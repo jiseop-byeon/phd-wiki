@@ -31,6 +31,61 @@ because each unit-length link contributes one unit vector at its own absolute an
 
 Draw two panels side by side.
 
+<svg viewBox="0 0 560 342" style="max-width:100%;height:auto" role="img" aria-label="Left, P2's workspace with the wall x = 1 tangent to the elbow circle and the arm at its two contact poses A and B; right, the torus chart of (θ1, θ2) with the shaded C-obstacle lens and A and B on its contact boundary.">
+  <rect x="206" y="37.5" width="45" height="220.5" fill="currentColor" fill-opacity="0.06"/>
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="206" y1="47.5" x2="216" y2="37.5"/><line x1="206" y1="57.5" x2="226" y2="37.5"/><line x1="206" y1="67.5" x2="236" y2="37.5"/><line x1="206" y1="77.5" x2="246" y2="37.5"/><line x1="206" y1="87.5" x2="251" y2="42.5"/><line x1="206" y1="97.5" x2="251" y2="52.5"/><line x1="206" y1="107.5" x2="251" y2="62.5"/><line x1="206" y1="117.5" x2="251" y2="72.5"/><line x1="206" y1="127.5" x2="251" y2="82.5"/><line x1="206" y1="137.5" x2="251" y2="92.5"/><line x1="206" y1="147.5" x2="251" y2="102.5"/><line x1="206" y1="157.5" x2="251" y2="112.5"/><line x1="206" y1="167.5" x2="251" y2="122.5"/><line x1="206" y1="177.5" x2="251" y2="132.5"/><line x1="206" y1="187.5" x2="251" y2="142.5"/><line x1="206" y1="197.5" x2="251" y2="152.5"/><line x1="206" y1="207.5" x2="251" y2="162.5"/><line x1="206" y1="217.5" x2="251" y2="172.5"/><line x1="206" y1="227.5" x2="251" y2="182.5"/><line x1="206" y1="237.5" x2="251" y2="192.5"/><line x1="206" y1="247.5" x2="251" y2="202.5"/><line x1="206" y1="257.5" x2="251" y2="212.5"/><line x1="215.5" y1="258" x2="251" y2="222.5"/><line x1="225.5" y1="258" x2="251" y2="232.5"/><line x1="235.5" y1="258" x2="251" y2="242.5"/><line x1="245.5" y1="258" x2="251" y2="252.5"/></g>
+  <line x1="206" y1="37.5" x2="206" y2="258" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="116" cy="150" r="90" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.55"/>
+  <polyline points="116,150 116,60 206,60" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round" opacity="0.45"/>
+  <polyline points="116,150 206,150 206,60" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="116" cy="150" r="5" fill="currentColor"/>
+  <circle cx="206" cy="150" r="3.8" fill="currentColor"/>
+  <circle cx="116" cy="60" r="3.8" fill="currentColor" fill-opacity="0.45"/>
+  <circle cx="206" cy="60" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="190.7" y1="177" x2="203.5" y2="153" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+  <g stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.35"><line x1="368" y1="50" x2="368" y2="250"/><line x1="318" y1="200" x2="518" y2="200"/><line x1="418" y1="50" x2="418" y2="250"/><line x1="318" y1="150" x2="518" y2="150"/><line x1="468" y1="50" x2="468" y2="228"/><line x1="318" y1="100" x2="518" y2="100"/></g>
+  <path d="M368 100 L368 99 L368.1 98 L368.2 97 L368.3 96.1 L368.4 95.2 L368.6 94.3 L368.8 93.5 L369.1 92.7 L369.4 92 L369.7 91.2 L370.1 90.6 L370.4 89.9 L370.9 89.3 L371.3 88.7 L371.8 88.1 L372.3 87.6 L372.9 87.1 L373.4 86.6 L374.1 86.2 L374.7 85.7 L375.4 85.4 L376.1 85 L376.8 84.7 L377.5 84.4 L378.3 84.2 L379.1 84 L380 83.8 L380.8 83.6 L381.7 83.5 L382.6 83.4 L383.6 83.4 L384.5 83.3 L385.5 83.3 L386.5 83.4 L387.6 83.5 L388.6 83.6 L389.7 83.8 L390.8 84 L391.9 84.2 L393 84.5 L394.1 84.8 L395.3 85.1 L396.5 85.5 L397.7 86 L398.9 86.5 L400.1 87 L401.3 87.6 L402.5 88.2 L403.8 88.9 L405.1 89.7 L406.3 90.4 L407.6 91.3 L408.9 92.2 L410.2 93.1 L411.5 94.1 L412.8 95.2 L414.1 96.3 L415.4 97.5 L416.7 98.7 L418 100 L419.3 101.3 L420.6 102.7 L421.9 104.2 L423.2 105.7 L424.5 107.2 L425.8 108.8 L427.1 110.4 L428.4 112.1 L429.7 113.8 L430.9 115.5 L432.2 117.3 L433.5 119.1 L434.7 121 L435.9 122.8 L437.1 124.7 L438.3 126.7 L439.5 128.6 L440.7 130.5 L441.9 132.5 L443 134.5 L444.1 136.4 L445.2 138.4 L446.3 140.4 L447.4 142.4 L448.4 144.4 L449.5 146.3 L450.5 148.3 L451.5 150.2 L452.4 152.2 L453.4 154.1 L454.3 156 L455.2 157.9 L456 159.8 L456.9 161.7 L457.7 163.5 L458.5 165.3 L459.2 167.1 L459.9 168.9 L460.6 170.6 L461.3 172.4 L461.9 174 L462.6 175.7 L463.1 177.3 L463.7 178.9 L464.2 180.5 L464.7 182 L465.1 183.5 L465.6 185 L465.9 186.4 L466.3 187.8 L466.6 189.2 L466.9 190.5 L467.2 191.8 L467.4 193.1 L467.6 194.3 L467.7 195.5 L467.8 196.7 L467.9 197.8 L468 198.9 L468 200 L468 201 L467.9 202 L467.8 203 L467.7 203.9 L467.6 204.8 L467.4 205.7 L467.2 206.5 L466.9 207.3 L466.6 208 L466.3 208.8 L465.9 209.4 L465.6 210.1 L465.1 210.7 L464.7 211.3 L464.2 211.9 L463.7 212.4 L463.1 212.9 L462.6 213.4 L461.9 213.8 L461.3 214.3 L460.6 214.6 L459.9 215 L459.2 215.3 L458.5 215.6 L457.7 215.8 L456.9 216 L456 216.2 L455.2 216.4 L454.3 216.5 L453.4 216.6 L452.4 216.6 L451.5 216.7 L450.5 216.7 L449.5 216.6 L448.4 216.5 L447.4 216.4 L446.3 216.2 L445.2 216 L444.1 215.8 L443 215.5 L441.9 215.2 L440.7 214.9 L439.5 214.5 L438.3 214 L437.1 213.5 L435.9 213 L434.7 212.4 L433.5 211.8 L432.2 211.1 L430.9 210.3 L429.7 209.6 L428.4 208.7 L427.1 207.8 L425.8 206.9 L424.5 205.9 L423.2 204.8 L421.9 203.7 L420.6 202.5 L419.3 201.3 L418 200 L416.7 198.7 L415.4 197.3 L414.1 195.8 L412.8 194.3 L411.5 192.8 L410.2 191.2 L408.9 189.6 L407.6 187.9 L406.3 186.2 L405.1 184.5 L403.8 182.7 L402.5 180.9 L401.3 179 L400.1 177.2 L398.9 175.3 L397.7 173.3 L396.5 171.4 L395.3 169.5 L394.1 167.5 L393 165.5 L391.9 163.6 L390.8 161.6 L389.7 159.6 L388.6 157.6 L387.6 155.6 L386.5 153.7 L385.5 151.7 L384.5 149.8 L383.6 147.8 L382.6 145.9 L381.7 144 L380.8 142.1 L380 140.2 L379.1 138.3 L378.3 136.5 L377.5 134.7 L376.8 132.9 L376.1 131.1 L375.4 129.4 L374.7 127.6 L374.1 126 L373.4 124.3 L372.9 122.7 L372.3 121.1 L371.8 119.5 L371.3 118 L370.9 116.5 L370.4 115 L370.1 113.6 L369.7 112.2 L369.4 110.8 L369.1 109.5 L368.8 108.2 L368.6 106.9 L368.4 105.7 L368.3 104.5 L368.2 103.3 L368.1 102.2 L368 101.1 L368 100 Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  <rect x="318" y="50" width="200" height="200" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g stroke="currentColor" stroke-width="1" opacity="0.7"><line x1="318" y1="250" x2="318" y2="254"/><line x1="314" y1="250" x2="318" y2="250"/><line x1="368" y1="250" x2="368" y2="254"/><line x1="314" y1="200" x2="318" y2="200"/><line x1="418" y1="250" x2="418" y2="254"/><line x1="314" y1="150" x2="318" y2="150"/><line x1="468" y1="250" x2="468" y2="254"/><line x1="314" y1="100" x2="318" y2="100"/><line x1="518" y1="250" x2="518" y2="254"/><line x1="314" y1="50" x2="318" y2="50"/></g>
+  <g stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"><polyline points="313,78 318,72 323,78"/><polyline points="513,78 518,72 523,78"/><polyline points="336,45 342,50 336,55"/><polyline points="343,45 349,50 343,55"/><polyline points="336,245 342,250 336,255"/><polyline points="343,245 349,250 343,255"/></g>
+  <circle cx="418" cy="100" r="4.5" fill="currentColor"/>
+  <circle cx="468" cy="200" r="4.5" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="346.9" y1="73.3" x2="369.8" y2="87.1" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+  <line x1="468" y1="206" x2="468" y2="230" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+  <g font-size="11" fill="currentColor">
+    <text x="12" y="18" font-size="12">Workspace</text>
+    <text x="300" y="18" font-size="12">C-space chart, cut-open torus</text>
+    <text x="230.5" y="31.5" text-anchor="middle">wall x = 1</text>
+    <text x="109" y="168" text-anchor="end">base (0, 0)</text>
+    <text x="109" y="53" text-anchor="end" opacity="0.75">(0, 1)</text>
+    <text x="197" y="49" text-anchor="end">target (1, 1)</text>
+    <text x="197" y="142" text-anchor="end">A</text>
+    <text x="124" y="81" opacity="0.75">B</text>
+    <text x="188.7" y="190" text-anchor="end">tangent at (1, 0)</text>
+    <text x="116" y="214.8" text-anchor="middle" opacity="0.8">elbow circle, r = 1</text>
+    <text x="318" y="268" text-anchor="middle">−180°</text>
+    <text x="311" y="254" text-anchor="end">−180°</text>
+    <text x="368" y="268" text-anchor="middle">−90°</text>
+    <text x="311" y="204" text-anchor="end">−90°</text>
+    <text x="418" y="268" text-anchor="middle">0°</text>
+    <text x="311" y="154" text-anchor="end">0°</text>
+    <text x="468" y="268" text-anchor="middle">90°</text>
+    <text x="311" y="104" text-anchor="end">90°</text>
+    <text x="518" y="268" text-anchor="middle">180°</text>
+    <text x="311" y="54" text-anchor="end">180°</text>
+    <text x="418" y="284" text-anchor="middle" font-size="12">θ<tspan dy="3.5">1</tspan></text>
+    <text x="311" y="36" text-anchor="end" font-size="12">θ<tspan dy="3.5">2</tspan></text>
+    <text x="425" y="93">A (0°, 90°)</text>
+    <text x="468" y="242" text-anchor="middle">B (90°, −90°)</text>
+    <text x="340.2" y="68.9" text-anchor="middle">contact</text>
+    <text x="418" y="142.2" text-anchor="middle">C<tspan dy="3.5">obs</tspan></text>
+    <text x="419.7" y="162.2" text-anchor="middle">18.478 %</text>
+    <text x="12" y="300" opacity="0.9">A = (0°, 90°): link 2 lies flush along the face · B = (90°, −90°): only the tip touches.</text>
+    <text x="12" y="316" opacity="0.9">Both have d = 0, so both lie on the contact curve. Shaded: cos θ<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">+ cos(θ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">+θ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">) &gt; 1.</tspan></text>
+    <text x="12" y="332" opacity="0.9">Matching arrows glue the edges (left = right, top = bottom): the square is the torus T².</text>
+  </g>
+</svg>
+
 **Left — the workspace.** The base at the origin; the unit circle the elbow traces; the wall drawn as a vertical line at $x = 1$ with hatching to its right. Note that the wall is *tangent* to the elbow circle at $(1,0)$. Draw P2 twice: once at $(0°, 90°)$, where link 2 runs from $(1,0)$ to $(1,1)$ and lies flat along the face, and once at $(90°, -90°)$, where link 1 runs from the origin to $(0,1)$ and link 2 runs from $(0,1)$ to $(1,1)$, touching the face only at the tip. Mark the target $(1,1)$.
 
 **Right — the C-space chart.** A square with $\theta_1$ on the horizontal axis and $\theta_2$ on the vertical, both from $-180°$ to $+180°$. Draw arrows on the left and right edges showing they are the same edge, and again on the top and bottom: that double identification is what makes the square a torus rather than a rectangle. Shade the region where the arm penetrates the panel — a lens that spans $\theta_1 \in (-90°, 90°)$ and pinches to a point at each end. Mark the two configurations from the left panel as dots on the shaded region's boundary, and label the boundary curve "contact".
@@ -117,8 +172,6 @@ They are the same point of task space and two different points of C-space, and t
 > - **Spatial 6R arm**: $m = 6$, links $N = 7$ (base + 6 moving links), $J = 6$ revolute joints, each $f_i = 1$. $6(7-1-6) + 6 = 0 + 6 = 6$ — enough to place the tool at any position and orientation in its reachable workspace.
 >
 > **Pattern**: for an open serial chain $J = N - 1$, so the first term vanishes and dof is just $\sum_i f_i$. Each closed loop subtracts constraints, which is why the four-bar's 4 joints give only 1 dof. The formula assumes independent constraints; special geometry can break it (MR Example 2.6).
->
-> The homework's 1-dof claim *is* $3(4-1-4)+4=1$. Special geometry (MR 2.6) is what would falsify “Grübler always gives the mobility.” P2 reaching $(1,1)$ is in task space and in the workspace; two C-space points map to it (ch.6).
 
 ### 2. C-obstacles and free space, defined
 
@@ -154,7 +207,7 @@ A **constraint** on a mechanism is a condition its motion must satisfy. Two kind
 > 1. Three for the chassis: $(x, y, \theta)$ (five if the two wheel rolling angles are included, as MR §13.3 does). The nonholonomic constraint (no sideways slip) restricts *velocities*, not reachable chassis configurations — the robot can still reach any pose, just not by any path.
 > 2. $\text{dof} = 3(4-1-4) + (3\cdot 1 + 1\cdot 1) = -3 + 4 = 1$. The prismatic joint contributes its one freedom exactly like a revolute one; what matters to the count is $f_i$, not the joint's kind.
 > 3. $359°$ and $1°$ are neighbours on the circle but far apart in Euclidean distance, so a naive MSE regression is penalized enormously at the wrap point and learns a discontinuous target ([[02-foundations/se3-geometry|SE(3) §2]]).
-> 4. The arm is straight at $45°$, so the tip is at $(\sqrt2, \sqrt2) = (1.4142, 1.4142)$ and $d = \cos 45° + \cos 45° - 1 = \sqrt2 - 1 = 0.4142\,\mathrm{m}$ — it is $41.4\,\mathrm{cm}$ inside the panel, the deepest point of the lens along the line $\theta_2 = 0$.
+> 4. The arm is straight at $45°$, so the tip is at $(\sqrt2, \sqrt2) = (1.4142, 1.4142)$ and $d = \cos 45° + \cos 45° - 1 = \sqrt2 - 1 = 0.4142\,\mathrm{m}$ — it is $41.4\,\mathrm{cm}$ inside the panel; along the line $\theta_2 = 0$ the lens is deepest at $\theta_1 = 0$, where $d = 1\,\mathrm{m}$.
 
 ### Problem set · 과제
 
@@ -186,6 +239,61 @@ $$e(\theta) = (\cos\theta_1,\ \sin\theta_1), \qquad p(\theta) = e(\theta) + (\co
 ### 과제가 그릴 그림 · Homework diagram
 
 그림 두 개를 나란히 그린다.
+
+<svg viewBox="0 0 560 342" style="max-width:100%;height:auto" role="img" aria-label="왼쪽은 엘보 원에 접하는 벽 x = 1과 두 접촉 자세 A, B를 그린 P2 작업 영역이고, 오른쪽은 칠한 C-장애물 렌즈와 그 접촉 경계 위의 A, B를 표시한 (θ1, θ2) 원환면 도표다.">
+  <rect x="206" y="37.5" width="45" height="220.5" fill="currentColor" fill-opacity="0.06"/>
+  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="206" y1="47.5" x2="216" y2="37.5"/><line x1="206" y1="57.5" x2="226" y2="37.5"/><line x1="206" y1="67.5" x2="236" y2="37.5"/><line x1="206" y1="77.5" x2="246" y2="37.5"/><line x1="206" y1="87.5" x2="251" y2="42.5"/><line x1="206" y1="97.5" x2="251" y2="52.5"/><line x1="206" y1="107.5" x2="251" y2="62.5"/><line x1="206" y1="117.5" x2="251" y2="72.5"/><line x1="206" y1="127.5" x2="251" y2="82.5"/><line x1="206" y1="137.5" x2="251" y2="92.5"/><line x1="206" y1="147.5" x2="251" y2="102.5"/><line x1="206" y1="157.5" x2="251" y2="112.5"/><line x1="206" y1="167.5" x2="251" y2="122.5"/><line x1="206" y1="177.5" x2="251" y2="132.5"/><line x1="206" y1="187.5" x2="251" y2="142.5"/><line x1="206" y1="197.5" x2="251" y2="152.5"/><line x1="206" y1="207.5" x2="251" y2="162.5"/><line x1="206" y1="217.5" x2="251" y2="172.5"/><line x1="206" y1="227.5" x2="251" y2="182.5"/><line x1="206" y1="237.5" x2="251" y2="192.5"/><line x1="206" y1="247.5" x2="251" y2="202.5"/><line x1="206" y1="257.5" x2="251" y2="212.5"/><line x1="215.5" y1="258" x2="251" y2="222.5"/><line x1="225.5" y1="258" x2="251" y2="232.5"/><line x1="235.5" y1="258" x2="251" y2="242.5"/><line x1="245.5" y1="258" x2="251" y2="252.5"/></g>
+  <line x1="206" y1="37.5" x2="206" y2="258" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="116" cy="150" r="90" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.55"/>
+  <polyline points="116,150 116,60 206,60" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round" opacity="0.45"/>
+  <polyline points="116,150 206,150 206,60" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="116" cy="150" r="5" fill="currentColor"/>
+  <circle cx="206" cy="150" r="3.8" fill="currentColor"/>
+  <circle cx="116" cy="60" r="3.8" fill="currentColor" fill-opacity="0.45"/>
+  <circle cx="206" cy="60" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="190.7" y1="177" x2="203.5" y2="153" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+  <g stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.35"><line x1="368" y1="50" x2="368" y2="250"/><line x1="318" y1="200" x2="518" y2="200"/><line x1="418" y1="50" x2="418" y2="250"/><line x1="318" y1="150" x2="518" y2="150"/><line x1="468" y1="50" x2="468" y2="228"/><line x1="318" y1="100" x2="518" y2="100"/></g>
+  <path d="M368 100 L368 99 L368.1 98 L368.2 97 L368.3 96.1 L368.4 95.2 L368.6 94.3 L368.8 93.5 L369.1 92.7 L369.4 92 L369.7 91.2 L370.1 90.6 L370.4 89.9 L370.9 89.3 L371.3 88.7 L371.8 88.1 L372.3 87.6 L372.9 87.1 L373.4 86.6 L374.1 86.2 L374.7 85.7 L375.4 85.4 L376.1 85 L376.8 84.7 L377.5 84.4 L378.3 84.2 L379.1 84 L380 83.8 L380.8 83.6 L381.7 83.5 L382.6 83.4 L383.6 83.4 L384.5 83.3 L385.5 83.3 L386.5 83.4 L387.6 83.5 L388.6 83.6 L389.7 83.8 L390.8 84 L391.9 84.2 L393 84.5 L394.1 84.8 L395.3 85.1 L396.5 85.5 L397.7 86 L398.9 86.5 L400.1 87 L401.3 87.6 L402.5 88.2 L403.8 88.9 L405.1 89.7 L406.3 90.4 L407.6 91.3 L408.9 92.2 L410.2 93.1 L411.5 94.1 L412.8 95.2 L414.1 96.3 L415.4 97.5 L416.7 98.7 L418 100 L419.3 101.3 L420.6 102.7 L421.9 104.2 L423.2 105.7 L424.5 107.2 L425.8 108.8 L427.1 110.4 L428.4 112.1 L429.7 113.8 L430.9 115.5 L432.2 117.3 L433.5 119.1 L434.7 121 L435.9 122.8 L437.1 124.7 L438.3 126.7 L439.5 128.6 L440.7 130.5 L441.9 132.5 L443 134.5 L444.1 136.4 L445.2 138.4 L446.3 140.4 L447.4 142.4 L448.4 144.4 L449.5 146.3 L450.5 148.3 L451.5 150.2 L452.4 152.2 L453.4 154.1 L454.3 156 L455.2 157.9 L456 159.8 L456.9 161.7 L457.7 163.5 L458.5 165.3 L459.2 167.1 L459.9 168.9 L460.6 170.6 L461.3 172.4 L461.9 174 L462.6 175.7 L463.1 177.3 L463.7 178.9 L464.2 180.5 L464.7 182 L465.1 183.5 L465.6 185 L465.9 186.4 L466.3 187.8 L466.6 189.2 L466.9 190.5 L467.2 191.8 L467.4 193.1 L467.6 194.3 L467.7 195.5 L467.8 196.7 L467.9 197.8 L468 198.9 L468 200 L468 201 L467.9 202 L467.8 203 L467.7 203.9 L467.6 204.8 L467.4 205.7 L467.2 206.5 L466.9 207.3 L466.6 208 L466.3 208.8 L465.9 209.4 L465.6 210.1 L465.1 210.7 L464.7 211.3 L464.2 211.9 L463.7 212.4 L463.1 212.9 L462.6 213.4 L461.9 213.8 L461.3 214.3 L460.6 214.6 L459.9 215 L459.2 215.3 L458.5 215.6 L457.7 215.8 L456.9 216 L456 216.2 L455.2 216.4 L454.3 216.5 L453.4 216.6 L452.4 216.6 L451.5 216.7 L450.5 216.7 L449.5 216.6 L448.4 216.5 L447.4 216.4 L446.3 216.2 L445.2 216 L444.1 215.8 L443 215.5 L441.9 215.2 L440.7 214.9 L439.5 214.5 L438.3 214 L437.1 213.5 L435.9 213 L434.7 212.4 L433.5 211.8 L432.2 211.1 L430.9 210.3 L429.7 209.6 L428.4 208.7 L427.1 207.8 L425.8 206.9 L424.5 205.9 L423.2 204.8 L421.9 203.7 L420.6 202.5 L419.3 201.3 L418 200 L416.7 198.7 L415.4 197.3 L414.1 195.8 L412.8 194.3 L411.5 192.8 L410.2 191.2 L408.9 189.6 L407.6 187.9 L406.3 186.2 L405.1 184.5 L403.8 182.7 L402.5 180.9 L401.3 179 L400.1 177.2 L398.9 175.3 L397.7 173.3 L396.5 171.4 L395.3 169.5 L394.1 167.5 L393 165.5 L391.9 163.6 L390.8 161.6 L389.7 159.6 L388.6 157.6 L387.6 155.6 L386.5 153.7 L385.5 151.7 L384.5 149.8 L383.6 147.8 L382.6 145.9 L381.7 144 L380.8 142.1 L380 140.2 L379.1 138.3 L378.3 136.5 L377.5 134.7 L376.8 132.9 L376.1 131.1 L375.4 129.4 L374.7 127.6 L374.1 126 L373.4 124.3 L372.9 122.7 L372.3 121.1 L371.8 119.5 L371.3 118 L370.9 116.5 L370.4 115 L370.1 113.6 L369.7 112.2 L369.4 110.8 L369.1 109.5 L368.8 108.2 L368.6 106.9 L368.4 105.7 L368.3 104.5 L368.2 103.3 L368.1 102.2 L368 101.1 L368 100 Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  <rect x="318" y="50" width="200" height="200" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g stroke="currentColor" stroke-width="1" opacity="0.7"><line x1="318" y1="250" x2="318" y2="254"/><line x1="314" y1="250" x2="318" y2="250"/><line x1="368" y1="250" x2="368" y2="254"/><line x1="314" y1="200" x2="318" y2="200"/><line x1="418" y1="250" x2="418" y2="254"/><line x1="314" y1="150" x2="318" y2="150"/><line x1="468" y1="250" x2="468" y2="254"/><line x1="314" y1="100" x2="318" y2="100"/><line x1="518" y1="250" x2="518" y2="254"/><line x1="314" y1="50" x2="318" y2="50"/></g>
+  <g stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"><polyline points="313,78 318,72 323,78"/><polyline points="513,78 518,72 523,78"/><polyline points="336,45 342,50 336,55"/><polyline points="343,45 349,50 343,55"/><polyline points="336,245 342,250 336,255"/><polyline points="343,245 349,250 343,255"/></g>
+  <circle cx="418" cy="100" r="4.5" fill="currentColor"/>
+  <circle cx="468" cy="200" r="4.5" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="346.9" y1="73.3" x2="369.8" y2="87.1" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+  <line x1="468" y1="206" x2="468" y2="230" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+  <g font-size="11" fill="currentColor">
+    <text x="12" y="18" font-size="12">작업 영역</text>
+    <text x="300" y="18" font-size="12">C-space 도표 (잘라 편 원환면)</text>
+    <text x="230.5" y="31.5" text-anchor="middle">벽 x = 1</text>
+    <text x="109" y="168" text-anchor="end">베이스 (0, 0)</text>
+    <text x="109" y="53" text-anchor="end" opacity="0.75">(0, 1)</text>
+    <text x="197" y="49" text-anchor="end">목표 (1, 1)</text>
+    <text x="197" y="142" text-anchor="end">A</text>
+    <text x="124" y="81" opacity="0.75">B</text>
+    <text x="188.7" y="190" text-anchor="end">(1, 0)에서 접함</text>
+    <text x="116" y="214.8" text-anchor="middle" opacity="0.8">엘보 원, r = 1</text>
+    <text x="318" y="268" text-anchor="middle">−180°</text>
+    <text x="311" y="254" text-anchor="end">−180°</text>
+    <text x="368" y="268" text-anchor="middle">−90°</text>
+    <text x="311" y="204" text-anchor="end">−90°</text>
+    <text x="418" y="268" text-anchor="middle">0°</text>
+    <text x="311" y="154" text-anchor="end">0°</text>
+    <text x="468" y="268" text-anchor="middle">90°</text>
+    <text x="311" y="104" text-anchor="end">90°</text>
+    <text x="518" y="268" text-anchor="middle">180°</text>
+    <text x="311" y="54" text-anchor="end">180°</text>
+    <text x="418" y="284" text-anchor="middle" font-size="12">θ<tspan dy="3.5">1</tspan></text>
+    <text x="311" y="36" text-anchor="end" font-size="12">θ<tspan dy="3.5">2</tspan></text>
+    <text x="425" y="93">A (0°, 90°)</text>
+    <text x="468" y="242" text-anchor="middle">B (90°, −90°)</text>
+    <text x="340.2" y="68.9" text-anchor="middle">접촉</text>
+    <text x="418" y="142.2" text-anchor="middle">C<tspan dy="3.5">obs</tspan></text>
+    <text x="419.7" y="162.2" text-anchor="middle">18.478 %</text>
+    <text x="12" y="300" opacity="0.9">A = (0°, 90°): 링크 2가 면에 붙어 눕는다 · B = (90°, −90°): 말단만 닿는다.</text>
+    <text x="12" y="316" opacity="0.9">둘 다 d = 0이라 접촉 곡선 위에 있다. 칠한 영역: cos θ<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">+ cos(θ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">+θ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">) &gt; 1.</tspan></text>
+    <text x="12" y="332" opacity="0.9">같은 화살표끼리 붙인다(왼쪽 = 오른쪽, 위 = 아래). 그래서 정사각형이 원환면 T²다.</text>
+  </g>
+</svg>
 
 **왼쪽 — 작업 영역.** 원점의 베이스, 엘보가 그리는 단위원, $x = 1$의 수직선으로 그린 벽(오른쪽에 빗금). 벽은 엘보 원에 $(1,0)$에서 *접한다*는 점을 표시한다. P2를 두 번 그린다. $(0°, 90°)$에서는 링크 2가 $(1,0)$에서 $(1,1)$로 가며 면에 완전히 붙어 눕고, $(90°, -90°)$에서는 링크 1이 원점에서 $(0,1)$로, 링크 2가 $(0,1)$에서 $(1,1)$로 가서 말단만 면에 닿는다. 목표 $(1,1)$을 표시한다.
 
@@ -301,7 +409,7 @@ $$\mathcal{C}_{\text{obs}} = \{\,\theta \in \mathcal{C} \;:\; \mathcal{A}(\theta
 > 1. 차체만 보면 $(x, y, \theta)$ 세 개다(MR §13.3처럼 두 바퀴의 회전각까지 넣으면 다섯). 비홀로노믹 제약(옆 미끄럼 불가)은 *속도*를 제한할 뿐 도달 가능한 차체 자세를 제한하지 않는다. 어떤 자세에도 갈 수 있고, 다만 아무 경로로나 가지는 못한다.
 > 2. $\text{dof} = 3(4-1-4) + (3\cdot 1 + 1\cdot 1) = -3 + 4 = 1$. 직동관절도 회전관절과 똑같이 자유도 하나를 보탠다. 계산에 들어가는 것은 관절의 종류가 아니라 $f_i$다.
 > 3. $359°$와 $1°$는 원 위에서 이웃인데 유클리드 거리로는 멀다. 순진한 MSE 회귀는 각이 감기는 지점에서 큰 벌점을 받고 불연속인 목표를 학습하게 된다([[02-foundations/se3-geometry|SE(3) §2]]).
-> 4. 팔이 $45°$로 곧게 펴져 말단이 $(\sqrt2, \sqrt2) = (1.4142, 1.4142)$이므로 $d = \cos 45° + \cos 45° - 1 = \sqrt2 - 1 = 0.4142\,\mathrm{m}$다. 패널 안으로 $41.4\,\mathrm{cm}$ 들어가 있고, $\theta_2 = 0$ 선 위에서 렌즈가 가장 깊은 지점이다.
+> 4. 팔이 $45°$로 곧게 펴져 말단이 $(\sqrt2, \sqrt2) = (1.4142, 1.4142)$이므로 $d = \cos 45° + \cos 45° - 1 = \sqrt2 - 1 = 0.4142\,\mathrm{m}$다. 패널 안으로 $41.4\,\mathrm{cm}$ 들어가 있다. $\theta_2 = 0$ 선 위에서 렌즈가 가장 깊은 지점은 $\theta_1 = 0$이고, 거기서 $d = 1\,\mathrm{m}$다.
 
 ### 과제 · Problem set
 

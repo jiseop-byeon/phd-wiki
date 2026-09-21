@@ -73,7 +73,7 @@ Before 2020, model sizing was intuition-driven. Kaplan et al. measured how cross
 
 ### The Chinchilla correction (Hoffmann 2022)
 
-- With a better experimental design (varying learning-rate schedules per token budget), the compute-optimal frontier changes: **N and D should scale in equal proportion** — roughly **20 tokens per parameter**. The abstract says only that "for every doubling of model size the number of training tokens should also be doubled"; the 20:1 ratio and the 1.4T-token Chinchilla run are body figures.
+- With a better experimental design (varying learning-rate schedules per token budget), the compute-optimal frontier changes: **N and D should scale in equal proportion** — roughly **20 tokens per parameter**. The abstract says only that "for every doubling of model size the number of training tokens should also be doubled". The 1.4T-token Chinchilla run is a body figure; the 20:1 ratio is printed nowhere — it is read off the paper's table of compute-optimal token counts per model size.
 - Most large models of 2020–22 (GPT-3 175B, Gopher 280B) were substantially **undertrained** for their size.
 - Key experimental evidence: under the reported compute-matched setup, Chinchilla 70B trained on 1.4T tokens outperformed Gopher 280B across the evaluated tasks.
 
@@ -149,7 +149,7 @@ Turned frontier training into an engineering discipline: every serious lab now f
 
 ### Chinchilla의 교정 (Hoffmann 2022)
 
-- 더 나은 실험 설계(토큰 예산별 학습률 스케줄)로 다시 재보니 최적 지점이 달라진다: **N과 D는 같은 비율로** — 대략 **파라미터당 20 토큰**.
+- 더 나은 실험 설계(토큰 예산별 학습률 스케줄)로 다시 재보니 최적 지점이 달라진다: **N과 D는 같은 비율로** — 대략 **파라미터당 20 토큰**. 초록은 "모델 크기를 두 배로 할 때마다 학습 토큰도 두 배로"라고만 말한다. 1.4T 토큰의 Chinchilla 학습은 본문 수치이고, 20:1이라는 비율은 어디에도 그대로 적혀 있지 않다 — 모델 크기별 최적 토큰 수를 적은 표에서 읽어 낸 값이다.
 - 2020~22년의 대형 모델들(GPT-3 175B, Gopher 280B)은 크기에 비해 상당히 **덜 학습된** 상태였다.
 - 핵심 실험 증거: 보고된 compute-matched 설정에서 1.4조 토큰을 학습한 Chinchilla 70B가 평가된 과제 전반에서 Gopher 280B를 앞섰다.
 

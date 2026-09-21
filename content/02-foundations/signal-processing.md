@@ -29,6 +29,85 @@ functions.
 
 The object is plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], the haptic handle, running on its $1\,\mathrm{kHz}$ servo. The problem set asks for this drawing.
 
+<svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="plant P3 on its 1 kHz servo: handle, ideal sampler, zero-order hold and wall law in a row; below, the handle position, its eight samples and the hold's staircase against the wall, on a grid one encoder count tall">
+  <defs><marker id="arSp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <rect x="12" y="33" width="66" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="45.0" y="47.0" fill="currentColor" text-anchor="middle">handle</text>
+  <text x="45.0" y="61.0" fill="currentColor" text-anchor="middle" opacity="0.85">P3</text>
+  <line x1="78" y1="50" x2="124" y2="50" stroke="currentColor" stroke-width="1.6" marker-end="url(#arSp)"/>
+  <text x="101.0" y="43.0" fill="currentColor" text-anchor="middle">x(t)</text>
+  <g fill="currentColor"><circle cx="128" cy="50" r="2.6"/><circle cx="164" cy="50" r="2.6"/></g>
+  <line x1="128" y1="50" x2="160" y2="36" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M150 30 A 14 14 0 0 1 162 43" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" marker-end="url(#arSp)"/>
+  <text x="146.0" y="23.0" fill="currentColor" text-anchor="middle">ideal sampler</text>
+  <text x="146.0" y="72.0" fill="currentColor" text-anchor="middle" opacity="0.9">closes every T = 1 ms</text>
+  <text x="146.0" y="86.0" fill="currentColor" text-anchor="middle" opacity="0.9">f<tspan dy="3" font-size="11">s</tspan><tspan dx="3.3" dy="-3">= 1000 Hz</tspan></text>
+  <text x="146.0" y="100.0" fill="currentColor" text-anchor="middle" opacity="0.9">Nyquist 500 Hz</text>
+  <line x1="167" y1="50" x2="250" y2="50" stroke="currentColor" stroke-width="1.6" marker-end="url(#arSp)"/>
+  <text x="208.0" y="43.0" fill="currentColor" text-anchor="middle">x[n] = x(nT)</text>
+  <rect x="252" y="33" width="64" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <polyline points="258,60 270,60 270,53 282,53 282,46 294,46 294,40 310,40" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="284.0" y="23.0" fill="currentColor" text-anchor="middle">zero-order hold</text>
+  <text x="284.0" y="86.0" fill="currentColor" text-anchor="middle" opacity="0.9">holds x[n] on [nT, (n+1)T),</text>
+  <text x="284.0" y="100.0" fill="currentColor" text-anchor="middle" opacity="0.9">then jumps</text>
+  <line x1="316" y1="50" x2="410" y2="50" stroke="currentColor" stroke-width="1.6" marker-end="url(#arSp)"/>
+  <text x="362.0" y="43.0" fill="currentColor" text-anchor="middle">held x</text>
+  <rect x="412" y="33" width="136" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="480.0" y="47.0" fill="currentColor" text-anchor="middle">wall law</text>
+  <text x="480.0" y="61.0" fill="currentColor" text-anchor="middle">F = −k<tspan dy="3" font-size="11">w</tspan><tspan dy="-3">(x − x</tspan><tspan dy="3" font-size="11">w</tspan><tspan dy="-3">)</tspan></text>
+  <g stroke="currentColor" stroke-width="1" stroke-opacity="0.18"><line x1="60" y1="306.0" x2="364" y2="306.0"/><line x1="60" y1="262.0" x2="364" y2="262.0"/><line x1="60" y1="218.0" x2="364" y2="218.0"/><line x1="60" y1="174.0" x2="364" y2="174.0"/><line x1="60" y1="130.0" x2="364" y2="130.0"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.55" fill="none"><line x1="60" y1="124.0" x2="60" y2="334.0"/><line x1="60" y1="334.0" x2="368" y2="334.0"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.5"><line x1="60.0" y1="334.0" x2="60.0" y2="338.0"/><line x1="98.0" y1="334.0" x2="98.0" y2="338.0"/><line x1="136.0" y1="334.0" x2="136.0" y2="338.0"/><line x1="174.0" y1="334.0" x2="174.0" y2="338.0"/><line x1="212.0" y1="334.0" x2="212.0" y2="338.0"/><line x1="250.0" y1="334.0" x2="250.0" y2="338.0"/><line x1="288.0" y1="334.0" x2="288.0" y2="338.0"/><line x1="326.0" y1="334.0" x2="326.0" y2="338.0"/><line x1="364.0" y1="334.0" x2="364.0" y2="338.0"/></g>
+  <text x="60.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">0</text>
+  <text x="98.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">1</text>
+  <text x="136.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">2</text>
+  <text x="174.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">3</text>
+  <text x="212.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">4</text>
+  <text x="250.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">5</text>
+  <text x="288.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">6</text>
+  <text x="326.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">7</text>
+  <text x="364.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">8</text>
+  <text x="364.0" y="364.0" fill="currentColor" text-anchor="end" opacity="0.8">t (ms)</text>
+  <line x1="99.0" y1="360.0" x2="135.0" y2="360.0" stroke="currentColor" stroke-width="1.2" marker-end="url(#arSp)"/>
+  <line x1="135.0" y1="360.0" x2="99.0" y2="360.0" stroke="currentColor" stroke-width="1.2" marker-end="url(#arSp)"/>
+  <text x="142.0" y="364.0" fill="currentColor">T = 1 ms: the clock</text>
+  <line x1="60" y1="221.3" x2="372" y2="221.3" stroke="currentColor" stroke-width="1.6" stroke-dasharray="7 4"/>
+  <text x="378.0" y="225.3" fill="currentColor">x<tspan dy="3" font-size="11">w</tspan><tspan dx="3.3" dy="-3">= 0.030 m</tspan></text>
+  <path d="M60.0 308.2L61.9 307.4L63.8 306.7L65.7 305.9L67.6 305.2L69.5 304.4L71.4 303.6L73.3 302.8L75.2 302.0L77.1 301.2L79.0 300.4L80.9 299.6L82.8 298.8L84.7 298.0L86.6 297.1L88.5 296.3L90.4 295.5L92.3 294.6L94.2 293.7L96.1 292.9L98.0 292.0L99.9 291.1L101.8 290.2L103.7 289.4L105.6 288.5L107.5 287.6L109.4 286.6L111.3 285.7L113.2 284.8L115.1 283.9L117.0 283.0L118.9 282.0L120.8 281.1L122.7 280.1L124.6 279.2L126.5 278.2L128.4 277.3L130.3 276.3L132.2 275.3L134.1 274.3L136.0 273.3L137.9 272.4L139.8 271.4L141.7 270.4L143.6 269.4L145.5 268.4L147.4 267.4L149.3 266.3L151.2 265.3L153.1 264.3L155.0 263.3L156.9 262.3L158.8 261.2L160.7 260.2L162.6 259.2L164.5 258.1L166.4 257.1L168.3 256.0L170.2 255.0L172.1 253.9L174.0 252.8L175.9 251.8L177.8 250.7L179.7 249.7L181.6 248.6L183.5 247.5L185.4 246.4L187.3 245.4L189.2 244.3L191.1 243.2L193.0 242.1L194.9 241.0L196.8 240.0L198.7 238.9L200.6 237.8L202.5 236.7L204.4 235.6L206.3 234.5L208.2 233.4L210.1 232.3L212.0 231.2L213.9 230.1L215.8 229.0L217.7 227.9L219.6 226.8L221.5 225.7L223.4 224.6L225.3 223.5L227.2 222.4L229.1 221.3L231.0 220.2L232.9 219.1L234.8 218.0L236.7 216.9L238.6 215.8L240.5 214.7L242.4 213.7L244.3 212.6L246.2 211.5L248.1 210.4L250.0 209.3L251.9 208.2L253.8 207.1L255.7 206.0L257.6 204.9L259.5 203.8L261.4 202.7L263.3 201.6L265.2 200.6L267.1 199.5L269.0 198.4L270.9 197.3L272.8 196.2L274.7 195.2L276.6 194.1L278.5 193.0L280.4 192.0L282.3 190.9L284.2 189.8L286.1 188.8L288.0 187.7L289.9 186.7L291.8 185.6L293.7 184.6L295.6 183.5L297.5 182.5L299.4 181.5L301.3 180.4L303.2 179.4L305.1 178.4L307.0 177.4L308.9 176.3L310.8 175.3L312.7 174.3L314.6 173.3L316.5 172.3L318.4 171.3L320.3 170.3L322.2 169.3L324.1 168.4L326.0 167.4L327.9 166.4L329.8 165.4L331.7 164.5L333.6 163.5L335.5 162.6L337.4 161.6L339.3 160.7L341.2 159.7L343.1 158.8L345.0 157.9L346.9 157.0L348.8 156.0L350.7 155.1L352.6 154.2L354.5 153.3L356.4 152.4L358.3 151.6L360.2 150.7L362.1 149.8L364.0 148.9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <polyline points="60.0,308.2 98.0,308.2 98.0,292.0 136.0,292.0 136.0,273.3 174.0,273.3 174.0,252.8 212.0,252.8 212.0,231.2 250.0,231.2 250.0,209.3 288.0,209.3 288.0,187.7 326.0,187.7 326.0,167.4 364.0,167.4" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <polygon points="98.0,292.0 99.9,291.1 101.8,290.2 103.7,289.4 105.6,288.5 107.5,287.6 109.4,286.6 111.3,285.7 113.2,284.8 115.1,283.9 117.0,283.0 118.9,282.0 120.8,281.1 122.7,280.1 124.6,279.2 126.5,278.2 128.4,277.3 130.3,276.3 132.2,275.3 134.1,274.3 136.0,273.3 136.0,292.0 98.0,292.0" fill="currentColor" fill-opacity="0.28" stroke="none"/>
+  <line x1="118.9" y1="285.0" x2="94.2" y2="146.7" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
+  <text x="66.0" y="128.7" fill="currentColor">hold late by T/2 = 0.5 ms</text>
+  <text x="66.0" y="142.7" fill="currentColor" opacity="0.85">on average (§5: phase lag)</text>
+  <g fill="currentColor"><circle cx="60.0" cy="308.2" r="3.3"/><circle cx="98.0" cy="292.0" r="3.3"/><circle cx="136.0" cy="273.3" r="3.3"/><circle cx="174.0" cy="252.8" r="3.3"/><circle cx="212.0" cy="231.2" r="3.3"/><circle cx="250.0" cy="209.3" r="3.3"/><circle cx="288.0" cy="187.7" r="3.3"/><circle cx="326.0" cy="167.4" r="3.3"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.4"><path d="M60.0 301.0L65.0 306.0L60.0 311.0L55.0 306.0z"/><path d="M98.0 301.0L103.0 306.0L98.0 311.0L93.0 306.0z"/><path d="M136.0 257.0L141.0 262.0L136.0 267.0L131.0 262.0z"/><path d="M174.0 257.0L179.0 262.0L174.0 267.0L169.0 262.0z"/><path d="M212.0 213.0L217.0 218.0L212.0 223.0L207.0 218.0z"/><path d="M250.0 213.0L255.0 218.0L250.0 223.0L245.0 218.0z"/><path d="M288.0 169.0L293.0 174.0L288.0 179.0L283.0 174.0z"/><path d="M326.0 169.0L331.0 174.0L326.0 179.0L321.0 174.0z"/></g>
+  <ellipse cx="269.0" cy="209.3" rx="26" ry="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="229.1" y1="214.3" x2="229.1" y2="228.3" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="227.1" y1="213.3" x2="189.2" y2="185.0" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
+  <text x="187.3" y="183.0" fill="currentColor" text-anchor="end">true crossing</text>
+  <line x1="271.0" y1="218.3" x2="285.0" y2="269.8" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
+  <text x="185.4" y="281.8" fill="currentColor">contact begins at a tick (5 ms),</text>
+  <text x="185.4" y="295.8" fill="currentColor" opacity="0.85">not at the true crossing</text>
+  <line x1="372" y1="131.0" x2="372" y2="173.0" stroke="currentColor" stroke-width="1.2" marker-end="url(#arSp)"/>
+  <line x1="372" y1="173.0" x2="372" y2="131.0" stroke="currentColor" stroke-width="1.2" marker-end="url(#arSp)"/>
+  <text x="380.0" y="140.0" fill="currentColor" opacity="1">Δx = 61.4 μm:</text>
+  <text x="380.0" y="154.0" fill="currentColor" opacity="0.9">one encoder count</text>
+  <text x="380.0" y="172.0" fill="currentColor" opacity="1">k<tspan dy="3" font-size="11">w</tspan><tspan dy="-3">·Δx = 400 × 61.4 μm</tspan></text>
+  <text x="380.0" y="186.0" fill="currentColor" opacity="0.9">= 0.025 N, the smallest</text>
+  <text x="380.0" y="200.0" fill="currentColor" opacity="0.9">force step in the wall</text>
+  <line x1="378" y1="260.0" x2="392" y2="260.0" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <circle cx="385" cy="274.0" r="3.3" fill="currentColor"/>
+  <polyline points="378,292.0 385,292.0 385,284.0 392,284.0" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <path d="M385 297.0L390 302.0L385 307.0L380 302.0z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="398.0" y="264.0" fill="currentColor" opacity="0.9">x(t), 30 Hz</text>
+  <text x="398.0" y="278.0" fill="currentColor" opacity="0.9">x[n] = x(nT)</text>
+  <text x="398.0" y="292.0" fill="currentColor" opacity="0.9">ZOH output</text>
+  <text x="398.0" y="306.0" fill="currentColor" opacity="0.9">x[n] snapped to a count</text>
+  <text x="14.0" y="394.0" fill="currentColor" opacity="1">Where the grids meet: Δx/T = 61.4 mm/s gives one new count per tick.</text>
+  <text x="14.0" y="408.0" fill="currentColor" opacity="0.95">This x(t) never exceeds 30.7 mm/s, so every other tick reports no motion,</text>
+  <text x="14.0" y="422.0" fill="currentColor" opacity="0.95">and a velocity from differenced positions reads 0, then 61.4 mm/s.</text>
+</svg>
+
 **The signal path, as four blocks in a row.** From the left: the handle, giving the continuous position $x(t)$; an **ideal sampler**, drawn as a switch that closes for an instant every $T=10^{-3}\,\mathrm{s}$; the sequence $x[n]=x(nT)$; a **zero-order hold**, drawn as a box whose output is a staircase; and the held signal that the wall law actually sees. Under the sampler write $f_s=1000\,\mathrm{Hz}$ and Nyquist $500\,\mathrm{Hz}$. Under the hold write the one thing the block does: it holds $x[n]$ constant on $[nT,\ (n+1)T)$ and then jumps.
 
 **The time plot underneath, all three curves on one axis.** Horizontal axis: time, about $8\,\mathrm{ms}$ so that eight ticks fit. Draw $x(t)$ as a smooth curve rising through the wall position. Put a dot on it at each tick — those are $x[n]$, and nothing between them exists for the controller. Then draw the ZOH staircase over the same axis: each tread flat at the height of the *previous* dot. Shade the sliver between the smooth curve and the staircase on one tread and label it: the hold is late by half a sample on average, $T/2 = 0.5\,\mathrm{ms}$, and §5 is where that half-sample becomes a phase lag in a loop. Draw the wall $x_w=0.030\,\mathrm{m}$ as a horizontal dashed line across all three, and circle the first tread whose height is above it — the controller's contact begins at a tick, never at the true crossing.
@@ -395,6 +474,85 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 ### 과제가 그릴 그림 · Homework diagram
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3**, 곧 $1\,\mathrm{kHz}$ 서보로 도는 햅틱 핸들이다. 과제가 이 그림을 요구한다.
+
+<svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="1 kHz 서보로 도는 장치 P3: 핸들, 이상 샘플러, 영차 홀드, 벽 법칙을 한 줄로 놓고, 그 아래에 핸들 위치와 그 여덟 샘플과 홀드의 계단을 벽과 함께, 엔코더 한 카운트 높이의 격자 위에 그린 그림">
+  <defs><marker id="arSpk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <rect x="12" y="33" width="66" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="45.0" y="47.0" fill="currentColor" text-anchor="middle">핸들</text>
+  <text x="45.0" y="61.0" fill="currentColor" text-anchor="middle" opacity="0.85">P3</text>
+  <line x1="78" y1="50" x2="124" y2="50" stroke="currentColor" stroke-width="1.6" marker-end="url(#arSpk)"/>
+  <text x="101.0" y="43.0" fill="currentColor" text-anchor="middle">x(t)</text>
+  <g fill="currentColor"><circle cx="128" cy="50" r="2.6"/><circle cx="164" cy="50" r="2.6"/></g>
+  <line x1="128" y1="50" x2="160" y2="36" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M150 30 A 14 14 0 0 1 162 43" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" marker-end="url(#arSpk)"/>
+  <text x="146.0" y="23.0" fill="currentColor" text-anchor="middle">이상 샘플러</text>
+  <text x="146.0" y="72.0" fill="currentColor" text-anchor="middle" opacity="0.9">T = 1 ms마다 닫힌다</text>
+  <text x="146.0" y="86.0" fill="currentColor" text-anchor="middle" opacity="0.9">f<tspan dy="3" font-size="11">s</tspan><tspan dx="3.3" dy="-3">= 1000 Hz</tspan></text>
+  <text x="146.0" y="100.0" fill="currentColor" text-anchor="middle" opacity="0.9">나이퀴스트 500 Hz</text>
+  <line x1="167" y1="50" x2="250" y2="50" stroke="currentColor" stroke-width="1.6" marker-end="url(#arSpk)"/>
+  <text x="208.0" y="43.0" fill="currentColor" text-anchor="middle">x[n] = x(nT)</text>
+  <rect x="252" y="33" width="64" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <polyline points="258,60 270,60 270,53 282,53 282,46 294,46 294,40 310,40" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="284.0" y="23.0" fill="currentColor" text-anchor="middle">영차 홀드</text>
+  <text x="284.0" y="86.0" fill="currentColor" text-anchor="middle" opacity="0.9">x[n]을 [nT, (n+1)T) 동안 유지,</text>
+  <text x="284.0" y="100.0" fill="currentColor" text-anchor="middle" opacity="0.9">그다음 튄다</text>
+  <line x1="316" y1="50" x2="410" y2="50" stroke="currentColor" stroke-width="1.6" marker-end="url(#arSpk)"/>
+  <text x="362.0" y="43.0" fill="currentColor" text-anchor="middle">유지된 x</text>
+  <rect x="412" y="33" width="136" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="480.0" y="47.0" fill="currentColor" text-anchor="middle">벽 법칙</text>
+  <text x="480.0" y="61.0" fill="currentColor" text-anchor="middle">F = −k<tspan dy="3" font-size="11">w</tspan><tspan dy="-3">(x − x</tspan><tspan dy="3" font-size="11">w</tspan><tspan dy="-3">)</tspan></text>
+  <g stroke="currentColor" stroke-width="1" stroke-opacity="0.18"><line x1="60" y1="306.0" x2="364" y2="306.0"/><line x1="60" y1="262.0" x2="364" y2="262.0"/><line x1="60" y1="218.0" x2="364" y2="218.0"/><line x1="60" y1="174.0" x2="364" y2="174.0"/><line x1="60" y1="130.0" x2="364" y2="130.0"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.55" fill="none"><line x1="60" y1="124.0" x2="60" y2="334.0"/><line x1="60" y1="334.0" x2="368" y2="334.0"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.5"><line x1="60.0" y1="334.0" x2="60.0" y2="338.0"/><line x1="98.0" y1="334.0" x2="98.0" y2="338.0"/><line x1="136.0" y1="334.0" x2="136.0" y2="338.0"/><line x1="174.0" y1="334.0" x2="174.0" y2="338.0"/><line x1="212.0" y1="334.0" x2="212.0" y2="338.0"/><line x1="250.0" y1="334.0" x2="250.0" y2="338.0"/><line x1="288.0" y1="334.0" x2="288.0" y2="338.0"/><line x1="326.0" y1="334.0" x2="326.0" y2="338.0"/><line x1="364.0" y1="334.0" x2="364.0" y2="338.0"/></g>
+  <text x="60.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">0</text>
+  <text x="98.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">1</text>
+  <text x="136.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">2</text>
+  <text x="174.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">3</text>
+  <text x="212.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">4</text>
+  <text x="250.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">5</text>
+  <text x="288.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">6</text>
+  <text x="326.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">7</text>
+  <text x="364.0" y="350.0" fill="currentColor" text-anchor="middle" opacity="0.8">8</text>
+  <text x="364.0" y="364.0" fill="currentColor" text-anchor="end" opacity="0.8">t (ms)</text>
+  <line x1="99.0" y1="360.0" x2="135.0" y2="360.0" stroke="currentColor" stroke-width="1.2" marker-end="url(#arSpk)"/>
+  <line x1="135.0" y1="360.0" x2="99.0" y2="360.0" stroke="currentColor" stroke-width="1.2" marker-end="url(#arSpk)"/>
+  <text x="142.0" y="364.0" fill="currentColor">T = 1 ms: 시계</text>
+  <line x1="60" y1="221.3" x2="372" y2="221.3" stroke="currentColor" stroke-width="1.6" stroke-dasharray="7 4"/>
+  <text x="378.0" y="225.3" fill="currentColor">x<tspan dy="3" font-size="11">w</tspan><tspan dx="3.3" dy="-3">= 0.030 m</tspan></text>
+  <path d="M60.0 308.2L61.9 307.4L63.8 306.7L65.7 305.9L67.6 305.2L69.5 304.4L71.4 303.6L73.3 302.8L75.2 302.0L77.1 301.2L79.0 300.4L80.9 299.6L82.8 298.8L84.7 298.0L86.6 297.1L88.5 296.3L90.4 295.5L92.3 294.6L94.2 293.7L96.1 292.9L98.0 292.0L99.9 291.1L101.8 290.2L103.7 289.4L105.6 288.5L107.5 287.6L109.4 286.6L111.3 285.7L113.2 284.8L115.1 283.9L117.0 283.0L118.9 282.0L120.8 281.1L122.7 280.1L124.6 279.2L126.5 278.2L128.4 277.3L130.3 276.3L132.2 275.3L134.1 274.3L136.0 273.3L137.9 272.4L139.8 271.4L141.7 270.4L143.6 269.4L145.5 268.4L147.4 267.4L149.3 266.3L151.2 265.3L153.1 264.3L155.0 263.3L156.9 262.3L158.8 261.2L160.7 260.2L162.6 259.2L164.5 258.1L166.4 257.1L168.3 256.0L170.2 255.0L172.1 253.9L174.0 252.8L175.9 251.8L177.8 250.7L179.7 249.7L181.6 248.6L183.5 247.5L185.4 246.4L187.3 245.4L189.2 244.3L191.1 243.2L193.0 242.1L194.9 241.0L196.8 240.0L198.7 238.9L200.6 237.8L202.5 236.7L204.4 235.6L206.3 234.5L208.2 233.4L210.1 232.3L212.0 231.2L213.9 230.1L215.8 229.0L217.7 227.9L219.6 226.8L221.5 225.7L223.4 224.6L225.3 223.5L227.2 222.4L229.1 221.3L231.0 220.2L232.9 219.1L234.8 218.0L236.7 216.9L238.6 215.8L240.5 214.7L242.4 213.7L244.3 212.6L246.2 211.5L248.1 210.4L250.0 209.3L251.9 208.2L253.8 207.1L255.7 206.0L257.6 204.9L259.5 203.8L261.4 202.7L263.3 201.6L265.2 200.6L267.1 199.5L269.0 198.4L270.9 197.3L272.8 196.2L274.7 195.2L276.6 194.1L278.5 193.0L280.4 192.0L282.3 190.9L284.2 189.8L286.1 188.8L288.0 187.7L289.9 186.7L291.8 185.6L293.7 184.6L295.6 183.5L297.5 182.5L299.4 181.5L301.3 180.4L303.2 179.4L305.1 178.4L307.0 177.4L308.9 176.3L310.8 175.3L312.7 174.3L314.6 173.3L316.5 172.3L318.4 171.3L320.3 170.3L322.2 169.3L324.1 168.4L326.0 167.4L327.9 166.4L329.8 165.4L331.7 164.5L333.6 163.5L335.5 162.6L337.4 161.6L339.3 160.7L341.2 159.7L343.1 158.8L345.0 157.9L346.9 157.0L348.8 156.0L350.7 155.1L352.6 154.2L354.5 153.3L356.4 152.4L358.3 151.6L360.2 150.7L362.1 149.8L364.0 148.9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <polyline points="60.0,308.2 98.0,308.2 98.0,292.0 136.0,292.0 136.0,273.3 174.0,273.3 174.0,252.8 212.0,252.8 212.0,231.2 250.0,231.2 250.0,209.3 288.0,209.3 288.0,187.7 326.0,187.7 326.0,167.4 364.0,167.4" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <polygon points="98.0,292.0 99.9,291.1 101.8,290.2 103.7,289.4 105.6,288.5 107.5,287.6 109.4,286.6 111.3,285.7 113.2,284.8 115.1,283.9 117.0,283.0 118.9,282.0 120.8,281.1 122.7,280.1 124.6,279.2 126.5,278.2 128.4,277.3 130.3,276.3 132.2,275.3 134.1,274.3 136.0,273.3 136.0,292.0 98.0,292.0" fill="currentColor" fill-opacity="0.28" stroke="none"/>
+  <line x1="118.9" y1="285.0" x2="94.2" y2="146.7" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
+  <text x="66.0" y="128.7" fill="currentColor">홀드는 평균 T/2 = 0.5 ms 늦다</text>
+  <text x="66.0" y="142.7" fill="currentColor" opacity="0.85">(§5에서 위상 지연이 된다)</text>
+  <g fill="currentColor"><circle cx="60.0" cy="308.2" r="3.3"/><circle cx="98.0" cy="292.0" r="3.3"/><circle cx="136.0" cy="273.3" r="3.3"/><circle cx="174.0" cy="252.8" r="3.3"/><circle cx="212.0" cy="231.2" r="3.3"/><circle cx="250.0" cy="209.3" r="3.3"/><circle cx="288.0" cy="187.7" r="3.3"/><circle cx="326.0" cy="167.4" r="3.3"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.4"><path d="M60.0 301.0L65.0 306.0L60.0 311.0L55.0 306.0z"/><path d="M98.0 301.0L103.0 306.0L98.0 311.0L93.0 306.0z"/><path d="M136.0 257.0L141.0 262.0L136.0 267.0L131.0 262.0z"/><path d="M174.0 257.0L179.0 262.0L174.0 267.0L169.0 262.0z"/><path d="M212.0 213.0L217.0 218.0L212.0 223.0L207.0 218.0z"/><path d="M250.0 213.0L255.0 218.0L250.0 223.0L245.0 218.0z"/><path d="M288.0 169.0L293.0 174.0L288.0 179.0L283.0 174.0z"/><path d="M326.0 169.0L331.0 174.0L326.0 179.0L321.0 174.0z"/></g>
+  <ellipse cx="269.0" cy="209.3" rx="26" ry="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="229.1" y1="214.3" x2="229.1" y2="228.3" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="227.1" y1="213.3" x2="189.2" y2="185.0" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
+  <text x="187.3" y="183.0" fill="currentColor" text-anchor="end">참된 교차점</text>
+  <line x1="271.0" y1="218.3" x2="285.0" y2="269.8" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
+  <text x="185.4" y="281.8" fill="currentColor">접촉은 눈금(5 ms)에서 시작하고,</text>
+  <text x="185.4" y="295.8" fill="currentColor" opacity="0.85">참된 교차점에서 시작하지 않는다</text>
+  <line x1="372" y1="131.0" x2="372" y2="173.0" stroke="currentColor" stroke-width="1.2" marker-end="url(#arSpk)"/>
+  <line x1="372" y1="173.0" x2="372" y2="131.0" stroke="currentColor" stroke-width="1.2" marker-end="url(#arSpk)"/>
+  <text x="380.0" y="140.0" fill="currentColor" opacity="1">Δx = 61.4 μm:</text>
+  <text x="380.0" y="154.0" fill="currentColor" opacity="0.9">엔코더 한 카운트</text>
+  <text x="380.0" y="172.0" fill="currentColor" opacity="1">k<tspan dy="3" font-size="11">w</tspan><tspan dy="-3">·Δx = 400 × 61.4 μm</tspan></text>
+  <text x="380.0" y="186.0" fill="currentColor" opacity="0.9">= 0.025 N, 벽 안에서</text>
+  <text x="380.0" y="200.0" fill="currentColor" opacity="0.9">가장 작은 힘 단위</text>
+  <line x1="378" y1="260.0" x2="392" y2="260.0" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <circle cx="385" cy="274.0" r="3.3" fill="currentColor"/>
+  <polyline points="378,292.0 385,292.0 385,284.0 392,284.0" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <path d="M385 297.0L390 302.0L385 307.0L380 302.0z" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="398.0" y="264.0" fill="currentColor" opacity="0.9">x(t), 30 Hz</text>
+  <text x="398.0" y="278.0" fill="currentColor" opacity="0.9">x[n] = x(nT)</text>
+  <text x="398.0" y="292.0" fill="currentColor" opacity="0.9">ZOH 출력</text>
+  <text x="398.0" y="306.0" fill="currentColor" opacity="0.9">카운트에 스냅한 x[n]</text>
+  <text x="14.0" y="394.0" fill="currentColor" opacity="1">두 격자가 만나는 곳: Δx/T = 61.4 mm/s이면 눈금마다 새 카운트가 하나 생긴다.</text>
+  <text x="14.0" y="408.0" fill="currentColor" opacity="0.95">이 x(t)는 30.7 mm/s를 넘지 않으므로 한 눈금 걸러 움직임이 없다고 보고하고,</text>
+  <text x="14.0" y="422.0" fill="currentColor" opacity="0.95">위치를 차분해 얻은 속도는 0이었다가 61.4 mm/s로 튄다.</text>
+</svg>
 
 **신호 경로, 한 줄에 놓인 블록 넷.** 왼쪽부터: 연속 위치 $x(t)$를 내는 핸들, $T=10^{-3}\,\mathrm{s}$마다 순간적으로 닫히는 스위치로 그린 **이상 샘플러**, 수열 $x[n]=x(nT)$, 출력이 계단인 상자로 그린 **영차 홀드**, 그리고 벽 법칙이 실제로 보는 유지된 신호. 샘플러 아래에 $f_s=1000\,\mathrm{Hz}$와 나이퀴스트 $500\,\mathrm{Hz}$를 쓴다. 홀드 아래에는 그 블록이 하는 일 하나만 쓴다. $x[n]$을 $[nT,\ (n+1)T)$ 동안 일정하게 유지하고 그다음 튄다.
 

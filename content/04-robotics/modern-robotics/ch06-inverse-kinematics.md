@@ -21,6 +21,49 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 One workspace figure, three arms on it, and one annotation that is not an arm. The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], unit links, and the target is the catalog tip $(1,1)$ — the point on the panel face that the running task has to reach.
 
+<svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="P2 reaching the target (1, 1) with two IK branches, elbow at (1, 0) and at (0, 1); their joint-space mean is a straight arm whose tip (1.414, 1.414) overshoots by 0.586 m, where the only reachable direction is perpendicular to the wanted one.">
+  <defs><marker id="mr06hdE" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="0.8" opacity="0.25"><line x1="38.8" y1="256" x2="307.5" y2="256"/><line x1="70" y1="268.5" x2="70" y2="37.2"/></g>
+  <polyline points="70,256 70,131 195,131" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round" opacity="0.42"/>
+  <polyline points="70,256 195,256 195,131" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <polyline points="70,256 158.4,167.6 238.3,87.7" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4" opacity="0.75"/>
+  <circle cx="70" cy="256" r="4.8" fill="currentColor"/>
+  <circle cx="195" cy="256" r="3.8" fill="currentColor"/>
+  <circle cx="70" cy="131" r="3.8" fill="currentColor" fill-opacity="0.42"/>
+  <circle cx="158.4" cy="167.6" r="3" fill="currentColor" fill-opacity="0.75"/>
+  <circle cx="195" cy="131" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <g stroke="currentColor" stroke-width="2.2"><line x1="242.6" y1="75" x2="251" y2="83.4"/><line x1="242.6" y1="83.4" x2="251" y2="75"/></g>
+  <g stroke="currentColor" stroke-width="1.8" marker-end="url(#mr06hdE)"><line x1="238.3" y1="70.7" x2="220.3" y2="52.7"/><line x1="255.3" y1="87.7" x2="273.3" y2="105.7"/></g>
+  <line x1="223.4" y1="91.2" x2="194.6" y2="120" stroke="currentColor" stroke-width="2.4" marker-end="url(#mr06hdE)"/>
+  <polyline points="236.9,89.1 227,79.2 236.9,69.3" fill="none" stroke="currentColor" stroke-width="1" opacity="0.85"/>
+  <line x1="340" y1="14" x2="340" y2="276" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+  <g font-size="11" fill="currentColor">
+    <text x="215.3" y="46.7" text-anchor="end">reachable</text>
+    <text x="205.9" y="92.1" text-anchor="end">wanted</text>
+    <text x="226.9" y="126.1">miss 0.586 m</text>
+    <text x="257.8" y="76.2">(1.414, 1.414)</text>
+    <text x="206" y="153">target (1, 1)</text>
+    <text x="195" y="274" text-anchor="middle">elbow A (1, 0)</text>
+    <text x="61" y="135" text-anchor="end" opacity="0.75">(0, 1)</text>
+    <text x="61" y="149" text-anchor="end" opacity="0.75">elbow B</text>
+    <text x="132.5" y="122" text-anchor="middle" opacity="0.75">B (90°, −90°)</text>
+    <text x="204" y="223.5">A (0°, 90°)</text>
+    <text x="145" y="241" text-anchor="middle" opacity="0.85">mean (45°, 0°)</text>
+    <text x="70" y="274" text-anchor="middle" opacity="0.8">base</text>
+    <text x="352" y="26" font-size="12">Two exact IK solutions</text>
+    <text x="358" y="45">A = (0°, 90°), elbow (1, 0)</text>
+    <text x="358" y="62">B = (90°, −90°), elbow (0, 1)</text>
+    <text x="352" y="91" font-size="12">Their mean (45°, 0°) is not one</text>
+    <text x="358" y="110">tip (√2, √2), miss 0.5858 m</text>
+    <text x="358" y="127">= 41 % of the target's 1.414 m</text>
+    <text x="352" y="156" font-size="12">At the mean, J has rank 1</text>
+    <text x="358" y="175">σ = (2.2361, 0)</text>
+    <text x="358" y="192">reachable (−0.7071, 0.7071)</text>
+    <text x="358" y="209">wanted e = (−0.4142, −0.4142)</text>
+    <text x="358" y="226">Jᵀe = (0, 0): no step, for every λ</text>
+  </g>
+</svg>
+
 1. **Branch A, solid.** $\theta = (0^\circ, 90^\circ)$: link 1 along $+\hat x$ to the elbow at $(1,0)$, link 2 straight up to $(1,1)$. Label the elbow point. This is the catalog frozen pose.
 2. **Branch B, solid but lighter.** $\theta = (90^\circ, -90^\circ)$: link 1 straight up to the elbow at $(0,1)$, link 2 along $+\hat x$ to $(1,1)$. Label this elbow too. The two elbows are the whole content of "elbow-up versus elbow-down" — same tip, two different arms.
 3. **The mean arm, dashed.** $\theta = (45^\circ, 0^\circ)$, the componentwise average of the two branches: a single straight segment from the origin out to $(\sqrt2, \sqrt2) = (1.414, 1.414)$. Put an $\times$ on its tip and mark the miss distance $0.586\,\mathrm{m}$ back to the target. It must be visibly *past* the target, not near it.
@@ -199,7 +242,7 @@ Tier B. Tip target $(1,1)$ on **P2** from [[02-foundations/lab-plants|0.6]]. Ana
 > [!tip]- Solutions
 > 1. Elbow-right: elbow at $(1,0)$, forearm up. Elbow-up: elbow at $(0,1)$, forearm to the right.
 > 2. $(0^\circ,90^\circ)$ and $(90^\circ,-90^\circ)$. Frozen pose is $(0^\circ,90^\circ)$. Mean $(45^\circ,0^\circ)$: tip $(\sqrt2,\sqrt2)\approx(1.41,1.41)$ — not a solution. The mean of two IKs is not an IK (the figure in §1).
-> 3. $\det J=L_1L_2\sin\theta_2$ vanishes on the straight arm between branches. A local solver stays on its seed's side; switching elbows loses the panel-normal velocity at the singularity.
+> 3. $\det J=L_1L_2\sin\theta_2$ vanishes on the straight arm between branches, and $(45^\circ,0^\circ)$ lies on it: seeded exactly there the solver does not move at all (Worked case, Step 4), and once nudged off it a local solver stays on that side; switching elbows loses the panel-normal velocity at the singularity.
 
 ## 한국어
 
@@ -208,6 +251,49 @@ Tier B. Tip target $(1,1)$ on **P2** from [[02-foundations/lab-plants|0.6]]. Ana
 ### 과제가 그릴 그림 · Homework diagram
 
 작업 영역 그림 하나에 팔 셋을 올리고, 팔이 아닌 표시 하나를 더한다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 단위 링크이고, 목표는 카탈로그 말단 $(1,1)$ — 관통 과제가 닿아야 하는 패널 면 위의 점이다.
+
+<svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="목표 (1, 1)에 닿는 P2의 IK 가지 둘(엘보 (1, 0)과 (0, 1))과 그 관절 공간 평균인 곧은 팔을 그린 그림으로, 평균의 말단 (1.414, 1.414)은 0.586 m 지나치고 거기서 도달 가능한 유일한 방향은 원하는 방향과 직각이다.">
+  <defs><marker id="mr06hdK" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="0.8" opacity="0.25"><line x1="38.8" y1="256" x2="307.5" y2="256"/><line x1="70" y1="268.5" x2="70" y2="37.2"/></g>
+  <polyline points="70,256 70,131 195,131" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round" opacity="0.42"/>
+  <polyline points="70,256 195,256 195,131" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/>
+  <polyline points="70,256 158.4,167.6 238.3,87.7" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4" opacity="0.75"/>
+  <circle cx="70" cy="256" r="4.8" fill="currentColor"/>
+  <circle cx="195" cy="256" r="3.8" fill="currentColor"/>
+  <circle cx="70" cy="131" r="3.8" fill="currentColor" fill-opacity="0.42"/>
+  <circle cx="158.4" cy="167.6" r="3" fill="currentColor" fill-opacity="0.75"/>
+  <circle cx="195" cy="131" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <g stroke="currentColor" stroke-width="2.2"><line x1="242.6" y1="75" x2="251" y2="83.4"/><line x1="242.6" y1="83.4" x2="251" y2="75"/></g>
+  <g stroke="currentColor" stroke-width="1.8" marker-end="url(#mr06hdK)"><line x1="238.3" y1="70.7" x2="220.3" y2="52.7"/><line x1="255.3" y1="87.7" x2="273.3" y2="105.7"/></g>
+  <line x1="223.4" y1="91.2" x2="194.6" y2="120" stroke="currentColor" stroke-width="2.4" marker-end="url(#mr06hdK)"/>
+  <polyline points="236.9,89.1 227,79.2 236.9,69.3" fill="none" stroke="currentColor" stroke-width="1" opacity="0.85"/>
+  <line x1="340" y1="14" x2="340" y2="276" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+  <g font-size="11" fill="currentColor">
+    <text x="215.3" y="46.7" text-anchor="end">도달 가능</text>
+    <text x="205.9" y="92.1" text-anchor="end">원하는 방향</text>
+    <text x="226.9" y="126.1">빗나감 0.586 m</text>
+    <text x="257.8" y="76.2">(1.414, 1.414)</text>
+    <text x="206" y="153">목표 (1, 1)</text>
+    <text x="195" y="274" text-anchor="middle">엘보 A (1, 0)</text>
+    <text x="61" y="135" text-anchor="end" opacity="0.75">(0, 1)</text>
+    <text x="61" y="149" text-anchor="end" opacity="0.75">엘보 B</text>
+    <text x="132.5" y="122" text-anchor="middle" opacity="0.75">B (90°, −90°)</text>
+    <text x="204" y="223.5">A (0°, 90°)</text>
+    <text x="145" y="241" text-anchor="middle" opacity="0.85">평균 (45°, 0°)</text>
+    <text x="70" y="274" text-anchor="middle" opacity="0.8">베이스</text>
+    <text x="352" y="26" font-size="12">정확한 IK 해 둘</text>
+    <text x="358" y="45">A = (0°, 90°), 엘보 (1, 0)</text>
+    <text x="358" y="62">B = (90°, −90°), 엘보 (0, 1)</text>
+    <text x="352" y="91" font-size="12">평균 (45°, 0°)은 해가 아니다</text>
+    <text x="358" y="110">말단 (√2, √2), 빗나감 0.5858 m</text>
+    <text x="358" y="127">= 목표 거리 1.414 m의 41 %</text>
+    <text x="352" y="156" font-size="12">평균에서 J의 랭크는 1</text>
+    <text x="358" y="175">σ = (2.2361, 0)</text>
+    <text x="358" y="192">도달 가능 (−0.7071, 0.7071)</text>
+    <text x="358" y="209">원하는 방향 e = (−0.4142, −0.4142)</text>
+    <text x="358" y="226">Jᵀe = (0, 0): 어떤 λ에도 스텝 0</text>
+  </g>
+</svg>
 
 1. **분기 A, 실선.** $\theta = (0^\circ, 90^\circ)$: 링크 1이 $+\hat x$로 가서 엘보가 $(1,0)$, 링크 2가 곧장 위로 올라가 $(1,1)$. 엘보 점에 이름을 붙인다. 카탈로그 고정 자세다.
 2. **분기 B, 실선이지만 더 얇게.** $\theta = (90^\circ, -90^\circ)$: 링크 1이 곧장 위로 가서 엘보가 $(0,1)$, 링크 2가 $+\hat x$로 가서 $(1,1)$. 이 엘보에도 이름을 붙인다. 두 엘보 점이 "팔꿈치 위/아래"의 내용 전부다. 말단은 같고 팔이 둘이다.
@@ -382,5 +468,5 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, 말단 목표 $(1,1)$. 해�
 
 > [!tip]- 정답 · Solutions
 > 1. 엘보-오른쪽: 엘보 $(1,0)$, 전완 위. 엘보-위: 엘보 $(0,1)$, 전완 오른쪽.
-> 2. $(0^\circ,90^\circ)$와 $(90^\circ,-90^\circ)$. 고정 자세는 $(0^\circ,90^\circ)$. 평균 $(45^\circ,0^\circ)$: 말단 $(\sqrt2,\sqrt2)$ — 해가 아니다. 두 IK의 평균은 IK가 아니다(§1 그림).
-> 3. 가지 사이의 직선 팔에서 $\det J=0$. 국소 해법은 씨앗 쪽에 남고, 엘보를 바꾸면 특이점에서 패널 법선 속도를 잃는다.
+> 2. $(0^\circ,90^\circ)$와 $(90^\circ,-90^\circ)$. 고정 자세는 $(0^\circ,90^\circ)$. 평균 $(45^\circ,0^\circ)$: 말단 $(\sqrt2,\sqrt2)\approx(1.41,1.41)$ — 해가 아니다. 두 IK의 평균은 IK가 아니다(§1 그림).
+> 3. 가지 사이의 직선 팔에서 $\det J=0$이고, $(45^\circ,0^\circ)$는 바로 그 위에 있다. 정확히 거기서 시작하면 해법은 전혀 움직이지 않고(위 계산의 4단계), 거기서 조금 벗어난 뒤에는 국소 해법이 그쪽에 남는다. 엘보를 바꾸면 특이점에서 패널 법선 속도를 잃는다.

@@ -72,6 +72,14 @@ D1-D6, and research practice reuses the frozen study RS1 (06-research-practice/i
 The Robotics track ends in a capstone (26) that assembles the running task end to end; a
 new stage page links the capstone step it owns.
 
+9. THE DIAGRAM IS DRAWN. The Homework diagram section shows the figure itself - the worked
+case's version, with its numbers and labels - in both halves (Korean labels in the Korean
+half), and the text under it says how to draw it; the problem set asks for the variant.
+Geometry, plots, timelines and phase portraits are inline SVG whose coordinates are computed
+from the page's numbers (currentColor so the figure follows the light/dark theme; viewBox 560
+wide so it scales to a phone; ids unique per figure). Graphs, pipelines and state machines
+may be mermaid. A description of a figure without the figure does not meet the bar.
+
 Do not copy any course's slides or assignments. Original problems. Python only.
 Code once in the English half; Korean captions and interprets.
 -->

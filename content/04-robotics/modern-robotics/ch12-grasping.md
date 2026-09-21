@@ -36,6 +36,50 @@ The tile frame's origin is the centre of mass, which is also the midpoint of the
 
 One figure, the tile drawn as a rectangle with its centre of mass marked.
 
+<svg viewBox="0 0 560 341" style="max-width:100%;height:auto" role="img" aria-label="the panel tile held by two point fingers at the midpoints of its short edges: inward normals, friction cones of half-angle 26.565°, the contact line through both cones, the 4.905 N weight at the centre of mass and two 2.4525 N finger forces, and the four cone-edge wrenches">
+  <defs><marker id="ar12e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1" opacity="0.7"><line x1="140" y1="30" x2="420" y2="30"/><line x1="140" y1="25" x2="140" y2="35"/><line x1="420" y1="25" x2="420" y2="35"/></g>
+  <text x="280" y="24" font-size="11" text-anchor="middle" fill="currentColor">0.200 m</text>
+  <path d="M140 120 L229.4 75.3 A100 100 0 0 1 229.4 164.7 Z" fill="currentColor" fill-opacity="0.13" stroke="none"/>
+  <g stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3"><line x1="140" y1="120" x2="229.4" y2="75.3"/><line x1="140" y1="120" x2="229.4" y2="164.7"/></g>
+  <text x="233.4" y="73.3" font-size="11.5" text-anchor="start" fill="currentColor">1<tspan dy="-4.4" font-size="9">+</tspan></text>
+  <text x="233.4" y="174.7" font-size="11.5" text-anchor="start" fill="currentColor">1<tspan dy="-4.4" font-size="9">−</tspan></text>
+  <path d="M420 120 L330.6 75.3 A100 100 0 0 0 330.6 164.7 Z" fill="currentColor" fill-opacity="0.13" stroke="none"/>
+  <g stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3"><line x1="420" y1="120" x2="330.6" y2="75.3"/><line x1="420" y1="120" x2="330.6" y2="164.7"/></g>
+  <text x="326.6" y="73.3" font-size="11.5" text-anchor="end" fill="currentColor">2<tspan dy="-4.4" font-size="9">+</tspan></text>
+  <text x="326.6" y="174.7" font-size="11.5" text-anchor="end" fill="currentColor">2<tspan dy="-4.4" font-size="9">−</tspan></text>
+  <rect x="140" y="50" width="280" height="140" fill="none" stroke="currentColor" stroke-width="2"/>
+  <line x1="140" y1="120" x2="420" y2="120" stroke="currentColor" stroke-width="0.9" opacity="0.65"/>
+  <g stroke="currentColor" stroke-width="2.2" marker-end="url(#ar12e)"><line x1="140" y1="120" x2="196" y2="120"/><line x1="420" y1="120" x2="364" y2="120"/></g>
+  <text x="200" y="114" font-size="12" fill="currentColor">n₁</text><polyline points="201,106.8 203.4,104.4 205.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="346" y="114" font-size="12" fill="currentColor">n₂</text><polyline points="347,106.8 349.4,104.4 351.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M176 120 L175.9 117.6 L175.7 115.2 L175.3 112.9 L174.7 110.6 L174 108.3 L173.2 106.1 L172.2 103.9" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="193.2" y="87.8" font-size="11" text-anchor="middle" fill="currentColor" transform="rotate(-26.565 193.2 87.8)">α = 26.565°</text>
+  <circle cx="140" cy="120" r="3.6" fill="currentColor"/>
+  <circle cx="420" cy="120" r="3.6" fill="currentColor"/>
+  <circle cx="280" cy="120" r="6" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <path d="M280 120 L286 120 A6 6 0 0 0 280 114 Z M280 120 L274 120 A6 6 0 0 0 280 126 Z" fill="currentColor"/>
+  <text x="271" y="111" font-size="11" text-anchor="end" fill="currentColor">CoM</text>
+  <line x1="280" y1="127" x2="280" y2="198.5" stroke="currentColor" stroke-width="2.2" marker-end="url(#ar12e)"/>
+  <g stroke="currentColor" stroke-width="2" marker-end="url(#ar12e)"><line x1="133" y1="120" x2="133" y2="80.8"/><line x1="427" y1="120" x2="427" y2="80.8"/></g>
+  <g fill="currentColor">
+  <text x="289" y="206" font-size="11.5">W = 4.905 N</text>
+  <text x="289" y="220" font-size="11" opacity="0.85">f<tspan dy="3.1" font-size="8.6">y1</tspan><tspan dy="-3.1" dx="3.3">+ f</tspan><tspan dy="3.1" font-size="8.6">y2</tspan><tspan dy="-3.1" dx="3.3">= W</tspan></text>
+  <text x="126" y="98" font-size="11" text-anchor="end">f<tspan dy="3.1" font-size="8.6">y1</tspan><tspan dy="-3.1" dx="3.3">= 2.4525 N</tspan></text>
+  <text x="434" y="98" font-size="11">f<tspan dy="3.1" font-size="8.6">y2</tspan><tspan dy="-3.1" dx="3.3">= 2.4525 N</tspan></text>
+  <text x="152" y="208" font-size="11" text-anchor="end">r₁ = (−0.100, 0)</text>
+  <text x="408" y="208" font-size="11">r₂ = (+0.100, 0)</text>
+  </g>
+  <rect x="16" y="236" width="528" height="74" fill="none" stroke="currentColor" stroke-width="1" opacity="0.7" rx="4"/>
+  <text x="28" y="254" font-size="11" fill="currentColor" font-weight="bold">cone-edge wrenches w = (f<tspan dy="3.1" font-size="8.6">x</tspan><tspan dy="-3.1">, f</tspan><tspan dy="3.1" font-size="8.6">y</tspan><tspan dy="-3.1">, m</tspan><tspan dy="3.1" font-size="8.6">z</tspan><tspan dy="-3.1">), unit normal force</tspan></text>
+  <text x="28" y="276" font-size="12" fill="currentColor">1<tspan dy="-4.6" font-size="9.4">+</tspan><tspan dy="4.6" dx="3.6"> (1, 0.5, −0.05)</tspan></text>
+  <text x="158" y="276" font-size="12" fill="currentColor">1<tspan dy="-4.6" font-size="9.4">−</tspan><tspan dy="4.6" dx="3.6"> (1, −0.5, +0.05)</tspan></text>
+  <text x="288" y="276" font-size="12" fill="currentColor">2<tspan dy="-4.6" font-size="9.4">+</tspan><tspan dy="4.6" dx="3.6"> (−1, 0.5, +0.05)</tspan></text>
+  <text x="418" y="276" font-size="12" fill="currentColor">2<tspan dy="-4.6" font-size="9.4">−</tspan><tspan dy="4.6" dx="3.6"> (−1, −0.5, −0.05)</tspan></text>
+  <text x="28" y="298" font-size="11" fill="currentColor" opacity="0.9">λ = (1, 1, 1, 1) sums them to (0, 0, 0) and the rank is 3: force closure</text>
+  <text x="16" y="328" font-size="11" fill="currentColor" opacity="0.8">tile 0.200 × 0.100 m, 0.500 kg · μ = 0.5 · preload f<tspan dy="3.1" font-size="8.6">n</tspan><tspan dy="-3.1" dx="3.3">= 20 N per finger</tspan></text>
+</svg>
+
 - Draw both contact points on the short edges and, at each, the **inward normal** as a solid arrow.
 - At each contact draw the **friction cone**: two dashed rays at $\pm 26.565°$ from that normal, with the wedge between them shaded. Write the half-angle on one of them.
 - Draw the line joining the two contacts as a thin straight line all the way through the tile, and check by eye that it lies inside both shaded wedges — that is the antipodal condition, and here the line and the normals coincide.
@@ -50,7 +94,7 @@ The problem set asks for the same figure with a narrower cone and the centre of 
 
 $$\alpha = \tan^{-1}\mu = \tan^{-1}0.5 = 26.565°$$
 
-of the inward normal, because $f_t/f_n = \tan(\text{angle from the normal})$. The cone's two boundary rays are therefore the unit directions $\hat n \pm \mu\,\hat t$, and any force in the cone is a nonnegative combination of them.
+of the inward normal, because $f_t/f_n = \tan(\text{angle from the normal})$. The cone's two boundary rays are therefore the directions $\hat n \pm \mu\,\hat t$, and any force in the cone is a nonnegative combination of them.
 
 **Step 2 — turn each cone edge into a wrench.** A planar contact force $f$ applied at $r$ produces
 
@@ -94,7 +138,7 @@ $$f_n^{\min} = \frac{W}{2\mu} = \frac{4.905}{2 \times 0.5} = 4.905\ \mathrm{N}$$
 
 because the two contacts share the load and each converts preload into $\mu$ times as much friction. The frozen preload of $20\,\mathrm{N}$ therefore carries a safety factor of $20/4.905 = 4.08$, a total tangential budget of $2\mu f_n = 20\,\mathrm{N}$, and a moment capacity about $z$ of $2\,(\mu f_n)\,(0.100) = 2.00\ \mathrm{N\cdot m}$.
 
-**Step 7 — the limit that separates the two questions.** Repeat Step 3 with a general $\mu > 0$: the four edges are $(\pm1, \pm\mu, \mp 0.1\mu)$ in the same pattern, $\lambda = (1,1,1,1)$ still cancels, and the rank is still 3. So the grasp is a force closure **for every positive $\mu$, however small** — and yet $f_n^{\min} = W/(2\mu)$ diverges: at $\mu = 0.05$ it is $49.05\,\mathrm{N}$, ten times the catalog figure. Closure is a statement about *directions*; preload is a statement about *magnitudes*. A paper that reports a force-closure grasp has told you the first and nothing about the second.
+**Step 7 — the limit that separates the two questions.** Repeat Step 3 with a general $\mu > 0$: the four edges are $(1, \pm\mu, \mp 0.1\mu)$ and $(-1, \pm\mu, \pm 0.1\mu)$ in the same pattern, $\lambda = (1,1,1,1)$ still cancels, and the rank is still 3. So the grasp is a force closure **for every positive $\mu$, however small** — and yet $f_n^{\min} = W/(2\mu)$ diverges: at $\mu = 0.05$ it is $49.05\,\mathrm{N}$, ten times the Step 6 figure. Closure is a statement about *directions*; preload is a statement about *magnitudes*. A paper that reports a force-closure grasp has told you the first and nothing about the second.
 
 ### 1. The chapter in one list
 
@@ -179,9 +223,9 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 3. **Interpret.** Did either knob change the force-closure verdict? Answer for each, with the reason. Then explain what the offset costs as a formula rather than a number, and say what would have to change before the grasp fails outright rather than merely needing a harder squeeze.
 
 > [!tip]- Solutions
-> 1. The cones are visibly thinner and the weight arrow no longer passes between the fingers, so a curved moment arrow appears about the grasp midpoint.
-> 2. (a) $\alpha = \tan^{-1}0.2 = 11.310°$. Edges: $(1,\ 0.2,\ -0.02)$, $(1,\ -0.2,\ +0.02)$, $(-1,\ 0.2,\ +0.02)$, $(-1,\ -0.2,\ -0.02)$. (b) $\lambda = (1,1,1,1)$ sums to $(0,0,0)$, and the rank is 3 because the pairs give $(2,0,0)$, $(0,0.4,0)$ and $(0,0,-0.04)$. Force closure holds. (c) Gravity acts at $(0.030, 0)$ with force $(0,-4.905)$, so $m_z = r_x f_y = 0.030 \times (-4.905) = -0.14715\ \mathrm{N\cdot m}$ and the grasp must supply $(0,\ +4.905,\ +0.14715)$. Then $f_{y1}+f_{y2} = 4.905$ and $-0.100f_{y1} + 0.100f_{y2} = 0.14715$, giving $f_{y2} - f_{y1} = 1.4715$, so $f_{y2} = 3.18825$ and $f_{y1} = 1.71675\ \mathrm{N}$. The binding finger is the far one: $f_n^{\min} = 3.18825/0.2 = 15.941\ \mathrm{N}$. (d) Yes: the budget per finger is $\mu f_n = 0.2 \times 20 = 4\ \mathrm{N}$ against a demand of $3.188\ \mathrm{N}$, a margin of $4/3.188 = 1.25$ — against $4.08$ in the catalog case, so almost all of the safety factor is gone.
-> 3. Neither changed it. Force closure is decided by the cone-edge *directions* and the contact positions, and $\mu > 0$ with unchanged antipodal geometry keeps the positive-span test passing, while moving the centre of mass changes the wrench to be resisted, not the wrenches available. Both knobs move only the preload. As a formula, the offset $e$ raises the worst finger's tangential demand from $W/2$ to $\tfrac{W}{2}(1 + e/\ell)$ with $\ell = 0.100\,\mathrm{m}$ the half-span of the grasp, so $f_n^{\min} = \tfrac{W}{2\mu}(1 + e/\ell)$ — here $1 + 0.3 = 1.30$, a $30\,\%$ surcharge at any $\mu$. Outright failure needs the *directions* to change: $\mu \to 0$ exactly (rank drops to 1), or a re-grasp that stops the contact line from lying inside both cones, or an offset $e > \ell$, which puts the centre of mass outside the fingers so that no nonnegative normal forces can balance it.
+> 1. The cones are visibly thinner and the weight arrow no longer passes through the grasp midpoint, so a curved moment arrow appears about it.
+> 2. (a) $\alpha = \tan^{-1}0.2 = 11.310°$. Edges: $(1,\ 0.2,\ -0.02)$, $(1,\ -0.2,\ +0.02)$, $(-1,\ 0.2,\ +0.02)$, $(-1,\ -0.2,\ -0.02)$. (b) $\lambda = (1,1,1,1)$ sums to $(0,0,0)$, and the rank is 3 because the pairs give $(2,0,0)$, $(0,0.4,0)$ and $(0,0,-0.04)$. Force closure holds. (c) Gravity acts at $(0.030, 0)$ with force $(0,-4.905)$, so $m_z = r_x f_y = 0.030 \times (-4.905) = -0.14715\ \mathrm{N\cdot m}$ and the grasp must supply $(0,\ +4.905,\ +0.14715)$. Then $f_{y1}+f_{y2} = 4.905$ and $-0.100f_{y1} + 0.100f_{y2} = 0.14715$, giving $f_{y2} - f_{y1} = 1.4715$, so $f_{y2} = 3.18825$ and $f_{y1} = 1.71675\ \mathrm{N}$. The binding finger is the one nearer the centre of mass: $f_n^{\min} = 3.18825/0.2 = 15.941\ \mathrm{N}$. (d) Yes: the budget per finger is $\mu f_n = 0.2 \times 20 = 4\ \mathrm{N}$ against a demand of $3.188\ \mathrm{N}$, a margin of $4/3.188 = 1.25$ — against $4.08$ in Step 6, so almost all of the safety factor is gone.
+> 3. Neither changed it. Force closure is decided by the cone-edge *directions* and the contact positions, and $\mu > 0$ with unchanged antipodal geometry keeps the positive-span test passing, while moving the centre of mass changes the wrench to be resisted, not the wrenches available. Both knobs move only the preload. As a formula, the offset $e$ raises the worst finger's tangential demand from $W/2$ to $\tfrac{W}{2}(1 + e/\ell)$ with $\ell = 0.100\,\mathrm{m}$ the half-span of the grasp, so $f_n^{\min} = \tfrac{W}{2\mu}(1 + e/\ell)$ — here $1 + 0.3 = 1.30$, a $30\,\%$ surcharge at any $\mu$. Outright failure needs the *directions* to change: $\mu \to 0$ exactly (rank drops to 1), or a re-grasp that stops the contact line from lying inside both cones. An offset never does, not even $e > \ell$ with the centre of mass outside the fingers: $f_{y1} = \tfrac{W}{2}(1 - e/\ell)$ merely turns negative, which friction allows, and the formula above still gives the squeeze.
 
 ### Continue beyond this chapter
 
@@ -210,6 +254,50 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 
 그림 하나, 질량 중심을 표시한 직사각형으로 타일을 그린다.
 
+<svg viewBox="0 0 560 341" style="max-width:100%;height:auto" role="img" aria-label="짧은 두 변의 중점에서 점 손가락 둘이 잡은 패널 타일: 안쪽 법선, 반각 26.565°의 마찰 원뿔, 두 원뿔을 지나는 접촉선, 질량 중심의 4.905 N 무게와 2.4525 N 손가락 힘 둘, 그리고 원뿔 모서리 렌치 넷">
+  <defs><marker id="ar12k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1" opacity="0.7"><line x1="140" y1="30" x2="420" y2="30"/><line x1="140" y1="25" x2="140" y2="35"/><line x1="420" y1="25" x2="420" y2="35"/></g>
+  <text x="280" y="24" font-size="11" text-anchor="middle" fill="currentColor">0.200 m</text>
+  <path d="M140 120 L229.4 75.3 A100 100 0 0 1 229.4 164.7 Z" fill="currentColor" fill-opacity="0.13" stroke="none"/>
+  <g stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3"><line x1="140" y1="120" x2="229.4" y2="75.3"/><line x1="140" y1="120" x2="229.4" y2="164.7"/></g>
+  <text x="233.4" y="73.3" font-size="11.5" text-anchor="start" fill="currentColor">1<tspan dy="-4.4" font-size="9">+</tspan></text>
+  <text x="233.4" y="174.7" font-size="11.5" text-anchor="start" fill="currentColor">1<tspan dy="-4.4" font-size="9">−</tspan></text>
+  <path d="M420 120 L330.6 75.3 A100 100 0 0 0 330.6 164.7 Z" fill="currentColor" fill-opacity="0.13" stroke="none"/>
+  <g stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3"><line x1="420" y1="120" x2="330.6" y2="75.3"/><line x1="420" y1="120" x2="330.6" y2="164.7"/></g>
+  <text x="326.6" y="73.3" font-size="11.5" text-anchor="end" fill="currentColor">2<tspan dy="-4.4" font-size="9">+</tspan></text>
+  <text x="326.6" y="174.7" font-size="11.5" text-anchor="end" fill="currentColor">2<tspan dy="-4.4" font-size="9">−</tspan></text>
+  <rect x="140" y="50" width="280" height="140" fill="none" stroke="currentColor" stroke-width="2"/>
+  <line x1="140" y1="120" x2="420" y2="120" stroke="currentColor" stroke-width="0.9" opacity="0.65"/>
+  <g stroke="currentColor" stroke-width="2.2" marker-end="url(#ar12k)"><line x1="140" y1="120" x2="196" y2="120"/><line x1="420" y1="120" x2="364" y2="120"/></g>
+  <text x="200" y="114" font-size="12" fill="currentColor">n₁</text><polyline points="201,106.8 203.4,104.4 205.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="346" y="114" font-size="12" fill="currentColor">n₂</text><polyline points="347,106.8 349.4,104.4 351.8,106.8" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M176 120 L175.9 117.6 L175.7 115.2 L175.3 112.9 L174.7 110.6 L174 108.3 L173.2 106.1 L172.2 103.9" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="193.2" y="87.8" font-size="11" text-anchor="middle" fill="currentColor" transform="rotate(-26.565 193.2 87.8)">α = 26.565°</text>
+  <circle cx="140" cy="120" r="3.6" fill="currentColor"/>
+  <circle cx="420" cy="120" r="3.6" fill="currentColor"/>
+  <circle cx="280" cy="120" r="6" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <path d="M280 120 L286 120 A6 6 0 0 0 280 114 Z M280 120 L274 120 A6 6 0 0 0 280 126 Z" fill="currentColor"/>
+  <text x="271" y="111" font-size="11" text-anchor="end" fill="currentColor">질량 중심</text>
+  <line x1="280" y1="127" x2="280" y2="198.5" stroke="currentColor" stroke-width="2.2" marker-end="url(#ar12k)"/>
+  <g stroke="currentColor" stroke-width="2" marker-end="url(#ar12k)"><line x1="133" y1="120" x2="133" y2="80.8"/><line x1="427" y1="120" x2="427" y2="80.8"/></g>
+  <g fill="currentColor">
+  <text x="289" y="206" font-size="11.5">W = 4.905 N</text>
+  <text x="289" y="220" font-size="11" opacity="0.85">f<tspan dy="3.1" font-size="8.6">y1</tspan><tspan dy="-3.1" dx="3.3">+ f</tspan><tspan dy="3.1" font-size="8.6">y2</tspan><tspan dy="-3.1" dx="3.3">= W</tspan></text>
+  <text x="126" y="98" font-size="11" text-anchor="end">f<tspan dy="3.1" font-size="8.6">y1</tspan><tspan dy="-3.1" dx="3.3">= 2.4525 N</tspan></text>
+  <text x="434" y="98" font-size="11">f<tspan dy="3.1" font-size="8.6">y2</tspan><tspan dy="-3.1" dx="3.3">= 2.4525 N</tspan></text>
+  <text x="152" y="208" font-size="11" text-anchor="end">r₁ = (−0.100, 0)</text>
+  <text x="408" y="208" font-size="11">r₂ = (+0.100, 0)</text>
+  </g>
+  <rect x="16" y="236" width="528" height="74" fill="none" stroke="currentColor" stroke-width="1" opacity="0.7" rx="4"/>
+  <text x="28" y="254" font-size="11" fill="currentColor" font-weight="bold">원뿔 모서리 렌치 w = (f<tspan dy="3.1" font-size="8.6">x</tspan><tspan dy="-3.1">, f</tspan><tspan dy="3.1" font-size="8.6">y</tspan><tspan dy="-3.1">, m</tspan><tspan dy="3.1" font-size="8.6">z</tspan><tspan dy="-3.1">), 법선 성분 1</tspan></text>
+  <text x="28" y="276" font-size="12" fill="currentColor">1<tspan dy="-4.6" font-size="9.4">+</tspan><tspan dy="4.6" dx="3.6"> (1, 0.5, −0.05)</tspan></text>
+  <text x="158" y="276" font-size="12" fill="currentColor">1<tspan dy="-4.6" font-size="9.4">−</tspan><tspan dy="4.6" dx="3.6"> (1, −0.5, +0.05)</tspan></text>
+  <text x="288" y="276" font-size="12" fill="currentColor">2<tspan dy="-4.6" font-size="9.4">+</tspan><tspan dy="4.6" dx="3.6"> (−1, 0.5, +0.05)</tspan></text>
+  <text x="418" y="276" font-size="12" fill="currentColor">2<tspan dy="-4.6" font-size="9.4">−</tspan><tspan dy="4.6" dx="3.6"> (−1, −0.5, −0.05)</tspan></text>
+  <text x="28" y="298" font-size="11" fill="currentColor" opacity="0.9">λ = (1, 1, 1, 1)로 합이 (0, 0, 0)이고 랭크는 3: force closure</text>
+  <text x="16" y="328" font-size="11" fill="currentColor" opacity="0.8">타일 0.200 × 0.100 m, 0.500 kg · μ = 0.5 · 손가락당 예압 f<tspan dy="3.1" font-size="8.6">n</tspan><tspan dy="-3.1" dx="3.3">= 20 N</tspan></text>
+</svg>
+
 - 짧은 두 변의 접촉점을 찍고 각각에 **안쪽 법선**을 실선 화살표로 그린다.
 - 각 접촉점에 **마찰 원뿔**을 그린다. 법선에서 $\pm 26.565°$인 점선 두 개와 그 사이를 칠한 쐐기. 반각을 한쪽에 적는다.
 - 두 접촉점을 잇는 선을 타일을 관통하는 가는 직선으로 긋고, 그것이 칠한 두 쐐기 안에 있는지 눈으로 확인한다. 그것이 대척 조건이고, 여기서는 그 선과 법선이 일치한다.
@@ -224,7 +312,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 
 $$\alpha = \tan^{-1}\mu = \tan^{-1}0.5 = 26.565°$$
 
-이내에 있어야 한다는 뜻이다. $f_t/f_n = \tan(\text{법선에서의 각})$이기 때문이다. 따라서 원뿔의 두 경계 방향은 단위 벡터 $\hat n \pm \mu\,\hat t$이고, 원뿔 안의 모든 힘은 그 둘의 음이 아닌 결합이다.
+이내에 있어야 한다는 뜻이다. $f_t/f_n = \tan(\text{법선에서의 각})$이기 때문이다. 따라서 원뿔의 두 경계 방향은 벡터 $\hat n \pm \mu\,\hat t$이고, 원뿔 안의 모든 힘은 그 둘의 음이 아닌 결합이다.
 
 **2단계 — 원뿔 모서리를 렌치로.** 평면에서 $r$에 작용하는 접촉력 $f$는
 
@@ -268,7 +356,7 @@ $$f_n^{\min} = \frac{W}{2\mu} = \frac{4.905}{2 \times 0.5} = 4.905\ \mathrm{N}$$
 
 이다. 두 접촉이 하중을 나눠 지고 각각이 예압을 그 $\mu$배의 마찰로 바꾸기 때문이다. 그러므로 고정된 $20\,\mathrm{N}$ 예압은 안전율 $20/4.905 = 4.08$, 접선 여유 총 $2\mu f_n = 20\,\mathrm{N}$, $z$ 둘레 모멘트 용량 $2\,(\mu f_n)\,(0.100) = 2.00\ \mathrm{N\cdot m}$을 준다.
 
-**7단계 — 두 질문을 가르는 극한.** 3단계를 일반의 $\mu > 0$으로 반복하면 모서리 넷이 같은 형태의 $(\pm1, \pm\mu, \mp 0.1\mu)$이고, $\lambda = (1,1,1,1)$이 여전히 상쇄되며 랭크도 여전히 3이다. 즉 **$\mu$가 아무리 작아도 양이기만 하면** force closure다. 그런데 $f_n^{\min} = W/(2\mu)$는 발산한다. $\mu = 0.05$면 $49.05\,\mathrm{N}$, 카탈로그 값의 열 배다. closure는 *방향*에 관한 진술이고 예압은 *크기*에 관한 진술이다. force closure 파지를 보고한 논문은 앞의 것을 말한 것이고 뒤의 것은 아무것도 말하지 않은 것이다.
+**7단계 — 두 질문을 가르는 극한.** 3단계를 일반의 $\mu > 0$으로 반복하면 모서리 넷이 같은 형태의 $(1, \pm\mu, \mp 0.1\mu)$와 $(-1, \pm\mu, \pm 0.1\mu)$이고, $\lambda = (1,1,1,1)$이 여전히 상쇄되며 랭크도 여전히 3이다. 즉 **$\mu$가 아무리 작아도 양이기만 하면** force closure다. 그런데 $f_n^{\min} = W/(2\mu)$는 발산한다. $\mu = 0.05$면 $49.05\,\mathrm{N}$, 6단계 값의 열 배다. closure는 *방향*에 관한 진술이고 예압은 *크기*에 관한 진술이다. force closure 파지를 보고한 논문은 앞의 것을 말한 것이고 뒤의 것은 아무것도 말하지 않은 것이다.
 
 ### 1. 이 장을 목록 하나로
 
@@ -333,7 +421,7 @@ $$\text{closure} \iff \exists\,\lambda > 0,\ \textstyle\sum_i \lambda_i w_i = 0 
 4. 타일을 $2\,\mathrm{m/s^2}$로 위로 가속하며 든다. $\mu = 0.5$에서 예압은 얼마가 되어야 하는가?
 
 > [!tip]- 정답 · Answers
-> 1. $45°$ — 접촉력이 법선에서 45°까지 기울어도 미끄러지지 않는다.
+> 1. $\alpha = \tan^{-1}1.0 = 45°$ — 접촉력이 법선에서 45°까지 기울어도 미끄러지지 않는다. 마찰 계수는 *각도*이므로 $\mu$를 0.5에서 1.0으로 두 배 하면 원뿔이 ~26.6°에서 45°로 넓어진다. 허용되는 접선 대 법선 힘의 비는 두 배가 되지만 원뿔 각은 두 배가 되지 않는다.
 > 2. 마찰 원뿔이 주는 여유 방향 없이 기하만으로 모든 방향을 막아야 하기 때문이다(마찰 없는 점 접촉에서 평면 최소 4개, 공간 최소 7개). 이 경계는 1차 결과이고, 곡률은 2차 효과라 평면 물체를 접촉 2개로 가둘 수 있다.
 > 3. 평면 2점 모델에서는 두 접촉점을 잇는 선이 두 마찰 원뿔 안에 있어야 한다. 이것만으로
 > 공간의 hard point 접촉 둘이 force closure인 것은 아니다. 공간 평행 그리퍼에는 soft-finger
@@ -349,9 +437,9 @@ Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴
 3. **해석.** 두 노브 중 force closure 판정을 바꾼 것이 있는가? 각각에 대해 이유와 함께 답하라. 그다음 옮겨진 질량 중심의 대가를 숫자가 아니라 공식으로 설명하고, 더 세게 쥐는 정도가 아니라 파지가 아예 실패하려면 무엇이 바뀌어야 하는지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. 원뿔이 눈에 띄게 얇아지고 무게 화살표가 더 이상 두 손가락 사이를 지나지 않으므로, 파지 중점 둘레에 굽은 모멘트 화살표가 하나 나타난다.
-> 2. (a) $\alpha = \tan^{-1}0.2 = 11.310°$. 모서리: $(1,\ 0.2,\ -0.02)$, $(1,\ -0.2,\ +0.02)$, $(-1,\ 0.2,\ +0.02)$, $(-1,\ -0.2,\ -0.02)$. (b) $\lambda = (1,1,1,1)$의 합이 $(0,0,0)$이고, 쌍에서 $(2,0,0)$, $(0,0.4,0)$, $(0,0,-0.04)$가 나오므로 랭크는 3이다. force closure가 성립한다. (c) 중력은 $(0.030, 0)$에 $(0,-4.905)$로 작용하므로 $m_z = r_x f_y = 0.030 \times (-4.905) = -0.14715\ \mathrm{N\cdot m}$이고 파지는 $(0,\ +4.905,\ +0.14715)$를 내야 한다. 그러면 $f_{y1}+f_{y2} = 4.905$, $-0.100f_{y1} + 0.100f_{y2} = 0.14715$에서 $f_{y2} - f_{y1} = 1.4715$이므로 $f_{y2} = 3.18825$, $f_{y1} = 1.71675\ \mathrm{N}$. 걸리는 쪽은 먼 손가락이고 $f_n^{\min} = 3.18825/0.2 = 15.941\ \mathrm{N}$. (d) 잡는다. 손가락당 여유가 $\mu f_n = 0.2 \times 20 = 4\ \mathrm{N}$인데 요구가 $3.188\ \mathrm{N}$이라 $4/3.188 = 1.25$배다. 카탈로그의 $4.08$에 비하면 안전율이 거의 사라졌다.
-> 3. 둘 다 바꾸지 않았다. force closure는 원뿔 모서리의 *방향*과 접촉 위치가 결정하는데, 대척 기하가 그대로이고 $\mu > 0$이면 양의 생성 검사는 계속 통과한다. 질량 중심을 옮기는 것은 버텨야 할 렌치를 바꾸지 쓸 수 있는 렌치를 바꾸지 않는다. 두 노브는 예압만 움직인다. 공식으로 쓰면, 편심 $e$는 가장 불리한 손가락의 접선 요구를 $W/2$에서 $\tfrac{W}{2}(1 + e/\ell)$로 올린다. $\ell = 0.100\,\mathrm{m}$은 파지의 반너비다. 따라서 $f_n^{\min} = \tfrac{W}{2\mu}(1 + e/\ell)$이고, 여기서는 $1 + 0.3 = 1.30$, 어떤 $\mu$에서도 $30\,\%$ 할증이다. 아예 실패하려면 *방향*이 바뀌어야 한다. $\mu$가 정확히 0이 되거나(랭크가 1로 떨어진다), 접촉선이 두 원뿔 안에 있지 않게 다시 쥐거나, 편심이 $e > \ell$이 되어 질량 중심이 손가락 바깥으로 나가 음이 아닌 법선력으로는 균형을 맞출 수 없게 되어야 한다.
+> 1. 원뿔이 눈에 띄게 얇아지고 무게 화살표가 더 이상 파지 중점을 지나지 않으므로, 그 둘레에 굽은 모멘트 화살표가 하나 나타난다.
+> 2. (a) $\alpha = \tan^{-1}0.2 = 11.310°$. 모서리: $(1,\ 0.2,\ -0.02)$, $(1,\ -0.2,\ +0.02)$, $(-1,\ 0.2,\ +0.02)$, $(-1,\ -0.2,\ -0.02)$. (b) $\lambda = (1,1,1,1)$의 합이 $(0,0,0)$이고, 쌍에서 $(2,0,0)$, $(0,0.4,0)$, $(0,0,-0.04)$가 나오므로 랭크는 3이다. force closure가 성립한다. (c) 중력은 $(0.030, 0)$에 $(0,-4.905)$로 작용하므로 $m_z = r_x f_y = 0.030 \times (-4.905) = -0.14715\ \mathrm{N\cdot m}$이고 파지는 $(0,\ +4.905,\ +0.14715)$를 내야 한다. 그러면 $f_{y1}+f_{y2} = 4.905$, $-0.100f_{y1} + 0.100f_{y2} = 0.14715$에서 $f_{y2} - f_{y1} = 1.4715$이므로 $f_{y2} = 3.18825$, $f_{y1} = 1.71675\ \mathrm{N}$. 걸리는 쪽은 질량 중심에 가까운 손가락이고 $f_n^{\min} = 3.18825/0.2 = 15.941\ \mathrm{N}$. (d) 잡는다. 손가락당 여유가 $\mu f_n = 0.2 \times 20 = 4\ \mathrm{N}$인데 요구가 $3.188\ \mathrm{N}$이라 $4/3.188 = 1.25$배다. 6단계의 $4.08$에 비하면 안전율이 거의 사라졌다.
+> 3. 둘 다 바꾸지 않았다. force closure는 원뿔 모서리의 *방향*과 접촉 위치가 결정하는데, 대척 기하가 그대로이고 $\mu > 0$이면 양의 생성 검사는 계속 통과한다. 질량 중심을 옮기는 것은 버텨야 할 렌치를 바꾸지 쓸 수 있는 렌치를 바꾸지 않는다. 두 노브는 예압만 움직인다. 공식으로 쓰면, 편심 $e$는 가장 불리한 손가락의 접선 요구를 $W/2$에서 $\tfrac{W}{2}(1 + e/\ell)$로 올린다. $\ell = 0.100\,\mathrm{m}$은 파지의 반너비다. 따라서 $f_n^{\min} = \tfrac{W}{2\mu}(1 + e/\ell)$이고, 여기서는 $1 + 0.3 = 1.30$, 어떤 $\mu$에서도 $30\,\%$ 할증이다. 아예 실패하려면 *방향*이 바뀌어야 한다. $\mu$가 정확히 0이 되거나(랭크가 1로 떨어진다), 접촉선이 두 원뿔 안에 있지 않게 다시 쥐어야 한다. 편심은 $e > \ell$로 질량 중심이 손가락 바깥으로 나가도 파지를 아예 실패시키지 못한다. $f_{y1} = \tfrac{W}{2}(1 - e/\ell)$이 음수가 될 뿐이고 마찰은 그것을 허용하므로, 쥐는 힘은 여전히 위 공식이 정한다.
 
 ### 이 장 다음으로
 

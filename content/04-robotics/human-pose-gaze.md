@@ -60,12 +60,132 @@ The object is built so that $\hat{A}$ and $\hat{B}$ swap places depending on whi
 
 Draw this once. The problem set asks for the same drawing with a different yaw and a different camera.
 
+<svg viewBox="0 0 560 500" style="max-width:100%;height:auto" role="img" aria-label="Pose homework diagram: the five-keypoint skeleton from above with its shoulder and hip circles, the facing arrow at 36.87 degrees and the shoulder line at 126.87 degrees; prediction A turned 15 degrees with each joint's chord; prediction B's five error arrows; and the camera cone at 20 m where the head spans 16.0 pixels and the iris 1.2">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">(a) K5 from above, and Â</text>
+  <text x="292" y="24" font-size="12" fill="currentColor" font-weight="600">(b) the same axes, and B̂</text>
+  <circle cx="142" cy="170" r="80" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="5 3" fill="none"/>
+  <circle cx="142" cy="170" r="60" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="1.5 2.5" fill="none"/>
+  <line x1="178" y1="218" x2="106" y2="122" stroke="currentColor" stroke-width="7.0" stroke-opacity="0.16" stroke-linecap="round"/>
+  <line x1="190" y1="234" x2="94" y2="106" stroke="currentColor" stroke-width="2.0"/>
+  <circle cx="94" cy="106" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="190" cy="234" r="4" stroke="none" fill="currentColor"/>
+  <rect x="102.6" y="118.6" width="6.8" height="6.8" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="1.0"/>
+  <rect x="174.6" y="214.6" width="6.8" height="6.8" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="1.0"/>
+  <circle cx="142" cy="170" r="6.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <line x1="204.9" y1="219.4" x2="79.1" y2="120.6" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="5 3"/>
+  <line x1="94" y1="106" x2="79.1" y2="120.6" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="79.1" cy="120.6" r="3" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.15"/>
+  <line x1="190" y1="234" x2="204.9" y2="219.4" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="204.9" cy="219.4" r="3" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.15"/>
+  <line x1="106" y1="122" x2="94.8" y2="133" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="94.8" cy="133" r="3" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.15"/>
+  <line x1="178" y1="218" x2="189.2" y2="207" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="189.2" cy="207" r="3" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.15"/>
+  <line x1="142" y1="170" x2="226.5" y2="106.6" stroke="currentColor" stroke-width="2.0"/>
+  <path d="M231.6 102.8 L227.2 110.3 L223.2 104.9 Z" fill="currentColor" stroke="none"/>
+  <line x1="142" y1="170" x2="78.2" y2="84.9" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M74.8 80.4 L81.4 84.2 L76.6 87.8 Z" fill="currentColor" stroke="none"/>
+  <line x1="142" y1="170" x2="207.7" y2="86.3" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3"/>
+  <path d="M211.2 81.9 L209.1 89.2 L204.5 85.6 Z" fill="currentColor" stroke="none"/>
+  <path d="M150 164 L144 156 L136 162" stroke="currentColor" stroke-width="1.0" fill="none" stroke-linejoin="round"/>
+  <path d="M217.2 113.6 L216.1 112.2 L215 110.8 L213.9 109.5 L212.8 108.1 L211.6 106.8 L210.4 105.5 L209.2 104.3 L208 103 L206.7 101.8 L205.4 100.6 L204.1 99.4 L202.8 98.3 L201.4 97.2 L200 96.1" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <text x="235.6" y="116.8" font-size="11" fill="currentColor">u: ψ = 36.87°</text>
+  <text x="76.8" y="72.4" font-size="11" fill="currentColor" text-anchor="middle">shoulder line 126.87°</text>
+  <text x="213.2" y="73.9" font-size="11" fill="currentColor" text-anchor="middle">Â: 51.87°</text>
+  <text x="216.2" y="101.3" font-size="11" fill="currentColor">+15°</text>
+  <text x="142" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">r<tspan dy="3.1" font-size="8.6">sh</tspan><tspan dx="3.1" dy="-3.1">= 0.20 m (dashed)</tspan></text>
+  <text x="142" y="282" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">r<tspan dy="3.1" font-size="8.6">hip</tspan><tspan dx="3.1" dy="-3.1">= 0.15 m (dotted)</tspan></text>
+  <text x="142" y="299" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">head p<tspan dy="3.1" font-size="8.6">1</tspan><tspan dx="3.1" dy="-3.1">over the root: chord 0</tspan></text>
+  <text x="206.5" y="236.7" font-size="11" fill="currentColor">52.2</text>
+  <circle cx="404" cy="170" r="80" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="5 3" fill="none"/>
+  <circle cx="404" cy="170" r="60" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="1.5 2.5" fill="none"/>
+  <line x1="440" y1="218" x2="368" y2="122" stroke="currentColor" stroke-width="7.0" stroke-opacity="0.16" stroke-linecap="round"/>
+  <line x1="452" y1="234" x2="356" y2="106" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55"/>
+  <circle cx="356" cy="106" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="452" cy="234" r="4" stroke="none" fill="currentColor"/>
+  <rect x="364.6" y="118.6" width="6.8" height="6.8" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="1.0"/>
+  <rect x="436.6" y="214.6" width="6.8" height="6.8" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="1.0"/>
+  <circle cx="404" cy="170" r="6.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <line x1="404" y1="170" x2="476.3" y2="115.8" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.5"/>
+  <path d="M480.8 112.4 L477 119 L473.4 114.2 Z" fill="currentColor" stroke="none" fill-opacity="0.5"/>
+  <line x1="404" y1="170" x2="480.4" y2="121.7" stroke="currentColor" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <path d="M485.2 118.7 L480.8 125 L477.7 120 Z" fill="currentColor" stroke="none"/>
+  <path d="M461.5 133.7 L461.3 133.4 L461.1 133 L460.9 132.7 L460.6 132.4 L460.4 132.1 L460.2 131.7 L460 131.4 L459.8 131.1 L459.5 130.8 L459.3 130.5 L459.1 130.1 L458.9 129.8 L458.6 129.5 L458.4 129.2" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <line x1="404" y1="170" x2="413.1" y2="157.8" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M416 154 L414.4 160.3 L410.4 157.3 Z" fill="currentColor" stroke="none"/>
+  <line x1="356" y1="106" x2="356" y2="98.8" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M356 94 L358.5 100 L353.5 100 Z" fill="currentColor" stroke="none"/>
+  <line x1="452" y1="234" x2="452" y2="241.2" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M452 246 L449.5 240 L454.5 240 Z" fill="currentColor" stroke="none"/>
+  <line x1="368" y1="122" x2="372.6" y2="126.6" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M376 130 L370 127.5 L373.5 124 Z" fill="currentColor" stroke="none"/>
+  <line x1="440" y1="218" x2="438.1" y2="214.3" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M436 210 L440.9 214.2 L436.4 216.5 Z" fill="currentColor" stroke="none"/>
+  <path d="M40 372 L400 327.2 L400 416.8 Z" fill="currentColor" fill-opacity="0.07" stroke="none"/>
+  <line x1="40" y1="372" x2="400" y2="416.8" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <line x1="40" y1="372" x2="400" y2="327.2" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <path d="M40 372 L400 346.2 L400 353 Z" fill="currentColor" fill-opacity="0.55" stroke="none"/>
+  <path d="M40 372 L400 369.2 L400 374.8 Z" fill="currentColor" fill-opacity="0.3" stroke="none"/>
+  <line x1="40" y1="372" x2="400" y2="372" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <path d="M32 366 L40 372 L32 378 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.3" stroke-linejoin="round"/>
+  <line x1="400" y1="321.6" x2="410" y2="321.6" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="327.2" x2="410" y2="327.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="332.8" x2="410" y2="332.8" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="338.4" x2="410" y2="338.4" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="344" x2="410" y2="344" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="349.6" x2="410" y2="349.6" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="355.2" x2="410" y2="355.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="360.8" x2="410" y2="360.8" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="366.4" x2="410" y2="366.4" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="372" x2="410" y2="372" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="377.6" x2="410" y2="377.6" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="383.2" x2="410" y2="383.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="388.8" x2="410" y2="388.8" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="394.4" x2="410" y2="394.4" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="400" x2="410" y2="400" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="405.6" x2="410" y2="405.6" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="411.2" x2="410" y2="411.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="416.8" x2="410" y2="416.8" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="422.4" x2="410" y2="422.4" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="321.6" x2="400" y2="422.4" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="410" y1="321.6" x2="410" y2="422.4" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="415" y1="327.2" x2="415" y2="416.8" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="421" y1="346.2" x2="421" y2="353" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="44.4" y1="432.8" x2="395.6" y2="432.8" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <path d="M400 432.8 L394.5 435.1 L394.5 430.5 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <path d="M40 432.8 L45.5 430.5 L45.5 435.1 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <rect x="432" y="398" width="28" height="20" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6" fill="none"/>
+  <rect x="460" y="398" width="28" height="20" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6" fill="none"/>
+  <rect x="488" y="398" width="28" height="20" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6" fill="none"/>
+  <rect x="457.2" y="402" width="33.6" height="12" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.55"/>
+  <text x="196.2" y="206" font-size="11" fill="currentColor">39.2</text>
+  <text x="485.8" y="108.4" font-size="11" fill="currentColor" fill-opacity="0.7">u 36.87°</text>
+  <text x="491.2" y="128.7" font-size="11" fill="currentColor">B̂: 32.28°</text>
+  <text x="466" y="145.4" font-size="11" fill="currentColor">−4.6°</text>
+  <text x="416" y="148" font-size="11" fill="currentColor" text-anchor="middle">50</text>
+  <text x="349" y="96" font-size="11" fill="currentColor" text-anchor="end">50</text>
+  <text x="459" y="250" font-size="11" fill="currentColor">50</text>
+  <text x="361" y="126" font-size="11" fill="currentColor" text-anchor="end">30</text>
+  <text x="452" y="212" font-size="11" fill="currentColor">30</text>
+  <text x="404" y="280" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">arrows: horizontal part; numbers: 3-D length (mm)</text>
+  <text x="16" y="318" font-size="12" fill="currentColor" font-weight="600">C20 at D = 20 m</text>
+  <text x="117.1" y="318" font-size="11" fill="currentColor" fill-opacity="0.8">(width stretched 31×)</text>
+  <text x="38" y="394" font-size="11" fill="currentColor" text-anchor="middle">pinhole</text>
+  <text x="220" y="447.8" font-size="11" fill="currentColor" text-anchor="middle">D = 20 m</text>
+  <text x="428" y="336.2" font-size="11" fill="currentColor">head 0.16 m: 16.0 px</text>
+  <text x="428" y="351.2" font-size="11" fill="currentColor">iris 0.012 m: 1.2 px</text>
+  <text x="392" y="389" font-size="11" fill="currentColor" text-anchor="end">1 px = 1/f = 0.5 mrad</text>
+  <text x="432" y="391" font-size="11" fill="currentColor">×5: 1 cell = 1 px</text>
+  <text x="16" y="472" font-size="11" fill="currentColor" fill-opacity="0.9">Chords 2·r·sin 7.5°: 52.2 mm at each shoulder, 39.2 mm at each hip. MPJPE: Â 36.5 mm beats B̂ 42.0 mm,</text>
+  <text x="16" y="488" font-size="11" fill="currentColor" fill-opacity="0.9">yet Â's facing is off by +15.0° and B̂'s by −4.6°. At 20 m the head spans 16 pixels and the iris 1.2.</text>
+</svg>
+
 1. **The skeleton from above.** Project K5 onto the horizontal plane. Mark the root at the origin, the shoulder line $p_2 - p_3$, the hip line $p_4 - p_5$, and the two circles of radius $r_{\mathrm{sh}} = 0.20$ m and $r_{\mathrm{hip}} = 0.15$ m that each joint rides when the body yaws. Put the head on the centre.
 2. **The facing arrow.** From the root draw $u = (p_2 - p_3) \times \hat{z}$ and label its azimuth. Draw the shoulder-line azimuth as a second arrow, so the $90^\circ$ between them is on the page.
 3. **Both predictions on those axes.** $\hat{A}$ as the same figure turned by $15^\circ$, with the chord each joint travels marked; $\hat{B}$ as five short error arrows with their lengths in millimetres beside them.
 4. **The camera cone.** To one side, C20 at $D = 20$ m, one pixel's angle $1/f$ opening from the pinhole, and the two subtenses $d_{\mathrm{head}}/D$ and $d_{\mathrm{iris}}/D$ drawn to scale inside it. Write how many pixels wide each one is.
 
-A correct drawing has already answered §4: the head spans several pixels and the iris does not fill one.
+A correct drawing has already answered §4: the head spans several pixels and the iris barely more than one ($1.2$ px).
 
 ### Worked on K5 · K5로 한 번 끝까지
 
@@ -468,12 +588,132 @@ Tier B. Using **K5** and **C20** from the running object above, and this page on
 
 한 번 그려 두라. 과제는 요각과 카메라만 바꿔서 같은 그림을 다시 요구한다.
 
+<svg viewBox="0 0 560 500" style="max-width:100%;height:auto" role="img" aria-label="자세 과제 그림: 어깨 원과 엉덩이 원을 그린 키포인트 다섯 개 골격을 위에서 본 것, 36.87도의 facing 화살표와 126.87도의 어깨선, 15도 돌아간 예측 A와 각 관절의 현, 예측 B의 오차 화살표 다섯, 그리고 머리가 16.0 픽셀, 홍채가 1.2 픽셀을 덮는 20 m의 카메라 원뿔">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">(a) 위에서 본 K5, 그리고 Â</text>
+  <text x="292" y="24" font-size="12" fill="currentColor" font-weight="600">(b) 같은 축 위의 B̂</text>
+  <circle cx="142" cy="170" r="80" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="5 3" fill="none"/>
+  <circle cx="142" cy="170" r="60" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="1.5 2.5" fill="none"/>
+  <line x1="178" y1="218" x2="106" y2="122" stroke="currentColor" stroke-width="7.0" stroke-opacity="0.16" stroke-linecap="round"/>
+  <line x1="190" y1="234" x2="94" y2="106" stroke="currentColor" stroke-width="2.0"/>
+  <circle cx="94" cy="106" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="190" cy="234" r="4" stroke="none" fill="currentColor"/>
+  <rect x="102.6" y="118.6" width="6.8" height="6.8" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="1.0"/>
+  <rect x="174.6" y="214.6" width="6.8" height="6.8" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="1.0"/>
+  <circle cx="142" cy="170" r="6.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <line x1="204.9" y1="219.4" x2="79.1" y2="120.6" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="5 3"/>
+  <line x1="94" y1="106" x2="79.1" y2="120.6" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="79.1" cy="120.6" r="3" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.15"/>
+  <line x1="190" y1="234" x2="204.9" y2="219.4" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="204.9" cy="219.4" r="3" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.15"/>
+  <line x1="106" y1="122" x2="94.8" y2="133" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="94.8" cy="133" r="3" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.15"/>
+  <line x1="178" y1="218" x2="189.2" y2="207" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="189.2" cy="207" r="3" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.15"/>
+  <line x1="142" y1="170" x2="226.5" y2="106.6" stroke="currentColor" stroke-width="2.0"/>
+  <path d="M231.6 102.8 L227.2 110.3 L223.2 104.9 Z" fill="currentColor" stroke="none"/>
+  <line x1="142" y1="170" x2="78.2" y2="84.9" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M74.8 80.4 L81.4 84.2 L76.6 87.8 Z" fill="currentColor" stroke="none"/>
+  <line x1="142" y1="170" x2="207.7" y2="86.3" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3"/>
+  <path d="M211.2 81.9 L209.1 89.2 L204.5 85.6 Z" fill="currentColor" stroke="none"/>
+  <path d="M150 164 L144 156 L136 162" stroke="currentColor" stroke-width="1.0" fill="none" stroke-linejoin="round"/>
+  <path d="M217.2 113.6 L216.1 112.2 L215 110.8 L213.9 109.5 L212.8 108.1 L211.6 106.8 L210.4 105.5 L209.2 104.3 L208 103 L206.7 101.8 L205.4 100.6 L204.1 99.4 L202.8 98.3 L201.4 97.2 L200 96.1" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <text x="235.6" y="116.8" font-size="11" fill="currentColor">u: ψ = 36.87°</text>
+  <text x="76.8" y="72.4" font-size="11" fill="currentColor" text-anchor="middle">어깨선 126.87°</text>
+  <text x="213.2" y="73.9" font-size="11" fill="currentColor" text-anchor="middle">Â: 51.87°</text>
+  <text x="216.2" y="101.3" font-size="11" fill="currentColor">+15°</text>
+  <text x="142" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">r<tspan dy="3.1" font-size="8.6">sh</tspan><tspan dx="3.1" dy="-3.1">= 0.20 m (파선)</tspan></text>
+  <text x="142" y="282" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">r<tspan dy="3.1" font-size="8.6">hip</tspan><tspan dx="3.1" dy="-3.1">= 0.15 m (점선)</tspan></text>
+  <text x="142" y="299" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">머리 p<tspan dy="3.1" font-size="8.6">1</tspan><tspan dy="-3.1">은 루트 위: 현 0</tspan></text>
+  <text x="206.5" y="236.7" font-size="11" fill="currentColor">52.2</text>
+  <circle cx="404" cy="170" r="80" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="5 3" fill="none"/>
+  <circle cx="404" cy="170" r="60" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="1.5 2.5" fill="none"/>
+  <line x1="440" y1="218" x2="368" y2="122" stroke="currentColor" stroke-width="7.0" stroke-opacity="0.16" stroke-linecap="round"/>
+  <line x1="452" y1="234" x2="356" y2="106" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55"/>
+  <circle cx="356" cy="106" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="452" cy="234" r="4" stroke="none" fill="currentColor"/>
+  <rect x="364.6" y="118.6" width="6.8" height="6.8" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="1.0"/>
+  <rect x="436.6" y="214.6" width="6.8" height="6.8" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="1.0"/>
+  <circle cx="404" cy="170" r="6.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <line x1="404" y1="170" x2="476.3" y2="115.8" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.5"/>
+  <path d="M480.8 112.4 L477 119 L473.4 114.2 Z" fill="currentColor" stroke="none" fill-opacity="0.5"/>
+  <line x1="404" y1="170" x2="480.4" y2="121.7" stroke="currentColor" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <path d="M485.2 118.7 L480.8 125 L477.7 120 Z" fill="currentColor" stroke="none"/>
+  <path d="M461.5 133.7 L461.3 133.4 L461.1 133 L460.9 132.7 L460.6 132.4 L460.4 132.1 L460.2 131.7 L460 131.4 L459.8 131.1 L459.5 130.8 L459.3 130.5 L459.1 130.1 L458.9 129.8 L458.6 129.5 L458.4 129.2" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <line x1="404" y1="170" x2="413.1" y2="157.8" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M416 154 L414.4 160.3 L410.4 157.3 Z" fill="currentColor" stroke="none"/>
+  <line x1="356" y1="106" x2="356" y2="98.8" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M356 94 L358.5 100 L353.5 100 Z" fill="currentColor" stroke="none"/>
+  <line x1="452" y1="234" x2="452" y2="241.2" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M452 246 L449.5 240 L454.5 240 Z" fill="currentColor" stroke="none"/>
+  <line x1="368" y1="122" x2="372.6" y2="126.6" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M376 130 L370 127.5 L373.5 124 Z" fill="currentColor" stroke="none"/>
+  <line x1="440" y1="218" x2="438.1" y2="214.3" stroke="currentColor" stroke-width="1.9"/>
+  <path d="M436 210 L440.9 214.2 L436.4 216.5 Z" fill="currentColor" stroke="none"/>
+  <path d="M40 372 L400 327.2 L400 416.8 Z" fill="currentColor" fill-opacity="0.07" stroke="none"/>
+  <line x1="40" y1="372" x2="400" y2="416.8" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <line x1="40" y1="372" x2="400" y2="327.2" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <path d="M40 372 L400 346.2 L400 353 Z" fill="currentColor" fill-opacity="0.55" stroke="none"/>
+  <path d="M40 372 L400 369.2 L400 374.8 Z" fill="currentColor" fill-opacity="0.3" stroke="none"/>
+  <line x1="40" y1="372" x2="400" y2="372" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <path d="M32 366 L40 372 L32 378 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.3" stroke-linejoin="round"/>
+  <line x1="400" y1="321.6" x2="410" y2="321.6" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="327.2" x2="410" y2="327.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="332.8" x2="410" y2="332.8" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="338.4" x2="410" y2="338.4" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="344" x2="410" y2="344" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="349.6" x2="410" y2="349.6" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="355.2" x2="410" y2="355.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="360.8" x2="410" y2="360.8" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="366.4" x2="410" y2="366.4" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="372" x2="410" y2="372" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="377.6" x2="410" y2="377.6" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="383.2" x2="410" y2="383.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="388.8" x2="410" y2="388.8" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="394.4" x2="410" y2="394.4" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="400" x2="410" y2="400" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="405.6" x2="410" y2="405.6" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="411.2" x2="410" y2="411.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="416.8" x2="410" y2="416.8" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="422.4" x2="410" y2="422.4" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.55"/>
+  <line x1="400" y1="321.6" x2="400" y2="422.4" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="410" y1="321.6" x2="410" y2="422.4" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="415" y1="327.2" x2="415" y2="416.8" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="421" y1="346.2" x2="421" y2="353" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="44.4" y1="432.8" x2="395.6" y2="432.8" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <path d="M400 432.8 L394.5 435.1 L394.5 430.5 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <path d="M40 432.8 L45.5 430.5 L45.5 435.1 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <rect x="432" y="398" width="28" height="20" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6" fill="none"/>
+  <rect x="460" y="398" width="28" height="20" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6" fill="none"/>
+  <rect x="488" y="398" width="28" height="20" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6" fill="none"/>
+  <rect x="457.2" y="402" width="33.6" height="12" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.55"/>
+  <text x="196.2" y="206" font-size="11" fill="currentColor">39.2</text>
+  <text x="485.8" y="108.4" font-size="11" fill="currentColor" fill-opacity="0.7">u 36.87°</text>
+  <text x="491.2" y="128.7" font-size="11" fill="currentColor">B̂: 32.28°</text>
+  <text x="466" y="145.4" font-size="11" fill="currentColor">−4.6°</text>
+  <text x="416" y="148" font-size="11" fill="currentColor" text-anchor="middle">50</text>
+  <text x="349" y="96" font-size="11" fill="currentColor" text-anchor="end">50</text>
+  <text x="459" y="250" font-size="11" fill="currentColor">50</text>
+  <text x="361" y="126" font-size="11" fill="currentColor" text-anchor="end">30</text>
+  <text x="452" y="212" font-size="11" fill="currentColor">30</text>
+  <text x="404" y="280" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">화살표: 수평 성분, 숫자: 3D 길이(mm)</text>
+  <text x="16" y="318" font-size="12" fill="currentColor" font-weight="600">D = 20 m의 C20</text>
+  <text x="113.5" y="318" font-size="11" fill="currentColor" fill-opacity="0.8">(폭을 31배로 늘림)</text>
+  <text x="38" y="394" font-size="11" fill="currentColor" text-anchor="middle">핀홀</text>
+  <text x="220" y="447.8" font-size="11" fill="currentColor" text-anchor="middle">D = 20 m</text>
+  <text x="428" y="336.2" font-size="11" fill="currentColor">머리 0.16 m: 16.0 px</text>
+  <text x="428" y="351.2" font-size="11" fill="currentColor">홍채 0.012 m: 1.2 px</text>
+  <text x="392" y="389" font-size="11" fill="currentColor" text-anchor="end">1 px = 1/f = 0.5 mrad</text>
+  <text x="432" y="391" font-size="11" fill="currentColor">×5: 한 칸 = 1 px</text>
+  <text x="16" y="472" font-size="11" fill="currentColor" fill-opacity="0.9">현은 2·r·sin 7.5°: 어깨마다 52.2 mm, 엉덩이마다 39.2 mm. MPJPE는 Â 36.5 mm가 B̂ 42.0 mm를 이기지만</text>
+  <text x="16" y="488" font-size="11" fill="currentColor" fill-opacity="0.9">facing 오차는 Â가 +15.0°, B̂가 −4.6°다. 20 m에서 머리는 16픽셀, 홍채는 1.2픽셀을 덮는다.</text>
+</svg>
+
 1. **위에서 본 골격.** K5를 수평면에 투영한다. 원점의 루트, 어깨선 $p_2 - p_3$, 엉덩이선 $p_4 - p_5$, 그리고 몸이 요각으로 돌 때 각 관절이 타는 반지름 $r_{\mathrm{sh}} = 0.20$ m와 $r_{\mathrm{hip}} = 0.15$ m 원 둘을 표시한다. 머리는 중심에 놓는다.
 2. **facing 화살표.** 루트에서 $u = (p_2 - p_3) \times \hat{z}$를 그리고 방위각을 적는다. 어깨선 방위각을 별도 화살표로 그려서 둘 사이 $90^\circ$가 종이 위에 보이게 한다.
 3. **같은 축 위의 예측 둘.** $\hat{A}$는 같은 도형을 $15^\circ$ 돌린 것으로, 각 관절이 지나는 현을 표시한다. $\hat{B}$는 짧은 오차 화살표 다섯 개로, 옆에 길이를 mm로 적는다.
 4. **카메라 원뿔.** 옆쪽에 $D = 20$ m의 C20, 핀홀에서 벌어지는 픽셀 하나의 각 $1/f$, 그리고 그 안에 축척을 맞춘 $d_{\mathrm{head}}/D$와 $d_{\mathrm{iris}}/D$ 두 시각(視角)을 그린다. 각각 몇 픽셀인지 적는다.
 
-제대로 그렸다면 §4의 답은 이미 그림 안에 있다. 머리는 여러 픽셀을 덮고 홍채는 한 픽셀도 채우지 못한다.
+제대로 그렸다면 §4의 답은 이미 그림 안에 있다. 머리는 여러 픽셀을 덮고 홍채는 한 픽셀을 겨우 넘는다($1.2$ px).
 
 ### K5로 한 번 끝까지 · Worked on K5
 
@@ -752,6 +992,8 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 
 > [!tip]- 정답
 > 1. 눈 시선이 아니라 머리 자세 — 그 거리에서 눈 영역은 분해되지 않는다. 2. Procrustes 정렬이 전역 회전을 제거하는데, 방향 오차가 바로 의도 관련 양이므로 지표는 좋아지면서 유용한 신호는 버려진다. 3. 거친 2D 키포인트(어깨선과 엉덩이선)에서 얻은 몸통 방향. 추적 박스만으로는 사람이 움직이는 동안의 진행 방향만 알 수 있다. 3D 메시는 불필요하다. 4. 일정한 비용이 군중에 매력적이지만, 군중이야말로 키포인트–사람 그룹핑을 모호하게 만드는 조건이다.
+
+**계산: 이 페이지가 허가하는 세 가지 주장 읽기.** $20\,\mathrm{m}$에서 차량 카메라가 재는 것은 시선이 아니라 머리 자세다. PA-MPJPE가 $45\to 30\,\mathrm{mm}$로 좋아져도 facing은 버려질 수 있다. "톱 쪽으로 몸을 돌린다"에 충분한 가장 싼 단서는 어깨선·엉덩이선에서 얻는 몸통이다.
 
 ### 과제 · Problem set
 

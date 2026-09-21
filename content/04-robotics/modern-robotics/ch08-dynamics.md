@@ -29,6 +29,108 @@ That matrix is quoted everywhere else in the wiki; on this page it is *derived*,
 
 One figure of P2 standing in the vertical plane, drawn twice on the same axes, because the whole chapter is about what changes between the two copies.
 
+<svg viewBox="0 0 560 390" style="max-width:100%;height:auto" role="img" aria-label="P2 in the vertical plane at the catalog pose (0°, 90°) and, lighter, the straight pose (0°, 0°): point masses, equal 9.81 N weights, shoulder moment arms 1 m and 1 m against 1 m and 2 m, and the equation of motion circled at rest and while moving">
+  <defs><marker id="ar8e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="ar8eL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="0.9" stroke-dasharray="6 3 1.5 3" opacity="0.5"><line x1="62" y1="27.8" x2="62" y2="149.4"/><line x1="62" y1="183.6" x2="62" y2="245"/></g>
+  <polygon points="62,160 52,175 72,175" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <g stroke="currentColor" stroke-width="0.9" opacity="0.6"><line x1="50" y1="180" x2="54" y2="175"/><line x1="55" y1="180" x2="59" y2="175"/><line x1="60" y1="180" x2="64" y2="175"/><line x1="65" y1="180" x2="69" y2="175"/><line x1="70" y1="180" x2="74" y2="175"/></g>
+  <line x1="180" y1="160" x2="298" y2="160" stroke="currentColor" stroke-width="7" stroke-opacity="0.2" stroke-dasharray="10 5"/>
+  <g stroke="currentColor" stroke-width="7" stroke-opacity="0.42" stroke-linecap="round" fill="none"><line x1="62" y1="160" x2="180" y2="160"/><line x1="180" y1="160" x2="180" y2="42"/></g>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.9"><line x1="62" y1="42" x2="180" y2="42" stroke-dasharray="4 3"/><line x1="62" y1="38" x2="62" y2="46"/><line x1="180" y1="38" x2="180" y2="46"/></g>
+  <text x="121" y="37" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.9">1 m</text>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.9"><line x1="62" y1="186" x2="180" y2="186" stroke-dasharray="4 3"/><line x1="62" y1="182" x2="62" y2="190"/><line x1="180" y1="182" x2="180" y2="190"/></g>
+  <text x="121" y="181" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.9">1 m</text>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.55"><line x1="62" y1="235.5" x2="298" y2="235.5" stroke-dasharray="4 3"/><line x1="62" y1="231.5" x2="62" y2="239.5"/><line x1="298" y1="231.5" x2="298" y2="239.5"/></g>
+  <text x="239" y="230.5" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.55">2 m</text>
+  <line x1="298" y1="219" x2="298" y2="240.2" stroke="currentColor" stroke-width="0.9" stroke-dasharray="1.5 2.5" opacity="0.55"/>
+  <g stroke="currentColor" stroke-width="1.8" marker-end="url(#ar8e)"><line x1="180" y1="167" x2="180" y2="219"/><line x1="180" y1="49" x2="180" y2="101"/></g>
+  <g stroke="currentColor" stroke-width="1.6" opacity="0.5" marker-end="url(#ar8eL)"><line x1="298" y1="166" x2="298" y2="219"/></g>
+  <circle cx="62" cy="160" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="180" cy="160" r="7" fill="currentColor"/>
+  <circle cx="180" cy="42" r="7" fill="currentColor"/>
+  <circle cx="298" cy="160" r="6" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6"/>
+  <path d="M86.1 150.3 L85 147.9 L83.7 145.7 L82.2 143.6 L80.5 141.7 L78.6 140 L76.5 138.4 L74.3 137.1 L72 136 L69.6 135.1 L67.1 134.5 L64.6 134.1 L62 134 L59.4 134.1 L56.9 134.5 L54.4 135.1 L52 136 L49.7 137.1 L47.5 138.4 L45.4 140 L43.5 141.7 L41.8 143.6 L40.3 145.7 L39 147.9 L37.9 150.3" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar8e)"/>
+  <path d="M203.3 154.2 L203 153.2 L202.7 152.1 L202.3 151.1 L201.9 150.1 L201.4 149.1 L200.9 148.2 L200.3 147.3 L199.7 146.3 L199.1 145.5 L198.4 144.6 L197.7 143.8 L197 143 L196.2 142.3 L195.4 141.6 L194.5 140.9 L193.7 140.3 L192.7 139.7 L191.8 139.1 L190.9 138.6 L189.9 138.1 L188.9 137.7 L187.9 137.3 L186.8 137 L185.8 136.7" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar8e)"/>
+  <g fill="currentColor">
+  <text x="30.1" y="139.9" font-size="12" text-anchor="middle">τ₁</text>
+  <text x="214.2" y="136.4" font-size="12" text-anchor="middle">τ₂</text>
+  <text x="168" y="34" font-size="11" text-anchor="end">m₂</text>
+  <text x="190" y="180" font-size="11">m₁</text>
+  <text x="189" y="75" font-size="11">9.81 N</text>
+  <text x="187" y="209.6" font-size="11">9.81 N</text>
+  <text x="290.9" y="29.5" font-size="11" text-anchor="end">g = 9.81 m/s²</text>
+  <text x="171.7" y="110.4" font-size="11" text-anchor="end">arm from elbow: 0</text>
+  <text x="192" y="46" font-size="11">(0°, 90°)</text>
+  </g>
+  <text x="305" y="209.6" font-size="11" fill="currentColor" opacity="0.6">9.81 N</text>
+  <text x="255.5" y="150.6" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.6">(0°, 0°)</text>
+  <line x1="300.4" y1="12.4" x2="300.4" y2="36.4" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar8e)"/>
+  <g fill="currentColor">
+  <text x="352" y="26" font-size="11.5" font-weight="bold">catalog θ = (0°, 90°) · solid</text>
+  <text x="352" y="52" font-size="11">M =</text>
+  </g>
+  <g fill="currentColor">
+  <path d="M384 36 L380 36 L380 66 L384 66" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M416 36 L420 36 L420 66 L416 66" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="392" y="47" font-size="11" text-anchor="middle">3</text>
+  <text x="408" y="47" font-size="11" text-anchor="middle">1</text>
+  <text x="392" y="61" font-size="11" text-anchor="middle">1</text>
+  <text x="408" y="61" font-size="11" text-anchor="middle">1</text>
+  </g>
+  <g fill="currentColor">
+  <text x="426" y="52" font-size="11">kg·m²</text>
+  <text x="352" y="86" font-size="11">g = (19.62, 0) N·m</text>
+  <text x="352" y="103" font-size="11">arms from shoulder: 1 m, 1 m</text>
+  </g>
+  <g fill="currentColor" opacity="0.62">
+  <text x="352" y="142" font-size="11.5" font-weight="bold">straight θ = (0°, 0°) · light</text>
+  <text x="352" y="168" font-size="11">M =</text>
+  <path d="M384 152 L380 152 L380 182 L384 182" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M416 152 L420 152 L420 182 L416 182" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="392" y="163" font-size="11" text-anchor="middle">5</text>
+  <text x="408" y="163" font-size="11" text-anchor="middle">2</text>
+  <text x="392" y="177" font-size="11" text-anchor="middle">2</text>
+  <text x="408" y="177" font-size="11" text-anchor="middle">1</text>
+  <text x="426" y="168" font-size="11">kg·m²</text>
+  <text x="352" y="202" font-size="11">g = (29.43, 9.81) N·m</text>
+  <text x="352" y="219" font-size="11">arms from shoulder: 1 m, 2 m</text>
+  </g>
+  <g fill="currentColor">
+  <text x="14" y="276" font-size="11" font-weight="bold">held at rest</text>
+  <text x="14" y="291" font-size="11">θ = 0</text><circle cx="16.9" cy="281.5" r="0.8" fill="currentColor"/>
+  <text x="14" y="305" font-size="11">θ = 0</text><circle cx="15.4" cy="295.5" r="0.8" fill="currentColor"/><circle cx="18.3" cy="295.5" r="0.8" fill="currentColor"/>
+  <text x="200" y="284" font-size="12.5" text-anchor="middle">τ =</text>
+  <text x="272" y="284" font-size="12.5" text-anchor="end">M(θ)θ</text>
+  <circle cx="267.1" cy="273.2" r="0.9" fill="currentColor"/><circle cx="270.4" cy="273.2" r="0.9" fill="currentColor"/>
+  <text x="287" y="284" font-size="12.5" text-anchor="middle">+</text>
+  <text x="349" y="284" font-size="12.5" text-anchor="end">c(θ, θ</text>
+  <text x="349" y="284" font-size="12.5">)</text>
+  <circle cx="345.8" cy="273.2" r="0.9" fill="currentColor"/>
+  <text x="372" y="284" font-size="12.5" text-anchor="middle">+</text>
+  <text x="405" y="284" font-size="12.5" text-anchor="middle">g(θ)</text>
+  <text x="434" y="284" font-size="12">= (19.62, 0) N·m</text>
+  </g>
+  <ellipse cx="405" cy="280" rx="19" ry="12" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <g fill="currentColor">
+  <text x="14" y="324" font-size="11" font-weight="bold">moving through</text>
+  <text x="14" y="339" font-size="11">θ = (1, −1) rad/s</text><circle cx="16.9" cy="329.5" r="0.8" fill="currentColor"/>
+  <text x="14" y="353" font-size="11">θ = 0</text><circle cx="15.4" cy="343.5" r="0.8" fill="currentColor"/><circle cx="18.3" cy="343.5" r="0.8" fill="currentColor"/>
+  <text x="200" y="332" font-size="12.5" text-anchor="middle">τ =</text>
+  <text x="272" y="332" font-size="12.5" text-anchor="end">M(θ)θ</text>
+  <circle cx="267.1" cy="321.2" r="0.9" fill="currentColor"/><circle cx="270.4" cy="321.2" r="0.9" fill="currentColor"/>
+  <text x="287" y="332" font-size="12.5" text-anchor="middle">+</text>
+  <text x="349" y="332" font-size="12.5" text-anchor="end">c(θ, θ</text>
+  <text x="349" y="332" font-size="12.5">)</text>
+  <circle cx="345.8" cy="321.2" r="0.9" fill="currentColor"/>
+  <text x="372" y="332" font-size="12.5" text-anchor="middle">+</text>
+  <text x="405" y="332" font-size="12.5" text-anchor="middle">g(θ)</text>
+  <text x="434" y="332" font-size="12">= (20.62, 1) N·m</text>
+  </g>
+  <ellipse cx="330" cy="328" rx="31" ry="12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 2.5"/>
+  <ellipse cx="405" cy="328" rx="22" ry="13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 2.5"/>
+  <text x="14" y="376" font-size="11" fill="currentColor" opacity="0.85">only the moving row circles c: c = (1, 1) N·m, 1 N·m more at each joint</text>
+</svg>
+
 1. **The catalog pose, solid.** Base at the origin, link 1 along $+\hat x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$. Put a filled circle at each point mass — $(1,0)$ and $(1,1)$ — and hang a weight arrow of $9.81\,\mathrm{N}$ straight down from each. Two masses, two arrows, same length.
 2. **The moment arms, dashed and horizontal.** From the shoulder axis, drop a dashed horizontal to each mass: both have length $1\,\mathrm{m}$, which is the surprise worth drawing — the forearm mass is directly above the elbow, so it hangs at the *same* horizontal distance from the shoulder as the upper-arm mass. From the elbow axis, the dashed horizontal to mass 2 has length $0$. Those three lengths are the whole gravity calculation.
 3. **The straight pose, lighter.** The same arm at $\theta = (0^\circ, 0^\circ)$: both links along $+\hat x$, masses at $(1,0)$ and $(2,0)$. Now the moment arms from the shoulder are $1\,\mathrm{m}$ and $2\,\mathrm{m}$. Drawing both copies makes the configuration dependence of *both* $M$ and $g$ visible in one glance instead of in two equations.
@@ -66,14 +168,14 @@ $$c(\theta, \dot\theta) = \bigl(\,-\sin\theta_2\,\dot\theta_2(2\dot\theta_1 + \d
 
 which is quadratic in $\dot\theta$ and proportional to $\sin\theta_2$. Two consequences follow immediately and both get used below: $c$ vanishes identically whenever the arm is still, and it vanishes identically at $\theta_2 = 0$ or $180^\circ$ **whatever the velocity**, because a straight or folded elbow is where $M$ momentarily stops changing. The catalog pose $\theta_2 = 90^\circ$ is the opposite extreme, $|\sin\theta_2| = 1$: it is the most strongly velocity-coupled pose this arm has.
 
-**Step 5 — one numerical case, end to end.** Put P2 at the catalog pose and set it *moving*: $\dot\theta = (1, -1)\,\mathrm{rad/s}$, shoulder opening while the elbow closes. Command exactly the gravity torque, $\tau = g = (19.62,\ 0)$, which is what a naive "gravity compensation" controller does.
+**Step 5 — one numerical case, end to end.** Put P2 at the catalog pose and set it *moving*: $\dot\theta = (1, -1)\,\mathrm{rad/s}$, shoulder opening while the elbow straightens. Command exactly the gravity torque, $\tau = g = (19.62,\ 0)$, which is what a naive "gravity compensation" controller does.
 
 - Coriolis: $c_1 = -1\cdot(-1)\bigl(2(1) + (-1)\bigr) = 1$ and $c_2 = 1\cdot(1)^2 = 1$, so $c = (1,\ 1)\,\mathrm{N\,m}$.
 - Net: $\tau - c - g = (19.62, 0) - (1,1) - (19.62, 0) = (-1,\ -1)\,\mathrm{N\,m}$.
 - Inverse mass matrix: $\det M = 3 - 1 = 2$, so $M^{-1} = \tfrac12\begin{pmatrix}1&-1\\-1&3\end{pmatrix} = \begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}$.
 - Forward dynamics: $\ddot\theta = M^{-1}(\tau - c - g) = (0,\ -1)\,\mathrm{rad/s^2}$.
 
-So cancelling gravity on a *moving* arm leaves the shoulder with exactly zero acceleration and the elbow decelerating at $1\,\mathrm{rad/s^2}$. Every bit of that is the Coriolis term: at rest the same command would produce $\ddot\theta = 0$ and nothing would happen at all. A controller tuned on a stationary arm and tested on a moving one meets this difference first.
+So cancelling gravity on a *moving* arm leaves the shoulder with exactly zero acceleration and the elbow straightening faster, at $1\,\mathrm{rad/s^2}$. Every bit of that is the Coriolis term: at rest the same command would produce $\ddot\theta = 0$ and nothing would happen at all. A controller tuned on a stationary arm and tested on a moving one meets this difference first.
 
 **Step 6 — the same line read backwards.** Ask instead for $\ddot\theta = 0$ at that same state — hold the velocity steady through the pose. Inverse dynamics gives $\tau = c + g = (20.62,\ 1)\,\mathrm{N\,m}$: one extra newton-metre at *each* joint over the static hold, including at the elbow, which statically needed nothing. That $1\,\mathrm{N\,m}$ at an unloaded joint is the signature of velocity coupling, and it is exactly what a feedforward term supplies in [[04-robotics/modern-robotics/ch11-robot-control|ch.11]].
 
@@ -109,7 +211,7 @@ where $\dot\theta \in \mathbb{R}^n$ is the joint velocity, $M(\theta) \in \mathb
 
 - **Example**: P2's $M(\theta_2)$ from step 2, with $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$ at the catalog pose. Symmetric by inspection; positive definite because its eigenvalues $2 \pm \sqrt2$ are both positive; and $\tfrac12(1,-1)M(1,-1)^\top = 1\,\mathrm{J}$ is the kinetic energy of the step 5 motion, a positive number as required.
 - **Non-example**: the operational-space inertia $\Lambda = (JM^{-1}J^\top)^{-1} = \mathrm{diag}(1,2)$, also listed in the catalog at this same pose. It is symmetric and positive definite too, and it is *not* the mass matrix: it is the inertia the **tip** feels in task coordinates, so its entries are kilograms rather than $\mathrm{kg\,m^2}$ and it has one entry per task direction rather than per joint. Reading "the arm is twice as heavy in $y$" off $\Lambda$ and then substituting $\Lambda$ into $\tau = M\ddot\theta + \ldots$ is the standard way this page's object gets confused with page 10's.
-- **Why it matters**: $M$ is what a simulator inverts every step, what a computed-torque controller multiplies by, and the reason gains that work at one pose fail at another. A controller designed as though $M$ were the identity is designing for a robot that does not exist.
+- **Why it matters**: $M$ is what a simulator inverts every step, what a computed-torque controller multiplies by, and the reason gains that work at one pose fail at another. A controller designed as though $M$ were the identity is designing for a robot that does not exist. A geared motor adds to $M$ as well, its rotor's reflected inertia $n^2J_m$: with the frozen drive of [[04-robotics/actuators-drives|10.5 Actuators & Drives §4]] at a gear ratio of 100 it already equals the link's own at P2's elbow.
 
 ### 3. Forward and inverse dynamics, and the two derivations
 
@@ -166,6 +268,108 @@ Tier B. Same plant **P2** from [[02-foundations/lab-plants|0.6]], same masses, s
 
 연직 평면에 선 P2를 같은 축 위에 두 번 그린다. 이 장 전체가 두 그림 사이에서 무엇이 바뀌는가에 대한 것이기 때문이다.
 
+<svg viewBox="0 0 560 390" style="max-width:100%;height:auto" role="img" aria-label="연직 평면에 선 P2: 카탈로그 자세 (0°, 90°)와 얇게 그린 곧게 편 자세 (0°, 0°), 점질량, 같은 9.81 N 무게, 어깨 모멘트 팔 1 m·1 m 대 1 m·2 m, 그리고 정지와 움직임에서 동그라미 친 운동 방정식">
+  <defs><marker id="ar8k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="ar8kL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="0.9" stroke-dasharray="6 3 1.5 3" opacity="0.5"><line x1="62" y1="27.8" x2="62" y2="149.4"/><line x1="62" y1="183.6" x2="62" y2="245"/></g>
+  <polygon points="62,160 52,175 72,175" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <g stroke="currentColor" stroke-width="0.9" opacity="0.6"><line x1="50" y1="180" x2="54" y2="175"/><line x1="55" y1="180" x2="59" y2="175"/><line x1="60" y1="180" x2="64" y2="175"/><line x1="65" y1="180" x2="69" y2="175"/><line x1="70" y1="180" x2="74" y2="175"/></g>
+  <line x1="180" y1="160" x2="298" y2="160" stroke="currentColor" stroke-width="7" stroke-opacity="0.2" stroke-dasharray="10 5"/>
+  <g stroke="currentColor" stroke-width="7" stroke-opacity="0.42" stroke-linecap="round" fill="none"><line x1="62" y1="160" x2="180" y2="160"/><line x1="180" y1="160" x2="180" y2="42"/></g>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.9"><line x1="62" y1="42" x2="180" y2="42" stroke-dasharray="4 3"/><line x1="62" y1="38" x2="62" y2="46"/><line x1="180" y1="38" x2="180" y2="46"/></g>
+  <text x="121" y="37" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.9">1 m</text>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.9"><line x1="62" y1="186" x2="180" y2="186" stroke-dasharray="4 3"/><line x1="62" y1="182" x2="62" y2="190"/><line x1="180" y1="182" x2="180" y2="190"/></g>
+  <text x="121" y="181" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.9">1 m</text>
+  <g stroke="currentColor" stroke-width="1.1" opacity="0.55"><line x1="62" y1="235.5" x2="298" y2="235.5" stroke-dasharray="4 3"/><line x1="62" y1="231.5" x2="62" y2="239.5"/><line x1="298" y1="231.5" x2="298" y2="239.5"/></g>
+  <text x="239" y="230.5" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.55">2 m</text>
+  <line x1="298" y1="219" x2="298" y2="240.2" stroke="currentColor" stroke-width="0.9" stroke-dasharray="1.5 2.5" opacity="0.55"/>
+  <g stroke="currentColor" stroke-width="1.8" marker-end="url(#ar8k)"><line x1="180" y1="167" x2="180" y2="219"/><line x1="180" y1="49" x2="180" y2="101"/></g>
+  <g stroke="currentColor" stroke-width="1.6" opacity="0.5" marker-end="url(#ar8kL)"><line x1="298" y1="166" x2="298" y2="219"/></g>
+  <circle cx="62" cy="160" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="180" cy="160" r="7" fill="currentColor"/>
+  <circle cx="180" cy="42" r="7" fill="currentColor"/>
+  <circle cx="298" cy="160" r="6" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6"/>
+  <path d="M86.1 150.3 L85 147.9 L83.7 145.7 L82.2 143.6 L80.5 141.7 L78.6 140 L76.5 138.4 L74.3 137.1 L72 136 L69.6 135.1 L67.1 134.5 L64.6 134.1 L62 134 L59.4 134.1 L56.9 134.5 L54.4 135.1 L52 136 L49.7 137.1 L47.5 138.4 L45.4 140 L43.5 141.7 L41.8 143.6 L40.3 145.7 L39 147.9 L37.9 150.3" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar8k)"/>
+  <path d="M203.3 154.2 L203 153.2 L202.7 152.1 L202.3 151.1 L201.9 150.1 L201.4 149.1 L200.9 148.2 L200.3 147.3 L199.7 146.3 L199.1 145.5 L198.4 144.6 L197.7 143.8 L197 143 L196.2 142.3 L195.4 141.6 L194.5 140.9 L193.7 140.3 L192.7 139.7 L191.8 139.1 L190.9 138.6 L189.9 138.1 L188.9 137.7 L187.9 137.3 L186.8 137 L185.8 136.7" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar8k)"/>
+  <g fill="currentColor">
+  <text x="30.1" y="139.9" font-size="12" text-anchor="middle">τ₁</text>
+  <text x="214.2" y="136.4" font-size="12" text-anchor="middle">τ₂</text>
+  <text x="168" y="34" font-size="11" text-anchor="end">m₂</text>
+  <text x="190" y="180" font-size="11">m₁</text>
+  <text x="189" y="75" font-size="11">9.81 N</text>
+  <text x="187" y="209.6" font-size="11">9.81 N</text>
+  <text x="290.9" y="29.5" font-size="11" text-anchor="end">g = 9.81 m/s²</text>
+  <text x="171.7" y="110.4" font-size="11" text-anchor="end">엘보에서의 팔: 0</text>
+  <text x="192" y="46" font-size="11">(0°, 90°)</text>
+  </g>
+  <text x="305" y="209.6" font-size="11" fill="currentColor" opacity="0.6">9.81 N</text>
+  <text x="255.5" y="150.6" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.6">(0°, 0°)</text>
+  <line x1="300.4" y1="12.4" x2="300.4" y2="36.4" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar8k)"/>
+  <g fill="currentColor">
+  <text x="352" y="26" font-size="11.5" font-weight="bold">카탈로그 θ = (0°, 90°) · 실선</text>
+  <text x="352" y="52" font-size="11">M =</text>
+  </g>
+  <g fill="currentColor">
+  <path d="M384 36 L380 36 L380 66 L384 66" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M416 36 L420 36 L420 66 L416 66" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="392" y="47" font-size="11" text-anchor="middle">3</text>
+  <text x="408" y="47" font-size="11" text-anchor="middle">1</text>
+  <text x="392" y="61" font-size="11" text-anchor="middle">1</text>
+  <text x="408" y="61" font-size="11" text-anchor="middle">1</text>
+  </g>
+  <g fill="currentColor">
+  <text x="426" y="52" font-size="11">kg·m²</text>
+  <text x="352" y="86" font-size="11">g = (19.62, 0) N·m</text>
+  <text x="352" y="103" font-size="11">어깨에서의 팔: 1 m, 1 m</text>
+  </g>
+  <g fill="currentColor" opacity="0.62">
+  <text x="352" y="142" font-size="11.5" font-weight="bold">곧게 편 θ = (0°, 0°) · 얇게</text>
+  <text x="352" y="168" font-size="11">M =</text>
+  <path d="M384 152 L380 152 L380 182 L384 182" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M416 152 L420 152 L420 182 L416 182" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="392" y="163" font-size="11" text-anchor="middle">5</text>
+  <text x="408" y="163" font-size="11" text-anchor="middle">2</text>
+  <text x="392" y="177" font-size="11" text-anchor="middle">2</text>
+  <text x="408" y="177" font-size="11" text-anchor="middle">1</text>
+  <text x="426" y="168" font-size="11">kg·m²</text>
+  <text x="352" y="202" font-size="11">g = (29.43, 9.81) N·m</text>
+  <text x="352" y="219" font-size="11">어깨에서의 팔: 1 m, 2 m</text>
+  </g>
+  <g fill="currentColor">
+  <text x="14" y="276" font-size="11" font-weight="bold">정지 유지</text>
+  <text x="14" y="291" font-size="11">θ = 0</text><circle cx="16.9" cy="281.5" r="0.8" fill="currentColor"/>
+  <text x="14" y="305" font-size="11">θ = 0</text><circle cx="15.4" cy="295.5" r="0.8" fill="currentColor"/><circle cx="18.3" cy="295.5" r="0.8" fill="currentColor"/>
+  <text x="200" y="284" font-size="12.5" text-anchor="middle">τ =</text>
+  <text x="272" y="284" font-size="12.5" text-anchor="end">M(θ)θ</text>
+  <circle cx="267.1" cy="273.2" r="0.9" fill="currentColor"/><circle cx="270.4" cy="273.2" r="0.9" fill="currentColor"/>
+  <text x="287" y="284" font-size="12.5" text-anchor="middle">+</text>
+  <text x="349" y="284" font-size="12.5" text-anchor="end">c(θ, θ</text>
+  <text x="349" y="284" font-size="12.5">)</text>
+  <circle cx="345.8" cy="273.2" r="0.9" fill="currentColor"/>
+  <text x="372" y="284" font-size="12.5" text-anchor="middle">+</text>
+  <text x="405" y="284" font-size="12.5" text-anchor="middle">g(θ)</text>
+  <text x="434" y="284" font-size="12">= (19.62, 0) N·m</text>
+  </g>
+  <ellipse cx="405" cy="280" rx="19" ry="12" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <g fill="currentColor">
+  <text x="14" y="324" font-size="11" font-weight="bold">지나가며 움직임</text>
+  <text x="14" y="339" font-size="11">θ = (1, −1) rad/s</text><circle cx="16.9" cy="329.5" r="0.8" fill="currentColor"/>
+  <text x="14" y="353" font-size="11">θ = 0</text><circle cx="15.4" cy="343.5" r="0.8" fill="currentColor"/><circle cx="18.3" cy="343.5" r="0.8" fill="currentColor"/>
+  <text x="200" y="332" font-size="12.5" text-anchor="middle">τ =</text>
+  <text x="272" y="332" font-size="12.5" text-anchor="end">M(θ)θ</text>
+  <circle cx="267.1" cy="321.2" r="0.9" fill="currentColor"/><circle cx="270.4" cy="321.2" r="0.9" fill="currentColor"/>
+  <text x="287" y="332" font-size="12.5" text-anchor="middle">+</text>
+  <text x="349" y="332" font-size="12.5" text-anchor="end">c(θ, θ</text>
+  <text x="349" y="332" font-size="12.5">)</text>
+  <circle cx="345.8" cy="321.2" r="0.9" fill="currentColor"/>
+  <text x="372" y="332" font-size="12.5" text-anchor="middle">+</text>
+  <text x="405" y="332" font-size="12.5" text-anchor="middle">g(θ)</text>
+  <text x="434" y="332" font-size="12">= (20.62, 1) N·m</text>
+  </g>
+  <ellipse cx="330" cy="328" rx="31" ry="12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 2.5"/>
+  <ellipse cx="405" cy="328" rx="22" ry="13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 2.5"/>
+  <text x="14" y="376" font-size="11" fill="currentColor" opacity="0.85">움직이는 줄에만 c에 동그라미가 있다: c = (1, 1) N·m, 관절마다 1 N·m씩 더</text>
+</svg>
+
 1. **카탈로그 자세, 실선.** 베이스 원점, 링크 1이 $+\hat x$로 가서 엘보가 $(1,0)$, 링크 2가 곧장 위로 올라가 말단이 $(1,1)$. 점질량 자리 $(1,0)$과 $(1,1)$에 속을 채운 원을 찍고, 각각에서 $9.81\,\mathrm{N}$의 무게 화살표를 아래로 내린다. 질량 둘, 화살표 둘, 길이는 같다.
 2. **모멘트 팔, 점선 수평선.** 어깨 축에서 각 질량까지 수평 점선을 내린다. 둘 다 길이가 $1\,\mathrm{m}$이고, 이것이 그려 볼 가치가 있는 놀라움이다. 전완 질량이 엘보 바로 위에 있으므로 어깨에서의 수평 거리가 상완 질량과 *같다*. 엘보 축에서 질량 2까지의 수평 점선은 길이가 $0$이다. 이 세 길이가 중력 계산의 전부다.
 3. **곧게 편 자세, 얇게.** 같은 팔의 $\theta = (0^\circ, 0^\circ)$: 두 링크 모두 $+\hat x$, 질량은 $(1,0)$과 $(2,0)$. 이제 어깨에서의 모멘트 팔이 $1\,\mathrm{m}$과 $2\,\mathrm{m}$다. 두 벌을 함께 그리면 $M$과 $g$ *둘 다*의 자세 의존성이 방정식 두 줄이 아니라 한눈에 보인다.
@@ -205,14 +409,14 @@ $$c(\theta, \dot\theta) = \bigl(\,-\sin\theta_2\,\dot\theta_2(2\dot\theta_1 + \d
 
 가 된다. $\dot\theta$의 이차식이고 $\sin\theta_2$에 비례한다. 곧바로 따라 나오는 결론이 둘이고 아래에서 둘 다 쓴다. 팔이 멈춰 있으면 $c$는 항등적으로 0이다. 그리고 $\theta_2 = 0$이나 $180^\circ$에서는 **속도가 무엇이든** 항등적으로 0이다. 곧게 펴거나 접은 엘보가 바로 $M$이 순간적으로 변하기를 멈추는 자리이기 때문이다. 카탈로그 자세 $\theta_2 = 90^\circ$는 정반대 극단인 $|\sin\theta_2| = 1$로, 이 팔이 가질 수 있는 가장 강하게 속도 결합된 자세다.
 
-**5단계 — 수치 한 건을 끝까지.** P2를 카탈로그 자세에 두고 *움직이게* 한다. $\dot\theta = (1, -1)\,\mathrm{rad/s}$, 어깨는 열리고 엘보는 닫힌다. 명령은 정확히 중력 토크 $\tau = g = (19.62,\ 0)$, 순진한 "중력 보상" 제어기가 하는 일 그대로다.
+**5단계 — 수치 한 건을 끝까지.** P2를 카탈로그 자세에 두고 *움직이게* 한다. $\dot\theta = (1, -1)\,\mathrm{rad/s}$, 어깨는 열리고 엘보는 펴진다. 명령은 정확히 중력 토크 $\tau = g = (19.62,\ 0)$, 순진한 "중력 보상" 제어기가 하는 일 그대로다.
 
 - 코리올리: $c_1 = -1\cdot(-1)\bigl(2(1) + (-1)\bigr) = 1$, $c_2 = 1\cdot(1)^2 = 1$이므로 $c = (1,\ 1)\,\mathrm{N\,m}$.
 - 남는 힘: $\tau - c - g = (19.62, 0) - (1,1) - (19.62, 0) = (-1,\ -1)\,\mathrm{N\,m}$.
 - 역질량 행렬: $\det M = 3 - 1 = 2$이므로 $M^{-1} = \tfrac12\begin{pmatrix}1&-1\\-1&3\end{pmatrix} = \begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}$.
 - 순동역학: $\ddot\theta = M^{-1}(\tau - c - g) = (0,\ -1)\,\mathrm{rad/s^2}$.
 
-즉 *움직이는* 팔에서 중력만 상쇄하면 어깨 가속도는 정확히 0이고 엘보는 $1\,\mathrm{rad/s^2}$로 감속한다. 전부 코리올리 항이다. 정지 상태였다면 같은 명령이 $\ddot\theta = 0$을 내고 아무 일도 일어나지 않았을 것이다. 멈춰 있는 팔에서 조율한 제어기를 움직이는 팔에 올리면 가장 먼저 만나는 차이가 이것이다.
+즉 *움직이는* 팔에서 중력만 상쇄하면 어깨 가속도는 정확히 0이고 엘보는 $1\,\mathrm{rad/s^2}$로 더 빨리 펴진다. 전부 코리올리 항이다. 정지 상태였다면 같은 명령이 $\ddot\theta = 0$을 내고 아무 일도 일어나지 않았을 것이다. 멈춰 있는 팔에서 조율한 제어기를 움직이는 팔에 올리면 가장 먼저 만나는 차이가 이것이다.
 
 **6단계 — 같은 줄을 반대로 읽는다.** 같은 상태에서 이번에는 $\ddot\theta = 0$을 요구한다. 속도를 유지한 채 그 자세를 지나가라는 뜻이다. 역동역학은 $\tau = c + g = (20.62,\ 1)\,\mathrm{N\,m}$을 준다. 정지 유지보다 *각* 관절에 $1\,\mathrm{N\,m}$씩 더 드는데, 정역학적으로는 아무것도 필요 없던 엘보에도 든다. 부하가 없는 관절의 그 $1\,\mathrm{N\,m}$이 속도 결합의 서명이고, [[04-robotics/modern-robotics/ch11-robot-control|11장]]에서 피드포워드 항이 공급하는 것이 정확히 그것이다.
 
@@ -248,7 +452,7 @@ $$\mathcal{K}(\theta, \dot\theta) = \tfrac12\,\dot\theta^\top M(\theta)\,\dot\th
 
 - **예**: 2단계의 P2 $M(\theta_2)$, 카탈로그 자세에서 $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$. 보기만 해도 대칭이고, 고윳값 $2 \pm \sqrt2$가 둘 다 양수라 양정부호이며, $\tfrac12(1,-1)M(1,-1)^\top = 1\,\mathrm{J}$이 5단계 운동의 운동 에너지로 요구대로 양수다.
 - **반례**: 같은 자세에서 카탈로그가 함께 적어 둔 작업 공간 관성 $\Lambda = (JM^{-1}J^\top)^{-1} = \mathrm{diag}(1,2)$. 이것도 대칭이고 양정부호지만 질량 행렬이 *아니다*. **말단**이 작업 좌표에서 느끼는 관성이라 성분의 단위가 $\mathrm{kg\,m^2}$이 아니라 킬로그램이고, 관절마다가 아니라 과제 방향마다 하나씩이다. $\Lambda$에서 "팔이 $y$에서 두 배 무겁다"를 읽고 나서 그 $\Lambda$를 $\tau = M\ddot\theta + \ldots$에 대입하는 것이, 이 페이지의 대상이 10번 페이지의 대상과 섞이는 표준적인 방식이다.
-- **왜 중요한가**: $M$은 시뮬레이터가 매 스텝 역행렬을 구하는 대상이고, 계산 토크 제어기가 곱하는 대상이며, 한 자세에서 맞던 이득이 다른 자세에서 깨지는 이유다. $M$이 항등행렬인 셈 치고 설계한 제어기는 존재하지 않는 로봇을 위해 설계한 것이다.
+- **왜 중요한가**: $M$은 시뮬레이터가 매 스텝 역행렬을 구하는 대상이고, 계산 토크 제어기가 곱하는 대상이며, 한 자세에서 맞던 이득이 다른 자세에서 깨지는 이유다. $M$이 항등행렬인 셈 치고 설계한 제어기는 존재하지 않는 로봇을 위해 설계한 것이다. 기어 달린 모터도 $M$에 보탠다. 회전자의 반사 관성 $n^2J_m$이고, [[04-robotics/actuators-drives|10.5 액추에이터·구동계 §4]]의 고정 구동계를 감속비 100으로 달면 P2의 팔꿈치에서 이미 링크 자신의 것과 같다.
 
 ### 3. 순동역학과 역동역학, 그리고 유도 두 가지
 

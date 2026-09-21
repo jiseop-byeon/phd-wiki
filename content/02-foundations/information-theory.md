@@ -29,6 +29,48 @@ no prior background assumed.
 
 The page's object is the **P5** crack detector from [[02-foundations/lab-plants|0.6 Lab Plants]], and every number below is drawn as a channel. The problem set asks for this same figure.
 
+<svg viewBox="0 0 560 324" style="max-width:100%;height:auto" role="img" aria-label="The P5 crack detector as a binary channel: prior boxes to scale, a line for cracked at 0.01 and a tall box for sound at 0.99; four arrows with their conditionals and joint masses; the alarm node split into 0.161 from cracked and 0.839 from sound inside a bracket labelled P(+) = 0.059; 0.95 and 0.161 circled.">
+  <defs><marker id="itHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="104" y="46" width="36" height="2" fill="currentColor" fill-opacity="0.85"/>
+  <rect x="104" y="62" width="36" height="198" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.3"/>
+  <text x="96" y="44" font-size="11" text-anchor="end" fill="currentColor">c  cracked</text>
+  <text x="96" y="58" font-size="11" text-anchor="end" fill="currentColor">P(c) = 0.01</text>
+  <text x="96" y="157" font-size="11" text-anchor="end" fill="currentColor">¬c  sound</text>
+  <text x="96" y="171" font-size="11" text-anchor="end" fill="currentColor">P(¬c) = 0.99</text>
+  <text x="96" y="191" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">to scale: 99 : 1</text>
+  <rect x="376" y="72" width="24" height="10.3" fill="currentColor" fill-opacity="0.55"/>
+  <rect x="376" y="82.3" width="24" height="53.7" fill="currentColor" fill-opacity="0.12"/>
+  <rect x="376" y="196" width="24" height="64" fill="currentColor" fill-opacity="0.07"/>
+  <rect x="376" y="72" width="24" height="64" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <rect x="376" y="196" width="24" height="64" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="400" y="50" font-size="11" text-anchor="end" fill="currentColor">+  alarm</text>
+  <text x="400" y="276" font-size="11" text-anchor="end" fill="currentColor">−  silent</text>
+  <line x1="140" y1="47" x2="375" y2="77.2" stroke="currentColor" stroke-width="1.5" marker-end="url(#itHw)"/>
+  <line x1="140" y1="116" x2="375" y2="109.2" stroke="currentColor" stroke-width="1.5" marker-end="url(#itHw)"/>
+  <line x1="140" y1="47" x2="375" y2="208" stroke="currentColor" stroke-width="1.5" marker-end="url(#itHw)"/>
+  <line x1="140" y1="220" x2="375" y2="242" stroke="currentColor" stroke-width="1.5" marker-end="url(#itHw)"/>
+  <circle cx="257.5" cy="42.1" r="15.8" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="257.5" y="46.1" font-size="11" text-anchor="middle" fill="currentColor">0.95</text>
+  <text x="304.5" y="103.2" font-size="11" text-anchor="middle" fill="currentColor">0.05</text>
+  <text x="300.9" y="148" font-size="11" fill="currentColor">0.05</text>
+  <text x="257.5" y="247" font-size="11" text-anchor="middle" fill="currentColor">0.95</text>
+  <text x="346" y="63.5" font-size="11" text-anchor="end" fill="currentColor">0.0095</text>
+  <text x="364" y="126.2" font-size="11" text-anchor="end" fill="currentColor">0.0495</text>
+  <text x="350" y="214" font-size="11" text-anchor="end" fill="currentColor">0.0005</text>
+  <text x="364" y="259" font-size="11" text-anchor="end" fill="currentColor">0.9405</text>
+  <circle cx="426" cy="77.2" r="18.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="426" y="81.2" font-size="11" text-anchor="middle" fill="currentColor">0.161</text>
+  <text x="408" y="113.2" font-size="11" fill="currentColor">0.839</text>
+  <path d="M 458 72 q 6 0 6 6 V 98 q 0 6 6 6 q -6 0 -6 6 V 130 q 0 6 -6 6" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="475" y="108" font-size="11" fill="currentColor">P(+) = 0.059</text>
+  <text x="424" y="162" font-size="11" opacity="0.9" fill="currentColor">joint masses:</text>
+  <text x="424" y="176" font-size="11" opacity="0.9" fill="currentColor">0.0095 + 0.0005</text>
+  <text x="424" y="190" font-size="11" opacity="0.9" fill="currentColor">+ 0.0495 + 0.9405</text>
+  <text x="424" y="204" font-size="11" opacity="0.9" fill="currentColor">= 1 ✓</text>
+  <text x="12" y="299" font-size="11" opacity="0.9" fill="currentColor">The arrows leaving each left node sum to 1 (0.95 + 0.05); those entering + need not.</text>
+  <text x="12" y="313" font-size="11" opacity="0.9" fill="currentColor">Circled: P(+|c) = 0.95 on the arrow, P(c|+) = 0.161 in the bracket, about six times apart.</text>
+</svg>
+
 **The channel itself.** Two nodes on the left, stacked: $c$ (cracked) on top, $\neg c$ (sound) below. Two nodes on the right, also stacked: $+$ (alarm) on top, $-$ (silent) below. Four arrows, every left node to every right node, none omitted — the two diagonal arrows are the errors and they are the whole lesson. Write the conditional on each: $c\to+$ is $0.95$, $c\to-$ is $0.05$, $\neg c\to+$ is $0.05$, $\neg c\to-$ is $0.95$. Check on the drawing that the two arrows leaving each left node sum to $1$, and that the two arrows entering each right node need *not* — here they do ($0.95+0.05$) only because this channel is symmetric; a column of a channel matrix is a distribution, a row of it is not.
 
 **The prior, drawn to scale.** Draw the two left nodes as boxes whose heights are their prior masses, $P(c)=0.01$ against $P(\neg c)=0.99$. Drawn honestly, the top box is a line and the bottom one is the whole figure. That ratio of $99$ is the only reason the page's punchline exists, so it must be visible before any arithmetic starts.
@@ -338,6 +380,48 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
 ### 과제가 그릴 그림 · Homework diagram
 
 이 페이지의 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P5** 균열 감지기이고, 아래 숫자는 전부 채널 하나로 그려진다. 과제가 바로 이 그림을 요구한다.
+
+<svg viewBox="0 0 560 324" style="max-width:100%;height:auto" role="img" aria-label="장치 P5 균열 감지기를 이진 채널로 그린 그림: 사전확률을 실제 비율로 그린 상자, 균열 0.01은 선 하나이고 멀쩡함 0.99는 긴 상자다. 조건부 확률과 결합 질량이 적힌 화살표 넷, P(+) = 0.059라고 적힌 묶음 안에서 균열 몫 0.161과 멀쩡함 몫 0.839로 나뉜 경보 노드, 동그라미 친 0.95와 0.161.">
+  <defs><marker id="itHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="104" y="46" width="36" height="2" fill="currentColor" fill-opacity="0.85"/>
+  <rect x="104" y="62" width="36" height="198" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.3"/>
+  <text x="96" y="44" font-size="11" text-anchor="end" fill="currentColor">c  균열</text>
+  <text x="96" y="58" font-size="11" text-anchor="end" fill="currentColor">P(c) = 0.01</text>
+  <text x="96" y="157" font-size="11" text-anchor="end" fill="currentColor">¬c  멀쩡함</text>
+  <text x="96" y="171" font-size="11" text-anchor="end" fill="currentColor">P(¬c) = 0.99</text>
+  <text x="96" y="191" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">실제 비율: 99 : 1</text>
+  <rect x="376" y="72" width="24" height="10.3" fill="currentColor" fill-opacity="0.55"/>
+  <rect x="376" y="82.3" width="24" height="53.7" fill="currentColor" fill-opacity="0.12"/>
+  <rect x="376" y="196" width="24" height="64" fill="currentColor" fill-opacity="0.07"/>
+  <rect x="376" y="72" width="24" height="64" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <rect x="376" y="196" width="24" height="64" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="400" y="50" font-size="11" text-anchor="end" fill="currentColor">+  경보</text>
+  <text x="400" y="276" font-size="11" text-anchor="end" fill="currentColor">−  침묵</text>
+  <line x1="140" y1="47" x2="375" y2="77.2" stroke="currentColor" stroke-width="1.5" marker-end="url(#itHwk)"/>
+  <line x1="140" y1="116" x2="375" y2="109.2" stroke="currentColor" stroke-width="1.5" marker-end="url(#itHwk)"/>
+  <line x1="140" y1="47" x2="375" y2="208" stroke="currentColor" stroke-width="1.5" marker-end="url(#itHwk)"/>
+  <line x1="140" y1="220" x2="375" y2="242" stroke="currentColor" stroke-width="1.5" marker-end="url(#itHwk)"/>
+  <circle cx="257.5" cy="42.1" r="15.8" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="257.5" y="46.1" font-size="11" text-anchor="middle" fill="currentColor">0.95</text>
+  <text x="304.5" y="103.2" font-size="11" text-anchor="middle" fill="currentColor">0.05</text>
+  <text x="300.9" y="148" font-size="11" fill="currentColor">0.05</text>
+  <text x="257.5" y="247" font-size="11" text-anchor="middle" fill="currentColor">0.95</text>
+  <text x="346" y="63.5" font-size="11" text-anchor="end" fill="currentColor">0.0095</text>
+  <text x="364" y="126.2" font-size="11" text-anchor="end" fill="currentColor">0.0495</text>
+  <text x="350" y="214" font-size="11" text-anchor="end" fill="currentColor">0.0005</text>
+  <text x="364" y="259" font-size="11" text-anchor="end" fill="currentColor">0.9405</text>
+  <circle cx="426" cy="77.2" r="18.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="426" y="81.2" font-size="11" text-anchor="middle" fill="currentColor">0.161</text>
+  <text x="408" y="113.2" font-size="11" fill="currentColor">0.839</text>
+  <path d="M 458 72 q 6 0 6 6 V 98 q 0 6 6 6 q -6 0 -6 6 V 130 q 0 6 -6 6" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="475" y="108" font-size="11" fill="currentColor">P(+) = 0.059</text>
+  <text x="424" y="162" font-size="11" opacity="0.9" fill="currentColor">결합 질량:</text>
+  <text x="424" y="176" font-size="11" opacity="0.9" fill="currentColor">0.0095 + 0.0005</text>
+  <text x="424" y="190" font-size="11" opacity="0.9" fill="currentColor">+ 0.0495 + 0.9405</text>
+  <text x="424" y="204" font-size="11" opacity="0.9" fill="currentColor">= 1 ✓</text>
+  <text x="12" y="299" font-size="11" opacity="0.9" fill="currentColor">왼쪽 노드 하나에서 나가는 두 화살표의 합은 1이다(0.95 + 0.05). +로 들어오는 둘은 아니어도 된다.</text>
+  <text x="12" y="313" font-size="11" opacity="0.9" fill="currentColor">동그라미: 화살표 위의 P(+|c) = 0.95와 묶음 안의 P(c|+) = 0.161, 약 여섯 배 차이다.</text>
+</svg>
 
 **채널 자체.** 왼쪽에 노드 둘을 위아래로: 위가 $c$(균열 있음), 아래가 $\neg c$(멀쩡함). 오른쪽에도 둘: 위가 $+$(경보), 아래가 $-$(침묵). 화살표는 넷이고 왼쪽 노드마다 오른쪽 노드 둘 모두로 간다. 하나도 빼지 않는다. 대각선 화살표 둘이 오류이고 그것이 이 페이지의 교훈 전부이기 때문이다. 각 화살표에 조건부 확률을 쓴다. $c\to+$는 $0.95$, $c\to-$는 $0.05$, $\neg c\to+$는 $0.05$, $\neg c\to-$는 $0.95$. 그림 위에서 확인할 것 둘: 왼쪽 노드 하나에서 나가는 두 화살표의 합은 $1$이고, 오른쪽 노드 하나로 들어오는 두 화살표의 합은 $1$일 *필요가 없다*. 여기서 $1$이 되는 것($0.95+0.05$)은 이 채널이 대칭이기 때문일 뿐이다. 채널 행렬의 열은 분포지만 행은 분포가 아니다.
 

@@ -29,7 +29,83 @@ already know** — matrix multiplication and derivatives — wearing unfamiliar 
 
 ### Homework diagram · 과제가 그릴 그림
 
-The object is plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the drawing is a vocabulary chart: every word this page teaches has a place on it. The problem set asks for the same drawing. §2 prints the finished figure — draw yours before looking at it.
+The object is plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the drawing is a vocabulary chart: every word this page teaches has a place on it. The problem set asks for the same drawing. The figure below is the finished chart — draw yours before looking at it.
+
+<svg viewBox="0 0 560 366" style="max-width:100%;height:auto" role="img" aria-label="P1 as a vocabulary chart: inputs 1 and 2, hidden values 1, 2, 3 after ReLU, output 0.5, every weight on its edge, W1 three by two and W2 one by three bracketed as layers, faint bias stubs, nine weights or thirteen parameters with biases, the ReLU mask (1, 1, 1), and in brackets the case z3 = -3 where the third unit carries 0">
+  <line x1="81.4" y1="135.4" x2="199.8" y2="103.9" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="78" y1="214.7" x2="204.1" y2="112.5" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="81.4" y1="144.7" x2="199.8" y2="177" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="81.4" y1="221.3" x2="199.8" y2="189" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="78" y1="151.3" x2="204.1" y2="253.5" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="81.4" y1="230.6" x2="199.8" y2="262.1" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="242" y1="109.3" x2="356.3" y2="174.1" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <line x1="245" y1="183" x2="354" y2="183" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <line x1="242" y1="256.7" x2="356.3" y2="191.9" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <text x="188.3" y="102.7" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="196.1" y="134.6" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <text x="192.5" y="170.7" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <text x="192.8" y="204.3" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="195.4" y="240.2" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="188.1" y="272.3" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="304.9" y="137.5" font-size="11" fill="currentColor" text-anchor="middle">1·1</text>
+  <text x="300" y="180" font-size="11" fill="currentColor" text-anchor="middle">+ (−1)·2</text>
+  <text x="307.9" y="241.7" font-size="11" fill="currentColor" text-anchor="middle">+ 0.5·3</text>
+  <line x1="222" y1="58" x2="222" y2="74" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+  <text x="228" y="68" font-size="11" fill="currentColor" fill-opacity="0.5">b<tspan dy="3" font-size="9.5">1</tspan></text>
+  <line x1="222" y1="143" x2="222" y2="159" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+  <text x="228" y="153" font-size="11" fill="currentColor" fill-opacity="0.5">b<tspan dy="3" font-size="9.5">1</tspan></text>
+  <line x1="222" y1="228" x2="222" y2="244" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+  <text x="228" y="238" font-size="11" fill="currentColor" fill-opacity="0.5">b<tspan dy="3" font-size="9.5">1</tspan></text>
+  <line x1="372" y1="148" x2="372" y2="164" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+  <text x="378" y="158" font-size="11" fill="currentColor" fill-opacity="0.5">b<tspan dy="3" font-size="9.5">2</tspan></text>
+  <circle cx="64" cy="140" r="18" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="64" y="144.5" font-size="13" fill="currentColor" text-anchor="middle">1</text>
+  <circle cx="64" cy="226" r="18" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="64" y="230.5" font-size="13" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="222" cy="98" r="23" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="222" y="99" font-size="13" fill="currentColor" text-anchor="middle">1</text>
+  <text x="222" y="112" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">ReLU</text>
+  <circle cx="222" cy="183" r="23" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="222" y="184" font-size="13" fill="currentColor" text-anchor="middle">2</text>
+  <text x="222" y="197" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">ReLU</text>
+  <circle cx="222" cy="268" r="23" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="222" y="269" font-size="13" fill="currentColor" text-anchor="middle">3</text>
+  <text x="222" y="282" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">ReLU</text>
+  <circle cx="372" cy="183" r="18" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <text x="372" y="187.5" font-size="13" fill="currentColor" text-anchor="middle">0.5</text>
+  <text x="40" y="144" font-size="11" fill="currentColor" text-anchor="end">x<tspan dy="3" font-size="9.5">1</tspan></text>
+  <text x="40" y="230" font-size="11" fill="currentColor" text-anchor="end">x<tspan dy="3" font-size="9.5">2</tspan></text>
+  <text x="396" y="187" font-size="11" fill="currentColor">= ŷ</text>
+  <text x="222" y="22" font-size="11" fill="currentColor" text-anchor="middle">σ = ReLU, mask (1, 1, 1):</text>
+  <text x="222" y="37" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">every z &gt; 0, so ReLU does nothing</text>
+  <path d="M370 12 L364 12 L364 112 L370 112" stroke="currentColor" stroke-width="1.4" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M542 12 L548 12 L548 112 L542 112" stroke="currentColor" stroke-width="1.4" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="376" y="30" font-size="11" fill="currentColor">if z<tspan dy="3" font-size="9.5">3</tspan><tspan dy="-3" dx="3.5">= −3:</tspan></text>
+  <circle cx="398" cy="68" r="15" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="398" y="72.5" font-size="13" fill="currentColor" text-anchor="middle">0</text>
+  <circle cx="522" cy="68" r="11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.35" stroke-dasharray="2 2"/>
+  <line x1="414" y1="68" x2="510" y2="68" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.3" stroke-dasharray="4 3"/>
+  <text x="462" y="60" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">W<tspan dy="3" font-size="9.5">2,3</tspan><tspan dy="-3" dx="3.5">adds 0</tspan></text>
+  <text x="376" y="104" font-size="11" fill="currentColor">h<tspan dy="3" font-size="9.5">3</tspan><tspan dy="-3" dx="3.5">= 0, mask (1, 1, 0)</tspan></text>
+  <text x="424" y="226" font-size="12" fill="currentColor">parameters</text>
+  <text x="474" y="250" font-size="12" fill="currentColor" text-anchor="end">6 + 3 =</text>
+  <text x="488" y="250" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">9</text>
+  <circle cx="488" cy="245.5" r="10.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <text x="424" y="266" font-size="11" fill="currentColor" fill-opacity="0.8">biases off, as in P1</text>
+  <text x="424" y="290" font-size="12" fill="currentColor">9 + 4 = 13</text>
+  <text x="424" y="306" font-size="11" fill="currentColor" fill-opacity="0.8">with b<tspan dy="3" font-size="9.5">1</tspan><tspan dy="-3">, b</tspan><tspan dy="3" font-size="9.5">2</tspan><tspan dy="-3" dx="3.5">on</tspan></text>
+  <path d="M40 301 L40 306 L88 306 L88 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="64" y="322" font-size="11" fill="currentColor" text-anchor="middle">input layer</text>
+  <path d="M96 301 L96 306 L190 306 L190 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="143" y="322" font-size="11" fill="currentColor" text-anchor="middle">W<tspan dy="3" font-size="9.5">1</tspan><tspan dy="-3" dx="3.5">· 3×2</tspan></text>
+  <path d="M196 301 L196 306 L248 306 L248 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="222" y="322" font-size="11" fill="currentColor" text-anchor="middle">hidden layer</text>
+  <path d="M256 301 L256 306 L346 306 L346 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="301" y="322" font-size="11" fill="currentColor" text-anchor="middle">W<tspan dy="3" font-size="9.5">2</tspan><tspan dy="-3" dx="3.5">· 1×3</tspan></text>
+  <path d="M350 301 L350 306 L394 306 L394 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="372" y="322" font-size="11" fill="currentColor" text-anchor="middle">output</text>
+  <text x="12" y="348" font-size="11" fill="currentColor" fill-opacity="0.85">one edge = one weight · one bracketed bundle of edges = one layer</text>
+</svg>
 
 **The graph.** Two circles in a left column, three in a middle column, one on the right. Every left circle joins every middle circle (six edges), and every middle circle joins the output (three edges) — nine edges, fully connected, which is what the word *dense* or *fully connected* names. Write the value inside each circle: $1$ and $2$ on the left, $1$, $2$ and $3$ in the middle, $0.5$ on the right.
 
@@ -309,7 +385,83 @@ numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practic
 
 ### 과제가 그릴 그림 · Homework diagram
 
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**이고, 그림은 어휘 도표다. 이 페이지가 가르치는 단어마다 그림 위에 자리가 하나씩 있다. 과제가 같은 그림을 요구한다. §2에 완성된 그림이 있으니, 보기 전에 먼저 그려라.
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**이고, 그림은 어휘 도표다. 이 페이지가 가르치는 단어마다 그림 위에 자리가 하나씩 있다. 과제가 같은 그림을 요구한다. 아래 그림이 완성된 도표이니, 보기 전에 먼저 그려라.
+
+<svg viewBox="0 0 560 366" style="max-width:100%;height:auto" role="img" aria-label="어휘 도표로 그린 P1: 입력 1과 2, ReLU 뒤 은닉값 1, 2, 3, 출력 0.5, 변마다 가중치, 층으로 묶은 3×2의 W1과 1×3의 W2, 흐린 편향 가지, 가중치 9개 또는 편향을 켜면 파라미터 13개, ReLU 마스크 (1, 1, 1), 괄호 안에 z3 = -3이라 셋째 유닛이 0을 담는 경우">
+  <line x1="81.4" y1="135.4" x2="199.8" y2="103.9" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="78" y1="214.7" x2="204.1" y2="112.5" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="81.4" y1="144.7" x2="199.8" y2="177" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="81.4" y1="221.3" x2="199.8" y2="189" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="78" y1="151.3" x2="204.1" y2="253.5" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="81.4" y1="230.6" x2="199.8" y2="262.1" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="242" y1="109.3" x2="356.3" y2="174.1" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <line x1="245" y1="183" x2="354" y2="183" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <line x1="242" y1="256.7" x2="356.3" y2="191.9" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75"/>
+  <text x="188.3" y="102.7" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="196.1" y="134.6" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <text x="192.5" y="170.7" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <text x="192.8" y="204.3" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="195.4" y="240.2" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="188.1" y="272.3" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="304.9" y="137.5" font-size="11" fill="currentColor" text-anchor="middle">1·1</text>
+  <text x="300" y="180" font-size="11" fill="currentColor" text-anchor="middle">+ (−1)·2</text>
+  <text x="307.9" y="241.7" font-size="11" fill="currentColor" text-anchor="middle">+ 0.5·3</text>
+  <line x1="222" y1="58" x2="222" y2="74" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+  <text x="228" y="68" font-size="11" fill="currentColor" fill-opacity="0.5">b<tspan dy="3" font-size="9.5">1</tspan></text>
+  <line x1="222" y1="143" x2="222" y2="159" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+  <text x="228" y="153" font-size="11" fill="currentColor" fill-opacity="0.5">b<tspan dy="3" font-size="9.5">1</tspan></text>
+  <line x1="222" y1="228" x2="222" y2="244" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+  <text x="228" y="238" font-size="11" fill="currentColor" fill-opacity="0.5">b<tspan dy="3" font-size="9.5">1</tspan></text>
+  <line x1="372" y1="148" x2="372" y2="164" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+  <text x="378" y="158" font-size="11" fill="currentColor" fill-opacity="0.5">b<tspan dy="3" font-size="9.5">2</tspan></text>
+  <circle cx="64" cy="140" r="18" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="64" y="144.5" font-size="13" fill="currentColor" text-anchor="middle">1</text>
+  <circle cx="64" cy="226" r="18" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="64" y="230.5" font-size="13" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="222" cy="98" r="23" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="222" y="99" font-size="13" fill="currentColor" text-anchor="middle">1</text>
+  <text x="222" y="112" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">ReLU</text>
+  <circle cx="222" cy="183" r="23" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="222" y="184" font-size="13" fill="currentColor" text-anchor="middle">2</text>
+  <text x="222" y="197" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">ReLU</text>
+  <circle cx="222" cy="268" r="23" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="222" y="269" font-size="13" fill="currentColor" text-anchor="middle">3</text>
+  <text x="222" y="282" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">ReLU</text>
+  <circle cx="372" cy="183" r="18" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <text x="372" y="187.5" font-size="13" fill="currentColor" text-anchor="middle">0.5</text>
+  <text x="40" y="144" font-size="11" fill="currentColor" text-anchor="end">x<tspan dy="3" font-size="9.5">1</tspan></text>
+  <text x="40" y="230" font-size="11" fill="currentColor" text-anchor="end">x<tspan dy="3" font-size="9.5">2</tspan></text>
+  <text x="396" y="187" font-size="11" fill="currentColor">= ŷ</text>
+  <text x="222" y="22" font-size="11" fill="currentColor" text-anchor="middle">σ = ReLU, 마스크 (1, 1, 1):</text>
+  <text x="222" y="37" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">모든 z &gt; 0이라 ReLU가 하는 일이 없다</text>
+  <path d="M370 12 L364 12 L364 112 L370 112" stroke="currentColor" stroke-width="1.4" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M542 12 L548 12 L548 112 L542 112" stroke="currentColor" stroke-width="1.4" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="376" y="30" font-size="11" fill="currentColor">z<tspan dy="3" font-size="9.5">3</tspan><tspan dy="-3" dx="3.5">= −3이었다면:</tspan></text>
+  <circle cx="398" cy="68" r="15" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="398" y="72.5" font-size="13" fill="currentColor" text-anchor="middle">0</text>
+  <circle cx="522" cy="68" r="11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.35" stroke-dasharray="2 2"/>
+  <line x1="414" y1="68" x2="510" y2="68" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.3" stroke-dasharray="4 3"/>
+  <text x="462" y="60" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">W<tspan dy="3" font-size="9.5">2,3</tspan><tspan dy="-3">의 기여 0</tspan></text>
+  <text x="376" y="104" font-size="11" fill="currentColor">h<tspan dy="3" font-size="9.5">3</tspan><tspan dy="-3" dx="3.5">= 0, 마스크 (1, 1, 0)</tspan></text>
+  <text x="424" y="226" font-size="12" fill="currentColor">파라미터 수</text>
+  <text x="474" y="250" font-size="12" fill="currentColor" text-anchor="end">6 + 3 =</text>
+  <text x="488" y="250" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">9</text>
+  <circle cx="488" cy="245.5" r="10.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <text x="424" y="266" font-size="11" fill="currentColor" fill-opacity="0.8">편향 끔 (P1 그대로)</text>
+  <text x="424" y="290" font-size="12" fill="currentColor">9 + 4 = 13</text>
+  <text x="424" y="306" font-size="11" fill="currentColor" fill-opacity="0.8">b<tspan dy="3" font-size="9.5">1</tspan><tspan dy="-3">, b</tspan><tspan dy="3" font-size="9.5">2</tspan><tspan dy="-3">를 켜면</tspan></text>
+  <path d="M40 301 L40 306 L88 306 L88 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="64" y="322" font-size="11" fill="currentColor" text-anchor="middle">입력층</text>
+  <path d="M96 301 L96 306 L190 306 L190 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="143" y="322" font-size="11" fill="currentColor" text-anchor="middle">W<tspan dy="3" font-size="9.5">1</tspan><tspan dy="-3" dx="3.5">· 3×2</tspan></text>
+  <path d="M196 301 L196 306 L248 306 L248 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="222" y="322" font-size="11" fill="currentColor" text-anchor="middle">은닉층</text>
+  <path d="M256 301 L256 306 L346 306 L346 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="301" y="322" font-size="11" fill="currentColor" text-anchor="middle">W<tspan dy="3" font-size="9.5">2</tspan><tspan dy="-3" dx="3.5">· 1×3</tspan></text>
+  <path d="M350 301 L350 306 L394 306 L394 301" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <text x="372" y="322" font-size="11" fill="currentColor" text-anchor="middle">출력</text>
+  <text x="12" y="348" font-size="11" fill="currentColor" fill-opacity="0.85">변 하나 = 가중치 하나 · 괄호로 묶은 변 다발 하나 = 층 하나</text>
+</svg>
 
 **그래프.** 왼쪽 열에 동그라미 둘, 가운데 열에 셋, 오른쪽에 하나. 왼쪽 동그라미마다 가운데 동그라미 전부와 이어지고(변 여섯), 가운데 동그라미마다 출력과 이어진다(변 셋). 변이 아홉이고 빠짐없이 이어진 이 상태를 *dense* 또는 *완전 연결*이라 부른다. 각 동그라미 안에 값을 적는다. 왼쪽은 $1$과 $2$, 가운데는 $1$, $2$, $3$, 오른쪽은 $0.5$.
 

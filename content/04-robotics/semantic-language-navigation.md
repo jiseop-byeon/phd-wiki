@@ -50,6 +50,81 @@ Finally, the agent's open-vocabulary detector has already scored each map node a
 
 ### Homework diagram: G4, its legal stops, and one path
 
+The figure is the worked case: the television as the goal and episode 3's walk as the solid path.
+
+<svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="Map G4 for the instruction go to the television: a 4 by 4 grid with sofa, tv and plant cells shaded, walls A, B and C drawn on cell edges, legal stops (3,0) and (3,2) circled, (2,1) crossed, the shortest path dashed and episode 3's walk solid">
+  <defs><marker id="arG4e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="40" y="18" width="70" height="70" fill="currentColor" fill-opacity="0.16"/>
+  <rect x="250" y="158" width="70" height="70" fill="currentColor" fill-opacity="0.16"/>
+  <rect x="250" y="18" width="70" height="70" fill="currentColor" fill-opacity="0.16"/>
+  <line x1="40" y1="18" x2="320" y2="18" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="18" x2="40" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="88" x2="320" y2="88" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="110" y1="18" x2="110" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="158" x2="320" y2="158" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="180" y1="18" x2="180" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="228" x2="320" y2="228" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="250" y1="18" x2="250" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="298" x2="320" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="320" y1="18" x2="320" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="44" y="241" font-size="11" fill="currentColor" fill-opacity="0.6">(0,0)</text>
+  <text x="44" y="171" font-size="11" fill="currentColor" fill-opacity="0.6">(0,1)</text>
+  <text x="44" y="101" font-size="11" fill="currentColor" fill-opacity="0.6">(0,2)</text>
+  <text x="44" y="31" font-size="11" fill="currentColor" fill-opacity="0.6">(0,3)</text>
+  <text x="114" y="241" font-size="11" fill="currentColor" fill-opacity="0.6">(1,0)</text>
+  <text x="114" y="171" font-size="11" fill="currentColor" fill-opacity="0.6">(1,1)</text>
+  <text x="114" y="101" font-size="11" fill="currentColor" fill-opacity="0.6">(1,2)</text>
+  <text x="114" y="31" font-size="11" fill="currentColor" fill-opacity="0.6">(1,3)</text>
+  <text x="184" y="241" font-size="11" fill="currentColor" fill-opacity="0.6">(2,0)</text>
+  <text x="184" y="171" font-size="11" fill="currentColor" fill-opacity="0.6">(2,1)</text>
+  <text x="184" y="101" font-size="11" fill="currentColor" fill-opacity="0.6">(2,2)</text>
+  <text x="184" y="31" font-size="11" fill="currentColor" fill-opacity="0.6">(2,3)</text>
+  <text x="254" y="241" font-size="11" fill="currentColor" fill-opacity="0.6">(3,0)</text>
+  <text x="254" y="171" font-size="11" fill="currentColor" fill-opacity="0.6">(3,1)</text>
+  <text x="254" y="101" font-size="11" fill="currentColor" fill-opacity="0.6">(3,2)</text>
+  <text x="254" y="31" font-size="11" fill="currentColor" fill-opacity="0.6">(3,3)</text>
+  <text x="75" y="58" font-size="12.5" fill="currentColor" text-anchor="middle" font-weight="600">sofa</text>
+  <text x="285" y="198" font-size="12.5" fill="currentColor" text-anchor="middle" font-weight="600">tv</text>
+  <text x="285" y="58" font-size="12.5" fill="currentColor" text-anchor="middle" font-weight="600">plant</text>
+  <text x="75" y="290" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">start</text>
+  <circle cx="75" cy="263" r="3.2" fill="currentColor" fill-opacity="1"/>
+  <line x1="41.5" y1="158" x2="108.5" y2="158" stroke="currentColor" stroke-width="6"/>
+  <text x="75" y="151" font-size="12" fill="currentColor" text-anchor="middle" font-weight="700">A</text>
+  <line x1="111.5" y1="158" x2="178.5" y2="158" stroke="currentColor" stroke-width="6"/>
+  <text x="145" y="151" font-size="12" fill="currentColor" text-anchor="middle" font-weight="700">B</text>
+  <line x1="250" y1="159.5" x2="250" y2="226.5" stroke="currentColor" stroke-width="6"/>
+  <text x="243" y="174.5" font-size="12" fill="currentColor" text-anchor="end" font-weight="700">C</text>
+  <circle cx="285" cy="263" r="19" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="285" cy="123" r="19" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="202" y1="180" x2="228" y2="206" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="202" y1="206" x2="228" y2="180" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="87" y1="269" x2="133" y2="269" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arG4e)"/>
+  <line x1="157" y1="269" x2="203" y2="269" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arG4e)"/>
+  <line x1="227" y1="269" x2="263" y2="269" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arG4e)"/>
+  <line x1="69" y1="251" x2="69" y2="205" stroke="currentColor" stroke-width="1.8" marker-end="url(#arG4e)"/>
+  <line x1="81" y1="193" x2="127" y2="193" stroke="currentColor" stroke-width="1.8" marker-end="url(#arG4e)"/>
+  <line x1="151" y1="193" x2="188" y2="193" stroke="currentColor" stroke-width="1.8" marker-end="url(#arG4e)"/>
+  <circle cx="354" cy="36" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="372" y="40" font-size="11" fill="currentColor">legal stop: next to the tv,</text>
+  <text x="372" y="54" font-size="11" fill="currentColor">no wall on the shared edge</text>
+  <line x1="348" y1="72" x2="360" y2="84" stroke="currentColor" stroke-width="2"/>
+  <line x1="348" y1="84" x2="360" y2="72" stroke="currentColor" stroke-width="2"/>
+  <text x="372" y="82" font-size="11" fill="currentColor">1.0 m from the tv, wall C</text>
+  <text x="372" y="96" font-size="11" fill="currentColor">between: not a legal stop</text>
+  <line x1="344" y1="120" x2="363" y2="120" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arG4e)"/>
+  <text x="372" y="124" font-size="11" fill="currentColor">shortest path to the nearest</text>
+  <text x="372" y="138" font-size="11" fill="currentColor">legal stop (3,0): ℓ = 3 m</text>
+  <line x1="344" y1="162" x2="363" y2="162" stroke="currentColor" stroke-width="1.8" marker-end="url(#arG4e)"/>
+  <text x="372" y="166" font-size="11" fill="currentColor">walked, episode 3: p = 3 m,</text>
+  <text x="372" y="180" font-size="11" fill="currentColor">stops at (2,1): S = 0</text>
+  <line x1="344" y1="204" x2="364" y2="204" stroke="currentColor" stroke-width="6"/>
+  <text x="372" y="208" font-size="11" fill="currentColor">wall: lives on an edge</text>
+  <rect x="345" y="225" width="18" height="18" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="372" y="238" font-size="11" fill="currentColor">object: fills a cell</text>
+  <text x="12" y="324" font-size="11" fill="currentColor">(3,0) and (2,1) are both 3 steps from the start and 1.0 m from the tv;</text>
+  <text x="12" y="339" font-size="11" fill="currentColor">only (3,0) can see it. The grounding g(tv) = 0.846 was right; the stop was not.</text>
+</svg>
+
 Draw the grid full size, 4×4, one square per cell, and label every cell $(c, r)$. Shade the three object cells and write their names in. Draw the three wall segments **A**, **B**, **C** as thick lines *on the edges between* cells, not inside cells — the whole geometry lesson is that a wall lives on an edge and an object lives in a cell.
 
 Then, for the goal object, mark every cell that is a **legal stop**: four-adjacent to the object cell with no wall segment on the shared edge. Circle those. Then mark, with a cross, every cell that is four-adjacent to the object but separated from it by a wall — these are exactly 1.0 m from the goal and are *not* legal stops. For the television the circles go on $(3,0)$ and $(3,2)$ and the cross goes on $(2,1)$.
@@ -476,6 +551,81 @@ A와 B는 방 왼쪽을 가로지르는 칸막이이고, C는 텔레비전이 �
 *범위: 이 페이지는 이 문헌이 쓰인 두 정의 — ObjectNav 성공 기준과 SPL — 와, 접지 점수와 지도 기하가 어떻게 정지 결정 하나로 합쳐지는지를 가르친다. 프런티어를 어떻게 고르고 지역 제어기가 어떻게 모는지([[04-robotics/navigation-mobile-manipulation|16. 내비게이션과 모바일 조작]]), 시각-언어 특징을 어떻게 학습하는지([[01-canonical-papers/notes/3-vlm/clip|CLIP]]), 실외 traversability([[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]])는 가르치지 않는다.*
 
 ### 과제가 그릴 그림: G4와 합법적 정지 칸, 그리고 경로 하나
+
+그림은 아래 계산의 경우 그대로다: 목표는 텔레비전이고, 실선은 에피소드 3이 걸은 경로다.
+
+<svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="지시 텔레비전으로 가라에 대한 지도 G4: sofa, tv, plant 칸을 칠한 4×4 격자, 칸의 변 위에 그린 벽 A, B, C, 동그라미 친 합법적 정지 칸 (3,0)과 (3,2), 가위표 친 (2,1), 점선의 최단 경로와 실선의 에피소드 3 경로">
+  <defs><marker id="arG4k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="40" y="18" width="70" height="70" fill="currentColor" fill-opacity="0.16"/>
+  <rect x="250" y="158" width="70" height="70" fill="currentColor" fill-opacity="0.16"/>
+  <rect x="250" y="18" width="70" height="70" fill="currentColor" fill-opacity="0.16"/>
+  <line x1="40" y1="18" x2="320" y2="18" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="18" x2="40" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="88" x2="320" y2="88" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="110" y1="18" x2="110" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="158" x2="320" y2="158" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="180" y1="18" x2="180" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="228" x2="320" y2="228" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="250" y1="18" x2="250" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="40" y1="298" x2="320" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <line x1="320" y1="18" x2="320" y2="298" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="44" y="241" font-size="11" fill="currentColor" fill-opacity="0.6">(0,0)</text>
+  <text x="44" y="171" font-size="11" fill="currentColor" fill-opacity="0.6">(0,1)</text>
+  <text x="44" y="101" font-size="11" fill="currentColor" fill-opacity="0.6">(0,2)</text>
+  <text x="44" y="31" font-size="11" fill="currentColor" fill-opacity="0.6">(0,3)</text>
+  <text x="114" y="241" font-size="11" fill="currentColor" fill-opacity="0.6">(1,0)</text>
+  <text x="114" y="171" font-size="11" fill="currentColor" fill-opacity="0.6">(1,1)</text>
+  <text x="114" y="101" font-size="11" fill="currentColor" fill-opacity="0.6">(1,2)</text>
+  <text x="114" y="31" font-size="11" fill="currentColor" fill-opacity="0.6">(1,3)</text>
+  <text x="184" y="241" font-size="11" fill="currentColor" fill-opacity="0.6">(2,0)</text>
+  <text x="184" y="171" font-size="11" fill="currentColor" fill-opacity="0.6">(2,1)</text>
+  <text x="184" y="101" font-size="11" fill="currentColor" fill-opacity="0.6">(2,2)</text>
+  <text x="184" y="31" font-size="11" fill="currentColor" fill-opacity="0.6">(2,3)</text>
+  <text x="254" y="241" font-size="11" fill="currentColor" fill-opacity="0.6">(3,0)</text>
+  <text x="254" y="171" font-size="11" fill="currentColor" fill-opacity="0.6">(3,1)</text>
+  <text x="254" y="101" font-size="11" fill="currentColor" fill-opacity="0.6">(3,2)</text>
+  <text x="254" y="31" font-size="11" fill="currentColor" fill-opacity="0.6">(3,3)</text>
+  <text x="75" y="58" font-size="12.5" fill="currentColor" text-anchor="middle" font-weight="600">sofa</text>
+  <text x="285" y="198" font-size="12.5" fill="currentColor" text-anchor="middle" font-weight="600">tv</text>
+  <text x="285" y="58" font-size="12.5" fill="currentColor" text-anchor="middle" font-weight="600">plant</text>
+  <text x="75" y="290" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">출발</text>
+  <circle cx="75" cy="263" r="3.2" fill="currentColor" fill-opacity="1"/>
+  <line x1="41.5" y1="158" x2="108.5" y2="158" stroke="currentColor" stroke-width="6"/>
+  <text x="75" y="151" font-size="12" fill="currentColor" text-anchor="middle" font-weight="700">A</text>
+  <line x1="111.5" y1="158" x2="178.5" y2="158" stroke="currentColor" stroke-width="6"/>
+  <text x="145" y="151" font-size="12" fill="currentColor" text-anchor="middle" font-weight="700">B</text>
+  <line x1="250" y1="159.5" x2="250" y2="226.5" stroke="currentColor" stroke-width="6"/>
+  <text x="243" y="174.5" font-size="12" fill="currentColor" text-anchor="end" font-weight="700">C</text>
+  <circle cx="285" cy="263" r="19" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="285" cy="123" r="19" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="202" y1="180" x2="228" y2="206" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="202" y1="206" x2="228" y2="180" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="87" y1="269" x2="133" y2="269" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arG4k)"/>
+  <line x1="157" y1="269" x2="203" y2="269" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arG4k)"/>
+  <line x1="227" y1="269" x2="263" y2="269" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arG4k)"/>
+  <line x1="69" y1="251" x2="69" y2="205" stroke="currentColor" stroke-width="1.8" marker-end="url(#arG4k)"/>
+  <line x1="81" y1="193" x2="127" y2="193" stroke="currentColor" stroke-width="1.8" marker-end="url(#arG4k)"/>
+  <line x1="151" y1="193" x2="188" y2="193" stroke="currentColor" stroke-width="1.8" marker-end="url(#arG4k)"/>
+  <circle cx="354" cy="36" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="372" y="40" font-size="11" fill="currentColor">합법적 정지 칸: tv와 인접,</text>
+  <text x="372" y="54" font-size="11" fill="currentColor">공유 변에 벽이 없음</text>
+  <line x1="348" y1="72" x2="360" y2="84" stroke="currentColor" stroke-width="2"/>
+  <line x1="348" y1="84" x2="360" y2="72" stroke="currentColor" stroke-width="2"/>
+  <text x="372" y="82" font-size="11" fill="currentColor">tv에서 1.0 m지만 벽 C가</text>
+  <text x="372" y="96" font-size="11" fill="currentColor">사이에 있음: 정지 칸 아님</text>
+  <line x1="344" y1="120" x2="363" y2="120" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arG4k)"/>
+  <text x="372" y="124" font-size="11" fill="currentColor">가장 가까운 합법적 정지</text>
+  <text x="372" y="138" font-size="11" fill="currentColor">(3,0)까지 최단 경로: ℓ = 3 m</text>
+  <line x1="344" y1="162" x2="363" y2="162" stroke="currentColor" stroke-width="1.8" marker-end="url(#arG4k)"/>
+  <text x="372" y="166" font-size="11" fill="currentColor">실제로 걸은 경로(에피소드 3):</text>
+  <text x="372" y="180" font-size="11" fill="currentColor">p = 3 m, (2,1)에 정지: S = 0</text>
+  <line x1="344" y1="204" x2="364" y2="204" stroke="currentColor" stroke-width="6"/>
+  <text x="372" y="208" font-size="11" fill="currentColor">벽: 변 위에 산다</text>
+  <rect x="345" y="225" width="18" height="18" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="372" y="238" font-size="11" fill="currentColor">물체: 칸을 채운다</text>
+  <text x="12" y="324" font-size="11" fill="currentColor">(3,0)과 (2,1)은 둘 다 출발에서 3걸음, tv에서 1.0 m다.</text>
+  <text x="12" y="339" font-size="11" fill="currentColor">tv를 볼 수 있는 것은 (3,0)뿐이다. 접지 g(tv) = 0.846은 맞았고, 정지가 틀렸다.</text>
+</svg>
 
 격자를 크게, 4×4로, 칸 하나에 정사각형 하나씩 그리고 모든 칸에 $(c, r)$을 적는다. 물체 칸 셋을 칠하고 이름을 써 넣는다. 벽 선분 **A**, **B**, **C**는 칸 안이 아니라 칸과 칸 *사이의 변 위에* 굵은 선으로 그린다 — 벽은 변에 살고 물체는 칸에 산다는 것이 이 기하 수업의 전부다.
 

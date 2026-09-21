@@ -26,28 +26,94 @@ Similarity logits are $\ell_{ij}=v_i^\top t_j/\tau$. Rows ask “which text matc
 
 Everything on this page follows from those six vectors and one knob. All are unit length, so each dot product is the cosine of the angle between two of them, and the three images sit at $0^\circ$, $60^\circ$ and $90^\circ$. Matched pairs are *exactly* aligned — this is a batch the encoder has already solved — so the only thing that can go wrong on D3 is the objective itself, which is what makes it the right object for reading a contrastive loss. Two page-local variants are frozen here for §5 and the problem set, changing one vector each. **The one-wrong batch** moves image 2 to $v_2'=(0,1)$, i.e. to $90^\circ$, so the encoder now places it on top of caption 3. **The duplicate-caption batch** sets $t_3=t_2$, so captions 2 and 3 are the same sentence and the "negative" in row 2 is a correct match.
 
-*Scope: this page teaches the contrastive objective of a dual encoder — the similarity matrix, the two directions, the temperature, the negatives, and what the resulting number does and does not certify — and the vocabulary that separates conditioning from grounding. It does not teach the image encoder, which is [[03-deep-learning/computer-vision/index|2. Computer Vision §1]]; nor the cross-attention that fusion models use, which is the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]; nor the loss and optimizer machinery around the objective, which is [[03-deep-learning/foundations/index|1. Learning Systems §6]]; nor generative decoding, captioning metrics, or action, which are the generative entries of the [[01-canonical-papers/canonical-list|canonical list]] and the [[03-deep-learning/vla/index|VLA course]]. The retrieval metrics named in §3 are defined in [[02-foundations/ml-practice|9. ML Practice §3]].*
+*Scope: this page teaches the contrastive objective of a dual encoder — the similarity matrix, the two directions, the temperature, the negatives, and what the resulting number does and does not certify — and the vocabulary that separates conditioning from grounding. It does not teach the image encoder, which is [[03-deep-learning/computer-vision/index|2. Computer Vision §1]]; nor the cross-attention that fusion models use, which is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §1]] and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]; nor the loss and optimizer machinery around the objective, which is [[03-deep-learning/foundations/index|1. Learning Systems §6]]; nor generative decoding, captioning metrics, or action, which are the generative entries of the [[01-canonical-papers/canonical-list|canonical list]] and the [[03-deep-learning/vla/index|VLA course]]. The retrieval metrics named in §3 are defined in [[02-foundations/ml-practice|9. ML Practice §3]].*
 
 ### Homework diagram
 
-One figure in two parts, and the problem set asks for exactly this one.
+One figure in two parts, and the problem set asks for exactly this one. The figure is the worked case at $\tau=1/2$, with the three row losses and their mean.
 
-```mermaid
-flowchart LR
-    IMG["3 images"] --> IE["image encoder"]
-    IE --> VV["v1 v2 v3 · unit length"]
-    TXT["3 captions"] --> TE["text encoder"]
-    TE --> TT["t1 t2 t3 · unit length"]
-    VV --> SIM["similarity matrix · 3x3"]
-    TT --> SIM
-    SIM --> TAU["divide by tau"]
-    TAU --> RS["softmax along each ROW · image to text"]
-    TAU --> CS["softmax along each COLUMN · text to image"]
-    RS --> LI["mean of 3 row losses"]
-    CS --> LT["mean of 3 column losses"]
-    LI --> AV["average the two · L"]
-    LT --> AV
-```
+<svg viewBox="0 0 560 372" style="max-width:100%;height:auto" role="img" aria-label="D3's two encoders feed a 3 by 3 cosine matrix, dividing every cell by tau = 1/2 gives the one logit matrix with its diagonal marked as positives inside a batch box, and that matrix is read along rows and along columns, each giving losses 0.407606, 0.757448, 0.642002 and the objective 0.602352 nats">
+  <defs><marker id="aD3e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="38" font-size="11" fill="currentColor">3 images</text>
+  <line x1="78" y1="34" x2="90" y2="34" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3e)"/>
+  <rect x="92" y="23" width="90" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="137" y="38" font-size="11" fill="currentColor" text-anchor="middle">image encoder</text>
+  <line x1="137" y1="45" x2="137" y2="51" stroke="currentColor" stroke-width="1.2"/>
+  <text x="137" y="63" font-size="11" fill="currentColor" text-anchor="middle">v<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">, v</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">, v</tspan><tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">· unit</tspan></text>
+  <text x="12" y="88" font-size="11" fill="currentColor">3 captions</text>
+  <line x1="78" y1="84" x2="90" y2="84" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3e)"/>
+  <rect x="92" y="73" width="90" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="137" y="88" font-size="11" fill="currentColor" text-anchor="middle">text encoder</text>
+  <line x1="137" y1="95" x2="137" y2="101" stroke="currentColor" stroke-width="1.2"/>
+  <text x="137" y="113" font-size="11" fill="currentColor" text-anchor="middle">t<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">, t</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">, t</tspan><tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">· unit</tspan></text>
+  <text x="137" y="132" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">at 0°, 60°, 90°</text>
+  <text x="430" y="71" font-size="11" fill="currentColor" fill-opacity="0.85">V T<tspan dy="-4" font-size="10">T</tspan><tspan dy="4">: cosines</tspan></text>
+  <text x="267" y="35" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">t<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="329" y="35" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">t<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="391" y="35" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">t<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="230" y="53" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">v<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="267" y="53" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <text x="329" y="53" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <text x="391" y="53" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0</text>
+  <text x="230" y="71" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">v<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="267" y="71" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <text x="329" y="71" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <text x="391" y="71" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.866025</text>
+  <text x="230" y="89" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">v<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="267" y="89" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0</text>
+  <text x="329" y="89" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.866025</text>
+  <text x="391" y="89" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <rect x="236" y="40" width="186" height="54" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <line x1="198" y1="67" x2="212" y2="58" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3e)"/>
+  <line x1="198" y1="117" x2="212" y2="78" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3e)"/>
+  <line x1="329" y1="97" x2="329" y2="146" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD3e)"/>
+  <text x="337" y="124" font-size="11" fill="currentColor">÷ τ, τ = 1/2, on all nine cells</text>
+  <rect x="236" y="170" width="62" height="26" stroke="none" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="298" y="196" width="62" height="26" stroke="none" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="360" y="222" width="62" height="26" stroke="none" fill="currentColor" fill-opacity="0.22"/>
+  <line x1="298" y1="170" x2="298" y2="248" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+  <line x1="236" y1="196" x2="422" y2="196" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+  <line x1="360" y1="170" x2="360" y2="248" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+  <line x1="236" y1="222" x2="422" y2="222" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+  <text x="267" y="157" font-size="11" fill="currentColor" text-anchor="middle">t<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="329" y="157" font-size="11" fill="currentColor" text-anchor="middle">t<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="391" y="157" font-size="11" fill="currentColor" text-anchor="middle">t<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="227" y="187" font-size="11" fill="currentColor" text-anchor="end">v<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="267" y="188" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="329" y="188" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="391" y="188" font-size="12" fill="currentColor" text-anchor="middle">0</text>
+  <text x="227" y="213" font-size="11" fill="currentColor" text-anchor="end">v<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="267" y="214" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="329" y="214" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="391" y="214" font-size="12" fill="currentColor" text-anchor="middle">1.732051</text>
+  <text x="227" y="239" font-size="11" fill="currentColor" text-anchor="end">v<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="267" y="240" font-size="12" fill="currentColor" text-anchor="middle">0</text>
+  <text x="329" y="240" font-size="12" fill="currentColor" text-anchor="middle">1.732051</text>
+  <text x="391" y="240" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="12" y="182" font-size="11" fill="currentColor">ℓ<tspan dy="3" font-size="10">ij</tspan><tspan dy="-3" dx="3.5">= v</tspan><tspan dy="3" font-size="10">i</tspan><tspan dy="-7" font-size="10">T</tspan><tspan dy="4">t</tspan><tspan dy="3" font-size="10">j</tspan><tspan dy="-3" dx="3.5">/ τ</tspan></text>
+  <text x="12" y="208" font-size="11" fill="currentColor" fill-opacity="0.85">shaded diagonal = positives,</text>
+  <text x="12" y="224" font-size="11" fill="currentColor" fill-opacity="0.85">nothing else marked</text>
+  <rect x="232" y="166" width="194" height="86" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="232" y="267" font-size="11" fill="currentColor">batch, N = 3</text>
+  <line x1="426" y1="209" x2="444" y2="209" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD3e)"/>
+  <text x="550" y="141" font-size="11" fill="currentColor" text-anchor="end">row softmax</text>
+  <text x="550" y="157" font-size="11" fill="currentColor" text-anchor="end">image → text</text>
+  <text x="450" y="187" font-size="11" fill="currentColor">L<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= 0.407606</tspan></text>
+  <text x="450" y="213" font-size="11" fill="currentColor">L<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= 0.757448</tspan></text>
+  <text x="450" y="239" font-size="11" fill="currentColor">L<tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">= 0.642002</tspan></text>
+  <line x1="450" y1="251" x2="534" y2="251" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="450" y="265" font-size="11" fill="currentColor" font-weight="bold">mean 0.602352</text>
+  <line x1="329" y1="252" x2="329" y2="280" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD3e)"/>
+  <text x="267" y="296" font-size="11" fill="currentColor" text-anchor="middle">0.407606</text>
+  <text x="329" y="296" font-size="11" fill="currentColor" text-anchor="middle">0.757448</text>
+  <text x="391" y="296" font-size="11" fill="currentColor" text-anchor="middle">0.642002</text>
+  <text x="227" y="296" font-size="11" fill="currentColor" text-anchor="end">column softmax · text → image</text>
+  <line x1="240" y1="302" x2="418" y2="302" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="329" y="317" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">mean 0.602352</text>
+  <text x="227" y="317" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">same three: the matrix is symmetric</text>
+  <text x="12" y="342" font-size="12" fill="currentColor" font-weight="bold">𝓛 = ½(0.602352 + 0.602352) = 0.602352 nats</text>
+  <text x="12" y="360" font-size="11" fill="currentColor" fill-opacity="0.85">no information: log 3 = 1.098612</text>
+</svg>
 
 And the matrix itself, which is the part the problem set asks you to draw by hand. At $\tau=1/2$:
 
@@ -75,7 +141,7 @@ The matrix is symmetric, since $v_i=t_i$ for every $i$, which is a property of D
 
 **Row 1, in full.** Image 1's logits are $(2,1,0)$, so
 
-$$p_{11}=\frac{e^2}{e^2+e^1+e^0}=\frac{7.389056}{11.107337}=0.665241,\qquad L_{1}=-\log p_{11}=0.407606 \text{ nats}.$$
+$$p_{11}=\frac{e^2}{e^2+e^1+e^0}=\frac{7.389056}{11.107338}=0.665241,\qquad L_{1}=-\log p_{11}=0.407606 \text{ nats}.$$
 
 **All three rows, and the other direction.** Row 2's logits are $(1,2,1.732051)$ and row 3's are $(0,1.732051,2)$, giving
 
@@ -85,7 +151,7 @@ The column losses are the *same three numbers*, because the matrix is symmetric,
 
 $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_i L_i^{\,t\to i}\right)=\tfrac13(0.407606+0.757448+0.642002)=0.602352 \text{ nats}.$$
 
-**What that number is measured against.** A batch of $N=3$ that has learned nothing puts $1/3$ on every cell, so its loss is $\log 3=1.098612$ nats. D3 sits at $0.602352$, a little over half the way down — and the *floor* is $0$, reached only as $\tau\to0$. So the number alone says almost nothing: the same encoder scores anywhere between $0.933538$ and $0.000001$ on this very batch depending only on $\tau$, which §5 measures.
+**What that number is measured against.** A batch of $N=3$ that has learned nothing puts $1/3$ on every cell, so its loss is $\log 3=1.098612$ nats. D3 sits at $0.602352$, a little under half the way down — and the *floor* is $0$, reached only as $\tau\to0$. So the number alone says almost nothing: the same encoder scores anywhere between $0.933538$ and $0.000001$ on this very batch depending only on $\tau$, which §5 measures.
 
 **The negative that is not obviously wrong.** Row 2's softmax at $\tau=1/2$ is $(0.172485,\ 0.468861,\ 0.358654)$. The gradient of a softmax cross-entropy is $p-y$ (worked in [[03-deep-learning/foundations/index|1. Learning Systems §2]]), so this row pushes image 2 *away from caption 3* with weight $0.358654$ — more than a third of all the push-down mass in the row. Caption 3 is a negative because it sits in a different slot of the batch, and for no other reason. Keep that number in mind for §2's paragraph about false negatives, and for the problem set, where caption 3 is a copy of caption 2.
 
@@ -213,10 +279,10 @@ print("log 3 in bits =", round(float(np.log(3)/np.log(2)), 6), "  log 2 =", roun
 
 **Reading the sweep.** Four things the row-1 calculation could not have told you.
 
-- **On a batch it has already solved, lowering $\tau$ only buys confidence.** The aligned column falls monotonically from $0.933538$ at $\tau=2$ to $0.000001$ at $\tau=1/100$, and the grid search confirms the minimum is at the low end of the range. Nothing was learned; the same six vectors produced a loss that spans three orders of magnitude. A contrastive loss quoted without its $\tau$ and its $N$ is not a comparable number, and neither is a plot of it across a paper that tunes $\tau$.
+- **On a batch it has already solved, lowering $\tau$ only buys confidence.** The aligned column falls monotonically from $0.933538$ at $\tau=2$ to $0.000001$ at $\tau=1/100$, and the grid search confirms the minimum is at the low end of the range. Nothing was learned; the same six vectors produced a loss that spans six orders of magnitude. A contrastive loss quoted without its $\tau$ and its $N$ is not a comparable number, and neither is a plot of it across a paper that tunes $\tau$.
 - **The spread is not uniform across rows, and that is the geometry.** At $\tau=1/2$, $p_{11}=0.665241$ but $p_{22}=0.468861$ — image 2 is at $60^\circ$ from caption 1 and only $30^\circ$ from caption 3, so it has a genuinely hard negative and image 1 does not. Row 2 is the hardest row at every temperature in the table. Hard negatives are a property of the embedding geometry, not of the sampling code.
 - **With one pair wrong, the loss is not monotone in $\tau$ and has an interior minimum.** The right-hand column falls to $0.527329$ at $\tau=1/4$, turns, and reaches $2.463960$ at $\tau=1/100$ — worse than the no-information $\log 3$. A grid search over $\tau\in[0.01,3]$ puts the minimum at $\tau=0.1639$, $\mathcal L=0.507409$. Sharpening amplifies whatever the model believes, and below the optimum it is amplifying a mistake. This is the sentence in the problem set's old solution — "sharper logits improve confidence here but also sharpen mistakes" — with the turning point measured.
-- **A large enough $\tau$ hides the error completely.** At $\tau=2$ the wrong encoder scores $0.932611$ against the correct encoder's $0.933538$ — marginally *better*. The two curves cross at $\tau\approx1.6539$. Above that, the softmax is so flat that a $30^\circ$ encoding error is invisible in the loss, which is worth remembering whenever a training curve is used as evidence that an encoder is working.
+- **A large enough $\tau$ hides the error completely.** At $\tau=2$ the wrong encoder scores $0.932611$ against the correct encoder's $0.933538$ — marginally *better*. The two curves cross at $\tau\approx1.6542$. Above that, the softmax is so flat that a $30^\circ$ encoding error is invisible in the loss, which is worth remembering whenever a training curve is used as evidence that an encoder is working.
 
 ### Self-check
 
@@ -240,7 +306,7 @@ Tier A. Using only this page, its prerequisites, and [[03-deep-learning/lab-obje
 1. **Draw.** Draw D3's $3\times3$ similarity matrix and mark positives on the diagonal. Add the two softmax directions as arrows off the same matrix, the $\tau$ division before them, and a box around the batch; label which cells would stop being negatives if the batch were larger.
 2. **Derive.** On D3 image 1, recompute logits and row loss at $\tau=1/4$. Explain the effect of the lower temperature.
 3. **Interpret.** A model answers “red valve” correctly but no localization or intervention is tested. What claim remains open?
-4. **Do.** Fill the `?` blanks, then run the **duplicate-caption** variant: caption 3 is an exact copy of caption 2, so $t_3=t_2$ while the images are unchanged. Sweep $\tau\in\{2,1,1/2,1/4,1/10,1/20,1/100\}$ and report (a) $\mathcal L$ at each $\tau$; (b) the three image-to-text row losses and the three text-to-image column losses at $\tau=1/2$ and at $\tau=1/100$; (c) the $\tau$ that minimises $\mathcal L$, by grid search. Then answer in two sentences: which of the six losses is unbounded as $\tau\to0$ and which one converges to $\log 2$, and what that difference says about how a duplicate caption damages the two directions differently.
+4. **Do.** Fill the `?` blanks, then run the **duplicate-caption** variant: caption 3 is an exact copy of caption 2, so $t_3=t_2$ while the images are unchanged. Sweep $\tau\in\{2,1,1/2,1/4,1/10,1/20,1/100\}$ and report (a) $\mathcal L$ at each $\tau$; (b) the three image-to-text row losses and the three text-to-image column losses at $\tau=1/2$ and at $\tau=1/100$; (c) the $\tau$ that minimises $\mathcal L$, by grid search. Then answer in two sentences: which of the six losses is unbounded as $\tau\to0$ and which ones converge to $\log 2$, and what that difference says about how a duplicate caption damages the two directions differently.
 
 ```python
 # D3 with a duplicate caption. Reuse infonce from section 5. Fill ?.
@@ -292,11 +358,96 @@ logit은 $\ell_{ij}=v_i^\top t_j/\tau$다. 행은 이미지에 맞는 텍스트,
 
 이 페이지의 전부가 그 벡터 여섯 개와 손잡이 하나에서 나온다. 모두 단위 길이라 각 내적은 두 벡터 사이 각의 코사인이고, 세 이미지는 $0^\circ$, $60^\circ$, $90^\circ$에 놓인다. 짝이 맞는 쌍은 *정확히* 정렬되어 있다. 즉 encoder가 이미 풀어 놓은 배치라서, D3에서 잘못될 수 있는 것은 목적함수 자체뿐이다. 대조 loss를 읽기에 알맞은 대상인 이유가 그것이다. §5와 과제를 위해 벡터 하나씩만 바꾼 페이지 고유 변형 둘도 여기서 고정한다. **한 쌍이 틀린 배치**는 이미지 2를 $v_2'=(0,1)$, 즉 $90^\circ$로 옮겨 encoder가 캡션 3 위에 겹쳐 놓게 한다. **중복 캡션 배치**는 $t_3=t_2$로 두어 캡션 2와 3이 같은 문장이 되고, 행 2의 "negative"가 실제로는 맞는 짝이 된다.
 
-*범위: 이 페이지는 dual encoder의 대조 목적함수 — similarity matrix, 두 방향, temperature, negative, 그리고 그 결과 숫자가 보증하는 것과 보증하지 못하는 것 — 와 conditioning을 grounding에서 가르는 어휘를 가르친다. 이미지 encoder는 가르치지 않는다. 그것은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전 §1]]이다. fusion 모델이 쓰는 cross-attention도 아니다. 그것은 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 목적함수 주변의 loss·optimizer 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §6]]이다. 생성 디코딩, 캡션 metric, 행동도 아니다. 그것은 [[01-canonical-papers/canonical-list|canonical list]]의 생성 항목과 [[03-deep-learning/vla/index|VLA 교과]]다. §3에 이름만 나오는 retrieval metric은 [[02-foundations/ml-practice|9. ML 실무 §3]]에 정의되어 있다.*
+*범위: 이 페이지는 dual encoder의 대조 목적함수 — similarity matrix, 두 방향, temperature, negative, 그리고 그 결과 숫자가 보증하는 것과 보증하지 못하는 것 — 와 conditioning을 grounding에서 가르는 어휘를 가르친다. 이미지 encoder는 가르치지 않는다. 그것은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전 §1]]이다. fusion 모델이 쓰는 cross-attention도 아니다. 그것은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §1]]과 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 목적함수 주변의 loss·optimizer 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §6]]이다. 생성 디코딩, 캡션 metric, 행동도 아니다. 그것은 [[01-canonical-papers/canonical-list|canonical list]]의 생성 항목과 [[03-deep-learning/vla/index|VLA 교과]]다. §3에 이름만 나오는 retrieval metric은 [[02-foundations/ml-practice|9. ML 실무 §3]]에 정의되어 있다.*
 
 ### 과제가 그릴 그림
 
-두 부분으로 된 그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 영어 절의 mermaid 도면이 첫 부분이다. 둘째 부분은 $\tau=1/2$의 행렬 자체이고, 과제가 손으로 그리라는 것이 그것이다.
+두 부분으로 된 그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 그림은 $\tau=1/2$의 계산 절이고, 행 loss 셋과 그 평균까지 적었다.
+
+<svg viewBox="0 0 560 372" style="max-width:100%;height:auto" role="img" aria-label="D3의 두 encoder가 3×3 코사인 행렬을 만들고, 아홉 칸 전부를 τ = 1/2로 나눈 logit 행렬 하나에 대각선을 positive로 표시하고 배치 상자를 두른 뒤, 그 행렬을 행 방향과 열 방향으로 읽어 각각 loss 0.407606, 0.757448, 0.642002와 목적함수 0.602352 nat을 얻는 그림">
+  <defs><marker id="aD3k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="38" font-size="11" fill="currentColor">이미지 3장</text>
+  <line x1="78" y1="34" x2="90" y2="34" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3k)"/>
+  <rect x="92" y="23" width="90" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="137" y="38" font-size="11" fill="currentColor" text-anchor="middle">image encoder</text>
+  <line x1="137" y1="45" x2="137" y2="51" stroke="currentColor" stroke-width="1.2"/>
+  <text x="137" y="63" font-size="11" fill="currentColor" text-anchor="middle">v<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">, v</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">, v</tspan><tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">· 단위</tspan></text>
+  <text x="12" y="88" font-size="11" fill="currentColor">캡션 3개</text>
+  <line x1="78" y1="84" x2="90" y2="84" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3k)"/>
+  <rect x="92" y="73" width="90" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="137" y="88" font-size="11" fill="currentColor" text-anchor="middle">text encoder</text>
+  <line x1="137" y1="95" x2="137" y2="101" stroke="currentColor" stroke-width="1.2"/>
+  <text x="137" y="113" font-size="11" fill="currentColor" text-anchor="middle">t<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">, t</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">, t</tspan><tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">· 단위</tspan></text>
+  <text x="137" y="132" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">각 0°, 60°, 90°</text>
+  <text x="430" y="71" font-size="11" fill="currentColor" fill-opacity="0.85">V T<tspan dy="-4" font-size="10">T</tspan><tspan dy="4">: 코사인</tspan></text>
+  <text x="267" y="35" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">t<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="329" y="35" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">t<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="391" y="35" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">t<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="230" y="53" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">v<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="267" y="53" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <text x="329" y="53" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <text x="391" y="53" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0</text>
+  <text x="230" y="71" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">v<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="267" y="71" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <text x="329" y="71" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <text x="391" y="71" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.866025</text>
+  <text x="230" y="89" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">v<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="267" y="89" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0</text>
+  <text x="329" y="89" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.866025</text>
+  <text x="391" y="89" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <rect x="236" y="40" width="186" height="54" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <line x1="198" y1="67" x2="212" y2="58" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3k)"/>
+  <line x1="198" y1="117" x2="212" y2="78" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3k)"/>
+  <line x1="329" y1="97" x2="329" y2="146" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD3k)"/>
+  <text x="337" y="124" font-size="11" fill="currentColor">÷ τ, τ = 1/2, 아홉 칸 전부에</text>
+  <rect x="236" y="170" width="62" height="26" stroke="none" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="298" y="196" width="62" height="26" stroke="none" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="360" y="222" width="62" height="26" stroke="none" fill="currentColor" fill-opacity="0.22"/>
+  <line x1="298" y1="170" x2="298" y2="248" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+  <line x1="236" y1="196" x2="422" y2="196" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+  <line x1="360" y1="170" x2="360" y2="248" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+  <line x1="236" y1="222" x2="422" y2="222" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+  <text x="267" y="157" font-size="11" fill="currentColor" text-anchor="middle">t<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="329" y="157" font-size="11" fill="currentColor" text-anchor="middle">t<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="391" y="157" font-size="11" fill="currentColor" text-anchor="middle">t<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="227" y="187" font-size="11" fill="currentColor" text-anchor="end">v<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="267" y="188" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="329" y="188" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="391" y="188" font-size="12" fill="currentColor" text-anchor="middle">0</text>
+  <text x="227" y="213" font-size="11" fill="currentColor" text-anchor="end">v<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="267" y="214" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="329" y="214" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="391" y="214" font-size="12" fill="currentColor" text-anchor="middle">1.732051</text>
+  <text x="227" y="239" font-size="11" fill="currentColor" text-anchor="end">v<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="267" y="240" font-size="12" fill="currentColor" text-anchor="middle">0</text>
+  <text x="329" y="240" font-size="12" fill="currentColor" text-anchor="middle">1.732051</text>
+  <text x="391" y="240" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="12" y="182" font-size="11" fill="currentColor">ℓ<tspan dy="3" font-size="10">ij</tspan><tspan dy="-3" dx="3.5">= v</tspan><tspan dy="3" font-size="10">i</tspan><tspan dy="-7" font-size="10">T</tspan><tspan dy="4">t</tspan><tspan dy="3" font-size="10">j</tspan><tspan dy="-3" dx="3.5">/ τ</tspan></text>
+  <text x="12" y="208" font-size="11" fill="currentColor" fill-opacity="0.85">음영 대각선 = positive,</text>
+  <text x="12" y="224" font-size="11" fill="currentColor" fill-opacity="0.85">그 밖에는 표시 없음</text>
+  <rect x="232" y="166" width="194" height="86" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
+  <text x="232" y="267" font-size="11" fill="currentColor">배치, N = 3</text>
+  <line x1="426" y1="209" x2="444" y2="209" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD3k)"/>
+  <text x="550" y="141" font-size="11" fill="currentColor" text-anchor="end">행 softmax</text>
+  <text x="550" y="157" font-size="11" fill="currentColor" text-anchor="end">이미지 → 텍스트</text>
+  <text x="450" y="187" font-size="11" fill="currentColor">L<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= 0.407606</tspan></text>
+  <text x="450" y="213" font-size="11" fill="currentColor">L<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= 0.757448</tspan></text>
+  <text x="450" y="239" font-size="11" fill="currentColor">L<tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">= 0.642002</tspan></text>
+  <line x1="450" y1="251" x2="534" y2="251" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="450" y="265" font-size="11" fill="currentColor" font-weight="bold">평균 0.602352</text>
+  <line x1="329" y1="252" x2="329" y2="280" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD3k)"/>
+  <text x="267" y="296" font-size="11" fill="currentColor" text-anchor="middle">0.407606</text>
+  <text x="329" y="296" font-size="11" fill="currentColor" text-anchor="middle">0.757448</text>
+  <text x="391" y="296" font-size="11" fill="currentColor" text-anchor="middle">0.642002</text>
+  <text x="227" y="296" font-size="11" fill="currentColor" text-anchor="end">열 softmax · 텍스트 → 이미지</text>
+  <line x1="240" y1="302" x2="418" y2="302" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="329" y="317" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">평균 0.602352</text>
+  <text x="227" y="317" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">같은 세 숫자: 행렬이 대칭</text>
+  <text x="12" y="342" font-size="12" fill="currentColor" font-weight="bold">𝓛 = ½(0.602352 + 0.602352) = 0.602352 nat</text>
+  <text x="12" y="360" font-size="11" fill="currentColor" fill-opacity="0.85">정보 없음: log 3 = 1.098612</text>
+</svg>
+
+둘째 부분은 $\tau=1/2$의 행렬 자체이고, 과제가 손으로 그리라는 것이 그것이다.
 
 | $\ell_{ij}$ | $t_1$ | $t_2$ | $t_3$ |
 |---|---:|---:|---:|
@@ -322,7 +473,7 @@ $$V T^\top=\begin{pmatrix}1&1/2&0\\1/2&1&\sqrt3/2\\0&\sqrt3/2&1\end{pmatrix}=\be
 
 **행 1, 끝까지.** 이미지 1의 logit은 $(2,1,0)$이므로
 
-$$p_{11}=\frac{e^2}{e^2+e^1+e^0}=\frac{7.389056}{11.107337}=0.665241,\qquad L_{1}=-\log p_{11}=0.407606\ \text{nat}.$$
+$$p_{11}=\frac{e^2}{e^2+e^1+e^0}=\frac{7.389056}{11.107338}=0.665241,\qquad L_{1}=-\log p_{11}=0.407606\ \text{nat}.$$
 
 **세 행 전부, 그리고 반대 방향.** 행 2의 logit은 $(1,2,1.732051)$, 행 3은 $(0,1.732051,2)$이므로
 
@@ -332,7 +483,7 @@ $$L_{1}=0.407606,\qquad L_{2}=0.757448,\qquad L_{3}=0.642002.$$
 
 $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_i L_i^{\,t\to i}\right)=\tfrac13(0.407606+0.757448+0.642002)=0.602352\ \text{nat}.$$
 
-**그 숫자는 무엇에 대고 재는가.** 아무것도 배우지 못한 $N=3$ 배치는 아홉 칸에 $1/3$씩 두므로 loss가 $\log 3=1.098612$ nat이다. D3는 $0.602352$로 절반 조금 넘게 내려와 있고, *바닥*은 $0$인데 $\tau\to0$에서만 닿는다. 그래서 숫자만으로는 말할 수 있는 것이 거의 없다. 같은 encoder가 바로 이 배치에서 $\tau$만으로 $0.933538$과 $0.000001$ 사이 아무 값이나 낸다. 그것을 §5가 측정한다.
+**그 숫자는 무엇에 대고 재는가.** 아무것도 배우지 못한 $N=3$ 배치는 아홉 칸에 $1/3$씩 두므로 loss가 $\log 3=1.098612$ nat이다. D3는 $0.602352$로 절반이 조금 못 되게 내려와 있고, *바닥*은 $0$인데 $\tau\to0$에서만 닿는다. 그래서 숫자만으로는 말할 수 있는 것이 거의 없다. 같은 encoder가 바로 이 배치에서 $\tau$만으로 $0.933538$과 $0.000001$ 사이 아무 값이나 낸다. 그것을 §5가 측정한다.
 
 **명백히 틀렸다고 할 수 없는 negative.** $\tau=1/2$에서 행 2의 softmax는 $(0.172485,\ 0.468861,\ 0.358654)$다. softmax cross-entropy의 gradient는 $p-y$이므로([[03-deep-learning/foundations/index|1. 학습 시스템 §2]]의 계산) 이 행은 이미지 2를 *캡션 3에서* 가중치 $0.358654$만큼 밀어낸다. 행 전체의 밀어내기 질량 중 3분의 1이 넘는다. 캡션 3이 negative인 이유는 배치의 다른 칸에 있다는 것뿐이고 다른 이유는 없다. 이 숫자를 §2의 false negative 문단과, 캡션 3이 캡션 2의 복사본이 되는 과제를 위해 기억해 둔다.
 
@@ -413,10 +564,10 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 
 **Sweep 읽기.** 행 1의 계산이 알려줄 수 없었던 것 넷.
 
-- **이미 풀어 놓은 배치에서 $\tau$를 낮추는 것은 확신을 사는 일일 뿐이다.** 정렬 열은 $\tau=2$의 $0.933538$에서 $\tau=1/100$의 $0.000001$까지 단조로 내려가고, 격자 탐색도 최소가 범위의 아래 끝에 있음을 확인한다. 배운 것은 없다. 같은 벡터 여섯 개가 세 자릿수를 넘나드는 loss를 냈다. $\tau$와 $N$ 없이 인용된 대조 loss는 비교 가능한 숫자가 아니고, $\tau$를 튜닝하는 논문의 loss 그래프도 마찬가지다.
+- **이미 풀어 놓은 배치에서 $\tau$를 낮추는 것은 확신을 사는 일일 뿐이다.** 정렬 열은 $\tau=2$의 $0.933538$에서 $\tau=1/100$의 $0.000001$까지 단조로 내려가고, 격자 탐색도 최소가 범위의 아래 끝에 있음을 확인한다. 배운 것은 없다. 같은 벡터 여섯 개가 여섯 자릿수를 넘나드는 loss를 냈다. $\tau$와 $N$ 없이 인용된 대조 loss는 비교 가능한 숫자가 아니고, $\tau$를 튜닝하는 논문의 loss 그래프도 마찬가지다.
 - **퍼짐은 행마다 다르고, 그것이 기하다.** $\tau=1/2$에서 $p_{11}=0.665241$인데 $p_{22}=0.468861$이다. 이미지 2는 캡션 1에서 $60^\circ$, 캡션 3에서는 $30^\circ$밖에 떨어져 있지 않아 진짜 어려운 negative를 가지고 있고 이미지 1은 그렇지 않다. 표의 모든 temperature에서 행 2가 가장 어려운 행이다. hard negative는 임베딩 기하의 성질이지 샘플링 코드의 성질이 아니다.
 - **한 쌍이 틀리면 loss는 $\tau$에 대해 단조가 아니고 내부 최소를 가진다.** 오른쪽 열은 $\tau=1/4$의 $0.527329$까지 내려갔다가 돌아서서 $\tau=1/100$에서 $2.463960$에 이른다. 정보가 없을 때의 $\log 3$보다 나쁘다. $\tau\in[0.01,3]$ 격자 탐색은 최소를 $\tau=0.1639$, $\mathcal L=0.507409$에 둔다. 날카롭게 하는 것은 모델이 믿는 것을 증폭하는 일이고, 최적점 아래에서는 실수를 증폭한다. 과제의 옛 정답에 있던 문장 — "맞을 때 더 자신 있지만 오류도 날카로워진다" — 의 전환점을 측정한 것이 이것이다.
-- **$\tau$가 충분히 크면 오류가 완전히 숨는다.** $\tau=2$에서 틀린 encoder는 $0.932611$로 맞는 encoder의 $0.933538$보다 근소하게 *낫다*. 두 곡선은 $\tau\approx1.6539$에서 교차한다. 그 위에서는 softmax가 너무 평평해 $30^\circ$의 인코딩 오류가 loss에 보이지 않는다. 학습 곡선을 encoder가 잘 작동한다는 증거로 쓸 때마다 기억할 일이다.
+- **$\tau$가 충분히 크면 오류가 완전히 숨는다.** $\tau=2$에서 틀린 encoder는 $0.932611$로 맞는 encoder의 $0.933538$보다 근소하게 *낫다*. 두 곡선은 $\tau\approx1.6542$에서 교차한다. 그 위에서는 softmax가 너무 평평해 $30^\circ$의 인코딩 오류가 loss에 보이지 않는다. 학습 곡선을 encoder가 잘 작동한다는 증거로 쓸 때마다 기억할 일이다.
 
 ### 스스로 점검 · Self-check
 

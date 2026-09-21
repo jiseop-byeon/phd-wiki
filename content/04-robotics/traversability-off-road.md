@@ -67,7 +67,7 @@ cell: that one is the rock and everything that follows turns on it.
 **Middle — the two slopes.** Draw a side view along the middle row: the three heights $0.06$, $0.10$,
 $0.14$ as dots over a ground axis, and a line through them — that is the central difference. Then
 draw the least-squares plane's trace through the same section as a second, steeper line, and mark the
-vertical gap at the rock's column. The two lines disagreeing by $7.8^\circ$ is the figure.
+vertical gap at the rock's column. The two lines disagreeing by $8.8^\circ$ in this section is the figure.
 
 **Right — the decision.** Three horizontal bars, one per normalized term $\theta/\theta_{\max}$,
 $\Delta h/h_{\max}$, $\sigma/\sigma_{\max}$, with a vertical line at $1$ marking the gate. Draw the
@@ -212,7 +212,7 @@ $\sum x_ih_i=0.2(0.16+0.14+0.32)-0.2(0.08+0.06+0.04)=0.088$ and
 $\sum y_ih_i=0.2(0.36)-0.2(0.44)=-0.016$. The slope is then
 $\arctan\sqrt{0.3667^2+0.0667^2}=\arctan 0.3727=20.44^\circ$.
 
-The two estimators disagree by $7.84^\circ$ on the same nine numbers, and the north–south gradient
+The two estimators disagree by $7.83^\circ$ on the same nine numbers, and the north–south gradient
 even changes sign, from $+0.10$ to $-0.0667$. Neither is wrong. The central difference never touched
 the corner cell, so it reports the ramp; the plane fit weights that corner as heavily as any other
 cell, so the rock reaches it and it reports a tilted compromise. **A paper reporting "slope
@@ -354,7 +354,7 @@ failure is a rollover rather than a delay, the second is the right objective.
 > vertical spacing puts consecutive rings on flat ground at $r = h/\tan\theta$. Two beams near
 > $\theta = 5.15°$ and $5.55°$ land at $1.8/\tan 5.15° = 20.0$ m and $1.8/\tan 5.55° = 18.5$ m —
 > a ring spacing of **1.4 m**. The same pair of beams near $\theta = 10.2°$ and $10.6°$ land at
-> 10.00 m and 9.62 m: **0.38 m**.
+> 10.00 m and 9.62 m: **0.39 m**.
 >
 > So a flat 0.3 m hazard — a rut or a hole — gets roughly one ring at 10 m and usually **none** at 20 m; ring spacing already exceeds 0.3 m beyond about 9 m. (A rock 0.3 m *tall* still catches about two returns on its face at 20 m: enough to detect, not to characterise.) It is not
 > that the geometry is noisy out there; there is almost no geometry out there.
@@ -458,7 +458,7 @@ includes construction machinery is the nearest existing bridge between this page
 > 3. **Interventions per kilometre**, plus the distance itself. Success rate on a fixed course conflates "drove it cleanly" with "drove it after three operator rescues", and the intervention count is the number that tracks deployability. *How Does It Feel?*'s headline is exactly this — an up-to-57% reduction in interventions — rather than a success percentage.
 > 4. A name collision. The DARPA programme is *Robotic Autonomy in Complex Environments with Resiliency*; a separate, unrelated paper uses RACER for an epistemic risk-sensitive RL method on a 1/10-scale rally car. Both are real; citing one for the other is a common error.
 > 5. **GOOSE-Ex**, because it is the only off-road perception dataset here containing a robotic excavator, and it was built for cross-embodiment generalization. What is still missing is everything about the machine's own state — no actuator, joint, hydraulic-pressure or force channel is released, which is the same gap [[06-research-practice/simulators-benchmarks-datasets|7. §8]] documents across the whole construction dataset landscape.
-> 6. Anything whose signature is a pairwise or diagonal height difference rather than a gradient: a boulder on a corner cell, a kerb, a narrow ditch that falls between the stencil's arms. The frozen patch is the minimal example — the corner rock moves the least-squares slope by $7.84^\circ$ and pushes the step height to $0.24$ m while leaving the central difference at exactly $12.60^\circ$. The fix is not a finer slope estimator; it is a separate step-height term, because no gradient of a fitted surface can express a quantity defined on pairs of cells.
+> 6. Anything whose signature is a pairwise or diagonal height difference rather than a gradient: a boulder on a corner cell, a kerb, a narrow ditch that falls between the stencil's arms. The frozen patch is the minimal example — the corner rock moves the least-squares slope by $7.83^\circ$ and pushes the step height to $0.24$ m while leaving the central difference at exactly $12.60^\circ$. The fix is not a finer slope estimator; it is a separate step-height term, because no gradient of a fitted surface can express a quantity defined on pairs of cells.
 
 **Worked: the three readings the homework asks.** Tall grass occupied in lidar is the canonical counterexample; BADGR or *How Does It Feel?* replaces the occupancy label with consequence. Interventions per kilometre beat 95% success. CVaR, not the mean, is the excavator-on-a-slope objective.
 
@@ -570,7 +570,7 @@ $c=0.20$ m를 표시하고, $+x$ 동쪽과 $+y$ 북쪽 화살표를 넣는다. �
 **가운데 — 두 개의 경사.** 가운데 행을 따라 옆에서 본 그림을 그린다. 높이 $0.06$, $0.10$, $0.14$를
 지면 축 위의 점 셋으로 찍고 그 점들을 지나는 선을 긋는다 — 그것이 중앙 차분이다. 그다음 같은
 단면을 지나는 최소제곱 평면의 자취를 더 가파른 두 번째 선으로 긋고, 바위가 있는 열에서 수직
-간격을 표시한다. 두 선이 $7.8^\circ$ 어긋난다는 것이 이 그림이다.
+간격을 표시한다. 두 선이 이 단면에서 $8.8^\circ$ 어긋난다는 것이 이 그림이다.
 
 **오른쪽 — 판정.** 정규화된 항 $\theta/\theta_{\max}$, $\Delta h/h_{\max}$, $\sigma/\sigma_{\max}$
 하나에 하나씩 수평 막대 셋을 그리고, $1$에 관문을 뜻하는 수직선을 긋는다. 같은 축 위에 Q용과
@@ -709,7 +709,7 @@ $\sum x_ih_i=0.2(0.16+0.14+0.32)-0.2(0.08+0.06+0.04)=0.088$,
 $\sum y_ih_i=0.2(0.36)-0.2(0.44)=-0.016$이다. 경사는 그러면
 $\arctan\sqrt{0.3667^2+0.0667^2}=\arctan 0.3727=20.44^\circ$다.
 
-두 추정기가 같은 아홉 개의 수에 대해 $7.84^\circ$ 어긋나고, 남북 기울기는 부호까지 $+0.10$에서
+두 추정기가 같은 아홉 개의 수에 대해 $7.83^\circ$ 어긋나고, 남북 기울기는 부호까지 $+0.10$에서
 $-0.0667$로 바뀐다. 어느 쪽도 틀리지 않았다. 중앙 차분은 모서리 셀을 건드린 적이 없으니 경사면을
 보고하고, 평면 적합은 그 모서리를 다른 셀과 똑같이 무겁게 세므로 바위에 닿고, 그래서 기울어진
 타협을 보고한다. **"경사 임계 $25^\circ$"라고 적은 논문은 이 둘 중 무엇에 임계를 걸었는지 아직 말하지
@@ -838,7 +838,7 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 > **기하학적 쪽이 원거리에서 바닥나는 이유.** 높이 1.8 m에 수직 간격 0.4°인 64빔 라이다는
 > 평지 위 연속한 링을 $r = h/\tan\theta$에 놓는다. $\theta = 5.15°$와 $5.55°$인 두 빔은
 > $1.8/\tan 5.15° = 20.0$ m와 $1.8/\tan 5.55° = 18.5$ m에 떨어진다 — 링 간격 **1.4 m**. 같은
-> 두 빔이 $\theta = 10.2°$와 $10.6°$일 때는 10.00 m와 9.62 m, 즉 **0.38 m**다.
+> 두 빔이 $\theta = 10.2°$와 $10.6°$일 때는 10.00 m와 9.62 m, 즉 **0.39 m**다.
 >
 > 그러므로 길이 0.3 m의 평평한 위험 — 바퀴 자국이나 구멍 — 은 10 m에서 링 하나에 겨우 걸치고 20 m에서는 대개 **하나도** 걸치지
 > 않는다. 링 간격은 약 9 m부터 이미 0.3 m를 넘는다. (높이 0.3 m인 바위라면 20 m에서도 앞면에 반사점이 두 개쯤 찍힌다: 검출은 되지만 특성을 파악할 만큼은 아니다.) 그곳의 기하가 잡음이 많은 것이 아니라, 그곳에는 기하가 거의 없다.
@@ -934,7 +934,7 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 > 3. **킬로미터당 개입 횟수**, 그리고 거리 그 자체. 고정 코스의 성공률은 "깨끗하게 주행했다"와 "조작자가 세 번 구해 준 뒤 주행했다"를 뭉뚱그리고, 배치 가능성을 추적하는 숫자는 개입 횟수다. *How Does It Feel?* 의 대표 수치가 성공률이 아니라 정확히 이것 — 개입 **최대** 57% 감소 — 이다.
 > 4. 이름 충돌이다. DARPA 프로그램은 *Robotic Autonomy in Complex Environments with Resiliency*이고, 별개의 무관한 논문이 1/10 스케일 랠리카의 epistemic risk-sensitive RL 방법에 RACER를 쓴다. 둘 다 실재하며, 하나를 다른 하나로 인용하는 것이 흔한 오류다.
 > 5. **GOOSE-Ex.** 여기서 로봇 굴착기를 담은 유일한 오프로드 인식 데이터셋이고 교차 embodiment 일반화를 위해 만들어졌기 때문이다. 여전히 없는 것은 기계 자신의 상태 전부다 — 액추에이터·관절·유압·힘 채널이 하나도 공개되지 않으며, 이는 [[06-research-practice/simulators-benchmarks-datasets|7. §8]]이 건설 데이터셋 전반에 대해 기록한 바로 그 공백이다.
-> 6. 기울기가 아니라 쌍이나 대각선의 높이 차로 나타나는 것 전부다. 모서리 셀 위의 바위, 연석, 스텐실의 팔 사이로 빠지는 좁은 도랑. 고정된 패치가 최소 사례다 — 모서리 바위가 최소제곱 경사를 $7.84^\circ$ 움직이고 단차 높이를 $0.24$ m로 밀어 올리면서도 중앙 차분은 정확히 $12.60^\circ$에 남겨 둔다. 해법은 더 정교한 경사 추정기가 아니라 별개의 단차 항이다. 셀 쌍 위에 정의된 양을 적합 곡면의 기울기가 표현할 방법은 없기 때문이다.
+> 6. 기울기가 아니라 쌍이나 대각선의 높이 차로 나타나는 것 전부다. 모서리 셀 위의 바위, 연석, 스텐실의 팔 사이로 빠지는 좁은 도랑. 고정된 패치가 최소 사례다 — 모서리 바위가 최소제곱 경사를 $7.83^\circ$ 움직이고 단차 높이를 $0.24$ m로 밀어 올리면서도 중앙 차분은 정확히 $12.60^\circ$에 남겨 둔다. 해법은 더 정교한 경사 추정기가 아니라 별개의 단차 항이다. 셀 쌍 위에 정의된 양을 적합 곡면의 기울기가 표현할 방법은 없기 때문이다.
 
 **Worked: 과제가 묻는 세 가지 읽기.** 라이다에서 점유로 찍히는 키 큰 풀이 대표 반례다. BADGR이나 *How Does It Feel?*은 점유 라벨을 결과(consequence)로 바꾼다. 킬로미터당 개입 횟수가 성공률 95%보다 나은 지표다. 경사면의 굴삭기가 목적함수로 삼아야 하는 것은 평균이 아니라 CVaR이다.
 

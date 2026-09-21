@@ -158,7 +158,7 @@ For a brushed DC motor,
 
 $$\tau_m=k_t i,\qquad V=Ri+L\dot i+k_e\omega.$$
 
-Current is the direct torque variable. PWM duty cycle approximately controls average terminal voltage; current still depends on resistance, inductance, back-EMF, switching, and load. Stall torque is a short-duration operating point, not a continuous-force rating. Thermal limits, saturation, torque ripple (torque that oscillates with rotor angle even at constant current), and amplifier current/voltage limits must be included in the force envelope.
+Current is the direct torque variable. PWM duty cycle approximately controls average terminal voltage; current still depends on resistance, inductance, back-EMF, switching, and load. Stall torque is a short-duration operating point, not a continuous-force rating. Thermal limits, saturation, torque ripple (torque that oscillates with rotor angle even at constant current), and amplifier current/voltage limits must be included in the force envelope. The same two equations, with the torque–speed line and the current and voltage limits, are worked on an arm joint in [[04-robotics/actuators-drives|10.5 Actuators & Drives §1–§3]].
 
 A transmission multiplies torque and reflected inertia approximately by $n$ and $n^2$, respectively. Gears can add backlash and friction; capstan drives (a cable wrapped around a small motor pulley and a larger output drum) can be low-backlash but require tension, alignment, and no-slip contact. High torque ratio can make a device strong yet heavy-feeling—bad for free-space transparency. That asymmetry between $n$ and $n^2$ is the single most consequential fact in haptic mechanism design, so both halves of it get a definition. The ratio is written $n$ here to keep it clear of the encoder's $N=1024$ counts/rev, which is an unrelated quantity that most textbooks unhelpfully give the same letter.
 
@@ -193,8 +193,8 @@ Quadrature encoders provide counts and direction; angle requires counts-per-revo
 > $$\hat x=\Delta x\left\lfloor\frac{x}{\Delta x}\right\rfloor,\qquad \Delta x=r_m\frac{2\pi}{N}$$
 >
 > where $x$ is true handle position, $\hat x$ the position the controller sees, $\lfloor\cdot\rfloor$ the floor, $\Delta x$ the encoder resolution below, $r_m$ the pulley radius and $N$ counts per revolution — so every force the device renders is a function of $\hat x$, never of $x$.
-> - **Example**: on P3, a handle drifting from $x=0.03000$ to $x=0.03006\,\mathrm{m}$ renders the *same* wall force the whole way, then jumps by $0.0245\,\mathrm{N}$ in one sample when the count changes.
-> - **Non-example**: treating that jump as additive white noise and low-pass filtering it. Because the staircase is a function of position, a slow approach produces a long run of identical readings followed by a step, which is a strongly correlated error, and filtering only delays the step. It is also why the finite-difference velocity estimate reads exactly zero at low speed ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]) rather than reading something small and noisy.
+> - **Example**: on P3, a handle drifting from $x=0.03003$ to $x=0.03006\,\mathrm{m}$ renders the *same* wall force the whole way, then jumps by $0.0245\,\mathrm{N}$ in one sample when the count changes.
+> - **Non-example**: treating that jump as additive white noise and low-pass filtering it. Because the staircase is a function of position, a slow approach produces a long run of identical readings followed by a step, which is a strongly correlated error, and filtering only delays the step. It is also why the finite-difference velocity estimate reads exactly zero at low speed ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]) rather than reading something small and noisy. The white-noise model becomes honest only when the position crosses many counts irregularly between samples, the condition [[04-robotics/sensor-models|3.2 Sensor Models & Noise §4]] states and checks.
 > - **Why it matters**: with Coulomb friction $f_c$ it imposes a stiffness ceiling $K\le 2f_c/\Delta x$ that is entirely separate from, and does not improve with, the sample rate — Abbott & Okamura's bound, taken in [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]].
 
 > **Encoder resolution, defined.** **Encoder resolution** $\Delta x$ is a *length*: the smallest change in handle position that changes the reported count. It is one number with units of metres at the handle, not a count and not a percentage. Three defining conditions. It is stated **at the point of interest** — an angular resolution at the motor is a different number from a linear resolution at the handle, related by the whole transmission. It is stated **after decode**, because quadrature multiplies a disc's line count by four and the two figures differ by that factor. And it is a **floor, not an accuracy**: eccentricity, cable stretch and calibration error all add on top of it, so the true error is never smaller than $\Delta x$ and is usually larger.
@@ -382,7 +382,7 @@ $$\tau=J^\top F=\begin{bmatrix}0.2&0\\0.1&0.15\end{bmatrix}\begin{bmatrix}5\\-2\
 
 $$\tau_m=k_t i,\qquad V=Ri+L\dot i+k_e\omega.$$
 
-전류가 직접적인 토크 변수다. PWM duty는 평균 단자 전압을 근사적으로 제어할 뿐이고, 전류는 여전히 저항·인덕턴스·역기전력·스위칭·부하에 달려 있다. Stall torque는 짧은 시간의 동작점이지 연속 힘 정격이 아니다. 열 한계·포화·torque ripple(전류가 일정해도 회전자 각도에 따라 출렁이는 토크)·증폭기의 전류/전압 한계를 힘 범위 안에 포함해야 한다.
+전류가 직접적인 토크 변수다. PWM duty는 평균 단자 전압을 근사적으로 제어할 뿐이고, 전류는 여전히 저항·인덕턴스·역기전력·스위칭·부하에 달려 있다. Stall torque는 짧은 시간의 동작점이지 연속 힘 정격이 아니다. 열 한계·포화·torque ripple(전류가 일정해도 회전자 각도에 따라 출렁이는 토크)·증폭기의 전류/전압 한계를 힘 범위 안에 포함해야 한다. 같은 두 방정식을 토크–속도 선, 전류·전압 한계와 함께 팔 관절 위에서 푼 것이 [[04-robotics/actuators-drives|10.5 액추에이터·구동계 §1–§3]]이다.
 
 전달장치는 토크를 대략 $n$배, 반사 관성을 대략 $n^2$배로 만든다. 기어는 backlash와 마찰을 더할 수 있고, capstan(작은 모터 풀리와 큰 출력 드럼에 케이블을 감은 전달장치)은 backlash가 작지만 장력·정렬·미끄럼 없는 접촉을 요구한다. 큰 감속비는 장치를 강하지만 무겁게 느껴지게 만들며, 이는 자유공간 투명성에 나쁘다. $n$과 $n^2$의 이 비대칭이 햅틱 메커니즘 설계에서 결과가 가장 큰 사실 하나이므로 양쪽 모두에 정의를 준다. 비를 $n$으로 적는 것은 엔코더의 $N=1024$ counts/rev와 구별하기 위해서다. 둘은 전혀 다른 양인데 대부분의 교과서가 같은 글자를 쓴다.
 
@@ -417,8 +417,8 @@ Quadrature encoder는 count와 방향을 준다. 각도를 얻으려면 회전�
 > $$\hat x=\Delta x\left\lfloor\frac{x}{\Delta x}\right\rfloor,\qquad \Delta x=r_m\frac{2\pi}{N}$$
 >
 > $x$는 참 핸들 위치, $\hat x$는 제어기가 보는 위치, $\lfloor\cdot\rfloor$는 바닥 함수, $\Delta x$는 아래의 엔코더 해상도, $r_m$은 풀리 반지름, $N$은 회전당 카운트다. 그러므로 장치가 렌더링하는 모든 힘은 $x$가 아니라 $\hat x$의 함수다.
-> - **예**: P3에서 핸들이 $x=0.03000$에서 $x=0.03006\,\mathrm{m}$까지 흘러가는 동안 벽 힘은 *그대로*이고, 카운트가 바뀌는 샘플에서 $0.0245\,\mathrm{N}$만큼 한 번에 뛴다.
-> - **비예**: 그 도약을 가산 백색 잡음으로 보고 저역통과로 거르는 것. 계단이 위치의 함수이므로 천천히 다가가면 같은 값이 길게 이어지다가 계단이 오고, 이는 강하게 상관된 오차라 필터는 계단을 늦출 뿐이다. 저속에서 차분 속도 추정이 정확히 0을 읽는 이유도 같다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]). 작고 시끄러운 값이 아니라 0이다.
+> - **예**: P3에서 핸들이 $x=0.03003$에서 $x=0.03006\,\mathrm{m}$까지 흘러가는 동안 벽 힘은 *그대로*이고, 카운트가 바뀌는 샘플에서 $0.0245\,\mathrm{N}$만큼 한 번에 뛴다.
+> - **비예**: 그 도약을 가산 백색 잡음으로 보고 저역통과로 거르는 것. 계단이 위치의 함수이므로 천천히 다가가면 같은 값이 길게 이어지다가 계단이 오고, 이는 강하게 상관된 오차라 필터는 계단을 늦출 뿐이다. 저속에서 차분 속도 추정이 정확히 0을 읽는 이유도 같다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]). 작고 시끄러운 값이 아니라 0이다. 백색 잡음 모델이 정직해지는 것은 위치가 샘플 사이에 여러 카운트를 불규칙하게 가로지를 때뿐이고, 그 조건은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §4]]가 말하고 확인한다.
 > - **왜 중요한가**: Coulomb 마찰 $f_c$와 함께 $K\le 2f_c/\Delta x$라는 강성 천장을 만드는데, 이 천장은 샘플 주기와 완전히 무관하고 주기를 줄여도 올라가지 않는다. Abbott & Okamura의 경계이고 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]이 다룬다.
 
 > **엔코더 해상도의 정의.** **엔코더 해상도** $\Delta x$는 *길이*다. 보고되는 카운트를 바꾸는 가장 작은 핸들 위치 변화이고, 핸들에서 미터 단위를 갖는 숫자 하나다. 카운트도 아니고 백분율도 아니다. 정의 조건 셋. **관심 지점에서** 말해야 한다. 모터에서의 각 해상도와 핸들에서의 길이 해상도는 전달장치 전체를 사이에 둔 다른 숫자다. **디코드 후**로 말해야 한다. 쿼드러처가 디스크의 선 수를 네 배로 만들므로 두 값이 그 배수만큼 다르다. 그리고 **정확도가 아니라 바닥**이다. 편심, 케이블 신장, 보정 오차가 그 위에 더해지므로 실제 오차는 $\Delta x$보다 작아지는 일이 없고 보통은 더 크다.

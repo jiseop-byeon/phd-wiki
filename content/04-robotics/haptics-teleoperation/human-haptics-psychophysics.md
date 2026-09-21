@@ -100,6 +100,79 @@ This is a model, not a universal law of sensory dominance. Reliability, temporal
 
 One figure, two panels. The problem set asks for the same figure drawn from a different table, so draw it once here properly.
 
+<svg viewBox="0 0 560 486" style="max-width:100%;height:auto" role="img" aria-label="Panel A traces the stimulus from commanded force through the P3 handle and the hand to the response, with the 1 s, 0.5 s, 1 s trial timeline and the decision criterion living only in the response, and panel B joins the six frozen proportions with straight segments and drops the 0.25, 0.50 and 0.75 crossings to x25 = 4.65, PSE = 5.0429 and x75 = 5.4714 N, with a 2 JND brace of 0.8214 N and the reference 5.00 N marked 43 mN left of the PSE.">
+  <text x="10" y="18" font-size="12.5" fill="currentColor">A · where the stimulus comes from</text>
+  <rect x="8" y="30" width="92" height="58" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="54" y="55.8">commanded</text><text x="54" y="70.2">force F<tspan font-size="11" dy="3">c</tspan></text></g>
+  <line x1="103" y1="59" x2="110.5" y2="59" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="117,59 110,62.4 110,55.6" fill="currentColor"/>
+  <rect x="120" y="30" width="124" height="58" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="182" y="48.5">P3 handle</text><text x="182" y="63">m = 0.04 kg</text><text x="182" y="77.5">b = 0.8 N·s/m</text></g>
+  <line x1="247" y1="59" x2="254.5" y2="59" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="261,59 254,62.4 254,55.6" fill="currentColor"/>
+  <rect x="264" y="30" width="124" height="58" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="326" y="48.5">hand</text><text x="326" y="63">k<tspan font-size="11" dy="3">h</tspan><tspan dy="-3" dx="4">= 400 N/m</tspan></text><text x="326" y="77.5">b<tspan font-size="11" dy="3">h</tspan><tspan dy="-3" dx="4">= 8 N·s/m</tspan></text></g>
+  <line x1="391" y1="59" x2="398.5" y2="59" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="405,59 398,62.4 398,55.6" fill="currentColor"/>
+  <rect x="408" y="30" width="144" height="58" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="480" y="48.5">response:</text><text x="480" y="63">which interval</text><text x="480" y="77.5">pushed harder?</text><text x="254" y="51">+x</text></g>
+  <text x="18" y="104" font-size="11" fill="currentColor" opacity="0.8">one trial</text>
+  <rect x="18" y="110" width="110" height="18" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <rect x="128" y="110" width="55" height="18" fill="none" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <rect x="183" y="110" width="110" height="18" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="73" y="123">F<tspan font-size="11" dy="3">ref</tspan><tspan dy="-3" dx="4">= 5.00 N</tspan></text><text x="238" y="123">F<tspan font-size="11" dy="3">c</tspan></text></g>
+  <line x1="295" y1="119" x2="305.5" y2="119" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="311,119 305,122 305,116" fill="currentColor"/>
+  <text x="315" y="123" font-size="11.5" fill="currentColor">respond</text>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8"><text x="73" y="143">1 s</text><text x="155.5" y="143">0.5 s</text><text x="238" y="143">1 s</text></g>
+  <line x1="480" y1="90" x2="480" y2="97" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="414" y="110" font-size="11" fill="currentColor">not in the chain:</text>
+  <g font-size="11" fill="currentColor" opacity="0.9"><text x="414" y="124">the decision criterion.</text><text x="414" y="138">It lives only in this</text><text x="414" y="152">box, so a threshold</text><text x="414" y="166">needs a stated p.</text></g>
+  <line x1="8" y1="172" x2="552" y2="172" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="3 4"/>
+  <text x="10" y="196" font-size="12.5" fill="currentColor">B · the curve: proportion judged stronger against comparison force</text>
+  <g stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"><line x1="66" y1="402" x2="536" y2="402"/><line x1="66" y1="402" x2="66" y2="222"/><line x1="62" y1="402" x2="66" y2="402"/></g>
+  <text x="59" y="406" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0</text>
+  <line x1="62" y1="357" x2="66" y2="357" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="59" y="361" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0.25</text>
+  <line x1="62" y1="312" x2="66" y2="312" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="59" y="316" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0.50</text>
+  <line x1="62" y1="267" x2="66" y2="267" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="59" y="271" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0.75</text>
+  <line x1="62" y1="222" x2="66" y2="222" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="59" y="226" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">1</text>
+  <text x="59" y="212" font-size="12" fill="currentColor" text-anchor="end" opacity="0.9">p</text>
+  <line x1="93.6" y1="402" x2="93.6" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="93.6" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">4.4</text>
+  <line x1="176.6" y1="402" x2="176.6" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="176.6" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">4.7</text>
+  <line x1="259.5" y1="402" x2="259.5" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="259.5" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">5.0</text>
+  <line x1="342.5" y1="402" x2="342.5" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="342.5" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">5.3</text>
+  <line x1="425.4" y1="402" x2="425.4" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="425.4" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">5.6</text>
+  <line x1="508.4" y1="402" x2="508.4" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="508.4" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">5.9</text>
+  <text x="548" y="435" font-size="12" fill="currentColor" text-anchor="end" opacity="0.85">F<tspan font-size="11" dy="3">c</tspan><tspan dy="-3" dx="4.2">(N)</tspan></text>
+  <line x1="259.5" y1="222" x2="259.5" y2="394" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75" stroke-dasharray="1.5 2.5"/>
+  <polygon points="259.5,393.0 254.5,402.0 264.5,402.0" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="259.5" y="216" font-size="12" fill="currentColor" text-anchor="middle">F<tspan font-size="11" dy="3">ref</tspan><tspan dy="-3" dx="4.2">= 5.00 N</tspan></text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="66" y1="357" x2="162.8" y2="357"/><line x1="162.8" y1="357" x2="162.8" y2="402"/></g>
+  <text x="162.8" y="435" font-size="12" fill="currentColor" text-anchor="middle">x<tspan font-size="11" dy="3">25</tspan><tspan dy="-3" dx="4.2">= 4.65</tspan></text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="66" y1="312" x2="271.4" y2="312"/><line x1="271.4" y1="312" x2="271.4" y2="402"/></g>
+  <text x="271.4" y="435" font-size="12" fill="currentColor" text-anchor="middle">PSE = 5.0429</text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="66" y1="267" x2="389.9" y2="267"/><line x1="389.9" y1="267" x2="389.9" y2="402"/></g>
+  <text x="389.9" y="435" font-size="12" fill="currentColor" text-anchor="middle">x<tspan font-size="11" dy="3">75</tspan><tspan dy="-3" dx="4.2">= 5.4714</tspan></text>
+  <polyline points="93.6,379.5 176.6,352.5 259.5,316.5 342.5,285 425.4,253.5 508.4,235.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/>
+  <g fill="currentColor"><circle cx="93.6" cy="379.5" r="4.2"/><circle cx="176.6" cy="352.5" r="4.2"/><circle cx="259.5" cy="316.5" r="4.2"/><circle cx="342.5" cy="285" r="4.2"/><circle cx="425.4" cy="253.5" r="4.2"/><circle cx="508.4" cy="235.5" r="4.2"/></g>
+  <g font-size="11" fill="currentColor" opacity="0.8"><text x="403.3" y="301.2">straight segments =</text><text x="403.3" y="315.2">linear interpolation</text><text x="403.3" y="329.2">(§6); nothing fitted</text></g>
+  <line x1="259.5" y1="388" x2="271.4" y2="388" stroke="currentColor" stroke-width="1.3"/>
+  <g stroke="currentColor" stroke-width="1.1"><line x1="259.5" y1="385" x2="259.5" y2="391"/><line x1="271.4" y1="385" x2="271.4" y2="391"/></g>
+  <text x="277.4" y="392" font-size="11.5" fill="currentColor">bias +43 mN</text>
+  <path d="M162.8 446.0 q0 6 6 6 L270.3 452.0 q6 0 6 6 q0 -6 6 -6 L383.9 452.0 q6 0 6 -6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <text x="276.3" y="473" font-size="12" fill="currentColor" text-anchor="middle">2 JND = 0.8214 N   (JND = 0.4107 N)</text>
+</svg>
+
 **Panel A — where the stimulus comes from.** A left-to-right chain of four boxes: `commanded force F_c` $\to$ `P3 handle: m = 0.04 kg, b = 0.8 N·s/m` $\to$ `hand: k_h = 400 N/m, b_h = 8 N·s/m` $\to$ `response: which interval pushed harder?`. Under the chain draw the trial as a timeline bar: 1 s at $F_{\text{ref}}$, a 0.5 s gap, 1 s at $F_c$, then the response. Mark $+x$ as the direction the handle pushes. Then write beside the last box the one quantity the chain does not carry: the participant's decision criterion, which exists only inside that box and is why a threshold needs a stated $p$.
 
 **Panel B — the curve.** Comparison force on the horizontal axis, 4.3 to 6.0 N; proportion judged stronger on the vertical, 0 to 1. Plot the six frozen points and join consecutive points with *straight segments*, not a smooth S-curve, because those segments are exactly the linear interpolation of §6 and the figure must show that no psychometric function has been fitted. Draw horizontal lines at $p=0.25$, $0.50$, $0.75$, drop a vertical from each crossing to the axis, and label the three feet $x_{25}$, PSE, $x_{75}$. Brace $x_{25}$ to $x_{75}$ and label the brace $2\,\mathrm{JND}$. Finally mark $F_{\text{ref}}=5.00\,\mathrm{N}$ with a differently styled tick, so that the gap between the reference and the PSE — the bias of Step 7 — is visible rather than asserted.
@@ -272,6 +345,79 @@ $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$
 ### 5. 과제가 그릴 그림
 
 그림 하나, 패널 둘. 과제는 다른 표로 같은 그림을 그리라고 하므로, 여기서 한 번 제대로 그려 둔다.
+
+<svg viewBox="0 0 560 486" style="max-width:100%;height:auto" role="img" aria-label="패널 A는 명령 힘에서 P3 핸들과 손을 거쳐 응답으로 가는 자극과 1초, 0.5초, 1초의 시행 타임라인, 응답 안에만 있는 결정 기준을 보이고, 패널 B는 얼어붙은 여섯 비율을 직선 구간으로 이어 0.25, 0.50, 0.75의 교차점을 x25 = 4.65, PSE = 5.0429, x75 = 5.4714 N으로 내리고 0.8214 N의 2 JND 괄호와 PSE보다 43 mN 왼쪽의 기준 힘 5.00 N을 표시한다.">
+  <text x="10" y="18" font-size="12.5" fill="currentColor">A · 자극이 어디서 오는가</text>
+  <rect x="8" y="30" width="92" height="58" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="54" y="55.8">명령 힘</text><text x="54" y="70.2">F<tspan font-size="11" dy="3">c</tspan></text></g>
+  <line x1="103" y1="59" x2="110.5" y2="59" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="117,59 110,62.4 110,55.6" fill="currentColor"/>
+  <rect x="120" y="30" width="124" height="58" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="182" y="48.5">P3 핸들</text><text x="182" y="63">m = 0.04 kg</text><text x="182" y="77.5">b = 0.8 N·s/m</text></g>
+  <line x1="247" y1="59" x2="254.5" y2="59" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="261,59 254,62.4 254,55.6" fill="currentColor"/>
+  <rect x="264" y="30" width="124" height="58" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="326" y="48.5">손</text><text x="326" y="63">k<tspan font-size="11" dy="3">h</tspan><tspan dy="-3" dx="4">= 400 N/m</tspan></text><text x="326" y="77.5">b<tspan font-size="11" dy="3">h</tspan><tspan dy="-3" dx="4">= 8 N·s/m</tspan></text></g>
+  <line x1="391" y1="59" x2="398.5" y2="59" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="405,59 398,62.4 398,55.6" fill="currentColor"/>
+  <rect x="408" y="30" width="144" height="58" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="480" y="48.5">응답:</text><text x="480" y="63">어느 구간이</text><text x="480" y="77.5">더 세게 밀었는가?</text><text x="254" y="51">+x</text></g>
+  <text x="18" y="104" font-size="11" fill="currentColor" opacity="0.8">시행 하나</text>
+  <rect x="18" y="110" width="110" height="18" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <rect x="128" y="110" width="55" height="18" fill="none" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <rect x="183" y="110" width="110" height="18" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="73" y="123">F<tspan font-size="11" dy="3">ref</tspan><tspan dy="-3" dx="4">= 5.00 N</tspan></text><text x="238" y="123">F<tspan font-size="11" dy="3">c</tspan></text></g>
+  <line x1="295" y1="119" x2="305.5" y2="119" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="311,119 305,122 305,116" fill="currentColor"/>
+  <text x="315" y="123" font-size="11.5" fill="currentColor">응답</text>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8"><text x="73" y="143">1 s</text><text x="155.5" y="143">0.5 s</text><text x="238" y="143">1 s</text></g>
+  <line x1="480" y1="90" x2="480" y2="97" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="414" y="110" font-size="11" fill="currentColor">사슬이 나르지 않는 양:</text>
+  <g font-size="11" fill="currentColor" opacity="0.9"><text x="414" y="124">참가자의 결정 기준.</text><text x="414" y="138">이 상자 안에만 있고,</text><text x="414" y="152">그래서 임계값에는</text><text x="414" y="166">p를 밝혀야 한다.</text></g>
+  <line x1="8" y1="172" x2="552" y2="172" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="3 4"/>
+  <text x="10" y="196" font-size="12.5" fill="currentColor">B · 곡선: 비교 힘에 대한 “더 세다” 판정 비율</text>
+  <g stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"><line x1="66" y1="402" x2="536" y2="402"/><line x1="66" y1="402" x2="66" y2="222"/><line x1="62" y1="402" x2="66" y2="402"/></g>
+  <text x="59" y="406" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0</text>
+  <line x1="62" y1="357" x2="66" y2="357" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="59" y="361" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0.25</text>
+  <line x1="62" y1="312" x2="66" y2="312" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="59" y="316" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0.50</text>
+  <line x1="62" y1="267" x2="66" y2="267" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="59" y="271" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0.75</text>
+  <line x1="62" y1="222" x2="66" y2="222" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="59" y="226" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">1</text>
+  <text x="59" y="212" font-size="12" fill="currentColor" text-anchor="end" opacity="0.9">p</text>
+  <line x1="93.6" y1="402" x2="93.6" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="93.6" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">4.4</text>
+  <line x1="176.6" y1="402" x2="176.6" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="176.6" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">4.7</text>
+  <line x1="259.5" y1="402" x2="259.5" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="259.5" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">5.0</text>
+  <line x1="342.5" y1="402" x2="342.5" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="342.5" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">5.3</text>
+  <line x1="425.4" y1="402" x2="425.4" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="425.4" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">5.6</text>
+  <line x1="508.4" y1="402" x2="508.4" y2="406" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="508.4" y="418" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">5.9</text>
+  <text x="548" y="435" font-size="12" fill="currentColor" text-anchor="end" opacity="0.85">F<tspan font-size="11" dy="3">c</tspan><tspan dy="-3" dx="4.2">(N)</tspan></text>
+  <line x1="259.5" y1="222" x2="259.5" y2="394" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75" stroke-dasharray="1.5 2.5"/>
+  <polygon points="259.5,393.0 254.5,402.0 264.5,402.0" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="259.5" y="216" font-size="12" fill="currentColor" text-anchor="middle">F<tspan font-size="11" dy="3">ref</tspan><tspan dy="-3" dx="4.2">= 5.00 N</tspan></text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="66" y1="357" x2="162.8" y2="357"/><line x1="162.8" y1="357" x2="162.8" y2="402"/></g>
+  <text x="162.8" y="435" font-size="12" fill="currentColor" text-anchor="middle">x<tspan font-size="11" dy="3">25</tspan><tspan dy="-3" dx="4.2">= 4.65</tspan></text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="66" y1="312" x2="271.4" y2="312"/><line x1="271.4" y1="312" x2="271.4" y2="402"/></g>
+  <text x="271.4" y="435" font-size="12" fill="currentColor" text-anchor="middle">PSE = 5.0429</text>
+  <g stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="5 3"><line x1="66" y1="267" x2="389.9" y2="267"/><line x1="389.9" y1="267" x2="389.9" y2="402"/></g>
+  <text x="389.9" y="435" font-size="12" fill="currentColor" text-anchor="middle">x<tspan font-size="11" dy="3">75</tspan><tspan dy="-3" dx="4.2">= 5.4714</tspan></text>
+  <polyline points="93.6,379.5 176.6,352.5 259.5,316.5 342.5,285 425.4,253.5 508.4,235.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/>
+  <g fill="currentColor"><circle cx="93.6" cy="379.5" r="4.2"/><circle cx="176.6" cy="352.5" r="4.2"/><circle cx="259.5" cy="316.5" r="4.2"/><circle cx="342.5" cy="285" r="4.2"/><circle cx="425.4" cy="253.5" r="4.2"/><circle cx="508.4" cy="235.5" r="4.2"/></g>
+  <g font-size="11" fill="currentColor" opacity="0.8"><text x="403.3" y="301.2">직선 구간 =</text><text x="403.3" y="315.2">§6의 선형 보간.</text><text x="403.3" y="329.2">적합한 곡선은 없다</text></g>
+  <line x1="259.5" y1="388" x2="271.4" y2="388" stroke="currentColor" stroke-width="1.3"/>
+  <g stroke="currentColor" stroke-width="1.1"><line x1="259.5" y1="385" x2="259.5" y2="391"/><line x1="271.4" y1="385" x2="271.4" y2="391"/></g>
+  <text x="277.4" y="392" font-size="11.5" fill="currentColor">편향 +43 mN</text>
+  <path d="M162.8 446.0 q0 6 6 6 L270.3 452.0 q6 0 6 6 q0 -6 6 -6 L383.9 452.0 q6 0 6 -6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <text x="276.3" y="473" font-size="12" fill="currentColor" text-anchor="middle">2 JND = 0.8214 N   (JND = 0.4107 N)</text>
+</svg>
 
 **패널 A — 자극이 어디서 오는가.** 왼쪽에서 오른쪽으로 상자 넷의 사슬: `명령 힘 F_c` $\to$ `P3 핸들: m = 0.04 kg, b = 0.8 N·s/m` $\to$ `손: k_h = 400 N/m, b_h = 8 N·s/m` $\to$ `응답: 어느 구간이 더 세게 밀었는가?`. 사슬 아래에 시행을 타임라인 막대로 그린다. $F_{\text{ref}}$로 1초, 0.5초 공백, $F_c$로 1초, 그다음 응답. 핸들이 미는 방향을 $+x$로 표시한다. 그리고 마지막 상자 옆에, 사슬이 나르지 *않는* 양 하나를 적는다. 참가자의 결정 기준이다. 그 상자 안에만 있고, 임계값에 $p$를 명시해야 하는 이유가 바로 그것이다.
 

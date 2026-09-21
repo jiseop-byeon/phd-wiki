@@ -14,12 +14,107 @@ mastery-when: "Go deeper when you are choosing delivery semantics, executor poli
 > **Working** — 두 클라이언트 라이브러리 모두에서 자기 pub–sub 노드를 쓰고 빌드하고 디버깅할 정도. 전달 보장이나 프로세스 내 zero-copy를 따질 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], meaning a working **ROS 2 Jazzy Jalisco on Ubuntu 24.04** install that you can source, and the graph-reading commands from its section 9. Python; enough C++ to read a class. Every command below assumes a sourced terminal. Building your own packages is covered properly in [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]] — this page uses the minimum of it and tells you which lines matter.
-> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 거기 9절의 그래프 읽기 명령들. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다. 패키지 빌드는 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에서 제대로 다루고, 이 페이지는 최소한만 쓰면서 어느 줄이 중요한지 짚는다.
+> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], meaning a working **ROS 2 Jazzy Jalisco on Ubuntu 24.04** install that you can source, and the graph-reading commands from its section 9. Python; enough C++ to read a class. Every command below assumes a sourced terminal.
+> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 거기 9절의 그래프 읽기 명령들. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다.
+
+*Comes after this page, not before it: building your own packages is taught properly in [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]], which assumes this page. Here you use the minimum of it, and each step says which lines matter.*
 
 ### Homework diagram: two P6 nodes, with every name resolved
 
 The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a cart on a line, encoder $N=2048$ counts/m, vision publishing a goal at $50\,\mathrm{Hz}$, a controller commanding the motor at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ of end-to-end budget. Both nodes are launched into the namespace `/cart`. Draw three panels; the problem set asks for the same three with the namespace changed.
+
+<svg viewBox="0 0 560 378" style="max-width:100%;height:auto" role="img" aria-label="Left: nodes camera and controller launched into /cart, with code names and resolved names, the topic goal resolving to /cart/goal, and a stray /goal stub on the controller. Right: inside the controller, on_goal at 50 Hz stores the goal and on_tick on a 5 ms timer reads the store and the encoder and publishes cmd. Bottom: goals at 0 and 20 ms, ticks every 5 ms, three ticks re-using one goal, encoder reads, and the 70 ms budget for scale.">
+  <defs><marker id="n2eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="n2esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">Names, as written and as resolved</text>
+  <ellipse cx="54" cy="84" rx="36" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="54" y="88" font-size="11" text-anchor="middle" fill-opacity="0.55" fill="currentColor">vision</text>
+  <text x="54" y="116" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">camera</text>
+  <text x="54" y="131" font-size="11" text-anchor="middle" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">/cart/camera</text>
+  <ellipse cx="222" cy="84" rx="42" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="222" y="88" font-size="11" text-anchor="middle" fill-opacity="0.55" fill="currentColor">control</text>
+  <text x="222" y="116" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">controller</text>
+  <text x="222" y="131" font-size="11" text-anchor="middle" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">/cart/controller</text>
+  <line x1="90" y1="84" x2="178" y2="84" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#n2eopen)"/>
+  <text x="135" y="78" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">goal</text>
+  <text x="135" y="99" font-size="11" text-anchor="middle" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">/cart/goal</text>
+  <line x1="276" y1="44" x2="241.7" y2="69" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#n2eopen)"/>
+  <text x="270" y="40" font-size="11" text-anchor="end" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <text x="12" y="166" font-size="11" fill-opacity="0.6" fill="currentColor">upper: the string in the code</text>
+  <text x="12" y="180" font-size="11" fill-opacity="0.6" fill="currentColor">lower: resolved under /cart</text>
+  <text x="12" y="196" font-size="11" fill-opacity="0.6" fill="currentColor"><tspan font-family="ui-monospace,monospace">/goal</tspan>: a second name, no publisher (§10)</text>
+  <text x="300" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">Inside controller: two callbacks</text>
+  <ellipse cx="438" cy="108" rx="112" ry="76" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8" fill="none"/>
+  <text x="438" y="52" font-size="11" text-anchor="middle" fill-opacity="0.6" font-family="ui-monospace,monospace" fill="currentColor">/cart/controller</text>
+  <rect x="352" y="66" width="74" height="22" rx="3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <text x="389" y="81" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">on_goal</text>
+  <rect x="446" y="66" width="70" height="22" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none"/>
+  <text x="481" y="81" font-size="11" text-anchor="middle" fill-opacity="0.85" fill="currentColor">goal store</text>
+  <line x1="426" y1="77" x2="444" y2="77" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" fill="none" marker-end="url(#n2esol)"/>
+  <line x1="292" y1="77" x2="350" y2="77" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#n2eopen)"/>
+  <text x="292" y="70" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">goal</text>
+  <text x="292" y="96" font-size="11" fill-opacity="0.9" fill="currentColor">50 Hz</text>
+  <rect x="352" y="122" width="90" height="22" rx="3" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.9" fill="none"/>
+  <circle cx="363" cy="133" r="6.5" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <line x1="363" y1="133" x2="363" y2="129" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <line x1="363" y1="133" x2="366.5" y2="133" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <text x="374" y="137" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">on_tick</text>
+  <text x="356" y="115" font-size="11" fill-opacity="0.9" fill="currentColor">200 Hz, 5 ms</text>
+  <line x1="470" y1="88" x2="438" y2="121" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" fill="none" marker-end="url(#n2esol)"/>
+  <text x="476" y="110" font-size="11" fill-opacity="0.75" font-style="italic" fill="currentColor">reads</text>
+  <line x1="382" y1="198" x2="382" y2="145" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="2 3" fill="none" marker-end="url(#n2esol)"/>
+  <text x="388" y="197" font-size="11" fill-opacity="0.8" fill="currentColor">encoder (outside the graph)</text>
+  <line x1="442" y1="133" x2="552" y2="133" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#n2eopen)"/>
+  <text x="500" y="128" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">cmd</text>
+  <text x="12" y="222" font-size="12" fill-opacity="0.8" fill="currentColor">Five lines of clock (ms)</text>
+  <text x="100" y="244" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">goal 50 Hz</text>
+  <text x="100" y="266" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">tick 200 Hz</text>
+  <text x="100" y="288" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">re-use</text>
+  <text x="100" y="308" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">encoder read</text>
+  <text x="100" y="330" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">budget</text>
+  <line x1="108" y1="240" x2="228" y2="240" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" fill="none"/>
+  <circle cx="108" cy="240" r="4.2" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="228" cy="240" r="4.2" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <line x1="108" y1="262" x2="228" y2="262" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" fill="none"/>
+  <path d="M108.0 256v12M138.0 256v12M168.0 256v12M198.0 256v12M228.0 256v12" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.9" fill="none"/>
+  <path d="M138.0 277V284H198.0V277" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85" fill="none"/>
+  <text x="208" y="288" font-size="11" fill-opacity="0.85" fill="currentColor">ticks 5, 10, 15 re-use the goal from 0</text>
+  <rect x="104.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <rect x="134.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <rect x="164.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <rect x="194.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <rect x="224.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <line x1="108" y1="326" x2="528" y2="326" stroke="currentColor" stroke-width="2.4" stroke-opacity="0.8" fill="none"/>
+  <line x1="108" y1="320" x2="108" y2="332" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8" fill="none"/>
+  <line x1="528" y1="320" x2="528" y2="332" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8" fill="none"/>
+  <text x="318" y="319" font-size="11" text-anchor="middle" fill-opacity="0.85" fill="currentColor">70 ms budget, for scale</text>
+  <line x1="108" y1="344" x2="528" y2="344" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+  <line x1="108" y1="344" x2="108" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="138" y1="344" x2="138" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="168" y1="344" x2="168" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="198" y1="344" x2="198" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="228" y1="344" x2="228" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="258" y1="344" x2="258" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="288" y1="344" x2="288" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="318" y1="344" x2="318" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="348" y1="344" x2="348" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="378" y1="344" x2="378" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="408" y1="344" x2="408" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="438" y1="344" x2="438" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="468" y1="344" x2="468" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="498" y1="344" x2="498" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="528" y1="344" x2="528" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <text x="108" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">0</text>
+  <text x="138" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">5</text>
+  <text x="168" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">10</text>
+  <text x="198" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">15</text>
+  <text x="228" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">20</text>
+  <text x="288" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">30</text>
+  <text x="348" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">40</text>
+  <text x="408" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">50</text>
+  <text x="468" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">60</text>
+  <text x="528" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">70</text>
+  <path d="M108.0 270V344M138.0 270V344M168.0 270V344M198.0 270V344M228.0 270V344" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.25" stroke-dasharray="1 3" fill="none"/>
+</svg>
 
 **Left — the two nodes, each labelled with both of its names.** Two ellipses. Under each, two lines: the name the code passes to `super().__init__` (`camera`, `controller`) and the fully resolved name after the launch namespace (`/cart/camera`, `/cart/controller`). Between them, one arrow for the topic, labelled twice in the same way: the string written in the code (`goal`) above the arrow and what section 3's table resolves it to (`/cart/goal`) below it. Then draw a *second* arrow stub leaving the controller, labelled `/goal`, with nothing on the other end. That is section 10's bug, and the point of drawing it is that it is a second name, not a broken arrow — nothing in the picture is red.
 
@@ -695,12 +790,107 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Vision publishes `/
 > **Working** — enough to write, build and debug your own pub–sub nodes in both client libraries, not to reason about delivery guarantees.
 
 > [!note] 선수 지식 · Prerequisites
-> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 그 9절의 그래프 읽기 명령들. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다. 패키지 빌드 자체는 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에서 다루고, 여기서는 최소한만 쓴다.
+> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 그 9절의 그래프 읽기 명령들. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다.
 > ROS 2 Jazzy on Ubuntu 24.04, the graph-reading commands from 25.1, Python, and enough C++ to read a class.
+
+*이 페이지보다 먼저가 아니라 뒤에 오는 페이지: 자기 패키지를 빌드하는 법은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에서 제대로 가르치고, 그 페이지가 이 페이지를 전제한다. 여기서는 최소한만 쓰고, 단계마다 어느 줄이 중요한지 짚는다.*
 
 ### 과제가 그릴 그림: P6 노드 둘, 모든 이름을 풀어서 · Homework diagram
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. 직선 위의 카트, 엔코더 $N=2048$ counts/m, 목표를 $50\,\mathrm{Hz}$로 내는 비전, 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 종단 예산 $70\,\mathrm{ms}$. 두 노드는 네임스페이스 `/cart`로 띄운다. 패널 셋을 그려라. 과제는 네임스페이스만 바꾼 같은 그림 셋을 요구한다.
+
+<svg viewBox="0 0 560 378" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: /cart로 띄운 camera와 controller 노드, 코드 이름과 풀린 이름, /cart/goal로 풀리는 토픽 goal, 그리고 controller에 붙은 /goal 토막. 오른쪽: controller 안에서 50 Hz on_goal은 목표를 저장하고, 5 ms 타이머의 on_tick은 저장소와 엔코더를 읽어 cmd를 낸다. 아래: 0과 20 ms의 목표, 5 ms마다의 틱, 목표 하나를 재사용하는 틱 셋, 엔코더 읽기, 축척용 70 ms 예산.">
+  <defs><marker id="n2kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="n2ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">이름: 코드에 쓴 것과 풀린 것</text>
+  <ellipse cx="54" cy="84" rx="36" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="54" y="88" font-size="11" text-anchor="middle" fill-opacity="0.55" fill="currentColor">비전</text>
+  <text x="54" y="116" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">camera</text>
+  <text x="54" y="131" font-size="11" text-anchor="middle" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">/cart/camera</text>
+  <ellipse cx="222" cy="84" rx="42" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="222" y="88" font-size="11" text-anchor="middle" fill-opacity="0.55" fill="currentColor">제어</text>
+  <text x="222" y="116" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">controller</text>
+  <text x="222" y="131" font-size="11" text-anchor="middle" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">/cart/controller</text>
+  <line x1="90" y1="84" x2="178" y2="84" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#n2kopen)"/>
+  <text x="135" y="78" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">goal</text>
+  <text x="135" y="99" font-size="11" text-anchor="middle" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">/cart/goal</text>
+  <line x1="276" y1="44" x2="241.7" y2="69" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#n2kopen)"/>
+  <text x="270" y="40" font-size="11" text-anchor="end" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <text x="12" y="166" font-size="11" fill-opacity="0.6" fill="currentColor">위: 코드에 쓴 문자열</text>
+  <text x="12" y="180" font-size="11" fill-opacity="0.6" fill="currentColor">아래: /cart에서 풀린 이름</text>
+  <text x="12" y="196" font-size="11" fill-opacity="0.6" fill="currentColor"><tspan font-family="ui-monospace,monospace">/goal</tspan>: 두 번째 이름, 퍼블리셔 없음 (10절)</text>
+  <text x="300" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">controller 안: 콜백 둘</text>
+  <ellipse cx="438" cy="108" rx="112" ry="76" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8" fill="none"/>
+  <text x="438" y="52" font-size="11" text-anchor="middle" fill-opacity="0.6" font-family="ui-monospace,monospace" fill="currentColor">/cart/controller</text>
+  <rect x="352" y="66" width="74" height="22" rx="3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <text x="389" y="81" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">on_goal</text>
+  <rect x="446" y="66" width="70" height="22" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none"/>
+  <text x="481" y="81" font-size="11" text-anchor="middle" fill-opacity="0.85" fill="currentColor">목표 저장</text>
+  <line x1="426" y1="77" x2="444" y2="77" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" fill="none" marker-end="url(#n2ksol)"/>
+  <line x1="292" y1="77" x2="350" y2="77" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#n2kopen)"/>
+  <text x="292" y="70" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">goal</text>
+  <text x="292" y="96" font-size="11" fill-opacity="0.9" fill="currentColor">50 Hz</text>
+  <rect x="352" y="122" width="90" height="22" rx="3" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.9" fill="none"/>
+  <circle cx="363" cy="133" r="6.5" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <line x1="363" y1="133" x2="363" y2="129" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <line x1="363" y1="133" x2="366.5" y2="133" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <text x="374" y="137" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">on_tick</text>
+  <text x="356" y="115" font-size="11" fill-opacity="0.9" fill="currentColor">200 Hz, 5 ms</text>
+  <line x1="470" y1="88" x2="438" y2="121" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" fill="none" marker-end="url(#n2ksol)"/>
+  <text x="476" y="110" font-size="11" fill-opacity="0.75" font-style="italic" fill="currentColor">읽음</text>
+  <line x1="382" y1="198" x2="382" y2="145" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="2 3" fill="none" marker-end="url(#n2ksol)"/>
+  <text x="388" y="197" font-size="11" fill-opacity="0.8" fill="currentColor">엔코더 (그래프 바깥)</text>
+  <line x1="442" y1="133" x2="552" y2="133" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#n2kopen)"/>
+  <text x="500" y="128" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">cmd</text>
+  <text x="12" y="222" font-size="12" fill-opacity="0.8" fill="currentColor">시계 다섯 줄 (ms)</text>
+  <text x="100" y="244" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">목표 50 Hz</text>
+  <text x="100" y="266" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">틱 200 Hz</text>
+  <text x="100" y="288" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">재사용</text>
+  <text x="100" y="308" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">엔코더 읽기</text>
+  <text x="100" y="330" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">예산</text>
+  <line x1="108" y1="240" x2="228" y2="240" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" fill="none"/>
+  <circle cx="108" cy="240" r="4.2" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="228" cy="240" r="4.2" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <line x1="108" y1="262" x2="228" y2="262" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" fill="none"/>
+  <path d="M108.0 256v12M138.0 256v12M168.0 256v12M198.0 256v12M228.0 256v12" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.9" fill="none"/>
+  <path d="M138.0 277V284H198.0V277" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85" fill="none"/>
+  <text x="208" y="288" font-size="11" fill-opacity="0.85" fill="currentColor">틱 5, 10, 15는 0의 목표를 재사용</text>
+  <rect x="104.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <rect x="134.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <rect x="164.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <rect x="194.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <rect x="224.5" y="300.5" width="7" height="7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none"/>
+  <line x1="108" y1="326" x2="528" y2="326" stroke="currentColor" stroke-width="2.4" stroke-opacity="0.8" fill="none"/>
+  <line x1="108" y1="320" x2="108" y2="332" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8" fill="none"/>
+  <line x1="528" y1="320" x2="528" y2="332" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8" fill="none"/>
+  <text x="318" y="319" font-size="11" text-anchor="middle" fill-opacity="0.85" fill="currentColor">70 ms 예산, 축척용</text>
+  <line x1="108" y1="344" x2="528" y2="344" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+  <line x1="108" y1="344" x2="108" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="138" y1="344" x2="138" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="168" y1="344" x2="168" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="198" y1="344" x2="198" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="228" y1="344" x2="228" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="258" y1="344" x2="258" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="288" y1="344" x2="288" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="318" y1="344" x2="318" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="348" y1="344" x2="348" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="378" y1="344" x2="378" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="408" y1="344" x2="408" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="438" y1="344" x2="438" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="468" y1="344" x2="468" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="498" y1="344" x2="498" y2="348" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="528" y1="344" x2="528" y2="350" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <text x="108" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">0</text>
+  <text x="138" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">5</text>
+  <text x="168" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">10</text>
+  <text x="198" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">15</text>
+  <text x="228" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">20</text>
+  <text x="288" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">30</text>
+  <text x="348" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">40</text>
+  <text x="408" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">50</text>
+  <text x="468" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">60</text>
+  <text x="528" y="362" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">70</text>
+  <path d="M108.0 270V344M138.0 270V344M168.0 270V344M198.0 270V344M228.0 270V344" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.25" stroke-dasharray="1 3" fill="none"/>
+</svg>
 
 **왼쪽 — 노드 둘, 각각 이름 두 개를 달아서**. 타원 둘. 각 타원 아래에 두 줄을 쓴다. 코드가 `super().__init__`에 넘기는 이름(`camera`, `controller`), 그리고 launch 네임스페이스를 거친 완전 이름(`/cart/camera`, `/cart/controller`). 둘 사이에 토픽 화살표 하나를 긋고 같은 방식으로 두 번 적는다. 화살표 위에는 코드에 쓰인 문자열(`goal`), 아래에는 3절의 표가 그것을 푸는 결과(`/cart/goal`). 그다음 제어기에서 나가는 *두 번째* 화살표 토막을 `/goal`이라고 적고 반대편은 비워 둔다. 10절의 버그이고, 그것을 그리는 이유는 그것이 끊어진 화살표가 아니라 두 번째 *이름*이기 때문이다. 그림 어디에도 빨간 표시는 없다.
 

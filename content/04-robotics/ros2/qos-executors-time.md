@@ -21,6 +21,113 @@ mastery-when: "Go deeper when you are doing response-time analysis of a control 
 
 The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: vision publishing `/goal` at $50\,\mathrm{Hz}$, a controller on a $5\,\mathrm{ms}$ timer commanding the motor at $200\,\mathrm{Hz}$, encoder $N=2048$ counts/m, and $70\,\mathrm{ms}$ from camera mid-exposure to applied force. Three panels; the problem set asks for the same three with the failure moved from the subscriber to the camera.
 
+<svg viewBox="0 0 560 566" style="max-width:100%;height:auto" role="img" aria-label="Top: the /goal edge from /camera to /controller with the offered and requested QoS profiles stacked on the arrow; only the reliability pair, best effort offered against reliable requested, is crossed. Middle: ten goals stamped 20 to 200 ms arrive during a 200 ms stall; a depth-5 window keeps the newest five, aged 80, 60, 40, 20 and 0 ms, and only the 80 ms one crosses the 70 ms budget line. Bottom: on a 0 to 200 ms clock, forty control firings that do not happen, ten vision publications on time, and the 40 ms deadline met at every bracket.">
+  <defs><marker id="q5eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="q5esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">One edge, both profiles, as ros2 topic info --verbose prints them</text>
+  <ellipse cx="54" cy="124" rx="42" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="54" y="128" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/camera</text>
+  <ellipse cx="500" cy="124" rx="52" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="500" y="128" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/controller</text>
+  <line x1="96" y1="124" x2="446" y2="124" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#q5eopen)"/>
+  <text x="124" y="118" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <rect x="150" y="32" width="206" height="84" rx="4" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75" fill="currentColor" fill-opacity="0.04"/>
+  <text x="159" y="47" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">offered by /camera</text>
+  <text x="159" y="62" font-size="11" fill-opacity="0.95" font-weight="bold" fill="currentColor">reliability</text>
+  <text x="238" y="62" font-size="11" font-family="ui-monospace,monospace" font-weight="bold" fill="currentColor">BEST_EFFORT</text>
+  <text x="159" y="75" font-size="11" fill-opacity="0.7" fill="currentColor">history</text>
+  <text x="238" y="75" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">KEEP_LAST (5)</text>
+  <text x="159" y="88" font-size="11" fill-opacity="0.7" fill="currentColor">durability</text>
+  <text x="238" y="88" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">VOLATILE</text>
+  <text x="159" y="101" font-size="11" fill-opacity="0.7" fill="currentColor">deadline</text>
+  <text x="238" y="101" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">40 ms</text>
+  <text x="159" y="114" font-size="11" fill-opacity="0.7" fill="currentColor">liveliness</text>
+  <text x="238" y="114" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">AUTOMATIC</text>
+  <rect x="150" y="132" width="206" height="84" rx="4" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75" fill="currentColor" fill-opacity="0.04"/>
+  <text x="159" y="147" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">requested by /controller</text>
+  <text x="159" y="162" font-size="11" fill-opacity="0.95" font-weight="bold" fill="currentColor">reliability</text>
+  <text x="238" y="162" font-size="11" font-family="ui-monospace,monospace" font-weight="bold" fill="currentColor">RELIABLE</text>
+  <text x="159" y="175" font-size="11" fill-opacity="0.7" fill="currentColor">history</text>
+  <text x="238" y="175" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">KEEP_LAST (10)</text>
+  <text x="159" y="188" font-size="11" fill-opacity="0.7" fill="currentColor">durability</text>
+  <text x="238" y="188" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">VOLATILE</text>
+  <text x="159" y="201" font-size="11" fill-opacity="0.7" fill="currentColor">deadline</text>
+  <text x="238" y="201" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">40 ms</text>
+  <text x="159" y="214" font-size="11" fill-opacity="0.7" fill="currentColor">liveliness</text>
+  <text x="238" y="214" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">AUTOMATIC</text>
+  <line x1="364.5" y1="152.5" x2="375.5" y2="163.5" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none"/>
+  <line x1="364.5" y1="163.5" x2="375.5" y2="152.5" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none"/>
+  <path d="M358 58H370V149" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="2 2" fill="none"/>
+  <text x="382" y="156" font-size="11" fill-opacity="0.9" fill="currentColor">reliable requested,</text>
+  <text x="382" y="169" font-size="11" fill-opacity="0.9" fill="currentColor">best effort offered:</text>
+  <text x="382" y="182" font-size="11" fill-opacity="0.75" fill="currentColor">no connection, no error</text>
+  <text x="12" y="244" font-size="12" fill-opacity="0.8" fill="currentColor">The queue during a 200 ms stall, after the fix: subscriber KEEP_LAST (5)</text>
+  <rect x="26" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="48" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">20</text>
+  <rect x="76" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="98" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">40</text>
+  <rect x="126" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="148" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">60</text>
+  <rect x="176" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="198" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">80</text>
+  <rect x="226" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="248" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">100</text>
+  <rect x="276" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="298" y="286" font-size="11" text-anchor="middle" fill="currentColor">120</text>
+  <rect x="326" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="348" y="286" font-size="11" text-anchor="middle" fill="currentColor">140</text>
+  <rect x="376" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="398" y="286" font-size="11" text-anchor="middle" fill="currentColor">160</text>
+  <rect x="426" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="448" y="286" font-size="11" text-anchor="middle" fill="currentColor">180</text>
+  <rect x="476" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="498" y="286" font-size="11" text-anchor="middle" fill="currentColor">200</text>
+  <rect x="272" y="264" width="252" height="36" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.9" fill="none"/>
+  <text x="398" y="259" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">kept: the subscription's depth 5 (stamps in ms)</text>
+  <text x="26" y="259" font-size="11" fill-opacity="0.6" fill="currentColor">dropped silently (ages 100–180 ms)</text>
+  <line x1="266" y1="304" x2="30" y2="304" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" fill="none" marker-end="url(#q5esol)"/>
+  <text x="148" y="318" font-size="11" text-anchor="middle" fill-opacity="0.55" fill="currentColor">pushed out, oldest first</text>
+  <text x="298" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" font-weight="bold" fill="currentColor">80 ms</text>
+  <rect x="291" y="318" width="14" height="72" fill="currentColor" fill-opacity="0.45" stroke="none"/>
+  <rect x="291" y="318" width="14" height="72" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none"/>
+  <text x="348" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">60 ms</text>
+  <rect x="341" y="318" width="14" height="54" fill="currentColor" fill-opacity="0.22" stroke="none"/>
+  <rect x="341" y="318" width="14" height="54" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none"/>
+  <text x="398" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">40 ms</text>
+  <rect x="391" y="318" width="14" height="36" fill="currentColor" fill-opacity="0.22" stroke="none"/>
+  <rect x="391" y="318" width="14" height="36" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none"/>
+  <text x="448" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">20 ms</text>
+  <rect x="441" y="318" width="14" height="18" fill="currentColor" fill-opacity="0.22" stroke="none"/>
+  <rect x="441" y="318" width="14" height="18" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none"/>
+  <text x="498" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">0 ms</text>
+  <line x1="26" y1="381" x2="520" y2="381" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.9" stroke-dasharray="6 3" fill="none"/>
+  <text x="270" y="376" font-size="11" text-anchor="end" fill-opacity="0.9" fill="currentColor">70 ms budget</text>
+  <text x="298" y="404" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">↑ delivered first</text>
+  <text x="520" y="404" font-size="11" text-anchor="end" fill-opacity="0.6" fill="currentColor">age when the executor returns</text>
+  <text x="12" y="448" font-size="12" fill-opacity="0.8" fill="currentColor">The clock, 0 to 200 ms: the executor stalls, the camera does not</text>
+  <text x="30" y="468" font-size="11" fill-opacity="0.7" fill="currentColor">40 control firings (every 5 ms), none of them happen</text>
+  <path d="M42.5 487v-9M55.0 487v-9M67.5 487v-9M80.0 487v-9M92.5 487v-9M105.0 487v-9M117.5 487v-9M130.0 487v-9M142.5 487v-9M155.0 487v-9M167.5 487v-9M180.0 487v-9M192.5 487v-9M205.0 487v-9M217.5 487v-9M230.0 487v-9M242.5 487v-9M255.0 487v-9M267.5 487v-9M280.0 487v-9M292.5 487v-9M305.0 487v-9M317.5 487v-9M330.0 487v-9M342.5 487v-9M355.0 487v-9M367.5 487v-9M380.0 487v-9M392.5 487v-9M405.0 487v-9M417.5 487v-9M430.0 487v-9M442.5 487v-9M455.0 487v-9M467.5 487v-9M480.0 487v-9M492.5 487v-9M505.0 487v-9M517.5 487v-9M530.0 487v-9" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 2" fill="none"/>
+  <line x1="30" y1="488" x2="530" y2="488" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" fill="none"/>
+  <path d="M80.0 488v12M130.0 488v12M180.0 488v12M230.0 488v12M280.0 488v12M330.0 488v12M380.0 488v12M430.0 488v12M480.0 488v12M530.0 488v12" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.9" fill="none"/>
+  <path d="M31.5 505V510H128.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="80" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
+  <path d="M131.5 505V510H228.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="180" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
+  <path d="M231.5 505V510H328.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="280" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
+  <path d="M331.5 505V510H428.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="380" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
+  <path d="M431.5 505V510H528.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="480" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
+  <text x="30" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">0</text>
+  <text x="130" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">40</text>
+  <text x="230" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">80</text>
+  <text x="330" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">120</text>
+  <text x="430" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">160</text>
+  <text x="530" y="539" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">200 ms</text>
+  <text x="30" y="554" font-size="11" fill-opacity="0.75" fill="currentColor">10 vision publications (every 20 ms), all on time;</text>
+  <text x="530" y="554" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">requested deadline 40 ms: met at every bracket</text>
+</svg>
+
 **Left — the edge with both profiles written out, the way `ros2 topic info --verbose` prints them.** Two ellipses and one arrow, and on the arrow two stacked boxes rather than a label. The upper box is what the camera *offers*: `BEST_EFFORT`, `KEEP_LAST (5)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. The lower box is what the controller *requests*: `RELIABLE`, `KEEP_LAST (10)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. Rule each pair of lines against the tables in section 3, and put a cross on the reliability line only. One crossed line is the whole failure; the other four being fine is exactly why it is hard to see.
 
 **Middle — the queue, during a $200\,\mathrm{ms}$ stall of the controller's executor.** Draw this panel for the system *after* the left panel's cross is fixed, with the controller moved onto the sensor-data profile so that its subscription history is `KEEP_LAST (5)` — the depth that decides this is the subscriber's, not the publisher's. A row of ten boxes for the ten goals published while the executor is inside some other callback, stamped $20, 40, \ldots, 200\,\mathrm{ms}$. Above the row draw a window five boxes wide, pushed to the right end: those five are what the subscription retains, and the five that fall out of the left of the window are gone, silently. Under each surviving box write its age at the instant the executor returns, and draw the $70\,\mathrm{ms}$ budget as a horizontal line across the row so that the boxes past it are visibly on the wrong side of it.
@@ -535,6 +642,113 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm
 ### 과제가 그릴 그림: P6의 간선 하나, 프로파일 둘, 그리고 정지 동안의 큐 · Homework diagram
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. `/goal`을 $50\,\mathrm{Hz}$로 내는 비전, $5\,\mathrm{ms}$ 타이머로 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 엔코더 $N=2048$ counts/m, 카메라 노출 중간부터 힘까지 $70\,\mathrm{ms}$. 패널 셋을 그려라. 과제는 고장을 구독자에서 카메라로 옮긴 같은 셋을 요구한다.
+
+<svg viewBox="0 0 560 566" style="max-width:100%;height:auto" role="img" aria-label="위: /camera에서 /controller로 가는 /goal 간선 위에 제공 프로파일과 요청 프로파일을 위아래로 쌓았고, best effort 제공 대 reliable 요청인 reliability 짝에만 가위표가 있다. 가운데: 200 ms 정지 동안 20에서 200 ms 스탬프의 목표 열 개가 도착하고, 깊이 5의 창이 가장 새 다섯(나이 80, 60, 40, 20, 0 ms)을 남기며, 70 ms 예산선을 넘는 것은 80 ms 하나뿐이다. 아래: 0에서 200 ms 시계 위의 일어나지 않은 제어 발화 마흔 개, 제때 도착한 비전 발행 열 개, 모든 괄호에서 충족된 40 ms deadline.">
+  <defs><marker id="q5kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="q5ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">간선 하나, 프로파일 둘 (ros2 topic info --verbose가 찍는 그대로)</text>
+  <ellipse cx="54" cy="124" rx="42" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="54" y="128" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/camera</text>
+  <ellipse cx="500" cy="124" rx="52" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="500" y="128" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/controller</text>
+  <line x1="96" y1="124" x2="446" y2="124" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#q5kopen)"/>
+  <text x="124" y="118" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <rect x="150" y="32" width="206" height="84" rx="4" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75" fill="currentColor" fill-opacity="0.04"/>
+  <text x="159" y="47" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">/camera가 제공(offer)</text>
+  <text x="159" y="62" font-size="11" fill-opacity="0.95" font-weight="bold" fill="currentColor">reliability</text>
+  <text x="238" y="62" font-size="11" font-family="ui-monospace,monospace" font-weight="bold" fill="currentColor">BEST_EFFORT</text>
+  <text x="159" y="75" font-size="11" fill-opacity="0.7" fill="currentColor">history</text>
+  <text x="238" y="75" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">KEEP_LAST (5)</text>
+  <text x="159" y="88" font-size="11" fill-opacity="0.7" fill="currentColor">durability</text>
+  <text x="238" y="88" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">VOLATILE</text>
+  <text x="159" y="101" font-size="11" fill-opacity="0.7" fill="currentColor">deadline</text>
+  <text x="238" y="101" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">40 ms</text>
+  <text x="159" y="114" font-size="11" fill-opacity="0.7" fill="currentColor">liveliness</text>
+  <text x="238" y="114" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">AUTOMATIC</text>
+  <rect x="150" y="132" width="206" height="84" rx="4" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75" fill="currentColor" fill-opacity="0.04"/>
+  <text x="159" y="147" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">/controller가 요청(request)</text>
+  <text x="159" y="162" font-size="11" fill-opacity="0.95" font-weight="bold" fill="currentColor">reliability</text>
+  <text x="238" y="162" font-size="11" font-family="ui-monospace,monospace" font-weight="bold" fill="currentColor">RELIABLE</text>
+  <text x="159" y="175" font-size="11" fill-opacity="0.7" fill="currentColor">history</text>
+  <text x="238" y="175" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">KEEP_LAST (10)</text>
+  <text x="159" y="188" font-size="11" fill-opacity="0.7" fill="currentColor">durability</text>
+  <text x="238" y="188" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">VOLATILE</text>
+  <text x="159" y="201" font-size="11" fill-opacity="0.7" fill="currentColor">deadline</text>
+  <text x="238" y="201" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">40 ms</text>
+  <text x="159" y="214" font-size="11" fill-opacity="0.7" fill="currentColor">liveliness</text>
+  <text x="238" y="214" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">AUTOMATIC</text>
+  <line x1="364.5" y1="152.5" x2="375.5" y2="163.5" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none"/>
+  <line x1="364.5" y1="163.5" x2="375.5" y2="152.5" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none"/>
+  <path d="M358 58H370V149" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="2 2" fill="none"/>
+  <text x="382" y="156" font-size="11" fill-opacity="0.9" fill="currentColor">reliable 요청 대</text>
+  <text x="382" y="169" font-size="11" fill-opacity="0.9" fill="currentColor">best effort 제공:</text>
+  <text x="382" y="182" font-size="11" fill-opacity="0.75" fill="currentColor">연결 없음, 오류도 없음</text>
+  <text x="12" y="244" font-size="12" fill-opacity="0.8" fill="currentColor">200 ms 정지 동안의 큐, 고친 뒤: 구독자 KEEP_LAST (5)</text>
+  <rect x="26" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="48" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">20</text>
+  <rect x="76" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="98" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">40</text>
+  <rect x="126" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="148" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">60</text>
+  <rect x="176" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="198" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">80</text>
+  <rect x="226" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
+  <text x="248" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">100</text>
+  <rect x="276" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="298" y="286" font-size="11" text-anchor="middle" fill="currentColor">120</text>
+  <rect x="326" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="348" y="286" font-size="11" text-anchor="middle" fill="currentColor">140</text>
+  <rect x="376" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="398" y="286" font-size="11" text-anchor="middle" fill="currentColor">160</text>
+  <rect x="426" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="448" y="286" font-size="11" text-anchor="middle" fill="currentColor">180</text>
+  <rect x="476" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.1"/>
+  <text x="498" y="286" font-size="11" text-anchor="middle" fill="currentColor">200</text>
+  <rect x="272" y="264" width="252" height="36" rx="5" stroke="currentColor" stroke-width="2" stroke-opacity="0.9" fill="none"/>
+  <text x="398" y="259" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">남는 것: 구독의 깊이 5 (스탬프, ms)</text>
+  <text x="26" y="259" font-size="11" fill-opacity="0.6" fill="currentColor">조용히 버려짐 (나이 100–180 ms)</text>
+  <line x1="266" y1="304" x2="30" y2="304" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" fill="none" marker-end="url(#q5ksol)"/>
+  <text x="148" y="318" font-size="11" text-anchor="middle" fill-opacity="0.55" fill="currentColor">오래된 것부터 밀려남</text>
+  <text x="298" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" font-weight="bold" fill="currentColor">80 ms</text>
+  <rect x="291" y="318" width="14" height="72" fill="currentColor" fill-opacity="0.45" stroke="none"/>
+  <rect x="291" y="318" width="14" height="72" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none"/>
+  <text x="348" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">60 ms</text>
+  <rect x="341" y="318" width="14" height="54" fill="currentColor" fill-opacity="0.22" stroke="none"/>
+  <rect x="341" y="318" width="14" height="54" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none"/>
+  <text x="398" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">40 ms</text>
+  <rect x="391" y="318" width="14" height="36" fill="currentColor" fill-opacity="0.22" stroke="none"/>
+  <rect x="391" y="318" width="14" height="36" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none"/>
+  <text x="448" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">20 ms</text>
+  <rect x="441" y="318" width="14" height="18" fill="currentColor" fill-opacity="0.22" stroke="none"/>
+  <rect x="441" y="318" width="14" height="18" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none"/>
+  <text x="498" y="310" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">0 ms</text>
+  <line x1="26" y1="381" x2="520" y2="381" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.9" stroke-dasharray="6 3" fill="none"/>
+  <text x="270" y="376" font-size="11" text-anchor="end" fill-opacity="0.9" fill="currentColor">70 ms 예산</text>
+  <text x="298" y="404" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">↑ 먼저 전달됨</text>
+  <text x="520" y="404" font-size="11" text-anchor="end" fill-opacity="0.6" fill="currentColor">executor가 돌아온 순간의 나이</text>
+  <text x="12" y="448" font-size="12" fill-opacity="0.8" fill="currentColor">시계, 0에서 200 ms: 멈춘 것은 executor이고 카메라가 아니다</text>
+  <text x="30" y="468" font-size="11" fill-opacity="0.7" fill="currentColor">제어 발화 40개(5 ms마다), 하나도 일어나지 않음</text>
+  <path d="M42.5 487v-9M55.0 487v-9M67.5 487v-9M80.0 487v-9M92.5 487v-9M105.0 487v-9M117.5 487v-9M130.0 487v-9M142.5 487v-9M155.0 487v-9M167.5 487v-9M180.0 487v-9M192.5 487v-9M205.0 487v-9M217.5 487v-9M230.0 487v-9M242.5 487v-9M255.0 487v-9M267.5 487v-9M280.0 487v-9M292.5 487v-9M305.0 487v-9M317.5 487v-9M330.0 487v-9M342.5 487v-9M355.0 487v-9M367.5 487v-9M380.0 487v-9M392.5 487v-9M405.0 487v-9M417.5 487v-9M430.0 487v-9M442.5 487v-9M455.0 487v-9M467.5 487v-9M480.0 487v-9M492.5 487v-9M505.0 487v-9M517.5 487v-9M530.0 487v-9" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 2" fill="none"/>
+  <line x1="30" y1="488" x2="530" y2="488" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" fill="none"/>
+  <path d="M80.0 488v12M130.0 488v12M180.0 488v12M230.0 488v12M280.0 488v12M330.0 488v12M380.0 488v12M430.0 488v12M480.0 488v12M530.0 488v12" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.9" fill="none"/>
+  <path d="M31.5 505V510H128.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="80" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
+  <path d="M131.5 505V510H228.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="180" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
+  <path d="M231.5 505V510H328.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="280" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
+  <path d="M331.5 505V510H428.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="380" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
+  <path d="M431.5 505V510H528.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="480" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
+  <text x="30" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">0</text>
+  <text x="130" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">40</text>
+  <text x="230" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">80</text>
+  <text x="330" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">120</text>
+  <text x="430" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">160</text>
+  <text x="530" y="539" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">200 ms</text>
+  <text x="30" y="554" font-size="11" fill-opacity="0.75" fill="currentColor">비전 발행 10개(20 ms마다), 전부 제때;</text>
+  <text x="530" y="554" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">요청한 deadline 40 ms: 모든 괄호에서 충족</text>
+</svg>
 
 **왼쪽 — `ros2 topic info --verbose`가 찍는 그대로, 프로파일 둘을 다 적은 간선**. 타원 둘과 화살표 하나. 화살표 위에는 라벨이 아니라 상자 둘을 위아래로 놓는다. 위 상자는 카메라가 *제공(offer)* 하는 것: `BEST_EFFORT`, `KEEP_LAST (5)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. 아래 상자는 제어기가 *요청(request)* 하는 것: `RELIABLE`, `KEEP_LAST (10)`, `VOLATILE`, deadline `40 ms`, liveliness `AUTOMATIC`. 줄을 짝지어 3절의 표에 대보고, reliability 줄에만 가위표를 친다. 가위표 하나가 고장 전부이고, 나머지 넷이 멀쩡하다는 사실이 바로 이 고장이 잘 안 보이는 이유다.
 

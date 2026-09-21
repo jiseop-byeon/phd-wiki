@@ -36,6 +36,179 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]], recorded rather 
 
 One figure, two panels, and the problem set asks for the same figure with one topic's count wrong.
 
+<svg viewBox="0 0 560 556" style="max-width:100%;height:auto" role="img" aria-label="Panel A: live, a 50 Hz /goal publisher feeds the control node, which publishes /cmd at 200 Hz to the cart, and the rosbag2 recorder subscribes to both; replay, ros2 bag play with --clock feeds /goal to the same control node on use_sim_time, its /cmd goes into an assertion rather than a motor, and /clock reaches every node. Panel B: the expected counts 50 times 60 equals 3000 and 200 times 60 equals 12000, and a 100 ms window of the 60 s run showing four /cmd ticks per /goal with goal ages 0, 5, 10 and 15 ms, the default 25 ms --clock ticks and the 70 ms budget.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · the two lives of one stream</text>
+  <rect x="8" y="28" width="544" height="114" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35"/>
+  <rect x="8" y="150" width="544" height="116" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35"/>
+  <text x="16" y="44" font-size="12" fill="currentColor" font-weight="600">live</text>
+  <text x="16" y="166" font-size="12" fill="currentColor" font-weight="600">replay</text>
+  <rect x="20" y="54" width="132" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="86" y="70" font-size="11" fill="currentColor" text-anchor="middle">/goal publisher</text>
+  <text x="86" y="84" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">vision · 50 Hz</text>
+  <rect x="204" y="54" width="148" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="278" y="70" font-size="11" fill="currentColor" text-anchor="middle">control node</text>
+  <text x="278" y="84" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">publishes /cmd · 200 Hz</text>
+  <rect x="404" y="54" width="136" height="36" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="472" y="70" font-size="11" fill="currentColor" text-anchor="middle">P6 cart</text>
+  <text x="472" y="84" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">motor</text>
+  <line x1="152" y1="72" x2="197.5" y2="72" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="204,72 197,75.4 197,68.6" fill="currentColor"/>
+  <line x1="352" y1="72" x2="397.5" y2="72" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="404,72 397,75.4 397,68.6" fill="currentColor"/>
+  <text x="178" y="67" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">/goal</text>
+  <text x="378" y="67" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">/cmd</text>
+  <rect x="204" y="102" width="148" height="32" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="278" y="116" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">rosbag2 recorder</text>
+  <text x="278" y="130" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">a subscriber</text>
+  <circle cx="178" cy="72" r="2.6" fill="currentColor"/>
+  <polyline points="178,72 178,118" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="178" y1="118" x2="197.5" y2="118" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="204,118 197,121.4 197,114.6" fill="currentColor"/>
+  <circle cx="378" cy="72" r="2.6" fill="currentColor"/>
+  <polyline points="378,72 378,118" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="378" y1="118" x2="358.5" y2="118" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="352,118 359,114.6 359,121.4" fill="currentColor"/>
+  <rect x="20" y="176" width="132" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="86" y="192" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">ros2 bag play</text>
+  <text x="86" y="206" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">--clock</text>
+  <rect x="204" y="176" width="148" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="278" y="192" font-size="11" fill="currentColor" text-anchor="middle">control node</text>
+  <text x="278" y="206" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">use_sim_time: true</text>
+  <rect x="404" y="176" width="136" height="36" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="472" y="192" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">assertion</text>
+  <text x="472" y="206" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">messages, not the cart</text>
+  <line x1="152" y1="194" x2="197.5" y2="194" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="204,194 197,197.4 197,190.6" fill="currentColor"/>
+  <line x1="352" y1="194" x2="397.5" y2="194" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="404,194 397,197.4 397,190.6" fill="currentColor"/>
+  <text x="178" y="189" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">/goal</text>
+  <text x="378" y="189" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">/cmd</text>
+  <circle cx="86" cy="212" r="2.8" fill="currentColor"/>
+  <polyline points="86,212 86,242 472,242" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 3" stroke-linejoin="round"/>
+  <line x1="278" y1="242" x2="278" y2="218.5" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 3"/>
+  <polygon points="278,212 281.4,219 274.6,219" fill="currentColor"/>
+  <line x1="472" y1="242" x2="472" y2="218.5" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 3"/>
+  <polygon points="472,212 475.4,219 468.6,219" fill="currentColor"/>
+  <text x="94" y="257" font-size="11" fill="currentColor" font-weight="600">/clock</text>
+  <line x1="8" y1="276" x2="552" y2="276" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="294" font-size="12" fill="currentColor" font-weight="600">B · the ledger you expect before you open the bag</text>
+  <text x="12" y="318" font-size="11" fill="currentColor" font-weight="600">topic</text>
+  <text x="70" y="318" font-size="11" fill="currentColor" font-weight="600">expected count</text>
+  <line x1="8" y1="324" x2="236" y2="324" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="12" y="340" font-size="11" fill="currentColor">/goal</text>
+  <text x="70" y="340" font-size="11" fill="currentColor">50 × 60 = 3000</text>
+  <text x="12" y="358" font-size="11" fill="currentColor">/cmd</text>
+  <text x="70" y="358" font-size="11" fill="currentColor">200 × 60 = 12000</text>
+  <line x1="8" y1="366" x2="236" y2="366" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+  <text x="12" y="382" font-size="11" fill="currentColor" opacity="0.85">total</text>
+  <text x="70" y="382" font-size="11" fill="currentColor" opacity="0.85">15000, ratio 4:1</text>
+  <line x1="62" y1="306" x2="62" y2="388" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+  <line x1="272" y1="348" x2="540" y2="348" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="272" y1="344" x2="272" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="272" y="339" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="316.7" y1="344" x2="316.7" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="316.7" y="339" font-size="11" fill="currentColor" text-anchor="middle">10</text>
+  <line x1="361.3" y1="344" x2="361.3" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="361.3" y="339" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <line x1="406" y1="344" x2="406" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="406" y="339" font-size="11" fill="currentColor" text-anchor="middle">30</text>
+  <line x1="450.7" y1="344" x2="450.7" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="450.7" y="339" font-size="11" fill="currentColor" text-anchor="middle">40</text>
+  <line x1="495.3" y1="344" x2="495.3" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="495.3" y="339" font-size="11" fill="currentColor" text-anchor="middle">50</text>
+  <line x1="540" y1="344" x2="540" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="540" y="339" font-size="11" fill="currentColor" text-anchor="middle">60</text>
+  <text x="540" y="368" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0 to 60 s</text>
+  <rect x="403" y="341" width="6" height="14" fill="currentColor" fill-opacity="0.9"/>
+  <text x="406" y="322" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">one 100 ms window</text>
+  <polyline points="403,355 136,402" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="3 3" stroke-linejoin="round"/>
+  <polyline points="409,355 532,402" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="3 3" stroke-linejoin="round"/>
+  <rect x="130" y="402" width="408" height="144" rx="3" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45"/>
+  <text x="136" y="420" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">0</text>
+  <text x="155.8" y="420" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">5</text>
+  <text x="175.6" y="420" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">10</text>
+  <text x="195.4" y="420" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">15</text>
+  <text x="215.2" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">0</text>
+  <text x="235" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">5</text>
+  <text x="254.8" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">10</text>
+  <text x="274.6" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">15</text>
+  <text x="294.4" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">0</text>
+  <text x="314.2" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">5</text>
+  <text x="334" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">10</text>
+  <text x="353.8" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">15</text>
+  <text x="373.6" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">0</text>
+  <text x="393.4" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">5</text>
+  <text x="413.2" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">10</text>
+  <text x="433" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">15</text>
+  <text x="452.8" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">0</text>
+  <text x="472.6" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">5</text>
+  <text x="492.4" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">10</text>
+  <text x="512.2" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">15</text>
+  <line x1="136" y1="432" x2="136" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="155.8" y1="432" x2="155.8" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="175.6" y1="432" x2="175.6" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="195.4" y1="432" x2="195.4" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="215.2" y1="432" x2="215.2" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="235" y1="432" x2="235" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="254.8" y1="432" x2="254.8" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="274.6" y1="432" x2="274.6" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="294.4" y1="432" x2="294.4" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="314.2" y1="432" x2="314.2" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="334" y1="432" x2="334" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="353.8" y1="432" x2="353.8" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="373.6" y1="432" x2="373.6" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="393.4" y1="432" x2="393.4" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="413.2" y1="432" x2="413.2" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="433" y1="432" x2="433" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="452.8" y1="432" x2="452.8" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="472.6" y1="432" x2="472.6" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="492.4" y1="432" x2="492.4" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="512.2" y1="432" x2="512.2" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="532" y1="432" x2="532" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="136" y1="453" x2="136" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="136" y1="462" x2="215.2" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="215.2" y1="453" x2="215.2" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="215.2" y1="462" x2="294.4" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="294.4" y1="453" x2="294.4" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="294.4" y1="462" x2="373.6" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="373.6" y1="453" x2="373.6" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="373.6" y1="462" x2="452.8" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="452.8" y1="453" x2="452.8" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="452.8" y1="462" x2="532" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="532" y1="453" x2="532" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="136" y1="479" x2="136" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="132" y1="486" x2="140" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="235" y1="479" x2="235" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="231" y1="486" x2="239" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="334" y1="479" x2="334" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="330" y1="486" x2="338" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="433" y1="479" x2="433" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="429" y1="486" x2="437" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="532" y1="479" x2="532" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="528" y1="486" x2="536" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <polyline points="136,500 136,506 413.2,506 413.2,500" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+  <text x="419.2" y="510" font-size="11" fill="currentColor" font-weight="600">70 ms</text>
+  <text x="8" y="420" font-size="11" fill="currentColor" opacity="0.9">age of newest /goal</text>
+  <text x="8" y="442" font-size="11" fill="currentColor" opacity="0.9">/cmd · 5 ms</text>
+  <text x="8" y="466" font-size="11" fill="currentColor" opacity="0.9">/goal · 20 ms</text>
+  <text x="8" y="490" font-size="11" fill="currentColor" opacity="0.9">--clock · 25 ms</text>
+  <text x="8" y="510" font-size="11" fill="currentColor" opacity="0.9">P6 budget</text>
+  <line x1="136" y1="520" x2="532" y2="520" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="136" y1="520" x2="136" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="136" y="536" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="215.2" y1="520" x2="215.2" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="215.2" y="536" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <line x1="294.4" y1="520" x2="294.4" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="294.4" y="536" font-size="11" fill="currentColor" text-anchor="middle">40</text>
+  <line x1="373.6" y1="520" x2="373.6" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="373.6" y="536" font-size="11" fill="currentColor" text-anchor="middle">60</text>
+  <line x1="452.8" y1="520" x2="452.8" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="452.8" y="536" font-size="11" fill="currentColor" text-anchor="middle">80</text>
+  <line x1="532" y1="520" x2="532" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="532" y="536" font-size="11" fill="currentColor" text-anchor="middle">100</text>
+  <text x="8" y="528" font-size="11" fill="currentColor" opacity="0.8">ms into the window</text>
+</svg>
+
 **Panel A — the two lives of one stream.** Two horizontal bands, one above the other. The upper band is `live`: a `/goal` publisher at $50\,\mathrm{Hz}$, a control node, a `/cmd` publisher at $200\,\mathrm{Hz}$, and a `rosbag2` recorder subscribing to both. The lower band is `replay`: `ros2 bag play` publishing the same two topic names into the same control node, with a `/clock` arrow drawn to *every* node in the band. Three things the drawing must get right. The recorder is a **subscriber**, drawn with its arrows pointing into it, because a topic it names but nobody publishes yields a count of zero rather than an error. The `/clock` arrow must reach the node under test as well as the player, since §8's two failure modes are exactly the cases where one of the two halves is missing. And the replayed `/cmd` should be drawn entering a box labelled `assertion`, not a motor — the bag proves things about messages, never about the machine.
 
 **Panel B — the ledger you expect before you open the bag.** A two-column table drawn by hand, headed `topic` and `expected count`, with the arithmetic written out rather than the answers alone: $50\times60$ and $200\times60$. Under it, a number line of $0$ to $60\,\mathrm{s}$ with one $100\,\mathrm{ms}$ window blown up to the right, showing four `/cmd` ticks between two `/goal` ticks and the age of the newest `/goal` written above each one. Beside the blown-up window put P6's $70\,\mathrm{ms}$ bracket and the default `--clock` period of $25\,\mathrm{ms}$ as a second, coarser tick row, because the figure exists to show that the replay clock is itself a sampling rate.
@@ -68,7 +241,7 @@ which is five whole control periods of this cart, and $25/70=36\%$ of P6's entir
 
 $$186.6\times60 = 11.2\,\mathrm{GB},$$
 
-about $11\,600$ times the two topics you actually needed, because the bytes scale with pixels and not with the question. The disk fills, the recorder falls behind, and Step 2's missing $600$ messages are the ones that disappear. Recording less is not thrift; on this run it is the only way the control topic survives intact.
+about $11\,700$ times the two topics you actually needed, because the bytes scale with pixels and not with the question. The disk fills, the recorder falls behind, and Step 2's missing $600$ messages are the ones that disappear. Recording less is not thrift; on this run it is the only way the control topic survives intact.
 
 ### 1. Why this page exists
 
@@ -557,7 +730,7 @@ Tracing — instrumenting the middleware itself with LTTng to see callback-level
 ### Self-check
 
 1. Your node produces no output. You are certain the publisher is fine. Which check do you run first, and why not the one you think is the problem?
-2. `ros2 topic hz /scan` reports a healthy 30 Hz and `ros2 topic delay /scan` reports a delay growing by a second every second. What is happening, and why does `hz` not show it?
+2. `ros2 topic hz /scan` reports a healthy 30 Hz and `ros2 topic delay /scan` reports a delay growing by 0.5 s every second. What is happening, and why does `hz` not show it?
 3. Why is `ros2 bag record -a` a bad default for a research recording, beyond disk space?
 4. A bag replays with `--clock`, `ros2 bag info` shows thousands of messages, and your node produces nothing. Name the two usual causes and how you tell them apart.
 5. You replay the P6 bag with `ros2 bag play run --clock` and assert that each `/cmd` follows its `/goal` within $200\,\mathrm{ms}$. The test passes. What have you actually proved about P6's $70\,\mathrm{ms}$ budget, and what are the two separate reasons this test cannot see a budget failure?
@@ -574,13 +747,13 @@ Tracing — instrumenting the middleware itself with LTTng to see callback-level
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal` ($50\,\mathrm{Hz}$) and `/cmd` ($200\,\mathrm{Hz}$). Budget $70\,\mathrm{ms}$. No new simulator.
 
 1. **Draw.** Ordered checklist (environment → node list → topic hz → info `--verbose` → TF → `/clock`) on the P6 graph. Five-line timeline of a bag replay with `--clock`: first `/goal`, fourteen `/cmd` ticks, the $70\,\mathrm{ms}$ mark.
-2. **Derive.** (a) `ros2 topic hz /goal` is a healthy $50\,\mathrm{Hz}$; `delay` grows $1\,\mathrm{s}$ per second. What is happening, and why `hz` is blind. (b) A frame with delay $200\,\mathrm{ms}$ versus the $70\,\mathrm{ms}$ budget. (c) `record -a` on P6: besides disk, what happens to `/cmd` when the recorder cannot keep $200\,\mathrm{Hz}$?
+2. **Derive.** (a) `ros2 topic hz /goal` is a healthy $50\,\mathrm{Hz}$; `delay` grows $0.5\,\mathrm{s}$ per second. What is happening, and why `hz` is blind. (b) A frame with delay $200\,\mathrm{ms}$ versus the $70\,\mathrm{ms}$ budget. (c) `record -a` on P6: besides disk, what happens to `/cmd` when the recorder cannot keep $200\,\mathrm{Hz}$?
 3. **Interpret.** Replay with `--clock` shows thousands of messages; the controller emits nothing. Two causes, and the command that splits them. Which of the two also hides a budget failure?
 
 > [!tip]- Solutions
 > 1. Check 0 is the shell. Timeline in bag time, not wall time, if `--clock` and `use_sim_time` agree.
 > 2. (a) Upstream queue: arrivals stay $50\,\mathrm{Hz}$, each stamp older. `hz` is inter-arrival; `delay` is age. (b) $130\,\mathrm{ms}$ over budget — even a "healthy" hz is a late force. (c) Drops, no error; `ros2 bag info` Count on `/cmd` is short.
-> 3. Clock (`use_sim_time` / `/clock`) versus QoS. `ros2 topic info /goal --verbose` splits them (`hz` cannot see QoS). A compatible QoS pair with $200\,\mathrm{ms}$ delay is the budget failure: data flows and is already late.
+> 3. Clock (`use_sim_time` / `/clock`) versus QoS. `ros2 topic info /goal --verbose` splits them (`hz` cannot see QoS). The clock is the one that also hides a budget failure. With the QoS pair compatible the data flows, so a frame with $200\,\mathrm{ms}$ delay is already late, $130\,\mathrm{ms}$ over budget; and while the node's clock disagrees with `/clock`, no comparison of a stamp with `now()` can show it. A QoS mismatch passes no data at all, so it has no lateness to hide.
 
 ## 한국어
 
@@ -602,6 +775,179 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal
 ### 과제가 그릴 그림 · Homework diagram
 
 그림 하나, 패널 둘. 과제는 토픽 하나의 개수가 틀린 같은 그림을 요구한다.
+
+<svg viewBox="0 0 560 556" style="max-width:100%;height:auto" role="img" aria-label="패널 A: live에서는 50 Hz /goal 퍼블리셔가 제어 노드에 들어가고, 제어 노드가 200 Hz로 /cmd를 카트에 내며, rosbag2 레코더가 둘 다 구독한다. replay에서는 --clock을 단 ros2 bag play가 use_sim_time인 같은 제어 노드에 /goal을 넣고, 그 /cmd는 모터가 아니라 단언으로 들어가며, /clock은 모든 노드에 닿는다. 패널 B: 기대 개수 50 곱하기 60은 3000, 200 곱하기 60은 12000, 그리고 60 s 실행 중 100 ms 창 하나에서 /goal 하나당 /cmd 틱 넷과 목표 나이 0, 5, 10, 15 ms, 기본 25 ms --clock 틱, 70 ms 예산.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · 한 스트림의 두 인생</text>
+  <rect x="8" y="28" width="544" height="114" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35"/>
+  <rect x="8" y="150" width="544" height="116" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35"/>
+  <text x="16" y="44" font-size="12" fill="currentColor" font-weight="600">live</text>
+  <text x="16" y="166" font-size="12" fill="currentColor" font-weight="600">replay</text>
+  <rect x="20" y="54" width="132" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="86" y="70" font-size="11" fill="currentColor" text-anchor="middle">/goal 퍼블리셔</text>
+  <text x="86" y="84" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">비전 · 50 Hz</text>
+  <rect x="204" y="54" width="148" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="278" y="70" font-size="11" fill="currentColor" text-anchor="middle">제어 노드</text>
+  <text x="278" y="84" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">/cmd 발행 · 200 Hz</text>
+  <rect x="404" y="54" width="136" height="36" rx="3" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="472" y="70" font-size="11" fill="currentColor" text-anchor="middle">P6 카트</text>
+  <text x="472" y="84" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">모터</text>
+  <line x1="152" y1="72" x2="197.5" y2="72" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="204,72 197,75.4 197,68.6" fill="currentColor"/>
+  <line x1="352" y1="72" x2="397.5" y2="72" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="404,72 397,75.4 397,68.6" fill="currentColor"/>
+  <text x="178" y="67" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">/goal</text>
+  <text x="378" y="67" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">/cmd</text>
+  <rect x="204" y="102" width="148" height="32" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="278" y="116" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">rosbag2 레코더</text>
+  <text x="278" y="130" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">구독자</text>
+  <circle cx="178" cy="72" r="2.6" fill="currentColor"/>
+  <polyline points="178,72 178,118" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="178" y1="118" x2="197.5" y2="118" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="204,118 197,121.4 197,114.6" fill="currentColor"/>
+  <circle cx="378" cy="72" r="2.6" fill="currentColor"/>
+  <polyline points="378,72 378,118" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="378" y1="118" x2="358.5" y2="118" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="352,118 359,114.6 359,121.4" fill="currentColor"/>
+  <rect x="20" y="176" width="132" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="86" y="192" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">ros2 bag play</text>
+  <text x="86" y="206" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">--clock</text>
+  <rect x="204" y="176" width="148" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="278" y="192" font-size="11" fill="currentColor" text-anchor="middle">제어 노드</text>
+  <text x="278" y="206" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">use_sim_time: true</text>
+  <rect x="404" y="176" width="136" height="36" rx="3" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="472" y="192" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">단언</text>
+  <text x="472" y="206" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">카트가 아니라 메시지</text>
+  <line x1="152" y1="194" x2="197.5" y2="194" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="204,194 197,197.4 197,190.6" fill="currentColor"/>
+  <line x1="352" y1="194" x2="397.5" y2="194" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="404,194 397,197.4 397,190.6" fill="currentColor"/>
+  <text x="178" y="189" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">/goal</text>
+  <text x="378" y="189" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">/cmd</text>
+  <circle cx="86" cy="212" r="2.8" fill="currentColor"/>
+  <polyline points="86,212 86,242 472,242" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 3" stroke-linejoin="round"/>
+  <line x1="278" y1="242" x2="278" y2="218.5" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 3"/>
+  <polygon points="278,212 281.4,219 274.6,219" fill="currentColor"/>
+  <line x1="472" y1="242" x2="472" y2="218.5" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 3"/>
+  <polygon points="472,212 475.4,219 468.6,219" fill="currentColor"/>
+  <text x="94" y="257" font-size="11" fill="currentColor" font-weight="600">/clock</text>
+  <line x1="8" y1="276" x2="552" y2="276" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="294" font-size="12" fill="currentColor" font-weight="600">B · bag을 열기 전에 적어 두는 장부</text>
+  <text x="12" y="318" font-size="11" fill="currentColor" font-weight="600">토픽</text>
+  <text x="70" y="318" font-size="11" fill="currentColor" font-weight="600">기대 개수</text>
+  <line x1="8" y1="324" x2="236" y2="324" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="12" y="340" font-size="11" fill="currentColor">/goal</text>
+  <text x="70" y="340" font-size="11" fill="currentColor">50 × 60 = 3000</text>
+  <text x="12" y="358" font-size="11" fill="currentColor">/cmd</text>
+  <text x="70" y="358" font-size="11" fill="currentColor">200 × 60 = 12000</text>
+  <line x1="8" y1="366" x2="236" y2="366" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+  <text x="12" y="382" font-size="11" fill="currentColor" opacity="0.85">합계</text>
+  <text x="70" y="382" font-size="11" fill="currentColor" opacity="0.85">15000, 비 4:1</text>
+  <line x1="62" y1="306" x2="62" y2="388" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+  <line x1="272" y1="348" x2="540" y2="348" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="272" y1="344" x2="272" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="272" y="339" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="316.7" y1="344" x2="316.7" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="316.7" y="339" font-size="11" fill="currentColor" text-anchor="middle">10</text>
+  <line x1="361.3" y1="344" x2="361.3" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="361.3" y="339" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <line x1="406" y1="344" x2="406" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="406" y="339" font-size="11" fill="currentColor" text-anchor="middle">30</text>
+  <line x1="450.7" y1="344" x2="450.7" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="450.7" y="339" font-size="11" fill="currentColor" text-anchor="middle">40</text>
+  <line x1="495.3" y1="344" x2="495.3" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="495.3" y="339" font-size="11" fill="currentColor" text-anchor="middle">50</text>
+  <line x1="540" y1="344" x2="540" y2="352" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="540" y="339" font-size="11" fill="currentColor" text-anchor="middle">60</text>
+  <text x="540" y="368" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">0에서 60 s</text>
+  <rect x="403" y="341" width="6" height="14" fill="currentColor" fill-opacity="0.9"/>
+  <text x="406" y="322" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">100 ms 창 하나</text>
+  <polyline points="403,355 136,402" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="3 3" stroke-linejoin="round"/>
+  <polyline points="409,355 532,402" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="3 3" stroke-linejoin="round"/>
+  <rect x="130" y="402" width="408" height="144" rx="3" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45"/>
+  <text x="136" y="420" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">0</text>
+  <text x="155.8" y="420" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">5</text>
+  <text x="175.6" y="420" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">10</text>
+  <text x="195.4" y="420" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">15</text>
+  <text x="215.2" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">0</text>
+  <text x="235" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">5</text>
+  <text x="254.8" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">10</text>
+  <text x="274.6" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">15</text>
+  <text x="294.4" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">0</text>
+  <text x="314.2" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">5</text>
+  <text x="334" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">10</text>
+  <text x="353.8" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">15</text>
+  <text x="373.6" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">0</text>
+  <text x="393.4" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">5</text>
+  <text x="413.2" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">10</text>
+  <text x="433" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">15</text>
+  <text x="452.8" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">0</text>
+  <text x="472.6" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">5</text>
+  <text x="492.4" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">10</text>
+  <text x="512.2" y="420" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.55">15</text>
+  <line x1="136" y1="432" x2="136" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="155.8" y1="432" x2="155.8" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="175.6" y1="432" x2="175.6" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="195.4" y1="432" x2="195.4" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="215.2" y1="432" x2="215.2" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="235" y1="432" x2="235" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="254.8" y1="432" x2="254.8" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="274.6" y1="432" x2="274.6" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="294.4" y1="432" x2="294.4" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="314.2" y1="432" x2="314.2" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="334" y1="432" x2="334" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="353.8" y1="432" x2="353.8" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="373.6" y1="432" x2="373.6" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="393.4" y1="432" x2="393.4" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="413.2" y1="432" x2="413.2" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="433" y1="432" x2="433" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="452.8" y1="432" x2="452.8" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="472.6" y1="432" x2="472.6" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="492.4" y1="432" x2="492.4" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="512.2" y1="432" x2="512.2" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="532" y1="432" x2="532" y2="444" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="136" y1="453" x2="136" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="136" y1="462" x2="215.2" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="215.2" y1="453" x2="215.2" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="215.2" y1="462" x2="294.4" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="294.4" y1="453" x2="294.4" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="294.4" y1="462" x2="373.6" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="373.6" y1="453" x2="373.6" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="373.6" y1="462" x2="452.8" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="452.8" y1="453" x2="452.8" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="452.8" y1="462" x2="532" y2="462" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3"/>
+  <line x1="532" y1="453" x2="532" y2="471" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="136" y1="479" x2="136" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="132" y1="486" x2="140" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="235" y1="479" x2="235" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="231" y1="486" x2="239" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="334" y1="479" x2="334" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="330" y1="486" x2="338" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="433" y1="479" x2="433" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="429" y1="486" x2="437" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="532" y1="479" x2="532" y2="493" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <line x1="528" y1="486" x2="536" y2="486" stroke="currentColor" stroke-width="2.0" stroke-opacity="0.8"/>
+  <polyline points="136,500 136,506 413.2,506 413.2,500" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+  <text x="419.2" y="510" font-size="11" fill="currentColor" font-weight="600">70 ms</text>
+  <text x="8" y="420" font-size="11" fill="currentColor" opacity="0.9">가장 새 /goal의 나이</text>
+  <text x="8" y="442" font-size="11" fill="currentColor" opacity="0.9">/cmd · 5 ms</text>
+  <text x="8" y="466" font-size="11" fill="currentColor" opacity="0.9">/goal · 20 ms</text>
+  <text x="8" y="490" font-size="11" fill="currentColor" opacity="0.9">--clock · 25 ms</text>
+  <text x="8" y="510" font-size="11" fill="currentColor" opacity="0.9">P6 예산</text>
+  <line x1="136" y1="520" x2="532" y2="520" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="136" y1="520" x2="136" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="136" y="536" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="215.2" y1="520" x2="215.2" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="215.2" y="536" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <line x1="294.4" y1="520" x2="294.4" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="294.4" y="536" font-size="11" fill="currentColor" text-anchor="middle">40</text>
+  <line x1="373.6" y1="520" x2="373.6" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="373.6" y="536" font-size="11" fill="currentColor" text-anchor="middle">60</text>
+  <line x1="452.8" y1="520" x2="452.8" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="452.8" y="536" font-size="11" fill="currentColor" text-anchor="middle">80</text>
+  <line x1="532" y1="520" x2="532" y2="524" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="532" y="536" font-size="11" fill="currentColor" text-anchor="middle">100</text>
+  <text x="8" y="528" font-size="11" fill="currentColor" opacity="0.8">창 안의 ms</text>
+</svg>
 
 **패널 A — 한 스트림의 두 인생.** 가로 띠 둘을 위아래로 놓는다. 위 띠는 `live`다. $50\,\mathrm{Hz}$ `/goal` 퍼블리셔, 제어 노드, $200\,\mathrm{Hz}$ `/cmd` 퍼블리셔, 그리고 둘 다 구독하는 `rosbag2` 레코더. 아래 띠는 `replay`다. `ros2 bag play`가 같은 토픽 이름으로 같은 제어 노드에 발행하고, `/clock` 화살표가 그 띠의 *모든* 노드에 닿는다. 그림이 맞혀야 할 것이 셋이다. 레코더는 **구독자**이므로 화살표가 그쪽으로 들어가게 그린다. 이름만 대고 아무도 발행하지 않는 토픽은 오류가 아니라 개수 0을 낳기 때문이다. `/clock` 화살표는 플레이어뿐 아니라 시험 대상 노드에도 닿아야 한다. §8의 실패 모드 둘이 정확히 그 두 짝 중 하나가 빠진 경우이기 때문이다. 그리고 재생된 `/cmd`는 모터가 아니라 `단언`이라고 쓴 상자로 들어가게 그린다. bag은 메시지에 대해 증명하지 기계에 대해 증명하지 않는다.
 
@@ -635,7 +981,7 @@ $$\frac{1}{40}=25\,\mathrm{ms}$$
 
 $$186.6\times60 = 11.2\,\mathrm{GB}$$
 
-가 된다. 실제로 필요했던 두 토픽의 약 $11\,600$배다. 바이트는 질문이 아니라 픽셀에 비례하기 때문이다. 디스크가 차고, 레코더가 뒤처지고, Step 2의 사라진 $600$개가 바로 그때 사라진다. 적게 기록하는 것은 절약이 아니다. 이 실행에서는 제어 토픽이 온전히 살아남는 유일한 길이다.
+가 된다. 실제로 필요했던 두 토픽의 약 $11\,700$배다. 바이트는 질문이 아니라 픽셀에 비례하기 때문이다. 디스크가 차고, 레코더가 뒤처지고, Step 2의 사라진 $600$개가 바로 그때 사라진다. 적게 기록하는 것은 절약이 아니다. 이 실행에서는 제어 토픽이 온전히 살아남는 유일한 길이다.
 
 ### 1. 이 페이지가 존재하는 이유
 
@@ -687,7 +1033,7 @@ ros2 doctor --report-failed   # 실패한 점검만
 
 ```bash
 ros2 topic hz /scan              # 메시지 도착률, 윈도 평균
-ros2 topic hz /scan -w 1000      # 긴 윈도: 숫자의 흔들림이 줄어든다
+ros2 topic hz /scan -w 100       # 짧은 윈도(기본 10000): 더 빨리 반응하고 더 흔들린다
 ros2 topic hz /scan --wall-time
 ros2 topic bw /scan              # 초당 바이트 — 이 토픽이 네트워크를 채우는 원인인가
 ros2 topic delay /scan           # 도착 시점 기준 header 스탬프의 나이
@@ -1124,7 +1470,7 @@ ros2 param get /my_node use_sim_time      # 노드가 들어야 한다고 믿는
 ### 스스로 점검
 
 1. 노드가 출력을 내지 않는다. 퍼블리셔는 확실히 멀쩡하다. 무엇부터 점검하고, 왜 짐작한 지점부터 보지 않는가?
-2. `ros2 topic hz /scan`은 30 Hz로 멀쩡한데 `ros2 topic delay /scan`은 1초에 1초씩 늘어난다. 무슨 일이고, 왜 `hz`는 못 보는가?
+2. `ros2 topic hz /scan`은 30 Hz로 멀쩡한데 `ros2 topic delay /scan`은 1초에 0.5초씩 늘어난다. 무슨 일이고, 왜 `hz`는 못 보는가?
 3. 연구용 녹화에서 `ros2 bag record -a`가 나쁜 기본값인 이유를 디스크 용량 말고 대라.
 4. bag이 `--clock`으로 재생되고 `ros2 bag info`는 수천 개의 메시지를 보여 주는데 노드는 아무것도 내지 않는다. 흔한 원인 둘과 그것을 가르는 방법을 대라.
 5. P6 bag을 `ros2 bag play run --clock`으로 재생하고 각 `/cmd`가 자기 `/goal` 뒤 $200\,\mathrm{ms}$ 안에 온다고 단언한다. 테스트가 통과한다. P6의 $70\,\mathrm{ms}$ 예산에 대해 실제로 무엇을 증명했는가? 이 테스트가 예산 실패를 볼 수 없는 서로 다른 이유 둘은 무엇인가?
@@ -1141,10 +1487,10 @@ ros2 param get /my_node use_sim_time      # 노드가 들어야 한다고 믿는
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. `/goal`($50\,\mathrm{Hz}$)과 `/cmd`($200\,\mathrm{Hz}$)를 녹화했다. 예산 $70\,\mathrm{ms}$. 시뮬레이터를 새로 만들지 마라.
 
 1. **그리기.** P6 그래프 위의 순서 있는 점검(환경 → node list → topic hz → info `--verbose` → TF → `/clock`). `--clock` bag 재생의 다섯 줄 타임라인: 첫 `/goal`, `/cmd` 틱 열넷, $70\,\mathrm{ms}$ 표시.
-2. **유도.** (a) `ros2 topic hz /goal`은 $50\,\mathrm{Hz}$로 멀쩡하고 `delay`는 1초마다 $1\,\mathrm{s}$씩 는다. 무슨 일이고, 왜 `hz`는 못 보는가. (b) 지연 $200\,\mathrm{ms}$인 프레임 대 $70\,\mathrm{ms}$ 예산. (c) P6에서 `record -a`: 디스크 말고, 기록기가 $200\,\mathrm{Hz}$를 못 따라가면 `/cmd`에 무슨 일이 있는가?
+2. **유도.** (a) `ros2 topic hz /goal`은 $50\,\mathrm{Hz}$로 멀쩡하고 `delay`는 1초마다 $0.5\,\mathrm{s}$씩 는다. 무슨 일이고, 왜 `hz`는 못 보는가. (b) 지연 $200\,\mathrm{ms}$인 프레임 대 $70\,\mathrm{ms}$ 예산. (c) P6에서 `record -a`: 디스크 말고, 기록기가 $200\,\mathrm{Hz}$를 못 따라가면 `/cmd`에 무슨 일이 있는가?
 3. **해석.** `--clock` 재생이 메시지 수천 개를 보여 주는데 제어기는 아무것도 안 낸다. 원인 둘과 가르는 명령. 둘 중 어느 것이 예산 실패도 감추는가?
 
 > [!tip]- 정답 · Solutions
 > 1. 0번은 셸. `--clock`과 `use_sim_time`이 맞으면 타임라인은 벽시계가 아니라 bag 시간.
 > 2. (a) 상류 큐: 도착은 $50\,\mathrm{Hz}$로 남고 스탬프만 늙는다. `hz`는 도착 간격, `delay`는 나이. (b) 예산 초과 $130\,\mathrm{ms}$ — "건강한" hz도 늦은 힘. (c) 드롭, 에러 없음; `ros2 bag info`의 `/cmd` Count가 짧다.
-> 3. 시계(`use_sim_time` / `/clock`) 대 QoS. `ros2 topic info /goal --verbose`가 가른다(`hz`는 QoS를 못 봄). 호환 QoS에 $200\,\mathrm{ms}$ 지연이면 예산 실패: 데이터는 흐르고 이미 늦다.
+> 3. 시계(`use_sim_time` / `/clock`) 대 QoS. `ros2 topic info /goal --verbose`가 가른다(`hz`는 QoS를 못 봄). 예산 실패도 감추는 쪽은 시계다. QoS가 호환이면 데이터는 흐르므로 지연 $200\,\mathrm{ms}$인 프레임은 이미 늦었고 예산을 $130\,\mathrm{ms}$ 넘었다. 그리고 노드의 시계가 `/clock`과 어긋나 있는 동안에는 스탬프를 `now()`와 비교하는 어떤 점검도 그것을 보여 주지 못한다. QoS 불일치는 데이터를 아예 통과시키지 않으므로 감출 늦음이 없다.

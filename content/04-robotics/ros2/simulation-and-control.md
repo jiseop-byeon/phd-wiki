@@ -35,6 +35,192 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the 1-D cart 
 
 One figure, two panels, and the problem set asks for the same figure with one rate changed.
 
+<svg viewBox="0 0 560 574" style="max-width:100%;height:auto" role="img" aria-label="Panel A: Gazebo Harmonic holds the gz_ros2_control plugin and the controller manager at update_rate 200; state interfaces cart/position and cart/velocity cross the seam to the controllers, the command interface cart/velocity comes back marked available and claimed, and the camera and /clock leave Gazebo through ros_gz_bridge. Panel B: five lanes on simulated time from 0 to 80 ms, camera every 20 ms, controller every 5 ms, one frame's command on the cart for L plus 25 ms, under a 70 ms budget that is wall time.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · who provides what</text>
+  <rect x="8" y="24" width="226" height="172" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <text x="16" y="40" font-size="12" fill="currentColor">Gazebo Harmonic</text>
+  <text x="16" y="54" font-size="11" fill="currentColor" opacity="0.75">physics and the model: the P6 cart</text>
+  <rect x="16" y="62" width="210" height="102" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="22" y="76" font-size="11" fill="currentColor">gz_ros2_control system plugin</text>
+  <rect x="24" y="84" width="194" height="74" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <text x="32" y="101" font-size="11" fill="currentColor">controller manager</text>
+  <text x="32" y="117" font-size="11" fill="currentColor">update_rate: 200</text>
+  <text x="32" y="132" font-size="11" fill="currentColor" opacity="0.7">(per simulated second)</text>
+  <rect x="16" y="170" width="96" height="20" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="64" y="184" font-size="11" fill="currentColor" text-anchor="middle">camera sensor</text>
+  <rect x="124" y="170" width="102" height="20" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="175" y="184" font-size="11" fill="currentColor" text-anchor="middle">sim clock</text>
+  <line x1="388" y1="70" x2="388" y2="190" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="5 4"/>
+  <text x="388" y="64" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">seam</text>
+  <text x="311" y="80" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.7">state interfaces</text>
+  <line x1="218" y1="96" x2="393.5" y2="96" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="400,96 393,99.4 393,92.6" fill="currentColor"/>
+  <text x="311" y="92" font-size="11" fill="currentColor" text-anchor="middle">cart/position</text>
+  <line x1="218" y1="114" x2="393.5" y2="114" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="400,114 393,117.4 393,110.6" fill="currentColor"/>
+  <text x="311" y="110" font-size="11" fill="currentColor" text-anchor="middle">cart/velocity</text>
+  <text x="311" y="131" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.7">command interface</text>
+  <line x1="400" y1="148" x2="224.5" y2="148" stroke="currentColor" stroke-width="1.8"/>
+  <polygon points="218,148 225,144.6 225,151.4" fill="currentColor"/>
+  <text x="311" y="144" font-size="11" fill="currentColor" text-anchor="middle">cart/velocity</text>
+  <text x="311" y="163" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">[available] [claimed]</text>
+  <rect x="400" y="84" width="152" height="40" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="406" y="100" font-size="11" fill="currentColor">joint_state_broadcaster</text>
+  <text x="406" y="116" font-size="11" fill="currentColor" opacity="0.7">publishes /joint_states</text>
+  <rect x="400" y="134" width="152" height="40" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="406" y="150" font-size="11" fill="currentColor">velocity controller</text>
+  <text x="406" y="166" font-size="11" fill="currentColor" opacity="0.7">the one claimant</text>
+  <rect x="8" y="212" width="226" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <text x="121" y="226" font-size="11" fill="currentColor" text-anchor="middle">ros_gz_bridge</text>
+  <text x="121" y="241" font-size="11" fill="currentColor" text-anchor="middle">token [ : GZ → ROS only</text>
+  <line x1="36" y1="190" x2="36" y2="253.5" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="36,260 32.6,253 39.4,253" fill="currentColor"/>
+  <text x="42" y="207" font-size="11" fill="currentColor">/camera</text>
+  <line x1="206" y1="190" x2="206" y2="259.5" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="206,266 202.6,259 209.4,259" fill="currentColor"/>
+  <text x="212" y="207" font-size="11" fill="currentColor">/clock</text>
+  <rect x="8" y="260" width="132" height="24" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="74" y="276" font-size="11" fill="currentColor" text-anchor="middle">vision node · 50 Hz</text>
+  <text x="156" y="280" font-size="11" fill="currentColor" opacity="0.85">ROS nodes on use_sim_time</text>
+  <polyline points="74,284 74,296 476,296" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="476" y1="296" x2="476" y2="180.5" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="476,174 479.4,181 472.6,181" fill="currentColor"/>
+  <text x="468" y="292" font-size="11" fill="currentColor" text-anchor="end">/goal · 50 Hz</text>
+  <line x1="8" y1="306" x2="552" y2="306" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="324" font-size="12" fill="currentColor" font-weight="600">B · the timeline, on sim time</text>
+  <circle cx="222.8" cy="320.5" r="3.4" fill="currentColor"/>
+  <text x="231.8" y="324" font-size="11" fill="currentColor" opacity="0.85">new goal</text>
+  <circle cx="301.8" cy="320.5" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="310.8" y="324" font-size="11" fill="currentColor" opacity="0.85">same goal: 3 of every 4</text>
+  <rect x="462.2" y="316.5" width="8" height="8" fill="currentColor" fill-opacity="0.75"/>
+  <text x="475.2" y="324" font-size="11" fill="currentColor" opacity="0.85">from frame k</text>
+  <rect x="170" y="360" width="115" height="120" fill="currentColor" fill-opacity="0.1"/>
+  <line x1="170" y1="360" x2="170" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <line x1="193" y1="360" x2="193" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="216" y1="360" x2="216" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="239" y1="360" x2="239" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="262" y1="360" x2="262" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <line x1="285" y1="360" x2="285" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="308" y1="360" x2="308" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="331" y1="360" x2="331" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="354" y1="360" x2="354" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <line x1="377" y1="360" x2="377" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="400" y1="360" x2="400" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="423" y1="360" x2="423" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="446" y1="360" x2="446" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <line x1="469" y1="360" x2="469" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="492" y1="360" x2="492" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="515" y1="360" x2="515" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="538" y1="360" x2="538" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <text x="8" y="376" font-size="11" fill="currentColor">camera exposure</text>
+  <line x1="170" y1="384" x2="538" y2="384" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <text x="8" y="400" font-size="11" fill="currentColor">bridge</text>
+  <line x1="170" y1="408" x2="538" y2="408" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <text x="8" y="424" font-size="11" fill="currentColor">controller read</text>
+  <line x1="170" y1="432" x2="538" y2="432" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <text x="8" y="448" font-size="11" fill="currentColor">controller update/write</text>
+  <line x1="170" y1="456" x2="538" y2="456" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <text x="8" y="472" font-size="11" fill="currentColor">force at the cart</text>
+  <line x1="170" y1="480" x2="538" y2="480" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <circle cx="170" cy="372" r="3.6" fill="currentColor"/>
+  <circle cx="262" cy="372" r="3.6" fill="currentColor"/>
+  <circle cx="354" cy="372" r="3.6" fill="currentColor"/>
+  <circle cx="446" cy="372" r="3.6" fill="currentColor"/>
+  <circle cx="538" cy="372" r="3.6" fill="currentColor"/>
+  <text x="176" y="367" font-size="11" fill="currentColor" opacity="0.9">frame k</text>
+  <text x="268" y="367" font-size="11" fill="currentColor" opacity="0.9">k+1</text>
+  <line x1="172.5" y1="377" x2="172.5" y2="396.5" stroke="currentColor" stroke-width="1.1"/>
+  <polygon points="172.5,401 169.9,396 175.1,396" fill="currentColor"/>
+  <line x1="264.5" y1="377" x2="264.5" y2="396.5" stroke="currentColor" stroke-width="1.1"/>
+  <polygon points="264.5,401 261.9,396 267.1,396" fill="currentColor"/>
+  <line x1="356.5" y1="377" x2="356.5" y2="396.5" stroke="currentColor" stroke-width="1.1"/>
+  <polygon points="356.5,401 353.9,396 359.1,396" fill="currentColor"/>
+  <line x1="448.5" y1="377" x2="448.5" y2="396.5" stroke="currentColor" stroke-width="1.1"/>
+  <polygon points="448.5,401 445.9,396 451.1,396" fill="currentColor"/>
+  <circle cx="170" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="193" cy="420" r="3.4" fill="currentColor"/>
+  <circle cx="216" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="239" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="262" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="285" cy="420" r="3.4" fill="currentColor"/>
+  <circle cx="308" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="331" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="354" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="377" cy="420" r="3.4" fill="currentColor"/>
+  <circle cx="400" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="423" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="446" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="469" cy="420" r="3.4" fill="currentColor"/>
+  <circle cx="492" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="515" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="538" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <rect x="167" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="190" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="213" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="236" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="259" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="282" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="305" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="328" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="351" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="374" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="397" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="420" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="443" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="466" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="489" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="512" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="535" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="170.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="193.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="216.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="239.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="262.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="285.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="308.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="331.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="354.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="377.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="400.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="423.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="446.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="469.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="492.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="515.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <polyline points="171,356 171,352 261,352 261,356" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+  <polyline points="263,356 263,352 284,352 284,356" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+  <text x="216" y="347" font-size="11" fill="currentColor" text-anchor="middle">T<tspan font-size="8.5" dy="2.5">v</tspan><tspan dy="-2.5" dx="4">= 20 ms</tspan></text>
+  <text x="264" y="347" font-size="11" fill="currentColor">T<tspan font-size="8.5" dy="2.5">c</tspan><tspan dy="-2.5" dx="4">= 5 ms</tspan></text>
+  <text x="329" y="347" font-size="11" fill="currentColor" font-weight="600">L + 20 + 5 = L + 25 ms</text>
+  <line x1="170" y1="484" x2="538" y2="484" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="170" y1="484" x2="170" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="170" y="500" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="216" y1="484" x2="216" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="216" y="500" font-size="11" fill="currentColor" text-anchor="middle">10</text>
+  <line x1="262" y1="484" x2="262" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="262" y="500" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <line x1="308" y1="484" x2="308" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="308" y="500" font-size="11" fill="currentColor" text-anchor="middle">30</text>
+  <line x1="354" y1="484" x2="354" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="354" y="500" font-size="11" fill="currentColor" text-anchor="middle">40</text>
+  <line x1="400" y1="484" x2="400" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="400" y="500" font-size="11" fill="currentColor" text-anchor="middle">50</text>
+  <line x1="446" y1="484" x2="446" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="446" y="500" font-size="11" fill="currentColor" text-anchor="middle">60</text>
+  <line x1="492" y1="484" x2="492" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="492" y="500" font-size="11" fill="currentColor" text-anchor="middle">70</text>
+  <line x1="538" y1="484" x2="538" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="538" y="500" font-size="11" fill="currentColor" text-anchor="middle">80</text>
+  <text x="8" y="500" font-size="11" fill="currentColor" opacity="0.8">simulated time (ms)</text>
+  <polyline points="170,507 170,512 492,512 492,507" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="285" y1="507" x2="285" y2="515" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="8" y="516" font-size="11" fill="currentColor">budget B = 70 ms</text>
+  <text x="227.5" y="527" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">25: the rates</text>
+  <text x="388.5" y="527" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">45 left: L, driver, actuator</text>
+  <text x="170" y="546" font-size="12" fill="currentColor" font-weight="600">This axis is sim time, and the budget is wall time.</text>
+  <text x="8" y="564" font-size="11" fill="currentColor" opacity="0.75">Worst case: each goal lands just after a tick. L (mid-exposure to landing) is drawn as zero.</text>
+</svg>
+
 **Panel A — who provides what.** Draw four boxes and the seam between them. Left: `Gazebo Harmonic` holding the physics and the model. Inside it, a box `gz_ros2_control system plugin` containing a second box `controller manager, update_rate: 200`. Right of the seam, two controller boxes: `joint_state_broadcaster` and a velocity controller. Between the manager and the controllers draw the interfaces as *named arrows*, not plain lines: `cart/position` and `cart/velocity` pointing left-to-right as state, `cart/velocity` pointing right-to-left as command. Three things the drawing has to get right, each of which is a claim. The **command arrow carries a claim mark**: label it `[available] [claimed]`, because §6's exclusivity rule is that exactly one active controller may hold it. The **`/clock` arrow leaves Gazebo and enters ROS**, never the reverse, since the simulator owns the time. And the camera arrow crosses a box marked `ros_gz_bridge` with the direction token written on it, because §3's point is that an unbridged topic does not exist on the ROS side and reports no error.
 
 **Panel B — the timeline, on sim time.** Five parallel lanes against one horizontal axis labelled *simulated* seconds, $0$ to $80\,\mathrm{ms}$, ruled every $5\,\mathrm{ms}$: `camera exposure`, `bridge`, `controller read`, `controller update/write`, `force at the cart`. Put the camera ticks $20\,\mathrm{ms}$ apart and the controller ticks $5\,\mathrm{ms}$ apart, so four control ticks visibly fit inside one camera interval and three of them carry no new goal. Shade, from one camera tick, the span during which a command derived from *that* frame is still on the actuator, and write its length beside it. Finally draw the $70\,\mathrm{ms}$ budget as a bracket under the axis, and write beneath the bracket the one sentence the figure exists to make arguable: *this axis is sim time, and the budget is wall time.*
@@ -53,7 +239,7 @@ so the loop performs four complete `read`–`update`–`write` cycles per camera
 
 $$\Delta p=\frac{1}{N}=\frac{1}{2048}=4.883\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}.$$
 
-Difference two successive position reads one control period apart and the smallest non-zero velocity you can report is one count per period, $\Delta p/T_c=0.0977\,\mathrm{m/s}=97.7\,\mathrm{mm/s}$, because a single count is the smallest change the numerator can take. Do the same differencing across a whole vision interval instead and the quantum falls to $\Delta p/T_v=24.4\,\mathrm{mm/s}$, at the cost of $20\,\mathrm{ms}$ of lag — the same noise-versus-delay trade the velocity estimator makes in [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]].
+Difference two successive position reads one control period apart and the smallest non-zero velocity you can report is one count per period, $\Delta p/T_c=0.0977\,\mathrm{m/s}=97.7\,\mathrm{mm/s}$, because a single count is the smallest change the numerator can take. Do the same differencing across a whole vision interval instead and the quantum falls to $\Delta p/T_v=24.4\,\mathrm{mm/s}$, at the cost of $10\,\mathrm{ms}$ of lag, half the $20\,\mathrm{ms}$ window — the same noise-versus-delay trade the velocity estimator makes in [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]].
 
 **Step 3 — the staleness the rates alone impose.** Let a measurement be taken at mid-exposure $t_0$ and let $L$ be everything between that instant and the goal message arriving at the controller: exposure half-window, readout, bridge, DDS. The rates add two more terms after $L$. The controller keeps using this goal until the next frame replaces it, which is at most $T_v$ later; and the command computed at that last tick is written and then *held* until the following tick, one more $T_c$. So the worst-case age of the vision measurement while the force it caused is still on the cart is
 
@@ -61,9 +247,9 @@ $$A_{\max}=L+T_v+T_c=L+20+5=L+25\,\mathrm{ms},$$
 
 since the vision period bounds how long a stale goal survives and the control period bounds how long a stale command is held. Against P6's budget that leaves $70-25=45\,\mathrm{ms}$ for the whole of $L$ plus the driver and the actuator. The rates have already spent $36\%$ of the budget before a single line of your code runs.
 
-**Step 4 — the same ledger in millimetres.** At the page-local $v=0.25\,\mathrm{m/s}$ the cart covers $0.25\times0.025=6.25\,\mathrm{mm}$ during those $25\,\mathrm{ms}$, which is $6.25\times2.048=12.8$ encoder counts: the goal the controller is chasing is nearly thirteen counts behind the cart even when nothing is late. Per control period the cart moves $0.25\times0.005=1.25\,\mathrm{mm}=2.56$ counts, comfortably above the quantum. Slow it to $0.05\,\mathrm{m/s}$ and one period covers $0.25\,\mathrm{mm}=0.512$ counts, so most ticks see *no* count change at all and the differenced velocity reads exactly $0$ or exactly $97.7\,\mathrm{mm/s}$ — a velocity signal that is pure quantization noise, at the speed where you most wanted it to be smooth.
+**Step 4 — the same ledger in millimetres.** At the page-local $v=0.25\,\mathrm{m/s}$ the cart covers $0.25\times0.025=6.25\,\mathrm{mm}$ during those $25\,\mathrm{ms}$, which is $6.25\times2.048=12.8$ encoder counts: the goal the controller is chasing is nearly thirteen counts behind the cart even when nothing is late. Per control period the cart moves $0.25\times0.005=1.25\,\mathrm{mm}=2.56$ counts, comfortably above the quantum. Slow it to $0.05\,\mathrm{m/s}$ and one period covers $0.25\,\mathrm{mm}=0.512$ counts, so nearly half the ticks see *no* count change at all and the differenced velocity reads exactly $0$ or exactly $97.7\,\mathrm{mm/s}$ — a velocity signal that is pure quantization noise, at the speed where you most wanted it to be smooth.
 
-**Step 5 — and why Gazebo cannot certify any of it.** The controller manager runs inside the simulator, so `update_rate: 200` is 200 ticks per simulated second (§10). Let the real-time factor be $0.5$, a simulation running at half speed. The loop then executes $200\times0.5=100$ times per *wall* second, and the $25\,\mathrm{ms}$ sim-time ledger of Step 3 occupies $25/0.5=50\,\mathrm{ms}$ of wall time, leaving $70-50=20\,\mathrm{ms}$ instead of $45$. Nothing in the simulation misbehaves: sim time is internally consistent, the trajectory tracks, `ros2 topic hz /joint_states` reports 200. P6's $70\,\mathrm{ms}$ is a wall-clock budget about a real camera and a real motor, and a run that does not report its real-time factor has not measured it. That is the precise version of §1's warning, and it is the thing the problem set's third item asks you to say out loud.
+**Step 5 — and why Gazebo cannot certify any of it.** The controller manager runs inside the simulator, so `update_rate: 200` is 200 ticks per simulated second (§10). Let the real-time factor be $0.5$, a simulation running at half speed. The loop then executes $200\times0.5=100$ times per *wall* second, and the $25\,\mathrm{ms}$ sim-time ledger of Step 3 occupies $25/0.5=50\,\mathrm{ms}$ of wall time, leaving $70-50=20\,\mathrm{ms}$ instead of $45$. Nothing in the simulation misbehaves: sim time is internally consistent, the trajectory tracks, and `ros2 topic hz --use-sim-time /joint_states` reports 200, per simulated second. Drop the flag and the same command reports about 100, because Jazzy's `ros2 topic hz` timestamps each arrival on its own node's clock, and that node follows `/clock` only when `-s`/`--use-sim-time` is given; otherwise it reads the wall clock (`ros2topic/verb/hz.py` and `ros2cli/node/direct.py`, jazzy branch; `--wall-time` forces the wall clock even with the flag). P6's $70\,\mathrm{ms}$ is a wall-clock budget about a real camera and a real motor, and a run that does not report its real-time factor has not measured it. That is the precise version of §1's warning, and it is the thing the problem set's third item asks you to say out loud.
 
 ### 1. Why simulate, and what simulation will not tell you
 
@@ -474,7 +660,7 @@ If the subscription exists and the message is arriving, look at time. Four facts
 - **The clock bridge.** Sim time only advances if the `/clock` bridge is running; check with `ros2 topic hz /clock`.
 - **`time_from_start`.** It must be nonzero. A trajectory whose single point is at `t=0` is a command to be there instantly, which a position interface may satisfy so fast you see nothing.
 
-Last, confirm the simulator is stepping at all: `ros2 topic hz /joint_states` against a paused Gazebo reports a rate of zero, and a world started without `-r` is paused. Press play, or add `-r`.
+Last, confirm the simulator is stepping at all: against a paused Gazebo, `ros2 topic hz /joint_states` prints no rate at all — it reports only when messages arrive, and a paused world publishes none — and a world started without `-r` is paused. Press play, or add `-r`.
 
 ### 13. What this page does not cover
 
@@ -516,7 +702,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. 
 
 > [!tip]- Solutions
 > 1. Plugin `gz_ros2_control/GazeboSimSystem`; `/clock` out of Gazebo into ROS. Timeline in sim time, not wall time.
-> 2. (a) $T_c=1/500=2\,\mathrm{ms}$ and $T_v=1/30=33.3\,\mathrm{ms}$, so the ratio is $500/30=16.7$ — *not* an integer, so ticks and frames never line up and the goal's age differs from tick to tick, which the catalog's clean $4$ hid. The velocity quantum rises to $\Delta p/0.002=244\,\mathrm{mm/s}$, worse than the catalog's $97.7$, since a shorter differencing window divides the same single count by a smaller time. The ledger becomes $33.3+2=35.3\,\mathrm{ms}$, leaving $34.7$ against the catalog's $45$: the faster loop bought $3\,\mathrm{ms}$ and the slower camera cost $13.3$, a net loss of $10.3\,\mathrm{ms}$. The term you cannot reach from the controller is the one that dominates. (b) `ros2 control list_controllers`; joint-name mismatch among URDF, `<ros2_control>`, YAML. (c) A start far in the future (unless the stamp is zero, "start now").
+> 2. (a) $T_c=1/500=2\,\mathrm{ms}$ and $T_v=1/30=33.3\,\mathrm{ms}$, so the ratio is $500/30=16.7$ — *not* an integer, so ticks and frames line up only once every three frames ($100\,\mathrm{ms}=50$ ticks) and the goal's age differs from tick to tick, which the catalog's clean $4$ hid. The velocity quantum rises to $\Delta p/0.002=244\,\mathrm{mm/s}$, worse than the catalog's $97.7$, since a shorter differencing window divides the same single count by a smaller time. The ledger becomes $33.3+2=35.3\,\mathrm{ms}$, leaving $34.7$ against the catalog's $45$: the faster loop bought $3\,\mathrm{ms}$ and the slower camera cost $13.3$, a net loss of $10.3\,\mathrm{ms}$. The term you cannot reach from the controller is the one that dominates. (b) `ros2 control list_controllers`, to confirm it really reads `active`. If it does, its interface is `[claimed]` and the cause is downstream: the command topic, the stamp or `time_from_start`, or a paused simulation. A joint-name mismatch among URDF, `<ros2_control>`, YAML would have left it `inactive`. (c) A start far in the future (unless the stamp is zero, "start now").
 > 3. No: $200>70$. Gazebo success claims plumbing — interfaces, rates, launch. Not that the $70\,\mathrm{ms}$ camera-to-force chain, or contact, will hold on hardware.
 
 ## 한국어
@@ -547,6 +733,192 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. 
 
 그림 하나, 패널 둘. 과제는 속도 하나만 바꾼 같은 그림을 요구한다.
 
+<svg viewBox="0 0 560 574" style="max-width:100%;height:auto" role="img" aria-label="패널 A: Gazebo Harmonic 안에 gz_ros2_control 플러그인과 update_rate 200의 컨트롤러 매니저가 있고, 상태 인터페이스 cart/position과 cart/velocity가 이음매를 건너 제어기로 가며, 명령 인터페이스 cart/velocity는 available·claimed 표시를 달고 돌아오고, 카메라와 /clock은 ros_gz_bridge를 지나 Gazebo를 나간다. 패널 B: 시뮬레이션 시간 0에서 80 ms 위의 레인 다섯. 카메라는 20 ms, 제어기는 5 ms마다이고, 한 프레임의 명령은 L 더하기 25 ms 동안 카트에 걸려 있으며, 70 ms 예산은 벽시계 시간이다.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · 누가 무엇을 제공하는가</text>
+  <rect x="8" y="24" width="226" height="172" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <text x="16" y="40" font-size="12" fill="currentColor">Gazebo Harmonic</text>
+  <text x="16" y="54" font-size="11" fill="currentColor" opacity="0.75">물리와 모델: P6 카트</text>
+  <rect x="16" y="62" width="210" height="102" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="22" y="76" font-size="11" fill="currentColor">gz_ros2_control system plugin</text>
+  <rect x="24" y="84" width="194" height="74" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <text x="32" y="101" font-size="11" fill="currentColor">controller manager</text>
+  <text x="32" y="117" font-size="11" fill="currentColor">update_rate: 200</text>
+  <text x="32" y="132" font-size="11" fill="currentColor" opacity="0.7">(시뮬레이션 1초당)</text>
+  <rect x="16" y="170" width="96" height="20" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="64" y="184" font-size="11" fill="currentColor" text-anchor="middle">카메라 센서</text>
+  <rect x="124" y="170" width="102" height="20" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="175" y="184" font-size="11" fill="currentColor" text-anchor="middle">시뮬레이션 시계</text>
+  <line x1="388" y1="70" x2="388" y2="190" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="5 4"/>
+  <text x="388" y="64" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">이음매</text>
+  <text x="311" y="80" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.7">상태 인터페이스</text>
+  <line x1="218" y1="96" x2="393.5" y2="96" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="400,96 393,99.4 393,92.6" fill="currentColor"/>
+  <text x="311" y="92" font-size="11" fill="currentColor" text-anchor="middle">cart/position</text>
+  <line x1="218" y1="114" x2="393.5" y2="114" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="400,114 393,117.4 393,110.6" fill="currentColor"/>
+  <text x="311" y="110" font-size="11" fill="currentColor" text-anchor="middle">cart/velocity</text>
+  <text x="311" y="131" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.7">명령 인터페이스</text>
+  <line x1="400" y1="148" x2="224.5" y2="148" stroke="currentColor" stroke-width="1.8"/>
+  <polygon points="218,148 225,144.6 225,151.4" fill="currentColor"/>
+  <text x="311" y="144" font-size="11" fill="currentColor" text-anchor="middle">cart/velocity</text>
+  <text x="311" y="163" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">[available] [claimed]</text>
+  <rect x="400" y="84" width="152" height="40" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="406" y="100" font-size="11" fill="currentColor">joint_state_broadcaster</text>
+  <text x="406" y="116" font-size="11" fill="currentColor" opacity="0.7">/joint_states 발행</text>
+  <rect x="400" y="134" width="152" height="40" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="406" y="150" font-size="11" fill="currentColor">속도 제어기</text>
+  <text x="406" y="166" font-size="11" fill="currentColor" opacity="0.7">유일한 점유자</text>
+  <rect x="8" y="212" width="226" height="34" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <text x="121" y="226" font-size="11" fill="currentColor" text-anchor="middle">ros_gz_bridge</text>
+  <text x="121" y="241" font-size="11" fill="currentColor" text-anchor="middle">토큰 [ : GZ → ROS 한 방향</text>
+  <line x1="36" y1="190" x2="36" y2="253.5" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="36,260 32.6,253 39.4,253" fill="currentColor"/>
+  <text x="42" y="207" font-size="11" fill="currentColor">/camera</text>
+  <line x1="206" y1="190" x2="206" y2="259.5" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="206,266 202.6,259 209.4,259" fill="currentColor"/>
+  <text x="212" y="207" font-size="11" fill="currentColor">/clock</text>
+  <rect x="8" y="260" width="132" height="24" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="74" y="276" font-size="11" fill="currentColor" text-anchor="middle">비전 노드 · 50 Hz</text>
+  <text x="156" y="280" font-size="11" fill="currentColor" opacity="0.85">use_sim_time인 ROS 노드들</text>
+  <polyline points="74,284 74,296 476,296" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="476" y1="296" x2="476" y2="180.5" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="476,174 479.4,181 472.6,181" fill="currentColor"/>
+  <text x="468" y="292" font-size="11" fill="currentColor" text-anchor="end">/goal · 50 Hz</text>
+  <line x1="8" y1="306" x2="552" y2="306" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="324" font-size="12" fill="currentColor" font-weight="600">B · 타임라인, 시뮬레이션 시간 위에서</text>
+  <circle cx="280.1" cy="320.5" r="3.4" fill="currentColor"/>
+  <text x="289.1" y="324" font-size="11" fill="currentColor" opacity="0.85">새 목표</text>
+  <circle cx="343.1" cy="320.5" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="352.1" y="324" font-size="11" fill="currentColor" opacity="0.85">같은 목표: 넷 중 셋</text>
+  <rect x="460.4" y="316.5" width="8" height="8" fill="currentColor" fill-opacity="0.75"/>
+  <text x="473.4" y="324" font-size="11" fill="currentColor" opacity="0.85">프레임 k의 명령</text>
+  <rect x="170" y="360" width="115" height="120" fill="currentColor" fill-opacity="0.1"/>
+  <line x1="170" y1="360" x2="170" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <line x1="193" y1="360" x2="193" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="216" y1="360" x2="216" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="239" y1="360" x2="239" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="262" y1="360" x2="262" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <line x1="285" y1="360" x2="285" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="308" y1="360" x2="308" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="331" y1="360" x2="331" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="354" y1="360" x2="354" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <line x1="377" y1="360" x2="377" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="400" y1="360" x2="400" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="423" y1="360" x2="423" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="446" y1="360" x2="446" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <line x1="469" y1="360" x2="469" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="492" y1="360" x2="492" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="515" y1="360" x2="515" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.13"/>
+  <line x1="538" y1="360" x2="538" y2="480" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.32"/>
+  <text x="8" y="376" font-size="11" fill="currentColor">카메라 노출</text>
+  <line x1="170" y1="384" x2="538" y2="384" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <text x="8" y="400" font-size="11" fill="currentColor">브리지</text>
+  <line x1="170" y1="408" x2="538" y2="408" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <text x="8" y="424" font-size="11" fill="currentColor">제어기 read</text>
+  <line x1="170" y1="432" x2="538" y2="432" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <text x="8" y="448" font-size="11" fill="currentColor">제어기 update/write</text>
+  <line x1="170" y1="456" x2="538" y2="456" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <text x="8" y="472" font-size="11" fill="currentColor">카트에 걸리는 힘</text>
+  <line x1="170" y1="480" x2="538" y2="480" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <circle cx="170" cy="372" r="3.6" fill="currentColor"/>
+  <circle cx="262" cy="372" r="3.6" fill="currentColor"/>
+  <circle cx="354" cy="372" r="3.6" fill="currentColor"/>
+  <circle cx="446" cy="372" r="3.6" fill="currentColor"/>
+  <circle cx="538" cy="372" r="3.6" fill="currentColor"/>
+  <text x="176" y="367" font-size="11" fill="currentColor" opacity="0.9">프레임 k</text>
+  <text x="268" y="367" font-size="11" fill="currentColor" opacity="0.9">k+1</text>
+  <line x1="172.5" y1="377" x2="172.5" y2="396.5" stroke="currentColor" stroke-width="1.1"/>
+  <polygon points="172.5,401 169.9,396 175.1,396" fill="currentColor"/>
+  <line x1="264.5" y1="377" x2="264.5" y2="396.5" stroke="currentColor" stroke-width="1.1"/>
+  <polygon points="264.5,401 261.9,396 267.1,396" fill="currentColor"/>
+  <line x1="356.5" y1="377" x2="356.5" y2="396.5" stroke="currentColor" stroke-width="1.1"/>
+  <polygon points="356.5,401 353.9,396 359.1,396" fill="currentColor"/>
+  <line x1="448.5" y1="377" x2="448.5" y2="396.5" stroke="currentColor" stroke-width="1.1"/>
+  <polygon points="448.5,401 445.9,396 451.1,396" fill="currentColor"/>
+  <circle cx="170" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="193" cy="420" r="3.4" fill="currentColor"/>
+  <circle cx="216" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="239" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="262" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="285" cy="420" r="3.4" fill="currentColor"/>
+  <circle cx="308" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="331" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="354" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="377" cy="420" r="3.4" fill="currentColor"/>
+  <circle cx="400" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="423" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="446" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="469" cy="420" r="3.4" fill="currentColor"/>
+  <circle cx="492" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="515" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <circle cx="538" cy="420" r="3.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <rect x="167" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="190" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="213" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="236" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="259" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="282" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="305" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="328" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="351" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="374" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="397" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="420" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="443" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="466" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="489" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="512" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="535" y="441" width="6" height="6" fill="currentColor" fill-opacity="0.35"/>
+  <rect x="170.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="193.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="216.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="239.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="262.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="285.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="308.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="331.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="354.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="377.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="400.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="423.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="446.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="469.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="492.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="515.8" y="463" width="21.4" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <polyline points="171,356 171,352 261,352 261,356" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+  <polyline points="263,356 263,352 284,352 284,356" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+  <text x="216" y="347" font-size="11" fill="currentColor" text-anchor="middle">T<tspan font-size="8.5" dy="2.5">v</tspan><tspan dy="-2.5" dx="4">= 20 ms</tspan></text>
+  <text x="264" y="347" font-size="11" fill="currentColor">T<tspan font-size="8.5" dy="2.5">c</tspan><tspan dy="-2.5" dx="4">= 5 ms</tspan></text>
+  <text x="329" y="347" font-size="11" fill="currentColor" font-weight="600">L + 20 + 5 = L + 25 ms</text>
+  <line x1="170" y1="484" x2="538" y2="484" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="170" y1="484" x2="170" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="170" y="500" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="216" y1="484" x2="216" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="216" y="500" font-size="11" fill="currentColor" text-anchor="middle">10</text>
+  <line x1="262" y1="484" x2="262" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="262" y="500" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <line x1="308" y1="484" x2="308" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="308" y="500" font-size="11" fill="currentColor" text-anchor="middle">30</text>
+  <line x1="354" y1="484" x2="354" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="354" y="500" font-size="11" fill="currentColor" text-anchor="middle">40</text>
+  <line x1="400" y1="484" x2="400" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="400" y="500" font-size="11" fill="currentColor" text-anchor="middle">50</text>
+  <line x1="446" y1="484" x2="446" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="446" y="500" font-size="11" fill="currentColor" text-anchor="middle">60</text>
+  <line x1="492" y1="484" x2="492" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="492" y="500" font-size="11" fill="currentColor" text-anchor="middle">70</text>
+  <line x1="538" y1="484" x2="538" y2="488" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="538" y="500" font-size="11" fill="currentColor" text-anchor="middle">80</text>
+  <text x="8" y="500" font-size="11" fill="currentColor" opacity="0.8">시뮬레이션 시간 (ms)</text>
+  <polyline points="170,507 170,512 492,512 492,507" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="285" y1="507" x2="285" y2="515" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="8" y="516" font-size="11" fill="currentColor">예산 B = 70 ms</text>
+  <text x="227.5" y="527" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">25: 속도들</text>
+  <text x="388.5" y="527" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">45 남음: L, 드라이버, 구동기</text>
+  <text x="170" y="546" font-size="12" fill="currentColor" font-weight="600">이 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.</text>
+  <text x="8" y="564" font-size="11" fill="currentColor" opacity="0.75">최악의 경우를 그렸다. 목표는 틱 직후에 도착하고, L(노출 중간에서 도착까지)은 폭 0으로 그렸다.</text>
+</svg>
+
 **패널 A — 누가 무엇을 제공하는가.** 상자 넷과 그 사이의 이음매를 그린다. 왼쪽에 물리와 모델을 쥔 `Gazebo Harmonic`. 그 안에 `gz_ros2_control system plugin` 상자, 다시 그 안에 `controller manager, update_rate: 200` 상자. 이음매 오른쪽에 제어기 상자 둘, `joint_state_broadcaster`와 속도 제어기. 매니저와 제어기 사이의 인터페이스는 맨 선이 아니라 *이름 붙은 화살표*로 그린다. 상태로 왼쪽에서 오른쪽으로 가는 `cart/position`과 `cart/velocity`, 명령으로 오른쪽에서 왼쪽으로 가는 `cart/velocity`. 그림이 맞혀야 할 것이 셋이고 각각이 주장이다. **명령 화살표에는 점유 표시를 단다.** `[available] [claimed]`라고 적는다. §6의 배타성 규칙이 활성 제어기 정확히 하나만 그것을 쥘 수 있다는 것이기 때문이다. **`/clock` 화살표는 Gazebo에서 나와 ROS로 들어간다.** 반대 방향은 없다. 시간을 소유한 쪽이 시뮬레이터이기 때문이다. 그리고 카메라 화살표는 `ros_gz_bridge`라고 쓴 상자를 지나가고 그 위에 방향 토큰을 적는다. 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 오류도 내지 않는다는 것이 §3의 요점이기 때문이다.
 
 **패널 B — 타임라인, 시뮬레이션 시간 위에서.** 가로축 하나에 평행한 레인 다섯을 건다. 축은 *시뮬레이션* 초로 $0$에서 $80\,\mathrm{ms}$, 눈금은 $5\,\mathrm{ms}$마다. 레인은 `카메라 노출`, `브리지`, `제어기 read`, `제어기 update/write`, `카트에 걸리는 힘`. 카메라 틱은 $20\,\mathrm{ms}$ 간격, 제어기 틱은 $5\,\mathrm{ms}$ 간격으로 찍어, 카메라 한 구간 안에 제어 틱 넷이 들어가고 그중 셋에는 새 목표가 없다는 것이 눈에 보이게 한다. 카메라 틱 하나에서 시작해, *그* 프레임에서 나온 명령이 아직 구동기에 걸려 있는 구간을 음영으로 칠하고 그 길이를 옆에 적는다. 마지막으로 축 아래에 $70\,\mathrm{ms}$ 예산을 괄호로 긋고, 괄호 밑에 이 그림이 존재하는 이유인 한 문장을 적는다. *이 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.*
@@ -565,7 +937,7 @@ $$T_c=\frac{1}{f_c}=\frac{1}{200}=5\,\mathrm{ms},\qquad T_v=\frac{1}{f_v}=\frac{
 
 $$\Delta p=\frac{1}{N}=\frac{1}{2048}=4.883\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}.$$
 
-제어 주기 하나 떨어진 두 위치 읽기를 차분하면 보고할 수 있는 가장 작은 0이 아닌 속도는 주기당 한 카운트, 즉 $\Delta p/T_c=0.0977\,\mathrm{m/s}=97.7\,\mathrm{mm/s}$다. 분자가 취할 수 있는 가장 작은 변화가 한 카운트이기 때문이다. 같은 차분을 비전 구간 전체에 걸쳐 하면 양자는 $\Delta p/T_v=24.4\,\mathrm{mm/s}$로 내려가고 대신 $20\,\mathrm{ms}$의 지연을 문다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]의 속도 추정기가 하는 잡음–지연 거래와 같은 것이다.
+제어 주기 하나 떨어진 두 위치 읽기를 차분하면 보고할 수 있는 가장 작은 0이 아닌 속도는 주기당 한 카운트, 즉 $\Delta p/T_c=0.0977\,\mathrm{m/s}=97.7\,\mathrm{mm/s}$다. 분자가 취할 수 있는 가장 작은 변화가 한 카운트이기 때문이다. 같은 차분을 비전 구간 전체에 걸쳐 하면 양자는 $\Delta p/T_v=24.4\,\mathrm{mm/s}$로 내려가고 대신 창 $20\,\mathrm{ms}$의 절반인 $10\,\mathrm{ms}$의 지연을 문다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]의 속도 추정기가 하는 잡음–지연 거래와 같은 것이다.
 
 **Step 3 — 속도만으로 생기는 낡음.** 측정이 노출 중간 $t_0$에 일어나고, 그 순간부터 목표 메시지가 제어기에 도착할 때까지의 모든 것을 $L$이라 하자. 노출 반폭, 판독, 브리지, DDS다. 속도는 $L$ 뒤에 항 둘을 더한다. 제어기는 다음 프레임이 이 목표를 갈아치울 때까지 계속 쓰고, 그것은 길어야 $T_v$ 뒤다. 그리고 그 마지막 틱에서 계산된 명령은 기록된 뒤 다음 틱까지 *유지되므로* $T_c$가 한 번 더 붙는다. 그래서 그 프레임이 만든 힘이 아직 카트에 걸려 있는 동안 비전 측정이 가질 수 있는 최악의 나이는
 
@@ -573,9 +945,9 @@ $$A_{\max}=L+T_v+T_c=L+20+5=L+25\,\mathrm{ms}$$
 
 이다. 낡은 목표가 얼마나 오래 살아남는지를 비전 주기가, 낡은 명령이 얼마나 오래 유지되는지를 제어 주기가 각각 묶기 때문이다. P6의 예산에 대면 $L$ 전체와 드라이버와 구동기가 쓸 몫으로 $70-25=45\,\mathrm{ms}$가 남는다. 내 코드가 한 줄도 돌기 전에 속도들이 이미 예산의 $36\%$를 썼다.
 
-**Step 4 — 같은 장부를 밀리미터로.** 페이지 국소 값 $v=0.25\,\mathrm{m/s}$에서 카트는 그 $25\,\mathrm{ms}$ 동안 $0.25\times0.025=6.25\,\mathrm{mm}$를 간다. 이는 $6.25\times2.048=12.8$ 엔코더 카운트다. 아무것도 늦지 않아도 제어기가 쫓는 목표는 카트보다 열세 카운트 가까이 뒤에 있다. 제어 주기당으로는 $0.25\times0.005=1.25\,\mathrm{mm}=2.56$ 카운트여서 양자보다 넉넉히 위다. 속도를 $0.05\,\mathrm{m/s}$로 낮추면 한 주기가 $0.25\,\mathrm{mm}=0.512$ 카운트를 덮으므로 대부분의 틱에서 카운트가 *전혀* 바뀌지 않고, 차분 속도는 정확히 $0$ 아니면 정확히 $97.7\,\mathrm{mm/s}$를 읽는다. 가장 매끄럽기를 바랐던 속도에서 속도 신호가 순수한 양자화 잡음이 된다.
+**Step 4 — 같은 장부를 밀리미터로.** 페이지 국소 값 $v=0.25\,\mathrm{m/s}$에서 카트는 그 $25\,\mathrm{ms}$ 동안 $0.25\times0.025=6.25\,\mathrm{mm}$를 간다. 이는 $6.25\times2.048=12.8$ 엔코더 카운트다. 아무것도 늦지 않아도 제어기가 쫓는 목표는 카트보다 열세 카운트 가까이 뒤에 있다. 제어 주기당으로는 $0.25\times0.005=1.25\,\mathrm{mm}=2.56$ 카운트여서 양자보다 넉넉히 위다. 속도를 $0.05\,\mathrm{m/s}$로 낮추면 한 주기가 $0.25\,\mathrm{mm}=0.512$ 카운트를 덮으므로 틱의 절반 가까이에서 카운트가 *전혀* 바뀌지 않고, 차분 속도는 정확히 $0$ 아니면 정확히 $97.7\,\mathrm{mm/s}$를 읽는다. 가장 매끄럽기를 바랐던 속도에서 속도 신호가 순수한 양자화 잡음이 된다.
 
-**Step 5 — 그리고 Gazebo가 그 무엇도 보증하지 못하는 이유.** 컨트롤러 매니저는 시뮬레이터 안에서 돌므로 `update_rate: 200`은 시뮬레이션 1초당 200틱이다(§10). 실시간 계수가 $0.5$, 즉 절반 속도로 도는 시뮬레이션이라고 하자. 루프는 *벽시계* 1초당 $200\times0.5=100$번 실행되고, Step 3의 $25\,\mathrm{ms}$ 시뮬레이션 장부는 벽시계로 $25/0.5=50\,\mathrm{ms}$를 차지해 남는 몫이 $45$가 아니라 $70-50=20\,\mathrm{ms}$가 된다. 시뮬레이션 안에서는 아무것도 잘못되지 않는다. 시뮬레이션 시간은 내부적으로 일관되고, 궤적은 잘 추종되며, `ros2 topic hz /joint_states`는 200을 보고한다. P6의 $70\,\mathrm{ms}$는 실제 카메라와 실제 모터에 관한 벽시계 예산이고, 실시간 계수를 보고하지 않은 실행은 그것을 잰 적이 없다. 이것이 §1의 경고를 정확한 형태로 쓴 것이고, 과제 3번이 소리 내어 말하라고 요구하는 것이다.
+**Step 5 — 그리고 Gazebo가 그 무엇도 보증하지 못하는 이유.** 컨트롤러 매니저는 시뮬레이터 안에서 돌므로 `update_rate: 200`은 시뮬레이션 1초당 200틱이다(§10). 실시간 계수가 $0.5$, 즉 절반 속도로 도는 시뮬레이션이라고 하자. 루프는 *벽시계* 1초당 $200\times0.5=100$번 실행되고, Step 3의 $25\,\mathrm{ms}$ 시뮬레이션 장부는 벽시계로 $25/0.5=50\,\mathrm{ms}$를 차지해 남는 몫이 $45$가 아니라 $70-50=20\,\mathrm{ms}$가 된다. 시뮬레이션 안에서는 아무것도 잘못되지 않는다. 시뮬레이션 시간은 내부적으로 일관되고, 궤적은 잘 추종되며, `ros2 topic hz --use-sim-time /joint_states`는 시뮬레이션 1초당 200을 보고한다. 플래그를 빼면 같은 명령이 약 100을 보고한다. Jazzy의 `ros2 topic hz`는 도착 시각을 자기 노드의 시계로 찍는데, 그 노드는 `-s`/`--use-sim-time`을 줄 때만 `/clock`을 따르고 그렇지 않으면 벽시계를 읽기 때문이다(jazzy 브랜치의 `ros2topic/verb/hz.py`와 `ros2cli/node/direct.py`. `--wall-time`은 플래그가 있어도 벽시계를 강제한다). P6의 $70\,\mathrm{ms}$는 실제 카메라와 실제 모터에 관한 벽시계 예산이고, 실시간 계수를 보고하지 않은 실행은 그것을 잰 적이 없다. 이것이 §1의 경고를 정확한 형태로 쓴 것이고, 과제 3번이 소리 내어 말하라고 요구하는 것이다.
 
 ### 1. 왜 시뮬레이션하는가, 그리고 시뮬레이션이 말해 주지 않는 것
 
@@ -715,7 +1087,7 @@ URDF 안, 링크·관절 옆에 놓이는 `<ros2_control>` 블록에서 선언�
 
 ### 7. 컨트롤러 매니저
 
-**컨트롤러 매니저(controller manager)** 는 양쪽을 붙들고 있는 프로세스다. `pluginlib`(등록된 이름으로 공유 라이브러리에서 C++ 클래스를 실행 중에 불러오는 ROS 라이브러리)으로 하드웨어 컴포넌트를 싣고, 같은 방식으로 제어기를 싣고, 요구된 인터페이스와 제공된 인터페이스를 맞추고, 루프를 돈다: 하드웨어에서 `read()`, 활성 제어기마다 `update()`, 하드웨어로 `write()`. `update_rate` 파라미터가 그 루프의 주기(Hz)이고 기본값은 100이다. 로봇 기술은 `robot_description` 토픽을 구독해 얻는다.
+**컨트롤러 매니저(controller manager)** 는 양쪽을 붙들고 있는 프로세스다. `pluginlib`(등록된 이름으로 공유 라이브러리에서 C++ 클래스를 실행 중에 불러오는 ROS 라이브러리)으로 하드웨어 컴포넌트를 싣고, 같은 방식으로 제어기를 싣고, 요구된 인터페이스와 제공된 인터페이스를 맞추고, 루프를 돈다: 하드웨어에서 `read()`, 활성 제어기마다 `update()`, 하드웨어로 `write()`. `update_rate` 파라미터가 그 루프의 주파수(Hz)이고 기본값은 100이다. 로봇 기술은 `robot_description` 토픽을 구독해 얻는다.
 
 제어기는 상태 셋이 중요한 lifecycle 객체다([[04-robotics/ros2/services-actions-parameters#8. 관리형(라이프사이클) 노드|25.3 §8]]의 관리형 노드 상태 기계).
 
@@ -986,7 +1358,7 @@ Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고
 - **시계 브리지.** 시뮬레이션 시간은 `/clock` 브리지가 돌 때만 흐른다. `ros2 topic hz /clock`으로 확인한다.
 - **`time_from_start`.** 0이 아니어야 한다. 점 하나가 `t=0`인 궤적은 "지금 당장 거기 있어라"라는 명령이고, position 인터페이스는 그것을 눈에 보이지 않을 만큼 빨리 만족시킬 수 있다.
 
-마지막으로 시뮬레이터가 진행 중인지 확인한다. 일시정지된 Gazebo에 대해 `ros2 topic hz /joint_states`는 0을 보고하고, `-r` 없이 시작한 world는 일시정지 상태다. 재생을 누르거나 `-r`을 붙여라.
+마지막으로 시뮬레이터가 진행 중인지 확인한다. 일시정지된 Gazebo에 대해 `ros2 topic hz /joint_states`는 아무 주기도 출력하지 않는다. 메시지가 도착할 때만 보고하는데 일시정지된 world는 아무것도 내지 않기 때문이다. `-r` 없이 시작한 world는 일시정지 상태다. 재생을 누르거나 `-r`을 붙여라.
 
 ### 13. 이 페이지가 다루지 않는 것
 
@@ -1028,5 +1400,5 @@ Tier B. Gazebo Harmonic 안의 [[02-foundations/lab-plants|0.6]] **P6**. 제어�
 
 > [!tip]- 정답 · Solutions
 > 1. 플러그인 `gz_ros2_control/GazeboSimSystem`; Gazebo에서 ROS로 `/clock`. 타임라인은 벽시계가 아니라 시뮬 시간.
-> 2. (a) $T_c=1/500=2\,\mathrm{ms}$, $T_v=1/30=33.3\,\mathrm{ms}$이므로 비는 $500/30=16.7$이다. 정수가 *아니어서* 틱과 프레임이 결코 맞아떨어지지 않고 목표의 나이가 틱마다 달라진다. 카탈로그의 깔끔한 $4$가 가리고 있던 사실이다. 속도 양자는 $\Delta p/0.002=244\,\mathrm{mm/s}$로 올라 카탈로그의 $97.7$보다 나빠진다. 차분 창이 짧아지면 같은 한 카운트를 더 작은 시간으로 나누기 때문이다. 장부는 $33.3+2=35.3\,\mathrm{ms}$가 되어 카탈로그의 $45$ 대신 $34.7$만 남는다. 빠른 루프가 $3\,\mathrm{ms}$를 벌고 느린 카메라가 $13.3$을 썼으니 순손실 $10.3\,\mathrm{ms}$다. 제어기에서 손댈 수 없는 항이 지배한다. (b) `ros2 control list_controllers`; URDF, `<ros2_control>`, YAML 사이 관절 이름 불일치. (c) 먼 미래 시작(스탬프 0, "지금 시작"이 아니면).
+> 2. (a) $T_c=1/500=2\,\mathrm{ms}$, $T_v=1/30=33.3\,\mathrm{ms}$이므로 비는 $500/30=16.7$이다. 정수가 *아니어서* 틱과 프레임이 세 프레임에 한 번($100\,\mathrm{ms}=50$틱)만 맞아떨어지고 목표의 나이가 틱마다 달라진다. 카탈로그의 깔끔한 $4$가 가리고 있던 사실이다. 속도 양자는 $\Delta p/0.002=244\,\mathrm{mm/s}$로 올라 카탈로그의 $97.7$보다 나빠진다. 차분 창이 짧아지면 같은 한 카운트를 더 작은 시간으로 나누기 때문이다. 장부는 $33.3+2=35.3\,\mathrm{ms}$가 되어 카탈로그의 $45$ 대신 $34.7$만 남는다. 빠른 루프가 $3\,\mathrm{ms}$를 벌고 느린 카메라가 $13.3$을 썼으니 순손실 $10.3\,\mathrm{ms}$다. 제어기에서 손댈 수 없는 항이 지배한다. (b) `ros2 control list_controllers`로 정말 `active`인지 확인. 그렇다면 인터페이스는 `[claimed]`이고 원인은 그 아래다. 명령 토픽, 스탬프나 `time_from_start`, 일시정지된 시뮬레이션. URDF, `<ros2_control>`, YAML 사이 관절 이름 불일치였다면 `inactive`로 남았을 것이다. (c) 먼 미래 시작(스탬프 0, "지금 시작"이 아니면).
 > 3. 아니오: $200>70$. Gazebo 성공은 배관 — 인터페이스, 주기, launch — 을 주장한다. $70\,\mathrm{ms}$ 카메라–힘 사슬이나 접촉이 하드웨어에서 버틴다는 것은 아니다.

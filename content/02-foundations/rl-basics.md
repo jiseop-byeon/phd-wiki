@@ -31,6 +31,68 @@ fine-tuning on real machines, and how to read an RL experimental section.
 
 The object is plant **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$, read as an MDP. The problem set asks for this drawing.
 
+<svg viewBox="0 0 560 530" style="max-width:100%;height:auto" role="img" aria-label="plant P4 read as an MDP: the heater's summing junction on the agent's border, the two-state MDP with rewards, values and action values, and an empty box for the certificate the two bins cannot give">
+  <defs><marker id="arRl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker><marker id="arRl2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.75"/></marker></defs>
+  <path d="M236 87 L236 62 L14 62 L14 138 L236 138 L236 113" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="8 4"/>
+  <text x="18.0" y="55.0" fill="currentColor">what the policy may choose</text>
+  <rect x="30" y="80" width="110" height="40" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="85.0" y="104.0" fill="currentColor" text-anchor="middle">policy π(u | s)</text>
+  <circle cx="236" cy="100" r="13" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="236.0" y="104.5" fill="currentColor" font-size="13" text-anchor="middle">Σ</text>
+  <line x1="140" y1="100" x2="222" y2="100" stroke="currentColor" stroke-width="1.8" marker-end="url(#arRl)"/>
+  <text x="181.0" y="94.0" fill="currentColor" text-anchor="middle">u (chosen)</text>
+  <line x1="302" y1="12" x2="245.9" y2="90.1" stroke="currentColor" stroke-width="1.8" marker-end="url(#arRl)"/>
+  <text x="312.0" y="18.0" fill="currentColor" opacity="1">d: from outside, not chosen,</text>
+  <text x="312.0" y="32.0" fill="currentColor" opacity="0.9">enters at the same Σ as u.</text>
+  <text x="312.0" y="46.0" fill="currentColor" opacity="0.9">The plant cannot tell them apart;</text>
+  <text x="312.0" y="60.0" fill="currentColor" opacity="0.9">only the border can.</text>
+  <line x1="250" y1="100" x2="292" y2="100" stroke="currentColor" stroke-width="1.8" marker-end="url(#arRl)"/>
+  <rect x="292" y="84" width="60" height="32" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="322.0" y="105.0" fill="currentColor" font-size="13" text-anchor="middle">∫</text>
+  <text x="292.0" y="78.0" fill="currentColor">ẋ = −x + u + d</text>
+  <line x1="352" y1="100" x2="518" y2="100" stroke="currentColor" stroke-width="1.8" marker-end="url(#arRl)"/>
+  <text x="526.0" y="104.0" fill="currentColor" font-size="13">x</text>
+  <circle cx="400" cy="100" r="2.6" fill="currentColor"/>
+  <path d="M400 100 L400 150 L262 150 L245.9 109.9" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#arRl)"/>
+  <text x="262.0" y="166.0" fill="currentColor" opacity="0.9">−x: a consequence, not a choice</text>
+  <circle cx="190" cy="268" r="32" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="190.0" y="258.0" fill="currentColor" text-anchor="middle" opacity="1">s = 0</text>
+  <text x="190.0" y="272.0" fill="currentColor" text-anchor="middle" opacity="0.9">x ≈ 0</text>
+  <text x="190.0" y="286.0" fill="currentColor" text-anchor="middle" opacity="0.9">r = 0</text>
+  <circle cx="380" cy="268" r="32" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="380.0" y="258.0" fill="currentColor" text-anchor="middle" opacity="1">s = 1</text>
+  <text x="380.0" y="272.0" fill="currentColor" text-anchor="middle" opacity="0.9">x ≈ 1</text>
+  <text x="380.0" y="286.0" fill="currentColor" text-anchor="middle" opacity="0.9">r = −1</text>
+  <path d="M206.0 240.3 Q285 186 363.5 239.4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-opacity="0.75" stroke-dasharray="5 3" marker-end="url(#arRl2)"/>
+  <text x="285.0" y="204.9" fill="currentColor" text-anchor="middle">u = 1, p = 1</text>
+  <text x="285.0" y="190.9" fill="currentColor" text-anchor="middle">Q(0,1) = −0.9, A = −0.9</text>
+  <path d="M364.0 295.7 Q285 350 206.5 296.6" stroke="currentColor" stroke-width="2.2" fill="none" marker-end="url(#arRl)"/>
+  <text x="285.0" y="341.1" fill="currentColor" text-anchor="middle">u = 0, p = 1, γ = 0.9 (greedy)</text>
+  <text x="285.0" y="355.1" fill="currentColor" text-anchor="middle" opacity="0.85">effective horizon 1/(1 − γ) = 10 steps</text>
+  <path d="M162.3 284.0 C108 308 108 228 161.4 251.5" stroke="currentColor" stroke-width="2.2" fill="none" marker-end="url(#arRl)"/>
+  <text x="118.0" y="265.0" fill="currentColor" text-anchor="end">u = 0, p = 1</text>
+  <text x="118.0" y="279.0" fill="currentColor" text-anchor="end" opacity="0.85">(greedy)</text>
+  <path d="M407.7 252.0 C462 228 462 308 408.6 284.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-opacity="0.75" stroke-dasharray="5 3" marker-end="url(#arRl2)"/>
+  <text x="454.0" y="258.0" fill="currentColor" opacity="0.9">u = 1, p = 1</text>
+  <text x="454.0" y="272.0" fill="currentColor" opacity="1">Q(1,1) = −1.9</text>
+  <text x="454.0" y="286.0" fill="currentColor" opacity="1">A = −0.9</text>
+  <text x="170.0" y="224.0" fill="currentColor" text-anchor="end">V(0) = 0</text>
+  <text x="400.0" y="224.0" fill="currentColor">V(1) = −1</text>
+  <text x="24.0" y="206.0" fill="currentColor" opacity="0.85">reward r = −s², written in the state</text>
+  <rect x="40" y="374" width="480" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="52.0" y="389.0" fill="currentColor" opacity="0.95">Already the fixed point: a second backup returns the same two numbers,</text>
+  <text x="52.0" y="403.0" fill="currentColor" opacity="0.95">because the best move from either state is u = 0,</text>
+  <text x="52.0" y="417.0" fill="currentColor" opacity="0.95">and V(0) = 0.9·V(0) forces V(0) = 0.</text>
+  <text x="14.0" y="446.0" fill="currentColor">The two bins are the whole state space. When a real d jumps, the agent</text>
+  <text x="14.0" y="460.0" fill="currentColor">has no statement at all about what happens between the bins.</text>
+  <text x="14.0" y="480.0" fill="currentColor" opacity="0.9">the agent, between bins:</text>
+  <rect x="14" y="486" width="160" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="5 3"/>
+  <text x="194.0" y="480.0" fill="currentColor" opacity="0.9">the control track, u = −Kx:</text>
+  <rect x="194" y="486" width="352" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="204.0" y="500.0" fill="currentColor">closed loop ẋ = −(1 + K)x + d,</text>
+  <text x="204.0" y="514.0" fill="currentColor">one pole at −(1 + K)  (5. Control Theory)</text>
+</svg>
+
 **Top panel — the plant, with three arrows into one sum.** Draw the summing junction of the heater with all three inputs: $u$ arriving from the controller, $-x$ arriving from the feedback path, and $d$ arriving from outside the figure. Draw $d$'s arrow crossing the box that encloses everything the agent owns, and put a heavy dashed border on that box. Label the border *what the policy may choose*: $u$ is inside it, $d$ is not, and $-x$ is a consequence rather than a choice. That single border is the difference between a controller and an agent, and it is the one thing the problem set checks. Write beside $d$ that it enters at exactly the same point as $u$ — so the plant cannot tell them apart, and only the border can.
 
 **Middle panel — the same plant as a two-state MDP.** Two circles, $s=0$ for $x\approx0$ and $s=1$ for $x\approx1$. With $d=0$ and one Euler step of $T=1$, the next state is $x^+=u$, so draw four arrows: from each circle, one arrow to $s=0$ labelled $u=0$ and one to $s=1$ labelled $u=1$. Every arrow is deterministic, so write probability $1$ on each and nothing else — the stochasticity of the general MDP has been spent, and the figure should say so rather than hide it. Write the reward *inside* each circle, $r=-s^2$, giving $0$ and $-1$: on this page reward is a property of the state you are in, not of the arrow you took. Put $\gamma=0.9$ on one arrow with a note that the effective horizon is $1/(1-\gamma)=10$ steps.
@@ -936,6 +998,68 @@ MDP 어휘 없이는 [[01-canonical-papers/notes/1-foundations/instructgpt|RLHF]
 ### 과제가 그릴 그림 · Homework diagram
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P4**, 곧 새는 히터 $\dot x=-x+u+d$를 MDP로 읽은 것이다. 과제가 이 그림을 요구한다.
+
+<svg viewBox="0 0 560 530" style="max-width:100%;height:auto" role="img" aria-label="MDP로 읽은 장치 P4: 에이전트의 테두리 위에 놓인 히터의 합산점, 보상과 가치와 행동 가치가 적힌 두 상태 MDP, 두 칸이 줄 수 없는 보증서를 뜻하는 빈 상자">
+  <defs><marker id="arRlk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker><marker id="arRlk2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor" fill-opacity="0.75"/></marker></defs>
+  <path d="M236 87 L236 62 L14 62 L14 138 L236 138 L236 113" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="8 4"/>
+  <text x="18.0" y="55.0" fill="currentColor">정책이 고를 수 있는 것</text>
+  <rect x="30" y="80" width="110" height="40" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="85.0" y="104.0" fill="currentColor" text-anchor="middle">정책 π(u | s)</text>
+  <circle cx="236" cy="100" r="13" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="236.0" y="104.5" fill="currentColor" font-size="13" text-anchor="middle">Σ</text>
+  <line x1="140" y1="100" x2="222" y2="100" stroke="currentColor" stroke-width="1.8" marker-end="url(#arRlk)"/>
+  <text x="181.0" y="94.0" fill="currentColor" text-anchor="middle">u (고른 것)</text>
+  <line x1="302" y1="12" x2="245.9" y2="90.1" stroke="currentColor" stroke-width="1.8" marker-end="url(#arRlk)"/>
+  <text x="312.0" y="18.0" fill="currentColor" opacity="1">d: 바깥에서 오고, 고르지 않았다.</text>
+  <text x="312.0" y="32.0" fill="currentColor" opacity="0.9">u와 같은 Σ로 들어온다.</text>
+  <text x="312.0" y="46.0" fill="currentColor" opacity="0.9">플랜트는 둘을 구별하지 못하고,</text>
+  <text x="312.0" y="60.0" fill="currentColor" opacity="0.9">구별하는 것은 테두리뿐이다.</text>
+  <line x1="250" y1="100" x2="292" y2="100" stroke="currentColor" stroke-width="1.8" marker-end="url(#arRlk)"/>
+  <rect x="292" y="84" width="60" height="32" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="322.0" y="105.0" fill="currentColor" font-size="13" text-anchor="middle">∫</text>
+  <text x="292.0" y="78.0" fill="currentColor">ẋ = −x + u + d</text>
+  <line x1="352" y1="100" x2="518" y2="100" stroke="currentColor" stroke-width="1.8" marker-end="url(#arRlk)"/>
+  <text x="526.0" y="104.0" fill="currentColor" font-size="13">x</text>
+  <circle cx="400" cy="100" r="2.6" fill="currentColor"/>
+  <path d="M400 100 L400 150 L262 150 L245.9 109.9" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#arRlk)"/>
+  <text x="262.0" y="166.0" fill="currentColor" opacity="0.9">−x: 선택이 아니라 결과</text>
+  <circle cx="190" cy="268" r="32" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="190.0" y="258.0" fill="currentColor" text-anchor="middle" opacity="1">s = 0</text>
+  <text x="190.0" y="272.0" fill="currentColor" text-anchor="middle" opacity="0.9">x ≈ 0</text>
+  <text x="190.0" y="286.0" fill="currentColor" text-anchor="middle" opacity="0.9">r = 0</text>
+  <circle cx="380" cy="268" r="32" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="380.0" y="258.0" fill="currentColor" text-anchor="middle" opacity="1">s = 1</text>
+  <text x="380.0" y="272.0" fill="currentColor" text-anchor="middle" opacity="0.9">x ≈ 1</text>
+  <text x="380.0" y="286.0" fill="currentColor" text-anchor="middle" opacity="0.9">r = −1</text>
+  <path d="M206.0 240.3 Q285 186 363.5 239.4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-opacity="0.75" stroke-dasharray="5 3" marker-end="url(#arRlk2)"/>
+  <text x="285.0" y="204.9" fill="currentColor" text-anchor="middle">u = 1, p = 1</text>
+  <text x="285.0" y="190.9" fill="currentColor" text-anchor="middle">Q(0,1) = −0.9, A = −0.9</text>
+  <path d="M364.0 295.7 Q285 350 206.5 296.6" stroke="currentColor" stroke-width="2.2" fill="none" marker-end="url(#arRlk)"/>
+  <text x="285.0" y="341.1" fill="currentColor" text-anchor="middle">u = 0, p = 1, γ = 0.9 (탐욕 선택)</text>
+  <text x="285.0" y="355.1" fill="currentColor" text-anchor="middle" opacity="0.85">실효 지평 1/(1 − γ) = 10스텝</text>
+  <path d="M162.3 284.0 C108 308 108 228 161.4 251.5" stroke="currentColor" stroke-width="2.2" fill="none" marker-end="url(#arRlk)"/>
+  <text x="118.0" y="265.0" fill="currentColor" text-anchor="end">u = 0, p = 1</text>
+  <text x="118.0" y="279.0" fill="currentColor" text-anchor="end" opacity="0.85">(탐욕 선택)</text>
+  <path d="M407.7 252.0 C462 228 462 308 408.6 284.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-opacity="0.75" stroke-dasharray="5 3" marker-end="url(#arRlk2)"/>
+  <text x="454.0" y="258.0" fill="currentColor" opacity="0.9">u = 1, p = 1</text>
+  <text x="454.0" y="272.0" fill="currentColor" opacity="1">Q(1,1) = −1.9</text>
+  <text x="454.0" y="286.0" fill="currentColor" opacity="1">A = −0.9</text>
+  <text x="170.0" y="224.0" fill="currentColor" text-anchor="end">V(0) = 0</text>
+  <text x="400.0" y="224.0" fill="currentColor">V(1) = −1</text>
+  <text x="24.0" y="206.0" fill="currentColor" opacity="0.85">보상 r = −s²는 상태 안에 쓴다</text>
+  <rect x="40" y="374" width="480" height="50" rx="4" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="52.0" y="389.0" fill="currentColor" opacity="0.95">이미 고정점이다. 한 번 더 backup해도 같은 두 수가 돌아온다.</text>
+  <text x="52.0" y="403.0" fill="currentColor" opacity="0.95">어느 상태에서든 최선의 수가 u = 0이고,</text>
+  <text x="52.0" y="417.0" fill="currentColor" opacity="0.95">V(0) = 0.9·V(0)이 V(0) = 0을 강제하기 때문이다.</text>
+  <text x="14.0" y="446.0" fill="currentColor">이 모델의 상태 공간은 두 칸이 전부다. 진짜 d가 뛸 때 칸과 칸</text>
+  <text x="14.0" y="460.0" fill="currentColor">사이에서 무슨 일이 일어나는지 에이전트는 아무 진술도 갖지 못한다.</text>
+  <text x="14.0" y="480.0" fill="currentColor" opacity="0.9">에이전트, 칸 사이:</text>
+  <rect x="14" y="486" width="160" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="5 3"/>
+  <text x="194.0" y="480.0" fill="currentColor" opacity="0.9">제어 트랙, u = −Kx:</text>
+  <rect x="194" y="486" width="352" height="34" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="204.0" y="500.0" fill="currentColor">폐루프 ẋ = −(1 + K)x + d,</text>
+  <text x="204.0" y="514.0" fill="currentColor">극점 하나: −(1 + K)  (5. 제어 이론)</text>
+</svg>
 
 **위 칸 — 플랜트, 합산점 하나로 들어가는 화살표 셋.** 히터의 합산점을 입력 셋과 함께 그린다. 제어기에서 오는 $u$, 피드백 경로에서 오는 $-x$, 그림 바깥에서 오는 $d$. $d$의 화살표가 에이전트가 소유한 모든 것을 감싼 상자를 가로지르게 그리고, 그 상자의 테두리를 굵은 점선으로 그린다. 테두리에 *정책이 고를 수 있는 것*이라 이름 붙인다. $u$는 안에 있고 $d$는 밖에 있으며, $-x$는 선택이 아니라 결과다. 이 테두리 하나가 제어기와 에이전트의 차이이고, 과제가 확인하는 것도 그것 하나다. $d$ 옆에 그것이 $u$와 정확히 같은 지점으로 들어온다고 적는다. 플랜트는 둘을 구별하지 못하고, 구별하는 것은 테두리뿐이다.
 

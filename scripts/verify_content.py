@@ -391,6 +391,22 @@ _r = _sp.run([sys.executable, os.path.join("scripts", "build_glossary_index.py")
 if _r.returncode != 0:
     err("quartz/static/glossary/terms.json", _r.stdout.strip() or "glossary index check failed")
 
+# --- 17. SVG ids unique on a page ---------------------------------------------
+# Both language halves render into one HTML page, and the language toggle hides
+# one half with display:none. A figure whose marker or gradient id repeats an id
+# first defined in the hidden half can lose its arrowheads, so every id inside
+# an inline SVG must be unique on its page (the Korean copy takes a suffix).
+_svg_block = re.compile(r"<svg\b.*?</svg>", re.S)
+_svg_id = re.compile(r'\sid="([^"]+)"')
+for p in md_files:
+    _ids = []
+    for _svg in _svg_block.findall(open(p, encoding="utf-8").read()):
+        _ids += _svg_id.findall(_svg)
+    _dup = sorted({i for i in _ids if _ids.count(i) > 1})
+    if _dup:
+        err(p, f"SVG id defined more than once on the page: {', '.join(_dup)} — "
+               f"give the Korean half's copy its own id")
+
 errors = list(dict.fromkeys(errors))
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")

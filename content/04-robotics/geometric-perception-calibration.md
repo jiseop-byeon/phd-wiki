@@ -41,7 +41,7 @@ No plant in [[02-foundations/lab-plants|0.6 Lab Plants]] is a camera, so this pa
 | $s$ | $0$ | skew, zero for every sensor you will meet |
 | $k_1, k_2$ | $-0.20$, $+0.05$ | radial distortion coefficients (barrel, since $k_1<0$) |
 | $p_1, p_2$ | $0$, $0$ | tangential distortion, zero for a well-seated lens |
-| $b$ | $0.12$ m | stereo baseline: a second identical camera at $t = (-b, 0, 0)$, $R = I$ |
+| $b$ | $0.12$ m | stereo baseline: a second identical camera with $t = (-b, 0, 0)$, $R = I$ |
 | $L$ | $(0.5,\ 0.2,\ 2.0)$ m | the landmark, in camera 1's frame |
 | $A, B, C$ | $(0,0,2)$, $(0.5,0,2)$, $(0,0.4,2)$ m | three calibration-target corners on one plane |
 | $d_{ct}$ | $0.04$ m | hand–eye offset: the camera sits this far behind P2's tool tip |
@@ -55,9 +55,135 @@ Everything else on the page is derived from that table. $L$ lands at $(470, 300)
 
 Draw it once; the problem set asks for the same drawing at different numbers.
 
+<svg viewBox="0 0 560 472" style="max-width:100%;height:auto" role="img" aria-label="Stereo homework diagram for the wrist rig: the pinhole projection of the landmark with its two similar triangles, a second camera 0.12 m to the side with rays to the landmark at 2 m and to a point at 8 m, and the two depth error bars and the distortion shift drawn to scale">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">projection, XZ plane</text>
+  <text x="232" y="24" font-size="12" fill="currentColor" font-weight="600">the second camera</text>
+  <text x="404" y="24" font-size="12" fill="currentColor" font-weight="600">three errors, to scale</text>
+  <path d="M64 300 L64 100 L114 100 Z" fill="currentColor" fill-opacity="0.07" stroke="none"/>
+  <path d="M64 300 L64 180 L94 180 Z" fill="currentColor" fill-opacity="0.24" stroke="none"/>
+  <line x1="64" y1="300" x2="64" y2="50" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="4 3"/>
+  <path d="M64 44 L66.9 51 L61.1 51 Z" fill="currentColor" stroke="none" fill-opacity="0.7"/>
+  <text x="72" y="56" font-size="11" fill="currentColor" fill-opacity="0.8">optical axis</text>
+  <line x1="36" y1="180" x2="190" y2="180" stroke="currentColor" stroke-width="1.8"/>
+  <text x="106" y="173" font-size="11" fill="currentColor">image plane, Z = f</text>
+  <line x1="64" y1="100" x2="114" y2="100" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="114" y1="100" x2="64" y2="300" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="114" cy="100" r="4.2" stroke="none" fill="currentColor"/>
+  <circle cx="94" cy="180" r="3.2" stroke="none" fill="currentColor"/>
+  <circle cx="64" cy="300" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="64" y="318" font-size="12" fill="currentColor" text-anchor="middle">O</text>
+  <text x="122" y="104" font-size="11" fill="currentColor">L (0.5, 2.0) m</text>
+  <line x1="30" y1="100" x2="30" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="27" y1="100" x2="33" y2="100" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="27" y1="300" x2="33" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="46" y1="180" x2="46" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="43" y1="180" x2="49" y2="180" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="43" y1="300" x2="49" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="24" y="144" font-size="12" fill="currentColor" text-anchor="end">Z</text>
+  <text x="38" y="244" font-size="12" fill="currentColor" text-anchor="middle">f</text>
+  <line x1="64" y1="90" x2="114" y2="90" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="64" y1="87" x2="64" y2="93" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="114" y1="87" x2="114" y2="93" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="89" y="84" font-size="12" fill="currentColor" text-anchor="middle">X</text>
+  <line x1="64" y1="187" x2="94" y2="187" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="64" y1="184" x2="64" y2="190" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="94" y1="184" x2="94" y2="190" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="104" y="198" font-size="11" fill="currentColor">u − c<tspan dy="3.1" font-size="8.6">x</tspan></text>
+  <text x="16" y="340" font-size="11" fill="currentColor">(u − c<tspan dy="3.1" font-size="8.6">x</tspan><tspan dy="-3.1">) / f = X / Z</tspan></text>
+  <text x="16" y="356" font-size="11" fill="currentColor">150 / 600 = 0.5 / 2.0</text>
+  <text x="16" y="372" font-size="11" fill="currentColor">so u = 320 + 150 = 470 px</text>
+  <line x1="250" y1="300" x2="250" y2="64" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="4 3"/>
+  <line x1="280" y1="300" x2="280" y2="64" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="4 3"/>
+  <line x1="250" y1="300" x2="287.5" y2="66" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="6 3"/>
+  <line x1="280" y1="300" x2="308.5" y2="66" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="6 3"/>
+  <path d="M287.5 60 L289.3 67.4 L283.5 66.5 Z" fill="currentColor" stroke="none"/>
+  <path d="M308.5 60 L310.6 67.3 L304.8 66.6 Z" fill="currentColor" stroke="none"/>
+  <line x1="250" y1="300" x2="375" y2="100" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="280" y1="300" x2="375" y2="100" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="375" cy="100" r="4.2" stroke="none" fill="currentColor"/>
+  <text x="369" y="91" font-size="12" fill="currentColor" text-anchor="middle">L</text>
+  <path d="M244 309 L250 300 L256 309 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.25" stroke-linejoin="round"/>
+  <path d="M274 309 L280 300 L286 309 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.25" stroke-linejoin="round"/>
+  <text x="241" y="322" font-size="11" fill="currentColor" text-anchor="middle">C<tspan dy="3.1" font-size="8.6">1</tspan></text>
+  <text x="284" y="322" font-size="11" fill="currentColor">C<tspan dy="3.1" font-size="8.6">2</tspan><tspan dx="3.1" dy="-3.1">at X = +0.12 m</tspan></text>
+  <text x="301.5" y="46" font-size="11" fill="currentColor">Z = 8 m: d = 9 px</text>
+  <text x="360" y="112" font-size="11" fill="currentColor" text-anchor="end">d = 36 px</text>
+  <text x="392" y="282" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">X drawn 2.5× Z</text>
+  <line x1="234" y1="374" x2="391.5" y2="374" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7"/>
+  <line x1="244.5" y1="371" x2="244.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="265.5" y1="371" x2="265.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="286.5" y1="371" x2="286.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="307.5" y1="371" x2="307.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="328.5" y1="371" x2="328.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="349.5" y1="371" x2="349.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="370.5" y1="371" x2="370.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="391.5" y1="371" x2="391.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <text x="234" y="340" font-size="11" fill="currentColor" fill-opacity="0.85">both images on one u axis (px)</text>
+  <line x1="343.2" y1="365" x2="343.2" y2="377" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="381" y1="365" x2="381" y2="377" stroke="currentColor" stroke-width="1.8"/>
+  <text x="343.2" y="361" font-size="11" fill="currentColor" text-anchor="middle">434</text>
+  <text x="381" y="361" font-size="11" fill="currentColor" text-anchor="middle">470</text>
+  <line x1="347.6" y1="383" x2="376.6" y2="383" stroke="currentColor" stroke-width="1.1"/>
+  <path d="M381 383 L375.5 385.3 L375.5 380.7 Z" fill="currentColor" stroke="none"/>
+  <path d="M343.2 383 L348.7 380.7 L348.7 385.3 Z" fill="currentColor" stroke="none"/>
+  <text x="362.1" y="397" font-size="11" fill="currentColor" text-anchor="middle">d = 36</text>
+  <line x1="253.4" y1="365" x2="253.4" y2="377" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.9"/>
+  <line x1="262.9" y1="365" x2="262.9" y2="377" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.9"/>
+  <text x="258.1" y="361" font-size="11" fill="currentColor" text-anchor="middle">8 m</text>
+  <line x1="253.4" y1="383" x2="262.9" y2="383" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="253.4" y1="380" x2="253.4" y2="386" stroke="currentColor" stroke-width="1.0"/>
+  <line x1="262.9" y1="380" x2="262.9" y2="386" stroke="currentColor" stroke-width="1.0"/>
+  <text x="258.1" y="397" font-size="11" fill="currentColor" text-anchor="middle">d = 9</text>
+  <line x1="444" y1="300" x2="444" y2="39.6" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7"/>
+  <path d="M444 32.6 L446.5 38.6 L441.5 38.6 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <text x="452" y="43.6" font-size="11" fill="currentColor">Z (m)</text>
+  <line x1="440" y1="300" x2="444" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="304" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0</text>
+  <line x1="440" y1="244" x2="444" y2="244" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="248" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">2</text>
+  <line x1="440" y1="188" x2="444" y2="188" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="192" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">4</text>
+  <line x1="440" y1="132" x2="444" y2="132" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="136" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">6</text>
+  <line x1="440" y1="76" x2="444" y2="76" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="80" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">8</text>
+  <rect x="450" y="242.4" width="10" height="3.1" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.35"/>
+  <line x1="447" y1="242.4" x2="463" y2="242.4" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="447" y1="245.6" x2="463" y2="245.6" stroke="currentColor" stroke-width="1.2"/>
+  <rect x="450" y="51.1" width="10" height="49.8" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.35"/>
+  <line x1="447" y1="51.1" x2="463" y2="51.1" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="447" y1="100.9" x2="463" y2="100.9" stroke="currentColor" stroke-width="1.2"/>
+  <text x="468" y="248" font-size="11" fill="currentColor">(i) ±0.056 m</text>
+  <text x="468" y="76" font-size="11" fill="currentColor">(ii) ±0.89 m</text>
+  <text x="468" y="90" font-size="11" fill="currentColor" fill-opacity="0.85">16× longer</text>
+  <line x1="414" y1="330" x2="414" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="425" y1="330" x2="425" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="436" y1="330" x2="436" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="447" y1="330" x2="447" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="458" y1="330" x2="458" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="469" y1="330" x2="469" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="480" y1="330" x2="480" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="491" y1="330" x2="491" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="502" y1="330" x2="502" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="330" x2="502" y2="330" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="341" x2="502" y2="341" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="352" x2="502" y2="352" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="363" x2="502" y2="363" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="374" x2="502" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <circle cx="469" cy="363" r="3.4" stroke="none" fill="currentColor"/>
+  <line x1="469" y1="363" x2="450" y2="355.4" stroke="currentColor" stroke-width="1.6"/>
+  <path d="M445.5 353.6 L452 353.5 L450.1 358.2 Z" fill="currentColor" stroke="none"/>
+  <text x="414" y="322" font-size="11" fill="currentColor">(iii) image plane</text>
+  <text x="414" y="389" font-size="11" fill="currentColor">2.30 px bias</text>
+  <text x="414" y="403" font-size="11" fill="currentColor" fill-opacity="0.8">1 square = 1 px</text>
+  <text x="16" y="428" font-size="11" fill="currentColor" fill-opacity="0.9">At 8 m the two rays are nearly parallel (d = 9 px against 36): that angle is what depth accuracy is made of.</text>
+  <text x="16" y="444" font-size="11" fill="currentColor" fill-opacity="0.9">The two depth bars share one scale, so the 8 m bar is sixteen times the 2 m bar: depth error grows as Z².</text>
+  <text x="16" y="460" font-size="11" fill="currentColor" fill-opacity="0.9">The 2.30 px shift is a bias on the image plane, not noise: averaging frames does not shrink it.</text>
+</svg>
+
 **Left — the projection, in the $XZ$ plane.** Optical centre $O$ at the origin, the optical axis along $+Z$, the image plane at $Z = f$. The landmark $L$ at $(X, Z) = (0.5, 2.0)$, and the ray from $L$ through $O$ crossing the image plane. Mark the similar triangles that give $u - c_x = f_x X / Z$: they are the derivation, so the drawing has to show both.
 
-**Middle — the second camera.** An identical centre at $X = -0.12$, its own ray to the same $L$. Label the two image points $470$ and $434$ and the disparity $36$ px between them. Then draw the *same* pair of rays for a point at $Z = 8$ m and show them nearly parallel: the disparity is $9$ px, and the angle between the rays is what depth accuracy is actually made of.
+**Middle — the second camera.** An identical centre at $X = +0.12$, its own ray to the same $L$. Label the two image points $470$ and $434$ and the disparity $36$ px between them. Then draw the *same* pair of rays for a point at $Z = 8$ m and show them nearly parallel: the disparity is $9$ px, and the angle between the rays is what depth accuracy is actually made of.
 
 **Right — three error bars on the same axis, to scale.** (i) A $\pm 1$ px disparity error at $Z = 2$ m, which is $\pm 0.056$ m. (ii) The same $\pm 1$ px at $Z = 8$ m, which is $\pm 0.89$ m — sixteen times longer, and it must be drawn sixteen times longer. (iii) The $2.30$ px that ignoring distortion costs at $L$, drawn on the image plane rather than on the depth axis, because it is a different kind of error: a bias, not a noise.
 
@@ -65,7 +191,7 @@ Draw it once; the problem set asks for the same drawing at different numbers.
 
 **1. Project $L$.** In homogeneous form, with the camera frame equal to the world frame so $R = I$ and $t = 0$:
 
-$$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&1\end{pmatrix}\begin{pmatrix}0.5\\0.2\\2.0\end{pmatrix} = \begin{pmatrix}940\\360\\2\end{pmatrix}$$
+$$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&1\end{pmatrix}\begin{pmatrix}0.5\\0.2\\2.0\end{pmatrix} = \begin{pmatrix}940\\600\\2\end{pmatrix}$$
 
 so dividing by the third entry gives $(u, v) = (470, 300)$ px, because the division by $Z$ that perspective performs is exactly the dehomogenization of the third coordinate.
 
@@ -154,7 +280,7 @@ The whole camera is then the composition of extrinsics and intrinsics on homogen
 
 $$\lambda \begin{pmatrix}u\\v\\1\end{pmatrix} = K\,[R \mid t]\begin{pmatrix}X^w\\Y^w\\Z^w\\1\end{pmatrix}, \qquad \lambda = Z^c$$
 
-The scalar $\lambda$ is the depth in the camera frame, so dividing it out *is* the perspective division, and $K$ has to be written this way because a matrix cannot divide — only the dehomogenization can. *Example:* the rig's $K$ takes $L$'s ray $(0.25, 0.10, 1)$ to $(470, 300, 1)$. *Non-example:* $K$ is **not** a change of physical units. It maps a direction to a pixel, so applying $K$ to a point in metres, as $K(0.5, 0.2, 2.0)^\top$, only accidentally works — it gives $(940, 360, 2)$, which dehomogenizes to the right answer precisely because the third row divides by $Z$ again. Feed it a ray you have already normalized and it is correct; feed it a metric point without dividing and you have relied on a coincidence.
+The scalar $\lambda$ is the depth in the camera frame, so dividing it out *is* the perspective division, and $K$ has to be written this way because a matrix cannot divide — only the dehomogenization can. *Example:* the rig's $K$ takes $L$'s ray $(0.25, 0.10, 1)$ to $(470, 300, 1)$. *Non-example:* $K$ is **not** a change of physical units. It maps a direction to a pixel, so applying $K$ to a point in metres, as $K(0.5, 0.2, 2.0)^\top$, only accidentally works — it gives $(940, 600, 2)$, which dehomogenizes to the right answer precisely because the third row divides by $Z$ again. Feed it a ray you have already normalized and it is correct; feed it a metric point without dividing and you have relied on a coincidence.
 
 **Extrinsics, stated completely.** $[R \mid t]$ is the $3\times4$ block of the **SE(3)** transform $T_{cw}$ that expresses a world point in the camera frame, $p^c = Rp^w + t$, with $R \in SO(3)$ and $t \in \mathbb{R}^3$ ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]]). Two conditions make it an extrinsic rather than a pose: it is the **world-to-camera** direction, and it carries **no** scale or shear, since $R^\top R = I$. The camera's *pose in the world* is the inverse $T_{wc}$, whose translation is the camera centre $-R^\top t$, because the centre is the point with $p^c = 0$ and $0 = Rp^w + t$ gives $p^w = -R^\top t$. *Non-example:* storing $t$ and calling it "the camera position" is the single most common calibration-file bug — $t$ equals the camera centre only when $R = I$, and then only up to sign.
 
@@ -176,7 +302,7 @@ then $u = f_xx_d + c_x$ and $v = f_yy_d + c_y$. The **radial** part is even in $
 
 **Stereo worked example**: $f=600$ px, baseline $b=0.12$ m, disparity $d=9$ px
 → $Z = 600\cdot 0.12/9 = 8$ m. One pixel of disparity error ($d=8$) gives $Z=9$ m —
-a 12.5% jump at this range: depth error grows quadratically with distance.
+a 12.5% jump at this range: depth error grows quadratically with distance. Across the optical axis the same pixel is worth only $Z/f$ metres, and turning a pixel-noise σ into the measurement variance a filter needs is [[04-robotics/sensor-models|3.2 Sensor Models & Noise §5 and §8]].
 
 
 
@@ -558,9 +684,135 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
 
 한 번 그려 두면 과제가 같은 그림을 다른 숫자로 묻는다.
 
+<svg viewBox="0 0 560 472" style="max-width:100%;height:auto" role="img" aria-label="손목 리그의 스테레오 과제 그림: 닮은꼴 삼각형 둘로 본 랜드마크의 핀홀 투영, 옆으로 0.12 m 떨어진 두 번째 카메라와 2 m의 랜드마크 및 8 m의 점으로 가는 광선, 그리고 축척대로 그린 깊이 오차 막대 둘과 왜곡 이동">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">XZ 평면의 투영</text>
+  <text x="232" y="24" font-size="12" fill="currentColor" font-weight="600">두 번째 카메라</text>
+  <text x="404" y="24" font-size="12" fill="currentColor" font-weight="600">오차 셋, 축척대로</text>
+  <path d="M64 300 L64 100 L114 100 Z" fill="currentColor" fill-opacity="0.07" stroke="none"/>
+  <path d="M64 300 L64 180 L94 180 Z" fill="currentColor" fill-opacity="0.24" stroke="none"/>
+  <line x1="64" y1="300" x2="64" y2="50" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="4 3"/>
+  <path d="M64 44 L66.9 51 L61.1 51 Z" fill="currentColor" stroke="none" fill-opacity="0.7"/>
+  <text x="72" y="56" font-size="11" fill="currentColor" fill-opacity="0.8">광축</text>
+  <line x1="36" y1="180" x2="190" y2="180" stroke="currentColor" stroke-width="1.8"/>
+  <text x="106" y="173" font-size="11" fill="currentColor">이미지 평면, Z = f</text>
+  <line x1="64" y1="100" x2="114" y2="100" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="114" y1="100" x2="64" y2="300" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="114" cy="100" r="4.2" stroke="none" fill="currentColor"/>
+  <circle cx="94" cy="180" r="3.2" stroke="none" fill="currentColor"/>
+  <circle cx="64" cy="300" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="64" y="318" font-size="12" fill="currentColor" text-anchor="middle">O</text>
+  <text x="122" y="104" font-size="11" fill="currentColor">L (0.5, 2.0) m</text>
+  <line x1="30" y1="100" x2="30" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="27" y1="100" x2="33" y2="100" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="27" y1="300" x2="33" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="46" y1="180" x2="46" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="43" y1="180" x2="49" y2="180" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="43" y1="300" x2="49" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="24" y="144" font-size="12" fill="currentColor" text-anchor="end">Z</text>
+  <text x="38" y="244" font-size="12" fill="currentColor" text-anchor="middle">f</text>
+  <line x1="64" y1="90" x2="114" y2="90" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="64" y1="87" x2="64" y2="93" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="114" y1="87" x2="114" y2="93" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="89" y="84" font-size="12" fill="currentColor" text-anchor="middle">X</text>
+  <line x1="64" y1="187" x2="94" y2="187" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="64" y1="184" x2="64" y2="190" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="94" y1="184" x2="94" y2="190" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="104" y="198" font-size="11" fill="currentColor">u − c<tspan dy="3.1" font-size="8.6">x</tspan></text>
+  <text x="16" y="340" font-size="11" fill="currentColor">(u − c<tspan dy="3.1" font-size="8.6">x</tspan><tspan dy="-3.1">) / f = X / Z</tspan></text>
+  <text x="16" y="356" font-size="11" fill="currentColor">150 / 600 = 0.5 / 2.0</text>
+  <text x="16" y="372" font-size="11" fill="currentColor">그래서 u = 320 + 150 = 470 px</text>
+  <line x1="250" y1="300" x2="250" y2="64" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="4 3"/>
+  <line x1="280" y1="300" x2="280" y2="64" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="4 3"/>
+  <line x1="250" y1="300" x2="287.5" y2="66" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="6 3"/>
+  <line x1="280" y1="300" x2="308.5" y2="66" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="6 3"/>
+  <path d="M287.5 60 L289.3 67.4 L283.5 66.5 Z" fill="currentColor" stroke="none"/>
+  <path d="M308.5 60 L310.6 67.3 L304.8 66.6 Z" fill="currentColor" stroke="none"/>
+  <line x1="250" y1="300" x2="375" y2="100" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="280" y1="300" x2="375" y2="100" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="375" cy="100" r="4.2" stroke="none" fill="currentColor"/>
+  <text x="369" y="91" font-size="12" fill="currentColor" text-anchor="middle">L</text>
+  <path d="M244 309 L250 300 L256 309 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.25" stroke-linejoin="round"/>
+  <path d="M274 309 L280 300 L286 309 Z" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.25" stroke-linejoin="round"/>
+  <text x="241" y="322" font-size="11" fill="currentColor" text-anchor="middle">C<tspan dy="3.1" font-size="8.6">1</tspan></text>
+  <text x="284" y="322" font-size="11" fill="currentColor">C<tspan dy="3.1" font-size="8.6">2</tspan><tspan dy="-3.1">: X = +0.12 m</tspan></text>
+  <text x="301.5" y="46" font-size="11" fill="currentColor">Z = 8 m: d = 9 px</text>
+  <text x="360" y="112" font-size="11" fill="currentColor" text-anchor="end">d = 36 px</text>
+  <text x="392" y="282" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">X를 Z의 2.5배로 그림</text>
+  <line x1="234" y1="374" x2="391.5" y2="374" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7"/>
+  <line x1="244.5" y1="371" x2="244.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="265.5" y1="371" x2="265.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="286.5" y1="371" x2="286.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="307.5" y1="371" x2="307.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="328.5" y1="371" x2="328.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="349.5" y1="371" x2="349.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="370.5" y1="371" x2="370.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <line x1="391.5" y1="371" x2="391.5" y2="377" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.45"/>
+  <text x="234" y="340" font-size="11" fill="currentColor" fill-opacity="0.85">두 이미지를 한 u축에 (px)</text>
+  <line x1="343.2" y1="365" x2="343.2" y2="377" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="381" y1="365" x2="381" y2="377" stroke="currentColor" stroke-width="1.8"/>
+  <text x="343.2" y="361" font-size="11" fill="currentColor" text-anchor="middle">434</text>
+  <text x="381" y="361" font-size="11" fill="currentColor" text-anchor="middle">470</text>
+  <line x1="347.6" y1="383" x2="376.6" y2="383" stroke="currentColor" stroke-width="1.1"/>
+  <path d="M381 383 L375.5 385.3 L375.5 380.7 Z" fill="currentColor" stroke="none"/>
+  <path d="M343.2 383 L348.7 380.7 L348.7 385.3 Z" fill="currentColor" stroke="none"/>
+  <text x="362.1" y="397" font-size="11" fill="currentColor" text-anchor="middle">d = 36</text>
+  <line x1="253.4" y1="365" x2="253.4" y2="377" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.9"/>
+  <line x1="262.9" y1="365" x2="262.9" y2="377" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.9"/>
+  <text x="258.1" y="361" font-size="11" fill="currentColor" text-anchor="middle">8 m</text>
+  <line x1="253.4" y1="383" x2="262.9" y2="383" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="253.4" y1="380" x2="253.4" y2="386" stroke="currentColor" stroke-width="1.0"/>
+  <line x1="262.9" y1="380" x2="262.9" y2="386" stroke="currentColor" stroke-width="1.0"/>
+  <text x="258.1" y="397" font-size="11" fill="currentColor" text-anchor="middle">d = 9</text>
+  <line x1="444" y1="300" x2="444" y2="39.6" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7"/>
+  <path d="M444 32.6 L446.5 38.6 L441.5 38.6 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <text x="452" y="43.6" font-size="11" fill="currentColor">Z (m)</text>
+  <line x1="440" y1="300" x2="444" y2="300" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="304" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0</text>
+  <line x1="440" y1="244" x2="444" y2="244" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="248" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">2</text>
+  <line x1="440" y1="188" x2="444" y2="188" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="192" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">4</text>
+  <line x1="440" y1="132" x2="444" y2="132" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="136" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">6</text>
+  <line x1="440" y1="76" x2="444" y2="76" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="437" y="80" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">8</text>
+  <rect x="450" y="242.4" width="10" height="3.1" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.35"/>
+  <line x1="447" y1="242.4" x2="463" y2="242.4" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="447" y1="245.6" x2="463" y2="245.6" stroke="currentColor" stroke-width="1.2"/>
+  <rect x="450" y="51.1" width="10" height="49.8" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.35"/>
+  <line x1="447" y1="51.1" x2="463" y2="51.1" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="447" y1="100.9" x2="463" y2="100.9" stroke="currentColor" stroke-width="1.2"/>
+  <text x="468" y="248" font-size="11" fill="currentColor">(i) ±0.056 m</text>
+  <text x="468" y="76" font-size="11" fill="currentColor">(ii) ±0.89 m</text>
+  <text x="468" y="90" font-size="11" fill="currentColor" fill-opacity="0.85">16배 길다</text>
+  <line x1="414" y1="330" x2="414" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="425" y1="330" x2="425" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="436" y1="330" x2="436" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="447" y1="330" x2="447" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="458" y1="330" x2="458" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="469" y1="330" x2="469" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="480" y1="330" x2="480" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="491" y1="330" x2="491" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="502" y1="330" x2="502" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="330" x2="502" y2="330" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="341" x2="502" y2="341" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="352" x2="502" y2="352" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="363" x2="502" y2="363" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="414" y1="374" x2="502" y2="374" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <circle cx="469" cy="363" r="3.4" stroke="none" fill="currentColor"/>
+  <line x1="469" y1="363" x2="450" y2="355.4" stroke="currentColor" stroke-width="1.6"/>
+  <path d="M445.5 353.6 L452 353.5 L450.1 358.2 Z" fill="currentColor" stroke="none"/>
+  <text x="414" y="322" font-size="11" fill="currentColor">(iii) 이미지 평면</text>
+  <text x="414" y="389" font-size="11" fill="currentColor">2.30 px 편향</text>
+  <text x="414" y="403" font-size="11" fill="currentColor" fill-opacity="0.8">한 칸 = 1 px</text>
+  <text x="16" y="428" font-size="11" fill="currentColor" fill-opacity="0.9">8 m에서는 두 광선이 거의 나란하다(시차 36이 아니라 9 px). 깊이 정확도의 실체가 그 각도다.</text>
+  <text x="16" y="444" font-size="11" fill="currentColor" fill-opacity="0.9">두 깊이 막대는 같은 축척이라 8 m 막대가 2 m 막대의 열여섯 배다. 깊이 오차는 Z²로 자란다.</text>
+  <text x="16" y="460" font-size="11" fill="currentColor" fill-opacity="0.9">2.30 px 이동은 이미지 평면 위의 편향이지 잡음이 아니다. 프레임을 평균해도 줄지 않는다.</text>
+</svg>
+
 **왼쪽 — $XZ$ 평면에서의 투영.** 원점에 광학 중심 $O$, $+Z$ 를 따라 광축, $Z = f$ 에 이미지 평면. 랜드마크 $L$ 은 $(X, Z) = (0.5, 2.0)$ 이고 $L$ 에서 $O$ 로 가는 광선이 이미지 평면을 지난다. $u - c_x = f_x X / Z$ 를 주는 닮은꼴 삼각형을 표시한다. 그것이 유도 자체이므로 그림이 둘 다 보여야 한다.
 
-**가운데 — 두 번째 카메라.** $X = -0.12$ 에 동일한 중심, 같은 $L$ 로 가는 자기 광선. 두 상점 $470$ 과 $434$, 그리고 그 사이의 시차 $36$ px를 적는다. 그다음 $Z = 8$ m의 점에 대해 *같은* 광선 쌍을 그려 거의 평행함을 보인다. 시차는 $9$ px이고, 두 광선 사이의 각도가 깊이 정확도의 실체다.
+**가운데 — 두 번째 카메라.** $X = +0.12$ 에 동일한 중심, 같은 $L$ 로 가는 자기 광선. 두 상점 $470$ 과 $434$, 그리고 그 사이의 시차 $36$ px를 적는다. 그다음 $Z = 8$ m의 점에 대해 *같은* 광선 쌍을 그려 거의 평행함을 보인다. 시차는 $9$ px이고, 두 광선 사이의 각도가 깊이 정확도의 실체다.
 
 **오른쪽 — 같은 축 위의 오차 막대 셋, 축척대로.** (i) $Z = 2$ m에서 시차 $\pm 1$ px 오차, 곧 $\pm 0.056$ m. (ii) $Z = 8$ m에서의 같은 $\pm 1$ px, 곧 $\pm 0.89$ m — 열여섯 배 길고, 열여섯 배 길게 그려야 한다. (iii) $L$ 에서 왜곡을 무시할 때 치르는 $2.30$ px. 이것은 깊이 축이 아니라 이미지 평면 위에 그린다. 종류가 다른 오차, 잡음이 아니라 편향이기 때문이다.
 
@@ -568,7 +820,7 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
 
 **1. $L$ 을 투영한다.** 카메라 프레임을 세계 프레임과 같게 두어 $R = I$, $t = 0$ 인 동차 형태로
 
-$$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&1\end{pmatrix}\begin{pmatrix}0.5\\0.2\\2.0\end{pmatrix} = \begin{pmatrix}940\\360\\2\end{pmatrix}$$
+$$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&1\end{pmatrix}\begin{pmatrix}0.5\\0.2\\2.0\end{pmatrix} = \begin{pmatrix}940\\600\\2\end{pmatrix}$$
 
 세 번째 성분으로 나누면 $(u, v) = (470, 300)$ px다. 원근이 수행하는 $Z$ 로 나누기가 정확히 세 번째 좌표의 비동차화이기 때문이다.
 
@@ -655,7 +907,7 @@ $$K = \begin{pmatrix} f_x & s & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{pmatrix}$
 
 $$\lambda \begin{pmatrix}u\\v\\1\end{pmatrix} = K\,[R \mid t]\begin{pmatrix}X^w\\Y^w\\Z^w\\1\end{pmatrix}, \qquad \lambda = Z^c$$
 
-스칼라 $\lambda$ 는 카메라 프레임에서의 깊이이므로 그것을 나눠 없애는 것이 *곧* 원근 나눗셈이고, 행렬은 나눌 수 없으므로 — 나눌 수 있는 것은 비동차화뿐이므로 — $K$ 를 이렇게 써야 한다. *예:* 리그의 $K$ 는 $L$ 의 광선 $(0.25, 0.10, 1)$ 을 $(470, 300, 1)$ 로 보낸다. *반례:* $K$ 는 물리 단위의 변환이 **아니다**. 방향을 픽셀로 보내므로 미터 단위 점에 $K(0.5, 0.2, 2.0)^\top$ 처럼 적용하면 우연히 맞는 것이다 — $(940, 360, 2)$ 가 나오고 비동차화하면 정답이 되는데, 세 번째 행이 $Z$ 로 또 나누기 때문일 뿐이다. 이미 정규화한 광선을 넣으면 옳고, 나누지 않은 미터 점을 넣으면 우연에 기댄 것이다.
+스칼라 $\lambda$ 는 카메라 프레임에서의 깊이이므로 그것을 나눠 없애는 것이 *곧* 원근 나눗셈이고, 행렬은 나눌 수 없으므로 — 나눌 수 있는 것은 비동차화뿐이므로 — $K$ 를 이렇게 써야 한다. *예:* 리그의 $K$ 는 $L$ 의 광선 $(0.25, 0.10, 1)$ 을 $(470, 300, 1)$ 로 보낸다. *반례:* $K$ 는 물리 단위의 변환이 **아니다**. 방향을 픽셀로 보내므로 미터 단위 점에 $K(0.5, 0.2, 2.0)^\top$ 처럼 적용하면 우연히 맞는 것이다 — $(940, 600, 2)$ 가 나오고 비동차화하면 정답이 되는데, 세 번째 행이 $Z$ 로 또 나누기 때문일 뿐이다. 이미 정규화한 광선을 넣으면 옳고, 나누지 않은 미터 점을 넣으면 우연에 기댄 것이다.
 
 **외부 파라미터의 완전한 정의.** $[R \mid t]$ 는 세계 점을 카메라 프레임으로 쓰는 **SE(3)** 변환 $T_{cw}$ 의 $3\times4$ 블록이다. $p^c = Rp^w + t$ 이고 $R \in SO(3)$, $t \in \mathbb{R}^3$ 이다([[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]]). 이것을 pose가 아니라 extrinsic으로 만드는 조건이 둘이다: 방향이 **세계에서 카메라로**이고, $R^\top R = I$ 이므로 스케일도 전단도 **없다**. 카메라의 *세계 안 pose*는 역변환 $T_{wc}$ 이고 그 평행 이동이 카메라 중심 $-R^\top t$ 다. 중심은 $p^c = 0$ 인 점이고 $0 = Rp^w + t$ 에서 $p^w = -R^\top t$ 가 나오기 때문이다. *반례:* $t$ 를 저장해 놓고 "카메라 위치"라 부르는 것이 보정 파일에서 가장 흔한 버그다. $t$ 가 카메라 중심과 같은 것은 $R = I$ 일 때뿐이고, 그때도 부호를 빼고서다.
 
@@ -677,7 +929,7 @@ $$\begin{pmatrix}x_d\\y_d\end{pmatrix} = \underbrace{(1 + k_1r^2 + k_2r^4 + k_3r
 
 **스테레오 계산 예제**: $f=600$ px, 기선 $b=0.12$ m, 시차 $d=9$ px
 → $Z = 600\cdot 0.12/9 = 8$ m. 시차 1픽셀 오차($d=8$)면 $Z=9$ m — 이 거리에서 12.5%
-튄다: 깊이 오차는 거리에 제곱으로 자란다.
+튄다: 깊이 오차는 거리에 제곱으로 자란다. 광축을 가로지르는 방향에서는 같은 1픽셀이 $Z/f$미터일 뿐이고, 픽셀 잡음 σ를 필터가 쓰는 측정 분산으로 바꾸는 일은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §5와 §8]]에 있다.
 
 <svg viewBox="0 0 620 246" style="max-width:100%;height:auto" role="img" aria-label="스테레오: 가까운 점은 두 광선을 크게 벌리고, 먼 점은 거의 나란하게 만든다">
   <g stroke="currentColor" stroke-width="1.4" fill="none">

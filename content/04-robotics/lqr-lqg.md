@@ -51,6 +51,80 @@ Draw it once here; the problem set asks for the same figure with one weight chan
 [[04-robotics/control-theory-ce397|5. Control Theory §1]] — the same machine, with the gain now
 chosen by a cost instead of by hand.
 
+<svg viewBox="0 0 560 376" style="max-width:100%;height:auto" role="img" aria-label="Top: the leaky heater's feedback loop with the disturbance entering at the summing junction, and a dashed ledger that prices x with Q and u with R into J. Bottom: the real axis with the open-loop pole at -1 and the closed-loop poles at -1.414 for Q = 1 and -2.236 for Q = 4.">
+  <defs><marker id="aLQR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <circle cx="96" cy="80" r="11"/>
+    <rect x="160" y="60" width="160" height="40" rx="3"/>
+    <rect x="238" y="138" width="60" height="28" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#aLQR)">
+    <line x1="96" y1="26" x2="96" y2="68"/>
+    <line x1="107" y1="80" x2="158" y2="80"/>
+    <line x1="320" y1="80" x2="424" y2="80"/>
+    <polyline points="380,80 380,152 300,152"/>
+    <polyline points="238,152 96,152 96,92"/>
+  </g>
+  <circle cx="380" cy="80" r="3" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="4 3" stroke-opacity="0.75">
+    <polyline points="424,80 452,80"/>
+    <polyline points="472,94 472,204"/>
+    <polyline points="140,152 140,204"/>
+    <polyline points="160,218 300,218"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.75">
+    <rect x="452" y="66" width="40" height="28" rx="3"/>
+    <rect x="120" y="204" width="40" height="28" rx="3"/>
+    <rect x="300" y="204" width="240" height="28" rx="3"/>
+  </g>
+  <circle cx="140" cy="152" r="2.6" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1.1" fill="none">
+    <line x1="50" y1="306.0" x2="519.5" y2="306.0"/>
+    <line x1="470" y1="301.0" x2="470" y2="311.0"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" stroke-opacity="0.45">
+    <line x1="170" y1="303.0" x2="170" y2="309.0"/>
+    <line x1="320" y1="303.0" x2="320" y2="309.0"/>
+  </g>
+  <g stroke="currentColor" fill="none">
+    <path d="M314.5 300.5 L325.5 311.5 M314.5 311.5 L325.5 300.5" stroke-width="1.6" stroke-opacity="0.6"/>
+    <path d="M252.4 300.5 L263.4 311.5 M252.4 311.5 L263.4 300.5" stroke-width="1.6" stroke-opacity="0.6"/>
+    <path d="M129.1 300.5 L140.1 311.5 M129.1 311.5 L140.1 300.5" stroke-width="2.4" stroke-opacity="1"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aLQR)">
+    <line x1="320" y1="290.0" x2="138.6" y2="290.0"/>
+  </g>
+  <g font-size="12" fill="currentColor" text-anchor="middle">
+    <text x="96" y="84">Σ</text>
+    <text x="240" y="85">ẋ = −x + u + d</text>
+    <text x="268" y="157">−K</text>
+    <text x="472" y="85">Q</text>
+    <text x="140" y="223">R</text>
+    <text x="420" y="223">J = ∫<tspan font-size="9.5" dy="4">0</tspan><tspan font-size="9.5" dy="-10">∞</tspan><tspan dy="6"> (Qx² + Ru²) dt</tspan></text>
+  </g>
+  <g font-size="12" fill="currentColor">
+    <text x="104" y="38">d</text>
+    <text x="360" y="73">x</text>
+    <text x="182" y="146">u</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="240" y="52" text-anchor="middle" opacity="0.85">P4, the leaky heater</text>
+    <text x="268" y="184" text-anchor="middle">(Q, R) → P → K: offline, once</text>
+    <text x="268" y="198" text-anchor="middle" opacity="0.85">Q = 4, R = 1 gives P = K = 1.236</text>
+    <text x="540" y="250" text-anchor="end" opacity="0.8">ledger: an accounting path, it never touches the plant</text>
+    <text x="227.3" y="283.0" text-anchor="middle">raise Q/R: the closed-loop pole slides left</text>
+    <text x="328" y="326.0">−1</text>
+    <text x="328" y="340.0" opacity="0.85">open loop</text>
+    <text x="257.9" y="326.0" text-anchor="middle" opacity="0.85">−√2 = −1.414</text>
+    <text x="257.9" y="340.0" text-anchor="middle" opacity="0.85">Q = 1, problem set</text>
+    <text x="134.6" y="326.0" text-anchor="middle">−√5 = −2.236</text>
+    <text x="134.6" y="340.0" text-anchor="middle">Q = 4, worked in §1</text>
+    <text x="470" y="326.0" text-anchor="middle">0</text>
+    <text x="523.5" y="310.0">Re s</text>
+    <text x="12" y="363" opacity="0.9">closed-loop pole −(1 + K) = −√(1 + Q) at R = 1; nothing else in the figure moves</text>
+  </g>
+</svg>
+
 **The loop.** A summing junction; the plant box $\dot x=-x+u+d$ after it; the disturbance $d$
 entering at that junction beside $u$; the state $x$ leaving the box; and a feedback path from $x$
 through a gain block $-K$ back into the junction. That much is the control page's picture, and
@@ -343,6 +417,80 @@ $Q$, 양의 준정부호(모든 $x$에서 $x^\top Q x \ge 0$); 노력에 값을 
 [[04-robotics/control-theory-ce397|5. 제어 이론 §1]]의 새는 히터 $\dot x=-x+u+d$다. 기계는
 그대로이고, 이득을 손이 아니라 비용이 고른다는 점만 다르다.
 
+<svg viewBox="0 0 560 376" style="max-width:100%;height:auto" role="img" aria-label="위: 외란이 합산점으로 들어오는 새는 히터의 피드백 루프와, x에는 Q로 u에는 R로 값을 매겨 J로 모으는 파선 장부. 아래: 개루프 극점 -1, Q = 1의 폐루프 극점 -1.414, Q = 4의 폐루프 극점 -2.236을 찍은 실수축.">
+  <defs><marker id="aLQRk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.6" fill="none">
+    <circle cx="96" cy="80" r="11"/>
+    <rect x="160" y="60" width="160" height="40" rx="3"/>
+    <rect x="238" y="138" width="60" height="28" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#aLQRk)">
+    <line x1="96" y1="26" x2="96" y2="68"/>
+    <line x1="107" y1="80" x2="158" y2="80"/>
+    <line x1="320" y1="80" x2="424" y2="80"/>
+    <polyline points="380,80 380,152 300,152"/>
+    <polyline points="238,152 96,152 96,92"/>
+  </g>
+  <circle cx="380" cy="80" r="3" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="4 3" stroke-opacity="0.75">
+    <polyline points="424,80 452,80"/>
+    <polyline points="472,94 472,204"/>
+    <polyline points="140,152 140,204"/>
+    <polyline points="160,218 300,218"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.75">
+    <rect x="452" y="66" width="40" height="28" rx="3"/>
+    <rect x="120" y="204" width="40" height="28" rx="3"/>
+    <rect x="300" y="204" width="240" height="28" rx="3"/>
+  </g>
+  <circle cx="140" cy="152" r="2.6" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1.1" fill="none">
+    <line x1="50" y1="306.0" x2="519.5" y2="306.0"/>
+    <line x1="470" y1="301.0" x2="470" y2="311.0"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1" stroke-opacity="0.45">
+    <line x1="170" y1="303.0" x2="170" y2="309.0"/>
+    <line x1="320" y1="303.0" x2="320" y2="309.0"/>
+  </g>
+  <g stroke="currentColor" fill="none">
+    <path d="M314.5 300.5 L325.5 311.5 M314.5 311.5 L325.5 300.5" stroke-width="1.6" stroke-opacity="0.6"/>
+    <path d="M252.4 300.5 L263.4 311.5 M252.4 311.5 L263.4 300.5" stroke-width="1.6" stroke-opacity="0.6"/>
+    <path d="M129.1 300.5 L140.1 311.5 M129.1 311.5 L140.1 300.5" stroke-width="2.4" stroke-opacity="1"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aLQRk)">
+    <line x1="320" y1="290.0" x2="138.6" y2="290.0"/>
+  </g>
+  <g font-size="12" fill="currentColor" text-anchor="middle">
+    <text x="96" y="84">Σ</text>
+    <text x="240" y="85">ẋ = −x + u + d</text>
+    <text x="268" y="157">−K</text>
+    <text x="472" y="85">Q</text>
+    <text x="140" y="223">R</text>
+    <text x="420" y="223">J = ∫<tspan font-size="9.5" dy="4">0</tspan><tspan font-size="9.5" dy="-10">∞</tspan><tspan dy="6"> (Qx² + Ru²) dt</tspan></text>
+  </g>
+  <g font-size="12" fill="currentColor">
+    <text x="104" y="38">d</text>
+    <text x="360" y="73">x</text>
+    <text x="182" y="146">u</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="240" y="52" text-anchor="middle" opacity="0.85">P4, 새는 히터</text>
+    <text x="268" y="184" text-anchor="middle">(Q, R) → P → K: 오프라인에서 한 번</text>
+    <text x="268" y="198" text-anchor="middle" opacity="0.85">Q = 4, R = 1이면 P = K = 1.236</text>
+    <text x="540" y="250" text-anchor="end" opacity="0.8">장부: 회계 경로이며 플랜트를 전혀 건드리지 않는다</text>
+    <text x="227.3" y="283.0" text-anchor="middle">Q/R을 올리면 폐루프 극점이 왼쪽으로 미끄러진다</text>
+    <text x="328" y="326.0">−1</text>
+    <text x="328" y="340.0" opacity="0.85">개루프</text>
+    <text x="257.9" y="326.0" text-anchor="middle" opacity="0.85">−√2 = −1.414</text>
+    <text x="257.9" y="340.0" text-anchor="middle" opacity="0.85">Q = 1, 과제</text>
+    <text x="134.6" y="326.0" text-anchor="middle">−√5 = −2.236</text>
+    <text x="134.6" y="340.0" text-anchor="middle">Q = 4, §1의 계산</text>
+    <text x="470" y="326.0" text-anchor="middle">0</text>
+    <text x="523.5" y="310.0">Re s</text>
+    <text x="12" y="363" opacity="0.9">R = 1에서 폐루프 극점 −(1 + K) = −√(1 + Q), 그림의 나머지는 움직이지 않는다</text>
+  </g>
+</svg>
+
 **루프.** 합산점 하나, 그 뒤에 플랜트 상자 $\dot x=-x+u+d$, 그 합산점으로 $u$와 나란히 들어오는
 외란 $d$, 상자에서 나오는 상태 $x$, 그리고 $x$에서 이득 상자 $-K$를 거쳐 합산점으로 돌아가는
 피드백 경로. 여기까지는 제어 이론 페이지의 그림 그대로이고, 바뀐 것이 없다.
@@ -575,8 +723,8 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** $\dot x=-x+u+d$, $Q=1$, $R=1
 
 > [!tip]- 정답 · Solutions
 > 1. 플랜트 극점은 이미 $-1$; $Q$는 $x$, $R$은 $u$에 값을 매긴다.
-> 2. $P=-1+\sqrt2\approx0.414$, $K\approx0.414$. 극점 $\approx-1.414$, $x_\mathrm{ss}\approx0.707$. $K=4$면 극점 $-5$, $x_\mathrm{ss}=0.2$.
-> 3. 이미 안정한 플랜트에서 $Q=R=1$은 거의 안 움직인다. $K=4$는 손 선택(CE397 §1은 $10$배 억제에 $K=9$). $Q/R$을 올리면 $K$가 커져 $x_\mathrm{ss}$는 줄고 노력·잡음은 늘는다.
+> 2. $-2P-P^2+1=0\Rightarrow P=-1+\sqrt2\approx0.414$, $K\approx0.414$. 극점 $\approx-1.414$, $x_\mathrm{ss}\approx0.707$. $K=4$면 극점 $-5$, $x_\mathrm{ss}=0.2$.
+> 3. 이미 안정한 플랜트에서 $Q=R=1$은 거의 안 움직인다. $K=4$는 손 선택(CE397 §1은 $10$배 억제에 $K=9$). $Q/R$을 올리면 $K$가 커져 $x_\mathrm{ss}$는 줄고 노력·잡음은 는다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

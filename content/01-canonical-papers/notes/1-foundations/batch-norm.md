@@ -36,7 +36,7 @@ Training deep nets in 2014 was fragile: it demanded small learning rates and car
 
 - For each feature over a mini-batch: $\hat{x} = (x - \mu_B)/\sqrt{\sigma_B^2 + \epsilon}$, then $y = \gamma \hat{x} + \beta$ with learnable $\gamma, \beta$.
 - Normalization is inside the graph — gradients flow through $\mu_B$ and $\sigma_B$, so the optimizer can't fight it.
-- At inference, replace batch statistics with running averages collected during training.
+- At inference, replace batch statistics with fixed population statistics. The paper computes them by averaging the mini-batch means and unbiased variances over training batches; running (moving) averages, the usual implementation today, appear in the paper as a way to track accuracy while training.
 - Applied before the nonlinearity, typically after conv/FC layers.
 
 ### Results
@@ -78,7 +78,7 @@ Made deep networks routinely trainable — [[01-canonical-papers/notes/1-foundat
 
 - 미니배치에서 특징별로: $\hat{x} = (x - \mu_B)/\sqrt{\sigma_B^2 + \epsilon}$, 이후 학습 가능한 $\gamma, \beta$로 $y = \gamma \hat{x} + \beta$
 - 정규화가 계산 그래프 안에 있다 — $\mu_B$, $\sigma_B$를 통해서도 그래디언트가 흘러서 옵티마이저와 싸우지 않는다.
-- 추론 시에는 배치 통계 대신 학습 중 수집한 이동 평균을 사용.
+- 추론 시에는 배치 통계 대신 고정된 모집단 통계를 쓴다. 논문은 학습 미니배치들의 평균과 불편 분산을 평균해 그것을 구한다. 오늘날 흔한 구현인 이동 평균은 논문에서 학습 중 정확도를 추적하는 방법으로 나온다.
 - 주로 conv/FC 층 뒤, 비선형 함수 앞에 적용.
 
 ### 결과
@@ -108,6 +108,6 @@ Made deep networks routinely trainable — [[01-canonical-papers/notes/1-foundat
 ### 읽고 나면 말할 수 있어야 하는 것 · After reading
 
 - [ ] Say what is normalized over which axis (the minibatch), and why $\gamma, \beta$ exist · 무엇을 어느 축(미니배치)으로 정규화하는지, $\gamma, \beta$가 왜 있는지 말할 수 있다
-- [ ] Name the class of bug created by the gap between training batch statistics and inference running averages · 학습 시 배치 통계와 추론 시 이동 평균의 차이가 만드는 버그 유형을 말할 수 있다
+- [ ] Name the class of bug created by the gap between training batch statistics and inference population statistics · 학습 시 배치 통계와 추론 시 모집단 통계의 차이가 만드는 버그 유형을 말할 수 있다
 - [ ] Explain why it breaks on small batches and sequences, and why Transformers use LayerNorm · 작은 배치·시퀀스에서 깨지는 이유와 Transformer가 LayerNorm을 쓰는 이유를 말할 수 있다
 - [ ] Say how the internal-covariate-shift explanation was later challenged · internal covariate shift 설명이 이후 어떻게 반박됐는지 말할 수 있다

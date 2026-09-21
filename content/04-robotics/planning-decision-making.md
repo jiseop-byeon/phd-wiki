@@ -14,7 +14,7 @@ Choosing an executable future; group I specialises this for unstructured environ
 
 Planning asks how a robot should choose a feasible sequence of future states and actions to reach a goal. The difficulty is not merely finding a short path: robot geometry, dynamics, contact, uncertainty, computation time, and changing observations constrain what can actually be executed.
 
-*Scope: this page teaches the objects and the guarantees — the five words of §1, the spaces and the map and cost representations of §2, the four strengths of completeness in §5, the constraints that make a path undrivable in §5.5, and the shape of the trajectory-optimization program in §6 — plus enough of each method family to place a paper in it. It does not teach any single algorithm to implementation depth. A\*'s proofs and code are in [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms §6]], the sampling planners are surveyed here and implemented nowhere in this wiki, receding-horizon control is [[04-robotics/mpc|7. MPC]], policy learning is [[02-foundations/rl-basics|RL Basics]], and one navigation stack's concrete parameters are [[04-robotics/ros2/navigation-nav2|22.4 Nav2]].*
+*Scope: this page teaches the objects and the guarantees — the five words of §1, the spaces and the map and cost representations of §2, the four strengths of completeness in §5, the constraints that make a path undrivable in §5.5, and the shape of the trajectory-optimization program in §6 — plus enough of each method family to place a paper in it. It does not teach any single algorithm to implementation depth. A\*'s proofs and code are in [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms §6]], the sampling planners are surveyed here and implemented nowhere in this wiki, receding-horizon control is [[04-robotics/mpc|7. MPC]], policy learning is [[02-foundations/rl-basics|RL Basics]], and one navigation stack's concrete parameters are [[04-robotics/ros2/navigation-nav2|25.9 Nav2]].*
 
 > [!info] Depth target
 > Distinguish search, motion planning, trajectory optimization, task planning, policy learning, and control; read feasibility and optimality claims; and identify whether a generated trajectory is collision-free, dynamically feasible, and evaluated in closed loop.
@@ -30,6 +30,68 @@ Planning asks how a robot should choose a feasible sequence of future states and
 Two panels side by side, the same pairing as the figure in §2, and the problem set asks for this
 drawing. The object is **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — unit links, base
 at the world origin — and the panel is the half-plane $x<1$ m.
+
+<svg viewBox="0 0 560 320" style="max-width:100%;height:auto" role="img" aria-label="Left: P2's workspace with the reach disc of radius 2 m, the panel line x = 1 m, the task point (1, 1), the arm straight with its tip at (2, 0) and at the frozen pose with its elbow at (1, 0) and tip at (1, 1), and the quarter circle the tip traces. Right: the configuration-space torus with q_start = (0, 0), q_goal = (0, 90 degrees), the single edge between them, the region the tip check forbids shaded, and the goal on its boundary. An arrow f, the forward kinematics, joins them.">
+  <defs><marker id="aPDM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <circle cx="128.0" cy="162.0" r="100" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="128.0" y1="162.0" x2="57.3" y2="91.3" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.55" stroke-dasharray="2 3"/>
+  <line x1="178.0" y1="75.4" x2="178.0" y2="248.6" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M178.0 79.4 l-7 7 M178.0 88.4 l-7 7 M178.0 97.4 l-7 7 M178.0 106.4 l-7 7 M178.0 115.4 l-7 7 M178.0 124.4 l-7 7 M178.0 133.4 l-7 7 M178.0 142.4 l-7 7 M178.0 151.4 l-7 7 M178.0 160.4 l-7 7 M178.0 169.4 l-7 7 M178.0 178.4 l-7 7 M178.0 187.4 l-7 7 M178.0 196.4 l-7 7 M178.0 205.4 l-7 7 M178.0 214.4 l-7 7 M178.0 223.4 l-7 7 M178.0 232.4 l-7 7 M178.0 241.4 l-7 7" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" fill="none"/>
+  <path d="M228.0 162.0 A50 50 0 0 0 178.0 112.0" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <g stroke="currentColor" stroke-linecap="round" fill="none">
+    <polyline points="128.0,162.0 178.0,162.0 228.0,162.0" stroke-width="4" stroke-opacity="0.35"/>
+    <polyline points="128.0,162.0 178.0,162.0 178.0,112.0" stroke-width="3"/>
+  </g>
+  <circle cx="128.0" cy="162.0" r="4.5" fill="currentColor"/>
+  <circle cx="178.0" cy="162.0" r="3.5" fill="currentColor"/>
+  <circle cx="228.0" cy="162.0" r="3.5" fill="currentColor" fill-opacity="0.45"/>
+  <circle cx="178.0" cy="112.0" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <path d="M352 72 h180 v180 h-180 Z M397 117 L398 110.4 L399 108.2 L400 106.8 L401 105.7 L402 104.9 L403 104.2 L404 103.6 L405 103.2 L406 102.9 L407 102.6 L408 102.4 L409 102.2 L410 102.1 L411 102 L412 102 L413 102 L414 102.1 L415 102.2 L416 102.3 L417 102.5 L418 102.7 L419 102.9 L420 103.1 L421 103.4 L422 103.8 L423 104.1 L424 104.5 L425 104.9 L426 105.4 L427 105.8 L428 106.4 L429 106.9 L430 107.5 L431 108.1 L432 108.7 L433 109.4 L434 110.1 L435 110.9 L436 111.6 L437 112.4 L438 113.3 L439 114.2 L440 115.1 L441 116 L442 117 L443 118 L444 119.1 L445 120.2 L446 121.3 L447 122.4 L448 123.6 L449 124.9 L450 126.1 L451 127.4 L452 128.7 L453 130.1 L454 131.5 L455 132.9 L456 134.4 L457 135.8 L458 137.4 L459 138.9 L460 140.5 L461 142.1 L462 143.8 L463 145.4 L464 147.1 L465 148.9 L466 150.7 L467 152.5 L468 154.3 L469 156.2 L470 158.1 L471 160 L472 162 L473 164 L474 166.1 L475 168.2 L476 170.4 L477 172.6 L478 174.9 L479 177.2 L480 179.6 L481 182.2 L482 184.9 L483 187.7 L484 190.8 L485 194.2 L486 198.4 L487 207 L487 207 L486 213.6 L485 215.8 L484 217.2 L483 218.3 L482 219.1 L481 219.8 L480 220.4 L479 220.8 L478 221.1 L477 221.4 L476 221.6 L475 221.8 L474 221.9 L473 222 L472 222 L471 222 L470 221.9 L469 221.8 L468 221.7 L467 221.5 L466 221.3 L465 221.1 L464 220.9 L463 220.6 L462 220.2 L461 219.9 L460 219.5 L459 219.1 L458 218.6 L457 218.2 L456 217.6 L455 217.1 L454 216.5 L453 215.9 L452 215.3 L451 214.6 L450 213.9 L449 213.1 L448 212.4 L447 211.6 L446 210.7 L445 209.8 L444 208.9 L443 208 L442 207 L441 206 L440 204.9 L439 203.8 L438 202.7 L437 201.6 L436 200.4 L435 199.1 L434 197.9 L433 196.6 L432 195.3 L431 193.9 L430 192.5 L429 191.1 L428 189.6 L427 188.2 L426 186.6 L425 185.1 L424 183.5 L423 181.9 L422 180.2 L421 178.6 L420 176.9 L419 175.1 L418 173.3 L417 171.5 L416 169.7 L415 167.8 L414 165.9 L413 164 L412 162 L411 160 L410 157.9 L409 155.8 L408 153.6 L407 151.4 L406 149.1 L405 146.8 L404 144.4 L403 141.8 L402 139.1 L401 136.3 L400 133.2 L399 129.8 L398 125.6 L397 117 Z" fill="currentColor" fill-opacity="0.16" fill-rule="evenodd"/>
+  <path d="M397 117 L398 110.4 L399 108.2 L400 106.8 L401 105.7 L402 104.9 L403 104.2 L404 103.6 L405 103.2 L406 102.9 L407 102.6 L408 102.4 L409 102.2 L410 102.1 L411 102 L412 102 L413 102 L414 102.1 L415 102.2 L416 102.3 L417 102.5 L418 102.7 L419 102.9 L420 103.1 L421 103.4 L422 103.8 L423 104.1 L424 104.5 L425 104.9 L426 105.4 L427 105.8 L428 106.4 L429 106.9 L430 107.5 L431 108.1 L432 108.7 L433 109.4 L434 110.1 L435 110.9 L436 111.6 L437 112.4 L438 113.3 L439 114.2 L440 115.1 L441 116 L442 117 L443 118 L444 119.1 L445 120.2 L446 121.3 L447 122.4 L448 123.6 L449 124.9 L450 126.1 L451 127.4 L452 128.7 L453 130.1 L454 131.5 L455 132.9 L456 134.4 L457 135.8 L458 137.4 L459 138.9 L460 140.5 L461 142.1 L462 143.8 L463 145.4 L464 147.1 L465 148.9 L466 150.7 L467 152.5 L468 154.3 L469 156.2 L470 158.1 L471 160 L472 162 L473 164 L474 166.1 L475 168.2 L476 170.4 L477 172.6 L478 174.9 L479 177.2 L480 179.6 L481 182.2 L482 184.9 L483 187.7 L484 190.8 L485 194.2 L486 198.4 L487 207 L487 207 L486 213.6 L485 215.8 L484 217.2 L483 218.3 L482 219.1 L481 219.8 L480 220.4 L479 220.8 L478 221.1 L477 221.4 L476 221.6 L475 221.8 L474 221.9 L473 222 L472 222 L471 222 L470 221.9 L469 221.8 L468 221.7 L467 221.5 L466 221.3 L465 221.1 L464 220.9 L463 220.6 L462 220.2 L461 219.9 L460 219.5 L459 219.1 L458 218.6 L457 218.2 L456 217.6 L455 217.1 L454 216.5 L453 215.9 L452 215.3 L451 214.6 L450 213.9 L449 213.1 L448 212.4 L447 211.6 L446 210.7 L445 209.8 L444 208.9 L443 208 L442 207 L441 206 L440 204.9 L439 203.8 L438 202.7 L437 201.6 L436 200.4 L435 199.1 L434 197.9 L433 196.6 L432 195.3 L431 193.9 L430 192.5 L429 191.1 L428 189.6 L427 188.2 L426 186.6 L425 185.1 L424 183.5 L423 181.9 L422 180.2 L421 178.6 L420 176.9 L419 175.1 L418 173.3 L417 171.5 L416 169.7 L415 167.8 L414 165.9 L413 164 L412 162 L411 160 L410 157.9 L409 155.8 L408 153.6 L407 151.4 L406 149.1 L405 146.8 L404 144.4 L403 141.8 L402 139.1 L401 136.3 L400 133.2 L399 129.8 L398 125.6 L397 117 Z" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <rect x="352" y="72" width="180" height="180" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <path d="M348 210 L352 204 L356 210 M528 210 L532 204 L536 210 M496 68 L502 72 L496 76 M502 68 L508 72 L502 76 M496 248 L502 252 L496 256 M502 248 L508 252 L502 256" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <g stroke="currentColor" stroke-width="1" stroke-opacity="0.5">
+    <line x1="397" y1="252" x2="397" y2="256"/>
+    <line x1="348" y1="207" x2="352" y2="207"/>
+    <line x1="442" y1="252" x2="442" y2="256"/>
+    <line x1="348" y1="162" x2="352" y2="162"/>
+    <line x1="487" y1="252" x2="487" y2="256"/>
+    <line x1="348" y1="117" x2="352" y2="117"/>
+  </g>
+  <line x1="442" y1="162" x2="442" y2="117" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="442" cy="162" r="4" fill="currentColor"/>
+  <circle cx="442" cy="117" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="442" y1="111" x2="442" y2="64" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <path d="M437 139.5 Q 327.7 82.6 218.4 126.6" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#aPDM)"/>
+  <circle cx="442" cy="139.5" r="2.6" fill="currentColor"/>
+  <circle cx="213.4" cy="126.6" r="2.6" fill="currentColor"/>
+  <g font-size="11" fill="currentColor">
+    <text x="10" y="20" font-size="12">workspace: positions (m)</text>
+    <text x="322" y="20" font-size="12">configuration space C = T²: angles</text>
+    <text x="119.0" y="166.0" text-anchor="end">base (0, 0)</text>
+    <text x="169.0" y="179.0" text-anchor="end" opacity="0.9">elbow (1, 0)</text>
+    <text x="234.0" y="156.0" opacity="0.75">tip (2, 0)</text>
+    <text x="170.0" y="104.0" text-anchor="end">p* = (1, 1)</text>
+    <text x="182.0" y="71.4">panel x = 1 m</text>
+    <text x="97" y="113" text-anchor="middle" opacity="0.85">r = 2 m</text>
+    <text x="209" y="110.5" opacity="0.85">tip path</text>
+    <text x="292" y="100.6" text-anchor="middle">f: forward kinematics</text>
+    <text x="417" y="149.5" text-anchor="middle" font-size="12">C<tspan font-size="9.5" dy="3">free</tspan><tspan dy="-3" dx="1.5"></tspan></text>
+    <text x="358" y="244" opacity="0.85">tip x &lt; 1: forbidden</text>
+    <text x="449" y="175">q<tspan font-size="9.5" dy="3">start</tspan><tspan dy="-3" dx="1.5"> (0°, 0°)</tspan></text>
+    <text x="442" y="60" text-anchor="middle">q<tspan font-size="9.5" dy="3">goal</tspan><tspan dy="-3" dx="1.5"> (0°, 90°): on the boundary, contact</tspan></text>
+    <text x="352" y="267" text-anchor="middle" font-size="11">−180°</text>
+    <text x="346" y="256" text-anchor="end" font-size="11">−180°</text>
+    <text x="442" y="267" text-anchor="middle" font-size="11">0°</text>
+    <text x="346" y="166" text-anchor="end" font-size="11">0°</text>
+    <text x="532" y="267" text-anchor="middle" font-size="11">180°</text>
+    <text x="346" y="76" text-anchor="end" font-size="11">180°</text>
+    <text x="482" y="267" font-size="12">θ₁</text>
+    <text x="326" y="150" font-size="12">θ₂</text>
+    <text x="532.0" y="284" text-anchor="end" font-size="11" opacity="0.85">opposite edges identified: 179° and −179° are neighbours</text>
+    <text x="10" y="307" opacity="0.9">Planner guarantees are claims about the right panel; what the robot does is on the left.</text>
+  </g>
+</svg>
 
 **Left panel — the workspace.** The base at the origin, the reachable disc of radius $2$ m around
 it, the panel as a vertical line at $x=1$ with hatching on its far side, and the task point
@@ -126,7 +188,7 @@ appendix.
   to enter. As a function of a cell's distance $d$ to the nearest obstacle cell, with inscribed robot radius $r$ and decay rate $\alpha>0$, ROS costmaps use an exponential:
   $$c(d)=\begin{cases}c_{\text{lethal}} & d=0\\ c_{\text{insc}} & 0<d\le r\\ c_{\text{insc}}\,e^{-\alpha(d-r)} & r<d\le d_{\text{infl}}\\ 0 & d>d_{\text{infl}}\end{cases}$$
   so a cell within the inscribed radius means certain collision for a robot centred there, the cost decays with distance outside it, and cells beyond the inflation radius $d_{\text{infl}}$ cost nothing. With $\alpha=3$ /m, a cell 0.2 m outside the inscribed radius costs $e^{-0.6}=0.55$ of the inscribed value; raising $\alpha$ narrows the margin.
-  **Three radii, and they are not the same number.** A footprint has an **inscribed radius** $r_{\text{insc}}$, the radius of the largest disc centred at the robot's origin that fits *inside* it, and a **circumscribed radius** $r_{\text{circ}}$, the smallest disc that *contains* it. Within $r_{\text{insc}}$ of an obstacle the robot is in collision at every heading; beyond $r_{\text{circ}}$ it is clear at every heading; in between, collision depends on heading, which is the band a footprint check exists to resolve. The **inflation radius** $d_{\text{infl}}$ is a third thing entirely: the distance at which the decaying cost is truncated to zero. It is a *preference* knob and not a safety margin — the safety is $r_{\text{insc}}$, which comes from the footprint and not from $d_{\text{infl}}$. **Non-example, and the most common misconfiguration in the ecosystem:** reading `inflation_radius` as "keep the robot this far from walls" ([[04-robotics/ros2/navigation-nav2|22.4 Nav2 §5]]). With $r_{\text{insc}}=0.30$ m, $\alpha=3$ /m, $d_{\text{infl}}=1.00$ m and the ROS byte scale ($c_{\text{lethal}}=254$ for the obstacle cell, $c_{\text{insc}}=253$, and the skirt scaled by $252$), the cost is $252\,e^{-0.6}=138$ at $d=0.50$ m, $56$ at $0.80$ m and $30$ just inside $1.00$ m — and $0$ just outside it. That step of 30 at $d_{\text{infl}}$ is a **cost cliff**, a discontinuity the gradient-following argument above does not survive, so $d_{\text{infl}}$ wants to be large enough that the truncated value is small.
+  **Three radii, and they are not the same number.** A footprint has an **inscribed radius** $r_{\text{insc}}$, the radius of the largest disc centred at the robot's origin that fits *inside* it, and a **circumscribed radius** $r_{\text{circ}}$, the smallest disc that *contains* it. Within $r_{\text{insc}}$ of an obstacle the robot is in collision at every heading; beyond $r_{\text{circ}}$ it is clear at every heading; in between, collision depends on heading, which is the band a footprint check exists to resolve. The **inflation radius** $d_{\text{infl}}$ is a third thing entirely: the distance at which the decaying cost is truncated to zero. It is a *preference* knob and not a safety margin — the safety is $r_{\text{insc}}$, which comes from the footprint and not from $d_{\text{infl}}$. **Non-example, and the most common misconfiguration in the ecosystem:** reading `inflation_radius` as "keep the robot this far from walls" ([[04-robotics/ros2/navigation-nav2|25.9 Nav2 §5]]). With $r_{\text{insc}}=0.30$ m, $\alpha=3$ /m, $d_{\text{infl}}=1.00$ m and the ROS byte scale ($c_{\text{lethal}}=254$ for the obstacle cell, $c_{\text{insc}}=253$, and the skirt scaled by $252$), the cost is $252\,e^{-0.6}=138$ at $d=0.50$ m, $56$ at $0.80$ m and $30$ just inside $1.00$ m — and $0$ just outside it. That step of 30 at $d_{\text{infl}}$ is a **cost cliff**, a discontinuity the gradient-following argument above does not survive, so $d_{\text{infl}}$ wants to be large enough that the truncated value is small.
 - **Costmap** — an occupancy grid whose cells carry *traversal cost* rather than a binary.
   Cost combines inflation with whatever else the robot should avoid: unknown space, rough
   terrain, one-way regions, keep-out zones. **A costmap is where a policy preference stops
@@ -151,7 +213,7 @@ appendix.
   static map also claims, so either the wall is erased or the person is permanent — which is the
   whole reason the layers exist. *Why it matters when reading*: "the costmap" in a paper is a
   composition, and which layer produced a cost decides whether anything can clear it
-  ([[04-robotics/ros2/navigation-nav2|22.4 Nav2 §4]] for one stack's layer list and defaults).
+  ([[04-robotics/ros2/navigation-nav2|25.9 Nav2 §4]] for one stack's layer list and defaults).
 - **Frontier** — a boundary cell between *known free* and *unknown*: precisely, a cell that is itself known free and has at least one unknown neighbour (4- or 8-connected). **Frontier exploration**
   is the classic answer to "where next": drive to the nearest frontier, and the known region
   grows until no frontier remains. Some semantic-navigation methods keep this candidate set
@@ -243,7 +305,7 @@ Suppose two frontier nodes have $(g,h)=(6,3)$ and $(4,6)$. Their A* priorities a
 
 §4's $(g,h)$ pairs were bare numbers. Here they come from an object. **P2** from
 [[02-foundations/lab-plants|0.6 Lab Plants]], unit links $L_1=L_2=1$ m, base at the world origin;
-the panel is the half-plane $x<1$ m and the task point on it is $p^\star=(1,1)$ m. The arm starts
+the panel is the half-plane $x<1$ m and the task point on it is $p^\star=(1,1)$ m. This half-plane is a keep-out region for the tip alone, not the physical panel of [[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2]] ($x\ge1$): the check below tests only the tip, so the base standing in $x<1$ does not count, whereas MR ch.2 checks the whole arm, and there the straight pose would collide. The arm starts
 folded out straight, $q_\mathrm{start}=(0°,0°)$, tip at $(2,0)$. The question is the one §3 exists
 for — which edge does A* return — and answering it needs all of §1, §2 and §3 at once.
 
@@ -324,7 +386,7 @@ $$U(q)=\tfrac12 k_a\lVert q-q_{\text{goal}}\rVert^2+\begin{cases}\tfrac12 k_r\bi
 Here $k_a,k_r>0$ are gains, $\rho(q)$ is the distance to the nearest obstacle and $\rho_0$ is the range beyond which obstacles are ignored, so the robot slides toward the goal and is pushed back ever harder as $\rho\to0$. A **navigation function** (Rimon & Koditschek 1992) is a potential that satisfies four further conditions: it is smooth on the free space, has a *unique* minimum at the goal, is uniformly maximal on every obstacle boundary, and has only non-degenerate critical points. Its gradient therefore reaches the goal from almost every start.
 
 > [!example] Worked example · 계산 예제
-> Goal at the origin, a point obstacle at $(1,0)$, and $k_a=k_r=\rho_0=1$. On the segment between them the attractive force at $x$ is $-x$ and the repulsive force is $(1/\rho-1)/\rho^2$ with $\rho=x-1$. They cancel at $x=1.618$ ($\rho=0.618$), so a robot released at $(2,0)$ comes to rest there, short of the goal.
+> Goal at the origin, a point obstacle at $(1,0)$, and $k_a=k_r=\rho_0=1$. On the axis beyond the obstacle ($x>1$) the attractive force at $x$ is $-x$ and the repulsive force is $(1/\rho-1)/\rho^2$ with $\rho=x-1$. They cancel at $x=1.618$ ($\rho=0.618$), so a robot released at $(2,0)$ comes to rest there, short of the goal.
 >
 > **Non-example of a local minimum:** that point is a *saddle*. Moving sideways lowers the potential, $\partial^2U/\partial y^2=1-1.618/0.618=-1.62<0$, so any perturbation lets the robot slide around the obstacle. A concave obstacle such as a U-shaped wall creates a true minimum, and that is the trap the table warns of.
 
@@ -592,7 +654,7 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 어려움은 짧은 경로 찾기가 아니다: 로봇 형상, 동역학, 접촉, 불확실성, 계산 시간, 변하는
 관측이 실제로 실행할 수 있는 것을 제약한다.
 
-*범위: 이 페이지는 대상과 보장을 가르친다 — §1의 다섯 단어, §2의 공간들과 지도·비용 표현, §5의 완전성 네 강도, §5.5의 경로를 운전 불가능하게 만드는 제약들, §6의 궤적 최적화 문제 형태 — 그리고 논문을 어느 계열에 놓을지 판단할 만큼의 각 방법군. 어떤 알고리즘도 구현 깊이로는 가르치지 않는다. A\*의 증명과 코드는 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘 §6]]에 있고, 샘플링 플래너는 여기서 조망만 하며 이 위키 어디에도 구현하지 않는다. 후퇴 지평 제어는 [[04-robotics/mpc|7. MPC]], 정책 학습은 [[02-foundations/rl-basics|RL 기초]], 실제 내비게이션 스택 하나의 구체적 파라미터는 [[04-robotics/ros2/navigation-nav2|22.4 Nav2]]다.*
+*범위: 이 페이지는 대상과 보장을 가르친다 — §1의 다섯 단어, §2의 공간들과 지도·비용 표현, §5의 완전성 네 강도, §5.5의 경로를 운전 불가능하게 만드는 제약들, §6의 궤적 최적화 문제 형태 — 그리고 논문을 어느 계열에 놓을지 판단할 만큼의 각 방법군. 어떤 알고리즘도 구현 깊이로는 가르치지 않는다. A\*의 증명과 코드는 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘 §6]]에 있고, 샘플링 플래너는 여기서 조망만 하며 이 위키 어디에도 구현하지 않는다. 후퇴 지평 제어는 [[04-robotics/mpc|7. MPC]], 정책 학습은 [[02-foundations/rl-basics|RL 기초]], 실제 내비게이션 스택 하나의 구체적 파라미터는 [[04-robotics/ros2/navigation-nav2|25.9 Nav2]]다.*
 
 > [!info] 깊이 목표
 > 탐색·모션 플래닝·궤적 최적화·과제 계획·정책 학습·제어를 구분한다; feasibility와
@@ -610,6 +672,68 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 나란히 놓은 칸 둘. §2의 그림과 같은 짝이고, 과제가 요구하는 것도 이 그림이다. 대상은
 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**(단위 링크, 베이스는 월드 원점)이고, 패널은
 반평면 $x<1$ m다.
+
+<svg viewBox="0 0 560 320" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 반지름 2 m 도달 원판, 패널 선 x = 1 m, 과제 점 (1, 1), 말단이 (2, 0)에 있는 곧게 편 팔과 엘보 (1, 0), 말단 (1, 1)의 고정 자세, 말단이 그리는 사분원을 그린 P2의 작업 영역. 오른쪽: q_start = (0, 0)과 q_goal = (0, 90도), 그 사이의 유일한 간선, 말단 검사가 금지하는 영역의 음영, 그 경계 위의 목표를 그린 컨피규레이션 공간 토러스. 순기구학 화살표 f가 둘을 잇는다.">
+  <defs><marker id="aPDMk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <circle cx="128.0" cy="162.0" r="100" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="128.0" y1="162.0" x2="57.3" y2="91.3" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.55" stroke-dasharray="2 3"/>
+  <line x1="178.0" y1="75.4" x2="178.0" y2="248.6" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M178.0 79.4 l-7 7 M178.0 88.4 l-7 7 M178.0 97.4 l-7 7 M178.0 106.4 l-7 7 M178.0 115.4 l-7 7 M178.0 124.4 l-7 7 M178.0 133.4 l-7 7 M178.0 142.4 l-7 7 M178.0 151.4 l-7 7 M178.0 160.4 l-7 7 M178.0 169.4 l-7 7 M178.0 178.4 l-7 7 M178.0 187.4 l-7 7 M178.0 196.4 l-7 7 M178.0 205.4 l-7 7 M178.0 214.4 l-7 7 M178.0 223.4 l-7 7 M178.0 232.4 l-7 7 M178.0 241.4 l-7 7" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" fill="none"/>
+  <path d="M228.0 162.0 A50 50 0 0 0 178.0 112.0" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <g stroke="currentColor" stroke-linecap="round" fill="none">
+    <polyline points="128.0,162.0 178.0,162.0 228.0,162.0" stroke-width="4" stroke-opacity="0.35"/>
+    <polyline points="128.0,162.0 178.0,162.0 178.0,112.0" stroke-width="3"/>
+  </g>
+  <circle cx="128.0" cy="162.0" r="4.5" fill="currentColor"/>
+  <circle cx="178.0" cy="162.0" r="3.5" fill="currentColor"/>
+  <circle cx="228.0" cy="162.0" r="3.5" fill="currentColor" fill-opacity="0.45"/>
+  <circle cx="178.0" cy="112.0" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <path d="M352 72 h180 v180 h-180 Z M397 117 L398 110.4 L399 108.2 L400 106.8 L401 105.7 L402 104.9 L403 104.2 L404 103.6 L405 103.2 L406 102.9 L407 102.6 L408 102.4 L409 102.2 L410 102.1 L411 102 L412 102 L413 102 L414 102.1 L415 102.2 L416 102.3 L417 102.5 L418 102.7 L419 102.9 L420 103.1 L421 103.4 L422 103.8 L423 104.1 L424 104.5 L425 104.9 L426 105.4 L427 105.8 L428 106.4 L429 106.9 L430 107.5 L431 108.1 L432 108.7 L433 109.4 L434 110.1 L435 110.9 L436 111.6 L437 112.4 L438 113.3 L439 114.2 L440 115.1 L441 116 L442 117 L443 118 L444 119.1 L445 120.2 L446 121.3 L447 122.4 L448 123.6 L449 124.9 L450 126.1 L451 127.4 L452 128.7 L453 130.1 L454 131.5 L455 132.9 L456 134.4 L457 135.8 L458 137.4 L459 138.9 L460 140.5 L461 142.1 L462 143.8 L463 145.4 L464 147.1 L465 148.9 L466 150.7 L467 152.5 L468 154.3 L469 156.2 L470 158.1 L471 160 L472 162 L473 164 L474 166.1 L475 168.2 L476 170.4 L477 172.6 L478 174.9 L479 177.2 L480 179.6 L481 182.2 L482 184.9 L483 187.7 L484 190.8 L485 194.2 L486 198.4 L487 207 L487 207 L486 213.6 L485 215.8 L484 217.2 L483 218.3 L482 219.1 L481 219.8 L480 220.4 L479 220.8 L478 221.1 L477 221.4 L476 221.6 L475 221.8 L474 221.9 L473 222 L472 222 L471 222 L470 221.9 L469 221.8 L468 221.7 L467 221.5 L466 221.3 L465 221.1 L464 220.9 L463 220.6 L462 220.2 L461 219.9 L460 219.5 L459 219.1 L458 218.6 L457 218.2 L456 217.6 L455 217.1 L454 216.5 L453 215.9 L452 215.3 L451 214.6 L450 213.9 L449 213.1 L448 212.4 L447 211.6 L446 210.7 L445 209.8 L444 208.9 L443 208 L442 207 L441 206 L440 204.9 L439 203.8 L438 202.7 L437 201.6 L436 200.4 L435 199.1 L434 197.9 L433 196.6 L432 195.3 L431 193.9 L430 192.5 L429 191.1 L428 189.6 L427 188.2 L426 186.6 L425 185.1 L424 183.5 L423 181.9 L422 180.2 L421 178.6 L420 176.9 L419 175.1 L418 173.3 L417 171.5 L416 169.7 L415 167.8 L414 165.9 L413 164 L412 162 L411 160 L410 157.9 L409 155.8 L408 153.6 L407 151.4 L406 149.1 L405 146.8 L404 144.4 L403 141.8 L402 139.1 L401 136.3 L400 133.2 L399 129.8 L398 125.6 L397 117 Z" fill="currentColor" fill-opacity="0.16" fill-rule="evenodd"/>
+  <path d="M397 117 L398 110.4 L399 108.2 L400 106.8 L401 105.7 L402 104.9 L403 104.2 L404 103.6 L405 103.2 L406 102.9 L407 102.6 L408 102.4 L409 102.2 L410 102.1 L411 102 L412 102 L413 102 L414 102.1 L415 102.2 L416 102.3 L417 102.5 L418 102.7 L419 102.9 L420 103.1 L421 103.4 L422 103.8 L423 104.1 L424 104.5 L425 104.9 L426 105.4 L427 105.8 L428 106.4 L429 106.9 L430 107.5 L431 108.1 L432 108.7 L433 109.4 L434 110.1 L435 110.9 L436 111.6 L437 112.4 L438 113.3 L439 114.2 L440 115.1 L441 116 L442 117 L443 118 L444 119.1 L445 120.2 L446 121.3 L447 122.4 L448 123.6 L449 124.9 L450 126.1 L451 127.4 L452 128.7 L453 130.1 L454 131.5 L455 132.9 L456 134.4 L457 135.8 L458 137.4 L459 138.9 L460 140.5 L461 142.1 L462 143.8 L463 145.4 L464 147.1 L465 148.9 L466 150.7 L467 152.5 L468 154.3 L469 156.2 L470 158.1 L471 160 L472 162 L473 164 L474 166.1 L475 168.2 L476 170.4 L477 172.6 L478 174.9 L479 177.2 L480 179.6 L481 182.2 L482 184.9 L483 187.7 L484 190.8 L485 194.2 L486 198.4 L487 207 L487 207 L486 213.6 L485 215.8 L484 217.2 L483 218.3 L482 219.1 L481 219.8 L480 220.4 L479 220.8 L478 221.1 L477 221.4 L476 221.6 L475 221.8 L474 221.9 L473 222 L472 222 L471 222 L470 221.9 L469 221.8 L468 221.7 L467 221.5 L466 221.3 L465 221.1 L464 220.9 L463 220.6 L462 220.2 L461 219.9 L460 219.5 L459 219.1 L458 218.6 L457 218.2 L456 217.6 L455 217.1 L454 216.5 L453 215.9 L452 215.3 L451 214.6 L450 213.9 L449 213.1 L448 212.4 L447 211.6 L446 210.7 L445 209.8 L444 208.9 L443 208 L442 207 L441 206 L440 204.9 L439 203.8 L438 202.7 L437 201.6 L436 200.4 L435 199.1 L434 197.9 L433 196.6 L432 195.3 L431 193.9 L430 192.5 L429 191.1 L428 189.6 L427 188.2 L426 186.6 L425 185.1 L424 183.5 L423 181.9 L422 180.2 L421 178.6 L420 176.9 L419 175.1 L418 173.3 L417 171.5 L416 169.7 L415 167.8 L414 165.9 L413 164 L412 162 L411 160 L410 157.9 L409 155.8 L408 153.6 L407 151.4 L406 149.1 L405 146.8 L404 144.4 L403 141.8 L402 139.1 L401 136.3 L400 133.2 L399 129.8 L398 125.6 L397 117 Z" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <rect x="352" y="72" width="180" height="180" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <path d="M348 210 L352 204 L356 210 M528 210 L532 204 L536 210 M496 68 L502 72 L496 76 M502 68 L508 72 L502 76 M496 248 L502 252 L496 256 M502 248 L508 252 L502 256" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <g stroke="currentColor" stroke-width="1" stroke-opacity="0.5">
+    <line x1="397" y1="252" x2="397" y2="256"/>
+    <line x1="348" y1="207" x2="352" y2="207"/>
+    <line x1="442" y1="252" x2="442" y2="256"/>
+    <line x1="348" y1="162" x2="352" y2="162"/>
+    <line x1="487" y1="252" x2="487" y2="256"/>
+    <line x1="348" y1="117" x2="352" y2="117"/>
+  </g>
+  <line x1="442" y1="162" x2="442" y2="117" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="442" cy="162" r="4" fill="currentColor"/>
+  <circle cx="442" cy="117" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="442" y1="111" x2="442" y2="64" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <path d="M437 139.5 Q 327.7 82.6 218.4 126.6" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#aPDMk)"/>
+  <circle cx="442" cy="139.5" r="2.6" fill="currentColor"/>
+  <circle cx="213.4" cy="126.6" r="2.6" fill="currentColor"/>
+  <g font-size="11" fill="currentColor">
+    <text x="10" y="20" font-size="12">작업 영역: 위치 (m)</text>
+    <text x="322" y="20" font-size="12">컨피규레이션 공간 C = T²: 각도</text>
+    <text x="119.0" y="166.0" text-anchor="end">베이스 (0, 0)</text>
+    <text x="169.0" y="179.0" text-anchor="end" opacity="0.9">엘보 (1, 0)</text>
+    <text x="234.0" y="156.0" opacity="0.75">말단 (2, 0)</text>
+    <text x="170.0" y="104.0" text-anchor="end">p* = (1, 1)</text>
+    <text x="182.0" y="71.4">패널 x = 1 m</text>
+    <text x="97" y="113" text-anchor="middle" opacity="0.85">r = 2 m</text>
+    <text x="209" y="110.5" opacity="0.85">말단 경로</text>
+    <text x="292" y="100.6" text-anchor="middle">f: 순기구학</text>
+    <text x="417" y="149.5" text-anchor="middle" font-size="12">C<tspan font-size="9.5" dy="3">free</tspan><tspan dy="-3" dx="1.5"></tspan></text>
+    <text x="358" y="244" opacity="0.85">말단 x &lt; 1: 금지</text>
+    <text x="449" y="175">q<tspan font-size="9.5" dy="3">start</tspan><tspan dy="-3" dx="1.5"> (0°, 0°)</tspan></text>
+    <text x="442" y="60" text-anchor="middle">q<tspan font-size="9.5" dy="3">goal</tspan><tspan dy="-3" dx="1.5"> (0°, 90°): 경계 위, 곧 접촉</tspan></text>
+    <text x="352" y="267" text-anchor="middle" font-size="11">−180°</text>
+    <text x="346" y="256" text-anchor="end" font-size="11">−180°</text>
+    <text x="442" y="267" text-anchor="middle" font-size="11">0°</text>
+    <text x="346" y="166" text-anchor="end" font-size="11">0°</text>
+    <text x="532" y="267" text-anchor="middle" font-size="11">180°</text>
+    <text x="346" y="76" text-anchor="end" font-size="11">180°</text>
+    <text x="482" y="267" font-size="12">θ₁</text>
+    <text x="326" y="150" font-size="12">θ₂</text>
+    <text x="532.0" y="284" text-anchor="end" font-size="11" opacity="0.85">마주 보는 변은 붙어 있다: 179°와 −179°는 이웃</text>
+    <text x="10" y="307" opacity="0.9">플래너의 보장은 오른쪽 칸에 대한 주장이고, 로봇이 하는 일은 왼쪽 칸에 있다.</text>
+  </g>
+</svg>
 
 **왼쪽 칸 — 작업 영역.** 원점의 베이스, 그 둘레 반지름 $2$ m의 도달 원판, $x=1$에 수직선으로 그린
 패널과 그 너머의 빗금, 그리고 그 선 위의 과제 점 $p^\star=(1,1)$ m. 팔은 두 번 그린다. 한 번은
@@ -706,7 +830,7 @@ $\mathcal{C}$는 **C-장애물** $\mathcal{C}_{\text{obs}}$와 **자유 공간**
   돌린다. 그 바깥에 감쇠하는 비용을 더하면 계획기가 들어가기를 꺼리는 여유가 생긴다. 칸에서 가장 가까운 장애물 칸까지의 거리 $d$, 내접 로봇 반경 $r$, 감쇠율 $\alpha>0$에 대해 ROS costmap은 지수 함수를 쓴다:
   $$c(d)=\begin{cases}c_{\text{lethal}} & d=0\\ c_{\text{insc}} & 0<d\le r\\ c_{\text{insc}}\,e^{-\alpha(d-r)} & r<d\le d_{\text{infl}}\\ 0 & d>d_{\text{infl}}\end{cases}$$
   내접 반경 안의 칸은 로봇 중심을 거기 두면 반드시 충돌한다는 뜻이고, 그 바깥에서 비용은 거리에 따라 감쇠하며, 팽창 반경 $d_{\text{infl}}$ 너머의 칸은 비용이 없다. $\alpha=3$ /m이면 내접 반경에서 0.2 m 바깥 칸의 비용은 내접값의 $e^{-0.6}=0.55$배다. $\alpha$를 키우면 여유가 좁아진다.
-  **반경이 셋이고, 셋은 같은 수가 아니다.** footprint에는 **내접 반경** $r_{\text{insc}}$ — 로봇 원점을 중심으로 그 안에 *들어가는* 가장 큰 원의 반경 — 과 **외접 반경** $r_{\text{circ}}$ — footprint를 *담는* 가장 작은 원 — 이 있다. 장애물에서 $r_{\text{insc}}$ 안이면 어느 방향으로 서 있든 충돌이고, $r_{\text{circ}}$ 밖이면 어느 방향으로 서 있든 안전하며, 그 사이에서는 충돌 여부가 방향에 달려 있다. footprint 검사가 존재하는 이유가 바로 그 띠다. **팽창 반경** $d_{\text{infl}}$은 아예 세 번째 것이다. 감쇠 비용을 0으로 자르는 거리다. 이것은 *선호* 손잡이이지 안전 여유가 아니다 — 안전을 담당하는 것은 $d_{\text{infl}}$이 아니라 footprint에서 나오는 $r_{\text{insc}}$다. **반례, 그리고 이 생태계에서 가장 흔한 오설정:** `inflation_radius`를 "벽에서 이만큼 떨어뜨려라"로 읽는 것([[04-robotics/ros2/navigation-nav2|22.4 Nav2 §5]]). $r_{\text{insc}}=0.30$ m, $\alpha=3$ /m, $d_{\text{infl}}=1.00$ m에 ROS의 바이트 척도(장애물 칸 자체가 $c_{\text{lethal}}=254$, $c_{\text{insc}}=253$, 치맛자락은 $252$로 스케일)를 쓰면 비용은 $d=0.50$ m에서 $252\,e^{-0.6}=138$, $0.80$ m에서 $56$, $1.00$ m 바로 안쪽에서 $30$ — 그리고 바로 바깥에서 $0$이다. $d_{\text{infl}}$에서의 이 30짜리 단차가 **비용 절벽**이다. 위의 경사 따라가기 논증이 살아남지 못하는 불연속이므로, 잘리는 값이 충분히 작아지도록 $d_{\text{infl}}$을 크게 잡아야 한다.
+  **반경이 셋이고, 셋은 같은 수가 아니다.** footprint에는 **내접 반경** $r_{\text{insc}}$ — 로봇 원점을 중심으로 그 안에 *들어가는* 가장 큰 원의 반경 — 과 **외접 반경** $r_{\text{circ}}$ — footprint를 *담는* 가장 작은 원 — 이 있다. 장애물에서 $r_{\text{insc}}$ 안이면 어느 방향으로 서 있든 충돌이고, $r_{\text{circ}}$ 밖이면 어느 방향으로 서 있든 안전하며, 그 사이에서는 충돌 여부가 방향에 달려 있다. footprint 검사가 존재하는 이유가 바로 그 띠다. **팽창 반경** $d_{\text{infl}}$은 아예 세 번째 것이다. 감쇠 비용을 0으로 자르는 거리다. 이것은 *선호* 손잡이이지 안전 여유가 아니다 — 안전을 담당하는 것은 $d_{\text{infl}}$이 아니라 footprint에서 나오는 $r_{\text{insc}}$다. **반례, 그리고 이 생태계에서 가장 흔한 오설정:** `inflation_radius`를 "벽에서 이만큼 떨어뜨려라"로 읽는 것([[04-robotics/ros2/navigation-nav2|25.9 Nav2 §5]]). $r_{\text{insc}}=0.30$ m, $\alpha=3$ /m, $d_{\text{infl}}=1.00$ m에 ROS의 바이트 척도(장애물 칸 자체가 $c_{\text{lethal}}=254$, $c_{\text{insc}}=253$, 치맛자락은 $252$로 스케일)를 쓰면 비용은 $d=0.50$ m에서 $252\,e^{-0.6}=138$, $0.80$ m에서 $56$, $1.00$ m 바로 안쪽에서 $30$ — 그리고 바로 바깥에서 $0$이다. $d_{\text{infl}}$에서의 이 30짜리 단차가 **비용 절벽**이다. 위의 경사 따라가기 논증이 살아남지 못하는 불연속이므로, 잘리는 값이 충분히 작아지도록 $d_{\text{infl}}$을 크게 잡아야 한다.
 - **비용 지도(costmap)** — 칸이 이진값이 아니라 *통행 비용*을 담는 점유 격자다. 비용은
   팽창에 더해 로봇이 피해야 할 다른 모든 것을 합친다: 미지 영역, 거친 지형, 일방향 구역,
   진입 금지 구역. **비용 지도는 정책적 선호가 계획이기를 그만두고 기하가 되는 자리다** —
@@ -729,7 +853,7 @@ $\mathcal{C}$는 **C-장애물** $\mathcal{C}_{\text{obs}}$와 **자유 공간**
   지우려면 정적 지도도 자기 것이라고 주장하는 칸을 지워야 하므로, 벽이 지워지거나 사람이
   영영 남거나 둘 중 하나다 — 층이 존재하는 이유 전부가 이것이다. *읽을 때 왜 중요한가*:
   논문 속의 "비용 지도"는 합성물이고, 어느 층이 그 비용을 썼는지가 그것을 지울 수 있는지를
-  결정한다([[04-robotics/ros2/navigation-nav2|22.4 Nav2 §4]]에 한 스택의 층 목록과 기본값이 있다).
+  결정한다([[04-robotics/ros2/navigation-nav2|25.9 Nav2 §4]]에 한 스택의 층 목록과 기본값이 있다).
 - **Frontier** — *알려진 자유 공간*과 *미지* 사이의 경계 칸. 정확히는 자신은 자유로 알려져 있고 이웃(4-연결 또는 8-연결) 중 적어도 하나가 미지인 칸이다. **frontier 탐색**은 "다음에
   어디로"에 대한 고전적 답이다: 가장 가까운 frontier로 가면 아는 영역이 자라고, frontier가
   없어질 때까지 반복한다. [[04-robotics/semantic-language-navigation|19. §3]]에서 "어디를
@@ -827,7 +951,7 @@ cost-to-come이 더 큰데도 첫 노드가 먼저 확장된다. 휴리스틱은
 
 §4의 $(g,h)$ 쌍은 맨 숫자였다. 여기서는 그것이 대상에서 나온다.
 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**, 단위 링크 $L_1=L_2=1$ m, 베이스는 월드
-원점. 패널은 반평면 $x<1$ m이고 그 위의 과제 점은 $p^\star=(1,1)$ m다. 팔은 곧게 편
+원점. 패널은 반평면 $x<1$ m이고 그 위의 과제 점은 $p^\star=(1,1)$ m다. 이 반평면은 말단만을 위한 진입 금지 영역이지 [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]의 물리적 패널($x\ge1$)이 아니다. 아래의 검사는 말단만 시험하므로 $x<1$에 선 베이스는 따지지 않는다. MR 2장은 팔 전체를 검사하고, 거기서는 곧게 편 자세가 충돌한다. 팔은 곧게 편
 $q_\mathrm{start}=(0°,0°)$에서 출발하며 말단은 $(2,0)$에 있다. 물음은 §3이 존재하는 이유 그
 자체 — A*가 어떤 간선을 돌려주는가 — 이고, 답하려면 §1·§2·§3이 한꺼번에 필요하다.
 
@@ -905,7 +1029,7 @@ $$U(q)=\tfrac12 k_a\lVert q-q_{\text{goal}}\rVert^2+\begin{cases}\tfrac12 k_r\bi
 $k_a,k_r>0$는 이득, $\rho(q)$는 가장 가까운 장애물까지의 거리, $\rho_0$는 그보다 먼 장애물을 무시하는 범위다. 그래서 로봇은 목표 쪽으로 미끄러지고 $\rho\to0$일수록 점점 세게 밀려난다. **내비게이션 함수**(Rimon & Koditschek 1992)는 조건 넷을 더 만족하는 퍼텐셜이다: 자유 공간에서 매끄럽고, 최솟값이 목표 한 곳에*만* 있고, 모든 장애물 경계에서 균일하게 최대이며, 임계점이 모두 비퇴화다. 그래서 그 기울기를 따라가면 거의 모든 출발점에서 목표에 닿는다.
 
 > [!example] 계산 예제 · Worked example
-> 목표는 원점, 점 장애물은 $(1,0)$, $k_a=k_r=\rho_0=1$이다. 둘 사이 선분 위의 $x$에서 인력은 $-x$, 척력은 $\rho=x-1$로 두어 $(1/\rho-1)/\rho^2$다. 둘은 $x=1.618$($\rho=0.618$)에서 상쇄되므로, $(2,0)$에서 놓은 로봇은 목표에 못 미친 그곳에서 멈춘다.
+> 목표는 원점, 점 장애물은 $(1,0)$, $k_a=k_r=\rho_0=1$이다. 장애물 너머의 축($x>1$) 위의 $x$에서 인력은 $-x$, 척력은 $\rho=x-1$로 두어 $(1/\rho-1)/\rho^2$다. 둘은 $x=1.618$($\rho=0.618$)에서 상쇄되므로, $(2,0)$에서 놓은 로봇은 목표에 못 미친 그곳에서 멈춘다.
 >
 > **국소 최솟값의 반례:** 그 점은 *안장점*이다. 옆으로 움직이면 퍼텐셜이 낮아지므로($\partial^2U/\partial y^2=1-1.618/0.618=-1.62<0$) 작은 교란만 있어도 로봇은 장애물을 돌아 미끄러진다. U자 벽 같은 오목한 장애물은 진짜 최솟값을 만들고, 표가 경고하는 함정이 그것이다.
 
@@ -951,7 +1075,9 @@ $$P\Big(\lim_{n\to\infty}c_n=c^*\Big)=1$$
 
 **기하학적 경로만으로 부족한 이유.** 세 종류의 제약이 직선 구간 가정을 깬다.
 
-- **비홀로노믹 제약.** 자동차에는 옆 방향 속도가 없고 최소 회전 반경이 있다. 그래서 모서리나 옆으로 비키는 구간이 있는 경로는 쓰인 그대로는 운전할 수 없다. 그래도 차는 모든 pose에 도달할 수 있다(이유는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]]).
+- **비홀로노믹 제약.** 자동차에는 옆 방향 속도가 없고 최소 회전 반경이 있다. 그래서 모서리나 옆으로 비키는 구간이 있는 경로는 쓰인 그대로는 운전할 수 없다. 그래도 차는 모든 pose에 도달할 수 있다(이유는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]]). 형식적으로 쓰면, 비홀로노믹 제약은 $q$만에 대한 제약으로 적분할 수 없는 속도 제약 $A(q)\dot q=0$이다. heading이 $\theta$인 자동차나 유니사이클에서는 속도가 heading 방향을 가리켜야 하므로 다음과 같다:
+$$\dot x\sin\theta-\dot y\cos\theta=0$$
+  $\theta=0$에서 전진 운동 $(\dot x,\dot y)=(1,0)$은 $0$을 주어 허용되고, 옆 방향 운동 $(0,1)$은 $-1$을 주어 금지된다. **홀로노믹** 제약 $g(q)=0$은 $\mathcal{C}$에서 차원 하나를 없애지만, 비홀로노믹 제약은 운동 방향을 없앨 뿐 도달 가능한 컨피규레이션은 하나도 없애지 않는다.
 - **동역학 제약.** 굴착기 붐에는 관성이 있고 크레인에 매달린 짐은 흔들린다. 그래서 계획은 기계가 안정을 유지하고 짐이 진동하지 않을 만큼 가속도를 낮게 지켜야 한다.
 - **한계.** 속도·가속도·구동기 한계는 어느 방향으로든 움직일 수 있는 로봇에도 걸린다.
 
@@ -1030,9 +1156,22 @@ print("end state", s.round(3), "target (1, 1, %.3f)" % theta(1.0))
 
 ### 6. 궤적 최적화와 MPC
 
-흔한 정식화는 [[02-foundations/optimization|4. 최적화]]의 궤적 최적화 프로그램이다 — 매 스텝 내는 실행 비용에 마지막의 종단 비용을 더한 것으로 읽되, 물리와 장애물이 제약이다. 이것은 [[02-foundations/optimization|4. 최적화 §1]]의 일반 프로그램이고, 선형-이차 특수 경우를 QP로 쓴 것은 [[02-foundations/optimization|4. 최적화 §5]]에 있다.
+흔한 정식화는 [[02-foundations/optimization|4. 최적화]]의 궤적 최적화 프로그램이다 — 매 스텝 내는 실행 비용에 마지막의 종단 비용을 더한 것으로 읽되, 물리와 장애물이 제약이다.
 
 $$\min_{x_{0:N},u_{0:N-1}} \sum_{t=0}^{N-1}\ell(x_t,u_t)+\ell_f(x_N) \quad \text{s.t. 동역학, 한계, 충돌 제약}$$
+
+**모든 기호.** $x_t\in\mathbb{R}^n$은 스텝 $t$의 상태, $u_t\in\mathbb{R}^m$은 입력이다. $N$은 스텝의 수인 **지평**(horizon)이다. **실행 비용**(running cost), 또는 **단계 비용**(stage cost) $\ell(x_t,u_t)$는 목표까지의 거리나 제어 노력처럼 매 스텝 치르는 스칼라다. **종단 비용** $\ell_f(x_N)$은 마지막 상태에 대해 한 번만 치르고, 흔히 $\phi(x_T)$로 쓴다. 둘의 합이 목적함수 $J$이므로, 이 프로그램은 제안된 미래 하나의 총비용을 최소화한다. 제약에는 이름 붙은 세 종류가 있다.
+
+- 모든 $t$에서의 **동역학** $x_{t+1}=f(x_t,u_t)$(단 $x_0$은 현재 상태로 고정);
+- $u_{\min}\le u_t\le u_{\max}$ 같은 **한계**;
+- $\mathrm{sd}(x_t)\ge d_{\text{safe}}$ 같은 **충돌 제약**. 여기서 $\mathrm{sd}$는 가장 가까운 장애물까지의 부호 거리(signed distance)다.
+
+이것은 [[02-foundations/optimization|4. 최적화 §1]]의 일반 프로그램에서 결정 변수를 시간에 걸쳐 펼친 것이고, 선형-이차 특수 경우를 QP로 쓴 것은 [[02-foundations/optimization|4. 최적화 §5]]에 있다.
+
+> [!example] 계산 예제 · Worked example
+> 스칼라 동역학 $x_{t+1}=x_t+u_t$에 $x_0=1$, $N=2$, $\ell=x_t^2+u_t^2$, $\ell_f=x_N^2$을 두자. 입력 $(-0.5,-0.5)$는 상태 $1, 0.5, 0$과 $J=(1+0.25)+(0.25+0.25)+0=1.75$를 준다. 입력 $(-1,0)$은 상태 $1,0,0$으로 한 스텝 먼저 목표에 닿지만 $J=(1+1)+(0+0)+0=2$다. 큰 입력 하나가 절반 크기 입력 둘보다 비싸기 때문이다. 아무것도 하지 않는 $(0,0)$은 $J=1+1+1=3$을 준다.
+>
+> **후보의 반례:** 상태 $1,0,0$을 입력 $(0,0)$과 짝지으면 비용이 $1$뿐이지만, $x_1=x_0+u_0$을 어기므로 애초에 궤적이 아니다. 그것을 걸러내는 것이 동역학 제약의 일이다.
 
 - **주어진 것:** 초기 상태, 모델, 목표, 제약, 비용.
 - **최적화하는 것:** 상태·입력 시퀀스.
@@ -1059,13 +1198,23 @@ MPC는 이 정식화를 피드백으로 쓴다. 첫 입력을 실행하고 새 �
 기하학적으로 불가능할 수 있다. TAMP는 이산 행동과 연속 실행 가능성을 번갈아 또는
 공동으로 추론한다.
 
+**기호적 과제 계획의 정의.** 고전적(STRIPS식) 계획 문제는 네 부분으로 이루어진다. 먼저 `holding(block)` 같은 사실, 곧 불리언 **명제**(proposition)의 집합이 있다. **상태** $s$는 지금 참인 명제의 집합이고, 초기 상태 $s_0$과 끝에 참이 되어야 하는 명제의 집합인 **목표** $G$가 있다. 그리고 **연산자**(operator)가 있는데, 연산자마다 전제 조건 집합 $\mathrm{pre}(a)$, 추가 목록 $\mathrm{add}(a)$, 삭제 목록 $\mathrm{del}(a)$를 가진다. 연산자는 $\mathrm{pre}(a)\subseteq s$일 때 $s$에서 적용할 수 있고, 적용하면 자기가 이름 붙인 사실만 정확히 바꾸므로 다음 상태는
+$$s'=\big(s\setminus\mathrm{del}(a)\big)\cup\mathrm{add}(a)$$
+이다. 계획은 적용 가능한 연산자들의 열로서, 그것을 다 적용한 뒤 $G\subseteq s$가 되는 것이다. 단순화한 예: pre $\{$`handempty`, `clear(block)`$\}$, del $\{$`handempty`$\}$, add $\{$`holding(block)`$\}$인 `pick(block)`은 $\{$`handempty`, `clear(block)`$\}$를 $\{$`clear(block)`, `holding(block)`$\}$로 옮긴다. **반례:** 그 상태 어디에도 블록이 어디 있는지, 충돌 없는 파지가 존재하는지가 기록되어 있지 않으므로, 타당한 기호적 계획이 아직 실행 가능한 계획은 아니다. 그 간극을 메우는 것이 TAMP다.
+
+**튜플로 쓴 MDP와 POMDP.** **MDP** $(\mathcal{S},\mathcal{A},T,R,\gamma)$는 상태 집합, 행동 집합, 전이 커널 $T(s'\mid s,a)$, 보상 $R(s,a)$, 할인율 $\gamma\in[0,1]$로 이루어지고, 다음 상태가 현재 상태와 행동에만 달려 있다는 마르코프 성질을 함께 가진다. 완전한 정의는 [[02-foundations/rl-basics|RL 기초 §1]]에 있다.
+
 부분 관측에서는 계획의 상태가 **belief**, 즉 숨은 상태에 대한 확률 분포가 되고, 행동과 관측이
-있을 때마다 갱신된다. 그 갱신은 [[04-robotics/state-estimation-slam|3. 상태 추정 §4]]의 베이즈 필터에 행동을 붙인 것이다. POMDP는 숨은 상태, 관측, 행동, 전이, 관측 모델, 보상을 구분한다.
+있을 때마다 갱신된다. POMDP는 숨은 상태, 관측, 행동, 전이, 관측 모델, 보상을 구분한다. 튜플로 쓰면 **POMDP**(부분 관측 MDP)는
+$$(\mathcal{S},\mathcal{A},\Omega,T,Z,R,\gamma,b_0)$$
+이고, 상태가 더는 보이지 않으므로 MDP에 구성 요소 셋을 더한다: **관측 공간** $\Omega$, 행동 $a$가 상태 $s'$로 이끌었을 때 $o$를 관측할 확률을 주는 **관측 모델** $Z(o\mid s',a)$, 그리고 **초기 belief** $b_0$. belief $b(s)$는 지금까지의 모든 행동과 관측이 주어졌을 때 상태 $s$의 사후 확률이다. $a$를 하고 $o$를 관측하면 베이즈 규칙이 그것을 갱신한다:
+$$b'(s')=\eta\,Z(o\mid s',a)\sum_{s\in\mathcal{S}}T(s'\mid s,a)\,b(s)$$
+합은 옛 belief를 동역학에 통과시키는 **예측**(prediction)이고, 인자 $Z$는 각 상태를 그것이 $o$를 얼마나 잘 설명하는지로 가중하는 **보정**(correction)이며, $\eta$는 $b'$의 합이 1이 되게 하는 정규화 상수다. 이것은 [[04-robotics/state-estimation-slam|3. 상태 추정 §4]]의 베이즈 필터에 고른 행동을 붙인 것이다. belief가 이력 전체를 요약하므로 POMDP는 belief를 상태로 삼는 MDP이고, 그 기대 보상은 $\rho(b,a)=\sum_s b(s)\,R(s,a)$다. **반례:** 가장 최근의 관측 하나만으로는 마르코프 상태가 되지 않는다. 아래 예에서 같은 "열림" 판독이 belief $0.5$는 $0.8$로 옮기지만 belief $0.8$은 $0.94$로 옮긴다.
 
 > [!example] 계산 예제 · Worked example
 > 로봇이 잘 보이지 않는 문을 지나가야 한다. **숨은 상태:** 열림 또는 닫힘. **행동:** 다시 보기, 또는 지나가기. **전이:** 보기는 아무것도 바꾸지 않고, 지나가기는 로봇을 옮긴다. **관측:** "열림" 또는 "닫힘"이라는 센서 판독. **관측 모델:** 판독은 80% 확률로 맞다. **보상:** 통과하면 $+1$, 닫힌 문에 부딪히면 $-1$.
 >
-> belief $P(\text{열림})=0.5$에서 시작한다. "열림" 판독 한 번이면 $0.8\cdot0.5/(0.8\cdot0.5+0.2\cdot0.5)=0.8$, 두 번이면 $0.8\cdot0.8/(0.8\cdot0.8+0.2\cdot0.2)\approx0.94$다. belief 0.8에서 지나가면 기대 보상은 $0.8-0.2=0.6$, 0.94에서는 $0.88$이다. 한 번 더 볼 가치가 그 시간만큼 있는지가 바로 POMDP 계획기가 답하는 질문이고, 그 질문은 실제 문이 아니라 belief에 대해 던져진다.
+> belief $P(\text{열림})=0.5$에서 시작한다. "열림" 판독 한 번이면 $0.8\cdot0.5/(0.8\cdot0.5+0.2\cdot0.5)=0.8$, 두 번이면 $0.8\cdot0.8/(0.8\cdot0.8+0.2\cdot0.2)\approx0.94$다. 이것이 위의 갱신 식 그대로다. 보기는 상태를 바꾸지 않으므로 합은 그냥 $b(s')$이고, $Z$는 $0.8$ 또는 $0.2$이며, $\eta$는 첫 번째에 $1/0.5=2$, 두 번째에 $1/0.68=1.47$이다. belief 0.8에서 지나가면 기대 보상은 $\rho=0.8\cdot(+1)+0.2\cdot(-1)=0.6$, 0.94에서는 $0.88$이다. 한 번 더 볼 가치가 그 시간만큼 있는지가 바로 POMDP 계획기가 답하는 질문이고, 그 질문은 실제 문이 아니라 belief에 대해 던져진다.
 
 정확한 belief-space 계획은 대개 계산 불가능해서 논문들은
 근사, receding horizon, 학습된 가치, 비상 정책을 쓴다.
@@ -1085,7 +1234,7 @@ MPC는 이 정식화를 피드백으로 쓴다. 첫 입력을 실행하고 새 �
 
 ### 9. 평가와 실패 모드
 
-성공률, 충돌률, 경로/궤적 비용, 계획·실행 시간, 최적성 갭, 제약 위반, replanning 빈도,
+성공률, 충돌률, 경로/궤적 비용, 계획·실행 시간, 최적성 갭(상대 초과 비용 $(C-C^*)/C^*$, 그래서 최적 10 m에 대한 11 m 경로는 10% 갭이다), 제약 위반, replanning 빈도,
 지도/상태 오차에 대한 강건성, 폐루프 실행을 확인하라. 계획 실패, 인식 실패, 추종 실패,
 하드웨어 실패를 분리하라.
 

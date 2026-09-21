@@ -28,25 +28,298 @@ a vertical step edge of height 10 falling exactly between columns 3 and 4, which
 
 Two more page-local objects are frozen here for §2's metrics, both in D2's pixel coordinates. **Boxes**, written $(x_1,y_1,x_2,y_2)$ with the second corner exclusive: ground truth $G_1=(0,0,4,4)$ and $G_2=(4,4,8,8)$, each of area 16; predictions $P_1=(0,0,4,4)$ at confidence $0.90$, $P_2=(3,3,7,7)$ at $0.80$, $P_3=(4,3,8,7)$ at $0.60$. **Masks**, a two-class segmentation of the same image: the "cable" class occupies column 4 only — 8 pixels of 64 — and everything else is background.
 
-*Scope: this page teaches how a visual input becomes a tensor (convolution arithmetic and patch tokens), how the choice of output turns a backbone into a task, and how to read the metrics that score those outputs — IoU, mAP, and per-class mIoU — on objects small enough to recompute by hand. It does not teach the camera geometry underneath the pixels, which is [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §1]]; nor depth recovery and 3D reconstruction, which are [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §2]] and the 3D entries of the [[01-canonical-papers/canonical-list|canonical list]]; nor the training machinery — loss, optimizer, step size — which is [[03-deep-learning/foundations/index|1. Learning Systems §6]]; nor attention itself, which is the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]. The depth and 3D rows of §2's table are named so the table is complete, with their metrics defined, and are not taught here.*
+*Scope: this page teaches how a visual input becomes a tensor (convolution arithmetic and patch tokens), how the choice of output turns a backbone into a task, and how to read the metrics that score those outputs — IoU, mAP, and per-class mIoU — on objects small enough to recompute by hand. It does not teach the camera geometry underneath the pixels, which is [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §1]]; nor depth recovery and 3D reconstruction, which are [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §2]] and the 3D entries of the [[01-canonical-papers/canonical-list|canonical list]]; nor the training machinery — loss, optimizer, step size — which is [[03-deep-learning/foundations/index|1. Learning Systems §6]]; nor attention itself, which is the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]] and, worked on this page's D2, [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]]. The depth and 3D rows of §2's table are named so the table is complete, with their metrics defined, and are not taught here.*
 
 ### Homework diagram
 
-One figure in three panels, and the problem set asks for exactly this one.
+One figure in three panels, and the problem set asks for exactly this one. The figure is the worked case on the frozen numbers, with the embedding width left as $d$; problem 1 asks for the same drawing with $d=8$.
 
-```mermaid
-flowchart LR
-    IM["D2 image · 8x8"] --> PT["four 4x4 patches"]
-    PT --> FL["flatten · 4 x 16"]
-    FL --> EM["project by E · 4 x d"]
-    EM --> TK["tokens + position + class token · 5 x d"]
-    IM --> WN["3x3 window · stride s · pad p"]
-    WN --> FM["feature map · n_out x n_out"]
-    IM --> BX["boxes G1 G2 P1 P2 P3"]
-    BX --> OV["intersection / union"]
-    IM --> MK["masks: cable column vs background"]
-    MK --> PC["per-class IoU, then average"]
-```
+<svg viewBox="0 0 560 452" style="max-width:100%;height:auto" role="img" aria-label="D2's 8 by 8 step-edge image with its 2 by 2 patch grid and the 3 by 3 window that gives 40, its cell on the 6 by 6 output map, the token shapes, the five boxes with corner coordinates and the 4 by 3 intersection of P3 and G2, and the cable mask counted as 8 and 56">
+  <defs><marker id="aD2e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">(a) pixels, patch grid, one 3×3 window · stride 1, pad 0</text>
+  <rect x="102" y="50" width="72" height="144" stroke="none" fill="currentColor" fill-opacity="0.22"/>
+  <line x1="30" y1="50" x2="174" y2="50" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="68" x2="174" y2="68" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="86" x2="174" y2="86" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="104" x2="174" y2="104" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="122" x2="174" y2="122" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="140" x2="174" y2="140" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="158" x2="174" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="176" x2="174" y2="176" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="194" x2="174" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="50" x2="30" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="48" y1="50" x2="48" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="66" y1="50" x2="66" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="84" y1="50" x2="84" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="102" y1="50" x2="102" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="120" y1="50" x2="120" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="138" y1="50" x2="138" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="156" y1="50" x2="156" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="174" y1="50" x2="174" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <rect x="30" y="50" width="144" height="144" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <line x1="102" y1="50" x2="102" y2="194" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="30" y1="122" x2="174" y2="122" stroke="currentColor" stroke-width="2.4"/>
+  <text x="24" y="63" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">0</text>
+  <text x="39" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0</text>
+  <text x="24" y="81" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">1</text>
+  <text x="57" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <text x="24" y="99" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">2</text>
+  <text x="75" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">2</text>
+  <text x="24" y="117" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">3</text>
+  <text x="93" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">3</text>
+  <text x="24" y="135" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">4</text>
+  <text x="111" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">4</text>
+  <text x="24" y="153" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">5</text>
+  <text x="129" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">5</text>
+  <text x="24" y="171" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">6</text>
+  <text x="147" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">6</text>
+  <text x="24" y="189" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">7</text>
+  <text x="165" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">7</text>
+  <text x="66" y="117" font-size="11" fill="currentColor" text-anchor="middle">patch 1</text>
+  <text x="138" y="117" font-size="11" fill="currentColor" text-anchor="middle">patch 2</text>
+  <text x="66" y="189" font-size="11" fill="currentColor" text-anchor="middle">patch 3</text>
+  <text x="138" y="189" font-size="11" fill="currentColor" text-anchor="middle">patch 4</text>
+  <text x="12" y="225" font-size="11" fill="currentColor" fill-opacity="0.8">shaded = 10, blank = 0; the step lies on the patch line</text>
+  <rect x="66" y="50" width="54" height="54" stroke="currentColor" stroke-width="2.6" fill="currentColor" fill-opacity="0.12"/>
+  <line x1="232" y1="50" x2="340" y2="50" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="68" x2="340" y2="68" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="86" x2="340" y2="86" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="104" x2="340" y2="104" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="122" x2="340" y2="122" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="140" x2="340" y2="140" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="158" x2="340" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="50" x2="232" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="250" y1="50" x2="250" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="268" y1="50" x2="268" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="286" y1="50" x2="286" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="304" y1="50" x2="304" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="322" y1="50" x2="322" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="340" y1="50" x2="340" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <rect x="232" y="50" width="108" height="108" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <rect x="268" y="50" width="18" height="18" stroke="currentColor" stroke-width="2.6" fill="currentColor" fill-opacity="0.12"/>
+  <text x="241" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">40</text>
+  <text x="295" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="63" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">0</text>
+  <text x="241" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0</text>
+  <text x="241" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="81" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">1</text>
+  <text x="259" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <text x="241" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="99" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">2</text>
+  <text x="277" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">2</text>
+  <text x="241" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="117" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">3</text>
+  <text x="295" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">3</text>
+  <text x="241" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="135" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">4</text>
+  <text x="313" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">4</text>
+  <text x="241" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="153" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">5</text>
+  <text x="331" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">5</text>
+  <text x="286" y="189" font-size="11" fill="currentColor" text-anchor="middle">output map 6 × 6 · y<tspan dy="3" font-size="10">0,2</tspan><tspan dy="-3" dx="3.5">= 40</tspan></text>
+  <text x="286" y="205" font-size="11" fill="currentColor" text-anchor="middle">n<tspan dy="3" font-size="10">out</tspan><tspan dy="-3" dx="3.5">= ⌊(8 + 0 − 3)/1⌋ + 1 = 6</tspan></text>
+  <path d="M 114 49 C 124 19, 277.0 15, 277.0 48" stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#aD2e)"/>
+  <text x="362" y="42" font-size="11" fill="currentColor">flatten: 4 × 16</text>
+  <line x1="385" y1="52" x2="385" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="392" y1="52" x2="392" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="399" y1="52" x2="399" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="406" y1="52" x2="406" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="413" y1="52" x2="413" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="420" y1="52" x2="420" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="427" y1="52" x2="427" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="434" y1="52" x2="434" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="441" y1="52" x2="441" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="448" y1="52" x2="448" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="455" y1="52" x2="455" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="462" y1="52" x2="462" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="469" y1="52" x2="469" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="476" y1="52" x2="476" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="483" y1="52" x2="483" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <rect x="378" y="52" width="112" height="9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <text x="373" y="61" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">1</text>
+  <rect x="378" y="66" width="112" height="9" stroke="none" fill="currentColor" fill-opacity="0.3"/>
+  <line x1="385" y1="66" x2="385" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="392" y1="66" x2="392" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="399" y1="66" x2="399" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="406" y1="66" x2="406" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="413" y1="66" x2="413" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="420" y1="66" x2="420" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="427" y1="66" x2="427" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="434" y1="66" x2="434" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="441" y1="66" x2="441" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="448" y1="66" x2="448" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="455" y1="66" x2="455" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="462" y1="66" x2="462" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="469" y1="66" x2="469" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="476" y1="66" x2="476" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="483" y1="66" x2="483" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <rect x="378" y="66" width="112" height="9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <text x="373" y="75" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">2</text>
+  <line x1="385" y1="80" x2="385" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="392" y1="80" x2="392" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="399" y1="80" x2="399" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="406" y1="80" x2="406" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="413" y1="80" x2="413" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="420" y1="80" x2="420" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="427" y1="80" x2="427" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="434" y1="80" x2="434" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="441" y1="80" x2="441" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="448" y1="80" x2="448" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="455" y1="80" x2="455" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="462" y1="80" x2="462" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="469" y1="80" x2="469" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="476" y1="80" x2="476" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="483" y1="80" x2="483" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <rect x="378" y="80" width="112" height="9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <text x="373" y="89" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">3</text>
+  <rect x="378" y="94" width="112" height="9" stroke="none" fill="currentColor" fill-opacity="0.3"/>
+  <line x1="385" y1="94" x2="385" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="392" y1="94" x2="392" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="399" y1="94" x2="399" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="406" y1="94" x2="406" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="413" y1="94" x2="413" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="420" y1="94" x2="420" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="427" y1="94" x2="427" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="434" y1="94" x2="434" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="441" y1="94" x2="441" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="448" y1="94" x2="448" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="455" y1="94" x2="455" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="462" y1="94" x2="462" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="469" y1="94" x2="469" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="476" y1="94" x2="476" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="483" y1="94" x2="483" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <rect x="378" y="94" width="112" height="9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <text x="373" y="103" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">4</text>
+  <text x="498" y="61" font-size="11" fill="currentColor" fill-opacity="0.85">1 = 3</text>
+  <text x="498" y="75" font-size="11" fill="currentColor" fill-opacity="0.85">2 = 4</text>
+  <line x1="402" y1="110" x2="402" y2="128" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD2e)"/>
+  <text x="411" y="123" font-size="11" fill="currentColor">× E (16 × d)</text>
+  <text x="402" y="146" font-size="11" fill="currentColor" text-anchor="middle">4 × d</text>
+  <line x1="402" y1="152" x2="402" y2="180" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD2e)"/>
+  <text x="411" y="162" font-size="11" fill="currentColor">+ position p<tspan dy="3" font-size="10">i</tspan></text>
+  <text x="411" y="180" font-size="11" fill="currentColor">+ class token</text>
+  <text x="402" y="198" font-size="11" fill="currentColor" text-anchor="middle">5 × d</text>
+  <text x="12" y="246" font-size="12" fill="currentColor">(b) boxes, corners in pixel coordinates</text>
+  <line x1="30" y1="270" x2="182" y2="270" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="289" x2="182" y2="289" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="308" x2="182" y2="308" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="327" x2="182" y2="327" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="346" x2="182" y2="346" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="365" x2="182" y2="365" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="384" x2="182" y2="384" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="403" x2="182" y2="403" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="422" x2="182" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="270" x2="30" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="49" y1="270" x2="49" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="68" y1="270" x2="68" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="87" y1="270" x2="87" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="106" y1="270" x2="106" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="125" y1="270" x2="125" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="144" y1="270" x2="144" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="163" y1="270" x2="163" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="182" y1="270" x2="182" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <rect x="30" y="270" width="152" height="152" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <text x="30" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0</text>
+  <text x="24" y="274" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">0</text>
+  <text x="49" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <text x="24" y="293" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">1</text>
+  <text x="68" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">2</text>
+  <text x="24" y="312" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">2</text>
+  <text x="87" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">3</text>
+  <text x="24" y="331" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">3</text>
+  <text x="106" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">4</text>
+  <text x="24" y="350" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">4</text>
+  <text x="125" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">5</text>
+  <text x="24" y="369" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">5</text>
+  <text x="144" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">6</text>
+  <text x="24" y="388" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">6</text>
+  <text x="163" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">7</text>
+  <text x="24" y="407" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">7</text>
+  <text x="182" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">8</text>
+  <text x="24" y="426" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">8</text>
+  <rect x="106" y="346" width="76" height="57" stroke="none" fill="currentColor" fill-opacity="0.28"/>
+  <rect x="30" y="270" width="76" height="76" stroke="currentColor" stroke-width="2.2" fill="none"/>
+  <rect x="106" y="346" width="76" height="76" stroke="currentColor" stroke-width="2.2" fill="none"/>
+  <rect x="32.5" y="272.5" width="71" height="71" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="5 3"/>
+  <rect x="87" y="327" width="76" height="76" stroke="currentColor" stroke-width="1.4" fill="none" stroke-opacity="0.7" stroke-dasharray="5 3"/>
+  <rect x="106" y="327" width="76" height="76" stroke="currentColor" stroke-width="1.8" fill="none" stroke-dasharray="9 3 2 3"/>
+  <circle cx="106" cy="346" r="2.8" stroke="none" fill="currentColor"/>
+  <circle cx="182" cy="403" r="2.8" stroke="none" fill="currentColor"/>
+  <text x="144" y="379.5" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">12</text>
+  <text x="34.8" y="288.1" font-size="11" fill="currentColor">G<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">, P</tspan><tspan dy="3" font-size="10">1</tspan></text>
+  <text x="179.2" y="418.2" font-size="11" fill="currentColor" text-anchor="end">G<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="89.8" y="399.2" font-size="11" fill="currentColor" fill-opacity="0.85">P<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="180.5" y="340.7" font-size="11" fill="currentColor" text-anchor="end">P<tspan dy="3" font-size="10">3</tspan></text>
+  <line x1="200" y1="270" x2="222" y2="270" stroke="currentColor" stroke-width="2.2"/>
+  <text x="228" y="274" font-size="11" fill="currentColor">G<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= (0, 0, 4, 4)</tspan></text>
+  <line x1="200" y1="289" x2="222" y2="289" stroke="currentColor" stroke-width="2.2"/>
+  <text x="228" y="293" font-size="11" fill="currentColor">G<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= (4, 4, 8, 8)</tspan></text>
+  <line x1="200" y1="308" x2="222" y2="308" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <text x="228" y="312" font-size="11" fill="currentColor">P<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= (0, 0, 4, 4) · 0.90</tspan></text>
+  <line x1="200" y1="327" x2="222" y2="327" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.7" stroke-dasharray="5 3"/>
+  <text x="228" y="331" font-size="11" fill="currentColor">P<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= (3, 3, 7, 7) · 0.80</tspan></text>
+  <line x1="200" y1="346" x2="222" y2="346" stroke="currentColor" stroke-width="1.8" stroke-dasharray="9 3 2 3"/>
+  <text x="228" y="350" font-size="11" fill="currentColor">P<tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">= (4, 3, 8, 7) · 0.60</tspan></text>
+  <rect x="200" y="364" width="22" height="10" stroke="none" fill="currentColor" fill-opacity="0.28"/>
+  <text x="228" y="373" font-size="11" fill="currentColor">P<tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">∩ G</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">: x 4–8, y 4–7</tspan></text>
+  <text x="228" y="390" font-size="11" fill="currentColor">4 × 3 = 12</text>
+  <text x="200" y="411" font-size="11.5" fill="currentColor" font-weight="bold">IoU = 12 / (16 + 16 − 12) = 0.6</text>
+  <text x="426" y="246" font-size="12" fill="currentColor">(c) mask, as counts</text>
+  <rect x="488" y="270" width="13" height="104" stroke="none" fill="currentColor" fill-opacity="0.45"/>
+  <line x1="436" y1="270" x2="540" y2="270" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="283" x2="540" y2="283" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="296" x2="540" y2="296" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="309" x2="540" y2="309" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="322" x2="540" y2="322" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="335" x2="540" y2="335" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="348" x2="540" y2="348" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="361" x2="540" y2="361" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="374" x2="540" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="270" x2="436" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="449" y1="270" x2="449" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="462" y1="270" x2="462" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="475" y1="270" x2="475" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="488" y1="270" x2="488" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="501" y1="270" x2="501" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="514" y1="270" x2="514" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="527" y1="270" x2="527" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="540" y1="270" x2="540" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <rect x="436" y="270" width="104" height="104" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <rect x="488" y="270" width="13" height="104" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <text x="462" y="327" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">56</text>
+  <text x="494.5" y="390" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">8</text>
+  <text x="426" y="418" font-size="11" fill="currentColor">cable (column 4): 8</text>
+  <text x="426" y="434" font-size="11" fill="currentColor">background: 56</text>
+</svg>
 
 Four things the drawing has to get right, each of which is a claim about the pipeline.
 **The patch grid drawn on the pixels, not beside them.** Patch 1 is rows 0–3 and columns 0–3, and the step edge lands on the vertical grid line. If the drawing does not show that, it cannot show why two tokens come out identical.
@@ -92,7 +365,7 @@ That last sentence is the actual inductive bias, and it is worth separating from
 
 A Vision Transformer instead makes four patch tokens, adds position information, and lets attention mix them. The inductive bias changes: convolution hard-codes locality and translation sharing; patch attention learns long-range interaction more directly but typically relies more heavily on data and pretraining.
 
-D2 shows the cost of that trade in one line. Its four flattened patches are $(0,\dots,0)$, $(10,\dots,10)$, $(0,\dots,0)$, $(10,\dots,10)$, so tokens 1 and 3 are identical vectors and so are 2 and 4. Self-attention is permutation-equivariant, so without the added position embedding the model cannot distinguish "dark patch on top" from "dark patch on the bottom" — the position information is not a refinement, it is the only thing carrying layout. A convolution never faced this problem, because its output grid *is* the layout.
+D2 shows the cost of that trade in one line. Its four flattened patches are $(0,\dots,0)$, $(10,\dots,10)$, $(0,\dots,0)$, $(10,\dots,10)$, so tokens 1 and 3 are identical vectors and so are 2 and 4. Self-attention is permutation-equivariant, so without the added position embedding the model cannot distinguish "dark patch on top" from "dark patch on the bottom" — the position information is not a refinement, it is the only thing carrying layout. A convolution never faced this problem, because its output grid *is* the layout. The one-line proof, and a lab that removes D2's position table and watches every attention row go uniform, are [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §5]].
 
 ### 2. The output defines the problem
 
@@ -348,11 +621,298 @@ $$I[i,j]=\begin{cases}0,&j\le3\\10,&j\ge4\end{cases}\qquad i,j\in\{0,\dots,7\}$$
 
 §2의 metric을 위한 페이지 고유 대상 둘도 여기서 고정한다. 둘 다 D2의 픽셀 좌표다. **박스**는 $(x_1,y_1,x_2,y_2)$로 쓰고 두 번째 모서리는 배타적이다. 정답 $G_1=(0,0,4,4)$, $G_2=(4,4,8,8)$으로 각각 넓이 16이고, 예측은 $P_1=(0,0,4,4)$ 신뢰도 $0.90$, $P_2=(3,3,7,7)$ 신뢰도 $0.80$, $P_3=(4,3,8,7)$ 신뢰도 $0.60$이다. **마스크**는 같은 이미지의 2클래스 분할이다. "케이블" 클래스는 4열만 차지해 64픽셀 중 8픽셀이고 나머지는 배경이다.
 
-*범위: 이 페이지는 시각 입력이 텐서가 되는 방식(convolution 산술과 패치 토큰), 출력 선택이 backbone을 과제로 바꾸는 방식, 그리고 그 출력을 채점하는 metric — IoU, mAP, 클래스별 평균 mIoU — 을 손으로 다시 계산할 수 있을 만큼 작은 대상에서 읽는 법을 가르친다. 픽셀 아래의 카메라 기하는 가르치지 않는다. 그것은 [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §1]]이다. depth 복원과 3D 복원도 아니다. 그것은 [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §2]]와 [[01-canonical-papers/canonical-list|canonical list]]의 3D 항목이다. loss·optimizer·보폭 같은 학습 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §6]]이다. attention 자체도 아니다. 그것은 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. §2 표의 depth와 3D 행은 표를 완성하기 위해 이름과 metric 정의만 싣고, 여기서 가르치지는 않는다.*
+*범위: 이 페이지는 시각 입력이 텐서가 되는 방식(convolution 산술과 패치 토큰), 출력 선택이 backbone을 과제로 바꾸는 방식, 그리고 그 출력을 채점하는 metric — IoU, mAP, 클래스별 평균 mIoU — 을 손으로 다시 계산할 수 있을 만큼 작은 대상에서 읽는 법을 가르친다. 픽셀 아래의 카메라 기하는 가르치지 않는다. 그것은 [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §1]]이다. depth 복원과 3D 복원도 아니다. 그것은 [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §2]]와 [[01-canonical-papers/canonical-list|canonical list]]의 3D 항목이다. loss·optimizer·보폭 같은 학습 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §6]]이다. attention 자체도 아니다. 그것은 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]와, 이 페이지의 D2 위에서 계산한 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]다. §2 표의 depth와 3D 행은 표를 완성하기 위해 이름과 metric 정의만 싣고, 여기서 가르치지는 않는다.*
 
 ### 과제가 그릴 그림
 
-패널 셋으로 된 그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 영어 절의 mermaid 도면이 그 그림이다.
+패널 셋으로 된 그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 그림은 고정된 숫자로 그린 계산 절이고 임베딩 폭은 $d$로 남겨 두었다. 문제 1은 같은 그림을 $d=8$로 요구한다.
+
+<svg viewBox="0 0 560 452" style="max-width:100%;height:auto" role="img" aria-label="D2의 8×8 계단 이미지와 2×2 패치 격자, 40을 내는 3×3 창과 6×6 출력 맵의 칸, 토큰 shape, 모서리 좌표를 적은 박스 다섯과 P3·G2의 4×3 교집합, 그리고 8과 56으로 센 케이블 마스크">
+  <defs><marker id="aD2k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">(a) 픽셀, 패치 격자, 3×3 창 하나 · stride 1, pad 0</text>
+  <rect x="102" y="50" width="72" height="144" stroke="none" fill="currentColor" fill-opacity="0.22"/>
+  <line x1="30" y1="50" x2="174" y2="50" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="68" x2="174" y2="68" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="86" x2="174" y2="86" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="104" x2="174" y2="104" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="122" x2="174" y2="122" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="140" x2="174" y2="140" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="158" x2="174" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="176" x2="174" y2="176" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="194" x2="174" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="30" y1="50" x2="30" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="48" y1="50" x2="48" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="66" y1="50" x2="66" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="84" y1="50" x2="84" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="102" y1="50" x2="102" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="120" y1="50" x2="120" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="138" y1="50" x2="138" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="156" y1="50" x2="156" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="174" y1="50" x2="174" y2="194" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <rect x="30" y="50" width="144" height="144" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <line x1="102" y1="50" x2="102" y2="194" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="30" y1="122" x2="174" y2="122" stroke="currentColor" stroke-width="2.4"/>
+  <text x="24" y="63" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">0</text>
+  <text x="39" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0</text>
+  <text x="24" y="81" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">1</text>
+  <text x="57" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <text x="24" y="99" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">2</text>
+  <text x="75" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">2</text>
+  <text x="24" y="117" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">3</text>
+  <text x="93" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">3</text>
+  <text x="24" y="135" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">4</text>
+  <text x="111" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">4</text>
+  <text x="24" y="153" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">5</text>
+  <text x="129" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">5</text>
+  <text x="24" y="171" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">6</text>
+  <text x="147" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">6</text>
+  <text x="24" y="189" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">7</text>
+  <text x="165" y="207" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">7</text>
+  <text x="66" y="117" font-size="11" fill="currentColor" text-anchor="middle">패치 1</text>
+  <text x="138" y="117" font-size="11" fill="currentColor" text-anchor="middle">패치 2</text>
+  <text x="66" y="189" font-size="11" fill="currentColor" text-anchor="middle">패치 3</text>
+  <text x="138" y="189" font-size="11" fill="currentColor" text-anchor="middle">패치 4</text>
+  <text x="12" y="225" font-size="11" fill="currentColor" fill-opacity="0.8">음영 = 10, 빈칸 = 0, 계단은 패치 경계선 위</text>
+  <rect x="66" y="50" width="54" height="54" stroke="currentColor" stroke-width="2.6" fill="currentColor" fill-opacity="0.12"/>
+  <line x1="232" y1="50" x2="340" y2="50" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="68" x2="340" y2="68" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="86" x2="340" y2="86" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="104" x2="340" y2="104" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="122" x2="340" y2="122" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="140" x2="340" y2="140" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="158" x2="340" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="232" y1="50" x2="232" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="250" y1="50" x2="250" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="268" y1="50" x2="268" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="286" y1="50" x2="286" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="304" y1="50" x2="304" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="322" y1="50" x2="322" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <line x1="340" y1="50" x2="340" y2="158" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+  <rect x="232" y="50" width="108" height="108" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <rect x="268" y="50" width="18" height="18" stroke="currentColor" stroke-width="2.6" fill="currentColor" fill-opacity="0.12"/>
+  <text x="241" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">40</text>
+  <text x="295" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="63" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="63" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">0</text>
+  <text x="241" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0</text>
+  <text x="241" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="81" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="81" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">1</text>
+  <text x="259" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <text x="241" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="99" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="99" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">2</text>
+  <text x="277" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">2</text>
+  <text x="241" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="117" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="117" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">3</text>
+  <text x="295" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">3</text>
+  <text x="241" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="135" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="135" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">4</text>
+  <text x="313" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">4</text>
+  <text x="241" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="259" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="277" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="295" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">40</text>
+  <text x="313" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="331" y="153" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.45">0</text>
+  <text x="226" y="153" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">5</text>
+  <text x="331" y="171" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">5</text>
+  <text x="286" y="189" font-size="11" fill="currentColor" text-anchor="middle">출력 맵 6 × 6 · y<tspan dy="3" font-size="10">0,2</tspan><tspan dy="-3" dx="3.5">= 40</tspan></text>
+  <text x="286" y="205" font-size="11" fill="currentColor" text-anchor="middle">n<tspan dy="3" font-size="10">out</tspan><tspan dy="-3" dx="3.5">= ⌊(8 + 0 − 3)/1⌋ + 1 = 6</tspan></text>
+  <path d="M 114 49 C 124 19, 277.0 15, 277.0 48" stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#aD2k)"/>
+  <text x="362" y="42" font-size="11" fill="currentColor">flatten: 4 × 16</text>
+  <line x1="385" y1="52" x2="385" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="392" y1="52" x2="392" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="399" y1="52" x2="399" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="406" y1="52" x2="406" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="413" y1="52" x2="413" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="420" y1="52" x2="420" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="427" y1="52" x2="427" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="434" y1="52" x2="434" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="441" y1="52" x2="441" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="448" y1="52" x2="448" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="455" y1="52" x2="455" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="462" y1="52" x2="462" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="469" y1="52" x2="469" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="476" y1="52" x2="476" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="483" y1="52" x2="483" y2="61" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <rect x="378" y="52" width="112" height="9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <text x="373" y="61" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">1</text>
+  <rect x="378" y="66" width="112" height="9" stroke="none" fill="currentColor" fill-opacity="0.3"/>
+  <line x1="385" y1="66" x2="385" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="392" y1="66" x2="392" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="399" y1="66" x2="399" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="406" y1="66" x2="406" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="413" y1="66" x2="413" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="420" y1="66" x2="420" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="427" y1="66" x2="427" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="434" y1="66" x2="434" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="441" y1="66" x2="441" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="448" y1="66" x2="448" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="455" y1="66" x2="455" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="462" y1="66" x2="462" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="469" y1="66" x2="469" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="476" y1="66" x2="476" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="483" y1="66" x2="483" y2="75" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <rect x="378" y="66" width="112" height="9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <text x="373" y="75" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">2</text>
+  <line x1="385" y1="80" x2="385" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="392" y1="80" x2="392" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="399" y1="80" x2="399" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="406" y1="80" x2="406" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="413" y1="80" x2="413" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="420" y1="80" x2="420" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="427" y1="80" x2="427" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="434" y1="80" x2="434" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="441" y1="80" x2="441" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="448" y1="80" x2="448" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="455" y1="80" x2="455" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="462" y1="80" x2="462" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="469" y1="80" x2="469" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="476" y1="80" x2="476" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="483" y1="80" x2="483" y2="89" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <rect x="378" y="80" width="112" height="9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <text x="373" y="89" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">3</text>
+  <rect x="378" y="94" width="112" height="9" stroke="none" fill="currentColor" fill-opacity="0.3"/>
+  <line x1="385" y1="94" x2="385" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="392" y1="94" x2="392" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="399" y1="94" x2="399" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="406" y1="94" x2="406" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="413" y1="94" x2="413" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="420" y1="94" x2="420" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="427" y1="94" x2="427" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="434" y1="94" x2="434" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="441" y1="94" x2="441" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="448" y1="94" x2="448" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="455" y1="94" x2="455" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="462" y1="94" x2="462" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="469" y1="94" x2="469" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="476" y1="94" x2="476" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="483" y1="94" x2="483" y2="103" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.35"/>
+  <rect x="378" y="94" width="112" height="9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <text x="373" y="103" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">4</text>
+  <text x="498" y="61" font-size="11" fill="currentColor" fill-opacity="0.85">1 = 3</text>
+  <text x="498" y="75" font-size="11" fill="currentColor" fill-opacity="0.85">2 = 4</text>
+  <line x1="402" y1="110" x2="402" y2="128" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD2k)"/>
+  <text x="411" y="123" font-size="11" fill="currentColor">× E (16 × d)</text>
+  <text x="402" y="146" font-size="11" fill="currentColor" text-anchor="middle">4 × d</text>
+  <line x1="402" y1="152" x2="402" y2="180" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD2k)"/>
+  <text x="411" y="162" font-size="11" fill="currentColor">+ 위치 p<tspan dy="3" font-size="10">i</tspan></text>
+  <text x="411" y="180" font-size="11" fill="currentColor">+ class 토큰</text>
+  <text x="402" y="198" font-size="11" fill="currentColor" text-anchor="middle">5 × d</text>
+  <text x="12" y="246" font-size="12" fill="currentColor">(b) 박스, 픽셀 좌표로 적은 모서리</text>
+  <line x1="30" y1="270" x2="182" y2="270" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="289" x2="182" y2="289" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="308" x2="182" y2="308" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="327" x2="182" y2="327" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="346" x2="182" y2="346" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="365" x2="182" y2="365" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="384" x2="182" y2="384" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="403" x2="182" y2="403" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="422" x2="182" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="30" y1="270" x2="30" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="49" y1="270" x2="49" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="68" y1="270" x2="68" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="87" y1="270" x2="87" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="106" y1="270" x2="106" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="125" y1="270" x2="125" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="144" y1="270" x2="144" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="163" y1="270" x2="163" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="182" y1="270" x2="182" y2="422" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <rect x="30" y="270" width="152" height="152" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <text x="30" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0</text>
+  <text x="24" y="274" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">0</text>
+  <text x="49" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <text x="24" y="293" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">1</text>
+  <text x="68" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">2</text>
+  <text x="24" y="312" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">2</text>
+  <text x="87" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">3</text>
+  <text x="24" y="331" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">3</text>
+  <text x="106" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">4</text>
+  <text x="24" y="350" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">4</text>
+  <text x="125" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">5</text>
+  <text x="24" y="369" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">5</text>
+  <text x="144" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">6</text>
+  <text x="24" y="388" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">6</text>
+  <text x="163" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">7</text>
+  <text x="24" y="407" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">7</text>
+  <text x="182" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">8</text>
+  <text x="24" y="426" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">8</text>
+  <rect x="106" y="346" width="76" height="57" stroke="none" fill="currentColor" fill-opacity="0.28"/>
+  <rect x="30" y="270" width="76" height="76" stroke="currentColor" stroke-width="2.2" fill="none"/>
+  <rect x="106" y="346" width="76" height="76" stroke="currentColor" stroke-width="2.2" fill="none"/>
+  <rect x="32.5" y="272.5" width="71" height="71" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="5 3"/>
+  <rect x="87" y="327" width="76" height="76" stroke="currentColor" stroke-width="1.4" fill="none" stroke-opacity="0.7" stroke-dasharray="5 3"/>
+  <rect x="106" y="327" width="76" height="76" stroke="currentColor" stroke-width="1.8" fill="none" stroke-dasharray="9 3 2 3"/>
+  <circle cx="106" cy="346" r="2.8" stroke="none" fill="currentColor"/>
+  <circle cx="182" cy="403" r="2.8" stroke="none" fill="currentColor"/>
+  <text x="144" y="379.5" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">12</text>
+  <text x="34.8" y="288.1" font-size="11" fill="currentColor">G<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">, P</tspan><tspan dy="3" font-size="10">1</tspan></text>
+  <text x="179.2" y="418.2" font-size="11" fill="currentColor" text-anchor="end">G<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="89.8" y="399.2" font-size="11" fill="currentColor" fill-opacity="0.85">P<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="180.5" y="340.7" font-size="11" fill="currentColor" text-anchor="end">P<tspan dy="3" font-size="10">3</tspan></text>
+  <line x1="200" y1="270" x2="222" y2="270" stroke="currentColor" stroke-width="2.2"/>
+  <text x="228" y="274" font-size="11" fill="currentColor">G<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= (0, 0, 4, 4)</tspan></text>
+  <line x1="200" y1="289" x2="222" y2="289" stroke="currentColor" stroke-width="2.2"/>
+  <text x="228" y="293" font-size="11" fill="currentColor">G<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= (4, 4, 8, 8)</tspan></text>
+  <line x1="200" y1="308" x2="222" y2="308" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <text x="228" y="312" font-size="11" fill="currentColor">P<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= (0, 0, 4, 4) · 0.90</tspan></text>
+  <line x1="200" y1="327" x2="222" y2="327" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.7" stroke-dasharray="5 3"/>
+  <text x="228" y="331" font-size="11" fill="currentColor">P<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= (3, 3, 7, 7) · 0.80</tspan></text>
+  <line x1="200" y1="346" x2="222" y2="346" stroke="currentColor" stroke-width="1.8" stroke-dasharray="9 3 2 3"/>
+  <text x="228" y="350" font-size="11" fill="currentColor">P<tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">= (4, 3, 8, 7) · 0.60</tspan></text>
+  <rect x="200" y="364" width="22" height="10" stroke="none" fill="currentColor" fill-opacity="0.28"/>
+  <text x="228" y="373" font-size="11" fill="currentColor">P<tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">∩ G</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">: x 4–8, y 4–7</tspan></text>
+  <text x="228" y="390" font-size="11" fill="currentColor">4 × 3 = 12</text>
+  <text x="200" y="411" font-size="11.5" fill="currentColor" font-weight="bold">IoU = 12 / (16 + 16 − 12) = 0.6</text>
+  <text x="426" y="246" font-size="12" fill="currentColor">(c) 마스크, 개수로</text>
+  <rect x="488" y="270" width="13" height="104" stroke="none" fill="currentColor" fill-opacity="0.45"/>
+  <line x1="436" y1="270" x2="540" y2="270" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="283" x2="540" y2="283" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="296" x2="540" y2="296" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="309" x2="540" y2="309" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="322" x2="540" y2="322" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="335" x2="540" y2="335" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="348" x2="540" y2="348" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="361" x2="540" y2="361" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="374" x2="540" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="436" y1="270" x2="436" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="449" y1="270" x2="449" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="462" y1="270" x2="462" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="475" y1="270" x2="475" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="488" y1="270" x2="488" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="501" y1="270" x2="501" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="514" y1="270" x2="514" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="527" y1="270" x2="527" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <line x1="540" y1="270" x2="540" y2="374" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3"/>
+  <rect x="436" y="270" width="104" height="104" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <rect x="488" y="270" width="13" height="104" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <text x="462" y="327" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">56</text>
+  <text x="494.5" y="390" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">8</text>
+  <text x="426" y="418" font-size="11" fill="currentColor">케이블(4열): 8</text>
+  <text x="426" y="434" font-size="11" fill="currentColor">배경: 56</text>
+</svg>
 
 그림이 맞혀야 할 것이 넷이고, 각각이 파이프라인에 대한 주장이다.
 **패치 격자는 픽셀 옆이 아니라 픽셀 위에 그린다.** 패치 1은 0–3행, 0–3열이고 계단 모서리가 세로 격자선 위에 놓인다. 그것을 보이지 못하는 그림은 왜 토큰 둘이 똑같이 나오는지도 보이지 못한다.
@@ -392,7 +952,7 @@ convolution의 출력 크기는 $n_{out}=\lfloor(n+2p-k)/s\rfloor+1$이다. D2�
 
 마지막 문장이 실제 귀납 편향이고, 산술과 떼어 볼 가치가 있다. parameter 수 $C_{\text{out}}(C_{\text{in}}k^2+1)$에는 $n$이 없다. 같은 40개의 숫자가 $8\times8$ 이미지에도 $4000\times4000$ 이미지에도 쓰인다. 층이 픽셀마다 가중치를 두는 것이 아니라 필터 하나를 *재사용*하기 때문이다. D2의 64픽셀에 출력 4개를 붙인 완전연결층은 $4(64+1)=260$개가 필요하고, 같은 모서리 검출기를 위치마다 따로 배워야 한다. 이산 convolution 자체와, 왜 이동 불변성이 그 재사용을 정당화하는지는 [[02-foundations/signal-processing|6. 신호처리 §1]]에 있다.
 
-D2가 그 거래의 대가를 한 줄로 보여 준다. 평탄화한 네 패치는 $(0,\dots,0)$, $(10,\dots,10)$, $(0,\dots,0)$, $(10,\dots,10)$이므로 토큰 1과 3이 같은 벡터이고 2와 4도 그렇다. self-attention은 순열 동변이라, 더해 주는 위치 임베딩이 없으면 "위쪽의 어두운 패치"와 "아래쪽의 어두운 패치"를 구별할 수 없다. 위치 정보는 개선이 아니라 배치를 나르는 유일한 것이다. convolution은 이 문제를 겪은 적이 없다. 출력 격자 자체가 배치이기 때문이다.
+D2가 그 거래의 대가를 한 줄로 보여 준다. 평탄화한 네 패치는 $(0,\dots,0)$, $(10,\dots,10)$, $(0,\dots,0)$, $(10,\dots,10)$이므로 토큰 1과 3이 같은 벡터이고 2와 4도 그렇다. self-attention은 순열 등변이라, 더해 주는 위치 임베딩이 없으면 "위쪽의 어두운 패치"와 "아래쪽의 어두운 패치"를 구별할 수 없다. 위치 정보는 개선이 아니라 배치를 나르는 유일한 것이다. convolution은 이 문제를 겪은 적이 없다. 출력 격자 자체가 배치이기 때문이다. 한 줄 증명과, D2의 위치 표를 빼자 모든 어텐션 행이 균등해지는 실습은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §5]]에 있다.
 
 ### 2. 출력이 문제를 정의한다
 
@@ -502,7 +1062,7 @@ AlexNet·ResNet에서 표현과 최적화, ViT에서 patch token을 읽고 canon
 
 > [!tip]- 정답 · Answers
 > 1. $\lfloor(8+2-3)/1\rfloor+1=8$이므로 $8\times8\times4$, parameter는 $4(1\cdot9+1)=40$개다. $n$에 의존하는 것은 출력 크기뿐이다. parameter 수는 $C_{\text{out}}(C_{\text{in}}k^2+1)$로 $n$을 포함하지 않고, 그것이 weight sharing의 요점이다.
-> 2. self-attention은 순열 동변이라 서로 다른 위치의 같은 토큰을 구별할 수 없고, 모델은 왼쪽 위와 왼쪽 아래를 가르지 못한다. convolution은 출력 격자 자체가 배치라서 위치를 따로 더할 일이 없다.
+> 2. self-attention은 순열 등변이라 서로 다른 위치의 같은 토큰을 구별할 수 없고, 모델은 왼쪽 위와 왼쪽 아래를 가르지 못한다. convolution은 출력 격자 자체가 배치라서 위치를 따로 더할 일이 없다.
 > 3. 질문만으로는 답할 수 없다. $t=0.5$에서는 참양성, $t=0.75$에서는 거짓양성이고, 임계값은 검출기가 아니라 protocol에 속한다. 그리고 그 정답 물체를 더 높은 신뢰도의 검출이 이미 차지하지 않았을 때만 참양성이다.
 > 4. 틀려도 픽셀 비용이 거의 없을 만큼 작은 클래스여야 한다. D2의 케이블은 64픽셀 중 8픽셀이다. 개선을 보이게 하는 것은 mIoU의 균등한 클래스 가중이고, pixel accuracy는 픽셀 수로 가중하므로 보지 못한다.
 > 5. 그 숫자가 metric depth를 가리키는지 자체가 확립되지 않았다. 척도 모호한 방법은 AbsRel을 재기 전에 이미지마다 정답에 정렬되므로 결과는 상대적 형태를 재고, 미터와 그에 따른 조작·주행 주장은 뒷받침되지 않는다.

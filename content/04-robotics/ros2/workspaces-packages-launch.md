@@ -21,6 +21,103 @@ mastery-when: "Go deeper when you are packaging for release, writing CMake for a
 
 The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — cart on a line, encoder $N=2048$ counts/m, vision at $50\,\mathrm{Hz}$, control at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ end to end — and this page's twist: **two** of them, launched from one file into `/cart1` and `/cart2`. Three panels; the problem set asks for the same three with one cart and a changed namespace.
 
+<svg viewBox="0 0 560 592" style="max-width:100%;height:auto" role="img" aria-label="Top: the include tree of p6.launch.py, with its declared arguments cart_ns and use_sim_time, a GroupAction whose first item is PushROSNamespace(cart_ns) above the two IncludeLaunchDescription arrows to perception.launch.py and control.launch.py, and p6.yaml keyed by /cart1/controller and /cart2/controller. Middle: five names resolved under /cart1 and /cart2, with the two unchanged rows shaded. Bottom: the five lines of the day's loop and which of them --symlink-install removes.">
+  <defs><marker id="l4esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">The include tree</text>
+  <rect x="116" y="32" width="140" height="22" rx="3" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none"/>
+  <text x="186" y="47" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">p6.launch.py</text>
+  <rect x="330" y="28" width="220" height="44" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" fill="none"/>
+  <text x="338" y="24" font-size="11" fill-opacity="0.7" fill="currentColor">declared arguments</text>
+  <text x="338" y="45" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">cart_ns</text>
+  <text x="434" y="45" font-size="11" fill-opacity="0.8" fill="currentColor">default cart1</text>
+  <text x="338" y="61" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">use_sim_time</text>
+  <text x="434" y="61" font-size="11" fill-opacity="0.8" fill="currentColor">default false</text>
+  <line x1="256" y1="43" x2="330" y2="43" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" fill="none"/>
+  <rect x="12" y="72" width="334" height="150" rx="10" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="5 3" fill="none"/>
+  <line x1="186" y1="54" x2="186" y2="72" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <text x="20" y="102" font-size="11" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">GroupAction</text>
+  <rect x="104" y="88" width="186" height="22" rx="3" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.95" fill="currentColor" fill-opacity="0.08"/>
+  <text x="197" y="103" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">PushROSNamespace(cart_ns)</text>
+  <line x1="16" y1="118" x2="342" y2="118" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="2 3" fill="none"/>
+  <text x="338" y="131" font-size="11" text-anchor="end" fill-opacity="0.65" fill="currentColor">namespace applies below this line</text>
+  <circle cx="186" cy="140" r="2.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="22" y="170" width="146" height="22" rx="3" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="95" y="185" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">perception.launch.py</text>
+  <line x1="186" y1="142" x2="95" y2="168" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#l4esol)"/>
+  <rect x="196" y="170" width="140" height="22" rx="3" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="266" y="185" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">control.launch.py</text>
+  <line x1="186" y1="142" x2="266" y2="168" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#l4esol)"/>
+  <text x="128" y="157" font-size="11" text-anchor="end" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">use_sim_time</text>
+  <text x="240" y="157" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">use_sim_time</text>
+  <text x="20" y="213" font-size="11" fill-opacity="0.6" fill="currentColor">arrows: IncludeLaunchDescription + launch_arguments</text>
+  <rect x="470" y="170" width="80" height="22" rx="2" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <text x="510" y="185" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">p6.yaml</text>
+  <line x1="336" y1="181" x2="470" y2="181" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <text x="414" y="148" font-size="11" text-anchor="middle" fill-opacity="0.65" fill="currentColor">top-level keys</text>
+  <text x="414" y="163" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart1/controller:</text>
+  <text x="414" y="206" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart2/controller:</text>
+  <text x="12" y="254" font-size="12" fill-opacity="0.8" fill="currentColor">The resolution table</text>
+  <rect x="12" y="264" width="538" height="114" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <rect x="13" y="321" width="536" height="19" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+  <rect x="13" y="359" width="536" height="19" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+  <line x1="12" y1="283" x2="550" y2="283" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <line x1="12" y1="302" x2="550" y2="302" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="12" y1="321" x2="550" y2="321" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="12" y1="340" x2="550" y2="340" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="12" y1="359" x2="550" y2="359" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="192" y1="264" x2="192" y2="378" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="372" y1="264" x2="372" y2="378" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <text x="19" y="277" font-size="11" fill-opacity="0.75" fill="currentColor">written in the source</text>
+  <text x="199" y="277" font-size="11" fill-opacity="0.75" fill="currentColor">under /cart1</text>
+  <text x="379" y="277" font-size="11" fill-opacity="0.75" fill="currentColor">under /cart2</text>
+  <text x="19" y="296" font-size="11" fill-opacity="0.9" fill="currentColor">node name <tspan font-family="ui-monospace,monospace">controller</tspan></text>
+  <text x="199" y="296" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart1/controller</text>
+  <text x="379" y="296" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart2/controller</text>
+  <text x="19" y="315" font-size="11" fill-opacity="0.9" fill="currentColor">relative topic <tspan font-family="ui-monospace,monospace">goal</tspan></text>
+  <text x="199" y="315" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart1/goal</text>
+  <text x="379" y="315" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart2/goal</text>
+  <text x="19" y="334" font-size="11" fill-opacity="0.9" fill="currentColor">absolute topic <tspan font-family="ui-monospace,monospace">/goal</tspan></text>
+  <text x="199" y="334" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <text x="379" y="334" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <text x="19" y="353" font-size="11" fill-opacity="0.9" fill="currentColor">private param <tspan font-family="ui-monospace,monospace">~/gain</tspan></text>
+  <text x="199" y="353" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart1/controller/gain</text>
+  <text x="379" y="353" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart2/controller/gain</text>
+  <text x="19" y="372" font-size="11" fill-opacity="0.9" fill="currentColor">YAML key <tspan font-family="ui-monospace,monospace">/controller</tspan></text>
+  <text x="199" y="372" font-size="11" fill-opacity="0.8" font-style="italic" fill="currentColor">matches nothing</text>
+  <text x="379" y="372" font-size="11" fill-opacity="0.8" font-style="italic" fill="currentColor">matches nothing</text>
+  <text x="12" y="394" font-size="11" fill-opacity="0.65" fill="currentColor">shaded: the two rows that do not change between the namespaces</text>
+  <text x="12" y="418" font-size="12" fill-opacity="0.8" fill="currentColor">The day's loop, five lines</text>
+  <text x="468" y="422" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">--symlink-install removes it?</text>
+  <text x="426" y="436" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">controller.cpp</text>
+  <text x="510" y="436" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">camera .py</text>
+  <rect x="10" y="442" width="540" height="102" rx="4" fill="currentColor" fill-opacity="0.05" stroke="none"/>
+  <text x="18" y="458" font-size="11" fill-opacity="0.6" fill="currentColor">1</text>
+  <text x="32" y="458" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">edit controller.cpp</text>
+  <text x="18" y="478" font-size="11" fill-opacity="0.6" fill="currentColor">2</text>
+  <text x="32" y="478" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">colcon build --packages-select p6_control</text>
+  <text x="426" y="478" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">kept</text>
+  <text x="510" y="478" font-size="11" text-anchor="middle" fill-opacity="0.95" font-weight="bold" fill="currentColor">removed</text>
+  <rect x="484" y="466" width="52" height="16" rx="3" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" fill="none"/>
+  <text x="18" y="498" font-size="11" fill-opacity="0.6" fill="currentColor">3</text>
+  <text x="32" y="498" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">source install/setup.bash</text>
+  <text x="426" y="498" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">kept</text>
+  <text x="510" y="498" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">kept</text>
+  <text x="18" y="518" font-size="11" fill-opacity="0.6" fill="currentColor">4</text>
+  <text x="32" y="518" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">ros2 launch p6_bringup p6.launch.py cart_ns:=cart1</text>
+  <text x="426" y="518" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">kept</text>
+  <text x="510" y="518" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">kept</text>
+  <text x="18" y="538" font-size="11" fill-opacity="0.6" fill="currentColor">5</text>
+  <text x="32" y="538" font-size="11" fill-opacity="0.9" fill="currentColor">first <tspan font-family="ui-monospace,monospace">/cart1/goal</tspan> at 20 ms, first <tspan font-family="ui-monospace,monospace">/cart1/cmd</tspan> at 5 ms</text>
+  <line x1="408" y1="535" x2="544" y2="535" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <path d="M408.0 532v6M442.0 532v6M476.0 532v6M510.0 532v6M544.0 532v6" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" fill="none"/>
+  <circle cx="442" cy="535" r="3.2" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="544" cy="535" r="3.2" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <text x="448" y="547" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">cmd</text>
+  <text x="544" y="547" font-size="11" text-anchor="end" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">goal</text>
+  <text x="12" y="566" font-size="11" fill-opacity="0.8" fill="currentColor">The strip's edit is controller.cpp, compiled C++: nothing is removed (§7, worked case step 6).</text>
+  <text x="12" y="580" font-size="11" fill-opacity="0.8" fill="currentColor">Only a Python edit, such as the camera's .py, loses a line, and it is the build.</text>
+</svg>
+
 **Left — the include tree.** `p6.launch.py` at the top, with its declared arguments drawn as a small box hanging off it: `cart_ns` (default `cart1`) and `use_sim_time` (default `false`). Two children below it, `perception.launch.py` and `control.launch.py`, each reached by an `IncludeLaunchDescription` arrow labelled with the `launch_arguments` passed down. Draw a rounded box around both children for the `GroupAction`, and put `PushROSNamespace(cart_ns)` inside it as the **first** item, above both arrows. The position is the content of this panel: an action drawn above that line escapes the namespace, and nothing in the running system will tell you it did. Hang `p6.yaml` off `control.launch.py` and write the file's top-level key on the connector, not just the filename.
 
 **Middle — the resolution table, three columns wide.** Column 1, what the source writes; column 2, what it becomes under `/cart1`; column 3, under `/cart2`. Five rows: the node name `controller`; the relative topic `goal`; the absolute topic `/goal`; the private parameter `~/gain`; and the YAML top-level key. Two of those five rows do not change between columns 2 and 3, and finding which two is the exercise.
@@ -54,12 +151,12 @@ because a topic is a name and anyone may publish to it. Inside one $70\,\mathrm{
 - Per node, keyed by FQN: a `/cart1/controller:` block and a `/cart2/controller:` block, each with its own `ros__parameters:`. Verbose, and it states that these are the controller's values.
 - Wildcard: one `/**:` block. Right for `use_sim_time`, which genuinely belongs to every node in the graph. Wrong for `counts_per_metre`, which is meaningful to exactly one node per cart — and which you will one day want to differ, the morning somebody puts a $4096$ count/m encoder on cart 2.
 
-The failure to rehearse is the third row of step 2's table: key the file `/controller` and it parses, loads, reports success, and sets nothing, so the controller runs on its declared defaults. If that default is $1024$ rather than $2048$, the cart's estimated position is exactly doubled and nothing anywhere says so ([[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]], worked case step 5).
+The failure to rehearse is the fifth row of step 2's table: key the file `/controller` and it parses, loads, reports success, and sets nothing, so the controller runs on its declared defaults. If that default is $1024$ rather than $2048$, the cart's estimated position is exactly doubled and nothing anywhere says so ([[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]], worked case step 5).
 
 **Step 5 — testing the hypothesis without a rebuild.** You do not have to edit and rebuild to find out whether a name is the problem. Launch one cart and remap on the command line:
 
 ```bash
-ros2 run p6_control controller --ros-args --remap __ns:=/cart1 --remap goal:=/cart1/goal -p counts_per_metre:=2048
+ros2 run p6_control controller --ros-args --remap __ns:=/cart1 --remap /goal:=/cart1/goal -p counts_per_metre:=2048
 ```
 
 If data flows, the bug was the name. Then fix it where it belongs — in the source if the code hard-coded an absolute name, in the launch file if the namespace was wrong — and check the result with `ros2 node info /cart1/controller`, which prints resolved names and is therefore the authority.
@@ -592,7 +689,7 @@ Writing the nodes themselves is [[04-robotics/ros2/nodes-topics-messages|25.2 No
 > 2. For an `ament_python` package colcon runs setuptools' `develop` step, so the installed module path resolves back into `src/`. A C++ package's installed artefact is a compiled binary; there is no source file for it to point at, so a new binary requires a compile. Data files installed by a CMake package — launch, YAML, URDF — *are* symlinked and do track their sources.
 > 3. The top-level key must be the node's fully qualified name including its namespace (`/demo/sensor`, not `/sensor`), That mistake is silent. A misspelled `ros__parameters` would not have loaded without error — it is a parse error that stops the node — so if the file truly loaded, the name (or whether the file was passed at all) is the suspect. `/**` as the top-level key sidesteps the first one when the parameters really are meant for every node.
 > 4. `<depend>` declares a dependency needed at both build and run time, and a pure Python package has no build phase. Declaring build-time dependencies it does not have misinforms rosdep and the release tooling, which will install and require them at build time, and misrepresents what the package actually needs. (It does not change colcon's build order: colcon orders by run dependencies too.)
-> 5. An absolute name ignores the namespace, so both controllers subscribe to `/goal` and — if the cameras publish it absolutely too — both cameras publish there: $2\times50=100\,\mathrm{Hz}$ on one name, of which $50\%$ is the other cart's. Each controller acts on whichever goal arrived last, so each cart chases the wrong target about half the time, at full speed, with `ros2 topic hz /goal` reporting a healthy $100\,\mathrm{Hz}$. `ros2 node info /cart1/controller` proves it, because it prints *resolved* names: you will see `/goal` where you expected `/cart1/goal`. Fix it with relative names in the source plus `PushROSNamespace` in the launch file, and test the hypothesis first with `--ros-args --remap goal:=/cart1/goal`, which needs no rebuild.
+> 5. An absolute name ignores the namespace, so both controllers subscribe to `/goal` and — if the cameras publish it absolutely too — both cameras publish there: $2\times50=100\,\mathrm{Hz}$ on one name, of which $50\%$ is the other cart's. Each controller acts on whichever goal arrived last, so each cart chases the wrong target about half the time, at full speed, with `ros2 topic hz /goal` reporting a healthy $100\,\mathrm{Hz}$. `ros2 node info /cart1/controller` proves it, because it prints *resolved* names: you will see `/goal` where you expected `/cart1/goal`. Fix it with relative names in the source plus `PushROSNamespace` in the launch file, and test the hypothesis first with `--ros-args --remap /goal:=/cart1/goal`, which needs no rebuild.
 
 ### Problem set · 과제
 
@@ -604,7 +701,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Three nodes — cam
 
 > [!tip]- Solutions
 > 1. `p6.launch.py` → `camera`, `controller`, `logger`; YAML under `/cart`. Timeline: edit; build; source; launch; first vision period.
-> 2. (a) `/cart/controller` (or `/**`). `/controller` loads with no error and sets nothing. (b) $0.488\,\mathrm{mm}$, stored as $2048$ counts/m. (c) Wrong `--packages-select`, overlay not sourced, failed build. `ros2 pkg prefix` / `python3 -c "…__file__"`.
+> 2. (a) `/cart/controller` (or `/**`). `/controller` loads with no error and sets nothing. (b) $0.488\,\mathrm{mm}$, stored as $2048$ counts/m. (c) Wrong `--packages-select`, overlay not sourced, failed build. `ros2 pkg prefix p6_control`.
 > 3. Python `develop` points at `src/`; the C++ artefact is a binary. The $200\,\mathrm{Hz}$ loop is the C++ one — a stale binary keeps the old period even when the camera script updates.
 
 ## 한국어
@@ -620,6 +717,103 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Three nodes — cam
 ### 과제가 그릴 그림: include 트리와 그것이 푸는 모든 이름 · Homework diagram
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** — 직선 위의 카트, 엔코더 $N=2048$ counts/m, 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$, 종단 $70\,\mathrm{ms}$ — 이고, 이 페이지의 비틀기는 그것을 **둘** 띄운다는 것이다. 파일 하나로 `/cart1`과 `/cart2`에. 패널 셋을 그려라. 과제는 카트 하나에 네임스페이스만 바꾼 같은 셋을 요구한다.
+
+<svg viewBox="0 0 560 592" style="max-width:100%;height:auto" role="img" aria-label="위: p6.launch.py의 include 트리. 선언된 인자 cart_ns와 use_sim_time, 첫 항목 PushROSNamespace(cart_ns)가 perception.launch.py와 control.launch.py로 가는 IncludeLaunchDescription 화살표 둘보다 위에 있는 GroupAction, 그리고 /cart1/controller와 /cart2/controller를 키로 쓰는 p6.yaml. 가운데: 이름 다섯이 /cart1과 /cart2에서 풀린 표, 바뀌지 않는 두 행은 음영. 아래: 하루 루프의 다섯 줄과 --symlink-install이 그중 무엇을 없애는지.">
+  <defs><marker id="l4ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">include 트리</text>
+  <rect x="116" y="32" width="140" height="22" rx="3" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none"/>
+  <text x="186" y="47" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">p6.launch.py</text>
+  <rect x="330" y="28" width="220" height="44" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" fill="none"/>
+  <text x="338" y="24" font-size="11" fill-opacity="0.7" fill="currentColor">선언된 인자</text>
+  <text x="338" y="45" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">cart_ns</text>
+  <text x="434" y="45" font-size="11" fill-opacity="0.8" fill="currentColor">기본값 cart1</text>
+  <text x="338" y="61" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">use_sim_time</text>
+  <text x="434" y="61" font-size="11" fill-opacity="0.8" fill="currentColor">기본값 false</text>
+  <line x1="256" y1="43" x2="330" y2="43" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" fill="none"/>
+  <rect x="12" y="72" width="334" height="150" rx="10" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="5 3" fill="none"/>
+  <line x1="186" y1="54" x2="186" y2="72" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <text x="20" y="102" font-size="11" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">GroupAction</text>
+  <rect x="104" y="88" width="186" height="22" rx="3" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.95" fill="currentColor" fill-opacity="0.08"/>
+  <text x="197" y="103" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">PushROSNamespace(cart_ns)</text>
+  <line x1="16" y1="118" x2="342" y2="118" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="2 3" fill="none"/>
+  <text x="338" y="131" font-size="11" text-anchor="end" fill-opacity="0.65" fill="currentColor">이 선 아래에 네임스페이스 적용</text>
+  <circle cx="186" cy="140" r="2.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="22" y="170" width="146" height="22" rx="3" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="95" y="185" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">perception.launch.py</text>
+  <line x1="186" y1="142" x2="95" y2="168" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#l4ksol)"/>
+  <rect x="196" y="170" width="140" height="22" rx="3" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="266" y="185" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">control.launch.py</text>
+  <line x1="186" y1="142" x2="266" y2="168" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#l4ksol)"/>
+  <text x="128" y="157" font-size="11" text-anchor="end" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">use_sim_time</text>
+  <text x="240" y="157" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">use_sim_time</text>
+  <text x="20" y="213" font-size="11" fill-opacity="0.6" fill="currentColor">화살표: IncludeLaunchDescription + launch_arguments</text>
+  <rect x="470" y="170" width="80" height="22" rx="2" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" fill="none"/>
+  <text x="510" y="185" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">p6.yaml</text>
+  <line x1="336" y1="181" x2="470" y2="181" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <text x="414" y="148" font-size="11" text-anchor="middle" fill-opacity="0.65" fill="currentColor">최상위 키</text>
+  <text x="414" y="163" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart1/controller:</text>
+  <text x="414" y="206" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart2/controller:</text>
+  <text x="12" y="254" font-size="12" fill-opacity="0.8" fill="currentColor">이름 해석 표</text>
+  <rect x="12" y="264" width="538" height="114" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <rect x="13" y="321" width="536" height="19" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+  <rect x="13" y="359" width="536" height="19" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+  <line x1="12" y1="283" x2="550" y2="283" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <line x1="12" y1="302" x2="550" y2="302" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="12" y1="321" x2="550" y2="321" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="12" y1="340" x2="550" y2="340" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="12" y1="359" x2="550" y2="359" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="192" y1="264" x2="192" y2="378" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="372" y1="264" x2="372" y2="378" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <text x="19" y="277" font-size="11" fill-opacity="0.75" fill="currentColor">소스에 쓴 것</text>
+  <text x="199" y="277" font-size="11" fill-opacity="0.75" fill="currentColor">/cart1에서</text>
+  <text x="379" y="277" font-size="11" fill-opacity="0.75" fill="currentColor">/cart2에서</text>
+  <text x="19" y="296" font-size="11" fill-opacity="0.9" fill="currentColor">노드 이름 <tspan font-family="ui-monospace,monospace">controller</tspan></text>
+  <text x="199" y="296" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart1/controller</text>
+  <text x="379" y="296" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart2/controller</text>
+  <text x="19" y="315" font-size="11" fill-opacity="0.9" fill="currentColor">상대 토픽 <tspan font-family="ui-monospace,monospace">goal</tspan></text>
+  <text x="199" y="315" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart1/goal</text>
+  <text x="379" y="315" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart2/goal</text>
+  <text x="19" y="334" font-size="11" fill-opacity="0.9" fill="currentColor">절대 토픽 <tspan font-family="ui-monospace,monospace">/goal</tspan></text>
+  <text x="199" y="334" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <text x="379" y="334" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <text x="19" y="353" font-size="11" fill-opacity="0.9" fill="currentColor">비공개 파라미터 <tspan font-family="ui-monospace,monospace">~/gain</tspan></text>
+  <text x="199" y="353" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart1/controller/gain</text>
+  <text x="379" y="353" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/cart2/controller/gain</text>
+  <text x="19" y="372" font-size="11" fill-opacity="0.9" fill="currentColor">YAML 최상위 키 <tspan font-family="ui-monospace,monospace">/controller</tspan></text>
+  <text x="199" y="372" font-size="11" fill-opacity="0.8" font-style="italic" fill="currentColor">일치하는 노드 없음</text>
+  <text x="379" y="372" font-size="11" fill-opacity="0.8" font-style="italic" fill="currentColor">일치하는 노드 없음</text>
+  <text x="12" y="394" font-size="11" fill-opacity="0.65" fill="currentColor">음영: 두 네임스페이스에서 바뀌지 않는 두 행</text>
+  <text x="12" y="418" font-size="12" fill-opacity="0.8" fill="currentColor">하루의 루프, 다섯 줄</text>
+  <text x="468" y="422" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">--symlink-install이 없애 주나?</text>
+  <text x="426" y="436" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">controller.cpp</text>
+  <text x="510" y="436" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">카메라 .py</text>
+  <rect x="10" y="442" width="540" height="102" rx="4" fill="currentColor" fill-opacity="0.05" stroke="none"/>
+  <text x="18" y="458" font-size="11" fill-opacity="0.6" fill="currentColor">1</text>
+  <text x="32" y="458" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor"><tspan font-family="ui-monospace,monospace">controller.cpp</tspan> 편집</text>
+  <text x="18" y="478" font-size="11" fill-opacity="0.6" fill="currentColor">2</text>
+  <text x="32" y="478" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">colcon build --packages-select p6_control</text>
+  <text x="426" y="478" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">남음</text>
+  <text x="510" y="478" font-size="11" text-anchor="middle" fill-opacity="0.95" font-weight="bold" fill="currentColor">없어짐</text>
+  <rect x="484" y="466" width="52" height="16" rx="3" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" fill="none"/>
+  <text x="18" y="498" font-size="11" fill-opacity="0.6" fill="currentColor">3</text>
+  <text x="32" y="498" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">source install/setup.bash</text>
+  <text x="426" y="498" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">남음</text>
+  <text x="510" y="498" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">남음</text>
+  <text x="18" y="518" font-size="11" fill-opacity="0.6" fill="currentColor">4</text>
+  <text x="32" y="518" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">ros2 launch p6_bringup p6.launch.py cart_ns:=cart1</text>
+  <text x="426" y="518" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">남음</text>
+  <text x="510" y="518" font-size="11" text-anchor="middle" fill-opacity="0.6" fill="currentColor">남음</text>
+  <text x="18" y="538" font-size="11" fill-opacity="0.6" fill="currentColor">5</text>
+  <text x="32" y="538" font-size="11" fill-opacity="0.9" fill="currentColor">첫 <tspan font-family="ui-monospace,monospace">/cart1/goal</tspan> 20 ms, 첫 <tspan font-family="ui-monospace,monospace">/cart1/cmd</tspan> 5 ms</text>
+  <line x1="408" y1="535" x2="544" y2="535" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <path d="M408.0 532v6M442.0 532v6M476.0 532v6M510.0 532v6M544.0 532v6" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" fill="none"/>
+  <circle cx="442" cy="535" r="3.2" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="544" cy="535" r="3.2" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <text x="448" y="547" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">cmd</text>
+  <text x="544" y="547" font-size="11" text-anchor="end" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">goal</text>
+  <text x="12" y="566" font-size="11" fill-opacity="0.8" fill="currentColor">띠의 편집은 컴파일되는 C++인 controller.cpp다. 없어지는 줄이 없다(7절, 계산 예제 6단계).</text>
+  <text x="12" y="580" font-size="11" fill-opacity="0.8" fill="currentColor">줄 하나가 빠지는 것은 카메라의 .py 같은 Python 편집뿐이고, 빠지는 줄은 빌드다.</text>
+</svg>
 
 **왼쪽 — include 트리**. 맨 위에 `p6.launch.py`, 그 옆에 선언된 인자를 작은 상자로 매단다. `cart_ns`(기본값 `cart1`), `use_sim_time`(기본값 `false`). 그 아래 자식 둘, `perception.launch.py`와 `control.launch.py`, 각각 `IncludeLaunchDescription` 화살표로 잇고 아래로 넘기는 `launch_arguments`를 화살표에 적는다. 자식 둘을 둥근 상자로 묶어 `GroupAction`으로 만들고, 그 안의 **첫** 항목으로 `PushROSNamespace(cart_ns)`를 두 화살표 위에 그린다. 이 패널의 내용은 그 위치다. 그 줄보다 위에 그려진 action은 네임스페이스를 벗어나고, 돌아가는 시스템은 그 사실을 알려 주지 않는다. `p6.yaml`은 `control.launch.py`에 매달고, 연결선에는 파일 이름이 아니라 그 파일의 최상위 키를 적는다.
 
@@ -654,9 +848,9 @@ $$2\times 50\,\mathrm{Hz}=100\,\mathrm{Hz},\qquad \text{그중 }50\%\text{는 �
 - 노드별, 완전 이름을 키로: `/cart1/controller:` 블록과 `/cart2/controller:` 블록에 각각 `ros__parameters:`. 장황하지만 이 값들이 제어기의 것이라고 말한다.
 - 와일드카드: `/**:` 블록 하나. 그래프의 모든 노드에 진짜로 속하는 `use_sim_time`에는 맞다. 카트마다 노드 하나에만 의미가 있는 `counts_per_metre`에는 틀리고, 누군가 cart 2에 $4096$ counts/m 엔코더를 다는 아침에 둘을 다르게 하고 싶어질 값이기도 하다.
 
-연습해 둘 고장은 2단계 표의 셋째 행이다. 파일 키를 `/controller`로 두면 파싱되고, 로드되고, 성공을 보고하고, 아무것도 설정하지 않아서 제어기는 선언된 기본값으로 돈다. 그 기본값이 $2048$이 아니라 $1024$라면 카트의 추정 위치는 정확히 두 배가 되고 어디서도 그렇다고 말해 주지 않는다([[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] 계산 예제 5단계).
+연습해 둘 고장은 2단계 표의 다섯째 행이다. 파일 키를 `/controller`로 두면 파싱되고, 로드되고, 성공을 보고하고, 아무것도 설정하지 않아서 제어기는 선언된 기본값으로 돈다. 그 기본값이 $2048$이 아니라 $1024$라면 카트의 추정 위치는 정확히 두 배가 되고 어디서도 그렇다고 말해 주지 않는다([[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] 계산 예제 5단계).
 
-**5단계 — 다시 빌드하지 않고 가설 시험하기**. 이름이 문제인지 알아내려고 고치고 다시 빌드할 필요는 없다. 카트 하나만 띄우고 커맨드라인에서 remap한다. 위 영문 `ros2 run` 한 줄이 그것이다. `__ns`로 네임스페이스를, `goal:=/cart1/goal`로 토픽을, `-p`로 파라미터를 실행 시점에 준다. 데이터가 흐르면 버그는 이름이었다. 그다음 제자리에서 고친다. 코드가 절대 이름을 박아 두었으면 소스에서, 네임스페이스가 틀렸으면 launch 파일에서. 결과 확인은 `ros2 node info /cart1/controller`다. 해석된 이름을 찍으므로 그것이 최종 판정이다.
+**5단계 — 다시 빌드하지 않고 가설 시험하기**. 이름이 문제인지 알아내려고 고치고 다시 빌드할 필요는 없다. 카트 하나만 띄우고 커맨드라인에서 remap한다. 위 영문 `ros2 run` 한 줄이 그것이다. `__ns`로 네임스페이스를, `/goal:=/cart1/goal`로 토픽을, `-p`로 파라미터를 실행 시점에 준다. 데이터가 흐르면 버그는 이름이었다. 그다음 제자리에서 고친다. 코드가 절대 이름을 박아 두었으면 소스에서, 네임스페이스가 틀렸으면 launch 파일에서. 결과 확인은 `ros2 node info /cart1/controller`다. 해석된 이름을 찍으므로 그것이 최종 판정이다.
 
 **6단계 — 그리고 도움이 안 되는 재빌드**. 카메라는 Python이고 제어기는 C++이다. `--symlink-install`은 카메라 `.py` 수정을 빌드 없이 재실행만으로 보이게 한다. colcon이 setuptools의 `develop`을 돌려서 설치된 모듈 경로가 `src/`를 되가리키기 때문이다. 제어기는 가리킬 소스가 없는 컴파일된 바이너리이므로, P6 예산이 실제로 기대는 $200\,\mathrm{Hz}$ 루프는 매번 진짜 `colcon build`가 필요하다. 낡은 바이너리가 "주기를 바꿨는데 아무 일도 없다"의 고전 판본이고, 돌고 있는 실행 파일이 어느 워크스페이스에서 왔는지 알려 주는 명령은 `ros2 pkg prefix p6_control` 하나다.
 
@@ -1186,7 +1380,7 @@ file $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 > 2. `ament_python` 패키지에서는 colcon이 setuptools의 `develop` 단계를 돌리므로 설치된 모듈 경로가 `src/`로 되돌아 해석된다. C++ 패키지의 설치 산출물은 컴파일된 바이너리이고, 가리킬 소스 파일이 없으므로 새 바이너리에는 컴파일이 필요하다. CMake 패키지가 설치하는 데이터 파일 — launch, YAML, URDF — 은 링크되고 소스를 따라간다.
 > 3. 최상위 키가 네임스페이스를 포함한 노드의 완전 수식 이름이어야 한다(`/sensor`가 아니라 `/demo/sensor`), 이 실수는 조용하다. `ros__parameters` 오타였다면 에러 없이 로드될 수 없다 — 노드를 멈추는 파싱 오류다 — 그러니 파일이 정말 로드됐다면 의심할 것은 이름(또는 파일이 아예 전달됐는지)이다. 파라미터가 정말 모든 노드용이면 최상위 키 `/**`가 첫 번째 문제를 비켜 간다.
 > 4. `<depend>`는 빌드와 실행 양쪽에 필요한 의존성을 선언하는데, 순수 Python 패키지에는 빌드 국면이 없다. 없는 빌드 의존성을 선언하면 rosdep과 릴리스 도구가 그것을 빌드 시점에 설치·요구하도록 잘못 알리고, 패키지가 실제로 무엇을 필요로 하는지도 잘못 표현한다. (colcon의 빌드 순서는 바뀌지 않는다. colcon은 실행 의존성으로도 순서를 정한다.)
-> 5. 절대 이름은 네임스페이스를 무시하므로 제어기 둘이 모두 `/goal`을 구독하고, 카메라도 절대 이름으로 낸다면 둘 다 거기 발행한다. 이름 하나 위에 $2\times50=100\,\mathrm{Hz}$이고 그중 $50\%$는 다른 카트의 것이다. 제어기는 각각 마지막에 도착한 목표를 따르므로 각 카트가 절반쯤의 시간 동안 엉뚱한 목표를 향해 전속으로 달리는데, `ros2 topic hz /goal`은 건강한 $100\,\mathrm{Hz}$를 보고한다. 증명하는 명령은 `ros2 node info /cart1/controller`다. *해석된* 이름을 찍으므로 `/cart1/goal`을 기대한 자리에 `/goal`이 보인다. 처방은 소스의 상대 이름과 launch 파일의 `PushROSNamespace`이고, 가설 확인은 다시 빌드할 필요 없는 `--ros-args --remap goal:=/cart1/goal`로 먼저 한다.
+> 5. 절대 이름은 네임스페이스를 무시하므로 제어기 둘이 모두 `/goal`을 구독하고, 카메라도 절대 이름으로 낸다면 둘 다 거기 발행한다. 이름 하나 위에 $2\times50=100\,\mathrm{Hz}$이고 그중 $50\%$는 다른 카트의 것이다. 제어기는 각각 마지막에 도착한 목표를 따르므로 각 카트가 절반쯤의 시간 동안 엉뚱한 목표를 향해 전속으로 달리는데, `ros2 topic hz /goal`은 건강한 $100\,\mathrm{Hz}$를 보고한다. 증명하는 명령은 `ros2 node info /cart1/controller`다. *해석된* 이름을 찍으므로 `/cart1/goal`을 기대한 자리에 `/goal`이 보인다. 처방은 소스의 상대 이름과 launch 파일의 `PushROSNamespace`이고, 가설 확인은 다시 빌드할 필요 없는 `--ros-args --remap /goal:=/cart1/goal`로 먼저 한다.
 
 ### 과제 · Problem set
 
@@ -1198,5 +1392,5 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 노드 셋 — 카메라 $5
 
 > [!tip]- 정답 · Solutions
 > 1. `p6.launch.py` → `camera`, `controller`, `logger`; YAML은 `/cart` 아래. 타임라인: 수정; 빌드; source; launch; 첫 비전 주기.
-> 2. (a) `/cart/controller`(또는 `/**`). `/controller`는 에러 없이 로드되고 아무것도 안 넣는다. (b) $0.488\,\mathrm{mm}$, $2048$ counts/m로 저장. (c) 잘못된 `--packages-select`, overlay 미source, 실패한 빌드. `ros2 pkg prefix` / `python3 -c "…__file__"`.
+> 2. (a) `/cart/controller`(또는 `/**`). `/controller`는 에러 없이 로드되고 아무것도 안 넣는다. (b) $0.488\,\mathrm{mm}$, $2048$ counts/m로 저장. (c) 잘못된 `--packages-select`, overlay 미source, 실패한 빌드. `ros2 pkg prefix p6_control`.
 > 3. Python `develop`은 `src/`를 가리키고, C++ 산출물은 바이너리다. $200\,\mathrm{Hz}$ 루프가 C++ 쪽이라 낡은 바이너리는 카메라 스크립트가 갱신돼도 옛 주기를 유지한다.

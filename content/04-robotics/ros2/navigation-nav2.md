@@ -37,6 +37,109 @@ The Nav2 rates the worked case uses are the Jazzy defaults quoted in §4 and §6
 
 One figure, two panels, and the problem set asks for the same figure with one scan arriving late.
 
+<svg viewBox="0 0 560 530" style="max-width:100%;height:auto" role="img" aria-label="Panel A: the frame chain map to odom to base_link, AMCL publishing map to odom with a lightning mark because it may jump, wheel odometry publishing odom to base_link, the global costmap over map feeding the planner, the local costmap pinned to odom feeding the controller, and /cmd_vel at 20 Hz crossing out of Nav2 into ros2_control at 200 Hz. Panel B: five lanes from 0 to 1000 ms ticked at 5, 20, 50, 200 and 1000 ms with the distance the cart covers per period, and P6's 70 ms bracket, shorter than two of the periods.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · who owns which edge</text>
+  <rect x="24" y="44" width="96" height="26" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85"/>
+  <text x="72" y="61" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">map</text>
+  <rect x="232" y="44" width="96" height="26" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85"/>
+  <text x="280" y="61" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">odom</text>
+  <rect x="440" y="44" width="104" height="26" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85"/>
+  <text x="492" y="61" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">base_link</text>
+  <line x1="120" y1="57" x2="225.5" y2="57" stroke="currentColor" stroke-width="1.8"/>
+  <polygon points="232,57 225,60.4 225,53.6" fill="currentColor"/>
+  <line x1="328" y1="57" x2="433.5" y2="57" stroke="currentColor" stroke-width="1.8"/>
+  <polygon points="440,57 433,60.4 433,53.6" fill="currentColor"/>
+  <text x="176" y="90" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">AMCL</text>
+  <text x="384" y="90" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">wheel odometry (encoder)</text>
+  <path d="M163.4 33.5 L157.7 45.0 L162.0 45.0 L159.6 54.5 L166.3 42.1 L162.0 42.1 L165.3 33.5 Z" fill="currentColor" fill-opacity="0.9" stroke="none"/>
+  <text x="172" y="49" font-size="11" fill="currentColor" opacity="0.85">may jump</text>
+  <text x="384" y="49" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.7">smooth, drifts</text>
+  <rect x="12" y="110" width="190" height="54" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="33.1" y1="110" x2="33.1" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="54.2" y1="110" x2="54.2" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="75.3" y1="110" x2="75.3" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="96.4" y1="110" x2="96.4" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="117.6" y1="110" x2="117.6" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="138.7" y1="110" x2="138.7" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="159.8" y1="110" x2="159.8" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="180.9" y1="110" x2="180.9" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="12" y1="128" x2="202" y2="128" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="12" y1="146" x2="202" y2="146" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="72" y1="70" x2="72" y2="110" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8"/>
+  <circle cx="72" cy="110" r="2.6" fill="currentColor"/>
+  <text x="20" y="132" font-size="11" fill="currentColor" font-weight="600">global costmap</text>
+  <text x="20" y="148" font-size="11" fill="currentColor" opacity="0.8">in map · 1 Hz</text>
+  <rect x="250" y="110" width="60" height="36" rx="2" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <line x1="265" y1="110" x2="265" y2="146" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.2"/>
+  <line x1="280" y1="110" x2="280" y2="146" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.2"/>
+  <line x1="295" y1="110" x2="295" y2="146" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.2"/>
+  <line x1="250" y1="128" x2="310" y2="128" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.2"/>
+  <line x1="280" y1="70" x2="280" y2="110" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8"/>
+  <circle cx="280" cy="110" r="2.6" fill="currentColor"/>
+  <text x="318" y="124" font-size="11" fill="currentColor" font-weight="600">local costmap</text>
+  <text x="318" y="139" font-size="11" fill="currentColor" opacity="0.8">in odom · 5 Hz</text>
+  <rect x="24" y="190" width="140" height="26" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="94" y="207" font-size="11" fill="currentColor" text-anchor="middle">planner_server</text>
+  <rect x="218" y="190" width="150" height="26" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="293" y="207" font-size="11" fill="currentColor" text-anchor="middle">controller_server</text>
+  <line x1="94" y1="164" x2="94" y2="183.5" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="94,190 90.6,183 97.4,183" fill="currentColor"/>
+  <line x1="280" y1="146" x2="280" y2="183.5" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="280,190 276.6,183 283.4,183" fill="currentColor"/>
+  <line x1="396" y1="168" x2="396" y2="226" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="5 4"/>
+  <text x="396" y="162" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">Nav2 | ros2_control</text>
+  <rect x="440" y="186" width="112" height="36" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.85"/>
+  <text x="496" y="201" font-size="11" fill="currentColor" text-anchor="middle">ros2_control</text>
+  <text x="496" y="216" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">200 Hz loop</text>
+  <line x1="368" y1="203" x2="433.5" y2="203" stroke="currentColor" stroke-width="1.6"/>
+  <polygon points="440,203 433,206.4 433,199.6" fill="currentColor"/>
+  <text x="402" y="238" font-size="11" fill="currentColor" font-weight="600">/cmd_vel · 20 Hz</text>
+  <text x="402" y="252" font-size="11" fill="currentColor" opacity="0.8">a request, not the</text>
+  <text x="402" y="266" font-size="11" fill="currentColor" opacity="0.8">200 Hz motor command</text>
+  <line x1="8" y1="280" x2="552" y2="280" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="298" font-size="12" fill="currentColor" font-weight="600">B · the four clocks</text>
+  <path d="M193.2 309V459 M208.4 309V459 M223.6 309V459 M254 309V459 M269.2 309V459 M284.4 309V459 M314.8 309V459 M330 309V459 M345.2 309V459 M375.6 309V459 M390.8 309V459 M406 309V459 M436.4 309V459 M451.6 309V459 M466.8 309V459" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.12"/>
+  <path d="M178 309V459 M238.8 309V459 M299.6 309V459 M360.4 309V459 M421.2 309V459 M482 309V459" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.28"/>
+  <text x="552" y="298" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">per period</text>
+  <text x="8" y="328" font-size="11" fill="currentColor">ros2_control 200 Hz</text>
+  <line x1="178" y1="339" x2="482" y2="339" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 318V330 M179.5 318V330 M181 318V330 M182.6 318V330 M184.1 318V330 M185.6 318V330 M187.1 318V330 M188.6 318V330 M190.2 318V330 M191.7 318V330 M193.2 318V330 M194.7 318V330 M196.2 318V330 M197.8 318V330 M199.3 318V330 M200.8 318V330 M202.3 318V330 M203.8 318V330 M205.4 318V330 M206.9 318V330 M208.4 318V330 M209.9 318V330 M211.4 318V330 M213 318V330 M214.5 318V330 M216 318V330 M217.5 318V330 M219 318V330 M220.6 318V330 M222.1 318V330 M223.6 318V330 M225.1 318V330 M226.6 318V330 M228.2 318V330 M229.7 318V330 M231.2 318V330 M232.7 318V330 M234.2 318V330 M235.8 318V330 M237.3 318V330 M238.8 318V330 M240.3 318V330 M241.8 318V330 M243.4 318V330 M244.9 318V330 M246.4 318V330 M247.9 318V330 M249.4 318V330 M251 318V330 M252.5 318V330 M254 318V330 M255.5 318V330 M257 318V330 M258.6 318V330 M260.1 318V330 M261.6 318V330 M263.1 318V330 M264.6 318V330 M266.2 318V330 M267.7 318V330 M269.2 318V330 M270.7 318V330 M272.2 318V330 M273.8 318V330 M275.3 318V330 M276.8 318V330 M278.3 318V330 M279.8 318V330 M281.4 318V330 M282.9 318V330 M284.4 318V330 M285.9 318V330 M287.4 318V330 M289 318V330 M290.5 318V330 M292 318V330 M293.5 318V330 M295 318V330 M296.6 318V330 M298.1 318V330 M299.6 318V330 M301.1 318V330 M302.6 318V330 M304.2 318V330 M305.7 318V330 M307.2 318V330 M308.7 318V330 M310.2 318V330 M311.8 318V330 M313.3 318V330 M314.8 318V330 M316.3 318V330 M317.8 318V330 M319.4 318V330 M320.9 318V330 M322.4 318V330 M323.9 318V330 M325.4 318V330 M327 318V330 M328.5 318V330 M330 318V330 M331.5 318V330 M333 318V330 M334.6 318V330 M336.1 318V330 M337.6 318V330 M339.1 318V330 M340.6 318V330 M342.2 318V330 M343.7 318V330 M345.2 318V330 M346.7 318V330 M348.2 318V330 M349.8 318V330 M351.3 318V330 M352.8 318V330 M354.3 318V330 M355.8 318V330 M357.4 318V330 M358.9 318V330 M360.4 318V330 M361.9 318V330 M363.4 318V330 M365 318V330 M366.5 318V330 M368 318V330 M369.5 318V330 M371 318V330 M372.6 318V330 M374.1 318V330 M375.6 318V330 M377.1 318V330 M378.6 318V330 M380.2 318V330 M381.7 318V330 M383.2 318V330 M384.7 318V330 M386.2 318V330 M387.8 318V330 M389.3 318V330 M390.8 318V330 M392.3 318V330 M393.8 318V330 M395.4 318V330 M396.9 318V330 M398.4 318V330 M399.9 318V330 M401.4 318V330 M403 318V330 M404.5 318V330 M406 318V330 M407.5 318V330 M409 318V330 M410.6 318V330 M412.1 318V330 M413.6 318V330 M415.1 318V330 M416.6 318V330 M418.2 318V330 M419.7 318V330 M421.2 318V330 M422.7 318V330 M424.2 318V330 M425.8 318V330 M427.3 318V330 M428.8 318V330 M430.3 318V330 M431.8 318V330 M433.4 318V330 M434.9 318V330 M436.4 318V330 M437.9 318V330 M439.4 318V330 M441 318V330 M442.5 318V330 M444 318V330 M445.5 318V330 M447 318V330 M448.6 318V330 M450.1 318V330 M451.6 318V330 M453.1 318V330 M454.6 318V330 M456.2 318V330 M457.7 318V330 M459.2 318V330 M460.7 318V330 M462.2 318V330 M463.8 318V330 M465.3 318V330 M466.8 318V330 M468.3 318V330 M469.8 318V330 M471.4 318V330 M472.9 318V330 M474.4 318V330 M475.9 318V330 M477.4 318V330 M479 318V330 M480.5 318V330 M482 318V330" fill="none" stroke="currentColor" stroke-width="0.55"/>
+  <text x="552" y="328" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">1.25 mm</text>
+  <text x="8" y="358" font-size="11" fill="currentColor">scan/AMCL input 50 Hz</text>
+  <line x1="178" y1="369" x2="482" y2="369" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 345.8V362.2 M184.1 345.8V362.2 M190.2 345.8V362.2 M196.2 345.8V362.2 M202.3 345.8V362.2 M208.4 345.8V362.2 M214.5 345.8V362.2 M220.6 345.8V362.2 M226.6 345.8V362.2 M232.7 345.8V362.2 M238.8 345.8V362.2 M244.9 345.8V362.2 M251 345.8V362.2 M257 345.8V362.2 M263.1 345.8V362.2 M269.2 345.8V362.2 M275.3 345.8V362.2 M281.4 345.8V362.2 M287.4 345.8V362.2 M293.5 345.8V362.2 M299.6 345.8V362.2 M305.7 345.8V362.2 M311.8 345.8V362.2 M317.8 345.8V362.2 M323.9 345.8V362.2 M330 345.8V362.2 M336.1 345.8V362.2 M342.2 345.8V362.2 M348.2 345.8V362.2 M354.3 345.8V362.2 M360.4 345.8V362.2 M366.5 345.8V362.2 M372.6 345.8V362.2 M378.6 345.8V362.2 M384.7 345.8V362.2 M390.8 345.8V362.2 M396.9 345.8V362.2 M403 345.8V362.2 M409 345.8V362.2 M415.1 345.8V362.2 M421.2 345.8V362.2 M427.3 345.8V362.2 M433.4 345.8V362.2 M439.4 345.8V362.2 M445.5 345.8V362.2 M451.6 345.8V362.2 M457.7 345.8V362.2 M463.8 345.8V362.2 M469.8 345.8V362.2 M475.9 345.8V362.2 M482 345.8V362.2" fill="none" stroke="currentColor" stroke-width="1.45"/>
+  <text x="552" y="358" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">5.00 mm</text>
+  <text x="8" y="388" font-size="11" fill="currentColor">controller_server 20 Hz</text>
+  <line x1="178" y1="399" x2="482" y2="399" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 373.6V394.4 M193.2 373.6V394.4 M208.4 373.6V394.4 M223.6 373.6V394.4 M238.8 373.6V394.4 M254 373.6V394.4 M269.2 373.6V394.4 M284.4 373.6V394.4 M299.6 373.6V394.4 M314.8 373.6V394.4 M330 373.6V394.4 M345.2 373.6V394.4 M360.4 373.6V394.4 M375.6 373.6V394.4 M390.8 373.6V394.4 M406 373.6V394.4 M421.2 373.6V394.4 M436.4 373.6V394.4 M451.6 373.6V394.4 M466.8 373.6V394.4 M482 373.6V394.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+  <text x="552" y="388" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">12.5 mm</text>
+  <text x="8" y="418" font-size="11" fill="currentColor">local costmap 5 Hz</text>
+  <line x1="178" y1="429" x2="482" y2="429" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 401.4V426.6 M238.8 401.4V426.6 M299.6 401.4V426.6 M360.4 401.4V426.6 M421.2 401.4V426.6 M482 401.4V426.6" fill="none" stroke="currentColor" stroke-width="1.95"/>
+  <text x="552" y="418" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">50 mm</text>
+  <text x="8" y="448" font-size="11" fill="currentColor">global costmap 1 Hz</text>
+  <line x1="178" y1="459" x2="482" y2="459" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 429.2V458.8 M482 429.2V458.8" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <text x="552" y="448" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">250 mm</text>
+  <line x1="178" y1="463" x2="482" y2="463" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="178" y1="463" x2="178" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="178" y="479" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="238.8" y1="463" x2="238.8" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="238.8" y="479" font-size="11" fill="currentColor" text-anchor="middle">200</text>
+  <line x1="299.6" y1="463" x2="299.6" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="299.6" y="479" font-size="11" fill="currentColor" text-anchor="middle">400</text>
+  <line x1="360.4" y1="463" x2="360.4" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="360.4" y="479" font-size="11" fill="currentColor" text-anchor="middle">600</text>
+  <line x1="421.2" y1="463" x2="421.2" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="421.2" y="479" font-size="11" fill="currentColor" text-anchor="middle">800</text>
+  <line x1="482" y1="463" x2="482" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="482" y="479" font-size="11" fill="currentColor" text-anchor="middle">1000</text>
+  <text x="8" y="479" font-size="11" fill="currentColor" opacity="0.8">time (ms)</text>
+  <polyline points="178,487 178,493 199.3,493 199.3,487" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+  <text x="205.3" y="497" font-size="11" fill="currentColor" font-weight="600">70 ms</text>
+  <text x="8" y="517" font-size="11" fill="currentColor">2 of the 5 lanes have a period longer than the whole 70 ms bracket: both costmaps.</text>
+</svg>
+
 **Panel A — who owns which edge.** Draw the REP 105 chain of §7 as three boxes in a row, `map` → `odom` → `base_link`, and write the *publisher* under each arrow rather than beside it: AMCL under `map` → `odom`, the wheel odometry under `odom` → `base_link`. Then draw the two costmaps as rectangles anchored to their frames — the global one stretched over `map`, the local one a small window pinned to `odom` — and run one arrow from each into the server that reads it, planner and controller. Two things the drawing must get right. Put a small lightning mark on the `map` → `odom` arrow and none on the other, because that edge is the one allowed to jump and the whole frame split exists for it. And draw the controller's output crossing a labelled boundary out of Nav2 into `ros2_control`, because `/cmd_vel` is a request at $20\,\mathrm{Hz}$ and not the $200\,\mathrm{Hz}$ motor command.
 
 **Panel B — the four clocks.** Five lanes against one horizontal axis of $0$ to $1000\,\mathrm{ms}$, log-free and ruled every $50\,\mathrm{ms}$: `ros2_control 200 Hz`, `scan/AMCL input 50 Hz`, `controller_server 20 Hz`, `local costmap 5 Hz`, `global costmap 1 Hz`. Tick each lane at its own period so the nesting is visible: four control ticks per scan, ten control ticks per `/cmd_vel`, four `/cmd_vel` per local costmap update. Beside each lane write the distance the cart covers in one of its periods, from the table in the worked case. Finally draw P6's $70\,\mathrm{ms}$ budget as a short bracket at the left of the axis, and note in one line how many lanes have a period longer than the whole bracket.
@@ -77,7 +180,7 @@ $$200+50+5=255\,\mathrm{ms},$$
 
 which is $255/70=3.6$ times P6's budget, so the Nav2 reaction path cannot meet it and was never meant to. $70\,\mathrm{ms}$ is a *servo* budget — camera mid-exposure to applied force on the cart's own $200\,\mathrm{Hz}$ loop — and a navigation stack is a layer above that, replanning at map scale. Anything that genuinely needs $70\,\mathrm{ms}$ belongs under the seam with the controller, not in a behaviour tree. This is the honest version of "Nav2 is slow": it is not slow, it is answering a different question on a different clock.
 
-**Step 5 — inflation, measured in time.** §5 insists `inflation_radius` is a potential field rather than a margin, and the rate ladder says why that has to be true. The default $0.55\,\mathrm{m}$ is $0.55\times2048=1126$ counts, and the cart crosses it in $0.55/0.25=2.2\,\mathrm{s}$ — or, in the unit the controller actually experiences, $0.55/0.050=11$ local-costmap updates, since the cart covers $50\,\mathrm{mm}$ per update. Eleven cycles of gradient are what let a cost-aware planner lean away from the wall gradually. Shrink the skirt to one or two cycles and the controller meets a cliff instead of a slope, which is exactly the corner-clipping symptom of §13. The Jazzy TurtleBot value of $0.7\,\mathrm{m}$ is $14$ updates on the same cart.
+**Step 5 — inflation, measured in time.** §5 insists `inflation_radius` is a potential field rather than a margin, and the rate ladder says why that has to be true. The default $0.55\,\mathrm{m}$ is $0.55\times2048=1126$ counts, and the cart crosses it in $0.55/0.25=2.2\,\mathrm{s}$ — or, in the unit the controller actually experiences, $0.55/0.050=11$ local-costmap updates, since the cart covers $50\,\mathrm{mm}$ per update. Eleven cycles of gradient are what let a cost-aware planner lean away from the wall gradually. Shrink the skirt to one or two cycles and the controller meets a cliff instead of a slope, which is exactly the corner-clipping symptom of §5. The Jazzy TurtleBot value of $0.7\,\mathrm{m}$ is $14$ updates on the same cart.
 
 ### 1. The problem Nav2 solves
 
@@ -486,9 +589,9 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the Nav2 base. En
 3. **Interpret.** Why the local costmap must *not* live in `map` on P6, and why a $200\,\mathrm{ms}$ late scan is a budget failure even if AMCL still reports a pose.
 
 > [!tip]- Solutions
-> 1. Encoder owns `odom` → `base_link`; AMCL owns `map` → `odom`. Local control at $200\,\mathrm{Hz}$ reads the smooth frame; the planner reads the jumpy one.
+> 1. Encoder owns `odom` → `base_link`; AMCL owns `map` → `odom`. Local control at $20\,\mathrm{Hz}$ reads the smooth frame; the planner reads the jumpy one.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) Stamp older than tolerance $\Rightarrow$ every trajectory invalid. (c) `view_frames` / `tf2_monitor map base_link`. Gains are fourth; a missing TF produces this symptom with no error that names TF.
-> 3. `map` → `odom` may jump at $50\,\mathrm{Hz}$ corrections; a $200\,\mathrm{Hz}$ local controller on a teleporting frame issues discontinuous `cmd`. A $200\,\mathrm{ms}$ scan is already $130\,\mathrm{ms}$ over the $70\,\mathrm{ms}$ budget — AMCL can still output a pose of a place the cart has left.
+> 3. `map` → `odom` may jump at each AMCL correction, about every $1.00\,\mathrm{s}$ here (Step 3), not at $50\,\mathrm{Hz}$; a $20\,\mathrm{Hz}$ local controller on a teleporting frame issues discontinuous `cmd`. A $200\,\mathrm{ms}$ scan is already $130\,\mathrm{ms}$ over the $70\,\mathrm{ms}$ budget — AMCL can still output a pose of a place the cart has left.
 
 ## 한국어
 
@@ -519,6 +622,109 @@ Nav2 베이스로 쓰는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 
 ### 과제가 그릴 그림 · Homework diagram
 
 그림 하나, 패널 둘. 과제는 스캔 하나가 늦게 도착하는 같은 그림을 요구한다.
+
+<svg viewBox="0 0 560 530" style="max-width:100%;height:auto" role="img" aria-label="패널 A: map에서 odom, base_link로 가는 프레임 사슬. map→odom은 AMCL이 발행하고 뛸 수 있어서 번개 표시를 달며, odom→base_link는 휠 오도메트리가 발행한다. map 위의 전역 costmap은 플래너로, odom에 핀으로 꽂힌 지역 costmap은 제어기로 가고, 20 Hz /cmd_vel이 Nav2를 나가 200 Hz ros2_control로 들어간다. 패널 B: 0에서 1000 ms 위의 레인 다섯이 5, 20, 50, 200, 1000 ms마다 찍히고 주기당 카트 이동 거리가 적혀 있으며, P6의 70 ms 괄호는 주기 둘보다 짧다.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · 어느 변을 누가 소유하는가</text>
+  <rect x="24" y="44" width="96" height="26" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85"/>
+  <text x="72" y="61" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">map</text>
+  <rect x="232" y="44" width="96" height="26" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85"/>
+  <text x="280" y="61" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">odom</text>
+  <rect x="440" y="44" width="104" height="26" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85"/>
+  <text x="492" y="61" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">base_link</text>
+  <line x1="120" y1="57" x2="225.5" y2="57" stroke="currentColor" stroke-width="1.8"/>
+  <polygon points="232,57 225,60.4 225,53.6" fill="currentColor"/>
+  <line x1="328" y1="57" x2="433.5" y2="57" stroke="currentColor" stroke-width="1.8"/>
+  <polygon points="440,57 433,60.4 433,53.6" fill="currentColor"/>
+  <text x="176" y="90" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">AMCL</text>
+  <text x="384" y="90" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">휠 오도메트리 (엔코더)</text>
+  <path d="M163.4 33.5 L157.7 45.0 L162.0 45.0 L159.6 54.5 L166.3 42.1 L162.0 42.1 L165.3 33.5 Z" fill="currentColor" fill-opacity="0.9" stroke="none"/>
+  <text x="172" y="49" font-size="11" fill="currentColor" opacity="0.85">뛸 수 있다</text>
+  <text x="384" y="49" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.7">매끄럽고, 드리프트</text>
+  <rect x="12" y="110" width="190" height="54" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="33.1" y1="110" x2="33.1" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="54.2" y1="110" x2="54.2" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="75.3" y1="110" x2="75.3" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="96.4" y1="110" x2="96.4" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="117.6" y1="110" x2="117.6" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="138.7" y1="110" x2="138.7" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="159.8" y1="110" x2="159.8" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="180.9" y1="110" x2="180.9" y2="164" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="12" y1="128" x2="202" y2="128" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="12" y1="146" x2="202" y2="146" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.18"/>
+  <line x1="72" y1="70" x2="72" y2="110" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8"/>
+  <circle cx="72" cy="110" r="2.6" fill="currentColor"/>
+  <text x="20" y="132" font-size="11" fill="currentColor" font-weight="600">전역 costmap</text>
+  <text x="20" y="148" font-size="11" fill="currentColor" opacity="0.8">map 안 · 1 Hz</text>
+  <rect x="250" y="110" width="60" height="36" rx="2" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <line x1="265" y1="110" x2="265" y2="146" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.2"/>
+  <line x1="280" y1="110" x2="280" y2="146" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.2"/>
+  <line x1="295" y1="110" x2="295" y2="146" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.2"/>
+  <line x1="250" y1="128" x2="310" y2="128" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.2"/>
+  <line x1="280" y1="70" x2="280" y2="110" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8"/>
+  <circle cx="280" cy="110" r="2.6" fill="currentColor"/>
+  <text x="318" y="124" font-size="11" fill="currentColor" font-weight="600">지역 costmap</text>
+  <text x="318" y="139" font-size="11" fill="currentColor" opacity="0.8">odom 안 · 5 Hz</text>
+  <rect x="24" y="190" width="140" height="26" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="94" y="207" font-size="11" fill="currentColor" text-anchor="middle">planner_server</text>
+  <rect x="218" y="190" width="150" height="26" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="293" y="207" font-size="11" fill="currentColor" text-anchor="middle">controller_server</text>
+  <line x1="94" y1="164" x2="94" y2="183.5" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="94,190 90.6,183 97.4,183" fill="currentColor"/>
+  <line x1="280" y1="146" x2="280" y2="183.5" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="280,190 276.6,183 283.4,183" fill="currentColor"/>
+  <line x1="396" y1="168" x2="396" y2="226" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="5 4"/>
+  <text x="396" y="162" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">Nav2 | ros2_control</text>
+  <rect x="440" y="186" width="112" height="36" rx="3" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.85"/>
+  <text x="496" y="201" font-size="11" fill="currentColor" text-anchor="middle">ros2_control</text>
+  <text x="496" y="216" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">200 Hz 루프</text>
+  <line x1="368" y1="203" x2="433.5" y2="203" stroke="currentColor" stroke-width="1.6"/>
+  <polygon points="440,203 433,206.4 433,199.6" fill="currentColor"/>
+  <text x="402" y="238" font-size="11" fill="currentColor" font-weight="600">/cmd_vel · 20 Hz</text>
+  <text x="402" y="252" font-size="11" fill="currentColor" opacity="0.8">요청이지</text>
+  <text x="402" y="266" font-size="11" fill="currentColor" opacity="0.8">200 Hz 모터 명령이 아니다</text>
+  <line x1="8" y1="280" x2="552" y2="280" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="298" font-size="12" fill="currentColor" font-weight="600">B · 시계 넷</text>
+  <path d="M193.2 309V459 M208.4 309V459 M223.6 309V459 M254 309V459 M269.2 309V459 M284.4 309V459 M314.8 309V459 M330 309V459 M345.2 309V459 M375.6 309V459 M390.8 309V459 M406 309V459 M436.4 309V459 M451.6 309V459 M466.8 309V459" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.12"/>
+  <path d="M178 309V459 M238.8 309V459 M299.6 309V459 M360.4 309V459 M421.2 309V459 M482 309V459" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.28"/>
+  <text x="552" y="298" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">주기당</text>
+  <text x="8" y="328" font-size="11" fill="currentColor">ros2_control 200 Hz</text>
+  <line x1="178" y1="339" x2="482" y2="339" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 318V330 M179.5 318V330 M181 318V330 M182.6 318V330 M184.1 318V330 M185.6 318V330 M187.1 318V330 M188.6 318V330 M190.2 318V330 M191.7 318V330 M193.2 318V330 M194.7 318V330 M196.2 318V330 M197.8 318V330 M199.3 318V330 M200.8 318V330 M202.3 318V330 M203.8 318V330 M205.4 318V330 M206.9 318V330 M208.4 318V330 M209.9 318V330 M211.4 318V330 M213 318V330 M214.5 318V330 M216 318V330 M217.5 318V330 M219 318V330 M220.6 318V330 M222.1 318V330 M223.6 318V330 M225.1 318V330 M226.6 318V330 M228.2 318V330 M229.7 318V330 M231.2 318V330 M232.7 318V330 M234.2 318V330 M235.8 318V330 M237.3 318V330 M238.8 318V330 M240.3 318V330 M241.8 318V330 M243.4 318V330 M244.9 318V330 M246.4 318V330 M247.9 318V330 M249.4 318V330 M251 318V330 M252.5 318V330 M254 318V330 M255.5 318V330 M257 318V330 M258.6 318V330 M260.1 318V330 M261.6 318V330 M263.1 318V330 M264.6 318V330 M266.2 318V330 M267.7 318V330 M269.2 318V330 M270.7 318V330 M272.2 318V330 M273.8 318V330 M275.3 318V330 M276.8 318V330 M278.3 318V330 M279.8 318V330 M281.4 318V330 M282.9 318V330 M284.4 318V330 M285.9 318V330 M287.4 318V330 M289 318V330 M290.5 318V330 M292 318V330 M293.5 318V330 M295 318V330 M296.6 318V330 M298.1 318V330 M299.6 318V330 M301.1 318V330 M302.6 318V330 M304.2 318V330 M305.7 318V330 M307.2 318V330 M308.7 318V330 M310.2 318V330 M311.8 318V330 M313.3 318V330 M314.8 318V330 M316.3 318V330 M317.8 318V330 M319.4 318V330 M320.9 318V330 M322.4 318V330 M323.9 318V330 M325.4 318V330 M327 318V330 M328.5 318V330 M330 318V330 M331.5 318V330 M333 318V330 M334.6 318V330 M336.1 318V330 M337.6 318V330 M339.1 318V330 M340.6 318V330 M342.2 318V330 M343.7 318V330 M345.2 318V330 M346.7 318V330 M348.2 318V330 M349.8 318V330 M351.3 318V330 M352.8 318V330 M354.3 318V330 M355.8 318V330 M357.4 318V330 M358.9 318V330 M360.4 318V330 M361.9 318V330 M363.4 318V330 M365 318V330 M366.5 318V330 M368 318V330 M369.5 318V330 M371 318V330 M372.6 318V330 M374.1 318V330 M375.6 318V330 M377.1 318V330 M378.6 318V330 M380.2 318V330 M381.7 318V330 M383.2 318V330 M384.7 318V330 M386.2 318V330 M387.8 318V330 M389.3 318V330 M390.8 318V330 M392.3 318V330 M393.8 318V330 M395.4 318V330 M396.9 318V330 M398.4 318V330 M399.9 318V330 M401.4 318V330 M403 318V330 M404.5 318V330 M406 318V330 M407.5 318V330 M409 318V330 M410.6 318V330 M412.1 318V330 M413.6 318V330 M415.1 318V330 M416.6 318V330 M418.2 318V330 M419.7 318V330 M421.2 318V330 M422.7 318V330 M424.2 318V330 M425.8 318V330 M427.3 318V330 M428.8 318V330 M430.3 318V330 M431.8 318V330 M433.4 318V330 M434.9 318V330 M436.4 318V330 M437.9 318V330 M439.4 318V330 M441 318V330 M442.5 318V330 M444 318V330 M445.5 318V330 M447 318V330 M448.6 318V330 M450.1 318V330 M451.6 318V330 M453.1 318V330 M454.6 318V330 M456.2 318V330 M457.7 318V330 M459.2 318V330 M460.7 318V330 M462.2 318V330 M463.8 318V330 M465.3 318V330 M466.8 318V330 M468.3 318V330 M469.8 318V330 M471.4 318V330 M472.9 318V330 M474.4 318V330 M475.9 318V330 M477.4 318V330 M479 318V330 M480.5 318V330 M482 318V330" fill="none" stroke="currentColor" stroke-width="0.55"/>
+  <text x="552" y="328" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">1.25 mm</text>
+  <text x="8" y="358" font-size="11" fill="currentColor">스캔·AMCL 입력 50 Hz</text>
+  <line x1="178" y1="369" x2="482" y2="369" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 345.8V362.2 M184.1 345.8V362.2 M190.2 345.8V362.2 M196.2 345.8V362.2 M202.3 345.8V362.2 M208.4 345.8V362.2 M214.5 345.8V362.2 M220.6 345.8V362.2 M226.6 345.8V362.2 M232.7 345.8V362.2 M238.8 345.8V362.2 M244.9 345.8V362.2 M251 345.8V362.2 M257 345.8V362.2 M263.1 345.8V362.2 M269.2 345.8V362.2 M275.3 345.8V362.2 M281.4 345.8V362.2 M287.4 345.8V362.2 M293.5 345.8V362.2 M299.6 345.8V362.2 M305.7 345.8V362.2 M311.8 345.8V362.2 M317.8 345.8V362.2 M323.9 345.8V362.2 M330 345.8V362.2 M336.1 345.8V362.2 M342.2 345.8V362.2 M348.2 345.8V362.2 M354.3 345.8V362.2 M360.4 345.8V362.2 M366.5 345.8V362.2 M372.6 345.8V362.2 M378.6 345.8V362.2 M384.7 345.8V362.2 M390.8 345.8V362.2 M396.9 345.8V362.2 M403 345.8V362.2 M409 345.8V362.2 M415.1 345.8V362.2 M421.2 345.8V362.2 M427.3 345.8V362.2 M433.4 345.8V362.2 M439.4 345.8V362.2 M445.5 345.8V362.2 M451.6 345.8V362.2 M457.7 345.8V362.2 M463.8 345.8V362.2 M469.8 345.8V362.2 M475.9 345.8V362.2 M482 345.8V362.2" fill="none" stroke="currentColor" stroke-width="1.45"/>
+  <text x="552" y="358" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">5.00 mm</text>
+  <text x="8" y="388" font-size="11" fill="currentColor">controller_server 20 Hz</text>
+  <line x1="178" y1="399" x2="482" y2="399" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 373.6V394.4 M193.2 373.6V394.4 M208.4 373.6V394.4 M223.6 373.6V394.4 M238.8 373.6V394.4 M254 373.6V394.4 M269.2 373.6V394.4 M284.4 373.6V394.4 M299.6 373.6V394.4 M314.8 373.6V394.4 M330 373.6V394.4 M345.2 373.6V394.4 M360.4 373.6V394.4 M375.6 373.6V394.4 M390.8 373.6V394.4 M406 373.6V394.4 M421.2 373.6V394.4 M436.4 373.6V394.4 M451.6 373.6V394.4 M466.8 373.6V394.4 M482 373.6V394.4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+  <text x="552" y="388" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">12.5 mm</text>
+  <text x="8" y="418" font-size="11" fill="currentColor">지역 costmap 5 Hz</text>
+  <line x1="178" y1="429" x2="482" y2="429" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 401.4V426.6 M238.8 401.4V426.6 M299.6 401.4V426.6 M360.4 401.4V426.6 M421.2 401.4V426.6 M482 401.4V426.6" fill="none" stroke="currentColor" stroke-width="1.95"/>
+  <text x="552" y="418" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">50 mm</text>
+  <text x="8" y="448" font-size="11" fill="currentColor">전역 costmap 1 Hz</text>
+  <line x1="178" y1="459" x2="482" y2="459" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.12"/>
+  <path d="M178 429.2V458.8 M482 429.2V458.8" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <text x="552" y="448" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">250 mm</text>
+  <line x1="178" y1="463" x2="482" y2="463" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="178" y1="463" x2="178" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="178" y="479" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="238.8" y1="463" x2="238.8" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="238.8" y="479" font-size="11" fill="currentColor" text-anchor="middle">200</text>
+  <line x1="299.6" y1="463" x2="299.6" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="299.6" y="479" font-size="11" fill="currentColor" text-anchor="middle">400</text>
+  <line x1="360.4" y1="463" x2="360.4" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="360.4" y="479" font-size="11" fill="currentColor" text-anchor="middle">600</text>
+  <line x1="421.2" y1="463" x2="421.2" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="421.2" y="479" font-size="11" fill="currentColor" text-anchor="middle">800</text>
+  <line x1="482" y1="463" x2="482" y2="467" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="482" y="479" font-size="11" fill="currentColor" text-anchor="middle">1000</text>
+  <text x="8" y="479" font-size="11" fill="currentColor" opacity="0.8">시간 (ms)</text>
+  <polyline points="178,487 178,493 199.3,493 199.3,487" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+  <text x="205.3" y="497" font-size="11" fill="currentColor" font-weight="600">70 ms</text>
+  <text x="8" y="517" font-size="11" fill="currentColor">레인 다섯 중 둘은 주기가 70 ms 괄호 전체보다 길다: costmap 둘 다.</text>
+</svg>
 
 **패널 A — 어느 변을 누가 소유하는가.** §7의 REP 105 사슬을 상자 셋으로 한 줄에 그린다. `map` → `odom` → `base_link`. 각 화살표의 *발행자*를 옆이 아니라 아래에 적는다. `map` → `odom` 밑에 AMCL, `odom` → `base_link` 밑에 휠 오도메트리. 그다음 costmap 둘을 각자의 프레임에 붙은 사각형으로 그린다. 전역은 `map` 위에 넓게, 지역은 `odom`에 핀으로 꽂힌 작은 창으로. 각각에서 그것을 읽는 서버로 화살표를 하나씩 뺀다. 플래너와 제어기다. 그림이 맞혀야 할 것이 둘이다. `map` → `odom` 화살표에만 작은 번개 표시를 달고 다른 쪽에는 달지 않는다. 뛰어도 되는 변이 그쪽이고, 프레임을 둘로 가른 이유 전체가 그것이기 때문이다. 그리고 제어기의 출력이 Nav2를 나가 `ros2_control`로 들어가는 경계를 이름 붙여 그린다. `/cmd_vel`은 $20\,\mathrm{Hz}$의 요청이지 $200\,\mathrm{Hz}$의 모터 명령이 아니기 때문이다.
 
@@ -560,7 +766,7 @@ $$200+50+5=255\,\mathrm{ms},$$
 
 이는 P6 예산의 $255/70=3.6$배다. 그러니 Nav2 반응 경로는 그 예산을 맞출 수 없고, 애초에 맞추라고 만든 것도 아니다. $70\,\mathrm{ms}$는 *서보* 예산이다. 카메라 노출 중간부터 힘까지, 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서의 예산이고, 내비게이션 스택은 그 위층에서 지도 규모로 다시 계획한다. 진짜로 $70\,\mathrm{ms}$가 필요한 일은 행동 트리가 아니라 이음매 아래 제어기에 속한다. 이것이 "Nav2는 느리다"의 정직한 판본이다. 느린 것이 아니라 다른 시계 위에서 다른 질문에 답하고 있다.
 
-**Step 5 — 팽창을 시간으로 재기.** §5는 `inflation_radius`가 여유가 아니라 퍼텐셜 필드라고 못 박고, 속도 사다리가 왜 그래야만 하는지를 말해 준다. 기본값 $0.55\,\mathrm{m}$는 $0.55\times2048=1126$ 카운트이고 카트는 $0.55/0.25=2.2\,\mathrm{s}$에 그것을 가로지른다. 제어기가 실제로 겪는 단위로는 지역 costmap 갱신 $0.55/0.050=11$회다. 갱신 한 번에 카트가 $50\,\mathrm{mm}$를 가기 때문이다. 비용 인식 플래너가 벽에서 서서히 멀어지게 하는 것이 그 열한 번의 경사다. 치마폭을 한두 번으로 줄이면 제어기는 경사가 아니라 절벽을 만나고, 그것이 바로 §13의 모서리 깎기 증상이다. Jazzy TurtleBot 값 $0.7\,\mathrm{m}$는 같은 카트에서 갱신 $14$회다.
+**Step 5 — 팽창을 시간으로 재기.** §5는 `inflation_radius`가 여유가 아니라 퍼텐셜 필드라고 못 박고, 속도 사다리가 왜 그래야만 하는지를 말해 준다. 기본값 $0.55\,\mathrm{m}$는 $0.55\times2048=1126$ 카운트이고 카트는 $0.55/0.25=2.2\,\mathrm{s}$에 그것을 가로지른다. 제어기가 실제로 겪는 단위로는 지역 costmap 갱신 $0.55/0.050=11$회다. 갱신 한 번에 카트가 $50\,\mathrm{mm}$를 가기 때문이다. 비용 인식 플래너가 벽에서 서서히 멀어지게 하는 것이 그 열한 번의 경사다. 치마폭을 한두 번으로 줄이면 제어기는 경사가 아니라 절벽을 만나고, 그것이 바로 §5의 모서리 깎기 증상이다. Jazzy TurtleBot 값 $0.7\,\mathrm{m}$는 같은 카트에서 갱신 $14$회다.
 
 ### 1. Nav2가 푸는 문제
 
@@ -971,6 +1177,6 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 Nav2 베이스로. 엔코
 3. **해석.** P6에서 지역 costmap이 `map`에 살면 안 되는 이유, 그리고 AMCL이 자세를 보고해도 $200\,\mathrm{ms}$ 늦은 스캔이 예산 실패인 이유는?
 
 > [!tip]- 정답 · Solutions
-> 1. 엔코더가 `odom` → `base_link`를, AMCL이 `map` → `odom`을 소유. $200\,\mathrm{Hz}$ 지역 제어는 매끄러운 프레임, 플래너는 튀는 프레임.
+> 1. 엔코더가 `odom` → `base_link`를, AMCL이 `map` → `odom`을 소유. $20\,\mathrm{Hz}$ 지역 제어는 매끄러운 프레임, 플래너는 튀는 프레임.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) 스탬프가 tolerance보다 오래되면 모든 궤적이 무효. (c) `view_frames` / `tf2_monitor map base_link`. 게인은 넷째; 빠진 TF는 TF를 지목하는 오류 없이 이 증상을 낸다.
-> 3. `map` → `odom`이 $50\,\mathrm{Hz}$ 보정에서 점프할 수 있고, 순간이동 프레임 위의 $200\,\mathrm{Hz}$ 제어기는 불연속 `cmd`를 낸다. $200\,\mathrm{ms}$ 스캔은 이미 예산보다 $130\,\mathrm{ms}$ 초과 — AMCL은 카트가 떠난 곳의 자세를 여전히 낼 수 있다.
+> 3. `map` → `odom`이 AMCL 보정마다 점프할 수 있고(여기서는 $50\,\mathrm{Hz}$가 아니라 약 $1.00\,\mathrm{s}$마다, Step 3), 순간이동 프레임 위의 $20\,\mathrm{Hz}$ 제어기는 불연속 `cmd`를 낸다. $200\,\mathrm{ms}$ 스캔은 이미 예산보다 $130\,\mathrm{ms}$ 초과 — AMCL은 카트가 떠난 곳의 자세를 여전히 낼 수 있다.

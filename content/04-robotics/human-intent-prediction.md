@@ -60,6 +60,125 @@ The platform is a mobile base at $v = 1.5\ \mathrm{m/s}$ with a maximum decelera
 
 Two panels, drawn once. The problem set asks for the same two with a changed outcome and a changed platform.
 
+<svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="Intent-prediction homework diagram: the reliability diagram of the twenty I20 forecasts in five bins with their gaps to the diagonal, the recall-against-lead-time curve with the usable horizon 1.375 s falling 75 ms short of the 1.45 s the base needs, and the case-20 trajectory with its three displacement errors">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">1. reliability diagram</text>
+  <rect x="58" y="58" width="192" height="192" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" fill="none"/>
+  <line x1="96.4" y1="250" x2="96.4" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
+  <line x1="134.8" y1="250" x2="134.8" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
+  <line x1="173.2" y1="250" x2="173.2" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
+  <line x1="211.6" y1="250" x2="211.6" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
+  <line x1="58" y1="250" x2="250" y2="58" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="5 3"/>
+  <line x1="58" y1="250" x2="58" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="250" x2="58" y2="250" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="58" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.0</text>
+  <text x="51" y="254" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.0</text>
+  <line x1="96.4" y1="250" x2="96.4" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="211.6" x2="58" y2="211.6" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="96.4" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.2</text>
+  <text x="51" y="215.6" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.2</text>
+  <line x1="134.8" y1="250" x2="134.8" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="173.2" x2="58" y2="173.2" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="134.8" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.4</text>
+  <text x="51" y="177.2" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.4</text>
+  <line x1="173.2" y1="250" x2="173.2" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="134.8" x2="58" y2="134.8" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="173.2" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.6</text>
+  <text x="51" y="138.8" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.6</text>
+  <line x1="211.6" y1="250" x2="211.6" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="96.4" x2="58" y2="96.4" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="211.6" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.8</text>
+  <text x="51" y="100.4" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.8</text>
+  <line x1="250" y1="250" x2="250" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="58" x2="58" y2="58" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="250" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1.0</text>
+  <text x="51" y="62" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">1.0</text>
+  <text x="154" y="282" font-size="11" fill="currentColor" text-anchor="middle">forecast p̂ (bin mean)</text>
+  <text x="28" y="48" font-size="11" fill="currentColor">observed frequency</text>
+  <rect x="63.2" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <rect x="101.6" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <rect x="140" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <rect x="178.4" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <rect x="216.8" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="244.2" y="223.1" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">bars: n = 4 in each bin</text>
+  <line x1="77.2" y1="202" x2="77.2" y2="230.8" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="77.2" cy="202" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="106" cy="202" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="154" cy="154" r="4" stroke="none" fill="currentColor"/>
+  <line x1="192.4" y1="154" x2="192.4" y2="115.6" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="192.4" cy="154" r="4" stroke="none" fill="currentColor"/>
+  <line x1="230.8" y1="106" x2="230.8" y2="77.2" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="230.8" cy="106" r="4" stroke="none" fill="currentColor"/>
+  <text x="77.2" y="193" font-size="11" fill="currentColor" text-anchor="middle">0.15</text>
+  <text x="113" y="216" font-size="11" fill="currentColor">0.00</text>
+  <text x="161" y="168" font-size="11" fill="currentColor">0.00</text>
+  <text x="198.4" y="169" font-size="11" fill="currentColor">0.20</text>
+  <text x="230.8" y="123" font-size="11" fill="currentColor" text-anchor="middle">0.15</text>
+  <text x="300" y="24" font-size="12" fill="currentColor" font-weight="600">2. time-to-event</text>
+  <rect x="330" y="58" width="210" height="192" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" fill="none"/>
+  <line x1="330" y1="250" x2="330" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="330" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <line x1="382.5" y1="250" x2="382.5" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="382.5" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1.0</text>
+  <line x1="435" y1="250" x2="435" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="435" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1.5</text>
+  <line x1="487.5" y1="250" x2="487.5" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="487.5" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">2.0</text>
+  <line x1="540" y1="250" x2="540" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="540" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">2.5</text>
+  <line x1="326" y1="250" x2="330" y2="250" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="323" y="254" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.4</text>
+  <line x1="326" y1="186" x2="330" y2="186" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="323" y="190" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.6</text>
+  <line x1="326" y1="122" x2="330" y2="122" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="323" y="126" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.8</text>
+  <line x1="326" y1="58" x2="330" y2="58" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="323" y="62" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">1.0</text>
+  <text x="435" y="282" font-size="11" fill="currentColor" text-anchor="middle">time to event Δ (s)</text>
+  <text x="300" y="48" font-size="11" fill="currentColor">recall at FPR 0.05</text>
+  <line x1="330" y1="138" x2="540" y2="138" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" stroke-dasharray="5 3"/>
+  <text x="536" y="132" font-size="11" fill="currentColor" text-anchor="end">required recall 0.75</text>
+  <path d="M330 83.6 L382.5 109.2 L435 147.6 L487.5 186 L540 224.4" stroke="currentColor" stroke-width="1.9" fill="none" stroke-linejoin="round"/>
+  <circle cx="330" cy="83.6" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="382.5" cy="109.2" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="435" cy="147.6" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="487.5" cy="186" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="540" cy="224.4" r="3.4" stroke="none" fill="currentColor"/>
+  <line x1="421.9" y1="138" x2="421.9" y2="250" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="429.8" y1="60" x2="429.8" y2="250" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2.5"/>
+  <circle cx="421.9" cy="138" r="4.4" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="415.9" y="211.6" font-size="11" fill="currentColor" text-anchor="end">Δ* = 1.375 s</text>
+  <text x="435.8" y="74" font-size="11" fill="currentColor">t<tspan dy="3.1" font-size="8.6">stop</tspan><tspan dx="3.1" dy="-3.1">+ t</tspan><tspan dy="3.1" font-size="8.6">lat</tspan><tspan dx="3.1" dy="-3.1">= 1.45 s</tspan></text>
+  <line x1="421.9" y1="235.6" x2="429.8" y2="235.6" stroke="currentColor" stroke-width="1.2"/>
+  <text x="435.8" y="239.6" font-size="11" fill="currentColor">−0.075 s</text>
+  <text x="435.8" y="223.6" font-size="11" fill="currentColor">misses by 75 ms</text>
+  <text x="16" y="314" font-size="12" fill="currentColor" font-weight="600">Part 2 from above (m): observed, true and predicted</text>
+  <line x1="19.8" y1="404" x2="445.4" y2="404" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.35"/>
+  <path d="M194.6 404 L270.6 381.2 L369.4 373.6 L468.2 343.2" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.8" stroke-dasharray="5 3" stroke-linejoin="round"/>
+  <circle cx="42.6" cy="404" r="4.2" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <circle cx="118.6" cy="404" r="4.2" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <circle cx="194.6" cy="404" r="4.2" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <circle cx="270.6" cy="404" r="4.2" stroke="none" fill="currentColor"/>
+  <circle cx="346.6" cy="404" r="4.2" stroke="none" fill="currentColor"/>
+  <circle cx="422.6" cy="404" r="4.2" stroke="none" fill="currentColor"/>
+  <rect x="266.6" y="377.2" width="8" height="8" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.3"/>
+  <rect x="365.4" y="369.6" width="8" height="8" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.3"/>
+  <rect x="464.2" y="339.2" width="8" height="8" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.3"/>
+  <line x1="270.6" y1="404" x2="270.6" y2="381.2" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="346.6" y1="404" x2="369.4" y2="373.6" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="422.6" y1="404" x2="468.2" y2="343.2" stroke="currentColor" stroke-width="3.4"/>
+  <text x="277.6" y="400.6" font-size="11" fill="currentColor">0.30</text>
+  <text x="365" y="396.8" font-size="11" fill="currentColor">0.50</text>
+  <text x="452.4" y="381.6" font-size="11" fill="currentColor">1.00 (FDE)</text>
+  <circle cx="20" cy="424" r="4.2" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="30" y="428" font-size="11" fill="currentColor">observed</text>
+  <circle cx="87.2" cy="424" r="4.2" stroke="none" fill="currentColor"/>
+  <text x="97.2" y="428" font-size="11" fill="currentColor">true</text>
+  <rect x="124.2" y="420" width="8" height="8" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.3"/>
+  <text x="138.2" y="428" font-size="11" fill="currentColor">model</text>
+  <text x="16" y="452" font-size="11" fill="currentColor" fill-opacity="0.9">ECE = 0.2 × (0.15 + 0 + 0 + 0.20 + 0.15) = 0.100; the top two bins sit below the diagonal (overconfident).</text>
+  <text x="16" y="468" font-size="11" fill="currentColor" fill-opacity="0.9">ADE = (0.30 + 0.50 + 1.00) / 3 = 0.60 m and FDE = 1.00 m; constant velocity hits (1, 0), (2, 0), (3, 0) exactly.</text>
+</svg>
+
 1. **The reliability diagram.** A unit square, $\hat p$ across and observed frequency up, with the $45^\circ$ diagonal drawn as the calibrated line. Divide the horizontal axis into the five equal-width bins, and for each bin plot one point at (bin mean $\hat p$, bin observed frequency), with a bar above the axis showing how many of the twenty cases fell in it. Draw the vertical gap from each point to the diagonal and label it — the weighted average of those five gaps is the whole of §4's scalar.
 2. **The time-to-event panel.** $\Delta$ across, recall up, the five points of Part 3 joined. Draw the horizontal requirement line at $0.75$, drop a vertical from where the curve crosses it and label it $\Delta^{*}$, then draw a second vertical at the required lead $t_{\mathrm{stop}} + t_{\mathrm{lat}}$. The signed distance between those two verticals is the answer, and its sign is the deployment decision.
 
@@ -441,7 +560,7 @@ Tier B. Using **I20** from the running object above, and this page only. One out
 3. **Interpret.** The vendor reads the part (a) result and reports "recalibrated: ECE improved from $0.100$ to $0.090$." Two of the three numbers you computed in (a) moved much further than the ECE did. Say what actually changed in the log, why ECE is the least sensitive of the three to it, and what you would require the vendor to report instead.
 
 > [!tip]- Solutions
-> 1. Panel 1: only the top bin's point moves, from $(0.90,\ 0.75)$ up to $(0.90,\ 1.00)$ — past the diagonal, from under-confident-in-the-data to over-shooting it; the other four points and all five bars are untouched, because the flip changes an outcome, not a forecast. Panel 2: $\Delta^{*}$ stays at $1.375$ s while the required-lead vertical moves out to $1.55$ s, so the gap that was $-0.075$ s becomes $-0.175$ s — a faster base with a shorter latency is still worse off, because $v/a$ grew more than $t_{\mathrm{lat}}$ shrank.
+> 1. Panel 1: only the top bin's point moves, from $(0.90,\ 0.75)$ up to $(0.90,\ 1.00)$ — past the diagonal, from overconfident (frequency below the forecast) to underconfident (frequency above it); the other four points and all five bars are untouched, because the flip changes an outcome, not a forecast. Panel 2: $\Delta^{*}$ stays at $1.375$ s while the required-lead vertical moves out to $1.55$ s, so the gap that was $-0.075$ s becomes $-0.175$ s — a faster base with a shorter latency is still worse off, because $v/a$ grew more than $t_{\mathrm{lat}}$ shrank.
 > 2. (a) Case 19's residual changes from $(0.90-0)^2 = 0.81$ to $(0.90-1)^2 = 0.01$, so the total falls from $4.515$ to $3.715$ and $\mathrm{BS} = 3.715/20 = \mathbf{0.1858}$. The base rate becomes $10/20 = \mathbf{0.50}$, the reference is $0.50 \times 0.50 = 0.2500$, and $\mathrm{BSS} = 1 - 0.1858/0.2500 = \mathbf{0.257}$. Only the top bin's ECE term changes, its frequency going from $0.75$ to $1.00$ and its gap from $0.15$ to $|1.00-0.90| = 0.10$, so $\mathrm{ECE} = 0.2\,(0.15 + 0 + 0 + 0.20 + 0.10) = \mathbf{0.090}$.
 > (b) Model errors $\hat x_k - x_k$: $(0.00,\ 0.15) \to 0.15$; $(-0.12,-0.16) \to 0.20$; $(-0.15,-0.20) \to 0.25$. $\mathrm{ADE} = 0.60/3 = \mathbf{0.20\ \mathrm{m}}$, $\mathrm{FDE} = \mathbf{0.25\ \mathrm{m}}$. Constant velocity still predicts $(1,0), (2,0), (3,0)$, giving errors $\lVert(0,-0.15)\rVert = 0.15$, $\lVert(-0.42,-0.56)\rVert = 0.70$, $\lVert(-0.75,-1.00)\rVert = 1.25$, so $\mathrm{ADE}_{\mathrm{CV}} = 2.10/3 = \mathbf{0.70\ \mathrm{m}}$ and $\mathrm{FDE}_{\mathrm{CV}} = \mathbf{1.25\ \mathrm{m}}$. The ranking has completely reversed from the straight walk, on the same model and the same baseline. That is the reading: an ADE is a statement about the *test set's* motion as much as about the model, which is why the constant-velocity control belongs in every table.
 > (c) $t_{\mathrm{stop}} = 2.0/1.6 = 1.25$ s, $\Delta_{\mathrm{req}} = 1.25 + 0.30 = 1.55$ s $> 1.375$ s. It fails, and by more than before. The stopping distance also grows from $0.75$ m to $2.0^2/(2\times1.6) = 1.25$ m.
@@ -542,6 +661,125 @@ Tier B. Using **I20** from the running object above, and this page only. One out
 ### 과제가 그릴 그림 · Homework diagram
 
 패널 둘, 한 번 그린다. 과제는 결과 하나와 플랫폼을 바꿔서 같은 둘을 다시 요구한다.
+
+<svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="의도 예측 과제 그림: I20의 예측 스무 개를 다섯 구간으로 묶어 대각선까지의 간격을 표시한 reliability diagram, 사용 가능 지평 1.375초가 베이스에 필요한 1.45초에 75 ms 못 미치는 선행 시간 대 recall 곡선, 그리고 변위 오차 셋을 표시한 사례 20의 궤적">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">1. reliability diagram</text>
+  <rect x="58" y="58" width="192" height="192" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" fill="none"/>
+  <line x1="96.4" y1="250" x2="96.4" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
+  <line x1="134.8" y1="250" x2="134.8" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
+  <line x1="173.2" y1="250" x2="173.2" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
+  <line x1="211.6" y1="250" x2="211.6" y2="58" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22"/>
+  <line x1="58" y1="250" x2="250" y2="58" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="5 3"/>
+  <line x1="58" y1="250" x2="58" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="250" x2="58" y2="250" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="58" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.0</text>
+  <text x="51" y="254" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.0</text>
+  <line x1="96.4" y1="250" x2="96.4" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="211.6" x2="58" y2="211.6" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="96.4" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.2</text>
+  <text x="51" y="215.6" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.2</text>
+  <line x1="134.8" y1="250" x2="134.8" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="173.2" x2="58" y2="173.2" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="134.8" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.4</text>
+  <text x="51" y="177.2" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.4</text>
+  <line x1="173.2" y1="250" x2="173.2" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="134.8" x2="58" y2="134.8" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="173.2" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.6</text>
+  <text x="51" y="138.8" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.6</text>
+  <line x1="211.6" y1="250" x2="211.6" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="96.4" x2="58" y2="96.4" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="211.6" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.8</text>
+  <text x="51" y="100.4" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.8</text>
+  <line x1="250" y1="250" x2="250" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="54" y1="58" x2="58" y2="58" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="250" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1.0</text>
+  <text x="51" y="62" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">1.0</text>
+  <text x="154" y="282" font-size="11" fill="currentColor" text-anchor="middle">예측 p̂ (구간 평균)</text>
+  <text x="28" y="48" font-size="11" fill="currentColor">관측 빈도</text>
+  <rect x="63.2" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <rect x="101.6" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <rect x="140" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <rect x="178.4" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <rect x="216.8" y="230" width="28" height="20" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="244.2" y="223.1" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">막대: 구간마다 n = 4</text>
+  <line x1="77.2" y1="202" x2="77.2" y2="230.8" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="77.2" cy="202" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="106" cy="202" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="154" cy="154" r="4" stroke="none" fill="currentColor"/>
+  <line x1="192.4" y1="154" x2="192.4" y2="115.6" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="192.4" cy="154" r="4" stroke="none" fill="currentColor"/>
+  <line x1="230.8" y1="106" x2="230.8" y2="77.2" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="230.8" cy="106" r="4" stroke="none" fill="currentColor"/>
+  <text x="77.2" y="193" font-size="11" fill="currentColor" text-anchor="middle">0.15</text>
+  <text x="113" y="216" font-size="11" fill="currentColor">0.00</text>
+  <text x="161" y="168" font-size="11" fill="currentColor">0.00</text>
+  <text x="198.4" y="169" font-size="11" fill="currentColor">0.20</text>
+  <text x="230.8" y="123" font-size="11" fill="currentColor" text-anchor="middle">0.15</text>
+  <text x="300" y="24" font-size="12" fill="currentColor" font-weight="600">2. time-to-event</text>
+  <rect x="330" y="58" width="210" height="192" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" fill="none"/>
+  <line x1="330" y1="250" x2="330" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="330" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <line x1="382.5" y1="250" x2="382.5" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="382.5" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1.0</text>
+  <line x1="435" y1="250" x2="435" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="435" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1.5</text>
+  <line x1="487.5" y1="250" x2="487.5" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="487.5" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">2.0</text>
+  <line x1="540" y1="250" x2="540" y2="254" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="540" y="266" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">2.5</text>
+  <line x1="326" y1="250" x2="330" y2="250" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="323" y="254" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.4</text>
+  <line x1="326" y1="186" x2="330" y2="186" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="323" y="190" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.6</text>
+  <line x1="326" y1="122" x2="330" y2="122" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="323" y="126" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.8</text>
+  <line x1="326" y1="58" x2="330" y2="58" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="323" y="62" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">1.0</text>
+  <text x="435" y="282" font-size="11" fill="currentColor" text-anchor="middle">사건까지 남은 시간 Δ (s)</text>
+  <text x="300" y="48" font-size="11" fill="currentColor">FPR 0.05에서의 recall</text>
+  <line x1="330" y1="138" x2="540" y2="138" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" stroke-dasharray="5 3"/>
+  <text x="536" y="132" font-size="11" fill="currentColor" text-anchor="end">요구 recall 0.75</text>
+  <path d="M330 83.6 L382.5 109.2 L435 147.6 L487.5 186 L540 224.4" stroke="currentColor" stroke-width="1.9" fill="none" stroke-linejoin="round"/>
+  <circle cx="330" cy="83.6" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="382.5" cy="109.2" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="435" cy="147.6" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="487.5" cy="186" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="540" cy="224.4" r="3.4" stroke="none" fill="currentColor"/>
+  <line x1="421.9" y1="138" x2="421.9" y2="250" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="429.8" y1="60" x2="429.8" y2="250" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2.5"/>
+  <circle cx="421.9" cy="138" r="4.4" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="415.9" y="211.6" font-size="11" fill="currentColor" text-anchor="end">Δ* = 1.375 s</text>
+  <text x="435.8" y="74" font-size="11" fill="currentColor">t<tspan dy="3.1" font-size="8.6">stop</tspan><tspan dx="3.1" dy="-3.1">+ t</tspan><tspan dy="3.1" font-size="8.6">lat</tspan><tspan dx="3.1" dy="-3.1">= 1.45 s</tspan></text>
+  <line x1="421.9" y1="235.6" x2="429.8" y2="235.6" stroke="currentColor" stroke-width="1.2"/>
+  <text x="435.8" y="239.6" font-size="11" fill="currentColor">−0.075 s</text>
+  <text x="435.8" y="223.6" font-size="11" fill="currentColor">75 ms 모자람</text>
+  <text x="16" y="314" font-size="12" fill="currentColor" font-weight="600">2부를 위에서 본 것 (m): 관측, 정답, 예측</text>
+  <line x1="19.8" y1="404" x2="445.4" y2="404" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.35"/>
+  <path d="M194.6 404 L270.6 381.2 L369.4 373.6 L468.2 343.2" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.8" stroke-dasharray="5 3" stroke-linejoin="round"/>
+  <circle cx="42.6" cy="404" r="4.2" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <circle cx="118.6" cy="404" r="4.2" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <circle cx="194.6" cy="404" r="4.2" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <circle cx="270.6" cy="404" r="4.2" stroke="none" fill="currentColor"/>
+  <circle cx="346.6" cy="404" r="4.2" stroke="none" fill="currentColor"/>
+  <circle cx="422.6" cy="404" r="4.2" stroke="none" fill="currentColor"/>
+  <rect x="266.6" y="377.2" width="8" height="8" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.3"/>
+  <rect x="365.4" y="369.6" width="8" height="8" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.3"/>
+  <rect x="464.2" y="339.2" width="8" height="8" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.3"/>
+  <line x1="270.6" y1="404" x2="270.6" y2="381.2" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="346.6" y1="404" x2="369.4" y2="373.6" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="422.6" y1="404" x2="468.2" y2="343.2" stroke="currentColor" stroke-width="3.4"/>
+  <text x="277.6" y="400.6" font-size="11" fill="currentColor">0.30</text>
+  <text x="365" y="396.8" font-size="11" fill="currentColor">0.50</text>
+  <text x="452.4" y="381.6" font-size="11" fill="currentColor">1.00 (FDE)</text>
+  <circle cx="20" cy="424" r="4.2" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="30" y="428" font-size="11" fill="currentColor">관측</text>
+  <circle cx="61" cy="424" r="4.2" stroke="none" fill="currentColor"/>
+  <text x="71" y="428" font-size="11" fill="currentColor">정답</text>
+  <rect x="98" y="420" width="8" height="8" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.3"/>
+  <text x="112" y="428" font-size="11" fill="currentColor">모델</text>
+  <text x="16" y="452" font-size="11" fill="currentColor" fill-opacity="0.9">ECE = 0.2 × (0.15 + 0 + 0 + 0.20 + 0.15) = 0.100. 위의 두 구간이 대각선 아래에 있다(과신).</text>
+  <text x="16" y="468" font-size="11" fill="currentColor" fill-opacity="0.9">ADE = (0.30 + 0.50 + 1.00) / 3 = 0.60 m, FDE = 1.00 m. 등속 외삽은 (1, 0), (2, 0), (3, 0)을 정확히 맞힌다.</text>
+</svg>
 
 1. **Reliability diagram.** 단위 정사각형에 가로는 $\hat p$, 세로는 관측 빈도, 그리고 보정된 선인 $45^\circ$ 대각선을 긋는다. 가로축을 등폭 5구간으로 나누고, 구간마다 (구간 평균 $\hat p$, 구간 관측 빈도)에 점 하나를 찍고, 축 위에 스무 사례 중 몇 개가 그 구간에 들었는지 막대로 표시한다. 각 점에서 대각선까지 수직 간격을 그리고 값을 적어라. 그 다섯 간격의 가중 평균이 §4 스칼라의 전부다.
 2. **Time-to-event 패널.** 가로는 $\Delta$, 세로는 recall, 3부의 다섯 점을 잇는다. $0.75$에 수평 요구선을 긋고 곡선이 그것을 가로지르는 지점에서 수직선을 내려 $\Delta^{*}$라 적은 뒤, 필요 선행 $t_{\mathrm{stop}} + t_{\mathrm{lat}}$에 두 번째 수직선을 긋는다. 두 수직선 사이의 부호 있는 거리가 답이고, 그 부호가 배포 결정이다.
@@ -900,6 +1138,8 @@ Conformal prediction의 수학은 교환가능성(보정 사례와 새 사례가
 > [!tip]- 정답
 > 1. 기저율 때문 — 무조건 "아니오"가 비슷한 점수를 받는다. 순위 판별용 AUC와 precision–recall, 선택한 배포 동작점을 time-to-event의 함수로 보고해야 한다. 2. B가 이 요구를 만족하고 A는 해당 동작점에서 선행 시간이 부족하다. AUC만으로는 임계값·제동 비용·보정을 결정하지 못한다. 3. minADE는 스무 개 중 운 좋은 하나를 보상한다; 플래너는 미래에 대한 확률분포가 필요한데 지표가 그것을 요구하지 않는다. 4. 보행자를 마스킹·제거하고 재평가한다; 성능이 비슷하면 장면 사전확률을 학습한 것이다. 5. 작업자가 배포된 로봇에 적응하므로 배포 자체가 데이터 생성 과정을 바꾼다 — 수동적 도로 녹화에는 없는 피드백 루프다.
 
+**계산: 이 페이지가 허가하는 세 가지 주장 읽기.** "아니오" 기저율이 94%인 데서 96% 정확도는 무조건 "아니오"의 점수다. minADE$_{20}=0.18\,\mathrm{m}$는 정지에 쓸 보정된 집합을 주지 않는다. 4주 차 현장 레이블은 JAAD가 아니다. 동료 작업자들이 로봇에 적응했다.
+
 ### 과제 · Problem set
 
 Tier B. 위의 대상 **I20**, 그리고 이 페이지만 사용한다. 결과 하나가 뒤집히고, 보행자가 방향을 틀고, 플랫폼이 바뀐다. 스무 개의 예측은 그대로다.
@@ -909,7 +1149,7 @@ Tier B. 위의 대상 **I20**, 그리고 이 페이지만 사용한다. 결과 �
 3. **해석하라.** 업체가 (a)의 결과를 읽고 "재보정 완료: ECE가 $0.100$에서 $0.090$으로 개선"이라 보고한다. (a)에서 구한 셋 중 둘은 ECE보다 훨씬 크게 움직였다. 로그에서 실제로 바뀐 것이 무엇인지, ECE가 셋 중 그것에 가장 둔감한 이유가 무엇인지, 그리고 업체에 대신 무엇을 요구할지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. 패널 1: 맨 위 구간의 점 하나만 $(0.90,\ 0.75)$에서 $(0.90,\ 1.00)$으로 올라간다. 대각선을 지나쳐 데이터에 못 미치던 쪽에서 넘어서는 쪽으로 간다. 나머지 네 점과 다섯 막대는 그대로다. 뒤집힌 것이 예측이 아니라 결과이기 때문이다. 패널 2: $\Delta^{*}$는 $1.375$초로 그대로인데 필요 선행 수직선이 $1.55$초로 밀려나, $-0.075$초였던 간격이 $-0.175$초가 된다. 더 빠르고 지연이 짧은 베이스가 오히려 나빠지는 이유는 $v/a$가 늘어난 폭이 $t_{\mathrm{lat}}$이 줄어든 폭보다 크기 때문이다.
+> 1. 패널 1: 맨 위 구간의 점 하나만 $(0.90,\ 0.75)$에서 $(0.90,\ 1.00)$으로 올라간다. 대각선을 지나쳐, 빈도가 예측에 못 미치던 과신 쪽에서 예측을 넘어서는 과소 확신 쪽으로 간다. 나머지 네 점과 다섯 막대는 그대로다. 뒤집힌 것이 예측이 아니라 결과이기 때문이다. 패널 2: $\Delta^{*}$는 $1.375$초로 그대로인데 필요 선행 수직선이 $1.55$초로 밀려나, $-0.075$초였던 간격이 $-0.175$초가 된다. 더 빠르고 지연이 짧은 베이스가 오히려 나빠지는 이유는 $v/a$가 늘어난 폭이 $t_{\mathrm{lat}}$이 줄어든 폭보다 크기 때문이다.
 > 2. (a) 19번의 잔차가 $(0.90-0)^2 = 0.81$에서 $(0.90-1)^2 = 0.01$로 바뀌어 합계가 $4.515$에서 $3.715$가 되므로 $\mathrm{BS} = 3.715/20 = \mathbf{0.1858}$이다. 기저율은 $10/20 = \mathbf{0.50}$, 기준은 $0.50 \times 0.50 = 0.2500$, 따라서 $\mathrm{BSS} = 1 - 0.1858/0.2500 = \mathbf{0.257}$. ECE는 맨 위 구간 항만 바뀌어 빈도가 $0.75$에서 $1.00$, 간격이 $0.15$에서 $|1.00-0.90| = 0.10$이 되므로 $\mathrm{ECE} = 0.2\,(0.15 + 0 + 0 + 0.20 + 0.10) = \mathbf{0.090}$이다.
 > (b) 모델 오차 $\hat x_k - x_k$: $(0.00,\ 0.15) \to 0.15$, $(-0.12,-0.16) \to 0.20$, $(-0.15,-0.20) \to 0.25$. $\mathrm{ADE} = 0.60/3 = \mathbf{0.20\ \mathrm{m}}$, $\mathrm{FDE} = \mathbf{0.25\ \mathrm{m}}$. 등속은 여전히 $(1,0), (2,0), (3,0)$을 내놓아 오차가 $\lVert(0,-0.15)\rVert = 0.15$, $\lVert(-0.42,-0.56)\rVert = 0.70$, $\lVert(-0.75,-1.00)\rVert = 1.25$이므로 $\mathrm{ADE}_{\mathrm{CV}} = 2.10/3 = \mathbf{0.70\ \mathrm{m}}$, $\mathrm{FDE}_{\mathrm{CV}} = \mathbf{1.25\ \mathrm{m}}$다. 같은 모델, 같은 기준선인데 직진 보행에서와 순위가 완전히 뒤집혔다. 그것이 읽어야 할 바다. ADE는 모델에 관한 진술인 만큼이나 *시험 집합의 움직임* 에 관한 진술이고, 그래서 모든 표에 등속 대조군이 들어가야 한다.
 > (c) $t_{\mathrm{stop}} = 2.0/1.6 = 1.25$초, $\Delta_{\mathrm{req}} = 1.25 + 0.30 = 1.55$초 $> 1.375$초. 통과하지 못하고, 전보다 더 못 미친다. 제동거리도 $0.75$ m에서 $2.0^2/(2\times1.6) = 1.25$ m로 늘어난다.

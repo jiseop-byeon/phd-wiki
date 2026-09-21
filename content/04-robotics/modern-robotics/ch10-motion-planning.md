@@ -31,6 +31,72 @@ with contact ($d = 0$) counted as free, because the running task ends in contact
 
 One square, $\theta_1$ horizontal and $\theta_2$ vertical, both $-180°$ to $+180°$, with the opposite edges marked as identified — the same torus chart as ch.2. On it, four layers.
 
+<svg viewBox="0 0 560 401" style="max-width:100%;height:auto" role="img" aria-label="P2's torus chart for the panel x ≥ 1: the C-obstacle lens, the 30° grid with 21 blocked, 13 touching and 110 free nodes, the five-node roadmap with its two blocked edges crossed out, and the shortest path A, E, B of length π√2 = 4.4429 rad">
+  <g transform="translate(0 2)">
+    <polygon points="131,111 131.9,102.3 132.8,99.1 133.7,96.9 134.6,95.2 135.5,93.8 136.4,92.6 137.3,91.6 138.2,90.7 139.1,89.9 140,89.2 140.9,88.5 141.8,87.9 142.7,87.4 143.6,87 144.5,86.5 145.4,86.2 146.3,85.8 147.2,85.5 148.1,85.3 149,85 149.9,84.8 150.8,84.6 151.7,84.5 152.6,84.4 153.5,84.2 154.4,84.2 155.3,84.1 156.2,84 157.1,84 158,84 158.9,84 159.8,84 160.7,84.1 161.6,84.1 162.5,84.2 163.4,84.3 164.3,84.4 165.2,84.5 166.1,84.7 167,84.8 167.9,85 168.8,85.2 169.7,85.4 170.6,85.6 171.5,85.8 172.4,86.1 173.3,86.3 174.2,86.6 175.1,86.9 176,87.2 176.9,87.5 177.8,87.8 178.7,88.2 179.6,88.5 180.5,88.9 181.4,89.3 182.3,89.7 183.2,90.1 184.1,90.5 185,90.9 185.9,91.4 186.8,91.8 187.7,92.3 188.6,92.8 189.5,93.3 190.4,93.9 191.3,94.4 192.2,95 193.1,95.5 194,96.1 194.9,96.7 195.8,97.3 196.7,98 197.6,98.6 198.5,99.3 199.4,99.9 200.3,100.6 201.2,101.3 202.1,102 203,102.8 203.9,103.5 204.8,104.3 205.7,105.1 206.6,105.9 207.5,106.7 208.4,107.5 209.3,108.4 210.2,109.2 211.1,110.1 212,111 212.9,111.9 213.8,112.8 214.7,113.8 215.6,114.7 216.5,115.7 217.4,116.7 218.3,117.7 219.2,118.7 220.1,119.7 221,120.8 221.9,121.8 222.8,122.9 223.7,124 224.6,125.1 225.5,126.3 226.4,127.4 227.3,128.6 228.2,129.7 229.1,130.9 230,132.1 230.9,133.3 231.8,134.6 232.7,135.8 233.6,137.1 234.5,138.3 235.4,139.6 236.3,140.9 237.2,142.2 238.1,143.6 239,144.9 239.9,146.3 240.8,147.7 241.7,149.1 242.6,150.5 243.5,151.9 244.4,153.3 245.3,154.8 246.2,156.2 247.1,157.7 248,159.2 248.9,160.7 249.8,162.2 250.7,163.7 251.6,165.3 252.5,166.8 253.4,168.4 254.3,170 255.2,171.6 256.1,173.2 257,174.8 257.9,176.5 258.8,178.1 259.7,179.8 260.6,181.5 261.5,183.2 262.4,184.9 263.3,186.7 264.2,188.4 265.1,190.2 266,192 266.9,193.8 267.8,195.6 268.7,197.5 269.6,199.4 270.5,201.2 271.4,203.2 272.3,205.1 273.2,207 274.1,209 275,211 275.9,213.1 276.8,215.1 277.7,217.2 278.6,219.4 279.5,221.5 280.4,223.8 281.3,226 282.2,228.3 283.1,230.7 284,233.2 284.9,235.7 285.8,238.3 286.7,241 287.6,243.8 288.5,246.8 289.4,250 290.3,253.5 291.2,257.5 292.1,262.5 293,273 293,273 292.1,281.7 291.2,284.9 290.3,287.1 289.4,288.8 288.5,290.2 287.6,291.4 286.7,292.4 285.8,293.3 284.9,294.1 284,294.8 283.1,295.5 282.2,296.1 281.3,296.6 280.4,297 279.5,297.5 278.6,297.8 277.7,298.2 276.8,298.5 275.9,298.7 275,299 274.1,299.2 273.2,299.4 272.3,299.5 271.4,299.6 270.5,299.8 269.6,299.8 268.7,299.9 267.8,300 266.9,300 266,300 265.1,300 264.2,300 263.3,299.9 262.4,299.9 261.5,299.8 260.6,299.7 259.7,299.6 258.8,299.5 257.9,299.3 257,299.2 256.1,299 255.2,298.8 254.3,298.6 253.4,298.4 252.5,298.2 251.6,297.9 250.7,297.7 249.8,297.4 248.9,297.1 248,296.8 247.1,296.5 246.2,296.2 245.3,295.8 244.4,295.5 243.5,295.1 242.6,294.7 241.7,294.3 240.8,293.9 239.9,293.5 239,293.1 238.1,292.6 237.2,292.2 236.3,291.7 235.4,291.2 234.5,290.7 233.6,290.1 232.7,289.6 231.8,289 230.9,288.5 230,287.9 229.1,287.3 228.2,286.7 227.3,286 226.4,285.4 225.5,284.7 224.6,284.1 223.7,283.4 222.8,282.7 221.9,282 221,281.2 220.1,280.5 219.2,279.7 218.3,278.9 217.4,278.1 216.5,277.3 215.6,276.5 214.7,275.6 213.8,274.8 212.9,273.9 212,273 211.1,272.1 210.2,271.2 209.3,270.2 208.4,269.3 207.5,268.3 206.6,267.3 205.7,266.3 204.8,265.3 203.9,264.3 203,263.2 202.1,262.2 201.2,261.1 200.3,260 199.4,258.9 198.5,257.7 197.6,256.6 196.7,255.4 195.8,254.3 194.9,253.1 194,251.9 193.1,250.7 192.2,249.4 191.3,248.2 190.4,246.9 189.5,245.7 188.6,244.4 187.7,243.1 186.8,241.8 185.9,240.4 185,239.1 184.1,237.7 183.2,236.3 182.3,234.9 181.4,233.5 180.5,232.1 179.6,230.7 178.7,229.2 177.8,227.8 176.9,226.3 176,224.8 175.1,223.3 174.2,221.8 173.3,220.3 172.4,218.7 171.5,217.2 170.6,215.6 169.7,214 168.8,212.4 167.9,210.8 167,209.2 166.1,207.5 165.2,205.9 164.3,204.2 163.4,202.5 162.5,200.8 161.6,199.1 160.7,197.3 159.8,195.6 158.9,193.8 158,192 157.1,190.2 156.2,188.4 155.3,186.5 154.4,184.6 153.5,182.8 152.6,180.8 151.7,178.9 150.8,177 149.9,175 149,173 148.1,170.9 147.2,168.9 146.3,166.8 145.4,164.6 144.5,162.5 143.6,160.2 142.7,158 141.8,155.7 140.9,153.3 140,150.8 139.1,148.3 138.2,145.7 137.3,143 136.4,140.2 135.5,137.2 134.6,134 133.7,130.5 132.8,126.5 131.9,121.5 131,111" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="50" y="30" width="324" height="324" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.7"/>
+    <g stroke="currentColor" stroke-width="1.3" opacity="0.6"><line x1="212" y1="30" x2="212" y2="111"/><line x1="212" y1="273" x2="212" y2="354"/></g>
+    <g fill="none" stroke="currentColor" stroke-width="1.4"><path d="M46 316.5 L50 311.5 L54 316.5"/><path d="M370 316.5 L374 311.5 L378 316.5"/><path d="M85.7 26 L90.7 30 L85.7 34"/><path d="M90.7 26 L95.7 30 L90.7 34"/><path d="M85.7 350 L90.7 354 L85.7 358"/><path d="M90.7 350 L95.7 354 L90.7 358"/></g>
+    <g stroke="currentColor" stroke-width="1" opacity="0.6"><line x1="50" y1="354" x2="50" y2="358"/><line x1="46" y1="354" x2="50" y2="354"/><line x1="77" y1="354" x2="77" y2="358"/><line x1="46" y1="327" x2="50" y2="327"/><line x1="104" y1="354" x2="104" y2="358"/><line x1="46" y1="300" x2="50" y2="300"/><line x1="131" y1="354" x2="131" y2="358"/><line x1="46" y1="273" x2="50" y2="273"/><line x1="158" y1="354" x2="158" y2="358"/><line x1="46" y1="246" x2="50" y2="246"/><line x1="185" y1="354" x2="185" y2="358"/><line x1="46" y1="219" x2="50" y2="219"/><line x1="212" y1="354" x2="212" y2="358"/><line x1="46" y1="192" x2="50" y2="192"/><line x1="239" y1="354" x2="239" y2="358"/><line x1="46" y1="165" x2="50" y2="165"/><line x1="266" y1="354" x2="266" y2="358"/><line x1="46" y1="138" x2="50" y2="138"/><line x1="293" y1="354" x2="293" y2="358"/><line x1="46" y1="111" x2="50" y2="111"/><line x1="320" y1="354" x2="320" y2="358"/><line x1="46" y1="84" x2="50" y2="84"/><line x1="347" y1="354" x2="347" y2="358"/><line x1="46" y1="57" x2="50" y2="57"/><line x1="374" y1="354" x2="374" y2="358"/><line x1="46" y1="30" x2="50" y2="30"/></g>
+    <g fill="currentColor">
+    <text x="50" y="370" font-size="11" text-anchor="middle">−180°</text>
+    <text x="43" y="358" font-size="11" text-anchor="end">−180°</text>
+    <text x="131" y="370" font-size="11" text-anchor="middle">−90°</text>
+    <text x="43" y="277" font-size="11" text-anchor="end">−90°</text>
+    <text x="212" y="370" font-size="11" text-anchor="middle">0°</text>
+    <text x="43" y="196" font-size="11" text-anchor="end">0°</text>
+    <text x="293" y="370" font-size="11" text-anchor="middle">90°</text>
+    <text x="43" y="115" font-size="11" text-anchor="end">90°</text>
+    <text x="374" y="370" font-size="11" text-anchor="middle">180°</text>
+    <text x="43" y="34" font-size="11" text-anchor="end">180°</text>
+    <text x="374" y="385" font-size="12" text-anchor="end">θ₁</text>
+    <text x="43" y="18" font-size="12" text-anchor="end">θ₂</text>
+    <text x="50" y="18" font-size="11">panel x ≥ 1 · edges identified</text>
+    </g>
+    <g fill="currentColor" opacity="0.45"><circle cx="50" cy="354" r="1.1"/><circle cx="50" cy="327" r="1.1"/><circle cx="50" cy="300" r="1.1"/><circle cx="50" cy="273" r="1.1"/><circle cx="50" cy="246" r="1.1"/><circle cx="50" cy="219" r="1.1"/><circle cx="50" cy="192" r="1.1"/><circle cx="50" cy="165" r="1.1"/><circle cx="50" cy="138" r="1.1"/><circle cx="50" cy="111" r="1.1"/><circle cx="50" cy="84" r="1.1"/><circle cx="50" cy="57" r="1.1"/><circle cx="77" cy="354" r="1.1"/><circle cx="77" cy="327" r="1.1"/><circle cx="77" cy="300" r="1.1"/><circle cx="77" cy="273" r="1.1"/><circle cx="77" cy="246" r="1.1"/><circle cx="77" cy="219" r="1.1"/><circle cx="77" cy="192" r="1.1"/><circle cx="77" cy="165" r="1.1"/><circle cx="77" cy="138" r="1.1"/><circle cx="77" cy="111" r="1.1"/><circle cx="77" cy="84" r="1.1"/><circle cx="77" cy="57" r="1.1"/><circle cx="104" cy="354" r="1.1"/><circle cx="104" cy="327" r="1.1"/><circle cx="104" cy="300" r="1.1"/><circle cx="104" cy="273" r="1.1"/><circle cx="104" cy="246" r="1.1"/><circle cx="104" cy="219" r="1.1"/><circle cx="104" cy="192" r="1.1"/><circle cx="104" cy="165" r="1.1"/><circle cx="104" cy="138" r="1.1"/><circle cx="104" cy="111" r="1.1"/><circle cx="104" cy="84" r="1.1"/><circle cx="104" cy="57" r="1.1"/><circle cx="131" cy="354" r="1.1"/><circle cx="131" cy="327" r="1.1"/><circle cx="131" cy="300" r="1.1"/><circle cx="131" cy="273" r="1.1"/><circle cx="131" cy="246" r="1.1"/><circle cx="131" cy="219" r="1.1"/><circle cx="131" cy="192" r="1.1"/><circle cx="131" cy="165" r="1.1"/><circle cx="131" cy="138" r="1.1"/><circle cx="131" cy="84" r="1.1"/><circle cx="131" cy="57" r="1.1"/><circle cx="158" cy="354" r="1.1"/><circle cx="158" cy="327" r="1.1"/><circle cx="158" cy="300" r="1.1"/><circle cx="158" cy="273" r="1.1"/><circle cx="158" cy="246" r="1.1"/><circle cx="158" cy="219" r="1.1"/><circle cx="158" cy="57" r="1.1"/><circle cx="185" cy="354" r="1.1"/><circle cx="185" cy="327" r="1.1"/><circle cx="185" cy="300" r="1.1"/><circle cx="185" cy="273" r="1.1"/><circle cx="185" cy="246" r="1.1"/><circle cx="185" cy="84" r="1.1"/><circle cx="185" cy="57" r="1.1"/><circle cx="239" cy="354" r="1.1"/><circle cx="239" cy="327" r="1.1"/><circle cx="239" cy="300" r="1.1"/><circle cx="239" cy="138" r="1.1"/><circle cx="239" cy="111" r="1.1"/><circle cx="239" cy="84" r="1.1"/><circle cx="239" cy="57" r="1.1"/><circle cx="266" cy="354" r="1.1"/><circle cx="266" cy="327" r="1.1"/><circle cx="266" cy="165" r="1.1"/><circle cx="266" cy="138" r="1.1"/><circle cx="266" cy="111" r="1.1"/><circle cx="266" cy="84" r="1.1"/><circle cx="266" cy="57" r="1.1"/><circle cx="293" cy="354" r="1.1"/><circle cx="293" cy="327" r="1.1"/><circle cx="293" cy="300" r="1.1"/><circle cx="293" cy="246" r="1.1"/><circle cx="293" cy="219" r="1.1"/><circle cx="293" cy="192" r="1.1"/><circle cx="293" cy="165" r="1.1"/><circle cx="293" cy="138" r="1.1"/><circle cx="293" cy="111" r="1.1"/><circle cx="293" cy="84" r="1.1"/><circle cx="293" cy="57" r="1.1"/><circle cx="320" cy="354" r="1.1"/><circle cx="320" cy="327" r="1.1"/><circle cx="320" cy="300" r="1.1"/><circle cx="320" cy="273" r="1.1"/><circle cx="320" cy="246" r="1.1"/><circle cx="320" cy="219" r="1.1"/><circle cx="320" cy="192" r="1.1"/><circle cx="320" cy="165" r="1.1"/><circle cx="320" cy="138" r="1.1"/><circle cx="320" cy="111" r="1.1"/><circle cx="320" cy="84" r="1.1"/><circle cx="320" cy="57" r="1.1"/><circle cx="347" cy="354" r="1.1"/><circle cx="347" cy="327" r="1.1"/><circle cx="347" cy="300" r="1.1"/><circle cx="347" cy="273" r="1.1"/><circle cx="347" cy="246" r="1.1"/><circle cx="347" cy="219" r="1.1"/><circle cx="347" cy="192" r="1.1"/><circle cx="347" cy="165" r="1.1"/><circle cx="347" cy="138" r="1.1"/><circle cx="347" cy="111" r="1.1"/><circle cx="347" cy="84" r="1.1"/><circle cx="347" cy="57" r="1.1"/></g>
+    <g stroke="currentColor" stroke-width="1.2" fill="none"><path d="M155.3 162.3 L160.7 167.7 M155.3 167.7 L160.7 162.3"/><path d="M155.3 135.3 L160.7 140.7 M155.3 140.7 L160.7 135.3"/><path d="M155.3 108.3 L160.7 113.7 M155.3 113.7 L160.7 108.3"/><path d="M182.3 216.3 L187.7 221.7 M182.3 221.7 L187.7 216.3"/><path d="M182.3 189.3 L187.7 194.7 M182.3 194.7 L187.7 189.3"/><path d="M182.3 162.3 L187.7 167.7 M182.3 167.7 L187.7 162.3"/><path d="M182.3 135.3 L187.7 140.7 M182.3 140.7 L187.7 135.3"/><path d="M182.3 108.3 L187.7 113.7 M182.3 113.7 L187.7 108.3"/><path d="M209.3 243.3 L214.7 248.7 M209.3 248.7 L214.7 243.3"/><path d="M209.3 216.3 L214.7 221.7 M209.3 221.7 L214.7 216.3"/><path d="M209.3 189.3 L214.7 194.7 M209.3 194.7 L214.7 189.3"/><path d="M209.3 162.3 L214.7 167.7 M209.3 167.7 L214.7 162.3"/><path d="M209.3 135.3 L214.7 140.7 M209.3 140.7 L214.7 135.3"/><path d="M236.3 270.3 L241.7 275.7 M236.3 275.7 L241.7 270.3"/><path d="M236.3 243.3 L241.7 248.7 M236.3 248.7 L241.7 243.3"/><path d="M236.3 216.3 L241.7 221.7 M236.3 221.7 L241.7 216.3"/><path d="M236.3 189.3 L241.7 194.7 M236.3 194.7 L241.7 189.3"/><path d="M236.3 162.3 L241.7 167.7 M236.3 167.7 L241.7 162.3"/><path d="M263.3 270.3 L268.7 275.7 M263.3 275.7 L268.7 270.3"/><path d="M263.3 243.3 L268.7 248.7 M263.3 248.7 L268.7 243.3"/><path d="M263.3 216.3 L268.7 221.7 M263.3 221.7 L268.7 216.3"/></g>
+    <g stroke="currentColor" stroke-width="1.1" fill="none"><circle cx="131" cy="111" r="2.8"/><circle cx="158" cy="192" r="2.8"/><circle cx="158" cy="84" r="2.8"/><circle cx="212" cy="354" r="2.8"/><circle cx="212" cy="327" r="2.8"/><circle cx="212" cy="300" r="2.8"/><circle cx="212" cy="273" r="2.8"/><circle cx="212" cy="111" r="2.8"/><circle cx="212" cy="84" r="2.8"/><circle cx="212" cy="57" r="2.8"/><circle cx="266" cy="300" r="2.8"/><circle cx="266" cy="192" r="2.8"/><circle cx="293" cy="273" r="2.8"/></g>
+    <g stroke="currentColor" stroke-width="1.1" opacity="0.6"><line x1="212" y1="111" x2="266" y2="111"/><line x1="212" y1="111" x2="320" y2="165"/><line x1="293" y1="273" x2="320" y2="165"/><line x1="266" y1="111" x2="320" y2="165"/><line x1="266" y1="111" x2="333.5" y2="232.5"/><line x1="320" y1="165" x2="333.5" y2="232.5"/></g>
+    <g stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"><line x1="212" y1="111" x2="293" y2="273"/><line x1="293" y1="273" x2="266" y2="111"/></g>
+    <g stroke="currentColor" stroke-width="2.2" fill="none"><path d="M247.9 187.4 L257.1 196.6 M247.9 196.6 L257.1 187.4"/><path d="M285.7 252.2 L294.9 261.4 M285.7 261.4 L294.9 252.2"/></g>
+    <polyline points="212,111 333.5,232.5 293,273" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="212" cy="111" r="4.6" fill="currentColor"/>
+    <circle cx="293" cy="273" r="4.6" fill="currentColor"/>
+    <circle cx="266" cy="111" r="4.6" fill="currentColor"/>
+    <circle cx="320" cy="165" r="4.6" fill="currentColor"/>
+    <circle cx="333.5" cy="232.5" r="4.6" fill="currentColor"/>
+    <g fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="212" cy="111" r="7.6"/><circle cx="293" cy="273" r="7.6"/></g>
+    <g fill="currentColor" font-weight="bold">
+    <text x="201" y="104" font-size="12.5" text-anchor="end">A</text>
+    <text x="303" y="289" font-size="12.5" text-anchor="start">B</text>
+    <text x="266" y="100" font-size="12.5" text-anchor="middle">C</text>
+    <text x="330" y="160" font-size="12.5" text-anchor="start">D</text>
+    <text x="341.5" y="223.5" font-size="12.5" text-anchor="start">E</text>
+    </g>
+    <line x1="339.5" y1="232.5" x2="386" y2="232.5" stroke="currentColor" stroke-width="0.9" opacity="0.6"/>
+    <text x="390" y="230.5" font-size="11.5" fill="currentColor" font-weight="bold">shortest A→E→B</text>
+    <text x="390" y="245.5" font-size="11.5" fill="currentColor">π√2 = 4.4429 rad</text>
+    <rect x="386" y="31" width="12" height="10" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <text x="408" y="40" font-size="11" fill="currentColor">C-obstacle d &gt; 0</text>
+    <text x="408" y="54" font-size="11" fill="currentColor">18.478 % of the torus</text>
+    <path d="M389.3 67.3 L394.7 72.7 M389.3 72.7 L394.7 67.3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+    <text x="408" y="74" font-size="11" fill="currentColor">blocked node: 21</text>
+    <circle cx="392" cy="86" r="2.8" fill="none" stroke="currentColor" stroke-width="1.1"/>
+    <text x="408" y="90" font-size="11" fill="currentColor">touching, d = 0: 13</text>
+    <text x="408" y="104" font-size="11" fill="currentColor">(ringed: A and B)</text>
+    <circle cx="392" cy="118" r="1.1" fill="currentColor" opacity="0.6"/>
+    <text x="408" y="122" font-size="11" fill="currentColor">free node: 110</text>
+    <line x1="392" y1="132" x2="392" y2="147" stroke="currentColor" stroke-width="1.3" opacity="0.6"/>
+    <text x="408" y="142" font-size="11" fill="currentColor">d = 0 along θ₁ = 0:</text>
+    <text x="408" y="156" font-size="11" fill="currentColor">elbow on the wall</text>
+    <line x1="385" y1="172" x2="399" y2="172" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"/>
+    <path d="M388.4 168.4 L395.6 175.6 M388.4 175.6 L395.6 168.4" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="408" y="176" font-size="11" fill="currentColor">blocked edge, X = deepest</text>
+    <text x="408" y="190" font-size="11" fill="currentColor">point: A–B 0.4142 m and</text>
+    <text x="408" y="204" font-size="11" fill="currentColor">B–C 0.0201 m into the wall</text>
+  </g>
+</svg>
+
 1. **The C-obstacle**, shaded: the lens $\cos\theta_1 + \cos(\theta_1{+}\theta_2) > 1$ spanning $\theta_1 \in (-90°, 90°)$.
 2. **The grid**: tick marks every $30°$ on both axes, giving $12 \times 12$ nodes. Put a cross on every node that lies in the shaded region, and a small open circle on every node that lies exactly on its boundary.
 3. **The roadmap**: five labelled dots $A, B, C, D, E$ at the configurations tabulated below, with a straight segment drawn between every pair. Draw the two segments that cut through the shaded region as dashed and put an X on each.
@@ -86,7 +152,7 @@ and the rule is visible in the table: **a sample spacing wider than the violatin
 | $B$ | $(90°,\ -90°)$ | $(1,\ 1)$ | $0$ |
 | $C$ | $(60°,\ 90°)$ | $(-0.366,\ 1.366)$ | $-0.500$ |
 | $D$ | $(120°,\ 30°)$ | $(-1.366,\ 1.366)$ | $-1.500$ |
-| $E$ | $(135°,\ -45°)$ | $(-0.707,\ 0.707)$ | $-1.707$ |
+| $E$ | $(135°,\ -45°)$ | $(-0.707,\ 1.707)$ | $-1.707$ |
 
 All ten pairs get the edge test, edge length being the Euclidean distance on the chart (taking the short way round each circle):
 
@@ -99,15 +165,15 @@ All ten pairs get the edge test, edge length being the Euclidean distance on the
 | $B$–$C$ | $3.1849$ | blocked, $d_{\max}=0.0201$ |
 | $B$–$D$ | $2.1589$ | free |
 | $B$–$E$ | $1.1107$ | free |
-| $C$–$D$ | $1.4811$ | free |
+| $C$–$D$ | $1.4810$ | free |
 | $C$–$E$ | $2.6954$ | free |
 | $D$–$E$ | $1.3349$ | free |
 
-Now run Dijkstra from $A$. The direct edge is gone, so the candidates are $A$–$E$–$B = 3.3322 + 1.1107 = 4.4429$, $A$–$D$–$B = 2.3416 + 2.1589 = 4.5005$, $A$–$C$–$D$–$B = 4.6872$, and $A$–$D$–$E$–$B = 4.7872$. The winner is
+Now run Dijkstra from $A$. The direct edge is gone, so the candidates are $A$–$E$–$B = 3.3322 + 1.1107 = 4.4429$, $A$–$D$–$B = 2.3416 + 2.1589 = 4.5005$, $A$–$C$–$D$–$B = 4.6870$, and $A$–$D$–$E$–$B = 4.7872$. The winner is
 
 $$A \to E \to B, \qquad \text{cost } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = \pi\sqrt2$$
 
-because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(45°,45°)$, so the two lengths are $135°\sqrt2$ and $45°\sqrt2$ and they sum to $180°\sqrt2 = \pi\sqrt2$. Against the blocked direct edge's $(\pi/2)\sqrt5 = 3.5124$, the detour costs $2\sqrt2/\sqrt5 = 1.265$, i.e. $\mathbf{26.5\,\%}$ extra joint travel. The margin over $A$–$D$–$B$ is only $0.058\,\mathrm{rad}$; a roadmap this sparse decides such things by which samples happened to be drawn, which is exactly the property §3 names.
+because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so the two lengths are $135°\sqrt2$ and $45°\sqrt2$ and they sum to $180°\sqrt2 = \pi\sqrt2$. Against the blocked direct edge's $(\pi/2)\sqrt5 = 3.5124$, the detour costs $2\sqrt2/\sqrt5 = 1.265$, i.e. $\mathbf{26.5\,\%}$ extra joint travel. The margin over $A$–$D$–$B$ is only $0.058\,\mathrm{rad}$; a roadmap this sparse decides such things by which samples happened to be drawn, which is exactly the property §3 names.
 
 ### 1. The chapter in one list
 
@@ -197,7 +263,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 
 ### Continue beyond this chapter
 
-[[04-robotics/planning-decision-making|Planning & Decision-Making]] connects this chapter to A*, sampling-based planning, trajectory optimization, TAMP, uncertainty, MPC, and learned planners.
+[[04-robotics/planning-decision-making|Planning & Decision-Making]] connects this chapter to A*, sampling-based planning, trajectory optimization, TAMP, uncertainty, MPC, and learned planners. [[04-robotics/capstone-panel-contact|26. Capstone]] reuses this chapter's detour through $E$ against a panel whose position is only estimated, so the obstacle is inflated by $3\sigma$ before any edge is tested.
 
 ## 한국어
 
@@ -216,6 +282,72 @@ $$d(\theta) = \max\bigl(\cos\theta_1,\ \cos\theta_1 + \cos(\theta_1{+}\theta_2)\
 ### 과제가 그릴 그림 · Homework diagram
 
 정사각형 하나, 가로 $\theta_1$ 세로 $\theta_2$, 둘 다 $-180°$에서 $+180°$, 마주 보는 변은 동일시 표시 — 2장과 같은 원환면 도표다. 그 위에 네 겹.
+
+<svg viewBox="0 0 560 401" style="max-width:100%;height:auto" role="img" aria-label="패널 x ≥ 1에 대한 P2의 원환면 도표: C-장애물 렌즈, 막힘 21·닿음 13·자유 110인 30° 격자, 막힌 간선 둘에 X를 친 다섯 노드 로드맵, 그리고 길이 π√2 = 4.4429 rad인 최단 경로 A, E, B">
+  <g transform="translate(0 2)">
+    <polygon points="131,111 131.9,102.3 132.8,99.1 133.7,96.9 134.6,95.2 135.5,93.8 136.4,92.6 137.3,91.6 138.2,90.7 139.1,89.9 140,89.2 140.9,88.5 141.8,87.9 142.7,87.4 143.6,87 144.5,86.5 145.4,86.2 146.3,85.8 147.2,85.5 148.1,85.3 149,85 149.9,84.8 150.8,84.6 151.7,84.5 152.6,84.4 153.5,84.2 154.4,84.2 155.3,84.1 156.2,84 157.1,84 158,84 158.9,84 159.8,84 160.7,84.1 161.6,84.1 162.5,84.2 163.4,84.3 164.3,84.4 165.2,84.5 166.1,84.7 167,84.8 167.9,85 168.8,85.2 169.7,85.4 170.6,85.6 171.5,85.8 172.4,86.1 173.3,86.3 174.2,86.6 175.1,86.9 176,87.2 176.9,87.5 177.8,87.8 178.7,88.2 179.6,88.5 180.5,88.9 181.4,89.3 182.3,89.7 183.2,90.1 184.1,90.5 185,90.9 185.9,91.4 186.8,91.8 187.7,92.3 188.6,92.8 189.5,93.3 190.4,93.9 191.3,94.4 192.2,95 193.1,95.5 194,96.1 194.9,96.7 195.8,97.3 196.7,98 197.6,98.6 198.5,99.3 199.4,99.9 200.3,100.6 201.2,101.3 202.1,102 203,102.8 203.9,103.5 204.8,104.3 205.7,105.1 206.6,105.9 207.5,106.7 208.4,107.5 209.3,108.4 210.2,109.2 211.1,110.1 212,111 212.9,111.9 213.8,112.8 214.7,113.8 215.6,114.7 216.5,115.7 217.4,116.7 218.3,117.7 219.2,118.7 220.1,119.7 221,120.8 221.9,121.8 222.8,122.9 223.7,124 224.6,125.1 225.5,126.3 226.4,127.4 227.3,128.6 228.2,129.7 229.1,130.9 230,132.1 230.9,133.3 231.8,134.6 232.7,135.8 233.6,137.1 234.5,138.3 235.4,139.6 236.3,140.9 237.2,142.2 238.1,143.6 239,144.9 239.9,146.3 240.8,147.7 241.7,149.1 242.6,150.5 243.5,151.9 244.4,153.3 245.3,154.8 246.2,156.2 247.1,157.7 248,159.2 248.9,160.7 249.8,162.2 250.7,163.7 251.6,165.3 252.5,166.8 253.4,168.4 254.3,170 255.2,171.6 256.1,173.2 257,174.8 257.9,176.5 258.8,178.1 259.7,179.8 260.6,181.5 261.5,183.2 262.4,184.9 263.3,186.7 264.2,188.4 265.1,190.2 266,192 266.9,193.8 267.8,195.6 268.7,197.5 269.6,199.4 270.5,201.2 271.4,203.2 272.3,205.1 273.2,207 274.1,209 275,211 275.9,213.1 276.8,215.1 277.7,217.2 278.6,219.4 279.5,221.5 280.4,223.8 281.3,226 282.2,228.3 283.1,230.7 284,233.2 284.9,235.7 285.8,238.3 286.7,241 287.6,243.8 288.5,246.8 289.4,250 290.3,253.5 291.2,257.5 292.1,262.5 293,273 293,273 292.1,281.7 291.2,284.9 290.3,287.1 289.4,288.8 288.5,290.2 287.6,291.4 286.7,292.4 285.8,293.3 284.9,294.1 284,294.8 283.1,295.5 282.2,296.1 281.3,296.6 280.4,297 279.5,297.5 278.6,297.8 277.7,298.2 276.8,298.5 275.9,298.7 275,299 274.1,299.2 273.2,299.4 272.3,299.5 271.4,299.6 270.5,299.8 269.6,299.8 268.7,299.9 267.8,300 266.9,300 266,300 265.1,300 264.2,300 263.3,299.9 262.4,299.9 261.5,299.8 260.6,299.7 259.7,299.6 258.8,299.5 257.9,299.3 257,299.2 256.1,299 255.2,298.8 254.3,298.6 253.4,298.4 252.5,298.2 251.6,297.9 250.7,297.7 249.8,297.4 248.9,297.1 248,296.8 247.1,296.5 246.2,296.2 245.3,295.8 244.4,295.5 243.5,295.1 242.6,294.7 241.7,294.3 240.8,293.9 239.9,293.5 239,293.1 238.1,292.6 237.2,292.2 236.3,291.7 235.4,291.2 234.5,290.7 233.6,290.1 232.7,289.6 231.8,289 230.9,288.5 230,287.9 229.1,287.3 228.2,286.7 227.3,286 226.4,285.4 225.5,284.7 224.6,284.1 223.7,283.4 222.8,282.7 221.9,282 221,281.2 220.1,280.5 219.2,279.7 218.3,278.9 217.4,278.1 216.5,277.3 215.6,276.5 214.7,275.6 213.8,274.8 212.9,273.9 212,273 211.1,272.1 210.2,271.2 209.3,270.2 208.4,269.3 207.5,268.3 206.6,267.3 205.7,266.3 204.8,265.3 203.9,264.3 203,263.2 202.1,262.2 201.2,261.1 200.3,260 199.4,258.9 198.5,257.7 197.6,256.6 196.7,255.4 195.8,254.3 194.9,253.1 194,251.9 193.1,250.7 192.2,249.4 191.3,248.2 190.4,246.9 189.5,245.7 188.6,244.4 187.7,243.1 186.8,241.8 185.9,240.4 185,239.1 184.1,237.7 183.2,236.3 182.3,234.9 181.4,233.5 180.5,232.1 179.6,230.7 178.7,229.2 177.8,227.8 176.9,226.3 176,224.8 175.1,223.3 174.2,221.8 173.3,220.3 172.4,218.7 171.5,217.2 170.6,215.6 169.7,214 168.8,212.4 167.9,210.8 167,209.2 166.1,207.5 165.2,205.9 164.3,204.2 163.4,202.5 162.5,200.8 161.6,199.1 160.7,197.3 159.8,195.6 158.9,193.8 158,192 157.1,190.2 156.2,188.4 155.3,186.5 154.4,184.6 153.5,182.8 152.6,180.8 151.7,178.9 150.8,177 149.9,175 149,173 148.1,170.9 147.2,168.9 146.3,166.8 145.4,164.6 144.5,162.5 143.6,160.2 142.7,158 141.8,155.7 140.9,153.3 140,150.8 139.1,148.3 138.2,145.7 137.3,143 136.4,140.2 135.5,137.2 134.6,134 133.7,130.5 132.8,126.5 131.9,121.5 131,111" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="50" y="30" width="324" height="324" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.7"/>
+    <g stroke="currentColor" stroke-width="1.3" opacity="0.6"><line x1="212" y1="30" x2="212" y2="111"/><line x1="212" y1="273" x2="212" y2="354"/></g>
+    <g fill="none" stroke="currentColor" stroke-width="1.4"><path d="M46 316.5 L50 311.5 L54 316.5"/><path d="M370 316.5 L374 311.5 L378 316.5"/><path d="M85.7 26 L90.7 30 L85.7 34"/><path d="M90.7 26 L95.7 30 L90.7 34"/><path d="M85.7 350 L90.7 354 L85.7 358"/><path d="M90.7 350 L95.7 354 L90.7 358"/></g>
+    <g stroke="currentColor" stroke-width="1" opacity="0.6"><line x1="50" y1="354" x2="50" y2="358"/><line x1="46" y1="354" x2="50" y2="354"/><line x1="77" y1="354" x2="77" y2="358"/><line x1="46" y1="327" x2="50" y2="327"/><line x1="104" y1="354" x2="104" y2="358"/><line x1="46" y1="300" x2="50" y2="300"/><line x1="131" y1="354" x2="131" y2="358"/><line x1="46" y1="273" x2="50" y2="273"/><line x1="158" y1="354" x2="158" y2="358"/><line x1="46" y1="246" x2="50" y2="246"/><line x1="185" y1="354" x2="185" y2="358"/><line x1="46" y1="219" x2="50" y2="219"/><line x1="212" y1="354" x2="212" y2="358"/><line x1="46" y1="192" x2="50" y2="192"/><line x1="239" y1="354" x2="239" y2="358"/><line x1="46" y1="165" x2="50" y2="165"/><line x1="266" y1="354" x2="266" y2="358"/><line x1="46" y1="138" x2="50" y2="138"/><line x1="293" y1="354" x2="293" y2="358"/><line x1="46" y1="111" x2="50" y2="111"/><line x1="320" y1="354" x2="320" y2="358"/><line x1="46" y1="84" x2="50" y2="84"/><line x1="347" y1="354" x2="347" y2="358"/><line x1="46" y1="57" x2="50" y2="57"/><line x1="374" y1="354" x2="374" y2="358"/><line x1="46" y1="30" x2="50" y2="30"/></g>
+    <g fill="currentColor">
+    <text x="50" y="370" font-size="11" text-anchor="middle">−180°</text>
+    <text x="43" y="358" font-size="11" text-anchor="end">−180°</text>
+    <text x="131" y="370" font-size="11" text-anchor="middle">−90°</text>
+    <text x="43" y="277" font-size="11" text-anchor="end">−90°</text>
+    <text x="212" y="370" font-size="11" text-anchor="middle">0°</text>
+    <text x="43" y="196" font-size="11" text-anchor="end">0°</text>
+    <text x="293" y="370" font-size="11" text-anchor="middle">90°</text>
+    <text x="43" y="115" font-size="11" text-anchor="end">90°</text>
+    <text x="374" y="370" font-size="11" text-anchor="middle">180°</text>
+    <text x="43" y="34" font-size="11" text-anchor="end">180°</text>
+    <text x="374" y="385" font-size="12" text-anchor="end">θ₁</text>
+    <text x="43" y="18" font-size="12" text-anchor="end">θ₂</text>
+    <text x="50" y="18" font-size="11">패널 x ≥ 1 · 마주 보는 변 동일시</text>
+    </g>
+    <g fill="currentColor" opacity="0.45"><circle cx="50" cy="354" r="1.1"/><circle cx="50" cy="327" r="1.1"/><circle cx="50" cy="300" r="1.1"/><circle cx="50" cy="273" r="1.1"/><circle cx="50" cy="246" r="1.1"/><circle cx="50" cy="219" r="1.1"/><circle cx="50" cy="192" r="1.1"/><circle cx="50" cy="165" r="1.1"/><circle cx="50" cy="138" r="1.1"/><circle cx="50" cy="111" r="1.1"/><circle cx="50" cy="84" r="1.1"/><circle cx="50" cy="57" r="1.1"/><circle cx="77" cy="354" r="1.1"/><circle cx="77" cy="327" r="1.1"/><circle cx="77" cy="300" r="1.1"/><circle cx="77" cy="273" r="1.1"/><circle cx="77" cy="246" r="1.1"/><circle cx="77" cy="219" r="1.1"/><circle cx="77" cy="192" r="1.1"/><circle cx="77" cy="165" r="1.1"/><circle cx="77" cy="138" r="1.1"/><circle cx="77" cy="111" r="1.1"/><circle cx="77" cy="84" r="1.1"/><circle cx="77" cy="57" r="1.1"/><circle cx="104" cy="354" r="1.1"/><circle cx="104" cy="327" r="1.1"/><circle cx="104" cy="300" r="1.1"/><circle cx="104" cy="273" r="1.1"/><circle cx="104" cy="246" r="1.1"/><circle cx="104" cy="219" r="1.1"/><circle cx="104" cy="192" r="1.1"/><circle cx="104" cy="165" r="1.1"/><circle cx="104" cy="138" r="1.1"/><circle cx="104" cy="111" r="1.1"/><circle cx="104" cy="84" r="1.1"/><circle cx="104" cy="57" r="1.1"/><circle cx="131" cy="354" r="1.1"/><circle cx="131" cy="327" r="1.1"/><circle cx="131" cy="300" r="1.1"/><circle cx="131" cy="273" r="1.1"/><circle cx="131" cy="246" r="1.1"/><circle cx="131" cy="219" r="1.1"/><circle cx="131" cy="192" r="1.1"/><circle cx="131" cy="165" r="1.1"/><circle cx="131" cy="138" r="1.1"/><circle cx="131" cy="84" r="1.1"/><circle cx="131" cy="57" r="1.1"/><circle cx="158" cy="354" r="1.1"/><circle cx="158" cy="327" r="1.1"/><circle cx="158" cy="300" r="1.1"/><circle cx="158" cy="273" r="1.1"/><circle cx="158" cy="246" r="1.1"/><circle cx="158" cy="219" r="1.1"/><circle cx="158" cy="57" r="1.1"/><circle cx="185" cy="354" r="1.1"/><circle cx="185" cy="327" r="1.1"/><circle cx="185" cy="300" r="1.1"/><circle cx="185" cy="273" r="1.1"/><circle cx="185" cy="246" r="1.1"/><circle cx="185" cy="84" r="1.1"/><circle cx="185" cy="57" r="1.1"/><circle cx="239" cy="354" r="1.1"/><circle cx="239" cy="327" r="1.1"/><circle cx="239" cy="300" r="1.1"/><circle cx="239" cy="138" r="1.1"/><circle cx="239" cy="111" r="1.1"/><circle cx="239" cy="84" r="1.1"/><circle cx="239" cy="57" r="1.1"/><circle cx="266" cy="354" r="1.1"/><circle cx="266" cy="327" r="1.1"/><circle cx="266" cy="165" r="1.1"/><circle cx="266" cy="138" r="1.1"/><circle cx="266" cy="111" r="1.1"/><circle cx="266" cy="84" r="1.1"/><circle cx="266" cy="57" r="1.1"/><circle cx="293" cy="354" r="1.1"/><circle cx="293" cy="327" r="1.1"/><circle cx="293" cy="300" r="1.1"/><circle cx="293" cy="246" r="1.1"/><circle cx="293" cy="219" r="1.1"/><circle cx="293" cy="192" r="1.1"/><circle cx="293" cy="165" r="1.1"/><circle cx="293" cy="138" r="1.1"/><circle cx="293" cy="111" r="1.1"/><circle cx="293" cy="84" r="1.1"/><circle cx="293" cy="57" r="1.1"/><circle cx="320" cy="354" r="1.1"/><circle cx="320" cy="327" r="1.1"/><circle cx="320" cy="300" r="1.1"/><circle cx="320" cy="273" r="1.1"/><circle cx="320" cy="246" r="1.1"/><circle cx="320" cy="219" r="1.1"/><circle cx="320" cy="192" r="1.1"/><circle cx="320" cy="165" r="1.1"/><circle cx="320" cy="138" r="1.1"/><circle cx="320" cy="111" r="1.1"/><circle cx="320" cy="84" r="1.1"/><circle cx="320" cy="57" r="1.1"/><circle cx="347" cy="354" r="1.1"/><circle cx="347" cy="327" r="1.1"/><circle cx="347" cy="300" r="1.1"/><circle cx="347" cy="273" r="1.1"/><circle cx="347" cy="246" r="1.1"/><circle cx="347" cy="219" r="1.1"/><circle cx="347" cy="192" r="1.1"/><circle cx="347" cy="165" r="1.1"/><circle cx="347" cy="138" r="1.1"/><circle cx="347" cy="111" r="1.1"/><circle cx="347" cy="84" r="1.1"/><circle cx="347" cy="57" r="1.1"/></g>
+    <g stroke="currentColor" stroke-width="1.2" fill="none"><path d="M155.3 162.3 L160.7 167.7 M155.3 167.7 L160.7 162.3"/><path d="M155.3 135.3 L160.7 140.7 M155.3 140.7 L160.7 135.3"/><path d="M155.3 108.3 L160.7 113.7 M155.3 113.7 L160.7 108.3"/><path d="M182.3 216.3 L187.7 221.7 M182.3 221.7 L187.7 216.3"/><path d="M182.3 189.3 L187.7 194.7 M182.3 194.7 L187.7 189.3"/><path d="M182.3 162.3 L187.7 167.7 M182.3 167.7 L187.7 162.3"/><path d="M182.3 135.3 L187.7 140.7 M182.3 140.7 L187.7 135.3"/><path d="M182.3 108.3 L187.7 113.7 M182.3 113.7 L187.7 108.3"/><path d="M209.3 243.3 L214.7 248.7 M209.3 248.7 L214.7 243.3"/><path d="M209.3 216.3 L214.7 221.7 M209.3 221.7 L214.7 216.3"/><path d="M209.3 189.3 L214.7 194.7 M209.3 194.7 L214.7 189.3"/><path d="M209.3 162.3 L214.7 167.7 M209.3 167.7 L214.7 162.3"/><path d="M209.3 135.3 L214.7 140.7 M209.3 140.7 L214.7 135.3"/><path d="M236.3 270.3 L241.7 275.7 M236.3 275.7 L241.7 270.3"/><path d="M236.3 243.3 L241.7 248.7 M236.3 248.7 L241.7 243.3"/><path d="M236.3 216.3 L241.7 221.7 M236.3 221.7 L241.7 216.3"/><path d="M236.3 189.3 L241.7 194.7 M236.3 194.7 L241.7 189.3"/><path d="M236.3 162.3 L241.7 167.7 M236.3 167.7 L241.7 162.3"/><path d="M263.3 270.3 L268.7 275.7 M263.3 275.7 L268.7 270.3"/><path d="M263.3 243.3 L268.7 248.7 M263.3 248.7 L268.7 243.3"/><path d="M263.3 216.3 L268.7 221.7 M263.3 221.7 L268.7 216.3"/></g>
+    <g stroke="currentColor" stroke-width="1.1" fill="none"><circle cx="131" cy="111" r="2.8"/><circle cx="158" cy="192" r="2.8"/><circle cx="158" cy="84" r="2.8"/><circle cx="212" cy="354" r="2.8"/><circle cx="212" cy="327" r="2.8"/><circle cx="212" cy="300" r="2.8"/><circle cx="212" cy="273" r="2.8"/><circle cx="212" cy="111" r="2.8"/><circle cx="212" cy="84" r="2.8"/><circle cx="212" cy="57" r="2.8"/><circle cx="266" cy="300" r="2.8"/><circle cx="266" cy="192" r="2.8"/><circle cx="293" cy="273" r="2.8"/></g>
+    <g stroke="currentColor" stroke-width="1.1" opacity="0.6"><line x1="212" y1="111" x2="266" y2="111"/><line x1="212" y1="111" x2="320" y2="165"/><line x1="293" y1="273" x2="320" y2="165"/><line x1="266" y1="111" x2="320" y2="165"/><line x1="266" y1="111" x2="333.5" y2="232.5"/><line x1="320" y1="165" x2="333.5" y2="232.5"/></g>
+    <g stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"><line x1="212" y1="111" x2="293" y2="273"/><line x1="293" y1="273" x2="266" y2="111"/></g>
+    <g stroke="currentColor" stroke-width="2.2" fill="none"><path d="M247.9 187.4 L257.1 196.6 M247.9 196.6 L257.1 187.4"/><path d="M285.7 252.2 L294.9 261.4 M285.7 261.4 L294.9 252.2"/></g>
+    <polyline points="212,111 333.5,232.5 293,273" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="212" cy="111" r="4.6" fill="currentColor"/>
+    <circle cx="293" cy="273" r="4.6" fill="currentColor"/>
+    <circle cx="266" cy="111" r="4.6" fill="currentColor"/>
+    <circle cx="320" cy="165" r="4.6" fill="currentColor"/>
+    <circle cx="333.5" cy="232.5" r="4.6" fill="currentColor"/>
+    <g fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="212" cy="111" r="7.6"/><circle cx="293" cy="273" r="7.6"/></g>
+    <g fill="currentColor" font-weight="bold">
+    <text x="201" y="104" font-size="12.5" text-anchor="end">A</text>
+    <text x="303" y="289" font-size="12.5" text-anchor="start">B</text>
+    <text x="266" y="100" font-size="12.5" text-anchor="middle">C</text>
+    <text x="330" y="160" font-size="12.5" text-anchor="start">D</text>
+    <text x="341.5" y="223.5" font-size="12.5" text-anchor="start">E</text>
+    </g>
+    <line x1="339.5" y1="232.5" x2="386" y2="232.5" stroke="currentColor" stroke-width="0.9" opacity="0.6"/>
+    <text x="390" y="230.5" font-size="11.5" fill="currentColor" font-weight="bold">최단 A→E→B</text>
+    <text x="390" y="245.5" font-size="11.5" fill="currentColor">π√2 = 4.4429 rad</text>
+    <rect x="386" y="31" width="12" height="10" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <text x="408" y="40" font-size="11" fill="currentColor">C-장애물 d &gt; 0</text>
+    <text x="408" y="54" font-size="11" fill="currentColor">원환면의 18.478 %</text>
+    <path d="M389.3 67.3 L394.7 72.7 M389.3 72.7 L394.7 67.3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+    <text x="408" y="74" font-size="11" fill="currentColor">막힌 노드: 21</text>
+    <circle cx="392" cy="86" r="2.8" fill="none" stroke="currentColor" stroke-width="1.1"/>
+    <text x="408" y="90" font-size="11" fill="currentColor">닿음, d = 0: 13</text>
+    <text x="408" y="104" font-size="11" fill="currentColor">(고리 친 A와 B 포함)</text>
+    <circle cx="392" cy="118" r="1.1" fill="currentColor" opacity="0.6"/>
+    <text x="408" y="122" font-size="11" fill="currentColor">자유 노드: 110</text>
+    <line x1="392" y1="132" x2="392" y2="147" stroke="currentColor" stroke-width="1.3" opacity="0.6"/>
+    <text x="408" y="142" font-size="11" fill="currentColor">θ₁ = 0 위의 d = 0:</text>
+    <text x="408" y="156" font-size="11" fill="currentColor">엘보가 벽에 닿음</text>
+    <line x1="385" y1="172" x2="399" y2="172" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"/>
+    <path d="M388.4 168.4 L395.6 175.6 M388.4 175.6 L395.6 168.4" stroke="currentColor" stroke-width="2" fill="none"/>
+    <text x="408" y="176" font-size="11" fill="currentColor">막힌 간선, 가장 깊은</text>
+    <text x="408" y="190" font-size="11" fill="currentColor">점에 X: A–B 0.4142 m,</text>
+    <text x="408" y="204" font-size="11" fill="currentColor">B–C 0.0201 m 벽 안으로</text>
+  </g>
+</svg>
 
 1. **C-장애물**을 칠한다: $\theta_1 \in (-90°, 90°)$에 걸친 렌즈 $\cos\theta_1 + \cos(\theta_1{+}\theta_2) > 1$.
 2. **격자**: 두 축에 $30°$마다 눈금, $12 \times 12$개의 노드. 칠한 영역 안의 노드마다 가위표, 경계에 정확히 걸린 노드마다 작은 빈 동그라미.
@@ -272,7 +404,7 @@ $$d_{\max} = \sqrt2 - 1 = 0.4142\ \mathrm{m}$$
 | $B$ | $(90°,\ -90°)$ | $(1,\ 1)$ | $0$ |
 | $C$ | $(60°,\ 90°)$ | $(-0.366,\ 1.366)$ | $-0.500$ |
 | $D$ | $(120°,\ 30°)$ | $(-1.366,\ 1.366)$ | $-1.500$ |
-| $E$ | $(135°,\ -45°)$ | $(-0.707,\ 0.707)$ | $-1.707$ |
+| $E$ | $(135°,\ -45°)$ | $(-0.707,\ 1.707)$ | $-1.707$ |
 
 열 쌍 모두에 간선 검사를 하고, 간선 길이는 도표 위의 유클리드 거리(각 원에서 짧은 쪽)다:
 
@@ -285,15 +417,15 @@ $$d_{\max} = \sqrt2 - 1 = 0.4142\ \mathrm{m}$$
 | $B$–$C$ | $3.1849$ | 막힘, $d_{\max}=0.0201$ |
 | $B$–$D$ | $2.1589$ | 자유 |
 | $B$–$E$ | $1.1107$ | 자유 |
-| $C$–$D$ | $1.4811$ | 자유 |
+| $C$–$D$ | $1.4810$ | 자유 |
 | $C$–$E$ | $2.6954$ | 자유 |
 | $D$–$E$ | $1.3349$ | 자유 |
 
-이제 $A$에서 다익스트라를 돌린다. 직통 간선이 사라졌으므로 후보는 $A$–$E$–$B = 3.3322 + 1.1107 = 4.4429$, $A$–$D$–$B = 2.3416 + 2.1589 = 4.5005$, $A$–$C$–$D$–$B = 4.6872$, $A$–$D$–$E$–$B = 4.7872$다. 승자는
+이제 $A$에서 다익스트라를 돌린다. 직통 간선이 사라졌으므로 후보는 $A$–$E$–$B = 3.3322 + 1.1107 = 4.4429$, $A$–$D$–$B = 2.3416 + 2.1589 = 4.5005$, $A$–$C$–$D$–$B = 4.6870$, $A$–$D$–$E$–$B = 4.7872$다. 승자는
 
 $$A \to E \to B, \qquad \text{비용 } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = \pi\sqrt2$$
 
-다. $A$–$E$가 $(135°,-135°)$, $E$–$B$가 $(45°,45°)$를 움직이므로 두 길이가 $135°\sqrt2$와 $45°\sqrt2$이고 합이 $180°\sqrt2 = \pi\sqrt2$이기 때문이다. 막힌 직통 간선의 $(\pi/2)\sqrt5 = 3.5124$에 대해 우회 비용은 $2\sqrt2/\sqrt5 = 1.265$배, 즉 관절 이동량 $\mathbf{26.5\,\%}$ 추가다. $A$–$D$–$B$에 대한 여유는 $0.058\,\mathrm{rad}$뿐이다. 이만큼 성긴 로드맵은 그런 것을 어떤 표본이 우연히 뽑혔는지로 결정하며, 그것이 바로 §3이 이름 붙이는 성질이다.
+다. $A$–$E$가 $(135°,-135°)$, $E$–$B$가 $(-45°,-45°)$를 움직이므로 두 길이가 $135°\sqrt2$와 $45°\sqrt2$이고 합이 $180°\sqrt2 = \pi\sqrt2$이기 때문이다. 막힌 직통 간선의 $(\pi/2)\sqrt5 = 3.5124$에 대해 우회 비용은 $2\sqrt2/\sqrt5 = 1.265$배, 즉 관절 이동량 $\mathbf{26.5\,\%}$ 추가다. $A$–$D$–$B$에 대한 여유는 $0.058\,\mathrm{rad}$뿐이다. 이만큼 성긴 로드맵은 그런 것을 어떤 표본이 우연히 뽑혔는지로 결정하며, 그것이 바로 §3이 이름 붙이는 성질이다.
 
 ### 1. 이 장을 목록 하나로
 
@@ -381,4 +513,4 @@ Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴
 
 ### 이 장 너머로
 
-[[04-robotics/planning-decision-making|계획과 의사결정]]이 이 장을 A*, 표본 기반 계획, 궤적 최적화, TAMP, 불확실성, MPC, 학습된 계획기로 이어 준다.
+[[04-robotics/planning-decision-making|계획과 의사결정]]이 이 장을 A*, 표본 기반 계획, 궤적 최적화, TAMP, 불확실성, MPC, 학습된 계획기로 이어 준다. [[04-robotics/capstone-panel-contact|26. 캡스톤]]은 $E$를 거치는 이 장의 우회를, 위치를 추정만 한 패널에 대해 다시 쓴다. 그래서 간선을 검사하기 전에 장애물을 $3\sigma$만큼 부풀린다.

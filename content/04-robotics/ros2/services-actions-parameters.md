@@ -21,6 +21,110 @@ mastery-when: "Go deeper when you are designing the interface another team will 
 
 The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: a cart on a line, encoder $N=2048$ counts/m, vision publishing a goal at $50\,\mathrm{Hz}$, a controller on a $5\,\mathrm{ms}$ timer commanding the motor at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ of end-to-end budget. Add one node the earlier pages did not have: a `/planner` that takes up to $2\,\mathrm{s}$ to produce the next goal. Draw three panels; the problem set asks for the same three with the planner's duration changed.
 
+<svg viewBox="0 0 560 464" style="max-width:100%;height:auto" role="img" aria-label="Top: the P6 graph with four kinds of edge: the topic /goal at 50 Hz from /camera to /controller, the service /controller/reset_odometry as a request and response pair with an operator, the action navigate as a lane between /controller and /planner with a goal, three feedbacks and a result, and the parameters as a table hanging off /controller. Middle: the camera's lifecycle, unconfigured, inactive, active, with the first /goal allowed only once active. Bottom: a healthy clock with 5 ms ticks running for 2 s under the action, and a broken clock with one tick and a client.call at t = 0 and then nothing, while the server answers at t = 0.">
+  <defs><marker id="s3eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="s3esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="s3esols" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">The graph: four kinds of edge</text>
+  <ellipse cx="60" cy="62" rx="40" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="60" y="66" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/camera</text>
+  <ellipse cx="330" cy="62" rx="52" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="330" y="66" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/controller</text>
+  <ellipse cx="330" cy="184" rx="40" ry="14" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="330" y="188" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/planner</text>
+  <line x1="100" y1="62" x2="276" y2="62" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#s3eopen)"/>
+  <text x="189" y="55" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/goal</tspan> · 50 Hz</text>
+  <rect x="470" y="48" width="80" height="28" rx="3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none"/>
+  <text x="510" y="66" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">operator</text>
+  <line x1="466" y1="58" x2="388" y2="58" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none" marker-end="url(#s3esol)"/>
+  <line x1="386" y1="66" x2="464" y2="66" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none" marker-end="url(#s3esol)"/>
+  <text x="548" y="38" font-size="11" text-anchor="end" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/controller/reset_odometry</text>
+  <text x="392" y="90" font-size="11" fill-opacity="0.75" fill="currentColor">1 request, 1 response</text>
+  <rect x="280" y="84" width="100" height="80" rx="6" fill="currentColor" fill-opacity="0.07" stroke="none"/>
+  <rect x="280" y="84" width="100" height="80" rx="6" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="4 3" fill="none"/>
+  <line x1="292" y1="89" x2="292" y2="158" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#s3esol)"/>
+  <line x1="318" y1="159" x2="318" y2="91" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none" marker-end="url(#s3esols)"/>
+  <line x1="334" y1="159" x2="334" y2="91" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none" marker-end="url(#s3esols)"/>
+  <line x1="350" y1="159" x2="350" y2="91" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none" marker-end="url(#s3esols)"/>
+  <line x1="368" y1="159" x2="368" y2="90" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none" marker-end="url(#s3esol)"/>
+  <line x1="330" y1="77" x2="330" y2="84" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" fill="none"/>
+  <line x1="330" y1="164" x2="330" y2="170" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" fill="none"/>
+  <text x="394" y="112" font-size="11" fill-opacity="0.9" fill="currentColor">action <tspan font-family="ui-monospace,monospace">navigate</tspan></text>
+  <text x="394" y="128" font-size="11" fill-opacity="0.85" fill="currentColor">goal at 0 s</text>
+  <text x="394" y="144" font-size="11" fill-opacity="0.85" fill="currentColor">feedback at 0.5, 1.0, 1.5 s</text>
+  <text x="394" y="160" font-size="11" fill-opacity="0.85" fill="currentColor">result at 2 s</text>
+  <line x1="387" y1="120" x2="387" y2="130" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#s3esols)"/>
+  <line x1="387" y1="146" x2="387" y2="136" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none" marker-end="url(#s3esols)"/>
+  <line x1="387" y1="162" x2="387" y2="152" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none" marker-end="url(#s3esols)"/>
+  <text x="10" y="92" font-size="11" fill-opacity="0.75" fill="currentColor">parameters: a table, not an edge</text>
+  <rect x="10" y="100" width="264" height="60" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <line x1="10" y1="120" x2="274" y2="120" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="10" y1="140" x2="274" y2="140" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <text x="16" y="114" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">counts_per_metre</text>
+  <text x="128" y="114" font-size="11" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">int64</text>
+  <text x="180" y="114" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">2048</text>
+  <text x="219" y="114" font-size="11" fill-opacity="0.8" font-style="italic" fill="currentColor">read-only</text>
+  <text x="16" y="134" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">control_period</text>
+  <text x="128" y="134" font-size="11" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">float64</text>
+  <text x="180" y="134" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">0.005</text>
+  <text x="16" y="154" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">goal_topic</text>
+  <text x="128" y="154" font-size="11" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">string</text>
+  <text x="180" y="154" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">goal</text>
+  <line x1="309.7" y1="75.8" x2="272" y2="101" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" fill="none"/>
+  <text x="12" y="222" font-size="12" fill-opacity="0.8" fill="currentColor">The camera's lifecycle lane</text>
+  <rect x="10" y="244" width="540" height="32" rx="6" fill="currentColor" fill-opacity="0.06" stroke="none"/>
+  <rect x="16" y="249" width="88" height="22" rx="3" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" fill="none"/>
+  <text x="60" y="264" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">unconfigured</text>
+  <rect x="184" y="249" width="72" height="22" rx="3" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" fill="none"/>
+  <text x="220" y="264" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">inactive</text>
+  <rect x="336" y="249" width="60" height="22" rx="3" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="366" y="264" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">active</text>
+  <line x1="106" y1="260" x2="181" y2="260" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none" marker-end="url(#s3esol)"/>
+  <text x="144" y="240" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">configure</text>
+  <line x1="258" y1="260" x2="333" y2="260" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none" marker-end="url(#s3esol)"/>
+  <text x="296" y="240" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">activate</text>
+  <line x1="336" y1="238" x2="336" y2="282" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.9" stroke-dasharray="4 2" fill="none"/>
+  <text x="404" y="257" font-size="11" fill-opacity="0.9" fill="currentColor">first /goal may appear here</text>
+  <text x="404" y="271" font-size="11" fill-opacity="0.7" fill="currentColor">nothing publishes before it</text>
+  <text x="12" y="306" font-size="12" fill-opacity="0.8" fill="currentColor">Two clocks, 0 to 2 s</text>
+  <text x="12" y="328" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">healthy</text>
+  <text x="102" y="340" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">action</text>
+  <text x="102" y="364" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">ticks</text>
+  <line x1="110" y1="336" x2="530" y2="336" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+  <line x1="110" y1="322" x2="110" y2="334.5" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#s3esol)"/>
+  <text x="116" y="328" font-size="11" fill-opacity="0.8" fill="currentColor">goal accepted</text>
+  <line x1="215" y1="336" x2="215" y2="324" stroke="currentColor" stroke-width="1" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none" marker-end="url(#s3esols)"/>
+  <text x="215" y="349" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">feedback</text>
+  <line x1="320" y1="336" x2="320" y2="324" stroke="currentColor" stroke-width="1" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none" marker-end="url(#s3esols)"/>
+  <text x="320" y="349" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">feedback</text>
+  <line x1="425" y1="336" x2="425" y2="324" stroke="currentColor" stroke-width="1" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none" marker-end="url(#s3esols)"/>
+  <text x="425" y="349" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">feedback</text>
+  <line x1="530" y1="336" x2="530" y2="323" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none" marker-end="url(#s3esol)"/>
+  <text x="530" y="349" font-size="11" text-anchor="middle" fill-opacity="0.85" fill="currentColor">result</text>
+  <path d="M110.00 355v10M111.05 355v10M112.10 355v10M113.15 355v10M114.20 355v10M115.25 355v10M116.30 355v10M117.35 355v10M118.40 355v10M119.45 355v10M120.50 355v10M121.55 355v10M122.60 355v10M123.65 355v10M124.70 355v10M125.75 355v10M126.80 355v10M127.85 355v10M128.90 355v10M129.95 355v10M131.00 355v10M132.05 355v10M133.10 355v10M134.15 355v10M135.20 355v10M136.25 355v10M137.30 355v10M138.35 355v10M139.40 355v10M140.45 355v10M141.50 355v10M142.55 355v10M143.60 355v10M144.65 355v10M145.70 355v10M146.75 355v10M147.80 355v10M148.85 355v10M149.90 355v10M150.95 355v10M152.00 355v10M153.05 355v10M154.10 355v10M155.15 355v10M156.20 355v10M157.25 355v10M158.30 355v10M159.35 355v10M160.40 355v10M161.45 355v10M162.50 355v10M163.55 355v10M164.60 355v10M165.65 355v10M166.70 355v10M167.75 355v10M168.80 355v10M169.85 355v10M170.90 355v10M171.95 355v10M173.00 355v10M174.05 355v10M175.10 355v10M176.15 355v10M177.20 355v10M178.25 355v10M179.30 355v10M180.35 355v10M181.40 355v10M182.45 355v10M183.50 355v10M184.55 355v10M185.60 355v10M186.65 355v10M187.70 355v10M188.75 355v10M189.80 355v10M190.85 355v10M191.90 355v10M192.95 355v10M194.00 355v10M195.05 355v10M196.10 355v10M197.15 355v10M198.20 355v10M199.25 355v10M200.30 355v10M201.35 355v10M202.40 355v10M203.45 355v10M204.50 355v10M205.55 355v10M206.60 355v10M207.65 355v10M208.70 355v10M209.75 355v10M210.80 355v10M211.85 355v10M212.90 355v10M213.95 355v10M215.00 355v10M216.05 355v10M217.10 355v10M218.15 355v10M219.20 355v10M220.25 355v10M221.30 355v10M222.35 355v10M223.40 355v10M224.45 355v10M225.50 355v10M226.55 355v10M227.60 355v10M228.65 355v10M229.70 355v10M230.75 355v10M231.80 355v10M232.85 355v10M233.90 355v10M234.95 355v10M236.00 355v10M237.05 355v10M238.10 355v10M239.15 355v10M240.20 355v10M241.25 355v10M242.30 355v10M243.35 355v10M244.40 355v10M245.45 355v10M246.50 355v10M247.55 355v10M248.60 355v10M249.65 355v10M250.70 355v10M251.75 355v10M252.80 355v10M253.85 355v10M254.90 355v10M255.95 355v10M257.00 355v10M258.05 355v10M259.10 355v10M260.15 355v10M261.20 355v10M262.25 355v10M263.30 355v10M264.35 355v10M265.40 355v10M266.45 355v10M267.50 355v10M268.55 355v10M269.60 355v10M270.65 355v10M271.70 355v10M272.75 355v10M273.80 355v10M274.85 355v10M275.90 355v10M276.95 355v10M278.00 355v10M279.05 355v10M280.10 355v10M281.15 355v10M282.20 355v10M283.25 355v10M284.30 355v10M285.35 355v10M286.40 355v10M287.45 355v10M288.50 355v10M289.55 355v10M290.60 355v10M291.65 355v10M292.70 355v10M293.75 355v10M294.80 355v10M295.85 355v10M296.90 355v10M297.95 355v10M299.00 355v10M300.05 355v10M301.10 355v10M302.15 355v10M303.20 355v10M304.25 355v10M305.30 355v10M306.35 355v10M307.40 355v10M308.45 355v10M309.50 355v10M310.55 355v10M311.60 355v10M312.65 355v10M313.70 355v10M314.75 355v10M315.80 355v10M316.85 355v10M317.90 355v10M318.95 355v10M320.00 355v10M321.05 355v10M322.10 355v10M323.15 355v10M324.20 355v10M325.25 355v10M326.30 355v10M327.35 355v10M328.40 355v10M329.45 355v10M330.50 355v10M331.55 355v10M332.60 355v10M333.65 355v10M334.70 355v10M335.75 355v10M336.80 355v10M337.85 355v10M338.90 355v10M339.95 355v10M341.00 355v10M342.05 355v10M343.10 355v10M344.15 355v10M345.20 355v10M346.25 355v10M347.30 355v10M348.35 355v10M349.40 355v10M350.45 355v10M351.50 355v10M352.55 355v10M353.60 355v10M354.65 355v10M355.70 355v10M356.75 355v10M357.80 355v10M358.85 355v10M359.90 355v10M360.95 355v10M362.00 355v10M363.05 355v10M364.10 355v10M365.15 355v10M366.20 355v10M367.25 355v10M368.30 355v10M369.35 355v10M370.40 355v10M371.45 355v10M372.50 355v10M373.55 355v10M374.60 355v10M375.65 355v10M376.70 355v10M377.75 355v10M378.80 355v10M379.85 355v10M380.90 355v10M381.95 355v10M383.00 355v10M384.05 355v10M385.10 355v10M386.15 355v10M387.20 355v10M388.25 355v10M389.30 355v10M390.35 355v10M391.40 355v10M392.45 355v10M393.50 355v10M394.55 355v10M395.60 355v10M396.65 355v10M397.70 355v10M398.75 355v10M399.80 355v10M400.85 355v10M401.90 355v10M402.95 355v10M404.00 355v10M405.05 355v10M406.10 355v10M407.15 355v10M408.20 355v10M409.25 355v10M410.30 355v10M411.35 355v10M412.40 355v10M413.45 355v10M414.50 355v10M415.55 355v10M416.60 355v10M417.65 355v10M418.70 355v10M419.75 355v10M420.80 355v10M421.85 355v10M422.90 355v10M423.95 355v10M425.00 355v10M426.05 355v10M427.10 355v10M428.15 355v10M429.20 355v10M430.25 355v10M431.30 355v10M432.35 355v10M433.40 355v10M434.45 355v10M435.50 355v10M436.55 355v10M437.60 355v10M438.65 355v10M439.70 355v10M440.75 355v10M441.80 355v10M442.85 355v10M443.90 355v10M444.95 355v10M446.00 355v10M447.05 355v10M448.10 355v10M449.15 355v10M450.20 355v10M451.25 355v10M452.30 355v10M453.35 355v10M454.40 355v10M455.45 355v10M456.50 355v10M457.55 355v10M458.60 355v10M459.65 355v10M460.70 355v10M461.75 355v10M462.80 355v10M463.85 355v10M464.90 355v10M465.95 355v10M467.00 355v10M468.05 355v10M469.10 355v10M470.15 355v10M471.20 355v10M472.25 355v10M473.30 355v10M474.35 355v10M475.40 355v10M476.45 355v10M477.50 355v10M478.55 355v10M479.60 355v10M480.65 355v10M481.70 355v10M482.75 355v10M483.80 355v10M484.85 355v10M485.90 355v10M486.95 355v10M488.00 355v10M489.05 355v10M490.10 355v10M491.15 355v10M492.20 355v10M493.25 355v10M494.30 355v10M495.35 355v10M496.40 355v10M497.45 355v10M498.50 355v10M499.55 355v10M500.60 355v10M501.65 355v10M502.70 355v10M503.75 355v10M504.80 355v10M505.85 355v10M506.90 355v10M507.95 355v10M509.00 355v10M510.05 355v10M511.10 355v10M512.15 355v10M513.20 355v10M514.25 355v10M515.30 355v10M516.35 355v10M517.40 355v10M518.45 355v10M519.50 355v10M520.55 355v10M521.60 355v10M522.65 355v10M523.70 355v10M524.75 355v10M525.80 355v10M526.85 355v10M527.90 355v10M528.95 355v10M530.00 355v10" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.6" fill="none"/>
+  <text x="320" y="378" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">a 5 ms tick train: 400 periods in 2 s</text>
+  <text x="12" y="394" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">broken</text>
+  <text x="102" y="406" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">ticks</text>
+  <text x="102" y="428" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">server</text>
+  <line x1="110" y1="402" x2="530" y2="402" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+  <line x1="110" y1="397" x2="110" y2="407" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.95" fill="none"/>
+  <text x="116" y="395" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">client.call</text>
+  <text x="372.5" y="395" font-size="11" text-anchor="middle" fill-opacity="0.7" font-style="italic" fill="currentColor">nothing after t = 0: no ticks, no log lines, no error</text>
+  <line x1="110" y1="424" x2="122" y2="424" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+  <line x1="111" y1="415" x2="111" y2="422.5" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none" marker-end="url(#s3esols)"/>
+  <line x1="117" y1="422.5" x2="117" y2="415" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none" marker-end="url(#s3esols)"/>
+  <text x="128" y="428" font-size="11" fill-opacity="0.8" fill="currentColor">answers normally at t ≈ 0</text>
+  <line x1="110" y1="438" x2="530" y2="438" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35" fill="none"/>
+  <line x1="110" y1="435" x2="110" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="215" y1="435" x2="215" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="320" y1="435" x2="320" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="425" y1="435" x2="425" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="530" y1="435" x2="530" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <text x="110" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">0</text>
+  <text x="215" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">0.5</text>
+  <text x="320" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">1.0</text>
+  <text x="425" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">1.5</text>
+  <text x="530" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">2.0 s</text>
+</svg>
+
 **Left — the graph, with each edge drawn as the thing it is.** Four different pen strokes, and they must not look alike, because the whole of this page is the distinction:
 
 - A **topic** is one open arrow: `/goal`, $50\,\mathrm{Hz}$, `/camera` → `/controller`.
@@ -515,7 +619,7 @@ Custom `.srv` and `.action` packages appear here only far enough to build one; t
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop is $200\,\mathrm{Hz}$. A planner may take $2\,\mathrm{s}$ to produce the next goal. No new simulator.
 
 1. **Draw.** P6 nodes: `planner` (long goal), `controller` ($5\,\mathrm{ms}$ timer + encoder), `camera` ($50\,\mathrm{Hz}$). Mark the planner–controller link as an *action*, not a topic or a service. Five-line timeline: goal sent, feedback at $0.5\,\mathrm{s}$, result at $2\,\mathrm{s}$, controller ticks throughout.
-2. **Derive.** (a) How many control samples does a $2\,\mathrm{s}$ *service* callback block? (b) Encoder $\Delta p$ for one count. (c) Silent case: the controller calls the planner with `client.call` inside the $200\,\mathrm{Hz}$ timer. What happens after the first tick, and why is there no error?
+2. **Derive.** (a) How many control samples does a $2\,\mathrm{s}$ *service* callback block? (b) Encoder $\Delta p$ for one count. (c) Silent case: inside the $200\,\mathrm{Hz}$ timer the controller logs `calling`, then calls the planner with `client.call`. What does the log show from the first tick on, and why is there no error?
 3. **Interpret.** Why is a P6 goal an action, and what does lifecycle buy you when the camera driver dies after the controller is already at $200\,\mathrm{Hz}$?
 
 > [!tip]- Solutions
@@ -536,6 +640,110 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop
 ### 과제가 그릴 그림: P6 제어기 하나와 네 종류의 간선 · Homework diagram
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. 직선 위의 카트, 엔코더 $N=2048$ counts/m, 목표를 $50\,\mathrm{Hz}$로 내는 비전, $5\,\mathrm{ms}$ 타이머로 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 종단 예산 $70\,\mathrm{ms}$. 앞 페이지에 없던 노드를 하나 더한다. 다음 목표를 만드는 데 최대 $2\,\mathrm{s}$가 걸리는 `/planner`. 패널 셋을 그려라. 과제는 플래너의 소요 시간만 바꾼 같은 셋을 요구한다.
+
+<svg viewBox="0 0 560 464" style="max-width:100%;height:auto" role="img" aria-label="위: 간선 네 종류로 그린 P6 그래프. /camera에서 /controller로 가는 50 Hz 토픽 /goal, 조작자와 주고받는 요청·응답 한 쌍인 서비스 /controller/reset_odometry, /controller와 /planner 사이의 레인으로 그린 액션 navigate(목표, 피드백 셋, 결과), /controller에 매달린 표로 그린 파라미터. 가운데: 카메라의 라이프사이클 unconfigured, inactive, active와 active 이후에만 허용되는 첫 /goal. 아래: 액션 아래로 5 ms 틱이 2 s 내내 이어지는 정상 시계, 그리고 t = 0의 틱 하나와 client.call 뒤로 아무것도 없는 고장 시계, 그동안 서버는 t = 0에 응답한다.">
+  <defs><marker id="s3kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="s3ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="s3ksols" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">그래프: 간선 네 종류</text>
+  <ellipse cx="60" cy="62" rx="40" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="60" y="66" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/camera</text>
+  <ellipse cx="330" cy="62" rx="52" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="330" y="66" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/controller</text>
+  <ellipse cx="330" cy="184" rx="40" ry="14" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="330" y="188" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/planner</text>
+  <line x1="100" y1="62" x2="276" y2="62" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#s3kopen)"/>
+  <text x="189" y="55" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/goal</tspan> · 50 Hz</text>
+  <rect x="470" y="48" width="80" height="28" rx="3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none"/>
+  <text x="510" y="66" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">조작자</text>
+  <line x1="466" y1="58" x2="388" y2="58" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none" marker-end="url(#s3ksol)"/>
+  <line x1="386" y1="66" x2="464" y2="66" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none" marker-end="url(#s3ksol)"/>
+  <text x="548" y="38" font-size="11" text-anchor="end" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/controller/reset_odometry</text>
+  <text x="392" y="90" font-size="11" fill-opacity="0.75" fill="currentColor">요청 1, 응답 1</text>
+  <rect x="280" y="84" width="100" height="80" rx="6" fill="currentColor" fill-opacity="0.07" stroke="none"/>
+  <rect x="280" y="84" width="100" height="80" rx="6" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="4 3" fill="none"/>
+  <line x1="292" y1="89" x2="292" y2="158" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#s3ksol)"/>
+  <line x1="318" y1="159" x2="318" y2="91" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none" marker-end="url(#s3ksols)"/>
+  <line x1="334" y1="159" x2="334" y2="91" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none" marker-end="url(#s3ksols)"/>
+  <line x1="350" y1="159" x2="350" y2="91" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none" marker-end="url(#s3ksols)"/>
+  <line x1="368" y1="159" x2="368" y2="90" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none" marker-end="url(#s3ksol)"/>
+  <line x1="330" y1="77" x2="330" y2="84" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" fill="none"/>
+  <line x1="330" y1="164" x2="330" y2="170" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" fill="none"/>
+  <text x="394" y="112" font-size="11" fill-opacity="0.9" fill="currentColor">액션 <tspan font-family="ui-monospace,monospace">navigate</tspan></text>
+  <text x="394" y="128" font-size="11" fill-opacity="0.85" fill="currentColor">목표 0 s</text>
+  <text x="394" y="144" font-size="11" fill-opacity="0.85" fill="currentColor">피드백 0.5, 1.0, 1.5 s</text>
+  <text x="394" y="160" font-size="11" fill-opacity="0.85" fill="currentColor">결과 2 s</text>
+  <line x1="387" y1="120" x2="387" y2="130" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#s3ksols)"/>
+  <line x1="387" y1="146" x2="387" y2="136" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="3 2" fill="none" marker-end="url(#s3ksols)"/>
+  <line x1="387" y1="162" x2="387" y2="152" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none" marker-end="url(#s3ksols)"/>
+  <text x="10" y="92" font-size="11" fill-opacity="0.75" fill="currentColor">파라미터: 간선이 아니라 표</text>
+  <rect x="10" y="100" width="264" height="60" rx="3" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" fill="none"/>
+  <line x1="10" y1="120" x2="274" y2="120" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <line x1="10" y1="140" x2="274" y2="140" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.3" fill="none"/>
+  <text x="16" y="114" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">counts_per_metre</text>
+  <text x="128" y="114" font-size="11" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">int64</text>
+  <text x="180" y="114" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">2048</text>
+  <text x="219" y="114" font-size="11" fill-opacity="0.8" font-style="italic" fill="currentColor">read-only</text>
+  <text x="16" y="134" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">control_period</text>
+  <text x="128" y="134" font-size="11" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">float64</text>
+  <text x="180" y="134" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">0.005</text>
+  <text x="16" y="154" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">goal_topic</text>
+  <text x="128" y="154" font-size="11" fill-opacity="0.75" font-family="ui-monospace,monospace" fill="currentColor">string</text>
+  <text x="180" y="154" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">goal</text>
+  <line x1="309.7" y1="75.8" x2="272" y2="101" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" fill="none"/>
+  <text x="12" y="222" font-size="12" fill-opacity="0.8" fill="currentColor">카메라의 라이프사이클 레인</text>
+  <rect x="10" y="244" width="540" height="32" rx="6" fill="currentColor" fill-opacity="0.06" stroke="none"/>
+  <rect x="16" y="249" width="88" height="22" rx="3" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" fill="none"/>
+  <text x="60" y="264" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">unconfigured</text>
+  <rect x="184" y="249" width="72" height="22" rx="3" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" fill="none"/>
+  <text x="220" y="264" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">inactive</text>
+  <rect x="336" y="249" width="60" height="22" rx="3" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="366" y="264" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">active</text>
+  <line x1="106" y1="260" x2="181" y2="260" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none" marker-end="url(#s3ksol)"/>
+  <text x="144" y="240" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">configure</text>
+  <line x1="258" y1="260" x2="333" y2="260" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none" marker-end="url(#s3ksol)"/>
+  <text x="296" y="240" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">activate</text>
+  <line x1="336" y1="238" x2="336" y2="282" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.9" stroke-dasharray="4 2" fill="none"/>
+  <text x="404" y="257" font-size="11" fill-opacity="0.9" fill="currentColor">여기서부터 첫 /goal 가능</text>
+  <text x="404" y="271" font-size="11" fill-opacity="0.7" fill="currentColor">그 전엔 아무것도 publish 없음</text>
+  <text x="12" y="306" font-size="12" fill-opacity="0.8" fill="currentColor">시계 둘, 0에서 2 s</text>
+  <text x="12" y="328" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">정상</text>
+  <text x="102" y="340" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">액션</text>
+  <text x="102" y="364" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">틱</text>
+  <line x1="110" y1="336" x2="530" y2="336" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+  <line x1="110" y1="322" x2="110" y2="334.5" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#s3ksol)"/>
+  <text x="116" y="328" font-size="11" fill-opacity="0.8" fill="currentColor">목표 수락</text>
+  <line x1="215" y1="336" x2="215" y2="324" stroke="currentColor" stroke-width="1" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none" marker-end="url(#s3ksols)"/>
+  <text x="215" y="349" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">피드백</text>
+  <line x1="320" y1="336" x2="320" y2="324" stroke="currentColor" stroke-width="1" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none" marker-end="url(#s3ksols)"/>
+  <text x="320" y="349" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">피드백</text>
+  <line x1="425" y1="336" x2="425" y2="324" stroke="currentColor" stroke-width="1" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none" marker-end="url(#s3ksols)"/>
+  <text x="425" y="349" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">피드백</text>
+  <line x1="530" y1="336" x2="530" y2="323" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none" marker-end="url(#s3ksol)"/>
+  <text x="530" y="349" font-size="11" text-anchor="middle" fill-opacity="0.85" fill="currentColor">결과</text>
+  <path d="M110.00 355v10M111.05 355v10M112.10 355v10M113.15 355v10M114.20 355v10M115.25 355v10M116.30 355v10M117.35 355v10M118.40 355v10M119.45 355v10M120.50 355v10M121.55 355v10M122.60 355v10M123.65 355v10M124.70 355v10M125.75 355v10M126.80 355v10M127.85 355v10M128.90 355v10M129.95 355v10M131.00 355v10M132.05 355v10M133.10 355v10M134.15 355v10M135.20 355v10M136.25 355v10M137.30 355v10M138.35 355v10M139.40 355v10M140.45 355v10M141.50 355v10M142.55 355v10M143.60 355v10M144.65 355v10M145.70 355v10M146.75 355v10M147.80 355v10M148.85 355v10M149.90 355v10M150.95 355v10M152.00 355v10M153.05 355v10M154.10 355v10M155.15 355v10M156.20 355v10M157.25 355v10M158.30 355v10M159.35 355v10M160.40 355v10M161.45 355v10M162.50 355v10M163.55 355v10M164.60 355v10M165.65 355v10M166.70 355v10M167.75 355v10M168.80 355v10M169.85 355v10M170.90 355v10M171.95 355v10M173.00 355v10M174.05 355v10M175.10 355v10M176.15 355v10M177.20 355v10M178.25 355v10M179.30 355v10M180.35 355v10M181.40 355v10M182.45 355v10M183.50 355v10M184.55 355v10M185.60 355v10M186.65 355v10M187.70 355v10M188.75 355v10M189.80 355v10M190.85 355v10M191.90 355v10M192.95 355v10M194.00 355v10M195.05 355v10M196.10 355v10M197.15 355v10M198.20 355v10M199.25 355v10M200.30 355v10M201.35 355v10M202.40 355v10M203.45 355v10M204.50 355v10M205.55 355v10M206.60 355v10M207.65 355v10M208.70 355v10M209.75 355v10M210.80 355v10M211.85 355v10M212.90 355v10M213.95 355v10M215.00 355v10M216.05 355v10M217.10 355v10M218.15 355v10M219.20 355v10M220.25 355v10M221.30 355v10M222.35 355v10M223.40 355v10M224.45 355v10M225.50 355v10M226.55 355v10M227.60 355v10M228.65 355v10M229.70 355v10M230.75 355v10M231.80 355v10M232.85 355v10M233.90 355v10M234.95 355v10M236.00 355v10M237.05 355v10M238.10 355v10M239.15 355v10M240.20 355v10M241.25 355v10M242.30 355v10M243.35 355v10M244.40 355v10M245.45 355v10M246.50 355v10M247.55 355v10M248.60 355v10M249.65 355v10M250.70 355v10M251.75 355v10M252.80 355v10M253.85 355v10M254.90 355v10M255.95 355v10M257.00 355v10M258.05 355v10M259.10 355v10M260.15 355v10M261.20 355v10M262.25 355v10M263.30 355v10M264.35 355v10M265.40 355v10M266.45 355v10M267.50 355v10M268.55 355v10M269.60 355v10M270.65 355v10M271.70 355v10M272.75 355v10M273.80 355v10M274.85 355v10M275.90 355v10M276.95 355v10M278.00 355v10M279.05 355v10M280.10 355v10M281.15 355v10M282.20 355v10M283.25 355v10M284.30 355v10M285.35 355v10M286.40 355v10M287.45 355v10M288.50 355v10M289.55 355v10M290.60 355v10M291.65 355v10M292.70 355v10M293.75 355v10M294.80 355v10M295.85 355v10M296.90 355v10M297.95 355v10M299.00 355v10M300.05 355v10M301.10 355v10M302.15 355v10M303.20 355v10M304.25 355v10M305.30 355v10M306.35 355v10M307.40 355v10M308.45 355v10M309.50 355v10M310.55 355v10M311.60 355v10M312.65 355v10M313.70 355v10M314.75 355v10M315.80 355v10M316.85 355v10M317.90 355v10M318.95 355v10M320.00 355v10M321.05 355v10M322.10 355v10M323.15 355v10M324.20 355v10M325.25 355v10M326.30 355v10M327.35 355v10M328.40 355v10M329.45 355v10M330.50 355v10M331.55 355v10M332.60 355v10M333.65 355v10M334.70 355v10M335.75 355v10M336.80 355v10M337.85 355v10M338.90 355v10M339.95 355v10M341.00 355v10M342.05 355v10M343.10 355v10M344.15 355v10M345.20 355v10M346.25 355v10M347.30 355v10M348.35 355v10M349.40 355v10M350.45 355v10M351.50 355v10M352.55 355v10M353.60 355v10M354.65 355v10M355.70 355v10M356.75 355v10M357.80 355v10M358.85 355v10M359.90 355v10M360.95 355v10M362.00 355v10M363.05 355v10M364.10 355v10M365.15 355v10M366.20 355v10M367.25 355v10M368.30 355v10M369.35 355v10M370.40 355v10M371.45 355v10M372.50 355v10M373.55 355v10M374.60 355v10M375.65 355v10M376.70 355v10M377.75 355v10M378.80 355v10M379.85 355v10M380.90 355v10M381.95 355v10M383.00 355v10M384.05 355v10M385.10 355v10M386.15 355v10M387.20 355v10M388.25 355v10M389.30 355v10M390.35 355v10M391.40 355v10M392.45 355v10M393.50 355v10M394.55 355v10M395.60 355v10M396.65 355v10M397.70 355v10M398.75 355v10M399.80 355v10M400.85 355v10M401.90 355v10M402.95 355v10M404.00 355v10M405.05 355v10M406.10 355v10M407.15 355v10M408.20 355v10M409.25 355v10M410.30 355v10M411.35 355v10M412.40 355v10M413.45 355v10M414.50 355v10M415.55 355v10M416.60 355v10M417.65 355v10M418.70 355v10M419.75 355v10M420.80 355v10M421.85 355v10M422.90 355v10M423.95 355v10M425.00 355v10M426.05 355v10M427.10 355v10M428.15 355v10M429.20 355v10M430.25 355v10M431.30 355v10M432.35 355v10M433.40 355v10M434.45 355v10M435.50 355v10M436.55 355v10M437.60 355v10M438.65 355v10M439.70 355v10M440.75 355v10M441.80 355v10M442.85 355v10M443.90 355v10M444.95 355v10M446.00 355v10M447.05 355v10M448.10 355v10M449.15 355v10M450.20 355v10M451.25 355v10M452.30 355v10M453.35 355v10M454.40 355v10M455.45 355v10M456.50 355v10M457.55 355v10M458.60 355v10M459.65 355v10M460.70 355v10M461.75 355v10M462.80 355v10M463.85 355v10M464.90 355v10M465.95 355v10M467.00 355v10M468.05 355v10M469.10 355v10M470.15 355v10M471.20 355v10M472.25 355v10M473.30 355v10M474.35 355v10M475.40 355v10M476.45 355v10M477.50 355v10M478.55 355v10M479.60 355v10M480.65 355v10M481.70 355v10M482.75 355v10M483.80 355v10M484.85 355v10M485.90 355v10M486.95 355v10M488.00 355v10M489.05 355v10M490.10 355v10M491.15 355v10M492.20 355v10M493.25 355v10M494.30 355v10M495.35 355v10M496.40 355v10M497.45 355v10M498.50 355v10M499.55 355v10M500.60 355v10M501.65 355v10M502.70 355v10M503.75 355v10M504.80 355v10M505.85 355v10M506.90 355v10M507.95 355v10M509.00 355v10M510.05 355v10M511.10 355v10M512.15 355v10M513.20 355v10M514.25 355v10M515.30 355v10M516.35 355v10M517.40 355v10M518.45 355v10M519.50 355v10M520.55 355v10M521.60 355v10M522.65 355v10M523.70 355v10M524.75 355v10M525.80 355v10M526.85 355v10M527.90 355v10M528.95 355v10M530.00 355v10" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.6" fill="none"/>
+  <text x="320" y="378" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">5 ms 틱의 연속: 2 s에 주기 400개</text>
+  <text x="12" y="394" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">고장</text>
+  <text x="102" y="406" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">틱</text>
+  <text x="102" y="428" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">서버</text>
+  <line x1="110" y1="402" x2="530" y2="402" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+  <line x1="110" y1="397" x2="110" y2="407" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.95" fill="none"/>
+  <text x="116" y="395" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">client.call</text>
+  <text x="372.5" y="395" font-size="11" text-anchor="middle" fill-opacity="0.7" font-style="italic" fill="currentColor">t = 0 이후 아무것도 없음: 틱도, 로그도, 오류도 없음</text>
+  <line x1="110" y1="424" x2="122" y2="424" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4" fill="none"/>
+  <line x1="111" y1="415" x2="111" y2="422.5" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none" marker-end="url(#s3ksols)"/>
+  <line x1="117" y1="422.5" x2="117" y2="415" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" fill="none" marker-end="url(#s3ksols)"/>
+  <text x="128" y="428" font-size="11" fill-opacity="0.8" fill="currentColor">t ≈ 0에 정상 응답</text>
+  <line x1="110" y1="438" x2="530" y2="438" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35" fill="none"/>
+  <line x1="110" y1="435" x2="110" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="215" y1="435" x2="215" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="320" y1="435" x2="320" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="425" y1="435" x2="425" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <line x1="530" y1="435" x2="530" y2="441" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <text x="110" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">0</text>
+  <text x="215" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">0.5</text>
+  <text x="320" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">1.0</text>
+  <text x="425" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">1.5</text>
+  <text x="530" y="452" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">2.0 s</text>
+</svg>
 
 **왼쪽 — 그래프, 각 간선을 그것의 정체대로**. 펜 자국 네 가지가 서로 닮아 보이면 안 된다. 이 페이지 전체가 그 구분이기 때문이다.
 
@@ -1030,7 +1238,7 @@ ros2 service list | grep add_two_ints   # 서버는 멀쩡히 있다
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 제어 루프는 $200\,\mathrm{Hz}$. 계획기는 다음 목표를 만드는 데 $2\,\mathrm{s}$가 걸릴 수 있다. 시뮬레이터를 새로 만들지 마라.
 
 1. **그리기.** P6 노드: `planner`(긴 목표), `controller`($5\,\mathrm{ms}$ 타이머 + 엔코더), `camera`($50\,\mathrm{Hz}$). 계획기–제어기 링크는 토픽이나 서비스가 아니라 *액션*. 다섯 줄 타임라인: 목표 전송, $0.5\,\mathrm{s}$ 피드백, $2\,\mathrm{s}$ 결과, 그동안의 제어 틱.
-2. **유도.** (a) $2\,\mathrm{s}$ *서비스* 콜백이 막는 제어 샘플 수. (b) 엔코더 한 카운트의 $\Delta p$. (c) 조용한 고장: 제어기가 $200\,\mathrm{Hz}$ 타이머 안에서 `client.call`로 계획기를 부른다. 첫 틱 이후 무슨 일이 있고, 왜 에러가 없는가?
+2. **유도.** (a) $2\,\mathrm{s}$ *서비스* 콜백이 막는 제어 샘플 수. (b) 엔코더 한 카운트의 $\Delta p$. (c) 조용한 고장: 제어기가 $200\,\mathrm{Hz}$ 타이머 안에서 `calling`을 로그로 찍은 뒤 `client.call`로 계획기를 부른다. 첫 틱부터 로그에는 무엇이 보이고, 왜 에러가 없는가?
 3. **해석.** P6 목표가 액션인 이유, 그리고 제어기가 이미 $200\,\mathrm{Hz}$인데 카메라 드라이버가 죽으면 라이프사이클이 사 주는 것은?
 
 > [!tip]- 정답 · Solutions

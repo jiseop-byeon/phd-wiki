@@ -34,7 +34,7 @@ Closure is binary and ch.12 settles it. Ranking needs three things ch.12 never h
 
 | Addition | Value | Why a quality metric needs it |
 |---|---|---|
-| **three candidate grasps** | **A** at $(\pm 0.100,\ 0)$ with normals $(\pm 1,\ 0)$ · **B** at $(0,\ \pm 0.050)$ with normals $(0,\ \mp 1)$ · **C** at $(-0.100,\ 0)$ with normal $(1,\ 0)$ and $(0.060,\ -0.050)$ with normal $(0,\ 1)$ | a ranking needs more than one grasp, and a screening test needs something that fails it |
+| **three candidate grasps** | **A** at $(\pm 0.100,\ 0)$ with normals $(\mp 1,\ 0)$ · **B** at $(0,\ \pm 0.050)$ with normals $(0,\ \mp 1)$ · **C** at $(-0.100,\ 0)$ with normal $(1,\ 0)$ and $(0.060,\ -0.050)$ with normal $(0,\ 1)$ | a ranking needs more than one grasp, and a screening test needs something that fails it |
 | **force budget** | $\sum_i f_{n,i} \le F = 20\ \mathrm{N}$ — a **total**, not a per-contact cap | without a bound the wrench set is an unbounded cone and no radius or volume exists |
 | **characteristic length** | $\rho = 0.100\ \mathrm{m}$, the grasp half-span | a ball cannot mix newtons with newton-metres until $m_z$ is divided by a length |
 
@@ -45,6 +45,101 @@ Grasp **A** is ch.12's grasp. **B** is the same tile turned $90°$ in the grippe
 ### Homework diagram · 과제가 그릴 그림
 
 Two figures, side by side.
+
+<svg viewBox="0 0 560 380" style="max-width:100%;height:auto" role="img" aria-label="Grasping homework diagram: left, the panel tile with grasps A and C, their friction cones, the four line-to-normal angles and the octagon that linearizes one cone; right, grasp A's wrench space as a tetrahedron with its inscribed ball of radius 6.667 N and the gravity wrench leaving it at 10.0 N">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">the tile and its candidates</text>
+  <text x="296" y="24" font-size="12" fill="currentColor" font-weight="600">grasp A's wrench space (N)</text>
+  <rect x="72" y="67" width="180" height="90" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.05"/>
+  <circle cx="162" cy="112" r="5.5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <path d="M162 112 L167.5 112 L167.4 110.9 L167.1 109.9 L166.6 108.9 L165.9 108.1 L165.1 107.4 L164.1 106.9 L163.1 106.6 L162 106.5 Z" fill="currentColor" fill-opacity="0.9" stroke="none"/>
+  <path d="M162 112 L156.5 112 L156.6 113.1 L156.9 114.1 L157.4 115.1 L158.1 115.9 L158.9 116.6 L159.9 117.1 L160.9 117.4 L162 117.5 Z" fill="currentColor" fill-opacity="0.9" stroke="none"/>
+  <text x="162" y="101" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">CoM</text>
+  <line x1="72" y1="112" x2="252" y2="112" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="72" y1="112" x2="216" y2="157" stroke="currentColor" stroke-width="1.4" stroke-dasharray="7 4"/>
+  <path d="M72 112 L107.8 129.9 L107.8 94.1 Z" fill="currentColor" fill-opacity="0.16" stroke="none"/>
+  <line x1="72" y1="112" x2="107.8" y2="129.9" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="72" y1="112" x2="107.8" y2="94.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="72" y1="112" x2="94.4" y2="112" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M100 112 L93 114.9 L93 109.1 Z" fill="currentColor" stroke="none"/>
+  <circle cx="72" cy="112" r="3.4" stroke="none" fill="currentColor"/>
+  <path d="M252 112 L216.2 94.1 L216.2 129.9 Z" fill="currentColor" fill-opacity="0.16" stroke="none"/>
+  <line x1="252" y1="112" x2="216.2" y2="94.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="252" y1="112" x2="216.2" y2="129.9" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="252" y1="112" x2="229.6" y2="112" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M224 112 L231 109.1 L231 114.9 Z" fill="currentColor" stroke="none"/>
+  <circle cx="252" cy="112" r="3.4" stroke="none" fill="currentColor"/>
+  <path d="M216 157 L233.9 121.2 L198.1 121.2 Z" fill="currentColor" fill-opacity="0.16" stroke="none"/>
+  <line x1="216" y1="157" x2="233.9" y2="121.2" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="216" y1="157" x2="198.1" y2="121.2" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="216" y1="157" x2="216" y2="134.6" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M216 129 L218.9 136 L213.1 136 Z" fill="currentColor" stroke="none"/>
+  <circle cx="216" cy="157" r="3.4" stroke="none" fill="currentColor"/>
+  <path d="M124 112 L124 112.7 L124 113.3 L124 114 L123.9 114.6 L123.9 115.3 L123.9 115.9 L123.8 116.6 L123.7 117.2 L123.7 117.9 L123.6 118.5 L123.5 119.2 L123.4 119.8 L123.3 120.5 L123.2 121.1 L123.1 121.8 L122.9 122.4 L122.8 123.1 L122.7 123.7 L122.5 124.3 L122.4 125 L122.2 125.6 L122 126.3 L121.8 126.9 L121.6 127.5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <path d="M216 137 L214.9 137 L213.9 137.1 L212.8 137.3 L211.8 137.4 L210.8 137.7 L209.8 138 L208.8 138.4 L207.8 138.8 L206.8 139.2 L205.9 139.7 L205 140.3 L204.2 140.9 L203.3 141.5 L202.5 142.2 L201.8 143 L201 143.7 L200.4 144.5 L199.7 145.4 L199.1 146.3 L198.6 147.2 L198.1 148.1 L197.6 149.1 L197.3 150 L196.9 151" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <text x="65" y="98" font-size="11" fill="currentColor" text-anchor="end">A<tspan dy="3.1" font-size="8.6">1</tspan><tspan dx="3.1" dy="-3.1">= C</tspan><tspan dy="3.1" font-size="8.6">1</tspan></text>
+  <text x="65" y="116" font-size="11" fill="currentColor" text-anchor="end">A 0.000°</text>
+  <text x="65" y="132" font-size="11" fill="currentColor" text-anchor="end">C 17.354°</text>
+  <text x="258" y="116" font-size="11" fill="currentColor">A<tspan dy="3.1" font-size="8.6">2</tspan></text>
+  <text x="252" y="59" font-size="11" fill="currentColor" text-anchor="middle">A 0.000°</text>
+  <text x="224" y="172" font-size="11" fill="currentColor">C<tspan dy="3.1" font-size="8.6">2</tspan></text>
+  <text x="176" y="185" font-size="11" fill="currentColor" text-anchor="middle">C 72.646°</text>
+  <ellipse cx="176" cy="182.1" rx="31.5" ry="9.3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="188" y="107" font-size="11" fill="currentColor" fill-opacity="0.75">A</text>
+  <text x="120" y="142" font-size="11" fill="currentColor" fill-opacity="0.75">C</text>
+  <rect x="16" y="218" width="258" height="92" rx="4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3" fill="none"/>
+  <path d="M98 264 A36 36 0 1 1 26 264 A36 36 0 1 1 98 264 Z M95.3 277.8 L75.8 297.3 L48.2 297.3 L28.7 277.8 L28.7 250.2 L48.2 230.7 L75.8 230.7 L95.3 250.2 Z" fill="currentColor" fill-opacity="0.32" fill-rule="evenodd" stroke="none"/>
+  <circle cx="62" cy="264" r="36" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <path d="M95.3 277.8 L75.8 297.3 L48.2 297.3 L28.7 277.8 L28.7 250.2 L48.2 230.7 L75.8 230.7 L95.3 250.2 Z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+  <circle cx="62" cy="264" r="2.4" stroke="none" fill="currentColor"/>
+  <line x1="62" y1="264" x2="75.8" y2="230.7" stroke="currentColor" stroke-width="1.0"/>
+  <line x1="62" y1="264" x2="95.3" y2="264" stroke="currentColor" stroke-width="1.0" stroke-dasharray="2 2"/>
+  <text x="112" y="235" font-size="11" fill="currentColor" fill-opacity="0.85">the same cone seen along n:</text>
+  <text x="112" y="251" font-size="11" fill="currentColor">base disc, radius μ = 0.5</text>
+  <text x="112" y="267" font-size="11" fill="currentColor">octagon: μ<tspan dy="3.1" font-size="8.6">eff</tspan><tspan dx="3.1" dy="-3.1">= 0.462</tspan></text>
+  <text x="112" y="283" font-size="11" fill="currentColor">shaded: 10.0% of the disc,</text>
+  <text x="112" y="299" font-size="11" fill="currentColor">7.6% of μ in the worst direction</text>
+  <text x="16" y="336" font-size="11" fill="currentColor" fill-opacity="0.9">C fails at C<tspan dy="3.1" font-size="8.6">2</tspan><tspan dy="-3.1">: 72.646° &gt; 26.565°,</tspan></text>
+  <text x="16" y="352" font-size="11" fill="currentColor" fill-opacity="0.9">so no squeeze makes it hold.</text>
+  <circle cx="424" cy="159.4" r="30.7" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" fill="currentColor" fill-opacity="0.1"/>
+  <line x1="474.2" y1="162.1" x2="526" y2="206.4" stroke="currentColor" stroke-width="1.7"/>
+  <line x1="474.2" y1="162.1" x2="373.8" y2="76" stroke="currentColor" stroke-width="1.7"/>
+  <line x1="474.2" y1="162.1" x2="322" y2="193.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="526" y1="206.4" x2="373.8" y2="76" stroke="currentColor" stroke-width="1.7"/>
+  <line x1="526" y1="206.4" x2="322" y2="193.3" stroke="currentColor" stroke-width="1.7"/>
+  <line x1="373.8" y1="76" x2="322" y2="193.3" stroke="currentColor" stroke-width="1.7"/>
+  <circle cx="474.2" cy="162.1" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="526" cy="206.4" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="373.8" cy="76" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="322" cy="193.3" r="3.6" stroke="none" fill="currentColor"/>
+  <line x1="424" y1="159.4" x2="440.1" y2="140.7" stroke="currentColor" stroke-width="2.0"/>
+  <path d="M444 136.1 L441.5 143.9 L436.7 139.8 Z" fill="currentColor" stroke="none"/>
+  <path d="M448.5 140 L444.6 144.6 L440.1 140.7" stroke="currentColor" stroke-width="1.0" fill="none" stroke-linejoin="round"/>
+  <line x1="424" y1="159.4" x2="424" y2="145.6" stroke="currentColor" stroke-width="2.0"/>
+  <path d="M424 139.6 L427.1 147.1 L420.9 147.1 Z" fill="currentColor" stroke="none"/>
+  <line x1="424" y1="139.6" x2="424" y2="119" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2.5"/>
+  <circle cx="424" cy="119" r="4.4" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <circle cx="424" cy="159.4" r="3" stroke="none" fill="currentColor"/>
+  <line x1="512" y1="300" x2="527.7" y2="305.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <path d="M531.8 306.5 L525.9 307 L527.3 302.6 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <line x1="512" y1="300" x2="512" y2="283.3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <path d="M512 278.9 L514.3 284.4 L509.7 284.4 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <line x1="512" y1="300" x2="521.9" y2="293" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <path d="M525.5 290.5 L522.3 295.5 L519.7 291.8 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <text x="483.2" y="156.1" font-size="12" fill="currentColor">1<tspan dy="-4.6" font-size="9.4">+</tspan></text>
+  <text x="528" y="223.4" font-size="12" fill="currentColor" text-anchor="middle">1<tspan dy="-4.6" font-size="9.4">−</tspan></text>
+  <text x="364.8" y="71" font-size="12" fill="currentColor" text-anchor="end">2<tspan dy="-4.6" font-size="9.4">+</tspan></text>
+  <text x="314" y="208.3" font-size="12" fill="currentColor" text-anchor="end">2<tspan dy="-4.6" font-size="9.4">−</tspan></text>
+  <text x="539.8" y="310.5" font-size="11" fill="currentColor">f<tspan dy="3.1" font-size="8.6">x</tspan></text>
+  <text x="512" y="273.9" font-size="11" fill="currentColor" text-anchor="middle">f<tspan dy="3.1" font-size="8.6">y</tspan></text>
+  <text x="521.5" y="286.5" font-size="11" fill="currentColor">m<tspan dy="3.1" font-size="8.6">z</tspan><tspan dy="-3.1">/ρ</tspan></text>
+  <text x="415" y="167.4" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="453" y="133.1" font-size="11" fill="currentColor">ε = 6.667 N</text>
+  <text x="433" y="110" font-size="11" fill="currentColor">leaves at 10.0 N</text>
+  <text x="418" y="151.5" font-size="11" fill="currentColor" text-anchor="end">W = 4.905 N</text>
+  <text x="300" y="336" font-size="11" fill="currentColor" fill-opacity="0.9">generators 1<tspan dy="-4.2" font-size="8.6">±</tspan><tspan dx="3.1" dy="4.2">= (20, ±10, ∓10),</tspan></text>
+  <text x="300" y="352" font-size="11" fill="currentColor" fill-opacity="0.9">2<tspan dy="-4.2" font-size="8.6">±</tspan><tspan dx="3.1" dy="4.2">= (−20, ±10, ±10); ε ⟂ the face it touches;</tspan></text>
+  <text x="300" y="368" font-size="11" fill="currentColor" fill-opacity="0.9">gravity's direction reaches 10.0 N, beyond ε.</text>
+</svg>
 
 **Left — the tile and its candidates.** Draw the tile as a rectangle with the centre of mass marked, then all four contact points of **A** and **C** on it. At each, the inward normal as a solid arrow and the friction cone as two dashed rays at $\pm 26.565°$ with the wedge shaded. Draw the connecting line of **A** straight through the tile and the connecting line of **C** as a second, tilted line. Write the angle each line makes with each normal at its own end — four numbers — and circle the one that is outside its cone. In a margin box, draw one contact's cone a second time with an inscribed regular octagon over it, and shade the eight slivers the octagon throws away.
 
@@ -109,7 +204,7 @@ $$Q_{v,A} = \tfrac16\left|\det\begin{bmatrix} 0 & -20 & 20 \\ -40 & 0 & 20 \\ -4
 
 since the three rows are the edge vectors from vertex $1^{+}$ to the other three.
 
-**Step 5 — rank the two grasps, then look at the task.** Repeating Step 4 for **B** (contacts $0.050\,\mathrm{m}$ from centre, squeeze along $\hat y$) gives generators $(\pm 10,\ \mp 20,\ \mp 5)$ and $(\pm 10,\ \pm 20,\ \pm 5)$, then $\epsilon_B = 20/\sqrt{21} = 4.364\ \mathrm{N}$ on the face with normal $(2,\ -1,\ 4)/\sqrt{21}$, and $Q_{v,B} = 8000/3 = 2667\ \mathrm{N^3}$. So **A** wins on both metrics — $2.00\times$ the volume, $\sqrt{21}/3 = 1.528\times$ the radius. Now ask what the task loads:
+**Step 5 — rank the two grasps, then look at the task.** Repeating Step 4 for **B** (contacts $0.050\,\mathrm{m}$ from centre, squeeze along $\hat y$) gives generators $(\pm 10,\ -20,\ \mp 5)$ and $(\pm 10,\ +20,\ \pm 5)$, then $\epsilon_B = 20/\sqrt{21} = 4.364\ \mathrm{N}$ on the face with normal $(2,\ -1,\ 4)/\sqrt{21}$, and $Q_{v,B} = 8000/3 = 2667\ \mathrm{N^3}$. So **A** wins on both metrics — $2.00\times$ the volume, $\sqrt{21}/3 = 1.528\times$ the radius. Now ask what the task loads:
 
 | direction | **A** capacity | **B** capacity |
 |---|---:|---:|
@@ -269,10 +364,10 @@ of one set, so define the set first.
 >
 > with $G$ the grasp map of the Worked case, $\mathcal{FC}_i$ contact $i$'s friction cone, $F$ the total normal-force budget, $\rho$ the characteristic length and $S$ the scaling that leaves every coordinate of $\mathcal{W}$ in newtons — so $\mathcal{W}$ is convex, because $G$ is linear, each cone is convex and the budget is one linear inequality. When the cones are polyhedral, $\mathcal{W}$ is exactly the convex hull of the budgeted cone-edge wrenches, which is what makes it computable.
 >
-> - **Example**: $\mathcal{W}_A$, the tetrahedron on $(\pm 20,\ \pm 10,\ \mp 10)$ built in Step 4, with the origin at its centroid.
+> - **Example**: $\mathcal{W}_A$, the tetrahedron on $(20,\ \pm 10,\ \mp 10)$ and $(-20,\ \pm 10,\ \pm 10)$ built in Step 4, with the origin at its centroid.
 > - **Non-example, no budget**: the cone those four edges generate. It contains the origin in its interior exactly when the grasp is force-closed, so "the largest ball inside it" is *infinite* for every closed grasp and zero for every other — the quality metric collapses back into the binary test it was meant to refine.
-> - **Non-example, no $\rho$**: the same four wrenches with $m_z$ left in newton-metres, $(\pm20,\pm10,\mp1)$. The inscribed radius drops from $6.667$ to $0.994$ and the weakest direction swings to almost pure moment, $(0.050,\ 0.099,\ 0.994)$ — the metric now measures the tile's size, not the grasp.
-> - **Why it matters**: both numbers below are functions of $\mathcal{W}$, so two papers scoring the *same grasp on the same object* differ by a factor of $\sqrt3 = 1.73$ in $\epsilon$ and $3$ in volume purely by choosing a per-contact budget instead of a total one, and by another factor for $\rho$. Neither convention is wrong. Reporting the number without it is.
+> - **Non-example, no $\rho$**: the same four wrenches with $m_z$ left in newton-metres, $(20,\pm10,\mp1)$ and $(-20,\pm10,\pm1)$. The inscribed radius drops from $6.667$ to $0.994$ and the weakest direction swings to almost pure moment, $(0.050,\ 0.099,\ 0.994)$ — the metric now measures the tile's size, not the grasp.
+> - **Why it matters**: both numbers below are functions of $\mathcal{W}$, so two papers scoring the *same grasp on the same object* — **A** on this tile — differ by a factor of $\sqrt3 = 1.73$ in $\epsilon$ and $3$ in volume purely by choosing a per-contact budget instead of a total one, and by another factor for $\rho$. Neither convention is wrong. Reporting the number without it is.
 
 Ferrari and Canny's 1992 metric is then disarmingly geometric.
 
@@ -568,7 +663,7 @@ Closure는 이분법이고 12장이 그것을 끝낸다. 순위를 매기려면 
 
 | 추가하는 것 | 값 | 품질 지표에 왜 필요한가 |
 |---|---|---|
-| **후보 파지 셋** | **A**는 $(\pm 0.100,\ 0)$, 법선 $(\pm 1,\ 0)$ · **B**는 $(0,\ \pm 0.050)$, 법선 $(0,\ \mp 1)$ · **C**는 $(-0.100,\ 0)$에 법선 $(1,\ 0)$과 $(0.060,\ -0.050)$에 법선 $(0,\ 1)$ | 순위에는 파지가 둘 이상 필요하고, 선별 검사에는 그것을 통과하지 못하는 것이 필요하다 |
+| **후보 파지 셋** | **A**는 $(\pm 0.100,\ 0)$, 법선 $(\mp 1,\ 0)$ · **B**는 $(0,\ \pm 0.050)$, 법선 $(0,\ \mp 1)$ · **C**는 $(-0.100,\ 0)$에 법선 $(1,\ 0)$과 $(0.060,\ -0.050)$에 법선 $(0,\ 1)$ | 순위에는 파지가 둘 이상 필요하고, 선별 검사에는 그것을 통과하지 못하는 것이 필요하다 |
 | **힘 예산** | $\sum_i f_{n,i} \le F = 20\ \mathrm{N}$ — 접촉당이 아니라 **총합** | 한계가 없으면 렌치 집합은 유계가 아닌 원뿔이고 반지름도 부피도 존재하지 않는다 |
 | **특성 길이** | $\rho = 0.100\ \mathrm{m}$, 파지의 반너비 | $m_z$를 길이로 나누기 전에는 공 하나가 뉴턴과 뉴턴미터를 비교하게 된다 |
 
@@ -579,6 +674,101 @@ Closure는 이분법이고 12장이 그것을 끝낸다. 순위를 매기려면 
 ### 과제가 그릴 그림 · Homework diagram
 
 그림 둘을 나란히.
+
+<svg viewBox="0 0 560 380" style="max-width:100%;height:auto" role="img" aria-label="파지 과제 그림: 왼쪽은 파지 A와 C가 놓인 패널 타일, 마찰 원뿔, 선과 법선이 이루는 각 넷, 원뿔 하나를 선형화하는 팔각형이고, 오른쪽은 반지름 6.667 N의 내접 공을 품은 사면체로 그린 파지 A의 렌치 공간과 10.0 N에서 그것을 벗어나는 중력 렌치다">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">타일과 후보들</text>
+  <text x="296" y="24" font-size="12" fill="currentColor" font-weight="600">파지 A의 렌치 공간 (N)</text>
+  <rect x="72" y="67" width="180" height="90" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.05"/>
+  <circle cx="162" cy="112" r="5.5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <path d="M162 112 L167.5 112 L167.4 110.9 L167.1 109.9 L166.6 108.9 L165.9 108.1 L165.1 107.4 L164.1 106.9 L163.1 106.6 L162 106.5 Z" fill="currentColor" fill-opacity="0.9" stroke="none"/>
+  <path d="M162 112 L156.5 112 L156.6 113.1 L156.9 114.1 L157.4 115.1 L158.1 115.9 L158.9 116.6 L159.9 117.1 L160.9 117.4 L162 117.5 Z" fill="currentColor" fill-opacity="0.9" stroke="none"/>
+  <text x="162" y="101" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">질량 중심</text>
+  <line x1="72" y1="112" x2="252" y2="112" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55"/>
+  <line x1="72" y1="112" x2="216" y2="157" stroke="currentColor" stroke-width="1.4" stroke-dasharray="7 4"/>
+  <path d="M72 112 L107.8 129.9 L107.8 94.1 Z" fill="currentColor" fill-opacity="0.16" stroke="none"/>
+  <line x1="72" y1="112" x2="107.8" y2="129.9" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="72" y1="112" x2="107.8" y2="94.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="72" y1="112" x2="94.4" y2="112" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M100 112 L93 114.9 L93 109.1 Z" fill="currentColor" stroke="none"/>
+  <circle cx="72" cy="112" r="3.4" stroke="none" fill="currentColor"/>
+  <path d="M252 112 L216.2 94.1 L216.2 129.9 Z" fill="currentColor" fill-opacity="0.16" stroke="none"/>
+  <line x1="252" y1="112" x2="216.2" y2="94.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="252" y1="112" x2="216.2" y2="129.9" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="252" y1="112" x2="229.6" y2="112" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M224 112 L231 109.1 L231 114.9 Z" fill="currentColor" stroke="none"/>
+  <circle cx="252" cy="112" r="3.4" stroke="none" fill="currentColor"/>
+  <path d="M216 157 L233.9 121.2 L198.1 121.2 Z" fill="currentColor" fill-opacity="0.16" stroke="none"/>
+  <line x1="216" y1="157" x2="233.9" y2="121.2" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="216" y1="157" x2="198.1" y2="121.2" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" stroke-dasharray="3 2.5"/>
+  <line x1="216" y1="157" x2="216" y2="134.6" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M216 129 L218.9 136 L213.1 136 Z" fill="currentColor" stroke="none"/>
+  <circle cx="216" cy="157" r="3.4" stroke="none" fill="currentColor"/>
+  <path d="M124 112 L124 112.7 L124 113.3 L124 114 L123.9 114.6 L123.9 115.3 L123.9 115.9 L123.8 116.6 L123.7 117.2 L123.7 117.9 L123.6 118.5 L123.5 119.2 L123.4 119.8 L123.3 120.5 L123.2 121.1 L123.1 121.8 L122.9 122.4 L122.8 123.1 L122.7 123.7 L122.5 124.3 L122.4 125 L122.2 125.6 L122 126.3 L121.8 126.9 L121.6 127.5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <path d="M216 137 L214.9 137 L213.9 137.1 L212.8 137.3 L211.8 137.4 L210.8 137.7 L209.8 138 L208.8 138.4 L207.8 138.8 L206.8 139.2 L205.9 139.7 L205 140.3 L204.2 140.9 L203.3 141.5 L202.5 142.2 L201.8 143 L201 143.7 L200.4 144.5 L199.7 145.4 L199.1 146.3 L198.6 147.2 L198.1 148.1 L197.6 149.1 L197.3 150 L196.9 151" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <text x="65" y="98" font-size="11" fill="currentColor" text-anchor="end">A<tspan dy="3.1" font-size="8.6">1</tspan><tspan dx="3.1" dy="-3.1">= C</tspan><tspan dy="3.1" font-size="8.6">1</tspan></text>
+  <text x="65" y="116" font-size="11" fill="currentColor" text-anchor="end">A 0.000°</text>
+  <text x="65" y="132" font-size="11" fill="currentColor" text-anchor="end">C 17.354°</text>
+  <text x="258" y="116" font-size="11" fill="currentColor">A<tspan dy="3.1" font-size="8.6">2</tspan></text>
+  <text x="252" y="59" font-size="11" fill="currentColor" text-anchor="middle">A 0.000°</text>
+  <text x="224" y="172" font-size="11" fill="currentColor">C<tspan dy="3.1" font-size="8.6">2</tspan></text>
+  <text x="176" y="185" font-size="11" fill="currentColor" text-anchor="middle">C 72.646°</text>
+  <ellipse cx="176" cy="182.1" rx="31.5" ry="9.3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="188" y="107" font-size="11" fill="currentColor" fill-opacity="0.75">A</text>
+  <text x="120" y="142" font-size="11" fill="currentColor" fill-opacity="0.75">C</text>
+  <rect x="16" y="218" width="258" height="92" rx="4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3" fill="none"/>
+  <path d="M98 264 A36 36 0 1 1 26 264 A36 36 0 1 1 98 264 Z M95.3 277.8 L75.8 297.3 L48.2 297.3 L28.7 277.8 L28.7 250.2 L48.2 230.7 L75.8 230.7 L95.3 250.2 Z" fill="currentColor" fill-opacity="0.32" fill-rule="evenodd" stroke="none"/>
+  <circle cx="62" cy="264" r="36" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <path d="M95.3 277.8 L75.8 297.3 L48.2 297.3 L28.7 277.8 L28.7 250.2 L48.2 230.7 L75.8 230.7 L95.3 250.2 Z" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+  <circle cx="62" cy="264" r="2.4" stroke="none" fill="currentColor"/>
+  <line x1="62" y1="264" x2="75.8" y2="230.7" stroke="currentColor" stroke-width="1.0"/>
+  <line x1="62" y1="264" x2="95.3" y2="264" stroke="currentColor" stroke-width="1.0" stroke-dasharray="2 2"/>
+  <text x="112" y="235" font-size="11" fill="currentColor" fill-opacity="0.85">같은 원뿔을 n 방향에서 본 것:</text>
+  <text x="112" y="251" font-size="11" fill="currentColor">밑면 원판, 반지름 μ = 0.5</text>
+  <text x="112" y="267" font-size="11" fill="currentColor">팔각형: μ<tspan dy="3.1" font-size="8.6">eff</tspan><tspan dx="3.1" dy="-3.1">= 0.462</tspan></text>
+  <text x="112" y="283" font-size="11" fill="currentColor">칠한 부분: 원판의 10.0%,</text>
+  <text x="112" y="299" font-size="11" fill="currentColor">가장 나쁜 방향에서 μ의 7.6%</text>
+  <text x="16" y="336" font-size="11" fill="currentColor" fill-opacity="0.9">C는 C<tspan dy="3.1" font-size="8.6">2</tspan><tspan dy="-3.1">에서 실패한다: 72.646° &gt; 26.565°.</tspan></text>
+  <text x="16" y="352" font-size="11" fill="currentColor" fill-opacity="0.9">얼마나 세게 쥐어도 버티지 못한다.</text>
+  <circle cx="424" cy="159.4" r="30.7" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" fill="currentColor" fill-opacity="0.1"/>
+  <line x1="474.2" y1="162.1" x2="526" y2="206.4" stroke="currentColor" stroke-width="1.7"/>
+  <line x1="474.2" y1="162.1" x2="373.8" y2="76" stroke="currentColor" stroke-width="1.7"/>
+  <line x1="474.2" y1="162.1" x2="322" y2="193.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="526" y1="206.4" x2="373.8" y2="76" stroke="currentColor" stroke-width="1.7"/>
+  <line x1="526" y1="206.4" x2="322" y2="193.3" stroke="currentColor" stroke-width="1.7"/>
+  <line x1="373.8" y1="76" x2="322" y2="193.3" stroke="currentColor" stroke-width="1.7"/>
+  <circle cx="474.2" cy="162.1" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="526" cy="206.4" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="373.8" cy="76" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="322" cy="193.3" r="3.6" stroke="none" fill="currentColor"/>
+  <line x1="424" y1="159.4" x2="440.1" y2="140.7" stroke="currentColor" stroke-width="2.0"/>
+  <path d="M444 136.1 L441.5 143.9 L436.7 139.8 Z" fill="currentColor" stroke="none"/>
+  <path d="M448.5 140 L444.6 144.6 L440.1 140.7" stroke="currentColor" stroke-width="1.0" fill="none" stroke-linejoin="round"/>
+  <line x1="424" y1="159.4" x2="424" y2="145.6" stroke="currentColor" stroke-width="2.0"/>
+  <path d="M424 139.6 L427.1 147.1 L420.9 147.1 Z" fill="currentColor" stroke="none"/>
+  <line x1="424" y1="139.6" x2="424" y2="119" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2.5"/>
+  <circle cx="424" cy="119" r="4.4" stroke="currentColor" stroke-width="1.5" fill="none"/>
+  <circle cx="424" cy="159.4" r="3" stroke="none" fill="currentColor"/>
+  <line x1="512" y1="300" x2="527.7" y2="305.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <path d="M531.8 306.5 L525.9 307 L527.3 302.6 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <line x1="512" y1="300" x2="512" y2="283.3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <path d="M512 278.9 L514.3 284.4 L509.7 284.4 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <line x1="512" y1="300" x2="521.9" y2="293" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <path d="M525.5 290.5 L522.3 295.5 L519.7 291.8 Z" fill="currentColor" stroke="none" fill-opacity="0.8"/>
+  <text x="483.2" y="156.1" font-size="12" fill="currentColor">1<tspan dy="-4.6" font-size="9.4">+</tspan></text>
+  <text x="528" y="223.4" font-size="12" fill="currentColor" text-anchor="middle">1<tspan dy="-4.6" font-size="9.4">−</tspan></text>
+  <text x="364.8" y="71" font-size="12" fill="currentColor" text-anchor="end">2<tspan dy="-4.6" font-size="9.4">+</tspan></text>
+  <text x="314" y="208.3" font-size="12" fill="currentColor" text-anchor="end">2<tspan dy="-4.6" font-size="9.4">−</tspan></text>
+  <text x="539.8" y="310.5" font-size="11" fill="currentColor">f<tspan dy="3.1" font-size="8.6">x</tspan></text>
+  <text x="512" y="273.9" font-size="11" fill="currentColor" text-anchor="middle">f<tspan dy="3.1" font-size="8.6">y</tspan></text>
+  <text x="521.5" y="286.5" font-size="11" fill="currentColor">m<tspan dy="3.1" font-size="8.6">z</tspan><tspan dy="-3.1">/ρ</tspan></text>
+  <text x="415" y="167.4" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="453" y="133.1" font-size="11" fill="currentColor">ε = 6.667 N</text>
+  <text x="433" y="110" font-size="11" fill="currentColor">10.0 N에서 벗어남</text>
+  <text x="418" y="151.5" font-size="11" fill="currentColor" text-anchor="end">W = 4.905 N</text>
+  <text x="300" y="336" font-size="11" fill="currentColor" fill-opacity="0.9">생성 렌치 1<tspan dy="-4.2" font-size="8.6">±</tspan><tspan dx="3.1" dy="4.2">= (20, ±10, ∓10),</tspan></text>
+  <text x="300" y="352" font-size="11" fill="currentColor" fill-opacity="0.9">2<tspan dy="-4.2" font-size="8.6">±</tspan><tspan dx="3.1" dy="4.2">= (−20, ±10, ±10). ε는 닿는 면에 수직,</tspan></text>
+  <text x="300" y="368" font-size="11" fill="currentColor" fill-opacity="0.9">중력 방향은 ε보다 먼 10.0 N까지 간다.</text>
+</svg>
 
 **왼쪽 — 타일과 후보들.** 타일을 직사각형으로 그리고 질량 중심을 표시한 뒤, **A**와 **C**의 접촉점 넷을 모두 찍는다. 각각에 안쪽 법선을 실선 화살표로, 마찰 원뿔을 $\pm 26.565°$의 점선 두 개와 그 사이를 칠한 쐐기로 그린다. **A**의 이음선은 타일을 관통하는 직선으로, **C**의 이음선은 기울어진 두 번째 직선으로 긋는다. 각 선이 자기 쪽 끝의 법선과 이루는 각을 적는다 — 숫자 넷 — 그리고 자기 원뿔 밖에 있는 것 하나에 동그라미를 친다. 여백 상자에는 접촉 하나의 원뿔을 다시 그리고 그 위에 내접 정팔각형을 겹쳐, 팔각형이 버리는 조각 여덟 개를 칠한다.
 
@@ -643,7 +833,7 @@ $$Q_{v,A} = \tfrac16\left|\det\begin{bmatrix} 0 & -20 & 20 \\ -40 & 0 & 20 \\ -4
 
 이다. 세 행이 꼭짓점 $1^{+}$에서 나머지 셋으로 가는 변 벡터이기 때문이다.
 
-**5단계 — 파지 둘의 순위를 매기고, 그다음 과제를 본다.** **B**(접촉이 중심에서 $0.050\,\mathrm{m}$, $\hat y$로 쥔다)에 4단계를 반복하면 생성자가 $(\pm 10,\ \mp 20,\ \mp 5)$와 $(\pm 10,\ \pm 20,\ \pm 5)$, 그다음 법선이 $(2,\ -1,\ 4)/\sqrt{21}$인 면에서 $\epsilon_B = 20/\sqrt{21} = 4.364\ \mathrm{N}$, 그리고 $Q_{v,B} = 8000/3 = 2667\ \mathrm{N^3}$이다. 즉 **A**가 두 지표 모두에서 이긴다 — 부피 $2.00$배, 반지름 $\sqrt{21}/3 = 1.528$배. 이제 과제가 무엇에 힘을 거는지 묻자:
+**5단계 — 파지 둘의 순위를 매기고, 그다음 과제를 본다.** **B**(접촉이 중심에서 $0.050\,\mathrm{m}$, $\hat y$로 쥔다)에 4단계를 반복하면 생성자가 $(\pm 10,\ -20,\ \mp 5)$와 $(\pm 10,\ +20,\ \pm 5)$, 그다음 법선이 $(2,\ -1,\ 4)/\sqrt{21}$인 면에서 $\epsilon_B = 20/\sqrt{21} = 4.364\ \mathrm{N}$, 그리고 $Q_{v,B} = 8000/3 = 2667\ \mathrm{N^3}$이다. 즉 **A**가 두 지표 모두에서 이긴다 — 부피 $2.00$배, 반지름 $\sqrt{21}/3 = 1.528$배. 이제 과제가 무엇에 힘을 거는지 묻자:
 
 | 방향 | **A**의 용량 | **B**의 용량 |
 |---|---:|---:|
@@ -792,10 +982,10 @@ Closure는 이분법이고, 계획기에는 순위가 필요하다. 표준적인
 >
 > $G$는 Worked case의 파지 사상, $\mathcal{FC}_i$는 접촉 $i$의 마찰 원뿔, $F$는 법선력 총 예산, $\rho$는 특성 길이, $S$는 $\mathcal{W}$의 모든 좌표를 뉴턴으로 남기는 스케일링이다. $G$가 선형이고 각 원뿔이 볼록이며 예산이 선형 부등식 하나이므로 $\mathcal{W}$는 볼록이다. 원뿔이 다면체일 때 $\mathcal{W}$는 정확히 예산이 적용된 원뿔 모서리 렌치들의 볼록 껍질이고, 그것이 계산 가능하게 만드는 것이다.
 >
-> - **예**: 4단계에서 $(\pm 20,\ \pm 10,\ \mp 10)$ 위에 지은 사면체 $\mathcal{W}_A$, 원점이 그 무게중심이다.
+> - **예**: 4단계에서 $(20,\ \pm 10,\ \mp 10)$과 $(-20,\ \pm 10,\ \pm 10)$ 위에 지은 사면체 $\mathcal{W}_A$, 원점이 그 무게중심이다.
 > - **반례(예산 없음)**: 그 모서리 넷이 생성하는 원뿔. 파지가 force closure일 때 정확히 원점을 내부에 담으므로 "그 안의 가장 큰 공"은 닫힌 파지마다 *무한*이고 나머지마다 0이다 — 품질 지표가 정교하게 만들려던 그 이분법으로 도로 무너진다.
-> - **반례($\rho$ 없음)**: $m_z$를 뉴턴미터로 남긴 같은 렌치 넷, $(\pm20,\pm10,\mp1)$. 내접 반지름이 $6.667$에서 $0.994$로 떨어지고 가장 약한 방향이 거의 순수 모멘트 $(0.050,\ 0.099,\ 0.994)$로 돌아간다 — 지표가 파지가 아니라 타일의 크기를 재고 있다.
-> - **왜 중요한가**: 아래 숫자 둘 다 $\mathcal{W}$의 함수이므로, *같은 물체 위 같은 파지*를 채점한 논문 둘이 총합 예산 대신 접촉당 예산을 골랐다는 이유만으로 $\epsilon$에서 $\sqrt3 = 1.73$배, 부피에서 $3$배 다르고, $\rho$로 또 한 번 다르다. 어느 규약도 틀리지 않았다. 규약 없이 숫자만 보고하는 것이 틀렸다.
+> - **반례($\rho$ 없음)**: $m_z$를 뉴턴미터로 남긴 같은 렌치 넷, $(20,\pm10,\mp1)$과 $(-20,\pm10,\pm1)$. 내접 반지름이 $6.667$에서 $0.994$로 떨어지고 가장 약한 방향이 거의 순수 모멘트 $(0.050,\ 0.099,\ 0.994)$로 돌아간다 — 지표가 파지가 아니라 타일의 크기를 재고 있다.
+> - **왜 중요한가**: 아래 숫자 둘 다 $\mathcal{W}$의 함수이므로, *같은 물체 위 같은 파지*(이 타일 위의 A)를 채점한 논문 둘이 총합 예산 대신 접촉당 예산을 골랐다는 이유만으로 $\epsilon$에서 $\sqrt3 = 1.73$배, 부피에서 $3$배 다르고, $\rho$로 또 한 번 다르다. 어느 규약도 틀리지 않았다. 규약 없이 숫자만 보고하는 것이 틀렸다.
 
 Ferrari와 Canny의 1992년 지표는 그다음 놀랄 만큼 기하적이다.
 

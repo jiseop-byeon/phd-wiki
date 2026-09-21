@@ -34,6 +34,71 @@ Two panels and a clock, drawn by hand before the problem set asks for them again
 **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$ that
 §1 opens with.
 
+<svg viewBox="0 0 560 332" style="max-width:100%;height:auto" role="img" aria-label="Left: the leaky heater in open loop, u and d summed before the plant and x read by nothing, so x settles at 1 + d = 1.5; right: the same plant with u = -Kx through a sampler of period 0.1 s and a zero-order hold, closed-loop pole -10 and x settling at d/(1+K) = 0.05, and the sampled loop stable only for K below 19">
+  <defs><marker id="ctdA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="22" font-size="12" fill-opacity="0.85" font-weight="600">open loop</text>
+    <line x1="12" y1="96" x2="45" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <text x="14" y="88" font-size="12">u = 1</text>
+    <line x1="56" y1="46" x2="56" y2="85" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <text x="63" y="58" font-size="12">d = 0.5</text>
+    <circle cx="56" cy="96" r="9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <line x1="49.7" y1="89.7" x2="62.3" y2="102.3" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <line x1="49.7" y1="102.3" x2="62.3" y2="89.7" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <text x="40" y="114" font-size="12" text-anchor="middle">+</text>
+    <text x="68" y="83" font-size="12" text-anchor="middle">+</text>
+    <line x1="65" y1="96" x2="78" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <rect x="80" y="77" width="100" height="38" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="130" y="100.3" font-size="12" text-anchor="middle">ẋ = −x + u + d</text>
+    <line x1="180" y1="96" x2="204" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <text x="192" y="88" font-size="12" text-anchor="middle">x</text>
+    <text x="12" y="156" font-size="12" xml:space="preserve">x<tspan dy="3.4" font-size="11">∞</tspan><tspan dy="-3.4"> = 1 + d = 1.5</tspan></text>
+    <text x="12" y="172" font-size="12" fill-opacity="0.85">(u = 1, d = 0.5)</text>
+    <text x="12" y="196" font-size="12" fill-opacity="0.85">no arrow reads x,</text>
+    <text x="12" y="212" font-size="12" fill-opacity="0.85">so nothing can correct it</text>
+    <line x1="214" y1="12" x2="214" y2="320" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="226" y="22" font-size="12" fill-opacity="0.85" font-weight="600">closed loop, with the clock on top</text>
+    <line x1="262" y1="46" x2="262" y2="85" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <text x="269" y="58" font-size="12">d(t)</text>
+    <circle cx="262" cy="96" r="9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <line x1="255.7" y1="89.7" x2="268.3" y2="102.3" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <line x1="255.7" y1="102.3" x2="268.3" y2="89.7" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <text x="274" y="83" font-size="12" text-anchor="middle">+</text>
+    <text x="250" y="118" font-size="12" text-anchor="middle">+</text>
+    <line x1="271" y1="96" x2="286" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <rect x="288" y="77" width="100" height="38" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="338" y="100.3" font-size="12" text-anchor="middle">ẋ = −x + u + d</text>
+    <line x1="388" y1="96" x2="546" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <text x="430" y="88" font-size="12" text-anchor="middle">x(t)</text>
+    <circle cx="488" cy="96" r="3" fill="currentColor"/>
+    <line x1="488" y1="96" x2="488" y2="176" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="488" y1="176" x2="470" y2="176" stroke="currentColor" stroke-width="1.4"/>
+    <circle cx="470" cy="176" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <circle cx="448" cy="176" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="467.6" y1="174.5" x2="450" y2="164" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 454.0 159.0 A 10 10 0 0 1 469.0 166.0" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" marker-end="url(#ctdA)"/>
+    <text x="546" y="198" font-size="11" text-anchor="end">sampler, T = 0.1 s</text>
+    <line x1="445" y1="176" x2="424" y2="176" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <text x="435" y="168" font-size="12" text-anchor="middle" xml:space="preserve">x<tspan dy="3.4" font-size="11">k</tspan></text>
+    <rect x="384" y="161" width="38" height="30" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="403" y="180.7" font-size="13" text-anchor="middle">−K</text>
+    <text x="403" y="206" font-size="11" text-anchor="middle" fill-opacity="0.85">K = 9</text>
+    <line x1="384" y1="176" x2="344" y2="176" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <text x="363" y="168" font-size="12" text-anchor="middle" xml:space="preserve">u<tspan dy="3.4" font-size="11">k</tspan></text>
+    <rect x="300" y="161" width="42" height="30" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="321" y="180.3" font-size="12" text-anchor="middle">ZOH</text>
+    <text x="321" y="206" font-size="11" text-anchor="middle" fill-opacity="0.85">zero-order hold</text>
+    <path d="M 300.0 176.0 L 262.0 176.0 L 262.0 107.0" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdA)"/>
+    <text x="269" y="142" font-size="12">u(t), held</text>
+    <text x="546" y="226" font-size="11" text-anchor="end" fill-opacity="0.8">(t): continuous signal  ·  k: sequence</text>
+    <text x="226" y="250" font-size="12">closed-loop pole −(1+K) = −10</text>
+    <text x="226" y="266" font-size="12" xml:space="preserve">x<tspan dy="3.4" font-size="11">∞</tspan><tspan dy="-3.4"> = d/(1+K) = 0.05   (K = 9, d = 0.5)</tspan></text>
+    <text x="226" y="288" font-size="12" fill-opacity="0.9">with the clock, T = 0.1 s (explicit Euler, §4):</text>
+    <text x="226" y="304" font-size="12" fill-opacity="0.9" xml:space="preserve">x<tspan dy="3.4" font-size="11">k+1</tspan><tspan dy="-3.4"> = (1 − T(1+K)) x</tspan><tspan dy="3.4" font-size="11">k</tspan><tspan dy="-3.4"> + T d</tspan><tspan dy="3.4" font-size="11">k</tspan></text>
+    <text x="226" y="320" font-size="12" fill-opacity="0.9">stable only while K &lt; 19; K = 99 gives −9 and diverges</text>
+  </g>
+</svg>
+
 **Left panel — open loop.** A box labelled $\dot x=-x+u+d$, with the command $u$ and the
 disturbance $d$ arriving together at a summing junction *before* the box, and the state $x$ leaving
 it and going nowhere. Write $x_\infty=1+d$ under the panel and say why in one line: no arrow reads
@@ -202,7 +267,7 @@ and $T = 0.1$: $A_d = e^{-0.1} = 0.905$ and $B_d = 1 - e^{-0.1} = 0.095$. Since 
 $e^{AT}$ are $e^{\lambda_i T}$, the map is
 $\lambda \mapsto e^{\lambda T}$, and $\text{Re}(\lambda)<0$ is exactly
 $\lvert e^{\lambda T}\rvert<1$. Check: $\lambda = -1$, $T = 0.1$ →
-$e^{-0.1} = 0.905 < 1$. ✓ Approximate schemes do not keep this equivalence: forward Euler maps $\lambda \mapsto 1 + \lambda T$, so $\lambda = -30$ with $T = 0.1$ gives $-2$, an unstable discrete mode from a stable continuous one.
+$e^{-0.1} = 0.905 < 1$. ✓ Approximate schemes do not keep this equivalence: forward Euler maps $\lambda \mapsto 1 + \lambda T$, so $\lambda = -30$ with $T = 0.1$ gives $-2$, an unstable discrete mode from a stable continuous one. Recovering this $A_d$ and $B_d$ from a recorded input and output, and mapping them back to the time constant, is [[04-robotics/system-identification|5.5 System Identification]].
 
 **Worked: P4 under explicit Euler.** The leaky heater of §1 with $u=-Kx$ is $\dot x=-(1+K)x+d$. One explicit-Euler step of period $T$ ([[02-foundations/lab-kernel|0.65]]) is
 
@@ -481,7 +546,7 @@ $-\omega_1 + \omega_a \log M_s = \pi p$. Solve for $M_s$ and substitute $p = 6$,
 
 $$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
 
-Then $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 34°$. (Åström & Murray's Example 14.2 prints $M_s = 1.75$ and $33°$; $e^{0.546}$ is 1.727, so the book has rounded up and this page keeps its own arithmetic.) This lower bound constrains the sensitivity peak but does not by itself prove that a 45° phase margin is impossible. Physical moves include faster actuators (raise $\omega_a$), a less
+Then $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 34°$. (Åström & Murray's Example 14.2 prints $M_s = 1.75$ and $33°$; $e^{0.5462}$ is 1.727, so the book has rounded up and this page keeps its own arithmetic.) This lower bound constrains the sensitivity peak but does not by itself prove that a 45° phase margin is impossible. Physical moves include faster actuators (raise $\omega_a$), a less
 unstable airframe (lower $p$), or a lower bandwidth demand.
 
 That is the reading skill this section exists for. When a paper reports a control result,
@@ -657,7 +722,7 @@ point only*. Three consequences you will meet in papers:
 - **Gain scheduling**: interpolate different $K$'s across operating points (an excavator's
   dynamics at full extension are not those at full retraction).
 - **Saturation and rate limits**: no linear result survives an actuator that has stopped
-  moving — this is exactly the gap [[04-robotics/mpc|MPC]] exists to close.
+  moving — this is exactly the gap [[04-robotics/mpc|MPC]] exists to close. On an electric joint, speed saturation is the current loop running out of voltage ([[04-robotics/actuators-drives|10.5 Actuators & Drives §5]]).
 - **Unmodeled dynamics**: hydraulic valve dead zones, backlash, and flexible links break
   linearity outright — which is why the excavation literature spends as much effort on
   actuator models as on policies
@@ -728,7 +793,7 @@ for k in range(n):
 
 > [!tip]- Solutions
 > 1. Open: $u$ and $d$ sum into the $-1$ plant. Closed: a box $-K$ from $x$ to $u$.
-> 2. (a) $\dot x=-(1+K)x+d$, pole $-(1+K)$, $x_\infty=d/(1+K)$. (b) $|1-T(1+K)|<1$ $\Rightarrow$ for $T=0.1$ and $K>-1$, the dangerous edge is $1-T(1+K)>-1$ $\Rightarrow$ $T(1+K)<2$ $\Rightarrow$ $K<19$. (c) $K=99$ at $T=0.1$ gives multiplier $1-10=-9$ — unstable. At $T=0.01$, $1-1.00=0$, on the boundary of this Euler map (deadbeat, fragile). The 100× attenuation gain is a continuous-time number; the sampler can refuse it.
+> 2. (a) $\dot x=-(1+K)x+d$, pole $-(1+K)$, $x_\infty=d/(1+K)$. (b) $|1-T(1+K)|<1$ $\Rightarrow$ for $T=0.1$ and $K>-1$, the dangerous edge is $1-T(1+K)>-1$ $\Rightarrow$ $T(1+K)<2$ $\Rightarrow$ $K<19$. (c) $K=99$ at $T=0.1$ gives multiplier $1-10=-9$ — unstable. At $T=0.01$, $1-1.00=0$: inside the disk, so it survives — deadbeat on this Euler map, and fragile. The 100× attenuation gain is a continuous-time number; the sampler can refuse it.
 > 3. `u = -K * x`, `x = x + T * (-x + u + d)`. A: $x\to 1$. B: $x\to 0$ with multiplier $0.5$. C: $x\to 0.2$. D at $T=0.1$: diverges (sign-flipping growth). D at $T=0.01$: sits near $0.01$. The integrator is part of the claim ([[02-foundations/lab-kernel|0.65]]).
 
 ### Continue beyond this guide
@@ -775,6 +840,71 @@ examples *are* your domain.
 칸 두 개와 시계 하나. 과제가 다시 요구하기 전에 손으로 한 번 그려 둔다. 대상은
 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, §1이 열면서 꺼내는 새는 히터
 $\dot x=-x+u+d$다.
+
+<svg viewBox="0 0 560 332" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 개루프의 새는 히터, u와 d가 플랜트 앞에서 더해지고 x를 읽는 것이 없어 x는 1 + d = 1.5에 머문다; 오른쪽: 같은 플랜트에 주기 0.1 s의 샘플러와 영차 홀드를 거친 u = -Kx, 폐루프 극점 -10과 정상 상태 d/(1+K) = 0.05, 그리고 샘플링된 루프는 K가 19보다 작을 때만 안정하다">
+  <defs><marker id="ctdkA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="22" font-size="12" fill-opacity="0.85" font-weight="600">개루프</text>
+    <line x1="12" y1="96" x2="45" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <text x="14" y="88" font-size="12">u = 1</text>
+    <line x1="56" y1="46" x2="56" y2="85" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <text x="63" y="58" font-size="12">d = 0.5</text>
+    <circle cx="56" cy="96" r="9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <line x1="49.7" y1="89.7" x2="62.3" y2="102.3" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <line x1="49.7" y1="102.3" x2="62.3" y2="89.7" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <text x="40" y="114" font-size="12" text-anchor="middle">+</text>
+    <text x="68" y="83" font-size="12" text-anchor="middle">+</text>
+    <line x1="65" y1="96" x2="78" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <rect x="80" y="77" width="100" height="38" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="130" y="100.3" font-size="12" text-anchor="middle">ẋ = −x + u + d</text>
+    <line x1="180" y1="96" x2="204" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <text x="192" y="88" font-size="12" text-anchor="middle">x</text>
+    <text x="12" y="156" font-size="12" xml:space="preserve">x<tspan dy="3.4" font-size="11">∞</tspan><tspan dy="-3.4"> = 1 + d = 1.5</tspan></text>
+    <text x="12" y="172" font-size="12" fill-opacity="0.85">(u = 1, d = 0.5)</text>
+    <text x="12" y="196" font-size="12" fill-opacity="0.85">x를 읽는 화살표가 없으니</text>
+    <text x="12" y="212" font-size="12" fill-opacity="0.85">아무것도 고칠 수 없다</text>
+    <line x1="214" y1="12" x2="214" y2="320" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="226" y="22" font-size="12" fill-opacity="0.85" font-weight="600">폐루프, 그 위에 시계</text>
+    <line x1="262" y1="46" x2="262" y2="85" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <text x="269" y="58" font-size="12">d(t)</text>
+    <circle cx="262" cy="96" r="9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <line x1="255.7" y1="89.7" x2="268.3" y2="102.3" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <line x1="255.7" y1="102.3" x2="268.3" y2="89.7" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <text x="274" y="83" font-size="12" text-anchor="middle">+</text>
+    <text x="250" y="118" font-size="12" text-anchor="middle">+</text>
+    <line x1="271" y1="96" x2="286" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <rect x="288" y="77" width="100" height="38" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="338" y="100.3" font-size="12" text-anchor="middle">ẋ = −x + u + d</text>
+    <line x1="388" y1="96" x2="546" y2="96" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <text x="430" y="88" font-size="12" text-anchor="middle">x(t)</text>
+    <circle cx="488" cy="96" r="3" fill="currentColor"/>
+    <line x1="488" y1="96" x2="488" y2="176" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="488" y1="176" x2="470" y2="176" stroke="currentColor" stroke-width="1.4"/>
+    <circle cx="470" cy="176" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <circle cx="448" cy="176" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="467.6" y1="174.5" x2="450" y2="164" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 454.0 159.0 A 10 10 0 0 1 469.0 166.0" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" marker-end="url(#ctdkA)"/>
+    <text x="546" y="198" font-size="11" text-anchor="end">샘플러, T = 0.1 s</text>
+    <line x1="445" y1="176" x2="424" y2="176" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <text x="435" y="168" font-size="12" text-anchor="middle" xml:space="preserve">x<tspan dy="3.4" font-size="11">k</tspan></text>
+    <rect x="384" y="161" width="38" height="30" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="403" y="180.7" font-size="13" text-anchor="middle">−K</text>
+    <text x="403" y="206" font-size="11" text-anchor="middle" fill-opacity="0.85">K = 9</text>
+    <line x1="384" y1="176" x2="344" y2="176" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <text x="363" y="168" font-size="12" text-anchor="middle" xml:space="preserve">u<tspan dy="3.4" font-size="11">k</tspan></text>
+    <rect x="300" y="161" width="42" height="30" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="321" y="180.3" font-size="12" text-anchor="middle">ZOH</text>
+    <text x="321" y="206" font-size="11" text-anchor="middle" fill-opacity="0.85">영차 홀드</text>
+    <path d="M 300.0 176.0 L 262.0 176.0 L 262.0 107.0" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#ctdkA)"/>
+    <text x="269" y="142" font-size="12">u(t), 유지</text>
+    <text x="546" y="226" font-size="11" text-anchor="end" fill-opacity="0.8">(t): 연속 신호  ·  k: 수열</text>
+    <text x="226" y="250" font-size="12">폐루프 극점 −(1+K) = −10</text>
+    <text x="226" y="266" font-size="12" xml:space="preserve">x<tspan dy="3.4" font-size="11">∞</tspan><tspan dy="-3.4"> = d/(1+K) = 0.05   (K = 9, d = 0.5)</tspan></text>
+    <text x="226" y="288" font-size="12" fill-opacity="0.9">시계를 넣으면, T = 0.1 s (명시적 오일러, §4):</text>
+    <text x="226" y="304" font-size="12" fill-opacity="0.9" xml:space="preserve">x<tspan dy="3.4" font-size="11">k+1</tspan><tspan dy="-3.4"> = (1 − T(1+K)) x</tspan><tspan dy="3.4" font-size="11">k</tspan><tspan dy="-3.4"> + T d</tspan><tspan dy="3.4" font-size="11">k</tspan></text>
+    <text x="226" y="320" font-size="12" fill-opacity="0.9">K &lt; 19일 때만 안정. K = 99는 −9로 발산한다</text>
+  </g>
+</svg>
 
 **왼쪽 칸 — 개루프.** $\dot x=-x+u+d$라 적은 상자 하나. 명령 $u$와 외란 $d$가 상자 *앞의*
 합산점에서 함께 들어가고, 상태 $x$는 상자에서 나와 아무 데로도 가지 않는다. 칸 아래에
@@ -927,7 +1057,7 @@ $$x_{k+1} = A_d x_k + B_d u_k, \qquad A_d = e^{AT}, \qquad B_d = \int_0^T e^{A\t
 $A_d = e^{-0.1} = 0.905$, $B_d = 1 - e^{-0.1} = 0.095$다. $e^{AT}$의 고유값은 $e^{\lambda_i T}$이므로
 사상은 $\lambda \mapsto e^{\lambda T}$이고,
 $\text{Re}(\lambda)<0$이 정확히 $\lvert e^{\lambda T}\rvert<1$이다. 검산: $\lambda = -1$,
-$T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 근사 기법은 이 동치를 지키지 않는다: 전진 오일러는 $\lambda \mapsto 1 + \lambda T$라서, $\lambda = -30$, $T = 0.1$이면 $-2$가 되어 안정한 연속 모드가 불안정한 이산 모드가 된다.
+$T = 0.1$ → $e^{-0.1} = 0.905 < 1$. ✓ 근사 기법은 이 동치를 지키지 않는다: 전진 오일러는 $\lambda \mapsto 1 + \lambda T$라서, $\lambda = -30$, $T = 0.1$이면 $-2$가 되어 안정한 연속 모드가 불안정한 이산 모드가 된다. 기록된 입력과 출력에서 이 $A_d$와 $B_d$를 되찾고, 그것을 다시 시상수로 되돌리는 일은 [[04-robotics/system-identification|5.5 시스템 식별]]이다.
 
 **계산: 명시적 오일러 아래의 P4.** §1의 새는 히터에 $u=-Kx$를 걸면 $\dot x=-(1+K)x+d$. 주기 $T$의 명시적 오일러 한 스텝([[02-foundations/lab-kernel|0.65]])은
 
@@ -1179,7 +1309,7 @@ $-\omega_1 + \omega_a \log M_s = \pi p$를 준다. $M_s$에 대해 풀고 $p = 6
 
 $$M_s = e^{(\pi p + \omega_1)/\omega_a} = e^{(18.85 + 3)/40} = e^{0.546} = 1.73$$
 
-그러면 $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 34°$다. (Åström과 Murray의 예제 14.2는 $M_s = 1.75$와 $33°$를 싣는다. $e^{0.546}$은 1.727이므로 책이 올림한 것이고, 이 페이지는 자기 계산을 유지한다.) 이 하한은 감도 피크를 제약하지만,
+그러면 $\varphi_m \ge 2\arcsin\!\big(1/(2M_s)\big) = 34°$다. (Åström과 Murray의 예제 14.2는 $M_s = 1.75$와 $33°$를 싣는다. $e^{0.5462}$는 1.727이므로 책이 올림한 것이고, 이 페이지는 자기 계산을 유지한다.) 이 하한은 감도 피크를 제약하지만,
 그 자체로 45° 위상여유가 불가능하다고 증명하지는 않는다. 물리적으로 조정할 수 있는 값에는 더 빠른 구동기($\omega_a$를 올린다), 덜 불안정한 기체($p$를
 낮춘다), 아니면 더 낮은 대역폭 요구.
 
@@ -1340,7 +1470,7 @@ $L$의 확률적 버전이
 - **게인 스케줄링**: 운용점마다 다른 $K$를 보간한다(굴착기의 완전 신장 시 동역학은 완전
   수축 시 동역학이 아니다).
 - **포화와 속도 한계**: 이미 멈춘 액추에이터 앞에서 살아남는 선형 결과는 없다 — 정확히
-  이 간극을 메우려고 [[04-robotics/mpc|MPC]]가 존재한다.
+  이 간극을 메우려고 [[04-robotics/mpc|MPC]]가 존재한다. 전기 관절에서 속도 포화는 전류 루프가 전압을 다 써 버린 것이다([[04-robotics/actuators-drives|10.5 액추에이터·구동계 §5]]).
 - **미모델링 동역학**: 유압 밸브 데드존, 백래시, 유연 링크가 선형성을 정면으로 깬다 —
   굴착 문헌이 정책만큼 액추에이터 모델에 공을 들이는 이유다
   ([[05-construction-robotics/earthmoving-heavy-machinery|토공 스트림 §1]]).
@@ -1390,7 +1520,7 @@ $$x_{k+1}=\big(1-T(1+K)\big)x_k + T d_k$$
 
 > [!tip]- 정답 · Solutions
 > 1. 개루프는 $u$와 $d$가 $-1$ 플랜트로. 폐루프는 $x$에서 $u$로 $-K$.
-> 2. (a) 극점 $-(1+K)$, $x_\infty=d/(1+K)$. (b) $K<19$. (c) $T=0.1$에서 배수 $-9$, 불안정. $T=0.01$에서 배수 $0$, 이 오일러 사상의 경계. 100배 감쇠 이득은 연속 시간 숫자다.
+> 2. (a) 극점 $-(1+K)$, $x_\infty=d/(1+K)$. (b) $K<19$. (c) $T=0.1$에서 배수 $-9$, 불안정. $T=0.01$에서 배수 $0$, 단위원 안이라 살아남는다 — 이 오일러 사상의 deadbeat이고 깨지기 쉽다. 100배 감쇠 이득은 연속 시간 숫자다.
 > 3. A: $x\to 1$. B: $x\to 0$. C: $x\to 0.2$. D $T=0.1$: 발산. D $T=0.01$: $\approx 0.01$. 적분기가 주장의 일부다.
 
 ### 이 가이드 다음으로

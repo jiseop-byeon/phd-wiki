@@ -164,8 +164,8 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
   자리 잡듯 $\mathcal{N}(0, I)$로 수렴한다([[02-foundations/probability|3. 확률 §7]]).
 
 <svg viewBox="0 0 620 208" style="max-width:100%;height:auto" role="img" aria-label="고정된 순방향 노이즈 사슬과 학습되는 역방향 사슬">
-  <defs><marker id="ddA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
-  <g stroke="currentColor" stroke-width="1.3" opacity="0.75"><line x1="94" y1="42" x2="126" y2="42" marker-end="url(#ddA)"/><line x1="174" y1="42" x2="206" y2="42" marker-end="url(#ddA)"/><line x1="254" y1="42" x2="286" y2="42" marker-end="url(#ddA)"/><line x1="334" y1="42" x2="366" y2="42" marker-end="url(#ddA)"/><line x1="414" y1="42" x2="446" y2="42" marker-end="url(#ddA)"/><line x1="494" y1="42" x2="526" y2="42" marker-end="url(#ddA)"/></g>
+  <defs><marker id="ddAk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.3" opacity="0.75"><line x1="94" y1="42" x2="126" y2="42" marker-end="url(#ddAk)"/><line x1="174" y1="42" x2="206" y2="42" marker-end="url(#ddAk)"/><line x1="254" y1="42" x2="286" y2="42" marker-end="url(#ddAk)"/><line x1="334" y1="42" x2="366" y2="42" marker-end="url(#ddAk)"/><line x1="414" y1="42" x2="446" y2="42" marker-end="url(#ddAk)"/><line x1="494" y1="42" x2="526" y2="42" marker-end="url(#ddAk)"/></g>
   <circle cx="72.1" cy="71.5" r="2.6" fill="currentColor" opacity="0.8"/>
   <circle cx="67.8" cy="72.1" r="2.6" fill="currentColor" opacity="0.8"/>
   <circle cx="72.7" cy="72.7" r="2.6" fill="currentColor" opacity="0.8"/>
@@ -208,7 +208,7 @@ descendant. The noise-prediction U-Net/DiT recipe is today's default generative 
   <circle cx="527.9" cy="83.6" r="2.6" fill="currentColor" opacity="0.8"/>
   <circle cx="521.2" cy="106.1" r="2.6" fill="currentColor" opacity="0.8"/>
   <circle cx="528.4" cy="83.9" r="2.6" fill="currentColor" opacity="0.8"/>
-  <g stroke="currentColor" stroke-width="1.7"><line x1="126" y1="126" x2="94" y2="126" marker-end="url(#ddA)"/><line x1="206" y1="126" x2="174" y2="126" marker-end="url(#ddA)"/><line x1="286" y1="126" x2="254" y2="126" marker-end="url(#ddA)"/><line x1="366" y1="126" x2="334" y2="126" marker-end="url(#ddA)"/><line x1="446" y1="126" x2="414" y2="126" marker-end="url(#ddA)"/><line x1="526" y1="126" x2="494" y2="126" marker-end="url(#ddA)"/></g>
+  <g stroke="currentColor" stroke-width="1.7"><line x1="126" y1="126" x2="94" y2="126" marker-end="url(#ddAk)"/><line x1="206" y1="126" x2="174" y2="126" marker-end="url(#ddAk)"/><line x1="286" y1="126" x2="254" y2="126" marker-end="url(#ddAk)"/><line x1="366" y1="126" x2="334" y2="126" marker-end="url(#ddAk)"/><line x1="446" y1="126" x2="414" y2="126" marker-end="url(#ddAk)"/><line x1="526" y1="126" x2="494" y2="126" marker-end="url(#ddAk)"/></g>
   <g font-size="10.5" fill="currentColor" text-anchor="middle">
     <text x="70" y="112">x&#8320;</text><text x="310" y="112">x&#8348;</text><text x="550" y="112">x_T</text>
   </g>

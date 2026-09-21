@@ -45,7 +45,8 @@ flowchart LR
     X["x"] --> Hum
     V["v"] --> Hum
     Hum --> Fh["Fh"]
-    X --> Sw{"x > xw?"}
+    X --> ZOH["sample and zero-order hold, T"]
+    ZOH --> Sw{"x > xw?"}
     Sw -->|yes| Fa["Fa = -kw(x-xw)"]
     Sw -->|no| Z["Fa = 0"]
     Fh --> Sum["Σ"]
@@ -106,7 +107,7 @@ Next step: $F_h=400\cdot 0.015+8\cdot(-0.150)=4.80$, $a=(4.80-0.8\cdot 0.150)/0.
 
 **And the same case as energy**, which is the quantity §2 reasons with. At a representative approach speed $v=0.1\,\mathrm{m/s}$ the hold leaks about $\tfrac12 k_w(vT)^2=\tfrac12\cdot400\cdot(10^{-4})^2=2\,\mathrm{\mu J}$ per period while the device damper removes $bv^2T=0.8\cdot0.01\cdot10^{-3}=8\,\mathrm{\mu J}$, a ratio of $0.25$ — comfortably dissipative. Put $k_w=2500$ in the same place and the leak becomes $12.5\,\mathrm{\mu J}$ against the same $8\,\mathrm{\mu J}$, a ratio of $1.5625$, and the wall is now a generator. Those two ratios are exactly $k_wT/(2b)$, since the $v^2$ cancels between leak and dissipation, which is why §2's bound has no speed in it.
 
-The four-condition sweep in the problem set is this same loop with one knob changed each time: never hit the wall; hit it and settle; sample too slowly on a stiff wall; sample faster; then drop $b_h$ and watch the "stable" stiff wall fail. §2 already told you which of those the device damper can pay for.
+The four-condition sweep in the problem set is this same loop with one or two knobs changed each time: never hit the wall; hit it and settle; sample too slowly on a stiff wall; sample faster; then drop $b_h$ and watch the "stable" stiff wall fail. §2 already told you which of those the device damper can pay for.
 
 ### 1. Haptic rendering is a hard real-time feedback loop
 
@@ -148,7 +149,7 @@ The quantity the bound is really about has a name, and it is worth stating exact
 >
 > where $K$ is the rendered stiffness, $v$ the speed through the interval, $T$ the period and $b$ the device damping — and the ratio has no $v$ in it **because** the $v^2$ that the hold's overshoot picks up is the same $v^2$ the damper dissipates, which is why the bound $K\le 2b/T$ is a statement about the machine and not about how fast the user moves.
 >
-> - **Example**: P3 at $v=0.1\,\mathrm{m/s}$, $T=10^{-3}$, catalog $k_w=400$. Leak $\tfrac12\cdot400\cdot(10^{-4})^2=2\,\mathrm{\mu J}$ per period against $0.8\cdot0.01\cdot10^{-3}=8\,\mathrm{\mu J}$ dissipated — a ratio of $0.25$, exactly $k_wT/(2b)$, so three quarters of the leak is paid for and the wall is a sink.
+> - **Example**: P3 at $v=0.1\,\mathrm{m/s}$, $T=10^{-3}$, catalog $k_w=400$. Leak $\tfrac12\cdot400\cdot(10^{-4})^2=2\,\mathrm{\mu J}$ per period against $0.8\cdot0.01\cdot10^{-3}=8\,\mathrm{\mu J}$ dissipated — a ratio of $0.25$, exactly $k_wT/(2b)$, so the leak is paid for with three quarters of the dissipation to spare and the wall is a sink.
 > - **Non-example**: the energy an ideal *continuous* spring stores on the way in and returns on the way out. That is conservative, not a leak: the net over a cycle is zero at any stiffness, which is why the whole phenomenon disappears as $T\to0$ and why it is a sampled-data effect rather than a stiffness effect.
 > - **Non-example**: energy growth caused by an unstable integrator. Explicit Euler on a stiff spring also blows up, but from truncation error in the simulation, not from a hold in the loop. The two look identical on a plot and have different fixes, which is why the integrator is part of the claim two paragraphs below.
 > - **Why it matters**: it converts "how stiff can this device be" from a tuning question into an accounting question with four terms — $K$, $T$, $b$, and the encoder's $\Delta x$ in §3 — and every stabilizer in §5 is a different way of making the ledger balance.
@@ -157,7 +158,7 @@ These bounds are usually checked in simulation before hardware, and that check h
 
 The integrator you simulate this with is part of the claim. Explicit Euler advances position with the *old* velocity, $v_{k+1}=v_k+Ta_k$ and $x_{k+1}=x_k+Tv_k$; semi-implicit Euler uses the *new* velocity in the position step. The two behave differently at the same step size, and a wall that looks stable under one can leak energy under the other. When a paper reports a stability limit from simulation, the integrator and step size are part of the result.
 
-The same holds for the non-idealities you include: a simulation without quantization, Coulomb friction, actuator saturation and the zero-order hold will report a wall the hardware cannot render, so model them before trusting a simulated limit.
+The same holds for the non-idealities you include: a simulation without quantization, Coulomb friction, actuator saturation and the zero-order hold will report a wall the hardware cannot render, so model them before trusting a simulated limit. On an arm the same ledger bounds the rendered impedance spring, and [[04-robotics/capstone-panel-contact|26. Capstone §7]] shows this trap at work: a plant stepped at the controller's own period contains no hold leak at all, so the sweep's stiffest rows look clean.
 
 The wall bound is a special case of a general one, and this is where it comes from. A pulse transfer function $H(z)$ is the sampled-data version of a transfer function: it maps the sequence of sampled positions to the sequence of commanded forces, with $z$ standing for a one-sample time shift ([[02-foundations/signal-processing|6. Signal Processing §5]]). Before the formula, the idea: read it the same way as the wall bound, because the physical damping $b$ has to pay, at every frequency up to Nyquist ($\omega_N=\pi/T$), for the energy the sampled environment injects. For any virtual environment written as $H(z)$, Colgate and Schenkel (*J. Robotic Systems* 14(1), 1997) give the passivity condition for the one-DOF sampled-data model with a zero-order hold, as presented in Weir & Colgate (eq. 8.2):
 
@@ -211,7 +212,7 @@ That paragraph is the whole idea, and each of its clauses is load-bearing, so he
 
 > **Z-width, defined.** **Z-width** is a *region* — a two-dimensional set of renderable virtual stiffness–damping pairs — not a scalar, not a maximum stiffness, and not a fixed rating of a device. Three defining conditions. It is defined **relative to a declared criterion**, normally passivity, so "Z-width" with no criterion named is not a claim. It has **two** boundaries that different physics set: a lower one, the smallest impedance the device can display, and an upper one, the largest. And it is measured **under declared conditions** — frequency range, grip, load, measurement location, velocity estimator — so it moves when any of them moves.
 >
-> $$\mathcal{Z}=\Big\{(K,B)\ :\ b>\tfrac{KT}{2}+\lvert B\rvert\Big\}\quad\text{under the one-DoF backward-difference model of §2}$$
+> $$\mathcal{Z}=\Big\{(K,B)\ :\ b>\tfrac{KT}{2}+\lvert B\rvert\Big\}\quad\text{under the one-DoF backward-difference model of Section 2}$$
 >
 > where $K$ and $B$ are the virtual stiffness and damping being asked for, $b$ the device damping and $T$ the period — a triangle in the $(K,B)$ plane rather than a line, because every unit of virtual damping is subtracted from the same $b$ that was paying for the stiffness.
 >
@@ -308,7 +309,7 @@ for k in range(n):
 > [!tip]- Solutions
 > 1. $x_d$ feeds a spring–damper whose other port is $(x,\dot x)$; that force $F_h$ sums with $F_a$ and $-b\dot x$ into $1/m$. The wall block is a switch: it reads $x$ and emits $F_a$ only for $x>x_w$. No path from $F_a$ back to $x_d$ — the human desired position is an exogenous input.
 > 2. (a) $m s^2+(b+b_h)s+(k_h+k_w)=0.04 s^2+8.8 s+800$. Divide by $m$: $s^2+220s+20000=0$. $\omega_n=\sqrt{20000}=141\,\mathrm{rad/s}$, $\zeta=220/(2\cdot 141)=0.78$ (underdamped). (b) $k_h(x_d-x^\ast)=k_w(x^\ast-x_w)$ $\Rightarrow$ $0.035-x^\ast=x^\ast-0.030$ $\Rightarrow$ $x^\ast=0.0325\,\mathrm{m}$, wall force $1.0\,\mathrm{N}$. (c) $T=10^{-3}$: $2b/T=1600\,\mathrm{N/m}$. Catalog $400$ passes; $2500$ fails. $T=5\times10^{-3}$: $2b/T=320$. Both $400$ and $2500$ fail the device-only bound. Human damper $b_h$ is *not* in this inequality.
-> 3. Blanks: `Fh = kh*(xd - x) + bh*(0.0 - v)`, `Fa = -kw*(x - xw) if x > xw else 0.0`, `a = (Fh + Fa - b*v) / m`. A: never contacts, $x\to 0.020$, $E=0$. B: contacts and settles at $0.0325$, $E<0$ (wall takes energy). C: chatters for the whole window, many velocity sign changes, $E>0$ (sampled wall injects energy). D: looks settled despite $k_w>1600$, because $b_h=8$ is ten times $b$. D with $b_h=0$: the trace diverges. The bound assumed you would not spend the human as a damper; a paper that “proves” a $2500\,\mathrm{N/m}$ wall at $1\,\mathrm{kHz}$ on this mass owes you $b$ and whether a person was holding the handle.
+> 3. Blanks: `Fh = kh*(xd - x) + bh*(0.0 - v)`, `Fa = -kw*(x - xw) if x > xw else 0.0`, `a = (Fh + Fa - b*v) / m`. A: never contacts, $x\to 0.020$, $E=0$. B: contacts and settles at $0.0325$, $E<0$ (wall takes energy). C: chatters for the whole window, many velocity sign changes, $E>0$ (sampled wall injects energy). D: looks settled despite $k_w>1600$, $E<0$, because $b_h=8$ is ten times $b$. D with $b_h=0$: the trace diverges, $E>0$. The bound assumed you would not spend the human as a damper; a paper that “proves” a $2500\,\mathrm{N/m}$ wall at $1\,\mathrm{kHz}$ on this mass owes you $b$ and whether a person was holding the handle.
 
 ## 한국어
 
@@ -344,7 +345,8 @@ flowchart LR
     X["x"] --> Hum
     V["v"] --> Hum
     Hum --> Fh["Fh"]
-    X --> Sw{"x > xw?"}
+    X --> ZOH["sample and zero-order hold, T"]
+    ZOH --> Sw{"x > xw?"}
     Sw -->|yes| Fa["Fa = -kw(x-xw)"]
     Sw -->|no| Z["Fa = 0"]
     Fh --> Sum["Σ"]
@@ -405,7 +407,7 @@ $$v\leftarrow 0.150,\qquad x\leftarrow 0.020.$$
 
 **같은 경우를 에너지로**, 즉 §2가 추론하는 양으로 보자. 대표적인 접근 속도 $v=0.1\,\mathrm{m/s}$에서 홀드는 주기마다 $\tfrac12 k_w(vT)^2=\tfrac12\cdot400\cdot(10^{-4})^2=2\,\mathrm{\mu J}$를 흘리고 장치 댐퍼는 $bv^2T=0.8\cdot0.01\cdot10^{-3}=8\,\mathrm{\mu J}$를 걷어 간다. 비는 $0.25$, 넉넉히 소산이다. 같은 자리에 $k_w=2500$을 넣으면 누설은 $12.5\,\mathrm{\mu J}$가 되고 소산은 그대로 $8\,\mathrm{\mu J}$, 비는 $1.5625$라 벽이 발전기가 된다. 두 비는 정확히 $k_wT/(2b)$다. 누설과 소산에서 $v^2$이 소거되기 때문이고, 그래서 §2의 경계에 속도가 없다.
 
-과제의 네 조건 스윕은 같은 루프에서 손잡이 하나만 바꾼다. §2가 장치 댐퍼가 어느 것을 갚을 수 있는지 이미 말했다.
+과제의 네 조건 스윕은 같은 루프에서 손잡이를 한두 개씩만 바꾼다. §2가 장치 댐퍼가 어느 것을 갚을 수 있는지 이미 말했다.
 
 ### 1. 햅틱 렌더링은 hard real-time feedback loop다
 
@@ -447,7 +449,7 @@ $$K\le\frac{2b}{T}$$
 >
 > $K$는 렌더링된 강성, $v$는 구간 동안의 속도, $T$는 주기, $b$는 장치 댐핑이다. 비에 $v$가 없는 것은 홀드의 초과분이 얻는 $v^2$과 댐퍼가 소산하는 $v^2$이 같기 **때문이고**, 그래서 $K\le 2b/T$는 사용자가 얼마나 빨리 움직이는가가 아니라 기계에 대한 진술이다.
 >
-> - **예**: $v=0.1\,\mathrm{m/s}$, $T=10^{-3}$, 카탈로그 $k_w=400$의 P3. 주기당 누설 $\tfrac12\cdot400\cdot(10^{-4})^2=2\,\mathrm{\mu J}$ 대 소산 $0.8\cdot0.01\cdot10^{-3}=8\,\mathrm{\mu J}$. 비는 $0.25$이고 정확히 $k_wT/(2b)$다. 누설의 4분의 3이 갚아지고 벽은 흡수원이다.
+> - **예**: $v=0.1\,\mathrm{m/s}$, $T=10^{-3}$, 카탈로그 $k_w=400$의 P3. 주기당 누설 $\tfrac12\cdot400\cdot(10^{-4})^2=2\,\mathrm{\mu J}$ 대 소산 $0.8\cdot0.01\cdot10^{-3}=8\,\mathrm{\mu J}$. 비는 $0.25$이고 정확히 $k_wT/(2b)$다. 누설을 다 갚고도 소산의 4분의 3이 남아 벽은 흡수원이다.
 > - **비예**: 이상적인 *연속* 스프링이 들어갈 때 저장하고 나올 때 돌려주는 에너지. 그것은 보존이지 누설이 아니다. 어떤 강성에서도 한 주기 순합이 0이다. $T\to0$에서 현상 전체가 사라지는 이유이고, 이것이 강성 효과가 아니라 샘플링 데이터 효과인 이유다.
 > - **비예**: 불안정한 적분기가 만드는 에너지 증가. 명시적 오일러도 단단한 스프링에서 발산하지만, 그것은 루프의 홀드가 아니라 시뮬레이션의 절단 오차에서 온다. 그래프에서는 똑같아 보이고 고치는 법은 다르다. 두 문단 아래에서 적분기가 주장의 일부인 이유가 그것이다.
 > - **왜 중요한가**: "이 장치가 얼마나 단단해질 수 있나"를 튜닝 문제에서 항 넷($K$, $T$, $b$, 그리고 §3의 $\Delta x$)의 회계 문제로 바꾼다. §5의 안정화 기법은 모두 그 장부를 맞추는 서로 다른 방법이다.
@@ -456,7 +458,7 @@ $$K\le\frac{2b}{T}$$
 
 이것을 시뮬레이션하는 적분기도 주장의 일부다. 명시적 오일러는 *이전* 속도로 위치를 전진시키고($v_{k+1}=v_k+Ta_k$, $x_{k+1}=x_k+Tv_k$), 준음해 오일러는 위치 갱신에 *새* 속도를 쓴다. 같은 스텝 크기에서 둘의 거동이 다르고, 한쪽에서 안정해 보이는 벽이 다른 쪽에서는 에너지를 샐 수 있다. 논문이 시뮬레이션에서 얻은 안정성 한계를 보고하면 적분기와 스텝 크기가 그 결과의 일부다.
 
-시뮬레이션에 넣는 비이상성도 마찬가지다. 양자화, Coulomb 마찰, 액추에이터 포화, zero-order hold가 빠진 시뮬레이션은 하드웨어가 구현할 수 없는 벽을 보고하므로, 시뮬레이션 한계를 믿기 전에 이것들을 모델링하라.
+시뮬레이션에 넣는 비이상성도 마찬가지다. 양자화, Coulomb 마찰, 액추에이터 포화, zero-order hold가 빠진 시뮬레이션은 하드웨어가 구현할 수 없는 벽을 보고하므로, 시뮬레이션 한계를 믿기 전에 이것들을 모델링하라. 팔에서도 같은 장부가 렌더링된 임피던스 스프링을 묶고, [[04-robotics/capstone-panel-contact|26. 캡스톤 §7]]이 이 함정이 작동하는 모습을 보여 준다. 제어기 자신의 주기로 전진시킨 플랜트에는 hold의 누설이 아예 없어서, 스윕에서 가장 단단한 행들이 깨끗해 보인다.
 
 벽 경계는 일반적인 경계의 특수한 경우이고, 그 경계가 여기서 나온다. 펄스 전달함수 $H(z)$는 전달함수의 샘플링 데이터 판이다. 샘플링된 위치의 수열을 명령 힘의 수열로 사상하고, $z$는 한 샘플만큼의 시간 이동을 나타낸다([[02-foundations/signal-processing|6. 신호처리 §5]]). 식보다 생각을 먼저 보자. 벽 경계와 같은 방식으로 읽으면 되는데, 물리적 댐핑 $b$가 나이퀴스트($\omega_N=\pi/T$)까지의 모든 주파수에서 샘플링된 환경이 주입하는 에너지를 갚아야 하기 때문이다. 가상 환경을 $H(z)$로 쓰면, Colgate와 Schenkel(*J. Robotic Systems* 14(1), 1997)은 zero-order hold가 있는 1자유도 샘플링 데이터 모델의 수동성 조건을 다음과 같이 준다(Weir & Colgate의 식 8.2).
 
@@ -510,7 +512,7 @@ $$E(t)=E_0+\int_0^t F(\tau)^\top v(\tau)d\tau\ge0.$$
 
 > **Z-width의 정의.** **Z-width**는 *영역*이다. 표현 가능한 가상 강성–댐핑 쌍의 2차원 집합이지 스칼라도, 최대 강성도, 장치에 고정된 정격도 아니다. 정의 조건 셋. **선언한 판정 기준에 상대적으로** 정의된다. 보통 수동성이고, 기준을 말하지 않은 "Z-width"는 주장이 아니다. 서로 다른 물리가 정하는 **두** 경계가 있다. 아래 끝은 장치가 표시할 수 있는 가장 작은 임피던스, 위 끝은 가장 큰 임피던스다. 그리고 **선언한 조건에서** 측정한다. 주파수 범위, 파지, 부하, 측정 위치, 속도 추정기가 그것이고, 그중 무엇이 움직이면 영역도 움직인다.
 >
-> $$\mathcal{Z}=\Big\{(K,B)\ :\ b>\tfrac{KT}{2}+\lvert B\rvert\Big\}\quad\text{(§2의 1자유도 후방차분 모델에서)}$$
+> $$\mathcal{Z}=\Big\{(K,B)\ :\ b>\tfrac{KT}{2}+\lvert B\rvert\Big\}\quad\text{(2절의 1자유도 후방차분 모델에서)}$$
 >
 > $K$와 $B$는 요구하는 가상 강성과 댐핑, $b$는 장치 댐핑, $T$는 주기다. 선이 아니라 $(K,B)$ 평면의 삼각형인데, 가상 댐핑 한 단위마다 강성을 갚던 그 $b$에서 빠져나가기 때문이다.
 >
@@ -584,4 +586,4 @@ $$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
 > [!tip]- 정답 · Solutions
 > 1. $x_d$는 $(x,\dot x)$가 다른 포트인 스프링–댐퍼로 들어가 $F_h$가 되고, $F_a$ 및 $-b\dot x$와 더해 $1/m$으로 간다. 벽은 $x>x_w$일 때만 $F_a$를 낸다. $F_a$에서 $x_d$로 가는 길은 없다.
 > 2. (a) $0.04 s^2+8.8 s+800=0$, 즉 $s^2+220s+20000=0$. $\omega_n=141\,\mathrm{rad/s}$, $\zeta=0.78$. (b) $x^\ast=0.0325\,\mathrm{m}$, 벽 힘 $1.0\,\mathrm{N}$. (c) $T=10^{-3}$이면 $2b/T=1600$: $400$ 통과, $2500$ 실패. $T=5\times10^{-3}$이면 $320$: 둘 다 실패. $b_h$는 이 부등식에 없다.
-> 3. 빈칸은 영어 해와 같다. A: 비접촉, $x\to 0.020$, $E=0$. B: $0.0325$에 정착, $E<0$. C: 창 내내 채터, $E>0$. D: $k_w>1600$인데도 정착해 보인다 — $b_h=8$이 $b$의 열 배. $b_h=0$인 D는 발산. 경계는 사람을 댐퍼로 쓰지 않는다는 가정이다.
+> 3. 빈칸은 영어 해와 같다. A: 비접촉, $x\to 0.020$, $E=0$. B: $0.0325$에 정착, $E<0$. C: 창 내내 채터, $E>0$. D: $k_w>1600$인데도 정착해 보인다, $E<0$ — $b_h=8$이 $b$의 열 배. $b_h=0$인 D는 발산, $E>0$. 경계는 사람을 댐퍼로 쓰지 않는다는 가정이다.

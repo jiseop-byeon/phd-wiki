@@ -37,6 +37,133 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as the *base* the
 
 One figure, two panels, and the problem set asks for the same figure with a slower plan.
 
+<svg viewBox="0 0 560 492" style="max-width:100%;height:auto" role="img" aria-label="Panel A: perception, move_group and ros2_control side by side; the physical panel and its collision object in the planning scene are joined by a dashed arrow applied once; the follow_joint_trajectory action crosses from move_group to the trajectory controller on P6's 200 Hz loop; the camera has no arrow into ros2_control. Panel B: a seconds axis with the scene snapshot, a 0.80 s plan and a 1.50 s execution, the panel pose aging from 20 ms to 0.82 s to 2.32 s, and a separate millisecond axis with 5 ms control ticks and a 70 ms bracket, unconnected.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · who believes what</text>
+  <line x1="158" y1="42" x2="158" y2="250" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="5 4"/>
+  <text x="158" y="37" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">scene update</text>
+  <line x1="386" y1="42" x2="386" y2="250" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="5 4"/>
+  <text x="386" y="37" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">action</text>
+  <text x="83" y="52" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">perception</text>
+  <text x="276" y="52" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">move_group</text>
+  <text x="475" y="52" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">ros2_control</text>
+  <rect x="12" y="64" width="140" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="18" y="79" font-size="11" fill="currentColor">camera · 50 Hz</text>
+  <text x="18" y="94" font-size="11" fill="currentColor" opacity="0.75">publishes a panel pose</text>
+  <rect x="36" y="150" width="88" height="14" fill="currentColor" fill-opacity="0.35" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="44" y1="164" x2="49" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="52" y1="164" x2="57" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="60" y1="164" x2="65" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="68" y1="164" x2="73" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="76" y1="164" x2="81" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="84" y1="164" x2="89" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="92" y1="164" x2="97" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="100" y1="164" x2="105" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="108" y1="164" x2="113" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="116" y1="164" x2="121" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="80" y="180" font-size="11" fill="currentColor" text-anchor="middle">panel (physical)</text>
+  <line x1="60" y1="100" x2="66" y2="148" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="1.5 3"/>
+  <line x1="104" y1="100" x2="96" y2="148" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="1.5 3"/>
+  <rect x="166" y="64" width="200" height="178" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="174" y="74" width="184" height="104" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="182" y="90" font-size="11" fill="currentColor">planning scene</text>
+  <rect x="256" y="150" width="88" height="14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <text x="300" y="128" font-size="11" fill="currentColor" text-anchor="middle">panel as a</text>
+  <text x="300" y="142" font-size="11" fill="currentColor" text-anchor="middle">collision object</text>
+  <rect x="174" y="188" width="88" height="24" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="218" y="204" font-size="11" fill="currentColor" text-anchor="middle">SRDF groups</text>
+  <rect x="270" y="188" width="88" height="24" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="314" y="204" font-size="11" fill="currentColor" text-anchor="middle">pipeline</text>
+  <line x1="126" y1="157" x2="246.5" y2="157" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <polygon points="253,157 246,160.4 246,153.6" fill="currentColor"/>
+  <text x="162" y="150" font-size="11" fill="currentColor" font-weight="600">applied once</text>
+  <text x="18" y="206" font-size="11" fill="currentColor" opacity="0.75">not a loop: nothing</text>
+  <text x="18" y="220" font-size="11" fill="currentColor" opacity="0.75">republishes the scene</text>
+  <rect x="404" y="96" width="148" height="42" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="478" y="121" font-size="11" fill="currentColor" text-anchor="middle">trajectory controller</text>
+  <rect x="404" y="160" width="148" height="40" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="478" y="176" font-size="11" fill="currentColor" text-anchor="middle">P6 loop · 200 Hz</text>
+  <text x="478" y="191" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">read–update–write</text>
+  <line x1="478" y1="138" x2="478" y2="153.5" stroke="currentColor" stroke-width="1.2"/>
+  <polygon points="478,160 474.6,153 481.4,153" fill="currentColor"/>
+  <text x="396" y="72" font-size="11" fill="currentColor" font-weight="600">follow_joint_trajectory</text>
+  <text x="396" y="87" font-size="11" fill="currentColor" opacity="0.8">goal out, result back</text>
+  <line x1="366" y1="106" x2="397.5" y2="106" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="404,106 397,109.4 397,102.6" fill="currentColor"/>
+  <line x1="404" y1="128" x2="372.5" y2="128" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="366,128 373,124.6 373,131.4" fill="currentColor"/>
+  <text x="8" y="268" font-size="11" fill="currentColor" opacity="0.85">No arrow from the camera into ros2_control: P6's 70 ms chain does not pass through MoveIt.</text>
+  <line x1="8" y1="284" x2="552" y2="284" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="302" font-size="12" fill="currentColor" font-weight="600">B · two clocks, not one</text>
+  <path d="M30.0 396.0 L333.6 396.0 L333.6 346.0 L30.0 395.6 Z" fill="currentColor" fill-opacity="0.22" stroke="none"/>
+  <polyline points="30,395.6 333.6,346" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="30" y1="396" x2="333.6" y2="396" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="30" y="326" font-size="11" fill="currentColor" font-weight="600">age of the panel pose</text>
+  <text x="30" y="340" font-size="11" fill="currentColor" opacity="0.75">cart has moved</text>
+  <line x1="30" y1="338" x2="30" y2="426" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+  <line x1="135.6" y1="338" x2="135.6" y2="426" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+  <line x1="333.6" y1="338" x2="333.6" y2="426" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+  <text x="34" y="362" font-size="11" fill="currentColor" font-weight="600">20 ms</text>
+  <text x="34" y="376" font-size="11" fill="currentColor" opacity="0.75">5.0 mm</text>
+  <text x="139.6" y="352.3" font-size="11" fill="currentColor" font-weight="600">0.82 s</text>
+  <text x="139.6" y="366.3" font-size="11" fill="currentColor" opacity="0.75">205 mm</text>
+  <text x="328.6" y="367" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">2.32 s</text>
+  <text x="328.6" y="381" font-size="11" fill="currentColor" text-anchor="end" opacity="0.75">580 mm</text>
+  <rect x="30" y="406" width="105.6" height="16" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <rect x="135.6" y="406" width="198" height="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <line x1="30" y1="400" x2="30" y2="428" stroke="currentColor" stroke-width="2.6"/>
+  <text x="84.8" y="418" font-size="11" fill="currentColor" text-anchor="middle">plan 0.80 s</text>
+  <text x="234.6" y="418" font-size="11" fill="currentColor" text-anchor="middle">execute 1.50 s</text>
+  <line x1="30" y1="434" x2="360" y2="434" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="30" y1="434" x2="30" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="30" y="450" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="96" y1="434" x2="96" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="96" y="450" font-size="11" fill="currentColor" text-anchor="middle">0.5</text>
+  <line x1="162" y1="434" x2="162" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="162" y="450" font-size="11" fill="currentColor" text-anchor="middle">1.0</text>
+  <line x1="228" y1="434" x2="228" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="228" y="450" font-size="11" fill="currentColor" text-anchor="middle">1.5</text>
+  <line x1="294" y1="434" x2="294" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="294" y="450" font-size="11" fill="currentColor" text-anchor="middle">2.0</text>
+  <line x1="360" y1="434" x2="360" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="360" y="450" font-size="11" fill="currentColor" text-anchor="middle">2.5</text>
+  <text x="360" y="466" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">seconds</text>
+  <text x="26" y="466" font-size="11" fill="currentColor" opacity="0.85">↑ scene snapshot</text>
+  <rect x="386" y="314" width="166" height="150" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"/>
+  <text x="394" y="330" font-size="11" fill="currentColor" font-weight="600">milliseconds (magnified)</text>
+  <line x1="398" y1="360" x2="398" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="406.9" y1="360" x2="406.9" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="415.8" y1="360" x2="415.8" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="424.6" y1="360" x2="424.6" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="433.5" y1="360" x2="433.5" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="442.4" y1="360" x2="442.4" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="451.2" y1="360" x2="451.2" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="460.1" y1="360" x2="460.1" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="469" y1="360" x2="469" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="477.9" y1="360" x2="477.9" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="486.8" y1="360" x2="486.8" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="495.6" y1="360" x2="495.6" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="504.5" y1="360" x2="504.5" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="513.4" y1="360" x2="513.4" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="522.2" y1="360" x2="522.2" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="531.1" y1="360" x2="531.1" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="540" y1="360" x2="540" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <text x="394" y="352" font-size="11" fill="currentColor" opacity="0.85">5 ms control ticks</text>
+  <polyline points="398,392 398,398 522.2,398 522.2,392" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <text x="460.1" y="413" font-size="11" fill="currentColor" text-anchor="middle">70 ms budget</text>
+  <line x1="398" y1="424" x2="540" y2="424" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="398" y1="424" x2="398" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="398" y="440" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="433.5" y1="424" x2="433.5" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="433.5" y="440" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <line x1="469" y1="424" x2="469" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="469" y="440" font-size="11" fill="currentColor" text-anchor="middle">40</text>
+  <line x1="504.5" y1="424" x2="504.5" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="504.5" y="440" font-size="11" fill="currentColor" text-anchor="middle">60</text>
+  <line x1="540" y1="424" x2="540" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="540" y="440" font-size="11" fill="currentColor" text-anchor="middle">80</text>
+  <text x="550" y="480" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">nothing connects the two axes</text>
+</svg>
+
 **Panel A — who believes what.** Three regions side by side with two labelled boundaries between them: `perception` (a camera at $50\,\mathrm{Hz}$ publishing a panel pose), `move_group` (holding the planning scene, the SRDF groups and the pipeline), and `ros2_control` (the trajectory controller and P6's $200\,\mathrm{Hz}$ loop). Draw the panel *twice*: once as the physical object on the left, once as a collision object inside the planning scene, and join the two with a dashed arrow labelled `applied once`. Three things the drawing must get right. The dashed arrow is **not** a feedback loop: nothing republishes the scene unless your code does, which is the whole content of the worked case. The boundary between `move_group` and `ros2_control` carries an **action**, `follow_joint_trajectory`, not a topic, because MoveIt is an action client and needs the result. And the camera has **no arrow at all** into `ros2_control`, since P6's $70\,\mathrm{ms}$ budget lives on a chain MoveIt is not part of.
 
 **Panel B — two clocks, not one.** One horizontal axis in seconds, $0$ to $2.5$, with a second axis inset at the right magnified to milliseconds. On the seconds axis mark three spans end to end: `scene snapshot` (a tick), `plan` of $0.80\,\mathrm{s}$, `execute` of $1.50\,\mathrm{s}$. Above them draw a bar whose length grows from left to right, labelled `age of the panel pose`, and write its value at the three boundaries. On the magnified inset draw the $5\,\mathrm{ms}$ control ticks and one $70\,\mathrm{ms}$ bracket, and connect nothing between the two axes — the gap between them is the figure's argument.
@@ -75,7 +202,7 @@ $$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20,$$
 
 so twenty control cycles fall between consecutive trajectory points and the controller interpolates across them ([[04-robotics/ros2/simulation-and-control|25.7 §11]]). The trajectory is coarse and the loop is fine, and that is the intended division: MoveIt says where and when, `ros2_control` says how often.
 
-**Step 5 — `fraction`, as a distance rather than a ratio.** Take a $0.20\,\mathrm{m}$ insertion line at the default `eef_step` of $0.01\,\mathrm{m}$. That is $0.20/0.01 = 20$ interpolated poses and $20$ IK solves, each step being $0.01\times2048=20.5$ encoder counts of base motion — comparable to the whole start tolerance, which is worth noticing. A return of $0.62$ then means the tool reaches $0.20\times0.62=0.124\,\mathrm{m}$ and stops $0.076\,\mathrm{m}$ short: $76\,\mathrm{mm}$, or $156$ counts, of unfinished slot, with the tool halted in mid-air at a pose nobody chose. §7's rule follows directly — the number is a fraction of *your* line, so read it back in the units of the line.
+**Step 5 — `fraction`, as a distance rather than a ratio.** Take a $0.20\,\mathrm{m}$ insertion line at §7's `eef_step` of $0.01\,\mathrm{m}$. That is $0.20/0.01 = 20$ interpolated poses and $20$ IK solves, each step being $0.01\times2048=20.5$ encoder counts of base motion — comparable to the whole start tolerance, which is worth noticing. A return of $0.62$ then means the tool reaches $0.20\times0.62=0.124\,\mathrm{m}$ and stops $0.076\,\mathrm{m}$ short: $76\,\mathrm{mm}$, or $156$ counts, of unfinished slot, with the tool halted in mid-air at a pose nobody chose. §7's rule follows directly — the number is a fraction of *your* line, so read it back in the units of the line.
 
 **Step 6 — the two budgets, kept apart.** Nothing in Steps 1 to 5 violates P6's $70\,\mathrm{ms}$, because that budget measures camera mid-exposure to applied force on the cart's own $200\,\mathrm{Hz}$ loop, and planning is not on that chain. A $0.80\,\mathrm{s}$ plan is not a budget failure. A panel pose that reaches the *scene* $200\,\mathrm{ms}$ late is not a MoveIt failure either — MoveIt will plan against it without complaint. Both are failures of the caller to say which clock each number belongs to, and Step 3 is what happens when the two are finally forced to meet.
 
@@ -428,6 +555,133 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a
 
 그림 하나, 패널 둘. 과제는 계획이 더 느린 같은 그림을 요구한다.
 
+<svg viewBox="0 0 560 492" style="max-width:100%;height:auto" role="img" aria-label="패널 A: 지각, move_group, ros2_control이 나란히 있고, 실제 패널과 planning scene 안의 collision object가 한 번만 적용이라는 점선 화살표로 이어지며, follow_joint_trajectory 액션이 move_group에서 P6의 200 Hz 루프 위 궤적 제어기로 건너가고, 카메라에서 ros2_control로 가는 화살표는 없다. 패널 B: 초 축 위에 씬 스냅샷, 0.80 s 계획, 1.50 s 실행이 있고 패널 자세의 나이가 20 ms에서 0.82 s, 2.32 s로 자라며, 5 ms 제어 틱과 70 ms 괄호를 담은 밀리초 축이 따로 있고 둘은 이어지지 않는다.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · 누가 무엇을 믿는가</text>
+  <line x1="158" y1="42" x2="158" y2="250" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="5 4"/>
+  <text x="158" y="37" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">씬 갱신</text>
+  <line x1="386" y1="42" x2="386" y2="250" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="5 4"/>
+  <text x="386" y="37" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8">액션</text>
+  <text x="83" y="52" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">지각</text>
+  <text x="276" y="52" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">move_group</text>
+  <text x="475" y="52" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">ros2_control</text>
+  <rect x="12" y="64" width="140" height="36" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="18" y="79" font-size="11" fill="currentColor">카메라 · 50 Hz</text>
+  <text x="18" y="94" font-size="11" fill="currentColor" opacity="0.75">패널 자세를 발행</text>
+  <rect x="36" y="150" width="88" height="14" fill="currentColor" fill-opacity="0.35" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="44" y1="164" x2="49" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="52" y1="164" x2="57" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="60" y1="164" x2="65" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="68" y1="164" x2="73" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="76" y1="164" x2="81" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="84" y1="164" x2="89" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="92" y1="164" x2="97" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="100" y1="164" x2="105" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="108" y1="164" x2="113" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="116" y1="164" x2="121" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="80" y="180" font-size="11" fill="currentColor" text-anchor="middle">패널 (실물)</text>
+  <line x1="60" y1="100" x2="66" y2="148" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="1.5 3"/>
+  <line x1="104" y1="100" x2="96" y2="148" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="1.5 3"/>
+  <rect x="166" y="64" width="200" height="178" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="174" y="74" width="184" height="104" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="182" y="90" font-size="11" fill="currentColor">planning scene</text>
+  <rect x="256" y="150" width="88" height="14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <text x="300" y="128" font-size="11" fill="currentColor" text-anchor="middle">collision object</text>
+  <text x="300" y="142" font-size="11" fill="currentColor" text-anchor="middle">로서의 패널</text>
+  <rect x="174" y="188" width="88" height="24" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="218" y="204" font-size="11" fill="currentColor" text-anchor="middle">SRDF 그룹</text>
+  <rect x="270" y="188" width="88" height="24" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="314" y="204" font-size="11" fill="currentColor" text-anchor="middle">파이프라인</text>
+  <line x1="126" y1="157" x2="246.5" y2="157" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <polygon points="253,157 246,160.4 246,153.6" fill="currentColor"/>
+  <text x="162" y="150" font-size="11" fill="currentColor" font-weight="600">한 번만 적용</text>
+  <text x="18" y="206" font-size="11" fill="currentColor" opacity="0.75">루프가 아니다: 씬을</text>
+  <text x="18" y="220" font-size="11" fill="currentColor" opacity="0.75">다시 발행하는 것은 없다</text>
+  <rect x="404" y="96" width="148" height="42" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="478" y="121" font-size="11" fill="currentColor" text-anchor="middle">궤적 제어기</text>
+  <rect x="404" y="160" width="148" height="40" rx="3" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <text x="478" y="176" font-size="11" fill="currentColor" text-anchor="middle">P6 루프 · 200 Hz</text>
+  <text x="478" y="191" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75">read–update–write</text>
+  <line x1="478" y1="138" x2="478" y2="153.5" stroke="currentColor" stroke-width="1.2"/>
+  <polygon points="478,160 474.6,153 481.4,153" fill="currentColor"/>
+  <text x="396" y="72" font-size="11" fill="currentColor" font-weight="600">follow_joint_trajectory</text>
+  <text x="396" y="87" font-size="11" fill="currentColor" opacity="0.8">목표를 보내고 결과를 기다린다</text>
+  <line x1="366" y1="106" x2="397.5" y2="106" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="404,106 397,109.4 397,102.6" fill="currentColor"/>
+  <line x1="404" y1="128" x2="372.5" y2="128" stroke="currentColor" stroke-width="1.5"/>
+  <polygon points="366,128 373,124.6 373,131.4" fill="currentColor"/>
+  <text x="8" y="268" font-size="11" fill="currentColor" opacity="0.85">카메라에서 ros2_control로 가는 화살표는 없다. P6의 70 ms 사슬은 MoveIt을 지나지 않는다.</text>
+  <line x1="8" y1="284" x2="552" y2="284" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="302" font-size="12" fill="currentColor" font-weight="600">B · 시계는 하나가 아니라 둘</text>
+  <path d="M30.0 396.0 L333.6 396.0 L333.6 346.0 L30.0 395.6 Z" fill="currentColor" fill-opacity="0.22" stroke="none"/>
+  <polyline points="30,395.6 333.6,346" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <line x1="30" y1="396" x2="333.6" y2="396" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="30" y="326" font-size="11" fill="currentColor" font-weight="600">패널 자세의 나이</text>
+  <text x="30" y="340" font-size="11" fill="currentColor" opacity="0.75">카트가 간 거리</text>
+  <line x1="30" y1="338" x2="30" y2="426" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+  <line x1="135.6" y1="338" x2="135.6" y2="426" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+  <line x1="333.6" y1="338" x2="333.6" y2="426" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+  <text x="34" y="362" font-size="11" fill="currentColor" font-weight="600">20 ms</text>
+  <text x="34" y="376" font-size="11" fill="currentColor" opacity="0.75">5.0 mm</text>
+  <text x="139.6" y="352.3" font-size="11" fill="currentColor" font-weight="600">0.82 s</text>
+  <text x="139.6" y="366.3" font-size="11" fill="currentColor" opacity="0.75">205 mm</text>
+  <text x="328.6" y="367" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">2.32 s</text>
+  <text x="328.6" y="381" font-size="11" fill="currentColor" text-anchor="end" opacity="0.75">580 mm</text>
+  <rect x="30" y="406" width="105.6" height="16" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <rect x="135.6" y="406" width="198" height="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8"/>
+  <line x1="30" y1="400" x2="30" y2="428" stroke="currentColor" stroke-width="2.6"/>
+  <text x="84.8" y="418" font-size="11" fill="currentColor" text-anchor="middle">계획 0.80 s</text>
+  <text x="234.6" y="418" font-size="11" fill="currentColor" text-anchor="middle">실행 1.50 s</text>
+  <line x1="30" y1="434" x2="360" y2="434" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="30" y1="434" x2="30" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="30" y="450" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="96" y1="434" x2="96" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="96" y="450" font-size="11" fill="currentColor" text-anchor="middle">0.5</text>
+  <line x1="162" y1="434" x2="162" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="162" y="450" font-size="11" fill="currentColor" text-anchor="middle">1.0</text>
+  <line x1="228" y1="434" x2="228" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="228" y="450" font-size="11" fill="currentColor" text-anchor="middle">1.5</text>
+  <line x1="294" y1="434" x2="294" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="294" y="450" font-size="11" fill="currentColor" text-anchor="middle">2.0</text>
+  <line x1="360" y1="434" x2="360" y2="438" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="360" y="450" font-size="11" fill="currentColor" text-anchor="middle">2.5</text>
+  <text x="360" y="466" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">초</text>
+  <text x="26" y="466" font-size="11" fill="currentColor" opacity="0.85">↑ 씬 스냅샷</text>
+  <rect x="386" y="314" width="166" height="150" rx="4" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"/>
+  <text x="394" y="330" font-size="11" fill="currentColor" font-weight="600">밀리초 (확대)</text>
+  <line x1="398" y1="360" x2="398" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="406.9" y1="360" x2="406.9" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="415.8" y1="360" x2="415.8" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="424.6" y1="360" x2="424.6" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="433.5" y1="360" x2="433.5" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="442.4" y1="360" x2="442.4" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="451.2" y1="360" x2="451.2" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="460.1" y1="360" x2="460.1" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="469" y1="360" x2="469" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="477.9" y1="360" x2="477.9" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="486.8" y1="360" x2="486.8" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="495.6" y1="360" x2="495.6" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="504.5" y1="360" x2="504.5" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="513.4" y1="360" x2="513.4" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="522.2" y1="360" x2="522.2" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="531.1" y1="360" x2="531.1" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="540" y1="360" x2="540" y2="376" stroke="currentColor" stroke-width="1.1"/>
+  <text x="394" y="352" font-size="11" fill="currentColor" opacity="0.85">5 ms 제어 틱</text>
+  <polyline points="398,392 398,398 522.2,398 522.2,392" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+  <text x="460.1" y="413" font-size="11" fill="currentColor" text-anchor="middle">70 ms 예산</text>
+  <line x1="398" y1="424" x2="540" y2="424" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="398" y1="424" x2="398" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="398" y="440" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="433.5" y1="424" x2="433.5" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="433.5" y="440" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <line x1="469" y1="424" x2="469" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="469" y="440" font-size="11" fill="currentColor" text-anchor="middle">40</text>
+  <line x1="504.5" y1="424" x2="504.5" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="504.5" y="440" font-size="11" fill="currentColor" text-anchor="middle">60</text>
+  <line x1="540" y1="424" x2="540" y2="428" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="540" y="440" font-size="11" fill="currentColor" text-anchor="middle">80</text>
+  <text x="550" y="480" font-size="11" fill="currentColor" text-anchor="end" opacity="0.8">두 축 사이는 아무것도 잇지 않는다</text>
+</svg>
+
 **패널 A — 누가 무엇을 믿는가.** 영역 셋을 나란히 두고 그 사이에 이름 붙은 경계 둘을 긋는다. `지각`($50\,\mathrm{Hz}$로 패널 자세를 내는 카메라), `move_group`(planning scene, SRDF 그룹, 파이프라인을 쥔다), `ros2_control`(궤적 제어기와 P6의 $200\,\mathrm{Hz}$ 루프). 패널은 *두 번* 그린다. 왼쪽에는 실제 물체로, 다시 planning scene 안에는 collision object로. 둘을 점선 화살표로 잇고 `한 번만 적용`이라고 적는다. 그림이 맞혀야 할 것이 셋이다. 그 점선 화살표는 되먹임 루프가 **아니다**. 내 코드가 다시 발행하지 않는 한 씬을 갱신하는 것은 없고, 그것이 계산 절 전체의 내용이다. `move_group`과 `ros2_control` 사이의 경계에는 토픽이 아니라 **액션** `follow_joint_trajectory`가 놓인다. MoveIt은 액션 클라이언트이고 결과를 알아야 하기 때문이다. 그리고 카메라에서 `ros2_control`로 가는 화살표는 **하나도 없다**. P6의 $70\,\mathrm{ms}$ 예산은 MoveIt이 끼어 있지 않은 사슬 위에 있기 때문이다.
 
 **패널 B — 시계는 하나가 아니라 둘.** 가로축 하나를 초 단위 $0$에서 $2.5$로 긋고, 오른쪽에 밀리초로 확대한 축을 따로 끼워 넣는다. 초 축에는 구간 셋을 이어 붙여 표시한다. `씬 스냅샷`(눈금 하나), $0.80\,\mathrm{s}$짜리 `계획`, $1.50\,\mathrm{s}$짜리 `실행`. 그 위에 왼쪽에서 오른쪽으로 길어지는 막대를 그리고 `패널 자세의 나이`라고 이름 붙인 뒤 경계 셋에서의 값을 적는다. 확대한 축에는 $5\,\mathrm{ms}$ 제어 틱과 $70\,\mathrm{ms}$ 괄호 하나를 그리고, 두 축 사이는 아무것도 잇지 않는다. 그 사이의 빈틈이 이 그림의 논증이다.
@@ -468,7 +722,7 @@ $$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20$$
 
 이므로 이웃한 궤적 점 사이에 제어 주기 스무 번이 들어가고 제어기가 그 사이를 보간한다([[04-robotics/ros2/simulation-and-control|25.7 §11]]). 궤적은 성기고 루프는 촘촘하다. 그것이 의도된 분업이다. MoveIt은 어디로 언제를 말하고, `ros2_control`은 얼마나 자주를 말한다.
 
-**Step 5 — `fraction`을 비율이 아니라 거리로.** $0.20\,\mathrm{m}$짜리 삽입 직선을 기본 `eef_step` $0.01\,\mathrm{m}$로 잡자. 보간 자세 $0.20/0.01 = 20$개와 IK 해 20번이고, 한 스텝은 $0.01\times2048=20.5$ 엔코더 카운트의 베이스 이동에 해당한다. 시작 허용 오차 전체와 맞먹는 값이라 눈여겨볼 만하다. 여기서 $0.62$가 돌아왔다면 도구는 $0.20\times0.62=0.124\,\mathrm{m}$까지 가서 $0.076\,\mathrm{m}$을 남기고 멈춘다. $76\,\mathrm{mm}$, 즉 $156$ 카운트만큼 슬롯이 덜 들어갔고, 도구는 아무도 고르지 않은 자세로 허공에 서 있다. §7의 규칙이 여기서 곧바로 따라 나온다. 그 숫자는 *내가 그은* 직선의 분수이므로, 그 직선의 단위로 되읽어야 한다.
+**Step 5 — `fraction`을 비율이 아니라 거리로.** $0.20\,\mathrm{m}$짜리 삽입 직선을 §7의 `eef_step` $0.01\,\mathrm{m}$로 잡자. 보간 자세 $0.20/0.01 = 20$개와 IK 해 20번이고, 한 스텝은 $0.01\times2048=20.5$ 엔코더 카운트의 베이스 이동에 해당한다. 시작 허용 오차 전체와 맞먹는 값이라 눈여겨볼 만하다. 여기서 $0.62$가 돌아왔다면 도구는 $0.20\times0.62=0.124\,\mathrm{m}$까지 가서 $0.076\,\mathrm{m}$을 남기고 멈춘다. $76\,\mathrm{mm}$, 즉 $156$ 카운트만큼 슬롯이 덜 들어갔고, 도구는 아무도 고르지 않은 자세로 허공에 서 있다. §7의 규칙이 여기서 곧바로 따라 나온다. 그 숫자는 *내가 그은* 직선의 분수이므로, 그 직선의 단위로 되읽어야 한다.
 
 **Step 6 — 두 예산을 갈라 두기.** Step 1부터 5까지의 어느 것도 P6의 $70\,\mathrm{ms}$를 어기지 않는다. 그 예산은 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서 카메라 노출 중간부터 힘까지를 재고, 계획은 그 사슬 위에 있지 않기 때문이다. $0.80\,\mathrm{s}$짜리 계획은 예산 위반이 아니다. 패널 자세가 *씬*에 $200\,\mathrm{ms}$ 늦게 닿는 것도 MoveIt의 실패가 아니다. MoveIt은 불평 없이 그것으로 계획한다. 둘 다 각 숫자가 어느 시계에 속하는지 말하지 않은 호출자의 실패이고, 두 시계가 끝내 마주치면 무슨 일이 나는지가 Step 3이다.
 

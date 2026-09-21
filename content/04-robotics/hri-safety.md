@@ -52,6 +52,80 @@ The tool matters because the hazard is the swept volume, not the base: with the 
 
 Draw it once; the problem set asks for the same drawing at different numbers.
 
+<svg viewBox="0 0 560 516" style="max-width:100%;height:auto" role="img" aria-label="Safety-cell homework diagram: P2 in plan with its tool, the dashed hazard circle of radius 2.25 m, the solid sensing-field circle at 3.49 m, the six terms of the 1.24 m separation distance laid end to end to scale along one approach line, and underneath the clock from the field boundary to the stop at 0.40 s">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">plan view (m)</text>
+  <path d="M521.1 294 A223.4 223.4 0 1 0 78.9 294" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <path d="M440.4 294 A144 144 0 1 0 159.6 294" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="6 4"/>
+  <line x1="300" y1="262" x2="364" y2="262" stroke="currentColor" stroke-width="4.0" stroke-linecap="round"/>
+  <line x1="364" y1="262" x2="364" y2="198" stroke="currentColor" stroke-width="4.0" stroke-linecap="round"/>
+  <line x1="364" y1="198" x2="364" y2="182" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+  <rect x="291" y="253" width="18" height="18" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.25"/>
+  <circle cx="364" cy="262" r="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="1.0"/>
+  <circle cx="364" cy="182" r="2.6" stroke="none" fill="currentColor"/>
+  <text x="354" y="236" font-size="11" fill="currentColor" text-anchor="end">P2 at θ = (0°, 90°)</text>
+  <text x="356" y="187" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">tool 0.25 m</text>
+  <text x="300" y="148" font-size="11" fill="currentColor" text-anchor="middle">hazard boundary</text>
+  <text x="300" y="163" font-size="11" fill="currentColor" text-anchor="middle">R<tspan dy="3.1" font-size="8.6">h</tspan><tspan dx="3.1" dy="-3.1">= 2.25 m</tspan></text>
+  <text x="300" y="72.6" font-size="11" fill="currentColor" text-anchor="middle">sensing-field boundary</text>
+  <text x="300" y="87.6" font-size="11" fill="currentColor" text-anchor="middle">R<tspan dy="3.1" font-size="8.6">h</tspan><tspan dx="3.1" dy="-3.1">+ S</tspan><tspan dy="3.1" font-size="8.6">p</tspan><tspan dx="3.1" dy="-3.1">= 3.49 m</tspan></text>
+  <line x1="156" y1="262" x2="288" y2="262" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" stroke-dasharray="2 3"/>
+  <rect x="76.6" y="258" width="6.4" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.07"/>
+  <rect x="83" y="258" width="12.8" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.3"/>
+  <rect x="95.8" y="258" width="41" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.15"/>
+  <rect x="136.8" y="258" width="9.6" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.38"/>
+  <rect x="146.4" y="258" width="6.4" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="152.8" y="258" width="3.2" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.46"/>
+  <circle cx="65.6" cy="242" r="4.6" stroke="currentColor" stroke-width="1.3" fill="none"/>
+  <line x1="65.6" y1="247" x2="65.6" y2="259" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="65.6" y1="259" x2="60.6" y2="270" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="65.6" y1="259" x2="70.6" y2="270" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="59.6" y1="251" x2="71.6" y2="251" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="88.6" y1="236" x2="115.8" y2="236" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M120.6 236 L114.6 238.5 L114.6 233.5 Z" fill="currentColor" stroke="none"/>
+  <text x="86.6" y="228" font-size="11" fill="currentColor">v<tspan dy="3.1" font-size="8.6">h</tspan><tspan dx="3.1" dy="-3.1">= 1.6 m/s</tspan></text>
+  <text x="78.6" y="282" font-size="11" fill="currentColor" fill-opacity="0.85">× 6 below</text>
+  <rect x="50" y="327" width="38.4" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.07"/>
+  <text x="69.2" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.10</text>
+  <text x="69.2" y="340" font-size="11" fill="currentColor" text-anchor="middle">Z<tspan dy="3.1" font-size="8.6">d</tspan></text>
+  <rect x="88.4" y="327" width="76.8" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.3"/>
+  <text x="126.8" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.20</text>
+  <text x="126.8" y="340" font-size="11" fill="currentColor" text-anchor="middle">C</text>
+  <rect x="165.2" y="327" width="245.8" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.15"/>
+  <text x="288.1" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.64</text>
+  <text x="288.1" y="340" font-size="11" fill="currentColor" text-anchor="middle">S<tspan dy="3.1" font-size="8.6">h</tspan></text>
+  <rect x="411" y="327" width="57.6" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.38"/>
+  <text x="439.8" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.15</text>
+  <text x="439.8" y="340" font-size="11" fill="currentColor" text-anchor="middle">S<tspan dy="3.1" font-size="8.6">s</tspan></text>
+  <rect x="468.6" y="327" width="38.4" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22"/>
+  <text x="487.8" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.10</text>
+  <text x="487.8" y="340" font-size="11" fill="currentColor" text-anchor="middle">S<tspan dy="3.1" font-size="8.6">r</tspan></text>
+  <rect x="507" y="327" width="19.2" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.46"/>
+  <text x="516.6" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.05</text>
+  <text x="516.6" y="340" font-size="11" fill="currentColor" text-anchor="middle">Z<tspan dy="3.1" font-size="8.6">r</tspan></text>
+  <text x="50" y="322" font-size="11" fill="currentColor" fill-opacity="0.85">field boundary</text>
+  <text x="526.2" y="322" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">hazard boundary</text>
+  <text x="288.1" y="322" font-size="11" fill="currentColor" text-anchor="middle">S<tspan dy="3.1" font-size="8.6">p</tspan><tspan dx="3.1" dy="-3.1">= 1.24 m</tspan></text>
+  <text x="50" y="378" font-size="11" fill="currentColor">t = 0: the body crosses the field boundary</text>
+  <rect x="50" y="384" width="400" height="13" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22"/>
+  <text x="250" y="394" font-size="11" fill="currentColor" text-anchor="middle">person still walking, all 0.40 s</text>
+  <line x1="50" y1="410" x2="490" y2="410" stroke="currentColor" stroke-width="1.2"/>
+  <path d="M502 410 L496 412.5 L496 407.5 Z" fill="currentColor" stroke="none"/>
+  <text x="506" y="414" font-size="11" fill="currentColor">t (s)</text>
+  <line x1="50" y1="405" x2="50" y2="415" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="110" y1="405" x2="110" y2="415" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="150" y1="405" x2="150" y2="415" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="450" y1="405" x2="450" y2="415" stroke="currentColor" stroke-width="1.4"/>
+  <text x="50" y="429" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="150" y1="416" x2="150" y2="425" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="1.5 2"/>
+  <line x1="110" y1="416" x2="110" y2="443" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="1.5 2"/>
+  <line x1="450" y1="416" x2="450" y2="425" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="1.5 2"/>
+  <text x="153" y="435" font-size="11" fill="currentColor">T<tspan dy="3.1" font-size="8.6">r</tspan><tspan dx="3.1" dy="-3.1">= 0.10 s: brake command</tspan></text>
+  <text x="450" y="435" font-size="11" fill="currentColor" text-anchor="middle">T<tspan dy="3.1" font-size="8.6">r</tspan><tspan dx="3.1" dy="-3.1">+ T</tspan><tspan dy="3.1" font-size="8.6">s</tspan><tspan dx="3.1" dy="-3.1">= 0.40 s: stopped</tspan></text>
+  <text x="113" y="453" font-size="11" fill="currentColor">T<tspan dy="3.1" font-size="8.6">sens</tspan><tspan dx="3.1" dy="-3.1">= 0.06 s: tracker reports</tspan></text>
+  <text x="16" y="484" font-size="11" fill="currentColor" fill-opacity="0.9">S<tspan dy="3.1" font-size="8.6">p</tspan><tspan dx="3.1" dy="-3.1">= 0.64 + 0.10 + 0.15 + 0.20 + 0.10 + 0.05 = 1.24 m, measured outward from the hazard boundary;</tspan></text>
+  <text x="16" y="500" font-size="11" fill="currentColor" fill-opacity="0.9">S<tspan dy="3.1" font-size="8.6">h</tspan><tspan dy="-3.1">, the person walking, is 51.6% of it. The field starts at 3.49 m: 38.3 m² of floor for a 2.25 m reach.</tspan></text>
+</svg>
+
 **Top — the plan view.** P2's base at the origin. Link 1 along $+x$ to $(1,0)$, link 2 up to the tip at $(1,1)$, the tool beyond it. A dashed circle of radius $R_h = 2.25$ m around the base: the hazard boundary. A second, solid circle at $R_h + S_p$: the sensing-field boundary. One straight approach line running inward from the field boundary toward the arm, with the person on it walking at $v_h$. On that line, mark the six contributions end to end as segments, in the order a body actually spends them: $C$ first (the reach into the field before detection), then $S_h$ (how far the person travels while the robot reacts and stops), then $S_r$ and $S_s$ (the robot's own travel and stopping distance, measured from the hazard boundary outward), and $Z_d$, $Z_r$ at each end as the two uncertainty pads. The segments must be drawn to scale — that is the whole point of the drawing.
 
 **Bottom — the clock, on the same horizontal axis.** $t = 0$ when the body crosses the field boundary. A tick at $T_{\text{sens}} = 0.06$ s where the tracker first reports the person; a tick at $T_r = 0.10$ s where the brake command leaves the controller; a tick at $T_r + T_s = 0.40$ s where motion has stopped. Above the clock, one bar showing the person still walking through all 0.40 s, because nothing the robot does shortens it.
@@ -95,7 +169,7 @@ Reaction time is charged twice — once to the person's approach through $S_h$ a
 - Slowing the robot from 1.0 to 0.5 m/s saves $0.25 \times 0.5 = 0.125$ m: $S_p$ falls to 1.115 m.
 - Stopping the robot dead, $v_r = 0$, still leaves $S_p = 0.99$ m. So the **entire** budget available from robot speed is $1.24 - 0.99 = 0.25$ m.
 
-That last line is the whole lecture in one inequality: $0.25 < 0.26$. A detector regression of one tenth of a second cannot be paid for by slowing the robot *at all*, because buying 0.26 m back would need $0.26 / 0.25 = 1.04$ m/s of speed and the robot only has 1.0 m/s to give. Speed scaling and sensing latency are not interchangeable knobs, and §6 is where you will see papers trade one for the other in words.
+That last line is the whole lecture in one comparison: the robot's entire speed budget, $0.25$ m, is about what one tenth of a second of detector latency costs, $0.26$ m. The sensitivities are slopes at this cell, and $S_p$ contains the product $v_rT_r$, so settle the trade exactly: with the slower detector $T_r = 0.20$ s and $S_p = 1.15 + 0.35\,v_r$, so getting back to 1.24 m needs $v_r \le 0.09/0.35 = 0.26$ m/s. One tenth of a second of latency is paid for with three quarters of the robot's speed. Speed scaling and sensing latency are not interchangeable knobs at any rate a paper would advertise, and §6 is where you will see papers trade one for the other in words. Step 8 of [[04-robotics/capstone-panel-contact|26. Capstone]] runs a joint-limit trapezoid through this same $S_p$: the tip reaches $2.04\,\mathrm{m/s}$, $S_p$ grows to $1.50\,\mathrm{m}$, and the check fails until that leg is slowed at the tip.
 
 ### 1. Autonomy is a spectrum
 
@@ -405,8 +479,8 @@ A procurement decision has landed on the cell. The new person-tracker is cheaper
 
 > [!tip]- Solutions
 > 1. The drawing must keep $C$, $Z_d$ and $Z_r$ at the lengths they had — those three are the unchanged ones, since none of them contains a speed or a time. $S_h$ must be visibly longer than before and $S_s$ visibly shorter. On the clock, the interval from $t = 0$ to $t = 0.20$ s is the person walking while the robot has not yet begun to brake, and the first 0.16 s of it is the detector alone.
-> 2. $S_h = 1.6(0.20 + 0.30) = 0.80$ m; $S_r = 0.6 \times 0.20 = 0.12$ m; $S_s = \tfrac{1}{2}(0.6)(0.30) = 0.09$ m; $S_p = 0.80 + 0.12 + 0.09 + 0.20 + 0.10 + 0.05 = 1.36$ m. The field must start at $2.25 + 1.36 = 3.61$ m. The compensation fails, and by more than it looks: $S_p$ went **up** by 0.12 m even after the robot gave up 40% of its speed. At $T_r = 0.20$ s the sensitivity is $\partial S_p/\partial v_r = 0.20 + 0.15 = 0.35$ s, so taking the robot all the way to $v_r = 0$ would buy only $0.35 \times 0.6 = 0.21$ m — less than the $0.26$ m the slower detector cost. The slower detector is not purchasable with speed at any price.
-> 3. It must have changed $T_r$ (a faster detector, or a shorter brake-command path) or $C$ (a sensing field that detects a body earlier, which is the same claim in different clothing). Speed cannot do it: the whole speed budget is $0.25$ m at $T_r = 0.10$ s and $0.21$ m at $T_r = 0.20$ s, both below 0.5 m. What an $S_p$ still does not tell you: whether the cell actually stops — the separation function is worthless without a verified stop, which is the monitored-standstill and emergency-stop machinery of §6 — and what the change cost in cycle time, which is the honest way to report a separation result at all.
+> 2. $S_h = 1.6(0.20 + 0.30) = 0.80$ m; $S_r = 0.6 \times 0.20 = 0.12$ m; $S_s = \tfrac{1}{2}(0.6)(0.30) = 0.09$ m; $S_p = 0.80 + 0.12 + 0.09 + 0.20 + 0.10 + 0.05 = 1.36$ m. The field must start at $2.25 + 1.36 = 3.61$ m. The compensation fails, and by more than it looks: $S_p$ went **up** by 0.12 m even after the robot gave up 40% of its speed. At $T_r = 0.20$ s the sensitivity is $\partial S_p/\partial v_r = 0.20 + 0.15 = 0.35$ s, and $S_p$ is linear in $v_r$ at fixed $T_r$, so the robot's whole 1.0 m/s buys at most $0.35$ m ($1.50 \to 1.15$ m), and from the proposed 0.6 m/s only $0.35 \times 0.6 = 0.21$ m is left. Getting back to 1.24 m needs $1.15 + 0.35\,v_r \le 1.24$, that is $v_r \le 0.26$ m/s: the slower detector can be bought back with speed only by giving up three quarters of it.
+> 3. It must have changed $T_r$ (a faster detector, or a shorter brake-command path) or $C$ (a sensing field that detects a body earlier, which is the same claim in different clothing). Speed cannot do it: the whole speed budget is $0.25$ m at $T_r = 0.10$ s and $0.35$ m at $T_r = 0.20$ s, both below 0.5 m. What an $S_p$ still does not tell you: whether the cell actually stops — the separation function is worthless without a verified stop, which is the monitored-standstill and emergency-stop machinery of §6 — and what the change cost in cycle time, which is the honest way to report a separation result at all.
 
 ### Sources
 
@@ -469,6 +543,80 @@ A procurement decision has landed on the cell. The new person-tracker is cheaper
 
 한 번 그려 두면 과제가 같은 그림을 다른 숫자로 다시 요구한다.
 
+<svg viewBox="0 0 560 516" style="max-width:100%;height:auto" role="img" aria-label="안전 셀 과제 그림: 도구를 든 P2의 평면도, 반지름 2.25 m의 점선 위험 원, 3.49 m의 실선 감지 영역 원, 접근선 하나를 따라 축척대로 이어 붙인 1.24 m 이격 거리의 여섯 항, 그리고 그 아래 영역 경계에서 0.40초 정지까지의 시계">
+  <text x="16" y="24" font-size="12" fill="currentColor" font-weight="600">평면도 (m)</text>
+  <path d="M521.1 294 A223.4 223.4 0 1 0 78.9 294" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <path d="M440.4 294 A144 144 0 1 0 159.6 294" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="6 4"/>
+  <line x1="300" y1="262" x2="364" y2="262" stroke="currentColor" stroke-width="4.0" stroke-linecap="round"/>
+  <line x1="364" y1="262" x2="364" y2="198" stroke="currentColor" stroke-width="4.0" stroke-linecap="round"/>
+  <line x1="364" y1="198" x2="364" y2="182" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+  <rect x="291" y="253" width="18" height="18" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.25"/>
+  <circle cx="364" cy="262" r="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="1.0"/>
+  <circle cx="364" cy="182" r="2.6" stroke="none" fill="currentColor"/>
+  <text x="354" y="236" font-size="11" fill="currentColor" text-anchor="end">P2, θ = (0°, 90°)</text>
+  <text x="356" y="187" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">도구 0.25 m</text>
+  <text x="300" y="148" font-size="11" fill="currentColor" text-anchor="middle">위험 경계</text>
+  <text x="300" y="163" font-size="11" fill="currentColor" text-anchor="middle">R<tspan dy="3.1" font-size="8.6">h</tspan><tspan dx="3.1" dy="-3.1">= 2.25 m</tspan></text>
+  <text x="300" y="72.6" font-size="11" fill="currentColor" text-anchor="middle">감지 영역 경계</text>
+  <text x="300" y="87.6" font-size="11" fill="currentColor" text-anchor="middle">R<tspan dy="3.1" font-size="8.6">h</tspan><tspan dx="3.1" dy="-3.1">+ S</tspan><tspan dy="3.1" font-size="8.6">p</tspan><tspan dx="3.1" dy="-3.1">= 3.49 m</tspan></text>
+  <line x1="156" y1="262" x2="288" y2="262" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" stroke-dasharray="2 3"/>
+  <rect x="76.6" y="258" width="6.4" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.07"/>
+  <rect x="83" y="258" width="12.8" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.3"/>
+  <rect x="95.8" y="258" width="41" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.15"/>
+  <rect x="136.8" y="258" width="9.6" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.38"/>
+  <rect x="146.4" y="258" width="6.4" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.22"/>
+  <rect x="152.8" y="258" width="3.2" height="8" stroke="currentColor" stroke-width="0.6" fill="currentColor" fill-opacity="0.46"/>
+  <circle cx="65.6" cy="242" r="4.6" stroke="currentColor" stroke-width="1.3" fill="none"/>
+  <line x1="65.6" y1="247" x2="65.6" y2="259" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="65.6" y1="259" x2="60.6" y2="270" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="65.6" y1="259" x2="70.6" y2="270" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="59.6" y1="251" x2="71.6" y2="251" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="88.6" y1="236" x2="115.8" y2="236" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M120.6 236 L114.6 238.5 L114.6 233.5 Z" fill="currentColor" stroke="none"/>
+  <text x="86.6" y="228" font-size="11" fill="currentColor">v<tspan dy="3.1" font-size="8.6">h</tspan><tspan dx="3.1" dy="-3.1">= 1.6 m/s</tspan></text>
+  <text x="78.6" y="282" font-size="11" fill="currentColor" fill-opacity="0.85">아래에 6배</text>
+  <rect x="50" y="327" width="38.4" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.07"/>
+  <text x="69.2" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.10</text>
+  <text x="69.2" y="340" font-size="11" fill="currentColor" text-anchor="middle">Z<tspan dy="3.1" font-size="8.6">d</tspan></text>
+  <rect x="88.4" y="327" width="76.8" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.3"/>
+  <text x="126.8" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.20</text>
+  <text x="126.8" y="340" font-size="11" fill="currentColor" text-anchor="middle">C</text>
+  <rect x="165.2" y="327" width="245.8" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.15"/>
+  <text x="288.1" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.64</text>
+  <text x="288.1" y="340" font-size="11" fill="currentColor" text-anchor="middle">S<tspan dy="3.1" font-size="8.6">h</tspan></text>
+  <rect x="411" y="327" width="57.6" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.38"/>
+  <text x="439.8" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.15</text>
+  <text x="439.8" y="340" font-size="11" fill="currentColor" text-anchor="middle">S<tspan dy="3.1" font-size="8.6">s</tspan></text>
+  <rect x="468.6" y="327" width="38.4" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22"/>
+  <text x="487.8" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.10</text>
+  <text x="487.8" y="340" font-size="11" fill="currentColor" text-anchor="middle">S<tspan dy="3.1" font-size="8.6">r</tspan></text>
+  <rect x="507" y="327" width="19.2" height="18" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.46"/>
+  <text x="516.6" y="361" font-size="11" fill="currentColor" text-anchor="middle">0.05</text>
+  <text x="516.6" y="340" font-size="11" fill="currentColor" text-anchor="middle">Z<tspan dy="3.1" font-size="8.6">r</tspan></text>
+  <text x="50" y="322" font-size="11" fill="currentColor" fill-opacity="0.85">영역 경계</text>
+  <text x="526.2" y="322" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">위험 경계</text>
+  <text x="288.1" y="322" font-size="11" fill="currentColor" text-anchor="middle">S<tspan dy="3.1" font-size="8.6">p</tspan><tspan dx="3.1" dy="-3.1">= 1.24 m</tspan></text>
+  <text x="50" y="378" font-size="11" fill="currentColor">t = 0: 신체가 영역 경계를 넘는다</text>
+  <rect x="50" y="384" width="400" height="13" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22"/>
+  <text x="250" y="394" font-size="11" fill="currentColor" text-anchor="middle">사람은 0.40초 내내 계속 걷는다</text>
+  <line x1="50" y1="410" x2="490" y2="410" stroke="currentColor" stroke-width="1.2"/>
+  <path d="M502 410 L496 412.5 L496 407.5 Z" fill="currentColor" stroke="none"/>
+  <text x="506" y="414" font-size="11" fill="currentColor">t (s)</text>
+  <line x1="50" y1="405" x2="50" y2="415" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="110" y1="405" x2="110" y2="415" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="150" y1="405" x2="150" y2="415" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="450" y1="405" x2="450" y2="415" stroke="currentColor" stroke-width="1.4"/>
+  <text x="50" y="429" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="150" y1="416" x2="150" y2="425" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="1.5 2"/>
+  <line x1="110" y1="416" x2="110" y2="443" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="1.5 2"/>
+  <line x1="450" y1="416" x2="450" y2="425" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="1.5 2"/>
+  <text x="153" y="435" font-size="11" fill="currentColor">T<tspan dy="3.1" font-size="8.6">r</tspan><tspan dx="3.1" dy="-3.1">= 0.10 s: 제동 명령</tspan></text>
+  <text x="450" y="435" font-size="11" fill="currentColor" text-anchor="middle">T<tspan dy="3.1" font-size="8.6">r</tspan><tspan dx="3.1" dy="-3.1">+ T</tspan><tspan dy="3.1" font-size="8.6">s</tspan><tspan dx="3.1" dy="-3.1">= 0.40 s: 정지</tspan></text>
+  <text x="113" y="453" font-size="11" fill="currentColor">T<tspan dy="3.1" font-size="8.6">sens</tspan><tspan dx="3.1" dy="-3.1">= 0.06 s: 추적기 보고</tspan></text>
+  <text x="16" y="484" font-size="11" fill="currentColor" fill-opacity="0.9">S<tspan dy="3.1" font-size="8.6">p</tspan><tspan dx="3.1" dy="-3.1">= 0.64 + 0.10 + 0.15 + 0.20 + 0.10 + 0.05 = 1.24 m, 위험 경계에서 바깥쪽으로 잰다.</tspan></text>
+  <text x="16" y="500" font-size="11" fill="currentColor" fill-opacity="0.9">사람이 걷는 몫 S<tspan dy="3.1" font-size="8.6">h</tspan><tspan dy="-3.1">가 51.6%다. 영역은 3.49 m에서 시작한다: 2.25 m 팔에 바닥 38.3 m².</tspan></text>
+</svg>
+
 **위 — 평면도.** P2의 베이스가 원점. 링크 1이 $+x$로 $(1,0)$까지, 링크 2가 위로 말단 $(1,1)$까지, 그 너머로 도구. 베이스를 중심으로 반지름 $R_h = 2.25$ m의 점선 원: 위험 경계. 그 밖에 $R_h + S_p$의 실선 원: 감지 영역 경계. 영역 경계에서 팔 쪽으로 곧게 들어오는 접근선 하나를 긋고, 그 위에 $v_h$로 걷는 사람을 놓는다. 그 선 위에 여섯 기여를, 신체가 실제로 쓰는 순서대로 이어 붙여 표시한다: 먼저 $C$(감지되기 전에 영역 안으로 들어간 거리), 다음 $S_h$(로봇이 반응하고 멈추는 동안 사람이 이동한 거리), 다음 $S_r$과 $S_s$(위험 경계에서 바깥쪽으로 잰 로봇 자신의 이동 거리와 정지 거리), 그리고 양 끝에 두 불확실성 여유 $Z_d$, $Z_r$. 선분은 반드시 축척에 맞게 그려야 한다 — 그것이 이 그림의 전부다.
 
 **아래 — 같은 가로축 위의 시계.** 신체가 영역 경계를 넘는 순간이 $t = 0$. $T_{\text{sens}} = 0.06$ s에 추적기가 사람을 처음 보고하는 눈금, $T_r = 0.10$ s에 제동 명령이 제어기를 떠나는 눈금, $T_r + T_s = 0.40$ s에 운동이 멈춘 눈금. 시계 위에는 0.40초 내내 계속 걷고 있는 사람을 막대 하나로 그린다. 로봇이 무엇을 하든 그 구간은 짧아지지 않기 때문이다.
@@ -512,7 +660,7 @@ $$\frac{\partial S_p}{\partial T_r} = v_h + v_r = 2.6\ \mathrm{m/s}, \qquad \fra
 - 로봇을 1.0에서 0.5 m/s로 늦추면 $0.25 \times 0.5 = 0.125$ m를 아낀다. $S_p$는 1.115 m로 떨어진다.
 - 로봇을 아예 세워도, $v_r = 0$에서 $S_p = 0.99$ m가 남는다. 즉 로봇 속도로 쓸 수 있는 예산 **전부**가 $1.24 - 0.99 = 0.25$ m다.
 
-마지막 줄이 부등식 하나로 요약한 이 강의다: $0.25 < 0.26$. 0.1초짜리 검출 성능 후퇴는 로봇을 늦춰서 *전혀* 메울 수 없다. 0.26 m를 되사려면 $0.26 / 0.25 = 1.04$ m/s의 속도가 필요한데 로봇에게는 1.0 m/s밖에 없기 때문이다. 속도 스케일링과 감지 지연은 서로 바꿔 쓸 수 있는 손잡이가 아니고, §6은 논문들이 그 둘을 말로 맞바꾸는 것을 보게 되는 곳이다.
+마지막 줄이 비교 하나로 요약한 이 강의다. 로봇 속도가 가진 예산 전체 $0.25$ m가 검출 지연 0.1초의 값 $0.26$ m와 거의 같다. 민감도는 이 셀에서의 기울기이고 $S_p$에는 곱 $v_rT_r$이 들어 있으니 맞교환을 정확히 따져 보자. 느려진 검출기에서는 $T_r = 0.20$ s, $S_p = 1.15 + 0.35\,v_r$이므로, 1.24 m로 돌아가려면 $v_r \le 0.09/0.35 = 0.26$ m/s여야 한다. 0.1초의 지연을 로봇 속도의 4분의 3으로 치르는 셈이다. 속도 스케일링과 감지 지연은 논문이 내세울 만한 어떤 비율로도 서로 바꿔 쓸 수 있는 손잡이가 아니고, §6은 논문들이 그 둘을 말로 맞바꾸는 것을 보게 되는 곳이다. [[04-robotics/capstone-panel-contact|26. 캡스톤]]의 8단계는 관절 한계 사다리꼴을 이 같은 $S_p$에 통과시킨다. 말단이 $2.04\,\mathrm{m/s}$에 이르러 $S_p$가 $1.50\,\mathrm{m}$로 커지고, 그 구간을 말단에서 늦출 때까지 검사는 실패한다.
 
 ### 1. 자율성은 스펙트럼이다
 
@@ -843,8 +991,8 @@ Tier B. 위의 **P2** 안전 셀 위에서 손으로 유도한다. 이 페이지
 
 > [!tip]- 정답 · Solutions
 > 1. 그림에서 $C$, $Z_d$, $Z_r$은 이전 길이 그대로여야 한다. 셋 다 안에 속도도 시간도 없으므로 바뀌지 않은 것이 이 셋이다. $S_h$는 눈에 띄게 길어지고 $S_s$는 눈에 띄게 짧아져야 한다. 시계에서 $t = 0$부터 $t = 0.20$ s까지가 로봇이 아직 제동을 시작하지 않은 채 사람이 걷는 구간이고, 그중 앞의 0.16초는 검출기만의 몫이다.
-> 2. $S_h = 1.6(0.20 + 0.30) = 0.80$ m, $S_r = 0.6 \times 0.20 = 0.12$ m, $S_s = \tfrac{1}{2}(0.6)(0.30) = 0.09$ m, $S_p = 0.80 + 0.12 + 0.09 + 0.20 + 0.10 + 0.05 = 1.36$ m. 영역은 $2.25 + 1.36 = 3.61$ m에서 시작해야 한다. 보상은 실패하고, 보이는 것보다 더 크게 실패한다. 로봇이 속도의 40%를 내놓았는데도 $S_p$는 오히려 0.12 m **늘었다**. $T_r = 0.20$ s에서 민감도는 $\partial S_p/\partial v_r = 0.20 + 0.15 = 0.35$ s이므로 로봇을 $v_r = 0$까지 세워도 $0.35 \times 0.6 = 0.21$ m밖에 못 산다 — 느려진 검출기가 물린 0.26 m보다 적다. 느려진 검출기는 어떤 값을 치러도 속도로 살 수 없다.
-> 3. $T_r$(더 빠른 검출기, 또는 더 짧은 제동 명령 경로)이나 $C$(신체를 더 일찍 감지하는 감지 영역, 곧 옷만 갈아입은 같은 주장)를 바꿨어야 한다. 속도로는 불가능하다. 속도 예산 전체가 $T_r = 0.10$ s에서 $0.25$ m, $T_r = 0.20$ s에서 $0.21$ m로 둘 다 0.5 m에 못 미친다. $S_p$ 하나로 여전히 알 수 없는 것: 셀이 실제로 멈추는지 — 검증된 정지 없이는 이격 기능이 아무 값도 하지 않으며, 그것이 §6의 monitored standstill과 비상 정지 장치다 — 그리고 그 변경이 사이클 타임으로 얼마를 치렀는지. 후자가 이격 결과를 정직하게 보고하는 방법이다.
+> 2. $S_h = 1.6(0.20 + 0.30) = 0.80$ m, $S_r = 0.6 \times 0.20 = 0.12$ m, $S_s = \tfrac{1}{2}(0.6)(0.30) = 0.09$ m, $S_p = 0.80 + 0.12 + 0.09 + 0.20 + 0.10 + 0.05 = 1.36$ m. 영역은 $2.25 + 1.36 = 3.61$ m에서 시작해야 한다. 보상은 실패하고, 보이는 것보다 더 크게 실패한다. 로봇이 속도의 40%를 내놓았는데도 $S_p$는 오히려 0.12 m **늘었다**. $T_r = 0.20$ s에서 민감도는 $\partial S_p/\partial v_r = 0.20 + 0.15 = 0.35$ s이고 $T_r$이 고정이면 $S_p$는 $v_r$에 선형이므로, 로봇의 1.0 m/s 전부로 살 수 있는 것은 최대 $0.35$ m($1.50 \to 1.15$ m)이고 제안된 0.6 m/s에서는 $0.35 \times 0.6 = 0.21$ m만 남는다. 1.24 m로 돌아가려면 $1.15 + 0.35\,v_r \le 1.24$, 곧 $v_r \le 0.26$ m/s여야 한다. 느려진 검출기의 값은 로봇 속도의 4분의 3을 내놓아야만 속도로 되갚을 수 있다.
+> 3. $T_r$(더 빠른 검출기, 또는 더 짧은 제동 명령 경로)이나 $C$(신체를 더 일찍 감지하는 감지 영역, 곧 옷만 갈아입은 같은 주장)를 바꿨어야 한다. 속도로는 불가능하다. 속도 예산 전체가 $T_r = 0.10$ s에서 $0.25$ m, $T_r = 0.20$ s에서 $0.35$ m로 둘 다 0.5 m에 못 미친다. $S_p$ 하나로 여전히 알 수 없는 것: 셀이 실제로 멈추는지 — 검증된 정지 없이는 이격 기능이 아무 값도 하지 않으며, 그것이 §6의 monitored standstill과 비상 정지 장치다 — 그리고 그 변경이 사이클 타임으로 얼마를 치렀는지. 후자가 이격 결과를 정직하게 보고하는 방법이다.
 
 ### 출처
 

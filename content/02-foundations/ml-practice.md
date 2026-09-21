@@ -53,6 +53,94 @@ E1b is not a random sample of the site, so no rate computed on it estimates a de
 
 Draw these three panels once. The problem set asks for the same three at a different threshold.
 
+<svg viewBox="0 0 560 426" style="max-width:100%;height:auto" role="img" aria-label="E1 in three panels: the confusion matrix at threshold 0.55 with the precision column and recall row ringed and TN shaded; the ROC operating point at FPR 0.011, TPR 0.667 with precision 0.80, or 0.27 at a tenth of the crack rate; and the normal, Wilson and bootstrap intervals for 9 of 10">
+  <defs><marker id="aMl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">1 · the 2×2 box (E1a, τ = 0.55)</text>
+  <rect x="178" y="124" width="78" height="44" stroke="none" fill="currentColor" fill-opacity="0.16"/>
+  <rect x="100" y="80" width="156" height="88" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <line x1="178" y1="80" x2="178" y2="168" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="100" y1="124" x2="256" y2="124" stroke="currentColor" stroke-width="1.2"/>
+  <text x="139" y="46" font-size="11" fill="currentColor" text-anchor="middle">predicted</text>
+  <text x="139" y="60" font-size="11" fill="currentColor" text-anchor="middle">crack</text>
+  <text x="217" y="46" font-size="11" fill="currentColor" text-anchor="middle">predicted</text>
+  <text x="217" y="60" font-size="11" fill="currentColor" text-anchor="middle">fine</text>
+  <text x="84" y="99" font-size="11" fill="currentColor" text-anchor="end">really</text>
+  <text x="84" y="113" font-size="11" fill="currentColor" text-anchor="end">cracked</text>
+  <text x="84" y="143" font-size="11" fill="currentColor" text-anchor="end">really</text>
+  <text x="84" y="157" font-size="11" fill="currentColor" text-anchor="end">fine</text>
+  <text x="139" y="106" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">TP = 40</text>
+  <text x="217" y="106" font-size="12" fill="currentColor" text-anchor="middle">FN = 20</text>
+  <text x="139" y="150" font-size="12" fill="currentColor" text-anchor="middle">FP = 10</text>
+  <text x="217" y="150" font-size="12" fill="currentColor" text-anchor="middle">TN = 930</text>
+  <rect x="96" y="69" width="86" height="110" rx="7" stroke="currentColor" stroke-width="2.2" fill="none"/>
+  <rect x="89" y="76" width="178" height="52" rx="7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-dasharray="6 3"/>
+  <text x="217" y="196" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">neither ratio</text>
+  <text x="217" y="210" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">uses this cell</text>
+  <line x1="217" y1="182" x2="217" y2="172" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" marker-end="url(#aMl)"/>
+  <line x1="14" y1="234" x2="40" y2="234" stroke="currentColor" stroke-width="2.2"/>
+  <text x="46" y="238" font-size="11" fill="currentColor">precision = 40/50 = 0.80: the column</text>
+  <line x1="14" y1="250" x2="40" y2="250" stroke="currentColor" stroke-width="2.2" stroke-dasharray="6 3"/>
+  <text x="46" y="254" font-size="11" fill="currentColor">recall = 40/60 = 0.667: the row</text>
+  <text x="316" y="20" font-size="12" fill="currentColor">2 · ROC axes, one point</text>
+  <line x1="346" y1="226" x2="526" y2="226" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7"/>
+  <line x1="346" y1="226" x2="346" y2="46" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7"/>
+  <line x1="346" y1="226" x2="346" y2="230" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="346" y="242" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0</text>
+  <line x1="342" y1="226" x2="346" y2="226" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="339" y="230" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0</text>
+  <line x1="436" y1="226" x2="436" y2="230" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="436" y="242" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <line x1="342" y1="136" x2="346" y2="136" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="339" y="140" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.5</text>
+  <line x1="526" y1="226" x2="526" y2="230" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="526" y="242" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <line x1="342" y1="46" x2="346" y2="46" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="339" y="50" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">1</text>
+  <text x="436" y="258" font-size="11" fill="currentColor" text-anchor="middle">FPR</text>
+  <text x="339" y="38" font-size="11" fill="currentColor" text-anchor="end">TPR</text>
+  <line x1="346" y1="226" x2="526" y2="46" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="4 4"/>
+  <text x="490" y="107.2" font-size="11" fill="currentColor" fill-opacity="0.7">chance</text>
+  <circle cx="347.9" cy="106" r="4.5" stroke="none" fill="currentColor"/>
+  <text x="357.9" y="50" font-size="11" fill="currentColor">precision 0.80</text>
+  <text x="357.9" y="65" font-size="11" fill="currentColor" fill-opacity="0.85">at 6% cracked</text>
+  <text x="357.9" y="84" font-size="11" fill="currentColor">0.27: same point</text>
+  <text x="357.9" y="99" font-size="11" fill="currentColor" fill-opacity="0.85">at 0.6% cracked</text>
+  <text x="357.9" y="118" font-size="11" fill="currentColor" fill-opacity="0.85">(0.011, 0.667)</text>
+  <text x="12" y="292" font-size="12" fill="currentColor">3 · three 95% intervals on 9/10 (E1c pilot)</text>
+  <line x1="64" y1="380" x2="448" y2="380" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="64" y1="380" x2="64" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="64" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0</text>
+  <line x1="160" y1="380" x2="160" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="160" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.25</text>
+  <line x1="256" y1="380" x2="256" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="256" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <line x1="352" y1="380" x2="352" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="352" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.75</text>
+  <line x1="448" y1="380" x2="448" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="448" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <line x1="409.6" y1="378" x2="409.6" y2="308" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="1 3"/>
+  <line x1="448" y1="380" x2="448" y2="312" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="3 3"/>
+  <line x1="338.2" y1="318" x2="448" y2="318" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="338.2" y1="313" x2="338.2" y2="323" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="448" y1="318" x2="481" y2="318" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2"/>
+  <line x1="481" y1="313" x2="481" y2="323" stroke="currentColor" stroke-width="1.6"/>
+  <text x="330.2" y="322" font-size="11" fill="currentColor" text-anchor="end">normal approximation [0.714, 1.086]</text>
+  <line x1="292.8" y1="338" x2="441.1" y2="338" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="292.8" y1="333" x2="292.8" y2="343" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="441.1" y1="333" x2="441.1" y2="343" stroke="currentColor" stroke-width="1.6"/>
+  <text x="284.8" y="342" font-size="11" fill="currentColor" text-anchor="end">Wilson [0.596, 0.982]</text>
+  <line x1="332.8" y1="358" x2="448" y2="358" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="332.8" y1="353" x2="332.8" y2="363" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="448" y1="353" x2="448" y2="363" stroke="currentColor" stroke-width="1.6"/>
+  <text x="324.8" y="362" font-size="11" fill="currentColor" text-anchor="end">percentile bootstrap [0.70, 1.00]</text>
+  <circle cx="448" cy="318" r="3.6" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.0"/>
+  <text x="548" y="305" font-size="11" fill="currentColor" text-anchor="end">leaves the axis at 1</text>
+  <text x="456" y="342" font-size="11" fill="currentColor" fill-opacity="0.85">inside [0, 1]</text>
+  <text x="456" y="362" font-size="11" fill="currentColor" fill-opacity="0.85">capped at 1.00</text>
+  <path d="M404.6 389 L409.6 382 L414.6 389 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="409.6" y="414" font-size="11" fill="currentColor" text-anchor="middle">p̂ = 0.9 (9 of 10)</text>
+</svg>
+
 1. **The 2×2 box.** E1a's four counts in a square, columns labelled by the *prediction* and rows by the *truth*. Ring the column precision divides by and the row recall divides by in two different colours, and mark TP where the two rings cross. Shade TN and write beside it: neither ratio uses this cell.
 2. **The ROC axes, with one point on them.** FPR across, TPR up, the chance diagonal, and E1a's operating point at $(0.011,\ 0.667)$. Beside the point write its precision, $0.80$; then write $0.27$ under that — the precision of the *same point* at a site with one-tenth the crack rate. The point does not move. That is the entire picture.
 3. **The interval strip.** A horizontal axis from 0 to 1. Mark E1c's pilot estimate $\hat p = 0.9$ and stack three intervals above it: the normal approximation, the Wilson interval, the percentile bootstrap. Mark where the first one leaves the axis.
@@ -405,6 +493,94 @@ E1b는 현장의 무작위 표본이 아니므로 여기서 계산한 어떤 비
 ### 과제가 그릴 그림 · Homework diagram
 
 세 그림을 한 번 그려 두면 과제는 문턱값만 바꾼 같은 세 그림을 묻는다.
+
+<svg viewBox="0 0 560 426" style="max-width:100%;height:auto" role="img" aria-label="E1을 세 칸에: 문턱값 0.55의 혼동 행렬과 정밀도 열·재현율 행 테두리, 칠한 TN; FPR 0.011, TPR 0.667의 ROC 동작점과 정밀도 0.80, 균열 비율이 10분의 1이면 0.27; 10번 중 9번에 대한 정규근사·Wilson·부트스트랩 구간">
+  <defs><marker id="aMlK" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">1 · 2×2 상자 (E1a, τ = 0.55)</text>
+  <rect x="178" y="124" width="78" height="44" stroke="none" fill="currentColor" fill-opacity="0.16"/>
+  <rect x="100" y="80" width="156" height="88" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <line x1="178" y1="80" x2="178" y2="168" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="100" y1="124" x2="256" y2="124" stroke="currentColor" stroke-width="1.2"/>
+  <text x="139" y="46" font-size="11" fill="currentColor" text-anchor="middle">균열로</text>
+  <text x="139" y="60" font-size="11" fill="currentColor" text-anchor="middle">예측</text>
+  <text x="217" y="46" font-size="11" fill="currentColor" text-anchor="middle">정상으로</text>
+  <text x="217" y="60" font-size="11" fill="currentColor" text-anchor="middle">예측</text>
+  <text x="84" y="99" font-size="11" fill="currentColor" text-anchor="end">실제</text>
+  <text x="84" y="113" font-size="11" fill="currentColor" text-anchor="end">균열</text>
+  <text x="84" y="143" font-size="11" fill="currentColor" text-anchor="end">실제</text>
+  <text x="84" y="157" font-size="11" fill="currentColor" text-anchor="end">정상</text>
+  <text x="139" y="106" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">TP = 40</text>
+  <text x="217" y="106" font-size="12" fill="currentColor" text-anchor="middle">FN = 20</text>
+  <text x="139" y="150" font-size="12" fill="currentColor" text-anchor="middle">FP = 10</text>
+  <text x="217" y="150" font-size="12" fill="currentColor" text-anchor="middle">TN = 930</text>
+  <rect x="96" y="69" width="86" height="110" rx="7" stroke="currentColor" stroke-width="2.2" fill="none"/>
+  <rect x="89" y="76" width="178" height="52" rx="7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-dasharray="6 3"/>
+  <text x="217" y="196" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">두 비 모두</text>
+  <text x="217" y="210" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">이 칸을 안 쓴다</text>
+  <line x1="217" y1="182" x2="217" y2="172" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" marker-end="url(#aMlK)"/>
+  <line x1="14" y1="234" x2="40" y2="234" stroke="currentColor" stroke-width="2.2"/>
+  <text x="46" y="238" font-size="11" fill="currentColor">정밀도 = 40/50 = 0.80: 열</text>
+  <line x1="14" y1="250" x2="40" y2="250" stroke="currentColor" stroke-width="2.2" stroke-dasharray="6 3"/>
+  <text x="46" y="254" font-size="11" fill="currentColor">재현율 = 40/60 = 0.667: 행</text>
+  <text x="316" y="20" font-size="12" fill="currentColor">2 · ROC 축과 점 하나</text>
+  <line x1="346" y1="226" x2="526" y2="226" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7"/>
+  <line x1="346" y1="226" x2="346" y2="46" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7"/>
+  <line x1="346" y1="226" x2="346" y2="230" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="346" y="242" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0</text>
+  <line x1="342" y1="226" x2="346" y2="226" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="339" y="230" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0</text>
+  <line x1="436" y1="226" x2="436" y2="230" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="436" y="242" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <line x1="342" y1="136" x2="346" y2="136" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="339" y="140" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.5</text>
+  <line x1="526" y1="226" x2="526" y2="230" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="526" y="242" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <line x1="342" y1="46" x2="346" y2="46" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="339" y="50" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">1</text>
+  <text x="436" y="258" font-size="11" fill="currentColor" text-anchor="middle">FPR</text>
+  <text x="339" y="38" font-size="11" fill="currentColor" text-anchor="end">TPR</text>
+  <line x1="346" y1="226" x2="526" y2="46" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="4 4"/>
+  <text x="490" y="107.2" font-size="11" fill="currentColor" fill-opacity="0.7">우연 수준</text>
+  <circle cx="347.9" cy="106" r="4.5" stroke="none" fill="currentColor"/>
+  <text x="357.9" y="50" font-size="11" fill="currentColor">정밀도 0.80</text>
+  <text x="357.9" y="65" font-size="11" fill="currentColor" fill-opacity="0.85">균열 6%에서</text>
+  <text x="357.9" y="84" font-size="11" fill="currentColor">0.27: 같은 점</text>
+  <text x="357.9" y="99" font-size="11" fill="currentColor" fill-opacity="0.85">균열 0.6%에서</text>
+  <text x="357.9" y="118" font-size="11" fill="currentColor" fill-opacity="0.85">(0.011, 0.667)</text>
+  <text x="12" y="292" font-size="12" fill="currentColor">3 · 9/10에 대한 95% 구간 셋 (E1c 파일럿)</text>
+  <line x1="64" y1="380" x2="448" y2="380" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="64" y1="380" x2="64" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="64" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0</text>
+  <line x1="160" y1="380" x2="160" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="160" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.25</text>
+  <line x1="256" y1="380" x2="256" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="256" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <line x1="352" y1="380" x2="352" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="352" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.75</text>
+  <line x1="448" y1="380" x2="448" y2="385" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="448" y="398" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <line x1="409.6" y1="378" x2="409.6" y2="308" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="1 3"/>
+  <line x1="448" y1="380" x2="448" y2="312" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="3 3"/>
+  <line x1="338.2" y1="318" x2="448" y2="318" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="338.2" y1="313" x2="338.2" y2="323" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="448" y1="318" x2="481" y2="318" stroke="currentColor" stroke-width="2.4" stroke-dasharray="3 2"/>
+  <line x1="481" y1="313" x2="481" y2="323" stroke="currentColor" stroke-width="1.6"/>
+  <text x="330.2" y="322" font-size="11" fill="currentColor" text-anchor="end">정규근사 [0.714, 1.086]</text>
+  <line x1="292.8" y1="338" x2="441.1" y2="338" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="292.8" y1="333" x2="292.8" y2="343" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="441.1" y1="333" x2="441.1" y2="343" stroke="currentColor" stroke-width="1.6"/>
+  <text x="284.8" y="342" font-size="11" fill="currentColor" text-anchor="end">Wilson [0.596, 0.982]</text>
+  <line x1="332.8" y1="358" x2="448" y2="358" stroke="currentColor" stroke-width="2.4"/>
+  <line x1="332.8" y1="353" x2="332.8" y2="363" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="448" y1="353" x2="448" y2="363" stroke="currentColor" stroke-width="1.6"/>
+  <text x="324.8" y="362" font-size="11" fill="currentColor" text-anchor="end">백분위 부트스트랩 [0.70, 1.00]</text>
+  <circle cx="448" cy="318" r="3.6" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.0"/>
+  <text x="548" y="305" font-size="11" fill="currentColor" text-anchor="end">1에서 축을 벗어난다</text>
+  <text x="456" y="342" font-size="11" fill="currentColor" fill-opacity="0.85">[0, 1] 안</text>
+  <text x="456" y="362" font-size="11" fill="currentColor" fill-opacity="0.85">1.00에서 막힘</text>
+  <path d="M404.6 389 L409.6 382 L414.6 389 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="409.6" y="414" font-size="11" fill="currentColor" text-anchor="middle">p̂ = 0.9 (10번 중 9번)</text>
+</svg>
 
 1. **2×2 상자.** E1a의 네 개수를 정사각형에 넣고 열에는 *예측*, 행에는 *실제*를 붙인다. 정밀도가 나누는 열과 재현율이 나누는 행을 서로 다른 색으로 두르고, 두 테두리가 만나는 칸에 TP를 표시한다. TN은 칠하고 옆에 적는다. 두 비 모두 이 칸을 쓰지 않는다.
 2. **ROC 축과 점 하나.** 가로 FPR, 세로 TPR, 우연 수준 대각선, 그리고 E1a의 동작점 $(0.011,\ 0.667)$. 점 옆에 그 정밀도 $0.80$을 적고, 그 아래에 $0.27$을 적는다. 균열 비율이 10분의 1인 현장에서의 *같은 점*의 정밀도다. 점은 움직이지 않는다. 그림 전체가 그 말이다.

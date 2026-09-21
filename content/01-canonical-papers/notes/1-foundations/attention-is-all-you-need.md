@@ -171,7 +171,7 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
   넣고 텐서 모양을 모두 적어 NumPy로 짠 버전은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §10]]에 있다.
 
 <svg viewBox="0 0 620 226" style="max-width:100%;height:auto" role="img" aria-label="어텐션 헤드 하나를 모양의 연쇄로 본 것">
-  <defs><marker id="atA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="atAk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="none" stroke="currentColor" stroke-width="1.3">
     <rect x="24" y="76" width="58" height="44" rx="3"/>
     <rect x="128" y="30" width="52" height="30" rx="3"/><rect x="128" y="80" width="52" height="30" rx="3"/><rect x="128" y="130" width="52" height="30" rx="3"/>
@@ -179,7 +179,7 @@ Transformer는 동일한 블록을 쌓은(원 논문 기준 각 6층) 인코더-
     <rect x="348" y="46" width="70" height="52" rx="3"/>
     <rect x="470" y="76" width="58" height="44" rx="3"/>
   </g>
-  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#atA)" opacity="0.8">
+  <g stroke="currentColor" stroke-width="1.2" marker-end="url(#atAk)" opacity="0.8">
     <line x1="82" y1="90" x2="124" y2="48"/><line x1="82" y1="98" x2="124" y2="95"/><line x1="82" y1="106" x2="124" y2="142"/>
     <line x1="180" y1="45" x2="234" y2="62"/><line x1="180" y1="95" x2="234" y2="78"/>
     <line x1="308" y1="72" x2="344" y2="72"/>

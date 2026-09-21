@@ -42,6 +42,83 @@ Scientific writing aligns a claim with evidence and makes its boundary inspectab
 
 The paper's one figure, drawn by hand before any plotting code is written. The problem set asks for it again under a different success definition, with a second panel added.
 
+<svg viewBox="0 0 560 290" style="max-width:100%;height:auto" role="img" aria-label="RS1 pilot as the paper's figure: every trial's peak contact force as a dot on a 5 to 15 N axis, the 10 N line fixed before the pilot with the success side shaded, each controller's mean with its 95% interval, and beside it the difference of means, 3.16 N with Welch 95% interval 1.28 to 5.04">
+  <rect x="72" y="30" width="150" height="128" fill="currentColor" fill-opacity="0.08"/>
+  <line x1="72" y1="158" x2="372" y2="158" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <path d="M72 158V163 M102 158V163 M132 158V163 M162 158V163 M192 158V163 M222 158V163 M252 158V163 M282 158V163 M312 158V163 M342 158V163 M372 158V163" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="72" y="176" font-size="11" text-anchor="middle" fill="currentColor">5</text>
+  <text x="102" y="176" font-size="11" text-anchor="middle" fill="currentColor">6</text>
+  <text x="132" y="176" font-size="11" text-anchor="middle" fill="currentColor">7</text>
+  <text x="162" y="176" font-size="11" text-anchor="middle" fill="currentColor">8</text>
+  <text x="192" y="176" font-size="11" text-anchor="middle" fill="currentColor">9</text>
+  <text x="222" y="176" font-size="11" text-anchor="middle" fill="currentColor">10</text>
+  <text x="252" y="176" font-size="11" text-anchor="middle" fill="currentColor">11</text>
+  <text x="282" y="176" font-size="11" text-anchor="middle" fill="currentColor">12</text>
+  <text x="312" y="176" font-size="11" text-anchor="middle" fill="currentColor">13</text>
+  <text x="342" y="176" font-size="11" text-anchor="middle" fill="currentColor">14</text>
+  <text x="372" y="176" font-size="11" text-anchor="middle" fill="currentColor">15</text>
+  <text x="222" y="193" font-size="11" text-anchor="middle" fill="currentColor">peak contact force per trial (N)</text>
+  <line x1="222" y1="22" x2="222" y2="158" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="228" y="28" font-size="11" fill="currentColor">10 N, fixed before the pilot</text>
+  <text x="77" y="43" font-size="11" opacity="0.8" fill="currentColor">success: peak ≤ 10 N</text>
+  <circle cx="369" cy="24" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="369" y="28" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">1</text>
+  <circle cx="153" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="165" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="195" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="204" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="216" cy="61.5" r="3.6" fill="currentColor"/>
+  <circle cx="219" cy="70.5" r="3.6" fill="currentColor"/>
+  <circle cx="261" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="300" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="339" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="366" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="99" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="108" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="120" cy="113.5" r="3.6" fill="currentColor"/>
+  <circle cx="126" cy="122.5" r="3.6" fill="currentColor"/>
+  <circle cx="135" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="147" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="159" cy="113.5" r="3.6" fill="currentColor"/>
+  <circle cx="162" cy="122.5" r="3.6" fill="currentColor"/>
+  <circle cx="174" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="240" cy="118" r="3.6" fill="currentColor"/>
+  <text x="16" y="70" font-size="12.5" font-weight="bold" fill="currentColor">A</text>
+  <text x="16" y="122" font-size="12.5" font-weight="bold" fill="currentColor">B</text>
+  <circle cx="38" cy="66" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="38" y="70" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">2</text>
+  <path d="M190 86 H293.6 M190 82 V90 M293.6 82 V90" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <path d="M241.8 81 L246.8 86 L241.8 91 L236.8 86 Z" fill="currentColor"/>
+  <path d="M117.9 138 H176.1 M117.9 134 V142 M176.1 134 V142" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <path d="M147 133 L152 138 L147 143 L142 138 Z" fill="currentColor"/>
+  <text x="301.6" y="90" font-size="11" opacity="0.85" fill="currentColor">mean, 95% CI</text>
+  <circle cx="383.6" cy="86" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="383.6" y="90" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">3</text>
+  <line x1="446" y1="36" x2="446" y2="158" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" stroke-opacity="0.6"/>
+  <line x1="430" y1="158" x2="542" y2="158" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <path d="M430 158V163 M446 158V163 M462 158V163 M478 158V163 M494 158V163 M510 158V163 M526 158V163 M542 158V163" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="446" y="176" font-size="11" text-anchor="middle" fill="currentColor">0</text>
+  <text x="478" y="176" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <text x="510" y="176" font-size="11" text-anchor="middle" fill="currentColor">4</text>
+  <text x="542" y="176" font-size="11" text-anchor="middle" fill="currentColor">6</text>
+  <text x="486" y="193" font-size="11" text-anchor="middle" fill="currentColor">A − B (N)</text>
+  <text x="495" y="28" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">difference of means</text>
+  <circle cx="430.9" cy="24" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="430.9" y="28" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">3</text>
+  <path d="M466.5 96 H526.6 M466.5 92 V100 M526.6 92 V100" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <path d="M496.6 91 L501.6 96 L496.6 101 L491.6 96 Z" fill="currentColor"/>
+  <text x="496.6" y="84" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">3.16 N</text>
+  <text x="496.6" y="116" font-size="11" text-anchor="middle" fill="currentColor">[1.28, 5.04]</text>
+  <text x="496.6" y="130" font-size="11" text-anchor="middle" opacity="0.8" fill="currentColor">Welch 95% CI</text>
+  <circle cx="23" cy="214" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="23" y="218" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">4</text>
+  <text x="38" y="218" font-size="11" font-style="italic" opacity="0.9" fill="currentColor">Figure 1. RS1 pilot (illustrative data): peak contact force (N) of every trial, arm P2 against a 400 N/m</text>
+  <text x="38" y="233" font-size="11" font-style="italic" opacity="0.9" fill="currentColor">panel, ten unpaired trials per controller, none excluded. Dots are single trials; the diamond and bar</text>
+  <text x="38" y="248" font-size="11" font-style="italic" opacity="0.9" fill="currentColor">under each row are the mean and its 95% t-interval (A 10.66 N [8.93, 12.39], B 7.50 N [6.53, 8.47]).</text>
+  <text x="38" y="263" font-size="11" font-style="italic" opacity="0.9" fill="currentColor">Dashed line: the 10 N success threshold, fixed before the pilot; the shaded side counts as success.</text>
+  <text x="38" y="278" font-size="11" font-style="italic" opacity="0.9" fill="currentColor">Right: the difference of means A − B, 3.16 N, with its Welch 95% interval [1.28, 5.04].</text>
+</svg>
+
 1. **Axis and line.** A horizontal axis of peak contact force from 5 to 15 N. A dashed vertical line at 10 N labelled *fixed before the pilot*, with the success side shaded.
 2. **Every trial.** A's ten peaks as dots on one row and B's ten on the row below: dots, not bars, so that a reader can count the four A peaks stacked just under the line and B's single peak above it.
 3. **The uncertainty that answers the claim.** Under each row, the mean with its 95% interval. Beside the figure, the difference of means with its Welch interval, $3.16$ N $[1.28,\ 5.04]$, because the claim is about the difference and neither row's own interval answers it.
@@ -421,6 +498,83 @@ Research Practice의 관통 연구 RS1을 [[06-research-practice/research-questi
 ### 과제가 그릴 그림 · Homework diagram
 
 논문의 그림 하나를, 그리는 코드를 쓰기 전에 손으로 그린다. 과제는 다른 성공 정의 아래에서, 두 번째 패널을 더해 같은 그림을 다시 요구한다.
+
+<svg viewBox="0 0 560 290" style="max-width:100%;height:auto" role="img" aria-label="논문의 그림으로 그린 RS1 파일럿: 5–15 N 축 위에 모든 시행의 최대 접촉력을 점으로, 파일럿 전에 고정한 10 N 선과 칠한 성공 쪽, 제어기마다 평균과 95% 구간, 그리고 옆에 평균의 차 3.16 N과 Welch 95% 구간 1.28–5.04">
+  <rect x="72" y="30" width="150" height="128" fill="currentColor" fill-opacity="0.08"/>
+  <line x1="72" y1="158" x2="372" y2="158" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <path d="M72 158V163 M102 158V163 M132 158V163 M162 158V163 M192 158V163 M222 158V163 M252 158V163 M282 158V163 M312 158V163 M342 158V163 M372 158V163" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="72" y="176" font-size="11" text-anchor="middle" fill="currentColor">5</text>
+  <text x="102" y="176" font-size="11" text-anchor="middle" fill="currentColor">6</text>
+  <text x="132" y="176" font-size="11" text-anchor="middle" fill="currentColor">7</text>
+  <text x="162" y="176" font-size="11" text-anchor="middle" fill="currentColor">8</text>
+  <text x="192" y="176" font-size="11" text-anchor="middle" fill="currentColor">9</text>
+  <text x="222" y="176" font-size="11" text-anchor="middle" fill="currentColor">10</text>
+  <text x="252" y="176" font-size="11" text-anchor="middle" fill="currentColor">11</text>
+  <text x="282" y="176" font-size="11" text-anchor="middle" fill="currentColor">12</text>
+  <text x="312" y="176" font-size="11" text-anchor="middle" fill="currentColor">13</text>
+  <text x="342" y="176" font-size="11" text-anchor="middle" fill="currentColor">14</text>
+  <text x="372" y="176" font-size="11" text-anchor="middle" fill="currentColor">15</text>
+  <text x="222" y="193" font-size="11" text-anchor="middle" fill="currentColor">시행별 최대 접촉력 (N)</text>
+  <line x1="222" y1="22" x2="222" y2="158" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="228" y="28" font-size="11" fill="currentColor">10 N, 파일럿 전에 고정</text>
+  <text x="77" y="43" font-size="11" opacity="0.8" fill="currentColor">성공: 최댓값 ≤ 10 N</text>
+  <circle cx="352.6" cy="24" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="352.6" y="28" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">1</text>
+  <circle cx="153" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="165" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="195" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="204" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="216" cy="61.5" r="3.6" fill="currentColor"/>
+  <circle cx="219" cy="70.5" r="3.6" fill="currentColor"/>
+  <circle cx="261" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="300" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="339" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="366" cy="66" r="3.6" fill="currentColor"/>
+  <circle cx="99" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="108" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="120" cy="113.5" r="3.6" fill="currentColor"/>
+  <circle cx="126" cy="122.5" r="3.6" fill="currentColor"/>
+  <circle cx="135" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="147" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="159" cy="113.5" r="3.6" fill="currentColor"/>
+  <circle cx="162" cy="122.5" r="3.6" fill="currentColor"/>
+  <circle cx="174" cy="118" r="3.6" fill="currentColor"/>
+  <circle cx="240" cy="118" r="3.6" fill="currentColor"/>
+  <text x="16" y="70" font-size="12.5" font-weight="bold" fill="currentColor">A</text>
+  <text x="16" y="122" font-size="12.5" font-weight="bold" fill="currentColor">B</text>
+  <circle cx="38" cy="66" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="38" y="70" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">2</text>
+  <path d="M190 86 H293.6 M190 82 V90 M293.6 82 V90" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <path d="M241.8 81 L246.8 86 L241.8 91 L236.8 86 Z" fill="currentColor"/>
+  <path d="M117.9 138 H176.1 M117.9 134 V142 M176.1 134 V142" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <path d="M147 133 L152 138 L147 143 L142 138 Z" fill="currentColor"/>
+  <text x="301.6" y="90" font-size="11" opacity="0.85" fill="currentColor">평균, 95% 신뢰구간</text>
+  <circle cx="411" cy="86" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="411" y="90" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">3</text>
+  <line x1="446" y1="36" x2="446" y2="158" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" stroke-opacity="0.6"/>
+  <line x1="430" y1="158" x2="542" y2="158" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <path d="M430 158V163 M446 158V163 M462 158V163 M478 158V163 M494 158V163 M510 158V163 M526 158V163 M542 158V163" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="446" y="176" font-size="11" text-anchor="middle" fill="currentColor">0</text>
+  <text x="478" y="176" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <text x="510" y="176" font-size="11" text-anchor="middle" fill="currentColor">4</text>
+  <text x="542" y="176" font-size="11" text-anchor="middle" fill="currentColor">6</text>
+  <text x="486" y="193" font-size="11" text-anchor="middle" fill="currentColor">A − B (N)</text>
+  <text x="495" y="28" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">평균의 차</text>
+  <circle cx="458.1" cy="24" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="458.1" y="28" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">3</text>
+  <path d="M466.5 96 H526.6 M466.5 92 V100 M526.6 92 V100" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <path d="M496.6 91 L501.6 96 L496.6 101 L491.6 96 Z" fill="currentColor"/>
+  <text x="496.6" y="84" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">3.16 N</text>
+  <text x="496.6" y="116" font-size="11" text-anchor="middle" fill="currentColor">[1.28, 5.04]</text>
+  <text x="496.6" y="130" font-size="11" text-anchor="middle" opacity="0.8" fill="currentColor">Welch 95% 구간</text>
+  <circle cx="23" cy="214" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="23" y="218" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">4</text>
+  <text x="38" y="218" font-size="11" opacity="0.9" fill="currentColor">그림 1. RS1 파일럿(예시 데이터): 모든 시행의 최대 접촉력(N). 400 N/m 패널에 대한 팔 P2, 제어기당</text>
+  <text x="38" y="233" font-size="11" opacity="0.9" fill="currentColor">대응 없는 시행 10회, 제외한 시행 없음. 점은 시행 하나이고, 각 줄 아래의 다이아몬드와 막대는 평균과</text>
+  <text x="38" y="248" font-size="11" opacity="0.9" fill="currentColor">그 95% t-구간이다(A 10.66 N [8.93, 12.39], B 7.50 N [6.53, 8.47]). 점선은 파일럿 전에 고정한 10 N</text>
+  <text x="38" y="263" font-size="11" opacity="0.9" fill="currentColor">성공 문턱이고, 칠한 쪽이 성공이다. 오른쪽은 평균의 차 A − B = 3.16 N과 그 Welch 95% 구간</text>
+  <text x="38" y="278" font-size="11" opacity="0.9" fill="currentColor">[1.28, 5.04]다.</text>
+</svg>
 
 1. **축과 선.** 5 N에서 15 N까지의 최대 접촉력 가로축. 10 N에 점선 세로선을 긋고 *파일럿 전에 고정*이라고 적은 다음, 성공 쪽을 칠한다.
 2. **모든 시행.** 한 줄에 A의 최댓값 열 개를, 그 아래 줄에 B의 열 개를 점으로 찍는다. 막대가 아니라 점이어야 독자가 선 바로 아래 쌓인 A의 최댓값 넷과, 선 위에 있는 B의 최댓값 하나를 셀 수 있다.

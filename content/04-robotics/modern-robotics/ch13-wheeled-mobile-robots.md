@@ -40,6 +40,62 @@ The radius is not a free choice: a $1024$-count wheel that must resolve $2048$ c
 
 Two panels.
 
+<svg viewBox="0 0 560 316" style="max-width:100%;height:auto" role="img" aria-label="left: the P6-D cart on the worked quarter turn, wheels at plus and minus d = 0.200 m on the axle, the axle extended to the instantaneous centre of rotation 1.000 m away, the wheel tracks with Δs_R = 1.885 m and Δs_L = 1.257 m, and a crossed-out sideways arrow; right: the clock, with control every 5 ms, vision every 20 ms, and the 70 ms sense-to-act bracket over which the cart travels 35 mm">
+  <g transform="translate(0 2)">
+    <defs><marker id="ar13e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+    <g fill="currentColor" font-weight="bold"><text x="10" y="18" font-size="11.5">geometry</text><text x="326" y="18" font-size="11.5">the clock</text></g>
+    <g fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 3" opacity="0.8"><path d="M120 237 L126.6 236.9 L133.2 236.5 L139.7 235.8 L146.3 234.9 L152.8 233.8 L159.2 232.4 L165.6 230.7 L171.9 228.8 L178.1 226.6 L184.3 224.2 L190.3 221.6 L196.3 218.7 L202.1 215.6 L207.8 212.2 L213.3 208.7 L218.7 204.9 L224 200.9 L229.1 196.7 L234 192.4 L238.8 187.8 L243.4 183 L247.7 178.1 L251.9 173 L255.9 167.7 L259.7 162.3 L263.2 156.8 L266.6 151.1 L269.7 145.3 L272.6 139.3 L275.2 133.3 L277.6 127.1 L279.8 120.9 L281.7 114.6 L283.4 108.2 L284.8 101.8 L285.9 95.3 L286.8 88.7 L287.5 82.2 L287.9 75.6 L288 69"/><path d="M120 181 L124.4 180.9 L128.8 180.7 L133.2 180.2 L137.5 179.6 L141.9 178.8 L146.1 177.9 L150.4 176.8 L154.6 175.5 L158.8 174.1 L162.9 172.5 L166.9 170.7 L170.8 168.8 L174.7 166.7 L178.5 164.5 L182.2 162.1 L185.8 159.6 L189.3 157 L192.7 154.2 L196 151.2 L199.2 148.2 L202.2 145 L205.2 141.7 L208 138.3 L210.6 134.8 L213.1 131.2 L215.5 127.5 L217.7 123.7 L219.8 119.8 L221.7 115.9 L223.5 111.9 L225.1 107.8 L226.5 103.6 L227.8 99.4 L228.9 95.1 L229.8 90.9 L230.6 86.5 L231.2 82.2 L231.7 77.8 L231.9 73.4 L232 69"/></g>
+    <path d="M120 209 L125.4 208.9 L130.7 208.6 L136.1 208.1 L141.4 207.4 L146.7 206.4 L152 205.3 L157.2 204 L162.3 202.4 L167.4 200.7 L172.4 198.8 L177.4 196.7 L182.2 194.4 L187 191.9 L191.7 189.3 L196.2 186.4 L200.7 183.4 L205 180.2 L209.2 176.9 L213.3 173.4 L217.3 169.7 L221 165.9 L224.7 161.9 L228.2 157.9 L231.5 153.6 L234.7 149.3 L237.7 144.8 L240.5 140.3 L243.2 135.6 L245.6 130.8 L247.9 125.9 L250 121 L251.9 116 L253.6 110.9 L255.1 105.7 L256.4 100.5 L257.5 95.2 L258.4 89.9 L259.1 84.6 L259.6 79.3 L259.9 73.9" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#ar13e)"/>
+    <line x1="120" y1="176.8" x2="120" y2="69" stroke="currentColor" stroke-width="1.1" stroke-dasharray="6 3"/>
+    <circle cx="120" cy="69" r="4" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <path d="M114 69 L126 69 M120 63 L120 75" stroke="currentColor" stroke-width="1"/>
+    <g opacity="0.5"><polygon points="282.4,88.6 282.4,27 237.6,27 237.6,88.6" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/><polygon points="235.1,80.1 235.1,57.9 228.9,57.9 228.9,80.1" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/><polygon points="291.1,80.1 291.1,57.9 284.9,57.9 284.9,80.1" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/></g>
+    <polygon points="100.4,231.4 162,231.4 162,186.6 100.4,186.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <g fill="currentColor" fill-opacity="0.35" stroke="currentColor" stroke-width="1.2"><polygon points="108.9,184.1 131.1,184.1 131.1,177.9 108.9,177.9" stroke="currentColor" stroke-width="1.6"/><polygon points="108.9,240.1 131.1,240.1 131.1,233.9 108.9,233.9" stroke="currentColor" stroke-width="1.6"/></g>
+    <line x1="120" y1="237" x2="120" y2="181" stroke="currentColor" stroke-width="1.3"/>
+    <circle cx="120" cy="209" r="3" fill="currentColor"/>
+    <line x1="124.2" y1="209" x2="184.4" y2="209" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar13e)"/>
+    <line x1="120" y1="243.3" x2="120" y2="274.8" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar13e)"/>
+    <path d="M114 252 L126 264 M114 264 L126 252" stroke="currentColor" stroke-width="2" fill="none"/>
+    <g stroke="currentColor" stroke-width="1" opacity="0.8"><line x1="89.2" y1="209" x2="89.2" y2="181"/><line x1="85.2" y1="209" x2="93.2" y2="209"/><line x1="85.2" y1="181" x2="93.2" y2="181"/></g>
+    <g stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.6"><line x1="89.2" y1="209" x2="100.4" y2="209"/><line x1="89.2" y1="181" x2="108.9" y2="181"/></g>
+    <g fill="currentColor">
+    <text x="83.2" y="199" font-size="11" text-anchor="end">d = 0.200 m</text>
+    <text x="112" y="61" font-size="11" text-anchor="end">ICR</text>
+    <text x="114.4" y="122.2" font-size="11" text-anchor="end">R = v/ω</text>
+    <text x="114.4" y="136.2" font-size="11" text-anchor="end">= 1.000 m</text>
+    <text x="189.2" y="213" font-size="11">x<tspan dy="3.1" font-size="8.6">b</tspan></text>
+    <text x="127.2" y="162.8" font-size="11">y<tspan dy="3.1" font-size="8.6">b</tspan></text>
+    <text x="129.8" y="255.2" font-size="11">no sideways velocity</text>
+    <text x="129.8" y="269.2" font-size="11" opacity="0.8">(nonholonomic)</text>
+    <text x="226.4" y="41" font-size="11" text-anchor="end" opacity="0.75">(1, 1, 90°)</text>
+    <text x="10" y="302" font-size="11" opacity="0.85">quarter turn: (0, 0, 0°) → (1, 1, 90°)</text>
+    <text x="260.7" y="178.9" font-size="11" text-anchor="middle" transform="rotate(-52 260.7 178.9)">Δs<tspan dy="3.1" font-size="8.6">R</tspan><tspan dy="-3.1" dx="3.3">= 1.884956 m</tspan></text>
+    <text x="179" y="144.6" font-size="11" text-anchor="middle" transform="rotate(-38 179 144.6)">Δs<tspan dy="3.1" font-size="8.6">L</tspan><tspan dy="-3.1" dx="3.3">= 1.256637 m</tspan></text>
+    </g>
+    <g fill="currentColor"><text x="326" y="38" font-size="11">control 200 Hz · every 5 ms</text><text x="326" y="110" font-size="11">vision 50 Hz · every 20 ms</text><text x="326" y="180" font-size="11">sense-to-act budget 70 ms</text></g>
+    <rect x="424.1" y="50" width="12.9" height="16" fill="currentColor" fill-opacity="0.2"/>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="334" y1="52" x2="334" y2="64"/><line x1="346.9" y1="52" x2="346.9" y2="64"/><line x1="359.8" y1="52" x2="359.8" y2="64"/><line x1="372.6" y1="52" x2="372.6" y2="64"/><line x1="385.5" y1="52" x2="385.5" y2="64"/><line x1="398.4" y1="52" x2="398.4" y2="64"/><line x1="411.2" y1="52" x2="411.2" y2="64"/><line x1="424.1" y1="52" x2="424.1" y2="64"/><line x1="437" y1="52" x2="437" y2="64"/><line x1="449.9" y1="52" x2="449.9" y2="64"/><line x1="462.8" y1="52" x2="462.8" y2="64"/><line x1="475.6" y1="52" x2="475.6" y2="64"/><line x1="488.5" y1="52" x2="488.5" y2="64"/><line x1="501.4" y1="52" x2="501.4" y2="64"/><line x1="514.2" y1="52" x2="514.2" y2="64"/><line x1="527.1" y1="52" x2="527.1" y2="64"/><line x1="540" y1="52" x2="540" y2="64"/></g>
+    <line x1="334" y1="64" x2="540" y2="64" stroke="currentColor" stroke-width="0.9" opacity="0.6"/>
+    <line x1="430.6" y1="68" x2="430.6" y2="76" stroke="currentColor" stroke-width="0.9"/>
+    <text x="430.6" y="88" font-size="11" text-anchor="middle" fill="currentColor">one 5 ms tick: 5.12 counts</text>
+    <g stroke="currentColor" stroke-width="2.2"><line x1="334" y1="124" x2="334" y2="140"/><line x1="385.5" y1="124" x2="385.5" y2="140"/><line x1="437" y1="124" x2="437" y2="140"/><line x1="488.5" y1="124" x2="488.5" y2="140"/><line x1="540" y1="124" x2="540" y2="140"/></g>
+    <line x1="334" y1="140" x2="540" y2="140" stroke="currentColor" stroke-width="0.9" opacity="0.6"/>
+    <g stroke="currentColor" stroke-width="0.9" opacity="0.7"><line x1="385.5" y1="148" x2="437" y2="148"/><line x1="385.5" y1="144" x2="385.5" y2="152"/><line x1="437" y1="144" x2="437" y2="152"/></g>
+    <text x="411.2" y="165" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">10 mm between frames</text>
+    <g stroke="currentColor" stroke-width="0.9" stroke-dasharray="2 2.5" opacity="0.55"><line x1="334" y1="140" x2="334" y2="252"/><line x1="514.2" y1="64" x2="514.2" y2="252"/></g>
+    <path d="M334 206 L334 198 L514.2 198 L514.2 206" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <g fill="currentColor">
+    <text x="337" y="218" font-size="11">mid-exposure</text>
+    <text x="511.2" y="218" font-size="11" text-anchor="end">force applied</text>
+    <text x="424.1" y="234" font-size="11" text-anchor="middle" font-weight="bold">at 0.5 m/s the cart moves 35 mm</text>
+    </g>
+    <line x1="334" y1="252" x2="540" y2="252" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+    <g stroke="currentColor" stroke-width="1" opacity="0.6"><line x1="334" y1="252" x2="334" y2="256"/><line x1="385.5" y1="252" x2="385.5" y2="256"/><line x1="437" y1="252" x2="437" y2="256"/><line x1="488.5" y1="252" x2="488.5" y2="256"/><line x1="540" y1="252" x2="540" y2="256"/></g>
+    <g fill="currentColor"><text x="334" y="268" font-size="11" text-anchor="middle">0</text><text x="385.5" y="268" font-size="11" text-anchor="middle">20</text><text x="437" y="268" font-size="11" text-anchor="middle">40</text><text x="488.5" y="268" font-size="11" text-anchor="middle">60</text><text x="540" y="268" font-size="11" text-anchor="middle">80</text><text x="540" y="283" font-size="11" text-anchor="end">t (ms)</text></g>
+  </g>
+</svg>
+
 **Left — the geometry.** The cart as a rectangle with its body frame at the wheel-axle midpoint: body $x$ forward, body $y$ to the left. Draw both wheels on the axle at $\pm d$ and label $d = 0.200\,\mathrm{m}$. Extend the axle line to the left until it reaches the **instantaneous centre of rotation** and mark that distance $R = v/\omega$; draw the arc the body frame follows around it. On the arc, write $\Delta s_R$ along the outer wheel's track and $\Delta s_L$ along the inner one. Put a crossed-out sideways arrow on the body $y$ axis: that is the nonholonomic constraint, and it is the one arrow the cart cannot draw.
 
 **Right — the clock.** A time axis with three rows of ticks: control at every $5\,\mathrm{ms}$, vision at every $20\,\mathrm{ms}$, and a single bracket $70\,\mathrm{ms}$ long from a camera mid-exposure mark to the instant force is applied. Under the bracket write how far the cart has travelled at $0.5\,\mathrm{m/s}$. Under one $5\,\mathrm{ms}$ interval write how many counts arrive in it.
@@ -79,13 +135,13 @@ because the outer wheel runs on a circle of radius $R+d$ and the inner on $R-d$ 
 - $\Delta\theta = 0.628418/0.4 = 1.571045\,\mathrm{rad} = 90.0142°$, over by $0.0142°$;
 - reconstructed radius $R' = \Delta s/\Delta\theta = 0.999689\,\mathrm{m}$, giving a final position $(R'\sin\Delta\theta,\ R'(1-\cos\Delta\theta)) = (0.999689,\ 0.999938)\,\mathrm{m}$.
 
-**The whole manoeuvre lands $0.317\,\mathrm{mm}$ from the target**, which is $0.02\,\%$ of the metre travelled, and every bit of it comes from the two truncated counts. That last line is the *exact* constant-curvature integration — the closed form MR's odometry section uses — and it is legitimate here only because the whole manoeuvre genuinely is one arc. Step 3's midpoint rule is the cheap per-tick approximation to it, and Step 5 measures what the approximation costs.
+**The whole manoeuvre lands $0.317\,\mathrm{mm}$ from the target**, which is $0.02\,\%$ of the $1.57\,\mathrm{m}$ travelled, and every bit of it comes from the two truncated counts. That last line is the *exact* constant-curvature integration — the closed form MR's odometry section uses — and it is legitimate here only because the whole manoeuvre genuinely is one arc. Step 3's midpoint rule is the cheap per-tick approximation to it, and Step 5 measures what the approximation costs.
 
 **Step 5 — why the loop runs at $200\,\mathrm{Hz}$ and not once per manoeuvre.** Apply step 3 *once* over the whole $90°$ turn and it reports a displacement of magnitude $\Delta s = 1.5708\,\mathrm{m}$ in the $45°$ direction, when the true chord is $2R\sin 45° = 1.4142\,\mathrm{m}$: an error of $156.6\,\mathrm{mm}$. Split the same turn across the $628$ control ticks the manoeuvre actually takes at $0.5\,\mathrm{m/s}$, so that $\Delta\theta = 2.5\,\mathrm{mrad}$ per tick, and the per-step magnitude error is
 
 $$\Delta s\left(1 - \frac{\sin(\Delta\theta/2)}{\Delta\theta/2}\right) \approx \frac{\Delta s\,\Delta\theta^2}{24} = \frac{0.0025 \times (0.0025)^2}{24} = 6.5 \times 10^{-10}\ \mathrm{m}$$
 
-because $\sin u/u \approx 1 - u^2/6$, so over $628$ ticks the total discretization error is $0.41\ \mu\mathrm{m}$ — six orders of magnitude below the quantization error of Step 4. **The integrator is never the problem at $200\,\mathrm{Hz}$; the encoder and the tyres are.**
+because $\sin u/u \approx 1 - u^2/6$, so over $628$ ticks the total discretization error is $0.41\ \mu\mathrm{m}$ — three orders of magnitude below the quantization error of Step 4. **The integrator is never the problem at $200\,\mathrm{Hz}$; the encoder and the tyres are.**
 
 **Step 6 — rank the two error sources.** Quantization first. Counts are exact events, so the residual is bounded rather than accumulating: at any instant each wheel's distance is known to within half a count, and the worst-case heading error is
 
@@ -141,7 +197,7 @@ where $\oplus$ is the pose update of Step 3, so the estimate is a running sum an
 
 - **Example**: the quarter turn of Step 4 — $0.317\,\mathrm{mm}$ of position error out of $1.57\,\mathrm{m}$ from quantization alone, with no external sensor consulted.
 - **Non-example**: a wheel-encoder estimate that a GNSS fix has corrected. That is *fusion*, and it is a different object with a different error behaviour: bounded rather than growing ([[04-robotics/state-estimation-slam|State Estimation §8]]).
-- **Why it matters**: odometry's error is unbounded *in the long run* and excellent *in the short run*, which is exactly the opposite of a global sensor. Fusion exists because those two profiles are complementary, not because either is bad.
+- **Why it matters**: odometry's error is unbounded *in the long run* and excellent *in the short run*, which is exactly the opposite of a global sensor. Fusion exists because those two profiles are complementary, not because either is bad. The growth law behind both halves of that sentence, each error term's power of $t$ once it has been integrated, is derived for inertial dead reckoning in [[04-robotics/sensor-models|3.2 Sensor Models & Noise §3]].
 
 ### 3. The instantaneous centre of rotation, defined
 
@@ -186,7 +242,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 > [!tip]- Solutions
 > 1. $v = 0$ and $R = v/\omega = 0$, so the ICR is at the axle midpoint; the body-frame origin does not move and its arc degenerates to a point. The two wheels counter-rotate on the same circle of radius $d = 0.200\,\mathrm{m}$ about that point, one forward and one backward.
 > 2. (a) Each wheel travels $d\,\Delta\theta = 0.200 \times 1.570796 = 0.314159\,\mathrm{m}$, which is $0.314159 \times 2048 = 643.398$ counts. (b) With $\Delta n_L = -\Delta n_R$ the difference is $2\Delta n_R$, always even, while the exact requirement is $2d\,\Delta\theta \times 2048 = 1286.796$ counts — odd territory. The two nearest even values are $1286$ ($\Delta n_R = 643$), giving $1286/2048/0.4 = 1.569824\,\mathrm{rad} = 89.9443°$, error $-0.0557°$; and $1288$ ($\Delta n_R = 644$), giving $1.572266\,\mathrm{rad} = 90.0842°$, error $+0.0842°$. Consecutive achievable values are $2$ counts apart, i.e. $2/2048/0.4 = 0.0024414\,\mathrm{rad} = 0.1399°$ — twice the single-count quantum of $0.0699°$, because the symmetry throws away every other value. (c) Break the symmetry: $\Delta n_R = 644$, $\Delta n_L = -643$ gives a difference of $1287$ and a heading of $1.571045\,\mathrm{rad} = 90.0142°$, error $+0.0142°$, four times better. The cost is that $\Delta s = (644-643)/2048/2 = 0.244\,\mathrm{mm}$ of forward translation: the cart no longer turns exactly in place. (d) $\Delta\theta/\omega = 1.5708/0.5 = 3.142\,\mathrm{s}$, i.e. $628$ control ticks, and each wheel covers $d\,\omega\,\Delta t = 0.2 \times 0.5 \times 0.005 = 0.5\,\mathrm{mm}$ per tick, which is $1.024$ counts.
-> 3. The turn-in-place heading error is $0.056°$–$0.084°$ against slip's $2.70°$, a factor of roughly $35$: a finer encoder would fix the smaller of the two and leave the larger untouched, so it is the wrong purchase. The tyres, or an external heading reference, are the right one. From (d), one tick carries about one count, so a one-tick velocity estimate is quantized to $\pm 100\,\%$ of the commanded wheel speed — the derivative is pure quantization noise. The two standard ways out are to difference over a longer window (accepting the lag it adds) or to run a state estimator that integrates the counts and models the speed, which is where this page hands off to [[04-robotics/state-estimation-slam|State Estimation §8]].
+> 3. The turn-in-place heading error is $0.056°$–$0.084°$ against slip's $2.70°$, a factor of $32$ to $48$: a finer encoder would fix the smaller of the two and leave the larger untouched, so it is the wrong purchase. The tyres, or an external heading reference, are the right one. From (d), one tick carries about one count, so a one-tick velocity estimate is quantized to $\pm 100\,\%$ of the commanded wheel speed — the derivative is pure quantization noise. The two standard ways out are to difference over a longer window (accepting the lag it adds) or to run a state estimator that integrates the counts and models the speed, which is where this page hands off to [[04-robotics/state-estimation-slam|State Estimation §8]].
 
 ## 한국어
 
@@ -214,6 +270,62 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 ### 과제가 그릴 그림 · Homework diagram
 
 그림 두 장.
+
+<svg viewBox="0 0 560 316" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 계산 예제의 1/4 회전 위의 P6-D 카트. 차축 위 ±d = 0.200 m의 바퀴, 1.000 m 떨어진 순간 회전 중심까지 연장한 차축, Δs_R = 1.885 m와 Δs_L = 1.257 m의 바퀴 자취, 가위표 친 옆 방향 화살표. 오른쪽: 시계. 5 ms마다 제어, 20 ms마다 비전, 그리고 카트가 35 mm를 가는 70 ms 감지-작용 괄호">
+  <g transform="translate(0 2)">
+    <defs><marker id="ar13k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+    <g fill="currentColor" font-weight="bold"><text x="10" y="18" font-size="11.5">기하</text><text x="326" y="18" font-size="11.5">시계</text></g>
+    <g fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 3" opacity="0.8"><path d="M120 237 L126.6 236.9 L133.2 236.5 L139.7 235.8 L146.3 234.9 L152.8 233.8 L159.2 232.4 L165.6 230.7 L171.9 228.8 L178.1 226.6 L184.3 224.2 L190.3 221.6 L196.3 218.7 L202.1 215.6 L207.8 212.2 L213.3 208.7 L218.7 204.9 L224 200.9 L229.1 196.7 L234 192.4 L238.8 187.8 L243.4 183 L247.7 178.1 L251.9 173 L255.9 167.7 L259.7 162.3 L263.2 156.8 L266.6 151.1 L269.7 145.3 L272.6 139.3 L275.2 133.3 L277.6 127.1 L279.8 120.9 L281.7 114.6 L283.4 108.2 L284.8 101.8 L285.9 95.3 L286.8 88.7 L287.5 82.2 L287.9 75.6 L288 69"/><path d="M120 181 L124.4 180.9 L128.8 180.7 L133.2 180.2 L137.5 179.6 L141.9 178.8 L146.1 177.9 L150.4 176.8 L154.6 175.5 L158.8 174.1 L162.9 172.5 L166.9 170.7 L170.8 168.8 L174.7 166.7 L178.5 164.5 L182.2 162.1 L185.8 159.6 L189.3 157 L192.7 154.2 L196 151.2 L199.2 148.2 L202.2 145 L205.2 141.7 L208 138.3 L210.6 134.8 L213.1 131.2 L215.5 127.5 L217.7 123.7 L219.8 119.8 L221.7 115.9 L223.5 111.9 L225.1 107.8 L226.5 103.6 L227.8 99.4 L228.9 95.1 L229.8 90.9 L230.6 86.5 L231.2 82.2 L231.7 77.8 L231.9 73.4 L232 69"/></g>
+    <path d="M120 209 L125.4 208.9 L130.7 208.6 L136.1 208.1 L141.4 207.4 L146.7 206.4 L152 205.3 L157.2 204 L162.3 202.4 L167.4 200.7 L172.4 198.8 L177.4 196.7 L182.2 194.4 L187 191.9 L191.7 189.3 L196.2 186.4 L200.7 183.4 L205 180.2 L209.2 176.9 L213.3 173.4 L217.3 169.7 L221 165.9 L224.7 161.9 L228.2 157.9 L231.5 153.6 L234.7 149.3 L237.7 144.8 L240.5 140.3 L243.2 135.6 L245.6 130.8 L247.9 125.9 L250 121 L251.9 116 L253.6 110.9 L255.1 105.7 L256.4 100.5 L257.5 95.2 L258.4 89.9 L259.1 84.6 L259.6 79.3 L259.9 73.9" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#ar13k)"/>
+    <line x1="120" y1="176.8" x2="120" y2="69" stroke="currentColor" stroke-width="1.1" stroke-dasharray="6 3"/>
+    <circle cx="120" cy="69" r="4" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <path d="M114 69 L126 69 M120 63 L120 75" stroke="currentColor" stroke-width="1"/>
+    <g opacity="0.5"><polygon points="282.4,88.6 282.4,27 237.6,27 237.6,88.6" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/><polygon points="235.1,80.1 235.1,57.9 228.9,57.9 228.9,80.1" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/><polygon points="291.1,80.1 291.1,57.9 284.9,57.9 284.9,80.1" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/></g>
+    <polygon points="100.4,231.4 162,231.4 162,186.6 100.4,186.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <g fill="currentColor" fill-opacity="0.35" stroke="currentColor" stroke-width="1.2"><polygon points="108.9,184.1 131.1,184.1 131.1,177.9 108.9,177.9" stroke="currentColor" stroke-width="1.6"/><polygon points="108.9,240.1 131.1,240.1 131.1,233.9 108.9,233.9" stroke="currentColor" stroke-width="1.6"/></g>
+    <line x1="120" y1="237" x2="120" y2="181" stroke="currentColor" stroke-width="1.3"/>
+    <circle cx="120" cy="209" r="3" fill="currentColor"/>
+    <line x1="124.2" y1="209" x2="184.4" y2="209" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar13k)"/>
+    <line x1="120" y1="243.3" x2="120" y2="274.8" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar13k)"/>
+    <path d="M114 252 L126 264 M114 264 L126 252" stroke="currentColor" stroke-width="2" fill="none"/>
+    <g stroke="currentColor" stroke-width="1" opacity="0.8"><line x1="89.2" y1="209" x2="89.2" y2="181"/><line x1="85.2" y1="209" x2="93.2" y2="209"/><line x1="85.2" y1="181" x2="93.2" y2="181"/></g>
+    <g stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.6"><line x1="89.2" y1="209" x2="100.4" y2="209"/><line x1="89.2" y1="181" x2="108.9" y2="181"/></g>
+    <g fill="currentColor">
+    <text x="83.2" y="199" font-size="11" text-anchor="end">d = 0.200 m</text>
+    <text x="112" y="61" font-size="11" text-anchor="end">ICR</text>
+    <text x="114.4" y="122.2" font-size="11" text-anchor="end">R = v/ω</text>
+    <text x="114.4" y="136.2" font-size="11" text-anchor="end">= 1.000 m</text>
+    <text x="189.2" y="213" font-size="11">x<tspan dy="3.1" font-size="8.6">b</tspan></text>
+    <text x="127.2" y="162.8" font-size="11">y<tspan dy="3.1" font-size="8.6">b</tspan></text>
+    <text x="129.8" y="255.2" font-size="11">옆 방향 속도 없음</text>
+    <text x="129.8" y="269.2" font-size="11" opacity="0.8">(비홀로노믹)</text>
+    <text x="226.4" y="41" font-size="11" text-anchor="end" opacity="0.75">(1, 1, 90°)</text>
+    <text x="10" y="302" font-size="11" opacity="0.85">1/4 회전: (0, 0, 0°) → (1, 1, 90°)</text>
+    <text x="260.7" y="178.9" font-size="11" text-anchor="middle" transform="rotate(-52 260.7 178.9)">Δs<tspan dy="3.1" font-size="8.6">R</tspan><tspan dy="-3.1" dx="3.3">= 1.884956 m</tspan></text>
+    <text x="179" y="144.6" font-size="11" text-anchor="middle" transform="rotate(-38 179 144.6)">Δs<tspan dy="3.1" font-size="8.6">L</tspan><tspan dy="-3.1" dx="3.3">= 1.256637 m</tspan></text>
+    </g>
+    <g fill="currentColor"><text x="326" y="38" font-size="11">제어 200 Hz · 5 ms마다</text><text x="326" y="110" font-size="11">비전 50 Hz · 20 ms마다</text><text x="326" y="180" font-size="11">감지-작용 예산 70 ms</text></g>
+    <rect x="424.1" y="50" width="12.9" height="16" fill="currentColor" fill-opacity="0.2"/>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="334" y1="52" x2="334" y2="64"/><line x1="346.9" y1="52" x2="346.9" y2="64"/><line x1="359.8" y1="52" x2="359.8" y2="64"/><line x1="372.6" y1="52" x2="372.6" y2="64"/><line x1="385.5" y1="52" x2="385.5" y2="64"/><line x1="398.4" y1="52" x2="398.4" y2="64"/><line x1="411.2" y1="52" x2="411.2" y2="64"/><line x1="424.1" y1="52" x2="424.1" y2="64"/><line x1="437" y1="52" x2="437" y2="64"/><line x1="449.9" y1="52" x2="449.9" y2="64"/><line x1="462.8" y1="52" x2="462.8" y2="64"/><line x1="475.6" y1="52" x2="475.6" y2="64"/><line x1="488.5" y1="52" x2="488.5" y2="64"/><line x1="501.4" y1="52" x2="501.4" y2="64"/><line x1="514.2" y1="52" x2="514.2" y2="64"/><line x1="527.1" y1="52" x2="527.1" y2="64"/><line x1="540" y1="52" x2="540" y2="64"/></g>
+    <line x1="334" y1="64" x2="540" y2="64" stroke="currentColor" stroke-width="0.9" opacity="0.6"/>
+    <line x1="430.6" y1="68" x2="430.6" y2="76" stroke="currentColor" stroke-width="0.9"/>
+    <text x="430.6" y="88" font-size="11" text-anchor="middle" fill="currentColor">5 ms 틱 하나: 5.12 카운트</text>
+    <g stroke="currentColor" stroke-width="2.2"><line x1="334" y1="124" x2="334" y2="140"/><line x1="385.5" y1="124" x2="385.5" y2="140"/><line x1="437" y1="124" x2="437" y2="140"/><line x1="488.5" y1="124" x2="488.5" y2="140"/><line x1="540" y1="124" x2="540" y2="140"/></g>
+    <line x1="334" y1="140" x2="540" y2="140" stroke="currentColor" stroke-width="0.9" opacity="0.6"/>
+    <g stroke="currentColor" stroke-width="0.9" opacity="0.7"><line x1="385.5" y1="148" x2="437" y2="148"/><line x1="385.5" y1="144" x2="385.5" y2="152"/><line x1="437" y1="144" x2="437" y2="152"/></g>
+    <text x="411.2" y="165" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">프레임 사이 10 mm</text>
+    <g stroke="currentColor" stroke-width="0.9" stroke-dasharray="2 2.5" opacity="0.55"><line x1="334" y1="140" x2="334" y2="252"/><line x1="514.2" y1="64" x2="514.2" y2="252"/></g>
+    <path d="M334 206 L334 198 L514.2 198 L514.2 206" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <g fill="currentColor">
+    <text x="337" y="218" font-size="11">노출 중간</text>
+    <text x="511.2" y="218" font-size="11" text-anchor="end">힘 인가</text>
+    <text x="424.1" y="234" font-size="11" text-anchor="middle" font-weight="bold">0.5 m/s에서 카트는 35 mm 간다</text>
+    </g>
+    <line x1="334" y1="252" x2="540" y2="252" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+    <g stroke="currentColor" stroke-width="1" opacity="0.6"><line x1="334" y1="252" x2="334" y2="256"/><line x1="385.5" y1="252" x2="385.5" y2="256"/><line x1="437" y1="252" x2="437" y2="256"/><line x1="488.5" y1="252" x2="488.5" y2="256"/><line x1="540" y1="252" x2="540" y2="256"/></g>
+    <g fill="currentColor"><text x="334" y="268" font-size="11" text-anchor="middle">0</text><text x="385.5" y="268" font-size="11" text-anchor="middle">20</text><text x="437" y="268" font-size="11" text-anchor="middle">40</text><text x="488.5" y="268" font-size="11" text-anchor="middle">60</text><text x="540" y="268" font-size="11" text-anchor="middle">80</text><text x="540" y="283" font-size="11" text-anchor="end">t (ms)</text></g>
+  </g>
+</svg>
 
 **왼쪽 — 기하.** 카트를 직사각형으로 그리고 바디 좌표계를 차축 중점에 둔다. 바디 $x$가 앞, 바디 $y$가 왼쪽. 차축 위 $\pm d$에 바퀴 둘을 그리고 $d = 0.200\,\mathrm{m}$을 적는다. 차축 직선을 왼쪽으로 연장해 **순간 회전 중심**까지 긋고 그 거리를 $R = v/\omega$로 표시한 뒤, 바디 좌표계가 그 둘레로 따라가는 호를 그린다. 호 위에 바깥 바퀴 자취를 따라 $\Delta s_R$, 안쪽을 따라 $\Delta s_L$을 쓴다. 바디 $y$축에 가위표 친 옆 방향 화살표를 그린다. 그것이 비홀로노믹 제약이고, 카트가 그릴 수 없는 유일한 화살표다.
 
@@ -254,13 +366,13 @@ $$\Delta s_R = s\,\frac{R+d}{R} = 1.5708 \times 1.2 = 1.884956\ \mathrm{m}, \qqu
 - $\Delta\theta = 0.628418/0.4 = 1.571045\,\mathrm{rad} = 90.0142°$, $0.0142°$ 초과;
 - 복원된 반지름 $R' = \Delta s/\Delta\theta = 0.999689\,\mathrm{m}$, 최종 위치 $(R'\sin\Delta\theta,\ R'(1-\cos\Delta\theta)) = (0.999689,\ 0.999938)\,\mathrm{m}$.
 
-**기동 전체가 목표에서 $0.317\,\mathrm{mm}$ 떨어진 곳에 내린다.** 1미터 남짓 이동한 것의 $0.02\,\%$이고, 전부가 잘려 나간 카운트 둘에서 나온다. 마지막 줄은 *정확한* 일정 곡률 적분, 즉 MR의 오도메트리 절이 쓰는 닫힌 형태다. 여기서 그것이 정당한 이유는 기동 전체가 실제로 호 하나이기 때문뿐이다. 3단계의 중간점 규칙은 그것의 값싼 틱 단위 근사이고, 그 근사의 대가를 5단계가 잰다.
+**기동 전체가 목표에서 $0.317\,\mathrm{mm}$ 떨어진 곳에 내린다.** $1.57\,\mathrm{m}$ 이동한 것의 $0.02\,\%$이고, 전부가 잘려 나간 카운트 둘에서 나온다. 마지막 줄은 *정확한* 일정 곡률 적분, 즉 MR의 오도메트리 절이 쓰는 닫힌 형태다. 여기서 그것이 정당한 이유는 기동 전체가 실제로 호 하나이기 때문뿐이다. 3단계의 중간점 규칙은 그것의 값싼 틱 단위 근사이고, 그 근사의 대가를 5단계가 잰다.
 
 **5단계 — 루프가 기동당 한 번이 아니라 $200\,\mathrm{Hz}$로 도는 이유.** 3번을 $90°$ 회전 전체에 *한 번* 적용하면 $45°$ 방향으로 크기 $\Delta s = 1.5708\,\mathrm{m}$의 변위를 보고하는데, 실제 현은 $2R\sin 45° = 1.4142\,\mathrm{m}$다. 오차 $156.6\,\mathrm{mm}$. 같은 회전을 $0.5\,\mathrm{m/s}$에서 실제로 걸리는 $628$개의 제어 틱에 나누면 틱당 $\Delta\theta = 2.5\,\mathrm{mrad}$이고 스텝당 크기 오차는
 
 $$\Delta s\left(1 - \frac{\sin(\Delta\theta/2)}{\Delta\theta/2}\right) \approx \frac{\Delta s\,\Delta\theta^2}{24} = \frac{0.0025 \times (0.0025)^2}{24} = 6.5 \times 10^{-10}\ \mathrm{m}$$
 
-다. $\sin u/u \approx 1 - u^2/6$이기 때문이다. $628$틱을 합쳐도 이산화 오차 총합은 $0.41\ \mu\mathrm{m}$, 4단계의 양자화 오차보다 여섯 자릿수 아래다. **$200\,\mathrm{Hz}$에서 적분기는 결코 문제가 아니다. 문제는 엔코더와 타이어다.**
+다. $\sin u/u \approx 1 - u^2/6$이기 때문이다. $628$틱을 합쳐도 이산화 오차 총합은 $0.41\ \mu\mathrm{m}$, 4단계의 양자화 오차보다 세 자릿수 아래다. **$200\,\mathrm{Hz}$에서 적분기는 결코 문제가 아니다. 문제는 엔코더와 타이어다.**
 
 **6단계 — 두 오차원의 순위.** 양자화부터. 카운트는 정확한 사건이라 잔차가 쌓이지 않고 유계다. 어느 순간에도 각 바퀴의 거리는 반 카운트 이내로 알려져 있고, 최악의 방위 오차는
 
@@ -316,7 +428,7 @@ $$\hat q_{k+1} = \hat q_k \oplus f(\Delta n_{R,k}, \Delta n_{L,k})$$
 
 - **예**: 4단계의 1/4 회전 — 외부 센서를 한 번도 보지 않고 $1.57\,\mathrm{m}$ 중 $0.317\,\mathrm{mm}$의 위치 오차가 양자화만으로 나온다.
 - **반례**: GNSS 픽스가 교정한 바퀴 엔코더 추정. 그것은 *융합*이고, 오차 거동이 다른 별개의 대상이다. 자라는 것이 아니라 유계다([[04-robotics/state-estimation-slam|상태 추정 §8]]).
-- **왜 중요한가**: 오도메트리의 오차는 *장기적으로* 무계이고 *단기적으로* 훌륭하며, 이는 전역 센서와 정확히 반대다. 융합이 존재하는 이유는 어느 한쪽이 나빠서가 아니라 두 프로파일이 상보적이기 때문이다.
+- **왜 중요한가**: 오도메트리의 오차는 *장기적으로* 무계이고 *단기적으로* 훌륭하며, 이는 전역 센서와 정확히 반대다. 융합이 존재하는 이유는 어느 한쪽이 나빠서가 아니라 두 프로파일이 상보적이기 때문이다. 그 문장의 두 절반 뒤에 있는 성장 법칙, 곧 적분된 오차 항마다의 $t$의 거듭제곱은 관성 추측 항법에 대해 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §3]]에서 유도한다.
 
 ### 3. 순간 회전 중심의 정의
 
@@ -344,7 +456,7 @@ $$R = \frac{v}{\omega}$$
 4. P6-D가 제어 틱 하나에서 $\Delta n_R = \Delta n_L = 5$를 보고한다. $\Delta s$, $\Delta\theta$, 그리고 함의되는 속력은?
 
 > [!tip]- 정답 · Answers
-> 1. $v = 0$이 되도록 $\omega_R = -\omega_L$; $\omega = r\omega_R/d = 1$ ⇒ $\omega_R = 2, \omega_L = -2$ rad/s.
+> 1. $v = 0$이 되도록 $\omega_R = -\omega_L$; $\omega = r(2\omega_R)/(2d) = r\omega_R/d = 0.5\,\omega_R = 1$ ⇒ $\omega_R = 2, \omega_L = -2$ rad/s.
 > 2. 옆 방향 속도가 없어 *연속* 시불변 피드백으로는 점 안정화가 불가능하다(Brockett). 매끄러운 것만이 아니라 연속인 것 전체가 안 되므로 미분가능성을 낮춰도 빠져나갈 수 없다 — 그래서 궤적 추종으로 우회한다.
 > 3. 단기 정밀(오도메트리 — 부드럽고 빠르지만 드리프트한다)에 드리프트 없는 절대
 >    기준(GNSS — 다만 현장에서는 멀티패스와 차폐가 잡음이 아니라 *편향*을 얹는다)을
@@ -364,4 +476,4 @@ Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴
 > [!tip]- 정답 · Solutions
 > 1. $v = 0$, $R = v/\omega = 0$이므로 ICR은 차축 중점이고, 바디 좌표계 원점은 움직이지 않아 그 호가 점으로 주저앉는다. 두 바퀴는 그 점 둘레 반지름 $d = 0.200\,\mathrm{m}$의 같은 원 위에서 하나는 앞으로 하나는 뒤로 반대 방향으로 돈다.
 > 2. (a) 각 바퀴는 $d\,\Delta\theta = 0.200 \times 1.570796 = 0.314159\,\mathrm{m}$, 즉 $0.314159 \times 2048 = 643.398$ 카운트를 간다. (b) $\Delta n_L = -\Delta n_R$이면 차가 $2\Delta n_R$이라 항상 짝수인데, 정확한 요구는 $2d\,\Delta\theta \times 2048 = 1286.796$ 카운트로 홀수 쪽이다. 가장 가까운 짝수 둘은 $1286$($\Delta n_R = 643$)로 $1286/2048/0.4 = 1.569824\,\mathrm{rad} = 89.9443°$, 오차 $-0.0557°$이고, $1288$($\Delta n_R = 644$)로 $1.572266\,\mathrm{rad} = 90.0842°$, 오차 $+0.0842°$다. 연속한 도달 가능 값은 $2$ 카운트 간격, 즉 $2/2048/0.4 = 0.0024414\,\mathrm{rad} = 0.1399°$로 한 카운트 양자 $0.0699°$의 두 배다. 대칭이 값을 하나 걸러 버리기 때문이다. (c) 대칭을 깬다. $\Delta n_R = 644$, $\Delta n_L = -643$이면 차가 $1287$, 방위가 $1.571045\,\mathrm{rad} = 90.0142°$, 오차 $+0.0142°$로 네 배 좋다. 대가는 $\Delta s = (644-643)/2048/2 = 0.244\,\mathrm{mm}$의 전진이다. 카트가 더는 정확히 제자리에서 돌지 않는다. (d) $\Delta\theta/\omega = 1.5708/0.5 = 3.142\,\mathrm{s}$, 즉 제어 틱 $628$개이고, 각 바퀴는 틱마다 $d\,\omega\,\Delta t = 0.2 \times 0.5 \times 0.005 = 0.5\,\mathrm{mm}$, 곧 $1.024$ 카운트를 간다.
-> 3. 제자리 회전의 방위 오차는 $0.056°$–$0.084°$이고 미끄럼은 $2.70°$라 대략 $35$배다. 더 좋은 엔코더는 둘 중 작은 쪽을 고치고 큰 쪽은 건드리지 못하므로 잘못된 구매다. 옳은 구매는 타이어, 또는 외부 방위 기준이다. (d)에서 한 틱에 대략 카운트 하나가 오므로 한 틱 속도 추정은 명령 바퀴 속도의 $\pm 100\,\%$로 양자화된다. 미분이 순수한 양자화 잡음이다. 표준적인 출구는 둘이다. 더 긴 창으로 차분하거나(그만큼 지연을 받아들인다), 카운트를 적분하며 속력을 모형화하는 상태 추정기를 돌리는 것이다. 후자가 이 페이지가 [[04-robotics/state-estimation-slam|상태 추정 §8]]로 넘기는 지점이다.
+> 3. 제자리 회전의 방위 오차는 $0.056°$–$0.084°$이고 미끄럼은 $2.70°$라 $32$배에서 $48$배다. 더 좋은 엔코더는 둘 중 작은 쪽을 고치고 큰 쪽은 건드리지 못하므로 잘못된 구매다. 옳은 구매는 타이어, 또는 외부 방위 기준이다. (d)에서 한 틱에 대략 카운트 하나가 오므로 한 틱 속도 추정은 명령 바퀴 속도의 $\pm 100\,\%$로 양자화된다. 미분이 순수한 양자화 잡음이다. 표준적인 출구는 둘이다. 더 긴 창으로 차분하거나(그만큼 지연을 받아들인다), 카운트를 적분하며 속력을 모형화하는 상태 추정기를 돌리는 것이다. 후자가 이 페이지가 [[04-robotics/state-estimation-slam|상태 추정 §8]]로 넘기는 지점이다.

@@ -49,6 +49,132 @@ tens of times a second precisely so that each solve sees a short, nearly static 
 
 One figure in three parts; the problem set asks for the same one.
 
+<svg viewBox="0 0 560 422" style="max-width:100%;height:auto" role="img" aria-label="Left: the two-step horizon timeline for Q, from the measured height 0.27 m through u0 = 76.92 N and u1 = -15.38 N to predicted gaps of -18.5 mm and +2.3 mm about the dashed 0.30 m reference, u0 circled; below it on the same time axis, the trot gait chart with the 0.12 s horizon shaded inside the LF-RH stance; right: the 24-cell decision grid with the 12 swing cells crossed out and the five constraint rows on one stance foot">
+  <defs><marker id="cmpA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="22" font-size="12" fill-opacity="0.85" font-weight="600">horizon timeline</text>
+    <line x1="64" y1="198" x2="208.4" y2="198" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <line x1="64" y1="194" x2="64" y2="202" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="64" y="214" font-size="11" text-anchor="middle" fill-opacity="0.85">0</text>
+    <line x1="133.3" y1="194" x2="133.3" y2="202" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="133.3" y="214" font-size="11" text-anchor="middle" fill-opacity="0.85">Δt = 0.06</text>
+    <line x1="202.6" y1="194" x2="202.6" y2="202" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="202.6" y="214" font-size="11" text-anchor="middle" fill-opacity="0.85">2Δt = 0.12 s</text>
+    <line x1="60" y1="72" x2="210.6" y2="72" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 4"/>
+    <text x="66" y="64" font-size="12" xml:space="preserve">z<tspan dy="-4.6" font-size="11">ref</tspan><tspan dy="4.6"> = 0.30 m</tspan></text>
+    <rect x="129.3" y="72" width="8" height="62.8" fill="currentColor" fill-opacity="0.3"/>
+    <rect x="198.6" y="64.2" width="8" height="7.8" fill="currentColor" fill-opacity="0.3"/>
+    <line x1="59" y1="72" x2="59" y2="174" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+    <text x="55" y="118" font-size="11" text-anchor="end" xml:space="preserve">e<tspan dy="3.1" font-size="11">0</tspan><tspan dy="-3.1"> =</tspan></text>
+    <text x="55" y="132" font-size="11" text-anchor="end">−30 mm</text>
+    <path d="M 64.0 174.0 L 65.8 174.0 L 67.6 173.9 L 69.3 173.8 L 71.1 173.6 L 72.9 173.4 L 74.7 173.1 L 76.4 172.7 L 78.2 172.3 L 80.0 171.9 L 81.8 171.4 L 83.5 170.9 L 85.3 170.3 L 87.1 169.6 L 88.9 168.9 L 90.7 168.2 L 92.4 167.4 L 94.2 166.5 L 96.0 165.6 L 97.8 164.7 L 99.5 163.7 L 101.3 162.6 L 103.1 161.5 L 104.9 160.4 L 106.6 159.1 L 108.4 157.9 L 110.2 156.6 L 112.0 155.2 L 113.8 153.8 L 115.5 152.3 L 117.3 150.8 L 119.1 149.2 L 120.9 147.6 L 122.6 145.9 L 124.4 144.2 L 126.2 142.4" fill="none" stroke="currentColor" stroke-width="1.7" marker-end="url(#cmpA)"/>
+    <path d="M 133.3 134.8 L 135.1 132.8 L 136.9 130.8 L 138.6 128.8 L 140.4 126.8 L 142.2 124.8 L 144.0 122.9 L 145.7 120.9 L 147.5 119.0 L 149.3 117.1 L 151.1 115.2 L 152.8 113.3 L 154.6 111.4 L 156.4 109.5 L 158.2 107.6 L 160.0 105.8 L 161.7 103.9 L 163.5 102.1 L 165.3 100.2 L 167.1 98.4 L 168.8 96.6 L 170.6 94.8 L 172.4 93.0 L 174.2 91.2 L 175.9 89.5 L 177.7 87.7 L 179.5 85.9 L 181.3 84.2 L 183.1 82.5 L 184.8 80.8 L 186.6 79.1 L 188.4 77.4 L 190.2 75.7 L 191.9 74.0 L 193.7 72.3 L 195.5 70.7" fill="none" stroke="currentColor" stroke-width="1.7" marker-end="url(#cmpA)"/>
+    <circle cx="64" cy="174" r="4.5" fill="currentColor"/>
+    <circle cx="133.3" cy="134.8" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <circle cx="202.6" cy="64.2" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <text x="56" y="178" font-size="12" text-anchor="end" xml:space="preserve">x<tspan dy="3.4" font-size="11">0</tspan></text>
+    <text x="125.3" y="128.8" font-size="12" text-anchor="end" xml:space="preserve">x<tspan dy="3.4" font-size="11">1</tspan></text>
+    <text x="194.6" y="58.2" font-size="12" text-anchor="end" xml:space="preserve">x<tspan dy="3.4" font-size="11">2</tspan></text>
+    <text x="125.3" y="96" font-size="11" text-anchor="end" xml:space="preserve">e<tspan dy="3.1" font-size="11">1</tspan><tspan dy="-3.1"> =</tspan></text>
+    <text x="125.3" y="110" font-size="11" text-anchor="end">−18.5 mm</text>
+    <text x="210.6" y="62.2" font-size="11" xml:space="preserve">e<tspan dy="3.1" font-size="11">2</tspan><tspan dy="-3.1"> = +2.3 mm</tspan></text>
+    <text x="82" y="187" font-size="12" xml:space="preserve">u<tspan dy="3.4" font-size="11">0</tspan><tspan dy="-3.4"> = 76.92 N</tspan></text>
+    <rect x="76" y="175" width="88" height="17" rx="8" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <text x="145.3" y="152" font-size="12" xml:space="preserve">u<tspan dy="3.4" font-size="11">1</tspan><tspan dy="-3.4"> = −15.38 N</tspan></text>
+    <text x="12" y="240" font-size="12" fill-opacity="0.85" font-weight="600">schedule (trot)</text>
+    <line x1="64" y1="274" x2="526" y2="274" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <rect x="64" y="260" width="231" height="14" rx="2" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+    <text x="56" y="271" font-size="11" text-anchor="end">LF</text>
+    <line x1="64" y1="294" x2="526" y2="294" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <rect x="295" y="280" width="231" height="14" rx="2" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+    <text x="56" y="291" font-size="11" text-anchor="end">RF</text>
+    <line x1="64" y1="314" x2="526" y2="314" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <rect x="295" y="300" width="231" height="14" rx="2" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+    <text x="56" y="311" font-size="11" text-anchor="end">LH</text>
+    <line x1="64" y1="334" x2="526" y2="334" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <rect x="64" y="320" width="231" height="14" rx="2" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+    <text x="56" y="331" font-size="11" text-anchor="end">RH</text>
+    <line x1="64" y1="342" x2="526" y2="342" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <line x1="64" y1="342" x2="64" y2="346" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="64" y="358" font-size="11" text-anchor="middle" fill-opacity="0.85">0</text>
+    <line x1="202.6" y1="342" x2="202.6" y2="346" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="202.6" y="358" font-size="11" text-anchor="middle" fill-opacity="0.85">0.12</text>
+    <line x1="295" y1="342" x2="295" y2="346" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="295" y="358" font-size="11" text-anchor="middle" fill-opacity="0.85">0.20</text>
+    <line x1="526" y1="342" x2="526" y2="346" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="526" y="358" font-size="11" text-anchor="middle" fill-opacity="0.85">0.40 s</text>
+    <rect x="64" y="255" width="138.6" height="84" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"/>
+    <text x="133.3" y="291" font-size="11" text-anchor="middle">horizon</text>
+    <text x="133.3" y="311" font-size="11" text-anchor="middle">0.12 s</text>
+    <line x1="295" y1="252" x2="295" y2="342" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+    <text x="301" y="252" font-size="11" fill-opacity="0.85">support switches, 0.20 s</text>
+    <text x="300" y="22" font-size="12" fill-opacity="0.85" font-weight="600">constraint block</text>
+    <text x="378" y="41" font-size="11" text-anchor="middle">k = 0</text>
+    <text x="462" y="41" font-size="11" text-anchor="middle">k = 1</text>
+    <text x="354" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">x</tspan></text>
+    <text x="378" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">y</tspan></text>
+    <text x="402" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">z</tspan></text>
+    <text x="438" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">x</tspan></text>
+    <text x="462" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">y</tspan></text>
+    <text x="486" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">z</tspan></text>
+    <text x="334" y="74" font-size="11" text-anchor="end">LF</text>
+    <rect x="342" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="366" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="390" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="426" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="450" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="474" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="334" y="90" font-size="11" text-anchor="end">RF</text>
+    <rect x="342" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="366" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="390" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="426" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="450" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="474" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="334" y="106" font-size="11" text-anchor="end">LH</text>
+    <rect x="342" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="366" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="390" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="426" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="450" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="474" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="334" y="122" font-size="11" text-anchor="end">RH</text>
+    <rect x="342" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="366" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="390" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="426" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="450" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="474" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <path d="M 346 81 L 362 91 M 346 91 L 362 81 M 370 81 L 386 91 M 370 91 L 386 81 M 394 81 L 410 91 M 394 91 L 410 81 M 430 81 L 446 91 M 430 91 L 446 81 M 454 81 L 470 91 M 454 91 L 470 81 M 478 81 L 494 91 M 478 91 L 494 81 M 346 97 L 362 107 M 346 107 L 362 97 M 370 97 L 386 107 M 370 107 L 386 97 M 394 97 L 410 107 M 394 107 L 410 97 M 430 97 L 446 107 M 430 107 L 446 97 M 454 97 L 470 107 M 454 107 L 470 97 M 478 97 L 494 107 M 478 107 L 494 97" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85"/>
+    <text x="506" y="90" font-size="11">swing:</text>
+    <text x="506" y="106" font-size="11" xml:space="preserve">f<tspan dy="3.1" font-size="11">i</tspan><tspan dy="-3.1"> = 0</tspan></text>
+    <rect x="342" y="62" width="72" height="16" fill="none" stroke="currentColor" stroke-width="2.2"/>
+    <text x="302" y="144" font-size="11" fill-opacity="0.9">LF at k = 0: five rows</text>
+    <line x1="344" y1="156" x2="412" y2="156" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="354" cy="156" r="2.6" fill="currentColor"/>
+    <circle cx="402" cy="156" r="2.6" fill="currentColor"/>
+    <text x="422" y="160" font-size="11" xml:space="preserve">f<tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1"> − μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <line x1="344" y1="170" x2="412" y2="170" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="354" cy="170" r="2.6" fill="currentColor"/>
+    <circle cx="402" cy="170" r="2.6" fill="currentColor"/>
+    <text x="422" y="174" font-size="11" xml:space="preserve">−f<tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1"> − μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <line x1="344" y1="184" x2="412" y2="184" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="378" cy="184" r="2.6" fill="currentColor"/>
+    <circle cx="402" cy="184" r="2.6" fill="currentColor"/>
+    <text x="422" y="188" font-size="11" xml:space="preserve">f<tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1"> − μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <line x1="344" y1="198" x2="412" y2="198" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="378" cy="198" r="2.6" fill="currentColor"/>
+    <circle cx="402" cy="198" r="2.6" fill="currentColor"/>
+    <text x="422" y="202" font-size="11" xml:space="preserve">−f<tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1"> − μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <line x1="344" y1="212" x2="412" y2="212" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="402" cy="212" r="2.6" fill="currentColor"/>
+    <text x="422" y="216" font-size="11" xml:space="preserve">−f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <text x="12" y="378" font-size="11" xml:space="preserve">Count: 24 cells − 12 crossed (swing, f<tspan dy="3.1" font-size="11">i</tspan><tspan dy="-3.1"> = 0) = 12 free forces;  rows 4 × 2 × 5 = 40,</tspan></text>
+    <text x="12" y="393" font-size="11">that is 32 pyramid + 8 unilateral (+ 8 with the 200 N/foot ceiling).  At the solution all are slack:</text>
+    <text x="12" y="408" font-size="11" xml:space="preserve">f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 97.32 N per stance foot, |f</tspan><tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1">| = |f</tspan><tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1">| = 0 ≤ μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 58.39 N.  Only the circled u</tspan><tspan dy="3.1" font-size="11">0</tspan><tspan dy="-3.1"> is applied.</tspan></text>
+  </g>
+</svg>
+
 **Left — the horizon timeline.** A time axis with ticks at $0$, $\Delta t$, $2\Delta t$. Mark the
 measured state $x_0$ at the first tick, the two decisions $u_0$ and $u_1$ as arrows leaving the
 first two ticks, and the two predicted states $x_1$, $x_2$ at the ticks they land on. Draw the
@@ -428,6 +554,132 @@ $0.12$ s 지평은 trot의 $0.20$ s 디딤보다 짧다. 그래서 **접촉 스�
 ### 과제가 그릴 그림 · Homework diagram
 
 그림 하나에 칸이 셋이고, 과제가 요구하는 것도 같은 그림이다.
+
+<svg viewBox="0 0 560 422" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: Q의 두 스텝 지평 타임라인, 측정 높이 0.27 m에서 u0 = 76.92 N과 u1 = -15.38 N을 거쳐 파선 기준 0.30 m 둘레의 예측 간격 -18.5 mm와 +2.3 mm로 가고 u0에 동그라미; 그 아래 같은 시간 축에 trot 보행 차트와 LF-RH 디딤 안에 칠한 0.12 s 지평; 오른쪽: 유각 12칸을 지운 24칸 결정 격자와 디딤발 하나의 제약 행 다섯">
+  <defs><marker id="cmpkA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="22" font-size="12" fill-opacity="0.85" font-weight="600">지평 타임라인</text>
+    <line x1="64" y1="198" x2="208.4" y2="198" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <line x1="64" y1="194" x2="64" y2="202" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="64" y="214" font-size="11" text-anchor="middle" fill-opacity="0.85">0</text>
+    <line x1="133.3" y1="194" x2="133.3" y2="202" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="133.3" y="214" font-size="11" text-anchor="middle" fill-opacity="0.85">Δt = 0.06</text>
+    <line x1="202.6" y1="194" x2="202.6" y2="202" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="202.6" y="214" font-size="11" text-anchor="middle" fill-opacity="0.85">2Δt = 0.12 s</text>
+    <line x1="60" y1="72" x2="210.6" y2="72" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 4"/>
+    <text x="66" y="64" font-size="12" xml:space="preserve">z<tspan dy="-4.6" font-size="11">ref</tspan><tspan dy="4.6"> = 0.30 m</tspan></text>
+    <rect x="129.3" y="72" width="8" height="62.8" fill="currentColor" fill-opacity="0.3"/>
+    <rect x="198.6" y="64.2" width="8" height="7.8" fill="currentColor" fill-opacity="0.3"/>
+    <line x1="59" y1="72" x2="59" y2="174" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+    <text x="55" y="118" font-size="11" text-anchor="end" xml:space="preserve">e<tspan dy="3.1" font-size="11">0</tspan><tspan dy="-3.1"> =</tspan></text>
+    <text x="55" y="132" font-size="11" text-anchor="end">−30 mm</text>
+    <path d="M 64.0 174.0 L 65.8 174.0 L 67.6 173.9 L 69.3 173.8 L 71.1 173.6 L 72.9 173.4 L 74.7 173.1 L 76.4 172.7 L 78.2 172.3 L 80.0 171.9 L 81.8 171.4 L 83.5 170.9 L 85.3 170.3 L 87.1 169.6 L 88.9 168.9 L 90.7 168.2 L 92.4 167.4 L 94.2 166.5 L 96.0 165.6 L 97.8 164.7 L 99.5 163.7 L 101.3 162.6 L 103.1 161.5 L 104.9 160.4 L 106.6 159.1 L 108.4 157.9 L 110.2 156.6 L 112.0 155.2 L 113.8 153.8 L 115.5 152.3 L 117.3 150.8 L 119.1 149.2 L 120.9 147.6 L 122.6 145.9 L 124.4 144.2 L 126.2 142.4" fill="none" stroke="currentColor" stroke-width="1.7" marker-end="url(#cmpkA)"/>
+    <path d="M 133.3 134.8 L 135.1 132.8 L 136.9 130.8 L 138.6 128.8 L 140.4 126.8 L 142.2 124.8 L 144.0 122.9 L 145.7 120.9 L 147.5 119.0 L 149.3 117.1 L 151.1 115.2 L 152.8 113.3 L 154.6 111.4 L 156.4 109.5 L 158.2 107.6 L 160.0 105.8 L 161.7 103.9 L 163.5 102.1 L 165.3 100.2 L 167.1 98.4 L 168.8 96.6 L 170.6 94.8 L 172.4 93.0 L 174.2 91.2 L 175.9 89.5 L 177.7 87.7 L 179.5 85.9 L 181.3 84.2 L 183.1 82.5 L 184.8 80.8 L 186.6 79.1 L 188.4 77.4 L 190.2 75.7 L 191.9 74.0 L 193.7 72.3 L 195.5 70.7" fill="none" stroke="currentColor" stroke-width="1.7" marker-end="url(#cmpkA)"/>
+    <circle cx="64" cy="174" r="4.5" fill="currentColor"/>
+    <circle cx="133.3" cy="134.8" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <circle cx="202.6" cy="64.2" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <text x="56" y="178" font-size="12" text-anchor="end" xml:space="preserve">x<tspan dy="3.4" font-size="11">0</tspan></text>
+    <text x="125.3" y="128.8" font-size="12" text-anchor="end" xml:space="preserve">x<tspan dy="3.4" font-size="11">1</tspan></text>
+    <text x="194.6" y="58.2" font-size="12" text-anchor="end" xml:space="preserve">x<tspan dy="3.4" font-size="11">2</tspan></text>
+    <text x="125.3" y="96" font-size="11" text-anchor="end" xml:space="preserve">e<tspan dy="3.1" font-size="11">1</tspan><tspan dy="-3.1"> =</tspan></text>
+    <text x="125.3" y="110" font-size="11" text-anchor="end">−18.5 mm</text>
+    <text x="210.6" y="62.2" font-size="11" xml:space="preserve">e<tspan dy="3.1" font-size="11">2</tspan><tspan dy="-3.1"> = +2.3 mm</tspan></text>
+    <text x="82" y="187" font-size="12" xml:space="preserve">u<tspan dy="3.4" font-size="11">0</tspan><tspan dy="-3.4"> = 76.92 N</tspan></text>
+    <rect x="76" y="175" width="88" height="17" rx="8" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <text x="145.3" y="152" font-size="12" xml:space="preserve">u<tspan dy="3.4" font-size="11">1</tspan><tspan dy="-3.4"> = −15.38 N</tspan></text>
+    <text x="12" y="240" font-size="12" fill-opacity="0.85" font-weight="600">스케줄 (trot)</text>
+    <line x1="64" y1="274" x2="526" y2="274" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <rect x="64" y="260" width="231" height="14" rx="2" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+    <text x="56" y="271" font-size="11" text-anchor="end">LF</text>
+    <line x1="64" y1="294" x2="526" y2="294" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <rect x="295" y="280" width="231" height="14" rx="2" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+    <text x="56" y="291" font-size="11" text-anchor="end">RF</text>
+    <line x1="64" y1="314" x2="526" y2="314" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <rect x="295" y="300" width="231" height="14" rx="2" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+    <text x="56" y="311" font-size="11" text-anchor="end">LH</text>
+    <line x1="64" y1="334" x2="526" y2="334" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <rect x="64" y="320" width="231" height="14" rx="2" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+    <text x="56" y="331" font-size="11" text-anchor="end">RH</text>
+    <line x1="64" y1="342" x2="526" y2="342" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <line x1="64" y1="342" x2="64" y2="346" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="64" y="358" font-size="11" text-anchor="middle" fill-opacity="0.85">0</text>
+    <line x1="202.6" y1="342" x2="202.6" y2="346" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="202.6" y="358" font-size="11" text-anchor="middle" fill-opacity="0.85">0.12</text>
+    <line x1="295" y1="342" x2="295" y2="346" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="295" y="358" font-size="11" text-anchor="middle" fill-opacity="0.85">0.20</text>
+    <line x1="526" y1="342" x2="526" y2="346" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="526" y="358" font-size="11" text-anchor="middle" fill-opacity="0.85">0.40 s</text>
+    <rect x="64" y="255" width="138.6" height="84" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3"/>
+    <text x="133.3" y="291" font-size="11" text-anchor="middle">지평</text>
+    <text x="133.3" y="311" font-size="11" text-anchor="middle">0.12 s</text>
+    <line x1="295" y1="252" x2="295" y2="342" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+    <text x="301" y="252" font-size="11" fill-opacity="0.85">디딤 교대, 0.20 s</text>
+    <text x="300" y="22" font-size="12" fill-opacity="0.85" font-weight="600">제약 블록</text>
+    <text x="378" y="41" font-size="11" text-anchor="middle">k = 0</text>
+    <text x="462" y="41" font-size="11" text-anchor="middle">k = 1</text>
+    <text x="354" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">x</tspan></text>
+    <text x="378" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">y</tspan></text>
+    <text x="402" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">z</tspan></text>
+    <text x="438" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">x</tspan></text>
+    <text x="462" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">y</tspan></text>
+    <text x="486" y="56" font-size="11" text-anchor="middle" xml:space="preserve">f<tspan dy="3.1" font-size="11">z</tspan></text>
+    <text x="334" y="74" font-size="11" text-anchor="end">LF</text>
+    <rect x="342" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="366" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="390" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="426" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="450" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="474" y="62" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="334" y="90" font-size="11" text-anchor="end">RF</text>
+    <rect x="342" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="366" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="390" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="426" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="450" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="474" y="78" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="334" y="106" font-size="11" text-anchor="end">LH</text>
+    <rect x="342" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="366" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="390" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="426" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="450" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="474" y="94" width="24" height="16" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="334" y="122" font-size="11" text-anchor="end">RH</text>
+    <rect x="342" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="366" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="390" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="426" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="450" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="474" y="110" width="24" height="16" fill="currentColor" fill-opacity="0.16" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <path d="M 346 81 L 362 91 M 346 91 L 362 81 M 370 81 L 386 91 M 370 91 L 386 81 M 394 81 L 410 91 M 394 91 L 410 81 M 430 81 L 446 91 M 430 91 L 446 81 M 454 81 L 470 91 M 454 91 L 470 81 M 478 81 L 494 91 M 478 91 L 494 81 M 346 97 L 362 107 M 346 107 L 362 97 M 370 97 L 386 107 M 370 107 L 386 97 M 394 97 L 410 107 M 394 107 L 410 97 M 430 97 L 446 107 M 430 107 L 446 97 M 454 97 L 470 107 M 454 107 L 470 97 M 478 97 L 494 107 M 478 107 L 494 97" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85"/>
+    <text x="506" y="90" font-size="11">유각:</text>
+    <text x="506" y="106" font-size="11" xml:space="preserve">f<tspan dy="3.1" font-size="11">i</tspan><tspan dy="-3.1"> = 0</tspan></text>
+    <rect x="342" y="62" width="72" height="16" fill="none" stroke="currentColor" stroke-width="2.2"/>
+    <text x="302" y="144" font-size="11" fill-opacity="0.9">k = 0의 LF: 행 다섯</text>
+    <line x1="344" y1="156" x2="412" y2="156" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="354" cy="156" r="2.6" fill="currentColor"/>
+    <circle cx="402" cy="156" r="2.6" fill="currentColor"/>
+    <text x="422" y="160" font-size="11" xml:space="preserve">f<tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1"> − μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <line x1="344" y1="170" x2="412" y2="170" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="354" cy="170" r="2.6" fill="currentColor"/>
+    <circle cx="402" cy="170" r="2.6" fill="currentColor"/>
+    <text x="422" y="174" font-size="11" xml:space="preserve">−f<tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1"> − μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <line x1="344" y1="184" x2="412" y2="184" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="378" cy="184" r="2.6" fill="currentColor"/>
+    <circle cx="402" cy="184" r="2.6" fill="currentColor"/>
+    <text x="422" y="188" font-size="11" xml:space="preserve">f<tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1"> − μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <line x1="344" y1="198" x2="412" y2="198" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="378" cy="198" r="2.6" fill="currentColor"/>
+    <circle cx="402" cy="198" r="2.6" fill="currentColor"/>
+    <text x="422" y="202" font-size="11" xml:space="preserve">−f<tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1"> − μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <line x1="344" y1="212" x2="412" y2="212" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <circle cx="402" cy="212" r="2.6" fill="currentColor"/>
+    <text x="422" y="216" font-size="11" xml:space="preserve">−f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
+    <text x="12" y="378" font-size="11" xml:space="preserve">개수: 24칸 − 지운 12칸(유각, f<tspan dy="3.1" font-size="11">i</tspan><tspan dy="-3.1"> = 0) = 자유 힘 12개.  행은 4 × 2 × 5 = 40개,</tspan></text>
+    <text x="12" y="393" font-size="11">곧 피라미드 32 + 단방향 8 (200 N/발 한계를 걸면 + 8).  풀이에서는 모두 여유다:</text>
+    <text x="12" y="408" font-size="11" xml:space="preserve">디딤발마다 f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 97.32 N, |f</tspan><tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1">| = |f</tspan><tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1">| = 0 ≤ μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 58.39 N.  적용되는 것은 동그라미 친 u</tspan><tspan dy="3.1" font-size="11">0</tspan><tspan dy="-3.1">뿐.</tspan></text>
+  </g>
+</svg>
 
 **왼쪽 — 지평 타임라인.** $0$, $\Delta t$, $2\Delta t$에 눈금이 있는 시간 축. 첫 눈금에 측정
 상태 $x_0$, 앞 두 눈금에서 떠나는 화살표로 결정 $u_0$와 $u_1$, 그리고 그것들이 도착하는 눈금에

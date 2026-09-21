@@ -47,6 +47,59 @@ The planning values the worked case uses, all taken from the pilot: success prob
 
 The ladder of §2, drawn with RS1 on it and a price on the next rung. The problem set asks for the same drawing with the pilot one rung higher.
 
+<svg viewBox="0 0 560 319" style="max-width:100%;height:auto" role="img" aria-label="The evidence ladder with RS1 on it: four rungs from simulation up to an active site, each with the sentence it licenses, independent use on its own axis to the side, the RS1 pilot on the simulation rung with its sentence in RS1's numbers, price tags of 32 and 8 trials per arm on the hardware rung, and two arrows: more trials along a rung, a new setting up to the next">
+  <defs><marker id="arRW" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="16" y="14" width="376" height="28" rx="3" fill="currentColor" fill-opacity="0.28" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <text x="24" y="32.5" font-size="11.5" fill="currentColor"><tspan font-weight="bold">4</tspan><tspan dx="6.4">active site, once</tspan></text>
+  <text x="150" y="32.5" font-size="11" opacity="0.9" fill="currentColor">“it survived conditions I did not choose”</text>
+  <line x1="395" y1="28" x2="427" y2="28" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6" marker-end="url(#arRW)"/>
+  <rect x="16" y="50" width="376" height="28" rx="3" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <text x="24" y="68.5" font-size="11.5" fill="currentColor"><tspan font-weight="bold">3</tspan><tspan dx="6.4">full-scale mock-up</tspan></text>
+  <text x="150" y="68.5" font-size="11" opacity="0.9" fill="currentColor">“it survives realistic geometry and scale”</text>
+  <line x1="395" y1="64" x2="427" y2="64" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6" marker-end="url(#arRW)"/>
+  <rect x="16" y="86" width="376" height="28" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <text x="24" y="104.5" font-size="11.5" fill="currentColor"><tspan font-weight="bold">2</tspan><tspan dx="6.4">laboratory hardware</tspan></text>
+  <text x="150" y="104.5" font-size="11" opacity="0.9" fill="currentColor">“it works on real hardware, in my conditions”</text>
+  <line x1="395" y1="100" x2="427" y2="100" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6" marker-end="url(#arRW)"/>
+  <rect x="16" y="172" width="376" height="28" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <text x="24" y="190.5" font-size="11.5" fill="currentColor"><tspan font-weight="bold">1</tspan><tspan dx="6.4">simulation</tspan></text>
+  <text x="150" y="190.5" font-size="11" opacity="0.9" fill="currentColor">“the method is sound under my assumptions”</text>
+  <line x1="395" y1="186" x2="427" y2="186" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6" marker-end="url(#arRW)"/>
+  <rect x="430" y="14" width="118" height="186" rx="4" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1" stroke-dasharray="5 3" stroke-opacity="0.7"/>
+  <text x="489" y="32" font-size="11" text-anchor="middle" font-style="italic" opacity="0.7" fill="currentColor">second axis</text>
+  <text x="489" y="56" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">used by</text>
+  <text x="489" y="71" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">someone else</text>
+  <text x="489" y="96" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">“it is useful to</text>
+  <text x="489" y="110" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">people who are</text>
+  <text x="489" y="124" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">not me”</text>
+  <text x="489" y="174" font-size="11" text-anchor="middle" opacity="0.7" fill="currentColor">reached from</text>
+  <text x="489" y="188" font-size="11" text-anchor="middle" opacity="0.7" fill="currentColor">any rung</text>
+  <line x1="42" y1="170" x2="42" y2="117" stroke="currentColor" stroke-width="1.6" marker-end="url(#arRW)"/>
+  <text x="52" y="140" font-size="11" fill="currentColor">a new setting:</text>
+  <text x="52" y="155" font-size="11" font-weight="bold" fill="currentColor">a new sentence</text>
+  <line x1="159" y1="114" x2="159" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <path d="M155 126 H297.4 V162 H155 L150 131 Z" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75"/>
+  <circle cx="159" cy="133" r="2.2" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="168" y="141" font-size="11" fill="currentColor">success rate: 32 per arm</text>
+  <text x="168" y="155" font-size="11" fill="currentColor">(36 for the exact test)</text>
+  <line x1="320.4" y1="114" x2="320.4" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <path d="M316.4 126 H392.1 V162 H316.4 L311.4 131 Z" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75"/>
+  <circle cx="320.4" cy="133" r="2.2" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="329.4" y="141" font-size="11" fill="currentColor">peak force:</text>
+  <text x="329.4" y="155" font-size="11" fill="currentColor">8 per arm</text>
+  <circle cx="128" cy="186" r="8" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <circle cx="128" cy="186" r="4.2" fill="currentColor"/>
+  <line x1="128" y1="194" x2="128" y2="213" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="128" y="224" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">RS1 pilot, 10 + 10 trials</text>
+  <line x1="200.3" y1="212" x2="390" y2="212" stroke="currentColor" stroke-width="1.6" marker-end="url(#arRW)"/>
+  <text x="200.3" y="227" font-size="11" fill="currentColor">more trials here: narrower intervals, the same sentence</text>
+  <path d="M16 236 H122 L128 230 L134 236 H544 V309 H16 Z" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="26" y="252" font-size="11" font-weight="bold" fill="currentColor">RS1’s pilot, in rung 1’s words:</text>
+  <text x="26" y="268" font-size="11" opacity="0.95" fill="currentColor">“Under the P2 model against a 400 N/m panel, B’s mean peak contact force was 3.16 N lower than A’s</text>
+  <text x="26" y="283" font-size="11" opacity="0.95" fill="currentColor">(95% CI 1.28 to 5.04 N), and B met the 10 N criterion in 9 of 10 trials against A’s 6 of 10, a difference</text>
+  <text x="26" y="298" font-size="11" opacity="0.95" fill="currentColor">the pilot cannot distinguish (95% CI −0.08 to +0.60).”</text>
+</svg>
+
 1. **The ladder.** The four rungs of §2's figure, simulation at the bottom, with the sentence each licenses written beside it, and "used by someone else" drawn off to the side on its own axis.
 2. **RS1 on it.** A marker on the simulation rung labelled *RS1 pilot, 10 + 10 trials*, and beside it the sentence that rung licenses, written in RS1's numbers (worked case, Step 1).
 3. **The price tags.** Hung on the laboratory-hardware rung: *success rate: 32 per arm (36 for the exact test)* and *peak force: 8 per arm*.
@@ -373,6 +426,59 @@ Research Practice의 관통 연구 RS1을 [[06-research-practice/research-questi
 ### 과제가 그릴 그림 · Homework diagram
 
 §2의 사다리를, RS1을 올려놓고 다음 단에 가격표를 달아 그린다. 과제는 파일럿을 한 단 올린 같은 그림을 요구한다.
+
+<svg viewBox="0 0 560 319" style="max-width:100%;height:auto" role="img" aria-label="RS1을 올린 증거 사다리: 시뮬레이션부터 가동 중 현장까지 네 단과 각 단이 허락하는 문장, 옆으로 떨어진 자기 축 위의 독립적 사용, 시뮬레이션 단 위의 RS1 파일럿과 RS1의 숫자로 쓴 그 문장, 하드웨어 단에 단 제어기당 32회와 8회의 가격표, 그리고 화살표 둘: 한 단을 따라가는 더 많은 시행과 다음 단으로 오르는 새로운 조건">
+  <defs><marker id="arRWk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="16" y="14" width="376" height="28" rx="3" fill="currentColor" fill-opacity="0.28" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <text x="24" y="32.5" font-size="11.5" fill="currentColor"><tspan font-weight="bold">4</tspan><tspan dx="6.4">가동 중 현장, 1회</tspan></text>
+  <text x="150" y="32.5" font-size="11" opacity="0.9" fill="currentColor">“내가 고르지 않은 조건을 견뎠다”</text>
+  <line x1="395" y1="28" x2="427" y2="28" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6" marker-end="url(#arRWk)"/>
+  <rect x="16" y="50" width="376" height="28" rx="3" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <text x="24" y="68.5" font-size="11.5" fill="currentColor"><tspan font-weight="bold">3</tspan><tspan dx="6.4">실물 크기 목업</tspan></text>
+  <text x="150" y="68.5" font-size="11" opacity="0.9" fill="currentColor">“현실적인 기하와 규모를 견딘다”</text>
+  <line x1="395" y1="64" x2="427" y2="64" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6" marker-end="url(#arRWk)"/>
+  <rect x="16" y="86" width="376" height="28" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <text x="24" y="104.5" font-size="11.5" fill="currentColor"><tspan font-weight="bold">2</tspan><tspan dx="6.4">실험실 하드웨어</tspan></text>
+  <text x="150" y="104.5" font-size="11" opacity="0.9" fill="currentColor">“내 조건에서 실기계에서 동작한다”</text>
+  <line x1="395" y1="100" x2="427" y2="100" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6" marker-end="url(#arRWk)"/>
+  <rect x="16" y="172" width="376" height="28" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.55"/>
+  <text x="24" y="190.5" font-size="11.5" fill="currentColor"><tspan font-weight="bold">1</tspan><tspan dx="6.4">시뮬레이션</tspan></text>
+  <text x="150" y="190.5" font-size="11" opacity="0.9" fill="currentColor">“내 가정 아래에서 방법이 타당하다”</text>
+  <line x1="395" y1="186" x2="427" y2="186" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6" marker-end="url(#arRWk)"/>
+  <rect x="430" y="14" width="118" height="186" rx="4" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1" stroke-dasharray="5 3" stroke-opacity="0.7"/>
+  <text x="489" y="32" font-size="11" text-anchor="middle" opacity="0.7" fill="currentColor">두 번째 축</text>
+  <text x="489" y="56" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">다른 사람이</text>
+  <text x="489" y="71" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">쓴다</text>
+  <text x="489" y="96" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">“내가 아닌</text>
+  <text x="489" y="110" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">사람들에게</text>
+  <text x="489" y="124" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">쓸모 있다”</text>
+  <text x="489" y="174" font-size="11" text-anchor="middle" opacity="0.7" fill="currentColor">어느 단에서든</text>
+  <text x="489" y="188" font-size="11" text-anchor="middle" opacity="0.7" fill="currentColor">닿을 수 있다</text>
+  <line x1="42" y1="170" x2="42" y2="117" stroke="currentColor" stroke-width="1.6" marker-end="url(#arRWk)"/>
+  <text x="52" y="140" font-size="11" fill="currentColor">새로운 조건:</text>
+  <text x="52" y="155" font-size="11" font-weight="bold" fill="currentColor">새로운 문장</text>
+  <line x1="159" y1="114" x2="159" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <path d="M155 126 H285.6 V162 H155 L150 131 Z" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75"/>
+  <circle cx="159" cy="133" r="2.2" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="168" y="141" font-size="11" fill="currentColor">성공률: 제어기당 32회</text>
+  <text x="168" y="155" font-size="11" fill="currentColor">(정확 검정이면 36회)</text>
+  <line x1="308.6" y1="114" x2="308.6" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <path d="M304.6 126 H389.8 V162 H304.6 L299.6 131 Z" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75"/>
+  <circle cx="308.6" cy="133" r="2.2" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="317.6" y="141" font-size="11" fill="currentColor">최대 접촉력:</text>
+  <text x="317.6" y="155" font-size="11" fill="currentColor">제어기당 8회</text>
+  <circle cx="110.4" cy="186" r="8" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <circle cx="110.4" cy="186" r="4.2" fill="currentColor"/>
+  <line x1="110.4" y1="194" x2="110.4" y2="213" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="110.4" y="224" font-size="11" text-anchor="middle" font-weight="bold" fill="currentColor">RS1 파일럿, 10 + 10회</text>
+  <line x1="179.6" y1="212" x2="390" y2="212" stroke="currentColor" stroke-width="1.6" marker-end="url(#arRWk)"/>
+  <text x="179.6" y="227" font-size="11" fill="currentColor">여기서 시행을 더하면: 좁아진 구간, 같은 문장</text>
+  <path d="M16 236 H104.4 L110.4 230 L116.4 236 H544 V309 H16 Z" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="26" y="252" font-size="11" font-weight="bold" fill="currentColor">단 1의 말로 쓴 RS1의 파일럿:</text>
+  <text x="26" y="268" font-size="11" opacity="0.95" fill="currentColor">“P2 모델과 400 N/m 패널에서 B의 평균 최대 접촉력은 A보다 3.16 N 낮았고(95% 신뢰구간</text>
+  <text x="26" y="283" font-size="11" opacity="0.95" fill="currentColor">1.28–5.04 N), B는 10회 중 9회, A는 10회 중 6회 10 N 기준을 만족했으나 파일럿은 이 차이를 구별하지</text>
+  <text x="26" y="298" font-size="11" opacity="0.95" fill="currentColor">못한다(95% 신뢰구간 −0.08–+0.60).”</text>
+</svg>
 
 1. **사다리.** §2 그림의 네 단을 시뮬레이션을 맨 아래로 하여 그리고, 단마다 허락하는 문장을 옆에 적는다. "다른 사람이 쓴다"는 옆으로 떨어진 자기 축 위에 그린다.
 2. **그 위의 RS1.** 시뮬레이션 단에 *RS1 파일럿, 10 + 10회*라는 표지를 놓고, 그 옆에 그 단이 허락하는 문장을 RS1의 숫자로 적는다(계산 예제 1단계).

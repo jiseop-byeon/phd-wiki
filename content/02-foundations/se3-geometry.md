@@ -29,6 +29,102 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 
 The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at $\theta=(0^\circ,90^\circ)$, drawn as two frames rather than as an arm. The problem set asks for this drawing.
 
+<svg viewBox="0 0 560 490" style="max-width:100%;height:auto" role="img" aria-label="plant P2 at theta = (0°, 90°) drawn as two frames: base axes at the origin, tool axes at the tip (1, 1) turned 90°, the position arrow p, a point 0.1 m along the tool x-axis and the tool x-direction, the matrices R and T read off the drawing, and a margin box with the base origin seen from the tool">
+  <defs><marker id="arSe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="7" stroke-opacity="0.13" stroke-linecap="round" fill="none"><line x1="80.0" y1="300.0" x2="230.0" y2="300.0"/><line x1="230.0" y1="300.0" x2="230.0" y2="150.0"/></g>
+  <circle cx="230.0" cy="300.0" r="4" fill="none" stroke="currentColor" stroke-opacity="0.3"/>
+  <text x="240.0" y="320.0" fill="currentColor" opacity="0.6">elbow (1, 0)</text>
+  <line x1="87.0" y1="300.0" x2="155.0" y2="300.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSe)"/>
+  <line x1="80.0" y1="293.0" x2="80.0" y2="225.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSe)"/>
+  <circle cx="80.0" cy="300.0" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="80.0" cy="300.0" r="2" fill="currentColor"/>
+  <text x="160.0" y="304.0" fill="currentColor" font-size="13">x<tspan dy="3" font-size="11">s</tspan></text>
+  <text x="74.0" y="231.0" fill="currentColor" font-size="13" text-anchor="end">y<tspan dy="3" font-size="11">s</tspan></text>
+  <text x="70.0" y="320.0" fill="currentColor" font-size="13" text-anchor="end">z<tspan dy="3" font-size="11">s</tspan></text>
+  <text x="90.0" y="320.0" fill="currentColor" opacity="0.9">base (0, 0)</text>
+  <line x1="230.0" y1="143.0" x2="230.0" y2="75.0" stroke="currentColor" stroke-width="2.4" marker-end="url(#arSe)"/>
+  <line x1="223.0" y1="150.0" x2="155.0" y2="150.0" stroke="currentColor" stroke-width="2.4" marker-end="url(#arSe)"/>
+  <circle cx="230.0" cy="150.0" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="230.0" cy="150.0" r="2" fill="currentColor"/>
+  <text x="236.0" y="80.0" fill="currentColor" font-size="13">x<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="150.0" y="155.0" fill="currentColor" font-size="13" text-anchor="end">y<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="240.0" y="170.0" fill="currentColor" font-size="13">z<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="240.0" y="185.0" fill="currentColor" opacity="0.9">tip (1, 1)</text>
+  <line x1="86.4" y1="293.6" x2="223.6" y2="156.4" stroke="currentColor" stroke-width="1.4" marker-end="url(#arSe)" stroke-dasharray="6 4" stroke-opacity="0.8"/>
+  <text x="150.0" y="262.0" fill="currentColor">p = (1, 1, 0)</text>
+  <circle cx="230.0" cy="135.0" r="3.4" fill="currentColor"/>
+  <line x1="226.0" y1="132.0" x2="214.0" y2="117.0" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
+  <text x="212.0" y="104.0" fill="currentColor" text-anchor="end">point: tool (0.1, 0, 0)</text>
+  <text x="212.0" y="118.0" fill="currentColor" text-anchor="end">= base (1, 1.1, 0)</text>
+  <line x1="258.0" y1="150.0" x2="258.0" y2="112.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSe)"/>
+  <text x="266.0" y="126.0" fill="currentColor">direction</text>
+  <text x="266.0" y="140.0" fill="currentColor">(0, 1, 0)</text>
+  <text x="14.0" y="24.0" fill="currentColor">• point, 4th entry 1: rotated and shifted</text>
+  <text x="14.0" y="38.0" fill="currentColor">↑ direction, 4th entry 0: rotated only</text>
+  <text x="14.0" y="344.0" fill="currentColor" opacity="0.85">⊙ = z, out of the page (right-handed)</text>
+  <rect x="340" y="60" width="212" height="192" rx="4" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="350.0" y="80.0" fill="currentColor">inverse: the same picture</text>
+  <text x="350.0" y="94.0" fill="currentColor" opacity="0.9">read backwards</text>
+  <line x1="500.0" y1="129.0" x2="500.0" y2="105.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSe)"/>
+  <line x1="493.0" y1="136.0" x2="469.0" y2="136.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSe)"/>
+  <circle cx="500.0" cy="136.0" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="500.0" cy="136.0" r="2" fill="currentColor"/>
+  <text x="506.0" y="110.0" fill="currentColor" font-size="13">x<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="464.0" y="141.0" fill="currentColor" font-size="13" text-anchor="end">y<tspan dy="3" font-size="11">b</tspan></text>
+  <path d="M500.0 136.0 L500.0 186.0 L450.0 186.0" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="2 3"/>
+  <line x1="500.0" y1="136.0" x2="450.0" y2="186.0" stroke="currentColor" stroke-width="1.4" stroke-dasharray="6 3"/>
+  <circle cx="450.0" cy="186.0" r="3.4" fill="currentColor"/>
+  <text x="506.0" y="165.0" fill="currentColor" opacity="0.8">1</text>
+  <text x="475.0" y="200.0" fill="currentColor" text-anchor="middle" opacity="0.8">1</text>
+  <text x="467.0" y="159.0" fill="currentColor" text-anchor="end">√2</text>
+  <text x="442.0" y="190.0" fill="currentColor" text-anchor="end">base origin</text>
+  <text x="350.0" y="214.0" fill="currentColor">base origin in tool coords:</text>
+  <text x="350.0" y="228.0" fill="currentColor">(−1, 1, 0) = −R<tspan dy="-4" font-size="11">T</tspan><tspan dy="4">p,</tspan></text>
+  <text x="350.0" y="242.0" fill="currentColor">still √2 from the tip</text>
+  <text x="14.0" y="372.0" fill="currentColor">R: each column read off a tip axis</text>
+  <text x="84.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">x<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="114.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">y<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="144.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">z<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="84.0" y="410.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="114.0" y="410.0" fill="currentColor" font-size="12" text-anchor="middle">−1</text>
+  <text x="144.0" y="410.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="84.0" y="426.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="114.0" y="426.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="144.0" y="426.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="84.0" y="442.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="114.0" y="442.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="144.0" y="442.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <path d="M71 398 L66 398 L66 447 L71 447" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M157 398 L162 398 L162 447 L157 447" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="24.0" y="426.0" fill="currentColor" font-size="12">R =</text>
+  <text x="172.0" y="426.0" fill="currentColor" font-size="12">= R<tspan dy="3" font-size="11">z</tspan><tspan dy="-3">(90°)</tspan></text>
+  <text x="14.0" y="466.0" fill="currentColor">columns unit, mutually ⟂: R<tspan dy="-4" font-size="11">T</tspan><tspan dy="4">R = I</tspan></text>
+  <text x="14.0" y="480.0" fill="currentColor">x<tspan dy="3" font-size="11">b</tspan><tspan dx="3.3" dy="-3">× y</tspan><tspan dy="3" font-size="11">b</tspan><tspan dx="3.3" dy="-3">= +z</tspan><tspan dy="3" font-size="11">b</tspan><tspan dy="-3">: det R = +1</tspan></text>
+  <text x="268.0" y="372.0" fill="currentColor">T: R in the corner, p in the last column</text>
+  <text x="312.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="338.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">−1</text>
+  <text x="364.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="390.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="312.0" y="408.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="338.0" y="408.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="364.0" y="408.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="390.0" y="408.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="312.0" y="424.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="338.0" y="424.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="364.0" y="424.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="390.0" y="424.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="312.0" y="440.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="338.0" y="440.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="364.0" y="440.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="390.0" y="440.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <path d="M301 380 L296 380 L296 445 L301 445" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M401 380 L406 380 L406 445 L401 445" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="268.0" y="420.0" fill="currentColor" font-size="12">T =</text>
+  <rect x="300" y="381" width="77" height="47" rx="2" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <rect x="378" y="381" width="24" height="47" rx="2" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+  <rect x="300" y="429" width="102" height="15" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="414.0" y="408.0" fill="currentColor">← p = (1, 1, 0)</text>
+  <text x="414.0" y="440.0" fill="currentColor">← fixed (0, 0, 0, 1)</text>
+  <text x="268.0" y="466.0" fill="currentColor" opacity="0.9">the bottom row is not decoration (§3)</text>
+</svg>
+
 **Two frames, axes first.** Draw the base frame at the origin: $x_s$ along $+x$, $y_s$ along $+y$, $z_s$ out of the page, drawn as a circled dot so the page has a right-handed triad and not two arrows. Sketch the arm faintly behind it — elbow $(1,0)$, tip $(1,1)$ — but draw it faintly, because this page's object is the frames and the links are only scaffolding. At the tip, draw the second frame. The forearm is vertical, so the tool's own $x$-axis points along $+y_s$ (straight up the page) and its $y$-axis along $-x_s$ (to the left); $z$ stays out of the page. Label the tip axes $x_b$, $y_b$, $z_b$ and *do not* draw them parallel to the base axes — the entire content of $R$ is that they are not.
 
 **The matrix, read off the drawing rather than computed.** Beside the figure write a $3\times3$ box and fill each column by reading the corresponding tip axis off the page in base coordinates: $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$. That is $R_z(90^\circ)$, obtained without a trigonometric identity. Under the box write the two membership tests of §1 as checks you can do on those three columns: they are unit length and mutually perpendicular ($R^\top R=I$), and $x_b\times y_b=z_b$ rather than $-z_b$ ($\det R=+1$). Then draw the arrow from base origin to tip origin and label it $p=(1,1,0)$, and assemble $T$ with $R$ in the corner, $p$ in the last column, and the bottom row $(0,0,0,1)$ written in — that row is not decoration, and §3 says what goes wrong without it.
@@ -324,6 +420,102 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**를 $\theta=(0^\circ,90^\circ)$에서 본 것이고, 팔이 아니라 프레임 둘로 그린다. 과제가 이 그림을 요구한다.
 
+<svg viewBox="0 0 560 490" style="max-width:100%;height:auto" role="img" aria-label="θ = (0°, 90°)의 장치 P2를 프레임 둘로 그린 그림: 원점의 베이스 축, 90° 돌아간 말단 (1, 1)의 도구 축, 위치 화살표 p, 도구 x축으로 0.1 m 나간 점과 도구 x 방향, 그림에서 읽은 행렬 R과 T, 도구에서 본 베이스 원점을 그린 여백 상자">
+  <defs><marker id="arSek" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="7" stroke-opacity="0.13" stroke-linecap="round" fill="none"><line x1="80.0" y1="300.0" x2="230.0" y2="300.0"/><line x1="230.0" y1="300.0" x2="230.0" y2="150.0"/></g>
+  <circle cx="230.0" cy="300.0" r="4" fill="none" stroke="currentColor" stroke-opacity="0.3"/>
+  <text x="240.0" y="320.0" fill="currentColor" opacity="0.6">엘보 (1, 0)</text>
+  <line x1="87.0" y1="300.0" x2="155.0" y2="300.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSek)"/>
+  <line x1="80.0" y1="293.0" x2="80.0" y2="225.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSek)"/>
+  <circle cx="80.0" cy="300.0" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="80.0" cy="300.0" r="2" fill="currentColor"/>
+  <text x="160.0" y="304.0" fill="currentColor" font-size="13">x<tspan dy="3" font-size="11">s</tspan></text>
+  <text x="74.0" y="231.0" fill="currentColor" font-size="13" text-anchor="end">y<tspan dy="3" font-size="11">s</tspan></text>
+  <text x="70.0" y="320.0" fill="currentColor" font-size="13" text-anchor="end">z<tspan dy="3" font-size="11">s</tspan></text>
+  <text x="90.0" y="320.0" fill="currentColor" opacity="0.9">베이스 (0, 0)</text>
+  <line x1="230.0" y1="143.0" x2="230.0" y2="75.0" stroke="currentColor" stroke-width="2.4" marker-end="url(#arSek)"/>
+  <line x1="223.0" y1="150.0" x2="155.0" y2="150.0" stroke="currentColor" stroke-width="2.4" marker-end="url(#arSek)"/>
+  <circle cx="230.0" cy="150.0" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="230.0" cy="150.0" r="2" fill="currentColor"/>
+  <text x="236.0" y="80.0" fill="currentColor" font-size="13">x<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="150.0" y="155.0" fill="currentColor" font-size="13" text-anchor="end">y<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="240.0" y="170.0" fill="currentColor" font-size="13">z<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="240.0" y="185.0" fill="currentColor" opacity="0.9">말단 (1, 1)</text>
+  <line x1="86.4" y1="293.6" x2="223.6" y2="156.4" stroke="currentColor" stroke-width="1.4" marker-end="url(#arSek)" stroke-dasharray="6 4" stroke-opacity="0.8"/>
+  <text x="150.0" y="262.0" fill="currentColor">p = (1, 1, 0)</text>
+  <circle cx="230.0" cy="135.0" r="3.4" fill="currentColor"/>
+  <line x1="226.0" y1="132.0" x2="214.0" y2="117.0" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
+  <text x="212.0" y="104.0" fill="currentColor" text-anchor="end">점: 도구 좌표 (0.1, 0, 0)</text>
+  <text x="212.0" y="118.0" fill="currentColor" text-anchor="end">= 베이스 (1, 1.1, 0)</text>
+  <line x1="258.0" y1="150.0" x2="258.0" y2="112.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSek)"/>
+  <text x="266.0" y="126.0" fill="currentColor">방향</text>
+  <text x="266.0" y="140.0" fill="currentColor">(0, 1, 0)</text>
+  <text x="14.0" y="24.0" fill="currentColor">• 점, 넷째 성분 1: 회전하고 평행이동</text>
+  <text x="14.0" y="38.0" fill="currentColor">↑ 방향, 넷째 성분 0: 회전만</text>
+  <text x="14.0" y="344.0" fill="currentColor" opacity="0.85">⊙ = 지면 밖으로 나오는 z (오른손 좌표계)</text>
+  <rect x="340" y="60" width="212" height="192" rx="4" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="350.0" y="80.0" fill="currentColor">역행렬: 같은 그림을</text>
+  <text x="350.0" y="94.0" fill="currentColor" opacity="0.9">거꾸로 읽은 것</text>
+  <line x1="500.0" y1="129.0" x2="500.0" y2="105.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSek)"/>
+  <line x1="493.0" y1="136.0" x2="469.0" y2="136.0" stroke="currentColor" stroke-width="2.0" marker-end="url(#arSek)"/>
+  <circle cx="500.0" cy="136.0" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="500.0" cy="136.0" r="2" fill="currentColor"/>
+  <text x="506.0" y="110.0" fill="currentColor" font-size="13">x<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="464.0" y="141.0" fill="currentColor" font-size="13" text-anchor="end">y<tspan dy="3" font-size="11">b</tspan></text>
+  <path d="M500.0 136.0 L500.0 186.0 L450.0 186.0" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="2 3"/>
+  <line x1="500.0" y1="136.0" x2="450.0" y2="186.0" stroke="currentColor" stroke-width="1.4" stroke-dasharray="6 3"/>
+  <circle cx="450.0" cy="186.0" r="3.4" fill="currentColor"/>
+  <text x="506.0" y="165.0" fill="currentColor" opacity="0.8">1</text>
+  <text x="475.0" y="200.0" fill="currentColor" text-anchor="middle" opacity="0.8">1</text>
+  <text x="467.0" y="159.0" fill="currentColor" text-anchor="end">√2</text>
+  <text x="442.0" y="190.0" fill="currentColor" text-anchor="end">베이스 원점</text>
+  <text x="350.0" y="214.0" fill="currentColor">도구 좌표로 본 베이스 원점:</text>
+  <text x="350.0" y="228.0" fill="currentColor">(−1, 1, 0) = −R<tspan dy="-4" font-size="11">T</tspan><tspan dy="4">p,</tspan></text>
+  <text x="350.0" y="242.0" fill="currentColor">말단에서 여전히 √2</text>
+  <text x="14.0" y="372.0" fill="currentColor">R: 각 열을 말단 축에서 읽는다</text>
+  <text x="84.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">x<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="114.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">y<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="144.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">z<tspan dy="3" font-size="11">b</tspan></text>
+  <text x="84.0" y="410.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="114.0" y="410.0" fill="currentColor" font-size="12" text-anchor="middle">−1</text>
+  <text x="144.0" y="410.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="84.0" y="426.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="114.0" y="426.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="144.0" y="426.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="84.0" y="442.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="114.0" y="442.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="144.0" y="442.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <path d="M71 398 L66 398 L66 447 L71 447" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M157 398 L162 398 L162 447 L157 447" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="24.0" y="426.0" fill="currentColor" font-size="12">R =</text>
+  <text x="172.0" y="426.0" fill="currentColor" font-size="12">= R<tspan dy="3" font-size="11">z</tspan><tspan dy="-3">(90°)</tspan></text>
+  <text x="14.0" y="466.0" fill="currentColor">열은 단위 길이, 서로 ⟂: R<tspan dy="-4" font-size="11">T</tspan><tspan dy="4">R = I</tspan></text>
+  <text x="14.0" y="480.0" fill="currentColor">x<tspan dy="3" font-size="11">b</tspan><tspan dx="3.3" dy="-3">× y</tspan><tspan dy="3" font-size="11">b</tspan><tspan dx="3.3" dy="-3">= +z</tspan><tspan dy="3" font-size="11">b</tspan><tspan dy="-3">: det R = +1</tspan></text>
+  <text x="268.0" y="372.0" fill="currentColor">T: 구석에 R, 마지막 열에 p</text>
+  <text x="312.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="338.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">−1</text>
+  <text x="364.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="390.0" y="392.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="312.0" y="408.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="338.0" y="408.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="364.0" y="408.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="390.0" y="408.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="312.0" y="424.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="338.0" y="424.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="364.0" y="424.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <text x="390.0" y="424.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="312.0" y="440.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="338.0" y="440.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="364.0" y="440.0" fill="currentColor" font-size="12" text-anchor="middle">0</text>
+  <text x="390.0" y="440.0" fill="currentColor" font-size="12" text-anchor="middle">1</text>
+  <path d="M301 380 L296 380 L296 445 L301 445" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M401 380 L406 380 L406 445 L401 445" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="268.0" y="420.0" fill="currentColor" font-size="12">T =</text>
+  <rect x="300" y="381" width="77" height="47" rx="2" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <rect x="378" y="381" width="24" height="47" rx="2" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+  <rect x="300" y="429" width="102" height="15" rx="2" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="414.0" y="408.0" fill="currentColor">← p = (1, 1, 0)</text>
+  <text x="414.0" y="440.0" fill="currentColor">← 늘 (0, 0, 0, 1)</text>
+  <text x="268.0" y="466.0" fill="currentColor" opacity="0.9">아래 행은 장식이 아니다 (§3)</text>
+</svg>
+
 **프레임 둘, 축부터.** 원점에 베이스 프레임을 그린다. $x_s$는 $+x$, $y_s$는 $+y$, $z_s$는 지면 밖으로 나오므로 동그라미 안의 점으로 그린다. 화살표 둘이 아니라 오른손 삼각대가 지면 위에 있어야 하기 때문이다. 팔은 뒤에 흐리게 스케치한다 — 엘보 $(1,0)$, 말단 $(1,1)$ — 흐리게 그리는 이유는 이 페이지의 대상이 프레임이고 링크는 받침대일 뿐이기 때문이다. 말단에 둘째 프레임을 그린다. 전완이 수직이므로 도구 자신의 $x$축은 $+y_s$(지면 위쪽)를, $y$축은 $-x_s$(왼쪽)를 향하고 $z$는 지면 밖 그대로다. 말단 축에 $x_b$, $y_b$, $z_b$라 이름 붙이고 베이스 축과 평행하게 그리지 *않는다*. $R$의 내용 전부가 그 둘이 평행하지 않다는 것이다.
 
 **행렬, 계산이 아니라 그림에서 읽어 내기.** 그림 옆에 $3\times3$ 상자를 그리고, 각 열을 해당 말단 축을 베이스 좌표로 읽어 채운다. $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$. 삼각함수 항등식 없이 얻은 $R_z(90^\circ)$다. 상자 아래에는 §1의 소속 검사 둘을, 그 세 열로 직접 할 수 있는 확인으로 적는다. 길이가 1이고 서로 수직이며($R^\top R=I$), $x_b\times y_b$가 $-z_b$가 아니라 $z_b$다($\det R=+1$). 그다음 베이스 원점에서 말단 원점으로 화살표를 긋고 $p=(1,1,0)$이라 쓴 뒤, 구석에 $R$, 마지막 열에 $p$, 아래 행에 $(0,0,0,1)$을 적어 $T$를 조립한다. 그 아래 행은 장식이 아니고, 없으면 무엇이 깨지는지는 §3이 말한다.
@@ -370,7 +562,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   로봇을 돌리는 대신 거울에 비춘 셈이다 — 규약 변환에서 실제로 자주 나는 버그다.
 
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="같은 점을 z 다음 x로 돌리면 z축에 도착하고 x 다음 z로 돌리면 y축에 도착한다">
-  <defs><marker id="seA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="seAk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.45">
     <line x1="150" y1="110" x2="197.6" y2="137.5"/>
     <line x1="150" y1="110" x2="102.4" y2="137.5"/>
@@ -379,7 +571,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   <g font-size="9" fill="currentColor" opacity="0.7">
     <text x="201.6" y="147.5">x</text><text x="90.4" y="147.5">y</text><text x="146" y="49">z</text>
   </g>
-  <g stroke="currentColor" stroke-width="1.7" fill="none" stroke-dasharray="5 4" opacity="0.85" marker-end="url(#seA)">
+  <g stroke="currentColor" stroke-width="1.7" fill="none" stroke-dasharray="5 4" opacity="0.85" marker-end="url(#seAk)">
     <path d="M197.6,137.5 Q150.0,115.5 102.4,137.5"/>
     <path d="M102.4,137.5 Q126.2,33 150,55"/>
   </g>
@@ -395,7 +587,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   <g font-size="9" fill="currentColor" opacity="0.7">
     <text x="461.6" y="147.5">x</text><text x="350.4" y="147.5">y</text><text x="406" y="49">z</text>
   </g>
-  <g stroke="currentColor" stroke-width="1.7" fill="none" stroke-dasharray="5 4" opacity="0.85" marker-end="url(#seA)">
+  <g stroke="currentColor" stroke-width="1.7" fill="none" stroke-dasharray="5 4" opacity="0.85" marker-end="url(#seAk)">
     <path d="M457.6,137.5 Q410.0,115.5 362.4,137.5"/>
   </g>
   <g fill="currentColor"><circle cx="410" cy="110" r="3"/><circle cx="457.6" cy="137.5" r="3.4"/></g>
@@ -466,7 +658,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   - **아래 첨자의 뜻.** $T_{AB}$는 프레임 $A$에서 표현한 프레임 $B$의 자세다. $R$의 열은 $A$ 좌표로 쓴 $B$의 축이고, $p$는 $A$ 좌표로 쓴 $B$의 원점이다. 사상으로 쓰면 좌표를 변환한다, $x_A=T_{AB}\,x_B$. 곱하려면 안쪽 첨자가 맞아야 하는 이유다. 아래의 $T_{world\leftarrow cam}$은 같은 대상을 화살표로 쓴 것이다.
 
 <svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="프레임 합성: 월드에서 베이스, 베이스에서 카메라">
-  <defs><marker id="se3a" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="se3ak" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g stroke="currentColor" stroke-width="1.6" fill="none">
     <path d="M40,140 L40,100"/><path d="M40,140 L80,140"/>
     <path d="M200,120 L188,86"/><path d="M200,120 L234,108"/>
@@ -474,8 +666,8 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
   </g>
   <g fill="currentColor"><circle cx="40" cy="140" r="3"/><circle cx="200" cy="120" r="3"/><circle cx="360" cy="70" r="3"/></g>
   <g stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3" opacity="0.8" fill="none">
-    <path d="M46,138 L193,123" marker-end="url(#se3a)"/><path d="M206,118 L353,73" marker-end="url(#se3a)"/>
-    <path d="M44,148 C140,184 272,142 356,80" marker-end="url(#se3a)"/>
+    <path d="M46,138 L193,123" marker-end="url(#se3ak)"/><path d="M206,118 L353,73" marker-end="url(#se3ak)"/>
+    <path d="M44,148 C140,184 272,142 356,80" marker-end="url(#se3ak)"/>
   </g>
   <g font-size="12" fill="currentColor">
     <text x="18" y="162">월드 A</text><text x="176" y="144">베이스 B</text><text x="346" y="26">카메라 C</text>

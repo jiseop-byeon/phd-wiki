@@ -55,6 +55,103 @@ What RS1 leaves unfixed on purpose: B's target impedance, A's stop threshold, th
 
 Two panels. The problem set asks for the same two for a different claim.
 
+<svg viewBox="0 0 560 590" style="max-width:100%;height:auto" role="img" aria-label="Two panels: the vague draft and the rewritten RS1 claim with their scope, intervention, comparator, outcome and withdrawal brackets, and RS1's twenty pilot peaks on a force axis with the 10 N line fixed before the pilot and the 9 to 10 N band shaded">
+  <text x="16" y="22" font-size="12.5" fill="currentColor"><tspan font-weight="bold">1</tspan><tspan dx="7">The claim’s anatomy</tspan></text>
+  <text x="16" y="44" font-size="11" font-style="italic" opacity="0.7" fill="currentColor">Draft (worked case, Step 1)</text>
+  <text x="16" y="64" font-size="12" textLength="98.4" lengthAdjust="spacing" fill="currentColor">impedance control</text>
+  <text x="117.8" y="64" font-size="12" textLength="35.4" lengthAdjust="spacing" fill="currentColor">makes</text>
+  <text x="156.5" y="64" font-size="12" textLength="69.7" lengthAdjust="spacing" fill="currentColor">robot contact</text>
+  <text x="229.6" y="64" font-size="12" textLength="26.8" lengthAdjust="spacing" fill="currentColor">safer</text>
+  <path d="M16 68 V72 H114.4 V68 M65.2 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="16" y="91" font-size="11" fill="currentColor">I · only a family name</text>
+  <path d="M156.5 68 V72 H226.2 V68 M191.4 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="3 2.5"/>
+  <circle cx="191.4" cy="87" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" stroke-opacity="0.6"/>
+  <text x="191.4" y="91" font-size="11" text-anchor="middle" opacity="0.6" fill="currentColor">S</text>
+  <path d="M229.6 68 V72 H256.4 V68 M243 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="3 2.5"/>
+  <circle cx="243" cy="87" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" stroke-opacity="0.6"/>
+  <text x="243" y="91" font-size="11" text-anchor="middle" opacity="0.6" fill="currentColor">Y</text>
+  <line x1="304" y1="64" x2="360" y2="64" stroke="currentColor" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="1 3"/>
+  <path d="M300 68 V72 H364 V68 M332 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="3 2.5"/>
+  <circle cx="332" cy="87" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" stroke-opacity="0.6"/>
+  <text x="332" y="91" font-size="11" text-anchor="middle" opacity="0.6" fill="currentColor">C</text>
+  <line x1="396" y1="64" x2="452" y2="64" stroke="currentColor" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="1 3"/>
+  <path d="M392 68 V72 H456 V68 M424 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="3 2.5"/>
+  <circle cx="424" cy="87" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" stroke-opacity="0.6"/>
+  <text x="424" y="91" font-size="11" text-anchor="middle" opacity="0.6" fill="currentColor">R</text>
+  <text x="548" y="91" font-size="11" text-anchor="end" opacity="0.7" fill="currentColor">dashed = left empty</text>
+  <text x="16" y="117" font-size="11" font-style="italic" opacity="0.7" fill="currentColor">Rewritten claim (worked case, Step 3)</text>
+  <text x="16" y="137" font-size="11.5" textLength="487.4" lengthAdjust="spacing" fill="currentColor">On the planar arm P2 approaching and contacting a 400 N/m panel under the RS1 trial protocol</text>
+  <path d="M16 141 V145 H503.4 V141 M259.7 145 V148.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="259.7" y="161" font-size="11" text-anchor="middle" fill="currentColor">S · scope: P2, the 400 N/m panel, the RS1 trial</text>
+  <text x="16" y="182" font-size="11.5" textLength="419.8" lengthAdjust="spacing" fill="currentColor">— with B’s target impedance and A’s stop threshold as reported in the methods —</text>
+  <text x="16" y="202" font-size="11.5" textLength="112.8" lengthAdjust="spacing" fill="currentColor">impedance control (B)</text>
+  <text x="132" y="202" font-size="11.5" textLength="47.5" lengthAdjust="spacing" fill="currentColor">produces</text>
+  <text x="182.8" y="202" font-size="11.5" textLength="166.9" lengthAdjust="spacing" fill="currentColor">a lower mean peak contact force</text>
+  <path d="M16 206 V210 H128.8 V206 M72.4 210 V213.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="72.4" y="226" font-size="11" text-anchor="middle" fill="currentColor">I · intervention: B</text>
+  <path d="M182.8 206 V210 H349.6 V206 M266.2 210 V213.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="266.2" y="226" font-size="11" text-anchor="middle" fill="currentColor">Y · outcome: peak contact force, N</text>
+  <text x="16" y="247" font-size="11.5" textLength="22.5" lengthAdjust="spacing" fill="currentColor">than</text>
+  <text x="41.8" y="247" font-size="11.5" textLength="234.7" lengthAdjust="spacing" fill="currentColor">position control with a force-threshold stop (A)</text>
+  <text x="276.5" y="247" font-size="11.5" textLength="3.2" lengthAdjust="spacing" fill="currentColor">.</text>
+  <path d="M41.8 251 V255 H276.5 V251 M159.1 255 V258.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="159.1" y="271" font-size="11" text-anchor="middle" fill="currentColor">C · comparator: A</text>
+  <text x="16" y="292" font-size="11.5" textLength="105.9" lengthAdjust="spacing" fill="currentColor">Secondary outcome:</text>
+  <text x="125.1" y="292" font-size="11.5" textLength="261.2" lengthAdjust="spacing" fill="currentColor">a larger share of B’s contacts stay at or below 10 N</text>
+  <text x="386.3" y="292" font-size="11.5" textLength="3.2" lengthAdjust="spacing" fill="currentColor">.</text>
+  <path d="M125.1 296 V300 H386.3 V296 M255.7 300 V303.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="255.7" y="316" font-size="11" text-anchor="middle" fill="currentColor">Y · secondary outcome: success at ≤ 10 N</text>
+  <path d="M16 327 V331 H503.4 V327 M259.7 331 V334.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="259.7" y="348" font-size="11" text-anchor="middle" fill="currentColor">R · withdrawn if the Welch 95% CI for μ<tspan dy="3" font-size="9.5">A</tspan><tspan dx="3.1" dy="-3">− μ</tspan><tspan dy="3" font-size="9.5">B</tspan><tspan dx="3.1" dy="-3">does not lie entirely above 0;</tspan></text>
+  <text x="259.7" y="363" font-size="11" text-anchor="middle" fill="currentColor">the secondary claim, if Fisher’s exact test does not reject at α = 0.05, two-sided</text>
+  <line x1="16" y1="381" x2="544" y2="381" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="16" y="403" font-size="12.5" fill="currentColor"><tspan font-weight="bold">2</tspan><tspan dx="7">The operational definition, drawn</tspan></text>
+  <rect x="268" y="425" width="44" height="80" fill="currentColor" fill-opacity="0.13"/>
+  <line x1="92" y1="505" x2="532" y2="505" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <path d="M92 505V510 M136 505V510 M180 505V510 M224 505V510 M268 505V510 M312 505V510 M356 505V510 M400 505V510 M444 505V510 M488 505V510 M532 505V510" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="92" y="523" font-size="11" text-anchor="middle" fill="currentColor">5</text>
+  <text x="136" y="523" font-size="11" text-anchor="middle" fill="currentColor">6</text>
+  <text x="180" y="523" font-size="11" text-anchor="middle" fill="currentColor">7</text>
+  <text x="224" y="523" font-size="11" text-anchor="middle" fill="currentColor">8</text>
+  <text x="268" y="523" font-size="11" text-anchor="middle" fill="currentColor">9</text>
+  <text x="312" y="523" font-size="11" text-anchor="middle" fill="currentColor">10</text>
+  <text x="356" y="523" font-size="11" text-anchor="middle" fill="currentColor">11</text>
+  <text x="400" y="523" font-size="11" text-anchor="middle" fill="currentColor">12</text>
+  <text x="444" y="523" font-size="11" text-anchor="middle" fill="currentColor">13</text>
+  <text x="488" y="523" font-size="11" text-anchor="middle" fill="currentColor">14</text>
+  <text x="532" y="523" font-size="11" text-anchor="middle" fill="currentColor">15</text>
+  <text x="312" y="540" font-size="11" text-anchor="middle" fill="currentColor">peak contact force per trial (N)</text>
+  <line x1="312" y1="415" x2="312" y2="505" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="318" y="423" font-size="11" fill="currentColor">10 N, fixed before the pilot</text>
+  <circle cx="210.8" cy="443" r="4" fill="currentColor"/>
+  <circle cx="228.4" cy="443" r="4" fill="currentColor"/>
+  <circle cx="272.4" cy="443" r="4" fill="currentColor"/>
+  <circle cx="285.6" cy="443" r="4" fill="currentColor"/>
+  <circle cx="303.2" cy="438" r="4" fill="currentColor"/>
+  <circle cx="307.6" cy="448" r="4" fill="currentColor"/>
+  <circle cx="369.2" cy="443" r="4" fill="currentColor"/>
+  <circle cx="426.4" cy="443" r="4" fill="currentColor"/>
+  <circle cx="483.6" cy="443" r="4" fill="currentColor"/>
+  <circle cx="523.2" cy="443" r="4" fill="currentColor"/>
+  <circle cx="131.6" cy="479" r="4" fill="currentColor"/>
+  <circle cx="144.8" cy="479" r="4" fill="currentColor"/>
+  <circle cx="162.4" cy="479" r="4" fill="currentColor"/>
+  <circle cx="171.2" cy="479" r="4" fill="currentColor"/>
+  <circle cx="184.4" cy="479" r="4" fill="currentColor"/>
+  <circle cx="202" cy="479" r="4" fill="currentColor"/>
+  <circle cx="219.6" cy="474" r="4" fill="currentColor"/>
+  <circle cx="224" cy="484" r="4" fill="currentColor"/>
+  <circle cx="241.6" cy="479" r="4" fill="currentColor"/>
+  <circle cx="338.4" cy="479" r="4" fill="currentColor"/>
+  <text x="20" y="447" font-size="12.5" font-weight="bold" fill="currentColor">A</text>
+  <text x="20" y="483" font-size="12.5" font-weight="bold" fill="currentColor">B</text>
+  <text x="38" y="447" font-size="12" fill="currentColor">6/10</text>
+  <text x="38" y="483" font-size="12" fill="currentColor">9/10</text>
+  <text x="38" y="423" font-size="11" opacity="0.7" fill="currentColor">≤ 10 N</text>
+  <text x="16" y="563" font-size="11" opacity="0.9" fill="currentColor">Shaded: the 9–10 N band. Four of A’s peaks sit in it (9.1, 9.4, 9.8, 9.9),</text>
+  <text x="16" y="578" font-size="11" opacity="0.9" fill="currentColor">so the verdict moves when the line moves: the line is part of the claim.</text>
+</svg>
+
 1. **The claim's anatomy.** Write the rewritten claim of the worked case (Step 3) across the page and bracket its phrases from below with four labels — **S** (scope: P2, the 400 N/m panel, the RS1 trial), **I** (intervention: B), **C** (comparator: A), **Y** (outcome: peak contact force in N, success at ≤ 10 N) — and a fifth bracket under the sentence that says what would withdraw it, **R**. Above it, write the vague draft "impedance control makes robot contact safer" with the same five brackets, and leave empty every bracket it does not fill.
 2. **The operational definition, drawn.** A horizontal force axis from 5 to 15 N. A's ten peaks as dots on one row, B's ten on the row below. A vertical line at 10 N labelled *fixed before the pilot*, and each row's count written left of the line: 6/10 and 9/10. Then shade the band from 9 to 10 N. Four of A's peaks sit in it (9.1, 9.4, 9.8, 9.9), which is why the verdict moves when the line moves.
 
@@ -344,6 +441,105 @@ RS1이 일부러 정하지 않은 것: B의 목표 임피던스, A가 멈추는 
 ### 과제가 그릴 그림 · Homework diagram
 
 그림 두 장. 과제는 다른 주장에 대해 같은 두 장을 요구한다.
+
+<svg viewBox="0 0 560 545" style="max-width:100%;height:auto" role="img" aria-label="그림 두 장: 모호한 초안과 고쳐 쓴 RS1 주장에 범위·개입·비교 대상·결과·철회 괄호를 친 해부도, 그리고 파일럿 전에 고정한 10 N 선과 9–10 N 띠를 칠한 힘 축 위의 파일럿 최대 접촉력 스무 개">
+  <text x="16" y="22" font-size="12.5" fill="currentColor"><tspan font-weight="bold">1</tspan><tspan dx="7">주장의 해부도</tspan></text>
+  <text x="16" y="44" font-size="11" font-style="italic" opacity="0.7" fill="currentColor">초안(계산 예제 1단계)</text>
+  <text x="16" y="64" font-size="12" textLength="75.4" lengthAdjust="spacing" fill="currentColor">임피던스 제어</text>
+  <text x="91.4" y="64" font-size="12" textLength="12" lengthAdjust="spacing" fill="currentColor">가</text>
+  <text x="106.7" y="64" font-size="12" textLength="51.4" lengthAdjust="spacing" fill="currentColor">로봇 접촉</text>
+  <text x="158.1" y="64" font-size="12" textLength="12" lengthAdjust="spacing" fill="currentColor">을</text>
+  <text x="173.4" y="64" font-size="12" textLength="63.4" lengthAdjust="spacing" fill="currentColor">더 안전하게</text>
+  <text x="240.2" y="64" font-size="12" textLength="36" lengthAdjust="spacing" fill="currentColor">만든다</text>
+  <path d="M16 68 V72 H91.4 V68 M53.7 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="16" y="91" font-size="11" fill="currentColor">I · 계열 이름뿐</text>
+  <path d="M106.7 68 V72 H158.1 V68 M132.4 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="3 2.5"/>
+  <circle cx="132.4" cy="87" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" stroke-opacity="0.6"/>
+  <text x="132.4" y="91" font-size="11" text-anchor="middle" opacity="0.6" fill="currentColor">S</text>
+  <path d="M173.4 68 V72 H236.8 V68 M205.1 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="3 2.5"/>
+  <circle cx="205.1" cy="87" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" stroke-opacity="0.6"/>
+  <text x="205.1" y="91" font-size="11" text-anchor="middle" opacity="0.6" fill="currentColor">Y</text>
+  <line x1="306.2" y1="64" x2="362.2" y2="64" stroke="currentColor" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="1 3"/>
+  <path d="M302.2 68 V72 H366.2 V68 M334.2 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="3 2.5"/>
+  <circle cx="334.2" cy="87" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" stroke-opacity="0.6"/>
+  <text x="334.2" y="91" font-size="11" text-anchor="middle" opacity="0.6" fill="currentColor">C</text>
+  <line x1="398.2" y1="64" x2="454.2" y2="64" stroke="currentColor" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="1 3"/>
+  <path d="M394.2 68 V72 H458.2 V68 M426.2 72 V75.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="3 2.5"/>
+  <circle cx="426.2" cy="87" r="7.5" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" stroke-opacity="0.6"/>
+  <text x="426.2" y="91" font-size="11" text-anchor="middle" opacity="0.6" fill="currentColor">R</text>
+  <text x="548" y="91" font-size="11" text-anchor="end" opacity="0.7" fill="currentColor">점선 = 비어 있음</text>
+  <text x="16" y="117" font-size="11" font-style="italic" opacity="0.7" fill="currentColor">고쳐 쓴 주장(계산 예제 3단계)</text>
+  <text x="16" y="137" font-size="11.5" textLength="357.1" lengthAdjust="spacing" fill="currentColor">RS1 시행 절차에 따라 평면 팔 P2가 400 N/m 패널에 다가가 접촉할 때</text>
+  <path d="M16 141 V145 H373.1 V141 M194.5 145 V148.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="194.5" y="161" font-size="11" text-anchor="middle" fill="currentColor">S · 범위: P2, 400 N/m 패널, RS1 시행</text>
+  <text x="16" y="182" font-size="11.5" textLength="338.3" lengthAdjust="spacing" fill="currentColor">— B의 목표 임피던스와 A의 정지 문턱은 방법 절에 보고한 대로 —</text>
+  <text x="16" y="202" font-size="11.5" textLength="87.5" lengthAdjust="spacing" fill="currentColor">임피던스 제어(B)</text>
+  <text x="103.5" y="202" font-size="11.5" textLength="11.5" lengthAdjust="spacing" fill="currentColor">는</text>
+  <text x="118.2" y="202" font-size="11.5" textLength="131.7" lengthAdjust="spacing" fill="currentColor">힘 문턱 정지 위치 제어(A)</text>
+  <text x="249.9" y="202" font-size="11.5" textLength="23" lengthAdjust="spacing" fill="currentColor">보다</text>
+  <text x="276.1" y="202" font-size="11.5" textLength="86.9" lengthAdjust="spacing" fill="currentColor">평균 최대 접촉력</text>
+  <text x="363.1" y="202" font-size="11.5" textLength="40.9" lengthAdjust="spacing" fill="currentColor">이 낮다.</text>
+  <path d="M16 206 V210 H103.5 V206 M59.8 210 V213.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="59.8" y="226" font-size="11" text-anchor="middle" fill="currentColor">I · 개입: B</text>
+  <path d="M118.2 206 V210 H249.9 V206 M184.1 210 V213.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="184.1" y="226" font-size="11" text-anchor="middle" fill="currentColor">C · 비교 대상: A</text>
+  <path d="M276.1 206 V210 H363.1 V206 M319.6 210 V213.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="319.6" y="226" font-size="11" text-anchor="middle" fill="currentColor">Y · 결과: 최대 접촉력(N)</text>
+  <text x="16" y="247" font-size="11.5" textLength="52.4" lengthAdjust="spacing" fill="currentColor">부차 결과:</text>
+  <text x="71.7" y="247" font-size="11.5" textLength="189.4" lengthAdjust="spacing" fill="currentColor">B의 접촉 중 10 N 이하에 머무는 비율</text>
+  <text x="261.1" y="247" font-size="11.5" textLength="55.7" lengthAdjust="spacing" fill="currentColor">이 더 크다.</text>
+  <path d="M71.7 251 V255 H261.1 V251 M166.4 255 V258.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="166.4" y="271" font-size="11" text-anchor="middle" fill="currentColor">Y · 부차 결과: 10 N 이하면 성공</text>
+  <path d="M16 282 V286 H404 V282 M210 286 V289.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="210" y="303" font-size="11" text-anchor="middle" fill="currentColor">R · μ<tspan dy="3" font-size="9.5">A</tspan><tspan dx="3.1" dy="-3">− μ</tspan><tspan dy="3" font-size="9.5">B</tspan><tspan dy="-3">의 Welch 95% 신뢰구간이 완전히 0보다 위에 있지 않으면 철회.</tspan></text>
+  <text x="210" y="318" font-size="11" text-anchor="middle" fill="currentColor">부차 주장은 Fisher 정확 검정이 양측 α = 0.05에서 기각하지 못하면 철회</text>
+  <line x1="16" y1="336" x2="544" y2="336" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="16" y="358" font-size="12.5" fill="currentColor"><tspan font-weight="bold">2</tspan><tspan dx="7">조작적 정의를 그림으로</tspan></text>
+  <rect x="268" y="380" width="44" height="80" fill="currentColor" fill-opacity="0.13"/>
+  <line x1="92" y1="460" x2="532" y2="460" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <path d="M92 460V465 M136 460V465 M180 460V465 M224 460V465 M268 460V465 M312 460V465 M356 460V465 M400 460V465 M444 460V465 M488 460V465 M532 460V465" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="92" y="478" font-size="11" text-anchor="middle" fill="currentColor">5</text>
+  <text x="136" y="478" font-size="11" text-anchor="middle" fill="currentColor">6</text>
+  <text x="180" y="478" font-size="11" text-anchor="middle" fill="currentColor">7</text>
+  <text x="224" y="478" font-size="11" text-anchor="middle" fill="currentColor">8</text>
+  <text x="268" y="478" font-size="11" text-anchor="middle" fill="currentColor">9</text>
+  <text x="312" y="478" font-size="11" text-anchor="middle" fill="currentColor">10</text>
+  <text x="356" y="478" font-size="11" text-anchor="middle" fill="currentColor">11</text>
+  <text x="400" y="478" font-size="11" text-anchor="middle" fill="currentColor">12</text>
+  <text x="444" y="478" font-size="11" text-anchor="middle" fill="currentColor">13</text>
+  <text x="488" y="478" font-size="11" text-anchor="middle" fill="currentColor">14</text>
+  <text x="532" y="478" font-size="11" text-anchor="middle" fill="currentColor">15</text>
+  <text x="312" y="495" font-size="11" text-anchor="middle" fill="currentColor">시행별 최대 접촉력 (N)</text>
+  <line x1="312" y1="370" x2="312" y2="460" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="318" y="378" font-size="11" fill="currentColor">10 N, 파일럿 전에 고정</text>
+  <circle cx="210.8" cy="398" r="4" fill="currentColor"/>
+  <circle cx="228.4" cy="398" r="4" fill="currentColor"/>
+  <circle cx="272.4" cy="398" r="4" fill="currentColor"/>
+  <circle cx="285.6" cy="398" r="4" fill="currentColor"/>
+  <circle cx="303.2" cy="393" r="4" fill="currentColor"/>
+  <circle cx="307.6" cy="403" r="4" fill="currentColor"/>
+  <circle cx="369.2" cy="398" r="4" fill="currentColor"/>
+  <circle cx="426.4" cy="398" r="4" fill="currentColor"/>
+  <circle cx="483.6" cy="398" r="4" fill="currentColor"/>
+  <circle cx="523.2" cy="398" r="4" fill="currentColor"/>
+  <circle cx="131.6" cy="434" r="4" fill="currentColor"/>
+  <circle cx="144.8" cy="434" r="4" fill="currentColor"/>
+  <circle cx="162.4" cy="434" r="4" fill="currentColor"/>
+  <circle cx="171.2" cy="434" r="4" fill="currentColor"/>
+  <circle cx="184.4" cy="434" r="4" fill="currentColor"/>
+  <circle cx="202" cy="434" r="4" fill="currentColor"/>
+  <circle cx="219.6" cy="429" r="4" fill="currentColor"/>
+  <circle cx="224" cy="439" r="4" fill="currentColor"/>
+  <circle cx="241.6" cy="434" r="4" fill="currentColor"/>
+  <circle cx="338.4" cy="434" r="4" fill="currentColor"/>
+  <text x="20" y="402" font-size="12.5" font-weight="bold" fill="currentColor">A</text>
+  <text x="20" y="438" font-size="12.5" font-weight="bold" fill="currentColor">B</text>
+  <text x="38" y="402" font-size="12" fill="currentColor">6/10</text>
+  <text x="38" y="438" font-size="12" fill="currentColor">9/10</text>
+  <text x="38" y="378" font-size="11" opacity="0.7" fill="currentColor">≤ 10 N</text>
+  <text x="16" y="518" font-size="11" opacity="0.9" fill="currentColor">칠한 띠: 9–10 N. A의 최댓값 넷(9.1, 9.4, 9.8, 9.9)이 그 안에 있어서</text>
+  <text x="16" y="533" font-size="11" opacity="0.9" fill="currentColor">선이 움직이면 판정도 움직인다. 선은 주장의 일부다.</text>
+</svg>
 
 1. **주장의 해부도.** 계산 예제 3단계에서 고쳐 쓴 주장을 가로로 적고, 구절마다 아래에서 괄호를 친다. S(범위: P2, 400 N/m 패널, RS1 시행), I(개입: B), C(비교 대상: A), Y(결과: 뉴턴 단위 최대 접촉력, 10 N 이하면 성공) 네 개와, 문장 아래에 무엇이 주장을 철회시키는지 적는 다섯 번째 괄호 R이다. 그 위에는 모호한 초안 "임피던스 제어가 로봇 접촉을 더 안전하게 만든다"를 같은 다섯 괄호와 함께 적고, 초안이 채우지 못한 괄호는 모두 비워 둔다.
 2. **조작적 정의를 그림으로.** 5 N에서 15 N까지의 가로 힘 축을 긋는다. 한 줄에 A의 최대 접촉력 열 개를 점으로, 그 아래 줄에 B의 열 개를 찍는다. 10 N에 세로선을 긋고 *파일럿 전에 고정*이라고 적은 다음, 선 왼쪽에 각 줄의 개수 6/10과 9/10을 쓴다. 그리고 9 N에서 10 N 사이의 띠를 칠한다. A의 최댓값 넷(9.1, 9.4, 9.8, 9.9)이 그 안에 있고, 그래서 선이 움직이면 판정도 움직인다.

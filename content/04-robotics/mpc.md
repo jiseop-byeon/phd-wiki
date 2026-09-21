@@ -132,6 +132,107 @@ The figure above draws receding horizon in the abstract. This is the version you
 draw on **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the problem set asks for the
 same one.
 
+<svg viewBox="0 0 560 372" style="max-width:100%;height:auto" role="img" aria-label="Receding horizon of length 3 on the leaky heater at x(t) = 0.5: predicted states above a time axis, three planned inputs pinned at the rail u = -1 inside the band from -1 to +1, the K = 99 demand of -49.5 far below it, d = 1 entering the plant unmeasured, the horizon re-planned from the new measurement, and the steady states [0, 2] the rails permit with 0.01 marked.">
+  <defs><marker id="aMPC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.5" fill="none">
+    <rect x="24" y="30" width="120" height="34" rx="3"/>
+    <circle cx="206" cy="47" r="10"/>
+    <rect x="252" y="30" width="150" height="34" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" fill="none" marker-end="url(#aMPC)">
+    <line x1="144" y1="47" x2="194" y2="47"/>
+    <line x1="206" y1="12" x2="206" y2="35"/>
+    <line x1="216" y1="47" x2="250" y2="47"/>
+    <polyline points="402,47 470,47 470,80 84,80 84,66"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none">
+    <line x1="56" y1="210" x2="268" y2="210"/>
+    <line x1="64" y1="206" x2="64" y2="214"/>
+    <line x1="128" y1="206" x2="128" y2="214"/>
+    <line x1="192" y1="206" x2="192" y2="214"/>
+    <line x1="256" y1="206" x2="256" y2="214"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" stroke-opacity="0.45">
+    <line x1="268" y1="210" x2="328" y2="210"/>
+    <line x1="320" y1="206" x2="320" y2="214"/>
+    <line x1="64" y1="200" x2="320" y2="200" stroke-dasharray="1 3"/>
+  </g>
+  <rect x="64" y="238" width="192" height="50" fill="currentColor" fill-opacity="0.10"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7">
+    <line x1="64" y1="238" x2="256" y2="238"/>
+    <line x1="64" y1="288" x2="256" y2="288"/>
+    <line x1="64" y1="263" x2="256" y2="263" stroke-dasharray="1 3"/>
+  </g>
+  <rect x="78" y="263" width="36" height="25" fill="currentColor" fill-opacity="0.55"/>
+  <rect x="142" y="263" width="36" height="25" fill="currentColor" fill-opacity="0.55"/>
+  <rect x="206" y="263" width="36" height="25" fill="currentColor" fill-opacity="0.55"/>
+  <ellipse cx="96" cy="275.5" rx="27" ry="16" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g stroke="currentColor" stroke-width="1.5" fill="none">
+    <line x1="96" y1="291" x2="96" y2="302"/>
+    <path d="M90 305 L102 301 M90 310 L102 306"/>
+    <line x1="96" y1="309" x2="96" y2="356" marker-end="url(#aMPC)"/>
+  </g>
+  <polyline points="64,105 128,132.1 192,156.7 256,178.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <polyline points="128,114 192,140.3 256,164.1 320,185.6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3" stroke-opacity="0.45"/>
+  <circle cx="64" cy="105" r="4" fill="currentColor"/>
+  <circle cx="128" cy="132.1" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="192" cy="156.7" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="256" cy="178.9" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="192" cy="140.3" r="3.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.45"/>
+  <circle cx="256" cy="164.1" r="3.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.45"/>
+  <circle cx="320" cy="185.6" r="3.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.45"/>
+  <circle cx="128" cy="114" r="4" fill="currentColor"/>
+  <path d="M134 114 H137 V132.1 H134" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="137" y1="123.1" x2="196" y2="112" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <rect x="352" y="284" width="120" height="16" fill="currentColor" fill-opacity="0.22"/>
+  <g stroke="currentColor" stroke-width="1.1" fill="none">
+    <line x1="338" y1="292" x2="492" y2="292"/>
+    <line x1="352" y1="281" x2="352" y2="303"/>
+    <line x1="412" y1="281" x2="412" y2="303"/>
+    <line x1="472" y1="281" x2="472" y2="303"/>
+  </g>
+  <path d="M352.6 301 l-5 9 h10 z" fill="currentColor"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="84" y="44">MPC</text>
+    <text x="84" y="58">N = 3, |u| ≤ 1</text>
+    <text x="327" y="52" font-size="12">ẋ = −x + u + d</text>
+    <text x="64" y="226">t</text>
+    <text x="128" y="226">t+1</text>
+    <text x="192" y="226">t+2</text>
+    <text x="256" y="226">t+3</text>
+    <text x="320" y="226" opacity="0.5">t+4</text>
+    <text x="96" y="255">u₀</text>
+    <text x="160" y="255">u₁</text>
+    <text x="224" y="255">u₂</text>
+    <text x="352" y="276">0</text>
+    <text x="412" y="276">1</text>
+    <text x="472" y="276">2</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="160" y="41">u₀</text>
+    <text x="214" y="22">d = 1, not measured</text>
+    <text x="462" y="76" text-anchor="end" opacity="0.85">measured x</text>
+    <text x="58" y="95">x(t) = 0.5, measured</text>
+    <text x="200" y="110">new measurement at t+1, above the predicted x₁:</text>
+    <text x="200" y="124">that gap is the feedback (d = 1 is not in the model)</text>
+    <text x="336" y="150" opacity="0.9">dashed: the plan, only step one runs</text>
+    <text x="336" y="164" opacity="0.6">lighter: re-planned from the new x</text>
+    <text x="58" y="242" text-anchor="end">u = +1</text>
+    <text x="58" y="292" text-anchor="end">u = −1</text>
+    <text x="58" y="204" text-anchor="end" opacity="0.7">x = 0</text>
+    <text x="140" y="306" opacity="0.85">only u₀ reaches the plant</text>
+    <text x="108" y="338">K = 99 asks u = −Kx = −49.5</text>
+    <text x="108" y="352" opacity="0.85">far below the band (off scale)</text>
+    <text x="318" y="248">steady states the rails permit</text>
+    <text x="318" y="262">0 = −x + u + d ⇒ x<tspan font-size="9.5" dy="3">ss</tspan><tspan dy="-3" dx="1.5"> = u + 1 ∈ [0, 2]</tspan></text>
+    <text x="318" y="326">0.01 = d/(1 + 99): reachable as a</text>
+    <text x="318" y="340">steady state, not by u = −99x's transient</text>
+    <text x="318" y="359" opacity="0.7" font-size="11">one step = 0.1 s (P4's catalog sampling)</text>
+  </g>
+</svg>
+
+The figure is the worked case at the top of this page, $x(t)=0.5$, where the $K=99$ law asks $u=-49.5$, with the predicted dots stepped at P4's catalog sampling $T=0.1$ s; the paragraphs below and the problem set use $x=1$, where the arrow reaches $u=-99$.
+
 **The axis and the prediction.** A time axis with four ticks, $t$ through $t+3$, so the $N=3$
 horizon fits. Above it, the state: the measured $x(t)$ as a filled dot on the first tick, the
 predicted $x_1,x_2,x_3$ as open dots, and a dashed curve through them — dashed, because only the
@@ -398,6 +499,107 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 위 그림은 receding horizon을 추상적으로 그린 것이다. 여기 있는 것은
 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4** 위에서 직접 그릴 수 있어야 하는 판이고,
 과제가 요구하는 것도 같은 그림이다.
+
+<svg viewBox="0 0 560 372" style="max-width:100%;height:auto" role="img" aria-label="x(t) = 0.5인 새는 히터 위의 길이 3 후퇴 지평: 시간 축 위의 예측 상태, -1과 +1 사이 띠 안에서 레일 u = -1에 붙은 계획 입력 셋, 그 한참 아래의 K = 99 요구값 -49.5, 측정되지 않은 채 플랜트로 들어가는 d = 1, 새 측정값에서 다시 세운 지평, 레일이 허용하는 정상상태 [0, 2]와 0.01의 표시.">
+  <defs><marker id="aMPCk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1.5" fill="none">
+    <rect x="24" y="30" width="120" height="34" rx="3"/>
+    <circle cx="206" cy="47" r="10"/>
+    <rect x="252" y="30" width="150" height="34" rx="3"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" fill="none" marker-end="url(#aMPCk)">
+    <line x1="144" y1="47" x2="194" y2="47"/>
+    <line x1="206" y1="12" x2="206" y2="35"/>
+    <line x1="216" y1="47" x2="250" y2="47"/>
+    <polyline points="402,47 470,47 470,80 84,80 84,66"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none">
+    <line x1="56" y1="210" x2="268" y2="210"/>
+    <line x1="64" y1="206" x2="64" y2="214"/>
+    <line x1="128" y1="206" x2="128" y2="214"/>
+    <line x1="192" y1="206" x2="192" y2="214"/>
+    <line x1="256" y1="206" x2="256" y2="214"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" stroke-opacity="0.45">
+    <line x1="268" y1="210" x2="328" y2="210"/>
+    <line x1="320" y1="206" x2="320" y2="214"/>
+    <line x1="64" y1="200" x2="320" y2="200" stroke-dasharray="1 3"/>
+  </g>
+  <rect x="64" y="238" width="192" height="50" fill="currentColor" fill-opacity="0.10"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7">
+    <line x1="64" y1="238" x2="256" y2="238"/>
+    <line x1="64" y1="288" x2="256" y2="288"/>
+    <line x1="64" y1="263" x2="256" y2="263" stroke-dasharray="1 3"/>
+  </g>
+  <rect x="78" y="263" width="36" height="25" fill="currentColor" fill-opacity="0.55"/>
+  <rect x="142" y="263" width="36" height="25" fill="currentColor" fill-opacity="0.55"/>
+  <rect x="206" y="263" width="36" height="25" fill="currentColor" fill-opacity="0.55"/>
+  <ellipse cx="96" cy="275.5" rx="27" ry="16" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g stroke="currentColor" stroke-width="1.5" fill="none">
+    <line x1="96" y1="291" x2="96" y2="302"/>
+    <path d="M90 305 L102 301 M90 310 L102 306"/>
+    <line x1="96" y1="309" x2="96" y2="356" marker-end="url(#aMPCk)"/>
+  </g>
+  <polyline points="64,105 128,132.1 192,156.7 256,178.9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <polyline points="128,114 192,140.3 256,164.1 320,185.6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3" stroke-opacity="0.45"/>
+  <circle cx="64" cy="105" r="4" fill="currentColor"/>
+  <circle cx="128" cy="132.1" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="192" cy="156.7" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="256" cy="178.9" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="192" cy="140.3" r="3.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.45"/>
+  <circle cx="256" cy="164.1" r="3.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.45"/>
+  <circle cx="320" cy="185.6" r="3.2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.45"/>
+  <circle cx="128" cy="114" r="4" fill="currentColor"/>
+  <path d="M134 114 H137 V132.1 H134" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="137" y1="123.1" x2="196" y2="112" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <rect x="352" y="284" width="120" height="16" fill="currentColor" fill-opacity="0.22"/>
+  <g stroke="currentColor" stroke-width="1.1" fill="none">
+    <line x1="338" y1="292" x2="492" y2="292"/>
+    <line x1="352" y1="281" x2="352" y2="303"/>
+    <line x1="412" y1="281" x2="412" y2="303"/>
+    <line x1="472" y1="281" x2="472" y2="303"/>
+  </g>
+  <path d="M352.6 301 l-5 9 h10 z" fill="currentColor"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="84" y="44">MPC</text>
+    <text x="84" y="58">N = 3, |u| ≤ 1</text>
+    <text x="327" y="52" font-size="12">ẋ = −x + u + d</text>
+    <text x="64" y="226">t</text>
+    <text x="128" y="226">t+1</text>
+    <text x="192" y="226">t+2</text>
+    <text x="256" y="226">t+3</text>
+    <text x="320" y="226" opacity="0.5">t+4</text>
+    <text x="96" y="255">u₀</text>
+    <text x="160" y="255">u₁</text>
+    <text x="224" y="255">u₂</text>
+    <text x="352" y="276">0</text>
+    <text x="412" y="276">1</text>
+    <text x="472" y="276">2</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="160" y="41">u₀</text>
+    <text x="214" y="22">d = 1, 측정 안 됨</text>
+    <text x="462" y="76" text-anchor="end" opacity="0.85">측정한 x</text>
+    <text x="58" y="95">x(t) = 0.5, 측정값</text>
+    <text x="200" y="110">t+1의 새 측정값은 예측한 x₁보다 위에 있다:</text>
+    <text x="200" y="124">그 간격이 피드백이다 (모델에는 d = 1이 없다)</text>
+    <text x="336" y="150" opacity="0.9">파선: 계획, 실행되는 것은 첫 스텝뿐</text>
+    <text x="336" y="164" opacity="0.6">옅은 선: 새 x에서 다시 세운 계획</text>
+    <text x="58" y="242" text-anchor="end">u = +1</text>
+    <text x="58" y="292" text-anchor="end">u = −1</text>
+    <text x="58" y="204" text-anchor="end" opacity="0.7">x = 0</text>
+    <text x="140" y="306" opacity="0.85">플랜트에 닿는 것은 u₀뿐</text>
+    <text x="108" y="338">K = 99는 u = −Kx = −49.5를 요구</text>
+    <text x="108" y="352" opacity="0.85">띠보다 한참 아래 (축척 밖)</text>
+    <text x="318" y="248">레일이 허용하는 정상상태</text>
+    <text x="318" y="262">0 = −x + u + d ⇒ x<tspan font-size="9.5" dy="3">ss</tspan><tspan dy="-3" dx="1.5"> = u + 1 ∈ [0, 2]</tspan></text>
+    <text x="318" y="326">0.01 = d/(1 + 99): 정상상태로는</text>
+    <text x="318" y="340">도달 가능, u = −99x의 과도 구간으로는 불가</text>
+    <text x="318" y="359" opacity="0.7" font-size="11">한 스텝 = 0.1초 (P4 카탈로그 샘플링)</text>
+  </g>
+</svg>
+
+그림은 이 페이지 첫머리의 계산 $x(t)=0.5$를 그린 것이다. 거기서 $K=99$ 법칙은 $u=-49.5$를 요구하고, 예측 점은 P4 카탈로그의 샘플링 $T=0.1$초 간격으로 찍었다. 아래 문단과 과제는 $x=1$을 쓰며, 그때 화살표는 $u=-99$에 닿는다.
 
 **축과 예측.** 눈금이 넷($t$부터 $t+3$까지)인 시간 축을 그어 $N=3$ 지평이 들어가게 한다. 축
 위쪽에는 상태를 그린다. 첫 눈금에 측정값 $x(t)$를 채운 점으로, 예측값 $x_1,x_2,x_3$를 빈 점으로,

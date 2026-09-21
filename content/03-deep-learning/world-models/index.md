@@ -42,22 +42,116 @@ Two learned gains rather than one, because §3's whole question is which *direct
 
 ### Homework diagram · 과제가 그릴 그림
 
-One block diagram with **two** rollout paths, and the problem set asks for exactly this one.
+One block diagram with **two** rollout paths, and the problem set asks for exactly this one. The figure is the worked case: D5's numbers on the blocks and, underneath, what the two paths produce with zero actions from $z_0=1$.
 
-```mermaid
-flowchart LR
-    O["observation o_t"] --> E["encoder"]
-    E --> Z["latent z_t"]
-    Z --> F["transition z' = 0.8 z + 0.5 a"]
-    A["action a_t"] --> F
-    F --> Z2["z_t+1"]
-    Z2 --> R["reward -z^2 - 0.1 a^2"]
-    Z2 --> D["decoder, optional"]
-    Z2 -->|"free running: feed the model its own output"| F
-    E -->|"teacher forced: re-encode a real observation"| F
-    R --> P["planner: argmax over action sequences"]
-    P --> A
-```
+<svg viewBox="0 0 560 478" style="max-width:100%;height:auto" role="img" aria-label="D5's world model as a block diagram with the teacher-forced and free-running paths into the transition drawn separately, and below the two paths' outputs with zero actions: the true state 0.8 to the H, the free-running rollout 0.9 to the H and their gap, which is 0.26281 at H = 5 and peaks at 0.269297 at H = 6">
+  <defs><marker id="aD5e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">(a) the block diagram, D5's numbers</text>
+  <rect x="170" y="32" width="236" height="26" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="288" y="49" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">planner: argmax over action sequences</text>
+  <rect x="170" y="92" width="236" height="50" rx="5" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <text x="288" y="106" font-size="11" fill="currentColor" text-anchor="middle">transition</text>
+  <text x="276.2" y="121" font-size="11" fill="currentColor" text-anchor="end">z′ =</text>
+  <text x="283.3" y="121" font-size="11" fill="currentColor" text-anchor="middle">λ</text>
+  <text x="286.5" y="121" font-size="11" fill="currentColor">z + βa</text>
+  <path d="M 280.6 112.7 L 283.3 110.7 L 285.9 112.7" stroke="currentColor" stroke-width="0.99" fill="none" stroke-linejoin="round"/>
+  <text x="276.6" y="136" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">true λ = 0.8 ·</text>
+  <text x="283.7" y="136" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">λ</text>
+  <text x="290.8" y="136" font-size="11" fill="currentColor" fill-opacity="0.8">= 0.9 · β = 0.5</text>
+  <path d="M 281 127.7 L 283.7 125.7 L 286.3 127.7" stroke="currentColor" stroke-width="0.99" fill="none" stroke-linejoin="round" stroke-opacity="0.8"/>
+  <line x1="288" y1="58" x2="288" y2="90" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD5e)"/>
+  <text x="280" y="80" font-size="11" fill="currentColor" text-anchor="end">action a<tspan dy="3" font-size="10">t</tspan><tspan dy="-3" dx="3.5">∈ {−1, −½, 0, ½, 1}</tspan></text>
+  <line x1="406" y1="117" x2="418" y2="117" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD5e)"/>
+  <rect x="420" y="105" width="40" height="24" rx="12" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="440" y="121" font-size="11" fill="currentColor" text-anchor="middle">ẑ<tspan dy="3" font-size="10">t+1</tspan></text>
+  <rect x="472" y="66" width="76" height="36" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="510" y="80.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">reward</text>
+  <text x="510" y="95.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">−z² − 0.1a²</text>
+  <rect x="472" y="132" width="76" height="36" rx="5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="4 3"/>
+  <text x="510" y="146.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">decoder</text>
+  <text x="510" y="161.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">optional</text>
+  <path d="M460 117 L464 117 L464 84 L470 84" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aD5e)" stroke-linejoin="round"/>
+  <path d="M464 117 L464 150 L470 150" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3" marker-end="url(#aD5e)" stroke-linejoin="round"/>
+  <path d="M510 66 L510 45 L408 45" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aD5e)" stroke-linejoin="round"/>
+  <rect x="12" y="170" width="96" height="24" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="60" y="186" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">observation o<tspan dy="3" font-size="10">t</tspan></text>
+  <rect x="120" y="170" width="64" height="24" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="152" y="186" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">encoder</text>
+  <line x1="108" y1="182" x2="118" y2="182" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD5e)"/>
+  <path d="M184 182 L200 182 L200 144" stroke="currentColor" stroke-width="1.8" fill="none" marker-end="url(#aD5e)" stroke-linejoin="round"/>
+  <text x="206" y="164" font-size="11" fill="currentColor">z<tspan dy="3" font-size="10">t</tspan></text>
+  <text x="12" y="214" font-size="11" fill="currentColor">teacher forced: re-encode a real observation</text>
+  <path d="M440 129 L440 182 L376 182 L376 144" stroke="currentColor" stroke-width="1.8" fill="none" stroke-dasharray="6 3" marker-end="url(#aD5e)" stroke-linejoin="round"/>
+  <text x="370" y="164" font-size="11" fill="currentColor" text-anchor="end">ẑ<tspan dy="3" font-size="10">t</tspan></text>
+  <text x="548" y="200" font-size="11" fill="currentColor" text-anchor="end">free running: feed the model its own output</text>
+  <text x="12" y="246" font-size="12" fill="currentColor">(b) the two paths on D5: zero actions, z<tspan dy="3" font-size="10.2">0</tspan><tspan dy="-3" dx="3.8">= 1</tspan></text>
+  <line x1="48" y1="438" x2="540" y2="438" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="48" y1="438" x2="48" y2="258" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="44" y1="438" x2="48" y2="438" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="442" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0</text>
+  <line x1="44" y1="394" x2="48" y2="394" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="398" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0.25</text>
+  <line x1="44" y1="350" x2="48" y2="350" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="354" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0.5</text>
+  <line x1="44" y1="306" x2="48" y2="306" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="310" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0.75</text>
+  <line x1="44" y1="262" x2="48" y2="262" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="266" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">1</text>
+  <line x1="48" y1="438" x2="48" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="48" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <line x1="171" y1="438" x2="171" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="171" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">5</text>
+  <line x1="294" y1="438" x2="294" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="294" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">10</text>
+  <line x1="417" y1="438" x2="417" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="417" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">15</text>
+  <line x1="540" y1="438" x2="540" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="540" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">20</text>
+  <text x="355.5" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">horizon H</text>
+  <path d="M48 262 L72.6 297.2 L97.2 325.4 L121.8 347.9 L146.4 365.9 L171 380.3 L195.6 391.9 L220.2 401.1 L244.8 408.5 L269.4 414.4 L294 419.1 L318.6 422.9 L343.2 425.9 L367.8 428.3 L392.4 430.3 L417 431.8 L441.6 433 L466.2 434 L490.8 434.8 L515.4 435.5 L540 436" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <path d="M48 262 L72.6 279.6 L97.2 295.4 L121.8 309.7 L146.4 322.5 L171 334.1 L195.6 344.5 L220.2 353.8 L244.8 362.2 L269.4 369.8 L294 376.6 L318.6 382.8 L343.2 388.3 L367.8 393.3 L392.4 397.7 L417 401.8 L441.6 405.4 L466.2 408.6 L490.8 411.6 L515.4 414.2 L540 416.6" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="7 4" stroke-linejoin="round"/>
+  <path d="M48 438 L72.6 420.4 L97.2 408.1 L121.8 399.8 L146.4 394.6 L171 391.7 L195.6 390.6 L220.2 390.7 L244.8 391.8 L269.4 393.4 L294 395.5 L318.6 397.9 L343.2 400.4 L367.8 402.9 L392.4 405.5 L417 408 L441.6 410.3 L466.2 412.6 L490.8 414.8 L515.4 416.8 L540 418.6" stroke="currentColor" stroke-width="1.1" fill="none" stroke-opacity="0.75" stroke-linejoin="round"/>
+  <circle cx="72.6" cy="279.6" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="97.2" cy="311.3" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="121.8" cy="336.6" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="146.4" cy="356.9" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="171" cy="373.1" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="195.6" cy="386.1" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="220.2" cy="396.5" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="244.8" cy="404.8" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="269.4" cy="411.4" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="294" cy="416.7" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="318.6" cy="421" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="343.2" cy="424.4" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="367.8" cy="427.1" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="392.4" cy="429.3" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="417" cy="431" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="441.6" cy="432.4" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="466.2" cy="433.5" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="490.8" cy="434.4" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="515.4" cy="435.1" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="540" cy="435.7" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="195.6" cy="390.6" r="3.6" stroke="none" fill="currentColor"/>
+  <line x1="171" y1="380.3" x2="171" y2="334.1" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="167" y1="380.3" x2="175" y2="380.3" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="167" y1="334.1" x2="175" y2="334.1" stroke="currentColor" stroke-width="1.6"/>
+  <text x="68.9" y="431.8" font-size="11" fill="currentColor" fill-opacity="0.85">H = 1: δ = 0.1, the one-step error</text>
+  <line x1="274.3" y1="260" x2="296.3" y2="260" stroke="currentColor" stroke-width="2"/>
+  <text x="304.3" y="264" font-size="11" fill="currentColor">true z<tspan dy="3" font-size="10">H</tspan><tspan dy="-3" dx="3.5">= 0.8</tspan><tspan dy="-4" font-size="10">H</tspan></text>
+  <circle cx="285.3" cy="278.5" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <text x="304.3" y="282.5" font-size="11" fill="currentColor">teacher forced 0.9·z<tspan dy="3" font-size="10">H−1</tspan></text>
+  <line x1="274.3" y1="297" x2="296.3" y2="297" stroke="currentColor" stroke-width="2" stroke-dasharray="7 4"/>
+  <text x="304.3" y="301" font-size="11" fill="currentColor">free running ẑ<tspan dy="3" font-size="10">H</tspan><tspan dy="-3" dx="3.5">= 0.9</tspan><tspan dy="-4" font-size="10">H</tspan></text>
+  <line x1="274.3" y1="315.5" x2="296.3" y2="315.5" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75"/>
+  <text x="304.3" y="319.5" font-size="11" fill="currentColor">gap δ<tspan dy="3" font-size="10">H</tspan><tspan dy="-3" dx="3.5">= 0.9</tspan><tspan dy="-4" font-size="10">H</tspan><tspan dy="4" dx="3.5">− 0.8</tspan><tspan dy="-4" font-size="10">H</tspan></text>
+  <line x1="285.3" y1="328" x2="285.3" y2="340" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="281.3" y1="328" x2="289.3" y2="328" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="281.3" y1="340" x2="289.3" y2="340" stroke="currentColor" stroke-width="1.6"/>
+  <text x="304.3" y="338" font-size="11" fill="currentColor">H = 5: 0.59049 − 0.32768 = 0.26281</text>
+  <circle cx="285.3" cy="352.5" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="304.3" y="356.5" font-size="11" fill="currentColor">peak H = 6: 0.269297</text>
+  <text x="304.3" y="375" font-size="11" fill="currentColor">H = 20: δ/z = 9.545</text>
+</svg>
 
 Four things the drawing has to get right, each of which is a claim about the method.
 **Two paths into the transition, drawn separately.** One arrow comes from the encoder (a real observation, re-encoded every step) and one from the transition's own output. Those two arrows are the difference between the loss a paper trains on and the rollout it deploys, and §5 measures how far apart they get.
@@ -237,7 +331,7 @@ Decompose a world-model paper into five components, identify its rollout horizon
 5. D5's reward charges $-z_t^2$ on the state *before* the action. Whose number changes if the convention is switched to charging $z_{t+1}$, and does the ranking of $(-1,0)$ against $(0,0)$ survive it?
 
 > [!tip]- Answers
-> 1. One-step MSE $10^{-4}$ is an error of $10^{-2}$ in the state. The amplification is $(1-0.95^{20})/(1-0.95)=12.83$, so the bound is about $0.128$ — four orders of magnitude worse than the loss suggests. It is not the number to quote because it assumes every one-step error is that large, in the same direction, and independent of the state; on D5 the true errors decayed with the state and the actual $\delta_{20}$ came out well under the bound. The bound is the right thing to ask a paper for, and the measured free-running curve is the right thing to demand alongside it.
+> 1. One-step MSE $10^{-4}$ is an error of $10^{-2}$ in the state. The amplification is $(1-0.95^{20})/(1-0.95)=12.83$, so the bound is about $0.128$ — three orders of magnitude worse than the loss suggests. It is not the number to quote because it assumes every one-step error is that large, in the same direction, and independent of the state; on D5 the true errors decayed with the state and the actual $\delta_{20}$ came out well under the bound. The bound is the right thing to ask a paper for, and the measured free-running curve is the right thing to demand alongside it.
 > 2. Condition two: the map has no action input. It can satisfy the latent and closure conditions perfectly and still support only a prediction claim, never a control claim, because nothing in it answers a counterfactual about an action the data did not contain.
 > 3. Nothing, on this action grid. The gap means the plant keeps outperforming the model's promise, which is a reporting problem rather than a control problem: the same paper's predicted returns are systematically too low. The moment the grid is fine enough that the ordering of near-optimal plans changes, that pessimism starts costing regret too — which is why the $0$ in this column is a property of this grid and is stated as such.
 > 4. With $H=1$ the planner maximizes $-z_0^2-0.1a_0^2$ over $a_0$, and $z_0$ does not depend on $a_0$. The only term the action touches is its own penalty, so the optimizer always picks $a_0=0$ and the state coasts down at $0.8$ per step. The failure is the horizon, not the model — the same run with the *wrong* model and $H=2$ scores $-1.2153$.
@@ -296,7 +390,116 @@ def roll_b(lm, bt, acts, z=z0):        # a model that may be wrong about beta to
 
 ### 과제가 그릴 그림 · Homework diagram
 
-rollout 경로가 **둘**인 블록선도 하나, 과제가 요구하는 것이 정확히 이 그림이다. 영어 절의 mermaid 그림을 보라.
+rollout 경로가 **둘**인 블록선도 하나, 과제가 요구하는 것이 정확히 이 그림이다. 그림은 계산 절이다. 블록에 D5의 숫자를 적었고, 아래에는 $z_0=1$에서 행동이 0일 때 두 경로가 내는 값을 그렸다.
+
+<svg viewBox="0 0 560 478" style="max-width:100%;height:auto" role="img" aria-label="전이로 들어가는 teacher forcing 경로와 자유 진행 경로를 따로 그린 D5 월드모델의 블록선도와, 행동이 0일 때 참 상태 0.8의 H제곱, 자유 진행 rollout 0.9의 H제곱, 그리고 H = 5에서 0.26281이고 H = 6에서 0.269297로 정점인 둘의 차이를 그린 그래프">
+  <defs><marker id="aD5k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">(a) 블록선도, D5의 숫자</text>
+  <rect x="170" y="32" width="236" height="26" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="288" y="49" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">planner: 행동 sequence에 대한 argmax</text>
+  <rect x="170" y="92" width="236" height="50" rx="5" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <text x="288" y="106" font-size="11" fill="currentColor" text-anchor="middle">전이</text>
+  <text x="276.2" y="121" font-size="11" fill="currentColor" text-anchor="end">z′ =</text>
+  <text x="283.3" y="121" font-size="11" fill="currentColor" text-anchor="middle">λ</text>
+  <text x="286.5" y="121" font-size="11" fill="currentColor">z + βa</text>
+  <path d="M 280.6 112.7 L 283.3 110.7 L 285.9 112.7" stroke="currentColor" stroke-width="0.99" fill="none" stroke-linejoin="round"/>
+  <text x="270.8" y="136" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">참 λ = 0.8 ·</text>
+  <text x="277.9" y="136" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">λ</text>
+  <text x="285" y="136" font-size="11" fill="currentColor" fill-opacity="0.8">= 0.9 · β = 0.5</text>
+  <path d="M 275.2 127.7 L 277.9 125.7 L 280.5 127.7" stroke="currentColor" stroke-width="0.99" fill="none" stroke-linejoin="round" stroke-opacity="0.8"/>
+  <line x1="288" y1="58" x2="288" y2="90" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD5k)"/>
+  <text x="280" y="80" font-size="11" fill="currentColor" text-anchor="end">행동 a<tspan dy="3" font-size="10">t</tspan><tspan dy="-3" dx="3.5">∈ {−1, −½, 0, ½, 1}</tspan></text>
+  <line x1="406" y1="117" x2="418" y2="117" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD5k)"/>
+  <rect x="420" y="105" width="40" height="24" rx="12" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="440" y="121" font-size="11" fill="currentColor" text-anchor="middle">ẑ<tspan dy="3" font-size="10">t+1</tspan></text>
+  <rect x="472" y="66" width="76" height="36" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="510" y="80.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">보상</text>
+  <text x="510" y="95.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">−z² − 0.1a²</text>
+  <rect x="472" y="132" width="76" height="36" rx="5" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="4 3"/>
+  <text x="510" y="146.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">decoder</text>
+  <text x="510" y="161.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">선택</text>
+  <path d="M460 117 L464 117 L464 84 L470 84" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aD5k)" stroke-linejoin="round"/>
+  <path d="M464 117 L464 150 L470 150" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3" marker-end="url(#aD5k)" stroke-linejoin="round"/>
+  <path d="M510 66 L510 45 L408 45" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aD5k)" stroke-linejoin="round"/>
+  <rect x="12" y="170" width="96" height="24" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="60" y="186" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">관측 o<tspan dy="3" font-size="10">t</tspan></text>
+  <rect x="120" y="170" width="64" height="24" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="152" y="186" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">encoder</text>
+  <line x1="108" y1="182" x2="118" y2="182" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD5k)"/>
+  <path d="M184 182 L200 182 L200 144" stroke="currentColor" stroke-width="1.8" fill="none" marker-end="url(#aD5k)" stroke-linejoin="round"/>
+  <text x="206" y="164" font-size="11" fill="currentColor">z<tspan dy="3" font-size="10">t</tspan></text>
+  <text x="12" y="214" font-size="11" fill="currentColor">teacher forcing: 실제 관측을 다시 부호화</text>
+  <path d="M440 129 L440 182 L376 182 L376 144" stroke="currentColor" stroke-width="1.8" fill="none" stroke-dasharray="6 3" marker-end="url(#aD5k)" stroke-linejoin="round"/>
+  <text x="370" y="164" font-size="11" fill="currentColor" text-anchor="end">ẑ<tspan dy="3" font-size="10">t</tspan></text>
+  <text x="548" y="200" font-size="11" fill="currentColor" text-anchor="end">자유 진행: 모델에 자기 출력을 다시 넣음</text>
+  <text x="12" y="246" font-size="12" fill="currentColor">(b) D5에서 두 경로: 행동 0, z<tspan dy="3" font-size="10.2">0</tspan><tspan dy="-3" dx="3.8">= 1</tspan></text>
+  <line x1="48" y1="438" x2="540" y2="438" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="48" y1="438" x2="48" y2="258" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="44" y1="438" x2="48" y2="438" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="442" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0</text>
+  <line x1="44" y1="394" x2="48" y2="394" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="398" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0.25</text>
+  <line x1="44" y1="350" x2="48" y2="350" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="354" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0.5</text>
+  <line x1="44" y1="306" x2="48" y2="306" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="310" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0.75</text>
+  <line x1="44" y1="262" x2="48" y2="262" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="41" y="266" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">1</text>
+  <line x1="48" y1="438" x2="48" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="48" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <line x1="171" y1="438" x2="171" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="171" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">5</text>
+  <line x1="294" y1="438" x2="294" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="294" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">10</text>
+  <line x1="417" y1="438" x2="417" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="417" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">15</text>
+  <line x1="540" y1="438" x2="540" y2="442" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="540" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">20</text>
+  <text x="355.5" y="454" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">horizon H</text>
+  <path d="M48 262 L72.6 297.2 L97.2 325.4 L121.8 347.9 L146.4 365.9 L171 380.3 L195.6 391.9 L220.2 401.1 L244.8 408.5 L269.4 414.4 L294 419.1 L318.6 422.9 L343.2 425.9 L367.8 428.3 L392.4 430.3 L417 431.8 L441.6 433 L466.2 434 L490.8 434.8 L515.4 435.5 L540 436" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <path d="M48 262 L72.6 279.6 L97.2 295.4 L121.8 309.7 L146.4 322.5 L171 334.1 L195.6 344.5 L220.2 353.8 L244.8 362.2 L269.4 369.8 L294 376.6 L318.6 382.8 L343.2 388.3 L367.8 393.3 L392.4 397.7 L417 401.8 L441.6 405.4 L466.2 408.6 L490.8 411.6 L515.4 414.2 L540 416.6" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="7 4" stroke-linejoin="round"/>
+  <path d="M48 438 L72.6 420.4 L97.2 408.1 L121.8 399.8 L146.4 394.6 L171 391.7 L195.6 390.6 L220.2 390.7 L244.8 391.8 L269.4 393.4 L294 395.5 L318.6 397.9 L343.2 400.4 L367.8 402.9 L392.4 405.5 L417 408 L441.6 410.3 L466.2 412.6 L490.8 414.8 L515.4 416.8 L540 418.6" stroke="currentColor" stroke-width="1.1" fill="none" stroke-opacity="0.75" stroke-linejoin="round"/>
+  <circle cx="72.6" cy="279.6" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="97.2" cy="311.3" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="121.8" cy="336.6" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="146.4" cy="356.9" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="171" cy="373.1" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="195.6" cy="386.1" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="220.2" cy="396.5" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="244.8" cy="404.8" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="269.4" cy="411.4" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="294" cy="416.7" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="318.6" cy="421" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="343.2" cy="424.4" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="367.8" cy="427.1" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="392.4" cy="429.3" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="417" cy="431" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="441.6" cy="432.4" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="466.2" cy="433.5" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="490.8" cy="434.4" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="515.4" cy="435.1" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="540" cy="435.7" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <circle cx="195.6" cy="390.6" r="3.6" stroke="none" fill="currentColor"/>
+  <line x1="171" y1="380.3" x2="171" y2="334.1" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="167" y1="380.3" x2="175" y2="380.3" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="167" y1="334.1" x2="175" y2="334.1" stroke="currentColor" stroke-width="1.6"/>
+  <text x="68.9" y="431.8" font-size="11" fill="currentColor" fill-opacity="0.85">H = 1: δ = 0.1, one-step 오차</text>
+  <line x1="274.3" y1="260" x2="296.3" y2="260" stroke="currentColor" stroke-width="2"/>
+  <text x="304.3" y="264" font-size="11" fill="currentColor">참 z<tspan dy="3" font-size="10">H</tspan><tspan dy="-3" dx="3.5">= 0.8</tspan><tspan dy="-4" font-size="10">H</tspan></text>
+  <circle cx="285.3" cy="278.5" r="2.6" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <text x="304.3" y="282.5" font-size="11" fill="currentColor">teacher forcing 0.9·z<tspan dy="3" font-size="10">H−1</tspan></text>
+  <line x1="274.3" y1="297" x2="296.3" y2="297" stroke="currentColor" stroke-width="2" stroke-dasharray="7 4"/>
+  <text x="304.3" y="301" font-size="11" fill="currentColor">자유 진행 ẑ<tspan dy="3" font-size="10">H</tspan><tspan dy="-3" dx="3.5">= 0.9</tspan><tspan dy="-4" font-size="10">H</tspan></text>
+  <line x1="274.3" y1="315.5" x2="296.3" y2="315.5" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75"/>
+  <text x="304.3" y="319.5" font-size="11" fill="currentColor">차이 δ<tspan dy="3" font-size="10">H</tspan><tspan dy="-3" dx="3.5">= 0.9</tspan><tspan dy="-4" font-size="10">H</tspan><tspan dy="4" dx="3.5">− 0.8</tspan><tspan dy="-4" font-size="10">H</tspan></text>
+  <line x1="285.3" y1="328" x2="285.3" y2="340" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="281.3" y1="328" x2="289.3" y2="328" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="281.3" y1="340" x2="289.3" y2="340" stroke="currentColor" stroke-width="1.6"/>
+  <text x="304.3" y="338" font-size="11" fill="currentColor">H = 5: 0.59049 − 0.32768 = 0.26281</text>
+  <circle cx="285.3" cy="352.5" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="304.3" y="356.5" font-size="11" fill="currentColor">정점 H = 6: 0.269297</text>
+  <text x="304.3" y="375" font-size="11" fill="currentColor">H = 20: δ/z = 9.545</text>
+</svg>
 
 그림이 맞혀야 할 것이 넷이고, 각각이 방법에 대한 주장이다.
 **전이로 들어가는 경로 둘을 따로 그린다.** 하나는 encoder에서(매 스텝 실제 관측을 다시 부호화), 하나는 전이 자신의 출력에서 온다. 이 두 화살표가 논문이 학습하는 손실과 배포하는 rollout의 차이이고, §5가 그 둘이 얼마나 벌어지는지를 잰다.
@@ -418,7 +621,7 @@ representation은 latent가 state를 보존하는지, prediction은 미래가 ca
 5. D5의 보상은 행동 *이전* 상태에 $-z_t^2$을 매긴다. $z_{t+1}$에 매기는 규약으로 바꾸면 누구의 숫자가 바뀌고, $(-1,0)$과 $(0,0)$의 순위는 살아남는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
-> 1. one-step MSE $10^{-4}$는 상태 오차 $10^{-2}$다. 증폭은 $(1-0.95^{20})/(1-0.95)=12.83$이므로 상계는 약 $0.128$이고, 손실이 시사하는 것보다 네 자릿수 나쁘다. 그대로 인용하면 안 되는 이유는 모든 one-step 오차가 그 크기로, 같은 방향으로, 상태와 무관하게 난다고 가정하기 때문이다. D5에서는 실제 오차가 상태와 함께 줄었고 실제 $\delta_{20}$은 상계보다 한참 작았다. 상계는 논문에 요구할 옳은 값이고, 함께 요구할 옳은 값은 측정된 자유 진행 곡선이다.
+> 1. one-step MSE $10^{-4}$는 상태 오차 $10^{-2}$다. 증폭은 $(1-0.95^{20})/(1-0.95)=12.83$이므로 상계는 약 $0.128$이고, 손실이 시사하는 것보다 세 자릿수 나쁘다. 그대로 인용하면 안 되는 이유는 모든 one-step 오차가 그 크기로, 같은 방향으로, 상태와 무관하게 난다고 가정하기 때문이다. D5에서는 실제 오차가 상태와 함께 줄었고 실제 $\delta_{20}$은 상계보다 한참 작았다. 상계는 논문에 요구할 옳은 값이고, 함께 요구할 옳은 값은 측정된 자유 진행 곡선이다.
 > 2. 둘째 조건이다. 사상에 행동 입력이 없다. latent와 닫힘 조건을 완벽히 만족하면서도 예측 주장만 받치고 제어 주장은 결코 받치지 못한다. 자료에 없던 행동에 대한 반사실을 답하는 것이 그 안에 없기 때문이다.
 > 3. 이 행동 격자에서는 없다. gap은 플랜트가 모델의 약속을 계속 웃돈다는 뜻이고, 제어 문제라기보다 보고 문제다. 같은 논문의 예측 return이 체계적으로 낮다. 격자가 촘촘해져 최적 근처 계획들의 순서가 바뀌는 순간부터는 이 비관도 regret을 치르기 시작한다. 그래서 이 열의 $0$은 이 격자의 성질이고, 그렇게 적어야 한다.
 > 4. $H=1$이면 planner는 $a_0$에 대해 $-z_0^2-0.1a_0^2$을 최대화하는데 $z_0$은 $a_0$에 의존하지 않는다. 행동이 건드리는 항은 자기 벌점뿐이라 언제나 $a_0=0$을 고르고 상태는 스텝당 $0.8$로 흘러내린다. 실패한 것은 모델이 아니라 horizon이다. *틀린* 모델로도 $H=2$면 $-1.2153$이다.

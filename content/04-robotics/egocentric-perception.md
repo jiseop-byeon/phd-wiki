@@ -46,6 +46,76 @@ Distortion is taken as zero and the pixels as square, so the pinhole relation $u
 
 Three panels, drawn once. The problem set asks for the same three with a different camera.
 
+<svg viewBox="0 0 560 456" style="max-width:100%;height:auto" role="img" aria-label="Three panels for helmet camera E1: from the side, the 58.7-degree vertical field of view pitched 40 degrees down from 1.65 m, meeting the floor from 0.62 m to 8.78 m, with the horizontal ray above which the floor is never seen; the 1.60 by 0.90 m footprint at the bench 0.80 m away, 0.833 mm per pixel, with the 6 mm bolt head of 7.2 pixels next to its 25.1-pixel blur at 90 degrees per second; from above, eye and camera 0.030 m apart sideways and 0.070 m forward, their rays to the bench target differing by 2.35 degrees, 4.57 degrees in full">
+  <defs><marker id="egoA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="22" font-size="12" fill-opacity="0.85" font-weight="600">1  the camera cone, from the side (to scale)</text>
+    <line x1="12" y1="141.1" x2="548" y2="141.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+    <path d="M 18 141.1 L 13 146.1 M 29 141.1 L 24 146.1 M 40 141.1 L 35 146.1 M 51 141.1 L 46 146.1 M 62 141.1 L 57 146.1 M 73 141.1 L 68 146.1 M 84 141.1 L 79 146.1 M 95 141.1 L 90 146.1 M 106 141.1 L 101 146.1 M 117 141.1 L 112 146.1 M 128 141.1 L 123 146.1 M 139 141.1 L 134 146.1 M 150 141.1 L 145 146.1 M 161 141.1 L 156 146.1 M 172 141.1 L 167 146.1 M 183 141.1 L 178 146.1 M 194 141.1 L 189 146.1 M 205 141.1 L 200 146.1 M 216 141.1 L 211 146.1 M 227 141.1 L 222 146.1 M 238 141.1 L 233 146.1 M 249 141.1 L 244 146.1 M 260 141.1 L 255 146.1 M 271 141.1 L 266 146.1 M 282 141.1 L 277 146.1 M 293 141.1 L 288 146.1 M 304 141.1 L 299 146.1 M 315 141.1 L 310 146.1 M 326 141.1 L 321 146.1 M 337 141.1 L 332 146.1 M 348 141.1 L 343 146.1 M 359 141.1 L 354 146.1 M 370 141.1 L 365 146.1 M 381 141.1 L 376 146.1 M 392 141.1 L 387 146.1 M 403 141.1 L 398 146.1 M 414 141.1 L 409 146.1 M 425 141.1 L 420 146.1 M 436 141.1 L 431 146.1 M 447 141.1 L 442 146.1 M 458 141.1 L 453 146.1 M 469 141.1 L 464 146.1 M 480 141.1 L 475 146.1 M 491 141.1 L 486 146.1 M 502 141.1 L 497 146.1 M 513 141.1 L 508 146.1 M 524 141.1 L 519 146.1 M 535 141.1 L 530 146.1 M 546 141.1 L 541 146.1" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+    <path d="M 70 52 L 103.6 141.1 L 544.2 141.1 Z" fill="currentColor" fill-opacity="0.1"/>
+    <line x1="70" y1="52" x2="103.6" y2="141.1" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="70" y1="52" x2="544.2" y2="141.1" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="70" y1="52" x2="176.2" y2="141.1" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" stroke-dasharray="6 3"/>
+    <line x1="70" y1="52" x2="548" y2="52" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" stroke-dasharray="2 3"/>
+    <circle cx="70" cy="52" r="3.6" fill="currentColor"/>
+    <line x1="58" y1="52" x2="58" y2="141.1" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <line x1="54" y1="52" x2="62" y2="52" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <text x="53" y="96" font-size="11" text-anchor="end">h =</text>
+    <text x="53" y="110" font-size="11" text-anchor="end">1.65 m</text>
+    <path d="M 125.2 98.3 A 72 72 0 0 0 142 52" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+    <path d="M 85.5 93.2 A 44 44 0 0 0 113.2 60.1" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+    <text x="150" y="104" font-size="11">optical axis, θ = 40°</text>
+    <line x1="112.8" y1="62.4" x2="262" y2="70" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="265" y="74" font-size="11">±29.36°</text>
+    <text x="200" y="46" font-size="11" fill-opacity="0.9">horizontal ray: nothing above it ever meets the floor</text>
+    <line x1="103.6" y1="136.1" x2="103.6" y2="146.1" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="544.2" y1="136.1" x2="544.2" y2="146.1" stroke="currentColor" stroke-width="1.4"/>
+    <text x="97.6" y="159.1" font-size="11">near 0.62 m</text>
+    <text x="544.2" y="159.1" font-size="11" text-anchor="end">far 8.78 m</text>
+    <text x="78" y="44" font-size="11" fill-opacity="0.85">projection centre</text>
+    <line x1="8" y1="172" x2="552" y2="172" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="12" y="190" font-size="12" fill-opacity="0.85" font-weight="600">2  the bench at D = 0.80 m, fronto-parallel</text>
+    <rect x="60" y="206" width="160" height="90" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.4"/>
+    <text x="140" y="311" font-size="11" text-anchor="middle">1.60 m</text>
+    <text x="54" y="255" font-size="11" text-anchor="end">0.90 m</text>
+    <text x="66" y="221" font-size="11">1 px = 0.833 mm</text>
+    <circle cx="140" cy="257" r="0.6" fill="currentColor"/>
+    <rect x="137" y="254" width="6" height="6" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.8"/>
+    <rect x="258" y="220" width="288" height="66" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <path d="M 264 220 L 264 286 M 270 220 L 270 286 M 276 220 L 276 286 M 282 220 L 282 286 M 288 220 L 288 286 M 294 220 L 294 286 M 300 220 L 300 286 M 306 220 L 306 286 M 312 220 L 312 286 M 318 220 L 318 286 M 324 220 L 324 286 M 330 220 L 330 286 M 336 220 L 336 286 M 342 220 L 342 286 M 348 220 L 348 286 M 354 220 L 354 286 M 360 220 L 360 286 M 366 220 L 366 286 M 372 220 L 372 286 M 378 220 L 378 286 M 384 220 L 384 286 M 390 220 L 390 286 M 396 220 L 396 286 M 402 220 L 402 286 M 408 220 L 408 286 M 414 220 L 414 286 M 420 220 L 420 286 M 426 220 L 426 286 M 432 220 L 432 286 M 438 220 L 438 286 M 444 220 L 444 286 M 450 220 L 450 286 M 456 220 L 456 286 M 462 220 L 462 286 M 468 220 L 468 286 M 474 220 L 474 286 M 480 220 L 480 286 M 486 220 L 486 286 M 492 220 L 492 286 M 498 220 L 498 286 M 504 220 L 504 286 M 510 220 L 510 286 M 516 220 L 516 286 M 522 220 L 522 286 M 528 220 L 528 286 M 534 220 L 534 286 M 540 220 L 540 286 M 258 226 L 546 226 M 258 232 L 546 232 M 258 238 L 546 238 M 258 244 L 546 244 M 258 250 L 546 250 M 258 256 L 546 256 M 258 262 L 546 262 M 258 268 L 546 268 M 258 274 L 546 274 M 258 280 L 546 280" fill="none" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.16"/>
+    <line x1="143" y1="254" x2="258" y2="220" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+    <line x1="143" y1="260" x2="258" y2="286" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+    <circle cx="291.6" cy="253" r="21.6" fill="currentColor" fill-opacity="0.55" stroke="currentColor" stroke-width="1.2"/>
+    <rect x="325.2" y="231.4" width="194" height="43.2" rx="21.599999999999998" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+    <line x1="346.8" y1="253" x2="496.3" y2="253" stroke="currentColor" stroke-width="1.3" marker-end="url(#egoA)"/>
+    <text x="258" y="214" font-size="11" fill-opacity="0.85">magnified ×72; grid = camera pixels</text>
+    <text x="258" y="301" font-size="11">bolt head 6 mm = 7.2 px</text>
+    <text x="546" y="301" font-size="11" text-anchor="end">blur at 90 °/s in 1/60 s:</text>
+    <text x="546" y="316" font-size="11" text-anchor="end">1.50° = 25.1 px on axis, 3.5 bolt widths</text>
+    <line x1="8" y1="318" x2="552" y2="318" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="12" y="336" font-size="12" fill-opacity="0.85" font-weight="600">3  the eye and the camera, from above (to scale)</text>
+    <line x1="480" y1="356" x2="480" y2="404" stroke="currentColor" stroke-width="2.4" stroke-opacity="0.6"/>
+    <line x1="48" y1="376" x2="476" y2="376" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="85.8" y1="392.2" x2="480" y2="376" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="85.8" y1="392.2" x2="245.8" y2="392.2" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" stroke-dasharray="3 3"/>
+    <circle cx="48" cy="376" r="4.2" fill="currentColor"/>
+    <circle cx="85.8" cy="392.2" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <circle cx="85.8" cy="392.2" r="1.4" fill="currentColor"/>
+    <circle cx="480" cy="376" r="3.6" fill="currentColor"/>
+    <line x1="48" y1="383" x2="48" y2="392.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5" stroke-dasharray="1 2"/>
+    <line x1="48" y1="392.2" x2="79.8" y2="392.2" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="1 2"/>
+    <path d="M 225.8 392.2 A 140 140 0 0 0 225.7 386.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <line x1="227.8" y1="391.3" x2="300" y2="409.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="303" y="413.2" font-size="11">seen from above: 2.35° left–right</text>
+    <text x="40" y="380" font-size="12" text-anchor="end">eye</text>
+    <text x="12" y="413.2" font-size="11">camera: 0.030 m right, 0.070 m forward</text>
+    <text x="12" y="427.2" font-size="11" fill-opacity="0.85">+ 0.050 m up, out of the page</text>
+    <text x="474" y="352" font-size="11" text-anchor="end">bench target, 0.80 m</text>
+    <text x="118" y="368" font-size="11" fill-opacity="0.85">the eye's ray: where the head points</text>
+    <text x="12" y="444" font-size="12">with the 0.050 m up offset the full angle is 4.57° = 76.5 px on axis</text>
+  </g>
+</svg>
+
 1. **The camera cone, from the side.** The projection centre, the optical axis pitched $\theta = 40^\circ$ below horizontal, and the two rays at $\pm\mathrm{VFOV}/2$ about it. Draw the ground line at $h = 1.65$ m below the centre and mark where the two rays meet it: those are the near and far edges of the ground footprint. Then draw a third ray at the horizontal and label it — everything above it never meets the floor at all.
 2. **The bench, fronto-parallel.** The image rectangle at $D = 0.80$ m with its width and height in metres, one pixel's footprint in millimetres, and the 6 mm bolt head drawn to scale inside it. Next to the bolt head, draw the blur streak that $\omega = 90$ °/s produces in one exposure, to the same scale.
 3. **The eye and the camera, from above.** Both projection centres, separated by the offset $b$; the bench target at $0.80$ m; and the two rays to it from eye and camera, with the angle between them marked. This is the panel that says what "where the head is pointing" is actually measuring.
@@ -260,7 +330,7 @@ but the observable evidence is different and, for short horizons, better. Hands 
 ### 5. Benchmarks and what they encode
 
 - **EPIC-KITCHENS** — unscripted kitchen activity, verb+noun labels, strong long-tail; the reference benchmark for fine-grained egocentric action and anticipation.
-- **Ego4D** — a massive multi-site egocentric corpus (thousands of hours) with a benchmark suite spanning episodic memory, hands and objects, social interaction, and forecasting. Kristen Grauman led this effort, which is why the topic appears in [[04-robotics/index|CS 381V]]-style syllabi.
+- **Ego4D** — a massive multi-site egocentric corpus (thousands of hours) with a benchmark suite spanning episodic memory, hands and objects, social interaction, and forecasting. Kristen Grauman led this effort, which is why the topic appears in [[04-robotics/index|graduate vision]] syllabi.
 
 - **Ego-Exo4D** — the same skilled activity captured *simultaneously* from the wearer's view and from several third-person cameras, with expert commentary as language annotation. This is the dataset that makes the ego–exo correspondence learnable, which is why it matters for turning third-person demonstration video into a first-person policy. Its headline numbers differ between the first arXiv preprint and the CVPR 2024 paper — see Sources.
 
@@ -400,6 +470,76 @@ Tier B. Using **E1** from the running object above, and this page only. A vendor
 ### 과제가 그릴 그림 · Homework diagram
 
 패널 셋, 한 번 그린다. 과제는 카메라를 바꿔서 같은 셋을 다시 요구한다.
+
+<svg viewBox="0 0 560 456" style="max-width:100%;height:auto" role="img" aria-label="헬멧 카메라 E1의 패널 셋: 옆에서 보면 1.65 m 높이에서 40도 내려다보는 58.7도 수직 화각이 바닥의 0.62 m에서 8.78 m까지 닿고 그 위로는 바닥이 보이지 않는 수평 광선이 있으며; 0.80 m 떨어진 작업대의 1.60 × 0.90 m 발자국은 픽셀당 0.833 mm이고 7.2픽셀인 6 mm 볼트 머리 옆에 90도/초의 25.1픽셀 번짐이 있고; 위에서 보면 옆으로 0.030 m, 앞으로 0.070 m 떨어진 눈과 카메라에서 작업대 표적으로 가는 두 광선이 2.35도, 전체로는 4.57도 차이 난다">
+  <defs><marker id="egokA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="22" font-size="12" fill-opacity="0.85" font-weight="600">1  옆에서 본 카메라 원뿔 (실제 비율)</text>
+    <line x1="12" y1="141.1" x2="548" y2="141.1" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+    <path d="M 18 141.1 L 13 146.1 M 29 141.1 L 24 146.1 M 40 141.1 L 35 146.1 M 51 141.1 L 46 146.1 M 62 141.1 L 57 146.1 M 73 141.1 L 68 146.1 M 84 141.1 L 79 146.1 M 95 141.1 L 90 146.1 M 106 141.1 L 101 146.1 M 117 141.1 L 112 146.1 M 128 141.1 L 123 146.1 M 139 141.1 L 134 146.1 M 150 141.1 L 145 146.1 M 161 141.1 L 156 146.1 M 172 141.1 L 167 146.1 M 183 141.1 L 178 146.1 M 194 141.1 L 189 146.1 M 205 141.1 L 200 146.1 M 216 141.1 L 211 146.1 M 227 141.1 L 222 146.1 M 238 141.1 L 233 146.1 M 249 141.1 L 244 146.1 M 260 141.1 L 255 146.1 M 271 141.1 L 266 146.1 M 282 141.1 L 277 146.1 M 293 141.1 L 288 146.1 M 304 141.1 L 299 146.1 M 315 141.1 L 310 146.1 M 326 141.1 L 321 146.1 M 337 141.1 L 332 146.1 M 348 141.1 L 343 146.1 M 359 141.1 L 354 146.1 M 370 141.1 L 365 146.1 M 381 141.1 L 376 146.1 M 392 141.1 L 387 146.1 M 403 141.1 L 398 146.1 M 414 141.1 L 409 146.1 M 425 141.1 L 420 146.1 M 436 141.1 L 431 146.1 M 447 141.1 L 442 146.1 M 458 141.1 L 453 146.1 M 469 141.1 L 464 146.1 M 480 141.1 L 475 146.1 M 491 141.1 L 486 146.1 M 502 141.1 L 497 146.1 M 513 141.1 L 508 146.1 M 524 141.1 L 519 146.1 M 535 141.1 L 530 146.1 M 546 141.1 L 541 146.1" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.35"/>
+    <path d="M 70 52 L 103.6 141.1 L 544.2 141.1 Z" fill="currentColor" fill-opacity="0.1"/>
+    <line x1="70" y1="52" x2="103.6" y2="141.1" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="70" y1="52" x2="544.2" y2="141.1" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="70" y1="52" x2="176.2" y2="141.1" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.85" stroke-dasharray="6 3"/>
+    <line x1="70" y1="52" x2="548" y2="52" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" stroke-dasharray="2 3"/>
+    <circle cx="70" cy="52" r="3.6" fill="currentColor"/>
+    <line x1="58" y1="52" x2="58" y2="141.1" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <line x1="54" y1="52" x2="62" y2="52" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7"/>
+    <text x="53" y="96" font-size="11" text-anchor="end">h =</text>
+    <text x="53" y="110" font-size="11" text-anchor="end">1.65 m</text>
+    <path d="M 125.2 98.3 A 72 72 0 0 0 142 52" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+    <path d="M 85.5 93.2 A 44 44 0 0 0 113.2 60.1" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+    <text x="150" y="104" font-size="11">광축, θ = 40°</text>
+    <line x1="112.8" y1="62.4" x2="262" y2="70" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="265" y="74" font-size="11">±29.36°</text>
+    <text x="200" y="46" font-size="11" fill-opacity="0.9">수평 광선: 그 위로는 바닥에 영영 닿지 않는다</text>
+    <line x1="103.6" y1="136.1" x2="103.6" y2="146.1" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="544.2" y1="136.1" x2="544.2" y2="146.1" stroke="currentColor" stroke-width="1.4"/>
+    <text x="97.6" y="159.1" font-size="11">근거리 끝 0.62 m</text>
+    <text x="544.2" y="159.1" font-size="11" text-anchor="end">원거리 끝 8.78 m</text>
+    <text x="78" y="44" font-size="11" fill-opacity="0.85">투영 중심</text>
+    <line x1="8" y1="172" x2="552" y2="172" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="12" y="190" font-size="12" fill-opacity="0.85" font-weight="600">2  정면으로 본 작업대, D = 0.80 m</text>
+    <rect x="60" y="206" width="160" height="90" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.4"/>
+    <text x="140" y="311" font-size="11" text-anchor="middle">1.60 m</text>
+    <text x="54" y="255" font-size="11" text-anchor="end">0.90 m</text>
+    <text x="66" y="221" font-size="11">1 px = 0.833 mm</text>
+    <circle cx="140" cy="257" r="0.6" fill="currentColor"/>
+    <rect x="137" y="254" width="6" height="6" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.8"/>
+    <rect x="258" y="220" width="288" height="66" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+    <path d="M 264 220 L 264 286 M 270 220 L 270 286 M 276 220 L 276 286 M 282 220 L 282 286 M 288 220 L 288 286 M 294 220 L 294 286 M 300 220 L 300 286 M 306 220 L 306 286 M 312 220 L 312 286 M 318 220 L 318 286 M 324 220 L 324 286 M 330 220 L 330 286 M 336 220 L 336 286 M 342 220 L 342 286 M 348 220 L 348 286 M 354 220 L 354 286 M 360 220 L 360 286 M 366 220 L 366 286 M 372 220 L 372 286 M 378 220 L 378 286 M 384 220 L 384 286 M 390 220 L 390 286 M 396 220 L 396 286 M 402 220 L 402 286 M 408 220 L 408 286 M 414 220 L 414 286 M 420 220 L 420 286 M 426 220 L 426 286 M 432 220 L 432 286 M 438 220 L 438 286 M 444 220 L 444 286 M 450 220 L 450 286 M 456 220 L 456 286 M 462 220 L 462 286 M 468 220 L 468 286 M 474 220 L 474 286 M 480 220 L 480 286 M 486 220 L 486 286 M 492 220 L 492 286 M 498 220 L 498 286 M 504 220 L 504 286 M 510 220 L 510 286 M 516 220 L 516 286 M 522 220 L 522 286 M 528 220 L 528 286 M 534 220 L 534 286 M 540 220 L 540 286 M 258 226 L 546 226 M 258 232 L 546 232 M 258 238 L 546 238 M 258 244 L 546 244 M 258 250 L 546 250 M 258 256 L 546 256 M 258 262 L 546 262 M 258 268 L 546 268 M 258 274 L 546 274 M 258 280 L 546 280" fill="none" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.16"/>
+    <line x1="143" y1="254" x2="258" y2="220" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+    <line x1="143" y1="260" x2="258" y2="286" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+    <circle cx="291.6" cy="253" r="21.6" fill="currentColor" fill-opacity="0.55" stroke="currentColor" stroke-width="1.2"/>
+    <rect x="325.2" y="231.4" width="194" height="43.2" rx="21.599999999999998" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+    <line x1="346.8" y1="253" x2="496.3" y2="253" stroke="currentColor" stroke-width="1.3" marker-end="url(#egokA)"/>
+    <text x="258" y="214" font-size="11" fill-opacity="0.85">×72 확대, 격자 = 카메라 픽셀</text>
+    <text x="258" y="301" font-size="11">볼트 머리 6 mm = 7.2 px</text>
+    <text x="546" y="301" font-size="11" text-anchor="end">90 °/s, 노출 1/60 s의 번짐:</text>
+    <text x="546" y="316" font-size="11" text-anchor="end">1.50° = 광축 위 25.1 px, 볼트 폭의 3.5배</text>
+    <line x1="8" y1="318" x2="552" y2="318" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="12" y="336" font-size="12" fill-opacity="0.85" font-weight="600">3  위에서 본 눈과 카메라 (실제 비율)</text>
+    <line x1="480" y1="356" x2="480" y2="404" stroke="currentColor" stroke-width="2.4" stroke-opacity="0.6"/>
+    <line x1="48" y1="376" x2="476" y2="376" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="85.8" y1="392.2" x2="480" y2="376" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="85.8" y1="392.2" x2="245.8" y2="392.2" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" stroke-dasharray="3 3"/>
+    <circle cx="48" cy="376" r="4.2" fill="currentColor"/>
+    <circle cx="85.8" cy="392.2" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <circle cx="85.8" cy="392.2" r="1.4" fill="currentColor"/>
+    <circle cx="480" cy="376" r="3.6" fill="currentColor"/>
+    <line x1="48" y1="383" x2="48" y2="392.2" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5" stroke-dasharray="1 2"/>
+    <line x1="48" y1="392.2" x2="79.8" y2="392.2" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="1 2"/>
+    <path d="M 225.8 392.2 A 140 140 0 0 0 225.7 386.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+    <line x1="227.8" y1="391.3" x2="300" y2="409.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="303" y="413.2" font-size="11">위에서 보면 좌우로 2.35°</text>
+    <text x="40" y="380" font-size="12" text-anchor="end">눈</text>
+    <text x="12" y="413.2" font-size="11">카메라: 오른쪽 0.030 m, 앞 0.070 m</text>
+    <text x="12" y="427.2" font-size="11" fill-opacity="0.85">+ 위로 0.050 m, 화면 밖 방향</text>
+    <text x="474" y="352" font-size="11" text-anchor="end">작업대 표적, 0.80 m</text>
+    <text x="118" y="368" font-size="11" fill-opacity="0.85">눈의 광선: 머리가 향하는 곳</text>
+    <text x="12" y="444" font-size="12">위 오프셋 0.050 m까지 넣은 전체 각은 4.57° = 광축 위 76.5 px</text>
+  </g>
+</svg>
 
 1. **옆에서 본 카메라 원뿔.** 투영 중심, 수평에서 $\theta = 40^\circ$ 내려간 광축, 그리고 그 둘레 $\pm\mathrm{VFOV}/2$의 광선 둘. 중심에서 $h = 1.65$ m 아래에 지면선을 긋고 두 광선이 만나는 지점을 표시한다. 그것이 지면 발자국의 근거리 끝과 원거리 끝이다. 그다음 수평 방향 광선을 하나 더 긋고 이름을 붙여라. 그 위쪽은 바닥에 영영 닿지 않는다.
 2. **정면으로 본 작업대.** $D = 0.80$ m의 영상 직사각형을 미터 단위 가로·세로와 함께, 픽셀 하나의 발자국을 mm로, 그리고 6 mm 볼트 머리를 축척에 맞춰 그 안에 그린다. 볼트 머리 옆에는 $\omega = 90$ °/s가 노출 한 번에 만드는 번짐 자국을 같은 축척으로 그린다.
@@ -602,7 +742,7 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 ### 5. 벤치마크와 그것이 담은 것
 
 - **EPIC-KITCHENS** — 대본 없는 주방 활동, 동사+명사 레이블, 강한 롱테일. 세밀한 자기중심 행동·예측의 기준 벤치마크.
-- **Ego4D** — 다지역 대규모 자기중심 코퍼스(수천 시간)에 에피소드 기억·손과 물체·사회적 상호작용·예측을 아우르는 벤치마크 묶음. Kristen Grauman이 주도했고, 그래서 [[04-robotics/index|CS 381V]] 계열 강의계획서에 이 주제가 등장한다.
+- **Ego4D** — 다지역 대규모 자기중심 코퍼스(수천 시간)에 에피소드 기억·손과 물체·사회적 상호작용·예측을 아우르는 벤치마크 묶음. Kristen Grauman이 주도했고, 그래서 [[04-robotics/index|대학원 비전]] 강의계획서에 이 주제가 등장한다.
 
 - **Ego-Exo4D** — 같은 숙련 활동을 착용자 시점과 여러 3인칭 카메라에서 *동시에* 촬영하고, 전문가 해설을 언어 주석으로 붙였다. ego–exo 대응을 학습 가능하게 만드는 데이터셋이고, 3인칭 시연 영상을 1인칭 정책으로 바꾸는 문제에서 중요한 이유가 그것이다. 대표 숫자가 첫 arXiv 프리프린트와 CVPR 2024 논문에서 다르다 — 출처를 보라.
 

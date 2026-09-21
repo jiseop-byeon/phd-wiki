@@ -264,7 +264,7 @@ so each sublayer reads a normalised copy of the running vector and adds its resu
 >
 > - **Example**: D2's $x_1=(0,1,-1,-1)$ has $\mu=-0.25$ and $\sigma^2=0.6875$, so with $\gamma=\mathbf 1$, $\beta=0$, $\varepsilon=0$ it maps to $(0.301511,\,1.507557,\,-0.904534,\,-0.904534)$; $x_4=(1,0,1,1)$ has $\mu=0.75$ and $\sigma^2=0.1875$ and maps to $(0.577350,\,-1.732051,\,0.577350,\,0.577350)$.
 > - **Non-example**: BatchNorm, which normalises each feature across the samples of a batch. Its statistics depend on the other samples and differ between training and test. LayerNorm uses one token, so it computes the same thing at batch size one and at test time — a property Ba et al. state in their abstract — and it keeps the block permutation-equivariant (§5).
-> - **Non-example**: normalising each feature across the tokens of a sequence. That mixes tokens, so one token's value would change another's normalisation, and a block built on it would not be equivariant.
+> - **Non-example**: normalising each feature across the tokens of a sequence. Its mean and variance are sums over the tokens, so reordering the tokens only reorders the outputs and equivariance survives. What breaks is locality in time: every token's normalised value now depends on every other token, later ones included, so a causal mask no longer hides the future (§3), and a KV cache goes stale because the earlier tokens' outputs change each time a token is appended (§7).
 > - **Why it matters**: it fixes the scale of what enters $W_Q$ and $W_K$, which is where §2's unit-variance assumption comes from at initialisation.
 
 **The MLP** is two linear maps with a nonlinearity between them, applied to each token separately and identically, $\mathrm{MLP}(z)=\max(0,\,zW_1+b_1)W_2+b_2$ with $W_1\in\mathbb R^{d\times d_{\text{ff}}}$, $W_2\in\mathbb R^{d_{\text{ff}}\times d}$ and $d_{\text{ff}}=4d$ in the original ($2048$ for $d=512$); ViT uses GELU in place of the max ([[02-foundations/neural-network-basics|0.7 Neural Networks §6]]). The two sublayers split the work. Attention moves information between tokens, and its output is a convex combination of values; the MLP transforms each token and holds most of the parameters.
@@ -856,7 +856,7 @@ $$Z=X+\mathrm{MHA}\big(\mathrm{LN}(X)\big),\qquad Y=Z+\mathrm{MLP}\big(\mathrm{L
 >
 > - **예**: D2의 $x_1=(0,1,-1,-1)$은 $\mu=-0.25$, $\sigma^2=0.6875$이므로 $\gamma=\mathbf 1$, $\beta=0$, $\varepsilon=0$에서 $(0.301511,\,1.507557,\,-0.904534,\,-0.904534)$로 간다. $x_4=(1,0,1,1)$은 $\mu=0.75$, $\sigma^2=0.1875$이고 $(0.577350,\,-1.732051,\,0.577350,\,0.577350)$으로 간다.
 > - **비예**: BatchNorm. 특징마다 배치의 샘플들에 걸쳐 정규화한다. 통계량이 다른 샘플에 의존하고 학습과 시험 때 달라진다. LayerNorm은 토큰 하나를 쓰므로 배치 크기 1에서도, 시험 때도 같은 것을 계산하고 — Ba 등이 초록에 적은 성질이다 — 블록의 순열 등변성을 지킨다(§5).
-> - **비예**: 시퀀스의 토큰들에 걸쳐 특징마다 정규화하기. 토큰을 섞으므로 한 토큰의 값이 다른 토큰의 정규화를 바꾸고, 그 위에 지은 블록은 등변이 아니다.
+> - **비예**: 시퀀스의 토큰들에 걸쳐 특징마다 정규화하기. 평균과 분산이 토큰들에 대한 합이므로 토큰을 재배열하면 출력도 재배열될 뿐이고, 등변성은 살아남는다. 깨지는 것은 시간상의 국소성이다. 모든 토큰의 정규화된 값이 이제 다른 모든 토큰, 뒤에 오는 토큰까지에 의존하므로 인과 마스크가 더 이상 미래를 가리지 못하고(§3), 토큰을 하나 덧붙일 때마다 앞 토큰들의 출력이 바뀌어 KV 캐시가 낡아 버린다(§7).
 > - **왜 중요한가**: $W_Q$와 $W_K$에 들어가는 것의 크기를 고정한다. 초기화 때 §2의 단위 분산 가정이 오는 곳이 여기다.
 
 MLP는 사이에 비선형성을 둔 선형 사상 둘이고, 각 토큰에 따로, 똑같이 적용한다. $\mathrm{MLP}(z)=\max(0,\,zW_1+b_1)W_2+b_2$, $W_1\in\mathbb R^{d\times d_{\text{ff}}}$, $W_2\in\mathbb R^{d_{\text{ff}}\times d}$이고 원래는 $d_{\text{ff}}=4d$($d=512$에서 $2048$)였다. ViT는 max 대신 GELU를 쓴다([[02-foundations/neural-network-basics|0.7 신경망 §6]]). 두 서브레이어는 일을 나눈다. 어텐션은 토큰 사이로 정보를 옮기고 그 출력은 값의 볼록 결합이다. MLP는 각 토큰을 변환하고 파라미터의 대부분을 갖는다.

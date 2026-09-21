@@ -31,6 +31,83 @@ All three are properties of *this* configuration and not of the arm, so every ga
 
 One signal-flow drawing with a small picture of the arm attached to it. Draw it left to right in three columns.
 
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="three columns: P2 at the catalog pose with the shoulder 0.1 rad behind the command; PD with gravity compensation above computed torque, fed the same error; the plant with the off-diagonal cells of M inverse shaded. PD gives accelerations (5, −5) with the elbow circled, computed torque (10, 0)">
+  <g transform="translate(0 3)">
+    <defs><marker id="ar11e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+    <g fill="currentColor" font-weight="bold"><text x="10" y="18" font-size="11.5">1 · the error</text><text x="150" y="18" font-size="11.5">2 · two controllers, one error</text><text x="426" y="18" font-size="11.5">3 · the plant</text></g>
+    <line x1="12" y1="40" x2="30" y2="40" stroke="currentColor" stroke-width="2" stroke-dasharray="5 3" opacity="0.75"/>
+    <line x1="12" y1="56" x2="30" y2="56" stroke="currentColor" stroke-width="3"/>
+    <g fill="currentColor"><text x="35" y="44" font-size="11">commanded</text><text x="35" y="60" font-size="11">actual</text></g>
+    <g stroke="currentColor" stroke-width="2" stroke-dasharray="5 3" fill="none" opacity="0.75"><polyline points="22,218 114,218 114,126"/></g>
+    <g stroke="currentColor" stroke-width="3" fill="none" stroke-linejoin="round"><polyline points="22,218 113.5,227.2 122.7,135.6"/></g>
+    <polygon points="22,218 14,230 30,230" fill="none" stroke="currentColor" stroke-width="1.1"/>
+    <circle cx="22" cy="218" r="3.6" fill="currentColor"/>
+    <circle cx="113.5" cy="227.2" r="3.4" fill="currentColor"/>
+    <circle cx="114" cy="218" r="3.2" fill="none" stroke="currentColor" stroke-width="1.1"/>
+    <circle cx="122.7" cy="135.6" r="3.4" fill="currentColor"/>
+    <circle cx="114" cy="126" r="3.4" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="114" y1="126" x2="122.7" y2="135.6" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 1.5"/>
+    <text x="106" y="124" font-size="11" text-anchor="end" fill="currentColor">tip gap 0.14 m</text>
+    <g fill="currentColor">
+    <text x="12" y="256" font-size="11" font-weight="bold">e = (0.1, 0) rad</text>
+    <text x="12" y="271" font-size="11">shoulder back 0.1 rad</text>
+    <text x="12" y="285" font-size="11">= 5.73°; elbow exact</text>
+    </g>
+    <text x="150" y="48" font-size="11.5" fill="currentColor" font-weight="bold">PD + gravity compensation</text>
+    <g fill="currentColor"><text x="150" y="84" font-size="11.5">e₁</text><text x="150" y="112" font-size="11.5">e₂</text></g>
+    <text x="190" y="65" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">K<tspan dy="3.1" font-size="8.6">p</tspan><tspan dy="-3.1">e + K</tspan><tspan dy="3.1" font-size="8.6">d</tspan><tspan dy="-3.1">ė</tspan></text>
+    <g stroke="currentColor" stroke-width="1.1" fill="none"><line x1="170" y1="71" x2="170" y2="89"/><line x1="210" y1="71" x2="210" y2="89"/><polyline points="170,75 175,75 178,71 182.4,79 186.8,71 191.2,79 195.6,71 200,79 204,75 210,75" fill="none"/><line x1="170" y1="85" x2="184" y2="85"/><path d="M182 81 L196 81 M182 89 L196 89 M182 81 L182 89" fill="none"/><line x1="189" y1="82.5" x2="189" y2="87.5"/><line x1="189" y1="85" x2="210" y2="85"/><line x1="170" y1="99" x2="170" y2="117"/><line x1="210" y1="99" x2="210" y2="117"/><polyline points="170,103 175,103 178,99 182.4,107 186.8,99 191.2,107 195.6,99 200,107 204,103 210,103" fill="none"/><line x1="170" y1="113" x2="184" y2="113"/><path d="M182 109 L196 109 M182 117 L196 117 M182 109 L182 117" fill="none"/><line x1="189" y1="110.5" x2="189" y2="115.5"/><line x1="189" y1="113" x2="210" y2="113"/></g>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="164" y1="80" x2="170" y2="80"/><line x1="164" y1="108" x2="170" y2="108"/></g>
+    <text x="150" y="168" font-size="11.5" fill="currentColor" font-weight="bold">computed torque</text>
+    <g fill="currentColor"><text x="150" y="204" font-size="11.5">e₁</text><text x="150" y="232" font-size="11.5">e₂</text></g>
+    <text x="190" y="185" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">K<tspan dy="3.1" font-size="8.6">p</tspan><tspan dy="-3.1">e + K</tspan><tspan dy="3.1" font-size="8.6">d</tspan><tspan dy="-3.1">ė</tspan></text>
+    <g stroke="currentColor" stroke-width="1.1" fill="none"><line x1="170" y1="191" x2="170" y2="209"/><line x1="210" y1="191" x2="210" y2="209"/><polyline points="170,195 175,195 178,191 182.4,199 186.8,191 191.2,199 195.6,191 200,199 204,195 210,195" fill="none"/><line x1="170" y1="205" x2="184" y2="205"/><path d="M182 201 L196 201 M182 209 L196 209 M182 201 L182 209" fill="none"/><line x1="189" y1="202.5" x2="189" y2="207.5"/><line x1="189" y1="205" x2="210" y2="205"/><line x1="170" y1="219" x2="170" y2="237"/><line x1="210" y1="219" x2="210" y2="237"/><polyline points="170,223 175,223 178,219 182.4,227 186.8,219 191.2,227 195.6,219 200,227 204,223 210,223" fill="none"/><line x1="170" y1="233" x2="184" y2="233"/><path d="M182 229 L196 229 M182 237 L196 237 M182 229 L182 237" fill="none"/><line x1="189" y1="230.5" x2="189" y2="235.5"/><line x1="189" y1="233" x2="210" y2="233"/></g>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="164" y1="200" x2="170" y2="200"/><line x1="164" y1="228" x2="170" y2="228"/></g>
+    <rect x="232" y="66" width="32" height="56" fill="none" stroke="currentColor" stroke-width="1.2" rx="3"/>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="210" y1="80" x2="264" y2="80"/><line x1="210" y1="108" x2="264" y2="108"/></g>
+    <text x="248" y="98" font-size="11.5" text-anchor="middle" fill="currentColor">+ g</text>
+    <g stroke="currentColor" stroke-width="1.2" marker-end="url(#ar11e)"><line x1="264" y1="80" x2="425" y2="80"/><line x1="264" y1="108" x2="425" y2="108"/></g>
+    <text x="345" y="74" font-size="11" text-anchor="middle" fill="currentColor">τ = (29.62, 0)</text>
+    <rect x="222" y="186" width="40" height="56" fill="none" stroke="currentColor" stroke-width="1.4" rx="3"/>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="210" y1="200" x2="222" y2="200"/><line x1="210" y1="228" x2="222" y2="228"/></g>
+    <g stroke="currentColor" stroke-width="1" opacity="0.75"><line x1="222" y1="200" x2="262" y2="200"/><line x1="222" y1="228" x2="262" y2="228"/><line x1="222" y1="200" x2="262" y2="228"/><line x1="222" y1="228" x2="262" y2="200"/></g>
+    <text x="242" y="182" font-size="11.5" text-anchor="middle" fill="currentColor">M(θ)</text>
+    <rect x="270" y="186" width="26" height="56" fill="none" stroke="currentColor" stroke-width="1.2" rx="3"/>
+    <text x="283" y="218" font-size="11.5" text-anchor="middle" fill="currentColor">+ c</text>
+    <rect x="302" y="186" width="26" height="56" fill="none" stroke="currentColor" stroke-width="1.2" rx="3"/>
+    <text x="315" y="218" font-size="11.5" text-anchor="middle" fill="currentColor">+ g</text>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="262" y1="200" x2="270" y2="200"/><line x1="262" y1="228" x2="270" y2="228"/><line x1="296" y1="200" x2="302" y2="200"/><line x1="296" y1="228" x2="302" y2="228"/></g>
+    <g stroke="currentColor" stroke-width="1.2" marker-end="url(#ar11e)"><line x1="328" y1="200" x2="425" y2="200"/><line x1="328" y1="228" x2="425" y2="228"/></g>
+    <text x="377" y="194" font-size="11" text-anchor="middle" fill="currentColor">τ = (49.62, 10)</text>
+    <text x="150" y="140" font-size="12" fill="currentColor">θ = (</text><circle cx="151.6" cy="129.7" r="0.9" fill="currentColor"/><circle cx="154.7" cy="129.7" r="0.9" fill="currentColor"/>
+    <text x="178.1" y="140" font-size="12" text-anchor="middle" fill="currentColor">5</text>
+    <text x="182.1" y="140" font-size="12" fill="currentColor">,</text>
+    <text x="201.4" y="140" font-size="12" text-anchor="middle" fill="currentColor">−5</text>
+    <text x="212.9" y="140" font-size="12" fill="currentColor">) rad/s²</text>
+    <ellipse cx="201.4" cy="136" rx="12" ry="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <text x="268" y="140" font-size="11" fill="currentColor" opacity="0.85">← elbow: e₂ = 0, τ₂ = 0</text>
+    <text x="150" y="260" font-size="12" fill="currentColor">θ = (</text><circle cx="151.6" cy="249.7" r="0.9" fill="currentColor"/><circle cx="154.7" cy="249.7" r="0.9" fill="currentColor"/>
+    <text x="181.6" y="260" font-size="12" text-anchor="middle" fill="currentColor">10</text>
+    <text x="189" y="260" font-size="12" fill="currentColor">,</text>
+    <text x="199.4" y="260" font-size="12" text-anchor="middle" fill="currentColor">0</text>
+    <text x="203.9" y="260" font-size="12" fill="currentColor">) rad/s²</text>
+    <rect x="426" y="58" width="122" height="190" fill="none" stroke="currentColor" stroke-width="1.4" rx="4"/>
+    <text x="435" y="80" font-size="11.5" fill="currentColor">θ = M<tspan dy="-4.4" font-size="9">−1</tspan><tspan dy="4.4">(τ − c − g)</tspan></text><circle cx="436.5" cy="70.1" r="0.9" fill="currentColor"/><circle cx="439.5" cy="70.1" r="0.9" fill="currentColor"/>
+    <text x="435" y="96" font-size="11" fill="currentColor" opacity="0.8">at rest: c = 0</text>
+    <text x="449" y="117" font-size="11.5" fill="currentColor">M<tspan dy="-4.4" font-size="9">−1</tspan><tspan dy="4.4" dx="3.4">=</tspan></text>
+    <rect x="449" y="124" width="38" height="26" fill="currentColor" fill-opacity="0" stroke="currentColor" stroke-width="1.2"/>
+    <text x="468" y="141.5" font-size="12" text-anchor="middle" fill="currentColor">0.5</text>
+    <rect x="487" y="124" width="38" height="26" fill="currentColor" fill-opacity="0.42" stroke="currentColor" stroke-width="1.2"/>
+    <text x="506" y="141.5" font-size="12" text-anchor="middle" fill="currentColor" font-weight="bold">−0.5</text>
+    <rect x="449" y="150" width="38" height="26" fill="currentColor" fill-opacity="0.42" stroke="currentColor" stroke-width="1.2"/>
+    <text x="468" y="167.5" font-size="12" text-anchor="middle" fill="currentColor" font-weight="bold">−0.5</text>
+    <rect x="487" y="150" width="38" height="26" fill="currentColor" fill-opacity="0" stroke="currentColor" stroke-width="1.2"/>
+    <text x="506" y="167.5" font-size="12" text-anchor="middle" fill="currentColor">1.5</text>
+    <text x="435" y="196" font-size="11" fill="currentColor" opacity="0.85">shaded: a push on one</text>
+    <text x="435" y="210" font-size="11" fill="currentColor" opacity="0.85">joint moves the other</text>
+  </g>
+</svg>
+
 1. **Left — the error, as geometry.** P2 at the catalog pose twice: the commanded arm dashed, and the actual arm solid with the **shoulder** rotated back by $e_1 = 0.1\,\mathrm{rad} = 5.73^\circ$ while the elbow angle is unchanged. Mark both tips and the gap between them. One joint is wrong and the other is exactly right — hold on to that, because it is what the rest of the figure is about.
 2. **Middle — two controllers, stacked, sharing that one error.** The upper path is joint-space PD with gravity compensation: draw a spring and a damper on each joint *separately*, with no line crossing between the two joints, then a box adding $g$. The absence of a crossing line is not laziness in the drawing; it is the controller's assumption. The lower path is computed torque: the same $K_pe + K_d\dot e$ signal, but routed through a box labelled $M(\theta)$ that has both joints' wires entering and both leaving, then boxes adding $c$ and $g$.
 3. **Right — the plant, drawn as the thing that couples.** One box, $\ddot\theta = M^{-1}(\tau - c - g)$, with $M^{-1}$ sketched as a $2\times2$ grid and the two off-diagonal cells shaded. Shade them heavily. Every surprise on this page comes out of those two cells.
@@ -72,7 +149,7 @@ the last equality holding because this page's $K_d = 2\sqrt{K_p}$. Since $M$'s e
 | heavy | $(0.924,\ 0.383)$, mostly shoulder | $0.2929$ | $5.412$ | $0.5412$ | $1.366\,\mathrm{s}$ | $13.2\,\%$ |
 | light | $(0.383,\ -0.924)$, elbow counter-rotating | $1.7071$ | $13.066$ | $1.3066$ | $0.234\,\mathrm{s}$ | none |
 
-One pair of gains, and the arm answers with two natural frequencies a factor of $2.4$ apart and two damping ratios straddling $1$: the heavy direction rings and takes $1.37\,\mathrm{s}$ to settle, the light one is overdamped and sluggish in its own way at $0.23\,\mathrm{s}$. Neither is the $\zeta = 1$, $0.4\,\mathrm{s}$ response that was designed. **Choosing $K_d = 2\sqrt{K_p}$ buys critical damping only if the inertia is $1$.** Computed torque makes it $1$ by dividing it out first; that is the only difference between steps 2 and 3.
+One pair of gains, and the arm answers with two natural frequencies a factor of $2.4$ apart and two damping ratios straddling $1$: the heavy direction rings and takes $1.37\,\mathrm{s}$ to settle, the light one is overdamped and sluggish in its own way at $0.66\,\mathrm{s}$, set by its slower pole $-\zeta\omega_n + \omega_n\sqrt{\zeta^2-1} = -6.08\,\mathrm{rad/s}$ (the table's $4/(\zeta\omega_n)$ holds only for $\zeta \le 1$). Neither is the $\zeta = 1$, $0.4\,\mathrm{s}$ response that was designed. **Choosing $K_d = 2\sqrt{K_p}$ buys critical damping only if the inertia is $1$.** Computed torque makes it $1$ by dividing it out first; that is the only difference between steps 2 and 3.
 
 **Step 5 — the same physics at the tip.** The catalog's $\Lambda = \mathrm{diag}(1,2)$ says a task-space controller asking for a tip acceleration $a$ must apply the wrench $F = \Lambda a$, and $\tau = J^\top F$ turns that into joint torques ([[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5 §3]]). For $a = (1,1)\,\mathrm{m/s^2}$: $F = (1,\ 2)\,\mathrm{N}$ — twice as much force for the same acceleration in $y$ as in $x$, which is what "the tip feels twice as heavy in $y$" means — and $\tau = J^\top F = (1,\ -1)\,\mathrm{N\,m}$. The structure is identical to step 1 with $\Lambda$ in place of $M$ and $J^\top$ bolted on, which is why operational-space control is a re-coordinatization of this chapter rather than a new idea.
 
@@ -83,8 +160,8 @@ One pair of gains, and the arm answers with two natural frequencies a factor of 
   $\ddot e + K_d \dot e + K_p e = 0$ with gains picking damping/frequency.
 - **Velocity-input regime (MR §11.3): P and PI swap the roles you expect.**
   - **P alone** gives *first-order* error dynamics, $\dot\theta_e + K_p\theta_e = c$. Here $c$
-    is zero for a setpoint and nonzero for a constant-velocity target; that nonzero $c$ is the
-    steady-state offset.
+    is zero for a setpoint and nonzero for a constant-velocity target; that nonzero $c$ leaves the
+    steady-state offset $c/K_p$.
   - **Adding I** removes the offset. Differentiating once shows the cost:
     $\ddot\theta_e + K_p\dot\theta_e + K_i\theta_e = 0$. **PI in this same section is second
     order**, with $\omega_n=\sqrt{K_i}$ and $\zeta = K_p/(2\sqrt{K_i})$.
@@ -153,7 +230,7 @@ not on impedance control alone.
 > 1. Matching $\ddot e + 2\zeta\omega_n\dot e + \omega_n^2 e = 0$ gives $\omega_n^2 = K_p$ and $2\zeta\omega_n = K_d$, so $\zeta = 1 \iff K_d = 2\sqrt{K_p}$ ([[02-foundations/engineering-math|0.5 §8]]).
 > 2. The cancellation is incomplete, so residual nonlinear terms remain inside the error dynamics — they act as a disturbance the PD gains must suppress. The error dynamics are no longer exactly linear, and both tracking performance and stability margin degrade as model error grows.
 > 3. Contact tasks (polishing, insertion — where a small position error against a stiff surface produces a huge force) and human collaboration (compliance so a collision is survivable). Both are cases where the *force–motion relationship* matters more than positional accuracy.
-> 4. Since $\zeta_i = K_d\sqrt{\mu_i}/(2\sqrt{K_p})$ with $\mu_i$ the eigenvalues of $M^{-1}$, both damping ratios equal $1$ only when $M$ has a single repeated eigenvalue — that is, when $M = mI$, an arm whose inertia is the same in every direction and at every pose. P2 is not that arm, and no serial manipulator with revolute joints is. Computed torque multiplies by $M(\theta)$ before the gains ever see the plant, so the error system it leaves behind genuinely has inertia $1$ in every direction, and the single designed $\zeta$ applies to both joints.
+> 4. Since $\zeta_i = K_d\sqrt{\mu_i}/(2\sqrt{K_p})$ with $\mu_i$ the eigenvalues of $M^{-1}$, both damping ratios equal $1$ only when $M$ has a single repeated eigenvalue equal to $1$ — that is, when $M = I$, an arm whose inertia is $1$ in every direction and at every pose. P2 is not that arm, and no serial manipulator with revolute joints is. Computed torque multiplies by $M(\theta)$ before the gains ever see the plant, so the error system it leaves behind genuinely has inertia $1$ in every direction, and the single designed $\zeta$ applies to both joints.
 
 ### Problem set · 과제
 
@@ -185,6 +262,84 @@ $$M = \begin{pmatrix}3&1\\1&1\end{pmatrix}\ \mathrm{kg\,m^2}, \qquad g = (19.62,
 ### 과제가 그릴 그림 · Homework diagram
 
 신호 흐름도 하나에 팔 그림을 작게 붙인다. 왼쪽에서 오른쪽으로 세 열이다.
+
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="세 열: 명령보다 어깨가 0.1 rad 뒤진 카탈로그 자세의 P2, 같은 오차를 받는 중력 보상 PD와 그 아래의 계산 토크, 그리고 M 역행렬의 비대각 칸을 칠한 플랜트. PD는 가속도 (5, −5)를 내고 엘보에 동그라미, 계산 토크는 (10, 0)">
+  <g transform="translate(0 3)">
+    <defs><marker id="ar11k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+    <g fill="currentColor" font-weight="bold"><text x="10" y="18" font-size="11.5">1 · 오차</text><text x="150" y="18" font-size="11.5">2 · 제어기 둘, 오차 하나</text><text x="426" y="18" font-size="11.5">3 · 플랜트</text></g>
+    <line x1="12" y1="40" x2="30" y2="40" stroke="currentColor" stroke-width="2" stroke-dasharray="5 3" opacity="0.75"/>
+    <line x1="12" y1="56" x2="30" y2="56" stroke="currentColor" stroke-width="3"/>
+    <g fill="currentColor"><text x="35" y="44" font-size="11">명령</text><text x="35" y="60" font-size="11">실제</text></g>
+    <g stroke="currentColor" stroke-width="2" stroke-dasharray="5 3" fill="none" opacity="0.75"><polyline points="22,218 114,218 114,126"/></g>
+    <g stroke="currentColor" stroke-width="3" fill="none" stroke-linejoin="round"><polyline points="22,218 113.5,227.2 122.7,135.6"/></g>
+    <polygon points="22,218 14,230 30,230" fill="none" stroke="currentColor" stroke-width="1.1"/>
+    <circle cx="22" cy="218" r="3.6" fill="currentColor"/>
+    <circle cx="113.5" cy="227.2" r="3.4" fill="currentColor"/>
+    <circle cx="114" cy="218" r="3.2" fill="none" stroke="currentColor" stroke-width="1.1"/>
+    <circle cx="122.7" cy="135.6" r="3.4" fill="currentColor"/>
+    <circle cx="114" cy="126" r="3.4" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="114" y1="126" x2="122.7" y2="135.6" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 1.5"/>
+    <text x="106" y="124" font-size="11" text-anchor="end" fill="currentColor">말단 간격 0.14 m</text>
+    <g fill="currentColor">
+    <text x="12" y="256" font-size="11" font-weight="bold">e = (0.1, 0) rad</text>
+    <text x="12" y="271" font-size="11">어깨가 0.1 rad 뒤로</text>
+    <text x="12" y="285" font-size="11">= 5.73°, 엘보는 정확</text>
+    </g>
+    <text x="150" y="48" font-size="11.5" fill="currentColor" font-weight="bold">중력 보상 PD</text>
+    <g fill="currentColor"><text x="150" y="84" font-size="11.5">e₁</text><text x="150" y="112" font-size="11.5">e₂</text></g>
+    <text x="190" y="65" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">K<tspan dy="3.1" font-size="8.6">p</tspan><tspan dy="-3.1">e + K</tspan><tspan dy="3.1" font-size="8.6">d</tspan><tspan dy="-3.1">ė</tspan></text>
+    <g stroke="currentColor" stroke-width="1.1" fill="none"><line x1="170" y1="71" x2="170" y2="89"/><line x1="210" y1="71" x2="210" y2="89"/><polyline points="170,75 175,75 178,71 182.4,79 186.8,71 191.2,79 195.6,71 200,79 204,75 210,75" fill="none"/><line x1="170" y1="85" x2="184" y2="85"/><path d="M182 81 L196 81 M182 89 L196 89 M182 81 L182 89" fill="none"/><line x1="189" y1="82.5" x2="189" y2="87.5"/><line x1="189" y1="85" x2="210" y2="85"/><line x1="170" y1="99" x2="170" y2="117"/><line x1="210" y1="99" x2="210" y2="117"/><polyline points="170,103 175,103 178,99 182.4,107 186.8,99 191.2,107 195.6,99 200,107 204,103 210,103" fill="none"/><line x1="170" y1="113" x2="184" y2="113"/><path d="M182 109 L196 109 M182 117 L196 117 M182 109 L182 117" fill="none"/><line x1="189" y1="110.5" x2="189" y2="115.5"/><line x1="189" y1="113" x2="210" y2="113"/></g>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="164" y1="80" x2="170" y2="80"/><line x1="164" y1="108" x2="170" y2="108"/></g>
+    <text x="150" y="168" font-size="11.5" fill="currentColor" font-weight="bold">계산 토크</text>
+    <g fill="currentColor"><text x="150" y="204" font-size="11.5">e₁</text><text x="150" y="232" font-size="11.5">e₂</text></g>
+    <text x="190" y="185" font-size="11" text-anchor="middle" fill="currentColor" opacity="0.85">K<tspan dy="3.1" font-size="8.6">p</tspan><tspan dy="-3.1">e + K</tspan><tspan dy="3.1" font-size="8.6">d</tspan><tspan dy="-3.1">ė</tspan></text>
+    <g stroke="currentColor" stroke-width="1.1" fill="none"><line x1="170" y1="191" x2="170" y2="209"/><line x1="210" y1="191" x2="210" y2="209"/><polyline points="170,195 175,195 178,191 182.4,199 186.8,191 191.2,199 195.6,191 200,199 204,195 210,195" fill="none"/><line x1="170" y1="205" x2="184" y2="205"/><path d="M182 201 L196 201 M182 209 L196 209 M182 201 L182 209" fill="none"/><line x1="189" y1="202.5" x2="189" y2="207.5"/><line x1="189" y1="205" x2="210" y2="205"/><line x1="170" y1="219" x2="170" y2="237"/><line x1="210" y1="219" x2="210" y2="237"/><polyline points="170,223 175,223 178,219 182.4,227 186.8,219 191.2,227 195.6,219 200,227 204,223 210,223" fill="none"/><line x1="170" y1="233" x2="184" y2="233"/><path d="M182 229 L196 229 M182 237 L196 237 M182 229 L182 237" fill="none"/><line x1="189" y1="230.5" x2="189" y2="235.5"/><line x1="189" y1="233" x2="210" y2="233"/></g>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="164" y1="200" x2="170" y2="200"/><line x1="164" y1="228" x2="170" y2="228"/></g>
+    <rect x="232" y="66" width="32" height="56" fill="none" stroke="currentColor" stroke-width="1.2" rx="3"/>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="210" y1="80" x2="264" y2="80"/><line x1="210" y1="108" x2="264" y2="108"/></g>
+    <text x="248" y="98" font-size="11.5" text-anchor="middle" fill="currentColor">+ g</text>
+    <g stroke="currentColor" stroke-width="1.2" marker-end="url(#ar11k)"><line x1="264" y1="80" x2="425" y2="80"/><line x1="264" y1="108" x2="425" y2="108"/></g>
+    <text x="345" y="74" font-size="11" text-anchor="middle" fill="currentColor">τ = (29.62, 0)</text>
+    <rect x="222" y="186" width="40" height="56" fill="none" stroke="currentColor" stroke-width="1.4" rx="3"/>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="210" y1="200" x2="222" y2="200"/><line x1="210" y1="228" x2="222" y2="228"/></g>
+    <g stroke="currentColor" stroke-width="1" opacity="0.75"><line x1="222" y1="200" x2="262" y2="200"/><line x1="222" y1="228" x2="262" y2="228"/><line x1="222" y1="200" x2="262" y2="228"/><line x1="222" y1="228" x2="262" y2="200"/></g>
+    <text x="242" y="182" font-size="11.5" text-anchor="middle" fill="currentColor">M(θ)</text>
+    <rect x="270" y="186" width="26" height="56" fill="none" stroke="currentColor" stroke-width="1.2" rx="3"/>
+    <text x="283" y="218" font-size="11.5" text-anchor="middle" fill="currentColor">+ c</text>
+    <rect x="302" y="186" width="26" height="56" fill="none" stroke="currentColor" stroke-width="1.2" rx="3"/>
+    <text x="315" y="218" font-size="11.5" text-anchor="middle" fill="currentColor">+ g</text>
+    <g stroke="currentColor" stroke-width="1.2"><line x1="262" y1="200" x2="270" y2="200"/><line x1="262" y1="228" x2="270" y2="228"/><line x1="296" y1="200" x2="302" y2="200"/><line x1="296" y1="228" x2="302" y2="228"/></g>
+    <g stroke="currentColor" stroke-width="1.2" marker-end="url(#ar11k)"><line x1="328" y1="200" x2="425" y2="200"/><line x1="328" y1="228" x2="425" y2="228"/></g>
+    <text x="377" y="194" font-size="11" text-anchor="middle" fill="currentColor">τ = (49.62, 10)</text>
+    <text x="150" y="140" font-size="12" fill="currentColor">θ = (</text><circle cx="151.6" cy="129.7" r="0.9" fill="currentColor"/><circle cx="154.7" cy="129.7" r="0.9" fill="currentColor"/>
+    <text x="178.1" y="140" font-size="12" text-anchor="middle" fill="currentColor">5</text>
+    <text x="182.1" y="140" font-size="12" fill="currentColor">,</text>
+    <text x="201.4" y="140" font-size="12" text-anchor="middle" fill="currentColor">−5</text>
+    <text x="212.9" y="140" font-size="12" fill="currentColor">) rad/s²</text>
+    <ellipse cx="201.4" cy="136" rx="12" ry="10" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <text x="268" y="140" font-size="11" fill="currentColor" opacity="0.85">← 엘보: e₂ = 0, τ₂ = 0</text>
+    <text x="150" y="260" font-size="12" fill="currentColor">θ = (</text><circle cx="151.6" cy="249.7" r="0.9" fill="currentColor"/><circle cx="154.7" cy="249.7" r="0.9" fill="currentColor"/>
+    <text x="181.6" y="260" font-size="12" text-anchor="middle" fill="currentColor">10</text>
+    <text x="189" y="260" font-size="12" fill="currentColor">,</text>
+    <text x="199.4" y="260" font-size="12" text-anchor="middle" fill="currentColor">0</text>
+    <text x="203.9" y="260" font-size="12" fill="currentColor">) rad/s²</text>
+    <rect x="426" y="58" width="122" height="190" fill="none" stroke="currentColor" stroke-width="1.4" rx="4"/>
+    <text x="435" y="80" font-size="11.5" fill="currentColor">θ = M<tspan dy="-4.4" font-size="9">−1</tspan><tspan dy="4.4">(τ − c − g)</tspan></text><circle cx="436.5" cy="70.1" r="0.9" fill="currentColor"/><circle cx="439.5" cy="70.1" r="0.9" fill="currentColor"/>
+    <text x="435" y="96" font-size="11" fill="currentColor" opacity="0.8">정지: c = 0</text>
+    <text x="449" y="117" font-size="11.5" fill="currentColor">M<tspan dy="-4.4" font-size="9">−1</tspan><tspan dy="4.4" dx="3.4">=</tspan></text>
+    <rect x="449" y="124" width="38" height="26" fill="currentColor" fill-opacity="0" stroke="currentColor" stroke-width="1.2"/>
+    <text x="468" y="141.5" font-size="12" text-anchor="middle" fill="currentColor">0.5</text>
+    <rect x="487" y="124" width="38" height="26" fill="currentColor" fill-opacity="0.42" stroke="currentColor" stroke-width="1.2"/>
+    <text x="506" y="141.5" font-size="12" text-anchor="middle" fill="currentColor" font-weight="bold">−0.5</text>
+    <rect x="449" y="150" width="38" height="26" fill="currentColor" fill-opacity="0.42" stroke="currentColor" stroke-width="1.2"/>
+    <text x="468" y="167.5" font-size="12" text-anchor="middle" fill="currentColor" font-weight="bold">−0.5</text>
+    <rect x="487" y="150" width="38" height="26" fill="currentColor" fill-opacity="0" stroke="currentColor" stroke-width="1.2"/>
+    <text x="506" y="167.5" font-size="12" text-anchor="middle" fill="currentColor">1.5</text>
+    <text x="435" y="196" font-size="11" fill="currentColor" opacity="0.85">칠한 칸: 한 관절을</text>
+    <text x="435" y="210" font-size="11" fill="currentColor" opacity="0.85">밀면 다른 관절이</text>
+    <text x="435" y="224" font-size="11" fill="currentColor" opacity="0.85">움직인다</text>
+  </g>
+</svg>
 
 1. **왼쪽 — 오차를 기하로.** 카탈로그 자세의 P2를 두 번 그린다. 명령된 팔은 점선, 실제 팔은 실선인데 **어깨**만 $e_1 = 0.1\,\mathrm{rad} = 5.73^\circ$만큼 뒤로 돌아가 있고 엘보 각은 그대로다. 두 말단과 그 사이의 간격을 표시한다. 한 관절은 틀렸고 다른 관절은 정확히 맞다는 것을 붙들고 있어라. 그림의 나머지가 그것에 대한 것이다.
 2. **가운데 — 그 오차 하나를 나눠 쓰는 제어기 둘, 위아래로.** 위쪽 경로는 중력 보상을 붙인 관절 공간 PD다. 관절마다 스프링과 댐퍼를 *따로* 그리고, 두 관절 사이를 건너는 선은 하나도 그리지 않은 뒤 $g$를 더하는 상자를 붙인다. 건너는 선이 없는 것은 그림을 대충 그린 것이 아니라 그 제어기의 가정이다. 아래쪽 경로는 계산 토크다. 같은 $K_pe + K_d\dot e$ 신호를 $M(\theta)$라고 쓴 상자로 보내는데, 그 상자에는 두 관절의 선이 모두 들어가고 모두 나온다. 그다음 $c$와 $g$를 더하는 상자가 있다.
@@ -227,7 +382,7 @@ $$\omega_{n,i} = \sqrt{K_p\mu_i}, \qquad \zeta_i = \frac{K_d\mu_i}{2\sqrt{K_p\mu
 | 무거운 쪽 | $(0.924,\ 0.383)$, 주로 어깨 | $0.2929$ | $5.412$ | $0.5412$ | $1.366\,\mathrm{s}$ | $13.2\,\%$ |
 | 가벼운 쪽 | $(0.383,\ -0.924)$, 엘보 역회전 | $1.7071$ | $13.066$ | $1.3066$ | $0.234\,\mathrm{s}$ | 없음 |
 
-이득은 한 쌍인데 팔은 $2.4$배 차이 나는 고유 진동수 둘과 $1$을 사이에 둔 감쇠비 둘로 답한다. 무거운 방향은 울리며 정착에 $1.37\,\mathrm{s}$가 걸리고, 가벼운 방향은 과감쇠라 그 나름대로 굼떠 $0.23\,\mathrm{s}$다. 어느 쪽도 설계한 $\zeta = 1$, $0.4\,\mathrm{s}$가 아니다. **$K_d = 2\sqrt{K_p}$가 임계 감쇠를 사 주는 것은 관성이 $1$일 때뿐이다.** 계산 토크는 먼저 나누어 없애서 관성을 $1$로 만든다. 2단계와 3단계의 차이는 그것 하나다.
+이득은 한 쌍인데 팔은 $2.4$배 차이 나는 고유 진동수 둘과 $1$을 사이에 둔 감쇠비 둘로 답한다. 무거운 방향은 울리며 정착에 $1.37\,\mathrm{s}$가 걸리고, 가벼운 방향은 과감쇠라 그 나름대로 굼떠 $0.66\,\mathrm{s}$다. 그 시간은 느린 극점 $-\zeta\omega_n + \omega_n\sqrt{\zeta^2-1} = -6.08\,\mathrm{rad/s}$가 정한다(표의 $4/(\zeta\omega_n)$는 $\zeta \le 1$에서만 맞다). 어느 쪽도 설계한 $\zeta = 1$, $0.4\,\mathrm{s}$가 아니다. **$K_d = 2\sqrt{K_p}$가 임계 감쇠를 사 주는 것은 관성이 $1$일 때뿐이다.** 계산 토크는 먼저 나누어 없애서 관성을 $1$로 만든다. 2단계와 3단계의 차이는 그것 하나다.
 
 **5단계 — 같은 물리를 말단에서.** 카탈로그의 $\Lambda = \mathrm{diag}(1,2)$는 말단 가속도 $a$를 요구하는 작업 공간 제어기가 렌치 $F = \Lambda a$를 가해야 한다는 뜻이고, $\tau = J^\top F$가 그것을 관절 토크로 바꾼다([[04-robotics/modern-robotics/ch05-velocity-kinematics|5장 §3]]). $a = (1,1)\,\mathrm{m/s^2}$이면 $F = (1,\ 2)\,\mathrm{N}$이다. 같은 가속도에 $y$에서 $x$의 두 배 힘이 들고, 그것이 "말단이 $y$에서 두 배 무겁다"의 뜻이다. 그리고 $\tau = J^\top F = (1,\ -1)\,\mathrm{N\,m}$이다. 구조가 1단계와 똑같고 $M$ 자리에 $\Lambda$가, 뒤에 $J^\top$이 붙었을 뿐이다. operational-space 제어가 새 아이디어가 아니라 이 장을 좌표만 바꿔 쓴 것인 이유다.
 
@@ -238,7 +393,7 @@ $$\omega_{n,i} = \sqrt{K_p\mu_i}, \qquad \zeta_i = \frac{K_d\mu_i}{2\sqrt{K_p\mu
   고른다.
 - **속도 입력 영역(MR §11.3): P와 PI에서는 이득의 역할이 예상과 뒤바뀐다.**
   - **P만** 쓰면 오차 동역학이 *1차*다($\dot\theta_e + K_p\theta_e = c$). $c$는 설정점
-    추종이면 0이고 등속 목표면 0이 아니다. 그 0이 아닌 $c$가 곧 정상 상태 오프셋이다.
+    추종이면 0이고 등속 목표면 0이 아니다. 그 0이 아닌 $c$가 정상 상태 오프셋 $c/K_p$를 남긴다.
   - **I를 더하면** 오프셋이 사라진다. 한 번 미분해 보면 대가가 보인다:
     $\ddot\theta_e + K_p\dot\theta_e + K_i\theta_e = 0$. **같은 절의 PI가 이미 2차다.**
     $\omega_n=\sqrt{K_i}$, $\zeta = K_p/(2\sqrt{K_i})$다.
@@ -304,7 +459,7 @@ $$\tau = \hat M(\theta)\bigl(\ddot\theta_d + K_pe + K_d\dot e\bigr) + \hat c(\th
 > 1. $\ddot e + 2\zeta\omega_n\dot e + \omega_n^2 e = 0$과 맞추면 $\omega_n^2 = K_p$, $2\zeta\omega_n = K_d$이므로 $\zeta = 1 \iff K_d = 2\sqrt{K_p}$다([[02-foundations/engineering-math|0.5 §8]]).
 > 2. 상쇄가 불완전해서 잔차 비선형 항이 오차 동역학 안에 남고, 그것이 PD 이득이 눌러야 할 외란으로 작용한다. 오차 동역학은 더 이상 정확히 선형이 아니며, 모델 오차가 커질수록 추종 성능과 안정 여유가 함께 나빠진다.
 > 3. 접촉 작업(연마, 삽입 — 단단한 표면에 대한 작은 위치 오차가 큰 힘을 만드는 경우)과 인간 협업(충돌을 견딜 수 있게 하는 순응성)이다. 둘 다 위치 정확도보다 *힘–운동 관계*가 중요한 경우다.
-> 4. $\zeta_i = K_d\sqrt{\mu_i}/(2\sqrt{K_p})$이고 $\mu_i$가 $M^{-1}$의 고윳값이므로, 두 감쇠비가 모두 $1$이 되려면 $M$의 고윳값이 하나로 중복되어야 한다. 곧 $M = mI$, 어느 방향에서나 어느 자세에서나 관성이 같은 팔이어야 한다. P2는 그런 팔이 아니고, 회전관절로 된 어떤 직렬 매니퓰레이터도 그렇지 않다. 계산 토크는 이득이 플랜트를 보기 전에 $M(\theta)$를 먼저 곱하므로, 뒤에 남는 오차 계의 관성이 모든 방향에서 실제로 $1$이고 설계한 $\zeta$ 하나가 두 관절에 그대로 적용된다.
+> 4. $\zeta_i = K_d\sqrt{\mu_i}/(2\sqrt{K_p})$이고 $\mu_i$가 $M^{-1}$의 고윳값이므로, 두 감쇠비가 모두 $1$이 되려면 $M$의 고윳값이 $1$ 하나로 중복되어야 한다. 곧 $M = I$, 어느 방향에서나 어느 자세에서나 관성이 $1$인 팔이어야 한다. P2는 그런 팔이 아니고, 회전관절로 된 어떤 직렬 매니퓰레이터도 그렇지 않다. 계산 토크는 이득이 플랜트를 보기 전에 $M(\theta)$를 먼저 곱하므로, 뒤에 남는 오차 계의 관성이 모든 방향에서 실제로 $1$이고 설계한 $\zeta$ 하나가 두 관절에 그대로 적용된다.
 
 ### 과제 · Problem set
 

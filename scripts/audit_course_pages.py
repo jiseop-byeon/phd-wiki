@@ -8,6 +8,8 @@ Checks, per page, on both halves:
   4. a self-check
   5. heading parity between the two halves (a drifting Korean half is invisible to
      audit_parity.py, which only compares section *references*)
+  6. rule 9: the homework diagram is drawn — an inline SVG, a mermaid block or an
+     image inside the Homework diagram section of each half, not only a description
 
 Exit status is always 0: this is a worklist, not a gate. Promote it into
 verify_content.py once the tracks conform.
@@ -57,6 +59,18 @@ HEADING = re.compile(r"^#{3,4} ", re.M)
 # A citation list is language-neutral: several pages carry one `### Sources` at the end
 # of the file, serving both halves, so it must not count as a Korean-only heading.
 SHARED_HEADING = re.compile(r"^#{3,4} .*(Sources|출처|참고문헌)", re.M)
+FIGURE = re.compile(r"<svg|```mermaid|!\[|<img")
+DIAGRAM_HEADING = re.compile(r"^#{3,4} .*(Homework diagram|과제가 그릴 그림).*$", re.M)
+
+
+def diagram_section(half):
+    """Text of the Homework diagram section, up to the next heading of level 2 or 3."""
+    m = DIAGRAM_HEADING.search(half)
+    if not m:
+        return None
+    rest = half[m.end():]
+    n = re.search(r"^#{2,3} ", rest, re.M)
+    return rest[:n.start()] if n else rest
 
 
 def halves(text):
@@ -81,6 +95,10 @@ def audit(path):
         missing = [half for half, t in (("EN", en), ("KO", ko)) if not rx.search(t)]
         if missing:
             problems.append(f"no {name} ({'+'.join(missing)})")
+    undrawn = [half for half, t in (("EN", en), ("KO", ko))
+               if (sec := diagram_section(t)) is not None and not FIGURE.search(sec)]
+    if undrawn:
+        problems.append(f"homework diagram described but not drawn ({'+'.join(undrawn)})")
     ps = PROBLEM.split(en)
     if len(ps) > 1 and not TIER.search(ps[-1]):
         problems.append("problem set has no tier line")

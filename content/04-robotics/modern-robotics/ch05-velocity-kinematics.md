@@ -21,6 +21,46 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 One figure, and every number on this page is read off it. The object is plant **P2** at the catalog pose $\theta = (0^\circ, 90^\circ)$ from [[02-foundations/lab-plants|0.6 Lab Plants]]: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$. Draw the arm to scale, then add four layers.
 
+<svg viewBox="0 0 560 306" style="max-width:100%;height:auto" role="img" aria-label="P2 at the catalog pose with, at the tip, the two Jacobian columns (−1, 1) and (−1, 0) m/s, the commanded velocity (0, −0.25) m/s, the manipulability ellipse with semi-axes 1.618 and 0.618, and the outlined force (0, −10) N pointing into the tip.">
+  <defs><marker id="mr05hdE" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="mr05hdvE" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+  <path d="M78 34 L74.3 34.1 L70.7 34.3 L67.3 34.6 L64 35.1 L60.9 35.6 L57.9 36.4 L55.1 37.2 L52.4 38.2 L49.9 39.3 L47.6 40.5 L45.4 41.9 L43.4 43.3 L41.6 44.9 L39.9 46.6 L38.5 48.5 L37.2 50.4 L36.1 52.5 L35.1 54.6 L34.4 56.9 L33.8 59.3 L33.5 61.7 L33.3 64.3 L33.3 67 L33.5 69.7 L33.8 72.6 L34.4 75.5 L35.1 78.5 L36.1 81.6 L37.2 84.8 L38.5 88 L39.9 91.3 L41.6 94.7 L43.4 98.1 L45.4 101.5 L47.6 105.1 L49.9 108.6 L52.4 112.2 L55.1 115.9 L57.9 119.5 L60.9 123.2 L64 127 L67.3 130.7 L70.7 134.5 L74.3 138.2 L78 142 L81.8 145.8 L85.8 149.5 L89.9 153.3 L94.1 157 L98.4 160.8 L102.8 164.5 L107.3 168.1 L112 171.8 L116.7 175.4 L121.5 178.9 L126.3 182.5 L131.3 185.9 L136.3 189.3 L141.3 192.7 L146.5 196 L151.6 199.2 L156.9 202.4 L162.1 205.5 L167.4 208.5 L172.7 211.4 L178 214.3 L183.3 217 L188.7 219.7 L194 222.3 L199.3 224.7 L204.6 227.1 L209.9 229.4 L215.1 231.5 L220.4 233.6 L225.5 235.5 L230.7 237.4 L235.7 239.1 L240.7 240.7 L245.7 242.1 L250.5 243.5 L255.3 244.7 L260 245.8 L264.7 246.8 L269.2 247.6 L273.6 248.4 L277.9 248.9 L282.1 249.4 L286.2 249.7 L290.2 249.9 L294 250 L297.7 249.9 L301.3 249.7 L304.7 249.4 L308 248.9 L311.1 248.4 L314.1 247.6 L316.9 246.8 L319.6 245.8 L322.1 244.7 L324.4 243.5 L326.6 242.1 L328.6 240.7 L330.4 239.1 L332.1 237.4 L333.5 235.5 L334.8 233.6 L335.9 231.5 L336.9 229.4 L337.6 227.1 L338.2 224.7 L338.5 222.3 L338.7 219.7 L338.7 217 L338.5 214.3 L338.2 211.4 L337.6 208.5 L336.9 205.5 L335.9 202.4 L334.8 199.2 L333.5 196 L332.1 192.7 L330.4 189.3 L328.6 185.9 L326.6 182.5 L324.4 178.9 L322.1 175.4 L319.6 171.8 L316.9 168.1 L314.1 164.5 L311.1 160.8 L308 157 L304.7 153.3 L301.3 149.5 L297.7 145.8 L294 142 L290.2 138.2 L286.2 134.5 L282.1 130.7 L277.9 127 L273.6 123.2 L269.2 119.5 L264.7 115.9 L260 112.2 L255.3 108.6 L250.5 105.1 L245.7 101.5 L240.7 98.1 L235.7 94.7 L230.7 91.3 L225.5 88 L220.4 84.8 L215.1 81.6 L209.9 78.5 L204.6 75.5 L199.3 72.6 L194 69.7 L188.7 67 L183.3 64.3 L178 61.7 L172.7 59.3 L167.4 56.9 L162.1 54.6 L156.9 52.5 L151.6 50.4 L146.5 48.5 L141.3 46.6 L136.3 44.9 L131.3 43.3 L126.3 41.9 L121.5 40.5 L116.7 39.3 L112 38.2 L107.3 37.2 L102.8 36.4 L98.4 35.6 L94.1 35.1 L89.9 34.6 L85.8 34.3 L81.8 34.1 Z" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-width="1.3"/>
+  <g stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 3" opacity="0.75"><line x1="186" y1="142" x2="37.4" y2="50.1"/><line x1="186" y1="142" x2="221.1" y2="85.2"/></g>
+  <polyline points="78,250 186,250 186,142" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" opacity="0.3"/>
+  <circle cx="78" cy="250" r="4.5" fill="currentColor" fill-opacity="0.6"/>
+  <circle cx="186" cy="250" r="3.5" fill="currentColor" fill-opacity="0.6"/>
+  <path d="M183 34 L189 34 L189 124 L193.5 124 L186 137 L178.5 124 L183 124 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  <g stroke="currentColor" stroke-width="2.4" marker-end="url(#mr05hdE)"><line x1="186" y1="142" x2="78" y2="34"/><line x1="186" y1="142" x2="78" y2="142"/></g>
+  <line x1="186" y1="142" x2="186" y2="169" stroke="currentColor" stroke-width="1.3" marker-end="url(#mr05hdvE)"/>
+  <circle cx="186" cy="142" r="4" fill="currentColor"/>
+  <line x1="350" y1="14" x2="350" y2="270" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+  <g font-size="11" fill="currentColor">
+    <text x="78" y="25" text-anchor="middle">col 1 = (−1, 1)</text>
+    <text x="142" y="158" text-anchor="middle">col 2 = (−1, 0)</text>
+    <text x="196" y="169">v = (0, −0.25)</text>
+    <text x="196" y="184">θ̇ = (−0.25, 0.25) rad/s</text>
+    <text x="198" y="43">F = (0, −10) N</text>
+    <text x="198" y="58">τ = Jᵀ F = (−10, 0) N·m</text>
+    <text x="24.4" y="44.1" text-anchor="middle">σ<tspan dy="3.5">1</tspan></text>
+    <text x="227.1" y="77.2">σ<tspan dy="3.5">2</tspan></text>
+    <text x="78" y="267" text-anchor="middle" opacity="0.8">base (0, 0)</text>
+    <text x="186" y="267" text-anchor="middle" opacity="0.8">elbow (1, 0)</text>
+    <text x="196" y="150" opacity="0.8">tip (1, 1)</text>
+    <text x="362" y="26" font-size="12">Velocities out of the tip</text>
+    <text x="368" y="45">col 1 = (−1, 1) m/s, θ̇ = (1, 0)</text>
+    <text x="368" y="62">col 1 ⟂ base–tip line, length √2</text>
+    <text x="368" y="79">col 2 = (−1, 0) m/s, θ̇ = (0, 1)</text>
+    <text x="368" y="102">v = (0, −0.25) m/s (thin)</text>
+    <text x="368" y="119">θ̇ = J⁻¹v = (−0.25, 0.25) rad/s</text>
+    <text x="362" y="146" font-size="12">Ellipse = J · (unit circle)</text>
+    <text x="368" y="165">σ<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">= 1.618 (long, easy)</tspan></text>
+    <text x="368" y="182">σ<tspan dy="3.5">2</tspan><tspan dx="3.1" dy="-3.5">= 0.618, ratio 2.6</tspan></text>
+    <text x="362" y="209" font-size="12">Force into the tip (outlined)</text>
+    <text x="368" y="228">F = (0, −10) N</text>
+    <text x="368" y="245">τ = Jᵀ F = (−10, 0) N·m</text>
+    <text x="12" y="296" opacity="0.85">Arrows out of the tip are velocities (1 m/s drawn as 1 m); the outlined arrow into the tip is a force.</text>
+  </g>
+</svg>
+
 1. **The two Jacobian columns, as arrows anchored at the tip.** Column 1 is the tip velocity when only the shoulder turns, $\dot\theta = (1,0)\,\mathrm{rad/s}$: the tip is at lever arm $\sqrt2$ from the base, so the arrow is perpendicular to the line from base to tip and has length $\sqrt2$ — draw it pointing up and to the left, and label it $(-1, 1)\,\mathrm{m/s}$. Column 2 is the tip velocity when only the elbow turns, $\dot\theta = (0,1)$: the forearm is the lever now, length $1$, so the arrow is perpendicular to the forearm, points in $-x$, and is labelled $(-1, 0)\,\mathrm{m/s}$. Do not draw them from the base; a Jacobian column is a velocity *of the tip*, and drawing it anywhere else is the standard way this figure goes wrong.
 2. **The commanded velocity** $v = (0, -0.25)\,\mathrm{m/s}$, a short arrow straight down from the tip, in a different line weight from the two columns. Beside it write the joint rates that produce it, $\dot\theta = J^{-1}v = (-0.25,\ 0.25)\,\mathrm{rad/s}$, so the figure shows both sides of one equation.
 3. **The manipulability ellipse** centred on the tip: the image of the unit circle of joint rates. Its axes are the singular values $\sigma = 1.618$ and $0.618$, an axis ratio of $2.6$ — draw it visibly elongated, not as a circle, and put its long axis along the easy direction.
@@ -119,7 +159,7 @@ VLA outputs pass through safety filters on real arms.
 > [!tip]- Answers
 > 1. $s_1 = 1, c_1 = 0, s_{12} = \sin 180° = 0, c_{12} = -1$, so $J = \begin{pmatrix}-1 & 0\\ -1 & -1\end{pmatrix}$ and $\det J = 1$. Still nonsingular — consistent with $\det J = L_1L_2\sin\theta_2 = \sin 90° = 1$.
 > 2. Power must match at both ends: $\dot\theta^\top\tau = \mathcal{V}^\top\mathcal{F}$. Substituting $\mathcal{V} = J\dot\theta$ gives $\dot\theta^\top\tau = \dot\theta^\top J^\top\mathcal{F}$ for *all* $\dot\theta$, hence $\tau = J^\top\mathcal{F}$.
-> 3. Motion along the arm's own axis is the nearly-singular direction: $\det J = \sin 5° \approx 0.087$, so producing that tip velocity demands roughly an order of magnitude more joint speed than normal — often beyond joint limits. Perpendicular motion is unaffected and behaves normally.
+> 3. Motion along the arm's own axis is the nearly-singular direction: $\det J = \sin 5° \approx 0.087$ and the smallest singular value is $\approx 0.04$, so producing that tip velocity demands roughly an order of magnitude more joint speed than normal — often beyond joint limits. Perpendicular motion is unaffected and behaves normally.
 > 4. Velocities are amplified by the singular value $\sigma$ in each principal direction; by $\tau = J^\top\mathcal{F}$ the force transmitted in that same direction scales as $1/\sigma$. Directions that are easy to move are therefore hard to hold force in, and vice versa — the two ellipsoids are reciprocal.
 
 ### Problem set · 과제
@@ -127,7 +167,7 @@ VLA outputs pass through safety filters on real arms.
 Tier A. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]]. Mass and $\Lambda$ wait until [[02-foundations/manipulator-kinematics-dynamics|10]]; this page is velocity and statics.
 
 1. **Draw.** P2 at the frozen pose: base at the origin, elbow at $(1,0)$, tip at $(1,1)$. Draw Jacobian column 1 as the tip velocity for $\dot\theta=(1,0)$, and column 2 as the tip velocity for $\dot\theta=(0,1)$. Both are arrows at the tip. Write the two arrows as vectors.
-2. **Derive.** (a) Confirm $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ from the arrows (or from §2). (b) $J^{-1}$. (c) Joint rates that produce $v=(0,-0.25)\,\mathrm{m/s}$. (d) $\tau=J^\top F$ for $F=(2,-5)\,\mathrm{N}$. (e) Same $F$ at $\theta_2=5^\circ$ is *not* asked as a number — say which joint torque blows up if you instead asked for a tip velocity *along the arm*, and why $J^\top F$ itself does not blow up.
+2. **Derive.** (a) Confirm $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ from the arrows (or from §2). (b) $J^{-1}$. (c) Joint rates that produce $v=(0,-0.25)\,\mathrm{m/s}$. (d) $\tau=J^\top F$ for $F=(2,-5)\,\mathrm{N}$. (e) Same $F$ at $\theta_2=5^\circ$ is *not* asked as a number — say which joint rate blows up if you instead asked for a tip velocity *along the arm*, and why $J^\top F$ itself does not blow up.
 3. **Do.** Fill the template and reproduce the lecture's $T=0.01$, $2\,\mathrm{s}$ pair (live vs frozen $J$). Then change *only* $T$ to $0.05$, live $J$, same $2\,\mathrm{s}$. Is the extra error frozen-$J$ class or integrator class?
 
 ```python
@@ -151,7 +191,7 @@ for k in range(n):
     # inverse of 2x2, then thdot = Jinv @ [0, vy]
     th1d, th2d = ?, ?
     th1, th2 = th1 + T*th1d, th2 + T*th2d
-    xs.append(c1 + math.cos(th1 + th2))
+    xs.append(math.cos(th1) + math.cos(th1 + th2))
     ys.append(math.sin(th1) + math.sin(th1 + th2))
 # plot xs, ys; caption "P2, explicit Euler on theta, T=0.01"
 ```
@@ -168,6 +208,46 @@ for k in range(n):
 ### 과제가 그릴 그림 · Homework diagram
 
 그림 하나로 끝내고, 이 페이지의 모든 숫자를 거기서 읽는다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$다. 베이스는 원점, 링크 1은 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2는 곧장 위로 올라가 말단이 $(1,1)$이다. 팔을 축척에 맞게 그린 뒤 네 겹을 얹는다.
+
+<svg viewBox="0 0 560 306" style="max-width:100%;height:auto" role="img" aria-label="카탈로그 자세의 P2 말단에 야코비안의 두 열 (−1, 1)과 (−1, 0) m/s, 명령 속도 (0, −0.25) m/s, 반축이 1.618과 0.618인 가조작성 타원, 말단으로 들어오는 윤곽선 힘 (0, −10) N을 그린 그림.">
+  <defs><marker id="mr05hdK" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker><marker id="mr05hdvK" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+  <path d="M78 34 L74.3 34.1 L70.7 34.3 L67.3 34.6 L64 35.1 L60.9 35.6 L57.9 36.4 L55.1 37.2 L52.4 38.2 L49.9 39.3 L47.6 40.5 L45.4 41.9 L43.4 43.3 L41.6 44.9 L39.9 46.6 L38.5 48.5 L37.2 50.4 L36.1 52.5 L35.1 54.6 L34.4 56.9 L33.8 59.3 L33.5 61.7 L33.3 64.3 L33.3 67 L33.5 69.7 L33.8 72.6 L34.4 75.5 L35.1 78.5 L36.1 81.6 L37.2 84.8 L38.5 88 L39.9 91.3 L41.6 94.7 L43.4 98.1 L45.4 101.5 L47.6 105.1 L49.9 108.6 L52.4 112.2 L55.1 115.9 L57.9 119.5 L60.9 123.2 L64 127 L67.3 130.7 L70.7 134.5 L74.3 138.2 L78 142 L81.8 145.8 L85.8 149.5 L89.9 153.3 L94.1 157 L98.4 160.8 L102.8 164.5 L107.3 168.1 L112 171.8 L116.7 175.4 L121.5 178.9 L126.3 182.5 L131.3 185.9 L136.3 189.3 L141.3 192.7 L146.5 196 L151.6 199.2 L156.9 202.4 L162.1 205.5 L167.4 208.5 L172.7 211.4 L178 214.3 L183.3 217 L188.7 219.7 L194 222.3 L199.3 224.7 L204.6 227.1 L209.9 229.4 L215.1 231.5 L220.4 233.6 L225.5 235.5 L230.7 237.4 L235.7 239.1 L240.7 240.7 L245.7 242.1 L250.5 243.5 L255.3 244.7 L260 245.8 L264.7 246.8 L269.2 247.6 L273.6 248.4 L277.9 248.9 L282.1 249.4 L286.2 249.7 L290.2 249.9 L294 250 L297.7 249.9 L301.3 249.7 L304.7 249.4 L308 248.9 L311.1 248.4 L314.1 247.6 L316.9 246.8 L319.6 245.8 L322.1 244.7 L324.4 243.5 L326.6 242.1 L328.6 240.7 L330.4 239.1 L332.1 237.4 L333.5 235.5 L334.8 233.6 L335.9 231.5 L336.9 229.4 L337.6 227.1 L338.2 224.7 L338.5 222.3 L338.7 219.7 L338.7 217 L338.5 214.3 L338.2 211.4 L337.6 208.5 L336.9 205.5 L335.9 202.4 L334.8 199.2 L333.5 196 L332.1 192.7 L330.4 189.3 L328.6 185.9 L326.6 182.5 L324.4 178.9 L322.1 175.4 L319.6 171.8 L316.9 168.1 L314.1 164.5 L311.1 160.8 L308 157 L304.7 153.3 L301.3 149.5 L297.7 145.8 L294 142 L290.2 138.2 L286.2 134.5 L282.1 130.7 L277.9 127 L273.6 123.2 L269.2 119.5 L264.7 115.9 L260 112.2 L255.3 108.6 L250.5 105.1 L245.7 101.5 L240.7 98.1 L235.7 94.7 L230.7 91.3 L225.5 88 L220.4 84.8 L215.1 81.6 L209.9 78.5 L204.6 75.5 L199.3 72.6 L194 69.7 L188.7 67 L183.3 64.3 L178 61.7 L172.7 59.3 L167.4 56.9 L162.1 54.6 L156.9 52.5 L151.6 50.4 L146.5 48.5 L141.3 46.6 L136.3 44.9 L131.3 43.3 L126.3 41.9 L121.5 40.5 L116.7 39.3 L112 38.2 L107.3 37.2 L102.8 36.4 L98.4 35.6 L94.1 35.1 L89.9 34.6 L85.8 34.3 L81.8 34.1 Z" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-width="1.3"/>
+  <g stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 3" opacity="0.75"><line x1="186" y1="142" x2="37.4" y2="50.1"/><line x1="186" y1="142" x2="221.1" y2="85.2"/></g>
+  <polyline points="78,250 186,250 186,142" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" opacity="0.3"/>
+  <circle cx="78" cy="250" r="4.5" fill="currentColor" fill-opacity="0.6"/>
+  <circle cx="186" cy="250" r="3.5" fill="currentColor" fill-opacity="0.6"/>
+  <path d="M183 34 L189 34 L189 124 L193.5 124 L186 137 L178.5 124 L183 124 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  <g stroke="currentColor" stroke-width="2.4" marker-end="url(#mr05hdK)"><line x1="186" y1="142" x2="78" y2="34"/><line x1="186" y1="142" x2="78" y2="142"/></g>
+  <line x1="186" y1="142" x2="186" y2="169" stroke="currentColor" stroke-width="1.3" marker-end="url(#mr05hdvK)"/>
+  <circle cx="186" cy="142" r="4" fill="currentColor"/>
+  <line x1="350" y1="14" x2="350" y2="270" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+  <g font-size="11" fill="currentColor">
+    <text x="78" y="25" text-anchor="middle">열 1 = (−1, 1)</text>
+    <text x="142" y="158" text-anchor="middle">열 2 = (−1, 0)</text>
+    <text x="196" y="169">v = (0, −0.25)</text>
+    <text x="196" y="184">θ̇ = (−0.25, 0.25) rad/s</text>
+    <text x="198" y="43">F = (0, −10) N</text>
+    <text x="198" y="58">τ = Jᵀ F = (−10, 0) N·m</text>
+    <text x="24.4" y="44.1" text-anchor="middle">σ<tspan dy="3.5">1</tspan></text>
+    <text x="227.1" y="77.2">σ<tspan dy="3.5">2</tspan></text>
+    <text x="78" y="267" text-anchor="middle" opacity="0.8">베이스 (0, 0)</text>
+    <text x="186" y="267" text-anchor="middle" opacity="0.8">엘보 (1, 0)</text>
+    <text x="196" y="150" opacity="0.8">말단 (1, 1)</text>
+    <text x="362" y="26" font-size="12">말단에서 나가는 속도</text>
+    <text x="368" y="45">열 1 = (−1, 1) m/s, θ̇ = (1, 0)</text>
+    <text x="368" y="62">열 1 ⟂ 베이스–말단 선, 길이 √2</text>
+    <text x="368" y="79">열 2 = (−1, 0) m/s, θ̇ = (0, 1)</text>
+    <text x="368" y="102">v = (0, −0.25) m/s (가는 선)</text>
+    <text x="368" y="119">θ̇ = J⁻¹v = (−0.25, 0.25) rad/s</text>
+    <text x="362" y="146" font-size="12">타원 = J · (단위원)</text>
+    <text x="368" y="165">σ<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">= 1.618 (긴 축, 쉬운 방향)</tspan></text>
+    <text x="368" y="182">σ<tspan dy="3.5">2</tspan><tspan dx="3.1" dy="-3.5">= 0.618, 축 비 2.6</tspan></text>
+    <text x="362" y="209" font-size="12">말단으로 들어오는 힘 (윤곽선)</text>
+    <text x="368" y="228">F = (0, −10) N</text>
+    <text x="368" y="245">τ = Jᵀ F = (−10, 0) N·m</text>
+    <text x="12" y="296" opacity="0.85">말단에서 나가는 화살표는 속도(1 m/s를 1 m로), 말단으로 들어오는 윤곽 화살표는 힘이다.</text>
+  </g>
+</svg>
 
 1. **야코비안의 두 열을 말단에 붙인 화살표로.** 열 1은 어깨만 도는 $\dot\theta = (1,0)\,\mathrm{rad/s}$일 때의 말단 속도다. 말단이 베이스에서 지렛대 $\sqrt2$만큼 떨어져 있으므로 화살표는 베이스–말단 선에 수직이고 길이가 $\sqrt2$다. 왼쪽 위로 그리고 $(-1, 1)\,\mathrm{m/s}$라고 쓴다. 열 2는 엘보만 도는 $\dot\theta = (0,1)$일 때의 말단 속도다. 이번엔 전완이 지렛대라 길이가 $1$이고, 화살표는 전완에 수직인 $-x$ 방향이며 $(-1, 0)\,\mathrm{m/s}$다. 베이스에서 그리면 안 된다. 야코비안의 열은 *말단의* 속도이고, 다른 곳에 그리는 것이 이 그림이 틀어지는 표준적인 방식이다.
 2. **명령 속도** $v = (0, -0.25)\,\mathrm{m/s}$를 말단에서 아래로 내리는 짧은 화살표로, 앞의 두 열과는 다른 선 굵기로 그린다. 옆에는 그것을 만드는 관절 속도 $\dot\theta = J^{-1}v = (-0.25,\ 0.25)\,\mathrm{rad/s}$를 적는다. 한 방정식의 양변이 그림 하나에 들어온다.

@@ -29,6 +29,96 @@ treatment: conditions, derivations, and a fully written MPC-as-QP example.
 
 The object is plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], sliced down to one weight so that a whole optimizer fits on one axis. The problem set asks for this drawing.
 
+<svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="Loss against the single weight W2,1: a parabola with vertex at 1.5; the catalog point at 1 with height 0.125 and slope -0.5; the eta = 0.1 step to 1.05 drawn to scale beside the 0.5 still to go; step sizes 1 and 2 marked on the axis; below, the eta = 10 step to 6 on a broken axis, with 2415.1 for the full step">
+  <defs><marker id="aOp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <line x1="60" y1="214" x2="530" y2="214" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="60" y1="214" x2="60" y2="30" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <text x="548" y="230" font-size="11" fill="currentColor" text-anchor="end">W<tspan dy="3" font-size="9.5">2,1</tspan></text>
+  <text x="53" y="24" font-size="11" fill="currentColor" text-anchor="end">L</text>
+  <line x1="85.6" y1="214" x2="85.6" y2="218" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="85.6" y="230" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <line x1="213.3" y1="214" x2="213.3" y2="218" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="213.3" y="230" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <line x1="341.1" y1="214" x2="341.1" y2="218" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="341.1" y="230" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1.5</text>
+  <line x1="468.9" y1="214" x2="468.9" y2="218" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="468.9" y="230" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">2</text>
+  <line x1="56" y1="154" x2="60" y2="154" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="158" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.2</text>
+  <line x1="56" y1="94" x2="60" y2="94" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="98" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.4</text>
+  <line x1="56" y1="34" x2="60" y2="34" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="38" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.6</text>
+  <text x="53" y="218" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0</text>
+  <path d="M60 32.5 L63.8 37.4 L67.7 42.3 L71.5 47 L75.3 51.8 L79.2 56.4 L83 61 L86.8 65.5 L90.7 69.9 L94.5 74.3 L98.3 78.6 L102.2 82.9 L106 87 L109.8 91.1 L113.7 95.2 L117.5 99.2 L121.3 103.1 L125.2 106.9 L129 110.7 L132.8 114.4 L136.7 118 L140.5 121.6 L144.3 125.1 L148.2 128.5 L152 131.9 L155.8 135.2 L159.7 138.4 L163.5 141.5 L167.3 144.6 L171.2 147.7 L175 150.6 L178.8 153.5 L182.7 156.3 L186.5 159.1 L190.3 161.8 L194.2 164.4 L198 167 L201.8 169.4 L205.7 171.9 L209.5 174.2 L213.3 176.5 L217.2 178.7 L221 180.9 L224.8 182.9 L228.7 185 L232.5 186.9 L236.3 188.8 L240.2 190.6 L244 192.3 L247.8 194 L251.7 195.6 L255.5 197.2 L259.3 198.6 L263.2 200 L267 201.4 L270.8 202.7 L274.7 203.9 L278.5 205 L282.3 206.1 L286.2 207.1 L290 208 L293.8 208.9 L297.7 209.7 L301.5 210.4 L305.3 211.1 L309.2 211.7 L313 212.2 L316.8 212.6 L320.7 213 L324.5 213.4 L328.3 213.6 L332.2 213.8 L336 213.9 L339.8 214 L343.7 214 L347.5 213.9 L351.3 213.8 L355.2 213.5 L359 213.3 L362.8 212.9 L366.7 212.5 L370.5 212 L374.3 211.5 L378.2 210.8 L382 210.2 L385.8 209.4 L389.7 208.6 L393.5 207.7 L397.3 206.7 L401.2 205.7 L405 204.6 L408.8 203.5 L412.7 202.2 L416.5 200.9 L420.3 199.6 L424.2 198.2 L428 196.7 L431.8 195.1 L435.7 193.5 L439.5 191.8 L443.3 190 L447.2 188.2 L451 186.3 L454.8 184.3 L458.7 182.3 L462.5 180.2 L466.3 178 L470.2 175.7 L474 173.4 L477.8 171.1 L481.7 168.6 L485.5 166.1 L489.3 163.5 L493.2 160.9 L497 158.2 L500.8 155.4 L504.7 152.6 L508.5 149.6 L512.3 146.7 L516.2 143.6 L520 140.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <circle cx="341.1" cy="214" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="347.1" y="192" font-size="11" fill="currentColor" fill-opacity="0.85">vertex (1.5, 0)</text>
+  <line x1="141.8" y1="134.5" x2="277.2" y2="214" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" stroke-dasharray="5 3"/>
+  <text x="74" y="160" font-size="11" fill="currentColor">tangent slope</text>
+  <text x="74" y="175" font-size="11" fill="currentColor">1 − 1.5 = −0.5</text>
+  <line x1="213.3" y1="176.5" x2="226.6" y2="176.5" stroke="currentColor" stroke-width="1.3" marker-end="url(#aOp)"/>
+  <circle cx="213.3" cy="176.5" r="4.5" stroke="none" fill="currentColor"/>
+  <circle cx="226.1" cy="183.6" r="3" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.0"/>
+  <text x="204.3" y="194.5" font-size="11" fill="currentColor" text-anchor="end">(1, 0.125)</text>
+  <text x="233.1" y="180.5" font-size="11" fill="currentColor">0.05</text>
+  <line x1="213.3" y1="156.5" x2="341.1" y2="156.5" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="213.3" y1="152.5" x2="213.3" y2="160.5" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="341.1" y1="152.5" x2="341.1" y2="160.5" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="213.3" y1="161.5" x2="213.3" y2="170.5" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" stroke-dasharray="1 2"/>
+  <line x1="341.1" y1="161.5" x2="341.1" y2="208" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" stroke-dasharray="1 2"/>
+  <text x="277.2" y="151.5" font-size="11" fill="currentColor" text-anchor="middle">0.5 still to the vertex</text>
+  <path d="M336.6 238 L341.1 233 L345.6 238 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="341.1" y="251" font-size="11" fill="currentColor" text-anchor="middle">η = 1</text>
+  <path d="M464.4 238 L468.9 233 L473.4 238 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="468.9" y="251" font-size="11" fill="currentColor" text-anchor="middle">η = 2</text>
+  <line x1="489.3" y1="247" x2="509.3" y2="247" stroke="currentColor" stroke-width="1.2" marker-end="url(#aOp)"/>
+  <text x="513.3" y="251" font-size="11" fill="currentColor">η &gt; 2</text>
+  <text x="208" y="30" font-size="11" fill="currentColor" fill-opacity="1.0">η = 0.1: W<tspan dy="3" font-size="9.5">2,1</tspan><tspan dy="-3" dx="3.5">1 → 1.05, L 0.125 → 0.101</tspan></text>
+  <text x="208" y="46" font-size="11" fill="currentColor" fill-opacity="1.0">curvature 1 here: one step lands at 1 + 0.5η;</text>
+  <text x="208" y="62" font-size="11" fill="currentColor" fill-opacity="1.0">η = 1 hits the vertex, η &lt; 2 converges, η &gt; 2 walks away</text>
+  <text x="208" y="84" font-size="11" fill="currentColor" fill-opacity="0.85">the real step moves all three weights; along</text>
+  <text x="208" y="100" font-size="11" fill="currentColor" fill-opacity="0.85">its gradient the curvature is ‖h‖² = 14: exact</text>
+  <text x="208" y="116" font-size="11" fill="currentColor" fill-opacity="0.85">η = 1/14 ≈ 0.071, divergence past 2/14 ≈ 0.143,</text>
+  <text x="208" y="132" font-size="11" fill="currentColor" fill-opacity="0.85">so η = 0.1 overshoots to ŷ = 1.20, not 1</text>
+  <text x="12" y="280" font-size="12" fill="currentColor">the variant: η = 10, broken vertical axis</text>
+  <line x1="60" y1="424" x2="530" y2="424" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="60" y1="424" x2="60" y2="364" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="60" y1="350" x2="60" y2="306" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="54" y1="364" x2="66" y2="358" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="54" y1="356" x2="66" y2="350" stroke="currentColor" stroke-width="1.3"/>
+  <text x="548" y="440" font-size="11" fill="currentColor" text-anchor="end">W<tspan dy="3" font-size="9.5">2,1</tspan></text>
+  <text x="68" y="312" font-size="11" fill="currentColor">L</text>
+  <line x1="104.5" y1="424" x2="104.5" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="104.5" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <line x1="178.7" y1="424" x2="178.7" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="178.7" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">2</text>
+  <line x1="252.9" y1="424" x2="252.9" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="252.9" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">3</text>
+  <line x1="327.1" y1="424" x2="327.1" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="327.1" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">4</text>
+  <line x1="401.3" y1="424" x2="401.3" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="401.3" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">5</text>
+  <line x1="475.5" y1="424" x2="475.5" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="475.5" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">6</text>
+  <line x1="56" y1="424" x2="60" y2="424" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="428" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0</text>
+  <line x1="56" y1="374" x2="60" y2="374" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="378" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.5</text>
+  <line x1="56" y1="340" x2="60" y2="340" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="344" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">10</text>
+  <path d="M60.3 364 L62.4 367 L64.4 369.9 L66.4 372.7 L68.5 375.4 L70.5 378.1 L72.5 380.6 L74.6 383.2 L76.6 385.6 L78.6 388 L80.7 390.2 L82.7 392.5 L84.7 394.6 L86.8 396.7 L88.8 398.7 L90.8 400.6 L92.8 402.4 L94.9 404.2 L96.9 405.9 L98.9 407.5 L101 409 L103 410.5 L105 411.9 L107.1 413.2 L109.1 414.4 L111.1 415.6 L113.2 416.6 L115.2 417.7 L117.2 418.6 L119.3 419.5 L121.3 420.2 L123.3 421 L125.4 421.6 L127.4 422.2 L129.4 422.6 L131.5 423.1 L133.5 423.4 L135.5 423.7 L137.5 423.9 L139.6 424 L141.6 424 L143.6 424 L145.7 423.9 L147.7 423.7 L149.7 423.4 L151.8 423.1 L153.8 422.6 L155.8 422.2 L157.9 421.6 L159.9 421 L161.9 420.2 L164 419.5 L166 418.6 L168 417.7 L170.1 416.7 L172.1 415.6 L174.1 414.4 L176.2 413.2 L178.2 411.9 L180.2 410.5 L182.3 409 L184.3 407.5 L186.3 405.9 L188.3 404.2 L190.4 402.4 L192.4 400.6 L194.4 398.6 L196.5 396.7 L198.5 394.6 L200.5 392.5 L202.6 390.2 L204.6 388 L206.6 385.6 L208.7 383.2 L210.7 380.6 L212.7 378.1 L214.8 375.4 L216.8 372.7 L218.8 369.9 L220.9 367 L222.9 364" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <path d="M471.8 350 L472.4 346 L473.1 342.1 L473.7 338.1 L474.4 334.1 L475.1 330.1 L475.7 326.1 L476.4 322.1 L477 318.1 L477.7 314 L478.4 310" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <line x1="104.5" y1="411.5" x2="475.5" y2="411.5" stroke="currentColor" stroke-width="1.5" marker-end="url(#aOp)"/>
+  <circle cx="104.5" cy="411.5" r="4.5" stroke="none" fill="currentColor"/>
+  <line x1="475.5" y1="405.5" x2="475.5" y2="366" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 3"/>
+  <line x1="475.5" y1="348" x2="475.5" y2="332.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 3"/>
+  <circle cx="475.5" cy="327.5" r="4" stroke="none" fill="currentColor"/>
+  <text x="290" y="403.5" font-size="11" fill="currentColor" text-anchor="middle">η = 10: W<tspan dy="3" font-size="9.5">2,1</tspan><tspan dy="-3" dx="3.5">1 → 6</tspan></text>
+  <text x="463.5" y="331.5" font-size="11" fill="currentColor" text-anchor="end">L = 10.125 on the slice</text>
+  <text x="80" y="300" font-size="11" fill="currentColor" fill-opacity="0.9">full three-weight step: ŷ = 70.5, L = 2415.1, far above this axis</text>
+  <text x="12" y="470" font-size="11" fill="currentColor" fill-opacity="0.85">One picture, two step sizes: the only difference between training and divergence.</text>
+</svg>
+
 **The axes and the curve.** Horizontal axis $W_{2,1}$ from about $0.5$ to $2$; vertical axis $L$ from $0$ to about $0.6$. Hold $h=(1,2,3)$ and the other two weights at their catalog values, so $\hat y = W_{2,1}-0.5$ and the objective is the parabola $L=\tfrac12(W_{2,1}-1.5)^2$. Draw it, and mark its vertex at $(1.5,\ 0)$: that is where this one weight would put the loss if nothing else moved.
 
 **The catalog point and its gradient.** Mark $W_{2,1}=1$ with a dot at height $L=0.125$ — the same $0.125$ the catalog prints, because this slice passes through the catalog state. Draw the tangent there and write its slope, $\partial L/\partial W_{2,1}=1-1.5=-0.5$. Then draw the step as a horizontal arrow *against* that slope: $\eta=0.1$ moves the weight to $1.05$ and the height to $0.101$. Draw the arrow's length to scale next to the distance $0.5$ that still separates the weight from the vertex; the visible mismatch is the lecture, because a gradient tells you a direction and a slope, never a distance.
@@ -312,6 +402,7 @@ a trust parameter.
 - **Lagrangian**: $\mathcal{L}(x,\lambda,\nu) = f(x) + \sum_i \lambda_i g_i(x) + \sum_j \nu_j h_j(x)$, $\lambda_i \ge 0$.
   - **Its parts, each named.** A scalar function of the decision variable and of one **multiplier** per constraint: $\lambda_i$ for the inequality $g_i\le0$ and $\nu_j$ for the equality $h_j=0$. Inequality multipliers must be nonnegative, because $\lambda_i g_i$ has to act as a penalty for violation ($g_i>0$) and never as a reward. Equality multipliers may have either sign, since $h_j$ can be violated in either direction.
   - **Example.** For the half-space projection worked below, $\min\tfrac12\lVert x-p\rVert^2$ s.t. $a^\top x-b\le0$, the Lagrangian is $\mathcal{L}(x,\lambda)=\tfrac12\lVert x-p\rVert^2+\lambda(a^\top x-b)$, and $\nabla_x\mathcal{L}=x-p+\lambda a=0$ is the stationarity line used there.
+
 <svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="at a constrained optimum the gradient of the objective and the gradient of the constraint lie on one line pointing opposite ways">
   <defs><marker id="opA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor" fill-opacity="0.07">
@@ -497,6 +588,96 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
 ### 과제가 그릴 그림 · Homework diagram
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**이고, 최적화기 하나가 축 하나에 들어가도록 가중치 하나로 잘라 본 단면이다. 과제가 이 그림을 요구한다.
+
+<svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="가중치 하나 W2,1에 대한 손실: 꼭짓점 1.5의 포물선, 높이 0.125와 기울기 -0.5인 카탈로그 점 1, 남은 거리 0.5 옆에 같은 축척으로 그린 1.05까지의 eta = 0.1 스텝, 축 위의 스텝 크기 1과 2, 아래에는 끊은 축 위의 6까지의 eta = 10 스텝과 실제 스텝의 2415.1">
+  <defs><marker id="aOpK" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <line x1="60" y1="214" x2="530" y2="214" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="60" y1="214" x2="60" y2="30" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <text x="548" y="230" font-size="11" fill="currentColor" text-anchor="end">W<tspan dy="3" font-size="9.5">2,1</tspan></text>
+  <text x="53" y="24" font-size="11" fill="currentColor" text-anchor="end">L</text>
+  <line x1="85.6" y1="214" x2="85.6" y2="218" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="85.6" y="230" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.5</text>
+  <line x1="213.3" y1="214" x2="213.3" y2="218" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="213.3" y="230" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <line x1="341.1" y1="214" x2="341.1" y2="218" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="341.1" y="230" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1.5</text>
+  <line x1="468.9" y1="214" x2="468.9" y2="218" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="468.9" y="230" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">2</text>
+  <line x1="56" y1="154" x2="60" y2="154" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="158" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.2</text>
+  <line x1="56" y1="94" x2="60" y2="94" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="98" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.4</text>
+  <line x1="56" y1="34" x2="60" y2="34" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="38" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.6</text>
+  <text x="53" y="218" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0</text>
+  <path d="M60 32.5 L63.8 37.4 L67.7 42.3 L71.5 47 L75.3 51.8 L79.2 56.4 L83 61 L86.8 65.5 L90.7 69.9 L94.5 74.3 L98.3 78.6 L102.2 82.9 L106 87 L109.8 91.1 L113.7 95.2 L117.5 99.2 L121.3 103.1 L125.2 106.9 L129 110.7 L132.8 114.4 L136.7 118 L140.5 121.6 L144.3 125.1 L148.2 128.5 L152 131.9 L155.8 135.2 L159.7 138.4 L163.5 141.5 L167.3 144.6 L171.2 147.7 L175 150.6 L178.8 153.5 L182.7 156.3 L186.5 159.1 L190.3 161.8 L194.2 164.4 L198 167 L201.8 169.4 L205.7 171.9 L209.5 174.2 L213.3 176.5 L217.2 178.7 L221 180.9 L224.8 182.9 L228.7 185 L232.5 186.9 L236.3 188.8 L240.2 190.6 L244 192.3 L247.8 194 L251.7 195.6 L255.5 197.2 L259.3 198.6 L263.2 200 L267 201.4 L270.8 202.7 L274.7 203.9 L278.5 205 L282.3 206.1 L286.2 207.1 L290 208 L293.8 208.9 L297.7 209.7 L301.5 210.4 L305.3 211.1 L309.2 211.7 L313 212.2 L316.8 212.6 L320.7 213 L324.5 213.4 L328.3 213.6 L332.2 213.8 L336 213.9 L339.8 214 L343.7 214 L347.5 213.9 L351.3 213.8 L355.2 213.5 L359 213.3 L362.8 212.9 L366.7 212.5 L370.5 212 L374.3 211.5 L378.2 210.8 L382 210.2 L385.8 209.4 L389.7 208.6 L393.5 207.7 L397.3 206.7 L401.2 205.7 L405 204.6 L408.8 203.5 L412.7 202.2 L416.5 200.9 L420.3 199.6 L424.2 198.2 L428 196.7 L431.8 195.1 L435.7 193.5 L439.5 191.8 L443.3 190 L447.2 188.2 L451 186.3 L454.8 184.3 L458.7 182.3 L462.5 180.2 L466.3 178 L470.2 175.7 L474 173.4 L477.8 171.1 L481.7 168.6 L485.5 166.1 L489.3 163.5 L493.2 160.9 L497 158.2 L500.8 155.4 L504.7 152.6 L508.5 149.6 L512.3 146.7 L516.2 143.6 L520 140.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <circle cx="341.1" cy="214" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="347.1" y="192" font-size="11" fill="currentColor" fill-opacity="0.85">꼭짓점 (1.5, 0)</text>
+  <line x1="141.8" y1="134.5" x2="277.2" y2="214" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" stroke-dasharray="5 3"/>
+  <text x="74" y="160" font-size="11" fill="currentColor">접선 기울기</text>
+  <text x="74" y="175" font-size="11" fill="currentColor">1 − 1.5 = −0.5</text>
+  <line x1="213.3" y1="176.5" x2="226.6" y2="176.5" stroke="currentColor" stroke-width="1.3" marker-end="url(#aOpK)"/>
+  <circle cx="213.3" cy="176.5" r="4.5" stroke="none" fill="currentColor"/>
+  <circle cx="226.1" cy="183.6" r="3" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.0"/>
+  <text x="204.3" y="194.5" font-size="11" fill="currentColor" text-anchor="end">(1, 0.125)</text>
+  <text x="233.1" y="180.5" font-size="11" fill="currentColor">0.05</text>
+  <line x1="213.3" y1="156.5" x2="341.1" y2="156.5" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="213.3" y1="152.5" x2="213.3" y2="160.5" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="341.1" y1="152.5" x2="341.1" y2="160.5" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="213.3" y1="161.5" x2="213.3" y2="170.5" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" stroke-dasharray="1 2"/>
+  <line x1="341.1" y1="161.5" x2="341.1" y2="208" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" stroke-dasharray="1 2"/>
+  <text x="277.2" y="151.5" font-size="11" fill="currentColor" text-anchor="middle">꼭짓점까지 남은 0.5</text>
+  <path d="M336.6 238 L341.1 233 L345.6 238 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="341.1" y="251" font-size="11" fill="currentColor" text-anchor="middle">η = 1</text>
+  <path d="M464.4 238 L468.9 233 L473.4 238 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="468.9" y="251" font-size="11" fill="currentColor" text-anchor="middle">η = 2</text>
+  <line x1="489.3" y1="247" x2="509.3" y2="247" stroke="currentColor" stroke-width="1.2" marker-end="url(#aOpK)"/>
+  <text x="513.3" y="251" font-size="11" fill="currentColor">η &gt; 2</text>
+  <text x="208" y="30" font-size="11" fill="currentColor" fill-opacity="1.0">η = 0.1: W<tspan dy="3" font-size="9.5">2,1</tspan><tspan dy="-3" dx="3.5">1 → 1.05, L 0.125 → 0.101</tspan></text>
+  <text x="208" y="46" font-size="11" fill="currentColor" fill-opacity="1.0">여기 곡률은 1: 한 스텝이 1 + 0.5η에 내려앉는다.</text>
+  <text x="208" y="62" font-size="11" fill="currentColor" fill-opacity="1.0">η = 1은 꼭짓점, η &lt; 2는 수렴, η &gt; 2는 걸어 나간다</text>
+  <text x="208" y="84" font-size="11" fill="currentColor" fill-opacity="0.85">실제 스텝은 가중치 셋을 함께 움직이고, 그</text>
+  <text x="208" y="100" font-size="11" fill="currentColor" fill-opacity="0.85">그래디언트 방향 곡률은 ‖h‖² = 14: 정확 스텝</text>
+  <text x="208" y="116" font-size="11" fill="currentColor" fill-opacity="0.85">η = 1/14 ≈ 0.071, 발산 문턱 2/14 ≈ 0.143,</text>
+  <text x="208" y="132" font-size="11" fill="currentColor" fill-opacity="0.85">그래서 η = 0.1은 1이 아니라 ŷ = 1.20까지 간다</text>
+  <text x="12" y="280" font-size="12" fill="currentColor">변형: η = 10, 세로축을 끊어서</text>
+  <line x1="60" y1="424" x2="530" y2="424" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="60" y1="424" x2="60" y2="364" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="60" y1="350" x2="60" y2="306" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="54" y1="364" x2="66" y2="358" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="54" y1="356" x2="66" y2="350" stroke="currentColor" stroke-width="1.3"/>
+  <text x="548" y="440" font-size="11" fill="currentColor" text-anchor="end">W<tspan dy="3" font-size="9.5">2,1</tspan></text>
+  <text x="68" y="312" font-size="11" fill="currentColor">L</text>
+  <line x1="104.5" y1="424" x2="104.5" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="104.5" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1</text>
+  <line x1="178.7" y1="424" x2="178.7" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="178.7" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">2</text>
+  <line x1="252.9" y1="424" x2="252.9" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="252.9" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">3</text>
+  <line x1="327.1" y1="424" x2="327.1" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="327.1" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">4</text>
+  <line x1="401.3" y1="424" x2="401.3" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="401.3" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">5</text>
+  <line x1="475.5" y1="424" x2="475.5" y2="428" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="475.5" y="440" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">6</text>
+  <line x1="56" y1="424" x2="60" y2="424" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="428" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0</text>
+  <line x1="56" y1="374" x2="60" y2="374" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="378" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">0.5</text>
+  <line x1="56" y1="340" x2="60" y2="340" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="53" y="344" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">10</text>
+  <path d="M60.3 364 L62.4 367 L64.4 369.9 L66.4 372.7 L68.5 375.4 L70.5 378.1 L72.5 380.6 L74.6 383.2 L76.6 385.6 L78.6 388 L80.7 390.2 L82.7 392.5 L84.7 394.6 L86.8 396.7 L88.8 398.7 L90.8 400.6 L92.8 402.4 L94.9 404.2 L96.9 405.9 L98.9 407.5 L101 409 L103 410.5 L105 411.9 L107.1 413.2 L109.1 414.4 L111.1 415.6 L113.2 416.6 L115.2 417.7 L117.2 418.6 L119.3 419.5 L121.3 420.2 L123.3 421 L125.4 421.6 L127.4 422.2 L129.4 422.6 L131.5 423.1 L133.5 423.4 L135.5 423.7 L137.5 423.9 L139.6 424 L141.6 424 L143.6 424 L145.7 423.9 L147.7 423.7 L149.7 423.4 L151.8 423.1 L153.8 422.6 L155.8 422.2 L157.9 421.6 L159.9 421 L161.9 420.2 L164 419.5 L166 418.6 L168 417.7 L170.1 416.7 L172.1 415.6 L174.1 414.4 L176.2 413.2 L178.2 411.9 L180.2 410.5 L182.3 409 L184.3 407.5 L186.3 405.9 L188.3 404.2 L190.4 402.4 L192.4 400.6 L194.4 398.6 L196.5 396.7 L198.5 394.6 L200.5 392.5 L202.6 390.2 L204.6 388 L206.6 385.6 L208.7 383.2 L210.7 380.6 L212.7 378.1 L214.8 375.4 L216.8 372.7 L218.8 369.9 L220.9 367 L222.9 364" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <path d="M471.8 350 L472.4 346 L473.1 342.1 L473.7 338.1 L474.4 334.1 L475.1 330.1 L475.7 326.1 L476.4 322.1 L477 318.1 L477.7 314 L478.4 310" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <line x1="104.5" y1="411.5" x2="475.5" y2="411.5" stroke="currentColor" stroke-width="1.5" marker-end="url(#aOpK)"/>
+  <circle cx="104.5" cy="411.5" r="4.5" stroke="none" fill="currentColor"/>
+  <line x1="475.5" y1="405.5" x2="475.5" y2="366" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 3"/>
+  <line x1="475.5" y1="348" x2="475.5" y2="332.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 3"/>
+  <circle cx="475.5" cy="327.5" r="4" stroke="none" fill="currentColor"/>
+  <text x="290" y="403.5" font-size="11" fill="currentColor" text-anchor="middle">η = 10: W<tspan dy="3" font-size="9.5">2,1</tspan><tspan dy="-3" dx="3.5">1 → 6</tspan></text>
+  <text x="463.5" y="331.5" font-size="11" fill="currentColor" text-anchor="end">단면에서 L = 10.125</text>
+  <text x="80" y="300" font-size="11" fill="currentColor" fill-opacity="0.9">가중치 셋을 다 움직이는 실제 스텝: ŷ = 70.5, L = 2415.1, 이 축 훨씬 위</text>
+  <text x="12" y="470" font-size="11" fill="currentColor" fill-opacity="0.85">그림 하나, 스텝 크기 둘. 학습과 발산을 가르는 유일한 차이다.</text>
+</svg>
 
 **축과 곡선.** 가로축은 $W_{2,1}$로 대략 $0.5$부터 $2$까지, 세로축은 $L$로 $0$부터 약 $0.6$까지. $h=(1,2,3)$과 나머지 두 가중치를 카탈로그 값에 고정하면 $\hat y = W_{2,1}-0.5$이고 목적함수는 포물선 $L=\tfrac12(W_{2,1}-1.5)^2$이 된다. 이것을 그리고 꼭짓점 $(1.5,\ 0)$을 표시한다. 다른 것이 움직이지 않을 때 이 가중치 하나가 손실을 데려갈 수 있는 자리다.
 
@@ -762,8 +943,9 @@ Gauss–Newton으로:
   $\lambda \ge 0$에 대해 $\nabla f = -\lambda\nabla g$(두 그래디언트가 반평행)가 된다.
   정리하면 $\nabla(f + \lambda g) = 0$ — 그래서 결합된 **라그랑지안**의 그래디언트를 0으로 놓으면 실행
   가능한 하강 방향이 남지 않는 후보점을 정확히 찾는다(비볼록 문제에서는 그 점이 라그랑지안의 최소가 아니라 안장점일 수도 있다).
+
 <svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="제약 최적점에서 목적함수의 그래디언트와 제약의 그래디언트가 한 직선 위에서 서로 반대를 향한다">
-  <defs><marker id="opA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="opAk" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor" fill-opacity="0.07">
     <polygon points="60,180 360,80 360,190 60,190"/>
   </g>
@@ -777,7 +959,7 @@ Gauss–Newton으로:
   <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.28" stroke-dasharray="4 3">
     <circle cx="300" cy="60" r="58"/>
   </g>
-  <g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#opA)">
+  <g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#opAk)">
     <line x1="312" y1="96" x2="329.4" y2="148.2"/>
     <line x1="312" y1="96" x2="294.6" y2="43.8"/>
   </g>

@@ -24,6 +24,51 @@ study time: every later chapter is this machinery applied. Take it in four steps
 
 One planar figure, drawn once and carried through every section below. The running object is plant **P2** at the catalog pose $\theta = (0^\circ, 90^\circ)$ from [[02-foundations/lab-plants|0.6 Lab Plants]]: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$. Draw the arm first, then add three things that are not the arm.
 
+<svg viewBox="0 0 560 324" style="max-width:100%;height:auto" role="img" aria-label="P2 at the catalog pose with the space frame at the base, the body frame at the tip, the dashed offset p = (1, 1, 0), and two rotation axes through the origin and the elbow; the four velocity numbers are written beside the drawing.">
+  <defs><marker id="mr03hdE" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="120,222 260,222 260,82" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" opacity="0.28"/>
+  <line x1="126.4" y1="215.6" x2="253.6" y2="88.4" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#mr03hdE)"/>
+  <g stroke="currentColor" stroke-width="1.8" marker-end="url(#mr03hdE)"><line x1="127" y1="222" x2="176" y2="222"/><line x1="120" y1="215" x2="120" y2="166"/><line x1="260" y1="76" x2="260" y2="26"/><line x1="254" y1="82" x2="204" y2="82"/></g>
+  <g><circle cx="120" cy="222" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="120" cy="222" r="2" fill="currentColor"/></g>
+  <g><circle cx="260" cy="222" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="260" cy="222" r="2" fill="currentColor"/></g>
+  <g><circle cx="260" cy="82" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="260" cy="82" r="2" fill="currentColor"/></g>
+  <path d="M115.1 203.6 L113.5 204.1 L112 204.8 L110.5 205.5 L109.1 206.4 L107.8 207.4 L106.6 208.6 L105.4 209.8 L104.4 211.1 L103.5 212.5 L102.8 214 L102.1 215.5 L101.6 217.1 L101.3 218.7 L101.1 220.3 L101 222 L101.1 223.7 L101.3 225.3 L101.6 226.9 L102.1 228.5 L102.8 230 L103.5 231.5 L104.4 232.9 L105.4 234.2 L106.6 235.4 L107.8 236.6 L109.1 237.6 L110.5 238.5 L112 239.2 L113.5 239.9 L115.1 240.4 L116.7 240.7 L118.3 240.9 L120 241 L121.7 240.9 L123.3 240.7 L124.9 240.4 L126.5 239.9 L128 239.2 L129.5 238.5 L130.9 237.6 L132.2 236.6 L133.4 235.4 L134.6 234.2 L135.6 232.9 L136.5 231.5 L137.2 230 L137.9 228.5 L138.4 226.9" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#mr03hdE)"/>
+  <path d="M241.6 226.9 L242.1 228.4 L242.7 229.8 L243.4 231.2 L244.2 232.6 L245.1 233.8 L246.1 235 L247.2 236.1 L248.4 237.1 L249.7 238 L251 238.8 L252.4 239.4 L253.9 240 L255.4 240.4 L256.9 240.7 L258.4 240.9 L260 241 L261.6 240.9 L263.1 240.7 L264.6 240.4 L266.1 240 L267.6 239.4 L269 238.8 L270.3 238 L271.6 237.1 L272.8 236.1 L273.9 235 L274.9 233.8 L275.8 232.6 L276.6 231.2 L277.3 229.8 L277.9 228.4 L278.4 226.9 L278.7 225.4 L278.9 223.9 L279 222.3 L279 220.8 L278.8 219.2 L278.5 217.7 L278.1 216.2 L277.6 214.7 L276.9 213.3 L276.1 212 L275.3 210.7 L274.3 209.5 L273.2 208.3 L272.1 207.3 L270.8 206.4 L269.5 205.5" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#mr03hdE)"/>
+  <line x1="318" y1="14" x2="318" y2="290" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+  <g font-size="11" fill="currentColor">
+    <text x="176" y="241" text-anchor="middle">x̂<tspan dy="3.5">s</tspan></text>
+    <text x="112" y="171" text-anchor="end">ŷ<tspan dy="3.5">s</tspan></text>
+    <text x="94" y="208" text-anchor="end" font-size="12">{s}</text>
+    <text x="94" y="226" text-anchor="end">ẑ<tspan dy="3.5">s</tspan></text>
+    <text x="268" y="36">x̂<tspan dy="3.5">b</tspan></text>
+    <text x="200" y="74" text-anchor="end">ŷ<tspan dy="3.5">b</tspan></text>
+    <text x="270" y="98" font-size="12">{b}</text>
+    <text x="270" y="112">ẑ<tspan dy="3.5">b</tspan></text>
+    <text x="180" y="144" text-anchor="end">p = (1, 1, 0)</text>
+    <text x="120" y="260" text-anchor="middle">q<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">= (0, 0, 0)</tspan></text>
+    <text x="120" y="276" text-anchor="middle">ω̂ = (0, 0, 1)</text>
+    <text x="120" y="292" text-anchor="middle">θ̇ = 1 rad/s</text>
+    <text x="260" y="260" text-anchor="middle">q<tspan dy="3.5">2</tspan><tspan dx="3.1" dy="-3.5">= (1, 0, 0)</tspan></text>
+    <text x="260" y="276" text-anchor="middle">ω̂ = (0, 0, 1)</text>
+    <text x="260" y="292" text-anchor="middle">θ̇ = 1 rad/s</text>
+    <text x="12" y="312" opacity="0.85">⊙ = a z axis out of the page · curved arrow = turning about it at 1 rad/s</text>
+    <text x="332" y="26" font-size="12">Written beside the figure</text>
+    <text x="332" y="48">T<tspan dy="3.5">sb</tspan><tspan dy="-3.5">: R</tspan><tspan dy="3.5">sb</tspan><tspan dx="3.1" dy="-3.5">= R</tspan><tspan dy="3.5">z</tspan><tspan dy="-3.5">(90°), p = (1, 1, 0)</tspan></text>
+    <text x="332" y="78">Axis 1, through q<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">= (0, 0, 0)</tspan></text>
+    <text x="340" y="96" opacity="0.85">tip:</text>
+    <text x="380" y="96">ω̂ × p = (−1, 1, 0) m/s</text>
+    <text x="340" y="114" opacity="0.85">v<tspan dy="3.5">s</tspan><tspan dy="-3.5">:</tspan></text>
+    <text x="380" y="114">−ω̂ × q<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">= (0, 0, 0)</tspan></text>
+    <text x="332" y="144">Axis 2, through q<tspan dy="3.5">2</tspan><tspan dx="3.1" dy="-3.5">= (1, 0, 0)</tspan></text>
+    <text x="340" y="162" opacity="0.85">tip:</text>
+    <text x="380" y="162">ω̂ × (p − q<tspan dy="3.5">2</tspan><tspan dy="-3.5">) = (−1, 0, 0) m/s</tspan></text>
+    <text x="340" y="180" opacity="0.85">v<tspan dy="3.5">s</tspan><tspan dy="-3.5">:</tspan></text>
+    <text x="380" y="180">−ω̂ × q<tspan dy="3.5">2</tspan><tspan dx="3.1" dy="-3.5">= (0, −1, 0)</tspan></text>
+    <text x="332" y="212">Neither v<tspan dy="3.5">s</tspan><tspan dx="3.1" dy="-3.5">is the tip velocity:</tspan></text>
+    <text x="332" y="228">v<tspan dy="3.5">s</tspan><tspan dx="3.1" dy="-3.5">= ṗ − ω</tspan><tspan dy="3.5">s</tspan><tspan dx="3.1" dy="-3.5">× p, not ṗ.</tspan></text>
+  </g>
+</svg>
+
 1. **The space frame $\{s\}$** at the origin — $\hat x_s$ right, $\hat y_s$ up, and $\hat z_s$ as a circled dot meaning *out of the page*. Draw the dot, do not leave the third axis implicit: a planar figure that does not declare which way $z$ points makes every sign in this chapter a coin flip.
 2. **The body frame $\{b\}$** at the tip, with $\hat x_b$ along the forearm — that is, along $+\hat y_s$ — so that $\hat y_b$ points along $-\hat x_s$ and $\hat z_b$ is again out of the page. Draw both as short arrows anchored at $(1,1)$, and draw the offset $p = (1,1,0)$ as a dashed arrow from the origin to the tip. Those two items, $R_{sb}$ and $p$, are the whole of $T_{sb}$.
 3. **Two candidate rotation axes**, each a circled dot with a curved arrow around it: one through the origin at $q_1 = (0,0,0)$, one through the elbow at $q_2 = (1,0,0)$. Label both $\hat\omega = (0,0,1)$, $\dot\theta = 1\,\mathrm{rad/s}$.
@@ -168,6 +213,51 @@ Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-pl
 
 평면 그림 하나를 그려 아래 모든 절에서 그대로 쓴다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$다. 베이스는 원점, 링크 1은 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2는 곧장 위로 올라가 말단이 $(1,1)$이다. 팔을 먼저 그리고, 팔이 아닌 것 셋을 더한다.
 
+<svg viewBox="0 0 560 324" style="max-width:100%;height:auto" role="img" aria-label="카탈로그 자세의 P2에 베이스의 space 프레임, 말단의 body 프레임, 점선 오프셋 p = (1, 1, 0), 원점과 엘보를 지나는 회전축 둘을 그리고, 속도 숫자 넷을 옆에 적은 그림.">
+  <defs><marker id="mr03hdK" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="120,222 260,222 260,82" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" opacity="0.28"/>
+  <line x1="126.4" y1="215.6" x2="253.6" y2="88.4" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#mr03hdK)"/>
+  <g stroke="currentColor" stroke-width="1.8" marker-end="url(#mr03hdK)"><line x1="127" y1="222" x2="176" y2="222"/><line x1="120" y1="215" x2="120" y2="166"/><line x1="260" y1="76" x2="260" y2="26"/><line x1="254" y1="82" x2="204" y2="82"/></g>
+  <g><circle cx="120" cy="222" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="120" cy="222" r="2" fill="currentColor"/></g>
+  <g><circle cx="260" cy="222" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="260" cy="222" r="2" fill="currentColor"/></g>
+  <g><circle cx="260" cy="82" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="260" cy="82" r="2" fill="currentColor"/></g>
+  <path d="M115.1 203.6 L113.5 204.1 L112 204.8 L110.5 205.5 L109.1 206.4 L107.8 207.4 L106.6 208.6 L105.4 209.8 L104.4 211.1 L103.5 212.5 L102.8 214 L102.1 215.5 L101.6 217.1 L101.3 218.7 L101.1 220.3 L101 222 L101.1 223.7 L101.3 225.3 L101.6 226.9 L102.1 228.5 L102.8 230 L103.5 231.5 L104.4 232.9 L105.4 234.2 L106.6 235.4 L107.8 236.6 L109.1 237.6 L110.5 238.5 L112 239.2 L113.5 239.9 L115.1 240.4 L116.7 240.7 L118.3 240.9 L120 241 L121.7 240.9 L123.3 240.7 L124.9 240.4 L126.5 239.9 L128 239.2 L129.5 238.5 L130.9 237.6 L132.2 236.6 L133.4 235.4 L134.6 234.2 L135.6 232.9 L136.5 231.5 L137.2 230 L137.9 228.5 L138.4 226.9" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#mr03hdK)"/>
+  <path d="M241.6 226.9 L242.1 228.4 L242.7 229.8 L243.4 231.2 L244.2 232.6 L245.1 233.8 L246.1 235 L247.2 236.1 L248.4 237.1 L249.7 238 L251 238.8 L252.4 239.4 L253.9 240 L255.4 240.4 L256.9 240.7 L258.4 240.9 L260 241 L261.6 240.9 L263.1 240.7 L264.6 240.4 L266.1 240 L267.6 239.4 L269 238.8 L270.3 238 L271.6 237.1 L272.8 236.1 L273.9 235 L274.9 233.8 L275.8 232.6 L276.6 231.2 L277.3 229.8 L277.9 228.4 L278.4 226.9 L278.7 225.4 L278.9 223.9 L279 222.3 L279 220.8 L278.8 219.2 L278.5 217.7 L278.1 216.2 L277.6 214.7 L276.9 213.3 L276.1 212 L275.3 210.7 L274.3 209.5 L273.2 208.3 L272.1 207.3 L270.8 206.4 L269.5 205.5" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#mr03hdK)"/>
+  <line x1="318" y1="14" x2="318" y2="290" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+  <g font-size="11" fill="currentColor">
+    <text x="176" y="241" text-anchor="middle">x̂<tspan dy="3.5">s</tspan></text>
+    <text x="112" y="171" text-anchor="end">ŷ<tspan dy="3.5">s</tspan></text>
+    <text x="94" y="208" text-anchor="end" font-size="12">{s}</text>
+    <text x="94" y="226" text-anchor="end">ẑ<tspan dy="3.5">s</tspan></text>
+    <text x="268" y="36">x̂<tspan dy="3.5">b</tspan></text>
+    <text x="200" y="74" text-anchor="end">ŷ<tspan dy="3.5">b</tspan></text>
+    <text x="270" y="98" font-size="12">{b}</text>
+    <text x="270" y="112">ẑ<tspan dy="3.5">b</tspan></text>
+    <text x="180" y="144" text-anchor="end">p = (1, 1, 0)</text>
+    <text x="120" y="260" text-anchor="middle">q<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">= (0, 0, 0)</tspan></text>
+    <text x="120" y="276" text-anchor="middle">ω̂ = (0, 0, 1)</text>
+    <text x="120" y="292" text-anchor="middle">θ̇ = 1 rad/s</text>
+    <text x="260" y="260" text-anchor="middle">q<tspan dy="3.5">2</tspan><tspan dx="3.1" dy="-3.5">= (1, 0, 0)</tspan></text>
+    <text x="260" y="276" text-anchor="middle">ω̂ = (0, 0, 1)</text>
+    <text x="260" y="292" text-anchor="middle">θ̇ = 1 rad/s</text>
+    <text x="12" y="312" opacity="0.85">⊙ = 지면 밖을 향하는 z축 · 굽은 화살표 = 그 축 둘레로 1 rad/s 회전</text>
+    <text x="332" y="26" font-size="12">그림 옆에 적는 것</text>
+    <text x="332" y="48">T<tspan dy="3.5">sb</tspan><tspan dy="-3.5">: R</tspan><tspan dy="3.5">sb</tspan><tspan dx="3.1" dy="-3.5">= R</tspan><tspan dy="3.5">z</tspan><tspan dy="-3.5">(90°), p = (1, 1, 0)</tspan></text>
+    <text x="332" y="78">축 1, q<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">= (0, 0, 0)을 지남</tspan></text>
+    <text x="340" y="96" opacity="0.85">말단:</text>
+    <text x="380" y="96">ω̂ × p = (−1, 1, 0) m/s</text>
+    <text x="340" y="114" opacity="0.85">v<tspan dy="3.5">s</tspan><tspan dy="-3.5">:</tspan></text>
+    <text x="380" y="114">−ω̂ × q<tspan dy="3.5">1</tspan><tspan dx="3.1" dy="-3.5">= (0, 0, 0)</tspan></text>
+    <text x="332" y="144">축 2, q<tspan dy="3.5">2</tspan><tspan dx="3.1" dy="-3.5">= (1, 0, 0)을 지남</tspan></text>
+    <text x="340" y="162" opacity="0.85">말단:</text>
+    <text x="380" y="162">ω̂ × (p − q<tspan dy="3.5">2</tspan><tspan dy="-3.5">) = (−1, 0, 0) m/s</tspan></text>
+    <text x="340" y="180" opacity="0.85">v<tspan dy="3.5">s</tspan><tspan dy="-3.5">:</tspan></text>
+    <text x="380" y="180">−ω̂ × q<tspan dy="3.5">2</tspan><tspan dx="3.1" dy="-3.5">= (0, −1, 0)</tspan></text>
+    <text x="332" y="212">어느 쪽 v<tspan dy="3.5">s</tspan><tspan dy="-3.5">도 말단 속도가 아니다:</tspan></text>
+    <text x="332" y="228">v<tspan dy="3.5">s</tspan><tspan dx="3.1" dy="-3.5">= ṗ − ω</tspan><tspan dy="3.5">s</tspan><tspan dx="3.1" dy="-3.5">× p이지 ṗ가 아니다.</tspan></text>
+  </g>
+</svg>
+
 1. **원점의 space 프레임 $\{s\}$** — $\hat x_s$는 오른쪽, $\hat y_s$는 위, $\hat z_s$는 *지면 밖*을 뜻하는 동그라미 친 점으로. 점을 반드시 그린다. 셋째 축이 어디를 향하는지 말하지 않는 평면 그림에서는 이 장의 모든 부호가 동전 던지기가 된다.
 2. **말단의 body 프레임 $\{b\}$** — $\hat x_b$를 전완 방향, 곧 $+\hat y_s$ 방향에 둔다. 그러면 $\hat y_b$는 $-\hat x_s$ 방향이고 $\hat z_b$도 지면 밖이다. 두 축을 $(1,1)$에 붙인 짧은 화살표로 그리고, 오프셋 $p = (1,1,0)$을 원점에서 말단까지의 점선 화살표로 그린다. 이 둘, 즉 $R_{sb}$와 $p$가 $T_{sb}$의 전부다.
 3. **회전축 후보 둘** — 각각 동그라미 친 점과 그 둘레의 굽은 화살표로. 하나는 원점 $q_1 = (0,0,0)$을, 다른 하나는 엘보 $q_2 = (1,0,0)$을 지난다. 둘 다 $\hat\omega = (0,0,1)$, $\dot\theta = 1\,\mathrm{rad/s}$로 표시한다.
@@ -238,10 +328,10 @@ $\omega_s = R\,\omega_b$, $v_s = R\,v_b$. **프레임 아래 첨자는 장식이
 
 $$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p=(1,1,0),\qquad T_{sb}=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}.$$
 
-원점 둘레로 팔 전체를 도는 순수 $z$ 회전의 공간 트위스트는 $\mathcal{V}_s=((0,0,1),(0,0,0))$: 원점을 지나는 축이라 $v_s=0$. 말단은 움직인다. $v_s$는 말단 속도가 아니다. 이 $p$에서 $\omega_s\times p=(-1,1,0)$이 $1\,\mathrm{rad/s}$의 말단 속도이고, $v_s=\dot p-\omega_s\times p$가 §3의 구분을 되살린다. 평면 P2는 항상 $\omega_x=\omega_y=v_z=0$이라 SE(2)로 충분하다 — 논문이 $v_s$를 $\dot p$로 취급하기 전까지. 과제는 이 $T_{sb}$를 유지하고 *엘보* 둘레 twist를 묻는다.
+원점 둘레로 팔 전체를 도는 순수 $z$ 회전의 공간 트위스트는 $\mathcal{V}_s=((0,0,1),(0,0,0))$: 원점을 지나는 축이라 $v_s=-\omega\times 0=0$. 말단은 움직인다. $v_s$는 말단 속도가 아니다. 이 $p$에서 $\omega_s\times p=(-1,1,0)$이 $1\,\mathrm{rad/s}$의 말단 속도이고, $v_s=\dot p-\omega_s\times p$가 §3의 구분을 되살린다. 평면 P2는 항상 $\omega_x=\omega_y=v_z=0$이라 SE(2)로 충분하다 — 논문이 $v_s$를 $\dot p$로 취급하기 전까지. 과제는 이 $T_{sb}$를 유지하고 *엘보* 둘레 twist를 묻는다.
 
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="하나의 물리적 운동을 고정 프레임에서, 그리고 몸체 프레임에서 기술한 것">
-  <defs><marker id="mr3a" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="mr3ak" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g stroke="currentColor" stroke-width="1.6" fill="none">
     <line x1="45" y1="150" x2="45" y2="100"/><line x1="45" y1="150" x2="95" y2="150"/>
   </g>
@@ -252,7 +342,7 @@ $$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p
   <g fill="currentColor"><circle cx="250" cy="95" r="3.5"/></g>
   <g stroke="currentColor" stroke-width="1.2" opacity="0.5" stroke-dasharray="4 3"><line x1="45" y1="150" x2="250" y2="95"/></g>
   <g stroke="currentColor" stroke-width="2.4" fill="none" opacity="0.85">
-    <path d="M250,95 C300,70 340,80 372,110" marker-end="url(#mr3a)"/>
+    <path d="M250,95 C300,70 340,80 372,110" marker-end="url(#mr3ak)"/>
   </g>
   <g font-size="11" fill="currentColor">
     <text x="26" y="172">space 프레임 {s}</text><text x="234" y="120">body 프레임 {b}</text>
@@ -279,7 +369,7 @@ $$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p
 4. $T$가 $p$만큼의 순수 병진이면 $[\text{Ad}_T]$는 twist에 무슨 일을 하는가?
 
 > [!tip]- 정답 · Answers
-> 1. $R = I + 0 + 2[\hat z]^2 = \text{diag}(-1, -1, 1)$ — x·y축이 뒤집힌다.
+> 1. $\sin 180° = 0$, $1-\cos 180° = 2$이므로 $R = I + 0 + 2[\hat z]^2 = \text{diag}(-1, -1, 1)$ — x·y축이 뒤집히고 z는 그대로다.
 > 2. $\omega_s = (0,0,1)$; 공간 프레임의 선형 성분은 $v_s = -\omega \times q = -(0,0,1)\times(0,2,0) = (2,0,0)$ — 지금 원점에 있는 물체 위의 점이 $+x$로 2 m/s로 움직인다는 뜻이고, 축 자체는 정지해 있다. §3의 경고를 수치로 옮긴 것이다.
 > 3. 3×3 반대칭 행렬의 거듭제곱이 자기 자신의 배수로 되돌아오기 때문 — 급수의 모든 항이 $[\hat\omega]$, $[\hat\omega]^2$의 계수로 흡수된다.
 > 4. $\omega$는 그대로, $v \mapsto v + p \times \omega$.
@@ -289,10 +379,10 @@ $$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 시뮬레이터 없음.
 
 1. **그리기.** 원점의 베이스 $\{s\}$, 엘보 $(1,0)$, 말단 $(1,1)$. 말단에 도구 프레임 $\{b\}$, $x$축은 전완 방향.
-2. **유도.** 그 말단의 $T_{sb}$(강의의 $4\times4$). 그다음 엘보 $q_2=(1,0,0)$ 둘레로 팔 전체를 도는 순수 $z$ 회전의 space twist $\mathcal{V}_s=(\omega,v)$. 여섯 좌표 중 여전히 0인 셋은?
+2. **유도.** 그 말단의 $T_{sb}$(강의의 $4\times4$). 그다음 엘보 $q_2=(1,0,0)$ 둘레로 팔 전체를 도는 순수 $z$ 회전의 space twist $\mathcal{V}_s=(\omega,v)$. 여섯 $\mathfrak{se}(3)$ 좌표 중 여전히 0인 셋은?
 3. **해석.** 왜 SE(2)면 충분한가? 이 자세에서 space twist의 $v_s$를 말단 속도로 읽으면 무엇이 틀리는가?
 
 > [!tip]- 정답 · Solutions
-> 1. 전완이 $+y_s$이므로 $x_b=\hat y_s$, $y_b=-\hat x_s$.
+> 1. 전완이 $+y_s$이므로 $x_b=\hat y_s$, $y_b=-\hat x_s$(오른손 프레임, $z$는 지면 밖).
 > 2. $T_{sb}$는 §4. 엘보 축: $\omega_s=(0,0,1)$, $v_s=-\omega\times q_2=(0,-1,0)$. 여전히 $\omega_x=\omega_y=v_z=0$; $v_s$는 이제 0이 아니다.
-> 3. 운동이 평면에 남는다. $v_s=\dot p-\omega_s\times p$이라 $p\neq0$이면 $v_s$는 말단 속도가 아니다. §4의 adjoint를 쓴다.
+> 3. 운동이 평면에 남으므로 SE(2)가 컨피규레이션 군이다. 이 자세에서 $v_s=\dot p-\omega_s\times p$이고, $z$축 둘레 $1\,\mathrm{rad/s}$ 회전이면 $\omega_s\times p=(-1,1,0)$이므로 $p\neq0$이면 $v_s$는 말단 속도가 아니다. §4의 adjoint를 쓴다.

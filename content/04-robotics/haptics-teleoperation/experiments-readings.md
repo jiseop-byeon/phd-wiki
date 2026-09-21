@@ -116,6 +116,64 @@ The packet covers the first half of a full haptics course particularly well. It 
 
 One plot, and the problem set asks for the same plot from a shorter record under a different rule.
 
+<svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="A 24-trial two-down one-up staircase on 0.05 N rows with filled markers for correct and open ones for wrong, eight numbered reversals of which the first two are struck out, a dashed line at 0.5167 N labelled 70.7% correct, and the causal chain with only the stimulus-to-perception arrow ticked.">
+  <circle cx="58" cy="17" r="3.8" fill="currentColor"/>
+  <text x="67" y="21" font-size="11" fill="currentColor">correct</text>
+  <circle cx="127.5" cy="17" r="3.8" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="136.5" y="21" font-size="11" fill="currentColor">wrong</text>
+  <circle cx="196.7" cy="17" r="7.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="208.7" y="21" font-size="11" fill="currentColor">reversal</text>
+  <circle cx="279.1" cy="17" r="7.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="270.1" y1="26" x2="288.1" y2="8" stroke="currentColor" stroke-width="1.5"/>
+  <text x="292.1" y="21" font-size="11" fill="currentColor">discarded (§7 Step 2)</text>
+  <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.28"><line x1="53" y1="200" x2="403" y2="200"/><line x1="53" y1="170" x2="403" y2="170"/><line x1="53" y1="140" x2="403" y2="140"/><line x1="53" y1="110" x2="403" y2="110"/><line x1="53" y1="80" x2="403" y2="80"/><line x1="53" y1="50" x2="403" y2="50"/></g>
+  <g font-size="11" fill="currentColor" text-anchor="end" opacity="0.8"><text x="49" y="204">0.40</text><text x="49" y="174">0.45</text><text x="49" y="144">0.50</text><text x="49" y="114">0.55</text><text x="49" y="84">0.60</text><text x="49" y="54">0.65</text></g>
+  <text x="14" y="38" font-size="11.5" fill="currentColor" opacity="0.9">ΔF (N)</text>
+  <line x1="53" y1="208" x2="403" y2="208" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <g stroke="currentColor" stroke-width="0.9" stroke-opacity="0.55">
+    <line x1="58" y1="208" x2="58" y2="213"/><line x1="72.8" y1="208" x2="72.8" y2="211"/><line x1="87.6" y1="208" x2="87.6" y2="211"/><line x1="102.3" y1="208" x2="102.3" y2="213"/><line x1="117.1" y1="208" x2="117.1" y2="211"/><line x1="131.9" y1="208" x2="131.9" y2="211"/><line x1="146.7" y1="208" x2="146.7" y2="211"/><line x1="161.5" y1="208" x2="161.5" y2="213"/><line x1="176.3" y1="208" x2="176.3" y2="211"/>
+    <line x1="191" y1="208" x2="191" y2="211"/><line x1="205.8" y1="208" x2="205.8" y2="211"/><line x1="220.6" y1="208" x2="220.6" y2="213"/><line x1="235.4" y1="208" x2="235.4" y2="211"/><line x1="250.2" y1="208" x2="250.2" y2="211"/><line x1="265" y1="208" x2="265" y2="211"/><line x1="279.7" y1="208" x2="279.7" y2="213"/><line x1="294.5" y1="208" x2="294.5" y2="211"/><line x1="309.3" y1="208" x2="309.3" y2="211"/>
+    <line x1="324.1" y1="208" x2="324.1" y2="211"/><line x1="338.9" y1="208" x2="338.9" y2="213"/><line x1="353.7" y1="208" x2="353.7" y2="211"/><line x1="368.4" y1="208" x2="368.4" y2="211"/><line x1="383.2" y1="208" x2="383.2" y2="211"/><line x1="398" y1="208" x2="398" y2="213"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8"><text x="58" y="225">1</text><text x="102.3" y="225">4</text><text x="161.5" y="225">8</text><text x="220.6" y="225">12</text><text x="279.7" y="225">16</text><text x="338.9" y="225">20</text><text x="398" y="225">24</text></g>
+  <text x="228" y="240" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">trial number</text>
+  <line x1="53" y1="130" x2="406" y2="130" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <g font-size="12" fill="currentColor"><text x="411" y="134">70.7% correct,</text><text x="411" y="149">2-down/1-up,</text><text x="411" y="164">5.00 N pedestal</text></g>
+  <g font-size="11" fill="currentColor" opacity="0.75"><text x="411" y="183">0.5167 N = mean of</text><text x="411" y="197">reversals 3–8</text></g>
+  <g stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75">
+    <line x1="62.4" y1="80" x2="68.4" y2="80"/><line x1="74.7" y1="83.9" x2="85.6" y2="106.1"/><line x1="92" y1="110" x2="97.9" y2="110"/><line x1="104.3" y1="106.1" x2="115.2" y2="83.9"/><line x1="121.5" y1="80" x2="127.5" y2="80"/><line x1="133.9" y1="83.9" x2="144.8" y2="106.1"/><line x1="151.1" y1="110" x2="157.1" y2="110"/><line x1="163.4" y1="113.9" x2="174.3" y2="136.1"/>
+    <line x1="180.7" y1="140" x2="186.6" y2="140"/><line x1="193" y1="143.9" x2="203.9" y2="166.1"/><line x1="207.8" y1="166.1" x2="218.7" y2="143.9"/><line x1="225" y1="140" x2="231" y2="140"/><line x1="237.3" y1="136.1" x2="248.2" y2="113.9"/><line x1="254.6" y1="110" x2="260.6" y2="110"/><line x1="266.9" y1="113.9" x2="277.8" y2="136.1"/><line x1="281.7" y1="136.1" x2="292.6" y2="113.9"/>
+    <line x1="298.9" y1="110" x2="304.9" y2="110"/><line x1="311.2" y1="113.9" x2="322.1" y2="136.1"/><line x1="328.5" y1="140" x2="334.5" y2="140"/><line x1="340.8" y1="136.1" x2="351.7" y2="113.9"/><line x1="358.1" y1="110" x2="364" y2="110"/><line x1="370.4" y1="113.9" x2="381.3" y2="136.1"/><line x1="387.6" y1="140" x2="393.6" y2="140"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="58" cy="80" r="3.8"/><circle cx="72.8" cy="80" r="3.8"/><circle cx="87.6" cy="110" r="3.8"/><circle cx="117.1" cy="80" r="3.8"/><circle cx="131.9" cy="80" r="3.8"/><circle cx="146.7" cy="110" r="3.8"/><circle cx="161.5" cy="110" r="3.8"/><circle cx="176.3" cy="140" r="3.8"/><circle cx="191" cy="140" r="3.8"/><circle cx="220.6" cy="140" r="3.8"/><circle cx="250.2" cy="110" r="3.8"/>
+    <circle cx="265" cy="110" r="3.8"/><circle cx="294.5" cy="110" r="3.8"/><circle cx="309.3" cy="110" r="3.8"/><circle cx="324.1" cy="140" r="3.8"/><circle cx="353.7" cy="110" r="3.8"/><circle cx="368.4" cy="110" r="3.8"/><circle cx="383.2" cy="140" r="3.8"/><circle cx="398" cy="140" r="3.8"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="102.3" cy="110" r="3.8"/><circle cx="205.8" cy="170" r="3.8"/><circle cx="235.4" cy="140" r="3.8"/><circle cx="279.7" cy="140" r="3.8"/><circle cx="338.9" cy="140" r="3.8"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="102.3" cy="110" r="7.5"/><circle cx="131.9" cy="80" r="7.5"/><circle cx="205.8" cy="170" r="7.5"/><circle cx="265" cy="110" r="7.5"/><circle cx="279.7" cy="140" r="7.5"/><circle cx="309.3" cy="110" r="7.5"/><circle cx="338.9" cy="140" r="7.5"/><circle cx="368.4" cy="110" r="7.5"/></g>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="91.3" y="102">1</text><text x="131.9" y="68">2</text><text x="205.8" y="192">3</text><text x="265" y="98">4</text><text x="279.7" y="162">5</text><text x="309.3" y="98">6</text><text x="338.9" y="162">7</text><text x="368.4" y="98">8</text></g>
+  <g stroke="currentColor" stroke-width="1.6"><line x1="93.5" y1="118.8" x2="111.1" y2="101.2"/><line x1="123.1" y1="88.8" x2="140.7" y2="71.2"/></g>
+  <text x="8" y="260" font-size="11" fill="currentColor" opacity="0.9">§1’s causal chain: the tick marks the one arrow this plot measures</text>
+  <rect x="8" y="270" width="118" height="50" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle"><text x="67" y="292.2">actuator</text><text x="67" y="305.8">command</text></g>
+  <line x1="129" y1="295" x2="140.5" y2="295" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="147,295 140,298.4 140,291.6" fill="currentColor"/>
+  <rect x="132" y="328" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <rect x="150" y="270" width="118" height="50" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle"><text x="209" y="285.5">delivered</text><text x="209" y="299">mechanical</text><text x="209" y="312.5">stimulus</text></g>
+  <line x1="271" y1="295" x2="282.5" y2="295" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="289,295 282,298.4 282,291.6" fill="currentColor"/>
+  <rect x="274" y="328" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <polyline points="276.2,334 279,337.5 284.5,329.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  <rect x="292" y="270" width="118" height="50" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle"><text x="351" y="292.2">perception /</text><text x="351" y="305.8">action</text></g>
+  <line x1="413" y1="295" x2="424.5" y2="295" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="431,295 424,298.4 424,291.6" fill="currentColor"/>
+  <rect x="416" y="328" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <rect x="434" y="270" width="118" height="50" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle"><text x="493" y="292.2">task</text><text x="493" y="305.8">outcome</text></g>
+</svg>
+
 Trial number 1 to 24 across; $\Delta F$ up, from $0.40$ to $0.65\,\mathrm{N}$ ruled in $0.05\,\mathrm{N}$ rows, because the step size is fixed and the level can therefore only ever sit on a row. Plot the 24 levels and join consecutive trials into one continuous track. Use a filled marker for a correct trial and an open marker for a wrong one, so the rule is readable off the figure: the track only descends after two filled markers in a row, and it rises immediately after any open one. Circle every trial at which the direction of travel changes and number the circles $1$ to $8$. Strike through the first two circles — §7 Step 2 discards them — and draw a horizontal line at the mean of the remaining six, labelled with the criterion it estimates rather than with the word "threshold": *70.7% correct, 2-down/1-up, 5.00 N pedestal*. Beside the plot copy §1's causal chain and put a tick under the single arrow this figure measures, leaving the other two arrows blank.
 
 ### 7. Worked case: a staircase record becomes a threshold, and a JND
@@ -159,7 +217,7 @@ i.e. $10.3\%$, since the pedestal is the operating point the increment was measu
 4. A within-subject study has 20 people and 30 trials per person. Is $n=600$?
 
 > [!tip]- Answers
-> 1. Neither. A stimulus level without its criterion is not a quantity: $0.5167\,\mathrm{N}$ is the increment at which *this* rule holds the participant, and the rule is what fixes which point on the curve that is. Change 2-down/1-up to 3-down/1-up and the same record, the same skin and the same handle deliver $p=0.5^{1/3}=0.7937$ instead — a different point, and a number no reader can convert without being told the rule. What is unreported is therefore the estimand itself, which is §2 item 1 restated as arithmetic.
+> 1. A stimulus level without its criterion is not a quantity: $0.5167\,\mathrm{N}$ is the increment at which *this* rule holds the participant, and the rule is what fixes which point on the curve that is. Change 2-down/1-up to 3-down/1-up and the same record, the same skin and the same handle deliver $p=0.5^{1/3}=0.7937$ instead — a different point, and a number no reader can convert without being told the rule. What is unreported is therefore the estimand itself, which is §2 item 1 restated as arithmetic.
 > 2. Neither is wrong, and the gap is not noise. The question that decides it is *what was the participant asked to do*. Constant stimuli measured half the $25$–$75$ span of a **judged-stronger** curve about its PSE; the staircase measured the increment for $70.7\%$ **correct** in a difference-detection task. Two tasks, two criteria, two functions; the numbers are comparable only through a stated psychometric model, and a paper that reports "the JND" bare has produced a figure no other lab can reproduce.
 > 3. One encoder count against the default wall is $\Delta F_{\text{count}}=0.0245\,\mathrm{N}$, so a $0.02\,\mathrm{N}$ step is $0.02/0.0245=0.82$ of a count — below the device's own quantum, where a commanded step down may not change the delivered force at all. Compare the $0.05\,\mathrm{N}$ step actually used, $0.05/0.0245=2.0$ counts, which the hardware can resolve. The track would then stall on quantization rather than on the participant, and the write-up would report a beautifully converged threshold that measures the encoder.
 > 4. Not for a participant-level treatment claim. Trials are nested, repeated observations. Analyse that dependence, for example with participant-level summaries or a hierarchical/mixed model (a regression that gives each participant their own baseline, so repeated trials from one person are not counted as independent people); report both 20 participants and 600 trials.
@@ -185,7 +243,7 @@ Same handle, same $5.00\,\mathrm{N}$ pedestal, same $0.05\,\mathrm{N}$ step, but
 
 > [!tip]- Solutions
 > 1. The track descends only after three filled markers in a row, so it spends longer on each level than §6's figure does. There are three reversals, and §6 discards the first two and averages six — here that would leave one. The discard rule cannot be applied, which is the finding, not an inconvenience.
-> 2. (a) Trial 5 at $0.45$, trial 8 at $0.50$, trial 12 at $0.40$. (b) Averaging all three gives $(0.45+0.50+0.40)/3=0.45\,\mathrm{N}$, and the attached sentence must say that it is the mean of *all three* reversals of a 12-trial run, an odd number, with no burn-in discarded — so peaks and troughs do not contribute equally and the estimate carries the start point. Six or more reversals are the usual minimum; this run should be treated as a pilot. (c) A down step now needs three consecutive correct, with probability $p^3$, so stationarity gives $p^3=1-p^3$, $p^3=0.5$ and $p=0.5^{1/3}=0.7937$: the $79.4\%$-correct point. For 1-up/1-down the down step needs one correct, so $p=1-p$ and $p=0.5$ — which in a two-alternative task is chance, so the rule tracks a level at which the participant is guessing and estimates nothing. (d) $k=0.45/5.00=0.090$, i.e. $9.0\%$; and $0.45/0.0245=18.3$ counts, about $1.13\,\mathrm{mm}$ of penetration.
+> 2. (a) Trial 5 at $0.45$, trial 8 at $0.50$, trial 12 at $0.40$. (b) Averaging all three gives $(0.45+0.50+0.40)/3=0.45\,\mathrm{N}$, and the attached sentence must say that it is the mean of *all three* reversals of a 12-trial run, an odd number, with no burn-in discarded — so peaks and troughs do not contribute equally and the estimate carries the start point. Six or more reversals are the usual minimum; this run should be treated as a pilot. (c) A down step now needs three consecutive correct, with probability $p^3$, so stationarity gives $p^3=1-p^3$, $p^3=0.5$ and $p=0.5^{1/3}=0.7937$: the $79.4\%$-correct point. For 1-up/1-down the down step needs one correct, so $p=1-p$ and $p=0.5$ — which in a two-alternative task is chance, so the rule tracks a level at which the participant is guessing and estimates nothing. (d) $k=0.45/5.00=0.090$, i.e. $9.0\%$; and $0.45/0.0245=18.4$ counts, about $1.13\,\mathrm{mm}$ of penetration.
 > 3. (a) First, the rule targets $p=0.5$, which is chance in 2AFC, so the "threshold" is not a threshold at all — no stimulus level is identified. Second, even a valid staircase number is a different estimand from a constant-stimuli JND (§7 Step 5): different task, different criterion, different point on the curve. The two must be compared through a stated psychometric model or not at all. (b) The estimand should be a named quantity (peak contact force, not "better"). TLX is self-reported workload, not the mechanical stimulus; time does not identify which cue caused the change. Calibrate the skin stimulus. (c) The participant is the unit for a treatment claim; trials are nested. Report $20$ people *and* $600$ trials, with a hierarchical/mixed model or participant-level summaries. (d) Bench response supports delivered dynamics, not detectability. Task improvement supports a causal effect in that protocol, not field generality.
 
 ## 한국어
@@ -293,6 +351,64 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 
 그림 하나. 과제는 더 짧은 기록을 다른 규칙으로 받아 같은 그림을 그리라고 한다.
 
+<svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="0.05 N 간격의 줄 위를 오가는 24시행 2-down 1-up staircase로, 정답은 채운 표식과 오답은 빈 표식, 번호를 단 reversal 여덟 개 중 앞의 둘에 줄을 긋고, 0.5167 N 점선에 70.7% 정답 기준을 붙이고, 인과 사슬에서는 자극에서 지각으로 가는 화살표에만 체크했다.">
+  <circle cx="58" cy="17" r="3.8" fill="currentColor"/>
+  <text x="67" y="21" font-size="11" fill="currentColor">정답</text>
+  <circle cx="108.1" cy="17" r="3.8" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="117.1" y="21" font-size="11" fill="currentColor">오답</text>
+  <circle cx="162.3" cy="17" r="7.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <text x="174.3" y="21" font-size="11" fill="currentColor">reversal</text>
+  <circle cx="244.7" cy="17" r="7.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="235.7" y1="26" x2="253.7" y2="8" stroke="currentColor" stroke-width="1.5"/>
+  <text x="257.7" y="21" font-size="11" fill="currentColor">버림 (§7 Step 2)</text>
+  <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.28"><line x1="53" y1="200" x2="403" y2="200"/><line x1="53" y1="170" x2="403" y2="170"/><line x1="53" y1="140" x2="403" y2="140"/><line x1="53" y1="110" x2="403" y2="110"/><line x1="53" y1="80" x2="403" y2="80"/><line x1="53" y1="50" x2="403" y2="50"/></g>
+  <g font-size="11" fill="currentColor" text-anchor="end" opacity="0.8"><text x="49" y="204">0.40</text><text x="49" y="174">0.45</text><text x="49" y="144">0.50</text><text x="49" y="114">0.55</text><text x="49" y="84">0.60</text><text x="49" y="54">0.65</text></g>
+  <text x="14" y="38" font-size="11.5" fill="currentColor" opacity="0.9">ΔF (N)</text>
+  <line x1="53" y1="208" x2="403" y2="208" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <g stroke="currentColor" stroke-width="0.9" stroke-opacity="0.55">
+    <line x1="58" y1="208" x2="58" y2="213"/><line x1="72.8" y1="208" x2="72.8" y2="211"/><line x1="87.6" y1="208" x2="87.6" y2="211"/><line x1="102.3" y1="208" x2="102.3" y2="213"/><line x1="117.1" y1="208" x2="117.1" y2="211"/><line x1="131.9" y1="208" x2="131.9" y2="211"/><line x1="146.7" y1="208" x2="146.7" y2="211"/><line x1="161.5" y1="208" x2="161.5" y2="213"/><line x1="176.3" y1="208" x2="176.3" y2="211"/>
+    <line x1="191" y1="208" x2="191" y2="211"/><line x1="205.8" y1="208" x2="205.8" y2="211"/><line x1="220.6" y1="208" x2="220.6" y2="213"/><line x1="235.4" y1="208" x2="235.4" y2="211"/><line x1="250.2" y1="208" x2="250.2" y2="211"/><line x1="265" y1="208" x2="265" y2="211"/><line x1="279.7" y1="208" x2="279.7" y2="213"/><line x1="294.5" y1="208" x2="294.5" y2="211"/><line x1="309.3" y1="208" x2="309.3" y2="211"/>
+    <line x1="324.1" y1="208" x2="324.1" y2="211"/><line x1="338.9" y1="208" x2="338.9" y2="213"/><line x1="353.7" y1="208" x2="353.7" y2="211"/><line x1="368.4" y1="208" x2="368.4" y2="211"/><line x1="383.2" y1="208" x2="383.2" y2="211"/><line x1="398" y1="208" x2="398" y2="213"/>
+  </g>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.8"><text x="58" y="225">1</text><text x="102.3" y="225">4</text><text x="161.5" y="225">8</text><text x="220.6" y="225">12</text><text x="279.7" y="225">16</text><text x="338.9" y="225">20</text><text x="398" y="225">24</text></g>
+  <text x="228" y="240" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">시행 번호</text>
+  <line x1="53" y1="130" x2="406" y2="130" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <g font-size="12" fill="currentColor"><text x="411" y="134">70.7% 정답,</text><text x="411" y="149">2-down 1-up,</text><text x="411" y="164">받침 5.00 N</text></g>
+  <g font-size="11" fill="currentColor" opacity="0.75"><text x="411" y="183">0.5167 N = reversal</text><text x="411" y="197">3–8의 평균</text></g>
+  <g stroke="currentColor" stroke-width="1.3" stroke-opacity="0.75">
+    <line x1="62.4" y1="80" x2="68.4" y2="80"/><line x1="74.7" y1="83.9" x2="85.6" y2="106.1"/><line x1="92" y1="110" x2="97.9" y2="110"/><line x1="104.3" y1="106.1" x2="115.2" y2="83.9"/><line x1="121.5" y1="80" x2="127.5" y2="80"/><line x1="133.9" y1="83.9" x2="144.8" y2="106.1"/><line x1="151.1" y1="110" x2="157.1" y2="110"/><line x1="163.4" y1="113.9" x2="174.3" y2="136.1"/>
+    <line x1="180.7" y1="140" x2="186.6" y2="140"/><line x1="193" y1="143.9" x2="203.9" y2="166.1"/><line x1="207.8" y1="166.1" x2="218.7" y2="143.9"/><line x1="225" y1="140" x2="231" y2="140"/><line x1="237.3" y1="136.1" x2="248.2" y2="113.9"/><line x1="254.6" y1="110" x2="260.6" y2="110"/><line x1="266.9" y1="113.9" x2="277.8" y2="136.1"/><line x1="281.7" y1="136.1" x2="292.6" y2="113.9"/>
+    <line x1="298.9" y1="110" x2="304.9" y2="110"/><line x1="311.2" y1="113.9" x2="322.1" y2="136.1"/><line x1="328.5" y1="140" x2="334.5" y2="140"/><line x1="340.8" y1="136.1" x2="351.7" y2="113.9"/><line x1="358.1" y1="110" x2="364" y2="110"/><line x1="370.4" y1="113.9" x2="381.3" y2="136.1"/><line x1="387.6" y1="140" x2="393.6" y2="140"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="58" cy="80" r="3.8"/><circle cx="72.8" cy="80" r="3.8"/><circle cx="87.6" cy="110" r="3.8"/><circle cx="117.1" cy="80" r="3.8"/><circle cx="131.9" cy="80" r="3.8"/><circle cx="146.7" cy="110" r="3.8"/><circle cx="161.5" cy="110" r="3.8"/><circle cx="176.3" cy="140" r="3.8"/><circle cx="191" cy="140" r="3.8"/><circle cx="220.6" cy="140" r="3.8"/><circle cx="250.2" cy="110" r="3.8"/>
+    <circle cx="265" cy="110" r="3.8"/><circle cx="294.5" cy="110" r="3.8"/><circle cx="309.3" cy="110" r="3.8"/><circle cx="324.1" cy="140" r="3.8"/><circle cx="353.7" cy="110" r="3.8"/><circle cx="368.4" cy="110" r="3.8"/><circle cx="383.2" cy="140" r="3.8"/><circle cx="398" cy="140" r="3.8"/>
+  </g>
+  <g fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="102.3" cy="110" r="3.8"/><circle cx="205.8" cy="170" r="3.8"/><circle cx="235.4" cy="140" r="3.8"/><circle cx="279.7" cy="140" r="3.8"/><circle cx="338.9" cy="140" r="3.8"/></g>
+  <g fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="102.3" cy="110" r="7.5"/><circle cx="131.9" cy="80" r="7.5"/><circle cx="205.8" cy="170" r="7.5"/><circle cx="265" cy="110" r="7.5"/><circle cx="279.7" cy="140" r="7.5"/><circle cx="309.3" cy="110" r="7.5"/><circle cx="338.9" cy="140" r="7.5"/><circle cx="368.4" cy="110" r="7.5"/></g>
+  <g font-size="11.5" fill="currentColor" text-anchor="middle"><text x="91.3" y="102">1</text><text x="131.9" y="68">2</text><text x="205.8" y="192">3</text><text x="265" y="98">4</text><text x="279.7" y="162">5</text><text x="309.3" y="98">6</text><text x="338.9" y="162">7</text><text x="368.4" y="98">8</text></g>
+  <g stroke="currentColor" stroke-width="1.6"><line x1="93.5" y1="118.8" x2="111.1" y2="101.2"/><line x1="123.1" y1="88.8" x2="140.7" y2="71.2"/></g>
+  <text x="8" y="260" font-size="11" fill="currentColor" opacity="0.9">§1의 인과 사슬: 체크는 이 그림이 재는 단 하나의 화살표</text>
+  <rect x="8" y="270" width="118" height="50" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle"><text x="67" y="292.2">액추에이터</text><text x="67" y="305.8">명령</text></g>
+  <line x1="129" y1="295" x2="140.5" y2="295" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="147,295 140,298.4 140,291.6" fill="currentColor"/>
+  <rect x="132" y="328" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <rect x="150" y="270" width="118" height="50" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle"><text x="209" y="292.2">실제 전달된</text><text x="209" y="305.8">역학 자극</text></g>
+  <line x1="271" y1="295" x2="282.5" y2="295" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="289,295 282,298.4 282,291.6" fill="currentColor"/>
+  <rect x="274" y="328" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <polyline points="276.2,334 279,337.5 284.5,329.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  <rect x="292" y="270" width="118" height="50" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="351" y="299" font-size="11" fill="currentColor" text-anchor="middle">지각·행동</text>
+  <line x1="413" y1="295" x2="424.5" y2="295" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="431,295 424,298.4 424,291.6" fill="currentColor"/>
+  <rect x="416" y="328" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <rect x="434" y="270" width="118" height="50" rx="4" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="493" y="299" font-size="11" fill="currentColor" text-anchor="middle">과제 결과</text>
+</svg>
+
 가로는 시행 번호 1에서 24, 세로는 $\Delta F$를 $0.40$에서 $0.65\,\mathrm{N}$까지 $0.05\,\mathrm{N}$ 간격의 줄로 긋는다. 단 크기가 고정이므로 수준은 언제나 줄 위에만 있을 수 있기 때문이다. 24개 수준을 찍고 이웃 시행을 이어 하나의 연속된 궤적으로 만든다. 정답은 채운 표식, 오답은 빈 표식으로 그려서 규칙이 그림에서 바로 읽히게 한다. 궤적은 채운 표식이 둘 연달아야만 내려가고, 빈 표식이 나오면 곧바로 올라간다. 진행 방향이 바뀌는 시행마다 동그라미를 치고 $1$에서 $8$까지 번호를 매긴다. 첫 두 동그라미에는 줄을 긋는다. §7 Step 2가 버리는 것들이다. 남은 여섯의 평균에 수평선을 긋되, 라벨에 "임계값"이라고 쓰지 말고 그것이 추정하는 기준을 쓴다. *70.7% 정답, 2-down 1-up, 받침 5.00 N*. 그림 옆에는 §1의 인과 사슬을 옮겨 적고, 이 그림이 재는 단 하나의 화살표 아래에만 체크를 하고 나머지 둘은 비워 둔다.
 
 ### 7. 대상으로 한 번 끝까지: staircase 기록이 임계값과 JND가 되기까지
@@ -336,7 +452,7 @@ $$k=\frac{\widehat{\Delta F}}{F_0}=\frac{0.5167}{5.00}=0.1033,$$
 4. within-subject 연구에서 20명이 각 30 trial을 했다면 $n=600$인가?
 
 > [!tip]- 스스로 점검 정답 · Answers
-> 1. 어느 쪽도 아니다. 기준 없는 자극 수준은 양이 아니다. $0.5167\,\mathrm{N}$은 *이* 규칙이 참가자를 붙들어 두는 증분이고, 그것이 곡선 위 어느 점인지는 규칙이 정한다. 2-down/1-up을 3-down/1-up으로 바꾸면 같은 기록, 같은 피부, 같은 핸들이 $p=0.5^{1/3}=0.7937$을 내놓는다. 다른 점이고, 규칙을 듣지 않은 독자는 환산할 수 없는 숫자다. 그러니 보고되지 않은 것은 estimand 자체이고, 이것이 §2 항목 1을 산술로 다시 쓴 것이다.
+> 1. 기준 없는 자극 수준은 양이 아니다. $0.5167\,\mathrm{N}$은 *이* 규칙이 참가자를 붙들어 두는 증분이고, 그것이 곡선 위 어느 점인지는 규칙이 정한다. 2-down/1-up을 3-down/1-up으로 바꾸면 같은 기록, 같은 피부, 같은 핸들이 $p=0.5^{1/3}=0.7937$을 내놓는다. 다른 점이고, 규칙을 듣지 않은 독자는 환산할 수 없는 숫자다. 그러니 보고되지 않은 것은 estimand 자체이고, 이것이 §2 항목 1을 산술로 다시 쓴 것이다.
 > 2. 어느 쪽도 틀리지 않았고 그 간격은 잡음이 아니다. 가르는 질문은 *참가자가 무엇을 하라고 요구받았는가*다. constant stimuli는 **더 세다고 판정**한 곡선의 PSE 둘레 $25$–$75$ 구간의 절반을 쟀고, staircase는 차이 검출 과제에서 $70.7\%$ **정답**이 되는 증분을 쟀다. 과제 둘, 기준 둘, 함수 둘이다. 두 숫자는 명시된 심리측정 모형을 거쳐야만 비교되고, "그 JND"를 맨몸으로 보고한 논문은 다른 연구실이 재현할 수 없는 값을 낸 것이다.
 > 3. 기본 벽에서 엔코더 한 카운트는 $\Delta F_{\text{count}}=0.0245\,\mathrm{N}$이므로 $0.02\,\mathrm{N}$ 계단은 $0.02/0.0245=0.82$ 카운트다. 장치 자체의 양자보다 작아서, 한 계단 내리라는 명령이 전달되는 힘을 전혀 바꾸지 못할 수 있다. 실제로 쓴 $0.05\,\mathrm{N}$ 계단은 $0.05/0.0245=2.0$ 카운트라 하드웨어가 구별한다. 그러면 트랙은 참가자가 아니라 양자화 위에서 멈추고, 보고서에는 엔코더를 잰 값이 아름답게 수렴한 임계값으로 적힌다.
 > 4. 참가자 수준의 처치 주장에서는 아니다. trial은 참가자 안에 nested된 반복 관측이다. 참가자별 요약이나 위계·혼합 모델(참가자마다 자기 기준선을 주어 한 사람의 반복 trial을 서로 독립인 사람처럼 세지 않는 회귀)로 그 의존성을 다루고, 참가자 20명과 trial 600회를 모두 보고하라.
@@ -362,5 +478,5 @@ Tier C — 이 페이지는 트랙의 읽기 지도이므로 과제도 주장 �
 
 > [!tip]- 정답 · Solutions
 > 1. 궤적은 채운 표식이 셋 연달아야만 내려가므로 §6의 그림보다 한 수준에 더 오래 머문다. reversal은 셋이다. §6은 앞의 둘을 버리고 여섯을 평균하는데, 여기서는 그러면 하나가 남는다. 줄 긋기를 수행할 수 없다는 것 자체가 결과이지 불편이 아니다.
-> 2. (a) 시행 5에서 $0.45$, 시행 8에서 $0.50$, 시행 12에서 $0.40$. (b) 셋을 모두 평균하면 $(0.45+0.50+0.40)/3=0.45\,\mathrm{N}$이고, 붙여야 할 문장은 이것이 12 시행짜리 run의 reversal *전부*, 즉 홀수 개의 평균이며 burn-in을 하나도 버리지 않았다는 것이다. 그래서 마루와 골이 똑같이 기여하지 않고 추정값이 시작점을 함께 지고 있다. 보통은 reversal 여섯 이상을 최소로 보므로 이 run은 예비 실험으로 다뤄야 한다. (c) 이제 한 단 내려가려면 연속 셋을 맞혀야 하므로 확률은 $p^3$이고, 정상성에서 $p^3=1-p^3$, $p^3=0.5$, $p=0.5^{1/3}=0.7937$, 즉 $79.4\%$ 정답 점이다. 1-up 1-down은 한 번만 맞히면 내려가므로 $p=1-p$에서 $p=0.5$인데, 2대안 과제에서 그것은 chance다. 참가자가 찍고 있는 수준을 추적하는 셈이라 아무것도 추정하지 못한다. (d) $k=0.45/5.00=0.090$, 즉 $9.0\%$. 그리고 $0.45/0.0245=18.3$ 카운트, 침투로는 약 $1.13\,\mathrm{mm}$.
+> 2. (a) 시행 5에서 $0.45$, 시행 8에서 $0.50$, 시행 12에서 $0.40$. (b) 셋을 모두 평균하면 $(0.45+0.50+0.40)/3=0.45\,\mathrm{N}$이고, 붙여야 할 문장은 이것이 12 시행짜리 run의 reversal *전부*, 즉 홀수 개의 평균이며 burn-in을 하나도 버리지 않았다는 것이다. 그래서 마루와 골이 똑같이 기여하지 않고 추정값이 시작점을 함께 지고 있다. 보통은 reversal 여섯 이상을 최소로 보므로 이 run은 예비 실험으로 다뤄야 한다. (c) 이제 한 단 내려가려면 연속 셋을 맞혀야 하므로 확률은 $p^3$이고, 정상성에서 $p^3=1-p^3$, $p^3=0.5$, $p=0.5^{1/3}=0.7937$, 즉 $79.4\%$ 정답 점이다. 1-up 1-down은 한 번만 맞히면 내려가므로 $p=1-p$에서 $p=0.5$인데, 2대안 과제에서 그것은 chance다. 참가자가 찍고 있는 수준을 추적하는 셈이라 아무것도 추정하지 못한다. (d) $k=0.45/5.00=0.090$, 즉 $9.0\%$. 그리고 $0.45/0.0245=18.4$ 카운트, 침투로는 약 $1.13\,\mathrm{mm}$.
 > 3. (a) 첫째, 그 규칙은 $p=0.5$를 겨냥하는데 2AFC에서 그것은 chance이므로 "임계값"이 애초에 임계값이 아니다. 어떤 자극 수준도 식별되지 않았다. 둘째, 유효한 staircase 숫자라 해도 constant-stimuli JND와는 다른 estimand다(§7 Step 5). 과제가 다르고 기준이 다르고 곡선 위의 점이 다르다. 둘을 비교하려면 명시한 심리측정 모델을 거치거나, 아니면 비교하지 말아야 한다. (b) Estimand는 이름 붙은 양이어야 한다(첨두 접촉력이지 "더 낫다"가 아님). TLX는 자기보고 workload이지 역학 자극이 아니고, 시간은 어느 cue가 변화를 일으켰는지 가리지 않는다. 피부 자극을 보정하라. (c) 처치 주장의 단위는 참가자이고 trial은 nested다. 사람 $20$명 *과* trial $600$회를, 위계·혼합 모델이나 참가자별 요약과 함께 보고한다. (d) 벤치 응답은 전달된 동역학을 지지하지 검출 가능성을 지지하지 않는다. 과제 개선은 그 프로토콜 안의 인과 효과를 지지하지 현장 일반화를 지지하지 않는다.

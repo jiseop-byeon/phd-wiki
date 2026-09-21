@@ -43,6 +43,90 @@ A **predicted segment** $P$ at threshold $\theta$ is the set of frames with $s_k
 
 ### Homework diagram: the timeline, three bars under it
 
+The figure is the worked case at $\theta = 0.50$, the threshold Steps 2 to 4 use.
+
+<svg viewBox="0 0 560 364" style="max-width:100%;height:auto" role="img" aria-label="Clip V8 on one time axis from 0 to 2.00 s: eight frame boxes with the live detector's scores and a dashed threshold at 0.50, three bars below for the ground truth, the live prediction and the lagged prediction, the intersection and union bracketed, and arrows at the true onset, the live crossing and the lagged crossing 0.50 s apart">
+  <defs><marker id="arV8e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="62" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="90" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 1</text>
+  <text x="90" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0.00 s</text>
+  <rect x="78" y="174" width="24" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <text x="90" y="170" font-size="11" fill="currentColor" text-anchor="middle">0.10</text>
+  <rect x="122" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="150" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 2</text>
+  <text x="150" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0.25 s</text>
+  <rect x="138" y="169" width="24" height="15" fill="currentColor" fill-opacity="0.22"/>
+  <text x="150" y="165" font-size="11" fill="currentColor" text-anchor="middle">0.15</text>
+  <rect x="182" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="210" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 3</text>
+  <text x="210" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0.50 s</text>
+  <rect x="198" y="149" width="24" height="35" fill="currentColor" fill-opacity="0.22"/>
+  <text x="210" y="145" font-size="11" fill="currentColor" text-anchor="middle">0.35</text>
+  <rect x="242" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="270" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 4</text>
+  <text x="270" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0.75 s</text>
+  <rect x="258" y="122" width="24" height="62" fill="currentColor" fill-opacity="0.55"/>
+  <text x="270" y="118" font-size="11" fill="currentColor" text-anchor="middle">0.62</text>
+  <rect x="302" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="330" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 5</text>
+  <text x="330" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1.00 s</text>
+  <rect x="318" y="96" width="24" height="88" fill="currentColor" fill-opacity="0.55"/>
+  <text x="330" y="92" font-size="11" fill="currentColor" text-anchor="middle">0.88</text>
+  <rect x="362" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="390" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 6</text>
+  <text x="390" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1.25 s</text>
+  <rect x="378" y="93" width="24" height="91" fill="currentColor" fill-opacity="0.55"/>
+  <text x="390" y="89" font-size="11" fill="currentColor" text-anchor="middle">0.91</text>
+  <rect x="422" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="450" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 7</text>
+  <text x="450" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1.50 s</text>
+  <rect x="438" y="130" width="24" height="54" fill="currentColor" fill-opacity="0.55"/>
+  <text x="450" y="126" font-size="11" fill="currentColor" text-anchor="middle">0.54</text>
+  <rect x="482" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="510" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 8</text>
+  <text x="510" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1.75 s</text>
+  <rect x="498" y="164" width="24" height="20" fill="currentColor" fill-opacity="0.22"/>
+  <text x="510" y="160" font-size="11" fill="currentColor" text-anchor="middle">0.20</text>
+  <line x1="60" y1="134" x2="540" y2="134" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <text x="56" y="138" font-size="11" fill="currentColor" text-anchor="end">θ = 0.50</text>
+  <line x1="60" y1="184" x2="540" y2="184" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="60" y1="184" x2="60" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="120" y1="184" x2="120" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="180" y1="184" x2="180" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="240" y1="184" x2="240" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="300" y1="184" x2="300" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="360" y1="184" x2="360" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="420" y1="184" x2="420" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="480" y1="184" x2="480" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="540" y1="184" x2="540" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="60" y="201" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <text x="548" y="201" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">2.00 s</text>
+  <line x1="180" y1="21" x2="180" y2="183" stroke="currentColor" stroke-width="1.5" marker-end="url(#arV8e)"/>
+  <line x1="240" y1="21" x2="240" y2="183" stroke="currentColor" stroke-width="1.5" marker-end="url(#arV8e)"/>
+  <line x1="360" y1="21" x2="360" y2="183" stroke="currentColor" stroke-width="1.5" marker-end="url(#arV8e)"/>
+  <text x="175" y="17" font-size="11" fill="currentColor" text-anchor="end">true onset</text>
+  <text x="245" y="17" font-size="11" fill="currentColor">live first ≥ θ</text>
+  <text x="365" y="17" font-size="11" fill="currentColor">lagged first ≥ θ</text>
+  <line x1="264" y1="30" x2="242" y2="30" stroke="currentColor" stroke-width="1.1" marker-end="url(#arV8e)"/>
+  <line x1="336" y1="30" x2="358" y2="30" stroke="currentColor" stroke-width="1.1" marker-end="url(#arV8e)"/>
+  <text x="300" y="34" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">ΔT = 0.50 s</text>
+  <text x="10" y="218" font-size="12" fill="currentColor" font-weight="700">G</text>
+  <rect x="180" y="206" width="300" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.3"/>
+  <text x="330" y="218" font-size="11" fill="currentColor" text-anchor="middle">frames 3–7</text>
+  <path d="M180.0 235 v5 H480.0 v-5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="175" y="244" font-size="11" fill="currentColor" text-anchor="end">union: 5 frames</text>
+  <path d="M240.0 251 v5 H480.0 v-5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="235" y="260" font-size="11" fill="currentColor" text-anchor="end">intersection: 4 frames</text>
+  <text x="10" y="282" font-size="12" fill="currentColor" font-weight="700">P<tspan dy="3">live</tspan></text>
+  <rect x="240" y="270" width="240" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.3"/>
+  <text x="360" y="282" font-size="11" fill="currentColor" text-anchor="middle">frames 4–7</text>
+  <text x="10" y="310" font-size="12" fill="currentColor" font-weight="700">P<tspan dy="3">lag</tspan></text>
+  <rect x="360" y="298" width="180" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.3"/>
+  <text x="450" y="310" font-size="11" fill="currentColor" text-anchor="middle">frames 6–8</text>
+  <text x="10" y="338" font-size="11" fill="currentColor">tIoU(P<tspan dy="3">live</tspan><tspan dy="-3">,</tspan> G) = 4/5 = 0.80; tIoU(P<tspan dy="3">lag</tspan><tspan dy="-3">,</tspan> G) = 2/6 = 0.333.</text>
+  <text x="10" y="354" font-size="11" fill="currentColor" fill-opacity="0.7">θ = 0.50 is the worked case’s threshold; the boxes hold the live detector’s scores.</text>
+</svg>
+
 Draw one horizontal time axis from 0 to 2.00 s with eight frame boxes above it, each 0.25 s wide and labelled with $k$ and its start time. Inside each box draw $s_k$ for the live detector as a vertical bar, and rule a horizontal dashed line at the threshold $\theta$ across all eight.
 
 Under the axis draw three bars, aligned to the same times and stacked:
@@ -279,7 +363,7 @@ Tier B. Hand derivation on **V8**, using only this page and its prerequisites. S
 3. **Interpret.** A paper reports top-1 accuracy of 100% on this class and calls the system suitable for a safety interlock, adding that it runs at 30 fps. Using 2(b) and 2(c), say what the top-1 number did and did not establish, and name the one measurement you would ask for instead.
 
 > [!tip]- Solutions
-> 1. The drawing must show $P_{\text{live}}$ starting one frame *after* $G'$ starts and ending one frame *after* it ends — the prediction is shifted, not merely shorter, which is why the union is larger than either segment. $P_{\text{lag3}}$ must not touch $G'$ at all.
+> 1. The drawing must show $P_{\text{live}}$ starting one frame *after* $G'$ starts and ending one frame *after* it ends — the prediction is shifted, not merely shorter, which is why the union is larger than either segment. At the drawing's $\theta = 0.30$, $P_{\text{lag3}}$ is frames 6–8 and touches $G'$ in frame 6 only ($\text{tIoU} = 1/7 = 0.143$); at 2(b)'s $\theta = 0.50$ it does not touch $G'$ at all.
 > 2. (a) At $\theta = 0.30$ the frames at or above threshold are 3, 4, 5, 6, 7, so $P_{\text{live}} = $ frames 3–7 $= [0.50,\ 1.75)$ s. Against $G' = $ frames 2–6 the intersection is frames 3–6, four frames, and the union is frames 2–7, six frames, so $\text{tIoU} = 4/6 = 0.667$. At $\theta = 0.50$ the prediction is frames 4–7; the intersection is frames 4, 5, 6, three frames, and the union is still frames 2–7, six frames, so $\text{tIoU} = 3/6 = 0.500$. Both are true positives at $\alpha = 0.50$: the matching condition is that tIoU *reaches* the threshold, so 0.500 counts, exactly as a spatial IoU of 0.50 counts in ML Practice §3. Note what this exercise shows — moving the threshold changed the number by a third without the detector changing, and both predictions score identically in the mAP table.
 > (b) The lagged row is $0, 0, 0, 0.10, 0.15, 0.35, 0.62, 0.88$, so at $\theta = 0.50$ only frames 7 and 8 qualify: $P_{\text{lag3}} = [1.50,\ 2.00)$ s. Its intersection with $G' = $ frames 2–6 is **empty**, so $\text{tIoU} = 0$. Yet max pooling gives $0.88$ — correct label, top-1 $= 100\%$ — while mean pooling gives $2.10/8 = 0.263$, below 0.5, so top-1 $= 0\%$. A detector that found nothing where the action was still scores a perfect top-1 under max pooling.
 > (c) Three frames at 4 fps is $0.75$ s. The live detector crosses $\theta = 0.50$ at frame 4, $t = 0.75$ s, and the lagged one at frame 7, $t = 1.50$ s. With $\partial S_p/\partial T_r = 2.6$ m/s, $\Delta S_p = 2.6 \times 0.75 = 1.95$ m, so $S_p$ rises from 1.24 m to 3.19 m, the sensing field from 3.49 m to $2.25 + 3.19 = 5.44$ m, and the monitored floor from $38.3\ \mathrm{m}^2$ to $\pi(5.44)^2 = 93.0\ \mathrm{m}^2$ — about $2.4\times$.
@@ -344,6 +428,90 @@ Tier B. Hand derivation on **V8**, using only this page and its prerequisites. S
 *범위: 이 페이지는 네 비디오 과제가 각각 무엇을 재는지, 프레임별 점수가 어떻게 구간과 숫자가 되는지, 검출 지연이 하류에서 무엇을 치르는지를 가르친다. 백본을 학습시키는 법(§3의 계보가 곧 읽기 목록이다), 프레임에서 자세나 손을 뽑는 법([[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]]), 예측이 생긴 다음에 무엇을 할지([[04-robotics/human-intent-prediction|23. 인간 의도·궤적 예측]]와 [[04-robotics/hri-safety|11. HRI와 안전]])는 가르치지 않는다.*
 
 ### 과제가 그릴 그림: 시간축과 그 아래 막대 셋
+
+그림은 아래 계산의 경우를 2~4단계의 문턱값 $\theta = 0.50$에서 그린 것이다.
+
+<svg viewBox="0 0 560 364" style="max-width:100%;height:auto" role="img" aria-label="클립 V8을 0에서 2.00초까지의 시간축 하나에 그린 그림: 실시간 검출기 점수가 든 프레임 상자 여덟 개와 0.50의 문턱값 점선, 그 아래 정답·실시간 예측·지연 예측의 막대 셋, 괄호로 묶은 교집합과 합집합, 그리고 실제 시작·실시간 교차·지연 교차 시각의 화살표와 0.50초 간격">
+  <defs><marker id="arV8k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="62" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="90" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 1</text>
+  <text x="90" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0.00 s</text>
+  <rect x="78" y="174" width="24" height="10" fill="currentColor" fill-opacity="0.22"/>
+  <text x="90" y="170" font-size="11" fill="currentColor" text-anchor="middle">0.10</text>
+  <rect x="122" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="150" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 2</text>
+  <text x="150" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0.25 s</text>
+  <rect x="138" y="169" width="24" height="15" fill="currentColor" fill-opacity="0.22"/>
+  <text x="150" y="165" font-size="11" fill="currentColor" text-anchor="middle">0.15</text>
+  <rect x="182" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="210" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 3</text>
+  <text x="210" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0.50 s</text>
+  <rect x="198" y="149" width="24" height="35" fill="currentColor" fill-opacity="0.22"/>
+  <text x="210" y="145" font-size="11" fill="currentColor" text-anchor="middle">0.35</text>
+  <rect x="242" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="270" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 4</text>
+  <text x="270" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">0.75 s</text>
+  <rect x="258" y="122" width="24" height="62" fill="currentColor" fill-opacity="0.55"/>
+  <text x="270" y="118" font-size="11" fill="currentColor" text-anchor="middle">0.62</text>
+  <rect x="302" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="330" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 5</text>
+  <text x="330" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1.00 s</text>
+  <rect x="318" y="96" width="24" height="88" fill="currentColor" fill-opacity="0.55"/>
+  <text x="330" y="92" font-size="11" fill="currentColor" text-anchor="middle">0.88</text>
+  <rect x="362" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="390" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 6</text>
+  <text x="390" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1.25 s</text>
+  <rect x="378" y="93" width="24" height="91" fill="currentColor" fill-opacity="0.55"/>
+  <text x="390" y="89" font-size="11" fill="currentColor" text-anchor="middle">0.91</text>
+  <rect x="422" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="450" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 7</text>
+  <text x="450" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1.50 s</text>
+  <rect x="438" y="130" width="24" height="54" fill="currentColor" fill-opacity="0.55"/>
+  <text x="450" y="126" font-size="11" fill="currentColor" text-anchor="middle">0.54</text>
+  <rect x="482" y="40" width="56" height="144" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="510" y="54" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">k = 8</text>
+  <text x="510" y="68" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1.75 s</text>
+  <rect x="498" y="164" width="24" height="20" fill="currentColor" fill-opacity="0.22"/>
+  <text x="510" y="160" font-size="11" fill="currentColor" text-anchor="middle">0.20</text>
+  <line x1="60" y1="134" x2="540" y2="134" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <text x="56" y="138" font-size="11" fill="currentColor" text-anchor="end">θ = 0.50</text>
+  <line x1="60" y1="184" x2="540" y2="184" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="60" y1="184" x2="60" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="120" y1="184" x2="120" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="180" y1="184" x2="180" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="240" y1="184" x2="240" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="300" y1="184" x2="300" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="360" y1="184" x2="360" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="420" y1="184" x2="420" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="480" y1="184" x2="480" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="540" y1="184" x2="540" y2="189" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="60" y="201" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <text x="548" y="201" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">2.00 s</text>
+  <line x1="180" y1="21" x2="180" y2="183" stroke="currentColor" stroke-width="1.5" marker-end="url(#arV8k)"/>
+  <line x1="240" y1="21" x2="240" y2="183" stroke="currentColor" stroke-width="1.5" marker-end="url(#arV8k)"/>
+  <line x1="360" y1="21" x2="360" y2="183" stroke="currentColor" stroke-width="1.5" marker-end="url(#arV8k)"/>
+  <text x="175" y="17" font-size="11" fill="currentColor" text-anchor="end">실제 시작</text>
+  <text x="245" y="17" font-size="11" fill="currentColor">실시간이 처음 ≥ θ</text>
+  <text x="365" y="17" font-size="11" fill="currentColor">지연이 처음 ≥ θ</text>
+  <line x1="264" y1="30" x2="242" y2="30" stroke="currentColor" stroke-width="1.1" marker-end="url(#arV8k)"/>
+  <line x1="336" y1="30" x2="358" y2="30" stroke="currentColor" stroke-width="1.1" marker-end="url(#arV8k)"/>
+  <text x="300" y="34" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">ΔT = 0.50 s</text>
+  <text x="10" y="218" font-size="12" fill="currentColor" font-weight="700">G</text>
+  <rect x="180" y="206" width="300" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.3"/>
+  <text x="330" y="218" font-size="11" fill="currentColor" text-anchor="middle">프레임 3–7</text>
+  <path d="M180.0 235 v5 H480.0 v-5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="175" y="244" font-size="11" fill="currentColor" text-anchor="end">합집합: 5 프레임</text>
+  <path d="M240.0 251 v5 H480.0 v-5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="235" y="260" font-size="11" fill="currentColor" text-anchor="end">교집합: 4 프레임</text>
+  <text x="10" y="282" font-size="12" fill="currentColor" font-weight="700">P<tspan dy="3">live</tspan></text>
+  <rect x="240" y="270" width="240" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.3"/>
+  <text x="360" y="282" font-size="11" fill="currentColor" text-anchor="middle">프레임 4–7</text>
+  <text x="10" y="310" font-size="12" fill="currentColor" font-weight="700">P<tspan dy="3">lag</tspan></text>
+  <rect x="360" y="298" width="180" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.3"/>
+  <text x="450" y="310" font-size="11" fill="currentColor" text-anchor="middle">프레임 6–8</text>
+  <text x="10" y="338" font-size="11" fill="currentColor">tIoU(P<tspan dy="3">live</tspan><tspan dy="-3">,</tspan> G) = 4/5 = 0.80, tIoU(P<tspan dy="3">lag</tspan><tspan dy="-3">,</tspan> G) = 2/6 = 0.333.</text>
+  <text x="10" y="354" font-size="11" fill="currentColor" fill-opacity="0.7">θ = 0.50은 계산 예제의 문턱값이고, 상자 안은 실시간 검출기의 점수다.</text>
+</svg>
 
 0에서 2.00초까지 가로 시간축을 하나 긋고 그 위에 프레임 상자 여덟 개를 놓는다. 각 상자는 0.25초 폭이고 $k$와 시작 시각을 적는다. 상자 안에 실시간 검출기의 $s_k$를 세로 막대로 그리고, 여덟 상자를 가로지르는 문턱값 $\theta$의 점선을 긋는다.
 
@@ -581,7 +749,7 @@ Tier B. **V8** 위에서 손으로 유도한다. 이 페이지와 선수 지식�
 3. **해석.** 어떤 논문이 이 클래스에서 top-1 정확도 100%를 보고하고, 30 fps로 돈다는 말을 덧붙이며, 이 시스템이 안전 인터록에 적합하다고 말한다. 2(b)와 2(c)를 써서 그 top-1 숫자가 무엇을 확립했고 무엇을 확립하지 못했는지 말하고, 대신 요구할 측정 하나를 대라.
 
 > [!tip]- 정답 · Solutions
-> 1. 그림에서 $P_{\text{live}}$는 $G'$보다 한 프레임 *늦게* 시작해 한 프레임 *늦게* 끝나야 한다. 예측이 단지 짧은 것이 아니라 밀려 있고, 그래서 합집합이 두 구간 어느 쪽보다도 크다. $P_{\text{lag3}}$은 $G'$에 전혀 닿지 않아야 한다.
+> 1. 그림에서 $P_{\text{live}}$는 $G'$보다 한 프레임 *늦게* 시작해 한 프레임 *늦게* 끝나야 한다. 예측이 단지 짧은 것이 아니라 밀려 있고, 그래서 합집합이 두 구간 어느 쪽보다도 크다. 그림의 $\theta = 0.30$에서 $P_{\text{lag3}}$은 프레임 6–8이고 $G'$와는 프레임 6에서만 닿는다($\text{tIoU} = 1/7 = 0.143$). 2(b)의 $\theta = 0.50$에서는 $G'$에 전혀 닿지 않는다.
 > 2. (a) $\theta = 0.30$에서 문턱값 이상인 프레임은 3, 4, 5, 6, 7이므로 $P_{\text{live}} = $ 프레임 3–7 $= [0.50,\ 1.75)$ s다. $G' = $ 프레임 2–6에 대해 교집합은 프레임 3–6으로 넷, 합집합은 프레임 2–7로 여섯이므로 $\text{tIoU} = 4/6 = 0.667$이다. $\theta = 0.50$에서는 예측이 프레임 4–7이고, 교집합은 프레임 4, 5, 6으로 셋, 합집합은 여전히 프레임 2–7로 여섯이므로 $\text{tIoU} = 3/6 = 0.500$이다. 둘 다 $\alpha = 0.50$에서 참양성이다. 정합 조건은 tIoU가 문턱값에 *닿는* 것이므로 0.500도 집계된다. ML 실무 §3에서 공간 IoU 0.50이 집계되는 것과 같다. 이 문제가 보이는 것에 주의하라 — 검출기는 그대로인데 문턱값을 옮긴 것만으로 값이 3분의 1 움직였고, 두 예측은 mAP 표에서 똑같은 점수를 받는다.
 > (b) 지연된 행은 $0, 0, 0, 0.10, 0.15, 0.35, 0.62, 0.88$이므로 $\theta = 0.50$에서는 프레임 7과 8만 남는다: $P_{\text{lag3}} = [1.50,\ 2.00)$ s. $G' = $ 프레임 2–6과의 교집합은 **공집합**이므로 $\text{tIoU} = 0$이다. 그런데 max 풀링은 $0.88$을 주고 — 라벨이 맞으므로 top-1 $= 100\%$ — mean 풀링은 $2.10/8 = 0.263$으로 0.5에 못 미쳐 top-1 $= 0\%$다. 행동이 있던 자리에서 아무것도 못 찾은 검출기가 max 풀링에서는 여전히 완벽한 top-1을 받는다.
 > (c) 4 fps에서 세 프레임은 $0.75$초다. 실시간 검출기는 프레임 4, $t = 0.75$ s에, 지연된 검출기는 프레임 7, $t = 1.50$ s에 $\theta = 0.50$을 넘는다. $\partial S_p/\partial T_r = 2.6$ m/s이므로 $\Delta S_p = 2.6 \times 0.75 = 1.95$ m이고, $S_p$는 1.24 m에서 3.19 m로, 감지 영역은 3.49 m에서 $2.25 + 3.19 = 5.44$ m로, 감시 바닥은 $38.3\ \mathrm{m}^2$에서 $\pi(5.44)^2 = 93.0\ \mathrm{m}^2$로, 약 $2.4$배가 된다.

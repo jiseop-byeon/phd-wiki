@@ -48,7 +48,108 @@ The three sensors watch the *same* patch and the *same* event, which is the whol
 
 Three panels, and the first two must be drawn to the same scale or they teach nothing.
 
-**Left — the patch, sampled.** Draw the $5\ \mathrm{mm}$-radius patch as a circle. Over its left half, rule the optical sampling grid; over its right half, rule the $4 \times 4$ taxel grid. Beneath it, three horizontal bars in a row, all at the same scale: $0.1268\ \mathrm{mm}$ (what the optical sensor resolves), $0.94\ \mathrm{mm}$ (the fingertip), $9.30\ \mathrm{mm}$ (what the taxel array resolves). The third bar is wider than the patch; draw it so, and let that be the figure's punchline.
+<svg viewBox="0 0 560 404" style="max-width:100%;height:auto" role="img" aria-label="Three panels for the fingertip patch S1: left, the 5 mm patch with the optical and 4 by 4 taxel grids and three resolution bars at one scale; middle, the slipping annulus at Q over mu P of 0.25, 0.50 and 1.00; right, the piezo reading of a held 5 N grip decaying with tau 10.0 s against a flat barometric line, and a 50 ms inset where an 80 Hz burst is the same on both">
+  <text x="92" y="18" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">the patch, sampled</text>
+  <text x="67" y="33" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">optical</text>
+  <text x="117" y="33" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">taxel 4×4</text>
+  <path d="M86.9 40.3V139.7M81.9 41V139M76.8 42.4V137.6M71.7 44.3V135.7M66.6 46.9V133.1M61.6 50.3V129.7M56.5 54.8V125.2M51.4 60.8V119.2M46.4 69.6V110.4M42 90H92M42.3 95.1H92M42.3 84.9H92M43 100.1H92M43 79.9H92M44.4 105.2H92M44.4 74.8H92M46.3 110.3H92M46.3 69.7H92M48.9 115.4H92M48.9 64.6H92M52.3 120.4H92M52.3 59.6H92M56.8 125.5H92M56.8 54.5H92M62.8 130.6H92M62.8 49.4H92M71.6 135.6H92M71.6 44.4H92" fill="none" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.55"/>
+  <path d="M138.5 71.6V108.4M92 54.2H127M92 90H142M92 125.8H127" fill="none" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85"/>
+  <line x1="92" y1="40" x2="92" y2="140" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85"/>
+  <circle cx="92" cy="90" r="50" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="87" y="156" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">0.0634 mm</text>
+  <text x="97" y="156" font-size="11" fill="currentColor" fill-opacity="0.8">4.65 mm</text>
+  <rect x="42" y="170" width="1.3" height="8" fill="currentColor" fill-opacity="0.9"/>
+  <text x="48.3" y="178" font-size="11" fill="currentColor">0.1268 mm optical</text>
+  <rect x="42" y="186" width="9.4" height="8" fill="currentColor" fill-opacity="0.9"/>
+  <text x="56.4" y="194" font-size="11" fill="currentColor">0.94 mm fingertip</text>
+  <text x="42" y="212" font-size="11" fill="currentColor" font-weight="600">9.30 mm taxel</text>
+  <rect x="42" y="218" width="93" height="9" fill="currentColor" fill-opacity="0.9"/>
+  <line x1="42" y1="236" x2="142" y2="236" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="42" y1="232" x2="42" y2="240" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="92" y1="232" x2="92" y2="240" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="142" y1="232" x2="142" y2="240" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="42" y="252" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <text x="92" y="252" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">a</text>
+  <text x="142" y="252" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">2a</text>
+  <text x="12" y="276" font-size="11" fill="currentColor" font-weight="600">9.30 mm &gt; a = 5 mm:</text>
+  <text x="12" y="290" font-size="11" fill="currentColor">wider than any annulus,</text>
+  <text x="12" y="304" font-size="11" fill="currentColor">narrower than 2a = 10 mm.</text>
+  <text x="262" y="18" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">slip, as an annulus</text>
+  <path d="M172 82a50 50 0 1 0 100 0a50 50 0 1 0 -100 0ZM176.6 82a45.4 45.4 0 1 0 90.9 0a45.4 45.4 0 1 0 -90.9 0Z" fill="currentColor" fill-opacity="0.32" fill-rule="evenodd" stroke="none"/>
+  <circle cx="222" cy="82" r="45.4" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="3 2"/>
+  <circle cx="222" cy="82" r="50" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <rect x="269.1" y="77" width="1.3" height="10" fill="currentColor" fill-opacity="0.95"/>
+  <text x="280" y="60" font-size="11" fill="currentColor" font-weight="600">Q/μP = 0.25</text>
+  <text x="280" y="74" font-size="11" fill="currentColor">c = 4.54 mm</text>
+  <text x="280" y="88" font-size="11" fill="currentColor">width 0.46 mm</text>
+  <text x="280" y="102" font-size="11" fill="currentColor" font-weight="600">optical fits</text>
+  <text x="280" y="116" font-size="11" fill="currentColor" fill-opacity="0.7">first at 0.074</text>
+  <path d="M172 198a50 50 0 1 0 100 0a50 50 0 1 0 -100 0ZM182.3 198a39.7 39.7 0 1 0 79.4 0a39.7 39.7 0 1 0 -79.4 0Z" fill="currentColor" fill-opacity="0.32" fill-rule="evenodd" stroke="none"/>
+  <circle cx="222" cy="198" r="39.7" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="3 2"/>
+  <circle cx="222" cy="198" r="50" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <rect x="262.1" y="193" width="9.4" height="10" fill="currentColor" fill-opacity="0.95"/>
+  <text x="280" y="176" font-size="11" fill="currentColor" font-weight="600">Q/μP = 0.50</text>
+  <text x="280" y="190" font-size="11" fill="currentColor">c = 3.97 mm</text>
+  <text x="280" y="204" font-size="11" fill="currentColor">width 1.03 mm</text>
+  <text x="280" y="218" font-size="11" fill="currentColor" font-weight="600">fingertip fits</text>
+  <text x="280" y="232" font-size="11" fill="currentColor" fill-opacity="0.7">first at 0.465</text>
+  <circle cx="222" cy="314" r="50" fill="currentColor" fill-opacity="0.32"/>
+  <circle cx="222" cy="314" r="50" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <rect x="179" y="309.5" width="93" height="9" fill="currentColor" fill-opacity="0.9"/>
+  <text x="280" y="292" font-size="11" fill="currentColor" font-weight="600">Q/μP = 1.00</text>
+  <text x="280" y="306" font-size="11" fill="currentColor">c = 0, all slips</text>
+  <text x="280" y="320" font-size="11" fill="currentColor">width = a = 5 mm</text>
+  <text x="280" y="334" font-size="11" fill="currentColor" font-weight="600">taxel never fits</text>
+  <text x="280" y="348" font-size="11" fill="currentColor" fill-opacity="0.7">9.30 &gt; 5</text>
+  <text x="478" y="18" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">time</text>
+  <line x1="404" y1="152" x2="538" y2="152" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="404" y1="152" x2="404" y2="40" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="404" y1="152" x2="404" y2="156" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="404" y="168" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <line x1="447.3" y1="152" x2="447.3" y2="156" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="447.3" y="168" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">10</text>
+  <line x1="490.7" y1="152" x2="490.7" y2="156" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="490.7" y="168" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">20</text>
+  <line x1="534" y1="152" x2="534" y2="156" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="534" y="168" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">30 s</text>
+  <line x1="400" y1="152" x2="404" y2="152" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="398" y="156" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">0</text>
+  <line x1="400" y1="52" x2="404" y2="52" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="398" y="56" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">5 N</text>
+  <line x1="404" y1="52" x2="534" y2="52" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 3"/>
+  <text x="408" y="46" font-size="11" fill="currentColor">barometric: 5 N held</text>
+  <path d="M404 52 L405.1 54.5 L406.2 56.9 L407.2 59.2 L408.3 61.5 L409.4 63.8 L410.5 65.9 L411.6 68.1 L412.7 70.1 L413.8 72.1 L414.8 74.1 L415.9 76 L417 77.9 L418.1 79.7 L419.2 81.5 L420.2 83.3 L421.3 85 L422.4 86.6 L423.5 88.2 L424.6 89.8 L425.7 91.3 L426.8 92.8 L427.8 94.3 L428.9 95.7 L430 97.1 L431.1 98.5 L432.2 99.8 L433.2 101.1 L434.3 102.3 L435.4 103.6 L436.5 104.8 L437.6 105.9 L438.7 107.1 L439.8 108.2 L440.8 109.3 L441.9 110.3 L443 111.3 L444.1 112.3 L445.2 113.3 L446.2 114.3 L447.3 115.2 L448.4 116.1 L449.5 117 L450.6 117.9 L451.7 118.7 L452.8 119.5 L453.8 120.3 L454.9 121.1 L456 121.9 L457.1 122.6 L458.2 123.3 L459.2 124.1 L460.3 124.7 L461.4 125.4 L462.5 126.1 L463.6 126.7 L464.7 127.3 L465.8 127.9 L466.8 128.5 L467.9 129.1 L469 129.7 L470.1 130.2 L471.2 130.8 L472.2 131.3 L473.3 131.8 L474.4 132.3 L475.5 132.8 L476.6 133.3 L477.7 133.7 L478.8 134.2 L479.8 134.6 L480.9 135.1 L482 135.5 L483.1 135.9 L484.2 136.3 L485.2 136.7 L486.3 137 L487.4 137.4 L488.5 137.8 L489.6 138.1 L490.7 138.5 L491.8 138.8 L492.8 139.1 L493.9 139.4 L495 139.8 L496.1 140.1 L497.2 140.4 L498.2 140.6 L499.3 140.9 L500.4 141.2 L501.5 141.5 L502.6 141.7 L503.7 142 L504.8 142.2 L505.8 142.5 L506.9 142.7 L508 142.9 L509.1 143.2 L510.2 143.4 L511.2 143.6 L512.3 143.8 L513.4 144 L514.5 144.2 L515.6 144.4 L516.7 144.6 L517.8 144.8 L518.8 144.9 L519.9 145.1 L521 145.3 L522.1 145.4 L523.2 145.6 L524.2 145.8 L525.3 145.9 L526.4 146.1 L527.5 146.2 L528.6 146.4 L529.7 146.5 L530.8 146.6 L531.8 146.8 L532.9 146.9 L534 147" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="434" y1="102" x2="434" y2="152" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <line x1="404" y1="102" x2="434" y2="102" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <circle cx="434" cy="102" r="2.6" fill="currentColor" fill-opacity="1"/>
+  <path d="M437 99L446 90" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="448" y="94" font-size="11" fill="currentColor">t½ = 6.93 s</text>
+  <line x1="447.3" y1="115.2" x2="447.3" y2="152" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <line x1="404" y1="115.2" x2="447.3" y2="115.2" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <circle cx="447.3" cy="115.2" r="2.6" fill="currentColor" fill-opacity="1"/>
+  <path d="M450.3 112.2L459.3 106" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="461.3" y="110" font-size="11" fill="currentColor">τ = 10.0 s</text>
+  <text x="398" y="106" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">2.50</text>
+  <text x="398" y="123.2" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">1.84</text>
+  <text x="458.2" y="72" font-size="11" fill="currentColor">piezo: 5·e<tspan dy="-5">−t/τ</tspan></text>
+  <rect x="384" y="190" width="164" height="122" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="390" y="205" font-size="11" fill="currentColor" font-weight="600">inset · 50 ms · 80 Hz burst</text>
+  <line x1="398" y1="258" x2="528" y2="258" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <line x1="398" y1="286" x2="398" y2="290" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="398" y="302" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <line x1="463" y1="286" x2="463" y2="290" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="463" y="302" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">25</text>
+  <line x1="528" y1="286" x2="528" y2="290" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="528" y="302" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">50 ms</text>
+  <line x1="398" y1="286" x2="528" y2="286" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <path d="M398 258 L398.5 258 L399.1 258 L399.6 258 L400.2 258 L400.7 257.9 L401.2 257.9 L401.8 257.9 L402.3 257.8 L402.9 257.7 L403.4 257.6 L404 257.5 L404.5 257.4 L405 257.3 L405.6 257.1 L406.1 257 L406.7 256.9 L407.2 256.8 L407.8 256.7 L408.3 256.6 L408.8 256.5 L409.4 256.5 L409.9 256.4 L410.5 256.5 L411 256.5 L411.5 256.7 L412.1 256.8 L412.6 257 L413.2 257.3 L413.7 257.6 L414.2 258 L414.8 258.4 L415.3 258.9 L415.9 259.4 L416.4 260 L417 260.5 L417.5 261.1 L418 261.8 L418.6 262.4 L419.1 263 L419.7 263.6 L420.2 264.2 L420.8 264.8 L421.3 265.2 L421.8 265.7 L422.4 266 L422.9 266.3 L423.5 266.5 L424 266.5 L424.5 266.5 L425.1 266.3 L425.6 266.1 L426.2 265.7 L426.7 265.1 L427.2 264.4 L427.8 263.7 L428.3 262.7 L428.9 261.7 L429.4 260.6 L430 259.3 L430.5 258 L431 256.6 L431.6 255.2 L432.1 253.7 L432.7 252.2 L433.2 250.7 L433.8 249.2 L434.3 247.7 L434.8 246.3 L435.4 245 L435.9 243.8 L436.5 242.8 L437 241.8 L437.5 241 L438.1 240.4 L438.6 240 L439.2 239.8 L439.7 239.8 L440.2 240 L440.8 240.5 L441.3 241.1 L441.9 242 L442.4 243.1 L443 244.4 L443.5 245.9 L444 247.5 L444.6 249.4 L445.1 251.4 L445.7 253.5 L446.2 255.7 L446.8 258 L447.3 260.3 L447.8 262.7 L448.4 265.1 L448.9 267.4 L449.5 269.7 L450 271.8 L450.5 273.9 L451.1 275.8 L451.6 277.5 L452.2 279 L452.7 280.3 L453.2 281.4 L453.8 282.2 L454.3 282.7 L454.9 283 L455.4 283 L456 282.7 L456.5 282.1 L457 281.3 L457.6 280.1 L458.1 278.7 L458.7 277.1 L459.2 275.3 L459.8 273.2 L460.3 270.9 L460.8 268.5 L461.4 266 L461.9 263.4 L462.5 260.7 L463 258 L463.5 255.3 L464.1 252.6 L464.6 250 L465.2 247.5 L465.7 245.1 L466.2 242.8 L466.8 240.7 L467.3 238.9 L467.9 237.3 L468.4 235.9 L469 234.7 L469.5 233.9 L470 233.3 L470.6 233 L471.1 233 L471.7 233.3 L472.2 233.8 L472.8 234.6 L473.3 235.7 L473.8 237 L474.4 238.5 L474.9 240.2 L475.5 242.1 L476 244.2 L476.5 246.3 L477.1 248.6 L477.6 250.9 L478.2 253.3 L478.7 255.7 L479.2 258 L479.8 260.3 L480.3 262.5 L480.9 264.6 L481.4 266.6 L482 268.5 L482.5 270.1 L483 271.6 L483.6 272.9 L484.1 274 L484.7 274.9 L485.2 275.5 L485.8 276 L486.3 276.2 L486.8 276.2 L487.4 276 L487.9 275.6 L488.5 275 L489 274.2 L489.5 273.2 L490.1 272.2 L490.6 271 L491.2 269.7 L491.7 268.3 L492.2 266.8 L492.8 265.3 L493.3 263.8 L493.9 262.3 L494.4 260.8 L495 259.4 L495.5 258 L496 256.7 L496.6 255.4 L497.1 254.3 L497.7 253.3 L498.2 252.3 L498.8 251.6 L499.3 250.9 L499.8 250.3 L500.4 249.9 L500.9 249.7 L501.5 249.5 L502 249.5 L502.5 249.5 L503.1 249.7 L503.6 250 L504.2 250.3 L504.7 250.8 L505.2 251.2 L505.8 251.8 L506.3 252.4 L506.9 253 L507.4 253.6 L508 254.2 L508.5 254.9 L509 255.5 L509.6 256 L510.1 256.6 L510.7 257.1 L511.2 257.6 L511.8 258 L512.3 258.4 L512.8 258.7 L513.4 259 L513.9 259.2 L514.5 259.3 L515 259.5 L515.5 259.5 L516.1 259.6 L516.6 259.5 L517.2 259.5 L517.7 259.4 L518.2 259.3 L518.8 259.2 L519.3 259.1 L519.9 259 L520.4 258.9 L521 258.7 L521.5 258.6 L522 258.5 L522.6 258.4 L523.1 258.3 L523.7 258.2 L524.2 258.1 L524.8 258.1 L525.3 258.1 L525.8 258 L526.4 258 L526.9 258 L527.5 258 L528 258" fill="none" stroke="currentColor" stroke-width="3.4" stroke-opacity="0.35"/>
+  <path d="M398 258 L398.5 258 L399.1 258 L399.6 258 L400.2 258 L400.7 257.9 L401.2 257.9 L401.8 257.9 L402.3 257.8 L402.9 257.7 L403.4 257.6 L404 257.5 L404.5 257.4 L405 257.3 L405.6 257.1 L406.1 257 L406.7 256.9 L407.2 256.8 L407.8 256.7 L408.3 256.6 L408.8 256.5 L409.4 256.5 L409.9 256.4 L410.5 256.5 L411 256.5 L411.5 256.7 L412.1 256.8 L412.6 257 L413.2 257.3 L413.7 257.6 L414.2 258 L414.8 258.4 L415.3 258.9 L415.9 259.4 L416.4 260 L417 260.5 L417.5 261.1 L418 261.8 L418.6 262.4 L419.1 263 L419.7 263.6 L420.2 264.2 L420.8 264.8 L421.3 265.2 L421.8 265.7 L422.4 266 L422.9 266.3 L423.5 266.5 L424 266.5 L424.5 266.5 L425.1 266.3 L425.6 266.1 L426.2 265.7 L426.7 265.1 L427.2 264.4 L427.8 263.7 L428.3 262.7 L428.9 261.7 L429.4 260.6 L430 259.3 L430.5 258 L431 256.6 L431.6 255.2 L432.1 253.7 L432.7 252.2 L433.2 250.7 L433.8 249.2 L434.3 247.7 L434.8 246.3 L435.4 245 L435.9 243.8 L436.5 242.8 L437 241.8 L437.5 241 L438.1 240.4 L438.6 240 L439.2 239.8 L439.7 239.8 L440.2 240 L440.8 240.5 L441.3 241.1 L441.9 242 L442.4 243.1 L443 244.4 L443.5 245.9 L444 247.5 L444.6 249.4 L445.1 251.4 L445.7 253.5 L446.2 255.7 L446.8 258 L447.3 260.3 L447.8 262.7 L448.4 265.1 L448.9 267.4 L449.5 269.7 L450 271.8 L450.5 273.9 L451.1 275.8 L451.6 277.5 L452.2 279 L452.7 280.3 L453.2 281.4 L453.8 282.2 L454.3 282.7 L454.9 283 L455.4 283 L456 282.7 L456.5 282.1 L457 281.3 L457.6 280.1 L458.1 278.7 L458.7 277.1 L459.2 275.3 L459.8 273.2 L460.3 270.9 L460.8 268.5 L461.4 266 L461.9 263.4 L462.5 260.7 L463 258 L463.5 255.3 L464.1 252.6 L464.6 250 L465.2 247.5 L465.7 245.1 L466.2 242.8 L466.8 240.7 L467.3 238.9 L467.9 237.3 L468.4 235.9 L469 234.7 L469.5 233.9 L470 233.3 L470.6 233 L471.1 233 L471.7 233.3 L472.2 233.8 L472.8 234.6 L473.3 235.7 L473.8 237 L474.4 238.5 L474.9 240.2 L475.5 242.1 L476 244.2 L476.5 246.3 L477.1 248.6 L477.6 250.9 L478.2 253.3 L478.7 255.7 L479.2 258 L479.8 260.3 L480.3 262.5 L480.9 264.6 L481.4 266.6 L482 268.5 L482.5 270.1 L483 271.6 L483.6 272.9 L484.1 274 L484.7 274.9 L485.2 275.5 L485.8 276 L486.3 276.2 L486.8 276.2 L487.4 276 L487.9 275.6 L488.5 275 L489 274.2 L489.5 273.2 L490.1 272.2 L490.6 271 L491.2 269.7 L491.7 268.3 L492.2 266.8 L492.8 265.3 L493.3 263.8 L493.9 262.3 L494.4 260.8 L495 259.4 L495.5 258 L496 256.7 L496.6 255.4 L497.1 254.3 L497.7 253.3 L498.2 252.3 L498.8 251.6 L499.3 250.9 L499.8 250.3 L500.4 249.9 L500.9 249.7 L501.5 249.5 L502 249.5 L502.5 249.5 L503.1 249.7 L503.6 250 L504.2 250.3 L504.7 250.8 L505.2 251.2 L505.8 251.8 L506.3 252.4 L506.9 253 L507.4 253.6 L508 254.2 L508.5 254.9 L509 255.5 L509.6 256 L510.1 256.6 L510.7 257.1 L511.2 257.6 L511.8 258 L512.3 258.4 L512.8 258.7 L513.4 259 L513.9 259.2 L514.5 259.3 L515 259.5 L515.5 259.5 L516.1 259.6 L516.6 259.5 L517.2 259.5 L517.7 259.4 L518.2 259.3 L518.8 259.2 L519.3 259.1 L519.9 259 L520.4 258.9 L521 258.7 L521.5 258.6 L522 258.5 L522.6 258.4 L523.1 258.3 L523.7 258.2 L524.2 258.1 L524.8 258.1 L525.3 258.1 L525.8 258 L526.4 258 L526.9 258 L527.5 258 L528 258" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="3 2"/>
+  <text x="380" y="328" font-size="11" fill="currentColor">thick: barometric; dashed: piezo.</text>
+  <text x="380" y="342" font-size="11" fill="currentColor">They coincide: |H(80 Hz)| = 1.0000</text>
+  <text x="12" y="392" font-size="11" fill="currentColor" fill-opacity="0.7">Left and middle share one scale. The optical grid is ruled 1 line in 8 (true pitch 0.0634 mm).</text>
+</svg>
+
+**Left — the patch, sampled.** Draw the $5\ \mathrm{mm}$-radius patch as a circle. Over its left half, rule the optical sampling grid; over its right half, rule the $4 \times 4$ taxel grid. Beneath it, three horizontal bars in a row, all at the same scale: $0.1268\ \mathrm{mm}$ (what the optical sensor resolves), $0.94\ \mathrm{mm}$ (the fingertip), $9.30\ \mathrm{mm}$ (what the taxel array resolves). The third bar is wider than the patch radius, the widest a slip annulus can ever become; draw it so, and let that be the figure's punchline.
 
 **Middle — slip, as an annulus.** The same circle with the stick zone of radius $c$ drawn inside it and the slipping annulus shaded. Draw it three times, at $Q/\mu P = 0.25$, $0.50$ and $1.00$, and write the annulus width on each. Mark which of the three bars from the left panel would first fit inside each annulus.
 
@@ -534,16 +635,16 @@ belongs to [[04-robotics/force-compliance-control|13]].
 
 ### Problem set · 과제
 
-Tier B. Using only this page, its prerequisites and **S1**. Three knobs move, nothing else. The finger is smaller, so the patch radius is $a' = 3\,\mathrm{mm}$ at the same $P = 5\,\mathrm{N}$ and $\mu = 0.5$. The taxel array is rebuilt at $8\times 8$ over the same $18.6\times14.3\,\mathrm{mm}$. The charge amplifier is rebuilt with $R_f' = 1\,\mathrm{G\Omega}$ at the same $C_f$. A tangential load now ramps at $5\,\mathrm{N/s}$ from zero, and the wrist camera is recalibrated so its depth noise falls to $\sigma_v' = 0.8\,\mathrm{mm}$. No new simulator.
+Tier B. Using only this page, its prerequisites and **S1**. Four knobs move, nothing else. The finger is smaller, so the patch radius is $a' = 3\,\mathrm{mm}$ at the same $P = 5\,\mathrm{N}$ and $\mu = 0.5$. The taxel array is rebuilt at $8\times 8$ over the same $18.6\times14.3\,\mathrm{mm}$. The charge amplifier is rebuilt with $R_f' = 1\,\mathrm{G\Omega}$ at the same $C_f$. A tangential load now ramps at $5\,\mathrm{N/s}$ from zero, and the wrist camera is recalibrated so its depth noise falls to $\sigma_v' = 0.8\,\mathrm{mm}$. No new simulator.
 
 1. **Draw.** The three panels of the homework diagram at the new numbers: the $3\,\mathrm{mm}$ patch with both sampling grids and the three resolution bars beneath it; the stick zone and annulus at $Q/\mu P = 0.25$ and $0.50$; and the new decay curve with $\tau'$ and the half-life marked. Add a fourth, small panel: a time axis from $0$ to $0.5\,\mathrm{s}$ with the instant each sensor first resolves the annulus marked on it, and the gross-slip instant at the right-hand end.
 2. **Derive.** (a) The new taxel pitch and resolution, and its ratio to the fingertip's $0.94\,\mathrm{mm}$. (b) $\tau'$, $f_c'$, the reading of a constant $5\,\mathrm{N}$ grip at $t = 1\,\mathrm{s}$ and $t = 5\,\mathrm{s}$, and $|H|$ at $80\,\mathrm{Hz}$ and at $1\,\mathrm{Hz}$. (c) For each of the optical sensor and the new taxel array, the $Q/\mu P$ at which the annulus first reaches its resolution on the $3\,\mathrm{mm}$ patch — or a statement that it never does. (d) Convert (c) into seconds under the $5\,\mathrm{N/s}$ ramp: the detection instant, the gross-slip instant, and the warning window between them, in milliseconds and in $30\,\mathrm{Hz}$ frames. (e) The fused $\sigma$ and $w_t$ at $\sigma_v' = 0.8\,\mathrm{mm}$, and the $\sigma$ of the unweighted mean.
-3. **Interpret.** §2's latency box says an optical tactile sensor at $33\,\mathrm{ms}$ per frame cannot participate in a $14\,\mathrm{ms}$ contact transition. Your answer to (d) says it has many frames of warning before gross slip. Reconcile the two in one sentence. Then say which of the three knobs changed a *verdict* rather than a number, and what that implies for the sentence "we improved slip detection with a higher-rate sensor".
+3. **Interpret.** §2's latency box says an optical tactile sensor at $33\,\mathrm{ms}$ per frame cannot participate in a $14\,\mathrm{ms}$ contact transition. Your answer to (d) says it has many frames of warning before gross slip. Reconcile the two in one sentence. Then say which of the four knobs, if any, changed a *verdict* rather than a number, and what that implies for the sentence "we improved slip detection with a higher-rate sensor".
 
 > [!tip]- Solutions
-> 1. The $9.30\,\mathrm{mm}$ bar of the original figure becomes $4.65\,\mathrm{mm}$ and is still wider than the whole $3\,\mathrm{mm}$ patch — the punchline survives the knob.
+> 1. The $9.30\,\mathrm{mm}$ bar of the original figure becomes $4.65\,\mathrm{mm}$ and is still wider than the $3\,\mathrm{mm}$ patch radius — the punchline survives the knob.
 > 2. (a) Pitch $18.6/8 = 2.325\,\mathrm{mm}$, resolution $4.65\,\mathrm{mm}$, which is $4.95\times$ coarser than the fingertip — twice as good as the $9.89\times$ of the $4\times4$ array, and still coarser than skin. (b) $\tau' = 10^9 \times 10^{-9} = 1.00\,\mathrm{s}$, $f_c' = 1/(2\pi) = 0.159\,\mathrm{Hz}$; the grip reads $5e^{-1} = 1.84\,\mathrm{N}$ at $1\,\mathrm{s}$ and $5e^{-5} = 0.034\,\mathrm{N}$ at $5\,\mathrm{s}$; $|H(80)| = 1.0000$ and $|H(1)| = 0.988$. The faster amplifier lost the grip ten times sooner and gained nothing at $80\,\mathrm{Hz}$. (c) Optical: $1 - ((3 - 0.1268)/3)^3 = 0.1215$. Taxel: resolution $4.65\,\mathrm{mm} \ge a' = 3\,\mathrm{mm}$, so its finest resolvable feature is wider than the annulus can ever become — **never**, even at $1\,\mathrm{kHz}$ and even with four times the channels. (d) $\mu P = 2.5\,\mathrm{N}$, so gross slip at $2.5/5 = 0.500\,\mathrm{s}$. The optical sensor detects at $0.1215 \times 0.500 = 0.0608\,\mathrm{s}$, a warning window of $439\,\mathrm{ms}$ = $13.2$ frames at $30\,\mathrm{Hz}$. (e) $w_t = 25/(1.5625 + 25) = 0.941$, $\sigma_{\text{fused}} = 0.194\,\mathrm{mm}$ — still only $1.031\times$ better than touch alone. The unweighted mean gives $\sqrt{(0.64 + 0.04)/4} = 0.412\,\mathrm{mm}$, $2.06\times$ worse than touch alone: halving the camera's noise made unweighted fusion less catastrophic and did not make it useful.
-> 3. The two statements are about events with different durations, not about the sensor: an impact is over in $14\,\mathrm{ms}$ and incipient slip lasts $439\,\mathrm{ms}$, so the same $33\,\mathrm{ms}$ frame is far too slow for one and thirteen times faster than needed for the other. The knob that changed a verdict is the **patch radius**, which pushed the taxel array from "never resolves the annulus" to — still never, but now by a smaller margin, and would have flipped had the array gone finer than $1.5\,\mathrm{mm}$ pitch; the amplifier and the camera moved numbers only. Which is why "we improved slip detection with a higher-rate sensor" is suspicious on its face: rate is the answer to Step 4's question, and incipient slip is Step 3's, so a rate improvement that improved incipient-slip detection was probably improving something else.
+> 3. The two statements are about events with different durations, not about the sensor: an impact is over in $14\,\mathrm{ms}$ and incipient slip lasts $439\,\mathrm{ms}$, so the same $33\,\mathrm{ms}$ frame is far too slow for one and thirteen times faster than needed for the other. **None** changed a verdict. The taxel array still never resolves the annulus: the denser array alone would have flipped it, barely, on the old $5\,\mathrm{mm}$ patch ($4.65 < 5$, at $Q/\mu P = 0.9997$), the smaller patch flips it back ($4.65 > 3$), and it flips for good only below a $1.5\,\mathrm{mm}$ pitch; the amplifier and the camera moved numbers only. Which is why "we improved slip detection with a higher-rate sensor" is suspicious on its face: rate is the answer to Step 4's question, and incipient slip is Step 3's, so a rate improvement that improved incipient-slip detection was probably improving something else.
 
 ### Sources
 
@@ -603,7 +704,108 @@ Tier B. Using only this page, its prerequisites and **S1**. Three knobs move, no
 
 패널 셋이고, 앞의 둘은 반드시 같은 축척으로 그려야 한다. 그러지 않으면 아무것도 가르치지 못한다.
 
-**왼쪽 — 표집된 접촉면.** 반지름 $5\ \mathrm{mm}$의 접촉면을 원으로 그린다. 왼쪽 절반에 광학 표집 격자를, 오른쪽 절반에 $4 \times 4$ 택셀 격자를 긋는다. 그 아래에 같은 축척의 가로 막대 셋을 나란히: $0.1268\ \mathrm{mm}$(광학이 분해하는 것), $0.94\ \mathrm{mm}$(손끝), $9.30\ \mathrm{mm}$(택셀 배열이 분해하는 것). 세 번째 막대가 접촉면보다 넓다. 그렇게 그리고, 그것이 이 그림의 급소가 되게 두라.
+<svg viewBox="0 0 560 404" style="max-width:100%;height:auto" role="img" aria-label="손끝 접촉면 S1의 패널 셋: 왼쪽은 광학 격자와 4×4 택셀 격자를 그은 5 mm 접촉면과 같은 축척의 해상도 막대 셋, 가운데는 Q/μP가 0.25, 0.50, 1.00일 때의 미끄러지는 고리, 오른쪽은 5 N 쥠에 대한 압전 값이 τ 10.0 s로 감쇠하는 곡선과 평평한 기압식 선, 그리고 80 Hz 버스트가 둘에서 같게 나오는 50 ms 삽입 그림">
+  <text x="92" y="18" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">표집된 접촉면</text>
+  <text x="67" y="33" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">광학</text>
+  <text x="117" y="33" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">택셀 4×4</text>
+  <path d="M86.9 40.3V139.7M81.9 41V139M76.8 42.4V137.6M71.7 44.3V135.7M66.6 46.9V133.1M61.6 50.3V129.7M56.5 54.8V125.2M51.4 60.8V119.2M46.4 69.6V110.4M42 90H92M42.3 95.1H92M42.3 84.9H92M43 100.1H92M43 79.9H92M44.4 105.2H92M44.4 74.8H92M46.3 110.3H92M46.3 69.7H92M48.9 115.4H92M48.9 64.6H92M52.3 120.4H92M52.3 59.6H92M56.8 125.5H92M56.8 54.5H92M62.8 130.6H92M62.8 49.4H92M71.6 135.6H92M71.6 44.4H92" fill="none" stroke="currentColor" stroke-width="0.5" stroke-opacity="0.55"/>
+  <path d="M138.5 71.6V108.4M92 54.2H127M92 90H142M92 125.8H127" fill="none" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85"/>
+  <line x1="92" y1="40" x2="92" y2="140" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85"/>
+  <circle cx="92" cy="90" r="50" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="87" y="156" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">0.0634 mm</text>
+  <text x="97" y="156" font-size="11" fill="currentColor" fill-opacity="0.8">4.65 mm</text>
+  <rect x="42" y="170" width="1.3" height="8" fill="currentColor" fill-opacity="0.9"/>
+  <text x="48.3" y="178" font-size="11" fill="currentColor">0.1268 mm 광학</text>
+  <rect x="42" y="186" width="9.4" height="8" fill="currentColor" fill-opacity="0.9"/>
+  <text x="56.4" y="194" font-size="11" fill="currentColor">0.94 mm 손끝</text>
+  <text x="42" y="212" font-size="11" fill="currentColor" font-weight="600">9.30 mm 택셀</text>
+  <rect x="42" y="218" width="93" height="9" fill="currentColor" fill-opacity="0.9"/>
+  <line x1="42" y1="236" x2="142" y2="236" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="42" y1="232" x2="42" y2="240" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="92" y1="232" x2="92" y2="240" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="142" y1="232" x2="142" y2="240" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="42" y="252" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <text x="92" y="252" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">a</text>
+  <text x="142" y="252" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">2a</text>
+  <text x="12" y="276" font-size="11" fill="currentColor" font-weight="600">9.30 mm &gt; a = 5 mm:</text>
+  <text x="12" y="290" font-size="11" fill="currentColor">어떤 고리보다도 넓고,</text>
+  <text x="12" y="304" font-size="11" fill="currentColor">2a = 10 mm보다는 좁다.</text>
+  <text x="262" y="18" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">미끄러짐은 고리</text>
+  <path d="M172 82a50 50 0 1 0 100 0a50 50 0 1 0 -100 0ZM176.6 82a45.4 45.4 0 1 0 90.9 0a45.4 45.4 0 1 0 -90.9 0Z" fill="currentColor" fill-opacity="0.32" fill-rule="evenodd" stroke="none"/>
+  <circle cx="222" cy="82" r="45.4" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="3 2"/>
+  <circle cx="222" cy="82" r="50" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <rect x="269.1" y="77" width="1.3" height="10" fill="currentColor" fill-opacity="0.95"/>
+  <text x="280" y="60" font-size="11" fill="currentColor" font-weight="600">Q/μP = 0.25</text>
+  <text x="280" y="74" font-size="11" fill="currentColor">c = 4.54 mm</text>
+  <text x="280" y="88" font-size="11" fill="currentColor">폭 0.46 mm</text>
+  <text x="280" y="102" font-size="11" fill="currentColor" font-weight="600">광학이 들어감</text>
+  <text x="280" y="116" font-size="11" fill="currentColor" fill-opacity="0.7">처음은 0.074</text>
+  <path d="M172 198a50 50 0 1 0 100 0a50 50 0 1 0 -100 0ZM182.3 198a39.7 39.7 0 1 0 79.4 0a39.7 39.7 0 1 0 -79.4 0Z" fill="currentColor" fill-opacity="0.32" fill-rule="evenodd" stroke="none"/>
+  <circle cx="222" cy="198" r="39.7" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="3 2"/>
+  <circle cx="222" cy="198" r="50" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <rect x="262.1" y="193" width="9.4" height="10" fill="currentColor" fill-opacity="0.95"/>
+  <text x="280" y="176" font-size="11" fill="currentColor" font-weight="600">Q/μP = 0.50</text>
+  <text x="280" y="190" font-size="11" fill="currentColor">c = 3.97 mm</text>
+  <text x="280" y="204" font-size="11" fill="currentColor">폭 1.03 mm</text>
+  <text x="280" y="218" font-size="11" fill="currentColor" font-weight="600">손끝도 들어감</text>
+  <text x="280" y="232" font-size="11" fill="currentColor" fill-opacity="0.7">처음은 0.465</text>
+  <circle cx="222" cy="314" r="50" fill="currentColor" fill-opacity="0.32"/>
+  <circle cx="222" cy="314" r="50" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <rect x="179" y="309.5" width="93" height="9" fill="currentColor" fill-opacity="0.9"/>
+  <text x="280" y="292" font-size="11" fill="currentColor" font-weight="600">Q/μP = 1.00</text>
+  <text x="280" y="306" font-size="11" fill="currentColor">c = 0, 전면 활주</text>
+  <text x="280" y="320" font-size="11" fill="currentColor">폭 = a = 5 mm</text>
+  <text x="280" y="334" font-size="11" fill="currentColor" font-weight="600">택셀은 결코 안 됨</text>
+  <text x="280" y="348" font-size="11" fill="currentColor" fill-opacity="0.7">9.30 &gt; 5</text>
+  <text x="478" y="18" font-size="12" fill="currentColor" text-anchor="middle" font-weight="600">시간</text>
+  <line x1="404" y1="152" x2="538" y2="152" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="404" y1="152" x2="404" y2="40" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="404" y1="152" x2="404" y2="156" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="404" y="168" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <line x1="447.3" y1="152" x2="447.3" y2="156" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="447.3" y="168" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">10</text>
+  <line x1="490.7" y1="152" x2="490.7" y2="156" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="490.7" y="168" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">20</text>
+  <line x1="534" y1="152" x2="534" y2="156" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="534" y="168" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">30 s</text>
+  <line x1="400" y1="152" x2="404" y2="152" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="398" y="156" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">0</text>
+  <line x1="400" y1="52" x2="404" y2="52" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="398" y="56" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">5 N</text>
+  <line x1="404" y1="52" x2="534" y2="52" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 3"/>
+  <text x="408" y="46" font-size="11" fill="currentColor">기압식: 5 N 유지</text>
+  <path d="M404 52 L405.1 54.5 L406.2 56.9 L407.2 59.2 L408.3 61.5 L409.4 63.8 L410.5 65.9 L411.6 68.1 L412.7 70.1 L413.8 72.1 L414.8 74.1 L415.9 76 L417 77.9 L418.1 79.7 L419.2 81.5 L420.2 83.3 L421.3 85 L422.4 86.6 L423.5 88.2 L424.6 89.8 L425.7 91.3 L426.8 92.8 L427.8 94.3 L428.9 95.7 L430 97.1 L431.1 98.5 L432.2 99.8 L433.2 101.1 L434.3 102.3 L435.4 103.6 L436.5 104.8 L437.6 105.9 L438.7 107.1 L439.8 108.2 L440.8 109.3 L441.9 110.3 L443 111.3 L444.1 112.3 L445.2 113.3 L446.2 114.3 L447.3 115.2 L448.4 116.1 L449.5 117 L450.6 117.9 L451.7 118.7 L452.8 119.5 L453.8 120.3 L454.9 121.1 L456 121.9 L457.1 122.6 L458.2 123.3 L459.2 124.1 L460.3 124.7 L461.4 125.4 L462.5 126.1 L463.6 126.7 L464.7 127.3 L465.8 127.9 L466.8 128.5 L467.9 129.1 L469 129.7 L470.1 130.2 L471.2 130.8 L472.2 131.3 L473.3 131.8 L474.4 132.3 L475.5 132.8 L476.6 133.3 L477.7 133.7 L478.8 134.2 L479.8 134.6 L480.9 135.1 L482 135.5 L483.1 135.9 L484.2 136.3 L485.2 136.7 L486.3 137 L487.4 137.4 L488.5 137.8 L489.6 138.1 L490.7 138.5 L491.8 138.8 L492.8 139.1 L493.9 139.4 L495 139.8 L496.1 140.1 L497.2 140.4 L498.2 140.6 L499.3 140.9 L500.4 141.2 L501.5 141.5 L502.6 141.7 L503.7 142 L504.8 142.2 L505.8 142.5 L506.9 142.7 L508 142.9 L509.1 143.2 L510.2 143.4 L511.2 143.6 L512.3 143.8 L513.4 144 L514.5 144.2 L515.6 144.4 L516.7 144.6 L517.8 144.8 L518.8 144.9 L519.9 145.1 L521 145.3 L522.1 145.4 L523.2 145.6 L524.2 145.8 L525.3 145.9 L526.4 146.1 L527.5 146.2 L528.6 146.4 L529.7 146.5 L530.8 146.6 L531.8 146.8 L532.9 146.9 L534 147" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="434" y1="102" x2="434" y2="152" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <line x1="404" y1="102" x2="434" y2="102" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <circle cx="434" cy="102" r="2.6" fill="currentColor" fill-opacity="1"/>
+  <path d="M437 99L446 90" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="448" y="94" font-size="11" fill="currentColor">t½ = 6.93 s</text>
+  <line x1="447.3" y1="115.2" x2="447.3" y2="152" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <line x1="404" y1="115.2" x2="447.3" y2="115.2" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <circle cx="447.3" cy="115.2" r="2.6" fill="currentColor" fill-opacity="1"/>
+  <path d="M450.3 112.2L459.3 106" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="461.3" y="110" font-size="11" fill="currentColor">τ = 10.0 s</text>
+  <text x="398" y="106" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">2.50</text>
+  <text x="398" y="123.2" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">1.84</text>
+  <text x="458.2" y="72" font-size="11" fill="currentColor">압전: 5·e<tspan dy="-5">−t/τ</tspan></text>
+  <rect x="384" y="190" width="164" height="122" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <text x="390" y="205" font-size="11" fill="currentColor" font-weight="600">삽입 · 50 ms · 80 Hz 버스트</text>
+  <line x1="398" y1="258" x2="528" y2="258" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <line x1="398" y1="286" x2="398" y2="290" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="398" y="302" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <line x1="463" y1="286" x2="463" y2="290" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="463" y="302" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">25</text>
+  <line x1="528" y1="286" x2="528" y2="290" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="528" y="302" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">50 ms</text>
+  <line x1="398" y1="286" x2="528" y2="286" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <path d="M398 258 L398.5 258 L399.1 258 L399.6 258 L400.2 258 L400.7 257.9 L401.2 257.9 L401.8 257.9 L402.3 257.8 L402.9 257.7 L403.4 257.6 L404 257.5 L404.5 257.4 L405 257.3 L405.6 257.1 L406.1 257 L406.7 256.9 L407.2 256.8 L407.8 256.7 L408.3 256.6 L408.8 256.5 L409.4 256.5 L409.9 256.4 L410.5 256.5 L411 256.5 L411.5 256.7 L412.1 256.8 L412.6 257 L413.2 257.3 L413.7 257.6 L414.2 258 L414.8 258.4 L415.3 258.9 L415.9 259.4 L416.4 260 L417 260.5 L417.5 261.1 L418 261.8 L418.6 262.4 L419.1 263 L419.7 263.6 L420.2 264.2 L420.8 264.8 L421.3 265.2 L421.8 265.7 L422.4 266 L422.9 266.3 L423.5 266.5 L424 266.5 L424.5 266.5 L425.1 266.3 L425.6 266.1 L426.2 265.7 L426.7 265.1 L427.2 264.4 L427.8 263.7 L428.3 262.7 L428.9 261.7 L429.4 260.6 L430 259.3 L430.5 258 L431 256.6 L431.6 255.2 L432.1 253.7 L432.7 252.2 L433.2 250.7 L433.8 249.2 L434.3 247.7 L434.8 246.3 L435.4 245 L435.9 243.8 L436.5 242.8 L437 241.8 L437.5 241 L438.1 240.4 L438.6 240 L439.2 239.8 L439.7 239.8 L440.2 240 L440.8 240.5 L441.3 241.1 L441.9 242 L442.4 243.1 L443 244.4 L443.5 245.9 L444 247.5 L444.6 249.4 L445.1 251.4 L445.7 253.5 L446.2 255.7 L446.8 258 L447.3 260.3 L447.8 262.7 L448.4 265.1 L448.9 267.4 L449.5 269.7 L450 271.8 L450.5 273.9 L451.1 275.8 L451.6 277.5 L452.2 279 L452.7 280.3 L453.2 281.4 L453.8 282.2 L454.3 282.7 L454.9 283 L455.4 283 L456 282.7 L456.5 282.1 L457 281.3 L457.6 280.1 L458.1 278.7 L458.7 277.1 L459.2 275.3 L459.8 273.2 L460.3 270.9 L460.8 268.5 L461.4 266 L461.9 263.4 L462.5 260.7 L463 258 L463.5 255.3 L464.1 252.6 L464.6 250 L465.2 247.5 L465.7 245.1 L466.2 242.8 L466.8 240.7 L467.3 238.9 L467.9 237.3 L468.4 235.9 L469 234.7 L469.5 233.9 L470 233.3 L470.6 233 L471.1 233 L471.7 233.3 L472.2 233.8 L472.8 234.6 L473.3 235.7 L473.8 237 L474.4 238.5 L474.9 240.2 L475.5 242.1 L476 244.2 L476.5 246.3 L477.1 248.6 L477.6 250.9 L478.2 253.3 L478.7 255.7 L479.2 258 L479.8 260.3 L480.3 262.5 L480.9 264.6 L481.4 266.6 L482 268.5 L482.5 270.1 L483 271.6 L483.6 272.9 L484.1 274 L484.7 274.9 L485.2 275.5 L485.8 276 L486.3 276.2 L486.8 276.2 L487.4 276 L487.9 275.6 L488.5 275 L489 274.2 L489.5 273.2 L490.1 272.2 L490.6 271 L491.2 269.7 L491.7 268.3 L492.2 266.8 L492.8 265.3 L493.3 263.8 L493.9 262.3 L494.4 260.8 L495 259.4 L495.5 258 L496 256.7 L496.6 255.4 L497.1 254.3 L497.7 253.3 L498.2 252.3 L498.8 251.6 L499.3 250.9 L499.8 250.3 L500.4 249.9 L500.9 249.7 L501.5 249.5 L502 249.5 L502.5 249.5 L503.1 249.7 L503.6 250 L504.2 250.3 L504.7 250.8 L505.2 251.2 L505.8 251.8 L506.3 252.4 L506.9 253 L507.4 253.6 L508 254.2 L508.5 254.9 L509 255.5 L509.6 256 L510.1 256.6 L510.7 257.1 L511.2 257.6 L511.8 258 L512.3 258.4 L512.8 258.7 L513.4 259 L513.9 259.2 L514.5 259.3 L515 259.5 L515.5 259.5 L516.1 259.6 L516.6 259.5 L517.2 259.5 L517.7 259.4 L518.2 259.3 L518.8 259.2 L519.3 259.1 L519.9 259 L520.4 258.9 L521 258.7 L521.5 258.6 L522 258.5 L522.6 258.4 L523.1 258.3 L523.7 258.2 L524.2 258.1 L524.8 258.1 L525.3 258.1 L525.8 258 L526.4 258 L526.9 258 L527.5 258 L528 258" fill="none" stroke="currentColor" stroke-width="3.4" stroke-opacity="0.35"/>
+  <path d="M398 258 L398.5 258 L399.1 258 L399.6 258 L400.2 258 L400.7 257.9 L401.2 257.9 L401.8 257.9 L402.3 257.8 L402.9 257.7 L403.4 257.6 L404 257.5 L404.5 257.4 L405 257.3 L405.6 257.1 L406.1 257 L406.7 256.9 L407.2 256.8 L407.8 256.7 L408.3 256.6 L408.8 256.5 L409.4 256.5 L409.9 256.4 L410.5 256.5 L411 256.5 L411.5 256.7 L412.1 256.8 L412.6 257 L413.2 257.3 L413.7 257.6 L414.2 258 L414.8 258.4 L415.3 258.9 L415.9 259.4 L416.4 260 L417 260.5 L417.5 261.1 L418 261.8 L418.6 262.4 L419.1 263 L419.7 263.6 L420.2 264.2 L420.8 264.8 L421.3 265.2 L421.8 265.7 L422.4 266 L422.9 266.3 L423.5 266.5 L424 266.5 L424.5 266.5 L425.1 266.3 L425.6 266.1 L426.2 265.7 L426.7 265.1 L427.2 264.4 L427.8 263.7 L428.3 262.7 L428.9 261.7 L429.4 260.6 L430 259.3 L430.5 258 L431 256.6 L431.6 255.2 L432.1 253.7 L432.7 252.2 L433.2 250.7 L433.8 249.2 L434.3 247.7 L434.8 246.3 L435.4 245 L435.9 243.8 L436.5 242.8 L437 241.8 L437.5 241 L438.1 240.4 L438.6 240 L439.2 239.8 L439.7 239.8 L440.2 240 L440.8 240.5 L441.3 241.1 L441.9 242 L442.4 243.1 L443 244.4 L443.5 245.9 L444 247.5 L444.6 249.4 L445.1 251.4 L445.7 253.5 L446.2 255.7 L446.8 258 L447.3 260.3 L447.8 262.7 L448.4 265.1 L448.9 267.4 L449.5 269.7 L450 271.8 L450.5 273.9 L451.1 275.8 L451.6 277.5 L452.2 279 L452.7 280.3 L453.2 281.4 L453.8 282.2 L454.3 282.7 L454.9 283 L455.4 283 L456 282.7 L456.5 282.1 L457 281.3 L457.6 280.1 L458.1 278.7 L458.7 277.1 L459.2 275.3 L459.8 273.2 L460.3 270.9 L460.8 268.5 L461.4 266 L461.9 263.4 L462.5 260.7 L463 258 L463.5 255.3 L464.1 252.6 L464.6 250 L465.2 247.5 L465.7 245.1 L466.2 242.8 L466.8 240.7 L467.3 238.9 L467.9 237.3 L468.4 235.9 L469 234.7 L469.5 233.9 L470 233.3 L470.6 233 L471.1 233 L471.7 233.3 L472.2 233.8 L472.8 234.6 L473.3 235.7 L473.8 237 L474.4 238.5 L474.9 240.2 L475.5 242.1 L476 244.2 L476.5 246.3 L477.1 248.6 L477.6 250.9 L478.2 253.3 L478.7 255.7 L479.2 258 L479.8 260.3 L480.3 262.5 L480.9 264.6 L481.4 266.6 L482 268.5 L482.5 270.1 L483 271.6 L483.6 272.9 L484.1 274 L484.7 274.9 L485.2 275.5 L485.8 276 L486.3 276.2 L486.8 276.2 L487.4 276 L487.9 275.6 L488.5 275 L489 274.2 L489.5 273.2 L490.1 272.2 L490.6 271 L491.2 269.7 L491.7 268.3 L492.2 266.8 L492.8 265.3 L493.3 263.8 L493.9 262.3 L494.4 260.8 L495 259.4 L495.5 258 L496 256.7 L496.6 255.4 L497.1 254.3 L497.7 253.3 L498.2 252.3 L498.8 251.6 L499.3 250.9 L499.8 250.3 L500.4 249.9 L500.9 249.7 L501.5 249.5 L502 249.5 L502.5 249.5 L503.1 249.7 L503.6 250 L504.2 250.3 L504.7 250.8 L505.2 251.2 L505.8 251.8 L506.3 252.4 L506.9 253 L507.4 253.6 L508 254.2 L508.5 254.9 L509 255.5 L509.6 256 L510.1 256.6 L510.7 257.1 L511.2 257.6 L511.8 258 L512.3 258.4 L512.8 258.7 L513.4 259 L513.9 259.2 L514.5 259.3 L515 259.5 L515.5 259.5 L516.1 259.6 L516.6 259.5 L517.2 259.5 L517.7 259.4 L518.2 259.3 L518.8 259.2 L519.3 259.1 L519.9 259 L520.4 258.9 L521 258.7 L521.5 258.6 L522 258.5 L522.6 258.4 L523.1 258.3 L523.7 258.2 L524.2 258.1 L524.8 258.1 L525.3 258.1 L525.8 258 L526.4 258 L526.9 258 L527.5 258 L528 258" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="3 2"/>
+  <text x="380" y="328" font-size="11" fill="currentColor">굵은 선: 기압식, 점선: 압전.</text>
+  <text x="380" y="342" font-size="11" fill="currentColor">둘이 겹친다: |H(80 Hz)| = 1.0000</text>
+  <text x="12" y="392" font-size="11" fill="currentColor" fill-opacity="0.7">왼쪽과 가운데는 같은 축척이다. 광학 격자는 8개 중 1개만 그었다(실제 피치 0.0634 mm).</text>
+</svg>
+
+**왼쪽 — 표집된 접촉면.** 반지름 $5\ \mathrm{mm}$의 접촉면을 원으로 그린다. 왼쪽 절반에 광학 표집 격자를, 오른쪽 절반에 $4 \times 4$ 택셀 격자를 긋는다. 그 아래에 같은 축척의 가로 막대 셋을 나란히: $0.1268\ \mathrm{mm}$(광학이 분해하는 것), $0.94\ \mathrm{mm}$(손끝), $9.30\ \mathrm{mm}$(택셀 배열이 분해하는 것). 세 번째 막대가 접촉면 반지름, 곧 미끄러짐 고리가 가질 수 있는 최대 폭보다 넓다. 그렇게 그리고, 그것이 이 그림의 급소가 되게 두라.
 
 **가운데 — 미끄러짐은 고리다.** 같은 원 안에 반지름 $c$의 고착 영역을 그리고 미끄러지는 고리를 칠한다. $Q/\mu P = 0.25$, $0.50$, $1.00$에서 세 번 그리고 각각에 고리 폭을 적는다. 왼쪽 패널의 막대 셋 중 어느 것이 각 고리에 처음 들어가는지 표시한다.
 
@@ -1053,16 +1255,16 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 
 ### 과제 · Problem set
 
-Tier B. 이 페이지와 선수 지식, **S1**만 쓴다. 손잡이 셋만 움직이고 나머지는 그대로다. 손가락이 작아져 접촉면 반지름이 $a' = 3\,\mathrm{mm}$이고 $P = 5\,\mathrm{N}$, $\mu = 0.5$는 같다. 택셀 배열을 같은 $18.6\times14.3\,\mathrm{mm}$ 위에 $8\times 8$로 다시 만든다. 전하 증폭기를 같은 $C_f$에 $R_f' = 1\,\mathrm{G\Omega}$으로 다시 만든다. 접선 하중이 이제 0에서 $5\,\mathrm{N/s}$로 올라가고, 손목 카메라를 재보정해 깊이 잡음이 $\sigma_v' = 0.8\,\mathrm{mm}$로 떨어진다. 시뮬레이터를 새로 만들지 마라.
+Tier B. 이 페이지와 선수 지식, **S1**만 쓴다. 손잡이 넷만 움직이고 나머지는 그대로다. 손가락이 작아져 접촉면 반지름이 $a' = 3\,\mathrm{mm}$이고 $P = 5\,\mathrm{N}$, $\mu = 0.5$는 같다. 택셀 배열을 같은 $18.6\times14.3\,\mathrm{mm}$ 위에 $8\times 8$로 다시 만든다. 전하 증폭기를 같은 $C_f$에 $R_f' = 1\,\mathrm{G\Omega}$으로 다시 만든다. 접선 하중이 이제 0에서 $5\,\mathrm{N/s}$로 올라가고, 손목 카메라를 재보정해 깊이 잡음이 $\sigma_v' = 0.8\,\mathrm{mm}$로 떨어진다. 시뮬레이터를 새로 만들지 마라.
 
 1. **그리기.** 과제 그림의 패널 셋을 새 숫자로. $3\,\mathrm{mm}$ 접촉면에 표집 격자 둘과 그 아래 해상도 막대 셋, $Q/\mu P = 0.25$와 $0.50$에서의 고착 영역과 고리, 그리고 $\tau'$와 반감기를 표시한 새 감쇠 곡선. 작은 네 번째 패널을 더한다. $0$부터 $0.5\,\mathrm{s}$까지의 시간 축에 각 센서가 고리를 처음 분해하는 순간을 찍고, 오른쪽 끝에 총 미끄러짐 순간을 찍는다.
 2. **유도.** (a) 새 택셀 피치와 해상도, 그리고 손끝 $0.94\,\mathrm{mm}$에 대한 비. (b) $\tau'$, $f_c'$, $t = 1\,\mathrm{s}$와 $t = 5\,\mathrm{s}$에서 일정한 $5\,\mathrm{N}$ 쥠의 값, 그리고 $80\,\mathrm{Hz}$와 $1\,\mathrm{Hz}$에서의 $|H|$. (c) 광학 센서와 새 택셀 배열 각각에 대해, $3\,\mathrm{mm}$ 접촉면에서 고리가 자기 해상도에 처음 닿는 $Q/\mu P$ — 또는 결코 닿지 않는다는 진술. (d) (c)를 $5\,\mathrm{N/s}$ 램프 아래 초로 바꾼다. 감지 순간, 총 미끄러짐 순간, 그 사이 경고 시간을 밀리초와 $30\,\mathrm{Hz}$ 프레임 수로. (e) $\sigma_v' = 0.8\,\mathrm{mm}$에서의 융합 $\sigma$와 $w_t$, 그리고 가중 없는 평균의 $\sigma$.
-3. **해석.** §2의 지연 상자는 프레임당 $33\,\mathrm{ms}$인 광학 촉각 센서가 $14\,\mathrm{ms}$ 접촉 천이에 참여할 수 없다고 말한다. (d)의 답은 총 미끄러짐 전에 여러 프레임의 경고가 있다고 말한다. 둘을 한 문장으로 조정하라. 그다음 손잡이 셋 중 숫자가 아니라 *판정*을 바꾼 것이 무엇인지, 그리고 그것이 "더 빠른 센서로 미끄러짐 감지를 개선했다"는 문장에 무엇을 함의하는지 말하라.
+3. **해석.** §2의 지연 상자는 프레임당 $33\,\mathrm{ms}$인 광학 촉각 센서가 $14\,\mathrm{ms}$ 접촉 천이에 참여할 수 없다고 말한다. (d)의 답은 총 미끄러짐 전에 여러 프레임의 경고가 있다고 말한다. 둘을 한 문장으로 조정하라. 그다음 손잡이 넷 중 숫자가 아니라 *판정*을 바꾼 것이 있다면 무엇인지, 그리고 그것이 "더 빠른 센서로 미끄러짐 감지를 개선했다"는 문장에 무엇을 함의하는지 말하라.
 
 > [!tip]- 정답 · Solutions
-> 1. 원래 그림의 $9.30\,\mathrm{mm}$ 막대가 $4.65\,\mathrm{mm}$가 되는데 그래도 $3\,\mathrm{mm}$ 접촉면 전체보다 넓다 — 급소가 손잡이를 견디고 살아남는다.
+> 1. 원래 그림의 $9.30\,\mathrm{mm}$ 막대가 $4.65\,\mathrm{mm}$가 되는데 그래도 접촉면 반지름 $3\,\mathrm{mm}$보다 넓다 — 급소가 손잡이를 견디고 살아남는다.
 > 2. (a) 피치 $18.6/8 = 2.325\,\mathrm{mm}$, 해상도 $4.65\,\mathrm{mm}$로 손끝보다 $4.95$배 거칠다. $4\times4$ 배열의 $9.89$배보다 두 배 낫고, 여전히 피부보다 거칠다. (b) $\tau' = 10^9 \times 10^{-9} = 1.00\,\mathrm{s}$, $f_c' = 1/(2\pi) = 0.159\,\mathrm{Hz}$. 쥠이 $1\,\mathrm{s}$에 $5e^{-1} = 1.84\,\mathrm{N}$, $5\,\mathrm{s}$에 $5e^{-5} = 0.034\,\mathrm{N}$. $|H(80)| = 1.0000$, $|H(1)| = 0.988$. 빨라진 증폭기는 쥠을 열 배 일찍 잃고 $80\,\mathrm{Hz}$에서는 아무것도 얻지 못했다. (c) 광학은 $1 - ((3 - 0.1268)/3)^3 = 0.1215$. 택셀은 해상도 $4.65\,\mathrm{mm} \ge a' = 3\,\mathrm{mm}$이므로 분해 가능한 가장 미세한 특징이 고리가 도달할 수 있는 최대 폭보다 넓다 — **결코**, $1\,\mathrm{kHz}$에서도, 채널이 네 배가 되어도. (d) $\mu P = 2.5\,\mathrm{N}$이므로 총 미끄러짐이 $2.5/5 = 0.500\,\mathrm{s}$. 광학은 $0.1215 \times 0.500 = 0.0608\,\mathrm{s}$에 감지하므로 경고 시간이 $439\,\mathrm{ms}$, $30\,\mathrm{Hz}$에서 $13.2$ 프레임이다. (e) $w_t = 25/(1.5625 + 25) = 0.941$, $\sigma_{\text{fused}} = 0.194\,\mathrm{mm}$ — 여전히 촉각만보다 $1.031$배 나을 뿐이다. 가중 없는 평균은 $\sqrt{(0.64 + 0.04)/4} = 0.412\,\mathrm{mm}$로 촉각만보다 $2.06$배 나쁘다. 카메라 잡음을 반으로 줄인 것은 가중 없는 융합을 덜 파국적으로 만들었을 뿐 쓸모 있게 만들지 못했다.
-> 3. 두 진술은 센서가 아니라 지속 시간이 다른 사건들에 관한 것이다. 충격은 $14\,\mathrm{ms}$에 끝나고 초기 미끄러짐은 $439\,\mathrm{ms}$ 동안 이어지므로, 같은 $33\,\mathrm{ms}$ 프레임이 하나에는 한참 느리고 다른 하나에는 필요보다 열세 배 빠르다. 판정을 바꾼 손잡이는 **접촉면 반지름**이다. 택셀 배열을 "고리를 결코 분해하지 못함"에서 — 여전히 못하지만 이제 더 작은 차이로 — 밀었고, 배열이 피치 $1.5\,\mathrm{mm}$보다 곱게 갔다면 뒤집혔을 것이다. 증폭기와 카메라는 숫자만 움직였다. 그래서 "더 빠른 센서로 미끄러짐 감지를 개선했다"는 문장이 그 자체로 의심스럽다. 주파수는 4단계 질문의 답이고 초기 미끄러짐은 3단계의 질문이므로, 초기 미끄러짐 감지를 개선한 주파수 개선은 아마 다른 무언가를 개선하고 있었다.
+> 3. 두 진술은 센서가 아니라 지속 시간이 다른 사건들에 관한 것이다. 충격은 $14\,\mathrm{ms}$에 끝나고 초기 미끄러짐은 $439\,\mathrm{ms}$ 동안 이어지므로, 같은 $33\,\mathrm{ms}$ 프레임이 하나에는 한참 느리고 다른 하나에는 필요보다 열세 배 빠르다. 판정을 바꾼 손잡이는 **없다**. 택셀 배열은 여전히 고리를 결코 분해하지 못한다. 조밀해진 배열만이었다면 옛 $5\,\mathrm{mm}$ 접촉면에서 판정이 겨우 뒤집혔겠지만($4.65 < 5$, $Q/\mu P = 0.9997$에서), 작아진 접촉면이 도로 뒤집고($4.65 > 3$), 피치가 $1.5\,\mathrm{mm}$보다 고와져야만 완전히 뒤집힌다. 증폭기와 카메라는 숫자만 움직였다. 그래서 "더 빠른 센서로 미끄러짐 감지를 개선했다"는 문장이 그 자체로 의심스럽다. 주파수는 4단계 질문의 답이고 초기 미끄러짐은 3단계의 질문이므로, 초기 미끄러짐 감지를 개선한 주파수 개선은 아마 다른 무언가를 개선하고 있었다.
 
 ### 출처
 

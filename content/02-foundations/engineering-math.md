@@ -28,6 +28,78 @@ straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
 
 This page is a reference, but it owns one object — plant **P4**, the leaky heater $\dot x=-x+u$ of §8 — and one drawing of it. The problem set asks for the same drawing.
 
+<svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="Block diagram of the leaky heater P4: command u = 1 enters a summing junction whose output is x-dot, an integrator returns the temperature error x, and x comes back through a unit gain with a minus sign. Inset: the step response with its initial tangent reaching 1 at t = 1 s, and a magnified view where the two Euler points sit above the two exact points.">
+  <defs><marker id="emHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="16,44 109,44" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#emHw)"/>
+  <text x="20" y="36" font-size="11" fill="currentColor">u = 1</text>
+  <circle cx="122" cy="44" r="12" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="106" y="39" font-size="13" text-anchor="end" fill="currentColor">+</text>
+  <text x="116" y="69" font-size="13" text-anchor="end" fill="currentColor">−</text>
+  <polyline points="134,44 213,44" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#emHw)"/>
+  <text x="174" y="36" font-size="11" text-anchor="middle" fill="currentColor">ẋ = u − x</text>
+  <text x="174" y="64" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">t = 0, x = 0:</text>
+  <text x="174" y="77" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">ẋ = 1 per s</text>
+  <rect x="214" y="22" width="60" height="44" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.4"/>
+  <text x="244" y="45" font-size="18" text-anchor="middle" fill="currentColor">∫</text>
+  <text x="244" y="60" font-size="11" text-anchor="middle" fill="currentColor">1/s</text>
+  <polyline points="274,44 548,44" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#emHw)"/>
+  <text x="288" y="36" font-size="11" fill="currentColor">x: temperature error, the only state</text>
+  <circle cx="500" cy="44" r="2.8" fill="currentColor"/>
+  <polyline points="500,44 500,108 303,108" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#emHw)"/>
+  <text x="507" y="80" font-size="11" fill="currentColor">x</text>
+  <rect x="272" y="96" width="30" height="24" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.4"/>
+  <text x="287" y="112" font-size="12" text-anchor="middle" fill="currentColor">1</text>
+  <text x="287" y="135" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">gain 1 (later K)</text>
+  <polyline points="272,108 122,108 122,57" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#emHw)"/>
+  <polyline points="52,310 264,310" fill="none" stroke="currentColor" stroke-width="1.1" marker-end="url(#emHw)"/>
+  <polyline points="52,310 52,168" fill="none" stroke="currentColor" stroke-width="1.1" marker-end="url(#emHw)"/>
+  <text x="266" y="314" font-size="11" fill="currentColor">t (s)</text>
+  <text x="48" y="166" font-size="11" text-anchor="end" fill="currentColor">x</text>
+  <polyline points="132,310 132,314" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="132" y="326" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="212,310 212,314" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="212" y="326" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <polyline points="52,250 48,250" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="45" y="254" font-size="11" text-anchor="end" fill="currentColor">0.5</text>
+  <polyline points="52,190 48,190" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="45" y="194" font-size="11" text-anchor="end" fill="currentColor">1</text>
+  <text x="45" y="324" font-size="11" text-anchor="end" fill="currentColor">0</text>
+  <polyline points="52,190 252,190" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.7"/>
+  <text x="252" y="184" font-size="11" text-anchor="end" opacity="0.9" fill="currentColor">steady value 1</text>
+  <polyline points="132,310 132,190" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.7"/>
+  <text x="137" y="252" font-size="11" fill="currentColor">τ = 1 s</text>
+  <polyline points="52,310 53.7,307.5 55.3,305.1 57,302.7 58.7,300.4 60.3,298.1 62,295.9 63.7,293.7 65.3,291.6 67,289.5 68.7,287.4 70.3,285.4 72,283.5 73.7,281.5 75.3,279.6 77,277.8 78.7,276 80.3,274.2 82,272.5 83.7,270.8 85.3,269.1 87,267.5 88.7,265.9 90.3,264.3 92,262.8 93.7,261.3 95.3,259.8 97,258.4 98.7,257 100.3,255.6 102,254.2 103.7,252.9 105.3,251.6 107,250.3 108.7,249.1 110.3,247.9 112,246.7 113.7,245.5 115.3,244.4 117,243.2 118.7,242.2 120.3,241.1 122,240 123.7,239 125.3,238 127,237 128.7,236 130.3,235.1 132,234.1 133.7,233.2 135.3,232.3 137,231.5 138.7,230.6 140.3,229.8 142,229 143.7,228.2 145.3,227.4 147,226.6 148.7,225.8 150.3,225.1 152,224.4 153.7,223.7 155.3,223 157,222.3 158.7,221.6 160.3,221 162,220.3 163.7,219.7 165.3,219.1 167,218.5 168.7,217.9 170.3,217.3 172,216.8 173.7,216.2 175.3,215.7 177,215.2 178.7,214.6 180.3,214.1 182,213.6 183.7,213.1 185.3,212.7 187,212.2 188.7,211.7 190.3,211.3 192,210.9 193.7,210.4 195.3,210 197,209.6 198.7,209.2 200.3,208.8 202,208.4 203.7,208 205.3,207.7 207,207.3 208.7,206.9 210.3,206.6 212,206.2 213.7,205.9 215.3,205.6 217,205.3 218.7,204.9 220.3,204.6 222,204.3 223.7,204 225.3,203.7 227,203.5 228.7,203.2 230.3,202.9 232,202.6 233.7,202.4 235.3,202.1 237,201.9 238.7,201.6 240.3,201.4 242,201.2 243.7,200.9 245.3,200.7 247,200.5 248.7,200.3 250.3,200.1 252,199.9" fill="none" stroke="currentColor" stroke-width="2"/>
+  <polyline points="52,310 140,178" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <circle cx="132" cy="190" r="2.6" fill="currentColor"/>
+  <text x="60" y="206" font-size="11" fill="currentColor">slope 1 /s</text>
+  <text x="204" y="227.9" font-size="11" fill="currentColor">x = 1 − e<tspan dy="-5" font-size="10">−t</tspan></text>
+  <rect x="58" y="284.6" width="12" height="14.9" fill="none" stroke="currentColor" stroke-width="1"/>
+  <polyline points="70,292 330,292" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 2.5" stroke-opacity="0.8"/>
+  <rect x="330" y="146" width="210" height="164" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1"/>
+  <polyline points="365,310 365,314" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="365" y="326" font-size="11" text-anchor="middle" fill="currentColor">0.1</text>
+  <polyline points="505,310 505,314" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="505" y="326" font-size="11" text-anchor="middle" fill="currentColor">0.2</text>
+  <text x="540" y="326" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">t (s)</text>
+  <polyline points="354,310 357.1,307.3 360.2,304.7 363.3,302 366.4,299.4 369.5,296.7 372.6,294.1 375.7,291.4 378.8,288.8 381.9,286.2 385,283.6 388.1,281 391.2,278.4 394.3,275.8 397.4,273.2 400.5,270.6 403.6,268 406.7,265.4 409.8,262.9 412.9,260.3 416,257.7 419.1,255.2 422.2,252.6 425.3,250.1 428.4,247.6 431.5,245 434.6,242.5 437.7,240 440.8,237.5 443.9,235 447,232.5 450.1,230 453.2,227.5 456.3,225 459.4,222.5 462.5,220 465.6,217.6 468.7,215.1 471.8,212.6 474.9,210.2 478,207.7 481.1,205.3 484.2,202.9 487.3,200.4 490.4,198 493.5,195.6 496.6,193.2 499.7,190.8 502.8,188.4 505.9,186 509,183.6 512.1,181.2 515.2,178.8 518.3,176.4 521.4,174 524.5,171.7 527.6,169.3 530.7,166.9 533.8,164.6 536.9,162.3 540,159.9" fill="none" stroke="currentColor" stroke-width="2"/>
+  <polyline points="348.2,310 521.8,146" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <circle cx="365" cy="294.1" r="2.9" fill="currentColor"/>
+  <circle cx="365" cy="300.5" r="2.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="358" y="291.1" font-size="11" text-anchor="end" fill="currentColor">0.10</text>
+  <text x="373" y="307.5" font-size="11" fill="currentColor">0.095</text>
+  <circle cx="505" cy="175.1" r="2.9" fill="currentColor"/>
+  <circle cx="505" cy="186.6" r="2.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="501" y="157.1" font-size="11" text-anchor="end" fill="currentColor">0.19</text>
+  <polyline points="501,160.1 503.5,171.7" fill="none" stroke="currentColor" stroke-width="0.8"/>
+  <text x="513" y="193.6" font-size="11" fill="currentColor">0.181</text>
+  <circle cx="440" cy="280" r="2.9" fill="currentColor"/>
+  <text x="449" y="284" font-size="11" fill="currentColor">forward Euler</text>
+  <circle cx="440" cy="295" r="2.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="449" y="299" font-size="11" fill="currentColor">exact</text>
+  <text x="12" y="345" font-size="11" opacity="0.9" fill="currentColor">Right, the boxed corner magnified: each Euler point sits above its exact partner, by 0.005</text>
+  <text x="12" y="359" font-size="11" opacity="0.9" fill="currentColor">and 0.009, since Euler uses the slope at the start of the step, where 1 − x is largest. d = 0.</text>
+</svg>
+
 **The loop, left to right.** Start with the command $u$ entering from the left as an arrow labelled $u=1$. It meets a **summing junction** — a small circle with two inputs — whose second input arrives from below. Write a $+$ beside the $u$ arrow and a $-$ beside the other, because the sign at the junction, not the sign inside a box, is what makes this a *negative* feedback loop. The junction's output leaves to the right and is labelled $\dot x$: name it on the drawing, because the whole picture is the sentence "the sum *is* the derivative". That arrow enters a box marked $\int$ or $1/s$ (§9 says why those are the same box), and the box's output is $x$, the temperature error, which is the only state on the page. Carry $x$ to the right edge as the output, then tap the same line and route it down and back to the junction's lower input with a gain block marked $1$ on the way — the unit gain is drawn, not omitted, so that when the control track replaces it with $K$ the picture does not change shape.
 
 **What to write on the drawing.** Three annotations, all readable straight off the loop. At $t=0$ with $x=0$, the junction outputs $\dot x=1$, so mark the initial slope as $1$ per second. Draw the tangent of that slope from the origin in a small inset of $x$ against $t$; it crosses the steady value $x=1$ at $t=1\,\mathrm{s}$, which is the time constant, and the true curve $x=1-e^{-t}$ passes below it. On the same inset put four points and nothing else: the exact $0.095$ at $t=0.1$ and $0.181$ at $t=0.2$, and the forward-Euler $0.10$ and $0.19$ at the same two instants, each Euler point drawn *above* its exact partner. That gap, not the curve, is the figure's argument.
@@ -650,6 +722,78 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
 ### 과제가 그릴 그림 · Homework diagram
 
 이 페이지는 참고서지만 대상 하나를 가진다. §8의 새는 히터 $\dot x=-x+u$, 즉 장치 **P4**이고, 그것을 그린 그림도 하나다. 과제가 같은 그림을 요구한다.
+
+<svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="새는 히터 P4의 블록선도: 명령 u = 1이 합산점으로 들어가고 그 출력이 x-dot이며, 적분기가 온도 오차 x를 돌려주고, x는 이득 1을 거쳐 음의 부호로 돌아온다. 삽도: 계단 응답과 t = 1 s에서 1에 닿는 초기 접선, 그리고 오일러 점 둘이 정확값 점 둘 위에 있는 확대 그림.">
+  <defs><marker id="emHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="16,44 109,44" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#emHwk)"/>
+  <text x="20" y="36" font-size="11" fill="currentColor">u = 1</text>
+  <circle cx="122" cy="44" r="12" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="106" y="39" font-size="13" text-anchor="end" fill="currentColor">+</text>
+  <text x="116" y="69" font-size="13" text-anchor="end" fill="currentColor">−</text>
+  <polyline points="134,44 213,44" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#emHwk)"/>
+  <text x="174" y="36" font-size="11" text-anchor="middle" fill="currentColor">ẋ = u − x</text>
+  <text x="174" y="64" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">t = 0, x = 0</text>
+  <text x="174" y="77" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">ẋ = 초당 1</text>
+  <rect x="214" y="22" width="60" height="44" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.4"/>
+  <text x="244" y="45" font-size="18" text-anchor="middle" fill="currentColor">∫</text>
+  <text x="244" y="60" font-size="11" text-anchor="middle" fill="currentColor">1/s</text>
+  <polyline points="274,44 548,44" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#emHwk)"/>
+  <text x="288" y="36" font-size="11" fill="currentColor">x: 온도 오차, 유일한 상태</text>
+  <circle cx="500" cy="44" r="2.8" fill="currentColor"/>
+  <polyline points="500,44 500,108 303,108" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#emHwk)"/>
+  <text x="507" y="80" font-size="11" fill="currentColor">x</text>
+  <rect x="272" y="96" width="30" height="24" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.4"/>
+  <text x="287" y="112" font-size="12" text-anchor="middle" fill="currentColor">1</text>
+  <text x="287" y="135" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">이득 1 (나중에 K)</text>
+  <polyline points="272,108 122,108 122,57" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#emHwk)"/>
+  <polyline points="52,310 264,310" fill="none" stroke="currentColor" stroke-width="1.1" marker-end="url(#emHwk)"/>
+  <polyline points="52,310 52,168" fill="none" stroke="currentColor" stroke-width="1.1" marker-end="url(#emHwk)"/>
+  <text x="266" y="314" font-size="11" fill="currentColor">t (s)</text>
+  <text x="48" y="166" font-size="11" text-anchor="end" fill="currentColor">x</text>
+  <polyline points="132,310 132,314" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="132" y="326" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="212,310 212,314" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="212" y="326" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <polyline points="52,250 48,250" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="45" y="254" font-size="11" text-anchor="end" fill="currentColor">0.5</text>
+  <polyline points="52,190 48,190" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="45" y="194" font-size="11" text-anchor="end" fill="currentColor">1</text>
+  <text x="45" y="324" font-size="11" text-anchor="end" fill="currentColor">0</text>
+  <polyline points="52,190 252,190" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.7"/>
+  <text x="252" y="184" font-size="11" text-anchor="end" opacity="0.9" fill="currentColor">정상값 1</text>
+  <polyline points="132,310 132,190" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.7"/>
+  <text x="137" y="252" font-size="11" fill="currentColor">τ = 1 s</text>
+  <polyline points="52,310 53.7,307.5 55.3,305.1 57,302.7 58.7,300.4 60.3,298.1 62,295.9 63.7,293.7 65.3,291.6 67,289.5 68.7,287.4 70.3,285.4 72,283.5 73.7,281.5 75.3,279.6 77,277.8 78.7,276 80.3,274.2 82,272.5 83.7,270.8 85.3,269.1 87,267.5 88.7,265.9 90.3,264.3 92,262.8 93.7,261.3 95.3,259.8 97,258.4 98.7,257 100.3,255.6 102,254.2 103.7,252.9 105.3,251.6 107,250.3 108.7,249.1 110.3,247.9 112,246.7 113.7,245.5 115.3,244.4 117,243.2 118.7,242.2 120.3,241.1 122,240 123.7,239 125.3,238 127,237 128.7,236 130.3,235.1 132,234.1 133.7,233.2 135.3,232.3 137,231.5 138.7,230.6 140.3,229.8 142,229 143.7,228.2 145.3,227.4 147,226.6 148.7,225.8 150.3,225.1 152,224.4 153.7,223.7 155.3,223 157,222.3 158.7,221.6 160.3,221 162,220.3 163.7,219.7 165.3,219.1 167,218.5 168.7,217.9 170.3,217.3 172,216.8 173.7,216.2 175.3,215.7 177,215.2 178.7,214.6 180.3,214.1 182,213.6 183.7,213.1 185.3,212.7 187,212.2 188.7,211.7 190.3,211.3 192,210.9 193.7,210.4 195.3,210 197,209.6 198.7,209.2 200.3,208.8 202,208.4 203.7,208 205.3,207.7 207,207.3 208.7,206.9 210.3,206.6 212,206.2 213.7,205.9 215.3,205.6 217,205.3 218.7,204.9 220.3,204.6 222,204.3 223.7,204 225.3,203.7 227,203.5 228.7,203.2 230.3,202.9 232,202.6 233.7,202.4 235.3,202.1 237,201.9 238.7,201.6 240.3,201.4 242,201.2 243.7,200.9 245.3,200.7 247,200.5 248.7,200.3 250.3,200.1 252,199.9" fill="none" stroke="currentColor" stroke-width="2"/>
+  <polyline points="52,310 140,178" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <circle cx="132" cy="190" r="2.6" fill="currentColor"/>
+  <text x="60" y="206" font-size="11" fill="currentColor">기울기 1 /s</text>
+  <text x="204" y="227.9" font-size="11" fill="currentColor">x = 1 − e<tspan dy="-5" font-size="10">−t</tspan></text>
+  <rect x="58" y="284.6" width="12" height="14.9" fill="none" stroke="currentColor" stroke-width="1"/>
+  <polyline points="70,292 330,292" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 2.5" stroke-opacity="0.8"/>
+  <rect x="330" y="146" width="210" height="164" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1"/>
+  <polyline points="365,310 365,314" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="365" y="326" font-size="11" text-anchor="middle" fill="currentColor">0.1</text>
+  <polyline points="505,310 505,314" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="505" y="326" font-size="11" text-anchor="middle" fill="currentColor">0.2</text>
+  <text x="540" y="326" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">t (s)</text>
+  <polyline points="354,310 357.1,307.3 360.2,304.7 363.3,302 366.4,299.4 369.5,296.7 372.6,294.1 375.7,291.4 378.8,288.8 381.9,286.2 385,283.6 388.1,281 391.2,278.4 394.3,275.8 397.4,273.2 400.5,270.6 403.6,268 406.7,265.4 409.8,262.9 412.9,260.3 416,257.7 419.1,255.2 422.2,252.6 425.3,250.1 428.4,247.6 431.5,245 434.6,242.5 437.7,240 440.8,237.5 443.9,235 447,232.5 450.1,230 453.2,227.5 456.3,225 459.4,222.5 462.5,220 465.6,217.6 468.7,215.1 471.8,212.6 474.9,210.2 478,207.7 481.1,205.3 484.2,202.9 487.3,200.4 490.4,198 493.5,195.6 496.6,193.2 499.7,190.8 502.8,188.4 505.9,186 509,183.6 512.1,181.2 515.2,178.8 518.3,176.4 521.4,174 524.5,171.7 527.6,169.3 530.7,166.9 533.8,164.6 536.9,162.3 540,159.9" fill="none" stroke="currentColor" stroke-width="2"/>
+  <polyline points="348.2,310 521.8,146" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <circle cx="365" cy="294.1" r="2.9" fill="currentColor"/>
+  <circle cx="365" cy="300.5" r="2.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="358" y="291.1" font-size="11" text-anchor="end" fill="currentColor">0.10</text>
+  <text x="373" y="307.5" font-size="11" fill="currentColor">0.095</text>
+  <circle cx="505" cy="175.1" r="2.9" fill="currentColor"/>
+  <circle cx="505" cy="186.6" r="2.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="501" y="157.1" font-size="11" text-anchor="end" fill="currentColor">0.19</text>
+  <polyline points="501,160.1 503.5,171.7" fill="none" stroke="currentColor" stroke-width="0.8"/>
+  <text x="513" y="193.6" font-size="11" fill="currentColor">0.181</text>
+  <circle cx="440" cy="280" r="2.9" fill="currentColor"/>
+  <text x="449" y="284" font-size="11" fill="currentColor">전진 오일러</text>
+  <circle cx="440" cy="295" r="2.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="449" y="299" font-size="11" fill="currentColor">정확값</text>
+  <text x="12" y="345" font-size="11" opacity="0.9" fill="currentColor">오른쪽은 네모 친 모서리의 확대다. 오일러 점은 각각 짝이 되는 정확값보다 0.005, 0.009 위에</text>
+  <text x="12" y="359" font-size="11" opacity="0.9" fill="currentColor">있다. 오일러는 1 − x가 가장 큰 스텝 시작점의 기울기를 쓰기 때문이다. 외란은 없다: d = 0.</text>
+</svg>
 
 **루프, 왼쪽에서 오른쪽으로.** 왼쪽에서 들어오는 화살표 $u=1$로 시작한다. 이것이 **합산점** — 입력 둘을 가진 작은 원 — 을 만나고, 둘째 입력은 아래에서 올라온다. $u$ 화살표 옆에 $+$, 다른 쪽에 $-$를 쓴다. 이것을 *음*의 피드백 루프로 만드는 것은 상자 안의 부호가 아니라 합산점의 부호이기 때문이다. 합산점의 출력은 오른쪽으로 나가고 이름은 $\dot x$다. 그림 위에 그 이름을 반드시 적는다. 이 그림 전체가 "합이 곧 미분이다"라는 한 문장이기 때문이다. 그 화살표가 $\int$ 또는 $1/s$라고 쓴 상자로 들어가고(둘이 왜 같은 상자인지는 §9가 말한다), 상자의 출력이 $x$, 곧 온도 오차이며 이 페이지의 유일한 상태다. $x$를 오른쪽 끝까지 출력으로 끌고 간 다음, 같은 선을 따 내려 이득 블록 $1$을 거쳐 합산점의 아래 입력으로 되돌린다. 이득 $1$을 생략하지 않고 그리는 이유는, 제어 트랙이 그것을 $K$로 바꿀 때 그림의 모양이 달라지지 않게 하기 위해서다.
 

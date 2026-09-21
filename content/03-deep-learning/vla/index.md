@@ -42,18 +42,116 @@ The instruction is not decoration here: "left, then down" *is* the axis order th
 
 ### Homework diagram · 과제가 그릴 그림
 
-One closed loop, and the problem set asks for exactly this one.
+One closed loop, and the problem set asks for exactly this one. The figure is the worked case on the catalog numbers, with the loop unrolled underneath for $k=3$.
 
-```mermaid
-flowchart LR
-    Scene["scene and instruction l"] --> Obs["observation o at step n-m"]
-    Obs --> Pol["policy, t_inf = 100 ms"]
-    Pol --> Buf["chunk buffer, k actions"]
-    Buf --> Ctl["controller at 20 Hz"]
-    Ctl --> Rob["robot: p <- p + a"]
-    Rob --> Scene
-    Buf -->|"refill every k steps"| Obs
-```
+<svg viewBox="0 0 560 402" style="max-width:100%;height:auto" role="img" aria-label="D4's closed loop with the policy edge labelled t_inf = 100 ms, the controller edge 50 ms, a chunk buffer of three actions and an observation from step n minus 2; below, the loop unrolled over control steps showing each chunk's observation step, the age of every executed action, and a 0.20 s reaction to a scene change at step 20">
+  <defs><marker id="aD4e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">(a) one loop, two clocks</text>
+  <rect x="12" y="44" width="106" height="42" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="65" y="61.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">scene</text>
+  <text x="65" y="76.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">l: left, then down</text>
+  <rect x="240" y="47" width="84" height="36" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="282" y="69" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">policy π<tspan dy="3" font-size="10">θ</tspan></text>
+  <line x1="118" y1="65" x2="238" y2="65" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD4e)"/>
+  <text x="179" y="45" font-size="11" fill="currentColor" text-anchor="middle">o from step n − m</text>
+  <text x="179" y="59" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">m = 2 steps</text>
+  <line x1="324" y1="65" x2="423" y2="65" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD4e)"/>
+  <text x="376" y="59" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">t<tspan dy="3" font-size="10">inf</tspan><tspan dy="-3" dx="3.5">= 100 ms</tspan></text>
+  <text x="488" y="37" font-size="11" fill="currentColor" text-anchor="middle">chunk buffer · k = 3</text>
+  <rect x="428" y="46" width="120" height="17" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="434" y="59" font-size="11" fill="currentColor">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="542" y="59" font-size="11" fill="currentColor" text-anchor="end">(−0.02, 0)</text>
+  <rect x="428" y="63" width="120" height="17" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="434" y="76" font-size="11" fill="currentColor">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="542" y="76" font-size="11" fill="currentColor" text-anchor="end">(−0.02, 0)</text>
+  <rect x="428" y="80" width="120" height="17" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="434" y="93" font-size="11" fill="currentColor">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="542" y="93" font-size="11" fill="currentColor" text-anchor="end">(0, −0.02)</text>
+  <rect x="425" y="43" width="126" height="57" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
+  <rect x="428" y="146" width="120" height="40" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="488" y="162.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">controller</text>
+  <text x="488" y="177.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">20 Hz</text>
+  <line x1="488" y1="100" x2="488" y2="144" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD4e)"/>
+  <rect x="240" y="146" width="84" height="40" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="282" y="162.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">robot</text>
+  <text x="282" y="177.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">p ← p + a</text>
+  <line x1="428" y1="166" x2="326" y2="166" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD4e)"/>
+  <text x="376" y="160" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">Δt = 50 ms</text>
+  <path d="M240 166 L64 166 L64 88" stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#aD4e)" stroke-linejoin="round"/>
+  <text x="74" y="160" font-size="11" fill="currentColor" fill-opacity="0.8">the world changes</text>
+  <path d="M425 86.5 L396 86.5 L396 116 L178 116 L178 68" stroke="currentColor" stroke-width="1.3" fill="none" stroke-dasharray="5 3" marker-end="url(#aD4e)" stroke-linejoin="round"/>
+  <text x="287" y="131" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.9">refill only when empty: every k = 3 steps</text>
+  <text x="12" y="220" font-size="12" fill="currentColor">(b) the loop unrolled for k = 3</text>
+  <text x="100" y="266" font-size="11" fill="currentColor" text-anchor="end">observes</text>
+  <text x="100" y="292" font-size="11" fill="currentColor" text-anchor="end">executes</text>
+  <text x="100" y="318" font-size="11" fill="currentColor" text-anchor="end">age (steps)</text>
+  <text x="100" y="340" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">control step n</text>
+  <rect x="108" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="126" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="126" y="318" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="126" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">16</text>
+  <rect x="144" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="162" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="162" y="318" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4</text>
+  <text x="162" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">17</text>
+  <rect x="180" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="198" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="198" y="318" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="198" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">18</text>
+  <rect x="216" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="234" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="234" y="318" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="234" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">19</text>
+  <rect x="252" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="270" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="270" y="318" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4</text>
+  <text x="270" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">20</text>
+  <rect x="288" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="306" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="306" y="318" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="306" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">21</text>
+  <rect x="324" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="342" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="342" y="318" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="342" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">22</text>
+  <rect x="360" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="378" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="378" y="318" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4</text>
+  <text x="378" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">23</text>
+  <rect x="396" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="414" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="414" y="318" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="414" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">24</text>
+  <rect x="432" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="450" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="450" y="318" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="450" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">25</text>
+  <rect x="468" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="486" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="486" y="318" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4</text>
+  <text x="486" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">26</text>
+  <rect x="504" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="522" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="522" y="318" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="522" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">27</text>
+  <line x1="180" y1="275" x2="180" y2="301" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="288" y1="275" x2="288" y2="301" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="396" y1="275" x2="396" y2="301" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="504" y1="275" x2="504" y2="301" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="108" cy="277" r="3.2" stroke="none" fill="currentColor"/>
+  <path d="M 108.0 274 Q 144.0 248 179.0 273" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aD4e)"/>
+  <circle cx="216" cy="277" r="3.2" stroke="none" fill="currentColor"/>
+  <path d="M 216.0 274 Q 252.0 248 287.0 273" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aD4e)"/>
+  <circle cx="324" cy="277" r="3.2" stroke="none" fill="currentColor"/>
+  <path d="M 324.0 274 Q 360.0 248 395.0 273" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aD4e)"/>
+  <circle cx="432" cy="277" r="3.2" stroke="none" fill="currentColor"/>
+  <path d="M 432.0 274 Q 468.0 248 503.0 273" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aD4e)"/>
+  <line x1="252" y1="238" x2="252" y2="328" stroke="currentColor" stroke-width="1.3" stroke-dasharray="3 3"/>
+  <text x="247" y="246" font-size="11" fill="currentColor" text-anchor="end">scene changes, n<tspan dy="3" font-size="10">j</tspan><tspan dy="-3" dx="3.5">= 20</tspan></text>
+  <path d="M252 351 L252 356 L396 356 L396 351" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
+  <text x="324" y="372" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">ℓ(3) = (24 − 20) × 0.05 s = 0.20 s</text>
+  <text x="12" y="388" font-size="11" fill="currentColor" fill-opacity="0.85">worst age (m + k − 1)Δt = 0.20 s · each arc is t<tspan dy="3" font-size="10">inf</tspan><tspan dy="-3" dx="3.5">= m = 2 steps</tspan></text>
+</svg>
 
 Four things the drawing has to get right, each of which is a claim about the system.
 **Two clocks, not one.** Label the policy edge with $t_{\mathrm{inf}}=100\,\mathrm{ms}$ and the controller edge with $\Delta t=50\,\mathrm{ms}$. A single rate on the loop is the most common wrong drawing, and every latency number on this page comes from the two being different.
@@ -118,7 +216,7 @@ The word doing the work in that paragraph is the objective's name, and the name 
 
 ### 3. Chunking trades smoothness against feedback
 
-Long chunks reduce compounding autoregressive calls and can preserve coordinated motion, but they delay correction. If inference takes 100 ms and the robot executes 10 actions at 20 Hz, a full open-loop chunk lasts 0.5 s. Receding execution—predict 10, execute 2, observe again—restores feedback at extra compute cost.
+Long chunks reduce compounding autoregressive calls and can preserve coordinated motion, but they delay correction. If inference takes 100 ms and the robot executes 10 actions at 20 Hz, a full open-loop chunk lasts 0.5 s. Receding execution—predict 10, execute 2, observe again—restores feedback at extra compute cost. What one autoregressive call is inside the model, a causally masked decoder emitting one token at a time with a KV cache that spares each step from rerunning the prefix, is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §3 and §7]].
 
 The worked case turned that sentence into two formulas, $\text{age}_{\max}=(m+k-1)\Delta t$ and $\ell(k)$, and §5 measures what is bought on the other side. First the object being traded:
 
@@ -220,7 +318,7 @@ Five readings, in the order a reviewer should take them.
 
 **One number in the table is not part of the trend.** Travel at $k=5$ (14.83 cm) is higher than at $k=4$ (13.19 cm). The jitter is a fixed sequence, so where the chunk boundaries land inside it matters at the 10% level; the factor of 3.3 across the whole column is the effect, and a 12% difference between neighbours is phase. A paper reporting the second kind of difference as a result owes you several seeds.
 
-The design conclusion for this robot: $k$ between 3 and 5 — a commitment of 0.15–0.25 s — removes every reversal and more than half the wasted travel while keeping reaction under 250 ms. Going further to $k=20$ saves a further 5.5 cm of travel and costs three quarters of a second of blindness, which is only a good trade if nothing in the scene moves.
+The design conclusion for this robot: $k$ between 3 and 5 — a commitment of 0.15–0.25 s — removes every reversal and more than half the wasted travel while keeping reaction within 250 ms. Going further to $k=20$ saves a further 5.5 cm of travel and costs three quarters of a second of blindness, which is only a good trade if nothing in the scene moves.
 
 ### After reading
 
@@ -301,7 +399,116 @@ def lag(src, e):                       # latency from change e to the first info
 
 ### 과제가 그릴 그림 · Homework diagram
 
-폐루프 하나, 과제가 요구하는 것이 정확히 이 그림이다. 영어 절의 mermaid 그림을 보라.
+폐루프 하나, 과제가 요구하는 것이 정확히 이 그림이다. 그림은 카탈로그 숫자로 그린 계산 절이고, 아래에 $k=3$으로 루프를 펼쳐 놓았다.
+
+<svg viewBox="0 0 560 402" style="max-width:100%;height:auto" role="img" aria-label="정책 변에 t_inf = 100 ms, 제어기 변에 50 ms, 행동 세 개짜리 chunk 버퍼와 스텝 n − 2의 관측을 적은 D4의 폐루프와, 그 루프를 제어 스텝으로 펼쳐 관측 스텝, 실행되는 행동의 나이, 스텝 20의 장면 변화에 대한 0.20 s 반응을 보인 시간선">
+  <defs><marker id="aD4k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">(a) 루프 하나, 시계 둘</text>
+  <rect x="12" y="44" width="106" height="42" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="65" y="61.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">장면</text>
+  <text x="65" y="76.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">l: 왼쪽, 그다음 아래</text>
+  <rect x="240" y="47" width="84" height="36" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="282" y="69" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">정책 π<tspan dy="3" font-size="10">θ</tspan></text>
+  <line x1="118" y1="65" x2="238" y2="65" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD4k)"/>
+  <text x="179" y="45" font-size="11" fill="currentColor" text-anchor="middle">o는 스텝 n − m의 관측</text>
+  <text x="179" y="59" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">m = 2 스텝</text>
+  <line x1="324" y1="65" x2="423" y2="65" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD4k)"/>
+  <text x="376" y="59" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">t<tspan dy="3" font-size="10">inf</tspan><tspan dy="-3" dx="3.5">= 100 ms</tspan></text>
+  <text x="488" y="37" font-size="11" fill="currentColor" text-anchor="middle">chunk 버퍼 · k = 3</text>
+  <rect x="428" y="46" width="120" height="17" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="434" y="59" font-size="11" fill="currentColor">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="542" y="59" font-size="11" fill="currentColor" text-anchor="end">(−0.02, 0)</text>
+  <rect x="428" y="63" width="120" height="17" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="434" y="76" font-size="11" fill="currentColor">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="542" y="76" font-size="11" fill="currentColor" text-anchor="end">(−0.02, 0)</text>
+  <rect x="428" y="80" width="120" height="17" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="434" y="93" font-size="11" fill="currentColor">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="542" y="93" font-size="11" fill="currentColor" text-anchor="end">(0, −0.02)</text>
+  <rect x="425" y="43" width="126" height="57" rx="3" stroke="currentColor" stroke-width="2" fill="none"/>
+  <rect x="428" y="146" width="120" height="40" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="488" y="162.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">제어기</text>
+  <text x="488" y="177.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">20 Hz</text>
+  <line x1="488" y1="100" x2="488" y2="144" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD4k)"/>
+  <rect x="240" y="146" width="84" height="40" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="282" y="162.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">로봇</text>
+  <text x="282" y="177.5" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1">p ← p + a</text>
+  <line x1="428" y1="166" x2="326" y2="166" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD4k)"/>
+  <text x="376" y="160" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">Δt = 50 ms</text>
+  <path d="M240 166 L64 166 L64 88" stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#aD4k)" stroke-linejoin="round"/>
+  <text x="74" y="160" font-size="11" fill="currentColor" fill-opacity="0.8">세계가 바뀐다</text>
+  <path d="M425 86.5 L396 86.5 L396 116 L178 116 L178 68" stroke="currentColor" stroke-width="1.3" fill="none" stroke-dasharray="5 3" marker-end="url(#aD4k)" stroke-linejoin="round"/>
+  <text x="287" y="131" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.9">비었을 때만 다시 채움: k = 3 스텝마다</text>
+  <text x="12" y="220" font-size="12" fill="currentColor">(b) k = 3으로 펼친 루프</text>
+  <text x="100" y="266" font-size="11" fill="currentColor" text-anchor="end">관측</text>
+  <text x="100" y="292" font-size="11" fill="currentColor" text-anchor="end">실행</text>
+  <text x="100" y="318" font-size="11" fill="currentColor" text-anchor="end">나이 (스텝)</text>
+  <text x="100" y="340" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">제어 스텝 n</text>
+  <rect x="108" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="126" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="126" y="318" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="126" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">16</text>
+  <rect x="144" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="162" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="162" y="318" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4</text>
+  <text x="162" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">17</text>
+  <rect x="180" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="198" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="198" y="318" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="198" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">18</text>
+  <rect x="216" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="234" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="234" y="318" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="234" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">19</text>
+  <rect x="252" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="270" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="270" y="318" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4</text>
+  <text x="270" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">20</text>
+  <rect x="288" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="306" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="306" y="318" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="306" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">21</text>
+  <rect x="324" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="342" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="342" y="318" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="342" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">22</text>
+  <rect x="360" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="378" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="378" y="318" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4</text>
+  <text x="378" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">23</text>
+  <rect x="396" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="414" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="414" y="318" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="414" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">24</text>
+  <rect x="432" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="450" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">2</tspan></text>
+  <text x="450" y="318" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="450" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">25</text>
+  <rect x="468" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.22" stroke-opacity="0.6"/>
+  <text x="486" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="486" y="318" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4</text>
+  <text x="486" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">26</text>
+  <rect x="504" y="278" width="36" height="20" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.6"/>
+  <text x="522" y="292" font-size="11" fill="currentColor" text-anchor="middle">a<tspan dy="3" font-size="10">1</tspan></text>
+  <text x="522" y="318" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="522" y="340" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">27</text>
+  <line x1="180" y1="275" x2="180" y2="301" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="288" y1="275" x2="288" y2="301" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="396" y1="275" x2="396" y2="301" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="504" y1="275" x2="504" y2="301" stroke="currentColor" stroke-width="2.2"/>
+  <circle cx="108" cy="277" r="3.2" stroke="none" fill="currentColor"/>
+  <path d="M 108.0 274 Q 144.0 248 179.0 273" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aD4k)"/>
+  <circle cx="216" cy="277" r="3.2" stroke="none" fill="currentColor"/>
+  <path d="M 216.0 274 Q 252.0 248 287.0 273" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aD4k)"/>
+  <circle cx="324" cy="277" r="3.2" stroke="none" fill="currentColor"/>
+  <path d="M 324.0 274 Q 360.0 248 395.0 273" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aD4k)"/>
+  <circle cx="432" cy="277" r="3.2" stroke="none" fill="currentColor"/>
+  <path d="M 432.0 274 Q 468.0 248 503.0 273" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aD4k)"/>
+  <line x1="252" y1="238" x2="252" y2="328" stroke="currentColor" stroke-width="1.3" stroke-dasharray="3 3"/>
+  <text x="247" y="246" font-size="11" fill="currentColor" text-anchor="end">장면 변화, n<tspan dy="3" font-size="10">j</tspan><tspan dy="-3" dx="3.5">= 20</tspan></text>
+  <path d="M252 351 L252 356 L396 356 L396 351" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
+  <text x="324" y="372" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">ℓ(3) = (24 − 20) × 0.05 s = 0.20 s</text>
+  <text x="12" y="388" font-size="11" fill="currentColor" fill-opacity="0.85">최악의 나이 (m + k − 1)Δt = 0.20 s · 호 하나가 t<tspan dy="3" font-size="10">inf</tspan><tspan dy="-3" dx="3.5">= m = 2 스텝</tspan></text>
+</svg>
 
 그림이 맞혀야 할 것이 넷이고, 각각이 시스템에 대한 주장이다.
 **시계는 하나가 아니라 둘.** 정책 변에 $t_{\mathrm{inf}}=100\,\mathrm{ms}$, 제어기 변에 $\Delta t=50\,\mathrm{ms}$를 적는다. 루프에 주기를 하나만 적는 것이 가장 흔한 오답이고, 이 페이지의 지연 숫자는 전부 둘이 다르다는 데서 나온다.
@@ -346,7 +553,7 @@ $L_{BC}=H^{-1}\sum_h\|a_{t+h}-\hat a_{t+h}\|^2$. 장애물의 좌우로 지나�
 
 ### 3. Chunking의 교환
 
-긴 chunk는 호출 횟수와 흔들림을 줄이지만 보정을 늦춘다. 추론이 100 ms이고 로봇이 20 Hz로 행동 10개를 실행하면 전체 open-loop chunk는 0.5초다. 10개를 예측하고 2개만 실행한 뒤 다시 관측하면 feedback을 회복하지만 계산량이 늘어난다.
+긴 chunk는 호출 횟수와 흔들림을 줄이지만 보정을 늦춘다. 추론이 100 ms이고 로봇이 20 Hz로 행동 10개를 실행하면 전체 open-loop chunk는 0.5초다. 10개를 예측하고 2개만 실행한 뒤 다시 관측하면 feedback을 회복하지만 계산량이 늘어난다. 모델 안에서 자기회귀 호출 한 번이 무엇인지, 곧 토큰을 하나씩 내는 인과 마스크 디코더와 매 스텝이 앞부분을 다시 돌리지 않게 하는 KV 캐시는 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §3과 §7]]에 있다.
 
 계산 절이 그 문장을 $(m+k-1)\Delta t$와 $\ell(k)$ 두 식으로 바꿨고, §5가 반대쪽에서 무엇을 사는지 잰다. 먼저 거래되는 대상부터.
 

@@ -26,28 +26,128 @@ Forward: $W_1x=(1,2,1)$, $h=\operatorname{ReLU}(W_1x)=(1,2,1)$, $s=W_2h=(2,1)$. 
 
 The target is class 1 throughout this page, so $y=(1,0)$, and every number below follows from those five objects and nothing else.
 
-*Scope: this page teaches the typed pipeline from one input to one parameter update — shapes, softmax, cross-entropy, the backward pass, one SGD step, and the step size that update has to respect — and the evidence a training claim owes. It does not teach where the derivatives come from, which is [[02-foundations/calculus-backprop|2. Calculus & Backprop §2]]; nor the optimizers themselves (momentum, Adam, schedules), which are [[02-foundations/optimization|4. Optimization §3]]; nor the experimental protocol that turns a number into a result, which is [[02-foundations/ml-practice|9. ML Practice §4]]; nor any architecture beyond a two-layer MLP — convolutions and patch tokens are [[03-deep-learning/computer-vision/index|2. Computer Vision]], and attention is the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]].*
+*Scope: this page teaches the typed pipeline from one input to one parameter update — shapes, softmax, cross-entropy, the backward pass, one SGD step, and the step size that update has to respect — and the evidence a training claim owes. It does not teach where the derivatives come from, which is [[02-foundations/calculus-backprop|2. Calculus & Backprop §2]]; nor the optimizers themselves (momentum, Adam, schedules), which are [[02-foundations/optimization|4. Optimization §3]]; nor the experimental protocol that turns a number into a result, which is [[02-foundations/ml-practice|9. ML Practice §4]]; nor any architecture beyond a two-layer MLP — convolutions and patch tokens are [[03-deep-learning/computer-vision/index|2. Computer Vision]], and attention is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]] and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]].*
 
 ### Homework diagram
 
-One diagram, and the problem set asks for exactly this one. Draw both directions on the same picture.
+One diagram, and the problem set asks for exactly this one. Draw both directions on the same picture. The figure is the worked case below, on the catalog numbers; problem 1 asks for the same drawing with batch shapes for $B=4$.
 
-```mermaid
-flowchart LR
-    X["x · 2"] --> M1["W1 · 3x2"]
-    M1 --> Z["z · 3"]
-    Z --> R{"ReLU gate"}
-    R --> H["h · 3"]
-    H --> M2["W2 · 2x3"]
-    M2 --> S["s · 2"]
-    S --> SM["softmax + cross-entropy"]
-    SM --> L["L · scalar"]
-    L -.-> GS["dL/ds = p - y"]
-    GS -.-> GW2["dL/dW2 = (p-y) h transpose"]
-    GS -.-> GH["dL/dh = W2 transpose (p-y)"]
-    GH -.-> GZ["dL/dz = dL/dh times mask(z>0)"]
-    GZ -.-> GW1["dL/dW1 = dL/dz x transpose"]
-```
+<svg viewBox="0 0 560 518" style="max-width:100%;height:auto" role="img" aria-label="D1's forward pass down the left with every tensor's shape and value, its weights and zero biases in the middle, and the backward pass up the right with every gradient's value">
+  <defs><marker id="aD1e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="22" font-size="12" fill="currentColor">D1 · target class 1, y = (1, 0) · solid: forward · dashed: backward</text>
+  <text x="75" y="46" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">forward · activations</text>
+  <text x="265" y="46" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">parameters · biases present, zero</text>
+  <text x="469" y="46" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">backward · gradients</text>
+  <line x1="144" y1="34" x2="144" y2="390" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="2 4"/>
+  <line x1="385" y1="34" x2="385" y2="390" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="2 4"/>
+  <rect x="12" y="49" width="126" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="63" font-size="11" fill="currentColor" text-anchor="middle">x · 2</text>
+  <text x="75" y="78" font-size="11" fill="currentColor" text-anchor="middle">(1, 2)</text>
+  <rect x="12" y="153" width="126" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="167" font-size="11" fill="currentColor" text-anchor="middle">z · 3</text>
+  <text x="75" y="182" font-size="11" fill="currentColor" text-anchor="middle">(1, 2, 1)</text>
+  <rect x="12" y="241" width="126" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="255" font-size="11" fill="currentColor" text-anchor="middle">h · 3</text>
+  <text x="75" y="270" font-size="11" fill="currentColor" text-anchor="middle">(1, 2, 1)</text>
+  <rect x="12" y="349" width="126" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="363" font-size="11" fill="currentColor" text-anchor="middle">s · 2</text>
+  <text x="75" y="378" font-size="11" fill="currentColor" text-anchor="middle">(2, 1)</text>
+  <line x1="75" y1="83" x2="75" y2="107" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="75" y1="129" x2="75" y2="152" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1e)"/>
+  <line x1="75" y1="275" x2="75" y2="301" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="75" y1="323" x2="75" y2="348" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1e)"/>
+  <rect x="31" y="107" width="88" height="22" rx="11" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="122" font-size="11" fill="currentColor" text-anchor="middle">W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">x + b</tspan><tspan dy="3" font-size="10">1</tspan></text>
+  <rect x="31" y="301" width="88" height="22" rx="11" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="316" font-size="11" fill="currentColor" text-anchor="middle">W<tspan dy="3" font-size="10">2</tspan><tspan dy="-3">h + b</tspan><tspan dy="3" font-size="10">2</tspan></text>
+  <line x1="75" y1="187" x2="75" y2="205" stroke="currentColor" stroke-width="1.4"/>
+  <rect x="35" y="205" width="80" height="18" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.1"/>
+  <text x="75" y="218" font-size="11" fill="currentColor" text-anchor="middle">ReLU gate</text>
+  <line x1="75" y1="223" x2="75" y2="240" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1e)"/>
+  <line x1="75" y1="383" x2="75" y2="397" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1e)"/>
+  <rect x="12" y="397" width="536" height="26" rx="5" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.07"/>
+  <text x="265" y="414" font-size="11.5" fill="currentColor" text-anchor="middle">softmax + cross-entropy · one block</text>
+  <line x1="75" y1="423" x2="75" y2="433" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1e)"/>
+  <rect x="12" y="434" width="126" height="54" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="449" font-size="11" fill="currentColor" text-anchor="middle">p · 2</text>
+  <text x="75" y="465" font-size="11" fill="currentColor" text-anchor="middle">p<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= 0.731059</tspan></text>
+  <text x="75" y="481" font-size="11" fill="currentColor" text-anchor="middle">p<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= 0.268941</tspan></text>
+  <line x1="265" y1="423" x2="265" y2="444" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1e)"/>
+  <rect x="177" y="445" width="176" height="24" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="265" y="461" font-size="11" fill="currentColor" text-anchor="middle">L · scalar = 0.313262 nats</text>
+  <text x="152" y="70" font-size="11" fill="currentColor">W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">· 3×2</tspan></text>
+  <text x="176" y="87" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="196" y="87" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="176" y="101" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="196" y="101" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="176" y="115" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="196" y="115" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M158 76 L154 76 L154 119 L158 119" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M196 76 L200 76 L200 119 L196 119" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="220" y="70" font-size="11" fill="currentColor">b<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">· 3 = 0</tspan></text>
+  <text x="242" y="87" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="242" y="101" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="242" y="115" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M224 76 L220 76 L220 119 L224 119" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M242 76 L246 76 L246 119 L242 119" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="152" y="142" font-size="11" fill="currentColor">∂L/∂W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= (∂L/∂z) x</tspan><tspan dy="-4" font-size="10">T</tspan><tspan dy="4" dx="3.5">· 3×2</tspan></text>
+  <text x="224" y="159" font-size="11" fill="currentColor" text-anchor="end">0.268941</text>
+  <text x="292" y="159" font-size="11" fill="currentColor" text-anchor="end">0.537883</text>
+  <text x="224" y="173" font-size="11" fill="currentColor" text-anchor="end">−0.268941</text>
+  <text x="292" y="173" font-size="11" fill="currentColor" text-anchor="end">−0.537883</text>
+  <text x="224" y="187" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="292" y="187" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M158 148 L154 148 L154 191 L158 191" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M292 148 L296 148 L296 191 L292 191" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <line x1="151" y1="97" x2="121" y2="116" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD1e)"/>
+  <text x="152" y="258" font-size="11" fill="currentColor">W<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">· 2×3</tspan></text>
+  <text x="176" y="275" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="196" y="275" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="216" y="275" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="176" y="289" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="196" y="289" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="216" y="289" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M158 264 L154 264 L154 293 L158 293" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M216 264 L220 264 L220 293 L216 293" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="240" y="258" font-size="11" fill="currentColor">b<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">· 2 = 0</tspan></text>
+  <text x="262" y="275" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="262" y="289" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M244 264 L240 264 L240 293 L244 293" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M262 264 L266 264 L266 293 L262 293" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="152" y="318" font-size="11" fill="currentColor">∂L/∂W<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= (p − y) h</tspan><tspan dy="-4" font-size="10">T</tspan><tspan dy="4" dx="3.5">· 2×3</tspan></text>
+  <text x="224" y="335" font-size="11" fill="currentColor" text-anchor="end">−0.268941</text>
+  <text x="292" y="335" font-size="11" fill="currentColor" text-anchor="end">−0.537883</text>
+  <text x="360" y="335" font-size="11" fill="currentColor" text-anchor="end">−0.268941</text>
+  <text x="224" y="349" font-size="11" fill="currentColor" text-anchor="end">0.268941</text>
+  <text x="292" y="349" font-size="11" fill="currentColor" text-anchor="end">0.537883</text>
+  <text x="360" y="349" font-size="11" fill="currentColor" text-anchor="end">0.268941</text>
+  <path d="M158 324 L154 324 L154 353 L158 353" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M360 324 L364 324 L364 353 L360 353" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <line x1="151" y1="279" x2="121" y2="310" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD1e)"/>
+  <rect x="390" y="349" width="158" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text x="469" y="363" font-size="11" fill="currentColor" text-anchor="middle">∂L/∂s = p − y · 2</text>
+  <text x="469" y="378" font-size="11" fill="currentColor" text-anchor="middle">(−0.268941, 0.268941)</text>
+  <rect x="390" y="241" width="158" height="52" rx="4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text x="469" y="255" font-size="11" fill="currentColor" text-anchor="middle">∂L/∂h = W<tspan dy="3" font-size="10">2</tspan><tspan dy="-7" font-size="10">T</tspan><tspan dy="4">(p − y) · 3</tspan></text>
+  <text x="469" y="270" font-size="11" fill="currentColor" text-anchor="middle">(0.268941, −0.268941, 0)</text>
+  <text x="469" y="286" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0: column 3 of W<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">is (0, 0)</tspan></text>
+  <rect x="390" y="153" width="158" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text x="469" y="167" font-size="11" fill="currentColor" text-anchor="middle">∂L/∂z · 3</text>
+  <text x="469" y="182" font-size="11" fill="currentColor" text-anchor="middle">(0.268941, −0.268941, 0)</text>
+  <line x1="469" y1="397" x2="469" y2="384" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#aD1e)"/>
+  <line x1="469" y1="349" x2="469" y2="294" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#aD1e)"/>
+  <text x="475" y="326" font-size="11" fill="currentColor" fill-opacity="0.85">× W<tspan dy="3" font-size="10">2</tspan><tspan dy="-7" font-size="10">T</tspan></text>
+  <line x1="389" y1="358" x2="369" y2="342" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#aD1e)"/>
+  <line x1="469" y1="241" x2="469" y2="223" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <rect x="415" y="205" width="108" height="18" rx="9" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text x="469" y="218" font-size="11" fill="currentColor" text-anchor="middle">⊙ mask (1, 1, 1)</text>
+  <line x1="469" y1="205" x2="469" y2="188" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#aD1e)"/>
+  <line x1="117" y1="214" x2="413" y2="214" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="1 3"/>
+  <text x="265" y="210" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.9">mask 1[z &gt; 0] = (1, 1, 1)</text>
+  <text x="265" y="227" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">read off z, fixed before backward</text>
+  <line x1="389" y1="166" x2="301" y2="168" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#aD1e)"/>
+  <text x="12" y="502" font-size="11" fill="currentColor" fill-opacity="0.9">No arrow runs from L to W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">: its gradient arrives only through W</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">and the mask.</tspan></text>
+</svg>
 
 Five things the drawing has to get right, each of which is a claim about the computation.
 **Every tensor labelled with its shape** — $x$ (2), $z$ (3), $h$ (3), $s$ (2), $p$ (2), $L$ (scalar). An unlabelled arrow is where a shape error hides, and a shape error is the most common reason a re-implementation silently trains the wrong model.
@@ -272,8 +372,8 @@ print("first eta that diverges: %.4f ; of the %d grid points above it, %d still 
 
 - **The useful boundary is the settling boundary, and it is exactly $2/\lambda_{\max}$.** Rows $0.5$ through $2$ land on $L^\ast=0.140339$ to six figures; row $3$ misses it in the sixth. Part 3 of the listing walks to $\theta^\ast$, builds the $12\times12$ Hessian by finite differences and reports $\lambda_{\max}=0.6627$, hence $2/\lambda_{\max}=3.0179$. Bisecting the loop for the largest $\eta$ that still settles gives $3.0180$. The textbook condition is not an approximation here; it is the measurement, to four significant figures.
 - **Above that boundary the failure is silent before it is loud.** At $\eta=8$ the cross-entropy is zero — the model is *perfect* on its one training point — while $L_\lambda=0.599431$, four times the minimum, because the weights have been thrown far from the origin. A run monitored on accuracy alone shows nothing wrong. At $\eta=10$ all three hidden units are dead, $p=(0.5,0.5)$, and the loss sits at exactly $\log 2=0.693147$: every weight has been decayed to zero and the network predicts the prior. That number is worth recognising on sight, because a two-class run stuck at $0.693$ has not converged, it has given up.
-- **One unit dies on purpose, and that is not the bug.** Every row from $\eta=0.1$ up ends with one dead unit, and so does the minimum itself: $\theta^\ast$ has $W_1$'s first row and $W_2$'s first column at zero. The backward pass wanted to push hidden unit 1 down ($\partial L/\partial z_1=+0.268941$) and the decay finished the job. Weight decay prunes; three dead units is collapse, one is the objective doing what it was asked.
-- **The overflow boundary is not a boundary at all.** It is tempting to report the divergence threshold the way the settling threshold was reported. Part 3 scans $\eta$ from $10.40$ to $10.60$ in steps of $0.0005$: the first divergence is at $\eta=10.4015$, and of the 417 grid points at or above it, 285 still survive 200 steps. Past the stability limit the iterate bounces across the ReLU kinks and whether it escapes is not monotone in $\eta$. A paper quoting "training diverges above $\eta=10.4$" on a plot of this kind is quoting one grid.
+- **One unit dies on purpose, and that is not the bug.** Every row from $\eta=0.1$ to $\eta=8$ ends with one dead unit, and so does the minimum itself: $\theta^\ast$ has $W_1$'s first row and $W_2$'s first column at zero. The backward pass wanted to push hidden unit 1 down ($\partial L/\partial z_1=+0.268941$) and the decay finished the job. Weight decay prunes; three dead units is collapse, one is the objective doing what it was asked.
+- **The overflow boundary is not a boundary at all.** It is tempting to report the divergence threshold the way the settling threshold was reported. Part 3 scans $\eta$ from $10.40$ to $10.6095$ in steps of $0.0005$: the first divergence is at $\eta=10.4015$, and of the 417 grid points at or above it, 285 still survive 200 steps. Past the stability limit the iterate bounces across the ReLU kinks and whether it escapes is not monotone in $\eta$. A paper quoting "training diverges above $\eta=10.4$" on a plot of this kind is quoting one grid.
 
 ### Self-check
 
@@ -374,11 +474,128 @@ $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\
 
 이 페이지에서 정답은 항상 1번 클래스이므로 $y=(1,0)$이고, 아래의 모든 숫자는 이 다섯 개의 대상만으로 나온다.
 
-*범위: 이 페이지는 입력 하나에서 파라미터 갱신 하나까지의 형식 붙은 경로 — shape, softmax, cross-entropy, 역전파, SGD 한 스텝, 그리고 그 스텝이 지켜야 하는 보폭 — 와 학습 주장이 갖춰야 할 증거를 가르친다. 미분이 어디서 오는지는 가르치지 않는다. 그것은 [[02-foundations/calculus-backprop|2. 미적분과 역전파 §2]]다. optimizer 자체(momentum, Adam, schedule)도 아니다. 그것은 [[02-foundations/optimization|4. 최적화 §3]]다. 숫자를 결과로 바꾸는 실험 절차도 아니다. 그것은 [[02-foundations/ml-practice|9. ML 실무 §4]]다. 2층 MLP 너머의 구조도 아니다. convolution과 patch token은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]], attention은 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다.*
+*범위: 이 페이지는 입력 하나에서 파라미터 갱신 하나까지의 형식 붙은 경로 — shape, softmax, cross-entropy, 역전파, SGD 한 스텝, 그리고 그 스텝이 지켜야 하는 보폭 — 와 학습 주장이 갖춰야 할 증거를 가르친다. 미분이 어디서 오는지는 가르치지 않는다. 그것은 [[02-foundations/calculus-backprop|2. 미적분과 역전파 §2]]다. optimizer 자체(momentum, Adam, schedule)도 아니다. 그것은 [[02-foundations/optimization|4. 최적화 §3]]다. 숫자를 결과로 바꾸는 실험 절차도 아니다. 그것은 [[02-foundations/ml-practice|9. ML 실무 §4]]다. 2층 MLP 너머의 구조도 아니다. convolution과 patch token은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]], attention은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]와 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다.*
 
 ### 과제가 그릴 그림
 
-그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 순방향과 역방향을 한 장에 함께 그린다. 영어 절의 mermaid 도면이 그 그림이다.
+그림 하나이고, 과제가 요구하는 것이 정확히 이 그림이다. 순방향과 역방향을 한 장에 함께 그린다. 그림은 아래 계산 절을 카탈로그 숫자로 그린 것이고, 문제 1은 같은 그림을 $B=4$의 배치 shape로 요구한다.
+
+<svg viewBox="0 0 560 518" style="max-width:100%;height:auto" role="img" aria-label="D1의 순전파를 왼쪽 열에 텐서마다 shape와 값을 달아 내려 그리고, 가운데에 가중치와 0인 bias를, 오른쪽 열에 gradient 값을 단 역전파를 올려 그린 그림">
+  <defs><marker id="aD1k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="22" font-size="12" fill="currentColor">D1 · 정답 1번 클래스, y = (1, 0) · 실선: 순전파 · 점선: 역전파</text>
+  <text x="75" y="46" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">순전파 · activation</text>
+  <text x="265" y="46" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">파라미터 · bias는 있고 0</text>
+  <text x="469" y="46" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">역전파 · gradient</text>
+  <line x1="144" y1="34" x2="144" y2="390" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="2 4"/>
+  <line x1="385" y1="34" x2="385" y2="390" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="2 4"/>
+  <rect x="12" y="49" width="126" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="63" font-size="11" fill="currentColor" text-anchor="middle">x · 2</text>
+  <text x="75" y="78" font-size="11" fill="currentColor" text-anchor="middle">(1, 2)</text>
+  <rect x="12" y="153" width="126" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="167" font-size="11" fill="currentColor" text-anchor="middle">z · 3</text>
+  <text x="75" y="182" font-size="11" fill="currentColor" text-anchor="middle">(1, 2, 1)</text>
+  <rect x="12" y="241" width="126" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="255" font-size="11" fill="currentColor" text-anchor="middle">h · 3</text>
+  <text x="75" y="270" font-size="11" fill="currentColor" text-anchor="middle">(1, 2, 1)</text>
+  <rect x="12" y="349" width="126" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="363" font-size="11" fill="currentColor" text-anchor="middle">s · 2</text>
+  <text x="75" y="378" font-size="11" fill="currentColor" text-anchor="middle">(2, 1)</text>
+  <line x1="75" y1="83" x2="75" y2="107" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="75" y1="129" x2="75" y2="152" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1k)"/>
+  <line x1="75" y1="275" x2="75" y2="301" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="75" y1="323" x2="75" y2="348" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1k)"/>
+  <rect x="31" y="107" width="88" height="22" rx="11" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="122" font-size="11" fill="currentColor" text-anchor="middle">W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">x + b</tspan><tspan dy="3" font-size="10">1</tspan></text>
+  <rect x="31" y="301" width="88" height="22" rx="11" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="316" font-size="11" fill="currentColor" text-anchor="middle">W<tspan dy="3" font-size="10">2</tspan><tspan dy="-3">h + b</tspan><tspan dy="3" font-size="10">2</tspan></text>
+  <line x1="75" y1="187" x2="75" y2="205" stroke="currentColor" stroke-width="1.4"/>
+  <rect x="35" y="205" width="80" height="18" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.1"/>
+  <text x="75" y="218" font-size="11" fill="currentColor" text-anchor="middle">ReLU 게이트</text>
+  <line x1="75" y1="223" x2="75" y2="240" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1k)"/>
+  <line x1="75" y1="383" x2="75" y2="397" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1k)"/>
+  <rect x="12" y="397" width="536" height="26" rx="5" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.07"/>
+  <text x="265" y="414" font-size="11.5" fill="currentColor" text-anchor="middle">softmax + cross-entropy · 한 블록</text>
+  <line x1="75" y1="423" x2="75" y2="433" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1k)"/>
+  <rect x="12" y="434" width="126" height="54" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="75" y="449" font-size="11" fill="currentColor" text-anchor="middle">p · 2</text>
+  <text x="75" y="465" font-size="11" fill="currentColor" text-anchor="middle">p<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= 0.731059</tspan></text>
+  <text x="75" y="481" font-size="11" fill="currentColor" text-anchor="middle">p<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= 0.268941</tspan></text>
+  <line x1="265" y1="423" x2="265" y2="444" stroke="currentColor" stroke-width="1.4" marker-end="url(#aD1k)"/>
+  <rect x="177" y="445" width="176" height="24" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <text x="265" y="461" font-size="11" fill="currentColor" text-anchor="middle">L · 스칼라 = 0.313262 nat</text>
+  <text x="152" y="70" font-size="11" fill="currentColor">W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">· 3×2</tspan></text>
+  <text x="176" y="87" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="196" y="87" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="176" y="101" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="196" y="101" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="176" y="115" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="196" y="115" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M158 76 L154 76 L154 119 L158 119" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M196 76 L200 76 L200 119 L196 119" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="220" y="70" font-size="11" fill="currentColor">b<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">· 3 = 0</tspan></text>
+  <text x="242" y="87" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="242" y="101" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="242" y="115" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M224 76 L220 76 L220 119 L224 119" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M242 76 L246 76 L246 119 L242 119" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="152" y="142" font-size="11" fill="currentColor">∂L/∂W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= (∂L/∂z) x</tspan><tspan dy="-4" font-size="10">T</tspan><tspan dy="4" dx="3.5">· 3×2</tspan></text>
+  <text x="224" y="159" font-size="11" fill="currentColor" text-anchor="end">0.268941</text>
+  <text x="292" y="159" font-size="11" fill="currentColor" text-anchor="end">0.537883</text>
+  <text x="224" y="173" font-size="11" fill="currentColor" text-anchor="end">−0.268941</text>
+  <text x="292" y="173" font-size="11" fill="currentColor" text-anchor="end">−0.537883</text>
+  <text x="224" y="187" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="292" y="187" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M158 148 L154 148 L154 191 L158 191" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M292 148 L296 148 L296 191 L292 191" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <line x1="151" y1="97" x2="121" y2="116" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD1k)"/>
+  <text x="152" y="258" font-size="11" fill="currentColor">W<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">· 2×3</tspan></text>
+  <text x="176" y="275" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="196" y="275" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="216" y="275" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="176" y="289" font-size="11" fill="currentColor" text-anchor="end">1</text>
+  <text x="196" y="289" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="216" y="289" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M158 264 L154 264 L154 293 L158 293" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M216 264 L220 264 L220 293 L216 293" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="240" y="258" font-size="11" fill="currentColor">b<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">· 2 = 0</tspan></text>
+  <text x="262" y="275" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <text x="262" y="289" font-size="11" fill="currentColor" text-anchor="end">0</text>
+  <path d="M244 264 L240 264 L240 293 L244 293" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M262 264 L266 264 L266 293 L262 293" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <text x="152" y="318" font-size="11" fill="currentColor">∂L/∂W<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= (p − y) h</tspan><tspan dy="-4" font-size="10">T</tspan><tspan dy="4" dx="3.5">· 2×3</tspan></text>
+  <text x="224" y="335" font-size="11" fill="currentColor" text-anchor="end">−0.268941</text>
+  <text x="292" y="335" font-size="11" fill="currentColor" text-anchor="end">−0.537883</text>
+  <text x="360" y="335" font-size="11" fill="currentColor" text-anchor="end">−0.268941</text>
+  <text x="224" y="349" font-size="11" fill="currentColor" text-anchor="end">0.268941</text>
+  <text x="292" y="349" font-size="11" fill="currentColor" text-anchor="end">0.537883</text>
+  <text x="360" y="349" font-size="11" fill="currentColor" text-anchor="end">0.268941</text>
+  <path d="M158 324 L154 324 L154 353 L158 353" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <path d="M360 324 L364 324 L364 353 L360 353" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <line x1="151" y1="279" x2="121" y2="310" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD1k)"/>
+  <rect x="390" y="349" width="158" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text x="469" y="363" font-size="11" fill="currentColor" text-anchor="middle">∂L/∂s = p − y · 2</text>
+  <text x="469" y="378" font-size="11" fill="currentColor" text-anchor="middle">(−0.268941, 0.268941)</text>
+  <rect x="390" y="241" width="158" height="52" rx="4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text x="469" y="255" font-size="11" fill="currentColor" text-anchor="middle">∂L/∂h = W<tspan dy="3" font-size="10">2</tspan><tspan dy="-7" font-size="10">T</tspan><tspan dy="4">(p − y) · 3</tspan></text>
+  <text x="469" y="270" font-size="11" fill="currentColor" text-anchor="middle">(0.268941, −0.268941, 0)</text>
+  <text x="469" y="286" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0: W<tspan dy="3" font-size="10">2</tspan><tspan dy="-3">의 3열이 (0, 0)</tspan></text>
+  <rect x="390" y="153" width="158" height="34" rx="4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text x="469" y="167" font-size="11" fill="currentColor" text-anchor="middle">∂L/∂z · 3</text>
+  <text x="469" y="182" font-size="11" fill="currentColor" text-anchor="middle">(0.268941, −0.268941, 0)</text>
+  <line x1="469" y1="397" x2="469" y2="384" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#aD1k)"/>
+  <line x1="469" y1="349" x2="469" y2="294" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#aD1k)"/>
+  <text x="475" y="326" font-size="11" fill="currentColor" fill-opacity="0.85">× W<tspan dy="3" font-size="10">2</tspan><tspan dy="-7" font-size="10">T</tspan></text>
+  <line x1="389" y1="358" x2="369" y2="342" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#aD1k)"/>
+  <line x1="469" y1="241" x2="469" y2="223" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <rect x="415" y="205" width="108" height="18" rx="9" stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="4 3"/>
+  <text x="469" y="218" font-size="11" fill="currentColor" text-anchor="middle">⊙ mask (1, 1, 1)</text>
+  <line x1="469" y1="205" x2="469" y2="188" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#aD1k)"/>
+  <line x1="117" y1="214" x2="413" y2="214" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="1 3"/>
+  <text x="265" y="210" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.9">mask 1[z &gt; 0] = (1, 1, 1)</text>
+  <text x="265" y="227" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">z에서 읽고 역전파 전에 고정</text>
+  <line x1="389" y1="166" x2="301" y2="168" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#aD1k)"/>
+  <text x="12" y="502" font-size="11" fill="currentColor" fill-opacity="0.9">L에서 W<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">으로 가는 화살표는 없다. gradient는 W</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">와 mask를 지나야만 닿는다.</tspan></text>
+</svg>
 
 그림이 맞혀야 할 것이 다섯이고, 각각이 계산에 대한 주장이다.
 **모든 텐서에 shape를 적는다** — $x$(2), $z$(3), $h$(3), $s$(2), $p$(2), $L$(스칼라). 이름 없는 화살표가 shape 오류가 숨는 자리이고, shape 오류는 재구현이 조용히 다른 모델을 학습시키는 가장 흔한 이유다.
@@ -530,8 +747,8 @@ weight decay, augmentation, dropout, early stopping, 데이터와 compute 증가
 
 - **쓸모 있는 경계는 정착 경계이고, 그것이 정확히 $2/\lambda_{\max}$다.** $0.5$부터 $2$까지의 행이 $L^\ast=0.140339$에 여섯 자리까지 내려앉고, $3$의 행은 여섯째 자리에서 어긋난다. 코드 3부는 $\theta^\ast$까지 내려가 유한차분으로 $12\times12$ Hessian을 만들고 $\lambda_{\max}=0.6627$, 즉 $2/\lambda_{\max}=3.0179$를 보고한다. 같은 반복문을 이분법으로 훑어 여전히 정착하는 최대 $\eta$를 찾으면 $3.0180$이다. 교과서의 조건이 여기서는 근사가 아니라 측정값이고, 유효숫자 네 자리까지 맞는다.
 - **경계 위에서는 실패가 시끄러워지기 전에 조용하다.** $\eta=8$에서 cross-entropy는 0이다. 모델은 자기 학습점 하나에 대해 *완벽하다*. 그런데 $L_\lambda=0.599431$로 최소점의 네 배인데, 가중치가 원점에서 멀리 던져졌기 때문이다. accuracy만 보는 run은 아무 이상도 보지 못한다. $\eta=10$에서는 은닉 유닛 셋이 모두 죽고 $p=(0.5,0.5)$, loss는 정확히 $\log 2=0.693147$이다. 모든 가중치가 0으로 감쇠했고 신경망은 사전 확률을 예측한다. 이 숫자는 눈에 익혀 둘 가치가 있다. $0.693$에 멈춘 2클래스 run은 수렴한 것이 아니라 포기한 것이다.
-- **유닛 하나가 죽는 것은 의도이고 버그가 아니다.** $\eta=0.1$ 이상의 모든 행이 죽은 유닛 하나로 끝나고, 최소점 자체가 그렇다. $\theta^\ast$에서 $W_1$의 첫 행과 $W_2$의 첫 열이 0이다. 역전파가 은닉 유닛 1을 내리려 했고($\partial L/\partial z_1=+0.268941$) decay가 마무리했다. weight decay는 가지치기를 한다. 죽은 유닛 셋은 붕괴이고, 하나는 목적함수가 시킨 대로 한 것이다.
-- **Overflow 경계는 경계가 아니다.** 정착 경계처럼 발산 임계값을 보고하고 싶어진다. 코드 3부는 $\eta$를 $10.40$에서 $10.60$까지 $0.0005$ 간격으로 훑는다. 첫 발산은 $\eta=10.4015$이고, 그 이상의 격자점 417개 중 285개가 여전히 200스텝을 살아남는다. 안정성 한계를 넘으면 반복이 ReLU의 꺾인 점들 위를 튕기고, 탈출 여부가 $\eta$에 대해 단조롭지 않다. 이런 그림에서 "$\eta=10.4$ 위에서 학습이 발산한다"고 적은 논문은 격자 하나를 인용하고 있는 것이다.
+- **유닛 하나가 죽는 것은 의도이고 버그가 아니다.** $\eta=0.1$부터 $\eta=8$까지의 모든 행이 죽은 유닛 하나로 끝나고, 최소점 자체가 그렇다. $\theta^\ast$에서 $W_1$의 첫 행과 $W_2$의 첫 열이 0이다. 역전파가 은닉 유닛 1을 내리려 했고($\partial L/\partial z_1=+0.268941$) decay가 마무리했다. weight decay는 가지치기를 한다. 죽은 유닛 셋은 붕괴이고, 하나는 목적함수가 시킨 대로 한 것이다.
+- **Overflow 경계는 경계가 아니다.** 정착 경계처럼 발산 임계값을 보고하고 싶어진다. 코드 3부는 $\eta$를 $10.40$에서 $10.6095$까지 $0.0005$ 간격으로 훑는다. 첫 발산은 $\eta=10.4015$이고, 그 이상의 격자점 417개 중 285개가 여전히 200스텝을 살아남는다. 안정성 한계를 넘으면 반복이 ReLU의 꺾인 점들 위를 튕기고, 탈출 여부가 $\eta$에 대해 단조롭지 않다. 이런 그림에서 "$\eta=10.4$ 위에서 학습이 발산한다"고 적은 논문은 격자 하나를 인용하고 있는 것이다.
 
 ### 스스로 점검 · Self-check
 

@@ -36,6 +36,129 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] on a *real* cart:
 
 One figure, two panels, and the problem set asks for the same figure with one round trip made slower.
 
+<svg viewBox="0 0 560 552" style="max-width:100%;height:auto" role="img" aria-label="Panel A: the ros2_control seam as a line; above it the same controller, controller manager at update_rate 200 and the same controllers.yaml on both sides of a simulation and hardware divider; below it Gazebo on one side and, on the other, the vendor hardware component with on_configure and on_activate over the bus to a drive that closes its own loop at tens of kHz, with a hard-wired E-stop reaching the drive directly. Panel B: a 5 ms cycle split into read 1.2, update 3.0 and write 0.8 ms, and a 7 ms overrun cycle overhanging it by 2 ms; one encoder count reads 97.7 mm/s over 5 ms and 69.8 mm/s over 7 ms.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · the seam, with each side labelled by what it costs</text>
+  <text x="236" y="40" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">simulation | hardware</text>
+  <line x1="236" y1="46" x2="236" y2="108" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="5 4"/>
+  <line x1="236" y1="164" x2="236" y2="322" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="5 4"/>
+  <rect x="52" y="50" width="132" height="50" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="60" y="65" font-size="11" fill="currentColor" font-weight="600">controllers.yaml</text>
+  <text x="60" y="80" font-size="11" fill="currentColor" opacity="0.85">update_rate: 200</text>
+  <text x="60" y="95" font-size="11" fill="currentColor" opacity="0.85">joints: [cart]</text>
+  <rect x="264" y="50" width="132" height="50" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="272" y="65" font-size="11" fill="currentColor" font-weight="600">controllers.yaml</text>
+  <text x="272" y="80" font-size="11" fill="currentColor" opacity="0.85">update_rate: 200</text>
+  <text x="272" y="95" font-size="11" fill="currentColor" opacity="0.85">joints: [cart]</text>
+  <text x="408" y="70" font-size="11" fill="currentColor" opacity="0.85">update() + framework:</text>
+  <text x="408" y="85" font-size="11" fill="currentColor" font-weight="600">3.0 of the 5 ms cycle</text>
+  <rect x="126" y="110" width="220" height="22" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.85"/>
+  <text x="236" y="125" font-size="11" fill="currentColor" text-anchor="middle">controller</text>
+  <rect x="100" y="140" width="272" height="22" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.85"/>
+  <text x="236" y="155" font-size="11" fill="currentColor" text-anchor="middle">controller manager · update_rate: 200</text>
+  <line x1="196" y1="132" x2="196" y2="135.5" stroke="currentColor" stroke-width="1.0"/>
+  <polygon points="196,140 193.4,135 198.6,135" fill="currentColor"/>
+  <line x1="276" y1="140" x2="276" y2="136.5" stroke="currentColor" stroke-width="1.0"/>
+  <polygon points="276,132 278.6,137 273.4,137" fill="currentColor"/>
+  <line x1="8" y1="176" x2="552" y2="176" stroke="currentColor" stroke-width="2.4"/>
+  <text x="552" y="170" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">&lt;ros2_control&gt;</text>
+  <rect x="12" y="188" width="216" height="58" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="18" y="204" font-size="11" fill="currentColor" font-weight="600">Gazebo Harmonic</text>
+  <text x="18" y="220" font-size="11" fill="currentColor">gz_ros2_control/GazeboSimSystem</text>
+  <text x="18" y="236" font-size="11" fill="currentColor" opacity="0.75">charged no bus time</text>
+  <line x1="120" y1="176" x2="120" y2="183.5" stroke="currentColor" stroke-width="1.0"/>
+  <polygon points="120,188 117.4,183 122.6,183" fill="currentColor"/>
+  <rect x="246" y="188" width="306" height="58" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.85"/>
+  <text x="252" y="204" font-size="11" fill="currentColor" font-weight="600">vendor hardware component</text>
+  <text x="252" y="220" font-size="11" fill="currentColor">on_configure: open the connection</text>
+  <text x="252" y="236" font-size="11" fill="currentColor" font-weight="600">on_activate: the only one allowed to energise</text>
+  <line x1="346" y1="176" x2="346" y2="183.5" stroke="currentColor" stroke-width="1.0"/>
+  <polygon points="346,188 343.4,183 348.6,183" fill="currentColor"/>
+  <rect x="246" y="280" width="226" height="36" rx="3" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="252" y="295" font-size="11" fill="currentColor" font-weight="600">drive</text>
+  <text x="252" y="310" font-size="11" fill="currentColor">closes its own loop at tens of kHz</text>
+  <line x1="282" y1="246" x2="282" y2="273.5" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="282,280 278.6,273 285.4,273" fill="currentColor"/>
+  <line x1="304" y1="280" x2="304" y2="252.5" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="304,246 307.4,253 300.6,253" fill="currentColor"/>
+  <text x="314" y="267" font-size="11" fill="currentColor" opacity="0.9">bus: read 1.2 + write 0.8 = 2.0 ms</text>
+  <circle cx="516" cy="298" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="516" cy="298" r="5" fill="currentColor"/>
+  <line x1="507" y1="298" x2="472" y2="298" stroke="currentColor" stroke-width="2.0"/>
+  <text x="516" y="283" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">E-stop</text>
+  <text x="516" y="321" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">hard-wired</text>
+  <line x1="8" y1="336" x2="552" y2="336" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="354" font-size="12" fill="currentColor" font-weight="600">B · one cycle, drawn to scale</text>
+  <rect x="40" y="382" width="52.8" height="20" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <text x="66.4" y="376" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">read 1.2</text>
+  <rect x="92.8" y="382" width="132" height="20" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <text x="158.8" y="376" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">update 3.0</text>
+  <rect x="224.8" y="382" width="35.2" height="20" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <text x="242.4" y="376" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">write 0.8</text>
+  <rect x="40" y="422" width="220" height="20" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <rect x="260" y="422" width="88" height="20" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <line x1="266" y1="442" x2="272" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="277" y1="442" x2="283" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="288" y1="442" x2="294" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="299" y1="442" x2="305" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="310" y1="442" x2="316" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="321" y1="442" x2="327" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="332" y1="442" x2="338" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="260" y1="380" x2="260" y2="446" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 2"/>
+  <text x="304" y="457" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">+2 ms overrun</text>
+  <text x="362" y="396" font-size="11" fill="currentColor" font-weight="600">1 count / 5 ms = 97.7 mm/s</text>
+  <text x="362" y="436" font-size="11" fill="currentColor" font-weight="600">1 count / 7 ms = 69.8 mm/s</text>
+  <line x1="40" y1="468" x2="348" y2="468" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="40" y1="468" x2="40" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="40" y="485" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="62" y1="468" x2="62" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="84" y1="468" x2="84" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="84" y="485" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="106" y1="468" x2="106" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="128" y1="468" x2="128" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="128" y="485" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="150" y1="468" x2="150" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="172" y1="468" x2="172" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="172" y="485" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="194" y1="468" x2="194" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="216" y1="468" x2="216" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="216" y="485" font-size="11" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="238" y1="468" x2="238" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="260" y1="468" x2="260" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="260" y="485" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="282" y1="468" x2="282" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="304" y1="468" x2="304" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="304" y="485" font-size="11" fill="currentColor" text-anchor="middle">6</text>
+  <line x1="326" y1="468" x2="326" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="348" y1="468" x2="348" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="348" y="485" font-size="11" fill="currentColor" text-anchor="middle">7</text>
+  <text x="362" y="485" font-size="11" fill="currentColor" opacity="0.8">ms</text>
+  <line x1="62" y1="382" x2="62" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="62" y1="422" x2="62" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="84" y1="382" x2="84" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="84" y1="422" x2="84" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="106" y1="382" x2="106" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="106" y1="422" x2="106" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="128" y1="382" x2="128" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="128" y1="422" x2="128" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="150" y1="382" x2="150" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="150" y1="422" x2="150" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="172" y1="382" x2="172" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="172" y1="422" x2="172" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="194" y1="382" x2="194" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="194" y1="422" x2="194" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="216" y1="382" x2="216" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="216" y1="422" x2="216" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="238" y1="382" x2="238" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="238" y1="422" x2="238" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="260" y1="422" x2="260" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="282" y1="422" x2="282" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="304" y1="422" x2="304" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="326" y1="422" x2="326" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <text x="8" y="506" font-size="11" fill="currentColor" opacity="0.85">Divide by the nominal 5 ms instead of the period you were handed,</text>
+  <text x="8" y="521" font-size="11" fill="currentColor" opacity="0.85">and the 7 ms cycle still reads 97.7 mm/s: 40 % too high.</text>
+  <text x="8" y="540" font-size="12" fill="currentColor" font-weight="600">the mean survived; the variance is the number that moved.</text>
+</svg>
+
 **Panel A — the seam, with the two sides labelled by what they cost.** Draw the `<ros2_control>` block as a horizontal line across the page. Above it, unchanged from 25.7: the controller, the controller manager, `update_rate: 200`. Below it, two stacked boxes replacing Gazebo: `vendor hardware component` and `drive, closing its own loop at tens of kHz`. Three things the drawing must get right. Write the *same* controller YAML on both sides of a dashed vertical divider marked `simulation | hardware`, because the claim of §2 is that nothing above the line changed. Put the E-stop in as a **separate line** that reaches the drive without passing through any box above it, since §7's whole point is that a stop routed through your code is not a stop. And mark the two lifecycle transitions on the component, `on_configure` and `on_activate`, with a note on the second that this is the only one allowed to energise anything.
 
 **Panel B — one cycle, drawn to scale.** A single $5\,\mathrm{ms}$ bar, ruled in $0.5\,\mathrm{ms}$ divisions, split into three labelled segments: `read` $1.2$, `update` (the remainder), `write` $0.8$. Draw a second bar underneath for an overrun cycle of $7\,\mathrm{ms}$, aligned to the same origin, so the $2\,\mathrm{ms}$ of overshoot is a visible overhang past the first bar's end. Beside the two bars write the velocity one encoder count implies in each, and label the pair with the sentence the figure argues: *the mean survived; the variance is the number that moved.*
@@ -60,24 +183,23 @@ because the bus cannot be asked for a round trip it has not finished. P6's $200\
 
 $$\frac{\Delta p}{0.007} = 69.8\,\mathrm{mm/s},$$
 
-an overstatement of $28.6\%$ from timing alone, since the numerator was right and the denominator was assumed. This is the mechanism behind §1's claim that variance, not mean delay, is what destabilises a loop: a derivative term fed this signal sees a disturbance that no sensor produced. Use the `period` you are given.
+an overstatement of $40\%$ from timing alone, since the numerator was right and the denominator was assumed. This is the mechanism behind §1's claim that variance, not mean delay, is what destabilises a loop: a derivative term fed this signal sees a disturbance that no sensor produced. Use the `period` you are given.
 
 **Step 4 — the end-to-end ledger, now with a bus and a network.** Follow one camera frame to one applied force, adding the hardware terms to the sampling terms:
 
 | Term | Value | Why it is there |
 |---|---:|---|
-| vision period | $20\,\mathrm{ms}$ | the goal cannot be newer than the last frame |
+| vision period | $20\,\mathrm{ms}$ | the goal cannot be newer than the last frame; the wait for the next tick falls inside it |
 | network transport | $5\,\mathrm{ms}$ | DDS across a machine boundary (§5) |
-| wait for the next tick | $5\,\mathrm{ms}$ | a goal arriving just after `update()` waits a full cycle |
 | bus round trips | $2.0\,\mathrm{ms}$ | $t_r+t_w$, inside the cycle |
 | command hold | $5\,\mathrm{ms}$ | the written value stands until the next `write()` |
-| **total** | $\mathbf{37\,ms}$ | |
+| **total** | $\mathbf{32\,ms}$ | |
 
-$$70-37 = 33\,\mathrm{ms}$$
+$$70-32 = 38\,\mathrm{ms}$$
 
-is what remains for exposure, readout, driver buffering and the actuator's own response, because the budget is a wall-clock sum and every term above is wall-clock. Compare 25.7's simulation ledger of $25\,\mathrm{ms}$: the bus and the network added $12\,\mathrm{ms}$ that Gazebo never charged, and they added it to the *fixed* part of the budget, where no tuning reaches.
+is what remains for exposure, readout, driver buffering and the actuator's own response, because the budget is a wall-clock sum and every term above is wall-clock. Compare 25.7's simulation ledger of $25\,\mathrm{ms}$: the bus and the network added $7\,\mathrm{ms}$ that Gazebo never charged, and they added it to the *fixed* part of the budget, where no tuning reaches.
 
-**Step 5 — and what one overrun does to that ledger.** The $7\,\mathrm{ms}$ cycle of Step 3 lengthens two of the five terms — the wait and the hold — by $2\,\mathrm{ms}$ each, so $37$ becomes $41\,\mathrm{ms}$ and the margin falls from $33$ to $29$. One overrun is survivable. The problem is that §3's overrun report is a throttled warning rather than an error, so a loop that misses a few percent of its deadlines looks identical in `list_controllers`, in RViz and in the trajectory's final error. The thing to log is therefore not the mean period but the **worst** period over a run, which is the one number this whole page is arguing for, and it is the same discipline [[04-robotics/ros2/debugging-data-reproducibility|25.10]] applies to a bag.
+**Step 5 — and what one overrun does to that ledger.** The $7\,\mathrm{ms}$ cycle of Step 3 lengthens one of the four terms — the hold — by $2\,\mathrm{ms}$, so $32$ becomes $34\,\mathrm{ms}$ and the margin falls from $38$ to $36$. One overrun is survivable. The problem is that §3's overrun report is a throttled warning rather than an error, so a loop that misses a few percent of its deadlines looks identical in `list_controllers`, in RViz and in the trajectory's final error. The thing to log is therefore not the mean period but the **worst** period over a run, which is the one number this whole page is arguing for, and it is the same discipline [[04-robotics/ros2/debugging-data-reproducibility|25.10]] applies to a bag.
 
 ### 1. What actually changes
 
@@ -389,7 +511,7 @@ Writing a hardware component for a bus that has no driver, and motor-controller 
 > 3. It bounds scheduling latency — a runnable thread runs within a known time — and does nothing about what the thread does. Page faults, dynamic allocation and unbounded blocking in the execution path still destroy determinism, which is why `controller_manager` also offers `lock_memory` and attempts `SCHED_FIFO`. And hard deadlines should not be in ROS at all; they belong in the motor controller.
 > 4. Because contact failures are commonly model-form errors rather than parameter errors. The rigid-body engine resolves contact as per-timestep point constraints and cannot represent the real contact patch, so no value of the parameter recovers the behaviour. Free-space motion transfers far better than contact, which is why the first real experiments should be free-space ones.
 > 5. It shares failure modes with the system it is meant to protect against: if the executor has hung, the DDS link has dropped or the machine has been unplugged from the network, the message is never delivered. An E-stop must remove power or engage brakes through hard-wired circuitry, latch, and work with the computer switched off.
-> 6. The cycle becomes $1/500=2.0\,\mathrm{ms}$, which is exactly the bus time, so `update()` gets $0\,\mathrm{ms}$ and every cycle overruns — the ceiling of Step 2 is what the bus can round-trip, not what the loop can do with the result. The ledger barely moves even if it worked: the two $5\,\mathrm{ms}$ terms would fall to $2$ each, taking $37$ to $31\,\mathrm{ms}$, a $6\,\mathrm{ms}$ gain on a $70\,\mathrm{ms}$ budget whose largest term is the camera's $20\,\mathrm{ms}$ and cannot be touched from here. And the argument is the one §6 refuses: ROS 2 is not where hard timing lives. The drive is already closing a loop at tens of kilohertz; asking the ROS loop to approach it buys $6\,\mathrm{ms}$ and spends the entire jitter margin of Step 5.
+> 6. The cycle becomes $1/500=2.0\,\mathrm{ms}$, which is exactly the bus time, so `update()` gets $0\,\mathrm{ms}$ and every cycle overruns — the ceiling of Step 2 is what the bus can round-trip, not what the loop can do with the result. The ledger barely moves even if it worked: the $5\,\mathrm{ms}$ hold would fall to $2$, taking $32$ to $29\,\mathrm{ms}$, a $3\,\mathrm{ms}$ gain on a $70\,\mathrm{ms}$ budget whose largest term is the camera's $20\,\mathrm{ms}$ and cannot be touched from here. And the argument is the one §6 refuses: ROS 2 is not where hard timing lives. The drive is already closing a loop at tens of kilohertz; asking the ROS loop to approach it buys $3\,\mathrm{ms}$ and spends the entire jitter margin of Step 5.
 
 ### Problem set · 과제
 
@@ -401,7 +523,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. En
 
 > [!tip]- Solutions
 > 1. `<plugin>` inside `<ros2_control>` is the only change. Timeline: encoder `read` every $5\,\mathrm{ms}$; camera path is a second chain that must still finish by $70\,\mathrm{ms}$.
-> 2. (a) Bus time becomes $3.0+0.8=3.8\,\mathrm{ms}$ of the $5\,\mathrm{ms}$ cycle, so `update()` is left $1.2\,\mathrm{ms}$ instead of $3.0$ — a $60\%$ cut for a $1.8\,\mathrm{ms}$ change in the driver. The ceiling falls to $f_{\max}=1/0.0038=263\,\mathrm{Hz}$, so $200\,\mathrm{Hz}$ now sits at $76\%$ of it rather than $40\%$, and the ledger rises to $20+5+5+3.8+5=38.8\,\mathrm{ms}$, leaving $31.2$. Defensible but no longer comfortable: one overrun now costs the same two terms out of a thinner margin, and the honest move is to measure the worst cycle before keeping the rate. (b) No — it bounds the thread's start, not camera transport, serialisation, or `write`. Hard deadlines belong in the motor drive. (c) Unicast data blocked while multicast discovery lives. `echo` adapts QoS, so empty echo is not a QoS miss.
+> 2. (a) Bus time becomes $3.0+0.8=3.8\,\mathrm{ms}$ of the $5\,\mathrm{ms}$ cycle, so `update()` is left $1.2\,\mathrm{ms}$ instead of $3.0$ — a $60\%$ cut for a $1.8\,\mathrm{ms}$ change in the driver. The ceiling falls to $f_{\max}=1/0.0038=263\,\mathrm{Hz}$, so $200\,\mathrm{Hz}$ now sits at $76\%$ of it rather than $40\%$, and the ledger rises to $20+5+3.8+5=33.8\,\mathrm{ms}$, leaving $36.2$. Defensible but no longer comfortable: one overrun now costs the same $2\,\mathrm{ms}$ out of a thinner margin, and the honest move is to measure the worst cycle before keeping the rate. (b) No — it bounds the thread's start, not camera transport, serialisation, or `write`. Hard deadlines belong in the motor drive. (c) Unicast data blocked while multicast discovery lives. `echo` adapts QoS, so empty echo is not a QoS miss.
 > 3. Hung executor, dropped DDS, unplugged cable — the message never arrives. E-stop must be wired. The late camera is the same $70\,\mathrm{ms}$ budget as in sim; swapping the plugin does not buy you milliseconds.
 
 ## 한국어
@@ -433,6 +555,129 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. En
 
 그림 하나, 패널 둘. 과제는 왕복 하나를 느리게 만든 같은 그림을 요구한다.
 
+<svg viewBox="0 0 560 552" style="max-width:100%;height:auto" role="img" aria-label="패널 A: ros2_control 이음매를 선으로 긋고, 그 위에는 같은 제어기, update_rate 200의 컨트롤러 매니저, 시뮬레이션과 하드웨어 구분선 양쪽의 같은 controllers.yaml이 있으며, 그 아래에는 한쪽에 Gazebo, 다른 쪽에 on_configure와 on_activate를 단 벤더 하드웨어 컴포넌트가 버스를 거쳐 수십 kHz로 자기 루프를 닫는 드라이브에 이어지고, 배선된 E-stop이 드라이브에 바로 닿는다. 패널 B: read 1.2, update 3.0, write 0.8 ms로 나뉜 5 ms 주기와 그것을 2 ms 넘어가는 7 ms overrun 주기. 엔코더 한 카운트는 5 ms에서 97.7 mm/s, 7 ms에서 69.8 mm/s다.">
+  <text x="8" y="20" font-size="12" fill="currentColor" font-weight="600">A · 이음매, 그리고 양쪽에 각자의 비용을 적기</text>
+  <text x="236" y="40" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">시뮬레이션 | 하드웨어</text>
+  <line x1="236" y1="46" x2="236" y2="108" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="5 4"/>
+  <line x1="236" y1="164" x2="236" y2="322" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="5 4"/>
+  <rect x="52" y="50" width="132" height="50" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="60" y="65" font-size="11" fill="currentColor" font-weight="600">controllers.yaml</text>
+  <text x="60" y="80" font-size="11" fill="currentColor" opacity="0.85">update_rate: 200</text>
+  <text x="60" y="95" font-size="11" fill="currentColor" opacity="0.85">joints: [cart]</text>
+  <rect x="264" y="50" width="132" height="50" rx="3" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="272" y="65" font-size="11" fill="currentColor" font-weight="600">controllers.yaml</text>
+  <text x="272" y="80" font-size="11" fill="currentColor" opacity="0.85">update_rate: 200</text>
+  <text x="272" y="95" font-size="11" fill="currentColor" opacity="0.85">joints: [cart]</text>
+  <text x="408" y="70" font-size="11" fill="currentColor" opacity="0.85">update() + 프레임워크:</text>
+  <text x="408" y="85" font-size="11" fill="currentColor" font-weight="600">5 ms 주기 중 3.0 ms</text>
+  <rect x="126" y="110" width="220" height="22" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.85"/>
+  <text x="236" y="125" font-size="11" fill="currentColor" text-anchor="middle">제어기</text>
+  <rect x="100" y="140" width="272" height="22" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.85"/>
+  <text x="236" y="155" font-size="11" fill="currentColor" text-anchor="middle">컨트롤러 매니저 · update_rate: 200</text>
+  <line x1="196" y1="132" x2="196" y2="135.5" stroke="currentColor" stroke-width="1.0"/>
+  <polygon points="196,140 193.4,135 198.6,135" fill="currentColor"/>
+  <line x1="276" y1="140" x2="276" y2="136.5" stroke="currentColor" stroke-width="1.0"/>
+  <polygon points="276,132 278.6,137 273.4,137" fill="currentColor"/>
+  <line x1="8" y1="176" x2="552" y2="176" stroke="currentColor" stroke-width="2.4"/>
+  <text x="552" y="170" font-size="11" fill="currentColor" text-anchor="end" font-weight="600">&lt;ros2_control&gt;</text>
+  <rect x="12" y="188" width="216" height="58" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="18" y="204" font-size="11" fill="currentColor" font-weight="600">Gazebo Harmonic</text>
+  <text x="18" y="220" font-size="11" fill="currentColor">gz_ros2_control/GazeboSimSystem</text>
+  <text x="18" y="236" font-size="11" fill="currentColor" opacity="0.75">버스 시간을 청구하지 않음</text>
+  <line x1="120" y1="176" x2="120" y2="183.5" stroke="currentColor" stroke-width="1.0"/>
+  <polygon points="120,188 117.4,183 122.6,183" fill="currentColor"/>
+  <rect x="246" y="188" width="306" height="58" rx="3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.85"/>
+  <text x="252" y="204" font-size="11" fill="currentColor" font-weight="600">벤더 하드웨어 컴포넌트</text>
+  <text x="252" y="220" font-size="11" fill="currentColor">on_configure: 연결을 연다</text>
+  <text x="252" y="236" font-size="11" fill="currentColor" font-weight="600">on_activate: 전원을 넣어도 되는 유일한 전이</text>
+  <line x1="346" y1="176" x2="346" y2="183.5" stroke="currentColor" stroke-width="1.0"/>
+  <polygon points="346,188 343.4,183 348.6,183" fill="currentColor"/>
+  <rect x="246" y="280" width="226" height="36" rx="3" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+  <text x="252" y="295" font-size="11" fill="currentColor" font-weight="600">드라이브</text>
+  <text x="252" y="310" font-size="11" fill="currentColor">수십 kHz로 자기 루프를 닫는다</text>
+  <line x1="282" y1="246" x2="282" y2="273.5" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="282,280 278.6,273 285.4,273" fill="currentColor"/>
+  <line x1="304" y1="280" x2="304" y2="252.5" stroke="currentColor" stroke-width="1.3"/>
+  <polygon points="304,246 307.4,253 300.6,253" fill="currentColor"/>
+  <text x="314" y="267" font-size="11" fill="currentColor" opacity="0.9">버스: read 1.2 + write 0.8 = 2.0 ms</text>
+  <circle cx="516" cy="298" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="516" cy="298" r="5" fill="currentColor"/>
+  <line x1="507" y1="298" x2="472" y2="298" stroke="currentColor" stroke-width="2.0"/>
+  <text x="516" y="283" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">E-stop</text>
+  <text x="516" y="321" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">배선 직결</text>
+  <line x1="8" y1="336" x2="552" y2="336" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="8" y="354" font-size="12" fill="currentColor" font-weight="600">B · 주기 하나를 실제 비율로</text>
+  <rect x="40" y="382" width="52.8" height="20" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <text x="66.4" y="376" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">read 1.2</text>
+  <rect x="92.8" y="382" width="132" height="20" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <text x="158.8" y="376" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">update 3.0</text>
+  <rect x="224.8" y="382" width="35.2" height="20" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <text x="242.4" y="376" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">write 0.8</text>
+  <rect x="40" y="422" width="220" height="20" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <rect x="260" y="422" width="88" height="20" fill="currentColor" fill-opacity="0.45" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.9"/>
+  <line x1="266" y1="442" x2="272" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="277" y1="442" x2="283" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="288" y1="442" x2="294" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="299" y1="442" x2="305" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="310" y1="442" x2="316" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="321" y1="442" x2="327" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="332" y1="442" x2="338" y2="422" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
+  <line x1="260" y1="380" x2="260" y2="446" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 2"/>
+  <text x="304" y="457" font-size="11" fill="currentColor" text-anchor="middle" font-weight="600">+2 ms overrun</text>
+  <text x="362" y="396" font-size="11" fill="currentColor" font-weight="600">1 카운트 / 5 ms = 97.7 mm/s</text>
+  <text x="362" y="436" font-size="11" fill="currentColor" font-weight="600">1 카운트 / 7 ms = 69.8 mm/s</text>
+  <line x1="40" y1="468" x2="348" y2="468" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="40" y1="468" x2="40" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="40" y="485" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="62" y1="468" x2="62" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="84" y1="468" x2="84" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="84" y="485" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="106" y1="468" x2="106" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="128" y1="468" x2="128" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="128" y="485" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="150" y1="468" x2="150" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="172" y1="468" x2="172" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="172" y="485" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="194" y1="468" x2="194" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="216" y1="468" x2="216" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="216" y="485" font-size="11" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="238" y1="468" x2="238" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="260" y1="468" x2="260" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="260" y="485" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="282" y1="468" x2="282" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="304" y1="468" x2="304" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="304" y="485" font-size="11" fill="currentColor" text-anchor="middle">6</text>
+  <line x1="326" y1="468" x2="326" y2="471" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <line x1="348" y1="468" x2="348" y2="473" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.7"/>
+  <text x="348" y="485" font-size="11" fill="currentColor" text-anchor="middle">7</text>
+  <text x="362" y="485" font-size="11" fill="currentColor" opacity="0.8">ms</text>
+  <line x1="62" y1="382" x2="62" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="62" y1="422" x2="62" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="84" y1="382" x2="84" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="84" y1="422" x2="84" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="106" y1="382" x2="106" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="106" y1="422" x2="106" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="128" y1="382" x2="128" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="128" y1="422" x2="128" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="150" y1="382" x2="150" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="150" y1="422" x2="150" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="172" y1="382" x2="172" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="172" y1="422" x2="172" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="194" y1="382" x2="194" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="194" y1="422" x2="194" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="216" y1="382" x2="216" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="216" y1="422" x2="216" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="238" y1="382" x2="238" y2="385" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="238" y1="422" x2="238" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="260" y1="422" x2="260" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="282" y1="422" x2="282" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="304" y1="422" x2="304" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <line x1="326" y1="422" x2="326" y2="425" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.5"/>
+  <text x="8" y="506" font-size="11" fill="currentColor" opacity="0.85">받은 period 대신 공칭 5 ms로 나누면</text>
+  <text x="8" y="521" font-size="11" fill="currentColor" opacity="0.85">7 ms 주기도 97.7 mm/s를 읽는다: 40 % 과대평가.</text>
+  <text x="8" y="540" font-size="12" fill="currentColor" font-weight="600">평균은 살아남았고, 움직인 숫자는 산포다.</text>
+</svg>
+
 **패널 A — 이음매, 그리고 양쪽에 각자의 비용을 적기.** `<ros2_control>` 블록을 페이지를 가로지르는 수평선으로 그린다. 위쪽은 25.7에서 그대로다. 제어기, 컨트롤러 매니저, `update_rate: 200`. 아래쪽은 Gazebo를 대신하는 상자 둘을 쌓는다. `벤더 하드웨어 컴포넌트`와 `수십 kHz로 자기 루프를 닫는 드라이브`. 그림이 맞혀야 할 것이 셋이다. `시뮬레이션 | 하드웨어`라고 적은 세로 점선 양쪽에 *같은* 제어기 YAML을 적는다. 선 위쪽은 아무것도 바뀌지 않았다는 것이 §2의 주장이기 때문이다. E-stop은 위쪽의 어떤 상자도 거치지 않고 드라이브에 닿는 **별도의 선**으로 넣는다. 내 코드를 지나는 정지는 정지가 아니라는 것이 §7의 요점이기 때문이다. 그리고 컴포넌트에 라이프사이클 전이 둘, `on_configure`와 `on_activate`를 표시하고, 두 번째에는 전원을 넣어도 되는 유일한 전이라고 주석을 단다.
 
 **패널 B — 주기 하나를 실제 비율로.** $5\,\mathrm{ms}$ 막대 하나를 $0.5\,\mathrm{ms}$ 눈금으로 긋고 이름 붙인 구간 셋으로 나눈다. `read` $1.2$, `update`(나머지), `write` $0.8$. 그 아래에 overrun 주기 $7\,\mathrm{ms}$를 같은 원점에 맞춰 그려서, $2\,\mathrm{ms}$의 초과분이 첫 막대 끝을 넘어 튀어나오게 한다. 두 막대 옆에 각각 엔코더 한 카운트가 함의하는 속도를 적고, 이 그림이 논증하는 문장을 붙인다. *평균은 살아남았고, 움직인 숫자는 산포다.*
@@ -457,24 +702,23 @@ $$f_{\max} = \frac{1}{t_r+t_w} = \frac{1}{0.0020} = 500\,\mathrm{Hz}$$
 
 $$\frac{\Delta p}{0.007} = 69.8\,\mathrm{mm/s}$$
 
-이므로 타이밍만으로 $28.6\%$ 과대평가다. 분자는 맞았고 분모를 가정했기 때문이다. 평균 지연이 아니라 산포가 루프를 불안정하게 만든다는 §1의 주장 뒤에 있는 기구가 이것이다. 이 신호를 먹은 미분 항은 어떤 센서도 만들지 않은 외란을 본다. 받은 `period`를 써라.
+이므로 타이밍만으로 $40\%$ 과대평가다. 분자는 맞았고 분모를 가정했기 때문이다. 평균 지연이 아니라 산포가 루프를 불안정하게 만든다는 §1의 주장 뒤에 있는 기구가 이것이다. 이 신호를 먹은 미분 항은 어떤 센서도 만들지 않은 외란을 본다. 받은 `period`를 써라.
 
 **Step 4 — 종단 장부, 이제 버스와 네트워크까지.** 카메라 프레임 하나에서 힘 하나까지를 따라가며 샘플링 항에 하드웨어 항을 더한다.
 
 | 항 | 값 | 왜 거기 있는가 |
 |---|---:|---|
-| 비전 주기 | $20\,\mathrm{ms}$ | 목표는 마지막 프레임보다 새로울 수 없다 |
+| 비전 주기 | $20\,\mathrm{ms}$ | 목표는 마지막 프레임보다 새로울 수 없고, 다음 틱 대기도 이 안에 든다 |
 | 네트워크 전송 | $5\,\mathrm{ms}$ | 머신 경계를 넘는 DDS(§5) |
-| 다음 틱 대기 | $5\,\mathrm{ms}$ | `update()` 직후 도착한 목표는 한 주기를 온전히 기다린다 |
 | 버스 왕복 | $2.0\,\mathrm{ms}$ | 주기 안의 $t_r+t_w$ |
 | 명령 유지 | $5\,\mathrm{ms}$ | 기록된 값은 다음 `write()`까지 선다 |
-| **합계** | $\mathbf{37\,ms}$ | |
+| **합계** | $\mathbf{32\,ms}$ | |
 
-$$70-37 = 33\,\mathrm{ms}$$
+$$70-32 = 38\,\mathrm{ms}$$
 
-가 노출, 판독, 드라이버 버퍼링, 구동기 자체 응답에 남는다. 예산이 벽시계 합이고 위의 모든 항이 벽시계이기 때문이다. 25.7의 시뮬레이션 장부 $25\,\mathrm{ms}$와 견주어 보라. 버스와 네트워크가 Gazebo는 청구한 적 없는 $12\,\mathrm{ms}$를 더했고, 그것을 예산의 *고정* 부분에 더했다. 튜닝이 닿지 않는 자리다.
+가 노출, 판독, 드라이버 버퍼링, 구동기 자체 응답에 남는다. 예산이 벽시계 합이고 위의 모든 항이 벽시계이기 때문이다. 25.7의 시뮬레이션 장부 $25\,\mathrm{ms}$와 견주어 보라. 버스와 네트워크가 Gazebo는 청구한 적 없는 $7\,\mathrm{ms}$를 더했고, 그것을 예산의 *고정* 부분에 더했다. 튜닝이 닿지 않는 자리다.
 
-**Step 5 — 그리고 overrun 한 번이 그 장부에 하는 일.** Step 3의 $7\,\mathrm{ms}$ 주기는 다섯 항 중 둘 — 대기와 유지 — 을 각각 $2\,\mathrm{ms}$씩 늘리므로 $37$이 $41\,\mathrm{ms}$가 되고 여유는 $33$에서 $29$로 준다. overrun 한 번은 버틸 만하다. 문제는 §3의 overrun 보고가 오류가 아니라 스로틀된 경고라는 데 있다. 마감을 몇 퍼센트씩 놓치는 루프는 `list_controllers`에서도, RViz에서도, 궤적의 최종 오차에서도 똑같아 보인다. 그러므로 기록할 것은 평균 주기가 아니라 한 번의 실행에서 나온 **최악** 주기다. 이 페이지 전체가 주장하는 숫자 하나가 그것이고, [[04-robotics/ros2/debugging-data-reproducibility|25.10]]이 bag에 적용하는 규율과 같은 것이다.
+**Step 5 — 그리고 overrun 한 번이 그 장부에 하는 일.** Step 3의 $7\,\mathrm{ms}$ 주기는 네 항 중 하나 — 유지 — 를 $2\,\mathrm{ms}$ 늘리므로 $32$가 $34\,\mathrm{ms}$가 되고 여유는 $38$에서 $36$으로 준다. overrun 한 번은 버틸 만하다. 문제는 §3의 overrun 보고가 오류가 아니라 스로틀된 경고라는 데 있다. 마감을 몇 퍼센트씩 놓치는 루프는 `list_controllers`에서도, RViz에서도, 궤적의 최종 오차에서도 똑같아 보인다. 그러므로 기록할 것은 평균 주기가 아니라 한 번의 실행에서 나온 **최악** 주기다. 이 페이지 전체가 주장하는 숫자 하나가 그것이고, [[04-robotics/ros2/debugging-data-reproducibility|25.10]]이 bag에 적용하는 규율과 같은 것이다.
 
 ### 1. 실제로 무엇이 달라지는가
 
@@ -784,7 +1028,7 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 > 3. 스케줄링 지연을 유계로 만든다 — 실행 준비된 스레드가 알려진 시간 안에 실행된다 — 그리고 그 스레드가 무엇을 하는지에 대해서는 아무것도 하지 않는다. 실행 경로의 페이지 폴트, 동적 할당, 무한 블로킹은 여전히 결정성을 파괴하고, 그래서 `controller_manager`가 `lock_memory`를 제공하고 `SCHED_FIFO`를 시도한다. 그리고 경성 마감은 애초에 ROS에 있으면 안 되고 모터 제어기에 속한다.
 > 4. 접촉 실패는 파라미터 오류가 아니라 모델 형식 오류인 경우가 많기 때문이다. 강체 엔진은 접촉을 시간 스텝마다의 점 구속으로 풀고 실제 접촉 면적을 표현하지 못하므로, 파라미터를 어떤 값으로 해도 그 거동은 복원되지 않는다. 자유 공간 운동은 접촉보다 훨씬 잘 이전되고, 그래서 첫 실기 실험은 자유 공간이어야 한다.
 > 5. 그것이 막아야 할 시스템과 실패 모드를 공유한다. executor가 멈췄거나 DDS 링크가 끊겼거나 기계가 네트워크에서 뽑혔다면 메시지는 영영 전달되지 않는다. E-stop은 하드와이어 회로로 전원을 끊거나 브레이크를 걸어야 하고, 래치되어야 하며, 컴퓨터가 꺼진 상태에서도 동작해야 한다.
-> 6. 주기가 $1/500=2.0\,\mathrm{ms}$가 되는데 이는 버스 시간과 정확히 같아서 `update()`에 $0\,\mathrm{ms}$가 남고 모든 주기가 overrun 난다. Step 2의 천장은 버스가 왕복할 수 있는 한계이지 루프가 그 결과로 무언가를 할 수 있는 한계가 아니다. 설령 된다 해도 장부는 거의 움직이지 않는다. $5\,\mathrm{ms}$짜리 항 둘이 각각 $2$로 줄어 $37$이 $31\,\mathrm{ms}$가 되고, $70\,\mathrm{ms}$ 예산에서 $6\,\mathrm{ms}$를 번다. 그 예산의 가장 큰 항은 카메라의 $20\,\mathrm{ms}$이고 여기서는 손댈 수 없다. 그리고 그 논증은 §6이 거부하는 바로 그것이다. 단단한 타이밍이 사는 곳은 ROS 2가 아니다. 드라이브는 이미 수십 킬로헤르츠로 루프를 닫고 있고, ROS 루프를 거기에 다가가게 하는 일은 $6\,\mathrm{ms}$를 벌고 Step 5의 지터 여유를 통째로 쓴다.
+> 6. 주기가 $1/500=2.0\,\mathrm{ms}$가 되는데 이는 버스 시간과 정확히 같아서 `update()`에 $0\,\mathrm{ms}$가 남고 모든 주기가 overrun 난다. Step 2의 천장은 버스가 왕복할 수 있는 한계이지 루프가 그 결과로 무언가를 할 수 있는 한계가 아니다. 설령 된다 해도 장부는 거의 움직이지 않는다. $5\,\mathrm{ms}$짜리 유지 항이 $2$로 줄어 $32$가 $29\,\mathrm{ms}$가 되고, $70\,\mathrm{ms}$ 예산에서 $3\,\mathrm{ms}$를 번다. 그 예산의 가장 큰 항은 카메라의 $20\,\mathrm{ms}$이고 여기서는 손댈 수 없다. 그리고 그 논증은 §6이 거부하는 바로 그것이다. 단단한 타이밍이 사는 곳은 ROS 2가 아니다. 드라이브는 이미 수십 킬로헤르츠로 루프를 닫고 있고, ROS 루프를 거기에 다가가게 하는 일은 $3\,\mathrm{ms}$를 벌고 Step 5의 지터 여유를 통째로 쓴다.
 
 ### 과제 · Problem set
 
@@ -796,5 +1040,5 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 *실제* 카트에. 엔�
 
 > [!tip]- 정답 · Solutions
 > 1. `<ros2_control>` 안의 `<plugin>`만 바뀐다. 타임라인: $5\,\mathrm{ms}$마다 엔코더 `read`; 카메라 경로는 $70\,\mathrm{ms}$까지 끝나야 하는 둘째 사슬.
-> 2. (a) 버스 시간이 $5\,\mathrm{ms}$ 주기 중 $3.0+0.8=3.8\,\mathrm{ms}$가 되어 `update()`에는 $3.0$ 대신 $1.2\,\mathrm{ms}$만 남는다. 드라이버가 $1.8\,\mathrm{ms}$ 바뀌었는데 $60\%$가 깎였다. 천장은 $f_{\max}=1/0.0038=263\,\mathrm{Hz}$로 내려가 $200\,\mathrm{Hz}$가 $40\%$가 아니라 그 $76\%$에 앉고, 장부는 $20+5+5+3.8+5=38.8\,\mathrm{ms}$로 올라 $31.2$가 남는다. 방어는 되지만 더는 넉넉하지 않다. overrun 한 번이 더 얇아진 여유에서 같은 두 항을 가져가므로, 정직한 수는 속도를 유지하기 전에 최악 주기를 재는 것이다. (b) 아니오 — 스레드가 *시작*하는 시간을 묶지, 카메라 전송·직렬화·`write`를 묶지 않는다. 경성 마감은 모터 드라이브의 몫. (c) 멀티캐스트 탐색은 살고 유니캐스트 데이터가 막힘. `echo`는 QoS를 맞추므로 빈 echo는 QoS 실패가 아니다.
+> 2. (a) 버스 시간이 $5\,\mathrm{ms}$ 주기 중 $3.0+0.8=3.8\,\mathrm{ms}$가 되어 `update()`에는 $3.0$ 대신 $1.2\,\mathrm{ms}$만 남는다. 드라이버가 $1.8\,\mathrm{ms}$ 바뀌었는데 $60\%$가 깎였다. 천장은 $f_{\max}=1/0.0038=263\,\mathrm{Hz}$로 내려가 $200\,\mathrm{Hz}$가 $40\%$가 아니라 그 $76\%$에 앉고, 장부는 $20+5+3.8+5=33.8\,\mathrm{ms}$로 올라 $36.2$가 남는다. 방어는 되지만 더는 넉넉하지 않다. overrun 한 번이 더 얇아진 여유에서 같은 $2\,\mathrm{ms}$를 가져가므로, 정직한 수는 속도를 유지하기 전에 최악 주기를 재는 것이다. (b) 아니오 — 스레드가 *시작*하는 시간을 묶지, 카메라 전송·직렬화·`write`를 묶지 않는다. 경성 마감은 모터 드라이브의 몫. (c) 멀티캐스트 탐색은 살고 유니캐스트 데이터가 막힘. `echo`는 QoS를 맞추므로 빈 echo는 QoS 실패가 아니다.
 > 3. 멈춘 executor, 끊긴 DDS, 뽑힌 케이블 — 메시지가 안 온다. E-stop은 배선이어야 한다. 늦은 카메라는 시뮬과 같은 $70\,\mathrm{ms}$ 예산이고, 플러그인을 바꾼다고 밀리초가 생기지는 않는다.

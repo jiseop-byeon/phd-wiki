@@ -34,6 +34,79 @@ One figure, drawn to scale on graph paper; the problem set asks for the same one
 **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — unit links, $L_1=L_2=1$ m — on a
 holonomic base, with the panel at world $(2,1)$ m.
 
+<svg viewBox="0 0 560 436" style="max-width:100%;height:auto" role="img" aria-label="Graph paper at 0.25 m per square: the panel at (2, 1) with its horizontal surface normal, three circles about the panel (r = 2 m, the r = 1.414 m ring and the shaded 1.311 to 1.511 m band), P2 at its frozen pose from a base at (1, 0), and a 10 cm disc of base uncertainty exactly as wide as the band.">
+  <defs><marker id="aNAV" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <path d="M36 24 V384 M36 24 H396 M56 24 V384 M36 44 H396 M76 24 V384 M36 64 H396 M96 24 V384 M36 84 H396 M116 24 V384 M36 104 H396 M136 24 V384 M36 124 H396 M156 24 V384 M36 144 H396 M176 24 V384 M36 164 H396 M196 24 V384 M36 184 H396 M216 24 V384 M36 204 H396 M236 24 V384 M36 224 H396 M256 24 V384 M36 244 H396 M276 24 V384 M36 264 H396 M296 24 V384 M36 284 H396 M316 24 V384 M36 304 H396 M336 24 V384 M36 324 H396 M356 24 V384 M36 344 H396 M376 24 V384 M36 364 H396 M396 24 V384 M36 384 H396" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.14" fill="none"/>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" marker-end="url(#aNAV)">
+    <line x1="36" y1="284" x2="400" y2="284"/>
+    <line x1="56" y1="384" x2="56" y2="20"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1">
+    <line x1="136" y1="281" x2="136" y2="287"/>
+    <line x1="216" y1="281" x2="216" y2="287"/>
+    <line x1="296" y1="281" x2="296" y2="287"/>
+    <line x1="376" y1="281" x2="376" y2="287"/>
+    <line x1="53" y1="364" x2="59" y2="364"/>
+    <line x1="53" y1="204" x2="59" y2="204"/>
+    <line x1="53" y1="124" x2="59" y2="124"/>
+    <line x1="53" y1="44" x2="59" y2="44"/>
+  </g>
+  <path d="M95.1 204 a120.9 120.9 0 1 0 241.7 0 a120.9 120.9 0 1 0 -241.7 0 Z M111.1 204 a104.9 104.9 0 1 0 209.7 0 a104.9 104.9 0 1 0 -209.7 0 Z" fill="currentColor" fill-opacity="0.30" fill-rule="evenodd"/>
+  <path d="M102.9 204 a113.1 113.1 0 1 0 226.3 0 a113.1 113.1 0 1 0 -226.3 0 Z" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>
+  <path d="M56 204 a160 160 0 1 0 320 0 a160 160 0 1 0 -320 0 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8"/>
+  <line x1="216" y1="180" x2="216" y2="228" stroke="currentColor" stroke-width="4" stroke-opacity="0.75"/>
+  <line x1="176" y1="204" x2="265.6" y2="204" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3" marker-end="url(#aNAV)"/>
+  <polyline points="136,284 216,284 216,204" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="216" cy="284" r="3.4" fill="currentColor"/>
+  <circle cx="216" cy="204" r="3.4" fill="currentColor"/>
+  <circle cx="136" cy="284" r="8" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.2"/>
+  <rect x="132.5" y="280.5" width="7" height="7" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6" fill="none">
+    <polyline points="345.4,110 398,92"/>
+    <polyline points="324.8,172.8 398,146"/>
+    <polyline points="327.8,219.7 398,200"/>
+    <polyline points="265.6,204 398,246"/>
+  </g>
+  <circle cx="345.4" cy="110" r="2" fill="currentColor"/>
+  <circle cx="324.8" cy="172.8" r="2" fill="currentColor"/>
+  <circle cx="327.8" cy="219.7" r="2" fill="currentColor"/>
+  <g font-size="11" fill="currentColor">
+    <text x="404" y="40" opacity="0.85">one square = 0.25 m</text>
+    <text x="404" y="96">r = 2 m: arm straight,</text>
+    <text x="404" y="110">det J = 0</text>
+    <text x="404" y="150">r = √2 = 1.414 m:</text>
+    <text x="404" y="164">w largest</text>
+    <text x="404" y="204">w ≥ 0.99: r = 1.311–1.511 m,</text>
+    <text x="404" y="218">a band 20 cm wide</text>
+    <text x="404" y="250">panel normal:</text>
+    <text x="404" y="264">the push direction</text>
+    <text x="404" y="330" opacity="0.85">inner circle: radius</text>
+    <text x="404" y="344" opacity="0.85">|L₁ − L₂| = 0 for P2, so none</text>
+    <text x="208" y="194" text-anchor="end">panel (2, 1) = tip</text>
+    <text x="223" y="278">elbow (2, 0)</text>
+    <text x="124" y="306" text-anchor="end">base (1, 0)</text>
+    <text x="124" y="320" text-anchor="end" opacity="0.85">2σ disc</text>
+    <text x="124" y="334" text-anchor="end" opacity="0.85">r = 10 cm</text>
+    <text x="400" y="314" text-anchor="end">x (m)</text>
+    <text x="64" y="30">y (m)</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.8">
+    <text x="51" y="297" text-anchor="end">0</text>
+    <text x="136" y="298" text-anchor="middle">1</text>
+    <text x="216" y="298" text-anchor="middle">2</text>
+    <text x="296" y="298" text-anchor="middle">3</text>
+    <text x="376" y="298" text-anchor="middle">4</text>
+    <text x="50" y="367.5" text-anchor="end">−1</text>
+    <text x="50" y="207.5" text-anchor="end">1</text>
+    <text x="50" y="127.5" text-anchor="end">2</text>
+    <text x="50" y="47.5" text-anchor="end">3</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="12" y="409">The band is narrower than one square, and the base's 2σ disc is exactly as wide as the band:</text>
+    <text x="12" y="423">a base commanded to the ring's centre can, at two sigma, be anywhere across it.</text>
+  </g>
+</svg>
+
 **The world frame and the target.** Axes at the world origin, one grid square to $0.25$ m, so a
 $2$ m reach is eight squares. Mark the panel pose at $(2,1)$ and draw the panel's surface normal
 through it. The direction the tool will push is the direction §3's whole argument is about, and a
@@ -294,7 +367,7 @@ cross term is $2\sqrt{4-4c^2}$ and $\sqrt{1-c^2}=w_0$. So the band's width is
 $$\Delta r=2\sqrt{1-w_0}$$
 
 and it closes as the square root of how much manipulability you insist on. Two thresholds, both
-bands centred on the $r=\sqrt2=1.414$ m ring of §2's table:
+bands centred in elbow angle on $90°$, the $r=\sqrt2=1.414$ m ring of §2's table:
 
 | $w_0$ | elbow interval | $r$ range (m) | band width $\Delta r$ (m) |
 |---|---|---|---:|
@@ -389,7 +462,7 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 
 > [!tip]- Solutions
 > 1. Reachable set is a disk of radius $2$ about the base (P2 can fold). Frozen-pose base at $(1,0)$. Good bases lie on (or near) the circle of radius $\sqrt{2}$ about the panel; the outer circle of radius $2$ is the singular ring.
-> 2. (a) $(2,1)-(1,1)=(1,0)$. (b) $r(90^\circ)=\sqrt{2}$, $r(5^\circ)\approx 1.996$, $r(0^\circ)=2$. (c) $\det J=1$, $\sin 5^\circ\approx 0.087$, $0$.
+> 2. (a) $(2,1)-(1,1)=(1,0)$. (b) $r(90^\circ)=\sqrt{2}$, $r(5^\circ)\approx 1.998$, $r(0^\circ)=2$. (c) $\det J=1$, $\sin 5^\circ\approx 0.087$, $0$.
 > 3. They maximised reach and parked on the singular ring. $\det J\to 0$: the lost direction is along the arm, which is the panel normal if they stretched straight at it. The arm is *strong* along that direction and cannot *move* or modulate force through the motors. The useful set is the $\sqrt{2}$ band, not the outer limit.
 
 ### Sources
@@ -424,6 +497,79 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 모눈종이에 축척을 지켜 그리는 그림 하나이고, 과제가 요구하는 것도 같은 그림이다. 대상은
 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**($L_1=L_2=1$ m의 단위 링크)를 홀로노믹
 베이스에 얹은 것이고, 패널은 월드 $(2,1)$ m에 있다.
+
+<svg viewBox="0 0 560 436" style="max-width:100%;height:auto" role="img" aria-label="한 칸 0.25 m 모눈종이: 수평 법선을 가진 (2, 1)의 패널, 패널을 중심으로 한 원 셋(r = 2 m, r = 1.414 m 고리, 1.311에서 1.511 m까지 칠한 띠), (1, 0)의 베이스에서 고정 자세를 취한 P2, 띠와 정확히 같은 폭인 반지름 10 cm의 베이스 불확실성 원.">
+  <defs><marker id="aNAVk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <path d="M36 24 V384 M36 24 H396 M56 24 V384 M36 44 H396 M76 24 V384 M36 64 H396 M96 24 V384 M36 84 H396 M116 24 V384 M36 104 H396 M136 24 V384 M36 124 H396 M156 24 V384 M36 144 H396 M176 24 V384 M36 164 H396 M196 24 V384 M36 184 H396 M216 24 V384 M36 204 H396 M236 24 V384 M36 224 H396 M256 24 V384 M36 244 H396 M276 24 V384 M36 264 H396 M296 24 V384 M36 284 H396 M316 24 V384 M36 304 H396 M336 24 V384 M36 324 H396 M356 24 V384 M36 344 H396 M376 24 V384 M36 364 H396 M396 24 V384 M36 384 H396" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.14" fill="none"/>
+  <g stroke="currentColor" stroke-width="1.1" fill="none" marker-end="url(#aNAVk)">
+    <line x1="36" y1="284" x2="400" y2="284"/>
+    <line x1="56" y1="384" x2="56" y2="20"/>
+  </g>
+  <g stroke="currentColor" stroke-width="1">
+    <line x1="136" y1="281" x2="136" y2="287"/>
+    <line x1="216" y1="281" x2="216" y2="287"/>
+    <line x1="296" y1="281" x2="296" y2="287"/>
+    <line x1="376" y1="281" x2="376" y2="287"/>
+    <line x1="53" y1="364" x2="59" y2="364"/>
+    <line x1="53" y1="204" x2="59" y2="204"/>
+    <line x1="53" y1="124" x2="59" y2="124"/>
+    <line x1="53" y1="44" x2="59" y2="44"/>
+  </g>
+  <path d="M95.1 204 a120.9 120.9 0 1 0 241.7 0 a120.9 120.9 0 1 0 -241.7 0 Z M111.1 204 a104.9 104.9 0 1 0 209.7 0 a104.9 104.9 0 1 0 -209.7 0 Z" fill="currentColor" fill-opacity="0.30" fill-rule="evenodd"/>
+  <path d="M102.9 204 a113.1 113.1 0 1 0 226.3 0 a113.1 113.1 0 1 0 -226.3 0 Z" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>
+  <path d="M56 204 a160 160 0 1 0 320 0 a160 160 0 1 0 -320 0 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8"/>
+  <line x1="216" y1="180" x2="216" y2="228" stroke="currentColor" stroke-width="4" stroke-opacity="0.75"/>
+  <line x1="176" y1="204" x2="265.6" y2="204" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3" marker-end="url(#aNAVk)"/>
+  <polyline points="136,284 216,284 216,204" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="216" cy="284" r="3.4" fill="currentColor"/>
+  <circle cx="216" cy="204" r="3.4" fill="currentColor"/>
+  <circle cx="136" cy="284" r="8" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.2"/>
+  <rect x="132.5" y="280.5" width="7" height="7" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6" fill="none">
+    <polyline points="345.4,110 398,92"/>
+    <polyline points="324.8,172.8 398,146"/>
+    <polyline points="327.8,219.7 398,200"/>
+    <polyline points="265.6,204 398,246"/>
+  </g>
+  <circle cx="345.4" cy="110" r="2" fill="currentColor"/>
+  <circle cx="324.8" cy="172.8" r="2" fill="currentColor"/>
+  <circle cx="327.8" cy="219.7" r="2" fill="currentColor"/>
+  <g font-size="11" fill="currentColor">
+    <text x="404" y="40" opacity="0.85">한 칸 = 0.25 m</text>
+    <text x="404" y="96">r = 2 m: 팔을 곧게 편다,</text>
+    <text x="404" y="110">det J = 0</text>
+    <text x="404" y="150">r = √2 = 1.414 m:</text>
+    <text x="404" y="164">w가 가장 크다</text>
+    <text x="404" y="204">w ≥ 0.99: r = 1.311–1.511 m,</text>
+    <text x="404" y="218">폭 20 cm의 띠</text>
+    <text x="404" y="250">패널 법선:</text>
+    <text x="404" y="264">도구가 미는 방향</text>
+    <text x="404" y="330" opacity="0.85">안쪽 원: 반지름</text>
+    <text x="404" y="344" opacity="0.85">P2는 |L₁ − L₂| = 0, 곧 없음</text>
+    <text x="208" y="194" text-anchor="end">패널 (2, 1) = 말단</text>
+    <text x="223" y="278">엘보 (2, 0)</text>
+    <text x="124" y="306" text-anchor="end">베이스 (1, 0)</text>
+    <text x="124" y="320" text-anchor="end" opacity="0.85">2σ 원</text>
+    <text x="124" y="334" text-anchor="end" opacity="0.85">r = 10 cm</text>
+    <text x="400" y="314" text-anchor="end">x (m)</text>
+    <text x="64" y="30">y (m)</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.8">
+    <text x="51" y="297" text-anchor="end">0</text>
+    <text x="136" y="298" text-anchor="middle">1</text>
+    <text x="216" y="298" text-anchor="middle">2</text>
+    <text x="296" y="298" text-anchor="middle">3</text>
+    <text x="376" y="298" text-anchor="middle">4</text>
+    <text x="50" y="367.5" text-anchor="end">−1</text>
+    <text x="50" y="207.5" text-anchor="end">1</text>
+    <text x="50" y="127.5" text-anchor="end">2</text>
+    <text x="50" y="47.5" text-anchor="end">3</text>
+  </g>
+  <g font-size="11" fill="currentColor" opacity="0.9">
+    <text x="12" y="409">띠는 모눈 한 칸보다 좁고, 베이스의 2σ 원은 띠와 정확히 같은 폭이다.</text>
+    <text x="12" y="423">고리 한가운데로 보낸 베이스는 2σ에서 띠의 어느 쪽 끝에든 있을 수 있다.</text>
+  </g>
+</svg>
 
 **월드 프레임과 대상.** 원점에 축을 긋고 모눈 한 칸을 $0.25$ m로 잡으면 $2$ m 도달 범위가 여덟
 칸이다. 패널 자세 $(2,1)$을 찍고 그 점을 지나는 패널 법선을 그린다. 도구가 밀 방향이 곧 §3의
@@ -659,7 +805,7 @@ $\sqrt{1-c^2}=w_0$이기 때문이다. 따라서 띠의 폭은
 
 $$\Delta r=2\sqrt{1-w_0}$$
 
-이고, 가조작성을 얼마나 요구하느냐의 제곱근으로 닫힌다. 문턱값 둘, 두 띠 모두 §2 표의
+이고, 가조작성을 얼마나 요구하느냐의 제곱근으로 닫힌다. 문턱값 둘, 두 띠 모두 엘보 각으로 $90°$, 곧 §2 표의
 $r=\sqrt2=1.414$ m 고리를 가운데 둔다.
 
 | $w_0$ | 엘보 구간 | $r$ 범위 (m) | 띠 폭 $\Delta r$ (m) |
@@ -750,7 +896,7 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**를 홀로노믹 베이스 �
 
 > [!tip]- 정답 · Solutions
 > 1. 도달 집합은 베이스 둘레 반지름 $2$의 원판(P2는 접을 수 있다). 고정 자세 베이스는 $(1,0)$. 좋은 베이스는 패널 둘레 반지름 $\sqrt{2}$의 원(근처)이고, 바깥 원 $r=2$가 특이 고리다.
-> 2. (a) $(2,1)-(1,1)=(1,0)$. (b) $r(90^\circ)=\sqrt{2}$, $r(5^\circ)\approx 1.996$, $r(0^\circ)=2$. (c) $\det J=1$, $\sin 5^\circ\approx 0.087$, $0$.
+> 2. (a) $(2,1)-(1,1)=(1,0)$. (b) $r(90^\circ)=\sqrt{2}$, $r(5^\circ)\approx 1.998$, $r(0^\circ)=2$. (c) $\det J=1$, $\sin 5^\circ\approx 0.087$, $0$.
 > 3. 도달 범위를 최대화하고 특이 고리에 세웠다. $\det J\to 0$: 잃은 방향은 팔 축이고, 곧게 뻗었다면 그것이 패널 법선이다. 그 방향으로 팔은 *강하고*, 모터로 *움직이거나* 힘을 조절하지는 못한다. 쓸 집합은 바깥 한계가 아니라 $\sqrt{2}$ 띠다.
 
 ### 출처

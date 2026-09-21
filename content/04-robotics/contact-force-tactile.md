@@ -50,6 +50,114 @@ Two tangents and not one, although P2 is planar: the *arm* moves in a plane but 
 
 Draw it once; the problem set asks for the same drawing at different numbers.
 
+<svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="Left: P2 at theta (0, 90 degrees) with its tip on the panel face x = 1 m, the contact frame, and the 400 N/m contact spring magnified; right: the friction cone of half-angle 26.6 degrees with, at a normal force of 2.00 N, the 1.00 N circle, the outer box with corner 1.414 N, the inner four-generator square with flat side 0.707 N, and the 1 N wipe; bottom: the gap axis with its two complementarity rays and the points +2 mm and -5 mm">
+  <defs><marker id="cftA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="cftB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="22" font-size="12" fill-opacity="0.85" font-weight="600">arm and panel (x–y plane, to scale)</text>
+    <line x1="18.2" y1="231" x2="61.8" y2="231" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <path d="M 20.8 231 L 15.8 237 M 26.3 231 L 21.3 237 M 31.8 231 L 26.8 237 M 37.3 231 L 32.3 237 M 42.8 231 L 37.8 237 M 48.3 231 L 43.3 237 M 53.8 231 L 48.8 237" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+    <path d="M 40 222 L 33 231 L 47 231 Z" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+    <line x1="168" y1="40.2" x2="168" y2="151.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="4 3"/>
+    <rect x="168" y="45.4" width="9" height="97.3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+    <line x1="40" y1="222" x2="168" y2="222" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="168" y1="222" x2="168" y2="94" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="40" cy="222" r="4.5" fill="currentColor"/>
+    <circle cx="168" cy="222" r="4" fill="currentColor"/>
+    <circle cx="168" cy="94" r="4.5" fill="currentColor"/>
+    <line x1="173" y1="94" x2="212" y2="94" stroke="currentColor" stroke-width="1.6" marker-end="url(#cftA)"/>
+    <line x1="174" y1="99" x2="174" y2="134" stroke="currentColor" stroke-width="1.6" marker-end="url(#cftA)"/>
+    <text x="181" y="86" font-size="12">n&#770; into panel</text>
+    <text x="182" y="136" font-size="12" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">1</tspan><tspan dy="-3.4"> wipe (−y)</tspan></text>
+    <text x="12" y="253" font-size="12">base (0, 0)</text>
+    <text x="168" y="253" font-size="12" text-anchor="middle">elbow (1, 0)</text>
+    <text x="160" y="86" font-size="12" text-anchor="end">tip (1, 1)</text>
+    <text x="104" y="214" font-size="12" text-anchor="middle" fill-opacity="0.85">P2, θ = (0°, 90°)</text>
+    <text x="183" y="55.4" font-size="12">face x = 1 m</text>
+    <rect x="46" y="104" width="104" height="62" rx="4" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <line x1="128" y1="124" x2="128" y2="160" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M 128 126 L 136 132 M 128 132.5 L 136 138.5 M 128 139 L 136 145 M 128 145.5 L 136 151.5 M 128 152 L 136 158 M 128 158.5 L 136 164.5" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <line x1="52" y1="140" x2="88" y2="140" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    <line x1="88" y1="133" x2="88" y2="147" stroke="currentColor" stroke-width="1.6"/>
+    <path d="M 88 140 L 91 140 L 92.7 145 L 96.1 135 L 99.5 145 L 102.9 135 L 106.3 145 L 109.7 135 L 113.1 145 L 116.5 135 L 119.9 145 L 123.3 135 L 125 140 L 128 140" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+    <line x1="78" y1="131" x2="78" y2="152" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+    <line x1="78" y1="152" x2="88" y2="152" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+    <line x1="88" y1="148" x2="88" y2="155" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+    <text x="52" y="119" font-size="11" xml:space="preserve">k<tspan dy="3.1" font-size="11">w</tspan><tspan dy="-3.1"> = 400 N/m</tspan></text>
+    <text x="54" y="163" font-size="11">δ = 5 mm</text>
+    <text x="46" y="180" font-size="11" fill-opacity="0.8">magnified, not to scale</text>
+    <line x1="150" y1="112" x2="163" y2="97" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+    <text x="280" y="22" font-size="12" fill-opacity="0.85" font-weight="600">the cone, in the contact frame</text>
+    <line x1="368" y1="226" x2="368" y2="60.8" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftA)"/>
+    <line x1="368" y1="226" x2="449.2" y2="226" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftA)"/>
+    <line x1="368" y1="226" x2="334.7" y2="259.3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftA)"/>
+    <text x="375" y="68.8" font-size="12">n&#770;</text>
+    <text x="455.2" y="230" font-size="12" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">1</tspan></text>
+    <text x="329.7" y="269.3" font-size="12" text-anchor="end" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">2</tspan></text>
+    <path d="M 368 226 L 428.9 107.5 L 307 131.4 Z" fill="currentColor" fill-opacity="0.06"/>
+    <line x1="368" y1="226" x2="307" y2="131.4" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="368" y1="226" x2="428.9" y2="107.5" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="368" y1="226" x2="388" y2="133.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="368" y1="226" x2="308.8" y2="133.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="368" y1="226" x2="348" y2="94.4" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="368" y1="226" x2="427.2" y2="94.4" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+    <path d="M 424 114 L 423.3 114.7 L 422.5 115.5 L 421.7 116.2 L 420.8 116.9 L 419.9 117.6 L 419 118.3 L 418 119.1 L 417 119.8 L 416 120.5 L 414.9 121.2 L 413.8 121.9 L 412.7 122.6 L 411.5 123.3 L 410.3 123.9 L 409.1 124.6 L 407.9 125.3 L 406.6 125.9 L 405.3 126.6 L 404 127.2 L 402.6 127.9 L 401.3 128.5 L 399.9 129.1 L 398.5 129.7 L 397 130.3 L 395.6 130.9 L 394.1 131.4 L 392.6 132 L 391.1 132.5 L 389.5 133.1 L 388 133.6 L 386.4 134.1 L 384.9 134.6 L 383.3 135.1 L 381.7 135.5 L 380.1 136 L 378.5 136.4 L 376.9 136.8 L 375.3 137.2 L 373.6 137.6 L 372 138 L 370.4 138.4 L 368.7 138.7 L 367.1 139 L 365.5 139.3 L 363.8 139.6 L 362.2 139.9 L 360.6 140.1 L 358.9 140.4 L 357.3 140.6 L 355.7 140.8 L 354.1 141 L 352.5 141.1 L 351 141.3 L 349.4 141.4 L 347.8 141.5 L 346.3 141.6 L 344.8 141.6 L 343.3 141.7 L 341.8 141.7 L 340.3 141.7 L 338.8 141.7 L 337.4 141.7 L 336 141.6 L 334.6 141.6 L 333.2 141.5 L 331.9 141.4 L 330.5 141.3 L 329.2 141.1 L 328 141 L 326.7 140.8 L 325.5 140.6 L 324.3 140.4 L 323.2 140.1 L 322.1 139.9 L 321 139.6 L 319.9 139.3 L 318.9 139 L 317.9 138.7 L 316.9 138.4 L 316 138 L 315.1 137.6 L 314.3 137.2 L 313.4 136.8 L 312.7 136.4 L 311.9 136 L 311.2 135.5 L 310.6 135.1 L 309.9 134.6 L 309.3 134.1 L 308.8 133.6 L 308.3 133.1 L 307.8 132.5 L 307.4 132 L 307 131.4 L 306.7 130.9 L 306.4 130.3 L 306.1 129.7 L 305.9 129.1 L 305.8 128.5 L 305.6 127.9 L 305.6 127.2 L 305.5 126.6 L 305.5 125.9 L 305.6 125.3 L 305.7 124.6 L 305.8 123.9 L 306 123.3 L 306.2 122.6 L 306.4 121.9 L 306.7 121.2 L 307.1 120.5 L 307.5 119.8 L 307.9 119.1 L 308.4 118.3 L 308.9 117.6 L 309.4 116.9 L 310 116.2 L 310.6 115.5 L 311.3 114.7 L 312 114 L 312.7 113.3 L 313.5 112.5 L 314.3 111.8 L 315.2 111.1 L 316.1 110.4 L 317 109.7 L 318 108.9 L 319 108.2 L 320 107.5 L 321.1 106.8 L 322.2 106.1 L 323.3 105.4 L 324.5 104.7 L 325.7 104.1 L 326.9 103.4 L 328.1 102.7 L 329.4 102.1 L 330.7 101.4 L 332 100.8 L 333.4 100.1 L 334.7 99.5 L 336.1 98.9 L 337.5 98.3 L 339 97.7 L 340.4 97.1 L 341.9 96.6 L 343.4 96 L 344.9 95.5 L 346.5 94.9 L 348 94.4 L 349.6 93.9 L 351.1 93.4 L 352.7 92.9 L 354.3 92.5 L 355.9 92 L 357.5 91.6 L 359.1 91.2 L 360.7 90.8 L 362.4 90.4 L 364 90 L 365.6 89.6 L 367.3 89.3 L 368.9 89 L 370.5 88.7 L 372.2 88.4 L 373.8 88.1 L 375.4 87.9 L 377.1 87.6 L 378.7 87.4 L 380.3 87.2 L 381.9 87 L 383.5 86.9 L 385 86.7 L 386.6 86.6 L 388.2 86.5 L 389.7 86.4 L 391.2 86.4 L 392.7 86.3 L 394.2 86.3 L 395.7 86.3 L 397.2 86.3 L 398.6 86.3 L 400 86.4 L 401.4 86.4 L 402.8 86.5 L 404.1 86.6 L 405.5 86.7 L 406.8 86.9 L 408 87 L 409.3 87.2 L 410.5 87.4 L 411.7 87.6 L 412.8 87.9 L 413.9 88.1 L 415 88.4 L 416.1 88.7 L 417.1 89 L 418.1 89.3 L 419.1 89.6 L 420 90 L 420.9 90.4 L 421.7 90.8 L 422.6 91.2 L 423.3 91.6 L 424.1 92 L 424.8 92.5 L 425.4 92.9 L 426.1 93.4 L 426.7 93.9 L 427.2 94.4 L 427.7 94.9 L 428.2 95.5 L 428.6 96 L 429 96.6 L 429.3 97.1 L 429.6 97.7 L 429.9 98.3 L 430.1 98.9 L 430.2 99.5 L 430.4 100.1 L 430.4 100.8 L 430.5 101.4 L 430.5 102.1 L 430.4 102.7 L 430.3 103.4 L 430.2 104.1 L 430 104.7 L 429.8 105.4 L 429.6 106.1 L 429.3 106.8 L 428.9 107.5 L 428.5 108.2 L 428.1 108.9 L 427.6 109.7 L 427.1 110.4 L 426.6 111.1 L 426 111.8 L 425.4 112.5 L 424.7 113.3 Z" fill="currentColor" fill-opacity="0.1"/>
+    <path d="M 396.3 141.7 L 284.3 141.7 L 339.7 86.3 L 451.7 86.3 Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" stroke-dasharray="6 3"/>
+    <path d="M 388 133.6 L 308.8 133.6 L 348 94.4 L 427.2 94.4 Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9"/>
+    <path d="M 424 114 L 423.3 114.7 L 422.5 115.5 L 421.7 116.2 L 420.8 116.9 L 419.9 117.6 L 419 118.3 L 418 119.1 L 417 119.8 L 416 120.5 L 414.9 121.2 L 413.8 121.9 L 412.7 122.6 L 411.5 123.3 L 410.3 123.9 L 409.1 124.6 L 407.9 125.3 L 406.6 125.9 L 405.3 126.6 L 404 127.2 L 402.6 127.9 L 401.3 128.5 L 399.9 129.1 L 398.5 129.7 L 397 130.3 L 395.6 130.9 L 394.1 131.4 L 392.6 132 L 391.1 132.5 L 389.5 133.1 L 388 133.6 L 386.4 134.1 L 384.9 134.6 L 383.3 135.1 L 381.7 135.5 L 380.1 136 L 378.5 136.4 L 376.9 136.8 L 375.3 137.2 L 373.6 137.6 L 372 138 L 370.4 138.4 L 368.7 138.7 L 367.1 139 L 365.5 139.3 L 363.8 139.6 L 362.2 139.9 L 360.6 140.1 L 358.9 140.4 L 357.3 140.6 L 355.7 140.8 L 354.1 141 L 352.5 141.1 L 351 141.3 L 349.4 141.4 L 347.8 141.5 L 346.3 141.6 L 344.8 141.6 L 343.3 141.7 L 341.8 141.7 L 340.3 141.7 L 338.8 141.7 L 337.4 141.7 L 336 141.6 L 334.6 141.6 L 333.2 141.5 L 331.9 141.4 L 330.5 141.3 L 329.2 141.1 L 328 141 L 326.7 140.8 L 325.5 140.6 L 324.3 140.4 L 323.2 140.1 L 322.1 139.9 L 321 139.6 L 319.9 139.3 L 318.9 139 L 317.9 138.7 L 316.9 138.4 L 316 138 L 315.1 137.6 L 314.3 137.2 L 313.4 136.8 L 312.7 136.4 L 311.9 136 L 311.2 135.5 L 310.6 135.1 L 309.9 134.6 L 309.3 134.1 L 308.8 133.6 L 308.3 133.1 L 307.8 132.5 L 307.4 132 L 307 131.4 L 306.7 130.9 L 306.4 130.3 L 306.1 129.7 L 305.9 129.1 L 305.8 128.5 L 305.6 127.9 L 305.6 127.2 L 305.5 126.6 L 305.5 125.9 L 305.6 125.3 L 305.7 124.6 L 305.8 123.9 L 306 123.3 L 306.2 122.6 L 306.4 121.9 L 306.7 121.2 L 307.1 120.5 L 307.5 119.8 L 307.9 119.1 L 308.4 118.3 L 308.9 117.6 L 309.4 116.9 L 310 116.2 L 310.6 115.5 L 311.3 114.7 L 312 114 L 312.7 113.3 L 313.5 112.5 L 314.3 111.8 L 315.2 111.1 L 316.1 110.4 L 317 109.7 L 318 108.9 L 319 108.2 L 320 107.5 L 321.1 106.8 L 322.2 106.1 L 323.3 105.4 L 324.5 104.7 L 325.7 104.1 L 326.9 103.4 L 328.1 102.7 L 329.4 102.1 L 330.7 101.4 L 332 100.8 L 333.4 100.1 L 334.7 99.5 L 336.1 98.9 L 337.5 98.3 L 339 97.7 L 340.4 97.1 L 341.9 96.6 L 343.4 96 L 344.9 95.5 L 346.5 94.9 L 348 94.4 L 349.6 93.9 L 351.1 93.4 L 352.7 92.9 L 354.3 92.5 L 355.9 92 L 357.5 91.6 L 359.1 91.2 L 360.7 90.8 L 362.4 90.4 L 364 90 L 365.6 89.6 L 367.3 89.3 L 368.9 89 L 370.5 88.7 L 372.2 88.4 L 373.8 88.1 L 375.4 87.9 L 377.1 87.6 L 378.7 87.4 L 380.3 87.2 L 381.9 87 L 383.5 86.9 L 385 86.7 L 386.6 86.6 L 388.2 86.5 L 389.7 86.4 L 391.2 86.4 L 392.7 86.3 L 394.2 86.3 L 395.7 86.3 L 397.2 86.3 L 398.6 86.3 L 400 86.4 L 401.4 86.4 L 402.8 86.5 L 404.1 86.6 L 405.5 86.7 L 406.8 86.9 L 408 87 L 409.3 87.2 L 410.5 87.4 L 411.7 87.6 L 412.8 87.9 L 413.9 88.1 L 415 88.4 L 416.1 88.7 L 417.1 89 L 418.1 89.3 L 419.1 89.6 L 420 90 L 420.9 90.4 L 421.7 90.8 L 422.6 91.2 L 423.3 91.6 L 424.1 92 L 424.8 92.5 L 425.4 92.9 L 426.1 93.4 L 426.7 93.9 L 427.2 94.4 L 427.7 94.9 L 428.2 95.5 L 428.6 96 L 429 96.6 L 429.3 97.1 L 429.6 97.7 L 429.9 98.3 L 430.1 98.9 L 430.2 99.5 L 430.4 100.1 L 430.4 100.8 L 430.5 101.4 L 430.5 102.1 L 430.4 102.7 L 430.3 103.4 L 430.2 104.1 L 430 104.7 L 429.8 105.4 L 429.6 106.1 L 429.3 106.8 L 428.9 107.5 L 428.5 108.2 L 428.1 108.9 L 427.6 109.7 L 427.1 110.4 L 426.6 111.1 L 426 111.8 L 425.4 112.5 L 424.7 113.3 Z" fill="none" stroke="currentColor" stroke-width="1.9"/>
+    <circle cx="388" cy="133.6" r="2.2" fill="currentColor"/>
+    <circle cx="308.8" cy="133.6" r="2.2" fill="currentColor"/>
+    <circle cx="348" cy="94.4" r="2.2" fill="currentColor"/>
+    <circle cx="427.2" cy="94.4" r="2.2" fill="currentColor"/>
+    <line x1="368" y1="226" x2="424" y2="114" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.75"/>
+    <path d="M 388.6 184.9 A 46 46 0 0 0 368 180" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+    <line x1="380.6" y1="182.2" x2="430" y2="200" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="433" y="204" font-size="11">arctan μ = 26.6°</text>
+    <line x1="368" y1="114" x2="421.8" y2="114" stroke="currentColor" stroke-width="2.2" marker-end="url(#cftA)"/>
+    <circle cx="368" cy="114" r="2.4" fill="currentColor"/>
+    <text x="280" y="60" font-size="11" fill-opacity="0.85">slice at</text>
+    <text x="280" y="73" font-size="11" fill-opacity="0.85" xml:space="preserve">f<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = 2.00 N</tspan></text>
+    <line x1="300" y1="78" x2="284.3" y2="141.7" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+    <line x1="453.7" y1="84.3" x2="455" y2="50" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="458" y="46" font-size="11">outer box,</text>
+    <text x="458" y="59" font-size="11">corner 1.414 N</text>
+    <line x1="432.5" y1="101.7" x2="455" y2="101" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="458" y="98" font-size="11">circle</text>
+    <text x="458" y="111" font-size="11" xml:space="preserve">μf<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = 1.00 N</tspan></text>
+    <line x1="376.3" y1="127.5" x2="455" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="458" y="147" font-size="11">inner 4-generator,</text>
+    <text x="458" y="160" font-size="11">flat side 0.707 N</text>
+    <line x1="427" y1="116" x2="455" y2="125" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="458" y="129" font-size="11">1 N wipe</text>
+    <line x1="8" y1="282" x2="552" y2="282" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <text x="12" y="300" font-size="12" fill-opacity="0.85" font-weight="600">the gap axis</text>
+    <line x1="98.8" y1="382" x2="451.6" y2="382" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+    <line x1="250" y1="382" x2="250" y2="316" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" marker-end="url(#cftB)"/>
+    <path d="M 138 382 L 138 386 M 194 382 L 194 386 M 250 382 L 250 386 M 306 382 L 306 386 M 362 382 L 362 386 M 418 382 L 418 386" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+    <text x="138" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">+4</text>
+    <text x="194" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">+2</text>
+    <text x="250" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">0</text>
+    <text x="306" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">−2</text>
+    <text x="362" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">−4</text>
+    <text x="418" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">−6</text>
+    <text x="457.6" y="386" font-size="11" fill-opacity="0.85">φ (mm)</text>
+    <text x="244" y="320" font-size="11" text-anchor="end" fill-opacity="0.85" xml:space="preserve">f<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> (N)</tspan></text>
+    <line x1="250" y1="382" x2="104.4" y2="382" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="250" y1="382" x2="250" y2="320.8" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="250" y1="382" x2="434.8" y2="318.6" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="5 3"/>
+    <circle cx="194" cy="382" r="4.5" fill="currentColor"/>
+    <circle cx="390" cy="334" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <text x="12" y="378" font-size="12">φ &gt; 0, apart:</text>
+    <text x="12" y="393" font-size="12" xml:space="preserve">f<tspan dy="3.4" font-size="11">n</tspan><tspan dy="-3.4"> = 0</tspan></text>
+    <text x="258" y="325.6" font-size="12" xml:space="preserve">φ = 0: f<tspan dy="3.4" font-size="11">n</tspan><tspan dy="-3.4"> ≥ 0</tspan></text>
+    <text x="194" y="356" font-size="11" text-anchor="middle">+2 mm,</text>
+    <text x="194" y="370" font-size="11" text-anchor="middle">before touch</text>
+    <text x="400" y="342" font-size="11" xml:space="preserve">−5 mm, f<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = 2.00 N</tspan></text>
+    <text x="400" y="356" font-size="11" fill-opacity="0.85">penalty allows, rigid forbids</text>
+    <text x="311.6" y="375" font-size="11" fill-opacity="0.85" xml:space="preserve">penalty f<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = k</tspan><tspan dy="3.1" font-size="11">w</tspan><tspan dy="-3.1">δ</tspan></text>
+    <text x="12" y="420" font-size="12" fill-opacity="0.9" xml:space="preserve">(φ, f<tspan dy="3.4" font-size="11">n</tspan><tspan dy="-3.4">) never leaves the two bold rays — that picture is complementarity</tspan></text>
+  </g>
+</svg>
+
 **Left — the arm and the panel, in the $x$–$y$ plane, to scale.** P2's base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 up to the tip at $(1,1)$. A vertical line at $x=1$ for the panel's face, with the panel drawn as a rectangle hanging on it. At the tip, the contact frame: $\hat n$ pointing $+x$ into the face, $\hat t_1$ pointing $-y$ down the face along the wipe. A small spring symbol between tip and face labelled $k_w=400$ N/m, compressed by $\delta=5$ mm — drawn much larger than to scale, with a note saying so, because 5 mm on a 1 m arm is invisible.
 
 **Right — the cone, in the contact frame.** The normal axis $\hat n$ vertical, the tangent plane $(\hat t_1,\hat t_2)$ horizontal. The circular cone opening upward with half-angle $\arctan\mu=26.6^\circ$, marked as an angle. On the tangent plane, three closed curves drawn concentrically: the true circle of radius $\mu f_n$; outside it the **square** of the outer box pyramid, touching the circle at four points; inside it the **square** of the four-generator inner cone, with its four corners *on* the circle. One arrow for the commanded wipe, drawn at its actual length, so the reader can see which of the three sets contains it.
@@ -140,11 +248,11 @@ Many models use a larger static coefficient $\mu_s$ for the stick bound and a sm
 - The **outer box pyramid** bounds each tangential axis separately, $|f_{t,1}|\le\mu f_n$ and $|f_{t,2}|\le\mu f_n$ — four facets, two per axis. It **contains** the true cone, so it admits forces that would slip: at $f_n=2$ N and $\mu=0.5$ its corner is $\lVert f_t\rVert=\sqrt{1^2+1^2}=1.414$ N against a true bound of 1 N, $41.4\%$ too generous. This is the form [[04-robotics/convex-mpc-legged|8. Convex MPC]] uses in its fourth modelling move, and shrinking the coefficient to $\mu/\sqrt2$ is how that page buys the error back.
 - The **inner polyhedral cone** is instead *spanned* by $m$ generator rays spaced evenly around the normal, each ray lying on the true cone's surface:
 
-$$f=\sum_{j=1}^{m}\lambda_j\,g_j,\qquad \lambda_j\ge0,\qquad g_j=\hat n+\mu\left(\cos\tfrac{2\pi j}{m}\,\hat t_1+\sin\tfrac{2\pi j}{m}\,\hat t_2\right)$$
+$$f=\sum_{j=1}^{m}\lambda_j\,g_j,\qquad \lambda_j\ge0,\qquad g_j=\hat n+\mu\left(\cos\tfrac{(2j-1)\pi}{m}\,\hat t_1+\sin\tfrac{(2j-1)\pi}{m}\,\hat t_2\right)$$
 
-  where $\lambda_j$ is the non-negative weight on ray $j$ and $m$ is the facet count the modeller chooses. Every force it admits is **inside** the true cone, since the generators are on the cone and the cone is convex, so a nonnegative combination of them cannot leave it. Its price is the friction it discards: the inscribed polygon's inradius gives it an effective coefficient $\mu\cos(\pi/m)$, which is $0.354$ at $m=4$ ($29.3\%$ of the bound thrown away), $0.462$ at $m=8$ ($7.6\%$) and $0.490$ at $m=16$ ($1.9\%$).
+  where $\lambda_j$ is the non-negative weight on ray $j$ and $m$ is the facet count the modeller chooses; the half-step offset in the angle puts the middle of a facet, not a ray, on each tangent axis. Every force it admits is **inside** the true cone, since the generators are on the cone and the cone is convex, so a nonnegative combination of them cannot leave it. Its price is the friction it discards: the inscribed polygon's inradius gives it an effective coefficient $\mu\cos(\pi/m)$, which is $0.354$ at $m=4$ ($29.3\%$ of the bound thrown away), $0.462$ at $m=8$ ($7.6\%$) and $0.490$ at $m=16$ ($1.9\%$).
 
-At $m=4$ the inner cone's coefficient $\mu\cos(\pi/4)$ and the shrunk box's $\mu/\sqrt2$ are the same number, $0.354$, which is why the two constructions are so easily confused. They are still different sets, and the direction of the error is the point: **outer is optimistic about grip, inner is pessimistic, and neither is the cone.** Which one a paper solved decides whether its planner can promise a contact it cannot hold, or refuse one it could.
+At $m=4$ the inner cone's coefficient $\mu\cos(\pi/4)$ and the shrunk box's $\mu/\sqrt2$ are the same number, $0.354$ — laid as above, the shrunk box *is* the four-generator cone — which is why the two constructions are so easily confused. The box at full $\mu$ and the inner cone are still different sets, and the direction of the error is the point: **outer is optimistic about grip, inner is pessimistic, and neither is the cone.** Which one a paper solved decides whether its planner can promise a contact it cannot hold, or refuse one it could.
 
 > [!example] Worked example · 계산 예제
 > $\mu=0.5$ gives a half-angle $\arctan0.5=26.6°$. With $f_n=10$ N the cone allows $\lVert f_t\rVert\le5$ N: a 4 N tangential load can stick, and a 6 N demand cannot (Self-check 2).
@@ -298,7 +406,7 @@ Measure task success, peak/mean force, force-tracking error, slip/drop rate, obj
 
 $$e_{\mathrm{RMS}}=\sqrt{\frac{1}{T}\int_0^T\big(f_d(t)-f_m(t)\big)^2\,dt}$$
 
-  where $f_d$ is the commanded force, $f_m$ the measured one and $T$ the duration of contact — not of the trial, which is the substitution that flatters a controller by averaging in the free-space seconds. Example on the running object: a commanded $f_d=2$ N measured as $2.0,\ 2.3,\ 1.8,\ 2.1$ N gives errors $0,\ 0.3,\ -0.2,\ 0.1$ N, so $e_{\mathrm{RMS}}=\sqrt{0.035}=0.187$ N, $9.4\%$ of the target, while the mean absolute error is only $0.150$ N. RMS charges the single 0.3 N excursion more heavily, which is why it is the honest one to quote against a force limit.
+  where $f_d$ is the commanded force, $f_m$ the measured one and $T$ the duration of contact — not of the trial, which is the substitution that flatters a controller by averaging in the free-space seconds. Example on the running object: a commanded $f_d=2$ N measured as $2.0,\ 2.3,\ 1.8,\ 2.1$ N gives errors $0,\ -0.3,\ 0.2,\ -0.1$ N, so $e_{\mathrm{RMS}}=\sqrt{0.035}=0.187$ N, $9.4\%$ of the target, while the mean absolute error is only $0.150$ N. RMS charges the single 0.3 N excursion more heavily, which is why it is the honest one to quote against a force limit.
 - **Slip rate** and **drop rate**: the fraction of contact time in which tangential motion occurs while the controller commanded sticking, and the fraction of grasp trials in which the object leaves the hand before the goal. Both are proportions, so both are meaningless without the trial count beside them — and both are measured against a *commanded* intent, which means they presuppose the contact-state estimate of §7.
 
 **Non-example.** A peak force quoted with no sensor rate, an RMS error quoted over the whole trial, or a slip rate quoted without $n$ are three different ways of reporting a number that cannot be compared with anyone else's.
@@ -403,6 +511,114 @@ P2가 평면인데도 접선을 둘 두는 이유: 움직이는 것은 *팔*이�
 
 한 번 그려 두면 과제는 같은 그림을 다른 숫자로 묻는다.
 
+<svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 말단이 패널 면 x = 1 m에 닿은 θ = (0, 90도)의 P2와 접촉 프레임, 확대한 400 N/m 접촉 스프링; 오른쪽: 반각 26.6도의 마찰 원뿔과, 법선력 2.00 N에서의 1.00 N 원, 모서리 1.414 N의 외접 상자, 평평한 변 0.707 N의 내접 4-생성자 정사각형, 1 N 닦기; 아래: complementarity의 두 반직선과 +2 mm, -5 mm 두 점이 있는 간극 축">
+  <defs><marker id="cftkA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="cftkB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="22" font-size="12" fill-opacity="0.85" font-weight="600">팔과 패널 (x–y 평면, 실제 비율)</text>
+    <line x1="18.2" y1="231" x2="61.8" y2="231" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <path d="M 20.8 231 L 15.8 237 M 26.3 231 L 21.3 237 M 31.8 231 L 26.8 237 M 37.3 231 L 32.3 237 M 42.8 231 L 37.8 237 M 48.3 231 L 43.3 237 M 53.8 231 L 48.8 237" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+    <path d="M 40 222 L 33 231 L 47 231 Z" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+    <line x1="168" y1="40.2" x2="168" y2="151.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="4 3"/>
+    <rect x="168" y="45.4" width="9" height="97.3" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+    <line x1="40" y1="222" x2="168" y2="222" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="168" y1="222" x2="168" y2="94" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="40" cy="222" r="4.5" fill="currentColor"/>
+    <circle cx="168" cy="222" r="4" fill="currentColor"/>
+    <circle cx="168" cy="94" r="4.5" fill="currentColor"/>
+    <line x1="173" y1="94" x2="212" y2="94" stroke="currentColor" stroke-width="1.6" marker-end="url(#cftkA)"/>
+    <line x1="174" y1="99" x2="174" y2="134" stroke="currentColor" stroke-width="1.6" marker-end="url(#cftkA)"/>
+    <text x="181" y="86" font-size="12">n&#770; 패널 안쪽</text>
+    <text x="182" y="136" font-size="12" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">1</tspan><tspan dy="-3.4"> 닦기 (−y)</tspan></text>
+    <text x="12" y="253" font-size="12">베이스 (0, 0)</text>
+    <text x="168" y="253" font-size="12" text-anchor="middle">엘보 (1, 0)</text>
+    <text x="160" y="86" font-size="12" text-anchor="end">말단 (1, 1)</text>
+    <text x="104" y="214" font-size="12" text-anchor="middle" fill-opacity="0.85">P2, θ = (0°, 90°)</text>
+    <text x="183" y="55.4" font-size="12">면 x = 1 m</text>
+    <rect x="46" y="104" width="104" height="62" rx="4" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <line x1="128" y1="124" x2="128" y2="160" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M 128 126 L 136 132 M 128 132.5 L 136 138.5 M 128 139 L 136 145 M 128 145.5 L 136 151.5 M 128 152 L 136 158 M 128 158.5 L 136 164.5" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <line x1="52" y1="140" x2="88" y2="140" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    <line x1="88" y1="133" x2="88" y2="147" stroke="currentColor" stroke-width="1.6"/>
+    <path d="M 88 140 L 91 140 L 92.7 145 L 96.1 135 L 99.5 145 L 102.9 135 L 106.3 145 L 109.7 135 L 113.1 145 L 116.5 135 L 119.9 145 L 123.3 135 L 125 140 L 128 140" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+    <line x1="78" y1="131" x2="78" y2="152" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+    <line x1="78" y1="152" x2="88" y2="152" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+    <line x1="88" y1="148" x2="88" y2="155" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+    <text x="52" y="119" font-size="11" xml:space="preserve">k<tspan dy="3.1" font-size="11">w</tspan><tspan dy="-3.1"> = 400 N/m</tspan></text>
+    <text x="54" y="163" font-size="11">δ = 5 mm</text>
+    <text x="46" y="180" font-size="11" fill-opacity="0.8">확대, 비율 아님</text>
+    <line x1="150" y1="112" x2="163" y2="97" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+    <text x="280" y="22" font-size="12" fill-opacity="0.85" font-weight="600">접촉 프레임 안의 원뿔</text>
+    <line x1="368" y1="226" x2="368" y2="60.8" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftkA)"/>
+    <line x1="368" y1="226" x2="449.2" y2="226" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftkA)"/>
+    <line x1="368" y1="226" x2="334.7" y2="259.3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" marker-end="url(#cftkA)"/>
+    <text x="375" y="68.8" font-size="12">n&#770;</text>
+    <text x="455.2" y="230" font-size="12" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">1</tspan></text>
+    <text x="329.7" y="269.3" font-size="12" text-anchor="end" xml:space="preserve">t&#770;<tspan dy="3.4" font-size="11">2</tspan></text>
+    <path d="M 368 226 L 428.9 107.5 L 307 131.4 Z" fill="currentColor" fill-opacity="0.06"/>
+    <line x1="368" y1="226" x2="307" y2="131.4" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="368" y1="226" x2="428.9" y2="107.5" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="368" y1="226" x2="388" y2="133.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="368" y1="226" x2="308.8" y2="133.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="368" y1="226" x2="348" y2="94.4" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="368" y1="226" x2="427.2" y2="94.4" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+    <path d="M 424 114 L 423.3 114.7 L 422.5 115.5 L 421.7 116.2 L 420.8 116.9 L 419.9 117.6 L 419 118.3 L 418 119.1 L 417 119.8 L 416 120.5 L 414.9 121.2 L 413.8 121.9 L 412.7 122.6 L 411.5 123.3 L 410.3 123.9 L 409.1 124.6 L 407.9 125.3 L 406.6 125.9 L 405.3 126.6 L 404 127.2 L 402.6 127.9 L 401.3 128.5 L 399.9 129.1 L 398.5 129.7 L 397 130.3 L 395.6 130.9 L 394.1 131.4 L 392.6 132 L 391.1 132.5 L 389.5 133.1 L 388 133.6 L 386.4 134.1 L 384.9 134.6 L 383.3 135.1 L 381.7 135.5 L 380.1 136 L 378.5 136.4 L 376.9 136.8 L 375.3 137.2 L 373.6 137.6 L 372 138 L 370.4 138.4 L 368.7 138.7 L 367.1 139 L 365.5 139.3 L 363.8 139.6 L 362.2 139.9 L 360.6 140.1 L 358.9 140.4 L 357.3 140.6 L 355.7 140.8 L 354.1 141 L 352.5 141.1 L 351 141.3 L 349.4 141.4 L 347.8 141.5 L 346.3 141.6 L 344.8 141.6 L 343.3 141.7 L 341.8 141.7 L 340.3 141.7 L 338.8 141.7 L 337.4 141.7 L 336 141.6 L 334.6 141.6 L 333.2 141.5 L 331.9 141.4 L 330.5 141.3 L 329.2 141.1 L 328 141 L 326.7 140.8 L 325.5 140.6 L 324.3 140.4 L 323.2 140.1 L 322.1 139.9 L 321 139.6 L 319.9 139.3 L 318.9 139 L 317.9 138.7 L 316.9 138.4 L 316 138 L 315.1 137.6 L 314.3 137.2 L 313.4 136.8 L 312.7 136.4 L 311.9 136 L 311.2 135.5 L 310.6 135.1 L 309.9 134.6 L 309.3 134.1 L 308.8 133.6 L 308.3 133.1 L 307.8 132.5 L 307.4 132 L 307 131.4 L 306.7 130.9 L 306.4 130.3 L 306.1 129.7 L 305.9 129.1 L 305.8 128.5 L 305.6 127.9 L 305.6 127.2 L 305.5 126.6 L 305.5 125.9 L 305.6 125.3 L 305.7 124.6 L 305.8 123.9 L 306 123.3 L 306.2 122.6 L 306.4 121.9 L 306.7 121.2 L 307.1 120.5 L 307.5 119.8 L 307.9 119.1 L 308.4 118.3 L 308.9 117.6 L 309.4 116.9 L 310 116.2 L 310.6 115.5 L 311.3 114.7 L 312 114 L 312.7 113.3 L 313.5 112.5 L 314.3 111.8 L 315.2 111.1 L 316.1 110.4 L 317 109.7 L 318 108.9 L 319 108.2 L 320 107.5 L 321.1 106.8 L 322.2 106.1 L 323.3 105.4 L 324.5 104.7 L 325.7 104.1 L 326.9 103.4 L 328.1 102.7 L 329.4 102.1 L 330.7 101.4 L 332 100.8 L 333.4 100.1 L 334.7 99.5 L 336.1 98.9 L 337.5 98.3 L 339 97.7 L 340.4 97.1 L 341.9 96.6 L 343.4 96 L 344.9 95.5 L 346.5 94.9 L 348 94.4 L 349.6 93.9 L 351.1 93.4 L 352.7 92.9 L 354.3 92.5 L 355.9 92 L 357.5 91.6 L 359.1 91.2 L 360.7 90.8 L 362.4 90.4 L 364 90 L 365.6 89.6 L 367.3 89.3 L 368.9 89 L 370.5 88.7 L 372.2 88.4 L 373.8 88.1 L 375.4 87.9 L 377.1 87.6 L 378.7 87.4 L 380.3 87.2 L 381.9 87 L 383.5 86.9 L 385 86.7 L 386.6 86.6 L 388.2 86.5 L 389.7 86.4 L 391.2 86.4 L 392.7 86.3 L 394.2 86.3 L 395.7 86.3 L 397.2 86.3 L 398.6 86.3 L 400 86.4 L 401.4 86.4 L 402.8 86.5 L 404.1 86.6 L 405.5 86.7 L 406.8 86.9 L 408 87 L 409.3 87.2 L 410.5 87.4 L 411.7 87.6 L 412.8 87.9 L 413.9 88.1 L 415 88.4 L 416.1 88.7 L 417.1 89 L 418.1 89.3 L 419.1 89.6 L 420 90 L 420.9 90.4 L 421.7 90.8 L 422.6 91.2 L 423.3 91.6 L 424.1 92 L 424.8 92.5 L 425.4 92.9 L 426.1 93.4 L 426.7 93.9 L 427.2 94.4 L 427.7 94.9 L 428.2 95.5 L 428.6 96 L 429 96.6 L 429.3 97.1 L 429.6 97.7 L 429.9 98.3 L 430.1 98.9 L 430.2 99.5 L 430.4 100.1 L 430.4 100.8 L 430.5 101.4 L 430.5 102.1 L 430.4 102.7 L 430.3 103.4 L 430.2 104.1 L 430 104.7 L 429.8 105.4 L 429.6 106.1 L 429.3 106.8 L 428.9 107.5 L 428.5 108.2 L 428.1 108.9 L 427.6 109.7 L 427.1 110.4 L 426.6 111.1 L 426 111.8 L 425.4 112.5 L 424.7 113.3 Z" fill="currentColor" fill-opacity="0.1"/>
+    <path d="M 396.3 141.7 L 284.3 141.7 L 339.7 86.3 L 451.7 86.3 Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" stroke-dasharray="6 3"/>
+    <path d="M 388 133.6 L 308.8 133.6 L 348 94.4 L 427.2 94.4 Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9"/>
+    <path d="M 424 114 L 423.3 114.7 L 422.5 115.5 L 421.7 116.2 L 420.8 116.9 L 419.9 117.6 L 419 118.3 L 418 119.1 L 417 119.8 L 416 120.5 L 414.9 121.2 L 413.8 121.9 L 412.7 122.6 L 411.5 123.3 L 410.3 123.9 L 409.1 124.6 L 407.9 125.3 L 406.6 125.9 L 405.3 126.6 L 404 127.2 L 402.6 127.9 L 401.3 128.5 L 399.9 129.1 L 398.5 129.7 L 397 130.3 L 395.6 130.9 L 394.1 131.4 L 392.6 132 L 391.1 132.5 L 389.5 133.1 L 388 133.6 L 386.4 134.1 L 384.9 134.6 L 383.3 135.1 L 381.7 135.5 L 380.1 136 L 378.5 136.4 L 376.9 136.8 L 375.3 137.2 L 373.6 137.6 L 372 138 L 370.4 138.4 L 368.7 138.7 L 367.1 139 L 365.5 139.3 L 363.8 139.6 L 362.2 139.9 L 360.6 140.1 L 358.9 140.4 L 357.3 140.6 L 355.7 140.8 L 354.1 141 L 352.5 141.1 L 351 141.3 L 349.4 141.4 L 347.8 141.5 L 346.3 141.6 L 344.8 141.6 L 343.3 141.7 L 341.8 141.7 L 340.3 141.7 L 338.8 141.7 L 337.4 141.7 L 336 141.6 L 334.6 141.6 L 333.2 141.5 L 331.9 141.4 L 330.5 141.3 L 329.2 141.1 L 328 141 L 326.7 140.8 L 325.5 140.6 L 324.3 140.4 L 323.2 140.1 L 322.1 139.9 L 321 139.6 L 319.9 139.3 L 318.9 139 L 317.9 138.7 L 316.9 138.4 L 316 138 L 315.1 137.6 L 314.3 137.2 L 313.4 136.8 L 312.7 136.4 L 311.9 136 L 311.2 135.5 L 310.6 135.1 L 309.9 134.6 L 309.3 134.1 L 308.8 133.6 L 308.3 133.1 L 307.8 132.5 L 307.4 132 L 307 131.4 L 306.7 130.9 L 306.4 130.3 L 306.1 129.7 L 305.9 129.1 L 305.8 128.5 L 305.6 127.9 L 305.6 127.2 L 305.5 126.6 L 305.5 125.9 L 305.6 125.3 L 305.7 124.6 L 305.8 123.9 L 306 123.3 L 306.2 122.6 L 306.4 121.9 L 306.7 121.2 L 307.1 120.5 L 307.5 119.8 L 307.9 119.1 L 308.4 118.3 L 308.9 117.6 L 309.4 116.9 L 310 116.2 L 310.6 115.5 L 311.3 114.7 L 312 114 L 312.7 113.3 L 313.5 112.5 L 314.3 111.8 L 315.2 111.1 L 316.1 110.4 L 317 109.7 L 318 108.9 L 319 108.2 L 320 107.5 L 321.1 106.8 L 322.2 106.1 L 323.3 105.4 L 324.5 104.7 L 325.7 104.1 L 326.9 103.4 L 328.1 102.7 L 329.4 102.1 L 330.7 101.4 L 332 100.8 L 333.4 100.1 L 334.7 99.5 L 336.1 98.9 L 337.5 98.3 L 339 97.7 L 340.4 97.1 L 341.9 96.6 L 343.4 96 L 344.9 95.5 L 346.5 94.9 L 348 94.4 L 349.6 93.9 L 351.1 93.4 L 352.7 92.9 L 354.3 92.5 L 355.9 92 L 357.5 91.6 L 359.1 91.2 L 360.7 90.8 L 362.4 90.4 L 364 90 L 365.6 89.6 L 367.3 89.3 L 368.9 89 L 370.5 88.7 L 372.2 88.4 L 373.8 88.1 L 375.4 87.9 L 377.1 87.6 L 378.7 87.4 L 380.3 87.2 L 381.9 87 L 383.5 86.9 L 385 86.7 L 386.6 86.6 L 388.2 86.5 L 389.7 86.4 L 391.2 86.4 L 392.7 86.3 L 394.2 86.3 L 395.7 86.3 L 397.2 86.3 L 398.6 86.3 L 400 86.4 L 401.4 86.4 L 402.8 86.5 L 404.1 86.6 L 405.5 86.7 L 406.8 86.9 L 408 87 L 409.3 87.2 L 410.5 87.4 L 411.7 87.6 L 412.8 87.9 L 413.9 88.1 L 415 88.4 L 416.1 88.7 L 417.1 89 L 418.1 89.3 L 419.1 89.6 L 420 90 L 420.9 90.4 L 421.7 90.8 L 422.6 91.2 L 423.3 91.6 L 424.1 92 L 424.8 92.5 L 425.4 92.9 L 426.1 93.4 L 426.7 93.9 L 427.2 94.4 L 427.7 94.9 L 428.2 95.5 L 428.6 96 L 429 96.6 L 429.3 97.1 L 429.6 97.7 L 429.9 98.3 L 430.1 98.9 L 430.2 99.5 L 430.4 100.1 L 430.4 100.8 L 430.5 101.4 L 430.5 102.1 L 430.4 102.7 L 430.3 103.4 L 430.2 104.1 L 430 104.7 L 429.8 105.4 L 429.6 106.1 L 429.3 106.8 L 428.9 107.5 L 428.5 108.2 L 428.1 108.9 L 427.6 109.7 L 427.1 110.4 L 426.6 111.1 L 426 111.8 L 425.4 112.5 L 424.7 113.3 Z" fill="none" stroke="currentColor" stroke-width="1.9"/>
+    <circle cx="388" cy="133.6" r="2.2" fill="currentColor"/>
+    <circle cx="308.8" cy="133.6" r="2.2" fill="currentColor"/>
+    <circle cx="348" cy="94.4" r="2.2" fill="currentColor"/>
+    <circle cx="427.2" cy="94.4" r="2.2" fill="currentColor"/>
+    <line x1="368" y1="226" x2="424" y2="114" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.75"/>
+    <path d="M 388.6 184.9 A 46 46 0 0 0 368 180" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9"/>
+    <line x1="380.6" y1="182.2" x2="430" y2="200" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="433" y="204" font-size="11">arctan μ = 26.6°</text>
+    <line x1="368" y1="114" x2="421.8" y2="114" stroke="currentColor" stroke-width="2.2" marker-end="url(#cftkA)"/>
+    <circle cx="368" cy="114" r="2.4" fill="currentColor"/>
+    <text x="280" y="60" font-size="11" fill-opacity="0.85">단면</text>
+    <text x="280" y="73" font-size="11" fill-opacity="0.85" xml:space="preserve">f<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = 2.00 N</tspan></text>
+    <line x1="300" y1="78" x2="284.3" y2="141.7" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+    <line x1="453.7" y1="84.3" x2="455" y2="50" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="458" y="46" font-size="11">외접 상자,</text>
+    <text x="458" y="59" font-size="11">모서리 1.414 N</text>
+    <line x1="432.5" y1="101.7" x2="455" y2="101" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="458" y="98" font-size="11">원</text>
+    <text x="458" y="111" font-size="11" xml:space="preserve">μf<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = 1.00 N</tspan></text>
+    <line x1="376.3" y1="127.5" x2="455" y2="150" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="458" y="147" font-size="11">내접 4-생성자,</text>
+    <text x="458" y="160" font-size="11">평평한 변 0.707 N</text>
+    <line x1="427" y1="116" x2="455" y2="125" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.55"/>
+    <text x="458" y="129" font-size="11">1 N 닦기</text>
+    <line x1="8" y1="282" x2="552" y2="282" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35"/>
+    <text x="12" y="300" font-size="12" fill-opacity="0.85" font-weight="600">간극 축</text>
+    <line x1="98.8" y1="382" x2="451.6" y2="382" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+    <line x1="250" y1="382" x2="250" y2="316" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" marker-end="url(#cftkB)"/>
+    <path d="M 138 382 L 138 386 M 194 382 L 194 386 M 250 382 L 250 386 M 306 382 L 306 386 M 362 382 L 362 386 M 418 382 L 418 386" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+    <text x="138" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">+4</text>
+    <text x="194" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">+2</text>
+    <text x="250" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">0</text>
+    <text x="306" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">−2</text>
+    <text x="362" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">−4</text>
+    <text x="418" y="398" font-size="11" text-anchor="middle" fill-opacity="0.85">−6</text>
+    <text x="457.6" y="386" font-size="11" fill-opacity="0.85">φ (mm)</text>
+    <text x="244" y="320" font-size="11" text-anchor="end" fill-opacity="0.85" xml:space="preserve">f<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> (N)</tspan></text>
+    <line x1="250" y1="382" x2="104.4" y2="382" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="250" y1="382" x2="250" y2="320.8" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="250" y1="382" x2="434.8" y2="318.6" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="5 3"/>
+    <circle cx="194" cy="382" r="4.5" fill="currentColor"/>
+    <circle cx="390" cy="334" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <text x="12" y="378" font-size="12">φ &gt; 0, 떨어짐:</text>
+    <text x="12" y="393" font-size="12" xml:space="preserve">f<tspan dy="3.4" font-size="11">n</tspan><tspan dy="-3.4"> = 0</tspan></text>
+    <text x="258" y="325.6" font-size="12" xml:space="preserve">φ = 0: f<tspan dy="3.4" font-size="11">n</tspan><tspan dy="-3.4"> ≥ 0</tspan></text>
+    <text x="194" y="356" font-size="11" text-anchor="middle">+2 mm,</text>
+    <text x="194" y="370" font-size="11" text-anchor="middle">닿기 전</text>
+    <text x="400" y="342" font-size="11" xml:space="preserve">−5 mm, f<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = 2.00 N</tspan></text>
+    <text x="400" y="356" font-size="11" fill-opacity="0.85">페널티는 허용, 강체는 금지</text>
+    <text x="311.6" y="375" font-size="11" fill-opacity="0.85" xml:space="preserve">페널티 f<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = k</tspan><tspan dy="3.1" font-size="11">w</tspan><tspan dy="-3.1">δ</tspan></text>
+    <text x="12" y="420" font-size="12" fill-opacity="0.9" xml:space="preserve">(φ, f<tspan dy="3.4" font-size="11">n</tspan><tspan dy="-3.4">)은 굵은 두 반직선을 벗어나지 않는다 — 그 그림이 곧 complementarity</tspan></text>
+  </g>
+</svg>
+
 **왼쪽 — 팔과 패널, $x$–$y$ 평면, 실제 비율.** 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. $x=1$에 패널 면의 수직선을 긋고 패널을 직사각형으로 걸어 둔다. 말단에 접촉 프레임: $\hat n$은 $+x$로 면 안쪽, $\hat t_1$은 $-y$로 닦는 방향. 말단과 면 사이에 $k_w=400$ N/m이라고 적은 스프링 기호를 $\delta=5$ mm만큼 눌린 모습으로 그리되 — 비율보다 훨씬 크게 그리고 그렇게 그렸다고 적어 둔다. 1 m짜리 팔에서 5 mm는 눈에 보이지 않는다.
 
 **오른쪽 — 접촉 프레임 안의 원뿔.** 법선 축 $\hat n$을 세로로, 접선 평면 $(\hat t_1,\hat t_2)$을 가로로. 위로 열린 원형 원뿔의 반각 $\arctan\mu=26.6^\circ$를 각으로 표시한다. 접선 평면 위에는 닫힌 곡선 셋을 동심으로 그린다. 반지름 $\mu f_n$인 참 원, 그 바깥으로 네 점에서 원에 접하는 **외접 상자 피라미드**의 정사각형, 그 안쪽으로 네 꼭짓점이 원 *위에* 놓이는 4-생성자 내접 원뿔의 정사각형. 명령한 닦기 힘을 실제 길이의 화살표 하나로 그려서 셋 중 어느 집합이 그것을 포함하는지 눈으로 보이게 한다.
@@ -500,11 +716,11 @@ $$f_t=-\mu f_n\,\frac{v_t}{\lVert v_t\rVert}$$
 - **외접 상자 피라미드**는 접선 축을 하나씩 따로 묶는다. $|f_{t,1}|\le\mu f_n$, $|f_{t,2}|\le\mu f_n$ — 축마다 두 면씩 네 면이다. 참 원뿔을 **포함하므로** 미끄러질 힘까지 허용한다. $f_n=2$ N, $\mu=0.5$에서 모서리는 $\lVert f_t\rVert=\sqrt{1^2+1^2}=1.414$ N이라 참 경계 1 N보다 $41.4\%$ 후하다. [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 네 번째 모델링 수에서 쓰는 형태가 이것이고, 계수를 $\mu/\sqrt2$로 줄이는 것이 그 페이지가 오차를 되사는 방법이다.
 - **내접 다면 원뿔**은 대신 법선 둘레에 고르게 놓인 $m$개의 생성자 반직선으로 *생성*되며, 각 반직선은 참 원뿔의 표면 위에 있다.
 
-$$f=\sum_{j=1}^{m}\lambda_j\,g_j,\qquad \lambda_j\ge0,\qquad g_j=\hat n+\mu\left(\cos\tfrac{2\pi j}{m}\,\hat t_1+\sin\tfrac{2\pi j}{m}\,\hat t_2\right)$$
+$$f=\sum_{j=1}^{m}\lambda_j\,g_j,\qquad \lambda_j\ge0,\qquad g_j=\hat n+\mu\left(\cos\tfrac{(2j-1)\pi}{m}\,\hat t_1+\sin\tfrac{(2j-1)\pi}{m}\,\hat t_2\right)$$
 
-  여기서 $\lambda_j$는 반직선 $j$에 걸리는 음이 아닌 가중치이고 $m$은 모델러가 고르는 면의 수다. 생성자가 원뿔 위에 있고 원뿔이 볼록하므로 그들의 음이 아닌 결합은 원뿔을 벗어날 수 없고, 따라서 이 집합이 허용하는 힘은 모두 참 원뿔 **안**에 있다. 대가는 버리는 마찰이다. 내접 다각형의 내접원 반지름 때문에 유효 계수가 $\mu\cos(\pi/m)$이 되어, $m=4$에서 $0.354$(경계의 $29.3\%$를 버림), $m=8$에서 $0.462$($7.6\%$), $m=16$에서 $0.490$($1.9\%$)이다.
+  여기서 $\lambda_j$는 반직선 $j$에 걸리는 음이 아닌 가중치이고 $m$은 모델러가 고르는 면의 수이며, 각도를 반 칸 어긋나게 두었으므로 각 접선 축 위에는 반직선이 아니라 면의 한가운데가 온다. 생성자가 원뿔 위에 있고 원뿔이 볼록하므로 그들의 음이 아닌 결합은 원뿔을 벗어날 수 없고, 따라서 이 집합이 허용하는 힘은 모두 참 원뿔 **안**에 있다. 대가는 버리는 마찰이다. 내접 다각형의 내접원 반지름 때문에 유효 계수가 $\mu\cos(\pi/m)$이 되어, $m=4$에서 $0.354$(경계의 $29.3\%$를 버림), $m=8$에서 $0.462$($7.6\%$), $m=16$에서 $0.490$($1.9\%$)이다.
 
-$m=4$에서는 내접 원뿔의 계수 $\mu\cos(\pi/4)$와 줄인 상자의 $\mu/\sqrt2$가 같은 수 $0.354$가 된다. 두 구성이 그렇게 쉽게 헷갈리는 이유다. 그래도 집합은 서로 다르고, 요점은 오차의 방향이다. **외접은 파지에 낙관적이고 내접은 비관적이며, 둘 다 원뿔은 아니다.** 어느 쪽을 풀었는지가, 그 계획기가 버틸 수 없는 접촉을 약속하는지 버틸 수 있는 접촉을 거절하는지를 정한다.
+$m=4$에서는 내접 원뿔의 계수 $\mu\cos(\pi/4)$와 줄인 상자의 $\mu/\sqrt2$가 같은 수 $0.354$가 되고, 위처럼 놓으면 줄인 상자가 곧 4-생성자 원뿔이다. 두 구성이 그렇게 쉽게 헷갈리는 이유다. 그래도 온전한 $\mu$의 상자와 내접 원뿔은 서로 다른 집합이고, 요점은 오차의 방향이다. **외접은 파지에 낙관적이고 내접은 비관적이며, 둘 다 원뿔은 아니다.** 어느 쪽을 풀었는지가, 그 계획기가 버틸 수 없는 접촉을 약속하는지 버틸 수 있는 접촉을 거절하는지를 정한다.
 
 > [!example] 계산 예제 · Worked example
 > $\mu=0.5$이면 반각은 $\arctan0.5=26.6°$다. $f_n=10$ N이면 원뿔은 $\lVert f_t\rVert\le5$ N을 허용한다. 4 N 접선 하중은 고착할 수 있고, 6 N 요구는 그럴 수 없다(스스로 점검 2).
@@ -512,15 +728,15 @@ $m=4$에서는 내접 원뿔의 계수 $\mu\cos(\pi/4)$와 줄인 상자의 $\mu
 > **반례**: $f_n=-2$ N은 $f_t$가 아무리 작아도 어떤 $\mu$에서든 원뿔 밖이다. 표면은 당길 수 없기 때문이다. 그리고 원형 원뿔은 위의 두 다면 원뿔 어느 쪽과도 같은 집합이 아니다. 솔버가 보고하는 마찰 여유가 제 면에 대한 여유인 이유가 그것이다. 파지 해석이 이 원뿔 위에 서는 방식은 [[04-robotics/grasping|파지 §2]]에 있다.
 
 <svg viewBox="0 0 440 214" style="max-width:100%;height:auto" role="img" aria-label="마찰 원뿔: 안쪽 힘은 고착, 바깥 힘은 미끄럼">
-  <defs><marker id="fcA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="fcAk" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g stroke="currentColor" stroke-width="1.6"><line x1="30" y1="150" x2="410" y2="150"/></g>
   <g fill="currentColor" opacity="0.10"><path d="M150,150 L96,36 L204,36 Z"/></g>
   <g stroke="currentColor" stroke-width="1.5" fill="none"><path d="M150,150 L96,36"/><path d="M150,150 L204,36"/></g>
   <g stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"><line x1="150" y1="150" x2="150" y2="30"/></g>
   <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.75"><path d="M150,95 A55,55 0 0 1 175.9,101.1"/></g>
   <g stroke="currentColor" stroke-width="2" fill="none">
-    <path d="M150,150 L172,72" marker-end="url(#fcA)"/>
-    <path d="M150,150 L252,92" marker-end="url(#fcA)"/>
+    <path d="M150,150 L172,72" marker-end="url(#fcAk)"/>
+    <path d="M150,150 L252,92" marker-end="url(#fcAk)"/>
   </g>
   <g fill="currentColor"><circle cx="150" cy="150" r="3.5"/></g>
   <g font-size="11.5" fill="currentColor">
@@ -681,7 +897,7 @@ $$M_d\ddot x_c+D\,(\dot x_c-\dot x_d)+K\,(x_c-x_d)=F_{ext}$$
 
 $$e_{\mathrm{RMS}}=\sqrt{\frac{1}{T}\int_0^T\big(f_d(t)-f_m(t)\big)^2\,dt}$$
 
-  $f_d$는 명령한 힘, $f_m$은 측정한 힘, $T$는 접촉의 길이다 — 시행의 길이가 아니다. 시행 전체로 바꿔 넣으면 자유 공간의 몇 초가 평균에 섞여 제어기를 좋아 보이게 만든다. 계속 쓰는 대상의 예: 명령 $f_d=2$ N을 $2.0,\ 2.3,\ 1.8,\ 2.1$ N으로 측정하면 오차가 $0,\ 0.3,\ -0.2,\ 0.1$ N이므로 $e_{\mathrm{RMS}}=\sqrt{0.035}=0.187$ N, 목표의 $9.4\%$다. 평균 절대 오차는 $0.150$ N밖에 되지 않는다. RMS가 0.3 N짜리 한 번의 튐에 더 무겁게 값을 매기고, 힘 한계를 두고 이야기할 때 정직한 쪽이 그래서 RMS다.
+  $f_d$는 명령한 힘, $f_m$은 측정한 힘, $T$는 접촉의 길이다 — 시행의 길이가 아니다. 시행 전체로 바꿔 넣으면 자유 공간의 몇 초가 평균에 섞여 제어기를 좋아 보이게 만든다. 계속 쓰는 대상의 예: 명령 $f_d=2$ N을 $2.0,\ 2.3,\ 1.8,\ 2.1$ N으로 측정하면 오차가 $0,\ -0.3,\ 0.2,\ -0.1$ N이므로 $e_{\mathrm{RMS}}=\sqrt{0.035}=0.187$ N, 목표의 $9.4\%$다. 평균 절대 오차는 $0.150$ N밖에 되지 않는다. RMS가 0.3 N짜리 한 번의 튐에 더 무겁게 값을 매기고, 힘 한계를 두고 이야기할 때 정직한 쪽이 그래서 RMS다.
 - **미끄럼률**과 **낙하율**: 제어기가 고착을 명령한 동안 접선 운동이 일어난 접촉 시간의 비율, 그리고 목표에 닿기 전에 물체가 손을 떠난 파지 시행의 비율. 둘 다 비율이므로 시행 수를 옆에 적지 않으면 뜻이 없고, 둘 다 *명령한* 의도를 기준으로 재므로 §7의 접촉 상태 추정을 전제한다.
 
 **반례.** 센서 속도 없는 최대 힘, 시행 전체로 잰 RMS 오차, $n$ 없는 미끄럼률은 남의 숫자와 비교할 수 없는 수를 보고하는 세 가지 서로 다른 방법이다.

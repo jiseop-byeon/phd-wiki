@@ -41,6 +41,93 @@ the end-effector, what does the arm's own mass do to that command?*
 
 The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at $\theta=(0^\circ,90^\circ)$, standing in a *vertical* plane so that gravity is on the page. The problem set asks for this drawing.
 
+<svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="P2 at elbow ninety degrees in a vertical plane: two one-kilogram point masses with their weights, shoulder torque 19.62 newton-metres from a one-metre moment arm and zero at the elbow, the contact force pair drawn on tip and panel separately, and the apparent-mass ellipse diag(1, 2) kg">
+  <defs><marker id="aMk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <line x1="30" y1="30" x2="30" y2="76" stroke="currentColor" stroke-width="1.6" marker-end="url(#aMk)"/>
+  <text x="40" y="50" font-size="11" fill="currentColor">g = 9.81 m/s²</text>
+  <text x="40" y="64" font-size="11" fill="currentColor" fill-opacity="0.75">down is −y</text>
+  <line x1="26" y1="306" x2="52" y2="306" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" marker-end="url(#aMk)"/>
+  <line x1="26" y1="306" x2="26" y2="280" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" marker-end="url(#aMk)"/>
+  <text x="56" y="310" font-size="11" fill="currentColor" fill-opacity="0.85">x</text>
+  <text x="32" y="284" font-size="11" fill="currentColor" fill-opacity="0.85">y</text>
+  <path d="M100 206 L89 222 L111 222 Z" stroke="currentColor" stroke-width="1.1" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <line x1="80" y1="222" x2="120" y2="222" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <line x1="82" y1="222" x2="76" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="91" y1="222" x2="85" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="100" y1="222" x2="94" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="109" y1="222" x2="103" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="118" y1="222" x2="112" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="100" y1="206" x2="250" y2="206" stroke="currentColor" stroke-width="7" stroke-opacity="0.22" stroke-linecap="round"/>
+  <line x1="250" y1="206" x2="250" y2="56" stroke="currentColor" stroke-width="7" stroke-opacity="0.22" stroke-linecap="round"/>
+  <circle cx="100" cy="206" r="6.5" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.0"/>
+  <circle cx="250" cy="206" r="10" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <circle cx="250" cy="206" r="5.5" stroke="none" fill="currentColor"/>
+  <circle cx="250" cy="56" r="5.5" stroke="none" fill="currentColor"/>
+  <text x="88" y="210" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">(0, 0)</text>
+  <text x="250" y="42" font-size="11" fill="currentColor" text-anchor="middle">tip (1, 1)</text>
+  <text x="238" y="60" font-size="11" fill="currentColor" text-anchor="end">1 kg</text>
+  <text x="236" y="197" font-size="11" fill="currentColor" text-anchor="end">1 kg</text>
+  <text x="236" y="230" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">elbow (1, 0)</text>
+  <line x1="250" y1="212" x2="250" y2="255.1" stroke="currentColor" stroke-width="1.6" marker-end="url(#aMk)"/>
+  <text x="258" y="253.1" font-size="11" fill="currentColor">9.81 N</text>
+  <line x1="250" y1="62" x2="250" y2="105.1" stroke="currentColor" stroke-width="1.6" marker-end="url(#aMk)"/>
+  <text x="258" y="97.1" font-size="11" fill="currentColor">9.81 N</text>
+  <line x1="250" y1="108.1" x2="250" y2="196" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.9" stroke-dasharray="2 3"/>
+  <text x="240" y="112" font-size="11" fill="currentColor" text-anchor="end">elbow offset 0:</text>
+  <text x="240" y="127" font-size="11" fill="currentColor" text-anchor="end">the tip's weight line</text>
+  <text x="240" y="142" font-size="11" fill="currentColor" text-anchor="end">passes through its axis</text>
+  <line x1="100" y1="232" x2="100" y2="287.1" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="250" y1="258.1" x2="250" y2="287.1" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="101" y1="281.1" x2="249" y2="281.1" stroke="currentColor" stroke-width="1.1"/>
+  <path d="M108 277.6 L101 281.1 L108 284.6" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <path d="M242 277.6 L249 281.1 L242 284.6" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <text x="175" y="276.1" font-size="11" fill="currentColor" text-anchor="middle">1 m to both weight lines</text>
+  <path d="M 124.4 197.1 A 26 26 0 0 0 75.6 197.1" stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#aMk)"/>
+  <text x="56" y="156" font-size="11" fill="currentColor">τ<tspan dy="3" font-size="9.5">1</tspan><tspan dy="-3" dx="3.5">= 2 · 9.81 · 1</tspan></text>
+  <text x="56" y="171" font-size="11" fill="currentColor">= 19.62 N·m</text>
+  <path d="M 262.9 221.3 A 20 20 0 0 0 265.3 193.1" stroke="currentColor" stroke-width="1.3" fill="none" stroke-opacity="0.8" stroke-dasharray="3 3"/>
+  <text x="275" y="202" font-size="11" fill="currentColor">τ<tspan dy="3" font-size="9.5">2</tspan><tspan dy="-3" dx="3.5">= 0</tspan></text>
+  <rect x="322" y="12" width="230" height="146" rx="4" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <line x1="276" y1="56" x2="320" y2="56" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="1 3"/>
+  <text x="332" y="31" font-size="12" fill="currentColor">apparent mass at the tip</text>
+  <ellipse cx="374" cy="98" rx="24" ry="48" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.1"/>
+  <line x1="374" y1="98" x2="398" y2="98" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <line x1="374" y1="98" x2="374" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="386" y="113" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="370" y="78" font-size="11" fill="currentColor" text-anchor="end">2</text>
+  <text x="418" y="64" font-size="12" fill="currentColor">Λ = diag(1, 2) kg</text>
+  <text x="418" y="86" font-size="11" fill="currentColor">push sideways: 1 kg</text>
+  <text x="418" y="102" font-size="11" fill="currentColor">push up: 2 kg</text>
+  <text x="418" y="124" font-size="11" fill="currentColor" fill-opacity="0.8">an ellipse in kg,</text>
+  <text x="418" y="139" font-size="11" fill="currentColor" fill-opacity="0.8">not in velocity</text>
+  <rect x="322" y="170" width="230" height="150" rx="4" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <text x="332" y="189" font-size="12" fill="currentColor">contact at the tip, drawn apart</text>
+  <circle cx="440" cy="222" r="5.5" stroke="none" fill="currentColor"/>
+  <text x="440" y="211" font-size="11" fill="currentColor" text-anchor="middle">tip</text>
+  <line x1="380" y1="284" x2="500" y2="284" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="384" y1="284" x2="377" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="398" y1="284" x2="391" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="412" y1="284" x2="405" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="426" y1="284" x2="419" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="440" y1="284" x2="433" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="454" y1="284" x2="447" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="468" y1="284" x2="461" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="482" y1="284" x2="475" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="496" y1="284" x2="489" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="374" y="288" font-size="11" fill="currentColor" text-anchor="end">panel</text>
+  <line x1="433" y1="234" x2="433" y2="283" stroke="currentColor" stroke-width="1.8" marker-end="url(#aMk)"/>
+  <line x1="447" y1="278" x2="447" y2="228" stroke="currentColor" stroke-width="1.8" marker-end="url(#aMk)"/>
+  <text x="425" y="244" font-size="11" fill="currentColor" text-anchor="end">commanded,</text>
+  <text x="425" y="259" font-size="11" fill="currentColor" text-anchor="end">on the panel</text>
+  <text x="425" y="274" font-size="11" fill="currentColor" text-anchor="end">(0, −10) N</text>
+  <text x="455" y="244" font-size="11" fill="currentColor">reaction,</text>
+  <text x="455" y="259" font-size="11" fill="currentColor">on the tip</text>
+  <text x="455" y="274" font-size="11" fill="currentColor">(0, +10) N</text>
+  <text x="332" y="308" font-size="11" fill="currentColor" fill-opacity="0.8">same length, opposite bodies</text>
+  <text x="12" y="342" font-size="11" fill="currentColor" fill-opacity="0.85">● 1 kg point mass · ○ joint axis · rods massless · all force arrows to one scale</text>
+  <text x="12" y="358" font-size="11" fill="currentColor" fill-opacity="0.85">A moment arm is a weight line's horizontal offset from the joint axis, not a link length.</text>
+</svg>
+
 **The arm and its two masses.** Base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$, gravity $g=9.81\,\mathrm{m/s^2}$ pointing along $-y$ and drawn as an arrow in the margin so the page has an unambiguous down. Draw each link as a massless rod and put a filled dot of $1\,\mathrm{kg}$ at the *distal end* of each — one at $(1,0)$, one at $(1,1)$ — because the catalog's point-mass convention is what makes every number below come out, and a mass drawn at a link's centre gives a different arm. From each dot draw a weight arrow of $9.81\,\mathrm{N}$ straight down.
 
 **The gravity torques, as the moment arms that produce them.** For each joint, draw the horizontal distance from that joint's axis to each weight arrow and label it; those horizontal offsets, not the link lengths, are the moment arms. At the shoulder both masses hang $1\,\mathrm{m}$ to the right, giving $\tau_1 = 2\cdot 9.81\cdot 1 = 19.62\ \mathrm{N{\cdot}m}$; at the elbow the forearm mass is directly *above* the axis, offset $0$, giving $\tau_2 = 0$. Write both numbers as curved arrows at the joints, and write the $0$ explicitly rather than leaving the elbow blank — it is a fact about this pose, and it stops being $0$ the moment the arm leaves it.
@@ -460,6 +547,93 @@ print(Lam, tau_hold, tau_acc)
 ### 과제가 그릴 그림 · Homework diagram
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**를 $\theta=(0^\circ,90^\circ)$에서, *연직*면에 세워 중력이 지면 위에 놓이도록 한 것이다. 과제가 이 그림을 요구한다.
+
+<svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="연직면에서 엘보 90도인 P2: 1 kg 점질량 둘과 무게, 모멘트 팔 1 m에서 나오는 어깨 토크 19.62 N·m와 엘보의 0, 말단과 패널에 따로 그린 접촉력 쌍, 겉보기 질량 타원 diag(1, 2) kg">
+  <defs><marker id="aMkK" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <line x1="30" y1="30" x2="30" y2="76" stroke="currentColor" stroke-width="1.6" marker-end="url(#aMkK)"/>
+  <text x="40" y="50" font-size="11" fill="currentColor">g = 9.81 m/s²</text>
+  <text x="40" y="64" font-size="11" fill="currentColor" fill-opacity="0.75">아래가 −y</text>
+  <line x1="26" y1="306" x2="52" y2="306" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" marker-end="url(#aMkK)"/>
+  <line x1="26" y1="306" x2="26" y2="280" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8" marker-end="url(#aMkK)"/>
+  <text x="56" y="310" font-size="11" fill="currentColor" fill-opacity="0.85">x</text>
+  <text x="32" y="284" font-size="11" fill="currentColor" fill-opacity="0.85">y</text>
+  <path d="M100 206 L89 222 L111 222 Z" stroke="currentColor" stroke-width="1.1" fill="none" stroke-opacity="0.7" stroke-linejoin="round"/>
+  <line x1="80" y1="222" x2="120" y2="222" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <line x1="82" y1="222" x2="76" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="91" y1="222" x2="85" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="100" y1="222" x2="94" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="109" y1="222" x2="103" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="118" y1="222" x2="112" y2="229" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="100" y1="206" x2="250" y2="206" stroke="currentColor" stroke-width="7" stroke-opacity="0.22" stroke-linecap="round"/>
+  <line x1="250" y1="206" x2="250" y2="56" stroke="currentColor" stroke-width="7" stroke-opacity="0.22" stroke-linecap="round"/>
+  <circle cx="100" cy="206" r="6.5" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.0"/>
+  <circle cx="250" cy="206" r="10" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <circle cx="250" cy="206" r="5.5" stroke="none" fill="currentColor"/>
+  <circle cx="250" cy="56" r="5.5" stroke="none" fill="currentColor"/>
+  <text x="88" y="210" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">(0, 0)</text>
+  <text x="250" y="42" font-size="11" fill="currentColor" text-anchor="middle">말단 (1, 1)</text>
+  <text x="238" y="60" font-size="11" fill="currentColor" text-anchor="end">1 kg</text>
+  <text x="236" y="197" font-size="11" fill="currentColor" text-anchor="end">1 kg</text>
+  <text x="236" y="230" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">엘보 (1, 0)</text>
+  <line x1="250" y1="212" x2="250" y2="255.1" stroke="currentColor" stroke-width="1.6" marker-end="url(#aMkK)"/>
+  <text x="258" y="253.1" font-size="11" fill="currentColor">9.81 N</text>
+  <line x1="250" y1="62" x2="250" y2="105.1" stroke="currentColor" stroke-width="1.6" marker-end="url(#aMkK)"/>
+  <text x="258" y="97.1" font-size="11" fill="currentColor">9.81 N</text>
+  <line x1="250" y1="108.1" x2="250" y2="196" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.9" stroke-dasharray="2 3"/>
+  <text x="240" y="112" font-size="11" fill="currentColor" text-anchor="end">엘보 간격 0:</text>
+  <text x="240" y="127" font-size="11" fill="currentColor" text-anchor="end">말단의 무게선이</text>
+  <text x="240" y="142" font-size="11" fill="currentColor" text-anchor="end">엘보 축을 지난다</text>
+  <line x1="100" y1="232" x2="100" y2="287.1" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="250" y1="258.1" x2="250" y2="287.1" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="101" y1="281.1" x2="249" y2="281.1" stroke="currentColor" stroke-width="1.1"/>
+  <path d="M108 277.6 L101 281.1 L108 284.6" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <path d="M242 277.6 L249 281.1 L242 284.6" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/>
+  <text x="175" y="276.1" font-size="11" fill="currentColor" text-anchor="middle">두 무게선까지 1 m</text>
+  <path d="M 124.4 197.1 A 26 26 0 0 0 75.6 197.1" stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#aMkK)"/>
+  <text x="56" y="156" font-size="11" fill="currentColor">τ<tspan dy="3" font-size="9.5">1</tspan><tspan dy="-3" dx="3.5">= 2 · 9.81 · 1</tspan></text>
+  <text x="56" y="171" font-size="11" fill="currentColor">= 19.62 N·m</text>
+  <path d="M 262.9 221.3 A 20 20 0 0 0 265.3 193.1" stroke="currentColor" stroke-width="1.3" fill="none" stroke-opacity="0.8" stroke-dasharray="3 3"/>
+  <text x="275" y="202" font-size="11" fill="currentColor">τ<tspan dy="3" font-size="9.5">2</tspan><tspan dy="-3" dx="3.5">= 0</tspan></text>
+  <rect x="322" y="12" width="230" height="146" rx="4" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <line x1="276" y1="56" x2="320" y2="56" stroke="currentColor" stroke-width="1" stroke-opacity="0.7" stroke-dasharray="1 3"/>
+  <text x="332" y="31" font-size="12" fill="currentColor">말단의 겉보기 질량</text>
+  <ellipse cx="374" cy="98" rx="24" ry="48" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.1"/>
+  <line x1="374" y1="98" x2="398" y2="98" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <line x1="374" y1="98" x2="374" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="386" y="113" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <text x="370" y="78" font-size="11" fill="currentColor" text-anchor="end">2</text>
+  <text x="418" y="64" font-size="12" fill="currentColor">Λ = diag(1, 2) kg</text>
+  <text x="418" y="86" font-size="11" fill="currentColor">옆으로 밀면 1 kg</text>
+  <text x="418" y="102" font-size="11" fill="currentColor">위로 밀면 2 kg</text>
+  <text x="418" y="124" font-size="11" fill="currentColor" fill-opacity="0.8">kg의 타원이다.</text>
+  <text x="418" y="139" font-size="11" fill="currentColor" fill-opacity="0.8">속도의 타원이 아니다</text>
+  <rect x="322" y="170" width="230" height="150" rx="4" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <text x="332" y="189" font-size="12" fill="currentColor">말단의 접촉, 떼어 그림</text>
+  <circle cx="440" cy="222" r="5.5" stroke="none" fill="currentColor"/>
+  <text x="440" y="211" font-size="11" fill="currentColor" text-anchor="middle">말단</text>
+  <line x1="380" y1="284" x2="500" y2="284" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="384" y1="284" x2="377" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="398" y1="284" x2="391" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="412" y1="284" x2="405" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="426" y1="284" x2="419" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="440" y1="284" x2="433" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="454" y1="284" x2="447" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="468" y1="284" x2="461" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="482" y1="284" x2="475" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="496" y1="284" x2="489" y2="292" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="374" y="288" font-size="11" fill="currentColor" text-anchor="end">패널</text>
+  <line x1="433" y1="234" x2="433" y2="283" stroke="currentColor" stroke-width="1.8" marker-end="url(#aMkK)"/>
+  <line x1="447" y1="278" x2="447" y2="228" stroke="currentColor" stroke-width="1.8" marker-end="url(#aMkK)"/>
+  <text x="425" y="244" font-size="11" fill="currentColor" text-anchor="end">명령된 힘,</text>
+  <text x="425" y="259" font-size="11" fill="currentColor" text-anchor="end">패널에</text>
+  <text x="425" y="274" font-size="11" fill="currentColor" text-anchor="end">(0, −10) N</text>
+  <text x="455" y="244" font-size="11" fill="currentColor">반작용,</text>
+  <text x="455" y="259" font-size="11" fill="currentColor">말단에</text>
+  <text x="455" y="274" font-size="11" fill="currentColor">(0, +10) N</text>
+  <text x="332" y="308" font-size="11" fill="currentColor" fill-opacity="0.8">같은 길이, 다른 물체</text>
+  <text x="12" y="342" font-size="11" fill="currentColor" fill-opacity="0.85">● 1 kg 점질량 · ○ 관절 축 · 막대는 질량 없음 · 힘 화살표는 모두 같은 축척</text>
+  <text x="12" y="358" font-size="11" fill="currentColor" fill-opacity="0.85">모멘트 팔은 링크 길이가 아니라 관절 축에서 무게선까지의 수평 간격이다.</text>
+</svg>
 
 **팔과 두 질량.** 베이스는 원점, 링크 1이 $+x$를 따라 엘보 $(1,0)$까지, 링크 2가 곧장 위로 말단 $(1,1)$까지. 중력 $g=9.81\,\mathrm{m/s^2}$은 $-y$ 방향이고 여백에 화살표로 그려 아래쪽을 확정한다. 링크는 질량 없는 막대로 그리고 각 링크의 *말단 쪽 끝*에 $1\,\mathrm{kg}$짜리 검은 점을 찍는다. 하나는 $(1,0)$, 하나는 $(1,1)$이다. 카탈로그의 점질량 규약이 아래 모든 숫자를 만들어 내기 때문이고, 질량을 링크 중앙에 찍으면 다른 팔이 된다. 각 점에서 아래로 $9.81\,\mathrm{N}$짜리 무게 화살표를 긋는다.
 

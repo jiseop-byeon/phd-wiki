@@ -125,13 +125,13 @@ Diffusion Models*, build it from the ODE up.
 - **최적 수송(직선) 경로**: $x_t = (1-t)x_0 + t x_1$, 속도는 상수 $x_1 - x_0$ —
 
 <svg viewBox="0 0 620 218" style="max-width:100%;height:auto" role="img" aria-label="휘어진 확률 경로는 적분 스텝이 많이 필요하고, 곧은 경로는 적게 필요하다">
-  <defs><marker id="fmA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="fmAk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor"><circle cx="60" cy="120" r="5"/><circle cx="290" cy="62" r="5"/><circle cx="330" cy="120" r="5"/><circle cx="560" cy="62" r="5"/></g>
   <path d="M60,120 C110,152 150,42 200,56 C230,64 260,60 288,62" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.75"/>
   <g fill="currentColor" opacity="0.9">
     <circle cx="88" cy="136" r="2.6"/><circle cx="118" cy="122" r="2.6"/><circle cx="146" cy="78" r="2.6"/><circle cx="176" cy="57" r="2.6"/><circle cx="206" cy="57" r="2.6"/><circle cx="236" cy="61" r="2.6"/><circle cx="264" cy="61" r="2.6"/>
   </g>
-  <line x1="330" y1="120" x2="556" y2="64" stroke="currentColor" stroke-width="1.8" opacity="0.75" marker-end="url(#fmA)"/>
+  <line x1="330" y1="120" x2="556" y2="64" stroke="currentColor" stroke-width="1.8" opacity="0.75" marker-end="url(#fmAk)"/>
   <g fill="currentColor" opacity="0.9"><circle cx="405" cy="101" r="2.6"/><circle cx="481" cy="82" r="2.6"/></g>
   <g font-size="10.5" fill="currentColor">
     <text x="30" y="140">노이즈</text><text x="272" y="48">데이터</text>

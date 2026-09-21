@@ -21,6 +21,73 @@ mastery-when: "Go deeper when the middleware itself — discovery, transport, se
 
 Everything measurable on this page is about one machine: **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a cart on a line, encoder $N=2048$ counts/m, a vision node publishing a goal at $50\,\mathrm{Hz}$, a controller sampling the encoder and commanding a motor at $200\,\mathrm{Hz}$, and $70\,\mathrm{ms}$ of budget from camera mid-exposure to applied force. Draw the two pictures below once, now. The problem set asks for the same two with one knob moved.
 
+<svg viewBox="0 0 560 400" style="max-width:100%;height:auto" role="img" aria-label="Top: the P6 computation graph, with /camera, /controller and /logger inside one ROS domain, topics /goal at 50 Hz and /cmd at 200 Hz, and the motor and encoder outside the graph. Bottom: the five budget terms as consecutive brackets on a 0 to 80 ms clock, ending left of the 70 ms deadline.">
+  <defs><marker id="w1eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="w1esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">Computation graph, as ros2 node list and ros2 topic list -t report it</text>
+  <rect x="12" y="30" width="314" height="174" rx="10" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55" stroke-dasharray="5 4" fill="none"/>
+  <text x="20" y="46" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">export ROS_DOMAIN_ID=&lt;integer&gt;</text>
+  <ellipse cx="66" cy="96" rx="44" ry="16" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="66" y="100" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/camera</text>
+  <ellipse cx="250" cy="96" rx="60" ry="16" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="250" y="100" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/controller</text>
+  <ellipse cx="158" cy="160" rx="44" ry="16" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="158" y="164" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/logger</text>
+  <line x1="110" y1="96" x2="188" y2="96" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#w1eopen)"/>
+  <text x="150" y="86" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/goal</tspan> <tspan font-style="italic">[type]</tspan></text>
+  <text x="150" y="110" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">50 Hz</text>
+  <line x1="86.4" y1="110.2" x2="136.1" y2="144.8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#w1eopen)"/>
+  <text x="84" y="140" font-size="11" text-anchor="middle" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <line x1="228.5" y1="110.9" x2="179.9" y2="144.8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#w1eopen)"/>
+  <text x="236" y="142" font-size="11" text-anchor="middle" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">/cmd</text>
+  <rect x="404" y="70" width="144" height="40" rx="3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none"/>
+  <text x="476" y="87" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">motor</text>
+  <text x="476" y="102" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">hardware, not a node</text>
+  <line x1="309.4" y1="93.7" x2="402" y2="90" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#w1eopen)"/>
+  <text x="366" y="82" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/cmd</tspan> <tspan font-style="italic">[type]</tspan></text>
+  <text x="366" y="108" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">200 Hz</text>
+  <rect x="404" y="134" width="144" height="28" rx="3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none"/>
+  <text x="476" y="152" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">encoder</text>
+  <line x1="403" y1="148" x2="289.2" y2="109.6" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="2 3" fill="none" marker-end="url(#w1esol)"/>
+  <text x="356" y="147" font-size="11" text-anchor="middle" fill-opacity="0.9" font-style="italic" fill="currentColor">read</text>
+  <text x="20" y="194" font-size="11" fill-opacity="0.5" fill="currentColor"><tspan font-family="ui-monospace,monospace">/rosout  /parameter_events</tspan>  (in every graph, §9)</text>
+  <text x="404" y="184" font-size="11" fill-opacity="0.6" fill="currentColor">[type]: the page leaves P6's</text>
+  <text x="404" y="198" font-size="11" fill-opacity="0.6" fill="currentColor">message types open</text>
+  <text x="12" y="232" font-size="12" fill-opacity="0.8" fill="currentColor">One budget on a clock, to scale (ms after camera mid-exposure)</text>
+  <line x1="104" y1="316" x2="544" y2="316" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" fill="none"/>
+  <path d="M104.0 316v-7M131.5 316v-7M159.0 316v-7M186.5 316v-7M214.0 316v-7M241.5 316v-7M269.0 316v-7M296.5 316v-7M324.0 316v-7M351.5 316v-7M379.0 316v-7M406.5 316v-7M434.0 316v-7M461.5 316v-7M489.0 316v-7M516.5 316v-7M544.0 316v-7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75" fill="none"/>
+  <path d="M104.0 316v11M214.0 316v11M324.0 316v11M434.0 316v11" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.9" fill="none"/>
+  <text x="104" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">0</text>
+  <text x="214" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">20</text>
+  <text x="324" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">40</text>
+  <text x="434" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">60</text>
+  <text x="544" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">80</text>
+  <text x="96" y="315" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">control 200 Hz</text>
+  <text x="96" y="327" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">vision 50 Hz</text>
+  <path d="M104.8 288V282H213.2V288" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none"/>
+  <text x="159" y="277" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">L<tspan font-size="9.4" dy="3">cam</tspan></text>
+  <path d="M214.8 288V282H240.7V288" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none"/>
+  <text x="227.8" y="262" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">L<tspan font-size="9.4" dy="3">net</tspan></text>
+  <line x1="227.8" y1="266" x2="227.8" y2="281" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <rect x="241.5" y="282" width="27.5" height="34" fill="currentColor" fill-opacity="0.13" stroke="none"/>
+  <path d="M242.3 288V282H268.2V288" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none"/>
+  <text x="255.2" y="277" font-size="12" text-anchor="middle" fill-opacity="0.9" font-weight="bold" fill="currentColor">L<tspan font-size="9.4" dy="3">wait</tspan></text>
+  <path d="M269.8 288V282H284.7V288" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none"/>
+  <text x="277.2" y="262" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">L<tspan font-size="9.4" dy="3">ctrl</tspan></text>
+  <line x1="277.2" y1="266" x2="277.2" y2="281" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <path d="M286.3 288V282H323.2V288" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none"/>
+  <text x="304.8" y="277" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">L<tspan font-size="9.4" dy="3">act</tspan></text>
+  <line x1="489" y1="248" x2="489" y2="328" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.9" fill="none"/>
+  <text x="489" y="243" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">70 ms deadline</text>
+  <text x="332.2" y="245" font-size="11" fill-opacity="0.85" fill="currentColor">L<tspan font-size="8.6" dy="3">cam</tspan>  <tspan dy="-3">camera pipeline</tspan></text>
+  <text x="332.2" y="258" font-size="11" fill-opacity="0.85" fill="currentColor">L<tspan font-size="8.6" dy="3">net</tspan>  <tspan dy="-3">transport</tspan></text>
+  <text x="332.2" y="271" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">L<tspan font-size="8.6" dy="3">wait</tspan>  <tspan dy="-3">wait for the next tick</tspan></text>
+  <text x="332.2" y="284" font-size="11" fill-opacity="0.85" fill="currentColor">L<tspan font-size="8.6" dy="3">ctrl</tspan>  <tspan dy="-3">compute</tspan></text>
+  <text x="332.2" y="297" font-size="11" fill-opacity="0.85" fill="currentColor">L<tspan font-size="8.6" dy="3">act</tspan>  <tspan dy="-3">actuation</tspan></text>
+  <text x="12" y="358" font-size="11" fill-opacity="0.85" fill="currentColor">t = 0 is camera mid-exposure; vision spacing 20 ms = 4 control periods.</text>
+  <text x="12" y="373" font-size="11" fill-opacity="0.85" fill="currentColor">Solid: L<tspan font-size="8.6" dy="3">wait</tspan> <tspan dy="-3">&lt; T</tspan><tspan font-size="8.6" dy="3">ctrl</tspan> <tspan dy="-3">= 5 ms, the one term the two rates fix.</tspan></text>
+  <text x="12" y="388" font-size="11" fill-opacity="0.85" fill="currentColor">Dashed: the four measured terms, widths illustrative; together at most 70 − 5 = 65 ms.</text>
+</svg>
+
 **Top — the computation graph, drawn the way `ros2 node list` and `ros2 topic list -t` would report it.** Three ellipses for nodes: `/camera`, `/controller`, `/logger`. One rectangle, outside the graph, for the motor, because a driver's hardware is not a node. Arrows are topics, drawn publisher → subscriber and labelled with three things each — name, type, rate: `/goal` at $50\,\mathrm{Hz}$ from `/camera` to both `/controller` and `/logger`; `/cmd` at $200\,\mathrm{Hz}$ from `/controller` to the motor rectangle and to `/logger`. Draw the encoder as a short arrow into `/controller` from the hardware side and *not* as a topic, then write one word beside it saying why: it is read, not received. Add `/rosout` and `/parameter_events` in grey, because section 9 will show them in every graph you ever list. Finally, put a dashed boundary around the three ellipses and label it with the `ROS_DOMAIN_ID` that keeps this cart out of the rest of the lab's graphs.
 
 **Bottom — one budget on a clock, to scale.** One time axis, $0$ to $80\,\mathrm{ms}$. Above it, $200\,\mathrm{Hz}$ control ticks at $0,5,10,\ldots$; below it, $50\,\mathrm{Hz}$ vision publications at $0,20,40,60$. Mark $t=0$ as camera mid-exposure. Draw the five budget terms of the worked case as consecutive brackets along the axis — camera pipeline, transport, wait for the next tick, controller compute, actuation — and draw the $70\,\mathrm{ms}$ deadline as a vertical line. The drawing is right when the wait bracket is visibly one control period wide, the vision spacing is visibly four control periods, and the whole train of brackets ends left of the line.
@@ -47,7 +114,7 @@ since a goal can land anywhere inside a period and the worst case is landing jus
 
 **Step 3 — the allowance that leaves, and what a slower loop would cost.** $70-5=65\,\mathrm{ms}$ for the four measured terms. Run the same controller at $50\,\mathrm{Hz}$ and the bound becomes $L_{\text{wait}}<20\,\mathrm{ms}$, leaving $70-20=50\,\mathrm{ms}$. So the four-fold control rate buys $15\,\mathrm{ms}$ of the frame-to-force path, which is $15/70=21.4\%$ of the whole budget, without touching the camera, the network or the motor. That is the honest version of "we run the loop fast".
 
-**Step 4 — and what it does not buy.** $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$ exactly, so every goal is consumed by exactly four ticks. Only the first acts on it while it is fresh; the other three re-use it, adding $5$, $10$ and $15\,\mathrm{ms}$ of extra age — mean $7.5\,\mathrm{ms}$, or $10.7\%$ of the budget, worst case $15\,\mathrm{ms}$, or $21.4\%$. Add the two effects and the total is bounded whatever you do to the loop:
+**Step 4 — and what it does not buy.** $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$ exactly, so every goal is consumed by exactly four ticks. Only the first acts on it while it is fresh; the other three re-use it, adding $5$, $10$ and $15\,\mathrm{ms}$ of extra age — mean $7.5\,\mathrm{ms}$ over the four ticks, or $10.7\%$ of the budget, worst case $15\,\mathrm{ms}$, or $21.4\%$. Add the two effects and the total is bounded whatever you do to the loop:
 
 $$L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$$
 
@@ -420,6 +487,73 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]: encoder $N=2048$ co
 
 이 페이지에서 잴 수 있는 것은 전부 기계 하나에 대한 이야기다. [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** — 직선 위의 카트, 엔코더 $N=2048$ counts/m, 목표를 $50\,\mathrm{Hz}$로 발행하는 비전 노드, 엔코더를 샘플해 모터를 $200\,\mathrm{Hz}$로 명령하는 제어기, 그리고 카메라 노출 중간부터 힘이 나갈 때까지 $70\,\mathrm{ms}$ 예산. 아래 두 그림을 지금 한 번 그려라. 과제는 손잡이 하나만 돌린 같은 그림을 요구한다.
 
+<svg viewBox="0 0 560 400" style="max-width:100%;height:auto" role="img" aria-label="위: P6 계산 그래프. ROS 도메인 하나 안의 /camera, /controller, /logger, 50 Hz /goal과 200 Hz /cmd 토픽, 그래프 밖의 모터와 엔코더. 아래: 0에서 80 ms 시계 위에 예산 항 다섯을 이어지는 괄호로 그렸고, 70 ms 마감선 왼쪽에서 끝난다.">
+  <defs><marker id="w1kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="w1ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">계산 그래프 (ros2 node list와 ros2 topic list -t가 보고하는 그대로)</text>
+  <rect x="12" y="30" width="314" height="174" rx="10" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.55" stroke-dasharray="5 4" fill="none"/>
+  <text x="20" y="46" font-size="11" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">export ROS_DOMAIN_ID=&lt;정수&gt;</text>
+  <ellipse cx="66" cy="96" rx="44" ry="16" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="66" y="100" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/camera</text>
+  <ellipse cx="250" cy="96" rx="60" ry="16" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="250" y="100" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/controller</text>
+  <ellipse cx="158" cy="160" rx="44" ry="16" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
+  <text x="158" y="164" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">/logger</text>
+  <line x1="110" y1="96" x2="188" y2="96" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#w1kopen)"/>
+  <text x="150" y="86" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/goal</tspan> <tspan font-style="italic">[type]</tspan></text>
+  <text x="150" y="110" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">50 Hz</text>
+  <line x1="86.4" y1="110.2" x2="136.1" y2="144.8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#w1kopen)"/>
+  <text x="84" y="140" font-size="11" text-anchor="middle" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">/goal</text>
+  <line x1="228.5" y1="110.9" x2="179.9" y2="144.8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#w1kopen)"/>
+  <text x="236" y="142" font-size="11" text-anchor="middle" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">/cmd</text>
+  <rect x="404" y="70" width="144" height="40" rx="3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none"/>
+  <text x="476" y="87" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">모터</text>
+  <text x="476" y="102" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">하드웨어, 노드가 아님</text>
+  <line x1="309.4" y1="93.7" x2="402" y2="90" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none" marker-end="url(#w1kopen)"/>
+  <text x="366" y="82" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/cmd</tspan> <tspan font-style="italic">[type]</tspan></text>
+  <text x="366" y="108" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">200 Hz</text>
+  <rect x="404" y="134" width="144" height="28" rx="3" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none"/>
+  <text x="476" y="152" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">엔코더</text>
+  <line x1="403" y1="148" x2="289.2" y2="109.6" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="2 3" fill="none" marker-end="url(#w1ksol)"/>
+  <text x="356" y="147" font-size="11" text-anchor="middle" fill-opacity="0.9" font-style="italic" fill="currentColor">읽음</text>
+  <text x="20" y="194" font-size="11" fill-opacity="0.5" fill="currentColor"><tspan font-family="ui-monospace,monospace">/rosout  /parameter_events</tspan>  (모든 그래프에 있음, 9절)</text>
+  <text x="404" y="184" font-size="11" fill-opacity="0.6" fill="currentColor">[type]: P6의 메시지 타입은</text>
+  <text x="404" y="198" font-size="11" fill-opacity="0.6" fill="currentColor">이 페이지가 정하지 않음</text>
+  <text x="12" y="232" font-size="12" fill-opacity="0.8" fill="currentColor">시계 위의 예산 하나, 축척대로 (카메라 노출 중간부터 ms)</text>
+  <line x1="104" y1="316" x2="544" y2="316" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" fill="none"/>
+  <path d="M104.0 316v-7M131.5 316v-7M159.0 316v-7M186.5 316v-7M214.0 316v-7M241.5 316v-7M269.0 316v-7M296.5 316v-7M324.0 316v-7M351.5 316v-7M379.0 316v-7M406.5 316v-7M434.0 316v-7M461.5 316v-7M489.0 316v-7M516.5 316v-7M544.0 316v-7" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.75" fill="none"/>
+  <path d="M104.0 316v11M214.0 316v11M324.0 316v11M434.0 316v11" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.9" fill="none"/>
+  <text x="104" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">0</text>
+  <text x="214" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">20</text>
+  <text x="324" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">40</text>
+  <text x="434" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">60</text>
+  <text x="544" y="340" font-size="11" text-anchor="middle" fill-opacity="0.8" fill="currentColor">80</text>
+  <text x="96" y="315" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">제어 200 Hz</text>
+  <text x="96" y="327" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">비전 50 Hz</text>
+  <path d="M104.8 288V282H213.2V288" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none"/>
+  <text x="159" y="277" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">L<tspan font-size="9.4" dy="3">cam</tspan></text>
+  <path d="M214.8 288V282H240.7V288" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none"/>
+  <text x="227.8" y="262" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">L<tspan font-size="9.4" dy="3">net</tspan></text>
+  <line x1="227.8" y1="266" x2="227.8" y2="281" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <rect x="241.5" y="282" width="27.5" height="34" fill="currentColor" fill-opacity="0.13" stroke="none"/>
+  <path d="M242.3 288V282H268.2V288" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.95" fill="none"/>
+  <text x="255.2" y="277" font-size="12" text-anchor="middle" fill-opacity="0.9" font-weight="bold" fill="currentColor">L<tspan font-size="9.4" dy="3">wait</tspan></text>
+  <path d="M269.8 288V282H284.7V288" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none"/>
+  <text x="277.2" y="262" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">L<tspan font-size="9.4" dy="3">ctrl</tspan></text>
+  <line x1="277.2" y1="266" x2="277.2" y2="281" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5" fill="none"/>
+  <path d="M286.3 288V282H323.2V288" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75" stroke-dasharray="3 2" fill="none"/>
+  <text x="304.8" y="277" font-size="12" text-anchor="middle" fill-opacity="0.9" fill="currentColor">L<tspan font-size="9.4" dy="3">act</tspan></text>
+  <line x1="489" y1="248" x2="489" y2="328" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.9" fill="none"/>
+  <text x="489" y="243" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">70 ms 마감</text>
+  <text x="332.2" y="245" font-size="11" fill-opacity="0.85" fill="currentColor">L<tspan font-size="8.6" dy="3">cam</tspan>  <tspan dy="-3">카메라 파이프라인</tspan></text>
+  <text x="332.2" y="258" font-size="11" fill-opacity="0.85" fill="currentColor">L<tspan font-size="8.6" dy="3">net</tspan>  <tspan dy="-3">전송</tspan></text>
+  <text x="332.2" y="271" font-size="11" fill-opacity="0.85" font-weight="bold" fill="currentColor">L<tspan font-size="8.6" dy="3">wait</tspan>  <tspan dy="-3">다음 틱까지 대기</tspan></text>
+  <text x="332.2" y="284" font-size="11" fill-opacity="0.85" fill="currentColor">L<tspan font-size="8.6" dy="3">ctrl</tspan>  <tspan dy="-3">계산</tspan></text>
+  <text x="332.2" y="297" font-size="11" fill-opacity="0.85" fill="currentColor">L<tspan font-size="8.6" dy="3">act</tspan>  <tspan dy="-3">구동</tspan></text>
+  <text x="12" y="358" font-size="11" fill-opacity="0.85" fill="currentColor">t = 0이 카메라 노출 중간. 비전 간격 20 ms = 제어 주기 넷.</text>
+  <text x="12" y="373" font-size="11" fill-opacity="0.85" fill="currentColor">실선: L<tspan font-size="8.6" dy="3">wait</tspan> <tspan dy="-3">&lt; T</tspan><tspan font-size="8.6" dy="3">ctrl</tspan> <tspan dy="-3">= 5 ms, 두 주기가 정하는 유일한 항.</tspan></text>
+  <text x="12" y="388" font-size="11" fill-opacity="0.85" fill="currentColor">점선: 재야 할 네 항. 폭은 예시이고, 넷의 합은 70 − 5 = 65 ms 이하.</text>
+</svg>
+
 **상단 — `ros2 node list`와 `ros2 topic list -t`가 보고할 그대로의 계산 그래프**. 노드는 타원 셋: `/camera`, `/controller`, `/logger`. 모터는 그래프 바깥의 사각형 하나다. 드라이버의 하드웨어는 노드가 아니기 때문이다. 화살표는 토픽이고, 퍼블리셔에서 구독자 방향으로 그리며 이름·타입·주기 셋을 함께 적는다. `/goal`은 $50\,\mathrm{Hz}$로 `/camera`에서 `/controller`와 `/logger`로, `/cmd`는 $200\,\mathrm{Hz}$로 `/controller`에서 모터 사각형과 `/logger`로. 엔코더는 하드웨어 쪽에서 `/controller`로 들어가는 짧은 화살표로 그리되 토픽으로 그리지 마라. 그 옆에 이유를 한 단어로 적는다 — 받는 것이 아니라 읽는 것. `/rosout`과 `/parameter_events`도 회색으로 넣는다. 9절이 보여 주듯 모든 그래프에 있다. 마지막으로 타원 셋을 점선으로 둘러싸고, 이 카트를 실험실의 다른 그래프들과 갈라 놓는 `ROS_DOMAIN_ID`를 거기에 적는다.
 
 **하단 — 시계 위의 예산 하나, 축척을 지켜서**. 시간 축 하나, $0$에서 $80\,\mathrm{ms}$. 축 위에는 $200\,\mathrm{Hz}$ 제어 틱이 $0,5,10,\ldots$, 축 아래에는 $50\,\mathrm{Hz}$ 비전 발행이 $0,20,40,60$. $t=0$이 카메라 노출 중간이다. 계산 예제의 예산 항 다섯 개를 축을 따라 이어지는 괄호로 그린다 — 카메라 파이프라인, 전송, 다음 틱까지의 대기, 제어기 계산, 구동. 그리고 $70\,\mathrm{ms}$ 마감을 수직선으로 긋는다. 대기 괄호가 눈으로 보기에 제어 주기 하나만큼이고, 비전 간격이 제어 주기 넷만큼이며, 괄호 행렬 전체가 수직선 왼쪽에서 끝나면 제대로 그린 것이다.
@@ -446,7 +580,7 @@ $$0\le L_{\text{wait}}<T_{\text{ctrl}}=5\,\mathrm{ms}$$
 
 **3단계 — 그래서 남는 여유, 그리고 느린 루프의 값**. 측정해야 할 네 항에 $70-5=65\,\mathrm{ms}$가 남는다. 같은 제어기를 $50\,\mathrm{Hz}$로 돌리면 한계가 $L_{\text{wait}}<20\,\mathrm{ms}$가 되어 $70-20=50\,\mathrm{ms}$만 남는다. 제어 주기를 네 배로 올린 것이 프레임-투-포스 경로에서 $15\,\mathrm{ms}$, 곧 전체 예산의 $15/70=21.4\%$를 사 준 셈이고, 카메라도 네트워크도 모터도 건드리지 않았다. "루프를 빠르게 돌린다"는 말의 정직한 판본이다.
 
-**4단계 — 그리고 사 주지 못하는 것**. $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$가 정확히 나누어떨어지므로 목표 하나는 정확히 네 틱이 소비한다. 신선한 상태로 쓰는 것은 첫 틱뿐이고 나머지 셋은 재사용이라 $5$, $10$, $15\,\mathrm{ms}$의 나이를 더한다. 평균 $7.5\,\mathrm{ms}$로 예산의 $10.7\%$, 최악 $15\,\mathrm{ms}$로 $21.4\%$다. 두 효과를 더하면 루프를 어떻게 하든 한계가 같다.
+**4단계 — 그리고 사 주지 못하는 것**. $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$가 정확히 나누어떨어지므로 목표 하나는 정확히 네 틱이 소비한다. 신선한 상태로 쓰는 것은 첫 틱뿐이고 나머지 셋은 재사용이라 $5$, $10$, $15\,\mathrm{ms}$의 나이를 더한다. 네 틱 평균 $7.5\,\mathrm{ms}$로 예산의 $10.7\%$, 최악 $15\,\mathrm{ms}$로 $21.4\%$다. 두 효과를 더하면 루프를 어떻게 하든 한계가 같다.
 
 $$L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$$
 

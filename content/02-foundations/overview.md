@@ -155,16 +155,17 @@ met.
 | Route | Literacy pass | Working pass | What completion means |
 |---|---:|---:|---|
 | Foundations 0.5–10 | about 15–25 sessions | about 35–60 sessions | cumulative gate + selected problem sets |
-| Deep-learning bridge courses 1–6 | about 6–10 | about 12–18 | six exit checks; Working only for modules used in experiments |
-| Robotics common track 1–11 | about 20–30 | about 45–80 | running-task checkpoints + cumulative problem |
-| One robotics specialization | about 3–8 | about 8–20 | the selected pages' problem sets or build artifacts |
+| Deep-learning bridge courses 1–6 with 1.1–1.3 and 6.1 | about 10–25 | about 45–55 | ten problem sets with their labs + the cumulative problem set; Working only for modules used in experiments |
+| Robotics common track 1–11 with 3.2, 5.5, 10.5, then 26 | about 25–40 | about 85–105 | running-task checkpoints + cumulative problem set + capstone lab |
+| One robotics specialization | about 3–12 | about 13–45 | the selected pages' problem sets or build artifacts |
 | Construction entry + one stream | about 3–6 | about 8–15 | site-system ledger + evidence table for the chosen task |
+| Research practice 1–8 | about 8–20 | about 35–45 | eight problem sets on RS1, three of them with labs |
 | Paper track | ongoing | contribution-dependent | ★·◐·○ policy, not a fixed end date |
 
 These are planning ranges, not promises. Prior knowledge can compress a first pass; doing
 the derivations and debugging a build can expand a Working pass. Do not sum every row:
 algorithms, ROS 2, haptics, navigation, human perception, and manipulation are branching
-specializations. The common robotics curriculum stops at page 11, and the
+specializations. The common robotics curriculum stops at page 11 and closes with the capstone (26), and the
 [[00-study-depth-guide|depth guide]] decides which branch is worth the time.
 
 A sustainable pace is four sessions per week: two course sessions, one paper session, and
@@ -400,15 +401,16 @@ graph LR
 | 경로 | Literacy 통과 | Working 통과 | 완료의 뜻 |
 |---|---:|---:|---|
 | 기초 0.5–10 | 약 15–25회 | 약 35–60회 | 누적 gate + 선택한 problem set |
-| 딥러닝 브리지 교과 1–6 | 약 6–10회 | 약 12–18회 | 여섯 통과 기준; 실험에 쓰는 모듈만 Working |
-| 로보틱스 공통 1–11 | 약 20–30회 | 약 45–80회 | running-task 확인 + 누적 과제 |
-| 로보틱스 전문화 하나 | 약 3–8회 | 약 8–20회 | 선택 페이지의 과제 또는 build 산출물 |
+| 딥러닝 브리지 교과 1–6과 1.1–1.3, 6.1 | 약 10–25회 | 약 45–55회 | 과제 열 개와 그 실습 + 누적 과제; 실험에 쓰는 모듈만 Working |
+| 로보틱스 공통 1–11(3.2, 5.5, 10.5 포함), 이어서 26 | 약 25–40회 | 약 85–105회 | running-task 확인 + 누적 과제 + 캡스톤 실습 |
+| 로보틱스 전문화 하나 | 약 3–12회 | 약 13–45회 | 선택 페이지의 과제 또는 build 산출물 |
 | 건설 입문 + 스트림 하나 | 약 3–6회 | 약 8–15회 | 현장 시스템 장부 + 선택 작업의 증거 표 |
+| 연구 실무 1–8 | 약 8–20회 | 약 35–45회 | RS1 위의 과제 여덟 개, 그중 셋은 실습 포함 |
 | 논문 트랙 | 계속됨 | 기여에 따라 다름 | 고정 종료일이 아니라 ★·◐·○ 정책 |
 
 계획 범위이지 약속이 아니다. 선수 지식은 first pass를 줄이고, 유도와 debugging은 Working을
 늘린다. 모든 행을 더하지 않는다. 알고리즘·ROS 2·햅틱·내비게이션·사람 인지·매니퓰레이션은
-갈라지는 전문화다. 공통 로보틱스는 11번에서 끝나며 어느 가지를 탈지는
+갈라지는 전문화다. 공통 로보틱스는 11번에서 끝나고 캡스톤(26)으로 마무리하며 어느 가지를 탈지는
 [[00-study-depth-guide|깊이 가이드]]가 정한다.
 
 지속 가능한 페이스는 주 4회다: 교과 2회, 논문 1회, 복습 또는 구현 1회. 2주마다 gate를

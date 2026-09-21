@@ -21,6 +21,103 @@ mastery-when: "Go deeper when you are writing the localisation or odometry compo
 
 The object is **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — a cart on a line, encoder $N=2048$ counts/m, vision at $50\,\mathrm{Hz}$, control at $200\,\mathrm{Hz}$, $70\,\mathrm{ms}$ from mid-exposure to force — plus one thing this page has to add, because P6 does not fix it: **the camera sits $0.10\,\mathrm{m}$ ahead of and $0.25\,\mathrm{m}$ above `base_link`, with its axes aligned to the cart's.** Those two numbers are frozen here and do not change later on the page. Draw three panels; the problem set asks for the same three with a second owner on one edge.
 
+<svg viewBox="0 0 560 452" style="max-width:100%;height:auto" role="img" aria-label="Left: the URDF tree, base_link with a fixed joint camera_mount at xyz 0.10 0 0.25 to camera_link, each link with visual, collision and inertial elements and their readers. Right: the TF chain map, odom, base_link, camera_link, with owners, topics and rates, the static mount edge drawn doubled. Bottom: a 0 to 70 ms lookup clock where a now() lookup points past the newest odom sample into empty space and a lookup with the message stamp lands 20 ms before it.">
+  <defs><marker id="d6esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="d6eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">URDF tree: what robot_state_publisher reads</text>
+  <rect x="12" y="32" width="250" height="66" rx="4" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none"/>
+  <text x="22" y="48" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" font-weight="bold" fill="currentColor">base_link</text>
+  <text x="28" y="64" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;visual&gt;</text>
+  <text x="114" y="64" font-size="11" fill-opacity="0.75" fill="currentColor">RViz</text>
+  <text x="28" y="78" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;collision&gt;</text>
+  <text x="114" y="78" font-size="11" fill-opacity="0.75" fill="currentColor">planner, physics engine</text>
+  <text x="28" y="92" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;inertial&gt;</text>
+  <text x="114" y="92" font-size="11" fill-opacity="0.75" fill="currentColor">physics engine only</text>
+  <line x1="38" y1="98" x2="38" y2="150" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85" fill="none" marker-end="url(#d6esol)"/>
+  <path d="M38 118l6 6l-6 6l-6 -6z" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.25"/>
+  <text x="52" y="118" font-size="11" fill-opacity="0.9" fill="currentColor">joint <tspan font-family="ui-monospace,monospace">camera_mount</tspan> (fixed)</text>
+  <text x="52" y="133" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">&lt;origin xyz="0.10 0 0.25"/&gt;</text>
+  <rect x="12" y="152" width="250" height="66" rx="4" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none"/>
+  <text x="22" y="168" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" font-weight="bold" fill="currentColor">camera_link</text>
+  <text x="28" y="184" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;visual&gt;</text>
+  <text x="114" y="184" font-size="11" fill-opacity="0.75" fill="currentColor">RViz</text>
+  <text x="28" y="198" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;collision&gt;</text>
+  <text x="114" y="198" font-size="11" fill-opacity="0.75" fill="currentColor">planner, physics engine</text>
+  <text x="28" y="212" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;inertial&gt;</text>
+  <text x="114" y="212" font-size="11" fill-opacity="0.75" fill="currentColor">physics engine only</text>
+  <text x="12" y="238" font-size="11" fill-opacity="0.8" fill="currentColor">Not in it: the cart's travel on the rail.</text>
+  <text x="12" y="252" font-size="11" fill-opacity="0.65" fill="currentColor">A mobile base's pose is not a URDF joint (§11).</text>
+  <text x="292" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">TF tree: what lookup_transform answers from</text>
+  <rect x="292" y="32" width="84" height="20" rx="8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="334" y="46" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">map</text>
+  <rect x="292" y="92" width="84" height="20" rx="8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="334" y="106" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">odom</text>
+  <rect x="292" y="162" width="84" height="20" rx="8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="334" y="176" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">base_link</text>
+  <rect x="292" y="240" width="84" height="20" rx="8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="334" y="254" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">camera_link</text>
+  <line x1="334" y1="53" x2="334" y2="90" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#d6esol)"/>
+  <text x="388" y="69.5" font-size="11" fill="currentColor">localisation node</text>
+  <text x="388" y="82.5" font-size="11" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/tf</tspan> · when it corrects</text>
+  <line x1="334" y1="113" x2="334" y2="160" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#d6esol)"/>
+  <text x="388" y="128" font-size="11" fill="currentColor">encoder odometry node</text>
+  <text x="388" y="141" font-size="11" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/tf</tspan> · 200 Hz</text>
+  <text x="388" y="154" font-size="11" fill-opacity="0.85" fill="currentColor">Δp = 1/2048 m = 0.488 mm</text>
+  <line x1="331.5" y1="183" x2="331.5" y2="233" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="none"/>
+  <line x1="336.5" y1="183" x2="336.5" y2="233" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="none"/>
+  <path d="M327.0 231.0L334.0 239.0L341.0 231.0" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="388" y="195.5" font-size="11" fill="currentColor">static broadcaster</text>
+  <text x="388" y="208.5" font-size="11" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/tf_static</tspan> · once</text>
+  <text x="388" y="221.5" font-size="11" fill-opacity="0.85" fill="currentColor">transient local</text>
+  <text x="388" y="234.5" font-size="11" fill-opacity="0.85" fill="currentColor">xyz 0.10 0 0.25 m</text>
+  <text x="12" y="294" font-size="12" fill-opacity="0.8" fill="currentColor">Lookup clock, 0 to 70 ms</text>
+  <text x="142" y="326" font-size="11" text-anchor="end" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">odom → base_link</text>
+  <text x="142" y="354" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">vision stamps</text>
+  <text x="142" y="388" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">4 control lookups</text>
+  <text x="142" y="414" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">budget</text>
+  <line x1="150" y1="322" x2="535" y2="322" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3" fill="none"/>
+  <circle cx="150" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="177.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="205" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="232.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="260" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="287.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="315" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="342.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="370" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="397.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="425" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="452.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="480" cy="322" r="3.4" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="480" cy="322" r="7" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none"/>
+  <text x="471" y="339" font-size="11" text-anchor="end" fill-opacity="0.85" fill="currentColor">newest</text>
+  <path d="M481.0 313V309H506.5V313" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="535" y="305" font-size="11" text-anchor="end" fill-opacity="0.9" font-style="italic" fill="currentColor">extrapolation into the future</text>
+  <line x1="150" y1="350" x2="535" y2="350" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3" fill="none"/>
+  <path d="M150.0 344v12M260.0 344v12M370.0 344v12M480.0 344v12" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.9" fill="none"/>
+  <line x1="150" y1="384" x2="535" y2="384" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3" fill="none"/>
+  <path d="M421.0 388L425.0 381L429.0 388z" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.6"/>
+  <path d="M448.5 388L452.5 381L456.5 388z" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.6"/>
+  <path d="M476.0 388L480.0 381L484.0 388z" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.6"/>
+  <path d="M503.5 388L507.5 381L511.5 388z" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.6"/>
+  <line x1="507.5" y1="379" x2="507.5" y2="326" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.95" fill="none" marker-end="url(#d6esol)"/>
+  <text x="513.5" y="368" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">now()</text>
+  <line x1="478" y1="379" x2="371.5" y2="326" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85" fill="none" marker-end="url(#d6esol)"/>
+  <text x="430.5" y="368" font-size="11" text-anchor="end" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">msg.header.stamp</tspan> (20 ms back)</text>
+  <line x1="150" y1="410" x2="535" y2="410" stroke="currentColor" stroke-width="2.4" stroke-opacity="0.8" fill="none"/>
+  <line x1="150" y1="405" x2="150" y2="415" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <line x1="535" y1="405" x2="535" y2="415" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="342.5" y="404" font-size="11" text-anchor="middle" fill-opacity="0.85" fill="currentColor">70 ms budget</text>
+  <text x="150" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">0</text>
+  <text x="205" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">10</text>
+  <text x="260" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">20</text>
+  <text x="315" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">30</text>
+  <text x="370" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">40</text>
+  <text x="425" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">50</text>
+  <text x="480" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">60</text>
+  <text x="535" y="440" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">70 ms</text>
+  <path d="M150.0 420v5M177.5 420v5M205.0 420v5M232.5 420v5M260.0 420v5M287.5 420v5M315.0 420v5M342.5 420v5M370.0 420v5M397.5 420v5M425.0 420v5M452.5 420v5M480.0 420v5M507.5 420v5M535.0 420v5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" fill="none"/>
+</svg>
+
 **Left — the URDF tree, which is what `robot_state_publisher` reads.** Two links and one joint: `base_link` as the root, a `fixed` joint `camera_mount` with `<origin xyz="0.10 0 0.25"/>`, and `camera_link` as its child. Inside each link box draw the three sub-elements of section 4 and write beside each one who reads it — `<visual>` RViz, `<collision>` the planner and the physics engine, `<inertial>` the physics engine only. Then write beside the tree, in words, the thing that is deliberately *not* in it: the cart's travel along the rail. A mobile base's pose is not a URDF joint, and section 11 is why.
 
 **Middle — the TF tree, which is what `lookup_transform` answers from.** Four frames in one chain, and every edge carries three labels — owner, topic, rate:
@@ -53,7 +150,7 @@ and tf2 walks it for you across the three owners. Here every frame is axis-align
 
 $$0.40+0.00+0.50=0.90\,\mathrm{m}\quad\text{instead of}\quad 1.00\,\mathrm{m}$$
 
-so the error is exactly the lost mount offset, $0.10\,\mathrm{m}$ — which, in the units the rest of the system speaks, is $0.10\times2048=204.8$, about **205 encoder counts** of pure fiction on a cart whose encoder resolves $0.488\,\mathrm{mm}$. Nothing logs, RViz draws a robot that looks plausible, and the arm reaches ten centimetres short forever. Expand the xacro to a file and read the number whenever a result is *wrong*, not only when something is *missing*.
+so the error is exactly the lost mount offset, $0.10\,\mathrm{m}$ along $x$ (and $0.25\,\mathrm{m}$ in $z$) — which, in the units the rest of the system speaks, is $0.10\times2048=204.8$, about **205 encoder counts** of pure fiction on a cart whose encoder resolves $0.488\,\mathrm{mm}$. Nothing logs, RViz draws a robot that looks plausible, and the arm reaches ten centimetres short forever. Expand the xacro to a file and read the number whenever a result is *wrong*, not only when something is *missing*.
 
 **Step 4 — which time to ask for.** The buffer holds `odom` → `base_link` samples $5\,\mathrm{ms}$ apart and `base_link` → `camera_link` once, so the three ways of calling `lookup_transform` behave very differently on P6:
 
@@ -517,7 +614,7 @@ Driving the joints for real — controllers, hardware interfaces, and the Gazebo
 
 ### Self-check
 
-1. Your node calls `lookup_transform('base_link', 'camera_link', self.get_clock().now())` and
+1. Your node calls `lookup_transform('odom', 'camera_link', self.get_clock().now())` and
    logs "extrapolation into the future" most cycles. What is wrong, and what are the two
    correct fixes?
 2. Why can't `map` and `odom` both be parents of `base_link`, and what does the localisation
@@ -535,20 +632,20 @@ Driving the joints for real — controllers, hardware interfaces, and the Gazebo
 > 2. A tf2 frame has exactly one parent, which is what makes a lookup a unique path. REP 105 therefore chains `map` → `odom` → `base_link`: odometry owns `odom` → `base_link`, and localisation publishes the `map` → `odom` correction, which is the accumulated odometry drift. `odom` is continuous but drifts; `map` does not drift but jumps.
 > 3. The `<collision>` elements. If they reuse the detailed visual meshes, every one of the thousands of collision checks per query is mesh-versus-mesh instead of primitive-versus-primitive. Turn off *Visual Enabled* and turn on *Collision Enabled* in RViz's RobotModel display to see what the checker is actually using, then replace the meshes with primitives or a convex decomposition.
 > 4. The Broadcaster field carries no information in ROS 2 — listeners cannot learn who sent a transform. Read the average rate instead: an edge you expect at 10 Hz reporting about 30 Hz has more than one owner. Confirm with `ros2 topic info /tf --verbose` and `/tf_static`. (Two publishers sending *identical* transforms with identical stamps do not show up at all, because tf2 drops exact duplicates — and they also do no harm.)
-> 5. At $1.00\,\mathrm{m}$: the frames are axis-aligned, so the chain collapses to $0.40+0.10+0.50$, where $0.10\,\mathrm{m}$ is the frozen mount offset carried on `/tf_static` from the URDF and $0.50=1024/2048$ is the live encoder measurement on `odom` → `base_link`. Those are the two numbers you trusted, and only the first can be wrong silently: urdfdom ignores an unrecognised `xzy=` attribute instead of failing, so the offset becomes zero, the answer becomes $0.90\,\mathrm{m}$, and the error is exactly $0.10\,\mathrm{m}$ — $0.10\times2048=204.8$, about $205$ counts on an encoder that resolves $0.488\,\mathrm{mm}$. Expand the xacro and read the number; nothing else reports it.
+> 5. At $x=1.00\,\mathrm{m}$, at the mount height $z=0.25\,\mathrm{m}$: the frames are axis-aligned, so the chain collapses to $0.40+0.10+0.50$, where $0.10\,\mathrm{m}$ is the frozen mount offset carried on `/tf_static` from the URDF and $0.50=1024/2048$ is the live encoder measurement on `odom` → `base_link`. Those are the two numbers you trusted, and only the first can be wrong silently: urdfdom ignores an unrecognised `xzy=` attribute instead of failing, so the offset becomes zero, the answer becomes $0.90\,\mathrm{m}$, and the error is exactly $0.10\,\mathrm{m}$ along $x$ (plus $0.25\,\mathrm{m}$ in $z$) — $0.10\times2048=204.8$, about $205$ counts on an encoder that resolves $0.488\,\mathrm{mm}$. Expand the xacro and read the number; nothing else reports it.
 
 ### Problem set · 과제
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_link`, camera on the cart, encoder $N=2048$ counts/m. Vision $50\,\mathrm{Hz}$, control $200\,\mathrm{Hz}$. No new simulator.
 
-1. **Draw.** TF tree `map` → `odom` → `base_link` → `camera_link`. Who owns each edge? Mark encoder counts on `odom` → `base_link` and vision on `camera_link`. Five-line timeline: a $50\,\mathrm{Hz}$ TF update and four $200\,\mathrm{Hz}$ lookups, one of them with `now()`.
+1. **Draw.** TF tree `map` → `odom` → `base_link` → `camera_link`. Who owns each edge? Mark encoder counts on `odom` → `base_link` and vision on `camera_link`. Five-line timeline: the $200\,\mathrm{Hz}$ `odom` → `base_link` TF updates and four $200\,\mathrm{Hz}$ lookups, one of them with `now()`.
 2. **Derive.** (a) Encoder $\Delta p$ for one count — the resolution of `odom` → `base_link`. (b) Why `lookup_transform(..., now())` from the controller logs "extrapolation into the future". (c) Two publishers on `odom` → `base_link` at $50\,\mathrm{Hz}$ and $200\,\mathrm{Hz}$. What rate does `view_frames` report?
-3. **Interpret.** A $70\,\mathrm{ms}$ budget lookup uses a camera stamp $200\,\mathrm{ms}$ old. Which two fixes from §9, and which one is wrong for P6's force loop?
+3. **Interpret.** The controller must transform a detection whose camera stamp is $200\,\mathrm{ms}$ old, inside a $70\,\mathrm{ms}$ budget. Which two fixes does §9 give for *extrapolation into the future*, which one is wrong for P6's force loop, and what should the loop do with the detection?
 
 > [!tip]- Solutions
-> 1. Localisation owns `map` → `odom`; odometry (encoder) owns `odom` → `base_link`; a static (or $50\,\mathrm{Hz}$) broadcaster owns `base_link` → `camera_link`. Timeline: TF at $0,20\,\mathrm{ms}$; lookups at $0,5,10,15$; the `now()` lookup sits in the future of the buffer.
+> 1. Localisation owns `map` → `odom`; odometry (encoder) owns `odom` → `base_link`; a static broadcaster owns `base_link` → `camera_link`. Timeline: `odom` → `base_link` TF every $5\,\mathrm{ms}$ (the camera mount is static and never updates); lookups at $0,5,10,15$; the `now()` lookup sits in the future of the buffer.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) Transforms arrive late; `now()` is a time the buffer has not seen. Use `Time()` or the message stamp. (c) About $250\,\mathrm{Hz}$ — two owners.
-> 3. Latest available (`Time()`), or the *message* stamp with a short timeout. Subtracting a hard-coded $0.1\,\mathrm{s}$ is a diagnostic. For the force loop, a $200\,\mathrm{ms}$ camera stamp is already over the $70\,\mathrm{ms}$ budget — drop it, do not extrapolate it.
+> 3. Latest available (`Time()`), or the *message* stamp with a short timeout. Subtracting a hard-coded $0.1\,\mathrm{s}$ is a diagnostic. `Time()` is the wrong one here: it composes the $200\,\mathrm{ms}$-old detection with a pose at most $5\,\mathrm{ms}$ old, so the target is placed as if the image had been taken from where the cart is now, and nothing in the result shows the age. The message stamp gives the correct transform and keeps the age in view: $200\,\mathrm{ms}$ is already $130\,\mathrm{ms}$ over the $70\,\mathrm{ms}$ budget — drop the detection, do not extrapolate it.
 
 ## 한국어
 
@@ -563,6 +660,103 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_li
 ### 과제가 그릴 그림: 트리 둘과 시계 하나로 본 P6 · Homework diagram
 
 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** — 직선 위의 카트, 엔코더 $N=2048$ counts/m, 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$, 노출 중간부터 힘까지 $70\,\mathrm{ms}$ — 에 이 페이지가 하나를 더한다. P6이 정하지 않은 값이기 때문이다. **카메라는 `base_link`보다 $0.10\,\mathrm{m}$ 앞, $0.25\,\mathrm{m}$ 위에 있고 축은 카트와 정렬되어 있다.** 이 두 숫자는 여기서 고정되고 이 페이지에서 다시 바뀌지 않는다. 패널 셋을 그려라. 과제는 한 간선에 소유자를 하나 더 붙인 같은 셋을 요구한다.
+
+<svg viewBox="0 0 560 452" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: URDF 트리. base_link에서 xyz 0.10 0 0.25의 fixed 조인트 camera_mount를 지나 camera_link로, 링크마다 visual, collision, inertial 요소와 그것을 읽는 쪽. 오른쪽: map, odom, base_link, camera_link의 TF 사슬과 소유자·토픽·주기, 정적 장착 간선은 겹친 화살표. 아래: 0에서 70 ms 조회 시계. now() 조회는 가장 새 odom 샘플을 지나 빈 공간을 가리키고, 메시지 스탬프 조회는 그보다 20 ms 앞에 떨어진다.">
+  <defs><marker id="d6ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="d6kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">URDF 트리: robot_state_publisher가 읽는 것</text>
+  <rect x="12" y="32" width="250" height="66" rx="4" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none"/>
+  <text x="22" y="48" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" font-weight="bold" fill="currentColor">base_link</text>
+  <text x="28" y="64" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;visual&gt;</text>
+  <text x="114" y="64" font-size="11" fill-opacity="0.75" fill="currentColor">RViz</text>
+  <text x="28" y="78" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;collision&gt;</text>
+  <text x="114" y="78" font-size="11" fill-opacity="0.75" fill="currentColor">플래너, 물리 엔진</text>
+  <text x="28" y="92" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;inertial&gt;</text>
+  <text x="114" y="92" font-size="11" fill-opacity="0.75" fill="currentColor">물리 엔진만</text>
+  <line x1="38" y1="98" x2="38" y2="150" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85" fill="none" marker-end="url(#d6ksol)"/>
+  <path d="M38 118l6 6l-6 6l-6 -6z" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.25"/>
+  <text x="52" y="118" font-size="11" fill-opacity="0.9" fill="currentColor">조인트 <tspan font-family="ui-monospace,monospace">camera_mount</tspan> (fixed)</text>
+  <text x="52" y="133" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">&lt;origin xyz="0.10 0 0.25"/&gt;</text>
+  <rect x="12" y="152" width="250" height="66" rx="4" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none"/>
+  <text x="22" y="168" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" font-weight="bold" fill="currentColor">camera_link</text>
+  <text x="28" y="184" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;visual&gt;</text>
+  <text x="114" y="184" font-size="11" fill-opacity="0.75" fill="currentColor">RViz</text>
+  <text x="28" y="198" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;collision&gt;</text>
+  <text x="114" y="198" font-size="11" fill-opacity="0.75" fill="currentColor">플래너, 물리 엔진</text>
+  <text x="28" y="212" font-size="11" fill-opacity="0.85" font-family="ui-monospace,monospace" fill="currentColor">&lt;inertial&gt;</text>
+  <text x="114" y="212" font-size="11" fill-opacity="0.75" fill="currentColor">물리 엔진만</text>
+  <text x="12" y="238" font-size="11" fill-opacity="0.8" fill="currentColor">여기 없는 것: 레일 위의 카트 이동.</text>
+  <text x="12" y="252" font-size="11" fill-opacity="0.65" fill="currentColor">이동 베이스의 자세는 URDF 조인트가 아니다(11절).</text>
+  <text x="292" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">TF 트리: lookup_transform이 답하는 근거</text>
+  <rect x="292" y="32" width="84" height="20" rx="8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="334" y="46" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">map</text>
+  <rect x="292" y="92" width="84" height="20" rx="8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="334" y="106" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">odom</text>
+  <rect x="292" y="162" width="84" height="20" rx="8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="334" y="176" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">base_link</text>
+  <rect x="292" y="240" width="84" height="20" rx="8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="334" y="254" font-size="11" text-anchor="middle" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">camera_link</text>
+  <line x1="334" y1="53" x2="334" y2="90" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#d6ksol)"/>
+  <text x="388" y="69.5" font-size="11" fill="currentColor">위치추정 노드</text>
+  <text x="388" y="82.5" font-size="11" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/tf</tspan> · 보정할 때마다</text>
+  <line x1="334" y1="113" x2="334" y2="160" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.9" fill="none" marker-end="url(#d6ksol)"/>
+  <text x="388" y="128" font-size="11" fill="currentColor">엔코더 오도메트리 노드</text>
+  <text x="388" y="141" font-size="11" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/tf</tspan> · 200 Hz</text>
+  <text x="388" y="154" font-size="11" fill-opacity="0.85" fill="currentColor">Δp = 1/2048 m = 0.488 mm</text>
+  <line x1="331.5" y1="183" x2="331.5" y2="233" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="none"/>
+  <line x1="336.5" y1="183" x2="336.5" y2="233" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.9" fill="none"/>
+  <path d="M327.0 231.0L334.0 239.0L341.0 231.0" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="388" y="195.5" font-size="11" fill="currentColor">정적 브로드캐스터</text>
+  <text x="388" y="208.5" font-size="11" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">/tf_static</tspan> · 한 번</text>
+  <text x="388" y="221.5" font-size="11" fill-opacity="0.85" fill="currentColor">transient local</text>
+  <text x="388" y="234.5" font-size="11" fill-opacity="0.85" fill="currentColor">xyz 0.10 0 0.25 m</text>
+  <text x="12" y="294" font-size="12" fill-opacity="0.8" fill="currentColor">조회 시계, 0에서 70 ms</text>
+  <text x="142" y="326" font-size="11" text-anchor="end" fill-opacity="0.8" font-family="ui-monospace,monospace" fill="currentColor">odom → base_link</text>
+  <text x="142" y="354" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">비전 스탬프</text>
+  <text x="142" y="388" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">제어 조회 넷</text>
+  <text x="142" y="414" font-size="11" text-anchor="end" fill-opacity="0.8" fill="currentColor">예산</text>
+  <line x1="150" y1="322" x2="535" y2="322" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3" fill="none"/>
+  <circle cx="150" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="177.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="205" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="232.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="260" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="287.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="315" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="342.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="370" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="397.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="425" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="452.5" cy="322" r="2.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="480" cy="322" r="3.4" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.9"/>
+  <circle cx="480" cy="322" r="7" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8" fill="none"/>
+  <text x="471" y="339" font-size="11" text-anchor="end" fill-opacity="0.85" fill="currentColor">가장 새 샘플</text>
+  <path d="M481.0 313V309H506.5V313" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.9" fill="none"/>
+  <text x="535" y="305" font-size="11" text-anchor="end" fill-opacity="0.9" font-style="italic" fill="currentColor">extrapolation into the future</text>
+  <line x1="150" y1="350" x2="535" y2="350" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3" fill="none"/>
+  <path d="M150.0 344v12M260.0 344v12M370.0 344v12M480.0 344v12" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.9" fill="none"/>
+  <line x1="150" y1="384" x2="535" y2="384" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.3" fill="none"/>
+  <path d="M421.0 388L425.0 381L429.0 388z" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.6"/>
+  <path d="M448.5 388L452.5 381L456.5 388z" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.6"/>
+  <path d="M476.0 388L480.0 381L484.0 388z" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.6"/>
+  <path d="M503.5 388L507.5 381L511.5 388z" stroke="currentColor" stroke-width="1" stroke-opacity="0.9" fill="currentColor" fill-opacity="0.6"/>
+  <line x1="507.5" y1="379" x2="507.5" y2="326" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.95" fill="none" marker-end="url(#d6ksol)"/>
+  <text x="513.5" y="368" font-size="11" fill-opacity="0.9" font-family="ui-monospace,monospace" fill="currentColor">now()</text>
+  <line x1="478" y1="379" x2="371.5" y2="326" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.85" fill="none" marker-end="url(#d6ksol)"/>
+  <text x="430.5" y="368" font-size="11" text-anchor="end" fill-opacity="0.9" fill="currentColor"><tspan font-family="ui-monospace,monospace">msg.header.stamp</tspan> (20 ms 전)</text>
+  <line x1="150" y1="410" x2="535" y2="410" stroke="currentColor" stroke-width="2.4" stroke-opacity="0.8" fill="none"/>
+  <line x1="150" y1="405" x2="150" y2="415" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <line x1="535" y1="405" x2="535" y2="415" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
+  <text x="342.5" y="404" font-size="11" text-anchor="middle" fill-opacity="0.85" fill="currentColor">70 ms 예산</text>
+  <text x="150" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">0</text>
+  <text x="205" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">10</text>
+  <text x="260" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">20</text>
+  <text x="315" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">30</text>
+  <text x="370" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">40</text>
+  <text x="425" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">50</text>
+  <text x="480" y="440" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">60</text>
+  <text x="535" y="440" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">70 ms</text>
+  <path d="M150.0 420v5M177.5 420v5M205.0 420v5M232.5 420v5M260.0 420v5M287.5 420v5M315.0 420v5M342.5 420v5M370.0 420v5M397.5 420v5M425.0 420v5M452.5 420v5M480.0 420v5M507.5 420v5M535.0 420v5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" fill="none"/>
+</svg>
 
 **왼쪽 — URDF 트리, `robot_state_publisher`가 읽는 것**. 링크 둘과 조인트 하나. 루트는 `base_link`, `<origin xyz="0.10 0 0.25"/>`를 가진 `fixed` 조인트 `camera_mount`, 그 자식이 `camera_link`. 각 링크 상자 안에 4절의 하위 요소 셋을 그리고 각각을 누가 읽는지 옆에 적는다 — `<visual>`은 RViz, `<collision>`은 플래너와 물리 엔진, `<inertial>`은 물리 엔진만. 그리고 트리 옆에, 여기 일부러 *없는* 것을 말로 적는다. 레일 위의 카트 이동. 이동 베이스의 자세는 URDF 조인트가 아니고, 그 이유가 11절이다.
 
@@ -596,7 +790,7 @@ $$ {}_{\text{odom}}T_{\text{target}} = {}_{\text{odom}}T_{\text{base}}\cdot{}_{\
 
 $$0.40+0.00+0.50=0.90\,\mathrm{m}$$
 
-를 내놓는다. 원래 답은 $1.00\,\mathrm{m}$였으므로 오차는 정확히 잃어버린 장착 오프셋 $0.10\,\mathrm{m}$이다. 시스템 나머지가 쓰는 단위로 옮기면 $0.10\times2048=204.8$, 곧 $0.488\,\mathrm{mm}$를 분해하는 카트 위의 **엔코더 205 카운트짜리 허구**다. 로그는 조용하고, RViz는 그럴듯한 로봇을 그리고, 팔은 영원히 10센티미터 못 미쳐 닿는다. 무언가 *빠졌을* 때만이 아니라 결과가 *틀렸을* 때 xacro를 파일로 전개해 숫자를 읽어라.
+를 내놓는다. 원래 답은 $1.00\,\mathrm{m}$였으므로 오차는 정확히 잃어버린 장착 오프셋, $x$로 $0.10\,\mathrm{m}$(그리고 $z$로 $0.25\,\mathrm{m}$)이다. 시스템 나머지가 쓰는 단위로 옮기면 $0.10\times2048=204.8$, 곧 $0.488\,\mathrm{mm}$를 분해하는 카트 위의 **엔코더 205 카운트짜리 허구**다. 로그는 조용하고, RViz는 그럴듯한 로봇을 그리고, 팔은 영원히 10센티미터 못 미쳐 닿는다. 무언가 *빠졌을* 때만이 아니라 결과가 *틀렸을* 때 xacro를 파일로 전개해 숫자를 읽어라.
 
 **4단계 — 어느 시각을 물을 것인가**. 버퍼에는 `odom` → `base_link` 샘플이 $5\,\mathrm{ms}$ 간격으로, `base_link` → `camera_link`는 한 번 들어 있다. 그래서 `lookup_transform`의 세 가지 호출이 P6에서는 아주 다르게 굴러간다.
 
@@ -1060,7 +1254,7 @@ ros2 topic info /tf_static --verbose
 
 ### 스스로 점검
 
-1. 노드가 `lookup_transform('base_link', 'camera_link', self.get_clock().now())`을 호출하는데
+1. 노드가 `lookup_transform('odom', 'camera_link', self.get_clock().now())`을 호출하는데
    주기마다 "extrapolation into the future"가 찍힌다. 무엇이 잘못됐고 올바른 수정 둘은?
 2. `map`과 `odom`이 둘 다 `base_link`의 부모가 될 수 없는 이유는 무엇이고, 위치추정 노드는
    대신 무엇을 내보내나?
@@ -1076,17 +1270,17 @@ ros2 topic info /tf_static --verbose
 > 2. tf2 프레임은 부모가 정확히 하나이고, 그것이 조회 경로를 유일하게 만든다. 그래서 REP 105는 `map` → `odom` → `base_link`로 잇는다. 오도메트리가 `odom` → `base_link`를 소유하고, 위치추정은 누적된 오도메트리 표류인 `map` → `odom` 보정을 내보낸다. `odom`은 연속이지만 표류하고, `map`은 표류하지 않지만 도약한다.
 > 3. `<collision>` 요소. 정밀한 visual 메시를 재사용하고 있다면 질의당 수천 번의 충돌 검사가 원시 도형 대신 메시 대 메시로 돈다. RViz의 RobotModel display에서 *Visual Enabled*를 끄고 *Collision Enabled*를 켜서 검사기가 실제로 쓰는 형상을 보고, 원시 도형이나 볼록 분해로 바꾼다.
 > 4. ROS 2에서 Broadcaster 칸에는 정보가 없다 — 리스너는 누가 변환을 보냈는지 알 수 없다. 대신 평균 주기를 읽는다. 10 Hz로 예상한 간선이 약 30 Hz로 보고되면 소유자가 둘 이상이다. `ros2 topic info /tf --verbose`와 `/tf_static`으로 확인한다. (값과 스탬프가 *똑같은* 변환을 보내는 두 퍼블리셔는 tf2가 완전 중복을 버리므로 아예 드러나지 않고, 해를 끼치지도 않는다.)
-> 5. $1.00\,\mathrm{m}$이다. 프레임 축이 정렬되어 있어 사슬이 $0.40+0.10+0.50$으로 무너진다. $0.10\,\mathrm{m}$은 URDF에서 나와 `/tf_static`에 실린 고정 장착 오프셋이고 $0.50=1024/2048$은 `odom` → `base_link` 위의 살아 있는 엔코더 측정값이다. 믿은 숫자가 그 둘이고, 조용히 틀릴 수 있는 것은 앞의 것뿐이다. urdfdom은 알 수 없는 `xzy=` 속성을 실패시키지 않고 무시하므로 오프셋이 0이 되고 답이 $0.90\,\mathrm{m}$이 되며 오차는 정확히 $0.10\,\mathrm{m}$, 곧 $0.10\times2048=204.8$로 $0.488\,\mathrm{mm}$를 분해하는 엔코더의 약 $205$ 카운트다. xacro를 전개해 숫자를 읽어라. 다른 무엇도 이것을 알려 주지 않는다.
+> 5. $x=1.00\,\mathrm{m}$, 장착 높이인 $z=0.25\,\mathrm{m}$이다. 프레임 축이 정렬되어 있어 사슬이 $0.40+0.10+0.50$으로 무너진다. $0.10\,\mathrm{m}$은 URDF에서 나와 `/tf_static`에 실린 고정 장착 오프셋이고 $0.50=1024/2048$은 `odom` → `base_link` 위의 살아 있는 엔코더 측정값이다. 믿은 숫자가 그 둘이고, 조용히 틀릴 수 있는 것은 앞의 것뿐이다. urdfdom은 알 수 없는 `xzy=` 속성을 실패시키지 않고 무시하므로 오프셋이 0이 되고 답이 $0.90\,\mathrm{m}$이 되며 오차는 $x$로 정확히 $0.10\,\mathrm{m}$($z$로는 $0.25\,\mathrm{m}$), 곧 $0.10\times2048=204.8$로 $0.488\,\mathrm{mm}$를 분해하는 엔코더의 약 $205$ 카운트다. xacro를 전개해 숫자를 읽어라. 다른 무엇도 이것을 알려 주지 않는다.
 
 ### 과제 · Problem set
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 카트 프레임 `base_link`, 카메라가 카트 위, 엔코더 $N=2048$ counts/m. 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** TF 트리 `map` → `odom` → `base_link` → `camera_link`. 각 간선의 소유자. `odom` → `base_link`에 엔코더 카운트, `camera_link`에 비전. 다섯 줄 타임라인: $50\,\mathrm{Hz}$ TF 갱신과 $200\,\mathrm{Hz}$ 조회 넷, 그중 하나가 `now()`.
+1. **그리기.** TF 트리 `map` → `odom` → `base_link` → `camera_link`. 각 간선의 소유자. `odom` → `base_link`에 엔코더 카운트, `camera_link`에 비전. 다섯 줄 타임라인: $200\,\mathrm{Hz}$ `odom` → `base_link` TF 갱신과 $200\,\mathrm{Hz}$ 조회 넷, 그중 하나가 `now()`.
 2. **유도.** (a) 엔코더 한 카운트의 $\Delta p$ — `odom` → `base_link`의 해상도. (b) 제어기의 `lookup_transform(..., now())`가 "extrapolation into the future"를 찍는 이유. (c) `odom` → `base_link`에 $50\,\mathrm{Hz}$와 $200\,\mathrm{Hz}$ 퍼블리셔 둘. `view_frames`가 보고하는 주기는?
-3. **해석.** $70\,\mathrm{ms}$ 예산의 조회가 $200\,\mathrm{ms}$ 된 카메라 스탬프를 쓴다. §9의 수정 둘 중 어느 것이고, P6 힘 루프에 틀린 것은?
+3. **해석.** 제어기가 $70\,\mathrm{ms}$ 예산 안에서 카메라 스탬프가 $200\,\mathrm{ms}$ 된 검출을 변환해야 한다. §9가 *extrapolation into the future*에 주는 수정 둘은 무엇이고, 그중 P6 힘 루프에 틀린 것은 어느 것이며, 루프는 그 검출을 어떻게 해야 하는가?
 
 > [!tip]- 정답 · Solutions
-> 1. 위치추정이 `map` → `odom`을, 오도메트리(엔코더)가 `odom` → `base_link`를, 정적(또는 $50\,\mathrm{Hz}$) 브로드캐스터가 `base_link` → `camera_link`를 소유. 타임라인: TF $0,20\,\mathrm{ms}$; 조회 $0,5,10,15$; `now()` 조회는 버퍼의 미래.
+> 1. 위치추정이 `map` → `odom`을, 오도메트리(엔코더)가 `odom` → `base_link`를, 정적 브로드캐스터가 `base_link` → `camera_link`를 소유. 타임라인: `odom` → `base_link` TF $5\,\mathrm{ms}$마다(카메라 장착은 정적이라 갱신되지 않음); 조회 $0,5,10,15$; `now()` 조회는 버퍼의 미래.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) 변환은 늦게 도착하고 `now()`는 버퍼가 아직 못 본 시각. `Time()` 또는 메시지 스탬프. (c) 약 $250\,\mathrm{Hz}$ — 소유자 둘.
-> 3. 최신값(`Time()`), 또는 짧은 timeout을 붙인 *메시지* 스탬프. $0.1\,\mathrm{s}$를 빼는 것은 진단이다. 힘 루프에서는 $200\,\mathrm{ms}$ 카메라 스탬프가 이미 $70\,\mathrm{ms}$ 예산을 넘는다 — 외삽하지 말고 버려라.
+> 3. 최신값(`Time()`), 또는 짧은 timeout을 붙인 *메시지* 스탬프. $0.1\,\mathrm{s}$를 빼는 것은 진단이다. 여기서 틀린 것은 `Time()`이다. $200\,\mathrm{ms}$ 된 검출을 길어야 $5\,\mathrm{ms}$ 된 자세와 합성하므로, 표적이 지금 카트가 있는 자리에서 찍은 것처럼 놓이고 결과 어디에도 그 나이가 드러나지 않는다. 메시지 스탬프는 올바른 변환을 주고 나이도 그대로 보여 준다. $200\,\mathrm{ms}$는 이미 $70\,\mathrm{ms}$ 예산을 $130\,\mathrm{ms}$ 넘으니 — 외삽하지 말고 버려라.

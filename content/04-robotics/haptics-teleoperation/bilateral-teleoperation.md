@@ -47,19 +47,19 @@ Four things have to be on the page, and three of them are the things a published
 **Both ports drawn as double-headed arrows**, each labelled with its own pair $(F_1,v_1)$ and $(F_2,v_2)$. A single-headed arrow claims information flow where there is power flow, and the whole page is about power.
 **The sign convention, written on the figure** — here, positive force *into* the network at both ports. Write it as a short legend, not as an arrowhead, because the arrowhead is what everyone reads differently.
 **The delay, on both directions separately**, each marked $T_d=50\,\mathrm{ms}$, with the round trip $2T_d=100\,\mathrm{ms}$ written underneath. A single box labelled "network" hides whether the return path is delayed, which is the one thing that decides the argument.
-**The wall as a switch at the follower**, the same unilateral block as [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], plus the two scale blocks $s_x$ on the way out and $s_f$ on the way back, so the reader can see that the product $s_fs_x$ never appears and the *ratio* $s_f/s_x$ always does.
+**The wall as a switch at the follower**, the same unilateral block as [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], plus the two scale blocks $s_x$ on the way out and $s_f$ on the way back, so the reader can see that the product $s_fs_x$ never appears in the power and the *ratio* $s_f/s_x$ always does.
 
 ### Worked case · 대상으로 한 번 끝까지
 
 Five steps on the pair above. Everything §2 to §4 assert in words is a number here.
 
-**Step 1 — what the operator's hand feels when nothing is touching.** With the follower in free space the operator still feels the leader itself, $Z=ms+b$. At $1\,\mathrm{Hz}$ that is $\lvert 0.04\cdot j2\pi+0.8\rvert=0.839\,\mathrm{N{\cdot}s/m}$, so moving the leader at $5\,\mathrm{cm/s}$ costs $0.042\,\mathrm{N}$ of drag against an environment that is producing nothing at all. At $10\,\mathrm{Hz}$ the same handle reads $2.64\,\mathrm{N{\cdot}s/m}$, or $0.132\,\mathrm{N}$ — the inertia has taken over. §5 calls this quantity $h_{11}$ and transparency asks for it to be zero, which is why a teleoperator can fail its own specification before the channel is switched on.
+**Step 1 — what the operator's hand feels when nothing is touching.** With the follower in free space the operator still feels the leader itself, $Z=ms+b$. At $1\,\mathrm{Hz}$ that is $\lvert 0.04\cdot j2\pi+0.8\rvert=0.839\,\mathrm{N{\cdot}s/m}$, so moving the leader at $5\,\mathrm{cm/s}$ costs $0.042\,\mathrm{N}$ of drag against an environment that is producing nothing at all. At $10\,\mathrm{Hz}$ the same handle reads $2.64\,\mathrm{N{\cdot}s/m}$, or $0.132\,\mathrm{N}$ — the inertia has taken over. §1 calls this quantity $h_{11}$ and transparency asks for it to be zero, which is why a teleoperator can fail its own specification before the channel is switched on.
 
-**Step 2 — the stiffness the delay leaves.** The §2 bound of 24.4 spends the *whole* loop period, and a one-way delay of $50\,\mathrm{ms}$ is fifty times the local sample:
+**Step 2 — the stiffness the delay leaves.** First decide which delay is in the loop. Leader motion goes out to the follower and the follower's wall force comes back, so if the follower tracks its delayed command, the force reaching the leader is the wall acting on the leader's *own* position one round trip earlier: the loop delay is $T_D=2T_d=100\,\mathrm{ms}$, and this step assumes exactly that. Then price that delay. The §2 bound of 24.4, $K\le 2b/T$, reads as $K\le b/(T/2)$: the zero-order hold acts like half a period of delay. Diolaiti, Niemeyer, Barbagli and Salisbury (2006) show that a loop delay adds to that half period *in full*: with $\beta=b/(KT)$ and $\tau_D=T_D/T$, the viscous boundary moves from $\beta\ge\tfrac12$ to $\beta\ge\tfrac12+\tau_D$, which is $b\ge KT/2+KT_D$. So
 
-$$K\le\frac{2b}{T+T_d}=\frac{2\cdot 0.8}{0.001+0.050}=31.4\,\mathrm{N/m}$$
+$$K\le\frac{b}{T/2+2T_d}=\frac{0.8}{0.0005+0.100}=7.96\,\mathrm{N/m}$$
 
-because the energy the hold leaks now has $51\,\mathrm{ms}$ to accumulate before the damper is told about it. Catalog $k_w=400\,\mathrm{N/m}$ misses that ceiling by a factor of $400/31.4=12.7$, and the local ceiling of $1600\,\mathrm{N/m}$ has fallen by the same factor $51$ as the effective period rose. The wall the follower actually touches is unchanged; what changed is how much of it may be reflected.
+because the device damper's phase lead is the only thing paying for lag, and the lag it must now cover is the hold's half millisecond plus the whole $100\,\mathrm{ms}$ round trip. At unit impedance scale, $s_fs_x=1$ (unscaled, or Step 4's $s_f=10$, $s_x=0.1$), the leader feels the catalog wall itself, $k_w=400\,\mathrm{N/m}$, which misses that ceiling by a factor of $400/7.96=50.3$; the local ceiling of $1600\,\mathrm{N/m}$ has fallen by $1600/7.96=201$, which is $1+2\tau_D$ at $\tau_D=100$. If only one direction were delayed, $T_D=T_d$ and the ceiling would be $0.8/0.0505=15.8\,\mathrm{N/m}$, still $25.3$ times under the wall. The shortcut of writing $T+T_d$ where 24.4 has $T$ is wrong twice: $2b/(T+T_d)=b/(T/2+T_d/2)$ charges the delay at half its value, as if it were a hold, and it counts one direction only, so it returns $31.4\,\mathrm{N/m}$, about four times the ceiling. The wall the follower actually touches is unchanged; what changed is how much of it may be reflected.
 
 **Step 3 — power-preserving scaling, and why nobody ships it.** With $x_f=s_xx_l$ and $F_l=s_fF_f$ the power ratio is $s_f/s_x$ (§3), so power preservation means $s_f=s_x=0.1$. Let the follower hold $F_f=1\,\mathrm{N}$, which on the catalog wall is a penetration of $1/400=2.5\,\mathrm{mm}$. The leader then reflects
 
@@ -101,11 +101,11 @@ Each of those two ports is a port in the sense of [[04-robotics/haptics-teleoper
 
 Ideal transparency means the operator feels the remote environment as if the intervening system were absent. At the human port, the displayed impedance $Z_{in}=F_1/V_1$ should equal a scaled remote impedance. Real systems add leader/follower inertia, friction, local servos, sensor filtering, communication delay, quantization, and saturation. “Stable” and “transparent” are therefore different claims.
 
-> **Transparency, defined.** **Transparency** is a *target* — an asserted equality between two impedances at the human port — not a score, not a percentage, and not a synonym for "feels good". Three defining conditions, and a claim missing any of them is not checkable. The equality is between the **displayed** impedance and the **scaled environment** impedance, so the scale factors are part of the claim and a system with $s_f\ne s_x$ is transparent to a *different* environment than the one being touched. It must hold over a **declared frequency band**, because $Z$ is a function of $\omega$ and matching a slow press says nothing about an impact. And it must hold over a **declared class of environments**, since matching one soft object is one point of a function.
+> **Transparency, defined.** **Transparency** is a *target* — an asserted equality between two impedances at the human port — not a score, not a percentage, and not a synonym for "feels good". Three defining conditions, and a claim missing any of them is not checkable. The equality is between the **displayed** impedance and the **scaled environment** impedance, so the scale factors are part of the claim and a system with $s_fs_x\ne1$ is transparent to a *different* environment than the one being touched. It must hold over a **declared frequency band**, because $Z$ is a function of $\omega$ and matching a slow press says nothing about an impact. And it must hold over a **declared class of environments**, since matching one soft object is one point of a function.
 >
-> $$Z_{to}(j\omega)=\frac{F_1(j\omega)}{V_1(j\omega)}=\frac{s_f}{s_x}\,Z_e(j\omega)\qquad\text{for all }\omega\text{ in the declared band and all }Z_e\text{ in the declared class}$$
+> $$Z_{to}(j\omega)=\frac{F_1(j\omega)}{V_1(j\omega)}=s_fs_x\,Z_e(j\omega)\qquad\text{for all }\omega\text{ in the declared band and all }Z_e\text{ in the declared class}$$
 >
-> where $Z_{to}$ is what the hand feels, $Z_e$ the environment impedance at the follower, and $s_f/s_x$ the power ratio of §3 — so unscaled transparency is the case $s_f=s_x$, in which the equality reads $Z_{to}=Z_e$ and the intervening system has disappeared from the expression entirely.
+> where $Z_{to}$ is what the hand feels, $Z_e$ the environment impedance at the follower, and $s_fs_x$ the impedance scale, since $F_l=s_fF_f$ while $\dot x_l=\dot x_f/s_x$ (the power ratio of §3 is $s_f/s_x$ instead) — so unscaled transparency is the case $s_fs_x=1$, in which the equality reads $Z_{to}=Z_e$ and the intervening system has disappeared from the expression entirely.
 >
 > - **Example**: the ideal $h$ of §1. Substituting it into $Z_{to}=h_{11}-h_{12}h_{21}Z_e/(1+h_{22}Z_e)$ gives $Z_e$ for every $Z_e$ — transparency as an identity rather than a fit.
 > - **Non-example**: "force-tracking RMS error was $5\%$ on the trajectory we recorded." That is a performance number at one input, and it can be small on a system whose $h_{11}$ makes free space feel like syrup. Transparency is a statement about the *map*; performance is a statement about one of its outputs.
@@ -127,7 +127,7 @@ Power-preserving scaling requires $s_f=s_x$ under this convention; other convent
 
 ### 4. Why delay is hard
 
-A delayed force can arrive after velocity reverses, turning nominal damping into energy injection. Raising local feedback gains may improve low-delay tracking but erode phase margin (how much extra lag the loop tolerates before it oscillates; [[04-robotics/control-theory-ce397|Control Theory §5.5]]). On the running pair that costs a factor of $51$ in renderable stiffness, worked in Step 2 above. Common strategies include:
+A delayed force can arrive after velocity reverses, turning nominal damping into energy injection. Raising local feedback gains may improve low-delay tracking but erode phase margin (how much extra lag the loop tolerates before it oscillates; [[04-robotics/control-theory-ce397|Control Theory §5.5]]). On the running pair the $100\,\mathrm{ms}$ round trip costs a factor of $201$ in renderable stiffness, worked in Step 2 above. Common strategies include:
 
 - local damping or virtual coupling, the latter defined in [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §5]];
 - time-domain passivity observers/controllers;
@@ -184,13 +184,17 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]] as *both* leader and
 Leader motion is sent to the follower; follower wall force $F_a$ is sent back. One-way delay $T_d=50\,\mathrm{ms}$. Local sample $T=1\,\mathrm{ms}$. Catalog $k_w=400$, $b=0.8$.
 
 1. **Draw.** Human port $(F_1,v_1)$ — leader P3 — delayed channel — follower P3 — wall. Mark the four signals and the sign convention (positive force into the network at both ports).
-2. **Derive.** (a) Power-preserving scales $s_f=s_x$. If $s_x=0.1$ and the follower holds $F_f=1\,\mathrm{N}$ (catalog wall at $2.5\,\mathrm{mm}$ in), what does the leader reflect? Too faint? (b) With $s_f=10$, $s_x=0.1$, the power ratio $s_f/s_x$. Can the pair inherit passivity from its parts? (c) Colgate-style $K\le 2b/(T+T_d)$ at the leader. Does catalog $k_w$ pass?
+2. **Derive.** (a) Power-preserving scales $s_f=s_x$. If $s_x=0.1$ and the follower holds $F_f=1\,\mathrm{N}$ (catalog wall at $2.5\,\mathrm{mm}$ in), what does the leader reflect? Too faint? (b) With $s_f=10$, $s_x=0.1$, the power ratio $s_f/s_x$. Can the pair inherit passivity from its parts? (c) The delayed bound $K\le b/(T/2+T_D)$ (Diolaiti et al. 2006) at the leader, where $T_D$ is the delay around the loop. Which $T_D$ does this architecture put there, what is the ceiling, and does catalog $k_w$ pass? What would the ceiling be if only one direction were delayed?
 3. **Interpret.** Users are slower after you add damping to survive the delay. Is that a contradiction of passivity?
 
 > [!tip]- Solutions
 > 1. Four signals $F_1,v_1,F_2,v_2$; delay on both directions or at least on force; wall switch at the follower. Arrows for force into the two-port.
-> 2. (a) $F_l=0.1\,\mathrm{N}$ — below a typical force JND near $1\,\mathrm{N}$, too faint. (b) Ratio $100$; extra power from actuators; force-amplifying teleoperators do not inherit passivity. (c) $2b/0.051\approx 31\,\mathrm{N/m}$; $400$ fails.
+> 2. (a) $F_l=0.1\,\mathrm{N}$ — below a typical force JND near $1\,\mathrm{N}$, too faint. (b) Ratio $100$; extra power from actuators; force-amplifying teleoperators do not inherit passivity. (c) $T_D=2T_d=100\,\mathrm{ms}$: the follower tracks a command already $T_d$ old, and its force takes $T_d$ more to come back. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$ fails by a factor of $50.3$. One direction only: $0.8/0.0505=15.8\,\mathrm{N/m}$. Not $2b/(T+T_d)=31.4$, which charges the delay at half its value.
 > 3. No. Passivity bounds energy generation, not transparency or speed. Added dissipation can stabilize and make the wall feel sluggish — the trade §4 names.
+
+### Sources
+
+- N. Diolaiti, G. Niemeyer, F. Barbagli, J. K. Salisbury, "Stability of Haptic Rendering: Discretization, Quantization, Time Delay, and Coulomb Effects," *IEEE Transactions on Robotics*, vol. 22, no. 2, pp. 256–268, 2006 — the delayed dissipation criterion of Step 2, $\beta\ge\tfrac12+\tau_D$ with $\beta=b/(KT)$ and $\tau_D$ the combined loop delay over the sample period (Sec. III-D, eq. (19), Fig. 5); their describing-function analysis puts the viscous boundary at the same $\beta=\tfrac12+\tau_D$ by approximating the zero-order hold as half a sample of delay lumped with $\tau_D$.
 
 ## 한국어
 
@@ -228,19 +232,19 @@ flowchart LR
 **두 포트를 양쪽 화살표로.** 각각 자기 쌍 $(F_1,v_1)$과 $(F_2,v_2)$를 달아 준다. 한쪽 화살표는 일률이 흐르는 곳에 정보가 흐른다고 주장하는 것이고, 이 페이지 전체가 일률에 대한 이야기다.
 **부호 규약을 그림 위에.** 여기서는 두 포트 모두 네트워크 *안쪽*이 양의 힘이다. 화살촉이 아니라 짧은 범례로 적어라. 화살촉이야말로 사람마다 다르게 읽는 것이다.
 **지연을 양방향에 따로.** 각각 $T_d=50\,\mathrm{ms}$로 표시하고 아래에 왕복 $2T_d=100\,\mathrm{ms}$를 적는다. "네트워크"라고만 적힌 상자 하나는 되돌아오는 경로가 지연되는지를 가리는데, 논증을 정하는 것이 바로 그것이다.
-**follower의 벽은 스위치로.** [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]와 같은 한쪽 스위치 블록이다. 나가는 길의 $s_x$와 돌아오는 길의 $s_f$ 스케일 블록도 함께 그려서, 곱 $s_fs_x$는 어디에도 나오지 않고 *비* $s_f/s_x$만 늘 나온다는 것이 보이게 한다.
+**follower의 벽은 스위치로.** [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]와 같은 한쪽 스위치 블록이다. 나가는 길의 $s_x$와 돌아오는 길의 $s_f$ 스케일 블록도 함께 그려서, 곱 $s_fs_x$는 일률에 나오지 않고 *비* $s_f/s_x$만 늘 나온다는 것이 보이게 한다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
 위 쌍에 대해 다섯 단계. §2부터 §4까지가 말로 주장하는 것이 여기서는 전부 숫자다.
 
-**1단계 — 아무것도 닿지 않을 때 손이 느끼는 것.** follower가 자유공간에 있어도 조작자는 leader 자체, $Z=ms+b$를 느낀다. $1\,\mathrm{Hz}$에서 $\lvert 0.04\cdot j2\pi+0.8\rvert=0.839\,\mathrm{N{\cdot}s/m}$이므로 leader를 $5\,\mathrm{cm/s}$로 움직이는 데 아무것도 내지 않는 환경에 대해 $0.042\,\mathrm{N}$의 끌림을 쓴다. $10\,\mathrm{Hz}$에서 같은 핸들이 $2.64\,\mathrm{N{\cdot}s/m}$, 즉 $0.132\,\mathrm{N}$이 된다. 관성이 넘겨받은 것이다. §5는 이 양을 $h_{11}$이라 부르고 투명성은 그것이 0이기를 요구한다. 원격조작기가 채널을 켜기도 전에 자기 규격에 미달할 수 있는 이유다.
+**1단계 — 아무것도 닿지 않을 때 손이 느끼는 것.** follower가 자유공간에 있어도 조작자는 leader 자체, $Z=ms+b$를 느낀다. $1\,\mathrm{Hz}$에서 $\lvert 0.04\cdot j2\pi+0.8\rvert=0.839\,\mathrm{N{\cdot}s/m}$이므로 leader를 $5\,\mathrm{cm/s}$로 움직이는 데 아무것도 내지 않는 환경에 대해 $0.042\,\mathrm{N}$의 끌림을 쓴다. $10\,\mathrm{Hz}$에서 같은 핸들이 $2.64\,\mathrm{N{\cdot}s/m}$, 즉 $0.132\,\mathrm{N}$이 된다. 관성이 넘겨받은 것이다. §1은 이 양을 $h_{11}$이라 부르고 투명성은 그것이 0이기를 요구한다. 원격조작기가 채널을 켜기도 전에 자기 규격에 미달할 수 있는 이유다.
 
-**2단계 — 지연이 남겨 주는 강성.** 24.4 §2의 경계는 루프 주기 *전체*를 쓰는데, 편도 $50\,\mathrm{ms}$는 로컬 샘플의 쉰 배다.
+**2단계 — 지연이 남겨 주는 강성.** 먼저 루프에 어느 지연이 들어가는지 정한다. leader 운동은 follower로 나가고 follower의 벽 힘은 돌아오므로, follower가 지연된 명령을 추종한다면 leader에 도착하는 힘은 왕복 한 번 전의 leader *자신의* 위치에 벽이 작용한 힘이다. 루프 지연은 $T_D=2T_d=100\,\mathrm{ms}$이고, 이 단계는 바로 그것을 가정한다. 다음은 지연의 값이다. 24.4 §2의 경계 $K\le 2b/T$는 $K\le b/(T/2)$로 읽힌다. zero-order hold가 반 주기의 지연처럼 작용한다는 뜻이다. Diolaiti, Niemeyer, Barbagli, Salisbury(2006)는 루프 지연이 그 반 주기에 *온전히* 더해짐을 보였다. $\beta=b/(KT)$, $\tau_D=T_D/T$로 두면 점성 경계가 $\beta\ge\tfrac12$에서 $\beta\ge\tfrac12+\tau_D$로, 즉 $b\ge KT/2+KT_D$로 옮겨 간다. 그러므로
 
-$$K\le\frac{2b}{T+T_d}=\frac{2\cdot 0.8}{0.001+0.050}=31.4\,\mathrm{N/m}$$
+$$K\le\frac{b}{T/2+2T_d}=\frac{0.8}{0.0005+0.100}=7.96\,\mathrm{N/m}$$
 
-홀드가 흘리는 에너지가 댐퍼에게 알려지기까지 이제 $51\,\mathrm{ms}$ 동안 쌓이기 때문이다. 카탈로그 $k_w=400\,\mathrm{N/m}$은 그 천장을 $400/31.4=12.7$배 넘고, 로컬 천장 $1600\,\mathrm{N/m}$은 실효 주기가 커진 것과 같은 배수 $51$만큼 내려앉았다. follower가 실제로 만지는 벽은 그대로다. 바뀐 것은 그중 얼마를 반사해도 되는가다.
+이다. 지연을 갚는 것은 장치 댐퍼의 위상 앞섬뿐인데, 그것이 이제 덮어야 할 지연이 홀드의 반 밀리초에 $100\,\mathrm{ms}$ 왕복 전체를 더한 것이기 때문이다. 임피던스 스케일이 1이면($s_fs_x=1$. 스케일이 없거나 4단계의 $s_f=10$, $s_x=0.1$) leader는 카탈로그 벽 $k_w=400\,\mathrm{N/m}$을 그대로 느끼고, 이는 그 천장을 $400/7.96=50.3$배 넘는다. 로컬 천장 $1600\,\mathrm{N/m}$은 $1600/7.96=201$분의 1로 내려앉았고, 이 배수는 $\tau_D=100$에서의 $1+2\tau_D$다. 한 방향만 지연된다면 $T_D=T_d$이고 천장은 $0.8/0.0505=15.8\,\mathrm{N/m}$, 여전히 벽의 $25.3$분의 1이다. 24.4의 $T$ 자리에 $T+T_d$를 쓰는 지름길은 두 번 틀린다. $2b/(T+T_d)=b/(T/2+T_d/2)$는 지연을 홀드처럼 절반 값으로 치르고, 한 방향만 센다. 그래서 천장의 약 네 배인 $31.4\,\mathrm{N/m}$이 나온다. follower가 실제로 만지는 벽은 그대로다. 바뀐 것은 그중 얼마를 반사해도 되는가다.
 
 **3단계 — 일률 보존 스케일링, 그리고 아무도 그것을 출하하지 않는 이유.** $x_f=s_xx_l$, $F_l=s_fF_f$이면 일률 비는 $s_f/s_x$이므로(§3) 일률 보존은 $s_f=s_x=0.1$을 뜻한다. follower가 $F_f=1\,\mathrm{N}$을 쥔다고 하자. 카탈로그 벽에서 침투 $1/400=2.5\,\mathrm{mm}$다. 그러면 leader가 반사하는 것은
 
@@ -282,11 +286,11 @@ $$\frac{P_l}{P_f}=\frac{s_f}{s_x}=\frac{10}{0.1}=100$$
 
 이상적 transparency는 중간 시스템이 없는 것처럼 원격 환경을 조작자가 느끼는 것이다. 사람 쪽 포트에서 표시되는 임피던스 $Z_{in}=F_1/V_1$이 스케일된 원격 임피던스와 같아야 한다. 실제 시스템은 leader와 follower의 관성, 마찰, local servo, 센서 필터링, 통신 지연, quantization, saturation을 더한다. 그러므로 "안정하다"와 "투명하다"는 서로 다른 주장이다.
 
-> **투명성의 정의.** **투명성**(transparency)은 *목표*다. 사람 포트에서 임피던스 둘이 같다는 주장이지 점수도, 백분율도, "느낌이 좋다"의 동의어도 아니다. 정의 조건 셋이고, 하나라도 빠진 주장은 검증할 수 없다. 등식은 **표시되는** 임피던스와 **스케일된 환경** 임피던스 사이의 것이므로 스케일 인자가 주장의 일부이고, $s_f\ne s_x$인 시스템은 실제로 만지는 환경이 아니라 *다른* 환경에 대해 투명하다. **선언한 주파수 대역**에서 성립해야 한다. $Z$가 $\omega$의 함수이므로 느린 가압이 맞았다는 것은 충격에 대해 아무것도 말하지 않는다. 그리고 **선언한 환경 부류**에서 성립해야 한다. 부드러운 물체 하나가 맞은 것은 함수의 점 하나다.
+> **투명성의 정의.** **투명성**(transparency)은 *목표*다. 사람 포트에서 임피던스 둘이 같다는 주장이지 점수도, 백분율도, "느낌이 좋다"의 동의어도 아니다. 정의 조건 셋이고, 하나라도 빠진 주장은 검증할 수 없다. 등식은 **표시되는** 임피던스와 **스케일된 환경** 임피던스 사이의 것이므로 스케일 인자가 주장의 일부이고, $s_fs_x\ne1$인 시스템은 실제로 만지는 환경이 아니라 *다른* 환경에 대해 투명하다. **선언한 주파수 대역**에서 성립해야 한다. $Z$가 $\omega$의 함수이므로 느린 가압이 맞았다는 것은 충격에 대해 아무것도 말하지 않는다. 그리고 **선언한 환경 부류**에서 성립해야 한다. 부드러운 물체 하나가 맞은 것은 함수의 점 하나다.
 >
-> $$Z_{to}(j\omega)=\frac{F_1(j\omega)}{V_1(j\omega)}=\frac{s_f}{s_x}\,Z_e(j\omega)\qquad\text{선언한 대역의 모든 }\omega\text{, 선언한 부류의 모든 }Z_e$$
+> $$Z_{to}(j\omega)=\frac{F_1(j\omega)}{V_1(j\omega)}=s_fs_x\,Z_e(j\omega)\qquad\text{선언한 대역의 모든 }\omega\text{, 선언한 부류의 모든 }Z_e$$
 >
-> $Z_{to}$는 손이 느끼는 것, $Z_e$는 follower에서의 환경 임피던스, $s_f/s_x$는 §3의 일률 비다. 그러므로 스케일 없는 투명성은 $s_f=s_x$인 경우이고, 그때 등식은 $Z_{to}=Z_e$가 되어 중간 시스템이 식에서 완전히 사라진다.
+> $Z_{to}$는 손이 느끼는 것, $Z_e$는 follower에서의 환경 임피던스, $s_fs_x$는 임피던스 스케일이다. $F_l=s_fF_f$인데 $\dot x_l=\dot x_f/s_x$이기 때문이다(§3의 일률 비는 $s_f/s_x$로 다르다). 그러므로 스케일 없는 투명성은 $s_fs_x=1$인 경우이고, 그때 등식은 $Z_{to}=Z_e$가 되어 중간 시스템이 식에서 완전히 사라진다.
 >
 > - **예**: §1의 이상적 $h$. $Z_{to}=h_{11}-h_{12}h_{21}Z_e/(1+h_{22}Z_e)$에 넣으면 모든 $Z_e$에 대해 $Z_e$가 나온다. 맞춤이 아니라 항등식으로서의 투명성이다.
 > - **비예**: "우리가 기록한 궤적에서 힘 추종 RMS 오차가 $5\%$였다." 입력 하나에서의 성능 수치이고, $h_{11}$ 때문에 자유공간이 꿀처럼 느껴지는 시스템에서도 작을 수 있다. 투명성은 *사상*에 대한 진술이고 성능은 그 출력 하나에 대한 진술이다.
@@ -308,7 +312,7 @@ $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 
 ### 4. 지연이 어려운 이유
 
-지연된 힘은 속도가 방향을 바꾼 뒤에 도착할 수 있고, 그러면 명목상 damping이 에너지 주입으로 바뀐다. Local 피드백 이득을 올리면 지연이 작을 때의 추종은 나아지지만 위상 여유(루프가 진동하기 전까지 견딜 수 있는 추가 지연의 여유. [[04-robotics/control-theory-ce397|제어 이론 §5.5]])가 깎인다. 위의 대상 쌍에서는 그 값이 렌더링 가능한 강성의 $51$배이고, 2단계에서 계산했다. 흔한 대응은 이렇다.
+지연된 힘은 속도가 방향을 바꾼 뒤에 도착할 수 있고, 그러면 명목상 damping이 에너지 주입으로 바뀐다. Local 피드백 이득을 올리면 지연이 작을 때의 추종은 나아지지만 위상 여유(루프가 진동하기 전까지 견딜 수 있는 추가 지연의 여유. [[04-robotics/control-theory-ce397|제어 이론 §5.5]])가 깎인다. 위의 대상 쌍에서는 $100\,\mathrm{ms}$ 왕복이 렌더링 가능한 강성을 $201$분의 1로 깎고, 2단계에서 계산했다. 흔한 대응은 이렇다.
 
 - local damping 또는 virtual coupling. 뒤쪽의 정의는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §5]];
 - 시간영역 passivity observer/controller;
@@ -365,10 +369,14 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**를 리더와 팔로워 *둘 
 리더 운동이 팔로워로, 팔로워 벽 힘 $F_a$가 돌아온다. 편도 지연 $T_d=50\,\mathrm{ms}$. 로컬 샘플 $T=1\,\mathrm{ms}$. 카탈로그 $k_w=400$, $b=0.8$.
 
 1. **그리기.** 사람 포트 $(F_1,v_1)$ — 리더 P3 — 지연 채널 — 팔로워 P3 — 벽. 신호 넷과 부호 규약(두 포트 모두 네트워크 안쪽이 양의 힘).
-2. **유도.** (a) 일률 보존 스케일 $s_f=s_x$. $s_x=0.1$이고 팔로워가 $F_f=1\,\mathrm{N}$(카탈로그 벽 안 $2.5\,\mathrm{mm}$)을 쥐면 리더는 얼마를 반사하는가? 너무 약한가? (b) $s_f=10$, $s_x=0.1$에서 일률 비 $s_f/s_x$. 쌍이 부품에서 수동성을 물려받을 수 있는가? (c) 리더에서 Colgate형 $K\le 2b/(T+T_d)$. 카탈로그 $k_w$가 통과하는가?
+2. **유도.** (a) 일률 보존 스케일 $s_f=s_x$. $s_x=0.1$이고 팔로워가 $F_f=1\,\mathrm{N}$(카탈로그 벽 안 $2.5\,\mathrm{mm}$)을 쥐면 리더는 얼마를 반사하는가? 너무 약한가? (b) $s_f=10$, $s_x=0.1$에서 일률 비 $s_f/s_x$. 쌍이 부품에서 수동성을 물려받을 수 있는가? (c) 리더에서 지연 경계 $K\le b/(T/2+T_D)$(Diolaiti 외 2006). $T_D$는 루프를 한 바퀴 도는 지연이다. 이 구조에서 $T_D$는 얼마이고, 천장은 얼마이며, 카탈로그 $k_w$가 통과하는가? 한 방향만 지연된다면 천장은 얼마인가?
 3. **해석.** 지연을 버티려고 댐핑을 더했더니 사용자가 느려졌다. 수동성의 모순인가?
 
 > [!tip]- 정답 · Solutions
 > 1. 신호 넷 $F_1,v_1,F_2,v_2$; 양방향 또는 적어도 힘 쪽 지연; 팔로워의 벽 스위치. 2포트 안으로 들어가는 힘 화살표.
-> 2. (a) $F_l=0.1\,\mathrm{N}$ — $1\,\mathrm{N}$ 부근 힘 JND보다 작아 너무 약하다. (b) 비 $100$; 여분 일률은 액추에이터에서; 힘을 증폭하는 원격조작기는 수동성을 물려받지 못한다. (c) $2b/0.051\approx 31\,\mathrm{N/m}$; $400$ 실패.
+> 2. (a) $F_l=0.1\,\mathrm{N}$ — $1\,\mathrm{N}$ 부근 힘 JND보다 작아 너무 약하다. (b) 비 $100$; 여분 일률은 액추에이터에서; 힘을 증폭하는 원격조작기는 수동성을 물려받지 못한다. (c) $T_D=2T_d=100\,\mathrm{ms}$. 팔로워는 이미 $T_d$ 늦은 명령을 추종하고, 그 힘이 돌아오는 데 $T_d$가 더 걸린다. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$은 $50.3$배로 실패. 한 방향만이면 $0.8/0.0505=15.8\,\mathrm{N/m}$. 지연을 절반 값으로 치르는 $2b/(T+T_d)=31.4$가 아니다.
 > 3. 아니다. 수동성은 에너지 생성을 묶지 투명성이나 속도를 묶지 않는다. 소산을 더하면 안정되면서 벽이 둔해질 수 있다 — §4가 이름 붙인 거래다.
+
+### 출처
+
+- N. Diolaiti, G. Niemeyer, F. Barbagli, J. K. Salisbury, "Stability of Haptic Rendering: Discretization, Quantization, Time Delay, and Coulomb Effects," *IEEE Transactions on Robotics*, vol. 22, no. 2, pp. 256–268, 2006 — 2단계의 지연 소산 조건 $\beta\ge\tfrac12+\tau_D$. $\beta=b/(KT)$, $\tau_D$는 합친 루프 지연을 샘플 주기로 나눈 값이다(Sec. III-D, 식 (19), 그림 5). 논문의 describing function 해석은 zero-order hold를 반 샘플의 지연으로 근사해 $\tau_D$와 합치고, 같은 점성 경계 $\beta=\tfrac12+\tau_D$에 이른다.

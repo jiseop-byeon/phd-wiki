@@ -28,6 +28,96 @@ example, plus the gradient pathologies that shaped architecture history.
 
 One figure, drawn once here and asked for again in the problem set.
 
+<svg viewBox="0 0 560 308" style="max-width:100%;height:auto" role="img" aria-label="The P1 computational graph: forward values left to right, backward sensitivities right to left underneath, the two weight gradients hanging off as leaves, and the one update arrow, minus eta, back into W2.">
+  <defs><marker id="cbHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="17" y="49" width="26" height="34" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="17" y1="66" x2="43" y2="66" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="30" y="61.5" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="30" y="78.5" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <text x="30" y="34" font-size="12" text-anchor="middle" fill="currentColor">x</text>
+  <rect x="109" y="40.5" width="26" height="51" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="109" y1="57.5" x2="135" y2="57.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <line x1="109" y1="74.5" x2="135" y2="74.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="122" y="53" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="122" y="70" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <text x="122" y="87" font-size="11" text-anchor="middle" fill="currentColor">3</text>
+  <text x="122" y="34" font-size="12" text-anchor="middle" fill="currentColor">z = W₁x</text>
+  <rect x="213" y="40.5" width="26" height="51" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="213" y1="57.5" x2="239" y2="57.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <line x1="213" y1="74.5" x2="239" y2="74.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="226" y="53" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="226" y="70" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <text x="226" y="87" font-size="11" text-anchor="middle" fill="currentColor">3</text>
+  <text x="226" y="34" font-size="12" text-anchor="middle" fill="currentColor">h = ReLU(z)</text>
+  <rect x="387" y="57.5" width="34" height="17" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="404" y="70" font-size="11" text-anchor="middle" fill="currentColor">0.5</text>
+  <text x="404" y="34" font-size="12" text-anchor="middle" fill="currentColor">ŷ = W₂h</text>
+  <rect x="502" y="57.5" width="44" height="17" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="524" y="70" font-size="11" text-anchor="middle" fill="currentColor">0.125</text>
+  <text x="548" y="34" font-size="12" text-anchor="end" fill="currentColor">L = ½(ŷ − y)²</text>
+  <line x1="43" y1="66" x2="108" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHw)"/>
+  <line x1="239" y1="66" x2="386" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHw)"/>
+  <line x1="421" y1="66" x2="501" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHw)"/>
+  <text x="76" y="60" font-size="11" text-anchor="middle" fill="currentColor">W₁ · 3×2</text>
+  <text x="358" y="60" font-size="11" text-anchor="middle" fill="currentColor">W₂ · 1×3</text>
+  <text x="461.5" y="60" font-size="11" text-anchor="middle" fill="currentColor">loss</text>
+  <line x1="135" y1="49" x2="167.5" y2="49" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="180.5" y1="49" x2="212" y2="49" stroke="currentColor" stroke-width="1.3" marker-end="url(#cbHw)"/>
+  <circle cx="174" cy="49" r="6.5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="174" y="53" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <line x1="135" y1="66" x2="167.5" y2="66" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="180.5" y1="66" x2="212" y2="66" stroke="currentColor" stroke-width="1.3" marker-end="url(#cbHw)"/>
+  <circle cx="174" cy="66" r="6.5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="174" y="70" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <line x1="135" y1="83" x2="167.5" y2="83" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="180.5" y1="83" x2="212" y2="83" stroke="currentColor" stroke-width="1.3" marker-end="url(#cbHw)"/>
+  <circle cx="174" cy="83" r="6.5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="174" y="87" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="174" y="40" font-size="11" text-anchor="middle" fill="currentColor">ReLU</text>
+  <text x="174" y="100" font-size="11" text-anchor="middle" fill="currentColor">mask bits</text>
+  <text x="174" y="113" font-size="11" text-anchor="middle" fill="currentColor">shape kept</text>
+  <line x1="461.5" y1="95" x2="461.5" y2="68.5" stroke="currentColor" stroke-width="1.2" marker-end="url(#cbHw)"/>
+  <text x="461.5" y="107" font-size="11" text-anchor="middle" fill="currentColor">target y = 1</text>
+  <circle cx="122" cy="128" r="2.6" fill="currentColor"/>
+  <circle cx="226" cy="128" r="2.6" fill="currentColor"/>
+  <circle cx="404" cy="128" r="2.6" fill="currentColor"/>
+  <circle cx="524" cy="128" r="2.6" fill="currentColor"/>
+  <line x1="520" y1="128" x2="408" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHw)"/>
+  <line x1="400" y1="128" x2="230" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHw)"/>
+  <line x1="222" y1="128" x2="126" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHw)"/>
+  <text x="112" y="132" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">backward</text>
+  <text x="134" y="143" font-size="11" fill="currentColor">∂L/∂z = δ₁</text>
+  <text x="134" y="156" font-size="11" fill="currentColor">(−0.5, 0.5, −0.25)</text>
+  <text x="134" y="169" font-size="11" opacity="0.9" fill="currentColor">3×1</text>
+  <text x="250" y="143" font-size="11" fill="currentColor">∂L/∂h = W₂ᵀδ₂</text>
+  <text x="250" y="156" font-size="11" fill="currentColor">(−0.5, 0.5, −0.25)</text>
+  <text x="250" y="169" font-size="11" opacity="0.9" fill="currentColor">3×1</text>
+  <text x="472" y="143" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂ŷ = δ₂</text>
+  <text x="472" y="156" font-size="11" text-anchor="middle" fill="currentColor">−0.5</text>
+  <text x="472" y="169" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">1×1</text>
+  <rect x="340" y="186" width="128" height="48.5" rx="5" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2"/>
+  <text x="404" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W₂ = δ₂hᵀ</text>
+  <text x="404" y="215" font-size="11" text-anchor="middle" fill="currentColor">(−0.5, −1, −1.5)</text>
+  <text x="404" y="228.5" font-size="11" text-anchor="middle" fill="currentColor">1×3 = shape of W₂ ✓</text>
+  <rect x="30" y="186" width="132" height="75.5" rx="5" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2"/>
+  <text x="96" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W₁ = δ₁xᵀ</text>
+  <text x="86" y="215" font-size="11" text-anchor="end" fill="currentColor">−0.5</text>
+  <text x="120" y="215" font-size="11" text-anchor="end" fill="currentColor">−1</text>
+  <text x="86" y="228.5" font-size="11" text-anchor="end" fill="currentColor">0.5</text>
+  <text x="120" y="228.5" font-size="11" text-anchor="end" fill="currentColor">1</text>
+  <text x="86" y="242" font-size="11" text-anchor="end" fill="currentColor">−0.25</text>
+  <text x="120" y="242" font-size="11" text-anchor="end" fill="currentColor">−0.5</text>
+  <path d="M 51 206.5 h -3 V 245 h 3" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M 125 206.5 h 3 V 245 h -3" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="96" y="255.5" font-size="11" text-anchor="middle" fill="currentColor">3×2 = shape of W₁ ✓</text>
+  <line x1="404" y1="131" x2="404" y2="186" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
+  <line x1="122" y1="131" x2="122" y2="186" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
+  <line x1="358" y1="186" x2="358" y2="68.5" stroke="currentColor" stroke-width="1.7" marker-end="url(#cbHw)"/>
+  <text x="352" y="106" font-size="11" text-anchor="end" fill="currentColor">−η, η = 0.1</text>
+  <text x="12" y="283" font-size="11" opacity="0.9" fill="currentColor">Only the −η arrow changes a number: W₂ ← (1, −1, 0.5) − 0.1·(−0.5, −1, −1.5)</text>
+  <text x="12" y="297" font-size="11" opacity="0.9" fill="currentColor">= (1.05, −0.9, 0.65). Forward again with the same h: ŷ = 1.20, L = 0.020.</text>
+</svg>
+
 **The forward chain, left to right.** Five boxes joined by four arrows: $x$, then $z=W_1x$, then $h=\mathrm{ReLU}(z)$, then $\hat y=W_2h$, then $L=\tfrac12(\hat y-y)^2$. Inside each box write its catalog number — $x=(1,2)$, $z=(1,2,3)$, $h=(1,2,3)$, $\hat y=0.5$, $L=0.125$ — and on each arrow write what produced the next box together with its shape: $W_1$ is $3\times2$, ReLU is elementwise and changes no shape, $W_2$ is $1\times3$, and the loss arrow also carries the target $y=1$ in from the side. Mark each of the three hidden units with its ReLU mask bit, here $(1,1,1)$, because that bit is the only place the picture can be cut.
 
 **The backward chain, underneath, right to left.** One arrow under each forward arrow, and on it the quantity that travels back: $\partial L/\partial\hat y$ under the loss arrow, $\partial L/\partial h$ under the $W_2$ arrow, $\partial L/\partial z$ under the ReLU arrow. Draw the two parameter gradients as stubs hanging *off* the chain rather than links in it — $\partial L/\partial W_2$ dropping from the $\hat y$ arrow, $\partial L/\partial W_1$ from the $z$ arrow — because a weight gradient is a leaf of the backward pass: nothing is computed from it, it is only read out. Next to each backward arrow write the shape of what travels on it, and check that every stub has the shape of the matrix it will update.
@@ -399,6 +489,96 @@ print(d2, W2, L, L2)
 
 그림 하나. 여기서 한 번 그리고 과제가 같은 것을 다시 요구한다.
 
+<svg viewBox="0 0 560 308" style="max-width:100%;height:auto" role="img" aria-label="장치 P1의 계산 그래프: 위에는 왼쪽에서 오른쪽으로 순전파 값, 그 아래에는 오른쪽에서 왼쪽으로 역전파 민감도, 잎으로 매달린 가중치 그래디언트 둘, 그리고 W2로 돌아가는 갱신 화살표 마이너스 에타 하나.">
+  <defs><marker id="cbHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="17" y="49" width="26" height="34" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="17" y1="66" x2="43" y2="66" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="30" y="61.5" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="30" y="78.5" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <text x="30" y="34" font-size="12" text-anchor="middle" fill="currentColor">x</text>
+  <rect x="109" y="40.5" width="26" height="51" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="109" y1="57.5" x2="135" y2="57.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <line x1="109" y1="74.5" x2="135" y2="74.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="122" y="53" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="122" y="70" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <text x="122" y="87" font-size="11" text-anchor="middle" fill="currentColor">3</text>
+  <text x="122" y="34" font-size="12" text-anchor="middle" fill="currentColor">z = W₁x</text>
+  <rect x="213" y="40.5" width="26" height="51" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="213" y1="57.5" x2="239" y2="57.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <line x1="213" y1="74.5" x2="239" y2="74.5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <text x="226" y="53" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="226" y="70" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <text x="226" y="87" font-size="11" text-anchor="middle" fill="currentColor">3</text>
+  <text x="226" y="34" font-size="12" text-anchor="middle" fill="currentColor">h = ReLU(z)</text>
+  <rect x="387" y="57.5" width="34" height="17" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="404" y="70" font-size="11" text-anchor="middle" fill="currentColor">0.5</text>
+  <text x="404" y="34" font-size="12" text-anchor="middle" fill="currentColor">ŷ = W₂h</text>
+  <rect x="502" y="57.5" width="44" height="17" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="524" y="70" font-size="11" text-anchor="middle" fill="currentColor">0.125</text>
+  <text x="548" y="34" font-size="12" text-anchor="end" fill="currentColor">L = ½(ŷ − y)²</text>
+  <line x1="43" y1="66" x2="108" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHwk)"/>
+  <line x1="239" y1="66" x2="386" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHwk)"/>
+  <line x1="421" y1="66" x2="501" y2="66" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbHwk)"/>
+  <text x="76" y="60" font-size="11" text-anchor="middle" fill="currentColor">W₁ · 3×2</text>
+  <text x="358" y="60" font-size="11" text-anchor="middle" fill="currentColor">W₂ · 1×3</text>
+  <text x="461.5" y="60" font-size="11" text-anchor="middle" fill="currentColor">손실</text>
+  <line x1="135" y1="49" x2="167.5" y2="49" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="180.5" y1="49" x2="212" y2="49" stroke="currentColor" stroke-width="1.3" marker-end="url(#cbHwk)"/>
+  <circle cx="174" cy="49" r="6.5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="174" y="53" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <line x1="135" y1="66" x2="167.5" y2="66" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="180.5" y1="66" x2="212" y2="66" stroke="currentColor" stroke-width="1.3" marker-end="url(#cbHwk)"/>
+  <circle cx="174" cy="66" r="6.5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="174" y="70" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <line x1="135" y1="83" x2="167.5" y2="83" stroke="currentColor" stroke-width="1.3"/>
+  <line x1="180.5" y1="83" x2="212" y2="83" stroke="currentColor" stroke-width="1.3" marker-end="url(#cbHwk)"/>
+  <circle cx="174" cy="83" r="6.5" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <text x="174" y="87" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="174" y="40" font-size="11" text-anchor="middle" fill="currentColor">ReLU</text>
+  <text x="174" y="100" font-size="11" text-anchor="middle" fill="currentColor">마스크 비트</text>
+  <text x="174" y="113" font-size="11" text-anchor="middle" fill="currentColor">모양 유지</text>
+  <line x1="461.5" y1="95" x2="461.5" y2="68.5" stroke="currentColor" stroke-width="1.2" marker-end="url(#cbHwk)"/>
+  <text x="461.5" y="107" font-size="11" text-anchor="middle" fill="currentColor">목표 y = 1</text>
+  <circle cx="122" cy="128" r="2.6" fill="currentColor"/>
+  <circle cx="226" cy="128" r="2.6" fill="currentColor"/>
+  <circle cx="404" cy="128" r="2.6" fill="currentColor"/>
+  <circle cx="524" cy="128" r="2.6" fill="currentColor"/>
+  <line x1="520" y1="128" x2="408" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHwk)"/>
+  <line x1="400" y1="128" x2="230" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHwk)"/>
+  <line x1="222" y1="128" x2="126" y2="128" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#cbHwk)"/>
+  <text x="112" y="132" font-size="11" text-anchor="end" opacity="0.85" fill="currentColor">역전파</text>
+  <text x="134" y="143" font-size="11" fill="currentColor">∂L/∂z = δ₁</text>
+  <text x="134" y="156" font-size="11" fill="currentColor">(−0.5, 0.5, −0.25)</text>
+  <text x="134" y="169" font-size="11" opacity="0.9" fill="currentColor">3×1</text>
+  <text x="250" y="143" font-size="11" fill="currentColor">∂L/∂h = W₂ᵀδ₂</text>
+  <text x="250" y="156" font-size="11" fill="currentColor">(−0.5, 0.5, −0.25)</text>
+  <text x="250" y="169" font-size="11" opacity="0.9" fill="currentColor">3×1</text>
+  <text x="472" y="143" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂ŷ = δ₂</text>
+  <text x="472" y="156" font-size="11" text-anchor="middle" fill="currentColor">−0.5</text>
+  <text x="472" y="169" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">1×1</text>
+  <rect x="340" y="186" width="128" height="48.5" rx="5" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2"/>
+  <text x="404" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W₂ = δ₂hᵀ</text>
+  <text x="404" y="215" font-size="11" text-anchor="middle" fill="currentColor">(−0.5, −1, −1.5)</text>
+  <text x="404" y="228.5" font-size="11" text-anchor="middle" fill="currentColor">1×3 = W₂의 모양 ✓</text>
+  <rect x="30" y="186" width="132" height="75.5" rx="5" fill="currentColor" fill-opacity="0.05" stroke="currentColor" stroke-width="1.1" stroke-dasharray="1.5 2"/>
+  <text x="96" y="201.5" font-size="11" text-anchor="middle" fill="currentColor">∂L/∂W₁ = δ₁xᵀ</text>
+  <text x="86" y="215" font-size="11" text-anchor="end" fill="currentColor">−0.5</text>
+  <text x="120" y="215" font-size="11" text-anchor="end" fill="currentColor">−1</text>
+  <text x="86" y="228.5" font-size="11" text-anchor="end" fill="currentColor">0.5</text>
+  <text x="120" y="228.5" font-size="11" text-anchor="end" fill="currentColor">1</text>
+  <text x="86" y="242" font-size="11" text-anchor="end" fill="currentColor">−0.25</text>
+  <text x="120" y="242" font-size="11" text-anchor="end" fill="currentColor">−0.5</text>
+  <path d="M 51 206.5 h -3 V 245 h 3" fill="none" stroke="currentColor" stroke-width="1"/>
+  <path d="M 125 206.5 h 3 V 245 h -3" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="96" y="255.5" font-size="11" text-anchor="middle" fill="currentColor">3×2 = W₁의 모양 ✓</text>
+  <line x1="404" y1="131" x2="404" y2="186" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
+  <line x1="122" y1="131" x2="122" y2="186" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.5 2.5"/>
+  <line x1="358" y1="186" x2="358" y2="68.5" stroke="currentColor" stroke-width="1.7" marker-end="url(#cbHwk)"/>
+  <text x="352" y="106" font-size="11" text-anchor="end" fill="currentColor">−η, η = 0.1</text>
+  <text x="12" y="283" font-size="11" opacity="0.9" fill="currentColor">숫자를 바꾸는 것은 −η 화살표뿐이다: W₂ ← (1, −1, 0.5) − 0.1·(−0.5, −1, −1.5)</text>
+  <text x="12" y="297" font-size="11" opacity="0.9" fill="currentColor">= (1.05, −0.9, 0.65). 같은 h로 다시 순전파하면 ŷ = 1.20, L = 0.020.</text>
+</svg>
+
 **순전파 사슬, 왼쪽에서 오른쪽으로.** 상자 다섯을 화살표 넷으로 잇는다. $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$. 각 상자 안에 카탈로그 숫자를 쓴다 — $x=(1,2)$, $z=(1,2,3)$, $h=(1,2,3)$, $\hat y=0.5$, $L=0.125$. 각 화살표 위에는 다음 상자를 만든 것과 그 모양을 쓴다. $W_1$은 $3\times2$, ReLU는 원소별이라 모양을 바꾸지 않고, $W_2$는 $1\times3$이며, 손실로 가는 화살표에는 옆에서 목표 $y=1$이 함께 들어온다. 은닉 유닛 셋에는 각각 ReLU 마스크 비트를 적는다. 여기서는 $(1,1,1)$이고, 이 비트가 이 그림에서 사슬이 끊어질 수 있는 유일한 자리다.
 
 **역전파 사슬, 그 아래에 오른쪽에서 왼쪽으로.** 순전파 화살표마다 그 아래 화살표를 하나씩 그리고, 거기로 거슬러 가는 양을 적는다. 손실 화살표 아래에 $\partial L/\partial\hat y$, $W_2$ 화살표 아래에 $\partial L/\partial h$, ReLU 화살표 아래에 $\partial L/\partial z$. 파라미터 그래디언트 둘은 사슬의 고리가 아니라 사슬에서 *뻗어 나온* 가지로 그린다. $\partial L/\partial W_2$는 $\hat y$ 화살표에서, $\partial L/\partial W_1$은 $z$ 화살표에서 아래로 떨어진다. 가중치 그래디언트는 역전파의 잎이기 때문이다. 그것으로부터 계산되는 것은 없고 읽어 내기만 한다. 역전파 화살표 옆에는 그 위를 지나는 것의 모양을 쓰고, 각 가지의 모양이 그것이 갱신할 행렬의 모양과 같은지 확인한다.
@@ -475,17 +655,17 @@ print(d2, W2, L, L2)
   - **VJP의 완전한 정의.** 야코비안이 $J$인 기본 연산 $y=f(x)$의 VJP는 출력 크기의 민감도 $v=\partial L/\partial y$를 입력 크기의 민감도 $J^\top v=\partial L/\partial x$로 보내는 선형 사상이다. 기본 연산은 이것을 규칙으로 제공하고 $J$를 만들지 않는다. 입출력이 $10^7$개인 층이라면 $J$의 성분이 $10^{14}$개이기 때문이다. §3에서 이미 쓰는 규칙 둘: 선형층 $y=Wx$의 VJP는 $v\mapsto W^\top v$, 원소별 ReLU의 VJP는 $v\mapsto v\odot\mathbb{1}[z>0]$이다.
   - **gradient checkpointing의 완전한 정의.** 메모리와 계산을 맞바꾸는 방법이고 두 부분으로 된다. 순전파에서는 고른 **체크포인트**에서만 활성값을 저장하고, 역전파에서는 각 구간의 VJP가 필요로 하기 직전에 그 구간의 활성값을 체크포인트부터 **재계산**한다. 비용은 대략 순전파 한 번 추가다. $n$층 네트워크에서 $\sqrt{n}$층마다 체크포인트를 두면 활성값 메모리가 $O(n)$에서 $O(\sqrt{n})$으로 준다(Chen et al., "Training Deep Nets with Sublinear Memory Cost," 2016).
 <svg viewBox="0 0 560 228" style="max-width:100%;height:auto" role="img" aria-label="파라미터마다 한 번 왼쪽에서 오른쪽으로 쓸어가는 순방향 모드와, 손실 하나에 대해 한 번 오른쪽에서 왼쪽으로 쓸어오는 역방향 모드">
-  <defs><marker id="cbA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="cbAk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1">
     <rect x="70" y="38" width="52" height="26" rx="3"/><rect x="160" y="38" width="52" height="26" rx="3"/><rect x="250" y="38" width="52" height="26" rx="3"/><rect x="340" y="38" width="52" height="26" rx="3"/><circle cx="446" cy="51" r="14"/>
   </g>
   <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1">
     <rect x="70" y="108" width="52" height="26" rx="3"/><rect x="160" y="108" width="52" height="26" rx="3"/><rect x="250" y="108" width="52" height="26" rx="3"/><rect x="340" y="108" width="52" height="26" rx="3"/><circle cx="446" cy="121" r="14"/>
   </g>
-  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#cbA)" opacity="0.85">
+  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#cbAk)" opacity="0.85">
     <line x1="124" y1="51" x2="158" y2="51"/><line x1="214" y1="51" x2="248" y2="51"/><line x1="304" y1="51" x2="338" y2="51"/><line x1="394" y1="51" x2="428" y2="51"/>
   </g>
-  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#cbA)" opacity="0.85">
+  <g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#cbAk)" opacity="0.85">
     <line x1="160" y1="121" x2="124" y2="121"/><line x1="250" y1="121" x2="214" y2="121"/><line x1="340" y1="121" x2="304" y2="121"/><line x1="430" y1="121" x2="394" y2="121"/>
   </g>
   <g font-size="10.5" fill="currentColor">
@@ -569,7 +749,7 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 변수와 같은 모양이다 — 세상에서 가장 빠른 버그 검출기.
 
 <svg viewBox="0 0 560 175" style="max-width:100%;height:auto" role="img" aria-label="2층 신경망의 순전파와 역전파">
-  <defs><marker id="bpF" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="bpFk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="none" stroke="currentColor" stroke-width="1.4">
     <rect x="20" y="52" width="62" height="34" rx="4"/><rect x="140" y="52" width="62" height="34" rx="4"/>
     <rect x="260" y="52" width="72" height="34" rx="4"/><rect x="380" y="52" width="62" height="34" rx="4"/>
@@ -578,11 +758,11 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   <g font-size="12" fill="currentColor" text-anchor="middle">
     <text x="51" y="74">x</text><text x="171" y="74">z = W₁x</text><text x="296" y="74">h = ReLU(z)</text><text x="411" y="74">ŷ = W₂h</text><text x="516" y="74">L</text>
   </g>
-  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpF)">
+  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpFk)">
     <line x1="82" y1="62" x2="138" y2="62"/><line x1="202" y1="62" x2="258" y2="62"/>
     <line x1="332" y1="62" x2="378" y2="62"/><line x1="442" y1="62" x2="488" y2="62"/>
   </g>
-  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpF)" stroke-dasharray="5 3" opacity="0.85">
+  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpFk)" stroke-dasharray="5 3" opacity="0.85">
     <line x1="488" y1="78" x2="444" y2="78"/><line x1="378" y1="78" x2="334" y2="78"/>
     <line x1="258" y1="78" x2="204" y2="78"/><line x1="138" y1="78" x2="84" y2="78"/>
   </g>

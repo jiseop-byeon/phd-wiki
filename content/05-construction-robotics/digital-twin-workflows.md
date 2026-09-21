@@ -191,7 +191,7 @@ flowchart LR
 “트윈”이라는 이름이 아니라 데이터와 명령 경로를 보고 수준을 판단하라.
 
 <svg viewBox="0 0 600 214" style="max-width:100%;height:auto" role="img" aria-label="디지털 트윈이라 불리는 네 가지와, 각각에 아직 없는 것">
-  <defs><marker id="dtA" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="dtAk" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor" opacity="0.10">
     <rect x="24" y="150" width="300" height="34" rx="3"/><rect x="44" y="108" width="300" height="34" rx="3"/>
     <rect x="64" y="66" width="300" height="34" rx="3"/><rect x="84" y="24" width="300" height="34" rx="3"/>
@@ -200,7 +200,7 @@ flowchart LR
     <rect x="24" y="150" width="300" height="34" rx="3"/><rect x="44" y="108" width="300" height="34" rx="3"/>
     <rect x="64" y="66" width="300" height="34" rx="3"/><rect x="84" y="24" width="300" height="34" rx="3"/>
   </g>
-  <g stroke="currentColor" stroke-width="1.4" marker-end="url(#dtA)" opacity="0.7">
+  <g stroke="currentColor" stroke-width="1.4" marker-end="url(#dtAk)" opacity="0.7">
     <line x1="330" y1="167" x2="386" y2="167"/><line x1="350" y1="125" x2="386" y2="125"/><line x1="370" y1="83" x2="386" y2="83"/><line x1="390" y1="41" x2="392" y2="41"/>
   </g>
   <g font-size="11.5" fill="currentColor">

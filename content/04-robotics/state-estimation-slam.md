@@ -25,7 +25,7 @@ Sensors do not reveal the world directly: they provide partial, delayed, and noi
 
 ### Running object: P5's panel on P6's clock
 
-**P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] is the panel P2 is carrying a tool toward: a wall at a prior range of $10\,\mathrm{cm}$ with variance $4\,\mathrm{cm}^2$, and a range sensor that reads $12\,\mathrm{cm}$ with variance $1\,\mathrm{cm}^2$. **P6** supplies the clock and the motion. Every range on this page is in centimetres.
+**P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] is the panel P2 is carrying a tool toward: a wall at a prior range of $10\,\mathrm{cm}$ with variance $4\,\mathrm{cm}^2$, and a range sensor that reads $12\,\mathrm{cm}$ with variance $1\,\mathrm{cm}^2$. **P6** supplies the clock and the motion. Every P5 range on this page is in centimetres.
 
 | Symbol | Value | What it is |
 |---|---:|---|
@@ -40,8 +40,8 @@ Sensors do not reveal the world directly: they provide partial, delayed, and noi
 
 The $1\,\mathrm{cm}$ step every later section advances by is not a free choice: it is $u\Delta t = 0.5 \times 0.02\,\mathrm{m}$, the distance the tool covers between two frames of P6's vision node. Two numbers from the same table decide what the filter can and cannot fix.
 
-- **Latency is larger than the noise it is usually blamed on.** A range that arrives $T_\ell = 70\,\mathrm{ms}$ late describes the world $0.5 \times 0.070 = 3.5\,\mathrm{cm}$ ago, and $3.5\,\mathrm{cm}$ is $3.5$ times the sensor's own standard deviation of $1\,\mathrm{cm}$. So an unmodelled timestamp is a bias three times the size of the noise term the filter is tuned against, and no covariance setting removes a bias.
-- **The noise on the datasheet is not the noise that matters.** P6's encoder quantizes position to $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$, and a uniform quantum $q$ has variance $q^2/12$, so its standard deviation is $0.141\,\mathrm{mm} = 0.0141\,\mathrm{cm}$ and its variance $1.99\times10^{-4}\,\mathrm{cm}^2$. That is four orders of magnitude below $Q = 1\,\mathrm{cm}^2$, because $Q$ stands for slip and unmodelled motion, not for encoder counts.
+- **Latency is larger than the noise it is usually blamed on.** A range that arrives $T_\ell = 70\,\mathrm{ms}$ late describes the world $0.5 \times 0.070 = 3.5\,\mathrm{cm}$ ago, and $3.5\,\mathrm{cm}$ is $3.5$ times the sensor's own standard deviation of $1\,\mathrm{cm}$. So an unmodelled timestamp is a bias three and a half times the size of the noise term the filter is tuned against, and no covariance setting removes a bias.
+- **The noise on the datasheet is not the noise that matters.** P6's encoder quantizes position to $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$, and a uniform quantum $q$ has variance $q^2/12$, so its standard deviation is $0.141\,\mathrm{mm} = 0.0141\,\mathrm{cm}$ and its variance $1.99\times10^{-4}\,\mathrm{cm}^2$. That is four orders of magnitude below $Q = 1\,\mathrm{cm}^2$, because $Q$ stands for slip and unmodelled motion, not for encoder counts. The $q^2/12$ is derived, with the condition under which it holds (the cart crossing many counts irregularly between samples, not standing still), in [[04-robotics/sensor-models|3.2 Sensor Models & Noise §4]].
 
 *Scope: this page teaches how a belief is propagated and corrected, what a Kalman gain and an innovation are, how the SLAM posterior factors, and how to read an estimation claim. It does not teach the rotation parameterizations an SE(3) estimator needs ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]]), the perception front end that produces the measurements ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception]]), or the solvers the back end calls ([[02-foundations/optimization|4. Optimization §3.5]]).*
 
@@ -49,19 +49,169 @@ The $1\,\mathrm{cm}$ step every later section advances by is not a free choice: 
 
 Draw it once; the problem set asks for the same drawing at different numbers.
 
-**Top — the range axis, in centimetres, drawn to scale.** A tick at $11.6$ for the belief the catalog update leaves behind, an arrow of length $1$ to the right labelled *predict* ending at $12.6$, and under each tick a horizontal bar of half-width $\sqrt{P}$: $0.89$ before the step, $1.34$ after it. The bar must visibly grow, because prediction adds $Q$ and never subtracts anything.
+<svg viewBox="0 0 560 386" style="max-width:100%;height:auto" role="img" aria-label="One predict-correct-gate cycle on P5's range axis in centimetres, drawn to scale: the belief at 11.6 predicted 1 cm left to 10.6 with its spread growing from 0.89 to 1.34; a gate of half-width 5.02 around the prediction with z = 10.5 inside and z = 18 outside; and two hypotheses, the panel pulling the estimate to 10.536 and the passer-by throwing it to 15.357, 4.86 cm past the panel, both reporting P+ = 0.6429.">
+  <defs><marker id="aSES" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.55">
+    <line x1="24" y1="64" x2="374" y2="64"/>
+    <line x1="24" y1="152" x2="374" y2="152"/>
+    <line x1="24" y1="222" x2="374" y2="222"/>
+    <line x1="24" y1="282" x2="374" y2="282"/>
+  </g>
+  <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35">
+    <line x1="24" y1="61.5" x2="24" y2="66.5"/>
+    <line x1="49" y1="61.5" x2="49" y2="66.5"/>
+    <line x1="74" y1="61.5" x2="74" y2="66.5"/>
+    <line x1="99" y1="61.5" x2="99" y2="66.5"/>
+    <line x1="124" y1="61.5" x2="124" y2="66.5"/>
+    <line x1="149" y1="61.5" x2="149" y2="66.5"/>
+    <line x1="174" y1="61.5" x2="174" y2="66.5"/>
+    <line x1="199" y1="61.5" x2="199" y2="66.5"/>
+    <line x1="224" y1="61.5" x2="224" y2="66.5"/>
+    <line x1="249" y1="61.5" x2="249" y2="66.5"/>
+    <line x1="274" y1="61.5" x2="274" y2="66.5"/>
+    <line x1="299" y1="61.5" x2="299" y2="66.5"/>
+    <line x1="324" y1="61.5" x2="324" y2="66.5"/>
+    <line x1="349" y1="61.5" x2="349" y2="66.5"/>
+    <line x1="374" y1="61.5" x2="374" y2="66.5"/>
+    <line x1="24" y1="149.5" x2="24" y2="154.5"/>
+    <line x1="49" y1="149.5" x2="49" y2="154.5"/>
+    <line x1="74" y1="149.5" x2="74" y2="154.5"/>
+    <line x1="99" y1="149.5" x2="99" y2="154.5"/>
+    <line x1="124" y1="149.5" x2="124" y2="154.5"/>
+    <line x1="149" y1="149.5" x2="149" y2="154.5"/>
+    <line x1="174" y1="149.5" x2="174" y2="154.5"/>
+    <line x1="199" y1="149.5" x2="199" y2="154.5"/>
+    <line x1="224" y1="149.5" x2="224" y2="154.5"/>
+    <line x1="249" y1="149.5" x2="249" y2="154.5"/>
+    <line x1="274" y1="149.5" x2="274" y2="154.5"/>
+    <line x1="299" y1="149.5" x2="299" y2="154.5"/>
+    <line x1="324" y1="149.5" x2="324" y2="154.5"/>
+    <line x1="349" y1="149.5" x2="349" y2="154.5"/>
+    <line x1="374" y1="149.5" x2="374" y2="154.5"/>
+    <line x1="24" y1="219.5" x2="24" y2="224.5"/>
+    <line x1="49" y1="219.5" x2="49" y2="224.5"/>
+    <line x1="74" y1="219.5" x2="74" y2="224.5"/>
+    <line x1="99" y1="219.5" x2="99" y2="224.5"/>
+    <line x1="124" y1="219.5" x2="124" y2="224.5"/>
+    <line x1="149" y1="219.5" x2="149" y2="224.5"/>
+    <line x1="174" y1="219.5" x2="174" y2="224.5"/>
+    <line x1="199" y1="219.5" x2="199" y2="224.5"/>
+    <line x1="224" y1="219.5" x2="224" y2="224.5"/>
+    <line x1="249" y1="219.5" x2="249" y2="224.5"/>
+    <line x1="274" y1="219.5" x2="274" y2="224.5"/>
+    <line x1="299" y1="219.5" x2="299" y2="224.5"/>
+    <line x1="324" y1="219.5" x2="324" y2="224.5"/>
+    <line x1="349" y1="219.5" x2="349" y2="224.5"/>
+    <line x1="374" y1="219.5" x2="374" y2="224.5"/>
+    <line x1="24" y1="279.5" x2="24" y2="284.5"/>
+    <line x1="49" y1="279.5" x2="49" y2="284.5"/>
+    <line x1="74" y1="279.5" x2="74" y2="284.5"/>
+    <line x1="99" y1="279.5" x2="99" y2="284.5"/>
+    <line x1="124" y1="279.5" x2="124" y2="284.5"/>
+    <line x1="149" y1="279.5" x2="149" y2="284.5"/>
+    <line x1="174" y1="279.5" x2="174" y2="284.5"/>
+    <line x1="199" y1="279.5" x2="199" y2="284.5"/>
+    <line x1="224" y1="279.5" x2="224" y2="284.5"/>
+    <line x1="249" y1="279.5" x2="249" y2="284.5"/>
+    <line x1="274" y1="279.5" x2="274" y2="284.5"/>
+    <line x1="299" y1="279.5" x2="299" y2="284.5"/>
+    <line x1="324" y1="279.5" x2="324" y2="284.5"/>
+    <line x1="349" y1="279.5" x2="349" y2="284.5"/>
+    <line x1="374" y1="279.5" x2="374" y2="284.5"/>
+  </g>
+  <line x1="189" y1="38" x2="164" y2="38" stroke="currentColor" stroke-width="1.6" marker-end="url(#aSES)"/>
+  <g stroke="currentColor" stroke-width="1.8">
+    <line x1="189" y1="56" x2="189" y2="72"/>
+    <line x1="164" y1="56" x2="164" y2="72"/>
+  </g>
+  <rect x="166.6" y="76" width="44.7" height="5" fill="currentColor" fill-opacity="0.45"/>
+  <rect x="130.5" y="88" width="67.1" height="5" fill="currentColor" fill-opacity="0.8"/>
+  <rect x="38.5" y="126" width="251" height="26" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.5" stroke-width="1"/>
+  <line x1="164" y1="120" x2="164" y2="158" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M161.5 156.8 L165.7 161 L161.5 165.2 L157.3 161 Z" fill="currentColor" fill-opacity="1"/>
+  <path d="M349 156.8 L353.2 161 L349 165.2 L344.8 161 Z" fill="currentColor" fill-opacity="1"/>
+  <line x1="161.5" y1="210" x2="161.5" y2="234" stroke="currentColor" stroke-width="2.6" stroke-opacity="0.6"/>
+  <line x1="164" y1="216" x2="164" y2="228" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="161.5" y1="270" x2="161.5" y2="294" stroke="currentColor" stroke-width="2.6" stroke-opacity="0.6"/>
+  <line x1="164" y1="276" x2="164" y2="288" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="164" y1="213" x2="162.4" y2="213" stroke="currentColor" stroke-width="1.6" marker-end="url(#aSES)"/>
+  <circle cx="162.4" cy="222" r="2.8" fill="currentColor"/>
+  <line x1="164" y1="273" x2="282.9" y2="273" stroke="currentColor" stroke-width="1.6" marker-end="url(#aSES)"/>
+  <circle cx="282.9" cy="282" r="3.6" fill="currentColor"/>
+  <path d="M161.5 298 H282.9 M161.5 294 v8 M282.9 294 v8" stroke="currentColor" stroke-width="1" fill="none"/>
+  <g fill="none" stroke="currentColor" stroke-width="1.2">
+    <rect x="386" y="200" width="163" height="34" rx="3"/>
+    <rect x="386" y="260" width="163" height="34" rx="3"/>
+  </g>
+  <line x1="24" y1="346" x2="374" y2="346" stroke="currentColor" stroke-width="1.1"/>
+  <g stroke="currentColor" stroke-width="1">
+    <line x1="24" y1="346" x2="24" y2="343"/>
+    <line x1="49" y1="346" x2="49" y2="341"/>
+    <line x1="74" y1="346" x2="74" y2="343"/>
+    <line x1="99" y1="346" x2="99" y2="341"/>
+    <line x1="124" y1="346" x2="124" y2="343"/>
+    <line x1="149" y1="346" x2="149" y2="341"/>
+    <line x1="174" y1="346" x2="174" y2="343"/>
+    <line x1="199" y1="346" x2="199" y2="341"/>
+    <line x1="224" y1="346" x2="224" y2="343"/>
+    <line x1="249" y1="346" x2="249" y2="341"/>
+    <line x1="274" y1="346" x2="274" y2="343"/>
+    <line x1="299" y1="346" x2="299" y2="341"/>
+    <line x1="324" y1="346" x2="324" y2="343"/>
+    <line x1="349" y1="346" x2="349" y2="341"/>
+    <line x1="374" y1="346" x2="374" y2="343"/>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="176.5" y="30" text-anchor="middle">predict: x − uΔt, 1 cm</text>
+    <text x="194" y="60">11.6</text>
+    <text x="159" y="60" text-anchor="end">10.6</text>
+    <text x="217.4" y="82" opacity="0.8">√P = 0.89</text>
+    <text x="203.5" y="94">√P⁻ = 1.34</text>
+    <text x="386" y="56">belief 11.6 cm, P = 0.8 cm²</text>
+    <text x="386" y="70">prediction adds Q = 1: P⁻ = 1.8</text>
+    <text x="386" y="84" opacity="0.8">the bar grows, it never shrinks</text>
+    <text x="169" y="122">x̂⁻ = 10.6</text>
+    <text x="43.5" y="143" opacity="0.9">gate ±5.02</text>
+    <text x="155.5" y="176" text-anchor="end">z = 10.5</text>
+    <text x="349" y="178" text-anchor="middle">z = 18</text>
+    <text x="386" y="122">gate around the prediction:</text>
+    <text x="386" y="136">half-width 3√(P⁻ + R) = 5.02 cm</text>
+    <text x="386" y="150" opacity="0.9">z = 10.5: |y| = 0.1, inside</text>
+    <text x="386" y="164" opacity="0.9">z = 18: y = 7.4, outside</text>
+    <text x="155.5" y="216" text-anchor="end" opacity="0.85">panel</text>
+    <text x="173" y="217" opacity="0.85">a 0.064 cm pull</text>
+    <text x="155.5" y="276" text-anchor="end" opacity="0.85">panel</text>
+    <text x="222.2" y="312" text-anchor="middle">4.86 cm past the panel</text>
+    <text x="394" y="214">this z is the panel</text>
+    <text x="394" y="228" opacity="0.85">x̂⁺ = 10.536 cm</text>
+    <text x="394" y="274">this z is a passer-by</text>
+    <text x="394" y="288" opacity="0.85">x̂⁺ = 15.357 cm</text>
+    <text x="386" y="312">P⁺ = 0.6429 cm² in both boxes</text>
+    <text x="386" y="326" opacity="0.85">the variance cannot tell them apart</text>
+    <text x="49" y="360" text-anchor="middle" font-size="11">6</text>
+    <text x="99" y="360" text-anchor="middle" font-size="11">8</text>
+    <text x="149" y="360" text-anchor="middle" font-size="11">10</text>
+    <text x="199" y="360" text-anchor="middle" font-size="11">12</text>
+    <text x="249" y="360" text-anchor="middle" font-size="11">14</text>
+    <text x="299" y="360" text-anchor="middle" font-size="11">16</text>
+    <text x="349" y="360" text-anchor="middle" font-size="11">18</text>
+    <text x="24" y="373" opacity="0.8">range to the panel (cm), one scale for every row</text>
+  </g>
+</svg>
 
-**Middle — the gate.** Centred on the prediction $12.6$, a shaded band of half-width $3\sqrt{P^- + R} = 5.02$. Mark two candidate readings on the axis: $z = 12.5$ just inside the band on the left, and $z = 20$ far outside it on the right. The band is drawn around the *prediction*, not around the sensor reading, and its half-width uses $P^- + R$, not $P^-$ — both are the drawing's whole content.
+**Top — the range axis, in centimetres, drawn to scale.** A tick at $11.6$ for the belief the catalog update leaves behind, an arrow of length $1$ to the left labelled *predict* ending at $10.6$, and under each tick a horizontal bar of half-width $\sqrt{P}$: $0.89$ before the step, $1.34$ after it. The bar must visibly grow, because prediction adds $Q$ and never subtracts anything.
 
-**Bottom — two boxes, one arrow each.** A box "this $z$ is the panel" with an arrow pulling the estimate a short way toward $12.5$, and a box "this $z$ is a passer-by" with an arrow throwing the estimate $4.86\,\mathrm{cm}$ past the panel. Under the second box write the posterior variance that the filter would report anyway. That the two boxes end with the *same* variance is the point of the drawing.
+**Middle — the gate.** Centred on the prediction $10.6$, a shaded band of half-width $3\sqrt{P^- + R} = 5.02$. Mark two candidate readings on the axis: $z = 10.5$ just left of the prediction, well inside the band, and $z = 18$ far outside it on the right. The band is drawn around the *prediction*, not around the sensor reading, and its half-width uses $P^- + R$, not $P^-$ — both are the drawing's whole content.
+
+**Bottom — two boxes, one arrow each.** A box "this $z$ is the panel" with an arrow pulling the estimate a short way toward $10.5$, and a box "this $z$ is a passer-by" with an arrow throwing the estimate $4.86\,\mathrm{cm}$ past the panel. Under the second box write the posterior variance that the filter would report anyway. That the two boxes end with the *same* variance is the point of the drawing.
 
 ### Worked case: one predict–correct–gate cycle on P5, every intermediate
 
 Start from the belief the catalog's own update leaves: $\hat x = 11.6\,\mathrm{cm}$, $P = 0.8\,\mathrm{cm}^2$ (P5's scalar Kalman step, reproduced in §6). One step of P6's clock passes and a new range arrives.
 
-**1. Predict.** The motion model is $f(x, u) = x + u\Delta t$ with $u\Delta t = 1\,\mathrm{cm}$, so $A = 1$ and §5's predict equations give
+**1. Predict.** The motion model is $f(x, u) = x - u\Delta t$ with $u\Delta t = 1\,\mathrm{cm}$ (advancing toward the panel shortens the range), so $A = 1$ and §5's predict equations give
 
-$$\hat x^- = 11.6 + 1 = 12.6\ \mathrm{cm}, \qquad P^- = 1^2 \times 0.8 + 1 = 1.8\ \mathrm{cm}^2$$
+$$\hat x^- = 11.6 - 1 = 10.6\ \mathrm{cm}, \qquad P^- = 1^2 \times 0.8 + 1 = 1.8\ \mathrm{cm}^2$$
 
 because $A = 1$ carries the variance through unchanged and the independent process noise $Q$ adds its own $1\,\mathrm{cm}^2$ on top.
 
@@ -75,14 +225,14 @@ Both are fixed by the model alone, since neither $S$ nor $K$ contains $z$. That 
 
 | Candidate | $y = z - \hat x^-$ | $d^2 = y^2/S$ | $3\sigma$ gate | $\hat x^+ = \hat x^- + Ky$ | $P^+ = (1-K)P^-$ |
 |---|---:|---:|---|---:|---:|
-| panel, $z = 12.5$ | $-0.100$ | $0.0036$ | accept | $12.536$ | $0.6429$ |
-| passer-by, $z = 20$ | $+7.400$ | $19.557$ | reject | $17.357$ | $0.6429$ |
+| panel, $z = 10.5$ | $-0.100$ | $0.0036$ | accept | $10.536$ | $0.6429$ |
+| passer-by, $z = 18$ | $+7.400$ | $19.557$ | reject | $15.357$ | $0.6429$ |
 
-**4. What the wrong association costs, in the filter's own units.** Fuse the passer-by anyway and the estimate lands $17.357 - 12.5 = 4.857\,\mathrm{cm}$ beyond the panel while reporting $P^+ = 0.6429\,\mathrm{cm}^2$. §2's consistency check turns that into one number, the NEES of the resulting estimate:
+**4. What the wrong association costs, in the filter's own units.** Fuse the passer-by anyway and the estimate lands $15.357 - 10.5 = 4.857\,\mathrm{cm}$ beyond the panel while reporting $P^+ = 0.6429\,\mathrm{cm}^2$. §2's consistency check turns that into one number, the NEES of the resulting estimate:
 
-$$\epsilon = \frac{(12.5 - 17.357)^2}{0.6429} = 36.7$$
+$$\epsilon = \frac{(10.5 - 15.357)^2}{0.6429} = 36.7$$
 
-A consistent one-dimensional filter averages $\epsilon \approx 1$, so $36.7$ is not a large error inside a wide belief: it is a confident belief about the wrong place. A contact force commanded at that range meets air. The gate, not the covariance, is what separates the two rows of the table, because both rows report the identical $P^+$.
+A consistent one-dimensional filter averages $\epsilon \approx 1$, so $36.7$ is not a large error inside a wide belief: it is a confident belief about the wrong place. A tool driven to that range strikes the panel $4.9\,\mathrm{cm}$ before it expects contact. The gate, not the covariance, is what separates the two rows of the table, because both rows report the identical $P^+$.
 
 **5. One check worth doing by hand.** The Joseph form $P^+ = (1-K)^2P^- + K^2R$ gives $0.6429$, the same value as $(1-K)P^-$, which it must for the optimal $K$; the two disagree only when the gain used is not the optimal one, which is exactly when the Joseph form is worth its extra arithmetic.
 
@@ -123,10 +273,10 @@ so it is a whole distribution, conditioned on the measurements $z_{1:t}$ and inp
 $$\hat x_t = E[x_t \mid z_{1:t}, u_{1:t}] \quad \text{or} \quad \hat x_t = \arg\max_{x_t} \operatorname{bel}(x_t)$$
 Its uncertainty is reported by the **estimate covariance**, the expected outer product of the error $x_t - \hat x_t$, since that is what says how far and in which directions the truth may lie (covariance is defined in [[02-foundations/probability|3. Probability §2]]):
 $$P_t = E\big[(x_t - \hat x_t)(x_t - \hat x_t)^\top \mid z_{1:t}, u_{1:t}\big]$$
-*Example:* after §6's update the belief is Gaussian with mean 11.6 m and variance 0.8 m², so the estimate is 11.6 m by either rule, because a Gaussian's mean and mode coincide. *Non-example:* for a two-peaked belief (the robot is at door 1 or at door 2) the mean can fall between the doors, where the robot certainly is not, so a single point is a poor summary.
+*Example:* after §6's update the belief is Gaussian with mean 11.6 cm and variance 0.8 cm², so the estimate is 11.6 cm by either rule, because a Gaussian's mean and mode coincide. *Non-example:* for a two-peaked belief (the robot is at door 1 or at door 2) the mean can fall between the doors, where the robot certainly is not, so a single point is a poor summary.
 - **Consistency** is the property that the reported $P_t$ matches the actual error. With ground truth $x_t$ available it is checked by the **normalized estimation error squared** (NEES), the squared Mahalanobis distance of the true error:
 $$\epsilon_t = (x_t - \hat x_t)^\top P_t^{-1} (x_t - \hat x_t)$$
-Since $\epsilon_t$ follows a $\chi^2_n$ distribution for a consistent Gaussian estimator of an $n$-dimensional state, its average over many runs should be close to $n$. *Example:* with $P = 0.8$ m² and a true error of 1 m, $\epsilon = 1.25$; a consistent 1-D filter averages about 1 over many runs. *Non-example (overconfident):* a filter reporting $P = 0.01$ m² while its errors actually have variance 1 m² averages $\epsilon = 100$. That is the small-covariance failure above, in numbers.
+Since $\epsilon_t$ follows a $\chi^2_n$ distribution for a consistent Gaussian estimator of an $n$-dimensional state, its average over many runs should be close to $n$. *Example:* with $P = 0.8$ cm² and a true error of 1 cm, $\epsilon = 1.25$; a consistent 1-D filter averages about 1 over many runs. *Non-example (overconfident):* a filter reporting $P = 0.01$ cm² while its errors actually have variance 1 cm² averages $\epsilon = 100$. That is the small-covariance failure above, in numbers.
 
 The distinction is needed because the controller acts on an estimate while the world evolves according to the actual state. For example, an excavator can receive a precise-looking pose after a localization outage; the small reported covariance may simply omit the unmodeled motion. **The reading this gives you.** Ask what the observation directly measured, what inference produced the estimate, and which alternatives the belief still represents. A point estimate and its timestamp should never be read as a complete account of uncertainty merely because they arrived in the same message.
 
@@ -136,7 +286,7 @@ $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
 
 - **Given:** previous belief, input $u_t$, and measurement $z_t$.
 - **Estimated:** current state or belief.
-- **Uncertainty:** $w_t$ captures process/model uncertainty; $v_t$ captures measurement noise.
+- **Uncertainty:** $w_t$ captures process/model uncertainty; $v_t$ captures measurement noise. A real sensor's error also carries a bias that does not average away; splitting it from the white part of $v_t$ is [[04-robotics/sensor-models|3.2 Sensor Models & Noise §1]].
 - **Runtime:** the estimate is updated online as measurements arrive.
 
 **The two models, stated completely.** A state-space model has four named parts.
@@ -148,7 +298,7 @@ $$w_t \sim \mathcal{N}(0, Q_t), \qquad v_t \sim \mathcal{N}(0, R_t)$$
 
 The Bayes filter of §4 uses the same models written as distributions, because adding Gaussian noise to a deterministic prediction gives a Gaussian centred on that prediction:
 $$p(x_t \mid x_{t-1}, u_t) = \mathcal{N}\big(f(x_{t-1}, u_t),\, Q_t\big), \qquad p(z_t \mid x_t) = \mathcal{N}\big(h(x_t),\, R_t\big)$$
-When $f(x, u) = Ax + Bu$ and $h(x) = Hx$ are linear, the model is **linear-Gaussian** and the Kalman filter of §5 is exact; otherwise the EKF, UKF or particle filter approximates. *Example:* a cart on a rail driven at commanded speed $u_t$ over a step $\Delta t$ has $f(x_{t-1}, u_t) = x_{t-1} + u_t\Delta t$, and a range sensor along the rail has $h(x_t) = x_t$, both linear. With $x_{t-1}$ estimated at 9 m (variance 3 m²), $u_t = 1$ m/s, $\Delta t = 1$ s and $Q = 1$ m², the prediction is 10 m with variance $3 + 1 = 4$ m², exactly the prior §6 starts from. *Non-example:* a sensor measuring range to a landmark beside the rail, $h(x) = \sqrt{(x - \ell_x)^2 + \ell_y^2}$, is not linear in $x$, so the Kalman filter no longer applies exactly.
+When $f(x, u) = Ax + Bu$ and $h(x) = Hx$ are linear, the model is **linear-Gaussian** and the Kalman filter of §5 is exact; otherwise the EKF, UKF or particle filter approximates. *Example:* a cart on a rail driven at commanded speed $u_t$ over a step $\Delta t$ has $f(x_{t-1}, u_t) = x_{t-1} + u_t\Delta t$, and a range sensor along the rail has $h(x_t) = x_t$, both linear. With $x_{t-1}$ estimated at 9 cm (variance 3 cm²), $u_t = 1$ cm/s, $\Delta t = 1$ s and $Q = 1$ cm², the prediction is 10 cm with variance $3 + 1 = 4$ cm², exactly the prior §6 starts from. *Non-example:* a sensor measuring range to a landmark beside the rail, $h(x) = \sqrt{(x - \ell_x)^2 + \ell_y^2}$, is not linear in $x$, so the Kalman filter no longer applies exactly.
 
 Model error and sensor noise are different. Wheel slip violates a motion model; noisy range readings perturb measurements. Treating both as the same Gaussian noise can make a filter inconsistent.
 
@@ -221,7 +371,7 @@ $$\hat x^- = A\hat x + Bu, \qquad P^- = APA^\top + Q$$
 This holds since the mean of $Ax + Bu + w$ is $A\hat x + Bu$, the covariance of $Ax$ is $APA^\top$, and independent noise adds its own $Q$. The **update** step forms the **innovation** $y$ (measurement minus predicted measurement), its covariance $S$, and the gain:
 $$y = z - H\hat x^-, \qquad S = HP^-H^\top + R, \qquad K = P^-H^\top S^{-1}$$
 $$\hat x^+ = \hat x^- + Ky, \qquad P^+ = (I - KH)P^-$$
-Symbols: $\hat x$ and $P$ are the previous mean and covariance, superscript $-$ marks the prediction and $+$ the corrected result, $A$ is the state-transition matrix, $B$ the input matrix, $H$ the observation matrix, $Q$ and $R$ the process- and measurement-noise covariances, and $I$ the identity. The derivation from Gaussian conditioning is in [[02-foundations/probability|3. Probability §5]]. *Example:* §3's cart prediction (9 m and 3 m² become 10 m and 4 m²) followed by §6's update ($y = 2$, $S = 5$, $K = 0.8$, $\hat x^+ = 11.6$ m, $P^+ = 0.8$ m²) is one complete cycle. *Non-example:* for a range-to-landmark sensor, $h$ is not a matrix, so there is no $H$ to put into these equations. The EKF replaces it with a Jacobian.
+Symbols: $\hat x$ and $P$ are the previous mean and covariance, superscript $-$ marks the prediction and $+$ the corrected result, $A$ is the state-transition matrix, $B$ the input matrix, $H$ the observation matrix, $Q$ and $R$ the process- and measurement-noise covariances, and $I$ the identity. The derivation from Gaussian conditioning is in [[02-foundations/probability|3. Probability §5]]. *Example:* §3's cart prediction (9 cm and 3 cm² become 10 cm and 4 cm²) followed by §6's update ($y = 2$, $S = 5$, $K = 0.8$, $\hat x^+ = 11.6$ cm, $P^+ = 0.8$ cm²) is one complete cycle. *Non-example:* for a range-to-landmark sensor, $h$ is not a matrix, so there is no $H$ to put into these equations. The EKF replaces it with a Jacobian.
 
 **The EKF, stated completely.** The **extended Kalman filter** keeps the Kalman equations but allows nonlinear $f$ and $h$ by linearizing each around the current estimate with a first-order Taylor expansion. The Jacobians (matrices of partial derivatives, [[02-foundations/calculus-backprop|2. Calculus §1]]) are
 $$F_t = \frac{\partial f}{\partial x}\Big|_{\hat x_{t-1},\,u_t}, \qquad H_t = \frac{\partial h}{\partial x}\Big|_{\hat x_t^-}$$
@@ -256,11 +406,11 @@ The minimum is then a whole family of solutions rather than a point, and a prior
 
 ### 6. Worked example: one-dimensional update
 
-Suppose the predicted position is $10$ m with variance $4\,\mathrm{m}^2$, and a sensor reports $12$ m with variance $1\,\mathrm{m}^2$. With $H=1$,
+Suppose the predicted position is $10$ cm with variance $4\,\mathrm{cm}^2$, and a sensor reports $12$ cm with variance $1\,\mathrm{cm}^2$. With $H=1$,
 
-$$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{m}$$
+$$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{cm}$$
 
-The posterior variance is $(1-K)4=0.8\,\mathrm{m}^2$. The estimate lies closer to the more precise measurement. This conclusion is valid only if the variances and model are credible.
+The posterior variance is $(1-K)4=0.8\,\mathrm{cm}^2$. The estimate lies closer to the more precise measurement. This conclusion is valid only if the variances and model are credible.
 
 **Read the numbers in their causal order.** The predicted position comes from previous information and motion propagation. The sensor supplies new evidence. Their discrepancy, 12 − 10, is the innovation: how surprising this measurement is relative to the prediction. The gain determines how much of that discrepancy to use as a correction. It is not the probability that the sensor is right.
 
@@ -268,7 +418,7 @@ Here the measurement variance is smaller than the prediction variance, so the co
 
 **Try changing an assumption without recalculating.** If the measurement were much less precise, the gain should decrease and the estimate stay nearer the prediction. If the measurement reused information already inside the prediction, this formula would overcount evidence unless the correlation were modeled. Being able to predict those directions is a stronger first-pass check than memorizing 0.8 and 11.6.
 
-**Worked: P5 after the catalog update, then a wrong association.** Units centimetres. After the update above the belief is $11.6$, $P=0.8$ ([[02-foundations/lab-plants|0.6]]). P2 is carrying a tool toward a panel; this range *is* that panel. Predict a $1\,\mathrm{cm}$ advance with $Q=1$: $x=12.6$, $P=1.8$. Innovation $\sigma=\sqrt{P+R}=\sqrt{2.8}=1.67\,\mathrm{cm}$, so a 3-σ gate is $5.0\,\mathrm{cm}$. A range $z=12.5$ is $0.1\,\mathrm{cm}$ inside the gate: $K=1.8/2.8=0.643$, $\hat x=12.536$, $P=0.643$. A passer-by at $z=20$ is $7.4\,\mathrm{cm}$ outside: reject it. If you fuse it anyway, $\hat x=17.36$ with the *same* $P=0.643$ — confident, five centimetres too far, and a contact force at that range would hit empty air. Association is not a covariance question; the gate is the whole difference. The problem set is this cycle as a drawing and a filled template.
+**Worked: P5 after the catalog update, then a wrong association.** Units centimetres. After the update above the belief is $11.6$, $P=0.8$ ([[02-foundations/lab-plants|0.6]]). P2 is carrying a tool toward a panel; this range *is* that panel. Predict a $1\,\mathrm{cm}$ advance with $Q=1$: $x=10.6$, $P=1.8$. Innovation $\sigma=\sqrt{P+R}=\sqrt{2.8}=1.67\,\mathrm{cm}$, so a 3-σ gate is $5.0\,\mathrm{cm}$. A range $z=10.5$ is $0.1\,\mathrm{cm}$ from the prediction, inside the gate: $K=1.8/2.8=0.643$, $\hat x=10.536$, $P=0.643$. A passer-by at $z=18$ is $7.4\,\mathrm{cm}$ from it, outside the gate: reject it. If you fuse it anyway, $\hat x=15.36$ with the *same* $P=0.643$ — confident, five centimetres too far, and a tool driven to that range would strike the panel five centimetres before it expects contact. Association is not a covariance question; the gate is the whole difference. The problem set is this cycle as a drawing and a filled template.
 
 ### 7. Odometry, localization, mapping, and SLAM
 
@@ -326,11 +476,11 @@ the other's failure timescale. Two mechanics recur in the papers and are worth r
 **IMU preintegration** — summarising many IMU samples between two keyframes into one
 constraint, so the optimizer does not carry every sample — and **deskewing**, correcting a
 lidar scan for the fact that the robot moved *during* the sweep. A paper that omits deskewing
-on a fast platform is reporting a map built from distorted scans.
+on a fast platform is reporting a map built from distorted scans. How fast each IMU error term grows, the quantitative form of "accurate over milliseconds and useless over minutes", is derived in [[04-robotics/sensor-models|3.2 Sensor Models & Noise §3]].
 
 **Preintegration and deskewing, written out.** An IMU reports angular velocity $\tilde\omega_k$ and specific force $\tilde a_k$ at samples $k$ spaced $\Delta t$ apart, corrupted by a gyroscope bias $b_g$ and an accelerometer bias $b_a$. Preintegration between keyframes $i$ and $j$ sums those samples in keyframe $i$'s body frame into three **relative-motion increments** (Forster et al., *IEEE T-RO* 2017), where $\Delta R_{ik}$ and $\Delta v_{ik}$ are the partial sums up to sample $k$:
 $$\Delta R_{ij} = \prod_{k=i}^{j-1} \operatorname{Exp}\big((\tilde\omega_k - b_g)\Delta t\big), \quad \Delta v_{ij} = \sum_{k=i}^{j-1} \Delta R_{ik}(\tilde a_k - b_a)\Delta t, \quad \Delta p_{ij} = \sum_{k=i}^{j-1} \big[\Delta v_{ik}\Delta t + \tfrac12 \Delta R_{ik}(\tilde a_k - b_a)\Delta t^2\big]$$
-$\operatorname{Exp}$ turns a rotation vector into a rotation matrix ([[02-foundations/se3-geometry|8. 3D Geometry §2]]). The increments do not depend on the global pose, velocity or gravity at keyframe $i$, which enter only when the increments are compared with the states, so the sums are computed once and reused at every optimizer iteration; a later bias update is applied as a first-order correction instead of re-summing. *Example:* 100 samples at 200 Hz of a constant 0.5 m/s² along $x$, with no rotation and zero bias, give $\Delta v = 0.25$ m/s and $\Delta p = 0.0625$ m over 0.5 s, the familiar $\tfrac12 aT^2$.
+$\operatorname{Exp}$ turns a rotation vector into a rotation matrix ([[02-foundations/se3-geometry|8. 3D Geometry §2]]). The increments do not depend on the global pose, velocity or gravity at keyframe $i$, which enter only when the increments are compared with the states, so the sums are computed once and reused at every optimizer iteration; a later bias update is applied as a first-order correction instead of re-summing. *Example:* 100 samples at 200 Hz of a constant 0.5 m/s² along $x$, with no rotation and zero bias, give $\Delta v = 0.25$ m/s and $\Delta p = 0.0625$ m over 0.5 s, the familiar $\tfrac12 aT^2$. How the two biases $b_g$ and $b_a$ drift, and the random-walk process noise that lets an estimator carry them as states, are [[04-robotics/sensor-models|3.2 Sensor Models & Noise §3 and §8]].
 
 **Deskewing** re-expresses each lidar point $p_k$, captured at time $t_k$ during the sweep, in the sensor frame at one reference time $t_s$, using the sensor pose $T(t)$ interpolated from the IMU or odometry:
 $$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
@@ -399,7 +549,7 @@ spatial memory ([[04-robotics/semantic-language-navigation|19. Semantic Navigati
 
 ### 8. Sensor fusion and systems details
 
-- IMU: high-rate acceleration/angular velocity; bias causes drift.
+- IMU: high-rate acceleration/angular velocity; bias causes drift. How fast each bias and noise term drifts, and how to read their sizes off one static log, is [[04-robotics/sensor-models|3.2 Sensor Models & Noise §3 and §6]].
 - Camera: rich appearance and geometry; sensitive to blur, lighting, and texture.
 - LiDAR: direct range geometry; affected by sparsity, weather, and motion distortion.
 - Wheel odometry: inexpensive local motion; fails under slip. The kinematic model being integrated — and why its error grows without bound — is [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]].
@@ -553,14 +703,14 @@ You should be able to:
 ### Self-check
 
 1. Why can a filter report small covariance and still be wrong?
-2. Recompute the example if the sensor variance is $16\,\mathrm{m}^2$.
+2. Recompute the example if the sensor variance is $16\,\mathrm{cm}^2$.
 3. Why is global localization a natural particle-filter problem?
 4. What experiment would support a claim of robustness to construction-site vibration?
 5. In the §8.5 example, set $S_2 = I$. Recompute T2's distances, apply the gate, and compare GNN with greedy.
 6. A tracker paper swaps in a new detector, MOTA rises from 0.80 to 0.82 over 10,000 ground-truth boxes, and the paper claims better tracking. What else do you need to see?
 
 > [!tip]- Answers
-> 1. Covariance is conditional on the model; wrong calibration, association, or noise assumptions create overconfidence. 2. $K=4/(4+16)=0.2$, so $\hat{x}^+=10.4$ m. 3. The belief can contain several separated pose hypotheses. 4. Repeated trajectories with controlled vibration levels, synchronized ground truth, failure counts, and comparison against the same pipeline without the claimed robustness mechanism. 5. T2's distances become $9.00,\ 26.00,\ 25.00$, so only D1 is inside T2's gate, and only just. The one complete assignment is {T1–D2, T2–D1} at $2 + 9 = 11$. Greedy commits T1–D1 and leaves T2 with nothing, so T2 coasts. If a missed track costs the gate value, {T1–D1, T2 missed} costs $1 + 9.21 = 10.21 < 11$, and GNN leaves T2 unassigned too — the miss cost is a real design parameter. 6. The gain is 200 fewer summed errors, and MOTA cannot say which kind. Misses plus false positives could have fallen from 1950 to 1700 while identity switches doubled from 50 to 100, and MOTA would still read 0.82. Ask for ID switches and an association score such as HOTA's, with the detector held fixed.
+> 1. Covariance is conditional on the model; wrong calibration, association, or noise assumptions create overconfidence. 2. $K=4/(4+16)=0.2$, so $\hat{x}^+=10.4$ cm. 3. The belief can contain several separated pose hypotheses. 4. Repeated trajectories with controlled vibration levels, synchronized ground truth, failure counts, and comparison against the same pipeline without the claimed robustness mechanism. 5. T2's distances become $9.00,\ 26.00,\ 25.00$, so only D1 is inside T2's gate, and only just. The one complete assignment is {T1–D2, T2–D1} at $2 + 9 = 11$. Greedy commits T1–D1 and leaves T2 with nothing, so T2 coasts. If a missed track costs the gate value, {T1–D1, T2 missed} costs $1 + 9.21 = 10.21 < 11$, and GNN leaves T2 unassigned too — the miss cost is a real design parameter. 6. The gain is 200 fewer summed errors, and MOTA cannot say which kind. Misses plus false positives could have fallen from 1950 to 1700 while identity switches doubled from 50 to 100, and MOTA would still read 0.82. Ask for ID switches and an association score such as HOTA's, with the detector held fixed.
 
 ### Problem set · 과제
 
@@ -568,8 +718,8 @@ Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]] on **P6**'s clock; t
 
 P2 is carrying a tool toward a panel. Range to the panel is the P5 wall. Units centimetres, $Q = R = 1$, one $1\,\mathrm{cm}$ advance per step.
 
-1. **Draw.** Two cycles on one range axis. Step 1: predict from $11.6$, draw the gate, mark $z = 20$ outside it, and draw *no* correction arrow. Step 2: predict again from the **unchanged** belief, draw the new and visibly wider gate, mark $z = 14.4$ inside it, and draw the correction arrow. Label both gate half-widths. Beside them, in a second colour, the counterfactual: where the step-2 gate would have sat had step 1 fused $z=20$.
-2. **Derive.** Starting from the catalog P5 update ($11.6$, $P = 0.8$): (a) step 1 predict, then the $3\sigma$ gate on $z = 20$ — accept or reject, and what happens to $\hat x$ and $P$ either way. (b) step 2 predict from the belief (a) leaves, then the gate and the full correction on $z = 14.4$: $S$, $K$, $\hat x^+$, $P^+$. (c) The counterfactual: redo (b) from the belief you would have had if (a) had fused $z = 20$. Does the *correct* reading $14.4$ still pass the gate, and where does it leave the estimate?
+1. **Draw.** Two cycles on one range axis. Step 1: predict from $11.6$, draw the gate, mark $z = 18$ outside it, and draw *no* correction arrow. Step 2: predict again from the **unchanged** belief, draw the new and visibly wider gate, mark $z = 10.4$ inside it, and draw the correction arrow. Label both gate half-widths. Beside them, in a second colour, the counterfactual: where the step-2 gate would have sat had step 1 fused $z=18$.
+2. **Derive.** Starting from the catalog P5 update ($11.6$, $P = 0.8$): (a) step 1 predict, then the $3\sigma$ gate on $z = 18$ — accept or reject, and what happens to $\hat x$ and $P$ either way. (b) step 2 predict from the belief (a) leaves, then the gate and the full correction on $z = 10.4$: $S$, $K$, $\hat x^+$, $P^+$. (c) The counterfactual: redo (b) from the belief you would have had if (a) had fused $z = 18$. Does the *correct* reading $10.4$ still pass the gate, and where does it leave the estimate?
 3. **Do.** Fill the `?` blanks (reuse the correct function from [[02-foundations/probability|3]] if you already wrote it). Print (a) and (b), then **sweep** $q = Q/R \in \{0.25, 0.5, 1, 2, 4\}$: run the gated loop for 200 steps at each $q$ and report the value $P$ settles to. Compare it with the closed form you get by setting $P^+ = P^-R/(P^-+R)$ equal to $P$ and solving the resulting quadratic. Which knob, $Q$ or $R$, moves the steady-state gain, and does their ratio alone decide it?
 
 ```python
@@ -582,22 +732,22 @@ def update(x, P, z, R):             # one gated correct; returns (x, P, accepted
     return ?, ?, True               # x + K*y , (1-K)*P
 
 x, P = 11.6, 0.8
-x, P = x + 1.0, P + 1.0             # predict one 1 cm step, Q = 1
-print(update(x, P, 12.5, 1.0))      # (a) the panel
-print(update(x, P, 20.0, 1.0))      # (b) the passer-by — note what the gate does
+x, P = x - 1.0, P + 1.0             # predict one 1 cm step, Q = 1
+print(update(x, P, 10.5, 1.0))      # (a) the panel
+print(update(x, P, 18.0, 1.0))      # (b) the passer-by — note what the gate does
 
 for q in (0.25, 0.5, 1.0, 2.0, 4.0):    # sweep: Q = q, R = 1
     x, P = 11.6, 0.8
     for k in range(200):
-        x, P = x + 1.0, P + q       # predict
+        x, P = x - 1.0, P + q       # predict
         x, P, ok = update(x, P, x + 0.1, 1.0)   # a well-behaved reading each step
     print(q, round(P, 6))
 ```
 
 > [!tip]- Solutions
-> 1. Step 1's gate is a band of half-width $5.02$ around $12.6$; step 2's is $5.85$ around $13.6$, wider because a rejected step adds $Q$ and subtracts nothing. The counterfactual band is $4.88$ around $18.36$ — narrower *and* in the wrong place, which is the drawing's point.
-> 2. (a) Predict $\hat x^- = 12.6$, $P^- = 1.8$, $S = 2.8$, $3\sqrt S = 5.02$. The innovation is $y = 7.4$, so $d^2 = 19.56 > 9$: reject, and the belief stays exactly $(12.6,\ 1.8)$ — a rejected measurement is not a zero-gain update, it is no update. (b) Predict again: $\hat x^- = 13.6$, $P^- = 2.8$, $S = 3.8$, $3\sqrt S = 5.85$. Then $y = 0.8$, $d^2 = 0.168$: accept, $K = 2.8/3.8 = 0.7368$, $\hat x^+ = 14.189$, $P^+ = 0.7368$. The gain is *larger* than the Worked case's $0.643$ because a step of coasting made the prediction less trustworthy relative to the same sensor. (c) After fusing $z=20$ the belief is $(17.357,\ 0.643)$; predicting gives $(18.357,\ 1.643)$ and $S = 2.643$. Now $y = 14.4 - 18.357 = -3.957$ and $d^2 = 5.93 < 9$ — the correct reading **does** pass, but it only drags the estimate to $15.897$, still $1.7\,\mathrm{cm}$ past the panel, with a reported $P^+ = 0.622$ *smaller* than the honest branch's $0.737$. One bad association does not announce itself; it moves the gate so that good data is absorbed into a wrong trajectory.
-> 3. Blanks: `S = P + R`, `y = z - x`, `K = P / S`, then `x + K*y, (1-K)*P`. (a) prints $(12.536,\ 0.643,\ \text{True})$ and (b) prints $(12.6,\ 1.8,\ \text{False})$ — the gate returns the belief untouched. The sweep, with $R = 1$ throughout:
+> 1. Step 1's gate is a band of half-width $5.02$ around $10.6$; step 2's is $5.85$ around $9.6$, wider because a rejected step adds $Q$ and subtracts nothing. The counterfactual band is $4.88$ around $14.36$ — narrower *and* in the wrong place, which is the drawing's point.
+> 2. (a) Predict $\hat x^- = 10.6$, $P^- = 1.8$, $S = 2.8$, $3\sqrt S = 5.02$. The innovation is $y = 7.4$, so $d^2 = 19.56 > 9$: reject, and the belief stays exactly $(10.6,\ 1.8)$ — a rejected measurement is not a zero-gain update, it is no update. (b) Predict again: $\hat x^- = 9.6$, $P^- = 2.8$, $S = 3.8$, $3\sqrt S = 5.85$. Then $y = 0.8$, $d^2 = 0.168$: accept, $K = 2.8/3.8 = 0.7368$, $\hat x^+ = 10.189$, $P^+ = 0.7368$. The gain is *larger* than the Worked case's $0.643$ because a step of coasting made the prediction less trustworthy relative to the same sensor. (c) After fusing $z=18$ the belief is $(15.357,\ 0.643)$; predicting gives $(14.357,\ 1.643)$ and $S = 2.643$. Now $y = 10.4 - 14.357 = -3.957$ and $d^2 = 5.93 < 9$ — the correct reading **does** pass, but it only drags the estimate to $11.897$, still $1.7\,\mathrm{cm}$ past the honest branch's $10.189$, with a reported $P^+ = 0.622$ *smaller* than the honest branch's $0.737$. One bad association does not announce itself; it moves the gate so that good data is absorbed into a wrong trajectory.
+> 3. Blanks: `S = P + R`, `y = z - x`, `K = P / S`, then `x + K*y, (1-K)*P`. (a) prints $(10.536,\ 0.643,\ \text{True})$ and (b) prints $(10.6,\ 1.8,\ \text{False})$ — the gate returns the belief untouched. The sweep, with $R = 1$ throughout:
 >
 > | $q = Q/R$ | $P$ after 200 steps | closed form $\tfrac12\big(\sqrt{q^2+4q}-q\big)$ | $K_{ss}$ |
 > |---:|---:|---:|---:|
@@ -647,7 +797,7 @@ for q in (0.25, 0.5, 1.0, 2.0, 4.0):    # sweep: Q = q, R = 1
 
 ### 계속 쓰는 대상: P6의 시계 위에 놓인 P5의 패널
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P5** 가 이 페이지의 대상이다. P2가 도구를 나르며 다가가는 패널이고, 사전 분포는 거리 $10\,\mathrm{cm}$ 에 분산 $4\,\mathrm{cm}^2$, 거리 센서는 $12\,\mathrm{cm}$ 를 분산 $1\,\mathrm{cm}^2$ 로 읽는다. 시계와 운동은 **P6** 가 준다. 이 페이지의 모든 거리는 센티미터다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P5** 가 이 페이지의 대상이다. P2가 도구를 나르며 다가가는 패널이고, 사전 분포는 거리 $10\,\mathrm{cm}$ 에 분산 $4\,\mathrm{cm}^2$, 거리 센서는 $12\,\mathrm{cm}$ 를 분산 $1\,\mathrm{cm}^2$ 로 읽는다. 시계와 운동은 **P6** 가 준다. 이 페이지에서 P5의 모든 거리는 센티미터다.
 
 | 기호 | 값 | 무엇인가 |
 |---|---:|---|
@@ -662,8 +812,8 @@ for q in (0.25, 0.5, 1.0, 2.0, 4.0):    # sweep: Q = q, R = 1
 
 뒤의 모든 절이 전진시키는 $1\,\mathrm{cm}$ 는 임의로 고른 값이 아니다. $u\Delta t = 0.5 \times 0.02\,\mathrm{m}$, 곧 P6의 비전 노드가 두 프레임을 내는 사이에 도구가 지나가는 거리다. 같은 표의 숫자 둘이 필터가 고칠 수 있는 것과 없는 것을 가른다.
 
-- **지연은 흔히 그 탓으로 돌리는 잡음보다 크다.** $T_\ell = 70\,\mathrm{ms}$ 늦게 도착한 거리 측정은 $0.5 \times 0.070 = 3.5\,\mathrm{cm}$ 이전의 세계를 말하고, $3.5\,\mathrm{cm}$ 는 센서 자신의 표준편차 $1\,\mathrm{cm}$ 의 3.5배다. 그래서 모델에 없는 타임스탬프는 필터가 맞춰 놓은 잡음 항보다 세 배 큰 편향이고, 어떤 공분산 설정도 편향을 없애지는 못한다.
-- **데이터시트의 잡음이 문제가 되는 잡음은 아니다.** P6의 엔코더는 위치를 $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$ 로 양자화하고, 균일 양자 $q$ 의 분산은 $q^2/12$ 이므로 표준편차는 $0.141\,\mathrm{mm} = 0.0141\,\mathrm{cm}$, 분산은 $1.99\times10^{-4}\,\mathrm{cm}^2$ 다. $Q = 1\,\mathrm{cm}^2$ 보다 네 자릿수 아래인데, $Q$ 가 대표하는 것은 엔코더 카운트가 아니라 미끄럼과 모델 밖 운동이기 때문이다.
+- **지연은 흔히 그 탓으로 돌리는 잡음보다 크다.** $T_\ell = 70\,\mathrm{ms}$ 늦게 도착한 거리 측정은 $0.5 \times 0.070 = 3.5\,\mathrm{cm}$ 이전의 세계를 말하고, $3.5\,\mathrm{cm}$ 는 센서 자신의 표준편차 $1\,\mathrm{cm}$ 의 3.5배다. 그래서 모델에 없는 타임스탬프는 필터가 맞춰 놓은 잡음 항보다 3.5배 큰 편향이고, 어떤 공분산 설정도 편향을 없애지는 못한다.
+- **데이터시트의 잡음이 문제가 되는 잡음은 아니다.** P6의 엔코더는 위치를 $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$ 로 양자화하고, 균일 양자 $q$ 의 분산은 $q^2/12$ 이므로 표준편차는 $0.141\,\mathrm{mm} = 0.0141\,\mathrm{cm}$, 분산은 $1.99\times10^{-4}\,\mathrm{cm}^2$ 다. $Q = 1\,\mathrm{cm}^2$ 보다 네 자릿수 아래인데, $Q$ 가 대표하는 것은 엔코더 카운트가 아니라 미끄럼과 모델 밖 운동이기 때문이다. $q^2/12$는 성립 조건(카트가 서 있지 않고 샘플 사이에 여러 카운트를 불규칙하게 가로지를 것)과 함께 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §4]]에서 유도한다.
 
 *범위: 이 페이지는 belief가 어떻게 전파되고 보정되는지, 칼만 이득과 innovation이 무엇인지, SLAM 사후 분포가 어떻게 인수분해되는지, 추정 주장을 어떻게 읽는지를 가르친다. SE(3) 추정기에 필요한 회전 매개변수화([[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]]), 측정을 만들어 내는 인식 front end([[04-robotics/geometric-perception-calibration|3.5 기하 인식]]), back end가 호출하는 solver([[02-foundations/optimization|4. 최적화 §3.5]])는 가르치지 않는다.*
 
@@ -671,19 +821,169 @@ for q in (0.25, 0.5, 1.0, 2.0, 4.0):    # sweep: Q = q, R = 1
 
 한 번 그려 두면 과제가 같은 그림을 다른 숫자로 묻는다.
 
-**위 — 센티미터 단위의 거리 축, 축척대로.** 카탈로그 갱신이 남긴 belief 자리에 $11.6$ 눈금, 오른쪽으로 길이 $1$ 인 *예측* 화살표가 $12.6$ 에서 끝난다. 각 눈금 아래에 반너비 $\sqrt{P}$ 의 가로 막대: 스텝 전 $0.89$, 스텝 후 $1.34$. 막대는 눈에 띄게 커져야 한다. 예측은 $Q$ 를 더하기만 하고 무엇도 빼지 않기 때문이다.
+<svg viewBox="0 0 560 386" style="max-width:100%;height:auto" role="img" aria-label="P5의 센티미터 거리 축 위에 축척대로 그린 예측·보정·게이트 한 순환: 11.6의 belief가 왼쪽으로 1 cm 예측되어 10.6이 되고 퍼짐이 0.89에서 1.34로 커진다. 예측값 둘레 반너비 5.02의 게이트 안에 z = 10.5, 밖에 z = 18. 두 가설: 패널이면 추정값이 10.536으로 끌려가고, 통행인이면 패널을 4.86 cm 지나친 15.357로 던져지며, 둘 다 P+ = 0.6429를 보고한다.">
+  <defs><marker id="aSESk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.55">
+    <line x1="24" y1="64" x2="374" y2="64"/>
+    <line x1="24" y1="152" x2="374" y2="152"/>
+    <line x1="24" y1="222" x2="374" y2="222"/>
+    <line x1="24" y1="282" x2="374" y2="282"/>
+  </g>
+  <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35">
+    <line x1="24" y1="61.5" x2="24" y2="66.5"/>
+    <line x1="49" y1="61.5" x2="49" y2="66.5"/>
+    <line x1="74" y1="61.5" x2="74" y2="66.5"/>
+    <line x1="99" y1="61.5" x2="99" y2="66.5"/>
+    <line x1="124" y1="61.5" x2="124" y2="66.5"/>
+    <line x1="149" y1="61.5" x2="149" y2="66.5"/>
+    <line x1="174" y1="61.5" x2="174" y2="66.5"/>
+    <line x1="199" y1="61.5" x2="199" y2="66.5"/>
+    <line x1="224" y1="61.5" x2="224" y2="66.5"/>
+    <line x1="249" y1="61.5" x2="249" y2="66.5"/>
+    <line x1="274" y1="61.5" x2="274" y2="66.5"/>
+    <line x1="299" y1="61.5" x2="299" y2="66.5"/>
+    <line x1="324" y1="61.5" x2="324" y2="66.5"/>
+    <line x1="349" y1="61.5" x2="349" y2="66.5"/>
+    <line x1="374" y1="61.5" x2="374" y2="66.5"/>
+    <line x1="24" y1="149.5" x2="24" y2="154.5"/>
+    <line x1="49" y1="149.5" x2="49" y2="154.5"/>
+    <line x1="74" y1="149.5" x2="74" y2="154.5"/>
+    <line x1="99" y1="149.5" x2="99" y2="154.5"/>
+    <line x1="124" y1="149.5" x2="124" y2="154.5"/>
+    <line x1="149" y1="149.5" x2="149" y2="154.5"/>
+    <line x1="174" y1="149.5" x2="174" y2="154.5"/>
+    <line x1="199" y1="149.5" x2="199" y2="154.5"/>
+    <line x1="224" y1="149.5" x2="224" y2="154.5"/>
+    <line x1="249" y1="149.5" x2="249" y2="154.5"/>
+    <line x1="274" y1="149.5" x2="274" y2="154.5"/>
+    <line x1="299" y1="149.5" x2="299" y2="154.5"/>
+    <line x1="324" y1="149.5" x2="324" y2="154.5"/>
+    <line x1="349" y1="149.5" x2="349" y2="154.5"/>
+    <line x1="374" y1="149.5" x2="374" y2="154.5"/>
+    <line x1="24" y1="219.5" x2="24" y2="224.5"/>
+    <line x1="49" y1="219.5" x2="49" y2="224.5"/>
+    <line x1="74" y1="219.5" x2="74" y2="224.5"/>
+    <line x1="99" y1="219.5" x2="99" y2="224.5"/>
+    <line x1="124" y1="219.5" x2="124" y2="224.5"/>
+    <line x1="149" y1="219.5" x2="149" y2="224.5"/>
+    <line x1="174" y1="219.5" x2="174" y2="224.5"/>
+    <line x1="199" y1="219.5" x2="199" y2="224.5"/>
+    <line x1="224" y1="219.5" x2="224" y2="224.5"/>
+    <line x1="249" y1="219.5" x2="249" y2="224.5"/>
+    <line x1="274" y1="219.5" x2="274" y2="224.5"/>
+    <line x1="299" y1="219.5" x2="299" y2="224.5"/>
+    <line x1="324" y1="219.5" x2="324" y2="224.5"/>
+    <line x1="349" y1="219.5" x2="349" y2="224.5"/>
+    <line x1="374" y1="219.5" x2="374" y2="224.5"/>
+    <line x1="24" y1="279.5" x2="24" y2="284.5"/>
+    <line x1="49" y1="279.5" x2="49" y2="284.5"/>
+    <line x1="74" y1="279.5" x2="74" y2="284.5"/>
+    <line x1="99" y1="279.5" x2="99" y2="284.5"/>
+    <line x1="124" y1="279.5" x2="124" y2="284.5"/>
+    <line x1="149" y1="279.5" x2="149" y2="284.5"/>
+    <line x1="174" y1="279.5" x2="174" y2="284.5"/>
+    <line x1="199" y1="279.5" x2="199" y2="284.5"/>
+    <line x1="224" y1="279.5" x2="224" y2="284.5"/>
+    <line x1="249" y1="279.5" x2="249" y2="284.5"/>
+    <line x1="274" y1="279.5" x2="274" y2="284.5"/>
+    <line x1="299" y1="279.5" x2="299" y2="284.5"/>
+    <line x1="324" y1="279.5" x2="324" y2="284.5"/>
+    <line x1="349" y1="279.5" x2="349" y2="284.5"/>
+    <line x1="374" y1="279.5" x2="374" y2="284.5"/>
+  </g>
+  <line x1="189" y1="38" x2="164" y2="38" stroke="currentColor" stroke-width="1.6" marker-end="url(#aSESk)"/>
+  <g stroke="currentColor" stroke-width="1.8">
+    <line x1="189" y1="56" x2="189" y2="72"/>
+    <line x1="164" y1="56" x2="164" y2="72"/>
+  </g>
+  <rect x="166.6" y="76" width="44.7" height="5" fill="currentColor" fill-opacity="0.45"/>
+  <rect x="130.5" y="88" width="67.1" height="5" fill="currentColor" fill-opacity="0.8"/>
+  <rect x="38.5" y="126" width="251" height="26" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-opacity="0.5" stroke-width="1"/>
+  <line x1="164" y1="120" x2="164" y2="158" stroke="currentColor" stroke-width="1.8"/>
+  <path d="M161.5 156.8 L165.7 161 L161.5 165.2 L157.3 161 Z" fill="currentColor" fill-opacity="1"/>
+  <path d="M349 156.8 L353.2 161 L349 165.2 L344.8 161 Z" fill="currentColor" fill-opacity="1"/>
+  <line x1="161.5" y1="210" x2="161.5" y2="234" stroke="currentColor" stroke-width="2.6" stroke-opacity="0.6"/>
+  <line x1="164" y1="216" x2="164" y2="228" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="161.5" y1="270" x2="161.5" y2="294" stroke="currentColor" stroke-width="2.6" stroke-opacity="0.6"/>
+  <line x1="164" y1="276" x2="164" y2="288" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="164" y1="213" x2="162.4" y2="213" stroke="currentColor" stroke-width="1.6" marker-end="url(#aSESk)"/>
+  <circle cx="162.4" cy="222" r="2.8" fill="currentColor"/>
+  <line x1="164" y1="273" x2="282.9" y2="273" stroke="currentColor" stroke-width="1.6" marker-end="url(#aSESk)"/>
+  <circle cx="282.9" cy="282" r="3.6" fill="currentColor"/>
+  <path d="M161.5 298 H282.9 M161.5 294 v8 M282.9 294 v8" stroke="currentColor" stroke-width="1" fill="none"/>
+  <g fill="none" stroke="currentColor" stroke-width="1.2">
+    <rect x="386" y="200" width="163" height="34" rx="3"/>
+    <rect x="386" y="260" width="163" height="34" rx="3"/>
+  </g>
+  <line x1="24" y1="346" x2="374" y2="346" stroke="currentColor" stroke-width="1.1"/>
+  <g stroke="currentColor" stroke-width="1">
+    <line x1="24" y1="346" x2="24" y2="343"/>
+    <line x1="49" y1="346" x2="49" y2="341"/>
+    <line x1="74" y1="346" x2="74" y2="343"/>
+    <line x1="99" y1="346" x2="99" y2="341"/>
+    <line x1="124" y1="346" x2="124" y2="343"/>
+    <line x1="149" y1="346" x2="149" y2="341"/>
+    <line x1="174" y1="346" x2="174" y2="343"/>
+    <line x1="199" y1="346" x2="199" y2="341"/>
+    <line x1="224" y1="346" x2="224" y2="343"/>
+    <line x1="249" y1="346" x2="249" y2="341"/>
+    <line x1="274" y1="346" x2="274" y2="343"/>
+    <line x1="299" y1="346" x2="299" y2="341"/>
+    <line x1="324" y1="346" x2="324" y2="343"/>
+    <line x1="349" y1="346" x2="349" y2="341"/>
+    <line x1="374" y1="346" x2="374" y2="343"/>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="176.5" y="30" text-anchor="middle">예측: x − uΔt, 1 cm</text>
+    <text x="194" y="60">11.6</text>
+    <text x="159" y="60" text-anchor="end">10.6</text>
+    <text x="217.4" y="82" opacity="0.8">√P = 0.89</text>
+    <text x="203.5" y="94">√P⁻ = 1.34</text>
+    <text x="386" y="56">belief 11.6 cm, P = 0.8 cm²</text>
+    <text x="386" y="70">예측은 Q = 1을 더한다: P⁻ = 1.8</text>
+    <text x="386" y="84" opacity="0.8">막대는 커지기만 한다</text>
+    <text x="169" y="122">x̂⁻ = 10.6</text>
+    <text x="43.5" y="143" opacity="0.9">게이트 ±5.02</text>
+    <text x="155.5" y="176" text-anchor="end">z = 10.5</text>
+    <text x="349" y="178" text-anchor="middle">z = 18</text>
+    <text x="386" y="122">게이트는 예측값 둘레에:</text>
+    <text x="386" y="136">반너비 3√(P⁻ + R) = 5.02 cm</text>
+    <text x="386" y="150" opacity="0.9">z = 10.5: |y| = 0.1, 안쪽</text>
+    <text x="386" y="164" opacity="0.9">z = 18: y = 7.4, 바깥</text>
+    <text x="155.5" y="216" text-anchor="end" opacity="0.85">패널</text>
+    <text x="173" y="217" opacity="0.85">0.064 cm만 끌림</text>
+    <text x="155.5" y="276" text-anchor="end" opacity="0.85">패널</text>
+    <text x="222.2" y="312" text-anchor="middle">패널을 4.86 cm 지나침</text>
+    <text x="394" y="214">이 z는 패널이다</text>
+    <text x="394" y="228" opacity="0.85">x̂⁺ = 10.536 cm</text>
+    <text x="394" y="274">이 z는 통행인이다</text>
+    <text x="394" y="288" opacity="0.85">x̂⁺ = 15.357 cm</text>
+    <text x="386" y="312">두 상자 모두 P⁺ = 0.6429 cm²</text>
+    <text x="386" y="326" opacity="0.85">분산으로는 둘이 갈리지 않는다</text>
+    <text x="49" y="360" text-anchor="middle" font-size="11">6</text>
+    <text x="99" y="360" text-anchor="middle" font-size="11">8</text>
+    <text x="149" y="360" text-anchor="middle" font-size="11">10</text>
+    <text x="199" y="360" text-anchor="middle" font-size="11">12</text>
+    <text x="249" y="360" text-anchor="middle" font-size="11">14</text>
+    <text x="299" y="360" text-anchor="middle" font-size="11">16</text>
+    <text x="349" y="360" text-anchor="middle" font-size="11">18</text>
+    <text x="24" y="373" opacity="0.8">패널까지의 거리 (cm), 모든 행이 같은 축척</text>
+  </g>
+</svg>
 
-**가운데 — 게이트.** 예측값 $12.6$ 을 중심으로 반너비 $3\sqrt{P^- + R} = 5.02$ 의 음영 띠. 축 위에 후보 측정 둘을 찍는다: 왼쪽 띠 안에 아슬아슬하게 들어온 $z = 12.5$, 오른쪽 띠 한참 밖의 $z = 20$. 띠는 센서 측정이 아니라 *예측값* 둘레에 그리고, 반너비에는 $P^-$ 가 아니라 $P^- + R$ 이 들어간다. 이 그림의 내용은 그 둘이 전부다.
+**위 — 센티미터 단위의 거리 축, 축척대로.** 카탈로그 갱신이 남긴 belief 자리에 $11.6$ 눈금, 왼쪽으로 길이 $1$ 인 *예측* 화살표가 $10.6$ 에서 끝난다. 각 눈금 아래에 반너비 $\sqrt{P}$ 의 가로 막대: 스텝 전 $0.89$, 스텝 후 $1.34$. 막대는 눈에 띄게 커져야 한다. 예측은 $Q$ 를 더하기만 하고 무엇도 빼지 않기 때문이다.
 
-**아래 — 상자 둘, 각각 화살표 하나.** "이 $z$ 는 패널" 상자에서는 추정값이 $12.5$ 쪽으로 조금 끌려가고, "이 $z$ 는 통행인" 상자에서는 추정값이 패널을 $4.86\,\mathrm{cm}$ 지나쳐 던져진다. 두 번째 상자 아래에 그래도 필터가 보고할 사후 분산을 적는다. 두 상자가 *같은* 분산으로 끝난다는 것이 이 그림의 요점이다.
+**가운데 — 게이트.** 예측값 $10.6$ 을 중심으로 반너비 $3\sqrt{P^- + R} = 5.02$ 의 음영 띠. 축 위에 후보 측정 둘을 찍는다: 예측값 바로 왼쪽, 띠 안쪽 깊이 있는 $z = 10.5$, 오른쪽 띠 한참 밖의 $z = 18$. 띠는 센서 측정이 아니라 *예측값* 둘레에 그리고, 반너비에는 $P^-$ 가 아니라 $P^- + R$ 이 들어간다. 이 그림의 내용은 그 둘이 전부다.
+
+**아래 — 상자 둘, 각각 화살표 하나.** "이 $z$ 는 패널" 상자에서는 추정값이 $10.5$ 쪽으로 조금 끌려가고, "이 $z$ 는 통행인" 상자에서는 추정값이 패널을 $4.86\,\mathrm{cm}$ 지나쳐 던져진다. 두 번째 상자 아래에 그래도 필터가 보고할 사후 분산을 적는다. 두 상자가 *같은* 분산으로 끝난다는 것이 이 그림의 요점이다.
 
 ### 대상으로 한 번 끝까지: P5의 예측·보정·게이트 한 순환
 
 카탈로그 자신의 갱신이 남긴 belief에서 출발한다: $\hat x = 11.6\,\mathrm{cm}$, $P = 0.8\,\mathrm{cm}^2$(P5의 스칼라 칼만 스텝, §6에 다시 나온다). P6의 시계로 한 스텝이 지나고 새 거리 측정이 온다.
 
-**1. 예측.** 운동 모델은 $f(x, u) = x + u\Delta t$ 이고 $u\Delta t = 1\,\mathrm{cm}$ 이므로 $A = 1$ 이다. §5의 예측 식은
+**1. 예측.** 운동 모델은 $f(x, u) = x - u\Delta t$ 이고(패널로 다가가면 거리가 줄어든다) $u\Delta t = 1\,\mathrm{cm}$ 이므로 $A = 1$ 이다. §5의 예측 식은
 
-$$\hat x^- = 11.6 + 1 = 12.6\ \mathrm{cm}, \qquad P^- = 1^2 \times 0.8 + 1 = 1.8\ \mathrm{cm}^2$$
+$$\hat x^- = 11.6 - 1 = 10.6\ \mathrm{cm}, \qquad P^- = 1^2 \times 0.8 + 1 = 1.8\ \mathrm{cm}^2$$
 
 $A = 1$ 이 분산을 그대로 통과시키고, 독립인 과정 잡음 $Q$ 가 자기 몫 $1\,\mathrm{cm}^2$ 를 그 위에 더하기 때문이다.
 
@@ -697,14 +997,14 @@ $S$ 에도 $K$ 에도 $z$ 가 들어 있지 않으므로 둘은 모델만으로 
 
 | 후보 | $y = z - \hat x^-$ | $d^2 = y^2/S$ | 3-σ 게이트 | $\hat x^+ = \hat x^- + Ky$ | $P^+ = (1-K)P^-$ |
 |---|---:|---:|---|---:|---:|
-| 패널, $z = 12.5$ | $-0.100$ | $0.0036$ | 통과 | $12.536$ | $0.6429$ |
-| 통행인, $z = 20$ | $+7.400$ | $19.557$ | 기각 | $17.357$ | $0.6429$ |
+| 패널, $z = 10.5$ | $-0.100$ | $0.0036$ | 통과 | $10.536$ | $0.6429$ |
+| 통행인, $z = 18$ | $+7.400$ | $19.557$ | 기각 | $15.357$ | $0.6429$ |
 
-**4. 틀린 연관의 비용을, 필터 자신의 단위로.** 통행인을 그래도 융합하면 추정값은 패널을 $17.357 - 12.5 = 4.857\,\mathrm{cm}$ 지나친 자리에 놓이면서 $P^+ = 0.6429\,\mathrm{cm}^2$ 를 보고한다. §2의 일관성 검사가 그것을 숫자 하나로 바꾼다. 그 추정값의 NEES는
+**4. 틀린 연관의 비용을, 필터 자신의 단위로.** 통행인을 그래도 융합하면 추정값은 패널을 $15.357 - 10.5 = 4.857\,\mathrm{cm}$ 지나친 자리에 놓이면서 $P^+ = 0.6429\,\mathrm{cm}^2$ 를 보고한다. §2의 일관성 검사가 그것을 숫자 하나로 바꾼다. 그 추정값의 NEES는
 
-$$\epsilon = \frac{(12.5 - 17.357)^2}{0.6429} = 36.7$$
+$$\epsilon = \frac{(10.5 - 15.357)^2}{0.6429} = 36.7$$
 
-일관된 1차원 필터는 $\epsilon \approx 1$ 을 평균하므로, $36.7$ 은 넓은 belief 안의 큰 오차가 아니라 틀린 장소에 대한 확신이다. 그 거리에서 명령한 접촉력은 허공을 친다. 표의 두 행을 가르는 것은 공분산이 아니라 게이트다. 두 행이 똑같은 $P^+$ 를 보고하기 때문이다.
+일관된 1차원 필터는 $\epsilon \approx 1$ 을 평균하므로, $36.7$ 은 넓은 belief 안의 큰 오차가 아니라 틀린 장소에 대한 확신이다. 그 거리까지 몰고 간 도구는 접촉을 예상한 지점보다 $4.9\,\mathrm{cm}$ 먼저 패널에 부딪힌다. 표의 두 행을 가르는 것은 공분산이 아니라 게이트다. 두 행이 똑같은 $P^+$ 를 보고하기 때문이다.
 
 **5. 손으로 해 볼 만한 확인 하나.** Joseph 형태 $P^+ = (1-K)^2P^- + K^2R$ 도 $0.6429$ 를 주는데, 최적 $K$ 에서는 $(1-K)P^-$ 와 반드시 같아야 한다. 둘이 어긋나는 것은 쓰는 이득이 최적이 아닐 때뿐이고, Joseph 형태가 추가 계산값을 하는 것도 바로 그때다.
 
@@ -748,10 +1048,10 @@ $$\operatorname{bel}(x_t) = p(x_t \mid z_{1:t}, u_{1:t})$$
 $$\hat x_t = E[x_t \mid z_{1:t}, u_{1:t}] \quad \text{or} \quad \hat x_t = \arg\max_{x_t} \operatorname{bel}(x_t)$$
 그 불확실성은 **추정 공분산**, 곧 오차 $x_t - \hat x_t$의 외적의 기댓값으로 보고한다. 참값이 얼마나 멀리, 어느 방향으로 있을 수 있는지를 말해 주는 것이 이것이기 때문이다(공분산의 정의는 [[02-foundations/probability|3. 확률 §2]]).
 $$P_t = E\big[(x_t - \hat x_t)(x_t - \hat x_t)^\top \mid z_{1:t}, u_{1:t}\big]$$
-*예:* §6의 갱신 뒤 belief는 평균 11.6 m, 분산 0.8 m²인 가우시안이므로 어느 규칙으로든 추정값은 11.6 m다. 가우시안은 평균과 최빈값이 같기 때문이다. *반례:* 봉우리가 둘인 belief(로봇이 문 1 앞이거나 문 2 앞)라면 평균이 두 문 사이, 로봇이 확실히 없는 곳에 떨어질 수 있어 점 하나로는 요약이 나쁘다.
+*예:* §6의 갱신 뒤 belief는 평균 11.6 cm, 분산 0.8 cm²인 가우시안이므로 어느 규칙으로든 추정값은 11.6 cm다. 가우시안은 평균과 최빈값이 같기 때문이다. *반례:* 봉우리가 둘인 belief(로봇이 문 1 앞이거나 문 2 앞)라면 평균이 두 문 사이, 로봇이 확실히 없는 곳에 떨어질 수 있어 점 하나로는 요약이 나쁘다.
 - **일관성**(consistency): 보고한 $P_t$가 실제 오차와 맞는 성질이다. 참값 $x_t$가 있으면 **정규화 추정 오차 제곱**(NEES), 곧 실제 오차의 제곱 마할라노비스 거리로 확인한다.
 $$\epsilon_t = (x_t - \hat x_t)^\top P_t^{-1} (x_t - \hat x_t)$$
-$n$차원 상태의 일관된 가우시안 추정기에서 $\epsilon_t$는 $\chi^2_n$ 분포를 따르므로, 여러 번 돌린 평균이 $n$에 가까워야 한다. *예:* $P = 0.8$ m²이고 실제 오차가 1 m이면 $\epsilon = 1.25$다. 일관된 1차원 필터는 여러 번 돌리면 평균이 약 1이다. *반례(과신):* 실제 오차 분산이 1 m²인데 $P = 0.01$ m²을 보고하는 필터는 평균 $\epsilon = 100$이다. 위에서 말한 작은 공분산의 실패를 숫자로 본 것이다.
+$n$차원 상태의 일관된 가우시안 추정기에서 $\epsilon_t$는 $\chi^2_n$ 분포를 따르므로, 여러 번 돌린 평균이 $n$에 가까워야 한다. *예:* $P = 0.8$ cm²이고 실제 오차가 1 cm이면 $\epsilon = 1.25$다. 일관된 1차원 필터는 여러 번 돌리면 평균이 약 1이다. *반례(과신):* 실제 오차 분산이 1 cm²인데 $P = 0.01$ cm²을 보고하는 필터는 평균 $\epsilon = 100$이다. 위에서 말한 작은 공분산의 실패를 숫자로 본 것이다.
 
 제어기는 추정값으로 행동하지만 세계는 실제 상태에 따라 변하므로 구분이 필요하다. 위치 추정 중단 뒤 굴착기에 정밀해 보이는 자세가 들어와도 작은 공분산이 모델 밖 움직임을 빠뜨린 것일 수 있다. **여기서 얻는 독법.** 관측이 직접 측정한 것, 추정값을 만든 추론, 믿음이 아직 표현하는 대안을 묻는다. 점 추정과 시각이 같은 메시지에 도착했다고 불확실성 전체를 설명하는 것은 아니다.
 
@@ -761,7 +1061,7 @@ $$x_t=f(x_{t-1},u_t)+w_t, \qquad z_t=h(x_t)+v_t$$
 
 - **주어진 것:** 이전 belief, 입력 $u_t$, 측정 $z_t$.
 - **추정하는 것:** 현재 상태 또는 belief.
-- **불확실성:** $w_t$는 과정/모델 불확실성, $v_t$는 측정 잡음.
+- **불확실성:** $w_t$는 과정/모델 불확실성, $v_t$는 측정 잡음. 실제 센서의 오차에는 평균으로 사라지지 않는 bias도 들어 있고, 그것을 $v_t$의 백색 부분과 나누는 일은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §1]]에서 한다.
 - **실행 시점:** 측정이 들어올 때마다 온라인으로 갱신.
 
 **두 모델의 완전한 정의.** 상태공간 모델에는 이름 붙은 네 부분이 있다.
@@ -773,7 +1073,7 @@ $$w_t \sim \mathcal{N}(0, Q_t), \qquad v_t \sim \mathcal{N}(0, R_t)$$
 
 §4의 베이즈 필터는 같은 모델을 분포로 쓴 것을 사용한다. 결정적 예측에 가우시안 잡음을 더하면 그 예측을 중심으로 하는 가우시안이 되기 때문이다.
 $$p(x_t \mid x_{t-1}, u_t) = \mathcal{N}\big(f(x_{t-1}, u_t),\, Q_t\big), \qquad p(z_t \mid x_t) = \mathcal{N}\big(h(x_t),\, R_t\big)$$
-$f(x, u) = Ax + Bu$와 $h(x) = Hx$가 선형이면 모델은 **선형-가우시안**이고 §5의 칼만 필터가 정확하다. 그렇지 않으면 EKF, UKF, 파티클 필터가 근사한다. *예:* 레일 위 수레를 명령 속도 $u_t$로 한 스텝 $\Delta t$ 동안 몰면 $f(x_{t-1}, u_t) = x_{t-1} + u_t\Delta t$이고, 레일을 따라 재는 거리 센서는 $h(x_t) = x_t$로 둘 다 선형이다. $x_{t-1}$을 9 m(분산 3 m²)로 추정했고 $u_t = 1$ m/s, $\Delta t = 1$ s, $Q = 1$ m²이면 예측은 10 m, 분산 $3 + 1 = 4$ m²로, 정확히 §6이 출발하는 prior다. *반례:* 레일 옆 랜드마크까지의 거리를 재는 센서 $h(x) = \sqrt{(x - \ell_x)^2 + \ell_y^2}$는 $x$에 대해 선형이 아니므로 칼만 필터가 더 이상 정확히 적용되지 않는다.
+$f(x, u) = Ax + Bu$와 $h(x) = Hx$가 선형이면 모델은 **선형-가우시안**이고 §5의 칼만 필터가 정확하다. 그렇지 않으면 EKF, UKF, 파티클 필터가 근사한다. *예:* 레일 위 수레를 명령 속도 $u_t$로 한 스텝 $\Delta t$ 동안 몰면 $f(x_{t-1}, u_t) = x_{t-1} + u_t\Delta t$이고, 레일을 따라 재는 거리 센서는 $h(x_t) = x_t$로 둘 다 선형이다. $x_{t-1}$을 9 cm(분산 3 cm²)로 추정했고 $u_t = 1$ cm/s, $\Delta t = 1$ s, $Q = 1$ cm²이면 예측은 10 cm, 분산 $3 + 1 = 4$ cm²로, 정확히 §6이 출발하는 prior다. *반례:* 레일 옆 랜드마크까지의 거리를 재는 센서 $h(x) = \sqrt{(x - \ell_x)^2 + \ell_y^2}$는 $x$에 대해 선형이 아니므로 칼만 필터가 더 이상 정확히 적용되지 않는다.
 
 모델 오차와 센서 잡음은 다르다. 바퀴 미끄럼은 운동 모델을 *위반*하고, 잡음 낀 거리
 측정은 관측을 *교란*한다. 둘을 같은 가우시안 잡음으로 뭉뚱그리면 필터가 비일관해질 수
@@ -849,7 +1149,7 @@ $$\hat x^- = A\hat x + Bu, \qquad P^- = APA^\top + Q$$
 $Ax + Bu + w$ 의 평균이 $A\hat x + Bu$ 이고, $Ax$ 의 공분산이 $APA^\top$ 이며, 독립 잡음이 자기 $Q$ 를 더하기 때문이다. **갱신** 단계는 **innovation** $y$(측정에서 예측 측정을 뺀 것), 그 공분산 $S$, 그리고 이득을 만든다.
 $$y = z - H\hat x^-, \qquad S = HP^-H^\top + R, \qquad K = P^-H^\top S^{-1}$$
 $$\hat x^+ = \hat x^- + Ky, \qquad P^+ = (I - KH)P^-$$
-기호: $\hat x$ 와 $P$ 는 직전 평균과 공분산, 위첨자 $-$ 는 예측값, $+$ 는 보정 결과, $A$ 는 상태 전이 행렬, $B$ 는 입력 행렬, $H$ 는 관측 행렬, $Q$ 와 $R$ 은 과정·측정 잡음 공분산, $I$ 는 항등 행렬이다. 가우시안 조건부화에서 나오는 유도는 [[02-foundations/probability|3. 확률 §5]]에 있다. *예:* §3의 수레 예측(9 m, 3 m²가 10 m, 4 m²가 된다)에 §6의 갱신($y = 2$, $S = 5$, $K = 0.8$, $\hat x^+ = 11.6$ m, $P^+ = 0.8$ m²)을 이으면 한 순환이 완성된다. *반례:* 랜드마크까지의 거리 센서에서는 $h$ 가 행렬이 아니므로 이 식에 넣을 $H$ 자체가 없다. EKF가 그 자리를 야코비안으로 채운다.
+기호: $\hat x$ 와 $P$ 는 직전 평균과 공분산, 위첨자 $-$ 는 예측값, $+$ 는 보정 결과, $A$ 는 상태 전이 행렬, $B$ 는 입력 행렬, $H$ 는 관측 행렬, $Q$ 와 $R$ 은 과정·측정 잡음 공분산, $I$ 는 항등 행렬이다. 가우시안 조건부화에서 나오는 유도는 [[02-foundations/probability|3. 확률 §5]]에 있다. *예:* §3의 수레 예측(9 cm, 3 cm²가 10 cm, 4 cm²가 된다)에 §6의 갱신($y = 2$, $S = 5$, $K = 0.8$, $\hat x^+ = 11.6$ cm, $P^+ = 0.8$ cm²)을 이으면 한 순환이 완성된다. *반례:* 랜드마크까지의 거리 센서에서는 $h$ 가 행렬이 아니므로 이 식에 넣을 $H$ 자체가 없다. EKF가 그 자리를 야코비안으로 채운다.
 
 **EKF의 완전한 정의.** **확장 칼만 필터**는 칼만 식을 그대로 두되, 비선형 $f$ 와 $h$ 를 현재 추정값 둘레에서 1차 테일러 전개로 선형화해 허용한다. 야코비안(편도함수 행렬, [[02-foundations/calculus-backprop|2. 미적분 §1]])은
 $$F_t = \frac{\partial f}{\partial x}\Big|_{\hat x_{t-1},\,u_t}, \qquad H_t = \frac{\partial h}{\partial x}\Big|_{\hat x_t^-}$$
@@ -884,12 +1184,12 @@ $$\sum_k \lVert h_k(G \cdot X_k) - z_k \rVert^2_{\Sigma_k} = \sum_k \lVert h_k(X
 
 ### 6. 계산 예제: 1차원 갱신
 
-예측 위치가 $10$ m, 분산 $4\,\mathrm{m}^2$이고 센서가 $12$ m, 분산 $1\,\mathrm{m}^2$를
+예측 위치가 $10$ cm, 분산 $4\,\mathrm{cm}^2$이고 센서가 $12$ cm, 분산 $1\,\mathrm{cm}^2$를
 보고했다고 하자. $H=1$이면
 
-$$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{m}$$
+$$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{cm}$$
 
-사후 분산은 $(1-K)4=0.8\,\mathrm{m}^2$. 추정값이 더 정밀한 측정 쪽으로 끌려간다 — 단
+사후 분산은 $(1-K)4=0.8\,\mathrm{cm}^2$. 추정값이 더 정밀한 측정 쪽으로 끌려간다 — 단
 이 결론은 분산과 모델이 믿을 만할 때에만 유효하다.
 
 **숫자를 인과 순서로 읽는다.** 예측 위치는 이전 정보와 운동 전파에서 온다. 센서는 새 증거를 준다. 차이 12 − 10은 innovation, 즉 예측에 비해 측정이 얼마나 뜻밖인지다. 이득은 그 차이 중 얼마를 보정에 쓸지 정한다. 센서가 맞을 확률이 아니다.
@@ -898,7 +1198,7 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{m}$$
 
 **계산 없이 가정 하나를 바꿔 본다.** 측정이 훨씬 부정확하면 이득이 줄고 추정은 예측에 가까이 남아야 한다. 측정이 이미 예측에 들어간 정보를 재사용한다면 상관을 모델링하지 않은 이 식은 증거를 중복 계산한다. 0.8과 11.6을 외우기보다 변화 방향을 예측하는 것이 더 좋은 첫 이해 확인이다.
 
-**계산: 카탈로그 갱신 뒤의 P5, 그다음 틀린 연관.** 단위 센티미터. 위 갱신 뒤 belief는 $11.6$, $P=0.8$([[02-foundations/lab-plants|0.6]]). P2가 패널로 도구를 나르고, 이 거리가 그 패널이다. $Q=1$로 $1\,\mathrm{cm}$ 전진을 예측하면 $x=12.6$, $P=1.8$. 혁신 $\sigma=\sqrt{2.8}=1.67\,\mathrm{cm}$, 3-σ 게이트는 $5.0\,\mathrm{cm}$. $z=12.5$는 $0.1\,\mathrm{cm}$로 게이트 안: $K=0.643$, $\hat x=12.536$, $P=0.643$. 통행인 $z=20$은 $7.4\,\mathrm{cm}$로 밖: 기각. 그래도 넣으면 $\hat x=17.36$에 $P$는 그대로 $0.643$ — 확신하고 5 cm 멀고, 그 거리에서 접촉력은 허공을 친다. 연관은 공분산 질문이 아니다. 과제는 이 순환을 그림과 템플릿으로 묻는 것이다.
+**계산: 카탈로그 갱신 뒤의 P5, 그다음 틀린 연관.** 단위 센티미터. 위 갱신 뒤 belief는 $11.6$, $P=0.8$([[02-foundations/lab-plants|0.6]]). P2가 패널로 도구를 나르고, 이 거리가 그 패널이다. $Q=1$로 $1\,\mathrm{cm}$ 전진을 예측하면 $x=10.6$, $P=1.8$. 혁신 $\sigma=\sqrt{2.8}=1.67\,\mathrm{cm}$, 3-σ 게이트는 $5.0\,\mathrm{cm}$. $z=10.5$는 예측에서 $0.1\,\mathrm{cm}$로 게이트 안: $K=0.643$, $\hat x=10.536$, $P=0.643$. 통행인 $z=18$은 예측에서 $7.4\,\mathrm{cm}$로 게이트 밖: 기각. 그래도 넣으면 $\hat x=15.36$에 $P$는 그대로 $0.643$ — 확신하고 5 cm 멀고, 그 거리까지 몰고 간 도구는 접촉을 예상한 지점보다 5 cm 먼저 패널에 부딪힌다. 연관은 공분산 질문이 아니다. 과제는 이 순환을 그림과 템플릿으로 묻는 것이다.
 
 ### 7. Odometry, localization, mapping, SLAM
 
@@ -959,11 +1259,11 @@ front end를 약어로 부르고, 그 글자들이 무엇을 사는지 안다고
 반복해서 나오는 두 기구를 알아볼 수 있어야 한다: **IMU preintegration** — 두 keyframe 사이의
 IMU 표본 여럿을 하나의 제약으로 요약해서 최적화기가 모든 표본을 지고 가지 않게 하는 것. 회전 벡터를 회전 행렬로 보내는 $\operatorname{Exp}$는 [[02-foundations/se3-geometry|8. 3D 기하 §2]]다. 그리고
 **deskewing**, 라이다 스캔이 훑는 *동안* 로봇이 움직였다는 사실을 보정하는 것. 빠른 플랫폼에서
-deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고하고 있는 것이다.
+deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고하고 있는 것이다. IMU의 각 오차 항이 얼마나 빨리 자라는지, 곧 "밀리초에는 정확하고 분에는 쓸모없다"의 정량적 형태는 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §3]]에서 유도한다.
 
 **Preintegration과 deskewing을 풀어 쓰면.** IMU는 $\Delta t$ 간격의 표본 $k$ 마다 각속도 $\tilde\omega_k$ 와 비력 $\tilde a_k$ 를 보고하고, 자이로 bias $b_g$ 와 가속도계 bias $b_a$ 가 그것을 오염시킨다. Keyframe $i$ 와 $j$ 사이의 preintegration은 그 표본들을 keyframe $i$ 의 몸체 프레임에서 **상대 운동 증분** 셋으로 합친다(Forster 외, *IEEE T-RO* 2017). $\Delta R_{ik}$ 와 $\Delta v_{ik}$ 는 표본 $k$ 까지의 부분합이다.
 $$\Delta R_{ij} = \prod_{k=i}^{j-1} \operatorname{Exp}\big((\tilde\omega_k - b_g)\Delta t\big), \quad \Delta v_{ij} = \sum_{k=i}^{j-1} \Delta R_{ik}(\tilde a_k - b_a)\Delta t, \quad \Delta p_{ij} = \sum_{k=i}^{j-1} \big[\Delta v_{ik}\Delta t + \tfrac12 \Delta R_{ik}(\tilde a_k - b_a)\Delta t^2\big]$$
-이 증분들은 keyframe $i$ 의 전역 pose, 속도, 중력에 의존하지 않는다. 그것들은 증분을 상태와 비교할 때에만 들어오므로, 합은 한 번 계산해서 최적화기의 모든 반복에서 재사용된다. 나중의 bias 갱신은 다시 합하는 대신 1차 보정으로 적용한다. *예:* 200 Hz의 표본 100개 동안 회전 없이 $x$ 방향 $0.5$ m/s²가 일정하고 bias가 0이면, 0.5 s에 $\Delta v = 0.25$ m/s와 $\Delta p = 0.0625$ m를 준다. 익숙한 $\tfrac12 aT^2$ 다.
+이 증분들은 keyframe $i$ 의 전역 pose, 속도, 중력에 의존하지 않는다. 그것들은 증분을 상태와 비교할 때에만 들어오므로, 합은 한 번 계산해서 최적화기의 모든 반복에서 재사용된다. 나중의 bias 갱신은 다시 합하는 대신 1차 보정으로 적용한다. *예:* 200 Hz의 표본 100개 동안 회전 없이 $x$ 방향 $0.5$ m/s²가 일정하고 bias가 0이면, 0.5 s에 $\Delta v = 0.25$ m/s와 $\Delta p = 0.0625$ m를 준다. 익숙한 $\tfrac12 aT^2$ 다. 두 bias $b_g$와 $b_a$가 어떻게 떠도는지, 그리고 추정기가 그것을 상태로 들고 가게 하는 랜덤 워크 과정 잡음은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §3과 §8]]에 있다.
 
 **Deskewing**은 스윕 도중 시각 $t_k$ 에 잡힌 라이다 점 $p_k$ 를 기준 시각 $t_s$ 의 센서 프레임으로 다시 쓴다. 센서 pose $T(t)$ 는 IMU나 오도메트리에서 보간한다.
 $$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
@@ -1024,7 +1324,7 @@ $$\operatorname{esdf}(x) = \pm \min_{o \in \mathcal O} \lVert x - o \rVert$$
 
 ### 8. 센서 융합과 시스템 세부
 
-- IMU: 고주기 가속도/각속도; bias가 drift를 만든다.
+- IMU: 고주기 가속도/각속도; bias가 drift를 만든다. 각 bias·잡음 항이 얼마나 빨리 drift하는지, 그 크기를 정지 로그 하나에서 어떻게 읽는지는 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §3과 §6]]에 있다.
 - 카메라: 풍부한 외양·기하; 블러·조명·텍스처에 민감.
 - LiDAR: 직접적 거리 기하; 희소성·날씨·운동 왜곡의 영향.
 - 바퀴 odometry: 저렴한 국소 이동; 미끄럼에서 실패. 적분되는 기구학 모델과 그 오차가 왜 무한정 자라는지는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]]에 있다.
@@ -1070,19 +1370,27 @@ $$d^2_{ij} = (z_i-\hat z_j)^\top S_j^{-1}(z_i-\hat z_j) < \gamma$$
 **연관은 누가 어느 검출을 가질지 정한다.**
 
 - **탐욕적 최근접 이웃**(greedy nearest neighbour)은 남은 짝 중 $d^2$가 가장 작은 것을 반복해서 확정한다. 빠르지만, 앞선 확정이 뒤의 트랙을 나쁜 검출로 몰아낼 수 있다. 트랙마다 독립적으로 자기 최근접 검출을 가져가게 하면 더 나쁘다. 두 트랙이 같은 검출을 차지할 수 있기 때문이다.
-- **전역 최근접 이웃**(GNN)은 게이트를 통과한 짝들 위에서 합 $\sum d^2$가 가장 작은 일대일 할당을 고른다. 이것은 선형 할당 문제이고, 헝가리안 방법(Kuhn 1955; Munkres 1957)이 다항 시간에 정확히 푼다 — [[01-canonical-papers/notes/2-computer-vision/detr|DETR]]가 손실에 쓰는 바로 그 매칭이다. 탐욕과 달리 합이 진짜 최소인 할당을 돌려주며, 그러면서도 일대일 매칭 $n!$가지를 다 시도하지 않는다. $\sum d^2$가 옳은 합인 이유: 트랙 $j$ 아래 검출 $i$의 가우시안 우도는 음의 로그가 $-\ln p = \tfrac12 d^2_{ij} + \tfrac12\ln|2\pi S_j|$이므로, 결합 우도의 음의 로그는 $\tfrac12\sum d^2$에 트랙마다 정규화 항 하나를 더한 것이다. 모든 트랙이 할당될 때는 각 트랙의 정규화 항 $\ln|2\pi S_j|$가 모든 후보에 한 번씩 들어가 상쇄되므로, $\sum d^2$ 최소화가 결합 가우시안 우도 최대화와 같다. 트랙이 할당되지 않을 수도 있게 하면 구현은 놓친 트랙이나 새 트랙에 명시적 비용을 붙이고, 그 상수는 튜닝 선택이다.
+- **전역 최근접 이웃**(GNN)은 게이트를 통과한 짝들 위에서 합 $\sum d^2$가 가장 작은 일대일 할당을 고른다. 검출 $i$가 트랙 $j$로 가면 1인 0/1 변수 $a_{ij}$를 쓰고 모든 트랙이 할당된다고 두면
+$$\min_{a_{ij}\in\{0,1\}} \sum_{(i,j)\ \text{gated}} a_{ij}\, d^2_{ij} \quad \text{s.t.} \quad \sum_i a_{ij} = 1 \ \ \forall j, \qquad \sum_j a_{ij} \le 1 \ \ \forall i$$
+이다. 첫 제약은 각 트랙에 검출을 정확히 하나 주고, 둘째 제약은 각 검출이 최대 한 트랙에만 쓰이게 한다. 이것은 선형 할당 문제이고, 헝가리안 방법(Kuhn 1955; Munkres 1957)이 다항 시간에 정확히 푼다 — [[01-canonical-papers/notes/2-computer-vision/detr|DETR]]가 손실에 쓰는 바로 그 매칭이다. 탐욕과 달리 합이 진짜 최소인 할당을 돌려주며, 그러면서도 일대일 매칭 $n!$가지를 다 시도하지 않는다. $\sum d^2$가 옳은 합인 이유: 트랙 $j$ 아래 검출 $i$의 가우시안 우도는 음의 로그가 $-\ln p = \tfrac12 d^2_{ij} + \tfrac12\ln|2\pi S_j|$이므로, 결합 우도의 음의 로그는 $\tfrac12\sum d^2$에 트랙마다 정규화 항 하나를 더한 것이다. 모든 트랙이 할당될 때는 각 트랙의 정규화 항 $\ln|2\pi S_j|$가 모든 후보에 한 번씩 들어가 상쇄되므로, $\sum d^2$ 최소화가 결합 가우시안 우도 최대화와 같다. 트랙이 할당되지 않을 수도 있게 하면 구현은 놓친 트랙이나 새 트랙에 명시적 비용을 붙이고, 그 상수는 튜닝 선택이다.
 - **JPDA**(joint probabilistic data association; Fortmann, Bar-Shalom & Scheffe 1983)는 확정하지 않는다. 게이트가 허용하는 결합 사건들 — 각 검출은 최대 한 번, "놓침"과 "클러터" 포함 — 을 열거해 확률로 가중하고, 각 트랙을 게이트 안 innovation들의 가중 결합으로 갱신한다. 표적이 가까울 때 강건하지만, 가까운 트랙들을 서로 끌어당길 수 있다(트랙 합체; Fitzgerald, *IEEE TAES* 1985).
 - **MHT**(multiple hypothesis tracking; Reid 1979)는 여러 연관 이력을 프레임을 넘어 살려 두고 뒤의 데이터가 고르게 하며, 감당할 수 있도록 가설 트리를 가지치기한다.
 - PHD 필터(Mahler 2003) 같은 **랜덤 유한 집합 필터**는 물체 전체를 하나의 랜덤 집합으로 보고 그 1차 모멘트를 전파한다 — 어느 영역에서 적분하든 그 영역 안 물체 수의 기댓값이 나오는 밀도다. 물체별 정체를 들고 다니지 않고, 물체가 몇 개이며 어디 있는지를 추정한다.
 
-**트랙 관리는 트랙에 생애 주기를 준다.** 모든 게이트 밖의 검출은 **잠정**(tentative) 트랙을 시작한다. 최근 N 프레임 중 M번 연관되면 **확정**(confirmed)되고, 확정 트랙은 연속으로 너무 많이 놓치면 **삭제**(deleted)된다. M과 N은 확정 지연과 거짓 트랙을 맞바꾼다. 2-of-3이라면 프레임마다 0.9 확률로 검출되는 실제 물체는 세 프레임 안에 $0.972$의 확률로 확정된다: 셋 중 적어도 두 번 검출되어야 하므로 $3\cdot0.9^2\cdot0.1 + 0.9^3 = 0.243 + 0.729$다. 프레임마다 0.1 확률로 게이트에 다시 나타나는 클러터 덩어리는 $3\cdot0.1^2\cdot0.9 + 0.1^3 = 0.027 + 0.001$에서 $0.028$의 확률로 확정된다.
+**트랙 관리는 트랙에 생애 주기를 준다.** 모든 게이트 밖의 검출은 **잠정**(tentative) 트랙을 시작한다. 최근 N 프레임 중 M번 연관되면 **확정**(confirmed)되고, 확정 트랙은 연속으로 너무 많이 놓치면 **삭제**(deleted)된다. M과 N은 확정 지연과 거짓 트랙을 맞바꾼다. 프레임마다 독립적으로 확률 $p$로 연관된다면, $N$ 프레임에서 적어도 $M$번 연관될 확률은 이항 분포의 꼬리다. $k$번 맞는 $\binom{N}{k}$가지 배열이 각각 확률 $p^k(1-p)^{N-k}$를 가지기 때문이다:
+$$P(\text{confirm}) = \sum_{k=M}^{N} \binom{N}{k} p^k (1-p)^{N-k}$$
+2-of-3이라면 프레임마다 0.9 확률로 검출되는 실제 물체는 세 프레임 안에 $0.972$의 확률로 확정된다: 셋 중 적어도 두 번 검출되어야 하므로 $3\cdot0.9^2\cdot0.1 + 0.9^3 = 0.243 + 0.729$다. 프레임마다 0.1 확률로 게이트에 다시 나타나는 클러터 덩어리는 $3\cdot0.1^2\cdot0.9 + 0.1^3 = 0.027 + 0.001$에서 $0.028$의 확률로 확정된다.
 
-**검출기 기반 추적기도 같은 뼈대를 쓴다.** 오늘날 비전 추적의 대부분은 tracking-by-detection이다. SORT(Bewley et al., ICIP 2016)는 바운딩 박스마다 등속 칼만 필터를 돌리고 IoU 비용 위에서 헝가리안 알고리즘을 쓰며, χ² 게이트 대신 최소 IoU 문턱을 둔다. **IoU**(intersection over union, [[02-foundations/ml-practice|9. ML 실무 §3]])는 두 박스 $A,B$에 대해 $|A\cap B|/|A\cup B|$다. DeepSORT(Wojke et al., ICIP 2017)는 마할라노비스 게이팅에 재식별(re-identification) 네트워크의 외양 임베딩을 더해, 가려졌다 다시 나타난 사람이 정체를 유지할 수 있게 한다.
+**검출기 기반 추적기도 같은 뼈대를 쓴다.** 오늘날 비전 추적의 대부분은 tracking-by-detection이다. SORT(Bewley et al., ICIP 2016)는 바운딩 박스마다 등속 칼만 필터를 돌리고 IoU 비용 위에서 헝가리안 알고리즘을 쓰며, χ² 게이트 대신 최소 IoU 문턱을 둔다. **IoU**(intersection over union, [[02-foundations/ml-practice|9. ML 실무 §3]])는 두 박스 $A,B$에 대해 $|A\cap B|/|A\cup B|$다. $x$ 방향으로 1만큼 어긋난 2×2 박스 둘은 합집합 넓이 6 가운데 2를 공유하므로 IoU $= 1/3$이고, 2만큼 어긋나면 공유하는 것이 없어 IoU $= 0$이다. DeepSORT(Wojke et al., ICIP 2017)는 마할라노비스 게이팅에 재식별(re-identification) 네트워크의 외양 임베딩을 더해, 가려졌다 다시 나타난 사람이 정체를 유지할 수 있게 한다.
 
 **추적의 채점 방식.** 두 지표가 주로 쓰이는데, 정체에 두는 비중이 크게 다르다.
 
-- **MOTA**(Bernardin & Stiefelhagen 2008)는 모든 프레임에 걸친 $1 - \sum(\mathrm{FN}+\mathrm{FP}+\mathrm{IDSW})/\sum \mathrm{GT}$라서 검출이 지배한다: 정답 박스 1000개에서 놓침 50, 오검출 30, **정체 전환**(ID switch) 20이면 MOTA $= 0.90$이고, 전환이 깎는 몫은 0.02뿐이다.
-- **HOTA**(Luiten et al., IJCV 2021)는 검출 점수와 연관 점수의 기하평균을 위치 문턱들에 걸쳐 평균한 것이라, 좋은 검출 뒤에 연관 실패가 숨지 못한다.
+- **MOTA**(Bernardin & Stiefelhagen 2008)는 모든 프레임에 걸친 $1 - \sum(\mathrm{FN}+\mathrm{FP}+\mathrm{IDSW})/\sum \mathrm{GT}$라서 검출이 지배한다: 정답 박스 1000개에서 놓침 50, 오검출 30, **정체 전환**(ID switch) 20이면 MOTA $= 0.90$이고, 전환이 깎는 몫은 0.02뿐이다. 프레임 $t$마다 $\mathrm{FN}_t$는 짝지어진 가설이 없는 정답 물체의 수, $\mathrm{FP}_t$는 어떤 물체와도 짝지어지지 않은 가설의 수, $\mathrm{IDSW}_t$는 짝지어진 트랙 ID가 지난번 짝지어졌을 때의 ID와 다른 물체의 수, $\mathrm{GT}_t$는 정답 물체의 수다:
+$$\text{MOTA} = 1 - \frac{\sum_t (\mathrm{FN}_t + \mathrm{FP}_t + \mathrm{IDSW}_t)}{\sum_t \mathrm{GT}_t}$$
+오류를 상한 없이 더하므로 MOTA는 $[0,1]$ 안의 비율이 아니다. *반례:* 정답 박스 1000개에 오검출 1200개면 MOTA $= -0.2$다.
+- **HOTA**(Luiten et al., IJCV 2021)는 검출 점수와 연관 점수의 기하평균을 위치 문턱들에 걸쳐 평균한 것이라, 좋은 검출 뒤에 연관 실패가 숨지 못한다. 위치 문턱 $\alpha$(검출이 짝지어진 것으로 세어지려면 필요한 IoU)에서, TP, FN, FP를 각각 짝지어진 검출, 놓친 검출, 거짓 검출이라 하면
+$$\text{HOTA}_\alpha = \sqrt{\text{DetA}_\alpha \cdot \text{AssA}_\alpha}, \qquad \text{DetA}_\alpha = \frac{|\text{TP}|}{|\text{TP}| + |\text{FN}| + |\text{FP}|}, \qquad \text{AssA}_\alpha = \frac{1}{|\text{TP}|}\sum_{c\in\text{TP}} \frac{|\text{TPA}(c)|}{|\text{TPA}(c)| + |\text{FNA}(c)| + |\text{FPA}(c)|}$$
+이다. 참 양성 $c$마다 TPA$(c)$는 $c$와 정답 ID도 같고 예측 ID도 같은 참 양성들, FNA$(c)$는 그 정답 ID의 검출 가운데 다른 예측 ID를 받았거나 예측 ID가 없는 것들, FPA$(c)$는 그 예측 ID를 단 검출 가운데 다른 정답 물체 위에 있거나 정답 물체가 없는 것들이다. HOTA는 $\text{HOTA}_\alpha$를 $\alpha = 0.05, 0.10, \dots, 0.95$에 걸쳐 평균한다. *예:* TP 90, FN 10, FP 10이면 DetA $= 0.818$이다. 연관이 평균 0.5만큼만 겹친다면 HOTA$_\alpha = \sqrt{0.818 \cdot 0.5} = 0.64$이므로, 검출이 좋아도 정체를 제대로 지키지 못하면 점수가 내려간다.
 
 > [!example] 계산 예제 · Worked example
 > **트랙 둘, 검출 셋, 미터 단위 2차원 위치.** T1은 $\hat z_1 = (0, 0)$, $S_1 = I$를 예측한다. T2는 $\hat z_2 = (4, 0)$, $S_2 = \mathrm{diag}(4, 1)$을 예측한다: $x$ 방향으로 움직이고 있어 그 방향이 불확실하다. 검출은 D1 $= (1, 0)$, D2 $= (-1, 1)$, D3 $= (1, 4)$.
@@ -1173,7 +1481,7 @@ $\operatorname{trans}(E_i)$ 의 RMS와 그 회전각의 RMS로 보고한다.
 ### 스스로 점검
 
 1. 필터가 작은 covariance를 보고하면서도 틀릴 수 있는 이유는?
-2. 센서 분산이 $16\,\mathrm{m}^2$일 때 위 예제를 다시 계산하라.
+2. 센서 분산이 $16\,\mathrm{cm}^2$일 때 위 예제를 다시 계산하라.
 3. 전역 localization이 파티클 필터에 자연스러운 문제인 이유는?
 4. "건설 현장 진동에 강건하다"는 주장을 지지하려면 어떤 실험이 필요한가?
 5. §8.5 예제에서 $S_2 = I$로 두라. T2의 거리를 다시 계산하고, 게이트를 적용하고, GNN과 탐욕을 비교하라.
@@ -1181,7 +1489,7 @@ $\operatorname{trans}(E_i)$ 의 RMS와 그 회전각의 RMS로 보고한다.
 
 > [!tip]- 정답 · Answers
 > 1. Covariance는 모델 조건부다; 보정·association·잡음 가정이 틀리면 과신이 생긴다.
-> 2. $K=4/(4+16)=0.2$, $\hat{x}^+=10.4$ m.
+> 2. $K=4/(4+16)=0.2$, $\hat{x}^+=10.4$ cm.
 > 3. Belief가 서로 떨어진 여러 pose 가설을 담을 수 있기 때문.
 > 4. 진동 수준을 통제한 반복 궤적, 동기화된 ground truth, 실패 횟수, 그리고 주장한 강건화 장치를 뺀 동일 파이프라인과의 비교.
 > 5. T2의 거리는 $9.00,\ 26.00,\ 25.00$이 되어 D1만 겨우 T2의 게이트 안에 있다. 완전한 할당은 {T1–D2, T2–D1} 하나로 $2 + 9 = 11$이다. 탐욕은 T1–D1을 확정하고 T2에 아무것도 남기지 않아 T2가 예측만으로 이어진다. 놓친 트랙의 비용을 게이트 값으로 두면 {T1–D1, T2 놓침}이 $1 + 9.21 = 10.21 < 11$이라 GNN도 T2를 할당하지 않는다 — 놓침 비용은 실제 설계 파라미터다.
@@ -1193,14 +1501,14 @@ Tier A. **P6** 의 시계 위에 놓인 [[02-foundations/lab-plants|0.6]]의 **P
 
 P2가 패널로 도구를 나른다. 패널까지의 거리가 P5의 벽이다. 단위 센티미터, $Q = R = 1$, 한 스텝에 $1\,\mathrm{cm}$ 전진.
 
-1. **그리기.** 한 거리 축 위에 두 순환. 스텝 1: $11.6$ 에서 예측하고 게이트를 그린 뒤 $z = 20$ 을 그 밖에 찍고, 보정 화살표는 *그리지 않는다*. 스텝 2: **그대로인** belief에서 다시 예측하고, 눈에 띄게 넓어진 새 게이트를 그린 뒤 $z = 14.4$ 를 그 안에 찍고 보정 화살표를 그린다. 두 게이트의 반너비를 모두 적는다. 그 옆에 다른 색으로 반사실: 스텝 1이 $z=20$ 을 융합했다면 스텝 2의 게이트가 어디에 놓였을지.
-2. **유도.** 카탈로그 P5 갱신($11.6$, $P = 0.8$)에서 시작해서: (a) 스텝 1 예측, 그다음 $z = 20$ 에 3-σ 게이트 — 통과인가 기각인가, 그리고 어느 쪽이든 $\hat x$ 와 $P$ 에 무슨 일이 일어나는가. (b) (a)가 남긴 belief에서 스텝 2 예측, 그다음 $z = 14.4$ 의 게이트와 완전한 보정: $S$, $K$, $\hat x^+$, $P^+$. (c) 반사실: (a)가 $z = 20$ 을 융합했을 때의 belief에서 (b)를 다시 하라. *옳은* 측정 $14.4$ 가 그래도 게이트를 통과하는가, 그리고 추정값을 어디에 남기는가?
+1. **그리기.** 한 거리 축 위에 두 순환. 스텝 1: $11.6$ 에서 예측하고 게이트를 그린 뒤 $z = 18$ 을 그 밖에 찍고, 보정 화살표는 *그리지 않는다*. 스텝 2: **그대로인** belief에서 다시 예측하고, 눈에 띄게 넓어진 새 게이트를 그린 뒤 $z = 10.4$ 를 그 안에 찍고 보정 화살표를 그린다. 두 게이트의 반너비를 모두 적는다. 그 옆에 다른 색으로 반사실: 스텝 1이 $z=18$ 을 융합했다면 스텝 2의 게이트가 어디에 놓였을지.
+2. **유도.** 카탈로그 P5 갱신($11.6$, $P = 0.8$)에서 시작해서: (a) 스텝 1 예측, 그다음 $z = 18$ 에 3-σ 게이트 — 통과인가 기각인가, 그리고 어느 쪽이든 $\hat x$ 와 $P$ 에 무슨 일이 일어나는가. (b) (a)가 남긴 belief에서 스텝 2 예측, 그다음 $z = 10.4$ 의 게이트와 완전한 보정: $S$, $K$, $\hat x^+$, $P^+$. (c) 반사실: (a)가 $z = 18$ 을 융합했을 때의 belief에서 (b)를 다시 하라. *옳은* 측정 $10.4$ 가 그래도 게이트를 통과하는가, 그리고 추정값을 어디에 남기는가?
 3. **실행.** 영어 템플릿. (a)와 (b)를 출력하고, $q = Q/R \in \{0.25, 0.5, 1, 2, 4\}$ 를 **훑어라**: 각 $q$ 에서 게이트가 달린 루프를 200 스텝 돌려 $P$ 가 수렴하는 값을 보고하라. $P^+ = P^-R/(P^-+R)$ 를 $P$ 와 같다고 놓고 이차식을 풀어 얻는 닫힌 형태와 비교하라. $Q$ 와 $R$ 중 어느 손잡이가 정상 상태 이득을 움직이는가, 그리고 둘의 비만으로 결정되는가?
 
 > [!tip]- 정답 · Solutions
-> 1. 스텝 1의 게이트는 $12.6$ 둘레 반너비 $5.02$ 의 띠, 스텝 2는 $13.6$ 둘레 $5.85$ 다. 기각된 스텝이 $Q$ 를 더하기만 하고 아무것도 빼지 않으므로 넓어진다. 반사실의 띠는 $18.36$ 둘레 $4.88$ — 더 좁으면서 *동시에* 틀린 자리에 있고, 그것이 이 그림의 요점이다.
-> 2. (a) 예측 $\hat x^- = 12.6$, $P^- = 1.8$, $S = 2.8$, $3\sqrt S = 5.02$. Innovation이 $y = 7.4$ 이므로 $d^2 = 19.56 > 9$: 기각이고 belief는 정확히 $(12.6,\ 1.8)$ 로 남는다 — 기각된 측정은 이득 0의 갱신이 아니라 갱신이 아예 없는 것이다. (b) 다시 예측: $\hat x^- = 13.6$, $P^- = 2.8$, $S = 3.8$, $3\sqrt S = 5.85$. $y = 0.8$, $d^2 = 0.168$: 통과, $K = 2.8/3.8 = 0.7368$, $\hat x^+ = 14.189$, $P^+ = 0.7368$. 이득이 계산 예제의 $0.643$ 보다 *큰* 것은, 한 스텝을 예측만으로 흘려보낸 탓에 같은 센서에 비해 예측이 덜 믿을 만해졌기 때문이다. (c) $z=20$ 을 융합했다면 belief는 $(17.357,\ 0.643)$, 예측하면 $(18.357,\ 1.643)$ 이고 $S = 2.643$ 이다. 이제 $y = 14.4 - 18.357 = -3.957$, $d^2 = 5.93 < 9$ — 옳은 측정이 **통과한다**. 그러나 추정값을 $15.897$ 까지 끌어오는 데 그쳐 여전히 패널을 $1.7\,\mathrm{cm}$ 지나쳐 있고, 보고하는 $P^+ = 0.622$ 는 정직한 갈래의 $0.737$ 보다 *작다*. 틀린 연관 하나는 스스로를 알리지 않는다. 게이트를 옮겨서 좋은 데이터가 틀린 궤적 안으로 흡수되게 만든다.
-> 3. 빈칸: `S = P + R`, `y = z - x`, `K = P / S`, 그리고 `x + K*y, (1-K)*P`. (a)는 $(12.536,\ 0.643,\ \text{True})$, (b)는 $(12.6,\ 1.8,\ \text{False})$ 를 출력한다 — 게이트가 belief를 건드리지 않고 돌려준다. $R = 1$ 로 고정한 훑기는 다음과 같다.
+> 1. 스텝 1의 게이트는 $10.6$ 둘레 반너비 $5.02$ 의 띠, 스텝 2는 $9.6$ 둘레 $5.85$ 다. 기각된 스텝이 $Q$ 를 더하기만 하고 아무것도 빼지 않으므로 넓어진다. 반사실의 띠는 $14.36$ 둘레 $4.88$ — 더 좁으면서 *동시에* 틀린 자리에 있고, 그것이 이 그림의 요점이다.
+> 2. (a) 예측 $\hat x^- = 10.6$, $P^- = 1.8$, $S = 2.8$, $3\sqrt S = 5.02$. Innovation이 $y = 7.4$ 이므로 $d^2 = 19.56 > 9$: 기각이고 belief는 정확히 $(10.6,\ 1.8)$ 로 남는다 — 기각된 측정은 이득 0의 갱신이 아니라 갱신이 아예 없는 것이다. (b) 다시 예측: $\hat x^- = 9.6$, $P^- = 2.8$, $S = 3.8$, $3\sqrt S = 5.85$. $y = 0.8$, $d^2 = 0.168$: 통과, $K = 2.8/3.8 = 0.7368$, $\hat x^+ = 10.189$, $P^+ = 0.7368$. 이득이 계산 예제의 $0.643$ 보다 *큰* 것은, 한 스텝을 예측만으로 흘려보낸 탓에 같은 센서에 비해 예측이 덜 믿을 만해졌기 때문이다. (c) $z=18$ 을 융합했다면 belief는 $(15.357,\ 0.643)$, 예측하면 $(14.357,\ 1.643)$ 이고 $S = 2.643$ 이다. 이제 $y = 10.4 - 14.357 = -3.957$, $d^2 = 5.93 < 9$ — 옳은 측정이 **통과한다**. 그러나 추정값을 $11.897$ 까지 끌어오는 데 그쳐 여전히 정직한 갈래의 $10.189$ 를 $1.7\,\mathrm{cm}$ 지나쳐 있고, 보고하는 $P^+ = 0.622$ 는 정직한 갈래의 $0.737$ 보다 *작다*. 틀린 연관 하나는 스스로를 알리지 않는다. 게이트를 옮겨서 좋은 데이터가 틀린 궤적 안으로 흡수되게 만든다.
+> 3. 빈칸: `S = P + R`, `y = z - x`, `K = P / S`, 그리고 `x + K*y, (1-K)*P`. (a)는 $(10.536,\ 0.643,\ \text{True})$, (b)는 $(10.6,\ 1.8,\ \text{False})$ 를 출력한다 — 게이트가 belief를 건드리지 않고 돌려준다. $R = 1$ 로 고정한 훑기는 다음과 같다.
 >
 > | $q = Q/R$ | 200스텝 뒤 $P$ | 닫힌 형태 $\tfrac12\big(\sqrt{q^2+4q}-q\big)$ | $K_{ss}$ |
 > |---:|---:|---:|---:|

@@ -14,7 +14,7 @@ These objects are deliberately tiny. Their purpose is not benchmark performance;
 | ID | Object | Fixed specification | Used in |
 |---|---|---|---|
 | **D1** | small classifier | $x=(1,2)$, $W_1\in\mathbb R^{3\times2}$, $W_2\in\mathbb R^{2\times3}$, biases $0$; forward $s=(2,1)$ | learning foundations |
-| **D2** | patch image | grayscale $8\times8$ image, $4\times4$ patches, 4 patch tokens | computer vision |
+| **D2** | patch image | grayscale $8\times8$ image, $4\times4$ patches, 4 patch tokens | computer vision; attention (1.2) |
 | **D3** | aligned batch | three unit 2-D pairs, $\tau=1/2$; image-1 logits $(2,1,0)$ | VLM |
 | **D4** | action chunk | observation token plus three 2-D delta actions of $0.02\,\mathrm{m}$; 20 Hz control, 100 ms inference | VLA |
 | **D5** | scalar latent plant | $z_{t+1}=0.8z_t+0.5a_t$, reward $r_t=-z_t^2-0.1a_t^2$, $z_0=1$ | world models |
@@ -38,6 +38,8 @@ If a paper changes only line 1, it proposes a representation. If it changes line
 $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\1&0&0\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix}$$
 
 Forward: $W_1x=(1,2,1)$, $h=(1,2,1)$, $s=W_2h=(2,1)$. Home of [[03-deep-learning/foundations/index|1. Learning Systems]].
+
+**D2.** Pixels frozen on its home, [[03-deep-learning/computer-vision/index|2. Computer Vision]]; patches $1$–$4$ in raster order (1 top-left, 2 top-right, 3 bottom-left, 4 bottom-right). The width-4 embedding and one two-head attention layer are frozen on [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]]. Every row of $E\in\mathbb R^{16\times4}$ is $(\tfrac1{160},-\tfrac1{160},0,0)$, the bias is $e_0=(0,1,0,0)$, and slot $i$ adds the position row $p_i=(0,0,r_i,c_i)$ with $r_i,c_i\in\{\pm1\}$ ($r=-1$ top, $c=-1$ left), so token $i$ is $x_i=(m_i,\,1-m_i,\,r_i,\,c_i)$ with $m_i$ the patch mean divided by 10. The layer has $d=4$, $h=2$, $d_k=d_v=2$ and $W_O=I_4$; head 1 projects token $i$ to $q_i=(r_i,-c_i)$, $k_i=(r_i,c_i)$, $v_i=(m_i,r_i)$, and head 2 to $q_i=(-r_i,c_i)$, $k_i=(r_i,c_i)$, $v_i=(m_i,c_i)$.
 
 **D3.** Matched pairs are aligned. All vectors are unit length.
 
@@ -70,7 +72,7 @@ The catalog level is $i=5$, where $x_5=0.8(2)+0.6(-1)=1$; there $\alpha_5=\bar\a
 | ID | 대상 | 고정 사양 | 사용처 |
 |---|---|---|---|
 | **D1** | 작은 분류기 | $x=(1,2)$, $W_1\in\mathbb R^{3\times2}$, $W_2\in\mathbb R^{2\times3}$, bias $0$; 순전파 $s=(2,1)$ | 학습 기초 |
-| **D2** | 패치 이미지 | 회색조 $8\times8$, $4\times4$ 패치, 패치 토큰 4개 | 컴퓨터비전 |
+| **D2** | 패치 이미지 | 회색조 $8\times8$, $4\times4$ 패치, 패치 토큰 4개 | 컴퓨터비전; 어텐션(1.2) |
 | **D3** | 정렬 배치 | 단위 2차원 3쌍, $\tau=1/2$; 이미지 1 logit $(2,1,0)$ | VLM |
 | **D4** | 행동 청크 | 관측 토큰 하나와 $0.02\,\mathrm{m}$짜리 2차원 델타 행동 3개; 제어 20 Hz, 추론 100 ms | VLA |
 | **D5** | 스칼라 잠재 장치 | $z_{t+1}=0.8z_t+0.5a_t$, $r_t=-z_t^2-0.1a_t^2$, $z_0=1$ | 월드모델 |
@@ -94,6 +96,8 @@ The catalog level is $i=5$, where $x_5=0.8(2)+0.6(-1)=1$; there $\alpha_5=\bar\a
 $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\1&0&0\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix}$$
 
 순전파: $W_1x=(1,2,1)$, $h=(1,2,1)$, $s=W_2h=(2,1)$. 사용처 [[03-deep-learning/foundations/index|1. Learning Systems]].
+
+**D2.** 픽셀은 집인 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]]에서 고정한다. 패치는 래스터 순서로 $1$–$4$(1 왼쪽 위, 2 오른쪽 위, 3 왼쪽 아래, 4 오른쪽 아래)다. 폭 4의 임베딩과 헤드 두 개짜리 어텐션 층 하나는 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]에서 고정한다. $E\in\mathbb R^{16\times4}$의 모든 행은 $(\tfrac1{160},-\tfrac1{160},0,0)$, bias는 $e_0=(0,1,0,0)$이고, 슬롯 $i$는 위치 행 $p_i=(0,0,r_i,c_i)$, $r_i,c_i\in\{\pm1\}$($r=-1$ 위, $c=-1$ 왼쪽)을 더한다. 그래서 토큰 $i$는 $x_i=(m_i,\,1-m_i,\,r_i,\,c_i)$이고 $m_i$는 패치 평균을 10으로 나눈 값이다. 층은 $d=4$, $h=2$, $d_k=d_v=2$, $W_O=I_4$이고, 헤드 1은 토큰 $i$를 $q_i=(r_i,-c_i)$, $k_i=(r_i,c_i)$, $v_i=(m_i,r_i)$로, 헤드 2는 $q_i=(-r_i,c_i)$, $k_i=(r_i,c_i)$, $v_i=(m_i,c_i)$로 투영한다.
 
 **D3.** 짝이 맞는 쌍은 정렬되어 있고 모든 벡터는 단위 길이다.
 

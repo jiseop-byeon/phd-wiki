@@ -14,7 +14,7 @@ What an algorithm still needs before it is a robot: clocks, frames, rates, logs,
 
 A paper algorithm becomes a robot only when sensors, clocks, coordinate frames, computers, networks, controllers, actuators, safety logic, and logging work together. Systems literacy lets a reader determine what was actually deployed and where a reported improvement may have originated.
 
-*Scope: this page teaches the runtime concerns that sit between an algorithm and a robot — the loop, action interfaces, the latency budget with its deadlines and jitter, frames and the TF tree, middleware vocabulary, the execution layer and its behavior trees, reliability, staged deployment and the failure taxonomy. It does not teach ROS 2 itself, which is the eleven pages of [[04-robotics/ros2/index|22. ROS 2]], nor control design ([[04-robotics/control-theory-ce397|5. Control]]), estimation ([[04-robotics/state-estimation-slam|3. State Estimation]]) or planning ([[04-robotics/planning-decision-making|4. Planning]]). It teaches what to check about them, and it is not an electronics or installation tutorial.*
+*Scope: this page teaches the runtime concerns that sit between an algorithm and a robot — the loop, action interfaces, the latency budget with its deadlines and jitter, frames and the TF tree, middleware vocabulary, the execution layer and its behavior trees, reliability, staged deployment and the failure taxonomy. It does not teach ROS 2 itself, which is the eleven pages of [[04-robotics/ros2/index|25. ROS 2]], nor control design ([[04-robotics/control-theory-ce397|5. Control]]), estimation ([[04-robotics/state-estimation-slam|3. State Estimation]]) or planning ([[04-robotics/planning-decision-making|4. Planning]]). It teaches what to check about them, and it is not an electronics or installation tutorial.*
 
 > [!info] Depth target
 > Decompose a robot into its runtime pipeline; interpret action interfaces, timing, frames, middleware, reliability, simulation, and logging; and diagnose failures at subsystem boundaries. This is not a ROS installation or electronics tutorial.
@@ -32,6 +32,112 @@ One drawing, and the problem set asks for exactly this one. The object is **P6**
 node publishing a goal at $50\,\mathrm{Hz}$, a controller sampling the encoder and commanding a
 motor at $200\,\mathrm{Hz}$, and a $70\,\mathrm{ms}$ budget from camera mid-exposure to applied
 force.
+
+<svg viewBox="0 0 560 356" style="max-width:100%;height:auto" role="img" aria-label="P6 on one time axis in milliseconds: vision ticks every 20 ms above, control ticks every 5 ms below, the five instants of one cycle, the 70 ms budget bar with its sampling segment, and a 200 ms stale goal drawn lighter">
+  <line x1="96.6" y1="142" x2="530" y2="142" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="96.6" y1="118" x2="96.6" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="136" y1="118" x2="136" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="175.4" y1="118" x2="175.4" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="214.8" y1="118" x2="214.8" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="254.2" y1="118" x2="254.2" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="293.6" y1="118" x2="293.6" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="333" y1="118" x2="333" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="372.4" y1="118" x2="372.4" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="411.8" y1="118" x2="411.8" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="451.2" y1="118" x2="451.2" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="490.6" y1="118" x2="490.6" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="530" y1="118" x2="530" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="96.6" y1="142" x2="96.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="106.5" y1="142" x2="106.5" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="116.3" y1="142" x2="116.3" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="126.2" y1="142" x2="126.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="136" y1="142" x2="136" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="145.8" y1="142" x2="145.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="155.7" y1="142" x2="155.7" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="165.6" y1="142" x2="165.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="175.4" y1="142" x2="175.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="185.2" y1="142" x2="185.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="195.1" y1="142" x2="195.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="204.9" y1="142" x2="204.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="214.8" y1="142" x2="214.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="224.7" y1="142" x2="224.7" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="234.5" y1="142" x2="234.5" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="244.3" y1="142" x2="244.3" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="254.2" y1="142" x2="254.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="264.1" y1="142" x2="264.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="273.9" y1="142" x2="273.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="283.8" y1="142" x2="283.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="293.6" y1="142" x2="293.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="303.4" y1="142" x2="303.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="313.3" y1="142" x2="313.3" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="323.1" y1="142" x2="323.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="333" y1="142" x2="333" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="342.9" y1="142" x2="342.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="352.7" y1="142" x2="352.7" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="362.5" y1="142" x2="362.5" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="372.4" y1="142" x2="372.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="382.2" y1="142" x2="382.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="392.1" y1="142" x2="392.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="401.9" y1="142" x2="401.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="411.8" y1="142" x2="411.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="421.6" y1="142" x2="421.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="431.5" y1="142" x2="431.5" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="441.4" y1="142" x2="441.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="451.2" y1="142" x2="451.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="461.1" y1="142" x2="461.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="470.9" y1="142" x2="470.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="480.8" y1="142" x2="480.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="490.6" y1="142" x2="490.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="500.4" y1="142" x2="500.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="510.3" y1="142" x2="510.3" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="520.1" y1="142" x2="520.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="530" y1="142" x2="530" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="136" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <text x="175.4" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">20</text>
+  <text x="214.8" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">40</text>
+  <text x="254.2" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">60</text>
+  <text x="293.6" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">80</text>
+  <text x="333" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">100</text>
+  <text x="372.4" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">120</text>
+  <text x="411.8" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">140</text>
+  <text x="451.2" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">160</text>
+  <text x="490.6" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">180</text>
+  <text x="530" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">200 ms</text>
+  <text x="530" y="111" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">vision · 50 Hz: a tall tick every 20 ms</text>
+  <text x="530" y="178" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">control · 200 Hz: a short tick every 5 ms</text>
+  <circle cx="136" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <text x="136" y="110" font-size="11.5" fill="currentColor" text-anchor="middle">exposure midpoint</text>
+  <circle cx="244.3" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <path d="M244.3 138 V32 H285.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="289.9" y="36" font-size="11.5" fill="currentColor">vision publish</text>
+  <circle cx="258.1" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <path d="M258.1 138 V50 H285.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="289.9" y="54" font-size="11.5" fill="currentColor">controller’s TF lookup</text>
+  <circle cx="264.1" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <path d="M264.1 138 V68 H285.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="289.9" y="72" font-size="11.5" fill="currentColor">controller tick that consumes the goal</text>
+  <circle cx="273.9" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <path d="M273.9 138 V86 H285.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="289.9" y="90" font-size="11.5" fill="currentColor">current reaches the motor</text>
+  <rect x="96.6" y="190" width="19.7" height="16" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <rect x="116.3" y="190" width="19.7" height="16" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="3 2"/>
+  <rect x="136" y="190" width="137.9" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.3"/>
+  <text x="204.9" y="202" font-size="11.5" fill="currentColor" text-anchor="middle" font-weight="600">70 ms budget</text>
+  <text x="204.9" y="223" font-size="11" fill="currentColor" text-anchor="middle">70/20 = 3.5 vision periods</text>
+  <text x="204.9" y="237" font-size="11" fill="currentColor" text-anchor="middle">70/5 = 14 control ticks</text>
+  <text x="91.6" y="195" font-size="11" fill="currentColor" text-anchor="end">sampling</text>
+  <text x="91.6" y="209" font-size="11" fill="currentColor" text-anchor="end">½T<tspan dy="3">cam</tspan><tspan dy="-3" dx="3">= 10 ms</tspan></text>
+  <text x="91.6" y="223" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">worst 20 ms</text>
+  <line x1="273.9" y1="206" x2="273.9" y2="260" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="3 3"/>
+  <rect x="136" y="262" width="394" height="10" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="130" y="271" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">200 ms late</text>
+  <text x="530" y="256" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">40 ticks on a stale goal (200/5)</text>
+  <path d="M273.9 278 v6 H530.0 v-6" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="401.9" y="298" font-size="11" fill="currentColor" text-anchor="middle">200 − 70 = 130 ms over budget</text>
+  <text x="12" y="312" font-size="11" fill="currentColor">At 0.10 m/s the cart moves 20 mm while that goal ages 200 ms:</text>
+  <text x="12" y="326" font-size="11" fill="currentColor">20 mm ÷ 0.488 mm per count (1000/2048) = 41 counts the goal never knew about.</text>
+  <text x="12" y="344" font-size="11" fill="currentColor" fill-opacity="0.7">P6 fixes only the bar’s two ends; the three instants inside it are illustrative.</text>
+</svg>
 
 **One axis, two rows of ticks.** Draw a single time axis in milliseconds. Above it, tall ticks
 every $20\,\mathrm{ms}$ for the vision node; below it, short ticks every $5\,\mathrm{ms}$ for the
@@ -98,7 +204,7 @@ The blocks can run at different rates. A 30 Hz camera, 10 Hz policy, and 1 kHz m
 
 ### 2. Embodiment and action interfaces
 
-Embodiment includes morphology, actuator and transmission, sensing, compliance, payload, limits, and environment coupling. Motors, hydraulics, gearing, backlash, saturation, underactuation, and bandwidth determine which actions are meaningful.
+Embodiment includes morphology, actuator and transmission, sensing, compliance, payload, limits, and environment coupling. Motors, hydraulics, gearing, backlash, saturation, underactuation, and bandwidth determine which actions are meaningful. One geared electric drive opened up, with its two equations, torque–speed line, reflected inertia and thermal limit, is [[04-robotics/actuators-drives|10.5 Actuators & Drives]].
 
 When a paper says “action,” identify whether it means joint position, velocity, torque, motor current, end-effector pose, [[04-robotics/force-compliance-control|impedance target]] (a desired stiffness and damping around a reference, not a position to hit exactly), or a high-level skill. The same learned model can behave differently when the low-level interface and control rate change. An end-effector-pose action does not reach a motor until [[04-robotics/modern-robotics/ch06-inverse-kinematics|inverse kinematics (MR ch.6)]] resolves it — including its branch choices and singularities — and a waypoint action does not become motion until [[04-robotics/modern-robotics/ch09-trajectory-generation|time scaling (MR ch.9)]] gives it a velocity profile inside the actuator limits. On a wheeled base, both sit on the [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|nonholonomic kinematics of MR ch.13]].
 
@@ -112,7 +218,7 @@ When a paper says “action,” identify whether it means joint position, veloci
 | Command processing | 5 ms |
 | **Observation-to-action** | **70 ms** |
 
-At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end.
+At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end. Whether a distance like those 7 cm is too large depends on what it would correct: set against an estimate's σ, it is the staleness distance of [[04-robotics/capstone-panel-contact|26. Capstone §5]].
 
 **The budget, as a sum.** **Observation-to-action latency** $L$ is the elapsed time from the physical event to the moment the command derived from that event takes effect on the actuator. It is not one measurement but a sum of named terms, each of which some component owns:
 
@@ -148,7 +254,7 @@ since what a deadline argument needs is the extreme and not the centre — a sta
 >
 > The same distinction re-reads the sum above. With the numbers of the next callout the *mean* budget is $78.7\approx 79$ ms, but replacing the sampling term $\tfrac12 T_{\text{cam}}=16.7$ ms by its worst case $T_{\text{cam}}=33.3$ ms gives $\mathbf{95.3}$ ms. That $16.7$ ms gap is jitter and not bias, so no calibration removes it: a controller tuned on the mean budget meets a disturbance that is $21\%$ staler than designed, and at $0.3$ m/s the end-effector's staleness runs from $24$ mm to $29$ mm between one frame and the next.
 
-**Worked: plant P6.** Encoder $N=2048$ counts/m, so one count is $1000/2048=0.488\,\mathrm{mm}$. Vision at $50\,\mathrm{Hz}$ ($20\,\mathrm{ms}$), control at $200\,\mathrm{Hz}$ ($5\,\mathrm{ms}$), budget $70\,\mathrm{ms}$ from camera mid-exposure to force ([[02-foundations/lab-plants|0.6]]). A vision message $200\,\mathrm{ms}$ old at the controller is $130\,\mathrm{ms}$ over budget and $200/5=40$ stale ticks. At $0.10\,\mathrm{m/s}$ the cart travels $20\,\mathrm{mm}$ ($41$ counts) in that age. The estimator on [[04-robotics/state-estimation-slam|3]] cannot save you: the goal is late, not noisy. The problem set is this timeline as a drawing. The silent-failure drill (TF stamp, QoS) is [[04-robotics/ros2/qos-executors-time|25.5]]. Budgets tighten by more than an
+**Worked: plant P6.** Encoder $N=2048$ counts/m, so one count is $1000/2048=0.488\,\mathrm{mm}$. Vision at $50\,\mathrm{Hz}$ ($20\,\mathrm{ms}$), control at $200\,\mathrm{Hz}$ ($5\,\mathrm{ms}$), budget $70\,\mathrm{ms}$ from camera mid-exposure to force ([[02-foundations/lab-plants|0.6]]). A vision message $200\,\mathrm{ms}$ old at the controller is $130\,\mathrm{ms}$ over budget and $200/5=40$ stale ticks. At $0.10\,\mathrm{m/s}$ the cart travels $20\,\mathrm{mm}$ ($41$ counts) in that age. The estimator on [[04-robotics/state-estimation-slam|3]] cannot save you: the goal is late, not noisy. The problem set is this timeline as a drawing. The silent-failure drill (TF stamp, QoS) is [[04-robotics/ros2/qos-executors-time|25.5]]. What P6's sensors do contribute as noise, sensor by sensor, is modelled on [[04-robotics/sensor-models|3.2 Sensor Models & Noise]]. Budgets tighten by more than an
 order of magnitude when the loop renders stiff contact: a haptic servo must close in about 1 ms with bounded jitter,
 against this page's 70 ms observation-to-action budget,
 so the millisecond is the unit rather than the frame
@@ -269,7 +375,7 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 
 **The tick contract** is the part that gets skipped and then produces bugs. Three clauses: a tick re-enters from the **root** every cycle, so conditions are re-evaluated continuously and an action that is already Running is abandoned the moment an earlier sibling's condition turns false — that reactivity is what a tree buys over a chain of calls. A node that was Running and is no longer on the ticked path must therefore be explicitly **halted**, so every action node owes a halt implementation as well as a tick. And status is *returned*, never stored as a transition, because there are no edges between siblings at all.
 
-*Example.* `Fallback[ Sequence[ batteryOK, Sequence[ ComputePath, FollowPath ] ], Sequence[ ClearCostmaps, Spin ] ]`. The robot navigates while the battery holds; if either navigation step returns Failure the fallback moves on to the recovery branch; and if `batteryOK` goes false mid-drive, the very next tick from the root fails the inner sequence at its condition, halts `FollowPath` without waiting for it to finish, and enters recovery. [[04-robotics/ros2/navigation-nav2|22.4 Nav2 §2]] reads one production tree, including the composite variants (`PipelineSequence`, `RecoveryNode`) and the 1 Hz replanning decorator.
+*Example.* `Fallback[ Sequence[ batteryOK, Sequence[ ComputePath, FollowPath ] ], Sequence[ ClearCostmaps, Spin ] ]`. The robot navigates while the battery holds; if either navigation step returns Failure the fallback moves on to the recovery branch; and if `batteryOK` goes false mid-drive, the very next tick from the root fails the inner sequence at its condition, halts `FollowPath` without waiting for it to finish, and enters recovery. [[04-robotics/ros2/navigation-nav2|25.9 Nav2 §2]] reads one production tree, including the composite variants (`PipelineSequence`, `RecoveryNode`) and the 1 Hz replanning decorator.
 
 **Non-example.** A tree is not an if-then-else chain evaluated once at the start of the task, and a sequence is not a program's `;` — read it that way and the re-ticking looks like wasted work instead of the mechanism. Nor is it a state machine with nicer syntax: an FSM keeps its control flow in transition edges, of which there can be up to $n(n-1)$, and every recovery rule must be duplicated on each state it can fire from, whereas a tree's control flow is only sibling order plus a three-valued return. That is what makes recovery **scoped** — the nearest enclosing fallback decides who recovers, so a planner failure need not invoke the whole system's last resort.
 
@@ -469,7 +575,7 @@ print(mm_per_count, over, stale_ticks, travel_mm, travel_counts)
 로깅이 함께 작동할 때에만 로봇이 된다. 시스템 문해력은 실제로 무엇이 배포됐고, 보고된
 개선이 어느 하위 시스템에서 비롯됐을 수 있는지를 읽게 해 준다.
 
-*범위: 이 페이지는 알고리즘과 로봇 사이에 앉은 런타임 사안들을 가르친다 — 루프, 행동 인터페이스, 데드라인과 지터를 포함한 지연 예산, 좌표계와 TF 트리, 미들웨어 어휘, 실행 계층과 그 behavior tree, 신뢰성, 단계적 배포와 실패 분류. ROS 2 자체는 가르치지 않는다. 그것은 [[04-robotics/ros2/index|22. ROS 2]]의 열한 페이지다. 제어 설계([[04-robotics/control-theory-ce397|5. 제어]]), 상태 추정([[04-robotics/state-estimation-slam|3. 상태 추정]]), 계획([[04-robotics/planning-decision-making|4. 계획]])도 마찬가지다. 이 페이지가 가르치는 것은 그것들에 대해 무엇을 확인할지이며, 전자공학이나 설치 튜토리얼이 아니다.*
+*범위: 이 페이지는 알고리즘과 로봇 사이에 앉은 런타임 사안들을 가르친다 — 루프, 행동 인터페이스, 데드라인과 지터를 포함한 지연 예산, 좌표계와 TF 트리, 미들웨어 어휘, 실행 계층과 그 behavior tree, 신뢰성, 단계적 배포와 실패 분류. ROS 2 자체는 가르치지 않는다. 그것은 [[04-robotics/ros2/index|25. ROS 2]]의 열한 페이지다. 제어 설계([[04-robotics/control-theory-ce397|5. 제어]]), 상태 추정([[04-robotics/state-estimation-slam|3. 상태 추정]]), 계획([[04-robotics/planning-decision-making|4. 계획]])도 마찬가지다. 이 페이지가 가르치는 것은 그것들에 대해 무엇을 확인할지이며, 전자공학이나 설치 튜토리얼이 아니다.*
 
 > [!info] 깊이 목표
 > 로봇을 런타임 파이프라인으로 분해한다; 행동 인터페이스, 타이밍, 좌표계, 미들웨어,
@@ -489,6 +595,112 @@ print(mm_per_count, over, stale_ticks, travel_mm, travel_counts)
 counts/m, 목표를 $50\,\mathrm{Hz}$로 발행하는 비전 노드, 엔코더를 샘플해 모터를
 $200\,\mathrm{Hz}$로 명령하는 제어기, 그리고 카메라 노출 중간부터 힘이 나갈 때까지
 $70\,\mathrm{ms}$의 예산.
+
+<svg viewBox="0 0 560 356" style="max-width:100%;height:auto" role="img" aria-label="P6를 밀리초 시간축 하나에 그린 그림: 위에 20 ms마다 비전 눈금, 아래에 5 ms마다 제어 눈금, 한 주기의 다섯 시점, 샘플링 구간이 붙은 70 ms 예산 막대, 옅게 그린 200 ms짜리 늦은 목표">
+  <line x1="96.6" y1="142" x2="530" y2="142" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
+  <line x1="96.6" y1="118" x2="96.6" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="136" y1="118" x2="136" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="175.4" y1="118" x2="175.4" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="214.8" y1="118" x2="214.8" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="254.2" y1="118" x2="254.2" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="293.6" y1="118" x2="293.6" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="333" y1="118" x2="333" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="372.4" y1="118" x2="372.4" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="411.8" y1="118" x2="411.8" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="451.2" y1="118" x2="451.2" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="490.6" y1="118" x2="490.6" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="530" y1="118" x2="530" y2="142" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85"/>
+  <line x1="96.6" y1="142" x2="96.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="106.5" y1="142" x2="106.5" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="116.3" y1="142" x2="116.3" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="126.2" y1="142" x2="126.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="136" y1="142" x2="136" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="145.8" y1="142" x2="145.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="155.7" y1="142" x2="155.7" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="165.6" y1="142" x2="165.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="175.4" y1="142" x2="175.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="185.2" y1="142" x2="185.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="195.1" y1="142" x2="195.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="204.9" y1="142" x2="204.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="214.8" y1="142" x2="214.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="224.7" y1="142" x2="224.7" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="234.5" y1="142" x2="234.5" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="244.3" y1="142" x2="244.3" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="254.2" y1="142" x2="254.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="264.1" y1="142" x2="264.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="273.9" y1="142" x2="273.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="283.8" y1="142" x2="283.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="293.6" y1="142" x2="293.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="303.4" y1="142" x2="303.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="313.3" y1="142" x2="313.3" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="323.1" y1="142" x2="323.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="333" y1="142" x2="333" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="342.9" y1="142" x2="342.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="352.7" y1="142" x2="352.7" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="362.5" y1="142" x2="362.5" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="372.4" y1="142" x2="372.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="382.2" y1="142" x2="382.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="392.1" y1="142" x2="392.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="401.9" y1="142" x2="401.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="411.8" y1="142" x2="411.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="421.6" y1="142" x2="421.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="431.5" y1="142" x2="431.5" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="441.4" y1="142" x2="441.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="451.2" y1="142" x2="451.2" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="461.1" y1="142" x2="461.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="470.9" y1="142" x2="470.9" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="480.8" y1="142" x2="480.8" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="490.6" y1="142" x2="490.6" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="500.4" y1="142" x2="500.4" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="510.3" y1="142" x2="510.3" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="520.1" y1="142" x2="520.1" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <line x1="530" y1="142" x2="530" y2="149" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6"/>
+  <text x="136" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0</text>
+  <text x="175.4" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">20</text>
+  <text x="214.8" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">40</text>
+  <text x="254.2" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">60</text>
+  <text x="293.6" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">80</text>
+  <text x="333" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">100</text>
+  <text x="372.4" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">120</text>
+  <text x="411.8" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">140</text>
+  <text x="451.2" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">160</text>
+  <text x="490.6" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">180</text>
+  <text x="530" y="162" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">200 ms</text>
+  <text x="530" y="111" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">비전 · 50 Hz: 20 ms마다 긴 눈금</text>
+  <text x="530" y="178" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">제어 · 200 Hz: 5 ms마다 짧은 눈금</text>
+  <circle cx="136" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <text x="136" y="110" font-size="11.5" fill="currentColor" text-anchor="middle">노출 중간점</text>
+  <circle cx="244.3" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <path d="M244.3 138 V32 H285.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="289.9" y="36" font-size="11.5" fill="currentColor">비전 발행</text>
+  <circle cx="258.1" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <path d="M258.1 138 V50 H285.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="289.9" y="54" font-size="11.5" fill="currentColor">제어기의 TF 조회</text>
+  <circle cx="264.1" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <path d="M264.1 138 V68 H285.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="289.9" y="72" font-size="11.5" fill="currentColor">목표를 소비하는 제어 틱</text>
+  <circle cx="273.9" cy="142" r="2.4" fill="currentColor" fill-opacity="1"/>
+  <path d="M273.9 138 V86 H285.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="289.9" y="90" font-size="11.5" fill="currentColor">모터로 전류가 나감</text>
+  <rect x="96.6" y="190" width="19.7" height="16" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <rect x="116.3" y="190" width="19.7" height="16" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="3 2"/>
+  <rect x="136" y="190" width="137.9" height="16" fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.3"/>
+  <text x="204.9" y="202" font-size="11.5" fill="currentColor" text-anchor="middle" font-weight="600">70 ms 예산</text>
+  <text x="204.9" y="223" font-size="11" fill="currentColor" text-anchor="middle">70/20 = 3.5 비전 주기</text>
+  <text x="204.9" y="237" font-size="11" fill="currentColor" text-anchor="middle">70/5 = 14 제어 틱</text>
+  <text x="91.6" y="195" font-size="11" fill="currentColor" text-anchor="end">샘플링</text>
+  <text x="91.6" y="209" font-size="11" fill="currentColor" text-anchor="end">½T<tspan dy="3">cam</tspan><tspan dy="-3" dx="3">= 10 ms</tspan></text>
+  <text x="91.6" y="223" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">최악 20 ms</text>
+  <line x1="273.9" y1="206" x2="273.9" y2="260" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="3 3"/>
+  <rect x="136" y="262" width="394" height="10" fill="currentColor" fill-opacity="0.09" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="130" y="271" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">200 ms 늦음</text>
+  <text x="530" y="256" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">낡은 목표 위의 40틱 (200/5)</text>
+  <path d="M273.9 278 v6 H530.0 v-6" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+  <text x="401.9" y="298" font-size="11" fill="currentColor" text-anchor="middle">200 − 70 = 130 ms 예산 초과</text>
+  <text x="12" y="312" font-size="11" fill="currentColor">0.10 m/s면 그 목표가 200 ms 늙는 동안 카트가 20 mm를 간다:</text>
+  <text x="12" y="326" font-size="11" fill="currentColor">카운트당 0.488 mm(1000/2048)이므로 목표가 전혀 몰랐던 41 카운트다.</text>
+  <text x="12" y="344" font-size="11" fill="currentColor" fill-opacity="0.7">P6이 정하는 것은 막대의 두 끝뿐이고, 그 사이 세 시점은 예시 위치다.</text>
+</svg>
 
 **축 하나, 눈금 두 줄.** 밀리초 단위의 시간 축을 하나만 긋는다. 위쪽에는 비전 노드의 긴 눈금을
 $20\,\mathrm{ms}$마다, 아래쪽에는 제어기의 짧은 눈금을 $5\,\mathrm{ms}$마다 찍는다. 둘을 *같은*
@@ -554,7 +766,7 @@ flowchart LR
 
 Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언스, 페이로드, 한계, 환경
 결합을 포함한다. 모터·유압·기어비·백래시·포화·부족구동·대역폭이 어떤 행동이 의미
-있는지를 결정한다.
+있는지를 결정한다. 기어 달린 전기 구동계 하나를 열어 본 것, 곧 두 방정식, 토크–속도 선, 반사 관성, 열 한계가 [[04-robotics/actuators-drives|10.5 액추에이터·구동계]]다.
 
 논문이 "action"이라 하면 그것이 관절 위치·속도·토크·모터 전류·말단 pose·[[04-robotics/force-compliance-control|임피던스 타깃]]
 (정확히 도달할 위치가 아니라 기준 주위의 원하는 강성과 감쇠)·상위 스킬 중 무엇인지 확인하라. 같은 학습 모델도 저수준 인터페이스와 제어 주기가
@@ -576,7 +788,7 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 | 명령 처리 | 5 ms |
 | **관측→행동** | **70 ms** |
 
-1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다.
+1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다. 그 7 cm가 너무 큰지는 그것이 무엇을 고치느냐에 달렸다. 추정의 σ와 견준 것이 [[04-robotics/capstone-panel-contact|26. 캡스톤 §5]]의 낡음 거리다.
 
 **예산을 합으로 쓰면.** **관측-행동 지연** $L$은 물리적 사건이 일어난 순간부터 그 사건에서 나온 명령이 구동기에 효과를 내는 순간까지의 경과 시간이다. 측정값 하나가 아니라 이름 붙은 항들의 합이고, 각 항에는 그것을 책임지는 구성 요소가 있다:
 
@@ -612,7 +824,7 @@ $$J=\max_k R_k-\min_k R_k$$
 >
 > 같은 구분이 위의 합을 다시 읽게 한다. 다음 콜아웃의 숫자로 *평균* 예산은 $78.7\approx 79$ ms지만, 샘플링 항 $\tfrac12 T_{\text{cam}}=16.7$ ms를 최악값 $T_{\text{cam}}=33.3$ ms로 바꾸면 $\mathbf{95.3}$ ms가 된다. 그 $16.7$ ms 차이는 편향이 아니라 지터이므로 어떤 보정으로도 없앨 수 없다. 평균 예산에 맞춰 튜닝한 제어기는 설계보다 $21\%$ 더 늙은 외란을 만나고, $0.3$ m/s에서 말단의 낡음은 프레임마다 $24$ mm와 $29$ mm 사이를 오간다.
 
-**계산: 장치 P6.** 엔코더 $N=2048$ counts/m, 한 카운트 $0.488\,\mathrm{mm}$. 비전 $50\,\mathrm{Hz}$($20\,\mathrm{ms}$), 제어 $200\,\mathrm{Hz}$($5\,\mathrm{ms}$), 노출 중간부터 힘까지 예산 $70\,\mathrm{ms}$([[02-foundations/lab-plants|0.6]]). 제어기에서 $200\,\mathrm{ms}$ 늙은 비전은 예산 초과 $130\,\mathrm{ms}$, 낡은 틱 40개. $0.10\,\mathrm{m/s}$면 그 나이 동안 $20\,\mathrm{mm}$(41 카운트). [[04-robotics/state-estimation-slam|3]]의 추정기는 구하지 못한다. 목표가 늦은 것이지 잡음이 아니다. 과제는 이 타임라인을 그림으로 묻는 것이다. 조용한 실패(TF 스탬프, QoS)는 [[04-robotics/ros2/qos-executors-time|25.5]].
+**계산: 장치 P6.** 엔코더 $N=2048$ counts/m, 한 카운트 $0.488\,\mathrm{mm}$. 비전 $50\,\mathrm{Hz}$($20\,\mathrm{ms}$), 제어 $200\,\mathrm{Hz}$($5\,\mathrm{ms}$), 노출 중간부터 힘까지 예산 $70\,\mathrm{ms}$([[02-foundations/lab-plants|0.6]]). 제어기에서 $200\,\mathrm{ms}$ 늙은 비전은 예산 초과 $130\,\mathrm{ms}$, 낡은 틱 40개. $0.10\,\mathrm{m/s}$면 그 나이 동안 $20\,\mathrm{mm}$(41 카운트). [[04-robotics/state-estimation-slam|3]]의 추정기는 구하지 못한다. 목표가 늦은 것이지 잡음이 아니다. 과제는 이 타임라인을 그림으로 묻는 것이다. 조용한 실패(TF 스탬프, QoS)는 [[04-robotics/ros2/qos-executors-time|25.5]]. P6의 센서들이 실제로 보태는 잡음은 센서마다 [[04-robotics/sensor-models|3.2 센서 모델과 잡음]]에 모델링되어 있다.
 
 루프가 단단한 접촉을 렌더링하면
 예산이 한 자릿수 넘게 빡빡해진다. 이 페이지의 관측-행동 예산 70 ms에 견주어 햅틱 서보는 유계 지터로 약 1 ms 안에 닫혀야 하므로 단위가 프레임이 아니라
@@ -732,7 +944,7 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 
 **tick 계약**은 건너뛰었다가 버그를 만드는 부분이다. 조항이 셋이다. tick은 매 주기 **뿌리**에서 다시 들어오므로 조건이 계속 재평가되고, 앞선 형제의 조건이 거짓이 되는 순간 이미 Running이던 action이 버려진다 — 호출 사슬에 견주어 트리가 사 주는 것이 그 반응성이다. 따라서 Running이었다가 tick 경로에서 빠진 노드는 명시적으로 **halt**되어야 하고, 그래서 모든 action 노드는 tick뿐 아니라 halt 구현까지 진다. 그리고 상태는 *반환*될 뿐 전이로 저장되지 않는다. 형제 사이에는 애초에 간선이 없기 때문이다.
 
-*예.* `Fallback[ Sequence[ batteryOK, Sequence[ ComputePath, FollowPath ] ], Sequence[ ClearCostmaps, Spin ] ]`. 배터리가 버티는 동안 로봇은 주행한다. 주행 단계 중 하나가 Failure를 반환하면 fallback이 복구 가지로 넘어간다. 그리고 주행 중에 `batteryOK`가 거짓이 되면 뿌리에서 오는 바로 다음 tick이 안쪽 sequence를 그 조건에서 실패시키고, `FollowPath`가 끝나기를 기다리지 않고 halt한 뒤 복구로 들어간다. [[04-robotics/ros2/navigation-nav2|22.4 Nav2 §2]]가 실제 제품의 트리 하나를 읽는다. 합성 변종(`PipelineSequence`, `RecoveryNode`)과 1 Hz 재계획 decorator까지 들어 있다.
+*예.* `Fallback[ Sequence[ batteryOK, Sequence[ ComputePath, FollowPath ] ], Sequence[ ClearCostmaps, Spin ] ]`. 배터리가 버티는 동안 로봇은 주행한다. 주행 단계 중 하나가 Failure를 반환하면 fallback이 복구 가지로 넘어간다. 그리고 주행 중에 `batteryOK`가 거짓이 되면 뿌리에서 오는 바로 다음 tick이 안쪽 sequence를 그 조건에서 실패시키고, `FollowPath`가 끝나기를 기다리지 않고 halt한 뒤 복구로 들어간다. [[04-robotics/ros2/navigation-nav2|25.9 Nav2 §2]]가 실제 제품의 트리 하나를 읽는다. 합성 변종(`PipelineSequence`, `RecoveryNode`)과 1 Hz 재계획 decorator까지 들어 있다.
 
 **반례.** 트리는 과제 시작 때 한 번 평가되는 if-then-else 사슬이 아니고, sequence는 프로그램의 `;`이 아니다 — 그렇게 읽으면 다시 tick하는 것이 메커니즘이 아니라 낭비로 보인다. 문법만 예쁜 상태 기계도 아니다. FSM은 제어 흐름을 전이 간선에 두고 그 수가 최대 $n(n-1)$까지 가며 복구 규칙 하나하나를 그것이 발동할 수 있는 모든 상태마다 복제해야 하는 반면, 트리의 제어 흐름은 형제의 순서와 3값 반환뿐이다. 이것이 복구에 **범위**를 주는 장치다. 가장 가까운 바깥 fallback이 누가 복구할지를 정하므로, 플래너의 실패가 시스템 전체의 최후 수단을 부를 필요가 없다.
 

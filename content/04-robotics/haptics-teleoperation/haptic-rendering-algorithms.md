@@ -36,11 +36,76 @@ The plate's thickness is this page's own frozen number; everything else is catal
 
 Two pictures side by side, of the *same* instant, and the problem set asks for exactly these two.
 
-**Left — penalty.** The $x$ axis horizontal, the plate as a shaded band from $0.030$ to $0.034$, the mid-plane at $0.032$ as a dashed line through it. Put the device point at $x=0.036\,\mathrm{m}$, outside the far face. Draw the force as an arrow pointing in $+x$ — *away* from where the user came in — and label it $0.80\,\mathrm{N}$. Next to it write the rule the arrow obeys, "toward the nearest face", and mark which face that is.
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="Penalty and proxy at the same instant on a 4 mm plate from 0.030 to 0.034 m: the penalty law pushes the device point at 0.033 out the back with +0.40 N while a proxy held on the entry face pulls it back with −1.2 N, over a shared axis that marks 0.030, 0.032, 0.033 and 0.034 to scale.">
+  <text x="12" y="22" font-size="12.5" fill="currentColor">Penalty: stateless</text>
+  <rect x="70" y="38" width="120" height="72" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.55"/>
+  <line x1="130" y1="38" x2="130" y2="110" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <line x1="14" y1="72" x2="261.5" y2="72" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"/>
+  <polygon points="268,72 261,75.2 261,68.8" fill="currentColor" fill-opacity="0.5"/>
+  <text x="268" y="65" font-size="12" fill="currentColor" text-anchor="end" opacity="0.7">x</text>
+  <line x1="20" y1="88" x2="58.5" y2="88" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <polygon points="64,88 58,91 58,85" fill="currentColor" fill-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75"><text x="42" y="103">came in</text><text x="70" y="124">0.030</text><text x="130" y="124">0.032</text><text x="190" y="124">0.034</text></g>
+  <line x1="190" y1="38" x2="190" y2="110" stroke="currentColor" stroke-width="2.6"/>
+  <text x="190" y="34" font-size="11" fill="currentColor" text-anchor="middle">nearest face</text>
+  <circle cx="160" cy="72" r="4.5" fill="currentColor"/>
+  <line x1="160" y1="72" x2="181.5" y2="72" stroke="currentColor" stroke-width="2.4"/>
+  <polygon points="190,72 181,76.4 181,67.6" fill="currentColor"/>
+  <text x="185" y="63" font-size="12" fill="currentColor" text-anchor="end">+0.40 N</text>
+  <text x="12" y="142" font-size="11" fill="currentColor">rule: toward the nearest face</text>
+  <text x="12" y="157" font-size="11" fill="currentColor" opacity="0.8">(here the far face, 0.034)</text>
+  <line x1="280" y1="12" x2="280" y2="160" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3" stroke-dasharray="3 4"/>
+  <text x="290" y="22" font-size="12.5" fill="currentColor">Proxy: one remembered point</text>
+  <rect x="348" y="38" width="120" height="72" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.55"/>
+  <line x1="408" y1="38" x2="408" y2="110" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <line x1="292" y1="72" x2="539.5" y2="72" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"/>
+  <polygon points="546,72 539,75.2 539,68.8" fill="currentColor" fill-opacity="0.5"/>
+  <text x="546" y="65" font-size="12" fill="currentColor" text-anchor="end" opacity="0.7">x</text>
+  <line x1="298" y1="88" x2="336.5" y2="88" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <polygon points="342,88 336,91 336,85" fill="currentColor" fill-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75"><text x="320" y="103">came in</text><text x="348" y="124">0.030</text><text x="408" y="124">0.032</text><text x="468" y="124">0.034</text></g>
+  <polyline points="353,72 359,72 363.3,77 371.8,67 380.4,77 389,67 397.5,77 406.1,67 414.7,77 423.2,67 427.5,72 433.5,72" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+  <circle cx="348" cy="72" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="438" cy="72" r="4.5" fill="currentColor"/>
+  <line x1="438" y1="67" x2="438" y2="56" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" stroke-dasharray="2 2"/>
+  <line x1="438" y1="54" x2="356.5" y2="54" stroke="currentColor" stroke-width="2.4"/>
+  <polygon points="348,54 357,49.6 357,58.4" fill="currentColor"/>
+  <text x="376" y="47" font-size="12" fill="currentColor" text-anchor="middle">−1.2 N</text>
+  <text x="339" y="63" font-size="13" fill="currentColor" text-anchor="end">p<tspan font-size="11" dy="3">proxy</tspan></text>
+  <text x="290" y="142" font-size="11" fill="currentColor">rule: toward the proxy</text>
+  <text x="290" y="157" font-size="11" fill="currentColor" opacity="0.8">proxy unmoved since the point entered</text>
+  <text x="12" y="176" font-size="11.5" fill="currentColor" opacity="0.85">one shared axis, to scale</text>
+  <rect x="135" y="204" width="300" height="16" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <line x1="285" y1="204" x2="285" y2="220" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <line x1="24" y1="212" x2="527.5" y2="212" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <polygon points="534,212 527,215.2 527,208.8" fill="currentColor" fill-opacity="0.55"/>
+  <text x="534" y="238" font-size="11" fill="currentColor" text-anchor="end" opacity="0.7">x (m)</text>
+  <line x1="135" y1="220" x2="135" y2="225" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="135" y="238" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.030</text>
+  <line x1="285" y1="220" x2="285" y2="225" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="285" y="238" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.032</text>
+  <line x1="360" y1="220" x2="360" y2="225" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="360" y="238" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.033</text>
+  <line x1="435" y1="220" x2="435" y2="225" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="435" y="238" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.034</text>
+  <text x="135" y="253" font-size="12" fill="currentColor" text-anchor="middle">x<tspan font-size="11" dy="3">w</tspan><tspan font-size="11" dy="-3" dx="3.9">entry face</tspan></text>
+  <g font-size="11" fill="currentColor" text-anchor="middle"><text x="285" y="253">mid-plane</text><text x="360" y="253">device point</text><text x="435" y="253">far face</text></g>
+  <circle cx="360" cy="212" r="4.5" fill="currentColor"/>
+  <line x1="360" y1="207" x2="360" y2="180" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" stroke-dasharray="2 2"/>
+  <line x1="360" y1="194" x2="426.5" y2="194" stroke="currentColor" stroke-width="2.2"/>
+  <polygon points="435,194 426,198.2 426,189.8" fill="currentColor"/>
+  <text x="443" y="198" font-size="11.5" fill="currentColor">penalty +0.40 N</text>
+  <line x1="360" y1="181" x2="143.5" y2="181" stroke="currentColor" stroke-width="2.2"/>
+  <polygon points="135,181 144,176.8 144,185.2" fill="currentColor"/>
+  <text x="247.5" y="174" font-size="11.5" fill="currentColor" text-anchor="middle">proxy −1.2 N</text>
+  <g font-size="11" fill="currentColor" opacity="0.9"><text x="12" y="274">Same point, same K = 400 N/m: +0.40 N against −1.2 N,</text><text x="12" y="289">1.6 N apart and opposite in sign. Arrows to scale: 1 mm of spring = 0.40 N.</text></g>
+</svg>
 
-**Right — proxy.** The same band, the same device point at $0.036$. Now draw a second, hollow point sitting *on the entry face* at $0.030$ and label it $p_{\text{proxy}}$. Draw the spring between the two points and the force arrow in $-x$, labelled $2.4\,\mathrm{N}$. Write beside it the rule this arrow obeys, "toward the proxy", and note that the proxy has not moved since the point entered.
+**Left — penalty.** The $x$ axis horizontal, the plate as a shaded band from $0.030$ to $0.034$, the mid-plane at $0.032$ as a dashed line through it. Put the device point at $x=0.033\,\mathrm{m}$, between the mid-plane and the far face. Draw the force as an arrow pointing in $+x$ — *away* from where the user came in — and label it $0.40\,\mathrm{N}$. Next to it write the rule the arrow obeys, "toward the nearest face", and mark which face that is.
 
-**Underneath both**, one shared axis: mark $x_w=0.030$, the mid-plane $0.032$, the far face $0.034$ and the device point $0.036$ to scale, so the two arrows are visibly reading the same geometry and disagreeing about the answer. The two forces differ by $3.2\,\mathrm{N}$ and point in opposite directions, which is the entire argument of §3 in one figure.
+**Right — proxy.** The same band, the same device point at $0.033$. Now draw a second, hollow point sitting *on the entry face* at $0.030$ and label it $p_{\text{proxy}}$. Draw the spring between the two points and the force arrow in $-x$, labelled $1.2\,\mathrm{N}$. Write beside it the rule this arrow obeys, "toward the proxy", and note that the proxy has not moved since the point entered.
+
+**Underneath both**, one shared axis: mark $x_w=0.030$, the mid-plane $0.032$, the far face $0.034$ and the device point $0.033$ to scale, so the two arrows are visibly reading the same geometry and disagreeing about the answer. The two forces differ by $1.6\,\mathrm{N}$ and point in opposite directions, which is the entire argument of §3 in one figure.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -52,17 +117,17 @@ $$F_{\text{ceil}}=K\cdot\frac{\text{thickness}}{2}=400\cdot 0.002=0.80\,\mathrm{
 
 because past the mid-plane the *nearest* face is no longer the one the user entered through, and §2's third failure takes over. On P3's amplifier, which can supply $2.0\,\mathrm{N}$, any determined push is $2.5$ times this ceiling: the catalog wall does not hold this plate.
 
-**Step 2 — the penalty force after pop-through.** At $x=0.036\,\mathrm{m}$ the nearest face is the far one at $0.034$, so the penalty law measures $0.002\,\mathrm{m}$ of penetration from *that* side and pushes the point further out the back:
+**Step 2 — the penalty force after pop-through.** At $x=0.033\,\mathrm{m}$ the nearest face is the far one at $0.034$, so the penalty law measures $0.001\,\mathrm{m}$ of penetration from *that* side and pushes the point further out the back:
 
-$$F_{\text{penalty}}=+K\cdot(0.036-0.034)=+400\cdot0.002=+0.80\,\mathrm{N}$$
+$$F_{\text{penalty}}=+K\cdot(0.034-0.033)=+400\cdot0.001=+0.40\,\mathrm{N}$$
 
-the same magnitude as Step 1 and the opposite direction. Nothing in the algorithm is broken; the force law is doing exactly what it says, and what it says is wrong.
+half the magnitude of Step 1 and the opposite direction. Nothing in the algorithm is broken; the force law is doing exactly what it says, and what it says is wrong.
 
 **Step 3 — the proxy force at the same instant.** Give the algorithm one state variable, a proxy constrained to stay out of the plate and moved each period toward the device point as far as the constraints allow (§3). It entered at $x_w$ and cannot pass through the plate, so it is still at $0.030$, and the rendered force is the spring between the two points:
 
-$$F_{\text{proxy}}=K\,(x_{\text{proxy}}-x)=400\cdot(0.030-0.036)=-2.4\,\mathrm{N}$$
+$$F_{\text{proxy}}=K\,(x_{\text{proxy}}-x)=400\cdot(0.030-0.033)=-1.2\,\mathrm{N}$$
 
-pulling the hand back the way it came. Same geometry, same stiffness, same instant; the two algorithms differ by $3.2\,\mathrm{N}$ and by a sign, and the only difference between them is one remembered number.
+pulling the hand back the way it came. Same geometry, same stiffness, same instant; the two algorithms differ by $1.6\,\mathrm{N}$ and by a sign, and the only difference between them is one remembered number.
 
 **Step 4 — can stiffness rescue the penalty law instead?** Ask it backwards. To make $F_{\text{ceil}}$ exceed the amplifier's $2.0\,\mathrm{N}$ on this plate the penalty method needs
 
@@ -121,7 +186,7 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 >
 > where $\mathcal{C}$ is the free space outside every object, $p^{\text{dev}}_k$ the measured device point and $p^{\text{prox}}_k$ the proxy — and the subscript $k-1$ inside the constraint is the whole difference from §2, because it is the only place the past appears.
 >
-> - **Example**: the Worked case at $x=0.036$. The proxy is still at the entry face $0.030$ — reachability forbids it from crossing the plate to reach the nearer far face — so the force is $-2.4\,\mathrm{N}$, inward, where the stateless law gave $+0.80\,\mathrm{N}$, outward.
+> - **Example**: the Worked case at $x=0.033$. The proxy is still at the entry face $0.030$ — reachability forbids it from crossing the plate to reach the nearer far face — so the force is $-1.2\,\mathrm{N}$, inward, where the stateless law gave $+0.40\,\mathrm{N}$, outward.
 > - **Non-example**: taking the global nearest surface point each period and calling it a proxy. That is the penalty law with extra steps: drop the reachability clause and the "proxy" jumps to the far face at the mid-plane exactly as $\hat n$ did.
 > - **Non-example**: a 1-DoF half-space. There $\mathcal{C}$ is a half-line and the constrained minimiser is always the single boundary point, so proxy and penalty return the same force at every instant — which is why the catalog wall of 24.4 can be written in the penalty form without meeting any of §2's failures.
 > - **Why it matters**: it costs one stored point per contact and resolves all three failures at once, which is the best trade in the subject. **God object** (Zilles & Salisbury 1995) is this construction with an ideal zero-radius point; **virtual proxy** (Ruspini et al. 1997) gives the same point a finite radius and adds friction and force shading on top. The defining conditions above are shared; the radius is the difference.
@@ -152,7 +217,7 @@ Those three are the ones a rendering paper will name, and they differ in exactly
 > $$F_f=\begin{cases}-\operatorname{sat}_{F_s}(F_a), & \lvert v\rvert<D_v\quad\text{(stuck; and $v$ is set to $0$)}\\[2pt] -\big(F_d\,\mathrm{sgn}(v)+b_t v\big), & \lvert v\rvert\ge D_v\quad\text{(slipping)}\end{cases}$$
 >
 > where $F_a$ is the applied tangential force, $F_s$ the static limit, $F_d$ the dynamic (Coulomb) level, $b_t$ the tangential viscous coefficient, $D_v$ the dead-zone half-width and $\operatorname{sat}_{F_s}(\cdot)$ clipping at $\pm F_s$ — and the dead-zone exists **because** exact zero velocity never occurs in sampled data, so a model that tested $v=0$ would never stick.
-> - **Example**: the $F_s=3.5$, $F_d=3.0$, $b_t=10$ wall of the box above. A $2$ N sideways push is inside the saturation, so the rendered force is exactly $2$ N opposing and the point does not move; a $5$ N push breaks free and at $v=0.05$ m/s the friction is $3.5$ N, leaving $1.5$ N of net drive. The whole sensation of "grip" is the $F_s-F_d=0.5$ N gap and the instant of the switch.
+> - **Example**: the $F_s=3.5$, $F_d=3.0$, $b_t=10$ wall of the box below. A $2$ N sideways push is inside the saturation, so the rendered force is exactly $2$ N opposing and the point does not move; a $5$ N push breaks free and at $v=0.05$ m/s the friction is $3.5$ N, leaving $1.5$ N of net drive. The whole sensation of "grip" is the $F_s-F_d=0.5$ N gap and the instant of the switch.
 > - **Non-example**: Coulomb friction $-F_d\,\mathrm{sgn}(v)$ on its own. It has no stuck mode, so it chatters about zero velocity instead of holding, and a surface rendered with it cannot be rested on.
 > - **Why it matters**: it is cheap, it has no state to integrate, and $D_v$ is a knob with a physical meaning you can set from the encoder — but the dead-zone is also a lie about pre-sliding: inside it the point is rigidly fixed, where a real contact deflects elastically. That is the deficiency the next two models exist to remove.
 
@@ -214,13 +279,13 @@ Four questions separate the claims. **Which algorithm computes the force** — p
 
 Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. Catalog wall $k_w=400$, $x_w=0.030$. Replace the half-space with a *plate* of thickness $4\,\mathrm{mm}$ occupying $x\in[0.030,0.034]$. The Euler lab stays on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
 
-1. **Draw.** Handle $x$, plate, mid-plane at $0.032$. Two pictures at $x=0.036$: penalty (nearest-surface force, arrow *out the back*) and proxy (proxy stuck on the entry face $x_w$, spring $k_w(x_{\mathrm{proxy}}-x)$).
-2. **Derive.** (a) Penalty force just before the mid-plane, and the push that pops through. (b) Proxy force at $x=0.036$. (c) Colgate bound $2b/T$ at $T=10^{-3}$. At that ceiling, does a $2\,\mathrm{N}$ push (the 24.3 amplifier limit) still pop a $4\,\mathrm{mm}$ plate? A $2\,\mathrm{mm}$ plate?
+1. **Draw.** Handle $x$, plate, mid-plane at $0.032$. Two pictures at $x=0.033$: penalty (nearest-surface force, arrow *out the back*) and proxy (proxy stuck on the entry face $x_w$, spring $k_w(x_{\mathrm{proxy}}-x)$).
+2. **Derive.** (a) Penalty force just before the mid-plane, and the push that pops through. (b) Proxy force at $x=0.033$. (c) Colgate bound $2b/T$ at $T=10^{-3}$. At that ceiling, does a $2\,\mathrm{N}$ push (the 24.3 amplifier limit) still pop a $4\,\mathrm{mm}$ plate? A $2\,\mathrm{mm}$ plate?
 3. **Interpret.** Why is the 24.4 half-space wall honest as a penalty law, and why does the same law lie on this plate? What memory does the proxy add that a 1-DoF *half-space* never needed?
 
 > [!tip]- Solutions
-> 1. Penalty at $x=0.036$ is $2\,\mathrm{mm}$ past mid-plane, nearest face is $x=0.034$, force points $+x$ (out the back). Proxy remains at $0.030$, spring pulls $-x$.
-> 2. (a) $k_w\cdot 0.002=0.80\,\mathrm{N}$; any harder push pops through. (b) $400\cdot(0.030-0.036)=-2.4\,\mathrm{N}$. (c) $2b/T=1600\,\mathrm{N/m}$. Ceiling force before mid-plane is $K\cdot(\mathrm{thickness}/2)$: $4\,\mathrm{mm}$ plate $\to 3.2\,\mathrm{N}$ (a $2\,\mathrm{N}$ push survives); $2\,\mathrm{mm}$ plate $\to 1.6\,\mathrm{N}$ (it pops). The bound is not why catalog penalty fails here — missing state is.
+> 1. Penalty at $x=0.033$ is $1\,\mathrm{mm}$ past mid-plane, nearest face is $x=0.034$, force points $+x$ (out the back). Proxy remains at $0.030$, spring pulls $-x$.
+> 2. (a) $k_w\cdot 0.002=0.80\,\mathrm{N}$; any harder push pops through. (b) $400\cdot(0.030-0.033)=-1.2\,\mathrm{N}$. (c) $2b/T=1600\,\mathrm{N/m}$. Ceiling force before mid-plane is $K\cdot(\mathrm{thickness}/2)$: $4\,\mathrm{mm}$ plate $\to 3.2\,\mathrm{N}$ (a $2\,\mathrm{N}$ push survives); $2\,\mathrm{mm}$ plate $\to 1.6\,\mathrm{N}$ (it pops). The bound is not why catalog penalty fails here — missing state is.
 > 3. A half-space has one face; nearest-surface is always the entry face, so penalty and proxy coincide. A plate has two faces; without memory the force flips at the mid-plane. The proxy remembers the entry face.
 
 ## 한국어
@@ -248,11 +313,76 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. Catalog wall $k_w=4
 
 *같은* 순간의 그림 둘을 나란히. 과제가 요구하는 것이 정확히 이 둘이다.
 
-**왼쪽 — 벌점.** $x$축을 가로로, 판을 $0.030$에서 $0.034$까지의 음영 띠로, 중간면 $0.032$를 그 안을 지나는 점선으로. 장치 점을 먼 면 바깥 $x=0.036\,\mathrm{m}$에 둔다. 힘을 $+x$ 방향 화살표로 — 사용자가 들어온 쪽의 *반대*로 — 그리고 $0.80\,\mathrm{N}$이라 적는다. 옆에 그 화살표가 따르는 규칙 "가장 가까운 면 쪽"을 쓰고, 그게 어느 면인지 표시한다.
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="0.030–0.034 m의 4 mm 판에서 같은 순간을 본 벌점과 proxy로, 벌점 법칙은 0.033의 장치 점을 +0.40 N으로 뒤로 밀어내고 진입 면에 머문 proxy는 −1.2 N으로 되당기며, 아래 공유 축에 0.030, 0.032, 0.033, 0.034를 축척대로 표시했다.">
+  <text x="12" y="22" font-size="12.5" fill="currentColor">벌점: 상태 없음</text>
+  <rect x="70" y="38" width="120" height="72" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.55"/>
+  <line x1="130" y1="38" x2="130" y2="110" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <line x1="14" y1="72" x2="261.5" y2="72" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"/>
+  <polygon points="268,72 261,75.2 261,68.8" fill="currentColor" fill-opacity="0.5"/>
+  <text x="268" y="65" font-size="12" fill="currentColor" text-anchor="end" opacity="0.7">x</text>
+  <line x1="20" y1="88" x2="58.5" y2="88" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <polygon points="64,88 58,91 58,85" fill="currentColor" fill-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75"><text x="42" y="103">들어온 쪽</text><text x="70" y="124">0.030</text><text x="130" y="124">0.032</text><text x="190" y="124">0.034</text></g>
+  <line x1="190" y1="38" x2="190" y2="110" stroke="currentColor" stroke-width="2.6"/>
+  <text x="190" y="34" font-size="11" fill="currentColor" text-anchor="middle">가장 가까운 면</text>
+  <circle cx="160" cy="72" r="4.5" fill="currentColor"/>
+  <line x1="160" y1="72" x2="181.5" y2="72" stroke="currentColor" stroke-width="2.4"/>
+  <polygon points="190,72 181,76.4 181,67.6" fill="currentColor"/>
+  <text x="185" y="63" font-size="12" fill="currentColor" text-anchor="end">+0.40 N</text>
+  <text x="12" y="142" font-size="11" fill="currentColor">규칙: 가장 가까운 면 쪽</text>
+  <text x="12" y="157" font-size="11" fill="currentColor" opacity="0.8">(여기서는 먼 면, 0.034)</text>
+  <line x1="280" y1="12" x2="280" y2="160" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3" stroke-dasharray="3 4"/>
+  <text x="290" y="22" font-size="12.5" fill="currentColor">proxy: 기억한 점 하나</text>
+  <rect x="348" y="38" width="120" height="72" fill="currentColor" fill-opacity="0.13" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.55"/>
+  <line x1="408" y1="38" x2="408" y2="110" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <line x1="292" y1="72" x2="539.5" y2="72" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"/>
+  <polygon points="546,72 539,75.2 539,68.8" fill="currentColor" fill-opacity="0.5"/>
+  <text x="546" y="65" font-size="12" fill="currentColor" text-anchor="end" opacity="0.7">x</text>
+  <line x1="298" y1="88" x2="336.5" y2="88" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <polygon points="342,88 336,91 336,85" fill="currentColor" fill-opacity="0.6"/>
+  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.75"><text x="320" y="103">들어온 쪽</text><text x="348" y="124">0.030</text><text x="408" y="124">0.032</text><text x="468" y="124">0.034</text></g>
+  <polyline points="353,72 359,72 363.3,77 371.8,67 380.4,77 389,67 397.5,77 406.1,67 414.7,77 423.2,67 427.5,72 433.5,72" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+  <circle cx="348" cy="72" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="438" cy="72" r="4.5" fill="currentColor"/>
+  <line x1="438" y1="67" x2="438" y2="56" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" stroke-dasharray="2 2"/>
+  <line x1="438" y1="54" x2="356.5" y2="54" stroke="currentColor" stroke-width="2.4"/>
+  <polygon points="348,54 357,49.6 357,58.4" fill="currentColor"/>
+  <text x="376" y="47" font-size="12" fill="currentColor" text-anchor="middle">−1.2 N</text>
+  <text x="339" y="63" font-size="13" fill="currentColor" text-anchor="end">p<tspan font-size="11" dy="3">proxy</tspan></text>
+  <text x="290" y="142" font-size="11" fill="currentColor">규칙: proxy 쪽</text>
+  <text x="290" y="157" font-size="11" fill="currentColor" opacity="0.8">점이 들어온 뒤로 proxy는 움직이지 않았다</text>
+  <text x="12" y="176" font-size="11.5" fill="currentColor" opacity="0.85">공유하는 축 하나, 축척대로</text>
+  <rect x="135" y="204" width="300" height="16" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <line x1="285" y1="204" x2="285" y2="220" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <line x1="24" y1="212" x2="527.5" y2="212" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <polygon points="534,212 527,215.2 527,208.8" fill="currentColor" fill-opacity="0.55"/>
+  <text x="534" y="238" font-size="11" fill="currentColor" text-anchor="end" opacity="0.7">x (m)</text>
+  <line x1="135" y1="220" x2="135" y2="225" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="135" y="238" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.030</text>
+  <line x1="285" y1="220" x2="285" y2="225" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="285" y="238" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.032</text>
+  <line x1="360" y1="220" x2="360" y2="225" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="360" y="238" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.033</text>
+  <line x1="435" y1="220" x2="435" y2="225" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="435" y="238" font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">0.034</text>
+  <text x="135" y="253" font-size="12" fill="currentColor" text-anchor="middle">x<tspan font-size="11" dy="3">w</tspan><tspan font-size="11" dy="-3" dx="3.9">진입 면</tspan></text>
+  <g font-size="11" fill="currentColor" text-anchor="middle"><text x="285" y="253">중간면</text><text x="360" y="253">장치 점</text><text x="435" y="253">먼 면</text></g>
+  <circle cx="360" cy="212" r="4.5" fill="currentColor"/>
+  <line x1="360" y1="207" x2="360" y2="180" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" stroke-dasharray="2 2"/>
+  <line x1="360" y1="194" x2="426.5" y2="194" stroke="currentColor" stroke-width="2.2"/>
+  <polygon points="435,194 426,198.2 426,189.8" fill="currentColor"/>
+  <text x="443" y="198" font-size="11.5" fill="currentColor">벌점 +0.40 N</text>
+  <line x1="360" y1="181" x2="143.5" y2="181" stroke="currentColor" stroke-width="2.2"/>
+  <polygon points="135,181 144,176.8 144,185.2" fill="currentColor"/>
+  <text x="247.5" y="174" font-size="11.5" fill="currentColor" text-anchor="middle">proxy −1.2 N</text>
+  <g font-size="11" fill="currentColor" opacity="0.9"><text x="12" y="274">같은 점, 같은 K = 400 N/m에서 +0.40 N 대 −1.2 N.</text><text x="12" y="289">1.6 N 차이에 부호가 반대다. 화살표 축척: 스프링 1 mm = 0.40 N.</text></g>
+</svg>
 
-**오른쪽 — proxy.** 같은 띠, 같은 장치 점 $0.036$. 이번에는 *진입 면* $0.030$에 앉은 속 빈 점 하나를 더 그리고 $p_{\text{proxy}}$라 적는다. 두 점 사이의 스프링과 $-x$ 방향 힘 화살표를 그리고 $2.4\,\mathrm{N}$이라 적는다. 옆에 이 화살표의 규칙 "proxy 쪽"을 쓰고, 점이 들어온 뒤로 proxy가 움직이지 않았다는 것을 적는다.
+**왼쪽 — 벌점.** $x$축을 가로로, 판을 $0.030$에서 $0.034$까지의 음영 띠로, 중간면 $0.032$를 그 안을 지나는 점선으로. 장치 점을 중간면과 먼 면 사이 $x=0.033\,\mathrm{m}$에 둔다. 힘을 $+x$ 방향 화살표로 — 사용자가 들어온 쪽의 *반대*로 — 그리고 $0.40\,\mathrm{N}$이라 적는다. 옆에 그 화살표가 따르는 규칙 "가장 가까운 면 쪽"을 쓰고, 그게 어느 면인지 표시한다.
 
-**둘 아래에** 공유하는 축 하나: $x_w=0.030$, 중간면 $0.032$, 먼 면 $0.034$, 장치 점 $0.036$을 축척대로 표시해서, 두 화살표가 같은 기하를 읽고 다른 답을 내고 있다는 것이 보이게 한다. 두 힘은 $3.2\,\mathrm{N}$ 차이로 서로 반대를 가리키고, 그것이 §3의 논증 전체다.
+**오른쪽 — proxy.** 같은 띠, 같은 장치 점 $0.033$. 이번에는 *진입 면* $0.030$에 앉은 속 빈 점 하나를 더 그리고 $p_{\text{proxy}}$라 적는다. 두 점 사이의 스프링과 $-x$ 방향 힘 화살표를 그리고 $1.2\,\mathrm{N}$이라 적는다. 옆에 이 화살표의 규칙 "proxy 쪽"을 쓰고, 점이 들어온 뒤로 proxy가 움직이지 않았다는 것을 적는다.
+
+**둘 아래에** 공유하는 축 하나: $x_w=0.030$, 중간면 $0.032$, 먼 면 $0.034$, 장치 점 $0.033$을 축척대로 표시해서, 두 화살표가 같은 기하를 읽고 다른 답을 내고 있다는 것이 보이게 한다. 두 힘은 $1.6\,\mathrm{N}$ 차이로 서로 반대를 가리키고, 그것이 §3의 논증 전체다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -264,17 +394,17 @@ $$F_{\text{ceil}}=K\cdot\frac{\text{두께}}{2}=400\cdot 0.002=0.80\,\mathrm{N}$
 
 인데, 중간면을 지나면 *가장 가까운* 면이 더 이상 사용자가 들어온 면이 아니고 §2의 셋째 실패가 넘겨받기 때문이다. $2.0\,\mathrm{N}$을 낼 수 있는 P3의 증폭기에 대해 작정한 가압은 이 천장의 $2.5$배다. 카탈로그 벽은 이 판을 버티지 못한다.
 
-**2단계 — 뚫고 나간 뒤의 벌점 힘.** $x=0.036\,\mathrm{m}$에서 가장 가까운 면은 $0.034$의 먼 면이므로, 벌점 법칙은 *그쪽*에서 $0.002\,\mathrm{m}$의 침투를 재고 점을 뒤로 더 밀어낸다.
+**2단계 — 뚫고 나간 뒤의 벌점 힘.** $x=0.033\,\mathrm{m}$에서 가장 가까운 면은 $0.034$의 먼 면이므로, 벌점 법칙은 *그쪽*에서 $0.001\,\mathrm{m}$의 침투를 재고 점을 뒤로 더 밀어낸다.
 
-$$F_{\text{penalty}}=+K\cdot(0.036-0.034)=+400\cdot0.002=+0.80\,\mathrm{N}$$
+$$F_{\text{penalty}}=+K\cdot(0.034-0.033)=+400\cdot0.001=+0.40\,\mathrm{N}$$
 
-1단계와 크기는 같고 방향은 반대다. 알고리즘은 아무것도 망가지지 않았다. 힘 법칙은 자기가 말한 그대로를 하고 있고, 그 말이 틀렸을 뿐이다.
+크기는 1단계의 절반이고 방향은 반대다. 알고리즘은 아무것도 망가지지 않았다. 힘 법칙은 자기가 말한 그대로를 하고 있고, 그 말이 틀렸을 뿐이다.
 
 **3단계 — 같은 순간의 proxy 힘.** 알고리즘에 상태 변수 하나를 준다. 판 밖에 머물도록 제약되고, 주기마다 제약이 허락하는 만큼 장치 점 쪽으로 움직이는 proxy다(§3). 그것은 $x_w$로 들어왔고 판을 통과할 수 없으므로 여전히 $0.030$에 있고, 렌더링되는 힘은 두 점 사이의 스프링이다.
 
-$$F_{\text{proxy}}=K\,(x_{\text{proxy}}-x)=400\cdot(0.030-0.036)=-2.4\,\mathrm{N}$$
+$$F_{\text{proxy}}=K\,(x_{\text{proxy}}-x)=400\cdot(0.030-0.033)=-1.2\,\mathrm{N}$$
 
-손을 들어온 길로 되당긴다. 같은 기하, 같은 강성, 같은 순간에 두 알고리즘은 $3.2\,\mathrm{N}$과 부호 하나만큼 다르고, 둘의 차이는 기억한 숫자 하나뿐이다.
+손을 들어온 길로 되당긴다. 같은 기하, 같은 강성, 같은 순간에 두 알고리즘은 $1.6\,\mathrm{N}$과 부호 하나만큼 다르고, 둘의 차이는 기억한 숫자 하나뿐이다.
 
 **4단계 — 대신 강성으로 벌점 법칙을 구할 수 있나?** 거꾸로 물어보자. 이 판에서 $F_{\text{ceil}}$이 증폭기의 $2.0\,\mathrm{N}$을 넘으려면 벌점 방법은
 
@@ -333,7 +463,7 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 >
 > $\mathcal{C}$는 모든 물체 바깥의 자유 공간, $p^{\text{dev}}_k$는 측정된 장치 점, $p^{\text{prox}}_k$는 proxy다. 제약 안의 첨자 $k-1$이 §2와의 차이 전부인데, 과거가 등장하는 자리가 거기뿐이기 때문이다.
 >
-> - **예**: $x=0.036$의 계산 절. Proxy는 여전히 진입 면 $0.030$에 있고 — 도달 가능성이 판을 가로질러 더 가까운 먼 면으로 가는 것을 금지한다 — 그래서 힘이 안쪽으로 $-2.4\,\mathrm{N}$이다. 상태 없는 법칙은 바깥쪽으로 $+0.80\,\mathrm{N}$을 줬다.
+> - **예**: $x=0.033$의 계산 절. Proxy는 여전히 진입 면 $0.030$에 있고 — 도달 가능성이 판을 가로질러 더 가까운 먼 면으로 가는 것을 금지한다 — 그래서 힘이 안쪽으로 $-1.2\,\mathrm{N}$이다. 상태 없는 법칙은 바깥쪽으로 $+0.40\,\mathrm{N}$을 줬다.
 > - **비예**: 주기마다 전역 최근접 표면점을 잡아 놓고 proxy라 부르는 것. 그것은 단계만 늘린 벌점 법칙이다. 도달 가능성 조항을 빼면 그 "proxy"는 $\hat n$이 그랬듯 중간면에서 먼 면으로 뛴다.
 > - **비예**: 1자유도 반공간. 거기서 $\mathcal{C}$는 반직선이고 제약 최소점은 언제나 그 유일한 경계점이므로, proxy와 벌점이 매 순간 같은 힘을 낸다. 24.4의 카탈로그 벽을 §2의 실패를 하나도 만나지 않고 벌점 형태로 쓸 수 있는 이유가 그것이다.
 > - **왜 중요한가**: 접촉마다 저장하는 점 하나로 세 실패를 한꺼번에 풀고, 이 분야에서 가장 남는 거래다. **God object**(Zilles & Salisbury 1995)는 반지름이 0인 이상적인 점으로 본 이 구성이고, **virtual proxy**(Ruspini 외 1997)는 같은 점에 유한한 반지름을 주고 그 위에 마찰과 force shading을 얹은 것이다. 위의 정의 조건은 공유하고, 차이는 반지름이다.
@@ -364,7 +494,7 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 > $$F_f=\begin{cases}-\operatorname{sat}_{F_s}(F_a), & \lvert v\rvert<D_v\quad\text{(붙음; 그리고 $v$를 $0$으로)}\\[2pt] -\big(F_d\,\mathrm{sgn}(v)+b_t v\big), & \lvert v\rvert\ge D_v\quad\text{(미끄러짐)}\end{cases}$$
 >
 > $F_a$는 가해진 접선 힘, $F_s$는 정지 한계, $F_d$는 동(Coulomb) 수준, $b_t$는 접선 점성 계수, $D_v$는 사영역 반폭, $\operatorname{sat}_{F_s}(\cdot)$는 $\pm F_s$에서의 클리핑이다. 사영역이 있는 것은 샘플링된 데이터에서 정확한 0 속도가 결코 나오지 않기 **때문이고**, $v=0$을 검사하는 모델은 영영 붙지 못한다.
-> - **예**: 위 상자의 $F_s=3.5$, $F_d=3.0$, $b_t=10$인 벽. 옆으로 $2$ N을 밀면 포화 안쪽이라 렌더링되는 힘은 정확히 $2$ N을 반대로 내고 점은 움직이지 않는다. $5$ N을 밀면 풀려서 $v=0.05$ m/s에 마찰이 $3.5$ N이 되고 순 구동력 $1.5$ N이 남는다. "그립"으로 느껴지는 모든 것이 $F_s-F_d=0.5$ N의 간격과 전환 순간이다.
+> - **예**: 아래 상자의 $F_s=3.5$, $F_d=3.0$, $b_t=10$인 벽. 옆으로 $2$ N을 밀면 포화 안쪽이라 렌더링되는 힘은 정확히 $2$ N을 반대로 내고 점은 움직이지 않는다. $5$ N을 밀면 풀려서 $v=0.05$ m/s에 마찰이 $3.5$ N이 되고 순 구동력 $1.5$ N이 남는다. "그립"으로 느껴지는 모든 것이 $F_s-F_d=0.5$ N의 간격과 전환 순간이다.
 > - **비예**: Coulomb 마찰 $-F_d\,\mathrm{sgn}(v)$ 단독. 붙음 모드가 없어서 0 속도 근처에서 버티는 대신 채터하고, 그것으로 렌더링한 표면에는 손을 얹어 쉴 수가 없다.
 > - **왜 중요한가**: 싸고, 적분할 상태가 없고, $D_v$는 엔코더에서 값을 정할 수 있는 물리적 의미의 손잡이다. 그러나 사영역은 미끄러지기 전 거동에 대한 거짓말이기도 하다. 그 안에서 점은 강체처럼 고정되지만 실제 접촉은 탄성적으로 휜다. 다음 두 모델이 존재하는 이유가 그 결함이다.
 
@@ -426,13 +556,13 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 카탈로그 벽 $k_w=400$, $x_w=0.030$. 반공간을 두께 $4\,\mathrm{mm}$의 *판* $x\in[0.030,0.034]$으로 바꿔라. 오일러 랩은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 남긴다. 여기서 시뮬레이터를 하나 더 만들지 마라.
 
-1. **그리기.** 핸들 $x$, 판, 중간면 $0.032$. $x=0.036$에서 그림 둘: 벌점(가장 가까운 면의 힘, 화살표가 *뒤로 나감*)과 proxy(진입 면 $x_w$에 붙은 proxy, 스프링 $k_w(x_{\mathrm{proxy}}-x)$).
-2. **유도.** (a) 중간면 직전의 벌점 힘, 그리고 뚫고 나가는 가압. (b) $x=0.036$의 proxy 힘. (c) $T=10^{-3}$에서 Colgate 경계 $2b/T$. 그 천장에서 $2\,\mathrm{N}$ 가압(24.3 증폭기 한계)이 $4\,\mathrm{mm}$ 판을 아직 뚫는가? $2\,\mathrm{mm}$ 판은?
+1. **그리기.** 핸들 $x$, 판, 중간면 $0.032$. $x=0.033$에서 그림 둘: 벌점(가장 가까운 면의 힘, 화살표가 *뒤로 나감*)과 proxy(진입 면 $x_w$에 붙은 proxy, 스프링 $k_w(x_{\mathrm{proxy}}-x)$).
+2. **유도.** (a) 중간면 직전의 벌점 힘, 그리고 뚫고 나가는 가압. (b) $x=0.033$의 proxy 힘. (c) $T=10^{-3}$에서 Colgate 경계 $2b/T$. 그 천장에서 $2\,\mathrm{N}$ 가압(24.3 증폭기 한계)이 $4\,\mathrm{mm}$ 판을 아직 뚫는가? $2\,\mathrm{mm}$ 판은?
 3. **해석.** 24.4의 반공간 벽이 벌점 법칙으로 정직한 이유, 같은 법칙이 이 판에서는 거짓인 이유는? 1자유도 *반공간*이 끝내 필요 없었던 기억을 proxy가 무엇을 더하는가?
 
 > [!tip]- 정답 · Solutions
-> 1. $x=0.036$의 벌점은 중간면을 $2\,\mathrm{mm}$ 지났고, 가장 가까운 면은 $x=0.034$, 힘은 $+x$(뒤로). Proxy는 $0.030$에 남아 스프링이 $-x$로 당긴다.
-> 2. (a) $k_w\cdot 0.002=0.80\,\mathrm{N}$; 더 센 가압은 뚫고 나간다. (b) $400\cdot(0.030-0.036)=-2.4\,\mathrm{N}$. (c) $2b/T=1600\,\mathrm{N/m}$. 중간면 전 천장 힘은 강성에 반두께를 곱한 값이다: $K(4\,\mathrm{mm}/2)=3.2\,\mathrm{N}$이므로 $2\,\mathrm{N}$은 버티고, $K(2\,\mathrm{mm}/2)=1.6\,\mathrm{N}$이므로 뚫린다. 카탈로그 벌점이 여기서 실패하는 이유는 경계가 아니라 상태의 부재다.
+> 1. $x=0.033$의 벌점은 중간면을 $1\,\mathrm{mm}$ 지났고, 가장 가까운 면은 $x=0.034$, 힘은 $+x$(뒤로). Proxy는 $0.030$에 남아 스프링이 $-x$로 당긴다.
+> 2. (a) $k_w\cdot 0.002=0.80\,\mathrm{N}$; 더 센 가압은 뚫고 나간다. (b) $400\cdot(0.030-0.033)=-1.2\,\mathrm{N}$. (c) $2b/T=1600\,\mathrm{N/m}$. 중간면 전 천장 힘은 강성에 반두께를 곱한 값이다: $K(4\,\mathrm{mm}/2)=3.2\,\mathrm{N}$이므로 $2\,\mathrm{N}$은 버티고, $K(2\,\mathrm{mm}/2)=1.6\,\mathrm{N}$이므로 뚫린다. 카탈로그 벌점이 여기서 실패하는 이유는 경계가 아니라 상태의 부재다.
 > 3. 반공간은 면이 하나라 가장 가까운 면이 언제나 진입 면이고, 벌점과 proxy가 같다. 판은 면이 둘이라 기억 없이 중간면에서 힘이 뒤집힌다. Proxy가 진입 면을 기억한다.
 
 ### Sources

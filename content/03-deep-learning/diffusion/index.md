@@ -43,17 +43,157 @@ The network is specified as completely as the datum: it returns the noise that w
 
 ### Homework diagram · 과제가 그릴 그림
 
-Two paths that share a set of levels and nothing else, and the problem set asks for exactly this drawing.
+Two paths that share a set of levels and nothing else, and the problem set asks for exactly this drawing. The figure is the worked case: D6's schedule on top, and the reverse loop drawn for $N=4$, the sweep row that equals the worked case's one-shot $1.85$.
 
-```mermaid
-flowchart LR
-    X0["x0 = 2, known"] -->|"forward: one jump to any level"| XT["x_i = s_i x0 + n_i eps"]
-    XT --> Loss["loss: predict eps"]
-    Noise["x_20, no x0 available"] --> Step["denoise one level"]
-    Step --> Mid["x_i"]
-    Mid --> Step
-    Mid --> Out["x0_hat"]
-```
+<svg viewBox="0 0 560 384" style="max-width:100%;height:auto" role="img" aria-label="D6's schedule, the square root of alpha-bar falling linearly from 1 to 0.2 over 20 levels with its partner rising to 0.979796, above the two paths on the same levels: the forward path as one jump from the known x0 = 2 to x5 = 1 feeding the loss, and the reverse path starting at level 20 without any x0, looping N = 4 times through levels 15, 10 and 5 to the estimate 1.85">
+  <defs><marker id="aD6e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">(a) the schedule: levels, not times</text>
+  <line x1="62" y1="130" x2="62" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="62" y1="36" x2="62" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="62" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <line x1="84.6" y1="130" x2="84.6" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="107.2" y1="130" x2="107.2" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="129.8" y1="130" x2="129.8" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="152.4" y1="130" x2="152.4" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="175" y1="130" x2="175" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="175" y1="36" x2="175" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="175" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">5</text>
+  <line x1="197.6" y1="130" x2="197.6" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="220.2" y1="130" x2="220.2" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="242.8" y1="130" x2="242.8" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="265.4" y1="130" x2="265.4" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="288" y1="130" x2="288" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="288" y1="36" x2="288" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="288" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">10</text>
+  <line x1="310.6" y1="130" x2="310.6" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="333.2" y1="130" x2="333.2" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="355.8" y1="130" x2="355.8" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="378.4" y1="130" x2="378.4" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="401" y1="130" x2="401" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="401" y1="36" x2="401" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="401" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">15</text>
+  <line x1="423.6" y1="130" x2="423.6" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="446.2" y1="130" x2="446.2" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="468.8" y1="130" x2="468.8" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="491.4" y1="130" x2="491.4" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="514" y1="130" x2="514" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="514" y1="36" x2="514" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="514" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">20</text>
+  <text x="516" y="163" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">level i</text>
+  <line x1="62" y1="130" x2="514" y2="130" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="62" y1="130" x2="62" y2="34" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="58" y1="130" x2="62" y2="130" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="55" y="134" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0</text>
+  <line x1="58" y1="84" x2="62" y2="84" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="55" y="88" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0.5</text>
+  <line x1="58" y1="38" x2="62" y2="38" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="55" y="42" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">1</text>
+  <path d="M62 38 L84.6 41.7 L107.2 45.4 L129.8 49 L152.4 52.7 L175 56.4 L197.6 60.1 L220.2 63.8 L242.8 67.4 L265.4 71.1 L288 74.8 L310.6 78.5 L333.2 82.2 L355.8 85.8 L378.4 89.5 L401 93.2 L423.6 96.9 L446.2 100.6 L468.8 104.2 L491.4 107.9 L514 111.6" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <path d="M62 130 L84.6 104.2 L107.2 93.9 L129.8 86.3 L152.4 80.1 L175 74.8 L197.6 70.2 L220.2 66.2 L242.8 62.5 L265.4 59.3 L288 56.4 L310.6 53.8 L333.2 51.4 L355.8 49.3 L378.4 47.4 L401 45.7 L423.6 44.2 L446.2 42.8 L468.8 41.7 L491.4 40.7 L514 39.9" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="6 3" stroke-linejoin="round"/>
+  <circle cx="62" cy="38" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="62" cy="130" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="84.6" cy="41.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="84.6" cy="104.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="107.2" cy="45.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="107.2" cy="93.9" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="129.8" cy="49" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="129.8" cy="86.3" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="152.4" cy="52.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="152.4" cy="80.1" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="175" cy="56.4" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="175" cy="74.8" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="197.6" cy="60.1" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="197.6" cy="70.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="220.2" cy="63.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="220.2" cy="66.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="242.8" cy="67.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="242.8" cy="62.5" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="265.4" cy="71.1" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="265.4" cy="59.3" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="288" cy="74.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="288" cy="56.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="310.6" cy="78.5" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="310.6" cy="53.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="333.2" cy="82.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="333.2" cy="51.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="355.8" cy="85.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="355.8" cy="49.3" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="378.4" cy="89.5" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="378.4" cy="47.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="401" cy="93.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="401" cy="45.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="423.6" cy="96.9" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="423.6" cy="44.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="446.2" cy="100.6" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="446.2" cy="42.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="468.8" cy="104.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="468.8" cy="41.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="491.4" cy="107.9" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="491.4" cy="40.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="514" cy="111.6" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="514" cy="39.9" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="182" y="51.4" font-size="11" fill="currentColor">0.8</text>
+  <text x="182" y="89.8" font-size="11" fill="currentColor">0.6</text>
+  <text x="521" y="115.6" font-size="11" fill="currentColor">0.2</text>
+  <text x="508" y="33.9" font-size="11" fill="currentColor" text-anchor="end">0.979796</text>
+  <text x="306.1" y="124" font-size="11" fill="currentColor">√ᾱ<tspan dy="3" font-size="10">i</tspan><tspan dy="-3" dx="3.5">= 1 − 0.8 i/20</tspan></text>
+  <text x="319.6" y="39" font-size="11" fill="currentColor">√(1 − ᾱ<tspan dy="3" font-size="10">i</tspan><tspan dy="-3">)</tspan></text>
+  <text x="12" y="172" font-size="12" fill="currentColor">(b) two paths that share the levels and nothing else</text>
+  <circle cx="62" cy="252" r="4.5" stroke="none" fill="currentColor"/>
+  <circle cx="175" cy="252" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <path d="M 65.0 247 Q 118.5 202 171.0 245" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#aD6e)"/>
+  <text x="118.5" y="194" font-size="11" fill="currentColor" text-anchor="middle">√ᾱ<tspan dy="3" font-size="10">5</tspan><tspan dy="-3" dx="3.5">x</tspan><tspan dy="3" font-size="10">0</tspan><tspan dy="-3" dx="3.5">+ √(1 − ᾱ</tspan><tspan dy="3" font-size="10">5</tspan><tspan dy="-3">) ε</tspan></text>
+  <text x="118.5" y="210" font-size="11" fill="currentColor" text-anchor="middle">= 0.8·2 + 0.6·(−1) = 1</text>
+  <text x="12" y="271" font-size="11" fill="currentColor">x<tspan dy="3" font-size="10">0</tspan><tspan dy="-3" dx="3.5">= 2, known</tspan></text>
+  <text x="175" y="271" font-size="11" fill="currentColor" text-anchor="middle">x<tspan dy="3" font-size="10">5</tspan><tspan dy="-3" dx="3.5">= 1</tspan></text>
+  <text x="199.9" y="221" font-size="11" fill="currentColor" fill-opacity="0.85">forward: one jump, no chain</text>
+  <line x1="181" y1="252" x2="277" y2="252" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD6e)"/>
+  <rect x="279" y="233" width="269" height="38" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="413.5" y="248" font-size="11" fill="currentColor" text-anchor="middle">loss: predict ε = −1 from (x<tspan dy="3" font-size="10">5</tspan><tspan dy="-3">, 5)</tspan></text>
+  <text x="436.3" y="265" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">the network gives</text>
+  <text x="443" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">ε</text>
+  <text x="449.6" y="265" font-size="11" fill="currentColor" fill-opacity="0.85">= −0.8</text>
+  <path d="M 440.3 258.9 L 443 256.9 L 445.6 258.9" stroke="currentColor" stroke-width="0.99" fill="none" stroke-linejoin="round" stroke-opacity="0.85"/>
+  <text x="12" y="302" font-size="11" fill="currentColor" fill-opacity="0.85">reverse: a loop with a counter N</text>
+  <text x="548" y="302" font-size="11" fill="currentColor" text-anchor="end">x<tspan dy="3" font-size="10">20</tspan><tspan dy="-3">: no x</tspan><tspan dy="3" font-size="10">0</tspan><tspan dy="-3" dx="3.5">behind it</tspan></text>
+  <line x1="508" y1="324" x2="408" y2="324" stroke="currentColor" stroke-width="1.8" stroke-dasharray="7 3" marker-end="url(#aD6e)"/>
+  <line x1="395" y1="324" x2="295" y2="324" stroke="currentColor" stroke-width="1.8" stroke-dasharray="7 3" marker-end="url(#aD6e)"/>
+  <line x1="282" y1="324" x2="182" y2="324" stroke="currentColor" stroke-width="1.8" stroke-dasharray="7 3" marker-end="url(#aD6e)"/>
+  <line x1="169" y1="324" x2="69" y2="324" stroke="currentColor" stroke-width="1.8" stroke-dasharray="7 3" marker-end="url(#aD6e)"/>
+  <circle cx="514" cy="324" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="514" y="343" font-size="11" fill="currentColor" text-anchor="middle">−0.579796</text>
+  <circle cx="401" cy="324" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="401" y="343" font-size="11" fill="currentColor" text-anchor="middle">−0.325130</text>
+  <circle cx="288" cy="324" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="288" y="343" font-size="11" fill="currentColor" text-anchor="middle">0.102951</text>
+  <circle cx="175" cy="324" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="175" y="343" font-size="11" fill="currentColor" text-anchor="middle">0.683880</text>
+  <circle cx="62" cy="324" r="4.5" stroke="none" fill="currentColor"/>
+  <text x="15.2" y="343" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">x</text>
+  <text x="18.5" y="343" font-size="11" fill="currentColor" font-weight="bold"><tspan dy="3" font-size="10">0</tspan><tspan dy="-3" dx="3.5">= 1.85</tspan></text>
+  <path d="M 12.6 336.9 L 15.2 334.9 L 17.9 336.9" stroke="currentColor" stroke-width="0.99" fill="none" stroke-linejoin="round"/>
+  <text x="12" y="359" font-size="11" fill="currentColor" fill-opacity="0.85">error 0.15 = 0.2 × 0.75</text>
+  <text x="340" y="368" font-size="11" fill="currentColor" text-anchor="middle">× N, one network call per hop · N = 4 here: 4 × 5 ms = 20 ms</text>
+  <line x1="62" y1="152.4" x2="62" y2="159.9" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="62" y1="177.6" x2="62" y2="182.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="62" y1="215.4" x2="62" y2="259.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="62" y1="279.4" x2="62" y2="290.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="62" y1="307.4" x2="62" y2="330.9" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="175" y1="152.4" x2="175" y2="159.9" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="175" y1="177.6" x2="175" y2="182.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="175" y1="215.4" x2="175" y2="259.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="175" y1="279.4" x2="175" y2="290.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="175" y1="307.4" x2="175" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="288" y1="152.4" x2="288" y2="159.9" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="288" y1="177.6" x2="288" y2="209.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="288" y1="226.4" x2="288" y2="231" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="288" y1="273" x2="288" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="401" y1="152.4" x2="401" y2="231" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="401" y1="273" x2="401" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="514" y1="168.4" x2="514" y2="231" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="514" y1="273" x2="514" y2="290.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="514" y1="310.4" x2="514" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+</svg>
 
 Four things the drawing has to get right.
 **The forward path is one arrow, not a chain.** Training never walks down the levels; it samples a level and jumps there in closed form. Drawing a chain there is claiming a cost the training loop does not pay.
@@ -73,7 +213,7 @@ $$\alpha_5=\frac{\bar\alpha_5}{\bar\alpha_4}=\frac{0.64}{0.7056}=\Big(\frac{20}{
 
 $$\mu_{4}=\frac{1}{\sqrt{\alpha_t}}\Big(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\,\hat\epsilon\Big)=\frac{21}{20}\Big(1-\frac{0.092971}{0.6}(-0.8)\Big)=1.05\times1.123961=1.180159,$$
 
-using the network's $\hat\epsilon=-0.8$. With the exact $\hat\epsilon=-1$ the same formula gives $1.212699$, which is also what the posterior-from-$x_0$ form gives, $\frac{\sqrt{\bar\alpha_4}\beta_5}{1-\bar\alpha_5}x_0+\frac{\sqrt{\alpha_5}(1-\bar\alpha_4)}{1-\bar\alpha_5}x_t=0.433862+0.778837=1.212699$ — the two forms agree, which is the check that the step was taken correctly. The step's variance is $\tilde\beta_5=\frac{1-\bar\alpha_4}{1-\bar\alpha_5}\beta_5=0.076029$, a standard deviation of $0.275734$. Note the size of that against the $0.0325$ the biased $\hat\epsilon$ cost: on this object the sampler's own injected noise is eight times the model's error, so a single trajectory tells you almost nothing about the model, which is why samplers are compared over many draws or run deterministically.
+using the network's $\hat\epsilon=-0.8$. With the exact $\hat\epsilon=-1$ the same formula gives $1.212698$, which is also what the posterior-from-$x_0$ form gives, $\frac{\sqrt{\bar\alpha_4}\beta_5}{1-\bar\alpha_5}x_0+\frac{\sqrt{\alpha_5}(1-\bar\alpha_4)}{1-\bar\alpha_5}x_t=0.433862+0.778836=1.212698$ — the two forms agree, which is the check that the step was taken correctly. The step's variance is $\tilde\beta_5=\frac{1-\bar\alpha_4}{1-\bar\alpha_5}\beta_5=0.076029$, a standard deviation of $0.275734$. Note the size of that against the $0.0325$ the biased $\hat\epsilon$ cost: on this object the sampler's own injected noise is eight times the model's error, so a single trajectory tells you almost nothing about the model, which is why samplers are compared over many draws or run deterministically.
 
 **The error amplification, which is the whole of §5 in one factor.** Solving the forward equation for $x_0$ turns an error in $\hat\epsilon$ into an error in $\hat x_0$ scaled by
 
@@ -255,7 +395,7 @@ def eps_model(x, k):                      # same value at the catalog level, dif
 
 > [!tip]- Solutions
 > 1. Forward: one arrow from $x_0$ to $x_i$ labelled $\sqrt{\bar\alpha_i}x_0+\sqrt{1-\bar\alpha_i}\epsilon$, feeding the loss. Reverse: a loop from $x_{20}$ through $x_i$ back into itself, labelled with $N$, ending at $\hat x_0$, and starting at a point with no $x_0$ behind it. Guidance adds a *second* evaluation of the same network with the condition dropped, whose output is combined with the first by $(1+w)\epsilon_c-w\epsilon_\varnothing$ — so the arrow doubles every entry of the latency column, and the $N=10$ row that exactly filled a 20 Hz period becomes 100 ms and does not fit.
-> 2. (a) $x_5=0.8(2)+0.6(+1)=2.2$. (b) Perfect: $(2.2-0.6(1))/0.8=2$. Biased, $\hat\epsilon=1+0.2=1.2$: $(2.2-0.6(1.2))/0.8=1.85$ — the same $1.85$ as §2, because the bias is the same $0.2$ and it is amplified by the same $0.75$. (c) $\mu_4=\frac{21}{20}\big(2.2-\frac{0.092971}{0.6}(1.2)\big)=1.05\times2.014058=2.114761$. (d) $x_5$ moved by $1.2=2\times0.6$, the full flip scaled by the noise coefficient, and $\mu_4$ moved with it. The *error* in $\hat x_0$ did not move at all: it is $b/\sqrt{\mathrm{SNR}_5}=0.15$ regardless of which noise was drawn, which is why the sweep in §5 is a statement about the schedule and the network and not about the draw.
+> 2. (a) $x_5=0.8(2)+0.6(+1)=2.2$. (b) Perfect: $(2.2-0.6(1))/0.8=2$. Biased, $\hat\epsilon=1+0.2=1.2$: $(2.2-0.6(1.2))/0.8=1.85$ — the same $1.85$ as §2, because the bias is the same $0.2$ and it is amplified by the same $0.75$. (c) $\mu_4=\frac{21}{20}\big(2.2-\frac{0.092971}{0.6}(1.2)\big)=1.05\times2.014059=2.114762$. (d) $x_5$ moved by $1.2=2\times0.6$, the full flip scaled by the noise coefficient, and $\mu_4$ moved with it. The *error* in $\hat x_0$ did not move at all: it is $b/\sqrt{\mathrm{SNR}_5}=0.15$ regardless of which noise was drawn, which is why the sweep in §5 is a statement about the schedule and the network and not about the draw.
 > 3. Blank: `0.2 * x`. Running it gives $\hat x_0=2.568082$, $1.827178$, $1.845251$, $1.853453$, $1.882015$, $1.909234$ for $N=1,2,4,5,10,20$, that is errors $0.568082$, $0.172822$, $0.154749$, $0.146547$, $0.117985$, $0.090766$. The closed-form column of §5 no longer predicts any of them: at $N=1$ this network is *better* than the constant-bias one ($0.568$ against $0.980$) and it overshoots past the datum, while from $N=4$ up it is worse ($0.0908$ against $0.0583$ at $N=20$), so the two curves cross. Both networks return exactly $-0.8$ at the catalog level, so the worked case cannot tell them apart; only the loop can. That is what the fifth column of §5 is really claiming — not "sampler error equals $b/\sqrt{\mathrm{SNR}}$" but "for a network whose error does not depend on its input, the intermediate errors cancel and only the last level survives." Change that assumption and the closed form goes, while the qualitative trade — more steps, less error, proportionally more latency — stays.
 
 ## 한국어
@@ -286,7 +426,157 @@ def eps_model(x, k):                      # same value at the catalog level, dif
 
 ### 과제가 그릴 그림 · Homework diagram
 
-레벨 집합만 공유하고 나머지는 공유하지 않는 두 경로. 과제가 요구하는 것이 정확히 이 그림이다. 영어 절의 mermaid 그림을 보라.
+레벨 집합만 공유하고 나머지는 공유하지 않는 두 경로. 과제가 요구하는 것이 정확히 이 그림이다. 그림은 계산 절이다. 위에 D6의 schedule을 그렸고, reverse 고리는 계산 절의 한 번에 끝내는 추정 $1.85$와 같은 $N=4$ 행으로 그렸다.
+
+<svg viewBox="0 0 560 384" style="max-width:100%;height:auto" role="img" aria-label="20레벨에 걸쳐 1에서 0.2로 선형으로 줄어드는 루트 알파바와 0.979796으로 오르는 짝을 그린 D6의 schedule과, 같은 레벨 위에서 알려진 x0 = 2에서 x5 = 1로 한 번에 건너뛰어 손실로 가는 forward 경로와 x0가 없는 레벨 20에서 출발해 N = 4번 돌아 1.85에 닿는 reverse 경로">
+  <defs><marker id="aD6k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="20" font-size="12" fill="currentColor">(a) schedule: 시간이 아니라 레벨</text>
+  <line x1="62" y1="130" x2="62" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="62" y1="36" x2="62" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="62" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <line x1="84.6" y1="130" x2="84.6" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="107.2" y1="130" x2="107.2" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="129.8" y1="130" x2="129.8" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="152.4" y1="130" x2="152.4" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="175" y1="130" x2="175" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="175" y1="36" x2="175" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="175" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">5</text>
+  <line x1="197.6" y1="130" x2="197.6" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="220.2" y1="130" x2="220.2" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="242.8" y1="130" x2="242.8" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="265.4" y1="130" x2="265.4" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="288" y1="130" x2="288" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="288" y1="36" x2="288" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="288" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">10</text>
+  <line x1="310.6" y1="130" x2="310.6" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="333.2" y1="130" x2="333.2" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="355.8" y1="130" x2="355.8" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="378.4" y1="130" x2="378.4" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="401" y1="130" x2="401" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="401" y1="36" x2="401" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="401" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">15</text>
+  <line x1="423.6" y1="130" x2="423.6" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="446.2" y1="130" x2="446.2" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="468.8" y1="130" x2="468.8" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="491.4" y1="130" x2="491.4" y2="133" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="514" y1="130" x2="514" y2="135" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="514" y1="36" x2="514" y2="130" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <text x="514" y="147" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.75">20</text>
+  <text x="516" y="163" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">레벨 i</text>
+  <line x1="62" y1="130" x2="514" y2="130" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="62" y1="130" x2="62" y2="34" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <line x1="58" y1="130" x2="62" y2="130" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="55" y="134" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0</text>
+  <line x1="58" y1="84" x2="62" y2="84" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="55" y="88" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">0.5</text>
+  <line x1="58" y1="38" x2="62" y2="38" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="55" y="42" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.75">1</text>
+  <path d="M62 38 L84.6 41.7 L107.2 45.4 L129.8 49 L152.4 52.7 L175 56.4 L197.6 60.1 L220.2 63.8 L242.8 67.4 L265.4 71.1 L288 74.8 L310.6 78.5 L333.2 82.2 L355.8 85.8 L378.4 89.5 L401 93.2 L423.6 96.9 L446.2 100.6 L468.8 104.2 L491.4 107.9 L514 111.6" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+  <path d="M62 130 L84.6 104.2 L107.2 93.9 L129.8 86.3 L152.4 80.1 L175 74.8 L197.6 70.2 L220.2 66.2 L242.8 62.5 L265.4 59.3 L288 56.4 L310.6 53.8 L333.2 51.4 L355.8 49.3 L378.4 47.4 L401 45.7 L423.6 44.2 L446.2 42.8 L468.8 41.7 L491.4 40.7 L514 39.9" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="6 3" stroke-linejoin="round"/>
+  <circle cx="62" cy="38" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="62" cy="130" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="84.6" cy="41.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="84.6" cy="104.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="107.2" cy="45.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="107.2" cy="93.9" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="129.8" cy="49" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="129.8" cy="86.3" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="152.4" cy="52.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="152.4" cy="80.1" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="175" cy="56.4" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="175" cy="74.8" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="197.6" cy="60.1" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="197.6" cy="70.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="220.2" cy="63.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="220.2" cy="66.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="242.8" cy="67.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="242.8" cy="62.5" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="265.4" cy="71.1" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="265.4" cy="59.3" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="288" cy="74.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="288" cy="56.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="310.6" cy="78.5" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="310.6" cy="53.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="333.2" cy="82.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="333.2" cy="51.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="355.8" cy="85.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="355.8" cy="49.3" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="378.4" cy="89.5" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="378.4" cy="47.4" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="401" cy="93.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="401" cy="45.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="423.6" cy="96.9" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="423.6" cy="44.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="446.2" cy="100.6" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="446.2" cy="42.8" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="468.8" cy="104.2" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="468.8" cy="41.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="491.4" cy="107.9" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="491.4" cy="40.7" r="1.8" stroke="none" fill="currentColor"/>
+  <circle cx="514" cy="111.6" r="3.6" stroke="none" fill="currentColor"/>
+  <circle cx="514" cy="39.9" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="182" y="51.4" font-size="11" fill="currentColor">0.8</text>
+  <text x="182" y="89.8" font-size="11" fill="currentColor">0.6</text>
+  <text x="521" y="115.6" font-size="11" fill="currentColor">0.2</text>
+  <text x="508" y="33.9" font-size="11" fill="currentColor" text-anchor="end">0.979796</text>
+  <text x="306.1" y="124" font-size="11" fill="currentColor">√ᾱ<tspan dy="3" font-size="10">i</tspan><tspan dy="-3" dx="3.5">= 1 − 0.8 i/20</tspan></text>
+  <text x="319.6" y="39" font-size="11" fill="currentColor">√(1 − ᾱ<tspan dy="3" font-size="10">i</tspan><tspan dy="-3">)</tspan></text>
+  <text x="12" y="172" font-size="12" fill="currentColor">(b) 레벨만 공유하고 나머지는 공유하지 않는 두 경로</text>
+  <circle cx="62" cy="252" r="4.5" stroke="none" fill="currentColor"/>
+  <circle cx="175" cy="252" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <path d="M 65.0 247 Q 118.5 202 171.0 245" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#aD6k)"/>
+  <text x="118.5" y="194" font-size="11" fill="currentColor" text-anchor="middle">√ᾱ<tspan dy="3" font-size="10">5</tspan><tspan dy="-3" dx="3.5">x</tspan><tspan dy="3" font-size="10">0</tspan><tspan dy="-3" dx="3.5">+ √(1 − ᾱ</tspan><tspan dy="3" font-size="10">5</tspan><tspan dy="-3">) ε</tspan></text>
+  <text x="118.5" y="210" font-size="11" fill="currentColor" text-anchor="middle">= 0.8·2 + 0.6·(−1) = 1</text>
+  <text x="12" y="271" font-size="11" fill="currentColor">x<tspan dy="3" font-size="10">0</tspan><tspan dy="-3" dx="3.5">= 2, 알려짐</tspan></text>
+  <text x="175" y="271" font-size="11" fill="currentColor" text-anchor="middle">x<tspan dy="3" font-size="10">5</tspan><tspan dy="-3" dx="3.5">= 1</tspan></text>
+  <text x="199.9" y="221" font-size="11" fill="currentColor" fill-opacity="0.85">forward: 사슬이 아니라 한 번의 건너뛰기</text>
+  <line x1="181" y1="252" x2="277" y2="252" stroke="currentColor" stroke-width="1.6" marker-end="url(#aD6k)"/>
+  <rect x="279" y="233" width="269" height="38" rx="5" stroke="currentColor" stroke-width="1.4" fill="none"/>
+  <text x="413.5" y="248" font-size="11" fill="currentColor" text-anchor="middle">손실: (x<tspan dy="3" font-size="10">5</tspan><tspan dy="-3">, 5)에서 ε = −1을 예측</tspan></text>
+  <text x="390.4" y="265" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">신경망은</text>
+  <text x="397.1" y="265" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">ε</text>
+  <text x="403.7" y="265" font-size="11" fill="currentColor" fill-opacity="0.85">= −0.8을 낸다</text>
+  <path d="M 394.5 258.9 L 397.1 256.9 L 399.7 258.9" stroke="currentColor" stroke-width="0.99" fill="none" stroke-linejoin="round" stroke-opacity="0.85"/>
+  <text x="12" y="302" font-size="11" fill="currentColor" fill-opacity="0.85">reverse: 계수기 N이 붙은 고리</text>
+  <text x="548" y="302" font-size="11" fill="currentColor" text-anchor="end">x<tspan dy="3" font-size="10">20</tspan><tspan dy="-3">: 뒤에 x</tspan><tspan dy="3" font-size="10">0</tspan><tspan dy="-3">가 없다</tspan></text>
+  <line x1="508" y1="324" x2="408" y2="324" stroke="currentColor" stroke-width="1.8" stroke-dasharray="7 3" marker-end="url(#aD6k)"/>
+  <line x1="395" y1="324" x2="295" y2="324" stroke="currentColor" stroke-width="1.8" stroke-dasharray="7 3" marker-end="url(#aD6k)"/>
+  <line x1="282" y1="324" x2="182" y2="324" stroke="currentColor" stroke-width="1.8" stroke-dasharray="7 3" marker-end="url(#aD6k)"/>
+  <line x1="169" y1="324" x2="69" y2="324" stroke="currentColor" stroke-width="1.8" stroke-dasharray="7 3" marker-end="url(#aD6k)"/>
+  <circle cx="514" cy="324" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="514" y="343" font-size="11" fill="currentColor" text-anchor="middle">−0.579796</text>
+  <circle cx="401" cy="324" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="401" y="343" font-size="11" fill="currentColor" text-anchor="middle">−0.325130</text>
+  <circle cx="288" cy="324" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="288" y="343" font-size="11" fill="currentColor" text-anchor="middle">0.102951</text>
+  <circle cx="175" cy="324" r="4.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+  <text x="175" y="343" font-size="11" fill="currentColor" text-anchor="middle">0.683880</text>
+  <circle cx="62" cy="324" r="4.5" stroke="none" fill="currentColor"/>
+  <text x="15.2" y="343" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">x</text>
+  <text x="18.5" y="343" font-size="11" fill="currentColor" font-weight="bold"><tspan dy="3" font-size="10">0</tspan><tspan dy="-3" dx="3.5">= 1.85</tspan></text>
+  <path d="M 12.6 336.9 L 15.2 334.9 L 17.9 336.9" stroke="currentColor" stroke-width="0.99" fill="none" stroke-linejoin="round"/>
+  <text x="12" y="359" font-size="11" fill="currentColor" fill-opacity="0.85">오차 0.15 = 0.2 × 0.75</text>
+  <text x="340" y="368" font-size="11" fill="currentColor" text-anchor="middle">× N, 한 칸마다 신경망 1회 · 여기서 N = 4: 4 × 5 ms = 20 ms</text>
+  <line x1="62" y1="152.4" x2="62" y2="159.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="62" y1="177.6" x2="62" y2="182.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="62" y1="215.4" x2="62" y2="259" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="62" y1="279.4" x2="62" y2="290" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="62" y1="307.4" x2="62" y2="330.9" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="175" y1="152.4" x2="175" y2="159.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="175" y1="177.6" x2="175" y2="182.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="175" y1="215.4" x2="175" y2="259.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="175" y1="279.4" x2="175" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="288" y1="152.4" x2="288" y2="159.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="288" y1="177.6" x2="288" y2="209" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="288" y1="226.4" x2="288" y2="231" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="288" y1="273" x2="288" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="401" y1="152.4" x2="401" y2="209" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="401" y1="226.4" x2="401" y2="231" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="401" y1="273" x2="401" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="514" y1="168.4" x2="514" y2="231" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="514" y1="273" x2="514" y2="290" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+  <line x1="514" y1="310.4" x2="514" y2="331.6" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.22" stroke-dasharray="2 3"/>
+</svg>
 
 그림이 맞혀야 할 것이 넷이다.
 **forward 경로는 사슬이 아니라 화살표 하나다.** 학습은 레벨을 하나 뽑아 닫힌 형태로 곧장 건너뛴다. 거기에 사슬을 그리는 것은 학습 루프가 치르지 않는 비용을 주장하는 것이다.
@@ -304,7 +594,7 @@ def eps_model(x, k):                      # same value at the catalog level, dif
 
 $$\mu_{4}=\frac{1}{\sqrt{\alpha_t}}\Big(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\,\hat\epsilon\Big)=\frac{21}{20}\Big(1-\frac{0.092971}{0.6}(-0.8)\Big)=1.05\times1.123961=1.180159$$
 
-이고 신경망의 $\hat\epsilon=-0.8$을 썼다. 정확한 $\hat\epsilon=-1$이면 같은 식이 $1.212699$를 주는데, $x_0$에서 쓴 사후 평균 형태 $\frac{\sqrt{\bar\alpha_4}\beta_5}{1-\bar\alpha_5}x_0+\frac{\sqrt{\alpha_5}(1-\bar\alpha_4)}{1-\bar\alpha_5}x_t=0.433862+0.778837=1.212699$와 같다. 두 형태가 일치하는 것이 스텝을 제대로 밟았는지의 검사다. 스텝의 분산은 $\tilde\beta_5=\frac{1-\bar\alpha_4}{1-\bar\alpha_5}\beta_5=0.076029$, 표준편차 $0.275734$다. 편향된 $\hat\epsilon$이 이 스텝에 물린 $0.0325$와 견주어 보라. 이 대상에서는 sampler가 스스로 넣는 noise가 모델 오차의 여덟 배이므로 궤적 하나로는 모델에 대해 거의 아무것도 알 수 없고, 그래서 sampler는 여러 표본으로 비교하거나 결정론적으로 돌린다.
+이고 신경망의 $\hat\epsilon=-0.8$을 썼다. 정확한 $\hat\epsilon=-1$이면 같은 식이 $1.212698$을 주는데, $x_0$에서 쓴 사후 평균 형태 $\frac{\sqrt{\bar\alpha_4}\beta_5}{1-\bar\alpha_5}x_0+\frac{\sqrt{\alpha_5}(1-\bar\alpha_4)}{1-\bar\alpha_5}x_t=0.433862+0.778836=1.212698$과 같다. 두 형태가 일치하는 것이 스텝을 제대로 밟았는지의 검사다. 스텝의 분산은 $\tilde\beta_5=\frac{1-\bar\alpha_4}{1-\bar\alpha_5}\beta_5=0.076029$, 표준편차 $0.275734$다. 편향된 $\hat\epsilon$이 이 스텝에 물린 $0.0325$와 견주어 보라. 이 대상에서는 sampler가 스스로 넣는 noise가 모델 오차의 여덟 배이므로 궤적 하나로는 모델에 대해 거의 아무것도 알 수 없고, 그래서 sampler는 여러 표본으로 비교하거나 결정론적으로 돌린다.
 
 **오차 증폭, §5 전체를 담은 인자 하나.** forward 식을 $x_0$에 대해 풀면 $\hat\epsilon$의 오차가 $\hat x_0$의 오차로 바뀌며 곱해지는 값이
 
@@ -443,5 +733,5 @@ Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D6**, 이 페이지
 
 > [!tip]- 정답 · Solutions
 > 1. forward는 $x_0$에서 $x_i$로 가는 화살표 하나에 $\sqrt{\bar\alpha_i}x_0+\sqrt{1-\bar\alpha_i}\epsilon$을 적고 손실로 들어간다. reverse는 $x_{20}$에서 $x_i$를 거쳐 자신으로 돌아오는 고리에 $N$을 적고 $\hat x_0$에서 끝나며, 뒤에 $x_0$가 없는 점에서 시작한다. guidance는 조건을 떨어뜨린 같은 신경망의 *두 번째* 평가를 더하고 그 출력을 $(1+w)\epsilon_c-w\epsilon_\varnothing$으로 첫 번째와 결합한다. 그래서 그 화살표가 지연 열의 모든 항을 두 배로 만들고, 20 Hz 주기를 정확히 채우던 $N=10$ 행이 100 ms가 되어 들어가지 못한다.
-> 2. (a) $x_5=0.8(2)+0.6(+1)=2.2$. (b) 완벽하면 $(2.2-0.6(1))/0.8=2$. 편향되면 $\hat\epsilon=1+0.2=1.2$이므로 $(2.2-0.6(1.2))/0.8=1.85$로 §2와 같은 $1.85$다. 편향이 같은 $0.2$이고 같은 $0.75$로 증폭되기 때문이다. (c) $\mu_4=\frac{21}{20}\big(2.2-\frac{0.092971}{0.6}(1.2)\big)=1.05\times2.014058=2.114761$. (d) $x_5$는 $1.2=2\times0.6$만큼, 즉 뒤집은 전부에 noise 계수를 곱한 만큼 움직였고 $\mu_4$도 따라 움직였다. $\hat x_0$의 *오차*는 전혀 움직이지 않았다. 어느 noise를 뽑았든 $b/\sqrt{\mathrm{SNR}_5}=0.15$이고, 그래서 §5의 쓸기가 뽑기에 대한 진술이 아니라 schedule과 신경망에 대한 진술이다.
+> 2. (a) $x_5=0.8(2)+0.6(+1)=2.2$. (b) 완벽하면 $(2.2-0.6(1))/0.8=2$. 편향되면 $\hat\epsilon=1+0.2=1.2$이므로 $(2.2-0.6(1.2))/0.8=1.85$로 §2와 같은 $1.85$다. 편향이 같은 $0.2$이고 같은 $0.75$로 증폭되기 때문이다. (c) $\mu_4=\frac{21}{20}\big(2.2-\frac{0.092971}{0.6}(1.2)\big)=1.05\times2.014059=2.114762$. (d) $x_5$는 $1.2=2\times0.6$만큼, 즉 뒤집은 전부에 noise 계수를 곱한 만큼 움직였고 $\mu_4$도 따라 움직였다. $\hat x_0$의 *오차*는 전혀 움직이지 않았다. 어느 noise를 뽑았든 $b/\sqrt{\mathrm{SNR}_5}=0.15$이고, 그래서 §5의 쓸기가 뽑기에 대한 진술이 아니라 schedule과 신경망에 대한 진술이다.
 > 3. 빈칸은 `0.2 * x`다. 돌려 보면 $N=1,2,4,5,10,20$에서 $\hat x_0$이 $2.568082$, $1.827178$, $1.845251$, $1.853453$, $1.882015$, $1.909234$, 즉 오차가 $0.568082$, $0.172822$, $0.154749$, $0.146547$, $0.117985$, $0.090766$이다. §5의 닫힌 형태 열은 이 중 어느 것도 예측하지 못한다. $N=1$에서는 이 신경망이 상수 편향 쪽보다 *낫고*($0.568$ 대 $0.980$) 자료를 넘어 과하게 가며, $N=4$부터는 나쁘다($N=20$에서 $0.0908$ 대 $0.0583$). 두 곡선이 교차한다. 두 신경망 모두 카탈로그 레벨에서 정확히 $-0.8$을 돌려주므로 계산 절로는 구분할 수 없고 루프만이 구분한다. §5의 다섯째 열이 실제로 주장하는 것이 그것이다. "sampler 오차는 $b/\sqrt{\mathrm{SNR}}$이다"가 아니라 "입력에 의존하지 않는 오차를 가진 신경망에서는 중간 오차가 상쇄되고 마지막 레벨만 살아남는다"이다. 그 가정을 바꾸면 닫힌 형태는 사라지고, 질적 거래 — 스텝이 많을수록 오차가 줄고 지연이 비례해 는다 — 는 남는다.

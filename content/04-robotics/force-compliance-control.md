@@ -56,6 +56,117 @@ $K_e$ is the series stiffness of tool, sensor, arm structure and panel taken tog
 
 Draw it once; the problem set asks for the same drawing on the other axis.
 
+<svg viewBox="0 0 560 594" style="max-width:100%;height:auto" role="img" aria-label="Top: P2 at theta (0, 90 degrees) pressing a panel under its tip with 10 N, the equal and opposite reaction, and the virtual 500 N/m spring in series with the real 100,000 N/m one; middle: impedance and admittance block diagrams sharing the arm-and-panel block, the torque interface and the force sensor shaded; bottom: on one millisecond axis, the 14 ms impact half-sine against one 397 ms period of the target behaviour, with 1 kHz sample ticks">
+  <defs><marker id="fccA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="18" font-size="12" fill-opacity="0.85" font-weight="600">arm and panel (x–y plane, to scale)</text>
+    <line x1="34.4" y1="193" x2="65.6" y2="193" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <path d="M 36.2 193 L 31.2 199 M 41.5 193 L 36.5 199 M 46.8 193 L 41.8 199 M 52.1 193 L 47.1 199 M 57.4 193 L 52.4 199 M 62.7 193 L 57.7 199" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+    <path d="M 50 184 L 43 193 L 57 193 Z" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+    <rect x="114.4" y="92" width="57" height="6.4" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+    <path d="M 116.2 98.4 L 121.2 93.5 M 121.2 98.4 L 126.2 93.5 M 126.2 98.4 L 131.2 93.5 M 131.2 98.4 L 136.2 93.5 M 136.2 98.4 L 141.2 93.5 M 141.2 98.4 L 146.2 93.5 M 146.2 98.4 L 151.2 93.5 M 151.2 98.4 L 156.2 93.5 M 156.2 98.4 L 161.2 93.5 M 161.2 98.4 L 166.2 93.5 M 166.2 98.4 L 171.2 93.5" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+    <line x1="50" y1="184" x2="142" y2="184" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="142" y1="184" x2="142" y2="92" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="50" cy="184" r="4.5" fill="currentColor"/>
+    <circle cx="142" cy="184" r="4" fill="currentColor"/>
+    <circle cx="142" cy="92" r="4.5" fill="currentColor"/>
+    <line x1="153" y1="94" x2="153" y2="132" stroke="currentColor" stroke-width="1.8" marker-end="url(#fccA)"/>
+    <line x1="142" y1="86" x2="142" y2="48" stroke="currentColor" stroke-width="1.8" marker-end="url(#fccA)"/>
+    <text x="160" y="120" font-size="11">F = (0, −10) N</text>
+    <text x="160" y="134" font-size="11" fill-opacity="0.85">on the panel</text>
+    <text x="150" y="60" font-size="11">reaction +10 N</text>
+    <text x="150" y="74" font-size="11" fill-opacity="0.85">on the robot</text>
+    <text x="42" y="214" font-size="11">base (0, 0)</text>
+    <text x="146" y="214" font-size="11" text-anchor="middle">elbow (1, 0)</text>
+    <text x="134" y="82" font-size="11" text-anchor="end">tip (1, 1)</text>
+    <text x="96" y="176" font-size="11" text-anchor="middle" fill-opacity="0.85">P2, θ = (0°, 90°)</text>
+    <text x="110.4" y="104" font-size="11" text-anchor="end" fill-opacity="0.85">panel face</text>
+    <line x1="314" y1="34" x2="338" y2="34" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M 315 34 L 319 29 M 320.5 34 L 324.5 29 M 326 34 L 330 29 M 331.5 34 L 335.5 29 M 337 34 L 341 29" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+    <path d="M 326 34 L 326 38 L 319 40.3 L 333 45 L 319 49.7 L 333 54.3 L 319 59 L 333 63.7 L 319 68.3 L 333 73 L 319 77.7 L 333 82.3 L 319 87 L 333 91.7 L 326 94 L 326 98" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+    <rect x="317" y="98" width="18" height="4" fill="currentColor" fill-opacity="0.5" stroke="currentColor" stroke-width="1"/>
+    <path d="M 326 102 L 326 102.6 L 319 102.8 L 333 103.1 L 319 103.4 L 333 103.7 L 319 104 L 333 104.3 L 319 104.7 L 333 105 L 319 105.3 L 333 105.6 L 319 105.9 L 333 106.2 L 326 106.4 L 326 107" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linejoin="round"/>
+    <line x1="314" y1="107" x2="338" y2="107" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M 315 112 L 319 107 M 320.5 112 L 324.5 107 M 326 112 L 330 107 M 331.5 112 L 335.5 107 M 337 112 L 341 107" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+    <text x="344" y="38" font-size="11" fill-opacity="0.8">reference</text>
+    <text x="344" y="62" font-size="11" xml:space="preserve">virtual K<tspan dy="3.1" font-size="11">d</tspan><tspan dy="-3.1"> = 500 N/m</tspan></text>
+    <text x="344" y="76" font-size="11" fill-opacity="0.85">gives 20 mm</text>
+    <text x="344" y="108" font-size="11" xml:space="preserve">real K<tspan dy="3.1" font-size="11">e</tspan><tspan dy="-3.1"> = 10</tspan><tspan dy="-4.2" font-size="11">5</tspan><tspan dy="4.2"> N/m</tspan></text>
+    <text x="344" y="122" font-size="11" fill-opacity="0.85">gives 0.1 mm</text>
+    <text x="314" y="146" font-size="11">in series, same 10 N: ratio 200</text>
+    <line x1="148" y1="91" x2="312" y2="100" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+    <line x1="8" y1="216" x2="552" y2="216" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="12" y="234" font-size="12" fill-opacity="0.85" font-weight="600">impedance — measure motion, command force</text>
+    <rect x="428" y="258" width="120" height="92" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="488" y="290" font-size="12" text-anchor="middle">arm + panel</text>
+    <text x="488" y="307" font-size="11" text-anchor="middle" xml:space="preserve">Λ<tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1"> = 2 kg</tspan></text>
+    <text x="488" y="326" font-size="11" text-anchor="middle" xml:space="preserve">K<tspan dy="3.1" font-size="11">e</tspan><tspan dy="-3.1"> = 10</tspan><tspan dy="-4.2" font-size="11">5</tspan><tspan dy="4.2"> N/m</tspan></text>
+    <rect x="12" y="258" width="88" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.2"/>
+    <text x="56" y="273" font-size="11" text-anchor="middle">measure y, ẏ</text>
+    <text x="56" y="287" font-size="11" text-anchor="middle">at the tip</text>
+    <rect x="124" y="258" width="132" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.2"/>
+    <text x="190" y="273" font-size="11" text-anchor="middle">target impedance</text>
+    <text x="190" y="287" font-size="11" text-anchor="middle" xml:space="preserve">M<tspan dy="3.1" font-size="11">d</tspan><tspan dy="-3.1">ë + D</tspan><tspan dy="3.1" font-size="11">d</tspan><tspan dy="-3.1">ė + K</tspan><tspan dy="3.1" font-size="11">d</tspan><tspan dy="-3.1">e</tspan></text>
+    <rect x="276" y="258" width="100" height="36" rx="3" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.2"/>
+    <text x="326" y="273" font-size="11" text-anchor="middle" xml:space="preserve">τ = J<tspan dy="-4.2" font-size="11">T</tspan><tspan dy="4.2">F</tspan></text>
+    <text x="326" y="287" font-size="11" text-anchor="middle">torque interface</text>
+    <line x1="100" y1="276" x2="122" y2="276" stroke="currentColor" stroke-width="1.3" marker-end="url(#fccA)"/>
+    <text x="112" y="270" font-size="11" text-anchor="middle">e, ė</text>
+    <line x1="256" y1="276" x2="274" y2="276" stroke="currentColor" stroke-width="1.3" marker-end="url(#fccA)"/>
+    <text x="266" y="270" font-size="11" text-anchor="middle">F</text>
+    <line x1="376" y1="276" x2="426" y2="276" stroke="currentColor" stroke-width="1.3" marker-end="url(#fccA)"/>
+    <text x="402" y="270" font-size="11" text-anchor="middle">τ</text>
+    <rect x="12" y="314" width="88" height="36" rx="3" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.2"/>
+    <text x="56" y="329" font-size="11" text-anchor="middle" xml:space="preserve">F<tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1"> at the wrist</tspan></text>
+    <text x="56" y="343" font-size="11" text-anchor="middle">force sensor</text>
+    <rect x="124" y="314" width="132" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.2"/>
+    <text x="190" y="329" font-size="11" text-anchor="middle">integrate virtual</text>
+    <text x="190" y="343" font-size="11" text-anchor="middle" xml:space="preserve">dynamics → y<tspan dy="3.1" font-size="11">c</tspan></text>
+    <rect x="276" y="314" width="100" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.2"/>
+    <text x="326" y="329" font-size="11" text-anchor="middle">inner position</text>
+    <text x="326" y="343" font-size="11" text-anchor="middle">loop</text>
+    <line x1="100" y1="332" x2="122" y2="332" stroke="currentColor" stroke-width="1.3" marker-end="url(#fccA)"/>
+    <text x="112" y="326" font-size="11" text-anchor="middle" xml:space="preserve">F<tspan dy="3.1" font-size="11">y</tspan></text>
+    <line x1="256" y1="332" x2="274" y2="332" stroke="currentColor" stroke-width="1.3" marker-end="url(#fccA)"/>
+    <text x="266" y="326" font-size="11" text-anchor="middle" xml:space="preserve">y<tspan dy="3.1" font-size="11">c</tspan></text>
+    <line x1="376" y1="332" x2="426" y2="332" stroke="currentColor" stroke-width="1.3" marker-end="url(#fccA)"/>
+    <text x="402" y="326" font-size="11" text-anchor="middle">τ</text>
+    <path d="M 488.0 258.0 L 488.0 248.0 L 56.0 248.0 L 56.0 256.0" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" marker-end="url(#fccA)"/>
+    <text x="300" y="244" font-size="11" fill-opacity="0.85">tip motion</text>
+    <path d="M 488.0 350.0 L 488.0 360.0 L 56.0 360.0 L 56.0 352.0" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" marker-end="url(#fccA)"/>
+    <text x="300" y="373" font-size="11" fill-opacity="0.85">contact force</text>
+    <text x="12" y="390" font-size="12" fill-opacity="0.85" font-weight="600">admittance — measure force, command motion</text>
+    <text x="548" y="390" font-size="11" text-anchor="end" fill-opacity="0.8">shaded: the block each one cannot fake</text>
+    <line x1="8" y1="408" x2="552" y2="408" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="12" y="424" font-size="12" fill-opacity="0.85" font-weight="600">the clock, 0 to 400 ms, both lengths on one scale</text>
+    <text x="548" y="424" font-size="12" text-anchor="end" xml:space="preserve">T / t<tspan dy="3.4" font-size="11">contact</tspan><tspan dy="-3.4"> = 28.3</tspan></text>
+    <path d="M 60.0 439.0 L 540.0 439.0" fill="none" stroke="currentColor" stroke-width="6" stroke-opacity="0.75" stroke-dasharray="0.45 0.75"/>
+    <text x="54" y="443" font-size="11" text-anchor="end" fill-opacity="0.85">1 kHz</text>
+    <line x1="60" y1="526" x2="540" y2="526" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4"/>
+    <line x1="60" y1="566" x2="540" y2="566" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <path d="M 60 566 L 60 570 M 180 566 L 180 570 M 300 566 L 300 570 M 420 566 L 420 570 M 540 566 L 540 570" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="60" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">0</text>
+    <text x="180" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">100</text>
+    <text x="300" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">200</text>
+    <text x="420" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">300</text>
+    <text x="540" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">400</text>
+    <text x="12" y="582" font-size="11" fill-opacity="0.85">t (ms)</text>
+    <path d="M 60 526 L 63 525 L 66 524 L 68.9 522.9 L 71.9 521.9 L 74.9 520.9 L 77.9 519.9 L 80.9 518.9 L 83.8 518 L 86.8 517 L 89.8 516.1 L 92.8 515.1 L 95.8 514.2 L 98.7 513.3 L 101.7 512.4 L 104.7 511.6 L 107.7 510.7 L 110.7 509.9 L 113.6 509.1 L 116.6 508.4 L 119.6 507.6 L 122.6 506.9 L 125.6 506.2 L 128.5 505.6 L 131.5 505 L 134.5 504.4 L 137.5 503.8 L 140.5 503.3 L 143.5 502.8 L 146.4 502.4 L 149.4 502 L 152.4 501.6 L 155.4 501.3 L 158.4 501 L 161.3 500.7 L 164.3 500.5 L 167.3 500.3 L 170.3 500.2 L 173.3 500.1 L 176.2 500 L 179.2 500 L 182.2 500 L 185.2 500.1 L 188.2 500.2 L 191.1 500.3 L 194.1 500.5 L 197.1 500.7 L 200.1 501 L 203.1 501.3 L 206 501.6 L 209 502 L 212 502.4 L 215 502.8 L 218 503.3 L 220.9 503.8 L 223.9 504.4 L 226.9 505 L 229.9 505.6 L 232.9 506.2 L 235.8 506.9 L 238.8 507.6 L 241.8 508.4 L 244.8 509.1 L 247.8 509.9 L 250.7 510.7 L 253.7 511.6 L 256.7 512.4 L 259.7 513.3 L 262.7 514.2 L 265.6 515.1 L 268.6 516.1 L 271.6 517 L 274.6 518 L 277.6 518.9 L 280.5 519.9 L 283.5 520.9 L 286.5 521.9 L 289.5 522.9 L 292.5 524 L 295.4 525 L 298.4 526 L 301.4 527 L 304.4 528 L 307.4 529.1 L 310.4 530.1 L 313.3 531.1 L 316.3 532.1 L 319.3 533.1 L 322.3 534 L 325.3 535 L 328.2 535.9 L 331.2 536.9 L 334.2 537.8 L 337.2 538.7 L 340.2 539.6 L 343.1 540.4 L 346.1 541.3 L 349.1 542.1 L 352.1 542.9 L 355.1 543.6 L 358 544.4 L 361 545.1 L 364 545.8 L 367 546.4 L 370 547 L 372.9 547.6 L 375.9 548.2 L 378.9 548.7 L 381.9 549.2 L 384.9 549.6 L 387.8 550 L 390.8 550.4 L 393.8 550.7 L 396.8 551 L 399.8 551.3 L 402.7 551.5 L 405.7 551.7 L 408.7 551.8 L 411.7 551.9 L 414.7 552 L 417.6 552 L 420.6 552 L 423.6 551.9 L 426.6 551.8 L 429.6 551.7 L 432.5 551.5 L 435.5 551.3 L 438.5 551 L 441.5 550.7 L 444.5 550.4 L 447.4 550 L 450.4 549.6 L 453.4 549.2 L 456.4 548.7 L 459.4 548.2 L 462.4 547.6 L 465.3 547 L 468.3 546.4 L 471.3 545.8 L 474.3 545.1 L 477.3 544.4 L 480.2 543.6 L 483.2 542.9 L 486.2 542.1 L 489.2 541.3 L 492.2 540.4 L 495.1 539.6 L 498.1 538.7 L 501.1 537.8 L 504.1 536.9 L 507.1 535.9 L 510 535 L 513 534 L 516 533.1 L 519 532.1 L 522 531.1 L 524.9 530.1 L 527.9 529.1 L 530.9 528 L 533.9 527 L 536.9 526" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="536.9" y1="561" x2="536.9" y2="571" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="536.9" y1="526" x2="536.9" y2="561" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+    <text x="100.8" y="548" font-size="11" xml:space="preserve">one period of the target: T = 2π/ω<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = 397 ms</tspan></text>
+    <path d="M 60 526 L 60.4 522.1 L 60.8 518.3 L 61.3 514.5 L 61.7 510.8 L 62.1 507.2 L 62.5 503.7 L 63 500.3 L 63.4 497.1 L 63.8 494.1 L 64.2 491.2 L 64.6 488.6 L 65.1 486.2 L 65.5 484.1 L 65.9 482.2 L 66.3 480.6 L 66.7 479.2 L 67.2 478.2 L 67.6 477.4 L 68 477 L 68.4 476.8 L 68.9 477 L 69.3 477.4 L 69.7 478.2 L 70.1 479.2 L 70.5 480.6 L 71 482.2 L 71.4 484.1 L 71.8 486.2 L 72.2 488.6 L 72.6 491.2 L 73.1 494.1 L 73.5 497.1 L 73.9 500.3 L 74.3 503.7 L 74.8 507.2 L 75.2 510.8 L 75.6 514.5 L 76 518.3 L 76.4 522.1 L 76.9 526" fill="currentColor" fill-opacity="0.35" stroke="currentColor" stroke-width="1.8"/>
+    <text x="81.6" y="484" font-size="11">impact: half-sine,</text>
+    <text x="81.6" y="498" font-size="11" xml:space="preserve">14 ms, F<tspan dy="3.1" font-size="11">max</tspan><tspan dy="-3.1"> = 22.4 N</tspan></text>
+    <rect x="346" y="451" width="192" height="60" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <path d="M 346 451 L 346 457 M 355.6 451 L 355.6 457 M 365.2 451 L 365.2 457 M 374.8 451 L 374.8 457 M 384.4 451 L 384.4 457 M 394 451 L 394 457 M 403.6 451 L 403.6 457 M 413.2 451 L 413.2 457 M 422.8 451 L 422.8 457 M 432.4 451 L 432.4 457 M 442 451 L 442 457 M 451.6 451 L 451.6 457 M 461.2 451 L 461.2 457 M 470.8 451 L 470.8 457 M 480.4 451 L 480.4 457 M 490 451 L 490 457 M 499.6 451 L 499.6 457 M 509.2 451 L 509.2 457 M 518.8 451 L 518.8 457 M 528.4 451 L 528.4 457 M 538 451 L 538 457" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.75"/>
+    <path d="M 346 508 L 349.4 504.1 L 352.7 500.3 L 356.1 496.5 L 359.5 492.8 L 362.9 489.2 L 366.2 485.7 L 369.6 482.3 L 373 479.1 L 376.3 476.1 L 379.7 473.2 L 383.1 470.6 L 386.5 468.2 L 389.8 466.1 L 393.2 464.2 L 396.6 462.6 L 400 461.2 L 403.3 460.2 L 406.7 459.4 L 410.1 459 L 413.4 458.8 L 416.8 459 L 420.2 459.4 L 423.6 460.2 L 426.9 461.2 L 430.3 462.6 L 433.7 464.2 L 437 466.1 L 440.4 468.2 L 443.8 470.6 L 447.2 473.2 L 450.5 476.1 L 453.9 479.1 L 457.3 482.3 L 460.6 485.7 L 464 489.2 L 467.4 492.8 L 470.8 496.5 L 474.1 500.3 L 477.5 504.1 L 480.9 508" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.6"/>
+    <path d="M 346 508 L 350.8 507.8 L 355.6 507.6 L 360.4 507.4 L 365.2 507.2 L 370 507 L 374.8 506.8 L 379.6 506.6 L 384.4 506.4 L 389.2 506.2 L 394 505.9 L 398.8 505.7 L 403.6 505.5 L 408.4 505.3 L 413.2 505.1 L 418 504.9 L 422.8 504.7 L 427.6 504.5 L 432.4 504.3 L 437.2 504.1 L 442 503.9 L 446.8 503.7 L 451.6 503.5 L 456.4 503.3 L 461.2 503.1 L 466 502.9 L 470.8 502.7 L 475.6 502.5 L 480.4 502.3 L 485.2 502.1 L 490 501.9 L 494.8 501.7 L 499.6 501.5 L 504.4 501.3 L 509.2 501.1 L 514 500.9 L 518.8 500.7 L 523.6 500.5 L 528.4 500.3 L 533.2 500.1 L 538 499.9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <text x="340" y="467" font-size="11" text-anchor="end" fill-opacity="0.85">first 20 ms, ×8: one tick</text>
+    <text x="340" y="481" font-size="11" text-anchor="end" fill-opacity="0.85">per sample, 14 in the impact</text>
+  </g>
+</svg>
+
 **Top — the arm and the panel, in the $x$–$y$ plane, to scale.** P2's base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 up to the tip at $(1,1)$. A horizontal line under the tip for the panel's face, with the commanded press $F=(0,-10)$ N drawn as a downward arrow at the tip and the reaction on the robot as an upward arrow of the same length. Beside the tip, two small springs in series and labelled: the virtual one, $K_d=500$ N/m, and the real one, $K_e=10^5$ N/m — drawn with the virtual spring's coils stretched out and the real one's compressed almost flat, because that ratio of 200 is the picture's only job.
 
 **Middle — the two block diagrams, one above the other, sharing the same plant block on the right.** Impedance: measure $(y,\dot y)$ at the tip, run it through the target $M_d\ddot e+D_d\dot e+K_de$, get a force, map it with $\tau=J^\top F$, send torque to the arm. Admittance: measure $F_y$ at the wrist, integrate the virtual dynamics to get a motion reference $y_c$, hand $y_c$ to an inner position loop, and let that loop send torque. Shade the one block each architecture cannot fake — the torque interface on the top row, the force sensor on the bottom — and draw the feedback path from the panel back to the measurement in both.
@@ -278,7 +389,7 @@ so an impedance controller measures motion and outputs force, and an admittance 
 
 The diagram shows **two common implementations**, not hardware requirements for every controller carrying these names:
 
-- **Torque-based impedance** computes restoring forces from motion error and maps them to joint torques. A responsive torque interface helps render the desired behavior. Low mechanical friction and backdrivability also help; a backdrivable joint can be turned by an external push without the motor and gearbox resisting it. They are not the definition of impedance. Stiffness is selected for the task; it is not “soft by default.”
+- **Torque-based impedance** computes restoring forces from motion error and maps them to joint torques. A responsive torque interface helps render the desired behavior. Low mechanical friction and backdrivability also help; a backdrivable joint can be turned by an external push without the motor and gearbox resisting it. They are not the definition of impedance. Stiffness is selected for the task; it is not “soft by default.” How far a geared joint is from backdrivable, with each motor-side impedance reaching the joint multiplied by $n^2$, is [[04-robotics/actuators-drives|10.5 Actuators & Drives §7]].
 - **Admittance** takes measured or estimated external force and integrates a virtual dynamic model to generate a motion reference. An inner motion controller tracks that reference. This is useful on robots exposing position or velocity commands. Its achievable behavior depends on the inner loop as well as the outer force feedback.
 
 | Architecture | Useful starting point | What must be checked |
@@ -434,7 +545,7 @@ ten and divides the contact time by ten** — in this model the impulse is conse
 changes. Mechanical compliance moves both numbers directly; pre-impact control can most directly reduce $v$. For measured impacts, check the force-time trace and identified equivalent $\Lambda,K,D$.
 
 Take the $\Lambda = 2$ kg from [[02-foundations/manipulator-kinematics-dynamics|10. §6]] and
-a gentle approach at $v = 5$ cm/s.
+a gentle approach at $v = 5$ cm/s. That $\Lambda$ is the bare arm's: geared drives add their rotors' reflected inertia, and with the frozen drive of [[04-robotics/actuators-drives|10.5 Actuators & Drives §4]] at a gear ratio of 100 the same $10^5\,\mathrm{N/m}$ touchdown peaks at $29.5\,\mathrm{N}$ instead of $22.4$.
 
 | Interface | $K$ (N/m) | $F_{\max}$ | contact duration | 1 kHz samples inside the contact |
 |---|---:|---:|---:|---:|
@@ -478,7 +589,7 @@ arrives after the event. The figure draws the idealised row and the compliant wr
 Put a compliant element in series and both numbers move, in opposite directions and by the
 same factor: $F_{\max} \propto \sqrt{K}$ and $t_{\text{contact}} \propto 1/\sqrt{K}$, so
 softening from the structural $10^5$ to $10^4$ buys $\sqrt{10} \approx 3.2\times$ in each, and against the bottom row's idealisation $\sqrt{1000} \approx 32\times$. The force becomes
-something the arm can survive *and* the event becomes long enough to regulate.
+something the arm can survive *and* the event becomes long enough to regulate. The same approach run end to end on P2, switching to impedance before contact, pressing a compliantly mounted panel and sweeping $K_d$ against the approach speed, is [[04-robotics/capstone-panel-contact|26. Capstone]].
 
 The lesson generalises past the arithmetic: **passive compliance is not a cheap substitute
 for active control; it is the only thing that acts at contact bandwidth.** Whitney's 1982
@@ -696,7 +807,7 @@ tolerance, say which architecture can meet it — and whether any can.
 
 ### Problem set · 과제
 
-Tier B. Using only this page, its prerequisites and the object catalog. The running object with **three entries changed**: the press goes sideways into a standing panel, $F=(-8,0)\,\mathrm{N}$, so the axis is now $x$ and the apparent mass is $\Lambda_x=1\,\mathrm{kg}$; the target stiffness is $K_d=2000\,\mathrm{N/m}$ at $\zeta=0.7$; and the approach speed doubles to $v=0.10\,\mathrm{m/s}$. P2 stays at $\theta=(0^\circ,90^\circ)$ and $K_e$ stays at $10^5\,\mathrm{N/m}$ ([[02-foundations/lab-plants|0.6]]). The Euler loop lives on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
+Tier B. Using only this page, its prerequisites and the object catalog. The running object with **three entries changed**: the press goes sideways into a standing panel, $F=(-8,0)\,\mathrm{N}$, so the axis is now $x$ and the apparent mass, which $M_d$ is again set equal to, is $\Lambda_x=1\,\mathrm{kg}$; the target stiffness is $K_d=2000\,\mathrm{N/m}$ at $\zeta=0.7$; and the approach speed doubles to $v=0.10\,\mathrm{m/s}$. P2 stays at $\theta=(0^\circ,90^\circ)$ and $K_e$ stays at $10^5\,\mathrm{N/m}$ ([[02-foundations/lab-plants|0.6]]). The Euler loop lives on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
 
 1. **Draw.** All three panels of the homework diagram on the new axis: the arm with the panel now standing at $x=1\,\mathrm{m}$ (the same panel as [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile Interaction]]'s running object), the two block diagrams rewritten for $x$, and the clock with the new impact width against the new target period, both to the same scale.
 2. **Derive.** (a) $\tau=J^\top F$ for $F=(-8,0)$, and say what is different from the vertical case and why. (b) The static deflection under the $8\,\mathrm{N}$ reaction. (c) $\omega_n$, the critically damped $D_d$, and the $D_d$ at $\zeta=0.7$. (d) $F_{\max}$ and $t_{\text{contact}}$ against $K_e=10^5\,\mathrm{N/m}$ at $v=0.10\,\mathrm{m/s}$, with the number of 1 kHz samples inside. (e) The ratio of one target period to the contact duration.
@@ -705,7 +816,7 @@ Tier B. Using only this page, its prerequisites and the object catalog. The runn
 > [!tip]- Solutions
 > 1. Same arm, same pose; the panel is now the vertical one at $x=1\,\mathrm{m}$, the press arrow points in $-x$, and the springs in series are read along $x$. The clock now shows a $9.93\,\mathrm{ms}$ impact against a $140\,\mathrm{ms}$ period.
 > 2. (a) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$ and $\tau=(8,8)\,\mathrm{N{\cdot}m}$. **Both** joints now carry the load, where the vertical press loaded only the shoulder: at this pose the elbow's own motion moves the tip purely in $x$, so an $x$ force does work on it and a $y$ force does not. (b) $e=8/2000=0.004\,\mathrm{m}$, $4\,\mathrm{mm}$. (c) $\omega_n=\sqrt{2000/1}=44.72\,\mathrm{rad/s}$; $D_d\big|_{\zeta=1}=2\sqrt{2000\cdot1}=89.4\,\mathrm{N{\cdot}s/m}$; $D_d\big|_{\zeta=0.7}=62.6\,\mathrm{N{\cdot}s/m}$. (d) $F_{\max}=0.10\sqrt{1\times10^{5}}=31.6\,\mathrm{N}$ and $t_{\text{contact}}=\pi\sqrt{1/10^{5}}=9.93\,\mathrm{ms}$, so about $10$ samples at 1 kHz — four fewer than the vertical case. (e) $T=2\pi/44.72=0.1405\,\mathrm{s}$, so $T/t_{\text{contact}}=0.1405/0.00993=14.1$.
-> 3. The factor is $\sqrt{\Lambda_x/\Lambda_y}\times(v'/v)=\sqrt{1/2}\times2=1.414$, and $22.4\times1.414=31.6\,\mathrm{N}$. Halving the apparent mass bought $\sqrt{1/2}=0.707$ of the peak, and doubling the approach speed spent $2$ — speed is linear in $F_{\max}$ and mass is only square-root, so the speed knob won. That is the general lesson: approach-speed limits, not lighter poses, are what reduce impact force. And no, stiffening the target bought nothing over the impact: the ratio fell from $28.3$ to $14.1$ only because $\omega_n$ rose, and $14.1$ is still an impact that begins and ends inside a fourteenth of one period. Matching them needs $K_d=4K_e=4\times10^{5}\,\mathrm{N/m}$, two hundred times the $2000$ asked for here and far beyond what a 1 kHz loop renders against a stiff surface ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). The impact still belongs to the mechanics.
+> 3. The factor is $\sqrt{\Lambda_x/\Lambda_y}\times(v'/v)=\sqrt{1/2}\times2=1.414$, and $22.36\times1.414=31.6\,\mathrm{N}$. Halving the apparent mass bought $\sqrt{1/2}=0.707$ of the peak, and doubling the approach speed spent $2$ — speed is linear in $F_{\max}$ and mass is only square-root, so the speed knob won. That is the general lesson: approach-speed limits, not lighter poses, are what reduce impact force. And no, stiffening the target bought nothing over the impact: the ratio fell from $28.3$ to $14.1$ only because $\omega_n$ rose, and $14.1$ is still an impact that begins and ends inside a fourteenth of one period. Matching them needs $K_d=4K_e=4\times10^{5}\,\mathrm{N/m}$, two hundred times the $2000$ asked for here and far beyond what a 1 kHz loop renders against a stiff surface ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). The impact still belongs to the mechanics.
 
 ### Sources
 
@@ -768,6 +879,117 @@ $K_e$는 공구·센서·팔 구조·패널을 합친 직렬 강성이지 패널
 ### 과제가 그릴 그림: 패널 하나 위의 두 인과와 그 아래의 시계 · Homework diagram
 
 한 번 그려 두면 과제는 같은 그림을 다른 축에서 묻는다.
+
+<svg viewBox="0 0 560 594" style="max-width:100%;height:auto" role="img" aria-label="위: θ = (0, 90도)의 P2가 말단 아래 패널을 누르는 10 N과 크기가 같은 반력, 직렬로 이어진 500 N/m 가상 스프링과 100,000 N/m 실제 스프링; 가운데: 팔과 패널 블록을 공유하는 임피던스와 어드미턴스 블록선도, 토크 인터페이스와 힘 센서에 음영; 아래: 밀리초 축 하나 위의 14 ms 충격 반주기 사인과 목표 거동의 397 ms 한 주기, 1 kHz 샘플 눈금">
+  <defs><marker id="fcckA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <g fill="currentColor">
+    <text x="12" y="18" font-size="12" fill-opacity="0.85" font-weight="600">팔과 패널 (x–y 평면, 실제 비율)</text>
+    <line x1="34.4" y1="193" x2="65.6" y2="193" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <path d="M 36.2 193 L 31.2 199 M 41.5 193 L 36.5 199 M 46.8 193 L 41.8 199 M 52.1 193 L 47.1 199 M 57.4 193 L 52.4 199 M 62.7 193 L 57.7 199" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+    <path d="M 50 184 L 43 193 L 57 193 Z" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+    <rect x="114.4" y="92" width="57" height="6.4" fill="currentColor" fill-opacity="0.14" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+    <path d="M 116.2 98.4 L 121.2 93.5 M 121.2 98.4 L 126.2 93.5 M 126.2 98.4 L 131.2 93.5 M 131.2 98.4 L 136.2 93.5 M 136.2 98.4 L 141.2 93.5 M 141.2 98.4 L 146.2 93.5 M 146.2 98.4 L 151.2 93.5 M 151.2 98.4 L 156.2 93.5 M 156.2 98.4 L 161.2 93.5 M 161.2 98.4 L 166.2 93.5 M 166.2 98.4 L 171.2 93.5" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4"/>
+    <line x1="50" y1="184" x2="142" y2="184" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <line x1="142" y1="184" x2="142" y2="92" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="50" cy="184" r="4.5" fill="currentColor"/>
+    <circle cx="142" cy="184" r="4" fill="currentColor"/>
+    <circle cx="142" cy="92" r="4.5" fill="currentColor"/>
+    <line x1="153" y1="94" x2="153" y2="132" stroke="currentColor" stroke-width="1.8" marker-end="url(#fcckA)"/>
+    <line x1="142" y1="86" x2="142" y2="48" stroke="currentColor" stroke-width="1.8" marker-end="url(#fcckA)"/>
+    <text x="160" y="120" font-size="11">F = (0, −10) N</text>
+    <text x="160" y="134" font-size="11" fill-opacity="0.85">패널이 받는 힘</text>
+    <text x="150" y="60" font-size="11">반력 +10 N</text>
+    <text x="150" y="74" font-size="11" fill-opacity="0.85">로봇이 받는 힘</text>
+    <text x="42" y="214" font-size="11">베이스 (0, 0)</text>
+    <text x="146" y="214" font-size="11" text-anchor="middle">엘보 (1, 0)</text>
+    <text x="134" y="82" font-size="11" text-anchor="end">말단 (1, 1)</text>
+    <text x="96" y="176" font-size="11" text-anchor="middle" fill-opacity="0.85">P2, θ = (0°, 90°)</text>
+    <text x="110.4" y="104" font-size="11" text-anchor="end" fill-opacity="0.85">패널 면</text>
+    <line x1="314" y1="34" x2="338" y2="34" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M 315 34 L 319 29 M 320.5 34 L 324.5 29 M 326 34 L 330 29 M 331.5 34 L 335.5 29 M 337 34 L 341 29" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+    <path d="M 326 34 L 326 38 L 319 40.3 L 333 45 L 319 49.7 L 333 54.3 L 319 59 L 333 63.7 L 319 68.3 L 333 73 L 319 77.7 L 333 82.3 L 319 87 L 333 91.7 L 326 94 L 326 98" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+    <rect x="317" y="98" width="18" height="4" fill="currentColor" fill-opacity="0.5" stroke="currentColor" stroke-width="1"/>
+    <path d="M 326 102 L 326 102.6 L 319 102.8 L 333 103.1 L 319 103.4 L 333 103.7 L 319 104 L 333 104.3 L 319 104.7 L 333 105 L 319 105.3 L 333 105.6 L 319 105.9 L 333 106.2 L 326 106.4 L 326 107" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linejoin="round"/>
+    <line x1="314" y1="107" x2="338" y2="107" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M 315 112 L 319 107 M 320.5 112 L 324.5 107 M 326 112 L 330 107 M 331.5 112 L 335.5 107 M 337 112 L 341 107" fill="none" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+    <text x="344" y="38" font-size="11" fill-opacity="0.8">기준</text>
+    <text x="344" y="62" font-size="11" xml:space="preserve">가상 K<tspan dy="3.1" font-size="11">d</tspan><tspan dy="-3.1"> = 500 N/m</tspan></text>
+    <text x="344" y="76" font-size="11" fill-opacity="0.85">20 mm 물러남</text>
+    <text x="344" y="108" font-size="11" xml:space="preserve">실제 K<tspan dy="3.1" font-size="11">e</tspan><tspan dy="-3.1"> = 10</tspan><tspan dy="-4.2" font-size="11">5</tspan><tspan dy="4.2"> N/m</tspan></text>
+    <text x="344" y="122" font-size="11" fill-opacity="0.85">0.1 mm 물러남</text>
+    <text x="314" y="146" font-size="11">직렬, 같은 10 N: 비 200</text>
+    <line x1="148" y1="91" x2="312" y2="100" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+    <line x1="8" y1="216" x2="552" y2="216" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="12" y="234" font-size="12" fill-opacity="0.85" font-weight="600">임피던스 — 운동을 재고 힘을 명령</text>
+    <rect x="428" y="258" width="120" height="92" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3"/>
+    <text x="488" y="290" font-size="12" text-anchor="middle">팔 + 패널</text>
+    <text x="488" y="307" font-size="11" text-anchor="middle" xml:space="preserve">Λ<tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1"> = 2 kg</tspan></text>
+    <text x="488" y="326" font-size="11" text-anchor="middle" xml:space="preserve">K<tspan dy="3.1" font-size="11">e</tspan><tspan dy="-3.1"> = 10</tspan><tspan dy="-4.2" font-size="11">5</tspan><tspan dy="4.2"> N/m</tspan></text>
+    <rect x="12" y="258" width="88" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.2"/>
+    <text x="56" y="273" font-size="11" text-anchor="middle">말단에서</text>
+    <text x="56" y="287" font-size="11" text-anchor="middle">y, ẏ 측정</text>
+    <rect x="124" y="258" width="132" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.2"/>
+    <text x="190" y="273" font-size="11" text-anchor="middle">목표 임피던스</text>
+    <text x="190" y="287" font-size="11" text-anchor="middle" xml:space="preserve">M<tspan dy="3.1" font-size="11">d</tspan><tspan dy="-3.1">ë + D</tspan><tspan dy="3.1" font-size="11">d</tspan><tspan dy="-3.1">ė + K</tspan><tspan dy="3.1" font-size="11">d</tspan><tspan dy="-3.1">e</tspan></text>
+    <rect x="276" y="258" width="100" height="36" rx="3" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.2"/>
+    <text x="326" y="273" font-size="11" text-anchor="middle" xml:space="preserve">τ = J<tspan dy="-4.2" font-size="11">T</tspan><tspan dy="4.2">F</tspan></text>
+    <text x="326" y="287" font-size="11" text-anchor="middle">토크 인터페이스</text>
+    <line x1="100" y1="276" x2="122" y2="276" stroke="currentColor" stroke-width="1.3" marker-end="url(#fcckA)"/>
+    <text x="112" y="270" font-size="11" text-anchor="middle">e, ė</text>
+    <line x1="256" y1="276" x2="274" y2="276" stroke="currentColor" stroke-width="1.3" marker-end="url(#fcckA)"/>
+    <text x="266" y="270" font-size="11" text-anchor="middle">F</text>
+    <line x1="376" y1="276" x2="426" y2="276" stroke="currentColor" stroke-width="1.3" marker-end="url(#fcckA)"/>
+    <text x="402" y="270" font-size="11" text-anchor="middle">τ</text>
+    <rect x="12" y="314" width="88" height="36" rx="3" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.2"/>
+    <text x="56" y="329" font-size="11" text-anchor="middle" xml:space="preserve">손목에서 F<tspan dy="3.1" font-size="11">y</tspan></text>
+    <text x="56" y="343" font-size="11" text-anchor="middle">힘 센서</text>
+    <rect x="124" y="314" width="132" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.2"/>
+    <text x="190" y="329" font-size="11" text-anchor="middle">가상 동역학</text>
+    <text x="190" y="343" font-size="11" text-anchor="middle" xml:space="preserve">적분 → y<tspan dy="3.1" font-size="11">c</tspan></text>
+    <rect x="276" y="314" width="100" height="36" rx="3" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.2"/>
+    <text x="326" y="329" font-size="11" text-anchor="middle">내부 위치</text>
+    <text x="326" y="343" font-size="11" text-anchor="middle">루프</text>
+    <line x1="100" y1="332" x2="122" y2="332" stroke="currentColor" stroke-width="1.3" marker-end="url(#fcckA)"/>
+    <text x="112" y="326" font-size="11" text-anchor="middle" xml:space="preserve">F<tspan dy="3.1" font-size="11">y</tspan></text>
+    <line x1="256" y1="332" x2="274" y2="332" stroke="currentColor" stroke-width="1.3" marker-end="url(#fcckA)"/>
+    <text x="266" y="326" font-size="11" text-anchor="middle" xml:space="preserve">y<tspan dy="3.1" font-size="11">c</tspan></text>
+    <line x1="376" y1="332" x2="426" y2="332" stroke="currentColor" stroke-width="1.3" marker-end="url(#fcckA)"/>
+    <text x="402" y="326" font-size="11" text-anchor="middle">τ</text>
+    <path d="M 488.0 258.0 L 488.0 248.0 L 56.0 248.0 L 56.0 256.0" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" marker-end="url(#fcckA)"/>
+    <text x="300" y="244" font-size="11" fill-opacity="0.85">말단 운동</text>
+    <path d="M 488.0 350.0 L 488.0 360.0 L 56.0 360.0 L 56.0 352.0" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" marker-end="url(#fcckA)"/>
+    <text x="300" y="373" font-size="11" fill-opacity="0.85">접촉력</text>
+    <text x="12" y="390" font-size="12" fill-opacity="0.85" font-weight="600">어드미턴스 — 힘을 재고 운동을 명령</text>
+    <text x="548" y="390" font-size="11" text-anchor="end" fill-opacity="0.8">음영: 각 구조가 흉내 낼 수 없는 블록</text>
+    <line x1="8" y1="408" x2="552" y2="408" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+    <text x="12" y="424" font-size="12" fill-opacity="0.85" font-weight="600">시계, 0에서 400 ms, 두 길이를 같은 축척으로</text>
+    <text x="548" y="424" font-size="12" text-anchor="end" xml:space="preserve">T / t<tspan dy="3.4" font-size="11">contact</tspan><tspan dy="-3.4"> = 28.3</tspan></text>
+    <path d="M 60.0 439.0 L 540.0 439.0" fill="none" stroke="currentColor" stroke-width="6" stroke-opacity="0.75" stroke-dasharray="0.45 0.75"/>
+    <text x="54" y="443" font-size="11" text-anchor="end" fill-opacity="0.85">1 kHz</text>
+    <line x1="60" y1="526" x2="540" y2="526" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.4"/>
+    <line x1="60" y1="566" x2="540" y2="566" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+    <path d="M 60 566 L 60 570 M 180 566 L 180 570 M 300 566 L 300 570 M 420 566 L 420 570 M 540 566 L 540 570" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <text x="60" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">0</text>
+    <text x="180" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">100</text>
+    <text x="300" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">200</text>
+    <text x="420" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">300</text>
+    <text x="540" y="582" font-size="11" text-anchor="middle" fill-opacity="0.85">400</text>
+    <text x="12" y="582" font-size="11" fill-opacity="0.85">t (ms)</text>
+    <path d="M 60 526 L 63 525 L 66 524 L 68.9 522.9 L 71.9 521.9 L 74.9 520.9 L 77.9 519.9 L 80.9 518.9 L 83.8 518 L 86.8 517 L 89.8 516.1 L 92.8 515.1 L 95.8 514.2 L 98.7 513.3 L 101.7 512.4 L 104.7 511.6 L 107.7 510.7 L 110.7 509.9 L 113.6 509.1 L 116.6 508.4 L 119.6 507.6 L 122.6 506.9 L 125.6 506.2 L 128.5 505.6 L 131.5 505 L 134.5 504.4 L 137.5 503.8 L 140.5 503.3 L 143.5 502.8 L 146.4 502.4 L 149.4 502 L 152.4 501.6 L 155.4 501.3 L 158.4 501 L 161.3 500.7 L 164.3 500.5 L 167.3 500.3 L 170.3 500.2 L 173.3 500.1 L 176.2 500 L 179.2 500 L 182.2 500 L 185.2 500.1 L 188.2 500.2 L 191.1 500.3 L 194.1 500.5 L 197.1 500.7 L 200.1 501 L 203.1 501.3 L 206 501.6 L 209 502 L 212 502.4 L 215 502.8 L 218 503.3 L 220.9 503.8 L 223.9 504.4 L 226.9 505 L 229.9 505.6 L 232.9 506.2 L 235.8 506.9 L 238.8 507.6 L 241.8 508.4 L 244.8 509.1 L 247.8 509.9 L 250.7 510.7 L 253.7 511.6 L 256.7 512.4 L 259.7 513.3 L 262.7 514.2 L 265.6 515.1 L 268.6 516.1 L 271.6 517 L 274.6 518 L 277.6 518.9 L 280.5 519.9 L 283.5 520.9 L 286.5 521.9 L 289.5 522.9 L 292.5 524 L 295.4 525 L 298.4 526 L 301.4 527 L 304.4 528 L 307.4 529.1 L 310.4 530.1 L 313.3 531.1 L 316.3 532.1 L 319.3 533.1 L 322.3 534 L 325.3 535 L 328.2 535.9 L 331.2 536.9 L 334.2 537.8 L 337.2 538.7 L 340.2 539.6 L 343.1 540.4 L 346.1 541.3 L 349.1 542.1 L 352.1 542.9 L 355.1 543.6 L 358 544.4 L 361 545.1 L 364 545.8 L 367 546.4 L 370 547 L 372.9 547.6 L 375.9 548.2 L 378.9 548.7 L 381.9 549.2 L 384.9 549.6 L 387.8 550 L 390.8 550.4 L 393.8 550.7 L 396.8 551 L 399.8 551.3 L 402.7 551.5 L 405.7 551.7 L 408.7 551.8 L 411.7 551.9 L 414.7 552 L 417.6 552 L 420.6 552 L 423.6 551.9 L 426.6 551.8 L 429.6 551.7 L 432.5 551.5 L 435.5 551.3 L 438.5 551 L 441.5 550.7 L 444.5 550.4 L 447.4 550 L 450.4 549.6 L 453.4 549.2 L 456.4 548.7 L 459.4 548.2 L 462.4 547.6 L 465.3 547 L 468.3 546.4 L 471.3 545.8 L 474.3 545.1 L 477.3 544.4 L 480.2 543.6 L 483.2 542.9 L 486.2 542.1 L 489.2 541.3 L 492.2 540.4 L 495.1 539.6 L 498.1 538.7 L 501.1 537.8 L 504.1 536.9 L 507.1 535.9 L 510 535 L 513 534 L 516 533.1 L 519 532.1 L 522 531.1 L 524.9 530.1 L 527.9 529.1 L 530.9 528 L 533.9 527 L 536.9 526" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="536.9" y1="561" x2="536.9" y2="571" stroke="currentColor" stroke-width="1.4"/>
+    <line x1="536.9" y1="526" x2="536.9" y2="561" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.4" stroke-dasharray="2 2"/>
+    <text x="100.8" y="548" font-size="11" xml:space="preserve">목표 거동의 한 주기: T = 2π/ω<tspan dy="3.1" font-size="11">n</tspan><tspan dy="-3.1"> = 397 ms</tspan></text>
+    <path d="M 60 526 L 60.4 522.1 L 60.8 518.3 L 61.3 514.5 L 61.7 510.8 L 62.1 507.2 L 62.5 503.7 L 63 500.3 L 63.4 497.1 L 63.8 494.1 L 64.2 491.2 L 64.6 488.6 L 65.1 486.2 L 65.5 484.1 L 65.9 482.2 L 66.3 480.6 L 66.7 479.2 L 67.2 478.2 L 67.6 477.4 L 68 477 L 68.4 476.8 L 68.9 477 L 69.3 477.4 L 69.7 478.2 L 70.1 479.2 L 70.5 480.6 L 71 482.2 L 71.4 484.1 L 71.8 486.2 L 72.2 488.6 L 72.6 491.2 L 73.1 494.1 L 73.5 497.1 L 73.9 500.3 L 74.3 503.7 L 74.8 507.2 L 75.2 510.8 L 75.6 514.5 L 76 518.3 L 76.4 522.1 L 76.9 526" fill="currentColor" fill-opacity="0.35" stroke="currentColor" stroke-width="1.8"/>
+    <text x="81.6" y="484" font-size="11">충격: 반주기 사인,</text>
+    <text x="81.6" y="498" font-size="11" xml:space="preserve">14 ms, F<tspan dy="3.1" font-size="11">max</tspan><tspan dy="-3.1"> = 22.4 N</tspan></text>
+    <rect x="346" y="451" width="192" height="60" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.7"/>
+    <path d="M 346 451 L 346 457 M 355.6 451 L 355.6 457 M 365.2 451 L 365.2 457 M 374.8 451 L 374.8 457 M 384.4 451 L 384.4 457 M 394 451 L 394 457 M 403.6 451 L 403.6 457 M 413.2 451 L 413.2 457 M 422.8 451 L 422.8 457 M 432.4 451 L 432.4 457 M 442 451 L 442 457 M 451.6 451 L 451.6 457 M 461.2 451 L 461.2 457 M 470.8 451 L 470.8 457 M 480.4 451 L 480.4 457 M 490 451 L 490 457 M 499.6 451 L 499.6 457 M 509.2 451 L 509.2 457 M 518.8 451 L 518.8 457 M 528.4 451 L 528.4 457 M 538 451 L 538 457" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.75"/>
+    <path d="M 346 508 L 349.4 504.1 L 352.7 500.3 L 356.1 496.5 L 359.5 492.8 L 362.9 489.2 L 366.2 485.7 L 369.6 482.3 L 373 479.1 L 376.3 476.1 L 379.7 473.2 L 383.1 470.6 L 386.5 468.2 L 389.8 466.1 L 393.2 464.2 L 396.6 462.6 L 400 461.2 L 403.3 460.2 L 406.7 459.4 L 410.1 459 L 413.4 458.8 L 416.8 459 L 420.2 459.4 L 423.6 460.2 L 426.9 461.2 L 430.3 462.6 L 433.7 464.2 L 437 466.1 L 440.4 468.2 L 443.8 470.6 L 447.2 473.2 L 450.5 476.1 L 453.9 479.1 L 457.3 482.3 L 460.6 485.7 L 464 489.2 L 467.4 492.8 L 470.8 496.5 L 474.1 500.3 L 477.5 504.1 L 480.9 508" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1.6"/>
+    <path d="M 346 508 L 350.8 507.8 L 355.6 507.6 L 360.4 507.4 L 365.2 507.2 L 370 507 L 374.8 506.8 L 379.6 506.6 L 384.4 506.4 L 389.2 506.2 L 394 505.9 L 398.8 505.7 L 403.6 505.5 L 408.4 505.3 L 413.2 505.1 L 418 504.9 L 422.8 504.7 L 427.6 504.5 L 432.4 504.3 L 437.2 504.1 L 442 503.9 L 446.8 503.7 L 451.6 503.5 L 456.4 503.3 L 461.2 503.1 L 466 502.9 L 470.8 502.7 L 475.6 502.5 L 480.4 502.3 L 485.2 502.1 L 490 501.9 L 494.8 501.7 L 499.6 501.5 L 504.4 501.3 L 509.2 501.1 L 514 500.9 L 518.8 500.7 L 523.6 500.5 L 528.4 500.3 L 533.2 500.1 L 538 499.9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <text x="340" y="467" font-size="11" text-anchor="end" fill-opacity="0.85">처음 20 ms, ×8: 눈금 하나가</text>
+    <text x="340" y="481" font-size="11" text-anchor="end" fill-opacity="0.85">샘플 하나, 충격 안에 14개</text>
+  </g>
+</svg>
 
 **위 — 팔과 패널, $x$–$y$ 평면, 실제 비율.** 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. 말단 아래에 패널 면의 수평선을 긋고, 명령한 누름 $F=(0,-10)$ N을 말단에서 아래로 향한 화살표로, 로봇이 받는 반력을 같은 길이의 위 화살표로 그린다. 말단 옆에 직렬 스프링 둘을 그려 이름을 붙인다. 가상 스프링 $K_d=500$ N/m와 실제 스프링 $K_e=10^5$ N/m를, 가상 쪽 코일은 길게 늘이고 실제 쪽은 거의 납작하게 그린다. 이 그림이 할 일은 그 200이라는 비를 보여 주는 것 하나다.
 
@@ -984,7 +1206,7 @@ $$Z(s)=\frac{F_{ext}(s)}{V(s)}=M_ds+D_d+\frac{K_d}{s},\qquad Y(s)=\frac{1}{Z(s)}
 
 그림은 **흔한 두 구현**이다. 같은 이름을 쓰는 모든 제어기의 필수 하드웨어 조건은 아니다.
 
-- **토크 기반 임피던스**는 운동 오차에서 복원력을 계산하고 관절 토크로 변환한다. 반응이 빠른 토크 인터페이스가 유리하다. 작은 기계 마찰과 역구동 가능성(backdrivability)도 도움이 된다. 역구동 가능한 관절은 모터와 감속기의 저항 없이 외부에서 밀어 돌릴 수 있다. 그러나 그것이 임피던스의 정의는 아니다. 강성은 과제에 맞게 고른다. 항상 “기본적으로 무른” 것은 아니다.
+- **토크 기반 임피던스**는 운동 오차에서 복원력을 계산하고 관절 토크로 변환한다. 반응이 빠른 토크 인터페이스가 유리하다. 작은 기계 마찰과 역구동 가능성(backdrivability)도 도움이 된다. 역구동 가능한 관절은 모터와 감속기의 저항 없이 외부에서 밀어 돌릴 수 있다. 그러나 그것이 임피던스의 정의는 아니다. 강성은 과제에 맞게 고른다. 항상 “기본적으로 무른” 것은 아니다. 기어 달린 관절이 얼마나 역구동하기 어려운지, 곧 모터 쪽 임피던스마다 $n^2$가 곱해져 관절에 닿는다는 것은 [[04-robotics/actuators-drives|10.5 액추에이터·구동계 §7]]에 있다.
 - **어드미턴스**는 측정·추정한 외력을 가상 동역학에 넣고 적분해 운동 기준을 만든다. 내부 운동 제어기가 그 기준을 추종한다. 위치·속도 명령을 받는 로봇에 유용하다. 실제 거동은 외부 힘 피드백과 내부 루프 양쪽에 달렸다.
 
 | 구조 | 유용한 출발점 | 확인할 조건 |
@@ -1128,7 +1350,7 @@ $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lamb
 이 모델에서는 역적이 보존되고 모양만 바뀐다. 기계적 유연성은 두 숫자를 직접 움직이고, 충돌 전 제어가 가장 직접적으로 줄일 수 있는 값은 $v$다. 실제 충돌에서는 힘-시간 파형과 식별한 등가 $\Lambda,K,D$를 확인해야 한다.
 
 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 $\Lambda = 2$ kg와 부드러운
-접근 $v = 5$ cm/s를 넣자.
+접근 $v = 5$ cm/s를 넣자. 그 $\Lambda$는 맨 팔의 것이다. 기어 달린 구동계는 회전자의 반사 관성을 거기에 더하고, [[04-robotics/actuators-drives|10.5 액추에이터·구동계 §4]]의 고정 구동계를 감속비 100으로 달면 같은 $10^5\,\mathrm{N/m}$ 착지의 정점이 $22.4$가 아니라 $29.5\,\mathrm{N}$이 된다.
 
 | 접촉면 | $K$ (N/m) | $F_{\max}$ | 접촉 지속 | 접촉 중 1 kHz 샘플 수 |
 |---|---:|---:|---:|---:|
@@ -1172,7 +1394,7 @@ $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lamb
 $F_{\max} \propto \sqrt{K}$이고 $t_{\text{contact}} \propto 1/\sqrt{K}$이므로 구조 강성 $10^5$에서
 $10^4$으로 무르게 하면 각각 $\sqrt{10} \approx 3.2\times$를, 맨 아래 줄의 이상화에 대해서는
 $\sqrt{1000} \approx 32\times$를 산다. 힘은 팔이 견딜 만한 것이 되고, *동시에*
-사건이 조절할 수 있을 만큼 길어진다.
+사건이 조절할 수 있을 만큼 길어진다. 같은 접근을 P2 위에서 끝까지, 곧 접촉 전에 임피던스로 전환하고 컴플라이언트하게 장착된 패널을 누르며 $K_d$와 접근 속도를 스윕하면서 돌린 것이 [[04-robotics/capstone-panel-contact|26. 캡스톤]]이다.
 
 교훈은 산수 너머로 일반화된다: **수동 컴플라이언스는 능동 제어의 값싼 대체품이 아니라, 접촉
 대역폭에서 작동하는 유일한 것이다.** Whitney의 1982년 준정적 분석이 이 발상의 성숙한 판본이다 —
@@ -1365,7 +1587,7 @@ Mastery 시험: 팔, 환경 강성, 센서 주기, 과제 공차가 주어졌을
 
 ### 과제 · Problem set
 
-Tier B. 이 페이지와 선수 지식, 객체 카탈로그만 쓴다. 계속 쓰는 대상에서 **항목 셋을 바꾼다**. 누름이 서 있는 패널을 향해 옆으로 가서 $F=(-8,0)\,\mathrm{N}$이 되므로 축이 $x$가 되고 겉보기 질량은 $\Lambda_x=1\,\mathrm{kg}$이다. 목표 강성은 $\zeta=0.7$에서 $K_d=2000\,\mathrm{N/m}$이다. 접근 속도는 $v=0.10\,\mathrm{m/s}$로 두 배가 된다. P2는 $\theta=(0^\circ,90^\circ)$ 그대로, $K_e$도 $10^5\,\mathrm{N/m}$ 그대로다([[02-foundations/lab-plants|0.6]]). 오일러 루프는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라.
+Tier B. 이 페이지와 선수 지식, 객체 카탈로그만 쓴다. 계속 쓰는 대상에서 **항목 셋을 바꾼다**. 누름이 서 있는 패널을 향해 옆으로 가서 $F=(-8,0)\,\mathrm{N}$이 되므로 축이 $x$가 되고 겉보기 질량은 $\Lambda_x=1\,\mathrm{kg}$이다($M_d$도 다시 이 값으로 둔다). 목표 강성은 $\zeta=0.7$에서 $K_d=2000\,\mathrm{N/m}$이다. 접근 속도는 $v=0.10\,\mathrm{m/s}$로 두 배가 된다. P2는 $\theta=(0^\circ,90^\circ)$ 그대로, $K_e$도 $10^5\,\mathrm{N/m}$ 그대로다([[02-foundations/lab-plants|0.6]]). 오일러 루프는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다. 여기서 시뮬레이터를 하나 더 만들지 마라.
 
 1. **그리기.** 과제 그림의 세 패널을 새 축에서 다시 그린다. 패널이 이제 $x=1\,\mathrm{m}$에 서 있는 팔([[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]]의 계속 쓰는 대상과 같은 패널이다), $x$에 대해 다시 쓴 블록선도 둘, 그리고 새 충격 폭과 새 목표 주기를 같은 축척으로 놓은 시계.
 2. **유도.** (a) $F=(-8,0)$의 $\tau=J^\top F$, 그리고 수직 누름과 무엇이 다르며 왜 그런지. (b) $8\,\mathrm{N}$ 반력에서의 정적 처짐. (c) $\omega_n$, 임계 감쇠 $D_d$, 그리고 $\zeta=0.7$의 $D_d$. (d) $v=0.10\,\mathrm{m/s}$로 $K_e=10^5\,\mathrm{N/m}$에 부딪힐 때의 $F_{\max}$와 $t_{\text{contact}}$, 그리고 그 안에 들어가는 1 kHz 샘플 수. (e) 목표 한 주기 대 접촉 지속 시간의 비.
@@ -1374,7 +1596,7 @@ Tier B. 이 페이지와 선수 지식, 객체 카탈로그만 쓴다. 계속 �
 > [!tip]- 정답 · Solutions
 > 1. 같은 팔, 같은 자세. 패널은 이제 $x=1\,\mathrm{m}$의 수직 패널이고, 누름 화살표는 $-x$를 가리키며, 직렬 스프링 둘은 $x$를 따라 읽는다. 시계에는 $9.93\,\mathrm{ms}$ 충격과 $140\,\mathrm{ms}$ 주기가 나온다.
 > 2. (a) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$이고 $\tau=(8,8)\,\mathrm{N{\cdot}m}$. 수직 누름은 어깨만 실었는데 이제 **두 관절이 모두** 하중을 진다. 이 자세에서 엘보의 운동은 말단을 순수하게 $x$로 옮기므로 $x$ 힘은 거기에 일을 하고 $y$ 힘은 하지 않는다. (b) $e=8/2000=0.004\,\mathrm{m}$, 곧 $4\,\mathrm{mm}$. (c) $\omega_n=\sqrt{2000/1}=44.72\,\mathrm{rad/s}$, $D_d\big|_{\zeta=1}=2\sqrt{2000\cdot1}=89.4\,\mathrm{N{\cdot}s/m}$, $D_d\big|_{\zeta=0.7}=62.6\,\mathrm{N{\cdot}s/m}$. (d) $F_{\max}=0.10\sqrt{1\times10^{5}}=31.6\,\mathrm{N}$, $t_{\text{contact}}=\pi\sqrt{1/10^{5}}=9.93\,\mathrm{ms}$이므로 1 kHz에서 약 $10$개 — 수직 경우보다 네 개 적다. (e) $T=2\pi/44.72=0.1405\,\mathrm{s}$이므로 $T/t_{\text{contact}}=0.1405/0.00993=14.1$.
-> 3. 배수는 $\sqrt{\Lambda_x/\Lambda_y}\times(v'/v)=\sqrt{1/2}\times2=1.414$이고 $22.4\times1.414=31.6\,\mathrm{N}$이다. 겉보기 질량을 절반으로 줄여 최대 힘의 $\sqrt{1/2}=0.707$을 벌었는데 접근 속도를 두 배로 해서 $2$를 썼다. $F_{\max}$에서 속도는 선형이고 질량은 제곱근일 뿐이라 속도 쪽이 이긴다. 일반 교훈이 그것이다. 충격력을 줄이는 것은 더 가벼운 자세가 아니라 접근 속도 제한이다. 그리고 목표를 단단하게 만든 것은 충격에 대해 아무것도 사 주지 않았다. 비가 $28.3$에서 $14.1$로 내려간 것은 $\omega_n$이 올랐기 때문일 뿐이고, $14.1$도 여전히 한 주기의 14분의 1 안에서 시작하고 끝나는 충격이다. 둘을 맞추려면 $K_d=4K_e=4\times10^{5}\,\mathrm{N/m}$이 필요하고, 이는 여기서 요구한 $2000$의 200배이며 1 kHz 루프가 단단한 표면에 구현하는 범위를 한참 넘는다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). 충격은 여전히 역학의 것이다.
+> 3. 배수는 $\sqrt{\Lambda_x/\Lambda_y}\times(v'/v)=\sqrt{1/2}\times2=1.414$이고 $22.36\times1.414=31.6\,\mathrm{N}$이다. 겉보기 질량을 절반으로 줄여 최대 힘의 $\sqrt{1/2}=0.707$을 벌었는데 접근 속도를 두 배로 해서 $2$를 썼다. $F_{\max}$에서 속도는 선형이고 질량은 제곱근일 뿐이라 속도 쪽이 이긴다. 일반 교훈이 그것이다. 충격력을 줄이는 것은 더 가벼운 자세가 아니라 접근 속도 제한이다. 그리고 목표를 단단하게 만든 것은 충격에 대해 아무것도 사 주지 않았다. 비가 $28.3$에서 $14.1$로 내려간 것은 $\omega_n$이 올랐기 때문일 뿐이고, $14.1$도 여전히 한 주기의 14분의 1 안에서 시작하고 끝나는 충격이다. 둘을 맞추려면 $K_d=4K_e=4\times10^{5}\,\mathrm{N/m}$이 필요하고, 이는 여기서 요구한 $2000$의 200배이며 1 kHz 루프가 단단한 표면에 구현하는 범위를 한참 넘는다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). 충격은 여전히 역학의 것이다.
 
 ### 출처
 
