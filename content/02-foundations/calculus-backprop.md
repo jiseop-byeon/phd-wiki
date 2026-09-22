@@ -327,6 +327,8 @@ bug detector in existence.
 
 *Second pass. Each bullet is one layer's backward rule, fully derived; read the one a paper in front of you uses. The first pass jumps from §3 to §6.*
 
+#### 4.1 Softmax and cross-entropy
+
 - **Softmax + cross-entropy** — the tidiest result in the field, and *not* a legacy topic:
   it is still how every LLM is trained (next-token prediction is one softmax over the
   vocabulary, scored by cross-entropy — the loss $-\log p_{\text{true}}$, derived in [[02-foundations/information-theory|5. Information Theory §2]]), how every classification head works, and softmax is
@@ -351,6 +353,8 @@ bug detector in existence.
   Computed in practice through log-sum-exp so the exponentials cannot overflow — derived in
   [[02-foundations/engineering-math|0.5 §6]]. The same loss coded in NumPy, with the $1/N$ of a
   mean loss and a finite-difference gradient check, is [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]]. Inside attention no cross-entropy follows the softmax, so its own Jacobian carries the gradient, and it nearly vanishes when the scores are spread far apart: the saturation that the $\sqrt{d_k}$ scale is there to prevent at initialisation ([[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §2]]).
+#### 4.2 ReLU and sigmoid
+
 - **ReLU**: mask gradient — cheap, non-saturating; the reason it displaced saturating units
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]] compared it against tanh and reported several-times-faster training). Dead units = permanently zero mask.
   Stated with its formula: $\text{ReLU}(z)=\max(0,z)$, whose derivative is $\mathbb{1}[z>0]$ (§3). It is **non-saturating** because the slope stays exactly $1$ for every positive input, however large. A **dead unit** is one whose pre-activation $z=w^\top x+b$ is negative for every input in the data: its mask is always $0$, so $w$ and $b$ receive zero gradient and can never move back. Example: $w=1$, $b=-10$ and inputs $x\in[0,1]$ give $z\le-9$ on every example.
@@ -366,6 +370,8 @@ bug detector in existence.
 ### 5. The pathologies that shaped architectures
 
 *Second pass, like §4: architecture history (LSTM, BatchNorm, ResNet) and the graph-cutting tools (stop-gradient, reparameterization, EMA), for when a paper leans on one of them.*
+
+#### 5.1 Vanishing and exploding gradients
 
 - **Vanishing gradients**: products of Jacobians with norms < 1 decay exponentially with
   depth/time. Treatments, in historical order:
@@ -385,6 +391,8 @@ bug detector in existence.
   - **Stated with the formula.** The same product with factors larger than $1$ can grow like $\rho^{T}$: scalar Jacobians of $1.1$ over $50$ steps multiply the gradient by $1.1^{50}=117$, and one such step can throw the weights far outside the region where the loss was sensible. **Clipping by norm**, with ceiling $c$, rescales the gradient $g$ as
     $$g \leftarrow g\cdot\min\!\Big(1,\ \frac{c}{\lVert g\rVert}\Big)$$
     so a gradient already shorter than $c$ is untouched and a longer one keeps its direction but is shortened to length exactly $c$. Example: $g=(3,4)$ has length $5$; with $c=1$ it becomes $(0.6,\,0.8)$.
+#### 5.2 Cutting the graph on purpose
+
 - **Stop-gradient** $\text{sg}[\cdot]$: deliberately cut the graph. Reparameterization
   ([[01-canonical-papers/notes/6-diffusion/vae|VAE]]) moves sampling *outside* the differentiated path;
   EMA teachers ([[01-canonical-papers/notes/2-computer-vision/dino|DINO]]; EMA = exponential moving average — the teacher's weights are a slowly updated running average of the student's) and RL target networks receive no
@@ -445,7 +453,7 @@ bug detector in existence.
 
 Tier A. Plant **P1** from [[02-foundations/lab-plants|0.6]] — the same net as §3. No Euler; the “loop” is one SGD step.
 
-1. **Draw.** Computational graph of P1: $x \to z=W_1 x \to h=\mathrm{ReLU}(z) \to \hat y=W_2 h \to L=\tfrac12(\hat y-y)^2$. Label every node with its numerical value from the catalog.
+1. **Draw.** The picture above for the input $x=(2,-1)$, with the same weights and target $y=1$: $x \to z=W_1 x \to h=\mathrm{ReLU}(z) \to \hat y=W_2 h \to L=\tfrac12(\hat y-y)^2$ with every node's value, each hidden unit's ReLU mask bit, and the backward values under the chain. Circle the place where the chain is cut, and say which entries of the two weight-gradient stubs are zero and why.
 2. **Derive.** $\delta_2=\partial L/\partial\hat y$, $\partial L/\partial W_2$, $\partial L/\partial h$, $\delta_1=\partial L/\partial z$, $\partial L/\partial W_1$. Then one SGD step at $\eta=0.1$ on $W_2$ only.
 3. **Do.** Fill `?`. Print new $W_2$ and new $L$ after that one step (forward again with the updated $W_2$, same $x$). Then let the loop at the end redo the step from the original $W_2$ for $\eta = 0.05,\ 1/14,\ 0.1,\ 1/7,\ 0.2$: at which $\eta$ does one step land exactly on $y=1$, and past which one does it leave the loss above $0.125$?
 
@@ -474,16 +482,16 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
 ```
 
 > [!note]- How to draw it · 그리는 법
-> - The forward chain, left to right: five boxes joined by four arrows — $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$ — with each box's catalog value written inside.
+> - The forward chain, left to right: five boxes joined by four arrows — $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$ — with each box's value for $x=(2,-1)$ written inside.
 > - On each forward arrow, what produced the next box and its shape: $W_1$ is $3\times2$, ReLU is elementwise and changes no shape, $W_2$ is $1\times3$, and the loss arrow takes the target $y$ in from the side.
-> - Mark each hidden unit with its ReLU mask bit: that bit is the only place the chain can be cut.
-> - The backward chain underneath, right to left, one arrow under each forward arrow: $\partial L/\partial\hat y$ under the loss arrow, $\partial L/\partial h$ under the $W_2$ arrow, $\partial L/\partial z$ under the ReLU arrow, each with the shape of what travels on it.
+> - Mark each hidden unit with its ReLU mask bit: that bit is the only place the chain can be cut. With this input one unit has $z<0$, so one bit is $0$ — circle it.
+> - The backward chain underneath, right to left, one arrow under each forward arrow: $\partial L/\partial\hat y$ under the loss arrow, $\partial L/\partial h$ under the $W_2$ arrow, $\partial L/\partial z$ under the ReLU arrow, each with the shape of what travels on it. A nonzero entry of $\partial L/\partial h$ arrives at the zero bit and stops there.
 > - Draw $\partial L/\partial W_2$ and $\partial L/\partial W_1$ as stubs hanging *off* the chain, from the $\hat y$ and $z$ arrows, not as links in it: a weight gradient is a leaf of the backward pass — nothing is computed from it, it is only read out.
-> - Check that every stub has the shape of the matrix it will update; a stub of any other shape means the drawing is wrong before any arithmetic starts.
-> - One update arrow, marked $-\eta$, from the $\partial L/\partial W_2$ stub back into the $W_2$ label: it is the only arrow that changes a number, and item 3 prints what comes out of it.
+> - Check that every stub has the shape of the matrix it will update, and find the dead unit in both: one zero in $\partial L/\partial W_2$ because that unit's forward output is $0$, one zero row in $\partial L/\partial W_1$ because its backward signal was cut. Same unit, two different reasons.
+> - One update arrow, marked $-\eta$, from the $\partial L/\partial W_2$ stub back into the $W_2$ label: it is the only arrow that changes a number.
 
 > [!tip]- Solutions
-> 1. Values: $z=h=(1,2,3)$, $\hat y=0.5$, $L=0.125$.
+> 1. Forward: $z=W_1x=(2,-1,1)$, mask $(1,0,1)$, $h=(2,0,1)$, $\hat y=2-0+0.5=2.5$, $L=\tfrac12(1.5)^2=1.125$. Backward: $\delta_2=2.5-1=1.5$; $\partial L/\partial h=W_2^\top\delta_2=(1.5,-1.5,0.75)$, and the zero bit cuts the middle entry, so $\delta_1=(1.5,0,0.75)$. Stubs: $\partial L/\partial W_2=\delta_2h^\top=(3,0,1.5)$ and $\partial L/\partial W_1=\delta_1x^\top=\begin{pmatrix}3&-1.5\\0&0\\1.5&-0.75\end{pmatrix}$. Both are zero for the middle unit, for different reasons: $W_2$'s middle entry because that unit's *forward* output $h_2$ is $0$, $W_1$'s middle row because its *backward* signal is cut at the mask although $\partial L/\partial h_2=-1.5$ arrived there. The catalog input $x=(1,2)$ has every bit $1$, which is why the picture above has no cut.
 > 2. $\delta_2=0.5-1=-0.5$. $\partial L/\partial W_2=\delta_2 h^\top=(-0.5,-1,-1.5)$. $\partial L/\partial h=W_2^\top\delta_2=(-0.5,0.5,-0.25)$. ReLU mask is $(1,1,1)$, so $\delta_1$ is the same. $\partial L/\partial W_1=\delta_1 x^\top=\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
 > 3. Blanks: `d2 = yhat - y`, `dW2 = d2 * h.T`. Prints $-0.5$, `W2 = (1.05, -0.9, 0.65)`, $L=0.125$, $L_2=0.5(0.5+0.1\cdot(0.5\cdot1+1\cdot2+1.5\cdot3)-1)^2$. New $\hat y=W_2 h=1.05-1.8+1.95=1.20$, $L_2=0.5(0.20)^2=0.020$. One step overshot the target (ŷ went from 0.5 through 1 to 1.20) — $\eta=0.1$ is not small on this scale. That is the point of [[02-foundations/optimization|4]].
 >
@@ -819,6 +827,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 
 *두 번째 읽기. 항목마다 층 하나의 역방향 규칙을 끝까지 유도한다. 지금 읽는 논문이 쓰는 층만 읽어라. 처음에는 §3에서 §6으로 건너뛴다.*
 
+#### 4.1 Softmax와 교차 엔트로피
+
 - **Softmax + 교차 엔트로피** — 이 분야에서 가장 깔끔한 결과이고, 지나간 주제가 *아니다*:
   지금도 모든 LLM이 이것으로 학습된다(다음 토큰 예측 = 어휘 전체에 대한 softmax 하나를
   교차 엔트로피 — 손실 $-\log p_{\text{정답}}$, 유도는 [[02-foundations/information-theory|5. 정보이론 §2]] — 로 채점하는 것). 모든 분류 헤드가 이것이고, softmax는 어텐션 내부의 연산
@@ -841,6 +851,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   실무에서는 지수가 넘치지 않도록 log-sum-exp를 거쳐 계산한다 —
   [[02-foundations/engineering-math|0.5 §6]]에 유도해 두었다. 같은 손실을 평균 손실의 $1/N$과
   유한 차분 그래디언트 검사까지 넣어 NumPy로 짠 것은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §9]]에 있다. 어텐션 안에서는 softmax 뒤에 교차 엔트로피가 오지 않으므로 softmax 자신의 야코비안이 그래디언트를 나르고, 점수가 크게 벌어지면 그것이 거의 0이 된다. 초기화 시점에 $\sqrt{d_k}$ 스케일이 막으려는 포화가 이것이다([[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §2]]).
+#### 4.2 ReLU와 시그모이드
+
 - **ReLU**: 마스크 그래디언트 — 싸고, 포화하지 않는다; 포화 활성함수를 밀어낸 이유다
   ([[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]]은 tanh와 비교해 몇 배 빠른 학습을 보고했다). 죽은 유닛 = 영원히 0인 마스크.
   식으로 쓰면 $\text{ReLU}(z)=\max(0,z)$이고 도함수는 $\mathbb{1}[z>0]$(§3)이다. 양수 입력이 아무리 커도 기울기가 정확히 $1$이므로 **포화하지 않는다**. **죽은 유닛**은 사전 활성값 $z=w^\top x+b$가 데이터의 모든 입력에서 음수인 유닛이다. 마스크가 항상 $0$이라 $w$와 $b$가 그래디언트 0을 받고, 다시는 돌아오지 못한다. 예: $w=1$, $b=-10$, 입력 $x\in[0,1]$이면 모든 예제에서 $z\le-9$다.
@@ -857,6 +869,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 ### 5. 구조를 만든 병리들
 
 *§4처럼 두 번째 읽기다: 구조의 역사(LSTM, BatchNorm, ResNet)와 그래프를 끊는 도구들(stop-gradient, 재매개변수화, EMA). 논문이 그중 하나에 기댈 때 읽어라.*
+
+#### 5.1 그래디언트 소실과 폭발
 
 - **그래디언트 소실**: 노름 < 1인 야코비안들의 곱은 깊이/시간에 지수적으로 붕괴.
   역사 순서의 처방:
@@ -877,6 +891,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   - **식으로 쓰면.** 같은 곱의 인수가 $1$보다 크면 $\rho^{T}$처럼 커질 수 있다. 스칼라 야코비안 $1.1$이 $50$스텝이면 그래디언트에 $1.1^{50}=117$이 곱해지고, 그런 스텝 한 번이 가중치를 손실이 말이 되던 영역 밖으로 던질 수 있다. 상한 $c$의 **노름 클리핑**은 그래디언트 $g$를 이렇게 재스케일한다.
     $$g \leftarrow g\cdot\min\!\Big(1,\ \frac{c}{\lVert g\rVert}\Big)$$
     그래서 이미 $c$보다 짧은 그래디언트는 그대로이고, 긴 것은 방향을 유지한 채 길이가 정확히 $c$로 줄어든다. 예: $g=(3,4)$는 길이 $5$이고, $c=1$이면 $(0.6,\,0.8)$이 된다.
+#### 5.2 그래프를 일부러 자르기
+
 - **Stop-gradient** $\text{sg}[\cdot]$: 그래프를 의도적으로 자르기. reparameterization
   ([[01-canonical-papers/notes/6-diffusion/vae|VAE]])은 샘플링을 미분 경로 *밖으로* 옮기고, EMA
   교사(지수 이동 평균 — 교사 가중치가 학생 가중치를 천천히 따라가는 이동 평균이다; [[01-canonical-papers/notes/2-computer-vision/dino|DINO]])와 RL 타깃 네트워크는 설계상 그래디언트를 받지
@@ -937,20 +953,20 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 
 Tier A. [[02-foundations/lab-plants|0.6]]의 **P1**. 오일러 없음. “루프”는 SGD 한 스텝. 영어 템플릿을 채워라.
 
-1. **그리기.** P1 계산 그래프. 카탈로그 수치를 각 노드에 써라.
+1. **그리기.** 입력이 $x=(2,-1)$이고 가중치와 목표 $y=1$은 같을 때의 위 그림: $x \to z=W_1 x \to h=\mathrm{ReLU}(z) \to \hat y=W_2 h \to L=\tfrac12(\hat y-y)^2$의 각 노드 값, 은닉 유닛마다 ReLU 마스크 비트, 사슬 아래의 역전파 값. 사슬이 끊기는 자리에 동그라미를 치고, 두 가중치 그래디언트 가지에서 0이 되는 성분이 무엇이며 왜 그런지 말하라.
 2. **유도.** $\delta_2$, $\partial L/\partial W_2$, $\partial L/\partial h$, $\delta_1$, $\partial L/\partial W_1$. $\eta=0.1$로 $W_2$만 SGD 한 스텝.
 3. **실행.** 영어 템플릿. 새 $W_2$와 한 스텝 뒤 $L$을 출력하라. 그다음 끝의 루프가 원래 $W_2$에서 $\eta = 0.05,\ 1/14,\ 0.1,\ 1/7,\ 0.2$로 스텝을 다시 하게 하라: 어느 $\eta$에서 한 스텝이 정확히 $y=1$에 닿고, 어느 $\eta$를 넘으면 손실이 $0.125$보다 커지는가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 순전파 사슬은 왼쪽에서 오른쪽으로, 상자 다섯을 화살표 넷으로 잇는다. $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$이고, 상자마다 안에 카탈로그 값을 쓴다.
+> - 순전파 사슬은 왼쪽에서 오른쪽으로, 상자 다섯을 화살표 넷으로 잇는다. $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$이고, 상자마다 안에 $x=(2,-1)$일 때의 값을 쓴다.
 > - 순전파 화살표마다 다음 상자를 만든 것과 그 모양을 쓴다. $W_1$은 $3\times2$, ReLU는 원소별이라 모양을 바꾸지 않고, $W_2$는 $1\times3$이며, 손실 화살표에는 목표 $y$가 옆에서 들어온다.
-> - 은닉 유닛마다 ReLU 마스크 비트를 적는다. 사슬이 끊어질 수 있는 자리는 그 비트뿐이다.
-> - 역전파 사슬은 그 아래에 오른쪽에서 왼쪽으로, 순전파 화살표마다 하나씩 둔다. 손실 화살표 아래 $\partial L/\partial\hat y$, $W_2$ 화살표 아래 $\partial L/\partial h$, ReLU 화살표 아래 $\partial L/\partial z$이고, 각각 그 위를 지나는 것의 모양을 옆에 쓴다.
+> - 은닉 유닛마다 ReLU 마스크 비트를 적는다. 사슬이 끊어질 수 있는 자리는 그 비트뿐이다. 이 입력에서는 한 유닛의 $z$가 음수라 비트 하나가 $0$이다. 거기에 동그라미를 친다.
+> - 역전파 사슬은 그 아래에 오른쪽에서 왼쪽으로, 순전파 화살표마다 하나씩 둔다. 손실 화살표 아래 $\partial L/\partial\hat y$, $W_2$ 화살표 아래 $\partial L/\partial h$, ReLU 화살표 아래 $\partial L/\partial z$이고, 각각 그 위를 지나는 것의 모양을 옆에 쓴다. $\partial L/\partial h$의 0이 아닌 성분 하나가 0인 비트에 닿아 거기서 멈춘다.
 > - $\partial L/\partial W_2$와 $\partial L/\partial W_1$은 사슬의 고리가 아니라 $\hat y$ 화살표와 $z$ 화살표에서 *뻗어 나온* 가지로 그린다. 가중치 그래디언트는 역전파의 잎이다. 그것으로부터 계산되는 것은 없고 읽어 내기만 한다.
-> - 가지마다 자기가 갱신할 행렬과 모양이 같은지 확인한다. 모양이 다른 가지가 하나라도 있으면 산술을 시작하기 전에 이미 틀린 그림이다.
-> - 갱신 화살표는 하나다. $\partial L/\partial W_2$ 가지에서 $W_2$ 라벨로 돌아가며 $-\eta$라고 쓴다. 숫자를 바꾸는 화살표는 이것뿐이고, 3번이 출력하는 것이 그 결과다.
+> - 가지마다 자기가 갱신할 행렬과 모양이 같은지 확인하고, 두 가지에서 죽은 유닛을 찾는다. $\partial L/\partial W_2$의 0 하나는 그 유닛의 순전파 출력이 $0$이라서, $\partial L/\partial W_1$의 0인 행 하나는 역전파 신호가 끊겨서 생긴다. 같은 유닛, 다른 이유다.
+> - 갱신 화살표는 하나다. $\partial L/\partial W_2$ 가지에서 $W_2$ 라벨로 돌아가며 $-\eta$라고 쓴다. 숫자를 바꾸는 화살표는 이것뿐이다.
 
 > [!tip]- 정답 · Solutions
-> 1. $z=h=(1,2,3)$, $\hat y=0.5$, $L=0.125$.
+> 1. 순전파: $z=W_1x=(2,-1,1)$, 마스크 $(1,0,1)$, $h=(2,0,1)$, $\hat y=2-0+0.5=2.5$, $L=\tfrac12(1.5)^2=1.125$. 역전파: $\delta_2=2.5-1=1.5$, $\partial L/\partial h=W_2^\top\delta_2=(1.5,-1.5,0.75)$이고, 0인 비트가 가운데 성분을 끊으므로 $\delta_1=(1.5,0,0.75)$. 가지: $\partial L/\partial W_2=\delta_2h^\top=(3,0,1.5)$, $\partial L/\partial W_1=\delta_1x^\top=\begin{pmatrix}3&-1.5\\0&0\\1.5&-0.75\end{pmatrix}$. 둘 다 가운데 유닛에서 0이지만 이유가 다르다. $W_2$의 가운데 성분은 그 유닛의 *순전파* 출력 $h_2$가 $0$이라서, $W_1$의 가운데 행은 $\partial L/\partial h_2=-1.5$가 도착했는데도 *역전파* 신호가 마스크에서 끊겨서 0이다. 카탈로그 입력 $x=(1,2)$는 비트가 모두 $1$이라 위 그림에는 끊긴 곳이 없다.
 > 2. $\delta_2=-0.5$, $\partial L/\partial W_2=(-0.5,-1,-1.5)$, $\partial L/\partial h=(-0.5,0.5,-0.25)=\delta_1$, $\partial L/\partial W_1=\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$. $W_2\leftarrow(1.05,-0.9,0.65)$.
 > 3. 빈칸은 영어 해. 새 $\hat y=1.20$, $L_2=0.020$. 한 스텝이 목표를 지나쳤다 — 이 스케일에서 $\eta=0.1$은 작지 않다. 쓸기 빈칸은 `eta_s * dW2`이고(실행 코드는 영어 해), 출력은 $\eta = 0.05,\ 0.0714,\ 0.1,\ 0.1429,\ 0.2$에서 $\hat y = 0.850,\ 1.000,\ 1.200,\ 1.500,\ 1.900$, $L = 0.01125,\ 0,\ 0.02,\ 0.125,\ 0.405$다. 매 행이 §3에서 유도한 $\hat y = 0.5 + 7\eta$다. $\eta = 1/14$은 정확히 $y=1$에 닿고, $\eta = 1/7$은 $1.5$까지 흔들려 원래 손실 $0.125$와 같아질 뿐이며, $\eta = 0.2$는 손실을 처음보다 세 배 넘게 나쁘게 만든다. $0.05$ 행은 [[02-foundations/neural-network-basics|0.8 §3]]의 손 계산 갱신이다.

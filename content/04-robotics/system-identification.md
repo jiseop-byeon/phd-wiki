@@ -539,18 +539,18 @@ for name, r in (("r = 0", np.zeros(N)), ("r = prbs", prbs(N))):
 
 ```mermaid
 flowchart LR
-    G["input generator: step, sine or PRBS"] -->|"u_k"| H["zero-order hold, T"]
+    G["입력 생성기: 계단, 사인 또는 PRBS"] -->|"u_k"| H["영차 유지, T"]
     H --> S1(("Σ"))
-    D["d: disturbance, equation error"] --> S1
+    D["d: 외란, 방정식 오차"] --> S1
     S1 --> P["P4: dx/dt = -x + u + d"]
-    P --> SM["sampler, T"]
+    P --> SM["샘플러, T"]
     SM -->|"x_k"| S2(("Σ"))
-    V["v_k: sensor noise, output error"] --> S2
-    S2 -->|"y_k"| RG["regressor phi_k = (y_k, u_k), target y_k+1"]
-    G -->|"u_k, known exactly"| RG
-    RG --> LS["least squares: theta = (a, b)"]
-    LS --> MB["map back: tau = -T / ln a, K = b / (1 - a)"]
-    LS --> VAL["validate: free run on a held-out record"]
+    V["v_k: 센서 잡음, 출력 오차"] --> S2
+    S2 -->|"y_k"| RG["회귀 벡터 phi_k = (y_k, u_k), 목표 y_k+1"]
+    G -->|"u_k, 정확히 안다"| RG
+    RG --> LS["최소제곱: theta = (a, b)"]
+    LS --> MB["되돌리기: tau = -T / ln a, K = b / (1 - a)"]
+    LS --> VAL["검증: 떼어 둔 기록에서 자유 실행"]
 ```
 
 P4의 식별 기록을 그린 신호 흐름도다: 명령은 영차 유지를 거치고 상태는 샘플러가 읽는데 둘 다 주기가 $T = 0.1\,\mathrm{s}$라서, 샘플 모델 $x_{k+1} = a\,x_k + b\,u_k$는 $(a, b) = (0.904837,\ 0.095163)$으로 정확하다. 잡음은 두 자리로 들어오고 — 외란 $d$는 플랜트 앞에서, 센서 잡음 $v_k$는 샘플러 뒤에서 — 명령은 생성기에서 곧장 회귀 벡터로 가므로, $\Phi$에 잡음을 실어 나를 수 있는 것은 잰 열 $y_k$뿐이고 그것이 §5의 편향이다. 최소제곱이 돌려준 $\theta = (a, b)$를 $\tau = -T/\ln a = 1\,\mathrm{s}$와 $K = b/(1-a) = 1$로 되돌리고, 떼어 둔 기록 위의 자유 주행으로 검증한다.

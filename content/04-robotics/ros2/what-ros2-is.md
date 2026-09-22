@@ -469,21 +469,20 @@ Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]: encoder $N=2048$ counts/m, vision $50\,\mathrm{Hz}$, control $200\,\mathrm{Hz}$, end-to-end budget $70\,\mathrm{ms}$. No new simulator.
 
-1. **Draw.** P6 computation graph: `camera` publishes a goal, `controller` samples the encoder and commands the motor, `logger` writes a bag. Mark rates. Five-line timeline from camera mid-exposure to applied force, with the $70\,\mathrm{ms}$ mark.
+1. **Draw.** The picture's graph for a lab where a second, identical cart is started from the same launch on the same network: first with both carts on `ROS_DOMAIN_ID` 0, then with cart 2 moved to domain 1. Mark every `/goal` edge each controller receives, with the rate it arrives at, and the dashed domain boundaries. Then the picture's five-line timeline for cart 1 in the shared case, with the goals from both cameras on it.
 2. **Derive.** (a) Vision period and control period. (b) Encoder $\Delta p$ for one count. (c) How many control samples fit in the $70\,\mathrm{ms}$ budget? How many vision frames?
 3. **Interpret.** A colleague says "ROS 2 is real-time, so the $70\,\mathrm{ms}$ is guaranteed." What do you ask, and what does putting camera, controller, and logger in *one* process destroy that P6's budget cares about?
 
 > [!note]- How to draw it · 그리는 법
-> - Nodes are ellipses — `/camera`, `/controller`, `/logger` — and the motor is a rectangle outside the graph, because a driver's hardware is not a node.
-> - Topics are arrows from publisher to subscriber, each labelled with name, type and rate: `/goal` at $50\,\mathrm{Hz}$ to `/controller` and `/logger`, `/cmd` at $200\,\mathrm{Hz}$ to the motor and `/logger`.
-> - The encoder is a short arrow into `/controller` from the hardware side, not a topic, with one word beside it saying why: *read*, not received.
-> - Add `/rosout` and `/parameter_events` in grey, since §9 shows them in every graph, and put a dashed boundary around the nodes labelled with the `ROS_DOMAIN_ID` that keeps this cart out of the rest of the lab's graphs.
-> - The timeline is one axis to scale, $0$ to $80\,\mathrm{ms}$, with $t=0$ at camera mid-exposure: control ticks every $5\,\mathrm{ms}$ above it, vision publications at $0, 20, 40, 60\,\mathrm{ms}$ below it.
-> - Lay the five budget terms along it as consecutive brackets — camera pipeline, transport, wait for the next tick, controller compute, actuation — and draw the $70\,\mathrm{ms}$ deadline as a vertical line.
-> - It is right when the wait bracket is visibly one control period wide, the vision spacing visibly four control periods, and the whole train of brackets ends left of the deadline.
+> - Nodes are ellipses and the motors rectangles outside the graph, as in the picture — but now six ellipses, and in the shared case two of each name: `/camera`, `/controller`, `/logger` twice over.
+> - In the shared case draw one `/goal` topic, not two: both cameras publish into it and both controllers and both loggers subscribe to it. Label the arrow into each controller with what arrives, $2\times50=100\,\mathrm{Hz}$ of goals, half of them from the other cart.
+> - Write beside it what the tools say: `ros2 node list` shows each name twice with a warning about nodes sharing an exact name, and `ros2 topic info /goal` counts two publishers. Nothing errors.
+> - In the split case, one dashed boundary per domain, labelled $0$ and $1$, and no edge crossing either: each controller receives only its own camera's $50\,\mathrm{Hz}$, and neither graph can see the other.
+> - The encoder stays a short *read* arrow into each controller from its own hardware, not a topic, in both cases.
+> - The timeline for cart 1 in the shared case: control ticks every $5\,\mathrm{ms}$ above, and below it goals every $20\,\mathrm{ms}$ from its own camera and, offset by the other camera's phase, every $20\,\mathrm{ms}$ from cart 2's. The controller acts on whichever arrived last, so its target jumps between the two carts' goals.
 
 > [!tip]- Solutions
-> 1. Three nodes, topics `goal` at $50\,\mathrm{Hz}$ and `cmd` at $200\,\mathrm{Hz}$. Timeline: $t=0$ mid-exposure; $\sim 20\,\mathrm{ms}$ a vision period; next controller tick $\le 5\,\mathrm{ms}$; force by $70\,\mathrm{ms}$.
+> 1. Shared domain: six nodes with three names each used twice (`ros2 node list` warns about nodes sharing an exact name) and one `/goal` topic with two publishers: each controller receives both carts' goals interleaved, $2\times50=100\,\mathrm{Hz}$, and steers toward whichever arrived last. Nothing errors; the timeline shows cart 1's target switching between two goal streams. Split: with cart 2 on domain 1, two dashed boundaries and no edge across them; each controller receives only its own $50\,\mathrm{Hz}$, and the two graphs do not discover each other. Namespaces, `/cart1/goal` and `/cart2/goal` on [[04-robotics/ros2/workspaces-packages-launch|25.3]], are the other fix, and they keep both carts in one `ros2 topic list`.
 > 2. (a) $20\,\mathrm{ms}$, $5\,\mathrm{ms}$. (b) $1/2048\approx 0.488\,\mathrm{mm}$. (c) $14$ control samples, $3$ vision frames (a fourth would land at $80\,\mathrm{ms}$).
 > 3. Which kernel, which rmw, which allocations were removed. Apt ROS 2 gives no deadline. One process: a logger stall or camera crash takes the $200\,\mathrm{Hz}$ loop with it — the independent-restart reason §1 split the robot.
 
@@ -947,20 +946,19 @@ ros2: command not found
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**: 엔코더 $N=2048$ counts/m, 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$, 종단 예산 $70\,\mathrm{ms}$. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** P6 계산 그래프: `camera`가 목표를 발행, `controller`가 엔코더를 샘플해 모터를 명령, `logger`가 bag을 씀. 주기 기입. 카메라 노출 중간부터 힘이 나갈 때까지 다섯 줄 타임라인, $70\,\mathrm{ms}$ 표시.
+1. **그리기.** 똑같은 카트 하나를 같은 런치로 같은 네트워크에 더 띄운 실험실에 대한 위 그림의 그래프: 먼저 두 카트가 모두 `ROS_DOMAIN_ID` 0에 있을 때, 그다음 카트 2를 도메인 1로 옮겼을 때. 각 제어기가 받는 `/goal` 간선마다 도착하는 주기를 적고, 도메인 경계를 점선으로 그려라. 이어서 공유한 경우에 카트 1의 다섯 줄 타임라인을, 두 카메라의 목표를 모두 올려 그려라.
 2. **유도.** (a) 비전 주기와 제어 주기. (b) 엔코더 한 카운트의 $\Delta p$. (c) $70\,\mathrm{ms}$ 예산 안에 제어 샘플이 몇 개, 비전 프레임이 몇 장?
 3. **해석.** 동료가 "ROS 2는 실시간이라 $70\,\mathrm{ms}$는 보장된다"고 한다. 무엇을 묻고, 카메라·제어기·로거를 *한* 프로세스에 넣으면 P6 예산이 아끼는 무엇이 무너지는가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 노드는 타원 — `/camera`, `/controller`, `/logger` — 이고, 모터는 그래프 바깥의 사각형이다. 드라이버의 하드웨어는 노드가 아니기 때문이다.
-> - 토픽은 퍼블리셔에서 구독자로 가는 화살표이고 이름·타입·주기 셋을 함께 적는다. `/goal`은 $50\,\mathrm{Hz}$로 `/controller`와 `/logger`에, `/cmd`는 $200\,\mathrm{Hz}$로 모터와 `/logger`에.
-> - 엔코더는 하드웨어 쪽에서 `/controller`로 들어가는 짧은 화살표이지 토픽이 아니다. 그 옆에 이유를 한 단어로 적는다. 받는 것이 아니라 *읽는* 것.
-> - `/rosout`과 `/parameter_events`를 회색으로 넣고(9절이 보여 주듯 모든 그래프에 있다), 노드들을 점선으로 둘러싸 이 카트를 실험실의 다른 그래프들과 갈라 놓는 `ROS_DOMAIN_ID`를 적는다.
-> - 타임라인은 축척을 지킨 축 하나, $0$에서 $80\,\mathrm{ms}$이고 $t=0$이 카메라 노출 중간이다. 축 위에는 $5\,\mathrm{ms}$마다 제어 틱, 축 아래에는 $0, 20, 40, 60\,\mathrm{ms}$의 비전 발행.
-> - 예산 항 다섯 — 카메라 파이프라인, 전송, 다음 틱까지의 대기, 제어기 계산, 구동 — 을 축을 따라 이어지는 괄호로 놓고, $70\,\mathrm{ms}$ 마감을 수직선으로 긋는다.
-> - 대기 괄호가 눈으로 보기에 제어 주기 하나만큼, 비전 간격이 제어 주기 넷만큼이고, 괄호 행렬 전체가 마감선 왼쪽에서 끝나면 제대로 그린 것이다.
+> - 노드는 타원, 모터는 그래프 바깥의 사각형으로 위 그림과 같다. 다만 이제 타원이 여섯이고, 공유한 경우에는 `/camera`, `/controller`, `/logger`가 같은 이름으로 둘씩이다.
+> - 공유한 경우에 `/goal` 토픽은 둘이 아니라 하나로 그린다. 두 카메라가 모두 거기에 발행하고 두 제어기와 두 로거가 모두 구독한다. 각 제어기로 들어가는 화살표에 도착하는 것을 적는다. $2\times50=100\,\mathrm{Hz}$의 목표이고, 그 절반은 다른 카트 것이다.
+> - 옆에 도구가 하는 말을 적는다. `ros2 node list`는 이름마다 두 번 보여 주며 정확히 같은 이름의 노드가 있다고 경고하고, `ros2 topic info /goal`은 퍼블리셔를 둘로 센다. 오류는 없다.
+> - 나눈 경우에는 도메인마다 점선 경계 하나에 $0$과 $1$을 적고, 어느 경계도 가로지르는 간선이 없게 그린다. 각 제어기는 자기 카메라의 $50\,\mathrm{Hz}$만 받고, 두 그래프는 서로를 보지 못한다.
+> - 엔코더는 두 경우 모두 각자의 하드웨어에서 제어기로 들어가는 짧은 *읽기* 화살표이지 토픽이 아니다.
+> - 공유한 경우 카트 1의 타임라인: 위에는 $5\,\mathrm{ms}$마다 제어 틱, 아래에는 자기 카메라의 $20\,\mathrm{ms}$ 간격 목표와, 다른 카메라의 위상만큼 어긋난 카트 2의 $20\,\mathrm{ms}$ 간격 목표. 제어기는 마지막에 도착한 것을 따르므로 목표가 두 카트의 것 사이를 오간다.
 
 > [!tip]- 정답 · Solutions
-> 1. 노드 셋, 토픽 `goal` $50\,\mathrm{Hz}$, `cmd` $200\,\mathrm{Hz}$. 타임라인: $t=0$ 노출 중간; $\sim 20\,\mathrm{ms}$ 비전 한 주기; 다음 제어 틱 $\le 5\,\mathrm{ms}$; $70\,\mathrm{ms}$까지 힘.
+> 1. 도메인 공유: 노드 여섯에 이름 셋이 각각 두 번 쓰이고(`ros2 node list`가 같은 이름의 노드가 있다고 경고한다), `/goal` 토픽 하나에 퍼블리셔가 둘이다. 각 제어기는 두 카트의 목표를 섞어서 $2\times50=100\,\mathrm{Hz}$로 받고, 마지막에 도착한 쪽으로 간다. 오류는 없고, 타임라인에서는 카트 1의 목표가 두 흐름 사이를 오간다. 분리: 카트 2를 도메인 1에 두면 점선 경계 둘이 생기고 그것을 넘는 간선은 없다. 각 제어기는 자기 $50\,\mathrm{Hz}$만 받고, 두 그래프는 서로를 발견하지 않는다. 다른 해법은 [[04-robotics/ros2/workspaces-packages-launch|25.3]]의 네임스페이스 `/cart1/goal`, `/cart2/goal`이고, 그쪽은 두 카트를 한 `ros2 topic list`에 함께 둔다.
 > 2. (a) $20\,\mathrm{ms}$, $5\,\mathrm{ms}$. (b) $1/2048\approx 0.488\,\mathrm{mm}$. (c) 제어 샘플 $14$, 비전 프레임 $3$(네 번째는 $80\,\mathrm{ms}$).
-> 3. 어떤 커널, 어떤 rmw, 어떤 할당을 뺐는가. apt ROS 2는 마감을 주지 않는다. 한 프로세스면 로거 지연이나 카메라 충돌이 $200\,\mathrm{Hz}$ 루프를 함께 가져간다 — §1이 로봇을 나눈 이유인 독립 재시작.
+> 3. 어떤 커널, 어떤 rmw, 어떤 할당을 뺐는가. apt ROS 2는 마감을 주지 않는다. 한 프로세스면 로거 지연이나 카메라 프로세스의 죽음이 $200\,\mathrm{Hz}$ 루프를 함께 가져간다 — §1이 로봇을 나눈 이유인 독립 재시작.

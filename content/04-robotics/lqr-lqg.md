@@ -352,7 +352,7 @@ Underactuated ch. (geometric intuition, code) → connect to the
 
 Tier B. **P4** $\dot x=-x+u+d$ from [[02-foundations/lab-plants|0.6]], $Q=1$, $R=1$. No simulator.
 
-1. **Draw.** The picture above, at $Q=1$, $R=1$: the leaky heater with $u=-Kx$, boxes for $Q$ and $R$, disturbance $d$.
+1. **Draw.** The picture above at the problem set's weights, $Q=1$, $R=1$: the leaky heater with $u=-Kx$, boxes for $Q$ and $R$, disturbance $d$, and the Riccati arrow labelled with this $P$ and $K$. On the pole axis mark this closed-loop pole and the one for $Q=1$, $R=4$, and say which way raising $R$ moves it.
 2. **Derive.** Scalar ARE. Stabilizing $P$ and $K$. Closed-loop pole and $x_\mathrm{ss}$ for $d=1$. Same two numbers at a CE397-style hand gain $K=4$.
 3. **Interpret.** Why LQR's $K$ is smaller than $K=4$, and what raising $Q/R$ buys and costs (the $(1+K)$ trade of CE397 §1).
 
@@ -360,13 +360,13 @@ Tier B. **P4** $\dot x=-x+u+d$ from [[02-foundations/lab-plants|0.6]], $Q=1$, $R
 > - The loop: a summing junction, the plant box $\dot x=-x+u+d$ after it, the disturbance $d$ entering at that junction beside $u$, the state $x$ leaving the box, and a feedback path from $x$ through a gain block $-K$ back into the junction. That much is the control page's picture, unchanged.
 > - The ledger, which is what LQR adds: a branch from $x$ into a box $Q$, a branch from $u$ into a box $R$, and both into an accumulator labelled $J=\int_0^\infty (Qx^2+Ru^2)\,dt$.
 > - Draw the ledger with a different line weight, because it never touches the plant: it is an accounting path, not a control path, and keeping it visually separate is how $Q$ and $R$ stay distinct from the noise covariances $W$ and $V$ that enter the same loop in §4.
-> - Beside the $-K$ block, the single arrow the Riccati equation is, $(Q,R)\rightarrow P\rightarrow K$, labelled *offline, once*.
+> - Beside the $-K$ block, the single arrow the Riccati equation is, $(Q,R)\rightarrow P\rightarrow K$, labelled *offline, once*, with this set's numbers on it: $(1,1)\rightarrow0.414\rightarrow0.414$, not the picture's $1.236$.
 > - Under the loop, a real axis with the open-loop pole at $-1$, where the uncontrolled heater already sits, and the closed-loop pole at $-(1+K)$.
-> - At $R=1$ the stabilizing Riccati solution on this plant is $P=K=-1+\sqrt{1+Q}$, so the closed-loop pole lands at exactly $-\sqrt{1+Q}$ (worked in §1, $Q=4$: $-\sqrt5=-2.236$).
-> - The arrow worth drawing is the one that matters when reading a paper: raising $Q/R$ slides that pole left, and nothing else in the figure moves.
+> - On this plant the stabilizing Riccati solution is $P=-R+\sqrt{R^2+QR}$ and $K=P/R=-1+\sqrt{1+Q/R}$, so the closed-loop pole lands at $-\sqrt{1+Q/R}$: $-1.414$ at $R=1$ and $-1.118$ at $R=4$.
+> - The arrow worth drawing: raising $R$ slides the pole back toward $-1$, exactly as lowering $Q$ would, because only the ratio $Q/R$ appears.
 
 > [!tip]- Solutions
-> 1. Plant pole already at $-1$; $Q$ prices $x$, $R$ prices $u$.
+> 1. The picture's loop and ledger at $Q=1$, $R=1$; the Riccati arrow reads $(1,1)\rightarrow P=0.414\rightarrow K=0.414$. On the axis: the open-loop pole $-1$, this closed-loop pole $-\sqrt{1+Q/R}=-1.414$, and at $Q=1$, $R=4$ the pole $-\sqrt{1.25}=-1.118$, from $P=-4+\sqrt{20}=0.472$ and $K=P/R=0.118$. Raising $R$ slides the pole back toward $-1$: only $Q/R$ sets it, so pricing effort up is the same move as pricing error down.
 > 2. $-2P-P^2+1=0\Rightarrow P=-1+\sqrt2\approx0.414$, $K=P\approx0.414$. Pole $-(1+K)\approx-1.414$, $x_\mathrm{ss}=d/(1+K)\approx0.707$. At $K=4$: pole $-5$, $x_\mathrm{ss}=0.2$.
 > 3. $Q=R=1$ prices state and effort equally on an already-stable plant, so the optimizer barely acts. $K=4$ is a hand choice (CE397 §1 used $K=9$ for $10\times$ rejection). Raising $Q/R$ increases $K$, buys smaller $x_\mathrm{ss}$, costs effort and noise.
 
@@ -707,21 +707,21 @@ LQG의 추정기 쪽은 [[04-robotics/state-estimation-slam|상태 추정, 위�
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** $\dot x=-x+u+d$, $Q=1$, $R=1$. 시뮬레이터 없음.
 
-1. **그리기.** $Q=1$, $R=1$에서의 위의 그림: $u=-Kx$인 새는 히터, $Q$와 $R$ 상자, 외란 $d$.
+1. **그리기.** 과제의 가중치 $Q=1$, $R=1$에서의 위의 그림: $u=-Kx$인 새는 히터, $Q$와 $R$ 상자, 외란 $d$, 그리고 이 $P$와 $K$를 적은 리카티 화살표. 극점 축에는 이 폐루프 극점과 $Q=1$, $R=4$일 때의 극점을 표시하고, $R$을 올리면 극점이 어느 쪽으로 가는지 말하라.
 2. **유도.** 스칼라 리카티. 안정화 $P$와 $K$. $d=1$의 폐루프 극점과 $x_\mathrm{ss}$. CE397식 손 이득 $K=4$에서 같은 두 숫자.
-3. **해석.** LQR의 $K$가 $K=4$보다 작은 이유, $Q/R$을 올리면 사고 치는 것(CE397 §1의 $(1+K)$ 거래).
+3. **해석.** LQR의 $K$가 $K=4$보다 작은 이유, 그리고 $Q/R$을 올려서 얻는 것과 치르는 것(CE397 §1의 $(1+K)$ 거래).
 
 > [!note]- 그리는 법 · How to draw it
 > - 루프: 합산점 하나, 그 뒤의 플랜트 상자 $\dot x=-x+u+d$, 그 합산점으로 $u$와 나란히 들어오는 외란 $d$, 상자에서 나오는 상태 $x$, 그리고 $x$에서 이득 상자 $-K$를 거쳐 합산점으로 돌아가는 피드백 경로. 여기까지는 제어 이론 페이지의 그림 그대로다.
 > - LQR이 더하는 장부: $x$에서 상자 $Q$로 가는 가지, $u$에서 상자 $R$로 가는 가지, 그리고 둘이 함께 들어가는 누산기 $J=\int_0^\infty (Qx^2+Ru^2)\,dt$.
 > - 장부는 선 굵기를 달리해 그린다. 플랜트를 전혀 건드리지 않는 회계 경로이지 제어 경로가 아니며, 이렇게 시각적으로 갈라 두어야 $Q$·$R$이 §4에서 같은 루프로 들어오는 잡음 공분산 $W$·$V$와 섞이지 않는다.
-> - $-K$ 상자 옆에는 리카티 방정식이 곧 화살표 하나라는 것: $(Q,R)\rightarrow P\rightarrow K$, 그리고 *오프라인에서 한 번*.
+> - $-K$ 상자 옆에는 리카티 방정식이 곧 화살표 하나라는 것: $(Q,R)\rightarrow P\rightarrow K$, *오프라인에서 한 번*. 여기에 이 과제의 숫자를 적는다. 위 그림의 $1.236$이 아니라 $(1,1)\rightarrow0.414\rightarrow0.414$다.
 > - 루프 아래의 실수축: 제어하지 않은 히터가 이미 앉아 있는 개루프 극점 $-1$과 폐루프 극점 $-(1+K)$.
-> - 이 플랜트에서 $R=1$일 때 안정화 리카티 해는 $P=K=-1+\sqrt{1+Q}$이므로 폐루프 극점은 정확히 $-\sqrt{1+Q}$에 놓인다(§1의 계산, $Q=4$: $-\sqrt5=-2.236$).
-> - 그릴 값이 있는 화살표는 논문을 읽을 때 쓰이는 그것이다. $Q/R$을 올리면 그 극점이 왼쪽으로 미끄러지고, 그림의 나머지는 아무것도 움직이지 않는다.
+> - 이 플랜트에서 안정화 리카티 해는 $P=-R+\sqrt{R^2+QR}$, $K=P/R=-1+\sqrt{1+Q/R}$이므로 폐루프 극점은 $-\sqrt{1+Q/R}$에 놓인다. $R=1$이면 $-1.414$, $R=4$면 $-1.118$이다.
+> - 그릴 값이 있는 화살표: $R$을 올리면 극점이 $-1$ 쪽으로 되돌아가고, $Q$를 내렸을 때와 똑같다. 식에 나오는 것은 비 $Q/R$뿐이기 때문이다.
 
 > [!tip]- 정답 · Solutions
-> 1. 플랜트 극점은 이미 $-1$; $Q$는 $x$, $R$은 $u$에 값을 매긴다.
+> 1. $Q=1$, $R=1$에서의 위 그림의 루프와 장부이고, 리카티 화살표는 $(1,1)\rightarrow P=0.414\rightarrow K=0.414$다. 축 위에는 개루프 극점 $-1$, 이 폐루프 극점 $-\sqrt{1+Q/R}=-1.414$, 그리고 $Q=1$, $R=4$일 때 $P=-4+\sqrt{20}=0.472$, $K=P/R=0.118$에서 오는 극점 $-\sqrt{1.25}=-1.118$. $R$을 올리면 극점이 $-1$ 쪽으로 되돌아간다. 극점을 정하는 것은 $Q/R$뿐이므로, 노력에 값을 더 매기는 것과 오차에 값을 덜 매기는 것은 같은 수다.
 > 2. $-2P-P^2+1=0\Rightarrow P=-1+\sqrt2\approx0.414$, $K\approx0.414$. 극점 $\approx-1.414$, $x_\mathrm{ss}\approx0.707$. $K=4$면 극점 $-5$, $x_\mathrm{ss}=0.2$.
 > 3. 이미 안정한 플랜트에서 $Q=R=1$은 거의 안 움직인다. $K=4$는 손 선택(CE397 §1은 $10$배 억제에 $K=9$). $Q/R$을 올리면 $K$가 커져 $x_\mathrm{ss}$는 줄고 노력·잡음은 는다.
 

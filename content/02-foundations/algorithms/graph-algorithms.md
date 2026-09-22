@@ -953,6 +953,7 @@ search over a small set of arm motion primitives works when the task is structur
 6. On an 8-connected grid with diagonal cost $\sqrt 2$, is Manhattan distance admissible? What should you use?
 7. A teammate multiplies the Manhattan heuristic by 10 "to make the planner faster". What did they buy, and what did they give up?
 8. In label-correcting search, what changes when you switch the open list from FIFO to "smallest $C(x)$": the answer, or the work?
+9. Close the page and write `dijkstra(adj, s)` with `heapq` and lazy deletion from a blank file. Test it on §4's graph and on the same graph with an extra vertex `x` whose only edge is `x → t`, then compare it line by line with §4. Which line did you get wrong, and which step of the correctness argument does it break?
 
 > [!tip]- Answers
 > 1. Yes, provided a vertex's distance is fixed by the first copy dequeued and later copies are skipped: copies sit in the queue in non-decreasing distance order, so the first one carries the minimum. But a vertex can be enqueued once per incoming edge before it is marked, so the queue can hold $O(m)$ entries and the same vertex is processed repeatedly unless you skip duplicates on dequeue.
@@ -963,6 +964,7 @@ search over a small set of arm motion primitives works when the task is structur
 > 6. No. From $(0,0)$ to $(1,1)$ Manhattan says 2, but one diagonal step costs $\sqrt 2 \approx 1.414$. Use octile distance.
 > 7. That is weighted A* with $\varepsilon = 10$: far fewer expansions, but the path can cost up to 10 times the optimum, and in practice it hugs obstacles and takes greedy detours. Choose $\varepsilon$ deliberately (for example 1.5 to 3) or use an anytime planner that lowers it.
 > 8. Only the work. For any ordering the loop ends with the optimal cost on a finite graph without negative cycles; with non-negative weights, "smallest $C$" is the ordering for which each vertex's first removal is final, so nothing is ever re-expanded.
+> 9. State the invariant first: when a vertex is popped for the first time, its distance is final, and a later entry for it is stale. Each usual slip breaks it. Marking a vertex done when it is *pushed* finalizes a distance before cheaper paths are seen: on §4's graph `b` would keep $5$ from `s → b` instead of $3$ via `a`, and `t` would be fixed at $8$ through `a`, since `b` is already closed when `a` is expanded. Omitting the `if u in done: continue` check re-expands stale entries: the answer stays right but the work grows. Stopping when the target is first pushed returns a path that is not yet shortest. A correct version gives `t` $5$ via `s → a → b → t`, and the extra vertex `x` never appears in `dist`: it is unreachable from `s`, because edges point out of `x`, not into it.
 
 ### Sources
 
@@ -1901,6 +1903,7 @@ Dijkstra 루프다. Kruskal은 간선을 정렬하고 서로 다른 두 요소�
 6. 대각 비용이 $\sqrt 2$인 8-연결 격자에서 맨해튼 거리는 허용적인가? 무엇을 써야 하나?
 7. 동료가 "플래너를 빠르게 하려고" 맨해튼 휴리스틱에 10을 곱했다. 무엇을 얻고 무엇을 포기했나?
 8. 레이블 수정 탐색에서 열린 목록을 FIFO에서 "가장 작은 $C(x)$"로 바꾸면 무엇이 바뀌는가: 답인가, 일의 양인가?
+9. 페이지를 닫고 `heapq`와 게으른 삭제로 `dijkstra(adj, s)`를 빈 파일에서 써라. §4의 그래프, 그리고 간선이 `x → t` 하나뿐인 정점 `x`를 더한 같은 그래프로 시험한 뒤 §4와 한 줄씩 비교하라. 어느 줄을 틀렸고, 그 줄은 정확성 논증의 어느 단계를 깨는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 그렇다. 처음 꺼낸 사본으로 거리를 확정하고 나중 사본을 건너뛴다면 맞다. 사본들은 거리가 감소하지 않는 순서로 큐에 있으므로 첫 사본이 최솟값을 가진다. 하지만 표시되기 전까지 정점이 들어오는 간선마다 한 번씩 큐에 들어갈 수 있어 큐가 $O(m)$개를 담고, 꺼낼 때 중복을 건너뛰지 않으면 같은 정점을 반복 처리한다.
@@ -1911,6 +1914,7 @@ Dijkstra 루프다. Kruskal은 간선을 정렬하고 서로 다른 두 요소�
 > 6. 아니다. $(0,0)$에서 $(1,1)$까지 맨해튼은 2라고 하지만 대각 한 걸음은 $\sqrt 2 \approx 1.414$다. 옥타일 거리를 써라.
 > 7. $\varepsilon = 10$인 가중 A*다. 확장은 훨씬 줄지만 경로 비용이 최적의 10배까지 될 수 있고, 실제로는 장애물에 붙어 탐욕적으로 우회한다. $\varepsilon$을 의도적으로 고르거나(예: 1.5–3) 값을 낮춰 가는 애니타임 플래너를 써라.
 > 8. 일의 양만 바뀐다. 음수 사이클이 없는 유한 그래프에서는 어떤 정렬이든 루프가 최적 비용으로 끝난다. 가중치가 음이 아니면 "가장 작은 $C$"가 각 정점을 처음 꺼내는 순간이 최종이 되는 정렬이라 아무것도 다시 확장되지 않는다.
+> 9. 불변식을 먼저 적어라. 정점이 처음 꺼내질 때 그 거리는 확정이고, 그 뒤의 항목은 낡은 것이다. 흔한 실수는 각각 이것을 깬다. 정점을 *넣을* 때 완료로 표시하면 더 싼 경로를 보기 전에 거리가 확정된다. §4의 그래프에서 `b`는 `a`를 거친 $3$이 아니라 `s → b`의 $5$를 지키고, `a`를 확장할 때 `b`가 이미 닫혀 있으므로 `t`는 `a`를 거친 $8$로 굳는다. `if u in done: continue` 검사를 빼면 낡은 항목을 다시 확장한다. 답은 맞지만 일이 는다. 목표가 처음 들어갈 때 멈추면 아직 최단이 아닌 경로를 돌려준다. 올바른 구현은 `t`에 `s → a → b → t`로 $5$를 주고, 더한 정점 `x`는 `dist`에 나타나지 않는다. 간선이 `x`로 들어오지 않고 `x`에서 나가므로 `s`에서 닿을 수 없다.
 
 ### 출처
 

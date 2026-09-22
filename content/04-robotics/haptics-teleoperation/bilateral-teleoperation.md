@@ -189,19 +189,20 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]] as *both* leader and
 
 Leader motion is sent to the follower; follower wall force $F_a$ is sent back. One-way delay $T_d=50\,\mathrm{ms}$. Local sample $T=1\,\mathrm{ms}$. Catalog $k_w=400$, $b=0.8$.
 
-1. **Draw.** The picture above, for this set's channel: human port $(F_1,v_1)$ — leader P3 — delayed channel — follower P3 — wall. Mark the four signals and the sign convention (positive force into the network at both ports).
+1. **Draw.** The picture above for the channel item 2(c) ends on: the leader's motion reaches the follower at once, only the wall force $F_a$ comes back delayed by $T_d=50\,\mathrm{ms}$, and there is no scaling ($s_x=s_f=1$). Human port $(F_1,v_1)$ — leader P3 — channel — follower P3 — wall: mark the four signals, the sign convention (positive force into the network at both ports), each direction's delay, and the round trip the leader's bound sees.
 2. **Derive.** (a) Power-preserving scales $s_f=s_x$. If $s_x=0.1$ and the follower holds $F_f=1\,\mathrm{N}$ (catalog wall at $2.5\,\mathrm{mm}$ in), what does the leader reflect? Too faint? (b) With $s_f=10$, $s_x=0.1$, the power ratio $s_f/s_x$. Can the pair inherit passivity from its parts? (c) The delayed bound $K\le b/(T/2+T_D)$ (Diolaiti et al. 2006) at the leader, where $T_D$ is the delay around the loop. Which $T_D$ does this architecture put there, what is the ceiling, and does catalog $k_w$ pass? What would the ceiling be if only one direction were delayed?
 3. **Interpret.** Users are slower after you add damping to survive the delay. Is that a contradiction of passivity?
 
 > [!note]- How to draw it · 그리는 법
 > - Draw both ports as double-headed arrows, each labelled with its own pair: $(F_1,v_1)$ at the hand, $(F_2,v_2)$ at the wall. A single-headed arrow claims information flow where there is power flow, and the whole page is about power.
 > - Write the sign convention on the figure as a short legend — positive force *into* the network at both ports — not as an arrowhead, because the arrowhead is what everyone reads differently.
-> - Draw the delay on each direction separately, leader motion going out and wall force $F_a$ coming back, each marked $T_d=50\,\mathrm{ms}$, with the round trip $2T_d=100\,\mathrm{ms}$ written underneath. A single box labelled "network" hides whether the return path is delayed, which is the one thing that decides the argument.
+> - Draw the delay on each direction separately: leader motion going out marked $0$, wall force $F_a$ coming back marked $T_d=50\,\mathrm{ms}$, and the round trip $T_D=50\,\mathrm{ms}$ written underneath, against the picture's $100$. A single box labelled "network" would hide exactly the difference this variant is about.
 > - Draw the wall at the follower as a switch, the same unilateral block as [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], not as a spring.
-> - Put the two scale blocks on the channel, $s_x$ on the way out and $s_f$ on the way back, so the reader can see that the product $s_fs_x$ never appears in the power and the ratio $s_f/s_x$ always does.
+> - Keep the two scale blocks on the channel, $s_x$ out and $s_f$ back, both set to $1$: drawing them at unity says that scaling was chosen away, not forgotten.
+> - Beside the leader, the delayed bound with this round trip: $K\le b/(T/2+T_D)=0.8/0.0505=15.8\,\mathrm{N/m}$.
 
 > [!tip]- Solutions
-> 1. Four signals $F_1,v_1,F_2,v_2$; delay on both directions or at least on force; wall switch at the follower. Arrows for force into the two-port.
+> 1. The picture's two-port with both scale blocks at $1$ and the outgoing delay removed: the leader's motion arrow carries no delay, the returning $F_a$ arrow carries $T_d=50\,\mathrm{ms}$. Four signals $F_1,v_1,F_2,v_2$, both ports double-headed, the legend "positive force into the network at both ports", and the wall a switch at the follower. The delay around the loop is now $T_D=T_d=50\,\mathrm{ms}$, half the picture's $100\,\mathrm{ms}$, so the ceiling at the leader is $b/(T/2+T_D)=0.8/0.0505=15.8\,\mathrm{N/m}$: double the picture's $7.96$, and still $25$ times below the catalog $400$. Removing one direction's delay helps by exactly the delay it removes; it does not rescue the wall.
 > 2. (a) $F_l=0.1\,\mathrm{N}$ — too faint to rely on, but not because it is under a JND. With 24.1 §5's $k=0.0814$, $s_f$ divides out of $s_f\Delta F_f\ge ks_fF_f$, so the smallest follower change the hand feels is $kF_f=0.081\,\mathrm{N}$ whatever $s_f$ is; the trouble is that $0.1\,\mathrm{N}$ is twenty times below $2.03\,\mathrm{N}$, the lowest force at which 24.1 measured $k$, where it had already risen to $0.0896$. (b) Ratio $100$; extra power from actuators; force-amplifying teleoperators do not inherit passivity. (c) $T_D=2T_d=100\,\mathrm{ms}$: the follower tracks a command already $T_d$ old, and its force takes $T_d$ more to come back. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$ fails by a factor of $50.3$. One direction only: $0.8/0.0505=15.8\,\mathrm{N/m}$. Not $2b/(T+T_d)=31.4$, which charges the delay at half its value.
 > 3. No. Passivity bounds energy generation, not transparency or speed. Added dissipation can stabilize and make the wall feel sluggish — the trade §4 names.
 
@@ -387,19 +388,20 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**를 리더와 팔로워 *둘 
 
 리더 운동이 팔로워로, 팔로워 벽 힘 $F_a$가 돌아온다. 편도 지연 $T_d=50\,\mathrm{ms}$. 로컬 샘플 $T=1\,\mathrm{ms}$. 카탈로그 $k_w=400$, $b=0.8$.
 
-1. **그리기.** 위의 그림을 이 과제의 채널로: 사람 포트 $(F_1,v_1)$ — 리더 P3 — 지연 채널 — 팔로워 P3 — 벽. 신호 넷과 부호 규약(두 포트 모두 네트워크 안쪽이 양의 힘).
+1. **그리기.** 2(c)번이 끝에 묻는 채널에 대한 위의 그림: 리더의 운동은 팔로워에 곧바로 닿고, 벽 힘 $F_a$만 $T_d=50\,\mathrm{ms}$ 늦게 돌아오며, 스케일링은 없다($s_x=s_f=1$). 사람 포트 $(F_1,v_1)$ — 리더 P3 — 채널 — 팔로워 P3 — 벽. 신호 넷, 부호 규약(두 포트 모두 네트워크 안쪽이 양의 힘), 방향마다의 지연, 그리고 리더의 경계가 보는 왕복 지연을 표시하라.
 2. **유도.** (a) 일률 보존 스케일 $s_f=s_x$. $s_x=0.1$이고 팔로워가 $F_f=1\,\mathrm{N}$(카탈로그 벽 안 $2.5\,\mathrm{mm}$)을 쥐면 리더는 얼마를 반사하는가? 너무 약한가? (b) $s_f=10$, $s_x=0.1$에서 일률 비 $s_f/s_x$. 쌍이 부품에서 수동성을 물려받을 수 있는가? (c) 리더에서 지연 경계 $K\le b/(T/2+T_D)$(Diolaiti 외 2006). $T_D$는 루프를 한 바퀴 도는 지연이다. 이 구조에서 $T_D$는 얼마이고, 천장은 얼마이며, 카탈로그 $k_w$가 통과하는가? 한 방향만 지연된다면 천장은 얼마인가?
 3. **해석.** 지연을 버티려고 댐핑을 더했더니 사용자가 느려졌다. 수동성의 모순인가?
 
 > [!note]- 그리는 법 · How to draw it
 > - 두 포트를 양쪽 화살표로 그리고 각각에 자기 쌍을 단다. 손 쪽은 $(F_1,v_1)$, 벽 쪽은 $(F_2,v_2)$다. 한쪽 화살표는 일률이 흐르는 곳에 정보가 흐른다고 주장하는 것이고, 이 페이지 전체가 일률에 대한 이야기다.
 > - 부호 규약을 그림 위에 짧은 범례로 적는다. 두 포트 모두 네트워크 *안쪽*이 양의 힘이다. 화살촉으로 나타내지 마라. 화살촉이야말로 사람마다 다르게 읽는 것이다.
-> - 지연은 방향마다 따로 그린다. 나가는 리더 운동과 돌아오는 벽 힘 $F_a$에 각각 $T_d=50\,\mathrm{ms}$를 표시하고, 아래에 왕복 $2T_d=100\,\mathrm{ms}$를 적는다. "네트워크"라고만 적힌 상자 하나는 되돌아오는 경로가 지연되는지를 가리는데, 논증을 정하는 것이 바로 그것이다.
+> - 지연은 방향마다 따로 그린다. 나가는 리더 운동에는 $0$, 돌아오는 벽 힘 $F_a$에는 $T_d=50\,\mathrm{ms}$를 표시하고, 아래에 왕복 $T_D=50\,\mathrm{ms}$를 위 그림의 $100$과 나란히 적는다. "네트워크"라고만 적힌 상자 하나는 이 변형이 다루는 바로 그 차이를 가린다.
 > - 팔로워의 벽은 스프링이 아니라 스위치로 그린다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]와 같은 한쪽 스위치 블록이다.
-> - 채널에 스케일 블록 둘을 넣는다. 나가는 길에 $s_x$, 돌아오는 길에 $s_f$다. 그래야 곱 $s_fs_x$는 일률에 나오지 않고 *비* $s_f/s_x$만 늘 나온다는 것이 보인다.
+> - 채널의 스케일 블록 둘, 나가는 $s_x$와 돌아오는 $s_f$는 남겨 두고 둘 다 $1$로 적는다. 단위로 그려야 스케일링을 잊은 것이 아니라 고르지 않은 것임이 드러난다.
+> - 리더 옆에 이 왕복 지연의 경계: $K\le b/(T/2+T_D)=0.8/0.0505=15.8\,\mathrm{N/m}$.
 
 > [!tip]- 정답 · Solutions
-> 1. 신호 넷 $F_1,v_1,F_2,v_2$; 양방향 또는 적어도 힘 쪽 지연; 팔로워의 벽 스위치. 2포트 안으로 들어가는 힘 화살표.
+> 1. 스케일 블록 둘을 $1$로 두고 나가는 지연을 없앤 위 그림의 2포트다. 리더 운동 화살표에는 지연이 없고, 돌아오는 $F_a$ 화살표에 $T_d=50\,\mathrm{ms}$가 있다. 신호 넷 $F_1,v_1,F_2,v_2$, 양쪽 화살표인 두 포트, 범례 "두 포트 모두 네트워크 안쪽이 양의 힘", 팔로워의 벽 스위치. 루프를 도는 지연은 이제 $T_D=T_d=50\,\mathrm{ms}$로 위 그림의 $100\,\mathrm{ms}$의 절반이므로, 리더의 천장은 $b/(T/2+T_D)=0.8/0.0505=15.8\,\mathrm{N/m}$다. 위 그림의 $7.96$의 두 배이고, 여전히 카탈로그 $400$보다 $25$배 낮다. 한 방향의 지연을 없애면 꼭 그만큼만 나아질 뿐, 벽을 구하지는 못한다.
 > 2. (a) $F_l=0.1\,\mathrm{N}$ — 믿고 쓰기엔 너무 약하지만, JND보다 작아서가 아니다. 24.1 §5의 $k=0.0814$에서는 $s_f\Delta F_f\ge ks_fF_f$의 $s_f$가 약분되므로 손이 느끼는 가장 작은 follower 변화는 $s_f$와 무관하게 $kF_f=0.081\,\mathrm{N}$이다. 문제는 $0.1\,\mathrm{N}$이 24.1이 $k$를 잰 가장 낮은 힘 $2.03\,\mathrm{N}$(거기서 이미 $0.0896$으로 올랐다)보다 스무 배 낮다는 것이다. (b) 비 $100$; 여분 일률은 액추에이터에서; 힘을 증폭하는 원격조작기는 수동성을 물려받지 못한다. (c) $T_D=2T_d=100\,\mathrm{ms}$. 팔로워는 이미 $T_d$ 늦은 명령을 추종하고, 그 힘이 돌아오는 데 $T_d$가 더 걸린다. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$은 $50.3$배로 실패. 한 방향만이면 $0.8/0.0505=15.8\,\mathrm{N/m}$. 지연을 절반 값으로 치르는 $2b/(T+T_d)=31.4$가 아니다.
 > 3. 아니다. 수동성은 에너지 생성을 묶지 투명성이나 속도를 묶지 않는다. 소산을 더하면 안정되면서 벽이 둔해질 수 있다 — §4가 이름 붙인 거래다.
 

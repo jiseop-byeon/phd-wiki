@@ -793,21 +793,20 @@ Request–response, long-running cancellable goals, runtime configuration and ma
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Vision publishes `/goal` at $50\,\mathrm{Hz}$; the controller must command the motor at $200\,\mathrm{Hz}$. No new simulator.
 
-1. **Draw.** Two nodes, topic `/goal`, encoder counts in, motor command out. Mark the $50\,\mathrm{Hz}$ subscription and the $200\,\mathrm{Hz}$ timer. Five-line timeline: vision message, three controller ticks with no new vision, next vision.
+1. **Draw.** The picture above for the callback-driven design of item 2(a), with the names fixed so that both ends resolve to `/cart/goal`: two nodes, the topic, encoder counts in, motor command out, and `cmd` now published from `on_goal`. Mark the rate at which the motor is commanded. Five-line timeline over $0$–$40\,\mathrm{ms}$: vision messages, commands, encoder reads, and the gaps in which the motor holds a stale command.
 2. **Derive.** (a) If the controller publishes from the *vision callback*, what is the motor rate? (b) Encoder $\Delta p$ for one count. (c) Silent case: vision publishes `/cart/goal`, controller subscribes `/goal`. Both nodes log "ok". Which three causes look like this, and which command splits them?
 3. **Interpret.** Why is the timer-driven controller the right contract for P6, and when would callback-driven be right instead?
 
 > [!note]- How to draw it · 그리는 법
-> - Two ellipses, each labelled with both of its names: the one the code passes to `super().__init__`, and the fully resolved one after any launch namespace.
-> - One arrow for the topic, labelled the same way twice: the string written in the code above it, and what §3's table resolves it to below it.
-> - A name that resolves differently at the two ends (in the picture above, the relative `goal` under `/cart` against an absolute `/goal`) is a second arrow stub with nothing on the other end: a second name, not a broken arrow, and nothing in the drawing is red.
-> - Inside the controller, two boxes: `on_goal`, entered by the subscription arrow and labelled $50\,\mathrm{Hz}$, which only puts the goal into a small store beside it; and `on_tick`, with a clock symbol, labelled $200\,\mathrm{Hz}$.
-> - `on_tick` reads the store *and* the encoder, whose arrow comes from outside the graph, and the `cmd` arrow leaves the node from `on_tick`.
-> - The diagram is wrong the moment `cmd` leaves from `on_goal`; §9 is where you make that mistake on purpose.
-> - Five lines of clock: goals every $20\,\mathrm{ms}$, ticks every $5\,\mathrm{ms}$, a bracket under the three ticks that re-use the last goal, an encoder read on every tick, and the $70\,\mathrm{ms}$ budget line for scale.
+> - Two ellipses, each labelled with both of its names: the one the code passes to `super().__init__`, and the fully resolved one after the launch namespace.
+> - One arrow for the topic, labelled with the string written in the code above it and its resolved name, `/cart/goal`, below it, the same at both ends. The picture's stray `/goal` stub is gone.
+> - Inside the controller, one box, `on_goal`, entered by the subscription arrow and labelled $50\,\mathrm{Hz}$; no store and no timer, because nothing else runs.
+> - The encoder arrow comes from outside the graph into `on_goal`, and the `cmd` arrow leaves the node from `on_goal`. This is the drawing the picture's checklist calls wrong for P6; here it is drawn on purpose, so label it *callback-driven*.
+> - Label the `cmd` arrow with its rate, $50\,\mathrm{Hz}$ — the camera's, not the $200\,\mathrm{Hz}$ the motor loop was specified at.
+> - Five lines of clock over $0$–$40\,\mathrm{ms}$: goals at $0$, $20$, $40\,\mathrm{ms}$; commands and encoder reads at the same instants and nowhere else; and under each $20\,\mathrm{ms}$ gap a bracket marked *held*, where the picture's design had three ticks.
 
 > [!tip]- Solutions
-> 1. `camera` → `/goal` → `controller`; controller also reads $2048$ counts/m and publishes `cmd` from a $5\,\mathrm{ms}$ timer. Timeline: vision at $0,20\,\mathrm{ms}$; ticks at $0,5,10,15,20$.
+> 1. `camera` → `/cart/goal` → `controller`, with the stray `/goal` stub gone. Inside the controller there is one box, `on_goal`, and the `cmd` arrow leaves from it: the motor is commanded at $50\,\mathrm{Hz}$, the camera's rate, and the encoder is read only when a goal arrives. Timeline: goals, encoder reads and commands together at $0$, $20$ and $40\,\mathrm{ms}$ and nothing in between; each command is held for $20\,\mathrm{ms}$, where the picture's design issued three more, and one dropped frame would hold it for $40\,\mathrm{ms}$. That is item 2(a)'s answer, drawn: the motor inherits the camera.
 > 2. (a) $50\,\mathrm{Hz}$ — the motor inherits the camera. (b) $0.488\,\mathrm{mm}$. (c) Name mismatch, type mismatch, QoS. `ros2 topic info /goal --verbose` (then `ros2 node info`).
 > 3. The $200\,\mathrm{Hz}$ rate is the contract; vision is a slower input that may miss ticks. Callback-driven is right when every frame must be seen and the downstream can keep up — not when a motor loop has its own period.
 
@@ -1588,20 +1587,19 @@ $$\Delta v=\frac{\Delta p}{T}=\frac{1/2048}{T}\quad\Longrightarrow\quad \Delta v
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 비전이 `/goal`을 $50\,\mathrm{Hz}$로 발행하고, 제어기는 모터를 $200\,\mathrm{Hz}$로 명령해야 한다. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** 노드 둘, 토픽 `/goal`, 엔코더 카운트 입력, 모터 명령 출력. $50\,\mathrm{Hz}$ 구독과 $200\,\mathrm{Hz}$ 타이머. 다섯 줄 타임라인: 비전 메시지, 새 비전 없이 제어 틱 셋, 다음 비전.
+1. **그리기.** 2(a)번의 콜백 구동 설계에 대한 위의 그림. 이름은 고쳐서 양 끝이 모두 `/cart/goal`로 풀린다. 노드 둘, 토픽, 엔코더 카운트 입력, 모터 명령 출력, 그리고 이제 `on_goal`에서 발행되는 `cmd`. 모터가 명령받는 주기를 표시하라. $0$–$40\,\mathrm{ms}$의 다섯 줄 타임라인: 비전 메시지, 명령, 엔코더 읽기, 그리고 모터가 낡은 명령을 붙들고 있는 틈.
 2. **유도.** (a) 제어기가 *비전 콜백*에서 publish하면 모터 주기는? (b) 엔코더 한 카운트의 $\Delta p$. (c) 조용한 고장: 비전은 `/cart/goal`, 제어기는 `/goal`을 구독. 두 노드 모두 "ok". 이렇게 보이는 원인 셋과, 가르는 명령은?
 3. **해석.** P6에서 타이머 구동 제어기가 옳은 계약인 이유, 그리고 콜백 구동이 오히려 옳을 때는?
 
 > [!note]- 그리는 법 · How to draw it
 > - 타원 둘, 각각 이름 둘을 단다. 코드가 `super().__init__`에 넘기는 이름, 그리고 launch 네임스페이스를 거친 완전 이름.
-> - 토픽 화살표 하나에 같은 방식으로 두 번 적는다. 위에는 코드에 쓴 문자열, 아래에는 3절의 표가 그것을 푸는 결과.
-> - 양 끝에서 다르게 풀리는 이름(위의 그림에서는 `/cart` 아래의 상대 `goal` 대 절대 `/goal`)은 반대편이 빈 두 번째 화살표 토막이다. 끊어진 화살표가 아니라 두 번째 이름이고, 그림 어디에도 빨간 표시는 없다.
-> - 제어기 안에 상자 둘. `on_goal`은 구독 화살표가 들어오고 $50\,\mathrm{Hz}$라고 적으며, 옆의 작은 저장 상자에 목표를 넣기만 한다. `on_tick`은 시계 기호를 달고 $200\,\mathrm{Hz}$라고 적는다.
-> - `on_tick`은 저장 상자와 엔코더를 둘 다 읽고(엔코더 화살표는 그래프 바깥에서 온다), `cmd` 화살표는 `on_tick`에서 노드 밖으로 나간다.
-> - `cmd`가 `on_goal`에서 나가는 순간 그림은 틀린 것이다. 9절이 그 실수를 일부러 해 보는 자리다.
-> - 시계 다섯 줄: $20\,\mathrm{ms}$마다 목표, $5\,\mathrm{ms}$마다 틱, 마지막 목표를 재사용하는 틱 셋 아래의 괄호, 틱마다 엔코더 읽기, 그리고 축척을 위한 $70\,\mathrm{ms}$ 예산선.
+> - 토픽 화살표 하나에 위에는 코드에 쓴 문자열, 아래에는 풀린 이름 `/cart/goal`을 적고, 양 끝에서 같다. 위 그림의 떠도는 `/goal` 토막은 없다.
+> - 제어기 안에 상자 하나, `on_goal`. 구독 화살표가 들어오고 $50\,\mathrm{Hz}$라고 적는다. 다른 것은 돌지 않으므로 저장 상자도 타이머도 없다.
+> - 엔코더 화살표는 그래프 바깥에서 `on_goal`로 들어오고, `cmd` 화살표는 `on_goal`에서 노드 밖으로 나간다. 위 그림의 체크리스트가 P6에서는 틀렸다고 한 그림이고, 여기서는 일부러 그리는 것이니 *콜백 구동*이라고 적는다.
+> - `cmd` 화살표에 주기 $50\,\mathrm{Hz}$를 적는다. 모터 루프에 정한 $200\,\mathrm{Hz}$가 아니라 카메라의 주기다.
+> - $0$–$40\,\mathrm{ms}$의 시계 다섯 줄: $0$, $20$, $40\,\mathrm{ms}$의 목표, 같은 순간에만 있는 명령과 엔코더 읽기, 그리고 $20\,\mathrm{ms}$ 틈마다 아래에 *유지*라고 적은 괄호. 위 그림의 설계라면 거기에 틱이 셋 있었다.
 
 > [!tip]- 정답 · Solutions
-> 1. `camera` → `/goal` → `controller`; 제어기는 $2048$ counts/m를 읽고 $5\,\mathrm{ms}$ 타이머에서 `cmd`를 낸다. 타임라인: 비전 $0,20\,\mathrm{ms}$; 틱 $0,5,10,15,20$.
+> 1. `camera` → `/cart/goal` → `controller`이고 떠도는 `/goal` 토막은 없다. 제어기 안에는 상자 `on_goal` 하나뿐이고 `cmd` 화살표가 거기서 나간다. 모터는 카메라의 주기인 $50\,\mathrm{Hz}$로 명령받고, 엔코더는 목표가 도착할 때만 읽힌다. 타임라인: 목표·엔코더 읽기·명령이 $0$, $20$, $40\,\mathrm{ms}$에 함께 있고 그 사이에는 아무것도 없다. 명령은 $20\,\mathrm{ms}$씩 유지되며, 위 그림의 설계라면 그 사이에 셋을 더 냈다. 프레임 하나를 놓치면 $40\,\mathrm{ms}$ 동안 유지된다. 2(a)번의 답을 그린 것이다. 모터가 카메라를 물려받는다.
 > 2. (a) $50\,\mathrm{Hz}$ — 모터가 카메라를 상속. (b) $0.488\,\mathrm{mm}$. (c) 이름, 타입, QoS. `ros2 topic info /goal --verbose`(그다음 `ros2 node info`).
 > 3. $200\,\mathrm{Hz}$가 계약이고 비전은 틱을 놓칠 수 있는 느린 입력이다. 모든 프레임을 봐야 하고 하류가 따라오면 콜백 구동이 맞다 — 모터 루프가 자기 주기를 가질 때는 아니다.

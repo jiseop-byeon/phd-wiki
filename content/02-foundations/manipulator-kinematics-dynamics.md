@@ -510,7 +510,7 @@ Tier A (dynamics half of **P2**; the velocity loop is on [[04-robotics/modern-ro
 
 $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\quad M=\begin{pmatrix}3&1\\1&1\end{pmatrix},\quad \Lambda=\mathrm{diag}(1,2),\quad g=(19.62,\ 0)\,\mathrm{N{\cdot}m}$$
 
-1. **Draw.** P2 at the frozen pose in the vertical plane, $g$ in $-y$. Mark both point masses, $g(\theta)$ as shoulder/elbow torques, and a panel force of $10\,\mathrm{N}$ *on the panel* in $-y$ (the robot is pressing down). Write Newton's third law for the force *on the tip*.
+1. **Draw.** The picture above with the elbow opened to $\theta=(0^\circ,45^\circ)$, still in the vertical plane with $g$ in $-y$: both point masses with their weight arrows, the horizontal moment arm from each joint to each weight line, $g(\theta)$ as shoulder and elbow torques, and a panel force of $10\,\mathrm{N}$ *on the panel* in $-y$ under the tip. Write Newton's third law for the force *on the tip*. Which torque that is $0$ in the picture above is not $0$ here?
 2. **Derive.** At rest. (a) Holding torque with no contact. (b) Holding torque while commanding $F_\text{cmd}=(0,-10)\,\mathrm{N}$ on the panel, using $\tau=g+J^\top F_\text{cmd}$. (c) Task-space: the tip wrench that produces $\dot v=(0,1)\,\mathrm{m/s}^2$ if velocity terms are zero, $\mathcal{F}=\Lambda\dot v$. (d) Joint torque for that wrench via $J^\top$. (e) Recompute $\Lambda=(JM^{-1}J^\top)^{-1}$ from $J$ and $M$ — do not quote the catalog until you have the matrix.
 3. **Do.** Fill `?` and print $\Lambda$ and the two torques from (b) and (d). No time loop.
 
@@ -529,16 +529,16 @@ print(Lam, tau_hold, tau_acc)
 ```
 
 > [!note]- How to draw it · 그리는 법
-> - The arm to scale in the vertical plane: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$, and a gravity arrow along $-y$ in the margin so the page has an unambiguous down.
+> - The arm to scale in the vertical plane: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 at $45^\circ$ up and out to the tip at $(1.707,\ 0.707)$, and a gravity arrow along $-y$ in the margin so the page has an unambiguous down.
 > - Links as massless rods, with a filled $1\,\mathrm{kg}$ dot at the *distal end* of each and a $9.81\,\mathrm{N}$ weight arrow straight down from it: the catalog's point-mass convention is what makes every number come out, and a mass drawn at a link's centre gives a different arm.
-> - For each joint, draw and label the horizontal distance from its axis to each weight line: those offsets, not the link lengths, are the moment arms.
-> - Write the gravity torques as curved arrows at the joints, and write the elbow torque explicitly even when it is $0$ rather than leaving the elbow blank: at this pose that $0$ is a fact about the pose, and it stops being $0$ the moment the arm leaves it.
+> - For each joint, draw and label the horizontal distance from its axis to each weight line: those offsets, not the link lengths, are the moment arms. The tip's weight line no longer passes through the elbow axis, and the gap between them is the new number.
+> - Write the gravity torques as curved arrows at the joints, both with values: the elbow's is what the picture above had as $0$.
 > - The panel as a horizontal surface under the tip (the forearm passes in front of it, out of the drawing plane, so only the tip touches it); the commanded force as a down arrow *onto the panel*, and its reaction as an up arrow of the same length *onto the tip*, offset so the two read as a pair and not one arrow drawn twice.
-> - Label which body each force acts on: nearly every sign error later in the track is this pair.
-> - The apparent mass, if you add it for items 2(e) and 3: an ellipse at the tip whose semi-axes are the diagonal entries of $\Lambda$, in kg. It is not the manipulability ellipse of [[02-foundations/linear-algebra|1. Linear Algebra §4.5]] — that one lives in velocity, this one in mass, and §6 derives why they are different pictures of the same $J$.
+> - Label which body each force acts on: nearly every sign error later in the track is this pair, and it does not change with the pose.
+> - Items 2(e) and 3 stay at the frozen pose: the apparent-mass ellipse, if you add it, belongs to the picture above, with semi-axes the diagonal entries of $\Lambda$ in kg. It is not the manipulability ellipse of [[02-foundations/linear-algebra|1. Linear Algebra §4.5]] — that one lives in velocity, this one in mass, and §6 derives why they are different pictures of the same $J$.
 
 > [!tip]- Solutions
-> 1. Elbow at $(1,0)$, tip at $(1,1)$. Masses at those two points. Gravity torques: shoulder $19.62\,\mathrm{N{\cdot}m}$ (both masses 1 m to the right of joint 1), elbow $0$ (forearm mass above joint 2). Force on the panel $(0,-10)$ $\Rightarrow$ force on the tip $(0,+10)$.
+> 1. Elbow at $(1,0)$, tip at $(1+\cos45^\circ,\ \sin45^\circ)=(1.707,\ 0.707)$, masses at those two points. Moment arms: about the shoulder, $1$ m to the elbow mass and $1.707$ m to the tip mass; about the elbow, $0.707$ m to the tip mass. Holding torques $g(\theta)=(9.81(1+1.707),\ 9.81\times0.707)=(26.56,\ 6.94)\,\mathrm{N{\cdot}m}$. The elbow torque, $0$ at the frozen pose because the tip hung straight above the elbow, is now $6.94\,\mathrm{N{\cdot}m}$: the forearm leans out and its weight line leaves the elbow axis. Force on the panel $(0,-10)$ $\Rightarrow$ force on the tip $(0,+10)$, the same pair as before, because Newton's third law does not depend on the pose.
 > 2. (a) $\tau=g=(19.62,\ 0)$. (b) $J^\top F_\text{cmd}=(-10,\ 0)$, so $\tau=(9.62,\ 0)$ — the panel takes $10\,\mathrm{N}$ of the $19.62\,\mathrm{N}$ weight as seen at the tip. (c) $\Lambda a=(0,2)\,\mathrm{N}$. (d) $J^\top(0,2)=(2,\ 0)\,\mathrm{N{\cdot}m}$. (e) $M^{-1}=\begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}$, $M^{-1}J^\top=\begin{pmatrix}0&0.5\\-1&-0.5\end{pmatrix}$, $JM^{-1}J^\top=\mathrm{diag}(1,0.5)$, $\Lambda=\mathrm{diag}(1,2)$. Catalog matches.
 > 3. `Lam = np.linalg.inv(J @ np.linalg.inv(M) @ J.T)`, `tau_hold = g + J.T @ F_cmd`, `tau_acc = J.T @ (Lam @ a)`. Prints $\mathrm{diag}(1,2)$, $(9.62,0)$, $(2,0)$. The apparent mass in $y$ is $2\,\mathrm{kg}$ at this pose: a $10\,\mathrm{N}$ vertical contact on an unconstrained tip wants $5\,\mathrm{m/s}^2$. A stiff position inner loop is not this map — it is admittance with the vendor stiffness in the way ([[04-robotics/force-compliance-control|13]]).
 
@@ -1019,21 +1019,21 @@ Tier A (**P2**의 동역학 절반. 속도 루프는 [[04-robotics/modern-roboti
 
 $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\quad M=\begin{pmatrix}3&1\\1&1\end{pmatrix},\quad \Lambda=\mathrm{diag}(1,2),\quad g=(19.62,\ 0)\,\mathrm{N{\cdot}m}$$
 
-1. **그리기.** 연직면의 고정 자세 P2, $g$는 $-y$. 점질량 둘, 어깨/엘보 중력 토크, 패널에 $-y$로 $10\,\mathrm{N}$(로봇이 아래로 누름). 말단에 *가해지는* 힘에 뉴턴 3법칙을 써라.
+1. **그리기.** 엘보를 $\theta=(0^\circ,45^\circ)$로 편 위의 그림. 여전히 연직면이고 $g$는 $-y$다. 점질량 둘과 무게 화살표, 관절마다 각 무게 작용선까지의 수평 모멘트 팔, 어깨/엘보 토크 $g(\theta)$, 그리고 말단 아래 패널에 $-y$로 $10\,\mathrm{N}$(*패널에* 가해지는 힘). 말단에 *가해지는* 힘에 뉴턴 3법칙을 써라. 위 그림에서 $0$이던 토크 가운데 여기서 $0$이 아닌 것은 무엇인가?
 2. **유도.** 정지. (a) 비접촉 유지 토크. (b) 패널에 $F_\text{cmd}=(0,-10)\,\mathrm{N}$을 명령할 때 $\tau=g+J^\top F_\text{cmd}$. (c) 속도 항이 0일 때 $\dot v=(0,1)\,\mathrm{m/s}^2$를 만드는 말단 렌치 $\mathcal{F}=\Lambda\dot v$. (d) 그 렌치의 관절 토크 $J^\top$. (e) $J$와 $M$에서 $\Lambda=(JM^{-1}J^\top)^{-1}$를 다시 계산하라. 행렬을 얻기 전에 카탈로그를 인용하지 마라.
 3. **실행.** 영어 템플릿의 `?`를 채우고 $\Lambda$와 (b)·(d)의 토크를 출력하라. 시간 루프 없음.
 
 > [!note]- 그리는 법 · How to draw it
-> - 팔은 연직면에 실제 비율로 그린다. 베이스는 원점, 링크 1이 $+x$를 따라 엘보 $(1,0)$까지, 링크 2가 곧장 위로 말단 $(1,1)$까지 가고, 여백에 $-y$ 방향 중력 화살표를 그려 아래쪽을 확정한다.
+> - 팔은 연직면에 실제 비율로 그린다. 베이스는 원점, 링크 1이 $+x$를 따라 엘보 $(1,0)$까지, 링크 2가 $45^\circ$로 바깥 위를 향해 말단 $(1.707,\ 0.707)$까지 가고, 여백에 $-y$ 방향 중력 화살표를 그려 아래쪽을 확정한다.
 > - 링크는 질량 없는 막대로 그리고, 각 링크의 *말단 쪽 끝*에 $1\,\mathrm{kg}$짜리 검은 점을 찍어 거기서 아래로 $9.81\,\mathrm{N}$짜리 무게 화살표를 긋는다. 카탈로그의 점질량 규약이 모든 숫자를 만들어 내고, 질량을 링크 중앙에 찍으면 다른 팔이 된다.
-> - 관절마다 그 축에서 각 무게 작용선까지의 수평 거리를 그리고 값을 적는다. 모멘트 팔은 링크 길이가 아니라 그 수평 간격이다.
-> - 중력 토크는 관절의 곡선 화살표로 적고, 엘보 값은 $0$이어도 비워 두지 말고 명시한다. 이 자세에서 그 $0$은 자세에 대한 사실이고, 팔이 이 자세를 벗어나는 순간 $0$이 아니게 된다.
+> - 관절마다 그 축에서 각 무게 작용선까지의 수평 거리를 그리고 값을 적는다. 모멘트 팔은 링크 길이가 아니라 그 수평 간격이다. 말단의 무게 작용선이 이제 엘보 축을 지나지 않으며, 둘 사이의 간격이 새 숫자다.
+> - 중력 토크는 관절의 곡선 화살표로 적고 둘 다 값을 쓴다. 엘보 값은 위 그림에서 $0$이던 것이다.
 > - 말단 아래에 패널을 수평면으로 그리고(전완은 도면 평면 밖으로 패널 앞을 지나가므로 패널에 닿는 것은 말단뿐이다), 명령한 힘은 *패널로* 향하는 아래 화살표로, 그 반작용은 같은 길이의 위 화살표로 *말단에* 그린다. 살짝 어긋나게 그려 한 화살표를 두 번 그린 것이 아니라 쌍임이 보이게 한다.
-> - 각 힘이 어느 물체에 작용하는지 적는다. 이 트랙 뒷부분의 부호 실수는 거의 전부 이 쌍이다.
-> - 2(e)번과 3번을 위해 겉보기 질량을 더한다면, 말단에 반축이 $\Lambda$의 대각 성분(kg)인 타원을 그린다. 이것은 [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 조작성 타원이 아니다. 그쪽은 속도에, 이쪽은 질량에 살며, 같은 $J$의 두 그림이 왜 다른지가 §6의 유도다.
+> - 각 힘이 어느 물체에 작용하는지 적는다. 이 트랙 뒷부분의 부호 실수는 거의 전부 이 쌍이고, 이 쌍은 자세에 따라 바뀌지 않는다.
+> - 2(e)번과 3번은 고정 자세 그대로다. 겉보기 질량 타원을 더한다면 그것은 위 그림의 것이고, 반축은 $\Lambda$의 대각 성분(kg)이다. 이것은 [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 조작성 타원이 아니다. 그쪽은 속도에, 이쪽은 질량에 살며, 같은 $J$의 두 그림이 왜 다른지가 §6의 유도다.
 
 > [!tip]- 정답 · Solutions
-> 1. 엘보 $(1,0)$, 말단 $(1,1)$. 질량은 그 두 점. 중력: 어깨 $19.62\,\mathrm{N{\cdot}m}$(두 질량이 관절 1에서 오른쪽으로 1 m), 엘보 $0$(전완 질량이 관절 2 위). 패널에 $(0,-10)$ $\Rightarrow$ 말단에 $(0,+10)$.
+> 1. 엘보 $(1,0)$, 말단 $(1+\cos45^\circ,\ \sin45^\circ)=(1.707,\ 0.707)$이고 질량은 그 두 점에 있다. 모멘트 팔: 어깨에서 엘보 질량까지 $1$ m, 말단 질량까지 $1.707$ m, 엘보에서 말단 질량까지 $0.707$ m. 유지 토크 $g(\theta)=(9.81(1+1.707),\ 9.81\times0.707)=(26.56,\ 6.94)\,\mathrm{N{\cdot}m}$. 고정 자세에서는 말단이 엘보 바로 위에 있어 $0$이던 엘보 토크가 이제 $6.94\,\mathrm{N{\cdot}m}$이다. 전완이 바깥으로 기울어 그 무게 작용선이 엘보 축을 벗어났기 때문이다. 패널에 $(0,-10)$ $\Rightarrow$ 말단에 $(0,+10)$으로, 앞과 같은 쌍이다. 뉴턴 3법칙은 자세에 매이지 않는다.
 > 2. (a) $\tau=(19.62,\ 0)$. (b) $J^\top F_\text{cmd}=(-10,\ 0)$, $\tau=(9.62,\ 0)$ — 패널이 말단에서 보이는 $19.62\,\mathrm{N}$ 중 $10\,\mathrm{N}$을 진다. (c) $\Lambda a=(0,2)\,\mathrm{N}$. (d) $J^\top(0,2)=(2,\ 0)$. (e) $M^{-1}=\begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}$, $JM^{-1}J^\top=\mathrm{diag}(1,0.5)$, $\Lambda=\mathrm{diag}(1,2)$.
 > 3. 빈칸은 영어 해. $\mathrm{diag}(1,2)$, $(9.62,0)$, $(2,0)$. 이 자세에서 $y$ 겉보기 질량은 $2\,\mathrm{kg}$: 구속 없는 말단에 수직 $10\,\mathrm{N}$이면 $5\,\mathrm{m/s}^2$. 뻣뻣한 위치 내부 루프는 이 사상이 아니다([[04-robotics/force-compliance-control|13]]).
 

@@ -677,7 +677,7 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 
 Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]]. The motion step is the scalar Kalman of §5, not a new filter.
 
-1. **Draw.** The upper panel of the picture above, by hand: prior $p(x)=\mathcal{N}(10,4)$, likelihood $p(z\mid x)=\mathcal{N}(x,1)$ with $z=12$, posterior. Mark the Kalman gain as the weight on the innovation.
+1. **Draw.** The upper panel of the picture above for a range sensor twice as noisy in standard deviation, $R=4$, so that it is exactly as uncertain as the prior: prior $p(x)=\mathcal{N}(10,4)$, likelihood $p(z\mid x)=\mathcal{N}(x,4)$ with $z=12$, and the posterior. Mark the Kalman gain as the weight on the innovation. Where does the posterior sit now, and is it still narrower than both inputs?
 2. **Derive.** Catalog update: $K$, $\hat x^+$, $P^+$. Then a second independent range $z_2=11$, $R=1$. Then a motion $x\leftarrow x+1$ with process variance $Q=1$, then $z_3=13$, $R=1$. Write predict then correct.
 3. **Do.** Fill `?`. Print the three gains (after $z$, after $z_2$, after motion+$z_3$) and the final posterior.
 
@@ -697,16 +697,15 @@ print(K1, K2, K3, x, P)
 ```
 
 > [!note]- How to draw it · 그리는 법
-> - One horizontal axis, distance $x$ in centimetres from about $6$ to $16$, and one common vertical scale for all three curves.
-> - The prior $\mathcal{N}(10,\,4)$ with its inflection points marked at $10\pm2$, so the width on the page *is* the standard deviation, and the likelihood $\mathcal{N}(12,\,1)$ as a function of $x$, marked at $12\pm1$.
-> - Peak heights to scale, $0.199$ and $0.399$: the narrower curve must be visibly the taller one, because that height ratio is the whole reason the answer moves toward the sensor.
-> - The posterior $\mathcal{N}(11.6,\,0.8)$, standard deviation $\sqrt{0.8}=0.894$, peak $0.446$, with two checks written on it: it lies *between* the two centres and nearer the sensor, and it is narrower than *either* input ($0.894$ against $2$ and $1$). Draw it visibly thinner than the likelihood, or the figure lies about what fusion does.
-> - The gain as a labelled segment: the innovation $z-\hat x^-=2$ from $10$ to $12$, the sub-segment $K\cdot(z-\hat x^-)=0.8\times2=1.6$ from $10$ to $11.6$, and $K=P^-/(P^-+R)=4/5=0.8$ beside it — the fraction of the innovation you are willing to walk. In the margin, a bad sensor $R=100$: $K=0.04$ moves the estimate only to $10.08$, almost on top of the prior.
-> - To carry item 2 into the drawing, a time axis underneath with three measurement ticks and one predict step between the second and third, and at each an error bar for the current $P$: $4$, $0.8$ after $z_1=12$, $0.444$ after $z_2=11$, $1.444$ across the predict, $0.591$ after $z_3=13$. The bars shrink at every correction and grow at the prediction.
-> - A dashed bar for the danger item 3 ends on: a *wrong* wall at $20$ after the first update drags the estimate to $\approx15.3$ while the bar stays just as short — confident and wrong.
+> - One horizontal axis, distance $x$ in centimetres from about $4$ to $18$, and one common vertical scale for all three curves.
+> - The prior $\mathcal{N}(10,\,4)$ with its inflection points marked at $10\pm2$, so the width on the page *is* the standard deviation, and the likelihood $\mathcal{N}(12,\,4)$ as a function of $x$, marked at $12\pm2$.
+> - Peak heights to scale, $0.199$ and $0.199$: the two curves are the same shape, one shifted by $2$. In the picture above the likelihood was twice as tall, and that height ratio is what pulled the answer toward the sensor; here nothing pulls either way.
+> - The posterior $\mathcal{N}(11,\,2)$, standard deviation $\sqrt2=1.414$, peak $0.282$, with two checks written on it: it lies exactly halfway between the two centres, and it is still narrower than *either* input ($1.414$ against $2$ and $2$). Two equally poor opinions still beat one.
+> - The gain as a labelled segment: the innovation $z-\hat x^-=2$ from $10$ to $12$, the sub-segment $K\cdot(z-\hat x^-)=0.5\times2=1$ from $10$ to $11$, and $K=P^-/(P^-+R)=4/8=0.5$ beside it. In the margin, the picture above's $R=1$: $K=0.8$ and $11.6$.
+> - Items 2 and 3 use the catalog sensor, $R=1$: keep their time axis — $P=4$, $0.8$, $0.444$, $1.444$, $0.591$, shrinking at every correction and growing at the prediction — on a separate strip, not on this panel.
 
 > [!tip]- Solutions
-> 1. Prior blob at 10 with width 2; likelihood at 12 with width 1; posterior in between, closer to 12.
+> 1. Prior and likelihood are the same curve, centred at $10$ and $12$, each of width $2$ and peak $0.199$. $K=4/(4+4)=0.5$, so the estimate walks half the innovation, $0.5\times2=1$, to $\hat x^+=11$, exactly halfway, and $P^+=(1-0.5)\times4=2$: standard deviation $1.414$, peak $0.282$, narrower than both inputs. With the picture's $R=1$ the gain was $0.8$ and the estimate $11.6$: the gain is where the relative trust in the two sources is written down.
 > 2. $K=4/(4+1)=0.8$, $\hat x=10+0.8\cdot2=11.6$, $P=0.8$. Second: $K=0.8/(0.8+1)=0.444$, $\hat x=11.6+0.444\cdot(11-11.6)=11.333$, $P=0.444$. Predict: $x=12.333$, $P=1.444$. Third: $K=1.444/(1.444+1)=0.591$, $\hat x=12.333+0.591\cdot(13-12.333)=12.727$, $P=0.591$.
 > 3. Blanks: `K = P/(P+R)`, `x = x + K*(z-x)`, `P = (1-K)*P`. Prints $0.8$, $0.444$, then after predict+correct the third gain $\approx 0.591$, $x\approx 12.73$, $P\approx 0.591$. Fusing a *wrong* wall at 20 cm with $R=1$ after the first update would yank the estimate to $11.6+0.444\cdot(20-11.6)\approx 15.3$ with the same small $P$ — confident and wrong. That is the association failure [[04-robotics/state-estimation-slam|3]] exists to name.
 
@@ -1380,21 +1379,20 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 
 Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 영어 템플릿.
 
-1. **그리기.** 위의 그림 윗부분을 손으로 다시 그린다. 사전 $\mathcal{N}(10,4)$, 우도 $z=12$, $R=1$, 사후. 칼만 이득을 혁신의 가중으로 표시하라.
+1. **그리기.** 표준편차가 두 배로 시끄러워진 거리 센서, 곧 사전분포와 꼭 같은 만큼 불확실한 $R=4$에 대한 위 그림의 윗부분: 사전 $p(x)=\mathcal{N}(10,4)$, $z=12$에서의 우도 $p(z\mid x)=\mathcal{N}(x,4)$, 그리고 사후. 칼만 이득을 혁신의 가중으로 표시하라. 이제 사후는 어디에 놓이고, 여전히 두 입력보다 좁은가?
 2. **유도.** 카탈로그 갱신. 둘째 거리 $z_2=11$, $R=1$. 운동 $x\leftarrow x+1$, $Q=1$, 그다음 $z_3=13$. 예측 다음 보정.
 3. **실행.** 세 이득($z$, $z_2$, 운동+$z_3$ 뒤)과 마지막 사후를 출력하라.
 
 > [!note]- 그리는 법 · How to draw it
-> - 가로축 하나: 거리 $x$, 단위 센티미터, 대략 $6$부터 $16$까지. 세 곡선 모두에 공통인 세로 축척 하나.
-> - 사전분포 $\mathcal{N}(10,\,4)$는 변곡점을 $10\pm2$에 표시해 지면 위의 폭이 곧 표준편차가 되게 하고, 우도 $\mathcal{N}(12,\,1)$은 $x$의 함수로 그려 $12\pm1$을 표시한다.
-> - 봉우리 높이는 축척대로 $0.199$와 $0.399$. 좁은 곡선이 눈에 띄게 높아야 한다. 답이 센서 쪽으로 움직이는 이유가 전부 그 높이 비율이기 때문이다.
-> - 사후분포 $\mathcal{N}(11.6,\,0.8)$, 표준편차 $\sqrt{0.8}=0.894$, 봉우리 $0.446$. 그 위에 확인 둘을 적는다. 두 중심의 *사이*에 있고 센서 쪽에 더 가까우며, *어느* 입력보다도 좁다($2$와 $1$에 대해 $0.894$). 우도보다 눈에 띄게 가늘게 그려라. 그러지 않으면 그림이 융합이 하는 일에 대해 거짓말을 한다.
-> - 이득은 이름 붙인 선분으로: $10$에서 $12$까지 혁신 $z-\hat x^-=2$, $10$에서 $11.6$까지 부분 선분 $K\cdot(z-\hat x^-)=0.8\times2=1.6$, 옆에 $K=P^-/(P^-+R)=4/5=0.8$. 혁신 중 걸어갈 용의가 있는 비율이다. 여백에는 나쁜 센서 $R=100$: $K=0.04$라 추정이 $10.08$까지만 움직여 사전분포 거의 위에 겹친다.
-> - 2번을 그림으로 이어 가려면 아래에 시간축을 긋고 측정 눈금 셋과, 둘째와 셋째 사이에 예측 스텝 하나를 넣은 뒤, 각각에 그때의 $P$를 오차 막대로 그린다. $4$, $z_1=12$ 뒤 $0.8$, $z_2=11$ 뒤 $0.444$, 예측을 지나며 $1.444$, $z_3=13$ 뒤 $0.591$. 막대는 보정마다 줄고 예측에서 늘어난다.
-> - 3번이 끝나는 위험은 점선 막대로: 첫 갱신 뒤 $20$에 있는 *틀린* 벽은 추정을 $\approx15.3$까지 끌고 가면서 막대는 그대로 짧다. 확신하고 틀린 것이다.
+> - 가로축 하나: 거리 $x$, 단위 센티미터, 대략 $4$부터 $18$까지. 세 곡선 모두에 공통인 세로 축척 하나.
+> - 사전분포 $\mathcal{N}(10,\,4)$는 변곡점을 $10\pm2$에 표시해 지면 위의 폭이 곧 표준편차가 되게 하고, 우도 $\mathcal{N}(12,\,4)$는 $x$의 함수로 그려 $12\pm2$를 표시한다.
+> - 봉우리 높이는 축척대로 $0.199$와 $0.199$. 두 곡선은 모양이 같고 $2$만큼 옮겨져 있을 뿐이다. 위 그림에서는 우도가 두 배 높았고, 그 높이 비율이 답을 센서 쪽으로 끌었다. 여기서는 어느 쪽으로도 끌지 않는다.
+> - 사후분포 $\mathcal{N}(11,\,2)$, 표준편차 $\sqrt2=1.414$, 봉우리 $0.282$. 그 위에 확인 둘을 적는다. 두 중심의 정확히 한가운데에 있고, 그래도 *어느* 입력보다 좁다($2$와 $2$에 대해 $1.414$). 똑같이 서툰 의견 둘도 하나보다 낫다.
+> - 이득은 이름 붙인 선분으로: $10$에서 $12$까지 혁신 $z-\hat x^-=2$, $10$에서 $11$까지 부분 선분 $K\cdot(z-\hat x^-)=0.5\times2=1$, 옆에 $K=P^-/(P^-+R)=4/8=0.5$. 여백에는 위 그림의 $R=1$: $K=0.8$, $11.6$.
+> - 2번과 3번은 카탈로그 센서 $R=1$을 쓴다. 그 시간축 — $P=4$, $0.8$, $0.444$, $1.444$, $0.591$, 보정마다 줄고 예측에서 늘어나는 막대 — 은 이 칸이 아니라 따로 그린 띠에 둔다.
 
 > [!tip]- 정답 · Solutions
-> 1. 사전 10(폭 2), 우도 12(폭 1), 사후는 12 쪽.
+> 1. 사전과 우도는 같은 곡선이고 중심만 $10$과 $12$이며, 둘 다 폭 $2$, 봉우리 $0.199$다. $K=4/(4+4)=0.5$이므로 추정은 혁신의 절반 $0.5\times2=1$을 걸어 $\hat x^+=11$, 정확히 한가운데에 서고, $P^+=(1-0.5)\times4=2$로 표준편차 $1.414$, 봉우리 $0.282$이며 두 입력보다 좁다. 위 그림의 $R=1$에서는 이득이 $0.8$, 추정이 $11.6$이었다. 두 출처를 얼마나 믿는지가 적히는 자리가 이득이다.
 > 2. $K=0.8$, $11.6$, $P=0.8$. 둘째 $K=0.444$, $11.333$, $P=0.444$. 예측 $12.333$, $P=1.444$. 셋째 $K=0.591$, $12.727$, $P=0.591$.
 > 3. 빈칸은 영어 해. 첫 갱신 뒤 틀린 벽 20 cm를 같은 $R=1$로 넣으면 $\approx 15.3$에 작은 $P$ — 확신하고 틀림. [[04-robotics/state-estimation-slam|3]]이 이름 붙이는 연관 실패다.
 

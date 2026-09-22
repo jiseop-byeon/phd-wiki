@@ -188,19 +188,20 @@ twin ([[05-construction-robotics/index|construction]]); VLAs that output joint c
 
 Tier B. **P2** at the frozen pose of [[02-foundations/lab-plants|0.6]]. Home and screws as on this page. No simulator.
 
-1. **Draw.** Dashed home (both links along $+x$, tip at $(2,0)$) and solid frozen pose. Frames at the base, at $q_2=(1,0,0)$, and at the tip.
+1. **Draw.** The picture above for $\theta=(45^\circ,45^\circ)$, the pose where the shoulder moves too: dashed home (both links along $+x$, tip at $(2,0)$) and the solid evaluated arm, with the screw axes and the frames at the base, at $q_2=(1,0,0)$ and at the tip. Beside the arms, the matrix route and the geometric route to the tip. Where would the tip land if you skipped the first exponential?
 2. **Derive.** Write $\mathcal{S}_1$, $\mathcal{S}_2$, and $M$. From geometry: elbow, tip, $R$ at $\theta=(0^\circ,90^\circ)$. Why is $e^{[\mathcal{S}_1]\theta_1}=I$ here, and what is $T$?
 3. **Interpret.** When does skipping the first exponential fail, and what must still match PoE if it does?
 
 > [!note]- How to draw it · 그리는 법
 > - The home arm dashed: both links along $+\hat x$, elbow at $(1,0)$, tip at $(2,0)$. This is where $M$ is read — a fact about the model, not about where the robot is now.
-> - The evaluated arm solid: elbow at $(\cos\theta_1, \sin\theta_1)$, tip one more unit along the absolute angle $\theta_1 + \theta_2$. When $\theta_1 = 0$ the two arms share link 1 exactly; draw them overlapping, not offset, since that coincidence is what makes the first exponential the identity.
-> - The screw axes on the home drawing and nowhere else: a circled dot at each $q_i$, labelled with $\hat\omega_i = (0,0,1)$ and its linear part $v_i = -\hat\omega_i \times q_i$. Marking an axis on the solid arm is the most common way this figure goes wrong: $\mathcal{S}_i$ is defined at home and stays there.
-> - Three frames as small pairs of labelled arrows: $\{s\}$ at the base, one at $q_2$, and the tool frame at the solid tip with its $x$-axis along the forearm.
-> - Beside the figure, two independent lines that must agree: the matrix route $T = e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$ and the geometric route, elbow $+$ forearm. A figure that shows only one route cannot catch the error it exists to catch.
+> - The evaluated arm solid: elbow at $(\cos45^\circ,\ \sin45^\circ)=(0.707,\ 0.707)$, tip one more unit along the absolute angle $90^\circ$, at $(0.707,\ 1.707)$. Now $\theta_1\ne0$, so the two arms no longer share link 1: draw them apart.
+> - The screw axes on the home drawing and nowhere else: a circled dot at each $q_i$, labelled with $\hat\omega_i=(0,0,1)$ and its linear part $v_i=-\hat\omega_i\times q_i$. The solid elbow is at $(0.707,\ 0.707)$, not at $q_2$; marking $\mathcal{S}_2$ there is the most common way this figure goes wrong.
+> - Three frames as small pairs of labelled arrows: $\{s\}$ at the base, one at $q_2$ on the home arm, and the tool frame at the solid tip with its $x$-axis along the forearm, straight up.
+> - Beside the figure, two independent lines that must agree: the matrix route $T=e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$ and the geometric route, elbow $+$ forearm.
+> - A faint third arm for the shortcut that skips $e^{[\mathcal{S}_1]\theta_1}$: $e^{[\mathcal{S}_2]\theta_2}M$ alone puts the tip at $(1.707,\ 0.707)$ with $R=R_z(45^\circ)$, $1.414\,\mathrm{m}$ from the true tip. That gap is item 3's answer, drawn.
 
 > [!tip]- Solutions
-> 1. Home stretched along $+x$. Frozen: elbow $(1,0)$, tip $(1,1)$, forearm along $+y$.
+> 1. Home stretched along $+x$. Evaluated arm: elbow $(0.707,\ 0.707)$, tip $(0.707,\ 1.707)$, forearm along $+y$, so $R=R_z(90^\circ)$. Matrix route: $e^{[\mathcal{S}_2]\pi/4}M$ turns $M$ about $q_2$ to tip $(1.707,\ 0.707)$ with $R=R_z(45^\circ)$; $e^{[\mathcal{S}_1]\pi/4}$ then turns that about the origin to tip $(0.707,\ 1.707)$ with $R=R_z(90^\circ)$ — the geometric route's answer. Skipping the first exponential leaves the tip at $(1.707,\ 0.707)$, $\sqrt2=1.414\,\mathrm{m}$ off: the shortcut of item 2 holds only because $\theta_1=0$ at the frozen pose.
 > 2. $\mathcal{S}_1=(0,0,1;\,0,0,0)$, $\mathcal{S}_2=(0,0,1;\,0,-1,0)$, $M$ has $p=(2,0,0)$ and $R=I$. $\theta_1=0$ so the first factor is $I$. Joint 2 rotates $M$ about $q_2$: tip $(1,1)$, $R=R_z(90^\circ)$. Same $T$ as Self-check 1 — now named **P2**.
 > 3. The shortcut fails as soon as the shoulder moves; then the product order matters. Geometric FK and PoE must still agree.
 
@@ -381,18 +382,19 @@ $v_i = -\hat\omega_i \times q_i$ → 지수들 → 곱. 코드로는 Modern Robo
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 고정 자세 **P2**. 홈과 스크류는 이 페이지. 시뮬레이터 없음.
 
-1. **그리기.** 점선 홈(두 링크 $+x$, 말단 $(2,0)$)과 실선 고정 자세. 베이스, $q_2=(1,0,0)$, 말단의 프레임.
+1. **그리기.** 어깨도 움직이는 자세 $\theta=(45^\circ,45^\circ)$에 대한 위의 그림: 점선 홈(두 링크 $+x$, 말단 $(2,0)$)과 실선으로 그린 평가 자세의 팔, 스크류 축, 그리고 베이스·$q_2=(1,0,0)$·말단의 프레임. 팔 옆에 말단까지의 행렬 경로와 기하 경로를 적어라. 첫 지수를 건너뛰었다면 말단은 어디에 떨어졌겠는가?
 2. **유도.** $\mathcal{S}_1$, $\mathcal{S}_2$, $M$. 기하로 $\theta=(0^\circ,90^\circ)$의 엘보·말단·$R$. 왜 $e^{[\mathcal{S}_1]\theta_1}=I$이고 $T$는?
 3. **해석.** 첫 지수를 건너뛰는 지름길이 언제 깨지고, 그래도 PoE와 무엇이 맞아야 하는가?
 
 > [!note]- 그리는 법 · How to draw it
 > - 홈 자세의 팔은 점선. 두 링크 모두 $+\hat x$, 엘보 $(1,0)$, 말단 $(2,0)$. $M$을 읽는 곳이며, 로봇이 지금 어디 있는지가 아니라 모형에 대한 사실이다.
-> - 평가할 자세의 팔은 실선. 엘보는 $(\cos\theta_1, \sin\theta_1)$, 말단은 거기서 절대각 $\theta_1 + \theta_2$ 방향으로 한 단위 더 간 곳이다. $\theta_1 = 0$이면 두 팔이 링크 1을 정확히 공유하므로 어긋나게 그리지 말고 겹쳐 그린다. 그 겹침이 첫 지수를 항등으로 만드는 사실 그 자체다.
-> - 스크류 축은 홈 그림에만 표시한다. 각 $q_i$에 동그라미 친 점을 찍고 $\hat\omega_i = (0,0,1)$과 선형부 $v_i = -\hat\omega_i \times q_i$를 적는다. 축을 실선 팔에 표시하는 것이 이 그림이 틀리는 가장 흔한 방식이다. $\mathcal{S}_i$는 홈 자세에서 정의되고 거기 머문다.
-> - 프레임 셋을 이름 붙인 짧은 화살표 쌍으로. 베이스의 $\{s\}$, $q_2$의 것 하나, 그리고 실선 말단의 도구 프레임이고, 도구 프레임의 $x$축은 전완 방향이다.
-> - 그림 옆에는 서로 맞아야 하는 두 줄을 독립적으로 적는다. 행렬 경로 $T = e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$과 기하 경로 엘보 $+$ 전완이다. 둘 중 하나만 보여 주는 그림은 자기가 존재하는 이유인 그 오류를 잡지 못한다.
+> - 평가할 자세의 팔은 실선. 엘보는 $(\cos45^\circ,\ \sin45^\circ)=(0.707,\ 0.707)$, 말단은 거기서 절대각 $90^\circ$ 방향으로 한 단위 더 간 $(0.707,\ 1.707)$. 이제 $\theta_1\ne0$이므로 두 팔은 링크 1을 공유하지 않는다. 떨어뜨려 그린다.
+> - 스크류 축은 홈 그림에만 표시한다. 각 $q_i$에 동그라미 친 점을 찍고 $\hat\omega_i=(0,0,1)$과 선형부 $v_i=-\hat\omega_i\times q_i$를 적는다. 실선 엘보는 $q_2$가 아니라 $(0.707,\ 0.707)$에 있고, $\mathcal{S}_2$를 거기에 표시하는 것이 이 그림이 틀리는 가장 흔한 방식이다.
+> - 프레임 셋을 이름 붙인 짧은 화살표 쌍으로. 베이스의 $\{s\}$, 홈 팔의 $q_2$에 하나, 그리고 실선 말단의 도구 프레임이고, 도구 프레임의 $x$축은 전완 방향, 곧 곧장 위다.
+> - 그림 옆에는 서로 맞아야 하는 두 줄을 독립적으로 적는다. 행렬 경로 $T=e^{[\mathcal{S}_1]\theta_1}e^{[\mathcal{S}_2]\theta_2}M$과 기하 경로 엘보 $+$ 전완이다.
+> - $e^{[\mathcal{S}_1]\theta_1}$을 건너뛰는 지름길의 셋째 팔을 흐리게: $e^{[\mathcal{S}_2]\theta_2}M$만으로는 말단이 $(1.707,\ 0.707)$, $R=R_z(45^\circ)$에 놓여 참 말단에서 $1.414\,\mathrm{m}$ 떨어진다. 그 간격이 3번의 답을 그린 것이다.
 
 > [!tip]- 정답 · Solutions
-> 1. 홈은 $+x$로 뻗음. 고정: 엘보 $(1,0)$, 말단 $(1,1)$, 전완은 $+y$ 방향.
+> 1. 홈은 $+x$로 뻗음. 평가 자세: 엘보 $(0.707,\ 0.707)$, 말단 $(0.707,\ 1.707)$, 전완은 $+y$ 방향이라 $R=R_z(90^\circ)$. 행렬 경로: $e^{[\mathcal{S}_2]\pi/4}M$이 $M$을 $q_2$ 둘레로 돌려 말단을 $(1.707,\ 0.707)$, $R=R_z(45^\circ)$에 놓고, $e^{[\mathcal{S}_1]\pi/4}$가 그것을 원점 둘레로 돌려 말단 $(0.707,\ 1.707)$, $R=R_z(90^\circ)$ — 기하 경로의 답과 같다. 첫 지수를 건너뛰면 말단은 $(1.707,\ 0.707)$에 남아 $\sqrt2=1.414\,\mathrm{m}$ 어긋난다. 2번의 지름길은 고정 자세에서 $\theta_1=0$이기 때문에만 성립한다.
 > 2. $\mathcal{S}_1=(0,0,1;\,0,0,0)$, $\mathcal{S}_2=(0,0,1;\,0,-1,0)$, $M$의 $p=(2,0,0)$, $R=I$. $\theta_1=0$이라 첫 인자는 $I$. 관절 2가 $M$을 $q_2$ 둘레로 돌려 말단 $(1,1)$, $R=R_z(90^\circ)$. 스스로 점검 1과 같은 $T$ — 이제 이름이 **P2**.
 > 3. 어깨가 움직이는 순간 곱 순서가 필요하다. 기하 FK와 PoE는 여전히 같아야 한다.

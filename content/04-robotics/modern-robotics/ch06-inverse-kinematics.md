@@ -238,19 +238,19 @@ and motor commands.
 
 Tier B. Tip target $(1,1)$ on **P2** from [[02-foundations/lab-plants|0.6]]. Analytic only — no Newton loop.
 
-1. **Draw.** Both IK branches that put the tip at $(1,1)$. Label the two elbow points.
+1. **Draw.** The picture above for a target on the $x$-axis, $(1.5,\ 0)$: both IK branches that put the tip there, with the two elbow points labelled and each branch's joint angles written beside it. Add the mean of the two joint vectors, dashed, with an $\times$ on its tip, and the miss back to the target.
 2. **Derive.** The two joint pairs. Which is the frozen pose of 0.6? Average the two joint vectors; where does that mean configuration put the tip?
 3. **Interpret.** A numerical IK seeded at $(45^\circ,0^\circ)$ cannot jump branches without crossing $\theta_2=0$. What does that mean for moving the tool to the panel?
 
 > [!note]- How to draw it · 그리는 법
-> - Draw the target once, as a small circle, and let every arm end on it or point at it.
-> - Each branch is two links: link 1 from the base to its elbow, link 2 from the elbow to the target. Draw one branch solid and the other lighter.
-> - Label both elbow points. The two elbows are the whole content of "elbow-up versus elbow-down": same tip, two different arms.
-> - If you add the mean of the two joint vectors, draw it dashed from its own joint angles (in the picture above, $(45^\circ, 0^\circ)$, one straight segment), put an $\times$ on its tip, and mark the miss back to the target. It must land visibly past the target, not near it.
-> - At the dashed tip, "reachable" is a double-headed arrow perpendicular to the straight arm and "wanted" points back along it toward the target. Draw them at right angles: every tip velocity the straight arm can produce lies on the first, and the whole error on the second.
+> - Draw the target once, as a small circle at $(1.5,\ 0)$, and let every arm end on it or point at it.
+> - Each branch is two links: link 1 from the base to its elbow, link 2 from the elbow to the target. Draw one branch solid and the other lighter; they are mirror images in the $x$-axis because the target lies on it.
+> - Label both elbow points, $(0.75,\ -0.661)$ and $(0.75,\ 0.661)$, and write each branch's angles, $(-41.4^\circ,\ 82.8^\circ)$ and $(41.4^\circ,\ -82.8^\circ)$: same tip, two different arms.
+> - The mean of the two joint vectors is $(0^\circ,\ 0^\circ)$: draw it dashed as one straight segment along $+x$, put an $\times$ on its tip at $(2,0)$, and mark the $0.5\,\mathrm{m}$ miss back to the target. It must land visibly past the target, not near it.
+> - At the dashed tip, "reachable" is a double-headed arrow perpendicular to the straight arm and "wanted" points back along it toward the target. Draw them at right angles: the straight arm is singular again, and the whole error lies in the direction it cannot move.
 
 > [!tip]- Solutions
-> 1. Elbow-right: elbow at $(1,0)$, forearm up. Elbow-up: elbow at $(0,1)$, forearm to the right.
+> 1. With $\cos\theta_2=(1.5^2-2)/2=0.125$, $\theta_2=\pm82.8^\circ$, and $\theta_1=-\operatorname{atan2}(\sin\theta_2,\ 1+\cos\theta_2)=\mp41.4^\circ$: branches $(-41.4^\circ,\ 82.8^\circ)$ with the elbow at $(0.75,\ -0.661)$ and $(41.4^\circ,\ -82.8^\circ)$ with the elbow at $(0.75,\ 0.661)$, mirror images in the $x$-axis. Their mean is $(0^\circ,\ 0^\circ)$, the straight arm, with its tip at $(2,0)$: $0.5\,\mathrm{m}$ past the target, a third of its distance from the base, and exactly on the singularity, as in the picture above. The mean of two IK solutions is again not a solution.
 > 2. $(0^\circ,90^\circ)$ and $(90^\circ,-90^\circ)$. Frozen pose is $(0^\circ,90^\circ)$. Mean $(45^\circ,0^\circ)$: tip $(\sqrt2,\sqrt2)\approx(1.41,1.41)$ — not a solution. The mean of two IKs is not an IK (the figure in §1).
 > 3. $\det J=L_1L_2\sin\theta_2$ vanishes on the straight arm between branches, and $(45^\circ,0^\circ)$ lies on it: seeded exactly there the solver does not move at all (Worked case, Step 4), and once nudged off it a local solver stays on that side; switching elbows loses the panel-normal velocity at the singularity.
 
@@ -475,18 +475,18 @@ $\theta^{(0)} = (45°, 90°)$에서 시작.
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, 말단 목표 $(1,1)$. 해석해만 — 뉴턴 루프 없음.
 
-1. **그리기.** 말단을 $(1,1)$에 두는 IK 가지 둘. 엘보 두 점을 표시.
+1. **그리기.** $x$축 위의 목표 $(1.5,\ 0)$에 대한 위의 그림: 말단을 거기 두는 IK 가지 둘, 두 엘보 점의 이름, 그리고 가지마다 옆에 적은 관절 각. 두 관절 벡터의 평균을 점선으로 더하고, 그 말단에 $\times$를 치고, 목표까지 되돌아오는 빗나감을 표시하라.
 2. **유도.** 관절 각 두 쌍. 0.6의 고정 자세는 어느 쪽인가? 두 관절 벡터의 평균은 말단을 어디에 두는가?
 3. **해석.** $(45^\circ,0^\circ)$에서 시작한 수치 IK는 $\theta_2=0$을 건너지 않고는 가지를 못 바꾼다. 도구를 패널로 옮길 때 뜻은?
 
 > [!note]- 그리는 법 · How to draw it
-> - 목표는 작은 원 하나로 한 번만 그리고, 모든 팔이 거기서 끝나거나 그것을 가리키게 둔다.
-> - 가지마다 링크 둘이다. 링크 1은 베이스에서 그 엘보까지, 링크 2는 엘보에서 목표까지. 한 가지는 실선, 다른 가지는 더 얇게 그린다.
-> - 엘보 두 점에 이름을 붙인다. 두 엘보가 "팔꿈치 위/아래"의 내용 전부다. 말단은 같고 팔이 둘이다.
-> - 두 관절 벡터의 평균을 더한다면 그 자신의 관절 각으로 점선을 그리고(위의 그림에서는 $(45^\circ, 0^\circ)$, 곧은 선분 하나), 말단에 $\times$를 친 뒤 목표까지 되돌아오는 빗나감을 표시한다. 목표 근처가 아니라 눈에 띄게 지나쳐 있어야 한다.
-> - 점선 말단에서 "도달 가능"은 곧은 팔에 수직인 양방향 화살표, "원하는 방향"은 팔을 따라 목표 쪽으로 되돌아가는 화살표다. 둘을 직각으로 그린다. 곧은 팔이 만들 수 있는 말단 속도는 전부 앞쪽에 있고, 오차는 전부 뒤쪽에 있다.
+> - 목표는 $(1.5,\ 0)$에 작은 원 하나로 한 번만 그리고, 모든 팔이 거기서 끝나거나 그것을 가리키게 둔다.
+> - 가지마다 링크 둘이다. 링크 1은 베이스에서 그 엘보까지, 링크 2는 엘보에서 목표까지. 한 가지는 실선, 다른 가지는 더 얇게 그린다. 목표가 $x$축 위에 있으므로 두 가지는 $x$축에 대해 거울상이다.
+> - 엘보 두 점 $(0.75,\ -0.661)$과 $(0.75,\ 0.661)$에 이름을 붙이고, 가지마다 각 $(-41.4^\circ,\ 82.8^\circ)$와 $(41.4^\circ,\ -82.8^\circ)$를 적는다. 말단은 같고 팔이 둘이다.
+> - 두 관절 벡터의 평균은 $(0^\circ,\ 0^\circ)$이다. $+x$를 따라 곧은 선분 하나로 점선을 그리고, $(2,0)$의 말단에 $\times$를 친 뒤 목표까지 되돌아오는 $0.5\,\mathrm{m}$의 빗나감을 표시한다. 목표 근처가 아니라 눈에 띄게 지나쳐 있어야 한다.
+> - 점선 말단에서 "도달 가능"은 곧은 팔에 수직인 양방향 화살표, "원하는 방향"은 팔을 따라 목표 쪽으로 되돌아가는 화살표다. 둘을 직각으로 그린다. 곧은 팔은 다시 특이하고, 오차는 전부 팔이 움직일 수 없는 방향에 있다.
 
 > [!tip]- 정답 · Solutions
-> 1. 엘보-오른쪽: 엘보 $(1,0)$, 전완 위. 엘보-위: 엘보 $(0,1)$, 전완 오른쪽.
+> 1. $\cos\theta_2=(1.5^2-2)/2=0.125$이므로 $\theta_2=\pm82.8^\circ$, $\theta_1=-\operatorname{atan2}(\sin\theta_2,\ 1+\cos\theta_2)=\mp41.4^\circ$다. 가지는 엘보가 $(0.75,\ -0.661)$인 $(-41.4^\circ,\ 82.8^\circ)$와 엘보가 $(0.75,\ 0.661)$인 $(41.4^\circ,\ -82.8^\circ)$로, $x$축에 대해 거울상이다. 평균은 $(0^\circ,\ 0^\circ)$, 곧 곧은 팔이고 말단은 $(2,0)$이다. 목표를 $0.5\,\mathrm{m}$, 베이스에서의 거리의 삼분의 일만큼 지나치고, 위 그림처럼 정확히 특이점 위에 있다. 두 IK 해의 평균은 이번에도 해가 아니다.
 > 2. $(0^\circ,90^\circ)$와 $(90^\circ,-90^\circ)$. 고정 자세는 $(0^\circ,90^\circ)$. 평균 $(45^\circ,0^\circ)$: 말단 $(\sqrt2,\sqrt2)\approx(1.41,1.41)$ — 해가 아니다. 두 IK의 평균은 IK가 아니다(§1 그림).
 > 3. 가지 사이의 직선 팔에서 $\det J=0$이고, $(45^\circ,0^\circ)$는 바로 그 위에 있다. 정확히 거기서 시작하면 해법은 전혀 움직이지 않고(위 계산의 4단계), 거기서 조금 벗어난 뒤에는 국소 해법이 그쪽에 남는다. 엘보를 바꾸면 특이점에서 패널 법선 속도를 잃는다.

@@ -162,7 +162,7 @@ VLA outputs pass through safety filters on real arms.
 
 Tier A. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]]. Mass and $\Lambda$ wait until [[02-foundations/manipulator-kinematics-dynamics|10]]; this page is velocity and statics.
 
-1. **Draw.** P2 at the frozen pose: base at the origin, elbow at $(1,0)$, tip at $(1,1)$. Draw Jacobian column 1 as the tip velocity for $\dot\theta=(1,0)$, and column 2 as the tip velocity for $\dot\theta=(0,1)$. Both are arrows at the tip. Write the two arrows as vectors.
+1. **Draw.** The picture above with the elbow closed to $\theta=(0^\circ,30^\circ)$, nearer the straight arm: base at the origin, elbow at $(1,0)$, tip at $(1.866,\ 0.5)$. Draw Jacobian column 1 as the tip velocity for $\dot\theta=(1,0)$ and column 2 as the tip velocity for $\dot\theta=(0,1)$, both as arrows at the tip, the manipulability ellipse, and a commanded tip velocity of $0.25\,\mathrm{m/s}$ straight away from the base with the joint rates it needs. Write the two columns as vectors.
 2. **Derive.** (a) Confirm $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ from the arrows (or from §2). (b) $J^{-1}$. (c) Joint rates that produce $v=(0,-0.25)\,\mathrm{m/s}$. (d) $\tau=J^\top F$ for $F=(2,-5)\,\mathrm{N}$. (e) Same $F$ at $\theta_2=5^\circ$ is *not* asked as a number — say which joint rate blows up if you instead asked for a tip velocity *along the arm*, and why $J^\top F$ itself does not blow up.
 3. **Do.** Fill the template and reproduce the lecture's $T=0.01$, $2\,\mathrm{s}$ pair (live vs frozen $J$). Then change *only* $T$ to $0.05$, live $J$, same $2\,\mathrm{s}$. Is the extra error frozen-$J$ class or integrator class?
 
@@ -193,15 +193,15 @@ for k in range(n):
 ```
 
 > [!note]- How to draw it · 그리는 법
-> - Draw P2 to scale first: base at the origin, elbow at $(1,0)$, tip at $(1,1)$.
-> - Column $i$ is the tip velocity when only joint $i$ turns at $1\,\mathrm{rad/s}$: an arrow perpendicular to the line from joint $i$ to the tip and as long as that line — $\sqrt2$ from the base for column 1, the unit forearm for column 2. Label each arrow with its vector.
+> - Draw P2 to scale first: base at the origin, elbow at $(1,0)$, forearm at $30^\circ$ to the tip at $(1.866,\ 0.5)$.
+> - Column $i$ is the tip velocity when only joint $i$ turns at $1\,\mathrm{rad/s}$: an arrow perpendicular to the line from joint $i$ to the tip and as long as that line — $1.932$ from the base for column 1, the unit forearm for column 2. Label each arrow with its vector.
 > - Anchor both columns at the tip. Drawing a column from the base is the standard way this figure goes wrong: a Jacobian column is a velocity of the tip.
-> - A commanded velocity is its own arrow out of the tip, in a different line weight from the columns, with the joint rates that produce it, $\dot\theta = J^{-1}v$, written beside it.
-> - The manipulability ellipse is centred on the tip, the image of the unit circle of joint rates, with semi-axes equal to the singular values ($1.618$ and $0.618$ in the picture above). Draw it visibly elongated, long axis along the easy direction.
-> - A force is an outlined arrow into the tip, never a solid one, so it cannot be read as a velocity; write $\tau = J^\top F$ beside it.
+> - The manipulability ellipse centred on the tip, the image of the unit circle of joint rates, with semi-axes equal to the singular values, $2.163$ and $0.231$ here against $1.618$ and $0.618$ in the picture above. Draw it thin: $\kappa_2=9.36$.
+> - Mark the base-to-tip line through the tip: the ellipse's short axis lies within a few degrees of it, so the radial direction is the one the arm moves in worst.
+> - The commanded velocity as its own arrow out of the tip along that line, in a different line weight from the columns, with $\dot\theta=J^{-1}v$ written beside it.
 
 > [!tip]- Solutions
-> 1. Shoulder-only: the tip is at lever arm $\sqrt{2}$ from the base, velocity perpendicular to $(1,1)$, i.e. parallel to $(-1,1)$. Unit $\dot\theta_1$ gives $|v|=L_\text{tip}=\sqrt{2}$, so column 1 $=(-1,1)$. Elbow-only: forearm is along $+y$ from $(1,0)$ to $(1,1)$, unit $\dot\theta_2$ gives $v$ perpendicular to the forearm, column 2 $=(-1,0)$.
+> 1. Column 1 is the shoulder-only velocity: perpendicular to the base-to-tip line and as long as it, $(-0.5,\ 1.866)$, length $1.932$. Column 2 is the elbow-only velocity, perpendicular to the forearm at $30^\circ$: $(-0.5,\ 0.866)$, unit length. $\det J=\sin30^\circ=0.5$. The ellipse has semi-axes $2.163$ and $0.231$, $\kappa_2=9.36$ against $2.618$ at the frozen pose; its long axis points at $108^\circ$, its short axis at $18^\circ$, close to the base-to-tip line at $15^\circ$. Moving the tip $0.25\,\mathrm{m/s}$ straight out, along $(0.966,\ 0.259)$, needs $\dot\theta=J^{-1}v=(0.483,\ -0.966)\,\mathrm{rad/s}$, $2.7$ times the $(0.177,\ -0.354)$ the same request needs at the frozen pose: closer to straight, the radial direction is the expensive one.
 > 2. (a) Columns of $J$ are those arrows. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=J^{-1}(0,-0.25)=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $J^\top=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}$, $\tau=J^\top(2,-5)=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) Along-the-arm velocity hits the lost singular direction; $\dot\theta\sim 1/\sigma_{\min}$ blows up. $J^\top F$ is a static map and stays finite — the structure carries the force, the motors need not.
 > 3. $J$ blanks: `((-s1-s12, -s12), (c1+c12, c12))`. Inverse: `th1d = (J[1][1]*0 - J[0][1]*vy)/det`, `th2d = (-J[1][0]*0 + J[0][0]*vy)/det`. Lecture pair: live $\approx(0.999,\ 0.500)$, frozen $\approx(0.878,\ 0.521)$. Live at $T=0.05$: $\approx(0.997,\ 0.501)$ — still millimetre-scale. Integrator class. Frozen error is independent of $T$ (joint rates are constant), so it is not a step-size artefact.
 
@@ -354,19 +354,19 @@ $\tau = J^\top \mathcal{F}$ 위에 살고([[01-canonical-papers/notes/4-vla/act|
 
 Tier A. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 질량과 $\Lambda$는 [[02-foundations/manipulator-kinematics-dynamics|10]]까지 기다려라. 이 페이지는 속도와 정역학이다.
 
-1. **그리기.** 고정 자세의 P2: 베이스 원점, 엘보 $(1,0)$, 말단 $(1,1)$. $\dot\theta=(1,0)$의 말단 속도(열 1)와 $\dot\theta=(0,1)$의 말단 속도(열 2)를 말단에서 화살표로 그려라. 두 벡터를 써라.
+1. **그리기.** 엘보를 $\theta=(0^\circ,30^\circ)$로 접어 곧은 팔에 더 가까워진 위의 그림: 베이스 원점, 엘보 $(1,0)$, 말단 $(1.866,\ 0.5)$. $\dot\theta=(1,0)$의 말단 속도(열 1)와 $\dot\theta=(0,1)$의 말단 속도(열 2)를 말단에서 화살표로, 가조작성 타원, 그리고 베이스에서 곧장 멀어지는 $0.25\,\mathrm{m/s}$의 명령 말단 속도와 그것이 요구하는 관절 속도를 그려라. 두 열을 벡터로 써라.
 2. **유도.** (a) 화살표(또는 §2)에서 $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$. (b) $J^{-1}$. (c) $v=(0,-0.25)\,\mathrm{m/s}$를 만드는 관절 속도. (d) $F=(2,-5)\,\mathrm{N}$의 $\tau=J^\top F$. (e) $\theta_2=5^\circ$에서 같은 $F$의 숫자를 묻지 않는다. 대신 *팔을 따른* 말단 속도를 시키면 어느 관절 속도가 터지는지, 그리고 왜 $J^\top F$ 자체는 터지지 않는지.
 3. **실행.** 템플릿을 채워 강의의 $T=0.01$, $2\,\mathrm{s}$ 쌍(산 $J$ 대 고정 $J$)을 재현한다. 그다음 $T$만 $0.05$로, 산 $J$, 같은 $2\,\mathrm{s}$. 추가 오차는 고정-$J$급인가 적분기급인가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 먼저 P2를 축척대로 그린다. 베이스 원점, 엘보 $(1,0)$, 말단 $(1,1)$.
-> - 열 $i$는 관절 $i$만 $1\,\mathrm{rad/s}$로 돌 때의 말단 속도다. 관절 $i$에서 말단까지의 선에 수직이고 그 선만큼 긴 화살표로 그린다. 열 1은 베이스에서 $\sqrt2$, 열 2는 길이 1인 전완이다. 각 화살표에 벡터를 적는다.
+> - 먼저 P2를 축척대로 그린다. 베이스 원점, 엘보 $(1,0)$, $30^\circ$로 놓인 전완 끝의 말단 $(1.866,\ 0.5)$.
+> - 열 $i$는 관절 $i$만 $1\,\mathrm{rad/s}$로 돌 때의 말단 속도다. 관절 $i$에서 말단까지의 선에 수직이고 그 선만큼 긴 화살표로 그린다. 열 1은 베이스에서 $1.932$, 열 2는 길이 1인 전완이다. 각 화살표에 벡터를 적는다.
 > - 두 열 모두 말단에 붙인다. 베이스에서 그리는 것이 이 그림이 틀어지는 표준적인 방식이다. 야코비안의 열은 말단의 속도다.
-> - 명령 속도는 말단에서 나가는 별도의 화살표로, 두 열과 다른 선 굵기로 그리고, 그것을 만드는 관절 속도 $\dot\theta = J^{-1}v$를 옆에 적는다.
-> - 가조작성 타원은 말단 중심이고 관절 속도 단위원의 상이며, 반축은 특이값이다(위의 그림에서는 $1.618$과 $0.618$). 원이 아니라 눈에 띄게 길쭉하게, 긴 축을 쉬운 방향에 둔다.
-> - 힘은 말단으로 들어오는 윤곽선 화살표로 그린다. 속을 채우지 않아야 속도로 읽히지 않는다. 옆에 $\tau = J^\top F$를 적는다.
+> - 가조작성 타원은 말단 중심이고 관절 속도 단위원의 상이며, 반축은 특이값이다. 여기서는 $2.163$과 $0.231$로, 위 그림의 $1.618$과 $0.618$보다 훨씬 가늘다($\kappa_2=9.36$).
+> - 말단을 지나는 베이스-말단 선을 표시한다. 타원의 짧은 축이 그 선과 몇 도 차이밖에 나지 않으므로, 팔이 가장 못 움직이는 방향이 반지름 방향이다.
+> - 명령 속도는 그 선을 따라 말단에서 나가는 별도의 화살표로, 두 열과 다른 선 굵기로 그리고, 옆에 $\dot\theta=J^{-1}v$를 적는다.
 
 > [!tip]- 정답 · Solutions
-> 1. 어깨만: 말단이 베이스에서 지렛대 $\sqrt{2}$, 속도는 $(1,1)$에 수직 즉 $(-1,1)$ 방향. 단위 $\dot\theta_1$의 $|v|=\sqrt{2}$이므로 열 1 $=(-1,1)$. 엘보만: 전완이 $(1,0)\to(1,1)$의 $+y$, 단위 $\dot\theta_2$는 전완에 수직, 열 2 $=(-1,0)$.
+> 1. 열 1은 어깨만 돌 때의 속도로, 베이스-말단 선에 수직이고 그만큼 길다. $(-0.5,\ 1.866)$, 길이 $1.932$. 열 2는 엘보만 돌 때의 속도로, $30^\circ$의 전완에 수직인 $(-0.5,\ 0.866)$, 길이 1. $\det J=\sin30^\circ=0.5$. 타원의 반축은 $2.163$과 $0.231$로 $\kappa_2=9.36$(고정 자세는 $2.618$)이고, 긴 축은 $108^\circ$, 짧은 축은 $18^\circ$ 방향이라 $15^\circ$인 베이스-말단 선에 가깝다. 말단을 $(0.966,\ 0.259)$ 방향으로 $0.25\,\mathrm{m/s}$ 곧장 밀어내려면 $\dot\theta=J^{-1}v=(0.483,\ -0.966)\,\mathrm{rad/s}$가 필요하고, 이는 고정 자세에서 같은 요청에 드는 $(0.177,\ -0.354)$의 $2.7$배다. 곧은 팔에 가까울수록 비싼 것은 반지름 방향이다.
 > 2. (a) $J$의 열이 그 화살표. (b) $\det J=1$, $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. (c) $\dot\theta=(-0.25,\ 0.25)\,\mathrm{rad/s}$. (d) $\tau=(-7,-2)\,\mathrm{N{\cdot}m}$. (e) 팔 방향 속도는 잃어버린 특이 방향이라 $\dot\theta\sim 1/\sigma_{\min}$이 터진다. $J^\top F$는 정역학 사상이라 유한 — 구조가 힘을 지고 모터는 안 져도 된다.
 > 3. 빈칸은 영어 해. 강의 쌍: 산 $\approx(0.999,\ 0.500)$, 고정 $\approx(0.878,\ 0.521)$. $T=0.05$ 산 $J$: $\approx(0.997,\ 0.501)$ — 여전히 밀리미터. 적분기급. 고정 오차는 $T$와 무관하다(관절 속도가 상수).

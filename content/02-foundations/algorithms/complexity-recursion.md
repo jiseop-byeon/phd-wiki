@@ -757,6 +757,7 @@ A complete complexity answer has five parts, and saying them in order sounds org
 6. In `subsets`, someone writes `out.append(path)` instead of `out.append(path[:])`. What does `subsets([1, 2])` return, and why?
 7. For N-Queens, why does placing exactly one queen per row shrink the search space from $\binom{n^2}{n}$ placements to at most $n^n$, and what further bound do the column sets give?
 8. The subset-sum DP in §1 runs in $O(nT)$ time, which looks polynomial. Why does it not show that P = NP, and which term describes it?
+9. Close the page and write `subsets(nums)` by backtracking from a blank file. Test it on `[]`, `[1]`, `[1, 2, 3]` and `[1, 1]`, then compare it line by line with the code in §6. Which line did you get wrong, and which property of the output does that line break?
 
 > [!tip]- Answers
 > 1. The ratio is $3.3/0.8 \approx 4.1$, and $\log_2 4.1 \approx 2$: quadratic. Doubling again multiplies by about 4, so about 13 s.
@@ -767,6 +768,7 @@ A complete complexity answer has five parts, and saying them in order sounds org
 > 6. A list of four empty lists, `[ [], [], [], [] ]`. Every entry is a reference to the same list object; each `append` is later undone by `pop`, so after the search ends that single list is empty and all four entries show it.
 > 7. Two queens in the same row attack, so any valid placement has exactly one queen per row; choosing a column for each of $n$ rows gives $n^n$ candidates. Two queens in the same column also attack, so the columns must all differ — a permutation — giving at most $n!$ leaves. The diagonal sets prune further, but no simple closed form is known for the nodes actually visited.
 > 8. Polynomial time is measured against the input length in bits. $T$ is written in about $\log_2 T$ bits, so $T$ itself can be exponential in that length (a $b$-bit number can be as large as $2^b - 1$), and $O(nT)$ is exponential in the input length. The DP is pseudo-polynomial; subset sum stays NP-complete, and whether P = NP stays open.
+> 9. State the invariant first: when `backtrack(i)` is entered, `path` holds exactly the choices made for `nums[0:i]`, and it holds the same list again when the call returns. Each usual slip breaks it. Appending `path` instead of `path[:]` stores one list eight times, so every entry is what `path` ends as, `[]` (Self-check 6). Forgetting `path.pop()` leaves each choice behind, so later subsets carry stale elements. Recursing on `i` instead of `i + 1` never reaches a leaf. A correct version returns `[ [] ]`, `[ [], [1] ]`, the eight subsets `[ [], [3], [2], [2, 3], [1], [1, 3], [1, 2], [1, 2, 3] ]` in the §6 order, and for `[1, 1]` four lists with `[1]` twice: backtracking enumerates positions, not values, so removing duplicates is a separate step.
 
 ### Sources
 
@@ -1522,6 +1524,7 @@ $$1 + b + b^2 + \cdots + b^d = \frac{b^{d+1} - 1}{b - 1}$$
 6. `subsets`에서 누군가 `out.append(path[:])` 대신 `out.append(path)`라고 썼다. `subsets([1, 2])`는 무엇을 반환하고, 왜 그런가?
 7. N-Queens에서 행마다 퀸을 정확히 하나 놓으면 왜 탐색 공간이 $\binom{n^2}{n}$가지 배치에서 최대 $n^n$으로 줄고, 열 집합은 어떤 상한을 더 주는가?
 8. §1의 부분집합 합 DP는 $O(nT)$ 시간이라 다항 시간처럼 보인다. 왜 이것이 P = NP를 보여 주지 못하고, 이 알고리즘을 부르는 용어는 무엇인가?
+9. 페이지를 닫고 백트래킹으로 `subsets(nums)`를 빈 파일에서 써라. `[]`, `[1]`, `[1, 2, 3]`, `[1, 1]`로 시험한 뒤 §6의 코드와 한 줄씩 비교하라. 어느 줄을 틀렸고, 그 줄은 출력의 어떤 성질을 깨는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 비율은 $3.3/0.8 \approx 4.1$이고 $\log_2 4.1 \approx 2$: 이차다. 한 번 더 두 배면 약 4배이므로 약 13초.
@@ -1532,6 +1535,7 @@ $$1 + b + b^2 + \cdots + b^d = \frac{b^{d+1} - 1}{b - 1}$$
 > 6. 빈 리스트 네 개로 된 리스트, `[ [], [], [], [] ]`. 모든 항목이 같은 리스트 객체를 가리키는 참조다. 각 `append`는 나중에 `pop`으로 되돌려지므로, 탐색이 끝나면 그 리스트 하나는 비어 있고 네 항목 모두 그것을 보여 준다.
 > 7. 같은 행의 두 퀸은 서로 공격하므로 유효한 배치는 행마다 퀸이 정확히 하나다. $n$개 행 각각에 열을 고르면 후보는 $n^n$개다. 같은 열의 두 퀸도 공격하므로 열이 모두 달라야 한다 — 순열이다 — 그래서 잎은 최대 $n!$개다. 대각선 집합이 더 가지치기하지만, 실제로 방문하는 노드 수에 대한 간단한 닫힌 식은 알려져 있지 않다.
 > 8. 다항 시간은 비트로 잰 입력 길이를 기준으로 한다. $T$는 약 $\log_2 T$비트로 적히므로 $T$ 자체는 그 길이에 대해 지수적으로 클 수 있고($b$비트 수는 $2^b - 1$까지 커진다), 따라서 $O(nT)$는 입력 길이에 대해 지수적이다. 이 DP는 의사 다항 알고리즘이다. 부분집합 합은 여전히 NP-완전이고, P = NP인지도 여전히 열린 문제다.
+> 9. 불변식을 먼저 적어라. `backtrack(i)`에 들어갈 때 `path`에는 `nums[0:i]`에 대한 선택만 정확히 들어 있고, 호출이 돌아올 때도 같은 리스트다. 흔한 실수는 각각 이것을 깬다. `path[:]` 대신 `path`를 넣으면 한 리스트를 여덟 번 저장하므로 모든 항목이 `path`의 마지막 모습, 곧 `[]`가 된다(스스로 점검 6). `path.pop()`을 빠뜨리면 선택이 남아서 뒤의 부분집합에 묵은 원소가 따라붙는다. `i + 1` 대신 `i`로 재귀하면 잎에 닿지 못한다. 올바른 구현은 `[ [] ]`, `[ [], [1] ]`, §6 순서의 부분집합 여덟 개 `[ [], [3], [2], [2, 3], [1], [1, 3], [1, 2], [1, 2, 3] ]`를 돌려주고, `[1, 1]`에는 `[1]`이 두 번 든 리스트 넷을 돌려준다. 백트래킹은 값이 아니라 위치를 나열하므로 중복 제거는 따로 해야 한다.
 
 ### 출처
 

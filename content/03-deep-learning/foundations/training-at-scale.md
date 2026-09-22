@@ -696,18 +696,18 @@ print("C = %.4g FLOPs  N_opt = %.4g  D_opt = %.4g" % (C, N_opt, 20*N_opt))
 
 ```mermaid
 flowchart LR
-    H["h_in · n_in per token"] --> FW["forward: z = W h_in · 2 FLOPs per weight"]
-    W16["W in 16 bits · n_out x n_in"] --> FW
-    FW --> Z["z · n_out · Var z = n_in Var w times mean square of h_in"]
-    Z --> ACT["LN if present, then ReLU"]
-    GZ["dL/dz · n_out · carries the loss scale S"] --> BA["activation gradient: W^T dL/dz · 2 FLOPs per weight"]
+    H["h_in · 토큰마다 n_in"] --> FW["순전파: z = W h_in · 가중치마다 2 FLOPs"]
+    W16["16비트 W · n_out x n_in"] --> FW
+    FW --> Z["z · n_out · Var z = n_in Var w × (h_in의 제곱평균)"]
+    Z --> ACT["LN이 있으면 LN, 그다음 ReLU"]
+    GZ["dL/dz · n_out · 손실 스케일 S를 싣는다"] --> BA["활성값 그래디언트: W^T dL/dz · 가중치마다 2 FLOPs"]
     W16 --> BA
-    BA --> GH["dL/dh_in · Var = n_out Var w times mean square of dL/dz"]
-    GZ --> BW["weight gradient: dL/dz h_in^T summed over tokens · 2 FLOPs per weight"]
+    BA --> GH["dL/dh_in · Var = n_out Var w × (dL/dz의 제곱평균)"]
+    GZ --> BW["가중치 그래디언트: 토큰에 걸쳐 합한 dL/dz h_in^T · 가중치마다 2 FLOPs"]
     H --> BW
-    BW --> G16["gradient in 16 bits · 2 bytes per weight"]
-    G16 --> OPT["unscale by S, Adam step in fp32"]
-    OPT --> MS["fp32 master W 4 bytes · Adam m 4 · Adam v 4"]
+    BW --> G16["16비트 그래디언트 · 가중치마다 2바이트"]
+    G16 --> OPT["S로 나눠 스케일을 되돌리고 fp32로 Adam 한 걸음"]
+    OPT --> MS["fp32 마스터 W 4바이트 · Adam m 4 · Adam v 4"]
     MS --> W16
 ```
 

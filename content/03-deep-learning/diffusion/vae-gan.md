@@ -626,20 +626,20 @@ $$z\sim\mathcal N(0,1),\qquad p_\theta(x\mid z)=\mathcal N\big(x;\ wz+\mu,\ \sig
 
 ```mermaid
 flowchart LR
-    subgraph VAE["VAE: ascend the ELBO"]
-        XV["x from N(2, 0.5^2)"] --> ENC["encoder: m = a x + c, width s"]
+    subgraph VAE["VAE: ELBO를 올린다"]
+        XV["N(2, 0.5^2)에서 뽑은 x"] --> ENC["인코더: m = a x + c, 폭 s"]
         ENC --> ZV["z = m + s eps"]
-        EPS["eps from N(0,1), outside the graph"] --> ZV
-        ZV --> DEC["decoder: N(w z + mu, sx^2)"]
-        DEC --> REC["reconstruction: log p(x given z)"]
+        EPS["N(0,1)에서 뽑은 eps, 그래프 밖"] --> ZV
+        ZV --> DEC["디코더: N(w z + mu, sx^2)"]
+        DEC --> REC["복원 항: log p(x ∣ z)"]
         XV --> REC
-        ENC --> KLT["KL of q to the prior, closed form"]
+        ENC --> KLT["q와 사전분포의 KL, 닫힌 형태"]
     end
-    subgraph GAN["GAN: G descends V, D ascends it"]
-        ZG["z from N(0,1)"] --> GEN["G: x = m + 0.5 z"]
-        GEN --> DIS["D(x) in (0, 1), a sigmoid"]
-        XG["x from N(2, 0.5^2)"] --> DIS
-        DIS --> VAL["V = E log D(real) + E log(1 - D(fake))"]
+    subgraph GAN["GAN: G는 V를 내리고 D는 올린다"]
+        ZG["N(0,1)에서 뽑은 z"] --> GEN["G: x = m + 0.5 z"]
+        GEN --> DIS["D(x) ∈ (0, 1), sigmoid"]
+        XG["N(2, 0.5^2)에서 뽑은 x"] --> DIS
+        DIS --> VAL["V = E log D(진짜) + E log(1 − D(가짜))"]
     end
 ```
 

@@ -452,21 +452,21 @@ For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction roboti
 
 Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base. Panel at world $(2,1)\,\mathrm{m}$. Frozen pose: tip at $(1,1)$ relative to the base, $\det J=1$. No new simulator.
 
-1. **Draw.** The picture above: world frame, panel at $(2,1)$. Sketch the reachable disk of radius $2$ about a candidate base. Mark the frozen-pose base that puts the tip on the panel. Draw the annulus of base positions that keep the tip-to-base distance near $\sqrt{2}$ (well-conditioned) versus the outer circle $r=2$ (singular).
+1. **Draw.** The picture above for an arm with the same $2$ m reach but unequal links, $L_1=1.2$ m and $L_2=0.8$ m, on the same holonomic base, panel at world $(2,1)$: the circles about the panel — outer, best-conditioned and inner — the band where $w\ge0.99\,w_{\max}$ to scale, and the base that puts the tip on the panel at $\theta=(0^\circ,90^\circ)$, with its two links. What appears that P2's picture did not have?
 2. **Derive.** (a) Base position for the frozen pose. (b) Tip-to-base distance $r=\sqrt{2+2\cos\theta_2}$. Values at $\theta_2=90^\circ$, $5^\circ$, $0^\circ$. (c) $\det J=L_1 L_2\sin\theta_2$ at those three angles.
 3. **Interpret.** A team parks "as close as possible" so the arm is fully extended toward the panel. What have they maximised, and what have they lost in the direction the panel-push needs?
 
 > [!note]- How to draw it · 그리는 법
-> - Axes at the world origin, one grid square to $0.25$ m, so a $2$ m reach is eight squares, and the panel at $(2,1)$ with its surface normal drawn through it. The normal is the direction the tool will push, which §3's whole argument is about; a figure without it cannot show what a singular placement costs.
+> - Axes at the world origin, one grid square to $0.25$ m, and the panel at $(2,1)$ with its surface normal drawn through it: the normal is the direction the tool will push, which §3's argument is about.
 > - Circles about the panel, not about the base: this is §3's inversion, and drawing them the other way round is the usual mistake.
-> - About $(2,1)$, the outer circle $r=2$ m, where a base can only just touch the panel with the arm straight and $\det J=0$, then the ring $r=\sqrt2=1.414$ m where $w$ is largest.
-> - No inner circle: the one inside which the arm could no longer fold enough to reach has radius $|L_1-L_2|=0$ for P2, so say so beside the figure instead of drawing it.
-> - The $w\ge0.99$ band shaded around that ring, to scale (worked case: $r=1.311$–$1.511$ m, $20$ cm wide). Drawn correctly it is narrower than one grid square, and the figure has then made this page's argument without a sentence.
-> - The base that puts P2's tip on the panel at its frozen pose $\theta=(0°,90°)$, with its two links drawn to the elbow and the tip. Check on the drawing that it sits on the shaded ring, $\sqrt2$ m from the panel, not merely somewhere inside the outer circle.
-> - Centred on that base, a circle of radius $10$ cm, two standard deviations of §4's base localization. At the same scale it is as wide as the shaded band, and that overlap is the figure.
+> - About $(2,1)$, the outer circle $r=L_1+L_2=2$ m, where the arm is straight and $\det J=0$, then the ring $r=\sqrt{L_1^2+L_2^2}=1.442$ m, where $w=L_1L_2|\sin\theta_2|$ reaches $w_{\max}=0.96$.
+> - The inner circle, which P2 did not have: $r=|L_1-L_2|=0.4$ m. A base inside it cannot reach the panel at all, because the arm cannot fold its tip closer to its base than that.
+> - The band where $w\ge0.99\,w_{\max}$, that is $|\sin\theta_2|\ge0.99$ or $\cos\theta_2=\pm0.141$, shaded to scale: $1.345$ to $1.533$ m, $18.8$ cm wide, under one grid square.
+> - The base for $\theta=(0^\circ,90^\circ)$: the tip sits at $(1.2,\ 0.8)$ from the base, so the base is at $(2,1)-(1.2,0.8)=(0.8,\ 0.2)$. Draw its two links to the elbow and the tip, and check that it lies on the $1.442$ m ring.
+> - Centred on that base, the $10$ cm-radius circle of §4's two-sigma base localization: $20$ cm across, now slightly wider than the $18.8$ cm band.
 
 > [!tip]- Solutions
-> 1. Reachable set is a disk of radius $2$ about the base (P2 can fold). Frozen-pose base at $(1,0)$. Good bases lie on (or near) the circle of radius $\sqrt{2}$ about the panel; the outer circle of radius $2$ is the singular ring.
+> 1. Outer circle $r=L_1+L_2=2$ m, singular as before. The new element is the inner circle $r=|L_1-L_2|=0.4$ m: a base closer than that cannot reach the panel, because this arm cannot fold its tip nearer its base than $0.4$ m. $w=L_1L_2|\sin\theta_2|$ peaks at $\theta_2=90^\circ$ with $w_{\max}=0.96$, on the ring $r=\sqrt{L_1^2+L_2^2}=\sqrt{2.08}=1.442$ m; the band $w\ge0.99\,w_{\max}$ ($\cos\theta_2=\pm0.141$) runs from $1.345$ to $1.533$ m, $18.8$ cm wide against P2's $20$ cm. The base for $\theta=(0^\circ,90^\circ)$ is $(2,1)-(1.2,0.8)=(0.8,\ 0.2)$, on that ring, and its $20$ cm localization disc now slightly overfills the band.
 > 2. (a) $(2,1)-(1,1)=(1,0)$. (b) $r(90^\circ)=\sqrt{2}$, $r(5^\circ)\approx 1.998$, $r(0^\circ)=2$. (c) $\det J=1$, $\sin 5^\circ\approx 0.087$, $0$.
 > 3. They maximised reach and parked on the singular ring. $\det J\to 0$: the lost direction is along the arm, which is the panel normal if they stretched straight at it. The arm is *strong* along that direction and cannot *move* or modulate force through the motors. The useful set is the $\sqrt{2}$ band, not the outer limit.
 
@@ -893,21 +893,21 @@ $\pm2\sigma$ 구간은 $20$ cm다 — $w\ge0.99$ 띠 전체이고, 느슨한 $w\
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**를 홀로노믹 베이스 위에. 패널은 월드 $(2,1)\,\mathrm{m}$. 고정 자세: 말단이 베이스 기준 $(1,1)$, $\det J=1$. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** 위의 그림: 월드 프레임, 패널 $(2,1)$. 후보 베이스 둘레 반지름 $2$의 도달 원판. 말단을 패널에 올리는 고정 자세 베이스. 말단–베이스 거리가 $\sqrt{2}$ 근처인(조건이 좋은) 고리와, 바깥 원 $r=2$(특이)를 그려라.
+1. **그리기.** 도달 범위는 같은 $2$ m이지만 링크 길이가 다른 팔, $L_1=1.2$ m와 $L_2=0.8$ m를 같은 홀로노믹 베이스에 올리고 패널을 월드 $(2,1)$에 둔 위의 그림: 패널 둘레의 원 — 바깥, 조건이 가장 좋은 고리, 안쪽 — 축척을 지킨 $w\ge0.99\,w_{\max}$ 띠, 그리고 $\theta=(0^\circ,90^\circ)$에서 말단을 패널에 올리는 베이스와 그 링크 둘. P2의 그림에 없던 무엇이 나타나는가?
 2. **유도.** (a) 고정 자세의 베이스 위치. (b) 말단–베이스 거리 $r=\sqrt{2+2\cos\theta_2}$. $\theta_2=90^\circ$, $5^\circ$, $0^\circ$의 값. (c) 그 세 각에서 $\det J=L_1 L_2\sin\theta_2$.
 3. **해석.** 어떤 팀이 "최대한 가까이" 세워서 팔을 패널을 향해 완전히 뻗는다. 무엇을 최대화했고, 패널을 누르는 방향에서 무엇을 잃었는가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 원점의 축과 $0.25$ m짜리 모눈 한 칸(그러면 $2$ m 도달 범위가 여덟 칸), 그리고 $(2,1)$의 패널과 그 점을 지나는 패널 법선. 법선은 도구가 밀 방향, 곧 §3의 논증 전체가 다루는 방향이고, 그 선이 없는 그림은 특이한 배치가 무엇을 잃게 하는지 보여 줄 수 없다.
+> - 원점의 축과 $0.25$ m짜리 모눈 한 칸, 그리고 $(2,1)$의 패널과 그 점을 지나는 패널 법선. 법선은 도구가 밀 방향, 곧 §3의 논증이 다루는 방향이다.
 > - 원은 베이스가 아니라 패널을 중심으로 그린다. 이것이 §3의 뒤집기이고, 원을 반대로 그리는 것이 흔한 실수다.
-> - $(2,1)$을 중심으로, 팔을 곧게 펴야 겨우 닿고 $\det J=0$인 바깥 원 $r=2$ m, 이어 $w$가 가장 큰 고리 $r=\sqrt2=1.414$ m.
-> - 안쪽 원은 없다. 그 안에서는 팔이 더는 충분히 접히지 못하는 원의 반지름이 P2에서 $|L_1-L_2|=0$이므로, 그리지 말고 그림 옆에 그렇게 적는다.
-> - 그 고리 둘레에 축척을 지켜 칠한 $w\ge0.99$ 띠(계산 예제: $r=1.311$–$1.511$ m, 폭 $20$ cm). 제대로 그리면 모눈 한 칸보다 좁고, 그 순간 그림이 문장 없이 이 페이지의 논증을 마친 것이다.
-> - P2의 고정 자세 $\theta=(0°,90°)$에서 말단을 패널에 올리는 베이스와, 거기서 엘보와 말단까지 그린 링크 둘. 그 베이스가 바깥 원 안 아무 데가 아니라 칠한 고리 위, 패널에서 $\sqrt2$ m 떨어진 곳에 있는지 그림에서 확인한다.
-> - 그 베이스를 중심으로 §4의 베이스 위치 추정 표준편차의 두 배인 반지름 $10$ cm의 원. 같은 축척에서 그것은 칠한 띠와 같은 폭이고, 그 겹침이 곧 이 그림이다.
+> - $(2,1)$을 중심으로, 팔이 곧게 펴지고 $\det J=0$인 바깥 원 $r=L_1+L_2=2$ m, 이어 $w=L_1L_2|\sin\theta_2|$가 최댓값 $w_{\max}=0.96$에 닿는 고리 $r=\sqrt{L_1^2+L_2^2}=1.442$ m.
+> - P2에는 없던 안쪽 원 $r=|L_1-L_2|=0.4$ m. 그 안의 베이스는 패널에 아예 닿지 못한다. 이 팔은 말단을 베이스에 그보다 가깝게 접을 수 없기 때문이다.
+> - $w\ge0.99\,w_{\max}$, 곧 $|\sin\theta_2|\ge0.99$ 또는 $\cos\theta_2=\pm0.141$인 띠를 축척대로 칠한다. $1.345$부터 $1.533$ m까지, 폭 $18.8$ cm로 모눈 한 칸보다 좁다.
+> - $\theta=(0^\circ,90^\circ)$의 베이스: 말단이 베이스에서 $(1.2,\ 0.8)$에 있으므로 베이스는 $(2,1)-(1.2,0.8)=(0.8,\ 0.2)$다. 엘보와 말단까지 링크 둘을 그리고, 그것이 $1.442$ m 고리 위에 있는지 확인한다.
+> - 그 베이스를 중심으로 §4의 베이스 위치 추정 두 시그마인 반지름 $10$ cm의 원. 지름 $20$ cm로, 이제 $18.8$ cm 띠보다 조금 넓다.
 
 > [!tip]- 정답 · Solutions
-> 1. 도달 집합은 베이스 둘레 반지름 $2$의 원판(P2는 접을 수 있다). 고정 자세 베이스는 $(1,0)$. 좋은 베이스는 패널 둘레 반지름 $\sqrt{2}$의 원(근처)이고, 바깥 원 $r=2$가 특이 고리다.
+> 1. 바깥 원 $r=L_1+L_2=2$ m는 전처럼 특이하다. 새로 생긴 것은 안쪽 원 $r=|L_1-L_2|=0.4$ m다. 그보다 가까운 베이스는 패널에 닿지 못한다. 이 팔은 말단을 베이스에 $0.4$ m보다 가깝게 접을 수 없기 때문이다. $w=L_1L_2|\sin\theta_2|$는 $\theta_2=90^\circ$에서 $w_{\max}=0.96$으로 가장 크고, 그 자리는 고리 $r=\sqrt{L_1^2+L_2^2}=\sqrt{2.08}=1.442$ m다. $w\ge0.99\,w_{\max}$ 띠($\cos\theta_2=\pm0.141$)는 $1.345$부터 $1.533$ m까지로 폭 $18.8$ cm, P2의 $20$ cm보다 좁다. $\theta=(0^\circ,90^\circ)$의 베이스는 $(2,1)-(1.2,0.8)=(0.8,\ 0.2)$로 그 고리 위에 있고, 지름 $20$ cm의 위치 추정 원은 이제 띠를 조금 넘친다.
 > 2. (a) $(2,1)-(1,1)=(1,0)$. (b) $r(90^\circ)=\sqrt{2}$, $r(5^\circ)\approx 1.998$, $r(0^\circ)=2$. (c) $\det J=1$, $\sin 5^\circ\approx 0.087$, $0$.
 > 3. 도달 범위를 최대화하고 특이 고리에 세웠다. $\det J\to 0$: 잃은 방향은 팔 축이고, 곧게 뻗었다면 그것이 패널 법선이다. 그 방향으로 팔은 *강하고*, 모터로 *움직이거나* 힘을 조절하지는 못한다. 쓸 집합은 바깥 한계가 아니라 $\sqrt{2}$ 띠다.
 

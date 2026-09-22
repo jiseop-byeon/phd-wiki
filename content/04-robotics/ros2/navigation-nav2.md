@@ -598,21 +598,20 @@ For the algorithms underneath — search, sampling, MPC, and what optimality mea
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the Nav2 base. Encoder $2048$ counts/m, vision $50\,\mathrm{Hz}$ into AMCL, controller $200\,\mathrm{Hz}$, budget $70\,\mathrm{ms}$. No new simulator.
 
-1. **Draw.** REP 105 chain `map` → `odom` → `base_link` on the P6 cart. Global costmap in `map`, local in `odom`. Five-line timeline: a $50\,\mathrm{Hz}$ laser/vision scan, AMCL jump on `map` → `odom`, controller ticks on `odom` that must stay smooth.
+1. **Draw.** The picture above for a setup that drives twice as fast and plans local motion half as often: the cart at $0.5\,\mathrm{m/s}$ and `controller_frequency` lowered to $10\,\mathrm{Hz}$, everything else unchanged. Panel A: the REP 105 chain `map` → `odom` → `base_link` with its publishers, the two costmaps on their frames, and the `/cmd_vel` boundary with its new rate. Panel B: the five lanes on one $0$–$1000\,\mathrm{ms}$ axis, each with the distance the cart now covers in one period, and the $70\,\mathrm{ms}$ budget.
 2. **Derive.** (a) Encoder $\Delta p$ — the odom resolution. (b) A scan stamp $200\,\mathrm{ms}$ old versus `transform_tolerance` of $70\,\mathrm{ms}$. Is every trajectory valid? (c) The robot spins in place. First check, and why not controller gains?
 3. **Interpret.** Why the local costmap must *not* live in `map` on P6, and why a $200\,\mathrm{ms}$ late scan is a budget failure even if AMCL still reports a pose.
 
 > [!note]- How to draw it · 그리는 법
-> - Draw the REP 105 chain as three boxes in a row, `map` → `odom` → `base_link`, and write each publisher under its arrow rather than beside it: AMCL under `map` → `odom`, wheel odometry under `odom` → `base_link`.
-> - Put a small lightning mark on `map` → `odom` and none on `odom` → `base_link`, on the chain and on the timeline alike: that edge is the one allowed to jump, and the whole frame split exists for it.
-> - Draw the two costmaps as rectangles anchored to their frames — the global one stretched over `map`, the local one a small window pinned to `odom` — with one arrow from each into the server that reads it: planner and controller.
-> - Draw the controller's output crossing a labelled boundary out of Nav2 into `ros2_control`: `/cmd_vel` is a request at $20\,\mathrm{Hz}$, not the $200\,\mathrm{Hz}$ motor command.
-> - On the timeline, tick each lane at its own period against one linear time axis, so the nesting is visible: four control ticks per scan, ten per `/cmd_vel`.
-> - Beside each lane, write the distance the cart covers in one of its periods, from the worked case's table.
-> - Draw P6's $70\,\mathrm{ms}$ budget as a short bracket at the left of the axis, and note in one line how many lanes have a period longer than the whole bracket.
+> - Draw the REP 105 chain as three boxes in a row, `map` → `odom` → `base_link`, with each publisher under its arrow: AMCL under `map` → `odom`, wheel odometry under `odom` → `base_link`; a lightning mark on `map` → `odom` only. None of this depends on speed or rates.
+> - Draw the two costmaps as rectangles anchored to their frames — the global one over `map`, the local one a small window pinned to `odom` — with one arrow from each into the server that reads it.
+> - Draw the controller's output crossing a labelled boundary out of Nav2 into `ros2_control`: `/cmd_vel` is now a request at $10\,\mathrm{Hz}$, still not the $200\,\mathrm{Hz}$ motor command.
+> - On the timeline, tick each lane at its own period against one linear axis: still four control ticks per scan, now twenty per `/cmd_vel`.
+> - Beside each lane, the distance per period at $0.5\,\mathrm{m/s}$: $2.5\,\mathrm{mm}$ for `ros2_control`, $10\,\mathrm{mm}$ per scan, $50\,\mathrm{mm}$ per `/cmd_vel`, $100\,\mathrm{mm}$ per local-costmap update, $500\,\mathrm{mm}$ per global update — the picture's numbers doubled, except `/cmd_vel`'s, which quadrupled.
+> - The $70\,\mathrm{ms}$ budget as a short bracket at the left of the axis, $35\,\mathrm{mm}$ of travel at this speed, and one line saying how many lanes now have a period longer than it.
 
 > [!tip]- Solutions
-> 1. Encoder owns `odom` → `base_link`; AMCL owns `map` → `odom`. Local control at $20\,\mathrm{Hz}$ reads the smooth frame; the planner reads the jumpy one.
+> 1. Panel A is the picture's with `/cmd_vel` relabelled $10\,\mathrm{Hz}$: the encoder still owns `odom` → `base_link`, AMCL `map` → `odom`, and the costmaps sit where they did. Panel B at $0.5\,\mathrm{m/s}$: $2.5\,\mathrm{mm}$ per $5\,\mathrm{ms}$ control tick ($5.1$ counts), $10\,\mathrm{mm}$ per scan, $50\,\mathrm{mm}$ per $100\,\mathrm{ms}$ `/cmd_vel` period, $100\,\mathrm{mm}$ per local-costmap update and $500\,\mathrm{mm}$ per global one. The $70\,\mathrm{ms}$ budget is $35\,\mathrm{mm}$ of travel, and three lanes — `/cmd_vel`, local costmap, global costmap — now have periods longer than the whole budget, against two in the picture: halving `controller_frequency` pushed the local controller itself past the budget, and doubling the speed doubled what every late period costs in millimetres.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) Stamp older than tolerance $\Rightarrow$ every trajectory invalid. (c) `view_frames` / `tf2_monitor map base_link`. Gains are fourth; a missing TF produces this symptom with no error that names TF.
 > 3. `map` → `odom` may jump at each AMCL correction, about every $1.00\,\mathrm{s}$ here (Step 3), not at $50\,\mathrm{Hz}$; a $20\,\mathrm{Hz}$ local controller on a teleporting frame issues discontinuous `cmd`. A $200\,\mathrm{ms}$ scan is already $130\,\mathrm{ms}$ over the $70\,\mathrm{ms}$ budget — AMCL can still output a pose of a place the cart has left.
 
@@ -1209,20 +1208,19 @@ ros2 param dump /controller_server
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 Nav2 베이스로. 엔코더 $2048$ counts/m, 비전 $50\,\mathrm{Hz}$가 AMCL로, 제어기 $200\,\mathrm{Hz}$, 예산 $70\,\mathrm{ms}$. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** P6 카트의 REP 105 사슬 `map` → `odom` → `base_link`. 전역 costmap은 `map`, 지역은 `odom`. 다섯 줄 타임라인: $50\,\mathrm{Hz}$ 스캔, `map` → `odom`의 AMCL 점프, `odom` 위에서 매끄러워야 하는 제어 틱.
+1. **그리기.** 두 배 빨리 달리고 지역 운동을 절반만 자주 계획하는 설정에 대한 위의 그림: 카트는 $0.5\,\mathrm{m/s}$, `controller_frequency`는 $10\,\mathrm{Hz}$로 낮추고 나머지는 그대로. 패널 A: 발행자를 적은 REP 105 사슬 `map` → `odom` → `base_link`, 각자의 프레임 위 costmap 둘, 새 주기를 적은 `/cmd_vel` 경계. 패널 B: $0$–$1000\,\mathrm{ms}$ 축 하나 위의 레인 다섯과 각각 한 주기 동안 카트가 이제 가는 거리, 그리고 $70\,\mathrm{ms}$ 예산.
 2. **유도.** (a) 엔코더 $\Delta p$ — odom 해상도. (b) $200\,\mathrm{ms}$ 된 스캔 스탬프 대 `transform_tolerance` $70\,\mathrm{ms}$. 모든 궤적이 유효한가? (c) 로봇이 제자리 회전. 첫 점검, 왜 제어 게인이 아닌가?
 3. **해석.** P6에서 지역 costmap이 `map`에 살면 안 되는 이유, 그리고 AMCL이 자세를 보고해도 $200\,\mathrm{ms}$ 늦은 스캔이 예산 실패인 이유는?
 
 > [!note]- 그리는 법 · How to draw it
-> - REP 105 사슬을 상자 셋으로 한 줄에 그린다. `map` → `odom` → `base_link`. 각 화살표의 발행자는 옆이 아니라 아래에 적는다. `map` → `odom` 밑에 AMCL, `odom` → `base_link` 밑에 휠 오도메트리.
-> - `map` → `odom`에만 작은 번개 표시를 달고 `odom` → `base_link`에는 달지 않는다. 사슬에서도 타임라인에서도 마찬가지다. 뛰어도 되는 변이 그쪽이고, 프레임을 둘로 가른 이유 전체가 그것이다.
-> - costmap 둘은 각자의 프레임에 붙은 사각형으로 그린다. 전역은 `map` 위에 넓게, 지역은 `odom`에 핀으로 꽂힌 작은 창으로. 각각에서 그것을 읽는 서버, 곧 플래너와 제어기로 화살표를 하나씩 뺀다.
-> - 제어기의 출력이 Nav2를 나가 `ros2_control`로 들어가는 경계를 이름 붙여 그린다. `/cmd_vel`은 $20\,\mathrm{Hz}$의 요청이지 $200\,\mathrm{Hz}$의 모터 명령이 아니다.
-> - 타임라인은 선형 시간 축 하나에 레인마다 자기 주기로 눈금을 찍어 포개짐이 보이게 한다. 스캔 하나에 제어 틱 넷, `/cmd_vel` 하나에 제어 틱 열.
-> - 레인마다 옆에 그 주기 동안 카트가 가는 거리를 계산 절의 표에서 옮겨 적는다.
-> - 축 왼쪽에 P6의 $70\,\mathrm{ms}$ 예산을 짧은 괄호로 긋고, 주기가 괄호 전체보다 긴 레인이 몇 개인지 한 줄로 적는다.
+> - REP 105 사슬을 상자 셋으로 한 줄에 그린다. `map` → `odom` → `base_link`, 각 화살표 아래에 발행자 — `map` → `odom` 밑에 AMCL, `odom` → `base_link` 밑에 휠 오도메트리 — 그리고 번개 표시는 `map` → `odom`에만. 이것들은 속도나 주기와 상관없다.
+> - costmap 둘은 각자의 프레임에 붙은 사각형으로 그린다. 전역은 `map` 위에, 지역은 `odom`에 핀으로 꽂힌 작은 창으로. 각각에서 그것을 읽는 서버로 화살표를 하나씩 뺀다.
+> - 제어기의 출력이 Nav2를 나가 `ros2_control`로 들어가는 경계를 이름 붙여 그린다. `/cmd_vel`은 이제 $10\,\mathrm{Hz}$의 요청이고, 여전히 $200\,\mathrm{Hz}$의 모터 명령이 아니다.
+> - 타임라인은 선형 축 하나에 레인마다 자기 주기로 눈금을 찍는다. 스캔 하나에 제어 틱은 여전히 넷, `/cmd_vel` 하나에는 이제 스물.
+> - 레인마다 옆에 $0.5\,\mathrm{m/s}$에서 한 주기 동안의 거리: `ros2_control` $2.5\,\mathrm{mm}$, 스캔 $10\,\mathrm{mm}$, `/cmd_vel` $50\,\mathrm{mm}$, 지역 costmap 갱신 $100\,\mathrm{mm}$, 전역 갱신 $500\,\mathrm{mm}$. 위 그림의 숫자가 두 배가 되었고 `/cmd_vel`만 네 배다.
+> - 축 왼쪽에 $70\,\mathrm{ms}$ 예산을 짧은 괄호로, 이 속도에서 $35\,\mathrm{mm}$의 이동으로 긋고, 이제 주기가 그보다 긴 레인이 몇 개인지 한 줄로 적는다.
 
 > [!tip]- 정답 · Solutions
-> 1. 엔코더가 `odom` → `base_link`를, AMCL이 `map` → `odom`을 소유. $20\,\mathrm{Hz}$ 지역 제어는 매끄러운 프레임, 플래너는 튀는 프레임.
+> 1. 패널 A는 `/cmd_vel`에 $10\,\mathrm{Hz}$를 적은 위 그림이다. 엔코더는 여전히 `odom` → `base_link`를, AMCL은 `map` → `odom`을 소유하고, costmap은 제자리에 있다. $0.5\,\mathrm{m/s}$의 패널 B: $5\,\mathrm{ms}$ 제어 틱마다 $2.5\,\mathrm{mm}$($5.1$카운트), 스캔마다 $10\,\mathrm{mm}$, $100\,\mathrm{ms}$ `/cmd_vel` 주기마다 $50\,\mathrm{mm}$, 지역 costmap 갱신마다 $100\,\mathrm{mm}$, 전역 갱신마다 $500\,\mathrm{mm}$. $70\,\mathrm{ms}$ 예산은 $35\,\mathrm{mm}$의 이동이고, 이제 주기가 예산 전체보다 긴 레인은 `/cmd_vel`, 지역 costmap, 전역 costmap의 셋으로, 위 그림의 둘보다 많다. `controller_frequency`를 반으로 줄이자 지역 제어기 자체가 예산을 넘었고, 속도를 두 배로 하자 늦은 주기 하나하나의 값이 밀리미터로 두 배가 되었다.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) 스탬프가 tolerance보다 오래되면 모든 궤적이 무효. (c) `view_frames` / `tf2_monitor map base_link`. 게인은 넷째; 빠진 TF는 TF를 지목하는 오류 없이 이 증상을 낸다.
 > 3. `map` → `odom`이 AMCL 보정마다 점프할 수 있고(여기서는 $50\,\mathrm{Hz}$가 아니라 약 $1.00\,\mathrm{s}$마다, Step 3), 순간이동 프레임 위의 $20\,\mathrm{Hz}$ 제어기는 불연속 `cmd`를 낸다. $200\,\mathrm{ms}$ 스캔은 이미 예산보다 $130\,\mathrm{ms}$ 초과 — AMCL은 카트가 떠난 곳의 자세를 여전히 낼 수 있다.

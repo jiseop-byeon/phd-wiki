@@ -220,20 +220,21 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]], this page, and [[04
 
 The translating handle is driven by an inextensible capstan: motor pulley radius $r_m$, sector radius $r_s$. Cable length is conserved, so handle displacement is $x=r_m\theta_m$ regardless of $r_s$. Power match then gives $\tau_m=F r_m$. The motor encoder has $N=1024$ counts/rev after decode. A current amplifier saturates at $\tau_m^{\max}=0.020\,\mathrm{N{\cdot}m}$ (a problem number, not a catalog number).
 
-1. **Draw.** The picture above, as a mechanism sketch: the chain encoder $\to$ $\theta_m$ $\to$ pulley $r_m$ $\to$ cable $\to$ sector $r_s$ $\to$ handle $x$. Label every P3 length and $N$. Mark the wall at $x_w$ and the $+x$ direction into the wall. Write the two constitutive equalities $x=\ldots$ and $\tau_m=\ldots$ on the sketch.
+1. **Draw.** The picture above as a mechanism sketch for a redesign with the motor pulley halved, $r_m=0.005\,\mathrm{m}$, and everything else unchanged: the chain encoder $\to$ $\theta_m$ $\to$ pulley $r_m$ $\to$ cable $\to$ sector $r_s$ $\to$ handle $x$, every length and $N$ labelled, the wall at $x_w$ with $+x$ into it, and the two constitutive equalities $x=\ldots$ and $\tau_m=\ldots$ written on the sketch with this design's numbers. Mark one encoder count beside the handle with its new $\Delta x$, and write the rotor mass the hand now feels.
 2. **Derive.** (a) Handle motion $\Delta x$ for one encoder count. (b) Force increment $\Delta F$ of the default virtual wall $k_w$ for that one count, once inside the wall. (c) Maximum handle force $F^{\max}$ at amplifier saturation, and the penetration at which the default wall saturates. (d) At $x=0.036\,\mathrm{m}$ (6 mm into the wall), does the unsaturated spring law still hold?
 3. **Interpret.** A reviewer says “just use the sector radius in $x=r_s\theta_m$, the handle sits on the sector.” What factor would that mistake inject into every force you report? Separately: $N$ is after quadrature decode. If you treated it as 256 slots before decode, how would $\Delta x$ change?
 
 > [!note]- How to draw it · 그리는 법
-> - Draw the chain left to right as one line, encoder to wall, and write on every arrow the physical quantity it carries. Label every P3 length and $N$.
-> - Draw the two radii to scale: $r_s$ is five times $r_m$. If the sector and the pulley come out the same size, the only ratio the picture carries is already lost.
+> - Draw the chain left to right as one line, encoder to wall, and write on every arrow the physical quantity it carries. Label every length and $N$.
+> - Draw the two radii to scale: $r_s$ is now ten times $r_m$. If the sector and the pulley come out the same size, the only ratio the picture carries is already lost.
 > - Draw the cable as one unbroken line from the pulley to the sector and label it *inextensible*; that label is the constraint the whole derivation rests on.
-> - Write the two constitutive equalities, $x = \ldots$ and $\tau_m = \ldots$, on the sketch, each with the radius that actually appears in it. If $r_s$ appears in either, the sketch is wrong by a factor of five.
+> - Write the two constitutive equalities on the sketch, each with the radius that actually appears in it: $x=0.005\,\theta_m$ and $\tau_m=0.005\,F$. If $r_s$ appears in either, the sketch is wrong by a factor of ten.
 > - Draw the wall as a vertical line at $x_w$, with an arrow marking $+x$ as into the wall so that penetration is positive.
-> - Mark one encoder count as a short tick beside the handle with $\Delta x$ written next to it, drawn deliberately far too large: to scale, the worked case's $61\,\mathrm{\mu m}$ against the $30\,\mathrm{mm}$ wall would be about $1/500$ of the picture, and the tick is there because it is the smallest thing the device can know.
+> - Mark one encoder count as a short tick beside the handle, drawn far too large, with $\Delta x=30.7\,\mu\mathrm{m}$ written next to it — half the picture's $61.4$.
+> - Beside the pulley, the price of the smaller radius, from Step 6's formula: $m_{\text{refl}}=J_m/r_m^2=0.040\,\mathrm{kg}$, four times the picture's $0.010$ and as much as the whole catalog handle.
 
 > [!tip]- Solutions
-> 1. Cable inextensible $\Rightarrow$ arc on the motor pulley equals arc on the sector, $r_m\theta_m=r_s\theta_s$. A translating handle at the sector rim has $x=r_s\theta_s=r_m\theta_m$. Power $\tau_m\omega_m=F\dot x$ with $\dot x=r_m\omega_m$ gives $\tau_m=F r_m$. $r_s$ sets how the sector is built; it cancels in the handle map.
+> 1. The chain is the picture's with a pulley half the size, so the sector is drawn ten times the pulley. Cable length is still conserved: $x=r_m\theta_m=0.005\,\theta_m$ and $\tau_m=F\,r_m=0.005\,F$, and $r_s$ appears in neither. One count is $\Delta x=0.005\cdot2\pi/1024=30.7\,\mu\mathrm{m}$, half the picture's $61.4\,\mu\mathrm{m}$, and the $0.020\,\mathrm{N{\cdot}m}$ amplifier now reaches $F^{\max}=0.020/0.005=4.0\,\mathrm{N}$, twice as much. The price is in the square: the rotor's inertia felt at the handle is $J_m/r_m^2=1.0\times10^{-6}/0.005^2=0.040\,\mathrm{kg}$, four times the picture's $0.010\,\mathrm{kg}$. Halving $r_m$ doubles resolution and force and quadruples the felt rotor mass.
 > 2. (a) $\Delta\theta_m=2\pi/N=2\pi/1024$, so $\Delta x=r_m\Delta\theta_m=0.010\cdot 2\pi/1024=6.14\times10^{-5}\,\mathrm{m}$ (61.4 µm). (b) $\Delta F=k_w\Delta x=400\cdot 6.14\times10^{-5}=0.0245\,\mathrm{N}$. (c) $F^{\max}=\tau_m^{\max}/r_m=0.020/0.010=2.0\,\mathrm{N}$. Saturation penetration $\delta=F^{\max}/k_w=2/400=0.005\,\mathrm{m}$ (5 mm), i.e. at $x=0.035\,\mathrm{m}$. (d) At $x=0.036$ the unsaturated law wants $F=k_w(0.006)=2.4\,\mathrm{N}>2.0$, so the amplifier is already saturated and the spring law is a lie.
 > 3. Using $r_s$ in place of $r_m$ multiplies $x$ and divides $F$ by $r_s/r_m=5$. Every Newton you publish would be off by five. Quadrature $4\times$ on 256 slots is 1024 counts: treating $N=256$ inflates $\Delta x$ by four, so the wall would feel four times coarser and you would under-report resolution.
 
@@ -269,11 +270,11 @@ The translating handle is driven by an inextensible capstan: motor pulley radius
 
 ```mermaid
 flowchart LR
-    Enc["encoder N=1024"] --> Tm["θm"]
-    Tm --> Pulley["pulley rm=0.010"]
+    Enc["엔코더 N=1024"] --> Tm["θm"]
+    Tm --> Pulley["풀리 rm=0.010"]
     Pulley --> Cable["비신장 케이블"]
-    Cable --> Sector["sector rs=0.050"]
-    Sector --> X["handle x"]
+    Cable --> Sector["섹터 rs=0.050"]
+    Sector --> X["핸들 x"]
     X --> Wall["벽 xw=0.030"]
 ```
 
@@ -353,7 +354,7 @@ Impedance 쪽 열에 계속 등장하는 단어가 "backdrivable"인데, 이것�
 
 ```mermaid
 flowchart LR
-    C["encoder counts"] --> Q["관절각 q"] --> X["자세 x=f(q)"] --> VE["가상/원격<br/>환경"] --> F["직교좌표 힘 F"] --> T["관절 토크 τ"] --> I["모터 전류 i"]
+    C["엔코더 카운트"] --> Q["관절각 q"] --> X["자세 x=f(q)"] --> VE["가상/원격<br/>환경"] --> F["직교좌표 힘 F"] --> T["관절 토크 τ"] --> I["모터 전류 i"]
 ```
 
 기구학 미분은 $v=J(q)\dot q$다. 기계적 일률이 같다는 조건에서
@@ -445,19 +446,20 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**, 이 페이지, [[04-robotic
 
 병진 핸들은 비신장 캡스턴으로 구동된다: 모터 풀리 $r_m$, 섹터 $r_s$. 케이블 길이가 보존되므로 핸들 변위는 $r_s$와 무관하게 $x=r_m\theta_m$이다. 일률에서 $\tau_m=F r_m$. 모터 엔코더는 디코드 후 $N=1024$ counts/rev. 전류 증폭기는 $\tau_m^{\max}=0.020\,\mathrm{N{\cdot}m}$에서 포화한다(과제 숫자이지 카탈로그 숫자가 아니다).
 
-1. **그리기.** 위의 그림을 메커니즘 스케치로: 엔코더 $\to$ $\theta_m$ $\to$ 풀리 $r_m$ $\to$ 케이블 $\to$ 섹터 $r_s$ $\to$ 핸들 $x$ 사슬을 그려라. P3의 길이와 $N$을 모두 기입하라. 벽 $x_w$와 벽 안 $+x$를 표시하라. 구성 등식 $x=\ldots$, $\tau_m=\ldots$를 그림에 써라.
+1. **그리기.** 모터 풀리를 반으로 줄이고($r_m=0.005\,\mathrm{m}$) 나머지는 그대로 둔 재설계에 대해, 위의 그림을 메커니즘 스케치로: 엔코더 $\to$ $\theta_m$ $\to$ 풀리 $r_m$ $\to$ 케이블 $\to$ 섹터 $r_s$ $\to$ 핸들 $x$ 사슬, 모든 길이와 $N$의 기입, $x_w$의 벽과 벽 안 $+x$, 그리고 이 설계의 숫자로 쓴 구성 등식 $x=\ldots$, $\tau_m=\ldots$. 핸들 옆에 새 $\Delta x$로 엔코더 한 카운트를 표시하고, 이제 손이 느끼는 로터 질량을 적어라.
 2. **유도.** (a) 엔코더 한 카운트의 핸들 변위 $\Delta x$. (b) 벽 안에서 기본 가상 벽 $k_w$의 힘 증분 $\Delta F$. (c) 증폭기 포화 시 최대 핸들 힘 $F^{\max}$, 기본 벽이 포화하는 침투량. (d) $x=0.036\,\mathrm{m}$(벽 안 6 mm)에서 포화 없는 스프링 법칙이 아직 성립하는가?
 3. **해석.** 심사자가 “핸들이 섹터 위에 있으니 $x=r_s\theta_m$을 써라”고 한다. 그 실수가 보고하는 힘마다 몇 배를 넣는가? 별도로: $N$은 쿼드러처 디코드 후 값이다. 디코드 전 256 슬롯으로 취급하면 $\Delta x$는 어떻게 바뀌는가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 사슬을 엔코더에서 벽까지 왼쪽에서 오른쪽으로 한 줄로 그리고, 모든 화살표 위에 그 화살표가 나르는 물리량을 적는다. P3의 길이와 $N$을 모두 기입한다.
-> - 두 반지름은 축척을 지킨다. $r_s$는 $r_m$의 다섯 배다. 섹터와 풀리가 같은 크기로 나오면 그림이 나르는 유일한 비를 이미 잃은 것이다.
+> - 사슬을 엔코더에서 벽까지 왼쪽에서 오른쪽으로 한 줄로 그리고, 모든 화살표 위에 그 화살표가 나르는 물리량을 적는다. 모든 길이와 $N$을 기입한다.
+> - 두 반지름은 축척을 지킨다. $r_s$는 이제 $r_m$의 열 배다. 섹터와 풀리가 같은 크기로 나오면 그림이 나르는 유일한 비를 이미 잃은 것이다.
 > - 케이블은 풀리에서 섹터까지 끊기지 않은 한 선으로 긋고 *비신장*이라 적는다. 유도 전체가 그 한마디 위에 서 있다.
-> - 구성 등식 둘, $x = \ldots$와 $\tau_m = \ldots$를 각각 실제로 등장하는 반지름과 함께 그림 위에 적는다. 어느 쪽에든 $r_s$가 들어가면 그림은 다섯 배 틀린 것이다.
+> - 구성 등식 둘을 각각 실제로 등장하는 반지름과 함께 그림 위에 적는다. $x=0.005\,\theta_m$, $\tau_m=0.005\,F$. 어느 쪽에든 $r_s$가 들어가면 그림은 열 배 틀린 것이다.
 > - 벽은 $x_w$의 수직선으로 긋고, 침투가 양수가 되도록 $+x$가 벽 안임을 화살표로 표시한다.
-> - 엔코더 한 카운트는 핸들 옆에 짧은 눈금으로 긋고 $\Delta x$를 적되, 일부러 축척을 크게 어겨서 그린다. 축척대로라면 $30\,\mathrm{mm}$ 벽에 대한 계산 절의 $61\,\mathrm{\mu m}$은 그림의 약 $1/500$이다. 이 눈금이 거기 있는 이유는 그것이 장치가 알 수 있는 가장 작은 것이기 때문이다.
+> - 엔코더 한 카운트는 핸들 옆에 짧은 눈금으로, 일부러 크게 그리고 $\Delta x=30.7\,\mu\mathrm{m}$을 적는다. 위 그림의 $61.4$의 절반이다.
+> - 풀리 옆에는 작은 반지름의 값, 6단계의 식으로: $m_{\text{refl}}=J_m/r_m^2=0.040\,\mathrm{kg}$. 위 그림의 $0.010$의 네 배이고 카탈로그 핸들 전체 질량과 같다.
 
 > [!tip]- 정답 · Solutions
-> 1. 케이블 비신장 $\Rightarrow$ $r_m\theta_m=r_s\theta_s$. 섹터 가장자리의 병진 핸들은 $x=r_s\theta_s=r_m\theta_m$. 일률 $\tau_m\omega_m=F\dot x$, $\dot x=r_m\omega_m$이므로 $\tau_m=F r_m$. $r_s$는 섹터 형상이고 핸들 사상에서는 소거된다.
+> 1. 사슬은 위 그림과 같고 풀리만 반 크기이므로, 섹터는 풀리의 열 배로 그린다. 케이블 길이는 여전히 보존된다. $x=r_m\theta_m=0.005\,\theta_m$, $\tau_m=F\,r_m=0.005\,F$이고 $r_s$는 어느 쪽에도 없다. 한 카운트는 $\Delta x=0.005\cdot2\pi/1024=30.7\,\mu\mathrm{m}$로 위 그림의 $61.4\,\mu\mathrm{m}$의 절반이고, $0.020\,\mathrm{N{\cdot}m}$ 증폭기는 이제 $F^{\max}=0.020/0.005=4.0\,\mathrm{N}$, 두 배까지 낸다. 대가는 제곱에 있다. 핸들에서 느끼는 로터 관성은 $J_m/r_m^2=1.0\times10^{-6}/0.005^2=0.040\,\mathrm{kg}$으로 위 그림의 $0.010\,\mathrm{kg}$의 네 배다. $r_m$을 반으로 줄이면 해상도와 힘은 두 배, 느끼는 로터 질량은 네 배가 된다.
 > 2. (a) $\Delta\theta_m=2\pi/1024$, $\Delta x=0.010\cdot 2\pi/1024=6.14\times10^{-5}\,\mathrm{m}$ (61.4 µm). (b) $\Delta F=400\cdot 6.14\times10^{-5}=0.0245\,\mathrm{N}$. (c) $F^{\max}=0.020/0.010=2.0\,\mathrm{N}$. 포화 침투 $\delta=2/400=0.005\,\mathrm{m}$ (5 mm), 즉 $x=0.035\,\mathrm{m}$. (d) $x=0.036$에서 포화 없는 법칙은 $F=2.4\,\mathrm{N}>2.0$을 원하므로 증폭기는 이미 포화이고 스프링 법칙은 거짓이다.
 > 3. $r_m$ 자리에 $r_s$를 쓰면 $x$는 5배, $F$는 $1/5$. 발표하는 뉴턴마다 다섯 배가 틀린다. 256 슬롯의 쿼드러처 $4\times$가 1024 카운트다. $N=256$으로 쓰면 $\Delta x$가 네 배가 되어 벽이 네 배 거칠고 해상도를 낮게 보고하게 된다.

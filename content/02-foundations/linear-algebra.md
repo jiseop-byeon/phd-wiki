@@ -516,6 +516,8 @@ kinematics, $J^\dagger$ again in operational-space control — and it is the obj
 connects the SVD above to every solver in this wiki. It exists because most matrices you
 meet are not square, so $A^{-1}$ is not available.
 
+#### 4.5.1 When there is something to invert, and the two formulas
+
 **When is there anything to invert?** $A^\top A$ is invertible exactly when $A$'s columns
 are linearly independent. One line shows it: if $A^\top A x = 0$ then
 $x^\top A^\top A x = \lVert Ax \rVert^2 = 0$, so $Ax = 0$, so $x = 0$ by independence.
@@ -532,6 +534,8 @@ Those two rows are two different robotics situations. Tall is more measurements 
 unknowns: calibration, bundle adjustment, fitting a plane to a point cloud. Wide is more
 joints than task dimensions: a redundant arm, where infinitely many joint velocities produce
 the tool motion you asked for and you need a rule to pick one.
+
+#### 4.5.2 Two worked cases: a redundant arm and P2
 
 **Worked — the minimum-norm rule, on a redundant arm.** Take a 3-link planar arm with unit
 links at $\theta = (0°, 90°, 0°)$. Its Jacobian mapping joint rates to tool velocity comes from the column rule (MR ch.5) — each column is the tip velocity produced by unit rate at that joint alone — and it is
@@ -561,6 +565,8 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}.$$
 
 Draw the columns at the tip $(1,1)$: column 1 is the tip velocity for $\dot\theta=(1,0)$, which is $(-1,1)$; column 2 is $(-1,0)$. The $2\times 2$ inverse formula with $\det J=1$ gives $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. Square and invertible, so the table's last row says $J^\dagger=J^{-1}$. Check: $J J^{-1}=I$. The problem set asks you to write those two matrices and to say they match — you have just done it. The 3-link arm above needed a pseudoinverse because it was wide; P2 does not. What P2 *does* need the SVD story for is the next sentence: send $\theta_2\to 0$ and the two columns become parallel, $\det J\to 0$, $\kappa_2(J)\to\infty$, and a sideways tip motion is lost. $J^\dagger$ then explodes in the lost direction exactly as $\Sigma^\dagger$ below predicts.
 
+#### 4.5.3 The SVD view, singularities and damped least squares
+
 **The SVD view, and why $J^\dagger$ explodes.** Writing $A = U\Sigma V^\top$ from §4, the
 pseudo-inverse is
 
@@ -571,6 +577,8 @@ works for *every* matrix, including rank-deficient ones, and the two formulas ab
 special cases of it. It also explains the failure mode: near a singular configuration one
 $\sigma_i \to 0$, so $1/\sigma_i \to \infty$ and the returned joint velocity grows without bound in
 that one direction as the arm approaches the singularity. The arm is being asked to move in a direction it cannot move; at the singular pose itself the pseudo-inverse leaves that zero alone, so the answer jumps discontinuously when the rank actually drops.
+
+#### 4.5.4 The Moore–Penrose definition
 
 **The definition behind both formulas.** The (Moore–Penrose) pseudo-inverse of any
 $m\times n$ matrix $A$ is the unique $n\times m$ matrix $A^\dagger$ satisfying four conditions:
@@ -610,6 +618,8 @@ Levenberg–Marquardt. Four names, one idea.
 
 Linear algebra *is* the language of control ([[04-robotics/index|control track]]):
 
+#### 5.1 The state-space model and the matrix exponential
+
 - **State-space model** $\dot{x} = Ax + Bu$, $y = Cx$: the system is a matrix; simulating
   is repeated matrix multiplication; the matrix exponential $e^{At}$ solves the unforced system exactly, and with the convolution $x(t) = e^{At}x_0 + \int_0^t e^{A(t-s)}Bu(s)\,ds$ the forced one.
   The symbols: $x \in \mathbb{R}^n$ is the **state** (the numbers that, with future inputs,
@@ -624,8 +634,12 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   $A = \begin{pmatrix}0&1\\0&0\end{pmatrix}$ and $B = (0, 1)$. Here $A^2 = 0$, so the series
   stops: $e^{At} = \begin{pmatrix}1&t\\0&1\end{pmatrix}$, and starting at position $0$ with
   velocity $1$, after $t = 2$ the state is $(2, 1)$.
+#### 5.2 Stability
+
 - **Stability = eigenvalues of $A$** (poles): continuous-time stable iff all
   $\text{Re}(\lambda_i) < 0$; discrete-time iff all $|\lambda_i| < 1$.
+#### 5.3 Controllability and observability
+
 - **Controllability**: which directions can the input actually push the state? One step
   of input moves you along the columns of $B$; the dynamics then rotate that reach into
   $AB$, then $A^2B$, and so on. Stack those reachable directions —
@@ -709,21 +723,21 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\circ)$. This page §4.5. No time-stepper.
 
-1. **Draw.** Arm in the plane: base at the origin, elbow $(1,0)$, tip $(1,1)$. Draw $J$'s two columns as arrows at the tip (tip velocity for each unit joint rate).
+1. **Draw.** The picture above for the other elbow: the same tip $(1,1)$ reached at $\theta=(90^\circ,-90^\circ)$, with the elbow at $(0,1)$. Draw $J$'s two columns as arrows at the tip (tip velocity for each unit joint rate) and the ellipse the unit circle of joint rates maps to. What is the same as in the picture above, and what changed?
 2. **Derive.** From $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, compute $J^{-1}$ by the $2\times 2$ formula. Then $J^\dagger$ from the square-invertible row of the §4.5 table. Confirm they match.
 3. **Interpret.** Send $\theta_2\to 0$ with $\theta_1$ fixed. What happens to the two column arrows, to $\det J$, and to $\kappa_2(J)$? What tool motion becomes impossible?
 
 > [!note]- How to draw it · 그리는 법
-> - The arm to scale: base at the origin, a unit link along $+x$ to the elbow at $(1,0)$, a second unit link straight up to the tip at $(1,1)$, both joints marked with a circle.
-> - Write the angle each joint owns: $\theta_1$ measured from $+x$ at the base, $\theta_2$ measured at the elbow *relative to link 1* — the convention the catalog freezes, and the commonest place to go wrong.
+> - The arm to scale: base at the origin, a unit link straight up to the elbow at $(0,1)$, a second unit link along $+x$ to the tip at $(1,1)$, both joints marked with a circle.
+> - Write the angle each joint owns: $\theta_1=90^\circ$ measured from $+x$ at the base, $\theta_2=-90^\circ$ measured at the elbow *relative to link 1* — the convention the catalog freezes, and the commonest place to go wrong.
 > - Put both column arrows' tails at the tip, not at the joints: column 1 is the tip velocity for $\dot\theta=(1,0)$, the whole arm turning about the base, and column 2 the tip velocity for $\dot\theta=(0,1)$, the forearm turning about the elbow. Label each arrow with the joint rate that produced it.
-> - Check that each arrow is perpendicular to the segment from its own joint to the tip — a point on a rotating body moves at right angles to its radius — which catches a wrong sign faster than redoing the algebra.
-> - Write beside the drawing the sentence it is: a column of $J$ is the output of one unit of one input.
-> - The image of the unit circle, if you add it: a radius-$1$ circle in a corner box labelled joint-rate space, and at the tip the ellipse it maps to, with the singular values of §4 as semi-axes and $\kappa_2(J)=\sigma_1/\sigma_2$ written inside; its area is $\pi\lvert\det J\rvert$.
-> - For item 3, a second, smaller panel with the arm straight, $\theta=(0^\circ,0^\circ)$: draw the two column arrows there, shade the ellipse down to the segment it collapses into, and write $\det J$ and $\kappa_2$ beside it — the two panels differ by exactly one lost direction, and $J^\dagger$ blowing up in §4.5 is the algebra of the second.
+> - Check that each arrow is perpendicular to the segment from its own joint to the tip — a point on a rotating body moves at right angles to its radius — which catches a wrong sign faster than redoing the algebra. Column 1's segment is the same base-to-tip line as in the picture above; column 2's is not.
+> - The image of the unit circle: a radius-$1$ circle in a corner box labelled joint-rate space, and at the tip the ellipse it maps to, with the singular values of §4 as semi-axes and $\kappa_2(J)=\sigma_1/\sigma_2$ written inside; its area is $\pi\lvert\det J\rvert$.
+> - Draw the picture above's ellipse faintly behind yours: the two have the same semi-axes and differ only in tilt, and $\det J$ changes sign between them.
+> - For item 3, a second, smaller panel with the arm straight, $\theta=(0^\circ,0^\circ)$: the two column arrows there, the ellipse shaded down to the segment it collapses into, and $\det J$ and $\kappa_2$ beside it.
 
 > [!tip]- Solutions
-> 1. Column 1 is $(-1,1)$ (whole arm about the base). Column 2 is $(-1,0)$ (forearm about the elbow).
+> 1. Column 1 is still $(-1,1)$: turning the whole arm about the base moves the tip at right angles to the base-to-tip line, and the tip has not moved. Column 2 is now $(0,1)$, at right angles to the forearm, which runs from $(0,1)$ to $(1,1)$ along $+x$. So $J=\begin{pmatrix}-1&0\\1&1\end{pmatrix}$ and $\det J=-1$: the same size as before with the opposite sign, the sign of $\sin\theta_2$. $J^\top J=\begin{pmatrix}2&1\\1&1\end{pmatrix}$ has eigenvalues $2.618$ and $0.382$, so the singular values are again $1.618$ and $0.618$, $\kappa_2=2.618$ and the area is $\pi$. The ellipse has the same shape and a different tilt: its long axis points along $(-0.526,\ 0.851)$, at $121.7^\circ$, against $(-0.851,\ 0.526)$, at $148.3^\circ$, in the picture above. The tip is the same, the arm is not, so the map from joint rates is not.
 > 2. $\det J=1$, so $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. Square and invertible $\Rightarrow J^\dagger=J^{-1}$.
 > 3. The columns become parallel (both along $\pm y$ at $\theta=(0^\circ,0^\circ)$), $\det J\to 0$, $\kappa_2\to\infty$. Sideways ($x$) tip motion is lost: a stretched arm cannot do it at finite joint speed.
 
@@ -1210,6 +1224,8 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 $J^\dagger$ — 그리고 위의 SVD와 이 위키의 모든 솔버를 잇는 대상이다. 마주치는 행렬 대부분이
 정사각이 아니어서 $A^{-1}$을 쓸 수 없기 때문에 존재한다.
 
+#### 4.5.1 뒤집을 것이 있을 때, 그리고 두 공식
+
 **애초에 뒤집을 것이 있기는 한가?** $A^\top A$는 정확히 $A$의 열이 선형독립일 때 역을 갖는다.
 한 줄이면 보인다. $A^\top A x = 0$이면 $x^\top A^\top A x = \lVert Ax \rVert^2 = 0$이므로
 $Ax = 0$이고, 독립성에 의해 $x = 0$이다.
@@ -1225,6 +1241,8 @@ $Ax = 0$이고, 독립성에 의해 $x = 0$이다.
 그 두 행이 서로 다른 두 로보틱스 상황이다. 키 큰 쪽은 미지수보다 측정이 많은 경우 — 보정,
 번들 조정, 점군에 평면 맞추기. 넓은 쪽은 과제 차원보다 관절이 많은 경우 — 여유자유도 팔이고,
 요청한 도구 운동을 만드는 관절 속도가 무한히 많으므로 하나를 고르는 규칙이 필요하다.
+
+#### 4.5.2 두 계산: 여유자유도 팔과 P2
 
 **계산 — 여유자유도 팔에서의 최소 노름 규칙.** 단위 길이 링크 셋짜리 평면 팔을
 $\theta = (0°, 90°, 0°)$에 두자. 관절 속도를 도구 속도로 보내는 야코비는 열 규칙(MR 5장)에서 나온다 — 각 열은 그 관절만 단위 속도로 돌릴 때 생기는 말단 속도다 — 그리고 $2 \times 3$이다 —
@@ -1253,6 +1271,8 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}.$$
 
 말단 $(1,1)$에서 열을 그려라. 열 1은 $\dot\theta=(1,0)$의 말단 속도 $(-1,1)$, 열 2는 $(-1,0)$. $\det J=1$인 $2\times 2$ 역행렬 공식은 $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. 정방·가역이므로 표의 마지막 행이 $J^\dagger=J^{-1}$이라고 말한다. $J J^{-1}=I$. 과제는 그 두 행렬을 쓰고 같다고 말하라고 한다 — 방금 한 일이다. 위의 3링크는 가로로 넓어서 유사역행렬이 필요했고, P2는 아니다. P2가 SVD 이야기를 필요로 하는 것은 다음 문장이다. $\theta_2\to 0$이면 두 열이 평행해지고 $\det J\to 0$, $\kappa_2(J)\to\infty$, 옆방향 말단 운동이 사라진다. $J^\dagger$는 잃어버린 방향에서 아래 $\Sigma^\dagger$가 예측하는 대로 폭발한다.
 
+#### 4.5.3 SVD의 관점, 특이점, 감쇠 최소제곱
+
 **SVD의 관점, 그리고 $J^\dagger$가 폭발하는 이유.** §4에서 $A = U\Sigma V^\top$로 쓰면
 유사역행렬은
 
@@ -1262,6 +1282,8 @@ $$A^\dagger = V\Sigma^\dagger U^\top, \qquad \Sigma^\dagger = \operatorname{diag
 행렬에서 통하는 정의이고, 위의 두 공식은 그 특수한 경우다. 그리고 실패 방식도 설명한다.
 특이 자세 근처에서는 어떤 $\sigma_i \to 0$이므로 $1/\sigma_i \to \infty$가 되고 돌려받는
 관절 속도가 특이 자세에 다가갈수록 그 한 방향으로 한없이 커진다. 팔에게 움직일 수 없는 방향으로 움직이라고 요구한 것이다. 특이 자세 그 자체에서는 유사역행렬이 그 0을 건드리지 않으므로, 계수가 실제로 떨어지는 순간 답이 불연속으로 뛴다.
+
+#### 4.5.4 무어–펜로즈 정의
 
 **두 공식 뒤에 있는 정의.** 임의의 $m\times n$ 행렬 $A$의 (무어–펜로즈) 유사역행렬은 네 조건을
 만족하는 유일한 $n\times m$ 행렬 $A^\dagger$다.
@@ -1298,6 +1320,8 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
 
 선형대수는 제어의 언어 *그 자체*다 ([[04-robotics/index|제어 트랙]]):
 
+#### 5.1 상태공간 모델과 행렬 지수
+
 - **상태공간 모델** $\dot{x} = Ax + Bu$, $y = Cx$: 시스템이 곧 행렬이다; 시뮬레이션은
   반복된 행렬곱이고, 행렬 지수 $e^{At}$가 입력이 없는 시스템의 정확한 해를 주고, 입력이 있으면 합성곱 $x(t) = e^{At}x_0 + \int_0^t e^{A(t-s)}Bu(s)\,ds$가 해다.
   기호: $x \in \mathbb{R}^n$은 **상태**(미래 입력과 함께 미래를 결정하는 숫자들),
@@ -1310,8 +1334,12 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
   $u$로 미는 단위 질량의 상태를 (위치, 속도)로 두면 $A = \begin{pmatrix}0&1\\0&0\end{pmatrix}$,
   $B = (0, 1)$이다. $A^2 = 0$이라 급수가 멈추고 $e^{At} = \begin{pmatrix}1&t\\0&1\end{pmatrix}$이며,
   위치 $0$, 속도 $1$에서 출발하면 $t = 2$ 뒤 상태는 $(2, 1)$이다.
+#### 5.2 안정성
+
 - **안정성 = $A$의 고유값** (극점): 연속 시간은 모든 $\text{Re}(\lambda_i) < 0$일 때,
   이산 시간은 모든 $|\lambda_i| < 1$일 때 안정.
+#### 5.3 가제어성과 가관측성
+
 - **가제어성**: 입력이 상태를 실제로 어느 방향으로 밀 수 있나? 입력 한 스텝은 $B$의 열
   방향으로 움직이고, 동역학이 그 도달 범위를 $AB$로, 다시 $A^2B$로 회전시킨다. 그 도달
   방향들을 쌓아 —$[B, AB, \ldots, A^{n-1}B]$— 함께 $n$차원 전체를 생성하면($\text{rank}=n$)
@@ -1389,20 +1417,20 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 이 페이지 §4.5. 시간 스테퍼 없음.
 
-1. **그리기.** 평면 팔: 베이스 원점, 엘보 $(1,0)$, 말단 $(1,1)$. $J$의 두 열을 말단의 화살로 (각 관절 단위속도가 만드는 말단 속도).
+1. **그리기.** 반대쪽 엘보에 대한 위의 그림: 같은 말단 $(1,1)$에 $\theta=(90^\circ,-90^\circ)$로 닿고 엘보는 $(0,1)$에 있다. $J$의 두 열을 말단의 화살로(각 관절 단위속도가 만드는 말단 속도), 그리고 관절 속도의 단위원이 옮겨 간 타원을 그려라. 위의 그림과 무엇이 같고 무엇이 바뀌었는가?
 2. **유도.** $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$에서 $2\times 2$ 공식으로 $J^{-1}$. 이어서 §4.5 표의 정방·가역 행으로 $J^\dagger$. 둘이 같은지 확인하라.
 3. **해석.** $\theta_1$을 고정하고 $\theta_2\to 0$. 두 열 화살, $\det J$, $\kappa_2(J)$는? 어떤 말단 운동이 불가능해지는가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 팔은 실제 비율로 그린다. 베이스는 원점, 단위 링크가 $+x$를 따라 엘보 $(1,0)$까지, 둘째 단위 링크가 곧장 위로 말단 $(1,1)$까지 가고, 관절 둘은 동그라미로 표시한다.
-> - 관절마다 자기 각을 적는다. $\theta_1$은 베이스에서 $+x$로부터, $\theta_2$는 엘보에서 링크 1에 *대한 상대각*이다. 카탈로그가 고정한 규약이고 가장 흔히 틀리는 자리다.
+> - 팔은 실제 비율로 그린다. 베이스는 원점, 단위 링크가 곧장 위로 엘보 $(0,1)$까지, 둘째 단위 링크가 $+x$를 따라 말단 $(1,1)$까지 가고, 관절 둘은 동그라미로 표시한다.
+> - 관절마다 자기 각을 적는다. $\theta_1=90^\circ$은 베이스에서 $+x$로부터, $\theta_2=-90^\circ$은 엘보에서 링크 1에 *대한 상대각*이다. 카탈로그가 고정한 규약이고 가장 흔히 틀리는 자리다.
 > - 두 열 화살표의 꼬리는 관절이 아니라 말단에 둔다. 열 1은 $\dot\theta=(1,0)$, 곧 팔 전체가 베이스를 중심으로 돌 때의 말단 속도이고, 열 2는 $\dot\theta=(0,1)$, 곧 전완이 엘보를 중심으로 돌 때의 말단 속도다. 화살표마다 그것을 만든 관절 속도를 적는다.
-> - 각 화살표가 자기 관절에서 말단으로 가는 선분과 수직인지 확인한다. 회전하는 강체 위의 점은 반지름에 직각으로 움직이기 때문이고, 이 확인이 대수를 다시 푸는 것보다 부호 실수를 빨리 잡는다.
-> - 그림 옆에 이 그림이 곧 그 문장임을 적는다. $J$의 한 열은 입력 하나의 단위량이 만드는 출력이다.
-> - 단위원의 상을 더한다면, 한쪽 구석 상자에 관절 속도 공간의 반지름 $1$짜리 원을 그리고 말단 자리에 그 원이 옮겨 간 타원을 그린다. 반축은 §4의 특이값이고 타원 안에 $\kappa_2(J)=\sigma_1/\sigma_2$를 쓴다. 넓이는 $\pi\lvert\det J\rvert$다.
-> - 3번을 위해 더 작은 둘째 칸에 팔을 곧게 편 자세 $\theta=(0^\circ,0^\circ)$를 그리고, 거기서 두 열 화살표를 그리고, 타원이 주저앉은 선분을 칠하고, 옆에 $\det J$와 $\kappa_2$를 쓴다. 두 칸의 차이가 정확히 사라진 방향 하나이고, §4.5에서 $J^\dagger$가 폭발하는 것이 둘째 칸의 대수다.
+> - 각 화살표가 자기 관절에서 말단으로 가는 선분과 수직인지 확인한다. 회전하는 강체 위의 점은 반지름에 직각으로 움직이기 때문이고, 이 확인이 대수를 다시 푸는 것보다 부호 실수를 빨리 잡는다. 열 1의 선분은 위 그림과 같은 베이스-말단 선이고, 열 2의 선분은 다르다.
+> - 단위원의 상: 한쪽 구석 상자에 관절 속도 공간의 반지름 $1$짜리 원을 그리고 말단 자리에 그 원이 옮겨 간 타원을 그린다. 반축은 §4의 특이값이고 타원 안에 $\kappa_2(J)=\sigma_1/\sigma_2$를 쓴다. 넓이는 $\pi\lvert\det J\rvert$다.
+> - 위 그림의 타원을 뒤에 흐리게 겹쳐 그린다. 둘은 반축이 같고 기울기만 다르며, 둘 사이에서 $\det J$의 부호가 바뀐다.
+> - 3번을 위해 더 작은 둘째 칸에 팔을 곧게 편 자세 $\theta=(0^\circ,0^\circ)$를 그리고, 거기서 두 열 화살표, 타원이 주저앉은 선분, 그리고 옆에 $\det J$와 $\kappa_2$를 쓴다.
 
 > [!tip]- 정답 · Solutions
-> 1. 1열은 $(-1,1)$ (베이스를 도는 팔 전체). 2열은 $(-1,0)$ (엘보를 도는 전완).
+> 1. 열 1은 그대로 $(-1,1)$이다. 팔 전체가 베이스를 중심으로 돌면 말단은 베이스-말단 선에 직각으로 움직이고, 말단은 움직이지 않았다. 열 2는 이제 $(0,1)$로, $(0,1)$에서 $(1,1)$까지 $+x$를 따라 놓인 전완에 직각이다. 그러므로 $J=\begin{pmatrix}-1&0\\1&1\end{pmatrix}$, $\det J=-1$이다. 크기는 같고 부호는 반대이며, 그 부호는 $\sin\theta_2$의 부호다. $J^\top J=\begin{pmatrix}2&1\\1&1\end{pmatrix}$의 고윳값은 $2.618$과 $0.382$이므로 특이값은 다시 $1.618$과 $0.618$, $\kappa_2=2.618$, 넓이 $\pi$다. 타원은 모양이 같고 기울기가 다르다. 긴 축이 여기서는 $(-0.526,\ 0.851)$, 곧 $121.7^\circ$ 방향이고, 위 그림에서는 $(-0.851,\ 0.526)$, 곧 $148.3^\circ$ 방향이다. 말단은 같아도 팔이 다르니 관절 속도에서 오는 사상도 다르다.
 > 2. $\det J=1$이므로 $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. 정방·가역 $\Rightarrow J^\dagger=J^{-1}$.
 > 3. 열이 평행해진다($\theta=(0^\circ,0^\circ)$에서 둘 다 $\pm y$), $\det J\to 0$, $\kappa_2\to\infty$. 옆($x$) 말단 운동이 사라진다: 곧게 뻗은 팔은 유한 관절속도로 그것을 못 한다.

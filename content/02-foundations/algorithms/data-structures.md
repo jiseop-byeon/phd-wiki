@@ -948,6 +948,7 @@ The worked example drawn: the root splits at $x = 7$, its children at $y = 4$ (l
 5. In BST deletion with two children, why does the in-order successor never have a left child, and why does copying its key into the node preserve the BST invariant?
 6. With union by size alone, what is the worst-case cost of `find`, and why? What does path compression add? Why can't union-find handle "remove this edge"?
 7. A KD-tree nearest-neighbour search over 512-D image embeddings is barely faster than brute force. Explain why and propose a fix.
+8. Close the page and write `heap_push` and `heap_pop` for a binary min-heap stored in a Python list from a blank file. Push `5, 3, 8, 1, 9, 2, 3` and print the list, then pop until empty, and compare your code line by line with §4. Which line did you get wrong, and which invariant does it break?
 
 > [!tip]- Answers
 > 1. A balanced BST keyed by timestamp: C++ `std::map::lower_bound`, or `SortedList.bisect_left` from `sortedcontainers` in Python. Both give O(log n) inserts and "smallest key ≥ t". A heap only exposes the minimum, so finding the successor of an arbitrary t costs O(n). A hash map has no order at all. If the messages arrived in order, a plain list with `bisect` would do, because appends at the end are O(1).
@@ -957,6 +958,7 @@ The worked example drawn: the root splits at $x = 7$, its children at $y = 4$ (l
 > 5. The successor is the minimum of the right subtree. If it had a left child, that child would be in the right subtree and smaller, a contradiction. Its key is larger than every key in the node's left subtree, since it came from the right subtree, and smaller than every other key in the right subtree, since it was the minimum. So placing it at the node satisfies the invariant on both sides, and removing it from the right subtree is the easy leaf or one-child case.
 > 6. O(log n): a node gets deeper only when its tree merges under one at least as large, which at least doubles its tree's size, so this can happen at most $\log_2 n$ times. Path compression flattens paths as they are used, bringing $m$ operations down to $O(m\,\alpha(n))$, effectively constant per operation. Removing an edge would require splitting a set, but the parent-pointer forest does not record which union connected which elements, so there is nothing to undo. Handle deletions offline in reverse order, or use a dynamic-connectivity structure.
 > 7. In 512 dimensions the query ball crosses the splitting planes of nearly every node, so pruning almost never happens and the search visits most leaves. The rule of thumb $n \gg 2^d$ is hopeless at d = 512. Use approximate nearest neighbours (HNSW, IVF-PQ, randomized KD-forests), reduce dimension first (PCA), or, if exact answers are required and n is moderate, a vectorized brute force on a GPU.
+> 8. State the invariant first: `h[(i - 1) // 2] <= h[i]` for every `i > 0`, and the children of `i` are `2i + 1` and `2i + 2`. Each usual slip breaks it. Children at `2i` and `2i + 1` belong to a 1-based array and skip or repeat slots here. Sifting down into the *larger* child puts a large key above a small one. Popping by removing `h[0]` and shifting the list is $O(n)$ and scrambles every parent–child pair; the fix is to move the last leaf to the root and sift it down, and to skip that step when the popped item was the only one. After the pushes a correct heap is `[1, 3, 2, 5, 9, 8, 3]`, and the pops return `1, 2, 3, 3, 5, 8, 9`, the repeated `3` included.
 
 ### Sources
 
@@ -1913,6 +1915,7 @@ $$\lvert q_s - t \rvert < r$$
 5. 자식이 둘인 BST 삭제에서 중위 후속자에게 왜 왼쪽 자식이 없는가? 그 키를 노드에 복사해도 BST 불변식이 유지되는 이유는?
 6. 크기 기준 합치기만 쓸 때 `find`의 최악 비용과 그 이유는? 경로 압축은 무엇을 더하는가? union-find가 "이 간선을 지워라"를 처리할 수 없는 이유는?
 7. 512차원 이미지 임베딩에 대한 KD-tree 최근접점 탐색이 전수 탐색보다 거의 빠르지 않다. 이유를 설명하고 해결책을 제안하라.
+8. 페이지를 닫고 파이썬 리스트에 담은 이진 최소 힙의 `heap_push`와 `heap_pop`을 빈 파일에서 써라. `5, 3, 8, 1, 9, 2, 3`을 넣고 리스트를 출력한 다음 빌 때까지 꺼내고, 코드를 §4와 한 줄씩 비교하라. 어느 줄을 틀렸고, 그 줄은 어떤 불변식을 깨는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 타임스탬프를 키로 하는 균형 BST다. C++ `std::map::lower_bound`나 Python `sortedcontainers`의 `SortedList.bisect_left`가 O(log n) 삽입과 "t 이상인 최소 키"를 준다. 힙은 최솟값만 보여 주므로 임의의 t의 후속자를 찾는 데 O(n)이 들고, 해시 맵에는 순서가 아예 없다. 메시지가 순서대로 온다면 끝 append가 O(1)이므로 평범한 리스트와 `bisect`로 충분하다.
@@ -1922,6 +1925,7 @@ $$\lvert q_s - t \rvert < r$$
 > 5. 후속자는 오른쪽 서브트리의 최솟값이다. 왼쪽 자식이 있다면 그 자식도 오른쪽 서브트리에 있으면서 더 작을 테니 모순이다. 그 키는 오른쪽 서브트리에서 왔으므로 노드의 왼쪽 서브트리 모든 키보다 크고, 최솟값이었으므로 오른쪽 서브트리의 다른 모든 키보다 작다. 따라서 노드 자리에 두면 양쪽 불변식이 모두 성립하고, 오른쪽 서브트리에서 그것을 지우는 일은 쉬운 잎 또는 자식 하나 경우다.
 > 6. O(log n)이다. 노드는 자기 트리가 적어도 같은 크기의 트리 밑으로 들어갈 때만 깊어지고, 그때마다 트리 크기가 적어도 두 배가 되므로 많아야 $\log_2 n$번 일어난다. 경로 압축은 쓰이는 경로를 평평하게 만들어 연산 $m$번을 $O(m\,\alpha(n))$, 사실상 연산당 상수로 낮춘다. 간선을 지우려면 집합을 쪼개야 하는데, 부모 포인터 숲은 어느 union이 어떤 원소들을 이었는지 기록하지 않으므로 되돌릴 정보가 없다. 삭제는 오프라인 역순으로 처리하거나 동적 연결성 구조를 써라.
 > 7. 512차원에서는 질의 공이 거의 모든 노드의 분할 평면을 가로지르므로 가지치기가 거의 일어나지 않고, 탐색이 대부분의 잎을 방문한다. d = 512에서 경험칙 $n \gg 2^d$는 가망이 없다. 근사 최근접점(HNSW, IVF-PQ, 무작위 KD-forest)을 쓰거나, 먼저 차원을 줄이거나(PCA), 정확한 답이 필요하고 n이 적당하면 GPU에서 벡터화한 전수 탐색을 쓴다.
+> 8. 불변식을 먼저 적어라. 모든 `i > 0`에서 `h[(i - 1) // 2] <= h[i]`이고, `i`의 자식은 `2i + 1`과 `2i + 2`다. 흔한 실수는 각각 이것을 깬다. 자식을 `2i`와 `2i + 1`로 두는 것은 1부터 세는 배열의 것이라 여기서는 칸을 건너뛰거나 겹친다. *더 큰* 자식 쪽으로 sift down하면 큰 키가 작은 키 위에 앉는다. `h[0]`을 지우고 리스트를 당기는 pop은 $O(n)$이고 부모–자식 짝을 모두 흩뜨린다. 마지막 잎을 뿌리로 옮겨 sift down하고, 꺼낸 원소가 유일한 원소였다면 그 단계를 건너뛰는 것이 맞다. 넣기가 끝난 올바른 힙은 `[1, 3, 2, 5, 9, 8, 3]`이고, 꺼내면 반복된 `3`까지 포함해 `1, 2, 3, 3, 5, 8, 9`가 나온다.
 
 ### 출처
 

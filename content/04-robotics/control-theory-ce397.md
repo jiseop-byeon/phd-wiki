@@ -764,7 +764,7 @@ Closed loop $u=-Kx$ discretized by explicit Euler:
 
 $$x_{k+1}=\big(1-T(1+K)\big)x_k + T d_k$$
 
-1. **Draw.** The picture above, by hand: open-loop P4 ($u$ and $d$ into $\dot x=-x+\cdot$) and the same plant with $u=-Kx$ closing the loop. Mark the summing junction.
+1. **Draw.** The right panel of the picture above for the gain Self-check 1 asks for, $K=99$, with $d=1$ (the left panel is unchanged): P4 with $u=-Kx$ closing the loop, the summing junction's signs, and the clock drawn twice, once at $T=0.1$ and once at $T=0.01$. Under the panel write the continuous pole and $x_\infty$, and for each clock the Euler multiplier and whether the sampled loop is stable.
 2. **Derive.** (a) Continuous closed-loop pole and steady state under constant $d$. (b) Discrete multiplier $1-T(1+K)$. For $T=0.1$, the largest $K$ that stays inside the unit disk. (c) Self-check 1 asked for $K=99$ to cut $d$ a hundredfold. Does that $K$ survive $T=0.1$? $T=0.01$?
 3. **Do.** Fill `?`. Four runs, $t\in[0,2]$, $x(0)$ as listed, plot $x(t)$:
    - A. Open: $K=0$, $d=1$, $x_0=0$, $T=0.1$ (ss $=1$)
@@ -786,17 +786,16 @@ for k in range(n):
 ```
 
 > [!note]- How to draw it · 그리는 법
-> - **Left panel, open loop**: one box labelled $\dot x=-x+u+d$, the command $u$ and the disturbance $d$ arriving together at a summing junction *before* the box, and the state $x$ leaving it and going nowhere.
-> - **Under the left panel, $x_\infty=1+d$ and the reason in one line**: no arrow reads $x$, so nothing in the picture can correct it.
-> - **Right panel, closed loop**: the same box, plus a path from the output $x$ through a gain block $-K$ and back into the same summing junction.
+> - **The closed loop**: one box labelled $\dot x=-x+u+d$, the disturbance $d$ arriving at a summing junction *before* the box, and a path from the output $x$ through a gain block $-99$ back into the same junction.
 > - **The junction's signs marked explicitly, with the minus inside the gain block**, so the junction adds $u$ and $d$ and the box stays $\dot x=-x+u+d$. That is the convention that survives substitution; a paper that hides the sign in the junction instead is why half of all sign errors are found in someone else's figure.
-> - **Under the right panel, the closed-loop pole $-(1+K)$ and $x_\infty=d/(1+K)$.**
-> - **The clock, drawn on top of the right panel**: a sampler — a switch labelled with its period $T$ — on the feedback path, and a zero-order hold on $u$ after the gain.
-> - **Every arrow labelled with the kind of signal it carries**: $x(t)$ and $d(t)$ continuous, $x_k$ and $u_k$ sequences. The clock is what readers leave out, and it can decide the answer: the same $K$ that is stable in the right panel's continuous loop can be unstable once the clock samples it, and a block diagram that does not say where the signal becomes a sequence has not specified the controller the problem set runs.
-> - **The integrator named beside the stability bound**: the problem set steps the held loop by explicit Euler, $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$ (§4), which is where $K<19$ at $T=0.1\,\mathrm s$ comes from; integrating the plant exactly across each held interval would allow $K<20.02$.
+> - **Under the panel, the continuous closed-loop pole $-(1+K)=-100$ and $x_\infty=d/(1+K)=0.01$**: a hundredfold cut of $d$, on paper.
+> - **The clock, drawn twice on the same diagram**: a sampler — a switch labelled with its period — on the feedback path and a zero-order hold on $u$ after the gain, once labelled $T=0.1$ and once $T=0.01$.
+> - **Every arrow labelled with the kind of signal it carries**: $x(t)$ and $d(t)$ continuous, $x_k$ and $u_k$ sequences. The two copies differ only in that label, and it decides the answer.
+> - **Beside each clock, its Euler multiplier $1-T(1+K)$ and a verdict**: $-9$ at $T=0.1$, outside the unit disk, so the sampled loop diverges with alternating sign; $0$ at $T=0.01$, inside it (deadbeat on this map).
+> - **The integrator named beside the verdicts**: the problem set steps the held loop by explicit Euler, $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$ (§4), which is where the bound $K<19$ at $T=0.1\,\mathrm s$ comes from; integrating the plant exactly across each held interval would allow $K<20.02$, which $99$ still breaks.
 
 > [!tip]- Solutions
-> 1. Open: $u$ and $d$ sum into the $-1$ plant. Closed: a box $-K$ from $x$ to $u$.
+> 1. The picture's right panel with $-K=-99$ in the gain block. Continuous pole $-(1+K)=-100$ and $x_\infty=d/(1+K)=0.01$ for $d=1$. At $T=0.1$ the Euler multiplier is $1-0.1\times100=-9$: outside the unit disk, so the sampled loop diverges, alternating in sign, although its continuous pole is fast and stable. At $T=0.01$ it is $1-0.01\times100=0$: inside the disk, deadbeat on this Euler map. Same diagram, same $K$: only the sampler's label changed, and it decided whether the controller works. That is item 2(c) and run D, drawn.
 > 2. (a) $\dot x=-(1+K)x+d$, pole $-(1+K)$, $x_\infty=d/(1+K)$. (b) $|1-T(1+K)|<1$ $\Rightarrow$ for $T=0.1$ and $K>-1$, the dangerous edge is $1-T(1+K)>-1$ $\Rightarrow$ $T(1+K)<2$ $\Rightarrow$ $K<19$. (c) $K=99$ at $T=0.1$ gives multiplier $1-10=-9$ — unstable. At $T=0.01$, $1-1.00=0$: inside the disk, so it survives — deadbeat on this Euler map, and fragile. The 100× attenuation gain is a continuous-time number; the sampler can refuse it.
 > 3. `u = -K * x`, `x = x + T * (-x + u + d)`. A: $x\to 1$. B: $x\to 0$ with multiplier $0.5$. C: $x\to 0.2$. D at $T=0.1$: diverges (sign-flipping growth). D at $T=0.01$: sits near $0.01$. The integrator is part of the claim ([[02-foundations/lab-kernel|0.7]]).
 
@@ -1515,22 +1514,21 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P4**. 적분기 [[02-foundations/
 
 $$x_{k+1}=\big(1-T(1+K)\big)x_k + T d_k$$
 
-1. **그리기.** 위의 그림을 손으로 다시 그린다. 개루프 P4($u$와 $d$가 $\dot x=-x+\cdot$로 들어간다)와 $u=-Kx$로 루프를 닫은 같은 플랜트. 합산점을 표시하라.
+1. **그리기.** 스스로 점검 1이 요구하는 이득 $K=99$, $d=1$에 대한 위 그림의 오른쪽 칸(왼쪽 칸은 그대로): $u=-Kx$로 루프를 닫은 P4, 합산점의 부호, 그리고 시계를 두 번 — $T=0.1$일 때와 $T=0.01$일 때. 칸 아래에 연속 극점과 $x_\infty$를, 시계마다 오일러 배수와 샘플된 루프가 안정한지를 적어라.
 2. **유도.** (a) 연속 폐루프 극점과 상수 $d$의 정상상태. (b) $T=0.1$에서 단위원 안에 남는 최대 $K$. (c) 스스로 점검 1의 $K=99$가 $T=0.1$과 $T=0.01$에서 살아남는가?
 3. **실행.** 네 런: A $K=0,d=1,x_0=0,T=0.1$; B $K=4,d=0,x_0=1$; C $K=4,d=1,x_0=0$; D $K=99,d=1$ at $T=0.1$ then $T=0.01$.
 
 > [!note]- 그리는 법 · How to draw it
-> - **왼쪽 칸, 개루프**: $\dot x=-x+u+d$라 적은 상자 하나. 명령 $u$와 외란 $d$가 상자 *앞의* 합산점에서 함께 들어가고, 상태 $x$는 상자에서 나와 아무 데로도 가지 않는다.
-> - **왼쪽 칸 아래에 $x_\infty=1+d$와 한 줄짜리 이유**: $x$를 읽는 화살표가 없으니 그림 안의 어떤 것도 그것을 고칠 수 없다.
-> - **오른쪽 칸, 폐루프**: 같은 상자에, 출력 $x$에서 이득 상자 $-K$를 거쳐 같은 합산점으로 돌아가는 경로를 더한다.
+> - **폐루프**: $\dot x=-x+u+d$라 적은 상자 하나. 외란 $d$는 상자 *앞의* 합산점으로 들어오고, 출력 $x$에서 이득 상자 $-99$를 거쳐 같은 합산점으로 돌아가는 경로가 있다.
 > - **합산점의 부호를 명시하고, 마이너스는 이득 상자 안에 둔다**: 그러면 합산점은 $u$와 $d$를 더하고 상자는 그대로 $\dot x=-x+u+d$다. 대입해도 살아남는 관례가 이쪽이고, 부호를 합산점에 숨긴 논문이 부호 오류의 절반이 남의 그림에서 발견되는 이유다.
-> - **오른쪽 칸 아래에 폐루프 극점 $-(1+K)$와 $x_\infty=d/(1+K)$.**
-> - **시계는 오른쪽 칸 위에 겹쳐 그린다**: 피드백 경로에 주기 $T$를 적은 스위치(샘플러), 이득 뒤 $u$에 영차 홀드.
-> - **화살표마다 나르는 신호의 종류를 적는다**: $x(t)$와 $d(t)$는 연속, $x_k$와 $u_k$는 수열. 독자들이 빠뜨리는 것이 이 시계이고, 그것이 답을 가를 수 있다. 오른쪽 칸의 연속 루프에서 안정한 같은 $K$가 시계가 그 루프를 샘플링하면 불안정해질 수 있고, 신호가 어디서 수열이 되는지 말하지 않는 블록 다이어그램은 과제가 돌릴 제어기를 아직 특정하지 못한 그림이다.
-> - **안정 경계 옆에 적분기를 밝힌다**: 과제는 유지된 루프를 명시적 오일러 $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$(§4)로 한 주기씩 전진시키고, $T=0.1\,\mathrm s$에서 $K<19$가 거기서 나온다. 유지된 각 구간에서 플랜트를 정확히 적분했다면 $K<20.02$까지 허용된다.
+> - **칸 아래에 연속 폐루프 극점 $-(1+K)=-100$과 $x_\infty=d/(1+K)=0.01$**: 서류상으로는 $d$를 백분의 일로 줄인다.
+> - **시계는 같은 그림에 두 번 그린다**: 피드백 경로에 주기를 적은 스위치(샘플러), 이득 뒤 $u$에 영차 홀드. 한 번은 $T=0.1$, 한 번은 $T=0.01$이라고 적는다.
+> - **화살표마다 나르는 신호의 종류를 적는다**: $x(t)$와 $d(t)$는 연속, $x_k$와 $u_k$는 수열. 두 사본은 그 라벨 하나만 다르고, 그것이 답을 가른다.
+> - **시계마다 옆에 오일러 배수 $1-T(1+K)$와 판정**: $T=0.1$에서 $-9$로 단위원 밖이라 샘플된 루프는 부호를 바꾸며 발산하고, $T=0.01$에서 $0$으로 단위원 안이다(이 사상의 deadbeat).
+> - **판정 옆에 적분기를 밝힌다**: 과제는 유지된 루프를 명시적 오일러 $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$(§4)로 한 주기씩 전진시키고, $T=0.1\,\mathrm s$에서 경계 $K<19$가 거기서 나온다. 유지된 각 구간에서 플랜트를 정확히 적분했다면 $K<20.02$까지 허용되지만, $99$는 그것도 깬다.
 
 > [!tip]- 정답 · Solutions
-> 1. 개루프는 $u$와 $d$가 $-1$ 플랜트로. 폐루프는 $x$에서 $u$로 $-K$.
+> 1. 이득 상자에 $-K=-99$를 넣은 위 그림의 오른쪽 칸이다. $d=1$일 때 연속 극점 $-(1+K)=-100$, $x_\infty=d/(1+K)=0.01$. $T=0.1$에서 오일러 배수는 $1-0.1\times100=-9$로 단위원 밖이라, 연속 극점이 빠르고 안정한데도 샘플된 루프는 부호를 바꾸며 발산한다. $T=0.01$에서는 $1-0.01\times100=0$으로 단위원 안이고, 이 오일러 사상의 deadbeat이다. 같은 그림, 같은 $K$에서 샘플러의 라벨만 바뀌었고, 그것이 제어기가 작동하는지를 갈랐다. 2(c)번과 런 D를 그림으로 그린 것이다.
 > 2. (a) 극점 $-(1+K)$, $x_\infty=d/(1+K)$. (b) $K<19$. (c) $T=0.1$에서 배수 $-9$, 불안정. $T=0.01$에서 배수 $0$, 단위원 안이라 살아남는다 — 이 오일러 사상의 deadbeat이고 깨지기 쉽다. 100배 감쇠 이득은 연속 시간 숫자다.
 > 3. A: $x\to 1$. B: $x\to 0$. C: $x\to 0.2$. D $T=0.1$: 발산. D $T=0.01$: $\approx 0.01$. 적분기가 주장의 일부다.
 

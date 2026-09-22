@@ -556,17 +556,17 @@ $400\,\mathrm{N/m}$은 부드럽다. [[04-robotics/force-compliance-control|13. 
 
 ```mermaid
 flowchart LR
-    Z["range z = 12 cm"] --> KF["Kalman: 11.6 cm, sigma 0.89 cm"]
-    KF --> OB["planner face x = 1.0892 m"]
-    KF --> XS["stop point x = 1.161 m"]
-    OB --> PL["path A, E, P"]
-    PL --> TS["trapezoids 3.345 s and 2.457 s"]
-    TS --> CT["computed torque kp 100, kv 20"]
-    CT --> SW{"arrived at P?"}
-    SW -->|yes| IM["impedance Kd 500, Dd 63.2"]
+    Z["거리 측정 z = 12 cm"] --> KF["칼만: 11.6 cm, sigma 0.89 cm"]
+    KF --> OB["planner가 쓰는 면 x = 1.0892 m"]
+    KF --> XS["정지점 x = 1.161 m"]
+    OB --> PL["경로 A, E, P"]
+    PL --> TS["사다리꼴 3.345 s와 2.457 s"]
+    TS --> CT["계산 토크 kp 100, kv 20"]
+    CT --> SW{"P에 도착했나?"}
+    SW -->|예| IM["임피던스 Kd 500, Dd 63.2"]
     XS --> IM
-    IM --> WL["panel kw 400 N/m"]
-    WL --> CK["checks: 11 N, 2b/T, va L, S_p"]
+    IM --> WL["패널 kw 400 N/m"]
+    WL --> CK["점검: 11 N, 2b/T, va L, S_p"]
 ```
 
 계산 절의 루프를 단계별로 그렸고, 상자마다 다음 단계로 넘기는 숫자가 적혀 있다. $12\,\mathrm{cm}$ 측정은 $\sigma=0.89\,\mathrm{cm}$의 $11.6\,\mathrm{cm}$로 융합되어 두 단계를 먹인다: 띠의 가까운 끝 $x=1.0892\,\mathrm{m}$는 계획기로, 추정은 $x=1.161\,\mathrm{m}$의 정지점으로 간다. 경로 $A\to E\to P$는 $3.345\,\mathrm{s}$와 $2.457\,\mathrm{s}$의 사다리꼴로 시간이 매겨져 계산 토크로 추종되다가 $P$에 도착하면 임피던스($K_d=500\,\mathrm{N/m}$, $D_d=63.2\,\mathrm{N{\cdot}s/m}$)로 전환되고, $400\,\mathrm{N/m}$ 패널을 누르는 일은 검사 넷으로 판정한다: $11\,\mathrm{N}$ 한계, 장부 $2b/T$, 지연 $v_aL$, 분리 $S_p$.

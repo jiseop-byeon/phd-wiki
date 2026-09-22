@@ -701,7 +701,7 @@ Two definitions used everywhere before they are formally introduced:
 
 Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page §8; Euler numbers on [[02-foundations/lab-kernel|0.7]]. No simulator.
 
-1. **Draw.** Block diagram of $\dot x=-x+u$: command $u$, summing junction, integrator, $-x$ feedback. Label $x$ as temperature error.
+1. **Draw.** The picture above for a heater that loses heat twice as fast, $\dot x=-2x+u$: the same four parts, with the feedback gain block now marked $2$. Label $x$ as temperature error. On a small inset of $x$ against $t$ for $u=1$, $x(0)=0$, mark the initial slope, the steady value and the time constant, and the exact and forward-Euler ($T=0.1$) values at $t=0.1$ and $0.2$.
 2. **Derive.** With $u=1$ and $x(0)=0$, solve $\dot x=-x+1$. Give $x(t)$ and the values at $t=0.1$ and $t=0.2$.
 3. **Interpret.** Forward Euler $x\leftarrow x+T(-x+u)$ with $T=0.1$, from $x_0=0$. First two steps versus the exact values. Which way does Euler miss, and why?
 
@@ -709,13 +709,13 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
 > - The command $u$ enters from the left and meets a summing junction, a small circle with two inputs; the second input arrives from below.
 > - Write $+$ beside the $u$ arrow and $-$ beside the fed-back one: the sign at the junction, not a sign inside a box, is what makes this a *negative* feedback loop.
 > - Label the junction's output $\dot x$, because the whole picture is the sentence "the sum *is* the derivative", and send it into one box marked $\int$ or $1/s$ (§9 says why those are the same box); the box's output $x$ is the temperature error, the only state.
-> - Carry $x$ to the right edge as the output, then tap it and route it back to the junction's lower input through a gain block marked $1$ — drawn, not omitted, so the picture keeps its shape when the control track replaces it with $K$.
-> - No disturbance arrow. P4's $d$ enters the same junction as $u$, and this page sets $d=0$; [[02-foundations/rl-basics|7. RL Basics]] and the control track add that third input, and the difference between the two pictures is what those pages are about.
-> - The inset of $x$ against $t$, for items 2 and 3: at $t=0$ with $x=0$ the junction outputs $\dot x=u$, so mark that initial slope and draw its tangent from the origin; it reaches the steady value at the time constant, and the true curve passes below it.
-> - On the inset put four points and nothing else — the exact and the forward-Euler values at $t=0.1$ and $0.2$ — with each Euler point drawn *above* its exact partner: that gap, not the curve, is the argument.
+> - Tap $x$ and route it back to the junction's lower input through a gain block marked $2$. That block is the only thing that changed: the loss rate lives in the feedback gain, not in the integrator.
+> - No disturbance arrow. P4's $d$ enters the same junction as $u$, and this page sets $d=0$; [[02-foundations/rl-basics|7. RL Basics]] and the control track add that third input.
+> - The inset: at $t=0$ with $x=0$ the junction outputs $\dot x=u=1$ whatever the gain, so the initial slope is unchanged. The tangent from the origin reaches the steady value $u/2=0.5$ at the time constant $1/2=0.5\,\mathrm s$, and the true curve passes below it.
+> - Put four points on the inset and nothing else: exact $\tfrac12(1-e^{-2t})=0.0906$ and $0.1648$, forward Euler $0.100$ and $0.180$, each Euler point drawn *above* its exact partner — that gap, not the curve, is the argument.
 
 > [!tip]- Solutions
-> 1. $u$ and $-x$ meet at a sum; that sum is $\dot x$; an integrator returns $x$. With $u=0$ the error decays as $e^{-t}$.
+> 1. The picture's loop with feedback gain $2$: $u$ and $-2x$ meet at the sum, the sum is $\dot x$, an integrator returns $x$. For $u=1$, $x(0)=0$ the solution is $x(t)=\tfrac12(1-e^{-2t})$: initial slope $1$ (the gain multiplies $x$, which is $0$ at the start), steady value $0.5$, time constant $0.5\,\mathrm s$. Exact $0.0906$ and $0.1648$ at $t=0.1$ and $0.2$; Euler $x_1=0.1\times1=0.100$, $x_2=0.100+0.1(-0.200+1)=0.180$, both high, for item 3's reason. Doubling the loss rate halves both the steady value and the time constant; with $u=0$ the error decays as $e^{-2t}$.
 > 2. Particular $x=1$, homogeneous $ce^{-t}$. $x(0)=0\Rightarrow c=-1$, so $x(t)=1-e^{-t}$. At $0.1$ and $0.2$: $0.095$ and $0.181$.
 > 3. $x_1=0.10$, $x_2=0.19$. Euler is high (kernel: $0.10$, $0.19$ vs $0.095$, $0.181$). Forward Euler uses the slope at the *start* of the step, where $1-x$ is largest, so it overshoots a trajectory that is decaying toward $1$.
 
@@ -1354,7 +1354,7 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** ($d=0$), 이 페이지 §8, [[02-foundations/lab-kernel|0.7]]의 오일러 숫자. 시뮬레이터 없음.
 
-1. **그리기.** $\dot x=-x+u$의 블록선도: 명령 $u$, 합산점, 적분기, $-x$ 피드백. $x$는 온도 오차.
+1. **그리기.** 열을 두 배 빨리 잃는 히터 $\dot x=-2x+u$에 대해 위의 그림을 그려라. 네 부분은 같고, 피드백 이득 블록에만 $2$를 쓴다. $x$는 온도 오차다. $u=1$, $x(0)=0$일 때 $x$ 대 $t$의 작은 삽도에 초기 기울기, 정상값, 시정수, 그리고 $t=0.1$과 $0.2$의 정확값과 전진 오일러($T=0.1$) 값을 표시하라.
 2. **유도.** $u=1$, $x(0)=0$에서 $\dot x=-x+1$을 풀어라. $x(t)$와 $t=0.1$, $t=0.2$의 값.
 3. **해석.** 전방 오일러 $x\leftarrow x+T(-x+u)$, $T=0.1$, $x_0=0$. 두 스텝을 정확해와 비교하라. 어느 쪽으로 빗나가며 이유는?
 
@@ -1362,12 +1362,12 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** ($d=0$), 이 페이지 §8, 
 > - 명령 $u$가 왼쪽에서 들어와 합산점, 곧 입력 둘을 가진 작은 원을 만난다. 둘째 입력은 아래에서 올라온다.
 > - $u$ 화살표 옆에 $+$, 되먹임 화살표 옆에 $-$를 쓴다. 이 루프를 *음*의 피드백으로 만드는 것은 상자 안의 부호가 아니라 합산점의 부호다.
 > - 합산점의 출력에 $\dot x$라는 이름을 적는다. 이 그림 전체가 "합이 곧 미분이다"라는 한 문장이기 때문이다. 그 화살표는 $\int$ 또는 $1/s$라고 쓴 상자 하나로 들어가고(둘이 왜 같은 상자인지는 §9가 말한다), 상자의 출력 $x$가 온도 오차이자 유일한 상태다.
-> - $x$를 오른쪽 끝까지 출력으로 끌고 간 다음, 같은 선을 따 이득 블록 $1$을 거쳐 합산점의 아래 입력으로 되돌린다. 이득 $1$은 생략하지 않고 그린다. 제어 트랙이 그것을 $K$로 바꿔도 그림의 모양이 그대로이게 하기 위해서다.
-> - 외란 화살표는 없다. P4의 $d$는 $u$와 같은 합산점으로 들어오지만 이 페이지는 $d=0$으로 둔다. [[02-foundations/rl-basics|7. RL 기초]]와 제어 트랙이 그 셋째 입력을 더하며, 두 그림의 차이가 바로 그 페이지들의 주제다.
-> - 2번과 3번을 위한 $x$ 대 $t$ 삽도: $t=0$, $x=0$에서 합산점의 출력은 $\dot x=u$이므로 그 초기 기울기를 표시하고 원점에서 접선을 긋는다. 접선은 시정수에서 정상값에 닿고, 참 곡선은 그 아래로 지난다.
-> - 삽도에는 점 넷만 찍는다. $t=0.1$과 $0.2$의 정확값과 전진 오일러 값이고, 오일러 점은 각각 짝이 되는 정확값 *위*에 찍힌다. 곡선이 아니라 그 간격이 논증이다.
+> - $x$를 따서 이득 블록 $2$를 거쳐 합산점의 아래 입력으로 되돌린다. 바뀐 것은 이 블록 하나다. 열을 잃는 빠르기는 적분기가 아니라 피드백 이득에 들어 있다.
+> - 외란 화살표는 없다. P4의 $d$는 $u$와 같은 합산점으로 들어오지만 이 페이지는 $d=0$으로 둔다. [[02-foundations/rl-basics|7. RL 기초]]와 제어 트랙이 그 셋째 입력을 더한다.
+> - 삽도: $t=0$, $x=0$에서 합산점의 출력은 이득과 상관없이 $\dot x=u=1$이므로 초기 기울기는 그대로다. 원점에서 그은 접선은 시정수 $1/2=0.5\,\mathrm s$에서 정상값 $u/2=0.5$에 닿고, 참 곡선은 그 아래로 지난다.
+> - 삽도에는 점 넷만 찍는다. 정확값 $\tfrac12(1-e^{-2t})=0.0906$과 $0.1648$, 전진 오일러 $0.100$과 $0.180$이고, 오일러 점은 각각 짝이 되는 정확값 *위*에 찍힌다. 곡선이 아니라 그 간격이 논증이다.
 
 > [!tip]- 정답 · Solutions
-> 1. $u$와 $-x$가 합산되고, 합이 $\dot x$, 적분기가 $x$. $u=0$이면 오차가 $e^{-t}$로 감쇠.
+> 1. 피드백 이득이 $2$인 위 그림의 루프다. $u$와 $-2x$가 합산되고, 합이 $\dot x$, 적분기가 $x$를 돌려준다. $u=1$, $x(0)=0$이면 해는 $x(t)=\tfrac12(1-e^{-2t})$다. 초기 기울기 $1$(이득은 $x$에 곱해지는데 시작에서 $x=0$이다), 정상값 $0.5$, 시정수 $0.5\,\mathrm s$. $t=0.1$과 $0.2$에서 정확값 $0.0906$, $0.1648$. 오일러는 $x_1=0.1\times1=0.100$, $x_2=0.100+0.1(-0.200+1)=0.180$으로 둘 다 높고, 이유는 3번과 같다. 열을 잃는 빠르기가 두 배가 되면 정상값과 시정수가 함께 반이 된다. $u=0$이면 오차는 $e^{-2t}$로 감쇠한다.
 > 2. 특수해 $x=1$, 동차해 $ce^{-t}$. $x(0)=0\Rightarrow c=-1$, $x(t)=1-e^{-t}$. $0.1$과 $0.2$에서 $0.095$, $0.181$.
 > 3. $x_1=0.10$, $x_2=0.19$. 오일러가 높다(커널: $0.10$, $0.19$ vs $0.095$, $0.181$). 전방 오일러는 구간의 *시작* 기울기를 쓰며, 그때 $1-x$가 가장 커서 1로 다가가는 궤적을 지나친다.

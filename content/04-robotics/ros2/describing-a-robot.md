@@ -643,22 +643,20 @@ Driving the joints for real — controllers, hardware interfaces, and the Gazebo
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_link`, camera on the cart, encoder $N=2048$ counts/m. Vision $50\,\mathrm{Hz}$, control $200\,\mathrm{Hz}$. No new simulator.
 
-1. **Draw.** TF tree `map` → `odom` → `base_link` → `camera_link`. Who owns each edge? Mark encoder counts on `odom` → `base_link` and vision on `camera_link`. Five-line timeline: the $200\,\mathrm{Hz}$ `odom` → `base_link` TF updates and four $200\,\mathrm{Hz}$ lookups, one of them with `now()`.
+1. **Draw.** The picture above for item 2(c)'s fault: a second node — say an EKF left running from another launch — also publishes `odom` → `base_link`, at $50\,\mathrm{Hz}$. Draw the TF tree `map` → `odom` → `base_link` → `camera_link` with every owner on its edge, and on the clock over $0$–$40\,\mathrm{ms}$ both sample trains on that edge, a lookup that falls between an encoder sample and an EKF sample, and the rate `view_frames` reports.
 2. **Derive.** (a) Encoder $\Delta p$ for one count — the resolution of `odom` → `base_link`. (b) Why `lookup_transform(..., now())` from the controller logs "extrapolation into the future". (c) Two publishers on `odom` → `base_link` at $50\,\mathrm{Hz}$ and $200\,\mathrm{Hz}$. What rate does `view_frames` report?
 3. **Interpret.** The controller must transform a detection whose camera stamp is $200\,\mathrm{ms}$ old, inside a $70\,\mathrm{ms}$ budget. Which two fixes does §9 give for *extrapolation into the future*, which one is wrong for P6's force loop, and what should the loop do with the detection?
 
 > [!note]- How to draw it · 그리는 법
-> - Four frames in one chain, `map` → `odom` → `base_link` → `camera_link`, with three labels on every edge: owner, topic, rate.
-> - `map` → `odom`: the localisation node, `/tf`, published when it corrects. `odom` → `base_link`: the encoder odometry node, `/tf`, $200\,\mathrm{Hz}$ — write the encoder resolution on this edge.
-> - `base_link` → `camera_link`: a static broadcaster, `/tf_static`, published once, transient local — write the frozen mount offset on this edge.
-> - Draw the two `/tf` edges as solid arrows and the `/tf_static` edge as a doubled one: "republished forever" against "sent once and kept for late joiners" is the difference between a working RViz and an empty one.
-> - Write beside the chain what is deliberately not in the URDF: the cart's travel on the rail. A mobile base's pose is not a URDF joint (§11); its edge belongs to the odometry node.
-> - On the clock: `odom` → `base_link` samples every $5\,\mathrm{ms}$ with the newest one marked, vision stamps at $0, 20, 40, 60\,\mathrm{ms}$, the four control lookups, and the $70\,\mathrm{ms}$ budget.
-> - Draw the `now()` lookup landing right of the newest sample and label the gap *extrapolation into the future*; draw a lookup at the message's own stamp landing back at that stamp ($20\,\mathrm{ms}$ left of the newest sample in the picture above).
-> - The drawing is right when the `now()` arrow visibly points into empty space.
+> - Four frames in one chain, `map` → `odom` → `base_link` → `camera_link`, with owner, topic and rate on every edge, as in the picture.
+> - `odom` → `base_link` now carries two owners, written one above the other: the encoder odometry node at $200\,\mathrm{Hz}$ and the EKF at $50\,\mathrm{Hz}$, both on `/tf`. Drawing it as two edges is wrong: TF has one edge per frame pair, and nothing in it records who is allowed to write it.
+> - `base_link` → `camera_link` stays a static broadcaster on `/tf_static`, drawn as a doubled arrow, and `map` → `odom` stays the localisation node's.
+> - On the clock, one buffer lane for `odom` → `base_link` holding both trains: encoder samples every $5\,\mathrm{ms}$ and EKF samples every $20\,\mathrm{ms}$, in two symbols, interleaved in time order.
+> - Offset the EKF samples slightly from the encoder's in position — two estimators never agree exactly — and draw a lookup between an EKF sample and the next encoder sample: it interpolates between two different beliefs, so the returned pose jumps each time an EKF sample passes.
+> - Beside the edge, what `view_frames` reports: one edge at about $250\,\mathrm{Hz}$, which is the tell, since no single node publishes at $250$.
 
 > [!tip]- Solutions
-> 1. Localisation owns `map` → `odom`; odometry (encoder) owns `odom` → `base_link`; a static broadcaster owns `base_link` → `camera_link`. Timeline: `odom` → `base_link` TF every $5\,\mathrm{ms}$ (the camera mount is static and never updates); lookups at $0,5,10,15$; the `now()` lookup sits in the future of the buffer.
+> 1. The chain is the picture's, with two owners under `odom` → `base_link`: the encoder odometry at $200\,\mathrm{Hz}$ and the EKF at $50\,\mathrm{Hz}$, both on `/tf`. TF stores one edge per frame pair and records no owner, so `view_frames` shows a single edge at about $250\,\mathrm{Hz}$ — a rate no node publishes, which is how you spot it (item 2(c)). On the clock both trains land in one buffer, $200+50=250$ samples a second; wherever the two estimates differ, a lookup between an encoder sample and an EKF sample interpolates between two beliefs, and the pose the controller gets jumps every $20\,\mathrm{ms}$. Nothing errors. The fix is to stop one publisher — for an EKF, the odometry node's own TF broadcast is usually the one switched off — not to change the lookup.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) Transforms arrive late; `now()` is a time the buffer has not seen. Use `Time()` or the message stamp. (c) About $250\,\mathrm{Hz}$ — two owners.
 > 3. Latest available (`Time()`), or the *message* stamp with a short timeout. Subtracting a hard-coded $0.1\,\mathrm{s}$ is a diagnostic. `Time()` is the wrong one here: it composes the $200\,\mathrm{ms}$-old detection with a pose at most $5\,\mathrm{ms}$ old, so the target is placed as if the image had been taken from where the cart is now, and nothing in the result shows the age. The message stamp gives the correct transform and keeps the age in view: $200\,\mathrm{ms}$ is already $130\,\mathrm{ms}$ over the $70\,\mathrm{ms}$ budget — drop the detection, do not extrapolate it.
 
@@ -1296,21 +1294,19 @@ ros2 topic info /tf_static --verbose
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 카트 프레임 `base_link`, 카메라가 카트 위, 엔코더 $N=2048$ counts/m. 비전 $50\,\mathrm{Hz}$, 제어 $200\,\mathrm{Hz}$. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** TF 트리 `map` → `odom` → `base_link` → `camera_link`. 각 간선의 소유자. `odom` → `base_link`에 엔코더 카운트, `camera_link`에 비전. 다섯 줄 타임라인: $200\,\mathrm{Hz}$ `odom` → `base_link` TF 갱신과 $200\,\mathrm{Hz}$ 조회 넷, 그중 하나가 `now()`.
+1. **그리기.** 2(c)번의 고장에 대한 위의 그림: 둘째 노드 — 이를테면 다른 런치에서 켜 둔 채 남은 EKF — 가 `odom` → `base_link`를 $50\,\mathrm{Hz}$로 함께 발행한다. TF 트리 `map` → `odom` → `base_link` → `camera_link`와 간선마다 모든 소유자를 그리고, $0$–$40\,\mathrm{ms}$ 시계에 그 간선의 두 샘플 열, 엔코더 샘플과 EKF 샘플 사이에 떨어지는 조회 하나, 그리고 `view_frames`가 보고하는 주기를 그려라.
 2. **유도.** (a) 엔코더 한 카운트의 $\Delta p$ — `odom` → `base_link`의 해상도. (b) 제어기의 `lookup_transform(..., now())`가 "extrapolation into the future"를 찍는 이유. (c) `odom` → `base_link`에 $50\,\mathrm{Hz}$와 $200\,\mathrm{Hz}$ 퍼블리셔 둘. `view_frames`가 보고하는 주기는?
 3. **해석.** 제어기가 $70\,\mathrm{ms}$ 예산 안에서 카메라 스탬프가 $200\,\mathrm{ms}$ 된 검출을 변환해야 한다. §9가 *extrapolation into the future*에 주는 수정 둘은 무엇이고, 그중 P6 힘 루프에 틀린 것은 어느 것이며, 루프는 그 검출을 어떻게 해야 하는가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 프레임 넷이 한 사슬 `map` → `odom` → `base_link` → `camera_link`를 이루고, 모든 간선에 소유자·토픽·주기 셋을 적는다.
-> - `map` → `odom`: 위치추정 노드, `/tf`, 보정할 때마다. `odom` → `base_link`: 엔코더 오도메트리 노드, `/tf`, $200\,\mathrm{Hz}$ — 이 간선에 엔코더 해상도를 적는다.
-> - `base_link` → `camera_link`: 정적 브로드캐스터, `/tf_static`, 한 번, transient local — 이 간선에 고정한 장착 오프셋을 적는다.
-> - `/tf` 간선 둘은 실선 화살표로, `/tf_static` 간선은 겹친 화살표로 그린다. "계속 다시 보낸다"와 "한 번 보내고 늦게 온 쪽을 위해 보존한다"의 차이가 곧 동작하는 RViz와 빈 RViz의 차이다.
-> - URDF에 일부러 넣지 않은 것을 사슬 옆에 말로 적는다. 레일 위의 카트 이동이다. 이동 베이스의 자세는 URDF 조인트가 아니고(11절), 그 간선은 오도메트리 노드의 것이다.
-> - 시계에는 `odom` → `base_link` 샘플을 $5\,\mathrm{ms}$ 간격으로 찍고 가장 새 것에 표시, 비전 스탬프 $0, 20, 40, 60\,\mathrm{ms}$, 제어 조회 넷, 그리고 $70\,\mathrm{ms}$ 예산.
-> - `now()` 조회는 가장 새 샘플의 오른쪽에 떨어뜨리고 그 간격에 *extrapolation into the future*라고 적는다. 메시지 자신의 스탬프로 한 조회는 그 스탬프 자리로 돌아간다(위의 그림에서는 가장 새 샘플의 $20\,\mathrm{ms}$ 왼쪽).
-> - `now()` 화살표가 눈에 띄게 빈 공간을 가리키면 제대로 그린 것이다.
+> - 프레임 넷이 한 사슬 `map` → `odom` → `base_link` → `camera_link`를 이루고, 위 그림처럼 모든 간선에 소유자·토픽·주기를 적는다.
+> - `odom` → `base_link`에는 이제 소유자가 둘이고, 위아래로 적는다. $200\,\mathrm{Hz}$의 엔코더 오도메트리 노드와 $50\,\mathrm{Hz}$의 EKF, 둘 다 `/tf`. 간선 둘로 그리면 틀린다. TF는 프레임 쌍마다 간선이 하나이고, 누가 쓸 수 있는지는 어디에도 기록되지 않는다.
+> - `base_link` → `camera_link`는 그대로 `/tf_static`의 정적 브로드캐스터이고 겹친 화살표로 그리며, `map` → `odom`도 그대로 위치추정 노드의 것이다.
+> - 시계에는 `odom` → `base_link` 버퍼 레인 하나에 두 열을 함께 넣는다. $5\,\mathrm{ms}$마다의 엔코더 샘플과 $20\,\mathrm{ms}$마다의 EKF 샘플을 기호 둘로, 시간 순서대로 섞어서.
+> - 두 추정기는 결코 정확히 같지 않으므로 EKF 샘플을 엔코더 샘플에서 위치상 살짝 어긋나게 찍고, EKF 샘플과 다음 엔코더 샘플 사이의 조회 하나를 그린다. 그것은 서로 다른 두 믿음 사이를 보간하므로, EKF 샘플이 지나갈 때마다 돌려받는 자세가 튄다.
+> - 간선 옆에 `view_frames`가 보고하는 것: 약 $250\,\mathrm{Hz}$의 간선 하나. 어느 노드 하나도 $250$으로 발행하지 않으니 그것이 단서다.
 
 > [!tip]- 정답 · Solutions
-> 1. 위치추정이 `map` → `odom`을, 오도메트리(엔코더)가 `odom` → `base_link`를, 정적 브로드캐스터가 `base_link` → `camera_link`를 소유. 타임라인: `odom` → `base_link` TF $5\,\mathrm{ms}$마다(카메라 장착은 정적이라 갱신되지 않음); 조회 $0,5,10,15$; `now()` 조회는 버퍼의 미래.
+> 1. 사슬은 위 그림과 같고 `odom` → `base_link` 아래에 소유자가 둘이다. $200\,\mathrm{Hz}$의 엔코더 오도메트리와 $50\,\mathrm{Hz}$의 EKF, 둘 다 `/tf`. TF는 프레임 쌍마다 간선 하나를 저장하고 소유자를 기록하지 않으므로, `view_frames`는 약 $250\,\mathrm{Hz}$의 간선 하나를 보여 준다. 어느 노드도 발행하지 않는 주기이고, 그렇게 알아챈다(2(c)번). 시계에서는 두 열이 한 버퍼에 초당 $200+50=250$개로 들어가고, 두 추정이 다른 곳에서는 엔코더 샘플과 EKF 샘플 사이의 조회가 두 믿음 사이를 보간해 제어기가 받는 자세가 $20\,\mathrm{ms}$마다 튄다. 오류는 없다. 고치는 방법은 조회를 바꾸는 것이 아니라 발행자 하나를 멈추는 것이고, EKF를 쓴다면 보통 오도메트리 노드 자신의 TF 방송을 끈다.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) 변환은 늦게 도착하고 `now()`는 버퍼가 아직 못 본 시각. `Time()` 또는 메시지 스탬프. (c) 약 $250\,\mathrm{Hz}$ — 소유자 둘.
 > 3. 최신값(`Time()`), 또는 짧은 timeout을 붙인 *메시지* 스탬프. $0.1\,\mathrm{s}$를 빼는 것은 진단이다. 여기서 틀린 것은 `Time()`이다. $200\,\mathrm{ms}$ 된 검출을 길어야 $5\,\mathrm{ms}$ 된 자세와 합성하므로, 표적이 지금 카트가 있는 자리에서 찍은 것처럼 놓이고 결과 어디에도 그 나이가 드러나지 않는다. 메시지 스탬프는 올바른 변환을 주고 나이도 그대로 보여 준다. $200\,\mathrm{ms}$는 이미 $70\,\mathrm{ms}$ 예산을 $130\,\mathrm{ms}$ 넘으니 — 외삽하지 말고 버려라.

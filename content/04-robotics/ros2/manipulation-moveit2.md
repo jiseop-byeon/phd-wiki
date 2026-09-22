@@ -527,7 +527,7 @@ Where a grasp pose comes from is [[04-robotics/grasping|15. Grasping]]; what hap
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a planner must not treat as instant. Vision $50\,\mathrm{Hz}$ supplies a panel pose; the cart controller is $200\,\mathrm{Hz}$; budget $70\,\mathrm{ms}$. No new simulator.
 
-1. **Draw.** P6 cart, a panel, MoveIt's planning scene. Mark `/goal` from vision, the `follow_joint_trajectory` action, and the $200\,\mathrm{Hz}$ controller underneath. Five-line timeline: a $2\,\mathrm{s}$ plan, then execution ticks at $5\,\mathrm{ms}$, with the $70\,\mathrm{ms}$ sensing budget on a *different* clock from planning.
+1. **Draw.** The picture above for a planner that takes $2\,\mathrm{s}$ instead of the picture's $0.80\,\mathrm{s}$, with the same $1.50\,\mathrm{s}$ execution: P6 cart, a panel, MoveIt's planning scene, `/goal` from vision, the `follow_joint_trajectory` action, and the $200\,\mathrm{Hz}$ controller underneath. On the seconds axis the snapshot, the plan and the execution, with the age of the panel pose and the cart's travel at $0.25\,\mathrm{m/s}$ written at each boundary; the $5\,\mathrm{ms}$ execution ticks and the $70\,\mathrm{ms}$ sensing budget on a *different* clock.
 2. **Derive.** (a) Why a $2\,\mathrm{s}$ plan does not violate the $70\,\mathrm{ms}$ budget — which loop owns which number. (b) Encoder $\Delta p$ for one count, as the base-pose resolution the scene is *not* given. (c) `computeCartesianPath` returns $0.62$. Execute?
 3. **Interpret.** The plan is beautiful in RViz and the cart never moves. First three commands. Separately: a $200\,\mathrm{ms}$-late panel pose in the scene — is that a MoveIt bug or a P6 budget bug?
 
@@ -538,10 +538,10 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a
 > - The boundary between `move_group` and `ros2_control` carries an action, `follow_joint_trajectory`, not a topic, because MoveIt is an action client and needs the result.
 > - The camera has no arrow at all into `ros2_control`: P6's $70\,\mathrm{ms}$ budget lives on a chain MoveIt is not part of.
 > - Two axes: seconds, with `scene snapshot`, `plan` and `execute` laid end to end, and a separate millisecond inset with the $5\,\mathrm{ms}$ control ticks and one $70\,\mathrm{ms}$ bracket; connect nothing between them, because the gap is the figure's argument.
-> - Above the seconds axis, a bar labelled `age of the panel pose` that grows from left to right, with its value written at the three boundaries (worked case, $0.80\,\mathrm{s}$ plan: $20\,\mathrm{ms}$, $0.82\,\mathrm{s}$, $2.32\,\mathrm{s}$).
+> - Above the seconds axis, a bar labelled `age of the panel pose` that grows from left to right, with its value written at the three boundaries: $20\,\mathrm{ms}$, $2.02\,\mathrm{s}$ and $3.52\,\mathrm{s}$ for the $2\,\mathrm{s}$ plan, against the picture's $20\,\mathrm{ms}$, $0.82$ and $2.32\,\mathrm{s}$; under it the cart's travel at $0.25\,\mathrm{m/s}$, $5.0$, $505$ and $880\,\mathrm{mm}$.
 
 > [!tip]- Solutions
-> 1. Scene holds the panel; MoveIt talks to the trajectory controller, not to the camera. Planning seconds; control milliseconds; the $70\,\mathrm{ms}$ is camera-to-force, not planner-to-scene.
+> 1. Panel A is the picture's: the scene holds the panel, applied once; MoveIt talks to the trajectory controller through `follow_joint_trajectory`, and nothing runs from the camera into `ros2_control`. On the seconds axis the panel pose is $20\,\mathrm{ms}$ old at the snapshot, $2.02\,\mathrm{s}$ old when the plan is done and $3.52\,\mathrm{s}$ old when execution ends, against $0.82$ and $2.32\,\mathrm{s}$ in the picture, while the cart moves $5.0$, $505$ and $880\,\mathrm{mm}$. The millisecond inset is unchanged: the $70\,\mathrm{ms}$ is camera-to-force, and a slower planner lengthens only the seconds axis — but every extra second is $250\,\mathrm{mm}$ the scene does not know about.
 > 2. (a) $70\,\mathrm{ms}$ is the sensing/control chain; planning is allowed to be slow if execution still samples at $200\,\mathrm{Hz}$. (b) $0.488\,\mathrm{mm}$, invisible to a scene that was painted once. (c) No — stop at 62% of a line you chose.
 > 3. `list_controllers`, match `controller_names`, `ros2 action list | grep follow_joint_trajectory`. The late pose is a P6 budget bug: MoveIt will happily plan against a stale scene.
 
@@ -1067,9 +1067,9 @@ Panda의 마지막 두 계획 중 어느 쪽을 벽 옆에서 믿겠는지와 �
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 플래너가 순간 이동으로 취급하면 안 되는 모바일 베이스로. 비전 $50\,\mathrm{Hz}$가 패널 자세를 주고, 카트 제어기는 $200\,\mathrm{Hz}$, 예산 $70\,\mathrm{ms}$. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** P6 카트, 패널, MoveIt planning scene. 비전의 `/goal`, `follow_joint_trajectory` 액션, 그 아래 $200\,\mathrm{Hz}$ 제어기. 다섯 줄 타임라인: $2\,\mathrm{s}$ 계획, 그다음 $5\,\mathrm{ms}$ 실행 틱. $70\,\mathrm{ms}$ 센싱 예산은 계획과 *다른* 시계.
+1. **그리기.** 위 그림의 $0.80\,\mathrm{s}$가 아니라 $2\,\mathrm{s}$ 걸리는 플래너, 실행은 같은 $1.50\,\mathrm{s}$에 대한 위의 그림: P6 카트, 패널, MoveIt planning scene, 비전의 `/goal`, `follow_joint_trajectory` 액션, 그 아래 $200\,\mathrm{Hz}$ 제어기. 초 축에는 스냅샷·계획·실행과 각 경계에서의 패널 자세 나이, $0.25\,\mathrm{m/s}$로 가는 카트의 이동 거리. $5\,\mathrm{ms}$ 실행 틱과 $70\,\mathrm{ms}$ 센싱 예산은 *다른* 시계에.
 2. **유도.** (a) $2\,\mathrm{s}$ 계획이 $70\,\mathrm{ms}$ 예산을 어기지 않는 이유 — 어느 루프가 어느 숫자를 소유하는가. (b) 엔코더 한 카운트의 $\Delta p$, 씬이 *받지 않는* 베이스 자세 해상도. (c) `computeCartesianPath`가 $0.62$를 반환. 실행하는가?
-3. **해석.** RViz 계획은 훌륭한 데 카트가 안 움직인다. 첫 세 명령. 별도로: 씬 안의 $200\,\mathrm{ms}$ 늦은 패널 자세 — MoveIt 버그인가 P6 예산 버그인가?
+3. **해석.** RViz에서 계획은 훌륭한데 카트가 안 움직인다. 첫 세 명령. 별도로: 씬 안의 $200\,\mathrm{ms}$ 늦은 패널 자세 — MoveIt 버그인가 P6 예산 버그인가?
 
 > [!note]- 그리는 법 · How to draw it
 > - 영역 셋을 나란히 두고 그 사이에 이름 붙은 경계 둘을 긋는다. `지각`($50\,\mathrm{Hz}$로 패널 자세를 내는 카메라), `move_group`(planning scene, SRDF 그룹, 파이프라인), `ros2_control`(P6의 $200\,\mathrm{Hz}$ 루프 위의 궤적 제어기).
@@ -1078,9 +1078,9 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 플래너가 순간 이�
 > - `move_group`과 `ros2_control` 사이의 경계에는 토픽이 아니라 액션 `follow_joint_trajectory`가 놓인다. MoveIt은 액션 클라이언트이고 결과를 알아야 하기 때문이다.
 > - 카메라에서 `ros2_control`로 가는 화살표는 하나도 없다. P6의 $70\,\mathrm{ms}$ 예산은 MoveIt이 끼어 있지 않은 사슬 위에 있다.
 > - 축은 둘이다. `씬 스냅샷`, `계획`, `실행`을 이어 붙이는 초 축, 그리고 $5\,\mathrm{ms}$ 제어 틱과 $70\,\mathrm{ms}$ 괄호 하나를 담은 밀리초 확대 축. 둘 사이는 아무것도 잇지 않는다. 그 빈틈이 이 그림의 논증이다.
-> - 초 축 위에는 왼쪽에서 오른쪽으로 길어지는 `패널 자세의 나이` 막대를 그리고 경계 셋에서의 값을 적는다(계산 절, $0.80\,\mathrm{s}$ 계획: $20\,\mathrm{ms}$, $0.82\,\mathrm{s}$, $2.32\,\mathrm{s}$).
+> - 초 축 위에는 왼쪽에서 오른쪽으로 길어지는 `패널 자세의 나이` 막대를 그리고 경계 셋에서의 값을 적는다. $2\,\mathrm{s}$ 계획이면 $20\,\mathrm{ms}$, $2.02\,\mathrm{s}$, $3.52\,\mathrm{s}$이고, 위 그림은 $20\,\mathrm{ms}$, $0.82$, $2.32\,\mathrm{s}$다. 그 아래에 $0.25\,\mathrm{m/s}$로 가는 카트의 이동 거리 $5.0$, $505$, $880\,\mathrm{mm}$를 적는다.
 
 > [!tip]- 정답 · Solutions
-> 1. 씬이 패널을 쥐고, MoveIt은 카메라가 아니라 궤적 제어기와 말한다. 계획은 초, 제어는 밀리초; $70\,\mathrm{ms}$는 카메라–힘이지 플래너–씬이 아니다.
+> 1. 패널 A는 위 그림과 같다. 씬은 한 번 적용한 패널을 쥐고, MoveIt은 `follow_joint_trajectory`로 궤적 제어기와 말하며, 카메라에서 `ros2_control`로 가는 것은 없다. 초 축에서 패널 자세는 스냅샷에서 $20\,\mathrm{ms}$, 계획이 끝날 때 $2.02\,\mathrm{s}$, 실행이 끝날 때 $3.52\,\mathrm{s}$ 묵었고(위 그림은 $0.82$와 $2.32\,\mathrm{s}$), 그동안 카트는 $5.0$, $505$, $880\,\mathrm{mm}$를 간다. 밀리초 확대 축은 그대로다. $70\,\mathrm{ms}$는 카메라–힘이고, 느린 플래너는 초 축만 늘린다. 다만 더해진 1초마다 씬이 모르는 $250\,\mathrm{mm}$가 생긴다.
 > 2. (a) $70\,\mathrm{ms}$는 센싱/제어 사슬이고, 실행이 여전히 $200\,\mathrm{Hz}$로 샘플하면 계획은 느려도 된다. (b) $0.488\,\mathrm{mm}$, 한 번 그린 씬에는 안 보인다. (c) 아니오 — 고른 직선의 62 %에서 멈춘다.
 > 3. `list_controllers`, `controller_names` 대조, `ros2 action list | grep follow_joint_trajectory`. 늦은 자세는 P6 예산 버그: MoveIt은 낡은 씬에 대해 기꺼이 계획한다.

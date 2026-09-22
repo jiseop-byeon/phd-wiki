@@ -339,21 +339,21 @@ embeddings" — reads as what it is: a matrix multiplication with named parts.
 
 Tier B. **P1** from [[02-foundations/lab-plants|0.6]] (biases zero, ReLU). Hand only.
 
-1. **Draw.** The picture above, by hand: the $2\to 3\to 1$ graph. Label $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$. Write the two matrix shapes on the edges.
+1. **Draw.** The picture above with a fourth hidden unit added: its row of $W_1$ is $(1,-1)$ and its weight in $W_2$ is $-1$. Same input $x=(1,2)$. Label every circle's value, write the new matrix shapes on the edge bundles, and count the parameters with the biases off and on. Which edge carries nothing on this pass?
 2. **Derive.** Parameter count with biases off, as the catalog freezes them. $W_1$ entries, $W_2$ entries, total. (The lecture's 13 includes four bias numbers.)
 3. **Interpret.** At $z=(1,2,3)$, what does ReLU do to each unit, and what is $\partial h_i/\partial z_i$? If $z_3$ had been $-3$, which path to $\hat y$ would go dead?
 
 > [!note]- How to draw it · 그리는 법
-> - Two input circles, three hidden, one output. Join every input to every hidden unit (six edges) and every hidden unit to the output (three edges): nine edges, none missing, is what *dense* or *fully connected* means.
-> - The value inside every circle: $1$ and $2$ on the left, $1$, $2$, $3$ in the middle, $0.5$ on the right.
-> - One weight on each edge, $W_1$'s rows $(1,0)$, $(0,1)$, $(1,1)$ and $W_2=(1,-1,0.5)$, and a bracket around each bundle labelled with its shape, $W_1$ $3\times2$ and $W_2$ $1\times3$. One edge is one *weight* and one bundle is one *layer*; the drawing is what makes the two words different.
+> - Two input circles, four hidden, one output. Join every input to every hidden unit (eight edges) and every hidden unit to the output (four edges): twelve edges, none missing, is what *dense* or *fully connected* means.
+> - The value inside every circle: $1$ and $2$ on the left, $1$, $2$, $3$, $0$ in the middle — the new unit's pre-activation is $1\cdot1-1\cdot2=-1$, so it carries $0$ — and $0.5$ on the right.
+> - One weight on each edge, $W_1$'s rows $(1,0)$, $(0,1)$, $(1,1)$, $(1,-1)$ and $W_2=(1,-1,0.5,-1)$, and a bracket around each bundle labelled with its shape, $W_1$ $4\times2$ and $W_2$ $1\times4$. One edge is one *weight* and one bundle is one *layer*; adding a unit adds a row to one matrix and a column to the other.
 > - The words on the parts they name: *input layer*, *hidden layer* and *output* under the three columns, and $\sigma=\mathrm{ReLU}$ on each hidden circle.
-> - Faint bias stubs labelled $b_1$, $b_2$, even though the catalog sets every bias to zero, because the parameter count changes by exactly those four: $6+3=9$ with biases off, $9+4=13$ with them on. Circle the $9$; item 2 asks for it.
-> - The output sum written along the three edges that produce it, $1\cdot1+(-1)\cdot2+0.5\cdot3=0.5$, so that "a neuron is a weighted sum" is a line on the page and not a sentence.
-> - The ReLU mask $(1,1,1)$ beside the hidden column, and in brackets the case $z_3=-3$: that circle carries $0$, its outgoing edge is greyed out and $W_{2,3}$ contributes nothing. The greyed edge is the difference between a network and a stack of matrices, and it is item 3.
+> - Faint bias stubs labelled $b_1$, $b_2$: the count is $8+4=12$ with biases off and $12+(4+1)=17$ with them on. Set the $9$ and $13$ of the picture above beside them.
+> - The output sum written along the four edges that produce it, $1\cdot1+(-1)\cdot2+0.5\cdot3+(-1)\cdot0=0.5$, so that "a neuron is a weighted sum" is a line on the page and not a sentence.
+> - The ReLU mask $(1,1,1,0)$ beside the hidden column, with the new unit's outgoing edge greyed out: it contributes nothing on this pass, which is why $\hat y$ did not change.
 
 > [!tip]- Solutions
-> 1. Two inputs, three hidden, one output. $W_1$ is $3\times 2$, $W_2$ is $1\times 3$.
+> 1. Two inputs, four hidden, one output: $8+4=12$ edges. $W_1$ is now $4\times2$ and $W_2$ is $1\times4$, so there are $12$ parameters with biases off and $12+(4+1)=17$ with them on, against $9$ and $13$ before. The new unit's pre-activation is $z_4=1\cdot1+(-1)\cdot2=-1$, so $h=(1,2,3,0)$ and the mask is $(1,1,1,0)$; $\hat y=1-2+1.5+(-1)\cdot0=0.5$, unchanged. The new unit's outgoing edge carries nothing on this pass: a unit that is off for this input changes the parameter count but not the output.
 > 2. $W_1$ has 6, $W_2$ has 3, total 9. Biases would add $3+1=4$.
 > 3. All $z_i>0$, so ReLU is the identity and each local slope is $1$. If $z_3=-3$, then $h_3=0$ and $\partial h_3/\partial z_3=0$: that hidden unit and $W_{2,3}$ contribute nothing on this pass.
 
@@ -691,21 +691,21 @@ $\partial L/\partial \hat y = \hat y - y = -0.5$는 제곱 손실의 미분이�
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P1** (편향 0, ReLU). 손계산만.
 
-1. **그리기.** 위의 그림을 손으로 다시 그린다. $2\to 3\to 1$ 그래프. $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$를 기입. 변에 두 행렬의 모양.
+1. **그리기.** 은닉 유닛을 하나 더한 위의 그림. 새 유닛의 $W_1$ 행은 $(1,-1)$이고 $W_2$ 가중치는 $-1$이다. 입력은 그대로 $x=(1,2)$. 동그라미마다 값을 적고, 변 다발에 새 행렬 모양을 쓰고, 편향을 끄고 켰을 때의 파라미터 수를 세라. 이번 순전파에서 아무것도 싣지 않는 변은 어느 것인가?
 2. **유도.** 카탈로그대로 편향을 끈 파라미터 수. $W_1$ 개수, $W_2$ 개수, 합. (본문의 13은 편향 4개를 포함한다.)
 3. **해석.** $z=(1,2,3)$에서 ReLU가 각 유닛에 하는 일과 $\partial h_i/\partial z_i$. $z_3$이 $-3$이었다면 $\hat y$로 가는 어느 길이 죽는가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 입력 동그라미 둘, 은닉 셋, 출력 하나. 입력마다 은닉 유닛 전부와 잇고(변 여섯), 은닉 유닛마다 출력과 잇는다(변 셋). 변 아홉이 하나도 빠짐없이 이어진 상태가 *dense* 또는 *완전 연결*이다.
-> - 동그라미마다 안에 값을 적는다. 왼쪽은 $1$과 $2$, 가운데는 $1$, $2$, $3$, 오른쪽은 $0.5$.
-> - 변마다 가중치 하나 — $W_1$의 행 $(1,0)$, $(0,1)$, $(1,1)$과 $W_2=(1,-1,0.5)$ — 그리고 변 다발마다 괄호와 모양, $W_1$은 $3\times2$, $W_2$는 $1\times3$. 변 하나가 *가중치* 하나이고 다발 하나가 *층* 하나다. 두 단어를 다르게 만드는 것이 이 그림이다.
+> - 입력 동그라미 둘, 은닉 넷, 출력 하나. 입력마다 은닉 유닛 전부와 잇고(변 여덟), 은닉 유닛마다 출력과 잇는다(변 넷). 변 열둘이 하나도 빠짐없이 이어진 상태가 *dense* 또는 *완전 연결*이다.
+> - 동그라미마다 안에 값을 적는다. 왼쪽은 $1$과 $2$, 가운데는 $1$, $2$, $3$, $0$ — 새 유닛의 사전 활성은 $1\cdot1-1\cdot2=-1$이라 $0$을 담는다 — 오른쪽은 $0.5$.
+> - 변마다 가중치 하나 — $W_1$의 행 $(1,0)$, $(0,1)$, $(1,1)$, $(1,-1)$과 $W_2=(1,-1,0.5,-1)$ — 그리고 변 다발마다 괄호와 모양, $W_1$은 $4\times2$, $W_2$는 $1\times4$. 변 하나가 *가중치* 하나이고 다발 하나가 *층* 하나다. 유닛 하나를 더하면 한 행렬에는 행이, 다른 행렬에는 열이 하나 는다.
 > - 단어를 그것이 가리키는 부분에: 세 열 아래에 *입력층*, *은닉층*, *출력*, 은닉 동그라미마다 $\sigma=\mathrm{ReLU}$.
-> - 카탈로그가 편향을 전부 0으로 두더라도 흐린 편향 가지를 그려 $b_1$, $b_2$라 이름 붙인다. 파라미터 수가 정확히 그 넷만큼 달라지기 때문이다. 편향을 끄면 $6+3=9$, 켜면 $9+4=13$. $9$에 동그라미를 친다. 2번이 묻는 수다.
-> - 출력의 합을 그 값을 만든 변 셋을 따라 적는다. $1\cdot1+(-1)\cdot2+0.5\cdot3=0.5$. 그러면 "뉴런은 가중합이다"가 문장이 아니라 지면 위의 한 줄이 된다.
-> - 은닉 열 옆에 ReLU 마스크 $(1,1,1)$, 그리고 괄호 안에 $z_3=-3$인 경우. 그 동그라미는 $0$을 담고, 나가는 변은 흐려지고, $W_{2,3}$은 아무것도 기여하지 않는다. 흐려진 그 변이 네트워크와 행렬 더미의 차이이고, 3번 항목이다.
+> - 흐린 편향 가지를 그려 $b_1$, $b_2$라 이름 붙인다. 편향을 끄면 $8+4=12$, 켜면 $12+(4+1)=17$이다. 위 그림의 $9$와 $13$을 옆에 나란히 적는다.
+> - 출력의 합을 그 값을 만든 변 넷을 따라 적는다. $1\cdot1+(-1)\cdot2+0.5\cdot3+(-1)\cdot0=0.5$. 그러면 "뉴런은 가중합이다"가 문장이 아니라 지면 위의 한 줄이 된다.
+> - 은닉 열 옆에 ReLU 마스크 $(1,1,1,0)$을 적고, 새 유닛에서 나가는 변을 흐리게 그린다. 이번 순전파에서 그 변은 아무것도 기여하지 않고, 그래서 $\hat y$가 바뀌지 않았다.
 
 > [!tip]- 정답 · Solutions
-> 1. 입력 둘, 은닉 셋, 출력 하나. $W_1$은 $3\times 2$, $W_2$는 $1\times 3$.
+> 1. 입력 둘, 은닉 넷, 출력 하나로 변은 $8+4=12$개다. $W_1$은 이제 $4\times2$, $W_2$는 $1\times4$이므로 파라미터는 편향을 끄면 $12$개, 켜면 $12+(4+1)=17$개로, 전의 $9$와 $13$보다 많다. 새 유닛의 사전 활성은 $z_4=1\cdot1+(-1)\cdot2=-1$이라 $h=(1,2,3,0)$, 마스크 $(1,1,1,0)$이고, $\hat y=1-2+1.5+(-1)\cdot0=0.5$로 그대로다. 새 유닛에서 나가는 변은 이번 순전파에서 아무것도 싣지 않는다. 이 입력에서 꺼져 있는 유닛은 파라미터 수는 바꾸지만 출력은 바꾸지 않는다.
 > 2. $W_1$이 6, $W_2$가 3, 합 9. 편향을 켜면 $3+1=4$가 더해진다.
 > 3. 모든 $z_i>0$이라 ReLU는 항등이고 국소 기울기는 $1$. $z_3=-3$이면 $h_3=0$, $\partial h_3/\partial z_3=0$: 그 은닉 유닛과 $W_{2,3}$은 이번 순전파에 기여하지 않는다.
 

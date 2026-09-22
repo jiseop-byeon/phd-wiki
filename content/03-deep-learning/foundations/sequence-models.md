@@ -627,21 +627,21 @@ D5의 보상 $r_t=-z_t^2-0.1a_t^2$은 여기서 쓰지 않는다. 계산 절의 
 
 ```mermaid
 flowchart TB
-    subgraph FWD["forward"]
+    subgraph FWD["순전파"]
         direction LR
         Z0["z0 = 1"] -->|"× 0.8"| Z1["z1 = 0.3"]
         Z1 -->|"× 0.8"| Z2["z2 = 0.24"]
         A0["a0 = -1"] -->|"× 0.5"| Z1
         A1["a1 = 0"] -->|"× 0.5"| Z2
     end
-    subgraph BWD["backward, L = z2² / 2"]
+    subgraph BWD["역전파, L = z2² / 2"]
         direction RL
         G2["dL/dz2 = 0.24"] -.->|"× 0.8"| G1["dL/dz1 = 0.192"]
         G1 -.->|"× 0.8"| G0["dL/dz0 = 0.1536"]
         G2 -.->|"× z1 = 0.3"| P["dL/dλ = 0.072 + 0.192 = 0.264"]
         G1 -.->|"× z0 = 1"| P
     end
-    subgraph CONV["convolution"]
+    subgraph CONV["합성곱"]
         direction LR
         C0["z0 = 1"] -->|"0.8² = 0.64"| Y2["z2 = 0.24"]
         B0["a0 = -1"] -->|"K1 = 0.4"| Y2
@@ -800,12 +800,12 @@ $$c_t=f_t\odot c_{t-1}+i_t\odot g_t,\qquad h_t=o_t\odot\tanh(c_t)$$
 flowchart LR
     C0["c(t-1)"] --> MF(("× f(t)"))
     MF --> ADD(("Σ"))
-    WR["write: i(t) ⊙ g(t)"] --> ADD
+    WR["쓰기: i(t) ⊙ g(t)"] --> ADD
     ADD --> C1["c(t)"]
     C1 --> TH["tanh"]
     TH --> MO(("× o(t)"))
     MO --> H1["h(t)"]
-    HX["h(t-1), x(t)"] --> GT["gates and candidate: all the weights"]
+    HX["h(t-1), x(t)"] --> GT["게이트와 후보: 모든 가중치"]
     GT -.->|"f(t)"| MF
     GT -.->|"i(t), g(t)"| WR
     GT -.->|"o(t)"| MO

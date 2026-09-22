@@ -365,13 +365,13 @@ logit은 $\ell_{ij}=v_i^\top t_j/\tau$다. 행은 이미지에 맞는 텍스트,
   <text x="12" y="38" font-size="11" fill="currentColor">이미지 3장</text>
   <line x1="78" y1="34" x2="90" y2="34" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3k)"/>
   <rect x="92" y="23" width="90" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
-  <text x="137" y="38" font-size="11" fill="currentColor" text-anchor="middle">image encoder</text>
+  <text x="137" y="38" font-size="11" fill="currentColor" text-anchor="middle">이미지 encoder</text>
   <line x1="137" y1="45" x2="137" y2="51" stroke="currentColor" stroke-width="1.2"/>
   <text x="137" y="63" font-size="11" fill="currentColor" text-anchor="middle">v<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">, v</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">, v</tspan><tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">· 단위</tspan></text>
   <text x="12" y="88" font-size="11" fill="currentColor">캡션 3개</text>
   <line x1="78" y1="84" x2="90" y2="84" stroke="currentColor" stroke-width="1.2" marker-end="url(#aD3k)"/>
   <rect x="92" y="73" width="90" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="none"/>
-  <text x="137" y="88" font-size="11" fill="currentColor" text-anchor="middle">text encoder</text>
+  <text x="137" y="88" font-size="11" fill="currentColor" text-anchor="middle">텍스트 encoder</text>
   <line x1="137" y1="95" x2="137" y2="101" stroke="currentColor" stroke-width="1.2"/>
   <text x="137" y="113" font-size="11" fill="currentColor" text-anchor="middle">t<tspan dy="3" font-size="10">1</tspan><tspan dy="-3">, t</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3">, t</tspan><tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">· 단위</tspan></text>
   <text x="137" y="132" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">각 0°, 60°, 90°</text>

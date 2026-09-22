@@ -273,21 +273,21 @@ Four questions separate the claims. **Which algorithm computes the force** — p
 
 Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]]. Catalog wall $k_w=400$, $x_w=0.030$. Replace the half-space with a *plate* of thickness $4\,\mathrm{mm}$ occupying $x\in[0.030,0.034]$. The Euler lab stays on [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] — do not start a second simulator.
 
-1. **Draw.** The picture above. Handle $x$, plate, mid-plane at $0.032$. Two pictures at $x=0.033$: penalty (nearest-surface force, arrow *out the back*) and proxy (proxy stuck on the entry face $x_w$, spring $k_w(x_{\mathrm{proxy}}-x)$).
+1. **Draw.** The picture above for a device point that has gone right through the plate, $x=0.035$, $1\,\mathrm{mm}$ past the far face: handle $x$, plate, mid-plane at $0.032$, and both panels at that instant — penalty (nearest-surface force, if there is one) and proxy (proxy on the entry face $x_w$, spring $k_w(x_{\mathrm{proxy}}-x)$) — with each force's value and sign.
 2. **Derive.** (a) Penalty force just before the mid-plane, and the push that pops through. (b) Proxy force at $x=0.033$. (c) Colgate bound $2b/T$ at $T=10^{-3}$. At that ceiling, does a $2\,\mathrm{N}$ push (the 24.3 amplifier limit) still pop a $4\,\mathrm{mm}$ plate? A $2\,\mathrm{mm}$ plate?
 3. **Interpret.** Why is the 24.4 half-space wall honest as a penalty law, and why does the same law lie on this plate? What memory does the proxy add that a 1-DoF *half-space* never needed?
 
 > [!note]- How to draw it · 그리는 법
 > - Draw both panels at the same instant, side by side: the $x$ axis horizontal with $+x$ into the plate, the plate as a shaded band from its entry face to its far face, and the mid-plane as a dashed line through it.
-> - Put the device point in the same place in both panels, between the mid-plane and the far face.
-> - Penalty panel: one arrow toward the nearest face, which past the mid-plane is the far face, so it points $+x$, away from where the user came in. Write its rule, "toward the nearest face", and mark which face that is.
-> - Proxy panel: a second, hollow point on the entry face labelled $p_{\text{proxy}}$, the spring between the two points, and the force arrow in $-x$. Write its rule, "toward the proxy", and note that the proxy has not moved since the point entered.
-> - The proxy is constrained to stay out of the plate, so a proxy drawn on the device point, or anywhere past the entry face, is wrong.
-> - Label both forces with their values and signs, and draw the two arrows to one force scale.
-> - Underneath, one shared axis marking the entry face, the mid-plane, the far face and the device point to scale, so the two arrows visibly read the same geometry and disagree about the answer.
+> - Put the device point in the same place in both panels, $1\,\mathrm{mm}$ *beyond* the far face, outside the band.
+> - Penalty panel: the point is outside the plate, so the nearest-surface law finds no penetration and draws no arrow. Write "$F=0$" there: for this law the plate has vanished.
+> - Proxy panel: a second, hollow point on the entry face labelled $p_{\text{proxy}}$, the spring between the two points stretched across the whole plate, and the force arrow in $-x$. Note that the proxy has not moved since the point entered.
+> - The proxy is constrained to stay out of the plate, so a proxy drawn on the device point, on the far face, or anywhere past the entry face is wrong.
+> - Label the proxy force with its value and sign, and draw it to the same force scale as the picture above's $-1.2\,\mathrm{N}$ so the growth is visible.
+> - Underneath, one shared axis marking the entry face, the mid-plane, the far face and the device point to scale.
 
 > [!tip]- Solutions
-> 1. Penalty at $x=0.033$ is $1\,\mathrm{mm}$ past mid-plane, nearest face is $x=0.034$, force points $+x$ (out the back). Proxy remains at $0.030$, spring pulls $-x$.
+> 1. Penalty: at $x=0.035$ the point is outside the plate, so the nearest-surface law finds no penetration and the force is $0$ — the plate has vanished for a user who has popped through. Proxy: the proxy cannot cross the plate, so it is still on the entry face $0.030$, and the spring pulls $400\times(0.030-0.035)=-2.0\,\mathrm{N}$, back toward where the user came in: the full $2\,\mathrm{N}$ of the 24.3 amplifier. The two laws differ by $2.0\,\mathrm{N}$, and only one of them still knows there is a plate; that memory is item 3's answer.
 > 2. (a) $k_w\cdot 0.002=0.80\,\mathrm{N}$; any harder push pops through. (b) $400\cdot(0.030-0.033)=-1.2\,\mathrm{N}$. (c) $2b/T=1600\,\mathrm{N/m}$. Ceiling force before mid-plane is $K\cdot(\mathrm{thickness}/2)$: $4\,\mathrm{mm}$ plate $\to 3.2\,\mathrm{N}$ (a $2\,\mathrm{N}$ push survives); $2\,\mathrm{mm}$ plate $\to 1.6\,\mathrm{N}$ (it pops). The bound is not why catalog penalty fails here — missing state is.
 > 3. A half-space has one face; nearest-surface is always the entry face, so penalty and proxy coincide. A plate has two faces; without memory the force flips at the mid-plane. The proxy remembers the entry face.
 
@@ -553,21 +553,21 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 카탈로그 벽 $k_w=400$, $x_w=0.030$. 반공간을 두께 $4\,\mathrm{mm}$의 *판* $x\in[0.030,0.034]$으로 바꿔라. 오일러 랩은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 남긴다. 여기서 시뮬레이터를 하나 더 만들지 마라.
 
-1. **그리기.** 위의 그림. 핸들 $x$, 판, 중간면 $0.032$. $x=0.033$에서 그림 둘: 벌점(가장 가까운 면의 힘, 화살표가 *뒤로 나감*)과 proxy(진입 면 $x_w$에 붙은 proxy, 스프링 $k_w(x_{\mathrm{proxy}}-x)$).
+1. **그리기.** 장치 점이 판을 완전히 뚫고 나가 먼 면보다 $1\,\mathrm{mm}$ 너머인 $x=0.035$에 있을 때의 위 그림: 핸들 $x$, 판, 중간면 $0.032$, 그리고 그 순간의 두 패널 — 벌점(가장 가까운 면의 힘, 있다면)과 proxy(진입 면 $x_w$의 proxy, 스프링 $k_w(x_{\mathrm{proxy}}-x)$) — 과 각 힘의 값과 부호.
 2. **유도.** (a) 중간면 직전의 벌점 힘, 그리고 뚫고 나가는 가압. (b) $x=0.033$의 proxy 힘. (c) $T=10^{-3}$에서 Colgate 경계 $2b/T$. 그 천장에서 $2\,\mathrm{N}$ 가압(24.3 증폭기 한계)이 $4\,\mathrm{mm}$ 판을 아직 뚫는가? $2\,\mathrm{mm}$ 판은?
-3. **해석.** 24.4의 반공간 벽이 벌점 법칙으로 정직한 이유, 같은 법칙이 이 판에서는 거짓인 이유는? 1자유도 *반공간*이 끝내 필요 없었던 기억을 proxy가 무엇을 더하는가?
+3. **해석.** 24.4의 반공간 벽이 벌점 법칙으로 정직한 이유, 같은 법칙이 이 판에서는 거짓인 이유는? proxy는 1자유도 *반공간*에는 끝내 필요 없었던 어떤 기억을 더하는가?
 
 > [!note]- 그리는 법 · How to draw it
 > - 두 패널은 같은 순간을 나란히 그린다. $x$축은 가로로 두고 $+x$가 판 안쪽이며, 판은 진입 면에서 먼 면까지의 음영 띠로, 중간면은 그 안을 지나는 점선으로 그린다.
-> - 장치 점은 두 패널에서 같은 자리, 중간면과 먼 면 사이에 둔다.
-> - 벌점 패널: 가장 가까운 면을 향하는 화살표 하나. 중간면을 지나면 그 면은 먼 면이므로 화살표는 $+x$, 사용자가 들어온 쪽의 반대를 가리킨다. 규칙 "가장 가까운 면 쪽"을 쓰고 그게 어느 면인지 표시한다.
-> - Proxy 패널: 진입 면 위에 앉은 속 빈 점 하나를 더 그려 $p_{\text{proxy}}$라 적고, 두 점 사이의 스프링과 $-x$ 방향 힘 화살표를 그린다. 규칙 "proxy 쪽"을 쓰고, 점이 들어온 뒤로 proxy가 움직이지 않았다는 것을 적는다.
-> - Proxy는 판 밖에 머물도록 제약되어 있으므로, 장치 점 위나 진입 면 너머에 그린 proxy는 틀린 것이다.
-> - 두 힘에 값과 부호를 적고, 두 화살표를 한 가지 힘 축척으로 그린다.
-> - 그 아래에 공유 축 하나를 두고 진입 면, 중간면, 먼 면, 장치 점을 축척대로 표시해, 두 화살표가 같은 기하를 읽고 다른 답을 낸다는 것이 보이게 한다.
+> - 장치 점은 두 패널에서 같은 자리, 먼 면 *너머* $1\,\mathrm{mm}$, 띠 바깥에 둔다.
+> - 벌점 패널: 점이 판 밖에 있으므로 가장 가까운 면 법칙은 침투를 찾지 못하고 화살표를 그리지 않는다. 거기에 "$F=0$"이라 쓴다. 이 법칙에게 판은 사라졌다.
+> - Proxy 패널: 진입 면 위에 앉은 속 빈 점 하나를 더 그려 $p_{\text{proxy}}$라 적고, 판 전체를 가로질러 늘어난 두 점 사이의 스프링과 $-x$ 방향 힘 화살표를 그린다. 점이 들어온 뒤로 proxy가 움직이지 않았다는 것을 적는다.
+> - Proxy는 판 밖에 머물도록 제약되어 있으므로, 장치 점 위나 먼 면 위, 또는 진입 면 너머 어디에 그린 proxy도 틀린 것이다.
+> - Proxy 힘에 값과 부호를 적고, 위 그림의 $-1.2\,\mathrm{N}$과 같은 힘 축척으로 그려 커진 것이 보이게 한다.
+> - 그 아래에 공유 축 하나를 두고 진입 면, 중간면, 먼 면, 장치 점을 축척대로 표시한다.
 
 > [!tip]- 정답 · Solutions
-> 1. $x=0.033$의 벌점은 중간면을 $1\,\mathrm{mm}$ 지났고, 가장 가까운 면은 $x=0.034$, 힘은 $+x$(뒤로). Proxy는 $0.030$에 남아 스프링이 $-x$로 당긴다.
+> 1. 벌점: $x=0.035$에서 점은 판 밖에 있으므로 가장 가까운 면 법칙은 침투를 찾지 못하고 힘은 $0$이다. 뚫고 나간 사용자에게 판은 사라졌다. Proxy: proxy는 판을 건널 수 없으므로 여전히 진입 면 $0.030$에 있고, 스프링은 사용자가 들어온 쪽으로 $400\times(0.030-0.035)=-2.0\,\mathrm{N}$을 당긴다. 24.3 증폭기의 $2\,\mathrm{N}$ 전부다. 두 법칙은 $2.0\,\mathrm{N}$ 차이가 나고, 판이 아직 있다는 것을 아는 쪽은 하나뿐이다. 그 기억이 3번의 답이다.
 > 2. (a) $k_w\cdot 0.002=0.80\,\mathrm{N}$; 더 센 가압은 뚫고 나간다. (b) $400\cdot(0.030-0.033)=-1.2\,\mathrm{N}$. (c) $2b/T=1600\,\mathrm{N/m}$. 중간면 전 천장 힘은 강성에 반두께를 곱한 값이다: $K(4\,\mathrm{mm}/2)=3.2\,\mathrm{N}$이므로 $2\,\mathrm{N}$은 버티고, $K(2\,\mathrm{mm}/2)=1.6\,\mathrm{N}$이므로 뚫린다. 카탈로그 벌점이 여기서 실패하는 이유는 경계가 아니라 상태의 부재다.
 > 3. 반공간은 면이 하나라 가장 가까운 면이 언제나 진입 면이고, 벌점과 proxy가 같다. 판은 면이 둘이라 기억 없이 중간면에서 힘이 뒤집힌다. Proxy가 진입 면을 기억한다.
 

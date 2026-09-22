@@ -452,27 +452,36 @@ A world model is useful because imagined consequences let learning reuse collect
 
 Tier B. **P4** as an MDP. Plant from [[02-foundations/lab-plants|0.6]]; $d$ is unknown. Stabilizer language is [[04-robotics/control-theory-ce397|5. Control Theory]]. No simulator.
 
-1. **Draw.** The top panel of the picture above, by hand. MDP: state $x$ (temperature error), action $u$, disturbance $d$ entering the same sum as $u$ in $\dot x=-x+u+d$. Mark that the agent does not choose $d$.
+1. **Draw.** The top and middle panels of the picture above for an agent that discounts faster, $\gamma=0.5$. Top: the MDP — state $x$ (temperature error), action $u$, disturbance $d$ entering the same sum as $u$ in $\dot x=-x+u+d$ — with the border that marks what the agent chooses; say which parts, if any, $\gamma$ changes. Middle: the two bins with their rewards, the effective horizon, the values after one greedy backup from $V\equiv0$, and the action values on the two arrows the greedy policy skips.
 2. **Derive.** Bins $s\in\{0,1\}$ for $x\approx 0$ and $x\approx 1$; actions $u\in\{0,1\}$; $d=0$; Euler $T=1$ so $x^+=u$. Reward $r=-s^2$, $\gamma=0.9$. One greedy Bellman backup from $V\equiv 0$. Report $V(0)$ and $V(1)$.
 3. **Interpret.** Why can a policy learned on this MDP still need the CE397 stabilizer $u=-Kx$ when $d$ is a real, unmodelled disturbance?
 
 > [!note]- How to draw it · 그리는 법
 > - The heater's summing junction with all three inputs: $u$ from the policy, $-x$ from the feedback path, $d$ from outside the figure. Beside $d$, note that it enters at exactly the same point as $u$, so the plant cannot tell them apart; only the border can.
-> - A heavy dashed border around everything the agent owns, labelled *what the policy may choose*: $u$ inside, $d$'s arrow crossing it from outside, and $-x$ a consequence rather than a choice. That border is the difference between a controller and an agent, and it is the one thing item 1 checks.
-> - For item 2, two circles, $s=0$ for $x\approx0$ and $s=1$ for $x\approx1$. With $d=0$ and one Euler step of $T=1$, $x^+=u$, so each circle sends one arrow to $s=0$ labelled $u=0$ and one to $s=1$ labelled $u=1$. Write probability $1$ on every arrow: the model is deterministic, and the figure should say so rather than hide it.
-> - The reward *inside* each circle, $r=-s^2$, giving $0$ and $-1$: on this page reward belongs to the state you are in, not to the arrow you took. Put $\gamma=0.9$ on one arrow with the effective horizon $1/(1-\gamma)=10$ steps.
-> - The values after one greedy backup from $V\equiv0$ beside the circles, $V(0)=0$ and $V(1)=-1$, and a box saying this is already the fixed point: the best move from either state is $u=0$, and $V(0)=0.9\,V(0)$ forces $V(0)=0$.
-> - On the two arrows the greedy policy does not take, the action values at that fixed point, $Q(0,1)=-0.9$ and $Q(1,1)=-1.9$, each with advantage $-0.9$: the price of one unnecessary hot step.
-> - For item 3, a strip underneath: the two bins are the whole state space, so what the agent can say about the states between them when a real $d$ jumps is an empty box. Beside it, the control track's $u=-Kx$, which does have an answer — a pole ([[04-robotics/control-theory-ce397|5. Control Theory]]).
+> - A heavy dashed border around everything the agent owns, labelled *what the policy may choose*: $u$ inside, $d$'s arrow crossing it from outside, and $-x$ a consequence rather than a choice. $\gamma$ appears nowhere in this panel: it belongs to the agent's objective, not to the plant.
+> - Two circles, $s=0$ for $x\approx0$ and $s=1$ for $x\approx1$. With $d=0$ and one Euler step of $T=1$, $x^+=u$, so each circle sends one arrow to $s=0$ labelled $u=0$ and one to $s=1$ labelled $u=1$, each with probability $1$.
+> - The reward *inside* each circle, $r=-s^2$, giving $0$ and $-1$: on this page reward belongs to the state you are in, not to the arrow you took. Put $\gamma=0.5$ on one arrow with the effective horizon $1/(1-\gamma)=2$ steps.
+> - The values after one greedy backup from $V\equiv0$ beside the circles, $V(0)=0$ and $V(1)=-1$, and a box saying this is already the fixed point: $u=0$ is still the best move from either state, and $V(0)=0.5\,V(0)$ forces $V(0)=0$.
+> - On the two skipped arrows, $Q(0,1)=0+0.5\cdot(-1)=-0.5$ and $Q(1,1)=-1+0.5\cdot(-1)=-1.5$, each with advantage $-0.5$. Write the picture above's $-0.9$ beside them: the price of one unnecessary hot step is $\gamma$ times the cost of the hot state.
+> - For item 3 (at the catalog $\gamma=0.9$), a strip underneath: the two bins are the whole state space, so what the agent can say about the states between them when a real $d$ jumps is an empty box. Beside it, the control track's $u=-Kx$, which does have an answer — a pole ([[04-robotics/control-theory-ce397|5. Control Theory]]).
 
 > [!tip]- Solutions
-> 1. The agent outputs $u$; $d$ is an exogenous arrow into $\dot x$. Next $x$ is the plant, not a sampled reward.
+> 1. Top panel: nothing changes. $\gamma$ lives in the agent's objective, not in the plant, so the junction, its three inputs and the border are the picture's: the agent outputs $u$, and $d$ is an exogenous arrow into $\dot x$. Middle panel: rewards $0$ and $-1$ inside the circles as before, effective horizon $1/(1-0.5)=2$ steps. One greedy backup from $V\equiv0$ gives $V(0)=0$ and $V(1)=-1$, again the fixed point. The skipped arrows carry $Q(0,1)=-0.5$ and $Q(1,1)=-1.5$, advantage $-0.5$ each against $-0.9$ at $\gamma=0.9$: an agent with a shorter horizon charges less for visiting the hot state next step, because it weighs that step less.
 > 2. $s'=u$. From $V=0$, $Q(s,u)=-s^2$, so $V(0)=0$ and $V(1)=-1$ (both actions equivalent at this first backup).
 > 3. The backup never saw $d$, and a tabular or neural $\pi(u|x)$ has no pole certificate. Closed-loop $\dot x=-(1+K)x+d$ is a CE397 fact; RL can look optimal on the bins it trained and still drift when $d$ jumps.
 
 ### Robotics bridge
 
 MDPs, policies, and uncertainty connect to graph/trajectory methods and belief-space reasoning in [[04-robotics/planning-decision-making|Planning & Decision-Making]]. If your interest is robots, read [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning]] next; its section on RL on a real machine hands the transfer half of the story to the [[05-construction-robotics/sim-to-real|Sim-to-Real guide]].
+
+### Sources
+
+- R. S. Sutton and A. G. Barto, *Reinforcement Learning: An Introduction*, 2nd ed., MIT Press, 2018 (free at the link above) — ch.3–6 for §1–§3, ch.11 for §3.5, ch.13 for §4.
+- §3: C. J. C. H. Watkins and P. Dayan, "Q-learning," *Machine Learning* 8(3–4):279–292, 1992. V. Mnih et al., "Human-level control through deep reinforcement learning," *Nature* 518:529–533, 2015 — DQN's replay buffer and target network.
+- §3.5: J. N. Tsitsiklis and B. Van Roy, "An analysis of temporal-difference learning with function approximation," *IEEE Transactions on Automatic Control* 42(5):674–690, 1997 — the two-state divergence example. G. J. Gordon, "Stable function approximation in dynamic programming," ICML 1995 — the averagers that stay stable.
+- §4: R. J. Williams, "Simple statistical gradient-following algorithms for connectionist reinforcement learning," *Machine Learning* 8(3–4):229–256, 1992 — REINFORCE. J. Schulman et al., "Trust Region Policy Optimization," ICML 2015; "High-Dimensional Continuous Control Using Generalized Advantage Estimation," ICLR 2016; "Proximal Policy Optimization Algorithms," arXiv:1707.06347, 2017.
+- §5: D. Hafner et al., "Learning Latent Dynamics for Planning from Pixels," ICML 2019 (PlaNet), and "Dream to Control: Learning Behaviors by Latent Imagination," ICLR 2020 (Dreamer).
+- The numeric examples on this page were computed here from the stated numbers, not quoted from a source; recompute them rather than trusting them.
 
 ## 한국어
 
@@ -894,24 +903,33 @@ flowchart TD
 
 Tier B. **P4**를 MDP로. 장치는 [[02-foundations/lab-plants|0.6]], $d$는 미지. 안정화 언어는 [[04-robotics/control-theory-ce397|5. 제어 이론]]. 시뮬레이터 없음.
 
-1. **그리기.** 위의 그림 윗부분을 손으로 다시 그린다. MDP: 상태 $x$(온도 오차), 행동 $u$, $\dot x=-x+u+d$의 합산에 들어가는 외란 $d$. 에이전트가 $d$를 고르지 않음을 표시.
+1. **그리기.** 더 빨리 할인하는 에이전트, $\gamma=0.5$에 대한 위 그림의 윗부분과 가운데. 윗부분: MDP — 상태 $x$(온도 오차), 행동 $u$, $\dot x=-x+u+d$에서 $u$와 같은 합산으로 들어가는 외란 $d$ — 와 에이전트가 고르는 것을 표시하는 테두리. $\gamma$가 이 가운데 무엇을 바꾸는지, 바꾸기는 하는지 말하라. 가운데: 두 빈과 그 보상, 실효 지평, $V\equiv0$에서 탐욕 backup 한 번 뒤의 값, 그리고 탐욕 정책이 건너뛰는 두 화살표의 행동 가치.
 2. **유도.** $x\approx 0$과 $x\approx 1$의 빈 $s\in\{0,1\}$; 행동 $u\in\{0,1\}$; $d=0$; 오일러 $T=1$이라 $x^+=u$. 보상 $r=-s^2$, $\gamma=0.9$. $V\equiv 0$에서 탐욕 벨만 백업 한 번. $V(0)$과 $V(1)$.
 3. **해석.** 이 MDP에서 배운 정책이, $d$가 실제의 미모형 외란일 때에도 CE397 안정기 $u=-Kx$를 왜 여전히 필요로 하는가?
 
 > [!note]- 그리는 법 · How to draw it
 > - 히터의 합산점과 입력 셋: 정책에서 오는 $u$, 피드백 경로에서 오는 $-x$, 그림 바깥에서 오는 $d$. $d$ 옆에는 그것이 $u$와 정확히 같은 지점으로 들어온다고 적는다. 플랜트는 둘을 구별하지 못하고, 구별하는 것은 테두리뿐이다.
-> - 에이전트가 소유한 모든 것을 감싸는 굵은 점선 테두리와 그 이름 *정책이 고를 수 있는 것*. $u$는 안에 있고, $d$의 화살표는 바깥에서 그것을 가로지르며, $-x$는 선택이 아니라 결과다. 이 테두리 하나가 제어기와 에이전트의 차이이고, 1번이 확인하는 것도 그것 하나다.
-> - 2번을 위해 동그라미 둘, $x\approx0$인 $s=0$과 $x\approx1$인 $s=1$. $d=0$이고 $T=1$의 오일러 한 스텝이면 $x^+=u$이므로, 각 동그라미에서 $u=0$이라 적은 화살표가 $s=0$으로, $u=1$이라 적은 화살표가 $s=1$로 간다. 화살표마다 확률 $1$을 쓴다. 모델이 결정론적이라는 것을 그림이 감추지 말고 말해야 한다.
-> - 보상은 각 동그라미 *안에* $r=-s^2$로 써서 $0$과 $-1$이 되게 한다. 이 페이지에서 보상은 밟은 화살표가 아니라 머무는 상태의 성질이다. 화살표 하나에 $\gamma=0.9$와 실효 지평 $1/(1-\gamma)=10$스텝을 적는다.
-> - 동그라미 옆에 $V\equiv0$에서 탐욕적 backup을 한 번 한 뒤의 값 $V(0)=0$, $V(1)=-1$, 그리고 이것이 이미 고정점이라는 상자. 어느 상태에서든 최선의 수가 $u=0$이고 $V(0)=0.9\,V(0)$이 $V(0)=0$을 강제하기 때문이다.
-> - 탐욕 정책이 밟지 않는 두 화살표에는 그 고정점에서의 행동 가치 $Q(0,1)=-0.9$와 $Q(1,1)=-1.9$, 그리고 각각 어드밴티지 $-0.9$. 불필요하게 한 스텝 더 데운 값이다.
-> - 3번을 위해 아래 띠: 두 칸이 상태 공간의 전부이므로, 진짜 $d$가 뛸 때 칸 사이의 상태에 대해 에이전트가 할 수 있는 말은 빈 상자다. 그 옆에는 답을 가진 제어 트랙의 $u=-Kx$, 곧 극점을 둔다([[04-robotics/control-theory-ce397|5. 제어 이론]]).
+> - 에이전트가 소유한 모든 것을 감싸는 굵은 점선 테두리와 그 이름 *정책이 고를 수 있는 것*. $u$는 안에 있고, $d$의 화살표는 바깥에서 그것을 가로지르며, $-x$는 선택이 아니라 결과다. 이 칸 어디에도 $\gamma$는 없다. 그것은 플랜트가 아니라 에이전트의 목적함수에 속한다.
+> - 동그라미 둘, $x\approx0$인 $s=0$과 $x\approx1$인 $s=1$. $d=0$이고 $T=1$의 오일러 한 스텝이면 $x^+=u$이므로, 각 동그라미에서 $u=0$이라 적은 화살표가 $s=0$으로, $u=1$이라 적은 화살표가 $s=1$로 가고, 모두 확률 $1$이다.
+> - 보상은 각 동그라미 *안에* $r=-s^2$로 써서 $0$과 $-1$이 되게 한다. 이 페이지에서 보상은 밟은 화살표가 아니라 머무는 상태의 성질이다. 화살표 하나에 $\gamma=0.5$와 실효 지평 $1/(1-\gamma)=2$스텝을 적는다.
+> - 동그라미 옆에 $V\equiv0$에서 탐욕적 backup을 한 번 한 뒤의 값 $V(0)=0$, $V(1)=-1$, 그리고 이것이 이미 고정점이라는 상자. 어느 상태에서든 최선의 수는 여전히 $u=0$이고 $V(0)=0.5\,V(0)$이 $V(0)=0$을 강제한다.
+> - 건너뛴 두 화살표에는 $Q(0,1)=0+0.5\cdot(-1)=-0.5$와 $Q(1,1)=-1+0.5\cdot(-1)=-1.5$, 각각 어드밴티지 $-0.5$. 옆에 위 그림의 $-0.9$를 적는다. 불필요하게 한 스텝 더 데운 값은 $\gamma$ 곱하기 뜨거운 상태의 비용이다.
+> - 3번(카탈로그 $\gamma=0.9$)을 위해 아래 띠: 두 칸이 상태 공간의 전부이므로, 진짜 $d$가 뛸 때 칸 사이의 상태에 대해 에이전트가 할 수 있는 말은 빈 상자다. 그 옆에는 답을 가진 제어 트랙의 $u=-Kx$, 곧 극점을 둔다([[04-robotics/control-theory-ce397|5. 제어 이론]]).
 
 > [!tip]- 정답 · Solutions
-> 1. 에이전트는 $u$를 내고, $d$는 $\dot x$로 들어가는 외생 화살. 다음 $x$는 플랜트이지 샘플된 보상이 아니다.
+> 1. 윗부분: 바뀌는 것이 없다. $\gamma$는 플랜트가 아니라 에이전트의 목적함수에 살므로, 합산점과 세 입력과 테두리는 위 그림 그대로다. 에이전트는 $u$를 내고, $d$는 $\dot x$로 들어가는 외생 화살이다. 가운데: 동그라미 안의 보상은 전처럼 $0$과 $-1$, 실효 지평은 $1/(1-0.5)=2$스텝. $V\equiv0$에서 탐욕 backup 한 번이면 $V(0)=0$, $V(1)=-1$이고 다시 고정점이다. 건너뛴 화살표는 $Q(0,1)=-0.5$, $Q(1,1)=-1.5$, 어드밴티지는 각각 $-0.5$로, $\gamma=0.9$의 $-0.9$보다 작다. 지평이 짧은 에이전트는 다음 스텝에 뜨거운 상태에 가는 것을 덜 무겁게 치므로 그 값도 덜 매긴다.
 > 2. $s'=u$. $V=0$이면 $Q(s,u)=-s^2$, 따라서 $V(0)=0$, $V(1)=-1$(이 첫 백업에서 두 행동은 동등).
 > 3. 백업은 $d$를 본 적이 없고, 표나 신경망 $\pi(u|x)$에는 극점 증명이 없다. 폐루프 $\dot x=-(1+K)x+d$는 CE397의 사실이다. RL은 학습한 빈에서는 최적으로 보여도 $d$가 뛰면 표류한다.
 
 ### 로보틱스 다리
 
 MDP·정책·불확실성은 [[04-robotics/planning-decision-making|4. Planning & Decision-Making]]의 그래프/궤적 방법과 belief-space 추론으로 연결된다. 관심이 로봇이라면 다음은 [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL]]이다. 그 페이지의 실기계 위의 RL 절이 이야기의 전이 쪽 절반을 [[05-construction-robotics/sim-to-real|Sim-to-Real 가이드]]로 넘긴다.
+
+### 출처 · Sources
+
+- R. S. Sutton, A. G. Barto, *Reinforcement Learning: An Introduction*, 2판, MIT Press, 2018(위 링크에서 무료) — §1–§3은 3–6장, §3.5는 11장, §4는 13장.
+- §3: C. J. C. H. Watkins, P. Dayan, "Q-learning," *Machine Learning* 8(3–4):279–292, 1992. V. Mnih 외, "Human-level control through deep reinforcement learning," *Nature* 518:529–533, 2015 — DQN의 replay buffer와 target network.
+- §3.5: J. N. Tsitsiklis, B. Van Roy, "An analysis of temporal-difference learning with function approximation," *IEEE Transactions on Automatic Control* 42(5):674–690, 1997 — 상태 둘짜리 발산 예. G. J. Gordon, "Stable function approximation in dynamic programming," ICML 1995 — 안정한 채로 남는 averager.
+- §4: R. J. Williams, "Simple statistical gradient-following algorithms for connectionist reinforcement learning," *Machine Learning* 8(3–4):229–256, 1992 — REINFORCE. J. Schulman 외, "Trust Region Policy Optimization," ICML 2015; "High-Dimensional Continuous Control Using Generalized Advantage Estimation," ICLR 2016; "Proximal Policy Optimization Algorithms," arXiv:1707.06347, 2017.
+- §5: D. Hafner 외, "Learning Latent Dynamics for Planning from Pixels," ICML 2019(PlaNet), "Dream to Control: Learning Behaviors by Latent Imagination," ICLR 2020(Dreamer).
+- 이 페이지의 수치 예제는 명시된 숫자로부터 여기서 직접 계산한 것이며 어느 출처에서 인용한 것이 아니다. 믿지 말고 다시 계산하라.

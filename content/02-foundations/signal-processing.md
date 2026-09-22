@@ -455,21 +455,21 @@ For example, a driver may already smooth force readings before a second filter i
 
 Tier B. **P3** from [[02-foundations/lab-plants|0.6]]. This page §2. The haptic loop is $1\,\mathrm{kHz}$ ($T=10^{-3}\,\mathrm{s}$). No simulator.
 
-1. **Draw.** The picture above, by hand: continuous handle position $x(t)$ through an ideal sampler of period $T$, then a zero-order hold (value held constant until the next tick). Mark the wall $x_w$.
+1. **Draw.** The picture above for the same handle and encoder on a loop four times slower, $250\,\mathrm{Hz}$ ($T=4\,\mathrm{ms}$): continuous handle position $x(t)$ through an ideal sampler of period $T$, then a zero-order hold, over eight ticks. Mark the wall $x_w$, the Nyquist frequency, the average lag of the hold, and the encoder grid. At the handle's $30.7\,\mathrm{mm/s}$, how many new counts appear per tick now, and what does the velocity from differenced positions read?
 2. **Derive.** Nyquist frequency at $1\,\mathrm{kHz}$, and the largest band $B$ the theorem allows. If the hand/wall contact you care about lives below $30\,\mathrm{Hz}$, is $1\,\mathrm{kHz}$ enough on sampling grounds alone?
 3. **Interpret.** One motor encoder count is $\Delta x=r_m\,2\pi/N$. Compute it. Sampling interval or quantization step? What does raising $N$ change that raising $f_s$ does not?
 
 > [!note]- How to draw it · 그리는 법
-> - The signal path as blocks in a row: the handle giving $x(t)$; an ideal sampler, drawn as a switch that closes for an instant every $T=10^{-3}\,\mathrm{s}$, with $f_s=1000\,\mathrm{Hz}$ and Nyquist $500\,\mathrm{Hz}$ under it; the sequence $x[n]=x(nT)$; a zero-order hold, drawn as a box whose output is a staircase; and the held signal that the wall law actually sees.
+> - The signal path as blocks in a row: the handle giving $x(t)$; an ideal sampler, drawn as a switch that closes for an instant every $T=4\,\mathrm{ms}$, with $f_s=250\,\mathrm{Hz}$ and Nyquist $125\,\mathrm{Hz}$ under it; the sequence $x[n]=x(nT)$; a zero-order hold, drawn as a box whose output is a staircase; and the held signal that the wall law actually sees.
 > - Under the hold, the one thing it does: it holds $x[n]$ constant on $[nT,\ (n+1)T)$ and then jumps.
-> - Underneath, one time axis about $8\,\mathrm{ms}$ long so that eight ticks fit, with $x(t)$ as a smooth curve rising through the wall and a dot on it at each tick. Those dots are $x[n]$, and nothing between them exists for the controller.
-> - The ZOH staircase on the same axis, each tread flat at the height of the *previous* dot. Shade the sliver between curve and staircase on one tread and label it: the hold is late by $T/2=0.5\,\mathrm{ms}$ on average, which §2 turns into a phase lag.
-> - The wall $x_w=0.030\,\mathrm{m}$ as a dashed horizontal line across all three curves, and a circle on the first tread above it: the controller's contact begins at a tick, never at the true crossing.
-> - For item 3, faint horizontal gridlines one encoder count apart, $\Delta x=r_m\,2\pi/N=0.010\cdot2\pi/1024=61.4\,\mu\mathrm{m}$, with the dots redrawn snapped to the nearest line. Label the two steps so they cannot be confused: $T$ along time, set by the clock, and $\Delta x$ along space, set by the encoder.
-> - Beside the grid, what one count costs in force on this wall, $k_w\,\Delta x=400\times61.4\,\mu\mathrm{m}=0.025\,\mathrm{N}$; at the bottom, the speed at which one new count appears per tick, $\Delta x/T=61.4\,\mathrm{mm/s}$. Slower than that, some ticks report no motion, so a velocity from differenced positions reads zero and then jumps — the quantization noise §4's filtering handles, even for $30\,\mathrm{Hz}$ contact sampled $33.3$ times per cycle.
+> - Underneath, one time axis about $32\,\mathrm{ms}$ long so that eight ticks fit, with $x(t)$ as a smooth curve rising through the wall and a dot on it at each tick. Those dots are $x[n]$, and nothing between them exists for the controller.
+> - The ZOH staircase on the same axis, each tread flat at the height of the *previous* dot. Shade the sliver between curve and staircase on one tread and label it: the hold is late by $T/2=2\,\mathrm{ms}$ on average, four times the picture's $0.5\,\mathrm{ms}$.
+> - The wall $x_w=0.030\,\mathrm{m}$ as a dashed horizontal line, and a circle on the first tread above it: contact begins at a tick, now up to $4\,\mathrm{ms}$ after the true crossing.
+> - Faint horizontal gridlines one encoder count apart, $\Delta x=61.4\,\mu\mathrm{m}$ as before, with the dots snapped to the nearest line. Label the two steps so they cannot be confused: $T$ along time, set by the clock, which changed, and $\Delta x$ along space, set by the encoder, which did not.
+> - At the bottom, the speed at which one new count appears per tick, $\Delta x/T=15.3\,\mathrm{mm/s}$. The handle's $30.7\,\mathrm{mm/s}$ moves $122.8\,\mu\mathrm{m}$ per tick, two counts, so every tick reports motion and the differenced velocity is a steady $30.7\,\mathrm{mm/s}$ — not the $0$, $61.4$ alternation of the picture above.
 
 > [!tip]- Solutions
-> 1. Sampler $x[n]=x(nT)$. ZOH: a stair of height $x[n]$ on $[nT,(n+1)T)$. Wall at $x_w=0.030\,\mathrm{m}$.
+> 1. Sampler $x[n]=x(nT)$ every $4\,\mathrm{ms}$ ($f_s=250\,\mathrm{Hz}$, Nyquist $125\,\mathrm{Hz}$), so eight ticks span $32\,\mathrm{ms}$. The ZOH holds each value on $[nT,(n+1)T)$ and runs $T/2=2\,\mathrm{ms}$ late on average, four times the picture's $0.5\,\mathrm{ms}$; contact still begins at a tick, now up to $4\,\mathrm{ms}$ after the true crossing. The encoder grid is unchanged at $61.4\,\mu\mathrm{m}$, but one count per tick now means only $\Delta x/T=15.3\,\mathrm{mm/s}$, so at $30.7\,\mathrm{mm/s}$ each tick sees two new counts and the differenced velocity reads a steady $30.7\,\mathrm{mm/s}$ instead of alternating $0$ and $61.4\,\mathrm{mm/s}$. The slower clock removed the velocity chatter by making every reading four times staler: the clock sets how old a reading is, the encoder how fine. Nyquist $125\,\mathrm{Hz}$ is still well above $30\,\mathrm{Hz}$.
 > 2. $f_s=1000\,\mathrm{Hz}$, Nyquist $500\,\mathrm{Hz}$, so $B<500\,\mathrm{Hz}$. $30\,\mathrm{Hz}$ is far below; sampling is not the bottleneck.
 > 3. $\Delta x=0.010\cdot 2\pi/1024=6.14\times 10^{-5}\,\mathrm{m}$ ($61.4\,\mu\mathrm{m}$). Quantization of position, not a $T_s$. Larger $N$ shrinks the stair in space; larger $f_s$ shrinks it in time.
 
@@ -887,21 +887,21 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 이 페이지 §2. 햅틱 루프는 $1\,\mathrm{kHz}$ ($T=10^{-3}\,\mathrm{s}$). 시뮬레이터 없음.
 
-1. **그리기.** 위의 그림을 손으로 다시 그린다. 연속 핸들 위치 $x(t)$가 주기 $T$의 이상 샘플러, 이어서 영차 홀드(다음 틱까지 값을 유지). 벽 $x_w$를 표시.
+1. **그리기.** 같은 핸들과 엔코더를 네 배 느린 루프 $250\,\mathrm{Hz}$($T=4\,\mathrm{ms}$)에 둔 위의 그림: 연속 핸들 위치 $x(t)$가 주기 $T$의 이상 샘플러를 지나 영차 홀드로 가는 것을 눈금 여덟 개에 걸쳐 그린다. 벽 $x_w$, 나이퀴스트 주파수, 홀드의 평균 지연, 엔코더 격자를 표시하라. 핸들 속도 $30.7\,\mathrm{mm/s}$에서 이제 눈금마다 새 카운트가 몇 개 생기고, 위치를 차분한 속도는 무엇을 읽는가?
 2. **유도.** $1\,\mathrm{kHz}$에서의 나이퀴스트 주파수, 정리가 허용하는 최대 대역 $B$. 손/벽 접촉이 $30\,\mathrm{Hz}$ 아래라면, 샘플링만으로 $1\,\mathrm{kHz}$는 충분한가?
 3. **해석.** 모터 엔코더 한 카운트 $\Delta x=r_m\,2\pi/N$을 계산하라. 샘플 간격인가 양자화 스텝인가? $N$을 키우는 것과 $f_s$를 키우는 것은 무엇이 다른가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 신호 경로를 한 줄의 블록으로: $x(t)$를 내는 핸들, $T=10^{-3}\,\mathrm{s}$마다 순간적으로 닫히는 스위치로 그린 이상 샘플러(아래에 $f_s=1000\,\mathrm{Hz}$와 나이퀴스트 $500\,\mathrm{Hz}$), 수열 $x[n]=x(nT)$, 출력이 계단인 상자로 그린 영차 홀드, 그리고 벽 법칙이 실제로 보는 유지된 신호.
+> - 신호 경로를 한 줄의 블록으로: $x(t)$를 내는 핸들, $T=4\,\mathrm{ms}$마다 순간적으로 닫히는 스위치로 그린 이상 샘플러(아래에 $f_s=250\,\mathrm{Hz}$와 나이퀴스트 $125\,\mathrm{Hz}$), 수열 $x[n]=x(nT)$, 출력이 계단인 상자로 그린 영차 홀드, 그리고 벽 법칙이 실제로 보는 유지된 신호.
 > - 홀드 아래에는 그 블록이 하는 일 하나: $x[n]$을 $[nT,\ (n+1)T)$ 동안 일정하게 유지하고 그다음 튄다.
-> - 그 아래 시간축 하나, 눈금 여덟 개가 들어가도록 약 $8\,\mathrm{ms}$. $x(t)$는 벽을 가로지르며 올라가는 매끄러운 곡선이고, 눈금마다 그 위에 점을 찍는다. 그 점들이 $x[n]$이고, 제어기에게 그 사이는 존재하지 않는다.
-> - 같은 축 위의 ZOH 계단, 각 디딤판은 *직전* 점의 높이에서 평평하다. 디딤판 하나에서 곡선과 계단 사이의 조각을 칠하고 이름을 붙인다. 홀드는 평균 $T/2=0.5\,\mathrm{ms}$ 늦고, §2가 그것을 위상 지연으로 바꾼다.
-> - 벽($x_w=0.030\,\mathrm{m}$)은 세 곡선을 모두 가로지르는 수평 점선으로, 그보다 높은 첫 디딤판에는 동그라미. 제어기의 접촉은 언제나 눈금에서 시작하지 참된 교차점에서 시작하지 않는다.
-> - 3번을 위해 엔코더 한 카운트($\Delta x=r_m\,2\pi/N=0.010\cdot2\pi/1024=61.4\,\mu\mathrm{m}$) 간격으로 흐린 수평 격자선을 긋고 점들을 가장 가까운 선에 스냅해 다시 찍는다. 두 스텝은 혼동할 수 없도록 이름을 붙인다. 시간을 따라 시계가 정하는 $T$, 공간을 따라 엔코더가 정하는 $\Delta x$.
-> - 격자 옆에는 이 벽에서 한 카운트가 힘으로 얼마인지, $k_w\,\Delta x=400\times61.4\,\mu\mathrm{m}=0.025\,\mathrm{N}$. 맨 아래에는 눈금마다 새 카운트 하나가 생기는 속도 $\Delta x/T=61.4\,\mathrm{mm/s}$. 그보다 느리면 어떤 눈금은 움직임을 보고하지 않으므로 위치를 차분한 속도가 0이었다가 튄다. 한 주기에 $33.3$ 샘플이 들어가는 $30\,\mathrm{Hz}$ 접촉에서도 생기는, §4의 필터링이 다루는 양자화 잡음이다.
+> - 그 아래 시간축 하나, 눈금 여덟 개가 들어가도록 약 $32\,\mathrm{ms}$. $x(t)$는 벽을 가로지르며 올라가는 매끄러운 곡선이고, 눈금마다 그 위에 점을 찍는다. 그 점들이 $x[n]$이고, 제어기에게 그 사이는 존재하지 않는다.
+> - 같은 축 위의 ZOH 계단, 각 디딤판은 *직전* 점의 높이에서 평평하다. 디딤판 하나에서 곡선과 계단 사이의 조각을 칠하고 이름을 붙인다. 홀드는 평균 $T/2=2\,\mathrm{ms}$ 늦고, 위 그림의 $0.5\,\mathrm{ms}$의 네 배다.
+> - 벽 $x_w=0.030\,\mathrm{m}$은 수평 점선으로, 그보다 높은 첫 디딤판에는 동그라미. 접촉은 눈금에서 시작하고, 이제 참된 교차보다 최대 $4\,\mathrm{ms}$ 늦다.
+> - 엔코더 한 카운트 간격, 전과 같은 $\Delta x=61.4\,\mu\mathrm{m}$로 흐린 수평 격자선을 긋고 점들을 가장 가까운 선에 스냅한다. 두 스텝은 혼동할 수 없도록 이름을 붙인다. 시간을 따라 시계가 정하는 $T$는 바뀌었고, 공간을 따라 엔코더가 정하는 $\Delta x$는 그대로다.
+> - 맨 아래에는 눈금마다 새 카운트 하나가 생기는 속도 $\Delta x/T=15.3\,\mathrm{mm/s}$. 핸들의 $30.7\,\mathrm{mm/s}$는 눈금마다 $122.8\,\mu\mathrm{m}$, 곧 두 카운트를 움직이므로 모든 눈금이 움직임을 보고하고, 차분 속도는 위 그림의 $0$, $61.4$ 번갈아 읽기가 아니라 꾸준한 $30.7\,\mathrm{mm/s}$다.
 
 > [!tip]- 정답 · Solutions
-> 1. 샘플러 $x[n]=x(nT)$. ZOH는 $[nT,(n+1)T)$에서 높이 $x[n]$인 계단. 벽 $x_w=0.030\,\mathrm{m}$.
+> 1. 샘플러 $x[n]=x(nT)$가 $4\,\mathrm{ms}$마다($f_s=250\,\mathrm{Hz}$, 나이퀴스트 $125\,\mathrm{Hz}$) 읽으므로 눈금 여덟 개는 $32\,\mathrm{ms}$에 걸친다. ZOH는 각 값을 $[nT,(n+1)T)$에 유지하고 평균 $T/2=2\,\mathrm{ms}$ 늦어, 위 그림의 $0.5\,\mathrm{ms}$의 네 배다. 접촉은 여전히 눈금에서 시작하고 이제 참된 교차보다 최대 $4\,\mathrm{ms}$ 늦다. 엔코더 격자는 $61.4\,\mu\mathrm{m}$ 그대로지만, 눈금마다 한 카운트는 이제 $\Delta x/T=15.3\,\mathrm{mm/s}$일 뿐이므로 $30.7\,\mathrm{mm/s}$에서는 눈금마다 새 카운트 둘이 보이고, 차분 속도는 $0$과 $61.4\,\mathrm{mm/s}$를 번갈아 읽는 대신 꾸준히 $30.7\,\mathrm{mm/s}$를 읽는다. 느린 시계는 모든 읽기를 네 배 낡게 만드는 값으로 속도 떨림을 없앴다. 시계는 읽기가 얼마나 오래되었는지를, 엔코더는 얼마나 촘촘한지를 정한다. 나이퀴스트 $125\,\mathrm{Hz}$는 여전히 $30\,\mathrm{Hz}$보다 한참 위다.
 > 2. $f_s=1000\,\mathrm{Hz}$, 나이퀴스트 $500\,\mathrm{Hz}$, 따라서 $B<500\,\mathrm{Hz}$. $30\,\mathrm{Hz}$는 한참 아래라 샘플링이 병목이 아니다.
 > 3. $\Delta x=0.010\cdot 2\pi/1024=6.14\times 10^{-5}\,\mathrm{m}$ ($61.4\,\mu\mathrm{m}$). 위치의 양자화이지 $T_s$가 아니다. $N$을 키우면 공간 계단이 줄고, $f_s$를 키우면 시간 계단이 준다.
 

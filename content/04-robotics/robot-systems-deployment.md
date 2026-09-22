@@ -496,7 +496,7 @@ Tier A. Plant **P6** from [[02-foundations/lab-plants|0.6]]. The weekend ROS 2 p
 
 Encoder $N=2048$ counts/m. Vision publishes a goal at $50\,\mathrm{Hz}$. Controller samples the encoder and commands a motor at $200\,\mathrm{Hz}$. End-to-end budget, camera mid-exposure $\to$ applied force: $70\,\mathrm{ms}$.
 
-1. **Draw.** The picture above, one cycle as a timeline: exposure midpoint, vision publish, TF lookup, controller tick, current to the motor. Mark the $70\,\mathrm{ms}$ budget as a bar. Put the $50\,\mathrm{Hz}$ and $200\,\mathrm{Hz}$ periods on the same axis.
+1. **Draw.** The picture above for a cheaper $30\,\mathrm{Hz}$ camera, with the same $200\,\mathrm{Hz}$ controller and $70\,\mathrm{ms}$ budget: one cycle as a timeline — exposure midpoint, vision publish, TF lookup, controller tick, current to the motor — with the budget as a bar, both periods on the same axis, and the sampling term as a segment of its own. Overlay a goal that reaches the controller $100\,\mathrm{ms}$ after exposure.
 2. **Derive.** (a) One encoder count in millimetres. (b) Vision period and control period. (c) If the vision message is $200\,\mathrm{ms}$ old at the controller, by how much is the budget blown, and how many control ticks ran on a stale goal? (d) A $0.10\,\mathrm{m/s}$ cart: how many millimetres does it move during those $200\,\mathrm{ms}$, and how many encoder counts is that?
 3. **Do.** Fill `?`. Print counts, ticks, millimetres. No plant ODE.
 
@@ -512,16 +512,16 @@ print(mm_per_count, over, stale_ticks, travel_mm, travel_counts)
 ```
 
 > [!note]- How to draw it · 그리는 법
-> - A single time axis in milliseconds: tall ticks every $20\,\mathrm{ms}$ above it for the vision node, short ticks every $5\,\mathrm{ms}$ below it for the controller. Both on the *same* axis is the point: two rates are two tick spacings, and nothing drawn so far is a latency.
+> - A single time axis in milliseconds: tall ticks every $33.3\,\mathrm{ms}$ above it for the vision node, short ticks every $5\,\mathrm{ms}$ below it for the controller. Both on the *same* axis is the point: two rates are two tick spacings, and nothing drawn so far is a latency.
 > - The five instants, left to right: the exposure midpoint, the vision publish, the controller's TF lookup, the controller tick that consumes the goal, and current reaching the motor.
-> - A bar spanning the first and the last, labelled $70\,\mathrm{ms}$, with both counts written beneath it: how many vision periods and how many control ticks it covers.
-> - The sampling term $\tfrac12 T_{\text{cam}}=10\,\mathrm{ms}$ (worst case $20\,\mathrm{ms}$) as a segment of its own, not hidden inside the camera box: a budget that is not a whole number of vision periods is the ordinary case.
-> - The stale overlay, in a lighter line from the same exposure midpoint: a $200\,\mathrm{ms}$ bar for a goal that reached the controller that late, with its excess over the budget and the control ticks it spans written along it.
+> - A bar spanning the first and the last, labelled $70\,\mathrm{ms}$, with both counts written beneath it: $2.1$ vision periods now, and still $14$ control ticks.
+> - The sampling term $\tfrac12 T_{\text{cam}}=16.7\,\mathrm{ms}$ (worst case $33.3\,\mathrm{ms}$) as a segment of its own, not hidden inside the camera box: at worst it is nearly half the budget before any processing starts.
+> - The stale overlay, in a lighter line from the same exposure midpoint: a $100\,\mathrm{ms}$ bar for the late goal, with its excess over the budget and the control ticks it spans written along it.
 > - Under the axis, the consequence in the units the encoder speaks: how far the cart travels at $0.10\,\mathrm{m/s}$ during that age, in millimetres and in encoder counts.
-> - The drawing is wrong the moment an arrow labelled "$200\,\mathrm{Hz}$" stands in for a delay, or a noise cloud appears around the goal. Its whole job is to keep rate, latency and noise as three separate marks, because the failure it explains is a *late* goal, and no estimator on [[04-robotics/state-estimation-slam|3. State Estimation]] repairs lateness.
+> - The drawing is wrong the moment an arrow labelled "$30\,\mathrm{Hz}$" stands in for a delay, or a noise cloud appears around the goal: rate, latency and noise stay three separate marks, and no estimator on [[04-robotics/state-estimation-slam|3. State Estimation]] repairs lateness.
 
 > [!tip]- Solutions
-> 1. Vision ticks every $20\,\mathrm{ms}$; control every $5\,\mathrm{ms}$. The budget bar is 3.5 vision periods long. Force is applied on a control edge, not on a vision edge.
+> 1. Vision ticks every $33.3\,\mathrm{ms}$, control every $5\,\mathrm{ms}$. The $70\,\mathrm{ms}$ bar now covers $2.1$ vision periods and still $14$ control ticks: the budget has the same length, the camera's tick spacing does not. The sampling term is $\tfrac12T_{\text{cam}}=16.7\,\mathrm{ms}$ on average and $33.3\,\mathrm{ms}$ at worst, against $10$ and $20\,\mathrm{ms}$ at $50\,\mathrm{Hz}$. The $100\,\mathrm{ms}$ goal is $30\,\mathrm{ms}$ over budget and spans $20$ control ticks; at $0.10\,\mathrm{m/s}$ the cart moved $10\,\mathrm{mm}$, $20.5$ counts. Force is still applied on a control edge, not a vision edge.
 > 2. (a) $1000/2048=0.488\,\mathrm{mm}$. (b) $20\,\mathrm{ms}$, $5\,\mathrm{ms}$. (c) $200-70=130\,\mathrm{ms}$ over; $200/5=40$ stale ticks. (d) $0.10\times 0.200=0.020\,\mathrm{m}=20\,\mathrm{mm}=41$ counts. The estimator on [[04-robotics/state-estimation-slam|3]] cannot save you: the goal is late, not noisy.
 > 3. `1000/N`, `1/50`, `1/200`, `age-budget`, `age/control_T`, `v*age*1000`, `v*age*N`. Prints $0.488$, $0.130$, $40$, $20$, $40.96$. “Nothing happens” on this plant is often a TF stamp or a QoS mismatch, not a wrong $K$ — that drill is [[04-robotics/ros2/qos-executors-time|25.5]].
 
@@ -1056,21 +1056,21 @@ t = 12.4 s의 충돌은 t = 10.3 s부터 갱신되지 않은 위치 스트림에
 
 Tier A. [[02-foundations/lab-plants|0.6]]의 **P6**. 주말 ROS 2 경로는 [[04-robotics/ros2/index|25]]. 영어 템플릿.
 
-1. **그리기.** 위의 그림, 한 주기의 타임라인: 노출 중간, 비전 발행, TF, 제어 틱, 모터 전류. $70\,\mathrm{ms}$ 예산을 막대로. $50\,\mathrm{Hz}$와 $200\,\mathrm{Hz}$를 같은 축에.
+1. **그리기.** 더 싼 $30\,\mathrm{Hz}$ 카메라에 대한 위의 그림. 제어기 $200\,\mathrm{Hz}$와 $70\,\mathrm{ms}$ 예산은 같다. 한 주기의 타임라인 — 노출 중간, 비전 발행, TF 조회, 제어 틱, 모터 전류 — 과 막대로 그린 예산, 같은 축 위의 두 주기, 따로 한 구간으로 그린 샘플링 항. 노출 뒤 $100\,\mathrm{ms}$에 제어기에 닿는 목표를 겹쳐 그려라.
 2. **유도.** (a) 엔코더 한 카운트의 mm. (b) 비전·제어 주기. (c) 비전 메시지가 제어기에서 $200\,\mathrm{ms}$ 늙었으면 예산이 얼마나 깨지고, 낡은 목표로 몇 틱이 도는가? (d) $0.10\,\mathrm{m/s}$ 카트가 그 $200\,\mathrm{ms}$ 동안 몇 mm, 몇 카운트?
 3. **실행.** 카운트, 틱, mm를 출력하라. ODE 없음.
 
 > [!note]- 그리는 법 · How to draw it
-> - 밀리초 단위 시간 축 하나: 위쪽에 비전 노드의 긴 눈금을 $20\,\mathrm{ms}$마다, 아래쪽에 제어기의 짧은 눈금을 $5\,\mathrm{ms}$마다. 둘을 *같은* 축에 올리는 것이 요점이다. 두 주기는 두 눈금 간격일 뿐이고, 여기까지 그린 것 중 지연인 것은 하나도 없다.
+> - 밀리초 단위 시간 축 하나: 위쪽에 비전 노드의 긴 눈금을 $33.3\,\mathrm{ms}$마다, 아래쪽에 제어기의 짧은 눈금을 $5\,\mathrm{ms}$마다. 둘을 *같은* 축에 올리는 것이 요점이다. 두 주기는 두 눈금 간격일 뿐이고, 여기까지 그린 것 중 지연인 것은 하나도 없다.
 > - 왼쪽부터 다섯 시점: 노출 중간점, 비전 발행, 제어기의 TF 조회, 목표를 소비하는 제어 틱, 모터로 전류가 나가는 순간.
-> - 첫 점과 마지막 점을 잇고 $70\,\mathrm{ms}$라 적은 막대, 그리고 그 아래에 적은 두 개수: 막대가 덮는 비전 주기 수와 제어 틱 수.
-> - 카메라 상자 안에 숨기지 않고 따로 한 구간으로 그린 샘플링 항 $\tfrac12 T_{\text{cam}}=10\,\mathrm{ms}$(최악 $20\,\mathrm{ms}$). 예산이 비전 주기의 정수배가 아닌 것이 보통이다.
-> - 늦은 목표 겹쳐 그리기: 같은 노출 중간점에서 옅은 선으로 출발하는 $200\,\mathrm{ms}$짜리 막대, 곧 제어기에 그만큼 늙어서 도착한 목표와, 막대를 따라 적은 예산 초과분과 그것이 덮는 제어 틱 수.
+> - 첫 점과 마지막 점을 잇고 $70\,\mathrm{ms}$라 적은 막대, 그리고 그 아래에 적은 두 개수: 이제 비전 주기 $2.1$개, 제어 틱은 그대로 $14$개.
+> - 카메라 상자 안에 숨기지 않고 따로 한 구간으로 그린 샘플링 항 $\tfrac12 T_{\text{cam}}=16.7\,\mathrm{ms}$(최악 $33.3\,\mathrm{ms}$). 최악이면 처리가 시작되기도 전에 예산의 거의 절반이다.
+> - 늦은 목표 겹쳐 그리기: 같은 노출 중간점에서 옅은 선으로 출발하는 $100\,\mathrm{ms}$짜리 막대와, 막대를 따라 적은 예산 초과분과 그것이 덮는 제어 틱 수.
 > - 축 아래에는 그 결과를 엔코더가 쓰는 단위로: 그 나이 동안 $0.10\,\mathrm{m/s}$의 카트가 가는 거리를 mm와 엔코더 카운트로.
-> - 지연 대신 세워 둔 "$200\,\mathrm{Hz}$" 화살표나 목표 주위의 잡음 구름이 들어오는 순간 그림은 틀렸다. 이 그림의 일은 주기·지연·잡음을 서로 다른 세 표시로 유지하는 것이다. 설명하려는 실패가 잡음이 아니라 *늦음*이고, [[04-robotics/state-estimation-slam|3. 상태 추정]]의 어떤 추정기도 늦음을 고치지는 못한다.
+> - 지연 대신 세워 둔 "$30\,\mathrm{Hz}$" 화살표나 목표 주위의 잡음 구름이 들어오는 순간 그림은 틀렸다. 주기·지연·잡음은 서로 다른 세 표시로 남고, [[04-robotics/state-estimation-slam|3. 상태 추정]]의 어떤 추정기도 늦음을 고치지는 못한다.
 
 > [!tip]- 정답 · Solutions
-> 1. 비전 $20\,\mathrm{ms}$, 제어 $5\,\mathrm{ms}$. 예산 막대는 비전 주기 3.5개. 힘은 제어 에지에서 나간다.
+> 1. 비전 눈금은 $33.3\,\mathrm{ms}$마다, 제어는 $5\,\mathrm{ms}$마다. $70\,\mathrm{ms}$ 막대는 이제 비전 주기 $2.1$개, 제어 틱은 그대로 $14$개를 덮는다. 예산의 길이는 같고 카메라 눈금 간격이 다를 뿐이다. 샘플링 항은 평균 $\tfrac12T_{\text{cam}}=16.7\,\mathrm{ms}$, 최악 $33.3\,\mathrm{ms}$로, $50\,\mathrm{Hz}$의 $10$과 $20\,\mathrm{ms}$보다 크다. $100\,\mathrm{ms}$짜리 목표는 예산을 $30\,\mathrm{ms}$ 넘기고 제어 틱 $20$개에 걸치며, 그동안 $0.10\,\mathrm{m/s}$의 카트는 $10\,\mathrm{mm}$, $20.5$카운트를 움직였다. 힘은 여전히 비전 에지가 아니라 제어 에지에서 나간다.
 > 2. (a) $0.488\,\mathrm{mm}$. (b) $20\,\mathrm{ms}$, $5\,\mathrm{ms}$. (c) $130\,\mathrm{ms}$ 초과, 40 틱. (d) $20\,\mathrm{mm}$, 41 카운트. [[04-robotics/state-estimation-slam|3]]의 추정기는 구하지 못한다. 목표가 늦은 것이지 잡음이 아니다.
 > 3. $0.488$, $0.130$, $40$, $20$, $40.96$. 이 장치에서 “아무 일도 안 일어남”은 종종 $K$가 아니라 TF 스탬프나 QoS다([[04-robotics/ros2/qos-executors-time|25.5]]).
 

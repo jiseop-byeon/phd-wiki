@@ -435,20 +435,20 @@ What runs your callbacks, what happens to the rest of a node when one of them bl
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm{ms}$ from camera mid-exposure to applied force. A vision message arrives $200\,\mathrm{ms}$ late. No new simulator.
 
-1. **Draw.** P6: camera offers *sensor data* (best effort, volatile), controller requests the default profile (reliable, volatile). Mark the $70\,\mathrm{ms}$ budget and a $200\,\mathrm{ms}$-old stamp. Five-line timeline of a late frame versus fourteen $5\,\mathrm{ms}$ ticks.
+1. **Draw.** The picture above for a controller that gets a different policy wrong: it requests best effort, as the camera offers, but *transient local* durability, hoping to catch a goal published before it started, while the camera offers the sensor-data profile (best effort, volatile). Cross the incompatible line. Then the lower half for the fixed controller with `KEEP_LAST (3)` instead of $5$, through the same $200\,\mathrm{ms}$ pause: which goals survive, their ages, and which, if any, are past the $70\,\mathrm{ms}$ budget.
 2. **Derive.** (a) Do those QoS endpoints connect? (b) $200\,\mathrm{ms}$ versus the $70\,\mathrm{ms}$ budget — by how much is the force late if the controller still uses that stamp? (c) A deadline of $40\,\mathrm{ms}$ on `/goal`: does a healthy $50\,\mathrm{Hz}$ camera meet it? Does a $200\,\mathrm{ms}$ stall raise an event?
 3. **Interpret.** `ros2 topic echo /goal` prints frames, the controller callback never runs. What is the silent failure, and why is a $200\,\mathrm{ms}$ late vision *also* a budget failure even after QoS is fixed?
 
 > [!note]- How to draw it · 그리는 법
 > - Draw the edge as two ellipses and one arrow, with two stacked boxes on the arrow instead of a label: what the camera *offers* above, what the controller *requests* below, as `ros2 topic info --verbose` prints them.
-> - Write every policy line in both boxes — reliability, history, durability, deadline, liveliness — not only the one you suspect.
-> - Rule each pair of lines against the tables in §3 and cross only the incompatible pair: one crossed line is the whole failure, and the others being fine is exactly why it is hard to see.
-> - On the clock, draw the $5\,\mathrm{ms}$ control ticks above the axis and the vision publications at their $20\,\mathrm{ms}$ spacing below it, so a gap in either line shows.
-> - Draw the requested deadline as a repeating bracket on the vision line, and mark each bracket met or missed from the gaps between messages on the topic, not from whether the controller took them (in the Worked case the camera never stopped, so every bracket is met; in this problem it does stop).
-> - Write each frame's stamp beside it and draw the $70\,\mathrm{ms}$ budget as a line, so a frame older than the budget sits visibly on the wrong side of it.
+> - Write every policy line in both boxes — reliability, history, durability, deadline, liveliness — not only the one you suspect. Reliability now matches, which is exactly why the eye slides past the box.
+> - Rule each pair against the tables in §3 and cross only the incompatible pair: a *volatile* offer against a *transient local* request is "No" in the durability table, because the request is stricter than the offer. One crossed line, and it is not the one crossed in the picture above.
+> - Beside the crossed line, what you would see: no connection, and one warning at discovery whose last incompatible policy is durability, not reliability.
+> - The lower half on a clock: ten goals published at $20\,\mathrm{ms}$ spacing while the controller takes nothing for $200\,\mathrm{ms}$, and a queue of depth $3$ that keeps only the newest.
+> - Write each survivor's age when the controller wakes and draw the $70\,\mathrm{ms}$ budget as a line, so any goal older than the budget sits visibly on the wrong side of it.
 
 > [!tip]- Solutions
-> 1. Camera best-effort → controller reliable: an X on the match. Timeline: stamp $t-200\,\mathrm{ms}$; ticks at $0,5,\ldots,65$; budget expires at $70$ with the frame still $130\,\mathrm{ms}$ late.
+> 1. Top: reliability matches, best effort at both ends; durability does not. A transient-local request against a volatile offer is incompatible (§3's durability table), so that is the one crossed line out of five, and the endpoints still do not connect, with a single discovery warning naming durability. Bottom: with depth $3$, of the ten goals published during the pause only the newest three survive, aged $40$, $20$ and $0\,\mathrm{ms}$, and none is past the $70\,\mathrm{ms}$ budget, where depth $5$ kept one $80\,\mathrm{ms}$-old goal. A shallower queue discards more, which is what a stream read only for its latest value wants.
 > 2. (a) No — reliable request vs best-effort offer. (b) $130\,\mathrm{ms}$ over budget. (c) Healthy $20\,\mathrm{ms}$ period meets $40\,\mathrm{ms}$; a $200\,\mathrm{ms}$ gap misses and fires *requested deadline missed*.
 > 3. Incompatible reliability; `echo` adapts, the node does not. Fixing QoS still leaves a $200\,\mathrm{ms}$ stamp inside a $70\,\mathrm{ms}$ budget — the force is applied to a goal the cart has already rolled past.
 
@@ -886,20 +886,20 @@ reliability 네 조합과 durability 네 조합 중 어느 것이 연결에 실�
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 카메라 노출 중간부터 힘까지 예산 $70\,\mathrm{ms}$. 비전 메시지가 $200\,\mathrm{ms}$ 늦다. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** P6: 카메라가 *sensor data*(best effort, volatile)를 offer, 제어기가 기본 프로파일(reliable, volatile)을 request. $70\,\mathrm{ms}$ 예산과 $200\,\mathrm{ms}$ 된 스탬프. 늦은 프레임 대 $5\,\mathrm{ms}$ 틱 열넷의 다섯 줄 타임라인.
+1. **그리기.** 다른 정책을 잘못 고른 제어기에 대한 위의 그림: 제어기는 카메라가 제공하는 대로 best effort를 요청하지만, 자기가 뜨기 전에 발행된 목표를 잡으려고 *transient local* 내구성을 요청하고, 카메라는 sensor-data 프로파일(best effort, volatile)을 제공한다. 비호환인 줄에 가위표를 쳐라. 이어서 depth $5$가 아니라 `KEEP_LAST (3)`로 고친 제어기에 대한 아래 절반을 같은 $200\,\mathrm{ms}$ 정지를 지나며 그려라. 어느 목표가 살아남고, 나이는 얼마이며, $70\,\mathrm{ms}$ 예산을 넘은 것이 있는가?
 2. **유도.** (a) 그 QoS 끝점이 연결되는가? (b) $200\,\mathrm{ms}$ 대 $70\,\mathrm{ms}$ 예산 — 제어기가 그 스탬프를 그대로 쓰면 힘은 얼마나 늦은가? (c) `/goal`에 $40\,\mathrm{ms}$ deadline: 건강한 $50\,\mathrm{Hz}$ 카메라는 통과하는가? $200\,\mathrm{ms}$ 정지는 이벤트를 내는가?
 3. **해석.** `ros2 topic echo /goal`은 프레임을 찍는데 제어기 콜백은 안 돈다. 조용한 고장은 무엇이고, QoS를 고친 뒤에도 $200\,\mathrm{ms}$ 늦은 비전이 *역시* 예산 실패인 이유는?
 
 > [!note]- 그리는 법 · How to draw it
 > - 간선은 타원 둘과 화살표 하나이고, 화살표 위에는 라벨이 아니라 상자 둘을 위아래로 놓는다. 위는 카메라가 *제공(offer)* 하는 것, 아래는 제어기가 *요청(request)* 하는 것, `ros2 topic info --verbose`가 찍는 그대로.
-> - 두 상자 모두에 정책 줄을 전부 적는다 — reliability, history, durability, deadline, liveliness. 의심 가는 하나만 적지 않는다.
-> - 줄을 짝지어 3절의 표에 대보고 비호환인 짝에만 가위표를 친다. 가위표 하나가 고장 전부이고, 나머지가 멀쩡하다는 사실이 바로 이 고장이 잘 안 보이는 이유다.
-> - 시계에는 축 위에 $5\,\mathrm{ms}$ 제어 틱을, 축 아래에 $20\,\mathrm{ms}$ 간격의 비전 발행을 그려 어느 줄의 빈틈이든 보이게 한다.
-> - 요청한 deadline은 비전 줄 위의 반복 괄호로 그리고, 괄호마다 충족인지 놓침인지를 제어기가 가져갔는지가 아니라 토픽 위 메시지 사이의 간격으로 판정한다(대상으로 한 번 끝까지에서는 카메라가 한 번도 멈추지 않았으므로 모든 괄호가 충족되고, 이 과제에서는 카메라가 멈춘다).
-> - 프레임마다 옆에 스탬프를 적고 $70\,\mathrm{ms}$ 예산을 선으로 그어, 예산보다 오래된 프레임이 눈에 띄게 선의 반대편에 있게 한다.
+> - 두 상자 모두에 정책 줄을 전부 적는다 — reliability, history, durability, deadline, liveliness. 의심 가는 하나만 적지 않는다. 이번에는 reliability가 맞고, 바로 그래서 눈이 상자를 그냥 지나친다.
+> - 줄을 짝지어 3절의 표에 대보고 비호환인 짝에만 가위표를 친다. *volatile* 제공 대 *transient local* 요청은 내구성 표에서 "No"다. 요청이 제공보다 엄격하기 때문이다. 가위표는 하나이고, 위 그림에서 친 줄이 아니다.
+> - 가위표 옆에 보게 될 것을 적는다. 연결은 없고, 발견 시점의 경고 한 줄이 마지막 비호환 정책으로 reliability가 아니라 durability를 댄다.
+> - 아래 절반은 시계 위에: 제어기가 $200\,\mathrm{ms}$ 동안 아무것도 가져가지 않는 사이 $20\,\mathrm{ms}$ 간격으로 발행된 목표 열 개와, 가장 새것만 남기는 depth $3$의 큐.
+> - 제어기가 깨어날 때 살아남은 것마다 나이를 적고 $70\,\mathrm{ms}$ 예산을 선으로 그어, 예산보다 오래된 목표가 있다면 눈에 띄게 선의 반대편에 있게 한다.
 
 > [!tip]- 정답 · Solutions
-> 1. 카메라 best-effort → 제어기 reliable: 짝에 X. 타임라인: 스탬프 $t-200\,\mathrm{ms}$; 틱 $0,5,\ldots,65$; $70$에 예산이 끝나고 프레임은 아직 $130\,\mathrm{ms}$ 늦다.
+> 1. 위: reliability는 양 끝 모두 best effort로 맞고 durability가 맞지 않는다. transient local 요청 대 volatile 제공은 비호환이므로(3절의 내구성 표) 다섯 줄 중 가위표는 그 하나이고, 끝점은 여전히 연결되지 않으며, 발견 시점의 경고 한 줄은 durability를 댄다. 아래: depth $3$이면 정지 동안 발행된 목표 열 개 가운데 가장 새로운 셋만 살아남아 나이가 $40$, $20$, $0\,\mathrm{ms}$이고, $70\,\mathrm{ms}$ 예산을 넘은 것은 없다. depth $5$는 $80\,\mathrm{ms}$ 된 목표 하나를 남겼다. 큐가 얕을수록 더 많이 버리고, 늘 가장 최근 값만 읽는 흐름이 원하는 것이 바로 그것이다.
 > 2. (a) 아니오 — reliable 요청 대 best-effort 제공. (b) 예산 초과 $130\,\mathrm{ms}$. (c) 건강한 $20\,\mathrm{ms}$ 주기는 $40\,\mathrm{ms}$를 통과; $200\,\mathrm{ms}$ 공백은 *requested deadline missed*.
 > 3. 신뢰성 비호환. `echo`는 맞추고 노드는 안 맞춘다. QoS를 고쳐도 $70\,\mathrm{ms}$ 예산 안에 $200\,\mathrm{ms}$ 스탬프가 남는다 — 힘은 카트가 이미 지나간 목표에 걸린다.
 

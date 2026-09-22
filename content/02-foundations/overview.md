@@ -84,6 +84,7 @@ graph LR
     IT["Information Theory"]
     SP["Signal Processing"]
     RL["RL Basics"]
+    RLR["RL for Robot Learning"]
     SE["3D Geometry · SE(3)"]
     MLP["ML Practice"]
     MKD["Manipulator Kinematics · Dynamics"]
@@ -114,7 +115,8 @@ graph LR
     CB --> GEN
     SP --> VLA
     GEN --> VLA
-    RL --> VLA
+    RL --> RLR
+    RLR --> VLA
     RL --> WM
     GEN --> WM
     IT --> WM
@@ -319,30 +321,31 @@ flowchart TD
 
 ```mermaid
 graph LR
-    subgraph M["Engineering math"]
-    CALC["Calculus · Taylor"]
-    MAT["Matrix basics"]
-    EUL["Euler's formula"]
-    LOG["Exp · Log"]
+    subgraph M["공업수학"]
+    CALC["미적분 · 테일러"]
+    MAT["행렬 기초"]
+    EUL["오일러 공식"]
+    LOG["지수 · 로그"]
     end
-    subgraph F["Foundations"]
-    LA["Linear Algebra"]
-    NN["What a Neural Network Is"]
-    CB["Calculus & Backprop"]
-    PR["Probability"]
-    OPT["Optimization"]
-    IT["Information Theory"]
-    SP["Signal Processing"]
-    RL["RL Basics"]
-    SE["3D Geometry · SE(3)"]
-    MLP["ML Practice"]
-    MKD["Manipulator Kinematics · Dynamics"]
+    subgraph F["기초"]
+    LA["선형대수"]
+    NN["신경망이란 무엇인가"]
+    CB["미적분·역전파"]
+    PR["확률"]
+    OPT["최적화"]
+    IT["정보이론"]
+    SP["신호처리"]
+    RL["RL 기초"]
+    RLR["로봇 학습을 위한 RL"]
+    SE["3D 기하 · SE(3)"]
+    MLP["ML 실무와 평가"]
+    MKD["매니퓰레이터 기구학 · 동역학"]
     end
-    subgraph D["Deep learning (papers)"]
-    TF["Transformers · ViT · CLIP"]
-    GEN["VAE · GAN · Diffusion"]
+    subgraph D["딥러닝 (논문)"]
+    TF["트랜스포머 · ViT · CLIP"]
+    GEN["VAE · GAN · 디퓨전"]
     VLA["VLA: RT-2 · π0 · GR00T"]
-    WM["World models: Dreamer · JEPA"]
+    WM["월드모델: Dreamer · JEPA"]
     end
     MAT --> LA
     MAT --> NN
@@ -364,7 +367,8 @@ graph LR
     CB --> GEN
     SP --> VLA
     GEN --> VLA
-    RL --> VLA
+    RL --> RLR
+    RLR --> VLA
     RL --> WM
     GEN --> WM
     IT --> WM
@@ -375,7 +379,7 @@ graph LR
     MLP -.-> VLA
     MAT --> MKD
     SE --> MKD
-    MKD --> ROB["Robotics track: force control"]
+    MKD --> ROB["로보틱스 트랙: 힘 제어"]
 ```
 
 오른쪽 상자들은 아직 몰라도 되는 모델·논문 이름이다. 각각은 [[03-deep-learning/index|딥러닝]]에서
@@ -486,15 +490,15 @@ graph LR
 
 ```mermaid
 flowchart TD
-    F["Foundations"] --> AI["AI model literacy"]
-    F --> RS["Robot systems literacy"]
-    AI --> DL["Deep Learning · VLM · VLA · World Models"]
-    RS --> EST["Estimation"] --> PLAN["Planning"] --> CTRL["Control"]
-    CTRL --> PHY["Contact · Systems · HRI"]
+    F["기초"] --> AI["AI 모델을 읽는 힘"]
+    F --> RS["로봇 시스템을 읽는 힘"]
+    AI --> DL["딥러닝 · VLM · VLA · 월드모델"]
+    RS --> EST["추정"] --> PLAN["계획"] --> CTRL["제어"]
+    CTRL --> PHY["접촉 · 시스템 · HRI"]
     DL --> PAI["Physical AI"]
     PHY --> PAI
-    PAI --> CR["Construction Robotics"]
-    CR --> RP["Research Practice"]
+    PAI --> CR["건설 로봇"]
+    CR --> RP["연구 실무"]
 ```
 
 - **AI model literacy:** [[01-canonical-papers/how-to-read|How to Read Papers]] → [[01-canonical-papers/canonical-list|핵심 논문 리스트]], [[03-deep-learning/lineage|논문 계보도]] 병행.

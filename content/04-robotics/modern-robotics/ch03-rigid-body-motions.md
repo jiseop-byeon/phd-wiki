@@ -346,20 +346,20 @@ It prints $\mathcal{F}_s = (0,0,-10;\ 0,-10,0)$ and $\mathcal{F}_b = (0,0,0;\ -1
 
 Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-plants|0.6]]. No simulator.
 
-1. **Draw.** Base frame $\{s\}$ at the origin, elbow at $(1,0)$, tip at $(1,1)$. Put the tool frame $\{b\}$ at the tip with its $x$-axis along the forearm.
+1. **Draw.** The picture above for the arm raised straight up, $\theta=(90^\circ,0^\circ)$: base frame $\{s\}$ at the origin, elbow at $(0,1)$, tip at $(0,2)$, and the tool frame $\{b\}$ at the tip with its $x$-axis along the forearm. Add the axis through the elbow, $\hat\omega=(0,0,1)$ at $1\,\mathrm{rad/s}$, and write beside the figure the tip's velocity and the space twist's linear part. Which way does each point?
 2. **Derive.** Write $T_{sb}$ of that tip (the lecture's $4\times4$). Then a pure $z$-rotation of the whole arm about the *elbow* $q_2=(1,0,0)$: space twist $\mathcal{V}_s=(\omega,v)$. Which three of the six $\mathfrak{se}(3)$ coordinates are still identically zero?
 3. **Interpret.** Why is SE(2) enough here, and what goes wrong if a paper treats the space-twist linear part $v_s$ as the tip velocity at this pose?
 
 > [!note]- How to draw it · 그리는 법
-> - Draw the arm first: base at the origin, link 1 along $+x$ to the elbow at $(1,0)$, link 2 straight up to the tip at $(1,1)$.
+> - Draw the arm first: base at the origin, link 1 straight up to the elbow at $(0,1)$, link 2 straight on up to the tip at $(0,2)$.
 > - The space frame $\{s\}$ at the origin: $\hat x_s$ right, $\hat y_s$ up, and $\hat z_s$ as a circled dot meaning out of the page. Draw the dot — a planar figure that does not declare which way $z$ points makes every sign in this chapter a coin flip.
-> - The body frame $\{b\}$ at the tip, with $\hat x_b$ along the forearm, i.e. along $+\hat y_s$. Right-handedness then puts $\hat y_b$ along $-\hat x_s$ and $\hat z_b$ out of the page again.
-> - The offset $p$ as a dashed arrow from the origin to the tip. $R_{sb}$ and $p$ are the whole of $T_{sb}$.
-> - For item 2's twist, draw the rotation axis as a circled dot with a curved arrow around it, at the point $q$ it passes through, labelled with $\hat\omega$ and $\dot\theta$.
-> - Write velocities beside the figure, not inside it: the tip's actual velocity $\hat\omega \times (p - q)$ next to the twist's linear part $v_s = -\hat\omega \times q$. The two must disagree whenever $p \ne 0$; if yours agree, you wrote $\dot p$ where the twist wants $v_s$.
+> - The body frame $\{b\}$ at the tip, with $\hat x_b$ along the forearm, i.e. along $+\hat y_s$ — the same $R_{sb}$ as in the picture above. Right-handedness then puts $\hat y_b$ along $-\hat x_s$ and $\hat z_b$ out of the page again.
+> - The offset $p=(0,2,0)$ as a dashed arrow from the origin to the tip. $R_{sb}$ and $p$ are the whole of $T_{sb}$, and only $p$ changed.
+> - The rotation axis as a circled dot with a curved arrow around it at the elbow, $q=(0,1,0)$, labelled with $\hat\omega$ and $\dot\theta=1\,\mathrm{rad/s}$.
+> - Write velocities beside the figure, not inside it: the tip's actual velocity $\hat\omega\times(p-q)$ next to the twist's linear part $v_s=-\hat\omega\times q$, each as a short arrow. The tip sits one metre above the axis and the space origin one metre below it, so the two arrows point opposite ways; if yours agree, you wrote $\dot p$ where the twist wants $v_s$.
 
 > [!tip]- Solutions
-> 1. Forearm along $+y_s$, so $x_b=\hat y_s$ and $y_b=-\hat x_s$ (right-handed, $z$ out).
+> 1. The forearm points along $+\hat y_s$, so again $\hat x_b=\hat y_s$, $\hat y_b=-\hat x_s$ and $\hat z_b$ out of the page: $R_{sb}=R_z(90^\circ)$ as in the picture, but $p=(0,2,0)$. The elbow axis passes through $q=(0,1,0)$ with $\hat\omega=(0,0,1)$. The tip moves at $\hat\omega\times(p-q)=(0,0,1)\times(0,1,0)=(-1,0,0)\,\mathrm{m/s}$, to the left; the twist's linear part is $v_s=-\hat\omega\times q=(1,0,0)$, to the right. They are equal and opposite: $v_s$ is the velocity of the body point passing through the space origin, one metre below the axis, and the tip is one metre above it.
 > 2. $T_{sb}$ as in §4. Elbow axis: $\omega_s=(0,0,1)$, $v_s=-\omega\times q_2=(0,-1,0)$. Still $\omega_x=\omega_y=v_z=0$; $v_s$ is no longer $0$.
 > 3. Motion stays in the plane, so SE(2) is the configuration group. At this pose $v_s=\dot p-\omega_s\times p$: a $1\,\mathrm{rad/s}$ spin about $z$ gives $\omega_s\times p=(-1,1,0)$, so $v_s$ is *not* the tip velocity unless $p=0$. Use the adjoint of §4.
 
@@ -615,19 +615,19 @@ $$\mathcal{F}_b = [\mathrm{Ad}_{T_{ab}}]^\top\,\mathcal{F}_a$$
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 시뮬레이터 없음.
 
-1. **그리기.** 원점의 베이스 $\{s\}$, 엘보 $(1,0)$, 말단 $(1,1)$. 말단에 도구 프레임 $\{b\}$, $x$축은 전완 방향.
+1. **그리기.** 팔을 곧장 위로 세운 $\theta=(90^\circ,0^\circ)$에 대한 위의 그림: 원점의 베이스 프레임 $\{s\}$, 엘보 $(0,1)$, 말단 $(0,2)$, 그리고 말단에서 $x$축이 전완 방향인 도구 프레임 $\{b\}$. 엘보를 지나는 축 $\hat\omega=(0,0,1)$, $1\,\mathrm{rad/s}$를 더하고, 그림 옆에 말단의 속도와 space twist의 선형 성분을 적어라. 각각 어느 쪽을 가리키는가?
 2. **유도.** 그 말단의 $T_{sb}$(강의의 $4\times4$). 그다음 엘보 $q_2=(1,0,0)$ 둘레로 팔 전체를 도는 순수 $z$ 회전의 space twist $\mathcal{V}_s=(\omega,v)$. 여섯 $\mathfrak{se}(3)$ 좌표 중 여전히 0인 셋은?
 3. **해석.** 왜 SE(2)면 충분한가? 이 자세에서 space twist의 $v_s$를 말단 속도로 읽으면 무엇이 틀리는가?
 
 > [!note]- 그리는 법 · How to draw it
-> - 팔부터 그린다. 베이스는 원점, 링크 1은 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2는 곧장 위로 올라가 말단이 $(1,1)$.
+> - 팔부터 그린다. 베이스는 원점, 링크 1은 곧장 위로 엘보 $(0,1)$까지, 링크 2는 그대로 위로 말단 $(0,2)$까지.
 > - 원점의 space 프레임 $\{s\}$: $\hat x_s$는 오른쪽, $\hat y_s$는 위, $\hat z_s$는 지면 밖을 뜻하는 동그라미 친 점. 점을 반드시 그린다. 셋째 축이 어디를 향하는지 말하지 않는 평면 그림에서는 이 장의 모든 부호가 동전 던지기가 된다.
-> - 말단의 body 프레임 $\{b\}$는 $\hat x_b$를 전완 방향, 곧 $+\hat y_s$ 방향에 둔다. 그러면 오른손 규칙에 따라 $\hat y_b$는 $-\hat x_s$ 방향이고 $\hat z_b$도 다시 지면 밖이다.
-> - 오프셋 $p$는 원점에서 말단까지의 점선 화살표로. $R_{sb}$와 $p$가 $T_{sb}$의 전부다.
-> - 2번의 트위스트를 위해 회전축은 그 축이 지나는 점 $q$에 동그라미 친 점과 그 둘레의 굽은 화살표로 그리고, $\hat\omega$와 $\dot\theta$를 적는다.
-> - 속도는 그림 안이 아니라 옆에 적는다. 말단의 실제 속도 $\hat\omega \times (p - q)$와 트위스트의 선형 성분 $v_s = -\hat\omega \times q$를 나란히 쓴다. $p \ne 0$이면 둘은 반드시 달라야 하고, 같게 나왔다면 트위스트가 $v_s$를 원하는 자리에 $\dot p$를 쓴 것이다.
+> - 말단의 body 프레임 $\{b\}$는 $\hat x_b$를 전완 방향, 곧 $+\hat y_s$ 방향에 둔다 — 위 그림과 같은 $R_{sb}$다. 그러면 오른손 규칙에 따라 $\hat y_b$는 $-\hat x_s$ 방향이고 $\hat z_b$도 다시 지면 밖이다.
+> - 오프셋 $p=(0,2,0)$은 원점에서 말단까지의 점선 화살표로. $R_{sb}$와 $p$가 $T_{sb}$의 전부이고, 바뀐 것은 $p$뿐이다.
+> - 회전축은 엘보 $q=(0,1,0)$에 동그라미 친 점과 그 둘레의 굽은 화살표로 그리고, $\hat\omega$와 $\dot\theta=1\,\mathrm{rad/s}$를 적는다.
+> - 속도는 그림 안이 아니라 옆에 짧은 화살표로 적는다. 말단의 실제 속도 $\hat\omega\times(p-q)$와 트위스트의 선형 성분 $v_s=-\hat\omega\times q$를 나란히 둔다. 말단은 축 위 1 m, space 원점은 축 아래 1 m에 있으므로 두 화살표는 서로 반대를 가리킨다. 같게 나왔다면 트위스트가 $v_s$를 원하는 자리에 $\dot p$를 쓴 것이다.
 
 > [!tip]- 정답 · Solutions
-> 1. 전완이 $+y_s$이므로 $x_b=\hat y_s$, $y_b=-\hat x_s$(오른손 프레임, $z$는 지면 밖).
+> 1. 전완이 $+\hat y_s$를 가리키므로 다시 $\hat x_b=\hat y_s$, $\hat y_b=-\hat x_s$, $\hat z_b$는 지면 밖이다. $R_{sb}=R_z(90^\circ)$는 위 그림과 같고 $p=(0,2,0)$만 다르다. 엘보 축은 $q=(0,1,0)$을 지나고 $\hat\omega=(0,0,1)$이다. 말단은 $\hat\omega\times(p-q)=(0,0,1)\times(0,1,0)=(-1,0,0)\,\mathrm{m/s}$로 왼쪽으로 움직이고, 트위스트의 선형 성분은 $v_s=-\hat\omega\times q=(1,0,0)$으로 오른쪽이다. 크기는 같고 방향은 반대다. $v_s$는 축 아래 1 m, space 원점을 지나는 강체 점의 속도이고, 말단은 축 위 1 m에 있다.
 > 2. $T_{sb}$는 §4. 엘보 축: $\omega_s=(0,0,1)$, $v_s=-\omega\times q_2=(0,-1,0)$. 여전히 $\omega_x=\omega_y=v_z=0$; $v_s$는 이제 0이 아니다.
 > 3. 운동이 평면에 남으므로 SE(2)가 컨피규레이션 군이다. 이 자세에서 $v_s=\dot p-\omega_s\times p$이고, $z$축 둘레 $1\,\mathrm{rad/s}$ 회전이면 $\omega_s\times p=(-1,1,0)$이므로 $p\neq0$이면 $v_s$는 말단 속도가 아니다. §4의 adjoint를 쓴다.

@@ -352,20 +352,20 @@ so it is a lower bound on the evidence for every $q$, since the KL on the right 
 
 Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$. Use bits ($\log_2$).
 
-1. **Draw.** Binary channel $C\in\{c,\neg c\}$ into $\{+,-\}$. Label all four transitions. Mark the rare prior $P(c)=0.01$.
+1. **Draw.** The picture above for an improved detector whose false-alarm rate falls from $0.05$ to $P(+|\neg c)=0.01$, with the same sensitivity $0.95$ and prior $P(c)=0.01$: the binary channel $C\in\{c,\neg c\}$ into $\{+,-\}$ with all four transitions, the four joint masses, and the bracket on $+$ with $P(+)$ and its two shares. Which of the two circled numbers moved, and by how much?
 2. **Derive.** (a) $P(+)$ and $P(c|+)$ from Bayes. (b) After a $+$ reading the true posterior is Bernoulli($p$) with that $p$. Binary cross-entropy of a model that outputs $q=0.95$ (the sensitivity, treated as if it were $P(c|+)$). Compare to $H(p)$.
 3. **Interpret.** Why is $P(c|+)\approx 0.16$ even though sensitivity is 95%?
 
 > [!note]- How to draw it · 그리는 법
 > - Two input nodes on the left, $c$ above $\neg c$, and two output nodes on the right, $+$ above $-$, joined by four arrows, every input to every output: none omitted, because the two diagonal arrows are the errors and they are the whole lesson.
-> - Write the conditional $P(y|x)$ on each arrow and check that the two arrows leaving each left node sum to $1$. The two entering a right node need not, and here do only because this channel is symmetric: in a channel matrix with one column per input, a column is a distribution and a row need not be.
+> - Write the conditional $P(y|x)$ on each arrow and check that the two arrows leaving each left node sum to $1$. The two entering a right node need not: in the picture above they did only because that channel was symmetric, and this one is not — in a channel matrix with one column per input, a column is a distribution and a row need not be.
 > - Draw the left nodes as boxes whose heights are their prior masses; drawn honestly, the $c$ box is a line, and that ratio must be visible before any arithmetic starts.
 > - Multiply prior by conditional along each arrow and write the product where the arrow lands; write on the page the check that the four joint masses sum to $1$.
-> - Bracket the two arrows that land on $+$, write their total $P(+)$ beside the bracket, and split it into the two shares: the posterior after an alarm, read off the picture rather than from Bayes' rule.
-> - Circle the sensitivity $P(+|c)$ on its arrow and the posterior $P(c|+)$ at the bracket — two numbers one arrow apart, and item 2 makes you pay in bits for confusing them.
+> - Bracket the two arrows that land on $+$, write their total $P(+)$ beside the bracket, and split it into the two shares: the posterior after an alarm, read off the picture rather than from Bayes' rule. The two masses in the bracket are now nearly equal, and that near-tie is the answer.
+> - Circle the sensitivity $P(+|c)$ on its arrow and the posterior $P(c|+)$ at the bracket, and set each beside its value in the picture above: one of them did not move at all.
 
 > [!tip]- Solutions
-> 1. $c\to +$ at $0.95$, $c\to -$ at $0.05$; $\neg c\to +$ at $0.05$, $\neg c\to -$ at $0.95$. Almost all prior mass on $\neg c$.
+> 1. Arrows $c\to+$ at $0.95$, $c\to-$ at $0.05$, $\neg c\to+$ at $0.01$, $\neg c\to-$ at $0.99$. The two entering $+$ now sum to $0.96$, not $1$: the channel is no longer symmetric, and nothing required it to be. Joint masses $0.0095$, $0.0005$, $0.0099$, $0.9801$, summing to $1$. $P(+)=0.0194$, split into $0.490$ from cracked and $0.510$ from sound. The sensitivity is still $0.95$; the posterior $P(c|+)$ rose from $0.161$ to $0.490$, about three times, because false alarms, not misses, were what swamped the alarm. It is still below one half: at a $1\%$ prior, one false alarm per hundred sound panels produces as many alarms as the cracks do.
 > 2. $P(+)=0.95\cdot 0.01+0.05\cdot 0.99=0.059$. $P(c|+)=0.0095/0.059\approx 0.161$. $H(p,q)=-p\log_2 0.95-(1-p)\log_2 0.05\approx 3.64$ bits, while $H(p)\approx 0.64$ bits: sensitivity is a badly calibrated posterior.
 > 3. False alarms from the 99% non-crack mass dominate true positives ($0.0495$ vs $0.0095$). Sensitivity is $P(+|c)$, not $P(c|+)$.
 
@@ -700,19 +700,19 @@ $$\text{ELBO}(q, \theta) = E_{q(z|x)}\big[\log p_\theta(x, z) - \log q(z \mid x)
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P5** 균열 감지기: $P(+|c)=0.95$, $P(+|\neg c)=0.05$, $P(c)=0.01$. 비트($\log_2$).
 
-1. **그리기.** 이진 채널 $C\in\{c,\neg c\}$ → $\{+,-\}$. 전이 네 개에 확률. 희귀한 사전 $P(c)=0.01$.
+1. **그리기.** 오경보율이 $0.05$에서 $P(+|\neg c)=0.01$로 내려간 개선된 감지기에 대해 위의 그림을 그려라. 민감도 $0.95$와 사전 $P(c)=0.01$은 같다. 이진 채널 $C\in\{c,\neg c\}$ → $\{+,-\}$의 전이 넷, 결합 질량 넷, 그리고 $+$ 쪽 묶음에 $P(+)$와 그 두 몫. 동그라미 친 두 숫자 가운데 어느 쪽이 얼마나 움직였는가?
 2. **유도.** (a) 베이즈로 $P(+)$와 $P(c|+)$. (b) $+$를 본 뒤 참 사후는 그 $p$의 베르누이. 민감도 $q=0.95$를 $P(c|+)$인 양 쓰는 모델의 이진 교차 엔트로피. $H(p)$와 비교.
 3. **해석.** 민감도가 95%인데도 $P(c|+)\approx 0.16$인 이유는?
 
 > [!note]- 그리는 법 · How to draw it
 > - 왼쪽에 입력 노드 둘($c$가 위, $\neg c$가 아래), 오른쪽에 출력 노드 둘($+$가 위, $-$가 아래)을 두고, 입력마다 두 출력 모두로 가는 화살표 넷을 긋는다. 하나도 빼지 않는다. 대각선 화살표 둘이 오류이고 그것이 이 페이지의 교훈 전부다.
-> - 화살표마다 조건부 확률 $P(y|x)$를 쓰고, 왼쪽 노드 하나에서 나가는 두 화살표의 합이 $1$인지 확인한다. 오른쪽 노드로 들어오는 둘은 $1$일 필요가 없고, 여기서 $1$이 되는 것은 이 채널이 대칭이기 때문일 뿐이다. 입력마다 열 하나를 둔 채널 행렬에서 열은 분포지만 행은 분포일 필요가 없다.
+> - 화살표마다 조건부 확률 $P(y|x)$를 쓰고, 왼쪽 노드 하나에서 나가는 두 화살표의 합이 $1$인지 확인한다. 오른쪽 노드로 들어오는 둘은 $1$일 필요가 없다. 위 그림에서 $1$이 된 것은 그 채널이 대칭이었기 때문이고, 이 채널은 대칭이 아니다. 입력마다 열 하나를 둔 채널 행렬에서 열은 분포지만 행은 분포일 필요가 없다.
 > - 왼쪽 노드는 사전 질량 높이의 상자로 그린다. 정직하게 그리면 $c$ 상자는 선 하나이고, 그 비율이 산술을 시작하기 전에 눈에 보여야 한다.
 > - 화살표마다 사전확률과 조건부를 곱해 화살표가 닿는 자리에 적고, 결합 질량 넷의 합이 $1$이라는 확인을 그림에 적는다.
-> - $+$에 닿는 화살표 둘을 묶음으로 표시하고 옆에 합 $P(+)$를 쓴 다음, 그 안을 두 몫으로 나눈다. 베이즈 공식이 아니라 그림에서 읽어 낸 경보 후의 사후확률이다.
-> - 화살표 위의 민감도 $P(+|c)$와 묶음 쪽의 사후확률 $P(c|+)$에 동그라미를 친다. 화살표 하나 떨어진 두 숫자이고, 둘을 혼동한 대가는 2번이 비트로 치르게 한다.
+> - $+$에 닿는 화살표 둘을 묶음으로 표시하고 옆에 합 $P(+)$를 쓴 다음, 그 안을 두 몫으로 나눈다. 베이즈 공식이 아니라 그림에서 읽어 낸 경보 후의 사후확률이다. 이제 묶음 안의 두 질량이 거의 같고, 그 거의-동률이 답이다.
+> - 화살표 위의 민감도 $P(+|c)$와 묶음 쪽의 사후확률 $P(c|+)$에 동그라미를 치고, 각각을 위 그림의 값 옆에 나란히 적는다. 둘 중 하나는 전혀 움직이지 않았다.
 
 > [!tip]- 정답 · Solutions
-> 1. $c\to +$는 $0.95$, $c\to -$는 $0.05$; $\neg c\to +$는 $0.05$, $\neg c\to -$는 $0.95$. 사전 질량은 거의 $\neg c$.
+> 1. 화살표는 $c\to+$가 $0.95$, $c\to-$가 $0.05$, $\neg c\to+$가 $0.01$, $\neg c\to-$가 $0.99$다. $+$로 들어오는 둘의 합은 이제 $1$이 아니라 $0.96$이다. 채널이 더는 대칭이 아니고, 대칭이어야 할 이유도 없었다. 결합 질량은 $0.0095$, $0.0005$, $0.0099$, $0.9801$이고 합은 $1$이다. $P(+)=0.0194$이고, 그 가운데 $0.490$이 균열에서, $0.510$이 정상에서 온다. 민감도는 그대로 $0.95$이고, 사후 $P(c|+)$는 $0.161$에서 $0.490$으로 약 세 배가 되었다. 경보를 묻어 버린 것이 놓침이 아니라 오경보였기 때문이다. 그래도 절반에는 못 미친다. 사전이 $1\%$일 때 정상 패널 백 개당 오경보 하나는 균열이 내는 경보만큼의 경보를 만든다.
 > 2. $P(+)=0.059$. $P(c|+)=0.0095/0.059\approx 0.161$. $H(p,q)\approx 3.64$비트, $H(p)\approx 0.64$비트: 민감도를 사후로 쓰면 보정이 크게 틀린다.
 > 3. 균열이 없는 99%에서 나온 거짓 경보가 참양성을 이긴다($0.0495$ vs $0.0095$). 민감도는 $P(+|c)$이지 $P(c|+)$가 아니다.

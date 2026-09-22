@@ -268,7 +268,7 @@ $$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
 
 Device: $m\ddot x+b\dot x=F_h+F_a$. Wall: $F_a=-k_w(x-x_w)$ when $x>x_w$, else $0$.
 
-1. **Draw.** The picture above: block diagram with signals $x_d$, $x$, $\dot x$, $F_h$, $F_a$, and the summing junction into $m$. Mark the unilateral switch on the wall. This is the homework object; the rest of the set is this diagram in equations and in a loop.
+1. **Draw.** The picture above with a virtual damper $B=0.4\,\mathrm{N{\cdot}s/m}$ added to the wall and rendered from the sampled positions by backward difference: the block diagram with signals $x_d$, $x$, $\dot x$, $F_h$, $F_a$, the summing junction into $m$, the unilateral switch on the wall, and the new path the damper needs. Write the wall's stiffness ceiling at $T=10^{-3}$ beside it. Items 2 and 3 keep the picture's undamped wall.
 2. **Derive.** (a) In sustained contact, the characteristic polynomial in $s$. Natural frequency and damping ratio at the catalog $k_w=400$. (b) Equilibrium $x^\ast$ for $x_d=0.035\,\mathrm{m}$ (velocities zero). (c) Colgate-style bound $K\le 2b/T$ at $T=10^{-3}$ and at $T=5\times10^{-3}$. Does catalog $k_w$ pass each? Does $k_w=2500$ pass each? The bound is on the *device* damper $b$, not $b_h$.
 3. **Do.** Fill the `?` in the template. Explicit Euler, $T$ is the controller period ([[02-foundations/lab-kernel|0.7]]). Run four conditions, $t\in[0,1.5]$, $x(0)=0.020$, $v(0)=0$, and plot $x(t)$ with a dashed wall at $x_w$:
    - A. Free: $x_d=0.020$, $k_w=400$, $T=10^{-3}$
@@ -302,12 +302,15 @@ for k in range(n):
 
 > [!note]- How to draw it · 그리는 법
 > - Label all five signals — $x_d$, $x$, $\dot x$, $F_h$, $F_a$ — and draw the summing junction that feeds $1/m$, with $F_h$, $F_a$ and $-b\dot x$ as its three inputs. Anything unlabelled is a place the sign convention can hide.
-> - Draw the wall as a switch, not a spring: a diamond testing $x>x_w$ with two outgoing branches. A spring symbol would claim the loop is linear, and §2's whole argument is that it is not.
-> - Draw no arrow from $F_a$ back to $x_d$. The person chooses where they want the handle; the wall only pushes on $x$. A loop drawn with that arrow is a different, and wrong, system.
-> - Draw the hold explicitly: a small zero-order-hold block between the sampled $x$ and the wall block, with $T$ written on it, because that block is the energy source the rest of the page is about.
+> - Draw the wall as a switch, not a spring: a diamond testing $x>x_w$ with two outgoing branches, and the switch now gates both wall terms, so outside the wall $F_a=0$ whatever the velocity.
+> - The new path: from the sampled $x_k$ into a backward-difference block $(x_k-x_{k-1})/T$, whose output $\hat v_k$ feeds the wall law $F_a=-k_w(x-x_w)-B\hat v_k$. The wall cannot read the continuous $\dot x$: draw no line from it to the wall block.
+> - Keep the device's own $-b\dot x$ where it was, on the continuous side of the hold. The two dampers look alike and sit on opposite sides of the sampler, which is why they count with opposite signs in the bound.
+> - Draw no arrow from $F_a$ back to $x_d$. The person chooses where they want the handle; the wall only pushes on $x$.
+> - Draw the hold explicitly: a small zero-order-hold block between the sampled signals and the wall block, with $T$ written on it.
+> - Beside the wall block, the ceiling from §2's region: $K<2(b-|B|)/T=800\,\mathrm{N/m}$ at $T=10^{-3}$, half the picture's $1600$.
 
 > [!tip]- Solutions
-> 1. $x_d$ feeds a spring–damper whose other port is $(x,\dot x)$; that force $F_h$ sums with $F_a$ and $-b\dot x$ into $1/m$. The wall block is a switch: it reads $x$ and emits $F_a$ only for $x>x_w$. No path from $F_a$ back to $x_d$ — the human desired position is an exogenous input.
+> 1. The picture's loop with one more path into the wall block: the sampled $x_k$ also feeds a backward-difference block $(x_k-x_{k-1})/T$, the only velocity the wall can know, and inside the switch the wall law becomes $F_a=-k_w(x-x_w)-B\,\hat v_k$. The device's $-b\dot x$ stays on the continuous side, and outside the wall $F_a=0$ as before. Under §2's model the region is $b>KT/2+|B|$, so the ceiling is $K<2(0.8-0.4)/10^{-3}=800\,\mathrm{N/m}$, half the picture's $1600$: the catalog $400$ still passes, and $2500$ fails by more. The virtual damper spends the device damping that was paying for the stiffness.
 > 2. (a) $m s^2+(b+b_h)s+(k_h+k_w)=0.04 s^2+8.8 s+800$. Divide by $m$: $s^2+220s+20000=0$. $\omega_n=\sqrt{20000}=141\,\mathrm{rad/s}$, $\zeta=220/(2\cdot 141)=0.78$ (underdamped). (b) $k_h(x_d-x^\ast)=k_w(x^\ast-x_w)$ $\Rightarrow$ $0.035-x^\ast=x^\ast-0.030$ $\Rightarrow$ $x^\ast=0.0325\,\mathrm{m}$, wall force $1.0\,\mathrm{N}$. (c) $T=10^{-3}$: $2b/T=1600\,\mathrm{N/m}$. Catalog $400$ passes; $2500$ fails. $T=5\times10^{-3}$: $2b/T=320$. Both $400$ and $2500$ fail the device-only bound. Human damper $b_h$ is *not* in this inequality.
 > 3. Blanks: `Fh = kh*(xd - x) + bh*(0.0 - v)`, `Fa = -kw*(x - xw) if x > xw else 0.0`, `a = (Fh + Fa - b*v) / m`. A: never contacts, $x\to 0.020$, $E=0$. B: contacts and settles at $0.0325$, $E<0$ (wall takes energy). C: chatters for the whole window, many velocity sign changes, $E>0$ (sampled wall injects energy). D: looks settled despite $k_w>1600$, $E<0$, because $b_h=8$ is ten times $b$. D with $b_h=0$: the trace diverges, $E>0$. The bound assumed you would not spend the human as a damper; a paper that “proves” a $2500\,\mathrm{N/m}$ wall at $1\,\mathrm{kHz}$ on this mass owes you $b$ and whether a person was holding the handle. How much of this is the integrator rather than the wall: keep $F_a$ sampled and held for $T$, advance the device and hand exactly between samples, and count the wall's work as $\sum F_a\,\Delta x$ (the template's $\sum TF_av$ equals it only because explicit Euler moves $\Delta x=Tv$). A, B and D keep their outcomes; C settles although the held wall still does $+3.4\,\mathrm{mJ}$ of net work, and D with $b_h=0$ chatters in a bounded cycle between $28.1$ and $32.6\,\mathrm{mm}$ instead of diverging. The contact ceiling moves with them: the template is stable in sustained contact only while $(k_h+k_w)T<b+b_h$, because explicit Euler holds the hand's spring too and, stepping position on the old velocity, doubles every held spring's leak — $1360\,\mathrm{N/m}$ at $5\,\mathrm{ms}$ and $400\,\mathrm{N/m}$ at $1\,\mathrm{ms}$ without $b_h$ — while the sampled wall alone holds to $4388$ and $1607\,\mathrm{N/m}$, the last being §2's $2b/T=1600$ to within half a percent. Semi-implicit Euler at the same period errs the other way: its position step cancels the hold's leak, and D without $b_h$ settles. So C's chatter is the integrator's; D without $b_h$ fails on the wall's account, and only its runaway is the integrator's.
 
@@ -348,14 +351,14 @@ for k in range(n):
 
 ```mermaid
 flowchart LR
-    Xd["xd"] --> Hum["human kh, bh"]
+    Xd["xd"] --> Hum["사람 kh, bh"]
     X["x"] --> Hum
     V["v"] --> Hum
     Hum --> Fh["Fh"]
-    X --> ZOH["sample and zero-order hold, T"]
+    X --> ZOH["샘플링과 zero-order hold, T"]
     ZOH --> Sw{"x > xw?"}
-    Sw -->|yes| Fa["Fa = -kw(x-xw)"]
-    Sw -->|no| Z["Fa = 0"]
+    Sw -->|예| Fa["Fa = -kw(x-xw)"]
+    Sw -->|아니오| Z["Fa = 0"]
     Fh --> Sum["Σ"]
     Fa --> Sum
     V --> Damp["-b v"]
@@ -577,7 +580,7 @@ $$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
 
 장치 $m\ddot x+b\dot x=F_h+F_a$. 벽: $x>x_w$이면 $F_a=-k_w(x-x_w)$, 아니면 $0$.
 
-1. **그리기.** 위의 그림: 신호 $x_d$, $x$, $\dot x$, $F_h$, $F_a$와 $m$으로 들어가는 합산점을 가진 블록선도. 벽의 한쪽 스위치. 이 그림이 과제 대상이다.
+1. **그리기.** 벽에 가상 댐퍼 $B=0.4\,\mathrm{N{\cdot}s/m}$를 더하고 그것을 샘플된 위치의 후진 차분으로 렌더링할 때의 위 그림: 신호 $x_d$, $x$, $\dot x$, $F_h$, $F_a$와 $m$으로 들어가는 합산점을 가진 블록선도, 벽의 한쪽 스위치, 그리고 댐퍼에 필요한 새 경로. 옆에 $T=10^{-3}$에서 벽의 강성 천장을 적어라. 2번과 3번은 위 그림의 댐퍼 없는 벽을 그대로 쓴다.
 2. **유도.** (a) 지속 접촉에서 $s$의 특성다항식. 카탈로그 $k_w=400$의 고유진동수와 감쇠비. (b) $x_d=0.035\,\mathrm{m}$의 평형 $x^\ast$. (c) $T=10^{-3}$과 $T=5\times10^{-3}$에서 $K\le 2b/T$. 카탈로그 $k_w$와 $k_w=2500$이 각각 통과하는가? 경계는 장치 댐퍼 $b$이지 $b_h$가 아니다.
 3. **실행.** 영어 템플릿의 `?`를 채운다. 명시적 오일러. 네 조건, $t\in[0,1.5]$, $x(0)=0.020$, $v(0)=0$, 벽을 점선으로:
    - A. 자유: $x_d=0.020$, $k_w=400$, $T=10^{-3}$
@@ -588,12 +591,15 @@ $$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
 
 > [!note]- 그리는 법 · How to draw it
 > - 신호 다섯 $x_d$, $x$, $\dot x$, $F_h$, $F_a$에 모두 이름을 붙이고, $1/m$으로 들어가는 합산점을 $F_h$, $F_a$, $-b\dot x$ 세 입력과 함께 그린다. 이름 없는 선은 부호 규약이 숨는 자리다.
-> - 벽은 스프링이 아니라 스위치로 그린다. $x>x_w$를 묻는 마름모와 나가는 가지 둘이다. 여기에 스프링 기호를 그리면 루프가 선형이라고 주장하는 셈이고, §2의 논증 전체가 그렇지 않다는 것이다.
-> - $F_a$에서 $x_d$로 가는 화살표는 그리지 않는다. 사람이 핸들을 어디에 두고 싶은지를 정하고, 벽은 $x$만 민다. 그 화살표를 그린 루프는 다른 시스템이고 틀린 시스템이다.
-> - 홀드를 명시적으로 그린다. 샘플된 $x$와 벽 블록 사이에 작은 zero-order hold 블록을 넣고 그 위에 $T$를 적는다. 페이지의 나머지가 다루는 에너지원이 그 블록이기 때문이다.
+> - 벽은 스프링이 아니라 스위치로 그린다. $x>x_w$를 묻는 마름모와 나가는 가지 둘이고, 이제 스위치는 벽의 두 항을 모두 가른다. 벽 밖에서는 속도가 어떻든 $F_a=0$이다.
+> - 새 경로: 샘플된 $x_k$에서 후진 차분 블록 $(x_k-x_{k-1})/T$로 가고, 그 출력 $\hat v_k$가 벽 법칙 $F_a=-k_w(x-x_w)-B\hat v_k$로 들어간다. 벽은 연속 신호 $\dot x$를 읽을 수 없다. 그것에서 벽 블록으로 가는 선은 그리지 않는다.
+> - 장치 자신의 $-b\dot x$는 홀드의 연속 쪽, 원래 자리에 둔다. 두 댐퍼는 비슷해 보이지만 샘플러의 반대편에 있고, 그래서 경계식에서 서로 반대 부호로 센다.
+> - $F_a$에서 $x_d$로 가는 화살표는 그리지 않는다. 사람이 핸들을 어디에 두고 싶은지를 정하고, 벽은 $x$만 민다.
+> - 홀드를 명시적으로 그린다. 샘플된 신호와 벽 블록 사이에 작은 zero-order hold 블록을 넣고 그 위에 $T$를 적는다.
+> - 벽 블록 옆에 §2의 영역에서 오는 천장: $T=10^{-3}$에서 $K<2(b-|B|)/T=800\,\mathrm{N/m}$, 위 그림의 $1600$의 절반.
 
 > [!tip]- 정답 · Solutions
-> 1. $x_d$는 $(x,\dot x)$가 다른 포트인 스프링–댐퍼로 들어가 $F_h$가 되고, $F_a$ 및 $-b\dot x$와 더해 $1/m$으로 간다. 벽은 $x>x_w$일 때만 $F_a$를 낸다. $F_a$에서 $x_d$로 가는 길은 없다.
+> 1. 위 그림의 루프에 벽 블록으로 들어가는 경로가 하나 는다. 샘플된 $x_k$가 후진 차분 블록 $(x_k-x_{k-1})/T$로도 들어가 벽이 알 수 있는 유일한 속도가 되고, 스위치 안의 벽 법칙은 $F_a=-k_w(x-x_w)-B\,\hat v_k$가 된다. 장치의 $-b\dot x$는 연속 쪽에 남고, 벽 밖에서는 전처럼 $F_a=0$이다. §2의 모형에서 영역은 $b>KT/2+|B|$이므로 천장은 $K<2(0.8-0.4)/10^{-3}=800\,\mathrm{N/m}$로 위 그림의 $1600$의 절반이다. 카탈로그 $400$은 여전히 통과하고 $2500$은 더 크게 실패한다. 가상 댐퍼는 강성의 값을 치르던 장치 감쇠를 써 버린다.
 > 2. (a) $0.04 s^2+8.8 s+800=0$, 즉 $s^2+220s+20000=0$. $\omega_n=141\,\mathrm{rad/s}$, $\zeta=0.78$. (b) $x^\ast=0.0325\,\mathrm{m}$, 벽 힘 $1.0\,\mathrm{N}$. (c) $T=10^{-3}$이면 $2b/T=1600$: $400$ 통과, $2500$ 실패. $T=5\times10^{-3}$이면 $320$: 둘 다 실패. $b_h$는 이 부등식에 없다.
 > 3. 빈칸은 영어 해와 같다. A: 비접촉, $x\to 0.020$, $E=0$. B: $0.0325$에 정착, $E<0$. C: 창 내내 채터, $E>0$. D: $k_w>1600$인데도 정착해 보인다, $E<0$ — $b_h=8$이 $b$의 열 배. $b_h=0$인 D는 발산, $E>0$. 경계는 사람을 댐퍼로 쓰지 않는다는 가정이다. 이 중 얼마가 벽이 아니라 적분기의 몫인지 가르려면, $F_a$는 그대로 샘플링해 $T$ 동안 유지하고 장치와 손만 샘플 사이에서 정확히 전진시킨 뒤, 벽이 한 일을 $\sum F_a\,\Delta x$로 센다(템플릿의 $\sum TF_av$가 그것과 같은 것은 명시적 오일러가 $\Delta x=Tv$만큼 움직이기 때문일 뿐이다). A, B, D는 결과가 그대로다. C는 유지된 벽이 여전히 $+3.4\,\mathrm{mJ}$의 순일을 하는데도 정착하고, $b_h=0$인 D는 발산하는 대신 $28.1$과 $32.6\,\mathrm{mm}$ 사이의 유계 주기로 채터한다. 접촉 천장도 함께 움직인다. 템플릿은 지속 접촉에서 $(k_h+k_w)T<b+b_h$일 때만 안정한데, 명시적 오일러가 손의 스프링까지 유지하고 이전 속도로 위치를 옮겨 유지된 스프링마다 누설을 두 배로 만들기 때문이다. 그래서 천장은 $5\,\mathrm{ms}$에서 $1360\,\mathrm{N/m}$, $b_h$ 없는 $1\,\mathrm{ms}$에서 $400\,\mathrm{N/m}$이고, 샘플링된 벽만으로는 각각 $4388$과 $1607\,\mathrm{N/m}$까지 간다. 뒤의 것은 §2의 $2b/T=1600$과 0.5% 안에서 같다. 같은 주기의 준음해 오일러는 반대로 틀린다. 위치 갱신이 홀드의 누설을 지워 버려서 $b_h$ 없는 D가 정착한다. 그러므로 C의 채터는 적분기의 몫이고, $b_h$ 없는 D는 벽 때문에 실패하며 그 폭주만 적분기의 몫이다.
 

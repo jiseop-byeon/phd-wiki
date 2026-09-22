@@ -647,21 +647,19 @@ Custom `.srv` and `.action` packages appear here only far enough to build one; t
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop is $200\,\mathrm{Hz}$. A planner may take $2\,\mathrm{s}$ to produce the next goal. No new simulator.
 
-1. **Draw.** P6 nodes: `planner` (long goal), `controller` ($5\,\mathrm{ms}$ timer + encoder), `camera` ($50\,\mathrm{Hz}$). Mark the planner–controller link as an *action*, not a topic or a service. Five-line timeline: goal sent, feedback at $0.5\,\mathrm{s}$, result at $2\,\mathrm{s}$, controller ticks throughout.
+1. **Draw.** The picture's action lane and healthy clock for a goal that is cancelled: the side that sent the goal asks to cancel at $1.2\,\mathrm{s}$, the server accepts, and its execute loop, which checks `is_cancel_requested` once per $0.5\,\mathrm{s}$ step before publishing feedback, next looks at $1.5\,\mathrm{s}$. Draw every message that crosses the lane, in order and with its direction, the terminal status of the result, and the controller's $5\,\mathrm{ms}$ ticks throughout. How long is the goal cancelled on paper but still executing?
 2. **Derive.** (a) How many control samples does a $2\,\mathrm{s}$ *service* callback block? (b) Encoder $\Delta p$ for one count. (c) Silent case: inside the $200\,\mathrm{Hz}$ timer the controller logs `calling`, then calls the planner with `client.call`. What does the log show from the first tick on, and why is there no error?
 3. **Interpret.** Why is a P6 goal an action, and what does lifecycle buy you when the camera driver dies after the controller is already at $200\,\mathrm{Hz}$?
 
 > [!note]- How to draw it · 그리는 법
-> - Each kind of edge gets its own pen stroke, and no two may look alike: the whole of this page is the distinction.
-> - A topic is one open arrow: `/goal`, $50\,\mathrm{Hz}$, `/camera` → `/controller`.
-> - A service is a matched pair of short arrows in both directions, drawn tight together: one request, one response, nothing in between.
-> - An action is a lane with three kinds of arrow — the goal down, several feedback arrows up along its length, one result arrow up at the end — with `/planner` and `/controller` at its two ends.
-> - Parameters are not an edge at all: draw them as a small table hanging off `/controller` (name, type, value, and read-only where declared so), never as an arrow.
-> - On the timeline the controller's $5\,\mathrm{ms}$ ticks run unbroken under the whole action, from the goal to the result.
-> - A clock with one tick holding a `client.call` and nothing after it — no ticks, no log lines, no error, while the server answered at once — is §10's failure, not an action.
+> - Keep the picture's pen strokes: a topic is one open arrow, a service a tight pair, an action a lane, parameters a table. Only the action lane changes, so draw the rest faintly.
+> - On the lane, arrows in time order: the goal down at $0$ with its acceptance, feedback up at $0.5$ and $1.0\,\mathrm{s}$, then a new kind of arrow — the cancel request down at $1.2\,\mathrm{s}$ with its acceptance right after it. Cancel request and response are a service-like pair riding on the action, so draw them tight together.
+> - At $1.5\,\mathrm{s}$ one result arrow up, labelled with its terminal status, CANCELED; no feedback at $1.5$ and nothing at $2\,\mathrm{s}$. A result labelled SUCCEEDED, or a second result, means the lane is wrong.
+> - Bracket $1.2$–$1.5\,\mathrm{s}$ on the lane and label it: cancelled on paper, still executing. Accepting a cancel is a promise to stop, not the stop.
+> - On the clock underneath, the controller's $5\,\mathrm{ms}$ ticks run unbroken from $0$ to $2\,\mathrm{s}$, through the cancel as through the feedback; count the ticks under the bracket.
 
 > [!tip]- Solutions
-> 1. Action `navigate` from planner to controller; camera on `/goal` is a separate stream. Timeline: $t=0$ goal; ticks every $5\,\mathrm{ms}$; feedback; result at $2\,\mathrm{s}$.
+> 1. The lane carries, in order: the goal at $0$ and its acceptance; feedback at $0.5$ and $1.0\,\mathrm{s}$; the cancel request at $1.2\,\mathrm{s}$ and its acceptance; and at $1.5\,\mathrm{s}$, when the loop next checks `is_cancel_requested`, one result with terminal status CANCELED — no feedback at $1.5$ and no result at $2\,\mathrm{s}$. For $0.3\,\mathrm{s}$, $0.3/0.005=60$ control ticks, the goal is cancelled on paper and still executing; how often the server checks decides that gap. The controller's ticks run unbroken under all of it, as in the picture's healthy clock, and the camera's `/goal` topic and the parameter table are unchanged.
 > 2. (a) $2/0.005=400$ samples. (b) $0.488\,\mathrm{mm}$. (c) The timer holds the executor; the response callback cannot run; one `calling` and silence. No exception.
 > 3. $2\,\mathrm{s}$ is not "return quickly"; the action keeps the $200\,\mathrm{Hz}$ loop alive and is cancellable. Lifecycle + a bond tears the stack down when the camera dies, instead of letting the controller track a stale $70\,\mathrm{ms}$ budget — but only once the bond times out, $4.0/0.005=800$ ticks at Nav2's default. The guard on the budget itself is a stamp check in `on_tick` (§8.2).
 
@@ -1304,20 +1302,18 @@ ros2 service list | grep add_two_ints   # 서버는 멀쩡히 있다
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 제어 루프는 $200\,\mathrm{Hz}$. 계획기는 다음 목표를 만드는 데 $2\,\mathrm{s}$가 걸릴 수 있다. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** P6 노드: `planner`(긴 목표), `controller`($5\,\mathrm{ms}$ 타이머 + 엔코더), `camera`($50\,\mathrm{Hz}$). 계획기–제어기 링크는 토픽이나 서비스가 아니라 *액션*. 다섯 줄 타임라인: 목표 전송, $0.5\,\mathrm{s}$ 피드백, $2\,\mathrm{s}$ 결과, 그동안의 제어 틱.
+1. **그리기.** 취소되는 목표에 대한 위 그림의 액션 레인과 건강한 시계: 목표를 보낸 쪽이 $1.2\,\mathrm{s}$에 취소를 요청하고, 서버가 받아들이며, 피드백을 내기 전에 $0.5\,\mathrm{s}$ 한 걸음마다 `is_cancel_requested`를 확인하는 서버의 실행 루프는 다음에 $1.5\,\mathrm{s}$에 그것을 본다. 레인을 건너는 메시지를 모두 순서와 방향대로, 결과의 최종 상태, 그리고 그동안의 제어기 $5\,\mathrm{ms}$ 틱을 그려라. 목표가 서류상으로는 취소되었는데 아직 실행 중인 시간은 얼마인가?
 2. **유도.** (a) $2\,\mathrm{s}$ *서비스* 콜백이 막는 제어 샘플 수. (b) 엔코더 한 카운트의 $\Delta p$. (c) 조용한 고장: 제어기가 $200\,\mathrm{Hz}$ 타이머 안에서 `calling`을 로그로 찍은 뒤 `client.call`로 계획기를 부른다. 첫 틱부터 로그에는 무엇이 보이고, 왜 에러가 없는가?
 3. **해석.** P6 목표가 액션인 이유, 그리고 제어기가 이미 $200\,\mathrm{Hz}$인데 카메라 드라이버가 죽으면 라이프사이클이 사 주는 것은?
 
 > [!note]- 그리는 법 · How to draw it
-> - 간선의 종류마다 펜 자국이 따로 있고, 어느 둘도 닮아 보이면 안 된다. 이 페이지 전체가 그 구분이다.
-> - 토픽은 열린 화살표 하나. `/goal`, $50\,\mathrm{Hz}$, `/camera` → `/controller`.
-> - 서비스는 양방향 짧은 화살표 한 쌍을 바짝 붙여 그린다. 요청 하나, 응답 하나, 그 사이에는 아무것도 없다.
-> - 액션은 화살표 세 종류가 있는 레인이다. 목표가 내려가고, 레인을 따라 피드백이 여러 번 올라오고, 끝에서 결과가 한 번 올라온다. 양 끝이 `/planner`와 `/controller`다.
-> - 파라미터는 간선이 아니다. `/controller`에 매달린 작은 표(이름, 타입, 값, 그렇게 선언했다면 read-only)로 그리고, 화살표로는 그리지 않는다.
-> - 타임라인에서 제어기의 $5\,\mathrm{ms}$ 틱은 목표부터 결과까지 액션 내내 끊김 없이 이어진다.
-> - 틱 하나가 `client.call`을 쥔 뒤로 아무것도 없는 시계 — 틱도, 로그도, 오류도 없고 서버는 곧바로 응답한 — 는 액션이 아니라 10절의 고장이다.
+> - 위 그림의 펜 자국을 그대로 쓴다. 토픽은 열린 화살표 하나, 서비스는 바짝 붙은 한 쌍, 액션은 레인, 파라미터는 표. 바뀌는 것은 액션 레인뿐이니 나머지는 흐리게 그린다.
+> - 레인 위에는 시간 순서로 화살표를 둔다. $0$에 내려가는 목표와 그 수락, $0.5$와 $1.0\,\mathrm{s}$에 올라오는 피드백, 그리고 새 종류의 화살표 — $1.2\,\mathrm{s}$에 내려가는 취소 요청과 바로 뒤의 수락. 취소 요청과 응답은 액션 위에 얹힌 서비스 같은 쌍이므로 바짝 붙여 그린다.
+> - $1.5\,\mathrm{s}$에 결과 화살표 하나가 올라오고 최종 상태 CANCELED를 적는다. $1.5$의 피드백도, $2\,\mathrm{s}$의 무엇도 없다. SUCCEEDED라 적힌 결과나 두 번째 결과가 있으면 레인이 틀린 것이다.
+> - 레인 위 $1.2$–$1.5\,\mathrm{s}$에 괄호를 치고 적는다: 서류상 취소, 아직 실행 중. 취소 수락은 멈추겠다는 약속이지 멈춤이 아니다.
+> - 아래 시계에는 제어기의 $5\,\mathrm{ms}$ 틱이 $0$부터 $2\,\mathrm{s}$까지, 피드백 때처럼 취소를 지나서도 끊김 없이 이어진다. 괄호 아래의 틱 수를 센다.
 
 > [!tip]- 정답 · Solutions
-> 1. 계획기에서 제어기로 액션 `navigate`; 카메라 `/goal`은 별 스트림. 타임라인: $t=0$ 목표; $5\,\mathrm{ms}$마다 틱; 피드백; $2\,\mathrm{s}$에 결과.
+> 1. 레인에는 순서대로 이것들이 지나간다. $0$의 목표와 그 수락, $0.5$와 $1.0\,\mathrm{s}$의 피드백, $1.2\,\mathrm{s}$의 취소 요청과 그 수락, 그리고 루프가 다음에 `is_cancel_requested`를 확인하는 $1.5\,\mathrm{s}$에 최종 상태 CANCELED인 결과 하나. $1.5$의 피드백도, $2\,\mathrm{s}$의 결과도 없다. $0.3\,\mathrm{s}$, 곧 $0.3/0.005=60$ 제어 틱 동안 목표는 서류상 취소되었지만 여전히 실행 중이고, 그 틈은 서버가 얼마나 자주 확인하느냐가 정한다. 제어기 틱은 위 그림의 건강한 시계처럼 그 모든 것 아래에서 끊김 없이 이어지고, 카메라의 `/goal` 토픽과 파라미터 표는 그대로다.
 > 2. (a) $2/0.005=400$ 샘플. (b) $0.488\,\mathrm{mm}$. (c) 타이머가 executor를 붙들고 응답 콜백이 못 돈다. `calling` 한 줄 후 침묵. 예외 없음.
 > 3. $2\,\mathrm{s}$는 "빨리 반환"이 아니다. 액션은 $200\,\mathrm{Hz}$ 루프를 살려 두고 취소할 수 있다. 라이프사이클 + bond는 카메라가 죽으면 스택을 내리지, 제어기가 낡은 $70\,\mathrm{ms}$ 예산을 추적하게 두지 않는다. 다만 bond가 시간 초과된 뒤에야 그렇고, Nav2 기본값이면 $4.0/0.005=800$틱 뒤다. 예산 자체의 파수꾼은 `on_tick` 안의 스탬프 검사다(8.2절).

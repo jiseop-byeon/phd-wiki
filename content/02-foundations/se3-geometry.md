@@ -393,22 +393,21 @@ The linear part of a twist also depends on the reference frame and its origin. T
 
 Tier B. **P2** at $\theta=(0^\circ,90^\circ)$. This page §3–4. Planar, so $R=R_z(\theta_1+\theta_2)$.
 
-1. **Draw.** The picture above, by hand: base frame at the origin and tip frame at $(1,1)$. The second link is vertical: tip $x$-axis along $+y$. Label both origins.
+1. **Draw.** The picture above for the other elbow, $\theta=(90^\circ,-90^\circ)$: base frame at the origin, elbow at $(0,1)$, and the tip frame at the same point $(1,1)$ with the forearm now horizontal. Label both origins, write $R$ read off the drawing, and mark the point $0.1\,\mathrm{m}$ out along the tool's $x$-axis. What does this tip frame share with the picture above, and what not?
 2. **Derive.** Write $T_{\mathrm{base}\leftarrow\mathrm{tip}}$ as a $4\times 4$ homogeneous matrix. Rotation of the second link is $90^\circ$ about $z$; translation is the tip $(1,1,0)$.
 3. **Interpret.** $\mathrm{Ad}_T$ rewrites one twist in another frame. $J$ maps $\dot\theta$ to a twist at this pose. Same matrix? What would $\mathrm{Ad}_T$ do to a column of $J$ if you changed the velocity frame?
 
 > [!note]- How to draw it · 그리는 법
 > - The base frame at the origin as a right-handed triad: $x_s$ along $+x$, $y_s$ along $+y$, and $z_s$ out of the page drawn as a circled dot, so the page carries three axes and not two arrows.
-> - The arm only faintly, elbow $(1,0)$ and tip $(1,1)$: the object is the frames, and the links are scaffolding.
-> - The tip frame, with the forearm vertical: $x_b$ along $+y_s$ (up the page), $y_b$ along $-x_s$ (to the left), $z_b$ out of the page. Tip axes drawn parallel to the base axes have lost the entire content of $R$.
-> - For item 2, $R$ read off the drawing rather than computed: each column is one tip axis in base coordinates, $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$, which is $R_z(90^\circ)$ without a trigonometric identity.
-> - Under $R$, the two membership tests of §1 as checks on those columns: unit length and mutually perpendicular ($R^\top R=I$), and $x_b\times y_b=z_b$ rather than $-z_b$ ($\det R=+1$).
-> - The arrow from base origin to tip origin labelled $p=(1,1,0)$, and $T$ with $R$ in the corner, $p$ in the last column and the bottom row $(0,0,0,1)$ written in: that row is not decoration (§3).
-> - A dot $0.1\,\mathrm{m}$ out along the *tool's* $x$-axis, at base $(1,\ 1.1,\ 0)$, so above the tip and not to its right, beside the tool's $x$-*direction* as a short arrow labelled $(0,1,0)$. The point carries fourth entry $1$ and is rotated *and* shifted; the direction carries $0$ and is only rotated. Nearly every frame bug in the robotics track is this distinction.
-> - The inverse in a margin box: the base origin seen from the tool frame, $(-1,\ 1,\ 0)=-R^\top p$, one unit against $x_b$ and one along $y_b$, still $\sqrt2$ from the tip because a rigid motion cannot change a distance. It checks item 2's $T$ without multiplying anything.
+> - The arm only faintly, elbow $(0,1)$ and tip $(1,1)$: the object is the frames, and the links are scaffolding.
+> - The tip frame, with the forearm along $+x_s$: $x_b$ along $+x_s$, $y_b$ along $+y_s$, $z_b$ out of the page. This time the tip axes *are* parallel to the base axes, and correctly so, because $\theta_1+\theta_2=0$; in the picture above the same drawing would have lost the whole of $R$.
+> - $R$ read off the drawing rather than computed: each column is one tip axis in base coordinates, $x_b=(1,0,0)$, $y_b=(0,1,0)$, $z_b=(0,0,1)$, so $R=I$. Check it against §1's two tests: orthonormal columns and $x_b\times y_b=z_b$.
+> - The arrow from base origin to tip origin labelled $p=(1,1,0)$, the picture's own $p$, and $T$ with $R$ in the corner, $p$ in the last column and the bottom row $(0,0,0,1)$ written in.
+> - A dot $0.1\,\mathrm{m}$ out along the *tool's* $x$-axis, at base $(1.1,\ 1,\ 0)$, to the right of the tip this time, beside the tool's $x$-*direction* as a short arrow labelled $(1,0,0)$: the point is rotated *and* shifted, the direction only rotated.
+> - The inverse in a margin box: the base origin seen from the tool frame, $-R^\top p=(-1,\ -1,\ 0)$, still $\sqrt2$ from the tip because a rigid motion cannot change a distance.
 
 > [!tip]- Solutions
-> 1. Base at $(0,0)$; elbow $(1,0)$; tip $(1,1)$ with $x_{\mathrm{tip}}$ up and $y_{\mathrm{tip}}$ left.
+> 1. Elbow at $(0,1)$, tip at $(1,1)$, with $x_b$ along $+x_s$ and $y_b$ along $+y_s$. Here $\theta_1+\theta_2=0$, so $R=R_z(0)=I$ and the tip axes are parallel to the base axes, correctly, because this forearm points along $+x$. The origin $p=(1,1,0)$ is the picture's; the orientation is not, so $T=\begin{pmatrix}1&0&0&1\\0&1&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$ differs from item 2's only in its $3\times3$ corner. The tool point lands at base $(1.1,\ 1,\ 0)$, to the right of the tip rather than above it, and the base origin seen from the tool is $(-1,\ -1,\ 0)$, still $\sqrt2$ away. A position alone does not fix a pose.
 > 2. $R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$, $p=(1,1,0)$, so
 >    $T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$.
 > 3. Not the same map. $J$ is pose-dependent and stacks joint screws; $\mathrm{Ad}_T$ is a change of frame for a single twist. Changing the velocity frame left-multiplies $J$'s columns by $\mathrm{Ad}$ — it does not replace $J$. At this pose (§4), $\mathrm{Ad}_{T^{-1}}$ sends joint 2's base-frame column $(0,0,1,\ 0,-1,0)$ to the tool-frame column $(0,0,1,\ 0,1,0)$.
@@ -790,22 +789,21 @@ $\theta=(0^\circ,90^\circ)$의 장치 **P2**([[02-foundations/lab-plants|0.6 Lab
 
 Tier B. **P2**, $\theta=(0^\circ,90^\circ)$. 이 페이지 §3–4. 평면이므로 $R=R_z(\theta_1+\theta_2)$.
 
-1. **그리기.** 위의 그림을 손으로 다시 그린다. 원점의 베이스 프레임과 $(1,1)$의 말단 프레임. 둘째 링크는 수직: 말단 $x$축이 $+y$. 두 원점을 기입.
+1. **그리기.** 반대쪽 엘보 $\theta=(90^\circ,-90^\circ)$에 대한 위의 그림: 원점의 베이스 프레임, $(0,1)$의 엘보, 그리고 같은 점 $(1,1)$에 있되 전완이 이제 수평인 말단 프레임. 두 원점을 기입하고, 그림에서 읽은 $R$을 쓰고, 도구 $x$축을 따라 $0.1\,\mathrm{m}$ 나간 점을 표시하라. 이 말단 프레임은 위의 그림과 무엇을 공유하고 무엇을 공유하지 않는가?
 2. **유도.** $T_{\mathrm{base}\leftarrow\mathrm{tip}}$을 $4\times 4$ 동차행렬로. 둘째 링크의 회전은 $z$ 둘레 $90^\circ$, 평행이동은 말단 $(1,1,0)$.
 3. **해석.** $\mathrm{Ad}_T$는 트위스트 하나를 다른 프레임으로 다시 쓴다. $J$는 이 자세에서 $\dot\theta$를 트위스트로 보낸다. 같은 행렬인가? 속도 프레임을 바꾸면 $\mathrm{Ad}_T$는 $J$의 한 열에 무엇을 하는가?
 
 > [!note]- 그리는 법 · How to draw it
 > - 원점의 베이스 프레임을 오른손 삼각대로: $x_s$는 $+x$, $y_s$는 $+y$, $z_s$는 지면 밖으로 나오므로 동그라미 안의 점. 지면 위에 화살표 둘이 아니라 축 셋이 있어야 한다.
-> - 팔은 흐리게만, 엘보 $(1,0)$과 말단 $(1,1)$. 대상은 프레임이고 링크는 받침대일 뿐이다.
-> - 전완이 수직인 말단 프레임: $x_b$는 $+y_s$(지면 위쪽), $y_b$는 $-x_s$(왼쪽), $z_b$는 지면 밖. 말단 축을 베이스 축과 평행하게 그리면 $R$의 내용 전부를 잃는다.
-> - 2번을 위해 $R$을 계산이 아니라 그림에서 읽는다. 각 열이 말단 축 하나를 베이스 좌표로 쓴 것이다. $x_b=(0,1,0)$, $y_b=(-1,0,0)$, $z_b=(0,0,1)$ — 삼각함수 항등식 없이 얻은 $R_z(90^\circ)$다.
-> - $R$ 아래에는 §1의 소속 검사 둘을 그 열들로 하는 확인으로 적는다. 길이가 1이고 서로 수직이며($R^\top R=I$), $x_b\times y_b$가 $-z_b$가 아니라 $z_b$다($\det R=+1$).
-> - 베이스 원점에서 말단 원점으로 가는 화살표 $p=(1,1,0)$, 그리고 구석에 $R$, 마지막 열에 $p$, 아래 행에 $(0,0,0,1)$을 적은 $T$. 그 아래 행은 장식이 아니다(§3).
-> - *도구* $x$축을 따라 $0.1\,\mathrm{m}$ 나간 점은 베이스 $(1,\ 1.1,\ 0)$, 곧 말단의 오른쪽이 아니라 위에 찍히고, 그 옆에 도구의 $x$-*방향*을 짧은 화살표 $(0,1,0)$으로 그린다. 점은 넷째 성분 $1$을 지녀 회전되고 *또* 평행이동하며, 방향은 $0$을 지녀 회전만 된다. 로보틱스 트랙의 프레임 버그는 거의 전부 이 구분이다.
-> - 여백 상자의 역변환: 도구 프레임에서 본 베이스 원점 $(-1,\ 1,\ 0)=-R^\top p$, $x_b$ 반대쪽으로 한 칸, $y_b$ 쪽으로 한 칸. 강체 운동은 거리를 바꿀 수 없으므로 말단에서 여전히 $\sqrt2$다. 아무것도 곱하지 않고 2번의 $T$를 검산하는 방법이다.
+> - 팔은 흐리게만, 엘보 $(0,1)$과 말단 $(1,1)$. 대상은 프레임이고 링크는 받침대일 뿐이다.
+> - 전완이 $+x_s$를 따라 놓인 말단 프레임: $x_b$는 $+x_s$, $y_b$는 $+y_s$, $z_b$는 지면 밖. 이번에는 말단 축이 베이스 축과 *정말로* 평행하고, $\theta_1+\theta_2=0$이므로 그게 맞다. 위 그림에서 같은 그림을 그렸다면 $R$의 내용 전부를 잃었을 것이다.
+> - $R$을 계산이 아니라 그림에서 읽는다. 각 열이 말단 축 하나를 베이스 좌표로 쓴 것이다. $x_b=(1,0,0)$, $y_b=(0,1,0)$, $z_b=(0,0,1)$, 곧 $R=I$. §1의 검사 둘 — 정규직교인 열, $x_b\times y_b=z_b$ — 로 확인한다.
+> - 베이스 원점에서 말단 원점으로 가는 화살표 $p=(1,1,0)$ — 위 그림과 같은 $p$ — 그리고 구석에 $R$, 마지막 열에 $p$, 아래 행에 $(0,0,0,1)$을 적은 $T$.
+> - *도구* $x$축을 따라 $0.1\,\mathrm{m}$ 나간 점은 베이스 $(1.1,\ 1,\ 0)$, 이번에는 말단의 오른쪽에 찍고, 그 옆에 도구의 $x$-*방향*을 짧은 화살표 $(1,0,0)$으로 그린다. 점은 회전되고 *또* 평행이동하며, 방향은 회전만 된다.
+> - 여백 상자의 역변환: 도구 프레임에서 본 베이스 원점 $-R^\top p=(-1,\ -1,\ 0)$. 강체 운동은 거리를 바꿀 수 없으므로 말단에서 여전히 $\sqrt2$다.
 
 > [!tip]- 정답 · Solutions
-> 1. 베이스 $(0,0)$, 엘보 $(1,0)$, 말단 $(1,1)$. $x_{\mathrm{tip}}$은 위, $y_{\mathrm{tip}}$은 왼쪽.
+> 1. 엘보 $(0,1)$, 말단 $(1,1)$이고 $x_b$는 $+x_s$, $y_b$는 $+y_s$를 따른다. 여기서는 $\theta_1+\theta_2=0$이라 $R=R_z(0)=I$이고, 이 전완이 $+x$를 가리키므로 말단 축이 베이스 축과 평행한 것이 맞다. 원점 $p=(1,1,0)$은 위 그림과 같고 방향은 다르다. 그래서 $T=\begin{pmatrix}1&0&0&1\\0&1&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$는 2번의 $T$와 $3\times3$ 구석만 다르다. 도구 점은 베이스 $(1.1,\ 1,\ 0)$, 곧 말단 위가 아니라 오른쪽에 찍히고, 도구에서 본 베이스 원점은 $(-1,\ -1,\ 0)$으로 여전히 $\sqrt2$ 떨어져 있다. 위치 하나로는 자세가 정해지지 않는다.
 > 2. $R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$, $p=(1,1,0)$,
 >    $T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$.
 > 3. 같은 사상이 아니다. $J$는 자세에 의존하며 관절 스크류를 쌓고, $\mathrm{Ad}_T$는 트위스트 하나의 프레임 변환이다. 속도 프레임을 바꾸면 $J$의 열에 $\mathrm{Ad}$를 왼쪽 곱할 뿐, $J$를 대체하지 않는다. 이 자세에서(§4) $\mathrm{Ad}_{T^{-1}}$은 관절 2의 베이스 프레임 열 $(0,0,1,\ 0,-1,0)$을 도구 프레임 열 $(0,0,1,\ 0,1,0)$으로 보낸다.

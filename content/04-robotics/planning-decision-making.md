@@ -607,21 +607,21 @@ You should be able to:
 
 Tier B. First pass. **P2** to the panel ([[02-foundations/lab-plants|0.6]]). Two-node graph. No simulator.
 
-1. **Draw.** The picture above: node $q_\mathrm{start}=\theta=(0^\circ,0^\circ)$ (tip at $(2,0)$) and $q_\mathrm{goal}=$ frozen pose (tip at $(1,1)$ on the panel). One edge in $\mathcal{C}$. Label $\mathcal{C}_\mathrm{free}$.
+1. **Draw.** The picture above with the goal moved to the other IK branch, $q_\mathrm{goal}=(90^\circ,-90^\circ)$ — elbow at $(0,1)$, tip still at $(1,1)$ on the panel. Draw the arm at both configurations, the new single edge in $\mathcal{C}$ as a straight segment, the forbidden region with $\mathcal{C}_\mathrm{free}$ labelled, and the tip's curve on the left, with the picture's edge kept faint beside yours. What do the two edges share, and what can the tip check not tell apart?
 2. **Derive.** Straight interpolation $\theta(s)=(0^\circ,90^\circ s)$. Tip $x(s)=1+\cos(90^\circ s)$. If the panel is the wall $x=1$, when does the tip first touch? What does A* return on this two-node graph?
 3. **Interpret.** What can this search not promise about contact force at the panel?
 
 > [!note]- How to draw it · 그리는 법
-> - Left panel, the workspace: the base at the origin, the reachable disc of radius $2$ m around it, the panel as a vertical line at $x=1$ with hatching on its far side, and the task point $p^\star=(1,1)$ m on that line.
-> - The arm twice: once straight along $+x$ with its tip at $(2,0)$, once at the frozen pose with its elbow at $(1,0)$ and its tip on the panel. Two configurations, one picture, and nothing on it is yet a plan.
-> - Right panel, the configuration space: axes $\theta_1$ and $\theta_2$, each from $-180°$ to $180°$, with a note that opposite edges are identified. $\mathcal{C}$ is the torus $T^2$, and a planner that treats $179°$ and $-179°$ as far apart is using the wrong space (§2).
-> - $q_\mathrm{start}$ and $q_\mathrm{goal}$ as two dots, joined by the straight segment that is the graph's single edge.
-> - The region the tip-only check forbids, $\cos\theta_1+\cos(\theta_1+\theta_2)<1$, shaded, and the rest labelled $\mathcal{C}_\mathrm{free}$.
-> - The one point of the segment that lies on the boundary, marked as contact, not free space.
-> - One arrow from the segment on the right to the curve the tip traces on the left, labelled $f$, the forward kinematics. The two panels are not two views of one object: the right is a set of configurations, the left a set of positions, and that arrow is the only thing relating them.
+> - Left panel, the workspace: the base at the origin, the reachable disc of radius $2$ m around it, the boundary of the tip's keep-out half-plane as a vertical line at $x=1$ with hatching on the $x<1$ side, and the task point $p^\star=(1,1)$ m on that line.
+> - The arm twice: once straight along $+x$ with its tip at $(2,0)$, once at the new goal with its elbow at $(0,1)$ and its forearm along $+x$ to the tip on the line.
+> - Right panel, the configuration space: axes $\theta_1$ and $\theta_2$, each from $-180°$ to $180°$, with a note that opposite edges are identified ($\mathcal{C}=T^2$, §2).
+> - $q_\mathrm{start}=(0°,0°)$ and the new $q_\mathrm{goal}=(90°,-90°)$ as two dots joined by the diagonal segment $\theta(s)=(90°s,\ -90°s)$; the picture's edge, from $(0°,0°)$ up to $(0°,90°)$, drawn faintly for comparison.
+> - The region the tip-only check forbids, $\cos\theta_1+\cos(\theta_1+\theta_2)<1$, shaded, and the rest labelled $\mathcal{C}_\mathrm{free}$. Along the diagonal $\theta_1+\theta_2=0$, so the check reads $1+\cos90°s\ge1$: free, with only the goal on the boundary, marked as contact.
+> - One arrow from each segment on the right to the tip's curve on the left, both labelled $f$: they land on the same quarter circle. Two configurations' worth of edges, one tip path — $f$ is many-to-one.
+> - On the left, the elbow's path along the new edge, a quarter circle from $(1,0)$ to $(0,1)$ inside $x<1$: the tip check never looks at it, which is exactly what it cannot tell apart.
 
 > [!tip]- Solutions
-> 1. Two dots in $\mathcal{C}=T^2$, one segment. Free except the goal, which is on the contact set.
+> 1. The new edge is the diagonal $\theta(s)=(90^\circ s,\ -90^\circ s)$. Along it $\theta_1+\theta_2=0$, so the forearm always points along $+x$ and the tip is at $(1+\cos90^\circ s,\ \sin90^\circ s)$ — the same quarter circle as the picture's edge. Hence $\cos\theta_1+\cos(\theta_1+\theta_2)=1+\cos90^\circ s\ge1$, with equality only at $s=1$: the open segment is free and the goal is again on the boundary. Two different segments in $\mathcal{C}$ map under $f$ onto one curve in the workspace, and the tip-only check scores them identically. What differs is invisible to it: on the picture's edge the elbow stays at $(1,0)$, while on this one it swings from $(1,0)$ to $(0,1)$ through $x<1$, which a check on the whole arm, or the physical panel of [[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2]], would have to see.
 > 2. $x(s)=1$ only at $s=1$, so the open segment is free. A* returns that single edge as a feasible path (cost = whatever you put on it).
 > 3. A path is geometry without force. Search does not know $k_w$, $\mu$, or $F_n$ — those are contact, not $\mathcal{C}_\mathrm{free}$ (Self-check 1: collision-free $\neq$ dynamically / contact feasible).
 
@@ -1262,21 +1262,21 @@ $$b'(s')=\eta\,Z(o\mid s',a)\sum_{s\in\mathcal{S}}T(s'\mid s,a)\,b(s)$$
 
 Tier B. 첫 패스. [[02-foundations/lab-plants|0.6]]의 **P2**를 패널까지. 노드 둘짜리 그래프. 시뮬레이터 없음.
 
-1. **그리기.** 위의 그림: $q_\mathrm{start}=\theta=(0^\circ,0^\circ)$(말단 $(2,0)$)와 $q_\mathrm{goal}=$ 고정 자세(말단 $(1,1)$, 패널). $\mathcal{C}$의 간선 하나. $\mathcal{C}_\mathrm{free}$를 표시.
+1. **그리기.** 목표를 반대쪽 IK 가지 $q_\mathrm{goal}=(90^\circ,-90^\circ)$로 옮긴 위의 그림 — 엘보는 $(0,1)$, 말단은 여전히 패널 위 $(1,1)$. 두 컨피규레이션의 팔, $\mathcal{C}$의 새 간선 하나를 직선 구간으로, 금지 영역과 $\mathcal{C}_\mathrm{free}$ 표시, 그리고 왼쪽에 말단의 곡선을 그리고, 위 그림의 간선은 옆에 흐리게 남겨 둔다. 두 간선은 무엇을 공유하며, 말단 검사가 구별하지 못하는 것은 무엇인가?
 2. **유도.** 직선 보간 $\theta(s)=(0^\circ,90^\circ s)$. 말단 $x(s)=1+\cos(90^\circ s)$. 패널이 벽 $x=1$이면 언제 처음 닿는가? 이 두 노드에서 A*가 반환하는 것은?
 3. **해석.** 이 탐색이 패널 접촉력에 대해 약속할 수 없는 것은?
 
 > [!note]- 그리는 법 · How to draw it
-> - 왼쪽 칸, 작업 영역: 원점의 베이스, 그 둘레 반지름 $2$ m의 도달 원판, $x=1$에 수직선으로 그린 패널과 그 너머의 빗금, 그리고 그 선 위의 과제 점 $p^\star=(1,1)$ m.
-> - 팔은 두 번: 한 번은 $+x$ 방향으로 곧게 펴서 말단이 $(2,0)$에, 한 번은 고정 자세로 엘보가 $(1,0)$, 말단이 패널 위에. 컨피규레이션 둘이 그림 하나에 있고, 아직 그 어느 것도 계획이 아니다.
-> - 오른쪽 칸, 컨피규레이션 공간: 각각 $-180°$에서 $180°$까지인 $\theta_1$, $\theta_2$ 축과, 마주 보는 변이 서로 붙어 있다는 메모. $\mathcal{C}$는 토러스 $T^2$이고, $179°$와 $-179°$를 멀다고 보는 플래너는 공간을 잘못 고른 것이다(§2).
-> - 점 둘로 찍은 $q_\mathrm{start}$와 $q_\mathrm{goal}$, 그리고 둘을 잇는 직선 구간, 곧 그래프의 유일한 간선.
-> - 말단만 보는 검사가 금지하는 영역 $\cos\theta_1+\cos(\theta_1+\theta_2)<1$의 음영과, 나머지에 붙인 $\mathcal{C}_\mathrm{free}$라는 이름.
-> - 그 구간에서 경계 위에 놓이는 점 하나. 자유 공간이 아니라 접촉으로 표시한다.
-> - 오른쪽 구간에서 왼쪽에서 말단이 그리는 곡선으로 가는 화살표 하나와 순기구학 $f$라는 이름. 두 칸은 한 대상의 두 시점이 아니다. 오른쪽은 컨피규레이션의 집합, 왼쪽은 위치의 집합이고, 둘을 잇는 것은 그 화살표뿐이다.
+> - 왼쪽 칸, 작업 영역: 원점의 베이스, 그 둘레 반지름 $2$ m의 도달 원판, $x=1$에 수직선으로 그린 말단 금지 반평면의 경계와 $x<1$ 쪽의 빗금, 그리고 그 선 위의 과제 점 $p^\star=(1,1)$ m.
+> - 팔은 두 번: 한 번은 $+x$ 방향으로 곧게 펴서 말단이 $(2,0)$에, 한 번은 새 목표에서 엘보가 $(0,1)$, 전완이 $+x$를 따라 선 위의 말단까지.
+> - 오른쪽 칸, 컨피규레이션 공간: 각각 $-180°$에서 $180°$까지인 $\theta_1$, $\theta_2$ 축과, 마주 보는 변이 서로 붙어 있다는 메모($\mathcal{C}=T^2$, §2).
+> - 점 둘로 찍은 $q_\mathrm{start}=(0°,0°)$와 새 $q_\mathrm{goal}=(90°,-90°)$, 그리고 둘을 잇는 대각선 구간 $\theta(s)=(90°s,\ -90°s)$. 위 그림의 간선, 곧 $(0°,0°)$에서 $(0°,90°)$까지 위로 가는 구간은 비교용으로 흐리게 그린다.
+> - 말단만 보는 검사가 금지하는 영역 $\cos\theta_1+\cos(\theta_1+\theta_2)<1$의 음영과, 나머지에 붙인 $\mathcal{C}_\mathrm{free}$. 대각선 위에서는 $\theta_1+\theta_2=0$이라 검사가 $1+\cos90°s\ge1$이 되므로 자유이고, 목표만 경계 위에 있어 접촉으로 표시한다.
+> - 오른쪽의 두 구간에서 왼쪽의 말단 곡선으로 가는 화살표 둘, 둘 다 $f$라는 이름. 둘은 같은 사분원에 떨어진다. 컨피규레이션 공간의 간선은 둘인데 말단 경로는 하나 — $f$는 다대일이다.
+> - 왼쪽에 새 간선을 따라가는 엘보의 경로, 곧 $(1,0)$에서 $(0,1)$까지 $x<1$ 안을 지나는 사분원. 말단 검사는 그것을 보지 않고, 그것이 바로 이 검사가 구별하지 못하는 것이다.
 
 > [!tip]- 정답 · Solutions
-> 1. $\mathcal{C}=T^2$의 점 둘, 선분 하나. 목표는 접촉 집합 위.
+> 1. 새 간선은 대각선 $\theta(s)=(90^\circ s,\ -90^\circ s)$다. 그 위에서 $\theta_1+\theta_2=0$이므로 전완은 늘 $+x$를 가리키고 말단은 $(1+\cos90^\circ s,\ \sin90^\circ s)$, 곧 위 그림의 간선과 같은 사분원 위에 있다. 따라서 $\cos\theta_1+\cos(\theta_1+\theta_2)=1+\cos90^\circ s\ge1$이고 등호는 $s=1$에서뿐이다. 열린 구간은 자유이고 목표는 다시 경계 위에 있다. $\mathcal{C}$의 서로 다른 두 구간이 $f$를 거쳐 작업 영역의 한 곡선으로 가고, 말단만 보는 검사는 둘에 같은 점수를 준다. 다른 점은 그 검사에 보이지 않는다. 위 그림의 간선에서는 엘보가 $(1,0)$에 머물지만, 이 간선에서는 $(1,0)$에서 $(0,1)$까지 $x<1$을 지나 휘돈다. 팔 전체를 보는 검사, 또는 [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]의 물리적 패널이라면 그것을 봐야 한다.
 > 2. $x(s)=1$은 $s=1$뿐이라 열린 선분은 자유. A*는 그 간선 하나를 가능 경로로 반환한다.
 > 3. 경로는 힘이 없는 기하. 탐색은 $k_w$, $\mu$, $F_n$을 모른다 — 접촉이지 $\mathcal{C}_\mathrm{free}$가 아니다(스스로 점검 1).
 

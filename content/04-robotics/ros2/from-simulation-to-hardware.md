@@ -548,21 +548,21 @@ Writing a hardware component for a bus that has no driver, and motor-controller 
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. Encoder $2048$ counts/m, control $200\,\mathrm{Hz}$, budget $70\,\mathrm{ms}$. The Gazebo plugin is swapped for a vendor hardware component. No new simulator.
 
-1. **Draw.** Same controller YAML as in simulation. The one URDF line that changed. Five-line timeline of `read` (encoder) – `update` ($200\,\mathrm{Hz}$) – `write` (motor), with the $70\,\mathrm{ms}$ camera-to-force budget drawn *across* that loop, not inside `update`.
+1. **Draw.** The picture above for the slow driver of item 2(a), whose `read()` blocks for $3.0\,\mathrm{ms}$: panel A with the same controller YAML on both sides, the one URDF line that changed and the E-stop wiring; panel B with one $5\,\mathrm{ms}$ cycle to scale — `read`, `update`, `write` — and the same $7\,\mathrm{ms}$ overrun bar under it. Write on the bar what is left for `update()` and the new ceiling $f_{\max}$.
 2. **Derive.** (a) The vendor's `read()` turns out to block for $3.0\,\mathrm{ms}$, not $1.2$. Redo the worked case's Steps 1, 2 and 4: what is left for `update()`, the new $f_{\max}$, and the new end-to-end ledger against $70\,\mathrm{ms}$. Is $200\,\mathrm{Hz}$ still a defensible `update_rate`? (b) An RT_PREEMPT kernel bounds scheduling latency. Does it bound P6's $70\,\mathrm{ms}$? (c) Two machines list each other's nodes; `echo` is empty. First suspect, and why not QoS?
 3. **Interpret.** E-stop as `/p6/estop` at $200\,\mathrm{Hz}$. What failure modes does it share with the controller it is meant to kill? Separately: a $200\,\mathrm{ms}$-late camera on the real cart — plugin line or budget?
 
 > [!note]- How to draw it · 그리는 법
 > - **The seam is a line across the page**, the `<ros2_control>` block. Above it, unchanged from 25.7: the controller, the controller manager and its `update_rate`. Below it, replacing Gazebo, two stacked boxes: the vendor hardware component, and the drive that closes its own loop at tens of kHz.
-> - **The same controller YAML goes on both sides** of a dashed vertical divider marked `simulation | hardware`, because the claim of §2 is that nothing above the line changed.
-> - **The E-stop is a separate line** that reaches the drive without passing through any box above it, since §7's whole point is that a stop routed through your code is not a stop: the diagram is wrong the moment the E-stop passes through the controller or the component.
-> - **The component carries its two lifecycle transitions**, `on_configure` and `on_activate`, with a note on the second that it is the only one allowed to energise anything.
-> - **One cycle is a bar drawn to scale**, $1/f_c$ long, ruled in $0.5\,\mathrm{ms}$ divisions and split into three labelled segments, `read`, `update` (the remainder) and `write`, with each bus time written on its segment (a $5\,\mathrm{ms}$ bar with `read` $1.2$ and `write` $0.8$ in the worked case).
-> - **An overrun is a second bar under the first**, aligned to the same origin, so its overshoot is a visible overhang past the first bar's end ($7\,\mathrm{ms}$, overhanging by $2$, in the worked case).
-> - **Beside each bar, write the velocity one encoder count implies** over that bar's own period, and label the pair with the sentence the figure argues: *the mean survived; the variance is the number that moved.*
+> - **The same controller YAML goes on both sides** of a dashed vertical divider marked `simulation | hardware`, and the one changed line is the `<plugin>` inside `<ros2_control>`: a slower driver changes nothing above the line.
+> - **The E-stop is a separate line** that reaches the drive without passing through any box above it; the diagram is wrong the moment the E-stop passes through the controller or the component.
+> - **One cycle is a bar drawn to scale**, $5\,\mathrm{ms}$ long in $0.5\,\mathrm{ms}$ divisions, split into `read` $3.0$, `update` $1.2$ and `write` $0.8\,\mathrm{ms}$. Draw the picture's bar ($1.2$, $3.0$, $0.8$) faintly above it: the same length, with the middle segment cut by $60\%$.
+> - **An overrun is a second bar under the first**, aligned to the same origin, $7\,\mathrm{ms}$ long and overhanging by $2$.
+> - **Beside each bar, the velocity one encoder count implies** over that bar's period, $97.7$ and $69.8\,\mathrm{mm/s}$ — unchanged, because the driver moved time inside the cycle, not the cycle.
+> - **Under the bars, the ceiling** $f_{\max}=1/(3.0+0.8)\,\mathrm{ms}=263\,\mathrm{Hz}$, with $200\,\mathrm{Hz}$ marked at $76\%$ of it.
 
 > [!tip]- Solutions
-> 1. `<plugin>` inside `<ros2_control>` is the only change. Timeline: encoder `read` every $5\,\mathrm{ms}$; camera path is a second chain that must still finish by $70\,\mathrm{ms}$.
+> 1. Panel A is the picture's: the same YAML on both sides of the divider, the one changed line the `<plugin>` inside `<ros2_control>`, and the E-stop a separate wire to the drive. Panel B: the $5\,\mathrm{ms}$ bar splits into `read` $3.0$, `update` $1.2$ and `write` $0.8\,\mathrm{ms}$, so bus time is $3.8$ of $5$ and `update` has $1.2\,\mathrm{ms}$ instead of $3.0$. Under it the $7\,\mathrm{ms}$ overrun overhangs by $2\,\mathrm{ms}$; one count over the two periods reads $97.7$ and $69.8\,\mathrm{mm/s}$, as in the picture. The ceiling $f_{\max}=1/3.8\,\mathrm{ms}=263\,\mathrm{Hz}$ puts $200\,\mathrm{Hz}$ at $76\%$ of it, against $40\%$ before: item 2(a)'s arithmetic, drawn.
 > 2. (a) Bus time becomes $3.0+0.8=3.8\,\mathrm{ms}$ of the $5\,\mathrm{ms}$ cycle, so `update()` is left $1.2\,\mathrm{ms}$ instead of $3.0$ — a $60\%$ cut for a $1.8\,\mathrm{ms}$ change in the driver. The ceiling falls to $f_{\max}=1/0.0038=263\,\mathrm{Hz}$, so $200\,\mathrm{Hz}$ now sits at $76\%$ of it rather than $40\%$, and the ledger rises to $20+5+3.8+5=33.8\,\mathrm{ms}$, leaving $36.2$. Defensible but no longer comfortable: one overrun now costs the same $2\,\mathrm{ms}$ out of a thinner margin, and the honest move is to measure the worst cycle before keeping the rate. (b) No — it bounds the thread's start, not camera transport, serialisation, or `write`. Hard deadlines belong in the motor drive. (c) Unicast data blocked while multicast discovery lives. `echo` adapts QoS, so empty echo is not a QoS miss.
 > 3. Hung executor, dropped DDS, unplugged cable — the message never arrives. E-stop must be wired. The late camera is the same $70\,\mathrm{ms}$ budget as in sim; swapping the plugin does not buy you milliseconds.
 
@@ -1088,20 +1088,20 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**를 *실제* 카트에. 엔코더 $2048$ counts/m, 제어 $200\,\mathrm{Hz}$, 예산 $70\,\mathrm{ms}$. Gazebo 플러그인을 벤더 하드웨어 컴포넌트로 바꿨다. 시뮬레이터를 새로 만들지 마라.
 
-1. **그리기.** 시뮬레이션과 같은 제어기 YAML. 바뀐 URDF 한 줄. `read`(엔코더) – `update`($200\,\mathrm{Hz}$) – `write`(모터)의 다섯 줄 타임라인. $70\,\mathrm{ms}$ 카메라–힘 예산은 `update` *안*이 아니라 그 루프를 *가로질러* 그린다.
+1. **그리기.** `read()`가 $3.0\,\mathrm{ms}$ 블록하는 2(a)번의 느린 드라이버에 대한 위의 그림: 양쪽에 같은 제어기 YAML, 바뀐 URDF 한 줄, E-stop 배선을 담은 패널 A, 그리고 실제 비율의 $5\,\mathrm{ms}$ 주기 하나 — `read`, `update`, `write` — 와 그 아래의 같은 $7\,\mathrm{ms}$ overrun 막대를 담은 패널 B. 막대 위에 `update()`에 남는 시간과 새 천장 $f_{\max}$를 적어라.
 2. **유도.** (a) 벤더의 `read()`가 $1.2$가 아니라 $3.0\,\mathrm{ms}$ 동안 블록하는 것으로 드러났다. 계산 절의 Step 1, 2, 4를 다시 하라. `update()`에 남는 시간, 새 $f_{\max}$, 그리고 $70\,\mathrm{ms}$에 대한 새 종단 장부. $200\,\mathrm{Hz}$는 여전히 방어할 수 있는 `update_rate`인가? (b) RT_PREEMPT 커널이 스케줄 지연을 유계로 만든다. P6의 $70\,\mathrm{ms}$도 유계로 만드는가? (c) 두 머신이 서로의 노드를 나열하고 `echo`는 빔. 첫 의심, 왜 QoS가 아닌가?
 3. **해석.** E-stop을 $200\,\mathrm{Hz}$의 `/p6/estop`으로. 그것이 죽이려는 제어기와 어떤 실패 모드를 공유하는가? 별도로: 실제 카트의 $200\,\mathrm{ms}$ 늦은 카메라 — 플러그인 줄인가 예산인가?
 
 > [!note]- 그리는 법 · How to draw it
 > - **이음매는 페이지를 가로지르는 선이다.** `<ros2_control>` 블록을 수평선으로 긋는다. 위쪽은 25.7에서 그대로인 제어기, 컨트롤러 매니저, 그리고 그 `update_rate`. 아래쪽에는 Gazebo를 대신하는 상자 둘을 쌓는다. 벤더 하드웨어 컴포넌트, 그리고 수십 kHz로 자기 루프를 닫는 드라이브.
-> - **같은 제어기 YAML을 양쪽에 적는다.** `시뮬레이션 | 하드웨어`라고 적은 세로 점선 양쪽에. 선 위쪽은 아무것도 바뀌지 않았다는 것이 §2의 주장이기 때문이다.
-> - **E-stop은 별도의 선이다.** 위쪽의 어떤 상자도 거치지 않고 드라이브에 닿게 그린다. 내 코드를 지나는 정지는 정지가 아니라는 것이 §7의 요점이므로, E-stop이 제어기나 컴포넌트를 지나는 순간 그림은 틀린 것이다.
-> - **컴포넌트에 라이프사이클 전이 둘을 표시한다.** `on_configure`와 `on_activate`. 두 번째에는 무언가에 전원을 넣어도 되는 유일한 전이라고 주석을 단다.
-> - **주기 하나는 실제 비율의 막대다.** 길이 $1/f_c$에 $0.5\,\mathrm{ms}$ 눈금을 긋고 `read`, `update`(나머지), `write`의 이름 붙은 구간 셋으로 나눈 뒤, 버스 시간을 각 구간에 적는다(계산 절에서는 $5\,\mathrm{ms}$ 막대에 `read` $1.2$, `write` $0.8$).
-> - **overrun은 첫 막대 아래의 둘째 막대다.** 같은 원점에 맞춰 그려서 초과분이 첫 막대 끝을 넘어 튀어나오게 한다(계산 절에서는 $7\,\mathrm{ms}$, 초과분 $2$).
-> - **막대마다 엔코더 한 카운트가 함의하는 속도를 옆에 적는다.** 그 막대 자신의 주기로 나눈 값이다. 그리고 두 막대에 이 그림이 논증하는 문장을 붙인다. *평균은 살아남았고, 움직인 숫자는 산포다.*
+> - **같은 제어기 YAML을 양쪽에 적는다.** `시뮬레이션 | 하드웨어`라고 적은 세로 점선 양쪽에. 바뀐 한 줄은 `<ros2_control>` 안의 `<plugin>`이다. 느린 드라이버는 선 위쪽의 아무것도 바꾸지 않는다.
+> - **E-stop은 별도의 선이다.** 위쪽의 어떤 상자도 거치지 않고 드라이브에 닿게 그린다. E-stop이 제어기나 컴포넌트를 지나는 순간 그림은 틀린 것이다.
+> - **주기 하나는 실제 비율의 막대다.** 길이 $5\,\mathrm{ms}$에 $0.5\,\mathrm{ms}$ 눈금을 긋고 `read` $3.0$, `update` $1.2$, `write` $0.8\,\mathrm{ms}$로 나눈다. 위 그림의 막대($1.2$, $3.0$, $0.8$)를 그 위에 흐리게 그린다. 길이는 같고 가운데 구간이 $60\%$ 잘렸다.
+> - **overrun은 첫 막대 아래의 둘째 막대다.** 같은 원점에 맞춰 $7\,\mathrm{ms}$ 길이로, $2$만큼 튀어나오게 그린다.
+> - **막대마다 엔코더 한 카운트가 함의하는 속도를 옆에 적는다.** $97.7$과 $69.8\,\mathrm{mm/s}$ — 드라이버가 옮긴 것은 주기 안의 시간이지 주기가 아니므로 그대로다.
+> - **막대 아래에 천장**을 적는다. $f_{\max}=1/(3.0+0.8)\,\mathrm{ms}=263\,\mathrm{Hz}$, 그리고 그 $76\%$ 자리에 $200\,\mathrm{Hz}$ 표시.
 
 > [!tip]- 정답 · Solutions
-> 1. `<ros2_control>` 안의 `<plugin>`만 바뀐다. 타임라인: $5\,\mathrm{ms}$마다 엔코더 `read`; 카메라 경로는 $70\,\mathrm{ms}$까지 끝나야 하는 둘째 사슬.
+> 1. 패널 A는 위 그림과 같다. 점선 양쪽에 같은 YAML, 바뀐 한 줄은 `<ros2_control>` 안의 `<plugin>`, E-stop은 드라이브로 가는 별도의 선이다. 패널 B: $5\,\mathrm{ms}$ 막대가 `read` $3.0$, `update` $1.2$, `write` $0.8\,\mathrm{ms}$로 나뉘므로 버스 시간이 $5$ 중 $3.8$이고 `update`에는 $3.0$이 아니라 $1.2\,\mathrm{ms}$가 남는다. 그 아래 $7\,\mathrm{ms}$ overrun은 $2\,\mathrm{ms}$ 튀어나온다. 두 주기에 걸친 한 카운트는 위 그림과 같이 $97.7$과 $69.8\,\mathrm{mm/s}$다. 천장 $f_{\max}=1/3.8\,\mathrm{ms}=263\,\mathrm{Hz}$에서 $200\,\mathrm{Hz}$는 그 $76\%$로, 전의 $40\%$보다 높다. 2(a)번의 산수를 그린 것이다.
 > 2. (a) 버스 시간이 $5\,\mathrm{ms}$ 주기 중 $3.0+0.8=3.8\,\mathrm{ms}$가 되어 `update()`에는 $3.0$ 대신 $1.2\,\mathrm{ms}$만 남는다. 드라이버가 $1.8\,\mathrm{ms}$ 바뀌었는데 $60\%$가 깎였다. 천장은 $f_{\max}=1/0.0038=263\,\mathrm{Hz}$로 내려가 $200\,\mathrm{Hz}$가 $40\%$가 아니라 그 $76\%$에 앉고, 장부는 $20+5+3.8+5=33.8\,\mathrm{ms}$로 올라 $36.2$가 남는다. 방어는 되지만 더는 넉넉하지 않다. overrun 한 번이 더 얇아진 여유에서 같은 $2\,\mathrm{ms}$를 가져가므로, 정직한 수는 속도를 유지하기 전에 최악 주기를 재는 것이다. (b) 아니오 — 스레드가 *시작*하는 시간을 묶지, 카메라 전송·직렬화·`write`를 묶지 않는다. 경성 마감은 모터 드라이브의 몫. (c) 멀티캐스트 탐색은 살고 유니캐스트 데이터가 막힘. `echo`는 QoS를 맞추므로 빈 echo는 QoS 실패가 아니다.
 > 3. 멈춘 executor, 끊긴 DDS, 뽑힌 케이블 — 메시지가 안 온다. E-stop은 배선이어야 한다. 늦은 카메라는 시뮬과 같은 $70\,\mathrm{ms}$ 예산이고, 플러그인을 바꾼다고 밀리초가 생기지는 않는다.

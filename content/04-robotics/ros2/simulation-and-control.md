@@ -727,22 +727,20 @@ Writing a hardware component of your own — a real driver behind the same inter
 
 Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. Controller `update_rate: 200`. Vision is a bridged camera at $50\,\mathrm{Hz}$. Budget $70\,\mathrm{ms}$. No new Euler simulator.
 
-1. **Draw.** P6 cart in Gazebo: `gz_ros2_control` hardware plugin, joint-state broadcaster, a velocity controller, `/clock` bridge. Five-line timeline on *sim* time: camera exposure, bridge, controller `read`–`update`–`write`, force. Mark the $70\,\mathrm{ms}$ budget.
+1. **Draw.** The picture above at item 2(a)'s rates, `update_rate: 500` and the camera at $30\,\mathrm{Hz}$: panel A with the new rate on the controller manager, and panel B on sim time over $0$–$100\,\mathrm{ms}$ — camera exposure, bridge, controller `read`–`update`–`write`, force — with the $70\,\mathrm{ms}$ budget, one frame's command span shaded, and the instants where a camera tick and a control tick coincide.
 2. **Derive.** (a) Redo the worked case's Steps 1–3 with `update_rate: 500` and the camera at $30\,\mathrm{Hz}$: the tick-per-frame ratio, the velocity quantum from one-count differencing, and the rate ledger against the $70\,\mathrm{ms}$ budget. Say which of the two changes helped and which hurt. (b) The controller is `active` and the cart does not move. First command, most likely cause. (c) No `/clock` bridge; a trajectory is stamped with wall time. What does the sim-time controller read?
 3. **Interpret.** A $200\,\mathrm{ms}$-late bridged vision frame still meets Gazebo's physics rate. Does it meet P6's budget? What can a Gazebo success claim, and what can it not?
 
 > [!note]- How to draw it · 그리는 법
-> - **Panel A nests three boxes left of the seam**: `Gazebo Harmonic`, holding the physics and the model, contains the `gz_ros2_control` system plugin, which contains the controller manager with its `update_rate`. Right of the dashed seam sit `joint_state_broadcaster` and the velocity controller.
-> - **Interfaces are named arrows, not plain lines**: `cart/position` and `cart/velocity` cross the seam left to right as state, and `cart/velocity` comes back right to left as command.
-> - **The command arrow carries a claim mark**, `[available] [claimed]`, because §6's exclusivity rule is that exactly one active controller may hold it.
-> - **`/clock` leaves Gazebo and enters ROS**, never the reverse, since the simulator owns the time: the diagram is wrong the moment that arrow points into Gazebo.
-> - **The camera arrow crosses a box marked `ros_gz_bridge`** with the direction token written on it, because §3's point is that an unbridged topic does not exist on the ROS side and reports no error.
-> - **Panel B is five parallel lanes against one axis in simulated seconds** — camera exposure, bridge, controller read, controller update/write, force at the cart — ruled every control period ($0$ to $80\,\mathrm{ms}$ every $5\,\mathrm{ms}$ in the picture).
-> - **The tick spacing shows the ratio**: camera ticks $T_v$ apart and control ticks $T_c$ apart, so $f_c/f_v$ control ticks visibly fit in one camera interval and all but one of them carry no new goal (four and three at the worked case's $200$ and $50\,\mathrm{Hz}$).
-> - **Shade one frame and bracket the budget**: from one camera tick, shade the span during which a command derived from that frame is still on the actuator and write its length, $L+T_v+T_c$; draw the $70\,\mathrm{ms}$ budget as a bracket under the axis, and beneath it the sentence the figure exists to make arguable: *this axis is sim time, and the budget is wall time.*
+> - **Panel A nests three boxes left of the seam**: `Gazebo Harmonic`, holding the physics and the model, contains the `gz_ros2_control` system plugin, which contains the controller manager, now labelled `update_rate: 500`. Right of the dashed seam sit `joint_state_broadcaster` and the velocity controller.
+> - **Interfaces are named arrows, not plain lines**: `cart/position` and `cart/velocity` cross the seam left to right as state, and `cart/velocity` comes back right to left as command, with the claim mark `[available] [claimed]`.
+> - **`/clock` leaves Gazebo and enters ROS**, never the reverse, and **the camera arrow crosses a box marked `ros_gz_bridge`**: neither changes with the rates.
+> - **Panel B is five parallel lanes against one axis in simulated milliseconds**, $0$ to $100$, with control ticks every $T_c=2\,\mathrm{ms}$ (mark every fifth if fifty is too many) and camera frames every $T_v=33.3\,\mathrm{ms}$, at $0$, $33.3$, $66.7$ and $100$.
+> - **Circle the coincidences**: a camera tick lands on a control tick only at $0$ and $100\,\mathrm{ms}$, because $500/30=16.7$ is not an integer. Between them the goal's age at a tick differs from frame to frame, which the picture's clean ratio of $4$ hid.
+> - **Shade one frame and bracket the budget**: from one camera tick, shade the span during which its command is still on the actuator, $L+T_v+T_c=L+35.3\,\mathrm{ms}$, against the picture's $L+25$. Draw the $70\,\mathrm{ms}$ budget as a bracket under the axis, with the sentence *this axis is sim time, and the budget is wall time.*
 
 > [!tip]- Solutions
-> 1. Plugin `gz_ros2_control/GazeboSimSystem`; `/clock` out of Gazebo into ROS. Timeline in sim time, not wall time.
+> 1. Panel A is the picture's with `update_rate: 500`; the plugin is still `gz_ros2_control/GazeboSimSystem`, and `/clock` still leaves Gazebo into ROS. Panel B: control ticks every $2\,\mathrm{ms}$ and camera frames every $33.3\,\mathrm{ms}$, coinciding only at $0$ and $100\,\mathrm{ms}$ — $50$ ticks and three frames — so the goal's age at a tick changes from frame to frame. A frame's command can still be on the cart $L+T_v+T_c=L+35.3\,\mathrm{ms}$ after mid-exposure, against $L+25$ in the picture: the faster loop took $3\,\mathrm{ms}$ off and the slower camera added $13.3$, which is item 2(a)'s ledger, drawn. The axis is sim time and the budget wall time, as before.
 > 2. (a) $T_c=1/500=2\,\mathrm{ms}$ and $T_v=1/30=33.3\,\mathrm{ms}$, so the ratio is $500/30=16.7$ — *not* an integer, so ticks and frames line up only once every three frames ($100\,\mathrm{ms}=50$ ticks) and the goal's age differs from tick to tick, which the catalog's clean $4$ hid. The velocity quantum rises to $\Delta p/0.002=244\,\mathrm{mm/s}$, worse than the catalog's $97.7$, since a shorter differencing window divides the same single count by a smaller time. The ledger becomes $33.3+2=35.3\,\mathrm{ms}$, leaving $34.7$ against the catalog's $45$: the faster loop bought $3\,\mathrm{ms}$ and the slower camera cost $13.3$, a net loss of $10.3\,\mathrm{ms}$. The term you cannot reach from the controller is the one that dominates. (b) `ros2 control list_controllers`, to confirm it really reads `active`. If it does, its interface is `[claimed]` and the cause is downstream: the command topic, the stamp or `time_from_start`, or a paused simulation. A joint-name mismatch among URDF, `<ros2_control>`, YAML would have left it `inactive`. (c) A start far in the future (unless the stamp is zero, "start now").
 > 3. No: $200>70$. Gazebo success claims plumbing — interfaces, rates, launch. Not that the $70\,\mathrm{ms}$ camera-to-force chain, or contact, will hold on hardware.
 
@@ -1466,21 +1464,19 @@ Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고
 
 Tier B. Gazebo Harmonic 안의 [[02-foundations/lab-plants|0.6]] **P6**. 제어기 `update_rate: 200`. 비전은 $50\,\mathrm{Hz}$로 브리지된 카메라. 예산 $70\,\mathrm{ms}$. 새 오일러 시뮬레이터는 만들지 마라.
 
-1. **그리기.** Gazebo의 P6 카트: `gz_ros2_control` 하드웨어 플러그인, joint-state broadcaster, 속도 제어기, `/clock` 브리지. *시뮬* 시간의 다섯 줄 타임라인: 카메라 노출, 브리지, 제어기 `read`–`update`–`write`, 힘. $70\,\mathrm{ms}$ 예산 표시.
+1. **그리기.** 2(a)번의 주기, `update_rate: 500`과 $30\,\mathrm{Hz}$ 카메라에서의 위 그림: 컨트롤러 매니저에 새 주기를 적은 패널 A, 그리고 $0$–$100\,\mathrm{ms}$의 시뮬 시간 위 패널 B — 카메라 노출, 브리지, 제어기 `read`–`update`–`write`, 힘 — 와 $70\,\mathrm{ms}$ 예산, 음영으로 칠한 프레임 하나의 명령 구간, 그리고 카메라 틱과 제어 틱이 겹치는 순간들.
 2. **유도.** (a) 계산 절의 Step 1–3을 `update_rate: 500`과 $30\,\mathrm{Hz}$ 카메라로 다시 하라. 프레임당 틱 비, 한 카운트 차분의 속도 양자, 그리고 $70\,\mathrm{ms}$ 예산에 대한 속도 장부. 두 변경 중 무엇이 도왔고 무엇이 해쳤는지 말하라. (b) 제어기는 `active`인데 카트가 안 움직인다. 첫 명령, 가장 유력한 원인. (c) `/clock` 브리지가 없고 궤적에 벽시계 스탬프. 시뮬 시간 제어기는 무엇을 읽는가?
 3. **해석.** $200\,\mathrm{ms}$ 늦은 브리지 비전 프레임이 Gazebo 물리 주기는 만족한다. P6 예산을 만족하는가? Gazebo 성공이 주장할 수 있는 것과 없는 것은?
 
 > [!note]- 그리는 법 · How to draw it
-> - **패널 A는 이음매 왼쪽에 상자 셋을 겹쳐 넣는다.** 물리와 모델을 쥔 `Gazebo Harmonic` 안에 `gz_ros2_control` system plugin, 다시 그 안에 `update_rate`를 적은 컨트롤러 매니저. 점선 이음매 오른쪽에는 `joint_state_broadcaster`와 속도 제어기를 둔다.
-> - **인터페이스는 맨 선이 아니라 이름 붙은 화살표다.** 상태인 `cart/position`과 `cart/velocity`는 왼쪽에서 오른쪽으로 이음매를 건너고, 명령인 `cart/velocity`는 오른쪽에서 왼쪽으로 돌아온다.
-> - **명령 화살표에는 점유 표시를 단다.** `[available] [claimed]`라고 적는다. §6의 배타성 규칙이 활성 제어기 정확히 하나만 그것을 쥘 수 있다는 것이기 때문이다.
-> - **`/clock` 화살표는 Gazebo에서 나와 ROS로 들어간다.** 반대 방향은 없다. 시간을 소유한 쪽이 시뮬레이터이므로, 그 화살표가 Gazebo를 향하는 순간 그림은 틀린 것이다.
-> - **카메라 화살표는 `ros_gz_bridge`라고 쓴 상자를 지나간다.** 상자 위에 방향 토큰을 적는다. 브리지되지 않은 토픽은 ROS 쪽에 존재하지 않으면서 아무 오류도 내지 않는다는 것이 §3의 요점이기 때문이다.
-> - **패널 B는 시뮬레이션 초로 된 축 하나에 건 평행한 레인 다섯이다.** 카메라 노출, 브리지, 제어기 read, 제어기 update/write, 카트에 걸리는 힘. 눈금은 제어 주기마다 긋는다(위의 그림에서는 $0$에서 $80\,\mathrm{ms}$까지 $5\,\mathrm{ms}$마다).
-> - **틱 간격이 비를 보여 준다.** 카메라 틱은 $T_v$ 간격, 제어 틱은 $T_c$ 간격으로 찍어, 카메라 한 구간 안에 제어 틱 $f_c/f_v$개가 들어가고 그중 하나를 뺀 나머지에는 새 목표가 없다는 것이 눈에 보이게 한다(계산 절의 $200$과 $50\,\mathrm{Hz}$에서는 넷과 셋).
-> - **프레임 하나를 칠하고 예산을 괄호로 묶는다.** 카메라 틱 하나에서 시작해, 그 프레임에서 나온 명령이 아직 구동기에 걸려 있는 구간을 음영으로 칠하고 그 길이 $L+T_v+T_c$를 적는다. 축 아래에 $70\,\mathrm{ms}$ 예산을 괄호로 긋고, 괄호 밑에 이 그림이 존재하는 이유인 한 문장을 적는다. *이 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.*
+> - **패널 A는 이음매 왼쪽에 상자 셋을 겹쳐 넣는다.** 물리와 모델을 쥔 `Gazebo Harmonic` 안에 `gz_ros2_control` system plugin, 다시 그 안에 이제 `update_rate: 500`이라 적은 컨트롤러 매니저. 점선 이음매 오른쪽에는 `joint_state_broadcaster`와 속도 제어기를 둔다.
+> - **인터페이스는 맨 선이 아니라 이름 붙은 화살표다.** 상태인 `cart/position`과 `cart/velocity`는 왼쪽에서 오른쪽으로 이음매를 건너고, 명령인 `cart/velocity`는 점유 표시 `[available] [claimed]`를 달고 오른쪽에서 왼쪽으로 돌아온다.
+> - **`/clock`은 Gazebo에서 나와 ROS로 들어가고**(반대 방향은 없다), **카메라 화살표는 `ros_gz_bridge`라고 쓴 상자를 지나간다.** 둘 다 주기와 상관없이 그대로다.
+> - **패널 B는 시뮬레이션 밀리초로 된 축 하나에 건 평행한 레인 다섯이다.** $0$부터 $100$까지이고, 제어 틱은 $T_c=2\,\mathrm{ms}$마다(쉰 개가 너무 많으면 다섯째마다 표시), 카메라 프레임은 $T_v=33.3\,\mathrm{ms}$마다, 곧 $0$, $33.3$, $66.7$, $100$에 둔다.
+> - **겹치는 순간에 동그라미를 친다.** $500/30=16.7$이 정수가 아니므로 카메라 틱이 제어 틱과 겹치는 것은 $0$과 $100\,\mathrm{ms}$뿐이다. 그 사이에서는 틱에서 본 목표의 나이가 프레임마다 다르고, 위 그림의 깔끔한 비 $4$가 그것을 가렸다.
+> - **프레임 하나를 칠하고 예산을 괄호로 묶는다.** 카메라 틱 하나에서 시작해 그 명령이 아직 구동기에 걸려 있는 구간 $L+T_v+T_c=L+35.3\,\mathrm{ms}$를 칠하고, 위 그림의 $L+25$와 견준다. 축 아래에 $70\,\mathrm{ms}$ 예산을 괄호로 긋고 한 문장을 적는다. *이 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.*
 
 > [!tip]- 정답 · Solutions
-> 1. 플러그인 `gz_ros2_control/GazeboSimSystem`; Gazebo에서 ROS로 `/clock`. 타임라인은 벽시계가 아니라 시뮬 시간.
+> 1. 패널 A는 `update_rate: 500`인 위 그림이다. 플러그인은 여전히 `gz_ros2_control/GazeboSimSystem`이고 `/clock`도 여전히 Gazebo에서 ROS로 나간다. 패널 B: 제어 틱은 $2\,\mathrm{ms}$마다, 카메라 프레임은 $33.3\,\mathrm{ms}$마다 오고, 둘은 $0$과 $100\,\mathrm{ms}$에서만 겹친다 — 틱 $50$개, 프레임 셋. 그래서 틱에서 본 목표의 나이가 프레임마다 바뀐다. 한 프레임의 명령은 노출 중간 뒤 $L+T_v+T_c=L+35.3\,\mathrm{ms}$까지 카트에 걸려 있을 수 있고, 위 그림은 $L+25$였다. 빠른 루프가 $3\,\mathrm{ms}$를 덜고 느린 카메라가 $13.3$을 더했다. 2(a)번의 장부를 그린 것이다. 축은 시뮬 시간이고 예산은 벽시계 시간인 것도 그대로다.
 > 2. (a) $T_c=1/500=2\,\mathrm{ms}$, $T_v=1/30=33.3\,\mathrm{ms}$이므로 비는 $500/30=16.7$이다. 정수가 *아니어서* 틱과 프레임이 세 프레임에 한 번($100\,\mathrm{ms}=50$틱)만 맞아떨어지고 목표의 나이가 틱마다 달라진다. 카탈로그의 깔끔한 $4$가 가리고 있던 사실이다. 속도 양자는 $\Delta p/0.002=244\,\mathrm{mm/s}$로 올라 카탈로그의 $97.7$보다 나빠진다. 차분 창이 짧아지면 같은 한 카운트를 더 작은 시간으로 나누기 때문이다. 장부는 $33.3+2=35.3\,\mathrm{ms}$가 되어 카탈로그의 $45$ 대신 $34.7$만 남는다. 빠른 루프가 $3\,\mathrm{ms}$를 벌고 느린 카메라가 $13.3$을 썼으니 순손실 $10.3\,\mathrm{ms}$다. 제어기에서 손댈 수 없는 항이 지배한다. (b) `ros2 control list_controllers`로 정말 `active`인지 확인. 그렇다면 인터페이스는 `[claimed]`이고 원인은 그 아래다. 명령 토픽, 스탬프나 `time_from_start`, 일시정지된 시뮬레이션. URDF, `<ros2_control>`, YAML 사이 관절 이름 불일치였다면 `inactive`로 남았을 것이다. (c) 먼 미래 시작(스탬프 0, "지금 시작"이 아니면).
 > 3. 아니오: $200>70$. Gazebo 성공은 배관 — 인터페이스, 주기, launch — 을 주장한다. $70\,\mathrm{ms}$ 카메라–힘 사슬이나 접촉이 하드웨어에서 버틴다는 것은 아니다.

@@ -650,18 +650,18 @@ $x$의 좌표가 출력에 복사되는 자리에 1이, 부호를 뒤집어 복�
 
 ```mermaid
 flowchart LR
-    IM["D2 pixels · 8x8"] --> PA["patches u1..u4 · 4 x 16"]
-    PA --> EM["times E, plus e0 · 4 x 4"]
-    EM --> SUM["add"]
-    PT["position table P · one row per slot · 4 x 4"] --> SUM
+    IM["D2 픽셀 · 8x8"] --> PA["패치 u1..u4 · 4 x 16"]
+    PA --> EM["E를 곱하고 e0를 더한다 · 4 x 4"]
+    EM --> SUM["더한다"]
+    PT["위치 표 P · 자리마다 한 행 · 4 x 4"] --> SUM
     SUM --> X["X · 4 x 4"]
     X --> Q["Q = X WQ · 4 x 2"]
     X --> K["K = X WK · 4 x 2"]
     X --> V["V = X WV · 4 x 2"]
-    Q --> S["S = Q K^T / sqrt 2 · 4 x 4 · rows are queries"]
+    Q --> S["S = Q K^T / sqrt 2 · 4 x 4 · 행이 쿼리"]
     K --> S
-    S --> MK["optional causal mask · -inf above the diagonal"]
-    MK --> SM["softmax along each row · A · 4 x 4"]
+    S --> MK["선택: 인과 마스크 · 대각선 위는 -inf"]
+    MK --> SM["행마다 softmax · A · 4 x 4"]
     SM --> O["O = A V · 4 x 2"]
     V --> O
 ```
