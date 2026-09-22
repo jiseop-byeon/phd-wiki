@@ -19,6 +19,9 @@ stated as such.
 > next one* (system). Papers cite across all three; keeping them separate is what lets you
 > place a new paper precisely.
 
+> [!note] First pass · 처음이라면
+> Read §1's four eras and §4 on how to use the map first. §2 and §3 are reference you return to when a name or a machine comes up in a paper.
+
 ### 1. The technical genealogy — four eras
 
 **Era 1 — Japanese STCR (1980s–90s).** Shimizu, Obayashi, Kajima and peers built dozens
@@ -157,6 +160,9 @@ For example, start with a panel-fitting failure you can reproduce (panel fitting
 > "X가 Y에서 나왔다"는 세 가지 다른 뜻일 수 있다: *지도교수가 제자를 길렀다*(학술),
 > *방법론이 진화했다*(기술), *기계/플랫폼이 다음 기계로 자랐다*(시스템). 논문은 세 계보를
 > 넘나들며 인용한다 — 셋을 구분해야 새 논문을 정확히 배치할 수 있다.
+
+> [!note] 처음이라면 · First pass
+> §1의 네 시대와, 지도를 쓰는 법인 §4를 먼저 읽는다. §2와 §3은 논문에서 이름이나 기계가 나올 때 다시 찾아보는 참고다.
 
 ### 1. 기술 계보 — 네 시대
 

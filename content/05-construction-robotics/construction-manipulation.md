@@ -19,6 +19,66 @@ mastery-when: "This is the intersection the research program is built on — the
 
 ## English
 
+> [!note] First pass · 처음이라면
+> Read the Running object and look at the picture: the same S1 panel as [[05-construction-robotics/site-engineering|2.5]] and [[05-construction-robotics/assembly-fabrication|4]], followed to the instant its hole meets a locating pin. Then §1 and §2 for why construction contact differs from factory contact and which task needs what, and the Worked case after §3 for the four numbers that decide whether the panel seats. §3–§6 are what you read when choosing a dissertation task rather than learning the mechanics.
+
+### Running object · 이 페이지의 대상
+
+**S1** from [[05-construction-robotics/site-engineering|2.5 Site Robotics as an Engineering System]]: the $20\,\mathrm{kg}$ facade panel with two mounting holes $400\,\mathrm{mm}$ apart, followed past transport and alignment to the moment of contact, when each hole has to drop over a locating pin on its bracket. Everything before this moment is geometry; this is where it becomes manipulation.
+
+| Symbol | Value | What it is |
+|---|---:|---|
+| error budget | map $1$, base $2$, arm $1$, tool $0.5$, part $1\,\mathrm{mm}$ | S1's allocation (2.5 §2), read here as a two-sigma bound per horizontal axis for each source |
+| $D,\ d$ | $18$, $16\,\mathrm{mm}$ | hole and pin diameters: a bolt-clearance fit, diametral clearance $\Delta=2\,\mathrm{mm}$ |
+| $r_c$ | $4\,\mathrm{mm}$ | the radial error the pin's tapered nose can capture |
+| $\mu$ | $0.3$ | friction, steel on dusty steel |
+| $K_{\text{stiff}}$ | $10^5\,\mathrm{N/m}$ | a position-controlled arm pressed into steel: the series stiffness of [[04-robotics/force-compliance-control\|13]]'s running object |
+| $K_d$ | $500\,\mathrm{N/m}$ | a lateral target impedance, 13's $K_d$ |
+| $W$ | $196\,\mathrm{N}$ | the panel's weight, $20\times9.81$ |
+
+Reading the allocations as two-sigma bounds is this page's choice. 2.5 leaves it open, and its §2 is exactly the warning that the reading has to be stated. The pin, the lead-in and $\mu$ are this page's frozen numbers; everything else is S1 or catalog.
+
+*Scope: this page maps construction tasks to manipulation needs, places evidence on the simulation–lab–site ladder, and prices one contact event on S1. It does not teach impedance and admittance control ([[04-robotics/force-compliance-control|13]]), grasp quality ([[04-robotics/grasping|15]]) or base placement ([[04-robotics/navigation-mobile-manipulation|16]]); it uses their numbers.*
+
+### The picture · 그림으로 먼저 보기
+
+<svg viewBox="0 0 560 318" style="max-width:100%;height:auto" role="img" aria-label="Left: circles centred on a mounting hole showing the 4 mm lead-in capture radius, the 95th-percentile position error of 3.29 mm in the lab and 6.51 mm on site, and the 5.5 mm linear error sum. Right: on a logarithmic force axis, the sideways push at the 95th-percentile error is 329 N for a stiff arm and 1.6 N for a laterally compliant one, against the 196 N panel weight.">
+<text x="20" y="22" font-size="12.5" fill="currentColor" font-weight="600">where the pin meets the hole (mm)</text>
+<circle cx="140" cy="150" r="68.0" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
+<circle cx="140" cy="150" r="55.9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+<circle cx="140" cy="150" r="93.5" fill="none" stroke="currentColor" stroke-dasharray="1.5 3" stroke-opacity="0.8"/>
+<circle cx="140" cy="150" r="110.7" fill="none" stroke="currentColor" stroke-dasharray="5 3" stroke-opacity="0.75"/>
+<circle cx="140" cy="150" r="2.5" fill="currentColor"/>
+<line x1="38.0" y1="268" x2="38.0" y2="272" stroke="currentColor"/><text x="38.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">−6</text>
+<line x1="72.0" y1="268" x2="72.0" y2="272" stroke="currentColor"/><text x="72.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">−4</text>
+<line x1="106.0" y1="268" x2="106.0" y2="272" stroke="currentColor"/><text x="106.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">−2</text>
+<line x1="140.0" y1="268" x2="140.0" y2="272" stroke="currentColor"/><text x="140.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">0</text>
+<line x1="174.0" y1="268" x2="174.0" y2="272" stroke="currentColor"/><text x="174.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">2</text>
+<line x1="208.0" y1="268" x2="208.0" y2="272" stroke="currentColor"/><text x="208.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">4</text>
+<line x1="242.0" y1="268" x2="242.0" y2="272" stroke="currentColor"/><text x="242.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">6</text>
+<line x1="38.0" y1="268" x2="242.0" y2="268" stroke="currentColor" stroke-opacity="0.6"/>
+<rect x="262" y="41" width="22" height="10" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/><text x="290" y="50" font-size="11" fill="currentColor">lead-in captures r ≤ 4</text>
+<line x1="262" y1="64" x2="284" y2="64" stroke="currentColor" stroke-width="1.6"/><text x="290" y="68" font-size="11" fill="currentColor">lab 95%: 3.29</text>
+<line x1="262" y1="82" x2="284" y2="82" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 3"/><text x="290" y="86" font-size="11" fill="currentColor">site 95%: 6.51</text>
+<line x1="262" y1="100" x2="284" y2="100" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 3"/><text x="290" y="104" font-size="11" fill="currentColor">linear sum: 5.5</text>
+<text x="262" y="126" font-size="11" fill="currentColor" font-weight="600">lab: 97.6% of panels seat</text>
+<text x="262" y="142" font-size="11" fill="currentColor">site (base error 5 mm): 46%</text>
+<text x="262" y="182" font-size="12.5" fill="currentColor" font-weight="600">sideways push at the 95th-percentile error</text>
+<rect x="262" y="194" width="216.5" height="16" fill="currentColor" fill-opacity="0.55"/>
+<rect x="262" y="238" width="17.6" height="16" fill="currentColor" fill-opacity="0.55"/>
+<text x="262" y="226" font-size="11" fill="currentColor">stiff arm, 10<tspan dy="-4" font-size="9">5</tspan><tspan dy="4" dx="2"> N/m: 329 N</tspan></text>
+<text x="262" y="270" font-size="11" fill="currentColor">lateral impedance, 500 N/m: 1.6 N</text>
+<line x1="459.2" y1="190" x2="459.2" y2="278" stroke="currentColor" stroke-dasharray="2 3"/>
+<text x="455.2" y="290" font-size="10.5" fill="currentColor" text-anchor="end">panel weight 196 N</text>
+<line x1="262.0" y1="294" x2="262.0" y2="298" stroke="currentColor"/><text x="262.0" y="310" font-size="10.5" fill="currentColor" text-anchor="middle">1</text>
+<line x1="348.0" y1="294" x2="348.0" y2="298" stroke="currentColor"/><text x="348.0" y="310" font-size="10.5" fill="currentColor" text-anchor="middle">10</text>
+<line x1="434.0" y1="294" x2="434.0" y2="298" stroke="currentColor"/><text x="434.0" y="310" font-size="10.5" fill="currentColor" text-anchor="middle">100</text>
+<line x1="520.0" y1="294" x2="520.0" y2="298" stroke="currentColor"/><text x="520.0" y="310" font-size="10.5" fill="currentColor" text-anchor="middle">1000 N</text>
+<line x1="262" y1="294" x2="520" y2="294" stroke="currentColor" stroke-opacity="0.6"/>
+</svg>
+
+S1 at the instant a hole meets its pin. With the lab error budget, 95% of holes arrive within $3.29\,\mathrm{mm}$, inside the $4\,\mathrm{mm}$ the pin's lead-in captures, so $97.6\%$ of panels seat; if the base error grows to $5\,\mathrm{mm}$ on site, the 95% circle grows to $6.51\,\mathrm{mm}$ and only $46\%$ do. On the right is what the arm pushes sideways while the lead-in corrects a 95th-percentile error: a stiff arm leans on the building with more than the panel's own weight, a compliant one with about a newton and a half.
+
 ### 1. Why construction manipulation is its own problem
 
 [[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]] now works **S1**
@@ -141,6 +201,26 @@ dated cannot be disagreed with, and this one is meant to be.
 > making a claim almost nobody else can make. A dissertation that *says* "on-site" about
 > mock-up work is joining the pattern this page exists to name.
 
+### Worked case · 대상으로 한 번 끝까지
+
+Five steps on S1 at the pin, then what changes on site. The lab code in the problem set reproduces every number by sampling.
+
+**Step 1 — the budget, read two ways.** Added linearly, the five allocations come to $5.5\,\mathrm{mm}$, more than the $4\,\mathrm{mm}$ the lead-in captures, so a worst-case reading says the panel never seats reliably. Read as independent two-sigma bounds, they combine by root-sum-square to $\sqrt{1+4+1+0.25+1}=2.69\,\mathrm{mm}$ per axis, a per-axis standard deviation $\sigma=1.35\,\mathrm{mm}$. Neither reading is mere arithmetic; each is a claim about the errors (2.5 §2), and the rest of the case uses the second.
+
+**Step 2 — will the hole be captured?** With independent, equal errors in the two horizontal axes, the radial distance $r$ of a hole from its pin follows a Rayleigh distribution, so the probability that it lands inside the lead-in is
+
+$$P(r\le r_c)=1-e^{-r_c^2/2\sigma^2}=1-e^{-16/3.62}=0.988$$
+
+per hole, and $0.988^2=0.976$ for a panel whose two holes err independently. Ninety-five percent of holes arrive within $3.29\,\mathrm{mm}$, which is $2.45\sigma$. About one panel in forty misses a pin: often enough that the system needs a detected, recoverable miss (S1's *retreat and rescan*), not an assumption that it never happens.
+
+**Step 3 — how hard does the arm push while the lead-in corrects?** The taper turns the error into a sideways displacement the arm must allow. Held by a stiff position loop, the arm resists with the series stiffness of the structure: at the 95th-percentile error of $3.29\,\mathrm{mm}$, $F=K_{\text{stiff}}\,r=10^5\times0.00329=329\,\mathrm{N}$, **1.7 times the panel's own weight**, pushed sideways into a bracket bolted to the building. With a lateral target impedance $K_d=500\,\mathrm{N/m}$ the same correction costs $1.6\,\mathrm{N}$. This is why the task matrix of §2 lists *compliant fitting, low stiffness* for panel installation: the lead-in does the aligning only if the arm lets it.
+
+**Step 4 — but not compliant everywhere.** The same $500\,\mathrm{N/m}$ vertically would let a $5\%$ error in the payload estimate, $9.81\,\mathrm{N}$, sag the panel $9.81/500=19.6\,\mathrm{mm}$, four times the tolerance. Holding $1\,\mathrm{mm}$ against that error needs $9.81/0.001=9{,}810\,\mathrm{N/m}$ vertically. The target impedance has to be anisotropic, stiff along gravity and soft across the pin. That is 13's selection-matrix idea applied to a panel rather than a peg, and it is why the contact frame must be known (§1).
+
+**Step 5 — wedging needs a tight fit.** Once the pin is in, a tilted panel can still lock. Wedging ([[04-robotics/force-compliance-control|13 §5.2]]) is possible when two-point contact forms at an insertion depth $l<\mu D$, and for a small tilt $\theta$ two-point contact forms at $l\approx\Delta/\theta$, so the danger begins near $\theta=\Delta/(\mu D)$. With the $2\,\mathrm{mm}$ bolt clearance that is $2/(0.3\times18)=0.37\,\mathrm{rad}$, or $21^\circ$, and no panel is hung that crooked. With a $0.2\,\mathrm{mm}$ dowel fit it is $0.037\,\mathrm{rad}$, or $2.1^\circ$, which a flexing panel or an uneven bracket reaches easily. On S1, capture and sideways force are the problems; wedging becomes one only when the fit is precise.
+
+**What moves on site.** Step 2 assumed the lab's $2\,\mathrm{mm}$ base term. On a site where the base re-localizes against a structure that keeps changing, it may be $5\,\mathrm{mm}$. The per-axis $\sigma$ becomes $2.66\,\mathrm{mm}$, the 95% circle $6.51\,\mathrm{mm}$, and the panel capture rate falls from $97.6\%$ to $46\%$; keeping $99\%$ per hole would need a lead-in of $8.1\,\mathrm{mm}$ instead of $4.1$. Nothing about the arm changed, only the rung of §3. This is the quantitative form of why a mock-up result does not transfer to a site, and why the base term of the budget, owned by [[04-robotics/navigation-mobile-manipulation|16]], is a manipulation problem.
+
 ### 4. Anchor papers, by what they actually demonstrate
 
 Sorted by rung rather than by fame, because that is the ordering that matters here.
@@ -258,6 +338,79 @@ the [[07-research-program/index|research program]] is built on.
 > 4. As a product claim with its source named, never as a result. Jaibot, TyBot, Canvas and Okibo have no peer-reviewed papers of their own, so their productivity figures are marketing that has not been through review. They are legitimate evidence that a market exists and that the task is worth automating — which is a different claim from a measured one.
 > 5. Bricklaying and block placement, because they fail the contact-essential criterion — they are solved geometry with a payload attached — and welding, because its standards, heat, and qualification requirements add an entire regulatory apparatus orthogonal to the manipulation contribution. Cutting them costs the dissertation no core claim.
 
+### Problem set · 과제
+
+Tier A. S1 at the pin, with [[04-robotics/force-compliance-control|13]] and [[04-robotics/navigation-mobile-manipulation|16]] behind it. The lab code samples the five error sources; there is no simulator.
+
+1. **Draw.** The picture above for the site case, base term $5\,\mathrm{mm}$, with the lead-in enlarged until $99\%$ of holes are captured: the new 95% circle, the new lead-in, the new linear sum, and on the right the stiff and compliant sideways pushes at the new 95th-percentile error, against the panel's weight.
+2. **Derive.** (a) The root-sum-square budget and per-axis $\sigma$ when the base term is $3\,\mathrm{mm}$. (b) The lead-in radius that captures $99\%$ of holes at that $\sigma$. (c) The vertical stiffness that keeps the sag under $1\,\mathrm{mm}$ if the payload estimate is off by $10\%$. (d) The tilt at which wedging becomes possible for a $1\,\mathrm{mm}$ clearance in the same $18\,\mathrm{mm}$ hole, $\mu=0.3$.
+3. **Do.** Fill the `?` so that the script samples the five error sources and reproduces the Worked case: capture per hole and per panel, the 95th-percentile error, the two sideways forces, the vertical stiffness, and the site sweep of the base term. Then read the sweep: at what base error does panel capture first fall below $90\%$, and how fast must the lead-in grow to keep $99\%$ per hole?
+
+```python
+import numpy as np
+ALLOC = {"map": 1.0, "base": 2.0, "arm": 1.0, "tool": 0.5, "part": 1.0}   # S1 budget (mm), read as 2-sigma per axis
+rc, W = 4.0, 20*9.81                   # lead-in capture radius (mm), panel weight (N)
+rng = np.random.default_rng(0)
+def radial_error(alloc, n=200_000):
+    sig = ?                                                       # per-axis sigma of each source
+    e = rng.normal(0.0, sig, size=(n, 2, len(sig))).sum(axis=2)   # x and y error, sources summed
+    return np.hypot(e[:, 0], e[:, 1])
+r = radial_error(ALLOC)
+p_hole = ?                                                       # fraction of holes the lead-in captures
+r95 = float(np.percentile(r, 95))
+print("linear", sum(ALLOC.values()), "rss", round(float(np.sqrt(sum(v*v for v in ALLOC.values()))), 2),
+      "p_hole", round(p_hole, 3), "p_panel", round(p_hole*p_hole, 3), "r95", round(r95, 2))
+for K in (1e5, 500.0):                                           # stiff position control vs lateral impedance
+    print("K", K, "lateral force at r95 (N)", round(?, 1))
+print("vertical K for 1 mm sag at 5% payload error", round(?))
+for base in (2.0, 3.0, 4.0, 5.0):                                # the base term grows from lab to site
+    rb = radial_error(dict(ALLOC, base=base))
+    pb = float((rb <= rc).mean())
+    print("base", base, "p_panel", round(pb*pb, 3), "r95", round(float(np.percentile(rb, 95)), 2),
+          "rc for 99% per hole", round(float(np.percentile(rb, 99)), 2))
+```
+
+4. **Interpret.** A paper reports "$100\%$ insertion success in $30$ trials" for a panel-installation robot in a full-scale mock-up. Using Step 2 and the site paragraph, what would you need to know before expecting the same on a site, and how many consecutive successes would it take to rule out, at $95\%$ confidence, the $2.4\%$ panel miss rate of the lab budget?
+
+> [!note]- How to draw it · 그리는 법
+> - **Left, circles centred on the hole, to scale in millimetres**: the lead-in as a shaded disk of radius $8.1\,\mathrm{mm}$, the site 95% circle at $6.51\,\mathrm{mm}$ solid, and the linear sum, now $1+5+1+0.5+1=8.5\,\mathrm{mm}$, dotted, just outside the lead-in.
+> - **Beside it, the lab's $4\,\mathrm{mm}$ lead-in as a faint outline**, so the doubling is visible: the lead-in had to grow about $1.3\,\mathrm{mm}$ for every millimetre the base term grew.
+> - **Right, the two sideways pushes on a log axis at the new 95th-percentile error**: stiff $10^5\times0.00651=651\,\mathrm{N}$, now $3.3$ times the panel's weight, and compliant $500\times0.00651=3.3\,\mathrm{N}$. Draw the $196\,\mathrm{N}$ weight line.
+> - **Write under the left panel what the enlarged lead-in costs**: a pin nose twice as long and a bracket that must leave room for it. Geometry bought back what localization lost.
+> - The drawing is wrong if the 95% circle is inside the lead-in by the old margin: at $99\%$ capture the lead-in sits only $1.6\,\mathrm{mm}$ outside the 95% circle, because the Rayleigh tail between the 95th and 99th percentiles is short.
+
+> [!tip]- Solutions
+> 1. As in the How-to-draw list: lead-in $8.1\,\mathrm{mm}$, 95% circle $6.51\,\mathrm{mm}$, linear sum $8.5\,\mathrm{mm}$; pushes $651$ and $3.3\,\mathrm{N}$ against $196\,\mathrm{N}$.
+> 2. (a) $\sqrt{1+9+1+0.25+1}=\sqrt{12.25}=3.50\,\mathrm{mm}$, so $\sigma=1.75\,\mathrm{mm}$. (b) $r_c=\sigma\sqrt{-2\ln0.01}=1.75\times3.035=5.31\,\mathrm{mm}$. (c) $10\%$ of $196.2\,\mathrm{N}$ is $19.62\,\mathrm{N}$, so $K\ge19{,}620\,\mathrm{N/m}$. (d) $\theta=\Delta/(\mu D)=1/(0.3\times18)=0.185\,\mathrm{rad}$, $10.6^\circ$.
+> 3. The blanks are `np.array(list(alloc.values()))/2`, `float((r <= rc).mean())`, `K*r95/1000` and `0.05*W/0.001`. The filled script:
+>
+> ```python
+> import numpy as np
+> ALLOC = {"map": 1.0, "base": 2.0, "arm": 1.0, "tool": 0.5, "part": 1.0}   # S1 budget (mm), read as 2-sigma per axis
+> rc, W = 4.0, 20*9.81                   # lead-in capture radius (mm), panel weight (N)
+> rng = np.random.default_rng(0)
+> def radial_error(alloc, n=200_000):
+>     sig = np.array(list(alloc.values()))/2                        # per-axis sigma of each source
+>     e = rng.normal(0.0, sig, size=(n, 2, len(sig))).sum(axis=2)   # x and y error, sources summed
+>     return np.hypot(e[:, 0], e[:, 1])
+> r = radial_error(ALLOC)
+> p_hole = float((r <= rc).mean())                                 # fraction of holes the lead-in captures
+> r95 = float(np.percentile(r, 95))
+> print("linear", sum(ALLOC.values()), "rss", round(float(np.sqrt(sum(v*v for v in ALLOC.values()))), 2),
+>       "p_hole", round(p_hole, 3), "p_panel", round(p_hole*p_hole, 3), "r95", round(r95, 2))
+> for K in (1e5, 500.0):                                           # stiff position control vs lateral impedance
+>     print("K", K, "lateral force at r95 (N)", round(K*r95/1000, 1))
+> print("vertical K for 1 mm sag at 5% payload error", round(0.05*W/0.001))
+> for base in (2.0, 3.0, 4.0, 5.0):                                # the base term grows from lab to site
+>     rb = radial_error(dict(ALLOC, base=base))
+>     pb = float((rb <= rc).mean())
+>     print("base", base, "p_panel", round(pb*pb, 3), "r95", round(float(np.percentile(rb, 95)), 2),
+>           "rc for 99% per hole", round(float(np.percentile(rb, 99)), 2))
+> ```
+>
+> It prints `linear 5.5 rss 2.69 p_hole 0.988 p_panel 0.976 r95 3.29`, the forces `329.3` and `1.6`, the stiffness `9810`, and the sweep: base $2$, $3$, $4$, $5\,\mathrm{mm}$ give panel capture $0.976$, $0.860$, $0.657$, $0.461$, 95th-percentile error $3.29$, $4.28$, $5.37$, $6.51\,\mathrm{mm}$, and a $99\%$ lead-in of $4.08$, $5.30$, $6.65$, $8.10\,\mathrm{mm}$. Panel capture first falls below $90\%$ at a base error of $3\,\mathrm{mm}$, one millimetre above the lab's, and the lead-in has to grow about $1.3\,\mathrm{mm}$ per millimetre of base error.
+> 4. You would need the error budget the mock-up actually produced (in particular the base term, and whether the base was re-localized against the same fixed targets every trial), whether trials were reset by hand, and how misses would have been detected. With zero failures in $n$ trials, a failure rate $p$ is ruled out at $95\%$ when $(1-p)^n\le0.05$: for $p=0.024$ that needs $n\ge\ln0.05/\ln0.976=123.3$, so $124$ consecutive successes (the rule of three, $3/p$, gives $125$). Thirty successes rule out only rates above about $10\%$.
+
 ### Sources
 
 **Site-verified**
@@ -280,6 +433,10 @@ the [[07-research-program/index|research program]] is built on.
 - C. Brosque, J. T. Hawkins, T. Dong, J. Örn, M. Fischer, "Comparison of on-site and off-site robot solutions to the traditional framing and drywall installation tasks," *Construction Robotics*, vol. 7, no. 1, pp. 19–39, 2023. DOI 10.1007/s41693-023-00093-8 — a process and economics evaluation on a real project.
 - Z. Ren, J. I. Kim, "The Role of AI in On-Site Construction Robotics: A State-of-the-Art Review Using the Sense–Think–Act Framework," *Buildings*, vol. 15, no. 13, art. 2374, 2025 — the most recent learning-centric review.
 
+**Contact mechanics used in the Worked case**
+
+- D. E. Whitney, "Quasi-static assembly of compliantly supported rigid parts," *ASME Journal of Dynamic Systems, Measurement, and Control* 104(1):65–77, 1982 — the wedging condition of Step 5.
+
 **Within this wiki**
 
 - [[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]] — the lineages behind these systems.
@@ -288,6 +445,66 @@ the [[07-research-program/index|research program]] is built on.
 - [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] — the tools these tasks would be studied with, and the benchmark and dataset absences that go with them.
 
 ## 한국어
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 대상을 읽고 그림을 본다. [[05-construction-robotics/site-engineering|2.5]]와 [[05-construction-robotics/assembly-fabrication|4]]의 같은 S1 패널을, 구멍이 위치 결정 핀을 만나는 순간까지 따라간 것이다. 그다음 §1과 §2에서 건설의 접촉이 공장의 접촉과 왜 다르고 어떤 작업이 무엇을 요구하는지 읽고, §3 뒤의 계산 절에서 패널이 앉을지를 정하는 네 숫자를 본다. §3–§6은 역학을 배울 때가 아니라 학위논문 작업을 고를 때 읽는 부분이다.
+
+### 이 페이지의 대상 · Running object
+
+[[05-construction-robotics/site-engineering|2.5 현장 로보틱스를 공학 시스템으로]]의 **S1**이다. 설치 구멍 두 개가 $400\,\mathrm{mm}$ 떨어진 $20\,\mathrm{kg}$ 외장 패널을 운반과 정렬 너머 접촉하는 순간까지 따라간다. 이때 구멍마다 브래킷의 위치 결정 핀 위로 내려앉아야 한다. 이 순간 전까지는 기하이고, 여기서부터 조작이 된다.
+
+| 기호 | 값 | 뜻 |
+|---|---:|---|
+| 오차 예산 | 지도 $1$, 베이스 $2$, 팔 $1$, 공구 $0.5$, 부품 $1\,\mathrm{mm}$ | S1의 할당(2.5 §2). 여기서는 각 원천의 수평 축별 2시그마 경계로 읽는다 |
+| $D,\ d$ | $18$, $16\,\mathrm{mm}$ | 구멍과 핀의 지름. 볼트 여유 끼워맞춤, 지름 틈새 $\Delta=2\,\mathrm{mm}$ |
+| $r_c$ | $4\,\mathrm{mm}$ | 핀의 뾰족한 끝이 붙잡을 수 있는 반지름 방향 오차 |
+| $\mu$ | $0.3$ | 먼지 묻은 강철끼리의 마찰 |
+| $K_{\text{stiff}}$ | $10^5\,\mathrm{N/m}$ | 강철에 눌린 위치 제어 팔. [[04-robotics/force-compliance-control\|13]] 대상의 직렬 강성 |
+| $K_d$ | $500\,\mathrm{N/m}$ | 옆 방향 목표 임피던스, 13의 $K_d$ |
+| $W$ | $196\,\mathrm{N}$ | 패널 무게, $20\times9.81$ |
+
+할당을 2시그마 경계로 읽는 것은 이 페이지의 선택이다. 2.5는 그것을 열어 두었고, 그 페이지의 §2가 바로 그 읽기를 밝혀야 한다는 경고다. 핀, 리드인, $\mu$는 이 페이지가 고정한 숫자이고 나머지는 S1이나 카탈로그다.
+
+*범위: 이 페이지는 건설 작업을 조작의 요구에 대응시키고, 증거를 시뮬레이션–실험실–현장 사다리에 놓고, S1의 접촉 사건 하나에 값을 매긴다. 임피던스·어드미턴스 제어([[04-robotics/force-compliance-control|13]]), 파지 품질([[04-robotics/grasping|15]]), 베이스 배치([[04-robotics/navigation-mobile-manipulation|16]])는 가르치지 않고, 그 숫자를 쓴다.*
+
+### 그림으로 먼저 보기 · The picture
+
+<svg viewBox="0 0 560 318" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 설치 구멍을 중심으로 한 원들. 4 mm 리드인 포착 반지름, 실험실의 95번째 백분위 위치 오차 3.29 mm와 현장의 6.51 mm, 5.5 mm 선형 오차 합. 오른쪽: 로그 힘 축 위에서 95번째 백분위 오차의 옆 힘은 단단한 팔 329 N, 옆으로 유연한 팔 1.6 N이고, 패널 무게 196 N과 비교된다.">
+<text x="20" y="22" font-size="12.5" fill="currentColor" font-weight="600">핀이 구멍을 만나는 곳 (mm)</text>
+<circle cx="140" cy="150" r="68.0" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/>
+<circle cx="140" cy="150" r="55.9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+<circle cx="140" cy="150" r="93.5" fill="none" stroke="currentColor" stroke-dasharray="1.5 3" stroke-opacity="0.8"/>
+<circle cx="140" cy="150" r="110.7" fill="none" stroke="currentColor" stroke-dasharray="5 3" stroke-opacity="0.75"/>
+<circle cx="140" cy="150" r="2.5" fill="currentColor"/>
+<line x1="38.0" y1="268" x2="38.0" y2="272" stroke="currentColor"/><text x="38.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">−6</text>
+<line x1="72.0" y1="268" x2="72.0" y2="272" stroke="currentColor"/><text x="72.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">−4</text>
+<line x1="106.0" y1="268" x2="106.0" y2="272" stroke="currentColor"/><text x="106.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">−2</text>
+<line x1="140.0" y1="268" x2="140.0" y2="272" stroke="currentColor"/><text x="140.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">0</text>
+<line x1="174.0" y1="268" x2="174.0" y2="272" stroke="currentColor"/><text x="174.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">2</text>
+<line x1="208.0" y1="268" x2="208.0" y2="272" stroke="currentColor"/><text x="208.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">4</text>
+<line x1="242.0" y1="268" x2="242.0" y2="272" stroke="currentColor"/><text x="242.0" y="284" font-size="10.5" fill="currentColor" text-anchor="middle">6</text>
+<line x1="38.0" y1="268" x2="242.0" y2="268" stroke="currentColor" stroke-opacity="0.6"/>
+<rect x="262" y="41" width="22" height="10" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-opacity="0.5"/><text x="290" y="50" font-size="11" fill="currentColor">리드인 포착 r ≤ 4</text>
+<line x1="262" y1="64" x2="284" y2="64" stroke="currentColor" stroke-width="1.6"/><text x="290" y="68" font-size="11" fill="currentColor">실험실 95%: 3.29</text>
+<line x1="262" y1="82" x2="284" y2="82" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 3"/><text x="290" y="86" font-size="11" fill="currentColor">현장 95%: 6.51</text>
+<line x1="262" y1="100" x2="284" y2="100" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 3"/><text x="290" y="104" font-size="11" fill="currentColor">선형 합: 5.5</text>
+<text x="262" y="126" font-size="11" fill="currentColor" font-weight="600">실험실: 패널의 97.6%가 앉는다</text>
+<text x="262" y="142" font-size="11" fill="currentColor">현장(베이스 오차 5 mm): 46%</text>
+<text x="262" y="182" font-size="12.5" fill="currentColor" font-weight="600">95번째 백분위 오차에서의 옆 힘</text>
+<rect x="262" y="194" width="216.5" height="16" fill="currentColor" fill-opacity="0.55"/>
+<rect x="262" y="238" width="17.6" height="16" fill="currentColor" fill-opacity="0.55"/>
+<text x="262" y="226" font-size="11" fill="currentColor">단단한 팔, 10<tspan dy="-4" font-size="9">5</tspan><tspan dy="4" dx="2"> N/m: 329 N</tspan></text>
+<text x="262" y="270" font-size="11" fill="currentColor">옆 방향 임피던스 500 N/m: 1.6 N</text>
+<line x1="459.2" y1="190" x2="459.2" y2="278" stroke="currentColor" stroke-dasharray="2 3"/>
+<text x="455.2" y="290" font-size="10.5" fill="currentColor" text-anchor="end">패널 무게 196 N</text>
+<line x1="262.0" y1="294" x2="262.0" y2="298" stroke="currentColor"/><text x="262.0" y="310" font-size="10.5" fill="currentColor" text-anchor="middle">1</text>
+<line x1="348.0" y1="294" x2="348.0" y2="298" stroke="currentColor"/><text x="348.0" y="310" font-size="10.5" fill="currentColor" text-anchor="middle">10</text>
+<line x1="434.0" y1="294" x2="434.0" y2="298" stroke="currentColor"/><text x="434.0" y="310" font-size="10.5" fill="currentColor" text-anchor="middle">100</text>
+<line x1="520.0" y1="294" x2="520.0" y2="298" stroke="currentColor"/><text x="520.0" y="310" font-size="10.5" fill="currentColor" text-anchor="middle">1000 N</text>
+<line x1="262" y1="294" x2="520" y2="294" stroke="currentColor" stroke-opacity="0.6"/>
+</svg>
+
+구멍이 핀을 만나는 순간의 S1이다. 실험실 오차 예산이면 구멍의 95%가 $3.29\,\mathrm{mm}$ 안에 도착해 핀의 리드인이 붙잡는 $4\,\mathrm{mm}$ 안에 들어오므로 패널의 $97.6\%$가 앉는다. 현장에서 베이스 오차가 $5\,\mathrm{mm}$로 커지면 95% 원은 $6.51\,\mathrm{mm}$로 커지고 $46\%$만 앉는다. 오른쪽은 리드인이 95번째 백분위 오차를 바로잡는 동안 팔이 옆으로 미는 힘이다. 단단한 팔은 패널 자신의 무게보다 큰 힘으로 건물에 기대고, 유연한 팔은 1.5뉴턴 남짓으로 민다.
 
 ### 1. 건설 조작이 자기만의 문제인 이유
 
@@ -403,6 +620,26 @@ arXiv와 Crossref에서 했고, 2026년 9월에 다시 돌렸다. 재검색에�
 > 목업 작업을 두고 "on-site"라고 *말하는* 학위논문은, 이 페이지가 지목하려고 존재하는 그
 > 패턴에 합류하는 것이다.
 
+### 대상으로 한 번 끝까지 · Worked case
+
+핀 앞의 S1에서 다섯 단계, 그다음 현장에서 무엇이 바뀌는지. 과제의 실습 코드가 표본 추출로 모든 숫자를 다시 낸다.
+
+**1단계 — 예산을 두 가지로 읽기.** 다섯 할당을 선형으로 더하면 $5.5\,\mathrm{mm}$로 리드인이 붙잡는 $4\,\mathrm{mm}$보다 크므로, 최악의 경우로 읽으면 패널은 결코 믿을 만하게 앉지 않는다. 독립인 2시그마 경계로 읽으면 제곱합의 제곱근으로 축마다 $\sqrt{1+4+1+0.25+1}=2.69\,\mathrm{mm}$, 축별 표준편차 $\sigma=1.35\,\mathrm{mm}$가 된다. 어느 읽기도 단순한 산수가 아니라 오차에 대한 주장이고(2.5 §2), 이 계산은 뒤의 것을 쓴다.
+
+**2단계 — 구멍이 붙잡히는가?** 두 수평 축의 오차가 독립이고 크기가 같으면, 구멍이 핀에서 떨어진 반지름 거리 $r$는 레일리 분포를 따른다. 그래서 리드인 안에 떨어질 확률은
+
+$$P(r\le r_c)=1-e^{-r_c^2/2\sigma^2}=1-e^{-16/3.62}=0.988$$
+
+로 구멍 하나에 $0.988$, 두 구멍이 독립으로 어긋나는 패널에 $0.988^2=0.976$이다. 구멍의 95%는 $3.29\,\mathrm{mm}$, 곧 $2.45\sigma$ 안에 도착한다. 패널 마흔 개에 하나꼴로 핀을 놓친다. 그런 일이 없다고 가정할 것이 아니라, 놓침을 검출하고 되돌릴 수 있어야 할 만큼(S1의 *후퇴 후 재스캔*) 잦다.
+
+**3단계 — 리드인이 바로잡는 동안 팔은 얼마나 세게 미는가?** 테이퍼는 오차를 팔이 허용해야 할 옆 방향 변위로 바꾼다. 단단한 위치 루프가 팔을 붙들면 팔은 구조의 직렬 강성으로 버틴다. 95번째 백분위 오차 $3.29\,\mathrm{mm}$에서 $F=K_{\text{stiff}}\,r=10^5\times0.00329=329\,\mathrm{N}$으로, **패널 자신의 무게의 1.7배**를 건물에 볼트로 고정된 브래킷 쪽으로 옆으로 민다. 옆 방향 목표 임피던스 $K_d=500\,\mathrm{N/m}$이면 같은 교정에 $1.6\,\mathrm{N}$이 든다. §2의 작업 매트릭스가 패널 설치에 *유연한 맞춤, 낮은 강성*을 적는 이유다. 리드인은 팔이 허락할 때만 정렬을 해 준다.
+
+**4단계 — 그러나 모든 방향으로 유연하면 안 된다.** 같은 $500\,\mathrm{N/m}$를 수직으로 쓰면, 탑재물 추정의 $5\%$ 오차 $9.81\,\mathrm{N}$이 패널을 $9.81/500=19.6\,\mathrm{mm}$ 처지게 한다. 허용 오차의 네 배다. 그 오차에 맞서 $1\,\mathrm{mm}$를 지키려면 수직으로 $9.81/0.001=9{,}810\,\mathrm{N/m}$가 필요하다. 목표 임피던스는 비등방이어야 한다. 중력 방향으로 단단하고 핀을 가로질러 무르게. 13의 선택 행렬 발상을 못 대신 패널에 쓴 것이고, 접촉 좌표계를 알아야 하는 이유다(§1).
+
+**5단계 — 쐐기 걸림에는 빡빡한 끼워맞춤이 필요하다.** 핀이 들어간 뒤에도 기운 패널은 잠길 수 있다. 쐐기 걸림([[04-robotics/force-compliance-control|13 §5.2]])은 삽입 깊이 $l<\mu D$에서 두 점 접촉이 생길 때 가능하고, 작은 기울기 $\theta$에서 두 점 접촉은 $l\approx\Delta/\theta$에서 생긴다. 그래서 위험은 $\theta=\Delta/(\mu D)$ 근처에서 시작한다. $2\,\mathrm{mm}$ 볼트 틈새면 $2/(0.3\times18)=0.37\,\mathrm{rad}$, 곧 $21^\circ$이고, 그렇게 삐뚤게 거는 패널은 없다. $0.2\,\mathrm{mm}$ 다월 끼워맞춤이면 $0.037\,\mathrm{rad}$, 곧 $2.1^\circ$로, 휘는 패널이나 고르지 않은 브래킷이 쉽게 닿는다. S1에서는 포착과 옆 힘이 문제이고, 쐐기 걸림은 끼워맞춤이 정밀할 때만 문제가 된다.
+
+**현장에서 무엇이 움직이는가.** 2단계는 실험실의 베이스 항 $2\,\mathrm{mm}$를 가정했다. 계속 바뀌는 구조물에 대고 베이스를 다시 위치 추정하는 현장에서는 $5\,\mathrm{mm}$일 수 있다. 축별 $\sigma$는 $2.66\,\mathrm{mm}$, 95% 원은 $6.51\,\mathrm{mm}$가 되고, 패널 포착률은 $97.6\%$에서 $46\%$로 떨어진다. 구멍당 $99\%$를 지키려면 리드인이 $4.1$이 아니라 $8.1\,\mathrm{mm}$여야 한다. 팔은 하나도 바뀌지 않았고 §3의 단만 바뀌었다. 목업 결과가 현장으로 옮겨지지 않는 이유의 정량적 형태이고, [[04-robotics/navigation-mobile-manipulation|16]]이 맡는 예산의 베이스 항이 곧 조작의 문제인 이유다.
+
 ### 4. 앵커 논문 — 실제로 무엇을 실증했는가로 정렬
 
 명성이 아니라 사다리 단계로 정렬한다. 여기서는 그 순서가 중요하기 때문이다.
@@ -509,6 +746,28 @@ arXiv와 Crossref에서 했고, 2026년 9월에 다시 돌렸다. 재검색에�
 > 4. 결과가 아니라 출처를 밝힌 제품 주장으로. Jaibot, TyBot, Canvas, Okibo는 자기 심사 논문이 없으므로 그 생산성 수치는 심사를 거치지 않은 마케팅이다. 시장이 존재하고 그 작업이 자동화할 가치가 있다는 정당한 증거이긴 하다 — 측정된 주장과는 다른 주장이다.
 > 5. 조적·블록 쌓기는 접촉 본질성 기준에서 탈락하기 때문이고(페이로드가 붙은 풀린 기하다), 용접은 기준·열·자격 요건이 조작 기여와 직교하는 규제 장치 전체를 끌고 오기 때문이다. 둘을 잘라도 학위논문은 어떤 핵심 주장도 잃지 않는다.
 
+### 과제 · Problem set
+
+Tier A. 핀 앞의 S1, 그 뒤에 [[04-robotics/force-compliance-control|13]]과 [[04-robotics/navigation-mobile-manipulation|16]]. 실습 코드는 다섯 오차 원천을 표본 추출하고, 시뮬레이터는 없다.
+
+1. **그리기.** 현장의 경우, 베이스 항 $5\,\mathrm{mm}$에서 구멍의 $99\%$를 붙잡을 때까지 리드인을 키운 위의 그림: 새 95% 원, 새 리드인, 새 선형 합, 그리고 오른쪽에 새 95번째 백분위 오차에서 단단한 팔과 유연한 팔이 옆으로 미는 힘을 패널 무게와 함께.
+2. **유도.** (a) 베이스 항이 $3\,\mathrm{mm}$일 때의 제곱합 제곱근 예산과 축별 $\sigma$. (b) 그 $\sigma$에서 구멍의 $99\%$를 붙잡는 리드인 반지름. (c) 탑재물 추정이 $10\%$ 틀릴 때 처짐을 $1\,\mathrm{mm}$ 아래로 지키는 수직 강성. (d) 같은 $18\,\mathrm{mm}$ 구멍에서 틈새가 $1\,\mathrm{mm}$일 때 쐐기 걸림이 가능해지는 기울기, $\mu=0.3$.
+3. **실행.** 영어 절 템플릿의 `?`를 채워, 스크립트가 다섯 오차 원천을 표본 추출해 계산 절을 다시 내게 하라. 구멍당과 패널당 포착, 95번째 백분위 오차, 두 옆 힘, 수직 강성, 그리고 베이스 항의 현장 훑기. 그다음 훑기를 읽어라. 베이스 오차가 얼마일 때 패널 포착이 처음 $90\%$ 아래로 떨어지는가, 그리고 구멍당 $99\%$를 지키려면 리드인이 얼마나 빨리 커져야 하는가?
+4. **해석.** 어떤 논문이 실물 크기 목업에서 패널 설치 로봇이 "$30$회 시행에서 삽입 성공 $100\%$"라고 보고한다. 2단계와 현장 문단을 써서, 현장에서도 같기를 기대하기 전에 알아야 할 것은 무엇인가? 그리고 실험실 예산의 패널 놓침 비율 $2.4\%$를 $95\%$ 신뢰로 배제하려면 몇 번 연속 성공해야 하는가?
+
+> [!note]- 그리는 법 · How to draw it
+> - **왼쪽, 구멍을 중심으로 한 원들을 밀리미터 축척으로**: 반지름 $8.1\,\mathrm{mm}$의 리드인을 칠한 원판으로, 현장 95% 원 $6.51\,\mathrm{mm}$를 실선으로, 이제 $1+5+1+0.5+1=8.5\,\mathrm{mm}$인 선형 합을 리드인 바로 바깥의 점선으로.
+> - **그 옆에 실험실의 $4\,\mathrm{mm}$ 리드인을 흐린 윤곽선으로** 그려 두 배가 된 것이 보이게 한다. 베이스 항이 1밀리미터 커질 때마다 리드인은 약 $1.3\,\mathrm{mm}$ 커져야 했다.
+> - **오른쪽, 새 95번째 백분위 오차에서의 두 옆 힘을 로그 축에**: 단단한 팔 $10^5\times0.00651=651\,\mathrm{N}$으로 이제 패널 무게의 $3.3$배, 유연한 팔 $500\times0.00651=3.3\,\mathrm{N}$. $196\,\mathrm{N}$ 무게 선을 긋는다.
+> - **왼쪽 칸 아래에 키운 리드인의 대가를 적는다**: 두 배 긴 핀 끝과 그것이 들어갈 자리를 남겨야 하는 브래킷. 위치 추정이 잃은 것을 기하가 되사 온 것이다.
+> - 95% 원이 옛 여유만큼 리드인 안에 있으면 그림이 틀린 것이다. $99\%$ 포착에서 리드인은 95% 원보다 겨우 $1.6\,\mathrm{mm}$ 바깥에 있다. 95번째와 99번째 백분위 사이의 레일리 꼬리가 짧기 때문이다.
+
+> [!tip]- 정답 · Solutions
+> 1. 그리는 법 목록과 같다. 리드인 $8.1\,\mathrm{mm}$, 95% 원 $6.51\,\mathrm{mm}$, 선형 합 $8.5\,\mathrm{mm}$. 옆 힘 $651$과 $3.3\,\mathrm{N}$, 무게 $196\,\mathrm{N}$.
+> 2. (a) $\sqrt{1+9+1+0.25+1}=\sqrt{12.25}=3.50\,\mathrm{mm}$이므로 $\sigma=1.75\,\mathrm{mm}$. (b) $r_c=\sigma\sqrt{-2\ln0.01}=1.75\times3.035=5.31\,\mathrm{mm}$. (c) $196.2\,\mathrm{N}$의 $10\%$는 $19.62\,\mathrm{N}$이므로 $K\ge19{,}620\,\mathrm{N/m}$. (d) $\theta=\Delta/(\mu D)=1/(0.3\times18)=0.185\,\mathrm{rad}$, $10.6^\circ$.
+> 3. 빈칸은 영어 절 정답과 같다. 스크립트는 `linear 5.5 rss 2.69 p_hole 0.988 p_panel 0.976 r95 3.29`, 힘 `329.3`과 `1.6`, 강성 `9810`, 그리고 훑기를 찍는다. 베이스 $2$, $3$, $4$, $5\,\mathrm{mm}$에서 패널 포착은 $0.976$, $0.860$, $0.657$, $0.461$, 95번째 백분위 오차는 $3.29$, $4.28$, $5.37$, $6.51\,\mathrm{mm}$, $99\%$ 리드인은 $4.08$, $5.30$, $6.65$, $8.10\,\mathrm{mm}$다. 패널 포착은 실험실보다 1밀리미터 큰 베이스 오차 $3\,\mathrm{mm}$에서 처음 $90\%$ 아래로 떨어지고, 리드인은 베이스 오차 1밀리미터마다 약 $1.3\,\mathrm{mm}$ 커져야 한다.
+> 4. 목업이 실제로 만든 오차 예산(특히 베이스 항, 그리고 매 시행 같은 고정 표적에 대고 베이스를 다시 위치 추정했는지), 시행을 손으로 되돌렸는지, 놓침을 어떻게 검출했을지를 알아야 한다. $n$번 시행에 실패가 없으면 $(1-p)^n\le0.05$일 때 실패율 $p$가 $95\%$로 배제된다. $p=0.024$에는 $n\ge\ln0.05/\ln0.976=123.3$, 곧 $124$번 연속 성공이 필요하다(3의 규칙 $3/p$은 $125$). $30$번 성공은 약 $10\%$ 넘는 비율만 배제한다.
+
 ### 출처
 
 **현장 검증**
@@ -530,6 +789,11 @@ arXiv와 Crossref에서 했고, 2026년 9월에 다시 돌렸다. 재검색에�
 - N. Melenbrink, J. Werfel, A. Menges, "On-site autonomous construction robots: Towards unsupervised building," *Automation in Construction*, vol. 119, art. 103312, 2020. DOI 10.1016/j.autcon.2020.103312 — 먼저 읽을 서베이.
 - C. Brosque, J. T. Hawkins, T. Dong, J. Örn, M. Fischer, "Comparison of on-site and off-site robot solutions to the traditional framing and drywall installation tasks," *Construction Robotics*, vol. 7, no. 1, pp. 19–39, 2023. DOI 10.1007/s41693-023-00093-8 — 실제 프로젝트에서의 공정·경제성 평가.
 - Z. Ren, J. I. Kim, "The Role of AI in On-Site Construction Robotics: A State-of-the-Art Review Using the Sense–Think–Act Framework," *Buildings*, vol. 15, no. 13, art. 2374, 2025 — 가장 최근의 학습 중심 리뷰.
+
+
+**계산 절에 쓴 접촉 역학**
+
+- D. E. Whitney, "Quasi-static assembly of compliantly supported rigid parts," *ASME Journal of Dynamic Systems, Measurement, and Control* 104(1):65–77, 1982 — 5단계의 쐐기 걸림 조건.
 
 **이 위키 안에서**
 

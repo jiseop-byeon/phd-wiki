@@ -578,11 +578,46 @@ You should be able to:
 
 ### Problem set · 과제
 
-Tier B. Using **I20** from the running object above, and this page only. One outcome flips, the pedestrian turns, and the platform changes; the twenty forecasts do not.
+Tier A. Using **I20** from the running object above, and this page only. One outcome flips, the pedestrian turns, and the platform changes; the twenty forecasts do not.
 
 1. **Draw.** Redraw both panels of the picture above for the changed object. Panel 1: the reliability diagram after case 19 (which forecast $0.90$) turns out to have been a $y = 1$ after all — show which single point moves and in which direction, and mark the diagonal it moves toward. Panel 2: the same time-to-event curve against a faster platform, $v = 2.0\ \mathrm{m/s}$, $a = 1.6\ \mathrm{m/s^2}$, $t_{\mathrm{lat}} = 0.30$ s, with both verticals drawn and the gap between them signed.
 2. **Derive.** (a) With case 19 flipped to $y = 1$ and nothing else changed: the new Brier score, the new base rate, the new Brier skill score, and the new five-bin ECE. (b) The pedestrian of Part 2 turns instead of walking straight: the true future is now $(1.00,\ 0.15)$, $(2.42,\ 0.56)$, $(3.75,\ 1.00)$, the observed history and the model's prediction are unchanged. Compute ADE and FDE for the model and for the constant-velocity baseline. (c) $\Delta^{*}$ is unchanged at $1.375$ s; compute $\Delta_{\mathrm{req}}$ for the faster platform of panel 2 and say whether it now passes.
 3. **Interpret.** The vendor reads the part (a) result and reports "recalibrated: ECE improved from $0.100$ to $0.090$." Two of the three numbers you computed in (a) moved much further than the ECE did. Say what actually changed in the log, why ECE is the least sensitive of the three to it, and what you would require the vendor to report instead.
+
+4. **Do.** Fill the `?` so that one script recomputes the whole worked derivation from I20 — Brier, skill score, five-bin ECE and AUC; ADE and FDE for the model and the constant-velocity baseline; $\Delta^{*}$ against the required lead — and check each against the page. Then use it for the three things the page only asserts: square every forecast and confirm that AUC stays put while Brier and ECE move; recompute the ECE with $2$ and $10$ bins; and flip case 19 to check your 2(a). What does the squared forecaster's skill score say that its ECE does not?
+
+```python
+import numpy as np
+p = np.array([0.05, 0.10, 0.10, 0.15, 0.20, 0.25, 0.25, 0.30, 0.45, 0.50,
+              0.50, 0.55, 0.65, 0.70, 0.70, 0.75, 0.85, 0.90, 0.90, 0.95])    # I20, Part 1
+y = np.array([0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1])
+def ece(p, y, B=5):
+    b = np.minimum((p*B).astype(int), B - 1)                   # equal-width bins, top edge closed
+    return sum(? for k in range(B) if (b == k).any())         # occupancy-weighted gap
+def scores(p, y):
+    bs = np.mean((p - y)**2)                                   # Brier score
+    bss = ?                                                    # skill against the base-rate forecaster
+    pos, neg = p[y == 1], p[y == 0]
+    auc = np.mean([(a > b) + 0.5*(a == b) for a in pos for b in neg])   # Mann-Whitney, ties count half
+    return round(float(bs), 5), round(float(bss), 3), round(float(ece(p, y)), 4), round(float(auc), 4)
+def ade_fde(pred, truth):
+    d = np.linalg.norm(np.array(pred) - np.array(truth), axis=1)
+    return round(float(d.mean()), 3), round(float(d[-1]), 3)
+obs = np.array([(-2.0, 0.0), (-1.0, 0.0), (0.0, 0.0)])          # Part 2, 1 Hz
+truth = [(1.0, 0.0), (2.0, 0.0), (3.0, 0.0)]
+model = [(1.0, 0.3), (2.3, 0.4), (3.6, 0.8)]
+cv = [? for k in (1, 2, 3)]                                    # constant-velocity baseline
+dt = np.array([0.5, 1.0, 1.5, 2.0, 2.5])                        # Part 3
+rec = np.array([0.92, 0.84, 0.72, 0.60, 0.48])
+d_star = float(np.interp(-0.75, -rec, dt))                      # last lead time with recall >= 0.75
+d_req = ?                                                       # stopping time v/a plus latency
+print("I20", scores(p, y), "squared", scores(p**2, y))
+print("ECE by bins", [round(float(ece(p, y, B)), 3) for B in (2, 5, 10)])
+print("model", ade_fde(model, truth), "cv", ade_fde(cv, truth))
+print("usable", round(d_star, 3), "required", round(d_req, 3))
+y2 = y.copy(); y2[18] = 1                                        # case 19 flips to an event
+print("flipped", scores(p, y2))
+```
 
 > [!note]- How to draw it · 그리는 법
 > - **Panel 1, the reliability diagram**: a unit square, $\hat p$ across and observed frequency up, with the $45^\circ$ diagonal drawn as the calibrated line.
@@ -599,7 +634,42 @@ Tier B. Using **I20** from the running object above, and this page only. One out
 > (b) Model errors $\hat x_k - x_k$: $(0.00,\ 0.15) \to 0.15$; $(-0.12,-0.16) \to 0.20$; $(-0.15,-0.20) \to 0.25$. $\mathrm{ADE} = 0.60/3 = \mathbf{0.20\ \mathrm{m}}$, $\mathrm{FDE} = \mathbf{0.25\ \mathrm{m}}$. Constant velocity still predicts $(1,0), (2,0), (3,0)$, giving errors $\lVert(0,-0.15)\rVert = 0.15$, $\lVert(-0.42,-0.56)\rVert = 0.70$, $\lVert(-0.75,-1.00)\rVert = 1.25$, so $\mathrm{ADE}_{\mathrm{CV}} = 2.10/3 = \mathbf{0.70\ \mathrm{m}}$ and $\mathrm{FDE}_{\mathrm{CV}} = \mathbf{1.25\ \mathrm{m}}$. The ranking has completely reversed from the straight walk, on the same model and the same baseline. That is the reading: an ADE is a statement about the *test set's* motion as much as about the model, which is why the constant-velocity control belongs in every table.
 > (c) $t_{\mathrm{stop}} = 2.0/1.6 = 1.25$ s, $\Delta_{\mathrm{req}} = 1.25 + 0.30 = 1.55$ s $> 1.375$ s. It fails, and by more than before. The stopping distance also grows from $0.75$ m to $2.0^2/(2\times1.6) = 1.25$ m.
 > 3. What changed is one outcome out of twenty — not the model, which emitted the identical twenty probabilities in both versions. The Brier score moved $18\%$ and the skill score nearly tripled, from $0.088$ to $0.257$, while ECE moved $10\%$, because ECE collapses each bin to a single frequency before taking a difference and a $0.75 \to 1.00$ move inside one bin of four is a small change to a bounded gap, while the same flip removes the single largest squared residual in the log. Require the vendor to report $N$, the binning, the base rate, the Brier skill score against the base-rate forecaster, and the reliability diagram itself; an ECE alone at $N = 20$ is a number one worker's afternoon can move either way.
-
+> 4. The blanks are `1 - bs/(y.mean()*(1 - y.mean()))`, `(b == k).mean()*abs(y[b == k].mean() - p[b == k].mean())`, `obs[-1] + k*(obs[-1] - obs[-2])` and `1.5/1.5 + 0.45`. The filled script:
+>
+> ```python
+> import numpy as np
+> p = np.array([0.05, 0.10, 0.10, 0.15, 0.20, 0.25, 0.25, 0.30, 0.45, 0.50,
+>               0.50, 0.55, 0.65, 0.70, 0.70, 0.75, 0.85, 0.90, 0.90, 0.95])    # I20, Part 1
+> y = np.array([0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1])
+> def ece(p, y, B=5):
+>     b = np.minimum((p*B).astype(int), B - 1)                   # equal-width bins, top edge closed
+>     return sum((b == k).mean()*abs(y[b == k].mean() - p[b == k].mean()) for k in range(B) if (b == k).any())
+> def scores(p, y):
+>     bs = np.mean((p - y)**2)                                   # Brier score
+>     bss = 1 - bs/(y.mean()*(1 - y.mean()))                     # skill against the base-rate forecaster
+>     pos, neg = p[y == 1], p[y == 0]
+>     auc = np.mean([(a > b) + 0.5*(a == b) for a in pos for b in neg])   # Mann-Whitney, ties count half
+>     return round(float(bs), 5), round(float(bss), 3), round(float(ece(p, y)), 4), round(float(auc), 4)
+> def ade_fde(pred, truth):
+>     d = np.linalg.norm(np.array(pred) - np.array(truth), axis=1)
+>     return round(float(d.mean()), 3), round(float(d[-1]), 3)
+> obs = np.array([(-2.0, 0.0), (-1.0, 0.0), (0.0, 0.0)])          # Part 2, 1 Hz
+> truth = [(1.0, 0.0), (2.0, 0.0), (3.0, 0.0)]
+> model = [(1.0, 0.3), (2.3, 0.4), (3.6, 0.8)]
+> cv = [obs[-1] + k*(obs[-1] - obs[-2]) for k in (1, 2, 3)]       # constant-velocity baseline
+> dt = np.array([0.5, 1.0, 1.5, 2.0, 2.5])                        # Part 3
+> rec = np.array([0.92, 0.84, 0.72, 0.60, 0.48])
+> d_star = float(np.interp(-0.75, -rec, dt))                      # last lead time with recall >= 0.75
+> d_req = 1.5/1.5 + 0.45                                          # stopping time v/a plus latency
+> print("I20", scores(p, y), "squared", scores(p**2, y))
+> print("ECE by bins", [round(float(ece(p, y, B)), 3) for B in (2, 5, 10)])
+> print("model", ade_fde(model, truth), "cv", ade_fde(cv, truth))
+> print("usable", round(d_star, 3), "required", round(d_req, 3))
+> y2 = y.copy(); y2[18] = 1                                        # case 19 flips to an event
+> print("flipped", scores(p, y2))
+> ```
+>
+> It prints `I20 (0.22575, 0.088, 0.1, 0.7172)` and `squared (0.24898, -0.006, 0.1765, 0.7172)`, `ECE by bins [0.055, 0.1, 0.27]`, `model (0.6, 1.0) cv (0.0, 0.0)`, `usable 1.375 required 1.45` and `flipped (0.18575, 0.257, 0.09, 0.795)` — every number of the worked derivation, the two non-examples of step 3, and your 2(a). The squared forecaster's skill score is $-0.006$: it is now *worse* than always saying the base rate, a verdict its ECE of $0.177$ reports only as "less calibrated" and its unchanged AUC not at all. The flip also moves AUC, from $0.7172$ to $0.795$, because it changes which cases are events.
 ### Sources
 
 **Pedestrian intent**
@@ -1197,11 +1267,13 @@ Conformal prediction의 수학은 교환가능성(보정 사례와 새 사례가
 
 ### 과제 · Problem set
 
-Tier B. 위의 대상 **I20**, 그리고 이 페이지만 사용한다. 결과 하나가 뒤집히고, 보행자가 방향을 틀고, 플랫폼이 바뀐다. 스무 개의 예측은 그대로다.
+Tier A. 위의 대상 **I20**, 그리고 이 페이지만 사용한다. 결과 하나가 뒤집히고, 보행자가 방향을 틀고, 플랫폼이 바뀐다. 스무 개의 예측은 그대로다.
 
 1. **그려라.** 바뀐 대상으로 위의 그림의 패널 둘을 다시 그려라. 패널 1: $0.90$을 예측했던 19번 사례가 사실은 $y = 1$이었다고 하자. 점 하나가 어느 방향으로 움직이는지 표시하고, 그것이 향해 가는 대각선을 표시하라. 패널 2: 같은 time-to-event 곡선을 더 빠른 플랫폼($v = 2.0\ \mathrm{m/s}$, $a = 1.6\ \mathrm{m/s^2}$, $t_{\mathrm{lat}} = 0.30$초)에 대해 그리고, 수직선 둘과 그 사이 부호 있는 간격을 표시하라.
 2. **유도하라.** (a) 19번 사례를 $y = 1$로 뒤집고 나머지는 그대로일 때, 새 Brier 점수·새 기저율·새 Brier skill score·새 5구간 ECE. (b) 2부의 보행자가 직진 대신 방향을 튼다. 참 미래가 $(1.00,\ 0.15)$, $(2.42,\ 0.56)$, $(3.75,\ 1.00)$이고 관측 이력과 모델 예측은 그대로다. 모델과 등속 기준선의 ADE·FDE를 구하라. (c) $\Delta^{*}$는 $1.375$초로 그대로다. 패널 2의 더 빠른 플랫폼에 대해 $\Delta_{\mathrm{req}}$를 구하고 이제 통과하는지 말하라.
 3. **해석하라.** 업체가 (a)의 결과를 읽고 "재보정 완료: ECE가 $0.100$에서 $0.090$으로 개선"이라 보고한다. (a)에서 구한 셋 중 둘은 ECE보다 훨씬 크게 움직였다. 로그에서 실제로 바뀐 것이 무엇인지, ECE가 셋 중 그것에 가장 둔감한 이유가 무엇인지, 그리고 업체에 대신 무엇을 요구할지 말하라.
+
+4. **실행.** 영어 절 템플릿의 `?`를 채워, 스크립트 하나가 I20에서 풀이 전체를 다시 계산하게 하라. Brier, 기술 점수, 다섯 칸 ECE와 AUC. 모형과 등속 기준선의 ADE와 FDE. 필요한 선행 시간에 맞선 $\Delta^{*}$. 각각을 페이지와 맞춰 본다. 그다음 페이지가 주장만 하는 세 가지에 써라. 모든 예측을 제곱해 AUC는 그대로이고 Brier와 ECE는 움직이는지 확인하고, ECE를 $2$칸과 $10$칸으로 다시 계산하고, 사례 19를 뒤집어 2(a)를 확인한다. 제곱한 예측기의 기술 점수는 ECE가 말하지 않는 무엇을 말하는가?
 
 > [!note]- 그리는 법 · How to draw it
 > - **패널 1, reliability diagram.** 단위 정사각형에 가로는 $\hat p$, 세로는 관측 빈도, 그리고 보정된 선인 $45^\circ$ 대각선을 긋는다.
@@ -1218,7 +1290,7 @@ Tier B. 위의 대상 **I20**, 그리고 이 페이지만 사용한다. 결과 �
 > (b) 모델 오차 $\hat x_k - x_k$: $(0.00,\ 0.15) \to 0.15$, $(-0.12,-0.16) \to 0.20$, $(-0.15,-0.20) \to 0.25$. $\mathrm{ADE} = 0.60/3 = \mathbf{0.20\ \mathrm{m}}$, $\mathrm{FDE} = \mathbf{0.25\ \mathrm{m}}$. 등속은 여전히 $(1,0), (2,0), (3,0)$을 내놓아 오차가 $\lVert(0,-0.15)\rVert = 0.15$, $\lVert(-0.42,-0.56)\rVert = 0.70$, $\lVert(-0.75,-1.00)\rVert = 1.25$이므로 $\mathrm{ADE}_{\mathrm{CV}} = 2.10/3 = \mathbf{0.70\ \mathrm{m}}$, $\mathrm{FDE}_{\mathrm{CV}} = \mathbf{1.25\ \mathrm{m}}$다. 같은 모델, 같은 기준선인데 직진 보행에서와 순위가 완전히 뒤집혔다. 그것이 읽어야 할 바다. ADE는 모델에 관한 진술인 만큼이나 *시험 집합의 움직임* 에 관한 진술이고, 그래서 모든 표에 등속 대조군이 들어가야 한다.
 > (c) $t_{\mathrm{stop}} = 2.0/1.6 = 1.25$초, $\Delta_{\mathrm{req}} = 1.25 + 0.30 = 1.55$초 $> 1.375$초. 통과하지 못하고, 전보다 더 못 미친다. 제동거리도 $0.75$ m에서 $2.0^2/(2\times1.6) = 1.25$ m로 늘어난다.
 > 3. 바뀐 것은 스무 건 중 결과 하나다. 모델이 아니다. 모델은 두 판본 모두에서 똑같은 스무 확률을 내놓았다. 그런데 Brier 점수는 $18\%$ 움직였고 skill score는 $0.088$에서 $0.257$로 거의 세 배가 된 반면 ECE는 $10\%$만 움직였다. ECE가 차이를 내기 전에 각 구간을 빈도 하나로 눌러 버리기 때문이고, 네 건짜리 구간 안에서 $0.75 \to 1.00$은 유계인 간격에 작은 변화인 데 비해 같은 뒤집힘이 로그에서 가장 큰 제곱 잔차 하나를 통째로 없애기 때문이다. 업체에는 $N$, 구간 나누기, 기저율, 기저율 예측기 대비 Brier skill score, 그리고 reliability diagram 자체를 요구하라. $N = 20$에서 ECE 하나는 작업자 한 사람의 오후가 어느 쪽으로든 밀어낼 수 있는 숫자다.
-
+> 4. 빈칸은 영어 절 정답과 같다. 스크립트는 `I20 (0.22575, 0.088, 0.1, 0.7172)`와 `squared (0.24898, -0.006, 0.1765, 0.7172)`, `ECE by bins [0.055, 0.1, 0.27]`, `model (0.6, 1.0) cv (0.0, 0.0)`, `usable 1.375 required 1.45`, `flipped (0.18575, 0.257, 0.09, 0.795)`를 찍는다. 풀이의 모든 숫자, 3단계의 두 비예, 그리고 2(a)다. 제곱한 예측기의 기술 점수는 $-0.006$으로, 이제 늘 기저율을 말하는 것보다 *나쁘다*. ECE $0.177$은 그것을 "덜 보정됐다"로만 전하고, 그대로인 AUC는 전혀 전하지 않는다. 뒤집기는 어느 사례가 사건인지를 바꾸므로 AUC도 $0.7172$에서 $0.795$로 움직인다.
 ### 출처
 
 **보행자 의도**

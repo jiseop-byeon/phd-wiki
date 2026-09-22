@@ -12,6 +12,9 @@ This page tracks **what is operationally sold or deployed**, not which demo look
 autonomous. Company status changes quickly; entries are a verification snapshot
 (2026-07), not investment advice or a permanent ranking.
 
+> [!note] First pass · 처음이라면
+> Read §3 and its worked example on how to question a commercial claim first. §1, §2 and §4 place a product among deployment archetypes and research lineages.
+
 ### 1. Deployment archetypes
 
 | Archetype | Examples | Typical human role | Main evidence to seek |
@@ -97,6 +100,9 @@ deployment evidence, and economic value** should not be collapsed into one score
 
 이 페이지는 데모의 인상이 아니라 **실제로 무엇이 판매·배치되는가**를 추적한다. 기업 상태는
 빠르게 변하므로 2026-07 검증 스냅샷이며 영구 순위나 투자 조언이 아니다.
+
+> [!note] 처음이라면 · First pass
+> 상업 주장을 어떻게 캐묻는지 다루는 §3과 그 계산 예제를 먼저 읽는다. §1, §2, §4는 제품을 배치 유형과 연구 계보 사이에 놓는다.
 
 ### 1. 배치 유형
 

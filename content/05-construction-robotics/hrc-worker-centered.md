@@ -22,6 +22,9 @@ communicate, allocate, and recover without increasing cognitive or physical burd
 > [[04-robotics/hri-safety|HRI & Safety]] · [[02-foundations/signal-processing|Signal Processing]] ·
 > [[04-robotics/planning-decision-making|Planning]] · [[06-research-practice/experimental-design-reproducibility|Experimental Design]]
 
+> [!note] First pass · 처음이라면
+> Read §1's worker-in-the-loop stack, then the worked example in §4, which turns a detector's precision into false alarms per shift. §2 is the map of research lines, and §3 lists the claims that need care.
+
 ### 1. The worker-in-the-loop stack
 
 This page focuses on **sensed-state-adaptive HRC**, one branch of worker-centered robotics.
@@ -149,6 +152,15 @@ a small study is not evidence of low operational risk.
 > 3. Signal robustness under sweat, motion artifacts, PPE (helmets), and site noise; calibration time per user and per day; command latency and error cost when a misdecoded command moves a heavy machine; fallback authority and override; and validation beyond a controlled testbed population.
 > 4. Faster completion can come with higher cognitive workload or reduced situation awareness (hidden costs the timing metric misses), and short-term lab gains can vanish or invert with learning/order effects, fatigue over full shifts, or trust miscalibration — none observable in a small counterbalanced session.
 
+### Problem set · 과제
+
+1. **Derive.** Keep the worked example's detector: 28,800 judgements per shift, base rate $2\%$, $1{,}411$ false alarms. (a) If acknowledging each false alarm costs a worker $3\,\mathrm{s}$, how much of the shift is lost? (b) What false-positive rate allows at most one false alarm per ten minutes, and what precision does it give at the same $90\%$ true-positive rate?
+2. **Interpret.** A paper reports $98\%$ accuracy for a worker-intent detector evaluated at this base rate. Why is that number uninformative, and what two numbers would you ask for instead?
+
+> [!tip]- Solutions
+> 1. (a) $1{,}411\times3=4{,}233\,\mathrm{s}=70.6\,\mathrm{min}$, about a seventh of an 8-hour shift. (b) One per ten minutes is $48$ per shift: $0.98\times28{,}800\times\mathrm{FPR}\le48$ gives $\mathrm{FPR}\le0.17\%$, and precision becomes $0.018/(0.018+0.0017\times0.98)=91.5\%$ — the same order as the $0.2\%$ the source page derives for $90\%$ precision.
+> 2. A detector that always says "no" scores $98\%$ accuracy at a $2\%$ base rate, so the number cannot distinguish a working detector from a silent one. Ask for precision and recall at the stated operating point, or false alarms per hour of work together with the recall.
+
 ### Sources
 
 - [ACM/IEEE International Conference on Human-Robot Interaction](https://humanrobotinteraction.org/)
@@ -168,6 +180,9 @@ a small study is not evidence of low operational risk.
 > [!note] 선수 지식
 > [[04-robotics/hri-safety|HRI와 안전]] · [[02-foundations/signal-processing|신호처리]] ·
 > [[04-robotics/planning-decision-making|계획]] · [[06-research-practice/experimental-design-reproducibility|실험 설계]]
+
+> [!note] 처음이라면 · First pass
+> §1의 작업자 폐루프를 먼저 읽고, 그다음 §4의 계산 예제를 본다. 검출기의 정밀도를 교대 근무당 오경보 수로 바꾸는 예제다. §2는 연구 계보의 지도이고, §3은 조심해서 읽을 주장들이다.
 
 ### 1. 작업자 폐루프
 
@@ -284,6 +299,15 @@ COMMUNICATE 쪽에 가깝다. *적응적 자율성*은 로봇이 스스로 하�
 > 2. 로봇 모션에 대한 인간의 반응 — 동시 동작, 이격 거리, 과제 시간, 주관적 만족 — 을 측정해, 인간 인지 계획이 충돌의 부재를 넘어 사람들이 로봇 곁에서 일하는 방식 자체를 바꿈을 보였다. 건설의 공간은 공유되고 비정형이므로 이것이 수입된다: 짧은 연구의 무충돌은 작업자가 로봇을 예측하고 편하게 함께 일할 수 있는지에 대해 아무것도 말하지 않는다.
 > 3. 땀·동작 아티팩트·PPE(헬멧)·현장 소음 아래의 신호 강건성; 사용자별·일별 보정 시간; 오해독 명령이 중장비를 움직일 때의 지연과 오류 비용; 대체 권한과 override; 통제된 테스트베드 집단 너머의 검증.
 > 4. 시간 단축이 더 높은 인지 부하나 상황 인식 저하와 함께 올 수 있다(시간 지표가 놓치는 숨은 비용); 단기 실험실 이득이 학습/순서 효과, 전체 근무의 피로, 신뢰 오보정으로 사라지거나 뒤집힐 수 있다 — 작은 세션에서는 관측되지 않는다.
+
+### 과제 · Problem set
+
+1. **유도.** 계산 예제의 검출기를 그대로 둔다. 교대당 판단 28,800번, 기저율 $2\%$, 오경보 $1{,}411$번. (a) 오경보마다 작업자가 확인하는 데 $3\,\mathrm{s}$가 든다면 교대 시간이 얼마나 사라지는가? (b) 10분에 오경보가 많아야 하나이려면 위양성률은 얼마여야 하고, 같은 참양성률 $90\%$에서 정밀도는 얼마가 되는가?
+2. **해석.** 어떤 논문이 이 기저율에서 평가한 작업자 의도 검출기의 정확도를 $98\%$라고 보고한다. 그 숫자는 왜 정보가 없고, 대신 어떤 두 숫자를 요구하겠는가?
+
+> [!tip]- 정답 · Solutions
+> 1. (a) $1{,}411\times3=4{,}233\,\mathrm{s}=70.6$분, 8시간 교대의 약 7분의 1. (b) 10분에 하나는 교대당 $48$번이므로 $0.98\times28{,}800\times\mathrm{FPR}\le48$에서 $\mathrm{FPR}\le0.17\%$, 정밀도는 $0.018/(0.018+0.0017\times0.98)=91.5\%$가 된다. 원래 페이지가 정밀도 $90\%$에 대해 유도한 $0.2\%$와 같은 규모다.
+> 2. 늘 "아니다"라고만 하는 검출기도 기저율 $2\%$에서 정확도 $98\%$를 얻으므로, 그 숫자는 작동하는 검출기와 침묵하는 검출기를 가르지 못한다. 밝힌 운용점에서의 정밀도와 재현율, 또는 작업 시간당 오경보 수와 재현율을 함께 요구한다.
 
 ### 출처
 

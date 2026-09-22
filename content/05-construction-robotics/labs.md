@@ -14,6 +14,9 @@ dissertations, and publication records).
 (For companies see the [[05-construction-robotics/industry-deployment|industry & deployment map]];
 for how these groups' work fits the field's history, see [[05-construction-robotics/lineage|the lineage page]].)
 
+> [!note] First pass · 처음이라면
+> This page is a map. Read the sections on what separates these groups and how to use the map first, then look a group up when its name appears in a paper you are reading.
+
 ### The Michigan hub
 
 One structural fact organizes this survey's US map: **the University of Michigan CEE cluster
@@ -141,6 +144,9 @@ The groups differ less by country than by what they put on the site:
 2026-07 기준으로 검증했다 (랩 페이지, 학위논문, 출판 기록 웹 조사).
 (기업은 [[05-construction-robotics/industry-deployment|산업·배치 지도]], 이 그룹들의 작업이
 분야 역사에서 어디에 놓이는지는 [[05-construction-robotics/lineage|계보 페이지]] 참고.)
+
+> [!note] 처음이라면 · First pass
+> 이 페이지는 지도다. 그룹을 가르는 것과 이 지도를 쓰는 법을 먼저 읽고, 읽는 논문에 이름이 나올 때 그룹을 찾아본다.
 
 ### 미시간 허브
 

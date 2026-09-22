@@ -215,10 +215,10 @@ One row is one 60–90-minute session of the common track, in the study order of
 
 The specializations branch from the common track rather than add to it. At the same sizing — about 1,600 words a session across the table above — each group runs from one session a page for a first pass to its Working pass:
 
-- **H. Manipulation (12–16):** 7–32 sessions over five Tier B pages and the two Modern Robotics chapters read alongside them — [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] with 15 and [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] with 16, two sessions each.
-- **I. Unstructured-environment navigation (17–19):** 3–13 sessions over three Tier B pages.
-- **J. Human perception & intent (20–23):** 4–15 sessions over four Tier B pages.
-- **K. Haptics & teleoperation (24):** 10–27 sessions over the hub and its nine sub-pages, three of them Tier A labs (24.4, 24.8, 24.9).
+- **H. Manipulation (12–16):** 7–33 sessions over five pages (15 is a Tier A lab) and the two Modern Robotics chapters read alongside them — [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] with 15 and [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] with 16, two sessions each.
+- **I. Unstructured-environment navigation (17–19):** 3–14 sessions over three pages, 17 a Tier A lab.
+- **J. Human perception & intent (20–23):** 4–16 sessions over four pages, 23 a Tier A lab.
+- **K. Haptics & teleoperation (24):** 10–27 sessions over the hub and its nine sub-pages, three of them Tier A labs (24.4, 24.8, 24.9). The track is course-driven; for the research program alone its core is 24.4, 24.5, 24.8 and §5–§6 of 24.9, about 4–13 sessions ([[07-research-program/index|Research Program §6]]).
 - **L. Build track (25):** 12–44 sessions over the hub and its eleven sub-pages, before the build time a real workspace adds.
 
 ### Where this track leads
@@ -451,10 +451,10 @@ F절(10. 로봇 시스템)과 나란히, 컴퓨터에서 무언가를 돌려 보
 
 전문화는 공통 트랙에 더해지는 것이 아니라 거기서 갈라진다. 같은 산정 — 위 표 전체에서 회차당 약 1,600단어 — 으로, 각 묶음은 첫 읽기(페이지당 1회)에서 Working 통과까지 다음 범위다:
 
-- **H. 매니퓰레이션(12–16):** Tier B 다섯 페이지와 그와 함께 읽는 Modern Robotics 두 장 — 15와 함께 [[04-robotics/modern-robotics/ch12-grasping|MR 12장]], 16과 함께 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]], 각각 2회 — 에 7–32회.
-- **I. 비정형 환경 내비게이션(17–19):** Tier B 세 페이지에 3–13회.
-- **J. 사람 인지와 의도(20–23):** Tier B 네 페이지에 4–15회.
-- **K. 햅틱·원격조작(24):** 허브와 하위 페이지 아홉(그중 셋은 Tier A 실습: 24.4, 24.8, 24.9)에 10–27회.
+- **H. 매니퓰레이션(12–16):** 다섯 페이지(15는 Tier A 실습)와 그와 함께 읽는 Modern Robotics 두 장 — 15와 함께 [[04-robotics/modern-robotics/ch12-grasping|MR 12장]], 16과 함께 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]], 각각 2회 — 에 7–33회.
+- **I. 비정형 환경 내비게이션(17–19):** 세 페이지(17은 Tier A 실습)에 3–14회.
+- **J. 사람 인지와 의도(20–23):** 네 페이지(23은 Tier A 실습)에 4–16회.
+- **K. 햅틱·원격조작(24):** 허브와 하위 페이지 아홉(그중 셋은 Tier A 실습: 24.4, 24.8, 24.9)에 10–27회. 과목이 이끈 트랙이고, 연구 프로그램만 보면 핵심은 24.4, 24.5, 24.8, 24.9의 §5–§6으로 약 4–13회다([[07-research-program/index|연구 프로그램 §6]]).
 - **L. 만드는 트랙(25):** 허브와 하위 페이지 열한 개에 12–44회. 실제 워크스페이스가 더하는 빌드 시간은 빠져 있다.
 
 ### 이 트랙이 향하는 곳

@@ -574,8 +574,8 @@ includes construction machinery is the nearest existing bridge between this page
 
 ### Problem set · 과제
 
-Tier B. Using this page's patch, **Q**, **T**, and **P2** from [[02-foundations/lab-plants|0.6]].
-Hand arithmetic only — nine numbers do not need a simulator.
+Tier A. Using this page's patch, **Q**, **T**, and **P2** from [[02-foundations/lab-plants|0.6]].
+Items 1–4 are hand arithmetic — nine numbers do not need a simulator; item 5 hands the same arithmetic to a script and sweeps the rock.
 
 **The change of knobs.** The rock is smaller: the south-east cell is $0.20$ m, not $0.32$ m. A kerb,
 not a boulder. Everything else — cell size, the other eight heights, both machines' limits, the
@@ -601,6 +601,39 @@ weights — is unchanged.
    cost on a costmap. What does CVaR buy over the mean, and when is the mean the *wrong* objective for
    an excavator on a slope?
 
+5. **Do.** Fill the `?` so that the script reproduces the worked derivation (rock $0.32$ m) and your item 2 (rock $0.20$ m) for Q, Q carrying P2 and T. Then let it do what hand arithmetic cannot: for each machine, raise the rock in $1$ cm steps and find the height at which *each* term, on its own, first crosses its limit. Which term binds first for each machine, how far apart are the three crossings, and which crossing does loading P2 move?
+
+```python
+import numpy as np
+c = 0.20                                               # cell size (m)
+X, Y = np.meshgrid([-c, 0.0, c], [c, 0.0, -c])         # x east, y north; rows printed north to south
+LIMITS = {"Q": (25.0, 0.15, 0.05), "Q+P2": (22.0, 0.15, 0.05), "T": (30.0, 0.40, 0.10)}
+w = np.array([0.4, 0.4, 0.2])
+NAMES = ("slope", "step", "roughness")
+def patch(rock):
+    return np.array(((0.08, 0.12, 0.16), (0.06, 0.10, 0.14), (0.04, 0.08, rock)))
+def terms(H):
+    A = np.column_stack([np.ones(9), X.ravel(), Y.ravel()])
+    coef = np.linalg.lstsq(A, H.ravel(), rcond=None)[0]           # least-squares plane a, b, c0
+    theta = ?                                                    # slope of the fitted plane, degrees
+    steps = np.concatenate([np.abs(np.diff(H, axis=0)).ravel(), np.abs(np.diff(H, axis=1)).ravel()])
+    sigma = ?                                                    # RMS residual about the plane
+    return np.array([theta, steps.max(), sigma])
+def verdict(H, limits):
+    r = ?                                                        # the three normalized terms
+    return bool(r.max() > 1), round(float(w @ r), 3)
+for rock in (0.32, 0.20):
+    print(rock, {m: verdict(patch(rock), L) for m, L in LIMITS.items()})
+for m, L in LIMITS.items():                                      # the rock height at which each term trips alone
+    trips = []
+    for k in range(3):
+        for rock in np.round(np.arange(0.14, 1.0, 0.01), 2):
+            if ?:
+                trips.append((NAMES[k], float(rock)))
+                break
+    print(m, trips)
+```
+
 > [!note]- How to draw it · 그리는 법
 > - **Left, the patch**: the $3\times3$ grid with the nine heights written in the cells, the cell size $c=0.20$ m marked on one edge, and arrows for $+x$ east and $+y$ north.
 > - **Shade the south-east cell**: that one is the rock, and everything that follows turns on it.
@@ -614,7 +647,40 @@ weights — is unchanged.
 > 2. (a) Unchanged: $g_x=0.20$, $g_y=0.10$, $\theta=12.60^\circ$. (b) $\sum x_ih_i=0.2(0.16+0.14+0.20)-0.2(0.08+0.06+0.04)=0.064$, so $b=0.064/0.24=0.2667$; $\sum y_ih_i=0.2(0.36)-0.2(0.32)=0.008$, so $c_0=0.008/0.24=0.0333$ — positive again, the sign flip was the rock's doing; $a=0.98/9=0.1089$; $\theta=\arctan\sqrt{0.2667^2+0.0333^2}=\arctan 0.2687=15.04^\circ$. (c) $\Delta h=0.20-0.08=0.12$ m; $\sigma=0.0199$ m. (d) Q: $15.04/25=0.602$, $0.12/0.15=0.800$, $0.0199/0.05=0.398$ — gate clear, $C=0.640$. Q with P2 at $\theta_{\max}=22^\circ$: $0.684$, $0.800$, $0.398$ — clear, $C=0.673$. T: $0.501$, $0.300$, $0.199$ — clear, $C=0.360$. Ranking T $<$ Q $<$ Q+P2, and for the first time all three can cross.
 > 3. The central difference did not move, and it could not have: its stencil is the four 4-connected neighbours of the centre cell, and the cell that changed is a diagonal corner it never reads. So a pipeline computing slope by central differences on a $0.20$ m grid returns $12.60^\circ$ for a patch Q can cross and for a patch Q cannot — it is blind to exactly the feature that decides, and its agreement with the plane fit on smooth ground is what hides this. The fix is not a better estimator but a second term: step height is what separated the two patches ($1.60$ against $0.800$), and it is a pairwise quantity no gradient can express. As for §2 — **velocity tracking**, the supervision behind Wild Visual Navigation, would have got both right, because it asks whether the robot achieved the speed it commanded while actually driving there, which is the consequence all three geometric terms are proxies for. What it needs that geometry does not is *the robot having been there*: it is a record of experience, so it cannot score ground nobody has driven, and that is the whole reason §1's papers pair it with a vision model that generalises the label outward.
 > 4. (a) Grass is occupied in the grid and traversable for many platforms. BADGR (drive-and-label), or proprioceptive cost (*How Does It Feel?*), replaces geometry with consequence. (b) Interventions per kilometre, plus the distance. 95% conflates a clean run with a run after operator rescues. (c) CVaR penalises the tail, not the average rut. A mean-optimal path can still include a rare roll-over; an excavator on a slope cares about that tail — and the gate in the worked derivation is the crudest possible version of the same instinct, a term you refuse to let the average buy off.
-
+> 5. The blanks are `np.degrees(np.arctan(np.hypot(coef[1], coef[2])))`, `np.sqrt(np.mean((H.ravel() - A @ coef)**2))`, `terms(H)/np.array(limits)` and `terms(patch(rock))[k] > L[k]`. The filled script:
+>
+> ```python
+> import numpy as np
+> c = 0.20                                               # cell size (m)
+> X, Y = np.meshgrid([-c, 0.0, c], [c, 0.0, -c])         # x east, y north; rows printed north to south
+> LIMITS = {"Q": (25.0, 0.15, 0.05), "Q+P2": (22.0, 0.15, 0.05), "T": (30.0, 0.40, 0.10)}
+> w = np.array([0.4, 0.4, 0.2])
+> NAMES = ("slope", "step", "roughness")
+> def patch(rock):
+>     return np.array(((0.08, 0.12, 0.16), (0.06, 0.10, 0.14), (0.04, 0.08, rock)))
+> def terms(H):
+>     A = np.column_stack([np.ones(9), X.ravel(), Y.ravel()])
+>     coef = np.linalg.lstsq(A, H.ravel(), rcond=None)[0]           # least-squares plane a, b, c0
+>     theta = np.degrees(np.arctan(np.hypot(coef[1], coef[2])))    # slope of the fitted plane
+>     steps = np.concatenate([np.abs(np.diff(H, axis=0)).ravel(), np.abs(np.diff(H, axis=1)).ravel()])
+>     sigma = np.sqrt(np.mean((H.ravel() - A @ coef)**2))          # RMS residual about the plane
+>     return np.array([theta, steps.max(), sigma])
+> def verdict(H, limits):
+>     r = terms(H)/np.array(limits)                                # the three normalized terms
+>     return bool(r.max() > 1), round(float(w @ r), 3)
+> for rock in (0.32, 0.20):
+>     print(rock, {m: verdict(patch(rock), L) for m, L in LIMITS.items()})
+> for m, L in LIMITS.items():                                      # the rock height at which each term trips alone
+>     trips = []
+>     for k in range(3):
+>         for rock in np.round(np.arange(0.14, 1.0, 0.01), 2):
+>             if terms(patch(rock))[k] > L[k]:
+>                 trips.append((NAMES[k], float(rock)))
+>                 break
+>     print(m, trips)
+> ```
+>
+> The first two lines reproduce the worked table ($1.166$ gated, $1.21$ gated, $0.612$ clear) and item 2(d) ($0.640$, $0.673$, $0.360$, all clear). The sweep prints Q: step at $0.23$ m, roughness at $0.33$ m, slope at $0.42$ m; Q+P2: step $0.23$, roughness $0.33$, slope $0.36$; T: step $0.49$, slope $0.52$, roughness $0.53$. For Q the step limit binds $10$ cm before roughness and $19$ cm before slope, so on this patch the slope threshold a paper reports is the one term that never decides. Loading P2 moves only the slope crossing, by $6$ cm, because it changes the tip-over angle and nothing else. T's three limits are balanced to within $4$ cm, so for T no term can be dropped from the costmap.
 ### Sources
 
 - G. Kahn, P. Abbeel, S. Levine, "BADGR: An Autonomous Self-Supervised Learning-Based Navigation System," *IEEE RA-L*, vol. 6, no. 2, pp. 1312–1319, 2021 ([arXiv:2002.05700](https://arxiv.org/abs/2002.05700)).
@@ -1164,8 +1230,8 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 
 ### 과제 · Problem set
 
-Tier B. 이 페이지의 패치, **Q**, **T**, 그리고 [[02-foundations/lab-plants|0.6]]의 **P2**를 쓴다.
-손 계산만 한다. 수 아홉 개에 시뮬레이터는 필요 없다.
+Tier A. 이 페이지의 패치, **Q**, **T**, 그리고 [[02-foundations/lab-plants|0.6]]의 **P2**를 쓴다.
+1–4번은 손 계산이다. 수 아홉 개에 시뮬레이터는 필요 없다. 5번은 같은 계산을 스크립트에 넘겨 바위 높이를 훑는다.
 
 **바꿀 손잡이.** 바위가 더 작다. 남동쪽 셀이 $0.32$ m가 아니라 $0.20$ m다. 바위가 아니라 연석이다.
 나머지 — 셀 크기, 다른 여덟 높이, 두 기계의 한계, 가중치 — 는 그대로다.
@@ -1188,6 +1254,8 @@ Tier B. 이 페이지의 패치, **Q**, **T**, 그리고 [[02-foundations/lab-pl
    주행 둘은? (c) 플래너가 costmap에서 기댓값을 최소화한다. 평균 대신 CVaR가 사는 것과, 경사면
    굴착기에서 평균이 *틀린* 목적인 때는?
 
+5. **실행.** 영어 절 템플릿의 `?`를 채워, Q, P2를 실은 Q, T에 대해 풀이한 유도(바위 $0.32$ m)와 2번(바위 $0.20$ m)을 다시 내게 하라. 그다음 손 계산으로는 못 하는 일을 시켜라. 기계마다 바위를 $1$ cm씩 올리며 세 항이 *각각* 혼자서 처음 한계를 넘는 높이를 찾는다. 기계마다 어느 항이 먼저 묶이는가, 세 교차는 얼마나 떨어져 있는가, 그리고 P2를 실으면 어느 교차가 움직이는가?
+
 > [!note]- 그리는 법 · How to draw it
 > - **왼쪽, 패치**: 셀 안에 아홉 개의 높이를 적은 $3\times3$ 격자를 그리고, 한 변에 셀 크기 $c=0.20$ m를 표시하고, $+x$ 동쪽과 $+y$ 북쪽 화살표를 넣는다.
 > - **남동쪽 셀을 칠한다**: 그것이 바위이고, 이어지는 모든 것이 그 셀에 달려 있다.
@@ -1201,7 +1269,7 @@ Tier B. 이 페이지의 패치, **Q**, **T**, 그리고 [[02-foundations/lab-pl
 > 2. (a) 그대로다: $g_x=0.20$, $g_y=0.10$, $\theta=12.60^\circ$. (b) $\sum x_ih_i=0.2(0.16+0.14+0.20)-0.2(0.08+0.06+0.04)=0.064$이므로 $b=0.064/0.24=0.2667$. $\sum y_ih_i=0.2(0.36)-0.2(0.32)=0.008$이므로 $c_0=0.008/0.24=0.0333$ — 다시 양수다. 부호가 뒤집혔던 것은 바위가 한 일이었다. $a=0.98/9=0.1089$, $\theta=\arctan\sqrt{0.2667^2+0.0333^2}=\arctan 0.2687=15.04^\circ$. (c) $\Delta h=0.20-0.08=0.12$ m, $\sigma=0.0199$ m. (d) Q: $15.04/25=0.602$, $0.12/0.15=0.800$, $0.0199/0.05=0.398$ — 관문 통과, $C=0.640$. P2를 실은 Q($\theta_{\max}=22^\circ$): $0.684$, $0.800$, $0.398$ — 통과, $C=0.673$. T: $0.501$, $0.300$, $0.199$ — 통과, $C=0.360$. 순위는 T $<$ Q $<$ Q+P2이고, 처음으로 셋 다 건널 수 있다.
 > 3. 중앙 차분이 움직이지 않았고, 움직일 수도 없었다. 그 스텐실은 가운데 셀의 4-연결 이웃 넷인데 바뀐 셀은 그것이 읽지 않는 대각선 모서리다. 그러니 $0.20$ m 격자에서 중앙 차분으로 경사를 계산하는 파이프라인은 Q가 건널 수 있는 패치와 건널 수 없는 패치에 똑같이 $12.60^\circ$를 돌려준다 — 판정을 내리는 바로 그 특징에 눈이 멀어 있고, 매끄러운 지면에서 평면 적합과 잘 맞는다는 사실이 그것을 가린다. 해법은 더 나은 추정기가 아니라 두 번째 항이다. 두 패치를 갈라놓은 것은 단차 높이이고($0.800$에 대해 $1.60$), 그것은 어떤 기울기도 표현할 수 없는 쌍 위의 양이다. §2에서는 — Wild Visual Navigation 뒤의 지도 신호인 **속도 추종**이 둘 다 맞혔을 것이다. 실제로 거기를 달리면서 명령한 속도를 냈는지를 묻는데, 그것이 세 기하 항 전부가 대리하고 있던 결과이기 때문이다. 기하에는 필요 없는데 그것에는 필요한 것은 *로봇이 거기에 가 봤다는 사실*이다. 경험의 기록이라 아무도 달려 보지 않은 땅에는 점수를 매길 수 없고, §1의 논문들이 그것을 라벨을 바깥으로 일반화하는 비전 모델과 짝짓는 이유 전부가 그것이다.
 > 4. (a) 풀은 격자에서 점유지만 많은 플랫폼에는 통과 가능하다. BADGR(달려 보며 라벨)이나 고유수용 비용(*How Does It Feel?*)이 기하를 결과로 바꾼다. (b) 킬로미터당 개입, 그리고 거리. 95%는 깨끗한 주행과 조작자 구조 뒤 주행을 섞는다. (c) CVaR는 평균 골이 아니라 꼬리를 벌한다. 평균 최적 경로에도 드문 전복이 남을 수 있고, 경사면 굴착기는 그 꼬리를 본다 — 그리고 위 유도의 관문이 같은 직관의 가장 거친 판본이다. 평균이 사 버리도록 두지 않는 항 하나.
-
+> 5. 빈칸은 영어 절 정답과 같다. 앞의 두 줄은 풀이 표($1.166$ 막힘, $1.21$ 막힘, $0.612$ 통과)와 2(d)($0.640$, $0.673$, $0.360$, 모두 통과)를 다시 낸다. 훑기는 이렇게 찍는다. Q: 단차 $0.23$ m, 거칠기 $0.33$ m, 경사 $0.42$ m. Q+P2: 단차 $0.23$, 거칠기 $0.33$, 경사 $0.36$. T: 단차 $0.49$, 경사 $0.52$, 거칠기 $0.53$. Q에서는 단차 한계가 거칠기보다 $10$ cm, 경사보다 $19$ cm 먼저 묶이므로, 이 패치에서 논문이 보고하는 경사 문턱은 한 번도 결정하지 않는 항이다. P2를 실으면 전복 각도만 바뀌므로 경사 교차만 $6$ cm 움직인다. T의 세 한계는 $4$ cm 안에서 균형을 이루므로, T에서는 어느 항도 비용 지도에서 뺄 수 없다.
 ### 출처
 
 - G. Kahn, P. Abbeel, S. Levine, "BADGR: An Autonomous Self-Supervised Learning-Based Navigation System," *IEEE RA-L*, vol. 6, no. 2, pp. 1312–1319, 2021 ([arXiv:2002.05700](https://arxiv.org/abs/2002.05700)).

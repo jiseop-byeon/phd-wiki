@@ -1,7 +1,7 @@
 ---
 title: 24.2 Tactile Display Design
 tags: [haptics, tactile, hri]
-study-depth: Working
+study-depth: Literacy
 wiki-support: Working
 depth-goal: "Derive what a frozen vibrotactile actuator actually delivers to skin at two frequencies, and what its array spacing can and cannot resolve, before choosing a tactile actuation family from the perceptual variable, body site, bandwidth, workspace, and task."
 mastery-when: "Master transducer dynamics and psychophysical validation when the tactile display is the research contribution."

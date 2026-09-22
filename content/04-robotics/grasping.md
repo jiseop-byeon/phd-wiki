@@ -609,11 +609,45 @@ grasps are and what would make your answer wrong.
 
 ### Problem set · 과제
 
-Tier B. Using only this page, its prerequisites and [[02-foundations/lab-plants|0.6]]. Same tile, same budget $F=20\,\mathrm{N}$, same $\rho=0.100\,\mathrm{m}$. Two knobs move: the planner now proposes a **left-edge plus bottom-edge** pair — contact 1 fixed at $(-0.100,\ 0)$ with normal $(1,0)$, contact 2 anywhere on the bottom edge at $(x_2,\ -0.050)$ with normal $(0,1)$ — and the surface is dusty, $\mu=0.2$. No new simulator.
+Tier A. Using only this page, its prerequisites and [[02-foundations/lab-plants|0.6]]. Same tile, same budget $F=20\,\mathrm{N}$, same $\rho=0.100\,\mathrm{m}$. Two knobs move: the planner now proposes a **left-edge plus bottom-edge** pair — contact 1 fixed at $(-0.100,\ 0)$ with normal $(1,0)$, contact 2 anywhere on the bottom edge at $(x_2,\ -0.050)$ with normal $(0,1)$ — and the surface is dusty, $\mu=0.2$. No new simulator.
 
 1. **Draw.** The tile with contact 1 and its cone, and the bottom edge marked as a segment. Shade, along that segment, the set of $x_2$ passing the angle test *at contact 1*, then shade separately the set passing it *at contact 2*, using two different hatchings. Beside it, redraw the wrench-space figure of the picture above for grasp **B** at $\mu=0.2$: the four generators, the tetrahedron, the inscribed ball, and the gravity arrow $(0,\ 4.905,\ 0)$.
 2. **Derive.** (a) Write each end's antipodal condition as an inequality on $x_2$ in terms of $\mu$, and show the two sets are **disjoint** at $\mu=0.2$ and at $\mu=0.5$. (b) Find the $\mu$ at which they first meet, and the single $x_2$ where they meet. (c) Grasp **B** at $\mu=0.2$: the four generators, $\epsilon_B$, $Q_{v,B}$, and the ratio of each to its $\mu=0.5$ value. (d) The lift capacity of **B** and of **A** at $\mu=0.2$, each as a margin over $W=4.905\,\mathrm{N}$.
 3. **Interpret.** At $\mu=0.2$ both metrics still rank **A** above **B**. State which grasp survives the dust and which does not, and explain in one sentence what property of **B** the two metrics are structurally unable to see. Then say what this implies for a planner that ranks candidates by $\epsilon$ alone on a site where $\mu$ is unknown.
+
+4. **Do.** Fill the `?` so that the script builds each grasp's four generator wrenches and reads $\epsilon$ and $Q_v$ off their convex hull, and check it against the Worked case at $\mu=0.5$ and your 2(c) at $\mu=0.2$. Then run $\mu=0.1,\ 0.3,\ 0.8,\ 1.0$: does the ranking of **A** and **B** ever flip, and why does the ratio of their volumes not move at all?
+
+```python
+import numpy as np
+from itertools import combinations
+F, rho = 20.0, 0.100                      # force budget, characteristic length
+GRASPS = {"A": [((-0.100, 0.0), (1, 0)), ((0.100, 0.0), (-1, 0))],
+          "B": [((0.0, 0.050), (0, -1)), ((0.0, -0.050), (0, 1))]}
+def generators(contacts, mu):
+    W = []
+    for (rx, ry), (nx, ny) in contacts:
+        tx, ty = -ny, nx                              # tangent: normal turned 90 degrees
+        for s in (+1, -1):
+            fx, fy = ?                                    # cone edge at the full budget
+            W.append((fx, fy, ?))                         # (f_x, f_y, m_z/rho)
+    return np.array(W)
+def eps_and_volume(W):
+    eps, vol = np.inf, 0.0
+    for i, j, k in combinations(range(len(W)), 3):
+        n = np.cross(W[j] - W[i], W[k] - W[i])
+        if np.linalg.norm(n) < 1e-12: continue
+        n = n/np.linalg.norm(n)
+        d = W @ n - W[i] @ n                          # signed distances of all points to the plane
+        if ?: continue                                # skip planes that are not faces of the hull
+        n = -n if W[i] @ n < 0 else n                 # point the normal away from the origin
+        eps = min(eps, ?)                             # distance from the origin to this face
+        vol += abs(np.linalg.det(np.array([W[i], W[j], W[k]])))/6   # cone from the origin to the face
+    return eps, vol
+for mu in (0.5, 0.2):
+    for name, contacts in GRASPS.items():
+        e, v = eps_and_volume(generators(contacts, mu))
+        print(mu, name, round(float(e), 3), round(float(v), 1))
+```
 
 > [!note]- How to draw it · 그리는 법
 > - **Left, the tile and its candidates**: the tile as a rectangle with the centre of mass marked, and every candidate contact point on it.
@@ -629,7 +663,41 @@ Tier B. Using only this page, its prerequisites and [[02-foundations/lab-plants|
 > 1. Contact 1's cone opens $\pm 11.310°$ about $+\hat x$. The two hatchings never overlap.
 > 2. (a) At contact 1 the line is $(x_2+0.100,\ -0.050)$ against $\hat n_1 = (1,0)$, so $0.050/(x_2+0.100)\le\mu$, i.e. $x_2 \ge 0.050/\mu - 0.100$. At contact 2 the line is $(-(x_2+0.100),\ +0.050)$ against $\hat n_2 = (0,1)$, so $(x_2+0.100)/0.050 \le \mu$, i.e. $x_2 \le 0.050\mu - 0.100$. At $\mu=0.2$: $x_2\ge +0.150$ and $x_2\le -0.090$ — empty, and $+0.150$ is off the tile besides. At $\mu=0.5$: $x_2\ge 0$ and $x_2\le -0.075$ — empty. (b) The bounds meet when $0.050/\mu = 0.050\mu$, so $\mu=1$ and $x_2=-0.050\,\mathrm{m}$, where both angles are exactly $45°$ and the line is the $0.0707\,\mathrm{m}$ diagonal. **No left-edge-plus-bottom-edge pair on this tile is antipodal below $\mu=1$** — a whole family of candidates ruled out by two inequalities, with no wrench space built. (c) Generators $(4,\ -20,\ -2)$, $(-4,\ -20,\ 2)$, $(4,\ 20,\ 2)$, $(-4,\ 20,\ -2)$; they sum to zero. The nearest face has normal $(5,\ -1,\ 10)/\sqrt{126}$, so $\epsilon_B = 20/\sqrt{126} = 1.782\,\mathrm{N}$, which is $0.408\times$ its $\mu=0.5$ value of $4.364$; $Q_{v,B} = 426.7\,\mathrm{N^3}$, $0.160\times$ its $2667$. **A** fell by the same pattern, $0.420$ and $0.160$: the volume is exactly $(0.2/0.5)^2 = 0.16$ because two of the three generator coordinates are proportional to $\mu$, while $\epsilon$ falls a little less than in proportion. (d) **B** lifts $F = 20.0\,\mathrm{N}$, margin $20.0/4.905 = 4.08$, **unchanged from $\mu=0.5$**, because **B** carries the weight on its contact *normals* and normals do not care about friction. **A** lifts $\mu F = 4.0\,\mathrm{N}$, margin $0.82$: it drops the tile.
 > 3. **B** survives and **A** does not, and yet both metrics rank **A** first at both values of $\mu$ ($\epsilon$: $2.801$ against $1.782$; volume: $853$ against $427$). What the metrics cannot see is that **B**'s strength lies along the one axis the task loads, so dust takes $59\%$ of **B**'s $\epsilon$ and none of its actual job. A planner ranking by $\epsilon$ alone while $\mu$ is unknown is optimising a worst case over directions the task will never produce, and on this object it picks the grasp that fails. The fix is not a better scalar: it is a task wrench distribution, which is what the task-oriented critique in §8 is about.
-
+> 4. The blanks are `F*(nx + s*mu*tx), F*(ny + s*mu*ty)`, `(rx*fy - ry*fx)/rho`, `(d > 1e-9).any() and (d < -1e-9).any()` and `W[i] @ n`. The filled script:
+>
+> ```python
+> import numpy as np
+> from itertools import combinations
+> F, rho = 20.0, 0.100                      # force budget, characteristic length
+> GRASPS = {"A": [((-0.100, 0.0), (1, 0)), ((0.100, 0.0), (-1, 0))],
+>           "B": [((0.0, 0.050), (0, -1)), ((0.0, -0.050), (0, 1))]}
+> def generators(contacts, mu):
+>     W = []
+>     for (rx, ry), (nx, ny) in contacts:
+>         tx, ty = -ny, nx                              # tangent: normal turned 90 degrees
+>         for s in (+1, -1):
+>             fx, fy = F*(nx + s*mu*tx), F*(ny + s*mu*ty)   # cone edge at the full budget
+>             W.append((fx, fy, (rx*fy - ry*fx)/rho))
+>     return np.array(W)
+> def eps_and_volume(W):
+>     eps, vol = np.inf, 0.0
+>     for i, j, k in combinations(range(len(W)), 3):
+>         n = np.cross(W[j] - W[i], W[k] - W[i])
+>         if np.linalg.norm(n) < 1e-12: continue
+>         n = n/np.linalg.norm(n)
+>         d = W @ n - W[i] @ n                          # signed distances of all points to the plane
+>         if (d > 1e-9).any() and (d < -1e-9).any(): continue   # not a face of the hull
+>         n = -n if W[i] @ n < 0 else n                 # point the normal away from the origin
+>         eps = min(eps, W[i] @ n)                      # distance from the origin to this face
+>         vol += abs(np.linalg.det(np.array([W[i], W[j], W[k]])))/6   # cone from the origin to the face
+>     return eps, vol
+> for mu in (0.5, 0.2):
+>     for name, contacts in GRASPS.items():
+>         e, v = eps_and_volume(generators(contacts, mu))
+>         print(mu, name, round(float(e), 3), round(float(v), 1))
+> ```
+>
+> It prints `0.5 A 6.667 5333.3`, `0.5 B 4.364 2666.7`, `0.2 A 2.801 853.3` and `0.2 B 1.782 426.7`: the Worked case at $\mu=0.5$ and 2(c) at $\mu=0.2$. Over $\mu=0.1$ to $1.0$ the ranking never flips: $\epsilon_B/\epsilon_A$ only rises from $0.633$ to $0.707$. Both volumes grow as $\mu^2$ ($213$ and $107$ at $0.1$, $21{,}333$ and $10{,}667$ at $1.0$), so their ratio stays at exactly $1/2$, fixed by the contact geometry alone. Neither metric ever sees what item 3 is about.
 ### Sources
 
 **Classical**
@@ -1217,11 +1285,13 @@ Mastery 시험: 물체, 그리퍼, 마찰 추정치가 주어졌을 때 좋은 �
 
 ### 과제 · Problem set
 
-Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 타일도 예산 $F=20\,\mathrm{N}$도 $\rho=0.100\,\mathrm{m}$도 그대로다. 노브 둘이 움직인다. 계획기가 이제 **왼쪽 변과 아래 변**의 쌍을 제안한다 — 접촉 1은 $(-0.100,\ 0)$에 법선 $(1,0)$으로 고정, 접촉 2는 아래 변 위 아무 데나 $(x_2,\ -0.050)$에 법선 $(0,1)$ — 그리고 표면에 먼지가 앉아 $\mu=0.2$다. 시뮬레이터를 새로 만들지 마라.
+Tier A. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 타일도 예산 $F=20\,\mathrm{N}$도 $\rho=0.100\,\mathrm{m}$도 그대로다. 노브 둘이 움직인다. 계획기가 이제 **왼쪽 변과 아래 변**의 쌍을 제안한다 — 접촉 1은 $(-0.100,\ 0)$에 법선 $(1,0)$으로 고정, 접촉 2는 아래 변 위 아무 데나 $(x_2,\ -0.050)$에 법선 $(0,1)$ — 그리고 표면에 먼지가 앉아 $\mu=0.2$다. 시뮬레이터를 새로 만들지 마라.
 
 1. **그리기.** 타일과 접촉 1, 그 원뿔, 그리고 아래 변을 선분으로 표시한다. 그 선분을 따라 *접촉 1에서* 각 조건을 통과하는 $x_2$ 집합을 칠하고, *접촉 2에서* 통과하는 집합을 다른 빗금으로 따로 칠한다. 그 옆에는 위의 그림 오른쪽의 렌치 공간을 $\mu=0.2$의 파지 **B** 로 다시 그린다. 생성자 넷, 사면체, 내접 공, 그리고 중력 화살표 $(0,\ 4.905,\ 0)$.
 2. **유도.** (a) 각 끝의 antipodal 조건을 $\mu$가 든 $x_2$에 대한 부등식으로 쓰고, $\mu=0.2$와 $\mu=0.5$에서 두 집합이 **서로소**임을 보여라. (b) 두 집합이 처음 만나는 $\mu$와 그때의 유일한 $x_2$를 구하라. (c) $\mu=0.2$의 파지 **B**: 생성자 넷, $\epsilon_B$, $Q_{v,B}$, 그리고 각각의 $\mu=0.5$ 값 대비 비. (d) $\mu=0.2$에서 **B**와 **A**가 드는 용량을, 각각 $W=4.905\,\mathrm{N}$에 대한 여유로.
 3. **해석.** $\mu=0.2$에서도 두 지표는 여전히 **A**를 **B**보다 위에 놓는다. 먼지에서 살아남는 파지와 그러지 못하는 파지를 밝히고, 두 지표가 구조적으로 볼 수 없는 **B**의 성질이 무엇인지 한 문장으로 설명하라. 그다음 $\mu$를 모르는 현장에서 $\epsilon$만으로 후보 순위를 매기는 계획기에 이것이 무엇을 함의하는지 말하라.
+
+4. **실행.** 영어 절 템플릿의 `?`를 채워, 파지마다 생성 렌치 넷을 만들고 그 볼록 껍질에서 $\epsilon$과 $Q_v$를 읽게 하라. $\mu=0.5$에서는 계산 절과, $\mu=0.2$에서는 2(c)와 맞춰 보라. 그다음 $\mu=0.1,\ 0.3,\ 0.8,\ 1.0$을 돌려라. **A**와 **B**의 순위가 뒤집히는 일이 있는가, 그리고 둘의 부피 비는 왜 전혀 움직이지 않는가?
 
 > [!note]- 그리는 법 · How to draw it
 > - **왼쪽, 타일과 후보들.** 타일을 직사각형으로 그리고 질량 중심을 표시한 뒤, 후보의 접촉점을 모두 찍는다.
@@ -1237,7 +1307,7 @@ Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴
 > 1. 접촉 1의 원뿔이 $+\hat x$ 둘레로 $\pm 11.310°$ 열린다. 두 빗금은 결코 겹치지 않는다.
 > 2. (a) 접촉 1에서 선이 $(x_2+0.100,\ -0.050)$이고 $\hat n_1 = (1,0)$이므로 $0.050/(x_2+0.100)\le\mu$, 즉 $x_2 \ge 0.050/\mu - 0.100$이다. 접촉 2에서 선이 $(-(x_2+0.100),\ +0.050)$이고 $\hat n_2 = (0,1)$이므로 $(x_2+0.100)/0.050 \le \mu$, 즉 $x_2 \le 0.050\mu - 0.100$이다. $\mu=0.2$에서는 $x_2\ge +0.150$이고 $x_2\le -0.090$ — 공집합이고, $+0.150$은 애초에 타일 바깥이다. $\mu=0.5$에서는 $x_2\ge 0$이고 $x_2\le -0.075$ — 공집합이다. (b) $0.050/\mu = 0.050\mu$일 때 두 경계가 만나므로 $\mu=1$, $x_2=-0.050\,\mathrm{m}$이고, 거기서 두 각이 정확히 $45°$이며 선은 $0.0707\,\mathrm{m}$짜리 대각선이다. **이 타일에서 왼쪽 변과 아래 변의 쌍은 $\mu=1$ 아래에서는 어느 것도 antipodal이 아니다** — 렌치 공간을 하나도 짓지 않고 부등식 둘로 후보 가족 전체를 배제한 것이다. (c) 생성자는 $(4,\ -20,\ -2)$, $(-4,\ -20,\ 2)$, $(4,\ 20,\ 2)$, $(-4,\ 20,\ -2)$이고 합이 0이다. 가장 가까운 면의 법선이 $(5,\ -1,\ 10)/\sqrt{126}$이므로 $\epsilon_B = 20/\sqrt{126} = 1.782\,\mathrm{N}$, $\mu=0.5$ 값 $4.364$의 $0.408$배다. $Q_{v,B} = 426.7\,\mathrm{N^3}$으로 $2667$의 $0.160$배다. **A**도 같은 형태로 떨어졌다($0.420$과 $0.160$). 부피가 정확히 $(0.2/0.5)^2 = 0.16$인 이유는 생성자 세 좌표 중 둘이 $\mu$에 비례하기 때문이고, $\epsilon$은 비례보다 조금 덜 떨어진다. (d) **B**는 $F = 20.0\,\mathrm{N}$을 들고 여유가 $20.0/4.905 = 4.08$로 **$\mu=0.5$에서와 같다**. **B**가 무게를 접촉 *법선*으로 지고, 법선은 마찰을 신경 쓰지 않기 때문이다. **A**는 $\mu F = 4.0\,\mathrm{N}$을 들고 여유가 $0.82$다. 타일을 떨어뜨린다.
 > 3. **B**가 살아남고 **A**가 그러지 못하는데, 두 지표는 두 $\mu$ 값 모두에서 **A**를 1위로 놓는다($\epsilon$은 $2.801$ 대 $1.782$, 부피는 $853$ 대 $427$). 지표가 볼 수 없는 것은 **B**의 강함이 과제가 하중을 거는 바로 그 축에 놓여 있다는 사실이고, 그래서 먼지는 **B**의 $\epsilon$을 $59\%$ 가져가고 실제 임무는 하나도 가져가지 못한다. $\mu$를 모르는 채 $\epsilon$만으로 순위를 매기는 계획기는 과제가 결코 만들지 않을 방향들에 대한 최악의 경우를 최적화하고 있고, 이 물체에서는 실패하는 파지를 고른다. 해법은 더 나은 스칼라가 아니라 과제 렌치 분포이며, §8의 과제 지향 비판이 말하는 것이 그것이다.
-
+> 4. 빈칸은 영어 절 정답과 같다. 스크립트는 `0.5 A 6.667 5333.3`, `0.5 B 4.364 2666.7`, `0.2 A 2.801 853.3`, `0.2 B 1.782 426.7`을 찍어 $\mu=0.5$의 계산 절과 $\mu=0.2$의 2(c)를 다시 낸다. $\mu=0.1$에서 $1.0$까지 순위는 뒤집히지 않는다. $\epsilon_B/\epsilon_A$는 $0.633$에서 $0.707$로 조금 오를 뿐이다. 두 부피는 모두 $\mu^2$에 비례해 자라므로($0.1$에서 $213$과 $107$, $1.0$에서 $21{,}333$과 $10{,}667$) 그 비는 접촉 기하만으로 정해진 정확히 $1/2$에 머문다. 어느 지표도 3번이 묻는 것을 보지 못한다.
 ### 출처
 
 **고전**

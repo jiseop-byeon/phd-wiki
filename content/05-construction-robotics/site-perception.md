@@ -24,6 +24,9 @@ the geometry and workflow assumptions.
 > calibration → registration → uncertainty. Optional when a paper uses learned proposals/depth:
 > [[01-canonical-papers/notes/2-computer-vision/sam|SAM]] · [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]].
 
+> [!note] First pass · 처음이라면
+> Read §1's perception stack and its worked example, which shows a 10 mm crack falling between LiDAR samples at 20 m. §2 names the four problems that recur on every site; §3 and §4 are for reading a paper's model and its evaluation.
+
 ### 1. The site-perception stack
 
 BIM (Building Information Modeling) is the structured 3D design model of a building, in which each component is an object with an ID and properties; the [[05-construction-robotics/digital-twin-workflows|digital-twin workflows]] page treats it in depth.
@@ -116,6 +119,15 @@ Evaluation needs an independent reference because alignment can hide the error b
 > 3. A calibrated site coordinate and metric scale for the mask, temporal consistency across frames, association with a BIM/asset identity, and a safety-rated treatment of uncertainty — a mask is image-space evidence, not actionable state.
 > 4. The robot plans and executes its own scanning motion and registers the clouds it collects — sensing and motion are autonomous, closing the acquisition loop. Before calling it autonomous inspection, check whether analysis (defect/deviation detection) and reporting were also autonomous or done offline by humans.
 
+### Problem set · 과제
+
+1. **Derive.** A crack is reliably detected only if at least three LiDAR samples fall across it. (a) The largest range at which a $10\,\mathrm{mm}$ crack gets three samples at $0.1^\circ$ resolution. (b) The same at $0.05^\circ$. (c) The sample spacing at $5\,\mathrm{m}$ when the surface is tilted $60^\circ$ from facing the scanner.
+2. **Interpret.** A crack-detection paper reports $95\%$ recall on images taken at $2\,\mathrm{m}$. What does that support for a scanner mounted $20\,\mathrm{m}$ from the wall?
+
+> [!tip]- Solutions
+> 1. (a) Spacing must be at most $10/3=3.33\,\mathrm{mm}$, so $d\le0.00333/\tan0.1^\circ=1.91\,\mathrm{m}$. (b) $3.82\,\mathrm{m}$ — halving the angle doubles the range. (c) The spacing on the surface grows by $1/\cos60^\circ=2$: $8.7\times2=17.5\,\mathrm{mm}$, so obliquity costs as much as doubling the distance.
+> 2. Nothing directly: at $20\,\mathrm{m}$ the samples are ten times farther apart, and a $10\,\mathrm{mm}$ crack may not be sampled at all, so recall measured at $2\,\mathrm{m}$ is a statement about a different input. The paper would need recall as a function of range and incidence angle, or a resolution argument like the one above.
+
 ### Sources
 
 - [Szeliski, *Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/)
@@ -139,6 +151,9 @@ Evaluation needs an independent reference because alignment can hide the error b
 > 의미 분할이나 단안 깊이를 쓰는 연구라면 그때
 > [[01-canonical-papers/notes/2-computer-vision/sam|SAM]]과
 > [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]을 추가한다.
+
+> [!note] 처음이라면 · First pass
+> §1의 인식 스택과 그 계산 예제를 먼저 읽는다. 계산 예제는 20 m에서 10 mm 균열이 LiDAR 표본 사이로 빠지는 것을 보여 준다. §2는 모든 현장에서 되풀이되는 네 문제에 이름을 붙이고, §3과 §4는 논문의 모형과 평가를 읽을 때 쓴다.
 
 ### 1. 현장 인식 스택
 
@@ -222,6 +237,15 @@ voxel/transformer가 더 강할 수 있지만, 두 논문은 포인트 클라우
 > 2. 보고서는 오프라인이고 인간이 해석하며 지연과 공백을 견딘다; 로봇 상태는 하류 플래너/제어기가 요구하는 미터 해상도·갱신률·지연·신뢰성으로, 정량화된 불확실성과 정의된 실패 거동과 함께 도착해야 한다. 로봇 경로만이 행동을 물리 세계로 되먹인다.
 > 3. 마스크의 보정된 현장 좌표와 metric scale, 프레임 간 시간 일관성, BIM/자산 ID와의 연결, 불확실성의 안전 등급 처리 — 마스크는 이미지 공간의 증거이지 행동 가능한 상태가 아니다.
 > 4. 로봇이 스스로 스캔 동작을 계획·실행하고 수집한 클라우드를 정합한다 — 센싱과 이동이 자율이어서 취득 루프가 닫힌다. 자율 점검이라 부르기 전에 분석(결함/편차 검출)과 보고도 자율이었는지, 사람이 오프라인으로 했는지 확인하라.
+
+### 과제 · Problem set
+
+1. **유도.** 균열 위에 LiDAR 표본이 적어도 셋 떨어져야 믿을 만하게 검출된다. (a) 분해능 $0.1^\circ$에서 $10\,\mathrm{mm}$ 균열이 표본 셋을 받는 가장 먼 거리. (b) $0.05^\circ$에서 같은 것. (c) 표면이 스캐너를 마주한 방향에서 $60^\circ$ 기울었을 때 $5\,\mathrm{m}$에서의 표본 간격.
+2. **해석.** 어떤 균열 검출 논문이 $2\,\mathrm{m}$에서 찍은 영상으로 재현율 $95\%$를 보고한다. 벽에서 $20\,\mathrm{m}$ 떨어진 스캐너에 대해 그것은 무엇을 뒷받침하는가?
+
+> [!tip]- 정답 · Solutions
+> 1. (a) 간격이 $10/3=3.33\,\mathrm{mm}$ 이하여야 하므로 $d\le0.00333/\tan0.1^\circ=1.91\,\mathrm{m}$. (b) $3.82\,\mathrm{m}$. 각도를 반으로 하면 거리가 두 배가 된다. (c) 표면 위 간격은 $1/\cos60^\circ=2$배가 되어 $8.7\times2=17.5\,\mathrm{mm}$. 비스듬함은 거리를 두 배로 하는 것만큼 비싸다.
+> 2. 직접적으로는 아무것도. $20\,\mathrm{m}$에서는 표본 간격이 열 배이고 $10\,\mathrm{mm}$ 균열은 아예 표본에 안 잡힐 수 있으므로, $2\,\mathrm{m}$에서 잰 재현율은 다른 입력에 대한 진술이다. 거리와 입사각에 따른 재현율, 또는 위와 같은 분해능 논증이 필요하다.
 
 ### 출처
 

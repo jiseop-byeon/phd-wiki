@@ -25,6 +25,9 @@ failed.
 > [[04-robotics/robot-systems-deployment|Robot Systems]] ·
 > [[04-robotics/planning-decision-making|Planning]]
 
+> [!note] First pass · 처음이라면
+> Read §1's closed workflow first, then the worked example in §3, which adds three independent errors and finds the geometry too uncertain for a 10 mm anchor. §2 sorts the many things called a digital twin; §4 is for judging a paper's evaluation.
+
 ### 1. The closed workflow
 
 ```mermaid
@@ -138,6 +141,15 @@ A useful evaluation deliberately encounters disagreement because an always-consi
 > 3. Provenance encodes uncertainty and staleness: a manually entered "installed" flag can be wrong or outdated, an inferred pose has error bounds, a planned state may never have happened. A robot weighting them equally can act on fiction — e.g., planning through a wall that was never built or declaring completion from a stale scan.
 > 4. The verification step passing without discriminating power — e.g., registration tolerance looser than the defects it should catch, or ground truth derived from the same alignment being verified. Execution then always "verifies," the model is updated with unearned confidence, and the loop is open in exactly the place the twin claim depends on.
 
+### Problem set · 과제
+
+1. **Derive.** A survey of the as-built structure replaces the $20\,\mathrm{mm}$ design-to-built term with a $6\,\mathrm{mm}$ scan residual; scanning and registration stay at $5$ and $10\,\mathrm{mm}$. (a) The new root-sum-square uncertainty. (b) Does it meet the $10\,\mathrm{mm}$ tolerance, and if not, how small must the registration term become?
+2. **Interpret.** A paper reports that "the digital twin enabled $3\,\mathrm{mm}$ placement accuracy." Which frame, which error terms and which reference measurement must it name before that number means anything?
+
+> [!tip]- Solutions
+> 1. (a) $\sqrt{5^2+10^2+6^2}=\sqrt{161}=12.7\,\mathrm{mm}$ — the survey removed the largest term (it carried $76\%$ of the original variance) but not enough. (b) No. Keeping $5$ and $6\,\mathrm{mm}$, the registration term must satisfy $25+r^2+36\le100$, so $r\le6.2\,\mathrm{mm}$: registration is now the term to attack.
+> 2. The frame in which accuracy was measured (robot, site or design), which error terms the $3\,\mathrm{mm}$ includes (scan, registration, design-to-built, execution), and what it was measured against — an independent survey of the placed part, not the robot's own pose estimate.
+
 ### Sources
 
 - [buildingSMART International](https://www.buildingsmart.org/) — openBIM standards context
@@ -159,6 +171,9 @@ BIM은 구조화된 설계 모델이다. 디지털 트윈은 **물리 시스템�
 > [!note] 선수 지식
 > [[05-construction-robotics/site-perception|현장 인식]] ·
 > [[04-robotics/robot-systems-deployment|로봇 시스템]] · [[04-robotics/planning-decision-making|계획]]
+
+> [!note] 처음이라면 · First pass
+> §1의 닫힌 워크플로를 먼저 읽고, 그다음 §3의 계산 예제를 본다. 계산 예제는 독립 오차 셋을 더해 10 mm 앵커에는 기하가 너무 불확실하다는 것을 찾는다. §2는 디지털 트윈이라 불리는 여러 것을 가르고, §4는 논문의 평가를 판단할 때 읽는다.
 
 ### 1. 닫힌 워크플로
 
@@ -262,6 +277,15 @@ flowchart LR
 > 2. 좌표계와 미터 공차; 선행조건·효과가 있는 로봇 skill로의 순서 있는 분해; 파지/공구와 도달성 정보; 모델 객체를 물리 부재에 묶는 재료·부품 ID; 불일치 시 복구 거동을 포함한 완료·검증 기준.
 > 3. 출처는 불확실성과 신선도를 담는다: 수기 입력된 "설치됨" 플래그는 틀리거나 낡았을 수 있고, 추론된 자세에는 오차 한계가 있으며, 계획된 상태는 일어나지 않았을 수 있다. 이를 동등하게 취급하는 로봇은 허구에 따라 행동할 수 있다 — 지어지지 않은 벽을 통과하는 계획, 낡은 스캔으로 완료 선언 등.
 > 4. 판별력 없는 검증 단계의 통과 — 예: 잡아야 할 결함보다 느슨한 정합 공차, 또는 검증 대상 정렬로 만든 정답. 그러면 실행은 항상 "검증"되고, 모델은 근거 없는 확신으로 갱신되며, 트윈 주장이 의존하는 바로 그 지점에서 루프가 열려 있게 된다.
+
+### 과제 · Problem set
+
+1. **유도.** 준공 구조물 측량이 $20\,\mathrm{mm}$ 설계–시공 항을 $6\,\mathrm{mm}$ 스캔 잔차로 바꾼다. 스캔과 정합은 $5$와 $10\,\mathrm{mm}$ 그대로다. (a) 새 제곱합 제곱근 불확실성. (b) $10\,\mathrm{mm}$ 허용 오차를 만족하는가? 아니라면 정합 항은 얼마나 작아져야 하는가?
+2. **해석.** 어떤 논문이 "디지털 트윈 덕분에 배치 정확도 $3\,\mathrm{mm}$"라고 보고한다. 그 숫자가 뜻을 가지려면 어느 좌표계, 어느 오차 항, 어느 기준 측정을 밝혀야 하는가?
+
+> [!tip]- 정답 · Solutions
+> 1. (a) $\sqrt{5^2+10^2+6^2}=\sqrt{161}=12.7\,\mathrm{mm}$. 측량이 가장 큰 항(원래 분산의 $76\%$)을 없앴지만 충분하지 않다. (b) 아니다. $5$와 $6\,\mathrm{mm}$를 두면 정합 항은 $25+r^2+36\le100$, 곧 $r\le6.2\,\mathrm{mm}$여야 한다. 이제 공략할 항은 정합이다.
+> 2. 정확도를 잰 좌표계(로봇, 현장, 설계), $3\,\mathrm{mm}$에 든 오차 항(스캔, 정합, 설계–시공, 실행), 그리고 무엇에 대어 쟀는지 — 로봇 자신의 자세 추정이 아니라 놓인 부품을 따로 측량한 값.
 
 ### 출처
 

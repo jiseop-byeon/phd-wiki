@@ -26,6 +26,9 @@ track pays off most directly — everything here is
 > [[04-robotics/robot-systems-deployment|Robot Systems]] ·
 > [[05-construction-robotics/sim-to-real|Sim-to-Real Guide]]
 
+> [!note] First pass · 처음이라면
+> Read §1 and §2 on why a heavy machine digging soil is its own robotics problem, then the worked example in §6, which separates bucket fill from cycle time in a productivity claim. §3–§5 walk the pipeline and the reference systems.
+
 ### 1. Why heavy machines are a distinct robotics problem
 
 - **Hydraulic actuation**: valves, pump pressure dynamics, dead zones, and temperature
@@ -200,6 +203,15 @@ soil bin supports almost no claim.
 > 3. Hydraulic dynamics scale nonlinearly (valve/pump saturation); soil forces scale with bucket geometry differently than inertia; real sites add slopes, mixed material, obstacles, weather, and safety constraints absent from a bin.
 > 4. Liability and safety cases require a responsible human; failure recovery is unsolved (reset is human labor); and sites are shared spaces — the certification and insurance path for unsupervised heavy machinery does not yet exist.
 
+### Problem set · 과제
+
+1. **Derive.** Keep the worked example's bucket, $1.2\,\mathrm{m^3}$ at fill factor $0.85$. (a) An operator cycles in $25\,\mathrm{s}$ and spends $15\%$ of the hour not digging (repositioning, trucks, pauses): the effective hourly productivity. (b) An autonomous excavator cycles $20\%$ slower, in $30\,\mathrm{s}$, with the same $15\%$ non-digging time, but runs $10$ hours a day against the operator's $8$. Compare hourly and daily volumes.
+2. **Interpret.** A vendor says its autonomous excavator "matches operator productivity." Using (b), what denominator must the claim state, and which of the two comparisons would a contractor care about?
+
+> [!tip]- Solutions
+> 1. (a) $146.9\times0.85=124.9\,\mathrm{m^3/h}$. (b) Hourly: autonomous $1.2\times0.85\times3600/30\times0.85=104.0\,\mathrm{m^3/h}$ against the operator's $124.9$, $17\%$ less. Daily: $104.0\times10=1{,}040\,\mathrm{m^3}$ against $124.9\times8=999\,\mathrm{m^3}$, $4\%$ more. The same machine loses per hour and wins per day.
+> 2. The claim must say per hour of operation, per shift or per day, and what counts as non-digging time. A contractor paying for a schedule cares about volume per calendar day and the supervision it needs; a claim per hour and a claim per day can point in opposite directions, as (b) shows.
+
 ### Sources
 
 - [HEAP — ETH Research Collection (OA)](https://www.research-collection.ethz.ch/server/api/core/bitstreams/62e1de57-8939-4701-8672-ec2bb55e1c5d/content)
@@ -225,6 +237,9 @@ soil bin supports almost no claim.
 > [[04-robotics/mpc|MPC]] · [[04-robotics/contact-force-tactile|접촉]] ·
 > [[04-robotics/robot-systems-deployment|로봇 시스템]] ·
 > [[05-construction-robotics/sim-to-real|Sim-to-Real 가이드]]
+
+> [!note] 처음이라면 · First pass
+> §1과 §2에서 흙을 파는 중장비가 왜 별개의 로보틱스 문제인지 먼저 읽고, 그다음 §6의 계산 예제를 본다. 생산성 주장에서 버킷 채움과 사이클 시간을 가르는 예제다. §3–§5는 파이프라인과 기준 시스템을 따라간다.
 
 ### 1. 중장비가 별개의 로보틱스 문제인 이유
 
@@ -382,6 +397,15 @@ flowchart LR
 > 2. 싸지는 것: 무작위화된 과제 전반의 무제한·라벨된·리셋 가능한 시연 — 실기계가 줄 수 없는 바로 그것. 미해결: 시뮬레이션의 토질/유압/현장 다양성이 사전학습이 알 수 있는 것의 상한이다; 실제 현장의 분포 이동은 남는다.
 > 3. 유압 동역학이 비선형으로 스케일한다(밸브/펌프 포화); 토양력은 버킷 기하에 대해 관성과 다르게 스케일한다; 실제 현장에는 통에 없는 경사, 혼합 재료, 장애물, 날씨, 안전 제약이 있다.
 > 4. 책임과 안전 사례가 책임지는 인간을 요구한다; 실패 복구가 미해결이다(리셋은 인간 노동); 현장은 공유 공간이다 — 무감독 중장비의 인증·보험 경로가 아직 없다.
+
+### 과제 · Problem set
+
+1. **유도.** 계산 예제의 버킷 $1.2\,\mathrm{m^3}$, 채움 계수 $0.85$를 그대로 둔다. (a) 운전자는 $25\,\mathrm{s}$로 한 사이클을 돌고 한 시간의 $15\%$를 파지 않는 데(재배치, 트럭, 휴지) 쓴다. 실효 시간당 생산성은? (b) 자율 굴착기는 $20\%$ 느린 $30\,\mathrm{s}$로 돌고 파지 않는 시간은 같은 $15\%$지만, 운전자의 $8$시간에 맞서 하루 $10$시간을 돈다. 시간당과 하루당 토량을 비교하라.
+2. **해석.** 어떤 업체가 자사 자율 굴착기가 "운전자 생산성과 맞먹는다"고 말한다. (b)를 써서, 그 주장이 밝혀야 할 분모는 무엇이고 시공사는 두 비교 가운데 어느 것에 관심을 갖겠는가?
+
+> [!tip]- 정답 · Solutions
+> 1. (a) $146.9\times0.85=124.9\,\mathrm{m^3/h}$. (b) 시간당: 자율 $1.2\times0.85\times3600/30\times0.85=104.0\,\mathrm{m^3/h}$, 운전자의 $124.9$보다 $17\%$ 적다. 하루당: $104.0\times10=1{,}040\,\mathrm{m^3}$, 운전자의 $124.9\times8=999\,\mathrm{m^3}$보다 $4\%$ 많다. 같은 기계가 시간당으로는 지고 하루당으로는 이긴다.
+> 2. 운전 시간당인지, 교대당인지, 하루당인지, 그리고 무엇을 파지 않는 시간으로 세는지 밝혀야 한다. 일정에 돈을 내는 시공사는 달력상 하루당 토량과 그에 드는 감독에 관심을 갖는다. (b)가 보이듯 시간당 주장과 하루당 주장은 반대 방향을 가리킬 수 있다.
 
 ### 출처
 

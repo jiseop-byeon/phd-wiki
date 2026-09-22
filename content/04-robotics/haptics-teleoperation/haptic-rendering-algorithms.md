@@ -1,7 +1,7 @@
 ---
 title: 24.7 Haptic Rendering Algorithms
 tags: [haptics, rendering, virtual-environments]
-study-depth: Working
+study-depth: Literacy
 wiki-support: Working
 depth-goal: "Read a haptic rendering paper and say which algorithm computes the force, what it cannot render, and which of its realism claims rest on perception rather than physics."
 mastery-when: "Master constraint-based rendering and friction-model identification when the rendering algorithm itself is the contribution."

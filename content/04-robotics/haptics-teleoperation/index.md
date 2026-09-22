@@ -30,7 +30,7 @@ flowchart LR
 8. [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 Teleoperation Architectures, Absolute Stability & Delay]] — hybrid parameters, position–position and position–force pairs, transmitted impedance, Llewellyn's test, four channels, and what each delay remedy guarantees.
 9. [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 Rendering in Practice: Loops, Effects & Passivity Control]] — fast and slow loops, where the force is computed, the one-degree-of-freedom effect library, implicit surfaces, the sampled wall's energy leaks, and the time-domain passivity observer and controller.
 
-The fastest useful route is **24.1 → 24.3 → 24.4**. Add 24.2 for tactile-display work, 24.7 and then 24.9 for virtual-environment rendering, and 24.5 and then 24.8 for force-reflecting teleoperation. The broader demonstration-collection interpretation is in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]].
+The fastest useful route is **24.1 → 24.3 → 24.4**. Add 24.2 for tactile-display work, 24.7 and then 24.9 for virtual-environment rendering, and 24.5 and then 24.8 for force-reflecting teleoperation. For the research program rather than the course, the core is 24.4, 24.5, 24.8 and §5–§6 of 24.9; 24.2 and 24.7 sit at Literacy there ([[07-research-program/index|Research Program §6]]). The broader demonstration-collection interpretation is in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]].
 
 ### Prerequisite map
 
@@ -90,7 +90,7 @@ flowchart LR
 8. [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 Teleoperation Architectures, Absolute Stability & Delay]] — 하이브리드 매개변수, 위치–위치와 위치–힘 쌍, 전달 임피던스, Llewellyn 판정, 네 채널, 지연 처방마다 보장하는 것.
 9. [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 Rendering in Practice: Loops, Effects & Passivity Control]] — 빠른 루프와 느린 루프, 힘을 계산하는 곳, 1자유도 효과 목록, 음함수 곡면, 샘플된 벽의 에너지 누설, 시간 영역 수동성 관측기와 제어기.
 
-가장 빠른 핵심 경로는 **24.1 → 24.3 → 24.4**다. 촉각 디스플레이 연구에는 24.2를, 가상 환경 렌더링에는 24.7과 그다음 24.9를, 힘 반영 원격조작에는 24.5와 그다음 24.8을 더한다. 원격조작을 로봇 학습 데이터 수집으로 보는 관점은 [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]]에 있다.
+가장 빠른 핵심 경로는 **24.1 → 24.3 → 24.4**다. 촉각 디스플레이 연구에는 24.2를, 가상 환경 렌더링에는 24.7과 그다음 24.9를, 힘 반영 원격조작에는 24.5와 그다음 24.8을 더한다. 과목이 아니라 연구 프로그램을 위해서라면 핵심은 24.4, 24.5, 24.8, 그리고 24.9의 §5–§6이고, 24.2와 24.7은 거기서 Literacy다([[07-research-program/index|연구 프로그램 §6]]). 원격조작을 로봇 학습 데이터 수집으로 보는 관점은 [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]]에 있다.
 
 ### 선수 지식
 

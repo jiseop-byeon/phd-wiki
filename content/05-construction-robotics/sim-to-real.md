@@ -23,6 +23,9 @@ evaluation practices used to keep a policy useful when its simulator assumptions
 > [[04-robotics/robot-systems-deployment|Robot Systems]] ·
 > [[04-robotics/contact-force-tactile|Contact]]
 
+> [!note] First pass · 처음이라면
+> Read §1 on where the reality gap comes from, including its contact row, and then the worked example in §4, which shows that randomizing six parameters at 80% coverage each covers only 26% of real conditions. §2 and §3 are the strategies and the deployment ladder you will place papers on.
+
 ### 1. Where the reality gap comes from
 
 | Gap | Examples in field robots | Typical response |
@@ -176,6 +179,15 @@ outside the training range.
 > 3. Whether every observation the student consumes actually exists, at deployment rate and latency, on the real machine — and whether the distillation was evaluated with realistic noise on those signals. Privileged learning fails silently when test-time observability is quietly optimistic.
 > 4. ExACT is validated in simulation only, so its evidence stops at rung 1 (simulator-only evaluation); ExT reports centimeter-level transfer on a real machine, reaching the supervised real-trial rungs. Same method family, different evidentiary weight — the ladder, not the method name, sets the claim.
 
+### Problem set · 과제
+
+1. **Derive.** (a) What per-parameter coverage gives $90\%$ joint coverage for six independent parameters? (b) What joint coverage do ten parameters at $90\%$ each give?
+2. **Interpret.** A paper randomizes twelve parameters "over wide ranges" and reports zero-shot transfer. What does it have to show about the real parameters before its ranges can be called wide?
+
+> [!tip]- Solutions
+> 1. (a) $p^6=0.9$, so $p=0.9^{1/6}=0.983$: every range must cover $98.3\%$ of its real marginal. (b) $0.9^{10}=34.9\%$ — adding parameters erodes joint coverage even at generous marginals.
+> 2. Measurements or credible estimates of the real parameters' distributions, and whether they are correlated, since coverage is a property of the joint distribution. "Wide" relative to what was measured is a claim; "wide" alone is not, and independence is itself an assumption to state.
+
 ### Sources
 
 
@@ -199,6 +211,9 @@ outside the training range.
 > [!note] 선수 지식
 > [[02-foundations/probability|확률]] · [[02-foundations/rl-basics|RL 기초]] ·
 > [[04-robotics/robot-systems-deployment|로봇 시스템]] · [[04-robotics/contact-force-tactile|접촉]]
+
+> [!note] 처음이라면 · First pass
+> §1에서 reality gap이 어디서 생기는지, 접촉 행까지 읽고, 그다음 §4의 계산 예제를 본다. 매개변수 여섯을 각각 80%씩 덮도록 무작위화해도 실제 조건의 26%만 덮인다는 것을 보여 준다. §2와 §3은 논문을 올려놓을 전략과 배치 사다리다.
 
 ### 1. Reality gap은 어디서 생기나
 
@@ -339,6 +354,15 @@ Zero-shot transfer는 배치 전에 목표 도메인 학습 업데이트가 없�
 > 2. 상류에서는 신경망 밸브/액추에이터 모델을 맞추기 위한 실기계 데이터와 엔지니어링 — 실제 시스템 지식을 시뮬레이터에 구워 넣은 것 — 을 지불했다. "Zero-shot"은 배치 전 목표 도메인 학습 업데이트가 없다는 뜻이지, 시뮬레이터를 실데이터 없이 만들었다거나 식별된 기계·운용 범위 너머로 전이가 유지된다는 뜻이 아니다.
 > 3. 학생이 소비하는 모든 관측이 실기계에서 배치 주기와 지연으로 실제로 존재하는지 — 그리고 그 신호의 현실적 노이즈 아래에서 증류가 평가되었는지. Privileged learning은 시험 시점 관측 가능성이 조용히 낙관적일 때 소리 없이 실패한다.
 > 4. ExACT는 시뮬레이션 검증뿐이라 증거가 1단(시뮬레이터 평가)에서 멈춘다; ExT는 실기계에서 센티미터급 전이를 보고해 감독 실기 시험 단까지 도달한다. 같은 방법 계열, 다른 증거 무게 — 주장을 정하는 것은 방법 이름이 아니라 사다리다.
+
+### 과제 · Problem set
+
+1. **유도.** (a) 독립 매개변수 여섯에서 결합 포함률 $90\%$를 주는 매개변수별 포함률은? (b) 매개변수 열 개를 각각 $90\%$로 덮으면 결합 포함률은?
+2. **해석.** 어떤 논문이 매개변수 열두 개를 "넓은 범위로" 무작위화하고 제로샷 전이를 보고한다. 그 범위를 넓다고 부르려면 실제 매개변수에 대해 무엇을 보여야 하는가?
+
+> [!tip]- 정답 · Solutions
+> 1. (a) $p^6=0.9$이므로 $p=0.9^{1/6}=0.983$. 모든 범위가 실제 주변 분포의 $98.3\%$를 덮어야 한다. (b) $0.9^{10}=34.9\%$. 주변 분포를 넉넉히 덮어도 매개변수를 더할수록 결합 포함률은 깎인다.
+> 2. 실제 매개변수 분포의 측정이나 믿을 만한 추정, 그리고 서로 상관되어 있는지. 포함률은 결합 분포의 성질이기 때문이다. 잰 것에 비해 "넓다"는 주장이지만, "넓다"만으로는 아니다. 독립 자체도 밝혀야 할 가정이다.
 
 ### 출처
 

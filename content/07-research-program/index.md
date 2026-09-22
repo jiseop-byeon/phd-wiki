@@ -163,6 +163,8 @@ This is what makes the wiki one program rather than a pile of notes.
 | **HRI** (support) | [[02-foundations/ml-practice\|9. ML Practice]], [[06-research-practice/experimental-design-reproducibility\|Experimental Design]], [[06-research-practice/psychophysics-human-measurement\|Psychophysics & Human Measurement]] | [[04-robotics/hri-safety\|HRI & Safety]], [[04-robotics/video-action-understanding\|20. Video & Action Understanding]], [[04-robotics/human-pose-gaze\|21. Human Pose & Gaze]], [[04-robotics/egocentric-perception\|22. Egocentric Perception]], [[04-robotics/human-intent-prediction\|23. Human Intent & Trajectory Prediction]] | [[05-construction-robotics/hrc-worker-centered\|Worker-Centered HRC]] | [[01-canonical-papers/notes/8-construction/lasota-shah\|Lasota & Shah]], [[01-canonical-papers/notes/8-construction/liang-hrc-survey\|Liang HRC survey]] |
 | **The integration layer** | [[02-foundations/rl-basics\|7. RL Basics]] | — | [[05-construction-robotics/sim-to-real\|Sim-to-Real]], [[05-construction-robotics/industry-deployment\|Industry Deployment]] | [[01-canonical-papers/notes/4-vla/rt-2\|RT-2]], [[01-canonical-papers/notes/4-vla/pi0\|π0]], [[01-canonical-papers/notes/8-construction/ext\|ExT]] |
 
+**Where the haptics track sits.** [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]] entered the wiki because the owner is taking a haptics course, not because the admission test asked for it, and it is not a pillar. Four of its pages pass the test on their own: [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] and §5–§6 of [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9]] (why sampled contact goes unstable and how to keep it passive) and [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]] and [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8]] (teleoperation for demonstration collection and remote machines) serve **Manipulation**; [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]] serves **HRI** through human measurement. [[04-robotics/haptics-teleoperation/tactile-display-design|24.2 Tactile Display Design]] and [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 Haptic Rendering Algorithms]] serve the course only, so they sit at Literacy for this program while keeping Working support for the course. Count the track's size against the pillars' weights, not against how much course material happened to arrive.
+
 ### 7. Scope control — the rule that keeps this one dissertation
 
 Simultaneous major independent contributions in HRI theory, new SLAM algorithms,
@@ -181,11 +183,11 @@ If yes, it can be promoted toward Working or Mastery. If no, it stays at Literac
 is not a demotion: Literacy is exactly enough to read the field, cite it correctly, and
 recognize when it starts to matter.
 
-**Where the test has actually landed, as of 2026-09-22.** 170 pages sit at Working, 83 at
+**Where the test has actually landed, as of 2026-09-22.** 168 pages sit at Working, 85 at
 Literacy, 7 at Mastery. Twelve of the Working pages are the ROS 2 track added on 2026-09-10,
 which passes the test because running experiments on a real manipulator has no way around it. That is the opposite of what this page used to claim, and the reason
 is that all three pillars count as serving the question, so anything inside them passes.
-Literacy is concentrated where it belongs — 53 of the 83 sit in
+Literacy is concentrated where it belongs — 53 of the 85 sit in
 [[01-canonical-papers/index|1. Canonical Papers]] — while the concept pages that carry a
 pillar are nearly all Working.
 
@@ -368,6 +370,8 @@ flowchart LR
 | **HRI** (보조) | [[02-foundations/ml-practice\|9. ML 실무]], [[06-research-practice/experimental-design-reproducibility\|실험 설계]], [[06-research-practice/psychophysics-human-measurement\|심리물리·인간 측정]] | [[04-robotics/hri-safety\|HRI·안전]], [[04-robotics/video-action-understanding\|20. 비디오·행동 이해]], [[04-robotics/human-pose-gaze\|21. 사람 자세·시선]], [[04-robotics/egocentric-perception\|22. 자기중심 인지]], [[04-robotics/human-intent-prediction\|23. 인간 의도·궤적 예측]] | [[05-construction-robotics/hrc-worker-centered\|작업자 중심 HRC]] | [[01-canonical-papers/notes/8-construction/lasota-shah\|Lasota & Shah]], [[01-canonical-papers/notes/8-construction/liang-hrc-survey\|Liang HRC 서베이]] |
 | **통합 층** | [[02-foundations/rl-basics\|7. RL 기초]] | — | [[05-construction-robotics/sim-to-real\|Sim-to-Real]], [[05-construction-robotics/industry-deployment\|산업 배치]] | [[01-canonical-papers/notes/4-vla/rt-2\|RT-2]], [[01-canonical-papers/notes/4-vla/pi0\|π0]], [[01-canonical-papers/notes/8-construction/ext\|ExT]] |
 
+**햅틱 트랙은 어디에 서는가.** [[04-robotics/haptics-teleoperation/index|24. 햅틱·원격조작]]은 입학 시험이 요구해서가 아니라 주인이 햅틱 과목을 듣기 때문에 위키에 들어왔고, 기둥이 아니다. 그 가운데 네 쪽은 스스로 시험을 통과한다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]와 [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9]]의 §5–§6(샘플된 접촉이 왜 불안정해지고 어떻게 수동적으로 지키는가), 그리고 [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]]와 [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8]](시연 수집과 원격 기계를 위한 원격조작)은 **매니퓰레이션**을 받치고, [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]은 사람 측정을 통해 **HRI**를 받친다. [[04-robotics/haptics-teleoperation/tactile-display-design|24.2 촉각 디스플레이 설계]]와 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 햅틱 렌더링 알고리즘]]은 과목에만 쓰이므로, 과목을 위한 Working 지원은 유지한 채 이 프로그램에서는 Literacy에 둔다. 트랙의 크기는 우연히 들어온 과목 자료의 양이 아니라 기둥의 비중에 대어 보라.
+
 ### 7. 범위 통제 — 이것을 하나의 학위논문으로 유지하는 규칙
 
 HRI 이론, 새 SLAM 알고리즘, 매니퓰레이션, 촉각 센서 하드웨어, RL 이론, VLA 아키텍처에서
@@ -385,11 +389,11 @@ HRI 이론, 새 SLAM 알고리즘, 매니퓰레이션, 촉각 센서 하드웨�
 아니다: Literacy는 분야를 읽고, 정확히 인용하고, 그것이 중요해지기 시작하는 순간을 알아보는
 데 정확히 충분한 깊이다.
 
-**이 시험이 실제로 어디에 도달했는가, 2026-09-22 기준.** Working이 170쪽, Literacy가 83쪽,
+**이 시험이 실제로 어디에 도달했는가, 2026-09-22 기준.** Working이 168쪽, Literacy가 85쪽,
 Mastery가 7쪽이다. Working 중 12쪽은 2026-09-10에 더한 ROS 2 트랙이다. 실기계 매니퓰레이터로
 실험을 돌리는 데 우회로가 없으므로 입학 시험을 통과한다. 이 페이지가 예전에 주장하던 것과 반대이고, 이유는 세 기둥 모두가 연구 질문에
 기여하는 것으로 계산되어 그 안에 있는 것은 전부 시험을 통과하기 때문이다. Literacy는 있어야 할
-곳에 몰려 있다 — 83쪽 중 53쪽이 [[01-canonical-papers/index|1. 핵심 논문]]에 있다 — 반면
+곳에 몰려 있다 — 85쪽 중 53쪽이 [[01-canonical-papers/index|1. 핵심 논문]]에 있다 — 반면
 기둥을 지는 개념 페이지는 거의 다 Working이다.
 
 Working이 다수라는 사실만으로는 거르는 기능이 멈췄다는 증거가 못 된다.
