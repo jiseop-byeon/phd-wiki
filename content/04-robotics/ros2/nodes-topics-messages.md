@@ -14,10 +14,13 @@ mastery-when: "Go deeper when you are choosing delivery semantics, executor poli
 > **Working** — 두 클라이언트 라이브러리 모두에서 자기 pub–sub 노드를 쓰고 빌드하고 디버깅할 정도. 전달 보장이나 프로세스 내 zero-copy를 따질 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], meaning a working **ROS 2 Jazzy Jalisco on Ubuntu 24.04** install that you can source, and the graph-reading commands from its section 9. Python; enough C++ to read a class. Every command below assumes a sourced terminal.
-> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 거기 9절의 그래프 읽기 명령들. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다.
+> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], meaning a working **ROS 2 Jazzy Jalisco on Ubuntu 24.04** install that you can source, and the graph-reading commands from its section 9; **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] for the picture and the Worked case. Python; enough C++ to read a class. Every command below assumes a sourced terminal.
+> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 거기 9절의 그래프 읽기 명령들. 그림과 계산 절에는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다.
 
 *Comes after this page, not before it: building your own packages is taught properly in [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]], which assumes this page. Here you use the minimum of it, and each step says which lines matter.*
+
+> [!note] First pass · 처음이라면
+> Look at the picture, then read §1–§5 in order: why publish–subscribe, what a node and a topic are, how names resolve, how to read a message, and the Python pair. §6 is the same pair in C++, worth one reading now because production code is C++. §7 and §9 are one sitting at a keyboard, and §10 is the failure you will meet first. The Worked case sits after §10 because it uses all of that on P6's numbers — §3's name rules, the message advice of §4 and §7, §9's choice between a callback and a timer. §2.1 (composition) and §8 are second-pass: open them when a message is large or a topic is the wrong tool.
 
 ### The picture: two P6 nodes, with every name resolved
 
@@ -116,45 +119,6 @@ mastery-when: "Go deeper when you are choosing delivery semantics, executor poli
 
 **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as two nodes launched into the namespace `/cart`, each labelled with the name its code passes and the name it resolves to: the camera's `goal` resolves to `/cart/goal`, and the stray `/goal` stub on the controller is a second name with no publisher, §10's silent bug. Inside the controller, `on_goal` only stores each goal as it arrives at $50\,\mathrm{Hz}$, and `on_tick`, on a $5\,\mathrm{ms}$ timer, reads that store and the encoder and publishes `cmd` at $200\,\mathrm{Hz}$. On the clock below, goals land at $0$ and $20\,\mathrm{ms}$, every $5\,\mathrm{ms}$ tick reads the encoder, and ticks $5$, $10$ and $15$ re-use the goal from $0$, with the $70\,\mathrm{ms}$ budget drawn for scale.
 
-### Worked case: one encoder count through a message, and what it is worth in velocity
-
-Six numbers, all of them from P6's two constants and two rates.
-
-**Step 1 — counts to metres.** The encoder is a counter; the graph must carry metres. With $N=2048$ counts/m the conversion and its resolution are
-
-$$p=\frac{c}{N}=\frac{c}{2048}\,\mathrm{m},\qquad \Delta p=\frac{1}{2048}=4.8828125\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}$$
-
-because one count is one unit of $c$, so nothing this encoder ever reports distinguishes two positions closer than half a millimetre. At $c=1024$ the cart is at exactly $0.5\,\mathrm{m}$.
-
-**Step 2 — the message that carries it.** Section 4 told you what `std_msgs/msg/Float64` costs. Here is the type this cart deserves, in its own interface package:
-
-```text
-# Cart state, from the encoder on the rail. See 0.6 Lab Plants, P6.
-std_msgs/Header header
-int32 counts        # raw quadrature counts since homing
-float64 position    # m, = counts / 2048.0
-```
-
-The raw count travels beside the derived metre for a reason that is entirely practical: `counts` is exact and `position` is not, so a downstream node that suspects the scale factor can check it, and a bag recorded today survives a recalibration tomorrow. The `Header` carries the stamp the $70\,\mathrm{ms}$ budget is measured against.
-
-**Step 3 — what one count is worth as a velocity.** A controller that wants speed usually differences two positions one period apart, and the resolution of that estimate is the resolution of the position divided by the period:
-
-$$\Delta v=\frac{\Delta p}{T}=\frac{1/2048}{T}\quad\Longrightarrow\quad \Delta v\big|_{200\,\mathrm{Hz}}=\frac{0.00048828125}{0.005}=0.0977\,\mathrm{m/s},\qquad \Delta v\big|_{50\,\mathrm{Hz}}=\frac{0.00048828125}{0.020}=0.0244\,\mathrm{m/s}$$
-
-since dividing a fixed quantum by a shorter interval magnifies it. Read the first number again: at the control rate, **one count of jitter is $9.8\,\mathrm{cm/s}$ of apparent speed**. A cart crawling at $2\,\mathrm{cm/s}$ produces a velocity signal that alternates between $0$ and $9.8\,\mathrm{cm/s}$, and no amount of care in the message type fixes it. That is why a fast loop differences over a longer window, or filters, or reads velocity from somewhere other than a naive difference — and why publishing a bare `float64 velocity` with no stamp and no statement of how it was computed is the worst of the options in section 4.
-
-**Step 4 — how often each thing happens.** $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$ exactly, so each goal is consumed by four ticks, and in one $70\,\mathrm{ms}$ budget window there are $14$ ticks and $3$ complete vision periods. Now the design choice of section 9, on P6's numbers: publish `cmd` from `on_goal` and the motor is commanded at $50\,\mathrm{Hz}$, because a callback-driven publisher inherits its input's rate; publish from the $5\,\mathrm{ms}$ timer and it is commanded at $200\,\mathrm{Hz}$ with the newest goal in hand, whatever the camera is doing. The second is the contract P6 states, which is why the controller is timer-driven and the store between the callbacks exists.
-
-**Step 5 — and the name that silently undoes all of it.** Both nodes are launched into `/cart`. Section 3's three forms then resolve like this:
-
-| Written in the controller's code | Resolves to | Consequence for P6 |
-|---|---|---|
-| `goal` (relative) | `/cart/goal` | matches the camera's relative `goal`; data flows |
-| `/goal` (absolute) | `/goal` | namespace ignored; two names, no connection, no error |
-| `~/gain` (private) | `/cart/controller/gain` | per-node configuration, safe to launch twice |
-
-One character of difference between rows one and two costs a silent robot: `ros2 node list` shows both nodes, `ros2 topic list -t` shows *two* names where you expected one, and the motor holds its last command forever. Section 10 is the four commands that find it, and this is the case they find.
-
 ### 1. Why publish–subscribe
 
 In 25.1 you ran a graph someone else wrote. Now you write one. Before the code, the shape of the thing.
@@ -179,8 +143,27 @@ A **node** is a participant in the ROS 2 graph that uses a client library to tal
 
 Two refinements on top of the beginner picture:
 
-- A node is not exactly a process. One process can host several nodes; ROS 2 calls this composition, and it is how a real stack avoids paying serialisation costs (converting a message to bytes and back) between nodes that happen to run on the same machine: nodes sharing one process's memory can hand a message over directly when intra-process communication is enabled. Composition is [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]].
+- A node is not exactly a process. One process can host several nodes; ROS 2 calls this **composition**, and it is how a real stack avoids paying serialisation costs (converting a message to bytes and back) between nodes that happen to run on the same machine. §2.1 below defines it and says when it is worth it.
 - A node's name is not its executable's name. You saw this in 25.1: `turtlesim_node` names itself `/turtlesim`, and `--ros-args --remap __node:=my_turtle` renames it at launch without touching the code.
+
+#### 2.1 Composition: several nodes in one process
+
+**Composition** is running several nodes inside one operating-system process instead of one process each. Its unit is the **component**: a node written as a C++ class whose constructor takes `rclcpp::NodeOptions`, compiled into a shared library instead of an executable with its own `main()`, and registered by name with the macro `RCLCPP_COMPONENTS_REGISTER_NODE`. A **component container** is the process that loads components, either at startup from a launch file or at runtime with `ros2 component load`. There are three conditions, and the payoff needs all three:
+
+1. **the node is a component** — a registered class in a shared library, not a program with a `main()`;
+2. **it is loaded into a container**, which is where the single process comes from; and
+3. **intra-process communication is enabled** on the components (`use_intra_process_comms`). Without it, two nodes in one process still talk through the middleware, serialisation included, exactly as two processes would.
+
+What composition buys is the serialisation work. A message that crosses a process boundary is turned into bytes and back on every hop, so the load on one hop grows with the message size and its rate:
+
+$$W=B\,f$$
+
+where $B$ is the serialised size of one message in bytes, $f$ the publication rate in hertz, and $W$ the bytes per second that the hop must serialise and deserialise. Inside one container with intra-process communication on, a message published as a `std::unique_ptr` is handed to the subscriber as a pointer: nothing is serialised, and with a single subscriber nothing is copied at all.
+
+- **Example.** A camera driver, an image rectifier and a detector passing $640\times480$ RGB images at $30\,\mathrm{Hz}$: $B=640\cdot480\cdot3=921{,}600$ bytes, so $W\approx27.6\,\mathrm{MB/s}$ on each of the two hops. Composed, both hops become pointer hand-offs, which is how production perception pipelines are built.
+- **Non-example.** P6's camera and controller. A goal is a few dozen bytes at $50\,\mathrm{Hz}$, a few kilobytes per second with nothing to save, and composing the two would hand a camera crash to the $200\,\mathrm{Hz}$ loop — losing the independent restart that [[04-robotics/ros2/what-ros2-is|25.1 §1]] split the robot into processes to get. Nor is a launch file that starts several nodes composition: each `Node` it starts is still its own process. And the containers and macro above are rclcpp's; the Python nodes on this page run one per process.
+
+The cost is shared fate. A component that crashes takes the whole container down, and the components share the container's threads — `component_container` runs every callback on one thread, `component_container_mt` on several — so one slow callback delays its neighbours. Use composition for large, high-rate messages between nodes that live and die together; keep separate processes where independent restart matters. The ROS 2 composition tutorial shows both forms, `ros2 component load` and a launch file's `ComposableNodeContainer`; this track goes no further.
 
 ### 3. Topics, and the anonymity that is the point
 
@@ -290,7 +273,7 @@ if __name__ == '__main__':
 
 Four things in that file are the whole idiom, and the rest is decoration.
 
-`create_publisher(String, 'topic', 10)` declares the contract: message type, topic name, and a queue depth of 10. That third argument is not a convenience — it is a required Quality of Service setting that bounds how many messages are held for a subscriber that is not keeping up. You are choosing a delivery policy whether or not you know it; [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] is where the choice is made deliberately.
+`create_publisher(String, 'topic', 10)` declares the contract: message type, topic name, and a queue depth of 10. That third argument is not a convenience — it is a required Quality of Service setting that bounds how many messages are held for a subscriber that is not keeping up. You are choosing a delivery policy whether or not you know it; [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] is where the choice is made deliberately.
 
 `create_timer(0.5, self.timer_callback)` is the **timer-callback idiom**, and it is the answer to the question every beginner asks: where is the loop? There is no loop. You do not write `while True: publish(); sleep(0.5)`. You register a callback and hand control to ROS 2. Everything periodic in a ROS 2 node is a timer, because that is what lets one thread service timers, subscriptions and service requests in a policy you can control rather than in whatever order your `while` loop happens to impose.
 
@@ -331,6 +314,8 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ```
+
+The bare `self.subscription` line at the end of `__init__` only silences a linter's unused-variable warning. It keeps nothing alive and is safe to delete; §6 says why Python, unlike C++, needs no keep-alive.
 
 Note that the topic name and the message type are identical on both sides. They have to be. Matching name and type are necessary — compatible QoS is the third condition (section 10's box) — and section 10 is what happens when one of them is off by a character.
 
@@ -460,9 +445,9 @@ Structurally identical: subclass `Node`, name yourself in the constructor, creat
 
 **Endpoints are owned objects with lifetimes.** `rclcpp::Publisher<T>::SharedPtr publisher_` is a member because it must outlive the constructor. Let a publisher, subscription or timer go out of scope in C++ and the endpoint is destroyed — the node keeps running, quietly, with nothing attached. Python is different: the rclpy node keeps its own reference to every endpoint, so dropping yours does not destroy it, and the tutorial's odd-looking `self.subscription  # prevent unused variable warning` line only silences a linter. C++ has no such safety net.
 
-**The callback signature names the ownership.** `const std_msgs::msg::String & msg` says the message arrives by reference and the callback will not modify it. rclcpp also accepts `std_msgs::msg::String::UniquePtr`, which is the form that makes zero-copy intra-process delivery possible. Python has one calling convention and no way to express the distinction, so the cost of a message is invisible there.
+**The callback signature names the ownership.** `const std_msgs::msg::String & msg` says the message arrives by reference and the callback will not modify it. rclcpp also accepts `std_msgs::msg::String::UniquePtr`, which is the form that makes zero-copy intra-process delivery possible (§2.1). Python has one calling convention and no way to express the distinction, so the cost of a message is invisible there.
 
-**The clock is named.** rclcpp's `create_wall_timer` says wall clock in its name. rclpy's `create_timer` takes an optional `clock` argument and, when you omit it, uses the node's clock — which is the one that follows simulated time. So the Python and C++ examples on this page do not use the same clock, and in simulation they will not behave the same. That is [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]], and it is the single most under-appreciated line on this page.
+**The clock is named.** rclcpp's `create_wall_timer` says wall clock in its name. rclpy's `create_timer` takes an optional `clock` argument and, when you omit it, uses the node's clock — which is the one that follows simulated time. So the Python and C++ examples on this page do not use the same clock, and in simulation they will not behave the same. That is [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]], and it is the single most under-appreciated line on this page.
 
 The build plumbing is CMake rather than `setup.py`. In `package.xml`, `<depend>rclcpp</depend>` and `<depend>std_msgs</depend>` (`<depend>`, not `<exec_depend>`, because C++ needs these at build time too). In `CMakeLists.txt`:
 
@@ -730,16 +715,56 @@ ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch --remap turtle
 If that makes data flow, the bug was the name. Then fix it properly — in the code if the name was wrong, or in the launch file if the namespace was, which is [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]].
 
 > [!warning] There is a third cause of silence
-> Matching name and matching type, and still nothing arrives: the QoS profiles are incompatible. It presents identically — two healthy nodes, no error, no data — and `ros2 topic info --verbose` is again the command that shows it, in the QoS block you have been ignoring. Rule it out last, and read [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] before you need to.
+> Matching name and matching type, and still nothing arrives: the QoS profiles are incompatible. It presents identically — two healthy nodes, no error, no data — and `ros2 topic info --verbose` is again the command that shows it, in the QoS block you have been ignoring. Rule it out last, and read [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] before you need to.
+
+### Worked case: one encoder count through a message, and what it is worth in velocity
+
+Six numbers, all of them from P6's two constants and two rates, and every section of the lecture used once on them — which is why this case comes after §10 rather than before §1.
+
+**Step 1 — counts to metres.** The encoder is a counter; the graph must carry metres. With $N=2048$ counts/m the conversion and its resolution are
+
+$$p=\frac{c}{N}=\frac{c}{2048}\,\mathrm{m},\qquad \Delta p=\frac{1}{2048}=4.8828125\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}$$
+
+because one count is one unit of $c$, so nothing this encoder ever reports distinguishes two positions closer than half a millimetre. At $c=1024$ the cart is at exactly $0.5\,\mathrm{m}$.
+
+**Step 2 — the message that carries it.** Section 4 told you what `std_msgs/msg/Float64` costs. Here is the type this cart deserves, in its own interface package, built exactly as §7 built `SpeedReport`:
+
+```text
+# Cart state, from the encoder on the rail. See 0.6 Lab Plants, P6.
+std_msgs/Header header
+int32 counts        # raw quadrature counts since homing
+float64 position    # m, = counts / 2048.0
+```
+
+The raw count travels beside the derived metre for a reason that is entirely practical: `counts` is exact and `position` is not, so a downstream node that suspects the scale factor can check it, and a bag recorded today survives a recalibration tomorrow. The `Header` carries the stamp the $70\,\mathrm{ms}$ budget is measured against.
+
+**Step 3 — what one count is worth as a velocity.** A controller that wants speed usually differences two positions one period apart, and the resolution of that estimate is the resolution of the position divided by the period:
+
+$$\Delta v=\frac{\Delta p}{T}=\frac{1/2048}{T}\quad\Longrightarrow\quad \Delta v\big|_{200\,\mathrm{Hz}}=\frac{0.00048828125}{0.005}=0.0977\,\mathrm{m/s},\qquad \Delta v\big|_{50\,\mathrm{Hz}}=\frac{0.00048828125}{0.020}=0.0244\,\mathrm{m/s}$$
+
+since dividing a fixed quantum by a shorter interval magnifies it. Read the first number again: at the control rate, **one count of jitter is $9.8\,\mathrm{cm/s}$ of apparent speed**. A cart crawling at $2\,\mathrm{cm/s}$ produces a velocity signal that alternates between $0$ and $9.8\,\mathrm{cm/s}$, and no amount of care in the message type fixes it. That is why a fast loop differences over a longer window, or filters, or reads velocity from somewhere other than a naive difference — and why publishing a bare `float64 velocity` with no stamp and no statement of how it was computed is the worst of the options in section 4.
+
+**Step 4 — how often each thing happens.** $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$ exactly, so each goal is consumed by four ticks, and in one $70\,\mathrm{ms}$ budget window there are $14$ ticks and $3$ complete vision periods. Now the design choice of section 9, on P6's numbers: publish `cmd` from `on_goal` and the motor is commanded at $50\,\mathrm{Hz}$, because a callback-driven publisher inherits its input's rate; publish from the $5\,\mathrm{ms}$ timer and it is commanded at $200\,\mathrm{Hz}$ with the newest goal in hand, whatever the camera is doing. The second is the contract P6 states, which is why the controller is timer-driven and the store between the callbacks exists.
+
+**Step 5 — and the name that silently undoes all of it.** Both nodes are launched into `/cart`. Section 3's three forms then resolve like this:
+
+| Written in the controller's code | Resolves to | Consequence for P6 |
+|---|---|---|
+| `goal` (relative) | `/cart/goal` | matches the camera's relative `goal`; data flows |
+| `/goal` (absolute) | `/goal` | namespace ignored; two names, no connection, no error |
+| `~/gain` (private) | `/cart/controller/gain` | per-node configuration, safe to launch twice |
+
+One character of difference between rows one and two costs a silent robot: `ros2 node list` shows both nodes, `ros2 topic list -t` shows *two* names where you expected one, and the motor holds its last command forever. Section 10's four commands are what find it, and this is the case they were built for.
 
 ### 11. What this page does not cover
 
-Request–response, long-running cancellable goals, runtime configuration and managed startup are [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. Workspaces, overlays, `colcon` in earnest, composition and launch files are [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. The QoS settings behind the queue-depth argument you have been passing as `10`, the executor that decides which callback runs when several are ready, and simulated versus wall time are [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]. Simulation, navigation, manipulation and hardware interfaces sit above all of it in [[04-robotics/ros2/index|25. ROS 2]].
+Request–response, long-running cancellable goals, runtime configuration and managed startup are [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. Workspaces, overlays, `colcon` in earnest and launch files are [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]; composition is defined in §2.1 and taken no further in this track. The QoS settings behind the queue-depth argument you have been passing as `10`, the executor that decides which callback runs when several are ready, and simulated versus wall time are [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] and [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]]. Simulation, navigation, manipulation and hardware interfaces sit above all of it in [[04-robotics/ros2/index|25. ROS 2]].
 
 ### Sources
 
 - ROS 2 Jazzy documentation — Concepts: Nodes; Topics; Interfaces; Services; Actions; Interfaces (topics, services, actions).
 - ROS 2 Jazzy documentation — Tutorials: Understanding nodes; Understanding topics; Writing a simple publisher and subscriber (Python); Writing a simple publisher and subscriber (C++); Creating custom msg and srv files; Implementing custom interfaces; Creating your first ROS 2 package.
+- ROS 2 Jazzy documentation — Concepts: About Composition; Tutorials: Composing multiple nodes in a single process; Demos: Intra-Process Communication (components, containers, `use_intra_process_comms`, `unique_ptr` hand-off).
 - ROS 2 design article — Topic and Service name mapping to DDS (naming rules).
 - `ros2/examples` repository, `jazzy` branch — `rclcpp/topics/minimal_publisher/member_function.cpp`, `rclcpp/topics/minimal_subscriber/member_function.cpp`.
 - `std_msgs/msg/Float64` definition (deprecation note), `turtlesim/msg/Pose` definition.
@@ -793,10 +818,13 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Vision publishes `/
 > **Working** — enough to write, build and debug your own pub–sub nodes in both client libraries, not to reason about delivery guarantees.
 
 > [!note] 선수 지식 · Prerequisites
-> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 그 9절의 그래프 읽기 명령들. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다.
-> ROS 2 Jazzy on Ubuntu 24.04, the graph-reading commands from 25.1, Python, and enough C++ to read a class.
+> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], 즉 source 가능한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 설치와 그 9절의 그래프 읽기 명령들. 그림과 계산 절에는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**. Python과, 클래스를 읽을 정도의 C++. 아래 모든 명령은 source된 터미널을 전제한다.
+> ROS 2 Jazzy on Ubuntu 24.04, the graph-reading commands from 25.1, **P6** from 0.6, Python, and enough C++ to read a class.
 
 *이 페이지보다 먼저가 아니라 뒤에 오는 페이지: 자기 패키지를 빌드하는 법은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에서 제대로 가르치고, 그 페이지가 이 페이지를 전제한다. 여기서는 최소한만 쓰고, 단계마다 어느 줄이 중요한지 짚는다.*
+
+> [!note] 처음이라면 · First pass
+> 그림을 보고 1–5절을 순서대로 읽어라. publish–subscribe가 왜 필요한지, 노드와 토픽이 무엇인지, 이름이 어떻게 풀리는지, 메시지를 어떻게 읽는지, 그리고 Python 쌍이다. 6절은 같은 쌍의 C++이고, 제품 코드가 C++이니 지금 한 번 읽어 둘 값어치가 있다. 7절과 9절은 키보드 앞의 한 자리이고, 10절은 가장 먼저 겪을 고장이다. 계산 절이 10절 뒤에 있는 이유는 그 전부 — 3절의 이름 규칙, 4절과 7절의 메시지 설계, 9절의 콜백 대 타이머 선택 — 를 P6 숫자에 쓰기 때문이다. 2.1절(composition)과 8절은 두 번째 읽기다. 메시지가 크거나 토픽이 맞지 않는 도구일 때 연다.
 
 ### 그림으로 먼저 보기: P6 노드 둘, 모든 이름을 풀어서 · The picture
 
@@ -895,36 +923,6 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Vision publishes `/
 
 `/cart` 네임스페이스로 띄운 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 노드 둘이고, 노드마다 코드가 넘기는 이름과 풀린 이름을 함께 적었다 — 카메라의 `goal`은 `/cart/goal`로 풀리고, 제어기에 붙은 `/goal` 토막은 퍼블리셔 없는 두 번째 이름, 곧 10절의 조용한 버그다. 제어기 안에서 `on_goal`은 $50\,\mathrm{Hz}$로 도착하는 목표를 저장만 하고, $5\,\mathrm{ms}$ 타이머의 `on_tick`이 그 저장소와 엔코더를 읽어 `cmd`를 $200\,\mathrm{Hz}$로 낸다. 아래 시계에서 목표는 $0$과 $20\,\mathrm{ms}$에 오고, $5\,\mathrm{ms}$마다의 틱이 매번 엔코더를 읽으며, 틱 $5$, $10$, $15$는 $0$의 목표를 재사용하고, 축척용으로 $70\,\mathrm{ms}$ 예산을 그었다.
 
-### 대상으로 한 번 끝까지: 엔코더 한 카운트가 메시지를 지나 속도가 되기까지 · Worked case
-
-숫자 여섯 개, 전부 P6의 상수 둘과 주기 둘에서 나온다.
-
-**1단계 — 카운트에서 미터로**. 엔코더는 계수기이고 그래프는 미터를 날라야 한다. $N=2048$ counts/m이면 변환과 그 해상도는
-
-$$p=\frac{c}{N}=\frac{c}{2048}\,\mathrm{m},\qquad \Delta p=\frac{1}{2048}=4.8828125\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}$$
-
-한 카운트가 $c$의 최소 단위이기 때문이다. 즉 이 엔코더는 $0.5\,\mathrm{mm}$보다 가까운 두 위치를 영원히 구분하지 못한다. $c=1024$면 카트는 정확히 $0.5\,\mathrm{m}$에 있다.
-
-**2단계 — 그것을 나르는 메시지**. `std_msgs/msg/Float64`의 값은 4절이 말했다. 위 영문 `.msg` 블록이 이 카트에 어울리는 타입이고, 자기 인터페이스 패키지에 들어간다. `Header`, 원시 카운트 `int32 counts`, 파생된 미터 `float64 position` 세 줄이다. 원시 카운트를 파생값 옆에 함께 싣는 이유는 대단히 실무적이다. `counts`는 정확하고 `position`은 그렇지 않으므로, 축척 계수를 의심하는 하위 노드가 직접 검산할 수 있고, 오늘 녹화한 bag이 내일의 재보정에서도 살아남는다. `Header`의 스탬프가 $70\,\mathrm{ms}$ 예산을 재는 기준이다.
-
-**3단계 — 한 카운트는 속도로 얼마인가**. 속도가 필요한 제어기는 보통 한 주기 떨어진 위치 둘을 뺀다. 그 추정값의 해상도는 위치의 해상도를 주기로 나눈 것이다.
-
-$$\Delta v=\frac{\Delta p}{T}=\frac{1/2048}{T}\quad\Longrightarrow\quad \Delta v\big|_{200\,\mathrm{Hz}}=\frac{0.00048828125}{0.005}=0.0977\,\mathrm{m/s},\qquad \Delta v\big|_{50\,\mathrm{Hz}}=\frac{0.00048828125}{0.020}=0.0244\,\mathrm{m/s}$$
-
-고정된 양자를 더 짧은 간격으로 나누면 그만큼 커지기 때문이다. 첫 숫자를 다시 읽어라. 제어 주기에서 **한 카운트의 떨림은 겉보기 속도로 $9.8\,\mathrm{cm/s}$에 해당한다**. $2\,\mathrm{cm/s}$로 기어가는 카트가 $0$과 $9.8\,\mathrm{cm/s}$를 오가는 속도 신호를 만들고, 메시지 타입을 아무리 잘 짜도 고쳐지지 않는다. 빠른 루프가 더 긴 창으로 차분하거나, 필터를 걸거나, 단순 차분이 아닌 곳에서 속도를 읽는 이유가 이것이다. 그리고 스탬프도 없고 계산 방식도 밝히지 않은 맨 `float64 velocity`가 4절의 선택지 중 최악인 이유이기도 하다.
-
-**4단계 — 무엇이 얼마나 자주 일어나는가**. $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$로 정확히 나누어떨어지므로 목표 하나를 네 틱이 소비하고, $70\,\mathrm{ms}$ 예산 창 하나에는 틱 $14$개와 온전한 비전 주기 $3$개가 들어간다. 이제 9절의 설계 선택을 P6 숫자로 본다. `cmd`를 `on_goal`에서 내면 모터 명령은 $50\,\mathrm{Hz}$가 된다. 콜백 구동 퍼블리셔는 입력의 주기를 물려받기 때문이다. $5\,\mathrm{ms}$ 타이머에서 내면 카메라가 무엇을 하든 손에 쥔 가장 새 목표로 $200\,\mathrm{Hz}$로 명령한다. P6이 명시한 계약은 두 번째이고, 그래서 제어기가 타이머 구동이며 콜백 둘 사이에 저장소가 존재한다.
-
-**5단계 — 그리고 이 모든 것을 조용히 무너뜨리는 이름**. 두 노드 모두 `/cart`로 띄웠다. 3절의 세 형태는 이렇게 풀린다.
-
-| 제어기 코드에 쓴 것 | 풀린 이름 | P6에 미치는 결과 |
-|---|---|---|
-| `goal` (상대) | `/cart/goal` | 카메라의 상대 `goal`과 일치. 데이터가 흐른다 |
-| `/goal` (절대) | `/goal` | 네임스페이스 무시. 이름 둘, 연결 없음, 오류도 없음 |
-| `~/gain` (비공개) | `/cart/controller/gain` | 노드별 설정. 두 번 띄워도 안전 |
-
-1행과 2행의 차이는 문자 하나인데 대가는 조용한 로봇이다. `ros2 node list`에는 노드 둘이 다 보이고, `ros2 topic list -t`에는 하나를 기대한 자리에 이름이 *둘* 보이며, 모터는 마지막 명령을 영원히 붙들고 있다. 10절이 그것을 찾는 명령 넷이고, 이 사례가 바로 그 명령들이 찾아내는 사례다.
-
 ### 1. 왜 publish–subscribe인가
 
 25.1에서는 남이 만든 그래프를 돌렸다. 이제 직접 만든다. 코드보다 먼저 형태를 본다.
@@ -949,8 +947,27 @@ Publish–subscribe는 그 목록을 없앤다. 드라이버는 이름에 publis
 
 초심자용 그림에 붙일 보정 둘.
 
-- 노드는 정확히 프로세스가 아니다. 한 프로세스가 여러 노드를 담을 수 있고, ROS 2는 이것을 composition이라 부른다. 실제 스택이 같은 머신에 있는 노드들 사이의 직렬화(메시지를 바이트로 바꿨다가 되돌리는 것) 비용을 피하는 방법이 이것이다. 한 프로세스의 메모리를 공유하는 노드들은 intra-process 통신을 켜면 메시지를 직접 넘겨줄 수 있다. Composition은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]에 있다.
+- 노드는 정확히 프로세스가 아니다. 한 프로세스가 여러 노드를 담을 수 있고, ROS 2는 이것을 **composition** 이라 부른다. 실제 스택이 같은 머신에 있는 노드들 사이의 직렬화(메시지를 바이트로 바꿨다가 되돌리는 것) 비용을 피하는 방법이 이것이다. 정의와, 언제 쓸 값어치가 있는지는 아래 2.1절이다.
 - 노드 이름은 실행 파일 이름이 아니다. 25.1에서 봤다. `turtlesim_node`는 스스로를 `/turtlesim`이라 부르고, `--ros-args --remap __node:=my_turtle`은 코드를 건드리지 않고 실행 시점에 이름을 바꾼다.
+
+#### 2.1 Composition: 한 프로세스 안의 여러 노드
+
+**Composition** — 노드마다 프로세스 하나를 주는 대신, 노드 여럿을 운영체제 프로세스 하나 안에서 돌리는 방식이다. 그 단위는 **컴포넌트(component)** 다. 생성자가 `rclcpp::NodeOptions`를 받는 C++ 클래스로 쓴 노드를, 자기 `main()`을 가진 실행 파일이 아니라 공유 라이브러리로 컴파일하고, `RCLCPP_COMPONENTS_REGISTER_NODE` 매크로로 이름을 등록한 것이다. **컴포넌트 컨테이너(component container)** 는 컴포넌트를 싣는 프로세스로, launch 파일에서 시작 시점에 싣거나 실행 중에 `ros2 component load`로 싣는다. 조건은 셋이고, 이득을 보려면 셋 다 필요하다.
+
+1. **노드가 컴포넌트다** — `main()`이 있는 프로그램이 아니라 공유 라이브러리 안의 등록된 클래스.
+2. **컨테이너에 실린다** — 프로세스가 하나가 되는 곳이 여기다.
+3. **intra-process 통신이 켜져 있다** (`use_intra_process_comms`). 이것이 없으면 한 프로세스 안의 두 노드도 두 프로세스일 때와 똑같이, 직렬화까지 포함해 미들웨어를 거쳐 통신한다.
+
+Composition이 사 주는 것은 직렬화 작업이다. 프로세스 경계를 넘는 메시지는 홉(hop)마다 바이트로 바뀌었다가 되돌아오므로, 홉 하나의 부하는 메시지 크기와 주기에 비례해 는다.
+
+$$W=B\,f$$
+
+$B$는 메시지 하나의 직렬화 크기(바이트), $f$는 발행 주기(Hz), $W$는 그 홉이 초마다 직렬화하고 역직렬화해야 하는 바이트 수다. intra-process 통신을 켠 컨테이너 안에서는 `std::unique_ptr`로 publish한 메시지가 포인터로 구독자에게 넘어간다. 아무것도 직렬화되지 않고, 구독자가 하나면 복사도 전혀 일어나지 않는다.
+
+- **예.** $640\times480$ RGB 이미지를 $30\,\mathrm{Hz}$로 넘기는 카메라 드라이버, 영상 보정기(rectifier), 검출기. $B=640\cdot480\cdot3=921{,}600$ 바이트이므로 두 홉 각각에서 $W\approx27.6\,\mathrm{MB/s}$다. 합성하면 두 홉 모두 포인터 전달이 되고, 실제 인식 파이프라인이 이렇게 만들어진다.
+- **반례.** P6의 카메라와 제어기. 목표 하나는 수십 바이트에 $50\,\mathrm{Hz}$라 초당 몇 킬로바이트이고 아낄 것이 없다. 둘을 합성하면 카메라의 충돌이 $200\,\mathrm{Hz}$ 루프로 옮아간다. [[04-robotics/ros2/what-ros2-is|25.1 §1]]이 로봇을 프로세스로 나눠서 얻은 독립 재시작을 잃는 것이다. 노드 여럿을 띄우는 launch 파일도 composition이 아니다. 거기서 띄운 `Node`는 각각 제 프로세스다. 그리고 위의 컨테이너와 매크로는 rclcpp의 것이고, 이 페이지의 Python 노드는 프로세스마다 하나씩 돈다.
+
+대가는 운명 공유다. 컴포넌트 하나가 죽으면 컨테이너 전체가 함께 죽고, 컴포넌트들은 컨테이너의 스레드를 나눠 쓴다 — `component_container`는 모든 콜백을 스레드 하나에서, `component_container_mt`는 여럿에서 돌린다 — 그래서 느린 콜백 하나가 이웃을 늦춘다. 크고 주기가 빠른 메시지를 함께 살고 함께 죽는 노드들 사이에 주고받을 때 composition을 쓰고, 독립 재시작이 중요한 곳은 프로세스를 나눠 둔다. ROS 2의 composition 튜토리얼이 `ros2 component load`와 launch 파일의 `ComposableNodeContainer` 두 형태를 다 보여 준다. 이 트랙은 그 이상 들어가지 않는다.
 
 ### 3. 토픽, 그리고 익명성이라는 핵심
 
@@ -1060,7 +1077,7 @@ if __name__ == '__main__':
 
 이 파일에서 네 가지가 관용구의 전부이고 나머지는 장식이다.
 
-`create_publisher(String, 'topic', 10)`은 계약을 선언한다. 메시지 타입, 토픽 이름, 그리고 큐 깊이 10. 세 번째 인자는 편의 기능이 아니라 필수 Quality of Service 설정이고, 따라오지 못하는 구독자를 위해 몇 개까지 붙들어 둘지를 정한다. 알든 모르든 전달 정책을 고르고 있는 것이고, 그 선택을 의식적으로 하는 곳이 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]다.
+`create_publisher(String, 'topic', 10)`은 계약을 선언한다. 메시지 타입, 토픽 이름, 그리고 큐 깊이 10. 세 번째 인자는 편의 기능이 아니라 필수 Quality of Service 설정이고, 따라오지 못하는 구독자를 위해 몇 개까지 붙들어 둘지를 정한다. 알든 모르든 전달 정책을 고르고 있는 것이고, 그 선택을 의식적으로 하는 곳이 [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]]다.
 
 `create_timer(0.5, self.timer_callback)`이 **타이머-콜백 관용구**(timer-callback idiom)이고, 초심자가 반드시 던지는 질문의 답이다. 루프는 어디 있나? 루프는 없다. `while True: publish(); sleep(0.5)`를 쓰지 않는다. 콜백을 등록하고 제어권을 ROS 2에 넘긴다. ROS 2 노드에서 주기적인 것은 전부 타이머인데, 그래야 한 스레드가 타이머와 구독과 서비스 요청을, 당신의 `while` 루프가 우연히 강제하는 순서가 아니라 제어 가능한 정책으로 처리할 수 있기 때문이다.
 
@@ -1101,6 +1118,8 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ```
+
+`__init__` 끝의 맨 `self.subscription` 줄은 린터의 unused-variable 경고를 끌 뿐이다. 아무것도 살려 두지 않으니 지워도 된다. C++과 달리 Python에는 살려 두는 장치가 왜 필요 없는지는 6절이 말한다.
 
 양쪽의 토픽 이름과 메시지 타입이 똑같다는 점을 보라. 그래야만 한다. 이름과 타입의 일치는 필요조건이고 — 호환되는 QoS가 세 번째 조건이다(10절의 상자) — 한 글자가 어긋났을 때 무슨 일이 나는지가 10절이다.
 
@@ -1230,9 +1249,9 @@ int main(int argc, char * argv[])
 
 **엔드포인트는 수명을 가진 소유 객체다.** `rclcpp::Publisher<T>::SharedPtr publisher_`가 멤버인 이유는 생성자보다 오래 살아야 하기 때문이다. C++에서 퍼블리셔나 구독, 타이머를 스코프 밖으로 흘려보내면 엔드포인트가 파괴된다. 노드는 계속 돌아가고, 조용하고, 아무것도 붙어 있지 않다. Python은 다르다. rclpy 노드가 모든 엔드포인트의 참조를 스스로 쥐고 있어 내 참조를 버려도 파괴되지 않고, 튜토리얼의 어색한 `self.subscription  # prevent unused variable warning` 줄은 린터 경고를 끌 뿐이다. C++에는 그런 안전망이 없다.
 
-**콜백 시그니처가 소유권을 명시한다.** `const std_msgs::msg::String & msg`는 메시지가 참조로 도착하고 콜백이 그것을 수정하지 않는다고 말한다. rclcpp는 `std_msgs::msg::String::UniquePtr` 형태도 받는데, 프로세스 내 zero-copy 전달을 가능하게 하는 형태가 그것이다. Python에는 호출 규약이 하나뿐이고 그 구분을 표현할 방법이 없으므로 메시지의 비용이 보이지 않는다.
+**콜백 시그니처가 소유권을 명시한다.** `const std_msgs::msg::String & msg`는 메시지가 참조로 도착하고 콜백이 그것을 수정하지 않는다고 말한다. rclcpp는 `std_msgs::msg::String::UniquePtr` 형태도 받는데, 프로세스 내 zero-copy 전달을 가능하게 하는 형태가 그것이다(2.1절). Python에는 호출 규약이 하나뿐이고 그 구분을 표현할 방법이 없으므로 메시지의 비용이 보이지 않는다.
 
-**시계에 이름이 붙어 있다.** rclcpp의 `create_wall_timer`는 이름에 벽시계라고 적혀 있다. rclpy의 `create_timer`는 선택적 `clock` 인자를 받고, 생략하면 노드의 시계를 쓴다. 그것이 시뮬레이션 시간을 따라가는 시계다. 그래서 이 페이지의 Python 예제와 C++ 예제는 같은 시계를 쓰지 않으며, 시뮬레이션에서는 동작이 달라진다. 그것이 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]이고, 이 페이지에서 가장 과소평가되는 한 줄이다.
+**시계에 이름이 붙어 있다.** rclcpp의 `create_wall_timer`는 이름에 벽시계라고 적혀 있다. rclpy의 `create_timer`는 선택적 `clock` 인자를 받고, 생략하면 노드의 시계를 쓴다. 그것이 시뮬레이션 시간을 따라가는 시계다. 그래서 이 페이지의 Python 예제와 C++ 예제는 같은 시계를 쓰지 않으며, 시뮬레이션에서는 동작이 달라진다. 그것이 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]이고, 이 페이지에서 가장 과소평가되는 한 줄이다.
 
 빌드 배관은 `setup.py`가 아니라 CMake다. `package.xml`에는 `<depend>rclcpp</depend>`와 `<depend>std_msgs</depend>` — `<exec_depend>`가 아니라 `<depend>`인 이유는 C++이 이것들을 빌드 시점에도 필요로 하기 때문이다. `CMakeLists.txt`에는:
 
@@ -1500,16 +1519,47 @@ ros2 run turtle_watch speed_watch --ros-args --remap __ns:=/watch --remap turtle
 이걸로 데이터가 흐르면 버그는 이름이었다. 그다음 제대로 고친다. 이름이 틀렸으면 코드에서, 네임스페이스가 문제였으면 launch 파일에서. 후자는 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]다.
 
 > [!warning] 침묵의 세 번째 원인이 있다
-> 이름도 맞고 타입도 맞는데 여전히 아무것도 도착하지 않는다면 QoS 프로파일이 호환되지 않는 것이다. 증상은 똑같다 — 멀쩡한 노드 둘, 오류 없음, 데이터 없음. 그리고 그것을 보여 주는 명령도 다시 `ros2 topic info --verbose`이며, 그동안 무시해 온 QoS 블록이다. 마지막으로 배제하고, 필요해지기 전에 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]를 읽어 두라.
+> 이름도 맞고 타입도 맞는데 여전히 아무것도 도착하지 않는다면 QoS 프로파일이 호환되지 않는 것이다. 증상은 똑같다 — 멀쩡한 노드 둘, 오류 없음, 데이터 없음. 그리고 그것을 보여 주는 명령도 다시 `ros2 topic info --verbose`이며, 그동안 무시해 온 QoS 블록이다. 마지막으로 배제하고, 필요해지기 전에 [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]]를 읽어 두라.
+
+### 대상으로 한 번 끝까지: 엔코더 한 카운트가 메시지를 지나 속도가 되기까지 · Worked case
+
+숫자 여섯 개, 전부 P6의 상수 둘과 주기 둘에서 나오고, 강의의 모든 절이 여기서 한 번씩 쓰인다. 이 계산이 1절 앞이 아니라 10절 뒤에 있는 이유다.
+
+**1단계 — 카운트에서 미터로**. 엔코더는 계수기이고 그래프는 미터를 날라야 한다. $N=2048$ counts/m이면 변환과 그 해상도는
+
+$$p=\frac{c}{N}=\frac{c}{2048}\,\mathrm{m},\qquad \Delta p=\frac{1}{2048}=4.8828125\times10^{-4}\,\mathrm{m}=0.488\,\mathrm{mm}$$
+
+한 카운트가 $c$의 최소 단위이기 때문이다. 즉 이 엔코더는 $0.5\,\mathrm{mm}$보다 가까운 두 위치를 영원히 구분하지 못한다. $c=1024$면 카트는 정확히 $0.5\,\mathrm{m}$에 있다.
+
+**2단계 — 그것을 나르는 메시지**. `std_msgs/msg/Float64`의 값은 4절이 말했다. 위 영문 `.msg` 블록이 이 카트에 어울리는 타입이고, 7절이 `SpeedReport`를 만든 방식 그대로 자기 인터페이스 패키지에 들어간다. `Header`, 원시 카운트 `int32 counts`, 파생된 미터 `float64 position` 세 줄이다. 원시 카운트를 파생값 옆에 함께 싣는 이유는 대단히 실무적이다. `counts`는 정확하고 `position`은 그렇지 않으므로, 축척 계수를 의심하는 하위 노드가 직접 검산할 수 있고, 오늘 녹화한 bag이 내일의 재보정에서도 살아남는다. `Header`의 스탬프가 $70\,\mathrm{ms}$ 예산을 재는 기준이다.
+
+**3단계 — 한 카운트는 속도로 얼마인가**. 속도가 필요한 제어기는 보통 한 주기 떨어진 위치 둘을 뺀다. 그 추정값의 해상도는 위치의 해상도를 주기로 나눈 것이다.
+
+$$\Delta v=\frac{\Delta p}{T}=\frac{1/2048}{T}\quad\Longrightarrow\quad \Delta v\big|_{200\,\mathrm{Hz}}=\frac{0.00048828125}{0.005}=0.0977\,\mathrm{m/s},\qquad \Delta v\big|_{50\,\mathrm{Hz}}=\frac{0.00048828125}{0.020}=0.0244\,\mathrm{m/s}$$
+
+고정된 양자를 더 짧은 간격으로 나누면 그만큼 커지기 때문이다. 첫 숫자를 다시 읽어라. 제어 주기에서 **한 카운트의 떨림은 겉보기 속도로 $9.8\,\mathrm{cm/s}$에 해당한다**. $2\,\mathrm{cm/s}$로 기어가는 카트가 $0$과 $9.8\,\mathrm{cm/s}$를 오가는 속도 신호를 만들고, 메시지 타입을 아무리 잘 짜도 고쳐지지 않는다. 빠른 루프가 더 긴 창으로 차분하거나, 필터를 걸거나, 단순 차분이 아닌 곳에서 속도를 읽는 이유가 이것이다. 그리고 스탬프도 없고 계산 방식도 밝히지 않은 맨 `float64 velocity`가 4절의 선택지 중 최악인 이유이기도 하다.
+
+**4단계 — 무엇이 얼마나 자주 일어나는가**. $T_{\text{vision}}/T_{\text{ctrl}}=20/5=4$로 정확히 나누어떨어지므로 목표 하나를 네 틱이 소비하고, $70\,\mathrm{ms}$ 예산 창 하나에는 틱 $14$개와 온전한 비전 주기 $3$개가 들어간다. 이제 9절의 설계 선택을 P6 숫자로 본다. `cmd`를 `on_goal`에서 내면 모터 명령은 $50\,\mathrm{Hz}$가 된다. 콜백 구동 퍼블리셔는 입력의 주기를 물려받기 때문이다. $5\,\mathrm{ms}$ 타이머에서 내면 카메라가 무엇을 하든 손에 쥔 가장 새 목표로 $200\,\mathrm{Hz}$로 명령한다. P6이 명시한 계약은 두 번째이고, 그래서 제어기가 타이머 구동이며 콜백 둘 사이에 저장소가 존재한다.
+
+**5단계 — 그리고 이 모든 것을 조용히 무너뜨리는 이름**. 두 노드 모두 `/cart`로 띄웠다. 3절의 세 형태는 이렇게 풀린다.
+
+| 제어기 코드에 쓴 것 | 풀린 이름 | P6에 미치는 결과 |
+|---|---|---|
+| `goal` (상대) | `/cart/goal` | 카메라의 상대 `goal`과 일치. 데이터가 흐른다 |
+| `/goal` (절대) | `/goal` | 네임스페이스 무시. 이름 둘, 연결 없음, 오류도 없음 |
+| `~/gain` (비공개) | `/cart/controller/gain` | 노드별 설정. 두 번 띄워도 안전 |
+
+1행과 2행의 차이는 문자 하나인데 대가는 조용한 로봇이다. `ros2 node list`에는 노드 둘이 다 보이고, `ros2 topic list -t`에는 하나를 기대한 자리에 이름이 *둘* 보이며, 모터는 마지막 명령을 영원히 붙들고 있다. 그것을 찾는 것이 10절의 명령 넷이고, 이 사례가 바로 그 명령들이 겨냥한 사례다.
 
 ### 11. 이 페이지가 다루지 않는 것
 
-요청–응답, 취소 가능한 장시간 목표, 실행 중 설정, 결정적 기동은 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. 워크스페이스, 오버레이, `colcon`의 본격적인 사용, composition, launch 파일은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. 지금까지 `10`으로 넘겨 온 큐 깊이 인자 뒤의 QoS 설정, 여러 콜백이 준비됐을 때 어느 것을 돌릴지 정하는 executor, 시뮬레이션 시간과 벽시계 시간은 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]. 시뮬레이션, 내비게이션, 매니퓰레이션, 하드웨어 인터페이스는 그 위에 있고 [[04-robotics/ros2/index|25. ROS 2]]에 있다.
+요청–응답, 취소 가능한 장시간 목표, 실행 중 설정, 결정적 기동은 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. 워크스페이스, 오버레이, `colcon`의 본격적인 사용, launch 파일은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. Composition은 2.1절에서 정의했고 이 트랙은 그보다 더 나아가지 않는다. 지금까지 `10`으로 넘겨 온 큐 깊이 인자 뒤의 QoS 설정, 여러 콜백이 준비됐을 때 어느 것을 돌릴지 정하는 executor, 시뮬레이션 시간과 벽시계 시간은 [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]와 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]. 시뮬레이션, 내비게이션, 매니퓰레이션, 하드웨어 인터페이스는 그 위에 있고 [[04-robotics/ros2/index|25. ROS 2]]에 있다.
 
 ### 출처
 
 - ROS 2 Jazzy 문서 — Concepts: Nodes; Topics; Interfaces; Services; Actions; Interfaces (topics, services, actions).
 - ROS 2 Jazzy 문서 — Tutorials: Understanding nodes; Understanding topics; Writing a simple publisher and subscriber (Python); Writing a simple publisher and subscriber (C++); Creating custom msg and srv files; Implementing custom interfaces; Creating your first ROS 2 package.
+- ROS 2 Jazzy 문서 — Concepts: About Composition; Tutorials: Composing multiple nodes in a single process; Demos: Intra-Process Communication(컴포넌트, 컨테이너, `use_intra_process_comms`, `unique_ptr` 전달).
 - ROS 2 design 문서 — Topic and Service name mapping to DDS(이름 규칙).
 - `ros2/examples` 저장소 `jazzy` 브랜치 — `rclcpp/topics/minimal_publisher/member_function.cpp`, `rclcpp/topics/minimal_subscriber/member_function.cpp`.
 - `std_msgs/msg/Float64` 정의(deprecation 주석), `turtlesim/msg/Pose` 정의.

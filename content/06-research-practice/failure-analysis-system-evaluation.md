@@ -235,7 +235,7 @@ Three quantities turn a log into a reliability statement. Each is defined here a
 > [!info] Definition — exact (Garwood) interval for a rate
 > **What kind of thing it is:** a confidence-interval **procedure** in the sense of [[02-foundations/probability|3. Probability §6]], for the rate of a Poisson count; exact because it uses the Poisson distribution itself instead of a normal approximation. Its conditions: the count $X$ is Poisson with mean $\lambda T$; the lower end is the rate at which a count of $k$ or more would be just $\alpha/2$ likely; the upper end is the rate at which $k$ or fewer would be just $\alpha/2$ likely; and the lower end is 0 when $k = 0$.
 > $$P\big(X \ge k \mid \lambda_L T\big) = \tfrac{\alpha}{2}, \quad P\big(X \le k \mid \lambda_U T\big) = \tfrac{\alpha}{2}, \quad \lambda_L = \frac{\chi^2_{\alpha/2}(2k)}{2T}, \quad \lambda_U = \frac{\chi^2_{1-\alpha/2}(2k+2)}{2T}$$
-> where $\chi^2_q(\nu)$ is the $q$ quantile of a chi-square distribution with $\nu$ degrees of freedom. The two forms agree because "at most $k$ failures by time $T$" means the $(k+1)$-th failure comes after $T$, and twice the rate times that waiting time is chi-square with $2k + 2$ degrees of freedom.
+> where $\chi^2_q(\nu)$ is the $q$ quantile of a chi-square distribution with $\nu$ degrees of freedom ([[02-foundations/probability|3. Probability §6]]). The two forms agree because "at most $k$ failures by time $T$" means the $(k+1)$-th failure comes after $T$, and twice the rate times that waiting time is chi-square with $2k + 2$ degrees of freedom.
 > **Example.** F1's six failures, with $\chi^2_{0.025}(12) = 4.404$ and $\chi^2_{0.975}(14) = 26.119$: counts $[2.20,\ 13.06]$, rates $[0.0110,\ 0.0653]$ per hour. By hand, the upper end checks as $\sum_{i=0}^{6} e^{-13.06}\,13.06^i/i! = 0.025$.
 > **Non-example.** The normal interval $\hat\lambda \pm 1.96\sqrt{k}/T = 0.030 \pm 0.024$: symmetric where the uncertainty is skewed, and at $k = 1$ it runs below zero, $0.005 \pm 0.0098$.
 > **Why it matters.** Rare events are where reliability claims live, and at small $k$ only an exact interval stays honest.
@@ -611,7 +611,7 @@ validation 구분에서 계속되는 쪽 절반이다.
 > [!info] 정의 — 비율의 정확(Garwood) 구간
 > **어떤 종류의 것인가:** [[02-foundations/probability|3. 확률 §6]]의 뜻에서의 신뢰구간 절차로, 포아송 개수의 비율에 대한 것이다. 정규근사 대신 포아송 분포 자체를 쓰므로 정확 구간이라 부른다. 조건: 개수 $X$는 평균 $\lambda T$인 포아송이다; 하한은 개수가 $k$ 이상일 확률이 딱 $\alpha/2$가 되는 비율이다; 상한은 $k$ 이하일 확률이 딱 $\alpha/2$가 되는 비율이다; $k = 0$이면 하한은 0이다.
 > $$P\big(X \ge k \mid \lambda_L T\big) = \tfrac{\alpha}{2}, \quad P\big(X \le k \mid \lambda_U T\big) = \tfrac{\alpha}{2}, \quad \lambda_L = \frac{\chi^2_{\alpha/2}(2k)}{2T}, \quad \lambda_U = \frac{\chi^2_{1-\alpha/2}(2k+2)}{2T}$$
-> 여기서 $\chi^2_q(\nu)$는 자유도 $\nu$인 카이제곱 분포의 $q$ 분위수다. 두 형태가 같은 것은 "시각 $T$까지 고장이 $k$번 이하"가 곧 $(k+1)$번째 고장이 $T$ 뒤에 온다는 뜻이고, 비율의 두 배에 그 대기 시간을 곱한 값이 자유도 $2k + 2$인 카이제곱이기 때문이다.
+> 여기서 $\chi^2_q(\nu)$는 자유도 $\nu$인 카이제곱 분포의 $q$ 분위수다([[02-foundations/probability|3. 확률 §6]]). 두 형태가 같은 것은 "시각 $T$까지 고장이 $k$번 이하"가 곧 $(k+1)$번째 고장이 $T$ 뒤에 온다는 뜻이고, 비율의 두 배에 그 대기 시간을 곱한 값이 자유도 $2k + 2$인 카이제곱이기 때문이다.
 > **예.** F1의 여섯 건, $\chi^2_{0.025}(12) = 4.404$와 $\chi^2_{0.975}(14) = 26.119$로: 개수 $[2.20,\ 13.06]$, 비율 $[0.0110,\ 0.0653]$ /h. 손으로 상한을 확인하면 $\sum_{i=0}^{6} e^{-13.06}\,13.06^i/i! = 0.025$다.
 > **반례.** 정규 구간 $\hat\lambda \pm 1.96\sqrt{k}/T = 0.030 \pm 0.024$. 불확실성이 한쪽으로 치우친 곳에서 대칭이고, $k = 1$이면 0 아래로 내려간다: $0.005 \pm 0.0098$.
 > **왜 중요한가.** 신뢰성 주장이 사는 곳은 희귀 사건이고, 작은 $k$에서 정직한 구간은 정확 구간뿐이다.

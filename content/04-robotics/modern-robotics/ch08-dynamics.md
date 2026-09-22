@@ -10,12 +10,15 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.8** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> You need the Jacobian from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]], positive-definite matrices ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), and mechanics at the level of Newton's second law.
-> [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 야코비안, [[02-foundations/linear-algebra|PSD 행렬]], 그리고 뉴턴 제2법칙 수준의 역학이 필요하다.
+> You need the Jacobian from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]], positive-definite matrices ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), and Lagrange's equation $\frac{d}{dt}\frac{\partial L}{\partial\dot\theta} - \frac{\partial L}{\partial\theta} = \tau$ with $L = \mathcal{K} - U$, Newton's second law rewritten in energy terms ([[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics §2]]), together with the Christoffel symbols it produces ([[02-foundations/manipulator-kinematics-dynamics|10. §4]]). This page applies Lagrange's equation to P2 but does not derive it, and Newton's second law alone will not carry you through Step 4 of the worked case. The plant is **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 야코비안, [[02-foundations/linear-algebra|PSD 행렬]], 그리고 뉴턴 제2법칙을 에너지로 다시 쓴 라그랑주 방정식 $\frac{d}{dt}\frac{\partial L}{\partial\dot\theta} - \frac{\partial L}{\partial\theta} = \tau$, $L = \mathcal{K} - U$ ([[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학과 동역학 §2]])와 거기서 나오는 크리스토펠 기호([[02-foundations/manipulator-kinematics-dynamics|10. §4]])가 필요하다. 이 페이지는 라그랑주 방정식을 P2에 적용할 뿐 유도하지 않으며, 뉴턴 제2법칙만으로는 '대상으로 한 번 끝까지'의 4단계를 따라갈 수 없다. 장치는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**다.
 
 ## English
 
 **Core question**: what torques produce what accelerations?
+
+> [!note] First pass · 처음이라면
+> Read the running plant, the picture, and Steps 1–3 of the worked case — $M$ read off the kinetic energy, $g$ off the potential — then §1 and §2. Step 4 (Coriolis from the Christoffel symbols) leans on Lagrange's equation from 10. §2 and §4: if that is new, take Step 4's formula on trust the first time and read Steps 5–7, which use it in both directions. §3's two derivations and the wiki connections are second pass.
 
 ### Running plant · 이 페이지의 장치
 
@@ -133,7 +136,11 @@ Plant **P2** in the vertical plane, solid at the catalog pose $(0^\circ, 90^\cir
 
 ### Worked case · 대상으로 한 번 끝까지
 
-Everything below is P2's own numbers, in order, with nothing quoted that is not first derived.
+Everything below is P2's own numbers, in order, with nothing quoted that is not first derived. The one equation the steps apply is Lagrange's equation, derived from Newton's second law on [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics §2]]:
+
+$$\frac{d}{dt}\frac{\partial\mathcal{K}}{\partial\dot\theta_i} - \frac{\partial\mathcal{K}}{\partial\theta_i} + \frac{\partial U}{\partial\theta_i} = \tau_i, \qquad i = 1, 2$$
+
+with $\mathcal{K}$ the kinetic and $U$ the potential energy, so Steps 1–2 build $\mathcal{K}$, Step 3 differentiates $U$, and Step 4 collects what differentiating $\mathcal{K}$ leaves over.
 
 **Step 1 — kinetic energy, written out.** Mass 1 sits at $(L_1c_1,\ L_1s_1)$ and mass 2 at the tip, so differentiating and squaring gives
 
@@ -143,19 +150,23 @@ because the cross term of the two link velocities carries $\cos\theta_1\cos(\the
 
 $$2\mathcal{K} = (3 + 2\cos\theta_2)\,\dot\theta_1^2 + 2(1 + \cos\theta_2)\,\dot\theta_1\dot\theta_2 + \dot\theta_2^2.$$
 
-**Step 2 — read $M$ off the quadratic form.** Matching $2\mathcal{K} = \dot\theta^\top M\dot\theta$ term by term, the $\dot\theta_1^2$ coefficient is $M_{11}$, the $\dot\theta_2^2$ coefficient is $M_{22}$, and the $\dot\theta_1\dot\theta_2$ coefficient is $2M_{12}$ because symmetry splits it between the two off-diagonal entries:
+**Step 2 — read $M$ off the quadratic form.** Matching $2\mathcal{K} = \dot\theta^\top M\dot\theta$ (the quadratic form that defines the mass matrix, §2) term by term, the $\dot\theta_1^2$ coefficient is $M_{11}$, the $\dot\theta_2^2$ coefficient is $M_{22}$, and the $\dot\theta_1\dot\theta_2$ coefficient is $2M_{12}$ because symmetry splits it between the two off-diagonal entries:
 
 $$M(\theta_2) = \begin{pmatrix} 3 + 2\cos\theta_2 & 1 + \cos\theta_2 \\ 1 + \cos\theta_2 & 1\end{pmatrix}$$
 
 and only $\theta_2$ appears, since turning the whole arm about the shoulder cannot change how mass is distributed about its own axes. At the catalog pose $\cos\theta_2 = 0$, so $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$ — the catalog matrix, now earned. Its eigenvalues are $2 \pm \sqrt2 = 3.4142$ and $0.5858\ \mathrm{kg\,m^2}$, both positive, and their ratio $5.83$ is how much heavier the arm's heaviest direction is than its lightest. Straighten to $\theta_2 = 0$ and $M = \begin{pmatrix}5&2\\2&1\end{pmatrix}$, whose eigenvalues are $3 \pm 2\sqrt2 = 5.8284$ and $0.1716$, a ratio of $34.0$: extending the arm does not merely make it heavier, it makes it far more *unevenly* heavy.
 
-**Step 3 — gravity, from the potential.** The potential energy is $U = g(m_1y_1 + m_2y_2) = g\,(2\sin\theta_1 + \sin(\theta_1{+}\theta_2))$ with the catalog numbers, and the gravity vector is its gradient:
+**Step 3 — gravity, from the potential.** The potential energy is $U = g(m_1y_1 + m_2y_2) = g\,(2\sin\theta_1 + \sin(\theta_1{+}\theta_2))$ with the catalog numbers, and the gravity vector is its gradient, the $\partial U/\partial\theta$ term of Lagrange's equation:
 
 $$g(\theta) = \frac{\partial U}{\partial \theta} = \bigl(\,g(2\cos\theta_1 + \cos(\theta_1{+}\theta_2)),\ \ g\cos(\theta_1{+}\theta_2)\,\bigr)$$
 
 where each cosine is a horizontal moment arm read straight off the picture. At the catalog pose $\cos\theta_1 = 1$ and $\cos(\theta_1{+}\theta_2) = 0$, giving $g = (19.62,\ 0)\,\mathrm{N\,m}$: the shoulder holds both masses at $1\,\mathrm{m}$, and the elbow holds nothing because its mass is directly overhead. At the straight pose the same formula gives $(29.43,\ 9.81)$ — half again as much at the shoulder.
 
-**Step 4 — Coriolis, from how $M$ changes.** The velocity-product term comes from differentiating $M(\theta)$ inside the Lagrange equation; collecting it with the Christoffel symbols $\Gamma_{ijk} = \tfrac12(\partial M_{ij}/\partial\theta_k + \partial M_{ik}/\partial\theta_j - \partial M_{jk}/\partial\theta_i)$ and using $c_i = \sum_{j,k}\Gamma_{ijk}\dot\theta_j\dot\theta_k$, only $\partial M/\partial\theta_2 \propto \sin\theta_2$ survives, so
+**Step 4 — Coriolis, from how $M$ changes.** The velocity-product term comes from differentiating $M(\theta)$ inside the Lagrange equation; collecting it with the Christoffel symbols $\Gamma_{ijk} = \tfrac12(\partial M_{ij}/\partial\theta_k + \partial M_{ik}/\partial\theta_j - \partial M_{jk}/\partial\theta_i)$ of [[02-foundations/manipulator-kinematics-dynamics|10. §4]] and using $c_i = \sum_{j,k}\Gamma_{ijk}\dot\theta_j\dot\theta_k$, only $\partial M/\partial\theta_2 \propto \sin\theta_2$ survives. Explicitly, the only nonzero derivatives are $\partial M_{11}/\partial\theta_2 = -2\sin\theta_2$ and $\partial M_{12}/\partial\theta_2 = \partial M_{21}/\partial\theta_2 = -\sin\theta_2$, because nothing depends on $\theta_1$ and $M_{22}$ is constant. So, for instance, $\Gamma_{122} = \tfrac12(\partial M_{12}/\partial\theta_2 + \partial M_{12}/\partial\theta_2 - \partial M_{22}/\partial\theta_1) = -\sin\theta_2$ and $\Gamma_{212} = \tfrac12(\partial M_{21}/\partial\theta_2 + \partial M_{22}/\partial\theta_1 - \partial M_{12}/\partial\theta_2) = 0$, and all eight symbols are
+
+$$\Gamma_{112} = \Gamma_{121} = \Gamma_{122} = -\sin\theta_2, \qquad \Gamma_{211} = \sin\theta_2, \qquad \Gamma_{111} = \Gamma_{212} = \Gamma_{221} = \Gamma_{222} = 0$$
+
+so that $c_1 = \Gamma_{112}\dot\theta_1\dot\theta_2 + \Gamma_{121}\dot\theta_2\dot\theta_1 + \Gamma_{122}\dot\theta_2^2$ and $c_2 = \Gamma_{211}\dot\theta_1^2$, which is
 
 $$c(\theta, \dot\theta) = \bigl(\,-\sin\theta_2\,\dot\theta_2(2\dot\theta_1 + \dot\theta_2),\ \ \sin\theta_2\,\dot\theta_1^2\,\bigr)$$
 
@@ -166,11 +177,11 @@ which is quadratic in $\dot\theta$ and proportional to $\sin\theta_2$. Two conse
 - Coriolis: $c_1 = -1\cdot(-1)\bigl(2(1) + (-1)\bigr) = 1$ and $c_2 = 1\cdot(1)^2 = 1$, so $c = (1,\ 1)\,\mathrm{N\,m}$.
 - Net: $\tau - c - g = (19.62, 0) - (1,1) - (19.62, 0) = (-1,\ -1)\,\mathrm{N\,m}$.
 - Inverse mass matrix: $\det M = 3 - 1 = 2$, so $M^{-1} = \tfrac12\begin{pmatrix}1&-1\\-1&3\end{pmatrix} = \begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}$.
-- Forward dynamics: $\ddot\theta = M^{-1}(\tau - c - g) = (0,\ -1)\,\mathrm{rad/s^2}$.
+- Forward dynamics (the equation of motion solved for $\ddot\theta$, §3): $\ddot\theta = M^{-1}(\tau - c - g) = (0,\ -1)\,\mathrm{rad/s^2}$.
 
 So cancelling gravity on a *moving* arm leaves the shoulder with exactly zero acceleration and the elbow straightening faster, at $1\,\mathrm{rad/s^2}$. Every bit of that is the Coriolis term: at rest the same command would produce $\ddot\theta = 0$ and nothing would happen at all. A controller tuned on a stationary arm and tested on a moving one meets this difference first.
 
-**Step 6 — the same line read backwards.** Ask instead for $\ddot\theta = 0$ at that same state — hold the velocity steady through the pose. Inverse dynamics gives $\tau = c + g = (20.62,\ 1)\,\mathrm{N\,m}$: one extra newton-metre at *each* joint over the static hold, including at the elbow, which statically needed nothing. That $1\,\mathrm{N\,m}$ at an unloaded joint is the signature of velocity coupling, and it is exactly what a feedforward term supplies in [[04-robotics/modern-robotics/ch11-robot-control|ch.11]].
+**Step 6 — the same line read backwards.** Ask instead for $\ddot\theta = 0$ at that same state — hold the velocity steady through the pose. Inverse dynamics (the same equation evaluated for $\tau$, §3) gives $\tau = c + g = (20.62,\ 1)\,\mathrm{N\,m}$: one extra newton-metre at *each* joint over the static hold, including at the elbow, which statically needed nothing. That $1\,\mathrm{N\,m}$ at an unloaded joint is the signature of velocity coupling, and it is exactly what a feedforward term supplies in [[04-robotics/modern-robotics/ch11-robot-control|ch.11]].
 
 **Step 7 — at rest, only $g$ survives.** Set $\dot\theta = 0$. Then $c = 0$ by step 4 and the equation collapses to $\tau = M\ddot\theta + g$. Holding still means $\ddot\theta = 0$ and $\tau = g = (19.62,\ 0)$; feed that to forward dynamics and $\ddot\theta = M^{-1}(\tau - g) = 0$, so the simulator's next step does nothing. This is the state the problem set draws, and the one every other pose on this page should be compared against.
 
@@ -256,6 +267,9 @@ Tier B. Same plant **P2** from [[02-foundations/lab-plants|0.6]], same masses, s
 ## 한국어
 
 **핵심 질문**: 어떤 토크가 어떤 가속도를 만드는가?
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 장치, 그림, 그리고 '대상으로 한 번 끝까지'의 1–3단계(운동 에너지에서 읽은 $M$, 퍼텐셜에서 읽은 $g$)를 읽고, 이어서 §1과 §2를 읽어라. 4단계(크리스토펠 기호에서 나온 코리올리)는 10. §2와 §4의 라그랑주 방정식에 기댄다. 그것이 처음이라면 첫 읽기에서는 4단계의 식을 믿고 넘어가, 그 식을 양방향으로 쓰는 5–7단계를 읽어라. §3의 유도 두 가지와 위키 연결은 두 번째 읽기다.
 
 ### 이 페이지의 장치 · Running plant
 
@@ -373,7 +387,11 @@ Tier B. Same plant **P2** from [[02-foundations/lab-plants|0.6]], same masses, s
 
 ### 대상으로 한 번 끝까지 · Worked case
 
-아래는 전부 P2 자신의 숫자이고, 순서대로이며, 먼저 유도하지 않고 인용하는 것은 하나도 없다.
+아래는 전부 P2 자신의 숫자이고, 순서대로이며, 먼저 유도하지 않고 인용하는 것은 하나도 없다. 각 단계가 적용하는 방정식은 하나, [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학과 동역학 §2]]에서 뉴턴 제2법칙으로부터 유도한 라그랑주 방정식이다:
+
+$$\frac{d}{dt}\frac{\partial\mathcal{K}}{\partial\dot\theta_i} - \frac{\partial\mathcal{K}}{\partial\theta_i} + \frac{\partial U}{\partial\theta_i} = \tau_i, \qquad i = 1, 2$$
+
+여기서 $\mathcal{K}$는 운동 에너지, $U$는 퍼텐셜 에너지다. 그래서 1–2단계는 $\mathcal{K}$를 만들고, 3단계는 $U$를 미분하고, 4단계는 $\mathcal{K}$를 미분하고 남는 것을 모은다.
 
 **1단계 — 운동 에너지를 펼쳐 쓴다.** 질량 1은 $(L_1c_1,\ L_1s_1)$에, 질량 2는 말단에 있으므로 미분해 제곱하면
 
@@ -385,19 +403,23 @@ $$2\mathcal{K} = (3 + 2\cos\theta_2)\,\dot\theta_1^2 + 2(1 + \cos\theta_2)\,\dot
 
 으로 모인다.
 
-**2단계 — 이차형식에서 $M$을 읽는다.** $2\mathcal{K} = \dot\theta^\top M\dot\theta$와 항별로 맞추면 $\dot\theta_1^2$의 계수가 $M_{11}$, $\dot\theta_2^2$의 계수가 $M_{22}$, $\dot\theta_1\dot\theta_2$의 계수는 대칭성이 두 비대각 성분에 나누어 주므로 $2M_{12}$다:
+**2단계 — 이차형식에서 $M$을 읽는다.** $2\mathcal{K} = \dot\theta^\top M\dot\theta$(질량 행렬을 정의하는 이차형식, §2)와 항별로 맞추면 $\dot\theta_1^2$의 계수가 $M_{11}$, $\dot\theta_2^2$의 계수가 $M_{22}$, $\dot\theta_1\dot\theta_2$의 계수는 대칭성이 두 비대각 성분에 나누어 주므로 $2M_{12}$다:
 
 $$M(\theta_2) = \begin{pmatrix} 3 + 2\cos\theta_2 & 1 + \cos\theta_2 \\ 1 + \cos\theta_2 & 1\end{pmatrix}$$
 
 여기에 $\theta_2$만 나온다. 어깨 둘레로 팔 전체를 돌리는 것은 질량이 각 축에 대해 어떻게 분포하는지를 바꿀 수 없기 때문이다. 카탈로그 자세에서는 $\cos\theta_2 = 0$이므로 $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$ — 이제 인용이 아니라 벌어서 얻은 카탈로그 행렬이다. 고윳값은 $2 \pm \sqrt2 = 3.4142$와 $0.5858\ \mathrm{kg\,m^2}$로 둘 다 양수이고, 그 비 $5.83$이 이 팔의 가장 무거운 방향이 가장 가벼운 방향보다 몇 배 무거운지를 말한다. $\theta_2 = 0$으로 곧게 펴면 $M = \begin{pmatrix}5&2\\2&1\end{pmatrix}$이고 고윳값은 $3 \pm 2\sqrt2 = 5.8284$와 $0.1716$, 비가 $34.0$이다. 팔을 뻗으면 그냥 무거워지는 것이 아니라 훨씬 더 *고르지 않게* 무거워진다.
 
-**3단계 — 중력을 퍼텐셜에서.** 퍼텐셜 에너지는 $U = g(m_1y_1 + m_2y_2) = g\,(2\sin\theta_1 + \sin(\theta_1{+}\theta_2))$이고(카탈로그 숫자), 중력 벡터는 그 기울기다:
+**3단계 — 중력을 퍼텐셜에서.** 퍼텐셜 에너지는 $U = g(m_1y_1 + m_2y_2) = g\,(2\sin\theta_1 + \sin(\theta_1{+}\theta_2))$이고(카탈로그 숫자), 중력 벡터는 그 기울기, 곧 라그랑주 방정식의 $\partial U/\partial\theta$ 항이다:
 
 $$g(\theta) = \frac{\partial U}{\partial \theta} = \bigl(\,g(2\cos\theta_1 + \cos(\theta_1{+}\theta_2)),\ \ g\cos(\theta_1{+}\theta_2)\,\bigr)$$
 
 각 코사인이 그림에서 바로 읽히는 수평 모멘트 팔이다. 카탈로그 자세에서는 $\cos\theta_1 = 1$, $\cos(\theta_1{+}\theta_2) = 0$이므로 $g = (19.62,\ 0)\,\mathrm{N\,m}$이다. 어깨는 두 질량을 $1\,\mathrm{m}$에서 들고, 엘보는 질량이 바로 위에 있어 아무것도 들지 않는다. 곧게 편 자세에서는 같은 식이 $(29.43,\ 9.81)$을 준다. 어깨 쪽이 절반만큼 더 든다.
 
-**4단계 — 코리올리를 $M$의 변화에서.** 속도 곱 항은 라그랑주 방정식 안에서 $M(\theta)$를 미분할 때 나온다. 크리스토펠 기호 $\Gamma_{ijk} = \tfrac12(\partial M_{ij}/\partial\theta_k + \partial M_{ik}/\partial\theta_j - \partial M_{jk}/\partial\theta_i)$로 모으고 $c_i = \sum_{j,k}\Gamma_{ijk}\dot\theta_j\dot\theta_k$를 쓰면, $\partial M/\partial\theta_2 \propto \sin\theta_2$만 살아남아
+**4단계 — 코리올리를 $M$의 변화에서.** 속도 곱 항은 라그랑주 방정식 안에서 $M(\theta)$를 미분할 때 나온다. [[02-foundations/manipulator-kinematics-dynamics|10. §4]]의 크리스토펠 기호 $\Gamma_{ijk} = \tfrac12(\partial M_{ij}/\partial\theta_k + \partial M_{ik}/\partial\theta_j - \partial M_{jk}/\partial\theta_i)$로 모으고 $c_i = \sum_{j,k}\Gamma_{ijk}\dot\theta_j\dot\theta_k$를 쓰면, $\partial M/\partial\theta_2 \propto \sin\theta_2$만 살아남는다. 구체적으로 0이 아닌 도함수는 $\partial M_{11}/\partial\theta_2 = -2\sin\theta_2$와 $\partial M_{12}/\partial\theta_2 = \partial M_{21}/\partial\theta_2 = -\sin\theta_2$뿐이다. $\theta_1$에 의존하는 것이 없고 $M_{22}$는 상수이기 때문이다. 그래서 예를 들어 $\Gamma_{122} = \tfrac12(\partial M_{12}/\partial\theta_2 + \partial M_{12}/\partial\theta_2 - \partial M_{22}/\partial\theta_1) = -\sin\theta_2$, $\Gamma_{212} = \tfrac12(\partial M_{21}/\partial\theta_2 + \partial M_{22}/\partial\theta_1 - \partial M_{12}/\partial\theta_2) = 0$이고, 여덟 기호 전부는
+
+$$\Gamma_{112} = \Gamma_{121} = \Gamma_{122} = -\sin\theta_2, \qquad \Gamma_{211} = \sin\theta_2, \qquad \Gamma_{111} = \Gamma_{212} = \Gamma_{221} = \Gamma_{222} = 0$$
+
+이다. 따라서 $c_1 = \Gamma_{112}\dot\theta_1\dot\theta_2 + \Gamma_{121}\dot\theta_2\dot\theta_1 + \Gamma_{122}\dot\theta_2^2$, $c_2 = \Gamma_{211}\dot\theta_1^2$이고, 곧
 
 $$c(\theta, \dot\theta) = \bigl(\,-\sin\theta_2\,\dot\theta_2(2\dot\theta_1 + \dot\theta_2),\ \ \sin\theta_2\,\dot\theta_1^2\,\bigr)$$
 
@@ -408,11 +430,11 @@ $$c(\theta, \dot\theta) = \bigl(\,-\sin\theta_2\,\dot\theta_2(2\dot\theta_1 + \d
 - 코리올리: $c_1 = -1\cdot(-1)\bigl(2(1) + (-1)\bigr) = 1$, $c_2 = 1\cdot(1)^2 = 1$이므로 $c = (1,\ 1)\,\mathrm{N\,m}$.
 - 남는 힘: $\tau - c - g = (19.62, 0) - (1,1) - (19.62, 0) = (-1,\ -1)\,\mathrm{N\,m}$.
 - 역질량 행렬: $\det M = 3 - 1 = 2$이므로 $M^{-1} = \tfrac12\begin{pmatrix}1&-1\\-1&3\end{pmatrix} = \begin{pmatrix}0.5&-0.5\\-0.5&1.5\end{pmatrix}$.
-- 순동역학: $\ddot\theta = M^{-1}(\tau - c - g) = (0,\ -1)\,\mathrm{rad/s^2}$.
+- 순동역학(운동 방정식을 $\ddot\theta$에 대해 푼 것, §3): $\ddot\theta = M^{-1}(\tau - c - g) = (0,\ -1)\,\mathrm{rad/s^2}$.
 
 즉 *움직이는* 팔에서 중력만 상쇄하면 어깨 가속도는 정확히 0이고 엘보는 $1\,\mathrm{rad/s^2}$로 더 빨리 펴진다. 전부 코리올리 항이다. 정지 상태였다면 같은 명령이 $\ddot\theta = 0$을 내고 아무 일도 일어나지 않았을 것이다. 멈춰 있는 팔에서 조율한 제어기를 움직이는 팔에 올리면 가장 먼저 만나는 차이가 이것이다.
 
-**6단계 — 같은 줄을 반대로 읽는다.** 같은 상태에서 이번에는 $\ddot\theta = 0$을 요구한다. 속도를 유지한 채 그 자세를 지나가라는 뜻이다. 역동역학은 $\tau = c + g = (20.62,\ 1)\,\mathrm{N\,m}$을 준다. 정지 유지보다 *각* 관절에 $1\,\mathrm{N\,m}$씩 더 드는데, 정역학적으로는 아무것도 필요 없던 엘보에도 든다. 부하가 없는 관절의 그 $1\,\mathrm{N\,m}$이 속도 결합의 서명이고, [[04-robotics/modern-robotics/ch11-robot-control|11장]]에서 피드포워드 항이 공급하는 것이 정확히 그것이다.
+**6단계 — 같은 줄을 반대로 읽는다.** 같은 상태에서 이번에는 $\ddot\theta = 0$을 요구한다. 속도를 유지한 채 그 자세를 지나가라는 뜻이다. 역동역학(같은 방정식을 $\tau$에 대해 계산한 것, §3)은 $\tau = c + g = (20.62,\ 1)\,\mathrm{N\,m}$을 준다. 정지 유지보다 *각* 관절에 $1\,\mathrm{N\,m}$씩 더 드는데, 정역학적으로는 아무것도 필요 없던 엘보에도 든다. 부하가 없는 관절의 그 $1\,\mathrm{N\,m}$이 속도 결합의 서명이고, [[04-robotics/modern-robotics/ch11-robot-control|11장]]에서 피드포워드 항이 공급하는 것이 정확히 그것이다.
 
 **7단계 — 정지하면 $g$만 남는다.** $\dot\theta = 0$으로 두면 4단계에 의해 $c = 0$이고 방정식은 $\tau = M\ddot\theta + g$로 줄어든다. 가만히 있으라는 것은 $\ddot\theta = 0$이므로 $\tau = g = (19.62,\ 0)$이다. 이것을 순동역학에 넣으면 $\ddot\theta = M^{-1}(\tau - g) = 0$이라 시뮬레이터의 다음 스텝은 아무것도 하지 않는다. 과제가 그리는 상태이고, 이 페이지의 다른 모든 자세를 견주어야 할 기준이다.
 

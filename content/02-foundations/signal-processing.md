@@ -7,8 +7,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 §7]] (complex numbers, Euler's formula) · [[02-foundations/engineering-math|0.5 §9]] (Laplace, poles) · [[02-foundations/probability|3. Probability §5]] (white noise, stationarity)
-> [[02-foundations/engineering-math|0.5 §7]](복소수·오일러 공식) · [[02-foundations/engineering-math|0.5 §9]](라플라스·극점) · [[02-foundations/probability|3. 확률 §5]](백색 잡음·정상성)
+> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §7]] (complex numbers, Euler's formula) · [[02-foundations/engineering-math|0.5 §9]] (Laplace, poles) · [[02-foundations/linear-algebra|1. Linear Algebra §3, §5]] (eigenvectors, for §3's diagonalizing basis; controllability and observability, for §5) · [[02-foundations/probability|3. Probability §5]] (white noise, stationarity)
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3** · [[02-foundations/engineering-math|0.5 §7]](복소수·오일러 공식) · [[02-foundations/engineering-math|0.5 §9]](라플라스·극점) · [[02-foundations/linear-algebra|1. 선형대수 §3, §5]](고유벡터, §3의 대각화 기저용; 가제어성과 가관측성, §5용) · [[02-foundations/probability|3. 확률 §5]](백색 잡음·정상성)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -23,7 +23,7 @@ theorem with its math, DFT/FFT, filter design basics, and the bridge to control'
 functions.
 
 > [!note] First pass · 처음이라면
-> Read §1, §2 — the sampling contract and aliasing are what actually bite — then §6 for the field habits. §3 to §5 are the machinery; open them when a paper does something in the frequency domain.
+> Read the picture, §1, §2 — the sampling contract, aliasing and the zero-order hold are what actually bite — then §6 for the field habits. §2's four-step proof of the sampling theorem is a second pass. §3 to §5 are the machinery; open them when a paper does something in the frequency domain.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -76,7 +76,7 @@ functions.
   <polygon points="98.0,292.0 99.9,291.1 101.8,290.2 103.7,289.4 105.6,288.5 107.5,287.6 109.4,286.6 111.3,285.7 113.2,284.8 115.1,283.9 117.0,283.0 118.9,282.0 120.8,281.1 122.7,280.1 124.6,279.2 126.5,278.2 128.4,277.3 130.3,276.3 132.2,275.3 134.1,274.3 136.0,273.3 136.0,292.0 98.0,292.0" fill="currentColor" fill-opacity="0.28" stroke="none"/>
   <line x1="118.9" y1="285.0" x2="94.2" y2="146.7" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
   <text x="66.0" y="128.7" fill="currentColor">hold late by T/2 = 0.5 ms</text>
-  <text x="66.0" y="142.7" fill="currentColor" opacity="0.85">on average (§5: phase lag)</text>
+  <text x="66.0" y="142.7" fill="currentColor" opacity="0.85">on average (§2: phase lag)</text>
   <g fill="currentColor"><circle cx="60.0" cy="308.2" r="3.3"/><circle cx="98.0" cy="292.0" r="3.3"/><circle cx="136.0" cy="273.3" r="3.3"/><circle cx="174.0" cy="252.8" r="3.3"/><circle cx="212.0" cy="231.2" r="3.3"/><circle cx="250.0" cy="209.3" r="3.3"/><circle cx="288.0" cy="187.7" r="3.3"/><circle cx="326.0" cy="167.4" r="3.3"/></g>
   <g fill="none" stroke="currentColor" stroke-width="1.4"><path d="M60.0 301.0L65.0 306.0L60.0 311.0L55.0 306.0z"/><path d="M98.0 301.0L103.0 306.0L98.0 311.0L93.0 306.0z"/><path d="M136.0 257.0L141.0 262.0L136.0 267.0L131.0 262.0z"/><path d="M174.0 257.0L179.0 262.0L174.0 267.0L169.0 262.0z"/><path d="M212.0 213.0L217.0 218.0L212.0 223.0L207.0 218.0z"/><path d="M250.0 213.0L255.0 218.0L250.0 223.0L245.0 218.0z"/><path d="M288.0 169.0L293.0 174.0L288.0 179.0L283.0 174.0z"/><path d="M326.0 169.0L331.0 174.0L326.0 179.0L321.0 174.0z"/></g>
   <ellipse cx="269.0" cy="209.3" rx="26" ry="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
@@ -106,7 +106,7 @@ functions.
   <text x="14.0" y="422.0" fill="currentColor" opacity="0.95">and a velocity from differenced positions reads 0, then 61.4 mm/s.</text>
 </svg>
 
-Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], the haptic handle on its $1\,\mathrm{kHz}$ servo: the ideal sampler reads $x[n]=x(nT)$ every $T=1\,\mathrm{ms}$ (Nyquist $500\,\mathrm{Hz}$), and the zero-order hold turns the samples into a staircase that runs $T/2=0.5\,\mathrm{ms}$ late on average, so contact with the wall at $x_w=0.030\,\mathrm{m}$ begins at a tick ($5\,\mathrm{ms}$), not at the true crossing. The faint horizontal grid is one encoder count, $\Delta x=61.4\,\mu\mathrm{m}$; inside the wall one count is worth $k_w\,\Delta x=0.025\,\mathrm{N}$, the smallest force step. The two grids meet at $\Delta x/T=61.4\,\mathrm{mm/s}$, one new count per tick; this handle never moves faster than $30.7\,\mathrm{mm/s}$, so every other tick reports no motion and a velocity from differenced positions reads $0$, then $61.4\,\mathrm{mm/s}$.
+Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], the haptic handle on its $1\,\mathrm{kHz}$ servo: the ideal sampler reads $x[n]=x(nT)$ every $T=1\,\mathrm{ms}$ (Nyquist $500\,\mathrm{Hz}$; §2), and the zero-order hold (defined and derived in §2) turns the samples into a staircase that runs $T/2=0.5\,\mathrm{ms}$ late on average, so contact with the wall at $x_w=0.030\,\mathrm{m}$ begins at a tick ($5\,\mathrm{ms}$), not at the true crossing. The faint horizontal grid is one encoder count, $\Delta x=61.4\,\mu\mathrm{m}$; inside the wall one count is worth $k_w\,\Delta x=0.025\,\mathrm{N}$, the smallest force step. The two grids meet at $\Delta x/T=61.4\,\mathrm{mm/s}$, one new count per tick; this handle never moves faster than $30.7\,\mathrm{mm/s}$, so every other tick reports no motion and a velocity from differenced positions reads $0$, then $61.4\,\mathrm{mm/s}$.
 
 ### 1. Signals, systems, and convolution
 
@@ -193,9 +193,26 @@ Convolution is useful because a short physical event can affect several later sa
   band edge, the **Nyquist rate** $2B$:
   $$f_s > 2B$$
   Then the signal is *perfectly* recoverable from its samples, because sampling makes copies
-  of the spectrum spaced $f_s$ apart and those copies do not overlap. Example: audio
+  of the spectrum spaced $f_s$ apart and those copies do not overlap (proved below). Example: audio
   band-limited to 20 kHz needs $f_s > 40$ kHz, which is why CD audio uses 44.1 kHz.
+- **Why the theorem holds — a proof in four steps.** It needs the continuous-time Fourier transform, the counter-rotate-and-average of [[02-foundations/engineering-math|0.5 §7]] done with an integral over time (§3's frequency response is its version for sequences):
+  $$X_c(f) = \int_{-\infty}^{\infty} x_c(t)\,e^{-j2\pi ft}\,dt, \qquad x_c(t) = \int_{-\infty}^{\infty} X_c(f)\,e^{j2\pi ft}\,df$$
+  and "band-limited to $B$" means $X_c(f) = 0$ for $|f| > B$.
+  *Step 1, the samples see only a folded spectrum.* Put $t = nT_s$ into the inverse transform and cut the frequency axis into bands of width $f_s$, writing $f = f' + kf_s$ with $|f'| \le f_s/2$ and $k$ any integer. Because $e^{j2\pi kf_s nT_s} = e^{j2\pi kn} = 1$,
+  $$x[n] = \int_{-f_s/2}^{f_s/2} \Big(\sum_{k=-\infty}^{\infty} X_c(f' + kf_s)\Big)\,e^{j2\pi f' nT_s}\,df'$$
+  so the samples depend on $X_c$ only through the sum of its copies shifted by every multiple of $f_s$: the "copies of the spectrum" above.
+  *Step 2, with $f_s > 2B$ the copies miss the band.* For $|f'| \le f_s/2$ and $k \ne 0$, $|f' + kf_s| \ge f_s/2 > B$, so every copy except $k = 0$ is zero there and the bracket is $X_c(f')$ itself. The samples are then the Fourier-series coefficients of $X_c$ on that band, and those fix it: $X_c(f) = T_s\sum_n x[n]\,e^{-j2\pi fnT_s}$ for $|f| < f_s/2$.
+  *Step 3, rebuild the signal.* Put that back into the inverse transform. Sample $n$ contributes $x[n]\,T_s\int_{-f_s/2}^{f_s/2} e^{j2\pi f(t - nT_s)}\,df$, and the integral evaluates to a sinc pulse:
+  $$x_c(t) = \sum_n x[n]\,\operatorname{sinc}\Big(\frac{t - nT_s}{T_s}\Big), \qquad \operatorname{sinc}(u) = \frac{\sin \pi u}{\pi u}$$
+  Each pulse is 1 at its own sample instant and 0 at every other one, so the sum passes through all the samples and fills in between them. That is the theorem's "perfectly recoverable", and in the frequency domain it is an ideal low-pass filter (§4) with cutoff $f_s/2$.
+  *Step 4, failure is aliasing.* If $f_s \le 2B$, some copy with $k \ne 0$ lands inside the band and adds to $X_c(f')$: a tone at $f$ is counted at $f - kf_s$, which is the aliasing formula below.
+  *Checked numerically:* tones at $1.3$ and $2.9$ Hz sampled at $f_s = 10$ Hz ($2B = 5.8 < 10$) are rebuilt at $t = 0.5$ s as $-0.630653$, the true value to six decimals (summing the 8,001 samples nearest $t$). A $7$ Hz tone at the same rate rebuilds at $t = 0.123$ s as $-0.680$, the value of the $3$ Hz cosine it aliases to, while the true $7$ Hz value is $+0.642$.
 - **Worked: plant P3 at $1\,\mathrm{kHz}$.** The haptic servo uses $T=10^{-3}\,\mathrm{s}$, so $f_s=1000\,\mathrm{Hz}$ and Nyquist is $500\,\mathrm{Hz}$ ([[02-foundations/lab-plants|0.6]]). Contact you care about below $30\,\mathrm{Hz}$ is far inside the theorem; sampling is not the bottleneck. One encoder count is $\Delta x=r_m 2\pi/N=0.010\cdot 2\pi/1024=61.4\,\mu\mathrm{m}$ — a *quantization* stair in space, not a $T_s$. Raising $N$ shrinks space; raising $f_s$ shrinks time. The problem set is this sampler+ZOH as a drawing.
+- **Zero-order hold (ZOH).** The step back from samples to a continuous signal that the picture's staircase draws: it holds each sample until the next one,
+  $$x_h(t) = x[n] \quad \text{for } nT \le t < (n+1)T$$
+  so its output is piecewise constant, jumps at every tick, and never uses a future sample (it is causal). It is the reconstruction a DAC or a servo actually performs, in place of the sinc sum above, which would need samples that have not arrived yet. *Why it runs $T/2$ late on average:* at a time $t$ inside interval $n$ the held value is $x(nT)$, a reading $t - nT$ seconds old, and that age runs evenly from $0$ to $T$, so it averages $T/2$. For a ramp $x = vt$ the staircase is the ramp shifted $T/2$ later on average. The frequency response says the same thing exactly. The hold's impulse response is a unit pulse of width $T$, whose transform is
+  $$H_{\text{zoh}}(f) = \int_0^T e^{-j2\pi ft}\,dt = T\,e^{-j\pi fT}\operatorname{sinc}(fT)$$
+  a pure delay of $T/2$ (phase $-\pi fT$, a group delay of $T/2$ at every frequency, §4) times a gentle droop in gain. For P3 ($T = 1$ ms) at $30$ Hz the phase is $-5.4°$ and the gain is $0.9985$ of its DC value $T$; at the $500$ Hz Nyquist frequency they are $-90°$ and $0.637$ of it. In a loop that renders a spring $K$, the delay is what costs stability: a spring felt $T/2$ late, $K\,x(t - T/2) \approx Kx - K\tfrac{T}{2}\dot x$, acts as negative damping $KT/2$, the term in the haptic wall bound of [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 Rendering, Sampling & Stability]].
 - **Aliasing** is what happens when the condition fails. Content at a frequency $f$ above
   $f_s/2$ shows up in the samples at
   $$f_{alias} = |f - k f_s|$$
@@ -319,7 +336,7 @@ Frequency analysis is useful because visually similar fluctuations can require d
   ($b_0 = 1-\alpha$, $a_1 = -\alpha$), whose impulse response is $h[n] = (1-\alpha)\alpha^n$
   for $n \ge 0$: with $\alpha = 0.9$ that is $0.1, 0.09, 0.081, 0.0729, \ldots$, never exactly
   zero. Stability is no longer automatic: for $0 < \alpha < 1$ the sum $\sum_n |h[n]|$ is $1$,
-  but at $\alpha = 1.1$ the terms grow. IIR filters are cheap; phase is nonlinear. Higher-order IIR designs can be sharp but can ring or go unstable; this simplest one has a single real pole at $z=\alpha$, so for $0<\alpha<1$ it is always stable, never rings, and rolls off gently.
+  but at $\alpha = 1.1$ the terms grow. IIR filters are cheap; phase is nonlinear. Higher-order IIR designs can be sharp but can ring or go unstable; this simplest one has a single real pole at $z=\alpha$ ($z$ is the Z-transform variable of §5, and §5 derives this pole), so for $0<\alpha<1$ it is always stable, never rings, and rolls off gently.
 - **The $\alpha$ in that formula is a convention, not a quantity.** Written as above, a
   large $\alpha$ trusts the *previous output* and filters more. Many papers and lecture
   notes instead write $y[n] = \alpha x[n] + (1-\alpha)y[n-1]$, where a large $\alpha$
@@ -403,7 +420,7 @@ Frequency analysis is useful because visually similar fluctuations can require d
   controllers all speak this one language — which is why the control-theory course packet
   and this page are two views of the same object.
 
-Transforms help because they expose how a system changes each frequency and how internal dynamics can grow or decay. For example, a smoothing filter may attenuate vibration while introducing delay into the feedback used for contact control. **The reading this gives you.** Inspect both gain and phase before calling a filtered signal better. Also distinguish state-space modes from transfer-function poles: unobservable or uncontrollable modes can disappear through cancellation, so the pole–eigenvalue correspondence needs a minimal realization when used as an equality.
+Transforms help because they expose how a system changes each frequency and how internal dynamics can grow or decay. For example, a smoothing filter may attenuate vibration while introducing delay into the feedback used for contact control. **The reading this gives you.** Inspect both gain and phase before calling a filtered signal better. Also distinguish state-space modes from transfer-function poles: unobservable or uncontrollable modes (a mode the output never shows, or one the input never excites; defined with their rank tests in [[02-foundations/linear-algebra|1. Linear Algebra §5]]) can disappear through cancellation, so the pole–eigenvalue correspondence needs a minimal realization when used as an equality.
 
 ### 6. Sensor-pipeline habits (field-tested)
 
@@ -413,7 +430,7 @@ Transforms help because they expose how a system changes each frequency and how 
 - Check the spectrum before choosing a filter: name the noise before you fight it.
 
 > [!tip] Going deeper · 더 깊이
-> Oppenheim and Schafer's *Discrete-Time Signal Processing* is the standard course this page compresses. If §2 or §3 read as assertion rather than derivation, its sampling and DFT chapters are the fix.
+> Oppenheim and Schafer's *Discrete-Time Signal Processing* is the standard course this page compresses. §2 proves the sampling theorem in four steps; its sampling and DFT chapters add the convergence details and practical reconstruction filters that proof leaves out.
 
 For example, a driver may already smooth force readings before a second filter is applied in the controller. The combined stream looks clean while contact onset arrives late. Keeping the raw stream and documenting both stages makes that delay diagnosable. **The reading this gives you.** Trace the signal from acquisition to decision, including clock conversion and every transformation. A plot without its processing history cannot tell you whether the apparent smoothness came from better sensing or from removing the transient that mattered.
 
@@ -446,7 +463,7 @@ Tier B. **P3** from [[02-foundations/lab-plants|0.6]]. This page §2. The haptic
 > - The signal path as blocks in a row: the handle giving $x(t)$; an ideal sampler, drawn as a switch that closes for an instant every $T=10^{-3}\,\mathrm{s}$, with $f_s=1000\,\mathrm{Hz}$ and Nyquist $500\,\mathrm{Hz}$ under it; the sequence $x[n]=x(nT)$; a zero-order hold, drawn as a box whose output is a staircase; and the held signal that the wall law actually sees.
 > - Under the hold, the one thing it does: it holds $x[n]$ constant on $[nT,\ (n+1)T)$ and then jumps.
 > - Underneath, one time axis about $8\,\mathrm{ms}$ long so that eight ticks fit, with $x(t)$ as a smooth curve rising through the wall and a dot on it at each tick. Those dots are $x[n]$, and nothing between them exists for the controller.
-> - The ZOH staircase on the same axis, each tread flat at the height of the *previous* dot. Shade the sliver between curve and staircase on one tread and label it: the hold is late by $T/2=0.5\,\mathrm{ms}$ on average, which §5 turns into a phase lag.
+> - The ZOH staircase on the same axis, each tread flat at the height of the *previous* dot. Shade the sliver between curve and staircase on one tread and label it: the hold is late by $T/2=0.5\,\mathrm{ms}$ on average, which §2 turns into a phase lag.
 > - The wall $x_w=0.030\,\mathrm{m}$ as a dashed horizontal line across all three curves, and a circle on the first tread above it: the controller's contact begins at a tick, never at the true crossing.
 > - For item 3, faint horizontal gridlines one encoder count apart, $\Delta x=r_m\,2\pi/N=0.010\cdot2\pi/1024=61.4\,\mu\mathrm{m}$, with the dots redrawn snapped to the nearest line. Label the two steps so they cannot be confused: $T$ along time, set by the clock, and $\Delta x$ along space, set by the encoder.
 > - Beside the grid, what one count costs in force on this wall, $k_w\,\Delta x=400\times61.4\,\mu\mathrm{m}=0.025\,\mathrm{N}$; at the bottom, the speed at which one new count appears per tick, $\Delta x/T=61.4\,\mathrm{mm/s}$. Slower than that, some ticks report no motion, so a velocity from differenced positions reads zero and then jumps — the quantization noise §4's filtering handles, even for $30\,\mathrm{Hz}$ contact sampled $33.3$ times per cycle.
@@ -470,7 +487,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 필터 설계 기초, 그리고 제어의 전달함수로 가는 다리.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1, §2 — 실제로 무는 것은 샘플링 계약과 에일리어싱이다 — 그다음 §6의 현장 습관. §3~§5는 기계장치이고, 논문이 주파수 영역에서 무언가 할 때 펴라.
+> 먼저 그림, §1, §2 — 실제로 무는 것은 샘플링 계약, 에일리어싱, 영차 홀드다 — 그다음 §6의 현장 습관. §2의 네 단계 샘플링 정리 증명은 두 번째 읽기에서 본다. §3~§5는 기계장치이고, 논문이 주파수 영역에서 무언가 할 때 펴라.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -523,7 +540,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   <polygon points="98.0,292.0 99.9,291.1 101.8,290.2 103.7,289.4 105.6,288.5 107.5,287.6 109.4,286.6 111.3,285.7 113.2,284.8 115.1,283.9 117.0,283.0 118.9,282.0 120.8,281.1 122.7,280.1 124.6,279.2 126.5,278.2 128.4,277.3 130.3,276.3 132.2,275.3 134.1,274.3 136.0,273.3 136.0,292.0 98.0,292.0" fill="currentColor" fill-opacity="0.28" stroke="none"/>
   <line x1="118.9" y1="285.0" x2="94.2" y2="146.7" stroke="currentColor" stroke-width="0.9" opacity="0.7"/>
   <text x="66.0" y="128.7" fill="currentColor">홀드는 평균 T/2 = 0.5 ms 늦다</text>
-  <text x="66.0" y="142.7" fill="currentColor" opacity="0.85">(§5에서 위상 지연이 된다)</text>
+  <text x="66.0" y="142.7" fill="currentColor" opacity="0.85">(§2에서 위상 지연이 된다)</text>
   <g fill="currentColor"><circle cx="60.0" cy="308.2" r="3.3"/><circle cx="98.0" cy="292.0" r="3.3"/><circle cx="136.0" cy="273.3" r="3.3"/><circle cx="174.0" cy="252.8" r="3.3"/><circle cx="212.0" cy="231.2" r="3.3"/><circle cx="250.0" cy="209.3" r="3.3"/><circle cx="288.0" cy="187.7" r="3.3"/><circle cx="326.0" cy="167.4" r="3.3"/></g>
   <g fill="none" stroke="currentColor" stroke-width="1.4"><path d="M60.0 301.0L65.0 306.0L60.0 311.0L55.0 306.0z"/><path d="M98.0 301.0L103.0 306.0L98.0 311.0L93.0 306.0z"/><path d="M136.0 257.0L141.0 262.0L136.0 267.0L131.0 262.0z"/><path d="M174.0 257.0L179.0 262.0L174.0 267.0L169.0 262.0z"/><path d="M212.0 213.0L217.0 218.0L212.0 223.0L207.0 218.0z"/><path d="M250.0 213.0L255.0 218.0L250.0 223.0L245.0 218.0z"/><path d="M288.0 169.0L293.0 174.0L288.0 179.0L283.0 174.0z"/><path d="M326.0 169.0L331.0 174.0L326.0 179.0L321.0 174.0z"/></g>
   <ellipse cx="269.0" cy="209.3" rx="26" ry="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
@@ -553,7 +570,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   <text x="14.0" y="422.0" fill="currentColor" opacity="0.95">위치를 차분해 얻은 속도는 0이었다가 61.4 mm/s로 튄다.</text>
 </svg>
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3**, 곧 $1\,\mathrm{kHz}$ 서보로 도는 햅틱 핸들에서는 이상 샘플러가 $T=1\,\mathrm{ms}$마다 $x[n]=x(nT)$를 읽고(나이퀴스트 $500\,\mathrm{Hz}$) 영차 홀드가 그 표본을 평균 $T/2=0.5\,\mathrm{ms}$ 늦은 계단으로 바꾸므로, 벽($x_w=0.030\,\mathrm{m}$)과의 접촉은 참된 교차점이 아니라 눈금($5\,\mathrm{ms}$)에서 시작한다. 흐린 수평 격자는 엔코더 한 카운트 $\Delta x=61.4\,\mu\mathrm{m}$이고, 벽 안에서 한 카운트는 가장 작은 힘 단위인 $k_w\,\Delta x=0.025\,\mathrm{N}$에 해당한다. 두 격자는 눈금마다 새 카운트 하나가 생기는 $\Delta x/T=61.4\,\mathrm{mm/s}$에서 만나는데, 이 핸들은 $30.7\,\mathrm{mm/s}$를 넘지 않으므로 한 눈금 걸러 움직임이 없다고 보고하고, 위치를 차분해 얻은 속도는 $0$이었다가 $61.4\,\mathrm{mm/s}$로 튄다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3**, 곧 $1\,\mathrm{kHz}$ 서보로 도는 햅틱 핸들에서는 이상 샘플러가 $T=1\,\mathrm{ms}$마다 $x[n]=x(nT)$를 읽고(나이퀴스트 $500\,\mathrm{Hz}$; §2) 영차 홀드(§2에서 정의·유도)가 그 표본을 평균 $T/2=0.5\,\mathrm{ms}$ 늦은 계단으로 바꾸므로, 벽($x_w=0.030\,\mathrm{m}$)과의 접촉은 참된 교차점이 아니라 눈금($5\,\mathrm{ms}$)에서 시작한다. 흐린 수평 격자는 엔코더 한 카운트 $\Delta x=61.4\,\mu\mathrm{m}$이고, 벽 안에서 한 카운트는 가장 작은 힘 단위인 $k_w\,\Delta x=0.025\,\mathrm{N}$에 해당한다. 두 격자는 눈금마다 새 카운트 하나가 생기는 $\Delta x/T=61.4\,\mathrm{mm/s}$에서 만나는데, 이 핸들은 $30.7\,\mathrm{mm/s}$를 넘지 않으므로 한 눈금 걸러 움직임이 없다고 보고하고, 위치를 차분해 얻은 속도는 $0$이었다가 $61.4\,\mathrm{mm/s}$로 튄다.
 
 ### 1. 신호, 시스템, 합성곱
 
@@ -630,9 +647,26 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   **나이퀴스트 율** $2B$보다 커야 한다.
   $$f_s > 2B$$
   그러면 신호는 샘플에서 *완벽히* 복원된다. 샘플링은 스펙트럼 복사본을 $f_s$ 간격으로
-  만드는데, 이 조건에서는 복사본끼리 겹치지 않기 때문이다. 예: 20 kHz로 대역 제한된 오디오는
+  만드는데, 이 조건에서는 복사본끼리 겹치지 않기 때문이다(아래에서 증명). 예: 20 kHz로 대역 제한된 오디오는
   $f_s > 40$ kHz가 필요하고, 그래서 CD 오디오가 44.1 kHz를 쓴다.
+- **정리가 성립하는 이유 — 네 단계 증명.** 연속시간 푸리에 변환이 필요하다. [[02-foundations/engineering-math|0.5 §7]]의 "거꾸로 돌려 평균하기"를 시간에 대한 적분으로 한 것이다(§3의 주파수 응답은 이것의 수열 판이다):
+  $$X_c(f) = \int_{-\infty}^{\infty} x_c(t)\,e^{-j2\pi ft}\,dt, \qquad x_c(t) = \int_{-\infty}^{\infty} X_c(f)\,e^{j2\pi ft}\,df$$
+  "$B$로 대역 제한"은 $|f| > B$에서 $X_c(f) = 0$이라는 뜻이다.
+  *1단계, 샘플은 접힌 스펙트럼만 본다.* 역변환에 $t = nT_s$를 넣고 주파수 축을 폭 $f_s$의 띠로 자른다. $|f'| \le f_s/2$, $k$는 임의의 정수로 $f = f' + kf_s$라 쓴다. $e^{j2\pi kf_s nT_s} = e^{j2\pi kn} = 1$이므로
+  $$x[n] = \int_{-f_s/2}^{f_s/2} \Big(\sum_{k=-\infty}^{\infty} X_c(f' + kf_s)\Big)\,e^{j2\pi f' nT_s}\,df'$$
+  이다. 그래서 샘플은 $f_s$의 모든 배수만큼 옮긴 복사본들의 합을 통해서만 $X_c$에 의존한다. 위에서 말한 "스펙트럼 복사본"이 이것이다.
+  *2단계, $f_s > 2B$이면 복사본이 띠를 비켜 간다.* $|f'| \le f_s/2$이고 $k \ne 0$이면 $|f' + kf_s| \ge f_s/2 > B$이므로, 그곳에서는 $k = 0$ 말고 모든 복사본이 0이고 괄호는 $X_c(f')$ 자체다. 그러면 샘플은 그 띠 위에서 $X_c$의 푸리에 급수 계수이고, 계수가 함수를 정한다: $|f| < f_s/2$에서 $X_c(f) = T_s\sum_n x[n]\,e^{-j2\pi fnT_s}$.
+  *3단계, 신호를 다시 짓는다.* 그것을 역변환에 되넣는다. 샘플 $n$은 $x[n]\,T_s\int_{-f_s/2}^{f_s/2} e^{j2\pi f(t - nT_s)}\,df$를 보태고, 이 적분은 sinc 펄스가 된다:
+  $$x_c(t) = \sum_n x[n]\,\operatorname{sinc}\Big(\frac{t - nT_s}{T_s}\Big), \qquad \operatorname{sinc}(u) = \frac{\sin \pi u}{\pi u}$$
+  각 펄스는 자기 샘플 순간에 1, 다른 모든 샘플 순간에 0이므로, 합은 모든 샘플을 지나며 그 사이를 채운다. 이것이 정리의 "완벽히 복원"이고, 주파수 영역에서는 차단 주파수 $f_s/2$인 이상적 저역 통과 필터(§4)다.
+  *4단계, 실패는 곧 에일리어싱이다.* $f_s \le 2B$이면 $k \ne 0$인 어떤 복사본이 띠 안에 들어와 $X_c(f')$에 더해진다. 주파수 $f$의 음이 $f - kf_s$에서 세어지고, 이것이 아래의 에일리어싱 공식이다.
+  *수치 확인:* $1.3$ Hz와 $2.9$ Hz 음을 $f_s = 10$ Hz로 샘플링하면($2B = 5.8 < 10$) $t = 0.5$ s에서 $-0.630653$으로 복원되어 참값과 소수 여섯째 자리까지 같다($t$에 가장 가까운 샘플 8,001개를 합함). 같은 샘플링 주파수의 $7$ Hz 음은 $t = 0.123$ s에서 $-0.680$으로 복원되는데, 이것은 에일리어스인 $3$ Hz 코사인의 값이고 참 $7$ Hz 값은 $+0.642$다.
 - **계산: $1\,\mathrm{kHz}$의 장치 P3.** 햅틱 서보는 $T=10^{-3}\,\mathrm{s}$이므로 $f_s=1000\,\mathrm{Hz}$, 나이퀴스트 $500\,\mathrm{Hz}$([[02-foundations/lab-plants|0.6]]). $30\,\mathrm{Hz}$ 아래 접촉은 정리 안쪽이고 샘플링이 병목이 아니다. 엔코더 한 카운트 $\Delta x=61.4\,\mu\mathrm{m}$은 공간 양자화이지 $T_s$가 아니다. $N$을 올리면 공간이, $f_s$를 올리면 시간이 줄어든다. 과제는 이 샘플러+ZOH 그림이다.
+- **영차 홀드(zero-order hold, ZOH).** 그림의 계단이 그리는 것, 곧 샘플에서 연속 신호로 돌아가는 단계다. 각 샘플을 다음 샘플까지 유지한다:
+  $$x_h(t) = x[n] \quad \text{for } nT \le t < (n+1)T$$
+  그래서 출력은 조각마다 일정하고, 눈금마다 튀며, 미래 샘플을 쓰지 않는다(인과적이다). DAC나 서보가 실제로 하는 복원이 이것이고, 아직 도착하지 않은 샘플이 필요한 위의 sinc 합을 대신한다. *왜 평균 $T/2$ 늦는가:* 구간 $n$ 안의 시각 $t$에서 유지되는 값은 $x(nT)$, 곧 $t - nT$초 묵은 측정이고, 그 나이는 $0$에서 $T$까지 고르게 퍼지므로 평균 $T/2$다. 경사 $x = vt$라면 계단은 평균 $T/2$ 늦게 옮긴 경사다. 주파수 응답도 같은 것을 정확히 말한다. 홀드의 임펄스 응답은 폭 $T$의 단위 펄스이고, 그 변환은
+  $$H_{\text{zoh}}(f) = \int_0^T e^{-j2\pi ft}\,dt = T\,e^{-j\pi fT}\operatorname{sinc}(fT)$$
+  로, 순수한 $T/2$ 지연(위상 $-\pi fT$, 모든 주파수에서 군지연 $T/2$, §4)에 완만한 이득 처짐을 곱한 것이다. P3($T = 1$ ms)에서 $30$ Hz의 위상은 $-5.4°$, 이득은 DC 값 $T$의 $0.9985$배이고, $500$ Hz 나이퀴스트 주파수에서는 $-90°$와 그 $0.637$배다. 스프링 $K$를 렌더링하는 루프에서 안정성을 깎는 것은 이 지연이다: $T/2$ 늦게 느끼는 스프링 $K\,x(t - T/2) \approx Kx - K\tfrac{T}{2}\dot x$는 음의 감쇠 $KT/2$로 작용하고, 이것이 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]]의 햅틱 벽 한계식에 들어 있는 항이다.
 - **에일리어싱**은 조건이 깨질 때 벌어지는 일이다. $f_s/2$ 위의 주파수 $f$ 성분은 샘플에서
   $$f_{alias} = |f - k f_s|$$
   에 나타난다. $k$는 $f/f_s$에 가장 가까운 정수이고, 그래서 $f_{alias}$가 $0$과 $f_s/2$
@@ -747,7 +781,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   ($b_0 = 1-\alpha$, $a_1 = -\alpha$)이고, 임펄스 응답은 $n \ge 0$에서
   $h[n] = (1-\alpha)\alpha^n$이다. $\alpha = 0.9$면 $0.1, 0.09, 0.081, 0.0729, \ldots$로
   정확히 0이 되는 일이 없다. 안정성도 더는 저절로 보장되지 않는다. $0 < \alpha < 1$이면
-  $\sum_n |h[n]|$이 $1$이지만 $\alpha = 1.1$이면 항이 커진다. IIR은 싸고 위상이 비선형. 고차 IIR 설계는 날카로울 수 있지만 링잉·불안정이 가능하다. 이 가장 단순한 IIR은 $z=\alpha$에 실수 극점 하나뿐이라 $0<\alpha<1$이면 항상 안정하고, 링잉이 없으며, 완만하게 감쇠한다.
+  $\sum_n |h[n]|$이 $1$이지만 $\alpha = 1.1$이면 항이 커진다. IIR은 싸고 위상이 비선형. 고차 IIR 설계는 날카로울 수 있지만 링잉·불안정이 가능하다. 이 가장 단순한 IIR은 $z=\alpha$에 실수 극점 하나뿐이라($z$는 §5의 Z-변환 변수이고, 이 극점은 §5에서 유도한다) $0<\alpha<1$이면 항상 안정하고, 링잉이 없으며, 완만하게 감쇠한다.
 - **그 식의 $\alpha$는 양이 아니라 규약이다.** 위처럼 쓰면 큰 $\alpha$가 *직전 출력*을
   더 믿어 더 많이 거른다. 많은 논문과 강의안은 반대로 $y[n] = \alpha x[n] + (1-\alpha)y[n-1]$로
   써서, 큰 $\alpha$가 *새 측정*을 더 믿어 덜 거른다. 둘은 $\alpha$를 $1-\alpha$로 바꾼 같은
@@ -819,7 +853,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   $h[n]$에 $\alpha^n$ 항을 보태고, 그 항은 $|\alpha| < 1$일 때만 합산 가능하기 때문이다. 필터, 플랜트, 제어기가 전부 이 하나의 언어를 쓴다 — 제어이론 교재와
   이 페이지가 같은 대상의 두 시점인 이유다.
 
-변환은 주파수별 변화와 내부 동역학의 성장·감쇠를 드러낸다. 평활 필터는 진동을 줄이면서 접촉 제어 피드백에 지연을 추가할 수 있다. **여기서 얻는 독법.** 필터 신호가 더 좋다고 하기 전에 이득과 위상을 함께 본다. 상태 공간 모드와 전달함수 극점도 구분한다. 관측·제어할 수 없는 모드는 상쇄로 사라질 수 있어 극점과 고유값의 동일성에는 최소 실현 조건이 필요하다.
+변환은 주파수별 변화와 내부 동역학의 성장·감쇠를 드러낸다. 평활 필터는 진동을 줄이면서 접촉 제어 피드백에 지연을 추가할 수 있다. **여기서 얻는 독법.** 필터 신호가 더 좋다고 하기 전에 이득과 위상을 함께 본다. 상태 공간 모드와 전달함수 극점도 구분한다. 관측·제어할 수 없는 모드(출력에 전혀 드러나지 않는 모드, 또는 입력이 전혀 들뜨게 하지 못하는 모드; 계수 판정과 함께 [[02-foundations/linear-algebra|1. 선형대수 §5]]에서 정의)는 상쇄로 사라질 수 있어 극점과 고유값의 동일성에는 최소 실현 조건이 필요하다.
 
 ### 6. 센서 파이프라인 습관 (현장 검증됨)
 
@@ -829,7 +863,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 - 필터를 고르기 전에 스펙트럼부터 봐라: 싸울 노이즈의 이름부터 알아내라.
 
 > [!tip] 더 깊이 · Going deeper
-> 이 페이지가 압축한 표준 강의는 Oppenheim·Schafer의 *Discrete-Time Signal Processing*이다. §2나 §3이 유도가 아니라 단언처럼 읽혔다면 그 책의 샘플링·DFT 장이 답이다.
+> 이 페이지가 압축한 표준 강의는 Oppenheim·Schafer의 *Discrete-Time Signal Processing*이다. §2가 샘플링 정리를 네 단계로 증명한다. 그 책의 샘플링·DFT 장은 그 증명이 생략한 수렴의 세부와 실제 복원 필터를 더한다.
 
 드라이버가 힘 측정을 이미 평활한 뒤 제어기에서 다시 필터링할 수 있다. 신호는 깨끗해도 접촉 시작이 늦게 도착한다. 원신호와 두 처리 단계를 남겨야 지연을 진단할 수 있다. **여기서 얻는 독법.** 취득에서 결정까지 시계 변환과 모든 처리를 따라간다. 처리 이력이 없는 그림으로는 부드러움이 더 좋은 센싱에서 왔는지 중요한 과도응답을 없애서 생겼는지 알 수 없다.
 
@@ -861,7 +895,7 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 이 페이지 §2. 햅틱 �
 > - 신호 경로를 한 줄의 블록으로: $x(t)$를 내는 핸들, $T=10^{-3}\,\mathrm{s}$마다 순간적으로 닫히는 스위치로 그린 이상 샘플러(아래에 $f_s=1000\,\mathrm{Hz}$와 나이퀴스트 $500\,\mathrm{Hz}$), 수열 $x[n]=x(nT)$, 출력이 계단인 상자로 그린 영차 홀드, 그리고 벽 법칙이 실제로 보는 유지된 신호.
 > - 홀드 아래에는 그 블록이 하는 일 하나: $x[n]$을 $[nT,\ (n+1)T)$ 동안 일정하게 유지하고 그다음 튄다.
 > - 그 아래 시간축 하나, 눈금 여덟 개가 들어가도록 약 $8\,\mathrm{ms}$. $x(t)$는 벽을 가로지르며 올라가는 매끄러운 곡선이고, 눈금마다 그 위에 점을 찍는다. 그 점들이 $x[n]$이고, 제어기에게 그 사이는 존재하지 않는다.
-> - 같은 축 위의 ZOH 계단, 각 디딤판은 *직전* 점의 높이에서 평평하다. 디딤판 하나에서 곡선과 계단 사이의 조각을 칠하고 이름을 붙인다. 홀드는 평균 $T/2=0.5\,\mathrm{ms}$ 늦고, §5가 그것을 위상 지연으로 바꾼다.
+> - 같은 축 위의 ZOH 계단, 각 디딤판은 *직전* 점의 높이에서 평평하다. 디딤판 하나에서 곡선과 계단 사이의 조각을 칠하고 이름을 붙인다. 홀드는 평균 $T/2=0.5\,\mathrm{ms}$ 늦고, §2가 그것을 위상 지연으로 바꾼다.
 > - 벽($x_w=0.030\,\mathrm{m}$)은 세 곡선을 모두 가로지르는 수평 점선으로, 그보다 높은 첫 디딤판에는 동그라미. 제어기의 접촉은 언제나 눈금에서 시작하지 참된 교차점에서 시작하지 않는다.
 > - 3번을 위해 엔코더 한 카운트($\Delta x=r_m\,2\pi/N=0.010\cdot2\pi/1024=61.4\,\mu\mathrm{m}$) 간격으로 흐린 수평 격자선을 긋고 점들을 가장 가까운 선에 스냅해 다시 찍는다. 두 스텝은 혼동할 수 없도록 이름을 붙인다. 시간을 따라 시계가 정하는 $T$, 공간을 따라 엔코더가 정하는 $\Delta x$.
 > - 격자 옆에는 이 벽에서 한 카운트가 힘으로 얼마인지, $k_w\,\Delta x=400\times61.4\,\mu\mathrm{m}=0.025\,\mathrm{N}$. 맨 아래에는 눈금마다 새 카운트 하나가 생기는 속도 $\Delta x/T=61.4\,\mathrm{mm/s}$. 그보다 느리면 어떤 눈금은 움직임을 보고하지 않으므로 위치를 차분한 속도가 0이었다가 튄다. 한 주기에 $33.3$ 샘플이 들어가는 $30\,\mathrm{Hz}$ 접촉에서도 생기는, §4의 필터링이 다루는 양자화 잡음이다.

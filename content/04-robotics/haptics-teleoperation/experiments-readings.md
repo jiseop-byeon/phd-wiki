@@ -15,6 +15,9 @@ mastery-when: "Master psychometric/statistical models and protocol validation wh
 
 *The research-practice end of the haptics track: a reading map and a protocol checklist. It keeps plant **P3** only as the stimulus generator [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]] made it.*
 
+> [!note] First pass · 처음이라면
+> Read the Running object and look at the picture: one staircase record, its eight reversals, and the one line six of them average to. Then read §2, the protocol and its three terms with the estimand first, and work §6, the Worked case, which turns the record into a threshold with a named criterion and sets it beside 24.1's JND. §1 and §3 are short and worth one pass. §4 is the reading list you come back to, and §5 only records how this wiki chose its source materials, so skip it on a first read.
+
 ### Running object · 이 페이지의 대상
 
 This page is a reading map, so its object is not a machine but a **record**: one frozen staircase run, defined here and unchanged afterwards. **The trial-by-trial responses below are illustrative values this page defines so the arithmetic is exact. They are nobody's measured data.**
@@ -40,79 +43,9 @@ This page is a reading map, so its object is not a machine but a **record**: one
 | 11 | 0.45 | W | 23 | 0.50 | C |
 | 12 | 0.50 | C | 24 | 0.50 | C |
 
-§6 shows it as a picture and §7 converts it into a threshold, a JND, and a named criterion — which is the whole point of §2's insistence on an estimand, done once on a real record.
+The picture below shows it and §6 converts it into a threshold, a JND, and a named criterion — which is the whole point of §2's insistence on an estimand, done once on a real record.
 
-### 1. From an idea to a claim
-
-Write the causal chain before building the interface:
-
-$$\text{actuator command}\rightarrow\text{delivered mechanical stimulus}\rightarrow\text{perception/action}\rightarrow\text{task outcome}.$$
-
-Each arrow needs a measurement. A motor command is not a measured skin stimulus; a questionnaire is not controller performance; faster completion does not identify which cue caused the improvement. A strong study combines physical calibration, behavioral outcomes, and subjective reports.
-
-### 2. Minimal protocol
-
-1. **Question and estimand:** “Does shear cue A reduce peak contact force relative to vibration B for novice operators?” is testable; “Is haptics better?” is not. The estimand is the precise quantity the study is designed to estimate, here the mean reduction in peak contact force.
-2. **Participants and exclusions:** population, handedness if relevant, sensorimotor conditions, prior experience, stopping criteria.
-3. **Conditions:** feedback mode, delay, gain, task difficulty, and any secondary workload.
-4. **Design:** within-subject designs reduce between-person variance; counterbalance order and include enough practice to separate learning from treatment.
-5. **Primary outcome:** choose before seeing results—peak force, path error, success, time, detection threshold, or calibrated confidence.
-6. **Instrumentation:** synchronize haptic state, command, measured force, events, video, and survey identifiers; document clocks and missing packets.
-7. **Analysis unit:** trials nested within participants are not independent participants. Report participant count, repetitions, exclusions, uncertainty, and effect size.
-8. **Ethics and safety:** informed consent, voluntary withdrawal, privacy/de-identification, fatigue breaks, hardware stops, and incident handling belong in the design, not an appendix added later.
-
-**Three terms this page leans on, defined.** §7 uses all three on the running object.
-
-- **Estimand** — the *quantity a study is designed to estimate*, written down before the data exist, and made of three parts: the population it refers to, the measurement it is built from, and the contrast or criterion that pins it to one number. *Example*: "the mean reduction in peak contact force, in newtons, for novice operators, cue A against cue B". *Non-example*: "whether haptics helps", which names no quantity — and, more subtly, "the JND", which names a measurement but leaves out the criterion, so §7 Step 5 can produce two different numbers for that one word. It matters because design, sample size and analysis are all choices *about* the estimand, so a study without one cannot be underpowered or overpowered, only unfalsifiable.
-- **Adaptive staircase** — a *procedure*, not a statistic: the level presented on the next trial is chosen from the responses already given, by a rule fixed in advance. Its defining parts are the start level, the step size, the up/down rule, and the stopping condition; change any one and you have a different procedure. *Example*: the 2-down/1-up run of the running object. *Non-example*: the method of constant stimuli in [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]], where the levels are fixed before the session and the participant's answers never move them. It matters because the rule, not the experimenter's judgement, decides *which point of the psychometric curve* the run settles on — the one-line derivation in §7 Step 3.
-- **Reversal** — a *trial*: the one at which the direction of travel changes, from descending to ascending or back. *Non-example*: a wrong answer during a run that was already ascending, which continues the direction and is not a reversal, and a correct answer that is only the first of a needed pair. It matters because the threshold is averaged over reversals rather than over trials, so it is the reversal count that says whether a run was long enough — which is exactly what the problem set's twelve-trial record fails.
-
-NASA-TLX measures six self-reported workload dimensions—mental, physical, temporal demand, perceived performance, effort, and frustration. It complements objective data; it does not reveal the physical cause of workload. Use the official scoring procedure appropriate to raw or weighted TLX and report which variant was used.
-
-### 3. Evidence ladder
-
-| Evidence | Supports | Does not yet support |
-|---|---|---|
-| actuator bench response | delivered device dynamics | human detectability or usefulness |
-| psychophysical threshold | cue detectability under tested conditions | better task control |
-| controlled task improvement | causal effect in that protocol | field deployment generality |
-| representative workload study | performance under a closer context | long-term adoption or safety |
-| field/longitudinal study | operational behavior over time | mechanism without additional controls |
-
-### 4. Annotated reading sequence
-
-1. **Hannaford & Okamura, “Haptics,” Springer Handbook of Robotics, 2nd ed., 2016.** The compact field map: human sensing → device design → rendering → stability → tactile displays. [Official chapter page](https://handbookofrobotics.org/view-chapter/42), [DOI](https://doi.org/10.1007/978-3-319-32552-1_42).
-2. **Hayward & MacLean, “Do It Yourself Haptics: Part I,” IEEE RAM 14(4), 2007.** The best hardware-to-software bridge: transducers, impedance/admittance, DC motors, mechanisms, quantization, real-time loops, and practical limitations. [DOI](https://doi.org/10.1109/M-RA.2007.907921).
-3. **MacLean, “Haptic Interaction Design for Everyday Interfaces,” RHFE 4(1), 2008.** Read for active touch, multisensory attention, haptic icons, shared control, and why technical realism is not the same as usefulness. [DOI](https://doi.org/10.1518/155723408X342826).
-4. **Weir & Colgate, “Stability of Haptic Displays.”** Read the virtual-wall energy derivation, Z-width, quantization, virtual coupling, and PO/PC sections; treat later circuit implementations as specialized depth.
-5. **Gillespie & Cutkosky, “Stable User-Specific Haptic Rendering of the Virtual Wall,” ASME IMECE, 1996.** A sampled, switched wall is not merely an LTI spring. The half-sample predictor and threshold-crossing correction depend on a limited high-frequency human/device model; the early experiment was qualitative. [DOI](https://doi.org/10.1115/IMECE1996-0362).
-6. **Hannaford & Ryu, “Time-Domain Passivity Control of Haptic Interfaces,” IEEE TRA 18(1), 2002.** Follow the power sign, energy observer, and adaptive dissipative element. The method avoids an exact environment model but still faces noise, zero velocity, saturation, and performance tradeoffs. [DOI](https://doi.org/10.1109/70.988969).
-7. **Raju, Verghese & Sheridan, “Design Issues in 2-Port Network Models of Bilateral Remote Manipulation,” ICRA 1989.** A classic bridge from desired port impedances and human/task models to stable gain selection. Its guarantee is over the specified passive termination class and model assumptions. [DOI](https://doi.org/10.1109/ROBOT.1989.100162).
-8. **Colonnese & Okamura, “Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping,” IJRR 35(9):1103–1120, 2016** (online 2015). The one paper that puts sampling, position quantization, time delay, and the velocity-estimate low-pass filter into a single one-DOF model and derives the tradeoffs between them, including sufficient conditions for quantization-error passivity and necessary conditions for the absence of (malicious- and uncoupled-touch) limit cycles. Verified on a Phantom Premium 1.5; the abstract states no numerical result. Cite the volume, not the year alone — it appeared online in 2015 and in print in 2016. [DOI](https://doi.org/10.1177/0278364915596234).
-9. **Salisbury, Conti & Barbagli, "Haptic rendering: introductory concepts," IEEE CG&A 24(2), 2004.** The survey that frames rendering as a loop of collision, force computation and actuation; read it before any rendering paper. [DOI](https://doi.org/10.1109/MCG.2004.1274058).
-10. **Ruspini, Kolarov & Khatib, "The haptic display of complex graphical environments," SIGGRAPH 1997; Zilles & Salisbury, "A constraint-based god-object method for haptic display," IROS 1995.** The two proxy papers. Ruspini names the three failures of penalty rendering; Zilles and Salisbury introduced the constrained point two years earlier. [DOI](https://doi.org/10.1145/258734.258878) · [DOI](https://doi.org/10.1109/IROS.1995.525876).
-11. **Kuchenbecker, Fiene & Niemeyer, "Improving contact realism through event-based haptic feedback," IEEE TVCG 12(2), 2006.** Read with its WHC 2005 conference version, which carries the nine-subject realism study; note that realism was rated, not measured by task. [DOI](https://doi.org/10.1109/TVCG.2006.32) · [DOI](https://doi.org/10.1109/WHC.2005.52).
-12. **Richard & Cutkosky, "Friction modeling and display in haptic applications involving user performance," ICRA 2002.** The Karnopp implementation plus a twenty-subject Fitts study showing moderate friction helps and high stiction hurts. [DOI](https://doi.org/10.1109/ROBOT.2002.1013425).
-
-The algorithms in items 9–12 — penalty and proxy rendering, event-based transients and friction display — are worked through in [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 Haptic Rendering Algorithms]].
-
-### 5. How the supplied course materials were selected
-
-| Local material class | Public learning use |
-|---|---|
-| syllabus and lecture decks | track scope, prerequisite map, concepts, and version caveats |
-| MATLAB templates and Jacobian script | original derivations and implementation checklist; no submitted solution copied |
-| Hapkit slides and mechanical files | transmission and sensing reasoning in 24.3–24.4; build instructions and original files are not published |
-| assignments and student drafts | identify required competencies and common mistakes; no answer key or personal work published |
-| project options/rubric | transferable project-design and evaluation criteria; private contacts and unverified claims excluded |
-| consent, recruitment, pre/post surveys | ethics, eligibility, workload, privacy, and measurement design; no form copied or treated as a reusable approval |
-| licensed readings | annotated concepts and official DOI/publisher links; PDFs remain private |
-
-The packet covers the first half of a full haptics course particularly well. It does not contain all later lecture/lab materials named in the syllabus—such as the complete CHAI3D, advanced teleoperation, and ROS sequence—so this guide does not reconstruct those lectures or claim to cover them.
-
-**Worked: the three readings the homework asks.** “Haptics is better” with TLX and time down has no named estimand and skipped the skin stimulus. $n=600$ is nested trials; the unit is 20 people. Bench response is not detectability; task improvement is not field generality.
-
-### 6. The picture
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="A 24-trial two-down one-up staircase on 0.05 N rows with filled markers for correct and open ones for wrong, eight numbered reversals of which the first two are struck out, a dashed line at 0.5167 N labelled 70.7% correct, and the causal chain with only the stimulus-to-perception arrow ticked.">
   <circle cx="58" cy="17" r="3.8" fill="currentColor"/>
@@ -123,7 +56,7 @@ The packet covers the first half of a full haptics course particularly well. It 
   <text x="208.7" y="21" font-size="11" fill="currentColor">reversal</text>
   <circle cx="279.1" cy="17" r="7.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
   <line x1="270.1" y1="26" x2="288.1" y2="8" stroke="currentColor" stroke-width="1.5"/>
-  <text x="292.1" y="21" font-size="11" fill="currentColor">discarded (§7 Step 2)</text>
+  <text x="292.1" y="21" font-size="11" fill="currentColor">discarded (§6 Step 2)</text>
   <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.28"><line x1="53" y1="200" x2="403" y2="200"/><line x1="53" y1="170" x2="403" y2="170"/><line x1="53" y1="140" x2="403" y2="140"/><line x1="53" y1="110" x2="403" y2="110"/><line x1="53" y1="80" x2="403" y2="80"/><line x1="53" y1="50" x2="403" y2="50"/></g>
   <g font-size="11" fill="currentColor" text-anchor="end" opacity="0.8"><text x="49" y="204">0.40</text><text x="49" y="174">0.45</text><text x="49" y="144">0.50</text><text x="49" y="114">0.55</text><text x="49" y="84">0.60</text><text x="49" y="54">0.65</text></g>
   <text x="14" y="38" font-size="11.5" fill="currentColor" opacity="0.9">ΔF (N)</text>
@@ -172,9 +105,79 @@ The packet covers the first half of a full haptics course particularly well. It 
   <g font-size="11" fill="currentColor" text-anchor="middle"><text x="493" y="292.2">task</text><text x="493" y="305.8">outcome</text></g>
 </svg>
 
-The frozen 24-trial 2-down/1-up run on $0.05\,\mathrm{N}$ rows: filled markers are correct trials and open ones wrong, so the track descends only after two filled markers in a row and rises after any open one. Its eight reversals are circled and numbered, the first two struck out because §7 Step 2 discards them, and the dashed line at the mean of the other six, $0.5167\,\mathrm{N}$, carries the criterion it estimates: $70.7\%$ correct on the $5.00\,\mathrm{N}$ pedestal. Below, §1's causal chain has a tick under the one arrow this plot measures, from the delivered stimulus to perception.
+The frozen 24-trial 2-down/1-up run on $0.05\,\mathrm{N}$ rows: filled markers are correct trials and open ones wrong, so the track descends only after two filled markers in a row and rises after any open one. Its eight reversals are circled and numbered, the first two struck out because §6 Step 2 discards them, and the dashed line at the mean of the other six, $0.5167\,\mathrm{N}$, carries the criterion it estimates, derived in §6 Step 3: $70.7\%$ correct on the $5.00\,\mathrm{N}$ pedestal. Below, §1's causal chain has a tick under the one arrow this plot measures, from the delivered stimulus to perception.
 
-### 7. Worked case: a staircase record becomes a threshold, and a JND
+### 1. From an idea to a claim
+
+Write the causal chain before building the interface:
+
+$$\text{actuator command}\rightarrow\text{delivered mechanical stimulus}\rightarrow\text{perception/action}\rightarrow\text{task outcome}.$$
+
+Each arrow needs a measurement. A motor command is not a measured skin stimulus; a questionnaire is not controller performance; faster completion does not identify which cue caused the improvement. A strong study combines physical calibration, behavioral outcomes, and subjective reports.
+
+### 2. Minimal protocol
+
+1. **Question and estimand:** “Does shear cue A reduce peak contact force relative to vibration B for novice operators?” is testable; “Is haptics better?” is not. The estimand is the precise quantity the study is designed to estimate, here the mean reduction in peak contact force.
+2. **Participants and exclusions:** population, handedness if relevant, sensorimotor conditions, prior experience, stopping criteria.
+3. **Conditions:** feedback mode, delay, gain, task difficulty, and any secondary workload.
+4. **Design:** within-subject designs reduce between-person variance; counterbalance order and include enough practice to separate learning from treatment.
+5. **Primary outcome:** choose before seeing results—peak force, path error, success, time, detection threshold, or calibrated confidence.
+6. **Instrumentation:** synchronize haptic state, command, measured force, events, video, and survey identifiers; document clocks and missing packets.
+7. **Analysis unit:** trials nested within participants are not independent participants. Report participant count, repetitions, exclusions, uncertainty, and effect size.
+8. **Ethics and safety:** informed consent, voluntary withdrawal, privacy/de-identification, fatigue breaks, hardware stops, and incident handling belong in the design, not an appendix added later.
+
+**Three terms this page leans on, defined.** §6 uses all three on the running object.
+
+- **Estimand** — the *quantity a study is designed to estimate*, written down before the data exist, and made of three parts: the population it refers to, the measurement it is built from, and the contrast or criterion that pins it to one number. *Example*: "the mean reduction in peak contact force, in newtons, for novice operators, cue A against cue B". *Non-example*: "whether haptics helps", which names no quantity — and, more subtly, "the JND", which names a measurement but leaves out the criterion, so §6 Step 5 can produce two different numbers for that one word. It matters because design, sample size and analysis are all choices *about* the estimand, so a study without one cannot be underpowered or overpowered, only unfalsifiable.
+- **Adaptive staircase** — a *procedure*, not a statistic: the level presented on the next trial is chosen from the responses already given, by a rule fixed in advance. Its defining parts are the start level, the step size, the up/down rule, and the stopping condition; change any one and you have a different procedure. *Example*: the 2-down/1-up run of the running object. *Non-example*: the method of constant stimuli in [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]], where the levels are fixed before the session and the participant's answers never move them. It matters because the rule, not the experimenter's judgement, decides *which point of the psychometric curve* the run settles on — the one-line derivation in §6 Step 3.
+- **Reversal** — a *trial*: the one at which the direction of travel changes, from descending to ascending or back. *Non-example*: a wrong answer during a run that was already ascending, which continues the direction and is not a reversal, and a correct answer that is only the first of a needed pair. It matters because the threshold is averaged over reversals rather than over trials, so it is the reversal count that says whether a run was long enough — which is exactly what the problem set's twelve-trial record fails.
+
+NASA-TLX measures six self-reported workload dimensions—mental, physical, temporal demand, perceived performance, effort, and frustration. It complements objective data; it does not reveal the physical cause of workload. Use the official scoring procedure appropriate to raw or weighted TLX and report which variant was used.
+
+### 3. Evidence ladder
+
+| Evidence | Supports | Does not yet support |
+|---|---|---|
+| actuator bench response | delivered device dynamics | human detectability or usefulness |
+| psychophysical threshold | cue detectability under tested conditions | better task control |
+| controlled task improvement | causal effect in that protocol | field deployment generality |
+| representative workload study | performance under a closer context | long-term adoption or safety |
+| field/longitudinal study | operational behavior over time | mechanism without additional controls |
+
+### 4. Annotated reading sequence
+
+1. **Hannaford & Okamura, “Haptics,” Springer Handbook of Robotics, 2nd ed., 2016.** The compact field map: human sensing → device design → rendering → stability → tactile displays. [Official chapter page](https://handbookofrobotics.org/view-chapter/42), [DOI](https://doi.org/10.1007/978-3-319-32552-1_42).
+2. **Hayward & MacLean, “Do It Yourself Haptics: Part I,” IEEE RAM 14(4), 2007.** The best hardware-to-software bridge: transducers, impedance/admittance, DC motors, mechanisms, quantization, real-time loops, and practical limitations. [DOI](https://doi.org/10.1109/M-RA.2007.907921).
+3. **MacLean, “Haptic Interaction Design for Everyday Interfaces,” RHFE 4(1), 2008.** Read for active touch, multisensory attention, haptic icons, shared control, and why technical realism is not the same as usefulness. [DOI](https://doi.org/10.1518/155723408X342826).
+4. **Weir & Colgate, “Stability of Haptic Displays,” ch. 8 of Lin & Otaduy (eds.), Haptic Rendering: Foundations, Algorithms, and Applications, A K Peters, 2008.** Read the virtual-wall energy derivation, Z-width, quantization, virtual coupling, and PO/PC sections; treat later circuit implementations as specialized depth. Its quantization section restates the friction–quantization bound $K\le\min(2b/T,\,2f_c/\Delta)$ of Abbott & Okamura, “Effects of position quantization and sampling rate on virtual-wall passivity,” IEEE T-RO 21(5), 2005, which [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]] uses. [DOI](https://doi.org/10.1201/b10636-9) · [DOI](https://doi.org/10.1109/TRO.2005.851377).
+5. **Gillespie & Cutkosky, “Stable User-Specific Haptic Rendering of the Virtual Wall,” ASME IMECE, 1996.** A sampled, switched wall is not merely an LTI spring. The half-sample predictor and threshold-crossing correction depend on a limited high-frequency human/device model; the early experiment was qualitative. [DOI](https://doi.org/10.1115/IMECE1996-0362).
+6. **Hannaford & Ryu, “Time-Domain Passivity Control of Haptic Interfaces,” IEEE TRA 18(1), 2002.** Follow the power sign, energy observer, and adaptive dissipative element. The method avoids an exact environment model but still faces noise, zero velocity, saturation, and performance tradeoffs. [DOI](https://doi.org/10.1109/70.988969).
+7. **Raju, Verghese & Sheridan, “Design Issues in 2-Port Network Models of Bilateral Remote Manipulation,” ICRA 1989.** A classic bridge from desired port impedances and human/task models to stable gain selection. Its guarantee is over the specified passive termination class and model assumptions. [DOI](https://doi.org/10.1109/ROBOT.1989.100162).
+8. **Colonnese & Okamura, “Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping,” IJRR 35(9):1103–1120, 2016** (online 2015). The one paper that puts sampling, position quantization, time delay, and the velocity-estimate low-pass filter into a single one-DOF model and derives the tradeoffs between them, including sufficient conditions for quantization-error passivity and necessary conditions for the absence of (malicious- and uncoupled-touch) limit cycles. Verified on a Phantom Premium 1.5; the abstract states no numerical result. Cite the volume, not the year alone — it appeared online in 2015 and in print in 2016. [DOI](https://doi.org/10.1177/0278364915596234).
+9. **Salisbury, Conti & Barbagli, "Haptic rendering: introductory concepts," IEEE CG&A 24(2), 2004.** The survey that frames rendering as a loop of collision, force computation and actuation; read it before any rendering paper. [DOI](https://doi.org/10.1109/MCG.2004.1274058).
+10. **Ruspini, Kolarov & Khatib, "The haptic display of complex graphical environments," SIGGRAPH 1997; Zilles & Salisbury, "A constraint-based god-object method for haptic display," IROS 1995.** The two proxy papers. Ruspini names the three failures of penalty rendering; Zilles and Salisbury introduced the constrained point two years earlier. [DOI](https://doi.org/10.1145/258734.258878) · [DOI](https://doi.org/10.1109/IROS.1995.525876).
+11. **Kuchenbecker, Fiene & Niemeyer, "Improving contact realism through event-based haptic feedback," IEEE TVCG 12(2), 2006.** Read with its WHC 2005 conference version, which carries the nine-subject realism study; note that realism was rated, not measured by task. [DOI](https://doi.org/10.1109/TVCG.2006.32) · [DOI](https://doi.org/10.1109/WHC.2005.52).
+12. **Richard & Cutkosky, "Friction modeling and display in haptic applications involving user performance," ICRA 2002.** The Karnopp implementation plus a twenty-subject Fitts study showing moderate friction helps and high stiction hurts. [DOI](https://doi.org/10.1109/ROBOT.2002.1013425).
+
+The algorithms in items 9–12 — penalty and proxy rendering, event-based transients and friction display — are worked through in [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 Haptic Rendering Algorithms]].
+
+### 5. How the supplied course materials were selected
+
+| Local material class | Public learning use |
+|---|---|
+| syllabus and lecture decks | track scope, prerequisite map, concepts, and version caveats |
+| MATLAB templates and Jacobian script | original derivations and implementation checklist; no submitted solution copied |
+| Hapkit slides and mechanical files | transmission and sensing reasoning in 24.3–24.4; build instructions and original files are not published |
+| assignments and student drafts | identify required competencies and common mistakes; no answer key or personal work published |
+| project options/rubric | transferable project-design and evaluation criteria; private contacts and unverified claims excluded |
+| consent, recruitment, pre/post surveys | ethics, eligibility, workload, privacy, and measurement design; no form copied or treated as a reusable approval |
+| licensed readings | annotated concepts and official DOI/publisher links; PDFs remain private |
+
+The packet covers the first half of a full haptics course particularly well. It does not contain all later lecture/lab materials named in the syllabus—such as the complete CHAI3D, advanced teleoperation, and ROS sequence—so this guide does not reconstruct those lectures or claim to cover them.
+
+**Worked: the three readings the homework asks.** “Haptics is better” with TLX and time down has no named estimand and skipped the skin stimulus. $n=600$ is nested trials; the unit is 20 people. Bench response is not detectability; task improvement is not field generality.
+
+### 6. Worked case: a staircase record becomes a threshold, and a JND
 
 **Step 1 — find the reversals.** Walk the record and mark every trial where the direction changes. The rule descends only after two consecutive `C` and ascends on any `W`, which gives eight reversals:
 
@@ -201,9 +204,9 @@ $$k=\frac{\widehat{\Delta F}}{F_0}=\frac{0.5167}{5.00}=0.1033,$$
 
 i.e. $10.3\%$, since the pedestal is the operating point the increment was measured on.
 
-**Step 5 — compare it with the other method, and see the estimand problem appear.** [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]] measured the same participant on the same handle at the same $5\,\mathrm{N}$ operating point by constant stimuli and got $\mathrm{JND}=0.4107\,\mathrm{N}$, $k=8.1\%$. This staircase gives $0.5167\,\mathrm{N}$, $26\%$ larger. Neither is wrong and neither is noise: one is half the $25$–$75$ span of a *judged-stronger* curve about its PSE, the other is the increment for $70.7\%$ *correct* in a difference-detection task. They are different points on different functions. A paper that reports "the JND" without its criterion and its task has produced a number no other lab can reproduce or compare, which is §2's estimand requirement restated as arithmetic.
+**Step 5 — compare it with the other method, and see the estimand problem appear.** [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]] measured the same participant on the same handle at the same $5\,\mathrm{N}$ operating point by constant stimuli and got $\mathrm{JND}=0.4107\,\mathrm{N}$, $k=8.1\%$. This staircase gives $0.5167\,\mathrm{N}$, $26\%$ larger. Neither is wrong and neither is noise: one is half the $25$–$75$ span of a *judged-stronger* curve about its PSE, the other is the increment for $70.7\%$ *correct* in a difference-detection task. They are different points on different functions. A paper that reports "the JND" without its criterion and its task has produced a number no other lab can reproduce or compare, which is §2's estimand requirement restated as arithmetic.
 
-**Step 6 — check it against the device.** Using the P3 wall quantum of [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]], $\Delta F_{\text{count}}=0.0245\,\mathrm{N}$: the threshold is $0.5167/0.0245=21.1$ counts, or $0.5167/400=1.29\,\mathrm{mm}$ of penetration. The staircase's own step of $0.05\,\mathrm{N}$ is $0.05/0.0245=2.0$ counts, so the resolution of this experiment was set by the experimenter's step size and not by the hardware — but a step of $0.02\,\mathrm{N}$ would be $0.8$ of a count, below what the device can distinguish, and the track would stall on quantization while the write-up reported a converged threshold.
+**Step 6 — check it against the device.** Using the P3 wall quantum of [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]], $\Delta F_{\text{count}}=0.0245\,\mathrm{N}$: the threshold is $0.5167/0.0245=21.1$ counts, or $0.5167/400=1.29\,\mathrm{mm}$ of penetration. The staircase's own step of $0.05\,\mathrm{N}$ is $0.05/0.0245=2.0$ counts, so the resolution of this experiment was set by the experimenter's step size and not by the hardware — but a step of $0.02\,\mathrm{N}$ would be $0.8$ of a count, below what the device can distinguish, and the track would stall on quantization while the write-up reported a converged threshold.
 
 **Step 7 — what one record supports.** This is one participant and 24 trials, so it supports a single-participant estimate with wide uncertainty and nothing about a population. Run 20 participants and the unit for any treatment claim is still the participant: you analyse 20 threshold estimates, not 480 trials, which is §2 item 7 and the self-check below. On §3's ladder this number sits in the "psychophysical threshold" row — it supports cue detectability under the tested conditions, and not better task control.
 
@@ -222,7 +225,7 @@ i.e. $10.3\%$, since the pedestal is the operating point the increment was measu
 
 ### Problem set · 과제
 
-Tier C — this page is the track's reading map, so its homework stays claim-reading; §7 is the derivation it still owes you, and items 1 and 2 below are that derivation on a changed rule. Using this page, [[02-foundations/lab-plants|0.6]], and [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]] for comparison.
+Tier C — this page is the track's reading map, so its homework stays claim-reading; §6 is the derivation it still owes you, and items 1 and 2 below are that derivation on a changed rule. Using this page, [[02-foundations/lab-plants|0.6]], and [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]] for comparison.
 
 Same handle, same $5.00\,\mathrm{N}$ pedestal, same $0.05\,\mathrm{N}$ step, but the rule is changed to **three-down, one-up** and the run starts at $\Delta F=0.50\,\mathrm{N}$. Twelve trials, again illustrative:
 
@@ -235,8 +238,8 @@ Same handle, same $5.00\,\mathrm{N}$ pedestal, same $0.05\,\mathrm{N}$ step, but
 | 5 | 0.45 | W | 11 | 0.45 | C |
 | 6 | 0.50 | C | 12 | 0.40 | W |
 
-1. **Draw.** The picture in §6, for this record, with the same $0.05\,\mathrm{N}$ rows. Mark the reversals and say why the strike-through that §6's picture shows cannot be carried out here.
-2. **Derive.** (a) The reversal trials and their levels. (b) A threshold estimate, and the sentence you must attach to it about how it was averaged. (c) The criterion probability of a 3-down/1-up rule, and of a 1-up/1-down rule, by §7 Step 3's argument. (d) The Weber fraction, and the estimate in P3 encoder counts.
+1. **Draw.** The picture, for this record, with the same $0.05\,\mathrm{N}$ rows. Mark the reversals and say why the strike-through that the picture shows cannot be carried out here.
+2. **Derive.** (a) The reversal trials and their levels. (b) A threshold estimate, and the sentence you must attach to it about how it was averaged. (c) The criterion probability of a 3-down/1-up rule, and of a 1-up/1-down rule, by §6 Step 3's argument. (d) The Weber fraction, and the estimate in P3 encoder counts.
 3. **Interpret.** (a) A paper runs a 1-up/1-down staircase in a 2AFC task, reports the result as "the detection threshold", and compares it with another lab's constant-stimuli JND. Name the two separate estimand errors, using (c) for the first. (b) A study reports "haptics is better" with NASA-TLX down and completion time down. Which estimand is missing, and which arrow of actuator $\to$ stimulus $\to$ perception $\to$ outcome was not measured? (c) Twenty people, thirty trials each, $n=600$ in the t-test. What is the analysis unit, and what must the report still say? (d) Place "actuator bench response" and "controlled task improvement" on the evidence ladder. What does each not yet support?
 
 > [!note]- How to draw it · 그리는 법
@@ -244,18 +247,21 @@ Same handle, same $5.00\,\mathrm{N}$ pedestal, same $0.05\,\mathrm{N}$ step, but
 > - Plot every trial's level and join consecutive trials into one continuous track.
 > - Use a filled marker for a correct trial and an open one for a wrong trial, so the rule can be read off the figure: the track descends only after as many filled markers in a row as the rule's down count, and rises immediately after any open one.
 > - Circle every trial at which the direction of travel changes, and number the circles in order. A wrong answer on a track that is already rising is not a reversal.
-> - Strike through the reversals §7 Step 2 discards and draw a horizontal line at the mean of those that remain; count how many remain before you draw it.
-> - Label that line with the criterion it estimates, never with the word "threshold": the percent correct the rule targets (§7 Step 3), the rule, and the $5.00\,\mathrm{N}$ pedestal.
+> - Strike through the reversals §6 Step 2 discards and draw a horizontal line at the mean of those that remain; count how many remain before you draw it.
+> - Label that line with the criterion it estimates, never with the word "threshold": the percent correct the rule targets (§6 Step 3), the rule, and the $5.00\,\mathrm{N}$ pedestal.
 > - Beside the plot, copy §1's causal chain and tick only the one arrow the plot measures, leaving the other two blank.
 
 > [!tip]- Solutions
-> 1. The track descends only after three filled markers in a row, so it spends longer on each level than §6's figure does. There are three reversals, and §6 discards the first two and averages six — here that would leave one. The discard rule cannot be applied, which is the finding, not an inconvenience.
+> 1. The track descends only after three filled markers in a row, so it spends longer on each level than the picture's run does. There are three reversals, and §6 Step 2 discards the first two and averages six — here that would leave one. The discard rule cannot be applied, which is the finding, not an inconvenience.
 > 2. (a) Trial 5 at $0.45$, trial 8 at $0.50$, trial 12 at $0.40$. (b) Averaging all three gives $(0.45+0.50+0.40)/3=0.45\,\mathrm{N}$, and the attached sentence must say that it is the mean of *all three* reversals of a 12-trial run, an odd number, with no burn-in discarded — so peaks and troughs do not contribute equally and the estimate carries the start point. Six or more reversals are the usual minimum; this run should be treated as a pilot. (c) A down step now needs three consecutive correct, with probability $p^3$, so stationarity gives $p^3=1-p^3$, $p^3=0.5$ and $p=0.5^{1/3}=0.7937$: the $79.4\%$-correct point. For 1-up/1-down the down step needs one correct, so $p=1-p$ and $p=0.5$ — which in a two-alternative task is chance, so the rule tracks a level at which the participant is guessing and estimates nothing. (d) $k=0.45/5.00=0.090$, i.e. $9.0\%$; and $0.45/0.0245=18.4$ counts, about $1.13\,\mathrm{mm}$ of penetration.
-> 3. (a) First, the rule targets $p=0.5$, which is chance in 2AFC, so the "threshold" is not a threshold at all — no stimulus level is identified. Second, even a valid staircase number is a different estimand from a constant-stimuli JND (§7 Step 5): different task, different criterion, different point on the curve. The two must be compared through a stated psychometric model or not at all. (b) The estimand should be a named quantity (peak contact force, not "better"). TLX is self-reported workload, not the mechanical stimulus; time does not identify which cue caused the change. Calibrate the skin stimulus. (c) The participant is the unit for a treatment claim; trials are nested. Report $20$ people *and* $600$ trials, with a hierarchical/mixed model or participant-level summaries. (d) Bench response supports delivered dynamics, not detectability. Task improvement supports a causal effect in that protocol, not field generality.
+> 3. (a) First, the rule targets $p=0.5$, which is chance in 2AFC, so the "threshold" is not a threshold at all — no stimulus level is identified. Second, even a valid staircase number is a different estimand from a constant-stimuli JND (§6 Step 5): different task, different criterion, different point on the curve. The two must be compared through a stated psychometric model or not at all. (b) The estimand should be a named quantity (peak contact force, not "better"). TLX is self-reported workload, not the mechanical stimulus; time does not identify which cue caused the change. Calibrate the skin stimulus. (c) The participant is the unit for a treatment claim; trials are nested. Report $20$ people *and* $600$ trials, with a hierarchical/mixed model or participant-level summaries. (d) Bench response supports delivered dynamics, not detectability. Task improvement supports a causal effect in that protocol, not field generality.
 
 ## 한국어
 
 *햅틱 트랙의 연구 실무 쪽 끝이다. 읽기 지도이자 프로토콜 체크리스트다. 장치 **P3**는 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]이 만들어 둔 자극 발생기로만 쓴다.*
+
+> [!note] 처음이라면 · First pass
+> 대상을 읽고 그림을 보라. staircase 기록 하나, reversal 여덟, 그리고 그중 여섯을 평균한 선 하나다. 그다음 §2에서 프로토콜과 세 용어를 estimand부터 읽고 §6 계산 절을 따라가라. 기록이 기준을 밝힌 임계값이 되고 24.1의 JND와 나란히 놓이는 곳이다. §1과 §3은 짧으니 한 번 읽어 둘 만하다. §4는 다시 돌아와 볼 읽기 목록이고, §5는 이 위키가 원자료를 어떻게 골랐는지를 기록할 뿐이니 처음에는 건너뛴다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -282,79 +288,9 @@ Same handle, same $5.00\,\mathrm{N}$ pedestal, same $0.05\,\mathrm{N}$ step, but
 | 11 | 0.45 | W | 23 | 0.50 | C |
 | 12 | 0.50 | C | 24 | 0.50 | C |
 
-§6이 이것을 그림으로 보여 주고, §7이 이것을 임계값과 JND와 이름 붙은 기준으로 바꾼다. estimand를 명시하라는 §2의 요구를 실제 기록 위에서 한 번 해 보는 것이 그 전부다.
+아래 그림이 이것을 보여 주고, §6이 이것을 임계값과 JND와 이름 붙은 기준으로 바꾼다. estimand를 명시하라는 §2의 요구를 실제 기록 위에서 한 번 해 보는 것이 그 전부다.
 
-### 1. 아이디어에서 주장까지
-
-인터페이스를 만들기 전에 인과 사슬을 먼저 쓴다.
-
-$$\text{액추에이터 명령}\rightarrow\text{실제 전달된 역학 자극}\rightarrow\text{지각·행동}\rightarrow\text{과제 결과}.$$
-
-화살표마다 측정이 필요하다. 모터 명령은 측정된 피부 자극이 아니고, 설문은 제어기 성능이 아니며, 수행 시간이 줄었다는 것만으로 어떤 cue가 그 개선을 일으켰는지 알 수 없다. 강한 연구는 물리적 보정, 행동 결과, 주관 보고 셋을 함께 놓는다.
-
-### 2. 최소 프로토콜
-
-1. **질문과 estimand:** "전단 cue A가 초보 조작자에게서 진동 B 대비 최대 접촉력을 줄이는가"는 검정 가능하고, "햅틱이 더 나은가"는 아니다. Estimand는 연구가 추정하도록 설계된 정확한 양이고, 여기서는 최대 접촉력의 평균 감소량이다.
-2. **참가자와 제외:** 모집단, 필요하면 손잡이, 감각운동 조건, 사전 경험, 중단 기준.
-3. **조건:** 피드백 방식, 지연, 이득, 과제 난이도, 부가 workload.
-4. **설계:** within-subject는 사람 간 분산을 줄인다. 순서를 counterbalance하고, 학습을 처치와 분리할 만큼 연습을 넣는다.
-5. **주 결과 지표:** 결과를 보기 전에 고른다 — 최대 힘, 경로 오차, 성공, 시간, 검출 임계값, 또는 보정된 확신도.
-6. **계측:** 햅틱 상태, 명령, 측정된 힘, 이벤트, 영상, 설문 식별자를 동기화한다. 시계와 유실 패킷을 문서화한다.
-7. **분석 단위:** 참가자 안에 nested된 trial은 독립 참가자가 아니다. 참가자 수, 반복 수, 제외, 불확실성, 효과 크기를 보고한다.
-8. **윤리와 안전:** 사전 동의, 자발적 철회, 개인정보 비식별, 피로 휴식, 하드웨어 정지, 사고 처리는 나중에 붙이는 부록이 아니라 설계에 속한다.
-
-**이 페이지가 기대는 세 용어의 정의.** §7이 셋을 모두 running object 위에서 쓴다.
-
-- **Estimand** — 데이터가 존재하기 전에 적어 두는, *연구가 추정하도록 설계된 양*이다. 세 부분으로 이루어진다. 어느 모집단을 가리키는가, 어떤 측정으로 만들어지는가, 어떤 대조나 기준이 그것을 숫자 하나로 못 박는가. *예*: "초보 조작자에서 cue A 대 cue B의 뉴턴 단위 첨두 접촉력 평균 감소량". *반례*: "햅틱이 도움이 되는가". 양을 하나도 이름 붙이지 않았다. 더 미묘한 반례는 "그 JND"다. 측정은 이름 붙였지만 기준을 빼서, §7 Step 5가 그 한 단어에 서로 다른 숫자 둘을 만들어 낼 수 있다. 중요한 이유는 설계도 표본 크기도 분석도 전부 estimand*에 관한* 선택이기 때문이다. estimand 없는 연구는 검정력이 모자라지도 넘치지도 못하고 그저 반증 불가능하다.
-- **적응적 staircase** — 통계량이 아니라 *절차*다. 다음 시행에 제시할 수준을 이미 받은 응답에서, 미리 고정한 규칙으로 고른다. 정의 부분은 시작 수준, 단 크기, up/down 규칙, 중단 조건이고, 하나만 바꿔도 다른 절차가 된다. *예*: running object의 2-down 1-up run. *반례*: [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]]의 constant stimuli. 수준을 세션 전에 고정하고 참가자의 응답이 그것을 움직이지 않는다. 중요한 이유는 실험자의 판단이 아니라 규칙이 run이 가라앉을 *심리측정 곡선 위의 점*을 정하기 때문이다. §7 Step 3의 한 줄 유도가 그것이다.
-- **Reversal** — *시행*이다. 진행 방향이 내림에서 오름으로, 또는 그 반대로 바뀌는 그 시행. *반례*: 이미 올라가고 있던 run에서 나온 오답. 방향을 이어 가므로 reversal이 아니다. 필요한 쌍의 첫 번째인 정답도 마찬가지다. 중요한 이유는 임계값을 시행이 아니라 reversal 위에서 평균하기 때문이다. run이 충분히 길었는지는 reversal 개수가 말하고, 과제의 12 시행짜리 기록이 실패하는 지점이 바로 그것이다.
-
-NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, 좌절의 여섯 자기보고 workload 차원을 잰다. 객관 데이터를 보완할 뿐 workload의 물리적 원인을 드러내지는 않는다. raw와 weighted 중 해당하는 공식 채점 절차를 쓰고 어느 쪽을 썼는지 보고한다.
-
-### 3. 증거의 사다리
-
-| 증거 | 지지하는 것 | 아직 지지하지 못하는 것 |
-|---|---|---|
-| 액추에이터 벤치 응답 | 전달된 장치 동역학 | 사람의 검출 가능성이나 유용성 |
-| 심리물리 임계값 | 시험한 조건에서 cue의 검출 가능성 | 더 나은 과제 제어 |
-| 통제된 과제 개선 | 그 프로토콜 안에서의 인과 효과 | 현장 배치로의 일반화 |
-| 대표성 있는 workload 연구 | 더 가까운 맥락에서의 수행 | 장기 채택이나 안전 |
-| 현장·종단 연구 | 시간에 걸친 운용 행동 | 추가 통제 없이는 기전 |
-
-### 4. 주석 달린 읽기 순서
-
-1. **Hannaford & Okamura, "Haptics," Springer Handbook of Robotics 2판, 2016.** 압축된 분야 지도다. 인간 감각 → 장치 설계 → 렌더링 → 안정성 → 촉각 디스플레이. [공식 장 페이지](https://handbookofrobotics.org/view-chapter/42), [DOI](https://doi.org/10.1007/978-3-319-32552-1_42).
-2. **Hayward & MacLean, "Do It Yourself Haptics: Part I," IEEE RAM 14(4), 2007.** 하드웨어와 소프트웨어를 잇는 최고의 다리다. 변환기, 임피던스/어드미턴스, DC 모터, 기구, 양자화, 실시간 루프, 그리고 실제 한계. [DOI](https://doi.org/10.1109/M-RA.2007.907921).
-3. **MacLean, "Haptic Interaction Design for Everyday Interfaces," RHFE 4(1), 2008.** 능동적 촉각, 다감각 주의, haptic icon, shared control, 그리고 기술적 사실성이 유용성과 같지 않은 이유를 읽어라. [DOI](https://doi.org/10.1518/155723408X342826).
-4. **Weir & Colgate, "Stability of Haptic Displays."** 가상 벽의 에너지 유도, Z-width, 양자화, virtual coupling, PO/PC 절을 읽어라. 뒤의 회로 구현은 전문 심화로 다룬다.
-5. **Gillespie & Cutkosky, "Stable User-Specific Haptic Rendering of the Virtual Wall," ASME IMECE, 1996.** 샘플링되고 스위칭되는 벽은 그냥 LTI 스프링이 아니다. 반 샘플 예측기와 임계 통과 보정은 제한된 고주파 인간·장치 모델에 기대며, 초기 실험은 정성적이었다. [DOI](https://doi.org/10.1115/IMECE1996-0362).
-6. **Hannaford & Ryu, "Time-Domain Passivity Control of Haptic Interfaces," IEEE TRA 18(1), 2002.** 일률의 부호, 에너지 관측기, 적응적 소산 요소를 따라가라. 이 방법은 정확한 환경 모델을 피하지만 잡음, 영속도, 포화, 성능 절충은 여전히 남는다. [DOI](https://doi.org/10.1109/70.988969).
-7. **Raju, Verghese & Sheridan, "Design Issues in 2-Port Network Models of Bilateral Remote Manipulation," ICRA 1989.** 원하는 포트 임피던스와 인간·과제 모델에서 안정한 이득 선택으로 가는 고전적 다리다. 그 보장은 명시한 수동적 termination 부류와 모델 가정 위에서만 성립한다. [DOI](https://doi.org/10.1109/ROBOT.1989.100162).
-8. **Colonnese & Okamura, "Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping," IJRR 35(9):1103–1120, 2016**(온라인 2015). 샘플링, 위치 양자화, 시간 지연, 속도 추정용 저역통과 필터를 1자유도 모델 하나에 함께 넣고 그 사이의 절충을 유도한 논문이다. 양자화 오차 수동성의 충분조건과, (malicious·uncoupled touch) 극한 주기가 없기 위한 필요조건을 함께 제시한다. Phantom Premium 1.5로 검증했고, 초록에는 수치 결과가 없다. 연도만 쓰지 말고 권호를 써라 — 2015년에 온라인, 2016년에 지면으로 나왔다. [DOI](https://doi.org/10.1177/0278364915596234).
-9. **Salisbury, Conti, Barbagli, "Haptic rendering: introductory concepts," IEEE CG&A 24(2), 2004.** 렌더링을 충돌 검출·힘 계산·구동의 루프로 틀 짓는 서베이다. 어떤 렌더링 논문보다 먼저 읽어라. [DOI](https://doi.org/10.1109/MCG.2004.1274058).
-10. **Ruspini, Kolarov, Khatib, "The haptic display of complex graphical environments," SIGGRAPH 1997; Zilles & Salisbury, "A constraint-based god-object method for haptic display," IROS 1995.** proxy 논문 둘이다. Ruspini는 벌점 렌더링의 세 실패에 이름을 붙였고, Zilles와 Salisbury는 2년 앞서 제약된 점을 도입했다. [DOI](https://doi.org/10.1145/258734.258878) · [DOI](https://doi.org/10.1109/IROS.1995.525876).
-11. **Kuchenbecker, Fiene, Niemeyer, "Improving contact realism through event-based haptic feedback," IEEE TVCG 12(2), 2006.** 피험자 9명의 현실감 연구를 담은 WHC 2005 학회 판본과 함께 읽어라. 현실감은 과제로 잰 것이 아니라 평가 점수였다는 점을 기억하라. [DOI](https://doi.org/10.1109/TVCG.2006.32) · [DOI](https://doi.org/10.1109/WHC.2005.52).
-12. **Richard & Cutkosky, "Friction modeling and display in haptic applications involving user performance," ICRA 2002.** Karnopp 구현과, 적당한 마찰은 돕고 높은 정지 마찰은 해친다는 피험자 20명의 Fitts 연구. [DOI](https://doi.org/10.1109/ROBOT.2002.1013425).
-
-9–12번의 알고리즘 — 벌점·proxy 렌더링, 사건 기반 과도 신호, 마찰 표시 — 은 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 햅틱 렌더링 알고리즘]]에서 계산 예제와 함께 풀어 둔다.
-
-### 5. 제공된 과목 자료를 어떻게 선별했는가
-
-| 로컬 자료 부류 | 공개 학습 용도 |
-|---|---|
-| syllabus와 강의 슬라이드 | 트랙 범위, 선수 지식 지도, 개념, 판본 단서 |
-| MATLAB 템플릿과 야코비안 스크립트 | 독자적 유도와 구현 체크리스트. 제출 답안은 옮기지 않음 |
-| Hapkit 슬라이드와 기구 파일 | 24.3–24.4의 전동·센싱 논리. 제작 지침과 원본 파일은 공개하지 않음 |
-| 과제와 학생 초안 | 필요한 역량과 흔한 오류 식별. 정답지나 개인 작업물은 공개하지 않음 |
-| 프로젝트 선택지와 평가표 | 이전 가능한 프로젝트 설계·평가 기준. 사적 연락처와 미검증 주장은 제외 |
-| 동의서, 모집 자료, 사전·사후 설문 | 윤리, 참가 자격, workload, 개인정보, 측정 설계. 양식을 옮기거나 재사용 가능한 승인으로 취급하지 않음 |
-| 라이선스 읽기 자료 | 주석 단 개념과 공식 DOI·출판사 링크. PDF는 비공개 |
-
-이 자료 묶음은 햅틱 과목 전반부를 특히 잘 덮는다. syllabus가 예고한 후반 강의·실습 자료 전부 — 완전한 CHAI3D, 고급 원격조작, ROS 순서 같은 것 — 를 담고 있지는 않다. 그래서 이 안내는 그 강의들을 복원하지 않으며, 다룬다고 주장하지도 않는다.
-
-**계산해 읽기: 과제가 묻는 세 독해.** TLX가 내려가고 시간이 줄었다는 "햅틱이 더 낫다"에는 이름 붙은 estimand가 없고 피부 자극을 건너뛰었다. $n=600$은 nested trial이고 단위는 사람 20명이다. 벤치 응답은 검출 가능성이 아니고, 과제 개선은 현장 일반화가 아니다.
-
-### 6. 그림으로 먼저 보기
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 350" style="max-width:100%;height:auto" role="img" aria-label="0.05 N 간격의 줄 위를 오가는 24시행 2-down 1-up staircase로, 정답은 채운 표식과 오답은 빈 표식, 번호를 단 reversal 여덟 개 중 앞의 둘에 줄을 긋고, 0.5167 N 점선에 70.7% 정답 기준을 붙이고, 인과 사슬에서는 자극에서 지각으로 가는 화살표에만 체크했다.">
   <circle cx="58" cy="17" r="3.8" fill="currentColor"/>
@@ -365,7 +301,7 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
   <text x="174.3" y="21" font-size="11" fill="currentColor">reversal</text>
   <circle cx="244.7" cy="17" r="7.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
   <line x1="235.7" y1="26" x2="253.7" y2="8" stroke="currentColor" stroke-width="1.5"/>
-  <text x="257.7" y="21" font-size="11" fill="currentColor">버림 (§7 Step 2)</text>
+  <text x="257.7" y="21" font-size="11" fill="currentColor">버림 (§6 Step 2)</text>
   <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.28"><line x1="53" y1="200" x2="403" y2="200"/><line x1="53" y1="170" x2="403" y2="170"/><line x1="53" y1="140" x2="403" y2="140"/><line x1="53" y1="110" x2="403" y2="110"/><line x1="53" y1="80" x2="403" y2="80"/><line x1="53" y1="50" x2="403" y2="50"/></g>
   <g font-size="11" fill="currentColor" text-anchor="end" opacity="0.8"><text x="49" y="204">0.40</text><text x="49" y="174">0.45</text><text x="49" y="144">0.50</text><text x="49" y="114">0.55</text><text x="49" y="84">0.60</text><text x="49" y="54">0.65</text></g>
   <text x="14" y="38" font-size="11.5" fill="currentColor" opacity="0.9">ΔF (N)</text>
@@ -414,9 +350,79 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
   <text x="493" y="299" font-size="11" fill="currentColor" text-anchor="middle">과제 결과</text>
 </svg>
 
-얼어붙은 24 시행 2-down 1-up 기록을 $0.05\,\mathrm{N}$ 간격의 줄 위에 그렸다: 채운 표식이 정답, 빈 표식이 오답이므로, 궤적은 채운 표식이 둘 연달아야만 내려가고 빈 표식 하나에 곧바로 올라간다. Reversal 여덟 개에 동그라미와 번호를 달았고 §7 Step 2가 버리는 처음 둘에는 줄을 그었으며, 나머지 여섯의 평균 $0.5167\,\mathrm{N}$에 그은 점선에는 그것이 추정하는 기준, 곧 받침 $5.00\,\mathrm{N}$ 위의 $70.7\%$ 정답을 붙였다. 아래의 §1 인과 사슬에서는 이 그림이 재는 단 하나의 화살표, 전달된 자극에서 지각으로 가는 화살표에만 체크가 있다.
+얼어붙은 24 시행 2-down 1-up 기록을 $0.05\,\mathrm{N}$ 간격의 줄 위에 그렸다: 채운 표식이 정답, 빈 표식이 오답이므로, 궤적은 채운 표식이 둘 연달아야만 내려가고 빈 표식 하나에 곧바로 올라간다. Reversal 여덟 개에 동그라미와 번호를 달았고 §6 Step 2가 버리는 처음 둘에는 줄을 그었으며, 나머지 여섯의 평균 $0.5167\,\mathrm{N}$에 그은 점선에는 그것이 추정하는 기준, 곧 받침 $5.00\,\mathrm{N}$ 위의 $70.7\%$ 정답을 붙였다(유도는 §6 Step 3). 아래의 §1 인과 사슬에서는 이 그림이 재는 단 하나의 화살표, 전달된 자극에서 지각으로 가는 화살표에만 체크가 있다.
 
-### 7. 대상으로 한 번 끝까지: staircase 기록이 임계값과 JND가 되기까지
+### 1. 아이디어에서 주장까지
+
+인터페이스를 만들기 전에 인과 사슬을 먼저 쓴다.
+
+$$\text{액추에이터 명령}\rightarrow\text{실제 전달된 역학 자극}\rightarrow\text{지각·행동}\rightarrow\text{과제 결과}.$$
+
+화살표마다 측정이 필요하다. 모터 명령은 측정된 피부 자극이 아니고, 설문은 제어기 성능이 아니며, 수행 시간이 줄었다는 것만으로 어떤 cue가 그 개선을 일으켰는지 알 수 없다. 강한 연구는 물리적 보정, 행동 결과, 주관 보고 셋을 함께 놓는다.
+
+### 2. 최소 프로토콜
+
+1. **질문과 estimand:** "전단 cue A가 초보 조작자에게서 진동 B 대비 최대 접촉력을 줄이는가"는 검정 가능하고, "햅틱이 더 나은가"는 아니다. Estimand는 연구가 추정하도록 설계된 정확한 양이고, 여기서는 최대 접촉력의 평균 감소량이다.
+2. **참가자와 제외:** 모집단, 필요하면 손잡이, 감각운동 조건, 사전 경험, 중단 기준.
+3. **조건:** 피드백 방식, 지연, 이득, 과제 난이도, 부가 workload.
+4. **설계:** within-subject는 사람 간 분산을 줄인다. 순서를 counterbalance하고, 학습을 처치와 분리할 만큼 연습을 넣는다.
+5. **주 결과 지표:** 결과를 보기 전에 고른다 — 최대 힘, 경로 오차, 성공, 시간, 검출 임계값, 또는 보정된 확신도.
+6. **계측:** 햅틱 상태, 명령, 측정된 힘, 이벤트, 영상, 설문 식별자를 동기화한다. 시계와 유실 패킷을 문서화한다.
+7. **분석 단위:** 참가자 안에 nested된 trial은 독립 참가자가 아니다. 참가자 수, 반복 수, 제외, 불확실성, 효과 크기를 보고한다.
+8. **윤리와 안전:** 사전 동의, 자발적 철회, 개인정보 비식별, 피로 휴식, 하드웨어 정지, 사고 처리는 나중에 붙이는 부록이 아니라 설계에 속한다.
+
+**이 페이지가 기대는 세 용어의 정의.** §6이 셋을 모두 running object 위에서 쓴다.
+
+- **Estimand** — 데이터가 존재하기 전에 적어 두는, *연구가 추정하도록 설계된 양*이다. 세 부분으로 이루어진다. 어느 모집단을 가리키는가, 어떤 측정으로 만들어지는가, 어떤 대조나 기준이 그것을 숫자 하나로 못 박는가. *예*: "초보 조작자에서 cue A 대 cue B의 뉴턴 단위 첨두 접촉력 평균 감소량". *반례*: "햅틱이 도움이 되는가". 양을 하나도 이름 붙이지 않았다. 더 미묘한 반례는 "그 JND"다. 측정은 이름 붙였지만 기준을 빼서, §6 Step 5가 그 한 단어에 서로 다른 숫자 둘을 만들어 낼 수 있다. 중요한 이유는 설계도 표본 크기도 분석도 전부 estimand*에 관한* 선택이기 때문이다. estimand 없는 연구는 검정력이 모자라지도 넘치지도 못하고 그저 반증 불가능하다.
+- **적응적 staircase** — 통계량이 아니라 *절차*다. 다음 시행에 제시할 수준을 이미 받은 응답에서, 미리 고정한 규칙으로 고른다. 정의 부분은 시작 수준, 단 크기, up/down 규칙, 중단 조건이고, 하나만 바꿔도 다른 절차가 된다. *예*: running object의 2-down 1-up run. *반례*: [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]]의 constant stimuli. 수준을 세션 전에 고정하고 참가자의 응답이 그것을 움직이지 않는다. 중요한 이유는 실험자의 판단이 아니라 규칙이 run이 가라앉을 *심리측정 곡선 위의 점*을 정하기 때문이다. §6 Step 3의 한 줄 유도가 그것이다.
+- **Reversal** — *시행*이다. 진행 방향이 내림에서 오름으로, 또는 그 반대로 바뀌는 그 시행. *반례*: 이미 올라가고 있던 run에서 나온 오답. 방향을 이어 가므로 reversal이 아니다. 필요한 쌍의 첫 번째인 정답도 마찬가지다. 중요한 이유는 임계값을 시행이 아니라 reversal 위에서 평균하기 때문이다. run이 충분히 길었는지는 reversal 개수가 말하고, 과제의 12 시행짜리 기록이 실패하는 지점이 바로 그것이다.
+
+NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, 좌절의 여섯 자기보고 workload 차원을 잰다. 객관 데이터를 보완할 뿐 workload의 물리적 원인을 드러내지는 않는다. raw와 weighted 중 해당하는 공식 채점 절차를 쓰고 어느 쪽을 썼는지 보고한다.
+
+### 3. 증거의 사다리
+
+| 증거 | 지지하는 것 | 아직 지지하지 못하는 것 |
+|---|---|---|
+| 액추에이터 벤치 응답 | 전달된 장치 동역학 | 사람의 검출 가능성이나 유용성 |
+| 심리물리 임계값 | 시험한 조건에서 cue의 검출 가능성 | 더 나은 과제 제어 |
+| 통제된 과제 개선 | 그 프로토콜 안에서의 인과 효과 | 현장 배치로의 일반화 |
+| 대표성 있는 workload 연구 | 더 가까운 맥락에서의 수행 | 장기 채택이나 안전 |
+| 현장·종단 연구 | 시간에 걸친 운용 행동 | 추가 통제 없이는 기전 |
+
+### 4. 주석 달린 읽기 순서
+
+1. **Hannaford & Okamura, "Haptics," Springer Handbook of Robotics 2판, 2016.** 압축된 분야 지도다. 인간 감각 → 장치 설계 → 렌더링 → 안정성 → 촉각 디스플레이. [공식 장 페이지](https://handbookofrobotics.org/view-chapter/42), [DOI](https://doi.org/10.1007/978-3-319-32552-1_42).
+2. **Hayward & MacLean, "Do It Yourself Haptics: Part I," IEEE RAM 14(4), 2007.** 하드웨어와 소프트웨어를 잇는 최고의 다리다. 변환기, 임피던스/어드미턴스, DC 모터, 기구, 양자화, 실시간 루프, 그리고 실제 한계. [DOI](https://doi.org/10.1109/M-RA.2007.907921).
+3. **MacLean, "Haptic Interaction Design for Everyday Interfaces," RHFE 4(1), 2008.** 능동적 촉각, 다감각 주의, haptic icon, shared control, 그리고 기술적 사실성이 유용성과 같지 않은 이유를 읽어라. [DOI](https://doi.org/10.1518/155723408X342826).
+4. **Weir & Colgate, "Stability of Haptic Displays," Lin & Otaduy 편, Haptic Rendering: Foundations, Algorithms, and Applications, A K Peters, 2008, 8장.** 가상 벽의 에너지 유도, Z-width, 양자화, virtual coupling, PO/PC 절을 읽어라. 뒤의 회로 구현은 전문 심화로 다룬다. 양자화 절은 Abbott & Okamura, "Effects of position quantization and sampling rate on virtual-wall passivity," IEEE T-RO 21(5), 2005의 마찰–양자화 경계 $K\le\min(2b/T,\,2f_c/\Delta)$를 다시 싣고, [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]이 그 경계를 쓴다. [DOI](https://doi.org/10.1201/b10636-9) · [DOI](https://doi.org/10.1109/TRO.2005.851377).
+5. **Gillespie & Cutkosky, "Stable User-Specific Haptic Rendering of the Virtual Wall," ASME IMECE, 1996.** 샘플링되고 스위칭되는 벽은 그냥 LTI 스프링이 아니다. 반 샘플 예측기와 임계 통과 보정은 제한된 고주파 인간·장치 모델에 기대며, 초기 실험은 정성적이었다. [DOI](https://doi.org/10.1115/IMECE1996-0362).
+6. **Hannaford & Ryu, "Time-Domain Passivity Control of Haptic Interfaces," IEEE TRA 18(1), 2002.** 일률의 부호, 에너지 관측기, 적응적 소산 요소를 따라가라. 이 방법은 정확한 환경 모델을 피하지만 잡음, 영속도, 포화, 성능 절충은 여전히 남는다. [DOI](https://doi.org/10.1109/70.988969).
+7. **Raju, Verghese & Sheridan, "Design Issues in 2-Port Network Models of Bilateral Remote Manipulation," ICRA 1989.** 원하는 포트 임피던스와 인간·과제 모델에서 안정한 이득 선택으로 가는 고전적 다리다. 그 보장은 명시한 수동적 termination 부류와 모델 가정 위에서만 성립한다. [DOI](https://doi.org/10.1109/ROBOT.1989.100162).
+8. **Colonnese & Okamura, "Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping," IJRR 35(9):1103–1120, 2016**(온라인 2015). 샘플링, 위치 양자화, 시간 지연, 속도 추정용 저역통과 필터를 1자유도 모델 하나에 함께 넣고 그 사이의 절충을 유도한 논문이다. 양자화 오차 수동성의 충분조건과, (malicious·uncoupled touch) 극한 주기가 없기 위한 필요조건을 함께 제시한다. Phantom Premium 1.5로 검증했고, 초록에는 수치 결과가 없다. 연도만 쓰지 말고 권호를 써라 — 2015년에 온라인, 2016년에 지면으로 나왔다. [DOI](https://doi.org/10.1177/0278364915596234).
+9. **Salisbury, Conti, Barbagli, "Haptic rendering: introductory concepts," IEEE CG&A 24(2), 2004.** 렌더링을 충돌 검출·힘 계산·구동의 루프로 틀 짓는 서베이다. 어떤 렌더링 논문보다 먼저 읽어라. [DOI](https://doi.org/10.1109/MCG.2004.1274058).
+10. **Ruspini, Kolarov, Khatib, "The haptic display of complex graphical environments," SIGGRAPH 1997; Zilles & Salisbury, "A constraint-based god-object method for haptic display," IROS 1995.** proxy 논문 둘이다. Ruspini는 벌점 렌더링의 세 실패에 이름을 붙였고, Zilles와 Salisbury는 2년 앞서 제약된 점을 도입했다. [DOI](https://doi.org/10.1145/258734.258878) · [DOI](https://doi.org/10.1109/IROS.1995.525876).
+11. **Kuchenbecker, Fiene, Niemeyer, "Improving contact realism through event-based haptic feedback," IEEE TVCG 12(2), 2006.** 피험자 9명의 현실감 연구를 담은 WHC 2005 학회 판본과 함께 읽어라. 현실감은 과제로 잰 것이 아니라 평가 점수였다는 점을 기억하라. [DOI](https://doi.org/10.1109/TVCG.2006.32) · [DOI](https://doi.org/10.1109/WHC.2005.52).
+12. **Richard & Cutkosky, "Friction modeling and display in haptic applications involving user performance," ICRA 2002.** Karnopp 구현과, 적당한 마찰은 돕고 높은 정지 마찰은 해친다는 피험자 20명의 Fitts 연구. [DOI](https://doi.org/10.1109/ROBOT.2002.1013425).
+
+9–12번의 알고리즘 — 벌점·proxy 렌더링, 사건 기반 과도 신호, 마찰 표시 — 은 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 햅틱 렌더링 알고리즘]]에서 계산 예제와 함께 풀어 둔다.
+
+### 5. 제공된 과목 자료를 어떻게 선별했는가
+
+| 로컬 자료 부류 | 공개 학습 용도 |
+|---|---|
+| syllabus와 강의 슬라이드 | 트랙 범위, 선수 지식 지도, 개념, 판본 단서 |
+| MATLAB 템플릿과 야코비안 스크립트 | 독자적 유도와 구현 체크리스트. 제출 답안은 옮기지 않음 |
+| Hapkit 슬라이드와 기구 파일 | 24.3–24.4의 전동·센싱 논리. 제작 지침과 원본 파일은 공개하지 않음 |
+| 과제와 학생 초안 | 필요한 역량과 흔한 오류 식별. 정답지나 개인 작업물은 공개하지 않음 |
+| 프로젝트 선택지와 평가표 | 이전 가능한 프로젝트 설계·평가 기준. 사적 연락처와 미검증 주장은 제외 |
+| 동의서, 모집 자료, 사전·사후 설문 | 윤리, 참가 자격, workload, 개인정보, 측정 설계. 양식을 옮기거나 재사용 가능한 승인으로 취급하지 않음 |
+| 라이선스 읽기 자료 | 주석 단 개념과 공식 DOI·출판사 링크. PDF는 비공개 |
+
+이 자료 묶음은 햅틱 과목 전반부를 특히 잘 덮는다. syllabus가 예고한 후반 강의·실습 자료 전부 — 완전한 CHAI3D, 고급 원격조작, ROS 순서 같은 것 — 를 담고 있지는 않다. 그래서 이 안내는 그 강의들을 복원하지 않으며, 다룬다고 주장하지도 않는다.
+
+**계산해 읽기: 과제가 묻는 세 독해.** TLX가 내려가고 시간이 줄었다는 "햅틱이 더 낫다"에는 이름 붙은 estimand가 없고 피부 자극을 건너뛰었다. $n=600$은 nested trial이고 단위는 사람 20명이다. 벤치 응답은 검출 가능성이 아니고, 과제 개선은 현장 일반화가 아니다.
+
+### 6. 대상으로 한 번 끝까지: staircase 기록이 임계값과 JND가 되기까지
 
 **Step 1 — reversal 찾기.** 기록을 따라가며 방향이 바뀌는 시행을 표시한다. 규칙은 연속 `C` 둘 뒤에만 내려가고 `W` 하나에 바로 올라가므로 reversal은 여덟이다.
 
@@ -443,9 +449,9 @@ $$k=\frac{\widehat{\Delta F}}{F_0}=\frac{0.5167}{5.00}=0.1033,$$
 
 즉 $10.3\%$다. 증분을 잰 작동점이 곧 받침이기 때문이다.
 
-**Step 5 — 다른 방법과 비교하면 estimand 문제가 눈앞에 나타난다.** [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]]은 같은 참가자를 같은 핸들의 같은 $5\,\mathrm{N}$ 작동점에서 constant stimuli로 재어 $\mathrm{JND}=0.4107\,\mathrm{N}$, $k=8.1\%$를 얻었다. 이 staircase는 $0.5167\,\mathrm{N}$, $26\%$ 더 크다. 어느 쪽도 틀리지 않았고 어느 쪽도 잡음이 아니다. 하나는 *더 세다고 판정* 곡선의 PSE 둘레 $25$–$75$ 구간의 절반이고, 다른 하나는 차이 검출 과제에서 $70.7\%$ *정답*이 되는 증분이다. 서로 다른 함수의 서로 다른 점이다. 기준과 과제 없이 "그 JND"를 보고한 논문은 다른 연구실이 재현할 수도 비교할 수도 없는 숫자를 만든 것이고, 이것이 §2의 estimand 요구를 산술로 다시 쓴 것이다.
+**Step 5 — 다른 방법과 비교하면 estimand 문제가 눈앞에 나타난다.** [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]]는 같은 참가자를 같은 핸들의 같은 $5\,\mathrm{N}$ 작동점에서 constant stimuli로 재어 $\mathrm{JND}=0.4107\,\mathrm{N}$, $k=8.1\%$를 얻었다. 이 staircase는 $0.5167\,\mathrm{N}$, $26\%$ 더 크다. 어느 쪽도 틀리지 않았고 어느 쪽도 잡음이 아니다. 하나는 *더 세다고 판정* 곡선의 PSE 둘레 $25$–$75$ 구간의 절반이고, 다른 하나는 차이 검출 과제에서 $70.7\%$ *정답*이 되는 증분이다. 서로 다른 함수의 서로 다른 점이다. 기준과 과제 없이 "그 JND"를 보고한 논문은 다른 연구실이 재현할 수도 비교할 수도 없는 숫자를 만든 것이고, 이것이 §2의 estimand 요구를 산술로 다시 쓴 것이다.
 
-**Step 6 — 장치에 대고 확인하기.** [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]]의 P3 벽 양자 $\Delta F_{\text{count}}=0.0245\,\mathrm{N}$을 쓰면, 임계값은 $0.5167/0.0245=21.1$ 카운트이고 침투로는 $0.5167/400=1.29\,\mathrm{mm}$다. staircase 자신의 단 $0.05\,\mathrm{N}$은 $0.05/0.0245=2.0$ 카운트이므로 이 실험의 해상도는 하드웨어가 아니라 실험자가 고른 단이 정했다. 다만 단을 $0.02\,\mathrm{N}$로 잡았다면 $0.8$ 카운트로 장치가 구별하지 못하는 크기이고, 궤적은 양자화 위에서 멈춰 있는데 보고서에는 수렴한 임계값이 적히게 된다.
+**Step 6 — 장치에 대고 확인하기.** [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]]의 P3 벽 양자 $\Delta F_{\text{count}}=0.0245\,\mathrm{N}$을 쓰면, 임계값은 $0.5167/0.0245=21.1$ 카운트이고 침투로는 $0.5167/400=1.29\,\mathrm{mm}$다. staircase 자신의 단 $0.05\,\mathrm{N}$은 $0.05/0.0245=2.0$ 카운트이므로 이 실험의 해상도는 하드웨어가 아니라 실험자가 고른 단이 정했다. 다만 단을 $0.02\,\mathrm{N}$로 잡았다면 $0.8$ 카운트로 장치가 구별하지 못하는 크기이고, 궤적은 양자화 위에서 멈춰 있는데 보고서에는 수렴한 임계값이 적히게 된다.
 
 **Step 7 — 기록 하나가 지지하는 것.** 참가자 한 명, 24 시행이므로 불확실성이 큰 개인 추정값을 지지할 뿐 모집단에 대해서는 아무것도 지지하지 않는다. 20명을 돌려도 어떤 처치 주장에서든 단위는 여전히 참가자다. 480 trial이 아니라 임계값 추정치 20개를 분석한다. §2의 7번 항목이고 아래 자가 점검이다. §3의 사다리에서 이 숫자는 "심리물리 임계값" 줄에 앉는다. 시험한 조건에서의 검출 가능성을 지지하지, 더 나은 과제 제어를 지지하지 않는다.
 
@@ -464,7 +470,7 @@ $$k=\frac{\widehat{\Delta F}}{F_0}=\frac{0.5167}{5.00}=0.1033,$$
 
 ### 과제 · Problem set
 
-Tier C — 이 페이지는 트랙의 읽기 지도이므로 과제도 주장 읽기로 남는다. §7이 이 페이지가 갚아야 할 유도이고, 아래 1번과 2번이 규칙을 바꿔 그 유도를 다시 하는 것이다. 이 페이지와 [[02-foundations/lab-plants|0.6]], 그리고 비교용으로 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]]을 쓴다.
+Tier C — 이 페이지는 트랙의 읽기 지도이므로 과제도 주장 읽기로 남는다. §6이 이 페이지가 갚아야 할 유도이고, 아래 1번과 2번이 규칙을 바꿔 그 유도를 다시 하는 것이다. 이 페이지와 [[02-foundations/lab-plants|0.6]], 그리고 비교용으로 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]]를 쓴다.
 
 같은 핸들, 같은 $5.00\,\mathrm{N}$ 받침, 같은 $0.05\,\mathrm{N}$ 단. 다만 규칙을 **3-down 1-up**으로 바꾸고 $\Delta F=0.50\,\mathrm{N}$에서 시작한다. 12 시행이고 역시 예시 값이다.
 
@@ -477,8 +483,8 @@ Tier C — 이 페이지는 트랙의 읽기 지도이므로 과제도 주장 �
 | 5 | 0.45 | W | 11 | 0.45 | C |
 | 6 | 0.50 | C | 12 | 0.40 | W |
 
-1. **그려라.** 이 기록으로 §6의 그림을 같은 $0.05\,\mathrm{N}$ 줄 위에 그려라. reversal을 표시하고, §6의 그림에 있는 줄 긋기를 여기서는 수행할 수 없는 이유를 말하라.
-2. **유도하라.** (a) reversal 시행과 그 수준. (b) 임계값 추정값과, 그것을 어떻게 평균했는지에 대해 반드시 함께 붙여야 하는 문장. (c) §7 Step 3의 논증으로, 3-down 1-up 규칙의 기준 확률과 1-up 1-down 규칙의 기준 확률. (d) Weber 분수와, 그 추정값을 P3 엔코더 카운트로.
+1. **그려라.** 이 기록으로 그림을 같은 $0.05\,\mathrm{N}$ 줄 위에 그려라. reversal을 표시하고, 그림에 있는 줄 긋기를 여기서는 수행할 수 없는 이유를 말하라.
+2. **유도하라.** (a) reversal 시행과 그 수준. (b) 임계값 추정값과, 그것을 어떻게 평균했는지에 대해 반드시 함께 붙여야 하는 문장. (c) §6 Step 3의 논증으로, 3-down 1-up 규칙의 기준 확률과 1-up 1-down 규칙의 기준 확률. (d) Weber 분수와, 그 추정값을 P3 엔코더 카운트로.
 3. **해석하라.** (a) 어떤 논문이 2AFC 과제에서 1-up 1-down staircase를 돌리고 결과를 "검출 임계값"으로 보고한 뒤 다른 연구실의 constant-stimuli JND와 비교한다. 서로 다른 두 estimand 오류에 이름을 붙여라. 첫째는 (c)를 쓴다. (b) 어떤 연구가 NASA-TLX가 내려가고 완료 시간이 줄었으니 "햅틱이 더 낫다"고 보고한다. 빠진 estimand는 무엇이고, 액추에이터 $\to$ 자극 $\to$ 지각 $\to$ 결과의 어느 화살표가 재지지 않았는가? (c) 20명이 각 30 trial, t-검정에서 $n=600$. 분석 단위는 무엇이고, 보고가 여전히 말해야 하는 것은? (d) 증거 사다리에 "액추에이터 벤치 응답"과 "통제된 과제 개선"을 놓아라. 각각이 아직 지지하지 못하는 것은?
 
 > [!note]- 그리는 법 · How to draw it
@@ -486,11 +492,11 @@ Tier C — 이 페이지는 트랙의 읽기 지도이므로 과제도 주장 �
 > - 모든 시행의 수준을 찍고 이웃 시행을 이어 하나의 연속된 궤적으로 만든다.
 > - 정답은 채운 표식, 오답은 빈 표식으로 그려 규칙이 그림에서 바로 읽히게 한다. 궤적은 규칙의 down 횟수만큼 채운 표식이 연달아야만 내려가고, 빈 표식이 나오면 곧바로 올라간다.
 > - 진행 방향이 바뀌는 시행마다 동그라미를 치고 차례로 번호를 매긴다. 이미 올라가고 있는 궤적 위의 오답은 reversal이 아니다.
-> - §7 Step 2가 버리는 reversal에 줄을 긋고, 남은 것들의 평균에 수평선을 긋는다. 긋기 전에 몇 개가 남는지부터 센다.
-> - 그 수평선의 라벨에는 "임계값"이라고 쓰지 말고 그것이 추정하는 기준을 쓴다: 규칙이 겨냥하는 정답 비율(§7 Step 3), 규칙, 그리고 받침 $5.00\,\mathrm{N}$.
+> - §6 Step 2가 버리는 reversal에 줄을 긋고, 남은 것들의 평균에 수평선을 긋는다. 긋기 전에 몇 개가 남는지부터 센다.
+> - 그 수평선의 라벨에는 "임계값"이라고 쓰지 말고 그것이 추정하는 기준을 쓴다: 규칙이 겨냥하는 정답 비율(§6 Step 3), 규칙, 그리고 받침 $5.00\,\mathrm{N}$.
 > - 그림 옆에 §1의 인과 사슬을 옮겨 적고, 이 그림이 재는 단 하나의 화살표 아래에만 체크를 하고 나머지 둘은 비워 둔다.
 
 > [!tip]- 정답 · Solutions
-> 1. 궤적은 채운 표식이 셋 연달아야만 내려가므로 §6의 그림보다 한 수준에 더 오래 머문다. reversal은 셋이다. §6은 앞의 둘을 버리고 여섯을 평균하는데, 여기서는 그러면 하나가 남는다. 줄 긋기를 수행할 수 없다는 것 자체가 결과이지 불편이 아니다.
+> 1. 궤적은 채운 표식이 셋 연달아야만 내려가므로 그림보다 한 수준에 더 오래 머문다. reversal은 셋이다. §6 Step 2는 앞의 둘을 버리고 여섯을 평균하는데, 여기서는 그러면 하나가 남는다. 줄 긋기를 수행할 수 없다는 것 자체가 결과이지 불편이 아니다.
 > 2. (a) 시행 5에서 $0.45$, 시행 8에서 $0.50$, 시행 12에서 $0.40$. (b) 셋을 모두 평균하면 $(0.45+0.50+0.40)/3=0.45\,\mathrm{N}$이고, 붙여야 할 문장은 이것이 12 시행짜리 run의 reversal *전부*, 즉 홀수 개의 평균이며 burn-in을 하나도 버리지 않았다는 것이다. 그래서 마루와 골이 똑같이 기여하지 않고 추정값이 시작점을 함께 지고 있다. 보통은 reversal 여섯 이상을 최소로 보므로 이 run은 예비 실험으로 다뤄야 한다. (c) 이제 한 단 내려가려면 연속 셋을 맞혀야 하므로 확률은 $p^3$이고, 정상성에서 $p^3=1-p^3$, $p^3=0.5$, $p=0.5^{1/3}=0.7937$, 즉 $79.4\%$ 정답 점이다. 1-up 1-down은 한 번만 맞히면 내려가므로 $p=1-p$에서 $p=0.5$인데, 2대안 과제에서 그것은 chance다. 참가자가 찍고 있는 수준을 추적하는 셈이라 아무것도 추정하지 못한다. (d) $k=0.45/5.00=0.090$, 즉 $9.0\%$. 그리고 $0.45/0.0245=18.4$ 카운트, 침투로는 약 $1.13\,\mathrm{mm}$.
-> 3. (a) 첫째, 그 규칙은 $p=0.5$를 겨냥하는데 2AFC에서 그것은 chance이므로 "임계값"이 애초에 임계값이 아니다. 어떤 자극 수준도 식별되지 않았다. 둘째, 유효한 staircase 숫자라 해도 constant-stimuli JND와는 다른 estimand다(§7 Step 5). 과제가 다르고 기준이 다르고 곡선 위의 점이 다르다. 둘을 비교하려면 명시한 심리측정 모델을 거치거나, 아니면 비교하지 말아야 한다. (b) Estimand는 이름 붙은 양이어야 한다(첨두 접촉력이지 "더 낫다"가 아님). TLX는 자기보고 workload이지 역학 자극이 아니고, 시간은 어느 cue가 변화를 일으켰는지 가리지 않는다. 피부 자극을 보정하라. (c) 처치 주장의 단위는 참가자이고 trial은 nested다. 사람 $20$명 *과* trial $600$회를, 위계·혼합 모델이나 참가자별 요약과 함께 보고한다. (d) 벤치 응답은 전달된 동역학을 지지하지 검출 가능성을 지지하지 않는다. 과제 개선은 그 프로토콜 안의 인과 효과를 지지하지 현장 일반화를 지지하지 않는다.
+> 3. (a) 첫째, 그 규칙은 $p=0.5$를 겨냥하는데 2AFC에서 그것은 chance이므로 "임계값"이 애초에 임계값이 아니다. 어떤 자극 수준도 식별되지 않았다. 둘째, 유효한 staircase 숫자라 해도 constant-stimuli JND와는 다른 estimand다(§6 Step 5). 과제가 다르고 기준이 다르고 곡선 위의 점이 다르다. 둘을 비교하려면 명시한 심리측정 모델을 거치거나, 아니면 비교하지 말아야 한다. (b) Estimand는 이름 붙은 양이어야 한다(첨두 접촉력이지 "더 낫다"가 아님). TLX는 자기보고 workload이지 역학 자극이 아니고, 시간은 어느 cue가 변화를 일으켰는지 가리지 않는다. 피부 자극을 보정하라. (c) 처치 주장의 단위는 참가자이고 trial은 nested다. 사람 $20$명 *과* trial $600$회를, 위계·혼합 모델이나 참가자별 요약과 함께 보고한다. (d) 벤치 응답은 전달된 동역학을 지지하지 검출 가능성을 지지하지 않는다. 과제 개선은 그 프로토콜 안의 인과 효과를 지지하지 현장 일반화를 지지하지 않는다.

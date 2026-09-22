@@ -18,8 +18,8 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Yu, Kamat & Menassa, JCCE 2024** — [arXiv](https://arxiv.org/abs/2309.11619) · [PDF](https://arxiv.org/pdf/2309.11619)
 
 > [!note] Math on-ramp · 수학 준비물
-> [[02-foundations/rl-basics|7. RL Basics §6]] and [[02-foundations/ml-practice|9. ML Practice §1]]. VR demonstrations raise a distribution-shift question that the paper must answer: what differs between a demonstration in VR and the same action on a site?
-> [[02-foundations/rl-basics|7. RL 기초 §6]]과 [[02-foundations/ml-practice|9. ML 실무 §1]]. VR 시연은 논문이 답해야 할 분포 이동 질문을 만든다: VR에서의 시연과 현장에서의 같은 동작은 무엇이 다른가?
+> [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]] and [[02-foundations/ml-practice|9. ML Practice §1]]. VR demonstrations raise a distribution-shift question that the paper must answer: what differs between a demonstration in VR and the same action on a site?
+> [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]]과 [[02-foundations/ml-practice|9. ML 실무 §1]]. VR 시연은 논문이 답해야 할 분포 이동 질문을 만든다: VR에서의 시연과 현장에서의 같은 동작은 무엇이 다른가?
 
 ## English
 
@@ -30,7 +30,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **Context.** Repeated full-scale demonstrations can make construction skill collection burdensome. Virtual collection and hierarchical skill reuse target that bottleneck, while leaving physical transfer as a separate evaluation question.
 
-**Method**: a cloud-robotics virtual demonstration framework digitalizes the demonstration process, so workers need not repeatedly perform the task at full physical scale, and demonstrations become reusable across similar tasks. A Hierarchical Imitation Learning model built on deep generative models splits the skill into high-level *sequential* sub-skills (what to do next) and low-level *reactive* sub-skills (how to respond to contact and variation). In the vocabulary of [[02-foundations/rl-basics|RL 기초 §6]]: plain behavioral cloning compounds errors once the robot drifts from demonstrated states (covariate shift); this paper attacks the problem from both sides — hierarchy plus reactive sub-skills to absorb drift, and cheap VR demonstrations to widen state coverage.
+**Method**: a cloud-robotics virtual demonstration framework digitalizes the demonstration process, so workers need not repeatedly perform the task at full physical scale, and demonstrations become reusable across similar tasks. A Hierarchical Imitation Learning model built on deep generative models splits the skill into high-level *sequential* sub-skills (what to do next) and low-level *reactive* sub-skills (how to respond to contact and variation). In the vocabulary of [[02-foundations/rl-robot-learning|로봇 학습을 위한 RL §1]]: plain behavioral cloning compounds errors once the robot drifts from demonstrated states (covariate shift); this paper attacks the problem from both sides — hierarchy plus reactive sub-skills to absorb drift, and cheap VR demonstrations to widen state coverage.
 
 **What it measured.** The abstract reports no quantitative result. [Abstract checked](https://arxiv.org/abs/2309.11619).
 
@@ -52,7 +52,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 
 **맥락.** 실물 크기의 반복 시연은 건설 스킬 수집 부담을 키운다. 가상 수집과 계층적 재사용이 그 병목을 겨냥한다. 물리적 전이는 별도의 평가 질문으로 남는다.
 
-**방법**: 클라우드 로보틱스 기반 가상 시연 프레임워크가 시연 과정을 디지털화해, 작업자가 과제를 실물 규모로 반복 수행할 필요가 없고 시연이 유사 과제 간에 재사용된다. 심층 생성 모델 위에 지은 계층적 모방학습 모델이 스킬을 상위의 *순차적* 하위 스킬(다음에 무엇을 할지)과 하위의 *반응적* 하위 스킬(접촉과 변동에 어떻게 반응할지)로 나눈다. [[02-foundations/rl-basics|RL 기초 §6]]의 어휘로 말하면: 순수 행동 복제(BC)는 로봇이 시연된 상태에서 벗어나는 순간 오차가 누적된다(공변량 이동); 이 논문은 양쪽에서 공략한다 — 이탈을 흡수하는 계층 + 반응적 하위 스킬, 그리고 상태 커버리지를 넓히는 값싼 VR 시연.
+**방법**: 클라우드 로보틱스 기반 가상 시연 프레임워크가 시연 과정을 디지털화해, 작업자가 과제를 실물 규모로 반복 수행할 필요가 없고 시연이 유사 과제 간에 재사용된다. 심층 생성 모델 위에 지은 계층적 모방학습 모델이 스킬을 상위의 *순차적* 하위 스킬(다음에 무엇을 할지)과 하위의 *반응적* 하위 스킬(접촉과 변동에 어떻게 반응할지)로 나눈다. [[02-foundations/rl-robot-learning|로봇 학습을 위한 RL §1]]의 어휘로 말하면: 순수 행동 복제(BC)는 로봇이 시연된 상태에서 벗어나는 순간 오차가 누적된다(공변량 이동); 이 논문은 양쪽에서 공략한다 — 이탈을 흡수하는 계층 + 반응적 하위 스킬, 그리고 상태 커버리지를 넓히는 값싼 VR 시연.
 
 **무엇을 쟀는가.** 초록에 정량 결과가 제시되지 않았다. [초록 확인](https://arxiv.org/abs/2309.11619).
 
@@ -65,7 +65,7 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 ### 연결
 
 - 이전: [[liang-lfd|Liang LfD]] (건설 모방학습의 진입점 — 이 논문은 그 확장 국면)
-- 스트림: [[05-construction-robotics/assembly-fabrication|4]] · 기초: [[02-foundations/rl-basics|RL 기초 §6]] (BC와 공변량 이동)
+- 스트림: [[05-construction-robotics/assembly-fabrication|4]] · 기초: [[02-foundations/rl-robot-learning|로봇 학습을 위한 RL §1]] (BC와 공변량 이동)
 - 계보: Kamat/Menassa → Yu(Virginia Tech 교수) · [[05-construction-robotics/lineage|건설로봇 계보]]
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim

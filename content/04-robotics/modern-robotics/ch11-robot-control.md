@@ -7,15 +7,18 @@ depth-goal: "Follow the formulation, frames, assumptions, and failure modes well
 mastery-when: "Raise to Mastery when this subsystem is modified, defended, or claimed as a thesis contribution."
 ---
 
-**Modern Robotics ch.11** — [[04-robotics/modern-robotics-book|book guide & free PDF]] · continues into [[04-robotics/lqr-lqg|LQR]] → [[04-robotics/mpc|MPC]]
+**Modern Robotics ch.11** — [[04-robotics/modern-robotics-book|book guide & free PDF]] · continues into [[04-robotics/control-theory-ce397|5. Control Theory]] (the same ideas in state-space form) → [[04-robotics/lqr-lqg|LQR]] → [[04-robotics/mpc|MPC]]
 
 > [!note] Prerequisites · 선수 지식
-> You need the equation of motion from [[04-robotics/modern-robotics/ch08-dynamics|ch.8]] and second-order error dynamics ($\zeta, \omega_n$) from [[02-foundations/engineering-math|0.5 §8]]; [[04-robotics/control-theory-ce397|5. Control Theory]] develops the same ideas in state-space form.
-> [[04-robotics/modern-robotics/ch08-dynamics|8장]]의 운동 방정식과 [[02-foundations/engineering-math|0.5 §8]]의 오차 미분방정식($\zeta, \omega_n$)이 필요하다; [[04-robotics/control-theory-ce397|5. 제어 이론]]이 같은 내용을 상태공간으로 전개한다.
+> You need plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], the equation of motion from [[04-robotics/modern-robotics/ch08-dynamics|ch.8]], the statics map $\tau = J^\top F$ from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5 §3]], second-order error dynamics ($\zeta, \omega_n$) from [[02-foundations/engineering-math|0.5 §8]], and eigenvalues and eigenvectors of a symmetric matrix from [[02-foundations/linear-algebra|1. Linear Algebra §3]], along which Step 4 splits the arm's response.
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, [[04-robotics/modern-robotics/ch08-dynamics|8장]]의 운동 방정식, [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장 §3]]의 정역학 사상 $\tau = J^\top F$, [[02-foundations/engineering-math|0.5 §8]]의 2차 오차 동역학($\zeta, \omega_n$), 그리고 [[02-foundations/linear-algebra|1. 선형대수 §3]]의 대칭 행렬의 고윳값과 고유벡터가 필요하다. 4단계가 팔의 응답을 그 고유벡터 방향으로 나눈다.
 
 ## English
 
 **Core question**: how do we make the robot actually follow the trajectory?
+
+> [!note] First pass · 처음이라면
+> Read the running plant, the picture and Steps 1–3 of the worked case — one error sent through computed torque and through PD, with the cross-coupling visible in two cells of $M^{-1}$ — then §2, which defines computed torque. Step 4 (one pair of gains giving two different modes, which needs the eigenvectors of $M$) and Step 5 (the same algebra at the tip) are the second pass, together with §1's velocity-input and torque-input regimes and §3's contact example. Then the self-check and the problem set, which moves the error to the elbow.
 
 ### Running plant · 이 페이지의 장치
 
@@ -112,7 +115,7 @@ Left, plant **P2** at the catalog pose with the shoulder $0.1\,\mathrm{rad} = 5.
 
 One state, two controllers, all numbers exact. The arm is at rest at the catalog pose, the shoulder is $0.1\,\mathrm{rad}$ away from where it should be, and the elbow is perfect: $e = (0.1,\ 0)\,\mathrm{rad}$, $\dot e = 0$, $\ddot\theta_d = 0$. At rest $c = 0$ ([[04-robotics/modern-robotics/ch08-dynamics|ch.8]]), so the plant is $\ddot\theta = M^{-1}(\tau - g)$ and only two terms are in play.
 
-**Step 1 — computed torque, evaluated.** The law is $\tau = M(\theta)(\ddot\theta_d + K_pe + K_d\dot e) + c + g$. The bracket is $K_pe = (10,\ 0)\,\mathrm{rad/s^2}$, a *desired acceleration*, and $M$ converts it into the torque that actually delivers it:
+**Step 1 — computed torque, evaluated.** The law, defined part by part in §2, is $\tau = M(\theta)(\ddot\theta_d + K_pe + K_d\dot e) + c + g$. The bracket is $K_pe = (10,\ 0)\,\mathrm{rad/s^2}$, a *desired acceleration*, and $M$ converts it into the torque that actually delivers it:
 
 $$\tau = \begin{pmatrix}3&1\\1&1\end{pmatrix}\begin{pmatrix}10\\0\end{pmatrix} + \begin{pmatrix}19.62\\0\end{pmatrix} = \begin{pmatrix}30\\10\end{pmatrix} + \begin{pmatrix}19.62\\0\end{pmatrix} = \begin{pmatrix}49.62\\10\end{pmatrix}\ \mathrm{N\,m}$$
 
@@ -122,7 +125,7 @@ and note the second entry: the controller sends $10\,\mathrm{N\,m}$ to the **elb
 
 $$\ddot\theta = M^{-1}\bigl(M(K_pe) + g - g\bigr) = K_pe = (10,\ 0)\ \mathrm{rad/s^2}$$
 
-so the shoulder accelerates at exactly the commanded rate and the elbow does not move at all. Since $e = \theta_d - \theta$ with $\theta_d$ constant, $\ddot e = -\ddot\theta$, and the error obeys $\ddot e + K_p e = 0$ joint by joint — check it: $-10 + 100(0.1) = 0$. With $K_d$ switched on the same cancellation leaves $\ddot e + K_d\dot e + K_pe = 0$, giving $\omega_n = \sqrt{K_p} = 10\,\mathrm{rad/s}$, $\zeta = K_d/(2\sqrt{K_p}) = 1$, and a $2\,\%$ settling estimate of $4/(\zeta\omega_n) = 0.4\,\mathrm{s}$ — **the same pair of numbers for both joints**, which is the whole prize.
+so the shoulder accelerates at exactly the commanded rate and the elbow does not move at all. Since $e = \theta_d - \theta$ with $\theta_d$ constant, $\ddot e = -\ddot\theta$, and the error obeys $\ddot e + K_p e = 0$ joint by joint — check it: $-10 + 100(0.1) = 0$. With $K_d$ switched on the same cancellation leaves $\ddot e + K_d\dot e + K_pe = 0$, giving $\omega_n = \sqrt{K_p} = 10\,\mathrm{rad/s}$, $\zeta = K_d/(2\sqrt{K_p}) = 1$, and a $2\,\%$ settling estimate of $4/(\zeta\omega_n) = 0.4\,\mathrm{s}$ (four time constants $1/(\zeta\omega_n)$; this estimate and the overshoot formula used in Step 4 are §1's worked example, from MR §11.3) — **the same pair of numbers for both joints**, which is the whole prize.
 
 **Step 3 — the same error, PD with gravity compensation.** Now drop the $M$ and send $\tau = K_pe + K_d\dot e + g = (10,\ 0) + (19.62,\ 0) = (29.62,\ 0)\,\mathrm{N\,m}$. The elbow gets nothing, because it asked for nothing. The plant disagrees:
 
@@ -130,18 +133,18 @@ $$\ddot\theta = M^{-1}\begin{pmatrix}10\\0\end{pmatrix} = \begin{pmatrix}0.5&-0.
 
 Two things went wrong at once, and they are the two cells of $M^{-1}$. The shoulder got **half** the acceleration it asked for, because $(M^{-1})_{11} = 0.5$, not $1$. And the elbow, with zero error and zero commanded torque, is accelerating at $-5\,\mathrm{rad/s^2}$, because $(M^{-1})_{21} = -0.5$. There is no bug and no disturbance; the arm is simply one body, and pushing one end of it moves the other.
 
-**Step 4 — what that does to the error dynamics, as poles.** With gravity cancelled and $c = 0$, PD control gives $M\ddot e + K_d\dot e + K_pe = 0$, i.e. $\ddot e + K_dM^{-1}\dot e + K_pM^{-1}e = 0$. Both matrix coefficients are the *same* matrix $M^{-1}$ times a scalar, so the system decouples in the eigenvectors of $M$ — not in the joints. With $\mu$ an eigenvalue of $M^{-1}$, each mode obeys $\ddot e_i + K_d\mu_i\dot e_i + K_p\mu_ie_i = 0$, so
+**Step 4 — what that does to the error dynamics, as poles.** With gravity cancelled and $c = 0$, PD control gives $M\ddot e + K_d\dot e + K_pe = 0$, i.e. $\ddot e + K_dM^{-1}\dot e + K_pM^{-1}e = 0$. Both matrix coefficients are the *same* matrix $M^{-1}$ times a scalar, so the system decouples in the eigenvectors of $M$ — not in the joints. (An eigenvector $v$ of $M$ is a direction $M$ only scales, $Mv = \lambda v$, and because $M$ is symmetric its two eigenvectors are perpendicular and $M^{-1}$ has the same ones with eigenvalues $1/\lambda$: [[02-foundations/linear-algebra|1. Linear Algebra §3]]. Writing $e$ as a combination of those two directions therefore turns $M^{-1}$ into a diagonal matrix and the matrix equation into two scalar ones.) With $\mu$ an eigenvalue of $M^{-1}$, each mode obeys $\ddot e_i + K_d\mu_i\dot e_i + K_p\mu_ie_i = 0$, so
 
 $$\omega_{n,i} = \sqrt{K_p\mu_i}, \qquad \zeta_i = \frac{K_d\mu_i}{2\sqrt{K_p\mu_i}} = \frac{K_d\sqrt{\mu_i}}{2\sqrt{K_p}} = \sqrt{\mu_i}$$
 
-the last equality holding because this page's $K_d = 2\sqrt{K_p}$. Since $M$'s eigenvalues are $2 \pm \sqrt2$, those of $M^{-1}$ are $\mu = (2 \mp \sqrt2)/2 = 0.2929$ and $1.7071$, and the two modes come out as
+the last equality holding because this page's $K_d = 2\sqrt{K_p}$. Since $\det(M - \lambda I) = (3-\lambda)(1-\lambda) - 1 = \lambda^2 - 4\lambda + 2 = 0$ gives $M$'s eigenvalues as $2 \pm \sqrt2$, those of $M^{-1}$ are $\mu = (2 \mp \sqrt2)/2 = 0.2929$ and $1.7071$, and the two modes come out as
 
 | mode | direction | $\mu$ | $\omega_n$ | $\zeta$ | $4/(\zeta\omega_n)$ | overshoot |
 |---|---|---:|---:|---:|---:|---:|
 | heavy | $(0.924,\ 0.383)$, mostly shoulder | $0.2929$ | $5.412$ | $0.5412$ | $1.366\,\mathrm{s}$ | $13.2\,\%$ |
 | light | $(0.383,\ -0.924)$, elbow counter-rotating | $1.7071$ | $13.066$ | $1.3066$ | $0.234\,\mathrm{s}$ | none |
 
-One pair of gains, and the arm answers with two natural frequencies a factor of $2.4$ apart and two damping ratios straddling $1$: the heavy direction rings and takes $1.37\,\mathrm{s}$ to settle, the light one is overdamped and sluggish in its own way at $0.66\,\mathrm{s}$, set by its slower pole $-\zeta\omega_n + \omega_n\sqrt{\zeta^2-1} = -6.08\,\mathrm{rad/s}$ (the table's $4/(\zeta\omega_n)$ holds only for $\zeta \le 1$). Neither is the $\zeta = 1$, $0.4\,\mathrm{s}$ response that was designed. **Choosing $K_d = 2\sqrt{K_p}$ buys critical damping only if the inertia is $1$.** Computed torque makes it $1$ by dividing it out first; that is the only difference between steps 2 and 3.
+One pair of gains, and the arm answers with two natural frequencies a factor of $2.4$ apart and two damping ratios straddling $1$: the heavy direction rings and takes $1.37\,\mathrm{s}$ to settle, the light one is overdamped and sluggish in its own way at $0.66\,\mathrm{s}$, set by its slower pole, the root of $s^2 + 2\zeta\omega_n s + \omega_n^2 = 0$ nearer zero, $-\zeta\omega_n + \omega_n\sqrt{\zeta^2-1} = -6.08\,\mathrm{rad/s}$ (the table's $4/(\zeta\omega_n)$ holds only for $\zeta \le 1$). Neither is the $\zeta = 1$, $0.4\,\mathrm{s}$ response that was designed. **Choosing $K_d = 2\sqrt{K_p}$ buys critical damping only if the inertia is $1$.** Computed torque makes it $1$ by dividing it out first; that is the only difference between steps 2 and 3.
 
 **Step 5 — the same physics at the tip.** The catalog's $\Lambda = \mathrm{diag}(1,2)$ says a task-space controller asking for a tip acceleration $a$ must apply the wrench $F = \Lambda a$, and $\tau = J^\top F$ turns that into joint torques ([[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5 §3]]). For $a = (1,1)\,\mathrm{m/s^2}$: $F = (1,\ 2)\,\mathrm{N}$ — twice as much force for the same acceleration in $y$ as in $x$, which is what "the tip feels twice as heavy in $y$" means — and $\tau = J^\top F = (1,\ -1)\,\mathrm{N\,m}$. The structure is identical to step 1 with $\Lambda$ in place of $M$ and $J^\top$ bolted on, which is why operational-space control is a re-coordinatization of this chapter rather than a new idea.
 
@@ -196,7 +199,7 @@ where $\hat M, \hat c, \hat g$ are the *modelled* mass matrix, velocity-product 
 
 ### 3. Contact, and where control goes after this chapter
 
-**Worked: P2 under a $10\,\mathrm{N}$ contact, PD versus inverse dynamics.** Catalog pose, $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ ([[02-foundations/lab-plants|0.6]]). A panel pushes the tip with $F=(0,-10)\,\mathrm{N}$ (the robot pressing down). Duality gives $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$ — the shoulder carries the load, the elbow does not, because the forearm is vertical. Inverse dynamics can add that $J^\top F$ (and $g$) and hold with $e=0$. Joint-space PD cannot: if gravity is already cancelled and the only restoring torque is $K_p e$ with a deliberately soft $K_p=10\,\mathrm{N{\cdot}m/rad}$ on each joint — a tenth of this page's usual gain, chosen so the sag comes out a round number — the linear map predicts $e_1\approx 10/10=1\,\mathrm{rad}$ of sag at the shoulder. That $O(1)$ radian is the lecture saying the linear spring is the wrong object for a $10\,\mathrm{N}$ contact. PD turns contact into position error times stiffness; a stiff PD on a stiff panel makes huge force from a millimetre. Impedance, next page, commands the *relationship* instead.
+**Worked: P2 under a $10\,\mathrm{N}$ contact, PD versus inverse dynamics.** Catalog pose, $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ ([[02-foundations/lab-plants|0.6]]). A panel pushes the tip with $F=(0,-10)\,\mathrm{N}$ (the robot pressing down). Duality gives $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$ — the shoulder carries the load, the elbow does not, because the forearm is vertical. Inverse dynamics can add that $J^\top F$ (and $g$) and hold with $e=0$. Joint-space PD cannot: if gravity is already cancelled and the only restoring torque is $K_p e$ with a deliberately soft $K_p=10\,\mathrm{N{\cdot}m/rad}$ on each joint — a tenth of this page's usual gain, chosen so the sag comes out a round number — the linear map predicts $e_1\approx 10/10=1\,\mathrm{rad}$ of sag at the shoulder. That $O(1)$ radian is the lecture saying the linear spring is the wrong object for a $10\,\mathrm{N}$ contact. The soft gain is also the physically relevant regime, not only a convenient one: a joint about to touch a surface whose position is uncertain is detuned on purpose, because joint stiffness is what turns a position error into contact force, and at the usual $K_p = 100$ the same load would sag $0.1\,\mathrm{rad}$ while any commanded penetration would cost ten times the force. PD turns contact into position error times stiffness; a stiff PD on a stiff panel makes huge force from a millimetre. Impedance, next page, commands the *relationship* instead.
 
 **Force and impedance control**: when contact matters, control the *relationship* between
 motion and force (virtual spring-damper; full treatment in [[04-robotics/force-compliance-control|13. Force & Compliance Control]]) rather than position alone — the entry point to
@@ -222,7 +225,7 @@ not on impedance control alone.
 > 1. Matching $\ddot e + 2\zeta\omega_n\dot e + \omega_n^2 e = 0$ gives $\omega_n^2 = K_p$ and $2\zeta\omega_n = K_d$, so $\zeta = 1 \iff K_d = 2\sqrt{K_p}$ ([[02-foundations/engineering-math|0.5 §8]]).
 > 2. The cancellation is incomplete, so residual nonlinear terms remain inside the error dynamics — they act as a disturbance the PD gains must suppress. The error dynamics are no longer exactly linear, and both tracking performance and stability margin degrade as model error grows.
 > 3. Contact tasks (polishing, insertion — where a small position error against a stiff surface produces a huge force) and human collaboration (compliance so a collision is survivable). Both are cases where the *force–motion relationship* matters more than positional accuracy.
-> 4. Since $\zeta_i = K_d\sqrt{\mu_i}/(2\sqrt{K_p})$ with $\mu_i$ the eigenvalues of $M^{-1}$, both damping ratios equal $1$ only when $M$ has a single repeated eigenvalue equal to $1$ — that is, when $M = I$, an arm whose inertia is $1$ in every direction and at every pose. P2 is not that arm, and no serial manipulator with revolute joints is. Computed torque multiplies by $M(\theta)$ before the gains ever see the plant, so the error system it leaves behind genuinely has inertia $1$ in every direction, and the single designed $\zeta$ applies to both joints.
+> 4. Since $\zeta_i = K_d\sqrt{\mu_i}/(2\sqrt{K_p})$ with $\mu_i$ the eigenvalues of $M^{-1}$ (Step 4; [[02-foundations/linear-algebra|1. Linear Algebra §3]]), both damping ratios equal $1$ only when $M$ has a single repeated eigenvalue equal to $1$ — that is, when $M = I$, an arm whose inertia is $1$ in every direction and at every pose. P2 is not that arm, and no serial manipulator with revolute joints is. Computed torque multiplies by $M(\theta)$ before the gains ever see the plant, so the error system it leaves behind genuinely has inertia $1$ in every direction, and the single designed $\zeta$ applies to both joints.
 
 ### Problem set · 과제
 
@@ -248,6 +251,9 @@ Tier B. Same plant **P2** at the same catalog pose from [[02-foundations/lab-pla
 ## 한국어
 
 **핵심 질문**: 로봇이 궤적을 실제로 따르게 만드는 방법은?
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 장치, 그림, 그리고 계산의 1–3단계 — 오차 하나를 계산 토크와 PD에 각각 보내고, 관절 사이의 결합이 $M^{-1}$의 두 칸에서 보이는 부분 — 를 읽고, 그다음 계산 토크를 정의하는 §2를 읽어라. 4단계(이득 한 쌍이 서로 다른 두 모드를 내는 이유, $M$의 고유벡터가 필요하다)와 5단계(같은 대수를 말단에서)는 두 번째 읽기이고, §1의 속도 입력·토크 입력 영역과 §3의 접촉 예제도 그때 읽는다. 그다음 스스로 점검과, 오차를 엘보로 옮기는 과제.
 
 ### 이 페이지의 장치 · Running plant
 
@@ -345,7 +351,7 @@ $$M = \begin{pmatrix}3&1\\1&1\end{pmatrix}\ \mathrm{kg\,m^2}, \qquad g = (19.62,
 
 상태 하나, 제어기 둘, 숫자는 전부 정확하다. 팔은 카탈로그 자세에 정지해 있고, 어깨가 있어야 할 자리에서 $0.1\,\mathrm{rad}$ 벗어나 있으며, 엘보는 완벽하다. $e = (0.1,\ 0)\,\mathrm{rad}$, $\dot e = 0$, $\ddot\theta_d = 0$이다. 정지 상태라 $c = 0$이므로([[04-robotics/modern-robotics/ch08-dynamics|8장]]) 플랜트는 $\ddot\theta = M^{-1}(\tau - g)$이고 항은 둘뿐이다.
 
-**1단계 — 계산 토크를 계산한다.** 법칙은 $\tau = M(\theta)(\ddot\theta_d + K_pe + K_d\dot e) + c + g$다. 괄호 안은 $K_pe = (10,\ 0)\,\mathrm{rad/s^2}$, 곧 *원하는 가속도*이고, $M$이 그것을 실제로 만들어 내는 토크로 바꾼다:
+**1단계 — 계산 토크를 계산한다.** §2가 부분별로 정의하는 법칙은 $\tau = M(\theta)(\ddot\theta_d + K_pe + K_d\dot e) + c + g$다. 괄호 안은 $K_pe = (10,\ 0)\,\mathrm{rad/s^2}$, 곧 *원하는 가속도*이고, $M$이 그것을 실제로 만들어 내는 토크로 바꾼다:
 
 $$\tau = \begin{pmatrix}3&1\\1&1\end{pmatrix}\begin{pmatrix}10\\0\end{pmatrix} + \begin{pmatrix}19.62\\0\end{pmatrix} = \begin{pmatrix}30\\10\end{pmatrix} + \begin{pmatrix}19.62\\0\end{pmatrix} = \begin{pmatrix}49.62\\10\end{pmatrix}\ \mathrm{N\,m}$$
 
@@ -355,7 +361,7 @@ $$\tau = \begin{pmatrix}3&1\\1&1\end{pmatrix}\begin{pmatrix}10\\0\end{pmatrix} +
 
 $$\ddot\theta = M^{-1}\bigl(M(K_pe) + g - g\bigr) = K_pe = (10,\ 0)\ \mathrm{rad/s^2}$$
 
-어깨는 정확히 명령한 만큼 가속하고 엘보는 전혀 움직이지 않는다. $\theta_d$가 상수인 $e = \theta_d - \theta$이므로 $\ddot e = -\ddot\theta$이고, 오차는 관절별로 $\ddot e + K_p e = 0$을 따른다. 검산하면 $-10 + 100(0.1) = 0$이다. $K_d$까지 켜면 같은 상쇄가 $\ddot e + K_d\dot e + K_pe = 0$을 남겨 $\omega_n = \sqrt{K_p} = 10\,\mathrm{rad/s}$, $\zeta = K_d/(2\sqrt{K_p}) = 1$, $2\,\%$ 정착 시간 추정 $4/(\zeta\omega_n) = 0.4\,\mathrm{s}$가 된다. **두 관절 모두 같은 숫자 쌍**이고, 그것이 얻으려는 상 전부다.
+어깨는 정확히 명령한 만큼 가속하고 엘보는 전혀 움직이지 않는다. $\theta_d$가 상수인 $e = \theta_d - \theta$이므로 $\ddot e = -\ddot\theta$이고, 오차는 관절별로 $\ddot e + K_p e = 0$을 따른다. 검산하면 $-10 + 100(0.1) = 0$이다. $K_d$까지 켜면 같은 상쇄가 $\ddot e + K_d\dot e + K_pe = 0$을 남겨 $\omega_n = \sqrt{K_p} = 10\,\mathrm{rad/s}$, $\zeta = K_d/(2\sqrt{K_p}) = 1$, $2\,\%$ 정착 시간 추정 $4/(\zeta\omega_n) = 0.4\,\mathrm{s}$가 된다(시정수 $1/(\zeta\omega_n)$의 네 배. 이 추정과 4단계가 쓰는 오버슈트 공식은 §1의 계산 예제에 있고 출처는 MR §11.3이다). **두 관절 모두 같은 숫자 쌍**이고, 그것이 얻으려는 상 전부다.
 
 **3단계 — 같은 오차, 중력 보상만 붙인 PD.** 이번에는 $M$을 빼고 $\tau = K_pe + K_d\dot e + g = (10,\ 0) + (19.62,\ 0) = (29.62,\ 0)\,\mathrm{N\,m}$을 보낸다. 엘보는 아무것도 요구하지 않았으므로 아무것도 받지 않는다. 플랜트의 대답은 다르다:
 
@@ -363,18 +369,18 @@ $$\ddot\theta = M^{-1}\begin{pmatrix}10\\0\end{pmatrix} = \begin{pmatrix}0.5&-0.
 
 한꺼번에 둘이 틀어졌고, 둘 다 $M^{-1}$의 성분이다. 어깨는 요구한 가속도의 **절반**만 얻었다. $(M^{-1})_{11} = 0.5$이지 $1$이 아니기 때문이다. 그리고 오차도 0, 명령 토크도 0인 엘보가 $-5\,\mathrm{rad/s^2}$로 가속하고 있다. $(M^{-1})_{21} = -0.5$이기 때문이다. 버그도 외란도 아니다. 팔은 그냥 하나의 물체이고, 한쪽 끝을 밀면 다른 쪽이 움직인다.
 
-**4단계 — 그것이 오차 동역학의 극점에 하는 일.** 중력이 상쇄되고 $c = 0$이면 PD 제어는 $M\ddot e + K_d\dot e + K_pe = 0$, 곧 $\ddot e + K_dM^{-1}\dot e + K_pM^{-1}e = 0$을 준다. 두 행렬 계수가 *같은* 행렬 $M^{-1}$에 스칼라를 곱한 것이므로, 계는 관절이 아니라 $M$의 고유벡터에서 분리된다. $\mu$를 $M^{-1}$의 고윳값이라 하면 각 모드가 $\ddot e_i + K_d\mu_i\dot e_i + K_p\mu_ie_i = 0$을 따르므로
+**4단계 — 그것이 오차 동역학의 극점에 하는 일.** 중력이 상쇄되고 $c = 0$이면 PD 제어는 $M\ddot e + K_d\dot e + K_pe = 0$, 곧 $\ddot e + K_dM^{-1}\dot e + K_pM^{-1}e = 0$을 준다. 두 행렬 계수가 *같은* 행렬 $M^{-1}$에 스칼라를 곱한 것이므로, 계는 관절이 아니라 $M$의 고유벡터에서 분리된다. ($M$의 고유벡터 $v$는 $M$이 늘이거나 줄이기만 하는 방향, 곧 $Mv = \lambda v$인 방향이다. $M$이 대칭이므로 두 고유벡터는 서로 수직이고, $M^{-1}$은 같은 고유벡터에 고윳값 $1/\lambda$를 갖는다: [[02-foundations/linear-algebra|1. 선형대수 §3]]. 그래서 $e$를 그 두 방향의 결합으로 쓰면 $M^{-1}$이 대각 행렬이 되고 행렬 방정식이 스칼라 방정식 둘로 갈라진다.) $\mu$를 $M^{-1}$의 고윳값이라 하면 각 모드가 $\ddot e_i + K_d\mu_i\dot e_i + K_p\mu_ie_i = 0$을 따르므로
 
 $$\omega_{n,i} = \sqrt{K_p\mu_i}, \qquad \zeta_i = \frac{K_d\mu_i}{2\sqrt{K_p\mu_i}} = \frac{K_d\sqrt{\mu_i}}{2\sqrt{K_p}} = \sqrt{\mu_i}$$
 
-이고, 마지막 등호는 이 페이지의 $K_d = 2\sqrt{K_p}$ 때문에 성립한다. $M$의 고윳값이 $2 \pm \sqrt2$이므로 $M^{-1}$의 고윳값은 $\mu = (2 \mp \sqrt2)/2 = 0.2929$와 $1.7071$이고, 두 모드는 이렇게 나온다:
+이고, 마지막 등호는 이 페이지의 $K_d = 2\sqrt{K_p}$ 때문에 성립한다. $\det(M - \lambda I) = (3-\lambda)(1-\lambda) - 1 = \lambda^2 - 4\lambda + 2 = 0$에서 $M$의 고윳값이 $2 \pm \sqrt2$이므로 $M^{-1}$의 고윳값은 $\mu = (2 \mp \sqrt2)/2 = 0.2929$와 $1.7071$이고, 두 모드는 이렇게 나온다:
 
 | 모드 | 방향 | $\mu$ | $\omega_n$ | $\zeta$ | $4/(\zeta\omega_n)$ | 오버슈트 |
 |---|---|---:|---:|---:|---:|---:|
 | 무거운 쪽 | $(0.924,\ 0.383)$, 주로 어깨 | $0.2929$ | $5.412$ | $0.5412$ | $1.366\,\mathrm{s}$ | $13.2\,\%$ |
 | 가벼운 쪽 | $(0.383,\ -0.924)$, 엘보 역회전 | $1.7071$ | $13.066$ | $1.3066$ | $0.234\,\mathrm{s}$ | 없음 |
 
-이득은 한 쌍인데 팔은 $2.4$배 차이 나는 고유 진동수 둘과 $1$을 사이에 둔 감쇠비 둘로 답한다. 무거운 방향은 울리며 정착에 $1.37\,\mathrm{s}$가 걸리고, 가벼운 방향은 과감쇠라 그 나름대로 굼떠 $0.66\,\mathrm{s}$다. 그 시간은 느린 극점 $-\zeta\omega_n + \omega_n\sqrt{\zeta^2-1} = -6.08\,\mathrm{rad/s}$가 정한다(표의 $4/(\zeta\omega_n)$는 $\zeta \le 1$에서만 맞다). 어느 쪽도 설계한 $\zeta = 1$, $0.4\,\mathrm{s}$가 아니다. **$K_d = 2\sqrt{K_p}$가 임계 감쇠를 사 주는 것은 관성이 $1$일 때뿐이다.** 계산 토크는 먼저 나누어 없애서 관성을 $1$로 만든다. 2단계와 3단계의 차이는 그것 하나다.
+이득은 한 쌍인데 팔은 $2.4$배 차이 나는 고유 진동수 둘과 $1$을 사이에 둔 감쇠비 둘로 답한다. 무거운 방향은 울리며 정착에 $1.37\,\mathrm{s}$가 걸리고, 가벼운 방향은 과감쇠라 그 나름대로 굼떠 $0.66\,\mathrm{s}$다. 그 시간은 느린 극점, 곧 $s^2 + 2\zeta\omega_n s + \omega_n^2 = 0$의 두 근 중 0에 가까운 쪽 $-\zeta\omega_n + \omega_n\sqrt{\zeta^2-1} = -6.08\,\mathrm{rad/s}$가 정한다(표의 $4/(\zeta\omega_n)$는 $\zeta \le 1$에서만 맞다). 어느 쪽도 설계한 $\zeta = 1$, $0.4\,\mathrm{s}$가 아니다. **$K_d = 2\sqrt{K_p}$가 임계 감쇠를 사 주는 것은 관성이 $1$일 때뿐이다.** 계산 토크는 먼저 나누어 없애서 관성을 $1$로 만든다. 2단계와 3단계의 차이는 그것 하나다.
 
 **5단계 — 같은 물리를 말단에서.** 카탈로그의 $\Lambda = \mathrm{diag}(1,2)$는 말단 가속도 $a$를 요구하는 작업 공간 제어기가 렌치 $F = \Lambda a$를 가해야 한다는 뜻이고, $\tau = J^\top F$가 그것을 관절 토크로 바꾼다([[04-robotics/modern-robotics/ch05-velocity-kinematics|5장 §3]]). $a = (1,1)\,\mathrm{m/s^2}$이면 $F = (1,\ 2)\,\mathrm{N}$이다. 같은 가속도에 $y$에서 $x$의 두 배 힘이 들고, 그것이 "말단이 $y$에서 두 배 무겁다"의 뜻이다. 그리고 $\tau = J^\top F = (1,\ -1)\,\mathrm{N\,m}$이다. 구조가 1단계와 똑같고 $M$ 자리에 $\Lambda$가, 뒤에 $J^\top$이 붙었을 뿐이다. operational-space 제어가 새 아이디어가 아니라 이 장을 좌표만 바꿔 쓴 것인 이유다.
 
@@ -427,7 +433,7 @@ $$\tau = \hat M(\theta)\bigl(\ddot\theta_d + K_pe + K_d\dot e\bigr) + \hat c(\th
 
 ### 3. 접촉, 그리고 이 장 다음의 제어
 
-**계산: $10\,\mathrm{N}$ 접촉 아래의 P2, PD 대 역동역학.** 카탈로그 자세, $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$([[02-foundations/lab-plants|0.6]]). 패널이 말단을 $F=(0,-10)\,\mathrm{N}$으로 민다(로봇이 아래로 누름). 쌍대는 $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$ — 전완이 연직이라 어깨가 짐을 지고 엘보는 안 진다. 역동역학은 그 $J^\top F$(와 $g$)를 더해 $e=0$으로 유지할 수 있다. 관절 공간 PD는 못 한다. 중력이 이미 상쇄되고 복원 토크가 관절마다 $K_p=10\,\mathrm{N{\cdot}m/rad}$인 $K_p e$뿐이면 — 이 페이지의 평소 이득의 10분의 1로 일부러 무르게 잡아 처짐이 깔끔한 숫자로 나오게 한 것이다 — 선형 사상은 어깨 처짐 $e_1\approx 1\,\mathrm{rad}$을 예측한다. 그 $O(1)$ 라디안이 $10\,\mathrm{N}$ 접촉에 선형 스프링이 틀린 대상이라고 강의가 말하는 방식이다. PD는 접촉을 위치 오차 곱하기 강성으로 바꾼다. 단단한 패널 위의 뻣뻣한 PD는 밀리미터에서 큰 힘을 만든다. 임피던스는 다음 페이지에서 그 *관계*를 대신 명령한다.
+**계산: $10\,\mathrm{N}$ 접촉 아래의 P2, PD 대 역동역학.** 카탈로그 자세, $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$([[02-foundations/lab-plants|0.6]]). 패널이 말단을 $F=(0,-10)\,\mathrm{N}$으로 민다(로봇이 아래로 누름). 쌍대는 $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$ — 전완이 연직이라 어깨가 짐을 지고 엘보는 안 진다. 역동역학은 그 $J^\top F$(와 $g$)를 더해 $e=0$으로 유지할 수 있다. 관절 공간 PD는 못 한다. 중력이 이미 상쇄되고 복원 토크가 관절마다 $K_p=10\,\mathrm{N{\cdot}m/rad}$인 $K_p e$뿐이면 — 이 페이지의 평소 이득의 10분의 1로 일부러 무르게 잡아 처짐이 깔끔한 숫자로 나오게 한 것이다 — 선형 사상은 어깨 처짐 $e_1\approx 10/10 = 1\,\mathrm{rad}$을 예측한다. 그 $O(1)$ 라디안이 $10\,\mathrm{N}$ 접촉에 선형 스프링이 틀린 대상이라고 강의가 말하는 방식이다. 무른 이득은 계산이 편해서만이 아니라 물리적으로도 맞는 영역이다. 위치가 불확실한 표면에 닿으려는 관절은 일부러 무르게 조율한다. 위치 오차를 접촉력으로 바꾸는 것이 관절 강성이기 때문이다. 평소의 $K_p = 100$이면 같은 하중에 처짐은 $0.1\,\mathrm{rad}$이지만, 명령한 침투가 있으면 같은 침투에 열 배의 힘이 든다. PD는 접촉을 위치 오차 곱하기 강성으로 바꾼다. 단단한 패널 위의 뻣뻣한 PD는 밀리미터에서 큰 힘을 만든다. 임피던스는 다음 페이지에서 그 *관계*를 대신 명령한다.
 
 **힘·임피던스 제어**: 접촉이 중요할 때는 위치만이 아니라 운동과 힘의 *관계*(가상
 스프링-댐퍼; 자세한 내용은 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]])를 제어한다 — 접촉이 많은 조작으로 들어가는 입구.
@@ -451,7 +457,7 @@ $$\tau = \hat M(\theta)\bigl(\ddot\theta_d + K_pe + K_d\dot e\bigr) + \hat c(\th
 > 1. $\ddot e + 2\zeta\omega_n\dot e + \omega_n^2 e = 0$과 맞추면 $\omega_n^2 = K_p$, $2\zeta\omega_n = K_d$이므로 $\zeta = 1 \iff K_d = 2\sqrt{K_p}$다([[02-foundations/engineering-math|0.5 §8]]).
 > 2. 상쇄가 불완전해서 잔차 비선형 항이 오차 동역학 안에 남고, 그것이 PD 이득이 눌러야 할 외란으로 작용한다. 오차 동역학은 더 이상 정확히 선형이 아니며, 모델 오차가 커질수록 추종 성능과 안정 여유가 함께 나빠진다.
 > 3. 접촉 작업(연마, 삽입 — 단단한 표면에 대한 작은 위치 오차가 큰 힘을 만드는 경우)과 인간 협업(충돌을 견딜 수 있게 하는 순응성)이다. 둘 다 위치 정확도보다 *힘–운동 관계*가 중요한 경우다.
-> 4. $\zeta_i = K_d\sqrt{\mu_i}/(2\sqrt{K_p})$이고 $\mu_i$가 $M^{-1}$의 고윳값이므로, 두 감쇠비가 모두 $1$이 되려면 $M$의 고윳값이 $1$ 하나로 중복되어야 한다. 곧 $M = I$, 어느 방향에서나 어느 자세에서나 관성이 $1$인 팔이어야 한다. P2는 그런 팔이 아니고, 회전관절로 된 어떤 직렬 매니퓰레이터도 그렇지 않다. 계산 토크는 이득이 플랜트를 보기 전에 $M(\theta)$를 먼저 곱하므로, 뒤에 남는 오차 계의 관성이 모든 방향에서 실제로 $1$이고 설계한 $\zeta$ 하나가 두 관절에 그대로 적용된다.
+> 4. $\zeta_i = K_d\sqrt{\mu_i}/(2\sqrt{K_p})$이고 $\mu_i$가 $M^{-1}$의 고윳값이므로(4단계, [[02-foundations/linear-algebra|1. 선형대수 §3]]), 두 감쇠비가 모두 $1$이 되려면 $M$의 고윳값이 $1$ 하나로 중복되어야 한다. 곧 $M = I$, 어느 방향에서나 어느 자세에서나 관성이 $1$인 팔이어야 한다. P2는 그런 팔이 아니고, 회전관절로 된 어떤 직렬 매니퓰레이터도 그렇지 않다. 계산 토크는 이득이 플랜트를 보기 전에 $M(\theta)$를 먼저 곱하므로, 뒤에 남는 오차 계의 관성이 모든 방향에서 실제로 $1$이고 설계한 $\zeta$ 하나가 두 관절에 그대로 적용된다.
 
 ### 과제 · Problem set
 

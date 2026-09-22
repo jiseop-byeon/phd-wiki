@@ -15,14 +15,14 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ## English
 
 *[[02-foundations/overview|0. Overview]] drew the map. This page closes the undergraduate mathematics that map assumes —
-derivatives, matrix arithmetic, logs, complex numbers. Nine of the other twelve pages name it as a prerequisite, which is why it comes first.*
+derivatives, matrix arithmetic, logs, complex numbers. Most of the other Foundations pages name it as a prerequisite, which is why it comes first.*
 
 The engineering math that pages 1–9 silently assume, self-contained in one place. Each
 section says exactly which foundation page uses it. If all of this reads easily, skip
 straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
 
 > [!note] First pass · 처음이라면
-> This is a reference, not a narrative — do not read it front to back. Each section title says which page uses it, so open the section the page you are about to read names. The one exception is §10, the notation dictionary: skim it once and the rest of the track costs less.
+> This is a reference, not a narrative — do not read it front to back. Each section title says which page uses it, so open the section the page you are about to read names. Two exceptions. Skim §10, the notation dictionary, once and the rest of the track costs less. And the problem set uses only the picture and §8, whose P4 worked case leans on §4.5 (superposition) and §6 ($e^x$). §9 is a preview of the control track and can wait until you get there.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -261,10 +261,17 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
   deficiency, and rank gets its proper definition in
   [[02-foundations/linear-algebra|1. Linear Algebra §2]]. Here, read "full rank" as
   "nothing was lost, so it is reversible."
-- **A shape check you will do constantly.** A batch of 32 samples with 512 features is
-  $(32 \times 512)$; a linear layer to 10 classes is $(512 \times 10)$; the output is
-  $(32 \times 10)$ (row-vector convention, output $= XW$; in the column convention $y = Wx$ used on pages 0.7 and 2, the same layer's $W$ is $10 \times 512$) — one score vector per sample. Reading shapes like this *is* reading an
+- **A shape check you will do constantly.** A linear layer from 512 features to 10 class
+  scores is $y = Wx$ with $x$ a $512\times1$ column, so $W$ must be $10\times512$ and
+  $(10\times512)(512\times1) = 10\times1$: one score per class. A batch of 32 samples, stacked
+  as the columns of $X$ ($512\times32$), goes through in one product,
+  $(10\times512)(512\times32) = 10\times32$ — one score column per sample. This column
+  convention is the one pages 0.8 and 2 use. Reading shapes like this *is* reading an
   architecture ([[02-foundations/linear-algebra|1. Linear Algebra §1]]).
+  *Footnote, for code.* Libraries and attention formulas usually store a batch as rows
+  instead: $X$ is $32\times512$, the layer's matrix is kept as its transpose ($512\times10$),
+  and the output $XW$ is $32\times10$ — the same numbers transposed, by
+  $(AB)^\top = B^\top A^\top$ above. 1. Linear Algebra §1's $Q = XW_Q$ is written this way.
 
 ### 4.5 Linearity: additivity and homogeneity (→ 1. Linear Algebra, 6. Signal Processing, control track)
 
@@ -521,7 +528,9 @@ Physical systems are described by ODEs — this is the modeling language of all 
   *asymptotically stable*: from every starting value $x(0)$ the solution returns to $0$ as
   $t \to \infty$ (the full definition is [[04-robotics/control-theory-ce397|5. Control Theory §4]]). A robot joint,
   a heating room, a draining tank — all locally this equation.
-- **Worked: plant P4.** The leaky heater of [[02-foundations/lab-plants|0.6]] is $\dot x=-x+u$. With $u=1$ and $x(0)=0$ the solution is $x(t)=1-e^{-t}$ (particular $1$, homogeneous $ce^{-t}$, $c=-1$). At $t=0.1$ and $0.2$: $0.095$ and $0.181$. Forward Euler $x\leftarrow x+T(-x+u)$ with $T=0.1$ gives $0.10$ then $0.19$ ([[02-foundations/lab-kernel|0.7]]). It is high because it uses the slope at the *start* of the step, where $1-x$ is largest. The picture at the top of the page is this ODE as a block diagram.
+- **Worked: plant P4.** The leaky heater of [[02-foundations/lab-plants|0.6]] is $\dot x=-x+u$ (its disturbance $d$ set to $0$). With $u=1$ and $x(0)=0$, solve it in three moves. A constant that makes the right side zero solves it: $x=1$ gives $\dot x=0=-1+1$ — the *particular* solution, the steady state the input holds. The input-free equation $\dot x=-x$ is the first-order case above with $a=-1$, solved by $ce^{-t}$ for any $c$ — the *homogeneous* solution. By superposition (§4.5) their sum $x(t)=1+ce^{-t}$ still solves $\dot x=-x+1$, and $x(0)=0$ fixes $c=-1$:
+  $$x(t) = 1 - e^{-t}$$
+  so at $t=0.1$ and $0.2$ it is $0.095$ and $0.181$. **Forward Euler** is the simplest way code steps an ODE: follow the slope at the start of the step for one step of length $T$, $x_{k+1}=x_k+T\,\dot x(x_k)$ — here $x\leftarrow x+T(-x+u)$ ([[02-foundations/lab-kernel|0.7 Lab Kernel §2]] calls it explicit Euler). With $T=0.1$ it gives $0.10$ then $0.19$. It is high because the slope at the *start* of each step is where $1-x$ is largest. The picture at the top of the page is this ODE as a block diagram.
 - **With input**: $\dot x = ax + bu$ — the solution is "decayed initial state + accumulated
   input"; this is the scalar version of the state-space model
   $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$ ([[02-foundations/linear-algebra|linear algebra §5]]),
@@ -547,6 +556,15 @@ Physical systems are described by ODEs — this is the modeling language of all 
   coordinate systems.
 
 ### 9. Laplace transform and the s-plane (→ control track, 6. Signal Processing §5)
+
+> [!note] This section is a preview, not the destination
+> §9 exists so the words *pole*, *transfer function*, and *frequency response* are not new
+> when you meet them. The places that actually teach them are
+> [[04-robotics/control-theory-ce397|5. Control Theory §5]] — which turns pole positions into
+> the settling-time and overshoot **numbers** papers quote — and
+> [[02-foundations/signal-processing|6. Signal Processing §5]], which uses the same object to
+> design filters. It is thin by design: read it once for vocabulary, let the zero and
+> minimal-realization details go by on a first pass, and come back after those two.
 
 The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theory-ce397|5. Control Theory §5]] turns the resulting pole picture into the settling-time and overshoot numbers papers quote:
 
@@ -620,15 +638,6 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
   $\omega = 3$, $|G| = 1/(3\sqrt2) = 0.236$ and $-45°$; at $\omega = 30$, $|G| = 0.033$ and
   $-84.3°$. Slow inputs pass almost untouched and fast ones are attenuated and delayed — the
   system is a low-pass filter with its corner at the pole's distance, $3$ rad/s.
-
-> [!note] This section is a preview, not the destination
-> §9 exists so the words *pole*, *transfer function*, and *frequency response* are not new
-> when you meet them. The places that actually teach them are
-> [[04-robotics/control-theory-ce397|5. Control Theory §5]] — which turns pole positions into
-> the settling-time and overshoot **numbers** papers quote — and
-> [[02-foundations/signal-processing|6. Signal Processing §5]], which uses the same object to
-> design filters. If this section feels thin, that is by design: read it once for vocabulary
-> and come back after those two.
 
 ### 10. Notation dictionary (all pages)
 
@@ -713,14 +722,14 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
 ## 한국어
 
 *[[02-foundations/overview|0. Overview]]가 지도를 그렸다. 이 페이지는 그 지도가 말없이 전제하는 학부 수학 — 미분, 행렬 연산,
-로그, 복소수 — 을 닫는다. 나머지 열두 페이지 중 아홉이 여기를 선수 지식으로 지목한다. 그래서 맨 앞이다.*
+로그, 복소수 — 을 닫는다. 나머지 기초 페이지 대부분이 여기를 선수 지식으로 지목한다. 그래서 맨 앞이다.*
 
 1~9 페이지가 말없이 전제하는 공업수학을 한곳에 자체 완결로 정리했다.
 각 절이 정확히 어느 기초 페이지에 쓰이는지 표시했다. 전부 술술 읽히면 바로
 [[02-foundations/linear-algebra|1. 선형대수]]로 건너뛰어라.
 
 > [!note] 처음이라면 · First pass
-> 이 페이지는 서사가 아니라 참고서다 — 처음부터 끝까지 읽지 마라. 절 제목마다 어느 페이지가 그것을 쓰는지 달려 있으니, 지금 읽으려는 페이지가 지목하는 절만 펴라. 예외는 §10 표기법 사전이다: 한 번 훑어 두면 나머지 트랙이 싸진다.
+> 이 페이지는 서사가 아니라 참고서다 — 처음부터 끝까지 읽지 마라. 절 제목마다 어느 페이지가 그것을 쓰는지 달려 있으니, 지금 읽으려는 페이지가 지목하는 절만 펴라. 예외는 둘이다. §10 표기법 사전은 한 번 훑어 두면 나머지 트랙이 싸진다. 그리고 과제는 그림과 §8만 쓰는데, 그 P4 계산은 §4.5(중첩)와 §6($e^x$)에 기댄다. §9는 제어 트랙의 예고편이니 거기에 닿을 때까지 미뤄도 된다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -941,10 +950,17 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
   0으로 나눈다: **되돌아갈 곳이 없다.** 이것이 랭크 부족이고, 랭크의 정식 정의는
   [[02-foundations/linear-algebra|1. 선형대수 §2]]에 있다. 여기서는 "풀랭크" = "잃어버린 것이
   없어 되돌릴 수 있다"로 읽으면 된다.
-- **앞으로 끊임없이 하게 될 모양 검사.** 특징 512개짜리 샘플 32개 배치는 $(32 \times 512)$,
-  10개 클래스로 가는 선형 층은 $(512 \times 10)$, 출력은 $(32 \times 10)$(행벡터 관례, 출력 $= XW$. 0.7과 2 페이지의 열벡터 관례 $y = Wx$에서는 같은 층의 $W$가 $10 \times 512$다) — 샘플당 점수
-  벡터 하나. 이렇게 모양을 읽는 것이 곧 아키텍처를 읽는 것이다
+- **앞으로 끊임없이 하게 될 모양 검사.** 특징 512개에서 클래스 점수 10개로 가는 선형 층은
+  $x$가 $512\times1$ 열인 $y = Wx$이므로, $W$는 $10\times512$여야 하고
+  $(10\times512)(512\times1) = 10\times1$ — 클래스마다 점수 하나다. 샘플 32개를 $X$의 열로
+  쌓은 배치($512\times32$)는 곱 한 번으로 지나간다:
+  $(10\times512)(512\times32) = 10\times32$ — 샘플마다 점수 열 하나. 0.8과 2 페이지가 쓰는
+  것이 이 열벡터 관례다. 이렇게 모양을 읽는 것이 곧 아키텍처를 읽는 것이다
   ([[02-foundations/linear-algebra|1. 선형대수 §1]]).
+  *코드를 위한 각주.* 라이브러리와 어텐션 식은 보통 배치를 행으로 저장한다: $X$는
+  $32\times512$, 층의 행렬은 전치($512\times10$)로 두고, 출력 $XW$는 $32\times10$ — 위의
+  $(AB)^\top = B^\top A^\top$에 따라 같은 숫자를 전치한 것이다. 1. 선형대수 §1의 $Q = XW_Q$가
+  이렇게 쓰여 있다.
 
 ### 4.5 선형성: 가법성과 동차성 (→ 1. 선형대수, 6. 신호처리, 제어 트랙)
 
@@ -1181,7 +1197,9 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   초기값 $x(0)$에서 출발해도 $t \to \infty$에서 해가 $0$으로 돌아온다는 뜻이다(완전한 정의는
   [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]). 로봇 관절, 데워지는 방, 빠지는 물탱크
   — 전부 국소적으로 이 방정식이다.
-- **계산: 장치 P4.** [[02-foundations/lab-plants|0.6]]의 새는 히터는 $\dot x=-x+u$. $u=1$, $x(0)=0$이면 $x(t)=1-e^{-t}$. $t=0.1,0.2$에서 $0.095$, $0.181$. 전진 오일러 $T=0.1$은 $0.10$ 다음 $0.19$([[02-foundations/lab-kernel|0.7]]). 스텝 *시작*의 기울기를 써서 높다. 맨 위의 그림이 이 ODE의 블록선도다.
+- **계산: 장치 P4.** [[02-foundations/lab-plants|0.6]]의 새는 히터는 $\dot x=-x+u$(외란 $d$는 $0$). $u=1$, $x(0)=0$이면 세 단계로 푼다. 우변을 0으로 만드는 상수가 해다: $x=1$이면 $\dot x=0=-1+1$ — 입력이 붙잡아 두는 정상상태, 곧 *특수해*다. 입력이 없는 $\dot x=-x$는 위 1차 경우에서 $a=-1$인 것이므로 임의의 $c$에 대해 $ce^{-t}$가 푼다 — *동차해*다. 중첩(§4.5)에 의해 그 합 $x(t)=1+ce^{-t}$도 $\dot x=-x+1$을 풀고, $x(0)=0$이 $c=-1$을 정한다.
+  $$x(t) = 1 - e^{-t}$$
+  그래서 $t=0.1$, $0.2$에서 $0.095$, $0.181$이다. **전진 오일러**(forward Euler)는 코드가 ODE를 전진하는 가장 단순한 방법이다: 스텝 시작의 기울기를 따라 길이 $T$만큼 간다, $x_{k+1}=x_k+T\,\dot x(x_k)$ — 여기서는 $x\leftarrow x+T(-x+u)$([[02-foundations/lab-kernel|0.7 Lab Kernel §2]]는 이것을 명시적 오일러라 부른다). $T=0.1$이면 $0.10$ 다음 $0.19$. 각 스텝 *시작*의 기울기가 $1-x$가 가장 클 때의 기울기이므로 높다. 맨 위의 그림이 이 ODE의 블록선도다.
 - **입력이 있으면**: $\dot x = ax + bu$ — 해는 "감쇠한 초기 상태 + 누적된 입력";
   상태공간 모델 $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$
   ([[02-foundations/linear-algebra|선형대수 §5]])의 스칼라판이고, $e^{at}$는 행렬 지수
@@ -1204,6 +1222,13 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   사상된다* — 하나의 이야기를 두 좌표계로 쓴 것이다.
 
 ### 9. 라플라스 변환과 s-평면 (→ 제어 트랙, 6. 신호처리 §5)
+
+> [!note] 이 절은 예고편이지 목적지가 아니다
+> 9절은 *극점*, *전달함수*, *주파수 응답*이라는 말을 처음 만나는 것이 아니게 하려고 있다.
+> 실제로 가르치는 곳은 [[04-robotics/control-theory-ce397|5. 제어 이론 §5]] — 극점 위치를
+> 논문이 인용하는 정착 시간·오버슈트 숫자로 바꾸는 곳 — 와, 같은 대상으로 필터를 설계하는
+> [[02-foundations/signal-processing|6. 신호처리 §5]]다. 얇은 것은 설계 의도다: 어휘용으로 한
+> 번 읽고, 영점과 최소 실현의 세부는 처음에는 흘려보내고, 저 둘을 본 뒤 다시 오라.
 
 라플라스 변환은 미분방정식을 대수로 바꾼다 — 그리고 [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]가 그 극점 그림을 논문이 인용하는 정착 시간·오버슈트 숫자로 바꾼다:
 
@@ -1271,13 +1296,6 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   $|G| = 1/(3\sqrt2) = 0.236$, $-45°$; $\omega = 30$에서 $|G| = 0.033$, $-84.3°$다. 느린 입력은
   거의 그대로 지나가고 빠른 입력은 줄고 늦어진다 — 극점까지의 거리 $3$ rad/s에 모서리가 있는
   저역통과 필터다.
-
-> [!note] 이 절은 예고편이지 목적지가 아니다
-> 9절은 *극점*, *전달함수*, *주파수 응답*이라는 말을 처음 만나는 것이 아니게 하려고 있다.
-> 실제로 가르치는 곳은 [[04-robotics/control-theory-ce397|5. 제어 이론 §5]] — 극점 위치를
-> 논문이 인용하는 정착 시간·오버슈트 **숫자**로 바꾸는 곳 — 와, 같은 대상으로 필터를 설계하는
-> [[02-foundations/signal-processing|6. 신호처리 §5]]다. 이 절이 얇게 느껴진다면 그건 설계
-> 의도다: 어휘용으로 한 번 읽고, 저 둘을 본 뒤 다시 오라.
 
 ### 10. 표기법 사전 (전 페이지 공용)
 

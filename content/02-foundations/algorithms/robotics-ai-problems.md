@@ -8,8 +8,8 @@ mastery-when: "Raise to Mastery only if one of these components (a planner, an e
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms & Search]] (A*) · [[02-foundations/algorithms/data-structures|11.2 Core Data Structures]] (heaps, KD-trees) · [[02-foundations/probability|3. Probability & Random Processes]] (Gaussians, Bayes' rule) · [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]] (rotations, poses) · [[04-robotics/state-estimation-slam|3. State Estimation]] (Kalman and particle filters) · [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] (FK, Jacobian) · [[04-robotics/control-theory-ce397|5. Control Theory]] (PID) · [[02-foundations/calculus-backprop|2. Calculus & Backprop]] (gradients) · basic NumPy broadcasting
-> [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘과 탐색]](A*) · [[02-foundations/algorithms/data-structures|11.2 핵심 자료구조]](힙, KD-tree) · [[02-foundations/probability|3. 확률과 랜덤 프로세스]](가우시안, 베이즈 규칙) · [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]](회전, 자세) · [[04-robotics/state-estimation-slam|3. 상태 추정]](칼만·입자 필터) · [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학과 동역학]](순기구학, 야코비안) · [[04-robotics/control-theory-ce397|5. 제어 이론]](PID) · [[02-foundations/calculus-backprop|2. 미적분과 역전파]](그래디언트) · NumPy 브로드캐스팅 기초
+> [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms & Search]] (A*) · [[02-foundations/algorithms/data-structures|11.2 Core Data Structures]] (heaps, KD-trees) · [[02-foundations/linear-algebra|1. Linear Algebra]] (SVD and singular vectors, §4) · [[02-foundations/probability|3. Probability & Random Processes]] (Gaussians, Bayes' rule, the χ² distribution in §6) · [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]] (rotations, poses) · [[04-robotics/state-estimation-slam|3. State Estimation]] (Kalman and particle filters) · [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] (FK, Jacobian) · [[04-robotics/control-theory-ce397|5. Control Theory]] (PID) · [[02-foundations/calculus-backprop|2. Calculus & Backprop]] (gradients) · basic NumPy broadcasting
+> [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘과 탐색]](A*) · [[02-foundations/algorithms/data-structures|11.2 핵심 자료구조]](힙, KD-tree) · [[02-foundations/linear-algebra|1. 선형대수]](SVD와 특이 벡터, §4) · [[02-foundations/probability|3. 확률과 랜덤 프로세스]](가우시안, 베이즈 규칙, §6의 χ² 분포) · [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]](회전, 자세) · [[04-robotics/state-estimation-slam|3. 상태 추정]](칼만·입자 필터) · [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학과 동역학]](순기구학, 야코비안) · [[04-robotics/control-theory-ce397|5. 제어 이론]](PID) · [[02-foundations/calculus-backprop|2. 미적분과 역전파]](그래디언트) · NumPy 브로드캐스팅 기초
 
 ## English
 
@@ -20,7 +20,7 @@ A research-lab coding round rarely asks for a clever puzzle. It asks you to writ
 Every section has the same seven parts: **the prompt** as an interviewer might say it, **what is really being tested**, **the key idea**, **an implementation** of at most 35 lines (standard library plus NumPy), **complexity**, **follow-up questions** with short answers, and **the theory link**.
 
 > [!note] First pass · 처음이라면
-> If a robotics interview is next week, do §1, §4, §6 and §8 first: planning, filtering, kinematics and frames are asked in almost every lab. If the lab is closer to learning, swap §6 for §9 and §10.
+> If a robotics interview is next week, do §1, §4, §6 and §8 first: planning, filtering, kinematics and frames are asked in almost every lab. If the lab is closer to learning, swap §6 for §9 and §10. §2, §3, §5 and §7 are the second pass, and "How to practise these" at the end is the drill plan for all ten.
 
 ### 1. Grid A* with path reconstruction
 
@@ -75,6 +75,57 @@ print(astar(grid, (2, 0), (0, 4)))
 
 On that grid the wall occupies row 1, columns 1–2, so the path runs along the bottom and takes one diagonal step, (2, 3) to (1, 4), for a cost of $4 + \sqrt 2$. The step from (2, 2) to (1, 3) is refused, because it would squeeze past the corner of the wall at (1, 2).
 
+<svg viewBox="0 0 560 240" style="max-width:100%;height:auto" role="img" aria-label="A 3 by 5 grid with a wall at row 1, columns 1 and 2. A* from start (2, 0) to goal (0, 4) runs along row 2 with costs g = 0, 1, 2, 3, takes one diagonal from (2, 3) to (1, 4), g = 4.41, and ends at the goal with g = 5.41, which is 4 + √2. The diagonal from (2, 2) to (1, 3) is refused because its side cell (1, 2) is wall: it would squeeze past the wall's corner.">
+  <text x="67" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <text x="121" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">1</text>
+  <text x="175" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">2</text>
+  <text x="229" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">3</text>
+  <text x="283" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">4</text>
+  <text x="30" y="71" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">0</text>
+  <text x="30" y="125" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">1</text>
+  <text x="30" y="179" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">2</text>
+  <text x="30" y="30" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.6">r\c</text>
+  <rect x="40" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="94" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="148" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="202" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="256" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="40" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="94" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.45" stroke-opacity="0.7"/>
+  <rect x="148" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.45" stroke-opacity="0.7"/>
+  <rect x="202" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="256" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="40" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="94" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="148" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="202" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="256" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <path d="M67 175 L121 175 L175 175 L229 175 L283 121 L283 67" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+  <circle cx="67" cy="175" r="3.5" stroke="none" fill="currentColor"/>
+  <circle cx="121" cy="175" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="121" y="195" font-size="10" fill="currentColor" text-anchor="middle">g 1</text>
+  <circle cx="175" cy="175" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="175" y="195" font-size="10" fill="currentColor" text-anchor="middle">g 2</text>
+  <circle cx="229" cy="175" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="229" y="195" font-size="10" fill="currentColor" text-anchor="middle">g 3</text>
+  <circle cx="283" cy="121" r="3.5" stroke="none" fill="currentColor"/>
+  <circle cx="283" cy="67" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="67" y="165" font-size="10" fill="currentColor" text-anchor="middle" font-weight="bold">start</text>
+  <text x="67" y="195" font-size="10" fill="currentColor" text-anchor="middle">g 0</text>
+  <text x="283" y="57" font-size="10" fill="currentColor" text-anchor="middle" font-weight="bold">goal</text>
+  <line x1="175" y1="175" x2="229" y2="121" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.8" stroke-dasharray="4 3"/>
+  <line x1="196" y1="142" x2="208" y2="154" stroke="currentColor" stroke-width="2"/>
+  <line x1="196" y1="154" x2="208" y2="142" stroke="currentColor" stroke-width="2"/>
+  <text x="336" y="48" font-size="11" fill="currentColor">diagonal (dr, dc) from (r, c) needs</text>
+  <text x="336" y="65" font-size="11" fill="currentColor">both side cells free:</text>
+  <text x="336" y="82" font-size="11" fill="currentColor">(r + dr, c) and (r, c + dc)</text>
+  <text x="336" y="108" font-size="11" fill="currentColor">(2, 2) → (1, 3): side cell (1, 2)</text>
+  <text x="336" y="125" font-size="11" fill="currentColor">is wall, so the step is refused</text>
+  <text x="336" y="151" font-size="11" fill="currentColor">(2, 3) → (1, 4): sides (1, 3) and</text>
+  <text x="336" y="168" font-size="11" fill="currentColor">(2, 4) are free, so it is allowed</text>
+  <text x="40" y="228" font-size="12" fill="currentColor">g(1, 4) = 3 + √2 ≈ 4.41; g(goal) = 4 + √2 ≈ 5.41</text>
+</svg>
+
 **Complexity.** With $n$ free cells there are at most $8n$ edges, so at most $8n$ heap pushes. Each push or pop costs $O(\log n)$, giving $O(n \log n)$ time and $O(n)$ memory for `g`, `parent` and the heap. The heap can hold stale duplicates; skipping them on pop is cheaper than a decrease-key operation, which `heapq` does not have.
 
 **Follow-ups they ask.**
@@ -95,6 +146,45 @@ On that grid the wall occupies row 1, columns 1–2, so the path runs along the 
 **Key idea.** For brute force, expand the squared distance: $\lVert q - p\rVert^2 = \lVert q\rVert^2 - 2\,q^\top p + \lVert p\rVert^2$, so one matrix product gives all $m \times n$ distances. For a KD-tree, split the points at the median of the widest coordinate, recursively. A **KD-tree** is a binary tree over points in $\mathbb{R}^d$ with two kinds of node: a *leaf* stores a small bucket of point indices, and a *split node* stores an axis $a$, a value $v$, and two subtrees, where every point in the left subtree has coordinate $x_a \le v$ and every point in the right subtree has $x_a \ge v$, so each node's region is an axis-aligned box. At query time, descend into the side containing the query first, then visit the other side only if the splitting plane is closer than the best distance found so far, since every point beyond the plane is at least that far away. With $d^2_{\text{best}}$ the best squared distance so far, the far side is visited only when the test below holds, because any point across the plane $x_a = v$ is at least $\lvert q_a - v\rvert$ from $q$:
 $$(q_a - v)^2 < d^2_{\text{best}}$$
 *Example:* with $q_a = 0.3$, $v = 0.5$ and $d^2_{\text{best}} = 0.05$, $(0.3 - 0.5)^2 = 0.04 < 0.05$, so the far side can still hold a closer point and must be searched; if $d^2_{\text{best}}$ had already dropped to $0.03$, the whole far subtree would be skipped.
+
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="The KD-tree pruning test in two panels. The splitting plane x_a = v = 0.5 and a query at q_a = 0.3, so the plane is 0.2 away and (q_a − v)² = 0.04. Left: best squared distance 0.05, radius 0.224, the ball crosses the plane and the far side must be searched. Right: best squared distance 0.03, radius 0.173, the ball stays on the near side and the whole far side is pruned.">
+  <defs><marker id="araKd" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="22" y="22" font-size="12" fill="currentColor">(a) d²<tspan dy="3" font-size="10.2">best</tspan><tspan dy="-3" dx="3.8">= 0.05 &gt; 0.04</tspan></text>
+  <rect x="22" y="50" width="220" height="176" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <line x1="132" y1="50" x2="132" y2="226" stroke="currentColor" stroke-width="1.8"/>
+  <text x="137" y="218" font-size="10" fill="currentColor">x<tspan dy="3" font-size="10">a</tspan><tspan dy="-3" dx="3.2">= v = 0.5</tspan></text>
+  <text x="28" y="65" font-size="10" fill="currentColor" fill-opacity="0.8">near side</text>
+  <text x="236" y="65" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.8">far side</text>
+  <circle cx="88" cy="127" r="49.2" stroke="currentColor" stroke-width="1.3" fill="none" stroke-dasharray="4 3"/>
+  <circle cx="88" cy="127" r="3.2" stroke="none" fill="currentColor"/>
+  <text x="82" y="121" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">q</text>
+  <line x1="88" y1="127" x2="71.2" y2="173.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+  <rect x="68.2" y="170.2" width="6" height="6" stroke="none" fill="currentColor"/>
+  <text x="71.2" y="188.2" font-size="10" fill="currentColor" text-anchor="middle">best</text>
+  <text x="71.2" y="201.2" font-size="10" fill="currentColor" text-anchor="middle">√0.05 = 0.224</text>
+  <line x1="88" y1="101" x2="131" y2="101" stroke="currentColor" stroke-width="1" marker-end="url(#araKd)"/>
+  <text x="110" y="115" font-size="10" fill="currentColor" text-anchor="middle">0.2</text>
+  <text x="22" y="270" font-size="11" fill="currentColor">ball crosses the plane:</text>
+  <text x="22" y="288" font-size="11" fill="currentColor" font-weight="bold">search the far side</text>
+  <text x="300" y="22" font-size="12" fill="currentColor">(b) d²<tspan dy="3" font-size="10.2">best</tspan><tspan dy="-3" dx="3.8">= 0.03 &lt; 0.04</tspan></text>
+  <rect x="300" y="50" width="220" height="176" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <rect x="410" y="50" width="110" height="176" stroke="none" fill="currentColor" fill-opacity="0.16"/>
+  <line x1="410" y1="50" x2="410" y2="226" stroke="currentColor" stroke-width="1.8"/>
+  <text x="415" y="218" font-size="10" fill="currentColor">x<tspan dy="3" font-size="10">a</tspan><tspan dy="-3" dx="3.2">= v = 0.5</tspan></text>
+  <text x="306" y="65" font-size="10" fill="currentColor" fill-opacity="0.8">near side</text>
+  <text x="514" y="65" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.8">far side</text>
+  <circle cx="366" cy="127" r="38.1" stroke="currentColor" stroke-width="1.3" fill="none" stroke-dasharray="4 3"/>
+  <circle cx="366" cy="127" r="3.2" stroke="none" fill="currentColor"/>
+  <text x="360" y="121" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">q</text>
+  <line x1="366" y1="127" x2="353" y2="162.8" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+  <rect x="350" y="159.8" width="6" height="6" stroke="none" fill="currentColor"/>
+  <text x="353" y="177.8" font-size="10" fill="currentColor" text-anchor="middle">best</text>
+  <text x="353" y="190.8" font-size="10" fill="currentColor" text-anchor="middle">√0.03 = 0.173</text>
+  <line x1="366" y1="101" x2="409" y2="101" stroke="currentColor" stroke-width="1" marker-end="url(#araKd)"/>
+  <text x="388" y="115" font-size="10" fill="currentColor" text-anchor="middle">0.2</text>
+  <text x="300" y="270" font-size="11" fill="currentColor">ball stays on the near side:</text>
+  <text x="300" y="288" font-size="11" fill="currentColor" font-weight="bold">far side pruned</text>
+</svg>
 
 ```python
 import numpy as np
@@ -159,8 +249,9 @@ print(kd_nearest(tree, P, q)[1], knn_brute(P, q[None, :], k=1)[0][0, 0])
 
 **Key idea.** RANSAC (random sample consensus) is a robust estimator with five named parts: a **model** (here a line $n^\top x = c$ with unit normal $\lVert n\rVert = 1$); a **minimal sample** of $s$ points, the fewest that determine the model ($s = 2$ for a line); a **residual**, here the perpendicular distance of a point to the line; a **threshold** $t$; and the **consensus set** of inliers, the points whose residual is below $t$, whose size is the score. For a unit normal the residual is the formula below, since $n^\top x - c$ is the signed length of $x$'s projection onto the normal beyond the line:
 $$r(x) = \lvert n^\top x - c \rvert, \qquad \text{inliers} = \{\, x_i : r(x_i) < t \,\}$$
-*Example:* for the line $y = 0.5x + 1$, $n = (-0.5, 1)/\lVert(-0.5, 1)\rVert$ and the point $(2, 3)$ has $r = 0.894$, while its vertical residual is $3 - 2 = 1.0$; RANSAC uses the perpendicular one so that a vertical line has finite residuals. Repeatedly fit a line to two random points and count the points within a distance threshold; keep the line with the most inliers, then refit it by total least squares on those inliers. **Total least squares** chooses the line that minimizes the sum of squared *perpendicular* distances, the problem below, whose solution is $c = n^\top \bar x$ with $\bar x$ the inliers' mean and $n$ the right singular vector of the centred inliers with the smallest singular value, because that direction carries the least spread:
-$$\min_{\lVert n\rVert = 1,\ c}\ \sum_i (n^\top x_i - c)^2$$ How many repetitions? If a fraction $w$ of points are inliers, one sample of $s$ points is all inliers with probability $w^s$, so all $k$ independent samples are contaminated with probability $(1 - w^s)^k$. Requiring that to be at most $1 - p$ and taking logarithms gives the count, where the inequality flips because both logarithms are negative:
+*Example:* for the line $y = 0.5x + 1$, $n = (-0.5, 1)/\lVert(-0.5, 1)\rVert$ and the point $(2, 3)$ has $r = 0.894$, while its vertical residual is $3 - 2 = 1.0$; RANSAC uses the perpendicular one so that a vertical line has finite residuals. Repeatedly fit a line to two random points and count the points within a distance threshold; keep the line with the most inliers, then refit it by total least squares on those inliers. **Total least squares** chooses the line that minimizes the sum of squared *perpendicular* distances, the problem below, whose solution is $c = n^\top \bar x$ with $\bar x$ the inliers' mean and $n$ the right singular vector of the centred inliers with the smallest singular value (singular values and vectors are defined in [[02-foundations/linear-algebra|1. Linear Algebra §4]]), because that direction carries the least spread:
+$$\min_{\lVert n\rVert = 1,\ c}\ \sum_i (n^\top x_i - c)^2$$
+The derivation takes two steps. Setting the derivative in $c$ to zero gives $c = n^\top \bar x$. Substituting it back, the sum becomes $\lVert X_c n\rVert^2$, where the rows of $X_c$ are the centred inliers $x_i - \bar x$, and over unit vectors $n$ that quantity is smallest, equal to $\sigma_{\min}^2$, at the right singular vector of $X_c$ for the smallest singular value $\sigma_{\min}$. How many repetitions? If a fraction $w$ of points are inliers, one sample of $s$ points is all inliers with probability $w^s$, so all $k$ independent samples are contaminated with probability $(1 - w^s)^k$. Requiring that to be at most $1 - p$ and taking logarithms gives the count, where the inequality flips because both logarithms are negative:
 
 $$k = \left\lceil \frac{\log(1 - p)}{\log(1 - w^{s})} \right\rceil$$
 
@@ -200,7 +291,136 @@ print(ransac_iterations(0.99, 0.6, 2), -n[0] / n[1], c / n[1], mask[:60].mean())
 ```
 
 > [!example] Worked example · 계산 예제
-> With $p = 0.99$ and half the points outliers ($w = 0.5$): a line ($s = 2$) needs $\log 0.01 / \log 0.75 = 16.0$, so **17** samples; a plane ($s = 3$) needs **35**; the 8-point fundamental-matrix estimate ($s = 8$) needs **1177**. The inlier ratio matters as much as $s$: a plane with $w = 0.3$ needs **169**. The test file checks each value and then simulates 20 000 runs of $k$ samples, confirming the success rate matches $1 - (1 - w^s)^k \ge p$ and that $k - 1$ samples fall short.
+> With $p = 0.99$ and half the points outliers ($w = 0.5$): a line ($s = 2$) needs $\log 0.01 / \log 0.75 = 16.0$, so **17** samples; a plane ($s = 3$) needs **35**; the 8-point fundamental-matrix estimate ($s = 8$; the fundamental matrix is the $3 \times 3$ matrix that relates matching pixels in two camera views, [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration §2.6]]) needs **1177**. The inlier ratio matters as much as $s$: a plane with $w = 0.3$ needs **169**. The test file checks each value and then simulates 20 000 runs of $k$ samples, confirming the success rate matches $1 - (1 - w^s)^k \ge p$ and that $k - 1$ samples fall short.
+
+<svg viewBox="0 0 560 310" style="max-width:100%;height:auto" role="img" aria-label="RANSAC on the page's own run: 60 points of a wall on y = 0.5x + 1 plus 40 clutter points in a 10 by 10 box. The refit line y = 0.502x + 0.988 with its band of half-width 0.2 holds all 60 wall points as inliers (filled) and none of the clutter (hollow), after 11 samples. Right: the point (2, 3) against the line y = 0.5x + 1, with its perpendicular residual 0.894 to the foot (2.4, 2.2) and its vertical residual 1.0 to (2, 2).">
+  <rect x="36" y="30" width="250" height="250" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <text x="36" y="294" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <text x="30" y="284" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">0</text>
+  <text x="161" y="294" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">5</text>
+  <text x="30" y="159" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">5</text>
+  <text x="286" y="294" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">10</text>
+  <text x="30" y="34" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">10</text>
+  <path d="M36 249.7 L286 124.3 L286 135.5 L36 260.9 Z" stroke="none" fill="currentColor" fill-opacity="0.18" stroke-linejoin="round"/>
+  <line x1="36" y1="255.3" x2="286" y2="129.9" stroke="currentColor" stroke-width="1.2"/>
+  <circle cx="164" cy="191.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="273.6" cy="136.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="72" cy="236.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="273.2" cy="137.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="114" cy="217.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="141.8" cy="201.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="242.9" cy="152.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="138.3" cy="203.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="173.4" cy="185.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="42.9" cy="253.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="224.4" cy="160.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="170.5" cy="186.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="118.4" cy="214.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="233.1" cy="157.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="111.8" cy="216.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="149.4" cy="198" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="69.5" cy="237.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="136.8" cy="205" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="86.9" cy="231.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="101.6" cy="222.3" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="223.6" cy="161.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="106.1" cy="219" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="157.3" cy="194.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="281.2" cy="134.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="276.4" cy="136.3" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="217.2" cy="163.3" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="171.3" cy="186.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="105.2" cy="221.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="76.2" cy="234.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="278.5" cy="133.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="165" cy="189.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="65" cy="239.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="191.9" cy="176.7" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="230.2" cy="158" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="189.3" cy="178.7" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="265.3" cy="139" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="45.9" cy="252.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="168.1" cy="189.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="150.8" cy="197.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="51.6" cy="249" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="196.3" cy="174.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="249.2" cy="149.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="184.2" cy="179.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="101" cy="222.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="246" cy="149.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="163.4" cy="189.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="163.7" cy="190.7" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="224.3" cy="162" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="73" cy="238.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="240.9" cy="150.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="206.8" cy="169.7" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="232.8" cy="157.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="83.9" cy="230.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="236.6" cy="154.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="83.8" cy="230" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="56.4" cy="244.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="249.8" cy="148.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="251.3" cy="148.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="255.1" cy="144.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="154" cy="197.3" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="182.6" cy="70.1" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="217.6" cy="188.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="148.1" cy="188.1" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="63.4" cy="229.2" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="107" cy="201.5" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="114.3" cy="135.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="278.9" cy="86.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="233.8" cy="90.2" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="185.2" cy="50.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="208.4" cy="154.9" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="55.3" cy="157.9" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="89.2" cy="246.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="162.5" cy="83.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="109.8" cy="87.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="167.4" cy="242.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="277.2" cy="179.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="109.8" cy="68.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="67.1" cy="96.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="83" cy="181.9" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="94" cy="69.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="133.5" cy="36.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="192.3" cy="106.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="166.4" cy="202.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="134.9" cy="44.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="86.3" cy="32.9" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="225.6" cy="190.1" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="196.4" cy="184.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="131.4" cy="154" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="40.2" cy="156.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="278.9" cy="208.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="223.1" cy="169.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="88.3" cy="53.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="40.2" cy="204.1" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="285.8" cy="214.5" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="248.3" cy="128.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="237.5" cy="122.4" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="126.7" cy="89.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="42.6" cy="168.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="129" cy="160.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="67.9" cy="224.4" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <text x="326" y="258" font-size="11" fill="currentColor">11 samples; refit y = 0.502x + 0.988</text>
+  <text x="326" y="276" font-size="11" fill="currentColor">filled: 60 inliers (band ± 0.2)</text>
+  <text x="326" y="294" font-size="11" fill="currentColor">hollow: 40 outliers</text>
+  <text x="314" y="30" font-size="11" fill="currentColor">residual of (2, 3) to y = 0.5x + 1</text>
+  <line x1="326" y1="212.2" x2="508.4" y2="121" stroke="currentColor" stroke-width="1.4"/>
+  <text x="333.6" y="231.2" font-size="10" fill="currentColor">y = 0.5x + 1</text>
+  <line x1="409.6" y1="94.4" x2="440" y2="155.2" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="409.6" y1="94.4" x2="409.6" y2="170.4" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <circle cx="409.6" cy="94.4" r="4" stroke="none" fill="currentColor"/>
+  <text x="401.6" y="88.4" font-size="11" fill="currentColor" text-anchor="end">(2, 3)</text>
+  <path d="M436.4 148 L443.6 144.5 L447.2 151.6" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <circle cx="440" cy="155.2" r="2.5" stroke="none" fill="currentColor"/>
+  <circle cx="409.6" cy="170.4" r="2.5" stroke="none" fill="currentColor"/>
+  <text x="432.4" y="98.2" font-size="11" fill="currentColor">perpendicular</text>
+  <text x="432.4" y="111.1" font-size="11" fill="currentColor">0.894</text>
+  <text x="401.6" y="136.4" font-size="11" fill="currentColor" text-anchor="end">vertical 1.0</text>
+  <text x="442" y="185.2" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">(2.4, 2.2)</text>
+</svg>
 
 **Complexity.** $O(kN)$: each of $k$ iterations scores all $N$ points. The refit is $O(N)$. Note that $k$ does not depend on $N$, only on $w$, $s$ and $p$, which is why RANSAC scales to large clouds.
 
@@ -226,9 +446,9 @@ $$P = (I - KH)\,P^-\,(I - KH)^\top + K R K^\top$$
 
 For a white acceleration of standard deviation $\sigma_a$ held over each step, the state changes by $G a$ with $G = (\tfrac12 \Delta t^2, \Delta t)^\top$, so $Q = \sigma_a^2 G G^\top$.
 
-**The consistency statistics used below, defined.** A filter is *consistent* when its reported covariance matches its actual errors. Two squared, covariance-weighted errors test this, since each is chi-square distributed when the filter is right: the **normalized estimation error squared** (NEES), which needs the true state $x$ and so is used in simulation, and the **normalized innovation squared** (NIS), which needs only the measurement:
+**The consistency statistics used below, defined.** A filter is *consistent* when its reported covariance matches its actual errors. Two squared, covariance-weighted errors test this, since each is chi-square distributed when the filter is right. The $\chi^2_k$ distribution is the distribution of a sum of $k$ squared independent standard normal variables, and its mean is $k$ ([[02-foundations/probability|3. Probability §6]] defines it). The two errors are the **normalized estimation error squared** (NEES), which needs the true state $x$ and so is used in simulation, and the **normalized innovation squared** (NIS), which needs only the measurement:
 $$\text{NEES} = (x - \hat x)^\top P^{-1} (x - \hat x), \qquad \text{NIS} = y^\top S^{-1} y$$
-For a consistent filter their averages are the state dimension $n$ and the measurement dimension $m$, so NEES near 2 is the target here; an average well above $n$ means $P$ is too small (the filter is overconfident), well below means $P$ is too large.
+For a consistent filter their averages are the state dimension $n$ and the measurement dimension $m$. The reason: if the filter is right, the error $e = x - \hat x$ is Gaussian with mean zero and covariance $P$. Factor $P = LL^\top$ (Cholesky) and set $u = L^{-1}e$. Then $u$ has covariance $L^{-1}PL^{-\top} = I$, so its $n$ entries are independent standard normals, and $\text{NEES} = e^\top L^{-\top}L^{-1}e = u^\top u = \sum_i u_i^2$ is $\chi^2_n$, with mean $n$ because each $E[u_i^2] = 1$. The same argument with $S$ makes NIS a $\chi^2_m$ variable. So NEES near 2 is the target here; an average well above $n$ means $P$ is too small (the filter is overconfident), well below means $P$ is too large.
 
 ```python
 import numpy as np
@@ -268,7 +488,7 @@ print(x.round(4), P.round(4))
 **Follow-ups they ask.**
 - *Why not `P = (I - K H) @ P`?* It is correct only for the exact optimal gain and in exact arithmetic. Round-off makes it lose symmetry and eventually positive definiteness. The Joseph form stays valid for any gain, including a suboptimal one. The cheap alternative is symmetrizing, `P = 0.5 * (P + P.T)`.
 - *Why `solve` instead of `inv`?* It is cheaper and more accurate. For larger problems use a Cholesky factorization of $S$.
-- *A measurement is an outlier.* Gate it: accept only if $y^\top S^{-1} y$ is below a chi-square threshold (3.84 for one dimension at 95 %).
+- *A measurement is an outlier.* Gate it: accept only if $y^\top S^{-1} y$ is below a chi-square threshold (3.84 for one dimension at 95 %, since a $\chi^2_1$ variable is one squared standard normal and $P(\lvert u\rvert < 1.96) = 0.95$ gives $1.96^2 = 3.84$; [[02-foundations/probability|3. Probability §6]]).
 - *A reading is missing, or two sensors arrive at different rates.* Skip the update when nothing arrives; predict to each measurement's timestamp and update with that sensor's $H$ and $R$.
 - *How do you tune $Q$ and $R$?* $R$ from a static sensor log; $Q$ from the physics of how much the target can accelerate, then check consistency (normalized innovations should average to $m$).
 - *The model is nonlinear.* EKF: linearize $f$ and $h$ at the current estimate and use their Jacobians in place of $A$ and $H$.
@@ -321,6 +541,54 @@ print(w.round(4), effective_sample_size(w).round(3), np.bincount(systematic_resa
 
 > [!example] Worked example · 계산 예제
 > Weights $(0.10, 0.45, 0.35, 0.10)$ give cumulative sums $(0.10, 0.55, 0.90, 1.00)$. With $u_0 = 0.8$ the pointers are $0.20, 0.45, 0.70, 0.95$, which land in particles $1, 1, 2, 3$: copy counts $(0, 2, 1, 1)$ against expectations $(0.4, 1.8, 1.4, 0.4)$, each a floor or ceiling. The test file runs 40 000 resamplings of random weights and checks three things: the mean count of every particle matches $M w_i$ for both schemes, every systematic count is a floor or ceiling, and the total variance of the systematic counts is below the multinomial one.
+
+<svg viewBox="0 0 560 236" style="max-width:100%;height:auto" role="img" aria-label="Systematic resampling. The unit interval is cut at the cumulative weights 0.10, 0.55, 0.90 and 1.00 into particles 0 to 3. With u0 = 0.8 the four pointers sit at 0.20, 0.45, 0.70 and 0.95, a quarter apart, and land in particles 1, 1, 2 and 3, so the copies are 0, 2, 1, 1 against expected counts 0.4, 1.8, 1.4, 0.4, each a floor or a ceiling.">
+  <defs><marker id="araSy" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="40" y="22" font-size="12" fill="currentColor">pointers u<tspan dy="3" font-size="10.2">m</tspan><tspan dy="-3" dx="3.8">= (0.8 + m) / 4</tspan></text>
+  <rect x="40" y="110" width="48" height="30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.07500000000000001"/>
+  <text x="64" y="123" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0</text>
+  <text x="64" y="135" font-size="10" fill="currentColor" text-anchor="middle">0.10</text>
+  <rect x="88" y="110" width="216" height="30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1625"/>
+  <text x="196" y="123" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">1</text>
+  <text x="196" y="135" font-size="10" fill="currentColor" text-anchor="middle">0.45</text>
+  <rect x="304" y="110" width="168" height="30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1375"/>
+  <text x="388" y="123" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="388" y="135" font-size="10" fill="currentColor" text-anchor="middle">0.35</text>
+  <rect x="472" y="110" width="48" height="30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.07500000000000001"/>
+  <text x="496" y="123" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <text x="496" y="135" font-size="10" fill="currentColor" text-anchor="middle">0.10</text>
+  <line x1="40" y1="140" x2="40" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="40" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0.00</text>
+  <line x1="88" y1="140" x2="88" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="88" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0.10</text>
+  <line x1="304" y1="140" x2="304" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="304" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0.55</text>
+  <line x1="472" y1="140" x2="472" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="472" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0.90</text>
+  <line x1="520" y1="140" x2="520" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="520" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">1.00</text>
+  <text x="520" y="174" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.8">cumulative weight</text>
+  <line x1="136" y1="76" x2="136" y2="108" stroke="currentColor" stroke-width="1.6" marker-end="url(#araSy)"/>
+  <text x="136" y="70" font-size="11" fill="currentColor" text-anchor="middle">0.20</text>
+  <line x1="256" y1="76" x2="256" y2="108" stroke="currentColor" stroke-width="1.6" marker-end="url(#araSy)"/>
+  <text x="256" y="70" font-size="11" fill="currentColor" text-anchor="middle">0.45</text>
+  <line x1="376" y1="76" x2="376" y2="108" stroke="currentColor" stroke-width="1.6" marker-end="url(#araSy)"/>
+  <text x="376" y="70" font-size="11" fill="currentColor" text-anchor="middle">0.70</text>
+  <line x1="496" y1="76" x2="496" y2="108" stroke="currentColor" stroke-width="1.6" marker-end="url(#araSy)"/>
+  <text x="496" y="70" font-size="11" fill="currentColor" text-anchor="middle">0.95</text>
+  <line x1="138" y1="52" x2="254" y2="52" stroke="currentColor" stroke-width="1" marker-end="url(#araSy)"/>
+  <text x="196" y="47" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1/M = 0.25</text>
+  <text x="8" y="198" font-size="11" fill="currentColor">copies</text>
+  <text x="8" y="218" font-size="11" fill="currentColor">M w<tspan dy="3" font-size="10">i</tspan></text>
+  <text x="104" y="198" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">0</text>
+  <text x="104" y="218" font-size="11" fill="currentColor" text-anchor="middle">0.4</text>
+  <text x="196" y="198" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="196" y="218" font-size="11" fill="currentColor" text-anchor="middle">1.8</text>
+  <text x="388" y="198" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">1</text>
+  <text x="388" y="218" font-size="11" fill="currentColor" text-anchor="middle">1.4</text>
+  <text x="496" y="198" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">1</text>
+  <text x="496" y="218" font-size="11" fill="currentColor" text-anchor="middle">0.4</text>
+</svg>
 
 **Complexity.** Both schemes as written are $O(M \log M)$, a binary search per draw. Because the systematic pointers are already sorted, a two-pointer walk through the cumulative sum makes it $O(M)$. ESS is $O(M)$.
 
@@ -702,7 +970,7 @@ print(out.shape, W.shape, W[0].round(2))
 모든 절은 같은 일곱 부분으로 되어 있다: 면접관이 말할 법한 **문제**, **실제로 보는 것**, **핵심 아이디어**, 35줄 이하의 **구현** (표준 라이브러리와 NumPy), **복잡도**, 짧은 답을 붙인 **꼬리 질문**, 그리고 **이론 링크**.
 
 > [!note] 처음이라면 · First pass
-> 다음 주에 로보틱스 면접이 있다면 §1, §4, §6, §8부터 하라. 계획, 필터링, 기구학, 좌표계는 거의 모든 연구실이 묻는다. 학습 쪽에 가까운 연구실이라면 §6 대신 §9와 §10을 하라.
+> 다음 주에 로보틱스 면접이 있다면 §1, §4, §6, §8부터 하라. 계획, 필터링, 기구학, 좌표계는 거의 모든 연구실이 묻는다. 학습 쪽에 가까운 연구실이라면 §6 대신 §9와 §10을 하라. §2, §3, §5, §7은 두 번째로 읽고, 끝의 "연습하는 법"이 열 문제 전체의 연습 계획이다.
 
 ### 1. 경로 복원까지 하는 격자 A*
 
@@ -757,6 +1025,57 @@ print(astar(grid, (2, 0), (0, 4)))
 
 이 격자에서는 벽이 1행의 1–2열을 막고 있어서, 경로는 아래쪽 줄을 따라가다 (2, 3)에서 (1, 4)로 대각 한 걸음을 내딛는다. 비용은 $4 + \sqrt 2$다. (2, 2)에서 (1, 3)으로 가는 걸음은 (1, 2)에 있는 벽의 모서리를 비집고 지나가므로 거부된다.
 
+<svg viewBox="0 0 560 240" style="max-width:100%;height:auto" role="img" aria-label="1행의 1열과 2열에 벽이 있는 3×5 격자. 시작 (2, 0)에서 목표 (0, 4)로 가는 A*는 2행을 따라 g = 0, 1, 2, 3으로 가다가 (2, 3)에서 (1, 4)로 대각 한 걸음(g = 4.41)을 딛고, 목표에서 g = 5.41, 즉 4 + √2로 끝난다. (2, 2)에서 (1, 3)으로 가는 대각은 옆 칸 (1, 2)가 벽이라 거부된다. 벽의 모서리를 비집고 지나가기 때문이다.">
+  <text x="67" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <text x="121" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">1</text>
+  <text x="175" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">2</text>
+  <text x="229" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">3</text>
+  <text x="283" y="30" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">4</text>
+  <text x="30" y="71" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">0</text>
+  <text x="30" y="125" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">1</text>
+  <text x="30" y="179" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">2</text>
+  <text x="30" y="30" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.6">r\c</text>
+  <rect x="40" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="94" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="148" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="202" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="256" y="40" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="40" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="94" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.45" stroke-opacity="0.7"/>
+  <rect x="148" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.45" stroke-opacity="0.7"/>
+  <rect x="202" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="256" y="94" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="40" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="94" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="148" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="202" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <rect x="256" y="148" width="54" height="54" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.7"/>
+  <path d="M67 175 L121 175 L175 175 L229 175 L283 121 L283 67" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+  <circle cx="67" cy="175" r="3.5" stroke="none" fill="currentColor"/>
+  <circle cx="121" cy="175" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="121" y="195" font-size="10" fill="currentColor" text-anchor="middle">g 1</text>
+  <circle cx="175" cy="175" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="175" y="195" font-size="10" fill="currentColor" text-anchor="middle">g 2</text>
+  <circle cx="229" cy="175" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="229" y="195" font-size="10" fill="currentColor" text-anchor="middle">g 3</text>
+  <circle cx="283" cy="121" r="3.5" stroke="none" fill="currentColor"/>
+  <circle cx="283" cy="67" r="3.5" stroke="none" fill="currentColor"/>
+  <text x="67" y="165" font-size="10" fill="currentColor" text-anchor="middle" font-weight="bold">시작</text>
+  <text x="67" y="195" font-size="10" fill="currentColor" text-anchor="middle">g 0</text>
+  <text x="283" y="57" font-size="10" fill="currentColor" text-anchor="middle" font-weight="bold">목표</text>
+  <line x1="175" y1="175" x2="229" y2="121" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.8" stroke-dasharray="4 3"/>
+  <line x1="196" y1="142" x2="208" y2="154" stroke="currentColor" stroke-width="2"/>
+  <line x1="196" y1="154" x2="208" y2="142" stroke="currentColor" stroke-width="2"/>
+  <text x="336" y="48" font-size="11" fill="currentColor">(r, c)에서 대각 (dr, dc)로 가려면</text>
+  <text x="336" y="65" font-size="11" fill="currentColor">옆 칸 둘이 모두 비어 있어야 한다:</text>
+  <text x="336" y="82" font-size="11" fill="currentColor">(r + dr, c)와 (r, c + dc)</text>
+  <text x="336" y="108" font-size="11" fill="currentColor">(2, 2) → (1, 3): 옆 칸 (1, 2)가</text>
+  <text x="336" y="125" font-size="11" fill="currentColor">벽이므로 이 걸음은 거부된다</text>
+  <text x="336" y="151" font-size="11" fill="currentColor">(2, 3) → (1, 4): 옆 칸 (1, 3)과</text>
+  <text x="336" y="168" font-size="11" fill="currentColor">(2, 4)가 비어 있으므로 허용된다</text>
+  <text x="40" y="228" font-size="12" fill="currentColor">g(1, 4) = 3 + √2 ≈ 4.41; g(목표) = 4 + √2 ≈ 5.41</text>
+</svg>
+
 **복잡도.** 빈 칸이 $n$개면 간선은 최대 $8n$개이고 힙 삽입도 최대 $8n$번이다. 삽입과 추출이 각각 $O(\log n)$이므로 시간은 $O(n \log n)$, `g`, `parent`, 힙을 위한 메모리는 $O(n)$이다. 힙에는 낡은 중복 항목이 남을 수 있다. `heapq`에는 decrease-key가 없으니, 꺼낼 때 건너뛰는 편이 더 싸다.
 
 **꼬리 질문.**
@@ -777,6 +1096,45 @@ print(astar(grid, (2, 0), (0, 4)))
 **핵심 아이디어.** 전수 탐색에서는 거리 제곱을 전개한다. $\lVert q - p\rVert^2 = \lVert q\rVert^2 - 2\,q^\top p + \lVert p\rVert^2$이므로 행렬 곱 한 번으로 $m \times n$개의 거리를 모두 얻는다. KD-tree는 가장 넓게 퍼진 좌표의 중앙값에서 점들을 재귀적으로 나눈다. KD-tree(**k-d tree**)는 $\mathbb{R}^d$의 점들 위의 이진 트리이며 노드가 두 종류다. *잎*은 점 인덱스의 작은 묶음을 저장하고, *분할 노드*는 축 $a$, 값 $v$, 두 서브트리를 저장한다. 왼쪽 서브트리의 모든 점은 $x_a \le v$, 오른쪽 서브트리의 모든 점은 $x_a \ge v$이므로 각 노드의 영역은 축에 정렬된 상자다. 질의할 때는 질의점이 속한 쪽으로 먼저 내려가고, 분할 평면이 지금까지의 최선 거리보다 가까울 때만 반대쪽을 방문한다. 평면 너머의 모든 점은 적어도 평면까지의 거리만큼 떨어져 있기 때문이다. 지금까지의 최선 거리 제곱을 $d^2_{\text{best}}$라 하면, 평면 $x_a = v$ 너머의 점은 $q$에서 적어도 $\lvert q_a - v\rvert$ 떨어져 있으므로 아래 검사가 참일 때만 반대쪽을 방문한다.
 $$(q_a - v)^2 < d^2_{\text{best}}$$
 *예:* $q_a = 0.3$, $v = 0.5$, $d^2_{\text{best}} = 0.05$이면 $(0.3 - 0.5)^2 = 0.04 < 0.05$이므로 반대쪽에 더 가까운 점이 있을 수 있어 탐색해야 한다. $d^2_{\text{best}}$가 이미 $0.03$으로 내려갔다면 반대쪽 서브트리 전체를 건너뛴다.
+
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="두 패널로 본 KD-tree 가지치기 검사. 분할 평면 x_a = v = 0.5와 q_a = 0.3인 질의점이 있어 평면까지 0.2, (q_a − v)² = 0.04다. 왼쪽: 최선 거리 제곱 0.05, 반경 0.224로 공이 평면을 넘으므로 반대쪽을 탐색해야 한다. 오른쪽: 최선 거리 제곱 0.03, 반경 0.173으로 공이 가까운 쪽에 머물러 반대쪽 전체를 가지친다.">
+  <defs><marker id="araKdk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="22" y="22" font-size="12" fill="currentColor">(a) d²<tspan dy="3" font-size="10.2">best</tspan><tspan dy="-3" dx="3.8">= 0.05 &gt; 0.04</tspan></text>
+  <rect x="22" y="50" width="220" height="176" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <line x1="132" y1="50" x2="132" y2="226" stroke="currentColor" stroke-width="1.8"/>
+  <text x="137" y="218" font-size="10" fill="currentColor">x<tspan dy="3" font-size="10">a</tspan><tspan dy="-3" dx="3.2">= v = 0.5</tspan></text>
+  <text x="28" y="65" font-size="10" fill="currentColor" fill-opacity="0.8">가까운 쪽</text>
+  <text x="236" y="65" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.8">반대쪽</text>
+  <circle cx="88" cy="127" r="49.2" stroke="currentColor" stroke-width="1.3" fill="none" stroke-dasharray="4 3"/>
+  <circle cx="88" cy="127" r="3.2" stroke="none" fill="currentColor"/>
+  <text x="82" y="121" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">q</text>
+  <line x1="88" y1="127" x2="71.2" y2="173.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+  <rect x="68.2" y="170.2" width="6" height="6" stroke="none" fill="currentColor"/>
+  <text x="71.2" y="188.2" font-size="10" fill="currentColor" text-anchor="middle">최선</text>
+  <text x="71.2" y="201.2" font-size="10" fill="currentColor" text-anchor="middle">√0.05 = 0.224</text>
+  <line x1="88" y1="101" x2="131" y2="101" stroke="currentColor" stroke-width="1" marker-end="url(#araKdk)"/>
+  <text x="110" y="115" font-size="10" fill="currentColor" text-anchor="middle">0.2</text>
+  <text x="22" y="270" font-size="11" fill="currentColor">공이 평면을 넘는다:</text>
+  <text x="22" y="288" font-size="11" fill="currentColor" font-weight="bold">반대쪽을 탐색</text>
+  <text x="300" y="22" font-size="12" fill="currentColor">(b) d²<tspan dy="3" font-size="10.2">best</tspan><tspan dy="-3" dx="3.8">= 0.03 &lt; 0.04</tspan></text>
+  <rect x="300" y="50" width="220" height="176" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <rect x="410" y="50" width="110" height="176" stroke="none" fill="currentColor" fill-opacity="0.16"/>
+  <line x1="410" y1="50" x2="410" y2="226" stroke="currentColor" stroke-width="1.8"/>
+  <text x="415" y="218" font-size="10" fill="currentColor">x<tspan dy="3" font-size="10">a</tspan><tspan dy="-3" dx="3.2">= v = 0.5</tspan></text>
+  <text x="306" y="65" font-size="10" fill="currentColor" fill-opacity="0.8">가까운 쪽</text>
+  <text x="514" y="65" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.8">반대쪽</text>
+  <circle cx="366" cy="127" r="38.1" stroke="currentColor" stroke-width="1.3" fill="none" stroke-dasharray="4 3"/>
+  <circle cx="366" cy="127" r="3.2" stroke="none" fill="currentColor"/>
+  <text x="360" y="121" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">q</text>
+  <line x1="366" y1="127" x2="353" y2="162.8" stroke="currentColor" stroke-width="1" stroke-opacity="0.8"/>
+  <rect x="350" y="159.8" width="6" height="6" stroke="none" fill="currentColor"/>
+  <text x="353" y="177.8" font-size="10" fill="currentColor" text-anchor="middle">최선</text>
+  <text x="353" y="190.8" font-size="10" fill="currentColor" text-anchor="middle">√0.03 = 0.173</text>
+  <line x1="366" y1="101" x2="409" y2="101" stroke="currentColor" stroke-width="1" marker-end="url(#araKdk)"/>
+  <text x="388" y="115" font-size="10" fill="currentColor" text-anchor="middle">0.2</text>
+  <text x="300" y="270" font-size="11" fill="currentColor">공이 가까운 쪽에 머문다:</text>
+  <text x="300" y="288" font-size="11" fill="currentColor" font-weight="bold">반대쪽 가지치기</text>
+</svg>
 
 ```python
 import numpy as np
@@ -841,8 +1199,9 @@ print(kd_nearest(tree, P, q)[1], knn_brute(P, q[None, :], k=1)[0][0, 0])
 
 **핵심 아이디어.** RANSAC(random sample consensus)은 이름 붙은 다섯 부분으로 된 강건 추정기다. **모델**(여기서는 단위 법선 $\lVert n\rVert = 1$인 직선 $n^\top x = c$), 모델을 정하는 가장 적은 점 $s$개로 된 **최소 표본**(직선이면 $s = 2$), **잔차**(여기서는 점에서 직선까지의 수직 거리), **임계값** $t$, 그리고 잔차가 $t$보다 작은 점들, 즉 인라이어로 이루어진 **합의 집합**이며 그 크기가 점수다. 단위 법선이면 $n^\top x - c$가 직선 너머로 법선에 투영한 부호 있는 길이이므로 잔차는 아래 식이다.
 $$r(x) = \lvert n^\top x - c \rvert, \qquad \text{inliers} = \{\, x_i : r(x_i) < t \,\}$$
-*예:* 직선 $y = 0.5x + 1$에서 $n = (-0.5, 1)/\lVert(-0.5, 1)\rVert$이고, 점 $(2, 3)$은 $r = 0.894$인 반면 수직 방향 잔차는 $3 - 2 = 1.0$이다. RANSAC이 수직 거리를 쓰는 것은 수직선에서도 잔차가 유한하게 하기 위해서다. 무작위 두 점으로 직선을 만들고 거리 임계값 안에 드는 점을 세는 일을 반복한다. 인라이어가 가장 많은 직선을 남긴 뒤, 그 인라이어들에 전체 최소제곱(total least squares)으로 다시 맞춘다. 전체 최소제곱(**total least squares**)은 *수직* 거리 제곱의 합을 최소화하는 직선, 즉 아래 문제의 해를 고른다. 해는 $c = n^\top \bar x$($\bar x$는 인라이어 평균)이고 $n$은 중심화한 인라이어의 가장 작은 특이값에 대응하는 오른쪽 특이 벡터다. 그 방향의 퍼짐이 가장 작기 때문이다.
-$$\min_{\lVert n\rVert = 1,\ c}\ \sum_i (n^\top x_i - c)^2$$ 몇 번 반복하나? 점 중 비율 $w$가 인라이어라면 $s$개짜리 표본 하나가 모두 인라이어일 확률은 $w^s$이고, 그래서 독립 표본 $k$개가 모두 오염될 확률은 $(1 - w^s)^k$다. 이것이 $1 - p$ 이하가 되도록 요구하고 로그를 취하면 아래 횟수가 나온다. 두 로그가 모두 음수이기 때문에 부등호 방향이 뒤집힌다.
+*예:* 직선 $y = 0.5x + 1$에서 $n = (-0.5, 1)/\lVert(-0.5, 1)\rVert$이고, 점 $(2, 3)$은 $r = 0.894$인 반면 수직 방향 잔차는 $3 - 2 = 1.0$이다. RANSAC이 수직 거리를 쓰는 것은 수직선에서도 잔차가 유한하게 하기 위해서다. 무작위 두 점으로 직선을 만들고 거리 임계값 안에 드는 점을 세는 일을 반복한다. 인라이어가 가장 많은 직선을 남긴 뒤, 그 인라이어들에 전체 최소제곱(total least squares)으로 다시 맞춘다. 전체 최소제곱(**total least squares**)은 *수직* 거리 제곱의 합을 최소화하는 직선, 즉 아래 문제의 해를 고른다. 해는 $c = n^\top \bar x$($\bar x$는 인라이어 평균)이고 $n$은 중심화한 인라이어의 가장 작은 특이값에 대응하는 오른쪽 특이 벡터다(특이값과 특이 벡터의 정의는 [[02-foundations/linear-algebra|1. 선형대수 §4]]). 그 방향의 퍼짐이 가장 작기 때문이다.
+$$\min_{\lVert n\rVert = 1,\ c}\ \sum_i (n^\top x_i - c)^2$$
+유도는 두 단계다. $c$에 대한 도함수를 0으로 놓으면 $c = n^\top \bar x$다. 이것을 다시 대입하면 합은 $\lVert X_c n\rVert^2$가 되는데, $X_c$의 행은 중심화한 인라이어 $x_i - \bar x$다. 단위 벡터 $n$ 중에서 이 값은 $X_c$의 가장 작은 특이값 $\sigma_{\min}$에 대응하는 오른쪽 특이 벡터에서 가장 작고, 그때 값은 $\sigma_{\min}^2$이다. 몇 번 반복하나? 점 중 비율 $w$가 인라이어라면 $s$개짜리 표본 하나가 모두 인라이어일 확률은 $w^s$이고, 그래서 독립 표본 $k$개가 모두 오염될 확률은 $(1 - w^s)^k$다. 이것이 $1 - p$ 이하가 되도록 요구하고 로그를 취하면 아래 횟수가 나온다. 두 로그가 모두 음수이기 때문에 부등호 방향이 뒤집힌다.
 
 $$k = \left\lceil \frac{\log(1 - p)}{\log(1 - w^{s})} \right\rceil$$
 
@@ -882,7 +1241,136 @@ print(ransac_iterations(0.99, 0.6, 2), -n[0] / n[1], c / n[1], mask[:60].mean())
 ```
 
 > [!example] 계산 예제 · Worked example
-> $p = 0.99$이고 점의 절반이 이상치($w = 0.5$)라면, 직선($s = 2$)은 $\log 0.01 / \log 0.75 = 16.0$이므로 17번, 평면($s = 3$)은 35번, 8점 기초 행렬 추정($s = 8$)은 1177번이 필요하다. 인라이어 비율은 $s$만큼 중요하다. $w = 0.3$인 평면은 169번이 필요하다. 테스트 파일은 각 값을 확인한 뒤 $k$번 표본 추출을 20 000번 모의 실행해, 성공률이 $1 - (1 - w^s)^k \ge p$와 맞고 $k - 1$번으로는 모자란다는 것을 확인한다.
+> $p = 0.99$이고 점의 절반이 이상치($w = 0.5$)라면, 직선($s = 2$)은 $\log 0.01 / \log 0.75 = 16.0$이므로 17번, 평면($s = 3$)은 35번, 8점 기초 행렬 추정($s = 8$. 기초 행렬은 두 카메라 영상에서 서로 대응하는 픽셀을 잇는 $3 \times 3$ 행렬이다. [[04-robotics/geometric-perception-calibration|3.5 기하 인식과 보정 §2.6]])은 1177번이 필요하다. 인라이어 비율은 $s$만큼 중요하다. $w = 0.3$인 평면은 169번이 필요하다. 테스트 파일은 각 값을 확인한 뒤 $k$번 표본 추출을 20 000번 모의 실행해, 성공률이 $1 - (1 - w^s)^k \ge p$와 맞고 $k - 1$번으로는 모자란다는 것을 확인한다.
+
+<svg viewBox="0 0 560 310" style="max-width:100%;height:auto" role="img" aria-label="페이지 코드의 실행 결과로 그린 RANSAC. 10×10 상자 안에 직선 y = 0.5x + 1 위의 벽 점 60개와 잡동사니 점 40개가 있다. 표본 11번 뒤 다시 맞춘 직선 y = 0.502x + 0.988과 반폭 0.2의 띠가 벽 점 60개를 모두 인라이어(채운 점)로 잡고 잡동사니(빈 점)는 하나도 잡지 않는다. 오른쪽: 직선 y = 0.5x + 1에 대한 점 (2, 3)의 수직 거리 잔차 0.894(발 (2.4, 2.2))와 세로 방향 잔차 1.0((2, 2)까지).">
+  <rect x="36" y="30" width="250" height="250" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.6"/>
+  <text x="36" y="294" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <text x="30" y="284" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">0</text>
+  <text x="161" y="294" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">5</text>
+  <text x="30" y="159" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">5</text>
+  <text x="286" y="294" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">10</text>
+  <text x="30" y="34" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">10</text>
+  <path d="M36 249.7 L286 124.3 L286 135.5 L36 260.9 Z" stroke="none" fill="currentColor" fill-opacity="0.18" stroke-linejoin="round"/>
+  <line x1="36" y1="255.3" x2="286" y2="129.9" stroke="currentColor" stroke-width="1.2"/>
+  <circle cx="164" cy="191.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="273.6" cy="136.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="72" cy="236.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="273.2" cy="137.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="114" cy="217.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="141.8" cy="201.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="242.9" cy="152.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="138.3" cy="203.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="173.4" cy="185.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="42.9" cy="253.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="224.4" cy="160.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="170.5" cy="186.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="118.4" cy="214.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="233.1" cy="157.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="111.8" cy="216.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="149.4" cy="198" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="69.5" cy="237.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="136.8" cy="205" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="86.9" cy="231.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="101.6" cy="222.3" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="223.6" cy="161.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="106.1" cy="219" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="157.3" cy="194.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="281.2" cy="134.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="276.4" cy="136.3" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="217.2" cy="163.3" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="171.3" cy="186.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="105.2" cy="221.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="76.2" cy="234.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="278.5" cy="133.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="165" cy="189.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="65" cy="239.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="191.9" cy="176.7" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="230.2" cy="158" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="189.3" cy="178.7" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="265.3" cy="139" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="45.9" cy="252.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="168.1" cy="189.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="150.8" cy="197.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="51.6" cy="249" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="196.3" cy="174.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="249.2" cy="149.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="184.2" cy="179.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="101" cy="222.6" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="246" cy="149.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="163.4" cy="189.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="163.7" cy="190.7" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="224.3" cy="162" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="73" cy="238.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="240.9" cy="150.4" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="206.8" cy="169.7" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="232.8" cy="157.5" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="83.9" cy="230.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="236.6" cy="154.9" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="83.8" cy="230" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="56.4" cy="244.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="249.8" cy="148.1" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="251.3" cy="148.2" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="255.1" cy="144.8" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="154" cy="197.3" r="2.4" stroke="none" fill="currentColor"/>
+  <circle cx="182.6" cy="70.1" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="217.6" cy="188.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="148.1" cy="188.1" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="63.4" cy="229.2" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="107" cy="201.5" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="114.3" cy="135.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="278.9" cy="86.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="233.8" cy="90.2" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="185.2" cy="50.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="208.4" cy="154.9" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="55.3" cy="157.9" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="89.2" cy="246.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="162.5" cy="83.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="109.8" cy="87.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="167.4" cy="242.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="277.2" cy="179.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="109.8" cy="68.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="67.1" cy="96.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="83" cy="181.9" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="94" cy="69.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="133.5" cy="36.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="192.3" cy="106.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="166.4" cy="202.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="134.9" cy="44.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="86.3" cy="32.9" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="225.6" cy="190.1" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="196.4" cy="184.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="131.4" cy="154" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="40.2" cy="156.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="278.9" cy="208.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="223.1" cy="169.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="88.3" cy="53.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="40.2" cy="204.1" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="285.8" cy="214.5" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="248.3" cy="128.6" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="237.5" cy="122.4" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="126.7" cy="89.8" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="42.6" cy="168.3" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="129" cy="160.7" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <circle cx="67.9" cy="224.4" r="2.6" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <text x="326" y="258" font-size="11" fill="currentColor">표본 11번; 재맞춤 y = 0.502x + 0.988</text>
+  <text x="326" y="276" font-size="11" fill="currentColor">채운 점: 인라이어 60개 (띠 ± 0.2)</text>
+  <text x="326" y="294" font-size="11" fill="currentColor">빈 점: 이상치 40개</text>
+  <text x="314" y="30" font-size="11" fill="currentColor">직선 y = 0.5x + 1에 대한 (2, 3)의 잔차</text>
+  <line x1="326" y1="212.2" x2="508.4" y2="121" stroke="currentColor" stroke-width="1.4"/>
+  <text x="333.6" y="231.2" font-size="10" fill="currentColor">y = 0.5x + 1</text>
+  <line x1="409.6" y1="94.4" x2="440" y2="155.2" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="409.6" y1="94.4" x2="409.6" y2="170.4" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <circle cx="409.6" cy="94.4" r="4" stroke="none" fill="currentColor"/>
+  <text x="401.6" y="88.4" font-size="11" fill="currentColor" text-anchor="end">(2, 3)</text>
+  <path d="M436.4 148 L443.6 144.5 L447.2 151.6" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.8" stroke-linejoin="round"/>
+  <circle cx="440" cy="155.2" r="2.5" stroke="none" fill="currentColor"/>
+  <circle cx="409.6" cy="170.4" r="2.5" stroke="none" fill="currentColor"/>
+  <text x="432.4" y="98.2" font-size="11" fill="currentColor">수직 거리</text>
+  <text x="432.4" y="111.1" font-size="11" fill="currentColor">0.894</text>
+  <text x="401.6" y="136.4" font-size="11" fill="currentColor" text-anchor="end">세로 방향 1.0</text>
+  <text x="442" y="185.2" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">(2.4, 2.2)</text>
+</svg>
 
 **복잡도.** $O(kN)$이다. $k$번의 반복마다 $N$개 점을 모두 채점한다. 재맞춤은 $O(N)$이다. $k$가 $N$이 아니라 $w$, $s$, $p$에만 달려 있다는 점에 주목하라. RANSAC이 큰 점군으로 확장되는 이유다.
 
@@ -908,9 +1396,9 @@ $$P = (I - KH)\,P^-\,(I - KH)^\top + K R K^\top$$
 
 한 스텝 동안 유지되는 표준편차 $\sigma_a$의 백색 가속도라면 상태는 $G a$만큼 바뀌고 $G = (\tfrac12 \Delta t^2, \Delta t)^\top$이다. 그래서 $Q = \sigma_a^2 G G^\top$이다.
 
-**아래에서 쓰는 일관성 통계의 정의.** 필터가 보고하는 공분산이 실제 오차와 맞으면 필터가 *일관적*이라고 한다. 이를 검사하는 공분산 가중 오차 제곱이 둘 있고, 필터가 옳으면 각각 카이제곱 분포를 따른다. 참 상태 $x$가 필요해서 시뮬레이션에서 쓰는 정규화 추정 오차 제곱(**normalized estimation error squared**, NEES)과, 측정만 있으면 되는 정규화 혁신 제곱(**normalized innovation squared**, NIS)이다.
+**아래에서 쓰는 일관성 통계의 정의.** 필터가 보고하는 공분산이 실제 오차와 맞으면 필터가 *일관적*이라고 한다. 이를 검사하는 공분산 가중 오차 제곱이 둘 있고, 필터가 옳으면 각각 카이제곱 분포를 따른다. $\chi^2_k$ 분포는 서로 독립인 표준정규 확률변수 $k$개의 제곱합이 따르는 분포이고, 평균은 $k$다([[02-foundations/probability|3. 확률 §6]]에 정의가 있다). 두 오차는 참 상태 $x$가 필요해서 시뮬레이션에서 쓰는 정규화 추정 오차 제곱(**normalized estimation error squared**, NEES)과, 측정만 있으면 되는 정규화 혁신 제곱(**normalized innovation squared**, NIS)이다.
 $$\text{NEES} = (x - \hat x)^\top P^{-1} (x - \hat x), \qquad \text{NIS} = y^\top S^{-1} y$$
-일관적인 필터에서 두 값의 평균은 각각 상태 차원 $n$과 측정 차원 $m$이므로, 여기서 목표는 NEES가 2 근처인 것이다. 평균이 $n$보다 훨씬 크면 $P$가 너무 작고(과신), 훨씬 작으면 $P$가 너무 크다.
+일관적인 필터에서 두 값의 평균은 각각 상태 차원 $n$과 측정 차원 $m$이다. 이유는 이렇다. 필터가 옳으면 오차 $e = x - \hat x$는 평균 0, 공분산 $P$인 가우시안이다. $P = LL^\top$로 분해하고(Cholesky) $u = L^{-1}e$라 두면, $u$의 공분산은 $L^{-1}PL^{-\top} = I$이므로 $n$개 성분이 서로 독립인 표준정규이고, $\text{NEES} = e^\top L^{-\top}L^{-1}e = u^\top u = \sum_i u_i^2$는 $\chi^2_n$을 따른다. 각 $E[u_i^2] = 1$이므로 평균은 $n$이다. $S$로 같은 논증을 하면 NIS는 $\chi^2_m$을 따른다. 그래서 여기서 목표는 NEES가 2 근처인 것이다. 평균이 $n$보다 훨씬 크면 $P$가 너무 작고(과신), 훨씬 작으면 $P$가 너무 크다.
 
 ```python
 import numpy as np
@@ -950,7 +1438,7 @@ print(x.round(4), P.round(4))
 **꼬리 질문.**
 - *왜 `P = (I - K H) @ P`가 아닌가?* 정확한 최적 이득과 정확한 산술에서만 맞는다. 반올림 오차 때문에 대칭성을, 결국에는 양의 정부호성을 잃는다. Joseph 형태는 최적이 아닌 이득을 포함해 어떤 이득에서도 유효하다. 싼 대안은 `P = 0.5 * (P + P.T)`로 대칭화하는 것이다.
 - *왜 `inv` 대신 `solve`인가?* 더 싸고 더 정확하다. 문제가 크면 $S$의 Cholesky 분해를 쓴다.
-- *측정 하나가 이상치다.* 게이팅한다. $y^\top S^{-1} y$가 카이제곱 임계값(1차원 95 %에서 3.84)보다 작을 때만 받아들인다.
+- *측정 하나가 이상치다.* 게이팅한다. $y^\top S^{-1} y$가 카이제곱 임계값(1차원 95 %에서 3.84)보다 작을 때만 받아들인다. $\chi^2_1$ 확률변수는 표준정규 하나의 제곱이고 $P(\lvert u\rvert < 1.96) = 0.95$이므로 $1.96^2 = 3.84$다([[02-foundations/probability|3. 확률 §6]]).
 - *측정이 빠졌거나, 두 센서가 다른 주기로 들어온다.* 아무것도 오지 않으면 갱신을 건너뛴다. 각 측정의 타임스탬프까지 예측하고, 그 센서의 $H$와 $R$로 갱신한다.
 - *$Q$와 $R$은 어떻게 맞추나?* $R$은 정지 상태 센서 로그에서, $Q$는 표적이 얼마나 가속할 수 있는지에 대한 물리에서 정하고, 일관성을 확인한다(정규화 혁신의 평균이 $m$ 근처여야 한다).
 - *모델이 비선형이다.* EKF: 현재 추정에서 $f$와 $h$를 선형화하고, 그 야코비안을 $A$와 $H$ 자리에 쓴다.
@@ -1003,6 +1491,54 @@ print(w.round(4), effective_sample_size(w).round(3), np.bincount(systematic_resa
 
 > [!example] 계산 예제 · Worked example
 > 가중치 $(0.10, 0.45, 0.35, 0.10)$의 누적합은 $(0.10, 0.55, 0.90, 1.00)$이다. $u_0 = 0.8$이면 포인터는 $0.20, 0.45, 0.70, 0.95$이고, 입자 $1, 1, 2, 3$에 떨어진다. 복사 수 $(0, 2, 1, 1)$을 기댓값 $(0.4, 1.8, 1.4, 0.4)$와 비교하면 모두 내림 아니면 올림이다. 테스트 파일은 무작위 가중치로 재표본추출을 40 000번 돌려 세 가지를 확인한다. 두 방식 모두 각 입자의 평균 복사 수가 $M w_i$와 맞고, 체계적 방식의 복사 수는 모두 내림이나 올림이며, 체계적 방식 복사 수의 전체 분산이 다항 방식보다 작다.
+
+<svg viewBox="0 0 560 236" style="max-width:100%;height:auto" role="img" aria-label="체계적 재표본추출. 단위 구간을 누적 가중치 0.10, 0.55, 0.90, 1.00에서 잘라 입자 0부터 3에 준다. u0 = 0.8이면 포인터 네 개가 0.25 간격으로 0.20, 0.45, 0.70, 0.95에 놓여 입자 1, 1, 2, 3에 떨어지고, 복사 수 0, 2, 1, 1은 기댓값 0.4, 1.8, 1.4, 0.4의 내림 아니면 올림이다.">
+  <defs><marker id="araSyk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="40" y="22" font-size="12" fill="currentColor">포인터 u<tspan dy="3" font-size="10.2">m</tspan><tspan dy="-3" dx="3.8">= (0.8 + m) / 4</tspan></text>
+  <rect x="40" y="110" width="48" height="30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.07500000000000001"/>
+  <text x="64" y="123" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0</text>
+  <text x="64" y="135" font-size="10" fill="currentColor" text-anchor="middle">0.10</text>
+  <rect x="88" y="110" width="216" height="30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1625"/>
+  <text x="196" y="123" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">1</text>
+  <text x="196" y="135" font-size="10" fill="currentColor" text-anchor="middle">0.45</text>
+  <rect x="304" y="110" width="168" height="30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1375"/>
+  <text x="388" y="123" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="388" y="135" font-size="10" fill="currentColor" text-anchor="middle">0.35</text>
+  <rect x="472" y="110" width="48" height="30" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.07500000000000001"/>
+  <text x="496" y="123" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <text x="496" y="135" font-size="10" fill="currentColor" text-anchor="middle">0.10</text>
+  <line x1="40" y1="140" x2="40" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="40" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0.00</text>
+  <line x1="88" y1="140" x2="88" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="88" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0.10</text>
+  <line x1="304" y1="140" x2="304" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="304" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0.55</text>
+  <line x1="472" y1="140" x2="472" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="472" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">0.90</text>
+  <line x1="520" y1="140" x2="520" y2="145" stroke="currentColor" stroke-width="1"/>
+  <text x="520" y="157" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">1.00</text>
+  <text x="520" y="174" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.8">누적 가중치</text>
+  <line x1="136" y1="76" x2="136" y2="108" stroke="currentColor" stroke-width="1.6" marker-end="url(#araSyk)"/>
+  <text x="136" y="70" font-size="11" fill="currentColor" text-anchor="middle">0.20</text>
+  <line x1="256" y1="76" x2="256" y2="108" stroke="currentColor" stroke-width="1.6" marker-end="url(#araSyk)"/>
+  <text x="256" y="70" font-size="11" fill="currentColor" text-anchor="middle">0.45</text>
+  <line x1="376" y1="76" x2="376" y2="108" stroke="currentColor" stroke-width="1.6" marker-end="url(#araSyk)"/>
+  <text x="376" y="70" font-size="11" fill="currentColor" text-anchor="middle">0.70</text>
+  <line x1="496" y1="76" x2="496" y2="108" stroke="currentColor" stroke-width="1.6" marker-end="url(#araSyk)"/>
+  <text x="496" y="70" font-size="11" fill="currentColor" text-anchor="middle">0.95</text>
+  <line x1="138" y1="52" x2="254" y2="52" stroke="currentColor" stroke-width="1" marker-end="url(#araSyk)"/>
+  <text x="196" y="47" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">1/M = 0.25</text>
+  <text x="8" y="198" font-size="11" fill="currentColor">복사 수</text>
+  <text x="8" y="218" font-size="11" fill="currentColor">M w<tspan dy="3" font-size="10">i</tspan></text>
+  <text x="104" y="198" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">0</text>
+  <text x="104" y="218" font-size="11" fill="currentColor" text-anchor="middle">0.4</text>
+  <text x="196" y="198" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <text x="196" y="218" font-size="11" fill="currentColor" text-anchor="middle">1.8</text>
+  <text x="388" y="198" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">1</text>
+  <text x="388" y="218" font-size="11" fill="currentColor" text-anchor="middle">1.4</text>
+  <text x="496" y="198" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">1</text>
+  <text x="496" y="218" font-size="11" fill="currentColor" text-anchor="middle">0.4</text>
+</svg>
 
 **복잡도.** 여기 쓴 두 방식은 뽑을 때마다 이진 탐색을 하므로 $O(M \log M)$이다. 체계적 방식의 포인터는 이미 정렬되어 있으니 누적합을 두 포인터로 훑으면 $O(M)$이 된다. ESS는 $O(M)$이다.
 

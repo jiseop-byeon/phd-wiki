@@ -18,7 +18,7 @@ A data structure is a promise about which operations are cheap. Most interview p
 What interviews ask: the complexity table below from memory; hash map and heap *usage* in almost every problem; implementing a heap, a trie, or union-find from scratch; BST deletion; and, in robotics labs, "why is this nearest-neighbour search slow" (§8).
 
 > [!note] First pass · 처음이라면
-> Read §1 and learn the table. Then read §3 and §4, because hash maps and heaps appear in most problems. §5–§7 are the structures you implement when asked, and §8 connects the page to point clouds and planners.
+> Read §1 and learn the table. §2 is review except for the monotonic stack and deque, which are worth a first read. Then read §3 and §4, because hash maps and heaps appear in most problems. §5–§7 are the structures you implement when asked, and §8 connects the page to point clouds and planners.
 
 ### 1. Choosing a structure by the operations you need
 
@@ -132,6 +132,104 @@ The implication is a *requirement*, because a lookup recomputes $h$ and must lan
 $$s_i(k) = (h(k) + i) \bmod m, \qquad i = 0, 1, 2, \dots$$
 and every earlier position of that sequence is occupied or holds a tombstone, so a lookup may stop at the first truly empty slot. Example with $m = 10$: insert 42, which takes slot 2, then 52, which probes slot 2, finds it taken, and lands in slot 3. Emptying slot 2 to delete 42 would make a later lookup for 52 stop at slot 2 and report "absent", which is exactly why deletion leaves a tombstone.
 
+<svg viewBox="0 0 560 272" style="max-width:100%;height:auto" role="img" aria-label="Hash table with h(k) = k mod 10 and keys 42, 17, 52: chaining puts 42 and 52 in one list at bucket 2; linear probing moves 52 to slot 3, and deleting 42 leaves a tombstone so a lookup of 52 still reaches slot 3.">
+  <defs><marker id="ad1e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="20" y="22" font-size="12" fill="currentColor" font-weight="bold">separate chaining</text>
+  <text x="31" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">0</text>
+  <rect x="20" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="53" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">1</text>
+  <rect x="42" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="75" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">2</text>
+  <rect x="64" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <circle cx="75" cy="66" r="2.6" stroke="none" fill="currentColor"/>
+  <line x1="75" y1="66" x2="75" y2="99" stroke="currentColor" stroke-width="1.1" marker-end="url(#ad1e)"/>
+  <rect x="59" y="100" width="32" height="24" rx="3" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1"/>
+  <text x="75" y="116.5" font-size="12" fill="currentColor" text-anchor="middle">42</text>
+  <line x1="75" y1="124" x2="75" y2="145" stroke="currentColor" stroke-width="1.1" marker-end="url(#ad1e)"/>
+  <rect x="59" y="146" width="32" height="24" rx="3" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1"/>
+  <text x="75" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">52</text>
+  <text x="97" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">3</text>
+  <rect x="86" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="119" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">4</text>
+  <rect x="108" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="141" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">5</text>
+  <rect x="130" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="163" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">6</text>
+  <rect x="152" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="185" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">7</text>
+  <rect x="174" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <circle cx="185" cy="66" r="2.6" stroke="none" fill="currentColor"/>
+  <line x1="185" y1="66" x2="185" y2="99" stroke="currentColor" stroke-width="1.1" marker-end="url(#ad1e)"/>
+  <rect x="169" y="100" width="32" height="24" rx="3" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1"/>
+  <text x="185" y="116.5" font-size="12" fill="currentColor" text-anchor="middle">17</text>
+  <text x="207" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">8</text>
+  <rect x="196" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="229" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">9</text>
+  <rect x="218" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="308" y="22" font-size="12" fill="currentColor" font-weight="bold">open addressing, linear probing</text>
+  <text x="319" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">0</text>
+  <rect x="308" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="341" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">1</text>
+  <rect x="330" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="363" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">2</text>
+  <rect x="352" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="353.5" y="55.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="363" y="70.5" font-size="11" fill="currentColor" text-anchor="middle">42</text>
+  <text x="385" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">3</text>
+  <rect x="374" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="375.5" y="55.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="385" y="70.5" font-size="11" fill="currentColor" text-anchor="middle">52</text>
+  <text x="407" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">4</text>
+  <rect x="396" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="429" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">5</text>
+  <rect x="418" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="451" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">6</text>
+  <rect x="440" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="473" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">7</text>
+  <rect x="462" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="463.5" y="55.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="473" y="70.5" font-size="11" fill="currentColor" text-anchor="middle">17</text>
+  <text x="495" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">8</text>
+  <rect x="484" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="517" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">9</text>
+  <rect x="506" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="319" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">0</text>
+  <rect x="308" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="341" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">1</text>
+  <rect x="330" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="363" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">2</text>
+  <rect x="352" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <line x1="357" y1="171" x2="369" y2="185" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8"/>
+  <line x1="369" y1="171" x2="357" y2="185" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8"/>
+  <text x="385" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">3</text>
+  <rect x="374" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="375.5" y="167.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="385" y="182.5" font-size="11" fill="currentColor" text-anchor="middle">52</text>
+  <text x="407" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">4</text>
+  <rect x="396" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="429" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">5</text>
+  <rect x="418" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="451" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">6</text>
+  <rect x="440" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="473" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">7</text>
+  <rect x="462" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="463.5" y="167.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="473" y="182.5" font-size="11" fill="currentColor" text-anchor="middle">17</text>
+  <text x="495" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">8</text>
+  <rect x="484" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="517" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">9</text>
+  <rect x="506" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <path d="M 363.0 80 Q 374.0 94 385.0 81" stroke="currentColor" stroke-width="1.1" fill="none" marker-end="url(#ad1e)"/>
+  <text x="308" y="108" font-size="11" fill="currentColor">52: slot 2 taken, go to 3</text>
+  <text x="308" y="138" font-size="11" fill="currentColor" fill-opacity="0.9">after deleting 42: slot 2 holds a tombstone</text>
+  <path d="M 363.0 192 Q 374.0 206 385.0 193" stroke="currentColor" stroke-width="1.1" fill="none" marker-end="url(#ad1e)"/>
+  <text x="308" y="220" font-size="11" fill="currentColor">lookup 52: tombstone, go on → found at 3</text>
+  <line x1="12" y1="240" x2="548" y2="240" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <text x="280" y="260" font-size="12" fill="currentColor" text-anchor="middle">h(k) = k mod 10, keys inserted in the order 42, 17, 52</text>
+</svg>
+
+The keys 42, 17 and 52 inserted in that order with $h(k) = k \bmod 10$. With chaining, 42 and 52 share the list of bucket 2 and 17 sits alone in bucket 7. With linear probing, 52 finds slot 2 taken and lands in slot 3; after 42 is deleted, slot 2 keeps a tombstone, so a lookup for 52 passes it and still reaches slot 3 instead of stopping at an empty slot 2.
+
 **Load factor and resizing.** The load factor is the number of stored keys per bucket,
 $$\alpha = \frac{n}{m}$$
 with $n$ keys and $m$ buckets, so it may exceed 1 under chaining but must stay below 1 under open addressing, since each slot holds one key. With chaining, a lookup scans a list of expected length about $\alpha$. With open addressing under an idealized uniform-probing assumption, an unsuccessful search takes about $1/(1-\alpha)$ probes: 10 at $\alpha = 0.9$. Linear probing is worse because occupied slots clump together: a key that hashes anywhere into a run of filled slots lands at the end of that run and makes it one longer, so long runs grow faster than short ones and a search must walk the whole run. Knuth's analysis gives about $\tfrac12\bigl(1 + 1/(1-\alpha)^2\bigr) \approx 50$ probes at $\alpha = 0.9$. So implementations keep $\alpha$ bounded. Java's `HashMap` resizes above 0.75, CPython's `dict` above about 2/3, and `std::unordered_map` above `max_load_factor()` (default 1.0). Resizing doubles $m$ and **re-inserts every key**, because `h(k) % m` changes when $m$ changes. You cannot just copy the old array. Because the table doubles, the resize cost averages out to O(1) per insert, by the same argument as for dynamic arrays.
@@ -142,7 +240,9 @@ with $n$ keys and $m$ buckets, so it may exceed 1 under chaining but must stay b
 > A family $H$ of hash functions is **universal** if, for every pair of distinct keys $x \ne y$, a function drawn at random from $H$ makes them collide with probability at most $1/m$ (Carter & Wegman 1979). The probability is over the random choice of $h$, since the keys are fixed first:
 > $$\Pr_{h \in H}\left[h(x) = h(y)\right] \le \frac{1}{m} \quad \text{for all } x \ne y$$
 
-Why that is enough: for *any* fixed set of $n$ stored keys, the expected length of the chain an unsuccessful lookup scans is the sum of $n$ collision probabilities (one per stored key, by linearity of expectation), at most $n/m = \alpha$. So operations run in O(1 + α) expected time, and the expectation is over the random choice of function, not over the data.
+Why that is enough: fix *any* set of $n$ stored keys $k_1, \dots, k_n$ and a key $x$ that is not stored. The chain an unsuccessful lookup for $x$ scans holds exactly the stored keys that collide with $x$, so its length $L$ is a count, and a count is a sum of **indicator variables**. An indicator variable is a random variable that takes only the values 0 and 1: it is 1 when its event happens and 0 when it does not. Its expectation is therefore the probability of the event, $E[X] = 1 \cdot \Pr[\text{event}] + 0 \cdot \Pr[\text{no event}]$. Here there is one per stored key:
+$$X_j = \begin{cases} 1 & h(k_j) = h(x) \\ 0 & \text{otherwise} \end{cases}, \qquad L = \sum_{j=1}^{n} X_j, \qquad E[L] = \sum_{j=1}^{n} \Pr[h(k_j) = h(x)] \le \frac{n}{m} = \alpha$$
+The middle equality is linearity of expectation ([[02-foundations/probability|3. Probability §2]]), which needs no independence between the $X_j$, and the last step applies the universal bound to each pair $k_j \ne x$. With $n = 6$ stored keys and $m = 8$ buckets, each $X_j$ has expectation at most $1/8$, so the expected chain length is at most $6/8 = 0.75$. Non-example: $L$ itself is not an indicator, since it can be 2 or more; the point of the trick is that you never need $L$'s distribution, only the $n$ probabilities. The same trick counts the comparisons of randomized quicksort in [[02-foundations/algorithms/sorting-divide-conquer|11.3 §3]]. So operations run in O(1 + α) expected time, and the expectation is over the random choice of function, not over the data.
 
 A classic universal family is $h_{a,b}(x) = ((ax+b) \bmod p) \bmod m$ with $p$ a prime larger than every key and $a \ne 0$, $b$ chosen at random. Checked exhaustively for $p = 7$, $m = 3$ and keys $0$ to $6$ (all $6 \times 7 = 42$ choices of $a$ and $b$), the worst pair of distinct keys collides under 10 of the 42 functions, probability $0.238 \le 1/3$. Non-example: the single function $h(x) = x \bmod 3$ is a family of one, and the keys 0, 3, 6, 9 collide under it with probability 1. The same principle is the reason Python randomizes string hashing per process (SipHash, `PYTHONHASHSEED`).
 
@@ -287,11 +387,129 @@ So every parent is at most its children, and following the path up from any node
 
 **Sift-down (pop).** Remove the root, move the *last* leaf into the root, then swap it with its **smaller** child while it is larger than that child. Swapping with the smaller child makes the new parent ≤ both children. Swapping with the larger child would break heap order at once. One swap per level: O(log n).
 
+<svg viewBox="0 0 560 276" style="max-width:100%;height:auto" role="img" aria-label="Binary min-heap [1, 3, 2, 7, 4, 5] as a tree and an array; popping 1 moves the last leaf 5 to the root, which swaps once with its smaller child 2, giving [2, 3, 5, 7, 4].">
+  <defs><marker id="ad2e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="swd2e" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="96" y="22" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">(a) the heap</text>
+  <line x1="87" y1="65.4" x2="63" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="105" y1="65.4" x2="129" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="48.2" y1="111.6" x2="37.8" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="59.8" y1="111.6" x2="70.2" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="132.6" y1="111.8" x2="123.4" y2="132.2" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <circle cx="96" cy="56" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="96" y="60.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <circle cx="54" cy="100" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="54" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="138" cy="100" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="138" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="32" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="32" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <circle cx="76" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="76" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <circle cx="118" cy="144" r="13" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.14"/>
+  <text x="118" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <rect x="18" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="31" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="31" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <rect x="44" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="57" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <text x="57" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">1</text>
+  <rect x="70" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="83" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="83" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">2</text>
+  <rect x="96" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="109" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <text x="109" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">3</text>
+  <rect x="122" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="135" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="135" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">4</text>
+  <rect x="148" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="161" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <text x="161" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <text x="280" y="22" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">(b) pop 1: last leaf 5 → root</text>
+  <line x1="271" y1="65.4" x2="247" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="289" y1="65.4" x2="313" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="232.2" y1="111.6" x2="221.8" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="243.8" y1="111.6" x2="254.2" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <circle cx="280" cy="56" r="13" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.14"/>
+  <text x="280" y="60.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <circle cx="238" cy="100" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="238" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="322" cy="100" r="13" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.14"/>
+  <text x="322" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="216" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="216" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <circle cx="260" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="260" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="202" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="215" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <text x="215" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <rect x="228" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="241" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <text x="241" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">1</text>
+  <rect x="254" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="267" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="267" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">2</text>
+  <rect x="280" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="293" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <text x="293" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">3</text>
+  <rect x="306" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="319" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="319" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">4</text>
+  <rect x="332" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+  <text x="345" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <text x="464" y="22" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">(c) after one swap</text>
+  <line x1="455" y1="65.4" x2="431" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="473" y1="65.4" x2="497" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="416.2" y1="111.6" x2="405.8" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="427.8" y1="111.6" x2="438.2" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <circle cx="464" cy="56" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="464" y="60.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="422" cy="100" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="422" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="506" cy="100" r="13" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.14"/>
+  <text x="506" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <circle cx="400" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="400" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <circle cx="444" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="444" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="386" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="399" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="399" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <rect x="412" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="425" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <text x="425" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">1</text>
+  <rect x="438" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="451" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <text x="451" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">2</text>
+  <rect x="464" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="477" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <text x="477" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">3</text>
+  <rect x="490" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="503" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="503" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">4</text>
+  <rect x="516" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+  <text x="529" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <path d="M 57.0 189 Q 83.0 170 109.0 188" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" fill="none" marker-end="url(#ad2e)"/>
+  <path d="M 57.0 189 Q 96.0 166 135.0 188" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" fill="none" marker-end="url(#ad2e)"/>
+  <path d="M 130 137 C 178 104 158 46 111 52" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 3" fill="none" marker-end="url(#ad2e)"/>
+  <path d="M 294 54 Q 330 50 328 86" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#swd2e)" marker-start="url(#swd2e)"/>
+  <text x="96" y="248" font-size="11" fill="currentColor" text-anchor="middle">children of index i:</text>
+  <text x="96" y="263" font-size="11" fill="currentColor" text-anchor="middle">2i+1 and 2i+2 (i = 1: 3, 4)</text>
+  <text x="280" y="248" font-size="11" fill="currentColor" text-anchor="middle">5 &gt; 2, the smaller child:</text>
+  <text x="280" y="263" font-size="11" fill="currentColor" text-anchor="middle">swap indices 0 and 2</text>
+  <text x="464" y="248" font-size="11" fill="currentColor" text-anchor="middle">index 2 has no child:</text>
+  <text x="464" y="263" font-size="11" fill="currentColor" text-anchor="middle">2·2+1 = 5 ≥ n = 5, stop</text>
+</svg>
+
+The worked-example heap `[1, 3, 2, 7, 4, 5]` as a tree and as the array that stores it; the arcs mark the children of index 1, at $2i+1 = 3$ and $2i+2 = 4$. `heap_pop` removes 1 and moves the last leaf, 5, to the root. 5 is larger than its smaller child, 2, so they swap; at index 2 the first child would be at $2 \cdot 2 + 1 = 5$, past the end of the five-element array, so the sift-down stops with `[2, 3, 5, 7, 4]`.
+
 **Heapify in O(n).** Building a heap by n pushes costs O(n log n). Sifting *down* from the last parent back to the root costs only O(n). The reason is that most nodes are near the bottom: about $n/2^{h+1}$ nodes have height $h$, and sifting a node down costs O(its height), not O(log n). So the total is
 
 $$\sum_{h=0}^{\lfloor \log_2 n\rfloor} \frac{n}{2^{h+1}}\, O(h) \;=\; O\!\left(n \sum_{h \ge 0} \frac{h}{2^{h+1}}\right) \;=\; O(n)$$
 
-since the series $\sum_h h/2^{h+1}$ converges to exactly 1. Half the nodes are leaves and do no work at all. Sifting *up* from the top does not have this property, because the many deep nodes would each travel a long way.
+since the series $\sum_{h \ge 0} h/2^{h+1}$ sums to exactly 1. To see why, write each $h$ as a sum of $h$ ones, $h = \sum_{j=1}^{h} 1$, and swap the order of summation, which is allowed because every term is non-negative. The inner sum is then the tail of a geometric series ([[02-foundations/engineering-math|0.5 §5]]), $\sum_{h \ge j} 1/2^{h+1} = (1/2^{j+1}) \cdot 2 = 1/2^{j}$, so
+$$\sum_{h \ge 0} \frac{h}{2^{h+1}} = \sum_{j \ge 1} \sum_{h \ge j} \frac{1}{2^{h+1}} = \sum_{j \ge 1} \frac{1}{2^{j}} = 1$$
+The first five terms, $0 + 1/4 + 2/8 + 3/16 + 4/32 = 0.8125$, already show the approach to 1. Half the nodes are leaves and do no work at all. Sifting *up* from the top does not have this property, because the many deep nodes would each travel a long way.
 
 ```python
 def heap_push(h, x):
@@ -646,6 +864,75 @@ because every point $p$ on the far side has $\lVert q - p \rVert \ge \lvert q_s 
 > The root is at distance $\sqrt{5} = 2.236$, so $r = 2.236$; $q_x = 9 \ge 7$, go right. $(9,6)$ is at distance 5; $q_y = 1 < 6$, go left. $(8,1)$ is at distance 1, so $r = 1$. Back at $(9,6)$ the far side is empty. Back at the root, $\lvert 9 - 7 \rvert = 2 \ge r = 1$, so the whole left subtree is pruned and $(5,4)$, $(2,3)$, $(4,7)$ are never measured.
 > Three distance computations instead of six, and the answer $(8,1)$ matches brute force. The usual libraries are `scipy.spatial.cKDTree`/`KDTree`, `nanoflann` in C++, and the KD-trees inside PCL and Open3D.
 
+<svg viewBox="0 0 560 280" style="max-width:100%;height:auto" role="img" aria-label="KD-tree on six points, split at x = 7, then y = 4 on the left and y = 6 on the right. The query q = (9, 1) measures (7,2), (9,6), (8,1); since |9 − 7| = 2 ≥ r = 1, the left half is never searched.">
+  <rect x="34" y="44" width="168" height="192" stroke="none" fill="currentColor" fill-opacity="0.07"/>
+  <rect x="34" y="44" width="240" height="192" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.5"/>
+  <text x="34" y="251" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <text x="154" y="251" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <text x="274" y="251" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">10</text>
+  <text x="28" y="240" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.6">0</text>
+  <text x="28" y="144" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.6">4</text>
+  <text x="28" y="48" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.6">8</text>
+  <line x1="202" y1="236" x2="202" y2="44" stroke="currentColor" stroke-width="2.0"/>
+  <line x1="34" y1="140" x2="202" y2="140" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <line x1="202" y1="92" x2="274" y2="92" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <text x="207" y="58" font-size="11" fill="currentColor" font-weight="bold">x = 7</text>
+  <text x="38.8" y="135" font-size="11" fill="currentColor">y = 4</text>
+  <text x="207" y="87" font-size="11" fill="currentColor">y = 6</text>
+  <circle cx="82" cy="164" r="3.6" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.6"/>
+  <text x="89" y="168" font-size="11" fill="currentColor" fill-opacity="0.6">(2,3)</text>
+  <circle cx="154" cy="140" r="3.6" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.6"/>
+  <text x="160" y="134" font-size="11" fill="currentColor" fill-opacity="0.6">(5,4)</text>
+  <circle cx="250" cy="92" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="244" y="106" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="1.0">(9,6)</text>
+  <circle cx="130" cy="68" r="3.6" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.6"/>
+  <text x="137" y="72" font-size="11" fill="currentColor" fill-opacity="0.6">(4,7)</text>
+  <circle cx="226" cy="212" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="226" y="203" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1.0">(8,1)</text>
+  <circle cx="202" cy="188" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="196" y="183" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="1.0">(7,2)</text>
+  <line x1="245" y1="207" x2="255" y2="217" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="245" y1="217" x2="255" y2="207" stroke="currentColor" stroke-width="1.8"/>
+  <text x="258" y="207" font-size="12" fill="currentColor" font-weight="bold">q</text>
+  <line x1="230" y1="212" x2="244" y2="212" stroke="currentColor" stroke-width="1.0" stroke-dasharray="3 2"/>
+  <text x="238" y="228" font-size="11" fill="currentColor" text-anchor="middle">r = 1</text>
+  <line x1="202" y1="246" x2="250" y2="246" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="202" y1="242" x2="202" y2="250" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="250" y1="242" x2="250" y2="250" stroke="currentColor" stroke-width="1.1"/>
+  <text x="226" y="263" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">|9 − 7| = 2 ≥ r = 1</text>
+  <text x="118" y="204.8" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">pruned: never measured</text>
+  <text x="434" y="22" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">the tree; d = distance to q</text>
+  <line x1="434" y1="80" x2="366" y2="125" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <line x1="434" y1="80" x2="502" y2="118" stroke="currentColor" stroke-width="1.8" stroke-opacity="1.0"/>
+  <line x1="366" y1="147" x2="338" y2="199" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <line x1="366" y1="147" x2="400" y2="199" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <line x1="502" y1="154" x2="468" y2="192" stroke="currentColor" stroke-width="1.8" stroke-opacity="1.0"/>
+  <rect x="401" y="44" width="66" height="36" rx="4" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.1" stroke-opacity="1.0"/>
+  <text x="434" y="60" font-size="11" fill="currentColor" text-anchor="middle">(7,2)</text>
+  <text x="434" y="74" font-size="11" fill="currentColor" text-anchor="middle">d = 2.236</text>
+  <text x="471" y="52" font-size="11" fill="currentColor" fill-opacity="0.7">x</text>
+  <rect x="343" y="125" width="46" height="22" rx="4" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <text x="366" y="140" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.55">(5,4)</text>
+  <text x="393" y="133" font-size="11" fill="currentColor" fill-opacity="0.7">y</text>
+  <rect x="469" y="118" width="66" height="36" rx="4" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.1" stroke-opacity="1.0"/>
+  <text x="502" y="134" font-size="11" fill="currentColor" text-anchor="middle">(9,6)</text>
+  <text x="502" y="148" font-size="11" fill="currentColor" text-anchor="middle">d = 5</text>
+  <text x="539" y="126" font-size="11" fill="currentColor" fill-opacity="0.7">y</text>
+  <rect x="315" y="199" width="46" height="22" rx="4" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <text x="338" y="214" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.55">(2,3)</text>
+  <rect x="377" y="199" width="46" height="22" rx="4" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <text x="400" y="214" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.55">(4,7)</text>
+  <rect x="435" y="192" width="66" height="36" rx="4" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.1" stroke-opacity="1.0"/>
+  <text x="468" y="208" font-size="11" fill="currentColor" text-anchor="middle">(8,1)</text>
+  <text x="468" y="222" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">d = 1</text>
+  <text x="384" y="102" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.6">x &lt; 7</text>
+  <text x="484" y="102" font-size="11" fill="currentColor" fill-opacity="0.9">x ≥ 7</text>
+  <text x="473" y="176" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.9">y &lt; 6</text>
+  <text x="320" y="254" font-size="11" fill="currentColor" fill-opacity="0.6">pruned: never measured</text>
+</svg>
+
+The worked example drawn: the root splits at $x = 7$, its children at $y = 4$ (left) and $y = 6$ (right). The query $q = (9, 1)$ measures only the filled points, at distances 2.236, 5 and 1, along the solid path in the tree. Once the best distance is $r = 1$, the plane $x = 7$ lies $\lvert 9 - 7 \rvert = 2 \ge r$ away, so the shaded half holding $(5,4)$, $(2,3)$ and $(4,7)$ is never measured.
+
 **Curse of dimensionality.** Pruning relies on the query ball crossing few splitting planes. As $d$ grows, the ball crosses planes along almost every axis, and the search visits most leaves, approaching a linear scan. A common rule of thumb is that a KD-tree helps only when $n \gg 2^d$. For 3-D point clouds that holds easily. For 50-D or 512-D learned descriptors it fails, so use approximate nearest-neighbour methods (randomized KD-forests, graph-based indexes such as HNSW) and accept a small chance of missing the true nearest point.
 
 **In RRT.** Every iteration asks for the tree node nearest the random sample ([[04-robotics/modern-robotics/ch10-motion-planning|MR Ch. 10]]). With a linear scan, N iterations cost O(N²) in total, and nearest-neighbour search becomes the bottleneck well before collision checking does on simple scenes. A KD-tree reduces this to roughly O(log N) per query. Three caveats a good answer mentions: the planner's tree grows one node at a time, so the KD-tree must support incremental insertion and occasional rebuilds to stay balanced; configuration spaces with angles *wrap around* ($\theta = \pi$ is next to $-\pi$), so a plain Euclidean KD-tree needs a topology-aware metric; and for 7-DoF or higher arms the dimensionality penalty returns, so planners commonly accept approximate neighbours.
@@ -696,7 +983,7 @@ because every point $p$ on the far side has $\lVert q - p \rVert \ge \lvert q_s 
 인터뷰가 묻는 것: 아래 복잡도 표를 외워서 말하기, 거의 모든 문제에서의 해시 맵·힙 *사용법*, 힙·트라이·union-find의 백지 구현, BST 삭제, 그리고 로봇 연구실이라면 "이 최근접점 탐색은 왜 느린가"(§8).
 
 > [!note] 처음이라면 · First pass
-> §1을 읽고 표를 익혀라. 대부분의 문제에 해시 맵과 힙이 나오므로 그다음 §3, §4를 읽는다. §5–§7은 구현하라고 할 때 쓰는 구조이고, §8은 이 페이지를 포인트 클라우드와 플래너에 연결한다.
+> §1을 읽고 표를 익혀라. §2는 복습이지만 단조 스택과 덱은 처음부터 읽어 둘 만하다. 대부분의 문제에 해시 맵과 힙이 나오므로 그다음 §3, §4를 읽는다. §5–§7은 구현하라고 할 때 쓰는 구조이고, §8은 이 페이지를 포인트 클라우드와 플래너에 연결한다.
 
 ### 1. 필요한 연산으로 자료구조 고르기
 
@@ -810,6 +1097,104 @@ $$h: U \to \{0, 1, \dots, m-1\}, \qquad x = y \implies h(x) = h(y)$$
 $$s_i(k) = (h(k) + i) \bmod m, \qquad i = 0, 1, 2, \dots$$
 $m = 10$인 예: 42를 넣으면 칸 2에 들어가고, 52는 칸 2를 탐사해 차 있음을 보고 칸 3에 들어간다. 42를 지우려고 칸 2를 비우면 이후 52의 조회가 칸 2에서 멈춰 "없음"이라고 답한다. 삭제가 묘비를 남기는 이유가 정확히 이것이다.
 
+<svg viewBox="0 0 560 272" style="max-width:100%;height:auto" role="img" aria-label="h(k) = k mod 10, 키 42, 17, 52인 해시 테이블. 체이닝은 42와 52를 버킷 2의 한 리스트에 두고, 선형 탐사는 52를 칸 3으로 보낸다. 42를 지우면 묘비가 남아 52의 조회가 여전히 칸 3에 닿는다.">
+  <defs><marker id="ad1k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="20" y="22" font-size="12" fill="currentColor" font-weight="bold">분리 체이닝</text>
+  <text x="31" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">0</text>
+  <rect x="20" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="53" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">1</text>
+  <rect x="42" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="75" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">2</text>
+  <rect x="64" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <circle cx="75" cy="66" r="2.6" stroke="none" fill="currentColor"/>
+  <line x1="75" y1="66" x2="75" y2="99" stroke="currentColor" stroke-width="1.1" marker-end="url(#ad1k)"/>
+  <rect x="59" y="100" width="32" height="24" rx="3" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1"/>
+  <text x="75" y="116.5" font-size="12" fill="currentColor" text-anchor="middle">42</text>
+  <line x1="75" y1="124" x2="75" y2="145" stroke="currentColor" stroke-width="1.1" marker-end="url(#ad1k)"/>
+  <rect x="59" y="146" width="32" height="24" rx="3" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1"/>
+  <text x="75" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">52</text>
+  <text x="97" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">3</text>
+  <rect x="86" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="119" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">4</text>
+  <rect x="108" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="141" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">5</text>
+  <rect x="130" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="163" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">6</text>
+  <rect x="152" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="185" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">7</text>
+  <rect x="174" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <circle cx="185" cy="66" r="2.6" stroke="none" fill="currentColor"/>
+  <line x1="185" y1="66" x2="185" y2="99" stroke="currentColor" stroke-width="1.1" marker-end="url(#ad1k)"/>
+  <rect x="169" y="100" width="32" height="24" rx="3" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.1"/>
+  <text x="185" y="116.5" font-size="12" fill="currentColor" text-anchor="middle">17</text>
+  <text x="207" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">8</text>
+  <rect x="196" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="229" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">9</text>
+  <rect x="218" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="308" y="22" font-size="12" fill="currentColor" font-weight="bold">개방 주소법, 선형 탐사</text>
+  <text x="319" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">0</text>
+  <rect x="308" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="341" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">1</text>
+  <rect x="330" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="363" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">2</text>
+  <rect x="352" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="353.5" y="55.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="363" y="70.5" font-size="11" fill="currentColor" text-anchor="middle">42</text>
+  <text x="385" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">3</text>
+  <rect x="374" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="375.5" y="55.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="385" y="70.5" font-size="11" fill="currentColor" text-anchor="middle">52</text>
+  <text x="407" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">4</text>
+  <rect x="396" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="429" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">5</text>
+  <rect x="418" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="451" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">6</text>
+  <rect x="440" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="473" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">7</text>
+  <rect x="462" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="463.5" y="55.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="473" y="70.5" font-size="11" fill="currentColor" text-anchor="middle">17</text>
+  <text x="495" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">8</text>
+  <rect x="484" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="517" y="48" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">9</text>
+  <rect x="506" y="54" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="319" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">0</text>
+  <rect x="308" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="341" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">1</text>
+  <rect x="330" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="363" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">2</text>
+  <rect x="352" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <line x1="357" y1="171" x2="369" y2="185" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8"/>
+  <line x1="369" y1="171" x2="357" y2="185" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.8"/>
+  <text x="385" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">3</text>
+  <rect x="374" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="375.5" y="167.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="385" y="182.5" font-size="11" fill="currentColor" text-anchor="middle">52</text>
+  <text x="407" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">4</text>
+  <rect x="396" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="429" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">5</text>
+  <rect x="418" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="451" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">6</text>
+  <rect x="440" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="473" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">7</text>
+  <rect x="462" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <rect x="463.5" y="167.5" width="19" height="21" stroke="none" fill="currentColor" fill-opacity="0.12"/>
+  <text x="473" y="182.5" font-size="11" fill="currentColor" text-anchor="middle">17</text>
+  <text x="495" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">8</text>
+  <rect x="484" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="517" y="160" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.65">9</text>
+  <rect x="506" y="166" width="22" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <path d="M 363.0 80 Q 374.0 94 385.0 81" stroke="currentColor" stroke-width="1.1" fill="none" marker-end="url(#ad1k)"/>
+  <text x="308" y="108" font-size="11" fill="currentColor">52: 칸 2가 차 있어 칸 3으로</text>
+  <text x="308" y="138" font-size="11" fill="currentColor" fill-opacity="0.9">42를 지운 뒤: 칸 2에 묘비</text>
+  <path d="M 363.0 192 Q 374.0 206 385.0 193" stroke="currentColor" stroke-width="1.1" fill="none" marker-end="url(#ad1k)"/>
+  <text x="308" y="220" font-size="11" fill="currentColor">52 조회: 묘비면 계속 → 칸 3에서 찾음</text>
+  <line x1="12" y1="240" x2="548" y2="240" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <text x="280" y="260" font-size="12" fill="currentColor" text-anchor="middle">h(k) = k mod 10, 키를 넣은 순서는 42, 17, 52</text>
+</svg>
+
+키 42, 17, 52를 이 순서로 $h(k) = k \bmod 10$에 넣은 그림이다. 체이닝에서는 42와 52가 버킷 2의 리스트를 함께 쓰고 17은 버킷 7에 혼자 있다. 선형 탐사에서는 52가 칸 2가 차 있음을 보고 칸 3에 들어간다. 42를 지운 뒤에도 칸 2에는 묘비가 남으므로, 52의 조회는 빈 칸 2에서 멈추지 않고 그곳을 지나 칸 3에 닿는다.
+
 **적재율과 리사이즈.** 적재율은 버킷당 저장된 키 수다.
 $$\alpha = \frac{n}{m}$$
 $n$은 키 수, $m$은 버킷 수다. 그래서 체이닝에서는 1을 넘을 수 있지만, 개방 주소법에서는 칸마다 키가 하나이므로 1 미만이어야 한다. 체이닝에서 조회는 기대 길이 약 $\alpha$인 리스트를 훑는다. 개방 주소법에서는 이상화된 균일 탐사 가정 아래 실패하는 탐색이 약 $1/(1-\alpha)$번 탐사한다. $\alpha = 0.9$면 10번이다. 선형 탐사는 차 있는 칸이 뭉치므로 더 나쁘다. 차 있는 칸들의 연속 구간 어디에 해시되든 키는 그 구간 끝에 놓여 구간을 한 칸 늘리므로, 긴 구간일수록 더 빨리 자라고 탐색은 구간 전체를 걸어야 한다. Knuth의 분석으로는 $\alpha = 0.9$에서 약 $\tfrac12\bigl(1 + 1/(1-\alpha)^2\bigr) \approx 50$번이다. 그래서 구현들은 $\alpha$를 묶어 둔다. Java `HashMap`은 0.75, CPython `dict`는 약 2/3, `std::unordered_map`은 `max_load_factor()`(기본 1.0)를 넘으면 리사이즈한다. 리사이즈는 $m$을 두 배로 하고 **모든 키를 다시 넣는다.** $m$이 바뀌면 `h(k) % m`이 바뀌므로 옛 배열을 그냥 복사할 수 없다. 테이블이 두 배씩 커지므로 동적 배열과 같은 논리로 리사이즈 비용은 삽입당 O(1)로 평균된다.
@@ -820,7 +1205,9 @@ $n$은 키 수, $m$은 버킷 수다. 그래서 체이닝에서는 1을 넘을 �
 > 해시 함수족 $H$가 **범용(universal)이라는** 것은, 서로 다른 모든 키 쌍 $x \ne y$에 대해 $H$에서 무작위로 뽑은 함수로 두 키가 충돌할 확률이 $1/m$ 이하라는 뜻이다(Carter & Wegman 1979). 키가 먼저 고정되므로 확률은 $h$를 무작위로 고르는 것에 대한 것이다:
 > $$\Pr_{h \in H}\left[h(x) = h(y)\right] \le \frac{1}{m} \quad \text{for all } x \ne y$$
 
-이것으로 충분한 이유: 저장된 $n$개 키의 집합이 *무엇이든*, 실패하는 조회가 훑는 사슬의 기대 길이는 기댓값의 선형성에 따라 저장된 키마다 하나씩인 충돌 확률 $n$개의 합이므로 $n/m = \alpha$ 이하다. 따라서 연산은 기대 O(1 + α)이고, 기댓값은 데이터가 아니라 함수를 고르는 무작위성에 대한 것이다.
+이것으로 충분한 이유: 저장된 키 $k_1, \dots, k_n$의 집합을 *아무것이나* 고정하고, 저장되지 않은 키 $x$를 하나 잡자. $x$를 찾다 실패하는 조회가 훑는 사슬에는 $x$와 충돌하는 저장 키가 정확히 들어 있으므로, 그 길이 $L$은 개수이고, 개수는 지시 변수(**indicator variable**)의 합이다. 지시 변수는 0과 1만 값으로 갖는 확률변수로, 그 사건이 일어나면 1, 일어나지 않으면 0이다. 그래서 기댓값은 그 사건의 확률이다: $E[X] = 1 \cdot \Pr[\text{사건}] + 0 \cdot \Pr[\text{사건 아님}]$. 여기서는 저장된 키마다 하나씩 둔다:
+$$X_j = \begin{cases} 1 & h(k_j) = h(x) \\ 0 & \text{otherwise} \end{cases}, \qquad L = \sum_{j=1}^{n} X_j, \qquad E[L] = \sum_{j=1}^{n} \Pr[h(k_j) = h(x)] \le \frac{n}{m} = \alpha$$
+가운데 등호는 기댓값의 선형성([[02-foundations/probability|3. 확률 §2]])이고, $X_j$들 사이의 독립은 필요 없다. 마지막 단계는 각 쌍 $k_j \ne x$에 범용 상한을 적용한 것이다. 저장된 키가 $n = 6$개, 버킷이 $m = 8$개이면 각 $X_j$의 기댓값은 $1/8$ 이하이므로 사슬의 기대 길이는 $6/8 = 0.75$ 이하다. 반례: $L$ 자체는 2 이상이 될 수 있으므로 지시 변수가 아니다. 이 기법의 요점은 $L$의 분포를 몰라도 되고 확률 $n$개만 알면 된다는 것이다. 같은 기법이 [[02-foundations/algorithms/sorting-divide-conquer|11.3 §3]]에서 무작위 퀵정렬의 비교 횟수를 센다. 따라서 연산은 기대 O(1 + α)이고, 기댓값은 데이터가 아니라 함수를 고르는 무작위성에 대한 것이다.
 
 고전적인 범용 함수족은 $h_{a,b}(x) = ((ax+b) \bmod p) \bmod m$이다. 여기서 $p$는 모든 키보다 큰 소수이고, $a \ne 0$과 $b$를 무작위로 고른다. $p = 7$, $m = 3$, 키 $0$~$6$에 대해 전수로 확인하면($a$와 $b$의 선택 $6 \times 7 = 42$가지 전부), 가장 나쁜 서로 다른 키 쌍도 42개 함수 중 10개에서만 충돌하므로 확률 $0.238 \le 1/3$이다. 반례: 함수 하나 $h(x) = x \bmod 3$은 원소가 하나뿐인 함수족이고, 키 0, 3, 6, 9는 여기서 확률 1로 충돌한다. Python이 문자열 해시를 프로세스마다 무작위화하는 것(SipHash, `PYTHONHASHSEED`)도 같은 원리다.
 
@@ -965,11 +1352,129 @@ $$A[\lfloor (i-1)/2 \rfloor] \le A[i] \quad \text{for every } 1 \le i < n$$
 
 **Sift-down(pop).** 루트를 꺼내고 *마지막* 잎을 루트로 옮긴 뒤, **더 작은** 자식보다 큰 동안 그 자식과 바꾼다. 더 작은 자식과 바꿔야 새 부모가 두 자식 이하가 된다. 더 큰 자식과 바꾸면 곧바로 힙 순서가 깨진다. 층마다 한 번: O(log n).
 
+<svg viewBox="0 0 560 276" style="max-width:100%;height:auto" role="img" aria-label="이진 최소 힙 [1, 3, 2, 7, 4, 5]를 트리와 배열로 그렸다. 1을 꺼내면 마지막 잎 5가 루트로 오고, 더 작은 자식 2와 한 번 바꿔 [2, 3, 5, 7, 4]가 된다.">
+  <defs><marker id="ad2k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker><marker id="swd2k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="96" y="22" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">(a) 힙</text>
+  <line x1="87" y1="65.4" x2="63" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="105" y1="65.4" x2="129" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="48.2" y1="111.6" x2="37.8" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="59.8" y1="111.6" x2="70.2" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="132.6" y1="111.8" x2="123.4" y2="132.2" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <circle cx="96" cy="56" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="96" y="60.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <circle cx="54" cy="100" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="54" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="138" cy="100" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="138" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="32" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="32" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <circle cx="76" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="76" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <circle cx="118" cy="144" r="13" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.14"/>
+  <text x="118" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <rect x="18" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="31" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="31" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <rect x="44" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="57" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <text x="57" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">1</text>
+  <rect x="70" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="83" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="83" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">2</text>
+  <rect x="96" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="109" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <text x="109" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">3</text>
+  <rect x="122" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="135" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="135" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">4</text>
+  <rect x="148" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="161" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <text x="161" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <text x="280" y="22" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">(b) 1 꺼냄: 마지막 잎 5 → 루트</text>
+  <line x1="271" y1="65.4" x2="247" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="289" y1="65.4" x2="313" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="232.2" y1="111.6" x2="221.8" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="243.8" y1="111.6" x2="254.2" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <circle cx="280" cy="56" r="13" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.14"/>
+  <text x="280" y="60.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <circle cx="238" cy="100" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="238" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="322" cy="100" r="13" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.14"/>
+  <text x="322" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="216" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="216" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <circle cx="260" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="260" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="202" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="215" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <text x="215" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <rect x="228" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="241" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <text x="241" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">1</text>
+  <rect x="254" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="267" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="267" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">2</text>
+  <rect x="280" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="293" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <text x="293" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">3</text>
+  <rect x="306" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="319" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="319" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">4</text>
+  <rect x="332" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+  <text x="345" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <text x="464" y="22" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">(c) 한 번 바꾼 뒤</text>
+  <line x1="455" y1="65.4" x2="431" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="473" y1="65.4" x2="497" y2="90.6" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="416.2" y1="111.6" x2="405.8" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="427.8" y1="111.6" x2="438.2" y2="132.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <circle cx="464" cy="56" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="464" y="60.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="422" cy="100" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="422" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="506" cy="100" r="13" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.14"/>
+  <text x="506" y="104.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <circle cx="400" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="400" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <circle cx="444" cy="144" r="13" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="444" y="148.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="386" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="399" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="399" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <rect x="412" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="425" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <text x="425" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">1</text>
+  <rect x="438" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="451" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <text x="451" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">2</text>
+  <rect x="464" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="477" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">7</text>
+  <text x="477" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">3</text>
+  <rect x="490" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="1.0"/>
+  <text x="503" y="205.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="503" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">4</text>
+  <rect x="516" y="190" width="26" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+  <text x="529" y="226" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <path d="M 57.0 189 Q 83.0 170 109.0 188" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" fill="none" marker-end="url(#ad2k)"/>
+  <path d="M 57.0 189 Q 96.0 166 135.0 188" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.8" fill="none" marker-end="url(#ad2k)"/>
+  <path d="M 130 137 C 178 104 158 46 111 52" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 3" fill="none" marker-end="url(#ad2k)"/>
+  <path d="M 294 54 Q 330 50 328 86" stroke="currentColor" stroke-width="1.2" fill="none" marker-end="url(#swd2k)" marker-start="url(#swd2k)"/>
+  <text x="96" y="248" font-size="11" fill="currentColor" text-anchor="middle">인덱스 i의 자식:</text>
+  <text x="96" y="263" font-size="11" fill="currentColor" text-anchor="middle">2i+1과 2i+2 (i = 1이면 3, 4)</text>
+  <text x="280" y="248" font-size="11" fill="currentColor" text-anchor="middle">5 &gt; 2(더 작은 자식):</text>
+  <text x="280" y="263" font-size="11" fill="currentColor" text-anchor="middle">인덱스 0과 2를 바꿈</text>
+  <text x="464" y="248" font-size="11" fill="currentColor" text-anchor="middle">인덱스 2는 자식이 없다:</text>
+  <text x="464" y="263" font-size="11" fill="currentColor" text-anchor="middle">2·2+1 = 5 ≥ n = 5, 멈춤</text>
+</svg>
+
+계산 예제의 힙 `[1, 3, 2, 7, 4, 5]`를 트리와, 그것을 저장하는 배열로 그렸다. 호는 인덱스 1의 자식 $2i+1 = 3$과 $2i+2 = 4$를 가리킨다. `heap_pop`은 1을 꺼내고 마지막 잎 5를 루트로 옮긴다. 5가 더 작은 자식 2보다 크므로 둘을 바꾸고, 인덱스 2에서는 첫 자식 자리 $2 \cdot 2 + 1 = 5$가 원소 다섯 개짜리 배열의 끝을 넘으므로 `[2, 3, 5, 7, 4]`에서 sift-down이 멈춘다.
+
 **O(n) heapify.** push를 n번 해서 힙을 만들면 O(n log n)이다. 마지막 부모부터 루트까지 거꾸로 *sift-down*하면 O(n)이면 된다. 대부분의 노드가 바닥 근처에 있기 때문이다. 높이 $h$인 노드는 약 $n/2^{h+1}$개이고, 노드 하나를 내리는 비용은 O(log n)이 아니라 O(그 노드의 높이)다. 그래서 합은
 
 $$\sum_{h=0}^{\lfloor \log_2 n\rfloor} \frac{n}{2^{h+1}}\, O(h) \;=\; O\!\left(n \sum_{h \ge 0} \frac{h}{2^{h+1}}\right) \;=\; O(n)$$
 
-이 되는데, 급수 $\sum_h h/2^{h+1}$가 정확히 1로 수렴하기 때문이다. 노드의 절반은 잎이라 아무 일도 하지 않는다. 위에서부터 *sift-up*하는 방식에는 이런 성질이 없다. 수많은 깊은 노드가 각각 먼 길을 올라가야 하기 때문이다.
+이 되는데, 급수 $\sum_{h \ge 0} h/2^{h+1}$의 합이 정확히 1이기 때문이다. 이유를 보려면 각 $h$를 1을 $h$번 더한 것 $h = \sum_{j=1}^{h} 1$로 쓰고 합의 순서를 바꾼다. 모든 항이 음이 아니므로 순서를 바꿔도 된다. 그러면 안쪽 합은 기하급수의 꼬리가 되어([[02-foundations/engineering-math|0.5 §5]]) $\sum_{h \ge j} 1/2^{h+1} = (1/2^{j+1}) \cdot 2 = 1/2^{j}$이고, 따라서
+$$\sum_{h \ge 0} \frac{h}{2^{h+1}} = \sum_{j \ge 1} \sum_{h \ge j} \frac{1}{2^{h+1}} = \sum_{j \ge 1} \frac{1}{2^{j}} = 1$$
+처음 다섯 항 $0 + 1/4 + 2/8 + 3/16 + 4/32 = 0.8125$만 더해도 1에 다가가는 것이 보인다. 노드의 절반은 잎이라 아무 일도 하지 않는다. 위에서부터 *sift-up*하는 방식에는 이런 성질이 없다. 수많은 깊은 노드가 각각 먼 길을 올라가야 하기 때문이다.
 
 ```python
 def heap_push(h, x):
@@ -1324,6 +1829,75 @@ $$\lvert q_s - t \rvert < r$$
 > 루트까지 거리는 $\sqrt{5} = 2.236$이므로 $r = 2.236$. $q_x = 9 \ge 7$이니 오른쪽으로. $(9,6)$까지 거리 5, $q_y = 1 < 6$이니 왼쪽으로. $(8,1)$까지 거리 1이므로 $r = 1$. $(9,6)$로 돌아오면 반대편은 비어 있다. 루트로 돌아오면 $\lvert 9 - 7 \rvert = 2 \ge r = 1$이므로 왼쪽 서브트리 전체가 가지치기되어 $(5,4)$, $(2,3)$, $(4,7)$은 거리를 재지도 않는다.
 > 거리 계산 여섯 번 대신 세 번이고, 답 $(8,1)$은 전수 조사와 같다. 흔히 쓰는 라이브러리는 `scipy.spatial.cKDTree`/`KDTree`, C++의 `nanoflann`, 그리고 PCL과 Open3D 안의 KD-tree다.
 
+<svg viewBox="0 0 560 280" style="max-width:100%;height:auto" role="img" aria-label="점 여섯 개의 KD-tree. x = 7에서 나누고, 왼쪽은 y = 4, 오른쪽은 y = 6에서 다시 나눈다. 질의 q = (9, 1)은 (7,2), (9,6), (8,1)만 재고, |9 − 7| = 2 ≥ r = 1이므로 왼쪽 절반은 탐색하지 않는다.">
+  <rect x="34" y="44" width="168" height="192" stroke="none" fill="currentColor" fill-opacity="0.07"/>
+  <rect x="34" y="44" width="240" height="192" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.5"/>
+  <text x="34" y="251" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <text x="154" y="251" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <text x="274" y="251" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">10</text>
+  <text x="28" y="240" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.6">0</text>
+  <text x="28" y="144" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.6">4</text>
+  <text x="28" y="48" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.6">8</text>
+  <line x1="202" y1="236" x2="202" y2="44" stroke="currentColor" stroke-width="2.0"/>
+  <line x1="34" y1="140" x2="202" y2="140" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <line x1="202" y1="92" x2="274" y2="92" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 3"/>
+  <text x="207" y="58" font-size="11" fill="currentColor" font-weight="bold">x = 7</text>
+  <text x="38.8" y="135" font-size="11" fill="currentColor">y = 4</text>
+  <text x="207" y="87" font-size="11" fill="currentColor">y = 6</text>
+  <circle cx="82" cy="164" r="3.6" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.6"/>
+  <text x="89" y="168" font-size="11" fill="currentColor" fill-opacity="0.6">(2,3)</text>
+  <circle cx="154" cy="140" r="3.6" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.6"/>
+  <text x="160" y="134" font-size="11" fill="currentColor" fill-opacity="0.6">(5,4)</text>
+  <circle cx="250" cy="92" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="244" y="106" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="1.0">(9,6)</text>
+  <circle cx="130" cy="68" r="3.6" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.6"/>
+  <text x="137" y="72" font-size="11" fill="currentColor" fill-opacity="0.6">(4,7)</text>
+  <circle cx="226" cy="212" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="226" y="203" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="1.0">(8,1)</text>
+  <circle cx="202" cy="188" r="3.6" stroke="none" fill="currentColor"/>
+  <text x="196" y="183" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="1.0">(7,2)</text>
+  <line x1="245" y1="207" x2="255" y2="217" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="245" y1="217" x2="255" y2="207" stroke="currentColor" stroke-width="1.8"/>
+  <text x="258" y="207" font-size="12" fill="currentColor" font-weight="bold">q</text>
+  <line x1="230" y1="212" x2="244" y2="212" stroke="currentColor" stroke-width="1.0" stroke-dasharray="3 2"/>
+  <text x="238" y="228" font-size="11" fill="currentColor" text-anchor="middle">r = 1</text>
+  <line x1="202" y1="246" x2="250" y2="246" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="202" y1="242" x2="202" y2="250" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="250" y1="242" x2="250" y2="250" stroke="currentColor" stroke-width="1.1"/>
+  <text x="226" y="263" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">|9 − 7| = 2 ≥ r = 1</text>
+  <text x="118" y="204.8" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">가지치기: 재지 않음</text>
+  <text x="434" y="22" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">트리. d = q까지의 거리</text>
+  <line x1="434" y1="80" x2="366" y2="125" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <line x1="434" y1="80" x2="502" y2="118" stroke="currentColor" stroke-width="1.8" stroke-opacity="1.0"/>
+  <line x1="366" y1="147" x2="338" y2="199" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <line x1="366" y1="147" x2="400" y2="199" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <line x1="502" y1="154" x2="468" y2="192" stroke="currentColor" stroke-width="1.8" stroke-opacity="1.0"/>
+  <rect x="401" y="44" width="66" height="36" rx="4" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.1" stroke-opacity="1.0"/>
+  <text x="434" y="60" font-size="11" fill="currentColor" text-anchor="middle">(7,2)</text>
+  <text x="434" y="74" font-size="11" fill="currentColor" text-anchor="middle">d = 2.236</text>
+  <text x="471" y="52" font-size="11" fill="currentColor" fill-opacity="0.7">x</text>
+  <rect x="343" y="125" width="46" height="22" rx="4" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <text x="366" y="140" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.55">(5,4)</text>
+  <text x="393" y="133" font-size="11" fill="currentColor" fill-opacity="0.7">y</text>
+  <rect x="469" y="118" width="66" height="36" rx="4" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.1" stroke-opacity="1.0"/>
+  <text x="502" y="134" font-size="11" fill="currentColor" text-anchor="middle">(9,6)</text>
+  <text x="502" y="148" font-size="11" fill="currentColor" text-anchor="middle">d = 5</text>
+  <text x="539" y="126" font-size="11" fill="currentColor" fill-opacity="0.7">y</text>
+  <rect x="315" y="199" width="46" height="22" rx="4" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <text x="338" y="214" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.55">(2,3)</text>
+  <rect x="377" y="199" width="46" height="22" rx="4" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+  <text x="400" y="214" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.55">(4,7)</text>
+  <rect x="435" y="192" width="66" height="36" rx="4" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity="0.1" stroke-opacity="1.0"/>
+  <text x="468" y="208" font-size="11" fill="currentColor" text-anchor="middle">(8,1)</text>
+  <text x="468" y="222" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">d = 1</text>
+  <text x="384" y="102" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.6">x &lt; 7</text>
+  <text x="484" y="102" font-size="11" fill="currentColor" fill-opacity="0.9">x ≥ 7</text>
+  <text x="473" y="176" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.9">y &lt; 6</text>
+  <text x="320" y="254" font-size="11" fill="currentColor" fill-opacity="0.6">가지치기: 재지 않음</text>
+</svg>
+
+계산 예제를 그린 것이다. 루트는 $x = 7$에서, 그 자식들은 $y = 4$(왼쪽)와 $y = 6$(오른쪽)에서 나눈다. 질의 $q = (9, 1)$은 트리의 실선 경로를 따라 채운 점들만 거리 2.236, 5, 1로 잰다. 최선 거리가 $r = 1$이 되고 나면 평면 $x = 7$이 $\lvert 9 - 7 \rvert = 2 \ge r$만큼 떨어져 있으므로, $(5,4)$, $(2,3)$, $(4,7)$이 있는 음영 절반은 한 번도 재지 않는다.
+
 **차원의 저주.** 가지치기는 질의 공이 분할 평면을 몇 개만 가로지른다는 데 기댄다. $d$가 커지면 공이 거의 모든 축의 평면을 가로질러 탐색이 대부분의 잎을 방문하게 되고, 선형 탐색에 가까워진다. 흔한 경험칙은 $n \gg 2^d$일 때만 KD-tree가 도움이 된다는 것이다. 3차원 포인트 클라우드에서는 쉽게 성립한다. 50차원이나 512차원 학습 기술자에서는 성립하지 않으므로 근사 최근접점 방법(무작위 KD-forest, HNSW 같은 그래프 기반 인덱스)을 쓰고, 진짜 최근접점을 놓칠 작은 확률을 받아들인다.
 
 **RRT에서.** 반복마다 무작위 샘플에 가장 가까운 트리 노드를 묻는다([[04-robotics/modern-robotics/ch10-motion-planning|MR 10장]]). 선형 탐색이면 N번 반복에 전체 O(N²)이 들고, 단순한 장면에서는 충돌 검사보다 훨씬 먼저 최근접점 탐색이 병목이 된다. KD-tree는 이를 질의당 대략 O(log N)으로 줄인다. 좋은 답이 언급하는 주의점이 세 가지 있다. 플래너의 트리는 노드가 하나씩 자라므로 KD-tree가 점진적 삽입과 가끔의 재구축으로 균형을 유지해야 한다. 각도가 있는 형상 공간은 *한 바퀴 돌아 이어지므로*($\theta = \pi$ 옆이 $-\pi$) 평범한 유클리드 KD-tree에는 위상을 아는 거리 함수가 필요하다. 7자유도 이상의 팔에서는 차원 페널티가 돌아오므로 플래너들이 흔히 근사 이웃을 받아들인다.
@@ -1348,3 +1922,21 @@ $$\lvert q_s - t \rvert < r$$
 > 5. 후속자는 오른쪽 서브트리의 최솟값이다. 왼쪽 자식이 있다면 그 자식도 오른쪽 서브트리에 있으면서 더 작을 테니 모순이다. 그 키는 오른쪽 서브트리에서 왔으므로 노드의 왼쪽 서브트리 모든 키보다 크고, 최솟값이었으므로 오른쪽 서브트리의 다른 모든 키보다 작다. 따라서 노드 자리에 두면 양쪽 불변식이 모두 성립하고, 오른쪽 서브트리에서 그것을 지우는 일은 쉬운 잎 또는 자식 하나 경우다.
 > 6. O(log n)이다. 노드는 자기 트리가 적어도 같은 크기의 트리 밑으로 들어갈 때만 깊어지고, 그때마다 트리 크기가 적어도 두 배가 되므로 많아야 $\log_2 n$번 일어난다. 경로 압축은 쓰이는 경로를 평평하게 만들어 연산 $m$번을 $O(m\,\alpha(n))$, 사실상 연산당 상수로 낮춘다. 간선을 지우려면 집합을 쪼개야 하는데, 부모 포인터 숲은 어느 union이 어떤 원소들을 이었는지 기록하지 않으므로 되돌릴 정보가 없다. 삭제는 오프라인 역순으로 처리하거나 동적 연결성 구조를 써라.
 > 7. 512차원에서는 질의 공이 거의 모든 노드의 분할 평면을 가로지르므로 가지치기가 거의 일어나지 않고, 탐색이 대부분의 잎을 방문한다. d = 512에서 경험칙 $n \gg 2^d$는 가망이 없다. 근사 최근접점(HNSW, IVF-PQ, 무작위 KD-forest)을 쓰거나, 먼저 차원을 줄이거나(PCA), 정확한 답이 필요하고 n이 적당하면 GPU에서 벡터화한 전수 탐색을 쓴다.
+
+### 출처
+
+- Cormen, Leiserson, Rivest & Stein, *Introduction to Algorithms*, 4th ed., MIT Press, 2022 — 해시 테이블과 범용 해싱, 힙, 이진 탐색 트리, 레드-블랙 트리, 서로소 집합.
+- Roughgarden, *Algorithms Illuminated*, Part 2 (*Graph Algorithms and Data Structures*, 2018)와 Part 3 (*Greedy Algorithms and Dynamic Programming*, 2019), Soundlikeyourself Publishing — 힙, 탐색 트리, 해싱, 블룸 필터, union-find.
+- Kulikov & Pevzner, *Learning Algorithms Through Programming and Puzzle Solving*, Active Learning Technologies, 2018.
+- Bloom, B. H. "Space/time trade-offs in hash coding with allowable errors." *Communications of the ACM* 13(7), 1970. doi:10.1145/362686.362692
+- Carter, J. L. & Wegman, M. N. "Universal classes of hash functions." *Journal of Computer and System Sciences* 18(2), 1979. doi:10.1016/0022-0000(79)90044-8
+- Crosby, S. A. & Wallach, D. S. "Denial of service via algorithmic complexity attacks." *USENIX Security Symposium*, 2003.
+- Williams, J. W. J. "Algorithm 232: Heapsort." *Communications of the ACM* 7(6), 1964; Floyd, R. W. "Algorithm 245: Treesort 3." *Communications of the ACM* 7(12), 1964 (선형 시간 힙 만들기).
+- Adelson-Velsky, G. M. & Landis, E. M. "An algorithm for the organization of information." *Soviet Mathematics Doklady* 3, 1962.
+- Guibas, L. J. & Sedgewick, R. "A dichromatic framework for balanced trees." *IEEE Symposium on Foundations of Computer Science (FOCS)*, 1978.
+- Fredkin, E. "Trie memory." *Communications of the ACM* 3(9), 1960.
+- Tarjan, R. E. "Efficiency of a good but not linear set union algorithm." *Journal of the ACM* 22(2), 1975. doi:10.1145/321879.321884
+- Kruskal, J. B. "On the shortest spanning subtree of a graph and the traveling salesman problem." *Proceedings of the American Mathematical Society* 7(1), 1956.
+- Bentley, J. L. "Multidimensional binary search trees used for associative searching." *Communications of the ACM* 18(9), 1975. doi:10.1145/361002.361007
+- Friedman, J. H., Bentley, J. L. & Finkel, R. A. "An algorithm for finding best matches in logarithmic expected time." *ACM Transactions on Mathematical Software* 3(3), 1977.
+- LaValle, S. M. *Planning Algorithms*, Cambridge University Press, 2006 — 샘플링 기반 계획의 최근접점 질의.

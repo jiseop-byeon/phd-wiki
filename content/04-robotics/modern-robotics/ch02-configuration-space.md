@@ -17,6 +17,9 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Core question**: what is the space of all possible "positions" of a robot, and what shape is it?
 
+> [!note] First pass · 처음이라면
+> Read the running plant, the picture, and Steps 1–3 of the worked case — the dimension, the torus, and the C-obstacle derived from one inequality — then Step 6's two contact poses and §2, which defines what Step 3 built. Steps 4, 5 and 7, §1's list with its Grübler example, and §3's constraint types are second pass; come back to §3 before ch.13.
+
 ### Running plant · 이 페이지의 장치
 
 **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], with its frozen numbers: a planar 2R arm, $L_1 = L_2 = 1\,\mathrm{m}$, base at the origin, $\theta_1$ measured from the $+x$ axis and $\theta_2$ the elbow angle relative to link 1. Elbow and tip are then
@@ -88,7 +91,7 @@ Left, P2's workspace: the wall $x = 1$ is tangent to the elbow circle at $(1,0)$
 
 ### Worked on the plant · 장치로 한 번 끝까지
 
-**Step 1 — the dimension.** Grübler counts the ground link, so P2 as an open chain has $N = 3$ links (ground, upper arm, forearm), $J = 2$ revolute joints, each $f_i = 1$, and $m = 3$ in the plane:
+**Step 1 — the dimension.** Grübler's formula (§1) counts the ground link, so P2 as an open chain has $N = 3$ links (ground, upper arm, forearm), $J = 2$ revolute joints, each $f_i = 1$, and $m = 3$ in the plane:
 
 $$\text{dof} = m(N - 1 - J) + \sum_i f_i = 3(3 - 1 - 2) + (1 + 1) = 0 + 2 = 2$$
 
@@ -126,16 +129,16 @@ The row $\theta_1 = 60°,\ \theta_2 = 0°$ is worth checking by hand: the arm is
 
 $$A = \int_{-\pi/2}^{\pi/2} 2\arccos(1 - \cos u)\,du = 7.2949\ \mathrm{rad}^2$$
 
-since for each admissible $\theta_1 = u$ the forbidden $\varphi$ interval has length $2\arccos(1-\cos u)$. The whole torus has area $4\pi^2 = 39.478\ \mathrm{rad}^2$, so the panel costs **18.478 %** of P2's configuration space.
+since for each admissible $\theta_1 = u$ the forbidden $\varphi$ interval has length $2\arccos(1-\cos u)$. The integral is evaluated numerically (any quadrature rule gives it to four places); it is the one number on this page not done by hand, and the problem set never asks for it. The whole torus has area $4\pi^2 = 39.478\ \mathrm{rad}^2$, so the panel costs **18.478 %** of P2's configuration space.
 
-**Step 6 — the two contact configurations.** Both inverse-kinematics solutions for the tip at $(1,1)$ sit on the boundary, and the arithmetic is one line each:
+**Step 6 — the two contact configurations.** Both inverse-kinematics solutions for the tip at $(1,1)$ — the joint angles that put the tip there; [[04-robotics/modern-robotics/ch06-inverse-kinematics|ch.6]] derives why there are exactly these two, and here they are only checked — sit on the boundary, and the arithmetic is one line each:
 
 - $\theta = (0°, 90°)$: $\cos 0° + \cos 90° = 1 + 0 = 1$, so $d = 0$.
 - $\theta = (90°, -90°)$: $\cos 90° + \cos 0° = 0 + 1 = 1$, so $d = 0$.
 
 They are the same point of task space and two different points of C-space, and they are not equivalent contacts: at $(0°,90°)$ link 2 lies flush along the face over its whole length, while at $(90°,-90°)$ only the tip touches. The C-space picture says "both on $\partial\mathcal{C}_{\text{obs}}$" and stops; which contact the tool actually makes is a workspace question.
 
-**Step 7 — what contact does to the dimension.** Requiring the tip to stay on the face is the single equation $\cos\theta_1 + \cos(\theta_1{+}\theta_2) = 1$, one independent holonomic constraint, so the set of configurations that maintain contact has dimension $2 - 1 = 1$: it is exactly the boundary curve drawn in the picture. The obstacle *region* removes no dimension — it is an open subset of a 2-D space and is still 2-D. **An inequality carves; an equality reduces.** That distinction is the whole content of the next section.
+**Step 7 — what contact does to the dimension.** Requiring the tip to stay on the face is the single equation $\cos\theta_1 + \cos(\theta_1{+}\theta_2) = 1$, one independent holonomic constraint (an equation on the configuration alone, defined in §3), so the set of configurations that maintain contact has dimension $2 - 1 = 1$: it is exactly the boundary curve drawn in the picture. The obstacle *region* removes no dimension — it is an open subset of a 2-D space and is still 2-D. **An inequality carves; an equality reduces.** That distinction is the whole content of the next section.
 
 ### 1. Configuration, degrees of freedom, and Grübler
 
@@ -165,7 +168,7 @@ They are the same point of task space and two different points of C-space, and t
 > - **Planar four-bar** (MR Example 2.3): $m = 3$, links $N = 4$ (ground + crank + coupler + rocker), $J = 4$ revolute joints, each $f_i = 1$. $3(4-1-4) + 4 = -3 + 4 = 1$. Fix the crank angle and the whole loop is determined.
 > - **Spatial 6R arm**: $m = 6$, links $N = 7$ (base + 6 moving links), $J = 6$ revolute joints, each $f_i = 1$. $6(7-1-6) + 6 = 0 + 6 = 6$ — enough to place the tool at any position and orientation in its reachable workspace.
 >
-> **Pattern**: for an open serial chain $J = N - 1$, so the first term vanishes and dof is just $\sum_i f_i$. Each closed loop subtracts constraints, which is why the four-bar's 4 joints give only 1 dof. The formula assumes independent constraints; special geometry can break it (MR Example 2.6).
+> **Pattern**: for an open serial chain $J = N - 1$, so the first term vanishes and dof is just $\sum_i f_i$. Each closed loop subtracts constraints, which is why the four-bar's 4 joints give only 1 dof. The formula assumes independent constraints, and special geometry can break it: add a third link to a parallelogram linkage, parallel to and as long as the two cranks, and Grübler counts $N = 5$, $J = 6$, so $3(5-1-6) + 6 = 0$ dof — yet the linkage still moves with 1, because the extra link's constraints repeat ones the parallelogram already imposes (MR Example 2.6). For such mechanisms Grübler is only a lower bound.
 
 ### 2. C-obstacles and free space, defined
 
@@ -227,6 +230,9 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 ## 한국어
 
 **핵심 질문**: 로봇의 가능한 "자세" 전체의 공간은 무엇이고, 그 모양은 어떠한가?
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 장치, 그림, 그리고 '장치로 한 번 끝까지'의 1–3단계(차원, 원환면, 부등식 하나에서 유도한 C-장애물)를 읽고, 이어서 6단계의 접촉 자세 둘과, 3단계가 만든 것을 정의하는 §2를 읽어라. 4·5·7단계, 그뤼블러 예제가 있는 §1의 목록, §3의 제약 종류는 두 번째 읽기다. 13장에 가기 전에 §3으로 돌아오라.
 
 ### 이 페이지의 장치 · Running plant
 
@@ -299,7 +305,7 @@ $$e(\theta) = (\cos\theta_1,\ \sin\theta_1), \qquad p(\theta) = e(\theta) + (\co
 
 ### 장치로 한 번 끝까지 · Worked on the plant
 
-**1단계 — 차원.** 그뤼블러는 접지 링크를 세므로, 열린 체인 P2는 링크 $N = 3$(접지, 상완, 전완), 회전관절 $J = 2$, 각 $f_i = 1$, 평면이므로 $m = 3$:
+**1단계 — 차원.** 그뤼블러 공식(§1)은 접지 링크를 세므로, 열린 체인 P2는 링크 $N = 3$(접지, 상완, 전완), 회전관절 $J = 2$, 각 $f_i = 1$, 평면이므로 $m = 3$:
 
 $$\text{dof} = m(N - 1 - J) + \sum_i f_i = 3(3 - 1 - 2) + (1 + 1) = 0 + 2 = 2$$
 
@@ -333,16 +339,16 @@ $\theta_1 = 60°,\ \theta_2 = 0°$ 행은 손으로 확인할 값이 있다. 팔
 
 $$A = \int_{-\pi/2}^{\pi/2} 2\arccos(1 - \cos u)\,du = 7.2949\ \mathrm{rad}^2$$
 
-이다. 허용되는 각 $\theta_1 = u$마다 금지된 $\varphi$ 구간의 길이가 $2\arccos(1-\cos u)$이기 때문이다. 원환면 전체 넓이는 $4\pi^2 = 39.478\ \mathrm{rad}^2$이므로, **패널은 P2 컨피규레이션 공간의 18.478 %를 가져간다.**
+이다. 허용되는 각 $\theta_1 = u$마다 금지된 $\varphi$ 구간의 길이가 $2\arccos(1-\cos u)$이기 때문이다. 이 적분은 수치로 계산한다(어떤 구적법이든 소수 넷째 자리까지 준다). 이 페이지에서 손으로 하지 않는 유일한 숫자이고, 과제도 이것을 묻지 않는다. 원환면 전체 넓이는 $4\pi^2 = 39.478\ \mathrm{rad}^2$이므로, **패널은 P2 컨피규레이션 공간의 18.478 %를 가져간다.**
 
-**6단계 — 접촉 자세 둘.** 말단을 $(1,1)$에 두는 역기구학 해 두 개가 모두 경계 위에 있고, 계산은 각각 한 줄이다:
+**6단계 — 접촉 자세 둘.** 말단을 $(1,1)$에 두는 역기구학 해 두 개 — 말단을 거기 놓는 관절각이며, 왜 정확히 이 둘인지는 [[04-robotics/modern-robotics/ch06-inverse-kinematics|6장]]이 유도하고 여기서는 확인만 한다 — 가 모두 경계 위에 있고, 계산은 각각 한 줄이다:
 
 - $\theta = (0°, 90°)$: $\cos 0° + \cos 90° = 1 + 0 = 1$이므로 $d = 0$.
 - $\theta = (90°, -90°)$: $\cos 90° + \cos 0° = 0 + 1 = 1$이므로 $d = 0$.
 
 둘은 작업 공간의 같은 점이고 C-space의 다른 두 점이며, 같은 접촉도 아니다. $(0°,90°)$에서는 링크 2가 면에 전 길이로 붙어 눕고, $(90°,-90°)$에서는 말단만 닿는다. C-space 그림은 "둘 다 $\partial\mathcal{C}_{\text{obs}}$ 위"라고만 말하고 멈춘다. 도구가 실제로 어떤 접촉을 하는지는 작업 영역의 질문이다.
 
-**7단계 — 접촉이 차원에 하는 일.** 말단이 면 위에 머물라는 요구는 $\cos\theta_1 + \cos(\theta_1{+}\theta_2) = 1$ 하나, 독립인 홀로노믹 제약 하나이므로, 접촉을 유지하는 자세들의 집합은 차원 $2 - 1 = 1$이다. 바로 그림의 경계 곡선이다. 장애물 *영역*은 차원을 줄이지 않는다. 2차원 공간의 열린 부분집합이라 여전히 2차원이다. **부등식은 깎고, 등식은 줄인다.** 다음 절이 통째로 이 구별에 관한 것이다.
+**7단계 — 접촉이 차원에 하는 일.** 말단이 면 위에 머물라는 요구는 $\cos\theta_1 + \cos(\theta_1{+}\theta_2) = 1$ 하나, 독립인 홀로노믹 제약(컨피규레이션만의 등식, §3에서 정의) 하나이므로, 접촉을 유지하는 자세들의 집합은 차원 $2 - 1 = 1$이다. 바로 그림의 경계 곡선이다. 장애물 *영역*은 차원을 줄이지 않는다. 2차원 공간의 열린 부분집합이라 여전히 2차원이다. **부등식은 깎고, 등식은 줄인다.** 다음 절이 통째로 이 구별에 관한 것이다.
 
 ### 1. 컨피규레이션·자유도·그뤼블러
 
@@ -369,7 +375,7 @@ $$A = \int_{-\pi/2}^{\pi/2} 2\arccos(1 - \cos u)\,du = 7.2949\ \mathrm{rad}^2$$
 > - **평면 4절 링크**(MR 예제 2.3): $m = 3$, 링크 $N = 4$(접지 + 크랭크 + 커플러 + 로커), 회전관절 $J = 4$, 각 $f_i = 1$. $3(4-1-4) + 4 = -3 + 4 = 1$. 크랭크 각 하나를 정하면 루프 전체가 정해진다.
 > - **공간 6R 팔**: $m = 6$, 링크 $N = 7$(베이스 + 움직이는 링크 6), 회전관절 $J = 6$, 각 $f_i = 1$. $6(7-1-6) + 6 = 0 + 6 = 6$ — 도달 가능한 작업 영역 안에서 도구의 위치와 자세를 모두 정하기에 충분하다.
 >
-> **패턴**: 열린 직렬 체인은 $J = N - 1$이라 첫 항이 사라지고 자유도는 그냥 $\sum_i f_i$다. 닫힌 루프마다 제약이 빠지므로 4절 링크는 관절이 4개여도 자유도가 1이다. 공식은 제약이 서로 독립이라고 가정하며, 특수한 기하에서는 틀릴 수 있다(MR 예제 2.6).
+> **패턴**: 열린 직렬 체인은 $J = N - 1$이라 첫 항이 사라지고 자유도는 그냥 $\sum_i f_i$다. 닫힌 루프마다 제약이 빠지므로 4절 링크는 관절이 4개여도 자유도가 1이다. 공식은 제약이 서로 독립이라고 가정하며, 특수한 기하에서는 틀릴 수 있다. 평행사변형 링크에 두 크랭크와 평행하고 길이가 같은 셋째 링크를 더하면 그뤼블러는 $N = 5$, $J = 6$으로 $3(5-1-6) + 6 = 0$ 자유도를 세지만, 링크는 여전히 1 자유도로 움직인다. 더한 링크의 제약이 평행사변형이 이미 건 제약을 되풀이하기 때문이다(MR 예제 2.6). 이런 기구에서 그뤼블러는 하한일 뿐이다.
 
 ### 2. C-장애물과 자유 공간의 정의
 

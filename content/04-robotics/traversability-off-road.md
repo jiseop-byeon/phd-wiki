@@ -19,10 +19,10 @@ mastery-when: "Raise to Mastery only if terrain interaction or the traversabilit
 ## English
 
 *Group I. Stands on [[04-robotics/mpc|7. MPC]], [[04-robotics/planning-decision-making|4. Planning]] and [[02-foundations/ml-practice|ML Practice]].
-The reframing that reorganised the field: traversability is a learned affordance of a particular robot, not a geometric property of terrain.*
+The reframing that reorganised the field: traversability is a learned [[glossary|affordance]] of a particular robot, not a geometric property of terrain.*
 
 > [!note] First pass · 처음이라면
-> Read §1 — one reframing that reorganised the field — then §2 on where the labels come from, then §6. §4 and §5 are a record of what each field programme established; read them when you need to cite one. The running object and the worked derivation that follows §1 turn §1's claim into arithmetic; do them if you are here for the course rather than for the literature.
+> Read §1 — one reframing that reorganised the field — then §2 on where the labels come from, then §6. §3 — the elevation map underneath and CVaR, the risk measure the geometric side plans with — is second pass, unless a paper in front of you uses either. §4 and §5 are a record of what each field programme established; read them when you need to cite one. The running object and the worked derivation that follows §1 turn §1's claim into arithmetic; do them if you are here for the course rather than for the literature.
 
 ### Running object · 이 페이지의 장치
 
@@ -49,7 +49,8 @@ costmaps for different robots.
 
 Both use the same weights $(w_\theta,w_h,w_\sigma)=(0.4,0.4,0.2)$.
 
-Q is the frozen quadruped of [[04-robotics/legged-locomotion|18. Legged Locomotion]] — $12$ kg, CoM
+Q is the frozen quadruped of [[04-robotics/legged-locomotion|18. Legged Locomotion]], a later page;
+everything this page needs of it is stated here — $12$ kg, CoM
 $0.30$ m up, feet at $(\pm0.30,\pm0.15)$ m — and its $\theta_{\max}$ is *not* a stipulation. Q tips
 sideways about a lateral foot pair when the CoM projection crosses the $0.15$ m half-width, at
 $\arctan(0.15/0.30)=26.6^\circ$, so $25^\circ$ is that angle with a degree and a half of margin. Its
@@ -174,6 +175,10 @@ The correction is the premise of everything on this page:
 
 > **Traversability is not a geometric predicate. It is a robot-specific, velocity-conditioned
 > affordance learned from the robot's own experience of driving somewhere.**
+
+An **affordance** here is what a patch of ground makes possible for one robot — whether it can be
+driven over, and at what cost — so it belongs to the pair, robot and ground, and not to the ground
+alone (the [[glossary|Glossary]] entry *Affordance* gives the general sense, from manipulation).
 
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="the same three terrain patches read two ways: an occupancy grid and a learned affordance">
   <g font-size="10.5" fill="currentColor" opacity="0.8">
@@ -330,10 +335,22 @@ that was never going to bind. And the roughness term sits at $0.994$ — raise t
 centimetre, to $0.33$ m, and $\sigma$ becomes $0.0522$ m and that term trips the gate *on its own*.
 A cell can be one centimetre from being refused for a reason nobody is watching.
 
-**5. What P2 does to the verdict.** [[04-robotics/legged-locomotion|18. Legged Locomotion]] computes
-that mounting P2 raises Q's centre of mass from $0.30$ m to $0.371$ m, so the lateral tip-over angle
-falls from $26.6^\circ$ to $\arctan(0.15/0.371)=22.0^\circ$ and the honest $\theta_{\max}$ for the
-loaded robot is $22^\circ$, not $25^\circ$. The slope term becomes $20.44/22=0.929$: within $7\%$ of
+**5. What P2 does to the verdict.** P2 is the wiki's planar two-link arm
+([[02-foundations/lab-plants|0.6]]): two $1$ m links, each with a $1$ kg point mass at its far end.
+Mount it on Q with its shoulder at Q's CoM, $0.30$ m up, in its frozen pose $\theta=(0^\circ,90^\circ)$:
+the first link points forward and the second straight up, so the two masses sit $1$ m ahead of the
+shoulder, one at shoulder height and one $1$ m above it. A centre of mass is the mass-weighted
+average of the parts, so the loaded robot's CoM height is
+
+$$z'=\frac{12(0.30)+1(0.30)+1(1.30)}{12+1+1}=\frac{5.20}{14}=0.371\ \mathrm{m}$$
+
+That pose lies in the fore–aft plane, so no mass moves sideways and the half-width stays $0.15$ m.
+The running object's tip-over rule, $\arctan(\text{half-width}/\text{CoM height})$, then gives a
+lateral tip-over angle of $\arctan(0.15/0.371)=22.0^\circ$ in place of $26.6^\circ$, and the honest
+$\theta_{\max}$ for the loaded robot is $22^\circ$, not $25^\circ$.
+([[04-robotics/legged-locomotion|18. Legged Locomotion]] makes the same computation later and adds
+what the $0.143$ m forward shift of the CoM does to Q's balance; the slope gate needs only the height.)
+The slope term becomes $20.44/22=0.929$: within $7\%$ of
 its own gate, on terrain that was comfortable at $0.818$ unloaded. The gate still trips on step height,
 so the verdict does not change here — but the slope term's own margin is mostly gone, with no
 change in the ground at all. That sharpens §1's claim from "traversability is
@@ -404,6 +421,43 @@ competed in DARPA SubT.
 CVaR is worth knowing as a modelling choice rather than a detail: optimising the *mean*
 outcome and optimising the *worst decile* give different plans, and on terrain where the
 failure is a rollover rather than a delay, the second is the right objective.
+
+> [!info] Definition · 정의 — conditional value-at-risk (CVaR)
+> **What kind of thing it is.** A **risk measure**: a function that turns the whole distribution of
+> a random cost $Z$ into one number, the expected cost *within the worst fraction $\alpha$ of
+> outcomes*. It is a property of a distribution, not of one outcome, and it has the units of the cost.
+>
+> **Its defining conditions.** Four. (i) $Z$ is a **cost**, larger worse; for a reward the bad tail
+> is the other end. (ii) $\alpha\in(0,1]$ is the **tail fraction**: $\alpha=1$ gives the mean and
+> $\alpha\to0$ the worst case. Some papers write the confidence level $1-\alpha$ instead ($0.9$ where
+> this box writes $0.1$), so read which one a paper means. (iii) It **averages over the tail**, so how
+> bad the tail is counts, not only where it starts. (iv) For $N$ equally likely outcomes with
+> $\alpha N$ a whole number, it is simply the mean of the $\alpha N$ worst ones.
+>
+> $$\mathrm{CVaR}_\alpha(Z)=\min_{\eta\in\mathbb{R}}\Big\{\eta+\frac{1}{\alpha}\,\mathbb{E}\big[(Z-\eta)_+\big]\Big\},\qquad \mathrm{VaR}_\alpha(Z)=\min\{z:\ \mathbb{P}(Z\le z)\ge1-\alpha\}$$
+>
+> $(\cdot)_+=\max(\cdot,0)$; the minimising $\eta$ is $\mathrm{VaR}_\alpha$, the cost at which the worst
+> $\alpha$ begins, so the formula reads "the tail's start, plus the average amount by which the tail
+> exceeds it". This minimisation form (Rockafellar and Uryasev) is what makes CVaR usable inside an
+> optimiser, as an objective or as a constraint — the second is where STEP's risk-constrained MPC
+> puts it.
+>
+> **Example.** Q has two ways past the frozen patch, each with ten equally likely outcomes, in
+> seconds to the far side. Route A climbs the ramp: nine times $10$ s, and once Q slips on the rock
+> and needs $60$ s to recover. Route B detours: $14,14,15,15,16,16,17,17,18,18$ s. The mean prefers
+> A, $15.0$ s against $16.0$. At $\alpha=0.1$ the worst decile is one outcome each, so
+> $\mathrm{CVaR}_{0.1}$ is $60$ s for A against $18$ s for B, and CVaR prefers B; at $\alpha=0.2$ it
+> is $(60+10)/2=35$ s against $18$ s.
+>
+> **Non-example.** $\mathrm{VaR}_\alpha$, the threshold alone, is not CVaR. On the two routes
+> $\mathrm{VaR}_{0.1}$ is $10$ s for A, since nine outcomes in ten are at most $10$ s, against $18$ s for
+> B, so it prefers A — and it would still say $10$ s if the recovery took $600$ s, because it never
+> looks past the start of the tail.
+>
+> **Why it matters.** A planner that minimises the mean will buy a rare rollover with a small saving
+> in the common case; minimising $\mathrm{CVaR}_\alpha$ prices that tail explicitly. The gate of
+> worked step 4 is the crudest version of the same instinct: a cell that can roll the robot is refused
+> outright rather than averaged.
 
 > [!example] Worked example · 계산 예제
 > **Why the geometric side runs out at range.** A 64-beam lidar at 1.8 m height with 0.4°
@@ -533,8 +587,8 @@ weights — is unchanged.
    Right: the three normalized bars against the gate line, drawn three times now: Q, Q carrying P2, and T.
 2. **Derive.** (a) The central-difference slope at the centre cell. (b) The least-squares plane's
    $a$, $b$, $c_0$ and its slope, using the decoupled quotients. (c) The step height and the roughness.
-   (d) The gate and $C$ for Q, for Q carrying P2 (use the $\theta_{\max}$ that page 18 derives for the
-   loaded robot), and for T. Rank the three.
+   (d) The gate and $C$ for Q, for Q carrying P2 (use the $\theta_{\max}$ that worked step 5 derives
+   for the loaded robot), and for T. Rank the three.
 3. **Interpret.** One of your two slope estimates did not move at all between the lecture's patch and
    this one, while the verdict for Q flipped. Say which, say exactly why, and say what that implies
    about a costmap pipeline that computes slope from central differences on a $0.20$ m grid. Then:
@@ -569,6 +623,7 @@ weights — is unchanged.
 - M. Sivaprakasam, S. Triest, C. Ho, et al., "SALON: Self-supervised Adaptive Learning for Off-road Navigation," ICRA 2025 ([arXiv:2412.07826](https://arxiv.org/abs/2412.07826)).
 - S. Jung, J. Lee, X. Meng, B. Boots, A. Lambert, "V-STRONG: Visual Self-Supervised Traversability Learning for Off-road Navigation," ICRA 2024 ([arXiv:2312.16016](https://arxiv.org/abs/2312.16016)) — the zero-shot generalization claim.
 - D. D. Fan, K. Otsu, Y. Kubo, et al., "STEP: Stochastic Traversability Evaluation and Planning for Risk-Aware Off-road Navigation," RSS 2021 ([arXiv:2103.02828](https://arxiv.org/abs/2103.02828)).
+- R. T. Rockafellar, S. Uryasev, "Optimization of Conditional Value-at-Risk," *Journal of Risk*, vol. 2, no. 3, pp. 21–41, 2000 — the minimisation form of CVaR in §3's definition box.
 - P. Fankhauser, M. Bloesch, M. Hutter, "Probabilistic Terrain Mapping for Mobile Robots With Uncertain Localization," *IEEE RA-L*, vol. 3, no. 4, pp. 3019–3026, 2018 — the `elevation_mapping` package.
 - J. Frey, M. Patel, D. Atha, et al., "RoadRunner," accepted *IEEE T-FR* ([arXiv:2402.19341](https://arxiv.org/abs/2402.19341)); M. Patel et al., "RoadRunner M&M," *IEEE RA-L*, vol. 9, no. 12, pp. 11425–11432, 2024.
 - A. Datar, C. Pan, M. Nazeri, X. Xiao, "Toward Wheeled Mobility on Vertically Challenging Terrain," ICRA 2024, pp. 16322–16329 ([arXiv:2303.00998](https://arxiv.org/abs/2303.00998)) — the Verti-Wheelers line, from George Mason University.
@@ -586,10 +641,10 @@ weights — is unchanged.
 ## 한국어
 
 *I군이다. [[04-robotics/mpc|7. MPC]]·[[04-robotics/planning-decision-making|4. 계획]]과 [[02-foundations/ml-practice|ML 실무]] 위에 선다.
-이 분야를 재편한 재프레이밍: 통과 가능성은 지형의 기하학적 성질이 아니라 특정 로봇이 학습한 어포던스다.*
+이 분야를 재편한 재프레이밍: 통과 가능성은 지형의 기하학적 성질이 아니라 특정 로봇이 학습한 [[glossary|어포던스]]다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 이 분야를 재편한 재프레이밍 하나 — 그다음 라벨이 어디서 오는지인 §2, 그다음 §6. §4·§5는 각 필드 프로그램이 무엇을 확립했는지의 기록이니 인용이 필요할 때 읽어라. 이 페이지의 장치와 §1 뒤에 오는 유도는 §1의 주장을 산수로 바꾼다. 문헌이 아니라 수업 때문에 왔다면 그것부터 하라.
+> 먼저 §1 — 이 분야를 재편한 재프레이밍 하나 — 그다음 라벨이 어디서 오는지인 §2, 그다음 §6. §3 — 밑에 깔린 고도 지도, 그리고 기하학적 쪽이 계획에 쓰는 위험 척도 CVaR — 은 두 번째로 읽을 때다. 앞에 놓인 논문이 둘 중 하나를 쓴다면 그때 먼저 읽어라. §4·§5는 각 필드 프로그램이 무엇을 확립했는지의 기록이니 인용이 필요할 때 읽어라. 이 페이지의 장치와 §1 뒤에 오는 유도는 §1의 주장을 산수로 바꾼다. 문헌이 아니라 수업 때문에 왔다면 그것부터 하라.
 
 ### 이 페이지의 장치 · Running object
 
@@ -616,8 +671,9 @@ $0.32$ m로 올라가 있다. 그러니 이 패치는 바위 하나가 얹힌 �
 
 가중치는 둘 다 $(w_\theta,w_h,w_\sigma)=(0.4,0.4,0.2)$로 같다.
 
-Q는 [[04-robotics/legged-locomotion|18. 레그드 로코모션]]의 고정 사족이고($12$ kg, 무게중심
-$0.30$ m, 발은 $(\pm0.30,\pm0.15)$ m), 그 $\theta_{\max}$는 규정이 *아니다*. Q는 무게중심 투영이
+Q는 뒤에 나오는 [[04-robotics/legged-locomotion|18. 레그드 로코모션]]의 고정 사족이지만, 이
+페이지에 필요한 것은 모두 여기 적는다($12$ kg, 무게중심 $0.30$ m, 발은 $(\pm0.30,\pm0.15)$ m).
+그 $\theta_{\max}$는 규정이 *아니다*. Q는 무게중심 투영이
 $0.15$ m 반폭을 넘을 때 측면 발 한 쌍을 축으로 넘어가고 그 각도가
 $\arctan(0.15/0.30)=26.6^\circ$이므로, $25^\circ$는 거기에 1.5도의 여유를 둔 값이다. $h_{\max}$와
 $\sigma_{\max}$는 카탈로그 숫자로, 한 번 적고 과제에서만 바꾼다. T는 이 세 한계로만 고정되며,
@@ -740,6 +796,10 @@ $\sigma_{\max}$는 카탈로그 숫자로, 한 번 적고 과제에서만 바꾼
 
 > **Traversability는 기하학적 술어가 아니다. 로봇마다 다르고 속도에 조건부이며, 로봇 자신이
 > 거기를 주행한 경험에서 학습되는 어포던스다.**
+
+여기서 **어포던스** 란 한 뙈기의 땅이 로봇 하나에게 가능하게 하는 것 — 그 위를 달릴 수 있는지, 어떤
+비용으로 달릴 수 있는지 — 이다. 그러니 그것은 땅 혼자가 아니라 로봇과 땅의 짝에 속한다(일반적인
+뜻은 조작 쪽에서 온 [[glossary|용어집]]의 *Affordance* 항목에 있다).
 
 <svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="같은 지형 세 곳을 점유 격자와 학습된 어포던스 두 방식으로 읽은 것">
   <g font-size="10.5" fill="currentColor" opacity="0.8">
@@ -889,10 +949,20 @@ $10^4$쯤은 기꺼이 치르기 때문이고, 로봇을 굴릴 셀은 어떤 �
 $0.0522$ m가 되어 그 항이 *혼자서* 관문을 걸어 버린다. 아무도 보고 있지 않은 이유로 거부되기까지
 1 cm 남은 셀도 있을 수 있다는 뜻이다.
 
-**5. P2가 판정에 하는 일.** [[04-robotics/legged-locomotion|18. 레그드 로코모션]]이 계산하듯 P2를
-얹으면 Q의 무게중심이 $0.30$ m에서 $0.371$ m로 올라가므로 측면 전복 각이 $26.6^\circ$에서
-$\arctan(0.15/0.371)=22.0^\circ$로 내려가고, 실린 로봇의 정직한 $\theta_{\max}$는 $25^\circ$가
-아니라 $22^\circ$다. 경사 항은 $20.44/22=0.929$가 된다. 맨몸일 때 $0.818$로 편안하던 지형에서,
+**5. P2가 판정에 하는 일.** P2는 이 위키의 평면 2링크 팔이다([[02-foundations/lab-plants|0.6]]).
+길이 $1$ m 링크 둘이 각자 끝에 $1$ kg 점질량을 단다. 이것을 어깨가 Q의 무게중심, 곧 높이 $0.30$ m에
+오도록 Q에 얹고 고정 자세 $\theta=(0^\circ,90^\circ)$로 둔다. 첫 링크는 앞을, 둘째 링크는 곧장
+위를 가리키므로 두 질량은 어깨보다 $1$ m 앞에 놓이고, 하나는 어깨 높이에, 하나는 그보다 $1$ m
+위에 있다. 무게중심은 부분들의 질량 가중 평균이므로 짐을 실은 로봇의 무게중심 높이는
+
+$$z'=\frac{12(0.30)+1(0.30)+1(1.30)}{12+1+1}=\frac{5.20}{14}=0.371\ \mathrm{m}$$
+
+이다. 이 자세는 앞뒤 평면 안에 있으므로 옆으로 옮겨 가는 질량은 없고 반폭은 $0.15$ m 그대로다.
+그러면 이 페이지 장치의 전복 규칙 $\arctan(\text{반폭}/\text{무게중심 높이})$가 측면 전복 각으로
+$26.6^\circ$ 대신 $\arctan(0.15/0.371)=22.0^\circ$를 주고, 실린 로봇의 정직한 $\theta_{\max}$는
+$25^\circ$가 아니라 $22^\circ$다. ([[04-robotics/legged-locomotion|18. 레그드 로코모션]]이 나중에
+같은 계산을 하고, 무게중심이 앞으로 $0.143$ m 옮겨 간 것이 Q의 균형에 무엇을 하는지까지 더한다.
+경사 관문에 필요한 것은 높이뿐이다.) 경사 항은 $20.44/22=0.929$가 된다. 맨몸일 때 $0.818$로 편안하던 지형에서,
 이제 자기 관문의 $7\%$ 안쪽이다. 관문은 여전히 단차에서 걸리므로 여기서 판정이 바뀌지는 않지만,
 지면은 하나도 바뀌지 않은 채 경사 항 자신의 여유가 대부분 사라졌다. §1의 주장을
 "통과 가능성은 로봇에 특정적이다"에서 **로봇 *구성*에 특정적이다**로 날카롭게 하는 것이고,
@@ -954,6 +1024,39 @@ Value-at-Risk(CVaR)를 통한 꼬리 위험 평가**, 그리고 순차 이차 �
 CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: *평균* 결과를 최적화하는 것과 *최악
 10분위*를 최적화하는 것은 다른 계획을 낳고, 실패가 지연이 아니라 전복인 지형에서는 후자가 옳은
 목적함수다.
+
+> [!info] 정의 · Definition — 조건부 위험가치(CVaR)
+> **어떤 종류의 것인가.** **위험 척도** 다. 무작위 비용 $Z$의 분포 전체를 수 하나로 바꾸는 함수이고,
+> 그 수는 *가장 나쁜 비율 $\alpha$의 결과 안에서의* 기대 비용이다. 결과 하나가 아니라 분포의 성질이며,
+> 단위는 비용의 단위다.
+>
+> **정의 조건.** 넷이다. (i) $Z$는 **비용** 이다. 클수록 나쁘다. 보상이라면 나쁜 꼬리는 반대쪽 끝이다.
+> (ii) $\alpha\in(0,1]$는 **꼬리 비율** 이다. $\alpha=1$이면 평균이고 $\alpha\to0$이면 최악의 경우다.
+> 어떤 논문은 대신 신뢰 수준 $1-\alpha$를 쓰므로(이 상자의 $0.1$을 $0.9$로), 논문이 어느 쪽을 뜻하는지
+> 읽어라. (iii) **꼬리 전체를 평균** 하므로 꼬리가 어디서 시작하는지만이 아니라 얼마나 나쁜지가
+> 들어간다. (iv) 확률이 같은 결과 $N$개에서 $\alpha N$이 정수라면, 그것은 가장 나쁜 $\alpha N$개의
+> 평균일 뿐이다.
+>
+> $$\mathrm{CVaR}_\alpha(Z)=\min_{\eta\in\mathbb{R}}\Big\{\eta+\frac{1}{\alpha}\,\mathbb{E}\big[(Z-\eta)_+\big]\Big\},\qquad \mathrm{VaR}_\alpha(Z)=\min\{z:\ \mathbb{P}(Z\le z)\ge1-\alpha\}$$
+>
+> $(\cdot)_+=\max(\cdot,0)$이다. 최소화하는 $\eta$가 $\mathrm{VaR}_\alpha$, 곧 최악의 $\alpha$가 시작되는
+> 비용이므로, 식은 "꼬리의 시작점에, 꼬리가 그것을 넘는 양의 평균을 더한 것"으로 읽힌다. 이
+> 최소화 형태(Rockafellar와 Uryasev)가 CVaR을 최적화기 안에서 목적함수로도 제약으로도 쓸 수 있게
+> 해 주며, STEP의 위험 제약 MPC가 넣는 자리는 후자다.
+>
+> **예.** Q가 고정 패치를 지나는 길이 둘 있고, 각각 확률이 같은 결과 열 개를 가지며, 단위는 건너편에
+> 닿기까지의 초다. 길 A는 경사면을 오른다. 아홉 번은 $10$ s이고, 한 번은 Q가 바위에서 미끄러져 회복에
+> $60$ s가 든다. 길 B는 돌아간다: $14,14,15,15,16,16,17,17,18,18$ s. 평균은 A를 고른다. $15.0$ s 대
+> $16.0$ s다. $\alpha=0.1$에서 최악 10분위는 각각 결과 하나이므로 $\mathrm{CVaR}_{0.1}$은 A가 $60$ s,
+> B가 $18$ s이고, CVaR은 B를 고른다. $\alpha=0.2$에서는 $(60+10)/2=35$ s 대 $18$ s다.
+>
+> **반례.** 문턱값 하나인 $\mathrm{VaR}_\alpha$는 CVaR이 아니다. 두 길에서 $\mathrm{VaR}_{0.1}$은 A가
+> $10$ s — 열 번 중 아홉 번이 $10$ s 이하이므로 — 이고 B가 $18$ s라서 A를 고른다. 그리고 회복에
+> $600$ s가 들어도 여전히 $10$ s라고 말한다. 꼬리의 시작점 너머를 보지 않기 때문이다.
+>
+> **왜 중요한가.** 평균을 최소화하는 플래너는 흔한 경우의 작은 절약으로 드문 전복을 사 버린다.
+> $\mathrm{CVaR}_\alpha$를 최소화하면 그 꼬리에 값이 명시적으로 매겨진다. 유도 4단계의 관문이 같은
+> 직관의 가장 거친 판본이다. 로봇을 굴릴 수 있는 셀은 평균되지 않고 아예 거부된다.
 
 > [!example] 계산 예제 · Worked example
 > **기하학적 쪽이 원거리에서 바닥나는 이유.** 높이 1.8 m에 수직 간격 0.4°인 64빔 라이다는
@@ -1072,8 +1175,8 @@ Tier B. 이 페이지의 패치, **Q**, **T**, 그리고 [[02-foundations/lab-pl
    *전에* 긋고, 그것이 움직일지에 대한 예측을 함께 적는다. 오른쪽: 관문 선에 대한 정규화 막대 셋을
    이번에는 세 벌 그린다. Q, P2를 실은 Q, 그리고 T.
 2. **유도하라.** (a) 가운데 셀의 중앙 차분 경사. (b) 최소제곱 평면의 $a$, $b$, $c_0$ 및 그 경사를
-   분리된 몫으로 구한다. (c) 단차 높이와 거칠기. (d) Q, P2를 실은 Q(18번 페이지가 실린 로봇에
-   대해 유도하는 $\theta_{\max}$를 쓴다), 그리고 T에 대한 관문과 $C$. 셋의 순위를 매긴다.
+   분리된 몫으로 구한다. (c) 단차 높이와 거칠기. (d) Q, P2를 실은 Q(유도 5단계가 실린 로봇에
+   대해 구한 $\theta_{\max}$를 쓴다), 그리고 T에 대한 관문과 $C$. 셋의 순위를 매긴다.
 3. **해석하라.** 두 경사 추정 중 하나는 강의의 패치와 이 패치 사이에서 전혀 움직이지 않았는데 Q의
    판정은 뒤집혔다. 어느 쪽인지, 정확히 왜인지, 그리고 그것이 $0.20$ m 격자에서 중앙 차분으로
    경사를 계산하는 비용 지도 파이프라인에 대해 무엇을 뜻하는지 말하라. 그다음: 이 산수를 하나도
@@ -1107,6 +1210,7 @@ Tier B. 이 페이지의 패치, **Q**, **T**, 그리고 [[02-foundations/lab-pl
 - M. Sivaprakasam, S. Triest, C. Ho, et al., "SALON: Self-supervised Adaptive Learning for Off-road Navigation," ICRA 2025 ([arXiv:2412.07826](https://arxiv.org/abs/2412.07826)).
 - S. Jung, J. Lee, X. Meng, B. Boots, A. Lambert, "V-STRONG," ICRA 2024 ([arXiv:2312.16016](https://arxiv.org/abs/2312.16016)) — zero-shot 일반화 주장.
 - D. D. Fan, K. Otsu, Y. Kubo, et al., "STEP," RSS 2021 ([arXiv:2103.02828](https://arxiv.org/abs/2103.02828)).
+- R. T. Rockafellar, S. Uryasev, "Optimization of Conditional Value-at-Risk," *Journal of Risk*, vol. 2, no. 3, pp. 21–41, 2000 — §3 정의 상자의 CVaR 최소화 형태.
 - P. Fankhauser, M. Bloesch, M. Hutter, "Probabilistic Terrain Mapping for Mobile Robots With Uncertain Localization," *IEEE RA-L*, vol. 3, no. 4, pp. 3019–3026, 2018 — `elevation_mapping` 패키지.
 - J. Frey, M. Patel, D. Atha, et al., "RoadRunner," *IEEE T-FR* 게재 확정 ([arXiv:2402.19341](https://arxiv.org/abs/2402.19341)); M. Patel et al., "RoadRunner M&M," *IEEE RA-L*, vol. 9, no. 12, pp. 11425–11432, 2024.
 - A. Datar, C. Pan, M. Nazeri, X. Xiao, "Toward Wheeled Mobility on Vertically Challenging Terrain," ICRA 2024, pp. 16322–16329 ([arXiv:2303.00998](https://arxiv.org/abs/2303.00998)) — Verti-Wheelers 계열, 조지메이슨대.

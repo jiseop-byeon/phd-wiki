@@ -122,7 +122,7 @@ Run the five questions:
 5. **Train vs inference**: training only; at inference the policy picks a bin per dimension.
 
 Question 3 just paid for itself. "The expectation is over the demonstrator's states" *is*
-the compounding-error problem ([[02-foundations/rl-basics|7. RL Basics §6]]): the moment the
+the compounding-error problem ([[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]]): the moment the
 policy drifts off the demonstrated states, the loss it was trained on says nothing about
 where it now is. You did not need the paper to tell you that; the equation did.
 
@@ -335,7 +335,7 @@ $$\mathcal{L}(\theta) = -\,E_{(o,a)\sim\mathcal{D}}\Big[\sum_{d=1}^{11}\log \pi_
 5. **학습 vs 추론**: 학습에서만; 추론에서는 차원마다 구간을 하나 고른다.
 
 3번 질문이 방금 제 몫을 했다. "기댓값이 시연자의 상태 위에서 잡힌다"는 것이 곧 복합 오차
-문제다([[02-foundations/rl-basics|7. RL 기초 §6]]): 정책이 시연된 상태에서 벗어나는 순간,
+문제다([[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]]): 정책이 시연된 상태에서 벗어나는 순간,
 학습에 쓴 손실은 지금 있는 곳에 대해 아무 말도 해주지 않는다. 논문이 알려줄 필요가 없었다.
 수식이 알려줬다.
 

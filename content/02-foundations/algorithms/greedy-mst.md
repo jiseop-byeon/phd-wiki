@@ -55,6 +55,54 @@ The two methods are often interchangeable. Stays-ahead fits problems where solut
 > [!example] Worked example · 계산 예제
 > A mobile robot drives along a straight corridor from position $0$ to a goal at $20$ m. It starts fully charged and can drive $6$ m on one charge. Charging docks sit at $3, 5, 9, 12, 16$. Greedy rule: drive past docks while the next dock (or the goal) is still reachable, and charge only at the farthest reachable dock. From $0$ the farthest reachable dock is $5$, then $9$ (reach $11$), then $12$ (reach $15$), then $16$ (reach $18$). From $16$ the robot reaches $22 \ge 20$. That is **4 charges**. Stays-ahead proof: let $g_k$ and $o_k$ be the positions of greedy's and any other plan's $k$-th charge. Suppose $g_{k-1} \ge o_{k-1}$. The other plan's next dock satisfies $o_k \le o_{k-1} + 6 \le g_{k-1} + 6$, so it was reachable for greedy too, and greedy took the farthest such dock. So $g_k \ge o_k$. If the other plan reaches the goal after $m$ charges, then $g_m + 6 \ge o_m + 6 \ge 20$ and greedy reaches it after at most $m$ charges.
 
+<svg viewBox="0 0 560 230" style="max-width:100%;height:auto" role="img" aria-label="Charging docks at 3, 5, 9, 12 and 16 m on a 20 m corridor with a 6 m reach: each row is one charge's reach window, and greedy charges at the farthest dock inside it, at 5, 9, 12 and 16, four charges; from 16 the reach 22 passes the goal at 20.">
+  <text x="8" y="18" font-size="12" fill="currentColor">reach 6 m per charge; greedy charges at the farthest dock in reach</text>
+  <rect x="30" y="38" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <rect x="94" y="41.5" width="7" height="7" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.8"/>
+  <circle cx="142.5" cy="45" r="4.5" stroke="none" fill="currentColor"/>
+  <text x="171" y="49" font-size="11" fill="currentColor">charge 1 at 5</text>
+  <text x="97.5" y="35" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">3: passed by</text>
+  <rect x="142.5" y="64" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <circle cx="232.5" cy="71" r="4.5" stroke="none" fill="currentColor"/>
+  <line x1="142.5" y1="50" x2="142.5" y2="64" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="283.5" y="75" font-size="11" fill="currentColor">charge 2 at 9</text>
+  <rect x="232.5" y="90" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <circle cx="300" cy="97" r="4.5" stroke="none" fill="currentColor"/>
+  <line x1="232.5" y1="76" x2="232.5" y2="90" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="373.5" y="101" font-size="11" fill="currentColor">charge 3 at 12</text>
+  <rect x="300" y="116" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <circle cx="390" cy="123" r="4.5" stroke="none" fill="currentColor"/>
+  <line x1="300" y1="102" x2="300" y2="116" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="441" y="127" font-size="11" fill="currentColor">charge 4 at 16</text>
+  <rect x="390" y="142" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <line x1="390" y1="128" x2="390" y2="142" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="384" y="153" font-size="11" fill="currentColor" text-anchor="end">16 + 6 = 22 ≥ 20: goal</text>
+  <line x1="30" y1="180" x2="525" y2="180" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="30" y1="176" x2="30" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="30" y="197" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="97.5" y1="176" x2="97.5" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="97.5" y="197" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="142.5" y1="176" x2="142.5" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="142.5" y="197" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="232.5" y1="176" x2="232.5" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="232.5" y="197" font-size="11" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="300" y1="176" x2="300" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="300" y="197" font-size="11" fill="currentColor" text-anchor="middle">12</text>
+  <line x1="390" y1="176" x2="390" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="390" y="197" font-size="11" fill="currentColor" text-anchor="middle">16</text>
+  <line x1="480" y1="176" x2="480" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="480" y="197" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <rect x="94" y="176.5" width="7" height="7" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <rect x="139" y="176.5" width="7" height="7" stroke="none" fill="currentColor"/>
+  <rect x="229" y="176.5" width="7" height="7" stroke="none" fill="currentColor"/>
+  <rect x="296.5" y="176.5" width="7" height="7" stroke="none" fill="currentColor"/>
+  <rect x="386.5" y="176.5" width="7" height="7" stroke="none" fill="currentColor"/>
+  <line x1="480" y1="176" x2="480" y2="158" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M480 158 L491 161.5 L480 165 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="494" y="168" font-size="10" fill="currentColor" fill-opacity="0.85">goal</text>
+  <text x="525" y="216" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">position along the corridor (m)</text>
+</svg>
+
 ```python
 def min_charges(docks, reach, goal):
     """Fewest charging stops from 0 to goal, or -1 if some gap exceeds reach."""
@@ -115,6 +163,67 @@ print(max_activities(jobs))  # [(1, 2), (2, 5), (5, 8), (8, 10)]
 ```
 
 Sorting costs $O(n \log n)$ and the scan costs $O(n)$. A closely related problem is "fewest points that hit every interval", for example the fewest times to visit a site so that every tenant or crew is present at least once. Sorting by finish time and placing a point at each chosen finish time solves it, and the minimum number of points equals the maximum number of disjoint intervals.
+
+<svg viewBox="0 0 560 297" style="max-width:100%;height:auto" role="img" aria-label="The seven jobs as bars on a time line, sorted by finish time. Earliest-finish greedy takes [1, 2), [2, 5), [5, 8) and [8, 10) and skips the three that start before the last taken end. Below, the number of jobs running at each time peaks at 2, the depth, so 2 rooms suffice.">
+  <text x="8" y="18" font-size="12" fill="currentColor">sorted by finish time; filled = taken, dashed = skipped</text>
+  <line x1="158" y1="30" x2="158" y2="187" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+  <line x1="284" y1="30" x2="284" y2="187" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+  <line x1="410" y1="30" x2="410" y2="187" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+  <line x1="494" y1="30" x2="494" y2="187" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+  <text x="64" y="45.5" font-size="11" fill="currentColor" text-anchor="end">[1, 2)</text>
+  <rect x="116" y="36" width="42" height="11" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.45"/>
+  <text x="164" y="45.5" font-size="10" fill="currentColor" fill-opacity="0.8">taken</text>
+  <text x="64" y="66.5" font-size="11" fill="currentColor" text-anchor="end">[0, 3)</text>
+  <rect x="74" y="57" width="126" height="11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <text x="206" y="66.5" font-size="10" fill="currentColor" fill-opacity="0.8">skip: 0 &lt; 2</text>
+  <text x="64" y="87.5" font-size="11" fill="currentColor" text-anchor="end">[2, 5)</text>
+  <rect x="158" y="78" width="126" height="11" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.45"/>
+  <text x="290" y="87.5" font-size="10" fill="currentColor" fill-opacity="0.8">taken</text>
+  <text x="64" y="108.5" font-size="11" fill="currentColor" text-anchor="end">[4, 6)</text>
+  <rect x="242" y="99" width="84" height="11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <text x="332" y="108.5" font-size="10" fill="currentColor" fill-opacity="0.8">skip: 4 &lt; 5</text>
+  <text x="64" y="129.5" font-size="11" fill="currentColor" text-anchor="end">[5, 8)</text>
+  <rect x="284" y="120" width="126" height="11" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.45"/>
+  <text x="416" y="129.5" font-size="10" fill="currentColor" fill-opacity="0.8">taken</text>
+  <text x="64" y="150.5" font-size="11" fill="currentColor" text-anchor="end">[7, 9)</text>
+  <rect x="368" y="141" width="84" height="11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <text x="458" y="150.5" font-size="10" fill="currentColor" fill-opacity="0.8">skip: 7 &lt; 8</text>
+  <text x="64" y="171.5" font-size="11" fill="currentColor" text-anchor="end">[8, 10)</text>
+  <rect x="410" y="162" width="84" height="11" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.45"/>
+  <text x="500" y="171.5" font-size="10" fill="currentColor" fill-opacity="0.8">taken</text>
+  <line x1="74" y1="187" x2="494" y2="187" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="74" y1="187" x2="74" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="74" y="203" font-size="10" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="116" y1="187" x2="116" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="116" y="203" font-size="10" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="158" y1="187" x2="158" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="158" y="203" font-size="10" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="200" y1="187" x2="200" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="200" y="203" font-size="10" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="242" y1="187" x2="242" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="242" y="203" font-size="10" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="284" y1="187" x2="284" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="203" font-size="10" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="326" y1="187" x2="326" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="326" y="203" font-size="10" fill="currentColor" text-anchor="middle">6</text>
+  <line x1="368" y1="187" x2="368" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="368" y="203" font-size="10" fill="currentColor" text-anchor="middle">7</text>
+  <line x1="410" y1="187" x2="410" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="410" y="203" font-size="10" fill="currentColor" text-anchor="middle">8</text>
+  <line x1="452" y1="187" x2="452" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="452" y="203" font-size="10" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="494" y1="187" x2="494" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="494" y="203" font-size="10" fill="currentColor" text-anchor="middle">10</text>
+  <text x="504" y="203" font-size="11" fill="currentColor" font-style="italic">t</text>
+  <text x="8" y="229" font-size="11" fill="currentColor">jobs running at time t: at most 2, so 2 rooms</text>
+  <text x="64" y="281" font-size="10" fill="currentColor" text-anchor="end">0</text>
+  <line x1="74" y1="277" x2="494" y2="277" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="64" y="263" font-size="10" fill="currentColor" text-anchor="end">1</text>
+  <line x1="74" y1="259" x2="494" y2="259" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="2 3"/>
+  <text x="64" y="245" font-size="10" fill="currentColor" text-anchor="end">2</text>
+  <line x1="74" y1="241" x2="494" y2="241" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="2 3"/>
+  <path d="M74 277 L74 259 L116 259 L116 241 L158 241 L158 241 L200 241 L200 259 L242 259 L242 241 L284 241 L284 241 L326 241 L326 259 L368 259 L368 241 L410 241 L410 241 L452 241 L452 259 L494 259 L494 277" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.12" stroke-linejoin="round"/>
+</svg>
 
 #### Minimum rooms: how many resources run all intervals
 
@@ -233,7 +342,7 @@ print(fractional_knapsack([(6, 9), (5, 7), (5, 7)], 10))  # 14.6
 **0/1 knapsack.** Each item must be taken whole or left. The exchange step above fails, because you cannot trade $\varepsilon$ of one item for $\varepsilon$ of another. §1's instance shows the damage: the density rule gets $9$, while the optimum is $14$. The problem is NP-hard. The standard exact method is the $O(nW)$ dynamic program in [[02-foundations/algorithms/dynamic-programming|11.5 §4]], which is pseudo-polynomial: its running time grows with the numeric value of the capacity $W$, not with the number of bits used to write $W$ ([[02-foundations/algorithms/complexity-recursion#P, NP, NP-hard, and pseudo-polynomial time|11.1 §1]]). Two facts connect the two versions and appear in research code:
 
 - **The fractional optimum is an upper bound on the 0/1 optimum.** Here $14.6 \ge 14$. Branch-and-bound solvers use this bound to prune subtrees that cannot beat the best solution found so far.
-- **A cheap 1/2-approximation.** Assume every item fits on its own. Take the density-ordered items while they fit, compare that value with the single most valuable item, and keep the better. The result is at least half the 0/1 optimum, because the greedy prefix plus the first item that did not fit is worth at least the fractional optimum.
+- **A cheap 1/2-approximation.** Assume every item fits on its own. Take the density-ordered items while they fit, compare that value with the single most valuable item, and keep the better. The result is at least half the 0/1 optimum, because the greedy prefix plus the first item that did not fit is worth at least the fractional optimum. In detail: let item $j$ be the first item in density order that does not fit. The fractional optimum takes items $1, \dots, j-1$ whole and part of item $j$, and that fills the capacity, so it is worth at most the prefix value $V_{\text{pre}}$ plus $v_j$. Hence $\mathrm{OPT}_{0/1} \le \mathrm{OPT}_{\text{frac}} \le V_{\text{pre}} + v_j \le 2 \max(V_{\text{pre}}, v_{\max})$, where $v_{\max}$ is the value of the most valuable single item. On §1's instance, $14 \le 14.6 \le 9 + 7 = 16$, and the rule returns $\max(9, 9) = 9 \ge 14/2$.
 
 ### 5. Huffman coding
 
@@ -296,7 +405,7 @@ The gap to $H$ comes from rounding each codeword to a whole number of bits. It i
 
 ### 6. Minimum spanning trees
 
-**Definitions.** Let $G = (V, E)$ be an undirected graph ([[02-foundations/algorithms/graph-algorithms|11.6 §1]]) with a weight $w(e)$ on each edge. $G$ is **connected** when every two vertices are joined by a path. A **cycle** is a closed path $v_0, v_1, \dots, v_k = v_0$ with $k \ge 3$ and $v_0, \dots, v_{k-1}$ distinct. A **tree** is a connected graph with no cycle. A **spanning tree** of a connected $G$ is an edge set $T \subseteq E$ that satisfies three conditions:
+**Definitions.** Let $G = (V, E)$ be an undirected graph, a set $V$ of vertices and a set $E$ of edges, each edge an unordered pair $\{u, v\}$ of distinct vertices written $u\text{–}v$ ([[02-foundations/algorithms/graph-algorithms|11.6 §1]] shows how to store one), with a weight $w(e)$ on each edge. $G$ is **connected** when every two vertices are joined by a path. A **cycle** is a closed path $v_0, v_1, \dots, v_k = v_0$ with $k \ge 3$ and $v_0, \dots, v_{k-1}$ distinct. A **tree** is a connected graph with no cycle. A **spanning tree** of a connected $G$ is an edge set $T \subseteq E$ that satisfies three conditions:
 
 - **spanning**: it is taken on all of $V$, so every vertex is part of the graph $(V, T)$;
 - **connected**: $(V, T)$ has a path between every two vertices;
@@ -312,7 +421,71 @@ The minimum ranges over the finitely many spanning trees, so an MST exists whene
 
 **Cut property.** A *cut* splits the vertices into two nonempty groups $(S, V \setminus S)$. An edge **crosses** the cut when its endpoints lie on different sides, so the crossing edges are
 $$\delta(S) = \{(u, v) \in E : u \in S,\ v \notin S\}$$
-For $S = \{0\}$ in the example graph, $\delta(S) = \{0\text{–}1\,(4),\ 0\text{–}2\,(1)\}$, so by the property below every MST contains $0\text{–}2$. *If $e$ is the lightest edge crossing some cut, then some MST contains $e$. If $e$ is strictly lightest, every MST contains $e$.* Proof by exchange: take an MST $T$ that does not contain $e = (u, v)$. $T$ has a path from $u$ to $v$, and because $u$ and $v$ are on opposite sides of the cut, that path has an edge $f$ that also crosses the cut. Replacing $f$ by $e$ gives another spanning tree, since removing $f$ splits $T$ into two parts and $e$ reconnects them. Its weight is $w(T) - w(f) + w(e) \le w(T)$, so it is also an MST, and it contains $e$.
+For $S = \{0\}$ in the example graph, $\delta(S) = \{0\text{–}1\,(4),\ 0\text{–}2\,(1)\}$, so by the property below every MST contains $0\text{–}2$. *If $e$ is the lightest edge crossing some cut, then some MST contains $e$. If $e$ is strictly lightest, every MST contains $e$.* Proof by exchange: take an MST $T$ that does not contain $e = (u, v)$. $T$ has a path from $u$ to $v$, and because $u$ and $v$ are on opposite sides of the cut, that path has an edge $f$ that also crosses the cut. Replacing $f$ by $e$ gives another spanning tree, since removing $f$ splits $T$ into two parts and $e$ reconnects them. Its weight is $w(T) - w(f) + w(e) \le w(T)$, so it is also an MST, and it contains $e$. The figure runs both steps on the example graph: the cut $S = \{0\}$, and the swap for the spanning tree $\{0\text{–}1, 1\text{–}2, 1\text{–}3, 3\text{–}4\}$ of weight $15$, whose path from $0$ to $2$ crosses the cut at $f = 0\text{–}1$.
+
+<svg viewBox="0 0 560 290" style="max-width:100%;height:auto" role="img" aria-label="The five-vertex example graph drawn twice. Left: the cut S = {0} crosses edges 0–1 of weight 4 and 0–2 of weight 1, so the light edge 0–2 is in every MST; the MST edges 0–2, 1–2, 1–3, 3–4 weigh 12. Right: the spanning tree 0–1, 1–2, 1–3, 3–4 of weight 15 lacks e = 0–2; its path from 0 to 2 crosses the cut at f = 0–1, and swapping f for e gives 15 − 4 + 1 = 12.">
+  <text x="12" y="22" font-size="12" fill="currentColor">(a) cut S = {0}</text>
+  <ellipse cx="48" cy="116" rx="24" ry="34" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.05" stroke-opacity="0.7"/>
+  <text x="21" y="90" font-size="12" fill="currentColor" text-anchor="end" font-style="italic">S</text>
+  <line x1="56.6" y1="109.2" x2="107.4" y2="68.8" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="75.2" y="84.4" font-size="11" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="56.6" y1="122.8" x2="107.4" y2="163.2" stroke="currentColor" stroke-width="2.6"/>
+  <text x="75.2" y="155.6" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">1</text>
+  <line x1="116" y1="73" x2="116" y2="159" stroke="currentColor" stroke-width="2.6"/>
+  <text x="105" y="120" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <line x1="127" y1="62" x2="173" y2="62" stroke="currentColor" stroke-width="2.6"/>
+  <text x="150" y="55" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <line x1="121.9" y1="160.7" x2="178.1" y2="71.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="159.3" y="125.9" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="127" y1="170" x2="241" y2="170" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="184" y="185" font-size="11" fill="currentColor" text-anchor="middle">7</text>
+  <line x1="189.9" y1="71.3" x2="246.1" y2="160.7" stroke="currentColor" stroke-width="2.6"/>
+  <text x="227.3" y="114.1" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">6</text>
+  <circle cx="48" cy="116" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="48" y="120" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <circle cx="116" cy="62" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="116" y="66" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <circle cx="116" cy="170" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="116" y="174" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="184" cy="62" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="184" y="66" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="252" cy="170" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="252" y="174" font-size="11" fill="currentColor" text-anchor="middle">4</text>
+  <text x="12" y="242" font-size="11" fill="currentColor">crossing edges: 0–1 (4) and 0–2 (1)</text>
+  <text x="12" y="260" font-size="11" fill="currentColor">lightest is 0–2, so every MST has it</text>
+  <text x="12" y="278" font-size="11" fill="currentColor">MST (thick): 1 + 2 + 3 + 6 = 12</text>
+  <line x1="280" y1="34" x2="280" y2="228" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="294" y="22" font-size="12" fill="currentColor">(b) exchange: swap f for e</text>
+  <ellipse cx="330" cy="116" rx="24" ry="34" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.05" stroke-opacity="0.7"/>
+  <text x="303" y="90" font-size="12" fill="currentColor" text-anchor="end" font-style="italic">S</text>
+  <line x1="338.6" y1="109.2" x2="389.4" y2="68.8" stroke="currentColor" stroke-width="2.6" stroke-opacity="0.75" stroke-dasharray="5 4"/>
+  <text x="353.4" y="79.7" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold" font-style="italic">f = 4</text>
+  <line x1="338.6" y1="122.8" x2="389.4" y2="163.2" stroke="currentColor" stroke-width="3.0"/>
+  <text x="353.4" y="160.3" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold" font-style="italic">e = 1</text>
+  <line x1="398" y1="73" x2="398" y2="159" stroke="currentColor" stroke-width="2.6"/>
+  <text x="387" y="120" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <line x1="409" y1="62" x2="455" y2="62" stroke="currentColor" stroke-width="2.6"/>
+  <text x="432" y="55" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <line x1="403.9" y1="160.7" x2="460.1" y2="71.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="441.3" y="125.9" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="409" y1="170" x2="523" y2="170" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="466" y="185" font-size="11" fill="currentColor" text-anchor="middle">7</text>
+  <line x1="471.9" y1="71.3" x2="528.1" y2="160.7" stroke="currentColor" stroke-width="2.6"/>
+  <text x="509.3" y="114.1" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">6</text>
+  <circle cx="330" cy="116" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="330" y="120" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <circle cx="398" cy="62" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="398" y="66" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <circle cx="398" cy="170" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="398" y="174" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="466" cy="62" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="466" y="66" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="534" cy="170" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="534" y="174" font-size="11" fill="currentColor" text-anchor="middle">4</text>
+  <text x="294" y="242" font-size="11" fill="currentColor">T (thick): 4 + 3 + 2 + 6 = 15, lacks 0–2</text>
+  <text x="294" y="260" font-size="11" fill="currentColor">its 0-to-2 path crosses at f = 0–1</text>
+  <text x="294" y="278" font-size="11" fill="currentColor">T − f + e: 15 − 4 + 1 = 12, the MST</text>
+</svg>
 
 **Cycle property.** *If $e$ is the strictly heaviest edge on some cycle, no MST contains $e$.* If an MST contained $e$, removing $e$ would split it into two parts. Some other edge of the cycle crosses between those parts and is lighter, so swapping it in would give a cheaper spanning tree.
 
@@ -322,7 +495,7 @@ Both classic algorithms apply the cut property repeatedly. They differ in which 
 
 **The idea in one sentence:** start from any vertex, and repeatedly add the lightest edge that leaves the tree built so far (Jarník 1930; Prim 1957).
 
-The cut is (tree vertices, all other vertices), so every added edge is justified by the cut property. The implementation is Dijkstra's loop from [[02-foundations/algorithms/graph-algorithms|11.6]] with a different key: the key of a vertex is the weight of the cheapest single edge into the tree, not the distance from a source.
+The cut is (tree vertices, all other vertices), so every added edge is justified by the cut property. In code, a min-heap holds the edges that leave the tree, keyed by weight: pop the lightest, skip it if its far end has already joined the tree, and otherwise add that vertex and push its edges to vertices still outside. (If you already know Dijkstra's algorithm, [[02-foundations/algorithms/graph-algorithms|11.6 §4]], this is the same loop with the edge weight as the key in place of the distance from a source.)
 
 ```python
 import heapq
@@ -617,6 +790,54 @@ $$m_k(G) \succeq m_k(O) \quad \text{for every step } k \text{ and every valid so
 > [!example] 계산 예제 · Worked example
 > 이동 로봇이 곧은 복도를 따라 위치 $0$에서 $20$ m 지점의 목표까지 간다. 완충 상태로 출발하고 한 번 충전으로 $6$ m를 간다. 충전 도크는 $3, 5, 9, 12, 16$에 있다. 그리디 규칙: 다음 도크(또는 목표)에 아직 닿을 수 있으면 지나치고, 닿을 수 있는 가장 먼 도크에서만 충전한다. $0$에서 닿는 가장 먼 도크는 $5$, 다음은 $9$(도달 한계 $11$), $12$(한계 $15$), $16$(한계 $18$)이다. $16$에서는 $22 \ge 20$까지 갈 수 있다. 총 **4번** 충전한다. 앞서 가기 증명: 그리디와 임의의 다른 계획의 $k$번째 충전 위치를 $g_k$, $o_k$라 하자. $g_{k-1} \ge o_{k-1}$이라 가정한다. 다른 계획의 다음 도크는 $o_k \le o_{k-1} + 6 \le g_{k-1} + 6$을 만족하므로 그리디도 닿을 수 있었고, 그리디는 그런 도크 중 가장 먼 것을 골랐다. 따라서 $g_k \ge o_k$다. 다른 계획이 $m$번 충전 후 목표에 닿는다면 $g_m + 6 \ge o_m + 6 \ge 20$이므로 그리디도 많아야 $m$번 충전으로 닿는다.
 
+<svg viewBox="0 0 560 230" style="max-width:100%;height:auto" role="img" aria-label="20 m 복도에서 도크가 3, 5, 9, 12, 16 m에 있고 한 번 충전으로 6 m를 간다. 각 행은 충전 한 번의 도달 구간이고, 그리디는 그 안의 가장 먼 도크인 5, 9, 12, 16에서 충전해 모두 네 번 충전한다. 16에서는 도달 한계 22가 목표 20을 넘는다.">
+  <text x="8" y="18" font-size="12" fill="currentColor">한 번 충전에 6 m; 그리디는 닿는 가장 먼 도크에서 충전한다</text>
+  <rect x="30" y="38" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <rect x="94" y="41.5" width="7" height="7" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.8"/>
+  <circle cx="142.5" cy="45" r="4.5" stroke="none" fill="currentColor"/>
+  <text x="171" y="49" font-size="11" fill="currentColor">5에서 충전 1</text>
+  <text x="97.5" y="35" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.8">3: 지나침</text>
+  <rect x="142.5" y="64" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <circle cx="232.5" cy="71" r="4.5" stroke="none" fill="currentColor"/>
+  <line x1="142.5" y1="50" x2="142.5" y2="64" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="283.5" y="75" font-size="11" fill="currentColor">9에서 충전 2</text>
+  <rect x="232.5" y="90" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <circle cx="300" cy="97" r="4.5" stroke="none" fill="currentColor"/>
+  <line x1="232.5" y1="76" x2="232.5" y2="90" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="373.5" y="101" font-size="11" fill="currentColor">12에서 충전 3</text>
+  <rect x="300" y="116" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <circle cx="390" cy="123" r="4.5" stroke="none" fill="currentColor"/>
+  <line x1="300" y1="102" x2="300" y2="116" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="441" y="127" font-size="11" fill="currentColor">16에서 충전 4</text>
+  <rect x="390" y="142" width="135" height="14" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.07" stroke-opacity="0.55"/>
+  <line x1="390" y1="128" x2="390" y2="142" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" stroke-dasharray="2 2"/>
+  <text x="384" y="153" font-size="11" fill="currentColor" text-anchor="end">16 + 6 = 22 ≥ 20: 목표 도착</text>
+  <line x1="30" y1="180" x2="525" y2="180" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="30" y1="176" x2="30" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="30" y="197" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="97.5" y1="176" x2="97.5" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="97.5" y="197" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="142.5" y1="176" x2="142.5" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="142.5" y="197" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="232.5" y1="176" x2="232.5" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="232.5" y="197" font-size="11" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="300" y1="176" x2="300" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="300" y="197" font-size="11" fill="currentColor" text-anchor="middle">12</text>
+  <line x1="390" y1="176" x2="390" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="390" y="197" font-size="11" fill="currentColor" text-anchor="middle">16</text>
+  <line x1="480" y1="176" x2="480" y2="184" stroke="currentColor" stroke-width="1"/>
+  <text x="480" y="197" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <rect x="94" y="176.5" width="7" height="7" stroke="currentColor" stroke-width="1.2" fill="none"/>
+  <rect x="139" y="176.5" width="7" height="7" stroke="none" fill="currentColor"/>
+  <rect x="229" y="176.5" width="7" height="7" stroke="none" fill="currentColor"/>
+  <rect x="296.5" y="176.5" width="7" height="7" stroke="none" fill="currentColor"/>
+  <rect x="386.5" y="176.5" width="7" height="7" stroke="none" fill="currentColor"/>
+  <line x1="480" y1="176" x2="480" y2="158" stroke="currentColor" stroke-width="1.4"/>
+  <path d="M480 158 L491 161.5 L480 165 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="494" y="168" font-size="10" fill="currentColor" fill-opacity="0.85">목표</text>
+  <text x="525" y="216" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">복도 위치 (m)</text>
+</svg>
+
 ```python
 def min_charges(docks, reach, goal):
     """Fewest charging stops from 0 to goal, or -1 if some gap exceeds reach."""
@@ -677,6 +898,67 @@ print(max_activities(jobs))  # [(1, 2), (2, 5), (5, 8), (8, 10)]
 ```
 
 정렬에 $O(n \log n)$, 훑기에 $O(n)$이 든다. 가까운 문제로 "모든 구간을 찌르는 최소 점 개수"가 있다. 예를 들어 모든 입주자나 작업조가 적어도 한 번은 있을 때 현장을 방문하려면 최소 몇 번 가야 하는가 하는 문제다. 종료 시각으로 정렬하고 고른 구간의 종료 시각마다 점을 찍으면 풀리며, 필요한 점의 최소 개수는 서로소 구간의 최대 개수와 같다.
+
+<svg viewBox="0 0 560 297" style="max-width:100%;height:auto" role="img" aria-label="작업 일곱 개를 종료 시각 순으로 시간축 위 막대로 그렸다. 가장 빠른 종료 그리디는 [1, 2), [2, 5), [5, 8), [8, 10)을 고르고, 마지막으로 고른 종료 시각보다 먼저 시작하는 셋을 건너뛴다. 아래는 각 시각에 진행 중인 작업 수이며 최대 2, 즉 깊이가 2이므로 회의실 2개면 된다.">
+  <text x="8" y="18" font-size="12" fill="currentColor">종료 시각 순 정렬; 채운 막대 = 선택, 점선 = 건너뜀</text>
+  <line x1="158" y1="30" x2="158" y2="187" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+  <line x1="284" y1="30" x2="284" y2="187" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+  <line x1="410" y1="30" x2="410" y2="187" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+  <line x1="494" y1="30" x2="494" y2="187" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 3"/>
+  <text x="64" y="45.5" font-size="11" fill="currentColor" text-anchor="end">[1, 2)</text>
+  <rect x="116" y="36" width="42" height="11" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.45"/>
+  <text x="164" y="45.5" font-size="10" fill="currentColor" fill-opacity="0.8">선택</text>
+  <text x="64" y="66.5" font-size="11" fill="currentColor" text-anchor="end">[0, 3)</text>
+  <rect x="74" y="57" width="126" height="11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <text x="206" y="66.5" font-size="10" fill="currentColor" fill-opacity="0.8">건너뜀: 0 &lt; 2</text>
+  <text x="64" y="87.5" font-size="11" fill="currentColor" text-anchor="end">[2, 5)</text>
+  <rect x="158" y="78" width="126" height="11" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.45"/>
+  <text x="290" y="87.5" font-size="10" fill="currentColor" fill-opacity="0.8">선택</text>
+  <text x="64" y="108.5" font-size="11" fill="currentColor" text-anchor="end">[4, 6)</text>
+  <rect x="242" y="99" width="84" height="11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <text x="332" y="108.5" font-size="10" fill="currentColor" fill-opacity="0.8">건너뜀: 4 &lt; 5</text>
+  <text x="64" y="129.5" font-size="11" fill="currentColor" text-anchor="end">[5, 8)</text>
+  <rect x="284" y="120" width="126" height="11" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.45"/>
+  <text x="416" y="129.5" font-size="10" fill="currentColor" fill-opacity="0.8">선택</text>
+  <text x="64" y="150.5" font-size="11" fill="currentColor" text-anchor="end">[7, 9)</text>
+  <rect x="368" y="141" width="84" height="11" stroke="currentColor" stroke-width="1.2" fill="none" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <text x="458" y="150.5" font-size="10" fill="currentColor" fill-opacity="0.8">건너뜀: 7 &lt; 8</text>
+  <text x="64" y="171.5" font-size="11" fill="currentColor" text-anchor="end">[8, 10)</text>
+  <rect x="410" y="162" width="84" height="11" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.45"/>
+  <text x="500" y="171.5" font-size="10" fill="currentColor" fill-opacity="0.8">선택</text>
+  <line x1="74" y1="187" x2="494" y2="187" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="74" y1="187" x2="74" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="74" y="203" font-size="10" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="116" y1="187" x2="116" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="116" y="203" font-size="10" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="158" y1="187" x2="158" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="158" y="203" font-size="10" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="200" y1="187" x2="200" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="200" y="203" font-size="10" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="242" y1="187" x2="242" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="242" y="203" font-size="10" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="284" y1="187" x2="284" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="203" font-size="10" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="326" y1="187" x2="326" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="326" y="203" font-size="10" fill="currentColor" text-anchor="middle">6</text>
+  <line x1="368" y1="187" x2="368" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="368" y="203" font-size="10" fill="currentColor" text-anchor="middle">7</text>
+  <line x1="410" y1="187" x2="410" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="410" y="203" font-size="10" fill="currentColor" text-anchor="middle">8</text>
+  <line x1="452" y1="187" x2="452" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="452" y="203" font-size="10" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="494" y1="187" x2="494" y2="191" stroke="currentColor" stroke-width="1"/>
+  <text x="494" y="203" font-size="10" fill="currentColor" text-anchor="middle">10</text>
+  <text x="504" y="203" font-size="11" fill="currentColor" font-style="italic">t</text>
+  <text x="8" y="229" font-size="11" fill="currentColor">시각 t에 진행 중인 작업 수: 최대 2, 그래서 회의실 2개</text>
+  <text x="64" y="281" font-size="10" fill="currentColor" text-anchor="end">0</text>
+  <line x1="74" y1="277" x2="494" y2="277" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="64" y="263" font-size="10" fill="currentColor" text-anchor="end">1</text>
+  <line x1="74" y1="259" x2="494" y2="259" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="2 3"/>
+  <text x="64" y="245" font-size="10" fill="currentColor" text-anchor="end">2</text>
+  <line x1="74" y1="241" x2="494" y2="241" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="2 3"/>
+  <path d="M74 277 L74 259 L116 259 L116 241 L158 241 L158 241 L200 241 L200 259 L242 259 L242 241 L284 241 L284 241 L326 241 L326 259 L368 259 L368 241 L410 241 L410 241 L452 241 L452 259 L494 259 L494 277" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.12" stroke-linejoin="round"/>
+</svg>
 
 #### 최소 회의실: 모든 구간을 돌리려면 자원이 몇 개 필요한가
 
@@ -795,7 +1077,7 @@ print(fractional_knapsack([(6, 9), (5, 7), (5, 7)], 10))  # 14.6
 **0/1 배낭.** 물건은 통째로 담거나 두고 가야 한다. 위의 교환 단계가 실패한다. 한 물건의 $\varepsilon$을 다른 물건의 $\varepsilon$과 바꿀 수 없기 때문이다. §1의 사례가 그 피해를 보여 준다. 밀도 규칙은 $9$를 얻지만 최적은 $14$다. 이 문제는 NP-난해다. 표준적인 정확한 방법은 [[02-foundations/algorithms/dynamic-programming|11.5 §4]]의 $O(nW)$ 동적 계획법이며, 의사 다항 시간이다. 실행 시간이 $W$를 적는 비트 수가 아니라 용량 $W$의 값에 따라 늘어난다는 뜻이다([[02-foundations/algorithms/complexity-recursion#P, NP, NP-난해, 의사 다항 시간|11.1 §1]]). 두 버전을 잇는 사실 두 가지가 연구 코드에 등장한다.
 
 - **분할 가능 최적값은 0/1 최적값의 상한이다.** 여기서는 $14.6 \ge 14$다. 분기 한정법 솔버는 이 상한으로 지금까지 찾은 최선을 이길 수 없는 부분 트리를 가지치기한다.
-- **값싼 1/2 근사.** 모든 물건이 혼자서는 배낭에 들어간다고 가정한다. 밀도 순서로 들어가는 동안 담은 값과 가장 가치 큰 물건 하나의 값을 비교해 더 나은 쪽을 택한다. 결과는 0/1 최적값의 절반 이상이다. 그리디 접두부에 처음 들어가지 못한 물건 하나를 더한 값이 분할 가능 최적값 이상이기 때문이다.
+- **값싼 1/2 근사.** 모든 물건이 혼자서는 배낭에 들어간다고 가정한다. 밀도 순서로 들어가는 동안 담은 값과 가장 가치 큰 물건 하나의 값을 비교해 더 나은 쪽을 택한다. 결과는 0/1 최적값의 절반 이상이다. 그리디 접두부에 처음 들어가지 못한 물건 하나를 더한 값이 분할 가능 최적값 이상이기 때문이다. 자세히 보자. 밀도 순서에서 처음으로 들어가지 못하는 물건을 $j$라 하자. 분할 가능 최적해는 물건 $1, \dots, j-1$을 통째로, 물건 $j$를 일부만 담으면 용량이 가득 차므로, 그 값은 접두부 값 $V_{\text{pre}}$에 $v_j$를 더한 것 이하다. 따라서 $\mathrm{OPT}_{0/1} \le \mathrm{OPT}_{\text{frac}} \le V_{\text{pre}} + v_j \le 2 \max(V_{\text{pre}}, v_{\max})$이고, 여기서 $v_{\max}$는 가장 가치 큰 물건 하나의 값이다. §1의 사례에서는 $14 \le 14.6 \le 9 + 7 = 16$이고, 규칙은 $\max(9, 9) = 9 \ge 14/2$를 돌려준다.
 
 ### 5. 허프만 부호
 
@@ -858,7 +1140,7 @@ $H$와의 차이는 부호어마다 길이를 정수 비트로 반올림해서 �
 
 ### 6. 최소 신장 트리
 
-**정의.** $G = (V, E)$를 간선마다 가중치 $w(e)$가 있는 무방향 그래프([[02-foundations/algorithms/graph-algorithms|11.6 §1]])라 하자. 모든 두 정점이 경로로 이어져 있으면 $G$는 **연결**(connected)되어 있다. **사이클**(cycle)은 $k \ge 3$이고 $v_0, \dots, v_{k-1}$이 서로 다른 닫힌 경로 $v_0, v_1, \dots, v_k = v_0$이다. **트리**(tree)는 사이클이 없는 연결 그래프다. 연결된 $G$의 **신장 트리**(spanning tree)는 다음 세 조건을 만족하는 간선 집합 $T \subseteq E$다.
+**정의.** $G = (V, E)$를 간선마다 가중치 $w(e)$가 있는 무방향 그래프라 하자. 무방향 그래프는 정점 집합 $V$와 간선 집합 $E$로 이루어지고, 각 간선은 서로 다른 두 정점의 순서 없는 쌍 $\{u, v\}$이며 $u\text{–}v$로 쓴다(저장하는 법은 [[02-foundations/algorithms/graph-algorithms|11.6 §1]]). 모든 두 정점이 경로로 이어져 있으면 $G$는 **연결**(connected)되어 있다. **사이클**(cycle)은 $k \ge 3$이고 $v_0, \dots, v_{k-1}$이 서로 다른 닫힌 경로 $v_0, v_1, \dots, v_k = v_0$이다. **트리**(tree)는 사이클이 없는 연결 그래프다. 연결된 $G$의 **신장 트리**(spanning tree)는 다음 세 조건을 만족하는 간선 집합 $T \subseteq E$다.
 
 - **신장**(spanning): $V$ 전체 위에서 잡으므로 모든 정점이 그래프 $(V, T)$에 속한다.
 - **연결**(connected): $(V, T)$에서 모든 두 정점 사이에 경로가 있다.
@@ -874,7 +1156,71 @@ $$T^* = \arg\min_{T \text{ spanning tree of } G} w(T), \qquad w(T) = \sum_{e \in
 
 **컷 속성.** *컷*은 정점을 공집합이 아닌 두 그룹 $(S, V \setminus S)$로 나눈 것이다. 두 끝점이 서로 다른 쪽에 있는 간선이 컷을 **가로지른다**(crosses). 가로지르는 간선의 집합은
 $$\delta(S) = \{(u, v) \in E : u \in S,\ v \notin S\}$$
-이다. 예제 그래프에서 $S = \{0\}$이면 $\delta(S) = \{0\text{–}1\,(4),\ 0\text{–}2\,(1)\}$이므로, 아래 속성에 따라 모든 MST가 $0\text{–}2$를 포함한다. *간선 $e$가 어떤 컷을 가로지르는 가장 가벼운 간선이면, 어떤 MST는 $e$를 포함한다. $e$가 엄격히 가장 가벼우면 모든 MST가 $e$를 포함한다.* 교환 증명: $e = (u, v)$를 포함하지 않는 MST $T$를 잡는다. $T$에는 $u$에서 $v$로 가는 경로가 있고, $u$와 $v$는 컷의 반대편에 있으므로 그 경로에는 컷을 가로지르는 간선 $f$가 있다. $f$를 $e$로 바꾸면 또 하나의 신장 트리가 된다. $f$를 지우면 $T$가 두 조각으로 나뉘고 $e$가 다시 잇기 때문이다. 그 가중치는 $w(T) - w(f) + w(e) \le w(T)$이므로 이것도 MST이고 $e$를 포함한다.
+이다. 예제 그래프에서 $S = \{0\}$이면 $\delta(S) = \{0\text{–}1\,(4),\ 0\text{–}2\,(1)\}$이므로, 아래 속성에 따라 모든 MST가 $0\text{–}2$를 포함한다. *간선 $e$가 어떤 컷을 가로지르는 가장 가벼운 간선이면, 어떤 MST는 $e$를 포함한다. $e$가 엄격히 가장 가벼우면 모든 MST가 $e$를 포함한다.* 교환 증명: $e = (u, v)$를 포함하지 않는 MST $T$를 잡는다. $T$에는 $u$에서 $v$로 가는 경로가 있고, $u$와 $v$는 컷의 반대편에 있으므로 그 경로에는 컷을 가로지르는 간선 $f$가 있다. $f$를 $e$로 바꾸면 또 하나의 신장 트리가 된다. $f$를 지우면 $T$가 두 조각으로 나뉘고 $e$가 다시 잇기 때문이다. 그 가중치는 $w(T) - w(f) + w(e) \le w(T)$이므로 이것도 MST이고 $e$를 포함한다. 그림은 예제 그래프에서 두 단계를 모두 보여 준다. 컷 $S = \{0\}$, 그리고 가중치 $15$인 신장 트리 $\{0\text{–}1, 1\text{–}2, 1\text{–}3, 3\text{–}4\}$에서의 교환이다. 그 트리에서 $0$에서 $2$로 가는 경로는 $f = 0\text{–}1$에서 컷을 가로지른다.
+
+<svg viewBox="0 0 560 290" style="max-width:100%;height:auto" role="img" aria-label="정점 다섯 개 예제 그래프를 두 번 그렸다. 왼쪽: 컷 S = {0}을 가로지르는 간선은 가중치 4인 0–1과 가중치 1인 0–2이므로 가벼운 간선 0–2는 모든 MST에 들어간다. MST 간선 0–2, 1–2, 1–3, 3–4의 합은 12다. 오른쪽: 가중치 15인 신장 트리 0–1, 1–2, 1–3, 3–4에는 e = 0–2가 없다. 그 트리에서 0에서 2로 가는 경로가 f = 0–1에서 컷을 가로지르고, f를 e로 바꾸면 15 − 4 + 1 = 12가 된다.">
+  <text x="12" y="22" font-size="12" fill="currentColor">(a) 컷 S = {0}</text>
+  <ellipse cx="48" cy="116" rx="24" ry="34" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.05" stroke-opacity="0.7"/>
+  <text x="21" y="90" font-size="12" fill="currentColor" text-anchor="end" font-style="italic">S</text>
+  <line x1="56.6" y1="109.2" x2="107.4" y2="68.8" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="75.2" y="84.4" font-size="11" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="56.6" y1="122.8" x2="107.4" y2="163.2" stroke="currentColor" stroke-width="2.6"/>
+  <text x="75.2" y="155.6" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">1</text>
+  <line x1="116" y1="73" x2="116" y2="159" stroke="currentColor" stroke-width="2.6"/>
+  <text x="105" y="120" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <line x1="127" y1="62" x2="173" y2="62" stroke="currentColor" stroke-width="2.6"/>
+  <text x="150" y="55" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <line x1="121.9" y1="160.7" x2="178.1" y2="71.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="159.3" y="125.9" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="127" y1="170" x2="241" y2="170" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="184" y="185" font-size="11" fill="currentColor" text-anchor="middle">7</text>
+  <line x1="189.9" y1="71.3" x2="246.1" y2="160.7" stroke="currentColor" stroke-width="2.6"/>
+  <text x="227.3" y="114.1" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">6</text>
+  <circle cx="48" cy="116" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="48" y="120" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <circle cx="116" cy="62" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="116" y="66" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <circle cx="116" cy="170" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="116" y="174" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="184" cy="62" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="184" y="66" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="252" cy="170" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="252" y="174" font-size="11" fill="currentColor" text-anchor="middle">4</text>
+  <text x="12" y="242" font-size="11" fill="currentColor">가로지르는 간선: 0–1 (4), 0–2 (1)</text>
+  <text x="12" y="260" font-size="11" fill="currentColor">가장 가벼운 0–2는 모든 MST에 있다</text>
+  <text x="12" y="278" font-size="11" fill="currentColor">MST (굵은 선): 1 + 2 + 3 + 6 = 12</text>
+  <line x1="280" y1="34" x2="280" y2="228" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="294" y="22" font-size="12" fill="currentColor">(b) 교환: f를 e로 바꾼다</text>
+  <ellipse cx="330" cy="116" rx="24" ry="34" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.05" stroke-opacity="0.7"/>
+  <text x="303" y="90" font-size="12" fill="currentColor" text-anchor="end" font-style="italic">S</text>
+  <line x1="338.6" y1="109.2" x2="389.4" y2="68.8" stroke="currentColor" stroke-width="2.6" stroke-opacity="0.75" stroke-dasharray="5 4"/>
+  <text x="353.4" y="79.7" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold" font-style="italic">f = 4</text>
+  <line x1="338.6" y1="122.8" x2="389.4" y2="163.2" stroke="currentColor" stroke-width="3.0"/>
+  <text x="353.4" y="160.3" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold" font-style="italic">e = 1</text>
+  <line x1="398" y1="73" x2="398" y2="159" stroke="currentColor" stroke-width="2.6"/>
+  <text x="387" y="120" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <line x1="409" y1="62" x2="455" y2="62" stroke="currentColor" stroke-width="2.6"/>
+  <text x="432" y="55" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <line x1="403.9" y1="160.7" x2="460.1" y2="71.3" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="441.3" y="125.9" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="409" y1="170" x2="523" y2="170" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.4"/>
+  <text x="466" y="185" font-size="11" fill="currentColor" text-anchor="middle">7</text>
+  <line x1="471.9" y1="71.3" x2="528.1" y2="160.7" stroke="currentColor" stroke-width="2.6"/>
+  <text x="509.3" y="114.1" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">6</text>
+  <circle cx="330" cy="116" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="330" y="120" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+  <circle cx="398" cy="62" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="398" y="66" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <circle cx="398" cy="170" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="398" y="174" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <circle cx="466" cy="62" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="466" y="66" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <circle cx="534" cy="170" r="11" stroke="currentColor" stroke-width="1.4" fill="currentColor" fill-opacity="0.08"/>
+  <text x="534" y="174" font-size="11" fill="currentColor" text-anchor="middle">4</text>
+  <text x="294" y="242" font-size="11" fill="currentColor">T (굵은 선): 4 + 3 + 2 + 6 = 15, 0–2 없음</text>
+  <text x="294" y="260" font-size="11" fill="currentColor">0에서 2로 가는 경로가 f = 0–1에서 컷을 넘는다</text>
+  <text x="294" y="278" font-size="11" fill="currentColor">T − f + e: 15 − 4 + 1 = 12, 곧 MST</text>
+</svg>
 
 **사이클 속성.** *$e$가 어떤 사이클에서 엄격히 가장 무거운 간선이면, 어떤 MST도 $e$를 포함하지 않는다.* MST가 $e$를 포함한다면 $e$를 지웠을 때 두 조각으로 나뉜다. 사이클의 다른 간선 하나가 두 조각 사이를 가로지르고 더 가벼우므로, 그것으로 바꾸면 더 싼 신장 트리가 된다.
 
@@ -884,7 +1230,7 @@ $$\delta(S) = \{(u, v) \in E : u \in S,\ v \notin S\}$$
 
 **한 문장 요약:** 아무 정점에서 시작해, 지금까지 만든 트리를 떠나는 가장 가벼운 간선을 반복해서 더한다(Jarník 1930; Prim 1957).
 
-컷은 (트리 정점, 나머지 정점)이므로 더하는 간선마다 컷 속성으로 정당화된다. 구현은 [[02-foundations/algorithms/graph-algorithms|11.6]]의 Dijkstra 루프에서 키만 바꾼 것이다. 정점의 키가 출발점으로부터의 거리가 아니라 트리로 들어오는 가장 싼 간선 하나의 가중치다.
+컷은 (트리 정점, 나머지 정점)이므로 더하는 간선마다 컷 속성으로 정당화된다. 코드에서는 트리를 떠나는 간선들을 가중치를 키로 최소 힙에 담는다. 가장 가벼운 것을 꺼내, 반대쪽 끝이 이미 트리에 들어왔으면 건너뛰고, 아니면 그 정점을 더한 뒤 아직 밖에 있는 정점으로 가는 간선들을 넣는다. (Dijkstra 알고리즘([[02-foundations/algorithms/graph-algorithms|11.6 §4]])을 이미 안다면, 이것은 출발점으로부터의 거리 대신 간선 가중치를 키로 쓰는 같은 루프다.)
 
 ```python
 import heapq

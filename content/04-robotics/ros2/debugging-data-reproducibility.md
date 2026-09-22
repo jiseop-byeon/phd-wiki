@@ -14,8 +14,11 @@ mastery-when: "Go deeper when you are building the test infrastructure for a lab
 > **Working** — 조용히 죽은 ROS 2 시스템의 원인을 몇 분 안에 찾아내고, bag·컨테이너·테스트를 묶어 남에게 결과를 재현시킬 정도. 연구실 CI 기반을 처음부터 짓는 수준은 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] for QoS compatibility and `use_sim_time`, and [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]] for `colcon` and launch files. Baseline as everywhere in this track: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**.
-> QoS 호환성과 `use_sim_time`은 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]], `colcon`과 launch 파일은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. 기준 환경은 이 트랙 전체와 같이 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**다.
+> [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] for QoS compatibility and [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]] for `use_sim_time`, [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]] for `colcon` and launch files, and [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]] for the transform tree that check 6 of §2 inspects. The exercise (§14) records the arm you run in Gazebo in [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]. Baseline as everywhere in this track: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**.
+> QoS 호환성은 [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]], `use_sim_time`은 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]], `colcon`과 launch 파일은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]], §2의 6번 점검이 들여다보는 변환 트리는 [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]. 실습(§14)은 [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]에서 Gazebo로 돌린 팔을 기록한다. 기준 환경은 이 트랙 전체와 같이 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**다.
+
+> [!note] First pass · 처음이라면
+> Read the Running object and the picture, then the Worked case; its one-line glosses point to §6, §7 and §8. Then §2 (the ordered checks, the table to keep) and §6–§8 (recording, reading and replaying a bag), and do §14, which runs §2's table once on your own arm and then records and replays it. §1 is the motivation; §3–§5 are the tools, for reference; §9–§13 are the testing-and-reproducibility half, for when you package a result; §15 is the failure to work through when a replay produces nothing.
 
 ### Running object · 이 페이지의 대상
 
@@ -29,6 +32,8 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]], recorded rather 
 | $D$ | $60\,\mathrm{s}$ | recording duration |
 | $B$ | $70\,\mathrm{ms}$ | P6's end-to-end budget, which the bag is being asked to confirm or deny |
 | $s$ | $64$ bytes | serialised payload per message — **page-local** illustrative value, used only for the size comparison |
+
+*Two objects, stated once.* The bag the arithmetic reasons about is P6's, and nobody has recorded it: P6 exists on paper. The exercise (§14) records the robot you built instead, the two-link arm of 25.7 in Gazebo, whose `/joint_states` comes from a $200\,\mathrm{Hz}$ loop exactly as P6's `/cmd` does. So Step 1's $12\,000$ messages per simulated minute, Step 2's shortfall arithmetic and Step 3's `--clock` rate carry over unchanged, and §14 has you predict and check them. What does not carry over: the arm has no camera, so there is no `/goal` stream, no $3000$ and no Step 4 assertion to write; and Step 5's sizes are P6's page-local ones.
 
 *Scope: this page teaches how to find the cause of a silent system, what a recording is and is not evidence of, and how to turn a run into something another person can re-execute. It does not teach the QoS and time mechanisms that cause most silent systems, which are [[04-robotics/ros2/qos-executors-time|25.5]]; nor how to build a lab's CI from scratch; nor statistical experiment design, which is [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]].*
 
@@ -217,7 +222,7 @@ This is the homework object. Write down what the bag must contain *before* openi
 
 $$n = f\,D,$$
 
-so `/goal` owes $50\times60=3000$ messages and `/cmd` owes $200\times60=12000$, a total of $15000$ and a ratio of exactly $4{:}1$, since the control loop runs four times per vision frame. Predicting these before running `ros2 bag info` is the difference between reading the Count column and merely looking at it.
+so `/goal` owes $50\times60=3000$ messages and `/cmd` owes $200\times60=12000$, a total of $15000$ and a ratio of exactly $4{:}1$, since the control loop runs four times per vision frame. `ros2 bag info` prints a bag's metadata, one line per topic with its message Count (§7). Predicting these numbers before running it is the difference between reading the Count column and merely looking at it.
 
 **Step 2 — reading a shortfall as a quantity.** Suppose the bag reports `/cmd` with a count of $11\,400$. That is $11\,400/12\,000 = 95\%$, so
 
@@ -233,7 +238,7 @@ which is five whole control periods of this cart, and $25/70=36\%$ of P6's entir
 
 **Step 4 — the assertion the bag can actually support.** Within the recording, `/cmd` at $200\,\mathrm{Hz}$ and `/goal` at $50\,\mathrm{Hz}$ means four commands fall between successive goals, so the newest goal available to them is $0$, $5$, $10$ and $15\,\mathrm{ms}$ old — a mean of $7.5\,\mathrm{ms}$ and a maximum of $15\,\mathrm{ms}$. That gives a checkable property: *every `/cmd` stamp is within $20\,\mathrm{ms}$ of a `/goal` stamp*, allowing the $15\,\mathrm{ms}$ worst case plus one control period. Contrast §9's example tolerance of $200\,\mathrm{ms}$: on this cart that is $40$ control periods and $2.9$ times the whole budget, so an assertion written at that tolerance would pass while the budget failed. A tolerance must be smaller than the thing it protects.
 
-**Step 5 — and why `-a` is not a choice on this robot.** The two P6 topics at the page-local $s=64$ bytes of payload come to $15\,000\times64=0.96\,\mathrm{MB}$ for the whole minute. Add one uncompressed 1080p camera at 30 Hz, which §6 computes as $1920\times1080\times3\times30=186.6\,\mathrm{MB/s}$, and the same minute becomes
+**Step 5 — and why `-a` is not a choice on this robot.** `ros2 bag record -a` records every topic in the graph (§6). The two P6 topics at the page-local $s=64$ bytes of payload come to $15\,000\times64=0.96\,\mathrm{MB}$ for the whole minute. Add one uncompressed 1080p camera at 30 Hz, which §6 computes as $1920\times1080\times3\times30=186.6\,\mathrm{MB/s}$, and the same minute becomes
 
 $$186.6\times60 = 11.2\,\mathrm{GB},$$
 
@@ -453,7 +458,7 @@ ros2 bag play run_042 --start-offset 30 --playback-duration 5
 
 Without `--clock`, playback is just a publisher: it republishes the recorded messages, spaced as they were recorded, while every node continues to read the wall clock. That is fine for looking at data and wrong for anything that reasons about time, because the messages carry stamps from the day of the recording and the nodes believe it is today. TF lookups fail or extrapolate; any comparison of a message stamp with `now()` is nonsense.
 
-`--clock` makes playback the system's **time source**: it publishes `rosgraph_msgs/msg/Clock` on `/clock` at 40 Hz by default, or at the frequency you pass. Nodes that were started with `use_sim_time` true then take their `now()` from that topic, and the replayed run happens, as far as they can tell, at the time it was recorded. This is the mechanism from §10 of [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] with the bag standing in for the simulator.
+`--clock` makes playback the system's **time source**: it publishes `rosgraph_msgs/msg/Clock` on `/clock` at 40 Hz by default, or at the frequency you pass. Nodes that were started with `use_sim_time` true then take their `now()` from that topic, and the replayed run happens, as far as they can tell, at the time it was recorded. This is the mechanism of [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time §3]] with the bag standing in for the simulator.
 
 The two halves must agree, and this is where people lose an afternoon:
 
@@ -616,44 +621,58 @@ And when a run fails rather than succeeds, the discipline for turning that into 
 
 ### 14. Exercise: record, replay, and prove the node did not notice
 
-One sitting, using any simulated robot from this track — turtlesim is enough if a simulator is not yet running.
+One sitting, on the two-link arm you run in Gazebo in [[04-robotics/ros2/simulation-and-control|25.7 §11]]. The node under test is one you did not write, `robot_state_publisher`: its input is `/joint_states` and its output is the arm's transforms, so a replay that reproduces the transforms proves the node cannot tell a bag from the simulator.
 
-1. Start the simulated system. In another terminal, record a short run of the topics one downstream node consumes (turtlesim has no transforms; on a real system add `/tf /tf_static`):
+1. **Run §2's table once, top to bottom, on the live arm.** Launch the 25.7 exercise and work the checks in order before recording anything. The third column is what a healthy arm prints; the last is the same check on P6, for the Worked case's arithmetic.
+
+| # | On the 25.7 arm | Healthy answer | On P6 |
+|---|---|---|---|
+| 0 | `printenv \| grep -i ros` | `ROS_DISTRO=jazzy`, and one `ROS_DOMAIN_ID` in every terminal | the same |
+| 1 | `ros2 node list` | among them `/controller_manager`, `/joint_state_broadcaster`, `/joint_trajectory_controller`, `/robot_state_publisher` | the control node and the vision node |
+| 2 | `ros2 node info /robot_state_publisher` | subscribes `/joint_states`; publishes `/tf`, `/tf_static`, `/robot_description` | the control node subscribes `/goal`, publishes `/cmd` |
+| 3 | `ros2 topic hz --use-sim-time /joint_states` | about $200$, the `update_rate` | `/cmd` $200$, `/goal` $50$ |
+| 4 | `ros2 topic info /joint_states` | one publisher, at least one subscriber | `/goal`: one publisher, one subscriber (two while recording) |
+| 5 | `ros2 topic info /joint_states --verbose` | compatible Reliability and Durability on every endpoint | the same |
+| 6 | `ros2 run tf2_ros tf2_echo base_link link2` | `[0.000, 0.000, 0.400]` at rest; about `[0.287, 0.000, 0.279]` after 25.7's Step 6 | `tf2_echo odom camera_link` gives `[0.600, 0.000, 0.250]` at $c=1024$ (25.6) |
+| 7 | `ros2 topic hz /clock`, `ros2 param get /robot_state_publisher use_sim_time` | `/clock` arriving, and `True` | the controller on `use_sim_time` during replay |
+
+2. **Predict, then record.** Record the input of the node under test, `/joint_states`, and nothing else. Recording `/tf` too would make the bag, on replay, a second publisher of the edges `robot_state_publisher` recomputes: [[04-robotics/ros2/describing-a-robot|25.6 §13]]'s two-owner failure, brought in by the bag. Write the prediction first. It is the Worked case's Step 1 with this arm's numbers, $n=f\,D=200\times D_{\text{sim}}$, so one simulated minute owes $12\,000$ messages, the same as P6's `/cmd`, because both are $200\,\mathrm{Hz}$ loops.
 
 ```bash
-ros2 bag record --topics /turtle1/pose /turtle1/cmd_vel -o live_run
+ros2 bag record --topics /joint_states -o live_run
 ```
 
-2. While recording, capture the live behaviour of the node under test. Log its output topic to a file so you have something to compare against:
+While it records, send 25.7's Step 6 trajectory, and note the translation `tf2_echo base_link link2` prints at the end: about `[0.287, 0.000, 0.279]`. Also capture the node's configuration: `ros2 param dump /robot_state_publisher > live_params.yaml`.
 
-```bash
-ros2 topic echo /my_node_output > live_output.txt
-```
-
-Also capture its configuration: `ros2 param dump /my_node > live_params.yaml`.
-
-3. Stop the recording and inspect it. Check the Count of each topic against what you expected:
+3. **Stop the recording and read the Count against the prediction.**
 
 ```bash
 ros2 bag info live_run
 ```
 
-4. Shut the simulator down entirely. Start only the node under test, on simulated time:
+The recorder stamps each message on the wall clock, so `Duration` is wall time and the Count owed is $200\times\mathrm{RTF}\times$ Duration: $200$ per second of Duration at a real-time factor near 1, $100$ in 25.7's half-speed world. A Count well below that is Step 2's shortfall, and Step 2's conversion into seconds tells you whether the bag can still answer your question.
+
+4. **Shut everything down, then start only the node under test, on simulated time.**
 
 ```bash
-ros2 run my_pkg my_node --ros-args -p use_sim_time:=true
-ros2 param get /my_node use_sim_time     # confirm: true
+ros2 run robot_state_publisher robot_state_publisher --ros-args \
+  -p robot_description:="$(xacro two_link_arm.urdf.xacro)" -p use_sim_time:=true
+ros2 param get /robot_state_publisher use_sim_time     # confirm: True
 ```
 
-5. Replay as the time source:
+5. **Start `ros2 run tf2_ros tf2_echo base_link link2` in another terminal, then replay as the time source, at the loop's rate.**
 
 ```bash
-ros2 bag play live_run --clock
+ros2 bag play live_run --clock 200
 ```
 
-6. Capture the replayed output the same way and compare it with `live_output.txt`.
+`--clock 200`, not the default $40\,\mathrm{Hz}$, for the Worked case's Step 3 reason: at $40\,\mathrm{Hz}$ the replayed clock steps in $25\,\mathrm{ms}$, five of this loop's periods.
 
-You are done when the replayed output matches the live output within timing tolerance, and — the part that matters — when you can state why it matches: the node's `now()` came from `/clock`, `/clock` came from the bag, and the bag's timestamps are the ones the live run produced. The node cannot tell the difference. You now have a development loop that does not require the robot.
+6. **Compare.** `tf2_echo` prints the poses the live run printed, in the same order, and ends near `[0.287, 0.000, 0.279]`.
+
+You are done when the replayed transforms match the live ones within timing tolerance, and — the part that matters — when you can state why they match: the node's clock came from `/clock`, `/clock` came from the bag, and the stamps it copied into `/tf` are the ones the live run produced. The node cannot tell the difference. You now have a development loop that does not require the robot.
+
+If you have not built the 25.7 arm yet, turtlesim can stand in for the mechanics — record `/turtle1/pose` and `/turtle1/cmd_vel`, replay them with `--clock` into a node of your own — but it checks none of the Worked case's numbers: it has no $200\,\mathrm{Hz}$ loop and no transforms, so there is no ledger to predict.
 
 ### 15. The failure to diagnose: a bag that replays but produces nothing
 
@@ -761,6 +780,17 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal
 
 ## 한국어
 
+> [!abstract] 깊이 목표 · Depth target
+> **Working** — 조용히 죽은 ROS 2 시스템의 원인을 몇 분 안에 찾아내고, bag·컨테이너·테스트를 묶어 남에게 결과를 재현시킬 정도. 연구실 CI 기반을 처음부터 짓는 수준은 아니다.
+> **Working** — enough to find the cause of a silent ROS 2 system in minutes and hand someone a reproducible result; not enough to build a lab's CI from scratch.
+
+> [!note] 선수 지식 · Prerequisites
+> QoS 호환성은 [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]], `use_sim_time`은 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]], `colcon`과 launch 파일은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]], §2의 6번 점검이 들여다보는 변환 트리는 [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]. 실습(§14)은 [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]에서 Gazebo로 돌린 팔을 기록한다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**다.
+> QoS and `use_sim_time` from 25.5, `colcon` and launch from 25.4, the transform tree from 25.6; the exercise records the 25.7 arm.
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 대상과 그림을 보고 Worked case로 가라. 그 안의 한 줄 설명들이 §6, §7, §8을 가리킨다. 그다음 §2(순서 있는 점검, 곁에 둘 표)와 §6–§8(bag 기록, 읽기, 재생)을 읽고 §14를 하라. §14는 §2의 표를 당신의 팔에서 한 번 돌린 뒤 그것을 기록하고 재생한다. §1은 동기이고, §3–§5는 도구 모음이라 참고용이며, §9–§13은 결과를 꾸려 넘길 때 읽는 시험·재현성 쪽 절반이고, §15는 재생이 아무것도 내지 않을 때 밟는 고장 진단이다.
+
 ### 이 페이지의 대상 · Running object
 
 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**를 구동하는 대신 기록한다. 카트를 $60\,\mathrm{s}$ 돌린 실행 하나가 디스크에 있고 그 안에 토픽이 둘 있다. 증거에 대해 이 페이지가 하는 모든 주장은 그 bag에 대어 확인한다.
@@ -773,6 +803,8 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal
 | $D$ | $60\,\mathrm{s}$ | 녹화 길이 |
 | $B$ | $70\,\mathrm{ms}$ | P6의 종단 예산. bag에게 확인이나 반증을 요구하는 대상 |
 | $s$ | $64$ bytes | 메시지당 직렬화 적재량 — **페이지 국소** 예시 값이고 크기 비교에만 쓴다 |
+
+*대상이 둘이라는 것을 한 번 밝혀 둔다.* 계산이 따지는 bag은 P6의 것이고, 아무도 그것을 기록한 적이 없다. P6는 종이 위에만 있다. 실습(§14)은 대신 당신이 만든 로봇, Gazebo 속 25.7의 2링크 팔을 기록한다. 그 `/joint_states`는 P6의 `/cmd`와 똑같이 $200\,\mathrm{Hz}$ 루프에서 나온다. 그래서 Step 1의 시뮬레이션 1분당 $12\,000$개, Step 2의 부족분 산수, Step 3의 `--clock` 주기가 그대로 옮겨 가고, §14가 그것들을 예측하고 확인하게 한다. 옮겨 가지 않는 것도 있다. 팔에는 카메라가 없으므로 `/goal` 스트림도, $3000$도, 써 볼 Step 4의 단언도 없다. Step 5의 크기는 P6의 페이지 국소 값이다.
 
 *범위: 이 페이지는 조용히 죽은 시스템의 원인을 찾는 법, 녹화가 무엇의 증거이고 무엇의 증거가 아닌지, 실행 하나를 남이 다시 돌릴 수 있는 것으로 바꾸는 법을 가르친다. 조용한 실패를 대부분 만들어 내는 QoS와 시간 기구는 가르치지 않는다. 그것은 [[04-robotics/ros2/qos-executors-time|25.5]]다. 연구실 CI를 처음부터 짓는 법도, 통계적 실험 설계도 아니다. 후자는 [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]]이다.*
 
@@ -961,7 +993,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. You recorded `/goal
 
 $$n = f\,D$$
 
-개를 담고 있어야 한다. 그래서 `/goal`은 $50\times60=3000$개, `/cmd`는 $200\times60=12000$개, 합쳐 $15000$개이고 비는 정확히 $4{:}1$이다. 제어 루프가 비전 프레임 하나당 네 번 돌기 때문이다. `ros2 bag info`를 돌리기 전에 이 숫자를 예측해 두는 것이 Count 칸을 *읽는* 것과 그냥 *보는* 것의 차이다.
+개를 담고 있어야 한다. 그래서 `/goal`은 $50\times60=3000$개, `/cmd`는 $200\times60=12000$개, 합쳐 $15000$개이고 비는 정확히 $4{:}1$이다. 제어 루프가 비전 프레임 하나당 네 번 돌기 때문이다. `ros2 bag info`는 bag의 메타데이터를 토픽마다 한 줄씩, 메시지 개수(Count)와 함께 찍는다(§7). 그것을 돌리기 전에 이 숫자를 예측해 두는 것이 Count 칸을 *읽는* 것과 그냥 *보는* 것의 차이다.
 
 **Step 2 — 모자란 만큼을 양으로 읽기.** bag이 `/cmd` 개수를 $11\,400$으로 보고했다고 하자. $11\,400/12\,000 = 95\%$이므로
 
@@ -977,7 +1009,7 @@ $$\frac{1}{40}=25\,\mathrm{ms}$$
 
 **Step 4 — bag이 실제로 떠받칠 수 있는 단언.** 녹화 안에서 `/cmd`는 $200\,\mathrm{Hz}$, `/goal`은 $50\,\mathrm{Hz}$이므로 목표 둘 사이에 명령 넷이 들어가고, 그 넷이 쓸 수 있는 가장 새로운 목표의 나이는 $0$, $5$, $10$, $15\,\mathrm{ms}$다. 평균 $7.5\,\mathrm{ms}$, 최대 $15\,\mathrm{ms}$다. 여기서 확인 가능한 성질이 하나 나온다. *모든 `/cmd` 스탬프는 어떤 `/goal` 스탬프의 $20\,\mathrm{ms}$ 안에 있다*. 최악 $15\,\mathrm{ms}$에 제어 주기 하나를 더한 값이다. §9의 예시 허용 오차 $200\,\mathrm{ms}$와 견주어 보라. 이 카트에서는 제어 주기 $40$개이고 예산 전체의 $2.9$배라, 그 허용 오차로 쓴 단언은 예산이 무너져도 통과한다. 허용 오차는 그것이 지키려는 값보다 작아야 한다.
 
-**Step 5 — 그리고 이 로봇에서 `-a`가 선택지가 아닌 이유.** P6의 두 토픽은 페이지 국소 $s=64$ 바이트로 잡으면 1분 전체가 $15\,000\times64=0.96\,\mathrm{MB}$다. 여기에 비압축 1080p 카메라 하나를 30 Hz로 더하면, §6이 $1920\times1080\times3\times30=186.6\,\mathrm{MB/s}$로 계산한 그 값 때문에 같은 1분이
+**Step 5 — 그리고 이 로봇에서 `-a`가 선택지가 아닌 이유.** `ros2 bag record -a`는 그래프의 모든 토픽을 기록한다(§6). P6의 두 토픽은 페이지 국소 $s=64$ 바이트로 잡으면 1분 전체가 $15\,000\times64=0.96\,\mathrm{MB}$다. 여기에 비압축 1080p 카메라 하나를 30 Hz로 더하면, §6이 $1920\times1080\times3\times30=186.6\,\mathrm{MB/s}$로 계산한 그 값 때문에 같은 1분이
 
 $$186.6\times60 = 11.2\,\mathrm{GB}$$
 
@@ -1197,7 +1229,7 @@ ros2 bag play run_042 --start-offset 30 --playback-duration 5
 
 `--clock` 없이는 재생은 그냥 퍼블리셔다. 기록된 간격대로 메시지를 다시 발행할 뿐 모든 노드는 계속 벽시계를 읽는다. 데이터를 눈으로 보는 데는 괜찮고, 시간을 따지는 어떤 것에도 틀렸다. 메시지는 녹화 당일의 스탬프를 달고 있는데 노드는 오늘이라고 믿기 때문이다. TF 조회는 실패하거나 외삽되고, 메시지 스탬프와 `now()`의 비교는 전부 무의미해진다.
 
-`--clock`은 재생을 시스템의 **시간 소스**로 만든다. `/clock`에 `rosgraph_msgs/msg/Clock`을 기본 40 Hz로, 또는 지정한 주기로 발행한다. `use_sim_time`을 true로 띄운 노드는 `now()`를 거기서 가져오고, 재생된 실행은 그 노드가 아는 한 녹화된 그 시각에 일어난다. [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] §10의 기제에서 시뮬레이터 자리에 bag이 들어간 것이다.
+`--clock`은 재생을 시스템의 **시간 소스**로 만든다. `/clock`에 `rosgraph_msgs/msg/Clock`을 기본 40 Hz로, 또는 지정한 주기로 발행한다. `use_sim_time`을 true로 띄운 노드는 `now()`를 거기서 가져오고, 재생된 실행은 그 노드가 아는 한 녹화된 그 시각에 일어난다. [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간 §3]]의 기제에서 시뮬레이터 자리에 bag이 들어간 것이다.
 
 양쪽이 일치해야 하고, 여기서 사람들이 반나절을 잃는다.
 
@@ -1360,44 +1392,58 @@ RUN apt-get update \
 
 ### 14. 실습: 기록하고, 재생하고, 노드가 눈치채지 못했음을 보여라
 
-한 자리에서. 이 트랙의 어떤 시뮬레이션 로봇이든 좋고, 시뮬레이터가 아직 없다면 turtlesim으로 충분하다.
+한 자리에서, [[04-robotics/ros2/simulation-and-control|25.7 §11]]에서 Gazebo로 돌린 2링크 팔로. 테스트 대상 노드는 당신이 쓰지 않은 `robot_state_publisher`다. 입력은 `/joint_states`, 출력은 팔의 변환이므로, 재생이 변환을 그대로 재현하면 그 노드가 bag과 시뮬레이터를 구별하지 못한다는 것이 증명된다.
 
-1. 시뮬레이션 시스템을 띄운다. 다른 터미널에서 하류 노드 하나가 소비하는 토픽을 짧게 기록한다(turtlesim에는 변환이 없다. 실제 시스템이라면 `/tf /tf_static`을 더한다).
+1. **§2의 표를 살아 있는 팔에서 위에서 아래로 한 번 돌린다.** 25.7 실습을 띄우고, 아무것도 기록하기 전에 점검을 순서대로 밟아라. 셋째 열은 건강한 팔이 찍는 값이고, 마지막 열은 Worked case의 산수를 위해 같은 점검을 P6에 대어 본 것이다.
+
+| # | 25.7의 팔에서 | 건강한 답 | P6에서 |
+|---|---|---|---|
+| 0 | `printenv \| grep -i ros` | `ROS_DISTRO=jazzy`, 그리고 모든 터미널에서 같은 `ROS_DOMAIN_ID` | 같다 |
+| 1 | `ros2 node list` | 그중에 `/controller_manager`, `/joint_state_broadcaster`, `/joint_trajectory_controller`, `/robot_state_publisher` | 제어 노드와 비전 노드 |
+| 2 | `ros2 node info /robot_state_publisher` | `/joint_states` 구독, `/tf`·`/tf_static`·`/robot_description` 발행 | 제어 노드가 `/goal` 구독, `/cmd` 발행 |
+| 3 | `ros2 topic hz --use-sim-time /joint_states` | 약 $200$, 곧 `update_rate` | `/cmd` $200$, `/goal` $50$ |
+| 4 | `ros2 topic info /joint_states` | 퍼블리셔 하나, 구독자 하나 이상 | `/goal`: 퍼블리셔 하나, 구독자 하나(기록 중에는 둘) |
+| 5 | `ros2 topic info /joint_states --verbose` | 모든 엔드포인트의 Reliability와 Durability가 호환 | 같다 |
+| 6 | `ros2 run tf2_ros tf2_echo base_link link2` | 멈춰 있을 때 `[0.000, 0.000, 0.400]`, 25.7의 6단계 뒤에는 약 `[0.287, 0.000, 0.279]` | `tf2_echo odom camera_link`는 $c=1024$에서 `[0.600, 0.000, 0.250]`(25.6) |
+| 7 | `ros2 topic hz /clock`, `ros2 param get /robot_state_publisher use_sim_time` | `/clock`이 도착하고 `True` | 재생 중 `use_sim_time`으로 도는 제어기 |
+
+2. **예측하고, 기록한다.** 테스트 대상 노드의 입력인 `/joint_states`만 기록하고 다른 것은 넣지 말라. `/tf`까지 기록하면 재생할 때 bag이 `robot_state_publisher`가 다시 계산하는 간선의 두 번째 퍼블리셔가 된다. [[04-robotics/ros2/describing-a-robot|25.6 §13]]의 소유자 둘 고장을 bag이 들여오는 셈이다. 예측을 먼저 적어라. 이 팔의 숫자로 쓴 Worked case의 Step 1, $n=f\,D=200\times D_{\text{sim}}$이다. 그래서 시뮬레이션 1분은 $12\,000$개를 빚지고, P6의 `/cmd`와 같다. 둘 다 $200\,\mathrm{Hz}$ 루프이기 때문이다.
 
 ```bash
-ros2 bag record --topics /turtle1/pose /turtle1/cmd_vel -o live_run
+ros2 bag record --topics /joint_states -o live_run
 ```
 
-2. 기록하는 동안 테스트 대상 노드의 라이브 동작을 잡아 둔다. 비교 대상이 있도록 출력 토픽을 파일로 남긴다.
+기록하는 동안 25.7의 6단계 궤적을 보내고, `tf2_echo base_link link2`가 마지막에 찍는 병진을 적어 둔다. 약 `[0.287, 0.000, 0.279]`다. 노드의 설정도 잡아 둔다: `ros2 param dump /robot_state_publisher > live_params.yaml`.
 
-```bash
-ros2 topic echo /my_node_output > live_output.txt
-```
-
-설정도 잡는다: `ros2 param dump /my_node > live_params.yaml`.
-
-3. 기록을 멈추고 들여다본다. 각 토픽의 Count를 기대치와 대조한다.
+3. **기록을 멈추고 Count를 예측과 대조한다.**
 
 ```bash
 ros2 bag info live_run
 ```
 
-4. 시뮬레이터를 완전히 내린다. 테스트 대상 노드만, 시뮬레이션 시간으로 띄운다.
+레코더는 메시지마다 벽시계로 시각을 찍으므로 `Duration`은 벽시계 시간이고, 빚진 Count는 $200\times\mathrm{RTF}\times$ Duration이다. 실시간 계수가 1 가까이면 Duration 1초당 $200$, 25.7의 절반 속도 월드에서는 $100$이다. Count가 그보다 한참 모자라면 Step 2의 부족분이고, Step 2처럼 초로 바꾸어 보면 그 bag이 아직 당신의 질문에 답할 수 있는지가 나온다.
+
+4. **모든 것을 내리고, 테스트 대상 노드만 시뮬레이션 시간으로 띄운다.**
 
 ```bash
-ros2 run my_pkg my_node --ros-args -p use_sim_time:=true
-ros2 param get /my_node use_sim_time     # true인지 확인
+ros2 run robot_state_publisher robot_state_publisher --ros-args \
+  -p robot_description:="$(xacro two_link_arm.urdf.xacro)" -p use_sim_time:=true
+ros2 param get /robot_state_publisher use_sim_time     # confirm: True
 ```
 
-5. 시간 소스로서 재생한다.
+5. **다른 터미널에서 `ros2 run tf2_ros tf2_echo base_link link2`를 먼저 띄운 뒤, 루프의 주기로 시간 소스 삼아 재생한다.**
 
 ```bash
-ros2 bag play live_run --clock
+ros2 bag play live_run --clock 200
 ```
 
-6. 재생된 출력을 같은 방식으로 잡아 `live_output.txt`와 비교한다.
+기본값 $40\,\mathrm{Hz}$가 아니라 `--clock 200`을 쓰는 까닭은 Worked case의 Step 3이다. $40\,\mathrm{Hz}$라면 재생 시계가 $25\,\mathrm{ms}$씩, 이 루프의 주기 다섯 개씩 건너뛴다.
 
-재생 출력이 타이밍 허용오차 안에서 라이브 출력과 일치하고, 그리고 — 여기가 핵심인데 — 왜 일치하는지 말할 수 있으면 끝이다. 노드의 `now()`는 `/clock`에서 왔고, `/clock`은 bag에서 왔고, bag의 타임스탬프는 라이브 실행이 만든 그것이다. 노드는 차이를 알 수 없다. 이제 로봇이 없어도 되는 개발 루프를 가졌다.
+6. **비교한다.** `tf2_echo`는 라이브 실행이 찍었던 자세를 같은 순서로 찍고, 약 `[0.287, 0.000, 0.279]`에서 끝난다.
+
+재생된 변환이 타이밍 허용오차 안에서 라이브의 것과 일치하고, 그리고 — 여기가 핵심인데 — 왜 일치하는지 말할 수 있으면 끝이다. 노드의 시계는 `/clock`에서 왔고, `/clock`은 bag에서 왔고, 노드가 `/tf`에 옮겨 적은 스탬프는 라이브 실행이 만든 그것이다. 노드는 차이를 알 수 없다. 이제 로봇이 없어도 되는 개발 루프를 가졌다.
+
+25.7의 팔을 아직 만들지 않았다면 turtlesim이 절차만은 대신할 수 있다 — `/turtle1/pose`와 `/turtle1/cmd_vel`을 기록하고 `--clock`으로 당신이 쓴 노드에 재생한다. 그러나 Worked case의 숫자는 하나도 확인하지 못한다. $200\,\mathrm{Hz}$ 루프도 변환도 없으니 예측할 장부가 없다.
 
 ### 15. 진단할 고장: 재생은 되는데 아무것도 안 나오는 bag
 

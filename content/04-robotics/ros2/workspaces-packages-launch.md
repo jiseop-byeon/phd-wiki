@@ -14,8 +14,11 @@ mastery-when: "Go deeper when you are packaging for release, writing CMake for a
 > **Working** — 매일 반복하는 편집–빌드–source–launch 루프를 반나절 잃지 않고 돌리고, 그 과정에서 나오는 두 가지 고장을 진단할 정도. 배포판 릴리스용 패키징까지는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> A machine running **ROS 2 Jazzy Jalisco on Ubuntu 24.04** with the environment set up as in [[04-robotics/ros2/index|25. ROS 2]], and nodes you can already write and run, as in [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]. Parameters are used here as a thing to configure; what they are is [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]].
-> **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 환경, 그리고 이미 노드를 쓰고 실행할 수 있는 상태. 파라미터는 여기서 "설정하는 대상"으로만 쓴다.
+> A machine running **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, installed and sourced as in [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]] (§6–§7, and the overlay rows of its §11 table). Nodes you can already write and run, and the name rules of its §3, as in [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]. Parameters are used here as a thing to configure; what they are, and the YAML parameter file, is [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] §6–§7, and step 4 below also cites its worked case. **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇인가]]처럼 설치하고 source한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**(6–7절, 그리고 11절 표의 오버레이 행). [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]처럼 이미 노드를 쓰고 실행할 수 있고, 그 3절의 이름 규칙을 아는 상태. 파라미터는 여기서 "설정하는 대상"으로만 쓴다. 파라미터가 무엇인지와 YAML 파라미터 파일은 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] 6–7절이고, 그 계산 예제를 아래 4단계가 인용한다. [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**.
+
+> [!note] First pass · 처음이라면
+> Read the picture and the Worked case — two P6 carts from one launch file, every name written out — then §1–§7 in order: why a build exists, the workspace, what `colcon build` does, the two build types, dependency tags, overlays, and `--symlink-install`. Then §9–§11 for launch files. §12 is one sitting at a keyboard, and §13 is the failure it will produce. §8 (building less than everything) and P6's full `package.xml` in §5 are second-pass: they matter the day a build is slow, or a colleague's build fails where yours worked.
 
 ### The picture: the include tree, and every name it resolves
 
@@ -120,7 +123,7 @@ Two P6 carts at their catalog rates ([[02-foundations/lab-plants|0.6 Lab Plants]
 
 ### Worked case: two P6 carts from one launch file, and every name written out
 
-The system is six nodes: `camera`, `controller` and `logger`, twice. Nothing in the source differs between the two carts; the launch file is the only thing that makes them two robots instead of one robot fighting itself.
+The system is six nodes: `camera`, `controller` and `logger`, twice. Nothing in the source differs between the two carts; the launch file — a Python file that starts several nodes and gives each its namespace, parameters and remappings (§9–§11) — is the only thing that makes them two robots instead of one robot fighting itself.
 
 **Step 1 — what the namespace does to a node's own name.** A node that calls itself `controller` and is pushed into `/cart1` has the fully qualified name `/cart1/controller`. That FQN is what `ros2 node list` prints, what `ros2 param` addresses, and — the part people miss — what the parameter file's top-level key has to be.
 
@@ -155,7 +158,7 @@ ros2 run p6_control controller --ros-args --remap __ns:=/cart1 --remap /goal:=/c
 
 If data flows, the bug was the name. Then fix it where it belongs — in the source if the code hard-coded an absolute name, in the launch file if the namespace was wrong — and check the result with `ros2 node info /cart1/controller`, which prints resolved names and is therefore the authority.
 
-**Step 6 — and the rebuild that does not help.** The camera is Python and the controller is C++. `--symlink-install` makes an edit to the camera's `.py` visible after a relaunch with no build, because colcon runs setuptools' `develop` and the installed module path points back into `src/`. The controller is a compiled binary with no source to point at, so the $200\,\mathrm{Hz}$ loop — the rate P6's budget actually depends on — needs a real `colcon build` every time. A stale binary is the classic version of "I changed the period and nothing happened", and `ros2 pkg prefix p6_control` is the one command that tells you which workspace the running executable came from.
+**Step 6 — and the rebuild that does not help.** The camera is Python and the controller is C++. `--symlink-install` (the build flag that installs links back to your files instead of copies, where it can; §7) makes an edit to the camera's `.py` visible after a relaunch with no build, because colcon runs setuptools' `develop` and the installed module path points back into `src/`. The controller is a compiled binary with no source to point at, so the $200\,\mathrm{Hz}$ loop — the rate P6's budget actually depends on — needs a real `colcon build` every time. A stale binary is the classic version of "I changed the period and nothing happened", and `ros2 pkg prefix p6_control` is the one command that tells you which workspace the running executable came from.
 
 ### 1. Why a build step exists at all
 
@@ -208,7 +211,7 @@ Summary: 2 packages finished [6.20s]
 Four things happened, in this order:
 
 1. **Discovery.** colcon walked `src` looking for `package.xml` files. A directory containing a `COLCON_IGNORE` file is skipped — which is how repositories ship packages you are not meant to build.
-2. **Ordering.** It read the dependency tags in each `package.xml` and built a graph. Unrelated packages build in parallel; a package waits for the ones it depends on. This is the first practical reason to declare dependencies honestly: undeclared ones make the build order luck, and luck that holds on your machine fails on a colleague's parallel build.
+2. **Ordering.** It read the dependency tags in each `package.xml` — the run-time `<exec_depend>` as well as the build-time ones, because colcon also waits for a package's run dependencies — and built a graph. Unrelated packages build in parallel; a package waits for the ones it depends on. This is the first practical reason to declare dependencies honestly: undeclared ones make the build order luck, and luck that holds on your machine fails on a colleague's parallel build.
 3. **Per-package build**, dispatched by the package's declared build type — CMake for `ament_cmake`, setuptools for `ament_python`.
 4. **Install.** Each package's artefacts are copied into `install/<package_name>/`, and colcon generates the environment setup files alongside them.
 
@@ -262,6 +265,17 @@ ament_package()
 
 **When a package needs both.** Message, service and action definitions can currently only be generated from a CMake package: `rosidl_generate_interfaces()` is a CMake macro. So a package that defines its own interfaces *and* contains Python nodes cannot be `ament_python`. The documented way out is an `ament_cmake` package that also calls `ament_cmake_python`, whose `ament_python_install_package()` macro installs a Python package from CMake. The other way out — and the one worth preferring — is two packages: `my_robot_interfaces` (`ament_cmake`, definitions only) and `my_robot_nodes` (`ament_python`). Interface packages that contain nothing but definitions are cheap for other people to depend on.
 
+On P6 the split is four packages, and it is the layout the Worked case assumes:
+
+| Package | Build type | Holds |
+|---|---|---|
+| `p6_interfaces` | `ament_cmake` | `msg/CartState.msg`, the cart-state type from 25.2's Worked case — definitions only |
+| `p6_perception` | `ament_python` | the camera node, and `launch/perception.launch.py` |
+| `p6_control` | `ament_cmake` | the C++ controller, and `launch/control.launch.py` |
+| `p6_bringup` | `ament_cmake` | `launch/p6.launch.py` and `config/p6.yaml` — data files only |
+
+`p6_control` depends on `p6_interfaces`, and so does anything that reads the cart's `CartState`, but neither node package depends on the other. So a colleague who only wants to log the cart's state builds one small CMake package rather than the controller, and an edit to the controller never rebuilds the camera. §5 writes out `p6_control`'s dependency tags in full.
+
 ### 5. `package.xml`, dependency tags, and rosdep
 
 `package.xml` is the declaration. It carries the name, version, maintainer, licence, the build type in an `<export>` block, and the dependencies. The dependency entries are called **rosdep keys** and there is a specific tag for each phase of a package's life:
@@ -275,6 +289,25 @@ ament_package()
 | `<test_depend>` | needed only by tests | linters, `python3-pytest` |
 
 The distinction that beginners get wrong: a pure Python package has no build phase, so it should use `<exec_depend>`, not `<depend>`. A C++ package almost always wants `<depend>`.
+
+All five tags on one real package, `p6_control`. Its controller is a class declared in the public header `include/p6_control/controller.hpp`, whose methods take `Eigen::Vector2d` arguments, and it publishes `p6_interfaces/msg/CartState`:
+
+```xml
+<buildtool_depend>ament_cmake</buildtool_depend>
+
+<depend>rclcpp</depend>
+<depend>p6_interfaces</depend>
+
+<build_depend>eigen</build_depend>
+<build_export_depend>eigen</build_export_depend>
+
+<exec_depend>launch_ros</exec_depend>
+
+<test_depend>ament_lint_auto</test_depend>
+<test_depend>ament_lint_common</test_depend>
+```
+
+Read it one tag at a time. `rclcpp` and `p6_interfaces` are compiled against, loaded when the node runs, and named in the public header, so they are `<depend>` — which is exactly `<build_depend>`, `<build_export_depend>` and `<exec_depend>` together. Eigen is header-only: it is needed to compile `p6_control` and, because the public header includes `<Eigen/Core>`, to compile any package that includes that header, which is what `<build_export_depend>` says; but there is no Eigen library to load when the node runs, so there is no `<exec_depend>`. `launch_ros` is imported only when `control.launch.py` runs, so it is run-time only. The linters run only under `colcon test`. And `<buildtool_depend>ament_cmake</buildtool_depend>`, which `ros2 pkg create` writes for you, names the build system itself — a sixth tag the table leaves out because you never choose it.
 
 A key is either the name of a package released into the ROS ecosystem (`rclpy`, `std_msgs`, `nav2_bt_navigator`) or a system-library key from the rosdistro index — `rosdep/base.yaml` for apt packages, `rosdep/python.yaml` for Python ones. `doxygen` is a key; `libdoxygen-dev` is not.
 
@@ -654,7 +687,7 @@ The C++ loop is therefore `colcon build --packages-select temp_filter` every tim
 
 ### 14. What this page does not cover
 
-Writing the nodes themselves is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]], and declaring and validating the parameters that the YAML here sets is [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. Launch-time event handlers, conditional actions, composable-node containers and lifecycle-aware launch are beyond this page; the launch documentation covers them, and lifecycle nodes appear in 25.3. Capturing what a launched system did, replaying it, and pinning a workspace so a colleague gets the same build are [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]. Releasing a package into a ROS distribution — `bloom`, the rosdistro pull request, the buildfarm — is not covered anywhere in this track. Where the rest of the stack sits is [[04-robotics/ros2/index|25. ROS 2]].
+Writing the nodes themselves is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]], and declaring and validating the parameters that the YAML here sets is [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. Launch-time event handlers, conditional actions, composable-node containers and lifecycle-aware launch are beyond this page; the launch documentation covers them, composition itself is defined in [[04-robotics/ros2/nodes-topics-messages|25.2 §2.1]], and lifecycle nodes appear in 25.3. Capturing what a launched system did, replaying it, and pinning a workspace so a colleague gets the same build are [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]. Releasing a package into a ROS distribution — `bloom`, the rosdistro pull request, the buildfarm — is not covered anywhere in this track. Where the rest of the stack sits is [[04-robotics/ros2/index|25. ROS 2]].
 
 ### Sources
 
@@ -714,8 +747,11 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Three nodes — cam
 > **Working** — enough to run the daily loop and diagnose its two failures, not to package for a distribution release.
 
 > [!note] 선수 지식 · Prerequisites
-> **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco** 환경([[04-robotics/ros2/index|25. ROS 2]]), 그리고 이미 노드를 쓰고 실행할 수 있는 상태([[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]). 파라미터는 여기서 "설정하는 대상"으로만 쓴다. 파라미터 자체는 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]].
-> ROS 2 Jazzy on Ubuntu 24.04, plus the ability to write and run a node.
+> [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇인가]]처럼 설치하고 source한 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**(6–7절, 그리고 11절 표의 오버레이 행). [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]처럼 이미 노드를 쓰고 실행할 수 있고, 그 3절의 이름 규칙을 아는 상태. 파라미터는 여기서 "설정하는 대상"으로만 쓴다. 파라미터가 무엇인지와 YAML 파라미터 파일은 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] 6–7절이고, 그 계산 예제를 아래 4단계가 인용한다. [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**.
+> ROS 2 Jazzy on Ubuntu 24.04 as installed in 25.1; writing and running a node, and 25.2's name rules; 25.3 §6–§7 for parameters; **P6** from 0.6.
+
+> [!note] 처음이라면 · First pass
+> 그림과 계산 절 — launch 파일 하나로 띄운 P6 카트 둘, 모든 이름을 적어서 — 을 읽고, 1–7절을 순서대로 읽어라. 빌드가 왜 있는지, 워크스페이스, `colcon build`가 하는 일, 두 build type, 의존 태그, 오버레이, `--symlink-install`. 그다음 launch 파일은 9–11절이다. 12절은 키보드 앞의 한 자리이고, 13절은 거기서 나올 고장이다. 8절(전부보다 적게 빌드하기)과 5절의 P6 전체 `package.xml`은 두 번째 읽기다. 빌드가 느린 날, 또는 내 머신에서 되던 빌드가 동료의 머신에서 깨지는 날 쓸모가 있다.
 
 ### 그림으로 먼저 보기: include 트리와 그것이 푸는 모든 이름 · The picture
 
@@ -820,7 +856,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Three nodes — cam
 
 ### 대상으로 한 번 끝까지: launch 파일 하나로 P6 카트 둘, 모든 이름을 적어서 · Worked case
 
-시스템은 노드 여섯이다. `camera`, `controller`, `logger`가 두 벌. 소스에서 두 카트는 한 글자도 다르지 않다. 로봇 하나가 자기와 싸우는 대신 로봇 둘이 되게 하는 것은 launch 파일뿐이다.
+시스템은 노드 여섯이다. `camera`, `controller`, `logger`가 두 벌. 소스에서 두 카트는 한 글자도 다르지 않다. 로봇 하나가 자기와 싸우는 대신 로봇 둘이 되게 하는 것은 launch 파일 — 노드 여럿을 띄우며 각각에 네임스페이스, 파라미터, 리매핑을 주는 Python 파일(9–11절) — 뿐이다.
 
 **1단계 — 네임스페이스가 노드 이름에 하는 일**. 스스로를 `controller`라 부르는 노드를 `/cart1`에 밀어 넣으면 완전 이름은 `/cart1/controller`다. `ros2 node list`가 찍는 것도, `ros2 param`이 주소로 쓰는 것도 그것이고, 사람들이 놓치는 부분 — 파라미터 파일의 최상위 키가 되어야 하는 것도 그것이다.
 
@@ -849,7 +885,7 @@ $$2\times 50\,\mathrm{Hz}=100\,\mathrm{Hz},\qquad \text{그중 }50\%\text{는 �
 
 **5단계 — 다시 빌드하지 않고 가설 시험하기**. 이름이 문제인지 알아내려고 고치고 다시 빌드할 필요는 없다. 카트 하나만 띄우고 커맨드라인에서 remap한다. 위 영문 `ros2 run` 한 줄이 그것이다. `__ns`로 네임스페이스를, `/goal:=/cart1/goal`로 토픽을, `-p`로 파라미터를 실행 시점에 준다. 데이터가 흐르면 버그는 이름이었다. 그다음 제자리에서 고친다. 코드가 절대 이름을 박아 두었으면 소스에서, 네임스페이스가 틀렸으면 launch 파일에서. 결과 확인은 `ros2 node info /cart1/controller`다. 해석된 이름을 찍으므로 그것이 최종 판정이다.
 
-**6단계 — 그리고 도움이 안 되는 재빌드**. 카메라는 Python이고 제어기는 C++이다. `--symlink-install`은 카메라 `.py` 수정을 빌드 없이 재실행만으로 보이게 한다. colcon이 setuptools의 `develop`을 돌려서 설치된 모듈 경로가 `src/`를 되가리키기 때문이다. 제어기는 가리킬 소스가 없는 컴파일된 바이너리이므로, P6 예산이 실제로 기대는 $200\,\mathrm{Hz}$ 루프는 매번 진짜 `colcon build`가 필요하다. 낡은 바이너리가 "주기를 바꿨는데 아무 일도 없다"의 고전 판본이고, 돌고 있는 실행 파일이 어느 워크스페이스에서 왔는지 알려 주는 명령은 `ros2 pkg prefix p6_control` 하나다.
+**6단계 — 그리고 도움이 안 되는 재빌드**. 카메라는 Python이고 제어기는 C++이다. `--symlink-install`(할 수 있는 곳에서는 복사본 대신 내 파일로 돌아가는 링크를 설치하는 빌드 플래그. 7절)은 카메라 `.py` 수정을 빌드 없이 재실행만으로 보이게 한다. colcon이 setuptools의 `develop`을 돌려서 설치된 모듈 경로가 `src/`를 되가리키기 때문이다. 제어기는 가리킬 소스가 없는 컴파일된 바이너리이므로, P6 예산이 실제로 기대는 $200\,\mathrm{Hz}$ 루프는 매번 진짜 `colcon build`가 필요하다. 낡은 바이너리가 "주기를 바꿨는데 아무 일도 없다"의 고전 판본이고, 돌고 있는 실행 파일이 어느 워크스페이스에서 왔는지 알려 주는 명령은 `ros2 pkg prefix p6_control` 하나다.
 
 ### 1. 빌드 단계가 왜 존재하는가
 
@@ -902,7 +938,7 @@ Summary: 2 packages finished [6.20s]
 이 순서로 네 가지가 일어났다.
 
 1. **탐색.** colcon이 `src`를 걸으며 `package.xml`을 찾는다. `COLCON_IGNORE` 파일이 있는 디렉터리는 건너뛴다 — 저장소가 "빌드하면 안 되는 패키지"를 배포하는 방식이다.
-2. **순서 결정.** 각 `package.xml`의 의존 태그를 읽어 그래프를 만든다. 서로 무관한 패키지는 병렬로, 의존하는 패키지는 기다렸다 빌드한다. 의존성을 정직하게 선언해야 하는 첫 번째 실용적 이유가 이것이다. 선언하지 않은 의존성은 빌드 순서를 운에 맡기는 것이고, 내 머신에서 통하던 운은 동료의 병렬 빌드에서 깨진다.
+2. **순서 결정.** 각 `package.xml`의 의존 태그 — 빌드 시점 태그만이 아니라 실행 시점의 `<exec_depend>`까지, colcon은 패키지의 실행 의존성도 기다리기 때문이다 — 를 읽어 그래프를 만든다. 서로 무관한 패키지는 병렬로, 의존하는 패키지는 기다렸다 빌드한다. 의존성을 정직하게 선언해야 하는 첫 번째 실용적 이유가 이것이다. 선언하지 않은 의존성은 빌드 순서를 운에 맡기는 것이고, 내 머신에서 통하던 운은 동료의 병렬 빌드에서 깨진다.
 3. **패키지별 빌드.** 선언된 build type에 따라 분기한다 — `ament_cmake`면 CMake, `ament_python`이면 setuptools.
 4. **설치.** 각 패키지의 산출물을 `install/<package_name>/`으로 복사하고, 그 옆에 환경 setup 파일을 생성한다.
 
@@ -956,6 +992,17 @@ ament_package()
 
 **둘 다 필요한 경우.** 메시지·서비스·액션 정의는 현재 CMake 패키지에서만 생성할 수 있다. `rosidl_generate_interfaces()`가 CMake 매크로이기 때문이다. 따라서 자기 인터페이스를 정의하면서 Python 노드도 담는 패키지는 `ament_python`이 될 수 없다. 문서가 제시하는 길은 `ament_cmake` 패키지에서 `ament_cmake_python`을 함께 쓰는 것이다. 그 `ament_python_install_package()` 매크로가 CMake에서 Python 패키지를 설치한다. 다른 길은 — 그리고 이쪽이 낫다 — 패키지를 둘로 쪼개는 것이다. `my_robot_interfaces`(`ament_cmake`, 정의만)와 `my_robot_nodes`(`ament_python`). 정의만 든 인터페이스 패키지는 남이 의존하기에 싸다.
 
+P6에서는 패키지 넷으로 쪼개고, 계산 예제가 전제하는 배치도 이것이다.
+
+| 패키지 | build type | 담는 것 |
+|---|---|---|
+| `p6_interfaces` | `ament_cmake` | `msg/CartState.msg`, 25.2 계산 예제의 카트 상태 타입 — 정의만 |
+| `p6_perception` | `ament_python` | 카메라 노드와 `launch/perception.launch.py` |
+| `p6_control` | `ament_cmake` | C++ 제어기와 `launch/control.launch.py` |
+| `p6_bringup` | `ament_cmake` | `launch/p6.launch.py`와 `config/p6.yaml` — 데이터 파일뿐 |
+
+`p6_control`은 `p6_interfaces`에 의존하고, 카트의 `CartState`를 읽는 모든 것도 그렇다. 하지만 두 노드 패키지는 서로에게 의존하지 않는다. 그래서 카트 상태를 기록만 하려는 동료는 제어기가 아니라 작은 CMake 패키지 하나만 빌드하고, 제어기를 고쳐도 카메라는 다시 빌드되지 않는다. `p6_control`의 의존 태그 전부는 5절이 적는다.
+
 ### 5. `package.xml`, 의존 태그, rosdep
 
 `package.xml`이 선언이다. 이름, 버전, 관리자, 라이선스, `<export>` 블록의 build type, 그리고 의존성이 들어간다. 의존 항목은 **rosdep key**라 부르고, 패키지 생애의 각 국면마다 전용 태그가 있다.
@@ -969,6 +1016,8 @@ ament_package()
 | `<test_depend>` | 테스트에만 필요 | 린터, `python3-pytest` |
 
 초보가 틀리는 구분: 순수 Python 패키지는 빌드 국면이 없으므로 `<depend>`가 아니라 `<exec_depend>`를 써야 한다. C++ 패키지는 거의 항상 `<depend>`다.
+
+다섯 태그를 실제 패키지 하나, `p6_control`에 모두 써 보자. 제어기는 공개 헤더 `include/p6_control/controller.hpp`에 선언된 클래스이고, 그 메서드는 `Eigen::Vector2d` 인자를 받으며, `p6_interfaces/msg/CartState`를 발행한다. 태그 목록은 위 영문 `package.xml` 블록 그대로다. 태그 하나씩 읽는다. `rclcpp`와 `p6_interfaces`는 컴파일할 때 쓰고, 노드가 돌 때 로드되며, 공개 헤더에 이름이 나온다. 그래서 `<depend>`이고, `<depend>`는 정확히 `<build_depend>`, `<build_export_depend>`, `<exec_depend>` 셋을 합친 것이다. Eigen은 헤더뿐인 라이브러리다. `p6_control`을 컴파일할 때 필요하고, 공개 헤더가 `<Eigen/Core>`를 include하므로 그 헤더를 include하는 모든 패키지를 컴파일할 때도 필요하다. `<build_export_depend>`가 말하는 것이 이것이다. 그러나 노드가 돌 때 로드할 Eigen 라이브러리는 없으므로 `<exec_depend>`는 없다. `launch_ros`는 `control.launch.py`가 실행될 때만 import되므로 실행 시점 전용이다. 린터는 `colcon test`에서만 돈다. 그리고 `ros2 pkg create`가 대신 써 주는 `<buildtool_depend>ament_cmake</buildtool_depend>`는 빌드 시스템 자체를 가리킨다. 표가 빠뜨린 여섯째 태그인데, 고를 일이 없기 때문이다.
 
 key는 ROS 생태계에 릴리스된 패키지 이름(`rclpy`, `std_msgs`, `nav2_bt_navigator`)이거나, rosdistro 인덱스의 시스템 라이브러리 key다 — apt는 `rosdep/base.yaml`, Python은 `rosdep/python.yaml`. `doxygen`은 key이고 `libdoxygen-dev`는 아니다.
 
@@ -1348,7 +1397,7 @@ file $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 
 ### 14. 이 페이지가 다루지 않는 것
 
-노드 자체를 쓰는 것은 [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]이고, 여기의 YAML이 설정하는 파라미터를 선언하고 검증하는 것은 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]이다. launch 시점의 이벤트 핸들러, 조건부 액션, composable node 컨테이너, lifecycle을 아는 launch는 이 페이지 밖이다. launch 문서가 다루고 lifecycle 노드는 25.3에 나온다. launch된 시스템이 무엇을 했는지 기록하고 다시 재생하고, 동료가 같은 빌드를 얻도록 워크스페이스를 고정하는 것은 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]다. 패키지를 ROS 배포판에 릴리스하는 것 — `bloom`, rosdistro 풀 리퀘스트, 빌드팜 — 은 이 트랙 어디서도 다루지 않는다. 나머지 스택의 위치는 [[04-robotics/ros2/index|25. ROS 2]].
+노드 자체를 쓰는 것은 [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]이고, 여기의 YAML이 설정하는 파라미터를 선언하고 검증하는 것은 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]이다. launch 시점의 이벤트 핸들러, 조건부 액션, composable node 컨테이너, lifecycle을 아는 launch는 이 페이지 밖이다. launch 문서가 다루고, composition 자체의 정의는 [[04-robotics/ros2/nodes-topics-messages|25.2 §2.1]]에 있으며, lifecycle 노드는 25.3에 나온다. launch된 시스템이 무엇을 했는지 기록하고 다시 재생하고, 동료가 같은 빌드를 얻도록 워크스페이스를 고정하는 것은 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]다. 패키지를 ROS 배포판에 릴리스하는 것 — `bloom`, rosdistro 풀 리퀘스트, 빌드팜 — 은 이 트랙 어디서도 다루지 않는다. 나머지 스택의 위치는 [[04-robotics/ros2/index|25. ROS 2]].
 
 ### 출처
 

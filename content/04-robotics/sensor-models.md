@@ -16,7 +16,7 @@ mastery-when: "Raise to Mastery when sensor modelling, inertial calibration or v
 *Stands on 3. Probability, 6. Signal Processing and 3. State Estimation. A later use of plant **P6**, which ROS 2, 10. Robot Systems and MR ch.13 already drive; here it carries the sensors whose noise models those pages, and 3. State Estimation's filters, take as given.*
 
 > [!note] First pass · 처음이라면
-> Read the Running object table and the Worked case, then §2 (a density becomes a per-sample σ) and §3 (what integration does to each error term), and run the listing in §7. §4–§6 are what you open when an encoder's $R$, a range sensor's outliers or an Allan plot in a paper needs reading; §8 is where every number on the page goes in a Kalman filter.
+> Read the Running object table and the Worked case, then §1 (the one form every sensor is written in), §2 (a density becomes a per-sample σ) and §3 (what integration does to each error term), and run the listing in §7. §4–§6 are what you open when an encoder's $R$, a range sensor's outliers or an Allan plot in a paper needs reading; §8 is where every number on the page goes in a Kalman filter.
 
 ### Running object · 이 페이지의 대상
 
@@ -186,7 +186,7 @@ The quadrature sum treats each bias row as a one-sigma value of unknown sign. Th
 
 **4. Which sensor dominates, at each horizon.** Inside the IMU, the accelerometer's white noise dominates at 1 s, with $0.577$ of the $0.710\,\mathrm{mm}$. At 10 s the gyro's bias dominates through gravity, with $245$ of the $257\,\mathrm{mm}$, because it has been integrated three times against the accelerometer bias's two. The two bias rows are equal when $gB_gt^3/6 = B_at^2/2$, that is at $t = 3B_a/(gB_g) = 1.02\,\mathrm s$. Across the cart, set the IMU's growing error against the three sensors whose error does not grow. The IMU total passes the encoder's $0.141\,\mathrm{mm}$ at $0.38\,\mathrm s$, the camera's $0.833\,\mathrm{mm}$ at $1.09\,\mathrm s$, and the range sensor's $10\,\mathrm{mm}$ at $3.21\,\mathrm s$. Over one vision frame ($20\,\mathrm{ms}$) it has drifted $1.6\,\mathrm{\mu m}$, 86 times less than one encoder σ.
 
-So on P6 the IMU never beats the encoder on position beyond a third of a second, and it is not on the cart for position. It is there for what the encoder cannot see. If the encoder reads a wheel, as it does in MR ch.13's version of P6, that is slip. On a platform with no encoder at all, it is the milliseconds between camera frames. This is the quantitative form of the sentence in [[04-robotics/state-estimation-slam|3. State Estimation §7]] that an IMU is accurate over milliseconds and useless over minutes.
+So on P6 the IMU never beats the encoder on position beyond a third of a second, and it is not on the cart for position. It is there for what the encoder cannot see. If the encoder reads a wheel, as it does in MR ch.13's version of P6, that is slip. On a platform with no encoder at all, it is the milliseconds between camera frames. This is the quantitative form of the sentence in [[04-robotics/state-estimation-slam|3. State Estimation §7.2]] that an IMU is accurate over milliseconds and useless over minutes.
 
 **5. What goes into the filter.** Three numbers become measurement variances $R$: $1.99\times10^{-8}\,\mathrm m^2$ for the encoder, $(Z_c\sigma_u/f_x)^2 = (0.833\,\mathrm{mm})^2 = 6.94\times10^{-7}\,\mathrm m^2$ for the camera, and $10^{-4}\,\mathrm m^2$ for the range sensor. The IMU enters differently, as process noise $Q$. It adds $N_a^2\Delta t = 5\times10^{-9}\,(\mathrm m/\mathrm s)^2$ of velocity variance per $5\,\mathrm{ms}$ step, and its biases become states. §8 builds this.
 
@@ -305,7 +305,7 @@ Differencing makes quantization worse, because a one-tick velocity divides a pos
 
 Both measure position with an error that does not grow with the horizon. Each has one trap that the Gaussian in §1's table does not show.
 
-**The range sensor.** It reads $z_r = (x_w - p) + b_r + n_r$ with $\sigma_r = 10\,\mathrm{mm}$. The noise averages away and the offset does not. A hundred readings (2 s at 50 Hz) bring the noise down to $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$ and leave the $4\,\mathrm{mm}$ offset untouched, so after two seconds the bias is four times the noise, and it has to be calibrated against a known distance or carried as a state. The Gaussian is also only part of a real range sensor. Thrun, Burgard and Fox's beam model mixes four components: the Gaussian *hit* on the intended surface, *short* readings from unexpected objects in the beam, *max-range* readings when the return is lost, and a uniform floor of *random* readings. A reading that does not come from the panel at all, like the passer-by in 3. State Estimation's Worked case, belongs to one of the last three. No choice of $\sigma_r$ covers them, which is why that page gates ([[04-robotics/state-estimation-slam|3. State Estimation §8.5]]).
+**The range sensor.** It reads $z_r = (x_w - p) + b_r + n_r$ with $\sigma_r = 10\,\mathrm{mm}$. The noise averages away and the offset does not. A hundred readings (2 s at 50 Hz) bring the noise down to $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$ and leave the $4\,\mathrm{mm}$ offset untouched, so after two seconds the bias is four times the noise, and it has to be calibrated against a known distance or carried as a state. The Gaussian is also only part of a real range sensor. Thrun, Burgard and Fox's beam model mixes four components: the Gaussian *hit* on the intended surface, *short* readings from unexpected objects in the beam, *max-range* readings when the return is lost, and a uniform floor of *random* readings. A reading that does not come from the panel at all, like the passer-by in 3. State Estimation's Worked case, belongs to one of the last three. No choice of $\sigma_r$ covers them, which is why that page gates ([[04-robotics/state-estimation-slam|3. State Estimation §8.5.2]]).
 
 **The camera.** It measures a pixel, $u = c_x + f_x(p - p_c)/Z_c + n_u$. For a point at depth $Z_c$ the pinhole model ([[04-robotics/geometric-perception-calibration|3.5 §1]]) turns pixel noise into position noise:
 
@@ -335,7 +335,11 @@ Each term has its own slope and its own reading rule. The rules come from averag
 | $0$ | bias instability | $\sqrt{2\ln2/\pi}\,B = 0.664B$ | $B$ = the floor divided by $0.664$ |
 | $+\tfrac12$ | bias random walk | $K\sqrt{\tau/3}$ | $K$ = the line's value at $\tau = 3\,\mathrm s$ |
 
-The floor's constant is where §3's spectrum goes: in the Allan integral, the substitution $u = \pi f\tau$ turns $df/f$ into $du/u$, so $\tau$ drops out of the flicker term, leaving $(2B^2/\pi)\int_0^\infty \sin^4u/u^3\,du = (2\ln2/\pi)B^2$. Hou's derivation covers further terms, among them slope $-1$ for quantization of the output and slope $+1$ for a steady ramp in the rate. Three reading habits separate a correct reading from a plausible one.
+**Where $0.664$ comes from.** The Allan variance is a filter applied to the rate. The difference of two successive $\tau$-averages is the rate convolved with $+1/\tau$ over one cluster and $-1/\tau$ over the next, a kernel whose frequency response has magnitude $2\sin^2(\pi f\tau)/(\pi f\tau)$. Since $\sigma_A^2$ is half that difference's power, a rate with two-sided power spectral density $S(f)$ has
+$$\sigma_A^2(\tau) = 4\int_0^\infty S(f)\,\frac{\sin^4(\pi f\tau)}{(\pi f\tau)^2}\,df$$
+the relation the Allan-variance literature starts from (IEEE Std 952; El-Sheimy, Hou and Niu). White noise, $S = N^2$, gives $N^2/\tau$ under the substitution $u = \pi f\tau$, because $\int_0^\infty \sin^4u/u^2\,du = \pi/4$: the table's first row. For §3's flicker spectrum $S = B^2/(2\pi f)$, the same substitution turns $df/f$ into $du/u$, so $\tau$ drops out entirely, which is why the floor is flat:
+$$\sigma_A^2 = \frac{2B^2}{\pi}\int_0^\infty \frac{\sin^4u}{u^3}\,du = \frac{2\ln2}{\pi}\,B^2$$
+The integral is $\ln2$. One integration by parts turns $\sin^4u/u^3$ into $2\sin^3u\cos u/u^2 = (2\sin2u - \sin4u)/(4u^2)$, a second turns that into $(\cos2u - \cos4u)/u$, and the boundary terms vanish at both ends each time. That last integral is Frullani's, $\int_0^\infty(\cos au - \cos bu)/u\,du = \ln(b/a) = \ln 2$. So the floor is $\sqrt{2\ln2/\pi}\,B = 0.664B$, and quadrature confirms $\int_0^\infty \sin^4u/u^3\,du = 0.693147$. Hou's derivation covers further terms, among them slope $-1$ for quantization of the output and slope $+1$ for a steady ramp in the rate. Three reading habits separate a correct reading from a plausible one.
 - **Read the line, not the curve.** On P6's gyro the curve at $\tau = 1\,\mathrm s$ is $1.41\times10^{-4}$, 41% above $N_g$, because the floor is already there. $N$ comes from the $-\tfrac12$ line extended to 1 s, which is how §7's code reads it: a fit over the first decade of $\tau$.
 - **A flat bottom exists only if the terms leave room for it.** The white line meets the floor at $\tau_1 = (N/0.664B)^2 = 1.0\,\mathrm s$, and the floor meets the random walk at $\tau_2 = 3(0.664B/K)^2 = 7400\,\mathrm s$. With $\tau_2 \gg \tau_1$ the floor is a shelf several decades wide. Once $K$ grows until $\tau_2 < \tau_1$, the minimum is only where the $-\tfrac12$ and $+\tfrac12$ lines cross, and dividing it by $0.664$ reports a bias instability that is not there: §7's sweep reads $1.81B$ at $K = 2\times10^{-4}$. And a datasheet's "bias instability" may be the floor itself or the floor divided by $0.664$, a factor of 1.5 apart, so check which.
 - **Long cluster times are few.** The value at $\tau$ rests on only about $T/\tau$ clusters of a record of length $T$, and it scatters accordingly. For white noise, 4000 simulated records scatter by 20% with 20 non-overlapping clusters and by 11% with 60. The overlapping form does better, but not by an order of magnitude. That is why §7 reads the floor only up to $T/20$.
@@ -346,6 +350,10 @@ The floor's constant is where §3's spectrum goes: in the Allan integral, the su
 
 The derivations above give asymptotes. This section checks them on data you generate, and shows what a change of sample rate and a growing random walk do to the reading. The listing builds one gyro axis at rest from its three terms. The white noise has $\sigma = N\sqrt f$ (§2). The random walk is a cumulative sum of steps of size $K\sqrt{\Delta t}$ (§3). The flicker floor is white noise shaped by an FFT to the spectrum $B^2/(2\pi f)$. The listing then computes the overlapping Allan deviation, reads $N$ off the first decade and $B$ off the lowest point up to $T/20$. Part 1 is one five-minute record at P6's 200 Hz, the one §6's example quotes. Parts 2 and 3 are the sweeps, ten seeds per row. Part 4 checks §3's white-noise laws by brute force; its cumulative sums are semi-implicit Euler ([[02-foundations/lab-kernel|0.7 §3]]).
 
+**How the listing makes the flicker term.** A $1/f$ spectrum has no exact finite recursion, so `imu_axis` builds it in the frequency domain, in three moves. First, the discrete Fourier transform of $n$ independent standard-normal samples has coefficients $W_k$ with $E|W_k|^2 = n$ at every frequency $f_k = kf/n$: white noise's flat spectrum, with independent random phases. Second, a record sampled at rate $f$ whose two-sided power spectral density is $S$ has $E|Y_k|^2 = nf\,S(f_k)$, because the periodogram $|Y_k|^2/(nf)$ is the discrete estimate of $S$. So scaling each white coefficient by the square root of $f$ times the target spectrum gives every frequency exactly the power a process with that spectrum would have:
+$$Y_k = \sqrt{f\,S(f_k)}\;W_k, \qquad S(f_k) = \frac{B^2}{2\pi f_k}$$
+The inverse FFT turns the $Y_k$ back into a record, and a Gaussian one, since it is a linear map of Gaussian draws. Third, the zero-frequency bin is set to zero, because the $1/f$ spectrum is infinite there and that bin would only be a constant offset, which the Allan deviation cancels anyway. Averaged over 200 records and all frequency bins, the ratio of the output's periodogram to $B^2/(2\pi f_k)$ is $0.999$. Two limits come with the construction. The spectrum exists only between the lowest bin, $1/T$, and $f/2$, so the generated bias behaves as flicker only for cluster times well inside that band, one more reason to read the floor only up to $T/20$. And the FFT makes the record periodic, which does not matter for $\tau \ll T$.
+
 ```python
 # P6's page-local IMU at rest: simulate, compute the Allan deviation, read N and B back.
 import numpy as np
@@ -355,10 +363,10 @@ def imu_axis(N, B, K, f, T, rng):
     n = int(round(T * f))
     white = N * np.sqrt(f) * rng.standard_normal(n)                  # sigma = N sqrt(f), section 2
     walk = np.cumsum(K * np.sqrt(1.0 / f) * rng.standard_normal(n))   # Var b(t) = K^2 t
-    X = np.fft.rfft(rng.standard_normal(n))                           # flicker: shape white noise
+    X = np.fft.rfft(rng.standard_normal(n))                           # flicker: white DFT, E|W_k|^2 = n
     fr = np.fft.rfftfreq(n, 1.0 / f)
-    X[0] = 0.0
-    X[1:] *= np.sqrt(f * B**2 / (2 * np.pi * fr[1:]))                  # two-sided PSD B^2/(2 pi f)
+    X[0] = 0.0                                                        # no DC bin: 1/f is infinite at f = 0
+    X[1:] *= np.sqrt(f * B**2 / (2 * np.pi * fr[1:]))                  # Y_k = sqrt(f S(f_k)) W_k, S = B^2/(2 pi f)
     return white + np.fft.irfft(X, n) + walk
 
 def allan(y, f, taus):
@@ -575,7 +583,7 @@ for T in (300.0, 1800.0, 7200.0):
 *3. 확률, 6. 신호처리, 3. 상태 추정 위에 선다. 대상은 다시 장치 **P6** — ROS 2, 10. 로봇 시스템, MR 13장이 이미 굴린 카트다. 여기서는 그 페이지들과 3. 상태 추정의 필터들이 주어진 것으로 받아 쓰는 센서 잡음 모델을 싣는다.*
 
 > [!note] 처음이라면 · First pass
-> 이 페이지의 대상 표와 대상으로 한 번 끝까지를 읽고, §2(밀도가 샘플당 σ가 되는 법)와 §3(적분이 각 오차 항에 하는 일)을 읽은 뒤 §7의 코드를 돌려라. §4–§6은 엔코더의 $R$, 거리 센서의 이상치, 논문의 앨런 그림을 읽어야 할 때 펴는 절이고, §8은 이 페이지의 모든 숫자가 칼만 필터의 어디로 들어가는지를 보여 준다.
+> 이 페이지의 대상 표와 대상으로 한 번 끝까지를 읽고, §1(모든 센서를 쓰는 하나의 형태), §2(밀도가 샘플당 σ가 되는 법)와 §3(적분이 각 오차 항에 하는 일)을 읽은 뒤 §7의 코드를 돌려라. §4–§6은 엔코더의 $R$, 거리 센서의 이상치, 논문의 앨런 그림을 읽어야 할 때 펴는 절이고, §8은 이 페이지의 모든 숫자가 칼만 필터의 어디로 들어가는지를 보여 준다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -745,7 +753,7 @@ $$\sigma_a = 1.0\times10^{-3}\sqrt{200} = 0.0141\ \mathrm{m/s^2},\qquad \sigma_g
 
 **4. 지평마다 어느 센서가 지배하는가.** IMU 안에서는 1 s에 가속도계 백색 잡음이 지배한다. $0.710\,\mathrm{mm}$ 중 $0.577$이다. 10 s에는 중력을 거친 자이로 바이어스가 $257\,\mathrm{mm}$ 중 $245$로 지배한다. 가속도계 바이어스가 두 번 적분되는 동안 그것은 세 번 적분되기 때문이다. 두 바이어스 행은 $gB_gt^3/6 = B_at^2/2$, 곧 $t = 3B_a/(gB_g) = 1.02\,\mathrm s$에서 같다. 카트 전체로 보면, 자라는 IMU 오차를 자라지 않는 센서 셋과 맞세운다. IMU 합계는 $0.38\,\mathrm s$에 엔코더의 $0.141\,\mathrm{mm}$를, $1.09\,\mathrm s$에 카메라의 $0.833\,\mathrm{mm}$를, $3.21\,\mathrm s$에 거리 센서의 $10\,\mathrm{mm}$를 넘는다. 비전 한 프레임($20\,\mathrm{ms}$) 동안의 표류는 $1.6\,\mathrm{\mu m}$로, 엔코더 σ 하나보다 86배 작다.
 
-그러니 P6에서 IMU는 3분의 1초가 지나면 위치로 엔코더를 이기지 못하고, 카트에 실린 이유도 위치가 아니다. 엔코더가 보지 못하는 것 때문이다. 엔코더가 바퀴를 읽는다면, MR 13장판 P6처럼, 그것은 미끄럼이다. 엔코더가 아예 없는 플랫폼에서는 카메라 프레임 사이의 몇 밀리초다. [[04-robotics/state-estimation-slam|3. 상태 추정 §7]]의 문장, IMU는 밀리초 단위에서 정확하고 분 단위에서 쓸모없다는 말을 숫자로 쓴 것이 이것이다.
+그러니 P6에서 IMU는 3분의 1초가 지나면 위치로 엔코더를 이기지 못하고, 카트에 실린 이유도 위치가 아니다. 엔코더가 보지 못하는 것 때문이다. 엔코더가 바퀴를 읽는다면, MR 13장판 P6처럼, 그것은 미끄럼이다. 엔코더가 아예 없는 플랫폼에서는 카메라 프레임 사이의 몇 밀리초다. [[04-robotics/state-estimation-slam|3. 상태 추정 §7.2]]의 문장, IMU는 밀리초 단위에서 정확하고 분 단위에서 쓸모없다는 말을 숫자로 쓴 것이 이것이다.
 
 **5. 필터에 들어가는 것.** 숫자 셋이 측정 분산 $R$이 된다. 엔코더 $1.99\times10^{-8}\,\mathrm m^2$, 카메라 $(Z_c\sigma_u/f_x)^2 = (0.833\,\mathrm{mm})^2 = 6.94\times10^{-7}\,\mathrm m^2$, 거리 센서 $10^{-4}\,\mathrm m^2$. IMU는 다르게, 과정 잡음 $Q$로 들어간다. $5\,\mathrm{ms}$ 스텝마다 속도 분산을 $N_a^2\Delta t = 5\times10^{-9}\,(\mathrm m/\mathrm s)^2$씩 더하고, 바이어스는 상태가 된다. §8이 이것을 짠다.
 
@@ -864,7 +872,7 @@ $u^{2m-2}$를 $0$부터 $t$까지 적분하면 $t^{2m-1}/(2m-1)$이기 때문이
 
 둘 다 지평에 따라 자라지 않는 오차로 위치를 잰다. 각각에 §1 표의 가우시안이 보여 주지 않는 함정이 하나씩 있다.
 
-**거리 센서.** $\sigma_r = 10\,\mathrm{mm}$로 $z_r = (x_w - p) + b_r + n_r$을 읽는다. 잡음은 평균으로 사라지고 오프셋은 그렇지 않다. 100개를 읽으면(50 Hz로 2 s) 잡음은 $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$로 내려가고 $4\,\mathrm{mm}$ 오프셋은 그대로다. 그래서 2초 뒤에는 바이어스가 잡음의 네 배이고, 알려진 거리에 대해 보정하거나 상태로 들고 가야 한다. 가우시안은 실제 거리 센서의 일부이기도 하다. Thrun, Burgard, Fox의 빔 모델은 성분 넷을 섞는다. 의도한 표면에 맞은 가우시안 *hit*, 빔 안의 예상 밖 물체가 만드는 *short* 판독, 반사가 사라졌을 때의 *max-range* 판독, 그리고 균일한 바닥의 *random* 판독이다. 3. 상태 추정 계산 절의 지나가는 사람처럼 패널에서 전혀 오지 않은 판독은 뒤의 셋 중 하나에 속한다. 어떤 $\sigma_r$도 그것을 덮지 못하므로 그 페이지는 게이트를 건다([[04-robotics/state-estimation-slam|3. 상태 추정 §8.5]]).
+**거리 센서.** $\sigma_r = 10\,\mathrm{mm}$로 $z_r = (x_w - p) + b_r + n_r$을 읽는다. 잡음은 평균으로 사라지고 오프셋은 그렇지 않다. 100개를 읽으면(50 Hz로 2 s) 잡음은 $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$로 내려가고 $4\,\mathrm{mm}$ 오프셋은 그대로다. 그래서 2초 뒤에는 바이어스가 잡음의 네 배이고, 알려진 거리에 대해 보정하거나 상태로 들고 가야 한다. 가우시안은 실제 거리 센서의 일부이기도 하다. Thrun, Burgard, Fox의 빔 모델은 성분 넷을 섞는다. 의도한 표면에 맞은 가우시안 *hit*, 빔 안의 예상 밖 물체가 만드는 *short* 판독, 반사가 사라졌을 때의 *max-range* 판독, 그리고 균일한 바닥의 *random* 판독이다. 3. 상태 추정 계산 절의 지나가는 사람처럼 패널에서 전혀 오지 않은 판독은 뒤의 셋 중 하나에 속한다. 어떤 $\sigma_r$도 그것을 덮지 못하므로 그 페이지는 게이트를 건다([[04-robotics/state-estimation-slam|3. 상태 추정 §8.5.2]]).
 
 **카메라.** 픽셀 $u = c_x + f_x(p - p_c)/Z_c + n_u$를 잰다. 깊이 $Z_c$의 점에 대해 핀홀 모델([[04-robotics/geometric-perception-calibration|3.5 §1]])이 픽셀 잡음을 위치 잡음으로 바꾼다.
 
@@ -894,7 +902,11 @@ $$\sigma_p = \frac{Z_c\,\sigma_u}{f_x} = \frac{1.0 \times 0.5}{600}\ \mathrm m =
 | $0$ | 바이어스 불안정성 | $\sqrt{2\ln2/\pi}\,B = 0.664B$ | $B$ = 바닥을 $0.664$로 나눈 값 |
 | $+\tfrac12$ | 바이어스 랜덤 워크 | $K\sqrt{\tau/3}$ | $K$ = 직선의 $\tau = 3\,\mathrm s$ 값 |
 
-바닥의 상수가 §3의 스펙트럼이 가는 곳이다. 앨런 적분에서 치환 $u = \pi f\tau$가 $df/f$를 $du/u$로 바꾸므로 플리커 항에서 $\tau$가 빠지고 $(2B^2/\pi)\int_0^\infty \sin^4u/u^3\,du = (2\ln2/\pi)B^2$이 남는다. Hou의 유도는 항을 더 다루는데, 그중에는 출력 양자화의 기울기 $-1$과 각속도의 일정한 경사가 만드는 기울기 $+1$이 있다. 읽는 습관 셋이 맞는 읽기와 그럴듯한 읽기를 가른다.
+**$0.664$는 어디서 오는가.** 앨런 분산은 각속도에 거는 필터다. 연속한 두 $\tau$-평균의 차이는 각속도를 한 클러스터 동안 $+1/\tau$, 다음 클러스터 동안 $-1/\tau$인 핵과 합성곱한 것이고, 그 핵의 주파수 응답 크기는 $2\sin^2(\pi f\tau)/(\pi f\tau)$다. $\sigma_A^2$는 그 차이의 전력의 절반이므로, 양측 전력 스펙트럼 밀도가 $S(f)$인 각속도는
+$$\sigma_A^2(\tau) = 4\int_0^\infty S(f)\,\frac{\sin^4(\pi f\tau)}{(\pi f\tau)^2}\,df$$
+를 가진다. 앨런 분산 문헌이 출발점으로 삼는 관계식이다(IEEE Std 952; El-Sheimy, Hou, Niu). 백색 잡음 $S = N^2$은 치환 $u = \pi f\tau$ 아래에서 $N^2/\tau$를 준다. $\int_0^\infty \sin^4u/u^2\,du = \pi/4$이기 때문이고, 표의 첫 행이다. §3의 플리커 스펙트럼 $S = B^2/(2\pi f)$에서는 같은 치환이 $df/f$를 $du/u$로 바꾸므로 $\tau$가 통째로 빠진다. 바닥이 평평한 이유가 그것이다.
+$$\sigma_A^2 = \frac{2B^2}{\pi}\int_0^\infty \frac{\sin^4u}{u^3}\,du = \frac{2\ln2}{\pi}\,B^2$$
+적분값은 $\ln2$다. 부분적분 한 번이 $\sin^4u/u^3$을 $2\sin^3u\cos u/u^2 = (2\sin2u - \sin4u)/(4u^2)$로, 두 번째가 그것을 $(\cos2u - \cos4u)/u$로 바꾸고, 경계항은 매번 양끝에서 사라진다. 마지막 적분은 Frullani 적분 $\int_0^\infty(\cos au - \cos bu)/u\,du = \ln(b/a) = \ln 2$다. 그러므로 바닥은 $\sqrt{2\ln2/\pi}\,B = 0.664B$이고, 수치 적분도 $\int_0^\infty \sin^4u/u^3\,du = 0.693147$을 확인한다. Hou의 유도는 항을 더 다루는데, 그중에는 출력 양자화의 기울기 $-1$과 각속도의 일정한 경사가 만드는 기울기 $+1$이 있다. 읽는 습관 셋이 맞는 읽기와 그럴듯한 읽기를 가른다.
 - **곡선이 아니라 직선을 읽어라.** P6 자이로에서 $\tau = 1\,\mathrm s$의 곡선은 $1.41\times10^{-4}$로 $N_g$보다 41% 높다. 바닥이 이미 와 있기 때문이다. $N$은 $-\tfrac12$ 직선을 1 s까지 연장한 값이고, §7의 코드가 첫 decade의 맞춤으로 그렇게 읽는다.
 - **평평한 바닥은 항들이 자리를 내줄 때만 있다.** 백색 직선은 $\tau_1 = (N/0.664B)^2 = 1.0\,\mathrm s$에서 바닥과 만나고, 바닥은 $\tau_2 = 3(0.664B/K)^2 = 7400\,\mathrm s$에서 랜덤 워크와 만난다. $\tau_2 \gg \tau_1$이면 바닥은 몇 decade 폭의 선반이다. $K$가 커져 $\tau_2 < \tau_1$이 되면 최솟값은 $-\tfrac12$ 직선과 $+\tfrac12$ 직선이 교차하는 곳일 뿐이고, 그것을 $0.664$로 나누면 존재하지 않는 바이어스 불안정성을 보고하게 된다. §7의 스윕은 $K = 2\times10^{-4}$에서 $1.81B$를 읽는다. 그리고 데이터시트의 "bias instability"는 바닥 그 자체일 수도, 바닥을 $0.664$로 나눈 값일 수도 있다. 1.5배 차이이니 어느 쪽인지 확인하라.
 - **긴 클러스터 시간은 수가 적다.** $\tau$에서의 값은 길이 $T$ 기록의 클러스터 약 $T/\tau$개에만 기대고, 그만큼 흩어진다. 백색 잡음에서 시뮬레이션 기록 4000개는 겹치지 않는 클러스터 20개로 20%, 60개로 11% 흩어진다. 겹침 형태가 낫지만 자릿수가 달라질 만큼은 아니다. §7이 바닥을 $T/20$까지만 읽는 이유다.
@@ -904,6 +916,10 @@ $$\sigma_p = \frac{Z_c\,\sigma_u}{f_x} = \frac{1.0 \times 0.5}{600}\ \mathrm m =
 ### 7. 랩: 자이로를 시뮬레이션하고, 앨런 편차를 계산하고, N과 B를 읽어 낸다
 
 위의 유도는 점근선을 준다. 이 절은 직접 만든 데이터로 그것을 확인하고, 샘플링 속도의 변화와 커지는 랜덤 워크가 읽기에 무엇을 하는지 보여 준다. 코드는 정지한 자이로 축 하나를 세 항으로 만든다. 백색 잡음은 $\sigma = N\sqrt f$(§2), 랜덤 워크는 크기 $K\sqrt{\Delta t}$ 걸음의 누적합(§3), 플리커 바닥은 FFT로 스펙트럼 $B^2/(2\pi f)$에 맞춰 성형한 백색 잡음이다. 그런 다음 겹침 앨런 편차를 계산하고, 첫 decade에서 $N$을, $T/20$까지의 가장 낮은 점에서 $B$를 읽는다. 1부는 P6의 200 Hz로 얻은 5분 기록 하나이고, §6의 예가 인용하는 것이다. 2부와 3부는 스윕이고 행마다 시드 열 개다. 4부는 §3의 백색 잡음 법칙을 무차별 대입으로 확인한다. 거기의 누적합은 반암시적 오일러다([[02-foundations/lab-kernel|0.7 §3]]). 코드는 영어 절에 있다.
+
+**코드가 플리커 항을 만드는 법.** $1/f$ 스펙트럼에는 정확한 유한 점화식이 없으므로, `imu_axis`는 그것을 주파수 영역에서 세 걸음으로 짓는다. 첫째, 서로 독립인 표준정규 표본 $n$개의 이산 푸리에 변환은 모든 주파수 $f_k = kf/n$에서 $E|W_k|^2 = n$인 계수 $W_k$를 가진다. 백색 잡음의 평평한 스펙트럼이고, 위상은 서로 독립인 난수다. 둘째, 속도 $f$로 샘플링한 기록의 양측 전력 스펙트럼 밀도가 $S$이면 $E|Y_k|^2 = nf\,S(f_k)$다. 주기도 $|Y_k|^2/(nf)$가 $S$의 이산 추정량이기 때문이다. 그러므로 백색 계수마다 $f$ 곱하기 목표 스펙트럼의 제곱근을 곱하면, 모든 주파수가 그 스펙트럼을 가진 과정이 가질 전력을 정확히 갖는다.
+$$Y_k = \sqrt{f\,S(f_k)}\;W_k, \qquad S(f_k) = \frac{B^2}{2\pi f_k}$$
+역 FFT가 $Y_k$를 다시 기록으로 되돌리고, 가우시안 난수의 선형 사상이므로 그 기록도 가우시안이다. 셋째, 주파수 0의 칸은 0으로 둔다. $1/f$ 스펙트럼이 거기서 무한대이고, 그 칸은 상수 오프셋일 뿐이라 앨런 편차가 어차피 소거하기 때문이다. 기록 200개와 모든 주파수 칸에 걸쳐 평균하면, 출력의 주기도와 $B^2/(2\pi f_k)$의 비는 $0.999$다. 이 구성에는 한계가 둘 따라온다. 스펙트럼은 가장 낮은 칸 $1/T$와 $f/2$ 사이에만 있으므로, 만들어진 바이어스는 그 대역 한참 안쪽의 클러스터 시간에서만 플리커로 행동한다. 바닥을 $T/20$까지만 읽는 이유가 하나 더 생긴다. 그리고 FFT는 기록을 주기적으로 만들지만, $\tau \ll T$에서는 상관이 없다.
 
 **1부.** 기록의 샘플당 표준편차는 $N_g\sqrt f = 1.414\times10^{-3}$에 대해 $1.439\times10^{-3}$이다. 차이는 플리커와 랜덤 워크가 더한다. 앨런 편차는 §6의 예다. 시드 0은 $\hat N = 1.007\times10^{-4}$, $\hat B = 1.475\times10^{-4}$를 읽고, 가장 낮은 점은 $11.4\,\mathrm s$다.
 

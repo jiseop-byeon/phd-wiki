@@ -10,12 +10,15 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.13** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> Nonholonomic constraints from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]] and trigonometry are enough. The object is the cart of **P6** in [[02-foundations/lab-plants|0.6 Lab Plants]], given two wheels below.
-> [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 비홀로노믹 제약과 삼각함수면 충분하다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 카트이고, 아래에서 바퀴 두 개를 달아 준다.
+> Nonholonomic constraints from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]], trigonometry, and the first terms of a Taylor series from [[02-foundations/engineering-math|0.5 §2]] (Step 5 uses $\sin u/u \approx 1 - u^2/6$) are enough; the odometry-drift discussion leans on the Kalman update of [[04-robotics/state-estimation-slam|3. State Estimation]]. The object is the cart of **P6** in [[02-foundations/lab-plants|0.6 Lab Plants]], given two wheels below.
+> [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 비홀로노믹 제약, 삼각함수, 그리고 [[02-foundations/engineering-math|0.5 §2]]의 테일러 급수 앞 몇 항(5단계가 $\sin u/u \approx 1 - u^2/6$을 쓴다)이면 충분하고, 오도메트리 드리프트 논의는 [[04-robotics/state-estimation-slam|3. 상태 추정]]의 칼만 갱신에 기댄다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 카트이고, 아래에서 바퀴 두 개를 달아 준다.
 
 ## English
 
 **Core question**: how do wheeled bases move, and why is "can't slide sideways" not the same as "can't get there"?
+
+> [!note] First pass · 처음이라면
+> Read the running plant, the picture and Steps 1–4 of the worked case — rolling constraint, wheel speeds, the odometry update, and one quarter turn run through it by hand — then Step 6, which ranks encoder quantization against tyre slip. Steps 5 and 7 (why the loop runs at $200\,\mathrm{Hz}$, and what the clock does to a velocity estimate) and the definitions in §2 and §3 are the second pass; §1 is the chapter as one list, including Brockett's result, to come back to when a paper says its base tracks trajectories rather than stabilizing to a pose. Then the self-check and the problem set, which turns the cart in place.
 
 ### Running plant · 이 페이지의 장치
 
@@ -110,7 +113,7 @@ $$v = \frac{\dot s_R + \dot s_L}{2} = \frac{r(\omega_R + \omega_L)}{2}, \qquad \
 
 since a rigid body rotating at $\omega$ makes the two points $2d$ apart differ in speed by exactly $2d\,\omega$. The instantaneous turn radius follows as $R = v/\omega = d(\dot s_R + \dot s_L)/(\dot s_R - \dot s_L)$.
 
-**Step 3 — counts to pose, as an algorithm.** This is what the odometry node runs every $5\,\mathrm{ms}$ on the two count differences $\Delta n_R, \Delta n_L$:
+**Step 3 — counts to pose, as an algorithm.** This is what the odometry node — the process that dead-reckons pose from wheel counts alone, defined in §2 — runs every $5\,\mathrm{ms}$ on the two count differences $\Delta n_R, \Delta n_L$:
 
 1. $\Delta s_R = \Delta n_R/2048$, $\Delta s_L = \Delta n_L/2048$ (metres);
 2. $\Delta s = (\Delta s_R + \Delta s_L)/2$ and $\Delta\theta = (\Delta s_R - \Delta s_L)/(2d) = (\Delta s_R - \Delta s_L)/0.4$;
@@ -118,11 +121,13 @@ since a rigid body rotating at $\omega$ makes the two points $2d$ apart differ i
 
 Step 3 uses the *midpoint* heading rather than the heading at the start of the interval, which is second-order accurate because the true displacement of a constant-curvature arc points along exactly that midpoint direction. What it still gets wrong is the magnitude — the arc's chord is $2R\sin(\Delta\theta/2)$, shorter than the arc $\Delta s$ — and Step 5 sizes that.
 
+The three lines hold unchanged when a wheel runs backward: its $\Delta n$ is negative, so $\Delta s$ or $\Delta\theta$ comes out negative and no case split is needed. And $\theta$ is kept as an unwrapped running sum, because $\cos$ and $\sin$ repeat every $360°$ and line 3 gives the same $x, y$ either way; it is wrapped into $(-180°, 180°]$ only where two headings are compared, so that $359°$ and $1°$ differ by $2°$ rather than $358°$.
+
 **Step 4 — one worked manoeuvre.** Drive a quarter circle of radius $R = 1.000\,\mathrm{m}$ that carries the cart from $(0,0,0°)$ to $(1,1,90°)$, so the body-frame arc is $s = R\,\pi/2 = 1.570796\,\mathrm{m}$. Commanded wheel arcs:
 
 $$\Delta s_R = s\,\frac{R+d}{R} = 1.5708 \times 1.2 = 1.884956\ \mathrm{m}, \qquad \Delta s_L = s\,\frac{R-d}{R} = 1.5708 \times 0.8 = 1.256637\ \mathrm{m}$$
 
-because the outer wheel runs on a circle of radius $R+d$ and the inner on $R-d$ about the same centre. In counts those are $1.884956 \times 2048 = 3860.39$ and $1.256637 \times 2048 = 2573.59$ — and an encoder reports whole counts, so what the odometry actually sees is $\Delta n_R = 3860$, $\Delta n_L = 2573$. Run the algorithm on those integers:
+because the outer wheel runs on a circle of radius $R+d$ and the inner on $R-d$ about the same centre. In counts those are $1.884956 \times 2048 = 3860.39$ and $1.256637 \times 2048 = 2573.59$ — and an encoder reports whole counts. A count registers only when the wheel physically passes the next count boundary, so a reading of $n$ means the true travel lies in $[n,\ n+1)$ counts: readings **floor**, they do not round. What the odometry actually sees is therefore $\Delta n_R = 3860$, $\Delta n_L = 2573$ (rounding $2573.59$ up to $2574$ instead would give $89.944°$ and a $0.714\,\mathrm{mm}$ miss). Run the algorithm on those integers:
 
 - $\Delta s_R = 3860/2048 = 1.884766\,\mathrm{m}$, $\Delta s_L = 2573/2048 = 1.256348\,\mathrm{m}$;
 - $\Delta s = 1.570557\,\mathrm{m}$, short of the commanded $1.570796$ by $0.240\,\mathrm{mm}$;
@@ -137,9 +142,9 @@ $$\Delta s\left(1 - \frac{\sin(\Delta\theta/2)}{\Delta\theta/2}\right) \approx \
 
 because $\sin u/u \approx 1 - u^2/6$, so over $628$ ticks the total discretization error is $0.41\ \mu\mathrm{m}$ — three orders of magnitude below the quantization error of Step 4. **The integrator is never the problem at $200\,\mathrm{Hz}$; the encoder and the tyres are.**
 
-**Step 6 — rank the two error sources.** Quantization first. Counts are exact events, so the residual is bounded rather than accumulating: at any instant each wheel's distance is known to within half a count, and the worst-case heading error is
+**Step 6 — rank the two error sources.** Quantization first. Counts are exact events, so the residual is bounded rather than accumulating: at any instant each wheel's true travel lies less than one count above its floored reading, so the two wheels' errors differ by less than one count, and the worst-case heading error is
 
-$$\delta\theta = \frac{2 \times \tfrac12 (1/2048)}{2d} = \frac{1/2048}{0.4} = 0.0012207\ \mathrm{rad} = 0.0699°$$
+$$\delta\theta = \frac{1/2048}{2d} = \frac{1/2048}{0.4} = 0.0012207\ \mathrm{rad} = 0.0699°$$
 
 which is also the smallest heading change one count can express. It does not grow — but it *rotates everything that comes after it*, so after another $10\,\mathrm{m}$ of straight driving it has become a $12.2\,\mathrm{mm}$ lateral error. Now slip. Let the right wheel slip $1\,\%$ more than the left over the same quarter turn: $\Delta s_R$ is wrong by $0.01 \times 1.885 = 18.85\,\mathrm{mm}$, so the heading is wrong by $0.01885/0.4 = 0.0471\,\mathrm{rad} = 2.70°$, and over a further $10\,\mathrm{m}$ that is $471\,\mathrm{mm}$.
 
@@ -167,7 +172,11 @@ Slip beats quantization by a factor of $38.6$, so **odometry decay is a tyre bud
 - **Nonholonomy ≠ unreachability**: a car cannot move sideways *instantaneously*, yet can
   parallel-park into any pose — for these ideal rolling models (unicycle, diff-drive,
   car), the velocity constraints restrict *paths*, not the reachable set. The deep consequence (Brockett): no **continuous** time-invariant feedback can stabilize
-  such systems to a point — why practical controllers track *trajectories* instead. Planning
+  such systems to a point — why practical controllers track *trajectories* instead. (MR §13.3.2
+  states it as Theorem 13.1: $\dot q = G(q)u$ with $\operatorname{rank} G(0) < \dim q$, here
+  two inputs against three configuration variables, cannot be stabilized to $q = 0$ by
+  continuous time-invariant feedback. Neither MR nor this page proves it; the source is
+  Brockett's 1983 paper, *Asymptotic Stability and Feedback Stabilization*.) Planning
   has the matching consequence: search edges must be drivable curves — Reeds–Shepp shots,
   state lattices, Hybrid A\* ([[04-robotics/planning-decision-making|4. Planning §5.5]]). A base putting P2's origin in front of the panel therefore cannot use a sideways shuffle as a legal edge, and still reaches the pose.
 - **Odometry and its decay**: integrating wheel encoders gives pose, but slip and
@@ -249,6 +258,9 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 ## 한국어
 
 **핵심 질문**: 바퀴 달린 베이스는 어떻게 움직이고, "옆으로 못 미끄러진다"가 왜 "거기 못 간다"와 다른가?
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 장치, 그림, 그리고 계산의 1–4단계 — 구름 제약, 바퀴 속도, 오도메트리 갱신, 그리고 그것으로 손으로 돌려 보는 1/4 회전 하나 — 를 읽고, 그다음 엔코더 양자화와 타이어 미끄럼의 순위를 매기는 6단계를 읽어라. 5·7단계(루프가 $200\,\mathrm{Hz}$로 도는 이유, 시계가 속도 추정에 하는 일)와 §2·§3의 정의는 두 번째 읽기다. §1은 이 장을 목록 하나로 정리한 것으로 Brockett의 결과도 담고 있어서, 논문이 베이스를 한 자세에 안정화하지 않고 궤적을 추종시킨다고 말할 때 돌아와 볼 곳이다. 그다음 스스로 점검과, 카트를 제자리에서 돌리는 과제.
 
 ### 이 페이지의 장치 · Running plant
 
@@ -343,7 +355,7 @@ $$v = \frac{\dot s_R + \dot s_L}{2} = \frac{r(\omega_R + \omega_L)}{2}, \qquad \
 
 $\omega$로 도는 강체에서 $2d$ 떨어진 두 점의 속력 차가 정확히 $2d\,\omega$이기 때문이다. 순간 회전 반지름은 $R = v/\omega = d(\dot s_R + \dot s_L)/(\dot s_R - \dot s_L)$로 따라 나온다.
 
-**3단계 — 카운트에서 자세로, 알고리즘으로.** 오도메트리 노드가 카운트 차 $\Delta n_R, \Delta n_L$에 대해 $5\,\mathrm{ms}$마다 도는 것이 이것이다:
+**3단계 — 카운트에서 자세로, 알고리즘으로.** 오도메트리 노드 — 바퀴 카운트만으로 자세를 추측 항법하는 프로세스, §2에서 정의한다 — 가 카운트 차 $\Delta n_R, \Delta n_L$에 대해 $5\,\mathrm{ms}$마다 도는 것이 이것이다:
 
 1. $\Delta s_R = \Delta n_R/2048$, $\Delta s_L = \Delta n_L/2048$ (미터);
 2. $\Delta s = (\Delta s_R + \Delta s_L)/2$, $\Delta\theta = (\Delta s_R - \Delta s_L)/(2d) = (\Delta s_R - \Delta s_L)/0.4$;
@@ -351,11 +363,13 @@ $\omega$로 도는 강체에서 $2d$ 떨어진 두 점의 속력 차가 정확�
 
 3번은 구간 시작의 방위가 아니라 *중간점* 방위를 쓰는데, 일정 곡률 호의 실제 변위가 정확히 그 중간점 방향을 향하므로 2차 정확도다. 그래도 크기는 틀린다. 호의 현은 $2R\sin(\Delta\theta/2)$로 호 $\Delta s$보다 짧고, 그 크기를 5단계가 잰다.
 
+바퀴가 뒤로 돌 때도 세 줄은 그대로 성립한다. 그 바퀴의 $\Delta n$이 음수라 $\Delta s$나 $\Delta\theta$가 음수로 나올 뿐이고, 경우를 나눌 필요가 없다. 그리고 $\theta$는 감싸지 않은 누적 합으로 둔다. $\cos$과 $\sin$은 $360°$마다 반복되므로 3번 줄은 어느 쪽이든 같은 $x, y$를 준다. 두 방위를 비교하는 곳에서만 $(-180°, 180°]$로 감싸서, $359°$와 $1°$의 차가 $358°$가 아니라 $2°$가 되게 한다.
+
 **4단계 — 기동 하나를 끝까지.** 반지름 $R = 1.000\,\mathrm{m}$의 1/4원을 돌아 카트를 $(0,0,0°)$에서 $(1,1,90°)$로 옮긴다. 바디 좌표계의 호는 $s = R\,\pi/2 = 1.570796\,\mathrm{m}$다. 명령된 바퀴 호는
 
 $$\Delta s_R = s\,\frac{R+d}{R} = 1.5708 \times 1.2 = 1.884956\ \mathrm{m}, \qquad \Delta s_L = s\,\frac{R-d}{R} = 1.5708 \times 0.8 = 1.256637\ \mathrm{m}$$
 
-이다. 바깥 바퀴가 같은 중심에 대해 반지름 $R+d$의 원을, 안쪽이 $R-d$의 원을 달리기 때문이다. 카운트로는 $1.884956 \times 2048 = 3860.39$와 $1.256637 \times 2048 = 2573.59$인데, 엔코더는 정수 카운트만 보고하므로 오도메트리가 실제로 보는 것은 $\Delta n_R = 3860$, $\Delta n_L = 2573$이다. 그 정수로 알고리즘을 돌린다:
+이다. 바깥 바퀴가 같은 중심에 대해 반지름 $R+d$의 원을, 안쪽이 $R-d$의 원을 달리기 때문이다. 카운트로는 $1.884956 \times 2048 = 3860.39$와 $1.256637 \times 2048 = 2573.59$인데, 엔코더는 정수 카운트만 보고한다. 카운트는 바퀴가 다음 카운트 경계를 물리적으로 지나야만 올라가므로, 읽은 값이 $n$이면 실제 주행은 $[n,\ n+1)$ 카운트 안에 있다. 읽은 값은 반올림하지 않고 **내림한다**. 따라서 오도메트리가 실제로 보는 것은 $\Delta n_R = 3860$, $\Delta n_L = 2573$이다($2573.59$를 $2574$로 반올림하면 대신 $89.944°$와 $0.714\,\mathrm{mm}$ 빗나감이 나온다). 그 정수로 알고리즘을 돌린다:
 
 - $\Delta s_R = 3860/2048 = 1.884766\,\mathrm{m}$, $\Delta s_L = 2573/2048 = 1.256348\,\mathrm{m}$;
 - $\Delta s = 1.570557\,\mathrm{m}$, 명령된 $1.570796$보다 $0.240\,\mathrm{mm}$ 모자란다;
@@ -370,9 +384,9 @@ $$\Delta s\left(1 - \frac{\sin(\Delta\theta/2)}{\Delta\theta/2}\right) \approx \
 
 다. $\sin u/u \approx 1 - u^2/6$이기 때문이다. $628$틱을 합쳐도 이산화 오차 총합은 $0.41\ \mu\mathrm{m}$, 4단계의 양자화 오차보다 세 자릿수 아래다. **$200\,\mathrm{Hz}$에서 적분기는 결코 문제가 아니다. 문제는 엔코더와 타이어다.**
 
-**6단계 — 두 오차원의 순위.** 양자화부터. 카운트는 정확한 사건이라 잔차가 쌓이지 않고 유계다. 어느 순간에도 각 바퀴의 거리는 반 카운트 이내로 알려져 있고, 최악의 방위 오차는
+**6단계 — 두 오차원의 순위.** 양자화부터. 카운트는 정확한 사건이라 잔차가 쌓이지 않고 유계다. 어느 순간에도 각 바퀴의 실제 주행은 내림한 읽은 값보다 한 카운트 미만만큼 위에 있으므로 두 바퀴의 오차 차이는 한 카운트 미만이고, 최악의 방위 오차는
 
-$$\delta\theta = \frac{2 \times \tfrac12 (1/2048)}{2d} = \frac{1/2048}{0.4} = 0.0012207\ \mathrm{rad} = 0.0699°$$
+$$\delta\theta = \frac{1/2048}{2d} = \frac{1/2048}{0.4} = 0.0012207\ \mathrm{rad} = 0.0699°$$
 
 이며, 이는 카운트 하나가 표현할 수 있는 최소 방위 변화이기도 하다. 자라지는 않는다 — 다만 *그 뒤의 모든 주행을 회전시킨다*. 그래서 직진 $10\,\mathrm{m}$을 더 가면 $12.2\,\mathrm{mm}$의 횡오차가 된다. 이제 미끄럼. 같은 1/4 회전 동안 오른 바퀴가 왼 바퀴보다 $1\,\%$ 더 미끄러지면 $\Delta s_R$이 $0.01 \times 1.885 = 18.85\,\mathrm{mm}$ 틀리므로 방위가 $0.01885/0.4 = 0.0471\,\mathrm{rad} = 2.70°$ 틀리고, $10\,\mathrm{m}$을 더 가면 $471\,\mathrm{mm}$이다.
 
@@ -400,7 +414,11 @@ $$\delta\theta = \frac{2 \times \tfrac12 (1/2048)}{2d} = \frac{1/2048}{0.4} = 0.
   자세든 도달한다 — 이상적 구름 모델(외바퀴·차동 구동·자동차)에서 속도 제약은 *경로*를
   제한할 뿐 도달 집합을 제한하지 않는다. 깊은
   귀결(Brockett): 이런 시스템은 **연속** 시불변 피드백으로 점에 안정화할 수 없다 —
-  실전 제어기가 점이 아니라 *궤적*을 추종하는 이유다. 계획 쪽의 짝이 되는 귀결은, 탐색의
+  실전 제어기가 점이 아니라 *궤적*을 추종하는 이유다. (MR §13.3.2가 정리 13.1로 적는다:
+  $\operatorname{rank} G(0) < \dim q$인 $\dot q = G(q)u$는 연속 시불변 피드백으로 $q = 0$에
+  안정화할 수 없다. 여기서는 입력 둘에 컨피규레이션 변수 셋이다. MR도 이 페이지도 증명하지
+  않으며, 출처는 Brockett의 1983년 논문 *Asymptotic Stability and Feedback Stabilization*이다.)
+  계획 쪽의 짝이 되는 귀결은, 탐색의
   간선이 주행 가능한 곡선이어야 한다는 것이다 — Reeds–Shepp 연결, 상태 격자, Hybrid A\*
   ([[04-robotics/planning-decision-making|4. 계획 §5.5]]). 그래서 P2의 원점을 패널 앞에 두는 베이스도 옆으로 미끄러지는 간선은 쓸 수 없고, 그래도 그 자세에는 도달한다.
 - **오도메트리와 그 붕괴**: 바퀴 엔코더 적분으로 자세를 얻지만, 미끄럼과 양자화로 오차가

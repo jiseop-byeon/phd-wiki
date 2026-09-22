@@ -7,8 +7,8 @@ mastery-when: "Raise to Working or Mastery when the thesis objective depends dir
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 §6]] (log rules — §0 below re-states them) · [[02-foundations/probability|3. Probability §1–2]] (distributions, expectation)
-> [[02-foundations/engineering-math|0.5 §6]](로그 규칙 — 아래 §0이 다시 정리한다) · [[02-foundations/probability|3. 확률 §1–2]](분포·기댓값)
+> Plant **P5** (its crack detector) from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §6]] (log rules — §0 below re-states them) · [[02-foundations/probability|3. Probability §1–2]] (distributions, expectation) · [[02-foundations/optimization|4. Optimization §2]] (convexity, for Jensen's inequality in §3)
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P5**(균열 감지기) · [[02-foundations/engineering-math|0.5 §6]](로그 규칙 — 아래 §0이 다시 정리한다) · [[02-foundations/probability|3. 확률 §1–2]](분포·기댓값) · [[02-foundations/optimization|4. 최적화 §2]](볼록성, §3의 옌센 부등식용)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -23,7 +23,7 @@ even "perplexity." This page is the complete working set for reading modern pape
 no prior background assumed.
 
 > [!note] First pass · 처음이라면
-> Read §0 (three log rules, five minutes), §1, §2, §3 — and do the bit calculations by hand, they are the page. §4 and §5 are for when a paper puts mutual information or an ELBO in its objective.
+> Read the picture, §0 (three log rules, five minutes), §1, §2, §3 — and do the bit calculations by hand, they are the page. §4 and §5 are for when a paper puts mutual information or an ELBO in its objective; §4's InfoNCE proof is a second pass. §6 is a reference table to come back to.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -69,7 +69,7 @@ no prior background assumed.
   <text x="12" y="313" font-size="11" opacity="0.9" fill="currentColor">Circled: P(+|c) = 0.95 on the arrow, P(c|+) = 0.161 in the bracket, about six times apart.</text>
 </svg>
 
-The **P5** crack detector from [[02-foundations/lab-plants|0.6 Lab Plants]] as a binary channel, with the prior drawn to scale — cracked, $P(c)=0.01$, is a line and sound, $P(\neg c)=0.99$, fills the column — and four arrows carrying $P(+|c)=0.95$, $P(-|c)=0.05$, $P(+|\neg c)=0.05$ and $P(-|\neg c)=0.95$. At the arrowheads sit the joint masses $0.0095$, $0.0005$, $0.0495$ and $0.9405$, which sum to $1$; the two that land on $+$ make $P(+)=0.059$, split into the shares $0.161$ from cracked and $0.839$ from sound. The two circled numbers are the point — the sensitivity $P(+|c)=0.95$ on an arrow and the posterior $P(c|+)=0.161$ in the bracket, about six times apart — and §2 prices confusing them at $H(p,q)\approx 3.64$ bits against a floor of $H(p)\approx 0.637$ bits.
+The **P5** crack detector from [[02-foundations/lab-plants|0.6 Lab Plants]] as a binary channel, with the prior drawn to scale — cracked, $P(c)=0.01$, is a line and sound, $P(\neg c)=0.99$, fills the column — and four arrows carrying $P(+|c)=0.95$, $P(-|c)=0.05$, $P(+|\neg c)=0.05$ and $P(-|\neg c)=0.95$. At the arrowheads sit the joint masses $0.0095$, $0.0005$, $0.0495$ and $0.9405$, which sum to $1$; the two that land on $+$ make $P(+)=0.059$, split into the shares $0.161$ from cracked and $0.839$ from sound. The two circled numbers are the point — the sensitivity $P(+|c)=0.95$ on an arrow and the posterior $P(c|+)=0.161$ in the bracket, about six times apart — and §2 prices confusing them at $H(p,q)\approx 3.64$ bits (the cross-entropy, §2) against a floor of $H(p)\approx 0.637$ bits (the entropy of the true posterior, §1).
 
 ### 0. Prerequisite: the three log rules
 
@@ -260,7 +260,7 @@ Logarithms are useful because they turn the joint probability of many observatio
   — how many bits knowing $Y$ tells you about $X$; zero iff independent.
   **Mutual information** is a number attached to a pair of random variables with joint distribution $p(x,y)$ and marginals $p(x)$, $p(y)$. It has three equivalent forms, each a different reading:
   $$I(X;Y) = \sum_{x,y} p(x,y)\log\frac{p(x,y)}{p(x)\,p(y)} = H(X) - H(X \mid Y) = H(X) + H(Y) - H(X,Y)$$
-  The first says how far the joint is from the independent product $p(x)p(y)$ (a KL, §3); the second, how much knowing $Y$ reduces uncertainty about $X$ (§1); the third follows from the chain rule of §1. Its properties: **symmetric**, $I(X;Y) = I(Y;X)$; **non-negative**, since it is a KL; **zero iff $X$ and $Y$ are independent**, because only then is the joint equal to the product; and bounded, $I(X;Y) \le \min\big(H(X), H(Y)\big)$.
+  The first says how far the joint is from the independent product $p(x)p(y)$ (a KL, §3); the second, how much knowing $Y$ reduces uncertainty about $X$ (§1); the third, how much the two entropies overlap. The second follows from the first by one substitution: $p(x,y) = p(y)\,p(x \mid y)$, so $\log\frac{p(x,y)}{p(x)p(y)} = \log\frac{p(x \mid y)}{p(x)} = -\log p(x) + \log p(x \mid y)$, and averaging over $p(x,y)$ turns the two terms into $H(X)$ and $-H(X \mid Y)$ by the definitions of §1. The third then follows from the chain rule of §1, $H(X \mid Y) = H(X,Y) - H(Y)$. Its properties: **symmetric**, $I(X;Y) = I(Y;X)$; **non-negative**, since it is a KL; **zero iff $X$ and $Y$ are independent**, because only then is the joint equal to the product; and bounded, $I(X;Y) \le \min\big(H(X), H(Y)\big)$.
 - **Worked, with the crack detector from [[02-foundations/probability|3. Probability §1]].**
   $X$ = crack present ($P = 0.01$), $Y$ = alarm fires, with $P(Y{=}1|X{=}1) = 0.95$ and
   $P(Y{=}1|X{=}0) = 0.05$. Then $P(Y{=}1) = 0.95(0.01) + 0.05(0.99) = 0.059$. Computing the
@@ -278,9 +278,13 @@ Logarithms are useful because they turn the joint probability of many observatio
   $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$
   — cross-entropy where "the classes" are the other samples in the batch; because it satisfies
   $I(X;Y) \ge \log N - \mathcal{L}$, bigger batches permit tighter bounds (CLIP used a batch of 32,768, though the paper
-  states no information-theoretic reason for it). Caveat: how tight this MI bound is depends on the negative-sampling
-  scheme and distributional assumptions — treat it as guiding intuition, not a guarantee.
+  states no information-theoretic reason for it). Caveat: the bound is guaranteed only when the negatives are independent draws from the marginal
+  $p(y)$ (the proof below uses exactly that), and how tight it is depends on the score function and on $N$ — read the number as a floor under $I$, not an estimate of it.
   In the formula, $x_i$ and $y_i$ are the two views of the $i$-th pair, so the term $j = i$ is the positive and every $j \ne i$ is a negative. Since $\mathcal{L} \ge 0$, the bound can never certify more than $\log N$, which for CLIP's batch is $\ln 32{,}768 = 10.4$ nats (15 bits).
+- **Why the InfoNCE bound holds.** The bound is from Oord, Li & Vinyals (2018, contrastive predictive coding); Poole et al. (ICML 2019) prove it rigorously, and the three steps below are a compact version of that multi-sample argument, using only §1–§3. Fix one anchor $x$ and write $f(x,y) = s(x,y)/\tau$ for its scaled score. Its row of the batch holds the positive $y_1 \sim p(y \mid x)$ and $N - 1$ negatives $y_2, \dots, y_N \sim p(y)$, all independent, and $\mathcal{L}$ is the expected loss $E\big[-\log\big(e^{f(x,y_1)}/\sum_j e^{f(x,y_j)}\big)\big]$. *Step 1, the negatives add nothing:* $Y_{2:N}$ is independent of $(X, Y_1)$, so by the chain rule of §1 $I(X;Y_1) = I(X;Y_{1:N})$. *Step 2, any normalized guess gives a lower bound:* for any conditional distribution $q(y_{1:N} \mid x)$, $I(X;Y_{1:N}) \ge E\big[\log\big(q(y_{1:N} \mid x)/p(y_{1:N})\big)\big]$, because the gap is the average of $D_{KL}\big(p(y_{1:N} \mid x)\,\|\,q(y_{1:N} \mid x)\big) \ge 0$ (§3). *Step 3, the softmax is such a guess:*
+  $$q(y_{1:N} \mid x) = p(y_1)\cdots p(y_N)\cdot\frac{N\,e^{f(x,y_1)}}{\sum_{j=1}^{N} e^{f(x,y_j)}}$$
+  sums to 1, because under $p(y_1)\cdots p(y_N)$ the $N$ positions are interchangeable, so each of the $N$ softmax weights averages to $1/N$ and the factor $N$ restores 1. Its log-ratio to $p(y_{1:N}) = p(y_1)\cdots p(y_N)$ is $\log N + \log\big(e^{f(x,y_1)}/\sum_j e^{f(x,y_j)}\big)$, so step 2 gives $I(X;Y) \ge \log N - \mathcal{L}$. The bound holds for every score function; a poor one only loosens it, and a constant score gives exactly $\log N - \log N = 0$.
+  - *Worked on the crack detector* (anchor $X$, candidates the alarm readings $Y$, and the best score $f = \log\frac{p(y \mid x)}{p(y)}$). Exact enumeration gives a bound of $0.009$ bits at $N = 2$, $0.025$ at $N = 8$ and $0.030$ at $N = 16$: it climbs toward $I(X;Y) = 0.037$ bits and never passes it, while the ceiling $\log_2 N$ is 1, 3 and 4 bits. Here the small mutual information limits the bound, not the batch; the $\log N$ ceiling bites only when $I$ is large, as for image–text pairs.
 - Representation learning framings (information bottleneck): keep what predicts the label,
   discard the rest — compression as a theory of generalization.
   The **information bottleneck** (Tishby, Pereira and Bialek, 1999) makes that an objective over a stochastic encoder $p(z \mid x)$ that maps input $X$ to representation $Z$, given a target $Y$:
@@ -375,7 +379,7 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
 읽는 데 필요한 전부를 사전지식 없이 따라올 수 있게 담았다.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §0(로그 세 규칙, 5분), §1, §2, §3 — 비트 계산은 손으로 해라, 그것이 이 페이지다. §4·§5는 논문이 목적함수에 상호 정보량이나 ELBO를 넣을 때 보면 된다.
+> 먼저 그림, §0(로그 세 규칙, 5분), §1, §2, §3 — 비트 계산은 손으로 해라, 그것이 이 페이지다. §4·§5는 논문이 목적함수에 상호 정보량이나 ELBO를 넣을 때 보면 된다. §4의 InfoNCE 증명은 두 번째 읽기에서 본다. §6은 돌아와서 찾아보는 참조 표다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -421,7 +425,7 @@ Tier B. **P5** crack detector from [[02-foundations/lab-plants|0.6]]: $P(+|c)=0.
   <text x="12" y="313" font-size="11" opacity="0.9" fill="currentColor">동그라미: 화살표 위의 P(+|c) = 0.95와 묶음 안의 P(c|+) = 0.161, 약 여섯 배 차이다.</text>
 </svg>
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 P5 균열 감지기를 이진 채널로 그린 것으로, 사전확률은 실제 비율대로 — 균열 $P(c)=0.01$은 선 하나, 멀쩡함 $P(\neg c)=0.99$는 기둥 전체 — 그렸고 화살표 넷에는 $P(+|c)=0.95$, $P(-|c)=0.05$, $P(+|\neg c)=0.05$, $P(-|\neg c)=0.95$가 실려 있다. 화살촉 자리의 결합 질량 $0.0095$, $0.0005$, $0.0495$, $0.9405$는 합이 $1$이고, $+$에 닿는 둘이 $P(+)=0.059$를 이루며 그 안은 균열 몫 $0.161$과 멀쩡함 몫 $0.839$로 나뉜다. 요점은 동그라미 친 두 숫자, 곧 화살표 위의 민감도 $P(+|c)=0.95$와 묶음 안의 사후확률 $P(c|+)=0.161$이 약 여섯 배 차이 난다는 것이고, 둘을 혼동한 대가로 §2는 바닥 $H(p)\approx 0.637$비트에 대해 $H(p,q)\approx 3.64$비트를 청구한다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 P5 균열 감지기를 이진 채널로 그린 것으로, 사전확률은 실제 비율대로 — 균열 $P(c)=0.01$은 선 하나, 멀쩡함 $P(\neg c)=0.99$는 기둥 전체 — 그렸고 화살표 넷에는 $P(+|c)=0.95$, $P(-|c)=0.05$, $P(+|\neg c)=0.05$, $P(-|\neg c)=0.95$가 실려 있다. 화살촉 자리의 결합 질량 $0.0095$, $0.0005$, $0.0495$, $0.9405$는 합이 $1$이고, $+$에 닿는 둘이 $P(+)=0.059$를 이루며 그 안은 균열 몫 $0.161$과 멀쩡함 몫 $0.839$로 나뉜다. 요점은 동그라미 친 두 숫자, 곧 화살표 위의 민감도 $P(+|c)=0.95$와 묶음 안의 사후확률 $P(c|+)=0.161$이 약 여섯 배 차이 난다는 것이고, 둘을 혼동한 대가로 §2는 바닥 $H(p)\approx 0.637$비트(참 사후분포의 엔트로피, §1)에 대해 $H(p,q)\approx 3.64$비트(교차 엔트로피, §2)를 청구한다.
 
 ### 0. 사전 준비: 로그의 세 규칙
 
@@ -609,7 +613,7 @@ $$H_{\text{비트}} = \frac{H_{\text{나트}}}{\ln 2}, \qquad 1\ \text{나트} =
   — $Y$를 알면 $X$에 대해 몇 비트를 알게 되는가; 독립일 때만 0.
   **상호 정보량은** 결합 분포 $p(x,y)$와 주변 분포 $p(x)$, $p(y)$를 갖는 확률변수 쌍에 붙는 수다. 동치인 세 형태가 있고 각각 다르게 읽힌다:
   $$I(X;Y) = \sum_{x,y} p(x,y)\log\frac{p(x,y)}{p(x)\,p(y)} = H(X) - H(X \mid Y) = H(X) + H(Y) - H(X,Y)$$
-  첫째는 결합 분포가 독립 곱 $p(x)p(y)$에서 얼마나 먼지(KL, §3), 둘째는 $Y$를 알면 $X$에 대한 불확실성이 얼마나 줄어드는지(§1)이고, 셋째는 §1의 연쇄 법칙에서 나온다. 성질: **대칭**, $I(X;Y) = I(Y;X)$; KL이므로 **비음수**; 결합이 곱과 같을 때만이므로 **$X$와 $Y$가 독립일 때만 0**; 그리고 $I(X;Y) \le \min\big(H(X), H(Y)\big)$로 유계.
+  첫째는 결합 분포가 독립 곱 $p(x)p(y)$에서 얼마나 먼지(KL, §3), 둘째는 $Y$를 알면 $X$에 대한 불확실성이 얼마나 줄어드는지(§1), 셋째는 두 엔트로피가 얼마나 겹치는지다. 둘째는 첫째에서 대입 한 번으로 나온다: $p(x,y) = p(y)\,p(x \mid y)$이므로 $\log\frac{p(x,y)}{p(x)p(y)} = \log\frac{p(x \mid y)}{p(x)} = -\log p(x) + \log p(x \mid y)$이고, $p(x,y)$로 평균하면 §1의 정의에 따라 두 항이 $H(X)$와 $-H(X \mid Y)$가 된다. 셋째는 다시 §1의 연쇄 법칙 $H(X \mid Y) = H(X,Y) - H(Y)$에서 나온다. 성질: **대칭**, $I(X;Y) = I(Y;X)$; KL이므로 **비음수**; 결합이 곱과 같을 때만이므로 **$X$와 $Y$가 독립일 때만 0**; 그리고 $I(X;Y) \le \min\big(H(X), H(Y)\big)$로 유계.
 - **[[02-foundations/probability|3. 확률 §1]]의 균열 감지기로 계산해 보면.**
   $X$ = 균열 있음($P = 0.01$), $Y$ = 경보 울림, $P(Y{=}1|X{=}1) = 0.95$,
   $P(Y{=}1|X{=}0) = 0.05$. 그러면 $P(Y{=}1) = 0.95(0.01) + 0.05(0.99) = 0.059$이고, 네 개의
@@ -625,9 +629,13 @@ $$H_{\text{비트}} = \frac{H_{\text{나트}}}{\ln 2}, \qquad 1\ \text{나트} =
   $$\mathcal{L} = -\frac1N\sum_i \log\frac{e^{s(x_i,y_i)/\tau}}{\sum_j e^{s(x_i,y_j)/\tau}}$$
   — "클래스"가 배치 안의 다른 샘플들인 교차 엔트로피다; $I(X;Y) \ge \log N - \mathcal{L}$을
   만족하므로 배치가 클수록 더 빡빡한 하한이 가능하다 (CLIP은 배치 32,768을 썼지만, 논문은 그 이유로 정보이론을 들지 않는다).
-  단서: 이 상호 정보량 하한이 얼마나 빡빡한지는 음성 샘플링 방식과 분포 가정에 의존한다 —
-  보장이 아니라 안내하는 직관으로 읽어라.
+  단서: 이 하한은 음성이 주변분포 $p(y)$에서 독립으로 뽑혔을 때만 보장되고(아래 증명이 정확히 그것을 쓴다),
+  얼마나 빡빡한지는 점수 함수와 $N$에 달려 있다 — 그 수는 $I$의 추정이 아니라 $I$ 아래의 바닥으로 읽어라.
   식에서 $x_i$와 $y_i$는 $i$번째 쌍의 두 뷰이므로 $j = i$ 항이 양성이고 $j \ne i$인 항은 모두 음성이다. $\mathcal{L} \ge 0$이므로 하한은 $\log N$보다 많은 것을 결코 보증하지 못하며, CLIP의 배치에서는 $\ln 32{,}768 = 10.4$나트(15비트)다.
+- **InfoNCE 하한이 성립하는 이유.** 하한은 Oord, Li, Vinyals(2018, 대조 예측 부호화)에서 나왔고 Poole 등(ICML 2019)이 엄밀히 증명했다. 아래 세 단계는 그 다중 표본 논증을 §1–§3만으로 압축한 것이다. 앵커 $x$ 하나를 고정하고 그 점수를 $f(x,y) = s(x,y)/\tau$로 쓴다. 배치의 그 행에는 양성 $y_1 \sim p(y \mid x)$와 음성 $N - 1$개 $y_2, \dots, y_N \sim p(y)$가 모두 독립으로 들어 있고, $\mathcal{L}$은 기대 손실 $E\big[-\log\big(e^{f(x,y_1)}/\sum_j e^{f(x,y_j)}\big)\big]$이다. *1단계, 음성은 아무것도 더하지 않는다:* $Y_{2:N}$은 $(X, Y_1)$과 독립이므로 §1의 연쇄 법칙으로 $I(X;Y_1) = I(X;Y_{1:N})$이다. *2단계, 정규화된 어떤 추측도 하한을 준다:* 어떤 조건부 분포 $q(y_{1:N} \mid x)$에 대해서도 $I(X;Y_{1:N}) \ge E\big[\log\big(q(y_{1:N} \mid x)/p(y_{1:N})\big)\big]$이다. 그 차이가 $D_{KL}\big(p(y_{1:N} \mid x)\,\|\,q(y_{1:N} \mid x)\big) \ge 0$(§3)의 평균이기 때문이다. *3단계, 소프트맥스가 바로 그런 추측이다:*
+  $$q(y_{1:N} \mid x) = p(y_1)\cdots p(y_N)\cdot\frac{N\,e^{f(x,y_1)}}{\sum_{j=1}^{N} e^{f(x,y_j)}}$$
+  는 합이 1이다. $p(y_1)\cdots p(y_N)$ 아래에서 $N$개 자리는 서로 바꿔도 같으므로 소프트맥스 가중치 $N$개가 각각 평균 $1/N$이 되고, 인자 $N$이 합을 1로 되돌린다. $p(y_{1:N}) = p(y_1)\cdots p(y_N)$에 대한 로그 비는 $\log N + \log\big(e^{f(x,y_1)}/\sum_j e^{f(x,y_j)}\big)$이므로, 2단계가 $I(X;Y) \ge \log N - \mathcal{L}$을 준다. 이 하한은 어떤 점수 함수에서도 성립한다. 나쁜 점수는 하한을 느슨하게 할 뿐이고, 상수 점수는 정확히 $\log N - \log N = 0$을 준다.
+  - *균열 감지기로 계산* (앵커 $X$, 후보는 경보 측정값 $Y$, 최선의 점수 $f = \log\frac{p(y \mid x)}{p(y)}$). 정확히 열거하면 하한은 $N = 2$에서 $0.009$비트, $N = 8$에서 $0.025$비트, $N = 16$에서 $0.030$비트다. $I(X;Y) = 0.037$비트를 향해 올라가지만 결코 넘지 않고, 천장 $\log_2 N$은 1, 3, 4비트다. 여기서 하한을 막는 것은 배치가 아니라 작은 상호 정보량이다. $\log N$ 천장은 이미지–텍스트 쌍처럼 $I$가 클 때만 문제가 된다.
 - 표현 학습의 틀(information bottleneck): 라벨을 예측하는 것만 남기고 버려라 —
   압축을 일반화의 이론으로 보는 관점.
   **정보 병목**(Tishby, Pereira, Bialek, 1999)은 이것을, 목표 $Y$가 주어졌을 때 입력 $X$를 표현 $Z$로 보내는 확률적 인코더 $p(z \mid x)$ 위의 목적함수로 만든다:

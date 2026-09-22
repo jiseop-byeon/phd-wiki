@@ -14,8 +14,11 @@ mastery-when: "Go deeper when the middleware itself — discovery, transport, se
 > **Working** — ROS 2 시스템을 띄우고 그것이 무엇을 하고 있는지 볼 정도. 미들웨어 자체를 고칠 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> A working Ubuntu 24.04 machine (or VM), comfort with a shell, and Python. No prior ROS of any version is assumed. Everything that runs here is the baseline for the rest of this track: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, paired with Gazebo Harmonic when simulation arrives in [[04-robotics/ros2/index|25. ROS 2]].
-> Ubuntu 24.04 머신(또는 VM), 셸 사용 경험, Python. ROS 경험은 전제하지 않는다. 이 트랙 전체의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**이고, 시뮬레이션이 등장할 때는 Gazebo Harmonic과 짝을 이룬다.
+> A working Ubuntu 24.04 machine (or VM), comfort with a shell, and Python; for the picture and the Worked case, **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] (its two rates and its $70\,\mathrm{ms}$ budget). No prior ROS of any version is assumed. Everything that runs here is the baseline for the rest of this track: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, paired with Gazebo Harmonic when simulation arrives in [[04-robotics/ros2/index|25. ROS 2]].
+> Ubuntu 24.04 머신(또는 VM), 셸 사용 경험, Python. 그림과 계산 절에는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**(두 주기와 $70\,\mathrm{ms}$ 예산). ROS 경험은 전제하지 않는다. 이 트랙 전체의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**이고, 시뮬레이션이 등장할 때는 Gazebo Harmonic과 짝을 이룬다.
+
+> [!note] First pass · 처음이라면
+> Two routes, one page. If you have never typed a ROS 2 command, sit at a keyboard for §6–§10 first — install, source, run turtlesim, read its graph — and then come back to the picture and the Worked case, which are arithmetic on P6's two rates and need nothing installed. Either way, §1–§3 are the ideas every later page uses, and §2 is where "real-time" gets its meaning. §4–§5 (why ROS 2 replaced ROS 1, and DDS underneath) and the environment table in §11 are second-pass reading: open them when somebody asks why QoS exists, or when a shell behaves impossibly.
 
 ### The picture: the P6 graph, and one budget on a clock
 
@@ -86,7 +89,7 @@ mastery-when: "Go deeper when the middleware itself — discovery, transport, se
   <text x="12" y="388" font-size="11" fill-opacity="0.85" fill="currentColor">Dashed: the four measured terms, widths illustrative; together at most 70 − 5 = 65 ms.</text>
 </svg>
 
-**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as a ROS 2 computation graph inside one `ROS_DOMAIN_ID`: `/camera` publishes `/goal` at $50\,\mathrm{Hz}$, `/controller` publishes `/cmd` at $200\,\mathrm{Hz}$ to a motor that is hardware rather than a node, `/logger` subscribes to both, and the encoder is read inside the controller instead of arriving on a topic. Below, the $70\,\mathrm{ms}$ from camera mid-exposure to applied force is drawn to scale as five consecutive terms, with vision publications every $20\,\mathrm{ms}$, four control periods apart. Only the wait for the next control tick is fixed by the two rates, at under one control period of $5\,\mathrm{ms}$, which leaves at most $65\,\mathrm{ms}$ for the four terms that must be measured.
+**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as a ROS 2 computation graph inside one `ROS_DOMAIN_ID` (an integer, 0 unless the shell exports another; only nodes with the same value discover each other, §5): `/camera` publishes `/goal` at $50\,\mathrm{Hz}$, `/controller` publishes `/cmd` at $200\,\mathrm{Hz}$ to a motor that is hardware rather than a node, `/logger` subscribes to both, and the encoder is read inside the controller instead of arriving on a topic. Below, the $70\,\mathrm{ms}$ from camera mid-exposure to applied force is drawn to scale as five consecutive terms, with vision publications every $20\,\mathrm{ms}$, four control periods apart. Only the wait for the next control tick is fixed by the two rates, at under one control period of $5\,\mathrm{ms}$, which leaves at most $65\,\mathrm{ms}$ for the four terms that must be measured.
 
 ### Worked case: where P6's 70 ms goes, and what the control rate actually buys
 
@@ -106,7 +109,7 @@ because the five stages are strictly sequential: the frame is captured and publi
 
 $$0\le L_{\text{wait}}<T_{\text{ctrl}}=5\,\mathrm{ms}$$
 
-since a goal can land anywhere inside a period and the worst case is landing just after a tick. No property of ROS 2, DDS or the operating system moves that bound; it is arithmetic on $50$ and $200$.
+since a goal can land anywhere inside a period and the worst case is landing just after a tick. No property of ROS 2, DDS (the communication layer ROS 2 sits on, §5) or the operating system moves that bound; it is arithmetic on $50$ and $200$.
 
 **Step 3 — the allowance that leaves, and what a slower loop would cost.** $70-5=65\,\mathrm{ms}$ for the four measured terms. Run the same controller at $50\,\mathrm{Hz}$ and the bound becomes $L_{\text{wait}}<20\,\mathrm{ms}$, leaving $70-20=50\,\mathrm{ms}$. So the four-fold control rate buys $15\,\mathrm{ms}$ of the frame-to-force path, which is $15/70=21.4\%$ of the whole budget, without touching the camera, the network or the motor. That is the honest version of "we run the loop fast".
 
@@ -116,7 +119,7 @@ $$L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$$
 
 because the freshest goal in hand at any tick was published less than one vision period ago, by definition of "freshest". Raising the control rate shrinks the first term and grows the second by the same amount. The vision path cannot be made fresher by a faster controller; only a faster camera does that. Know this number before somebody proposes a $1\,\mathrm{kHz}$ loop as the fix for a late robot.
 
-**Step 5 — so why $200\,\mathrm{Hz}$ at all?** Because the loop's other input is not on a topic. The encoder is read inside the controller at the tick, so its data is never more than one compute time old, and the motor is corrected every $5\,\mathrm{ms}$ instead of every $20$. P6 is two loops with two clocks sharing one process boundary: a slow outer path that says *where to go* and a fast inner path that says *how hard to push*. Every page in this track is about keeping those two apart, and section 1 is the first argument for it.
+**Step 5 — so why $200\,\mathrm{Hz}$ at all?** Because the loop's other input is not on a topic (a named stream that nodes publish to and subscribe from, like `/goal` in the picture; §3). The encoder is read inside the controller at the tick, so its data is never more than one compute time old, and the motor is corrected every $5\,\mathrm{ms}$ instead of every $20$. P6 is two loops with two clocks sharing one process boundary: a slow outer path that says *where to go* and a fast inner path that says *how hard to push*. Every page in this track is about keeping those two apart, and section 1 is the first argument for it.
 
 ### 1. The problem a robot middleware solves
 
@@ -140,6 +143,12 @@ Three misreadings cost beginners weeks.
 - **It is not an operating system.** The name is historical. ROS 2 runs *on* Linux (Ubuntu 24.04 for Jazzy); it is a set of libraries, message definitions, build tooling and command-line tools.
 - **It is not a framework you must write your whole robot inside.** A ROS 2 node is an ordinary process that links a library. Your perception code, your solver, your learned policy can be plain Python or C++ with a thin ROS 2 edge that publishes and subscribes. Keeping that edge thin is good practice: it is what lets you unit-test the algorithm without a running graph.
 - **It is not a real-time system by itself.** Nothing about installing ROS 2 gives you deadline guarantees. The official position is that ROS 2 is *designed with* real-time constraints in mind; achieving hard real time additionally requires an RT kernel (for example RT_PREEMPT, which bounds how long a ready thread waits to be scheduled; see [[04-robotics/ros2/from-simulation-to-hardware|25.11 From Simulation to Real Hardware]]), avoiding nondeterministic operations such as dynamic allocation and unbounded blocking in the execution path, and a middleware configuration that supports it. The ROS 2 real-time demo is documented as needing a source build against a static DDS API (DDS is the communication standard ROS 2 sits on, explained in Section 5). Treat "ROS 2 is real-time" as a claim that needs its conditions stated, not a property you get from `apt install`.
+
+**What "real-time" means.** The word is about deadlines, not speed. A system is **real-time** when its correctness depends on *when* each result arrives as well as on its value: every job — one callback run, one control update — has a deadline, and it counts as correct only if it finishes by it. For one job the miss is measured as
+
+$$\ell=\max\bigl(0,\;f-(r+D)\bigr)$$
+
+where $r$ is the release time (when the job became ready to run), $D$ the relative deadline (how long it may take), $f$ the finish time, and $\ell$ the lateness, zero whenever the deadline was met. Two conditions separate the kinds. **Hard** real-time requires $\ell=0$ for every job, worst case included, because a late answer is a wrong answer: an airbag that fires after the head has hit the wheel. **Soft** real-time tolerates $\ell>0$ at a cost that grows with it, because a late answer is still used, only worse. P6's budget is soft in this sense: a goal released at camera mid-exposure ($r=0$, $D=70\,\mathrm{ms}$) whose force is applied at $f=75\,\mathrm{ms}$ has $\ell=5\,\mathrm{ms}$ and still moves the cart, a little off. The non-example is *fast*. A loop whose jobs take $1\,\mathrm{ms}$ on average but $100\,\mathrm{ms}$ once a minute is fast, and against a $10\,\mathrm{ms}$ deadline that one job has $\ell=100-10=90\,\mathrm{ms}$, so it is not real-time: real-time is a statement about the worst case, not the average. That is why the bullet above asks for an RT kernel and no dynamic allocation — both remove sources of rare, long delays that an average never shows.
 
 ### 3. The computation graph
 
@@ -185,7 +194,7 @@ What that buys:
 
 What it costs:
 
-- **QoS is now a way to fail.** Two nodes connect only if their QoS settings are compatible. A mismatch produces a publisher and a subscriber that both look healthy and never exchange a message. This is the single most common "it's just silent" bug in ROS 2, and [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] is where it is dissected.
+- **QoS is now a way to fail.** Two nodes connect only if their QoS settings are compatible. A mismatch produces a publisher and a subscriber that both look healthy and never exchange a message. This is the single most common "it's just silent" bug in ROS 2, and [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] is where it is dissected.
 - **Discovery traffic scales with participants**, and on a shared lab network you can see other people's graphs. `ROS_DOMAIN_ID` partitions this: set `export ROS_DOMAIN_ID=<integer>` and you only see nodes on the same domain.
 - **Configuration moves outside ROS.** Tuning buffer sizes or multicast behaviour means reading DDS vendor documentation, not ROS documentation.
 
@@ -426,7 +435,7 @@ The habit worth forming: when a ROS 2 system behaves impossibly, check the envir
 
 ### 12. What this page does not cover
 
-Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]. Request–response, long-running goals, configuration and managed startup are [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. Building and installing your own packages, and starting many nodes at once, are [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages and Launch]]. The QoS settings printed by `ros2 topic info --verbose`, the executor that decides which callback runs, and simulated versus wall time are [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]. Simulation, navigation, manipulation and hardware interfaces sit above all of this in [[04-robotics/ros2/index|25. ROS 2]].
+Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]. Request–response, long-running goals, configuration and managed startup are [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. Building and installing your own packages, and starting many nodes at once, are [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages and Launch]]. The QoS settings printed by `ros2 topic info --verbose`, the executor that decides which callback runs, and simulated versus wall time are [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] and [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]]. Simulation, navigation, manipulation and hardware interfaces sit above all of this in [[04-robotics/ros2/index|25. ROS 2]].
 
 ### Sources
 
@@ -453,7 +462,7 @@ Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes
 > 1. Discovery without configuration, a checked type system shared across languages and teams, per-connection delivery semantics (QoS), and a live introspection surface. The socket is the easy quarter of the problem; the rest is what you would end up rewriting badly.
 > 2. Your own `ros2 topic echo`. CLI introspection tools join the graph as real nodes; that is why they appear in `rqt_graph` under **Debug**.
 > 3. Environment variables live in a process and are inherited only by children. The setup file sets `PATH`, `AMENT_PREFIX_PATH`, `LD_LIBRARY_PATH` and `PYTHONPATH` in the shell that runs it and nowhere else. The upside of that design is that different terminals can run different distributions or workspaces.
-> 4. Which kernel, which middleware and configuration, and which operations were removed from the execution path. Installing ROS 2 from apt gives no deadline guarantees; the official position is that ROS 2 was *designed with* real-time constraints in mind, and the real-time demo itself is documented as requiring a source build against a static DDS API.
+> 4. Hard or soft, against which deadline, and shown for the worst case or only the average (§2). Then which kernel, which middleware and configuration, and which operations were removed from the execution path. Installing ROS 2 from apt gives no deadline guarantees; the official position is that ROS 2 was *designed with* real-time constraints in mind, and the real-time demo itself is documented as requiring a source build against a static DDS API.
 > 5. Only $L_{\text{wait}}$, the wait for the next control tick, which is bounded by one control period: it goes from under $5\,\mathrm{ms}$ to under $20\,\mathrm{ms}$, so the allowance left for camera, transport, compute and actuation falls from $65$ to $50\,\mathrm{ms}$ — $15\,\mathrm{ms}$, or $21.4\%$ of the budget. The *age* of the goal in force barely moves because $L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$ either way: at $200\,\mathrm{Hz}$ the goal waits at most $5\,\mathrm{ms}$ and is then re-used for three more ticks, at $50\,\mathrm{Hz}$ it waits up to $20\,\mathrm{ms}$ and is used once. What the fast loop really buys is the *encoder* path, which is read at the tick and corrects the motor every $5\,\mathrm{ms}$ rather than every $20$.
 
 ### Problem set · 과제
@@ -485,8 +494,11 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]: encoder $N=2048$ co
 > **Working** — enough to run a ROS 2 system and see what it does, not to modify the middleware.
 
 > [!note] 선수 지식 · Prerequisites
-> 동작하는 Ubuntu 24.04 머신(또는 VM), 셸, Python. ROS 경험은 필요 없다. 이 트랙의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**이고, 시뮬레이션 단계에서는 Gazebo Harmonic과 짝을 이룬다([[04-robotics/ros2/index|25. ROS 2]]).
-> A working Ubuntu 24.04 machine, a shell, and Python; no prior ROS assumed.
+> 동작하는 Ubuntu 24.04 머신(또는 VM), 셸, Python. 그림과 계산 절에는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**(두 주기와 $70\,\mathrm{ms}$ 예산). ROS 경험은 필요 없다. 이 트랙의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**이고, 시뮬레이션 단계에서는 Gazebo Harmonic과 짝을 이룬다([[04-robotics/ros2/index|25. ROS 2]]).
+> A working Ubuntu 24.04 machine, a shell, and Python; **P6** from 0.6 for the picture and the Worked case; no prior ROS assumed.
+
+> [!note] 처음이라면 · First pass
+> 한 페이지에 길이 둘이다. ROS 2 명령을 한 번도 쳐 본 적이 없다면 먼저 키보드 앞에서 6–10절을 끝내라 — 설치, source, turtlesim 실행, 그 그래프 읽기 — 그리고 그림과 계산 절로 돌아온다. 그 둘은 P6의 두 주기에 대한 산수라 아무것도 설치하지 않아도 된다. 어느 길이든 1–3절은 뒤의 모든 페이지가 쓰는 개념이고, "실시간"이 뜻을 얻는 곳이 2절이다. 4–5절(ROS 2가 ROS 1을 대체한 이유, 아래에 깔린 DDS)과 11절의 환경 표는 두 번째 읽기다. 누가 QoS가 왜 있느냐고 묻거나 셸이 불가능한 동작을 할 때 연다.
 
 ### 그림으로 먼저 보기: P6 그래프와 시계 위의 예산 하나 · The picture
 
@@ -557,7 +569,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]: encoder $N=2048$ co
   <text x="12" y="388" font-size="11" fill-opacity="0.85" fill="currentColor">점선: 재야 할 네 항. 폭은 예시이고, 넷의 합은 70 − 5 = 65 ms 이하.</text>
 </svg>
 
-위는 `ROS_DOMAIN_ID` 하나 안에 그린 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 계산 그래프로, `/camera`가 `/goal`을 $50\,\mathrm{Hz}$로 발행하고 `/controller`가 노드가 아니라 하드웨어인 모터에 `/cmd`를 $200\,\mathrm{Hz}$로 보내며 `/logger`가 둘 다 구독하고, 엔코더는 토픽으로 받지 않고 제어기 안에서 직접 읽는다. 아래는 카메라 노출 중간부터 힘이 나갈 때까지의 $70\,\mathrm{ms}$를 이어지는 항 다섯으로 축척대로 그린 것이고, 비전 발행은 $20\,\mathrm{ms}$마다, 곧 제어 주기 넷 간격이다. 두 주기만으로 정해지는 항은 다음 제어 틱까지의 대기 하나로 제어 주기 하나인 $5\,\mathrm{ms}$ 미만이며, 그래서 재야 할 나머지 네 항에는 많아야 $65\,\mathrm{ms}$가 남는다.
+위는 `ROS_DOMAIN_ID`(셸이 다른 값을 export하지 않으면 0인 정수로, 값이 같은 노드끼리만 서로를 탐색한다. 5절) 하나 안에 그린 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 계산 그래프로, `/camera`가 `/goal`을 $50\,\mathrm{Hz}$로 발행하고 `/controller`가 노드가 아니라 하드웨어인 모터에 `/cmd`를 $200\,\mathrm{Hz}$로 보내며 `/logger`가 둘 다 구독하고, 엔코더는 토픽으로 받지 않고 제어기 안에서 직접 읽는다. 아래는 카메라 노출 중간부터 힘이 나갈 때까지의 $70\,\mathrm{ms}$를 이어지는 항 다섯으로 축척대로 그린 것이고, 비전 발행은 $20\,\mathrm{ms}$마다, 곧 제어 주기 넷 간격이다. 두 주기만으로 정해지는 항은 다음 제어 틱까지의 대기 하나로 제어 주기 하나인 $5\,\mathrm{ms}$ 미만이며, 그래서 재야 할 나머지 네 항에는 많아야 $65\,\mathrm{ms}$가 남는다.
 
 ### 대상으로 한 번 끝까지: P6의 70 ms는 어디로 가고, 제어 주기는 무엇을 사 주는가 · Worked case
 
@@ -577,7 +589,7 @@ $$70\,\mathrm{ms}\;\ge\;L_{\text{cam}}+L_{\text{net}}+L_{\text{wait}}+L_{\text{c
 
 $$0\le L_{\text{wait}}<T_{\text{ctrl}}=5\,\mathrm{ms}$$
 
-목표는 주기 안 아무 데나 떨어질 수 있고 최악은 틱 직후에 떨어지는 경우이기 때문이다. ROS 2도 DDS도 운영체제도 이 한계를 옮기지 못한다. $50$과 $200$에 대한 산수일 뿐이다.
+목표는 주기 안 아무 데나 떨어질 수 있고 최악은 틱 직후에 떨어지는 경우이기 때문이다. ROS 2도, DDS(ROS 2가 올라타는 통신 계층, 5절)도, 운영체제도 이 한계를 옮기지 못한다. $50$과 $200$에 대한 산수일 뿐이다.
 
 **3단계 — 그래서 남는 여유, 그리고 느린 루프의 값**. 측정해야 할 네 항에 $70-5=65\,\mathrm{ms}$가 남는다. 같은 제어기를 $50\,\mathrm{Hz}$로 돌리면 한계가 $L_{\text{wait}}<20\,\mathrm{ms}$가 되어 $70-20=50\,\mathrm{ms}$만 남는다. 제어 주기를 네 배로 올린 것이 프레임-투-포스 경로에서 $15\,\mathrm{ms}$, 곧 전체 예산의 $15/70=21.4\%$를 사 준 셈이고, 카메라도 네트워크도 모터도 건드리지 않았다. "루프를 빠르게 돌린다"는 말의 정직한 판본이다.
 
@@ -587,7 +599,7 @@ $$L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$$
 
 어느 틱에서든 손에 쥔 가장 최신 목표는 정의상 한 비전 주기 안에 발행된 것이기 때문이다. 제어 주기를 올리면 첫 항이 줄고 둘째 항이 그만큼 는다. 비전 경로는 빠른 제어기로 신선해지지 않는다. 그건 빠른 카메라만 한다. 누군가 늦는 로봇의 처방으로 $1\,\mathrm{kHz}$ 루프를 제안하기 전에 이 숫자를 알고 있어야 한다.
 
-**5단계 — 그러면 왜 $200\,\mathrm{Hz}$인가**. 루프의 다른 입력이 토픽 위에 있지 않기 때문이다. 엔코더는 틱마다 제어기 안에서 읽으므로 그 데이터는 계산 시간 이상 낡지 않고, 모터는 $20\,\mathrm{ms}$가 아니라 $5\,\mathrm{ms}$마다 보정된다. P6은 프로세스 경계 하나를 공유하는, 시계가 둘인 루프 둘이다. *어디로 갈지*를 말하는 느린 바깥 경로와 *얼마나 세게 밀지*를 말하는 빠른 안쪽 경로. 이 트랙의 모든 페이지가 그 둘을 갈라 두는 이야기이고, 1절이 그 첫 논거다.
+**5단계 — 그러면 왜 $200\,\mathrm{Hz}$인가**. 루프의 다른 입력이 토픽(노드들이 publish하고 subscribe하는 이름 붙은 스트림. 그림의 `/goal`이 그렇다. 3절) 위에 있지 않기 때문이다. 엔코더는 틱마다 제어기 안에서 읽으므로 그 데이터는 계산 시간 이상 낡지 않고, 모터는 $20\,\mathrm{ms}$가 아니라 $5\,\mathrm{ms}$마다 보정된다. P6은 프로세스 경계 하나를 공유하는, 시계가 둘인 루프 둘이다. *어디로 갈지*를 말하는 느린 바깥 경로와 *얼마나 세게 밀지*를 말하는 빠른 안쪽 경로. 이 트랙의 모든 페이지가 그 둘을 갈라 두는 이야기이고, 1절이 그 첫 논거다.
 
 ### 1. 로봇 미들웨어가 푸는 문제
 
@@ -611,6 +623,12 @@ $$L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$$
 - **운영체제가 아니다.** 이름은 역사적 유물이다. ROS 2는 Linux 위에서 돈다(Jazzy는 Ubuntu 24.04). 라이브러리, 메시지 정의, 빌드 도구, 커맨드라인 도구의 묶음이다.
 - **로봇 전체를 그 안에 작성해야 하는 프레임워크가 아니다.** ROS 2 노드는 라이브러리를 링크한 평범한 프로세스다. 인식 코드, 솔버, 학습된 정책은 평범한 Python이나 C++로 두고, publish/subscribe 하는 얇은 ROS 2 경계만 붙이면 된다. 그 경계를 얇게 유지하는 것이 좋은 습관이다. 그래야 그래프를 띄우지 않고 알고리즘을 단위 테스트할 수 있다.
 - **그 자체로 실시간 시스템이 아니다.** ROS 2를 설치한다고 마감 시한 보장이 생기지는 않는다. 공식 문서의 입장은 ROS 2가 실시간 제약을 *염두에 두고 설계되었다*는 것이다. 경성 실시간을 얻으려면 RT 커널(예: RT_PREEMPT. 실행 준비된 스레드가 스케줄되기까지 기다리는 시간을 유계로 만든다. [[04-robotics/ros2/from-simulation-to-hardware|25.11 From Simulation to Real Hardware]] 참고), 실행 경로에서 동적 할당과 무한 블로킹 같은 비결정적 연산 제거, 그리고 그것을 지원하는 미들웨어 구성이 함께 필요하다. 공식 실시간 데모 자체가 정적 DDS API(DDS는 ROS 2가 올라타는 통신 표준으로, 5절에서 설명한다)에 대한 소스 빌드를 요구한다고 문서화되어 있다. "ROS 2는 실시간"이라는 말은 조건을 명시해야 하는 주장이지 `apt install`로 얻는 성질이 아니다.
+
+**"실시간"이 뜻하는 것.** 이 말은 속도가 아니라 마감에 관한 것이다. 시스템의 올바름이 결과의 값만이 아니라 결과가 *언제* 도착하는지에도 달려 있으면 그 시스템은 **실시간(real-time)** 이다. 모든 작업(job) — 콜백 한 번 실행, 제어 갱신 한 번 — 에 마감이 있고, 마감까지 끝나야만 올바른 것으로 친다. 작업 하나가 마감을 얼마나 놓쳤는지는
+
+$$\ell=\max\bigl(0,\;f-(r+D)\bigr)$$
+
+로 잰다. $r$는 해제 시각(작업이 실행 준비된 시각), $D$는 상대 마감(걸려도 되는 시간), $f$는 끝난 시각, $\ell$은 지각(lateness)이고, 마감을 지키면 0이다. 종류를 가르는 조건은 둘이다. **경성(hard)** 실시간은 최악의 경우까지 포함해 모든 작업에 $\ell=0$을 요구한다. 늦은 답은 틀린 답이기 때문이다. 머리가 핸들에 부딪힌 뒤에 터지는 에어백이 그렇다. **연성(soft)** 실시간은 $\ell>0$을 허용하되 그에 따라 커지는 비용을 치른다. 늦은 답도 쓰이지만 더 나쁘게 쓰이기 때문이다. P6의 예산은 이 뜻에서 연성이다. 카메라 노출 중간에 해제된 목표($r=0$, $D=70\,\mathrm{ms}$)의 힘이 $f=75\,\mathrm{ms}$에 나가면 $\ell=5\,\mathrm{ms}$이고, 카트는 조금 어긋나게나마 여전히 움직인다. 반례는 *빠름*이다. 작업이 평균 $1\,\mathrm{ms}$ 걸리지만 1분에 한 번 $100\,\mathrm{ms}$ 걸리는 루프는 빠르다. 그러나 $10\,\mathrm{ms}$ 마감에 대해 그 한 작업은 $\ell=100-10=90\,\mathrm{ms}$이므로 실시간이 아니다. 실시간은 평균이 아니라 최악의 경우에 대한 진술이다. 위 항목이 RT 커널과 동적 할당 제거를 요구하는 이유가 이것이다. 둘 다 평균에는 드러나지 않는 드물고 긴 지연의 원천을 없앤다.
 
 ### 3. 계산 그래프(computation graph)
 
@@ -656,7 +674,7 @@ ROS 2는 자체 와이어 프로토콜, 즉 네트워크를 오가는 바이트 
 
 치르는 것:
 
-- **QoS가 새로운 실패 경로다.** 두 노드는 QoS가 호환될 때만 연결된다. 불일치하면 퍼블리셔와 서브스크라이버가 둘 다 멀쩡해 보이면서 메시지를 한 개도 주고받지 않는다. ROS 2에서 가장 흔한 "그냥 조용한" 버그이고, [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]에서 해부한다.
+- **QoS가 새로운 실패 경로다.** 두 노드는 QoS가 호환될 때만 연결된다. 불일치하면 퍼블리셔와 서브스크라이버가 둘 다 멀쩡해 보이면서 메시지를 한 개도 주고받지 않는다. ROS 2에서 가장 흔한 "그냥 조용한" 버그이고, [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]]에서 해부한다.
 - **탐색 트래픽이 참여자 수에 따라 늘고**, 공용 실험실 네트워크에서는 남의 그래프가 보인다. `ROS_DOMAIN_ID`가 이를 나눈다. `export ROS_DOMAIN_ID=<정수>`를 하면 같은 도메인의 노드만 보인다.
 - **설정이 ROS 바깥으로 나간다.** 버퍼 크기나 멀티캐스트 동작을 조정하려면 ROS 문서가 아니라 DDS 벤더 문서를 읽어야 한다.
 
@@ -897,7 +915,7 @@ ros2: command not found
 
 ### 12. 이 페이지가 다루지 않는 것
 
-직접 노드를 쓰는 것은 [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]. 요청–응답, 장시간 목표, 설정, 결정적 기동은 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. 자기 패키지를 빌드·설치하고 여러 노드를 한 번에 띄우는 것은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages and Launch]]. `ros2 topic info --verbose`가 찍는 QoS, 어느 콜백이 도는지 정하는 executor, 시뮬레이션 시간과 벽시계 시간은 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]. 시뮬레이션, 내비게이션, 매니퓰레이션, 하드웨어 인터페이스는 그 위에 있고 [[04-robotics/ros2/index|25. ROS 2]]에 있다.
+직접 노드를 쓰는 것은 [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]]. 요청–응답, 장시간 목표, 설정, 결정적 기동은 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. 자기 패키지를 빌드·설치하고 여러 노드를 한 번에 띄우는 것은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages and Launch]]. `ros2 topic info --verbose`가 찍는 QoS, 어느 콜백이 도는지 정하는 executor, 시뮬레이션 시간과 벽시계 시간은 [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]와 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]. 시뮬레이션, 내비게이션, 매니퓰레이션, 하드웨어 인터페이스는 그 위에 있고 [[04-robotics/ros2/index|25. ROS 2]]에 있다.
 
 ### 출처
 
@@ -922,7 +940,7 @@ ros2: command not found
 > 1. 설정 없는 탐색, 언어와 팀을 가로지르는 검사 가능한 타입 체계, 연결 단위 전달 의미(QoS), 살아 있는 내성(introspection) 표면. 소켓은 문제의 쉬운 4분의 1이고, 나머지는 결국 엉성하게 다시 짜게 되는 부분이다.
 > 2. 당신의 `ros2 topic echo`. CLI 내성 도구는 진짜 노드로서 그래프에 참여하고, 그래서 `rqt_graph`의 **Debug** 항목에 나타난다.
 > 3. 환경 변수는 프로세스에 살고 자식에게만 상속된다. setup 파일은 실행한 그 셸에만 `PATH`, `AMENT_PREFIX_PATH`, `LD_LIBRARY_PATH`, `PYTHONPATH`를 설정한다. 그 설계의 이득은 터미널마다 다른 배포판이나 워크스페이스를 쓸 수 있다는 것이다.
-> 4. 어떤 커널, 어떤 미들웨어와 구성, 실행 경로에서 어떤 연산을 제거했는지. apt로 설치한 ROS 2는 마감 시한을 보장하지 않는다. 공식 입장은 실시간 제약을 *염두에 두고 설계했다*는 것이고, 실시간 데모 자체가 정적 DDS API에 대한 소스 빌드를 요구한다고 문서화되어 있다.
+> 4. 경성인가 연성인가, 어떤 마감에 대해서인가, 최악의 경우로 보였는가 평균으로만 보였는가(2절). 그다음 어떤 커널, 어떤 미들웨어와 구성, 실행 경로에서 어떤 연산을 제거했는지. apt로 설치한 ROS 2는 마감 시한을 보장하지 않는다. 공식 입장은 실시간 제약을 *염두에 두고 설계했다*는 것이고, 실시간 데모 자체가 정적 DDS API에 대한 소스 빌드를 요구한다고 문서화되어 있다.
 > 5. 다음 제어 틱까지의 대기 $L_{\text{wait}}$ 하나뿐이고, 그 한계는 제어 주기다. $5\,\mathrm{ms}$ 미만에서 $20\,\mathrm{ms}$ 미만으로 커지므로 카메라·전송·계산·구동에 남는 여유가 $65$에서 $50\,\mathrm{ms}$로 줄고, 차이는 $15\,\mathrm{ms}$, 곧 예산의 $21.4\%$다. 반면 실제로 작용 중인 목표의 *나이*는 거의 그대로인데, 어느 쪽이든 $L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$이기 때문이다. $200\,\mathrm{Hz}$에서는 최대 $5\,\mathrm{ms}$ 기다린 뒤 세 틱 더 재사용되고, $50\,\mathrm{Hz}$에서는 최대 $20\,\mathrm{ms}$ 기다린 뒤 한 번 쓰인다. 빠른 루프가 실제로 사는 것은 *엔코더* 경로다. 틱마다 직접 읽어 모터를 $20\,\mathrm{ms}$가 아니라 $5\,\mathrm{ms}$마다 보정한다.
 
 ### 과제 · Problem set

@@ -14,8 +14,11 @@ mastery-when: "Go deeper when you are designing the interface another team will 
 > **Working** — 올바른 통신 패턴을 고르고, 양쪽 끝을 직접 작성하고, 노드를 결정론적으로 설정하고 기동할 정도. 새 액션 프로토콜을 설계할 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]], and a working installation. Every command here assumes **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, with each terminal sourced (`source /opt/ros/jazzy/setup.bash`).
-> [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 동작하는 설치 환경. 여기의 모든 명령은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**를 전제하고, 터미널마다 `source /opt/ros/jazzy/setup.bash`가 되어 있다고 가정한다.
+> [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]], and through it [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]], whose worked case (P6's $70\,\mathrm{ms}$ budget) and §5 (a QoS mismatch is silent) are used below; **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]; and a working installation. Every command here assumes **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, with each terminal sourced (`source /opt/ros/jazzy/setup.bash`).
+> [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]], 그리고 그 앞의 [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇인가]] — 그 계산 예제(P6의 $70\,\mathrm{ms}$ 예산)와 5절(QoS 불일치는 조용하다)을 아래에서 쓴다 — [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**, 그리고 동작하는 설치 환경. 여기의 모든 명령은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**를 전제하고, 터미널마다 `source /opt/ros/jazzy/setup.bash`가 되어 있다고 가정한다.
+
+> [!note] First pass · 처음이라면
+> Read the picture and the Worked case, then §1, whose closing table maps the four patterns to their sections. After that, read the part you need now — services §2–§3, actions §4–§5, parameters §6–§7, lifecycle §8 — because each part stands on its own. Do §10 before you write any node that calls a service, and §9 the first time you write an action. §8.3 (Nav2) is second-pass until you reach 25.9, and the C++ snippets can wait until you are reading somebody else's rclcpp.
 
 ### The picture: one P6 controller, four kinds of edge
 
@@ -131,7 +134,7 @@ The controller's period is the unit of account for everything below:
 
 $$T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=0.005\,\mathrm{s}=5\,\mathrm{ms}$$
 
-so on a single-threaded executor, which is what `rclpy.spin(node)` gives you, every millisecond another callback holds is a millisecond the control timer cannot run.
+so on a single-threaded executor (one thread running one ready callback at a time, each to completion; §3), which is what `rclpy.spin(node)` gives you, every millisecond another callback holds is a millisecond the control timer cannot run.
 
 **Step 1 — a short handler is not free.** A service handler that takes $1\,\mathrm{ms}$ uses $1/5=20\%$ of every period it lands in. Nothing breaks, no message appears, and you have spent a fifth of the loop on a request that was supposed to be cheap. That is the correct mental model for "services return quickly": quickly means *relative to the fastest callback in the same node*.
 
@@ -143,13 +146,13 @@ firings do not happen on time, and the motor holds its last command for $20\,\ma
 
 **Step 3 — so a $2\,\mathrm{s}$ planner cannot be a service.** Put the same arithmetic on $D=2\,\mathrm{s}$ and the numerator is 400 times the period; the problem set asks you to finish that sentence. The point is not the size of the number, it is that the number exists at all: a service occupies the caller *and* the server's executor for its whole duration, so its duration is a property of the control loop, not of the planner. An action does not — the goal is accepted, the server works, feedback arrives, and the controller's timer keeps firing between the messages, because each of those is a separate short callback. That is the entire engineering content of "long work is an action".
 
-**Step 4 — the unbounded case, which is the one you will actually hit.** Call a service synchronously *from inside* the control timer and $D$ is not $20\,\mathrm{ms}$ or $2\,\mathrm{s}$; it is infinite, because the response can only be delivered by the executor that your callback is standing on. Ticks lost: all of them. Log lines: none. Section 10 is the diagnosis, and the tell that separates it from a QoS mismatch is timing — a deadlocked node worked until the first trigger, a mismatched one never worked at all.
+**Step 4 — the unbounded case, which is the one you will actually hit.** Call a service synchronously *from inside* the control timer and $D$ is not $20\,\mathrm{ms}$ or $2\,\mathrm{s}$; it is infinite, because the response can only be delivered by the executor that your callback is standing on. Ticks lost: all of them. Log lines: none. Section 10 is the diagnosis, and the tell that separates it from a QoS mismatch (two endpoints whose delivery settings are incompatible, so they never connect and nothing complains; [[04-robotics/ros2/what-ros2-is|25.1 §5]]) is timing — a deadlocked node worked until the first trigger, a mismatched one never worked at all.
 
 **Step 5 — the parameters, and the one that is worth a set-callback.** P6's constants belong in the parameter table, not in the source: `counts_per_metre` is an `int64` of $2048$ and `control_period` a `float64` of $0.005$. Declare `counts_per_metre` read-only, because changing the encoder scale while the cart is moving rescales the state estimate mid-flight. And notice what the type system cannot do for you here. Set it to $1024$ by mistake and every value is legal — it is a perfectly good `int64` — while the estimate becomes
 
 $$\hat p=\frac{c}{1024}=2\cdot\frac{c}{2048}=2p$$
 
-so at a true position of $0.5\,\mathrm{m}$, where the encoder reads $c=1024$ counts, the controller believes the cart is at $1.0\,\mathrm{m}$ and drives it half a metre the wrong way, with no error anywhere in the graph. Declared types catch a string in an integer; only a set-parameters callback that rejects anything but the encoder's datasheet number catches this.
+so at a true position of $0.5\,\mathrm{m}$, where the encoder reads $c=1024$ counts, the controller believes the cart is at $1.0\,\mathrm{m}$ and drives it half a metre the wrong way, with no error anywhere in the graph. Declared types catch a string in an integer; only a set-parameters callback (a function the node registers to inspect every proposed change, with the power to reject it; §6) that refuses anything but the encoder's datasheet number catches this.
 
 ### 1. Why topics are not enough
 
@@ -163,7 +166,20 @@ A topic is a one-way stream with no reply and no idea who is listening. That is 
 
 The distinction beginners get wrong: they reach for a service because it looks simpler than an action, then write a service handler that takes eight seconds. Section 3 is what that costs.
 
+The rest of the page takes the four in turn, and each part can be read on its own:
+
+| Pattern | Sections | Reach for it when | On P6, in the picture |
+|---|---|---|---|
+| Service | §2–§3 | you need one answer, and it comes back quickly | `/controller/reset_odometry` |
+| Action | §4–§5 | the work is long, reports progress, and may be cancelled | `navigate`, between `/controller` and `/planner` |
+| Parameters | §6–§7 | a value configures a node instead of flowing through it | `counts_per_metre`, `control_period`, `goal_topic` |
+| Lifecycle | §8 | a node must not work until its hardware is ready | the camera's `unconfigured` → `inactive` → `active` |
+
+§9 is one sitting at the keyboard with an action, and §10 is the failure where a service meets the executor.
+
 ### 2. Services: request and response
+
+*Pattern 1 of 4 — services, §2–§3.*
 
 One node sends a request and waits; another node computes an answer and sends it back. That is a service: a remote procedure call, meaning a function call whose body runs in a different process. Its contract lives in a `.srv` file: request fields, then `---`, then response fields. The one used throughout the official tutorials is `example_interfaces/srv/AddTwoInts`:
 
@@ -257,11 +273,13 @@ ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 2, b: 3}"
 
 The official concept documentation is blunt: services are expected to return quickly, because the client is generally waiting, and they should *never* be used for long-running processes — especially ones that might need to be preempted (stopped partway because a newer request or a cancel arrives).
 
-There is a mechanical reason as well as a design one. By default a node runs on a **single-threaded executor**: one thread pulls one ready callback at a time and runs it to completion. A service callback that takes eight seconds is eight seconds in which that node processes no subscriptions, no timers, and no other service requests. The control loop in the same process stops. Nothing logs a warning; the node simply goes deaf. The executor mechanism, and the callback groups that change this behaviour, are [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]].
+There is a mechanical reason as well as a design one. By default a node runs on a **single-threaded executor**: one thread pulls one ready callback at a time and runs it to completion. A service callback that takes eight seconds is eight seconds in which that node processes no subscriptions, no timers, and no other service requests. The control loop in the same process stops. Nothing logs a warning; the node simply goes deaf. The executor mechanism, and the callback groups that change this behaviour, are [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]].
 
 So the rule is not a style preference: **if the work is long, or cancellable, or you want progress, it is an action.**
 
 ### 4. Actions: long-running goals
+
+*Pattern 2 of 4 — actions, §4–§5.*
 
 An action is a service that takes time, reports progress, and can be cancelled. Underneath it is built out of topics and services, but you use it as one thing.
 
@@ -393,6 +411,8 @@ That comment is section 3, restated by the library's own authors. Python's simpl
 
 ### 6. Parameters: configuring a node
 
+*Pattern 3 of 4 — parameters, §6–§7.*
+
 A parameter is a node setting, owned by that node, living exactly as long as it does. Each is a key, a value, and a **descriptor** (metadata about the parameter, such as its description, allowed range and whether it is read-only). The value is one of nine types and no others: `bool`, `int64`, `float64`, `string`, `byte[]`, `bool[]`, `int64[]`, `float64[]`, `string[]`. No dictionary, no nested struct — `some_lists.some_integers` is a dotted *name*, not a nesting.
 
 A node must **declare** every parameter it will accept, so names and types are fixed at startup rather than discovered by a typo six months later:
@@ -442,7 +462,7 @@ From the command line at startup, with `--ros-args -p name:=value`:
 ros2 run demo_nodes_cpp parameter_blackboard --ros-args -p some_int:=42 -p "a_string:=Hello world" -p "some_lists.some_integers:=[1, 2, 3, 4]"
 ```
 
-From a YAML file at startup. The file is keyed by node name, then the literal key `ros__parameters` (two underscores):
+From a YAML file at startup. YAML is the plain-text format ROS 2 uses for parameter files (and for one of the three launch-file formats in 25.4): indentation nests one key under another, `[1, 2, 3]` is a list, and an unquoted value takes its type from its spelling — `42` an integer, `0.005` a float, `true` or `false` a boolean, most other words a string; quotes make anything a string. The file is keyed by node name, then the literal key `ros__parameters` (two underscores):
 
 ```yaml
 parameter_blackboard:
@@ -474,11 +494,15 @@ ros2 param dump /turtlesim > turtlesim.yaml
 ros2 param load /turtlesim turtlesim.yaml
 ```
 
-Two traps in `ros2 param set`. The value is parsed as YAML, so `off` becomes a boolean and will be rejected for a string parameter — write `'!!str off'`. And ROS 2 has no heterogeneous lists, so a mixed YAML list is interpreted as a string. `ros2 param dump` piped to a file is the fastest honest way to record the configuration of a run you intend to reproduce.
+Two traps in `ros2 param set`. The value is parsed as YAML, and the YAML 1.1 rules it follows also read `on`, `off`, `yes` and `no` as booleans, so `off` becomes a boolean and will be rejected for a string parameter — write `'!!str off'`, where `!!str` is YAML's explicit tag for "this value is a string". And ROS 2 has no heterogeneous lists, so a mixed YAML list is interpreted as a string. `ros2 param dump` piped to a file is the fastest honest way to record the configuration of a run you intend to reproduce.
 
 ### 8. Managed (lifecycle) nodes
 
+*Pattern 4 of 4 — lifecycle, §8: states in §8.1, P6's numbers in §8.2, Nav2 in §8.3.*
+
 An ordinary node starts working the moment it is constructed. For a laser, a camera or a motor driver that is wrong: the device takes seconds to boot, and a node that publishes nonsense while it warms up — or opens hardware before the rest of the system is ready — produces failures that look like sensor faults.
+
+#### 8.1 States, transitions and their callbacks
 
 A **managed node** (`LifecycleNode`) adds a state machine with four steady **primary states** — `unconfigured`, `inactive`, `active`, `finalized` — and intermediate **transition states** (`configuring`, `activating`, `deactivating`, `cleaningup`, `shuttingdown`, `errorprocessing`) that report whether a transition succeeded. The transitions you invoke are `configure`, `activate`, `deactivate`, `cleanup`, `shutdown`.
 
@@ -503,6 +527,22 @@ ros2 lifecycle set /lc_talker activate
 Run `ros2 launch lifecycle lifecycle_demo_launch.py`, or the executables `lifecycle_talker`, `lifecycle_listener` and `lifecycle_service_client` in three terminals. The talker prints nothing at first — it starts `unconfigured`, exactly as designed.
 
 In Python the node subclasses `rclpy.lifecycle.Node` (an alias for `LifecycleNode`), overrides `on_configure` and friends to return `TransitionCallbackReturn.SUCCESS`, and creates its publisher with `create_lifecycle_publisher`. In C++ it derives from `rclcpp_lifecycle::LifecycleNode` and the callbacks return `LifecycleNodeInterface::CallbackReturn`.
+
+#### 8.2 The lifecycle on P6's numbers
+
+Make P6's camera a managed node, and suppose its sensor needs $T_{\text{warm}}=1.5\,\mathrm{s}$ from power-on to its first valid frame — an assumed figure, since P6's catalog fixes only the rates. Started as an ordinary node that publishes from construction, the camera emits a goal every $20\,\mathrm{ms}$ whatever the sensor returns, and the controller acts on the newest one every $5\,\mathrm{ms}$, so the warm-up costs
+
+$$n_{\text{goal}}=T_{\text{warm}}\,f_{\text{vision}}=1.5\times50=75,\qquad n_{\text{tick}}=T_{\text{warm}}\,f_{\text{ctrl}}=1.5\times200=300$$
+
+invalid goals published and controller ticks spent driving the cart towards them. As a managed node the same camera opens the device and waits for its first valid frame inside `on_configure`, returning SUCCESS only then; the manager calls `activate` after that, and the lifecycle publisher drops every `publish()` before `activate`. Both counts are $0$. What the controller meets instead is a state the ordinary node hid, *no goal yet*, and it must hold the cart still until the first goal arrives. That explicit state is what the lifecycle bought.
+
+The second number is the case the problem set asks about: the camera dies after activation. The controller's goal store keeps the last goal and every tick re-uses it, so the goal in use ages by $T_{\text{ctrl}}=5\,\mathrm{ms}$ per tick and is older than the whole budget within $70/5=14$ ticks. A lifecycle manager holding a bond with the camera notices only when the bond times out, and at Nav2's default `bond_timeout` of $4.0\,\mathrm{s}$ (§8.3) that is
+
+$$\frac{4.0\,\mathrm{s}}{T_{\text{ctrl}}}=\frac{4.0}{0.005}=800\ \text{ticks},\qquad \frac{4000\,\mathrm{ms}}{70\,\mathrm{ms}}\approx57\ \text{budgets}$$
+
+on a goal that is by then about four seconds old. So the lifecycle takes the stack down cleanly, but it is not the guard on the $70\,\mathrm{ms}$ budget. That guard is one comparison in `on_tick` — the goal's stamp against the node's clock, holding the cart once the difference passes $70\,\mathrm{ms}$ — and the bond is how the rest of the system finds out.
+
+#### 8.3 Where you will meet it: Nav2
 
 This is not academic: **Nav2 is built on it**, and you will meet it in [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]]. Its `map_server`, `planner_server` and `controller_server` are lifecycle-enabled, and `nav2_lifecycle_manager` drives them through `configure` and `activate` in ordered groups on startup, and in reverse on shutdown, via its `<manager_name>/manage_nodes` service (e.g. `lifecycle_manager_navigation/manage_nodes`). It also holds a **bond** (a periodic heartbeat exchanged between the manager and a server) with each server, so a node that crashes after activation is noticed and the stack is brought down rather than left half-running; `bond_timeout` (default 4.0 s) is how long it waits. When Nav2 "does nothing" on startup, ask which state its servers are in — `ros2 lifecycle get` answers in one line.
 
@@ -567,11 +607,11 @@ ros2 service list | grep add_two_ints   # the server exists and is fine
 
 Alive in the graph, producing nothing, with a healthy server on the other end — that combination is the signature. Distinguish it from a QoS mismatch (also silent) by checking whether the node produced output *before* the trigger arrived: a deadlocked node worked until the first trigger, a mismatched one never worked at all.
 
-Three fixes, in order of preference. Use `call_async` and handle the future in a callback, which is safe from anywhere. Keep the call synchronous but put the *client* in a different **callback group** from the calling callback (or use a reentrant group) and run a multi-threaded executor. Or follow the documented pattern: spin in a separate thread and call from `main`, never from a callback. The executor and callback-group machinery behind all three is [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]. C++ is not exempt: blocking on the future from `async_send_request` inside a callback deadlocks the same way, and the official callback-groups guide uses exactly that as its example.
+Three fixes, in order of preference. Use `call_async` and handle the future in a callback, which is safe from anywhere. Keep the call synchronous but put the *client* in a different **callback group** from the calling callback (or use a reentrant group) and run a multi-threaded executor. Or follow the documented pattern: spin in a separate thread and call from `main`, never from a callback. The executor and callback-group machinery behind all three is [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]]. C++ is not exempt: blocking on the future from `async_send_request` inside a callback deadlocks the same way, and the official callback-groups guide uses exactly that as its example.
 
 ### 11. What this page does not cover
 
-Custom `.srv` and `.action` packages appear here only far enough to build one; the general interface-definition rules, and starting all of this from a launch file with parameters attached instead of six terminals, are [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. Executors, callback groups and the QoS settings that make services and actions connect at all are [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]. Actions as a system interface — a behaviour tree calling them, a lifecycle manager sequencing the servers — arrive in [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]]. The rest of the track is [[04-robotics/ros2/index|25. ROS 2]].
+Custom `.srv` and `.action` packages appear here only far enough to build one; the general interface-definition rules, and starting all of this from a launch file with parameters attached instead of six terminals, are [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. Executors, callback groups and the QoS settings that make services and actions connect at all are [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]] and [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]]. Actions as a system interface — a behaviour tree calling them, a lifecycle manager sequencing the servers — arrive in [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]]. The rest of the track is [[04-robotics/ros2/index|25. ROS 2]].
 
 ### Sources
 
@@ -623,7 +663,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop
 > [!tip]- Solutions
 > 1. Action `navigate` from planner to controller; camera on `/goal` is a separate stream. Timeline: $t=0$ goal; ticks every $5\,\mathrm{ms}$; feedback; result at $2\,\mathrm{s}$.
 > 2. (a) $2/0.005=400$ samples. (b) $0.488\,\mathrm{mm}$. (c) The timer holds the executor; the response callback cannot run; one `calling` and silence. No exception.
-> 3. $2\,\mathrm{s}$ is not "return quickly"; the action keeps the $200\,\mathrm{Hz}$ loop alive and is cancellable. Lifecycle + a bond tears the stack down when the camera dies, instead of letting the controller track a stale $70\,\mathrm{ms}$ budget.
+> 3. $2\,\mathrm{s}$ is not "return quickly"; the action keeps the $200\,\mathrm{Hz}$ loop alive and is cancellable. Lifecycle + a bond tears the stack down when the camera dies, instead of letting the controller track a stale $70\,\mathrm{ms}$ budget — but only once the bond times out, $4.0/0.005=800$ ticks at Nav2's default. The guard on the budget itself is a stamp check in `on_tick` (§8.2).
 
 ## 한국어
 
@@ -632,8 +672,11 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop
 > **Working** — enough to pick the right pattern, write both ends, and start a node deterministically.
 
 > [!note] 선수 지식 · Prerequisites
-> [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 동작하는 설치 환경. 여기의 모든 명령은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**를 전제하고, 터미널마다 `source /opt/ros/jazzy/setup.bash`가 되어 있다고 가정한다.
-> 25.2 and a working install; all commands assume ROS 2 Jazzy on Ubuntu 24.04, each terminal sourced.
+> [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]], 그리고 그 앞의 [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇인가]] — 그 계산 예제(P6의 $70\,\mathrm{ms}$ 예산)와 5절(QoS 불일치는 조용하다)을 아래에서 쓴다 — [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6**, 그리고 동작하는 설치 환경. 여기의 모든 명령은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**를 전제하고, 터미널마다 `source /opt/ros/jazzy/setup.bash`가 되어 있다고 가정한다.
+> 25.2 and, through it, 25.1 (its worked case and §5); **P6** from 0.6 Lab Plants; a working install. All commands assume ROS 2 Jazzy on Ubuntu 24.04, each terminal sourced.
+
+> [!note] 처음이라면 · First pass
+> 그림과 계산 절을 읽고, 이어서 1절을 읽어라. 1절 끝의 표가 네 패턴을 각자의 절에 짝지어 준다. 그다음은 지금 필요한 부분만 읽으면 된다 — 서비스 2–3절, 액션 4–5절, 파라미터 6–7절, 라이프사이클 8절 — 부분마다 따로 선다. 서비스를 호출하는 노드를 쓰기 전에 10절을, 액션을 처음 쓸 때 9절을 한다. 8.3절(Nav2)은 25.9에 닿기 전까지 두 번째 읽기이고, C++ 조각은 남의 rclcpp를 읽게 될 때까지 미뤄도 된다.
 
 ### 그림으로 먼저 보기: P6 제어기 하나와 네 종류의 간선 · The picture
 
@@ -749,7 +792,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. The controller loop
 
 $$T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=0.005\,\mathrm{s}=5\,\mathrm{ms}$$
 
-`rclpy.spin(node)`가 주는 단일 스레드 executor에서는 다른 콜백이 붙들고 있는 1밀리초가 곧 제어 타이머가 돌지 못하는 1밀리초이기 때문이다.
+`rclpy.spin(node)`가 주는 단일 스레드 executor(스레드 하나가 준비된 콜백을 한 번에 하나씩, 끝까지 돌리는 것. 3절)에서는 다른 콜백이 붙들고 있는 1밀리초가 곧 제어 타이머가 돌지 못하는 1밀리초이기 때문이다.
 
 **1단계 — 짧은 핸들러도 공짜가 아니다**. $1\,\mathrm{ms}$ 걸리는 서비스 핸들러는 자기가 떨어진 주기의 $1/5=20\%$를 쓴다. 깨지는 것도 없고 메시지도 안 나오는데, 싸야 했던 요청 하나에 루프의 5분의 1을 쓴 것이다. "서비스는 빨리 반환한다"의 올바른 심상이 이것이다. 빠르다는 것은 *같은 노드에서 가장 빠른 콜백에 견주어* 빠르다는 뜻이다.
 
@@ -761,13 +804,13 @@ $$\left\lfloor \frac{D}{T_{\text{ctrl}}}\right\rfloor=\left\lfloor\frac{20}{5}\r
 
 **3단계 — 그래서 $2\,\mathrm{s}$짜리 플래너는 서비스일 수 없다**. 같은 산수를 $D=2\,\mathrm{s}$에 대면 분자가 주기의 400배가 된다. 그 문장을 끝내는 것이 과제다. 요점은 숫자의 크기가 아니라 그 숫자가 존재한다는 사실이다. 서비스는 그 시간 내내 호출자와 서버의 executor를 함께 점유하므로, 그 소요 시간이 플래너의 성질이 아니라 제어 루프의 성질이 된다. 액션은 그렇지 않다. 목표가 수락되고, 서버가 일하고, 피드백이 오고, 그 메시지들 사이에서 제어기의 타이머는 계속 발화한다. 각각이 짧은 콜백 하나씩이기 때문이다. "긴 작업은 액션"이라는 말의 공학적 내용이 전부 이것이다.
 
-**4단계 — 그리고 실제로 당신이 맞을 무한대**. 제어 타이머 *안에서* 서비스를 동기 호출하면 $D$는 $20\,\mathrm{ms}$도 $2\,\mathrm{s}$도 아니고 무한이다. 응답을 전달할 수 있는 executor 위에 당신 콜백이 올라서 있기 때문이다. 잃는 틱: 전부. 로그 줄: 없음. 진단은 10절이고, QoS 불일치와 가르는 단서는 시간이다. 교착된 노드는 첫 트리거 전까지는 동작했고, 불일치한 노드는 처음부터 한 번도 동작하지 않았다.
+**4단계 — 그리고 실제로 당신이 맞을 무한대**. 제어 타이머 *안에서* 서비스를 동기 호출하면 $D$는 $20\,\mathrm{ms}$도 $2\,\mathrm{s}$도 아니고 무한이다. 응답을 전달할 수 있는 executor 위에 당신 콜백이 올라서 있기 때문이다. 잃는 틱: 전부. 로그 줄: 없음. 진단은 10절이고, QoS 불일치(전달 설정이 호환되지 않아 두 엔드포인트가 연결되지 않고 아무도 불평하지 않는 것. [[04-robotics/ros2/what-ros2-is|25.1 §5]])와 가르는 단서는 시간이다. 교착된 노드는 첫 트리거 전까지는 동작했고, 불일치한 노드는 처음부터 한 번도 동작하지 않았다.
 
 **5단계 — 파라미터, 그리고 set 콜백을 붙일 값어치가 있는 하나**. P6의 상수는 소스가 아니라 파라미터 표에 산다. `counts_per_metre`는 $2048$인 `int64`, `control_period`는 $0.005$인 `float64`. `counts_per_metre`는 read-only로 선언한다. 카트가 움직이는 중에 엔코더 축척이 바뀌면 상태 추정이 통째로 다시 스케일되기 때문이다. 그리고 여기서 타입 체계가 해 주지 못하는 일을 보라. 실수로 $1024$를 넣어도 모든 값이 합법이다. 훌륭한 `int64`이기 때문이다. 그동안 추정치는
 
 $$\hat p=\frac{c}{1024}=2\cdot\frac{c}{2048}=2p$$
 
-가 되므로, 엔코더가 $c=1024$ 카운트를 읽는 실제 위치 $0.5\,\mathrm{m}$에서 제어기는 카트가 $1.0\,\mathrm{m}$에 있다고 믿고 반대 방향으로 반 미터를 몬다. 그래프 어디에도 오류는 없다. 선언된 타입은 정수 자리의 문자열을 잡지만, 이것을 잡는 것은 엔코더 데이터시트의 숫자 외에는 거부하는 set-parameters 콜백뿐이다.
+가 되므로, 엔코더가 $c=1024$ 카운트를 읽는 실제 위치 $0.5\,\mathrm{m}$에서 제어기는 카트가 $1.0\,\mathrm{m}$에 있다고 믿고 반대 방향으로 반 미터를 몬다. 그래프 어디에도 오류는 없다. 선언된 타입은 정수 자리의 문자열을 잡지만, 이것을 잡는 것은 엔코더 데이터시트의 숫자 외에는 거부하는 set-parameters 콜백(노드가 등록해 두고 제안된 변경마다 검사해 거부할 수 있는 함수. 6절)뿐이다.
 
 ### 1. 토픽만으로 부족한 이유
 
@@ -781,7 +824,20 @@ $$\hat p=\frac{c}{1024}=2\cdot\frac{c}{2048}=2p$$
 
 초심자가 틀리는 구분: 액션보다 간단해 보인다는 이유로 서비스를 고르고, 8초 걸리는 서비스 핸들러를 쓴다. 그 대가가 3절이다.
 
+나머지 페이지는 넷을 차례로 다루고, 각 부분은 따로 읽어도 된다.
+
+| 패턴 | 절 | 이럴 때 쓴다 | 그림 속 P6에서 |
+|---|---|---|---|
+| 서비스 | 2–3절 | 답 하나가 필요하고, 그 답이 빨리 돌아온다 | `/controller/reset_odometry` |
+| 액션 | 4–5절 | 작업이 길고, 진행을 보고하고, 취소될 수 있다 | `/controller`와 `/planner` 사이의 `navigate` |
+| 파라미터 | 6–7절 | 값이 노드를 지나가는 것이 아니라 노드를 설정한다 | `counts_per_metre`, `control_period`, `goal_topic` |
+| 라이프사이클 | 8절 | 하드웨어가 준비되기 전에는 노드가 일하면 안 된다 | 카메라의 `unconfigured` → `inactive` → `active` |
+
+9절은 키보드 앞에서 액션을 다루는 한 자리이고, 10절은 서비스가 executor와 만나는 고장이다.
+
 ### 2. 서비스: 요청과 응답
+
+*네 패턴 중 첫째 — 서비스, 2–3절.*
 
 한 노드가 요청을 보내고 기다리면, 다른 노드가 답을 계산해 돌려보낸다. 이것이 서비스다. 원격 프로시저 호출, 즉 몸체가 다른 프로세스에서 실행되는 함수 호출이다. 계약은 `.srv` 파일에 있다. 요청 필드, `---`, 응답 필드. 공식 튜토리얼 전체가 쓰는 `example_interfaces/srv/AddTwoInts`:
 
@@ -875,11 +931,13 @@ ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 2, b: 3}"
 
 공식 개념 문서는 단호하다. 클라이언트가 대개 기다리고 있으므로 서비스는 빨리 반환해야 하고, 장시간 프로세스에는 *절대* 쓰지 말아야 한다. 특히 선점(새 요청이나 취소가 와서 도중에 멈추는 것)이 필요할 수 있는 작업에는 그렇다.
 
-설계상의 이유만이 아니라 기계적인 이유도 있다. 기본적으로 노드는 **단일 스레드 executor** 위에서 돈다. 스레드 하나가 준비된 콜백을 하나씩 꺼내 끝까지 실행한다. 8초 걸리는 서비스 콜백은 그 노드가 구독도, 타이머도, 다른 서비스 요청도 처리하지 않는 8초다. 같은 프로세스의 제어 루프가 멈춘다. 경고 로그는 없다. 노드가 그냥 귀를 닫는다. executor 기전과 이 동작을 바꾸는 콜백 그룹은 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executor, 시간]]에 있다.
+설계상의 이유만이 아니라 기계적인 이유도 있다. 기본적으로 노드는 **단일 스레드 executor** 위에서 돈다. 스레드 하나가 준비된 콜백을 하나씩 꺼내 끝까지 실행한다. 8초 걸리는 서비스 콜백은 그 노드가 구독도, 타이머도, 다른 서비스 요청도 처리하지 않는 8초다. 같은 프로세스의 제어 루프가 멈춘다. 경고 로그는 없다. 노드가 그냥 귀를 닫는다. executor 기전과 이 동작을 바꾸는 콜백 그룹은 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]에 있다.
 
 그러니 이 규칙은 취향이 아니다. **오래 걸리거나, 취소 가능해야 하거나, 진행 상황이 필요하면 액션이다.**
 
 ### 4. 액션: 장시간 목표
+
+*네 패턴 중 둘째 — 액션, 4–5절.*
 
 액션은 시간이 걸리고, 진행을 보고하고, 취소할 수 있는 서비스다. 내부는 토픽과 서비스로 만들어져 있지만, 쓸 때는 하나로 쓴다.
 
@@ -1011,6 +1069,8 @@ auto handle_accepted = [this](const std::shared_ptr<GoalHandleFibonacci> goal_ha
 
 ### 6. 파라미터: 노드 설정하기
 
+*네 패턴 중 셋째 — 파라미터, 6–7절.*
+
 파라미터는 노드의 설정값이고, 그 노드가 소유하며, 정확히 그 노드만큼 산다. 각각은 키, 값, **디스크립터**(설명, 허용 범위, 읽기 전용 여부 같은 파라미터 메타데이터)로 이루어진다. 값의 타입은 아홉 가지뿐이다. `bool`, `int64`, `float64`, `string`, `byte[]`, `bool[]`, `int64[]`, `float64[]`, `string[]`. 사전도 중첩 구조체도 없다. `some_lists.some_integers`는 점이 들어간 *이름*이지 중첩이 아니다.
 
 노드는 받아들일 모든 파라미터를 **선언(declare)** 해야 한다. 그래야 이름과 타입이 반년 뒤 오타로 발견되지 않고 기동 시점에 고정된다.
@@ -1060,7 +1120,7 @@ this->declare_parameter("my_parameter", "world", param_desc);
 ros2 run demo_nodes_cpp parameter_blackboard --ros-args -p some_int:=42 -p "a_string:=Hello world" -p "some_lists.some_integers:=[1, 2, 3, 4]"
 ```
 
-기동 시 YAML 파일로. 파일은 노드 이름, 그다음 리터럴 키 `ros__parameters`(밑줄 두 개)로 키를 잡는다.
+기동 시 YAML 파일로. YAML은 ROS 2가 파라미터 파일(그리고 25.4의 launch 파일 세 형식 중 하나)에 쓰는 평문 형식이다. 들여쓰기가 키 아래에 키를 중첩하고, `[1, 2, 3]`은 리스트이며, 따옴표 없는 값은 철자로 타입이 정해진다 — `42`는 정수, `0.005`는 실수, `true`나 `false`는 불리언, 그 밖의 낱말은 대개 문자열. 따옴표를 치면 무엇이든 문자열이다. 파일은 노드 이름, 그다음 리터럴 키 `ros__parameters`(밑줄 두 개)로 키를 잡는다.
 
 ```yaml
 parameter_blackboard:
@@ -1092,11 +1152,15 @@ ros2 param dump /turtlesim > turtlesim.yaml
 ros2 param load /turtlesim turtlesim.yaml
 ```
 
-`ros2 param set`의 함정 둘. 값은 YAML로 파싱되므로 `off`는 불리언이 되고 문자열 파라미터에는 거부된다. `'!!str off'`라고 써라. 그리고 ROS 2에는 이종(heterogeneous) 리스트가 없어서, 타입이 섞인 YAML 리스트는 문자열로 해석된다. `ros2 param dump`를 파일로 보내는 것은 재현할 실행의 설정을 기록하는 가장 빠르고 정직한 방법이다.
+`ros2 param set`의 함정 둘. 값은 YAML로 파싱되고, 그것이 따르는 YAML 1.1 규칙은 `on`, `off`, `yes`, `no`도 불리언으로 읽는다. 그래서 `off`는 불리언이 되고 문자열 파라미터에는 거부된다. `'!!str off'`라고 써라. `!!str`은 "이 값은 문자열"이라고 못 박는 YAML의 명시적 태그다. 그리고 ROS 2에는 이종(heterogeneous) 리스트가 없어서, 타입이 섞인 YAML 리스트는 문자열로 해석된다. `ros2 param dump`를 파일로 보내는 것은 재현할 실행의 설정을 기록하는 가장 빠르고 정직한 방법이다.
 
 ### 8. 관리형(라이프사이클) 노드
 
+*네 패턴 중 넷째 — 라이프사이클, 8절. 상태는 8.1절, P6 숫자는 8.2절, Nav2는 8.3절.*
+
 보통 노드는 생성되는 순간부터 제 일을 시작한다. 레이저, 카메라, 모터 드라이버에는 그것이 틀렸다. 장치는 부팅에 몇 초가 걸리고, 예열 중에 헛소리를 발행하거나 시스템의 나머지가 준비되기 전에 하드웨어를 여는 노드는 센서 고장처럼 보이는 실패를 만든다.
+
+#### 8.1 상태, 전이, 그리고 그 콜백
 
 **관리형 노드**(`LifecycleNode`)는 상태 기계를 더한다. 네 개의 안정적인 **주 상태** — `unconfigured`, `inactive`, `active`, `finalized` — 와, 전이 성공 여부를 알리는 **전이 상태**(`configuring`, `activating`, `deactivating`, `cleaningup`, `shuttingdown`, `errorprocessing`). 호출하는 전이는 `configure`, `activate`, `deactivate`, `cleanup`, `shutdown`이다.
 
@@ -1121,6 +1185,22 @@ ros2 lifecycle set /lc_talker activate
 돌려 볼 데모는 `ros2 launch lifecycle lifecycle_demo_launch.py`, 또는 터미널 셋에 `lifecycle_talker`, `lifecycle_listener`, `lifecycle_service_client`. talker는 처음에 아무것도 찍지 않는다. 설계대로 `unconfigured`로 시작하기 때문이다.
 
 Python에서는 `rclpy.lifecycle.Node`(`LifecycleNode`의 별칭)를 상속하고, `on_configure` 등을 재정의해 `TransitionCallbackReturn.SUCCESS`를 반환하고, 퍼블리셔를 `create_lifecycle_publisher`로 만든다. C++에서는 `rclcpp_lifecycle::LifecycleNode`를 상속하고 콜백은 `LifecycleNodeInterface::CallbackReturn`을 반환한다.
+
+#### 8.2 P6 숫자로 보는 라이프사이클
+
+P6의 카메라를 관리형 노드로 만들고, 센서가 전원을 켠 뒤 첫 유효 프레임까지 $T_{\text{warm}}=1.5\,\mathrm{s}$가 걸린다고 하자. P6 카탈로그는 주기만 정하므로 가정한 값이다. 생성 직후부터 발행하는 평범한 노드로 띄우면 카메라는 센서가 무엇을 돌려주든 $20\,\mathrm{ms}$마다 목표를 내고, 제어기는 $5\,\mathrm{ms}$마다 가장 새 목표대로 움직이므로 워밍업의 대가는
+
+$$n_{\text{goal}}=T_{\text{warm}}\,f_{\text{vision}}=1.5\times50=75,\qquad n_{\text{tick}}=T_{\text{warm}}\,f_{\text{ctrl}}=1.5\times200=300$$
+
+이다. 무효 목표 75개가 발행되고, 제어 틱 300번이 카트를 그쪽으로 모는 데 쓰인다. 관리형 노드라면 같은 카메라가 `on_configure` 안에서 장치를 열고 첫 유효 프레임을 기다렸다가 그때에야 SUCCESS를 반환하고, 관리자는 그 뒤에 `activate`를 부르며, 라이프사이클 퍼블리셔는 `activate` 전의 `publish()`를 모두 버린다. 두 수 모두 $0$이다. 대신 제어기는 평범한 노드가 숨기던 상태, *아직 목표 없음*을 만나고, 첫 목표가 올 때까지 카트를 세워 두어야 한다. 라이프사이클이 사 준 것은 그 명시적인 상태다.
+
+두 번째 숫자는 과제가 묻는 경우, 활성화 뒤에 카메라가 죽는 경우다. 제어기의 목표 저장소는 마지막 목표를 쥐고 있고 틱마다 그것을 재사용하므로, 쓰이는 목표는 틱마다 $T_{\text{ctrl}}=5\,\mathrm{ms}$씩 늙어 $70/5=14$틱 안에 예산 전체보다 오래된다. 카메라와 bond를 맺은 라이프사이클 관리자는 bond가 시간 초과될 때에야 알아채고, Nav2의 기본 `bond_timeout` $4.0\,\mathrm{s}$(8.3절)라면 그것은
+
+$$\frac{4.0\,\mathrm{s}}{T_{\text{ctrl}}}=\frac{4.0}{0.005}=800\ \text{틱},\qquad \frac{4000\,\mathrm{ms}}{70\,\mathrm{ms}}\approx57\ \text{예산}$$
+
+이고, 그 무렵 목표는 4초 가까이 묵어 있다. 그러니 라이프사이클은 스택을 깔끔하게 내려 주지만 $70\,\mathrm{ms}$ 예산의 파수꾼은 아니다. 그 파수꾼은 `on_tick` 안의 비교 한 줄 — 목표의 스탬프를 노드의 시계와 견주어, 차이가 $70\,\mathrm{ms}$를 넘으면 카트를 세우는 것 — 이고, bond는 나머지 시스템이 그 사실을 알게 되는 경로다.
+
+#### 8.3 만나게 될 곳: Nav2
 
 학술적인 이야기가 아니다. **Nav2가 이 위에 세워져 있고**, [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]에서 만나게 된다. `map_server`, `planner_server`, `controller_server`가 라이프사이클 노드이고, `nav2_lifecycle_manager`가 자기 `<manager_name>/manage_nodes` 서비스(예: `lifecycle_manager_navigation/manage_nodes`)를 통해 기동 시 순서 지어진 그룹으로 `configure`와 `activate`를, 종료 시에는 역순으로 몰아간다. 또 각 서버와 **bond**(관리자와 서버가 주기적으로 주고받는 heartbeat)를 유지해서, 활성화 뒤에 죽은 노드를 알아채고 반쯤 돌아가는 상태로 두는 대신 스택 전체를 내린다. `bond_timeout`(기본 4.0초)이 판단까지 기다리는 시간이다. Nav2가 기동 후 "아무것도 안 할" 때 첫 질문은 서버들이 어느 상태인가이고, `ros2 lifecycle get`이 한 줄로 답한다.
 
@@ -1185,11 +1265,11 @@ ros2 service list | grep add_two_ints   # 서버는 멀쩡히 있다
 
 그래프에 살아 있고, 아무것도 생산하지 않고, 반대편 서버는 건강하다. 이 조합이 서명이다. 역시 조용한 QoS 불일치와 구별하려면 트리거가 오기 *전에* 노드가 출력을 냈는지 보라. 데드락 난 노드는 첫 트리거까지는 동작했고, 불일치 난 노드는 처음부터 한 번도 동작하지 않았다.
 
-고치는 방법 셋, 선호 순서대로. `call_async`를 쓰고 future를 콜백에서 처리한다. 어디서 불러도 안전하다. 호출을 동기로 두되 *클라이언트*를 호출하는 콜백과 다른 **콜백 그룹**에 넣고(또는 재진입 그룹을 쓰고) 다중 스레드 executor를 돌린다. 정 필요하면 문서화된 패턴을 따른다. 별도 스레드에서 spin하고 `main`에서 호출하되, 콜백에서는 절대 부르지 않는다. 셋 모두의 바탕인 executor와 콜백 그룹 기계는 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executor, 시간]]에 있다. C++도 예외가 아니다. 콜백 안에서 `async_send_request`의 future를 기다리면 똑같이 교착되고, 공식 콜백 그룹 안내서가 바로 그것을 예로 든다.
+고치는 방법 셋, 선호 순서대로. `call_async`를 쓰고 future를 콜백에서 처리한다. 어디서 불러도 안전하다. 호출을 동기로 두되 *클라이언트*를 호출하는 콜백과 다른 **콜백 그룹**에 넣고(또는 재진입 그룹을 쓰고) 다중 스레드 executor를 돌린다. 정 필요하면 문서화된 패턴을 따른다. 별도 스레드에서 spin하고 `main`에서 호출하되, 콜백에서는 절대 부르지 않는다. 셋 모두의 바탕인 executor와 콜백 그룹 기계는 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]에 있다. C++도 예외가 아니다. 콜백 안에서 `async_send_request`의 future를 기다리면 똑같이 교착되고, 공식 콜백 그룹 안내서가 바로 그것을 예로 든다.
 
 ### 11. 이 페이지가 다루지 않는 것
 
-커스텀 `.srv`와 `.action` 패키지는 여기서 하나를 빌드할 만큼만 보였다. 일반적인 인터페이스 정의 규칙과 패키지가 그것을 선언하는 방법은 [[04-robotics/ros2/workspaces-packages-launch|25.4 워크스페이스, 패키지, 빌드, 런치]]의 몫이고, 터미널 여섯 개 대신 파라미터를 붙인 런치 파일로 이 전부를 띄우는 법도 거기에 있다. Executor, 콜백 그룹, 그리고 애초에 서비스와 액션이 연결되게 만드는 QoS 설정은 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executor, 시간]]. 시스템 인터페이스로서의 액션 — 행동 트리가 액션을 부르고, 라이프사이클 관리자가 서버들을 순서 짓는 모습 — 은 [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]에서 나온다. 트랙 전체는 [[04-robotics/ros2/index|25. ROS 2]].
+커스텀 `.srv`와 `.action` 패키지는 여기서 하나를 빌드할 만큼만 보였다. 일반적인 인터페이스 정의 규칙과 패키지가 그것을 선언하는 방법은 [[04-robotics/ros2/workspaces-packages-launch|25.4 워크스페이스, 패키지, 빌드, 런치]]의 몫이고, 터미널 여섯 개 대신 파라미터를 붙인 런치 파일로 이 전부를 띄우는 법도 거기에 있다. Executor, 콜백 그룹, 그리고 애초에 서비스와 액션이 연결되게 만드는 QoS 설정은 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]와 [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]. 시스템 인터페이스로서의 액션 — 행동 트리가 액션을 부르고, 라이프사이클 관리자가 서버들을 순서 짓는 모습 — 은 [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]에서 나온다. 트랙 전체는 [[04-robotics/ros2/index|25. ROS 2]].
 
 ### 출처
 
@@ -1240,4 +1320,4 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 제어 루프는 $200\,\mat
 > [!tip]- 정답 · Solutions
 > 1. 계획기에서 제어기로 액션 `navigate`; 카메라 `/goal`은 별 스트림. 타임라인: $t=0$ 목표; $5\,\mathrm{ms}$마다 틱; 피드백; $2\,\mathrm{s}$에 결과.
 > 2. (a) $2/0.005=400$ 샘플. (b) $0.488\,\mathrm{mm}$. (c) 타이머가 executor를 붙들고 응답 콜백이 못 돈다. `calling` 한 줄 후 침묵. 예외 없음.
-> 3. $2\,\mathrm{s}$는 "빨리 반환"이 아니다. 액션은 $200\,\mathrm{Hz}$ 루프를 살려 두고 취소할 수 있다. 라이프사이클 + bond는 카메라가 죽으면 스택을 내리지, 제어기가 낡은 $70\,\mathrm{ms}$ 예산을 추적하게 두지 않는다.
+> 3. $2\,\mathrm{s}$는 "빨리 반환"이 아니다. 액션은 $200\,\mathrm{Hz}$ 루프를 살려 두고 취소할 수 있다. 라이프사이클 + bond는 카메라가 죽으면 스택을 내리지, 제어기가 낡은 $70\,\mathrm{ms}$ 예산을 추적하게 두지 않는다. 다만 bond가 시간 초과된 뒤에야 그렇고, Nav2 기본값이면 $4.0/0.005=800$틱 뒤다. 예산 자체의 파수꾼은 `on_tick` 안의 스탬프 검사다(8.2절).

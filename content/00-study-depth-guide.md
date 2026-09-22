@@ -166,7 +166,7 @@ Which pages those six areas actually are, so the row is something you can act on
 | grasping | [[04-robotics/grasping\|15. Grasping]] |
 | manipulator dynamics and the operational-space bridge | [[02-foundations/manipulator-kinematics-dynamics\|10. Manipulator Kinematics & Dynamics]] |
 | teleoperation and demonstration collection | [[04-robotics/teleoperation-demonstration\|12. Teleoperation & Demonstration]] |
-| imitation learning as used for manipulation | **no page of its own** — it is split across [[02-foundations/rl-basics\|7. RL Basics §6]] (compounding error, the BC/DAgger argument), the method notes ([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]), and §6 of the teleoperation page (what the data does and does not contain) |
+| imitation learning as used for manipulation | **no page of its own** — it is split across [[02-foundations/rl-robot-learning\|7.5 RL for Robot Learning §1]] (compounding error, the BC/DAgger argument), the method notes ([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]), and §6 of the teleoperation page (what the data does and does not contain) |
 
 The last row is the honest one: five of the six areas have a page marked `study-depth:
 Mastery`, and imitation learning does not. Promote those three places together when the
@@ -344,7 +344,7 @@ Mastery, SE(3)·인식·제어·sim-to-real은 Working, 나머지 모델 계열�
 | 파지 | [[04-robotics/grasping\|15. 파지]] |
 | 매니퓰레이터 동역학과 작업공간으로 잇는 다리 | [[02-foundations/manipulator-kinematics-dynamics\|10. 매니퓰레이터 기구학·동역학]] |
 | 원격조작과 시연 수집 | [[04-robotics/teleoperation-demonstration\|12. 원격조작과 시연 수집]] |
-| 조작에 쓰는 모방학습 | **전용 페이지가 없다** — [[02-foundations/rl-basics\|7. RL 기초 §6]](복합 오차, BC/DAgger 논증), 방법 노트들([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]), 그리고 원격조작 페이지 §6(그 데이터에 무엇이 있고 없는지)에 나뉘어 있다 |
+| 조작에 쓰는 모방학습 | **전용 페이지가 없다** — [[02-foundations/rl-robot-learning\|7.5 로봇 학습을 위한 RL §1]](복합 오차, BC/DAgger 논증), 방법 노트들([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]), 그리고 원격조작 페이지 §6(그 데이터에 무엇이 있고 없는지)에 나뉘어 있다 |
 
 마지막 행이 정직한 쪽이다: 여섯 중 다섯은 `study-depth: Mastery`가 붙은 페이지가 있고
 모방학습만 없다. 논문이 그쪽으로 틀면 저 세 곳을 함께 올려라.

@@ -14,12 +14,17 @@ mastery-when: "Go deeper when you are writing the hardware interface itself — 
 > **Working** — 기술한 로봇을 실제 제어 스택 위에서 시뮬레이션으로 움직이게 하고, 그것이 조용히 실패할 때 진단할 정도. 실제 구동계의 하드웨어 인터페이스를 작성할 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> A sourced **ROS 2 Jazzy Jalisco on Ubuntu 24.04** installation, a workspace you can build in ([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]), and the two-link arm you wrote in [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]. Simulated versus wall time matters here and is covered in [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]].
-> source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**, 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]), 그리고 [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]에서 작성한 2링크 팔. 시뮬레이션 시간과 벽시계 시간의 구분이 여기서 중요해진다([[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]).
+> A sourced **ROS 2 Jazzy Jalisco on Ubuntu 24.04** installation, a workspace you can build in ([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]), and the two-link arm you wrote in [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]. Simulated versus wall time matters here and is covered in [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]].
+> source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**, 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]), 그리고 [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]에서 작성한 2링크 팔. 시뮬레이션 시간과 벽시계 시간의 구분이 여기서 중요해진다([[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]).
+
+> [!note] First pass · 처음이라면
+> Read the Running object and the picture, then the Worked case; its three one-line glosses point to §7 (the loop rate) and §10 (why the loop runs on simulated time, and the real-time factor). Then §5–§7 (the seam, the interfaces, the controller manager) and do §11, whose Step 7 makes the Worked case's Step 5 happen in your own terminal. §1–§4 are the Gazebo background (what simulation settles, which Gazebo, the bridge, spawning); §8–§10 are reference; §12 is the chain of checks for when an active controller moves nothing.
 
 ### Running object · 이 페이지의 대상
 
-Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the 1-D cart and its clock — spawned into Gazebo Harmonic and driven through `ros2_control`. The two-link arm of §11 is the thing you type; P6 is the thing you compute with, and every number below is the catalog's.
+Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the 1-D cart and its clock — drawn in Gazebo Harmonic and driven through `ros2_control`. Every number below is the catalog's.
+
+*Two objects, stated once.* The cart is what you compute with; nothing on this page builds it. The exercise (§11) builds the two-link arm from 25.6 instead, because that is the description you already have. What carries over to the arm unchanged is the loop: the exercise sets the same `update_rate: 200`, so Step 1's $T_c=5\,\mathrm{ms}$ and Step 5's real-time-factor arithmetic are what you measure in §11, Steps 5 and 7. What does not carry over: the arm has no encoder, since Gazebo reports each joint angle as a floating-point number, so Step 2's $0.488\,\mathrm{mm}$ quantum has no counterpart; and it has no camera, so there is no $T_v$ term and the arm's rate ledger is the hold term $T_c$ alone.
 
 | Symbol | Value | What it is here |
 |---|---:|---|
@@ -219,7 +224,7 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the 1-D cart 
   <text x="8" y="564" font-size="11" fill="currentColor" opacity="0.75">Worst case: each goal lands just after a tick. L (mid-exposure to landing) is drawn as zero.</text>
 </svg>
 
-Panel A is P6's cart in Gazebo Harmonic, whose `gz_ros2_control` plugin hosts the controller manager at `update_rate: 200`: the state interfaces `cart/position` and `cart/velocity` cross the seam to the controllers, the command interface `cart/velocity` comes back from the velocity controller, its one claimant, marked `[available] [claimed]`, and the camera and `/clock` reach ROS only through `ros_gz_bridge`. Panel B puts the loop on simulated time — a camera frame every $T_v=20\,\mathrm{ms}$ and a control tick every $T_c=5\,\mathrm{ms}$, so three ticks in four reuse the last goal — and in the worst case a frame's command is still on the cart $L+25\,\mathrm{ms}$ after mid-exposure, leaving $45$ of the $70\,\mathrm{ms}$ budget for $L$, the driver and the actuator. The axis is sim time, and the budget is wall time.
+Panel A is P6's cart in Gazebo Harmonic, whose `gz_ros2_control` plugin hosts the controller manager at `update_rate: 200`: the state interfaces `cart/position` and `cart/velocity` cross the seam to the controllers, the command interface `cart/velocity` comes back from the velocity controller, its one claimant, marked `[available] [claimed]`, and the camera and `/clock` reach ROS only through `ros_gz_bridge`. Panel B puts the loop on simulated time — a camera frame every $T_v=20\,\mathrm{ms}$ and a control tick every $T_c=5\,\mathrm{ms}$, so three ticks in four reuse the last goal — and in the worst case a frame's command is still on the cart $L+25\,\mathrm{ms}$ after mid-exposure (the Worked case's Step 3 derives it), leaving $45$ of the $70\,\mathrm{ms}$ budget for $L$, the driver and the actuator. The axis is sim time, and the budget is wall time.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -245,7 +250,11 @@ since the vision period bounds how long a stale goal survives and the control pe
 
 **Step 4 — the same ledger in millimetres.** At the page-local $v=0.25\,\mathrm{m/s}$ the cart covers $0.25\times0.025=6.25\,\mathrm{mm}$ during those $25\,\mathrm{ms}$, which is $6.25\times2.048=12.8$ encoder counts: the goal the controller is chasing is nearly thirteen counts behind the cart even when nothing is late. Per control period the cart moves $0.25\times0.005=1.25\,\mathrm{mm}=2.56$ counts, comfortably above the quantum. Slow it to $0.05\,\mathrm{m/s}$ and one period covers $0.25\,\mathrm{mm}=0.512$ counts, so nearly half the ticks see *no* count change at all and the differenced velocity reads exactly $0$ or exactly $97.7\,\mathrm{mm/s}$ — a velocity signal that is pure quantization noise, at the speed where you most wanted it to be smooth.
 
-**Step 5 — and why Gazebo cannot certify any of it.** The controller manager runs inside the simulator, so `update_rate: 200` is 200 ticks per simulated second (§10). Let the real-time factor be $0.5$, a simulation running at half speed. The loop then executes $200\times0.5=100$ times per *wall* second, and the $25\,\mathrm{ms}$ sim-time ledger of Step 3 occupies $25/0.5=50\,\mathrm{ms}$ of wall time, leaving $70-50=20\,\mathrm{ms}$ instead of $45$. Nothing in the simulation misbehaves: sim time is internally consistent, the trajectory tracks, and `ros2 topic hz --use-sim-time /joint_states` reports 200, per simulated second. Drop the flag and the same command reports about 100, because Jazzy's `ros2 topic hz` timestamps each arrival on its own node's clock, and that node follows `/clock` only when `-s`/`--use-sim-time` is given; otherwise it reads the wall clock (`ros2topic/verb/hz.py` and `ros2cli/node/direct.py`, jazzy branch; `--wall-time` forces the wall clock even with the flag). P6's $70\,\mathrm{ms}$ is a wall-clock budget about a real camera and a real motor, and a run that does not report its real-time factor has not measured it. That is the precise version of §1's warning, and it is the thing the problem set's third item asks you to say out loud.
+**Step 5 — and why Gazebo cannot certify any of it.** The controller manager runs inside the simulator, so `update_rate: 200` is 200 ticks per simulated second (§10). The real-time factor is simulated time elapsed per wall-clock second, $\mathrm{RTF}=\Delta t_{\text{sim}}/\Delta t_{\text{wall}}$ (defined in §10). Let it be $0.5$, a simulation running at half speed. The loop then executes $200\times0.5=100$ times per *wall* second, and the $25\,\mathrm{ms}$ sim-time ledger of Step 3 occupies $25/0.5=50\,\mathrm{ms}$ of wall time, leaving $70-50=20\,\mathrm{ms}$ instead of $45$.
+
+Nothing in the simulation misbehaves: sim time is internally consistent, the trajectory tracks, and `ros2 topic hz --use-sim-time /joint_states` reports 200, per simulated second. Drop the flag and the same command reports about 100, because Jazzy's `ros2 topic hz` timestamps each arrival on its own node's clock, and that node follows `/clock` only when `-s`/`--use-sim-time` is given; otherwise it reads the wall clock (`ros2topic/verb/hz.py` and `ros2cli/node/direct.py`, jazzy branch; `--wall-time` forces the wall clock even with the flag).
+
+P6's $70\,\mathrm{ms}$ is a wall-clock budget about a real camera and a real motor, and a run that does not report its real-time factor has not measured it. That is the precise version of §1's warning, and it is the thing the problem set's third item asks you to say out loud. §11's Step 7 makes it happen on your own arm.
 
 ### 1. Why simulate, and what simulation will not tell you
 
@@ -444,6 +453,12 @@ Their surfaces, which are what you actually type against:
 
 `gz_ros2_control` is a Gazebo system plugin that instantiates a controller manager inside the simulation process and connects it to a Gazebo model. Its joints are the hardware. Because the controller manager runs *inside* Gazebo, the control loop is stepped by the simulator's clock rather than by wall time — which is what makes a paused or slowed simulation behave correctly instead of racing.
 
+**The real-time factor** is the number that ties those two clocks together. It is a ratio of two durations measured over the same stretch of one run:
+
+$$\mathrm{RTF}=\frac{\Delta t_{\text{sim}}}{\Delta t_{\text{wall}}}$$
+
+where $\Delta t_{\text{sim}}$ is how far simulated time (the `/clock` the bridge carries) advanced and $\Delta t_{\text{wall}}$ is how much wall-clock time passed meanwhile. $\mathrm{RTF}=1$ means the simulation keeps pace with the wall; $0.5$ means one simulated second takes two wall seconds, because the physics could not step faster or the world file asked for that pace. It is a measured property of a run on one machine, not of the model: the world file's `<real_time_factor>` is a target the simulator throttles to and falls below when the machine is too slow, and Gazebo shows the measured value in the bottom-right corner of its window. A non-example: `use_sim_time: true` is not a real-time factor. It says *which* clock a node reads, not how fast that clock runs. It matters because every sim-time duration $d$ occupies $d/\mathrm{RTF}$ of wall time, and wall time is what a real camera and a real motor are budgeted in (the Worked case's Step 5).
+
 Two tags attach it, and they do different jobs.
 
 The `<ros2_control>` block names the hardware plugin — this is the line you change for real hardware:
@@ -519,7 +534,7 @@ and give `base_link` an `<inertial>` with the `default_inertial` macro you alrea
 ```yaml
 controller_manager:
   ros__parameters:
-    update_rate: 1000  # Hz
+    update_rate: 200  # Hz, P6's f_c
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -536,6 +551,8 @@ joint_trajectory_controller:
       - position
       - velocity
 ```
+
+`update_rate: 200` is the Running object's $f_c$, so the $5\,\mathrm{ms}$ period the Worked case computed with is the period your arm runs at. (The `gz_ros2_control` demos use `1000`, one update per $1\,\mathrm{ms}$ physics step of the default world; 200 is one update every five steps.)
 
 **Step 4 — the launch file**, following the structure of the `gz_ros2_control_demos` launch files. Note the ordering: the entity must exist before the controller manager it contains can be spawned into, so the spawners are chained on process exit.
 
@@ -592,7 +609,14 @@ ros2 control list_hardware_interfaces
 ros2 control list_controllers
 ```
 
-You want both controllers `active`, the exercise's two `position` command interfaces each listed as `[available] [claimed]`, and `/joint_states` echoing at the broadcaster's rate.
+You want both controllers `active`, the exercise's two `position` command interfaces each listed as `[available] [claimed]`, and `/joint_states` echoing at the broadcaster's rate. Then read that rate on both clocks — the Worked case's Step 5, in your terminal:
+
+```bash
+ros2 topic hz --use-sim-time /joint_states   # per simulated second: about 200, the update_rate
+ros2 topic hz /joint_states                  # per wall second: about 200 × RTF
+```
+
+With nothing else loading the machine the RTF is close to 1 and the two agree.
 
 **Step 6 — command a trajectory.**
 
@@ -601,7 +625,17 @@ ros2 topic pub -1 /joint_trajectory_controller/joint_trajectory trajectory_msgs/
   "{joint_names: [shoulder, elbow], points: [{positions: [0.8, -1.0], time_from_start: {sec: 2, nanosec: 0}}]}"
 ```
 
-The arm swings over two seconds. Send a second message with two points and different `time_from_start` values and watch it interpolate. You are done when you can predict, before pressing enter, which joint moves which way for a given sign.
+The arm swings over two seconds. Send a second message with two points and different `time_from_start` values and watch it interpolate.
+
+**Step 7 — make the Worked case's Step 5 happen.** Slow the world down on purpose. Find the stock world with `find /opt/ros/jazzy -name empty.sdf`, copy it next to your launch file as `half_speed.sdf`, and change its `<real_time_factor>1.0</real_time_factor>` to `0.5`. Point `gz_args` in the launch file at the copy (`'-r -v 1 /absolute/path/to/half_speed.sdf'`), relaunch, and repeat Steps 5 and 6. Predict first:
+
+- `ros2 topic hz --use-sim-time /joint_states` still reads about $200$;
+- plain `ros2 topic hz /joint_states` reads about $200\times0.5=100$;
+- Step 6's two-second trajectory takes about $2/0.5=4\,\mathrm{s}$ by your watch, while `time_from_start` still says 2.
+
+On the arm the only rate term is the hold, $T_c=5\,\mathrm{ms}$ of simulated time, and at this RTF it is $10\,\mathrm{ms}$ of wall time. Nothing logs a warning, which is the Worked case's point.
+
+You are done when you can predict, before pressing enter, which joint moves which way for a given sign, and how long the motion will take by your watch at a given real-time factor.
 
 ### 12. The failure to diagnose: the controller is active and nothing moves
 
@@ -719,12 +753,17 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. 
 > **Working** — enough to make your described robot move in simulation under a real controller stack, and to diagnose the silent version of that not happening.
 
 > [!note] 선수 지식 · Prerequisites
-> source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**, 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]), [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]에서 만든 2링크 팔. 시뮬레이션 시간과 벽시계 시간의 구분이 여기서 중요해진다([[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]).
+> source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**, 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]), [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]에서 만든 2링크 팔. 시뮬레이션 시간과 벽시계 시간의 구분이 여기서 중요해진다([[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]).
 > A sourced ROS 2 Jazzy install, a buildable workspace, and the two-link arm from 25.6.
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 대상과 그림을 보고 Worked case로 가라. 그 안의 한 줄 설명 셋이 §7(루프 주기)과 §10(루프가 시뮬레이션 시간으로 도는 이유, 그리고 실시간 계수)을 가리킨다. 그다음 §5–§7(이음매, 인터페이스, 컨트롤러 매니저)을 읽고 §11을 하라. 그 7단계가 Worked case의 Step 5를 당신의 터미널에서 일으킨다. §1–§4는 Gazebo 배경(시뮬레이션이 해결하는 것, 어느 Gazebo인가, 브리지, 스폰)이고, §8–§10은 참고 자료이며, §12는 active인 제어기가 아무것도 움직이지 않을 때 밟는 점검 사슬이다.
 
 ### 이 페이지의 대상 · Running object
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**, 1차원 카트와 그 시계다. Gazebo Harmonic에 띄우고 `ros2_control`로 구동한다. §11의 2링크 팔은 손으로 타이핑하는 대상이고, P6는 계산하는 대상이다. 아래 숫자는 모두 카탈로그의 것이다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**, 1차원 카트와 그 시계다. Gazebo Harmonic 안에 그려 넣고 `ros2_control`로 구동한다. 아래 숫자는 모두 카탈로그의 것이다.
+
+*대상이 둘이라는 것을 한 번 밝혀 둔다.* 카트는 계산하는 대상이고, 이 페이지에서 그것을 만들지는 않는다. 실습(§11)은 대신 25.6의 2링크 팔을 만든다. 이미 가진 기술이 그것이기 때문이다. 팔로 그대로 옮겨 가는 것은 루프다. 실습이 같은 `update_rate: 200`을 쓰므로 Step 1의 $T_c=5\,\mathrm{ms}$와 Step 5의 실시간 계수 산수가 §11의 5단계와 7단계에서 직접 재는 값이다. 옮겨 가지 않는 것도 있다. 팔에는 엔코더가 없어서(Gazebo는 관절 각을 부동소수점 수로 보고한다) Step 2의 $0.488\,\mathrm{mm}$ 양자에 해당하는 것이 없고, 카메라도 없어서 $T_v$ 항이 없으며 팔의 속도 장부는 유지 항 $T_c$ 하나뿐이다.
 
 | 기호 | 값 | 여기서의 뜻 |
 |---|---:|---|
@@ -924,7 +963,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] in Gazebo Harmonic. 
   <text x="8" y="564" font-size="11" fill="currentColor" opacity="0.75">최악의 경우를 그렸다. 목표는 틱 직후에 도착하고, L(노출 중간에서 도착까지)은 폭 0으로 그렸다.</text>
 </svg>
 
-패널 A는 Gazebo Harmonic 안의 P6 카트로, `gz_ros2_control` 플러그인이 `update_rate: 200`의 컨트롤러 매니저를 품고, 상태 인터페이스 `cart/position`과 `cart/velocity`가 이음매를 건너 제어기로 가며, 명령 인터페이스 `cart/velocity`는 유일한 점유자인 속도 제어기에서 `[available] [claimed]` 표시를 달고 돌아오고, 카메라와 `/clock`은 `ros_gz_bridge`를 거쳐야만 ROS에 닿는다. 패널 B는 같은 루프를 시뮬레이션 시간 위에 놓은 것으로, 카메라 프레임은 $T_v=20\,\mathrm{ms}$마다, 제어 틱은 $T_c=5\,\mathrm{ms}$마다 와서 틱 넷 중 셋이 지난 목표를 다시 쓰고, 최악의 경우 한 프레임의 명령은 노출 중간으로부터 $L+25\,\mathrm{ms}$ 뒤까지 카트에 걸려 있어 $70\,\mathrm{ms}$ 예산 중 $L$과 드라이버와 구동기에 남는 몫은 $45\,\mathrm{ms}$다. 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.
+패널 A는 Gazebo Harmonic 안의 P6 카트로, `gz_ros2_control` 플러그인이 `update_rate: 200`의 컨트롤러 매니저를 품고, 상태 인터페이스 `cart/position`과 `cart/velocity`가 이음매를 건너 제어기로 가며, 명령 인터페이스 `cart/velocity`는 유일한 점유자인 속도 제어기에서 `[available] [claimed]` 표시를 달고 돌아오고, 카메라와 `/clock`은 `ros_gz_bridge`를 거쳐야만 ROS에 닿는다. 패널 B는 같은 루프를 시뮬레이션 시간 위에 놓은 것으로, 카메라 프레임은 $T_v=20\,\mathrm{ms}$마다, 제어 틱은 $T_c=5\,\mathrm{ms}$마다 와서 틱 넷 중 셋이 지난 목표를 다시 쓰고, 최악의 경우 한 프레임의 명령은 노출 중간으로부터 $L+25\,\mathrm{ms}$ 뒤까지 카트에 걸려 있어(Worked case의 Step 3이 유도한다) $70\,\mathrm{ms}$ 예산 중 $L$과 드라이버와 구동기에 남는 몫은 $45\,\mathrm{ms}$다. 축은 시뮬레이션 시간이고, 예산은 벽시계 시간이다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -950,7 +989,11 @@ $$A_{\max}=L+T_v+T_c=L+20+5=L+25\,\mathrm{ms}$$
 
 **Step 4 — 같은 장부를 밀리미터로.** 페이지 국소 값 $v=0.25\,\mathrm{m/s}$에서 카트는 그 $25\,\mathrm{ms}$ 동안 $0.25\times0.025=6.25\,\mathrm{mm}$를 간다. 이는 $6.25\times2.048=12.8$ 엔코더 카운트다. 아무것도 늦지 않아도 제어기가 쫓는 목표는 카트보다 열세 카운트 가까이 뒤에 있다. 제어 주기당으로는 $0.25\times0.005=1.25\,\mathrm{mm}=2.56$ 카운트여서 양자보다 넉넉히 위다. 속도를 $0.05\,\mathrm{m/s}$로 낮추면 한 주기가 $0.25\,\mathrm{mm}=0.512$ 카운트를 덮으므로 틱의 절반 가까이에서 카운트가 *전혀* 바뀌지 않고, 차분 속도는 정확히 $0$ 아니면 정확히 $97.7\,\mathrm{mm/s}$를 읽는다. 가장 매끄럽기를 바랐던 속도에서 속도 신호가 순수한 양자화 잡음이 된다.
 
-**Step 5 — 그리고 Gazebo가 그 무엇도 보증하지 못하는 이유.** 컨트롤러 매니저는 시뮬레이터 안에서 돌므로 `update_rate: 200`은 시뮬레이션 1초당 200틱이다(§10). 실시간 계수가 $0.5$, 즉 절반 속도로 도는 시뮬레이션이라고 하자. 루프는 *벽시계* 1초당 $200\times0.5=100$번 실행되고, Step 3의 $25\,\mathrm{ms}$ 시뮬레이션 장부는 벽시계로 $25/0.5=50\,\mathrm{ms}$를 차지해 남는 몫이 $45$가 아니라 $70-50=20\,\mathrm{ms}$가 된다. 시뮬레이션 안에서는 아무것도 잘못되지 않는다. 시뮬레이션 시간은 내부적으로 일관되고, 궤적은 잘 추종되며, `ros2 topic hz --use-sim-time /joint_states`는 시뮬레이션 1초당 200을 보고한다. 플래그를 빼면 같은 명령이 약 100을 보고한다. Jazzy의 `ros2 topic hz`는 도착 시각을 자기 노드의 시계로 찍는데, 그 노드는 `-s`/`--use-sim-time`을 줄 때만 `/clock`을 따르고 그렇지 않으면 벽시계를 읽기 때문이다(jazzy 브랜치의 `ros2topic/verb/hz.py`와 `ros2cli/node/direct.py`. `--wall-time`은 플래그가 있어도 벽시계를 강제한다). P6의 $70\,\mathrm{ms}$는 실제 카메라와 실제 모터에 관한 벽시계 예산이고, 실시간 계수를 보고하지 않은 실행은 그것을 잰 적이 없다. 이것이 §1의 경고를 정확한 형태로 쓴 것이고, 과제 3번이 소리 내어 말하라고 요구하는 것이다.
+**Step 5 — 그리고 Gazebo가 그 무엇도 보증하지 못하는 이유.** 컨트롤러 매니저는 시뮬레이터 안에서 돌므로 `update_rate: 200`은 시뮬레이션 1초당 200틱이다(§10). 실시간 계수는 벽시계 1초당 흐른 시뮬레이션 시간, $\mathrm{RTF}=\Delta t_{\text{sim}}/\Delta t_{\text{wall}}$이다(정의는 §10). 이것이 $0.5$, 즉 절반 속도로 도는 시뮬레이션이라고 하자. 루프는 *벽시계* 1초당 $200\times0.5=100$번 실행되고, Step 3의 $25\,\mathrm{ms}$ 시뮬레이션 장부는 벽시계로 $25/0.5=50\,\mathrm{ms}$를 차지해 남는 몫이 $45$가 아니라 $70-50=20\,\mathrm{ms}$가 된다.
+
+시뮬레이션 안에서는 아무것도 잘못되지 않는다. 시뮬레이션 시간은 내부적으로 일관되고, 궤적은 잘 추종되며, `ros2 topic hz --use-sim-time /joint_states`는 시뮬레이션 1초당 200을 보고한다. 플래그를 빼면 같은 명령이 약 100을 보고한다. Jazzy의 `ros2 topic hz`는 도착 시각을 자기 노드의 시계로 찍는데, 그 노드는 `-s`/`--use-sim-time`을 줄 때만 `/clock`을 따르고 그렇지 않으면 벽시계를 읽기 때문이다(jazzy 브랜치의 `ros2topic/verb/hz.py`와 `ros2cli/node/direct.py`. `--wall-time`은 플래그가 있어도 벽시계를 강제한다).
+
+P6의 $70\,\mathrm{ms}$는 실제 카메라와 실제 모터에 관한 벽시계 예산이고, 실시간 계수를 보고하지 않은 실행은 그것을 잰 적이 없다. 이것이 §1의 경고를 정확한 형태로 쓴 것이고, 과제 3번이 소리 내어 말하라고 요구하는 것이다. §11의 7단계가 이것을 당신의 팔에서 일으킨다.
 
 ### 1. 왜 시뮬레이션하는가, 그리고 시뮬레이션이 말해 주지 않는 것
 
@@ -1149,6 +1192,12 @@ ros2 run controller_manager spawner joint_trajectory_controller --param-file con
 
 `gz_ros2_control`은 시뮬레이션 프로세스 안에 컨트롤러 매니저를 만들고 그것을 Gazebo 모델에 연결하는 Gazebo 시스템 플러그인이다. 그 관절이 곧 하드웨어다. 컨트롤러 매니저가 Gazebo *안에서* 돌기 때문에 제어 루프는 벽시계가 아니라 시뮬레이터의 시계로 진행된다. 일시정지하거나 느리게 돌린 시뮬레이션에서도 폭주하지 않고 올바르게 동작하는 이유다.
 
+**실시간 계수**(real-time factor)는 그 두 시계를 묶는 숫자다. 한 실행의 같은 구간에서 잰 두 시간 길이의 비다.
+
+$$\mathrm{RTF}=\frac{\Delta t_{\text{sim}}}{\Delta t_{\text{wall}}}$$
+
+여기서 $\Delta t_{\text{sim}}$은 시뮬레이션 시간(브리지가 나르는 `/clock`)이 나아간 양, $\Delta t_{\text{wall}}$은 그동안 흐른 벽시계 시간이다. $\mathrm{RTF}=1$이면 시뮬레이션이 벽시계와 보조를 맞추고, $0.5$이면 시뮬레이션 1초가 벽시계 2초를 먹는다. 물리가 더 빨리 걸을 수 없었거나 월드 파일이 그 속도를 요구했기 때문이다. 이것은 모델의 성질이 아니라 한 기계에서 돈 한 실행을 잰 값이다. 월드 파일의 `<real_time_factor>`는 시뮬레이터가 맞춰 늦추는 목표치이고 기계가 느리면 그 아래로 떨어지며, Gazebo는 잰 값을 창 오른쪽 아래에 보여 준다. 아닌 예 하나: `use_sim_time: true`는 실시간 계수가 아니다. 노드가 *어느* 시계를 읽는지를 말할 뿐, 그 시계가 얼마나 빨리 가는지는 말하지 않는다. 이것이 중요한 이유는 시뮬레이션 시간의 길이 $d$가 벽시계로는 $d/\mathrm{RTF}$를 차지하고, 실제 카메라와 실제 모터의 예산은 벽시계로 매겨지기 때문이다(Worked case의 Step 5).
+
 붙이는 태그는 둘이고, 하는 일이 다르다.
 
 `<ros2_control>` 블록은 하드웨어 플러그인을 지정한다. 실제 하드웨어로 갈 때 바꾸는 줄이 이것이다.
@@ -1224,7 +1273,7 @@ sudo apt install ros-jazzy-ros-gz ros-jazzy-ros2-control ros-jazzy-ros2-controll
 ```yaml
 controller_manager:
   ros__parameters:
-    update_rate: 1000  # Hz
+    update_rate: 200  # Hz, P6's f_c
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -1241,6 +1290,8 @@ joint_trajectory_controller:
       - position
       - velocity
 ```
+
+`update_rate: 200`은 이 페이지의 대상의 $f_c$이므로, Worked case가 계산에 쓴 $5\,\mathrm{ms}$ 주기가 곧 당신의 팔이 도는 주기다. (`gz_ros2_control` 데모는 기본 월드의 $1\,\mathrm{ms}$ 물리 스텝마다 한 번씩 갱신하는 `1000`을 쓴다. 200은 다섯 스텝마다 한 번이다.)
 
 **4단계 — launch 파일.** `gz_ros2_control_demos`의 launch 파일 구조를 따른다. 순서에 주의하라. 엔티티가 존재해야 그 안의 컨트롤러 매니저에 spawn할 수 있으므로, spawner들을 프로세스 종료 이벤트로 사슬처럼 엮는다.
 
@@ -1297,7 +1348,14 @@ ros2 control list_hardware_interfaces
 ros2 control list_controllers
 ```
 
-제어기 둘이 `active`, 이 실습이 만든 `position` 명령 인터페이스 둘이 각각 `[available] [claimed]`, 그리고 브로드캐스터 주기로 `/joint_states`가 나와야 한다.
+제어기 둘이 `active`, 이 실습이 만든 `position` 명령 인터페이스 둘이 각각 `[available] [claimed]`, 그리고 브로드캐스터 주기로 `/joint_states`가 나와야 한다. 그다음 그 주기를 두 시계로 읽어라. Worked case의 Step 5를 당신의 터미널에서 하는 것이다.
+
+```bash
+ros2 topic hz --use-sim-time /joint_states   # per simulated second: about 200, the update_rate
+ros2 topic hz /joint_states                  # per wall second: about 200 × RTF
+```
+
+기계에 다른 부하가 없으면 실시간 계수는 1에 가깝고 두 값이 일치한다.
 
 **6단계 — 궤적 명령.**
 
@@ -1306,7 +1364,17 @@ ros2 topic pub -1 /joint_trajectory_controller/joint_trajectory trajectory_msgs/
   "{joint_names: [shoulder, elbow], points: [{positions: [0.8, -1.0], time_from_start: {sec: 2, nanosec: 0}}]}"
 ```
 
-팔이 2초에 걸쳐 움직인다. 점 두 개와 서로 다른 `time_from_start`로 메시지를 한 번 더 보내고 보간을 지켜보라. 엔터를 치기 전에 어떤 부호가 어느 관절을 어느 쪽으로 움직일지 예측할 수 있으면 끝이다.
+팔이 2초에 걸쳐 움직인다. 점 두 개와 서로 다른 `time_from_start`로 메시지를 한 번 더 보내고 보간을 지켜보라.
+
+**7단계 — Worked case의 Step 5를 일으킨다.** 일부러 월드를 느리게 만든다. `find /opt/ros/jazzy -name empty.sdf`로 기본 월드를 찾아 launch 파일 옆에 `half_speed.sdf`로 복사하고, 그 안의 `<real_time_factor>1.0</real_time_factor>`를 `0.5`로 바꾼다. launch 파일의 `gz_args`가 복사본을 가리키게 하고(`'-r -v 1 /absolute/path/to/half_speed.sdf'`) 다시 띄운 뒤 5단계와 6단계를 반복하라. 먼저 예측하라.
+
+- `ros2 topic hz --use-sim-time /joint_states`는 여전히 약 $200$을 읽는다.
+- 그냥 `ros2 topic hz /joint_states`는 약 $200\times0.5=100$을 읽는다.
+- 6단계의 2초짜리 궤적은 손목시계로 약 $2/0.5=4\,\mathrm{s}$가 걸리지만 `time_from_start`는 여전히 2라고 말한다.
+
+팔에서 속도 항은 유지 항 하나, 시뮬레이션 시간으로 $T_c=5\,\mathrm{ms}$뿐이고, 이 실시간 계수에서 그것은 벽시계로 $10\,\mathrm{ms}$다. 경고는 하나도 찍히지 않는다. 그것이 Worked case가 말하려던 바다.
+
+엔터를 치기 전에 어떤 부호가 어느 관절을 어느 쪽으로 움직일지, 그리고 주어진 실시간 계수에서 그 동작이 손목시계로 얼마나 걸릴지 예측할 수 있으면 끝이다.
 
 ### 12. 진단할 고장: 제어기는 active인데 아무것도 움직이지 않는다
 

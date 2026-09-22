@@ -18,10 +18,10 @@ A single image answers *what is here*. Video is required to answer *what is happ
 > Distinguish recognition, temporal localization, spatiotemporal detection, and anticipation; explain why a video model may need no temporal reasoning to score well; interpret backbone choices (two-stream, 3D CNN, video transformer) and the cost they impose; and read an evaluation critically enough to know whether the claimed capability was tested.
 
 > [!note] Prerequisites
-> [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/information-theory|Information Theory]] · [[02-foundations/neural-network-basics|Neural Network Basics]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (paper note)]]
+> [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/information-theory|Information Theory]] · [[02-foundations/neural-network-basics|Neural Network Basics]] · [[02-foundations/ml-practice|9. ML Practice & Evaluation]] (§3: precision, recall, IoU and AP, which the worked case's temporal versions reuse) · [[04-robotics/hri-safety|11. HRI & Safety]] (the P2 safety cell and its protective separation distance $S_p$, which Step 4 prices a delay in) · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (paper note)]]
 
 > [!note] First pass · 처음이라면
-> Read the running object and the worked case below — eight frames, one ground truth, and the three numbers you can compute from them — then §1, four tasks that get mixed up routinely, then §2 on scene bias, then §5's worked example of one number hiding a result. §3 and §6 are backbone and long-form detail for when a specific paper needs them.
+> Read the running object and the worked case below — eight frames, one ground truth, and the three numbers you can compute from them — then §1, four tasks that get mixed up routinely, then §2 on scene bias, then §4, the anticipation objective, and §5's worked example of one number hiding a result. §3 and §6 are backbone and long-form detail for when a specific paper needs them; §7 is the hand-off to pages 21–23 and §8 the checklist to keep beside a paper.
 
 ### Running object: the clip V8
 
@@ -150,7 +150,7 @@ The clip V8 on one time axis from 0 to 2.00 s: eight 0.25 s frame boxes hold the
 >
 > **Example.** At $\theta = 0.50$ the live detector gives $P = $ frames 4–7 against $G = $ frames 3–7: the intersection is frames 4–7, four frames, and the union is frames 3–7, five frames, so $\text{tIoU} = 4/5 = 0.80$.
 >
-> **Non-examples.** The fraction of the ground truth that the prediction covers, $|P \cap G|/|G|$, is not tIoU — it is recall, it is not symmetric, and it rewards a prediction that simply spans the whole video. For the lagged detector below, coverage is $2/5 = 0.400$ while tIoU is $2/6 = 0.333$. Spatial IoU on bounding boxes ([[02-foundations/ml-practice|ML Practice §3]]) is also a different quantity on a different domain; the two share a name and nothing else, and a frame-mAP number is therefore not comparable to a segment-mAP number.
+> **Non-examples.** The fraction of the ground truth that the prediction covers, $|P \cap G|/|G|$, is not tIoU — it is recall, it is not symmetric, and it rewards a prediction that simply spans the whole video. For the lagged detector below, coverage is $2/5 = 0.400$ while tIoU is $2/6 = 0.333$. Spatial IoU on bounding boxes ([[02-foundations/ml-practice|ML Practice §3]]) is also a different quantity on a different domain: it compares two boxes in one image, not two stretches of one timeline, and the two share a name and nothing else.
 >
 > **Why it matters.** tIoU is the **matching rule**: it decides which predicted segments count as detections at all, so every localization number in a results table is a function of the threshold applied to it.
 
@@ -160,7 +160,7 @@ $$\text{tIoU} = \tfrac{5}{5} = 1.00 \ \ (\theta = 0.30), \qquad \tfrac{4}{5} = 0
 
 The detector never changed. Its localization score moved by 0.40 because someone chose a number, which is why a threshold-free claim about localization quality is not a claim.
 
-**Step 3 — top-1 against segment level, on the same eight scores.** Clip-level recognition needs one score for the clip, so it pools. Two standard pooling rules, both applied to the live row:
+**Step 3 — top-1 against segment level, on the same eight scores.** Clip-level recognition — one label for a whole trimmed clip, scored by **top-1 accuracy**, the fraction of clips whose highest-scoring label is the true one (§1 sets it beside the other three video tasks) — needs one score for the clip, so it pools. Two standard pooling rules, both applied to the live row:
 
 $$\max_k s_k = 0.91, \qquad \frac{1}{8}\sum_k s_k = \frac{3.75}{8} = 0.469$$
 
@@ -176,7 +176,7 @@ That is the concrete version of §1's table: recognition and localization are di
 
 $$\Delta T = 1.25 - 0.75 = 0.50\ \mathrm{s}$$
 
-later — the two frames, exactly. Hand that to the cell on [[04-robotics/hri-safety|11. HRI & Safety]], whose P2 running object sits at $v_h = 1.6$ m/s, $v_r = 1.0$ m/s and $S_p = 1.24$ m. Detection latency enters the protective separation distance through the reaction time, and that page derives $\partial S_p/\partial T_r = v_h + v_r = 2.6$ m/s, so
+later — the two frames, exactly. Hand that to the cell on [[04-robotics/hri-safety|11. HRI & Safety]], a prerequisite, whose P2 running object sits at $v_h = 1.6$ m/s (the person's approach speed), $v_r = 1.0$ m/s (the robot's) and $S_p = 1.24$ m, the protective separation distance: how far outside the hazard boundary a person must first be detected for the robot to stop in time. Detection latency enters $S_p$ through the reaction time $T_r$, and that page's worked case derives $\partial S_p/\partial T_r = v_h + v_r = 2.6$ m/s, so
 
 $$\Delta S_p = 2.6 \times 0.50 = 1.30\ \mathrm{m}$$
 
@@ -197,7 +197,7 @@ $S_p$ goes from 1.24 m to 2.54 m. The sensing field, which starts at the 2.25 m 
 >
 > **Example.** The five-prediction set below: 0.625 at $\alpha = 0.50$ and 0.417 at $\alpha = 0.75$.
 >
-> **Non-examples.** The fraction of ground-truth actions detected at all is not mAP — on the set below that is $3/4 = 0.75$ at $\alpha = 0.50$, and it ignores every false positive. An mAP quoted without its $\alpha$ is not a number you can use, and a frame-mAP from spatiotemporal detection (§1's third row) is a different metric again, matched per frame rather than per segment.
+> **Non-examples.** The fraction of ground-truth actions detected at all is not mAP — on the set below that is $3/4 = 0.75$ at $\alpha = 0.50$, and it ignores every false positive. An mAP quoted without its $\alpha$ is not a number you can use. Nor is a **frame-mAP** this quantity: that is the metric of spatiotemporal detection, the task that outputs a box and an action label on every frame, and it matches predictions per frame by spatial IoU rather than per segment by temporal IoU, so the two numbers are not comparable (§1 tabulates the four video tasks and their metrics).
 >
 > **Why it matters.** Localization results are reported as one number, and that number carries a hidden choice. Two papers can differ entirely because of $\alpha$, and a method that improves boundaries rather than detections gains only at high $\alpha$ — which is exactly what the two columns below show.
 
@@ -265,7 +265,22 @@ flowchart LR
 | Video transformer | attention over space-time tokens; often factorized into separate temporal and spatial attention (TimeSformer: temporal then spatial within each block) | attention is $O(N^2)$ in tokens | data-hungry; long video is still hard |
 | Masked video pretraining | reconstruct masked spacetime patches, then fine-tune | large pretraining cost, cheap fine-tune | pretraining data distribution leaks into results |
 
-The practical consequence for a robotics application is temporal receptive field. Most of these models reason over **2–10 seconds**. Behaviour that unfolds over a minute — approach, hesitation, decision — is not inside the window, and a longer window is not free.
+The practical consequence for a robotics application is the **temporal receptive field**, defined in the box below: the backbones in the table see between about **0.4 s and 12 s** of video in one forward pass. Behaviour that unfolds over a minute — approach, hesitation, decision — is not inside the window, and a longer window is not free.
+
+> [!info] Definition · 정의 — temporal receptive field
+> **What kind of thing it is.** A **duration in seconds**: the span of input video that can influence one output of the model. For a clip model it is bounded by the clip the model reads in one forward pass.
+>
+> **Its defining conditions.** Three. (i) It is measured in **seconds, not frames**: a frame count means nothing until the frame rate and the sampling stride are fixed. (ii) It belongs to **one forward pass**. Running the model on many clips and averaging their outputs — how I3D scores a whole test video — is pooling, Step 3's mean rule, and it does not let evidence in one clip condition evidence in another. (iii) It is an **upper bound** on what the model relates across time, not a promise that the model uses all of it; §2's scene bias is the case where it uses one frame.
+>
+> $$T_{\mathrm{RF}} = \frac{N\,s}{r}$$
+>
+> $N$ is the number of frames in one clip, $s$ the sampling stride (every $s$-th source frame is kept) and $r$ the source frame rate in frames per second.
+>
+> **Example.** I3D trains on 64 consecutive frames of video processed at 25 fps, so $T_{\mathrm{RF}} = 64 \times 1/25 = 2.56$ s. TimeSformer's default clip is 8 frames taken one in 32, which from 30 fps video is $8 \times 32/30 = 8.5$ s, the span its paper gives; the paper's long-range variant, 96 frames taken one in four, covers about 12 s by its own account. At the short end, the two-stream network that I3D compares against reads a stack of 10 optical-flow frames at 25 fps: 0.4 s. V8's per-frame detector has $N = 1$ at 4 fps: 0.25 s, which is why it can report that a hand is present but not that one is approaching.
+>
+> **Non-example.** "Eight frames" is not a receptive field. TimeSformer's 8 frames span 8.5 s, while 8 consecutive frames at 25 fps span $8/25 = 0.32$ s — the same count, about 27 times apart. Nor is the length of the test video, for the reason in (ii).
+>
+> **Why it matters.** A behaviour longer than $T_{\mathrm{RF}}$ is never inside one window, so no accuracy inside the window can model it. The workaround is aggregation over clips (§6), and a paper that uses it should say so rather than report the video's length as the model's reach.
 
 Space-time attention works because tokens carry both image-patch content and a position in the clip. Query–key similarity weights let a patch depicting a hand draw information from a tool or from another time, rather than treating each frame in isolation.
 
@@ -340,7 +355,7 @@ You should be able to:
 4. Give an operating condition under which a lower-accuracy anticipation model is the correct choice.
 
 > [!tip]- Answers
-> 1. Retrain or evaluate a single-frame baseline on the same split; if it is close, the dataset is scene-biased. Frame shuffling is a cheaper approximation. 2. Because the label window is excluded from the input, so the mapping is one-to-many over legitimate futures; the model estimates a distribution, not a deterministic label. 3. Fixed-window 3D CNNs and standard video transformers (2–10 s receptive field); the workaround is hierarchical or memory-based aggregation over clip-level features. 4. When the decision requires a longer horizon than the higher-accuracy model can sustain above the action threshold — see §5.
+> 1. Retrain or evaluate a single-frame baseline on the same split; if it is close, the dataset is scene-biased. Frame shuffling is a cheaper approximation. 2. Because the label window is excluded from the input, so the mapping is one-to-many over legitimate futures; the model estimates a distribution, not a deterministic label. 3. Fixed-window 3D CNNs and standard video transformers (temporal receptive fields of about 2.6 s for I3D to about 12 s for TimeSformer's long-range variant, all far short of 45 s); the workaround is hierarchical or memory-based aggregation over clip-level features. 4. When the decision requires a longer horizon than the higher-accuracy model can sustain above the action threshold — see §5.
 
 **Worked: the three readings the homework asks.** A localization score that moved 0.40 when only the threshold changed is a claim about the threshold. Top-1 under max pooling cannot see a timing defect, and mean pooling would have called the very same clip empty — so a pooling rule, not the model, decided the headline. Throughput is not latency: three buffered frames are 0.75 s and 1.95 m of protective separation, and none of it appears in an fps number.
 
@@ -403,10 +418,10 @@ Tier B. Hand derivation on **V8**, using only this page and its prerequisites. S
 > 그 비용을 해석한다; 주장한 능력이 실제로 검증됐는지 판단할 만큼 평가를 비판적으로 읽는다.
 
 > [!note] 선수 지식
-> [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/information-theory|정보 이론]] · [[02-foundations/neural-network-basics|신경망 기초]] · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (논문 노트)]]
+> [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/information-theory|정보 이론]] · [[02-foundations/neural-network-basics|신경망 기초]] · [[02-foundations/ml-practice|9. ML 실무와 평가]](§3: 정밀도·재현율·IoU·AP. 예제의 시간 버전이 이것을 그대로 쓴다) · [[04-robotics/hri-safety|11. HRI와 안전]](P2 안전 셀과 그 보호 이격 거리 $S_p$. 4단계가 지연의 값을 여기서 매긴다) · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (논문 노트)]]
 
 > [!note] 처음이라면 · First pass
-> 먼저 아래의 계속 쓰는 대상과 끝까지 계산해 보는 예제 — 프레임 여덟 장, 정답 구간 하나, 그리고 거기서 계산할 수 있는 숫자 셋 — 그다음 §1, 습관적으로 뒤섞이는 네 과제, 그다음 장면 편향인 §2, 그다음 숫자 하나가 결과를 가리는 §5의 예제. §3·§6은 백본과 롱폼 세부이니 특정 논문이 요구할 때 보라.
+> 먼저 아래의 계속 쓰는 대상과 끝까지 계산해 보는 예제 — 프레임 여덟 장, 정답 구간 하나, 그리고 거기서 계산할 수 있는 숫자 셋 — 그다음 §1, 습관적으로 뒤섞이는 네 과제, 그다음 장면 편향인 §2, 그다음 예측(anticipation)의 목적식인 §4와 숫자 하나가 결과를 가리는 §5의 예제. §3·§6은 백본과 롱폼 세부이니 특정 논문이 요구할 때 보라. §7은 21–23번 페이지로 넘기는 연결이고, §8은 논문 옆에 두고 쓰는 점검표다.
 
 ### 계속 쓰는 대상: 클립 V8
 
@@ -535,7 +550,7 @@ Tier B. Hand derivation on **V8**, using only this page and its prerequisites. S
 >
 > **예.** $\theta = 0.50$에서 실시간 검출기의 $P$는 프레임 4–7이고 $G$는 프레임 3–7이다. 교집합은 프레임 4–7로 넷, 합집합은 프레임 3–7로 다섯이므로 $\text{tIoU} = 4/5 = 0.80$이다.
 >
-> **비-예.** 예측이 정답을 덮는 비율 $|P \cap G|/|G|$는 tIoU가 아니다 — 그것은 재현율이고, 대칭이 아니며, 영상 전체를 덮는 예측에 상을 준다. 아래 지연된 검출기에서 그 값은 $2/5 = 0.400$이지만 tIoU는 $2/6 = 0.333$이다. 바운딩 박스의 공간 IoU([[02-foundations/ml-practice|ML 실무 §3]])도 다른 영역의 다른 양이다. 둘은 이름만 공유하며, 그래서 frame-mAP 수치와 segment-mAP 수치는 비교 대상이 아니다.
+> **비-예.** 예측이 정답을 덮는 비율 $|P \cap G|/|G|$는 tIoU가 아니다 — 그것은 재현율이고, 대칭이 아니며, 영상 전체를 덮는 예측에 상을 준다. 아래 지연된 검출기에서 그 값은 $2/5 = 0.400$이지만 tIoU는 $2/6 = 0.333$이다. 바운딩 박스의 공간 IoU([[02-foundations/ml-practice|ML 실무 §3]])도 다른 영역의 다른 양이다. 한 이미지 안의 박스 둘을 비교하지, 한 시간축 위의 구간 둘을 비교하지 않으며, 둘은 이름만 공유한다.
 >
 > **왜 중요한가.** tIoU는 **정합 규칙**이다. 어떤 예측 구간이 애초에 검출로 집계되는지를 정하므로, 결과표의 모든 위치추정 수치는 거기 적용된 문턱값의 함수다.
 
@@ -545,7 +560,7 @@ $$\text{tIoU} = \tfrac{5}{5} = 1.00 \ \ (\theta = 0.30), \qquad \tfrac{4}{5} = 0
 
 검출기는 아무것도 바뀌지 않았다. 누군가 숫자 하나를 골랐기 때문에 위치추정 점수가 0.40만큼 움직였고, 그래서 문턱값 없는 위치추정 품질 주장은 주장이 아니다.
 
-**3단계 — 같은 점수 여덟 개 위에서 top-1 대 구간 단위.** 클립 단위 인식은 클립에 점수 하나가 필요하므로 풀링을 한다. 실시간 행에 표준 풀링 둘을 적용하면
+**3단계 — 같은 점수 여덟 개 위에서 top-1 대 구간 단위.** 클립 단위 인식 — 잘라 낸 클립 하나 전체에 라벨 하나를 붙이는 과제로, 점수가 가장 높은 라벨이 정답인 클립의 비율인 **top-1 정확도** 로 채점한다(§1이 나머지 세 비디오 과제와 나란히 놓는다) — 은 클립에 점수 하나가 필요하므로 풀링을 한다. 실시간 행에 표준 풀링 둘을 적용하면
 
 $$\max_k s_k = 0.91, \qquad \frac{1}{8}\sum_k s_k = \frac{3.75}{8} = 0.469$$
 
@@ -561,7 +576,7 @@ $$\text{tIoU}_{\text{lag}} = \tfrac{2}{6} = 0.333 \quad\text{대}\quad \text{tIo
 
 $$\Delta T = 1.25 - 0.75 = 0.50\ \mathrm{s}$$
 
-늦는다 — 정확히 두 프레임이다. 이것을 [[04-robotics/hri-safety|11. HRI와 안전]]의 셀에 넘기자. 그 페이지의 P2 대상은 $v_h = 1.6$ m/s, $v_r = 1.0$ m/s, $S_p = 1.24$ m에 앉아 있다. 검출 지연은 반응 시간을 통해 보호 이격 거리에 들어가고, 그 페이지가 $\partial S_p/\partial T_r = v_h + v_r = 2.6$ m/s를 유도하므로
+늦는다 — 정확히 두 프레임이다. 이것을 선수 지식인 [[04-robotics/hri-safety|11. HRI와 안전]]의 셀에 넘기자. 그 페이지의 P2 대상은 $v_h = 1.6$ m/s(사람의 접근 속도), $v_r = 1.0$ m/s(로봇의 속도), 그리고 보호 이격 거리 $S_p = 1.24$ m — 로봇이 제때 멈추려면 사람을 위험 경계 바깥 얼마 지점에서 처음 감지해야 하는가 — 에 앉아 있다. 검출 지연은 반응 시간 $T_r$을 통해 $S_p$에 들어가고, 그 페이지의 예제가 $\partial S_p/\partial T_r = v_h + v_r = 2.6$ m/s를 유도하므로
 
 $$\Delta S_p = 2.6 \times 0.50 = 1.30\ \mathrm{m}$$
 
@@ -582,7 +597,7 @@ $S_p$는 1.24 m에서 2.54 m가 된다. 감지 영역은 위험 경계 2.25 m에
 >
 > **예.** 아래 다섯 예측 집합: $\alpha = 0.50$에서 0.625, $\alpha = 0.75$에서 0.417.
 >
-> **비-예.** 정답 행동 중 몇 개나 검출되었는가는 mAP가 아니다 — 아래 집합에서 $\alpha = 0.50$일 때 그 값은 $3/4 = 0.75$이고, 거짓양성을 전부 무시한다. $\alpha$ 없이 적힌 mAP도 쓸 수 있는 숫자가 아니며, 시공간 검출(§1의 셋째 행)의 frame-mAP는 또 다른 지표로 구간이 아니라 프레임마다 정합한다.
+> **비-예.** 정답 행동 중 몇 개나 검출되었는가는 mAP가 아니다 — 아래 집합에서 $\alpha = 0.50$일 때 그 값은 $3/4 = 0.75$이고, 거짓양성을 전부 무시한다. $\alpha$ 없이 적힌 mAP도 쓸 수 있는 숫자가 아니다. **frame-mAP** 도 이 양이 아니다. 그것은 프레임마다 박스 하나와 행동 레이블을 내는 과제인 시공간 검출의 지표이고, 예측을 구간마다 시간 IoU로가 아니라 프레임마다 공간 IoU로 정합하므로 두 숫자는 비교 대상이 아니다(§1이 네 비디오 과제와 그 지표를 표로 정리한다).
 >
 > **왜 중요한가.** 위치추정 결과는 숫자 하나로 보고되고, 그 숫자는 숨은 선택 하나를 지고 있다. 논문 둘이 오직 $\alpha$ 때문에 갈릴 수 있고, 검출이 아니라 경계를 개선한 방법은 높은 $\alpha$에서만 이득을 본다 — 아래 두 열이 보이는 것이 정확히 그것이다.
 
@@ -650,7 +665,22 @@ flowchart LR
 | 비디오 트랜스포머 | 시공간 토큰에 대한 어텐션, 보통 시간 어텐션과 공간 어텐션으로 분해(TimeSformer는 블록마다 시간 다음 공간) | 토큰 수에 $O(N^2)$ | 데이터 요구량 큼, 긴 영상은 여전히 난제 |
 | 마스킹 사전학습 | 마스킹된 시공간 패치 복원 후 미세조정 | 사전학습 비용 큼, 미세조정은 저렴 | 사전학습 데이터 분포가 결과에 스며듦 |
 
-로보틱스 응용에서 실질적 귀결은 **시간 수용 영역**이다. 위 모델 대부분이 **2–10초**를 추론한다. 접근–망설임–결정처럼 1분에 걸쳐 펼쳐지는 행동은 그 창 안에 없고, 창을 늘리는 건 공짜가 아니다.
+로보틱스 응용에서 실질적 귀결은 아래 상자에서 정의하는 **시간 수용 영역** 이다. 표의 백본들은 한 번의 순전파에서 영상을 약 **0.4초에서 12초** 까지 본다. 접근–망설임–결정처럼 1분에 걸쳐 펼쳐지는 행동은 그 창 안에 없고, 창을 늘리는 건 공짜가 아니다.
+
+> [!info] 정의 · Definition — 시간 수용 영역(temporal receptive field)
+> **어떤 종류의 것인가.** **초 단위의 길이** 다. 모델의 출력 하나에 영향을 줄 수 있는 입력 영상의 시간 폭이다. 클립 모델에서는 모델이 한 번의 순전파에서 읽는 클립이 그 상한이다.
+>
+> **정의 조건.** 셋이다. (i) **프레임이 아니라 초로** 잰다. 프레임 수는 프레임률과 샘플링 간격이 정해지기 전에는 아무 뜻이 없다. (ii) **한 번의 순전파** 에 속한다. 여러 클립에 모델을 돌리고 출력을 평균하는 것 — I3D가 테스트 영상 전체를 채점하는 방식 — 은 풀링, 곧 3단계의 mean 규칙이며, 한 클립의 증거가 다른 클립의 증거를 조건으로 삼게 해 주지 않는다. (iii) 모델이 시간에 걸쳐 관계 지을 수 있는 것의 **상한** 이지, 그 전부를 쓴다는 보장이 아니다. §2의 장면 편향은 프레임 하나만 쓰는 경우다.
+>
+> $$T_{\mathrm{RF}} = \frac{N\,s}{r}$$
+>
+> $N$은 클립 하나의 프레임 수, $s$는 샘플링 간격(원본 프레임 $s$장마다 한 장을 남긴다), $r$은 원본 프레임률(초당 프레임)이다.
+>
+> **예.** I3D는 25 fps로 처리한 영상의 연속 64프레임으로 학습하므로 $T_{\mathrm{RF}} = 64 \times 1/25 = 2.56$초다. TimeSformer의 기본 클립은 32장마다 한 장씩 뽑은 8프레임이라 30 fps 영상에서는 $8 \times 32/30 = 8.5$초이고, 논문이 직접 적는 길이도 이것이다. 논문의 장거리 변형은 네 장마다 한 장씩 뽑은 96프레임으로, 논문 스스로 약 12초를 덮는다고 적는다. 짧은 쪽 끝에서는, I3D가 비교 대상으로 삼은 two-stream 네트워크가 25 fps의 광류 프레임 10장을 쌓아 읽는다: 0.4초. V8의 프레임별 검출기는 4 fps에서 $N = 1$이므로 0.25초이고, 그래서 손이 *있다*고는 말할 수 있어도 손이 *다가온다*고는 말할 수 없다.
+>
+> **비-예.** "8프레임"은 수용 영역이 아니다. TimeSformer의 8프레임은 8.5초에 걸치지만, 25 fps의 연속 8프레임은 $8/25 = 0.32$초에 걸친다 — 같은 개수가 약 27배 차이 난다. 테스트 영상의 길이도 (ii)의 이유로 수용 영역이 아니다.
+>
+> **왜 중요한가.** $T_{\mathrm{RF}}$보다 긴 행동은 어떤 창 안에도 온전히 들어오지 않으므로, 창 안의 정확도가 아무리 높아도 그것을 모델링할 수 없다. 우회책은 클립들에 걸친 집계(§6)이고, 그것을 쓴 논문은 영상의 길이를 모델의 도달 범위로 보고하지 말고 집계를 썼다고 밝혀야 한다.
 
 시공간 어텐션의 토큰에는 영상 패치 내용과 클립 안의 위치가 담긴다. 쿼리–키 유사도 가중치로 손 패치가 도구나 다른 시각의 정보를 가져와 프레임을 따로 보지 않게 한다.
 
@@ -725,7 +755,7 @@ $\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천
 4. 정확도가 낮은 예측 모델이 올바른 선택이 되는 운용 조건 하나를 들라.
 
 > [!tip]- 정답
-> 1. 같은 split에서 단일 프레임 베이스라인을 평가한다; 근접하면 장면 편향이다. 프레임 셔플이 더 싼 근사다. 2. 레이블 구간이 입력에서 배제되므로 정당한 여러 미래에 대해 일대다 사상이 된다; 모델은 결정적 레이블이 아니라 분포를 추정한다. 3. 고정 창 3D CNN과 표준 비디오 트랜스포머(2–10초 수용 영역); 우회는 클립 단위 특징 위의 계층적·메모리 기반 집계다. 4. 결정에 필요한 지평이, 정확도 높은 모델이 임계값 위에서 유지할 수 있는 $\tau$보다 길 때 — §5 참조.
+> 1. 같은 split에서 단일 프레임 베이스라인을 평가한다; 근접하면 장면 편향이다. 프레임 셔플이 더 싼 근사다. 2. 레이블 구간이 입력에서 배제되므로 정당한 여러 미래에 대해 일대다 사상이 된다; 모델은 결정적 레이블이 아니라 분포를 추정한다. 3. 고정 창 3D CNN과 표준 비디오 트랜스포머(시간 수용 영역이 I3D의 약 2.6초에서 TimeSformer 장거리 변형의 약 12초까지로, 모두 45초에 한참 못 미친다); 우회는 클립 단위 특징 위의 계층적·메모리 기반 집계다. 4. 결정에 필요한 지평이, 정확도 높은 모델이 임계값 위에서 유지할 수 있는 $\tau$보다 길 때 — §5 참조.
 
 **계산으로 확인: 과제가 묻는 세 독법.** 문턱값만 바꿨는데 0.40이 움직인 위치추정 점수는 문턱값에 관한 주장이다. max 풀링의 top-1은 타이밍 결함을 볼 수 없고, mean 풀링이었다면 바로 그 클립을 비었다고 했을 것이다 — 표제 숫자를 정한 것은 모델이 아니라 풀링 규칙이다. 처리량은 지연이 아니다: 버퍼 세 프레임은 0.75초이자 보호 이격 1.95 m이고, 그중 어느 것도 fps 숫자에는 나타나지 않는다.
 

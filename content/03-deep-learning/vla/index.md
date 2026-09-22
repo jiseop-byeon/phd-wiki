@@ -8,8 +8,8 @@ mastery-when: "Raise when policy architecture, action representation, data mixtu
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Object **D4** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.7 Lab Kernel]], because this page is Tier A · [[03-deep-learning/vlm/index|3. VLM]], [[02-foundations/rl-basics|7. RL §6]], [[04-robotics/robot-systems-deployment|10. Robot Systems]], and [[04-robotics/teleoperation-demonstration|12. Teleoperation]].
-> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D4** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.7 Lab Kernel]] · [[03-deep-learning/vlm/index|3. VLM]], [[02-foundations/rl-basics|7. RL §6]], [[04-robotics/robot-systems-deployment|10. Robot Systems]], [[04-robotics/teleoperation-demonstration|12. Teleoperation]].
+> Object **D4** from [[03-deep-learning/lab-objects|0. Lab Objects]] · [[02-foundations/lab-kernel|0.7 Lab Kernel]], because this page is Tier A · [[03-deep-learning/vlm/index|3. VLM]], [[02-foundations/rl-robot-learning|7.5 RL §1]], [[04-robotics/robot-systems-deployment|10. Robot Systems]], and [[04-robotics/teleoperation-demonstration|12. Teleoperation]].
+> [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 **D4** · 이 페이지는 Tier A이므로 [[02-foundations/lab-kernel|0.7 Lab Kernel]] · [[03-deep-learning/vlm/index|3. VLM]], [[02-foundations/rl-robot-learning|7.5 RL §1]], [[04-robotics/robot-systems-deployment|10. Robot Systems]], [[04-robotics/teleoperation-demonstration|12. Teleoperation]].
 
 ## English
 

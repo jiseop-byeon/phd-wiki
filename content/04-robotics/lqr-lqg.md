@@ -18,8 +18,8 @@ let a cost place them, and the separation principle says when estimator and cont
 > LQR 문제, 리카티 방정식의 역할, 해가 존재하고 안정화하는 조건, LQG의 추정기–제어기 분리와 그 단서를 말할 수 있으면 된다. 리카티 해법의 유도·구현은 선택이다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/control-theory-ce397|5. Control Theory]] (state space, eigenvalue stability, controllability/observability, pole placement — this page is *"choose $K$ by optimization instead of by hand"*) · [[02-foundations/optimization|4. Optimization]] (quadratic objectives) · [[02-foundations/probability|3. Probability]] (the Kalman filter, for the LQG half)
-> [[04-robotics/control-theory-ce397|5. 제어 이론]] (상태공간, 고유값 안정성, 가제어성/가관측성, 극점 배치 — 이 페이지는 *"$K$를 손이 아니라 최적화로 고르기"*다) · [[02-foundations/optimization|4. 최적화]] (이차 목적함수) · [[02-foundations/probability|3. 확률]] (LQG 절반을 위한 칼만 필터)
+> [[04-robotics/control-theory-ce397|5. Control Theory]] (state space, eigenvalue stability, controllability/observability, pole placement — this page is *"choose $K$ by optimization instead of by hand"*) · [[02-foundations/optimization|4. Optimization]] (quadratic objectives) · [[02-foundations/probability|3. Probability]] (the Kalman filter, for the LQG half) · [[02-foundations/linear-algebra|1. Linear Algebra §3]] (positive definite and semidefinite matrices, the conditions on $Q$ and $R$) · [[02-foundations/lab-plants|0.6 Lab Plants]] (plant P4, the running example)
+> [[04-robotics/control-theory-ce397|5. 제어 이론]] (상태공간, 고유값 안정성, 가제어성/가관측성, 극점 배치 — 이 페이지는 *"$K$를 손이 아니라 최적화로 고르기"*다) · [[02-foundations/optimization|4. 최적화]] (이차 목적함수) · [[02-foundations/probability|3. 확률]] (LQG 절반을 위한 칼만 필터) · [[02-foundations/linear-algebra|1. 선형대수 §3]] (양의 정부호·준정부호 행렬, $Q$와 $R$에 걸린 조건) · [[02-foundations/lab-plants|0.6 Lab Plants]] (관통 예제인 장치 P4)
 
 **What it is**: the **Linear Quadratic Regulator** is the exactly-solvable heart of optimal
 control. For linear dynamics $\dot x = Ax + Bu$ and quadratic cost
@@ -42,7 +42,7 @@ written in error coordinates $x - x_{ref}$.
 estimate optimally, then control the estimate optimally, and it is jointly optimal).
 
 > [!note] First pass · 처음이라면
-> A short page; read it through. If you only have ten minutes, §2 is the one that changes how you read papers — "LQR guarantees stability" has two conditions attached, and papers linearising a nonlinear system inherit them only at the linearisation point.
+> A short page; read it through — the picture, §1, §2, §3 and §4 — except the paragraph on the discrete-time twin (the DARE) near the end of §1, which is an aside for [[04-robotics/mpc|7. MPC]]'s terminal cost and can wait until that page. If you only have ten minutes, §2 is the one that changes how you read papers — "LQR guarantees stability" has two conditions attached, and papers linearising a nonlinear system inherit them only at the linearisation point.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -162,17 +162,19 @@ $J = \int_0^\infty (1 + 2.414^2)\,e^{-2.828t}\,dt = 2.414 = P$.
 
 **Worked: plant P4, already stable.** The leaky heater $\dot x=-x+u$ has $A=-1$, $B=1$ ([[02-foundations/lab-plants|0.6]]). With $Q=4$, $R=1$ the ARE is $-2P-P^2+4=0$, so $P=-1+\sqrt5\approx 1.236$ (the positive root). Then $K=P\approx 1.236$, the closed-loop pole is $-(1+K)\approx-2.24$, and a constant $d=1$ sits at $x_\mathrm{ss}=d/(1+K)\approx 0.45$. Compare a CE397-style hand gain $K=4$: pole $-5$, $x_\mathrm{ss}=0.2$. $Q=4$ already prices state more than effort, so LQR acts, but not as hard as the hand gain that bought $5\times$ rejection. The problem set repeats the ARE at $Q=R=1$, where the optimizer barely acts ($K\approx 0.414$) because the plant is already stable and state and effort are priced equally. Raising $Q/R$ is the $(1+K)$ trade of CE397 §1: smaller $x_\mathrm{ss}$, more effort and noise.
 
-(Robotics papers usually use the **discrete-time twin** — the DARE, with gain $K=(R+B^\top P B)^{-1}B^\top P A$ — same structure, same reading.) For $x_{k+1} = Ax_k + Bu_k$ and cost $\sum_k (x_k^\top Q x_k + u_k^\top R u_k)$ it reads
+**Aside for [[04-robotics/mpc|7. MPC]]'s terminal cost — skip on a first pass.** (Robotics papers usually use the **discrete-time twin** — the DARE, with gain $K=(R+B^\top P B)^{-1}B^\top P A$ — same structure, same reading.) For $x_{k+1} = Ax_k + Bu_k$ and cost $\sum_k (x_k^\top Q x_k + u_k^\top R u_k)$ it reads
 
 $$P = A^\top P A - A^\top P B\,(R + B^\top P B)^{-1} B^\top P A + Q$$
 
 so each step's cost-to-go is the stage cost plus the next step's cost-to-go under the best input.
 For $x_{k+1} = x_k + u_k$ with $Q = R = 1$ it reduces to $P^2 - P - 1 = 0$, so $P = 1.618$,
 $K = P/(1+P) = 0.618$, and the closed loop $x_{k+1} = 0.382\,x_k$ is inside the unit circle
-([[04-robotics/mpc|7. MPC]] reuses these numbers). You never solve this by hand — but reading it structurally pays: $Q$ injects state cost,
+([[04-robotics/mpc|7. MPC]] reuses these numbers as its terminal cost). End of the aside.
+
+**Reading the ARE structurally.** At robot scale you never solve a Riccati equation by hand — but reading it structurally pays: $Q$ injects state cost,
 the quadratic $-PBR^{-1}B^\top P$ term is *feedback eating cost through control*, and the
 stabilizing solution $P$ — positive definite when $(A,Q^{1/2})$ is observable — is what makes $V(x)=x^\top P x$ a Lyapunov function for
-the closed loop. (A **Lyapunov function** is a scalar "energy" of the state that is positive everywhere except at $x=0$ and decreases along every closed-loop trajectory; if one exists, the state has nowhere to go but $0$, so its existence proves stability; the three conditions and a worked example are in [[04-robotics/control-theory-ce397|5. Control Theory §4]]. Here the HJB condition gives $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, minus the running cost.) Under detectability alone $P \succeq 0$, and the argument needs a LaSalle-type step — LaSalle's invariance principle, which still proves convergence when $\dot V$ is only $\le 0$, provided no trajectory can stay forever where $\dot V = 0$ except at the origin. When a paper says "we solve a Riccati equation," it means this constant
+the closed loop. (A **Lyapunov function** is a scalar "energy" of the state that is positive everywhere except at $x=0$ and decreases along every closed-loop trajectory; if one exists, the state has nowhere to go but $0$, so its existence proves stability; the three conditions and a worked example are in [[04-robotics/control-theory-ce397|5. Control Theory §4]]. Here the HJB condition gives $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, minus the running cost.) Under detectability alone (every mode that does not decay by itself shows up in the cost; it is the second condition of §2) $P \succeq 0$, and the argument needs a LaSalle-type step — LaSalle's invariance principle, which still proves convergence when $\dot V$ is only $\le 0$, provided no trajectory can stay forever where $\dot V = 0$ except at the origin. When a paper says "we solve a Riccati equation," it means this constant
 $P$, computed once offline (or once per linearization in iterative/time-varying LQR).
 
 ### 2. When does this actually work? Two conditions
@@ -312,6 +314,17 @@ none"; gain, phase and stability margins are defined in
 or robust variants. Read "we use LQG" as *nominal-optimal, robustness unverified unless
 shown*.
 
+*Non-example, with numbers — Doyle's own system.* In continuous time, where $W$ and $V$ are noise
+intensities, take $\dot x=\begin{pmatrix}1&1\\0&1\end{pmatrix}x+\begin{pmatrix}0\\1\end{pmatrix}u+\begin{pmatrix}1\\1\end{pmatrix}w$ and
+$y=x_1+v$, with $Q=60\begin{pmatrix}1&1\\1&1\end{pmatrix}$, $R=1$, process-noise intensity $60$ on the
+scalar $w$ and $V=1$. Both Riccati equations return the same round numbers, $K=(10,\ 10)$ and
+$L=(10,\ 10)^\top$. Now let the actuator deliver $m\,u$ where the model assumed $u$. Fed the true
+state, $u=-Kx$, the loop is stable for every $m>0.2$, because its characteristic polynomial is
+$\lambda^2+(10m-2)\lambda+1$. Fed the Kalman estimate, $u=-K\hat x$, it is stable only for
+$0.930<m<1.010$: an actuator one percent stronger than modelled destabilizes the jointly optimal
+controller. Nothing in the separation principle is violated — it never promised anything about
+$m\neq1$ — and that is the whole point of Doyle's one-line abstract.
+
 **Why study it**: LQR is the reference point everything else is measured against —
 [[04-robotics/mpc|MPC]] is "LQR + constraints, re-solved online" (its terminal cost $P$
 is typically the LQR Riccati solution); RL policy iteration or policy optimization on
@@ -394,7 +407,7 @@ $Q$, 양의 준정부호(모든 $x$에서 $x^\top Q x \ge 0$); 노력에 값을 
 (**분리 원리**: 최적으로 추정하고, 그 추정값을 최적으로 제어하면, 그 결합이 전체 최적이다).
 
 > [!note] 처음이라면 · First pass
-> 짧은 페이지이니 통독하라. 10분뿐이라면 §2다 — "LQR은 안정성이 보장된다"에는 조건이 둘 붙어 있고, 비선형계를 선형화해 쓰는 논문은 그 조건을 선형화 지점에서만 물려받는다.
+> 짧은 페이지이니 그림, §1, §2, §3, §4를 통독하라. 다만 §1 끝 무렵의 이산 시간 쌍둥이(DARE) 문단은 [[04-robotics/mpc|7. MPC]]의 종단 비용을 위한 곁가지이니 그 페이지까지 미뤄도 된다. 10분뿐이라면 §2다 — "LQR은 안정성이 보장된다"에는 조건이 둘 붙어 있고, 비선형계를 선형화해 쓰는 논문은 그 조건을 선형화 지점에서만 물려받는다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -510,15 +523,17 @@ $J = \int_0^\infty (1 + 2.414^2)\,e^{-2.828t}\,dt = 2.414 = P$다.
 
 **계산: 이미 안정한 장치 P4.** 새는 히터 $\dot x=-x+u$는 $A=-1$, $B=1$([[02-foundations/lab-plants|0.6]]). $Q=4$, $R=1$이면 ARE는 $-2P-P^2+4=0$, $P=-1+\sqrt5\approx 1.236$(양근). $K\approx 1.236$, 폐루프 극점 $\approx-2.24$, 상수 $d=1$은 $x_\mathrm{ss}\approx 0.45$. 손 이득 $K=4$는 극점 $-5$, $x_\mathrm{ss}=0.2$. $Q=4$는 이미 상태 쪽을 더 사서 LQR이 움직이지만, $5$배 억제를 산 손 이득만큼은 아니다. 과제는 $Q=R=1$에서 ARE를 반복한다. 플랜트가 이미 안정하고 상태와 노력을 같게 매기므로 최적화기는 거의 안 움직인다($K\approx 0.414$). $Q/R$을 올리는 것이 CE397 §1의 $(1+K)$ 거래다.
 
-(로봇 논문은 대개 **이산 시간 쌍둥이** — DARE, 이득 $K=(R+B^\top P B)^{-1}B^\top P A$ — 를 쓴다; 구조도 읽는 법도 같다.) $x_{k+1} = Ax_k + Bu_k$와 비용 $\sum_k (x_k^\top Q x_k + u_k^\top R u_k)$에 대해 식은
+**[[04-robotics/mpc|7. MPC]]의 종단 비용을 위한 곁가지 — 첫 읽기에서는 건너뛴다.** (로봇 논문은 대개 **이산 시간 쌍둥이** — DARE, 이득 $K=(R+B^\top P B)^{-1}B^\top P A$ — 를 쓴다; 구조도 읽는 법도 같다.) $x_{k+1} = Ax_k + Bu_k$와 비용 $\sum_k (x_k^\top Q x_k + u_k^\top R u_k)$에 대해 식은
 
 $$P = A^\top P A - A^\top P B\,(R + B^\top P B)^{-1} B^\top P A + Q$$
 
 이다. 각 스텝의 cost-to-go가 단계 비용에 최선의 입력 아래 다음 스텝 cost-to-go를 더한 것이기 때문이다.
 $x_{k+1} = x_k + u_k$, $Q = R = 1$이면 $P^2 - P - 1 = 0$으로 줄어 $P = 1.618$, $K = P/(1+P) = 0.618$이고,
-폐루프 $x_{k+1} = 0.382\,x_k$는 단위원 안에 있다([[04-robotics/mpc|7. MPC]]가 이 숫자를 다시 쓴다). 손으로 푸는 일은 없다 — 하지만 구조로 읽으면 남는 게 있다: $Q$는 상태 비용을 주입하고,
+폐루프 $x_{k+1} = 0.382\,x_k$는 단위원 안에 있다([[04-robotics/mpc|7. MPC]]가 이 숫자를 종단 비용으로 다시 쓴다). 곁가지는 여기까지다.
+
+**ARE를 구조로 읽기.** 로봇 규모에서 리카티 방정식을 손으로 푸는 일은 없다 — 하지만 구조로 읽으면 남는 게 있다: $Q$는 상태 비용을 주입하고,
 이차 항 $-PBR^{-1}B^\top P$는 *피드백이 제어를 통해 비용을 깎아먹는* 항이며, 안정화 해
-$P$가 — $(A,Q^{1/2})$가 가관측이면 양의 정부호 — $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만든다. (**리아푸노프 함수**(Lyapunov function)란 $x=0$을 뺀 모든 곳에서 양수이고 모든 폐루프 궤적을 따라 줄어드는 상태의 스칼라 "에너지"다. 그런 함수가 있으면 상태는 $0$ 말고 갈 곳이 없으므로, 그 존재가 곧 안정성의 증명이다. 세 조건과 계산 예제는 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]에 있다. 여기서는 HJB 조건이 $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, 즉 순간 비용에 음수를 붙인 값을 준다.) 검출 가능성만 있으면 $P \succeq 0$이고 LaSalle류 논증이 필요하다 — LaSalle 불변 원리는 $\dot V$가 $\le 0$에 그칠 때도, 원점 말고는 어떤 궤적도 $\dot V = 0$인 곳에 영원히 머물 수 없다면 수렴을 증명해 준다. 논문이 "리카티
+$P$가 — $(A,Q^{1/2})$가 가관측이면 양의 정부호 — $V(x)=x^\top P x$를 폐루프의 리아푸노프 함수로 만든다. (**리아푸노프 함수**(Lyapunov function)란 $x=0$을 뺀 모든 곳에서 양수이고 모든 폐루프 궤적을 따라 줄어드는 상태의 스칼라 "에너지"다. 그런 함수가 있으면 상태는 $0$ 말고 갈 곳이 없으므로, 그 존재가 곧 안정성의 증명이다. 세 조건과 계산 예제는 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]에 있다. 여기서는 HJB 조건이 $\dot V = -(x^\top Q x + u^{\star\top} R u^\star)$, 즉 순간 비용에 음수를 붙인 값을 준다.) 검출 가능성(스스로 줄어들지 않는 모든 모드가 비용에 나타난다는 조건으로, §2의 두 번째 조건이다)만 있으면 $P \succeq 0$이고 LaSalle류 논증이 필요하다 — LaSalle 불변 원리는 $\dot V$가 $\le 0$에 그칠 때도, 원점 말고는 어떤 궤적도 $\dot V = 0$인 곳에 영원히 머물 수 없다면 수렴을 증명해 준다. 논문이 "리카티
 방정식을 푼다"고 하면 이 상수 $P$를 오프라인에서 한 번(반복/시변 LQR에서는 선형화마다
 한 번) 계산한다는 뜻이다.
 
@@ -647,6 +662,16 @@ $P^2 - P - 1 = 0$으로 줄어 LQR 이득과 정상 상태 칼만 이득이 모�
 [[04-robotics/control-theory-ce397|5. 제어 이론 §5.5]]에서 정의한다). 추정 오차와 모델
 오차가 상호작용한다; 실제 시스템은 여유 검사나 강건 변형을 다시 도입한다. "LQG를 쓴다"는
 *공칭 최적, 강건성은 보이기 전까지 미검증*으로 읽어라.
+
+*반례, 숫자로 — Doyle 자신의 시스템.* $W$와 $V$가 잡음 세기인 연속 시간에서
+$\dot x=\begin{pmatrix}1&1\\0&1\end{pmatrix}x+\begin{pmatrix}0\\1\end{pmatrix}u+\begin{pmatrix}1\\1\end{pmatrix}w$,
+$y=x_1+v$를 잡고, $Q=60\begin{pmatrix}1&1\\1&1\end{pmatrix}$, $R=1$, 스칼라 $w$의 공정 잡음 세기 $60$,
+$V=1$로 둔다. 두 리카티 방정식이 같은 깔끔한 수를 돌려준다. $K=(10,\ 10)$, $L=(10,\ 10)^\top$.
+이제 모델은 $u$라고 가정했는데 구동기가 $m\,u$를 낸다고 하자. 참 상태를 되먹이면($u=-Kx$) 특성
+다항식이 $\lambda^2+(10m-2)\lambda+1$이므로 모든 $m>0.2$에서 루프가 안정하다. 칼만 추정값을
+되먹이면($u=-K\hat x$) $0.930<m<1.010$에서만 안정하다. 모델보다 1% 센 구동기 하나가 결합 최적
+제어기를 불안정하게 만든다. 분리 원리는 아무것도 어기지 않았다 — $m\neq1$에 대해서는 애초에
+아무것도 약속하지 않았다 — 그리고 그것이 Doyle의 한 줄 초록이 말하는 요점 전부다.
 
 **왜 공부하나**: LQR은 다른 모든 것을 재는 기준점이다 — [[04-robotics/mpc|MPC]]는 "제약을
 더해 온라인으로 다시 푸는 LQR"이고(그 종단 비용 $P$가 보통 LQR 리카티 해다),

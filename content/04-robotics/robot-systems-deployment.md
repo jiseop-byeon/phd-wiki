@@ -14,16 +14,16 @@ What an algorithm still needs before it is a robot: clocks, frames, rates, logs,
 
 A paper algorithm becomes a robot only when sensors, clocks, coordinate frames, computers, networks, controllers, actuators, safety logic, and logging work together. Systems literacy lets a reader determine what was actually deployed and where a reported improvement may have originated.
 
-*Scope: this page teaches the runtime concerns that sit between an algorithm and a robot — the loop, action interfaces, the latency budget with its deadlines and jitter, frames and the TF tree, middleware vocabulary, the execution layer and its behavior trees, reliability, staged deployment and the failure taxonomy. It does not teach ROS 2 itself, which is the eleven pages of [[04-robotics/ros2/index|25. ROS 2]], nor control design ([[04-robotics/control-theory-ce397|5. Control]]), estimation ([[04-robotics/state-estimation-slam|3. State Estimation]]) or planning ([[04-robotics/planning-decision-making|4. Planning]]). It teaches what to check about them, and it is not an electronics or installation tutorial.*
+*Scope: this page teaches the runtime concerns that sit between an algorithm and a robot — the loop, action interfaces, the latency budget with its deadlines and jitter, frames and the TF tree, middleware vocabulary, the execution layer and its behavior trees, the architecture lineages behind that layer and the formal task specifications of §6.5 (linear temporal logic, model checking versus reactive synthesis, realizability, the GR(1) fragment and signal temporal logic, taught from Boolean propositions up), reliability, staged deployment and the failure taxonomy. It does not teach ROS 2 itself, which is the eleven pages of [[04-robotics/ros2/index|25. ROS 2]], nor control design ([[04-robotics/control-theory-ce397|5. Control]]), estimation ([[04-robotics/state-estimation-slam|3. State Estimation]]) or planning ([[04-robotics/planning-decision-making|4. Planning]]). It teaches what to check about them, and it is not an electronics or installation tutorial.*
 
 > [!info] Depth target
 > Decompose a robot into its runtime pipeline; interpret action interfaces, timing, frames, middleware, reliability, simulation, and logging; and diagnose failures at subsystem boundaries. This is not a ROS installation or electronics tutorial.
 
 > [!note] Prerequisites
-> [[02-foundations/signal-processing|Signal Processing]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[04-robotics/state-estimation-slam|State Estimation]] · [[04-robotics/planning-decision-making|Planning]] · [[04-robotics/control-theory-ce397|Control Theory]]
+> [[02-foundations/lab-plants|0.6 Lab Plants]] (plant P6) · [[02-foundations/signal-processing|Signal Processing]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[04-robotics/state-estimation-slam|State Estimation]] · [[04-robotics/planning-decision-making|Planning]] · [[04-robotics/control-theory-ce397|Control Theory]]. §6.5's temporal logic assumes no logic course: it defines the propositions and connectives it uses.
 
 > [!note] First pass · 처음이라면
-> This is a checklist page more than a narrative. First pass: §1 for the loop, §3 for the timing budget — the single most common source of results that do not reproduce — and §10 for the failure taxonomy. The rest is a reference you return to with a specific system in front of you.
+> This is a checklist page more than a narrative. First pass: the picture, §1 for the loop, §3 for the timing budget — the single most common source of results that do not reproduce — with its worked P6 case, and §10 for the failure taxonomy. Second pass, with a specific system in front of you: §2 (action interfaces), §4 (frames), §5 (middleware), §6 (the execution layer), §6.5 (architecture lineages and temporal-logic specifications, the page's one formal subsection), §7–§9 (reliability, calibration, staged deployment) and §11 (resources).
 
 ### The picture · 그림으로 먼저 보기
 
@@ -221,8 +221,6 @@ since what a deadline argument needs is the extreme and not the centre — a sta
 > P6's control loop at 200 Hz, so $T=D=5$ ms. Five measured response times: $1.2, 1.5, 4.8, 1.3, 1.4$ ms. The mean is $2.04$ ms, the peak-to-peak jitter is $4.8-1.2=\mathbf{3.6}$ ms, there are **zero** deadline misses, and the margin at the worst instance is $5.0-4.8=0.2$ ms — that tick used $96\%$ of its period.
 >
 > **Non-example — quoting the mean as the rate.** $1000/2.04=490$ Hz describes a loop that does not exist. The loop is 200 Hz, and one tick in five came within $0.2$ ms of missing. The mean is the number that looks good in a table; the maximum is the number that decides whether the system works. Move the identical task under the $1$ ms haptic deadline named below and **all five** instances miss, with no change to the mean at all.
->
-> The same distinction re-reads the sum above. With the numbers of the next callout the *mean* budget is $78.7\approx 79$ ms, but replacing the sampling term $\tfrac12 T_{\text{cam}}=16.7$ ms by its worst case $T_{\text{cam}}=33.3$ ms gives $\mathbf{95.3}$ ms. That $16.7$ ms gap is jitter and not bias, so no calibration removes it: a controller tuned on the mean budget meets a disturbance that is $21\%$ staler than designed, and at $0.3$ m/s the end-effector's staleness runs from $24$ mm to $29$ mm between one frame and the next.
 
 **Worked: plant P6.** Encoder $N=2048$ counts/m, so one count is $1000/2048=0.488\,\mathrm{mm}$. Vision at $50\,\mathrm{Hz}$ ($20\,\mathrm{ms}$), control at $200\,\mathrm{Hz}$ ($5\,\mathrm{ms}$), budget $70\,\mathrm{ms}$ from camera mid-exposure to force ([[02-foundations/lab-plants|0.6]]). A vision message $200\,\mathrm{ms}$ old at the controller is $130\,\mathrm{ms}$ over budget and $200/5=40$ stale ticks. At $0.10\,\mathrm{m/s}$ the cart travels $20\,\mathrm{mm}$ ($41$ counts) in that age. The estimator on [[04-robotics/state-estimation-slam|3]] cannot save you: the goal is late, not noisy. The problem set is this timeline as a drawing. The silent-failure drill (TF stamp, QoS) is [[04-robotics/ros2/qos-executors-time|25.5]]. What P6's sensors do contribute as noise, sensor by sensor, is modelled on [[04-robotics/sensor-models|3.2 Sensor Models & Noise]]. Budgets tighten by more than an
 order of magnitude when the loop renders stiff contact: a haptic servo must close in about 1 ms with bounded jitter,
@@ -268,6 +266,8 @@ so the millisecond is the unit rather than the frame
 > a universal cap: the plant and controller determine the pre-delay margin, and adding delay
 > can move the crossover. [[04-robotics/control-theory-ce397|5. Control §5.5]] derives this
 > conditional budget and explains when it applies.
+>
+> **Mean versus worst case.** The jitter distinction of the P6 callout above re-reads this total. The $79$ ms ($78.7$ ms before rounding) is the *mean* budget; replacing the sampling term $\tfrac12 T_{\text{cam}}=16.7$ ms by its worst case $T_{\text{cam}}=33.3$ ms gives $16.7+78.7=\mathbf{95.3}$ ms. That $16.7$ ms gap is jitter and not bias, so no calibration removes it: a controller tuned on the mean budget meets a disturbance that is $16.7/78.7=21\%$ staler than designed, and at $0.3$ m/s the end-effector's staleness runs from $0.3\times0.0787=24$ mm to $0.3\times0.0953=29$ mm between one frame and the next.
 >
 > **The reading this gives you.** Halving inference time (40 → 20 ms) moves the total to 59 ms
 > and, under the same illustrative 90°/45° assumptions, the budget to
@@ -369,7 +369,7 @@ The execution layer of §6 is the middle tier of a design robotics reached after
 
 Tiers talk through §5's split: topics carry data, services and actions carry commands with a reply. **The reading this gives you.** "The LLM plans" replaces the deliberator only; recovery still lives in the sequencer and stability in the controller.
 
-**Temporal logic.** Temporal logic is logic about sequences over time: a formula is judged true or false of a whole run — a list of steps, each recording which propositions hold — rather than of one moment. LTL (Pnueli 1977) adds four operators to Boolean propositions over discrete steps: $\mathsf{X}\,\varphi$ (next step), $\mathsf{F}\,\varphi$ (eventually), $\mathsf{G}\,\varphi$ (always), $\varphi\,\mathsf{U}\,\psi$ ($\varphi$ at every step until $\psi$, which must occur). Patterns: safety $\mathsf{G}\,\neg\mathit{collision}$; liveness $\mathsf{G}\mathsf{F}\,\mathit{atCharger}$ (from every step, a charger visit still lies ahead, so on an infinite run the robot returns infinitely often); response $\mathsf{G}(\mathit{req}\rightarrow\mathsf{F}\,\mathit{grant})$; sequencing $\mathsf{F}(a\wedge\mathsf{F}\,b)$.
+**Temporal logic.** A **proposition** is a named fact that is true or false at each step, such as $\mathit{near}$ or $\mathit{stop}$, and the Boolean connectives combine propositions within one step: $\neg\varphi$ (not), $\varphi\wedge\psi$ (and), $\varphi\vee\psi$ (or), and $\varphi\rightarrow\psi$ (if $\varphi$ then $\psi$), which is false only when $\varphi$ holds and $\psi$ does not, so it is true *vacuously* at every step where $\varphi$ is false. Temporal logic is logic about sequences over time: a formula is judged true or false of a whole run — a list of steps, each recording which propositions hold — rather than of one moment. LTL (Pnueli 1977) adds four operators to Boolean propositions over discrete steps: $\mathsf{X}\,\varphi$ (next step), $\mathsf{F}\,\varphi$ (eventually), $\mathsf{G}\,\varphi$ (always), $\varphi\,\mathsf{U}\,\psi$ ($\varphi$ at every step until $\psi$, which must occur). Patterns: safety $\mathsf{G}\,\neg\mathit{collision}$; liveness $\mathsf{G}\mathsf{F}\,\mathit{atCharger}$ (from every step, a charger visit still lies ahead, so on an infinite run the robot returns infinitely often); response $\mathsf{G}(\mathit{req}\rightarrow\mathsf{F}\,\mathit{grant})$; sequencing $\mathsf{F}(a\wedge\mathsf{F}\,b)$.
 
 *Model checking* asks whether every behaviour of a given design satisfies $\varphi$, and returns yes or a counterexample. *Reactive synthesis* builds a controller that satisfies $\varphi$ against every sequence of environment inputs, choosing each output from the past alone, because a real robot must act before it sees the next input.
 
@@ -383,7 +383,7 @@ For continuous signals, signal temporal logic adds time intervals and real-value
 
 $$\varphi = \mathsf{G}\,\neg\mathit{near} \;\wedge\; \mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB}) \;\wedge\; \mathsf{G}(\mathit{fail}\rightarrow\mathsf{X}\,\mathsf{G}\,\mathit{stop})$$
 
-This is not realizable as written, because an early fault leaves the robot stopped and a stopped robot cannot deliver; so weaken the liveness part to $\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})\vee\mathsf{F}\,\mathit{fail}$ or assume no early fault.
+This is satisfiable — any fault-free run that keeps clear of workers and delivers A then B meets it — but not realizable as written, and one environment strategy shows why. The environment controls $\mathit{fail}$, so let it raise $\mathit{fail}$ at $t_0$, before anything has been delivered. The third conjunct then demands $\mathit{stop}$ at every step from $t_1$ on; a robot commanded to zero velocity delivers nothing; so $\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})$ is false on that run whatever the controller chooses. One input sequence that defeats every controller proves the formula not realizable, the same argument as the $\mathit{req}/\mathit{obst}$ example above. So weaken the liveness part to $\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})\vee\mathsf{F}\,\mathit{fail}$, which that strategy satisfies, or state as an assumption that no fault occurs before the deliveries.
 
 > [!example] Worked example · 계산 예제
 > **Assumption: finite-trace semantics.** The logged steps $t_0,\dots,t_5$ are the whole run; $\mathsf{G}$ and $\mathsf{F}$ range over the remaining steps, and $\mathsf{X}$ at the last step is false. Trace: $t_0\,\{\}$, $t_1\,\{\mathit{dB}\}$, $t_2\,\{\mathit{dA}\}$, $t_3\,\{\mathit{fail}\}$, $t_4\,\{\mathit{stop}\}$, $t_5\,\{\mathit{stop}\}$.
@@ -554,7 +554,7 @@ print(mm_per_count, over, stale_ticks, travel_mm, travel_counts)
 로깅이 함께 작동할 때에만 로봇이 된다. 시스템 문해력은 실제로 무엇이 배포됐고, 보고된
 개선이 어느 하위 시스템에서 비롯됐을 수 있는지를 읽게 해 준다.
 
-*범위: 이 페이지는 알고리즘과 로봇 사이에 앉은 런타임 사안들을 가르친다 — 루프, 행동 인터페이스, 데드라인과 지터를 포함한 지연 예산, 좌표계와 TF 트리, 미들웨어 어휘, 실행 계층과 그 behavior tree, 신뢰성, 단계적 배포와 실패 분류. ROS 2 자체는 가르치지 않는다. 그것은 [[04-robotics/ros2/index|25. ROS 2]]의 열한 페이지다. 제어 설계([[04-robotics/control-theory-ce397|5. 제어]]), 상태 추정([[04-robotics/state-estimation-slam|3. 상태 추정]]), 계획([[04-robotics/planning-decision-making|4. 계획]])도 마찬가지다. 이 페이지가 가르치는 것은 그것들에 대해 무엇을 확인할지이며, 전자공학이나 설치 튜토리얼이 아니다.*
+*범위: 이 페이지는 알고리즘과 로봇 사이에 앉은 런타임 사안들을 가르친다 — 루프, 행동 인터페이스, 데드라인과 지터를 포함한 지연 예산, 좌표계와 TF 트리, 미들웨어 어휘, 실행 계층과 그 behavior tree, 그 계층 뒤의 아키텍처 계보와 §6.5의 형식적 작업 명세(선형 시간 논리, 모델 검사와 반응형 합성의 차이, 실현 가능성, GR(1) 부분 논리, signal temporal logic을 불리언 명제부터 쌓아 올린다), 신뢰성, 단계적 배포와 실패 분류. ROS 2 자체는 가르치지 않는다. 그것은 [[04-robotics/ros2/index|25. ROS 2]]의 열한 페이지다. 제어 설계([[04-robotics/control-theory-ce397|5. 제어]]), 상태 추정([[04-robotics/state-estimation-slam|3. 상태 추정]]), 계획([[04-robotics/planning-decision-making|4. 계획]])도 마찬가지다. 이 페이지가 가르치는 것은 그것들에 대해 무엇을 확인할지이며, 전자공학이나 설치 튜토리얼이 아니다.*
 
 > [!info] 깊이 목표
 > 로봇을 런타임 파이프라인으로 분해한다; 행동 인터페이스, 타이밍, 좌표계, 미들웨어,
@@ -562,10 +562,10 @@ print(mm_per_count, over, stale_ticks, travel_mm, travel_counts)
 > 전자공학 튜토리얼이 아니다.
 
 > [!note] 선수 지식
-> [[02-foundations/signal-processing|신호처리]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[04-robotics/state-estimation-slam|상태 추정]] · [[04-robotics/planning-decision-making|계획]] · [[04-robotics/control-theory-ce397|제어 이론]]
+> [[02-foundations/lab-plants|0.6 Lab Plants]](플랜트 P6) · [[02-foundations/signal-processing|신호처리]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[04-robotics/state-estimation-slam|상태 추정]] · [[04-robotics/planning-decision-making|계획]] · [[04-robotics/control-theory-ce397|제어 이론]]. §6.5의 시간 논리는 논리학 강의를 가정하지 않는다. 쓰는 명제와 연결사를 그 자리에서 정의한다.
 
 > [!note] 처음이라면 · First pass
-> 이 페이지는 서사보다 체크리스트에 가깝다. 1차 통과: §1의 루프, §3의 지연 예산 — 재현되지 않는 결과의 가장 흔한 출처 — 그리고 §10의 실패 분류. 나머지는 특정 시스템을 앞에 놓고 돌아와 보는 참고서다.
+> 이 페이지는 서사보다 체크리스트에 가깝다. 1차 통과: 그림, §1의 루프, §3의 지연 예산 — 재현되지 않는 결과의 가장 흔한 출처 — 과 그 안의 P6 계산, 그리고 §10의 실패 분류. 2차 통과는 특정 시스템을 앞에 놓고 한다: §2(행동 인터페이스), §4(좌표계), §5(미들웨어), §6(실행 계층), §6.5(아키텍처 계보와 시간 논리 명세, 이 페이지에서 유일하게 형식적인 절), §7~§9(신뢰성, 보정, 단계적 배포), §11(자원).
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -772,8 +772,6 @@ $$J=\max_k R_k-\min_k R_k$$
 > P6의 제어 루프는 200 Hz이므로 $T=D=5$ ms다. 측정된 응답 시간 다섯 개: $1.2, 1.5, 4.8, 1.3, 1.4$ ms. 평균은 $2.04$ ms, 최대-최소 지터는 $4.8-1.2=\mathbf{3.6}$ ms, 데드라인 미스는 **0회**, 그리고 최악의 인스턴스에서 여유는 $5.0-4.8=0.2$ ms — 그 틱은 제 주기의 $96\%$를 썼다.
 >
 > **반례 — 평균을 주파수로 인용하기.** $1000/2.04=490$ Hz는 존재하지 않는 루프를 묘사한다. 루프는 200 Hz이고, 다섯 틱 중 하나는 미스까지 $0.2$ ms를 남겼다. 평균은 표에서 보기 좋은 수이고, 최댓값은 시스템이 동작하는지를 결정하는 수다. 똑같은 작업을 아래에 나오는 햅틱 $1$ ms 데드라인으로 옮기면 평균은 하나도 달라지지 않은 채 **다섯 개 전부**가 미스한다.
->
-> 같은 구분이 위의 합을 다시 읽게 한다. 다음 콜아웃의 숫자로 *평균* 예산은 $78.7\approx 79$ ms지만, 샘플링 항 $\tfrac12 T_{\text{cam}}=16.7$ ms를 최악값 $T_{\text{cam}}=33.3$ ms로 바꾸면 $\mathbf{95.3}$ ms가 된다. 그 $16.7$ ms 차이는 편향이 아니라 지터이므로 어떤 보정으로도 없앨 수 없다. 평균 예산에 맞춰 튜닝한 제어기는 설계보다 $21\%$ 더 늙은 외란을 만나고, $0.3$ m/s에서 말단의 낡음은 프레임마다 $24$ mm와 $29$ mm 사이를 오간다.
 
 **계산: 장치 P6.** 엔코더 $N=2048$ counts/m, 한 카운트 $0.488\,\mathrm{mm}$. 비전 $50\,\mathrm{Hz}$($20\,\mathrm{ms}$), 제어 $200\,\mathrm{Hz}$($5\,\mathrm{ms}$), 노출 중간부터 힘까지 예산 $70\,\mathrm{ms}$([[02-foundations/lab-plants|0.6]]). 제어기에서 $200\,\mathrm{ms}$ 늙은 비전은 예산 초과 $130\,\mathrm{ms}$, 낡은 틱 40개. $0.10\,\mathrm{m/s}$면 그 나이 동안 $20\,\mathrm{mm}$(41 카운트). [[04-robotics/state-estimation-slam|3]]의 추정기는 구하지 못한다. 목표가 늦은 것이지 잡음이 아니다. 과제는 이 타임라인을 그림으로 묻는 것이다. 조용한 실패(TF 스탬프, QoS)는 [[04-robotics/ros2/qos-executors-time|25.5]]. P6의 센서들이 실제로 보태는 잡음은 센서마다 [[04-robotics/sensor-models|3.2 센서 모델과 잡음]]에 모델링되어 있다.
 
@@ -817,6 +815,8 @@ $$J=\max_k R_k-\min_k R_k$$
 > 최대 45°다: $360fT\le 45°$, 따라서 $f\le 45°/(360T)$. $T=0.079$ s를 넣으면 예시 교차 주파수 예산은 $(90°-45°)/(360T)=\mathbf{1.6}$ Hz다. 이것은
 > 보편 상한이 아니다. 지연 전 여유는 플랜트와 제어기가 정하고, 지연을 넣으면 교차 주파수도
 > 움직일 수 있다. [[04-robotics/control-theory-ce397|5. 제어 §5.5]]가 이 조건부 예산을 유도한다.
+>
+> **평균과 최악.** 위 P6 콜아웃의 지터 구분이 이 합을 다시 읽게 한다. $79$ ms(반올림 전 $78.7$ ms)는 *평균* 예산이다. 샘플링 항 $\tfrac12 T_{\text{cam}}=16.7$ ms를 최악값 $T_{\text{cam}}=33.3$ ms로 바꾸면 $16.7+78.7=\mathbf{95.3}$ ms가 된다. 그 $16.7$ ms 차이는 편향이 아니라 지터이므로 어떤 보정으로도 없앨 수 없다. 평균 예산에 맞춰 튜닝한 제어기는 설계보다 $16.7/78.7=21\%$ 더 늙은 외란을 만나고, $0.3$ m/s에서 말단의 낡음은 프레임마다 $0.3\times0.0787=24$ mm와 $0.3\times0.0953=29$ mm 사이를 오간다.
 >
 > **여기서 얻는 독법.** 추론 시간을 절반으로(40 → 20 ms) 줄이면 합은 59 ms이고, 위와 같은
 > 90°/45° 가정의 예시 예산은 $0.785/0.059 = 13.3$ rad/s, 즉 2.1 Hz가 된다 — 실질적인 개선이지만 표제가 암시하는
@@ -919,7 +919,7 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 
 층 사이 통신은 §5의 구분을 따른다: 토픽은 데이터를, 서비스와 액션은 응답이 있는 명령을 나른다. **여기서 얻는 독법.** "LLM이 계획한다"는 deliberator만 바꾼 것이다. 회복은 여전히 sequencer에, 안정성은 여전히 controller에 있다.
 
-**시간 논리.** 시간 논리는 시간에 따른 열(sequence)에 대한 논리다: 식의 참·거짓을 한 순간이 아니라 실행 전체 — 단계마다 어떤 명제가 참인지 적은 목록 — 에 대해 판정한다. LTL(Pnueli 1977)은 이산 단계마다의 불리언 명제에 네 연산자를 더한다: $\mathsf{X}\,\varphi$(다음 단계), $\mathsf{F}\,\varphi$(언젠가), $\mathsf{G}\,\varphi$(항상), $\varphi\,\mathsf{U}\,\psi$($\psi$가 올 때까지 매 단계 $\varphi$, 그리고 $\psi$는 반드시 온다). 패턴: 안전성 $\mathsf{G}\,\neg\mathit{collision}$, 활성(liveness) $\mathsf{G}\mathsf{F}\,\mathit{atCharger}$(어느 단계에서 보든 충전소 방문이 아직 앞에 남아 있으므로, 무한 실행에서 로봇은 무한히 자주 돌아온다), 응답 $\mathsf{G}(\mathit{req}\rightarrow\mathsf{F}\,\mathit{grant})$, 순서 $\mathsf{F}(a\wedge\mathsf{F}\,b)$.
+**시간 논리.** **명제**(proposition)는 $\mathit{near}$나 $\mathit{stop}$처럼 단계마다 참 또는 거짓인 이름 붙은 사실이고, 불리언 연결사는 한 단계 안에서 명제를 묶는다: $\neg\varphi$(아니다), $\varphi\wedge\psi$(그리고), $\varphi\vee\psi$(또는), 그리고 $\varphi\rightarrow\psi$($\varphi$이면 $\psi$). 마지막 것은 $\varphi$가 참이고 $\psi$가 거짓일 때만 거짓이므로, $\varphi$가 거짓인 단계에서는 *공허하게*(vacuously) 참이다. 시간 논리는 시간에 따른 열(sequence)에 대한 논리다: 식의 참·거짓을 한 순간이 아니라 실행 전체 — 단계마다 어떤 명제가 참인지 적은 목록 — 에 대해 판정한다. LTL(Pnueli 1977)은 이산 단계마다의 불리언 명제에 네 연산자를 더한다: $\mathsf{X}\,\varphi$(다음 단계), $\mathsf{F}\,\varphi$(언젠가), $\mathsf{G}\,\varphi$(항상), $\varphi\,\mathsf{U}\,\psi$($\psi$가 올 때까지 매 단계 $\varphi$, 그리고 $\psi$는 반드시 온다). 패턴: 안전성 $\mathsf{G}\,\neg\mathit{collision}$, 활성(liveness) $\mathsf{G}\mathsf{F}\,\mathit{atCharger}$(어느 단계에서 보든 충전소 방문이 아직 앞에 남아 있으므로, 무한 실행에서 로봇은 무한히 자주 돌아온다), 응답 $\mathsf{G}(\mathit{req}\rightarrow\mathsf{F}\,\mathit{grant})$, 순서 $\mathsf{F}(a\wedge\mathsf{F}\,b)$.
 
 *모델 검사*는 주어진 설계의 모든 거동이 $\varphi$를 만족하는지 묻고, 예 또는 반례 궤적을 돌려준다. *반응형 합성*은 모든 환경 입력 열에 대해 $\varphi$를 만족하는 제어기를 만들며, 각 출력은 과거만 보고 고른다. 실제 로봇은 다음 입력을 보기 전에 행동해야 하기 때문이다.
 
@@ -933,7 +933,7 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 
 $$\varphi = \mathsf{G}\,\neg\mathit{near} \;\wedge\; \mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB}) \;\wedge\; \mathsf{G}(\mathit{fail}\rightarrow\mathsf{X}\,\mathsf{G}\,\mathit{stop})$$
 
-이 그대로는 실현 불가능하다. 이른 고장이 로봇을 멈춰 두고, 멈춘 로봇은 배달할 수 없기 때문이다. 그래서 활성 부분을 $\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})\vee\mathsf{F}\,\mathit{fail}$로 약화하거나 이른 고장이 없다는 가정을 명시해야 한다.
+이 식은 충족 가능하다 — 고장 없이 작업자와 떨어져 A 다음 B를 배달하는 실행이면 된다 — 하지만 이 그대로는 실현 불가능하며, 환경의 전략 하나가 그 이유를 보여 준다. $\mathit{fail}$은 환경이 정하므로, 아무것도 배달되기 전인 $t_0$에 환경이 $\mathit{fail}$을 올린다고 하자. 그러면 세 번째 연언항이 $t_1$부터 모든 단계에서 $\mathit{stop}$을 요구하고, 영속도 명령을 받은 로봇은 아무것도 배달하지 못하므로, 제어기가 무엇을 고르든 그 실행에서 $\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})$는 거짓이다. 모든 제어기를 이기는 입력 열 하나면 실현 불가능함이 증명되고, 이는 위의 $\mathit{req}/\mathit{obst}$ 예와 같은 논증이다. 그래서 활성 부분을 그 전략도 만족하는 $\mathsf{F}(\mathit{dA}\wedge\mathsf{F}\,\mathit{dB})\vee\mathsf{F}\,\mathit{fail}$로 약화하거나, 배달 전에는 고장이 없다는 가정을 명시해야 한다.
 
 > [!example] 계산 예제 · Worked example
 > **가정: 유한 궤적 의미론.** 기록된 $t_0,\dots,t_5$가 실행 전체다. $\mathsf{G}$와 $\mathsf{F}$는 남은 단계에 걸치고, 마지막 단계의 $\mathsf{X}$는 거짓이다. 궤적: $t_0\,\{\}$, $t_1\,\{\mathit{dB}\}$, $t_2\,\{\mathit{dA}\}$, $t_3\,\{\mathit{fail}\}$, $t_4\,\{\mathit{stop}\}$, $t_5\,\{\mathit{stop}\}$.

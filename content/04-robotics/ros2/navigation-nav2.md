@@ -14,8 +14,11 @@ mastery-when: "Go deeper when you are writing a planner, controller or costmap l
 > **Working** — 직접 작성하지 않은 로봇 위에서 스택을 설정하고 띄우고 디버깅할 정도. 플래너나 제어기 플러그인을 새로 짤 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> The transform tree and RViz from [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]], a simulated base that accepts velocity commands and publishes odometry from [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]], and actions and managed nodes from [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. One join to make: Jazzy Nav2 publishes plain `Twist` by default, while the 25.7 `diff_drive_controller` subscribes to `TwistStamped` on `<controller>/cmd_vel` — set `enable_stamped_cmd_vel: true` on Nav2's velocity publishers and remap `cmd_vel` to the controller's topic, or the commands never arrive. Baseline for every command here: **ROS 2 Jazzy Jalisco on Ubuntu 24.04 with Gazebo Harmonic**.
-> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. 이어 붙일 곳이 하나 있다. Jazzy Nav2는 기본으로 그냥 `Twist`를 내지만 25.7의 `diff_drive_controller`는 `<controller>/cmd_vel`에서 `TwistStamped`를 구독한다 — Nav2 속도 퍼블리셔에 `enable_stamped_cmd_vel: true`를 주고 `cmd_vel`을 제어기 토픽으로 remap하지 않으면 명령이 도착하지 않는다. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
+> The transform tree and RViz from [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]], a simulated base that accepts velocity commands and publishes odometry from [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]], and actions and managed nodes from [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. Grid search (Dijkstra, A\*) at the level of [[04-robotics/planning-decision-making|4. Planning]] helps with §6 but is not required; the page links it where it is used. One join to make: Jazzy Nav2 publishes plain `Twist` by default, while the 25.7 `diff_drive_controller` subscribes to `TwistStamped` on `<controller>/cmd_vel` — set `enable_stamped_cmd_vel: true` on Nav2's velocity publishers and remap `cmd_vel` to the controller's topic, or the commands never arrive. Baseline for every command here: **ROS 2 Jazzy Jalisco on Ubuntu 24.04 with Gazebo Harmonic**.
+> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. [[04-robotics/planning-decision-making|4. Planning]] 수준의 격자 탐색(Dijkstra, A\*)은 §6에 도움이 되지만 필수는 아니고, 쓰이는 자리에 링크가 있다. 이어 붙일 곳이 하나 있다. Jazzy Nav2는 기본으로 그냥 `Twist`를 내지만 25.7의 `diff_drive_controller`는 `<controller>/cmd_vel`에서 `TwistStamped`를 구독한다 — Nav2 속도 퍼블리셔에 `enable_stamped_cmd_vel: true`를 주고 `cmd_vel`을 제어기 토픽으로 remap하지 않으면 명령이 도착하지 않는다. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
+
+> [!note] First pass · 처음이라면
+> Read the Running object and the picture, then the Worked case; its three one-line glosses point to §2, §5 and §7. Then §2 (the behaviour tree), §3 (which server owns what), §4 (the two costmaps and their frames) and §7 (localisation), and do the §12 exercise, which measures the Worked case's rates on a simulated TurtleBot. §1 is the motivation; §5, §6 and §8–§11 are reference; §13 is the checklist for a robot that spins or will not move, and §13.5 (the route server) is optional.
 
 ### Running object · 이 페이지의 대상
 
@@ -30,6 +33,8 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as the Nav2 base:
 | $v$ | $0.25\,\mathrm{m/s}$ | cart speed — **page-local**: P6 freezes no speed, and it is used only to turn Nav2's periods into millimetres |
 
 The Nav2 rates the worked case uses are the Jazzy defaults quoted in §4 and §6 — global costmap $1.0\,\mathrm{Hz}$, local costmap $5.0\,\mathrm{Hz}$, `controller_frequency` $20\,\mathrm{Hz}$ — and AMCL's distance gate `update_min_d: 0.25` m from §7.
+
+*Two objects, stated once.* The arithmetic is done on P6; the exercise (§12) drives a simulated **TurtleBot3**, a two-wheeled differential-drive base on a prebuilt map, because Nav2's stock bringup ships one and nothing in this track builds P6. What carries over is every Nav2 rate in Step 1's table and AMCL's $0.25\,\mathrm{m}$ gate: the TurtleBot runs the same Jazzy defaults, and §12 has you measure them (steps 2 and 5). What does not: the counts column, because P6's $2048$ counts/m encoder is not the TurtleBot's; the $200\,\mathrm{Hz}$ row, because the TurtleBot's wheels are driven by its own simulated drive rather than a loop you configured; and the page-local $0.25\,\mathrm{m/s}$, because the stock parameters let the TurtleBot reach $0.5\,\mathrm{m/s}$, so its distances per period can be twice P6's.
 
 *Scope: this page teaches the shape of the Nav2 stack — which server owns what, which frame each costmap lives in, how a goal becomes an action — and computes what its four clocks cost on a real base. It does not teach how to author a planner or controller plugin, nor the search algorithms underneath them, which are [[04-robotics/planning-decision-making|4. Planning]]; nor SLAM and the particle filter, which are [[04-robotics/state-estimation-slam|3. State Estimation]].*
 
@@ -164,7 +169,7 @@ $$\frac{f_c}{f_{\text{ctrl}}}=\frac{200}{20}=10,$$
 
 since each period of the slower clock contains exactly ten of the faster one. One `/cmd_vel` is therefore written to the velocity command interface and re-applied on ten successive `read`–`update`–`write` cycles ([[04-robotics/ros2/simulation-and-control|25.7 §7]]): the value on the interface persists until something overwrites it. Ten ticks at $1.25\,\mathrm{mm}$ each is the $12.5\,\mathrm{mm}$ of Step 1's third row, which is the same statement seen from the other end.
 
-**Step 3 — AMCL updates on distance, not on frames.** §7's gate is `update_min_d: 0.25` m, which on this encoder is $0.25\times2048=512$ counts and at $0.25\,\mathrm{m/s}$ takes
+**Step 3 — AMCL updates on distance, not on frames.** AMCL, the localiser that publishes `map` → `odom`, keeps a cloud of weighted pose guesses and re-weights it against a scan only after the base has moved `update_min_d` (§7). That gate is $0.25\,\mathrm{m}$, which on this encoder is $0.25\times2048=512$ counts and at $0.25\,\mathrm{m/s}$ takes
 
 $$t_{\text{gate}}=\frac{0.25\,\mathrm{m}}{0.25\,\mathrm{m/s}}=1.00\,\mathrm{s},$$
 
@@ -174,9 +179,9 @@ so roughly $50\times1.00=50$ scans arrive between one correction of `map` → `o
 
 $$200+50+5=255\,\mathrm{ms},$$
 
-which is $255/70=3.6$ times P6's budget, so the Nav2 reaction path cannot meet it and was never meant to. $70\,\mathrm{ms}$ is a *servo* budget — camera mid-exposure to applied force on the cart's own $200\,\mathrm{Hz}$ loop — and a navigation stack is a layer above that, replanning at map scale. Anything that genuinely needs $70\,\mathrm{ms}$ belongs under the seam with the controller, not in a behaviour tree. This is the honest version of "Nav2 is slow": it is not slow, it is answering a different question on a different clock.
+which is $255/70=3.6$ times P6's budget, so the Nav2 reaction path cannot meet it and was never meant to. $70\,\mathrm{ms}$ is a *servo* budget — camera mid-exposure to applied force on the cart's own $200\,\mathrm{Hz}$ loop — and a navigation stack is a layer above that, replanning at map scale. Anything that genuinely needs $70\,\mathrm{ms}$ belongs under the seam with the controller, not in a behaviour tree (the policy that sequences Nav2's planner, controller and recoveries, §2). This is the honest version of "Nav2 is slow": it is not slow, it is answering a different question on a different clock.
 
-**Step 5 — inflation, measured in time.** §5 insists `inflation_radius` is a potential field rather than a margin, and the rate ladder says why that has to be true. The default $0.55\,\mathrm{m}$ is $0.55\times2048=1126$ counts, and the cart crosses it in $0.55/0.25=2.2\,\mathrm{s}$ — or, in the unit the controller actually experiences, $0.55/0.050=11$ local-costmap updates, since the cart covers $50\,\mathrm{mm}$ per update. Eleven cycles of gradient are what let a cost-aware planner lean away from the wall gradually. Shrink the skirt to one or two cycles and the controller meets a cliff instead of a slope, which is exactly the corner-clipping symptom of §5. The Jazzy TurtleBot value of $0.7\,\mathrm{m}$ is $14$ updates on the same cart.
+**Step 5 — inflation, measured in time.** `inflation_radius` is the distance out to which the costmap writes a decaying cost around every obstacle (§5). §5 insists it is a potential field rather than a margin, and the rate ladder says why that has to be true. The default $0.55\,\mathrm{m}$ is $0.55\times2048=1126$ counts, and the cart crosses it in $0.55/0.25=2.2\,\mathrm{s}$ — or, in the unit the controller actually experiences, $0.55/0.050=11$ local-costmap updates, since the cart covers $50\,\mathrm{mm}$ per update. Eleven cycles of gradient are what let a cost-aware planner lean away from the wall gradually. Shrink the skirt to one or two cycles and the controller meets a cliff instead of a slope, which is exactly the corner-clipping symptom of §5. The Jazzy TurtleBot value of $0.7\,\mathrm{m}$ is $14$ updates on the same cart.
 
 ### 1. The problem Nav2 solves
 
@@ -203,6 +208,12 @@ Jazzy is the first distribution where `nav2_bringup` targets modern Gazebo rathe
 ### 2. The behaviour-tree navigator, and why not a state machine
 
 `bt_navigator` is the node that receives your goal. It does not plan or control. It ticks a **behaviour tree** whose leaves are action clients calling the other servers. Nav2 uses BehaviorTree.CPP V4; the tree is an XML file loaded at runtime, and the leaf nodes are pluginlib plugins registered by name.
+
+**What a behaviour tree is.** A behaviour tree is a rooted tree of nodes that an executor *ticks*: at a fixed rate it calls the root, and each call runs down through the children. A tick is one call of one node, and it returns exactly one of three statuses:
+
+$$\mathrm{tick}(n)\in\{\texttt{SUCCESS},\ \texttt{FAILURE},\ \texttt{RUNNING}\}$$
+
+where $n$ is the node being ticked and `RUNNING` means "not finished; tick me again". Two kinds of node make up the tree. *Leaves* do the work: an action leaf starts or polls a long job — here, a goal sent to one of the servers of §3 — and returns `RUNNING` until the job ends; a condition leaf checks something and returns `SUCCESS` or `FAILURE` at once. *Control-flow nodes* have children and decide which to tick and how to combine what comes back. The plain `Sequence` ticks its children in order and returns `FAILURE` at the first failure, `SUCCESS` only when all have succeeded; the plain `Fallback` ticks them in order until one succeeds. Nav2's own control-flow nodes are variants of those two. A non-example is a finite state machine: its memory is one current state, and each transition names the next state explicitly, whereas a tree is re-ticked from the root and which leaf runs next follows from the statuses its children return. That is what lets a subtree be reused in any context and a new goal preempt a recovery mid-flight, which is the argument of the rest of this section.
 
 The default tree for a single goal is `navigate_to_pose_w_replanning_and_recovery.xml`, and its top two nodes tell you the whole design:
 
@@ -446,14 +457,21 @@ ros2 launch nav2_bringup tb3_simulation_launch.py headless:=False
 
 `headless` defaults to `true`, which starts the simulation without the 3D view; `False` gives you Gazebo and RViz side by side.
 
-1. **Localise.** The robot does not know where it is. Find it in the Gazebo world, then in RViz click **2D Pose Estimate** and click-drag at the matching spot on the map — the drag sets orientation. The particle cloud on `/particle_cloud` appears and the map snaps into place. If autostart is off, press **Startup** in the Nav2 panel first.
+1. **Localise, and check that it took.** The robot does not know where it is. It was spawned at the launch file's `x_pose`, `y_pose` and `yaw`, by default $-2.00$, $-0.50$ and $0.00$ (`ros2 launch nav2_bringup tb3_simulation_launch.py --show-args` prints them). If autostart is off, press **Startup** in the Nav2 panel first. In RViz click **2D Pose Estimate**, press at that spot on the map, and drag in the direction the robot faces; the drag sets orientation. Then judge the result by what RViz draws, not by the click:
+   - *Good:* the laser scan's points lie on the map's walls, and the particle cloud (`/particle_cloud`) is a tight cluster at the robot.
+   - *Bad:* the scan outline sits shifted or rotated against the walls, or the cloud stays spread out. Click **2D Pose Estimate** again; each estimate replaces the previous belief.
+
+   Do not expect the cloud to tighten while the robot is parked. AMCL updates only after $0.25\,\mathrm{m}$ of travel or $0.2\,\mathrm{rad}$ of turn (the Worked case's Step 3), so a parked robot keeps roughly the cloud you gave it; it tightens during step 4's drive.
 2. **Inspect the graph before you drive.** In a second sourced terminal:
 
 ```bash
 ros2 node list
 ros2 action list -t
 ros2 topic hz /local_costmap/costmap
+ros2 param get /local_costmap/local_costmap update_frequency
 ```
+
+Expect `hz` to report about $2\,\mathrm{Hz}$, not the Worked case's $5$, and the parameter to read `5.0`. Both are right. The costmap *updates* at `update_frequency`, $5.0$, which is what the controller reads and what Step 4 charges; it *publishes* a copy for RViz at `publish_frequency`, $2.0$ in the stock parameters. A topic's rate is not always the rate of the thing it shows.
 
 3. **Set up the displays.** The four that matter, and they are in the default RViz config: `/global_costmap/costmap` (Map display), `/local_costmap/costmap`, `/plan` (Path), and the controller's trajectory — with MPPI, the Jazzy default, add `/optimal_trajectory` (Path); the default config's `/local_plan` display stays empty, because only DWB and RPP publish that topic. Toggle the two costmaps on and off and note that the local one is a small square that follows the robot.
 4. **Send the goal from the command line**, not the RViz button, so you see the feedback:
@@ -465,7 +483,7 @@ ros2 action send_goal --feedback /navigate_to_pose nav2_msgs/action/NavigateToPo
 
 Watch `distance_remaining` fall and `number_of_recoveries` stay at zero.
 
-5. **Watch the replanning.** `/plan` is recomputed roughly once a second while the robot drives — the whole path twitches. `/optimal_trajectory` is the controller's short trajectory, updating at the controller rate (20 Hz).
+5. **Watch the replanning, and time AMCL.** `/plan` is recomputed roughly once a second while the robot drives — the whole path twitches. `/optimal_trajectory` is the controller's short trajectory, updating at the controller rate (20 Hz). During the drive, run `ros2 topic hz /amcl_pose` beside `ros2 topic hz /scan`. AMCL publishes its pose only when it updates, so on a straight stretch expect about speed $\div\,0.25\,\mathrm{m}$ — $1\,\mathrm{Hz}$ at $0.25\,\mathrm{m/s}$, $2\,\mathrm{Hz}$ at the $0.5\,\mathrm{m/s}$ cap — with extra updates in turns, while the scan keeps arriving at its own rate whether the robot moves or not. That gap is the Worked case's Step 3 on this robot.
 6. **Make it recover on purpose.** In Gazebo, drag a box into the corridor ahead of the robot while it is driving. The voxel layer marks it, the local costmap changes, and MPPI deviates around it. Now box the robot in completely. The controller fails, the tree clears the local costmap, retries, then falls into the recovery subtree — you will see the robot spin and back up, and `number_of_recoveries` increment in your feedback stream.
 7. **Cancel.** Ctrl+C the `send_goal` command mid-run and confirm the robot stops. That is the action's cancel path, not a crash.
 
@@ -605,8 +623,11 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the Nav2 base. En
 > **Working** — enough to configure, launch and debug the stack; not to author a planner or controller plugin.
 
 > [!note] 선수 지식 · Prerequisites
-> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. 이어 붙일 곳이 하나 있다. Jazzy Nav2는 기본으로 그냥 `Twist`를 내지만 25.7의 `diff_drive_controller`는 `<controller>/cmd_vel`에서 `TwistStamped`를 구독한다 — Nav2 속도 퍼블리셔에 `enable_stamped_cmd_vel: true`를 주고 `cmd_vel`을 제어기 토픽으로 remap하지 않으면 명령이 도착하지 않는다. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
-> TF and RViz from 25.6, a simulated base from 25.7, actions and managed nodes from 25.3. Baseline: ROS 2 Jazzy on Ubuntu 24.04 with Gazebo Harmonic.
+> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 변환 트리와 RViz, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 속도 명령을 받고 오도메트리를 내는 시뮬레이션 베이스, [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]의 액션과 관리형 노드. [[04-robotics/planning-decision-making|4. Planning]] 수준의 격자 탐색(Dijkstra, A\*)은 §6에 도움이 되지만 필수는 아니고, 쓰이는 자리에 링크가 있다. 이어 붙일 곳이 하나 있다. Jazzy Nav2는 기본으로 그냥 `Twist`를 내지만 25.7의 `diff_drive_controller`는 `<controller>/cmd_vel`에서 `TwistStamped`를 구독한다 — Nav2 속도 퍼블리셔에 `enable_stamped_cmd_vel: true`를 주고 `cmd_vel`을 제어기 토픽으로 remap하지 않으면 명령이 도착하지 않는다. 이 페이지 모든 명령의 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco와 Gazebo Harmonic**이다.
+> TF and RViz from 25.6, a simulated base from 25.7, actions and managed nodes from 25.3; 4. Planning optional. Baseline: ROS 2 Jazzy on Ubuntu 24.04 with Gazebo Harmonic.
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 대상과 그림을 보고 Worked case로 가라. 그 안의 한 줄 설명 셋이 §2, §5, §7을 가리킨다. 그다음 §2(행동 트리), §3(어느 서버가 무엇을 소유하는가), §4(두 costmap과 그 프레임), §7(위치 추정)을 읽고 §12 실습을 하라. 실습은 Worked case의 속도들을 시뮬레이션 TurtleBot에서 잰다. §1은 동기이고, §5, §6, §8–§11은 참고 자료이며, §13은 제자리에서 돌거나 움직이지 않는 로봇을 위한 점검표, §13.5(route server)는 선택이다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -621,6 +642,8 @@ Nav2 베이스로 쓰는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 
 | $v$ | $0.25\,\mathrm{m/s}$ | 카트 속도 — **페이지 국소 값**. P6는 속도를 고정하지 않으며, Nav2의 주기를 밀리미터로 바꾸는 데에만 쓴다 |
 
 계산 절이 쓰는 Nav2 속도는 §4와 §6이 인용한 Jazzy 기본값이다. 전역 costmap $1.0\,\mathrm{Hz}$, 지역 costmap $5.0\,\mathrm{Hz}$, `controller_frequency` $20\,\mathrm{Hz}$. AMCL의 거리 게이트 `update_min_d: 0.25` m는 §7의 값이다.
+
+*대상이 둘이라는 것을 한 번 밝혀 둔다.* 계산은 P6 위에서 한다. 실습(§12)은 미리 만든 지도 위의 바퀴 둘짜리 차동 구동 베이스, 시뮬레이션 **TurtleBot3**를 몬다. Nav2의 기본 bringup이 그것을 싣고 오고, 이 트랙 어디에서도 P6를 만들지 않기 때문이다. 옮겨 가는 것은 Step 1 표의 Nav2 속도 전부와 AMCL의 $0.25\,\mathrm{m}$ 게이트다. TurtleBot은 같은 Jazzy 기본값으로 돌고, §12가 그것들을 직접 재게 한다(2번과 5번). 옮겨 가지 않는 것도 있다. 카운트 열은 옮겨 가지 않는다. P6의 $2048$ counts/m 엔코더는 TurtleBot의 것이 아니기 때문이다. $200\,\mathrm{Hz}$ 행도 아니다. TurtleBot의 바퀴는 당신이 설정한 루프가 아니라 자기 시뮬레이션 구동부가 돌린다. 페이지 국소 값 $0.25\,\mathrm{m/s}$도 아니다. 기본 파라미터는 TurtleBot이 $0.5\,\mathrm{m/s}$까지 내게 두므로, 주기당 거리가 P6의 두 배까지 될 수 있다.
 
 *범위: 이 페이지는 Nav2 스택의 모양 — 어느 서버가 무엇을 소유하는지, 각 costmap이 어느 프레임에 사는지, 목표가 어떻게 액션이 되는지 — 을 가르치고, 그 시계 넷이 실제 베이스에서 얼마를 치르는지 계산한다. 플래너나 제어기 플러그인을 작성하는 법은 가르치지 않고, 그 아래의 탐색 알고리즘도 아니다. 그것은 [[04-robotics/planning-decision-making|4. 계획]]이다. SLAM과 입자 필터도 아니다. 그것은 [[04-robotics/state-estimation-slam|3. 상태 추정]]이다.*
 
@@ -755,7 +778,7 @@ $$\frac{f_c}{f_{\text{ctrl}}}=\frac{200}{20}=10,$$
 
 이다. 느린 시계의 한 주기에 빠른 시계의 주기가 정확히 열 개 들어가기 때문이다. 그러므로 `/cmd_vel` 하나는 속도 명령 인터페이스에 기록된 뒤 연속된 `read`–`update`–`write` 열 번에 걸쳐 다시 적용된다([[04-robotics/ros2/simulation-and-control|25.7 §7]]). 인터페이스의 값은 무언가가 덮어쓸 때까지 남는다. $1.25\,\mathrm{mm}$짜리 틱 열 번이 Step 1 셋째 행의 $12.5\,\mathrm{mm}$이고, 같은 진술을 반대편에서 본 것이다.
 
-**Step 3 — AMCL은 프레임이 아니라 거리로 갱신한다.** §7의 게이트는 `update_min_d: 0.25` m이고, 이 엔코더로는 $0.25\times2048=512$ 카운트이며 $0.25\,\mathrm{m/s}$에서는
+**Step 3 — AMCL은 프레임이 아니라 거리로 갱신한다.** `map` → `odom`을 발행하는 위치 추정기 AMCL은 가중치 붙은 자세 추측의 구름을 쥐고 있다가, 베이스가 `update_min_d`만큼 움직인 뒤에야 그것을 스캔에 대어 다시 가중한다(§7). 그 게이트는 $0.25\,\mathrm{m}$이고, 이 엔코더로는 $0.25\times2048=512$ 카운트이며 $0.25\,\mathrm{m/s}$에서는
 
 $$t_{\text{gate}}=\frac{0.25\,\mathrm{m}}{0.25\,\mathrm{m/s}}=1.00\,\mathrm{s}$$
 
@@ -765,9 +788,9 @@ $$t_{\text{gate}}=\frac{0.25\,\mathrm{m}}{0.25\,\mathrm{m/s}}=1.00\,\mathrm{s}$$
 
 $$200+50+5=255\,\mathrm{ms},$$
 
-이는 P6 예산의 $255/70=3.6$배다. 그러니 Nav2 반응 경로는 그 예산을 맞출 수 없고, 애초에 맞추라고 만든 것도 아니다. $70\,\mathrm{ms}$는 *서보* 예산이다. 카메라 노출 중간부터 힘까지, 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서의 예산이고, 내비게이션 스택은 그 위층에서 지도 규모로 다시 계획한다. 진짜로 $70\,\mathrm{ms}$가 필요한 일은 행동 트리가 아니라 이음매 아래 제어기에 속한다. 이것이 "Nav2는 느리다"의 정직한 판본이다. 느린 것이 아니라 다른 시계 위에서 다른 질문에 답하고 있다.
+이는 P6 예산의 $255/70=3.6$배다. 그러니 Nav2 반응 경로는 그 예산을 맞출 수 없고, 애초에 맞추라고 만든 것도 아니다. $70\,\mathrm{ms}$는 *서보* 예산이다. 카메라 노출 중간부터 힘까지, 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서의 예산이고, 내비게이션 스택은 그 위층에서 지도 규모로 다시 계획한다. 진짜로 $70\,\mathrm{ms}$가 필요한 일은 행동 트리(Nav2의 플래너·제어기·복구를 순서 짓는 정책, §2)가 아니라 이음매 아래 제어기에 속한다. 이것이 "Nav2는 느리다"의 정직한 판본이다. 느린 것이 아니라 다른 시계 위에서 다른 질문에 답하고 있다.
 
-**Step 5 — 팽창을 시간으로 재기.** §5는 `inflation_radius`가 여유가 아니라 퍼텐셜 필드라고 못 박고, 속도 사다리가 왜 그래야만 하는지를 말해 준다. 기본값 $0.55\,\mathrm{m}$는 $0.55\times2048=1126$ 카운트이고 카트는 $0.55/0.25=2.2\,\mathrm{s}$에 그것을 가로지른다. 제어기가 실제로 겪는 단위로는 지역 costmap 갱신 $0.55/0.050=11$회다. 갱신 한 번에 카트가 $50\,\mathrm{mm}$를 가기 때문이다. 비용 인식 플래너가 벽에서 서서히 멀어지게 하는 것이 그 열한 번의 경사다. 치마폭을 한두 번으로 줄이면 제어기는 경사가 아니라 절벽을 만나고, 그것이 바로 §5의 모서리 깎기 증상이다. Jazzy TurtleBot 값 $0.7\,\mathrm{m}$는 같은 카트에서 갱신 $14$회다.
+**Step 5 — 팽창을 시간으로 재기.** `inflation_radius`는 costmap이 모든 장애물 둘레에 감쇠하는 비용을 써 넣는 거리다(§5). §5는 그것이 여유가 아니라 퍼텐셜 필드라고 못 박고, 속도 사다리가 왜 그래야만 하는지를 말해 준다. 기본값 $0.55\,\mathrm{m}$는 $0.55\times2048=1126$ 카운트이고 카트는 $0.55/0.25=2.2\,\mathrm{s}$에 그것을 가로지른다. 제어기가 실제로 겪는 단위로는 지역 costmap 갱신 $0.55/0.050=11$회다. 갱신 한 번에 카트가 $50\,\mathrm{mm}$를 가기 때문이다. 비용 인식 플래너가 벽에서 서서히 멀어지게 하는 것이 그 열한 번의 경사다. 치마폭을 한두 번으로 줄이면 제어기는 경사가 아니라 절벽을 만나고, 그것이 바로 §5의 모서리 깎기 증상이다. Jazzy TurtleBot 값 $0.7\,\mathrm{m}$는 같은 카트에서 갱신 $14$회다.
 
 ### 1. Nav2가 푸는 문제
 
@@ -794,6 +817,12 @@ Jazzy는 `nav2_bringup`이 Gazebo Classic이 아니라 현대 Gazebo를 대상�
 ### 2. 행동 트리 내비게이터, 그리고 왜 상태 기계가 아닌가
 
 목표를 받는 노드는 `bt_navigator`다. 이 노드는 계획도 제어도 하지 않는다. **행동 트리(behaviour tree)** 를 tick하고, 그 잎 노드들이 다른 서버를 호출하는 액션 클라이언트다. Nav2는 BehaviorTree.CPP V4를 쓴다. 트리는 런타임에 로드되는 XML 파일이고, 잎 노드는 이름으로 등록된 pluginlib 플러그인이다.
+
+**행동 트리란 무엇인가.** 행동 트리는 실행기가 *tick* 하는 뿌리 있는 노드 트리다. 실행기는 정해진 주기로 뿌리를 부르고, 그 호출이 자식들을 따라 내려간다. tick은 노드 하나를 한 번 부르는 것이고, 반드시 세 상태 중 정확히 하나를 돌려준다.
+
+$$\mathrm{tick}(n)\in\{\texttt{SUCCESS},\ \texttt{FAILURE},\ \texttt{RUNNING}\}$$
+
+여기서 $n$은 tick되는 노드이고, `RUNNING`은 "아직 안 끝났으니 다시 tick하라"는 뜻이다. 트리는 두 종류의 노드로 이루어진다. *잎*이 일을 한다. 액션 잎은 긴 작업 — 여기서는 §3의 서버 하나에 보낸 목표 — 을 시작하거나 확인하고 작업이 끝날 때까지 `RUNNING`을 돌려주며, 조건 잎은 무언가를 확인해 곧바로 `SUCCESS`나 `FAILURE`를 돌려준다. *제어 흐름 노드*는 자식을 두고, 어느 자식을 tick할지와 돌아온 상태를 어떻게 합칠지 정한다. 기본 `Sequence`는 자식을 차례로 tick해 처음 실패한 자리에서 `FAILURE`를, 모두 성공했을 때만 `SUCCESS`를 돌려준다. 기본 `Fallback`은 하나가 성공할 때까지 차례로 tick한다. Nav2 자신의 제어 흐름 노드는 이 둘의 변형이다. 아닌 예는 유한 상태 기계다. 그 기억은 현재 상태 하나이고 전이마다 다음 상태를 명시적으로 지목하는 반면, 트리는 뿌리부터 다시 tick되고 다음에 어느 잎이 돌지는 자식들이 돌려준 상태에서 따라 나온다. 그 덕분에 서브트리를 어떤 맥락에서도 재사용하고, 새 목표가 진행 중인 복구를 도중에 선점할 수 있다. 이 절의 나머지가 펴는 논지가 그것이다.
 
 단일 목표에 대한 기본 트리는 `navigate_to_pose_w_replanning_and_recovery.xml`이고, 최상위 두 노드가 설계 전부를 말해 준다.
 
@@ -1042,14 +1071,21 @@ ros2 launch nav2_bringup tb3_simulation_launch.py headless:=False
 
 `headless`의 기본값은 `true`이고 3D 뷰 없이 시뮬레이션을 띄운다. `False`면 Gazebo와 RViz가 나란히 뜬다.
 
-1. **위치를 잡아 준다.** 로봇은 자기가 어디인지 모른다. Gazebo 세계에서 로봇을 찾고, RViz에서 **2D Pose Estimate** 를 눌러 지도 위 같은 지점을 클릭한 채 끌어라. 끄는 방향이 방위를 정한다. `/particle_cloud`의 입자 구름이 나타나고 지도가 제자리를 잡는다. autostart가 꺼져 있으면 Nav2 패널의 **Startup** 을 먼저 누른다.
+1. **위치를 잡아 주고, 잡혔는지 확인한다.** 로봇은 자기가 어디인지 모른다. 로봇은 launch 파일의 `x_pose`, `y_pose`, `yaw`, 기본값으로는 $-2.00$, $-0.50$, $0.00$에 스폰되었다(`ros2 launch nav2_bringup tb3_simulation_launch.py --show-args`가 보여 준다). autostart가 꺼져 있으면 Nav2 패널의 **Startup** 을 먼저 누른다. RViz에서 **2D Pose Estimate** 를 누르고, 지도 위 그 지점을 누른 채 로봇이 향한 쪽으로 끌어라. 끄는 방향이 방위를 정한다. 그다음 클릭이 아니라 RViz가 그리는 것으로 결과를 판정하라.
+   - *좋음:* 레이저 스캔의 점들이 지도의 벽 위에 놓이고, 입자 구름(`/particle_cloud`)이 로봇 자리에 촘촘히 모여 있다.
+   - *나쁨:* 스캔 윤곽이 벽에 대해 밀리거나 돌아가 있고, 또는 구름이 퍼진 채로 남는다. **2D Pose Estimate** 를 다시 눌러라. 추정할 때마다 이전 믿음이 대체된다.
+
+   로봇이 서 있는 동안 구름이 좁혀지기를 기대하지는 말라. AMCL은 $0.25\,\mathrm{m}$를 가거나 $0.2\,\mathrm{rad}$를 돈 뒤에야 갱신하므로(Worked case의 Step 3), 서 있는 로봇은 대체로 당신이 준 구름을 그대로 들고 있다. 구름은 4번의 주행 중에 좁혀진다.
 2. **몰기 전에 그래프를 본다.** source된 두 번째 터미널에서:
 
 ```bash
 ros2 node list
 ros2 action list -t
 ros2 topic hz /local_costmap/costmap
+ros2 param get /local_costmap/local_costmap update_frequency
 ```
+
+`hz`는 Worked case의 $5$가 아니라 약 $2\,\mathrm{Hz}$를, 파라미터는 `5.0`을 보고할 것이다. 둘 다 맞다. costmap은 `update_frequency`인 $5.0$으로 *갱신*되고, 제어기가 읽는 것과 Step 4가 치르는 것이 그 값이다. RViz용 사본은 `publish_frequency`로 *발행*되는데, 기본 파라미터에서 $2.0$이다. 토픽의 주기가 늘 그 토픽이 보여 주는 것의 주기인 것은 아니다.
 
 3. **디스플레이를 설정한다.** 중요한 넷이고 기본 RViz 설정에 이미 들어 있다: `/global_costmap/costmap`(Map 디스플레이), `/local_costmap/costmap`, `/plan`(Path), 그리고 제어기의 궤적 — Jazzy 기본인 MPPI라면 `/optimal_trajectory`(Path)를 추가하라. 기본 설정의 `/local_plan` 디스플레이는 비어 있는데, 그 토픽은 DWB와 RPP만 발행하기 때문이다. 두 costmap을 번갈아 켜고 끄면서, 지역 쪽이 로봇을 따라다니는 작은 정사각형임을 확인하라.
 4. **RViz 버튼이 아니라 커맨드라인으로 목표를 보낸다.** 그래야 피드백이 보인다.
@@ -1061,7 +1097,7 @@ ros2 action send_goal --feedback /navigate_to_pose nav2_msgs/action/NavigateToPo
 
 `distance_remaining`이 줄어들고 `number_of_recoveries`가 0에 머무는 것을 보라.
 
-5. **재계획을 관찰한다.** `/plan`은 로봇이 달리는 동안 대략 1초에 한 번 다시 계산된다 — 경로 전체가 꿈틀거린다. `/optimal_trajectory`는 제어기의 짧은 궤적이고 제어 주기(20 Hz)로 갱신된다.
+5. **재계획을 관찰하고, AMCL의 시계를 잰다.** `/plan`은 로봇이 달리는 동안 대략 1초에 한 번 다시 계산된다 — 경로 전체가 꿈틀거린다. `/optimal_trajectory`는 제어기의 짧은 궤적이고 제어 주기(20 Hz)로 갱신된다. 주행 중에 `ros2 topic hz /amcl_pose`를 `ros2 topic hz /scan` 옆에 띄워라. AMCL은 갱신할 때만 자세를 발행하므로, 곧은 구간에서는 대략 속도 $\div\,0.25\,\mathrm{m}$ — $0.25\,\mathrm{m/s}$에서 $1\,\mathrm{Hz}$, 상한 $0.5\,\mathrm{m/s}$에서 $2\,\mathrm{Hz}$ — 에 회전 구간에서 갱신이 조금 더해지고, 스캔은 로봇이 움직이든 말든 자기 주기로 계속 도착한다. 그 차이가 이 로봇 위의 Worked case Step 3이다.
 6. **일부러 복구시킨다.** 로봇이 달리는 동안 Gazebo에서 상자를 앞 복도에 끌어다 놓아라. voxel 계층이 그것을 표시하고, 지역 costmap이 바뀌고, MPPI가 돌아간다. 이제 로봇을 완전히 가둬라. 제어기가 실패하고, 트리가 지역 costmap을 지우고 재시도하고, 그다음 복구 서브트리로 떨어진다 — 로봇이 제자리 회전하고 후진하는 것이 보이고, 피드백 스트림의 `number_of_recoveries`가 올라간다.
 7. **취소한다.** 주행 중에 `send_goal` 명령을 Ctrl+C로 끊고 로봇이 서는지 확인하라. 그것은 크래시가 아니라 액션의 취소 경로다.
 

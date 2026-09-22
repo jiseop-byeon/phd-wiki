@@ -22,7 +22,7 @@ learning. Course-depth treatment: derivations, the Gaussian toolbox, a worked ML
 and the Kalman filter assembled from parts you'll have proven along the way.
 
 > [!note] First pass · 처음이라면
-> Read §1, §2, then §3 — the Gaussian toolbox is what actually gets used. §4 explains where your loss function came from and is worth the detour. Leave §5 until you reach state estimation; it will make more sense there.
+> Read the picture, §1, §2, then §3 — the Gaussian toolbox is what actually gets used. §4 explains where your loss function came from and is worth the detour. In §5 read §5.2's scalar gain derivation now, because the picture and the problem set run on it; the vector filter and §5.1's random processes can wait until state estimation. §6 is three tools to open when you need them: §6.1 when a robot must decide from one noisy reading, §6.2 when you compare two methods' results, §6.3 when a tracker gates a measurement with the χ² distribution. §7 is for when you meet HMMs, MCMC, or diffusion's forward process.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -115,7 +115,7 @@ and the Kalman filter assembled from parts you'll have proven along the way.
   <text x="14.0" y="536.0" fill="currentColor" opacity="0.9">That sawtooth is the Kalman filter as a picture.</text>
 </svg>
 
-Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]]: the belief that the wall is $10\,\mathrm{cm}$ away (variance $4$) and a range reading of $12$ (variance $1$) fuse into the posterior $\mathcal{N}(11.6,\ 0.8)$, which lies between the two and is narrower than either ($\sigma=0.894$ against $2$ and $1$). The gain $K=4/(4+1)=0.8$ is the fraction of the innovation $z-\hat x^-=2$ that the estimate walks, $0.8\times2=1.6$; with a bad sensor, $R=100$, $K=0.04$ and the estimate moves only to $10.08$. Below, the error bar shrinks at every correction and grows at the predict step ($P=4,\ 0.8,\ 0.444,\ 1.444,\ 0.591$), and a wrong wall at $20$ after the first update drags the estimate to $\approx15.3$ with $P$ still $0.444$: confident and wrong.
+Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]]: the belief that the wall is $10\,\mathrm{cm}$ away (variance $4$) and a range reading of $12$ (variance $1$) fuse into the posterior $\mathcal{N}(11.6,\ 0.8)$ (the Gaussian with mean $11.6$ and variance $0.8$; §2–§3), which lies between the two and is narrower than either ($\sigma=0.894$ against $2$ and $1$). The gain $K=4/(4+1)=0.8$ (derived in §5.2) is the fraction of the innovation $z-\hat x^-=2$ that the estimate walks, $0.8\times2=1.6$; with a bad sensor, $R=100$, $K=0.04$ and the estimate moves only to $10.08$. Below, the error bar shrinks at every correction and grows at the predict step, which shifts the estimate by the known motion of $+1$ cm and adds the process variance $Q=1$ (§5.2) ($P=4,\ 0.8,\ 0.444,\ 1.444,\ 0.591$), and a wrong wall at $20$ after the first update drags the estimate to $\approx15.3$ with $P$ still $0.444$: confident and wrong.
 
 ### 1. The core language
 
@@ -282,6 +282,9 @@ is still a Gaussian, so **affine** operations never leave the family:
    $$E[x_1|x_2] = \mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$$
    — the conditional mean is a *linear* correction weighted by covariance-to-variance.
    Memorize the shape of this formula: it *is* the Kalman gain.
+   Here $\mu_1, \mu_2$ are the two means, $\Sigma_{11}, \Sigma_{22}$ the two covariances and $\Sigma_{12} = \Sigma_{21}^\top = \text{Cov}(x_1, x_2)$. The spread left after conditioning is
+   $$\text{Cov}(x_1 \mid x_2) = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}$$
+   and both formulas come from one step. The leftover $e = x_1 - \mu_1 - \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$ has $\text{Cov}(e, x_2) = \Sigma_{12} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{22} = 0$. It is an affine map of $(x_1, x_2)$, so $(e, x_2)$ is jointly Gaussian, and a jointly Gaussian pair with zero covariance is independent (the covariance is block-diagonal, so the density above factors into two). Knowing $x_2$ therefore fixes the bracket $\mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$ and leaves $e$ with its zero mean and its covariance, which expands to the second formula. *Example:* the P5 wall, $x_1 = x$ with mean $10$ and variance $4$, and $x_2 = z = x + v$ with independent $\text{Var}(v) = 1$, has $\Sigma_{12} = 4$ and $\Sigma_{22} = 5$, so $E[x \mid z{=}12] = 10 + \tfrac45(12 - 10) = 11.6$ and $\text{Cov}(x \mid z) = 4 - 4 \cdot 4/5 = 0.8$, the picture's posterior.
 
 Also: the **central limit theorem (CLT)** is a limit statement with three named hypotheses: $X_1, \dots, X_N$ are i.i.d. (§2), with mean $\mu$, and with *finite* variance $\sigma^2$. Then the standardized sample mean $\bar X_N = \frac1N \sum_i X_i$ converges in distribution to a standard normal:
 $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1) \quad \text{as } N \to \infty$$
@@ -347,6 +350,8 @@ For sensor fusion, the conditioning formula says: start from the expected value 
 
 ### 5. Random processes and the Kalman filter
 
+#### 5.1 Random processes and the Markov property
+
 - A random process = an indexed family of RVs; characterized by its mean function and its
   **autocorrelation** — $E[x(t)x(t+\tau)]$, how strongly the signal at one instant predicts
   itself $\tau$ later (a noisy signal's frequency content, seen in the time domain).
@@ -370,26 +375,36 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   Written out, a process $x_0, x_1, \dots$ has the Markov property when the distribution of the next state, given the entire history, depends only on the current state:
   $$p(x_{t+1} \mid x_t, x_{t-1}, \dots, x_0) = p(x_{t+1} \mid x_t)$$
   This is conditional independence (§1) of the future and the past given the present. It lets the joint distribution factor as $p(x_0)\prod_t p(x_{t+1} \mid x_t)$, so the model needs only one transition rule. *Example:* the random walk above, since $x_{t+1} = x_t + \epsilon_{t+1}$ uses nothing older than $x_t$. *Non-example:* $x_{t+1} = x_t - 0.5\,x_{t-1} + \epsilon_{t+1}$ needs two past values; it becomes Markov again if you define the state as the pair $(x_t, x_{t-1})$, which is how position-only robot models are made Markov by adding velocity to the state. §7 builds the finite-state version.
+
+#### 5.2 The Kalman filter, derived
+
 - **Kalman filter, assembled from this page**: model
   $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$ with Gaussian $w_t \sim \mathcal{N}(0,Q)$,
   $v_t \sim \mathcal{N}(0,R)$, white, independent of each other and of a Gaussian initial state $x_0$.
   - *Predict* (affine property): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — here $P$ is
-    the **estimate covariance** (uncertainty of $\hat x$), $P = E[(x - \hat x)(x - \hat x)^\top]$, and $Q$ the process-noise covariance.
+    the **estimate covariance** (uncertainty of $\hat x$), $P = E[(x - \hat x)(x - \hat x)^\top]$, and $Q$ the process-noise covariance. Both lines are §3's closure rules: $Ax$ has covariance $APA^\top$ (property 1), and adding the independent $w_t$ adds $Q$ (property 2).
   - *Update* (Gaussian conditioning): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$.
-  Nothing new was needed: affine closure + conditioning formula = the optimal (minimum mean-square error) recursive
-  estimator, under exactly those assumptions.
-- **The gain, in one scalar example.** You believe a wall is $10$ cm away with variance
-  $P^- = 4$ (so $\pm2$ cm), and a sensor with variance $R = 1$ (so $\pm1$ cm) reads $12$.
-  Then $K = \frac{P^-}{P^- + R} = \frac{4}{5} = 0.8$, so
-  $\hat x = 10 + 0.8(12-10) = 11.6$ and $P = (1-K)P^- = 0.8$. Three things worth reading off:
+  - **Where the update comes from.** Before the reading, $x \sim \mathcal N(\hat x^-, P^-)$ and $y = Cx + v$ with $v$ independent of $x$. The pair $(x, y)$ is an affine map of $(x, v)$, so it is jointly Gaussian (§3, property 1), with mean $(\hat x^-,\ C\hat x^-)$ and
+  $$\text{Cov}(x, y) = \text{Cov}(x,\ Cx + v) = P^-C^\top, \qquad \text{Cov}(y) = CP^-C^\top + R$$
+  because $v$ is uncorrelated with $x$. Put $x_1 = x$ and $x_2 = y$ into §3's two conditioning formulas. The weight $\Sigma_{12}\Sigma_{22}^{-1} = P^-C^\top(CP^-C^\top+R)^{-1}$ is $K$, the conditional mean is $\hat x^- + K(y - C\hat x^-)$, and the conditional covariance is $P^- - K\,CP^- = (I - KC)P^-$: the three update lines. The difference $y - C\hat x^-$ is the **innovation** (what the reading says beyond the prediction) and $S = CP^-C^\top + R$ is its covariance; §6.3 uses both to gate readings.
+  - **Why it is optimal.** Each update computes the conditional mean $E[x_t \mid y_{1:t}]$ exactly (by induction: the predict step keeps the belief Gaussian and exact), and §2 showed the conditional expectation is the best mean-square predictor. So no estimator, linear or not, has smaller mean-square error — under exactly those assumptions (linear model, Gaussian white noise, the true $Q$ and $R$).
+- **The scalar gain, derived from Bayes' rule.** One scalar state with $C = 1$: the prior is $x \sim \mathcal N(\hat x^-, P^-)$ and the reading is $z = x + v$ with $v \sim \mathcal N(0, R)$ independent of $x$. Bayes' rule (§1) multiplies likelihood and prior, $p(x \mid z) \propto p(z \mid x)\,p(x)$, so the two Gaussian exponents add:
+  $$\log p(x \mid z) = -\frac{(x - \hat x^-)^2}{2P^-} - \frac{(z - x)^2}{2R} + \text{const}$$
+  That is a quadratic in $x$ with a negative $x^2$ coefficient, so the posterior is again a Gaussian. Its mean is where the derivative vanishes, $(x - \hat x^-)/P^- = (z - x)/R$, and its variance $P$ is read off the $x^2$ coefficient, $-\tfrac12\big(\tfrac1{P^-} + \tfrac1R\big) = -\tfrac1{2P}$:
+  $$\hat x = \frac{R\,\hat x^- + P^-\,z}{P^- + R} = \hat x^- + \frac{P^-}{P^- + R}\,(z - \hat x^-), \qquad \frac1P = \frac1{P^-} + \frac1R$$
+  So $K = P^-/(P^- + R)$ is the prior's share of the total variance, the precisions (inverse variances) add, and $P = P^-R/(P^- + R) = (1 - K)P^-$ because $1 - K = R/(P^- + R)$. On P5 you believe the wall is $10$ cm away with $P^- = 4$ (so $\pm2$ cm) and a sensor with $R = 1$ (so $\pm1$ cm) reads $12$: $K = 4/5 = 0.8$, $\hat x = (1 \cdot 10 + 4 \cdot 12)/5 = 11.6$ cm, and $1/P = 1/4 + 1/1 = 1.25$, so $P = 0.8$ cm².
+- **The same gain, as the best linear blend.** Drop the Gaussian assumption and ask only which update $\hat x = \hat x^- + k\,(z - \hat x^-)$ has the smallest error variance. Its error is $x - \hat x = (1 - k)(x - \hat x^-) - k\,v$, two independent pieces, so their variances add (§2):
+  $$\text{Var}(x - \hat x) = (1 - k)^2 P^- + k^2 R$$
+  Setting the derivative $-2(1 - k)P^- + 2kR$ to zero gives $k = P^-/(P^- + R) = K$ again, and substituting it back gives $(1 - K)P^-$. On P5 the error variance is $4$ at $k = 0$ (ignore the sensor), $1.25$ at $k = 0.5$ (split the difference), $1$ at $k = 1$ (copy the sensor) and $0.8$ at $k = 0.8$, the minimum. So the Kalman gain is the best linear blend for any noise with these variances, and when the noise is Gaussian it is also the exact posterior.
+- **Reading the gain.** With the P5 numbers just derived ($K = 0.8$, $\hat x = 11.6$, $P = 0.8$), three things are worth reading off:
   the estimate landed **closer to the sensor** because the sensor was the more trustworthy of
   the two; the new uncertainty $0.8$ is **smaller than either input** ($4$ and $1$) — combining
   two noisy opinions beats both; and if you set $R = 100$ (a terrible sensor) you get
   $K = 0.04$ and $\hat x = 10.08$, i.e. the filter almost ignores it. The gain is just
   *relative trust*, and that is all any Kalman-gain sentence in a paper is saying.
 
-**Worked: P5 sequential.** The numbers above *are* the catalog plant ([[02-foundations/lab-plants|0.6]]). A second independent range $z_2=11$, $R=1$: $K=0.8/(0.8+1)=0.444$, $\hat x=11.333$, $P=0.444$. Predict $x\leftarrow x+1$ with $Q=1$: $x=12.333$, $P=1.444$. Then $z_3=13$: $K=0.591$, $\hat x=12.727$, $P=0.591$. A *wrong* wall at $20$ after the first update would yank to $\approx 15.3$ with the same small $P$ — confident and wrong. The problem set is this sequence as a drawing and a filled `correct()` template.
+**Worked: P5 sequential.** The numbers above *are* the catalog plant ([[02-foundations/lab-plants|0.6]]). A second independent range $z_2=11$, $R=1$: $K=0.8/(0.8+1)=0.444$, $\hat x=11.333$, $P=0.444$. Predict $x\leftarrow x+1$ with $Q=1$: $x=12.333$, $P=1.444$. Then $z_3=13$: $K=0.591$, $\hat x=12.727$, $P=0.591$. A *wrong* wall at $20$ after the first update would yank to $\approx 15.3$ with the same small $P$ — confident and wrong, unless a gate stops it (§6.3 rejects it with NIS $= 39.2$). The problem set is this sequence as a drawing and a filled `correct()` template.
 
 ```mermaid
 flowchart LR
@@ -404,6 +419,8 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 
 ### 6. Detection, hypothesis tests, and whitening
 
+#### 6.1 Detection — deciding from one reading
+
 - **Detection is a decision, not an estimate.** Often a robot must choose between two explanations of a reading $y$: $H_0$ (nothing there, e.g. no contact) or $H_1$ (something there, e.g. contact). There are two ways to be wrong. A **false alarm** says $H_1$ when $H_0$ is true (probability $P_{FA}$). A **miss** says $H_0$ when $H_1$ is true (probability $1 - P_D$, where $P_D$ is the detection probability). Statistics names the same two errors **type I** (false alarm, rate $P_{FA}$) and **type II** (miss, rate $1 - P_D$), and calls $P_D$ the **power** of the test. The rules below all compare one statistic, the likelihood ratio, against a threshold:
   $$\Lambda(y) = \frac{p(y\mid H_1)}{p(y\mid H_0)} \;\gtrless\; \eta$$
   Only the threshold $\eta$ differs between rules, because the ratio already carries everything the reading says about which hypothesis produced it.
@@ -413,12 +430,14 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 
 > [!example] Worked example · 계산 예제
 > **Contact or not, from one force reading.** With no contact the wrist sensor reads pure noise, $y \sim \mathcal{N}(0,\,0.4^2)$ N. In contact it reads $y \sim \mathcal{N}(1.0,\,0.4^2)$ N.
-> - *The test becomes a threshold on $y$.* Both hypotheses share one variance, so the normalizing constants cancel and $\log\Lambda(y) = \big(y^2 - (y-1)^2\big)/(2 \cdot 0.4^2)$. The $y^2$ terms cancel too, leaving $(2y - 1)/(2 \cdot 0.4^2) = (y - 0.5)/0.4^2$, which grows with $y$, and "$\Lambda > \eta$" is the same as "$y > \tau$" with $\tau = 0.5 + 0.16\ln\eta$. Write $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$ for the Gaussian upper tail.
+> - *The test becomes a threshold on $y$.* Both hypotheses share one variance, so the normalizing constants cancel and $\log\Lambda(y) = \big(y^2 - (y-1)^2\big)/(2 \cdot 0.4^2)$. The $y^2$ terms cancel too, leaving $(2y - 1)/(2 \cdot 0.4^2) = (y - 0.5)/0.4^2$, which grows with $y$, and "$\Lambda > \eta$" is the same as "$y > \tau$" with $\tau = 0.5 + 0.16\ln\eta$. Write $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$ for the Gaussian upper tail $P(Z > x)$ of a standard normal $Z$, where $\operatorname{erf}(u) = \tfrac{2}{\sqrt\pi}\int_0^u e^{-s^2}\,ds$ is the error function (`math.erf` in Python); for example $Q(1.96) = 0.025$.
 > - *Equal priors* ($\eta = 1$): $\tau = 0.5$ N, $P_{FA} = Q(0.5/0.4) = Q(1.25) = 0.106$, $P_D = Q(-1.25) = 0.894$.
 > - *Contact is rare*, $P(H_1) = 0.1$, so $\eta = 9$: $\tau = 0.5 + 0.16\ln 9 = 0.852$ N, $P_{FA} = 0.017$, $P_D = 0.645$. This is the base-rate effect of §1 again, now moving a threshold.
 > - *Neyman–Pearson at $\alpha = 0.01$*: $Q^{-1}(0.01) = 2.326$, so $\tau = 0.4 \times 2.326 = 0.931$ N and $P_D = Q\big((0.931 - 1.0)/0.4\big) = 0.569$.
 >
 > Cutting false alarms tenfold (0.106 → 0.01) cost more than a third of the detections (0.894 → 0.569). Moving the threshold only slides you along one ROC curve. A better sensor, meaning a larger offset relative to the noise ($1.0/0.4 = 2.5$ here), lifts the whole curve.
+
+#### 6.2 Hypothesis tests — comparing two methods
 
 - **A hypothesis test is detection applied to a claim.** $H_0$ is the "nothing is going on" story (method B is no better than A). The test statistic plays the role of $y$, and the significance level $\alpha$ is the false-alarm rate you accept. The **p-value** is the probability, *computed assuming $H_0$ is true*, of a statistic at least as extreme as the one observed. For a statistic $T$ with observed value $t_{\text{obs}}$, where large values count as extreme,
   $$p = P\big(T \ge t_{\text{obs}} \mid H_0\big) \quad\text{(one-sided)}, \qquad p = P\big(|T| \ge |t_{\text{obs}}| \mid H_0\big) \quad\text{(two-sided)}$$
@@ -428,6 +447,9 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
   3. $p > 0.05$ is **not** evidence of no difference. With few trials the test may simply be unable to see one.
 - **Compare two methods on the same trials, pair by pair.** When A and B run on the same 10 objects (or seeds, or scenes), object-to-object difficulty cancels in the per-trial differences $d_i = s_i^{B} - s_i^{A}$. Four tools work on these differences. Use the paired t-test when the $d_i$ look roughly normal, the sign test when only "who won" is trustworthy, a permutation test when you want to use the sizes of the $d_i$ without assuming normality, and the bootstrap when you want an interval rather than a p-value.
   - The **paired t-test** uses $t = \bar d / (s_d/\sqrt{n})$, where $\bar d$ and $s_d$ are the mean and standard deviation of the $d_i$. Under $H_0$ it follows a $t$ distribution with $n-1$ degrees of freedom if the differences are roughly normal. The degrees of freedom are $n-1$ rather than $n$ because one is used up estimating $\bar d$; with fewer of them the $t$ distribution has heavier tails than a Gaussian, so small samples need a larger $t$.
+  - The **Student $t$ distribution** with $\nu$ degrees of freedom is the distribution of a standard normal divided by the root-mean-square of $\nu$ more, drawn independently:
+  $$T = \frac{Z}{\sqrt{V/\nu}}, \qquad Z \sim \mathcal N(0, 1),\quad V \sim \chi^2_\nu,\quad Z \text{ and } V \text{ independent}$$
+  where $\chi^2_\nu$ is the sum of $\nu$ squared standard normals (defined in §6.3). It is symmetric about 0, has variance $\nu/(\nu - 2)$ for $\nu > 2$, and approaches $\mathcal N(0, 1)$ as $\nu \to \infty$. The paired statistic has exactly this form: $\bar d/(\sigma/\sqrt n)$ is standard normal under $H_0$, $(n-1)s_d^2/\sigma^2$ is $\chi^2_{n-1}$ and independent of $\bar d$ for normal data, and the unknown $\sigma$ cancels in their ratio. Its 97.5% points are $t_{3,\,0.975} = 3.182$, $t_{4,\,0.975} = 2.776$ and $t_{30,\,0.975} = 2.042$, against $1.960$ for the Gaussian.
   - The **sign test** only counts who won each pair. A **permutation test** randomly flips the signs of the $d_i$ to build the null distribution. Neither needs normality.
   - *Example:* B beats A on 9 of 10 objects, with no ties. Under $H_0$ each win is a fair coin flip, so the two-sided sign test gives $p = 2\big(\binom{10}{9} + \binom{10}{10}\big)/2^{10} = 22/1024 = 0.021$.
   - A **bootstrap CI** resamples the $n$ differences with replacement thousands of times and reports the 2.5th and 97.5th percentiles of the resampled mean. For how many trials to run and which interval to report, see [[06-research-practice/experimental-design-reproducibility|Experiment Design §4]].
@@ -462,14 +484,34 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 >
 > Report "+25 points, 95% CI [0, +50], McNemar $p = 0.125$, 20 paired trials". The gain could be large or nothing. By misreading 3 that is not evidence of no difference; it is a reason to test more objects.
 
+#### 6.3 Whitening, Mahalanobis distance and χ² gating
+
 - **Whitening turns a correlated Gaussian into an isotropic one.** Factor the covariance with Cholesky, $\Sigma = LL^\top$, with $L$ lower triangular (it exists since $\Sigma$ is positive definite). Then
   $$z = L^{-1}(x - \mu) \;\Rightarrow\; \text{Cov}(z) = L^{-1}\Sigma L^{-\top} = I$$
   by the affine rule of §3: substitute $\Sigma = LL^\top$, and $L^{-1}L$ and $L^\top L^{-\top}$ each collapse to $I$. So every direction of $z$ has unit variance and no correlation. Run it backwards, $x = \mu + Lz$ with $z \sim \mathcal{N}(0, I)$, and you have **coloring**, the standard way to sample a correlated Gaussian. Any square root of $\Sigma$ works (the eigendecomposition gives one too); Cholesky is the cheapest.
 - **Mahalanobis distance is Euclidean distance after whitening.**
   $$d^2 = (x-\mu)^\top \Sigma^{-1} (x-\mu) = z^\top z$$
-  This holds because $\Sigma^{-1} = L^{-\top}L^{-1}$. For Gaussian $x$ in $k$ dimensions, $z$ has $k$ independent standard-normal entries, so $d^2$ is a sum of $k$ squared standard normals, which is a $\chi^2_k$ variable.
-  - **Gating** in a tracker uses exactly this. A measurement is associated with a track only if the $d^2$ of its innovation (measurement minus prediction, with the innovation covariance as $\Sigma$; see [[04-robotics/state-estimation-slam|State Estimation §6]]) is below a $\chi^2_k$ quantile.
+  This holds because $\Sigma^{-1} = L^{-\top}L^{-1}$. For Gaussian $x$ in $k$ dimensions, $z$ has $k$ independent standard-normal entries, so $d^2$ is a sum of $k$ squared standard normals, which is a $\chi^2_k$ variable, defined next.
+
+> [!info] Definition — χ² (chi-square) distribution
+> **What kind of thing it is.** A family of continuous distributions on $[0, \infty)$, one for each positive integer $k$, called the **degrees of freedom**. $Q \sim \chi^2_k$ means $Q$ is distributed as a sum of $k$ squared normals that meet two conditions: they are **independent**, and each is **standard**, $\mathcal N(0, 1)$, with zero mean and unit variance.
+> $$Q = Z_1^2 + Z_2^2 + \cdots + Z_k^2, \qquad Z_1, \dots, Z_k \ \text{i.i.d. } \mathcal N(0, 1)$$
+> **Density, mean, variance.** For $q > 0$ the density is
+> $$p_k(q) = \frac{q^{k/2 - 1}\, e^{-q/2}}{2^{k/2}\,\Gamma(k/2)}$$
+> where $\Gamma$ is the gamma function ($\Gamma(\tfrac12) = \sqrt\pi$, $\Gamma(1) = 1$, $\Gamma(x + 1) = x\,\Gamma(x)$), so it is only the normalizer. The mean is $k$, because each $E[Z_i^2] = \text{Var}(Z_i) = 1$ and expectations add. The variance is $2k$, because $\text{Var}(Z_i^2) = E[Z_i^4] - 1 = 3 - 1 = 2$ and the variances of independent terms add (§2). For $k = 2$ the density is $\tfrac12 e^{-q/2}$, the Exponential($\tfrac12$) of §2, so the CDF is $1 - e^{-q/2}$.
+> **Quantiles used for gating.** The point $c$ with $P(Q \le c) = p$. At 95%: $3.841$ for $k = 1$, $5.991$ for $k = 2$, $7.815$ for $k = 3$. At 99%: $6.635$, $9.210$, $11.345$. Two of them follow by hand: for $k = 1$, $P(Z^2 \le c) = P(|Z| \le \sqrt c)$, so the 95% point is $1.960^2 = 3.841$; for $k = 2$ the CDF above gives $-2\ln 0.05 = 5.991$. The rest come from `scipy.stats.chi2.ppf(p, k)`.
+> **Example.** Two independent unit-variance residuals $(1.2,\ -0.9)$ give $Q = 1.44 + 0.81 = 2.25 < 5.991$, inside the 95% region for $k = 2$. The pair $(2.5,\ 1.5)$ gives $Q = 8.5$: outside the 95% region, yet inside the 99% one, so the verdict depends on the gate you chose.
+> **Non-example.** Skip the standardization. If $X \sim \mathcal N(0, 2^2)$, then $X^2$ has mean $4$, not $1$, and only 67% of draws fall below $3.841$ instead of 95%. Correlated components fail the same way, which is why this section whitens first. Estimating the mean from the same data also costs a degree of freedom: $(n-1)s^2/\sigma^2$ is $\chi^2_{n-1}$, which is the $n - 1$ of the $t$ test in §6.2.
+> **Why it matters.** Every "is this residual too large for its covariance?" test in estimation — the gate, the NIS and the NEES below — compares a squared Mahalanobis distance with a $\chi^2$ quantile, and the right quantile depends on the dimension $k$.
+
+- **Gating with the NIS.** A tracker must decide whether a new reading belongs to the object it follows. Under the filter's own model the innovation of a true reading, $\nu = y - C\hat x^-$, is $\mathcal N(0, S)$ with $S = CP^-C^\top + R$ (§5.2), so its **normalized innovation squared**
+  $$\text{NIS} = \nu^\top S^{-1} \nu$$
+  is the squared Mahalanobis distance of $\nu$ and is $\chi^2_m$, where $m$ is the measurement dimension. The gate accepts the reading only if the NIS is below a $\chi^2_m$ quantile. A 95% gate therefore throws away 5% of true readings by design, and in exchange rejects anything far outside the predicted spread ([[04-robotics/state-estimation-slam|State Estimation §6]] runs it on a tracker).
+  - *Worked on P5* ($m = 1$, 95% gate $3.841$). The first reading: $\nu = 12 - 10 = 2$, $S = 4 + 1 = 5$, NIS $= 4/5 = 0.8$, accepted. The second, after the first update: $\nu = 11 - 11.6 = -0.6$, $S = 0.8 + 1 = 1.8$, NIS $= 0.36/1.8 = 0.2$, accepted. The wrong wall at $20$ in its place: $\nu = 8.4$, NIS $= 70.56/1.8 = 39.2$, rejected ten times over. The "confident and wrong" jump to $15.3$ in the picture happens only in a filter that fuses without gating.
   - For $k = 2$ the $\chi^2_2$ CDF is $1 - e^{-d^2/2}$, so the 99% gate is $d^2 < -2\ln 0.01 = 9.21$. In a million simulated Gaussian residuals, 98.99% fell inside.
+- **Consistency with the NEES.** In simulation, where the true state $x$ is known, the **normalized estimation error squared**
+  $$\text{NEES} = (x - \hat x)^\top P^{-1} (x - \hat x)$$
+  is $\chi^2_n$, with $n$ the state dimension, whenever the filter's reported covariance $P$ is right. Its average over many runs should therefore sit near $n$. An average well above $n$ means $P$ is too small, an **overconfident** filter; well below means $P$ is too cautious. *Example:* a scalar filter whose actual error variance is $0.8$ but which reports $P = 0.2$ averages a NEES of about $4$, four times the target $1$. Over $N = 50$ independent runs, the average of a consistent scalar filter lies in $[0.647,\ 1.428]$ with 95% probability, because $N$ times that average is $\chi^2_{50}$.
 
 > [!example] Worked example · 계산 예제
 > **Same distance, different surprise.** Take $\Sigma = \begin{pmatrix}4&2\\2&3\end{pmatrix}$, whose Cholesky factor is $L = \begin{pmatrix}2&0\\1&\sqrt2\end{pmatrix}$.
@@ -480,6 +522,8 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 > The positive covariance says the two coordinates tend to err together. A residual that goes against that pattern is far more surprising. This is the "same displacement, different surprise" point of §3, in numbers.
 
 ### 7. Markov chains and hidden Markov models
+
+#### 7.1 Markov chains
 
 - **A finite Markov chain** is a state $X_n \in \{1,\dots,S\}$ that jumps with fixed probabilities $P_{ij} = P(X_{n+1}=j \mid X_n = i)$. Convention on this page: **rows are "from" and columns are "to"**, so each row of $P$ sums to 1 (row-stochastic) and distributions are row vectors. By total probability $\pi_{n+1}(j) = \sum_i \pi_n(i) P_{ij}$, that is $\pi_{n+1} = \pi_n P$, and so $\pi_n = \pi_0 P^n$.
   A finite Markov chain is therefore fully specified by **four** named components:
@@ -512,6 +556,8 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 > - *Power iteration from "broken"*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.644,\ 0.211,\ 0.145)$, and $\pi_{10}$ matches $\pi$ to four decimals.
 >
 > Convergence was guaranteed, since every state reaches every other and each has a self-loop (so no period). The speed is set by the second-largest eigenvalue magnitude of $P$ ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), here $0.3$. The reason: $\pi$ is the part of $\pi_n$ with eigenvalue 1, and the gap $\pi_n - \pi$ is made of the other eigen-directions, each multiplied by its eigenvalue (here $0.3$ and $0.2$) at every step, so the largest of them sets the decay. The gap to $\pi$ shrinks by roughly a factor of $0.3$ each hour.
+
+#### 7.2 Hidden Markov models
 
 - **Hidden Markov model (HMM).** The chain $X_t$ is not observed. At each step the current state $j$ emits an observation $y_t$ with probability $B_j(y_t) = p(y_t \mid X_t = j)$. An HMM is specified by **three** parameter sets on top of a hidden state space: the initial distribution $\pi_0$, the transition matrix $P$, and the emission probabilities $B$. It rests on **two** assumptions: the hidden states form a Markov chain, and each observation depends only on the current hidden state. Together they make the joint probability of a state path and an observation sequence a product:
   $$p(x_{1:T}, y_{1:T}) = \pi_0(x_1)\,B_{x_1}(y_1) \prod_{t=2}^{T} P_{x_{t-1} x_t}\,B_{x_t}(y_t)$$
@@ -550,7 +596,7 @@ print(viterbi(np.log((0.9, 0.1)), np.log(A), np.log(B), (0, 0, 1, 1, 1, 0, 1)))
 - **Filter and decoder disagree, and both are right.** The forward filter puts $P(\text{worn})$ at only $0.229$ at hour 3 and $0.481$ at hour 6. The filter may use only readings up to now. Viterbi picks the whole sequence at once, so the later loud readings pull hour 3 toward "worn", and one quiet hour between loud ones is cheaper to explain as a quiet worn machine than as two switches ($0.10$, then $0.05$). Drop the final loud reading and Viterbi returns all six hours as working: the last hour of evidence rewrote the whole story.
 - **Learning the parameters.** When $P$, $B$ and the initial distribution are unknown, Baum–Welch fits them by EM (expectation–maximization), alternating two steps. The *E-step* runs forward–backward (the forward pass above plus a mirror-image pass from the end of the sequence) under the current parameters, which gives each step's state probabilities given the whole sequence and hence the expected number of times each transition and each emission occurred. The *M-step* re-estimates the parameters from those expected counts; for example, $P_{ij}$ becomes the expected number of $i \to j$ transitions divided by the expected number of departures from $i$. Repeating the two never lowers the likelihood (Baum et al. 1970).
 
-#### Metropolis–Hastings
+#### 7.3 Metropolis–Hastings
 
 Metropolis–Hastings is the MCMC of the "Why it matters" bullet made concrete: a recipe for a Markov chain whose stationary distribution is a target $p$ you can evaluate only up to a constant.
 - **Setting.** You can compute $\tilde p(x) = Z\,p(x)$ but not $Z$. A posterior $p(\theta \mid \mathcal D) \propto p(\mathcal D \mid \theta)\,p(\theta)$ with an intractable evidence integral is the typical case.
@@ -678,7 +724,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 칼만 필터까지.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1, §2, 그다음 §3 — 실제로 쓰이는 것은 가우시안 도구 상자다. §4는 당신의 손실함수가 어디서 왔는지 알려주므로 우회할 값어치가 있다. §5는 상태 추정에 닿을 때까지 미뤄라 — 거기서 더 잘 읽힌다.
+> 그림, §1, §2, 그다음 §3을 먼저 읽어라 — 실제로 쓰이는 것은 가우시안 도구 상자다. §4는 당신의 손실함수가 어디서 왔는지 알려주므로 우회할 값어치가 있다. §5에서는 §5.2의 스칼라 이득 유도를 지금 읽어라. 그림과 과제가 그것으로 돌아간다. 벡터 필터와 §5.1의 랜덤 프로세스는 상태 추정에 닿을 때까지 미뤄도 된다. §6은 필요할 때 여는 도구 셋이다: 잡음 섞인 측정값 하나로 로봇이 결정해야 할 때 §6.1, 두 방법의 결과를 비교할 때 §6.2, 추적기가 χ² 분포로 측정을 게이팅할 때 §6.3. §7은 HMM, MCMC, 디퓨전의 전방 과정을 만날 때 읽는다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -771,7 +817,7 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   <text x="14.0" y="536.0" fill="currentColor" opacity="0.9">그 톱니가 칼만 필터를 그림으로 옮긴 것이다.</text>
 </svg>
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P5**: 벽이 $10\,\mathrm{cm}$ 앞에 있다는 믿음(분산 $4$)과 거리 측정값 $12$(분산 $1$)가 융합되어 사후분포 $\mathcal{N}(11.6,\ 0.8)$이 되고, 그것은 둘 사이에 놓이면서 어느 쪽보다도 좁다($2$와 $1$에 대해 $\sigma=0.894$). 이득 $K=4/(4+1)=0.8$은 혁신 $z-\hat x^-=2$ 중 추정이 걸어가는 비율이어서 추정은 $0.8\times2=1.6$만큼 움직이고, $R=100$인 나쁜 센서라면 $K=0.04$라 $10.08$까지만 간다. 아래에서는 오차 막대가 보정마다 줄고 예측에서 늘어나며($P=4,\ 0.8,\ 0.444,\ 1.444,\ 0.591$), 첫 갱신 뒤 $20$에 있는 틀린 벽은 추정을 $\approx15.3$까지 끌고 가면서도 $P$를 그대로 $0.444$로 둔다 — 확신하고 틀린 것이다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P5**: 벽이 $10\,\mathrm{cm}$ 앞에 있다는 믿음(분산 $4$)과 거리 측정값 $12$(분산 $1$)가 융합되어 사후분포 $\mathcal{N}(11.6,\ 0.8)$(평균 $11.6$, 분산 $0.8$인 가우시안; §2–§3)이 되고, 그것은 둘 사이에 놓이면서 어느 쪽보다도 좁다($2$와 $1$에 대해 $\sigma=0.894$). 이득 $K=4/(4+1)=0.8$(§5.2에서 유도)은 혁신 $z-\hat x^-=2$ 중 추정이 걸어가는 비율이어서 추정은 $0.8\times2=1.6$만큼 움직이고, $R=100$인 나쁜 센서라면 $K=0.04$라 $10.08$까지만 간다. 아래에서는 오차 막대가 보정마다 줄고, 알려진 이동 $+1$ cm만큼 추정을 옮기며 과정 분산 $Q=1$을 더하는 예측 단계(§5.2)에서 늘어나며($P=4,\ 0.8,\ 0.444,\ 1.444,\ 0.591$), 첫 갱신 뒤 $20$에 있는 틀린 벽은 추정을 $\approx15.3$까지 끌고 가면서도 $P$를 그대로 $0.444$로 둔다 — 확신하고 틀린 것이다.
 
 ### 1. 핵심 언어
 
@@ -937,6 +983,9 @@ $$\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac1
    $$E[x_1|x_2] = \mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$$
    — 조건부 평균은 공분산/분산으로 가중된 *선형* 보정이다. 이 공식의 모양을 기억하라:
    이것이 *곧* 칼만 이득이다.
+   여기서 $\mu_1, \mu_2$는 두 평균, $\Sigma_{11}, \Sigma_{22}$는 두 공분산, $\Sigma_{12} = \Sigma_{21}^\top = \text{Cov}(x_1, x_2)$다. 조건화한 뒤 남는 퍼짐은
+   $$\text{Cov}(x_1 \mid x_2) = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}$$
+   이고, 두 공식은 한 단계에서 함께 나온다. 나머지 $e = x_1 - \mu_1 - \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$는 $\text{Cov}(e, x_2) = \Sigma_{12} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{22} = 0$이다. $e$는 $(x_1, x_2)$의 아핀 사상이므로 $(e, x_2)$는 결합 가우시안이고, 공분산이 0인 결합 가우시안 쌍은 독립이다(공분산이 블록 대각이어서 위의 밀도가 둘로 인수분해된다). 그래서 $x_2$를 알면 괄호 $\mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$가 고정되고 $e$는 평균 0과 자기 공분산을 그대로 가지며, 그 공분산을 전개하면 두 번째 공식이 된다. *예:* P5의 벽, 곧 평균 $10$, 분산 $4$인 $x_1 = x$와 분산 $1$인 독립 잡음 $v$를 더한 $x_2 = z = x + v$는 $\Sigma_{12} = 4$, $\Sigma_{22} = 5$이므로 $E[x \mid z{=}12] = 10 + \tfrac45(12 - 10) = 11.6$, $\text{Cov}(x \mid z) = 4 - 4 \cdot 4/5 = 0.8$로 그림의 사후분포다.
 
 또한: **중심극한정리**(CLT)는 이름 붙은 가정 셋을 가진 극한 명제다: $X_1, \dots, X_N$이 i.i.d.(§2)이고, 평균이 $\mu$이고, 분산 $\sigma^2$이 *유한*하다. 그러면 표준화한 표본 평균 $\bar X_N = \frac1N \sum_i X_i$가 표준정규로 분포수렴한다:
 $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1) \quad (N \to \infty)$$
@@ -1002,6 +1051,8 @@ $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1)
 
 ### 5. 랜덤 프로세스와 칼만 필터
 
+#### 5.1 랜덤 프로세스와 마르코프 성질
+
 - 랜덤 프로세스 = 인덱스 달린 확률변수의 족; 평균 함수와 **자기상관**(autocorrelation)으로
   특성화한다 — $E[x(t)x(t+\tau)]$, 어느 순간의 신호가 $\tau$ 뒤의 자기 자신을 얼마나
   예측하는가(잡음 신호의 주파수 내용을 시간 영역에서 본 것).
@@ -1025,24 +1076,35 @@ $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1)
   식으로 쓰면, 프로세스 $x_0, x_1, \dots$가 마르코프 성질을 가진다는 것은 전체 이력이 주어졌을 때 다음 상태의 분포가 현재 상태에만 의존한다는 뜻이다:
   $$p(x_{t+1} \mid x_t, x_{t-1}, \dots, x_0) = p(x_{t+1} \mid x_t)$$
   현재가 주어졌을 때 미래와 과거의 조건부 독립(§1)이다. 결합 분포가 $p(x_0)\prod_t p(x_{t+1} \mid x_t)$로 인수분해되므로 모델에 전이 규칙 하나만 있으면 된다. *예:* 위 랜덤 워크. $x_{t+1} = x_t + \epsilon_{t+1}$은 $x_t$보다 오래된 것을 쓰지 않는다. *반례:* $x_{t+1} = x_t - 0.5\,x_{t-1} + \epsilon_{t+1}$은 과거 값 둘이 필요하다. 상태를 쌍 $(x_t, x_{t-1})$로 정의하면 다시 마르코프가 되며, 위치만 있는 로봇 모델에 속도를 상태로 더해 마르코프로 만드는 방법이 이것이다. §7이 유한 상태 판본을 만든다.
+
+#### 5.2 칼만 필터, 유도
+
 - **이 페이지의 부품으로 조립하는 칼만 필터**: 모델
   $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$, 가우시안 $w_t \sim \mathcal{N}(0,Q)$,
   $v_t \sim \mathcal{N}(0,R)$이고, 둘은 백색이며 서로, 그리고 가우시안 초기 상태 $x_0$와 독립이다.
   - *예측* (아핀 성질): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — 여기서 $P$는
-    **추정 공분산**($\hat x$의 불확실성), $P = E[(x - \hat x)(x - \hat x)^\top]$이고, $Q$는 과정 잡음 공분산이다
+    **추정 공분산**($\hat x$의 불확실성), $P = E[(x - \hat x)(x - \hat x)^\top]$이고, $Q$는 과정 잡음 공분산이다. 두 줄 모두 §3의 닫힘 규칙이다: $Ax$의 공분산은 $APA^\top$(성질 1)이고, 독립인 $w_t$를 더하면 $Q$가 더해진다(성질 2).
   - *갱신* (가우시안 조건화): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
     $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$
-  새로운 것이 필요 없었다: 아핀 닫힘 + 조건화 공식 = 바로 그 가정 아래 최적(최소 평균제곱오차) 재귀 추정기.
-- **이득(gain)을 스칼라 예제 하나로.** 벽이 $10$ cm 앞에 있다고 믿고 그 분산이 $P^- = 4$
-  ($\pm2$ cm), 분산 $R = 1$($\pm1$ cm)짜리 센서가 $12$를 읽었다고 하자. 그러면
-  $K = \frac{P^-}{P^- + R} = \frac{4}{5} = 0.8$이므로 $\hat x = 10 + 0.8(12-10) = 11.6$,
-  $P = (1-K)P^- = 0.8$. 읽어낼 것 셋: 추정값이 **센서 쪽에 더 가깝게** 앉았는데 둘 중 센서가
+  - **갱신은 어디서 오는가.** 측정 전에는 $x \sim \mathcal N(\hat x^-, P^-)$이고 $y = Cx + v$이며 $v$는 $x$와 독립이다. 쌍 $(x, y)$는 $(x, v)$의 아핀 사상이므로 결합 가우시안이고(§3, 성질 1), 평균은 $(\hat x^-,\ C\hat x^-)$,
+  $$\text{Cov}(x, y) = \text{Cov}(x,\ Cx + v) = P^-C^\top, \qquad \text{Cov}(y) = CP^-C^\top + R$$
+  이다. $v$가 $x$와 무상관이기 때문이다. §3의 두 조건화 공식에 $x_1 = x$, $x_2 = y$를 넣는다. 가중치 $\Sigma_{12}\Sigma_{22}^{-1} = P^-C^\top(CP^-C^\top+R)^{-1}$가 $K$이고, 조건부 평균은 $\hat x^- + K(y - C\hat x^-)$, 조건부 공분산은 $P^- - K\,CP^- = (I - KC)P^-$다. 이것이 갱신의 세 줄이다. 차이 $y - C\hat x^-$가 **혁신**(innovation, 측정이 예측 너머로 말해주는 것)이고 $S = CP^-C^\top + R$가 그 공분산이다. §6.3이 이 둘로 측정을 게이팅한다.
+  - **왜 최적인가.** 매 갱신은 조건부 평균 $E[x_t \mid y_{1:t}]$를 정확히 계산하고(귀납법: 예측 단계가 믿음을 가우시안이자 정확하게 유지한다), §2는 조건부 기댓값이 평균제곱 의미의 최선 예측자임을 보였다. 그래서 선형이든 아니든 어떤 추정기도 평균제곱오차가 이보다 작지 않다 — 바로 그 가정(선형 모델, 가우시안 백색 잡음, 참 $Q$와 $R$) 아래에서.
+- **스칼라 이득을 베이즈 정리로 유도하기.** $C = 1$인 스칼라 상태 하나: 사전은 $x \sim \mathcal N(\hat x^-, P^-)$이고 측정은 $z = x + v$, $v \sim \mathcal N(0, R)$이며 $v$는 $x$와 독립이다. 베이즈 정리(§1)는 우도와 사전을 곱하므로 $p(x \mid z) \propto p(z \mid x)\,p(x)$, 두 가우시안의 지수가 더해진다:
+  $$\log p(x \mid z) = -\frac{(x - \hat x^-)^2}{2P^-} - \frac{(z - x)^2}{2R} + \text{const}$$
+  이것은 $x^2$ 계수가 음수인 $x$의 이차식이므로 사후분포도 가우시안이다. 평균은 도함수가 0이 되는 곳, $(x - \hat x^-)/P^- = (z - x)/R$이고, 분산 $P$는 $x^2$ 계수 $-\tfrac12\big(\tfrac1{P^-} + \tfrac1R\big) = -\tfrac1{2P}$에서 읽는다:
+  $$\hat x = \frac{R\,\hat x^- + P^-\,z}{P^- + R} = \hat x^- + \frac{P^-}{P^- + R}\,(z - \hat x^-), \qquad \frac1P = \frac1{P^-} + \frac1R$$
+  그래서 $K = P^-/(P^- + R)$는 전체 분산 중 사전의 몫이고, 정밀도(분산의 역수)가 더해지며, $1 - K = R/(P^- + R)$이므로 $P = P^-R/(P^- + R) = (1 - K)P^-$다. P5에서는 벽이 $10$ cm 앞에 있다고 $P^- = 4$($\pm2$ cm)로 믿고 $R = 1$($\pm1$ cm)짜리 센서가 $12$를 읽는다: $K = 4/5 = 0.8$, $\hat x = (1 \cdot 10 + 4 \cdot 12)/5 = 11.6$ cm, $1/P = 1/4 + 1/1 = 1.25$이므로 $P = 0.8$ cm²이다.
+- **같은 이득, 최선의 선형 혼합으로.** 가우시안 가정을 버리고, 갱신 $\hat x = \hat x^- + k\,(z - \hat x^-)$ 중 오차 분산이 가장 작은 것이 무엇인지만 묻는다. 오차는 $x - \hat x = (1 - k)(x - \hat x^-) - k\,v$로 서로 독립인 두 조각이므로 분산이 더해진다(§2):
+  $$\text{Var}(x - \hat x) = (1 - k)^2 P^- + k^2 R$$
+  도함수 $-2(1 - k)P^- + 2kR$를 0으로 두면 다시 $k = P^-/(P^- + R) = K$이고, 되넣으면 $(1 - K)P^-$다. P5에서 오차 분산은 $k = 0$(센서 무시)에서 $4$, $k = 0.5$(반씩 나누기)에서 $1.25$, $k = 1$(센서 그대로)에서 $1$, $k = 0.8$에서 최솟값 $0.8$이다. 그래서 칼만 이득은 이 분산을 가진 어떤 잡음에 대해서도 최선의 선형 혼합이고, 잡음이 가우시안이면 정확한 사후분포이기도 하다.
+- **이득 읽기.** 방금 유도한 P5 숫자($K = 0.8$, $\hat x = 11.6$, $P = 0.8$)에서 읽어낼 것 셋: 추정값이 **센서 쪽에 더 가깝게** 앉았는데 둘 중 센서가
   더 믿을 만했기 때문이고; 새 불확실성 $0.8$은 **두 입력($4$와 $1$) 어느 쪽보다도 작다** —
   잡음 섞인 두 의견을 합치면 둘 다보다 낫다; 그리고 $R = 100$(형편없는 센서)으로 두면
   $K = 0.04$, $\hat x = 10.08$이 되어 필터가 센서를 거의 무시한다. 이득은 그저 *상대적
   신뢰도*이고, 논문의 칼만 이득 문장이 말하는 것도 그게 전부다.
 
-**계산: P5 순차.** 위 숫자가 카탈로그 장치다([[02-foundations/lab-plants|0.6]]). 둘째 거리 $z_2=11$, $R=1$: $K=0.444$, $\hat x=11.333$, $P=0.444$. $Q=1$로 $x\leftarrow x+1$ 예측 뒤 $z_3=13$: $K=0.591$, $\hat x=12.727$, $P=0.591$. 첫 갱신 뒤 틀린 벽 $20$은 $\approx 15.3$에 작은 $P$ — 확신하고 틀림. 과제는 이 열을 그림과 `correct()` 템플릿으로 묻는 것이다.
+**계산: P5 순차.** 위 숫자가 카탈로그 장치다([[02-foundations/lab-plants|0.6]]). 둘째 거리 $z_2=11$, $R=1$: $K=0.444$, $\hat x=11.333$, $P=0.444$. $Q=1$로 $x\leftarrow x+1$ 예측 뒤 $z_3=13$: $K=0.591$, $\hat x=12.727$, $P=0.591$. 첫 갱신 뒤 틀린 벽 $20$은 $\approx 15.3$에 작은 $P$ — 확신하고 틀림. 게이트가 막지 않는 한 그렇다(§6.3이 NIS $= 39.2$로 기각한다). 과제는 이 열을 그림과 `correct()` 템플릿으로 묻는 것이다.
 
 ```mermaid
 flowchart LR
@@ -1057,6 +1119,8 @@ flowchart LR
 
 ### 6. 검출, 가설 검정, 백색화
 
+#### 6.1 검출 — 측정값 하나로 결정하기
+
 - **검출은 추정이 아니라 결정이다.** 로봇은 측정값 $y$에 대한 두 설명 중 하나를 골라야 할 때가 많다: $H_0$(아무것도 없음, 예: 접촉 없음) 또는 $H_1$(무언가 있음, 예: 접촉). 틀리는 방식은 두 가지다. **오경보는** $H_0$가 참인데 $H_1$이라고 말하는 것이다(확률 $P_{FA}$). **놓침은** $H_1$이 참인데 $H_0$라고 말하는 것이다(확률 $1 - P_D$, $P_D$는 검출 확률). 통계학은 같은 두 오류를 **제1종 오류**(오경보, 비율 $P_{FA}$)와 **제2종 오류**(놓침, 비율 $1 - P_D$)라 부르고, $P_D$를 검정의 **검정력**이라 부른다. 아래 규칙들은 모두 같은 통계량인 우도비를 문턱값과 비교한다:
   $$\Lambda(y) = \frac{p(y\mid H_1)}{p(y\mid H_0)} \;\gtrless\; \eta$$
   규칙마다 달라지는 것은 문턱값 $\eta$뿐이다. 어느 가설이 이 측정값을 만들었는지에 대해 측정값이 말해주는 모든 것을 비율이 이미 담고 있기 때문이다.
@@ -1066,12 +1130,14 @@ flowchart LR
 
 > [!example] 계산 예제 · Worked example
 > **힘 측정값 하나로 접촉 여부 판단.** 접촉이 없으면 손목 센서는 순수 잡음 $y \sim \mathcal{N}(0,\,0.4^2)$ N을 읽는다. 접촉 중이면 $y \sim \mathcal{N}(1.0,\,0.4^2)$ N을 읽는다.
-> - *검정이 $y$에 대한 문턱값이 된다.* 두 가설의 분산이 같으므로 정규화 상수가 약분되어 $\log\Lambda(y) = \big(y^2 - (y-1)^2\big)/(2 \cdot 0.4^2)$이다. $y^2$ 항도 약분되어 $(2y - 1)/(2 \cdot 0.4^2) = (y - 0.5)/0.4^2$만 남고, 이것은 $y$에 대해 증가하므로 "$\Lambda > \eta$"는 $\tau = 0.5 + 0.16\ln\eta$인 "$y > \tau$"와 같다. 가우시안 위쪽 꼬리를 $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$로 쓴다.
+> - *검정이 $y$에 대한 문턱값이 된다.* 두 가설의 분산이 같으므로 정규화 상수가 약분되어 $\log\Lambda(y) = \big(y^2 - (y-1)^2\big)/(2 \cdot 0.4^2)$이다. $y^2$ 항도 약분되어 $(2y - 1)/(2 \cdot 0.4^2) = (y - 0.5)/0.4^2$만 남고, 이것은 $y$에 대해 증가하므로 "$\Lambda > \eta$"는 $\tau = 0.5 + 0.16\ln\eta$인 "$y > \tau$"와 같다. 표준정규 $Z$의 가우시안 위쪽 꼬리 $P(Z > x)$를 $Q(x) = \tfrac12\big(1-\operatorname{erf}(x/\sqrt2)\big)$로 쓴다. 여기서 $\operatorname{erf}(u) = \tfrac{2}{\sqrt\pi}\int_0^u e^{-s^2}\,ds$는 오차 함수(파이썬의 `math.erf`)이고, 예를 들어 $Q(1.96) = 0.025$다.
 > - *사전확률이 같을 때* ($\eta = 1$): $\tau = 0.5$ N, $P_{FA} = Q(0.5/0.4) = Q(1.25) = 0.106$, $P_D = Q(-1.25) = 0.894$.
 > - *접촉이 드물 때*, $P(H_1) = 0.1$이므로 $\eta = 9$: $\tau = 0.5 + 0.16\ln 9 = 0.852$ N, $P_{FA} = 0.017$, $P_D = 0.645$. §1의 기저율 효과가 이번에는 문턱값을 움직인다.
 > - *$\alpha = 0.01$인 네이만–피어슨*: $Q^{-1}(0.01) = 2.326$이므로 $\tau = 0.4 \times 2.326 = 0.931$ N, $P_D = Q\big((0.931 - 1.0)/0.4\big) = 0.569$.
 >
 > 오경보를 10분의 1로 줄이자(0.106 → 0.01) 검출의 3분의 1 넘게를 잃었다(0.894 → 0.569). 문턱값을 옮기는 것은 하나의 ROC 곡선 위를 미끄러질 뿐이다. 더 좋은 센서, 즉 잡음 대비 더 큰 오프셋(여기서는 $1.0/0.4 = 2.5$)이 곡선 전체를 끌어올린다.
+
+#### 6.2 가설 검정 — 두 방법 비교하기
 
 - **가설 검정은 주장에 적용한 검출이다.** $H_0$는 "아무 일도 없다"는 이야기다(방법 B가 A보다 낫지 않다). 검정 통계량이 $y$ 역할을 하고, 유의수준 $\alpha$는 받아들이는 오경보율이다. **p-값은** *$H_0$가 참이라고 가정하고 계산한*, 관측된 것만큼 또는 그보다 극단적인 통계량이 나올 확률이다. 관측값이 $t_{\text{obs}}$인 통계량 $T$에서 큰 값을 극단으로 치면
   $$p = P\big(T \ge t_{\text{obs}} \mid H_0\big) \quad\text{(단측)}, \qquad p = P\big(|T| \ge |t_{\text{obs}}| \mid H_0\big) \quad\text{(양측)}$$
@@ -1081,6 +1147,9 @@ flowchart LR
   3. $p > 0.05$는 차이가 없다는 증거가 **아니다**. 시행이 적으면 검정이 차이를 볼 능력이 없을 수 있다.
 - **두 방법은 같은 시행에서, 쌍으로 비교한다.** A와 B를 같은 물체 10개(또는 시드, 장면)에서 돌리면, 시행별 차이 $d_i = s_i^{B} - s_i^{A}$에서 물체마다 다른 난이도가 상쇄된다. 이 차이에 쓰는 도구는 넷이다. $d_i$가 대략 정규로 보이면 대응 t-검정, "누가 이겼는지"만 믿을 만하면 부호 검정, 정규성을 가정하지 않고 $d_i$의 크기를 쓰고 싶으면 순열 검정, p-값 대신 구간을 원하면 부트스트랩을 쓴다.
   - **대응 t-검정은** $t = \bar d / (s_d/\sqrt{n})$를 쓰며, $\bar d$와 $s_d$는 $d_i$의 평균과 표준편차다. 차이가 대략 정규분포이면 $H_0$ 아래에서 자유도 $n-1$인 $t$ 분포를 따른다. 자유도가 $n$이 아니라 $n-1$인 것은 $\bar d$를 추정하는 데 하나를 쓰기 때문이고, 자유도가 적을수록 $t$ 분포의 꼬리가 가우시안보다 두꺼워서 표본이 작으면 더 큰 $t$가 필요하다.
+  - 자유도 $\nu$인 **스튜던트 $t$ 분포는** 표준정규 하나를, 독립으로 뽑은 표준정규 $\nu$개의 제곱평균제곱근으로 나눈 것의 분포다:
+  $$T = \frac{Z}{\sqrt{V/\nu}}, \qquad Z \sim \mathcal N(0, 1),\quad V \sim \chi^2_\nu,\quad Z \text{와 } V \text{는 독립}$$
+  여기서 $\chi^2_\nu$는 표준정규 $\nu$개의 제곱합이다(§6.3에서 정의). 0에 대해 대칭이고, $\nu > 2$에서 분산이 $\nu/(\nu - 2)$이며, $\nu \to \infty$이면 $\mathcal N(0, 1)$에 다가간다. 대응 통계량이 정확히 이 꼴이다: $H_0$ 아래에서 $\bar d/(\sigma/\sqrt n)$는 표준정규이고, 정규 데이터라면 $(n-1)s_d^2/\sigma^2$는 $\chi^2_{n-1}$이며 $\bar d$와 독립이고, 모르는 $\sigma$는 둘의 비에서 약분된다. 97.5% 점은 $t_{3,\,0.975} = 3.182$, $t_{4,\,0.975} = 2.776$, $t_{30,\,0.975} = 2.042$로, 가우시안의 $1.960$보다 크다.
   - **부호 검정은** 각 쌍에서 누가 이겼는지만 센다. **순열 검정은** $d_i$의 부호를 무작위로 뒤집어 귀무분포를 만든다. 둘 다 정규성이 필요 없다.
   - *예:* B가 물체 10개 중 9개에서 A를 이겼고 동률은 없다. $H_0$ 아래에서 각 승리는 공정한 동전 던지기이므로, 양측 부호 검정은 $p = 2\big(\binom{10}{9} + \binom{10}{10}\big)/2^{10} = 22/1024 = 0.021$을 준다.
   - **부트스트랩 CI는** $n$개의 차이를 복원추출로 수천 번 다시 뽑아, 재표본 평균의 2.5와 97.5 백분위수를 보고한다. 시행을 몇 번 할지, 어떤 구간을 보고할지는 [[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]를 보라.
@@ -1116,14 +1185,34 @@ flowchart LR
 >
 > "+25%p, 95% CI [0, +50], McNemar $p = 0.125$, 대응 시행 20회"로 보고한다. 이득은 클 수도, 없을 수도 있다. 오독 3에 따라 이것은 차이가 없다는 증거가 아니라, 물체를 더 시험할 이유다.
 
+#### 6.3 백색화, 마할라노비스 거리, χ² 게이팅
+
 - **백색화는 상관된 가우시안을 등방 가우시안으로 바꾼다.** 공분산을 촐레스키로 분해한다: $\Sigma = LL^\top$, $L$은 하삼각행렬이다($\Sigma$가 양의 정부호이므로 존재한다). 그러면
   $$z = L^{-1}(x - \mu) \;\Rightarrow\; \text{Cov}(z) = L^{-1}\Sigma L^{-\top} = I$$
   §3의 아핀 규칙에 따라 이 식이 성립한다: $\Sigma = LL^\top$를 대입하면 $L^{-1}L$과 $L^\top L^{-\top}$이 각각 $I$로 줄어든다. 그래서 $z$의 모든 방향은 분산이 1이고 상관이 없다. 거꾸로 $z \sim \mathcal{N}(0, I)$에서 $x = \mu + Lz$를 만들면 **채색**(coloring)이 되는데, 상관된 가우시안을 샘플링하는 표준 방법이다. $\Sigma$의 어떤 제곱근이든 되지만(고유분해로도 하나 얻는다) 촐레스키가 가장 싸다.
 - **마할라노비스 거리는 백색화한 뒤의 유클리드 거리다.**
   $$d^2 = (x-\mu)^\top \Sigma^{-1} (x-\mu) = z^\top z$$
-  $\Sigma^{-1} = L^{-\top}L^{-1}$이기 때문에 성립한다. $k$차원 가우시안 $x$라면 $z$는 서로 독립인 표준정규 성분 $k$개를 가지므로, $d^2$는 표준정규의 제곱 $k$개의 합, 즉 $\chi^2_k$ 확률변수다.
-  - 추적기의 **게이팅**(gating)이 정확히 이것을 쓴다. 측정값의 innovation(측정 빼기 예측, $\Sigma$ 자리에 innovation 공분산; [[04-robotics/state-estimation-slam|상태 추정 §6]] 참고)의 $d^2$가 $\chi^2_k$ 분위수보다 작을 때만 그 측정을 트랙에 연관한다.
+  $\Sigma^{-1} = L^{-\top}L^{-1}$이기 때문에 성립한다. $k$차원 가우시안 $x$라면 $z$는 서로 독립인 표준정규 성분 $k$개를 가지므로, $d^2$는 표준정규의 제곱 $k$개의 합, 즉 $\chi^2_k$ 확률변수다. 바로 아래에서 정의한다.
+
+> [!info] 정의 — χ²(카이제곱) 분포
+> **무엇인가.** $[0, \infty)$ 위의 연속 분포 가족으로, 양의 정수 $k$ 하나마다 하나씩 있고 $k$를 **자유도**(degrees of freedom)라 부른다. $Q \sim \chi^2_k$는 $Q$가 두 조건을 만족하는 정규 확률변수 $k$개의 제곱합처럼 분포한다는 뜻이다: 서로 **독립이고**, 각각 평균 0, 분산 1인 **표준** 정규 $\mathcal N(0, 1)$이다.
+> $$Q = Z_1^2 + Z_2^2 + \cdots + Z_k^2, \qquad Z_1, \dots, Z_k \ \text{i.i.d. } \mathcal N(0, 1)$$
+> **밀도, 평균, 분산.** $q > 0$에서 밀도는
+> $$p_k(q) = \frac{q^{k/2 - 1}\, e^{-q/2}}{2^{k/2}\,\Gamma(k/2)}$$
+> 이고, $\Gamma$는 감마 함수($\Gamma(\tfrac12) = \sqrt\pi$, $\Gamma(1) = 1$, $\Gamma(x + 1) = x\,\Gamma(x)$)로 정규화 상수 역할만 한다. 각 $E[Z_i^2] = \text{Var}(Z_i) = 1$이고 기댓값은 더해지므로 평균은 $k$다. $\text{Var}(Z_i^2) = E[Z_i^4] - 1 = 3 - 1 = 2$이고 독립인 항의 분산은 더해지므로(§2) 분산은 $2k$다. $k = 2$이면 밀도가 $\tfrac12 e^{-q/2}$, 곧 §2의 Exponential($\tfrac12$)이어서 CDF는 $1 - e^{-q/2}$다.
+> **게이팅에 쓰는 분위수.** $P(Q \le c) = p$인 점 $c$다. 95%에서는 $k = 1$이 $3.841$, $k = 2$가 $5.991$, $k = 3$이 $7.815$다. 99%에서는 $6.635$, $9.210$, $11.345$다. 둘은 손으로 나온다: $k = 1$이면 $P(Z^2 \le c) = P(|Z| \le \sqrt c)$이므로 95% 점은 $1.960^2 = 3.841$이고, $k = 2$이면 위의 CDF가 $-2\ln 0.05 = 5.991$을 준다. 나머지는 `scipy.stats.chi2.ppf(p, k)`로 얻는다.
+> **예.** 서로 독립이고 분산이 1인 잔차 $(1.2,\ -0.9)$는 $Q = 1.44 + 0.81 = 2.25 < 5.991$로 $k = 2$의 95% 영역 안이다. $(2.5,\ 1.5)$는 $Q = 8.5$로 95% 영역 밖이지만 99% 영역 안이므로, 판정은 어떤 게이트를 골랐는지에 달려 있다.
+> **반례.** 표준화를 건너뛰면 안 된다. $X \sim \mathcal N(0, 2^2)$이면 $X^2$의 평균은 $1$이 아니라 $4$이고, $3.841$ 아래에 떨어지는 비율은 95%가 아니라 67%다. 상관된 성분도 같은 식으로 어긋나므로 이 절은 먼저 백색화한다. 같은 데이터로 평균을 추정하면 자유도도 하나 줄어든다: $(n-1)s^2/\sigma^2$는 $\chi^2_{n-1}$이고, 이것이 §6.2 $t$ 검정의 $n - 1$이다.
+> **왜 중요한가.** 추정에서 "이 잔차가 공분산에 비해 너무 큰가?"를 묻는 모든 검정 — 아래의 게이트, NIS, NEES — 은 제곱 마할라노비스 거리를 $\chi^2$ 분위수와 비교하고, 맞는 분위수는 차원 $k$에 달려 있다.
+
+- **NIS로 게이팅하기.** 추적기는 새 측정값이 자기가 따라가는 물체의 것인지 결정해야 한다. 필터 자신의 모델 아래에서 참 측정값의 혁신 $\nu = y - C\hat x^-$는 $S = CP^-C^\top + R$(§5.2)일 때 $\mathcal N(0, S)$이므로, **정규화 혁신 제곱**(normalized innovation squared, NIS)
+  $$\text{NIS} = \nu^\top S^{-1} \nu$$
+  은 $\nu$의 제곱 마할라노비스 거리이고 $\chi^2_m$을 따른다. $m$은 측정 차원이다. 게이트는 NIS가 $\chi^2_m$ 분위수보다 작을 때만 측정을 받아들인다. 그래서 95% 게이트는 설계상 참 측정의 5%를 버리고, 그 대가로 예측한 퍼짐에서 멀리 벗어난 것은 무엇이든 기각한다([[04-robotics/state-estimation-slam|상태 추정 §6]]이 추적기에서 돌린다).
+  - *P5로 계산* ($m = 1$, 95% 게이트 $3.841$). 첫 측정: $\nu = 12 - 10 = 2$, $S = 4 + 1 = 5$, NIS $= 4/5 = 0.8$, 수락. 첫 갱신 뒤 둘째 측정: $\nu = 11 - 11.6 = -0.6$, $S = 0.8 + 1 = 1.8$, NIS $= 0.36/1.8 = 0.2$, 수락. 그 자리에 $20$의 틀린 벽: $\nu = 8.4$, NIS $= 70.56/1.8 = 39.2$로 게이트의 열 배를 넘어 기각. 그림의 "확신하고 틀린" $15.3$으로의 도약은 게이팅 없이 융합하는 필터에서만 일어난다.
   - $k = 2$이면 $\chi^2_2$의 CDF는 $1 - e^{-d^2/2}$이므로 99% 게이트는 $d^2 < -2\ln 0.01 = 9.21$이다. 가우시안 잔차 백만 개를 시뮬레이션하면 98.99%가 안에 들어왔다.
+- **NEES로 일관성 확인하기.** 참 상태 $x$를 아는 시뮬레이션에서는 **정규화 추정 오차 제곱**(normalized estimation error squared, NEES)
+  $$\text{NEES} = (x - \hat x)^\top P^{-1} (x - \hat x)$$
+  이 필터가 보고한 공분산 $P$가 맞을 때 $\chi^2_n$을 따른다. $n$은 상태 차원이다. 그러므로 여러 실행에 걸친 평균이 $n$ 근처에 있어야 한다. 평균이 $n$보다 훨씬 크면 $P$가 너무 작은 **과신** 필터이고, 훨씬 작으면 $P$가 지나치게 조심스럽다. *예:* 실제 오차 분산은 $0.8$인데 $P = 0.2$를 보고하는 스칼라 필터는 NEES 평균이 약 $4$로 목표 $1$의 네 배다. 독립 실행 $N = 50$번에서 일관적인 스칼라 필터의 평균은 95% 확률로 $[0.647,\ 1.428]$ 안에 있다. 그 평균에 $N$을 곱한 것이 $\chi^2_{50}$이기 때문이다.
 
 > [!example] 계산 예제 · Worked example
 > **같은 거리, 다른 놀라움.** $\Sigma = \begin{pmatrix}4&2\\2&3\end{pmatrix}$를 잡으면 촐레스키 인수는 $L = \begin{pmatrix}2&0\\1&\sqrt2\end{pmatrix}$다.
@@ -1134,6 +1223,8 @@ flowchart LR
 > 양의 공분산은 두 좌표가 함께 틀리는 경향이 있다는 뜻이다. 그 패턴을 거스르는 잔차는 훨씬 더 뜻밖이다. §3의 "같은 변위, 다른 놀라움"을 숫자로 본 것이다.
 
 ### 7. 마르코프 체인과 은닉 마르코프 모델
+
+#### 7.1 마르코프 체인
 
 - **유한 마르코프 체인은** 고정된 확률 $P_{ij} = P(X_{n+1}=j \mid X_n = i)$로 옮겨 다니는 상태 $X_n \in \{1,\dots,S\}$다. 이 페이지의 규약: **행이 "출발", 열이 "도착"이다**. 그래서 $P$의 각 행의 합이 1이고(행 확률행렬) 분포는 행벡터다. 전확률로 $\pi_{n+1}(j) = \sum_i \pi_n(i) P_{ij}$, 즉 $\pi_{n+1} = \pi_n P$이므로 $\pi_n = \pi_0 P^n$이다.
   따라서 유한 마르코프 체인은 이름 붙은 **네** 구성요소로 완전히 정해진다:
@@ -1168,6 +1259,8 @@ flowchart LR
 > - *"고장"에서 시작하는 거듭제곱 반복*, $\pi_0 = (0, 0, 1)$: $\pi_1 = (0.6,\ 0,\ 0.4)$, $\pi_2 = (0.66,\ 0.12,\ 0.22)$, $\pi_5 = (0.644,\ 0.211,\ 0.145)$, 그리고 $\pi_{10}$은 소수 넷째 자리까지 $\pi$와 같다.
 >
 > 수렴은 보장되어 있었다. 모든 상태가 서로 도달 가능하고 각 상태에 자기 루프가 있어 주기가 없기 때문이다. 속도는 $P$의 두 번째로 큰 고유값 크기([[02-foundations/linear-algebra|1. 선형대수 §3]]), 여기서는 $0.3$이 정한다. 이유: $\pi$는 $\pi_n$ 중 고유값 1인 부분이고, 차이 $\pi_n - \pi$는 나머지 고유방향들로 이루어져 매 스텝 각자의 고유값(여기서는 $0.3$과 $0.2$)이 곱해지므로, 그중 가장 큰 것이 감쇠 속도를 정한다. $\pi$와의 차이가 시간마다 대략 $0.3$배로 줄어든다.
+
+#### 7.2 은닉 마르코프 모델
 
 - **은닉 마르코프 모델(HMM).** 체인 $X_t$는 관측되지 않는다. 각 스텝에서 현재 상태 $j$가 확률 $B_j(y_t) = p(y_t \mid X_t = j)$로 관측 $y_t$를 내보낸다. HMM은 은닉 상태 공간 위의 **세** 파라미터 묶음으로 정해진다: 초기 분포 $\pi_0$, 전이 행렬 $P$, 방출 확률 $B$. 그리고 **두** 가정에 기댄다: 은닉 상태가 마르코프 체인을 이루고, 각 관측은 현재 은닉 상태에만 의존한다. 두 가정이 함께 상태 경로와 관측 수열의 결합 확률을 곱으로 만든다:
   $$p(x_{1:T}, y_{1:T}) = \pi_0(x_1)\,B_{x_1}(y_1) \prod_{t=2}^{T} P_{x_{t-1} x_t}\,B_{x_t}(y_t)$$
@@ -1206,7 +1299,7 @@ print(viterbi(np.log((0.9, 0.1)), np.log(A), np.log(B), (0, 0, 1, 1, 1, 0, 1)))
 - **필터와 디코더가 다르게 말하고, 둘 다 옳다.** 순방향 필터는 3시간째의 $P(\text{마모})$를 $0.229$, 6시간째를 $0.481$로만 본다. 필터는 지금까지의 측정만 쓸 수 있다. 비터비는 수열 전체를 한꺼번에 고르므로, 뒤의 시끄러운 측정이 3시간째를 "마모" 쪽으로 끌어당기고, 시끄러운 시간 사이의 조용한 한 시간은 두 번의 전환($0.10$, 그다음 $0.05$)보다 조용했던 마모 기계로 설명하는 편이 싸다. 마지막 시끄러운 측정을 빼면 비터비는 여섯 시간 전부를 작동으로 돌려준다: 마지막 한 시간의 증거가 이야기 전체를 다시 썼다.
 - **파라미터 학습.** $P$, $B$, 초기 분포를 모를 때 Baum–Welch는 EM(기댓값 최대화)으로 이것들을 맞추며, 두 단계를 번갈아 한다. *E-단계는* 현재 파라미터로 순방향–역방향 알고리즘(위의 순방향 패스에 수열 끝에서 거꾸로 오는 대칭 패스를 더한 것)을 돌려, 수열 전체가 주어졌을 때 각 스텝의 상태 확률을 얻고, 그로부터 각 전이와 각 방출이 일어난 기대 횟수를 얻는다. *M-단계는* 그 기대 횟수로 파라미터를 다시 추정한다. 예를 들어 $P_{ij}$는 $i \to j$ 전이의 기대 횟수를 $i$에서 떠난 기대 횟수로 나눈 값이 된다. 두 단계를 반복하면 우도가 결코 줄지 않는다(Baum 등 1970).
 
-#### Metropolis–Hastings
+#### 7.3 Metropolis–Hastings
 
 Metropolis–Hastings는 "여기서 왜 중요한가"의 MCMC를 구체화한 것이다: 상수배까지만 계산할 수 있는 목표 분포 $p$를 정상 분포로 갖는 마르코프 체인을 만드는 방법이다.
 - **상황.** $\tilde p(x) = Z\,p(x)$는 계산할 수 있지만 $Z$는 모른다. 증거 적분을 계산할 수 없는 사후분포 $p(\theta \mid \mathcal D) \propto p(\mathcal D \mid \theta)\,p(\theta)$가 전형적인 예다.

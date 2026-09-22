@@ -14,12 +14,17 @@ mastery-when: "Go deeper when you are writing a planner, a collision checker or 
 > **Working** — 팔에 MoveIt 2를 설정하고, 직접 채운 씬에 대해 계획·실행하고, 흔한 실행 실패를 진단할 정도. 플래너나 파지 합성기를 직접 쓸 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]] for URDF and TF, and [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]] for controllers — MoveIt sits directly on both. Inverse kinematics at the level of [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] helps but is not required. Baseline throughout: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, MoveIt 2 from `ros-jazzy-moveit`.
-> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 URDF와 TF, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 제어기. MoveIt은 이 둘 위에 바로 앉는다. [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] 수준의 역기구학은 도움이 되지만 필수는 아니다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**, MoveIt 2는 `ros-jazzy-moveit`.
+> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]] for URDF and TF, and [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]] for controllers — MoveIt sits directly on both. Inverse kinematics at the level of [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] helps but is not required. Not required either, and named because the page points at them four times each: where a grasp pose comes from is [[04-robotics/grasping|15. Grasping]], and what happens after contact is [[04-robotics/force-compliance-control|13. Force & Compliance Control]]. Baseline throughout: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, MoveIt 2 from `ros-jazzy-moveit`.
+> [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]]의 URDF와 TF, [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]의 제어기. MoveIt은 이 둘 위에 바로 앉는다. [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] 수준의 역기구학은 도움이 되지만 필수는 아니다. 역시 필수는 아니지만 이 페이지가 네 번씩 가리키므로 밝혀 둔다: 파지 자세가 어디서 오는지는 [[04-robotics/grasping|15. Grasping]], 접촉 이후는 [[04-robotics/force-compliance-control|13. Force & Compliance Control]]이다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**, MoveIt 2는 `ros-jazzy-moveit`.
+
+> [!note] First pass · 처음이라면
+> Read the Running object and the picture, then §1 (what MoveIt is not), §2 (what `move_group` talks to), §4 (the pipeline) and §6 (the scene). Then the Worked case, which sits after §11 because it leans on §6–§9, and the §12 exercise, whose last three steps put your own arm into MoveIt. §3, §5 and §7–§11 are reference for the specific call you are making; §13 is the checklist for a plan that will not execute.
 
 ### Running object · 이 페이지의 대상
 
 Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as the *base* the arm is bolted to: a cart on a line, carrying an arm that must reach a panel. P6 is the right object here precisely because MoveIt has no model of it — the planning scene is a snapshot, and the cart keeps moving through it.
+
+*Three objects, stated once.* The arithmetic is done on P6. The exercise (§12) runs first on the stock **Panda** demo, a seven-joint arm with a ready-made configuration, because the planner-family and scene lessons need an arm with room to route around a column. Its last three steps then put **your own two-link arm** from 25.6 and 25.7 into MoveIt, and run the Worked case there where it can run. Step 3's gate becomes $0.01\,\mathrm{rad}$ per joint, $8\,\mathrm{mm}$ at the tip of the straight $0.8\,\mathrm{m}$ arm, and you watch it refuse a plan. Step 4's twenty control ticks per trajectory point become something you read off the planned trajectory. Steps 1 and 2 have no counterpart, because your arm is bolted to `world` (25.7, §11 Step 1) and no base moves under it; a deliberate nudge of the shoulder plays the moving base instead.
 
 | Symbol | Value | What it is here |
 |---|---:|---|
@@ -164,47 +169,9 @@ Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] as the *base* the
 
 Panel A shows who believes what: the camera publishes the panel pose at $50\,\mathrm{Hz}$, the planning scene in `move_group` holds that pose as a collision object applied once and never refreshed, and `move_group` reaches the trajectory controller on P6's $200\,\mathrm{Hz}$ loop only through the `follow_joint_trajectory` action, with no arrow from the camera into `ros2_control`. Panel B keeps two clocks apart: on the seconds axis the panel pose ages from $20\,\mathrm{ms}$ at the scene snapshot to $0.82\,\mathrm{s}$ after the $0.80\,\mathrm{s}$ plan and $2.32\,\mathrm{s}$ after the $1.50\,\mathrm{s}$ execution while the cart moves $5.0$, $205$ and $580\,\mathrm{mm}$, and the millisecond inset holds the $5\,\mathrm{ms}$ control ticks and P6's $70\,\mathrm{ms}$ budget, with nothing connecting the two axes.
 
-### Worked case · 대상으로 한 번 끝까지
-
-This is the homework object. The arithmetic below is the catalog plus the three page-local durations; the problem set changes one of them.
-
-**Step 1 — the scene is a photograph.** The planner reads the planning scene once, when the request starts. The panel pose in it came from vision, so at that instant it is already up to one vision period old:
-
-$$a_0 = T_v = \frac{1}{50} = 20\,\mathrm{ms},$$
-
-because nothing can be fresher than the last frame. Planning then runs for $T_{\text{plan}}$ and execution for $T_{\text{exec}}$, and §6 is explicit that nothing refreshes a collision object unless your code republishes it. So the age of the belief at the two later boundaries is
-
-$$a_1 = a_0 + T_{\text{plan}} = 0.020 + 0.80 = 0.82\,\mathrm{s},\qquad a_2 = a_1 + T_{\text{exec}} = 0.82 + 1.50 = 2.32\,\mathrm{s}.$$
-
-**Step 2 — the age in millimetres and counts.** At the page-local $v$, the cart carrying the arm has moved $d=v\,a$ while the scene did not:
-
-| Boundary | age | $d=va$ | counts |
-|---|---:|---:|---:|
-| scene read | $20\,\mathrm{ms}$ | $5.0\,\mathrm{mm}$ | $10.2$ |
-| plan returned | $0.82\,\mathrm{s}$ | $205\,\mathrm{mm}$ | $420$ |
-| trajectory finished | $2.32\,\mathrm{s}$ | $580\,\mathrm{mm}$ | $1188$ |
-
-Over half a metre, and every joint angle in the trajectory was computed for the first row. This is not a MoveIt defect: the planner solved exactly the problem it was given, on a world someone told it was static. The defect is in the caller that let the base move.
-
-**Step 3 — MoveIt's own gate, read in P6's units.** §8's `allowed_start_tolerance: 0.01` is how far the current state may differ from the trajectory's first point before execution is refused. For a prismatic cart joint that is $0.01\,\mathrm{m}$, which is
-
-$$0.01\times 2048 = 20.5\ \text{counts},\qquad \frac{0.01\,\mathrm{m}}{0.25\,\mathrm{m/s}} = 40\,\mathrm{ms},$$
-
-since the tolerance is a distance and the cart crosses it at the page-local speed. Forty milliseconds. The gate that decides whether execution begins at all is crossed in less time than P6 allots to a whole camera-to-force chain, $40 < 70$. On a moving base, plan-then-execute-later is not a slow design, it is a design that will not start. Either stop the base before planning, or use Servo (§9), which has no plan to go stale.
-
-**Step 4 — what the $200\,\mathrm{Hz}$ loop does with the trajectory.** The response adapter `AddTimeOptimalParameterization` is what gives the path timing (§4); suppose it emits points $100\,\mathrm{ms}$ apart. Then
-
-$$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20,$$
-
-so twenty control cycles fall between consecutive trajectory points and the controller interpolates across them ([[04-robotics/ros2/simulation-and-control|25.7 §11]]). The trajectory is coarse and the loop is fine, and that is the intended division: MoveIt says where and when, `ros2_control` says how often.
-
-**Step 5 — `fraction`, as a distance rather than a ratio.** Take a $0.20\,\mathrm{m}$ insertion line at §7's `eef_step` of $0.01\,\mathrm{m}$. That is $0.20/0.01 = 20$ interpolated poses and $20$ IK solves, each step being $0.01\times2048=20.5$ encoder counts of base motion — comparable to the whole start tolerance, which is worth noticing. A return of $0.62$ then means the tool reaches $0.20\times0.62=0.124\,\mathrm{m}$ and stops $0.076\,\mathrm{m}$ short: $76\,\mathrm{mm}$, or $156$ counts, of unfinished slot, with the tool halted in mid-air at a pose nobody chose. §7's rule follows directly — the number is a fraction of *your* line, so read it back in the units of the line.
-
-**Step 6 — the two budgets, kept apart.** Nothing in Steps 1 to 5 violates P6's $70\,\mathrm{ms}$, because that budget measures camera mid-exposure to applied force on the cart's own $200\,\mathrm{Hz}$ loop, and planning is not on that chain. A $0.80\,\mathrm{s}$ plan is not a budget failure. A panel pose that reaches the *scene* $200\,\mathrm{ms}$ late is not a MoveIt failure either — MoveIt will plan against it without complaint. Both are failures of the caller to say which clock each number belongs to, and Step 3 is what happens when the two are finally forced to meet.
-
 ### 1. What MoveIt 2 is, and three things it is not
 
-You have an arm that moves when you send it a joint trajectory ([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). You want it to reach a pose on the other side of a column without hitting the column, the scaffolding, or itself. Writing that trajectory by hand means solving inverse kinematics, then searching a seven-dimensional configuration space (the space of all joint-angle vectors, one axis per joint; see [[04-robotics/modern-robotics/ch02-configuration-space|MR Ch.02 — Configuration Space]]) for a collision-free path, then assigning times to it that no joint's velocity or acceleration limit forbids. MoveIt 2 is the assembled, plugin-based answer to exactly that problem, and it is the standard one in ROS 2.
+You have an arm that moves when you send it a joint trajectory ([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). You want it to reach a pose on the other side of a column without hitting the column, the scaffolding, or itself. Writing that trajectory by hand means solving inverse kinematics (finding the joint angles that put the tool at a requested pose; [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]), then searching a seven-dimensional configuration space (the space of all joint-angle vectors, one axis per joint; see [[04-robotics/modern-robotics/ch02-configuration-space|MR Ch.02 — Configuration Space]]) for a collision-free path, then assigning times to it that no joint's velocity or acceleration limit forbids. MoveIt 2 is the assembled, plugin-based answer to exactly that problem, and it is the standard one in ROS 2.
 
 What it is not, stated early because each misreading costs weeks:
 
@@ -437,9 +404,47 @@ MoveIt 2's `MoveGroupInterface` has no `pick()` and no `place()`. The ROS 1 gras
 
 Two things in that list are outside MoveIt entirely: step 1, and everything about step 4 after the fingers touch. On a construction site both are the hard part — an irregular block on an uneven surface with unknown friction is a grasp-synthesis and force-control problem, and MoveIt's contribution is only that the arm gets there without hitting the formwork. Sequencing steps 2–6 with proper failure handling and backtracking is what `moveit_task_constructor` (`ros-jazzy-moveit-task-constructor-core`) exists for, and it is the right next tool once a hand-written sequence starts growing error branches.
 
+### Worked case · 대상으로 한 번 끝까지
+
+This is the homework object. It sits here, after §11, because every step leans on a section above it: the planning scene (§6), the Cartesian path (§7), the execution gate (§8) and Servo (§9). The arithmetic is the catalog plus the three page-local durations; the problem set changes one of them, and the exercise that follows runs Steps 3 and 4 on your own arm.
+
+**Step 1 — the scene is a photograph.** The planner reads the planning scene once, when the request starts. The panel pose in it came from vision, so at that instant it is already up to one vision period old:
+
+$$a_0 = T_v = \frac{1}{50} = 20\,\mathrm{ms},$$
+
+because nothing can be fresher than the last frame. Planning then runs for $T_{\text{plan}}$ and execution for $T_{\text{exec}}$, and §6 is explicit that nothing refreshes a collision object unless your code republishes it. So the age of the belief at the two later boundaries is
+
+$$a_1 = a_0 + T_{\text{plan}} = 0.020 + 0.80 = 0.82\,\mathrm{s},\qquad a_2 = a_1 + T_{\text{exec}} = 0.82 + 1.50 = 2.32\,\mathrm{s}.$$
+
+**Step 2 — the age in millimetres and counts.** At the page-local $v$, the cart carrying the arm has moved $d=v\,a$ while the scene did not:
+
+| Boundary | age | $d=va$ | counts |
+|---|---:|---:|---:|
+| scene read | $20\,\mathrm{ms}$ | $5.0\,\mathrm{mm}$ | $10.2$ |
+| plan returned | $0.82\,\mathrm{s}$ | $205\,\mathrm{mm}$ | $420$ |
+| trajectory finished | $2.32\,\mathrm{s}$ | $580\,\mathrm{mm}$ | $1188$ |
+
+Over half a metre, and every joint angle in the trajectory was computed for the first row. This is not a MoveIt defect: the planner solved exactly the problem it was given, on a world someone told it was static. The defect is in the caller that let the base move.
+
+**Step 3 — MoveIt's own gate, read in P6's units.** §8's `allowed_start_tolerance: 0.01` is how far the current state may differ from the trajectory's first point before execution is refused. For a prismatic cart joint that is $0.01\,\mathrm{m}$, which is
+
+$$0.01\times 2048 = 20.5\ \text{counts},\qquad \frac{0.01\,\mathrm{m}}{0.25\,\mathrm{m/s}} = 40\,\mathrm{ms},$$
+
+since the tolerance is a distance and the cart crosses it at the page-local speed. Forty milliseconds. The gate that decides whether execution begins at all is crossed in less time than P6 allots to a whole camera-to-force chain, $40 < 70$. On a moving base, plan-then-execute-later is not a slow design, it is a design that will not start. Either stop the base before planning, or use Servo (§9), which has no plan to go stale.
+
+**Step 4 — what the $200\,\mathrm{Hz}$ loop does with the trajectory.** The response adapter `AddTimeOptimalParameterization` is what gives the path timing (§4); suppose it emits points $100\,\mathrm{ms}$ apart. Then
+
+$$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20,$$
+
+so twenty control cycles fall between consecutive trajectory points and the controller interpolates across them ([[04-robotics/ros2/simulation-and-control|25.7 §11]]). The trajectory is coarse and the loop is fine, and that is the intended division: MoveIt says where and when, `ros2_control` says how often.
+
+**Step 5 — `fraction`, as a distance rather than a ratio.** Take a $0.20\,\mathrm{m}$ insertion line at §7's `eef_step` of $0.01\,\mathrm{m}$. That is $0.20/0.01 = 20$ interpolated poses and $20$ IK solves, each step being $0.01\times2048=20.5$ encoder counts of base motion — comparable to the whole start tolerance, which is worth noticing. A return of $0.62$ then means the tool reaches $0.20\times0.62=0.124\,\mathrm{m}$ and stops $0.076\,\mathrm{m}$ short: $76\,\mathrm{mm}$, or $156$ counts, of unfinished slot, with the tool halted in mid-air at a pose nobody chose. §7's rule follows directly — the number is a fraction of *your* line, so read it back in the units of the line.
+
+**Step 6 — the two budgets, kept apart.** Nothing in Steps 1 to 5 violates P6's $70\,\mathrm{ms}$, because that budget measures camera mid-exposure to applied force on the cart's own $200\,\mathrm{Hz}$ loop, and planning is not on that chain. A $0.80\,\mathrm{s}$ plan is not a budget failure. A panel pose that reaches the *scene* $200\,\mathrm{ms}$ late is not a MoveIt failure either — MoveIt will plan against it without complaint. Both are failures of the caller to say which clock each number belongs to, and Step 3 is what happens when the two are finally forced to meet.
+
 ### 12. Exercise: plan, execute, then put a column in the way
 
-One sitting, on the Panda demo. Nothing here needs hardware.
+Two sittings: steps 1–7 on the Panda demo, steps 8–10 on your own arm. Nothing here needs hardware.
 
 1. `ros2 launch moveit_resources_panda_moveit_config demo.launch.py`. In RViz's **MotionPlanning** display, check that **Planning Scene Topic** is `/monitored_planning_scene`.
 2. On the **Planning** tab, drag the orange interactive marker to a goal pose, **Plan**, watch the preview, then **Execute**. The mock-hardware arm follows.
@@ -455,8 +460,18 @@ ros2 control list_controllers
 5. Now add the obstacle. In the MotionPlanning display's **Scene Objects** tab, add a box, scale it to roughly a 0.1 m square column a metre tall, and drag it between the arm's start and goal. Plan again. The path bends. Drag it until the planner cannot get through and read the failure in the RViz status line and the `move_group` terminal.
 6. Repeat step 5 from Python, using the `apply_collision_object` snippet in section 6, and confirm the box appears in RViz. That is the loop you will actually use: scene from code, visual confirmation in RViz.
 7. Switch the planner. In the **Context** tab pick the `pilz_industrial_motion_planner` pipeline and `LIN`, and plan the same motion. Note where OMPL succeeds and `LIN` refuses — that refusal is the planner telling you the straight line does not exist, which is information OMPL never gives you.
+8. **Your arm, in MoveIt.** Copy your 25.7 description into a package's `urdf/` folder (25.4) as `two_link_arm_moveit.urdf.xacro`, and delete its `<ros2_control>` and `<gazebo>` blocks. The Assistant keeps any `<ros2_control>` block it finds, and a Gazebo hardware plugin cannot load outside Gazebo; with the block gone it writes its own `mock_components/GenericSystem` block, the same loop-back hardware as the Panda demo. Keep the `world` link, so no virtual joint is needed. Run `ros2 run moveit_setup_assistant moveit_setup_assistant` and walk §3's list: load the copy; generate the self-collision matrix; add a planning group `arm`, a kinematic chain from `base_link` to `link2`; add two robot poses, `home` (both joints $0$) and `raised` (`shoulder` $0.8$, `elbow` $-1.0$, the pose 25.7's Step 6 commanded); accept the defaults for ros2_control, ROS 2 controllers and MoveIt controllers; generate `two_link_arm_moveit_config` into your workspace. In its `config/ros2_controllers.yaml`, change `update_rate: 100` to `200`, P6's $f_c$ and 25.7's. Build, source, and `ros2 launch two_link_arm_moveit_config demo.launch.py`.
+9. **Plan between named poses, and read Step 4 off the plan.** On the **Planning** tab set *Goal State* to `raised`, then **Plan** and **Execute**. Dragging the marker mostly fails, and that is correct: two joints reach only a two-dimensional set of tip positions in the x–z plane, so almost no pose you drag to has an IK solution. Now `ros2 topic echo /display_planned_path --once` and read the `time_from_start` of successive points. They step by $0.1\,\mathrm{s}$ (the last step may be shorter), the default `resample_dt` of `AddTimeOptimalParameterization`, so at `update_rate: 200` twenty control ticks fall between points: the Worked case's $0.100/0.005=20$, on your arm.
+10. **Watch the start gate refuse.** Set *Goal State* to `home` and **Plan**, but do not execute. In a second terminal, move the arm under MoveIt's feet through its controller; the Assistant names it `arm_controller` for a group called `arm`, and `ros2 control list_controllers` confirms:
 
-You are done when you can state which of the last two plans you would trust near a wall, and why.
+```bash
+ros2 topic pub -1 /arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory \
+  "{joint_names: [shoulder, elbow], points: [{positions: [0.85, -1.0], time_from_start: {sec: 1}}]}"
+```
+
+Now press **Execute**. `move_group` refuses with *Invalid Trajectory: start point deviates from current robot state more than 0.01 at joint 'shoulder'*. The plan was computed for a shoulder at $0.80\,\mathrm{rad}$; it is now at $0.85$, five times the $0.01\,\mathrm{rad}$ gate. That is the Worked case's Step 3 on your arm, with the nudge standing in for the moving cart. Apply Step 3's first fix, stop the base and plan again from where the robot now is: **Plan**, then **Execute**, and it runs.
+
+You are done when you can state which of the Panda's last two plans you would trust near a wall and why, and when you can predict, before pressing **Execute**, whether a nudge of a given size will be refused.
 
 ### 13. The failure to diagnose: it plans in RViz but will not execute
 
@@ -538,11 +553,16 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a
 
 > [!note] 선수 지식 · Prerequisites
 > URDF와 TF는 [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot]], 제어기는 [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]. MoveIt은 이 둘 위에 바로 앉는다. [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] 수준의 역기구학은 도움이 되지만 필수는 아니다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**, MoveIt 2는 `ros-jazzy-moveit`.
-> URDF/TF from 25.6 and controllers from 25.7; baseline ROS 2 Jazzy on Ubuntu 24.04.
+> URDF/TF from 25.6 and controllers from 25.7; Grasping and Force & Compliance Control named, not required; baseline ROS 2 Jazzy on Ubuntu 24.04.
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 대상과 그림을 보고, §1(MoveIt이 아닌 것), §2(`move_group`이 누구와 말하는가), §4(파이프라인), §6(씬)을 읽어라. 그다음 Worked case로 가라. §6–§9에 기대므로 §11 뒤에 있다. 이어서 §12 실습을 하라. 그 마지막 세 단계가 당신의 팔을 MoveIt에 넣는다. §3, §5, §7–§11은 지금 부르는 호출에 맞춰 찾아보는 참고 자료이고, §13은 실행되지 않는 계획을 위한 점검표다.
 
 ### 이 페이지의 대상 · Running object
 
 팔이 볼트로 얹힌 *베이스*로 쓰는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**. 직선 위 카트가 팔을 싣고 패널에 닿아야 한다. 여기서 P6가 맞는 대상인 이유는 바로 MoveIt이 그것의 모델을 갖고 있지 않다는 데 있다. planning scene은 스냅샷이고, 카트는 그 사이에도 계속 움직인다.
+
+*대상이 셋이라는 것을 한 번 밝혀 둔다.* 계산은 P6 위에서 한다. 실습(§12)은 먼저 기성 **Panda** 데모에서 돈다. 설정이 다 갖춰진 7관절 팔이고, 플래너 계열과 씬의 교훈에는 기둥을 돌아갈 여유가 있는 팔이 필요하기 때문이다. 그 마지막 세 단계는 25.6과 25.7에서 만든 **당신의 2링크 팔** 자체를 MoveIt에 넣고, Worked case를 돌릴 수 있는 곳에서는 거기서 돌린다. Step 3의 관문은 관절당 $0.01\,\mathrm{rad}$, 곧게 편 $0.8\,\mathrm{m}$ 팔의 끝에서 $8\,\mathrm{mm}$가 되고, 그것이 계획을 거부하는 모습을 직접 본다. Step 4의 궤적 점당 제어 틱 스무 개는 계획된 궤적에서 읽어 내는 값이 된다. Step 1과 2에는 짝이 없다. 당신의 팔은 `world`에 볼트로 고정되어 있어(25.7의 §11 1단계) 그 아래 움직이는 베이스가 없기 때문이다. 대신 어깨를 일부러 살짝 미는 것이 움직이는 베이스 역할을 한다.
 
 | 기호 | 값 | 여기서의 뜻 |
 |---|---:|---|
@@ -687,49 +707,9 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a
 
 패널 A는 누가 무엇을 믿는가다 — 카메라는 패널 자세를 $50\,\mathrm{Hz}$로 내고, `move_group`의 planning scene은 그 자세를 한 번만 적용되고 다시는 갱신되지 않는 collision object로 쥐며, `move_group`은 `follow_joint_trajectory` 액션을 통해서만 P6의 $200\,\mathrm{Hz}$ 루프 위 궤적 제어기에 닿고, 카메라에서 `ros2_control`로 가는 화살표는 없다. 패널 B는 두 시계를 떼어 둔다 — 초 축에서 패널 자세의 나이는 씬 스냅샷의 $20\,\mathrm{ms}$에서 $0.80\,\mathrm{s}$ 계획 뒤 $0.82\,\mathrm{s}$, $1.50\,\mathrm{s}$ 실행 뒤 $2.32\,\mathrm{s}$로 자라고 그동안 카트는 $5.0$, $205$, $580\,\mathrm{mm}$를 움직이며, 밀리초 확대 축에는 $5\,\mathrm{ms}$ 제어 틱과 P6의 $70\,\mathrm{ms}$ 예산이 있고 두 축 사이는 아무것도 잇지 않는다.
 
-### 대상으로 한 번 끝까지 · Worked case
-
-이것이 과제의 대상이다. 아래 계산은 카탈로그에 페이지 국소 지속 시간 셋을 더한 것이고, 과제는 그중 하나를 바꾼다.
-
-**Step 1 — 씬은 사진이다.** 플래너는 요청이 시작될 때 planning scene을 한 번 읽는다. 그 안의 패널 자세는 비전에서 왔으므로 그 순간 이미 비전 한 주기만큼 낡아 있을 수 있다.
-
-$$a_0 = T_v = \frac{1}{50} = 20\,\mathrm{ms}.$$
-
-마지막 프레임보다 새로울 수 있는 것은 없기 때문이다. 그다음 계획이 $T_{\text{plan}}$, 실행이 $T_{\text{exec}}$ 동안 돌고, §6은 내 코드가 다시 발행하지 않는 한 collision object를 갱신하는 것은 없다고 못 박는다. 그래서 뒤의 두 경계에서 믿음의 나이는
-
-$$a_1 = a_0 + T_{\text{plan}} = 0.020 + 0.80 = 0.82\,\mathrm{s},\qquad a_2 = a_1 + T_{\text{exec}} = 0.82 + 1.50 = 2.32\,\mathrm{s}$$
-
-이다.
-
-**Step 2 — 그 나이를 밀리미터와 카운트로.** 페이지 국소 $v$에서 씬이 가만있는 동안 팔을 실은 카트는 $d=v\,a$만큼 움직였다.
-
-| 경계 | 나이 | $d=va$ | counts |
-|---|---:|---:|---:|
-| 씬을 읽음 | $20\,\mathrm{ms}$ | $5.0\,\mathrm{mm}$ | $10.2$ |
-| 계획이 돌아옴 | $0.82\,\mathrm{s}$ | $205\,\mathrm{mm}$ | $420$ |
-| 궤적이 끝남 | $2.32\,\mathrm{s}$ | $580\,\mathrm{mm}$ | $1188$ |
-
-반 미터가 넘는다. 그런데 궤적의 모든 관절각은 첫 행을 보고 계산됐다. 이것은 MoveIt의 결함이 아니다. 플래너는 주어진 문제를 정확히 풀었고, 누군가 그 세계가 정적이라고 말해 주었다. 결함은 베이스를 움직이게 둔 호출자 쪽에 있다.
-
-**Step 3 — MoveIt 자신의 관문을 P6 단위로 읽기.** §8의 `allowed_start_tolerance: 0.01`은 현재 상태가 궤적 첫 점에서 얼마나 떨어져 있어도 실행을 거부하지 않는지를 정한다. 직동 카트 관절에서는 $0.01\,\mathrm{m}$이고, 이는
-
-$$0.01\times 2048 = 20.5\ \text{counts},\qquad \frac{0.01\,\mathrm{m}}{0.25\,\mathrm{m/s}} = 40\,\mathrm{ms}$$
-
-이다. 허용 오차가 거리이고 카트가 페이지 국소 속도로 그것을 지나가기 때문이다. 40 밀리초다. 실행을 시작할지 말지를 정하는 관문이, P6가 카메라부터 힘까지의 사슬 전체에 주는 시간보다 짧게 넘어간다. $40 < 70$이다. 움직이는 베이스에서 계획하고 나중에 실행하는 설계는 느린 설계가 아니라 시작되지 않는 설계다. 계획 전에 베이스를 세우거나, 낡을 계획 자체가 없는 Servo(§9)를 쓴다.
-
-**Step 4 — $200\,\mathrm{Hz}$ 루프가 궤적으로 하는 일.** 경로에 시간을 붙이는 것은 응답 어댑터 `AddTimeOptimalParameterization`이다(§4). 그것이 점을 $100\,\mathrm{ms}$ 간격으로 내놓는다고 하자. 그러면
-
-$$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20$$
-
-이므로 이웃한 궤적 점 사이에 제어 주기 스무 번이 들어가고 제어기가 그 사이를 보간한다([[04-robotics/ros2/simulation-and-control|25.7 §11]]). 궤적은 성기고 루프는 촘촘하다. 그것이 의도된 분업이다. MoveIt은 어디로 언제를 말하고, `ros2_control`은 얼마나 자주를 말한다.
-
-**Step 5 — `fraction`을 비율이 아니라 거리로.** $0.20\,\mathrm{m}$짜리 삽입 직선을 §7의 `eef_step` $0.01\,\mathrm{m}$로 잡자. 보간 자세 $0.20/0.01 = 20$개와 IK 해 20번이고, 한 스텝은 $0.01\times2048=20.5$ 엔코더 카운트의 베이스 이동에 해당한다. 시작 허용 오차 전체와 맞먹는 값이라 눈여겨볼 만하다. 여기서 $0.62$가 돌아왔다면 도구는 $0.20\times0.62=0.124\,\mathrm{m}$까지 가서 $0.076\,\mathrm{m}$을 남기고 멈춘다. $76\,\mathrm{mm}$, 즉 $156$ 카운트만큼 슬롯이 덜 들어갔고, 도구는 아무도 고르지 않은 자세로 허공에 서 있다. §7의 규칙이 여기서 곧바로 따라 나온다. 그 숫자는 *내가 그은* 직선의 분수이므로, 그 직선의 단위로 되읽어야 한다.
-
-**Step 6 — 두 예산을 갈라 두기.** Step 1부터 5까지의 어느 것도 P6의 $70\,\mathrm{ms}$를 어기지 않는다. 그 예산은 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서 카메라 노출 중간부터 힘까지를 재고, 계획은 그 사슬 위에 있지 않기 때문이다. $0.80\,\mathrm{s}$짜리 계획은 예산 위반이 아니다. 패널 자세가 *씬*에 $200\,\mathrm{ms}$ 늦게 닿는 것도 MoveIt의 실패가 아니다. MoveIt은 불평 없이 그것으로 계획한다. 둘 다 각 숫자가 어느 시계에 속하는지 말하지 않은 호출자의 실패이고, 두 시계가 끝내 마주치면 무슨 일이 나는지가 Step 3이다.
-
 ### 1. MoveIt 2는 무엇이고, 아닌 것 세 가지
 
-관절 궤적을 보내면 움직이는 팔은 이미 있다([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). 이제 기둥 반대편의 어떤 자세로, 기둥도 비계도 자기 몸도 치지 않고 가야 한다. 그 궤적을 손으로 쓰려면 역기구학을 풀고, 7차원 배치 공간(관절마다 축이 하나씩인, 가능한 모든 관절각 벡터의 공간. [[04-robotics/modern-robotics/ch02-configuration-space|MR Ch.02 — Configuration Space]] 참고)에서 충돌 없는 경로를 탐색하고, 어느 관절의 속도·가속도 한계도 어기지 않는 시간을 그 경로에 붙여야 한다. MoveIt 2는 정확히 그 문제에 대한 조립된 플러그인 기반 답이고, ROS 2의 표준이다.
+관절 궤적을 보내면 움직이는 팔은 이미 있다([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). 이제 기둥 반대편의 어떤 자세로, 기둥도 비계도 자기 몸도 치지 않고 가야 한다. 그 궤적을 손으로 쓰려면 역기구학(요청한 자세에 도구를 두는 관절각을 찾는 일. [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]])을 풀고, 7차원 배치 공간(관절마다 축이 하나씩인, 가능한 모든 관절각 벡터의 공간. [[04-robotics/modern-robotics/ch02-configuration-space|MR Ch.02 — Configuration Space]] 참고)에서 충돌 없는 경로를 탐색하고, 어느 관절의 속도·가속도 한계도 어기지 않는 시간을 그 경로에 붙여야 한다. MoveIt 2는 정확히 그 문제에 대한 조립된 플러그인 기반 답이고, ROS 2의 표준이다.
 
 아닌 것 세 가지. 각각의 오해가 몇 주를 잡아먹는다.
 
@@ -962,9 +942,49 @@ MoveIt 2의 `MoveGroupInterface`에는 `pick()`도 `place()`도 없다. ROS 1의
 
 이 목록에서 두 가지는 MoveIt 바깥이다. 1번, 그리고 4번에서 손가락이 닿은 뒤의 전부. 건설 현장에서는 그 둘이 어려운 부분이다. 마찰을 모르는 고르지 않은 바닥 위의 불규칙한 블록은 파지 합성과 힘 제어 문제이고, MoveIt의 기여는 팔이 거푸집을 치지 않고 거기까지 간다는 것뿐이다. 2–6번을 제대로 된 실패 처리와 역추적과 함께 엮는 일이 `moveit_task_constructor`(`ros-jazzy-moveit-task-constructor-core`)가 존재하는 이유이고, 손으로 쓴 시퀀스에 오류 분기가 늘어나기 시작하면 그때가 그 도구로 넘어갈 때다.
 
+### 대상으로 한 번 끝까지 · Worked case
+
+이것이 과제의 대상이다. §11 뒤, 여기에 있는 까닭은 모든 단계가 앞 절에 기대기 때문이다. planning scene(§6), Cartesian path(§7), 실행 관문(§8), Servo(§9)다. 계산은 카탈로그에 페이지 국소 지속 시간 셋을 더한 것이고, 과제는 그중 하나를 바꾸며, 이어지는 실습은 Step 3과 4를 당신의 팔에서 돌린다.
+
+**Step 1 — 씬은 사진이다.** 플래너는 요청이 시작될 때 planning scene을 한 번 읽는다. 그 안의 패널 자세는 비전에서 왔으므로 그 순간 이미 비전 한 주기만큼 낡아 있을 수 있다.
+
+$$a_0 = T_v = \frac{1}{50} = 20\,\mathrm{ms}.$$
+
+마지막 프레임보다 새로울 수 있는 것은 없기 때문이다. 그다음 계획이 $T_{\text{plan}}$, 실행이 $T_{\text{exec}}$ 동안 돌고, §6은 내 코드가 다시 발행하지 않는 한 collision object를 갱신하는 것은 없다고 못 박는다. 그래서 뒤의 두 경계에서 믿음의 나이는
+
+$$a_1 = a_0 + T_{\text{plan}} = 0.020 + 0.80 = 0.82\,\mathrm{s},\qquad a_2 = a_1 + T_{\text{exec}} = 0.82 + 1.50 = 2.32\,\mathrm{s}$$
+
+이다.
+
+**Step 2 — 그 나이를 밀리미터와 카운트로.** 페이지 국소 $v$에서 씬이 가만있는 동안 팔을 실은 카트는 $d=v\,a$만큼 움직였다.
+
+| 경계 | 나이 | $d=va$ | counts |
+|---|---:|---:|---:|
+| 씬을 읽음 | $20\,\mathrm{ms}$ | $5.0\,\mathrm{mm}$ | $10.2$ |
+| 계획이 돌아옴 | $0.82\,\mathrm{s}$ | $205\,\mathrm{mm}$ | $420$ |
+| 궤적이 끝남 | $2.32\,\mathrm{s}$ | $580\,\mathrm{mm}$ | $1188$ |
+
+반 미터가 넘는다. 그런데 궤적의 모든 관절각은 첫 행을 보고 계산됐다. 이것은 MoveIt의 결함이 아니다. 플래너는 주어진 문제를 정확히 풀었고, 누군가 그 세계가 정적이라고 말해 주었다. 결함은 베이스를 움직이게 둔 호출자 쪽에 있다.
+
+**Step 3 — MoveIt 자신의 관문을 P6 단위로 읽기.** §8의 `allowed_start_tolerance: 0.01`은 현재 상태가 궤적 첫 점에서 얼마나 떨어져 있어도 실행을 거부하지 않는지를 정한다. 직동 카트 관절에서는 $0.01\,\mathrm{m}$이고, 이는
+
+$$0.01\times 2048 = 20.5\ \text{counts},\qquad \frac{0.01\,\mathrm{m}}{0.25\,\mathrm{m/s}} = 40\,\mathrm{ms}$$
+
+이다. 허용 오차가 거리이고 카트가 페이지 국소 속도로 그것을 지나가기 때문이다. 40 밀리초다. 실행을 시작할지 말지를 정하는 관문이, P6가 카메라부터 힘까지의 사슬 전체에 주는 시간보다 짧게 넘어간다. $40 < 70$이다. 움직이는 베이스에서 계획하고 나중에 실행하는 설계는 느린 설계가 아니라 시작되지 않는 설계다. 계획 전에 베이스를 세우거나, 낡을 계획 자체가 없는 Servo(§9)를 쓴다.
+
+**Step 4 — $200\,\mathrm{Hz}$ 루프가 궤적으로 하는 일.** 경로에 시간을 붙이는 것은 응답 어댑터 `AddTimeOptimalParameterization`이다(§4). 그것이 점을 $100\,\mathrm{ms}$ 간격으로 내놓는다고 하자. 그러면
+
+$$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20$$
+
+이므로 이웃한 궤적 점 사이에 제어 주기 스무 번이 들어가고 제어기가 그 사이를 보간한다([[04-robotics/ros2/simulation-and-control|25.7 §11]]). 궤적은 성기고 루프는 촘촘하다. 그것이 의도된 분업이다. MoveIt은 어디로 언제를 말하고, `ros2_control`은 얼마나 자주를 말한다.
+
+**Step 5 — `fraction`을 비율이 아니라 거리로.** $0.20\,\mathrm{m}$짜리 삽입 직선을 §7의 `eef_step` $0.01\,\mathrm{m}$로 잡자. 보간 자세 $0.20/0.01 = 20$개와 IK 해 20번이고, 한 스텝은 $0.01\times2048=20.5$ 엔코더 카운트의 베이스 이동에 해당한다. 시작 허용 오차 전체와 맞먹는 값이라 눈여겨볼 만하다. 여기서 $0.62$가 돌아왔다면 도구는 $0.20\times0.62=0.124\,\mathrm{m}$까지 가서 $0.076\,\mathrm{m}$을 남기고 멈춘다. $76\,\mathrm{mm}$, 즉 $156$ 카운트만큼 슬롯이 덜 들어갔고, 도구는 아무도 고르지 않은 자세로 허공에 서 있다. §7의 규칙이 여기서 곧바로 따라 나온다. 그 숫자는 *내가 그은* 직선의 분수이므로, 그 직선의 단위로 되읽어야 한다.
+
+**Step 6 — 두 예산을 갈라 두기.** Step 1부터 5까지의 어느 것도 P6의 $70\,\mathrm{ms}$를 어기지 않는다. 그 예산은 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서 카메라 노출 중간부터 힘까지를 재고, 계획은 그 사슬 위에 있지 않기 때문이다. $0.80\,\mathrm{s}$짜리 계획은 예산 위반이 아니다. 패널 자세가 *씬*에 $200\,\mathrm{ms}$ 늦게 닿는 것도 MoveIt의 실패가 아니다. MoveIt은 불평 없이 그것으로 계획한다. 둘 다 각 숫자가 어느 시계에 속하는지 말하지 않은 호출자의 실패이고, 두 시계가 끝내 마주치면 무슨 일이 나는지가 Step 3이다.
+
 ### 12. 실습: 계획하고 실행한 뒤, 기둥을 가져다 놓아라
 
-한 자리에서, Panda 데모로. 하드웨어는 필요 없다.
+두 자리에 나눠서. 1–7번은 Panda 데모로, 8–10번은 당신의 팔로. 하드웨어는 필요 없다.
 
 1. `ros2 launch moveit_resources_panda_moveit_config demo.launch.py`. RViz의 **MotionPlanning** 디스플레이에서 **Planning Scene Topic**이 `/monitored_planning_scene`인지 확인한다.
 2. **Planning** 탭에서 주황색 대화형 마커를 목표 자세로 끌고, **Plan**, 미리보기를 본 뒤 **Execute**. 모의 하드웨어 팔이 따라간다.
@@ -980,8 +1000,18 @@ ros2 control list_controllers
 5. 이제 장애물을 넣는다. MotionPlanning 디스플레이의 **Scene Objects** 탭에서 상자를 추가하고, 한 변 0.1 m에 높이 1 m 정도의 기둥으로 크기를 맞춘 뒤 시작과 목표 사이로 끌어다 놓는다. 다시 계획한다. 경로가 휜다. 플래너가 통과하지 못할 때까지 옮기고, RViz 상태 줄과 `move_group` 터미널의 실패 메시지를 읽는다.
 6. 6절의 `apply_collision_object` 코드로 5번을 Python에서 반복하고, 상자가 RViz에 나타나는지 확인한다. 실제로 쓰게 될 루프가 그것이다. 코드로 씬을 만들고 RViz로 눈으로 확인한다.
 7. 플래너를 바꾼다. **Context** 탭에서 `pilz_industrial_motion_planner` 파이프라인과 `LIN`을 고르고 같은 동작을 계획한다. OMPL은 성공하는데 `LIN`이 거부하는 지점을 보라. 그 거부는 직선이 존재하지 않는다고 플래너가 알려 주는 것이고, OMPL은 결코 주지 않는 정보다.
+8. **당신의 팔을 MoveIt에.** 25.7의 기술을 어느 패키지의 `urdf/` 폴더(25.4)에 `two_link_arm_moveit.urdf.xacro`로 복사하고, 그 안의 `<ros2_control>`과 `<gazebo>` 블록을 지운다. Assistant는 찾아낸 `<ros2_control>` 블록을 그대로 두는데, Gazebo 하드웨어 플러그인은 Gazebo 밖에서 올라오지 못한다. 블록이 없으면 Assistant가 Panda 데모와 같은 되먹임 하드웨어인 `mock_components/GenericSystem` 블록을 직접 쓴다. `world` 링크는 남겨 두어 virtual joint가 필요 없게 한다. `ros2 run moveit_setup_assistant moveit_setup_assistant`를 띄우고 §3의 목록을 따라가라. 복사본을 불러오고, self-collision matrix를 만들고, `base_link`에서 `link2`까지의 kinematic chain으로 planning group `arm`을 더하고, robot pose 둘 — `home`(두 관절 모두 $0$)과 `raised`(`shoulder` $0.8$, `elbow` $-1.0$, 25.7의 6단계가 명령한 자세) — 을 더하고, ros2_control·ROS 2 controllers·MoveIt controllers는 기본값을 받아들이고, 워크스페이스에 `two_link_arm_moveit_config`를 생성한다. 그 `config/ros2_controllers.yaml`에서 `update_rate: 100`을 P6와 25.7의 $f_c$인 `200`으로 바꾼다. 빌드하고 source한 뒤 `ros2 launch two_link_arm_moveit_config demo.launch.py`.
+9. **이름 붙은 자세 사이를 계획하고, 계획에서 Step 4를 읽는다.** **Planning** 탭에서 *Goal State*를 `raised`로 두고 **Plan**, **Execute**. 마커를 끄는 것은 대부분 실패하는데, 그게 맞다. 관절 둘은 x–z 평면의 2차원 끝점 집합에만 닿으므로, 끌어다 놓는 자세 거의 어디에도 IK 해가 없다. 이제 `ros2 topic echo /display_planned_path --once`로 연속한 점들의 `time_from_start`를 읽어라. $0.1\,\mathrm{s}$씩 나아가는데(마지막 간격은 더 짧을 수 있다), `AddTimeOptimalParameterization`의 기본 `resample_dt`다. 그러므로 `update_rate: 200`에서 점 사이에 제어 틱 스무 개가 들어간다. Worked case의 $0.100/0.005=20$을 당신의 팔에서 본 것이다.
+10. **시작 관문이 거부하는 것을 본다.** *Goal State*를 `home`으로 두고 **Plan** 버튼을 누르되 실행하지는 않는다. 두 번째 터미널에서 MoveIt 모르게 팔을 제어기로 움직인다. Assistant는 `arm` 그룹의 제어기를 `arm_controller`로 이름 짓고, `ros2 control list_controllers`로 확인된다.
 
-마지막 두 계획 중 어느 쪽을 벽 옆에서 믿겠는지, 그리고 왜인지 말할 수 있으면 끝이다.
+```bash
+ros2 topic pub -1 /arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory \
+  "{joint_names: [shoulder, elbow], points: [{positions: [0.85, -1.0], time_from_start: {sec: 1}}]}"
+```
+
+이제 **Execute** 버튼을 누른다. `move_group`은 *Invalid Trajectory: start point deviates from current robot state more than 0.01 at joint 'shoulder'* 로 거부한다. 계획은 어깨가 $0.80\,\mathrm{rad}$일 때 계산되었는데 지금은 $0.85$, $0.01\,\mathrm{rad}$ 관문의 다섯 배다. 움직이는 카트 자리에 이 밀기를 넣은 Worked case의 Step 3을 당신의 팔에서 본 것이다. Step 3의 첫 번째 처방, 베이스를 멈추고 로봇이 지금 있는 곳에서 다시 계획하기를 적용하라. **Plan**, 그다음 **Execute**. 이번에는 돈다.
+
+Panda의 마지막 두 계획 중 어느 쪽을 벽 옆에서 믿겠는지와 그 이유를 말할 수 있고, **Execute** 버튼을 누르기 전에 주어진 크기의 밀기가 거부될지 예측할 수 있으면 끝이다.
 
 ### 13. 진단할 고장: RViz에서는 계획되는데 실행되지 않는다
 

@@ -10,12 +10,15 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.5** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]. FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]). How to step a loop: [[02-foundations/lab-kernel|0.7 Lab Kernel]].
-> [[02-foundations/lab-plants|0.6]]의 장치 **P2**. [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK, [[02-foundations/calculus-backprop|편미분·야코비안]], [[02-foundations/linear-algebra|선형대수 §2]]의 랭크. 루프 전진: [[02-foundations/lab-kernel|0.7]].
+> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]. FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]]; twists and the adjoint from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §3–4]] and the wrench from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §6]]; partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]). How to step a loop: [[02-foundations/lab-kernel|0.7 Lab Kernel]].
+> [[02-foundations/lab-plants|0.6]]의 장치 **P2**. [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK, [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §3–4]]의 twist와 adjoint, [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §6]]의 렌치, [[02-foundations/calculus-backprop|편미분·야코비안]], [[02-foundations/linear-algebra|선형대수 §2]]의 랭크. 루프 전진: [[02-foundations/lab-kernel|0.7]].
 
 ## English
 
 **Core question**: how do joint velocities map to end-effector velocity — and forces back?
+
+> [!note] First pass · 처음이라면
+> Read the picture and §1's opening definition (column $i$ is the tool's motion when joint $i$ alone turns), then §2 through the two arrows at the tip and the resolved-rate run — the Jacobian as two velocity arrows and why it must be recomputed — and §3's three-line derivation of $\tau = J^\top\mathcal{F}$ with its P2 number. The rest of §1's frame bookkeeping, the six-vector check and the accounting paragraphs after §3's derivation, and §4's ellipsoids are second pass; the six-vector check needs the wrench of ch.3 §6.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -99,16 +102,18 @@ $$\dot\theta=J^{-1}v=(-0.25,\ 0.25)\,\mathrm{rad/s}.$$
 ### 3. Statics duality — derived in three lines
 
 Power must match at both ends of a lossless mechanism. Joint-side power is
-$\dot\theta^\top \tau$; end-effector-side power is $\mathcal{V}^\top \mathcal{F}$
-(wrench $\mathcal{F}$ = moment + force). Substitute $\mathcal{V} = J\dot\theta$:
+$\dot\theta^\top \tau$; end-effector-side power is $\mathcal{V}^\top \mathcal{F}$, where the
+wrench $\mathcal{F} = (m, f) \in \mathbb{R}^6$ stacks the moment and the force the tool applies, and its pairing with a twist, $\mathcal{V}^\top\mathcal{F} = \omega\cdot m + v\cdot f$, is a power in watts (defined with its frame rule in [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §6]]). Substitute $\mathcal{V} = J\dot\theta$:
 $$\dot\theta^\top \tau = (J\dot\theta)^\top \mathcal{F} = \dot\theta^\top J^\top \mathcal{F} \quad \forall \dot\theta \;\;\Longrightarrow\;\; \boxed{\tau = J^\top(\theta)\,\mathcal{F}}$$
 The *same* matrix maps velocities out and wrenches back in — gravity compensation, force
 control, and contact reasoning all run on this one line. (Frames must match: $J_b$ pairs
 with the body wrench $\mathcal{F}_b$, $J_s$ with $\mathcal{F}_s$.) On catalog P2, $F=(0,-10)\,\mathrm{N}$ (down on the panel) gives $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$: the shoulder carries the load, the elbow does not. The problem set uses a different $F$.
 
+**The same number from the full six-vectors.** As a space wrench this force is $\mathcal{F}_s = (0,0,-10;\ 0,-10,0)$, its moment $p\times f$ taken about the base, and at this pose the space Jacobian's columns are the screws $\mathcal{S}_1 = (0,0,1;\ 0,0,0)$ and $\mathcal{S}_2 = (0,0,1;\ 0,-1,0)$, since $\theta_1 = 0$ leaves $\mathcal{S}_2$ where it was at home. So $J_s^\top\mathcal{F}_s = (-10,\ 0)$ again, and [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §6]] repeats the check in the body frame. The $2\times2$ shortcut is exact because pairing the tip force with the tip velocity gives the same power as pairing the space wrench with the space twist.
+
 **Read the equality as an accounting rule.** A wrench does work through the motion it acts on. The Jacobian tells how a joint motion appears at the tool, so the transpose tells how that same tool wrench loads each joint. For each column, ask how strongly the wrench acts along the motion that column produces. That dot product is the corresponding joint effort.
 
-This is different from inverting a velocity equation. No inverse is needed to map a known wrench to joint loads, and the map remains meaningful at a singularity. However, solving backward for an unknown wrench from measured torques may be ambiguous or noise-sensitive. It also requires separating contact loads from gravity, inertia, friction, and other contributions to measured effort.
+This is different from inverting a velocity equation. No inverse is needed to map a known wrench to joint loads, and the map remains meaningful at a singularity. However, solving backward for an unknown wrench from measured torques may be ambiguous or noise-sensitive. In numbers: at $\theta = (0^\circ, 5^\circ)$ the smallest singular value of $J$ is $0.039$, and its force direction, $(0.999,\ 0.052)$, lies almost exactly along the arm. A $10\,\mathrm{N}$ push that way produces a joint-torque vector of norm only $0.39\,\mathrm{N\,m}$, so a $0.1\,\mathrm{N\,m}$ error in the measured torques can hide up to $0.1/0.039 = 2.6\,\mathrm{N}$ of force along the arm, against $0.1/0.618 = 0.16\,\mathrm{N}$ at the catalog pose. It also requires separating contact loads from gravity, inertia, friction, and other contributions to measured effort.
 
 **Check your understanding.** If a force produces no work along a joint's permitted instantaneous motion, its contribution to that joint's generalized effort is zero. That does not mean the force is absent: the mechanism can carry reaction loads in constrained directions. Match wrench and twist conventions, units, and frames before using the power identity.
 
@@ -204,6 +209,9 @@ for k in range(n):
 
 **핵심 질문**: 관절 속도는 말단 속도로, 힘은 그 반대로 어떻게 사상되는가?
 
+> [!note] 처음이라면 · First pass
+> 그림과 §1 첫머리의 정의(열 $i$는 관절 $i$만 돌 때의 도구 운동)를 읽고, §2를 말단의 두 화살표와 resolved-rate 실행까지 읽어라. 야코비안이 속도 화살표 둘이라는 것과 왜 다시 계산해야 하는지가 거기 있다. 그다음 §3의 세 줄 유도 $\tau = J^\top\mathcal{F}$와 그 P2 숫자. §1의 나머지 프레임 관리, 6차원 검산과 §3 유도 뒤의 회계 문단들, §4의 타원체는 두 번째 읽기다. 6차원 검산에는 3장 §6의 렌치가 필요하다.
+
 ### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 306" style="max-width:100%;height:auto" role="img" aria-label="카탈로그 자세의 P2 말단에 야코비안의 두 열 (−1, 1)과 (−1, 0) m/s, 명령 속도 (0, −0.25) m/s, 반축이 1.618과 0.618인 가조작성 타원, 말단으로 들어오는 윤곽선 힘 (0, −10) N을 그린 그림.">
@@ -285,16 +293,18 @@ $\det J = L_1 L_2 \sin\theta_2$: **팔이 완전히 뻗거나 접힐 때가 정�
 ### 3. 정역학 쌍대성 — 세 줄 유도
 
 손실 없는 기구의 양 끝에서 일률은 같아야 한다. 관절 쪽 일률은 $\dot\theta^\top \tau$,
-말단 쪽 일률은 $\mathcal{V}^\top \mathcal{F}$(렌치 $\mathcal{F}$ = 모멘트 + 힘).
+말단 쪽 일률은 $\mathcal{V}^\top \mathcal{F}$다. 렌치 $\mathcal{F} = (m, f) \in \mathbb{R}^6$은 도구가 가하는 모멘트와 힘을 쌓은 것이고, twist와의 짝 $\mathcal{V}^\top\mathcal{F} = \omega\cdot m + v\cdot f$가 와트 단위의 일률이다(프레임 규칙과 함께 [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §6]]에서 정의).
 $\mathcal{V} = J\dot\theta$를 대입하면:
 $$\dot\theta^\top \tau = (J\dot\theta)^\top \mathcal{F} = \dot\theta^\top J^\top \mathcal{F} \quad \forall \dot\theta \;\;\Longrightarrow\;\; \boxed{\tau = J^\top(\theta)\,\mathcal{F}}$$
 *같은* 행렬이 속도를 내보내고 렌치를 되받는다 — 중력 보상, 힘 제어, 접촉 추론이 전부 이
 한 줄 위에서 돈다. (프레임은 맞춰야 한다: $J_b$는 body 렌치 $\mathcal{F}_b$와, $J_s$는
 $\mathcal{F}_s$와 짝이다.) 카탈로그 P2에서 $F=(0,-10)\,\mathrm{N}$이면 $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$: 어깨가 지고 엘보는 안 진다. 과제는 다른 $F$를 쓴다.
 
+**같은 숫자를 6차원 벡터로.** 이 힘을 공간 렌치로 쓰면 모멘트 $p\times f$를 베이스에 대해 잡은 $\mathcal{F}_s = (0,0,-10;\ 0,-10,0)$이고, 이 자세에서 공간 야코비안의 열은 스크류 $\mathcal{S}_1 = (0,0,1;\ 0,0,0)$과 $\mathcal{S}_2 = (0,0,1;\ 0,-1,0)$이다. $\theta_1 = 0$이라 $\mathcal{S}_2$가 홈에서의 자리에 그대로 있기 때문이다. 따라서 $J_s^\top\mathcal{F}_s = (-10,\ 0)$이 다시 나오고, [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §6]]이 같은 검산을 바디 프레임에서 되풀이한다. $2\times2$ 지름길이 정확한 이유는 말단 힘과 말단 속도의 짝이 공간 렌치와 공간 twist의 짝과 같은 일률을 주기 때문이다.
+
 **등식을 일률의 회계 규칙으로 읽는다.** 렌치는 작용하는 운동을 통해 일을 한다. 야코비안이 관절 운동이 도구에서 어떻게 보이는지 알려 주므로 전치는 도구 렌치가 각 관절에 주는 부하를 알려 준다. 열마다 그 열이 만드는 운동에 렌치가 얼마나 작용하는지 묻는다. 그 내적이 해당 관절의 노력이다.
 
-속도 식을 역으로 푸는 것과 다르다. 알려진 렌치를 관절 부하로 바꾸는 데 역행렬은 필요 없고 특이점에서도 뜻이 있다. 반면 측정 토크에서 모르는 렌치를 찾는 역문제는 모호하거나 잡음에 민감할 수 있다. 측정 노력에서 중력, 관성, 마찰 등도 분리해야 한다.
+속도 식을 역으로 푸는 것과 다르다. 알려진 렌치를 관절 부하로 바꾸는 데 역행렬은 필요 없고 특이점에서도 뜻이 있다. 반면 측정 토크에서 모르는 렌치를 찾는 역문제는 모호하거나 잡음에 민감할 수 있다. 숫자로 보면, $\theta = (0^\circ, 5^\circ)$에서 $J$의 가장 작은 특이값은 $0.039$이고 그 힘 방향 $(0.999,\ 0.052)$는 거의 정확히 팔을 따른다. 그쪽으로 $10\,\mathrm{N}$을 밀어도 관절 토크 벡터의 크기는 $0.39\,\mathrm{N\,m}$뿐이므로, 측정 토크의 $0.1\,\mathrm{N\,m}$ 오차가 팔 방향 힘을 최대 $0.1/0.039 = 2.6\,\mathrm{N}$까지 숨길 수 있다. 카탈로그 자세에서는 $0.1/0.618 = 0.16\,\mathrm{N}$이다. 측정 노력에서 중력, 관성, 마찰 등도 분리해야 한다.
 
 **이해 확인.** 힘이 관절의 허용된 순간 운동을 따라 일을 하지 않으면 그 관절의 일반화 힘 기여는 0이다. 힘이 없다는 뜻은 아니다. 기구는 구속 방향의 반력을 지탱할 수 있다. 일률 등식을 쓰기 전에 렌치·트위스트의 표기, 단위, 프레임을 맞춘다.
 

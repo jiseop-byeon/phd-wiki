@@ -15,8 +15,8 @@ mastery-when: "This is on the manipulation track's critical path — every conta
 > 실패한다. 그래서 이것은 인접 분야가 아니라 기여의 의존 층이다.
 
 > [!note] Prerequisites · 선수 지식
-> You need friction and the friction cone ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2]]), wrenches and $\tau = J^\top\mathcal{F}$ ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §3]]), and convexity ([[02-foundations/optimization|4. Optimization §2]]).
-> 마찰과 마찰 원뿔([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2]]), 렌치와 $\tau = J^\top\mathcal{F}$([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §3]]), 볼록성([[02-foundations/optimization|4. 최적화 §2]])이 필요하다.
+> You need **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]; the panel tile, its contact wrench, force and form closure and the antipodal rule, all worked on that tile in [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]]; friction and the friction cone ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2]]); the wrench ([[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3 §6]]) and $\tau = J^\top\mathcal{F}$ ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §3]]); and convexity ([[02-foundations/optimization|4. Optimization §2]]).
+> **P2**([[02-foundations/lab-plants|0.6 Lab Plants]]), [[04-robotics/modern-robotics/ch12-grasping|MR 12장]]이 같은 타일에서 풀어 둔 패널 타일·접촉 렌치·force closure와 form closure·antipodal 규칙, 마찰과 마찰 원뿔([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2]]), 렌치([[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장 §6]])와 $\tau = J^\top\mathcal{F}$([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §3]]), 볼록성([[02-foundations/optimization|4. 최적화 §2]])이 필요하다.
 
 ## English
 
@@ -24,7 +24,7 @@ mastery-when: "This is on the manipulation track's critical path — every conta
 Half the field is the mathematics of closure and half is predicting it from a depth image without writing any of it down — both are worth reading, because the learned half trains on labels the analytic half produced.*
 
 > [!note] First pass · 처음이라면
-> Read §1, then §3 — form closure versus force closure is the distinction the secondary literature keeps getting wrong — then §7. §4 (the epsilon metric) and §5 are for when you are comparing grasp planners rather than reading about them.
+> Read the running object, the picture and the worked case — Steps 1–3 build the grasp map and screen the three candidates, Steps 4–6 score them and show the scores missing the task. Then §1, then §3 — form closure versus force closure is the distinction the secondary literature keeps getting wrong — then §7. §2 (the cone linearization), §4 (the wrench space, $\epsilon$ and hull volume the worked case computed) and §5 (the learned pipeline) are for when you are comparing grasp planners rather than reading about them; §6 and §8 are for a construction task and for Mastery.
 
 ### Running object · 이 페이지의 대상
 
@@ -40,7 +40,7 @@ Closure is binary and ch.12 settles it. Ranking needs three things ch.12 never h
 
 Grasp **A** is ch.12's grasp. **B** is the same tile turned $90°$ in the gripper, squeezing across the short dimension. **C** is a pair a depth image would happily propose and the test of §3 rejects. Ch.12's preload of $20\ \mathrm{N}$ *per finger* is the other budget convention, and §4 prices the difference exactly.
 
-*Scope: this page teaches how a grasp is scored — the linear map from contact forces to object wrenches, the wrench set that map generates under a budget, and the two numbers usually read off that set — and where the arithmetic survives inside a learned pipeline. It does not teach the closure test, which [[04-robotics/modern-robotics/ch12-grasping|MR ch.12 §3]] derives on this same tile; nor grasp synthesis algorithms; nor hand design, for which §8 names sources.*
+*Scope: this page teaches how a grasp is scored — the linear map from contact forces to object wrenches, the wrench set that map generates under a budget, and the two numbers usually read off that set — and where the arithmetic survives inside a learned pipeline. It does not teach the closure test, which [[04-robotics/modern-robotics/ch12-grasping|MR ch.12 §3]] derives on this same tile; nor grasp synthesis algorithms; nor hand design, for which §8 names sources. The robotics capstone, [[04-robotics/capstone-panel-contact|26]], uses nothing from this page: its task is to touch and press a panel, and nothing in it is grasped.*
 
 ### The picture · 그림으로 먼저 보기
 
@@ -165,7 +165,7 @@ One more reading, because it recurs in §4: $G_A\,(20,\ 10,\ 20,\ -10)^\top = (0
 
 **Step 2 — make the cones polyhedral.** In the plane nothing is needed: the wedge already has exactly two edges, $\hat n \pm \mu\hat t$, and they are the same two $G$ will be applied to. In space the cone is circular and has to be replaced before any of this is computable — see the definition at the end of §2, which costs $7.6\%$ of $\mu$ at $m = 8$ and nothing at all here.
 
-**Step 3 — screen the candidates.** The antipodal test of §3, applied to all three:
+**Step 3 — screen the candidates.** The antipodal test of [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]], defined in full in §3 — a two-contact grasp passes when the line joining the contacts makes an angle of at most $\arctan\mu$ with the inward normal *at both ends* — applied to all three:
 
 | grasp | line joining the contacts | angle at contact 1 | angle at contact 2 | verdict against $\arctan 0.5 = 26.565°$ |
 |---|---|---:|---:|---|
@@ -175,7 +175,7 @@ One more reading, because it recurs in §4: $G_A\,(20,\ 10,\ 20,\ -10)^\top = (0
 
 Contact 2 of **C** is on the bottom edge with normal $(0,1)$, and the line back to contact 1 is $(-0.160,\ +0.050)$, so $\cos\theta = 0.050/0.167631 = 0.298275$ and $\theta = 72.646°$. **C** would need $\mu \ge \tan 72.646° = 3.20$ — several times any dry surface — so no squeeze whatever makes it work, which is the point of screening before computing anything.
 
-**Step 4 — build the wrench space and read the two numbers.** Take the budget $F = 20\ \mathrm{N}$ to one contact at a time, at each of its two cone edges, and divide $m_z$ by $\rho = 0.100\ \mathrm{m}$:
+**Step 4 — build the wrench space and read the two numbers.** The grasp's **wrench space** $\mathcal{W}$ is the set of every net wrench it can apply with its contact forces inside their cones and within the budget (§4 defines it); with polyhedral cones it is the convex hull of the budgeted cone-edge wrenches, so build those. Take the budget $F = 20\ \mathrm{N}$ to one contact at a time, at each of its two cone edges, and divide $m_z$ by $\rho = 0.100\ \mathrm{m}$:
 
 | edge | $f$ (N) | $m_z = r_x f_y$ (N·m) | generator $(f_x,\ f_y,\ m_z/\rho)$ (N) |
 |---|---|---:|---|
@@ -186,13 +186,17 @@ Contact 2 of **C** is on the bottom edge with normal $(0,1)$, and the line back 
 
 $\mathcal{W}_A$ is the convex hull of those four points — a tetrahedron. They sum to zero, which is ch.12's $\lambda = (1,1,1,1)$ arriving again, so the origin is the centroid and sits strictly inside.
 
-The inscribed ball. By symmetry all four faces are the same distance from the origin; take the face through $1^{+}, 1^{-}, 2^{+}$, whose unit normal is $\hat u = (1,\ 2,\ 2)/3$. Then $\hat u\cdot(20,\ 10,\ -10) = (20 + 20 - 20)/3$, so
+The inscribed ball. $\epsilon$ is the radius of the largest ball centred at the origin that fits inside $\mathcal{W}_A$ — the grasp's capacity in its weakest direction (§4). A ball grown from the origin stops at the first face plane it touches, so $\epsilon$ is the distance from the origin to the nearest face. Take the face through $1^{+}, 1^{-}, 2^{+}$. Two of its edges are $1^{-}-1^{+} = (0,\ -20,\ 20)$ and $2^{+}-1^{+} = (-40,\ 0,\ 20)$, and their cross product ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §1]]) is perpendicular to both, so it is the face's normal:
+
+$$(0,\ -20,\ 20)\times(-40,\ 0,\ 20) = (-400,\ -800,\ -800) = -400\,(1,\ 2,\ 2)$$
+
+The unit normal pointing away from the origin is therefore $\hat u = (1,\ 2,\ 2)/3$ — away, because the fourth vertex has $\hat u\cdot(-20,\ -10,\ -10) = -20$, on the origin's side of the plane. All three vertices of the face give the same value, $\hat u\cdot(20,10,-10) = \hat u\cdot(20,-10,10) = \hat u\cdot(-20,10,10) = 20/3$, which is the plane's distance from the origin. The other three faces come out the same way, with normals $(1,-2,-2)/3$, $(-1,2,-2)/3$ and $(-1,-2,2)/3$, all at $20/3$, so
 
 $$\epsilon_A = \tfrac{20}{3} = 6.667\ \mathrm{N}, \qquad \text{attained along } \hat u = \tfrac13(1,\ 2,\ 2)$$
 
-because a face's supporting plane is the first thing a growing ball touches. The weakest direction is not a pure force and not a pure moment: it is one part push to two parts lift to two parts twist, which no hand calculation would have guessed.
+because a face's supporting plane is the first thing a growing ball touches (the three other faces touch it at the same radius, along their own normals). Read $\hat u$ coordinate by coordinate: $f_x : f_y : m_z/\rho = 1 : 2 : 2$. The weakest direction is not a pure force and not a pure moment: it is one part push to two parts lift to two parts twist, which nobody would have guessed before building the set.
 
-The volume. The tetrahedron on those four vertices has
+The volume. The **hull volume** $Q_v$ is the size of $\mathcal{W}$ — an average over directions where $\epsilon$ is a worst case (§4). The tetrahedron on those four vertices has
 
 $$Q_{v,A} = \tfrac16\left|\det\begin{bmatrix} 0 & -20 & 20 \\ -40 & 0 & 20 \\ -40 & -20 & 0\end{bmatrix}\right| = \tfrac{32000}{6} = \tfrac{16000}{3} = 5333\ \mathrm{N^3}$$
 
@@ -277,7 +281,7 @@ The cone's own full definition — both inequalities, the worked example and the
 >
 > where $\hat n$ is the inward normal, $\hat t_1,\hat t_2$ any two tangents completing a frame, $\lambda_j$ the nonnegative edge weights and $\mu_{\text{eff}}$ the friction the pyramid actually delivers in its worst direction — because the apothem of a regular $m$-gon is $\cos(\pi/m)$ times its circumradius, and the worst direction points at the middle of a side.
 >
-> - **Example**: $m = 8$ at $\mu = 0.5$ gives $\mu_{\text{eff}} = 0.462$ and a worst-case half-angle of $24.794°$ instead of $26.565°$ — $7.6\%$ of $\mu$ and $10.0\%$ of the cone's base disc thrown away. At $m = 4$ it is $\mu_{\text{eff}} = 0.354$, a third of the disc gone; at $m = 16$, $\mu_{\text{eff}} = 0.490$ and $2.6\%$.
+> - **Example**: $m = 8$ at $\mu = 0.5$ gives $\mu_{\text{eff}} = 0.462$ and a worst-case half-angle of $24.794°$ instead of $26.565°$ — $7.6\%$ of $\mu$ and $10.0\%$ of the cone's base disc thrown away. At $m = 4$ it is $\mu_{\text{eff}} = 0.354$: $29.3\%$ of $\mu$ and $36.3\%$ of the disc. At $m = 16$, $\mu_{\text{eff}} = 0.490$: $1.9\%$ of $\mu$ and $2.6\%$ of the disc. The two losses are different quantities — the first is linear in the coefficient, the worst-direction tangential force; the second is the area the inscribed polygon keeps, $\tfrac{m}{2\pi}\sin\tfrac{2\pi}{m}$ of the disc, and so always the larger, by about a third for large $m$ — and [[04-robotics/contact-force-tactile|9. Contact §2]] gives both, leading with the first. Say which one a percentage is.
 > - **Non-example**: the *circumscribed* pyramid, $\mu_{\text{circ}} = \mu/\cos(\pi/m)$, whose edges lie outside the cone. It is the same construction with the polygon on the other side of the circle, and it admits tangential forces the contact cannot apply — so it reports closure and quality where there is none. A paper that says "we linearize the friction cone with 8 facets" has not said which side, and the two differ by $\cos^2(\pi/8) = 0.854$ in the ratio.
 > - **Why it matters**: with polyhedral cones the closure test of §3 is a linear program and the wrench set of §4 is the convex hull of finitely many points — both become arithmetic instead of geometry. Everything worked above is planar, where $m = 2$ is *exact* and costs nothing; a 3D grasp planner's $\epsilon$ is pessimistic by roughly $\cos(\pi/m)$, which is worth knowing before comparing two planners that chose different $m$.
 
@@ -295,8 +299,11 @@ Two different guarantees, routinely conflated:
 >
 > What this section adds is the part ch.12 has no reason to cover: **which published finger count is a statement about which of the two, and under what contact model.** The test is settled; the literature is not.
 
-Form closure is the stronger and rarer condition. Force closure is what a two-finger grasp
-of a box achieves and what almost every grasp paper means when it says "stable".
+Form closure is the stronger and rarer condition. Force closure is what almost every grasp
+paper means when it says "stable" — and whether two fingers achieve it on a box depends on
+the **contact model**, which the warning box below makes the first question: two
+soft-finger pads, yes; two hard point contacts with friction, no. Read the box before you
+read any finger count, including the ones in the next paragraph.
 
 The finger counts are a place where secondary sources reliably go wrong, so state them with
 their sources attached. Markenscoff, Ni and Papadimitriou's 1990 analysis gives, in its own
@@ -311,8 +318,8 @@ two contacts, against a first-order bound of four
 theorems; always say which one you mean.
 
 > [!warning] Two fingers or four? Name the contact model
-> Those two statements — "a two-finger grasp of a box achieves force closure" and "four
-> fingers are necessary in 3D" — look contradictory and are not. They assume different
+> Two statements you will meet side by side — "a two-finger grasp of a box achieves force
+> closure" and "four fingers are necessary in 3D" — look contradictory and are not. They assume different
 > **contact models**, and a paper that does not name its model cannot be checked.
 >
 > | Model | Each contact transmits | Two-finger force closure in 3D? |
@@ -657,7 +664,7 @@ Every quantitative figure quoted in §5 is from the respective paper's own abstr
 이 분야의 절반은 closure의 수학이고 절반은 그것을 적지 않은 채 깊이 이미지에서 예측하는 방법이다 — 학습된 쪽이 해석적 쪽이 만든 라벨로 학습되므로 둘 다 읽을 값어치가 있다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 다음 §3 — form closure 대 force closure는 2차 문헌이 계속 틀리는 구분이다 — 그다음 §7. §4(엡실론 지표)와 §5는 파지 계획기에 관해 읽는 것이 아니라 비교할 때 본다.
+> 먼저 이 페이지의 대상, 그림, 대상으로 한 번 끝까지를 읽어라 — 1~3단계는 파지 사상을 세우고 후보 셋을 선별하며, 4~6단계는 그들에 점수를 매기고 그 점수가 과제를 놓치는 것을 보인다. 그다음 §1, 그다음 §3 — form closure 대 force closure는 2차 문헌이 계속 틀리는 구분이다 — 그다음 §7. §2(원뿔 선형화), §4(끝까지 계산이 구한 렌치 공간·$\epsilon$·hull volume), §5(학습 파이프라인)는 파지 계획기에 관해 읽는 것이 아니라 비교할 때 본다. §6과 §8은 건설 과제와 Mastery를 위한 것이다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -673,7 +680,7 @@ Closure는 이분법이고 12장이 그것을 끝낸다. 순위를 매기려면 
 
 파지 **A**가 12장의 파지다. **B**는 같은 타일을 그리퍼 안에서 $90°$ 돌려 짧은 쪽으로 쥔 것이다. **C**는 깊이 이미지가 기꺼이 제안할 법하고 §3의 검사가 기각하는 쌍이다. 12장의 손가락당 $20\ \mathrm{N}$ 예압은 다른 쪽 예산 규약이고, §4가 그 차이를 정확히 값으로 매긴다.
 
-*범위: 이 페이지는 파지를 어떻게 채점하는지를 가르친다 — 접촉력에서 물체 렌치로 가는 선형 사상, 그 사상이 예산 아래 만들어 내는 렌치 집합, 그리고 그 집합에서 보통 읽어 내는 숫자 둘, 그리고 그 산술이 학습 파이프라인 안에서 어디에 살아남는지. Closure 검사 자체는 가르치지 않는다. 그것은 [[04-robotics/modern-robotics/ch12-grasping|MR 12장 §3]]이 바로 이 타일 위에서 유도한다. 파지 합성 알고리즘과 손 설계도 가르치지 않는다. 후자는 §8이 출처를 지목한다.*
+*범위: 이 페이지는 파지를 어떻게 채점하는지를 가르친다 — 접촉력에서 물체 렌치로 가는 선형 사상, 그 사상이 예산 아래 만들어 내는 렌치 집합, 그리고 그 집합에서 보통 읽어 내는 숫자 둘, 그리고 그 산술이 학습 파이프라인 안에서 어디에 살아남는지. Closure 검사 자체는 가르치지 않는다. 그것은 [[04-robotics/modern-robotics/ch12-grasping|MR 12장 §3]]이 바로 이 타일 위에서 유도한다. 파지 합성 알고리즘과 손 설계도 가르치지 않는다. 후자는 §8이 출처를 지목한다. 로보틱스 캡스톤 [[04-robotics/capstone-panel-contact|26]]은 이 페이지의 어느 단계도 쓰지 않는다. 그 과제는 패널에 닿아 누르는 것이고, 거기서는 아무것도 쥐지 않는다.*
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -798,7 +805,7 @@ $$G_A = \begin{bmatrix} 1 & 0 & -1 & 0 \\ 0 & 1 & 0 & 1 \\ 0 & -0.100 & 0 & 0.10
 
 **2단계 — 원뿔을 다면체로.** 평면에서는 할 일이 없다. 쐐기는 이미 모서리가 정확히 둘, $\hat n \pm \mu\hat t$이고, $G$가 적용될 대상이 바로 그 둘이다. 공간에서는 원뿔이 원형이라 계산 가능해지기 전에 반드시 바꿔야 한다 — §2 끝의 정의를 보라. $m = 8$에서 $\mu$의 $7.6\%$가 들고 여기서는 아무것도 들지 않는다.
 
-**3단계 — 후보를 선별한다.** §3의 antipodal 검사를 셋 모두에:
+**3단계 — 후보를 선별한다.** [[04-robotics/modern-robotics/ch12-grasping|MR 12장]]의 antipodal 검사(§3에서 온전히 정의한다: 접촉 둘을 잇는 선이 *양 끝 모두에서* 안쪽 법선과 이루는 각이 $\arctan\mu$ 이하이면 통과)를 셋 모두에 적용한다:
 
 | 파지 | 접촉을 잇는 선 | 접촉 1에서의 각 | 접촉 2에서의 각 | $\arctan 0.5 = 26.565°$에 대한 판정 |
 |---|---|---:|---:|---|
@@ -808,7 +815,7 @@ $$G_A = \begin{bmatrix} 1 & 0 & -1 & 0 \\ 0 & 1 & 0 & 1 \\ 0 & -0.100 & 0 & 0.10
 
 **C**의 접촉 2는 법선이 $(0,1)$인 아래 변에 있고 접촉 1로 돌아가는 선이 $(-0.160,\ +0.050)$이므로 $\cos\theta = 0.050/0.167631 = 0.298275$, 즉 $\theta = 72.646°$다. **C**에는 $\mu \ge \tan 72.646° = 3.20$이 필요하다 — 어떤 마른 표면의 몇 배다 — 그러니 얼마나 세게 쥐든 되지 않고, 아무것도 계산하기 전에 선별하는 이유가 그것이다.
 
-**4단계 — 렌치 공간을 짓고 숫자 둘을 읽는다.** 예산 $F = 20\ \mathrm{N}$을 한 번에 접촉 하나에, 그 접촉의 두 원뿔 모서리 각각에 주고, $m_z$를 $\rho = 0.100\ \mathrm{m}$으로 나눈다:
+**4단계 — 렌치 공간을 짓고 숫자 둘을 읽는다.** 파지의 **렌치 공간** $\mathcal{W}$는 접촉력이 원뿔 안에 있고 예산 안에 있을 때 파지가 가할 수 있는 모든 합렌치의 집합이다(§4가 정의한다). 원뿔이 다면체면 그것은 예산을 채운 원뿔 모서리 렌치들의 볼록 껍질이므로, 그 렌치들을 짓는다. 예산 $F = 20\ \mathrm{N}$을 한 번에 접촉 하나에, 그 접촉의 두 원뿔 모서리 각각에 주고, $m_z$를 $\rho = 0.100\ \mathrm{m}$으로 나눈다:
 
 | 모서리 | $f$ (N) | $m_z = r_x f_y$ (N·m) | 생성자 $(f_x,\ f_y,\ m_z/\rho)$ (N) |
 |---|---|---:|---|
@@ -819,13 +826,17 @@ $$G_A = \begin{bmatrix} 1 & 0 & -1 & 0 \\ 0 & 1 & 0 & 1 \\ 0 & -0.100 & 0 & 0.10
 
 $\mathcal{W}_A$는 그 점 넷의 볼록 껍질, 즉 사면체다. 넷을 더하면 0인데 그것이 12장의 $\lambda = (1,1,1,1)$이 다시 온 것이고, 그러므로 원점이 무게중심이며 엄밀히 내부에 있다.
 
-내접 공. 대칭에 의해 네 면이 원점에서 같은 거리에 있으므로 $1^{+}, 1^{-}, 2^{+}$를 지나는 면을 잡으면 그 단위 법선이 $\hat u = (1,\ 2,\ 2)/3$이다. 그러면 $\hat u\cdot(20,\ 10,\ -10) = (20 + 20 - 20)/3$이므로
+내접 공. $\epsilon$은 원점을 중심으로 $\mathcal{W}_A$ 안에 들어가는 가장 큰 공의 반지름, 곧 가장 약한 방향에서의 파지 용량이다(§4). 원점에서 키운 공은 처음 닿는 면 평면에서 멈추므로, $\epsilon$은 원점에서 가장 가까운 면까지의 거리다. $1^{+}, 1^{-}, 2^{+}$를 지나는 면을 잡자. 그 면의 두 변은 $1^{-}-1^{+} = (0,\ -20,\ 20)$과 $2^{+}-1^{+} = (-40,\ 0,\ 20)$이고, 둘의 외적([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §1]])은 둘 모두에 수직이므로 면의 법선이다.
+
+$$(0,\ -20,\ 20)\times(-40,\ 0,\ 20) = (-400,\ -800,\ -800) = -400\,(1,\ 2,\ 2)$$
+
+그러므로 원점에서 멀어지는 쪽의 단위 법선은 $\hat u = (1,\ 2,\ 2)/3$이다 — 멀어지는 쪽인 이유는 넷째 꼭짓점이 $\hat u\cdot(-20,\ -10,\ -10) = -20$으로 평면의 원점 쪽에 있기 때문이다. 면의 세 꼭짓점은 모두 같은 값, $\hat u\cdot(20,10,-10) = \hat u\cdot(20,-10,10) = \hat u\cdot(-20,10,10) = 20/3$을 주고, 이것이 원점에서 평면까지의 거리다. 나머지 세 면도 같은 방식으로 법선 $(1,-2,-2)/3$, $(-1,2,-2)/3$, $(-1,-2,2)/3$을 가지며 모두 $20/3$에 있으므로
 
 $$\epsilon_A = \tfrac{20}{3} = 6.667\ \mathrm{N}, \qquad \text{가장 약한 방향은 } \hat u = \tfrac13(1,\ 2,\ 2)$$
 
-이다. 자라나는 공이 처음 닿는 것이 면의 지지 평면이기 때문이다. 가장 약한 방향은 순수한 힘도 순수한 모멘트도 아니다. 미는 힘 1 : 드는 힘 2 : 비트는 힘 2이고, 손으로는 짐작할 수 없는 조합이다.
+이다. 자라나는 공이 처음 닿는 것이 면의 지지 평면이기 때문이다(나머지 세 면도 같은 반지름에서 각자의 법선 방향으로 공에 닿는다). $\hat u$를 성분별로 읽으면 $f_x : f_y : m_z/\rho = 1 : 2 : 2$다. 가장 약한 방향은 순수한 힘도 순수한 모멘트도 아니다. 미는 힘 1 : 드는 힘 2 : 비트는 힘 2이고, 집합을 지어 보기 전에는 누구도 짐작하지 못했을 조합이다.
 
-부피. 그 꼭짓점 넷 위의 사면체는
+부피. **Hull volume** $Q_v$는 $\mathcal{W}$의 크기다 — $\epsilon$이 최악의 경우라면 이것은 방향에 대한 평균이다(§4). 그 꼭짓점 넷 위의 사면체는
 
 $$Q_{v,A} = \tfrac16\left|\det\begin{bmatrix} 0 & -20 & 20 \\ -40 & 0 & 20 \\ -40 & -20 & 0\end{bmatrix}\right| = \tfrac{32000}{6} = \tfrac{16000}{3} = 5333\ \mathrm{N^3}$$
 
@@ -907,7 +918,7 @@ $\mu = 0.5$면 그 반각은 $\arctan 0.5 \approx 26.6°$이고, $\mu = 1.0$이�
 >
 > $\hat n$은 안쪽 법선, $\hat t_1,\hat t_2$는 좌표계를 완성하는 접선 둘, $\lambda_j$는 음이 아닌 모서리 가중치, $\mu_{\text{eff}}$는 그 피라미드가 최악의 방향에서 실제로 내주는 마찰이다. 정$m$각형의 내심거리가 외접반지름의 $\cos(\pi/m)$배이고, 최악의 방향이 변의 한가운데를 향하기 때문이다.
 >
-> - **예**: $\mu = 0.5$에서 $m = 8$이면 $\mu_{\text{eff}} = 0.462$, 최악의 반각이 $26.565°$ 대신 $24.794°$다 — $\mu$의 $7.6\%$와 원뿔 밑면 원판의 $10.0\%$를 버린 것이다. $m = 4$면 $\mu_{\text{eff}} = 0.354$로 원판의 3분의 1이 사라지고, $m = 16$이면 $\mu_{\text{eff}} = 0.490$에 $2.6\%$다.
+> - **예**: $\mu = 0.5$에서 $m = 8$이면 $\mu_{\text{eff}} = 0.462$, 최악의 반각이 $26.565°$ 대신 $24.794°$다 — $\mu$의 $7.6\%$와 원뿔 밑면 원판의 $10.0\%$를 버린 것이다. $m = 4$면 $\mu_{\text{eff}} = 0.354$로 $\mu$의 $29.3\%$와 원판의 $36.3\%$가, $m = 16$이면 $\mu_{\text{eff}} = 0.490$으로 $\mu$의 $1.9\%$와 원판의 $2.6\%$가 사라진다. 두 손실은 서로 다른 양이다 — 앞의 것은 계수, 곧 가장 불리한 방향의 접선력에 대해 선형이고, 뒤의 것은 내접 다각형이 남기는 면적, 곧 원판의 $\tfrac{m}{2\pi}\sin\tfrac{2\pi}{m}$이라 언제나 더 크며 $m$이 크면 약 3분의 1 더 크다 — 그리고 [[04-robotics/contact-force-tactile|9. 접촉 §2]]는 둘을 모두 주되 앞의 것을 먼저 쓴다. 백분율이 둘 중 어느 것인지 밝혀라.
 > - **반례**: 모서리가 원뿔 바깥에 놓이는 *외접* 피라미드, $\mu_{\text{circ}} = \mu/\cos(\pi/m)$. 다각형을 원의 반대쪽에 놓은 같은 구성이고, 접촉이 가할 수 없는 접선력을 허용한다 — 그래서 closure도 품질도 없는 곳에서 있다고 보고한다. "마찰 원뿔을 면 8개로 선형화했다"고 쓴 논문은 어느 쪽인지를 말하지 않은 것이고, 둘은 비에서 $\cos^2(\pi/8) = 0.854$만큼 다르다.
 > - **왜 중요한가**: 원뿔이 다면체면 §3의 closure 검사가 선형계획이 되고 §4의 렌치 집합이 유한한 점들의 볼록 껍질이 된다 — 둘 다 기하에서 산술이 된다. 위에서 계산한 모든 것이 평면이고, 평면에서는 $m = 2$가 *정확*하며 비용이 0이다. 3D 파지 계획기의 $\epsilon$은 대략 $\cos(\pi/m)$만큼 체계적으로 비관적이고, 서로 다른 $m$을 고른 계획기 둘을 비교하기 전에 알아 둘 값이 있다.
 
@@ -925,8 +936,11 @@ $\mu = 0.5$면 그 반각은 $\arctan 0.5 \approx 26.6°$이고, $\mu = 1.0$이�
 >
 > 이 절이 더하는 것은 12장이 다룰 이유가 없는 부분이다. **어느 출판된 손가락 개수가 둘 중 무엇에 대한 진술이고, 어떤 접촉 모델 아래인가.** 검사는 끝났고, 문헌은 그렇지 않다.
 
-Form closure가 더 강하고 더 드문 조건이다. Force closure가 상자를 두 손가락으로 잡을 때
-달성되는 것이고, 거의 모든 파지 논문이 "안정적"이라고 할 때 뜻하는 것이다.
+Form closure가 더 강하고 더 드문 조건이다. Force closure는 거의 모든 파지 논문이
+"안정적"이라고 할 때 뜻하는 것이다 — 그리고 상자를 두 손가락으로 잡아 그것을 달성하는지는
+**접촉 모델**(contact model)에 달려 있고, 아래 경고 상자가 그것을 첫 질문으로 삼는다. 부드러운 손가락(soft
+finger) 패드 둘이면 그렇고, 마찰 있는 단단한 점 접촉 둘이면 아니다. 다음 문단의 것까지
+포함해 어떤 손가락 개수든 읽기 전에 그 상자를 먼저 읽어라.
 
 손가락 개수는 2차 출처가 어김없이 틀리는 지점이므로, 출처를 붙여서 말한다. Markenscoff, Ni,
 Papadimitriou의 1990년 분석은 자기 초록에서, 쿨롱 마찰이 있을 때 *가장 느슨한 가정 아래에서* **2차원에서는 손가락 셋,
@@ -938,7 +952,7 @@ Papadimitriou의 1990년 분석은 자기 초록에서, 쿨롱 마찰이 있을 
 숫자 셋이 서로 다른 정리 셋이다. 어느 것을 말하는지 항상 밝혀라.
 
 > [!warning] 손가락 둘인가 넷인가 — 접촉 모델을 밝혀라
-> 두 진술 — "상자를 두 손가락으로 잡으면 force closure다"와 "3D에서는 넷이 필요하다" — 은
+> 나란히 마주치는 두 진술 — "상자를 두 손가락으로 잡으면 force closure다"와 "3D에서는 넷이 필요하다" — 은
 > 모순처럼 보이지만 아니다. 서로 다른 **접촉 모델**을 전제하고 있고, 모델을 밝히지 않은
 > 논문은 검증할 수 없다.
 >

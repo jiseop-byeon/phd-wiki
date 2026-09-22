@@ -15,6 +15,9 @@ mastery-when: "Master staircase design, psychometric modeling, and multisensory 
 
 *The perception end of the haptics track. First use of plant **P3** as a stimulus generator rather than as a rendering loop; the loop itself is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]].*
 
+> [!note] First pass · 처음이라면
+> Read the Running object and look at the picture: one trial, one table of six proportions, and the three crossings every later number comes from. Then read §2 for the five terms and work §5, the Worked case, which turns the table into a threshold, a JND and a Weber fraction. §1, §3 and §4 are second pass: §1 when you need the receptor vocabulary, §3 when you have to choose an experimental method, §4 when a paper makes a multisensory or workload claim.
+
 ### Running object · 이 페이지의 대상
 
 Every number on this page comes from one frozen experiment, stated once here and never changed later. **The response counts are illustrative values defined on this page so that the arithmetic is exact. They are nobody's measured data, and no empirical claim may be cited from them.**
@@ -34,69 +37,9 @@ Every number on this page comes from one frozen experiment, stated once here and
 | 5.60 | 33 | 40 | 0.825 |
 | 5.90 | 37 | 40 | 0.925 |
 
-Here $p$ is the proportion of the 40 trials at that level on which the participant called the *comparison* interval stronger. §5 shows it as a picture, §6 turns the table into a threshold, a JND, and a Weber fraction, and the problem set repeats the whole exercise at a lower reference force.
+Here $p$ is the proportion of the 40 trials at that level on which the participant called the *comparison* interval stronger. The picture below shows it, §5 turns the table into a threshold, a JND, and a Weber fraction, and the problem set repeats the whole exercise at a lower reference force.
 
-### 1. Touch is an active sensing loop
-
-**Cutaneous** cues arise from skin deformation; **kinesthetic/proprioceptive** cues arise from muscles, tendons, joints, and skin stretch during limb motion. Haptic perception combines both with motor commands and often with vision and sound. Passive stimulation asks what a delivered cue evokes; active touch also lets the person choose an exploratory motion. Texture, hardness, temperature, weight, and exact shape invite different exploratory procedures (the stereotyped hand motions people use to probe a property, such as lateral sliding for texture, pressing for hardness, or static contact for temperature), so a device should be evaluated with the movement the target task actually requires.
-
-The common receptor labels are useful but approximate. In the names, SA = slowly adapting (keeps firing during a sustained stimulus) and RA = rapidly adapting (fires mainly when the stimulus changes); type I has a small receptive field and type II a large one.
-
-| Afferent class | Adaptation/field | Especially informative about |
-|---|---|---|
-| SA-I / Merkel | slow, small field | sustained pressure, edges, coarse form |
-| RA-I / Meissner | rapid, small field | low-frequency transients, slip onset |
-| SA-II / Ruffini | slow, large field | skin stretch, hand configuration |
-| RA-II / Pacinian | rapid, large field | high-frequency vibration and impacts |
-
-Frequency bands overlap and depend on contactor size, site, preload, and waveform. A statement such as “250 Hz is optimal” is incomplete without those conditions.
-
-### 2. Threshold, PSE, and JND
-
-A **psychometric function** maps physical stimulus $x$ to response probability, for example $P(\text{comparison judged stronger}\mid x)$. Its midpoint can define the **point of subjective equality** (PSE). In a two-alternative comparison, one common convention reads the just-noticeable difference (JND) off the curve: $x_{75}$ and $x_{25}$ are the stimulus levels judged stronger 75% and 25% of the time, so half their gap measures how far the stimulus must move from the PSE before judgments shift reliably.
-
-$$\mathrm{JND}=\frac{x_{75}-x_{25}}{2}.$$
-
-This is not a universal definition: yes/no detection, $n$-alternative choice, and fitted functions use different chance levels and threshold criteria. A 50% threshold is meaningful only after the response task is specified.
-
-**The five terms, defined.** Each one is a *convention applied to a curve*, not a property of skin, so each carries its task with it. §6 computes all five on the running object. [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §1]] defines these conventions in full — conditions, example and non-example for each — for a stiffness observer on this same handle, and its §2 derives the criterion a 1-up-$n$-down staircase settles on, $p^\ast=2^{-1/n}$.
-
-- **Two-alternative forced choice (2AFC)** — a *response task*, defined by three conditions: exactly two alternatives are offered, a response is required on every trial, and the experimenter fixes which alternative counts as the reference. *Example*: the two intervals of the running object. *Non-example*: "rate the force from 1 to 7", a rating scale whose midpoint is a criterion the participant chooses rather than a chance level the design fixes. It matters because the number of alternatives fixes chance level — $1/2$ here — and chance level is what makes one value of $p$ a threshold rather than another.
-- **Threshold $x_p$** — a *stimulus level*, namely the level at which the response probability equals a criterion $p$ that you name. So "the threshold" without both a $p$ and a task is not yet a quantity, and two papers reporting "the threshold" of the same cue may be reporting different points on the same curve.
-- **Point of subjective equality (PSE)** — the *threshold at $p=0.5$* on a comparison curve: the comparison level as likely to be called stronger as weaker. *Non-example*: the reference force. When $\mathrm{PSE}\neq F_{\text{ref}}$ the difference is a constant bias of this participant with this device and this interval order, which is a finding about the pair, not noise to be averaged away.
-- **JND** — a *stimulus difference*: half the span between the 25% and 75% thresholds, by the convention in the formula above. It measures the width of the uncertain region, not a step at which perception switches on.
-- **Weber fraction $k$** — a *dimensionless ratio*, the JND divided by the reference intensity it was measured at:
-
-$$k=\frac{\mathrm{JND}}{I},$$
-
-where $I$ is the operating-point intensity (the PSE, in §6), so $k$ is the only one of the five that can be compared across operating points, and even then only locally.
-
-**Weber's law** is the local empirical approximation $\Delta I/I\approx k$. It predicts that the absolute increment needed for discrimination grows with the reference intensity. Integrating equal relative increments motivates Fechner's logarithmic scale (perceived magnitude grows roughly with the logarithm of physical intensity), but neither law is exact across all intensities or modalities.
-
-Worked interpretation: if a force JND is 8% near 5 N, a first estimate of a noticeable increment is $0.08(5)=0.4$ N. This does not prove that every participant notices 5.4 N; it describes a criterion-dependent population response near that operating point.
-
-### 3. Choosing an experiment
-
-| Question | Useful method | Main risk |
-|---|---|---|
-| find an approximate threshold quickly | staircase / adaptive up–down | convergence depends on rule and lapses |
-| estimate a full psychometric curve | constant stimuli | many trials; order and fatigue |
-| let users match a sensation | adjustment | response and anchoring bias |
-| compare two interfaces | within-subject counterbalanced study | carryover and learning |
-
-Measure false alarms as well as hits. Signal-detection analysis separates sensitivity (how well a person can actually tell stimulus from no stimulus) from response criterion (how willing they are to say "yes" when unsure), because a cautious and a liberal participant can have the same sensitivity but very different hit rates. Randomize condition order, include training, predefine exclusions, and record contact force, motion, latency, and task success rather than relying only on preference.
-
-### 4. Multisensory and workload claims
-
-Under particular Gaussian/noise assumptions, two estimates with variances $\sigma_v^2$ and $\sigma_h^2$ combine by precision weighting:
-
-$$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$$
-
-This is a model, not a universal law of sensory dominance. Reliability, temporal alignment, task relevance, priors, attention, and conflict determine whether cues fuse, compete, or remain separate. Likewise, moving a warning from vision to touch does not automatically reduce workload; representative multitask testing is necessary.
-
-**Worked: the fusion the homework asks.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$ gives weights $4:1$, so $\hat x=\tfrac45 x_v+\tfrac15 x_h$, not vision alone. A force JND of $8\%$ near $5\,\mathrm{N}$ is a *population* increment of $0.4\,\mathrm{N}$; $5.2$ versus $5.0$ is half a JND and does not license “every participant notices.” Detection of a $250\,\mathrm{Hz}$ vibration is not insertion success: the chain is detectability $\to$ action $\to$ outcome.
-
-### 5. The picture
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 486" style="max-width:100%;height:auto" role="img" aria-label="Panel A traces the stimulus from commanded force through the P3 handle and the hand to the response, with the 1 s, 0.5 s, 1 s trial timeline and the decision criterion living only in the response, and panel B joins the six frozen proportions with straight segments and drops the 0.25, 0.50 and 0.75 crossings to x25 = 4.65, PSE = 5.0429 and x75 = 5.4714 N, with a 2 JND brace of 0.8214 N and the reference 5.00 N marked 43 mN left of the PSE.">
   <text x="10" y="18" font-size="12.5" fill="currentColor">A · where the stimulus comes from</text>
@@ -163,7 +106,7 @@ This is a model, not a universal law of sensory dominance. Reliability, temporal
   <text x="389.9" y="435" font-size="12" fill="currentColor" text-anchor="middle">x<tspan font-size="11" dy="3">75</tspan><tspan dy="-3" dx="4.2">= 5.4714</tspan></text>
   <polyline points="93.6,379.5 176.6,352.5 259.5,316.5 342.5,285 425.4,253.5 508.4,235.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/>
   <g fill="currentColor"><circle cx="93.6" cy="379.5" r="4.2"/><circle cx="176.6" cy="352.5" r="4.2"/><circle cx="259.5" cy="316.5" r="4.2"/><circle cx="342.5" cy="285" r="4.2"/><circle cx="425.4" cy="253.5" r="4.2"/><circle cx="508.4" cy="235.5" r="4.2"/></g>
-  <g font-size="11" fill="currentColor" opacity="0.8"><text x="403.3" y="301.2">straight segments =</text><text x="403.3" y="315.2">linear interpolation</text><text x="403.3" y="329.2">(§6); nothing fitted</text></g>
+  <g font-size="11" fill="currentColor" opacity="0.8"><text x="403.3" y="301.2">straight segments =</text><text x="403.3" y="315.2">linear interpolation</text><text x="403.3" y="329.2">(§5); nothing fitted</text></g>
   <line x1="259.5" y1="388" x2="271.4" y2="388" stroke="currentColor" stroke-width="1.3"/>
   <g stroke="currentColor" stroke-width="1.1"><line x1="259.5" y1="385" x2="259.5" y2="391"/><line x1="271.4" y1="385" x2="271.4" y2="391"/></g>
   <text x="277.4" y="392" font-size="11.5" fill="currentColor">bias +43 mN</text>
@@ -171,9 +114,69 @@ This is a model, not a universal law of sensory dominance. Reliability, temporal
   <text x="276.3" y="473" font-size="12" fill="currentColor" text-anchor="middle">2 JND = 0.8214 N   (JND = 0.4107 N)</text>
 </svg>
 
-Panel A traces the stimulus from the commanded force through the P3 handle ($m = 0.04\,\mathrm{kg}$, $b = 0.8\,\mathrm{N\cdot s/m}$) and the hand to the response, over a trial of 1 s at the reference, a 0.5 s gap and 1 s at the comparison; the decision criterion lives only in the response box, which is why a threshold needs a stated $p$. Panel B joins the six frozen proportions with straight segments, §6's linear interpolation with nothing fitted, and drops the $0.25$, $0.50$ and $0.75$ crossings to $x_{25} = 4.65$, $\mathrm{PSE} = 5.0429$ and $x_{75} = 5.4714\,\mathrm{N}$. The brace between the outer two is $2\,\mathrm{JND} = 0.8214\,\mathrm{N}$, and the reference $F_{\text{ref}} = 5.00\,\mathrm{N}$ sits $43\,\mathrm{mN}$ left of the PSE, the bias of §6 Step 7.
+Panel A traces the stimulus from the commanded force through the P3 handle ($m = 0.04\,\mathrm{kg}$, $b = 0.8\,\mathrm{N\cdot s/m}$) and the hand to the response, over a trial of 1 s at the reference, a 0.5 s gap and 1 s at the comparison; the decision criterion lives only in the response box, which is why a threshold needs a stated $p$. Panel B joins the six frozen proportions with straight segments, §5's linear interpolation with nothing fitted, and drops the $0.25$, $0.50$ and $0.75$ crossings to $x_{25} = 4.65$, $\mathrm{PSE} = 5.0429$ and $x_{75} = 5.4714\,\mathrm{N}$, the comparison forces judged stronger a quarter, half and three quarters of the time (named in §2). The brace between the outer two is $2\,\mathrm{JND} = 0.8214\,\mathrm{N}$, the just-noticeable difference being half that span, and the reference $F_{\text{ref}} = 5.00\,\mathrm{N}$ sits $43\,\mathrm{mN}$ left of the PSE, the bias of §5 Step 7.
 
-### 6. Worked case: threshold, JND, and Weber fraction
+### 1. Touch is an active sensing loop
+
+**Cutaneous** cues arise from skin deformation; **kinesthetic/proprioceptive** cues arise from muscles, tendons, joints, and skin stretch during limb motion. Haptic perception combines both with motor commands and often with vision and sound. Passive stimulation asks what a delivered cue evokes; active touch also lets the person choose an exploratory motion. Texture, hardness, temperature, weight, and exact shape invite different exploratory procedures (the stereotyped hand motions people use to probe a property, such as lateral sliding for texture, pressing for hardness, or static contact for temperature), so a device should be evaluated with the movement the target task actually requires.
+
+The common receptor labels are useful but approximate. In the names, SA = slowly adapting (keeps firing during a sustained stimulus) and RA = rapidly adapting (fires mainly when the stimulus changes); type I has a small receptive field and type II a large one.
+
+| Afferent class | Adaptation/field | Especially informative about |
+|---|---|---|
+| SA-I / Merkel | slow, small field | sustained pressure, edges, coarse form |
+| RA-I / Meissner | rapid, small field | low-frequency transients, slip onset |
+| SA-II / Ruffini | slow, large field | skin stretch, hand configuration |
+| RA-II / Pacinian | rapid, large field | high-frequency vibration and impacts |
+
+Frequency bands overlap and depend on contactor size, site, preload, and waveform. A statement such as “250 Hz is optimal” is incomplete without those conditions.
+
+### 2. Threshold, PSE, and JND
+
+A **psychometric function** maps physical stimulus $x$ to response probability, for example $P(\text{comparison judged stronger}\mid x)$. Its midpoint can define the **point of subjective equality** (PSE). In a two-alternative comparison, one common convention reads the just-noticeable difference (JND) off the curve: $x_{75}$ and $x_{25}$ are the stimulus levels judged stronger 75% and 25% of the time, so half their gap measures how far the stimulus must move from the PSE before judgments shift reliably.
+
+$$\mathrm{JND}=\frac{x_{75}-x_{25}}{2}.$$
+
+This is not a universal definition: yes/no detection, $n$-alternative choice, and fitted functions use different chance levels and threshold criteria. A 50% threshold is meaningful only after the response task is specified.
+
+**The five terms, defined.** Each one is a *convention applied to a curve*, not a property of skin, so each carries its task with it. §5 computes all five on the running object. [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §1]] defines these conventions in full — conditions, example and non-example for each — for a stiffness observer on this same handle, and its §2 derives the criterion a 1-up-$n$-down staircase settles on, $p^\ast=2^{-1/n}$.
+
+- **Two-alternative forced choice (2AFC)** — a *response task*, defined by three conditions: exactly two alternatives are offered, a response is required on every trial, and the experimenter fixes which alternative counts as the reference. *Example*: the two intervals of the running object. *Non-example*: "rate the force from 1 to 7", a rating scale whose midpoint is a criterion the participant chooses rather than a chance level the design fixes. It matters because the number of alternatives fixes chance level — $1/2$ here — and chance level is what makes one value of $p$ a threshold rather than another.
+- **Threshold $x_p$** — a *stimulus level*, namely the level at which the response probability equals a criterion $p$ that you name. So "the threshold" without both a $p$ and a task is not yet a quantity, and two papers reporting "the threshold" of the same cue may be reporting different points on the same curve.
+- **Point of subjective equality (PSE)** — the *threshold at $p=0.5$* on a comparison curve: the comparison level as likely to be called stronger as weaker. *Example*: $5.0429\,\mathrm{N}$ in the picture, computed in §5 Step 3. *Non-example*: the reference force. When $\mathrm{PSE}\neq F_{\text{ref}}$ the difference is a constant bias of this participant with this device and this interval order, which is a finding about the pair, not noise to be averaged away.
+- **JND** — a *stimulus difference*: half the span between the 25% and 75% thresholds, by the convention in the formula above. *Example*: $0.4107\,\mathrm{N}$, half the picture's $0.8214\,\mathrm{N}$ brace (§5 Step 5). It measures the width of the uncertain region, not a step at which perception switches on.
+- **Weber fraction $k$** — a *dimensionless ratio*, the JND divided by the reference intensity it was measured at:
+
+$$k=\frac{\mathrm{JND}}{I},$$
+
+where $I$ is the operating-point intensity (the PSE, in §5), so $k$ is the only one of the five that can be compared across operating points, and even then only locally.
+
+**Weber's law** is the local empirical approximation $\Delta I/I\approx k$. It predicts that the absolute increment needed for discrimination grows with the reference intensity. Integrating equal relative increments motivates Fechner's logarithmic scale (perceived magnitude grows roughly with the logarithm of physical intensity), but neither law is exact across all intensities or modalities.
+
+Worked interpretation: if a force JND is 8% near 5 N, a first estimate of a noticeable increment is $0.08(5)=0.4$ N. This does not prove that every participant notices 5.4 N; it describes a criterion-dependent population response near that operating point.
+
+### 3. Choosing an experiment
+
+| Question | Useful method | Main risk |
+|---|---|---|
+| find an approximate threshold quickly | staircase / adaptive up–down | convergence depends on rule and lapses |
+| estimate a full psychometric curve | constant stimuli | many trials; order and fatigue |
+| let users match a sensation | adjustment | response and anchoring bias |
+| compare two interfaces | within-subject counterbalanced study | carryover and learning |
+
+Measure false alarms as well as hits. Signal-detection analysis separates sensitivity (how well a person can actually tell stimulus from no stimulus) from response criterion (how willing they are to say "yes" when unsure), because a cautious and a liberal participant can have the same sensitivity but very different hit rates. Randomize condition order, include training, predefine exclusions, and record contact force, motion, latency, and task success rather than relying only on preference.
+
+### 4. Multisensory and workload claims
+
+Under particular Gaussian/noise assumptions, two estimates with variances $\sigma_v^2$ and $\sigma_h^2$ combine by precision weighting:
+
+$$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$$
+
+This is a model, not a universal law of sensory dominance. Reliability, temporal alignment, task relevance, priors, attention, and conflict determine whether cues fuse, compete, or remain separate. Likewise, moving a warning from vision to touch does not automatically reduce workload; representative multitask testing is necessary.
+
+**Worked: the fusion the homework asks.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$ gives weights $4:1$, so $\hat x=\tfrac45 x_v+\tfrac15 x_h$, not vision alone. A force JND of $8\%$ near $5\,\mathrm{N}$ is a *population* increment of $0.4\,\mathrm{N}$; $5.2$ versus $5.0$ is half a JND and does not license “every participant notices.” Detection of a $250\,\mathrm{Hz}$ vibration is not insertion success: the chain is detectability $\to$ action $\to$ outcome.
+
+### 5. Worked case: threshold, JND, and Weber fraction
 
 **Step 1 — the interpolation rule.** Between two tested levels the table says nothing, so the weakest assumption that still lets a threshold exist is a straight line through the two bracketing points. With $(x_i,p_i)$ and $(x_{i+1},p_{i+1})$ the rows on either side of the criterion $p$,
 
@@ -223,7 +226,7 @@ wide. The force step is about seventeen times finer than the smallest difference
 
 ### Self-check
 
-1. §6 reports two numbers about the same curve: a JND of $0.4107\,\mathrm{N}$ and a bias of $+43\,\mathrm{mN}$. If this participant's whole curve slid $0.1\,\mathrm{N}$ to the right, which of the two would change, and what does that tell you about what each one measures?
+1. §5 reports two numbers about the same curve: a JND of $0.4107\,\mathrm{N}$ and a bias of $+43\,\mathrm{mN}$. If this participant's whole curve slid $0.1\,\mathrm{N}$ to the right, which of the two would change, and what does that tell you about what each one measures?
 2. A colleague reads Step 5 and says "so this participant cannot feel anything below $0.41\,\mathrm{N}$." Name two separate errors in that sentence.
 3. Of §2's five terms, only the Weber fraction can be carried between operating points. Why — and what does the problem set's $2\,\mathrm{N}$ result say about how far it carries?
 4. Why can a clearer vibration fail to improve a teleoperation task?
@@ -244,18 +247,18 @@ Same participant, same handle, same 2AFC task, but the reference is moved down t
 |---|---:|---:|---:|---:|---:|---:|
 | judged stronger (of 40) | 4 | 10 | 18 | 27 | 34 | 38 |
 
-1. **Draw.** The two panels of §5's picture for this table, with the horizontal axis now 1.6 to 2.5 N. Mark $F_{\text{ref}}=2.00\,\mathrm{N}$, the three criterion lines, and the $2\,\mathrm{JND}$ brace. In panel A, change only what actually changed.
-2. **Derive.** (a) $x_{25}$, the PSE and $x_{75}$ by §6's rule. One of the three needs no interpolation — say which and why. (b) The JND and the Weber fraction $k$. (c) The bias $\mathrm{PSE}-F_{\text{ref}}$. (d) The JND in P3 encoder counts of wall force, and as a penetration in millimetres.
-3. **Interpret.** (a) Compare $k$ with the $8.14\%$ of §6: the absolute JND fell, the fraction rose. Which half of Weber's law survived, and which did not? (b) A device reflects $5.2\,\mathrm{N}$ versus $5.0\,\mathrm{N}$ and the paper claims every participant notices. Using §6's numbers, what exactly is wrong? (c) Another paper says "users detected the 250 Hz vibration, therefore the cue improved insertion". Which arrows of the causal chain were skipped, and what would you measure at each? (d) Two sensors, $\sigma_v=2\,\mathrm{mm}$ and $\sigma_h=4\,\mathrm{mm}$, are fused by precision weighting. Write $\hat x$, then say what "vision dominates, so haptic noise does not matter" dropped from the model.
+1. **Draw.** The two panels of the picture for this table, with the horizontal axis now 1.6 to 2.5 N. Mark $F_{\text{ref}}=2.00\,\mathrm{N}$, the three criterion lines, and the $2\,\mathrm{JND}$ brace. In panel A, change only what actually changed.
+2. **Derive.** (a) $x_{25}$, the PSE and $x_{75}$ by §5's rule. One of the three needs no interpolation — say which and why. (b) The JND and the Weber fraction $k$. (c) The bias $\mathrm{PSE}-F_{\text{ref}}$. (d) The JND in P3 encoder counts of wall force, and as a penetration in millimetres.
+3. **Interpret.** (a) Compare $k$ with the $8.14\%$ of §5: the absolute JND fell, the fraction rose. Which half of Weber's law survived, and which did not? (b) A device reflects $5.2\,\mathrm{N}$ versus $5.0\,\mathrm{N}$ and the paper claims every participant notices. Using §5's numbers, what exactly is wrong? (c) Another paper says "users detected the 250 Hz vibration, therefore the cue improved insertion". Which arrows of the causal chain were skipped, and what would you measure at each? (d) Two sensors, $\sigma_v=2\,\mathrm{mm}$ and $\sigma_h=4\,\mathrm{mm}$, are fused by precision weighting. Write $\hat x$, then say what "vision dominates, so haptic noise does not matter" dropped from the model.
 
 > [!note]- How to draw it · 그리는 법
 > - Panel A: a left-to-right chain of four boxes, commanded force, P3 handle with $m$ and $b$, hand with $k_h$ and $b_h$, response, with $+x$ marked as the direction the handle pushes; under it, the trial as a timeline of 1 s at $F_{\text{ref}}$, a 0.5 s gap, 1 s at $F_c$, then the response.
 > - Beside the response box, write the one quantity the chain does not carry: the participant's decision criterion. It exists only inside that box, which is why a threshold needs a stated $p$.
 > - Panel B: comparison force across, proportion judged stronger up from $0$ to $1$, each level's proportion being its count out of $40$.
-> - Join consecutive points with straight segments, never a smooth S-curve: the segments are exactly §6's linear interpolation, and the figure must show that no psychometric function has been fitted.
+> - Join consecutive points with straight segments, never a smooth S-curve: the segments are exactly §5's linear interpolation, and the figure must show that no psychometric function has been fitted.
 > - Draw horizontal lines at $p = 0.25$, $0.50$ and $0.75$, drop a vertical from each crossing to the axis, and label the three feet $x_{25}$, PSE and $x_{75}$.
 > - Brace $x_{25}$ to $x_{75}$ and label the brace $2\,\mathrm{JND}$: the JND is half that span, not a distance from the PSE.
-> - Mark $F_{\text{ref}}$ with a differently styled tick, so that the gap between the reference and the PSE, the bias of §6 Step 7, is visible rather than asserted.
+> - Mark $F_{\text{ref}}$ with a differently styled tick, so that the gap between the reference and the PSE, the bias of §5 Step 7, is visible rather than asserted.
 
 > [!tip]- Solutions
 > 1. Panel A is unchanged except for the two force labels: the chain, the handle constants and the timeline are the same object. Panel B has six new points at $p=0.100,0.250,0.450,0.675,0.850,0.950$; the $p=0.25$ line meets the data exactly at a tested level, so that foot lands on a plotted point rather than inside a segment.
@@ -265,6 +268,9 @@ Same participant, same handle, same 2AFC task, but the reference is moved down t
 ## 한국어
 
 *햅틱 트랙의 지각 쪽 끝이다. 장치 **P3**를 렌더링 루프가 아니라 자극 발생기로 쓰는 첫 페이지이고, 루프 자체는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다.*
+
+> [!note] 처음이라면 · First pass
+> 대상을 읽고 그림을 보라. 시행 하나, 비율 여섯 줄짜리 표 하나, 그리고 뒤의 모든 숫자가 나오는 교차점 셋이다. 그다음 §2에서 다섯 용어를 읽고 §5 계산 절을 따라가라. 표가 임계값·JND·Weber 분수로 바뀌는 곳이다. §1, §3, §4는 두 번째 읽을 때 본다. 수용기 용어가 필요하면 §1, 실험 방법을 골라야 하면 §3, 논문이 다감각이나 workload 주장을 하면 §4를 연다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -285,69 +291,9 @@ Same participant, same handle, same 2AFC task, but the reference is moved down t
 | 5.60 | 33 | 40 | 0.825 |
 | 5.90 | 37 | 40 | 0.925 |
 
-$p$는 그 수준의 40시행 중 참가자가 *비교* 구간을 더 세다고 답한 비율이다. §5가 이것을 그림으로 보여 주고, §6이 이 표를 임계값·JND·Weber 분수로 바꾸며, 과제는 더 낮은 기준 힘에서 같은 일을 다시 한다.
+$p$는 그 수준의 40시행 중 참가자가 *비교* 구간을 더 세다고 답한 비율이다. 아래 그림이 이것을 보여 주고, §5가 이 표를 임계값·JND·Weber 분수로 바꾸며, 과제는 더 낮은 기준 힘에서 같은 일을 다시 한다.
 
-### 1. 촉각은 능동 센싱 루프다
-
-**Cutaneous** cue는 피부 변형에서, **kinesthetic·proprioceptive** cue는 사지가 움직일 때 근육·힘줄·관절과 피부 신장에서 나온다. 햅틱 지각은 이 둘을 운동 명령과, 흔히 시각·청각과도 결합한다. 수동 자극은 주어진 cue가 무엇을 불러일으키는지 묻고, 능동 촉각은 사람이 탐색 동작까지 고른다. 질감, 경도, 온도, 무게, 정확한 형상은 서로 다른 탐색 절차(사람이 어떤 성질을 알아내려고 쓰는 정형화된 손동작. 질감에는 옆으로 문지르기, 경도에는 누르기, 온도에는 가만히 대고 있기)를 부르므로, 장치는 목표 과제가 실제로 요구하는 움직임으로 평가해야 한다.
-
-흔히 쓰는 수용기 이름표는 유용하지만 근사다. 이름에서 SA는 slowly adapting(지속 자극 동안 계속 발화), RA는 rapidly adapting(주로 자극이 변할 때 발화)이고, I형은 수용장이 작고 II형은 크다.
-
-| 구심신경 부류 | 적응·수용장 | 특히 잘 알려 주는 것 |
-|---|---|---|
-| SA-I / Merkel | 느림, 작은 수용장 | 지속 압력, 경계, 거친 형태 |
-| RA-I / Meissner | 빠름, 작은 수용장 | 저주파 과도, 미끄럼 시작 |
-| SA-II / Ruffini | 느림, 큰 수용장 | 피부 신장, 손 자세 |
-| RA-II / Pacinian | 빠름, 큰 수용장 | 고주파 진동과 충격 |
-
-주파수 대역은 서로 겹치고 접촉자 크기, 부위, 예압, 파형에 따라 달라진다. "250 Hz가 최적"이라는 진술은 그 조건들 없이는 불완전하다.
-
-### 2. 임계값, PSE, JND
-
-**심리측정 함수**는 물리 자극 $x$를 반응 확률로 사상한다. 예를 들어 $P(\text{비교 자극이 더 강하다고 판정}\mid x)$이다. 그 중간점이 **주관적 등가점**(PSE)을 정의할 수 있다. 2대안 비교에서 흔한 관례 하나는 곡선에서 최소 식별차(JND)를 읽는 것이다. $x_{75}$와 $x_{25}$는 더 강하다고 판정되는 비율이 각각 75%와 25%인 자극 수준이므로, 그 간격의 절반은 판단이 믿을 만하게 바뀌려면 자극이 PSE에서 얼마나 움직여야 하는지를 잰다.
-
-$$\mathrm{JND}=\frac{x_{75}-x_{25}}{2}.$$
-
-이것은 보편적 정의가 아니다. yes/no 검출, $n$대안 선택, 적합된 함수는 각각 다른 chance level과 임계 기준을 쓴다. 50% 임계값이라는 말은 반응 과제를 명시한 뒤에만 의미를 갖는다.
-
-**다섯 용어의 정의.** 다섯 모두 피부의 성질이 아니라 *곡선에 적용한 관례*다. 그래서 각각 자기 과제를 달고 다녀야 한다. §6이 이 다섯을 running object 위에서 전부 계산한다. [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §1]]은 같은 핸들 위의 강성 관찰자에 대해 이 관례들을 조건·예·반례까지 온전히 정의하고, 그 §2는 1-up-$n$-down 계단법이 자리 잡는 기준 $p^\ast=2^{-1/n}$을 유도한다.
-
-- **2대안 강제 선택(2AFC)** — *반응 과제*이고, 조건 셋으로 정의된다. 대안이 정확히 둘 제시되고, 매 시행 응답이 강제되며, 어느 쪽이 기준인지를 실험자가 고정한다. *예*: running object의 두 구간. *반례*: "힘을 1에서 7로 평정하라". 이것은 평정 척도이고 그 중간점은 설계가 고정한 chance level이 아니라 참가자가 고르는 기준이다. 중요한 이유는 대안의 수가 chance level을 정하고($1/2$), chance level이 어떤 $p$가 임계값이 될지를 정하기 때문이다.
-- **임계값 $x_p$** — *자극 수준*이다. 반응 확률이 당신이 이름 붙인 기준 $p$와 같아지는 수준. 그래서 $p$와 과제가 둘 다 없는 "그 임계값"은 아직 양이 아니고, 같은 cue의 "임계값"을 보고한 두 논문이 같은 곡선의 다른 점을 보고한 것일 수 있다.
-- **주관적 등가점(PSE)** — 비교 곡선에서 *$p=0.5$인 임계값*이다. 더 세다고 답할 확률과 더 약하다고 답할 확률이 같아지는 비교 수준. *반례*: 기준 힘. $\mathrm{PSE}\neq F_{\text{ref}}$이면 그 차이는 이 참가자가 이 장치와 이 구간 순서에서 갖는 일정한 편향이고, 평균으로 지워 버릴 잡음이 아니라 그 쌍에 관한 발견이다.
-- **JND** — *자극 차이*다. 위 공식의 관례대로 25%와 75% 임계값 사이 간격의 절반. 지각이 켜지는 계단의 위치가 아니라 불확실 구간의 폭을 잰다.
-- **Weber 분수 $k$** — *무차원 비*다. JND를 그것을 잰 기준 세기로 나눈 값:
-
-$$k=\frac{\mathrm{JND}}{I},$$
-
-여기서 $I$는 작동점의 세기(§6에서는 PSE)다. 다섯 중 작동점을 가로질러 비교할 수 있는 유일한 양이 $k$이고, 그것조차 국소적으로만 그렇다.
-
-**Weber 법칙**은 국소적인 경험 근사 $\Delta I/I\approx k$다. 구별에 필요한 절대 증가량이 기준 세기와 함께 커진다고 예측한다. 같은 상대 증가량을 적분하면 Fechner의 로그 척도(지각된 크기가 물리 세기의 로그에 대략 비례해 커진다)가 동기를 얻지만, 두 법칙 중 어느 것도 모든 세기와 모든 감각 양상에서 정확하지는 않다.
-
-계산해 읽기: 5 N 부근에서 힘 JND가 8%라면 알아챌 만한 증가량의 첫 추정은 $0.08(5)=0.4$ N이다. 이것은 모든 참가자가 5.4 N을 알아챈다는 증명이 아니라, 그 작동점 부근에서 기준에 의존하는 모집단 반응을 서술한 것이다.
-
-### 3. 실험 고르기
-
-| 질문 | 쓸 만한 방법 | 주된 위험 |
-|---|---|---|
-| 대략의 임계값을 빨리 찾기 | staircase · 적응적 up–down | 수렴이 규칙과 실수율에 달림 |
-| 전체 심리측정 곡선 추정 | constant stimuli | 시행이 많고 순서·피로가 개입 |
-| 사용자가 감각을 맞추게 하기 | adjustment | 반응 편향과 anchoring |
-| 두 인터페이스 비교 | within-subject counterbalanced | 이월 효과와 학습 |
-
-hit뿐 아니라 false alarm도 재라. 신호 검출 분석이 민감도(자극이 있을 때와 없을 때를 실제로 얼마나 잘 구별하는가)와 반응 기준(확신이 없을 때 "있다"고 답하려는 경향)을 분리해 준다. 신중한 참가자와 대담한 참가자는 민감도가 같아도 hit 비율이 크게 다를 수 있기 때문이다. 조건 순서를 무작위화하고, 훈련을 넣고, 제외 기준을 미리 정하고, 선호도에만 기대지 말고 접촉력·운동·지연·과제 성공을 기록하라.
-
-### 4. 다감각과 workload 주장
-
-특정한 가우시안·잡음 가정 아래에서 분산이 $\sigma_v^2$와 $\sigma_h^2$인 두 추정치는 정밀도 가중으로 결합된다.
-
-$$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$$
-
-이것은 모델이지 감각 우세의 보편 법칙이 아니다. 신뢰도, 시간 정렬, 과제 관련성, prior, 주의, 충돌이 cue가 융합할지 경쟁할지 따로 남을지를 결정한다. 마찬가지로 경고를 시각에서 촉각으로 옮긴다고 workload가 자동으로 줄지 않는다. 대표성 있는 다중 과제 시험이 필요하다.
-
-**계산해 읽기: 과제가 묻는 융합.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$이면 가중이 $4:1$이므로 $\hat x=\tfrac45x_v+\tfrac15x_h$이지 시각 단독이 아니다. $5\,\mathrm{N}$ 부근 힘 JND $8\%$는 *모집단* 증분 $0.4\,\mathrm{N}$이고, $5.2$ 대 $5.0$은 JND의 절반이라 "모든 참가자가 알아챈다"를 허락하지 않는다. $250\,\mathrm{Hz}$ 진동을 검출했다는 것은 삽입 성공이 아니다. 사슬은 검출 가능성 $\to$ 행동 $\to$ 결과다.
-
-### 5. 그림으로 먼저 보기
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 486" style="max-width:100%;height:auto" role="img" aria-label="패널 A는 명령 힘에서 P3 핸들과 손을 거쳐 응답으로 가는 자극과 1초, 0.5초, 1초의 시행 타임라인, 응답 안에만 있는 결정 기준을 보이고, 패널 B는 얼어붙은 여섯 비율을 직선 구간으로 이어 0.25, 0.50, 0.75의 교차점을 x25 = 4.65, PSE = 5.0429, x75 = 5.4714 N으로 내리고 0.8214 N의 2 JND 괄호와 PSE보다 43 mN 왼쪽의 기준 힘 5.00 N을 표시한다.">
   <text x="10" y="18" font-size="12.5" fill="currentColor">A · 자극이 어디서 오는가</text>
@@ -414,7 +360,7 @@ $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$
   <text x="389.9" y="435" font-size="12" fill="currentColor" text-anchor="middle">x<tspan font-size="11" dy="3">75</tspan><tspan dy="-3" dx="4.2">= 5.4714</tspan></text>
   <polyline points="93.6,379.5 176.6,352.5 259.5,316.5 342.5,285 425.4,253.5 508.4,235.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/>
   <g fill="currentColor"><circle cx="93.6" cy="379.5" r="4.2"/><circle cx="176.6" cy="352.5" r="4.2"/><circle cx="259.5" cy="316.5" r="4.2"/><circle cx="342.5" cy="285" r="4.2"/><circle cx="425.4" cy="253.5" r="4.2"/><circle cx="508.4" cy="235.5" r="4.2"/></g>
-  <g font-size="11" fill="currentColor" opacity="0.8"><text x="403.3" y="301.2">직선 구간 =</text><text x="403.3" y="315.2">§6의 선형 보간.</text><text x="403.3" y="329.2">적합한 곡선은 없다</text></g>
+  <g font-size="11" fill="currentColor" opacity="0.8"><text x="403.3" y="301.2">직선 구간 =</text><text x="403.3" y="315.2">§5의 선형 보간.</text><text x="403.3" y="329.2">적합한 곡선은 없다</text></g>
   <line x1="259.5" y1="388" x2="271.4" y2="388" stroke="currentColor" stroke-width="1.3"/>
   <g stroke="currentColor" stroke-width="1.1"><line x1="259.5" y1="385" x2="259.5" y2="391"/><line x1="271.4" y1="385" x2="271.4" y2="391"/></g>
   <text x="277.4" y="392" font-size="11.5" fill="currentColor">편향 +43 mN</text>
@@ -422,9 +368,69 @@ $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$
   <text x="276.3" y="473" font-size="12" fill="currentColor" text-anchor="middle">2 JND = 0.8214 N   (JND = 0.4107 N)</text>
 </svg>
 
-패널 A는 자극을 명령 힘에서 P3 핸들($m = 0.04\,\mathrm{kg}$, $b = 0.8\,\mathrm{N\cdot s/m}$)과 손을 거쳐 응답까지 따라가고(한 시행은 기준 힘 1초, 공백 0.5초, 비교 힘 1초), 결정 기준은 응답 상자 안에만 있으므로 임계값에는 명시한 $p$가 필요하다. 패널 B는 얼어붙은 비율 여섯을 직선 구간으로 잇고(§6의 선형 보간이며 아무것도 적합하지 않았다), $0.25$, $0.50$, $0.75$와 만나는 점을 축으로 내려 $x_{25} = 4.65$, $\mathrm{PSE} = 5.0429$, $x_{75} = 5.4714\,\mathrm{N}$를 얻는다. 바깥 둘 사이의 괄호가 $2\,\mathrm{JND} = 0.8214\,\mathrm{N}$이고, 기준 $F_{\text{ref}} = 5.00\,\mathrm{N}$은 PSE보다 $43\,\mathrm{mN}$ 왼쪽, 곧 §6 Step 7의 편향만큼 떨어져 있다.
+패널 A는 자극을 명령 힘에서 P3 핸들($m = 0.04\,\mathrm{kg}$, $b = 0.8\,\mathrm{N\cdot s/m}$)과 손을 거쳐 응답까지 따라가고(한 시행은 기준 힘 1초, 공백 0.5초, 비교 힘 1초), 결정 기준은 응답 상자 안에만 있으므로 임계값에는 명시한 $p$가 필요하다. 패널 B는 얼어붙은 비율 여섯을 직선 구간으로 잇고(§5의 선형 보간이며 아무것도 적합하지 않았다), $0.25$, $0.50$, $0.75$와 만나는 점을 축으로 내려 $x_{25} = 4.65$, $\mathrm{PSE} = 5.0429$, $x_{75} = 5.4714\,\mathrm{N}$를 얻는다. 셋은 더 세다고 판정되는 비율이 4분의 1, 절반, 4분의 3인 비교 힘이다(이름은 §2에서 붙인다). 바깥 둘 사이의 괄호가 $2\,\mathrm{JND} = 0.8214\,\mathrm{N}$이고 최소 식별차(JND)는 그 폭의 절반이며, 기준 $F_{\text{ref}} = 5.00\,\mathrm{N}$은 PSE보다 $43\,\mathrm{mN}$ 왼쪽, 곧 §5 Step 7의 편향만큼 떨어져 있다.
 
-### 6. 대상으로 한 번 끝까지: 임계값, JND, Weber 분수
+### 1. 촉각은 능동 센싱 루프다
+
+**Cutaneous** cue는 피부 변형에서, **kinesthetic·proprioceptive** cue는 사지가 움직일 때 근육·힘줄·관절과 피부 신장에서 나온다. 햅틱 지각은 이 둘을 운동 명령과, 흔히 시각·청각과도 결합한다. 수동 자극은 주어진 cue가 무엇을 불러일으키는지 묻고, 능동 촉각은 사람이 탐색 동작까지 고른다. 질감, 경도, 온도, 무게, 정확한 형상은 서로 다른 탐색 절차(사람이 어떤 성질을 알아내려고 쓰는 정형화된 손동작. 질감에는 옆으로 문지르기, 경도에는 누르기, 온도에는 가만히 대고 있기)를 부르므로, 장치는 목표 과제가 실제로 요구하는 움직임으로 평가해야 한다.
+
+흔히 쓰는 수용기 이름표는 유용하지만 근사다. 이름에서 SA는 slowly adapting(지속 자극 동안 계속 발화), RA는 rapidly adapting(주로 자극이 변할 때 발화)이고, I형은 수용장이 작고 II형은 크다.
+
+| 구심신경 부류 | 적응·수용장 | 특히 잘 알려 주는 것 |
+|---|---|---|
+| SA-I / Merkel | 느림, 작은 수용장 | 지속 압력, 경계, 거친 형태 |
+| RA-I / Meissner | 빠름, 작은 수용장 | 저주파 과도, 미끄럼 시작 |
+| SA-II / Ruffini | 느림, 큰 수용장 | 피부 신장, 손 자세 |
+| RA-II / Pacinian | 빠름, 큰 수용장 | 고주파 진동과 충격 |
+
+주파수 대역은 서로 겹치고 접촉자 크기, 부위, 예압, 파형에 따라 달라진다. "250 Hz가 최적"이라는 진술은 그 조건들 없이는 불완전하다.
+
+### 2. 임계값, PSE, JND
+
+**심리측정 함수**는 물리 자극 $x$를 반응 확률로 사상한다. 예를 들어 $P(\text{비교 자극이 더 강하다고 판정}\mid x)$이다. 그 중간점이 **주관적 등가점**(PSE)을 정의할 수 있다. 2대안 비교에서 흔한 관례 하나는 곡선에서 최소 식별차(JND)를 읽는 것이다. $x_{75}$와 $x_{25}$는 더 강하다고 판정되는 비율이 각각 75%와 25%인 자극 수준이므로, 그 간격의 절반은 판단이 믿을 만하게 바뀌려면 자극이 PSE에서 얼마나 움직여야 하는지를 잰다.
+
+$$\mathrm{JND}=\frac{x_{75}-x_{25}}{2}.$$
+
+이것은 보편적 정의가 아니다. yes/no 검출, $n$대안 선택, 적합된 함수는 각각 다른 chance level과 임계 기준을 쓴다. 50% 임계값이라는 말은 반응 과제를 명시한 뒤에만 의미를 갖는다.
+
+**다섯 용어의 정의.** 다섯 모두 피부의 성질이 아니라 *곡선에 적용한 관례*다. 그래서 각각 자기 과제를 달고 다녀야 한다. §5가 이 다섯을 running object 위에서 전부 계산한다. [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §1]]은 같은 핸들 위의 강성 관찰자에 대해 이 관례들을 조건·예·반례까지 온전히 정의하고, 그 §2는 1-up-$n$-down 계단법이 자리 잡는 기준 $p^\ast=2^{-1/n}$을 유도한다.
+
+- **2대안 강제 선택(2AFC)** — *반응 과제*이고, 조건 셋으로 정의된다. 대안이 정확히 둘 제시되고, 매 시행 응답이 강제되며, 어느 쪽이 기준인지를 실험자가 고정한다. *예*: running object의 두 구간. *반례*: "힘을 1에서 7로 평정하라". 이것은 평정 척도이고 그 중간점은 설계가 고정한 chance level이 아니라 참가자가 고르는 기준이다. 중요한 이유는 대안의 수가 chance level을 정하고($1/2$), chance level이 어떤 $p$가 임계값이 될지를 정하기 때문이다.
+- **임계값 $x_p$** — *자극 수준*이다. 반응 확률이 당신이 이름 붙인 기준 $p$와 같아지는 수준. 그래서 $p$와 과제가 둘 다 없는 "그 임계값"은 아직 양이 아니고, 같은 cue의 "임계값"을 보고한 두 논문이 같은 곡선의 다른 점을 보고한 것일 수 있다.
+- **주관적 등가점(PSE)** — 비교 곡선에서 *$p=0.5$인 임계값*이다. 더 세다고 답할 확률과 더 약하다고 답할 확률이 같아지는 비교 수준. *예*: 그림의 $5.0429\,\mathrm{N}$, §5 Step 3에서 계산한다. *반례*: 기준 힘. $\mathrm{PSE}\neq F_{\text{ref}}$이면 그 차이는 이 참가자가 이 장치와 이 구간 순서에서 갖는 일정한 편향이고, 평균으로 지워 버릴 잡음이 아니라 그 쌍에 관한 발견이다.
+- **JND** — *자극 차이*다. 위 공식의 관례대로 25%와 75% 임계값 사이 간격의 절반. *예*: 그림의 괄호 $0.8214\,\mathrm{N}$의 절반인 $0.4107\,\mathrm{N}$(§5 Step 5). 지각이 켜지는 계단의 위치가 아니라 불확실 구간의 폭을 잰다.
+- **Weber 분수 $k$** — *무차원 비*다. JND를 그것을 잰 기준 세기로 나눈 값:
+
+$$k=\frac{\mathrm{JND}}{I},$$
+
+여기서 $I$는 작동점의 세기(§5에서는 PSE)다. 다섯 중 작동점을 가로질러 비교할 수 있는 유일한 양이 $k$이고, 그것조차 국소적으로만 그렇다.
+
+**Weber 법칙**은 국소적인 경험 근사 $\Delta I/I\approx k$다. 구별에 필요한 절대 증가량이 기준 세기와 함께 커진다고 예측한다. 같은 상대 증가량을 적분하면 Fechner의 로그 척도(지각된 크기가 물리 세기의 로그에 대략 비례해 커진다)가 동기를 얻지만, 두 법칙 중 어느 것도 모든 세기와 모든 감각 양상에서 정확하지는 않다.
+
+계산해 읽기: 5 N 부근에서 힘 JND가 8%라면 알아챌 만한 증가량의 첫 추정은 $0.08(5)=0.4$ N이다. 이것은 모든 참가자가 5.4 N을 알아챈다는 증명이 아니라, 그 작동점 부근에서 기준에 의존하는 모집단 반응을 서술한 것이다.
+
+### 3. 실험 고르기
+
+| 질문 | 쓸 만한 방법 | 주된 위험 |
+|---|---|---|
+| 대략의 임계값을 빨리 찾기 | staircase · 적응적 up–down | 수렴이 규칙과 실수율에 달림 |
+| 전체 심리측정 곡선 추정 | constant stimuli | 시행이 많고 순서·피로가 개입 |
+| 사용자가 감각을 맞추게 하기 | adjustment | 반응 편향과 anchoring |
+| 두 인터페이스 비교 | within-subject counterbalanced | 이월 효과와 학습 |
+
+hit뿐 아니라 false alarm도 재라. 신호 검출 분석이 민감도(자극이 있을 때와 없을 때를 실제로 얼마나 잘 구별하는가)와 반응 기준(확신이 없을 때 "있다"고 답하려는 경향)을 분리해 준다. 신중한 참가자와 대담한 참가자는 민감도가 같아도 hit 비율이 크게 다를 수 있기 때문이다. 조건 순서를 무작위화하고, 훈련을 넣고, 제외 기준을 미리 정하고, 선호도에만 기대지 말고 접촉력·운동·지연·과제 성공을 기록하라.
+
+### 4. 다감각과 workload 주장
+
+특정한 가우시안·잡음 가정 아래에서 분산이 $\sigma_v^2$와 $\sigma_h^2$인 두 추정치는 정밀도 가중으로 결합된다.
+
+$$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$$
+
+이것은 모델이지 감각 우세의 보편 법칙이 아니다. 신뢰도, 시간 정렬, 과제 관련성, prior, 주의, 충돌이 cue가 융합할지 경쟁할지 따로 남을지를 결정한다. 마찬가지로 경고를 시각에서 촉각으로 옮긴다고 workload가 자동으로 줄지 않는다. 대표성 있는 다중 과제 시험이 필요하다.
+
+**계산해 읽기: 과제가 묻는 융합.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$이면 가중이 $4:1$이므로 $\hat x=\tfrac45x_v+\tfrac15x_h$이지 시각 단독이 아니다. $5\,\mathrm{N}$ 부근 힘 JND $8\%$는 *모집단* 증분 $0.4\,\mathrm{N}$이고, $5.2$ 대 $5.0$은 JND의 절반이라 "모든 참가자가 알아챈다"를 허락하지 않는다. $250\,\mathrm{Hz}$ 진동을 검출했다는 것은 삽입 성공이 아니다. 사슬은 검출 가능성 $\to$ 행동 $\to$ 결과다.
+
+### 5. 대상으로 한 번 끝까지: 임계값, JND, Weber 분수
 
 **Step 1 — 보간 규칙.** 시험한 두 수준 사이에서 표는 아무 말도 하지 않는다. 그래도 임계값이 존재하게 하는 가장 약한 가정은 양쪽 점을 잇는 직선이다. 기준 $p$의 양옆 행을 $(x_i,p_i)$, $(x_{i+1},p_{i+1})$이라 하면
 
@@ -474,7 +480,7 @@ $$\frac{\mathrm{JND}}{\Delta F}=\frac{0.4107}{0.0245}=16.7\ \text{카운트}$$
 
 ### 스스로 점검
 
-1. §6은 같은 곡선에서 숫자 둘을 보고한다. JND $0.4107\,\mathrm{N}$과 편향 $+43\,\mathrm{mN}$이다. 이 참가자의 곡선 전체가 오른쪽으로 $0.1\,\mathrm{N}$ 미끄러진다면 둘 중 무엇이 바뀌는가? 그 사실이 각 숫자가 무엇을 재는지에 대해 무엇을 말해 주는가?
+1. §5는 같은 곡선에서 숫자 둘을 보고한다. JND $0.4107\,\mathrm{N}$과 편향 $+43\,\mathrm{mN}$이다. 이 참가자의 곡선 전체가 오른쪽으로 $0.1\,\mathrm{N}$ 미끄러진다면 둘 중 무엇이 바뀌는가? 그 사실이 각 숫자가 무엇을 재는지에 대해 무엇을 말해 주는가?
 2. 동료가 Step 5를 읽고 "그러면 이 참가자는 $0.41\,\mathrm{N}$ 아래로는 아무것도 못 느낀다"고 말한다. 이 문장의 서로 다른 오류 둘을 지적하라.
 3. §2의 다섯 용어 중 작동점을 옮겨 가며 쓸 수 있는 것은 Weber 분수뿐이다. 왜인가? 그리고 과제의 $2\,\mathrm{N}$ 결과는 그것이 얼마나 멀리까지 옮겨 가는지에 대해 무엇을 말하는가?
 4. 더 선명한 진동이 원격조작 과제를 개선하지 못할 수 있는 이유는?
@@ -495,18 +501,18 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**와 이 페이지를 쓴다. 
 |---|---:|---:|---:|---:|---:|---:|
 | 더 세다고 판정 (40 중) | 4 | 10 | 18 | 27 | 34 | 38 |
 
-1. **그려라.** 이 표로 §5 그림의 두 패널을 그려라. 가로축은 이제 1.6에서 2.5 N이다. $F_{\text{ref}}=2.00\,\mathrm{N}$, 기준선 셋, $2\,\mathrm{JND}$ 괄호를 표시하라. 패널 A에서는 실제로 바뀐 것만 바꿔라.
-2. **유도하라.** (a) §6의 규칙으로 $x_{25}$, PSE, $x_{75}$. 셋 중 하나는 보간이 필요 없다. 어느 것이고 왜인가. (b) JND와 Weber 분수 $k$. (c) 편향 $\mathrm{PSE}-F_{\text{ref}}$. (d) JND를 P3 엔코더 카운트 수의 벽 힘으로, 그리고 밀리미터 단위 침투로.
-3. **해석하라.** (a) $k$를 §6의 $8.14\%$와 비교하라. 절대 JND는 줄고 분수는 올랐다. Weber 법칙의 어느 절반이 살아남았고 어느 절반이 죽었는가? (b) 어떤 장치가 $5.2\,\mathrm{N}$ 대 $5.0\,\mathrm{N}$을 반사하고 논문이 모든 참가자가 알아챈다고 주장한다. §6의 숫자로, 정확히 무엇이 틀렸는가? (c) 다른 논문이 "사용자가 250 Hz 진동을 검출했으므로 그 cue가 삽입을 개선했다"고 한다. 인과 사슬의 어느 화살표를 건너뛰었고, 각각에서 무엇을 재겠는가? (d) 센서 둘, $\sigma_v=2\,\mathrm{mm}$와 $\sigma_h=4\,\mathrm{mm}$를 정밀도 가중으로 융합한다. $\hat x$를 쓰고, "시각이 우세하므로 햅틱 잡음은 상관없다"가 모델에서 무엇을 떨어뜨렸는지 말하라.
+1. **그려라.** 이 표로 맨 앞 그림의 두 패널을 그려라. 가로축은 이제 1.6에서 2.5 N이다. $F_{\text{ref}}=2.00\,\mathrm{N}$, 기준선 셋, $2\,\mathrm{JND}$ 괄호를 표시하라. 패널 A에서는 실제로 바뀐 것만 바꿔라.
+2. **유도하라.** (a) §5의 규칙으로 $x_{25}$, PSE, $x_{75}$. 셋 중 하나는 보간이 필요 없다. 어느 것이고 왜인가. (b) JND와 Weber 분수 $k$. (c) 편향 $\mathrm{PSE}-F_{\text{ref}}$. (d) JND를 P3 엔코더 카운트 수의 벽 힘으로, 그리고 밀리미터 단위 침투로.
+3. **해석하라.** (a) $k$를 §5의 $8.14\%$와 비교하라. 절대 JND는 줄고 분수는 올랐다. Weber 법칙의 어느 절반이 살아남았고 어느 절반이 죽었는가? (b) 어떤 장치가 $5.2\,\mathrm{N}$ 대 $5.0\,\mathrm{N}$을 반사하고 논문이 모든 참가자가 알아챈다고 주장한다. §5의 숫자로, 정확히 무엇이 틀렸는가? (c) 다른 논문이 "사용자가 250 Hz 진동을 검출했으므로 그 cue가 삽입을 개선했다"고 한다. 인과 사슬의 어느 화살표를 건너뛰었고, 각각에서 무엇을 재겠는가? (d) 센서 둘, $\sigma_v=2\,\mathrm{mm}$와 $\sigma_h=4\,\mathrm{mm}$를 정밀도 가중으로 융합한다. $\hat x$를 쓰고, "시각이 우세하므로 햅틱 잡음은 상관없다"가 모델에서 무엇을 떨어뜨렸는지 말하라.
 
 > [!note]- 그리는 법 · How to draw it
 > - 패널 A: 왼쪽에서 오른쪽으로 상자 넷의 사슬(명령 힘, $m$과 $b$를 적은 P3 핸들, $k_h$와 $b_h$를 적은 손, 응답)을 그리고, 핸들이 미는 방향을 $+x$로 표시한다. 그 아래에 시행을 타임라인으로 그린다: $F_{\text{ref}}$로 1초, 0.5초 공백, $F_c$로 1초, 그다음 응답.
 > - 응답 상자 옆에, 사슬이 나르지 않는 양 하나를 적는다. 참가자의 결정 기준이다. 그 상자 안에만 있고, 임계값에 $p$를 명시해야 하는 이유가 바로 그것이다.
 > - 패널 B: 가로축은 비교 힘, 세로축은 0에서 1까지 더 세다고 판정한 비율이다. 각 수준의 비율은 40 중 판정 수로 계산한다.
-> - 이웃한 점끼리 매끈한 S자가 아니라 직선 구간으로 잇는다. 그 직선들이 정확히 §6의 선형 보간이고, 심리측정 함수를 적합한 적이 없다는 것을 그림이 보여야 한다.
+> - 이웃한 점끼리 매끈한 S자가 아니라 직선 구간으로 잇는다. 그 직선들이 정확히 §5의 선형 보간이고, 심리측정 함수를 적합한 적이 없다는 것을 그림이 보여야 한다.
 > - $p=0.25$, $0.50$, $0.75$에 수평선을 긋고, 각 교차점에서 축으로 수직선을 내려 세 발을 $x_{25}$, PSE, $x_{75}$로 이름 붙인다.
 > - $x_{25}$에서 $x_{75}$까지 괄호를 치고 $2\,\mathrm{JND}$라고 적는다. JND는 그 폭의 절반이지, PSE에서 잰 거리가 아니다.
-> - $F_{\text{ref}}$는 다른 모양의 눈금으로 표시해서, 기준과 PSE 사이의 간격(§6 Step 7의 편향)이 주장이 아니라 눈에 보이게 한다.
+> - $F_{\text{ref}}$는 다른 모양의 눈금으로 표시해서, 기준과 PSE 사이의 간격(§5 Step 7의 편향)이 주장이 아니라 눈에 보이게 한다.
 
 > [!tip]- 정답 · Solutions
 > 1. 패널 A는 힘 라벨 둘 말고는 그대로다. 사슬, 핸들 상수, 타임라인은 같은 대상이다. 패널 B에는 $p=0.100,0.250,0.450,0.675,0.850,0.950$의 새 점 여섯이 들어간다. $p=0.25$ 선이 시험한 수준에서 데이터를 정확히 만나므로, 그 발은 구간 안이 아니라 찍은 점 위에 떨어진다.

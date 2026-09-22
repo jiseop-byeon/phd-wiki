@@ -25,12 +25,14 @@ flowchart LR
     D --> G["11.4 Greedy<br/>& MST"]
     C --> P["11.5 Dynamic<br/>programming"]
     D --> R["11.6 Graphs<br/>& search"]
-    G --> R
-    P --> R
+    P -.->|"helps"| R
+    G -.->|"see also"| R
     R --> I["11.8 Robotics & AI<br/>implementation problems"]
     D --> W["11.7 Interview-ready<br/>code"]
-    W --> I
+    W -.->|"helps"| I
 ```
+
+A solid arrow means the later page's Prerequisites callout requires the earlier page. A dashed arrow means useful but not required: Bellman–Ford in 11.6 is a dynamic program (11.5), 11.6 §8 only points to 11.4 for the spanning-tree proofs, and the solving routine of 11.7 helps with the problems of 11.8.
 
 ### Recommended path
 
@@ -59,7 +61,7 @@ Each week, re-solve two old problems from a blank file without looking. Recall, 
 | Needed here | Review first |
 |---|---|
 | logarithms, sums, induction | [[02-foundations/engineering-math\|0.5 Engineering Math]] |
-| expectation, indicator variables (randomized algorithms) | [[02-foundations/probability\|3. Probability]] |
+| expectation and its linearity (randomized algorithms); the indicator-variable counting trick is taught where it is first used, [[02-foundations/algorithms/data-structures\|11.2 §3]] | [[02-foundations/probability\|3. Probability §2]] |
 | vectors and norms (nearest-neighbour, 11.8) | [[02-foundations/linear-algebra\|1. Linear Algebra]] |
 | Bellman equation (the DP bridge) | [[02-foundations/rl-basics\|7. RL Basics]] |
 
@@ -85,12 +87,14 @@ flowchart LR
     D --> G["11.4 그리디<br/>·MST"]
     C --> P["11.5 동적<br/>계획법"]
     D --> R["11.6 그래프<br/>·탐색"]
-    G --> R
-    P --> R
+    P -.->|"도움"| R
+    G -.->|"참고"| R
     R --> I["11.8 로봇·AI<br/>구현 문제"]
     D --> W["11.7 인터뷰용<br/>코드"]
-    W --> I
+    W -.->|"도움"| I
 ```
+
+실선 화살표는 뒤 페이지의 선수 지식 칸이 앞 페이지를 요구한다는 뜻이다. 점선 화살표는 도움이 되지만 필수는 아니라는 뜻이다. 11.6의 Bellman–Ford는 동적 계획법(11.5)이고, 11.6 §8은 신장 트리 증명을 11.4에 맡길 뿐이며, 11.7의 풀이 순서는 11.8의 문제를 풀 때 도움이 된다.
 
 ### 추천 경로
 
@@ -119,7 +123,7 @@ flowchart LR
 | 여기서 필요한 것 | 먼저 복습할 곳 |
 |---|---|
 | 로그, 합, 귀납법 | [[02-foundations/engineering-math\|0.5 공학 수학]] |
-| 기댓값, 지시 변수(무작위 알고리즘) | [[02-foundations/probability\|3. 확률]] |
+| 기댓값과 그 선형성(무작위 알고리즘). 지시 변수로 세는 기법은 처음 쓰는 곳인 [[02-foundations/algorithms/data-structures\|11.2 §3]]에서 가르친다 | [[02-foundations/probability\|3. 확률 §2]] |
 | 벡터와 노름(최근접점, 11.8) | [[02-foundations/linear-algebra\|1. 선형대수]] |
 | 벨만 방정식(DP 다리) | [[02-foundations/rl-basics\|7. 강화학습 기초]] |
 

@@ -10,12 +10,15 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.9** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> Differentiating polynomials ([[02-foundations/engineering-math|0.5 §1]]) and the idea of separating path from timing are all you need — the lightest chapter in the track. Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] carries the worked move.
-> 다항식 미분([[02-foundations/engineering-math|0.5 §1]])과 경로/시간의 분리라는 아이디어만 있으면 된다 — 이 장은 트랙에서 가장 가벼운 장이다. 계산은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**로 한다.
+> Differentiating polynomials ([[02-foundations/engineering-math|0.5 §1]]) and the idea of separating path from timing are all you need — the lightest chapter in the track. Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] carries the worked move, whose two end poses are the contact configurations of [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]]; §1's remark on torque uses the equation of motion of [[04-robotics/modern-robotics/ch08-dynamics|ch.8]].
+> 다항식 미분([[02-foundations/engineering-math|0.5 §1]])과 경로/시간의 분리라는 아이디어만 있으면 된다 — 이 장은 트랙에서 가장 가벼운 장이다. 계산은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**로 하고, 그 이동의 두 끝 자세는 [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 접촉 컨피규레이션이다. §1의 토크 이야기는 [[04-robotics/modern-robotics/ch08-dynamics|8장]]의 운동 방정식을 쓴다.
 
 ## English
 
 **Core question**: how do we turn "go from A to B" into a smooth, executable function of time?
+
+> [!note] First pass · 처음이라면
+> Read the running plant with its warning, the picture, and parts A and B of the worked case — the trapezoid and the cubic on the elbow flip, and which limit binds each — then §2 and §3, which define the two objects A and B used. Parts C and D (the comparison and the crossover), §1's list with its quintic and time-optimal notes, and the worked-example callout are second pass.
 
 ### Running plant · 이 페이지의 장치
 
@@ -105,9 +108,9 @@ The elbow flip on plant **P2**, $|\Delta\theta_2| = \pi$, timed two ways on one 
 
 ### Worked on the plant · 장치로 한 번 끝까지
 
-Both joints ride one scaling $s(t)$, so joint $i$ has $\dot\theta_i = \Delta\theta_i\,\dot s$ and $\ddot\theta_i = \Delta\theta_i\,\ddot s$. Every peak is therefore proportional to $|\Delta\theta_i|$, and the joint with the largest $|\Delta\theta_i|$ hits its limit first. Here that is the elbow, at $|\Delta\theta_2| = \pi = 3.1416\,\mathrm{rad}$, exactly twice the shoulder. **Design the scaling for the elbow and the shoulder follows for free.**
+Both joints ride one time scaling $s(t)$ — a monotone map from $[0, T]$ onto $[0, 1]$ that says how far along the path the arm is at time $t$, defined in §2 — so joint $i$ has $\dot\theta_i = \Delta\theta_i\,\dot s$ and $\ddot\theta_i = \Delta\theta_i\,\ddot s$. Every peak is therefore proportional to $|\Delta\theta_i|$, and the joint with the largest $|\Delta\theta_i|$ hits its limit first. Here that is the elbow, at $|\Delta\theta_2| = \pi = 3.1416\,\mathrm{rad}$, exactly twice the shoulder. **Design the scaling for the elbow and the shoulder follows for free.**
 
-**A — the trapezoid.** First decide whether a cruise phase exists at all. Ramping to $v_{\max}$ and straight back down covers $2 \cdot \tfrac12 a_{\max}t_a^2$ with $t_a = v_{\max}/a_{\max}$, i.e.
+**A — the trapezoid** (constant acceleration $+a_{\max}$, cruise at $v_{\max}$, constant deceleration $-a_{\max}$; defined in §3). First decide whether a cruise phase exists at all. Ramping to $v_{\max}$ and straight back down covers $2 \cdot \tfrac12 a_{\max}t_a^2$ with $t_a = v_{\max}/a_{\max}$, i.e.
 
 $$\Delta\theta^{*} = \frac{v_{\max}^2}{a_{\max}} = \frac{0.8^2}{2} = 0.32\ \mathrm{rad}$$
 
@@ -119,7 +122,7 @@ and since our $3.1416\,\mathrm{rad}$ is far above that, the profile is a true tr
 
 Check the shoulder, which rides the same $s(t)$ at half the amplitude: peak velocity $0.5 \times 0.8 = 0.4\,\mathrm{rad/s}$ and peak acceleration $0.5 \times 2 = 1\,\mathrm{rad/s^2}$. Both are at half their limits, so the shoulder is idle in the binding sense — it never constrains anything.
 
-**B — the cubic, on the same move.** For $s(t) = 3t^2/T^2 - 2t^3/T^3$ the unit-move peaks are $\dot s_{\max} = 1.5/T$ at $t = T/2$ and $|\ddot s|_{\max} = 6/T^2$ at the two ends, so the elbow's peaks are $1.5\,\Delta\theta/T$ and $6\,\Delta\theta/T^2$. Invert each limit separately for the shortest admissible duration:
+**B — the cubic, on the same move.** For $s(t) = 3t^2/T^2 - 2t^3/T^3$, differentiating gives $\dot s = (6t/T^2)(1 - t/T)$ and $\ddot s = (6/T^2)(1 - 2t/T)$, so the unit-move peaks are $\dot s_{\max} = 1.5/T$ at $t = T/2$ and $|\ddot s|_{\max} = 6/T^2$ at the two ends, and the elbow's peaks are $1.5\,\Delta\theta/T$ and $6\,\Delta\theta/T^2$. Invert each limit separately for the shortest admissible duration:
 
 $$T_v = \frac{1.5\,\Delta\theta}{v_{\max}} = \frac{1.5 \times 3.1416}{0.8} = 5.8905\ \mathrm{s}, \qquad T_a = \sqrt{\frac{6\,\Delta\theta}{a_{\max}}} = \sqrt{\frac{6 \times 3.1416}{2}} = 3.0700\ \mathrm{s}$$
 
@@ -146,6 +149,7 @@ because $1.5\Delta\theta/v_{\max} = \sqrt{6\Delta\theta/a_{\max}}$ squares to $2
   velocities) and quintic (zero endpoint accelerations too — smoother torques);
   **trapezoidal** velocity profiles (accelerate–cruise–decelerate) — what industrial
   controllers actually run.
+  - The quintic's numbers, derived: with $u = t/T$ it is $s = 10u^3 - 15u^4 + 6u^5$, the one quintic with $s$, $\dot s$ and $\ddot s$ fixed at both ends ($0, 0, 0$ and $1, 0, 0$). Then $\dot s = (30/T)\,u^2(1-u)^2$ peaks at $u = \tfrac12$ at $30/16 = 1.875/T$, and $\ddot s = (60/T^2)\,u(1-u)(1-2u)$ peaks where $1 - 6u + 6u^2 = 0$, at $u = \tfrac12 - \sqrt3/6 = 0.2113$, with value $(10/\sqrt3)/T^2 = 5.77/T^2$. Those are the two coefficients the worked example below uses.
 - **Via points**: interpolate through waypoints with splines — watch for overshoot between
   close points.
 - **Time-optimal time scaling**: given actuator limits and the
@@ -153,6 +157,7 @@ because $1.5\Delta\theta/v_{\max} = \sqrt{6\Delta\theta/a_{\max}}$ squares to $2
   fixed path — an [[02-foundations/optimization|optimization]] problem with a classic
   bang-bang structure (at every instant the path acceleration sits at its maximum or its
   minimum, never in between — typically full acceleration, then a switch to full deceleration).
+  - With constant limits on one joint the structure takes two lines to see. A move that starts and ends at rest has $|\dot\theta(t)| \le \min(a_{\max}t,\ v_{\max},\ a_{\max}(T - t))$ at every instant, so the distance it can cover in time $T$ is at most the area under that bound — which is exactly the trapezoid of the worked case, reached only by full acceleration, cruise at the limit, full deceleration. So the elbow flip's $4.327\,\mathrm{s}$ cannot be beaten under these limits; drop the speed limit and the bound becomes a triangle, the pure bang-bang flip taking $2\sqrt{\pi/2} = 2.507\,\mathrm{s}$.
 - Smoothness matters physically: discontinuous acceleration = torque spikes = vibration
   (the torque is $\tau = M(\theta)\ddot\theta + c + g$ from ch.8, and $c$, $g$ vary smoothly
   with the state, so a jump in $\ddot\theta$ is a jump in commanded torque)
@@ -178,7 +183,7 @@ A **time scaling** is a *function* $s: [0,T] \to [0,1]$, not a path and not a tr
 
 - **Endpoints**: $s(0) = 0$ and $s(T) = 1$, so the move starts at the start and finishes at the goal.
 - **Monotonicity**: $\dot s(t) \ge 0$, so the robot never retraces the path. A scaling that dips backwards is a different path, not a different timing.
-- **Smoothness to the order the hardware needs**: at least $C^1$ so velocity is continuous; $C^2$ if torque must be continuous.
+- **Smoothness to the order the hardware needs**: at least $C^1$ so velocity is continuous; $C^2$ if torque must be continuous, because the commanded torque is $\tau = M(\theta)\ddot\theta + c + g$ (§1's last bullet), so a jump in $\ddot\theta$ is a jump in $\tau$.
 
 The trajectory is then the composition $\theta(t) = \theta(s(t))$, and differentiating it once and twice gives the two identities every calculation on this page uses:
 
@@ -246,6 +251,9 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 ## 한국어
 
 **핵심 질문**: "A에서 B로 가라"를 매끄럽고 실행 가능한 시간 함수로 어떻게 바꾸는가?
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 장치와 그 경고, 그림, 그리고 '장치로 한 번 끝까지'의 A와 B(엘보 뒤집기의 사다리꼴과 3차, 그리고 각각 어느 한계가 걸리는지)를 읽고, 이어서 A와 B가 쓴 두 대상을 정의하는 §2와 §3을 읽어라. C와 D(비교와 교차점), 5차와 시간 최적에 대한 메모가 있는 §1의 목록, 그리고 계산 예제 상자는 두 번째 읽기다.
 
 ### 이 페이지의 장치 · Running plant
 
@@ -331,9 +339,9 @@ P2의 엘보 뒤집기 $|\Delta\theta_2| = \pi$에 두 방식으로 시간을 �
 
 ### 장치로 한 번 끝까지 · Worked on the plant
 
-두 관절이 하나의 스케일링 $s(t)$를 타므로 관절 $i$는 $\dot\theta_i = \Delta\theta_i\,\dot s$, $\ddot\theta_i = \Delta\theta_i\,\ddot s$다. 따라서 모든 최댓값이 $|\Delta\theta_i|$에 비례하고, $|\Delta\theta_i|$가 가장 큰 관절이 먼저 한계에 닿는다. 여기서는 엘보이며 $|\Delta\theta_2| = \pi = 3.1416\,\mathrm{rad}$, 어깨의 정확히 두 배다. **엘보에 맞춰 스케일링을 설계하면 어깨는 저절로 따라온다.**
+두 관절이 하나의 시간 스케일링 $s(t)$ — 시각 $t$에 팔이 경로를 얼마나 갔는지를 말하는, $[0, T]$에서 $[0, 1]$로 가는 단조 함수, §2에서 정의 — 를 타므로 관절 $i$는 $\dot\theta_i = \Delta\theta_i\,\dot s$, $\ddot\theta_i = \Delta\theta_i\,\ddot s$다. 따라서 모든 최댓값이 $|\Delta\theta_i|$에 비례하고, $|\Delta\theta_i|$가 가장 큰 관절이 먼저 한계에 닿는다. 여기서는 엘보이며 $|\Delta\theta_2| = \pi = 3.1416\,\mathrm{rad}$, 어깨의 정확히 두 배다. **엘보에 맞춰 스케일링을 설계하면 어깨는 저절로 따라온다.**
 
-**A — 사다리꼴.** 먼저 순항 구간이 존재하는지부터 정한다. $v_{\max}$까지 올렸다가 곧바로 내리면 $t_a = v_{\max}/a_{\max}$일 때 $2 \cdot \tfrac12 a_{\max}t_a^2$를 이동하므로
+**A — 사다리꼴**(일정 가속 $+a_{\max}$, $v_{\max}$로 순항, 일정 감속 $-a_{\max}$; §3에서 정의). 먼저 순항 구간이 존재하는지부터 정한다. $v_{\max}$까지 올렸다가 곧바로 내리면 $t_a = v_{\max}/a_{\max}$일 때 $2 \cdot \tfrac12 a_{\max}t_a^2$를 이동하므로
 
 $$\Delta\theta^{*} = \frac{v_{\max}^2}{a_{\max}} = \frac{0.8^2}{2} = 0.32\ \mathrm{rad}$$
 
@@ -345,7 +353,7 @@ $$\Delta\theta^{*} = \frac{v_{\max}^2}{a_{\max}} = \frac{0.8^2}{2} = 0.32\ \math
 
 같은 $s(t)$를 절반 진폭으로 타는 어깨를 확인한다. 최대 속도 $0.5 \times 0.8 = 0.4\,\mathrm{rad/s}$, 최대 가속도 $0.5 \times 2 = 1\,\mathrm{rad/s^2}$. 둘 다 한계의 절반이라 어깨는 아무것도 구속하지 않는다.
 
-**B — 같은 이동의 3차.** $s(t) = 3t^2/T^2 - 2t^3/T^3$의 단위 이동 최댓값은 $t = T/2$에서 $\dot s_{\max} = 1.5/T$, 양 끝에서 $|\ddot s|_{\max} = 6/T^2$이므로 엘보의 최댓값은 $1.5\,\Delta\theta/T$와 $6\,\Delta\theta/T^2$다. 두 한계를 각각 뒤집어 최소 허용 시간을 구한다:
+**B — 같은 이동의 3차.** $s(t) = 3t^2/T^2 - 2t^3/T^3$을 미분하면 $\dot s = (6t/T^2)(1 - t/T)$, $\ddot s = (6/T^2)(1 - 2t/T)$이므로 단위 이동 최댓값은 $t = T/2$에서 $\dot s_{\max} = 1.5/T$, 양 끝에서 $|\ddot s|_{\max} = 6/T^2$이고, 엘보의 최댓값은 $1.5\,\Delta\theta/T$와 $6\,\Delta\theta/T^2$다. 두 한계를 각각 뒤집어 최소 허용 시간을 구한다:
 
 $$T_v = \frac{1.5\,\Delta\theta}{v_{\max}} = \frac{1.5 \times 3.1416}{0.8} = 5.8905\ \mathrm{s}, \qquad T_a = \sqrt{\frac{6\,\Delta\theta}{a_{\max}}} = \sqrt{\frac{6 \times 3.1416}{2}} = 3.0700\ \mathrm{s}$$
 
@@ -370,10 +378,12 @@ $1.5\Delta\theta/v_{\max} = \sqrt{6\Delta\theta/a_{\max}}$를 제곱하면 $2.25
 - **점대점 시간 스케일링**: 3차($s = 3t^2/T^2 - 2t^3/T^3$: 양 끝 속도 0)와 5차(양 끝
   가속도까지 0 — 토크가 더 매끄럽다); **사다리꼴** 속도 프로파일(가속–순항–감속) — 산업
   제어기가 실제로 도는 방식.
+  - 5차의 숫자를 유도하면: $u = t/T$로 $s = 10u^3 - 15u^4 + 6u^5$이고, 양 끝에서 $s$, $\dot s$, $\ddot s$를($0, 0, 0$과 $1, 0, 0$으로) 고정하는 유일한 5차식이다. 그러면 $\dot s = (30/T)\,u^2(1-u)^2$은 $u = \tfrac12$에서 최대 $30/16 = 1.875/T$이고, $\ddot s = (60/T^2)\,u(1-u)(1-2u)$는 $1 - 6u + 6u^2 = 0$인 $u = \tfrac12 - \sqrt3/6 = 0.2113$에서 최대이며 그 값은 $(10/\sqrt3)/T^2 = 5.77/T^2$이다. 아래 계산 예제가 쓰는 두 계수가 이것이다.
 - **경유점**: 스플라인으로 웨이포인트들을 통과 — 가까운 점 사이의 오버슈트를 조심.
 - **시간 최적 스케일링**: 액추에이터 한계와
   [[04-robotics/modern-robotics/ch08-dynamics|동역학]]이 주어졌을 때 고정 경로 위에서 가장
   빠른 $s(t)$ 찾기 — 고전적 뱅뱅 구조(매 순간 경로 가속도가 최댓값이나 최솟값에 붙어 있고 그 사이 값은 쓰지 않는다 — 보통 최대 가속 후 최대 감속으로 전환)를 갖는 [[02-foundations/optimization|최적화]] 문제.
+  - 관절 하나에 한계가 일정하면 이 구조는 두 줄로 보인다. 정지에서 출발해 정지로 끝나는 이동은 매 순간 $|\dot\theta(t)| \le \min(a_{\max}t,\ v_{\max},\ a_{\max}(T - t))$이므로, 시간 $T$ 동안 갈 수 있는 거리는 그 상한 아래의 넓이를 넘지 못한다. 그 넓이가 바로 '장치로 한 번 끝까지'의 사다리꼴이고, 최대 가속, 한계에서의 순항, 최대 감속으로만 거기 닿는다. 그래서 이 한계에서 엘보 뒤집기의 $4.327\,\mathrm{s}$는 더 줄일 수 없다. 속도 한계를 없애면 상한이 삼각형이 되고, 순수 뱅뱅 뒤집기는 $2\sqrt{\pi/2} = 2.507\,\mathrm{s}$가 걸린다.
 - 매끄러움은 물리적으로 중요하다: 불연속 가속도 = 토크 스파이크 = 진동
   (8장의 토크는 $\tau = M(\theta)\ddot\theta + c + g$이고 $c$, $g$는 상태에 따라 매끄럽게
   변하므로, $\ddot\theta$가 튀면 명령 토크도 튄다)
@@ -399,7 +409,7 @@ $1.5\Delta\theta/v_{\max} = \sqrt{6\Delta\theta/a_{\max}}$를 제곱하면 $2.25
 
 - **양 끝**: $s(0) = 0$, $s(T) = 1$. 출발점에서 출발해 목표에서 끝난다.
 - **단조성**: $\dot s(t) \ge 0$. 로봇이 경로를 되짚지 않는다. 거꾸로 내려가는 스케일링은 다른 타이밍이 아니라 다른 경로다.
-- **하드웨어가 요구하는 차수까지의 매끄러움**: 속도가 연속이려면 최소 $C^1$, 토크가 연속이어야 하면 $C^2$.
+- **하드웨어가 요구하는 차수까지의 매끄러움**: 속도가 연속이려면 최소 $C^1$, 토크가 연속이어야 하면 $C^2$. 명령 토크가 $\tau = M(\theta)\ddot\theta + c + g$(§1의 마지막 항목)이므로 $\ddot\theta$가 튀면 $\tau$도 튀기 때문이다.
 
 궤적은 합성 $\theta(t) = \theta(s(t))$이고, 한 번·두 번 미분하면 이 페이지의 모든 계산이 쓰는 항등식 둘이 나온다:
 

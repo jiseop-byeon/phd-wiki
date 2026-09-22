@@ -10,12 +10,10 @@ wiki-support: Working
 > [!note] Prerequisites · 선수 지식
 > None. Open this page whenever a problem set says **P1**–**P6**.
 > 없음. 과제가 **P1**–**P6**을 말하면 이 페이지를 연다.
->
-> Integrators · 적분기: [[02-foundations/lab-kernel|0.7 Lab Kernel]]
 
 ## English
 
-Six plants, numbers frozen once. Problem sets in Foundations and Robotics name a plant by id instead of re-specifying it. Change a number here and every lab that points here is using a different machine.
+Six plants, numbers frozen once. Problem sets in Foundations and Robotics name a plant by id instead of re-specifying it. Change a number here and every lab that points here is using a different machine. How to step one of them in time is the next page, [[02-foundations/lab-kernel|0.7 Lab Kernel]].
 
 The robotics running task — *move a tool to a panel and make controlled contact* — is **P2** carrying a tool, meeting a wall whose stiffness is the same order as **P3**.
 
@@ -98,7 +96,7 @@ How to step a continuous plant: [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Ho
 
 ## 한국어
 
-숫자 여섯 개를 한 번만 고정한다. 기초와 로보틱스 과제는 장치를 다시 정의하지 않고 **P1**–**P6**으로 부른다. 여기 숫자를 바꾸면 이 페이지를 가리키는 모든 랩이 다른 기계를 쓴다.
+장치 여섯 개, 숫자는 한 번만 고정한다. 기초와 로보틱스 과제는 장치를 다시 정의하지 않고 **P1**–**P6** 번호로 부른다. 여기 숫자를 바꾸면 이 페이지를 가리키는 모든 랩이 다른 기계를 쓴다. 이 장치들을 시간에 따라 전진하는 법은 다음 페이지 [[02-foundations/lab-kernel|0.7 Lab Kernel]]이다.
 
 로보틱스 관통 과제 — *도구를 패널까지 옮겨 힘을 조절하며 접촉한다* — 는 도구를 든 **P2**가 **P3** 정도의 강성을 가진 벽을 만나는 것이다.
 
@@ -122,7 +120,7 @@ $\theta=(0^\circ,90^\circ)$에서 전완이 위. 말단 $(1,1)\,\mathrm{m}$. 위
 
 $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\qquad M=\begin{pmatrix}3&1\\1&1\end{pmatrix},\qquad \det J=1$$
 
-위치 과제에서 작업공간 관성 $\Lambda=\mathrm{diag}(1,2)$. 말단은 $x$보다 $y$에서 두 배 무겁다. FK부터 힘 제어까지 이 팔을 쓴다.
+이 자세의 위치 과제에서 작업공간 관성은 $\Lambda=(JM^{-1}J^\top)^{-1}=\mathrm{diag}(1,2)$. 말단은 $x$보다 $y$에서 두 배 무겁다. FK부터 힘 제어까지 이 팔을 쓴다.
 
 관절마다의 구동계(DC 모터, 증폭기, $n=100$ 기어박스)는 [[04-robotics/actuators-drives|10.5 액추에이터·구동계]]에서 고정한다. 수평면에서 P2의 동역학은 기저 관성 파라미터 셋 $\pi=(2,1,1)\,\mathrm{kg\,m^2}$에 선형이고, 말단의 $3\,\mathrm{kg}$ 페이로드는 그것을 $(5,4,4)$로 만든다([[04-robotics/system-identification|5.5 시스템 식별 §9]]).
 

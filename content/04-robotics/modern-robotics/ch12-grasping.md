@@ -10,12 +10,15 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.12** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> You need the wrench (moment + force) concept from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]] and vector cross products. The object is the panel tile that P2 carries, defined below from [[02-foundations/lab-plants|0.6 Lab Plants]].
-> [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 렌치(모멘트+힘) 개념과 벡터 외적이 필요하다. 대상은 P2가 나르는 패널 타일이고, [[02-foundations/lab-plants|0.6 Lab Plants]]에서 아래와 같이 정의한다.
+> You need the wrench (moment + force) from [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3 §6]], the vector cross product from [[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §1]], and linear independence, rank and rank–nullity from [[02-foundations/linear-algebra|1. Linear Algebra §2]] — the closure test on this page is a rank check. The object is the panel tile that P2 carries, defined below from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장 §6]]의 렌치(모멘트+힘), [[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §1]]의 벡터 외적, 그리고 [[02-foundations/linear-algebra|1. 선형대수 §2]]의 선형 독립, 랭크, 랭크–널리티 정리가 필요하다. 이 페이지의 closure 검사가 랭크 검사다. 대상은 P2가 나르는 패널 타일이고, [[02-foundations/lab-plants|0.6 Lab Plants]]에서 아래와 같이 정의한다.
 
 ## English
 
 **Core question**: when does a grasp actually hold the object?
+
+> [!note] First pass · 처음이라면
+> Read the running plant, the picture and Steps 1–3 and 6 of the worked case — the cone as an angle, the four edge wrenches, the closure test, and the preload that actually holds the tile — then §3, the same test stated once for any set of contacts. Steps 4, 5 and 7 (frictionless contacts, the pinwheel, and a closure that survives any friction while the preload it needs diverges) and §2's definitions are the second pass, and §1's contact counts are the part to come back to when a paper quotes a finger number. Then the self-check and the problem set, which lowers the friction and shifts the centre of mass.
 
 ### Running plant · 이 페이지의 장치
 
@@ -30,7 +33,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 | friction | $\mu = 0.5$ | Coulomb, the same $\mu$ the chapter already uses |
 | preload | $f_n = 20\ \mathrm{N}$ per finger | the squeeze the gripper applies |
 
-The tile frame's origin is the centre of mass, which is also the midpoint of the two contacts; its $x$ axis is the squeeze axis and its $y$ axis is world-vertical, so gravity acts along $-y$. A planar wrench is written $w = (f_x,\ f_y,\ m_z)$ throughout.
+The tile frame's origin is the centre of mass, which is also the midpoint of the two contacts; its $x$ axis is the squeeze axis and its $y$ axis is world-vertical, so gravity acts along $-y$. A planar wrench is written $w = (f_x,\ f_y,\ m_z)$ throughout. That is force first, the order grasping papers use; [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3 §6]] writes the spatial wrench moment first, $\mathcal F=(m,\ f)$, so reorder the components when you move between the two.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -78,7 +81,7 @@ The tile frame's origin is the centre of mass, which is also the midpoint of the
   <text x="16" y="328" font-size="11" fill="currentColor" opacity="0.8">tile 0.200 × 0.100 m, 0.500 kg · μ = 0.5 · preload f<tspan dy="3.1" font-size="8.6">n</tspan><tspan dy="-3.1" dx="3.3">= 20 N per finger</tspan></text>
 </svg>
 
-The panel tile, $0.200 \times 0.100\,\mathrm{m}$ and $0.500\,\mathrm{kg}$, held by two point fingers at the midpoints of its short edges, $(\pm 0.100,\ 0)$, each contact with its inward normal and a friction cone of half-angle $\tan^{-1}0.5 = 26.565°$. The line joining the contacts lies inside both cones — here it coincides with the normals — and the $4.905\,\mathrm{N}$ weight at the centre of mass is carried by two tangential finger forces of $2.4525\,\mathrm{N}$. The box lists the four cone-edge wrenches $(f_x, f_y, m_z)$; $\lambda = (1,1,1,1)$ sums them to zero and their rank is 3, so the grasp is a force closure.
+The panel tile, $0.200 \times 0.100\,\mathrm{m}$ and $0.500\,\mathrm{kg}$, held by two point fingers at the midpoints of its short edges, $(\pm 0.100,\ 0)$, each contact with its inward normal and a friction cone of half-angle $\tan^{-1}0.5 = 26.565°$. The line joining the contacts lies inside both cones — here it coincides with the normals — and the $4.905\,\mathrm{N}$ weight at the centre of mass is carried by two tangential finger forces of $2.4525\,\mathrm{N}$. The box lists the four cone-edge wrenches $(f_x, f_y, m_z)$; $\lambda = (1,1,1,1)$ sums them to zero and their rank, the number of linearly independent directions among them ([[02-foundations/linear-algebra|1. Linear Algebra §2]]), is 3, so the grasp is a force closure.
 
 ### Worked on the plant · 장치로 한 번 끝까지
 
@@ -109,7 +112,7 @@ since a strictly positive null combination puts the origin in the *interior* of 
 
 $$w_{1^{+}} + w_{1^{-}} + w_{2^{+}} + w_{2^{-}} = (1{+}1{-}1{-}1,\ \ 0.5{-}0.5{+}0.5{-}0.5,\ \ -0.05{+}0.05{+}0.05{-}0.05) = (0,0,0)$$
 
-and the rank is 3 because three independent directions come out of pairs: $w_{1^{+}} + w_{1^{-}} = (2,0,0)$, $w_{1^{+}} + w_{2^{+}} = (0,1,0)$, and $w_{1^{+}} + w_{2^{-}} = (0,0,-0.1)$. Both conditions hold, so the two-finger grasp is a **force closure**. Cross-check it against the antipodal rule: the line joining the contacts runs along $\hat x$, which is the normal at both contacts, so it makes a $0°$ angle with each normal — well inside $26.565°$.
+and the rank is 3 because three independent directions come out of pairs: $w_{1^{+}} + w_{1^{-}} = (2,0,0)$, $w_{1^{+}} + w_{2^{+}} = (0,1,0)$, and $w_{1^{+}} + w_{2^{-}} = (0,0,-0.1)$. Both conditions hold, so the two-finger grasp is a **force closure** — closure with each contact using its whole friction cone; its frictionless twin, form closure, tested in Steps 4–5, uses the normals alone, and §3 defines both. Cross-check it against the antipodal rule of §1: the line joining the contacts runs along $\hat x$, which is the normal at both contacts, so it makes a $0°$ angle with each normal — well inside $26.565°$.
 
 **Step 4 — the same contacts without friction are not form closure.** Set $\mu = 0$ and only the normals survive: $w_1 = (1,0,0)$ and $w_2 = (-1,0,0)$. They cancel with $\lambda = (1,1)$, but the rank is $1$. Their positive span is one line, so the grasp resists nothing in $f_y$ and nothing in $m_z$ — the tile slides down and spins out. That is why frictionless planar form closure needs at least four contacts.
 
@@ -122,7 +125,11 @@ and the rank is 3 because three independent directions come out of pairs: $w_{1^
 | $c_3$ | $(-0.050,\ +0.050)$ | $(0,\ -1)$ | $(0,\ -1,\ +0.050)$ |
 | $c_4$ | $(+0.050,\ -0.050)$ | $(0,\ +1)$ | $(0,\ +1,\ +0.050)$ |
 
-Try $\lambda = (1,1,1,1)$: the sum is $(0,\ 0,\ +0.05)$, not zero — so that choice fails, and the test is not "any $\lambda$". Try $\lambda = (2,2,1,1)$: the sum is $(0,\ 0,\ -0.05-0.05+0.05+0.05) = (0,0,0)$, all coefficients positive, and the rank is 3. **Form closure.** Now move the same four contacts to the edge midpoints, $(\pm 0.100, 0)$ and $(0, \pm 0.050)$, so that every normal passes through the centre of mass. The wrenches become $(\pm1, 0, 0)$ and $(0, \pm1, 0)$, rank $2$, and no positive combination produces any $m_z$ at all: four contacts, the count satisfied, and the tile still free to spin. **The bound of four is necessary, not sufficient.**
+Try $\lambda = (1,1,1,1)$: the sum is $(0,\ 0,\ +0.05)$, not zero — so that choice fails, and the test is not "any $\lambda$". To find the one that works, write $\sum_i \lambda_i w_i = 0$ one component at a time:
+
+$$f_x:\ \lambda_1 - \lambda_2 = 0, \qquad f_y:\ -\lambda_3 + \lambda_4 = 0, \qquad m_z:\ -0.025(\lambda_1 + \lambda_2) + 0.050(\lambda_3 + \lambda_4) = 0$$
+
+so the first two rows force $\lambda_1 = \lambda_2 = a$ and $\lambda_3 = \lambda_4 = b$, and the moment row becomes $-0.05a + 0.1b = 0$, i.e. $a = 2b$. Every solution is therefore a multiple of $\lambda = (2,2,1,1)$, whose coefficients are all positive, and its sum is $(0,\ 0,\ -0.05-0.05+0.05+0.05) = (0,0,0)$. The same system settles the rank: its solutions form a single line, so the null space of the $3 \times 4$ matrix $[w_1\ w_2\ w_3\ w_4]$ has dimension $1$ and rank–nullity gives rank $= 4 - 1 = 3$. **Form closure.** Now move the same four contacts to the edge midpoints, $(\pm 0.100, 0)$ and $(0, \pm 0.050)$, so that every normal passes through the centre of mass. The wrenches become $(\pm1, 0, 0)$ and $(0, \pm1, 0)$, rank $2$, and no positive combination produces any $m_z$ at all: four contacts, the count satisfied, and the tile still free to spin. **The bound of four is necessary, not sufficient.**
 
 **Step 6 — how hard to squeeze.** Closure says a wrench *can* be resisted; it says nothing about how much force that takes. Hold the tile against gravity: the fingers must supply $(0, +W, 0)$, and by symmetry $f_{y1} = f_{y2} = W/2 = 2.4525\,\mathrm{N}$, each of which Coulomb caps at $\mu f_n$. So
 
@@ -139,8 +146,8 @@ because the two contacts share the load and each converts preload into $\mu$ tim
   half-angle $\alpha = \tan^{-1}\mu$. For $\mu = 0.5$, $\alpha \approx 26.6°$: the physical
   meaning of a friction coefficient is *an angle*. First-order form closure's "at least 4 planar contacts" is falsified by second-order curvature with two contacts, named below.
 - **Form closure**: the geometry alone traps the object (no friction needed) — for
-  frictionless point contacts, at least 4 contacts in the plane and 7 in space. Robust but
-  demanding. Those counts are for **first-order** form closure, which is the qualifier that
+  frictionless point contacts, at least 4 contacts in the plane and 7 in space (both counts
+  derived from the closure test in §3). Robust but demanding. Those counts are for **first-order** form closure, which is the qualifier that
   matters: they follow from linearizing the contact constraints, so they only see the contact
   normals. Let the surfaces curve and second-order effects can immobilize a planar body with
   **two** contacts, well under the bound. So the number to quote depends on the order of the
@@ -155,7 +162,10 @@ because the two contacts share the load and each converts preload into $\mu$ tim
   contacts cannot resist torque about their connecting axis, because each contact force acts
   at a point on that axis and so has no lever arm about it; at least three point contacts
   are needed. Two **soft-finger** contacts can add torsional moments and achieve spatial
-  force closure. Always name the contact model before claiming closure.
+  force closure. Always name the contact model before claiming closure. The lever-arm
+  sentence is the whole proof that two hard contacts fail; that three frictional contacts
+  can succeed, and the soft-contact model itself, are stated here, not derived — see MR
+  §12.2.3.1 and §12.1.5.
 - **Learning-era continuation**: grasp synthesis is now largely learned (grasp-detection
   networks, dexterous-hand policies), but the *verification* language — cones, wrenches,
   closure — is still how failures are analyzed. Construction case in this wiki:
@@ -191,6 +201,7 @@ with $n = 3$ in the plane and $6$ in space, because a strictly positive combinat
 - **Example**: the two frictional fingers, $\lambda = (1,1,1,1)$, rank 3 — force closure. And the pinwheel, $\lambda = (2,2,1,1)$, rank 3 — form closure.
 - **Non-example, rank**: two frictionless antipodal normals. They cancel with positive $\lambda$, but rank 1, so the cone is a line.
 - **Non-example, count**: four frictionless normals all passing through the centre of mass. Four contacts is the textbook minimum and this arrangement still has rank 2. The minimum is necessary, never sufficient.
+- **The minimum, derived from the test**: rank $n$ needs at least $n$ generators, and a nonzero $\lambda$ with $\sum_i \lambda_i w_i = 0$ means the null space of $[w_1 \cdots w_k]$ is not just zero, so rank–nullity gives $k - n \ge 1$. Hence $k \ge n + 1$: four frictionless contacts in the plane and seven in space (MR §12.1.7.1, Theorem 12.6). For force closure the generators are cone edges rather than contacts, which is how two frictional planar contacts, with two edges each, reach the four that $n = 3$ needs.
 - **Why it matters**: the test costs a small linear program and gives a yes or no. It gives no margin, no required preload, and no answer at all about whether the fingers can be placed there — which is why Step 6 exists and why grasp *quality* metrics are a separate literature.
 
 ### Self-check
@@ -236,6 +247,9 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 
 **핵심 질문**: 파지는 언제 실제로 물체를 붙잡는가?
 
+> [!note] 처음이라면 · First pass
+> 이 페이지의 장치, 그림, 그리고 계산의 1–3단계와 6단계 — 각도로서의 원뿔, 모서리 렌치 넷, closure 검사, 그리고 타일을 실제로 붙잡는 예압 — 를 읽고, 그다음 같은 검사를 임의의 접촉 집합에 대해 한 번에 적은 §3을 읽어라. 4·5·7단계(마찰 없는 접촉, 바람개비, 그리고 마찰이 아무리 작아도 유지되지만 필요한 예압은 발산하는 closure)와 §2의 정의는 두 번째 읽기이고, §1의 접촉 개수는 논문이 손가락 수를 인용할 때 돌아와 볼 부분이다. 그다음 스스로 점검과, 마찰을 낮추고 질량 중심을 옮기는 과제.
+
 ### 이 페이지의 장치 · Running plant
 
 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**가 도구를 들고, 그 도구가 **패널 타일**을 잡는다. 여기서 고정하고 이 페이지 끝까지 숫자를 바꾸지 않는다.
@@ -249,7 +263,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 | 마찰 | $\mu = 0.5$ | 쿨롱, 이 장이 이미 쓰던 그 $\mu$ |
 | 예압 | 손가락당 $f_n = 20\ \mathrm{N}$ | 그리퍼가 주는 쥐는 힘 |
 
-타일 좌표계의 원점은 질량 중심이고 동시에 두 접촉점의 중점이다. $x$축이 쥐는 축, $y$축이 세계의 연직이므로 중력은 $-y$로 작용한다. 평면 렌치는 전부 $w = (f_x,\ f_y,\ m_z)$로 쓴다.
+타일 좌표계의 원점은 질량 중심이고 동시에 두 접촉점의 중점이다. $x$축이 쥐는 축, $y$축이 세계의 연직이므로 중력은 $-y$로 작용한다. 평면 렌치는 전부 $w = (f_x,\ f_y,\ m_z)$로 쓴다. 힘이 먼저인 이 순서는 파지 논문들이 쓰는 순서다. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장 §6]]은 공간 렌치를 모멘트 먼저 $\mathcal F=(m,\ f)$로 쓰므로, 둘 사이를 오갈 때는 성분 순서를 바꿔야 한다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -297,7 +311,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
   <text x="16" y="328" font-size="11" fill="currentColor" opacity="0.8">타일 0.200 × 0.100 m, 0.500 kg · μ = 0.5 · 손가락당 예압 f<tspan dy="3.1" font-size="8.6">n</tspan><tspan dy="-3.1" dx="3.3">= 20 N</tspan></text>
 </svg>
 
-짧은 두 변의 중점 $(\pm 0.100,\ 0)$에서 점 손가락 둘이 잡은 $0.200 \times 0.100\,\mathrm{m}$, $0.500\,\mathrm{kg}$의 패널 타일이고, 각 접촉점에 안쪽 법선과 반각 $\tan^{-1}0.5 = 26.565°$의 마찰 원뿔이 있다. 두 접촉점을 잇는 선은 두 원뿔 안에 있고(여기서는 법선과 일치한다), 질량 중심의 무게 $4.905\,\mathrm{N}$은 $2.4525\,\mathrm{N}$씩의 접선 손가락 힘 둘이 받친다. 상자 안의 원뿔 모서리 렌치 넷 $(f_x, f_y, m_z)$은 $\lambda = (1,1,1,1)$로 합이 0이고 랭크가 3이므로 이 파지는 force closure다.
+짧은 두 변의 중점 $(\pm 0.100,\ 0)$에서 점 손가락 둘이 잡은 $0.200 \times 0.100\,\mathrm{m}$, $0.500\,\mathrm{kg}$의 패널 타일이고, 각 접촉점에 안쪽 법선과 반각 $\tan^{-1}0.5 = 26.565°$의 마찰 원뿔이 있다. 두 접촉점을 잇는 선은 두 원뿔 안에 있고(여기서는 법선과 일치한다), 질량 중심의 무게 $4.905\,\mathrm{N}$은 $2.4525\,\mathrm{N}$씩의 접선 손가락 힘 둘이 받친다. 상자 안의 원뿔 모서리 렌치 넷 $(f_x, f_y, m_z)$은 $\lambda = (1,1,1,1)$로 합이 0이고, 그 가운데 선형 독립인 방향의 수인 랭크([[02-foundations/linear-algebra|1. 선형대수 §2]])가 3이므로 이 파지는 force closure다.
 
 ### 장치로 한 번 끝까지 · Worked on the plant
 
@@ -328,7 +342,7 @@ $$\exists\,\lambda > 0,\ \sum_i \lambda_i w_i = 0, \qquad \operatorname{rank}\,[
 
 $$w_{1^{+}} + w_{1^{-}} + w_{2^{+}} + w_{2^{-}} = (1{+}1{-}1{-}1,\ \ 0.5{-}0.5{+}0.5{-}0.5,\ \ -0.05{+}0.05{+}0.05{-}0.05) = (0,0,0)$$
 
-랭크가 3인 이유는 쌍에서 독립인 방향 셋이 나오기 때문이다. $w_{1^{+}} + w_{1^{-}} = (2,0,0)$, $w_{1^{+}} + w_{2^{+}} = (0,1,0)$, $w_{1^{+}} + w_{2^{-}} = (0,0,-0.1)$. 두 조건이 모두 성립하므로 손가락 둘의 파지는 **force closure**다. 대척 규칙으로 교차 확인하면, 두 접촉점을 잇는 선이 $\hat x$이고 그것이 양쪽 법선이므로 각 법선과 이루는 각이 $0°$, $26.565°$ 안쪽으로 충분하다.
+랭크가 3인 이유는 쌍에서 독립인 방향 셋이 나오기 때문이다. $w_{1^{+}} + w_{1^{-}} = (2,0,0)$, $w_{1^{+}} + w_{2^{+}} = (0,1,0)$, $w_{1^{+}} + w_{2^{-}} = (0,0,-0.1)$. 두 조건이 모두 성립하므로 손가락 둘의 파지는 **force closure**다. 각 접촉이 마찰 원뿔 전체를 쓰는 closure라는 뜻이고, 4–5단계가 검사하는 마찰 없는 짝인 form closure는 법선만 쓴다. 둘 다 §3이 정의한다. §1의 대척 규칙으로 교차 확인하면, 두 접촉점을 잇는 선이 $\hat x$이고 그것이 양쪽 법선이므로 각 법선과 이루는 각이 $0°$, $26.565°$ 안쪽으로 충분하다.
 
 **4단계 — 같은 접촉을 마찰 없이 두면 form closure가 아니다.** $\mu = 0$으로 두면 법선만 남아 $w_1 = (1,0,0)$, $w_2 = (-1,0,0)$이다. $\lambda = (1,1)$로 상쇄되지만 랭크가 $1$이다. 양의 생성이 직선 하나뿐이라 $f_y$도 $m_z$도 전혀 버티지 못한다. 타일이 미끄러져 내려가고 돌아 빠진다. 마찰 없는 평면 form closure에 접촉이 최소 넷 필요한 이유다.
 
@@ -341,7 +355,11 @@ $$w_{1^{+}} + w_{1^{-}} + w_{2^{+}} + w_{2^{-}} = (1{+}1{-}1{-}1,\ \ 0.5{-}0.5{+
 | $c_3$ | $(-0.050,\ +0.050)$ | $(0,\ -1)$ | $(0,\ -1,\ +0.050)$ |
 | $c_4$ | $(+0.050,\ -0.050)$ | $(0,\ +1)$ | $(0,\ +1,\ +0.050)$ |
 
-$\lambda = (1,1,1,1)$을 넣으면 합이 $(0,\ 0,\ +0.05)$로 0이 아니다. 그 선택은 실패하며, 검사는 "아무 $\lambda$나"가 아니다. $\lambda = (2,2,1,1)$을 넣으면 합이 $(0,\ 0,\ -0.05-0.05+0.05+0.05) = (0,0,0)$, 계수가 모두 양수이고 랭크는 3이다. **Form closure.** 이제 같은 접촉 넷을 변의 중점 $(\pm 0.100, 0)$과 $(0, \pm 0.050)$으로 옮겨 모든 법선이 질량 중심을 지나게 해 보자. 렌치는 $(\pm1, 0, 0)$과 $(0, \pm1, 0)$이 되어 랭크 $2$, 어떤 양의 결합도 $m_z$를 전혀 만들지 못한다. 접촉은 넷이고 개수 조건은 채웠는데 타일은 여전히 자유롭게 돈다. **넷이라는 하한은 필요조건이지 충분조건이 아니다.**
+$\lambda = (1,1,1,1)$을 넣으면 합이 $(0,\ 0,\ +0.05)$로 0이 아니다. 그 선택은 실패하며, 검사는 "아무 $\lambda$나"가 아니다. 되는 것을 찾으려면 $\sum_i \lambda_i w_i = 0$을 성분별로 쓴다:
+
+$$f_x:\ \lambda_1 - \lambda_2 = 0, \qquad f_y:\ -\lambda_3 + \lambda_4 = 0, \qquad m_z:\ -0.025(\lambda_1 + \lambda_2) + 0.050(\lambda_3 + \lambda_4) = 0$$
+
+처음 두 행이 $\lambda_1 = \lambda_2 = a$, $\lambda_3 = \lambda_4 = b$를 강제하고, 모멘트 행은 $-0.05a + 0.1b = 0$, 곧 $a = 2b$가 된다. 따라서 모든 해는 $\lambda = (2,2,1,1)$의 배수이고, 그 계수는 모두 양수이며 합은 $(0,\ 0,\ -0.05-0.05+0.05+0.05) = (0,0,0)$이다. 같은 연립방정식이 랭크도 정한다. 해가 직선 하나를 이루므로 $3 \times 4$ 행렬 $[w_1\ w_2\ w_3\ w_4]$의 영공간은 $1$차원이고, 랭크–널리티 정리로 랭크 $= 4 - 1 = 3$이다. **Form closure.** 이제 같은 접촉 넷을 변의 중점 $(\pm 0.100, 0)$과 $(0, \pm 0.050)$으로 옮겨 모든 법선이 질량 중심을 지나게 해 보자. 렌치는 $(\pm1, 0, 0)$과 $(0, \pm1, 0)$이 되어 랭크 $2$, 어떤 양의 결합도 $m_z$를 전혀 만들지 못한다. 접촉은 넷이고 개수 조건은 채웠는데 타일은 여전히 자유롭게 돈다. **넷이라는 하한은 필요조건이지 충분조건이 아니다.**
 
 **6단계 — 얼마나 세게 쥐어야 하는가.** closure는 렌치를 버틸 수 *있다*고 말할 뿐 얼마나 큰 힘이 드는지는 말하지 않는다. 중력에 맞서 타일을 든다고 하자. 손가락이 $(0, +W, 0)$을 내야 하고 대칭에서 $f_{y1} = f_{y2} = W/2 = 2.4525\,\mathrm{N}$이며, 쿨롱은 각각을 $\mu f_n$으로 자른다. 따라서
 
@@ -357,7 +375,7 @@ $$f_n^{\min} = \frac{W}{2\mu} = \frac{4.905}{2 \times 0.5} = 4.905\ \mathrm{N}$$
   접촉은 **마찰 원뿔** 안 어디로든 밀 수 있다 — 반각 $\alpha = \tan^{-1}\mu$.
   $\mu = 0.5$면 $\alpha \approx 26.6°$: 마찰 계수의 물리적 의미는 *각도*다. 1차 form closure의 "평면 접촉 최소 4개"는 아래에 이름을 적은 2차 곡률 효과, 접촉 둘로 반증된다.
 - **Form closure**: 기하만으로 물체를 가둔다(마찰 불필요) — 마찰 없는 점 접촉에서 평면
-  최소 4개, 공간 최소 7개의 접촉이 필요하다. 강건하지만 요구가 크다. 이 수는 **1차**
+  최소 4개, 공간 최소 7개의 접촉이 필요하다(두 수 모두 §3에서 closure 검사로부터 유도한다). 강건하지만 요구가 크다. 이 수는 **1차**
   form closure에 대한 것이고, 그 단서가 핵심이다. 접촉 구속을 선형화해서 얻은 결과라 접촉
   법선만 본다. 표면이 휘면 2차 효과가 개입해 평면 물체를 접촉 **2개**로 가둘 수 있고, 이는
   경계보다 한참 아래다. 즉 인용할 숫자는 접촉을 어떻게 배치했는지가 아니라 몇 차까지
@@ -369,7 +387,9 @@ $$f_n^{\min} = \frac{W}{2\mu} = \frac{4.905}{2 \times 0.5} = 4.905\ \mathrm{N}$$
   잇는 선이 두 마찰 원뿔 안에 있어야 한다 — "두 손가락이 원뿔을 통해 서로를 본다."
   공간에서는 hard point 접촉 둘만으로 두 점을 잇는 축 둘레의 토크를 막을 수 없어(각 접촉력이 그 축 위의 점에 작용하므로 축에 대한 지렛대 팔이 없다) 최소 세
   점접촉이 필요하다. **Soft-finger** 접촉 둘은 비틀림 모멘트를 더해 공간 force closure가
-  가능하다. Closure를 주장하기 전에 접촉 모델부터 밝혀야 한다.
+  가능하다. Closure를 주장하기 전에 접촉 모델부터 밝혀야 한다. hard 접촉 둘이 실패한다는
+  것은 지렛대 팔 문장이 증명 전부다. 마찰 접촉 셋이면 성공할 수 있다는 것과 soft 접촉 모델
+  자체는 여기서 유도하지 않고 진술만 한다 — MR §12.2.3.1과 §12.1.5를 보라.
 - **학습 시대의 연속**: 파지 생성은 이제 대부분 학습된다(파지 검출 네트워크, 정밀 손
   정책) — 하지만 *검증*의 언어(원뿔, 렌치, closure)는 여전히 실패 분석의 도구다. 이
   위키의 건설 사례: [[01-canonical-papers/notes/8-construction/heap|HEAP의 돌담]]은 불규칙한
@@ -404,6 +424,7 @@ $$\text{closure} \iff \exists\,\lambda > 0,\ \textstyle\sum_i \lambda_i w_i = 0 
 - **예**: 마찰 손가락 둘, $\lambda = (1,1,1,1)$, 랭크 3 — force closure. 그리고 바람개비, $\lambda = (2,2,1,1)$, 랭크 3 — form closure.
 - **반례(랭크)**: 마찰 없는 대척 법선 둘. 양의 $\lambda$로 상쇄되지만 랭크가 1이라 원뿔이 직선이다.
 - **반례(개수)**: 질량 중심을 모두 지나는 마찰 없는 법선 넷. 넷은 교과서적 최소치인데 이 배치는 랭크가 2다. 최소치는 필요조건일 뿐 절대 충분조건이 아니다.
+- **검사에서 유도한 최소치**: 랭크 $n$에는 생성자가 적어도 $n$개 필요하고, $\sum_i \lambda_i w_i = 0$인 0이 아닌 $\lambda$가 있다는 것은 $[w_1 \cdots w_k]$의 영공간이 0만이 아니라는 뜻이므로, 랭크–널리티 정리가 $k - n \ge 1$을 준다. 따라서 $k \ge n + 1$, 곧 평면에서 마찰 없는 접촉 넷, 공간에서 일곱이다(MR §12.1.7.1, 정리 12.6). force closure에서는 생성자가 접촉이 아니라 원뿔 모서리이므로, 모서리를 둘씩 가진 평면 마찰 접촉 둘이 $n = 3$에 필요한 넷을 채운다.
 - **왜 중요한가**: 검사는 작은 선형계획 하나 값이고 예/아니오를 준다. 여유도, 필요한 예압도, 손가락을 거기 놓을 수 있는지도 말해 주지 않는다. 6단계가 있는 이유이자 파지 *품질* 지표가 별개의 문헌인 이유다.
 
 ### 스스로 점검

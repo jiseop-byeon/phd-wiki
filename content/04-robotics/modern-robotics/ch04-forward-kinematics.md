@@ -10,12 +10,15 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.4** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> You need $e^{[\mathcal{S}]\theta}$ and screw axes from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3]], plus fluency multiplying 4×4 homogeneous transforms.
-> [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장]]의 $e^{[\mathcal{S}]\theta}$와 스크류 축, 그리고 4×4 동차 변환의 곱을 쓸 수 있어야 한다.
+> You need screw axes and the adjoint from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §3–4]] and the closed form of $e^{[\mathcal{S}]\theta}$ from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §5]], plus multiplying 4×4 homogeneous transforms ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §3]]). The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §3–4]]의 스크류 축과 adjoint, [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §5]]의 $e^{[\mathcal{S}]\theta}$ 닫힌 형태, 그리고 4×4 동차 변환의 곱([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §3]])을 쓸 수 있어야 한다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**다.
 
 ## English
 
 **Core question**: given joint angles $\theta$, where is the end-effector?
+
+> [!note] First pass · 처음이라면
+> Read the picture, the product-of-exponentials formula, and Steps 1–5 of the worked example (home pose, two screws, one evaluation, one geometric check) — that is the whole recipe. Then the Worked case's Steps 1, 2, 4 and 6: the catalog pose, and the wrong multiplication order that no orientation error warns you about. Step 3's closed-form exponential (from ch.3 §5) and Step 5's body form are second pass, and so is the D-H aside.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -134,7 +137,7 @@ Do this double-check on every robot you model — geometric FK and PoE FK must a
 
 The same recipe on the catalog object, at the pose every later chapter quotes: plant **P2** at $\theta = (0^\circ, 90^\circ)$ ([[02-foundations/lab-plants|0.6]]). Nothing here is new machinery; the point is to produce the one $4\times4$ that the rest of the track means by "the frozen pose".
 
-**Step 1 — the ingredients do not move.** $M$ and the screw axes were measured at the home pose, so §2's numbers carry over unchanged no matter what $\theta$ is asked for:
+**Step 1 — the ingredients do not move.** $M$ and the screw axes were measured at the home pose, so the worked example's numbers (its Steps 1–3) carry over unchanged no matter what $\theta$ is asked for:
 
 $$\mathcal{S}_1 = (0,0,1;\ 0,0,0), \qquad \mathcal{S}_2 = (0,0,1;\ 0,-1,0), \qquad M = \begin{pmatrix}1&0&0&2\\0&1&0&0\\0&0&1&0\\0&0&0&1\end{pmatrix}$$
 
@@ -142,7 +145,7 @@ because a screw axis is a property of the mechanism at home, not of the configur
 
 **Step 2 — the first factor is the identity.** $\theta_1 = 0$, and $e^{[\mathcal{S}]\cdot 0} = I$ for every screw $\mathcal{S}$, so $T(0^\circ, 90^\circ) = e^{[\mathcal{S}_2](\pi/2)}M$. The shoulder contributes nothing and the elbow does all the work. This is a fact about this pose only, and step 6 shows what it costs to forget that.
 
-**Step 3 — the elbow exponential, as a matrix.** For a screw with unit $\hat\omega$, the closed form is $e^{[\mathcal{S}]\theta} = \begin{pmatrix} e^{[\hat\omega]\theta} & G(\theta)v \\ 0 & 1\end{pmatrix}$ with $G(\theta) = I\theta + (1-\cos\theta)[\hat\omega] + (\theta - \sin\theta)[\hat\omega]^2$, the translation integrated along the screw. With $\hat\omega = \hat z$, $\theta = \pi/2$, $[\hat z]^2 = \mathrm{diag}(-1,-1,0)$ and the coefficients $1 - \cos(\pi/2) = 1$, $\pi/2 - \sin(\pi/2) = 0.5708$:
+**Step 3 — the elbow exponential, as a matrix.** For a screw with unit $\hat\omega$, the closed form is $e^{[\mathcal{S}]\theta} = \begin{pmatrix} e^{[\hat\omega]\theta} & G(\theta)v \\ 0 & 1\end{pmatrix}$ with $G(\theta) = I\theta + (1-\cos\theta)[\hat\omega] + (\theta - \sin\theta)[\hat\omega]^2$, the translation integrated along the screw — derived from the power series in [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §5]] (MR Prop. 3.25), which checks this very matrix. With $\hat\omega = \hat z$, $\theta = \pi/2$, $[\hat z]^2 = \mathrm{diag}(-1,-1,0)$ and the coefficients $1 - \cos(\pi/2) = 1$, $\pi/2 - \sin(\pi/2) = 0.5708$:
 
 $$G = \begin{pmatrix}1&-1&0\\1&1&0\\0&0&\pi/2\end{pmatrix}, \qquad G\,v_2 = G\begin{pmatrix}0\\-1\\0\end{pmatrix} = \begin{pmatrix}1\\-1\\0\end{pmatrix}$$
 
@@ -156,7 +159,7 @@ $$T(0^\circ, 90^\circ) = \begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{
 
 where the translation column is the catalog tip $(1,1)$ and the rotation block carries the tool's $x$-axis onto $+\hat y_s$, because the elbow exponential turned the whole downstream link a quarter turn about the vertical through $q_2$. Geometry agrees in one line: elbow $(\cos 0^\circ, \sin 0^\circ) = (1,0)$, plus a unit forearm at absolute angle $\theta_1 + \theta_2 = 90^\circ$, giving $(1,0) + (0,1) = (1,1)$.
 
-**Step 5 — the body form, as an independent check.** The body axes are the same screws measured from the tool frame at home, $\mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\mathcal{S}_i$, which here gives $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$ and $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$ — the linear parts are literally the distances $2\,\mathrm{m}$ and $1\,\mathrm{m}$ from the tool back to each axis. Then $T = M\,e^{[\mathcal{B}_1]\theta_1}e^{[\mathcal{B}_2]\theta_2}$ multiplies out to the identical $4\times4$. Two formulations, one pose.
+**Step 5 — the body form, as an independent check.** The body axes are the same screws measured from the tool frame at home, $\mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\mathcal{S}_i$ (the adjoint of [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §4]]), which here gives $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$ and $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$ — the linear parts are literally the distances $2\,\mathrm{m}$ and $1\,\mathrm{m}$ from the tool back to each axis. Then $T = M\,e^{[\mathcal{B}_1]\theta_1}e^{[\mathcal{B}_2]\theta_2}$ multiplies out to the identical $4\times4$. Two formulations, one pose.
 
 **Step 6 — what the identity was hiding.** Take the *other* worked pose, $\theta = (90^\circ, 90^\circ)$, where neither factor is $I$, and multiply the two exponentials in the wrong order. The correct product puts the tip at $(-1, 1)$; the swapped product $e^{[\mathcal{S}_2]\theta_2}e^{[\mathcal{S}_1]\theta_1}M$ puts it at $(-1, -1)$, with the *same* orientation $R_z(180^\circ)$. Two metres of position error and no orientation error to warn you — which is why the order is part of the formula, and why the catalog pose is a poor place to test a new FK implementation.
 
@@ -204,6 +207,9 @@ Tier B. **P2** at the frozen pose of [[02-foundations/lab-plants|0.6]]. Home and
 ## 한국어
 
 **핵심 질문**: 관절 각 $\theta$가 주어지면 말단은 어디에 있는가?
+
+> [!note] 처음이라면 · First pass
+> 그림, 지수 곱 공식, 그리고 계산 예제의 1–5단계(홈 자세, 스크류 둘, 한 번의 평가, 기하 검산 하나)를 읽어라. 레시피 전부가 거기 있다. 그다음 '대상으로 한 번 끝까지'의 1·2·4·6단계를 읽는다. 카탈로그 자세, 그리고 어떤 방향 오차도 경고해 주지 않는 잘못된 곱 순서다. 3단계의 닫힌 형태 지수(3장 §5에서 온다)와 5단계의 바디 형식은 두 번째 읽기이고, D-H 여담도 그렇다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -322,7 +328,7 @@ $(0,1)$); $\theta_2 = 90°$가 90°를 더해 링크 2는 $-\hat x$ 방향; 끝�
 
 같은 레시피를 카탈로그 대상에, 이후 모든 장이 인용하는 그 자세에서 돌린다. [[02-foundations/lab-plants|0.6]]의 장치 **P2**, $\theta = (0^\circ, 90^\circ)$다. 새로운 기계장치는 없다. 목적은 트랙의 나머지가 "고정 자세"라고 부를 때 뜻하는 그 $4\times4$ 하나를 만들어 내는 것이다.
 
-**1단계 — 재료는 움직이지 않는다.** $M$과 스크류 축은 홈 자세에서 쟀으므로, 어떤 $\theta$를 물어도 2절의 숫자가 그대로다:
+**1단계 — 재료는 움직이지 않는다.** $M$과 스크류 축은 홈 자세에서 쟀으므로, 어떤 $\theta$를 물어도 계산 예제의 숫자(그 1–3단계)가 그대로다:
 
 $$\mathcal{S}_1 = (0,0,1;\ 0,0,0), \qquad \mathcal{S}_2 = (0,0,1;\ 0,-1,0), \qquad M = \begin{pmatrix}1&0&0&2\\0&1&0&0\\0&0&1&0\\0&0&0&1\end{pmatrix}$$
 
@@ -330,7 +336,7 @@ $$\mathcal{S}_1 = (0,0,1;\ 0,0,0), \qquad \mathcal{S}_2 = (0,0,1;\ 0,-1,0), \qqu
 
 **2단계 — 첫 인자가 항등이다.** $\theta_1 = 0$이고 모든 스크류 $\mathcal{S}$에 대해 $e^{[\mathcal{S}]\cdot 0} = I$이므로 $T(0^\circ, 90^\circ) = e^{[\mathcal{S}_2](\pi/2)}M$이다. 어깨는 아무것도 하지 않고 엘보가 전부 한다. 이 자세에서만 성립하는 사실이고, 그것을 잊으면 얼마를 치르는지는 6단계가 보여 준다.
 
-**3단계 — 엘보 지수를 행렬로.** 단위 $\hat\omega$의 스크류에 대한 닫힌 형태는 $e^{[\mathcal{S}]\theta} = \begin{pmatrix} e^{[\hat\omega]\theta} & G(\theta)v \\ 0 & 1\end{pmatrix}$이고, $G(\theta) = I\theta + (1-\cos\theta)[\hat\omega] + (\theta - \sin\theta)[\hat\omega]^2$는 스크류를 따라 적분한 병진이다. $\hat\omega = \hat z$, $\theta = \pi/2$, $[\hat z]^2 = \mathrm{diag}(-1,-1,0)$이고 계수가 $1 - \cos(\pi/2) = 1$, $\pi/2 - \sin(\pi/2) = 0.5708$이므로
+**3단계 — 엘보 지수를 행렬로.** 단위 $\hat\omega$의 스크류에 대한 닫힌 형태는 $e^{[\mathcal{S}]\theta} = \begin{pmatrix} e^{[\hat\omega]\theta} & G(\theta)v \\ 0 & 1\end{pmatrix}$이고, $G(\theta) = I\theta + (1-\cos\theta)[\hat\omega] + (\theta - \sin\theta)[\hat\omega]^2$는 스크류를 따라 적분한 병진이다. 거듭제곱 급수에서의 유도는 [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §5]]에 있고(MR 명제 3.25), 거기서 바로 이 행렬을 검산한다. $\hat\omega = \hat z$, $\theta = \pi/2$, $[\hat z]^2 = \mathrm{diag}(-1,-1,0)$이고 계수가 $1 - \cos(\pi/2) = 1$, $\pi/2 - \sin(\pi/2) = 0.5708$이므로
 
 $$G = \begin{pmatrix}1&-1&0\\1&1&0\\0&0&\pi/2\end{pmatrix}, \qquad G\,v_2 = G\begin{pmatrix}0\\-1\\0\end{pmatrix} = \begin{pmatrix}1\\-1\\0\end{pmatrix}$$
 
@@ -346,7 +352,7 @@ $$T(0^\circ, 90^\circ) = \begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{
 
 이다. 병진 열이 카탈로그 말단 $(1,1)$이고 회전 블록이 도구의 $x$축을 $+\hat y_s$로 옮기는데, 엘보 지수가 $q_2$를 지나는 연직축 둘레로 하류 링크 전체를 4분의 1바퀴 돌렸기 때문이다. 기하도 한 줄이다. 엘보 $(\cos 0^\circ, \sin 0^\circ) = (1,0)$에 절대각 $\theta_1 + \theta_2 = 90^\circ$인 단위 전완을 더해 $(1,0) + (0,1) = (1,1)$.
 
-**5단계 — 바디 형식으로 독립 검산.** 바디 축은 같은 스크류를 홈에서 도구 프레임 기준으로 잰 것, 곧 $\mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\mathcal{S}_i$다. 여기서는 $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$, $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$이고, 선형부가 말 그대로 도구에서 각 축까지의 거리 $2\,\mathrm{m}$와 $1\,\mathrm{m}$다. $T = M\,e^{[\mathcal{B}_1]\theta_1}e^{[\mathcal{B}_2]\theta_2}$를 곱하면 같은 $4\times4$가 나온다. 정식화 둘, 자세 하나.
+**5단계 — 바디 형식으로 독립 검산.** 바디 축은 같은 스크류를 홈에서 도구 프레임 기준으로 잰 것, 곧 $\mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\mathcal{S}_i$다([[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §4]]의 adjoint). 여기서는 $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$, $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$이고, 선형부가 말 그대로 도구에서 각 축까지의 거리 $2\,\mathrm{m}$와 $1\,\mathrm{m}$다. $T = M\,e^{[\mathcal{B}_1]\theta_1}e^{[\mathcal{B}_2]\theta_2}$를 곱하면 같은 $4\times4$가 나온다. 정식화 둘, 자세 하나.
 
 **6단계 — 항등이 가리고 있던 것.** 두 인자 중 어느 쪽도 $I$가 아닌 다른 계산 자세 $\theta = (90^\circ, 90^\circ)$에서 두 지수를 일부러 반대 순서로 곱해 보자. 올바른 곱은 말단을 $(-1, 1)$에 놓고, 뒤바꾼 곱 $e^{[\mathcal{S}_2]\theta_2}e^{[\mathcal{S}_1]\theta_1}M$은 $(-1, -1)$에 놓는다. 방향은 *둘 다* $R_z(180^\circ)$로 같다. 위치 오차 2 m에 경고가 될 방향 오차는 0이다. 순서가 공식의 일부인 이유이고, 새 FK 구현을 시험하기에 카탈로그 자세가 나쁜 자리인 이유다.
 

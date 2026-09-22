@@ -63,7 +63,7 @@ BADGR is the clean statement of the reframing that [[04-robotics/traversability-
 
 - [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]] — the concept page this paper anchors
 - [[01-canonical-papers/notes/9-navigation/wild-visual-navigation|WVN]] — the same problem with demonstration instead of collision as the label source
-- [[02-foundations/rl-basics|RL Basics §6]] — why interactive data collection beats a fixed offline set
+- [[02-foundations/rl-robot-learning|RL for Robot Learning §1]] — why interactive data collection beats a fixed offline set
 
 ### After reading
 
@@ -113,7 +113,7 @@ BADGR은 [[04-robotics/traversability-off-road|17]]이 딛고 선 재프레이�
 
 - [[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율주행]] — 이 논문이 정박하는 개념 페이지
 - [[01-canonical-papers/notes/9-navigation/wild-visual-navigation|WVN]] — 충돌 대신 시연을 레이블 원천으로 삼은 같은 문제
-- [[02-foundations/rl-basics|RL 기초 §6]] — 상호작용적 데이터 수집이 고정된 오프라인 집합을 이기는 이유
+- [[02-foundations/rl-robot-learning|로봇 학습을 위한 RL §1]] — 상호작용적 데이터 수집이 고정된 오프라인 집합을 이기는 이유
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

@@ -17,8 +17,8 @@ mastery-when: "Raise to Working if data collection under the learner's own distr
 **Ross, Gordon & Bagnell, AISTATS 2011, PMLR vol. 15, pp. 627–635** — [arXiv](https://arxiv.org/abs/1011.0686). DBLP files it under JMLR W&CP vol. 15; citing it as AISTATS 2011 is correct.
 
 > [!note] Math on-ramp · 수학 준비물
-> The one thing to hold is the difference between the distribution a policy was *trained* on and the one it *runs* on ([[02-foundations/rl-basics|7. RL Basics §6]] — the horizon figure there is this paper's argument in picture form). Big-O notation is enough for the bound.
-> 붙잡을 것 하나: 정책이 *학습된* 분포와 *실행되는* 분포의 차이([[02-foundations/rl-basics|7. RL 기초 §6]] — 거기 있는 지평 그림이 이 논문의 논증을 그림으로 옮긴 것이다). 경계에는 빅오 표기면 충분하다.
+> The one thing to hold is the difference between the distribution a policy was *trained* on and the one it *runs* on ([[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]] — the horizon figure there is this paper's argument in picture form). Big-O notation is enough for the bound.
+> 붙잡을 것 하나: 정책이 *학습된* 분포와 *실행되는* 분포의 차이([[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]] — 거기 있는 지평 그림이 이 논문의 논증을 그림으로 옮긴 것이다). 경계에는 빅오 표기면 충분하다.
 
 ## English
 
@@ -47,7 +47,7 @@ $O(\epsilon T^2)$ in the horizon $T$ with per-step error $\epsilon$, while a no-
 ### Connections
 
 - [[04-robotics/legged-locomotion|18. Legged Locomotion §2]] — where this algorithm does its most consequential work: distilling a privileged teacher into a proprioception-only student
-- [[02-foundations/rl-basics|7. RL Basics §6]] — where the compounding-error argument and its arithmetic live
+- [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]] — where the compounding-error argument and its arithmetic live
 - [[01-canonical-papers/notes/4-vla/act|ACT]] — the cheap alternative to the same problem
 - [[04-robotics/teleoperation-demonstration|12. §6]] — why demonstrations rarely contain recoveries
 
@@ -83,7 +83,7 @@ $O(\epsilon T^2)$ in the horizon $T$ with per-step error $\epsilon$, while a no-
 ### 연결
 
 - [[04-robotics/legged-locomotion|18. 레그드 로코모션 §2]] — 이 알고리즘이 가장 큰 일을 하는 곳: 특권 교사를 고유수용 감각만 쓰는 학생으로 증류하기
-- [[02-foundations/rl-basics|7. RL 기초 §6]] — 복합 오차 논증과 그 산수가 있는 곳
+- [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]] — 복합 오차 논증과 그 산수가 있는 곳
 - [[01-canonical-papers/notes/4-vla/act|ACT]] — 같은 문제에 대한 싼 대안
 - [[04-robotics/teleoperation-demonstration|12. §6]] — 시연에 복구가 좀처럼 없는 이유
 

@@ -10,12 +10,15 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.6** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> You need the Jacobian from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]], least squares ([[02-foundations/linear-algebra|1. Linear Algebra §2]]) and the pseudoinverse ([[02-foundations/linear-algebra|§4.5]]), and Newton's method ([[02-foundations/optimization|4. Optimization §3]]).
-> [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 야코비안과 [[02-foundations/linear-algebra|최소제곱/유사역행렬]], [[02-foundations/optimization|뉴턴법]]을 알고 있어야 한다.
+> You need the Jacobian from [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]], least squares ([[02-foundations/linear-algebra|1. Linear Algebra §2]]) and the pseudoinverse ([[02-foundations/linear-algebra|§4.5]]), and Newton's method ([[02-foundations/optimization|4. Optimization §3]]); §2's full-pose error uses the matrix logarithm of [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §5]]. The object is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]]의 야코비안과 [[02-foundations/linear-algebra|최소제곱/유사역행렬]], [[02-foundations/optimization|뉴턴법]]을 알고 있어야 한다. §2의 자세 전체 오차는 [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §5]]의 행렬 로그를 쓴다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**다.
 
 ## English
 
 **Core question**: given a desired end-effector pose, what joint angles achieve it?
+
+> [!note] First pass · 처음이라면
+> Read the picture and Steps 1–3 of the worked case — the two analytic branches and why their mean is not a solution — then §1 and §3, one Newton iteration by hand. Steps 4–5 (a seed on the singularity and one degree off it), §2's full-pose error and §4's damped least squares are second pass; read them together, since Steps 4–5 are §4's argument in numbers.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -82,7 +85,7 @@ and the second term flips sign with $\theta_2$, so the two elbow choices give tw
 
 **Step 3 — why the average is not an answer, in numbers.** The componentwise mean is $(45^\circ, 0^\circ)$, a straight arm, tip at $(\sqrt2, \sqrt2)$, a miss of $\sqrt{2(\sqrt2 - 1)^2} = 0.5858\,\mathrm{m}$ on a target $1.414\,\mathrm{m}$ from the base — a $41\,\%$ overshoot, not a rounding error. The set of IK solutions is not convex, and averaging is exactly the operation that assumes it is.
 
-**Step 4 — hand the mean configuration to a numerical solver and watch nothing happen.** Seed Newton IK at $\theta^{(0)} = (45^\circ, 0^\circ)$. With $s_1 = c_1 = s_{12} = c_{12} = 0.7071$ the ch.5 formula gives
+**Step 4 — hand the mean configuration to a numerical solver and watch nothing happen.** Seed Newton IK — repeat the step $\Delta\theta = J^\dagger e$ on the tip error $e$, derived in §2 — at $\theta^{(0)} = (45^\circ, 0^\circ)$. With $s_1 = c_1 = s_{12} = c_{12} = 0.7071$ the ch.5 formula gives
 
 $$J = \begin{pmatrix}-1.4142 & -0.7071\\ 1.4142 & 0.7071\end{pmatrix}, \qquad \det J = L_1L_2\sin\theta_2 = 0, \qquad \sigma = (2.2361,\ 0)$$
 
@@ -90,7 +93,7 @@ so the map has rank 1: its one reachable direction is $(-0.7071, 0.7071)$, perpe
 
 $$J^\top e = \begin{pmatrix}-1.4142 & 1.4142\\ -0.7071 & 0.7071\end{pmatrix}\begin{pmatrix}-0.4142\\ -0.4142\end{pmatrix} = \begin{pmatrix}0.5858 - 0.5858\\ 0.2929 - 0.2929\end{pmatrix} = \begin{pmatrix}0\\0\end{pmatrix}$$
 
-and every update built on $J^\top$ inherits that zero: the pseudoinverse step is $0$, and so is the damped step $J^\top(JJ^\top + \lambda^2 I)^{-1}e$ for **every** $\lambda$, because the damping only changes what multiplies a vector that is already zero. The solver terminates on "no progress" while standing $58.6\,\mathrm{cm}$ from a target that has two exact solutions. Damping is the wrong medicine here; a different seed is the only cure.
+and every update built on $J^\top$ inherits that zero: the pseudoinverse step is $0$, and so is the damped step $J^\top(JJ^\top + \lambda^2 I)^{-1}e$ (damped least squares, the singularity fix of §4) for **every** $\lambda$, because the damping only changes what multiplies a vector that is already zero. The solver terminates on "no progress" while standing $58.6\,\mathrm{cm}$ from a target that has two exact solutions. Damping is the wrong medicine here; a different seed is the only cure.
 
 **Step 5 — one degree off the singularity is a different failure.** Move the seed to $(45^\circ, 10^\circ)$ so the arm is merely *nearly* straight: now $\det J = \sin 10^\circ = 0.1736$ and $\sigma = (2.2279,\ 0.0779)$. The error $\|e\| = 0.5964$ divided by that smallest singular value is what sets the step size, and the undamped update is a joint move of $\|\Delta\theta\| = 7.51\,\mathrm{rad}$ — it hurls the tip to $(-1.32, -1.39)$ and drives $\|e\|$ from $0.596$ up to $3.33$. Damping at $\lambda = 0.3$ instead steps to $(30.3^\circ, 33.1^\circ)$ and brings $\|e\|$ down to $0.506$: smaller than the exact least-squares step, and in the right direction. **Exactly singular means no step; nearly singular means a wild one.** They look alike on a plot of $\|e\|$ and need opposite fixes.
 
@@ -159,8 +162,12 @@ A numerical solver usually follows the branch near its initial guess. If it stop
 Iterate:
 $$\Delta\theta = J^\dagger(\theta)\; e, \qquad e = \text{(task-space error)}$$
 where in the full SE(3) case $e$ is the six-vector error $[\log(T_{now}^{-1} T_{goal})]^\vee$ in body coordinates, paired with the body Jacobian
-([[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3]]'s log map; the "vee" $^\vee$ undoes ch.3's bracket operation, pulling the six numbers back out of the $4\times4$ matrix), and $J^\dagger$
+([[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §5]]'s matrix logarithm; the "vee" $^\vee$ undoes ch.3's bracket operation, pulling the six numbers back out of the $4\times4$ matrix), and $J^\dagger$
 is the pseudoinverse ([[02-foundations/linear-algebra|least squares]]).
+
+This is Newton's method of [[02-foundations/optimization|4. Optimization §3]] in vector form. For a scalar equation $f(x) = 0$, Newton steps $x \leftarrow x - f(x)/f'(x)$; here the equation is $\mathrm{FK}(\theta) - x_{goal} = 0$, so the derivative $f'$ becomes the Jacobian $J$, dividing by it becomes solving $J\,\Delta\theta = e$, and when $J$ is not square or not invertible, solving means least squares — hence $J^\dagger$.
+
+**The SE(3) error in numbers, on P2.** Seed at home, $\theta = (0, 0)$, so $T_{now} = M$, and ask for $T_{goal} = T_{sb}$, the catalog tool pose of ch.3 §4. Then $M^{-1}T_{sb}$ has $R = R_z(90^\circ)$ and $p = (-1, 1, 0)$, and the logarithm of ch.3 §5 gives $e = (0, 0, \pi/2;\ 0, \pi/2, 0) = \mathcal{B}_2\cdot\frac{\pi}{2}$ — the elbow's body screw $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$ of [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], turned a quarter turn. At home the body Jacobian's columns are ch.4's body screws, $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$ and $\mathcal{B}_2$, and $J_b^\dagger e = (0,\ \pi/2)$: one Newton step lands exactly on $(0^\circ, 90^\circ)$, because this error is itself one joint's screw. A general error is not, which is why the loop below repeats.
 
 **Follow one iteration.** Compute the current pose, express the goal error in a chosen frame, and evaluate the matching Jacobian at the current joints. Solve the local relation JΔθ ≈ e, update the joint guess, then recompute both pose and error. Repeating is necessary because the Jacobian describes only local change. A damping or step-size rule can keep the update from trusting that approximation too far.
 
@@ -196,6 +203,9 @@ $\theta^{(0)} = (45°, 90°)$.
   identity $J^\top(JJ^\top + \lambda I)^{-1} = (J^\top J + \lambda I)^{-1}J^\top$ makes the
   two expressions the same, so $\lambda$ is a trust parameter and damped IK is the same
   algorithm SLAM and calibration run ([[02-foundations/optimization|4. Optimization §3.5]]).
+  The identity takes one line: $(J^\top J + \lambda I)J^\top = J^\top JJ^\top + \lambda J^\top = J^\top(JJ^\top + \lambda I)$;
+  multiply on the left by $(J^\top J + \lambda I)^{-1}$ and on the right by $(JJ^\top + \lambda I)^{-1}$,
+  both invertible for $\lambda > 0$ because each matrix is then positive definite.
 
   Note where this comes from: **MR itself does not present damped least squares.** At a
   singularity chapter 6 offers the bare pseudo-inverse and sends the damped and redundant-arm
@@ -247,6 +257,9 @@ Tier B. Tip target $(1,1)$ on **P2** from [[02-foundations/lab-plants|0.6]]. Ana
 ## 한국어
 
 **핵심 질문**: 원하는 말단 자세가 주어지면 어떤 관절 각이 그것을 달성하는가?
+
+> [!note] 처음이라면 · First pass
+> 그림과 '대상으로 한 번 끝까지'의 1–3단계(해석적 가지 둘, 그리고 그 평균이 해가 아닌 이유)를 읽고, 이어서 §1과 손으로 하는 뉴턴 반복 한 번인 §3을 읽어라. 4–5단계(특이점 위의 초기값과 거기서 1도 벗어난 초기값), §2의 자세 전체 오차, §4의 감쇠 최소제곱은 두 번째 읽기다. 4–5단계가 §4의 논증을 숫자로 옮긴 것이므로 함께 읽어라.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -313,7 +326,7 @@ $$\theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}(L_2\sin\theta_2,\
 
 **3단계 — 평균이 왜 해가 아닌지, 숫자로.** 성분별 평균은 $(45^\circ, 0^\circ)$, 곧게 편 팔이고 말단은 $(\sqrt2, \sqrt2)$다. 빗나간 거리는 $\sqrt{2(\sqrt2 - 1)^2} = 0.5858\,\mathrm{m}$인데, 베이스에서 $1.414\,\mathrm{m}$ 떨어진 목표에 대해 $41\,\%$를 지나친 것이지 반올림 오차가 아니다. IK 해의 집합은 볼록하지 않고, 평균은 정확히 그것이 볼록하다고 가정하는 연산이다.
 
-**4단계 — 그 평균 자세를 수치 해법에 주고 아무 일도 안 일어나는 것을 본다.** $\theta^{(0)} = (45^\circ, 0^\circ)$에서 뉴턴 IK를 시작한다. $s_1 = c_1 = s_{12} = c_{12} = 0.7071$이므로 5장 공식이
+**4단계 — 그 평균 자세를 수치 해법에 주고 아무 일도 안 일어나는 것을 본다.** $\theta^{(0)} = (45^\circ, 0^\circ)$에서 뉴턴 IK — 말단 오차 $e$에 대해 스텝 $\Delta\theta = J^\dagger e$를 반복하는 것, §2에서 유도 — 를 시작한다. $s_1 = c_1 = s_{12} = c_{12} = 0.7071$이므로 5장 공식이
 
 $$J = \begin{pmatrix}-1.4142 & -0.7071\\ 1.4142 & 0.7071\end{pmatrix}, \qquad \det J = L_1L_2\sin\theta_2 = 0, \qquad \sigma = (2.2361,\ 0)$$
 
@@ -321,7 +334,7 @@ $$J = \begin{pmatrix}-1.4142 & -0.7071\\ 1.4142 & 0.7071\end{pmatrix}, \qquad \d
 
 $$J^\top e = \begin{pmatrix}-1.4142 & 1.4142\\ -0.7071 & 0.7071\end{pmatrix}\begin{pmatrix}-0.4142\\ -0.4142\end{pmatrix} = \begin{pmatrix}0.5858 - 0.5858\\ 0.2929 - 0.2929\end{pmatrix} = \begin{pmatrix}0\\0\end{pmatrix}$$
 
-이고, $J^\top$ 위에 세운 모든 갱신이 이 0을 물려받는다. 유사역행렬 스텝이 $0$이고, 감쇠 스텝 $J^\top(JJ^\top + \lambda^2 I)^{-1}e$도 **모든** $\lambda$에 대해 $0$이다. 감쇠는 이미 0인 벡터에 곱해지는 것만 바꾸기 때문이다. 해법은 정확한 해가 둘이나 있는 목표에서 $58.6\,\mathrm{cm}$ 떨어진 채 "진전 없음"으로 멈춘다. 여기서 감쇠는 잘못된 처방이고, 유일한 처방은 다른 초기값이다.
+이고, $J^\top$ 위에 세운 모든 갱신이 이 0을 물려받는다. 유사역행렬 스텝이 $0$이고, 감쇠 스텝 $J^\top(JJ^\top + \lambda^2 I)^{-1}e$(감쇠 최소제곱, §4의 특이점 처방)도 **모든** $\lambda$에 대해 $0$이다. 감쇠는 이미 0인 벡터에 곱해지는 것만 바꾸기 때문이다. 해법은 정확한 해가 둘이나 있는 목표에서 $58.6\,\mathrm{cm}$ 떨어진 채 "진전 없음"으로 멈춘다. 여기서 감쇠는 잘못된 처방이고, 유일한 처방은 다른 초기값이다.
 
 **5단계 — 특이점에서 조금 떨어지면 실패의 종류가 바뀐다.** 초기값을 $(45^\circ, 10^\circ)$로 옮겨 팔이 *거의* 곧게 편 상태만 되게 하자. 이제 $\det J = \sin 10^\circ = 0.1736$, $\sigma = (2.2279,\ 0.0779)$다. 스텝 크기를 정하는 것은 $\|e\| = 0.5964$를 그 가장 작은 특이값으로 나눈 값이고, 감쇠 없는 갱신은 관절이 $\|\Delta\theta\| = 7.51\,\mathrm{rad}$만큼 움직이는 것이다. 말단은 $(-1.32, -1.39)$로 내던져지고 $\|e\|$는 $0.596$에서 $3.33$으로 커진다. $\lambda = 0.3$의 감쇠는 대신 $(30.3^\circ, 33.1^\circ)$로 가서 $\|e\|$를 $0.506$까지 내린다. 정확한 최소제곱 스텝보다 작고, 방향은 옳다. **정확히 특이점이면 스텝이 없고, 거의 특이점이면 스텝이 날뛴다.** $\|e\|$ 그래프에서는 비슷해 보이지만 처방이 정반대다.
 
@@ -389,8 +402,12 @@ FK와 달리 IK의 해는 **0개, 1개, 여러 개, 무한히 많을 수** 있�
 반복:
 $$\Delta\theta = J^\dagger(\theta)\; e, \qquad e = \text{(작업 공간 오차)}$$
 완전한 SE(3)의 경우 $e$는 바디 좌표의 6차원 오차 $[\log(T_{now}^{-1} T_{goal})]^\vee$이며 바디 자코비안과 짝지어 쓴다
-([[04-robotics/modern-robotics/ch03-rigid-body-motions|3장]]의 로그 사상; "vee" $^\vee$는 3장의 대괄호 연산을 되돌려 $4\times4$ 행렬에서 여섯 개의 수를 다시 꺼낸다)이고,
+([[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §5]]의 행렬 로그; "vee" $^\vee$는 3장의 대괄호 연산을 되돌려 $4\times4$ 행렬에서 여섯 개의 수를 다시 꺼낸다)이고,
 $J^\dagger$는 유사역행렬([[02-foundations/linear-algebra|최소제곱]])이다.
+
+이것은 [[02-foundations/optimization|4. 최적화 §3]]의 뉴턴법을 벡터로 쓴 것이다. 스칼라 방정식 $f(x) = 0$에서 뉴턴 스텝은 $x \leftarrow x - f(x)/f'(x)$다. 여기서는 방정식이 $\mathrm{FK}(\theta) - x_{goal} = 0$이므로 도함수 $f'$가 야코비안 $J$가 되고, 그것으로 나누는 일은 $J\,\Delta\theta = e$를 푸는 일이 되며, $J$가 정사각이 아니거나 가역이 아니면 푸는 것은 최소제곱을 뜻한다. 그래서 $J^\dagger$다.
+
+**SE(3) 오차를 숫자로, P2에서.** 홈 $\theta = (0, 0)$에서 시작하므로 $T_{now} = M$이고, 목표는 3장 §4의 카탈로그 도구 자세 $T_{goal} = T_{sb}$다. 그러면 $M^{-1}T_{sb}$는 $R = R_z(90^\circ)$, $p = (-1, 1, 0)$이고, 3장 §5의 로그가 $e = (0, 0, \pi/2;\ 0, \pi/2, 0) = \mathcal{B}_2\cdot\frac{\pi}{2}$를 준다. [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 엘보 바디 스크류 $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$을 4분의 1바퀴 돌린 것이다. 홈에서 바디 야코비안의 열은 4장의 바디 스크류 $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$과 $\mathcal{B}_2$이고 $J_b^\dagger e = (0,\ \pi/2)$다. 뉴턴 한 스텝이 정확히 $(0^\circ, 90^\circ)$에 떨어진다. 이 오차 자체가 관절 하나의 스크류이기 때문이다. 일반적인 오차는 그렇지 않으므로 아래 루프가 반복한다.
 
 **반복 한 번을 따라간다.** 현재 자세를 계산하고 목표 오차를 정한 프레임으로 표현한다. 현재 관절에서 그 프레임의 야코비안을 구한다. 국소 관계 JΔθ ≈ e를 풀고 관절 추정을 갱신한 뒤 자세와 오차를 다시 계산한다. 야코비안이 국소 변화만 설명하므로 반복이 필요하다. 감쇠나 보폭 규칙은 근사를 너무 멀리 믿지 않게 한다.
 
@@ -425,6 +442,9 @@ $\theta^{(0)} = (45°, 90°)$에서 시작.
   $J^\top(JJ^\top + \lambda I)^{-1} = (J^\top J + \lambda I)^{-1}J^\top$가 두 식을 같게
   만들므로 $\lambda$는 신뢰 파라미터이고, 감쇠 IK는 SLAM과 보정이 돌리는 바로 그 알고리즘이다
   ([[02-foundations/optimization|4. 최적화 §3.5]]).
+  항등식은 한 줄이다. $(J^\top J + \lambda I)J^\top = J^\top JJ^\top + \lambda J^\top = J^\top(JJ^\top + \lambda I)$의
+  왼쪽에 $(J^\top J + \lambda I)^{-1}$을, 오른쪽에 $(JJ^\top + \lambda I)^{-1}$을 곱한다.
+  $\lambda > 0$이면 두 행렬 모두 양정부호라 가역이다.
 
   출처를 분명히 해 두자. **MR 자체는
   damped least squares를 다루지 않는다.** 6장은 특이점에서 그냥 유사역행렬을 주고, 감쇠와

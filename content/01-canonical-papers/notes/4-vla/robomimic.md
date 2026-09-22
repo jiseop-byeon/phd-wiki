@@ -18,8 +18,8 @@ mastery-when: "Raise to Mastery when demonstration-data design is part of the th
 **Mandlekar et al., CoRL 2021, PMLR vol. 164, pp. 1678–1690** — [arXiv](https://arxiv.org/abs/2108.03298) · [Official](https://robomimic.github.io). Cite as CoRL 2021 although the PMLR volume is stamped 2022.
 
 > [!note] Math on-ramp · 수학 준비물
-> Behaviour cloning and its failure mode ([[02-foundations/rl-basics|7. RL Basics §6]]), plus the experimental-design vocabulary for reading a controlled comparison — what is held fixed, what varies, and what a difference between two numbers can and cannot mean ([[02-foundations/ml-practice|9. ML Practice]]).
-> 행동 복제와 그 실패 모드([[02-foundations/rl-basics|7. RL 기초 §6]]), 그리고 통제된 비교를 읽는 실험 설계 어휘 — 무엇이 고정되고 무엇이 변하며, 두 숫자의 차이가 무엇을 뜻할 수 있고 없는지([[02-foundations/ml-practice|9. ML 실무]]).
+> Behaviour cloning and its failure mode ([[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]]), plus the experimental-design vocabulary for reading a controlled comparison — what is held fixed, what varies, and what a difference between two numbers can and cannot mean ([[02-foundations/ml-practice|9. ML Practice]]).
+> 행동 복제와 그 실패 모드([[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]]), 그리고 통제된 비교를 읽는 실험 설계 어휘 — 무엇이 고정되고 무엇이 변하며, 두 숫자의 차이가 무엇을 뜻할 수 있고 없는지([[02-foundations/ml-practice|9. ML 실무]]).
 
 ## English
 
@@ -54,7 +54,7 @@ From the **abstract**: "an extensive study of **six** offline learning algorithm
 ### Connections
 
 - [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §6]] — the data-quality axes this study is the evidence for
-- [[02-foundations/rl-basics|7. RL Basics §6]] — the imitation toolbox it evaluates
+- [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]] — the imitation toolbox it evaluates
 - [[06-research-practice/experimental-design-reproducibility|Experimental Design & Reproducibility]] — the methodology this paper exemplifies
 
 ### After reading
@@ -96,7 +96,7 @@ From the **abstract**: "an extensive study of **six** offline learning algorithm
 ### 연결
 
 - [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집 §6]] — 이 연구가 근거가 되는 데이터 품질 축들
-- [[02-foundations/rl-basics|7. RL 기초 §6]] — 이 논문이 평가하는 모방학습 도구상자
+- [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]] — 이 논문이 평가하는 모방학습 도구상자
 - [[06-research-practice/experimental-design-reproducibility|실험 설계와 재현성]] — 이 논문이 예시하는 방법론
 
 ### 읽고 나면 말할 수 있어야 하는 것

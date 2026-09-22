@@ -14,8 +14,17 @@ mastery-when: "Go deeper when you are writing the localisation or odometry compo
 > **Working** — 로봇을 기술하고 프레임을 올바르게 publish하며, 어떤 프레임을 누가 잘못 내보내는지 찾아낼 정도. `map`을 소유하는 상태 추정기를 작성할 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> A sourced **ROS 2 Jazzy Jalisco on Ubuntu 24.04** installation and a workspace you can build in ([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). Rigid-body transforms help but are not required first: [[02-foundations/se3-geometry|3D Geometry & SE(3)]] and [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
-> source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**와 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). 강체 변환은 도움이 되지만 먼저 읽을 필요는 없다: [[02-foundations/se3-geometry|3D Geometry & SE(3)]], [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
+> A sourced **ROS 2 Jazzy Jalisco on Ubuntu 24.04** installation and a workspace you can build in ([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). The transient-local durability that keeps `/tf_static` alive (§6, §8) and the message timestamps every lookup asks about are [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] and [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]] respectively. Rigid-body transforms help but are not required first: [[02-foundations/se3-geometry|3D Geometry & SE(3)]] and [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
+> source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**와 빌드 가능한 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). `/tf_static`을 살려 두는 transient local durability(§6, §8)와 모든 조회가 묻는 메시지 타임스탬프는 각각 [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]와 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]에서 온다. 강체 변환은 도움이 되지만 먼저 읽을 필요는 없다: [[02-foundations/se3-geometry|3D Geometry & SE(3)]], [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
+
+> [!note] First pass · 처음이라면
+> Read the Running object and the picture, then the Worked case; its three one-line glosses point you to §5, §8 and §10. Then §2 (links, joints and the tree rule), §7 (who owns an edge) and §8 (which time to ask for), and do the §12 exercise, which runs the Worked case on an arm you build. §1 is the motivation in one paragraph; §3–§6 and §9–§11 are reference you return to when a symptom sends you there; §13 is the failure to reproduce once the exercise runs.
+
+### Running object · 이 페이지의 대상
+
+**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]], with the one thing P6 leaves open frozen here for the whole page: **the camera sits $0.10\,\mathrm{m}$ ahead of and $0.25\,\mathrm{m}$ above `base_link`, with its axes aligned to the cart's.** Every other number is P6's own: encoder $N=2048$ counts/m, control $200\,\mathrm{Hz}$, vision $50\,\mathrm{Hz}$, budget $70\,\mathrm{ms}$.
+
+*Two objects, stated once.* The calculations are done on P6. The exercise (§12) and the failure (§13) build a **two-link arm** instead. The reason is that P6's URDF would hold only the fixed camera mount: its travel on the rail is not a URDF joint (§11), so there would be nothing to move in RViz. Each Worked-case step that can run on the arm does. Step 2's composition is `tf2_echo base_link link2` (§12, item 4); Step 3's typo is §12, item 6; Step 5's two owners are §13, at $10+20=30\,\mathrm{Hz}$ instead of $200+20$. Step 4 has no arm counterpart, because the sliders publish at $10\,\mathrm{Hz}$ and nothing on the arm carries a camera stamp.
 
 ### The picture: P6 as two trees and one clock
 
@@ -116,11 +125,11 @@ mastery-when: "Go deeper when you are writing the localisation or odometry compo
   <path d="M150.0 420v5M177.5 420v5M205.0 420v5M232.5 420v5M260.0 420v5M287.5 420v5M315.0 420v5M342.5 420v5M370.0 420v5M397.5 420v5M425.0 420v5M452.5 420v5M480.0 420v5M507.5 420v5M535.0 420v5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" fill="none"/>
 </svg>
 
-**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]], with the one thing P6 leaves open frozen here for the whole page: **the camera sits $0.10\,\mathrm{m}$ ahead of and $0.25\,\mathrm{m}$ above `base_link`, with its axes aligned to the cart's.** Left is the URDF tree `robot_state_publisher` reads, one fixed joint `camera_mount` and no joint for the cart's travel on the rail; right is the TF chain `lookup_transform` answers from, every edge labelled with owner, topic and rate — localisation on `/tf` when it corrects, encoder odometry on `/tf` at $200\,\mathrm{Hz}$ with $\Delta p=0.488\,\mathrm{mm}$, and the mount on `/tf_static`, sent once. On the $0$ to $70\,\mathrm{ms}$ lookup clock below, a lookup at `now()` points past the newest `odom` sample into empty space, *extrapolation into the future*, while one at the message's own stamp lands $20\,\mathrm{ms}$ back, where the buffer has data.
+Left is the URDF tree `robot_state_publisher` reads: one fixed joint `camera_mount` at the frozen offset, and no joint for the cart's travel on the rail. Right is the TF chain `lookup_transform` answers from, every edge labelled with owner, topic and rate — localisation on `/tf` when it corrects, encoder odometry on `/tf` at $200\,\mathrm{Hz}$ with $\Delta p=0.488\,\mathrm{mm}$, and the mount on `/tf_static`, sent once. On the $0$ to $70\,\mathrm{ms}$ lookup clock below, a lookup at `now()` points past the newest `odom` sample into empty space, *extrapolation into the future*, while one at the message's own stamp lands $20\,\mathrm{ms}$ back, where the buffer has data.
 
 ### Worked case: a detection from `camera_link` to `odom`, and what one typo costs
 
-Five steps on the object above. Every number is either P6's or the mount offset frozen in the picture above.
+Five steps on the Running object. Every number is either P6's or the frozen mount offset.
 
 **Step 1 — where the cart is, from the encoder.** The `odom` → `base_link` edge carries the plant's own measurement, so its value and its resolution are
 
@@ -134,13 +143,13 @@ $$ {}_{\text{odom}}T_{\text{target}} = {}_{\text{odom}}T_{\text{base}}\cdot{}_{\
 
 and tf2 walks it for you across the three owners. Here every frame is axis-aligned, so the rotations are identity and the composition collapses to addition along $x$: $0.40+0.10=0.50\,\mathrm{m}$ in `base_link`, then $0.50+0.50=1.00\,\mathrm{m}$ in `odom`. Write the two additions down separately, because they come from two different places — the middle term is a fixed number in your URDF, the outer term is a live measurement from the encoder, and only one of them can be wrong quietly.
 
-**Step 3 — and it is the fixed one.** Section 5's warning is about a typo xacro cannot catch: write `xzy=` for `xyz=` and urdfdom ignores the attribute rather than failing, leaving the joint at a zero offset. The chain then yields
+**Step 3 — and it is the fixed one.** Xacro is the macro language you write the description in, expanded to plain URDF before anything reads it, and urdfdom is the library that parses that URDF (§5). Section 5's warning is about a typo xacro cannot catch: write `xzy=` for `xyz=` and urdfdom ignores the attribute rather than failing, leaving the joint at a zero offset. The chain then yields
 
 $$0.40+0.00+0.50=0.90\,\mathrm{m}\quad\text{instead of}\quad 1.00\,\mathrm{m}$$
 
 so the error is exactly the lost mount offset, $0.10\,\mathrm{m}$ along $x$ (and $0.25\,\mathrm{m}$ in $z$) — which, in the units the rest of the system speaks, is $0.10\times2048=204.8$, about **205 encoder counts** of pure fiction on a cart whose encoder resolves $0.488\,\mathrm{mm}$. Nothing logs, RViz draws a robot that looks plausible, and the arm reaches ten centimetres short forever. Expand the xacro to a file and read the number whenever a result is *wrong*, not only when something is *missing*.
 
-**Step 4 — which time to ask for.** The buffer holds `odom` → `base_link` samples $5\,\mathrm{ms}$ apart and `base_link` → `camera_link` once, so the three ways of calling `lookup_transform` behave very differently on P6:
+**Step 4 — which time to ask for.** A listener keeps a time-indexed history of every edge it hears, the buffer, and `lookup_transform`'s third argument says which instant in it to answer for; `Time()` means the newest entry (§8). The buffer holds `odom` → `base_link` samples $5\,\mathrm{ms}$ apart and `base_link` → `camera_link` once, so the three ways of calling `lookup_transform` behave very differently on P6:
 
 | Third argument | What it means here | Cost against the $70\,\mathrm{ms}$ budget |
 |---|---|---|
@@ -150,7 +159,7 @@ so the error is exactly the lost mount offset, $0.10\,\mathrm{m}$ along $x$ (and
 
 The middle row is the one to argue about. `Time()` is right for "where is the cart now"; the stamp is right for "where was the cart when this pixel was exposed", which is what transforming a detection means. Interpolating between two samples $5\,\mathrm{ms}$ apart is exact to within one encoder count as long as the cart moves slower than $\Delta p/T_{\text{ctrl}}=0.488\,\mathrm{mm}/5\,\mathrm{ms}=0.0977\,\mathrm{m/s}$; above that the interpolation is smoothing real motion, which is a bound worth knowing before trusting a number to a tenth of a millimetre.
 
-**Step 5 — one edge, two owners.** Add a state estimator that also broadcasts `odom` → `base_link`, at $20\,\mathrm{Hz}$, beside the encoder odometry node at $200\,\mathrm{Hz}$. Nothing refuses, nothing warns, and `view_frames` reports
+**Step 5 — one edge, two owners.** Add a state estimator that also broadcasts `odom` → `base_link`, at $20\,\mathrm{Hz}$, beside the encoder odometry node at $200\,\mathrm{Hz}$. Nothing refuses, nothing warns, and `view_frames` — the tool that draws the whole tree and labels each edge with its average rate and a Broadcaster field (§10) — reports
 
 $$200+20=220\,\mathrm{Hz}$$
 
@@ -313,7 +322,12 @@ TF2 is the library that answers "where is frame A relative to frame B, at time t
 
 **Frames form a tree, not a graph.** Each frame has exactly one parent and any number of children. There is one root. This is not a style rule; it is what makes a lookup a unique path.
 
-**Direction.** A transform is published as parent → child: `header.frame_id` is the parent, `child_frame_id` is the child. In a lookup, `lookup_transform(target_frame, source_frame, time)` returns the transform that takes data *expressed in* `source_frame` and gives it *expressed in* `target_frame`. The tf2 concept documentation warns explicitly that the published `geometry_msgs/msg/Transform` is the *frame* formulation, which is the inverse of the data formulation — the library inverts as needed while traversing, but this is the sign error you will make.
+**Direction.** Two facts, kept apart:
+
+- *Publishing* names parent then child: `header.frame_id` is the parent, `child_frame_id` is the child.
+- *Looking up* names where the data should end up, then where it starts: `lookup_transform(target_frame, source_frame, time)` returns the transform that takes data *expressed in* `source_frame` and gives it *expressed in* `target_frame`.
+
+The trap is between them. The tf2 concept documentation warns that the published `geometry_msgs/msg/Transform` is the *frame* formulation, the inverse of the data formulation. The library inverts as needed while it walks the tree, so it does not make this sign error; you will, the first time you write a transform by hand.
 
 Composition along the chain is what the tree buys you. For a two-link arm,
 
@@ -333,7 +347,7 @@ A **static** transform never changes: base to laser mount, base to camera. It go
 ros2 run tf2_ros static_transform_publisher --x 0 --y 0 --z 1 --roll 0 --pitch 0 --yaw 0 --frame-id world --child-frame-id mystaticturtle
 ```
 
-All arguments except `--frame-id` and `--child-frame-id` are optional and default to identity, and `--qx --qy --qz --qw` is accepted instead of roll/pitch/yaw. Note that these are named options in ROS 2, not the bare positional numbers the ROS 1 command used; copying a ROS 1 line here is a common failure.
+All arguments except `--frame-id` and `--child-frame-id` are optional and default to identity, and `--qx --qy --qz --qw` is accepted instead of roll/pitch/yaw. Every value goes after its named flag, exactly as above. (A line of six or nine bare numbers, as in older tutorials, is the older form; do not copy it.)
 
 A **dynamic** transform changes and is stamped every time: odom to base_link, and every movable joint of your arm. It goes on `/tf` and is republished continuously.
 
@@ -426,6 +440,8 @@ map --> odom --> base_link
 - `map` is a world-fixed frame with z up. The robot's pose in `map` does **not drift** over time, because a localisation component keeps recomputing it from sensor observations, but it is **not continuous**: it can jump discretely whenever new sensor information arrives.
 
 That is the trade you cannot escape, and it is why both frames exist. Use `odom` for anything local and short-term — a velocity controller, obstacle avoidance over the next second, anything that would be destabilised by a pose that jumps 30 cm sideways. Use `map` for anything long-term and global — "go to the kitchen" — where drift would eventually put you in the wrong room.
+
+On P6 the trade has sizes. `odom` → `base_link` is the encoder itself, $p=c/2048$, so it moves in $0.488\,\mathrm{mm}$ steps and never jumps. Suppose a localisation fix — the camera seeing the rail's end stop — puts the cart at $1.000\,\mathrm{m}$ while odometry says $0.990\,\mathrm{m}$ (an illustrative gap, not a catalog number). The localisation node then publishes a `map` → `odom` correction of $0.010\,\mathrm{m}$, about $20$ counts. At that instant the cart's pose in `map` jumps by $10\,\mathrm{mm}$ and its pose in `odom` does not move, so the $200\,\mathrm{Hz}$ controller, which reads `odom`, sees no jump at all.
 
 The structure surprises people: intuition says both `map` and `odom` should be parents of `base_link`, but a frame may have only one parent, so REP 105 makes `map` the parent of `odom` instead. The consequence is that the localisation node does not publish the robot's pose directly; it publishes the `map` → `odom` correction, which is the accumulated drift of the odometry. Odometry publishes `odom` → `base_link`. Neither ever publishes the other's edge — that is section 7's rule applied to the most important edges in the system. Everything from `base_link` downward comes from `robot_state_publisher` reading your URDF.
 
@@ -542,6 +558,7 @@ In RViz set **Fixed Frame** to `base_link`, add a **RobotModel** display and a *
 3. `ros2 topic echo /tf_static --once` — prints `transforms: []`. `robot_state_publisher` always publishes its static list at startup, and every joint here is movable, so the list is empty. Add a `fixed` joint for a sensor mount and an entry appears.
 4. `ros2 run tf2_ros tf2_echo base_link link2` with both sliders at zero. The translation should be `[0, 0, 0.4]` — `link2`'s origin sits at the *end* of `link1`, which is what the elbow joint's `<origin>` says. Move the shoulder to 1.57 and watch x and z swap.
 5. `ros2 run tf2_tools view_frames`, then open the generated PDF. Three frames, two edges, each with a rate near 10 Hz. The *Broadcaster* field reads `default_authority` on every edge: in ROS 2 a listener cannot learn which node sent a transform, so that field carries no information. That 10 is `joint_state_publisher`'s `rate` default — `robot_state_publisher` only republishes what it receives, and its own `publish_frequency` default of 20 Hz is a *maximum*, not a target.
+6. **The Worked case's Step 3, on the arm.** In the xacro, change the elbow joint's `<origin xyz="0 0 ${link_len}" .../>` to `xzy=`. Expand it and run `check_urdf`: it still passes. Relaunch and repeat item 4. `tf2_echo base_link link2` now prints `[0, 0, 0]` where it printed `[0, 0, 0.4]`, so the error is exactly the lost offset, `link_len` $=0.4\,\mathrm{m}$. At zero the two cylinders lie on top of each other, and nothing logs. Put `xyz=` back.
 
 You are done when you can predict, before looking, what `tf2_echo base_link link2` will print for a given pair of slider values.
 
@@ -587,7 +604,7 @@ ros2 topic info /tf_static --verbose
 
 ### 14. What this page does not cover
 
-Driving the joints for real — controllers, hardware interfaces, and the Gazebo Harmonic side of the URDF — is [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]], which also covers the `<transmission>` and `<ros2_control>` tags this page skipped, and the SDF format Gazebo uses natively. Timestamps, the `use_sim_time` parameter and the executor that decides when your TF callback runs are [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] — and TF2's transient-local `/tf_static` is a QoS story the moment a subscriber gets it wrong. Packaging the description properly, with `package://` mesh paths that resolve after installation, is [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. The mathematics that `lookup_transform` is doing for you is [[02-foundations/se3-geometry|3D Geometry & SE(3)]] and [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]]. Everything above this sits in [[04-robotics/ros2/index|25. ROS 2]].
+Driving the joints for real — controllers, hardware interfaces, and the Gazebo Harmonic side of the URDF — is [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]], which also covers the `<transmission>` and `<ros2_control>` tags this page skipped, and the SDF format Gazebo uses natively. Timestamps, the `use_sim_time` parameter and the executor that decides when your TF callback runs are [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]] — and TF2's transient-local `/tf_static` is a QoS story the moment a subscriber gets it wrong. Packaging the description properly, with `package://` mesh paths that resolve after installation, is [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. The mathematics that `lookup_transform` is doing for you is [[02-foundations/se3-geometry|3D Geometry & SE(3)]] and [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]]. Everything above this sits in [[04-robotics/ros2/index|25. ROS 2]].
 
 ### Sources
 
@@ -652,8 +669,17 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_li
 > **Working** — enough to describe a robot, publish its frames correctly, and find who publishes a frame wrongly.
 
 > [!note] 선수 지식 · Prerequisites
-> source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**와 빌드할 수 있는 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). 강체 변환은 도움이 되지만 선행 조건은 아니다: [[02-foundations/se3-geometry|3D Geometry & SE(3)]], [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
-> A sourced ROS 2 Jazzy on Ubuntu 24.04 and a buildable workspace; rigid-body transforms help but are not required.
+> source된 **Ubuntu 24.04 위 ROS 2 Jazzy Jalisco**와 빌드할 수 있는 워크스페이스([[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]). `/tf_static`을 살려 두는 transient local durability(§6, §8)와 모든 조회가 묻는 메시지 타임스탬프는 각각 [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]와 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]에서 온다. 강체 변환은 도움이 되지만 선행 조건은 아니다: [[02-foundations/se3-geometry|3D Geometry & SE(3)]], [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]].
+> A sourced ROS 2 Jazzy on Ubuntu 24.04 and a buildable workspace; transient-local durability and timestamps from 25.5; rigid-body transforms help but are not required.
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 대상과 그림을 보고 Worked case로 가라. 그 안의 한 줄 설명 셋이 §5, §8, §10을 가리킨다. 그다음 §2(링크, 조인트, 트리 규칙), §7(간선의 소유자), §8(어느 시각을 물을지)을 읽고 §12 실습을 하라. 실습은 Worked case를 직접 만든 팔 위에서 돌린다. §1은 한 문단짜리 동기이고, §3–§6과 §9–§11은 증상이 그리로 보낼 때 돌아와 찾는 참고 자료이며, §13은 실습이 돌아간 뒤 재현할 고장이다.
+
+### 이 페이지의 대상 · Running object
+
+대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 카트이고, P6이 정하지 않는 것 하나를 여기서 페이지 끝까지 고정한다: **카메라는 `base_link`보다 $0.10\,\mathrm{m}$ 앞, $0.25\,\mathrm{m}$ 위에 있고 축은 카트와 정렬되어 있다.** 나머지 숫자는 모두 P6의 것이다: 엔코더 $N=2048$ counts/m, 제어 $200\,\mathrm{Hz}$, 비전 $50\,\mathrm{Hz}$, 예산 $70\,\mathrm{ms}$.
+
+*대상이 둘이라는 것을 한 번 밝혀 둔다.* 계산은 P6 위에서 한다. 실습(§12)과 고장(§13)은 대신 **2링크 팔** 하나를 만든다. P6의 URDF에는 고정된 카메라 장착 하나만 들어가기 때문이다. 레일 위 카트의 이동은 URDF 조인트가 아니므로(§11) RViz에서 움직일 것이 없다. Worked case의 단계 중 팔에서 돌릴 수 있는 것은 팔에서 돌린다. 2단계의 합성은 `tf2_echo base_link link2`(§12의 4번), 3단계의 오타는 §12의 6번, 5단계의 소유자 둘은 §13이며 주기는 $200+20$이 아니라 $10+20=30\,\mathrm{Hz}$다. 4단계에는 팔 쪽 짝이 없다. 슬라이더는 $10\,\mathrm{Hz}$로 publish하고 팔에는 카메라 스탬프를 단 것이 없기 때문이다.
 
 ### 그림으로 먼저 보기: 트리 둘과 시계 하나로 본 P6 · The picture
 
@@ -754,11 +780,11 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Cart frame `base_li
   <path d="M150.0 420v5M177.5 420v5M205.0 420v5M232.5 420v5M260.0 420v5M287.5 420v5M315.0 420v5M342.5 420v5M370.0 420v5M397.5 420v5M425.0 420v5M452.5 420v5M480.0 420v5M507.5 420v5M535.0 420v5" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" fill="none"/>
 </svg>
 
-대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 카트이고, P6이 정하지 않는 것 하나를 여기서 페이지 끝까지 고정한다: **카메라는 `base_link`보다 $0.10\,\mathrm{m}$ 앞, $0.25\,\mathrm{m}$ 위에 있고 축은 카트와 정렬되어 있다.** 왼쪽은 `robot_state_publisher`가 읽는 URDF 트리로 fixed 조인트 `camera_mount` 하나뿐이고 레일 위 카트의 이동에 해당하는 조인트는 없으며, 오른쪽은 `lookup_transform`이 답하는 근거인 TF 사슬로 간선마다 소유자·토픽·주기를 적었다 — 위치추정은 보정할 때마다 `/tf`로, 엔코더 오도메트리는 $200\,\mathrm{Hz}$ `/tf`로(해상도 $\Delta p=0.488\,\mathrm{mm}$), 장착은 `/tf_static`으로 한 번. 아래 $0$에서 $70\,\mathrm{ms}$ 조회 시계에서 `now()`로 한 조회는 가장 새 `odom` 샘플을 지나 빈 공간을 가리키고(*extrapolation into the future*), 메시지 자신의 스탬프로 한 조회는 버퍼에 데이터가 있는 $20\,\mathrm{ms}$ 전에 떨어진다.
+왼쪽은 `robot_state_publisher`가 읽는 URDF 트리로, 고정된 오프셋의 fixed 조인트 `camera_mount` 하나뿐이고 레일 위 카트의 이동에 해당하는 조인트는 없다. 오른쪽은 `lookup_transform`이 답하는 근거인 TF 사슬로 간선마다 소유자·토픽·주기를 적었다 — 위치추정은 보정할 때마다 `/tf`로, 엔코더 오도메트리는 $200\,\mathrm{Hz}$ `/tf`로(해상도 $\Delta p=0.488\,\mathrm{mm}$), 장착은 `/tf_static`으로 한 번. 아래 $0$에서 $70\,\mathrm{ms}$ 조회 시계에서 `now()`로 한 조회는 가장 새 `odom` 샘플을 지나 빈 공간을 가리키고(*extrapolation into the future*), 메시지 자신의 스탬프로 한 조회는 버퍼에 데이터가 있는 $20\,\mathrm{ms}$ 전에 떨어진다.
 
 ### 대상으로 한 번 끝까지: `camera_link`의 검출을 `odom`으로, 그리고 오타 하나의 값 · Worked case
 
-위 대상 위에서 다섯 단계. 모든 숫자는 P6의 것이거나 위의 그림에서 고정한 장착 오프셋이다.
+이 페이지의 대상 위에서 다섯 단계. 모든 숫자는 P6의 것이거나 고정한 장착 오프셋이다.
 
 **1단계 — 엔코더가 말하는 카트의 위치**. `odom` → `base_link` 간선이 장치 자신의 측정값을 나르므로 그 값과 해상도는
 
@@ -772,13 +798,13 @@ $$ {}_{\text{odom}}T_{\text{target}} = {}_{\text{odom}}T_{\text{base}}\cdot{}_{\
 
 이고 tf2가 소유자 셋을 가로질러 대신 걸어 준다. 여기서는 모든 프레임의 축이 정렬되어 회전이 항등이므로 합성이 $x$ 방향 덧셈으로 무너진다. `base_link`에서 $0.40+0.10=0.50\,\mathrm{m}$, 그다음 `odom`에서 $0.50+0.50=1.00\,\mathrm{m}$. 두 덧셈을 따로 적어라. 출처가 다르기 때문이다. 가운데 항은 URDF에 박힌 고정 숫자이고 바깥 항은 엔코더의 살아 있는 측정값인데, 조용히 틀릴 수 있는 쪽은 하나뿐이다.
 
-**3단계 — 그리고 그 하나는 고정된 쪽이다**. 5절의 경고가 xacro가 잡지 못하는 오타 이야기였다. `xyz=`를 `xzy=`로 쓰면 urdfdom은 실패하는 대신 그 속성을 무시하고, 조인트 오프셋은 0이 된다. 그러면 사슬은
+**3단계 — 그리고 그 하나는 고정된 쪽이다**. xacro는 로봇 기술을 쓰는 매크로 언어로, 누가 읽기 전에 평범한 URDF로 전개된다. urdfdom은 그 URDF를 파싱하는 라이브러리다(§5). 5절의 경고가 xacro가 잡지 못하는 오타 이야기였다. `xyz=`를 `xzy=`로 쓰면 urdfdom은 실패하는 대신 그 속성을 무시하고, 조인트 오프셋은 0이 된다. 그러면 사슬은
 
 $$0.40+0.00+0.50=0.90\,\mathrm{m}$$
 
 를 내놓는다. 원래 답은 $1.00\,\mathrm{m}$였으므로 오차는 정확히 잃어버린 장착 오프셋, $x$로 $0.10\,\mathrm{m}$(그리고 $z$로 $0.25\,\mathrm{m}$)이다. 시스템 나머지가 쓰는 단위로 옮기면 $0.10\times2048=204.8$, 곧 $0.488\,\mathrm{mm}$를 분해하는 카트 위의 **엔코더 205 카운트짜리 허구**다. 로그는 조용하고, RViz는 그럴듯한 로봇을 그리고, 팔은 영원히 10센티미터 못 미쳐 닿는다. 무언가 *빠졌을* 때만이 아니라 결과가 *틀렸을* 때 xacro를 파일로 전개해 숫자를 읽어라.
 
-**4단계 — 어느 시각을 물을 것인가**. 버퍼에는 `odom` → `base_link` 샘플이 $5\,\mathrm{ms}$ 간격으로, `base_link` → `camera_link`는 한 번 들어 있다. 그래서 `lookup_transform`의 세 가지 호출이 P6에서는 아주 다르게 굴러간다.
+**4단계 — 어느 시각을 물을 것인가**. 리스너는 들은 간선마다 시간으로 색인한 이력, 곧 버퍼를 쌓고, `lookup_transform`의 세 번째 인자는 그 안의 어느 순간에 대해 답할지를 정한다. `Time()`은 가장 새 항목을 뜻한다(§8). 버퍼에는 `odom` → `base_link` 샘플이 $5\,\mathrm{ms}$ 간격으로, `base_link` → `camera_link`는 한 번 들어 있다. 그래서 `lookup_transform`의 세 가지 호출이 P6에서는 아주 다르게 굴러간다.
 
 | 세 번째 인자 | 여기서의 뜻 | $70\,\mathrm{ms}$ 예산에 대한 값 |
 |---|---|---|
@@ -788,7 +814,7 @@ $$0.40+0.00+0.50=0.90\,\mathrm{m}$$
 
 다툴 만한 것은 가운데 행이다. "카트가 지금 어디인가"에는 `Time()`이 맞고, "이 픽셀이 노출된 순간 카트가 어디였나"에는 스탬프가 맞는데, 검출을 변환한다는 것은 후자를 뜻한다. $5\,\mathrm{ms}$ 떨어진 두 샘플 사이의 보간은 카트가 $\Delta p/T_{\text{ctrl}}=0.488\,\mathrm{mm}/5\,\mathrm{ms}=0.0977\,\mathrm{m/s}$보다 느리게 움직이는 한 엔코더 한 카운트 안에서 정확하다. 그보다 빠르면 보간이 실제 운동을 뭉개는 것이고, 어떤 숫자를 $0.1\,\mathrm{mm}$ 단위까지 믿기 전에 알아 둘 만한 한계다.
 
-**5단계 — 간선 하나에 소유자 둘**. $200\,\mathrm{Hz}$의 엔코더 오도메트리 노드 옆에, `odom` → `base_link`를 $20\,\mathrm{Hz}$로 함께 내보내는 상태 추정기를 붙여 보자. 아무도 거부하지 않고 아무도 경고하지 않으며, `view_frames`는
+**5단계 — 간선 하나에 소유자 둘**. $200\,\mathrm{Hz}$의 엔코더 오도메트리 노드 옆에, `odom` → `base_link`를 $20\,\mathrm{Hz}$로 함께 내보내는 상태 추정기를 붙여 보자. 아무도 거부하지 않고 아무도 경고하지 않으며, 트리 전체를 그리고 간선마다 평균 주기와 Broadcaster 칸을 적어 주는 도구인 `view_frames`(§10)는
 
 $$200+20=220\,\mathrm{Hz}$$
 
@@ -951,7 +977,12 @@ TF2는 "시각 t에 프레임 A가 B에 대해 어디 있는가"에 답하는 �
 
 **프레임은 그래프가 아니라 트리다.** 각 프레임은 부모가 정확히 하나, 자식은 몇이든 가진다. 루트는 하나다. 취향 규칙이 아니라, 조회 경로가 유일해지는 근거다.
 
-**방향.** 변환은 부모 → 자식으로 publish된다. `header.frame_id`가 부모, `child_frame_id`가 자식이다. 조회에서 `lookup_transform(target_frame, source_frame, time)`은 `source_frame`에 *표현된* 데이터를 `target_frame`에 표현된 것으로 바꾸는 변환을 돌려준다. tf2 개념 문서는 publish되는 `geometry_msgs/msg/Transform`이 *프레임* 형식이고 이는 데이터 형식의 역이라고 명시적으로 경고한다. 라이브러리가 순회하면서 알아서 역을 취하지만, 당신이 저지를 부호 오류가 바로 이것이다.
+**방향.** 두 사실을 떼어 놓자.
+
+- *publish*는 부모, 자식 순으로 이름을 댄다. `header.frame_id`가 부모, `child_frame_id`가 자식이다.
+- *조회*는 데이터가 도착할 곳, 출발한 곳 순으로 이름을 댄다. `lookup_transform(target_frame, source_frame, time)`은 `source_frame`에 *표현된* 데이터를 `target_frame`에 표현된 것으로 바꾸는 변환을 돌려준다.
+
+함정은 그 둘 사이에 있다. tf2 개념 문서는 publish되는 `geometry_msgs/msg/Transform`이 *프레임* 형식이고 이는 데이터 형식의 역이라고 경고한다. 라이브러리는 트리를 걸으며 알아서 역을 취하므로 이 부호 오류를 저지르지 않는다. 저지르는 쪽은 변환을 처음 손으로 적는 당신이다.
 
 사슬을 따라 합성하는 것이 트리의 이득이다. 2링크 팔이라면
 
@@ -971,7 +1002,7 @@ $$ {}_{\text{base}}T_{\text{tip}} = {}_{\text{base}}T_{\text{link1}} \cdot {}_{\
 ros2 run tf2_ros static_transform_publisher --x 0 --y 0 --z 1 --roll 0 --pitch 0 --yaw 0 --frame-id world --child-frame-id mystaticturtle
 ```
 
-`--frame-id`와 `--child-frame-id`를 뺀 모든 인자는 선택이고 생략하면 항등이며, roll/pitch/yaw 대신 `--qx --qy --qz --qw`도 받는다. ROS 2에서는 이것이 이름 있는 옵션이지 ROS 1이 쓰던 맨 위치 인자가 아니다. ROS 1 줄을 그대로 복사하는 것이 흔한 실패다.
+`--frame-id`와 `--child-frame-id`를 뺀 모든 인자는 선택이고 생략하면 항등이며, roll/pitch/yaw 대신 `--qx --qy --qz --qw`도 받는다. 값은 모두 위처럼 이름 붙은 플래그 뒤에 쓴다. (오래된 튜토리얼에 나오는, 숫자 여섯 개나 아홉 개를 맨몸으로 늘어놓은 줄은 옛 형식이니 복사하지 말 것.)
 
 **동적** 변환은 변하고 매번 타임스탬프가 찍힌다. odom에서 base_link, 그리고 팔의 모든 가동 조인트. `/tf`로 계속 나간다.
 
@@ -1064,6 +1095,8 @@ map --> odom --> base_link
 - `map`은 z가 위인 월드 고정 프레임이다. `map`에서의 자세는 위치추정 요소가 센서 관측으로 계속 다시 계산하므로 **표류하지 않는다**. 대신 **연속이 아니다**. 새 센서 정보가 들어올 때마다 불연속으로 도약할 수 있다.
 
 피할 수 없는 맞교환이고, 두 프레임이 모두 존재하는 이유다. 국소적이고 단기적인 것 — 속도 제어기, 1초 앞 장애물 회피, 자세가 옆으로 30 cm 튀면 불안정해지는 모든 것 — 에는 `odom`을 쓴다. 장기적이고 전역적인 것 — "부엌으로 가라" — 에는 `map`을 쓴다. 표류하면 결국 엉뚱한 방에 도착하기 때문이다.
+
+P6에서는 이 맞교환에 크기가 붙는다. `odom` → `base_link`는 엔코더 그 자체, $p=c/2048$이므로 $0.488\,\mathrm{mm}$ 단위로 움직이고 도약하지 않는다. 위치추정 한 번 — 카메라가 레일 끝 멈춤쇠를 본 것 — 이 카트를 $1.000\,\mathrm{m}$에 두는데 오도메트리는 $0.990\,\mathrm{m}$라고 한다고 하자(예시용 차이이지 카탈로그 숫자가 아니다). 그러면 위치추정 노드는 $0.010\,\mathrm{m}$, 약 $20$ 카운트짜리 `map` → `odom` 보정을 publish한다. 그 순간 `map`에서의 카트 자세는 $10\,\mathrm{mm}$ 도약하고 `odom`에서의 자세는 움직이지 않으므로, `odom`을 읽는 $200\,\mathrm{Hz}$ 제어기는 아무 도약도 보지 않는다.
 
 구조가 사람을 놀라게 한다. 직관은 `map`과 `odom`이 둘 다 `base_link`의 부모여야 한다고 말하지만, 프레임은 부모를 하나만 가질 수 있으므로 REP 105는 `map`을 `odom`의 부모로 둔다. 그 귀결로, 위치추정 노드는 로봇 자세를 직접 내보내지 않는다. `map` → `odom` 보정 — 곧 누적된 오도메트리 표류 — 을 내보낸다. 오도메트리는 `odom` → `base_link`를 낸다. 어느 쪽도 상대의 간선을 내지 않는다. 7절의 규칙을 시스템에서 가장 중요한 간선들에 적용한 것이다. `base_link` 아래는 전부 `robot_state_publisher`가 당신의 URDF를 읽어서 만든다.
 
@@ -1180,6 +1213,7 @@ RViz에서 **Fixed Frame**을 `base_link`로 두고 **RobotModel**과 **TF** dis
 3. `ros2 topic echo /tf_static --once` — `transforms: []`가 찍힌다. `robot_state_publisher`는 기동할 때 정적 목록을 항상 발행하는데, 여기 조인트는 전부 가동이라 목록이 비어 있다. 센서 마운트용 `fixed` 조인트를 하나 넣으면 항목이 나타난다.
 4. 슬라이더 둘을 0에 두고 `ros2 run tf2_ros tf2_echo base_link link2`. 병진이 `[0, 0, 0.4]`여야 한다. `link2`의 원점은 `link1`의 *끝*에 있고, 이는 elbow 조인트의 `<origin>`이 말하는 바다. shoulder를 1.57로 옮기고 x와 z가 뒤바뀌는 것을 보라.
 5. `ros2 run tf2_tools view_frames` 후 생성된 PDF를 연다. 프레임 셋, 간선 둘, 각 간선의 주기는 10 Hz 근처다. *Broadcaster* 칸은 모든 간선에서 `default_authority`다. ROS 2에서는 리스너가 어느 노드가 변환을 보냈는지 알 수 없으므로 그 칸에는 정보가 없다. 그 10은 `joint_state_publisher`의 `rate` 기본값이다. `robot_state_publisher`는 받은 것을 다시 낼 뿐이고, 자기 `publish_frequency` 기본값 20 Hz는 목표치가 아니라 *상한*이다.
+6. **Worked case의 3단계를 팔에서.** xacro에서 elbow 조인트의 `<origin xyz="0 0 ${link_len}" .../>`을 `xzy=`로 바꾼다. 전개해서 `check_urdf`를 돌리면 여전히 통과한다. 다시 띄우고 4번을 반복하라. `tf2_echo base_link link2`는 `[0, 0, 0.4]`를 찍던 자리에서 이제 `[0, 0, 0]`을 찍으므로, 오차는 정확히 잃어버린 오프셋 `link_len` $=0.4\,\mathrm{m}$다. 0에서는 두 원기둥이 겹쳐 그려지고, 로그는 아무것도 남기지 않는다. `xyz=`로 되돌려 놓아라.
 
 주어진 슬라이더 값에 대해 `tf2_echo base_link link2`가 무엇을 찍을지 보기 전에 예측할 수 있으면 끝이다.
 
@@ -1225,7 +1259,7 @@ ros2 topic info /tf_static --verbose
 
 ### 14. 이 페이지가 다루지 않는 것
 
-조인트를 실제로 구동하는 것 — 제어기, 하드웨어 인터페이스, URDF의 Gazebo Harmonic 쪽 — 은 [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]이고, 여기서 건너뛴 `<transmission>`과 `<ros2_control>` 태그, Gazebo가 기본으로 쓰는 SDF 형식도 거기 있다. 타임스탬프, `use_sim_time` 파라미터, TF 콜백이 언제 도는지 정하는 executor는 [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]이다. TF2의 transient local `/tf_static`도 구독자가 QoS를 틀리는 순간 QoS 이야기가 된다. 설치 후에도 `package://` 메시 경로가 풀리도록 기술을 제대로 패키징하는 것은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. `lookup_transform`이 대신 해 주는 수학은 [[02-foundations/se3-geometry|3D Geometry & SE(3)]]와 [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]]. 이 모든 것의 위층은 [[04-robotics/ros2/index|25. ROS 2]]에 있다.
+조인트를 실제로 구동하는 것 — 제어기, 하드웨어 인터페이스, URDF의 Gazebo Harmonic 쪽 — 은 [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]이고, 여기서 건너뛴 `<transmission>`과 `<ros2_control>` 태그, Gazebo가 기본으로 쓰는 SDF 형식도 거기 있다. 타임스탬프, `use_sim_time` 파라미터, TF 콜백이 언제 도는지 정하는 executor는 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]이다. TF2의 transient local `/tf_static`도 구독자가 QoS를 틀리는 순간 QoS 이야기가 된다. 설치 후에도 `package://` 메시 경로가 풀리도록 기술을 제대로 패키징하는 것은 [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]]. `lookup_transform`이 대신 해 주는 수학은 [[02-foundations/se3-geometry|3D Geometry & SE(3)]]와 [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]]. 이 모든 것의 위층은 [[04-robotics/ros2/index|25. ROS 2]]에 있다.
 
 ### 출처
 

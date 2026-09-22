@@ -18,10 +18,10 @@ Once a robot touches the world, geometry alone is insufficient. Contact introduc
 > Read contact-rich manipulation papers by identifying the contact model, sensing, control mode, material assumptions, and evaluation. Detailed complementarity solvers and continuum mechanics remain optional working/mastery topics.
 
 > [!note] Prerequisites
-> [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/optimization|Optimization]] · [[04-robotics/modern-robotics/ch05-velocity-kinematics|Statics and Jacobians]] · [[04-robotics/modern-robotics/ch08-dynamics|Dynamics]] · [[04-robotics/modern-robotics/ch12-grasping|Grasping]]
+> Plants **P2** and **P3** ([[02-foundations/lab-plants|0.6 Lab Plants]]) · [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/optimization|Optimization]] (a QP, §5) · the wrench ([[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3 §6]]) · [[04-robotics/modern-robotics/ch05-velocity-kinematics|Statics and Jacobians]] · [[04-robotics/modern-robotics/ch08-dynamics|Dynamics]]
 
 > [!note] First pass · 처음이라면
-> Read the running object and the worked case below — they are the one calculation this page owes you, and they run from "is there a contact at all" to "does the grip hold". Then §1, why contact changes the problem at all, then §5 (position, force, impedance, admittance), then §6, the wall-wiping scenario that puts all four in one task. §2 to §4 are the mechanics; read them when a paper's friction or closure claims matter.
+> Read the running object and the worked case below — they are the one calculation this page owes you, and they run from "is there a contact at all" to "does the grip hold". Then §1, why contact changes the problem at all, then §5 (position, force, impedance, admittance), then §6, the wall-wiping scenario that puts all four in one task. §2 to §4 are the mechanics; read them when a paper's friction or closure claims matter. §7 to §9 — what sensing can tell you about the contact, where learning enters, and what a paper must report — close the page with the self-check and the problem set.
 
 > [!tip] From sensing contact to displaying it
 > This page explains robot-side contact. Continue to [[04-robotics/haptics-teleoperation/tactile-display-design|Tactile Display Design]] when the contact cue must be rendered to a person, and to [[04-robotics/haptics-teleoperation/rendering-sampling-stability|Rendering, Sampling & Stability]] when a virtual wall or force-feedback loop must remain stable.
@@ -42,7 +42,7 @@ Once a robot touches the world, geometry alone is insufficient. Contact introduc
 | $m_p$ | $1.0\,\mathrm{kg}$ | the panel's own mass, for when it is picked up in §4 |
 | $g$ | $9.81\,\mathrm{m/s^2}$ | gravity, acting in $-y$ |
 
-Two tangents and not one, although P2 is planar: the *arm* moves in a plane but the *contact* is three-dimensional, and §2's cone is a three-dimensional cone. Collapsing it to one tangent would hide the entire linearization question, which is where half the contact literature's optimizers live.
+Two tangents and not one, although P2 is planar, because the *contact* is three-dimensional even though the *arm* moves in a plane; §2 says what the second tangent costs.
 
 *Scope: this page teaches the mechanics of one contact — when a contact exists, how much force it can carry, how that force becomes an object wrench, and what closure does and does not promise — plus how to read a contact-rich paper's sensing and evaluation. It does not teach how to choose a controller for that contact ([[04-robotics/force-compliance-control|13. Force & Compliance Control]]), how to plan or score a grasp ([[04-robotics/grasping|Grasping]]), how a tactile signal is rendered back to a person ([[04-robotics/haptics-teleoperation/tactile-display-design|24.2 Tactile Display Design]]), or how a contact simulator's solver is built ([[06-research-practice/simulators-benchmarks-datasets|Simulators, Benchmarks & Datasets]]).*
 
@@ -162,7 +162,7 @@ Left: P2 at $\theta=(0^\circ,90^\circ)$ with its tip on the panel face $x=1\,\ma
 
 Six steps on the object above, each proved by the section named in its heading. Every number here is recomputed in the problem set with two of the table's entries changed.
 
-**Step 1 — is there a contact at all? (§1).** Hold the tool 2 mm short of the face: $\phi=0.002$ m and $f_n=0$ N, so $\phi f_n=0$ and the pair sits on the left ray. Drive to the face: $\phi=0$, and now $f_n$ may be anything non-negative — the model has stopped predicting the force and started only constraining it. That switch is the whole difficulty: the two cases are different sets of equations, so the number that decides which one holds is a *measurement*, not a command.
+**Step 1 — is there a contact at all? (§1).** Hold the tool 2 mm short of the face. The gap $\phi$ — the distance from tool to face, positive while they are apart and never negative for rigid bodies (§1) — is $\phi=0.002$ m and $f_n=0$ N, so $\phi f_n=0$ and the pair sits on the left ray. Drive to the face: $\phi=0$, and now $f_n$ may be anything non-negative — the model has stopped predicting the force and started only constraining it. That switch is the whole difficulty: the two cases are different sets of equations, so the number that decides which one holds is a *measurement*, not a command.
 
 **Step 2 — how much normal force? (§3).** The rigid model cannot answer, because at $\phi=0$ it only says $f_n\ge0$. Commanding $\delta=5$ mm past the face makes the rigid model infeasible, so use the penalty model, which trades non-penetration for a spring:
 
@@ -176,9 +176,9 @@ $$\lVert f_t\rVert\le\mu f_n=0.5\times2.00=1.00\ \mathrm{N}$$
 
 A 3 N downward wipe is three times the bound, so the tool slides and friction pins $f_t$ at $-1.00$ N opposing the slip. A 1 N wipe sits *exactly* on the bound: allowed, with zero margin. That is the honest reading of "it sticks" — the model permits it and nothing in the model says it will survive a 1% change in $\mu$.
 
-**Step 4 — what is a solver allowed to believe? (§2, the linearization).** An optimizer that must stay a QP replaces the circle by facets, and the two standard replacements err in opposite directions. The outer box pyramid's corner at this contact is $\lVert f_t\rVert=\sqrt{1.00^2+1.00^2}=1.414$ N, which is $41.4\%$ past the real bound — it would authorise a wipe that slips. The four-generator inner cone allows only $\mu\cos(\pi/4)\times f_n=0.354\times2.00=0.707$ N, throwing away $29.3\%$ of the available friction — it would refuse the 1 N wipe the real contact permits. Eight generators cut that loss to $7.6\%$ ($0.924$ N) and sixteen to $1.9\%$ ($0.981$ N).
+**Step 4 — what is a solver allowed to believe? (§2, the linearization).** An optimizer that must stay a QP replaces the circle by facets, and the two standard replacements err in opposite directions. The outer box pyramid's corner at this contact is $\lVert f_t\rVert=\sqrt{1.00^2+1.00^2}=1.414$ N, which is $41.4\%$ past the real bound — it would authorise a wipe that slips. The four-generator inner cone allows only $\mu\cos(\pi/4)\times f_n=0.354\times2.00=0.707$ N, throwing away $29.3\%$ of the friction bound in its worst direction — it would refuse the 1 N wipe the real contact permits. An $m$-generator inner cone keeps the coefficient $\mu\cos(\pi/m)$ (§2 derives it), so eight generators cut that loss to $7.6\%$ ($0.924$ N) and sixteen to $1.9\%$ ($0.981$ N). Every percentage in this step is a loss in $\mu$, that is, in the largest tangential force; §2 gives the matching losses in area, which are larger.
 
-**Step 5 — the same contact as an object wrench (§4).** Put the panel's frame origin on its mounting bracket, $0.40$ m below the contact, so $r=(0,0.40,0)$ m, and take the full contact force with the 1 N wipe, $f=(2.00,-1.00,0)$ N. Then $m=r\times f=(0,0,-0.80)$ N·m and
+**Step 5 — the same contact as an object wrench (§4).** Put the panel's frame origin on its mounting bracket, $0.40$ m below the contact, so $r=(0,0.40,0)$ m, and take the full contact force with the 1 N wipe, $f=(2.00,-1.00,0)$ N. The object feels a **wrench**: the moment $m=r\times f$ that force makes about the origin, stacked on the force itself, in Modern Robotics' order ([[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3 §6]]; §4 here). Then $m=r\times f=(0,0,-0.80)$ N·m and
 
 $$\mathcal{F}=\begin{pmatrix}m\\ f\end{pmatrix}=(0,\ 0,\ -0.80,\ 2.00,\ -1.00,\ 0)$$
 
@@ -211,11 +211,16 @@ $$f_n\ge 0$$
 - **Complementarity**: at most one of the two is nonzero, since a force can act only across a closed gap.
 $$\phi(q)\,f_n=0$$
 
-The three are written together as $0\le\phi(q)\perp f_n\ge 0$, where $\perp$ means "their product is zero". Because each case (apart with $f_n=0$, or touching with $f_n\ge0$) is a different set of equations, the dynamics switch between **contact modes**, which is what makes contact hybrid and nonsmooth. Stacking these conditions for every contact point turns one simulation step into a **linear complementarity problem** (LCP: find $z\ge0$ with $w=Mz+q\ge0$ and $z^\top w=0$), the form rigid-body simulators solve ([[06-research-practice/simulators-benchmarks-datasets|Simulators, Benchmarks & Datasets]]).
+The three are written together as $0\le\phi(q)\perp f_n\ge 0$, where $\perp$ means "their product is zero". Because each case (apart with $f_n=0$, or touching with $f_n\ge0$) is a different set of equations, the dynamics switch between **contact modes**, which is what makes contact hybrid and nonsmooth. Stacking these conditions for every contact point turns one simulation step into a **linear complementarity problem** (LCP), the form rigid-body simulators solve ([[06-research-practice/simulators-benchmarks-datasets|Simulators, Benchmarks & Datasets]]). An LCP is a *problem*, not a model: given a square matrix $M$ and a vector $q$ (the standard letters; this $q$ is not the configuration), find vectors $z$ and $w$ with
+
+$$z\ge0,\qquad w=Mz+q\ge0,\qquad z^\top w=0$$
+
+— the same three conditions as above, one pair $(z_i,w_i)$ per contact. In a time-stepping simulator $z_i$ is contact $i$'s normal impulse over the step and $w_i$ its normal velocity after it, because once a gap has closed the condition moves from position to velocity: the surfaces either separate ($w_i>0$, no impulse) or stay together ($w_i=0$, an impulse $z_i\ge0$), never both.
 
 > [!example] Worked example · 계산 예제
 > A 0.1 kg block held 2 mm above a table has $\phi=0.002$ m and $f_n=0$, so $\phi f_n=0$ ✓. Set it down and at rest $\phi=0$ and $f_n=mg=0.1\times9.81=0.981$ N, again $\phi f_n=0$ ✓.
 > **Non-examples**: $\phi=0.001$ m with $f_n=0.5$ N violates complementarity (a force across an open gap), $f_n=-0.5$ N violates unilaterality (the table pulling the block down), and $\phi<0$ violates non-penetration; a penalty model (§3) deliberately allows that last one.
+> **The same block as an LCP**, one step of $h=0.01$ s: the velocity after the step is $w=v-gh+z/m$, so $M=1/m=10\ \mathrm{kg^{-1}}$ and $q=v-gh=0-0.0981=-0.0981$ m/s. $z=0$ would leave $w=q<0$, the block sinking into the table, so the solution is $w=0$ and $z=-q/M=0.00981$ N·s — an average force $z/h=0.981$ N $=mg$, the resting force above, found by the solver. **Non-example**: the block moving up at $v=0.5$ m/s has $q=0.4019>0$, so the LCP returns $z=0$ and $w=0.4019$ m/s, and the block leaves. Solving the equation $w=0$ alone would instead give $z=-0.0402$ N·s, the table pulling the block down: the equality without its two inequalities is not an LCP.
 
 ### 2. Normal force and friction
 
@@ -237,14 +242,14 @@ $$f_t=-\mu f_n\,\frac{v_t}{\lVert v_t\rVert}$$
 
 Many models use a larger static coefficient $\mu_s$ for the stick bound and a smaller kinetic $\mu_k$ while sliding; a single $\mu$ assumes they are equal.
 
-**The linearized friction cone, and which way it errs.** The bound $\lVert f_t\rVert\le\mu f_n$ is a *second-order* cone: the constraint is a norm, not a set of linear inequalities. Any optimizer that needs a quadratic program ([[02-foundations/optimization|4. Optimization §5]]) therefore replaces it by a **polyhedral cone** — a cone bounded by finitely many flat facets. There are two standard replacements, they approximate from opposite sides, and calling both of them "the friction pyramid" is how the error gets lost.
+**The linearized friction cone, and which way it errs.** The bound $\lVert f_t\rVert\le\mu f_n$ is a *second-order* cone: the constraint is a norm, not a set of linear inequalities. Any optimizer that needs a quadratic program ([[02-foundations/optimization|4. Optimization §5]]) therefore replaces it by a **polyhedral cone** — a cone bounded by finitely many flat facets. There are two standard replacements, they approximate from opposite sides, and calling both of them "the friction pyramid" is how the error gets lost. This is why the running object keeps two tangents although P2 is planar: with one tangent the cone is a wedge with exactly two edges, which a polyhedron represents exactly, and the whole question below — where half the contact literature's optimizers live — would disappear.
 
 - The **outer box pyramid** bounds each tangential axis separately, $|f_{t,1}|\le\mu f_n$ and $|f_{t,2}|\le\mu f_n$ — four facets, two per axis. It **contains** the true cone, so it admits forces that would slip: at $f_n=2$ N and $\mu=0.5$ its corner is $\lVert f_t\rVert=\sqrt{1^2+1^2}=1.414$ N against a true bound of 1 N, $41.4\%$ too generous. This is the form [[04-robotics/convex-mpc-legged|8. Convex MPC]] uses in its fourth modelling move, and shrinking the coefficient to $\mu/\sqrt2$ is how that page buys the error back.
 - The **inner polyhedral cone** is instead *spanned* by $m$ generator rays spaced evenly around the normal, each ray lying on the true cone's surface:
 
 $$f=\sum_{j=1}^{m}\lambda_j\,g_j,\qquad \lambda_j\ge0,\qquad g_j=\hat n+\mu\left(\cos\tfrac{(2j-1)\pi}{m}\,\hat t_1+\sin\tfrac{(2j-1)\pi}{m}\,\hat t_2\right)$$
 
-  where $\lambda_j$ is the non-negative weight on ray $j$ and $m$ is the facet count the modeller chooses; the half-step offset in the angle puts the middle of a facet, not a ray, on each tangent axis. Every force it admits is **inside** the true cone, since the generators are on the cone and the cone is convex, so a nonnegative combination of them cannot leave it. Its price is the friction it discards: the inscribed polygon's inradius gives it an effective coefficient $\mu\cos(\pi/m)$, which is $0.354$ at $m=4$ ($29.3\%$ of the bound thrown away), $0.462$ at $m=8$ ($7.6\%$) and $0.490$ at $m=16$ ($1.9\%$).
+  where $\lambda_j$ is the non-negative weight on ray $j$ and $m$ is the facet count the modeller chooses; the half-step offset in the angle puts the middle of a facet, not a ray, on each tangent axis. Every force it admits is **inside** the true cone, since the generators are on the cone and the cone is convex, so a nonnegative combination of them cannot leave it. Its price is the friction it discards: the inscribed polygon's inradius gives it an effective coefficient $\mu\cos(\pi/m)$, which is $0.354$ at $m=4$ ($29.3\%$ of $\mu$ thrown away), $0.462$ at $m=8$ ($7.6\%$ of $\mu$) and $0.490$ at $m=16$ ($1.9\%$ of $\mu$). Those percentages are losses in the *coefficient* — the largest tangential force the cone allows in its worst direction. Measured instead as the *area* of the tangential disc the polygon keeps, $\tfrac{m}{2\pi}\sin\tfrac{2\pi}{m}$ of it, the losses are $36.3\%$, $10.0\%$ and $2.6\%$; [[04-robotics/grasping|Grasping §2]] quotes both. A linearization loss quoted without saying which of the two it is cannot be compared with another.
 
 At $m=4$ the inner cone's coefficient $\mu\cos(\pi/4)$ and the shrunk box's $\mu/\sqrt2$ are the same number, $0.354$ — laid as above, the shrunk box *is* the four-generator cone — which is why the two constructions are so easily confused. The box at full $\mu$ and the inner cone are still different sets, and the direction of the error is the point: **outer is optimistic about grip, inner is pessimistic, and neither is the cone.** Which one a paper solved decides whether its planner can promise a contact it cannot hold, or refuse one it could.
 
@@ -297,7 +302,7 @@ The model choice matters because an apparent controller improvement may come fro
 
 ### 4. Grasp and wrench language
 
-A contact force produces a force and moment on the object; stacked into one vector they are a **wrench** (defined in [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]). The **grasp map** is the matrix that adds up all the contact forces into a single object wrench. Two closure notions build on it:
+A contact force produces a force and moment on the object; stacked into one vector they are a **wrench** (defined in [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3 §6]]; [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]] maps it to joint torques). The **grasp map** is the matrix that adds up all the contact forces into a single object wrench. Two closure notions build on it:
 
 - **Form closure** immobilizes an object through geometry alone, under a specified contact model.
 - **Force closure** uses admissible contact forces, commonly including friction, to resist arbitrary external wrenches.
@@ -387,7 +392,7 @@ Rope, cloth, soil, wet concrete, cables, and bulk material have high-dimensional
 
 ### 8. Learning and sim-to-real
 
-Learning may estimate residual dynamics, contact state, friction/material properties, grasp scores, or a tactile-conditioned policy. Domain randomization (training over a distribution of simulator parameters, defined with its objective in [[04-robotics/legged-locomotion|18. Legged Locomotion §2]]) can broaden training conditions, but the chosen randomization distribution defines what variation was covered. Privileged simulator state ([[05-construction-robotics/sim-to-real|Sim-to-Real §2]]) can aid training while being unavailable at deployment; check how the policy replaces it at test time. One pushing task shows all three: a residual-dynamics network learns the difference between the simulator's predicted next state and the real one; domain randomization resamples μ and object mass every episode; and the policy trains with the simulator's exact object pose but must deploy with a pose estimated from the camera.
+Learning may estimate residual dynamics, contact state, friction/material properties, grasp scores, or a tactile-conditioned policy. Domain randomization ([[04-robotics/legged-locomotion|18. Legged Locomotion §2]] defines it, with its objective) can broaden training conditions, but the chosen randomization distribution defines what variation was covered. Privileged simulator state ([[05-construction-robotics/sim-to-real|Sim-to-Real §2]]) can aid training while being unavailable at deployment; check how the policy replaces it at test time. One pushing task shows all three: a residual-dynamics network learns the difference between the simulator's predicted next state and the real one; domain randomization resamples μ and object mass every episode; and the policy trains with the simulator's exact object pose but must deploy with a pose estimated from the camera.
 
 ### 9. Evaluation and paper language
 
@@ -486,10 +491,10 @@ Tier B. The running object with **two entries changed**: the commanded penetrati
 > 실무/숙달 주제다.
 
 > [!note] 선수 지식
-> [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/optimization|최적화]] · [[04-robotics/modern-robotics/ch05-velocity-kinematics|정역학과 야코비안]] · [[04-robotics/modern-robotics/ch08-dynamics|동역학]] · [[04-robotics/modern-robotics/ch12-grasping|파지]]
+> 장치 **P2**, **P3**([[02-foundations/lab-plants|0.6 Lab Plants]]) · [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/optimization|최적화]](QP, §5) · 렌치([[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장 §6]]) · [[04-robotics/modern-robotics/ch05-velocity-kinematics|정역학과 야코비안]] · [[04-robotics/modern-robotics/ch08-dynamics|동역학]]
 
 > [!note] 처음이라면 · First pass
-> 먼저 아래의 계속 쓰는 대상과 계산 예제를 읽어라. 이 페이지가 갚아야 할 계산 하나이고, "접촉이 있기는 한가"에서 "그 파지가 버티는가"까지 이어진다. 그다음 §1(접촉이 애초에 문제를 왜 바꾸는가), 그다음 §5(위치·힘·임피던스·어드미턴스), 그다음 그 넷을 한 과제에 넣어 보는 §6의 벽 닦기. §2~§4는 역학이고, 논문의 마찰이나 closure 주장이 중요해질 때 읽어라.
+> 먼저 아래의 계속 쓰는 대상과 계산 예제를 읽어라. 이 페이지가 갚아야 할 계산 하나이고, "접촉이 있기는 한가"에서 "그 파지가 버티는가"까지 이어진다. 그다음 §1(접촉이 애초에 문제를 왜 바꾸는가), 그다음 §5(위치·힘·임피던스·어드미턴스), 그다음 그 넷을 한 과제에 넣어 보는 §6의 벽 닦기. §2~§4는 역학이고, 논문의 마찰이나 closure 주장이 중요해질 때 읽어라. §7~§9 — 센싱이 접촉에 대해 알려 줄 수 있는 것, 학습이 들어오는 자리, 논문이 보고해야 할 것 — 는 스스로 점검·과제와 함께 페이지를 닫는다.
 
 ### 계속 쓰는 대상: P3 강성 패널을 미는 P2 · Running object
 
@@ -507,7 +512,7 @@ Tier B. The running object with **two entries changed**: the commanded penetrati
 | $m_p$ | $1.0\,\mathrm{kg}$ | 패널 자체의 질량, §4에서 들어 올릴 때 쓴다 |
 | $g$ | $9.81\,\mathrm{m/s^2}$ | 중력, $-y$ 방향 |
 
-P2가 평면인데도 접선을 둘 두는 이유: 움직이는 것은 *팔*이지만 *접촉*은 3차원이고 §2의 원뿔도 3차원 원뿔이다. 접선 하나로 줄이면 선형화 문제 전체가 사라지는데, 접촉 문헌의 최적화기 절반이 바로 거기에 산다.
+P2가 평면인데도 접선을 하나가 아니라 둘 두는 것은, *팔*은 평면에서 움직여도 *접촉*은 3차원이기 때문이다. 두 번째 접선이 무엇을 치르게 하는지는 §2가 말한다.
 
 *범위: 이 페이지는 접촉 하나의 역학을 가르친다 — 언제 접촉이 존재하는가, 그 접촉이 얼마나 되는 힘을 견디는가, 그 힘이 어떻게 물체 렌치가 되는가, closure가 무엇을 보장하고 무엇을 보장하지 않는가 — 그리고 접촉이 많은 논문의 센싱과 평가를 읽는 법을 가르친다. 그 접촉에 어떤 제어기를 고를지([[04-robotics/force-compliance-control|13. 힘과 컴플라이언스 제어]]), 파지를 어떻게 계획하고 채점할지([[04-robotics/grasping|파지]]), 촉각 신호를 사람에게 어떻게 되돌려 줄지([[04-robotics/haptics-teleoperation/tactile-display-design|24.2 촉각 디스플레이 설계]]), 접촉 시뮬레이터의 솔버를 어떻게 만드는지([[06-research-practice/simulators-benchmarks-datasets|시뮬레이터·벤치마크·데이터셋]])는 가르치지 않는다.*
 
@@ -627,7 +632,7 @@ P2가 평면인데도 접선을 둘 두는 이유: 움직이는 것은 *팔*이�
 
 위의 대상에서 여섯 단계를 밟는다. 각 단계는 제목에 적은 절이 증명한다. 여기 모든 숫자를 과제에서 표의 항목 두 개만 바꿔 다시 계산한다.
 
-**1단계 — 접촉이 있기는 한가? (§1).** 공구를 면에서 2 mm 앞에 두면 $\phi=0.002$ m, $f_n=0$ N이므로 $\phi f_n=0$이고 쌍은 왼쪽 반직선 위에 있다. 면까지 몰면 $\phi=0$이고, 이제 $f_n$은 음이 아니기만 하면 무엇이든 될 수 있다 — 모델이 힘을 예측하기를 그만두고 제약하기만 시작한 것이다. 그 전환이 어려움의 전부다. 두 경우가 서로 다른 방정식 묶음이므로, 어느 쪽인지 정하는 값은 명령이 아니라 *측정*이다.
+**1단계 — 접촉이 있기는 한가? (§1).** 공구를 면에서 2 mm 앞에 둔다. 간극 $\phi$ — 공구에서 면까지의 거리로, 떨어져 있는 동안 양수이고 강체라면 음수가 될 수 없다(§1) — 는 $\phi=0.002$ m, $f_n=0$ N이므로 $\phi f_n=0$이고 쌍은 왼쪽 반직선 위에 있다. 면까지 몰면 $\phi=0$이고, 이제 $f_n$은 음이 아니기만 하면 무엇이든 될 수 있다 — 모델이 힘을 예측하기를 그만두고 제약하기만 시작한 것이다. 그 전환이 어려움의 전부다. 두 경우가 서로 다른 방정식 묶음이므로, 어느 쪽인지 정하는 값은 명령이 아니라 *측정*이다.
 
 **2단계 — 법선력은 얼마인가? (§3).** 강체 모델은 $\phi=0$에서 $f_n\ge0$만 말하므로 답할 수 없다. $\delta=5$ mm 안쪽을 명령하면 강체 모델은 실행 불가능해지니, 비침투를 스프링과 맞바꾸는 페널티 모델을 쓴다.
 
@@ -641,9 +646,9 @@ $$\lVert f_t\rVert\le\mu f_n=0.5\times2.00=1.00\ \mathrm{N}$$
 
 아래로 3 N 닦기는 경계의 세 배라 공구가 미끄러지고 마찰이 $f_t$를 미끄럼 반대 방향 $-1.00$ N에 고정한다. 1 N 닦기는 경계 *위에 정확히* 놓인다. 허용되지만 여유는 0이다. "고착한다"의 정직한 독법이 이것이다. 모델이 허락할 뿐, $\mu$가 1%만 달라져도 버틴다는 말은 모델 어디에도 없다.
 
-**4단계 — 솔버는 무엇을 믿어도 되는가? (§2, 선형화).** QP로 남아야 하는 최적화기는 원을 면들로 바꾸는데, 표준적인 두 대체가 서로 반대 방향으로 틀린다. 이 접촉에서 외접 상자 피라미드의 모서리는 $\lVert f_t\rVert=\sqrt{1.00^2+1.00^2}=1.414$ N으로 참 경계보다 $41.4\%$ 크다 — 미끄러질 닦기를 허가해 준다. 4-생성자 내접 원뿔은 $\mu\cos(\pi/4)\times f_n=0.354\times2.00=0.707$ N까지만 허용해 쓸 수 있는 마찰의 $29.3\%$를 버린다 — 실제 접촉이 허용하는 1 N 닦기를 거절한다. 생성자를 여덟으로 늘리면 손실이 $7.6\%$($0.924$ N), 열여섯이면 $1.9\%$($0.981$ N)로 줄어든다.
+**4단계 — 솔버는 무엇을 믿어도 되는가? (§2, 선형화).** QP로 남아야 하는 최적화기는 원을 면들로 바꾸는데, 표준적인 두 대체가 서로 반대 방향으로 틀린다. 이 접촉에서 외접 상자 피라미드의 모서리는 $\lVert f_t\rVert=\sqrt{1.00^2+1.00^2}=1.414$ N으로 참 경계보다 $41.4\%$ 크다 — 미끄러질 닦기를 허가해 준다. 4-생성자 내접 원뿔은 $\mu\cos(\pi/4)\times f_n=0.354\times2.00=0.707$ N까지만 허용해, 가장 불리한 방향에서 마찰 경계의 $29.3\%$를 버린다 — 실제 접촉이 허용하는 1 N 닦기를 거절한다. $m$-생성자 내접 원뿔은 계수 $\mu\cos(\pi/m)$을 남기므로(§2가 유도한다), 생성자를 여덟으로 늘리면 손실이 $7.6\%$($0.924$ N), 열여섯이면 $1.9\%$($0.981$ N)로 줄어든다. 이 단계의 백분율은 모두 $\mu$의 손실, 곧 최대 접선력의 손실이다. 면적으로 잰 손실은 이보다 크고, §2가 함께 준다.
 
-**5단계 — 같은 접촉을 물체 렌치로 (§4).** 패널 프레임 원점을 접촉에서 $0.40$ m 아래인 브래킷에 두면 $r=(0,0.40,0)$ m이고, 1 N 닦기를 포함한 접촉력은 $f=(2.00,-1.00,0)$ N이다. 그러면 $m=r\times f=(0,0,-0.80)$ N·m이므로
+**5단계 — 같은 접촉을 물체 렌치로 (§4).** 패널 프레임 원점을 접촉에서 $0.40$ m 아래인 브래킷에 두면 $r=(0,0.40,0)$ m이고, 1 N 닦기를 포함한 접촉력은 $f=(2.00,-1.00,0)$ N이다. 물체가 느끼는 것은 **렌치**, 곧 그 힘이 원점에 대해 만드는 모멘트 $m=r\times f$를 힘 자체 위에 쌓은 것이고, 순서는 Modern Robotics를 따른다([[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장 §6]], 이 페이지 §4). 그러면 $m=r\times f=(0,0,-0.80)$ N·m이므로
 
 $$\mathcal{F}=\begin{pmatrix}m\\ f\end{pmatrix}=(0,\ 0,\ -0.80,\ 2.00,\ -1.00,\ 0)$$
 
@@ -679,11 +684,16 @@ $$f_n\ge 0$$
 - **상보성**: 힘은 닫힌 간극을 통해서만 작용하므로 둘 중 많아야 하나만 0이 아니다.
 $$\phi(q)\,f_n=0$$
 
-셋을 한데 묶어 $0\le\phi(q)\perp f_n\ge 0$로 쓰고, $\perp$는 "곱이 0"이라는 뜻이다. 떨어져 있고 $f_n=0$인 경우와 닿아 있고 $f_n\ge0$인 경우가 서로 다른 방정식 묶음이므로 동역학이 **접촉 모드** 사이를 전환하고, 이것이 접촉을 하이브리드·비매끄럽게 만든다. 접촉점마다 이 조건을 쌓으면 시뮬레이션 한 스텝이 **선형 상보성 문제**(LCP: $w=Mz+q\ge0$, $z\ge0$, $z^\top w=0$인 $z$를 찾는 문제)가 되고, 강체 시뮬레이터가 푸는 것이 이 형태다([[06-research-practice/simulators-benchmarks-datasets|시뮬레이터·벤치마크·데이터셋]]).
+셋을 한데 묶어 $0\le\phi(q)\perp f_n\ge 0$로 쓰고, $\perp$는 "곱이 0"이라는 뜻이다. 떨어져 있고 $f_n=0$인 경우와 닿아 있고 $f_n\ge0$인 경우가 서로 다른 방정식 묶음이므로 동역학이 **접촉 모드** 사이를 전환하고, 이것이 접촉을 하이브리드·비매끄럽게 만든다. 접촉점마다 이 조건을 쌓으면 시뮬레이션 한 스텝이 **선형 상보성 문제**(LCP)가 되고, 강체 시뮬레이터가 푸는 것이 이 형태다([[06-research-practice/simulators-benchmarks-datasets|시뮬레이터·벤치마크·데이터셋]]). LCP는 모델이 아니라 *문제*다. 정사각 행렬 $M$과 벡터 $q$가 주어졌을 때(관례적인 글자이고, 이 $q$는 구성이 아니다) 다음을 만족하는 벡터 $z$와 $w$를 찾는다.
+
+$$z\ge0,\qquad w=Mz+q\ge0,\qquad z^\top w=0$$
+
+— 위의 세 조건과 같은 모양이고, 접촉마다 쌍 $(z_i,w_i)$가 하나씩 있다. 시간 적분 시뮬레이터에서 $z_i$는 한 스텝 동안 접촉 $i$가 받는 법선 충격량, $w_i$는 스텝이 끝난 뒤의 법선 속도다. 간극이 한 번 닫히면 조건이 위치에서 속도로 옮겨 가기 때문이다. 두 표면은 떨어지거나($w_i>0$, 충격량 없음) 붙어 있거나($w_i=0$, 충격량 $z_i\ge0$) 둘 중 하나이고, 둘 다일 수는 없다.
 
 > [!example] 계산 예제 · Worked example
 > 탁자 위 2 mm에 들고 있는 0.1 kg 블록은 $\phi=0.002$ m, $f_n=0$이므로 $\phi f_n=0$ ✓. 내려놓고 정지하면 $\phi=0$, $f_n=mg=0.1\times9.81=0.981$ N이고 역시 $\phi f_n=0$ ✓.
 > **반례**: $\phi=0.001$ m에서 $f_n=0.5$ N은 상보성 위반(열린 간극을 가로지르는 힘), $f_n=-0.5$ N은 단방향성 위반(탁자가 블록을 끌어당김), $\phi<0$은 비침투 위반이다. 페널티 모델(§3)은 마지막 것을 일부러 허용한다.
+> **같은 블록을 LCP로**, $h=0.01$ s 한 스텝: 스텝 뒤의 속도는 $w=v-gh+z/m$이므로 $M=1/m=10\ \mathrm{kg^{-1}}$, $q=v-gh=0-0.0981=-0.0981$ m/s다. $z=0$이면 $w=q<0$, 곧 블록이 탁자 속으로 가라앉으므로 해는 $w=0$, $z=-q/M=0.00981$ N·s다 — 평균 힘으로 $z/h=0.981$ N $=mg$, 위의 정지 힘을 솔버가 찾아낸 것이다. **반례**: 위로 $v=0.5$ m/s로 움직이는 블록은 $q=0.4019>0$이므로 LCP는 $z=0$, $w=0.4019$ m/s를 돌려주고 블록은 떠난다. 등식 $w=0$만 풀면 대신 $z=-0.0402$ N·s, 곧 탁자가 블록을 끌어내리는 답이 나온다. 부등식 둘이 빠진 등식은 LCP가 아니다.
 
 ### 2. 법선력과 마찰
 
@@ -709,14 +719,14 @@ $$f_t=-\mu f_n\,\frac{v_t}{\lVert v_t\rVert}$$
 
 많은 모델이 고착 경계에는 더 큰 정지 마찰 계수 $\mu_s$를, 미끄러지는 동안에는 더 작은 운동 마찰 계수 $\mu_k$를 쓴다. $\mu$ 하나만 쓰면 둘이 같다고 가정한 것이다.
 
-**선형화한 마찰 원뿔, 그리고 어느 쪽으로 틀리는가.** 경계 $\lVert f_t\rVert\le\mu f_n$은 *2차* 원뿔이다. 제약이 노름이지 선형 부등식들이 아니다. 그래서 이차계획법이 필요한 최적화기는([[02-foundations/optimization|4. 최적화 §5]]) 이것을 **다면 원뿔**(polyhedral cone), 곧 유한한 개수의 평평한 면으로 둘러싸인 원뿔로 바꾼다. 표준적인 대체가 둘이고, 둘은 서로 반대쪽에서 근사하며, 양쪽을 모두 "마찰 피라미드"라고 부르는 순간 오차의 방향이 사라진다.
+**선형화한 마찰 원뿔, 그리고 어느 쪽으로 틀리는가.** 경계 $\lVert f_t\rVert\le\mu f_n$은 *2차* 원뿔이다. 제약이 노름이지 선형 부등식들이 아니다. 그래서 이차계획법이 필요한 최적화기는([[02-foundations/optimization|4. 최적화 §5]]) 이것을 **다면 원뿔**(polyhedral cone), 곧 유한한 개수의 평평한 면으로 둘러싸인 원뿔로 바꾼다. 표준적인 대체가 둘이고, 둘은 서로 반대쪽에서 근사하며, 양쪽을 모두 "마찰 피라미드"라고 부르는 순간 오차의 방향이 사라진다. 계속 쓰는 대상이 P2가 평면인데도 접선을 둘 두는 이유가 이것이다. 접선이 하나면 원뿔은 모서리가 정확히 둘인 쐐기이고 다면체가 그것을 오차 없이 나타내므로, 아래의 질문 전체 — 접촉 문헌의 최적화기 절반이 사는 곳 — 가 사라져 버린다.
 
 - **외접 상자 피라미드**는 접선 축을 하나씩 따로 묶는다. $|f_{t,1}|\le\mu f_n$, $|f_{t,2}|\le\mu f_n$ — 축마다 두 면씩 네 면이다. 참 원뿔을 **포함하므로** 미끄러질 힘까지 허용한다. $f_n=2$ N, $\mu=0.5$에서 모서리는 $\lVert f_t\rVert=\sqrt{1^2+1^2}=1.414$ N이라 참 경계 1 N보다 $41.4\%$ 후하다. [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 네 번째 모델링 수에서 쓰는 형태가 이것이고, 계수를 $\mu/\sqrt2$로 줄이는 것이 그 페이지가 오차를 되사는 방법이다.
 - **내접 다면 원뿔**은 대신 법선 둘레에 고르게 놓인 $m$개의 생성자 반직선으로 *생성*되며, 각 반직선은 참 원뿔의 표면 위에 있다.
 
 $$f=\sum_{j=1}^{m}\lambda_j\,g_j,\qquad \lambda_j\ge0,\qquad g_j=\hat n+\mu\left(\cos\tfrac{(2j-1)\pi}{m}\,\hat t_1+\sin\tfrac{(2j-1)\pi}{m}\,\hat t_2\right)$$
 
-  여기서 $\lambda_j$는 반직선 $j$에 걸리는 음이 아닌 가중치이고 $m$은 모델러가 고르는 면의 수이며, 각도를 반 칸 어긋나게 두었으므로 각 접선 축 위에는 반직선이 아니라 면의 한가운데가 온다. 생성자가 원뿔 위에 있고 원뿔이 볼록하므로 그들의 음이 아닌 결합은 원뿔을 벗어날 수 없고, 따라서 이 집합이 허용하는 힘은 모두 참 원뿔 **안**에 있다. 대가는 버리는 마찰이다. 내접 다각형의 내접원 반지름 때문에 유효 계수가 $\mu\cos(\pi/m)$이 되어, $m=4$에서 $0.354$(경계의 $29.3\%$를 버림), $m=8$에서 $0.462$($7.6\%$), $m=16$에서 $0.490$($1.9\%$)이다.
+  여기서 $\lambda_j$는 반직선 $j$에 걸리는 음이 아닌 가중치이고 $m$은 모델러가 고르는 면의 수이며, 각도를 반 칸 어긋나게 두었으므로 각 접선 축 위에는 반직선이 아니라 면의 한가운데가 온다. 생성자가 원뿔 위에 있고 원뿔이 볼록하므로 그들의 음이 아닌 결합은 원뿔을 벗어날 수 없고, 따라서 이 집합이 허용하는 힘은 모두 참 원뿔 **안**에 있다. 대가는 버리는 마찰이다. 내접 다각형의 내접원 반지름 때문에 유효 계수가 $\mu\cos(\pi/m)$이 되어, $m=4$에서 $0.354$($\mu$의 $29.3\%$를 버림), $m=8$에서 $0.462$($\mu$의 $7.6\%$), $m=16$에서 $0.490$($\mu$의 $1.9\%$)이다. 이 백분율은 *계수*의 손실, 곧 가장 불리한 방향에서 원뿔이 허용하는 최대 접선력의 손실이다. 대신 다각형이 남기는 접선 원판의 *면적*, 곧 원판의 $\tfrac{m}{2\pi}\sin\tfrac{2\pi}{m}$로 재면 손실은 $36.3\%$, $10.0\%$, $2.6\%$이고, [[04-robotics/grasping|파지 §2]]는 둘을 함께 적는다. 둘 중 어느 것인지 밝히지 않은 선형화 손실은 다른 손실과 비교할 수 없다.
 
 $m=4$에서는 내접 원뿔의 계수 $\mu\cos(\pi/4)$와 줄인 상자의 $\mu/\sqrt2$가 같은 수 $0.354$가 되고, 위처럼 놓으면 줄인 상자가 곧 4-생성자 원뿔이다. 두 구성이 그렇게 쉽게 헷갈리는 이유다. 그래도 온전한 $\mu$의 상자와 내접 원뿔은 서로 다른 집합이고, 요점은 오차의 방향이다. **외접은 파지에 낙관적이고 내접은 비관적이며, 둘 다 원뿔은 아니다.** 어느 쪽을 풀었는지가, 그 계획기가 버틸 수 없는 접촉을 약속하는지 버틸 수 있는 접촉을 거절하는지를 정한다.
 
@@ -770,7 +780,7 @@ $k$(접촉 강성, N/m)는 주어진 겹침이 만드는 힘의 크기를, $d$(�
 
 ### 4. 파지와 렌치의 언어
 
-접촉력은 물체에 힘과 모멘트를 만들고, 이 둘을 한 벡터로 쌓은 것이 렌치다(**wrench**, [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]에서 정의). **Grasp map**은 모든 접촉력을 더해 물체 렌치 하나로 만드는 행렬이다. 그 위에 두 가지 닫힘 개념이 선다.
+접촉력은 물체에 힘과 모멘트를 만들고, 이 둘을 한 벡터로 쌓은 것이 렌치다(**wrench**, [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장 §6]]에서 정의하고, [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]이 관절 토크로 옮긴다). **Grasp map**은 모든 접촉력을 더해 물체 렌치 하나로 만드는 행렬이다. 그 위에 두 가지 닫힘 개념이 선다.
 
 - **Form closure**는 명시된 접촉 모델 아래 기하만으로 물체를 고정한다.
 - **Force closure**는 허용 접촉력(대개 마찰 포함)으로 임의 외부 렌치에 저항한다.
@@ -875,7 +885,7 @@ $$M_d\ddot x_c+D\,(\dot x_c-\dot x_d)+K\,(x_c-x_d)=F_{ext}$$
 ### 8. 학습과 sim-to-real
 
 학습은 잔차 동역학, 접촉 상태, 마찰/재료 성질, 파지 점수, 촉각 조건부 정책을 추정할 수
-있다. Domain randomization은 학습 조건을 넓히지만(시뮬레이터 파라미터의 분포 위에서 학습하는 것이고, 목적함수와 함께 [[04-robotics/legged-locomotion|18. 레그드 로코모션 §2]]에서 정의한다), 선택한 randomization 분포가 곧
+있다. Domain randomization([[04-robotics/legged-locomotion|18. 레그드 로코모션 §2]]이 목적함수와 함께 정의한다)은 학습 조건을 넓히지만, 선택한 randomization 분포가 곧
 "어떤 변동까지 커버했는가"를 정의한다. 시뮬레이터의 특권 정보(privileged state, [[05-construction-robotics/sim-to-real|Sim-to-Real §2]])는 학습을
 돕지만 배포 시에는 없다 — 정책이 시험 시점에 그것을 무엇으로 대체하는지 확인하라.
 밀기 과제 하나에 셋이 다 들어간다. 잔차 동역학 네트워크는 시뮬레이터가 예측한 다음 상태와

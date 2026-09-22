@@ -20,7 +20,7 @@ mastery-when: "Raise to Mastery only if the target role writes performance-criti
 Knowing the right algorithm is about half of a coding interview. The other half is visible process: whether you ask before assuming, whether you start from something correct, whether your code runs the first time, and whether you find your own bug before the interviewer points at it. Research-lab interviews add a third question — would I want to read this person's code in our repository? This page covers all three: a routine to follow and narrate (§1), testing habits that catch bugs early (§2), the parts of Python and C++ that trip people under pressure (§3, §4), the habits that make numeric and research code readable (§5), the rules that change inside a control loop (§6), and how to answer "can you do better?" (§7).
 
 > [!note] First pass · 처음이라면
-> Read §1 and §2 first and practise them on every problem you solve from now on. Then read the section for the language you will interview in (§3 or §4). §5 to §7 matter most for research-lab interviews.
+> Read §1 and §2 first and practise them on every problem you solve from now on. Then read the section for the language you will interview in (§3 or §4). Those two sections change format: they are lookup tables of self-contained traps rather than one worked story, so read them through once and come back to single entries later. §5 to §7 matter most for research-lab interviews, and the drill list before the self-check turns the whole page into a practice plan.
 
 ### 1. The solving routine for a 45-minute interview
 
@@ -60,6 +60,54 @@ The times are a rough guide. What matters is the order, and not skipping step 6.
 **Step 4 — improve.** Look for work that is repeated or wasted. Two things are wasted here. Membership in a list is linear, but in a hash set it is O(1) on average. And the walk from 11 repeats most of the walk from 10: we only need to walk from values that *start* a run, meaning their predecessor is absent. Then every value is stepped over by at most one walk, so all the walks together take O(n) steps.
 
 > **Say:** "Put the values in a set, so membership is O(1) on average. Only start a walk at `x` if `x - 1` is not in the set. Each value then belongs to exactly one walk, so the total work is linear. An alternative is to sort and scan in O(n log n) with less extra memory — I'll mention that trade-off at the end."
+
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="The frame numbers 12, 10, 11, 11, 20, 13 become the set 10, 11, 12, 13, 20 on a number line. Only 10 and 20 start a walk, because 9 and 19 are absent; the walk from 10 steps through 11, 12 and 13 and stops at the missing 14, length 4; the walk from 20 has length 1; 11, 12 and 13 are skipped because their predecessor is present.">
+  <defs><marker id="aicRun" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="8" y="20" font-size="12" fill="currentColor">input [12, 10, 11, 11, 20, 13] → set {10, 11, 12, 13, 20}</text>
+  <line x1="28.8" y1="88" x2="515.2" y2="88" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <text x="44" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">9</text>
+  <circle cx="82" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="82" y="110" font-size="11" fill="currentColor" text-anchor="middle">10</text>
+  <circle cx="120" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="120" y="110" font-size="11" fill="currentColor" text-anchor="middle">11</text>
+  <circle cx="158" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="158" y="110" font-size="11" fill="currentColor" text-anchor="middle">12</text>
+  <circle cx="196" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="196" y="110" font-size="11" fill="currentColor" text-anchor="middle">13</text>
+  <text x="234" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">14</text>
+  <line x1="272" y1="84" x2="272" y2="92" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="272" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">15</text>
+  <line x1="310" y1="84" x2="310" y2="92" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="310" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">16</text>
+  <line x1="348" y1="84" x2="348" y2="92" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="348" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">17</text>
+  <line x1="386" y1="84" x2="386" y2="92" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="386" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">18</text>
+  <text x="424" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">19</text>
+  <circle cx="462" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="462" y="110" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <text x="500" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">21</text>
+  <text x="82" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85" font-weight="bold">start</text>
+  <text x="120" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">skip</text>
+  <text x="158" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">skip</text>
+  <text x="196" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">skip</text>
+  <text x="462" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85" font-weight="bold">start</text>
+  <path d="M 82 80 A 19 19 0 0 1 120 80" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aicRun)"/>
+  <path d="M 120 80 A 19 19 0 0 1 158 80" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aicRun)"/>
+  <path d="M 158 80 A 19 19 0 0 1 196 80" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aicRun)"/>
+  <path d="M 196 80 A 19 19 0 0 1 234 80" stroke="currentColor" stroke-width="1.4" fill="none" stroke-opacity="0.6" stroke-dasharray="3 2" marker-end="url(#aicRun)"/>
+  <circle cx="44" cy="88" r="6.5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="44" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.65">absent</text>
+  <circle cx="234" cy="88" r="6.5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="234" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.65">absent</text>
+  <circle cx="424" cy="88" r="6.5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="424" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.65">absent</text>
+  <circle cx="500" cy="88" r="6.5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="500" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.65">absent</text>
+  <text x="8" y="162" font-size="11" fill="currentColor">walk from 10: 11, 12, 13 present, 14 absent → length 4</text>
+  <text x="8" y="182" font-size="11" fill="currentColor">walk from 20: 21 absent → length 1; best = 4</text>
+  <text x="8" y="202" font-size="11" fill="currentColor" fill-opacity="0.85">each value is stepped over by at most one walk, so all walks together take O(n)</text>
+</svg>
 
 **Step 5 — code.** Name things for what they mean, keep the function small, and say what each block does as you write it.
 
@@ -195,6 +243,8 @@ The harness reports that on `[1, -1, 0, 0]` the reference answers 3 and the cand
 Know the limits of the method. If the problem has several correct outputs (any shortest path, any valid ordering), compare with a *checker* that verifies the output's properties rather than with an exact answer. Bugs in shared code — the input parser, or the generator never producing an empty list — are invisible to it. And it tests only the sizes the slow solution can handle, so still run one maximum-size input for time. Property-based testing libraries such as Hypothesis for Python automate generation and shrinking; knowing how to write the fifteen-line version yourself is what the interview checks.
 
 ### 3. Python for interviews
+
+*From here the page changes format. §3 and §4 are lookup tables: each bold entry is one self-contained trap with a runnable check, and no entry depends on the one before. Read them straight through once, then return to single entries before an interview.*
 
 Python lets you write an interview solution in half the lines of C++, provided you know the standard library and its costs. Ask which Python version the environment runs: a few tools below need 3.9 or 3.10.
 
@@ -619,6 +669,90 @@ A research-lab interviewer reads your code the way a labmate will: will it be ob
 - **Vectorize when asked, and say what it costs.** Loops in Python run at interpreter speed; one NumPy expression runs the loop in compiled code. **Broadcasting** is NumPy's rule for combining arrays of different shapes elementwise, in three steps: (1) align the two shapes at their *right* ends, padding the shorter one with leading 1s; (2) each aligned pair of axis lengths must be equal or contain a 1, otherwise NumPy raises an error; (3) the result takes the larger length on every axis, and an axis of length 1 is reused (stretched) along it without copying. So for aligned lengths $p$ and $r$, the check that step (2) performs and the output length are
 $$p = r \ \text{ or } \ p = 1 \ \text{ or } \ r = 1, \qquad \text{out} = \max(p, r)$$
   *Example:* `(2, 3)` with `(3,)` pads to `(1, 3)` and gives `(2, 3)`. *Non-example:* `(2, 3)` with `(2,)` pads to `(1, 2)`, and $3$ against $2$ fails, so it raises; `(2, 1)` is what "one value per row" needs. Broadcasting aligns shapes from the right and stretches axes of length 1, so an `(N, 1, D)` array minus a `(1, M, D)` array gives every pairwise difference as `(N, M, D)`. That array uses N·M·D floats of memory; multiplying out (a − b)·(a − b) gives the expanded form ‖a‖² + ‖b‖² − 2a·b, which needs only `(N, M)`, but rounding can make a tiny true distance slightly negative, so clamp at zero before the square root.
+
+<svg viewBox="0 0 560 280" style="max-width:100%;height:auto" role="img" aria-label="Broadcasting. Top: a 2 by 3 array plus a length-3 vector; the vector is padded to shape (1, 3) and its single row is reused for both rows, giving (2, 3). Bottom: shapes aligned at the right. (2, 3) with (3,) gives (2, 3); (2, 3) with (2,) pads to (1, 2) and 3 against 2 fails; (N, 1, D) with (1, M, D) gives (N, M, D).">
+  <defs><marker id="aicBc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="20" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="40" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="60" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="20" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="40" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="60" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="50" y="92" font-size="11" fill="currentColor" text-anchor="middle">(2, 3)</text>
+  <text x="100" y="59" font-size="14" fill="currentColor" text-anchor="middle">+</text>
+  <rect x="118" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="138" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="158" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <text x="148" y="92" font-size="11" fill="currentColor" text-anchor="middle">(3,)</text>
+  <text x="206" y="59" font-size="14" fill="currentColor" text-anchor="middle">→</text>
+  <rect x="224" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="244" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="264" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="224" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.5" stroke-dasharray="3 2"/>
+  <rect x="244" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.5" stroke-dasharray="3 2"/>
+  <rect x="264" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.5" stroke-dasharray="3 2"/>
+  <line x1="294" y1="44" x2="294" y2="64" stroke="currentColor" stroke-width="1.1" marker-end="url(#aicBc)"/>
+  <text x="254" y="92" font-size="11" fill="currentColor" text-anchor="middle">(1, 3), one row reused</text>
+  <text x="334" y="59" font-size="14" fill="currentColor" text-anchor="middle">=</text>
+  <rect x="352" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="372" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="392" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="352" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="372" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="392" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <text x="382" y="92" font-size="11" fill="currentColor" text-anchor="middle">(2, 3)</text>
+  <text x="8" y="124" font-size="12" fill="currentColor">align at the right; each pair must be equal or contain a 1</text>
+  <text x="78" y="150" font-size="11" fill="currentColor" font-weight="bold">example</text>
+  <text x="70" y="174" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">A</text>
+  <rect x="78" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="95" y="174" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="116" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="133" y="174" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="70" y="200" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">b</text>
+  <rect x="78" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <text x="95" y="200" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <rect x="116" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="133" y="200" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="95" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="133" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="78" y="250" font-size="11" fill="currentColor">result: (2, 3)</text>
+  <text x="78" y="268" font-size="10" fill="currentColor" fill-opacity="0.8">padded 1 (dashed)</text>
+  <text x="258" y="150" font-size="11" fill="currentColor" font-weight="bold">non-example</text>
+  <text x="250" y="174" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">A</text>
+  <rect x="258" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="275" y="174" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="296" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="313" y="174" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="250" y="200" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">b</text>
+  <rect x="258" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <text x="275" y="200" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <rect x="296" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="313" y="200" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="275" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="313" y="226" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">✗</text>
+  <text x="258" y="250" font-size="11" fill="currentColor">error: 3 vs 2</text>
+  <text x="258" y="268" font-size="10" fill="currentColor" fill-opacity="0.8">padded 1 (dashed)</text>
+  <text x="420" y="150" font-size="11" fill="currentColor" font-weight="bold">pairwise differences</text>
+  <text x="412" y="174" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">A</text>
+  <rect x="420" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="437" y="174" font-size="11" fill="currentColor" text-anchor="middle" font-style="italic">N</text>
+  <rect x="458" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="475" y="174" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="496" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="513" y="174" font-size="11" fill="currentColor" text-anchor="middle" font-style="italic">D</text>
+  <text x="412" y="200" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">b</text>
+  <rect x="420" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="437" y="200" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="458" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="475" y="200" font-size="11" fill="currentColor" text-anchor="middle" font-style="italic">M</text>
+  <rect x="496" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="513" y="200" font-size="11" fill="currentColor" text-anchor="middle" font-style="italic">D</text>
+  <text x="437" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="475" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="513" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="420" y="250" font-size="11" fill="currentColor">result: (N, M, D)</text>
+</svg>
+
 - **Determinism.** Seed every random source and pass generators explicitly, so a failure can be replayed. Iteration order over a `set` of strings changes between interpreter runs (string hashing is randomised per process), so sort before iterating when order affects the output.
 
 ```python
@@ -686,11 +820,76 @@ In a **hard** real-time system a single miss counts as a failure (a torque loop)
 - **Locks.** A mutex held by a lower-priority thread can block the control thread for as long as that thread runs, and a medium-priority thread can stretch that further (priority inversion). **Priority inversion** is a scheduling failure with three parts: a high-priority thread H waits for a lock held by a low-priority thread L; a medium-priority thread M, which needs no lock, becomes ready and preempts L because it outranks L; so H is effectively blocked by M, a thread of *lower* priority, for as long as M runs. Priority-inheritance mutexes fix it by temporarily raising L to H's priority while L holds the lock. Keep critical sections tiny, use `try_lock` and skip the update when it fails, or pass data through a single-producer single-consumer lock-free queue.
 - **Exceptions.** Throwing usually allocates the exception object, and unwinding takes time that depends on the stack. Mark hot-path functions `noexcept`, report failure with return values or status flags, and handle errors in a non-real-time thread. The same applies to logging and console output: formatting allocates and writing to a terminal can block.
 
-Python, with its garbage collector and interpreter, belongs outside hard real-time loops; it is fine for planning, perception, and supervision at lower rates. For the ROS 2 side of the same problem — why a long callback stalls a control timer on a single-threaded executor, and which clock a timer follows — read [[04-robotics/ros2/qos-executors-time|ROS 2 QoS, executors & time]], which also points to real-time scheduling analysis.
+Python, with its garbage collector and interpreter, belongs outside hard real-time loops; it is fine for planning, perception, and supervision at lower rates. For the ROS 2 side of the same problem — why a long callback stalls a control timer on a single-threaded executor, and which clock a timer follows — read [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]], which also points to real-time scheduling analysis.
 
 The standard structure for "keep the last N samples" in a hot path is a ring buffer over a fixed array: pushing overwrites the oldest sample, and nothing is ever allocated. A **ring buffer** (circular buffer) of capacity $N$ is a fixed array plus two integers, `head` (the slot of the oldest sample) and `size` (how many slots are in use, $0 \le$ `size` $\le N$); indices wrap modulo $N$, so the $i$-th oldest sample and the slot the next push writes are
 $$\text{slot}(i) = (\text{head} + i) \bmod N, \qquad \text{write slot} = (\text{head} + \text{size}) \bmod N$$
 *Example:* with $N = 3$, pushing 0.1 to 0.5 writes slots 0, 1, 2, then 0 and 1 again, leaving the array `[0.4, 0.5, 0.3]` with `head` = 2, so slots 2, 0, 1 read back 0.3, 0.4, 0.5, oldest first, as the test in the code asserts.
+
+<svg viewBox="0 0 560 268" style="max-width:100%;height:auto" role="img" aria-label="A ring buffer with three slots receiving 0.1 to 0.5. Each row shows the array after one push, the slot written, (head + size) mod 3, and the head after the push. After 0.4 and 0.5 overwrite slots 0 and 1 the array is 0.4, 0.5, 0.3 with head 2, and reading slot (2 + i) mod 3 for i = 0, 1, 2 returns 0.3, 0.4, 0.5, oldest first.">
+  <defs><marker id="aicRb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="106" y="34" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <text x="150" y="34" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">1</text>
+  <text x="194" y="34" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">2</text>
+  <text x="74" y="34" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">slot</text>
+  <text x="8" y="60" font-size="11" fill="currentColor">push 0.1</text>
+  <rect x="84" y="44" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="106" y="60" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.1</text>
+  <rect x="128" y="44" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <rect x="172" y="44" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <path d="M106 70 L101.5 77 L110.5 77 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="60" font-size="11" fill="currentColor">(0 + 0) mod 3 = 0</text>
+  <text x="8" y="96" font-size="11" fill="currentColor">push 0.2</text>
+  <rect x="84" y="80" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="106" y="96" font-size="11" fill="currentColor" text-anchor="middle">0.1</text>
+  <rect x="128" y="80" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="150" y="96" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.2</text>
+  <rect x="172" y="80" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <path d="M106 106 L101.5 113 L110.5 113 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="96" font-size="11" fill="currentColor">(0 + 1) mod 3 = 1</text>
+  <text x="8" y="132" font-size="11" fill="currentColor">push 0.3</text>
+  <rect x="84" y="116" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="106" y="132" font-size="11" fill="currentColor" text-anchor="middle">0.1</text>
+  <rect x="128" y="116" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="150" y="132" font-size="11" fill="currentColor" text-anchor="middle">0.2</text>
+  <rect x="172" y="116" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="194" y="132" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.3</text>
+  <path d="M106 142 L101.5 149 L110.5 149 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="132" font-size="11" fill="currentColor">(0 + 2) mod 3 = 2</text>
+  <text x="8" y="168" font-size="11" fill="currentColor">push 0.4</text>
+  <rect x="84" y="152" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="106" y="168" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.4</text>
+  <rect x="128" y="152" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="150" y="168" font-size="11" fill="currentColor" text-anchor="middle">0.2</text>
+  <rect x="172" y="152" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="194" y="168" font-size="11" fill="currentColor" text-anchor="middle">0.3</text>
+  <path d="M150 178 L145.5 185 L154.5 185 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="168" font-size="11" fill="currentColor">(0 + 3) mod 3 = 0</text>
+  <text x="8" y="204" font-size="11" fill="currentColor">push 0.5</text>
+  <rect x="84" y="188" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="106" y="204" font-size="11" fill="currentColor" text-anchor="middle">0.4</text>
+  <rect x="128" y="188" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="150" y="204" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.5</text>
+  <rect x="172" y="188" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="194" y="204" font-size="11" fill="currentColor" text-anchor="middle">0.3</text>
+  <path d="M194 214 L189.5 221 L198.5 221 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="204" font-size="11" fill="currentColor">(1 + 3) mod 3 = 1</text>
+  <text x="452" y="30" font-size="11" fill="currentColor" text-anchor="middle">read: slot(i) = (2 + i) mod 3</text>
+  <path d="M 502.2 107.0 A 58.0 58.0 0 0 0 401.8 107.0 L 426.0 121.0 A 30.0 30.0 0 0 1 478.0 121.0 Z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="452" y="96" font-size="11" fill="currentColor" text-anchor="middle">0.4</text>
+  <text x="452" y="50" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">slot 0</text>
+  <text x="452" y="63" font-size="10" fill="currentColor" text-anchor="middle" font-weight="bold">i = 1</text>
+  <path d="M 452.0 194.0 A 58.0 58.0 0 0 0 502.2 107.0 L 478.0 121.0 A 30.0 30.0 0 0 1 452.0 166.0 Z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="490.1" y="162" font-size="11" fill="currentColor" text-anchor="middle">0.5</text>
+  <text x="512.6" y="181" font-size="10" fill="currentColor" fill-opacity="0.85">slot 1</text>
+  <text x="512.6" y="194" font-size="10" fill="currentColor" font-weight="bold">i = 2</text>
+  <path d="M 401.8 107.0 A 58.0 58.0 0 0 0 452.0 194.0 L 452.0 166.0 A 30.0 30.0 0 0 1 426.0 121.0 Z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.2"/>
+  <text x="413.9" y="162" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.3</text>
+  <text x="391.4" y="181" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.85">slot 2</text>
+  <text x="391.4" y="194" font-size="10" fill="currentColor" text-anchor="end" font-weight="bold">i = 0</text>
+  <path d="M 433 144.9 A 21 21 0 1 1 471 144.9" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aicRb)"/>
+  <text x="8" y="256" font-size="11" fill="currentColor">▲ head after the push: the oldest sample; a push into a full buffer overwrites it</text>
+</svg>
 
 ```cpp
 #include <array>
@@ -743,6 +942,14 @@ int main() {
 >
 > The answer names the lower bound, turns to the resource that can still improve, and asks a clarifying question instead of guessing.
 
+### How to drill this page
+
+1. **Run the §1 routine on every problem you solve**, out loud or in comments: restate, hand example, brute force, improve, code, hand-test, complexity. For the first ten problems, time each step against the table in §1.
+2. **Keep one stress-test file.** For each problem, write the brute force first and reuse `stress` and `shrink` from §2; stop only when all 3000 trials agree.
+3. **Drill §3 and §4 as a lookup table.** Hide the code, read one bold entry name, predict what its snippet prints or which assertion it checks, then run it.
+4. **Rewrite one function a week in the §5 style**: units in names, shapes in comments, one assertion for an invariant, a seeded generator.
+5. **Answer "can you do better?" aloud** for every solution with the four moves of §7, and only then read §7's worked example.
+
 ### Self-check
 
 1. A problem says n ≤ 2 × 10⁵ and values up to 10⁹, and asks for the sum of the products of all pairs. Before designing anything, what two things do these constraints tell you in C++?
@@ -791,7 +998,7 @@ One extra, not a rewrite of the interview track. **P2** from [[02-foundations/la
 코딩 인터뷰에서 알맞은 알고리즘을 아는 것은 절반쯤이다. 나머지 절반은 겉으로 보이는 과정이다. 가정하기 전에 묻는가, 올바른 것에서 출발하는가, 코드가 처음부터 돌아가는가, 면접관이 짚기 전에 스스로 버그를 찾는가. 연구실 인터뷰는 세 번째 질문을 더한다. 이 사람의 코드를 우리 저장소에서 읽고 싶은가? 이 페이지는 셋을 모두 다룬다. 따라가며 소리 내어 말할 절차(§1), 버그를 일찍 잡는 테스트 습관(§2), 압박 속에서 사람을 넘어뜨리는 Python과 C++의 부분들(§3, §4), 수치 코드와 연구 코드를 읽기 쉽게 만드는 습관(§5), 제어 루프 안에서 달라지는 규칙(§6), 그리고 "더 잘할 수 있나요?"에 답하는 법(§7)이다.
 
 > [!note] 처음이라면 · First pass
-> §1과 §2를 먼저 읽고, 앞으로 푸는 모든 문제에서 연습하라. 그다음 인터뷰에서 쓸 언어의 절(§3 또는 §4)을 읽어라. §5부터 §7까지는 연구실 인터뷰에서 가장 중요하다.
+> §1과 §2를 먼저 읽고, 앞으로 푸는 모든 문제에서 연습하라. 그다음 인터뷰에서 쓸 언어의 절(§3 또는 §4)을 읽어라. 이 두 절은 형식이 바뀐다. 하나의 풀이 이야기가 아니라 서로 독립인 함정들을 모은 참조표이므로, 한 번 끝까지 읽은 뒤 필요한 항목만 다시 찾아본다. §5부터 §7까지는 연구실 인터뷰에서 가장 중요하고, 스스로 점검 앞의 연습 목록이 페이지 전체를 연습 계획으로 바꿔 준다.
 
 ### 1. 45분 인터뷰를 위한 풀이 절차
 
@@ -831,6 +1038,54 @@ One extra, not a rewrite of the interview track. **P2** from [[02-foundations/la
 **4단계 — 개선.** 반복되거나 낭비되는 일을 찾는다. 여기에는 낭비가 둘 있다. 리스트에서의 소속 검사는 선형이지만 해시 집합에서는 평균 O(1)이다. 그리고 11에서 시작한 걷기는 10에서 시작한 걷기의 대부분을 되풀이한다. 구간을 *시작하는* 값, 즉 바로 앞 값이 없는 값에서만 걸으면 된다. 그러면 각 값은 최대 한 번의 걷기에서만 지나가므로 모든 걷기를 합쳐도 O(n)걸음이다.
 
 > **이렇게 말한다:** "값을 집합에 넣어서 소속 검사를 평균 O(1)로 만듭니다. `x - 1`이 집합에 없을 때만 `x`에서 걷기를 시작합니다. 그러면 각 값은 정확히 한 번의 걷기에 속하니까 전체 작업은 선형입니다. 정렬 후 훑어서 O(n log n)에 추가 메모리를 덜 쓰는 대안도 있는데, 그 트레이드오프는 마지막에 말하겠습니다."
+
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="프레임 번호 12, 10, 11, 11, 20, 13은 수직선 위 집합 10, 11, 12, 13, 20이 된다. 9와 19가 없으므로 걷기는 10과 20에서만 시작한다. 10에서의 걷기는 11, 12, 13을 지나 없는 14에서 멈춰 길이 4, 20에서의 걷기는 길이 1이다. 11, 12, 13은 앞 값이 있으므로 건너뛴다.">
+  <defs><marker id="aicRunk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="8" y="20" font-size="12" fill="currentColor">입력 [12, 10, 11, 11, 20, 13] → 집합 {10, 11, 12, 13, 20}</text>
+  <line x1="28.8" y1="88" x2="515.2" y2="88" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <text x="44" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">9</text>
+  <circle cx="82" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="82" y="110" font-size="11" fill="currentColor" text-anchor="middle">10</text>
+  <circle cx="120" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="120" y="110" font-size="11" fill="currentColor" text-anchor="middle">11</text>
+  <circle cx="158" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="158" y="110" font-size="11" fill="currentColor" text-anchor="middle">12</text>
+  <circle cx="196" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="196" y="110" font-size="11" fill="currentColor" text-anchor="middle">13</text>
+  <text x="234" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">14</text>
+  <line x1="272" y1="84" x2="272" y2="92" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="272" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">15</text>
+  <line x1="310" y1="84" x2="310" y2="92" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="310" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">16</text>
+  <line x1="348" y1="84" x2="348" y2="92" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="348" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">17</text>
+  <line x1="386" y1="84" x2="386" y2="92" stroke="currentColor" stroke-width="1" stroke-opacity="0.6"/>
+  <text x="386" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">18</text>
+  <text x="424" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">19</text>
+  <circle cx="462" cy="88" r="6.5" stroke="none" fill="currentColor"/>
+  <text x="462" y="110" font-size="11" fill="currentColor" text-anchor="middle">20</text>
+  <text x="500" y="110" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">21</text>
+  <text x="82" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85" font-weight="bold">시작</text>
+  <text x="120" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">건너뜀</text>
+  <text x="158" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">건너뜀</text>
+  <text x="196" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">건너뜀</text>
+  <text x="462" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85" font-weight="bold">시작</text>
+  <path d="M 82 80 A 19 19 0 0 1 120 80" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aicRunk)"/>
+  <path d="M 120 80 A 19 19 0 0 1 158 80" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aicRunk)"/>
+  <path d="M 158 80 A 19 19 0 0 1 196 80" stroke="currentColor" stroke-width="1.4" fill="none" marker-end="url(#aicRunk)"/>
+  <path d="M 196 80 A 19 19 0 0 1 234 80" stroke="currentColor" stroke-width="1.4" fill="none" stroke-opacity="0.6" stroke-dasharray="3 2" marker-end="url(#aicRunk)"/>
+  <circle cx="44" cy="88" r="6.5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="44" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.65">없음</text>
+  <circle cx="234" cy="88" r="6.5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="234" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.65">없음</text>
+  <circle cx="424" cy="88" r="6.5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="424" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.65">없음</text>
+  <circle cx="500" cy="88" r="6.5" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.0" stroke-opacity="0.8" stroke-dasharray="2 2"/>
+  <text x="500" y="126" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.65">없음</text>
+  <text x="8" y="162" font-size="11" fill="currentColor">10에서 걷기: 11, 12, 13 있음, 14 없음 → 길이 4</text>
+  <text x="8" y="182" font-size="11" fill="currentColor">20에서 걷기: 21 없음 → 길이 1; 최댓값 = 4</text>
+  <text x="8" y="202" font-size="11" fill="currentColor" fill-opacity="0.85">각 값은 많아야 한 번의 걷기에서만 밟히므로 모든 걷기를 합쳐도 O(n)</text>
+</svg>
 
 **5단계 — 코드.** 의미대로 이름을 짓고, 함수를 작게 유지하고, 쓰면서 각 블록이 하는 일을 말한다.
 
@@ -966,6 +1221,8 @@ assert stress(longest_run_sorted_fixed, longest_run_slow) is None
 이 방법의 한계를 알아 두라. 올바른 출력이 여러 개인 문제(아무 최단 경로, 아무 유효한 순서)라면 정확한 답과 비교하지 말고 출력의 성질을 검증하는 *검사기*와 비교한다. 공유되는 코드의 버그 — 입력 파서, 또는 빈 리스트를 한 번도 만들지 않는 생성기 — 는 보이지 않는다. 그리고 느린 해법이 감당하는 크기만 테스트하므로, 시간 확인용으로 최대 크기 입력 하나는 여전히 돌려야 한다. Python의 Hypothesis 같은 속성 기반 테스트 라이브러리가 생성과 줄이기를 자동화해 주지만, 인터뷰가 확인하는 것은 열다섯 줄짜리 버전을 직접 쓸 줄 아는가다.
 
 ### 3. 인터뷰를 위한 Python
+
+*여기서부터 페이지의 형식이 바뀐다. §3과 §4는 참조표다. 굵은 글씨로 시작하는 항목 하나가 실행 가능한 확인 코드를 가진 독립된 함정 하나이고, 어떤 항목도 앞 항목에 기대지 않는다. 한 번 끝까지 읽은 뒤, 면접 전에는 필요한 항목만 다시 찾아본다.*
 
 표준 라이브러리와 그 비용을 알면, Python으로는 C++의 절반 줄 수로 인터뷰 답을 쓸 수 있다. 환경의 Python 버전을 물어보라. 아래 도구 몇 개는 3.9나 3.10이 필요하다.
 
@@ -1390,6 +1647,90 @@ int main() {
 - **요청받으면 벡터화하고, 그 비용을 말하라.** Python 루프는 인터프리터 속도로 돈다. NumPy 식 하나는 그 루프를 컴파일된 코드에서 돌린다. 브로드캐스팅(**broadcasting**)은 형상이 다른 배열을 원소별로 결합하는 NumPy의 규칙이며 세 단계로 되어 있다. (1) 두 형상을 *오른쪽* 끝에 맞추고, 짧은 쪽 앞에 1을 채운다. (2) 맞춰진 축 길이 쌍은 서로 같거나 하나가 1이어야 하고, 아니면 NumPy가 오류를 낸다. (3) 결과는 각 축에서 더 긴 길이를 가지며, 길이 1인 축은 복사 없이 그 축을 따라 재사용(늘리기)된다. 그래서 맞춰진 길이 $p$와 $r$에 대해 (2)단계의 검사와 출력 길이는 다음과 같다.
 $$p = r \ \text{ or } \ p = 1 \ \text{ or } \ r = 1, \qquad \text{out} = \max(p, r)$$
   *예:* `(2, 3)`과 `(3,)`은 `(1, 3)`으로 채워져 `(2, 3)`이 된다. *반례:* `(2, 3)`과 `(2,)`는 `(1, 2)`로 채워지고 $3$과 $2$가 맞지 않아 오류가 난다. "행마다 값 하나"에 필요한 것은 `(2, 1)`이다. 브로드캐스팅은 형상을 오른쪽부터 맞추고 길이 1인 축을 늘리므로, `(N, 1, D)` 배열에서 `(1, M, D)` 배열을 빼면 모든 쌍의 차이가 `(N, M, D)`로 나온다. 그 배열은 N·M·D개의 float 메모리를 쓴다. (a − b)·(a − b)를 전개한 형태 ‖a‖² + ‖b‖² − 2a·b는 `(N, M)`만 필요하지만, 반올림 때문에 아주 작은 실제 거리가 살짝 음수가 될 수 있으니 제곱근 전에 0으로 자른다.
+
+<svg viewBox="0 0 560 280" style="max-width:100%;height:auto" role="img" aria-label="브로드캐스팅. 위: 2×3 배열과 길이 3 벡터. 벡터는 (1, 3) 모양으로 채워지고 그 한 행이 두 행 모두에 재사용되어 (2, 3)이 된다. 아래: 오른쪽 끝을 맞춘 모양들. (2, 3)과 (3,)은 (2, 3), (2, 3)과 (2,)는 (1, 2)로 채워져 3과 2가 맞지 않아 실패, (N, 1, D)와 (1, M, D)는 (N, M, D)가 된다.">
+  <defs><marker id="aicBck" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="20" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="40" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="60" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="20" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="40" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <rect x="60" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="50" y="92" font-size="11" fill="currentColor" text-anchor="middle">(2, 3)</text>
+  <text x="100" y="59" font-size="14" fill="currentColor" text-anchor="middle">+</text>
+  <rect x="118" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="138" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="158" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <text x="148" y="92" font-size="11" fill="currentColor" text-anchor="middle">(3,)</text>
+  <text x="206" y="59" font-size="14" fill="currentColor" text-anchor="middle">→</text>
+  <rect x="224" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="244" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="264" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.2" stroke-opacity="0.9"/>
+  <rect x="224" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.5" stroke-dasharray="3 2"/>
+  <rect x="244" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.5" stroke-dasharray="3 2"/>
+  <rect x="264" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.5" stroke-dasharray="3 2"/>
+  <line x1="294" y1="44" x2="294" y2="64" stroke="currentColor" stroke-width="1.1" marker-end="url(#aicBck)"/>
+  <text x="254" y="92" font-size="11" fill="currentColor" text-anchor="middle">(1, 3), 한 행 재사용</text>
+  <text x="334" y="59" font-size="14" fill="currentColor" text-anchor="middle">=</text>
+  <rect x="352" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="372" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="392" y="34" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="352" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="372" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <rect x="392" y="54" width="20" height="20" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.14" stroke-opacity="0.9"/>
+  <text x="382" y="92" font-size="11" fill="currentColor" text-anchor="middle">(2, 3)</text>
+  <text x="8" y="124" font-size="12" fill="currentColor">오른쪽 끝을 맞추고, 각 쌍은 같거나 한쪽이 1이어야 한다</text>
+  <text x="78" y="150" font-size="11" fill="currentColor" font-weight="bold">예</text>
+  <text x="70" y="174" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">A</text>
+  <rect x="78" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="95" y="174" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="116" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="133" y="174" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="70" y="200" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">b</text>
+  <rect x="78" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <text x="95" y="200" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <rect x="116" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="133" y="200" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="95" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="133" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="78" y="250" font-size="11" fill="currentColor">결과: (2, 3)</text>
+  <text x="78" y="268" font-size="10" fill="currentColor" fill-opacity="0.8">채운 1 (점선)</text>
+  <text x="258" y="150" font-size="11" fill="currentColor" font-weight="bold">반례</text>
+  <text x="250" y="174" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">A</text>
+  <rect x="258" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="275" y="174" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="296" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="313" y="174" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <text x="250" y="200" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">b</text>
+  <rect x="258" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.02" stroke-opacity="0.6" stroke-dasharray="3 2"/>
+  <text x="275" y="200" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.7">1</text>
+  <rect x="296" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="313" y="200" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <text x="275" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="313" y="226" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">✗</text>
+  <text x="258" y="250" font-size="11" fill="currentColor">오류: 3 대 2</text>
+  <text x="258" y="268" font-size="10" fill="currentColor" fill-opacity="0.8">채운 1 (점선)</text>
+  <text x="420" y="150" font-size="11" fill="currentColor" font-weight="bold">모든 쌍의 차</text>
+  <text x="412" y="174" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">A</text>
+  <rect x="420" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="437" y="174" font-size="11" fill="currentColor" text-anchor="middle" font-style="italic">N</text>
+  <rect x="458" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="475" y="174" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="496" y="160" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="513" y="174" font-size="11" fill="currentColor" text-anchor="middle" font-style="italic">D</text>
+  <text x="412" y="200" font-size="11" fill="currentColor" text-anchor="end" font-style="italic">b</text>
+  <rect x="420" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="437" y="200" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="458" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="475" y="200" font-size="11" fill="currentColor" text-anchor="middle" font-style="italic">M</text>
+  <rect x="496" y="186" width="34" height="20" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.9"/>
+  <text x="513" y="200" font-size="11" fill="currentColor" text-anchor="middle" font-style="italic">D</text>
+  <text x="437" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="475" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="513" y="226" font-size="12" fill="currentColor" text-anchor="middle">✓</text>
+  <text x="420" y="250" font-size="11" fill="currentColor">결과: (N, M, D)</text>
+</svg>
+
 - **결정성.** 모든 난수원에 시드를 주고 생성기를 명시적으로 넘겨서 실패를 재현할 수 있게 하라. 문자열 `set`의 순회 순서는 인터프리터 실행마다 바뀐다(문자열 해싱이 프로세스마다 무작위화된다). 순서가 출력에 영향을 주면 순회 전에 정렬하라.
 
 ```python
@@ -1457,11 +1798,76 @@ $$C \le D$$
 - **락.** 우선순위가 낮은 스레드가 잡은 뮤텍스는 그 스레드가 도는 동안 제어 스레드를 막을 수 있고, 중간 우선순위 스레드가 그 시간을 더 늘릴 수 있다(우선순위 역전). 우선순위 역전(**priority inversion**)은 세 부분으로 된 스케줄링 실패다. 높은 우선순위 스레드 H가 낮은 우선순위 스레드 L이 잡은 락을 기다린다. 락이 필요 없는 중간 우선순위 스레드 M이 준비되면 L보다 높으므로 L을 선점한다. 그래서 M이 도는 동안 H는 사실상 자기보다 *낮은* 우선순위인 M에게 막힌다. 우선순위 상속 뮤텍스는 L이 락을 잡고 있는 동안 L을 H의 우선순위로 잠시 올려 이를 고친다. 임계 구역을 아주 작게 유지하거나, `try_lock`을 쓰고 실패하면 그 갱신을 건너뛰거나, 단일 생산자·단일 소비자 락-프리 큐로 데이터를 넘겨라.
 - **예외.** throw는 보통 예외 객체를 할당하고, 스택 되감기에는 스택에 따라 달라지는 시간이 든다. 핫 패스 함수에는 `noexcept`를 붙이고, 실패는 반환값이나 상태 플래그로 알리고, 오류는 실시간이 아닌 스레드에서 처리하라. 로깅과 콘솔 출력도 마찬가지다. 서식화는 할당하고, 터미널에 쓰기는 블록될 수 있다.
 
-가비지 컬렉터와 인터프리터를 가진 Python은 경성 실시간 루프 밖에 둔다. 더 낮은 주기의 계획, 인식, 감독에는 괜찮다. 같은 문제의 ROS 2 쪽 — 단일 스레드 executor에서 긴 콜백이 왜 제어 타이머를 멈추게 하는지, 타이머가 어느 시계를 따르는지 — 은 [[04-robotics/ros2/qos-executors-time|ROS 2 QoS, executor와 시간]]을 읽어라. 실시간 스케줄링 분석으로 가는 길도 거기서 안내한다.
+가비지 컬렉터와 인터프리터를 가진 Python은 경성 실시간 루프 밖에 둔다. 더 낮은 주기의 계획, 인식, 감독에는 괜찮다. 같은 문제의 ROS 2 쪽 — 단일 스레드 executor에서 긴 콜백이 왜 제어 타이머를 멈추게 하는지, 타이머가 어느 시계를 따르는지 — 은 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]을 읽어라. 실시간 스케줄링 분석으로 가는 길도 거기서 안내한다.
 
 핫 패스에서 "최근 N개 샘플 유지"의 표준 구조는 고정 배열 위의 링 버퍼다. push는 가장 오래된 샘플을 덮어쓰고, 아무것도 할당하지 않는다. 용량 $N$인 링 버퍼(**ring buffer**, 원형 버퍼)는 고정 배열에 정수 두 개, `head`(가장 오래된 샘플의 칸)와 `size`(쓰고 있는 칸 수, $0 \le$ `size` $\le N$)를 더한 것이다. 인덱스는 $N$을 법으로 감싸 돌므로, $i$번째로 오래된 샘플의 칸과 다음 push가 쓸 칸은 다음과 같다.
 $$\text{slot}(i) = (\text{head} + i) \bmod N, \qquad \text{write slot} = (\text{head} + \text{size}) \bmod N$$
 *예:* $N = 3$에서 0.1부터 0.5까지 넣으면 칸 0, 1, 2에 쓴 뒤 다시 0과 1에 써서 배열은 `[0.4, 0.5, 0.3]`, `head` = 2가 된다. 그래서 칸 2, 0, 1이 오래된 순서로 0.3, 0.4, 0.5를 돌려주고, 코드의 테스트가 이를 단언한다.
+
+<svg viewBox="0 0 560 268" style="max-width:100%;height:auto" role="img" aria-label="칸 세 개짜리 링 버퍼에 0.1부터 0.5까지 넣는다. 각 행은 한 번 넣은 뒤의 배열, 쓴 칸 (head + size) mod 3, 넣은 뒤의 head를 보여 준다. 0.4와 0.5가 칸 0과 1을 덮어쓰면 배열은 0.4, 0.5, 0.3이고 head는 2다. i = 0, 1, 2에 대해 칸 (2 + i) mod 3을 읽으면 오래된 순서로 0.3, 0.4, 0.5가 나온다.">
+  <defs><marker id="aicRbk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="106" y="34" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">0</text>
+  <text x="150" y="34" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">1</text>
+  <text x="194" y="34" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">2</text>
+  <text x="74" y="34" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.75">칸</text>
+  <text x="8" y="60" font-size="11" fill="currentColor">0.1 넣기</text>
+  <rect x="84" y="44" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="106" y="60" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.1</text>
+  <rect x="128" y="44" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <rect x="172" y="44" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <path d="M106 70 L101.5 77 L110.5 77 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="60" font-size="11" fill="currentColor">(0 + 0) mod 3 = 0</text>
+  <text x="8" y="96" font-size="11" fill="currentColor">0.2 넣기</text>
+  <rect x="84" y="80" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="106" y="96" font-size="11" fill="currentColor" text-anchor="middle">0.1</text>
+  <rect x="128" y="80" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="150" y="96" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.2</text>
+  <rect x="172" y="80" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <path d="M106 106 L101.5 113 L110.5 113 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="96" font-size="11" fill="currentColor">(0 + 1) mod 3 = 1</text>
+  <text x="8" y="132" font-size="11" fill="currentColor">0.3 넣기</text>
+  <rect x="84" y="116" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="106" y="132" font-size="11" fill="currentColor" text-anchor="middle">0.1</text>
+  <rect x="128" y="116" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="150" y="132" font-size="11" fill="currentColor" text-anchor="middle">0.2</text>
+  <rect x="172" y="116" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="194" y="132" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.3</text>
+  <path d="M106 142 L101.5 149 L110.5 149 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="132" font-size="11" fill="currentColor">(0 + 2) mod 3 = 2</text>
+  <text x="8" y="168" font-size="11" fill="currentColor">0.4 넣기</text>
+  <rect x="84" y="152" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="106" y="168" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.4</text>
+  <rect x="128" y="152" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="150" y="168" font-size="11" fill="currentColor" text-anchor="middle">0.2</text>
+  <rect x="172" y="152" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="194" y="168" font-size="11" fill="currentColor" text-anchor="middle">0.3</text>
+  <path d="M150 178 L145.5 185 L154.5 185 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="168" font-size="11" fill="currentColor">(0 + 3) mod 3 = 0</text>
+  <text x="8" y="204" font-size="11" fill="currentColor">0.5 넣기</text>
+  <rect x="84" y="188" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="106" y="204" font-size="11" fill="currentColor" text-anchor="middle">0.4</text>
+  <rect x="128" y="188" width="44" height="24" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="150" y="204" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.5</text>
+  <rect x="172" y="188" width="44" height="24" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="194" y="204" font-size="11" fill="currentColor" text-anchor="middle">0.3</text>
+  <path d="M194 214 L189.5 221 L198.5 221 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
+  <text x="228" y="204" font-size="11" fill="currentColor">(1 + 3) mod 3 = 1</text>
+  <text x="452" y="30" font-size="11" fill="currentColor" text-anchor="middle">읽기: slot(i) = (2 + i) mod 3</text>
+  <path d="M 502.2 107.0 A 58.0 58.0 0 0 0 401.8 107.0 L 426.0 121.0 A 30.0 30.0 0 0 1 478.0 121.0 Z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="452" y="96" font-size="11" fill="currentColor" text-anchor="middle">0.4</text>
+  <text x="452" y="50" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">칸 0</text>
+  <text x="452" y="63" font-size="10" fill="currentColor" text-anchor="middle" font-weight="bold">i = 1</text>
+  <path d="M 452.0 194.0 A 58.0 58.0 0 0 0 502.2 107.0 L 478.0 121.0 A 30.0 30.0 0 0 1 452.0 166.0 Z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="490.1" y="162" font-size="11" fill="currentColor" text-anchor="middle">0.5</text>
+  <text x="512.6" y="181" font-size="10" fill="currentColor" fill-opacity="0.85">칸 1</text>
+  <text x="512.6" y="194" font-size="10" fill="currentColor" font-weight="bold">i = 2</text>
+  <path d="M 401.8 107.0 A 58.0 58.0 0 0 0 452.0 194.0 L 452.0 166.0 A 30.0 30.0 0 0 1 426.0 121.0 Z" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.2"/>
+  <text x="413.9" y="162" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">0.3</text>
+  <text x="391.4" y="181" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.85">칸 2</text>
+  <text x="391.4" y="194" font-size="10" fill="currentColor" text-anchor="end" font-weight="bold">i = 0</text>
+  <path d="M 433 144.9 A 21 21 0 1 1 471 144.9" stroke="currentColor" stroke-width="1.3" fill="none" marker-end="url(#aicRbk)"/>
+  <text x="8" y="256" font-size="11" fill="currentColor">▲ 넣은 뒤의 head: 가장 오래된 샘플. 가득 찬 버퍼에 넣으면 이것을 덮어쓴다</text>
+</svg>
 
 ```cpp
 #include <array>
@@ -1513,6 +1919,14 @@ int main() {
 > **소리 내어 한 답:** "시간으로는 안 됩니다. 답이 모든 원소에 의존하니까 어떤 알고리즘이든 n개를 다 읽어야 합니다. 더 잘할 수 있는 건 메모리입니다. 집합이 O(n) 추가 공간을 씁니다. 메모리가 제약이라면 제자리 정렬 후 한 번 훑겠습니다. C++에서 O(n log n) 시간, O(1) 추가 공간입니다. 그리고 프레임 번호가 n보다 크게 넓지 않은 크기 U의 범위에 있다고 알려져 있다면, U비트 비트 배열이 U/8바이트로 O(n + U) 시간을 주고 상수에서 해싱을 이깁니다. 프레임 스트림이라면 답이 마지막에만 필요한지 계속 필요한지 여쭤보겠습니다. 계속 필요하다면 각 구간의 끝점에서 길이로 가는 맵을 두고 프레임이 올 때마다 구간을 합치겠습니다. 프레임당 기대 O(1)입니다."
 >
 > 이 답은 하한을 말하고, 아직 개선할 수 있는 자원으로 넘어가고, 추측하는 대신 확인 질문을 한다.
+
+### 이 페이지를 연습하는 법
+
+1. **푸는 모든 문제에 §1의 절차를 적용한다.** 소리 내어, 또는 주석으로 한다: 다시 말하기, 손 예제, 전수 탐색, 개선, 코드, 손 테스트, 복잡도. 처음 열 문제는 단계마다 걸린 시간을 §1의 표와 비교한다.
+2. **스트레스 테스트 파일을 하나 둔다.** 문제마다 전수 탐색을 먼저 쓰고 §2의 `stress`와 `shrink`를 재사용한다. 3000번 시행이 모두 일치할 때까지 멈추지 않는다.
+3. **§3과 §4는 참조표로 연습한다.** 코드를 가리고 굵은 항목 이름 하나를 읽은 뒤, 그 코드가 무엇을 출력하거나 무엇을 단언하는지 예측하고 실행해 확인한다.
+4. **매주 함수 하나를 §5의 방식으로 다시 쓴다.** 이름에 단위, 주석에 모양, 불변식 하나에 대한 단언, 시드를 준 생성기.
+5. **모든 풀이에 "더 잘할 수 있나요?"를 소리 내어 답한다.** §7의 네 단계로 답한 다음에야 §7의 계산 예제를 읽는다.
 
 ### 스스로 점검
 

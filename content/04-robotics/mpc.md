@@ -18,8 +18,11 @@ next to LQR, and [[04-robotics/convex-mpc-legged|8. Convex MPC]] is the applicat
 > MPC 정식화(비용·지평·제약)를 읽고, 매 스텝 온라인으로 무엇이 풀리는지 짚고, feasibility/안정성 주장을 판단하고, 표준 실패 모드를 알아볼 수 있으면 된다. 솔버 내부는 선택이다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/control-theory-ce397|5. Control Theory]] (state space, stability, and *why saturation breaks every linear guarantee* — the gap MPC exists to close) · [[04-robotics/lqr-lqg|6. LQR/LQG]] (its Riccati $P$ is MPC's usual terminal cost) · [[02-foundations/optimization|4. Optimization §2–5]] (convexity, KKT, and the MPC-as-QP example written out there)
-> [[04-robotics/control-theory-ce397|5. 제어 이론]] (상태공간, 안정성, 그리고 *포화가 모든 선형 보장을 왜 깨는가* — MPC가 메우려는 그 간극) · [[04-robotics/lqr-lqg|6. LQR/LQG]] (그 리카티 $P$가 MPC의 표준 종단 비용) · [[02-foundations/optimization|4. 최적화 §2–5]] (볼록성, KKT, 거기 써 놓은 MPC-QP 예제)
+> [[04-robotics/control-theory-ce397|5. Control Theory]] (state space, stability, and *why saturation breaks every linear guarantee* — the gap MPC exists to close) · [[04-robotics/lqr-lqg|6. LQR/LQG]] (its Riccati $P$ is MPC's usual terminal cost) · [[02-foundations/optimization|4. Optimization §2–5]] (convexity, KKT, and the MPC-as-QP example written out there) · [[02-foundations/lab-plants|0.6 Lab Plants]] (plant P4, the running example)
+> [[04-robotics/control-theory-ce397|5. 제어 이론]] (상태공간, 안정성, 그리고 *포화가 모든 선형 보장을 왜 깨는가* — MPC가 메우려는 그 간극) · [[04-robotics/lqr-lqg|6. LQR/LQG]] (그 리카티 $P$가 MPC의 표준 종단 비용) · [[02-foundations/optimization|4. 최적화 §2–5]] (볼록성, KKT, 거기 써 놓은 MPC-QP 예제) · [[02-foundations/lab-plants|0.6 Lab Plants]] (관통 예제인 장치 P4)
+
+> [!note] First pass · 처음이라면
+> First pass: the definition and the P4 example at the top, the picture, §1 (when the QP is actually convex), §3 (the failure modes papers gloss) and §4. Second pass: the Mayne block — conditions (a) and (b), their fine print and the scalar example that checks them — which you need when a paper claims recursive feasibility or stability, and §2, stacked versus condensed, for when you implement or a paper reports solve times.
 
 **What it is**: **Model Predictive Control** solves, at every control step, a finite-horizon
 optimal control problem from the current state, applies only the first input, and re-solves
@@ -45,6 +48,8 @@ and constraints on inputs and states are handled *natively*, which is
 MPC's whole advantage over [[04-robotics/lqr-lqg|LQR]].
 
 **Worked: P4 with $|u|\le 1$.** The leaky heater $\dot x=-x+u+d$ ([[02-foundations/lab-plants|0.6]]). Unconstrained $100\times$ rejection wants $K=99$ (CE397 Self-check 1). At $x=0.5$ that law asks $u=-49.5$, which the rail $|u|\le 1$ forbids. Steady state $0=-x+u+d$ with $d=1$ and $|u|\le 1$ forces $x_\mathrm{ss}=u+1\in[0,2]$. Sitting at $d/(1+99)=0.01$ would need $u=-0.99$ *and* a transient that never asked for $|u|>1$, which $u=-99x$ does as soon as $|x|>1/99$. A receding horizon of length 3 on this plant, with only $u_0$ applied, exists *because* of that rail. LQR $K=99$ is not “almost MPC with a short horizon.” The problem set repeats the same arithmetic at $x=1$.
+
+A generic sketch of the receding horizon first, with no plant in it; The picture below redraws it on P4 with the numbers of this example, and that is the figure the problem set asks you to draw.
 
 <svg viewBox="0 0 460 200" style="max-width:100%;height:auto" role="img" aria-label="receding horizon: plan over the horizon, execute one step, re-plan">
   <g stroke="currentColor" stroke-width="1" opacity="0.3">
@@ -104,10 +109,21 @@ turning a practical heuristic into a theory. The mechanism has two parts, plus f
   positive definite, the sets to be closed and to contain the origin in their interior, and
   the terminal set to be control invariant inside the state constraints. Rawlings adds a lower
   bound on the stage cost and a weak-controllability condition.
+  On a page like this one — $\ell=x^\top Qx+u^\top Ru$ with $Q\succ0$ and $R\succ0$, $V_f=x^\top Px$
+  from the LQR, and box constraints such as $|u|\le1$ — most of these hold automatically: a
+  positive-definite quadratic is continuous and positive definite and bounds the stage cost below
+  by $\lambda_{\min}(Q)\lVert x\rVert^2$, a box around zero is closed with the origin inside, and weak
+  controllability then follows once the terminal set contains the origin in its interior and the
+  feasible set is bounded. Two are real design work: finding a terminal set that the local law keeps
+  invariant — the scalar example below does it by hand, and beyond a few states it is a polytope
+  computation — and, when $Q$ is only semidefinite, checking detectability as in
+  [[04-robotics/lqr-lqg|6. LQR / LQG §2]], because positive definiteness is then no longer free.
 
-**Worked, on one scalar system.** Take $x_{k+1} = x_k + u_k$ with $|u_k| \le 1$, stage cost
-$\ell = x^2 + u^2$, and the discrete LQR solution of [[04-robotics/lqr-lqg|6. LQR / LQG §1]]:
-$V_f = 1.618\,x^2$ and $\kappa_f(x) = -0.618\,x$.
+**Worked, on a second plant — not P4.** This example leaves the heater for the discrete integrator
+$x_{k+1} = x_k + u_k$, because its LQR solution is already worked in
+[[04-robotics/lqr-lqg|6. LQR / LQG §1]] and makes every check below a line of arithmetic; P4,
+$\dot x=-x+u+d$, returns in the picture. Take $|u_k| \le 1$, stage cost $\ell = x^2 + u^2$, and that
+discrete LQR solution: $V_f = 1.618\,x^2$ and $\kappa_f(x) = -0.618\,x$.
 - *Terminal set.* $|\kappa_f(x)| \le 1$ exactly when $|x| \le 1.618$, and the next state
   $0.382\,x$ stays in that interval, so $\mathcal X_f = [-1.618,\ 1.618]$ is invariant.
 - *Cost decrease.* $V_f(0.382x) - V_f(x) = -1.382\,x^2$ and $\ell(x, \kappa_f(x)) = x^2 + 0.382\,x^2 = 1.382\,x^2$,
@@ -122,9 +138,6 @@ $V_f = 1.618\,x^2$ and $\kappa_f(x) = -0.618\,x$.
 
 Read the survey after the optimization page's example; skim its
 formulation and stability sections rather than every proof.
-
-> [!note] First pass · 처음이라면
-> Read §1 (when the QP is actually convex), §3 (the failure modes papers gloss), §4. §2 — stacked versus condensed — is for when you implement or when a paper reports solve times.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -383,6 +396,9 @@ See [[04-robotics/planning-decision-making|Planning & Decision-Making]] for traj
 *[[04-robotics/control-theory-ce397|5]]·[[04-robotics/lqr-lqg|6]]번 위에 선다. D군이다. 입력·상태 제약을 태생적으로 다루는 것이 LQR 옆에 존재하는 이유이고,
 [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 이것을 보행 로봇의 표준으로 만든 응용이다.*
 
+> [!note] 처음이라면 · First pass
+> 첫 읽기: 맨 위의 정의와 P4 예제, 그림, §1(QP가 실제로 볼록한 조건), §3(논문이 얼버무리는 실패 모드), §4. 두 번째 읽기: Mayne 묶음 — 조건 (a)와 (b), 그 작은 글씨, 그것을 확인하는 스칼라 예제 — 는 논문이 recursive feasibility나 안정성을 주장할 때 필요하고, §2의 stacked/condensed는 직접 구현하거나 논문이 풀이 시간을 보고할 때 읽어라.
+
 **무엇인가**: **모델 예측 제어**는 매 제어 주기마다 현재 상태에서 유한 지평 최적 제어
 문제를 풀고, 첫 입력만 적용한 뒤, 다음 주기에 다시 푼다(receding horizon). 식으로 쓰면, 시각 $t$에서
 측정한(또는 추정한) 상태 $x(t)$로부터 다음을 푼다.
@@ -402,6 +418,8 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 [[04-robotics/lqr-lqg|LQR]] 대비 MPC의 존재 이유다.
 
 **계산: $|u|\le 1$인 P4.** 새는 히터 $\dot x=-x+u+d$([[02-foundations/lab-plants|0.6]]). 제약 없는 $100$배 억제는 $K=99$(CE397 스스로 점검 1). $x=0.5$에서 그 법칙은 $u=-49.5$를 요구하고 레일 $|u|\le 1$이 금지한다. 정상상태 $0=-x+u+d$, $d=1$, $|u|\le 1$이면 $x_\mathrm{ss}=u+1\in[0,2]$. $d/(1+99)=0.01$에 앉으려면 $u=-0.99$이면서 과도에서 $|u|>1$을 한 번도 안 물어야 하는데, $u=-99x$는 $|x|>1/99$이면 바로 묻는다. 이 플랜트에서 길이 3의 후퇴 지평이 있는 이유가 그 레일이다. LQR $K=99$는 “짧은 지평의 거의 MPC”가 아니다. 과제는 같은 산수를 $x=1$에서 반복한다.
+
+먼저 플랜트가 없는 후퇴 지평의 일반 스케치다. 아래 그림으로 먼저 보기 절이 이 예제의 숫자를 넣어 P4 위에 다시 그리고, 과제가 그리라고 하는 것은 그 그림이다.
 
 <svg viewBox="0 0 460 200" style="max-width:100%;height:auto" role="img" aria-label="receding horizon: 지평 전체를 계획하고 한 스텝만 실행한 뒤 다시 계획">
   <g stroke="currentColor" stroke-width="1" opacity="0.3">
@@ -455,9 +473,19 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
   종단 비용이 연속이고 양정부호일 것, 집합들이 닫혀 있고 원점을 내부에 포함할 것, 종단 집합이
   상태 제약 안에서 제어 불변일 것도 함께 요구하고, Rawlings는 단계 비용의 하한과 약한
   제어가능성 조건을 더한다.
+  이 페이지 같은 설정 — $Q\succ0$, $R\succ0$인 $\ell=x^\top Qx+u^\top Ru$, LQR에서 온
+  $V_f=x^\top Px$, $|u|\le1$ 같은 상자 제약 — 에서는 대부분이 저절로 성립한다. 양의 정부호
+  이차식은 연속이고 양의 정부호이며 단계 비용을 아래에서 $\lambda_{\min}(Q)\lVert x\rVert^2$로
+  받치고, 원점을 둘러싼 상자는 닫혀 있고 원점을 내부에 품으며, 종단 집합이 원점을 내부에 품고
+  실행 가능 집합이 유계이면 약한 제어가능성도 따라 나온다. 실제 설계 일은 둘이다. 국소 법칙이
+  불변으로 유지하는 종단 집합을 찾는 일 — 아래 스칼라 예제가 손으로 하고, 상태가 몇 개를 넘으면
+  다면체 계산이 된다 — 그리고 $Q$가 준정부호일 뿐일 때는 양의 정부호성이 더는 공짜가 아니므로
+  [[04-robotics/lqr-lqg|6. LQR / LQG §2]]처럼 검출 가능성을 확인하는 일이다.
 
-**계산 예제, 스칼라 시스템 하나로.** $x_{k+1} = x_k + u_k$, $|u_k| \le 1$, 단계 비용 $\ell = x^2 + u^2$,
-그리고 [[04-robotics/lqr-lqg|6. LQR / LQG §1]]의 이산 LQR 해 $V_f = 1.618\,x^2$, $\kappa_f(x) = -0.618\,x$를 쓰자.
+**계산 예제, 두 번째 플랜트로 — P4가 아니다.** 이 예제는 히터를 떠나 이산 적분기 $x_{k+1} = x_k + u_k$를
+쓴다. 그 LQR 해가 이미 [[04-robotics/lqr-lqg|6. LQR / LQG §1]]에서 계산되어 있어 아래 확인이 모두 한 줄 산수가
+되기 때문이다. P4, 곧 $\dot x=-x+u+d$는 그림에서 돌아온다. $|u_k| \le 1$, 단계 비용 $\ell = x^2 + u^2$,
+그리고 그 이산 LQR 해 $V_f = 1.618\,x^2$, $\kappa_f(x) = -0.618\,x$를 쓰자.
 - *종단 집합.* $|\kappa_f(x)| \le 1$은 정확히 $|x| \le 1.618$일 때이고 다음 상태 $0.382\,x$도 그 구간에
   머물므로, $\mathcal X_f = [-1.618,\ 1.618]$은 불변이다.
 - *비용 감소.* $V_f(0.382x) - V_f(x) = -1.382\,x^2$이고 $\ell(x, \kappa_f(x)) = x^2 + 0.382\,x^2 = 1.382\,x^2$이므로
@@ -471,9 +499,6 @@ QP가 된다 — [[02-foundations/optimization|4. 최적화 §5]]에 완전히 �
 
 서베이는 최적화 페이지의 예제를 본 뒤에 읽되, 모든 증명보다는
 정식화와 안정성 조건을 다룬 절들을 훑는 것을 권한다.
-
-> [!note] 처음이라면 · First pass
-> 먼저 §1(QP가 실제로 볼록한 조건), §3(논문이 얼버무리는 실패 모드), §4. §2의 stacked/condensed는 직접 구현하거나 논문이 풀이 시간을 보고할 때 읽어라.
 
 ### 그림으로 먼저 보기 · The picture
 

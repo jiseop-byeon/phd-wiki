@@ -7,16 +7,35 @@ depth-goal: "Run the running task end to end on P2 — fuse the panel range, pla
 mastery-when: "Raise when an integrated contact pipeline, rather than one of its stages, is the thesis contribution."
 ---
 
-> [!note] Prerequisites · 선수 지식
-> Plants **P2**, **P3**, **P5** and **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] and the integrator of [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Every stage has an owner page and this page only assembles them: the Kalman update ([[02-foundations/probability|3. Probability §5]]), C-obstacles and the edge test ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR ch.10 §2]]), trapezoids ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9 §3]]), computed torque ([[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §2]]), impedance and the contact transition ([[04-robotics/force-compliance-control|13. Force & Compliance §2, §5]]), the sampled-spring ledger ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]), the latency budget ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]) and the separation distance ([[04-robotics/hri-safety|11. HRI & Safety]]). Do the cumulative problem set on [[04-robotics/index|4. Robotics]] first.
-> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 넷(**P2**, **P3**, **P5**, **P6**)과 [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기. 단계마다 주인 페이지가 있고 이 페이지는 조립만 한다: 칼만 갱신([[02-foundations/probability|3. 확률 §5]]), C-장애물과 간선 검사([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR 10장 §2]]), 사다리꼴([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §3]]), 계산 토크([[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §2]]), 임피던스와 접촉 천이([[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §2, §5]]), 샘플된 스프링의 장부([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]), 지연 예산([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]), 분리 거리([[04-robotics/hri-safety|11. HRI·안전]]). [[04-robotics/index|4. 로보틱스]]의 누적 과제를 먼저 풀어라.
-
 ## English
 
-*The capstone of the robotics track. Stands on [[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2]], [[04-robotics/modern-robotics/ch09-trajectory-generation|ch.9]], [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]], [[04-robotics/modern-robotics/ch11-robot-control|ch.11]], [[04-robotics/force-compliance-control|13]], [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], [[04-robotics/robot-systems-deployment|10]], [[04-robotics/hri-safety|11]] and [[02-foundations/probability|3. Probability]]. It uses **P2**, **P3**, **P5** and **P6** together, as the cumulative set on [[04-robotics/index|4. Robotics]] does — but as one loop, in which each stage's answer is the next stage's input, rather than as four separate answers.*
+> [!note] Prerequisites · 선수 지식
+> **This capstone needs the whole common track** — pages 1–11 of [[04-robotics/index|4. Robotics]] and its cumulative problem set, sessions 1–78 of the schedule there — **plus two sections from the specialisations**, scheduled as session 79: [[04-robotics/force-compliance-control|13. Force & Compliance §1, §2, §5]] and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]. It runs plants **P2**, **P3**, **P5** and **P6** ([[02-foundations/lab-plants|0.6 Lab Plants]]) on the integrator of [[02-foundations/lab-kernel|0.7 Lab Kernel]], and it re-teaches no stage: each step below cites its owner and uses that page's result as given. The manipulation sequence 9 → 13 → 15 alone is not enough — it supplies the contact half only, and [[04-robotics/grasping|15. Grasping]] is not used at all, because nothing in this cell is grasped. Tick every line below before starting; each names what the capstone takes from the page and a number to reproduce with the solution covered.
+>
+> **Common track — the stages the loop runs, in its order**
+> - [ ] **The Kalman update** ([[02-foundations/probability|3. Probability §5]]; the same P5 update in [[04-robotics/state-estimation-slam|3. State Estimation §6]]) → step 1. A 10 cm prior of variance 4 cm² and a 12 cm reading of variance 1 cm² fuse to 11.6 cm and 0.8 cm².
+> - [ ] **C-obstacles** ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]]) → step 2 and §2. The face at $x=1$ blocks $18.478\,\%$ of P2's torus.
+> - [ ] **The edge test and the via point** ([[04-robotics/modern-robotics/ch10-motion-planning|MR ch.10 §2]]) → step 2. The roadmap returns $A\to E\to B$ at $\pi\sqrt2=4.4429$ rad, $26.5\,\%$ over the blocked direct edge.
+> - [ ] **The Jacobian and statics** ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]) → steps 3 and 5. At the catalog pose $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, and $v=(0,-0.25)$ m/s needs $\dot\theta=(-0.25,\,0.25)$ rad/s.
+> - [ ] **Trapezoidal time scaling** ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9 §3]]) → steps 3 and 8. The elbow flip, $\pi$ rad at the frozen $0.8$ rad/s and $2$ rad/s², is a true trapezoid of $\pi/0.8+0.8/2=4.327$ s; re-geared to $1.6$ rad/s and $0.5$ rad/s² it never reaches top speed and becomes a $5.013$ s triangle.
+> - [ ] **The mass matrix, gravity and computed torque** ([[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]], [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §2]]) → step 4 and the lab. At rest $\tau=g=(19.62,\,0)$ N·m; computed torque $\tau=(29.62,\,10)$ N·m gives $\ddot\theta=(0,\,10)$ where PD gives the coupled $(-5,\,15)$.
+> - [ ] **The operational-space inertia** ([[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics §6]]) → step 5. $\Lambda=(JM^{-1}J^\top)^{-1}=\mathrm{diag}(1,2)$ kg at the catalog pose.
+> - [ ] **Contact and its detection** ([[04-robotics/contact-force-tactile|9. Contact §1, §7]]) → the panel's unilateral law and §4's switch. The two defining conditions of contact-state estimation, and why "the command is past the surface" fails the second.
+> - [ ] **The latency budget** ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]) → step 8 and §5. The $70$ ms observation-to-action budget rebuilt from its parts.
+> - [ ] **The separation distance** ([[04-robotics/hri-safety|11. HRI & Safety]], its worked case) → step 8. $S_p=1.24$ m term by term.
+> - [ ] **The integrator** ([[02-foundations/lab-kernel|0.7 Lab Kernel §3]]) → the lab of §6. Semi-implicit Euler: velocity first, then position with the new velocity.
+> - [ ] **The cumulative problem set** ([[04-robotics/index|4. Robotics]]) → §1. $(-0.05,\,0.05)$ rad/s, $(9.62,\,0)$ N·m, $1600$ N/m and $11.6$ cm.
+>
+> **Outside the common track — two sections the loop borrows**
+> - [ ] **Target impedance, series stiffness and the impact** ([[04-robotics/force-compliance-control|13. Force & Compliance §1, §2, §5]]) → steps 5–6 and §4. $D_d=2\sqrt{500\times2}=63.2$ N·s/m; with $10^5$ N/m in series the $500$ N/m controller supplies $99.5\,\%$ of the give; the $5$ cm/s touchdown on $10^5$ N/m peaks at $22.4$ N in $14.05$ ms.
+> - [ ] **The sampled-spring ledger** ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]) → step 7. $K\le2b/T=1600$ N/m for $b=0.8$ N·s/m and $T=1$ ms.
+>
+> The common-track pages not named above — 3.2, 3.5, 4 to 8, 10.5 and the other Modern Robotics chapters — are not called directly; the stages above stand on them, and the schedule places this page after all of them.
+
+*The capstone of the robotics track. It uses **P2**, **P3**, **P5** and **P6** together, as the cumulative set on [[04-robotics/index|4. Robotics]] does — but as one loop, in which each stage's answer is the next stage's input, rather than as four separate answers.*
 
 > [!note] First pass · 처음이라면
-> Read the running object and the picture, and follow the worked case to its report and its caution — that is the page. Then §5 for the four checks and their owners, and run the lab in §6. §1–§4 each define one thing the assembly needed that no single page owned; §7 says what the simulation cannot certify.
+> Tick the checklist in the Prerequisites first: a line you cannot reproduce is a stage page to go back to, not something this page will explain. Then read the running object and the picture, and follow the worked case to its report and its caution — that is the page. Then §5 for the four checks and their owners, and run the lab in §6. §1–§4 each define one thing the assembly needed that no single page owned; §7 says what the simulation cannot certify.
 
 ### Running object · 이 페이지의 대상
 
@@ -104,7 +123,11 @@ since the forearm is now horizontal: the elbow carries the full $9.81\,\mathrm{N
 
 $$\tau=J^\top\big[K_d\,(x_r-x)+D_d\,(\dot x_r-\dot x)\big]+c(\theta,\dot\theta)+g(\theta)$$
 
-so the tool keeps the arm's own apparent mass. At the contact pose that is $\Lambda\approx\mathrm{diag}(2.02,\,1.00)\,\mathrm{kg}$ — the catalog pose's $\mathrm{diag}(1,2)$ mirrored, because the forearm now lies along $x$ — and $D_d=2\sqrt{500\cdot2}=63.2\,\mathrm{N{\cdot}s/m}$ is 13's critical damping for it. The reference starts at $P$, ramps along $+x$ at $v_a$, and stops where the modelled series spring would carry $F_d$ against the *estimated* face (§4):
+so the tool keeps the arm's own apparent mass, the operational-space inertia $\Lambda=(JM^{-1}J^\top)^{-1}$ of [[02-foundations/manipulator-kinematics-dynamics|10. §6]]. For P2, whose two unit masses sit at the elbow and the tip, it has a closed form. The tip mass moves with the tip in every direction. The elbow mass moves only with the part of the tip's velocity that runs along the forearm — a push across the forearm just swings it about the elbow — and $1/|\sin\theta_2|$ times as fast, because projecting the tip velocity onto the forearm direction leaves $\dot\theta_1\sin\theta_2$. Writing the kinetic energy as $\tfrac12v^\top\Lambda v$ then gives
+
+$$\Lambda=I+\frac{e\,e^\top}{\sin^2\theta_2},\qquad e=\big(\cos(\theta_1+\theta_2),\ \sin(\theta_1+\theta_2)\big)$$
+
+in kilograms, with $e$ the forearm's unit direction. At the catalog pose $e=\hat y$ and $\sin^2\theta_2=1$, so $\Lambda=\mathrm{diag}(1,2)$. In contact the tip runs from the true face, $x=1.120\,\mathrm{m}$, to where step 6 settles it, $1.120+9.111/400=1.143\,\mathrm{m}$; on the elbow-up branch that is $\theta=(83.11^\circ,\,-82.69^\circ)$ to $(81.79^\circ,\,-81.20^\circ)$, with the forearm within $0.6^\circ$ of $x$. At the settled press $\sin^2(81.20^\circ)=0.9766$, so $\Lambda_{xx}=1+\cos^2(0.59^\circ)/0.9766=2.024$; across the whole contact, overshoot included, $\Lambda_{xx}$ stays between $2.016$ and $2.025$ while $\Lambda_{yy}=1.000$ and $|\Lambda_{xy}|\le0.011\,\mathrm{kg}$. That is $\Lambda\approx\mathrm{diag}(2.02,\,1.00)\,\mathrm{kg}$ — the catalog pose's $\mathrm{diag}(1,2)$ mirrored, because the forearm now lies along $x$ — and $D_d=2\sqrt{500\cdot2}=63.2\,\mathrm{N{\cdot}s/m}$ is 13's critical damping for it, rounded to $2$ kg. The reference starts at $P$, ramps along $+x$ at $v_a$, and stops where the modelled series spring would carry $F_d$ against the *estimated* face (§4):
 
 $$K_s=\frac{K_dk_w}{K_d+k_w}=\frac{500\cdot400}{900}=222.2\ \mathrm{N/m},\qquad x_{\text{stop}}=\hat x_w+\frac{F_d}{K_s}=1.116+0.045=1.161\ \mathrm{m}$$
 
@@ -147,7 +170,7 @@ The cumulative problem set on [[04-robotics/index|4. Robotics]] asks for four nu
 | Cumulative item | Here | What changed |
 |---|---|---|
 | fused range $11.6\,\mathrm{cm}$ (Derive d) | Step 1 | an answer becomes an input twice: its band's near edge to the planner, its mean to the stop point |
-| $\Lambda_y=2\,\mathrm{kg}$ at $(0^\circ,90^\circ)$ (Interpret) | Step 5 | the tool must point at the face, so the contact pose is the elbow-up branch, where $\Lambda=\mathrm{diag}(2,1)$: the heavy direction is now the press direction |
+| $\Lambda_y=2\,\mathrm{kg}$ at $(0^\circ,90^\circ)$ (Interpret) | Step 5 | the tool must point at the face, so the contact pose is the elbow-up branch, where $\Lambda\approx\mathrm{diag}(2.02,1.00)$: the heavy direction is now the press direction |
 | $2b/T=1600$ on the panel (Derive c) | Step 7 | the ledger moves from the panel to $K_d$, the spring the controller renders; the panel is physical |
 | holding torque at the catalog pose (Derive b) | Step 4 | at $P$ the forearm is horizontal and the elbow holds $9.81\,\mathrm{N{\cdot}m}$ |
 | "late vision is P6" (Interpret) | Step 8 | lateness gets a threshold, $v_aL\le\sigma$ |
@@ -474,10 +497,33 @@ X_OBS = XW_HAT - ? * SIG               # the planner's face
 
 ## 한국어
 
-*로보틱스 트랙의 캡스톤. [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]], [[04-robotics/modern-robotics/ch09-trajectory-generation|9장]], [[04-robotics/modern-robotics/ch10-motion-planning|10장]], [[04-robotics/modern-robotics/ch11-robot-control|11장]], [[04-robotics/force-compliance-control|13]], [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], [[04-robotics/robot-systems-deployment|10]], [[04-robotics/hri-safety|11]], [[02-foundations/probability|3. 확률]] 위에 선다. [[04-robotics/index|4. 로보틱스]]의 누적 과제처럼 장치 넷(**P2**, **P3**, **P5**, **P6**)을 함께 쓰지만, 따로 떨어진 답 넷이 아니라 단계마다 앞 단계의 답이 다음 단계의 입력이 되는 루프 하나로 쓴다.*
+> [!note] 선수 지식 · Prerequisites
+> **이 캡스톤에는 공통 트랙 전체가 필요하다** — [[04-robotics/index|4. 로보틱스]]의 1–11쪽과 그 누적 과제, 곧 그곳 학습 일정의 1–78회차 — **그리고 79회차에 배정된 전문화 트랙의 두 절**, [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §1, §2, §5]]와 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]가 필요하다. 장치 **P2**, **P3**, **P5**, **P6**([[02-foundations/lab-plants|0.6 Lab Plants]])을 [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기 위에서 돌리고, 어느 단계도 다시 가르치지 않는다. 아래 각 단계는 주인 페이지를 밝히고 그 페이지의 결과를 주어진 것으로 쓴다. 매니퓰레이션 순서 9 → 13 → 15만으로는 모자란다. 그것은 접촉 쪽 절반만 주고, [[04-robotics/grasping|15. 파지]]는 전혀 쓰이지 않는다 — 이 셀에서는 아무것도 쥐지 않기 때문이다. 시작하기 전에 아래 줄을 모두 체크하라. 줄마다 캡스톤이 그 페이지에서 가져가는 것과, 풀이를 가리고 재현할 숫자 하나를 적었다.
+>
+> **공통 트랙 — 루프가 돌리는 단계, 그 순서대로**
+> - [ ] **칼만 갱신**([[02-foundations/probability|3. 확률 §5]], 같은 P5 갱신을 [[04-robotics/state-estimation-slam|3. 상태 추정 §6]]에서도 푼다) → 1단계. 분산 4 cm²의 사전 10 cm와 분산 1 cm²의 측정 12 cm가 11.6 cm, 0.8 cm²로 융합된다.
+> - [ ] **C-장애물**([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]) → 2단계와 §2. $x=1$의 면이 P2 토러스의 $18.478\,\%$를 막는다.
+> - [ ] **간선 검사와 경유점**([[04-robotics/modern-robotics/ch10-motion-planning|MR 10장 §2]]) → 2단계. 로드맵이 $A\to E\to B$를 $\pi\sqrt2=4.4429$ rad로 돌려주고, 막힌 직통 간선보다 $26.5\,\%$ 길다.
+> - [ ] **야코비안과 정역학**([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]) → 3단계와 5단계. 카탈로그 자세에서 $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$이고, $v=(0,-0.25)$ m/s에는 $\dot\theta=(-0.25,\,0.25)$ rad/s가 필요하다.
+> - [ ] **사다리꼴 시간 스케일링**([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §3]]) → 3단계와 8단계. 고정 한계 $0.8$ rad/s, $2$ rad/s²에서 $\pi$ rad의 팔꿈치 뒤집기는 $\pi/0.8+0.8/2=4.327$ s의 온전한 사다리꼴이고, $1.6$ rad/s, $0.5$ rad/s²로 기어를 바꾸면 최고 속도에 닿지 못해 $5.013$ s의 삼각형이 된다.
+> - [ ] **질량 행렬, 중력, 계산 토크**([[04-robotics/modern-robotics/ch08-dynamics|MR 8장]], [[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §2]]) → 4단계와 랩. 정지 상태에서 $\tau=g=(19.62,\,0)$ N·m이고, 계산 토크 $\tau=(29.62,\,10)$ N·m은 $\ddot\theta=(0,\,10)$을 주는데 PD는 결합된 $(-5,\,15)$를 준다.
+> - [ ] **작업 공간 관성**([[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학 §6]]) → 5단계. 카탈로그 자세에서 $\Lambda=(JM^{-1}J^\top)^{-1}=\mathrm{diag}(1,2)$ kg.
+> - [ ] **접촉과 그 검출**([[04-robotics/contact-force-tactile|9. 접촉 §1, §7]]) → 패널의 단방향 법칙과 §4의 전환. 접촉 상태 추정의 두 정의 조건, 그리고 "명령이 표면을 넘었다"가 둘째 조건을 어기는 이유.
+> - [ ] **지연 예산**([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]) → 8단계와 §5. $70$ ms 관측-행동 예산을 그 부분들로 다시 쌓는다.
+> - [ ] **분리 거리**([[04-robotics/hri-safety|11. HRI·안전]]의 계산 절) → 8단계. $S_p=1.24$ m를 항마다.
+> - [ ] **적분기**([[02-foundations/lab-kernel|0.7 Lab Kernel §3]]) → §6의 랩. 반암시적 오일러: 속도를 먼저, 그다음 새 속도로 위치를.
+> - [ ] **누적 과제**([[04-robotics/index|4. 로보틱스]]) → §1. $(-0.05,\,0.05)$ rad/s, $(9.62,\,0)$ N·m, $1600$ N/m, $11.6$ cm.
+>
+> **공통 트랙 밖 — 루프가 빌려 오는 두 절**
+> - [ ] **목표 임피던스, 직렬 강성, 충격**([[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §1, §2, §5]]) → 5–6단계와 §4. $D_d=2\sqrt{500\times2}=63.2$ N·s/m; $10^5$ N/m와 직렬이면 $500$ N/m 제어기가 변위의 $99.5\,\%$를 맡는다; $10^5$ N/m 위에 $5$ cm/s로 닿으면 $14.05$ ms 동안 $22.4$ N의 정점이 난다.
+> - [ ] **샘플된 스프링의 장부**([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]) → 7단계. $b=0.8$ N·s/m, $T=1$ ms에서 $K\le2b/T=1600$ N/m.
+>
+> 위에 이름이 없는 공통 트랙 페이지 — 3.2, 3.5, 4–8, 10.5, 그리고 나머지 Modern Robotics 장 — 는 직접 호출되지 않는다. 위의 단계들이 그 위에 서 있고, 학습 일정은 이 페이지를 그 모두의 뒤에 둔다.
+
+*로보틱스 트랙의 캡스톤. [[04-robotics/index|4. 로보틱스]]의 누적 과제처럼 장치 넷(**P2**, **P3**, **P5**, **P6**)을 함께 쓰지만, 따로 떨어진 답 넷이 아니라 단계마다 앞 단계의 답이 다음 단계의 입력이 되는 루프 하나로 쓴다.*
 
 > [!note] 처음이라면 · First pass
-> 이 페이지의 대상과 그림을 읽고, 계산 절을 보고서와 경고까지 따라가라. 그것이 이 페이지다. 그다음 §5에서 네 가지 검사와 그 주인을 보고 §6의 랩을 돌려라. §1–§4는 조립에 필요했지만 어느 한 페이지도 갖고 있지 않던 것을 하나씩 정의하고, §7은 시뮬레이션이 보증하지 못하는 것을 말한다.
+> 먼저 선수 지식의 체크리스트를 채워라. 재현하지 못하는 줄은 이 페이지가 설명해 줄 것이 아니라 돌아가야 할 단계 페이지다. 그다음 이 페이지의 대상과 그림을 읽고, 계산 절을 보고서와 경고까지 따라가라. 그것이 이 페이지다. 그다음 §5에서 네 가지 검사와 그 주인을 보고 §6의 랩을 돌려라. §1–§4는 조립에 필요했지만 어느 한 페이지도 갖고 있지 않던 것을 하나씩 정의하고, §7은 시뮬레이션이 보증하지 못하는 것을 말한다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -565,7 +611,11 @@ $$g(\theta_P)=9.81\,\big(2\cos85.64^\circ+\cos0.17^\circ,\ \cos0.17^\circ\big)=(
 
 $$\tau=J^\top\big[K_d\,(x_r-x)+D_d\,(\dot x_r-\dot x)\big]+c(\theta,\dot\theta)+g(\theta)$$
 
-그래서 공구는 팔 자신의 겉보기 질량을 그대로 가진다. 접촉 자세에서 그것은 $\Lambda\approx\mathrm{diag}(2.02,\,1.00)\,\mathrm{kg}$ — 전완이 이제 $x$를 따라 누워 있어서 카탈로그 자세의 $\mathrm{diag}(1,2)$가 뒤집힌 것이다 — 이고, $D_d=2\sqrt{500\cdot2}=63.2\,\mathrm{N{\cdot}s/m}$는 그에 대한 13의 임계 댐핑이다. 기준은 $P$에서 출발해 $+x$로 $v_a$만큼씩 나아가다가, 모델링한 직렬 스프링이 *추정한* 면에 대해 $F_d$를 지는 자리에서 멈춘다(§4).
+그래서 공구는 팔 자신의 겉보기 질량, 곧 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 작업 공간 관성 $\Lambda=(JM^{-1}J^\top)^{-1}$을 그대로 가진다. 단위 질량 둘이 팔꿈치와 말단에 있는 P2에서는 이것이 닫힌 꼴을 가진다. 말단 질량은 어느 방향으로든 말단과 함께 움직인다. 팔꿈치 질량은 말단 속도 가운데 전완을 따라가는 성분에만 따라 움직이고 — 전완을 가로지르는 밀기는 전완을 팔꿈치 둘레로 휘두를 뿐이다 — 그 속도는 $1/|\sin\theta_2|$배다. 말단 속도를 전완 방향에 사영하면 $\dot\theta_1\sin\theta_2$가 남기 때문이다. 운동 에너지를 $\tfrac12v^\top\Lambda v$로 쓰면
+
+$$\Lambda=I+\frac{e\,e^\top}{\sin^2\theta_2},\qquad e=\big(\cos(\theta_1+\theta_2),\ \sin(\theta_1+\theta_2)\big)$$
+
+이다(킬로그램 단위, $e$는 전완의 단위 방향). 카탈로그 자세에서는 $e=\hat y$, $\sin^2\theta_2=1$이므로 $\Lambda=\mathrm{diag}(1,2)$다. 접촉하는 동안 말단은 참 면 $x=1.120\,\mathrm{m}$에서 6단계가 멈춰 세우는 $1.120+9.111/400=1.143\,\mathrm{m}$까지 움직이고, 엘보 위 가지에서 이것은 $\theta=(83.11^\circ,\,-82.69^\circ)$에서 $(81.79^\circ,\,-81.20^\circ)$까지로, 전완은 $x$에서 $0.6^\circ$ 안에 있다. 멈춘 누르기에서 $\sin^2(81.20^\circ)=0.9766$이므로 $\Lambda_{xx}=1+\cos^2(0.59^\circ)/0.9766=2.024$이고, 오버슈트를 포함한 접촉 전체에서 $\Lambda_{xx}$는 $2.016$과 $2.025$ 사이에 머물며 $\Lambda_{yy}=1.000$, $|\Lambda_{xy}|\le0.011\,\mathrm{kg}$이다. 즉 $\Lambda\approx\mathrm{diag}(2.02,\,1.00)\,\mathrm{kg}$ — 전완이 이제 $x$를 따라 누워 있어서 카탈로그 자세의 $\mathrm{diag}(1,2)$가 뒤집힌 것이다 — 이고, $D_d=2\sqrt{500\cdot2}=63.2\,\mathrm{N{\cdot}s/m}$는 $2$ kg로 반올림한 그에 대한 13의 임계 댐핑이다. 기준은 $P$에서 출발해 $+x$로 $v_a$만큼씩 나아가다가, 모델링한 직렬 스프링이 *추정한* 면에 대해 $F_d$를 지는 자리에서 멈춘다(§4).
 
 $$K_s=\frac{K_dk_w}{K_d+k_w}=\frac{500\cdot400}{900}=222.2\ \mathrm{N/m},\qquad x_{\text{stop}}=\hat x_w+\frac{F_d}{K_s}=1.116+0.045=1.161\ \mathrm{m}$$
 
@@ -608,7 +658,7 @@ $$T_2=\frac{0.8615}{0.38}+\frac{0.38}{2}=2.457\ \mathrm{s},\qquad v_{\text{tip}}
 | 누적 과제 항목 | 여기서 | 바뀐 것 |
 |---|---|---|
 | 융합 거리 $11.6\,\mathrm{cm}$ (유도 d) | 1단계 | 답이 입력으로 두 번 쓰인다: 띠의 가까운 끝은 계획기로, 평균은 정지점으로 |
-| $(0^\circ,90^\circ)$에서 $\Lambda_y=2\,\mathrm{kg}$ (해석) | 5단계 | 공구가 면을 가리켜야 하므로 접촉 자세는 엘보 위 가지이고, 거기서 $\Lambda=\mathrm{diag}(2,1)$: 무거운 방향이 이제 누르는 방향이다 |
+| $(0^\circ,90^\circ)$에서 $\Lambda_y=2\,\mathrm{kg}$ (해석) | 5단계 | 공구가 면을 가리켜야 하므로 접촉 자세는 엘보 위 가지이고, 거기서 $\Lambda\approx\mathrm{diag}(2.02,1.00)$: 무거운 방향이 이제 누르는 방향이다 |
 | 패널에 대한 $2b/T=1600$ (유도 c) | 7단계 | 장부가 패널에서 제어기가 렌더링하는 스프링 $K_d$로 옮겨 간다; 패널은 물리적이다 |
 | 카탈로그 자세의 유지 토크 (유도 b) | 4단계 | $P$에서는 전완이 수평이라 엘보가 $9.81\,\mathrm{N{\cdot}m}$를 진다 |
 | "늦은 비전은 P6" (해석) | 8단계 | 늦음에 문턱이 생긴다, $v_aL\le\sigma$ |

@@ -121,7 +121,7 @@ The controller samples position and holds a force until the next update. During 
 
 $$E_{\text{leak}}\approx\frac12K(vT)^2,$$
 
-while physical viscous damping dissipates
+and it is the area of one triangle. Across the interval the held force stays at its start-of-interval value while an ideal spring's force would change by $K\,vT$, so on the way out of the wall the device pushes harder than the spring by an error that grows from $0$ to $KvT$ over the distance $vT$, and the extra work it returns is half that force error times that distance, $\tfrac12(KvT)(vT)$. Over the same interval, physical viscous damping dissipates
 
 $$E_{\text{diss}}=bv^2T.$$
 
@@ -311,6 +311,15 @@ for k in range(n):
 > 2. (a) $m s^2+(b+b_h)s+(k_h+k_w)=0.04 s^2+8.8 s+800$. Divide by $m$: $s^2+220s+20000=0$. $\omega_n=\sqrt{20000}=141\,\mathrm{rad/s}$, $\zeta=220/(2\cdot 141)=0.78$ (underdamped). (b) $k_h(x_d-x^\ast)=k_w(x^\ast-x_w)$ $\Rightarrow$ $0.035-x^\ast=x^\ast-0.030$ $\Rightarrow$ $x^\ast=0.0325\,\mathrm{m}$, wall force $1.0\,\mathrm{N}$. (c) $T=10^{-3}$: $2b/T=1600\,\mathrm{N/m}$. Catalog $400$ passes; $2500$ fails. $T=5\times10^{-3}$: $2b/T=320$. Both $400$ and $2500$ fail the device-only bound. Human damper $b_h$ is *not* in this inequality.
 > 3. Blanks: `Fh = kh*(xd - x) + bh*(0.0 - v)`, `Fa = -kw*(x - xw) if x > xw else 0.0`, `a = (Fh + Fa - b*v) / m`. A: never contacts, $x\to 0.020$, $E=0$. B: contacts and settles at $0.0325$, $E<0$ (wall takes energy). C: chatters for the whole window, many velocity sign changes, $E>0$ (sampled wall injects energy). D: looks settled despite $k_w>1600$, $E<0$, because $b_h=8$ is ten times $b$. D with $b_h=0$: the trace diverges, $E>0$. The bound assumed you would not spend the human as a damper; a paper that “proves” a $2500\,\mathrm{N/m}$ wall at $1\,\mathrm{kHz}$ on this mass owes you $b$ and whether a person was holding the handle. How much of this is the integrator rather than the wall: keep $F_a$ sampled and held for $T$, advance the device and hand exactly between samples, and count the wall's work as $\sum F_a\,\Delta x$ (the template's $\sum TF_av$ equals it only because explicit Euler moves $\Delta x=Tv$). A, B and D keep their outcomes; C settles although the held wall still does $+3.4\,\mathrm{mJ}$ of net work, and D with $b_h=0$ chatters in a bounded cycle between $28.1$ and $32.6\,\mathrm{mm}$ instead of diverging. The contact ceiling moves with them: the template is stable in sustained contact only while $(k_h+k_w)T<b+b_h$, because explicit Euler holds the hand's spring too and, stepping position on the old velocity, doubles every held spring's leak — $1360\,\mathrm{N/m}$ at $5\,\mathrm{ms}$ and $400\,\mathrm{N/m}$ at $1\,\mathrm{ms}$ without $b_h$ — while the sampled wall alone holds to $4388$ and $1607\,\mathrm{N/m}$, the last being §2's $2b/T=1600$ to within half a percent. Semi-implicit Euler at the same period errs the other way: its position step cancels the hold's leak, and D without $b_h$ settles. So C's chatter is the integrator's; D without $b_h$ fails on the wall's account, and only its runaway is the integrator's.
 
+### Sources
+
+- J. E. Colgate, G. G. Schenkel, "Passivity of a class of sampled-data systems: application to haptic interfaces," *Journal of Robotic Systems* 14(1):37–47, 1997. [DOI](https://doi.org/10.1002/%28SICI%291097-4563%28199701%2914%3A1%3C37%3A%3AAID-ROB4%3E3.0.CO%3B2-V) — the sampled-data passivity condition of §2 and its wall form $b>KT/2+|B|$.
+- D. W. Weir, J. E. Colgate, "Stability of haptic displays," ch. 8 of M. C. Lin, M. A. Otaduy (eds.), *Haptic Rendering: Foundations, Algorithms, and Applications*, A K Peters, 2008. DOI 10.1201/b10636-9 — the presentation of Colgate and Schenkel's condition quoted in §2 (their eq. 8.2), the two ends of Z-width in §4, and a restatement of Abbott and Okamura's bound (their eq. 8.5).
+- J. J. Abbott, A. M. Okamura, "Effects of position quantization and sampling rate on virtual-wall passivity," *IEEE Transactions on Robotics* 21(5):952–964, 2005. DOI 10.1109/TRO.2005.851377 — the bound $K\le\min(2b/T,\,2f_c/\Delta)$ of §3, from the worst cases of compressing and extending the wall with Coulomb-plus-viscous friction and position quantization modelled.
+- N. Diolaiti, G. Niemeyer, F. Barbagli, J. K. Salisbury, "Stability of haptic rendering: discretization, quantization, time delay, and Coulomb effects," *IEEE Transactions on Robotics* 22(2):256–268, 2006. DOI 10.1109/TRO.2005.862487 — the $(\beta,\sigma)$ stability plane of §3; [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]] uses the same paper for the delayed bound.
+- J. E. Colgate, J. M. Brown, "Factors affecting the Z-width of a haptic display," *Proc. IEEE ICRA* 1994, pp. 3205–3210. DOI 10.1109/ROBOT.1994.351077 — the measured Z-width and the physical-damping lever of §4.
+- N. Colonnese, A. M. Okamura, "Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping," *International Journal of Robotics Research* 35(9):1103–1120, 2016 (online 2015). DOI 10.1177/0278364915596234 — the combined model named in §1 and §3.
+
 ## 한국어
 
 > [!note] 처음이라면 · First pass
@@ -421,7 +430,7 @@ $$F_k=\begin{cases}-Kx_k-B\hat v_k,&x_k>0\\0,&x_k\le 0,\end{cases}$$
 
 $$E_{\text{leak}}\approx\frac12K(vT)^2,$$
 
-이고, 물리적 점성 댐핑이 소산하는 에너지는
+이고, 이것은 삼각형 하나의 넓이다. 한 주기 동안 유지된 힘은 주기 시작의 값에 머무는데 이상적인 스프링의 힘은 $K\,vT$만큼 바뀐다. 그래서 벽에서 빠져나오는 길에 장치는 스프링보다 더 세게 밀고, 그 힘 오차는 거리 $vT$에 걸쳐 $0$에서 $KvT$까지 자란다. 장치가 되돌려 주는 여분의 일은 그 힘 오차와 거리를 곱한 값의 절반, $\tfrac12(KvT)(vT)$다. 같은 주기 동안 물리적 점성 댐핑이 소산하는 에너지는
 
 $$E_{\text{diss}}=bv^2T.$$
 
@@ -587,3 +596,12 @@ $$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
 > 1. $x_d$는 $(x,\dot x)$가 다른 포트인 스프링–댐퍼로 들어가 $F_h$가 되고, $F_a$ 및 $-b\dot x$와 더해 $1/m$으로 간다. 벽은 $x>x_w$일 때만 $F_a$를 낸다. $F_a$에서 $x_d$로 가는 길은 없다.
 > 2. (a) $0.04 s^2+8.8 s+800=0$, 즉 $s^2+220s+20000=0$. $\omega_n=141\,\mathrm{rad/s}$, $\zeta=0.78$. (b) $x^\ast=0.0325\,\mathrm{m}$, 벽 힘 $1.0\,\mathrm{N}$. (c) $T=10^{-3}$이면 $2b/T=1600$: $400$ 통과, $2500$ 실패. $T=5\times10^{-3}$이면 $320$: 둘 다 실패. $b_h$는 이 부등식에 없다.
 > 3. 빈칸은 영어 해와 같다. A: 비접촉, $x\to 0.020$, $E=0$. B: $0.0325$에 정착, $E<0$. C: 창 내내 채터, $E>0$. D: $k_w>1600$인데도 정착해 보인다, $E<0$ — $b_h=8$이 $b$의 열 배. $b_h=0$인 D는 발산, $E>0$. 경계는 사람을 댐퍼로 쓰지 않는다는 가정이다. 이 중 얼마가 벽이 아니라 적분기의 몫인지 가르려면, $F_a$는 그대로 샘플링해 $T$ 동안 유지하고 장치와 손만 샘플 사이에서 정확히 전진시킨 뒤, 벽이 한 일을 $\sum F_a\,\Delta x$로 센다(템플릿의 $\sum TF_av$가 그것과 같은 것은 명시적 오일러가 $\Delta x=Tv$만큼 움직이기 때문일 뿐이다). A, B, D는 결과가 그대로다. C는 유지된 벽이 여전히 $+3.4\,\mathrm{mJ}$의 순일을 하는데도 정착하고, $b_h=0$인 D는 발산하는 대신 $28.1$과 $32.6\,\mathrm{mm}$ 사이의 유계 주기로 채터한다. 접촉 천장도 함께 움직인다. 템플릿은 지속 접촉에서 $(k_h+k_w)T<b+b_h$일 때만 안정한데, 명시적 오일러가 손의 스프링까지 유지하고 이전 속도로 위치를 옮겨 유지된 스프링마다 누설을 두 배로 만들기 때문이다. 그래서 천장은 $5\,\mathrm{ms}$에서 $1360\,\mathrm{N/m}$, $b_h$ 없는 $1\,\mathrm{ms}$에서 $400\,\mathrm{N/m}$이고, 샘플링된 벽만으로는 각각 $4388$과 $1607\,\mathrm{N/m}$까지 간다. 뒤의 것은 §2의 $2b/T=1600$과 0.5% 안에서 같다. 같은 주기의 준음해 오일러는 반대로 틀린다. 위치 갱신이 홀드의 누설을 지워 버려서 $b_h$ 없는 D가 정착한다. 그러므로 C의 채터는 적분기의 몫이고, $b_h$ 없는 D는 벽 때문에 실패하며 그 폭주만 적분기의 몫이다.
+
+### 출처
+
+- J. E. Colgate, G. G. Schenkel, "Passivity of a class of sampled-data systems: application to haptic interfaces," *Journal of Robotic Systems* 14(1):37–47, 1997. [DOI](https://doi.org/10.1002/%28SICI%291097-4563%28199701%2914%3A1%3C37%3A%3AAID-ROB4%3E3.0.CO%3B2-V) — §2의 샘플링 데이터 수동성 조건과 그 벽 형태 $b>KT/2+|B|$.
+- D. W. Weir, J. E. Colgate, "Stability of haptic displays," M. C. Lin, M. A. Otaduy 편, *Haptic Rendering: Foundations, Algorithms, and Applications*, A K Peters, 2008, 8장. DOI 10.1201/b10636-9 — §2가 인용한 Colgate와 Schenkel 조건의 제시(그 장의 식 8.2), §4의 Z-width 두 끝, 그리고 Abbott와 Okamura 경계의 재진술(식 8.5).
+- J. J. Abbott, A. M. Okamura, "Effects of position quantization and sampling rate on virtual-wall passivity," *IEEE Transactions on Robotics* 21(5):952–964, 2005. DOI 10.1109/TRO.2005.851377 — §3의 경계 $K\le\min(2b/T,\,2f_c/\Delta)$. Coulomb·점성 마찰과 위치 양자화를 모델에 넣고 벽을 누를 때와 뺄 때의 최악의 경우에서 얻는다.
+- N. Diolaiti, G. Niemeyer, F. Barbagli, J. K. Salisbury, "Stability of haptic rendering: discretization, quantization, time delay, and Coulomb effects," *IEEE Transactions on Robotics* 22(2):256–268, 2006. DOI 10.1109/TRO.2005.862487 — §3의 $(\beta,\sigma)$ 안정성 평면. [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]]는 지연 경계에 같은 논문을 쓴다.
+- J. E. Colgate, J. M. Brown, "Factors affecting the Z-width of a haptic display," *Proc. IEEE ICRA* 1994, pp. 3205–3210. DOI 10.1109/ROBOT.1994.351077 — §4의 측정된 Z-width와 물리적 댐핑이라는 지렛대.
+- N. Colonnese, A. M. Okamura, "Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping," *International Journal of Robotics Research* 35(9):1103–1120, 2016(온라인 2015). DOI 10.1177/0278364915596234 — §1과 §3이 이름을 댄 통합 모델.

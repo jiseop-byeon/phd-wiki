@@ -15,8 +15,8 @@ mastery-when: "The research program keeps this at Working — it is a supporting
 > 의도적으로 이것을 Mastery로 올리지 *않는다*: 새 SLAM은 기여가 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> You need localization and mapping ([[04-robotics/state-estimation-slam|3. State Estimation, Localization & SLAM]]), configuration space and planning ([[04-robotics/planning-decision-making|4. Planning & Decision-Making]]), and the manipulability ellipsoid ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §4]]) — which turns out to be the quantity that decides where a base should stop.
-> 위치 추정과 지도 작성([[04-robotics/state-estimation-slam|3. 상태 추정·위치추정·SLAM]]), 자세 공간과 계획([[04-robotics/planning-decision-making|4. 계획·의사결정]]), 그리고 가조작성 타원체([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]])가 필요하다 — 베이스를 어디에 세울지를 결정하는 양이 결국 그것이다.
+> You need localization and mapping ([[04-robotics/state-estimation-slam|3. State Estimation, Localization & SLAM]]), configuration space and planning ([[04-robotics/planning-decision-making|4. Planning & Decision-Making]]), the manipulability ellipsoid ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §4]]) — which turns out to be the quantity that decides where a base should stop — the pseudo-inverse and the null space of a wide Jacobian ([[02-foundations/linear-algebra|1. Linear Algebra §4.5]]), and hand–eye calibration, the camera-to-gripper transform whose error enters §4's budget ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration §5]]).
+> 위치 추정과 지도 작성([[04-robotics/state-estimation-slam|3. 상태 추정·위치추정·SLAM]]), 자세 공간과 계획([[04-robotics/planning-decision-making|4. 계획·의사결정]]), 가조작성 타원체([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]]; 베이스를 어디에 세울지를 결정하는 양이 결국 그것이다), 넓은 야코비안의 유사역행렬과 영공간([[02-foundations/linear-algebra|1. 선형대수 §4.5]]), 그리고 §4의 예산에 오차로 들어가는 카메라–그리퍼 변환을 정하는 손–눈 보정([[04-robotics/geometric-perception-calibration|3.5 기하 인식·보정 §5]])이 필요하다.
 
 ## English
 
@@ -26,7 +26,7 @@ The goal is not a point on a map but a configuration the arm can work from, and 
 *Scope: this page teaches where a mobile base should stop and why — the reachable workspace and manipulability as placement criteria (§2–§3), the whole-body/decoupled architecture choice (§4.5), and the error budget that decides whether an open-loop design can close (§4). It does not teach SLAM or localization, which is [[04-robotics/state-estimation-slam|3. State Estimation]]; the planners that drive the base there, which are [[04-robotics/planning-decision-making|4. Planning]]; or what the arm does once it arrives, which is [[04-robotics/grasping|15. Grasping]] and [[04-robotics/force-compliance-control|13. Force & Compliance Control]].*
 
 > [!note] First pass · 처음이라면
-> Read §1 — the goal is a configuration, not a point — then §3 on base placement, then §6. §4's error budget is the section to return to when a system misses by centimetres and nobody can say which stage owns it.
+> Read the picture, then §1 (the goal is a configuration, not a point), §2 (reachability and the two manipulability measures), §3 (base placement), §4 (the error budget) and §4.5 (whole-body or decoupled). Then the Worked case, which sits after §4.5 and puts §2–§4 together on P2, and §6's reading table. §5 (localizing on a site that keeps changing) is second-pass; §4 is also the section to return to when a system misses by centimetres and nobody can say which stage owns it.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -207,8 +207,8 @@ Two practical points the figure is making:
   direct consumer of the margin.
 
 > [!note] There is no survey of this · 이 주제에는 서베이가 없다
-> A search for a survey or systematic review of base placement for mobile manipulation
-> found none. Do not cite one. The citable references are the primary methods —
+> No survey or systematic review of base placement for mobile manipulation is known, so do
+> not cite one. The citable references are the primary methods —
 > Zacharias et al. 2007 for capability maps, Vahrenkamp et al. 2013 for inverse
 > reachability, and Makhal and Goins' Reuleaux (IRC 2018) for the open-source tooling.
 > 모바일 조작의 base placement에 대한 서베이나 체계적 리뷰를 찾았으나 없었다. 없는 것을
@@ -238,7 +238,7 @@ Robotics* — whole-body control, redundancy resolution (both defined in §4.5 b
 navigation and manipulation constraints.
 
 > [!warning] Another absence worth knowing
-> There is no recent *Annual Review* survey of mobile manipulation — but one does exist elsewhere, and this page previously claimed none did: Thakar et al., "A Survey of Wheeled Mobile Manipulation: A Decision-Making Perspective," *ASME J. Mechanisms and Robotics* 15(2):020801, 2023. What is absent is a survey in the *Annual Review of Control,
+> A survey of mobile manipulation does exist: Thakar et al., "A Survey of Wheeled Mobile Manipulation: A Decision-Making Perspective," *ASME J. Mechanisms and Robotics* 15(2):020801, 2023. What is absent is a survey in the *Annual Review of Control,
 > Robotics, and Autonomous Systems*, and none by the authors it is often attributed to. The
 > Springer Handbook chapter (2016) remains the reference treatment despite its age. If you
 > need something recent and are willing to accept a narrow scope, there is a 2025
@@ -252,7 +252,9 @@ navigation and manipulation constraints.
 > covariance propagation or empirical task-space distribution.) Take a
 > representative budget at the moment the gripper closes: base localization $\sigma = 5$ cm,
 > base-to-arm mount 0.3 cm, arm kinematics and joint encoders 0.3 cm, hand–eye extrinsics
-> 1.0 cm, object pose from perception 1.0 cm.
+> (the camera-to-gripper transform that hand–eye calibration estimates from $AX=XB$,
+> [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration §5]]) 1.0 cm,
+> object pose from perception 1.0 cm.
 >
 > $\sigma_{\text{total}} = \sqrt{5.0^2 + 0.3^2 + 0.3^2 + 1.0^2 + 1.0^2} = \sqrt{27.18} = \mathbf{5.2}$ cm.
 >
@@ -290,7 +292,7 @@ and joint motion are alternative ways of serving the same task error:
 
 $$\dot x=J\dot q=\begin{pmatrix}J_b & J_a\end{pmatrix}\begin{pmatrix}\dot q_b\\ \dot q_a\end{pmatrix},\qquad \dot q=J^{+}\dot x+\big(I-J^{+}J\big)\dot q_0$$
 
-The first term achieves the task; the second lies in the **null space** of $J$, so it changes
+Here $J^{+}$ is the pseudo-inverse, which for a wide $J$ with independent rows returns the smallest $\dot q$ that achieves $\dot x$ ([[02-foundations/linear-algebra|1. Linear Algebra §4.5]]). The first term achieves the task; the second lies in the **null space** of $J$, so it changes
 the configuration without moving the end-effector at all, which is where secondary objectives
 go — manipulability, joint limits, obstacle distance. Choosing $\dot q_0$ is **redundancy
 resolution**. Three conditions define whole-body control and all three are required: one state
@@ -312,6 +314,24 @@ whatever conditioning the base handed the arm is what the task gets, permanently
 exactly why §3 spends so much effort on where to stop. A nonholonomic base does not contribute
 3 at the velocity level, because an instantaneous sideways motion is unavailable
 ([[04-robotics/planning-decision-making|4. Planning §5.5]]).
+
+**The null space, worked on P2.** Mount P2's shoulder at the centre of a holonomic base parked at world $(1,0)$ with heading $\varphi=0$, the arm at its frozen $\theta=(0°,90°)$, so the elbow is at $(2,0)$ and the tip on the panel at $(2,1)$, and order the five rates as $\dot q=(\dot x_b,\ \dot y_b,\ \dot\varphi,\ \dot\theta_1,\ \dot\theta_2)$. A base translation carries the tip one-for-one, a base rotation swings it about the shoulder exactly as $\dot\theta_1$ does, and the last two columns are P2's own $J$ at that pose, so
+
+$$J=\begin{pmatrix}1&0&-1&-1&-1\\0&1&1&1&0\end{pmatrix},\qquad J^{+}=J^{\top}\big(JJ^{\top}\big)^{-1}=\frac18\begin{pmatrix}3&2\\2&4\\-1&2\\-1&2\\-3&-2\end{pmatrix}$$
+
+because $JJ^{\top}=\begin{pmatrix}4&-2\\-2&3\end{pmatrix}$ has determinant $8$ and inverse $\tfrac18\begin{pmatrix}3&2\\2&4\end{pmatrix}$. The null-space projector is then
+
+$$I-J^{+}J=\frac18\begin{pmatrix}5&-2&1&1&3\\-2&4&-2&-2&2\\1&-2&5&-3&-1\\1&-2&-3&5&-1\\3&2&-1&-1&5\end{pmatrix}$$
+
+of rank $3$, the first row of the table above. Three self-motions it keeps can be read straight off $J$, and each gives $Jn=0$: $(0,0,1,-1,0)$ turns the base one way and the shoulder the other; $(1,0,0,0,1)$ drives the base $+x$ while the elbow swings the tip back by the same amount; $(1,-1,1,0,0)$ translates the base diagonally while turning it so the tip stays put. Now ask the tip to slide along the panel face at $0.2$ m/s, $\dot x=(0,\ 0.2)$:
+
+| choice | $\dot q=(\dot x_b,\ \dot y_b,\ \dot\varphi,\ \dot\theta_1,\ \dot\theta_2)$ | $\lVert\dot q\rVert$ | what it does |
+|---|---|---:|---|
+| decoupled, base parked: $J_a^{-1}\dot x$ | $(0,\ 0,\ 0,\ 0.2,\ -0.2)$ | $0.283$ | shoulder and elbow both turn, and the elbow walks away from the $90°$ that §3 parked it at |
+| whole-body, $\dot q_0=0$: $J^{+}\dot x$ | $(0.05,\ 0.1,\ 0.05,\ 0.05,\ -0.05)$ | $0.141$ | the minimum-norm share: all five move a little, the elbow at a quarter of the decoupled rate |
+| whole-body, $\dot q_0=(0,\ 0.2,\ 0,\ 0,\ 0)$, "let the base carry it" | $(0,\ 0.2,\ 0,\ 0,\ 0)$ | $0.200$ | the arm freezes at $w=1$ and the base drives along the panel |
+
+In the last row the projection adds $(I-J^{+}J)\dot q_0=(-0.05,\ 0.1,\ -0.05,\ -0.05,\ 0.05)$ to the minimum-norm share, and $J$ times that vector is exactly $(0,0)$: it reshapes the motion without moving the tip. That is what a secondary objective is, in numbers — the arm holds the best-conditioned elbow angle while the task is served in full, which the decoupled row, with a null space of dimension $0$, cannot do. One caveat the formula hides: the pseudo-inverse's "smallest" weighs metres per second and radians per second equally, which is harmless for P2's $1$ m links and a choice, not a fact, for any other arm; a weighted pseudo-inverse moves the split.
 
 **Non-example.** Commanding base velocity and arm velocity in the same message is not
 whole-body control. If the base command comes from a path follower and the arm from an IK
@@ -475,7 +495,7 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 *범위: 이 페이지는 이동 베이스가 어디에 서야 하고 왜 그런지를 가르친다 — 배치 기준으로서의 도달 작업 영역과 가조작성(§2–§3), 전신/분리 아키텍처 선택(§4.5), 그리고 개루프 설계가 성립하는지를 결정하는 오차 예산(§4). SLAM이나 위치 추정은 가르치지 않는다. 그것은 [[04-robotics/state-estimation-slam|3. 상태 추정]]이다. 베이스를 그곳까지 몰고 가는 플래너는 [[04-robotics/planning-decision-making|4. 계획]]이고, 도착한 뒤 팔이 하는 일은 [[04-robotics/grasping|15. 파지]]와 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 목표는 점이 아니라 자세다 — 그다음 base placement인 §3, 그다음 §6. §4의 오차 예산은 시스템이 센티미터 단위로 빗나가는데 어느 단계 탓인지 아무도 못 말할 때 돌아오는 절이다.
+> 그림을 먼저 보고, §1(목표는 점이 아니라 자세다), §2(도달성과 두 가조작성 척도), §3(base placement), §4(오차 예산), §4.5(전신인가 분리인가)를 읽어라. 그다음 §4.5 뒤에 있는 Worked case가 §2–§4를 P2 위에서 하나로 합치고, §6의 읽기 표로 끝낸다. §5(계속 변하는 현장에서 위치 잡기)는 두 번째 읽기에서 본다. §4는 시스템이 센티미터 단위로 빗나가는데 어느 단계 탓인지 아무도 못 말할 때 돌아오는 절이기도 하다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -651,7 +671,7 @@ $$w(q)=\sqrt{\det\big(J J^{\top}\big)}=\lvert\det J\rvert\ \ (J\ \text{가 정�
 - **쓸 만한 띠가 좁으므로**, 베이스 자세 오차는 반올림 오차가 아니라 여유를 직접 소비한다.
 
 > [!note] 이 주제에는 서베이가 없다 · There is no survey of this
-> 모바일 조작의 base placement에 대한 서베이나 체계적 리뷰를 찾았으나 **없었다.** 없는 것을
+> 모바일 조작의 base placement에 대한 서베이나 체계적 리뷰는 **알려진 것이 없다.** 없는 것을
 > 인용하지 마라. 인용 가능한 것은 1차 방법들이다 — 능력 지도는 Zacharias 등 2007, inverse
 > reachability는 Vahrenkamp 등 2013, 오픈소스 도구는 Makhal과 Goins의 Reuleaux(IRC 2018).
 
@@ -677,8 +697,8 @@ $$w(q)=\sqrt{\det\big(J J^{\top}\big)}=\lvert\det J\rvert\ \ (J\ \text{가 정�
 해소(둘 다 아래 §4.5에서 정의한다), 그리고 내비게이션 제약과 조작 제약의 상호작용.
 
 > [!warning] 알아 둘 또 하나의 부재
-> 모바일 조작 서베이는 존재한다 — Thakar 등, "A Survey of Wheeled Mobile Manipulation: A Decision-Making Perspective," *ASME J. Mechanisms and Robotics* 15(2):020801, 2023. (이 페이지의 이전 판은 없다고 적었다.) 없는 것은 *Annual Review of Control, Robotics, and Autonomous Systems*의 **최근 모바일 조작 서베이가
-> 없고**, 흔히 그것으로 귀속되는 저자들의 것도 없다. Springer Handbook 장(2016)이 나이에도
+> 모바일 조작 서베이는 존재한다 — Thakar 등, "A Survey of Wheeled Mobile Manipulation: A Decision-Making Perspective," *ASME J. Mechanisms and Robotics* 15(2):020801, 2023. 없는 것은 *Annual Review of Control, Robotics, and Autonomous Systems*에 실린
+> 최근 모바일 조작 서베이이고, 흔히 그것으로 귀속되는 저자들의 것도 없다. Springer Handbook 장(2016)이 나이에도
 > 불구하고 여전히 기준 서술이다. 최근 것이 필요하고 좁은 범위를 감수할 수 있다면, **가변
 > 자율성**을 다룬 2025년 *Frontiers in Robotics and AI* 미니 리뷰가 있다 — 비슷한 이름을 쓴
 > 다른 주제다.
@@ -688,7 +708,9 @@ $$w(q)=\sqrt{\det\big(J J^{\top}\big)}=\lvert\det J\rvert\ \ (J\ \text{가 정�
 > 근사하고 표준편차를 제곱합으로 더해 보자. 상관된 오차·편향·방향 오차·비가우시안 꼬리는 공분산
 > 전파나 실측 작업공간 분포가 필요하다. 그리퍼가 닫히는 순간의 대표적인 예산은 베이스 위치 추정
 > $\sigma = 5$ cm, 베이스–팔 장착부 0.3 cm,
-> 팔 기구학과 관절 엔코더 0.3 cm, 손–눈 외부 파라미터 1.0 cm, 인식이 준 물체 자세 1.0 cm.
+> 팔 기구학과 관절 엔코더 0.3 cm, 손–눈 외부 파라미터(손–눈 보정이 $AX=XB$로 추정하는
+> 카메라–그리퍼 변환, [[04-robotics/geometric-perception-calibration|3.5 기하 인식·보정 §5]]) 1.0 cm,
+> 인식이 준 물체 자세 1.0 cm.
 >
 > $\sigma_{\text{total}} = \sqrt{5.0^2 + 0.3^2 + 0.3^2 + 1.0^2 + 1.0^2} = \sqrt{27.18} = \mathbf{5.2}$ cm.
 >
@@ -721,7 +743,7 @@ $$w(q)=\sqrt{\det\big(J J^{\top}\big)}=\lvert\det J\rvert\ \ (J\ \text{가 정�
 
 $$\dot x=J\dot q=\begin{pmatrix}J_b & J_a\end{pmatrix}\begin{pmatrix}\dot q_b\\ \dot q_a\end{pmatrix},\qquad \dot q=J^{+}\dot x+\big(I-J^{+}J\big)\dot q_0$$
 
-첫 항이 과제를 달성하고, 둘째 항은 $J$의 **영공간**(null space)에 있으므로 말단을 전혀 움직이지
+여기서 $J^{+}$는 유사역행렬이고, 행이 독립인 넓은 $J$에 대해 $\dot x$를 이루는 가장 작은 $\dot q$를 돌려준다([[02-foundations/linear-algebra|1. 선형대수 §4.5]]). 첫 항이 과제를 달성하고, 둘째 항은 $J$의 **영공간**(null space)에 있으므로 말단을 전혀 움직이지
 않은 채 컨피규레이션만 바꾼다. 부차 목표 — 가조작성, 관절 한계, 장애물 거리 — 가 들어가는
 자리가 거기다. $\dot q_0$를 고르는 일이 **여유 자유도 해소**(redundancy resolution)다. 전신 제어를
 정의하는 조건은 셋이고 셋 다 필요하다. 베이스와 팔을 함께 담는 상태 벡터 하나, 둘 중 어느 쪽이든
@@ -742,6 +764,24 @@ $$\dot x=J\dot q=\begin{pmatrix}J_b & J_a\end{pmatrix}\begin{pmatrix}\dot q_b\\ 
 곧 과제가 받는 전부이고 그것으로 끝이다. §3이 어디에 설지에 그토록 공을 들이는 이유가 정확히
 그것이다. 비홀로노믹 베이스는 속도 수준에서 3을 보태지 못한다. 순간적인 옆방향 운동이 없기
 때문이다([[04-robotics/planning-decision-making|4. 계획 §5.5]]).
+
+**P2에서 풀어 본 영공간.** P2의 어깨를 월드 $(1,0)$에 방향 $\varphi=0$으로 세운 홀로노믹 베이스의 중심에 달고, 팔을 고정 자세 $\theta=(0°,90°)$에 두면 팔꿈치는 $(2,0)$, 말단은 패널 위 $(2,1)$에 있다. 다섯 속도를 $\dot q=(\dot x_b,\ \dot y_b,\ \dot\varphi,\ \dot\theta_1,\ \dot\theta_2)$ 순서로 놓는다. 베이스 병진은 말단을 그대로 옮기고, 베이스 회전은 말단을 어깨 둘레로 $\dot\theta_1$과 똑같이 휘두르며, 마지막 두 열은 그 자세에서의 P2 자신의 $J$이므로
+
+$$J=\begin{pmatrix}1&0&-1&-1&-1\\0&1&1&1&0\end{pmatrix},\qquad J^{+}=J^{\top}\big(JJ^{\top}\big)^{-1}=\frac18\begin{pmatrix}3&2\\2&4\\-1&2\\-1&2\\-3&-2\end{pmatrix}$$
+
+이다. $JJ^{\top}=\begin{pmatrix}4&-2\\-2&3\end{pmatrix}$의 행렬식이 $8$이고 역행렬이 $\tfrac18\begin{pmatrix}3&2\\2&4\end{pmatrix}$이기 때문이다. 그러면 영공간 사영은
+
+$$I-J^{+}J=\frac18\begin{pmatrix}5&-2&1&1&3\\-2&4&-2&-2&2\\1&-2&5&-3&-1\\1&-2&-3&5&-1\\3&2&-1&-1&5\end{pmatrix}$$
+
+이고 랭크가 $3$으로 위 표의 첫 행과 같다. 그것이 남기는 자기 운동 셋은 $J$에서 곧바로 읽히고, 각각 $Jn=0$이다. $(0,0,1,-1,0)$은 베이스를 한쪽으로, 어깨를 반대쪽으로 돌린다. $(1,0,0,0,1)$은 베이스를 $+x$로 밀고 팔꿈치가 말단을 같은 만큼 되돌린다. $(1,-1,1,0,0)$은 베이스를 대각선으로 옮기면서 돌려 말단이 제자리에 머문다. 이제 말단이 패널 면을 따라 $0.2$ m/s로 미끄러지게 하자, $\dot x=(0,\ 0.2)$:
+
+| 선택 | $\dot q=(\dot x_b,\ \dot y_b,\ \dot\varphi,\ \dot\theta_1,\ \dot\theta_2)$ | $\lVert\dot q\rVert$ | 하는 일 |
+|---|---|---:|---|
+| 분리형, 베이스 정지: $J_a^{-1}\dot x$ | $(0,\ 0,\ 0,\ 0.2,\ -0.2)$ | $0.283$ | 어깨와 팔꿈치가 모두 돌고, 팔꿈치가 §3이 세워 둔 $90°$에서 멀어진다 |
+| 전신, $\dot q_0=0$: $J^{+}\dot x$ | $(0.05,\ 0.1,\ 0.05,\ 0.05,\ -0.05)$ | $0.141$ | 최소 노름 분담: 다섯이 모두 조금씩 움직이고 팔꿈치는 분리형의 4분의 1 속도다 |
+| 전신, $\dot q_0=(0,\ 0.2,\ 0,\ 0,\ 0)$, "베이스가 나르게" | $(0,\ 0.2,\ 0,\ 0,\ 0)$ | $0.200$ | 팔은 $w=1$에서 멈추고 베이스가 패널을 따라 달린다 |
+
+마지막 행에서 사영은 최소 노름 분담에 $(I-J^{+}J)\dot q_0=(-0.05,\ 0.1,\ -0.05,\ -0.05,\ 0.05)$를 더하고, $J$에 그 벡터를 곱하면 정확히 $(0,0)$이다. 말단을 움직이지 않고 운동의 모양만 바꾼다. 부차 목표란 숫자로 이것이다 — 과제를 온전히 수행하면서 팔이 가장 조건이 좋은 팔꿈치 각을 지키는 것이고, 영공간 차원이 $0$인 분리형 행은 이것을 할 수 없다. 식이 감추는 단서 하나: 유사역행렬의 "가장 작은"은 초당 미터와 초당 라디안을 같은 무게로 잰다. 링크가 $1$ m인 P2에서는 무해하지만 다른 팔에서는 사실이 아니라 선택이고, 가중 유사역행렬을 쓰면 분담이 달라진다.
 
 **반례.** 베이스 속도와 팔 속도를 같은 메시지로 보내는 것은 전신 제어가 아니다. 베이스 명령이
 경로 추종기에서 나오고 팔 명령이 베이스의 *추정* pose에 대해 푼 IK에서 나온다면 둘은 여전히

@@ -21,7 +21,7 @@ A robot sharing space with a person acts on a guess about what the person will d
 > [[02-foundations/probability|Probability]] · [[02-foundations/ml-practice|9. ML Practice & Evaluation]] (AUC, ROC, precision–recall, F1) · [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]] · [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
 
 > [!note] First pass · 처음이라면
-> Read the running object and the five derivations on it, then §1 — intent classification and trajectory forecasting are different problems and papers do not always say which they solved — then §3, then §4. Calibration is where the research actually is, which is why §4 comes before the survey material.
+> Read the running object and the five derivations on it, then §1 — intent classification and trajectory forecasting are different problems and papers do not always say which they solved — then §3, then §4. Calibration is where the research actually is, which is why §4 comes before the survey material. Second pass: §2 and §5, the cue cascade and the base rate; §6 for the best-of-$k$ trajectory metrics; §7 for the move from roads to shared workspaces; §8 and §9 are the checklists to keep beside a paper.
 
 ### Running object · 이 페이지의 대상
 
@@ -48,7 +48,7 @@ Nine of the twenty events occurred, so the base rate on this log is $\bar p = 9/
 | truth $x_k$ | $(1.00,\ 0.00)$ | $(2.00,\ 0.00)$ | $(3.00,\ 0.00)$ |
 | model $\hat x_k$ | $(1.00,\ 0.30)$ | $(2.30,\ 0.40)$ | $(3.60,\ 0.80)$ |
 
-**Part 3 — the early-versus-accurate curve, and the platform it has to serve.** Recall at a fixed false-positive rate $\alpha = 0.05$, as a function of time to event:
+**Part 3 — the early-versus-accurate curve, and the platform it has to serve.** Recall at a fixed false-positive rate $\alpha = 0.05$, as a function of time to event. Read $\mathrm{Recall}_{\mathrm{FPR}=0.05}(\Delta)$ as: set the alarm threshold so that $5\%$ of the cases where no one enters are flagged anyway, then count the fraction of real entries that were already flagged $\Delta$ seconds before they happened ($\Delta = T - t$, the time left to the event; §3 states the construction and why it is reported as a curve):
 
 | $\Delta$ (s) | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 |
 |---|---:|---:|---:|---:|---:|
@@ -319,7 +319,7 @@ Now run the baseline the whole Schöller critique in Sources is about. The three
 
 The object is built that way on purpose, and the point is not that constant velocity is always exact. The point is that **the published $\mathrm{ADE} = 0.60$ m does not tell you it was beaten by arithmetic**, and no benchmark table is obliged to. The problem set turns the pedestrian and the ranking reverses; that reversal is the reading, not either number.
 
-**5. The usable horizon $\Delta^{*}$ against what the platform needs.** Part 3's requirement is recall $\ge 0.75$. The curve is $0.84$ at $\Delta = 1.0$ s and $0.72$ at $\Delta = 1.5$ s, so it crosses between them; interpolating linearly, the fraction of the interval used is $(0.84 - 0.75)/(0.84 - 0.72) = 0.09/0.12 = 0.75$, so
+**5. The usable horizon $\Delta^{*}$ against what the platform needs.** The usable horizon $\Delta^{*}$ is the longest lead time at which the curve still meets its requirement (§3 defines it for any operating metric). Part 3's requirement is recall $\ge 0.75$. The curve is $0.84$ at $\Delta = 1.0$ s and $0.72$ at $\Delta = 1.5$ s, so it crosses between them; interpolating linearly, the fraction of the interval used is $(0.84 - 0.75)/(0.84 - 0.72) = 0.09/0.12 = 0.75$, so
 
 $$\Delta^{*} = 1.0 + 0.75 \times (1.5 - 1.0) = 1.375\ \mathrm{s}$$
 
@@ -358,9 +358,11 @@ Intent is latent. What is measurable, roughly in order of lead time:
 | Gaze | longest | **no** beyond a few metres | [[04-robotics/human-pose-gaze\|21. §4]] |
 | Head / body orientation | long | yes | [[04-robotics/human-pose-gaze\|21. §4–§5]] |
 | Gait change, deceleration | medium | yes, from a tracked box | [[04-robotics/human-pose-gaze\|21. §5]] |
-| Proximity to boundary (curb, machine envelope) | medium | yes, needs scene geometry | — |
+| Proximity to boundary (curb, machine envelope) | medium | yes, if the boundary is in the same ground frame (below) | [[04-robotics/hri-safety\|11.]], its hazard boundary |
 | Trajectory curvature toward target | short | yes | §1 above |
 | Contact / entry | zero | yes | too late |
+
+Proximity is a relation between the person and the scene, not something read off the person. It is the signed distance from the person's tracked ground position $x$ to the boundary, positive outside; for a machine envelope modelled as a circle of radius $R_h$ about the base $x_{\mathrm{base}}$, it is $d = \lVert x - x_{\mathrm{base}}\rVert - R_h$, the same boundary [[04-robotics/hri-safety|11. HRI & Safety]] measures every separation distance from ($R_h = 2.25$ m for its P2 cell). Computing it takes scene geometry — two inputs beyond the person's track: the boundary itself in the robot's ground frame, from a site map or from the machine's own reach, and the person's ground position in that frame, from a depth sensor or from the ray through the foot of a tracked box meeting a known ground plane ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §1]], the pinhole model).
 
 This is the same cascade as [[04-robotics/egocentric-perception|22. §4]], seen from outside instead of from the head. **The design decision in any intent system is which rung you commit to,** because that fixes both the lead time and the ceiling on reliability.
 
@@ -474,7 +476,35 @@ Most pedestrians near a road do not cross in the next two seconds; most workers 
 
 ### 6. Trajectory forecasting, briefly
 
-When the output is a path rather than a decision:
+When the output is a path rather than a decision, the headline metric of this literature is a best-of-$k$ version of ADE and FDE.
+
+> [!info] Definition — $\mathrm{minADE}_k$ and $\mathrm{minFDE}_k$
+> Two **lengths in metres**, the best-of-$k$ versions of ADE and FDE: the model draws $k$ sampled
+> futures for one observed history, and only the sample closest to the truth is scored. Four
+> conditions. The $k$ samples come from **one forecaster for one history**, and $k$ is part of the
+> name: $\mathrm{minADE}_5$ and $\mathrm{minADE}_{20}$ are different quantities. The minimum is
+> over **whole trajectories** — each sample's ADE is computed over the full horizon and then the best
+> sample is kept, not the best sample at each step. $\mathrm{minADE}_k$ and $\mathrm{minFDE}_k$ each
+> take **their own** minimum, so they may be scored on different samples. And **no probability
+> enters**: whatever weights the model puts on its samples are ignored, and a benchmark figure is
+> this per-case number averaged over the test cases.
+> $$\mathrm{minADE}_k=\min_{m=1,\dots,k}\frac{1}{H}\sum_{t=1}^{H}\big\lVert\hat x^{(m)}_t-x_t\big\rVert_2,\qquad \mathrm{minFDE}_k=\min_{m=1,\dots,k}\big\lVert\hat x^{(m)}_H-x_H\big\rVert_2$$
+> where $\hat x^{(m)}_t$ is sample $m$'s position at step $t$, and $x_t$ and $H$ are as in the ADE
+> box of worked step 4.
+> **Example.** Part 2's straight walk, with a forecaster that emits $k = 2$ samples: the model's
+> curving path and the constant-velocity line. Their ADEs are $0.60$ and $0.00$ m, so
+> $\mathrm{minADE}_2 = 0.00$ m and $\mathrm{minFDE}_2 = 0.00$ m — a perfect score for a forecaster
+> that never said which of its two guesses it believed. Add a third sample walking backward,
+> $(-1, 0), (-2, 0), (-3, 0)$, whose errors are $2$, $4$ and $6$ m and whose ADE is $4.00$ m:
+> $\mathrm{minADE}_3$ is still $0.00$, because adding a sample can never raise a minimum.
+> **Non-example.** The mean ADE over the $k$ samples is not $\mathrm{minADE}_k$: it is
+> $(0.60 + 0.00)/2 = 0.30$ m for the two-sample set and $(0.60 + 0.00 + 4.00)/3 = 1.53$ m for the
+> three. That average does penalise the backward guess; $\mathrm{minADE}_k$ cannot.
+> **Why it matters.** It measures **coverage** — whether some sample came close — and a planner
+> needs the probability of each future, which this number never asks for. That is the trap §8
+> lists.
+
+Three things follow:
 
 - **Multimodality is the point.** The future is genuinely multi-valued; a model that regresses one path averages incompatible options and produces a trajectory no one would walk. Report $\text{minADE}_k$ / $\text{minFDE}_k$ over $k$ sampled futures, and be aware that these reward *coverage*, not calibration — a model can win by sampling diversely and believing nothing.
 - **Interaction matters.** Social pooling, graph, and attention-based models exist because pedestrians condition on each other and on vehicles.
@@ -627,7 +657,7 @@ Tier B. Using **I20** from the running object above, and this page only. One out
 > [[02-foundations/probability|확률]] · [[02-foundations/ml-practice|9. ML 실무와 평가]](AUC, ROC, precision–recall, F1) · [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]] · [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]] · [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]]
 
 > [!note] 처음이라면 · First pass
-> 먼저 이 페이지의 대상과 그 위에서 하는 다섯 개의 유도, 그다음 §1 — 의도 분류와 궤적 예측은 다른 문제이고 논문이 어느 쪽을 풀었는지 늘 밝히지는 않는다 — 그다음 §3, 그다음 §4. 연구가 실제로 있는 곳이 보정이라서 §4를 조망 자료보다 앞에 둔다.
+> 먼저 이 페이지의 대상과 그 위에서 하는 다섯 개의 유도, 그다음 §1 — 의도 분류와 궤적 예측은 다른 문제이고 논문이 어느 쪽을 풀었는지 늘 밝히지는 않는다 — 그다음 §3, 그다음 §4. 연구가 실제로 있는 곳이 보정이라서 §4를 조망 자료보다 앞에 둔다. 두 번째 읽기: 단서 사슬과 기저율인 §2·§5, best-of-$k$ 궤적 지표인 §6, 도로에서 공유 작업공간으로 옮기는 §7, 그리고 논문 옆에 두고 쓰는 점검표 §8·§9.
 
 ### 이 페이지의 대상 · Running object
 
@@ -654,7 +684,7 @@ Tier B. Using **I20** from the running object above, and this page only. One out
 | 정답 $x_k$ | $(1.00,\ 0.00)$ | $(2.00,\ 0.00)$ | $(3.00,\ 0.00)$ |
 | 모델 $\hat x_k$ | $(1.00,\ 0.30)$ | $(2.30,\ 0.40)$ | $(3.60,\ 0.80)$ |
 
-**3부 — 조기성 대 정확도 곡선, 그리고 그것이 지켜야 할 플랫폼.** 오경보율 $\alpha = 0.05$를 고정한 recall을 사건까지 남은 시간의 함수로:
+**3부 — 조기성 대 정확도 곡선, 그리고 그것이 지켜야 할 플랫폼.** 오경보율 $\alpha = 0.05$를 고정한 recall을 사건까지 남은 시간의 함수로 적는다. $\mathrm{Recall}_{\mathrm{FPR}=0.05}(\Delta)$는 이렇게 읽는다. 아무도 들어오지 않는 경우의 $5\%$가 어차피 경보를 받도록 경보 문턱값을 정하고, 실제 진입 중 일어나기 $\Delta$초 전에 이미 경보를 받은 비율을 센다($\Delta = T - t$, 사건까지 남은 시간이다. 이 구성과 그것을 곡선으로 보고하는 이유는 §3이 말한다):
 
 | $\Delta$ (초) | 0.5 | 1.0 | 1.5 | 2.0 | 2.5 |
 |---|---:|---:|---:|---:|---:|
@@ -914,7 +944,7 @@ $$\mathrm{ADE} = \frac{0.30 + 0.50 + 1.00}{3} = \frac{1.80}{3} = 0.60\ \mathrm{m
 
 대상을 일부러 그렇게 만들었고, 요점은 등속이 늘 정확하다는 게 아니다. 요점은 **출판된 $\mathrm{ADE} = 0.60$ m가 자기가 산수에 졌다는 사실을 말해 주지 않는다** 는 것이고, 어떤 벤치마크 표도 그걸 말할 의무가 없다는 것이다. 과제에서는 보행자가 방향을 틀고 순위가 뒤집힌다. 읽어야 할 것은 그 뒤집힘이지 두 숫자 중 어느 쪽도 아니다.
 
-**5. 가용 지평 $\Delta^{*}$와 플랫폼이 요구하는 것.** 3부의 요구는 recall $\ge 0.75$다. 곡선은 $\Delta = 1.0$초에서 $0.84$, $1.5$초에서 $0.72$이므로 그 사이에서 가로지른다. 선형 보간하면 구간에서 쓴 비율이 $(0.84 - 0.75)/(0.84 - 0.72) = 0.09/0.12 = 0.75$이므로
+**5. 가용 지평 $\Delta^{*}$와 플랫폼이 요구하는 것.** 가용 지평 $\Delta^{*}$는 곡선이 여전히 요구를 만족하는 가장 긴 선행 시간이다(§3이 어떤 운용 지표에 대해서든 정의한다). 3부의 요구는 recall $\ge 0.75$다. 곡선은 $\Delta = 1.0$초에서 $0.84$, $1.5$초에서 $0.72$이므로 그 사이에서 가로지른다. 선형 보간하면 구간에서 쓴 비율이 $(0.84 - 0.75)/(0.84 - 0.72) = 0.09/0.12 = 0.75$이므로
 
 $$\Delta^{*} = 1.0 + 0.75 \times (1.5 - 1.0) = 1.375\ \mathrm{s}$$
 
@@ -953,9 +983,11 @@ $$v \le a\big(\Delta^{*} - t_{\mathrm{lat}}\big) = 1.5 \times (1.375 - 0.45) = 1
 | 시선 | 가장 김 | 수 미터 넘으면 **불가** | [[04-robotics/human-pose-gaze\|21. §4]] |
 | 머리·몸 방향 | 김 | 가능 | [[04-robotics/human-pose-gaze\|21. §4–§5]] |
 | 보행 변화, 감속 | 중간 | 가능, 추적 박스로 | [[04-robotics/human-pose-gaze\|21. §5]] |
-| 경계(연석·기계 반경)와의 근접 | 중간 | 가능, 장면 기하 필요 | — |
+| 경계(연석·기계 반경)와의 근접 | 중간 | 가능, 경계가 같은 지면 좌표계에 있다면(아래) | [[04-robotics/hri-safety\|11.]], 그 위험 경계 |
 | 목표를 향한 궤적 곡률 | 짧음 | 가능 | 위 §1 |
 | 접촉·진입 | 0 | 가능 | 이미 늦음 |
+
+근접은 사람만 보고 읽어 내는 것이 아니라 사람과 장면 사이의 관계다. 추적한 사람의 지면 위치 $x$에서 경계까지의 부호 있는 거리이고, 바깥쪽이 양수다. 기계 반경을 베이스 $x_{\mathrm{base}}$ 둘레 반지름 $R_h$의 원으로 두면 $d = \lVert x - x_{\mathrm{base}}\rVert - R_h$이며, [[04-robotics/hri-safety|11. HRI와 안전]]이 모든 이격 거리를 재는 기준 경계가 바로 이것이다(그 P2 셀에서 $R_h = 2.25$ m). 그것을 계산하려면 장면 기하 — 사람의 추적 궤적 말고도 입력 둘 — 가 필요하다. 하나는 로봇의 지면 좌표계에서의 경계 자체로, 현장 지도나 기계 자신의 도달 범위에서 온다. 다른 하나는 같은 좌표계에서의 사람의 지면 위치로, 깊이 센서에서 오거나, 추적 상자의 발 쪽 픽셀을 지나는 광선이 알려진 지면 평면과 만나는 점에서 온다([[04-robotics/geometric-perception-calibration|3.5 기하 인식 §1]], 핀홀 모형).
 
 이는 [[04-robotics/egocentric-perception|22. §4]]와 같은 사슬을 머리가 아니라 바깥에서 본 것이다. **어떤 의도 시스템에서도 설계 결정은 어느 단에 걸 것인가이며**, 그 선택이 선행 시간과 신뢰도 상한을 동시에 고정한다.
 
@@ -1067,7 +1099,31 @@ Conformal prediction의 수학은 교환가능성(보정 사례와 새 사례가
 
 ### 6. 궤적 예측, 간단히
 
-출력이 결정이 아니라 경로일 때:
+출력이 결정이 아니라 경로일 때, 이 문헌의 대표 지표는 ADE와 FDE의 best-of-$k$ 판이다.
+
+> [!info] 정의 — $\mathrm{minADE}_k$와 $\mathrm{minFDE}_k$
+> 두 개의 **미터 단위 길이** 이고, ADE와 FDE의 best-of-$k$ 판이다. 모델이 관측 이력 하나에 대해 미래
+> 샘플 $k$개를 뽑고, 정답에 가장 가까운 샘플 하나만 채점한다. 조건이 넷이다. $k$개 샘플은 **이력
+> 하나에 대한 예측기 하나** 에서 나오고, $k$는 이름의 일부다. $\mathrm{minADE}_5$와 $\mathrm{minADE}_{20}$은
+> 다른 양이다. 최솟값은 **궤적 전체** 에 대해 취한다 — 샘플마다 예측 구간 전체의 ADE를 계산한 뒤 가장
+> 좋은 샘플을 남기는 것이지, 스텝마다 가장 좋은 샘플을 고르는 것이 아니다. $\mathrm{minADE}_k$와
+> $\mathrm{minFDE}_k$는 **각자의** 최솟값을 취하므로 서로 다른 샘플에서 점수가 나올 수 있다. 그리고
+> **확률이 들어가지 않는다.** 모델이 샘플에 어떤 가중치를 두든 무시되고, 벤치마크 숫자는 이 사례별
+> 값을 테스트 사례에 걸쳐 평균한 것이다.
+> $$\mathrm{minADE}_k=\min_{m=1,\dots,k}\frac{1}{H}\sum_{t=1}^{H}\big\lVert\hat x^{(m)}_t-x_t\big\rVert_2,\qquad \mathrm{minFDE}_k=\min_{m=1,\dots,k}\big\lVert\hat x^{(m)}_H-x_H\big\rVert_2$$
+> $\hat x^{(m)}_t$는 샘플 $m$의 스텝 $t$ 위치이고, $x_t$와 $H$는 유도 4단계 ADE 상자와 같다.
+> **예.** 2부의 직선 보행에서, 샘플 $k = 2$개 — 모델의 휘는 경로와 등속 직선 — 를 내는 예측기를
+> 생각하자. 두 샘플의 ADE는 $0.60$과 $0.00$ m이므로 $\mathrm{minADE}_2 = 0.00$ m, $\mathrm{minFDE}_2 = 0.00$ m다
+> — 두 추측 중 무엇을 믿는지 끝내 말하지 않은 예측기가 만점을 받는다. 뒤로 걷는 셋째 샘플
+> $(-1, 0), (-2, 0), (-3, 0)$을 더하면 오차는 $2$, $4$, $6$ m이고 ADE는 $4.00$ m지만, $\mathrm{minADE}_3$은
+> 여전히 $0.00$이다. 샘플을 더해서 최솟값이 커질 수는 없기 때문이다.
+> **반례.** $k$개 샘플의 ADE 평균은 $\mathrm{minADE}_k$가 아니다. 두 샘플 집합에서는 $(0.60 + 0.00)/2 = 0.30$ m,
+> 세 샘플에서는 $(0.60 + 0.00 + 4.00)/3 = 1.53$ m다. 그 평균은 뒤로 걷는 추측을 벌하지만
+> $\mathrm{minADE}_k$는 벌할 수 없다.
+> **왜 중요한가.** 이 지표가 재는 것은 **커버리지** — 어떤 샘플이 가까이 왔는가 — 이고, 플래너에게
+> 필요한 것은 각 미래의 확률인데 이 숫자는 그것을 한 번도 묻지 않는다. §8이 적는 함정이 그것이다.
+
+여기서 세 가지가 따른다:
 
 - **다중모드성이 핵심이다.** 미래는 진짜로 다가(多價)다. 경로 하나를 회귀하는 모델은 양립 불가능한 선택지를 평균해서 아무도 걷지 않을 궤적을 만든다. $k$개 샘플에 대한 $\text{minADE}_k$/$\text{minFDE}_k$를 보고하되, 이 지표는 **보정이 아니라 커버리지를 보상**한다는 걸 알아라 — 다양하게 뿌리고 아무것도 믿지 않는 모델이 이길 수 있다.
 - **상호작용이 중요하다.** 보행자는 서로에게, 차량에게 조건화된다. Social pooling·그래프·어텐션 모델이 존재하는 이유다.

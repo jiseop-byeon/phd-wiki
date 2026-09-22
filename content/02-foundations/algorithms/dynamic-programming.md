@@ -23,7 +23,7 @@ answer is value iteration (the Bellman equation is DP over time) and dynamic tim
 comparing demonstrations, both in §7.
 
 > [!note] First pass · 처음이라면
-> Read §1 and §2 slowly — the recipe and the two implementation styles are what every later section reuses. Then do §3 and §4 with the code open. §5 and §6 are pattern libraries to revisit before an interview; §8 is the checklist to read the night before.
+> Read §1 and §2 slowly — the recipe and the two implementation styles are what every later section reuses. Then do §3 and §4 with the code open. §5 and §6 are pattern libraries to revisit before an interview. §7 is the robotics payoff (value iteration, LQR, dynamic time warping): read it once, slowly, after §6. §8 is the checklist to read the night before.
 
 ### 1. When DP applies, and how it differs from its neighbours
 
@@ -57,13 +57,13 @@ $$\text{calls}(n) = 1 + \text{calls}(n-1) + \text{calls}(n-2), \qquad \text{call
 
 | Paradigm | Subproblems | Choice at each step | Typical proof |
 |---|---|---|---|
-| Divide and conquer | Disjoint (merge sort's two halves never share work) | None — the split is fixed | Recurrence / Master theorem |
+| Divide and conquer | Disjoint (merge sort's two halves never share work) | Usually none (merge sort splits at the middle); quicksort does choose a pivot, but it commits to that one pivot, and the choice changes only the running time, never the answer | Recurrence / Master theorem |
 | Greedy | One remaining subproblem | Commit to one locally best choice, never revisit | Exchange argument: the greedy choice is in some optimum |
 | Dynamic programming | Overlapping, reused many times | Try every option for the last decision, keep the best | Cut-and-paste + induction on subproblem size |
 
 A useful way to hold this: greedy is a DP in which you have proven that one option always
 suffices, and divide and conquer is a recursion whose subproblems happen never to repeat, so a
-cache would sit unused.
+cache would sit unused. Quicksort's pivot ([[02-foundations/algorithms/sorting-divide-conquer|11.3 §3]]) is a real choice, but not an optimization over options: every pivot leads to the same sorted array, and nothing is compared across pivots or reused between them. DP, by contrast, evaluates every option of a decision and keeps the best.
 
 **When optimal substructure fails.** Take the *longest simple path* between two vertices of a
 graph with cycles. Split it at a middle vertex $v$: the two halves need not be longest simple paths
@@ -102,6 +102,63 @@ The same recurrence can be run two ways.
 
 > [!example] Worked example · 계산 예제
 > A robot crosses a grid of floor cells from top-left to bottom-right, moving only right or down; each cell has a traversal cost. Grid rows: $[2, 1, 4]$, $[3, 9, 1]$, $[4, 2, 2]$. Subproblem: $f(r,c)$ = cheapest cost to reach cell $(r,c)$, including that cell. The last move came from above or from the left, so $f(r,c) = \text{cost}(r,c) + \min(f(r-1,c),\, f(r,c-1))$. Filling row by row gives $[2, 3, 7]$, $[5, 12, 8]$, $[9, 11, 10]$, so the answer is $10$ along $2 \to 1 \to 4 \to 1 \to 2$. Without the cache, the recursion reaches cell $(r,c)$ once per monotone path to it, $\binom{r+c}{r}$ times; with it, each of the $9$ cells is solved once.
+
+<svg viewBox="0 0 560 326" style="max-width:100%;height:auto" role="img" aria-label="The 3 by 3 cost grid and the filled table f: row 0 is 2, 3, 7; row 1 is 5, 12, 8; row 2 is 9, 11, 10. Each cell reads the cell above and the cell to its left; the solid arrow marks the one the minimum picks. The shaded cells are the cheapest path 2, 1, 4, 1, 2 with cost 10.">
+  <defs><marker id="adpGr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="16" y="30" font-size="12" fill="currentColor">cost(r, c)</text>
+  <rect x="16" y="52" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="35" y="75" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="54" y="52" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="73" y="75" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="92" y="52" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="111" y="75" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="16" y="90" width="38" height="38" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="35" y="113" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="54" y="90" width="38" height="38" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="73" y="113" font-size="12" fill="currentColor" text-anchor="middle">9</text>
+  <rect x="92" y="90" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="111" y="113" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="16" y="128" width="38" height="38" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="35" y="151" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="54" y="128" width="38" height="38" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="73" y="151" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="92" y="128" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="111" y="151" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="196" y="30" font-size="12" fill="currentColor">f(r, c) = cost(r, c) + min(above, left)</text>
+  <rect x="196" y="52" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="221" y="82" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <rect x="272" y="52" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="297" y="82" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <line x1="249" y1="77" x2="269" y2="77" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGr)"/>
+  <rect x="348" y="52" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="373" y="82" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">7</text>
+  <line x1="325" y1="77" x2="345" y2="77" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGr)"/>
+  <rect x="196" y="128" width="50" height="50" stroke="currentColor" stroke-width="1" fill="none"/>
+  <text x="221" y="158" font-size="13" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="221" y1="105" x2="221" y2="125" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGr)"/>
+  <rect x="272" y="128" width="50" height="50" stroke="currentColor" stroke-width="1" fill="none"/>
+  <text x="297" y="158" font-size="13" fill="currentColor" text-anchor="middle">12</text>
+  <line x1="297" y1="105" x2="297" y2="125" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGr)"/>
+  <line x1="249" y1="153" x2="269" y2="153" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpGr)"/>
+  <rect x="348" y="128" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="373" y="158" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">8</text>
+  <line x1="373" y1="105" x2="373" y2="125" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGr)"/>
+  <line x1="325" y1="153" x2="345" y2="153" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpGr)"/>
+  <rect x="196" y="204" width="50" height="50" stroke="currentColor" stroke-width="1" fill="none"/>
+  <text x="221" y="234" font-size="13" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="221" y1="181" x2="221" y2="201" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGr)"/>
+  <rect x="272" y="204" width="50" height="50" stroke="currentColor" stroke-width="1" fill="none"/>
+  <text x="297" y="234" font-size="13" fill="currentColor" text-anchor="middle">11</text>
+  <line x1="297" y1="181" x2="297" y2="201" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpGr)"/>
+  <line x1="249" y1="229" x2="269" y2="229" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGr)"/>
+  <rect x="348" y="204" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="373" y="234" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">10</text>
+  <line x1="373" y1="181" x2="373" y2="201" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGr)"/>
+  <line x1="325" y1="229" x2="345" y2="229" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpGr)"/>
+  <text x="196" y="272" font-size="11" fill="currentColor" fill-opacity="0.85">filled row by row, left to right</text>
+  <text x="8" y="292" font-size="11" fill="currentColor">solid arrow: the neighbour the min picks; faint dashed: the one it reads and rejects</text>
+  <text x="8" y="312" font-size="11" fill="currentColor">shaded: the cheapest path 2 → 1 → 4 → 1 → 2, cost f(2, 2) = 10</text>
+</svg>
 
 ```python
 from functools import cache
@@ -466,6 +523,62 @@ length.
 > [!example] Worked example · 계산 예제
 > $xs = [3, 1, 4, 1, 5, 9, 2, 6]$. `tails` evolves as $[3] \to [1] \to [1,4] \to [1,4] \to [1,4,5] \to [1,4,5,9] \to [1,2,5,9] \to [1,2,5,6]$. Length $4$. Note that the final `tails` $= [1,2,5,6]$ is **not** a subsequence of $xs$ — the $2$ sits at index 6, after the $5$ at index 4. `tails` stores the best *tail per length*, not a solution; to recover one you must keep a predecessor for each element at the moment it is placed, which gives $[1, 4, 5, 6]$.
 
+<svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="Patience sorting of 3, 1, 4, 1, 5, 9, 2, 6. Each card goes on the leftmost pile whose top is not smaller, giving four piles: 3, 1, 1; then 4, 2; then 5; then 9, 6. Each card points back to the top of the pile on its left when it was placed. The final tops 1, 2, 5, 6 are not a subsequence; following the pointers from 6 gives 6, 5, 4, 1, so the LIS is 1, 4, 5, 6.">
+  <defs><marker id="adpPs" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="108" y="40" font-size="12" fill="currentColor" text-anchor="end" font-style="italic">xs</text>
+  <rect x="120" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="140" y="40" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <text x="140" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 0</text>
+  <rect x="160" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="180" y="40" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="180" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 1</text>
+  <rect x="200" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="220" y="40" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="220" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 2</text>
+  <rect x="240" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="260" y="40" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="260" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 3</text>
+  <rect x="280" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="300" y="40" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <text x="300" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 4</text>
+  <rect x="320" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="340" y="40" font-size="12" fill="currentColor" text-anchor="middle">9</text>
+  <text x="340" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 5</text>
+  <rect x="360" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="380" y="40" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="380" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 6</text>
+  <rect x="400" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="420" y="40" font-size="12" fill="currentColor" text-anchor="middle">6</text>
+  <text x="420" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 7</text>
+  <text x="105" y="104" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">pile 0</text>
+  <text x="221" y="104" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">pile 1</text>
+  <text x="337" y="104" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">pile 2</text>
+  <text x="453" y="104" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">pile 3</text>
+  <rect x="70" y="120" width="70" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="105" y="136" font-size="11" fill="currentColor" text-anchor="middle">3  (i = 0)</text>
+  <rect x="70" y="152" width="70" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.16"/>
+  <text x="105" y="168" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">1  (i = 1)</text>
+  <rect x="70" y="184" width="70" height="24" rx="3" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="105" y="200" font-size="11" fill="currentColor" text-anchor="middle">1  (i = 3)</text>
+  <rect x="186" y="120" width="70" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.16"/>
+  <text x="221" y="136" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4  (i = 2)</text>
+  <rect x="186" y="152" width="70" height="24" rx="3" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="221" y="168" font-size="11" fill="currentColor" text-anchor="middle">2  (i = 6)</text>
+  <rect x="302" y="120" width="70" height="24" rx="3" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.16"/>
+  <text x="337" y="136" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">5  (i = 4)</text>
+  <rect x="418" y="120" width="70" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="453" y="136" font-size="11" fill="currentColor" text-anchor="middle">9  (i = 5)</text>
+  <rect x="418" y="152" width="70" height="24" rx="3" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.16"/>
+  <text x="453" y="168" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">6  (i = 7)</text>
+  <line x1="184" y1="132" x2="142" y2="164" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpPs)"/>
+  <line x1="300" y1="132" x2="258" y2="132" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpPs)"/>
+  <line x1="416" y1="132" x2="374" y2="132" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="3 2" marker-end="url(#adpPs)"/>
+  <line x1="184" y1="164" x2="142" y2="196" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="3 2" marker-end="url(#adpPs)"/>
+  <line x1="416" y1="164" x2="374" y2="132" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpPs)"/>
+  <text x="8" y="258" font-size="11" fill="currentColor">tops (tails) = [1, 2, 5, 6]: not a subsequence, since 2 (i = 6) comes after 5 (i = 4)</text>
+  <text x="8" y="278" font-size="11" fill="currentColor">back-pointers from the last pile: 6 → 5 → 4 → 1, so one LIS is [1, 4, 5, 6]</text>
+</svg>
+
 ```python
 from bisect import bisect_left
 
@@ -585,6 +698,62 @@ def held_karp(dist):                  # dist[i][j]: cost i -> j; the tour starts
 > Closing the tour: $\min(21+2,\ 14+9,\ 16+10)=23$, the tour $0 \to 1 \to 3 \to 2 \to 0$ ($2+4+8+9$) or its
 > reverse, which is what `held_karp` returns: `(23, [0, 2, 3, 1, 0])`. Brute force over all $3! = 6$
 > orders gives the same 23.
+
+<svg viewBox="0 0 560 330" style="max-width:100%;height:auto" role="img" aria-label="Held–Karp on four cities. States C(S, j) are grouped by the size of S: size 1 gives 2, 9, 10; size 2 gives 15 and 8 for S = {1, 2}, 14 and 6 for {1, 3}, 18 and 17 for {2, 3}; size 3 gives 21, 14 and 16. Arrows mark the winning predecessor. Closing the tour adds d(j, 0): 21 + 2 = 23, 14 + 9 = 23, 16 + 10 = 26, so the best tour costs 23.">
+  <defs><marker id="adpHk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="10" y="22" font-size="12" fill="currentColor">|S| = 1</text>
+  <text x="150" y="22" font-size="12" fill="currentColor">|S| = 2</text>
+  <text x="290" y="22" font-size="12" fill="currentColor">|S| = 3</text>
+  <text x="430" y="22" font-size="12" fill="currentColor">close: + d(j, 0)</text>
+  <text x="150" y="40" font-size="10" fill="currentColor" fill-opacity="0.75">box: S, j : C(S, j)</text>
+  <rect x="150" y="56" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="198" y="72" font-size="11" fill="currentColor" text-anchor="middle">{1,2}, 1 : 15</text>
+  <rect x="150" y="90" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="198" y="106" font-size="11" fill="currentColor" text-anchor="middle">{1,2}, 2 : 8</text>
+  <rect x="150" y="124" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="198" y="140" font-size="11" fill="currentColor" text-anchor="middle">{1,3}, 1 : 14</text>
+  <rect x="150" y="158" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="198" y="174" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{1,3}, 3 : 6</text>
+  <rect x="150" y="192" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="198" y="208" font-size="11" fill="currentColor" text-anchor="middle">{2,3}, 2 : 18</text>
+  <rect x="150" y="226" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="198" y="242" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{2,3}, 3 : 17</text>
+  <rect x="10" y="73" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="58" y="89" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{1}, 1 : 2</text>
+  <rect x="290" y="73" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="338" y="89" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{1,2,3}, 1 : 21</text>
+  <rect x="10" y="141" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="58" y="157" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{2}, 2 : 9</text>
+  <rect x="290" y="141" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="338" y="157" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{1,2,3}, 2 : 14</text>
+  <rect x="10" y="209" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="58" y="225" font-size="11" fill="currentColor" text-anchor="middle">{3}, 3 : 10</text>
+  <rect x="290" y="209" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="338" y="225" font-size="11" fill="currentColor" text-anchor="middle">{1,2,3}, 3 : 16</text>
+  <line x1="108" y1="153" x2="148" y2="68" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHk)"/>
+  <line x1="108" y1="85" x2="148" y2="102" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHk)"/>
+  <line x1="108" y1="221" x2="148" y2="136" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHk)"/>
+  <line x1="108" y1="85" x2="148" y2="170" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHk)"/>
+  <line x1="108" y1="221" x2="148" y2="204" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHk)"/>
+  <line x1="108" y1="153" x2="148" y2="238" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHk)"/>
+  <line x1="248" y1="238" x2="288" y2="85" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHk)"/>
+  <line x1="248" y1="204" x2="288" y2="85" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpHk)"/>
+  <line x1="248" y1="170" x2="288" y2="153" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHk)"/>
+  <line x1="248" y1="136" x2="288" y2="153" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpHk)"/>
+  <line x1="248" y1="102" x2="288" y2="221" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHk)"/>
+  <line x1="248" y1="68" x2="288" y2="221" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpHk)"/>
+  <line x1="388" y1="85" x2="428" y2="85" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHk)"/>
+  <rect x="430" y="73" width="118" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="489" y="89" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">21 + 2 = 23</text>
+  <line x1="388" y1="153" x2="428" y2="153" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHk)"/>
+  <rect x="430" y="141" width="118" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="489" y="157" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">14 + 9 = 23</text>
+  <line x1="388" y1="221" x2="428" y2="221" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" marker-end="url(#adpHk)"/>
+  <rect x="430" y="209" width="118" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="489" y="225" font-size="11" fill="currentColor" text-anchor="middle">16 + 10 = 26</text>
+  <text x="8" y="296" font-size="11" fill="currentColor">23 twice: the tour 0 → 1 → 3 → 2 → 0 (2 + 4 + 8 + 9) and its reverse</text>
+  <text x="8" y="316" font-size="11" fill="currentColor">solid: winning predecessor; faint dashed: the candidate that lost</text>
+</svg>
 
 **Complexity and limits.** There are $O(n\,2^n)$ states and each takes $O(n)$ to evaluate, so the
 time is $O(n^2 2^n)$ and the memory is $O(n\,2^n)$. For $n = 20$: about $4 \times 10^8$ basic steps
@@ -772,7 +941,7 @@ the window is for.
 방정식은 시간 축 위의 DP다)과 시연 궤적 비교를 위한 동적 시간 와핑이며, 둘 다 §7에 있다.
 
 > [!note] 처음이라면 · First pass
-> §1과 §2를 천천히 읽는다. 레시피와 두 가지 구현 방식은 이후 모든 절이 다시 쓴다. 그다음 코드를 열어 두고 §3과 §4를 푼다. §5와 §6은 면접 전에 다시 볼 패턴 모음이고, §8은 전날 밤에 읽을 점검표다.
+> §1과 §2를 천천히 읽는다. 레시피와 두 가지 구현 방식은 이후 모든 절이 다시 쓴다. 그다음 코드를 열어 두고 §3과 §4를 푼다. §5와 §6은 면접 전에 다시 볼 패턴 모음이다. §7은 로보틱스로 이어지는 결실(가치 반복, LQR, 동적 시간 와핑)이니 §6 다음에 한 번 천천히 읽는다. §8은 전날 밤에 읽을 점검표다.
 
 ### 1. DP가 적용되는 조건, 그리고 이웃 기법과의 차이
 
@@ -804,12 +973,12 @@ $$\text{calls}(n) = 1 + \text{calls}(n-1) + \text{calls}(n-2), \qquad \text{call
 
 | 패러다임 | 부분 문제 | 각 단계의 선택 | 전형적 증명 |
 |---|---|---|---|
-| 분할 정복 | 서로소(병합 정렬의 두 반쪽은 작업을 공유하지 않는다) | 없음 — 분할이 고정 | 점화식 / 마스터 정리 |
+| 분할 정복 | 서로소(병합 정렬의 두 반쪽은 작업을 공유하지 않는다) | 대개 없음(병합 정렬은 가운데에서 나눈다). 퀵정렬은 피벗을 고르지만 그 피벗 하나에 확정하며, 그 선택은 실행 시간만 바꾸고 답은 바꾸지 않는다 | 점화식 / 마스터 정리 |
 | 탐욕 | 남는 부분 문제가 하나 | 국소 최선 하나에 확정하고 되돌아보지 않음 | 교환 논법: 탐욕 선택이 어떤 최적해에 들어 있음 |
 | 동적 계획법 | 겹치며 여러 번 재사용 | 마지막 결정의 모든 선택지를 시도해 최선을 남김 | 잘라 붙이기 + 부분 문제 크기에 대한 귀납 |
 
 이렇게 기억하면 편하다. 탐욕은 선택지 하나로 충분함을 증명해 둔 DP이고, 분할 정복은 부분
-문제가 우연히 반복되지 않아 캐시를 둬도 쓸 일이 없는 재귀다.
+문제가 우연히 반복되지 않아 캐시를 둬도 쓸 일이 없는 재귀다. 퀵정렬의 피벗([[02-foundations/algorithms/sorting-divide-conquer|11.3 §3]])은 진짜 선택이지만 선택지들 사이의 최적화는 아니다. 어떤 피벗을 고르든 같은 정렬 결과가 나오고, 피벗끼리 비교하지도, 서로의 결과를 재사용하지도 않는다. 반면 DP는 한 결정의 모든 선택지를 계산해 최선을 남긴다.
 
 **최적 부분 구조가 깨지는 경우.** 사이클이 있는 그래프에서 두 정점 사이의 *가장 긴 단순 경로*를
 생각하자. 중간 정점 $v$에서 자르면 두 반쪽이 각각 가장 긴 단순 경로일 필요가 없다. $s$에서
@@ -844,6 +1013,63 @@ $s \to t$ 최장 경로는 간선 3개짜리 $s, a, v, t$다. "$s$에서 $v$까�
 
 > [!example] 계산 예제 · Worked example
 > 로봇이 바닥 칸으로 된 격자를 왼쪽 위에서 오른쪽 아래로 오른쪽 또는 아래로만 이동해 가로지른다. 칸마다 통과 비용이 있다. 격자 행: $[2, 1, 4]$, $[3, 9, 1]$, $[4, 2, 2]$. 부분 문제: $f(r,c)$ = 그 칸을 포함해 $(r,c)$에 도달하는 최소 비용. 마지막 이동은 위 또는 왼쪽에서 왔으므로 $f(r,c) = \text{cost}(r,c) + \min(f(r-1,c),\, f(r,c-1))$. 행 순서로 채우면 $[2, 3, 7]$, $[5, 12, 8]$, $[9, 11, 10]$이고, 답은 $2 \to 1 \to 4 \to 1 \to 2$ 경로의 $10$이다. 캐시가 없으면 재귀는 칸 $(r,c)$에 이르는 단조 경로마다 한 번씩, 즉 $\binom{r+c}{r}$번 그 칸에 도달한다. 캐시가 있으면 9개 칸을 각각 한 번만 푼다.
+
+<svg viewBox="0 0 560 326" style="max-width:100%;height:auto" role="img" aria-label="3×3 비용 격자와 채운 표 f. 0행은 2, 3, 7, 1행은 5, 12, 8, 2행은 9, 11, 10이다. 각 칸은 위 칸과 왼쪽 칸을 읽고, 실선 화살표가 최솟값이 고른 쪽이다. 음영 칸은 비용 10인 최소 경로 2, 1, 4, 1, 2다.">
+  <defs><marker id="adpGrk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="16" y="30" font-size="12" fill="currentColor">cost(r, c)</text>
+  <rect x="16" y="52" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="35" y="75" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="54" y="52" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="73" y="75" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="92" y="52" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="111" y="75" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="16" y="90" width="38" height="38" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="35" y="113" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="54" y="90" width="38" height="38" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="73" y="113" font-size="12" fill="currentColor" text-anchor="middle">9</text>
+  <rect x="92" y="90" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="111" y="113" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="16" y="128" width="38" height="38" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="35" y="151" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="54" y="128" width="38" height="38" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="73" y="151" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="92" y="128" width="38" height="38" stroke="currentColor" stroke-width="1" fill="currentColor" fill-opacity="0.16" stroke-opacity="0.7"/>
+  <text x="111" y="151" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="196" y="30" font-size="12" fill="currentColor">f(r, c) = cost(r, c) + min(위, 왼쪽)</text>
+  <rect x="196" y="52" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="221" y="82" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <rect x="272" y="52" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="297" y="82" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <line x1="249" y1="77" x2="269" y2="77" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGrk)"/>
+  <rect x="348" y="52" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="373" y="82" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">7</text>
+  <line x1="325" y1="77" x2="345" y2="77" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGrk)"/>
+  <rect x="196" y="128" width="50" height="50" stroke="currentColor" stroke-width="1" fill="none"/>
+  <text x="221" y="158" font-size="13" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="221" y1="105" x2="221" y2="125" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGrk)"/>
+  <rect x="272" y="128" width="50" height="50" stroke="currentColor" stroke-width="1" fill="none"/>
+  <text x="297" y="158" font-size="13" fill="currentColor" text-anchor="middle">12</text>
+  <line x1="297" y1="105" x2="297" y2="125" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGrk)"/>
+  <line x1="249" y1="153" x2="269" y2="153" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpGrk)"/>
+  <rect x="348" y="128" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="373" y="158" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">8</text>
+  <line x1="373" y1="105" x2="373" y2="125" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGrk)"/>
+  <line x1="325" y1="153" x2="345" y2="153" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpGrk)"/>
+  <rect x="196" y="204" width="50" height="50" stroke="currentColor" stroke-width="1" fill="none"/>
+  <text x="221" y="234" font-size="13" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="221" y1="181" x2="221" y2="201" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGrk)"/>
+  <rect x="272" y="204" width="50" height="50" stroke="currentColor" stroke-width="1" fill="none"/>
+  <text x="297" y="234" font-size="13" fill="currentColor" text-anchor="middle">11</text>
+  <line x1="297" y1="181" x2="297" y2="201" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpGrk)"/>
+  <line x1="249" y1="229" x2="269" y2="229" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGrk)"/>
+  <rect x="348" y="204" width="50" height="50" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.16"/>
+  <text x="373" y="234" font-size="13" fill="currentColor" text-anchor="middle" font-weight="bold">10</text>
+  <line x1="373" y1="181" x2="373" y2="201" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpGrk)"/>
+  <line x1="325" y1="229" x2="345" y2="229" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpGrk)"/>
+  <text x="196" y="272" font-size="11" fill="currentColor" fill-opacity="0.85">행 순서로, 왼쪽에서 오른쪽으로 채운다</text>
+  <text x="8" y="292" font-size="11" fill="currentColor">실선 화살표: min이 고른 이웃; 흐린 점선: 읽었지만 버린 이웃</text>
+  <text x="8" y="312" font-size="11" fill="currentColor">음영: 최소 경로 2 → 1 → 4 → 1 → 2, 비용 f(2, 2) = 10</text>
+</svg>
 
 ```python
 from functools import cache
@@ -1197,6 +1423,62 @@ $O(n \log n)$이다. 이름은 카드를 더미에 나눠 놓을 때 각 카드�
 > [!example] 계산 예제 · Worked example
 > $xs = [3, 1, 4, 1, 5, 9, 2, 6]$. `tails`는 $[3] \to [1] \to [1,4] \to [1,4] \to [1,4,5] \to [1,4,5,9] \to [1,2,5,9] \to [1,2,5,6]$로 변한다. 길이 $4$. 최종 `tails` $= [1,2,5,6]$은 $xs$의 부분 수열이 **아니다** — $2$는 인덱스 6에 있어 인덱스 4의 $5$보다 뒤다. `tails`는 해가 아니라 *길이별 최선의 꼬리*를 저장한다. 해를 복원하려면 각 원소를 놓는 순간의 선행 원소를 기록해야 하고, 그러면 $[1, 4, 5, 6]$이 나온다.
 
+<svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="3, 1, 4, 1, 5, 9, 2, 6의 인내 정렬. 각 카드는 윗장이 자기보다 작지 않은 가장 왼쪽 더미에 놓여 더미 네 개가 된다: 3, 1, 1; 4, 2; 5; 9, 6. 각 카드는 놓이는 순간 왼쪽 더미의 윗장을 가리킨다. 최종 윗장 1, 2, 5, 6은 부분 수열이 아니고, 6에서 포인터를 따라가면 6, 5, 4, 1이므로 LIS는 1, 4, 5, 6이다.">
+  <defs><marker id="adpPsk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="108" y="40" font-size="12" fill="currentColor" text-anchor="end" font-style="italic">xs</text>
+  <rect x="120" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="140" y="40" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <text x="140" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 0</text>
+  <rect x="160" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="180" y="40" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="180" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 1</text>
+  <rect x="200" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="220" y="40" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="220" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 2</text>
+  <rect x="240" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="260" y="40" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="260" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 3</text>
+  <rect x="280" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="300" y="40" font-size="12" fill="currentColor" text-anchor="middle">5</text>
+  <text x="300" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 4</text>
+  <rect x="320" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="340" y="40" font-size="12" fill="currentColor" text-anchor="middle">9</text>
+  <text x="340" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 5</text>
+  <rect x="360" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="380" y="40" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <text x="380" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 6</text>
+  <rect x="400" y="22" width="40" height="26" stroke="currentColor" stroke-width="1" fill="none" stroke-opacity="0.7"/>
+  <text x="420" y="40" font-size="12" fill="currentColor" text-anchor="middle">6</text>
+  <text x="420" y="64" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.75">i = 7</text>
+  <text x="105" y="104" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">더미 0</text>
+  <text x="221" y="104" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">더미 1</text>
+  <text x="337" y="104" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">더미 2</text>
+  <text x="453" y="104" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.85">더미 3</text>
+  <rect x="70" y="120" width="70" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="105" y="136" font-size="11" fill="currentColor" text-anchor="middle">3  (i = 0)</text>
+  <rect x="70" y="152" width="70" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.16"/>
+  <text x="105" y="168" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">1  (i = 1)</text>
+  <rect x="70" y="184" width="70" height="24" rx="3" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="105" y="200" font-size="11" fill="currentColor" text-anchor="middle">1  (i = 3)</text>
+  <rect x="186" y="120" width="70" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.16"/>
+  <text x="221" y="136" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">4  (i = 2)</text>
+  <rect x="186" y="152" width="70" height="24" rx="3" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="221" y="168" font-size="11" fill="currentColor" text-anchor="middle">2  (i = 6)</text>
+  <rect x="302" y="120" width="70" height="24" rx="3" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.16"/>
+  <text x="337" y="136" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">5  (i = 4)</text>
+  <rect x="418" y="120" width="70" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="453" y="136" font-size="11" fill="currentColor" text-anchor="middle">9  (i = 5)</text>
+  <rect x="418" y="152" width="70" height="24" rx="3" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.16"/>
+  <text x="453" y="168" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">6  (i = 7)</text>
+  <line x1="184" y1="132" x2="142" y2="164" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpPsk)"/>
+  <line x1="300" y1="132" x2="258" y2="132" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpPsk)"/>
+  <line x1="416" y1="132" x2="374" y2="132" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="3 2" marker-end="url(#adpPsk)"/>
+  <line x1="184" y1="164" x2="142" y2="196" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.4" stroke-dasharray="3 2" marker-end="url(#adpPsk)"/>
+  <line x1="416" y1="164" x2="374" y2="132" stroke="currentColor" stroke-width="1.6" marker-end="url(#adpPsk)"/>
+  <text x="8" y="258" font-size="11" fill="currentColor">윗장(tails) = [1, 2, 5, 6]: 부분 수열이 아니다. 2(i = 6)가 5(i = 4)보다 뒤에 있다</text>
+  <text x="8" y="278" font-size="11" fill="currentColor">마지막 더미에서 역포인터를 따라가면 6 → 5 → 4 → 1, 그래서 LIS 하나는 [1, 4, 5, 6]</text>
+</svg>
+
 ```python
 from bisect import bisect_left
 
@@ -1314,6 +1596,62 @@ def held_karp(dist):                  # dist[i][j]: cost i -> j; the tour starts
 > 순회 닫기: $\min(21+2,\ 14+9,\ 16+10)=23$이고, 순회는 $0 \to 1 \to 3 \to 2 \to 0$($2+4+8+9$) 또는 그
 > 역순이다. `held_karp`도 `(23, [0, 2, 3, 1, 0])`을 돌려준다. $3! = 6$가지 순서를 모두 따져 봐도
 > 같은 23이 나온다.
+
+<svg viewBox="0 0 560 330" style="max-width:100%;height:auto" role="img" aria-label="도시 네 개에 대한 Held–Karp. 상태 C(S, j)를 S의 크기별로 묶었다. 크기 1은 2, 9, 10, 크기 2는 S = {1, 2}에서 15와 8, {1, 3}에서 14와 6, {2, 3}에서 18과 17, 크기 3은 21, 14, 16이다. 화살표는 이긴 직전 상태다. 순회를 닫을 때 d(j, 0)을 더하면 21 + 2 = 23, 14 + 9 = 23, 16 + 10 = 26이므로 최선의 순회는 23이다.">
+  <defs><marker id="adpHkk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="10" y="22" font-size="12" fill="currentColor">|S| = 1</text>
+  <text x="150" y="22" font-size="12" fill="currentColor">|S| = 2</text>
+  <text x="290" y="22" font-size="12" fill="currentColor">|S| = 3</text>
+  <text x="430" y="22" font-size="12" fill="currentColor">닫기: + d(j, 0)</text>
+  <text x="150" y="40" font-size="10" fill="currentColor" fill-opacity="0.75">상자: S, j : C(S, j)</text>
+  <rect x="150" y="56" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="198" y="72" font-size="11" fill="currentColor" text-anchor="middle">{1,2}, 1 : 15</text>
+  <rect x="150" y="90" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="198" y="106" font-size="11" fill="currentColor" text-anchor="middle">{1,2}, 2 : 8</text>
+  <rect x="150" y="124" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="198" y="140" font-size="11" fill="currentColor" text-anchor="middle">{1,3}, 1 : 14</text>
+  <rect x="150" y="158" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="198" y="174" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{1,3}, 3 : 6</text>
+  <rect x="150" y="192" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="198" y="208" font-size="11" fill="currentColor" text-anchor="middle">{2,3}, 2 : 18</text>
+  <rect x="150" y="226" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="198" y="242" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{2,3}, 3 : 17</text>
+  <rect x="10" y="73" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="58" y="89" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{1}, 1 : 2</text>
+  <rect x="290" y="73" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="338" y="89" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{1,2,3}, 1 : 21</text>
+  <rect x="10" y="141" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="58" y="157" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{2}, 2 : 9</text>
+  <rect x="290" y="141" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="338" y="157" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">{1,2,3}, 2 : 14</text>
+  <rect x="10" y="209" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="58" y="225" font-size="11" fill="currentColor" text-anchor="middle">{3}, 3 : 10</text>
+  <rect x="290" y="209" width="96" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="338" y="225" font-size="11" fill="currentColor" text-anchor="middle">{1,2,3}, 3 : 16</text>
+  <line x1="108" y1="153" x2="148" y2="68" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHkk)"/>
+  <line x1="108" y1="85" x2="148" y2="102" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHkk)"/>
+  <line x1="108" y1="221" x2="148" y2="136" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHkk)"/>
+  <line x1="108" y1="85" x2="148" y2="170" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHkk)"/>
+  <line x1="108" y1="221" x2="148" y2="204" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHkk)"/>
+  <line x1="108" y1="153" x2="148" y2="238" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHkk)"/>
+  <line x1="248" y1="238" x2="288" y2="85" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHkk)"/>
+  <line x1="248" y1="204" x2="288" y2="85" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpHkk)"/>
+  <line x1="248" y1="170" x2="288" y2="153" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHkk)"/>
+  <line x1="248" y1="136" x2="288" y2="153" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpHkk)"/>
+  <line x1="248" y1="102" x2="288" y2="221" stroke="currentColor" stroke-width="1.2" marker-end="url(#adpHkk)"/>
+  <line x1="248" y1="68" x2="288" y2="221" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.35" stroke-dasharray="3 2" marker-end="url(#adpHkk)"/>
+  <line x1="388" y1="85" x2="428" y2="85" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHkk)"/>
+  <rect x="430" y="73" width="118" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="489" y="89" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">21 + 2 = 23</text>
+  <line x1="388" y1="153" x2="428" y2="153" stroke="currentColor" stroke-width="1.8" marker-end="url(#adpHkk)"/>
+  <rect x="430" y="141" width="118" height="24" rx="3" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.14"/>
+  <text x="489" y="157" font-size="11" fill="currentColor" text-anchor="middle" font-weight="bold">14 + 9 = 23</text>
+  <line x1="388" y1="221" x2="428" y2="221" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5" marker-end="url(#adpHkk)"/>
+  <rect x="430" y="209" width="118" height="24" rx="3" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.03"/>
+  <text x="489" y="225" font-size="11" fill="currentColor" text-anchor="middle">16 + 10 = 26</text>
+  <text x="8" y="296" font-size="11" fill="currentColor">23이 두 번: 순회 0 → 1 → 3 → 2 → 0 (2 + 4 + 8 + 9)과 그 역순</text>
+  <text x="8" y="316" font-size="11" fill="currentColor">실선: 이긴 직전 상태; 흐린 점선: 진 후보</text>
+</svg>
 
 **복잡도와 한계.** 상태가 $O(n\,2^n)$개이고 각각 $O(n)$에 계산하므로 시간은 $O(n^2 2^n)$, 메모리는
 $O(n\,2^n)$이다. $n = 20$이면 기본 연산 약 $4 \times 10^8$번, 표 항목 $2 \times 10^7$개(8바이트

@@ -9,7 +9,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
-*Group C, and the only page in it. Stands on the [[04-robotics/modern-robotics/index|Modern Robotics chapters]], [[04-robotics/mpc|7. MPC]] and the optimization and RL pages.
+*Group C, and the only page in it. Stands on the [[04-robotics/modern-robotics/index|Modern Robotics chapters]] and the optimization and RL pages; [[04-robotics/mpc|7. MPC]], later in the track, develops §6.
 Choosing an executable future; group I specialises this for unstructured environments.*
 
 Planning asks how a robot should choose a feasible sequence of future states and actions to reach a goal. The difficulty is not merely finding a short path: robot geometry, dynamics, contact, uncertainty, computation time, and changing observations constrain what can actually be executed.
@@ -20,10 +20,10 @@ Planning asks how a robot should choose a feasible sequence of future states and
 > Distinguish search, motion planning, trajectory optimization, task planning, policy learning, and control; read feasibility and optimality claims; and identify whether a generated trajectory is collision-free, dynamically feasible, and evaluated in closed loop.
 
 > [!note] Prerequisites
-> [[02-foundations/optimization|Optimization]] · [[02-foundations/rl-basics|RL Basics]] · [[04-robotics/modern-robotics/ch02-configuration-space|Configuration Space]] · [[04-robotics/modern-robotics/ch10-motion-planning|Motion Planning]] — §6 previews [[04-robotics/mpc|MPC]] (track page 7); read it lightly here and return after that page.
+> [[02-foundations/lab-plants|0.6 Lab Plants]] (plant P2) · [[02-foundations/optimization|Optimization]] · [[02-foundations/rl-basics|RL Basics]] · [[04-robotics/modern-robotics/ch02-configuration-space|Configuration Space]] · [[04-robotics/modern-robotics/ch09-trajectory-generation|Trajectory Generation]] (time scaling) · [[04-robotics/modern-robotics/ch10-motion-planning|Motion Planning]] · [[04-robotics/state-estimation-slam|3. State Estimation]] (the Bayes filter of its §4, used in §7).
 
 > [!note] First pass · 처음이라면
-> Read §1 — five words the literature uses interchangeably and should not — then §2, then §4's worked example. §5 through §8 are a survey; read the family a paper belongs to rather than all of them.
+> Read the picture, then §1 — five words the literature uses interchangeably and should not — §2, §3 and §4, and then the Worked case, which puts all four on P2. §5 through §8 are a survey: on a first pass read §5's table and its completeness list, and of §5.5.1–§5.5.5 and §6–§8 only the family a paper belongs to (§6 returns in depth on the later page [[04-robotics/mpc|7. MPC]]). §9 is the checklist to apply to any planning paper.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -103,7 +103,7 @@ Planning asks how a robot should choose a feasible sequence of future states and
 
 A planner may produce a path that a trajectory generator times ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]] — time scaling, via points, time-optimal scaling) and a controller tracks. When the plan lives in task space but the robot is commanded in joint space, [[04-robotics/modern-robotics/ch06-inverse-kinematics|inverse kinematics (MR ch.6)]] sits between them, and its multimodality is a planning problem in miniature. In learned systems, a policy can collapse these boundaries, but the physical requirements do not disappear.
 
-**The five, as mathematical objects.** Let $\mathcal{C}$ be the configuration space, $\mathcal{X}$ the state space and $\mathcal{U}$ the input space (all three are defined in §2).
+**The five, as mathematical objects.** Let $\mathcal{C}$ be the configuration space, the set of all configurations $q$, the lists of numbers that place every point of the robot (for P2, the joint-angle pairs $(\theta_1,\theta_2)$); $\mathcal{X}$ the state space, a configuration together with its velocity, $x=(q,\dot q)$; and $\mathcal{U}$ the input space, the set of commands the actuators accept. §2 gives each its full definition.
 
 - A **path** is a continuous map from a normalised parameter $s$ to configurations, with both ends fixed. The parameter is not time, so a path says only *where*.
 $$\sigma:[0,1]\to\mathcal{C},\qquad \sigma(0)=q_{\text{start}},\quad \sigma(1)=q_{\text{goal}}$$
@@ -319,8 +319,13 @@ A.
 
 **4. A heuristic that is admissible, and one that only looks it.** Take
 $h(q)=\lVert p(q)-p^\star\rVert/\sqrt5$, the straight-line task-space distance scaled down. It is
-admissible because on P2 no joint motion moves the tip faster than $\sqrt5$ times as fast: the
-largest singular value of $J$ satisfies $\sigma_{\max}^2\le\operatorname{tr}(JJ^\top)=3+2\cos\theta_2\le5$,
+admissible because on P2 no joint motion moves the tip faster than $\sqrt5$ times as fast. Here $J$ is
+P2's tip Jacobian, the $2\times2$ matrix with $\dot p=J(\theta)\dot\theta$ whose columns are the tip velocities
+each joint produces alone ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §2]] derives it for this
+arm), and its largest singular value $\sigma_{\max}$ is the most tip speed one unit of joint speed can buy,
+$\max_{\lVert\dot\theta\rVert=1}\lVert J\dot\theta\rVert$ ([[02-foundations/linear-algebra|1. Linear Algebra §4]]). The
+trace of $JJ^\top$ is the sum of both squared singular values, so
+$\sigma_{\max}^2\le\operatorname{tr}(JJ^\top)=3+2\cos\theta_2\le5$,
 with equality at $\theta_2=0$ where the arm is straight and $J$'s two columns are parallel. So a
 joint path of length $\ell$ moves the tip at most $\sqrt5\,\ell$, and dividing by $\sqrt5$ turns a
 workspace distance into a lower bound on joint distance. At the start
@@ -374,7 +379,7 @@ Here $k_a,k_r>0$ are gains, $\rho(q)$ is the distance to the nearest obstacle an
 - **Probabilistically complete**: when a *robust* solution exists, the probability of having found one approaches one as the number of samples $n$ grows,
 $$\lim_{n\to\infty}P\big(\text{a solution is found within } n \text{ samples}\big)=1$$
   where robust (or $\delta$-clear) means a path whose $\delta$-neighbourhood lies in $\mathcal{C}_{\text{free}}$ for some $\delta>0$, since a path that only grazes obstacles has probability zero of being sampled. The method cannot report "no solution": failure after any finite $n$ is still possible. PRM and RRT have this property. It does not mean fast success.
-- **Asymptotically optimal**: the cost $c_n$ of the best solution after $n$ samples converges to the optimal cost $c^*$ with probability one. This is a statement about the limit, so it says nothing about the quality available under a real-time budget. RRT\* and PRM\* have it; plain RRT does not (§5.5).
+- **Asymptotically optimal**: the cost $c_n$ of the best solution after $n$ samples converges to the optimal cost $c^*$ with probability one. This is a statement about the limit, so it says nothing about the quality available under a real-time budget. RRT\* and PRM\* have it; plain RRT does not (§5.5.4).
 $$P\Big(\lim_{n\to\infty}c_n=c^*\Big)=1$$
 
 > [!example] Worked example · 계산 예제
@@ -409,7 +414,9 @@ $$P\Big(\lim_{n\to\infty}c_n=c^*\Big)=1$$
 
 A robot that cannot move in every direction at every speed needs a planner whose edges are motions the machine can execute, so the straight-line connection that grid edges and §5's sampling tree assume has to be replaced by a steering rule that respects the dynamics.
 
-**Why a geometric path is not enough.** Three kinds of constraint break the straight-segment assumption:
+#### 5.5.1 Why a geometric path is not enough
+
+Three kinds of constraint break the straight-segment assumption:
 
 - **Nonholonomic.** A car has no sideways velocity and a minimum turning radius, so a path with a corner or a sideways shift is undrivable as written, even though the car can still reach every pose ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] explains why). Formally, a nonholonomic constraint is a velocity constraint $A(q)\dot q=0$ that cannot be integrated into a constraint on $q$ alone. For a car or unicycle with heading $\theta$ it reads as follows, because the velocity must point along the heading:
 $$\dot x\sin\theta-\dot y\cos\theta=0$$
@@ -419,14 +426,16 @@ $$\dot x\sin\theta-\dot y\cos\theta=0$$
 
 *Kinodynamic* originally named planning under velocity and acceleration bounds; it now covers any planning in a state space with $\dot x = f(x,u)$. A problem can be nonholonomic, kinodynamic, or both: a car with a dynamics model is both. MR ch.10 names the sampling version and its local planners in one line; this section is the longer map.
 
-**Exact shortest paths for a car in free space.**
+#### 5.5.2 Exact shortest paths for a car: Dubins and Reeds–Shepp
 
 - **Dubins (1957):** a forward-only car at constant speed with minimum turning radius $\rho$. Between any two poses $(x,y,\theta)$ the shortest path has at most three segments, each a full-lock left arc $L$, a full-lock right arc $R$, or a straight $S$. Only six *words* can be optimal: $LSL, LSR, RSL, RSR, LRL, RLR$. In the $CCC$ words the middle arc turns through more than $\pi$. The intuition is a shortest route around a bend: turn as tightly as allowed, drive straight, turn as tightly as allowed again — a gentler arc only adds length — and Dubins proved that three such pieces always suffice.
 - **Reeds–Shepp (1990):** the same car allowed to reverse. The shortest path is one of a fixed list of fewer than fifty words, each at most five segments long with at most two gear changes (cusps).
 
 Both are closed-form, so planners use them as a **steering function**, meaning an exact connection between two states. They also serve as the obstacle-free, turning-radius-aware half of the lattice heuristic in [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms]] §8. Two limits come with them. They ignore obstacles. And curvature jumps at every segment joint, so a real steering wheel cannot follow the corner exactly.
 
-**Search over motion primitives.** A* itself is [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms]] §6; what changes here is what an edge is.
+#### 5.5.3 Search over motion primitives: state lattices and Hybrid A\*
+
+A* itself is [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms]] §6; what changes here is what an edge is.
 
 - **State lattice** (Pivtoraiko, Knepper & Kelly 2009). Discretize $(x,y,\theta)$, sometimes with curvature or speed, on a regular grid. Offline, solve boundary-value problems — find an input that drives the model from one given state to exactly another — for a small set of feasible primitives that start and end exactly on lattice states. The set is translation-invariant, so the same primitives are reused everywhere.
 - **Hybrid A\*** (Dolgov, Thrun, Montemerlo & Diebel 2010). Expand a node by integrating the car model for a few steering values. Keep one *continuous* pose per discrete $(x,y,\theta)$ cell and prune later arrivals in the same cell. Try an analytic Reeds–Shepp shot to the goal as the search nears it, then smooth the result.
@@ -435,9 +444,13 @@ Their guarantees differ. A lattice planner's completeness or optimality claim is
 
 [[04-robotics/ros2/navigation-nav2|Nav2]] ships both as its "feasible" planners.
 
-**Sampling with dynamics.** *Kinodynamic RRT* (LaValle & Kuffner 2001) samples a state, finds the nearest tree node under a chosen metric, and extends it by integrating $\dot x = f(x,u)$ for some input and duration. That forward propagation needs no boundary-value solver, but new nodes never land exactly on the sampled state, and the metric choice matters. Karaman & Frazzoli (2011) showed that plain RRT converges to a suboptimal path with probability one; RRT\* and PRM\* restore asymptotic optimality by connecting each sample to neighbours within a radius that shrinks like $(\log n / n)^{1/d}$. That rate keeps on the order of $\log n$ samples in each ball, because the ball's volume scales as $r^d \propto \log n/n$ and there are $n$ samples: few enough that rewiring stays cheap, yet enough that the graph stays connected as samples multiply. FMT\* (Janson et al. 2015) reaches the same guarantee with a lazy dynamic-programming pass over a batch of samples that postpones collision checks. The asymptotically optimal versions for dynamical systems need an exact steering function plus its cost — Dubins or Reeds–Shepp for cars, a precomputed lattice, or flatness below.
+#### 5.5.4 Sampling with dynamics: kinodynamic RRT, RRT\* and FMT\*
 
-**Differential flatness.** Some systems let you plan a few output curves freely and read every state and input off them. Fliess, Lévine, Martin & Rouchon (1995) call a system $\dot x = f(x,u)$ *flat* when there are outputs $z$ (as many as there are inputs) such that
+*Kinodynamic RRT* (LaValle & Kuffner 2001) samples a state, finds the nearest tree node under a chosen metric, and extends it by integrating $\dot x = f(x,u)$ for some input and duration. That forward propagation needs no boundary-value solver, but new nodes never land exactly on the sampled state, and the metric choice matters. Karaman & Frazzoli (2011) showed that plain RRT converges to a suboptimal path with probability one; RRT\* and PRM\* restore asymptotic optimality by connecting each sample to neighbours within a radius that shrinks like $(\log n / n)^{1/d}$. That rate keeps on the order of $\log n$ samples in each ball, because the ball's volume scales as $r^d \propto \log n/n$ and there are $n$ samples: few enough that rewiring stays cheap, yet enough that the graph stays connected as samples multiply. FMT\* (Janson et al. 2015) reaches the same guarantee with a lazy dynamic-programming pass over a batch of samples that postpones collision checks. The asymptotically optimal versions for dynamical systems need an exact steering function plus its cost — Dubins or Reeds–Shepp for cars, a precomputed lattice, or flatness below.
+
+#### 5.5.5 Differential flatness
+
+Some systems let you plan a few output curves freely and read every state and input off them. Fliess, Lévine, Martin & Rouchon (1995) call a system $\dot x = f(x,u)$ *flat* when there are outputs $z$ (as many as there are inputs) such that
 
 $$x=\beta(z,\dot z,\dots,z^{(q)}),\qquad u=\gamma(z,\dot z,\dots,z^{(q)})$$
 
@@ -538,11 +551,11 @@ A plan is a sequence of applicable operators after which $G\subseteq s$. Example
 
 **MDP and POMDP, as tuples.** An **MDP** is $(\mathcal{S},\mathcal{A},T,R,\gamma)$: a state set, an action set, a transition kernel $T(s'\mid s,a)$, a reward $R(s,a)$ and a discount $\gamma\in[0,1]$, together with the Markov property that the next state depends only on the current state and action. Its complete definition is [[02-foundations/rl-basics|RL Basics §1]].
 
-With partial observability, the planning state becomes a **belief**: a probability distribution over the hidden state, updated after every action and observation. A POMDP distinguishes hidden state, observation, action, transition, observation model, and reward. Written as a tuple, a **POMDP** is
+With partial observability, the planning state becomes a **belief**: a probability distribution over the hidden state, updated after every action and observation by the **Bayes filter** of [[04-robotics/state-estimation-slam|3. State Estimation §4]] — a predict step that pushes the belief through the motion model, then a correct step that reweights it by the observation's likelihood and renormalises. A POMDP distinguishes hidden state, observation, action, transition, observation model, and reward. Written as a tuple, a **POMDP** is
 $$(\mathcal{S},\mathcal{A},\Omega,T,Z,R,\gamma,b_0)$$
 which adds three components to the MDP, because the state is no longer seen: an **observation space** $\Omega$, an **observation model** $Z(o\mid s',a)$ giving the probability of observing $o$ when action $a$ has led to state $s'$, and an **initial belief** $b_0$. The belief $b(s)$ is the posterior probability of state $s$ given every action and observation so far. After taking $a$ and observing $o$, Bayes' rule updates it:
 $$b'(s')=\eta\,Z(o\mid s',a)\sum_{s\in\mathcal{S}}T(s'\mid s,a)\,b(s)$$
-The sum is the **prediction**, which pushes the old belief through the dynamics; the factor $Z$ is the **correction**, which weights each state by how well it explains $o$; and $\eta$ is the normaliser that makes $b'$ sum to one. This is the Bayes filter of [[04-robotics/state-estimation-slam|3. State Estimation §4]] with a chosen action attached. Since the belief summarises the whole history, a POMDP is an MDP whose states are beliefs, with expected reward $\rho(b,a)=\sum_s b(s)\,R(s,a)$. **Non-example:** the latest observation alone is not a Markov state. The same "open" reading moves a belief of $0.5$ to $0.8$ but a belief of $0.8$ to $0.94$ in the example below.
+The sum is the **prediction**, which pushes the old belief through the dynamics; the factor $Z$ is the **correction**, which weights each state by how well it explains $o$; and $\eta$ is the normaliser that makes $b'$ sum to one. This is that Bayes filter with the action chosen by the planner rather than given, so the planner can ask which action will leave the most useful belief. Since the belief summarises the whole history, a POMDP is an MDP whose states are beliefs, with expected reward $\rho(b,a)=\sum_s b(s)\,R(s,a)$. **Non-example:** the latest observation alone is not a Markov state. The same "open" reading moves a belief of $0.5$ to $0.8$ but a belief of $0.8$ to $0.94$ in the example below.
 
 > [!example] Worked example · 계산 예제
 > A robot must go through a door it cannot see clearly. **Hidden state:** open or closed. **Action:** look again, or drive through. **Transition:** looking changes nothing; driving moves the robot. **Observation:** a sensor reading "open" or "closed". **Observation model:** the reading is right 80% of the time. **Reward:** $+1$ for getting through, $-1$ for hitting a closed door.
@@ -633,7 +646,7 @@ Tier B. First pass. **P2** to the panel ([[02-foundations/lab-plants|0.6]]). Two
 
 ## 한국어
 
-*C군이고, 그 안에 있는 유일한 페이지다. [[04-robotics/modern-robotics/index|MR 챕터 요약]]과 [[04-robotics/mpc|7. MPC]], 그리고 최적화·RL 기초 위에 선다.
+*C군이고, 그 안에 있는 유일한 페이지다. [[04-robotics/modern-robotics/index|MR 챕터 요약]]과 최적화·RL 기초 위에 서며, 트랙 뒤쪽의 [[04-robotics/mpc|7. MPC]]가 §6을 이어서 전개한다.
 실행 가능한 미래를 고르는 문제이며, I군이 이것을 비정형 환경으로 특수화한다.*
 
 Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동 시퀀스를 고르는 문제다.
@@ -648,10 +661,10 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 > 판별한다.
 
 > [!note] 선수 지식
-> [[02-foundations/optimization|최적화]] · [[02-foundations/rl-basics|RL 기초]] · [[04-robotics/modern-robotics/ch02-configuration-space|컨피규레이션 공간]] · [[04-robotics/modern-robotics/ch10-motion-planning|모션 플래닝]] — §6은 [[04-robotics/mpc|MPC]](트랙 7번)를 미리 쓴다; 여기서는 가볍게 읽고 그 페이지 후에 돌아오라.
+> [[02-foundations/lab-plants|0.6 Lab Plants]](플랜트 P2) · [[02-foundations/optimization|최적화]] · [[02-foundations/rl-basics|RL 기초]] · [[04-robotics/modern-robotics/ch02-configuration-space|컨피규레이션 공간]] · [[04-robotics/modern-robotics/ch09-trajectory-generation|궤적 생성]](시간 스케일링) · [[04-robotics/modern-robotics/ch10-motion-planning|모션 플래닝]] · [[04-robotics/state-estimation-slam|3. 상태 추정]](§7에서 쓰는 그 §4의 베이즈 필터).
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 — 문헌이 섞어 쓰지만 섞어 쓰면 안 되는 다섯 단어 — 그다음 §2, 그다음 §4의 계산 예제. §5~§8은 조망이니 전부가 아니라 지금 논문이 속한 계열만 읽어라.
+> 그림을 먼저 보고, §1 — 문헌이 섞어 쓰지만 섞어 쓰면 안 되는 다섯 단어 — 과 §2·§3·§4를 읽은 뒤, 넷을 P2 위에 한꺼번에 올리는 Worked case를 읽어라. §5~§8은 조망이다. 처음에는 §5의 표와 완전성 목록만 읽고, §5.5.1~§5.5.5와 §6~§8 가운데서는 지금 논문이 속한 계열만 읽어라(§6은 트랙 뒤쪽의 [[04-robotics/mpc|7. MPC]]에서 깊이 다시 나온다). §9는 어떤 계획 논문에든 대 볼 점검표다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -736,7 +749,7 @@ Planning은 목표에 도달하기 위한 실행 가능한 미래 상태·행동
 축소판 계획 문제다. 학습 시스템에서는 정책이 이 경계들을 합칠 수 있지만, 물리적 요구 사항이
 사라지는 것은 아니다.
 
-**다섯 가지를 수학적 대상으로 쓰면.** $\mathcal{C}$를 컨피규레이션 공간, $\mathcal{X}$를 상태 공간, $\mathcal{U}$를 입력 공간이라 하자(셋 다 §2에서 정의한다).
+**다섯 가지를 수학적 대상으로 쓰면.** $\mathcal{C}$는 컨피규레이션 공간, 곧 로봇의 모든 점의 위치를 정하는 숫자 목록인 컨피규레이션 $q$ 전체의 집합이다(P2라면 관절각 쌍 $(\theta_1,\theta_2)$). $\mathcal{X}$는 상태 공간, 곧 컨피규레이션과 그 속도를 함께 쓴 $x=(q,\dot q)$의 집합이고, $\mathcal{U}$는 입력 공간, 곧 구동기가 받아들이는 명령의 집합이다. 셋의 완전한 정의는 §2에 있다.
 
 - **path**는 정규화된 매개변수 $s$에서 컨피규레이션으로 가는 연속 사상이고, 양 끝이 고정되어 있다. 매개변수는 시간이 아니므로 path는 *어디로*만 말한다.
 $$\sigma:[0,1]\to\mathcal{C},\qquad \sigma(0)=q_{\text{start}},\quad \sigma(1)=q_{\text{goal}}$$
@@ -953,8 +966,12 @@ $$g_A=\lVert q_A-q_\mathrm{start}\rVert=\pi/2=1.5708\ \text{rad},\qquad g_B=\pi/
 **4. admissible한 휴리스틱 하나와, 그렇게 보이기만 하는 것 하나.**
 $h(q)=\lVert p(q)-p^\star\rVert/\sqrt5$, 곧 작업 공간 직선 거리를 줄인 값을 쓰자. 이것이
 admissible한 이유는 P2에서 어떤 관절 운동도 말단을 $\sqrt5$배보다 빠르게 움직이지 못하기
-때문이다. $J$의 최대 특잇값은
-$\sigma_{\max}^2\le\operatorname{tr}(JJ^\top)=3+2\cos\theta_2\le5$를 만족하고, 등호는 팔이 곧게 펴져
+때문이다. 여기서 $J$는 P2의 말단 야코비안, 곧 $\dot p=J(\theta)\dot\theta$를 만족하고 각 열이 관절 하나만 움직일 때의
+말단 속도인 $2\times2$ 행렬이다([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §2]]가 이 팔에 대해 유도한다).
+그 최대 특잇값 $\sigma_{\max}$는 관절 속도 한 단위로 얻을 수 있는 최대 말단 속력
+$\max_{\lVert\dot\theta\rVert=1}\lVert J\dot\theta\rVert$다([[02-foundations/linear-algebra|1. 선형대수 §4]]). $JJ^\top$의 대각합은
+두 특잇값 제곱의 합이므로
+$\sigma_{\max}^2\le\operatorname{tr}(JJ^\top)=3+2\cos\theta_2\le5$이고, 등호는 팔이 곧게 펴져
 $J$의 두 열이 평행해지는 $\theta_2=0$에서 성립한다. 그러니 길이 $\ell$의 관절 경로는 말단을 최대
 $\sqrt5\,\ell$만큼 옮기고, $\sqrt5$로 나누면 작업 공간 거리가 관절 거리의 하한이 된다. 출발점에서
 $h=\sqrt2/\sqrt5=0.6325$ rad이므로 $f(q_\mathrm{start})=0+0.6325$이고, 둘을 확장한 뒤에는
@@ -1006,7 +1023,7 @@ $k_a,k_r>0$는 이득, $\rho(q)$는 가장 가까운 장애물까지의 거리, 
 - **확률적 완전(probabilistically complete)**: *robust한* 해가 존재하면, 표본 수 $n$이 늘수록 해를 찾았을 확률이 1로 간다.
 $$\lim_{n\to\infty}P\big(\text{a solution is found within } n \text{ samples}\big)=1$$
   robust(또는 $\delta$-여유)란 어떤 $\delta>0$에 대해 $\delta$-근방이 $\mathcal{C}_{\text{free}}$ 안에 있는 경로라는 뜻이다. 장애물을 스치기만 하는 경로는 표본으로 뽑힐 확률이 0이기 때문이다. 이 방법은 "해 없음"을 보고할 수 없다: 유한한 어떤 $n$ 뒤에도 실패가 가능하다. PRM과 RRT가 이 성질을 가진다. 빠른 성공을 뜻하지 않는다.
-- **점근적 최적(asymptotically optimal)**: 표본 $n$개 뒤 최선의 해의 비용 $c_n$이 확률 1로 최적 비용 $c^*$에 수렴한다. 극한에 대한 진술이므로 실시간 예산에서 얻는 품질에 대해서는 아무것도 말하지 않는다. RRT\*와 PRM\*는 이 성질을 가지고, 단순 RRT는 가지지 않는다(§5.5).
+- **점근적 최적(asymptotically optimal)**: 표본 $n$개 뒤 최선의 해의 비용 $c_n$이 확률 1로 최적 비용 $c^*$에 수렴한다. 극한에 대한 진술이므로 실시간 예산에서 얻는 품질에 대해서는 아무것도 말하지 않는다. RRT\*와 PRM\*는 이 성질을 가지고, 단순 RRT는 가지지 않는다(§5.5.4).
 $$P\Big(\lim_{n\to\infty}c_n=c^*\Big)=1$$
 
 > [!example] 계산 예제 · Worked example
@@ -1039,7 +1056,9 @@ $$P\Big(\lim_{n\to\infty}c_n=c^*\Big)=1$$
 
 모든 방향으로 모든 속도로 움직일 수 없는 로봇에는 간선이 곧 그 기계가 실행할 수 있는 운동인 계획기가 필요하다. 그래서 격자의 간선과 §5의 표본 트리가 가정하는 직선 연결을, 동역학을 지키는 조향 규칙으로 바꿔야 한다.
 
-**기하학적 경로만으로 부족한 이유.** 세 종류의 제약이 직선 구간 가정을 깬다.
+#### 5.5.1 기하학적 경로만으로 부족한 이유
+
+세 종류의 제약이 직선 구간 가정을 깬다.
 
 - **비홀로노믹 제약.** 자동차에는 옆 방향 속도가 없고 최소 회전 반경이 있다. 그래서 모서리나 옆으로 비키는 구간이 있는 경로는 쓰인 그대로는 운전할 수 없다. 그래도 차는 모든 pose에 도달할 수 있다(이유는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]]). 형식적으로 쓰면, 비홀로노믹 제약은 $q$만에 대한 제약으로 적분할 수 없는 속도 제약 $A(q)\dot q=0$이다. heading이 $\theta$인 자동차나 유니사이클에서는 속도가 heading 방향을 가리켜야 하므로 다음과 같다:
 $$\dot x\sin\theta-\dot y\cos\theta=0$$
@@ -1049,14 +1068,16 @@ $$\dot x\sin\theta-\dot y\cos\theta=0$$
 
 *kinodynamic*은 원래 속도·가속도 한계 아래의 계획을 가리켰고, 지금은 $\dot x = f(x,u)$인 상태 공간에서의 계획 전반을 뜻한다. 문제는 비홀로노믹이거나, kinodynamic이거나, 둘 다일 수 있다. 동역학 모델을 가진 자동차가 둘 다다. MR 10장은 표본 기반 판본과 그 지역 계획기를 한 줄로 짚고, 이 절은 그 긴 지도다.
 
-**자유 공간에서 자동차의 정확한 최단 경로.**
+#### 5.5.2 자동차의 정확한 최단 경로: Dubins와 Reeds–Shepp
 
 - **Dubins (1957):** 일정 속도로 전진만 하고 최소 회전 반경이 $\rho$인 차. 임의의 두 pose $(x,y,\theta)$ 사이 최단 경로는 최대 세 구간이고, 각 구간은 최대 조향 좌회전 호 $L$, 최대 조향 우회전 호 $R$, 직진 $S$ 중 하나다. 최적일 수 있는 *단어*는 여섯 개뿐이다: $LSL, LSR, RSL, RSR, LRL, RLR$. $CCC$ 단어에서 가운데 호는 $\pi$보다 크게 돈다. 직관은 굽은 길을 가장 짧게 도는 방법이다: 허용되는 만큼 최대로 꺾고, 곧게 달리고, 다시 최대로 꺾는다 — 더 완만한 호는 길이만 늘린다 — 그리고 Dubins는 이런 조각 세 개면 언제나 충분함을 증명했다.
 - **Reeds–Shepp (1990):** 같은 차에 후진을 허용한다. 최단 경로는 쉰 개가 안 되는 고정된 단어 목록 중 하나이고, 각 단어는 최대 다섯 구간, 기어 변환(cusp)은 최대 두 번이다.
 
 둘 다 닫힌 형태라서 계획기는 이것을 **조향 함수(steering function)**, 즉 두 상태 사이의 정확한 연결로 쓴다. 또한 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘]] §8의 격자 휴리스틱에서 장애물을 무시하되 회전 반경은 지키는 쪽 절반이 된다. 한계도 둘 따라온다. 장애물을 무시한다. 그리고 구간 이음매마다 곡률이 점프하므로 실제 핸들은 그 모서리를 정확히 따라갈 수 없다.
 
-**모션 프리미티브 위의 탐색.** A* 자체는 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘]] §6에 있다. 여기서 바뀌는 것은 간선이 무엇이냐다.
+#### 5.5.3 모션 프리미티브 위의 탐색: 상태 격자와 Hybrid A\*
+
+A* 자체는 [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘]] §6에 있다. 여기서 바뀌는 것은 간선이 무엇이냐다.
 
 - **상태 격자(state lattice)** (Pivtoraiko, Knepper & Kelly 2009). $(x,y,\theta)$를, 때로는 곡률이나 속도까지 규칙적인 격자로 이산화한다. 오프라인에서 경계값 문제 — 주어진 한 상태에서 다른 한 상태로 모델을 정확히 옮기는 입력을 찾는 문제 — 를 풀어, 격자 상태에서 정확히 시작해 격자 상태에서 정확히 끝나는 실행 가능한 프리미티브의 작은 집합을 만든다. 이 집합은 평행이동에 불변이라 어디서나 같은 프리미티브를 재사용한다.
 - **Hybrid A\*** (Dolgov, Thrun, Montemerlo & Diebel 2010). 몇 개의 조향값으로 차 모델을 적분해 노드를 확장한다. 이산 $(x,y,\theta)$ 칸마다 *연속* pose를 하나만 두고, 같은 칸에 나중에 도착한 것은 가지친다. 목표에 가까워지면 목표까지 해석적 Reeds–Shepp 연결을 시도하고, 결과를 평활화한다.
@@ -1065,9 +1086,13 @@ $$\dot x\sin\theta-\dot y\cos\theta=0$$
 
 [[04-robotics/ros2/navigation-nav2|Nav2]]는 둘 다 "실현 가능(feasible)" 계획기로 제공한다.
 
-**동역학을 넣은 표본 기반 계획.** *Kinodynamic RRT*(LaValle & Kuffner 2001)는 상태를 표본으로 뽑고, 정한 거리 척도로 가장 가까운 트리 노드를 찾은 뒤, 어떤 입력과 지속 시간으로 $\dot x = f(x,u)$를 적분해 뻗는다. 이 전방 전파에는 경계값 문제 풀이기가 필요 없지만, 새 노드는 뽑은 상태에 정확히 닿지 않고 거리 척도의 선택이 결과를 좌우한다. Karaman & Frazzoli(2011)는 단순 RRT가 확률 1로 준최적 경로에 수렴함을 보였고, RRT\*와 PRM\*는 각 표본을 $(\log n / n)^{1/d}$처럼 줄어드는 반경 안의 이웃과 연결해 점근적 최적성을 되찾는다. 이 속도면 공 하나에 표본이 $\log n$에 비례하는 개수만큼 들어간다. 공의 부피가 $r^d \propto \log n/n$이고 표본이 $n$개이기 때문이다. 재연결이 싸게 유지될 만큼 적으면서, 표본이 늘어도 그래프가 연결된 채로 남을 만큼은 많다. FMT\*(Janson 외 2015)는 표본 묶음 위에서 충돌 검사를 미루는 게으른 동적 계획법으로 같은 보장을 얻는다. 동역학 시스템용 점근 최적 판본에는 정확한 조향 함수와 그 비용이 필요하다 — 자동차라면 Dubins나 Reeds–Shepp, 아니면 미리 계산한 격자, 아니면 아래의 평탄성.
+#### 5.5.4 동역학을 넣은 표본 기반 계획: kinodynamic RRT, RRT\*, FMT\*
 
-**미분 평탄성(differential flatness).** 어떤 시스템은 몇 개의 출력 곡선을 자유롭게 계획하면 모든 상태와 입력을 거기서 읽어낼 수 있다. Fliess, Lévine, Martin & Rouchon(1995)은 시스템 $\dot x = f(x,u)$가 (입력 개수만큼의) 출력 $z$를 가져
+*Kinodynamic RRT*(LaValle & Kuffner 2001)는 상태를 표본으로 뽑고, 정한 거리 척도로 가장 가까운 트리 노드를 찾은 뒤, 어떤 입력과 지속 시간으로 $\dot x = f(x,u)$를 적분해 뻗는다. 이 전방 전파에는 경계값 문제 풀이기가 필요 없지만, 새 노드는 뽑은 상태에 정확히 닿지 않고 거리 척도의 선택이 결과를 좌우한다. Karaman & Frazzoli(2011)는 단순 RRT가 확률 1로 준최적 경로에 수렴함을 보였고, RRT\*와 PRM\*는 각 표본을 $(\log n / n)^{1/d}$처럼 줄어드는 반경 안의 이웃과 연결해 점근적 최적성을 되찾는다. 이 속도면 공 하나에 표본이 $\log n$에 비례하는 개수만큼 들어간다. 공의 부피가 $r^d \propto \log n/n$이고 표본이 $n$개이기 때문이다. 재연결이 싸게 유지될 만큼 적으면서, 표본이 늘어도 그래프가 연결된 채로 남을 만큼은 많다. FMT\*(Janson 외 2015)는 표본 묶음 위에서 충돌 검사를 미루는 게으른 동적 계획법으로 같은 보장을 얻는다. 동역학 시스템용 점근 최적 판본에는 정확한 조향 함수와 그 비용이 필요하다 — 자동차라면 Dubins나 Reeds–Shepp, 아니면 미리 계산한 격자, 아니면 아래의 평탄성.
+
+#### 5.5.5 미분 평탄성(differential flatness)
+
+어떤 시스템은 몇 개의 출력 곡선을 자유롭게 계획하면 모든 상태와 입력을 거기서 읽어낼 수 있다. Fliess, Lévine, Martin & Rouchon(1995)은 시스템 $\dot x = f(x,u)$가 (입력 개수만큼의) 출력 $z$를 가져
 
 $$x=\beta(z,\dot z,\dots,z^{(q)}),\qquad u=\gamma(z,\dot z,\dots,z^{(q)})$$
 
@@ -1171,11 +1196,11 @@ $$s'=\big(s\setminus\mathrm{del}(a)\big)\cup\mathrm{add}(a)$$
 **튜플로 쓴 MDP와 POMDP.** **MDP** $(\mathcal{S},\mathcal{A},T,R,\gamma)$는 상태 집합, 행동 집합, 전이 커널 $T(s'\mid s,a)$, 보상 $R(s,a)$, 할인율 $\gamma\in[0,1]$로 이루어지고, 다음 상태가 현재 상태와 행동에만 달려 있다는 마르코프 성질을 함께 가진다. 완전한 정의는 [[02-foundations/rl-basics|RL 기초 §1]]에 있다.
 
 부분 관측에서는 계획의 상태가 **belief**, 즉 숨은 상태에 대한 확률 분포가 되고, 행동과 관측이
-있을 때마다 갱신된다. POMDP는 숨은 상태, 관측, 행동, 전이, 관측 모델, 보상을 구분한다. 튜플로 쓰면 **POMDP**(부분 관측 MDP)는
+있을 때마다 [[04-robotics/state-estimation-slam|3. 상태 추정 §4]]의 **베이즈 필터**로 갱신된다. belief를 운동 모델에 통과시키는 예측 단계와, 관측의 우도로 다시 가중하고 정규화하는 보정 단계다. POMDP는 숨은 상태, 관측, 행동, 전이, 관측 모델, 보상을 구분한다. 튜플로 쓰면 **POMDP**(부분 관측 MDP)는
 $$(\mathcal{S},\mathcal{A},\Omega,T,Z,R,\gamma,b_0)$$
 이고, 상태가 더는 보이지 않으므로 MDP에 구성 요소 셋을 더한다: **관측 공간** $\Omega$, 행동 $a$가 상태 $s'$로 이끌었을 때 $o$를 관측할 확률을 주는 **관측 모델** $Z(o\mid s',a)$, 그리고 **초기 belief** $b_0$. belief $b(s)$는 지금까지의 모든 행동과 관측이 주어졌을 때 상태 $s$의 사후 확률이다. $a$를 하고 $o$를 관측하면 베이즈 규칙이 그것을 갱신한다:
 $$b'(s')=\eta\,Z(o\mid s',a)\sum_{s\in\mathcal{S}}T(s'\mid s,a)\,b(s)$$
-합은 옛 belief를 동역학에 통과시키는 **예측**(prediction)이고, 인자 $Z$는 각 상태를 그것이 $o$를 얼마나 잘 설명하는지로 가중하는 **보정**(correction)이며, $\eta$는 $b'$의 합이 1이 되게 하는 정규화 상수다. 이것은 [[04-robotics/state-estimation-slam|3. 상태 추정 §4]]의 베이즈 필터에 고른 행동을 붙인 것이다. belief가 이력 전체를 요약하므로 POMDP는 belief를 상태로 삼는 MDP이고, 그 기대 보상은 $\rho(b,a)=\sum_s b(s)\,R(s,a)$다. **반례:** 가장 최근의 관측 하나만으로는 마르코프 상태가 되지 않는다. 아래 예에서 같은 "열림" 판독이 belief $0.5$는 $0.8$로 옮기지만 belief $0.8$은 $0.94$로 옮긴다.
+합은 옛 belief를 동역학에 통과시키는 **예측**(prediction)이고, 인자 $Z$는 각 상태를 그것이 $o$를 얼마나 잘 설명하는지로 가중하는 **보정**(correction)이며, $\eta$는 $b'$의 합이 1이 되게 하는 정규화 상수다. 이것은 바로 그 베이즈 필터이되, 행동이 주어지는 것이 아니라 계획기가 고른다. 그래서 계획기는 어떤 행동이 가장 쓸모 있는 belief를 남길지 물을 수 있다. belief가 이력 전체를 요약하므로 POMDP는 belief를 상태로 삼는 MDP이고, 그 기대 보상은 $\rho(b,a)=\sum_s b(s)\,R(s,a)$다. **반례:** 가장 최근의 관측 하나만으로는 마르코프 상태가 되지 않는다. 아래 예에서 같은 "열림" 판독이 belief $0.5$는 $0.8$로 옮기지만 belief $0.8$은 $0.94$로 옮긴다.
 
 > [!example] 계산 예제 · Worked example
 > 로봇이 잘 보이지 않는 문을 지나가야 한다. **숨은 상태:** 열림 또는 닫힘. **행동:** 다시 보기, 또는 지나가기. **전이:** 보기는 아무것도 바꾸지 않고, 지나가기는 로봇을 옮긴다. **관측:** "열림" 또는 "닫힘"이라는 센서 판독. **관측 모델:** 판독은 80% 확률로 맞다. **보상:** 통과하면 $+1$, 닫힌 문에 부딪히면 $-1$.

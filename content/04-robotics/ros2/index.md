@@ -15,8 +15,8 @@ mastery-when: "Raise to Mastery when a ROS 2 stack you wrote is the artifact a p
 > 이 위키의 다른 장은 분야를 *읽는* 법을 가르친다. 이 장은 그 안에서 *만드는* 법을 가르친다. 목표는 로봇을 기술(description)에서 과제 수행까지 데려가고, 실패했을 때 왜 실패했는지 말할 수 있는 엔지니어다.
 
 > [!note] Prerequisites · 선수 지식
-> Python, enough C++ to read a class, a Linux terminal, and Git. No ROS experience is assumed. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]] and [[02-foundations/se3-geometry|3D Geometry & SE(3)]] make §25.6 easier but are not required first.
-> Python, 클래스를 읽을 만큼의 C++, 리눅스 터미널, Git. ROS 경험은 전제하지 않는다. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장]]과 [[02-foundations/se3-geometry|3D 기하와 SE(3)]]는 §25.6을 쉽게 만들지만 먼저 읽어야 하는 것은 아니다.
+> Python, enough C++ to read a class, and a Linux terminal. Git enters late and lightly — a `.gitignore` in 25.4, then commits and clean checkouts as evidence in 25.10 — so it is needed by then, not before 25.1. No ROS experience is assumed. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]] and [[02-foundations/se3-geometry|3D Geometry & SE(3)]] make §25.6 easier but are not required first.
+> Python, 클래스를 읽을 만큼의 C++, 리눅스 터미널. Git은 늦게, 가볍게 들어온다 — 25.4의 `.gitignore`, 그리고 25.10에서 증거로 쓰는 커밋과 깨끗한 checkout — 그러니 그때까지 필요하지 25.1 전에 필요한 것은 아니다. ROS 경험은 전제하지 않는다. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장]]과 [[02-foundations/se3-geometry|3D 기하와 SE(3)]]는 §25.6을 쉽게 만들지만 먼저 읽어야 하는 것은 아니다.
 
 Most of this wiki exists so that a paper can be read accurately. This track exists for the
 other half of the work. A research claim in robotics is usually carried by a running system,
@@ -49,7 +49,8 @@ flowchart LR
 2. [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] — publish and subscribe, in Python and in the C++ that production stacks are written in.
 3. [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] — the three patterns that are not topics, and how a node is configured and started deterministically.
 4. [[04-robotics/ros2/workspaces-packages-launch|25.4 Workspaces, Packages, Builds and Launch]] — the daily loop, and the stale-install bug that wastes an afternoon the first time.
-5. [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] — the three mechanisms that fail without stopping the program.
+5. [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] — QoS policies and the request-versus-offered rule: a mismatch fails without stopping the program.
+   - [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]] — the other two silent mechanisms: a long callback that starves the rest of the node, and a node on the wrong clock.
 6. [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot: URDF, TF2 and RViz]] — links, joints, and the transform tree that beginners lose the most hours to.
 7. [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]] — Gazebo, and the controller-hardware seam that makes simulation work transfer.
 8. [[04-robotics/ros2/manipulation-moveit2|25.8 Manipulation with MoveIt 2]] — planning, the planning scene, execution, and what MoveIt does not solve.
@@ -102,6 +103,8 @@ commands rather than guesses.
 
 Tier A (weekend path). Plant **P6** from [[02-foundations/lab-plants|0.6]]. The arithmetic lives on [[04-robotics/robot-systems-deployment|10]]; this page is the silent-failure drill. No new ODE.
 
+Do this set when you finish the track, not when you arrive: item 3 asks for checks from 25.2, 25.5 and 25.6, and the QoS and transform vocabulary it uses is taught there. On a first visit, read it as a preview of what the track will let you do.
+
 1. **Draw.** Three nodes on P6: `vision` (50 Hz pose), `tf` (cart frame), `controller` (200 Hz, reads encoder, writes effort). Label the two topics and the TF edge. Mark which process owns the 70 ms budget.
 2. **Derive.** The cart is commanded to a goal 0.40 m away at $0.10\,\mathrm{m/s}$. (a) How long should motion last? (b) How many vision messages, control ticks, and encoder counts in that interval? (c) `controller` looks up TF with `time=0` (latest) instead of the vision stamp. Vision is 120 ms late. What age does the controller actually use, and is the 70 ms budget intact?
 3. **Interpret.** After launch, encoder ticks up, `/tf` is silent, the motor effort is identically zero, and `ros2 topic echo` on the vision topic prints nothing. Ordered checks — name the first three you run, and which page of this track each one lives on. One of them is a QoS mismatch (vision `transient_local`, controller `volatile` on a latched goal). Say why that presents as “nothing happens” rather than a crash.
@@ -143,7 +146,8 @@ flowchart LR
 2. [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]] — 발행과 구독. Python으로, 그리고 실제 제품 스택이 쓰는 C++로.
 3. [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 토픽이 아닌 세 가지 패턴, 그리고 노드를 설정하고 결정론적으로 띄우는 법.
 4. [[04-robotics/ros2/workspaces-packages-launch|25.4 워크스페이스, 패키지, 빌드, 런치]] — 매일의 반복 루프, 그리고 처음 한 번은 반드시 반나절을 잡아먹는 stale install 버그.
-5. [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executor, 시간]] — 프로그램을 멈추지 않은 채 실패하는 세 가지 기전.
+5. [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]] — QoS 정책과 요청 대 제공 규칙: 불일치는 프로그램을 멈추지 않은 채 실패한다.
+   - [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]] — 조용한 나머지 두 기전: 노드의 나머지를 굶기는 긴 콜백, 그리고 잘못된 시계를 따르는 노드.
 6. [[04-robotics/ros2/describing-a-robot|25.6 로봇 기술하기: URDF, TF2, RViz]] — 링크와 조인트, 그리고 초심자가 가장 많은 시간을 잃는 변환 트리.
 7. [[04-robotics/ros2/simulation-and-control|25.7 시뮬레이션과 ros2_control]] — Gazebo, 그리고 시뮬레이션 작업을 실물로 옮겨 주는 제어기-하드웨어 이음매.
 8. [[04-robotics/ros2/manipulation-moveit2|25.8 MoveIt 2로 하는 매니퓰레이션]] — 계획, planning scene, 실행, 그리고 MoveIt이 풀어 주지 *않는* 것.
@@ -191,6 +195,8 @@ Python, C++, 리눅스, Git은 가르치지 않는다. 위키의 나머지가 �
 ### 과제 · Problem set
 
 Tier A (주말 경로). [[02-foundations/lab-plants|0.6]]의 **P6**. 산수는 [[04-robotics/robot-systems-deployment|10]]에 있다. ODE 없음.
+
+이 과제는 트랙에 들어설 때가 아니라 끝낼 때 푼다. 3번은 25.2, 25.5, 25.6의 점검을 요구하고, 거기 쓰이는 QoS와 변환(transform) 어휘도 그 페이지들이 가르친다. 처음 왔다면 이 트랙이 무엇을 할 수 있게 해 주는지 미리 보는 셈으로 읽어라.
 
 1. **그리기.** P6의 노드 셋: `vision` (50 Hz), `tf`, `controller` (200 Hz). 토픽 둘과 TF 간선. 70 ms 예산을 누가 소유하는지.
 2. **유도.** 목표 0.40 m, $0.10\,\mathrm{m/s}$. (a) 운동 시간. (b) 그 구간의 비전 메시지, 제어 틱, 엔코더 카운트. (c) 제어기가 비전 스탬프 대신 `time=0`(최신)으로 TF를 찾고, 비전이 120 ms 늦다. 실제 나이와 70 ms 예산.

@@ -55,6 +55,16 @@ Prerequisites callout, First pass callout, Running object, The picture, Worked c
 numbered lecture sections, then the wiki's standing tail - After reading (where the page has
 one), Self-check (+ Answers), Problem set · 과제 (tier line, Draw / Derive / Do or Interpret,
 Solutions), Sources. Do not invent per-track variants such as "Exit check".
+The Worked case may sit right after The picture only if it reads at that position: every
+term, symbol and formula it uses is defined in the Prerequisites, the Running object or the
+picture, or glossed in one line with a pointer to the section that derives it. If it would
+need more than three such glosses, it goes after the lecture sections it depends on (before
+After reading) - a worked case that cites what the reader has not met yet does not teach.
+
+10. HONEST PREREQUISITES. The Prerequisites callout lists every page the lecture actually
+leans on, and none that comes later in study order (scripts/audit_prereqs.py reports both).
+A concept the page uses must be taught on this page, on a listed prerequisite, or linked at
+first use - never used as if known.
 
 6. wiki-support: Working means the page's own problem set is completable from the page,
 its prerequisites, and the object catalog - nothing else. If it is not, the honest value

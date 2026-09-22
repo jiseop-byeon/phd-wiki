@@ -7,8 +7,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 §1–2]] (gradients, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §3]] (eigenvalues, SPD, condition number) · [[02-foundations/calculus-backprop|2. Calculus §1]] (the Hessian)
-> [[02-foundations/engineering-math|0.5 §1–2]](그래디언트·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §3]](고유값·SPD·조건수) · [[02-foundations/calculus-backprop|2. 미적분 §1]](헤시안)
+> Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §1–2]] (gradients, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §3]] (eigenvalues, SPD, condition number) · [[02-foundations/calculus-backprop|2. Calculus §1]] (the Hessian) · [[02-foundations/probability|3. Probability §2]] (expectation, for §3's stochastic gradients)
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1** · [[02-foundations/engineering-math|0.5 §1–2]](그래디언트·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §3]](고유값·SPD·조건수) · [[02-foundations/calculus-backprop|2. 미적분 §1]](헤시안) · [[02-foundations/probability|3. 확률 §2]](기댓값, §3의 확률적 그래디언트용)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -23,7 +23,7 @@ construction tasks are all "minimize an objective subject to constraints." Cours
 treatment: conditions, derivations, and a fully written MPC-as-QP example.
 
 > [!note] First pass · 처음이라면
-> Read §1, then §2 — convexity is the fork everything else hangs on — then §3. Open §4 the first time a paper says "subject to"; KKT reads much better with a concrete constraint in front of you. §3.5 is for when a SLAM, calibration or IK paper says "we optimize" — read it with such a paper in hand.
+> Read the picture, §1, then §2 — convexity is the fork everything else hangs on — then §3, whose P1 step is the picture's arithmetic. Open §4 the first time a paper says "subject to"; KKT reads much better with a concrete constraint in front of you. §3.5 is for when a SLAM, calibration or IK paper says "we optimize" — read it with such a paper in hand. §5 is a table of problem classes to look things up in, and §6 is a one-screen map of where this page reappears in the wiki; skim both.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -117,7 +117,7 @@ treatment: conditions, derivations, and a fully written MPC-as-QP example.
   <text x="12" y="470" font-size="11" fill="currentColor" fill-opacity="0.85">One picture, two step sizes: the only difference between training and divergence.</text>
 </svg>
 
-Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], cut down to the one weight $W_{2,1}$: the loss is the parabola $L=\tfrac12(W_{2,1}-1.5)^2$, its slope at the catalog point $(1,\ 0.125)$ is $-0.5$, and the step $\eta=0.1$ moves the weight $0.05$, to $1.05$ ($L=0.101$), beside the $0.5$ still left to the vertex. On this slice the curvature is $1$, so $\eta=1$ lands on the vertex and $\eta>2$ diverges; along the real three-weight gradient it is $\lVert h\rVert^2=14$, which moves the exact step to $1/14\approx0.071$ and the divergence threshold to $2/14\approx0.143$. The lower panel is $\eta=10$: the weight jumps to $6$ ($L=10.125$ on the slice), and the full three-weight step reaches $\hat y=70.5$, $L=2415.1$.
+Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], cut down to the one weight $W_{2,1}$: the loss is the parabola $L=\tfrac12(W_{2,1}-1.5)^2$, its slope at the catalog point $(1,\ 0.125)$ is $-0.5$, and the step $\eta=0.1$ moves the weight $0.05$, to $1.05$ ($L=0.101$), beside the $0.5$ still left to the vertex. On this slice the curvature is $1$, so $\eta=1$ lands on the vertex and $\eta>2$ diverges (on a parabola of curvature $c$ a step multiplies the distance to the vertex by $1-\eta c$; §3). Along the real three-weight gradient the curvature is $\lVert h\rVert^2=14$, the one nonzero eigenvalue of the Hessian $hh^\top$ (derived in §3's P1 step), which moves the exact step to $1/14\approx0.071$ and the divergence threshold to $2/14\approx0.143$. The lower panel is $\eta=10$: the weight jumps to $6$ ($L=10.125$ on the slice), and the full three-weight step reaches $\hat y=70.5$, $L=2415.1$.
 
 ### 1. Anatomy of a problem
 
@@ -217,6 +217,9 @@ The formulation is needed because a preference and a requirement play different 
   you get that behavior only near the optimum, and you pay $O(n^3)$ per step to form and
   invert $H$ — which is why nobody runs it on a neural network.
 - **Worked: one GD step on P1.** Catalog $W_2=(1,-1,0.5)$ and $\partial L/\partial W_2=(-0.5,-1,-1.5)$ from [[02-foundations/calculus-backprop|2]] ([[02-foundations/lab-plants|0.6]]). With $\eta=0.1$: $W_2\leftarrow(1.05,-0.9,0.65)$. Holding $h=(1,2,3)$, $L=\tfrac12(W_{2,1}-1.5)^2$ is a parabola in $W_{2,1}$ with minimum at $1.5$; the catalog sits on the left slope. $\eta=10$ jumps to $W_2=(6,9,15.5)$, $\hat y=70.5$, and $L$ explodes. The problem set is this step by hand.
+  - **The curvature along the real step, derived.** With $h$ held fixed, $\hat y=W_2h$ is linear in $W_2$, so $L=\tfrac12(W_2h-y)^2$ has gradient $(\hat y-y)\,h$ and, differentiating once more, Hessian $hh^\top$ ([[02-foundations/calculus-backprop|2. Calculus §1]]). The curvature along a unit direction $u$ is $u^\top hh^\top u=(h^\top u)^2$. Along the single weight $W_{2,1}$, $u=e_1$ gives $h_1^2=1$, the slice in the picture. Along the gradient, $u=h/\lVert h\rVert$ gives $\lVert h\rVert^2=1+4+9=14$, the largest curvature in any direction, because $hh^\top$ has the single nonzero eigenvalue $\lVert h\rVert^2$ with eigenvector $h$. One step shows it directly. The step changes the output by $-\eta(\hat y-y)\lVert h\rVert^2$, so the residual becomes
+    $$\hat y'-y=(\hat y-y)\big(1-\eta\lVert h\rVert^2\big)=-0.5\,(1-14\eta)$$
+    which is the per-eigendirection factor $1-\alpha\lambda_i$ above with $\lambda=14$. So $\eta=1/14\approx0.071$ zeroes the residual in one step, any $\eta>2/14\approx0.143$ makes it grow, and $\eta=0.1$ overshoots to $-0.5(1-1.4)=+0.2$, i.e. $\hat y=1.20$ and $L=0.02$. $\eta=10$ multiplies the residual by $1-140=-139$: $\hat y-y=69.5$, $\hat y=70.5$ and $L=\tfrac12(69.5)^2=2415.1$.
 - **Momentum** accumulates a velocity to average out oscillation across ill-conditioned
   valleys; **Newton** minimizes the *second*-order model,
   $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum for a strongly convex $f$ with Lipschitz Hessian (its curvature cannot change arbitrarily fast: $\lVert H(x) - H(y)\rVert \le L\lVert x - y\rVert$), $O(n^3)$ per
@@ -268,7 +271,7 @@ $$\min_x \; \lVert f(x) \rVert^2, \qquad f(x) = \big(f_1(x),\, \ldots,\, f_m(x)\
 
 Bundle adjustment, pose-graph SLAM, ICP registration, camera and hand–eye calibration,
 inverse kinematics, and IMU–camera time alignment are all this problem with a different
-$f$. Knowing the two algorithms below tells you what those systems are actually doing when
+$f$. You do not need to know any of them yet, only that each has this shape; the robotics track teaches them ([[04-robotics/state-estimation-slam|3. State Estimation & SLAM]] for pose graphs, [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]] for ICP and calibration, [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]] for inverse kinematics). Knowing the two algorithms below tells you what those systems are actually doing when
 a paper says "we optimize." So is output-error system identification, which fits a model's free run to the measured output instead of its one-step prediction ([[04-robotics/system-identification|5.5 System Identification §5]]).
 
 **What the symbols are.** The unknown $x\in\mathbb{R}^n$ is what is being estimated (a pose, a set of landmark positions, calibration parameters). Each component $f_i:\mathbb{R}^n\to\mathbb{R}$ is a **residual**: what the model predicts for measurement $i$ at the guess $x$, minus what was actually measured. The vector $f(x)\in\mathbb{R}^m$ stacks all $m$ of them, and $\lVert f(x)\rVert^2=\sum_i f_i(x)^2$ is the total squared mismatch, zero only if every measurement is explained exactly. Many papers write $\tfrac12\lVert f\rVert^2$ or weight each residual by an inverse covariance, which changes the scale of the objective but not the method. For the beacon example below, $f_i(x)=\lVert x-a_i\rVert-\rho_i$: the predicted range to beacon $a_i$ minus the measured range $\rho_i$. At the guess $x=(12,4)$ with $\rho=(11.66,\,6.32,\,11.66)$ the residuals are $(0.989,\,-0.663,\,-2.716)$ and $\lVert f\rVert^2=8.79$; at the true $(10,6)$ they are below $0.005$, rounding error in the ranges.
@@ -584,7 +587,7 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
 서술: 조건, 유도, 그리고 완전히 써 내려간 MPC-QP 예제.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 다음 §2 — 볼록성이 나머지 전부가 걸리는 분기점이다 — 그다음 §3. §4는 논문이 처음 "subject to"라고 쓸 때 펴라. 눈앞에 구체적인 제약을 두고 읽으면 KKT가 훨씬 잘 읽힌다. §3.5는 SLAM·보정·IK 논문이 "최적화한다"고 쓸 때를 위한 것이니, 그런 논문을 손에 들고 읽어라.
+> 그림, §1, 그다음 §2 — 볼록성이 나머지 전부가 걸리는 분기점이다 — 그리고 §3을 읽어라. §3의 P1 스텝이 그림의 계산이다. §4는 논문이 처음 "subject to"라고 쓸 때 펴라. 눈앞에 구체적인 제약을 두고 읽으면 KKT가 훨씬 잘 읽힌다. §3.5는 SLAM·보정·IK 논문이 "최적화한다"고 쓸 때를 위한 것이니, 그런 논문을 손에 들고 읽어라. §5는 찾아보는 문제 부류 표이고 §6은 이 페이지가 위키 어디에 다시 나오는지 보여주는 한 화면짜리 지도이니, 둘 다 훑어보면 된다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -678,7 +681,7 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
   <text x="12" y="470" font-size="11" fill="currentColor" fill-opacity="0.85">그림 하나, 스텝 크기 둘. 학습과 발산을 가르는 유일한 차이다.</text>
 </svg>
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**, 그 가중치 하나 $W_{2,1}$만 남긴 단면에서 손실은 포물선 $L=\tfrac12(W_{2,1}-1.5)^2$이고, 카탈로그 점 $(1,\ 0.125)$의 기울기는 $-0.5$이며, 스텝 $\eta=0.1$은 꼭짓점까지 남은 $0.5$ 옆에서 가중치를 $0.05$ 옮겨 $1.05$($L=0.101$)에 놓는다. 이 단면의 곡률은 $1$이라 $\eta=1$은 꼭짓점에 내려앉고 $\eta>2$는 발산하지만, 가중치 셋을 모두 움직이는 실제 그래디언트 방향의 곡률은 $\lVert h\rVert^2=14$라 정확 스텝은 $1/14\approx0.071$, 발산 문턱은 $2/14\approx0.143$으로 옮겨 간다. 아래 칸은 $\eta=10$으로, 가중치가 $6$으로 튀고(단면에서 $L=10.125$) 가중치 셋을 모두 움직이는 스텝은 $\hat y=70.5$, $L=2415.1$에 이른다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**, 그 가중치 하나 $W_{2,1}$만 남긴 단면에서 손실은 포물선 $L=\tfrac12(W_{2,1}-1.5)^2$이고, 카탈로그 점 $(1,\ 0.125)$의 기울기는 $-0.5$이며, 스텝 $\eta=0.1$은 꼭짓점까지 남은 $0.5$ 옆에서 가중치를 $0.05$ 옮겨 $1.05$($L=0.101$)에 놓는다. 이 단면의 곡률은 $1$이라 $\eta=1$은 꼭짓점에 내려앉고 $\eta>2$는 발산한다(곡률 $c$인 포물선에서 스텝 하나는 꼭짓점까지의 거리에 $1-\eta c$를 곱한다; §3). 가중치 셋을 모두 움직이는 실제 그래디언트 방향의 곡률은 헤시안 $hh^\top$의 유일한 0 아닌 고윳값 $\lVert h\rVert^2=14$(§3의 P1 스텝에서 유도)라 정확 스텝은 $1/14\approx0.071$, 발산 문턱은 $2/14\approx0.143$으로 옮겨 간다. 아래 칸은 $\eta=10$으로, 가중치가 $6$으로 튀고(단면에서 $L=10.125$) 가중치 셋을 모두 움직이는 스텝은 $\hat y=70.5$, $L=2415.1$에 이른다.
 
 ### 1. 문제의 구조
 
@@ -772,6 +775,9 @@ $$f(x^\star)\le f(x)\quad\text{for every } x\in\mathcal{F}$$
   최적점 근처에서만 이 거동이 나오고, 매 스텝 $H$를 만들고 역행렬을 구하는 데 $O(n^3)$을 낸다 —
   아무도 신경망에 이걸 돌리지 않는 이유다.
 - **계산: P1에서 GD 한 스텝.** 카탈로그의 $W_2=(1,-1,0.5)$와 [[02-foundations/calculus-backprop|2]]에서 온 $\partial L/\partial W_2=(-0.5,-1,-1.5)$([[02-foundations/lab-plants|0.6]]). $\eta=0.1$이면 $W_2\leftarrow(1.05,-0.9,0.65)$. $h=(1,2,3)$을 고정하면 $L=\tfrac12(W_{2,1}-1.5)^2$은 $W_{2,1}$의 포물선이고 최솟값은 $1.5$에 있다. 카탈로그는 왼쪽 비탈에 앉아 있다. $\eta=10$은 $W_2=(6,9,15.5)$로 뛰어 $\hat y=70.5$가 되고 $L$이 폭발한다. 과제는 이 스텝을 손으로 하는 것이다.
+  - **실제 스텝 방향의 곡률, 유도.** $h$를 고정하면 $\hat y=W_2h$는 $W_2$에 대해 선형이므로 $L=\tfrac12(W_2h-y)^2$의 그래디언트는 $(\hat y-y)\,h$이고, 한 번 더 미분하면 헤시안은 $hh^\top$이다([[02-foundations/calculus-backprop|2. 미적분 §1]]). 단위 방향 $u$를 따른 곡률은 $u^\top hh^\top u=(h^\top u)^2$다. 가중치 하나 $W_{2,1}$ 방향, 곧 $u=e_1$이면 $h_1^2=1$로 그림의 단면이다. 그래디언트 방향, 곧 $u=h/\lVert h\rVert$이면 $\lVert h\rVert^2=1+4+9=14$이고, $hh^\top$의 0 아닌 고윳값은 고유벡터 $h$를 가진 $\lVert h\rVert^2$ 하나뿐이므로 이것이 어느 방향보다 큰 곡률이다. 한 스텝이 이를 바로 보여준다. 스텝은 출력을 $-\eta(\hat y-y)\lVert h\rVert^2$만큼 바꾸므로 잔차는
+    $$\hat y'-y=(\hat y-y)\big(1-\eta\lVert h\rVert^2\big)=-0.5\,(1-14\eta)$$
+    가 되고, 이것이 위의 고유방향별 인자 $1-\alpha\lambda_i$에 $\lambda=14$를 넣은 것이다. 그래서 $\eta=1/14\approx0.071$은 한 스텝에 잔차를 0으로 만들고, $\eta>2/14\approx0.143$이면 잔차가 커지며, $\eta=0.1$은 $-0.5(1-1.4)=+0.2$로 넘어가 $\hat y=1.20$, $L=0.02$가 된다. $\eta=10$은 잔차에 $1-140=-139$를 곱한다: $\hat y-y=69.5$, $\hat y=70.5$, $L=\tfrac12(69.5)^2=2415.1$.
 - **모멘텀**은 속도를 누적해 나쁜 조건의 골짜기에서 진동을 상쇄한다; **뉴턴법**은 *2차*
   모델을 최소화, $x_{k+1} = x_k - H^{-1}\nabla f$ — 강볼록이고 헤시안이 립시츠일 때(곡률이 임의로 빠르게 변할 수 없다는 뜻: $\lVert H(x) - H(y)\rVert \le L\lVert x - y\rVert$) 최적점 근처 이차 수렴, 스텝당
   $O(n^3)$; 준뉴턴(BFGS/L-BFGS)은 그래디언트 차분으로 $H^{-1}$ 추정을 쌓는다.
@@ -820,7 +826,7 @@ $$w_{k+1}=w_k-\eta\Big(\frac{\hat m_k}{\sqrt{\hat v_k}+\epsilon}+\lambda\,w_k\Bi
 $$\min_x \; \lVert f(x) \rVert^2, \qquad f(x) = \big(f_1(x),\, \ldots,\, f_m(x)\big)$$
 
 번들 조정, 포즈그래프 SLAM, ICP 정합, 카메라·손눈 보정, 역기구학, IMU–카메라 시간 정렬이
-전부 $f$만 다른 이 문제다. 아래 두 알고리즘을 알면 논문이 "최적화한다"고 쓸 때 그 시스템들이
+전부 $f$만 다른 이 문제다. 이것들을 아직 알 필요는 없고, 모두 이 모양이라는 것만 알면 된다. 로보틱스 트랙이 가르친다(포즈그래프는 [[04-robotics/state-estimation-slam|3. 상태 추정과 SLAM]], ICP와 보정은 [[04-robotics/geometric-perception-calibration|3.5 기하 인식과 보정]], 역기구학은 [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR 6장]]). 아래 두 알고리즘을 알면 논문이 "최적화한다"고 쓸 때 그 시스템들이
 실제로 무엇을 하고 있는지 알 수 있다. 출력 오차 시스템 식별도 그렇다. 모델의 한 스텝 예측 대신 자유 주행을 측정 출력에 맞추기 때문이다([[04-robotics/system-identification|5.5 시스템 식별 §5]]).
 
 **기호가 무엇인가.** 미지수 $x\in\mathbb{R}^n$은 추정할 대상이다(자세, 랜드마크 위치들, 보정 파라미터). 각 성분 $f_i:\mathbb{R}^n\to\mathbb{R}$는 **잔차**다. 추정값 $x$에서 모델이 측정 $i$에 대해 예측하는 값에서 실제 측정값을 뺀 것이다. 벡터 $f(x)\in\mathbb{R}^m$은 잔차 $m$개를 쌓은 것이고, $\lVert f(x)\rVert^2=\sum_i f_i(x)^2$은 전체 제곱 불일치로, 모든 측정이 정확히 설명될 때만 0이다. 많은 논문이 $\tfrac12\lVert f\rVert^2$로 쓰거나 잔차마다 역공분산 가중치를 주는데, 목적함수의 척도만 바뀌고 방법은 같다. 아래 비콘 예제에서는 $f_i(x)=\lVert x-a_i\rVert-\rho_i$, 즉 비콘 $a_i$까지의 예측 거리에서 측정 거리 $\rho_i$를 뺀 것이다. 추정값 $x=(12,4)$, $\rho=(11.66,\,6.32,\,11.66)$에서 잔차는 $(0.989,\,-0.663,\,-2.716)$이고 $\lVert f\rVert^2=8.79$다. 참 위치 $(10,6)$에서는 거리 반올림 오차 수준인 $0.005$ 미만이다.

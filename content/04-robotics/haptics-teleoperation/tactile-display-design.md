@@ -15,6 +15,9 @@ mastery-when: "Master transducer dynamics and psychophysical validation when the
 
 *The actuation end of the haptics track. Uses plant **P3** as the thing the skin is in contact with; [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]] is the same handle used to measure the person instead of to drive them.*
 
+> [!note] First pass · 처음이라면
+> Read the Running object and look at the picture: one flat command that reaches the skin as two very different stimuli, and one sleeve whose 16 actuators buy only 10 sites. Then read §2 for the three terms (magnitude response, resonance, sensation level) and §3 for the two-point limen, and work §6, the Worked case. §1, §4 and §5 are second pass: the family table, the contact cues and the design checklist are what you open when you are choosing hardware rather than reading about it.
+
 ### Running object · 이 페이지의 대상
 
 One frozen display, defined here and unchanged for the rest of the page. **Every value in it is an illustrative number this page defines so the arithmetic is exact. It is not a datasheet, and it is not anyone's measurement.**
@@ -36,71 +39,9 @@ One frozen display, defined here and unchanged for the rest of the page. **Every
 
 **T3 — the sleeve.** A tactor sleeve wrapped around the handle grip, circumference $C=100\,\mathrm{mm}$, worn against the palmar skin of the closed hand, whose illustrative two-point limen is $d_2=10\,\mathrm{mm}$. A forearm strap at the same circumference would have $d_2=35\,\mathrm{mm}$.
 
-§6 shows T1–T3 in one picture and §7 works them end to end; the problem set retunes the suspension and moves the sleeve.
+The picture below shows T1–T3 at once and §6 works them end to end; the problem set retunes the suspension and moves the sleeve.
 
-### 1. Start from the information, not the actuator
-
-A tactile display deliberately stimulates skin. A kinesthetic display primarily applies force or motion to a limb, although its handle also stimulates skin. Before choosing hardware, write the target variable: contact onset, direction, slip, roughness, local shape, friction, softness, or temperature. Then ask whether realism or discriminable communication is the goal.
-
-| Display family | Controlled cue | Strength | Typical limitation |
-|---|---|---|---|
-| ERM (eccentric rotating mass) “rumble” motor | coupled vibration frequency/amplitude | cheap, salient | slow envelope; frequency and amplitude coupled |
-| LRA (linear resonant actuator) / voice coil / piezo | shaped vibration | faster, richer waveform | resonance, stroke, mounting dependence |
-| tactor array | spatial-temporal pattern | direction and alerts | masking, wiring, body-site acuity |
-| skin stretch / shear | tangential deformation | direction, slip, friction illusion | preload and no-slip contact must be controlled |
-| pin/shape display | pressure distribution/local shape | spatial form | actuator density, bulk, bandwidth |
-| variable-friction surface | friction during active scan | texture on flat screens | requires finger motion and tracking |
-| Peltier thermal display | heat flow/temperature cue | material and temperature cues | slow dynamics, heat sinking, safety |
-
-### 2. A waveform is not a percept
-
-For a sinusoid $a(t)=A\sin(2\pi ft)$, the physical variables include frequency, amplitude, phase, duration, attack/decay envelope, body site, contact area, and preload. Perception depends on all of them. Equal motor voltage does not imply equal skin acceleration, and equal acceleration does not imply equal perceived magnitude across frequencies.
-
-An eccentric rotating mass produces centrifugal force approximately proportional to $m r\omega^2$; changing speed changes both frequency and force amplitude. An LRA or voice-coil actuator offers more independent waveform control but is shaped by its own transfer function (how much it amplifies and delays each input frequency; see [[02-foundations/signal-processing#5. Bridge to control: transforms|Signal Processing §5]]), for example a large response near its resonance and a weak one away from it. Therefore characterize **the acceleration or skin displacement at the contact site**, not merely the command signal.
-
-**Three terms, defined.** The first two belong to the hardware, the third to the pair of hardware and person, and confusing them is how "we drove it at 250 Hz" becomes a perceptual claim. §7 computes all three on T1 and T2.
-
-- **Magnitude response** $Z(f)$ — a *function of frequency*, not a number: the steady-state amplitude of the output per unit amplitude of a sinusoidal input, at each frequency separately. It is defined only for a linear, time-invariant system driven long enough to settle. *Example*: the contactor displacement per newton of coil force, computed in §7 Step 3. *Non-example*: the command amplitude, which is the same at every frequency by construction and therefore carries no information about what the skin received. It matters because a constant command through a non-constant $Z$ is a *varying* stimulus, which is the whole content of "a waveform is not a percept".
-- **Resonance frequency** $f_0$ — the *undamped natural frequency of a second-order system*, where its spring and its inertia cancel, set by its own mass and stiffness and not by the drive:
-
-$$f_0=\frac{1}{2\pi}\sqrt{\frac{k_t}{m_t}},$$
-
-so it moves only if you change the suspension or the moving mass, which is exactly the knob the problem set turns. The velocity response peaks exactly at $f_0$, but the displacement response does not: for $\zeta<1/\sqrt2$ the displacement peak sits slightly below $f_0$,
-
-$$f_{\text{peak}}=f_0\sqrt{1-2\zeta^2}=100.03\sqrt{1-2(0.25)^2}=93.57\ \mathrm{Hz},$$
-
-because the damper's term $c_t\omega$ in §7's $Z(f)$ keeps growing with frequency, so the denominator bottoms out a little before the spring–inertia term reaches zero. On T1 that peak is $39.2\,\mu\mathrm{m}$, against $38.0\,\mu\mathrm{m}$ at $f_0$ itself, and the acceleration response peaks slightly *above* $f_0$ instead; for $\zeta\ge1/\sqrt2$ the displacement response has no peak and only falls from its static value. *Non-example*: the frequency the designer wants to display. A tactor driven far from $f_0$ is not broken; it is quieter, by an amount §7 computes.
-
-- **Sensation level (SL)** — the *amount by which a delivered stimulus exceeds that person's detection threshold at that frequency*, in decibels:
-
-$$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
-
-because the stimulus and the threshold are amplitudes, so the field convention of $20\log_{10}$ applies. $\mathrm{SL}=0$ is threshold and negative SL is undetectable. *Non-example*: the amplitude alone. Two frequencies at the same displacement are not equally strong, because $Z_{\text{th}}$ differs between them — which is why SL, and not micrometres, is what may be compared across frequencies.
-
-### 3. Spatial and temporal design
-
-Two nearby stimuli can merge, mask one another, or create apparent motion depending on spacing and timing. Acuity differs sharply between fingertip, palm, forearm, torso, and hairy skin. A wearable array must be tested in its actual placement, under motion and workload. Use a small vocabulary of well-separated signals before increasing symbol count; multidimensional scaling (placing the patterns as points on a map whose distances match how different users judge them) or confusion matrices (a table counting how often pattern A was reported as pattern B) reveal which patterns users actually distinguish.
-
-**Two-point limen, defined.** The **two-point limen** $d_2$ is a *distance*: the smallest separation at which two simultaneous contacts are reported as two rather than one. Its defining conditions are all external to the device — a named body site, contactor size and shape, contact force, and the judgement asked for — so a single number is meaningless without them, and the same skin gives different values under different conditions. *Example*: the $10\,\mathrm{mm}$ of T3, an illustrative value for the palmar hand. *Non-example*: the array pitch, which is a property you chose when you drew the sleeve and which says nothing about what can be told apart. It matters because $d_2$ caps the number of *locations* a spatial vocabulary can use, whatever the actuator count, and §7 Step 8 turns that cap into bits.
-
-### 4. Contact, slip, and material cues
-
-Humans regulate grip before gross slip using distributed pressure, skin stretch, vibration, and prior knowledge. A teleoperator that returns only normal force omits much of this evidence. Contact-location devices move a contact patch; shear devices deform skin without gross slip; vibration can reproduce impact transients; variable-friction displays alter tangential force during exploration. No single cue is “touch.”
-
-For hard contact, a low-frequency force loop and a short high-frequency transient may be combined. This can improve perceived hardness without demanding an unrealistically stiff stable virtual spring (a sampled spring can be rendered stably only up to a stiffness set by the device damping and the sample period; see [[04-robotics/haptics-teleoperation/rendering-sampling-stability#2. Why a digital spring can create energy|24.4 §2]]), but the transient is open-loop energy and must remain within device and safety limits.
-
-### 5. Design checklist
-
-1. What physical event should the user detect or estimate?
-2. Which skin site remains in reliable contact during the task?
-3. What stimulus dimensions can the hardware control independently?
-4. What is the measured transfer from command to skin?
-5. Are patterns distinguishable under task workload, not just in isolation?
-6. Does the cue improve a decision or task outcome, and what false alarms does it create?
-
-**Worked: the three readings the homework asks.** “250 Hz on an ERM” still leaves amplitude, envelope, preload, area, site free; independent amplitude wants an LRA/voice coil/piezo because ERM couples $F\propto\omega^2$. Equal voltage is not equal percept across frequency. Table-top array then worn forearm skips contact reliability and workload; discriminability typically collapses.
-
-### 6. The picture
+### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="Panel A plots on log-log axes what one 0.10 A command delivers from the T1 tactor, 38.0 µm at its 100 Hz natural frequency, just past the 39.2 µm peak at 93.57 Hz, and 3.52 µm at 250 Hz, against skin thresholds of 1.0 and 0.20 µm with the gaps shaded as 31.6 and 24.9 dB of sensation level, and panel B unrolls the 100 mm sleeve into 16 six-millimetre discs at 6.25 mm pitch over a ruler of 10 mm segments: 16 actuators, 10 resolvable sites.">
   <text x="10" y="18" font-size="12.5" fill="currentColor">A · what reaches the skin</text>
@@ -165,9 +106,71 @@ For hard contact, a low-frequency force loop and a short high-frequency transien
   <g font-size="13" fill="currentColor"><text x="24" y="414">16 actuators</text><text x="194" y="414">10 resolvable sites<tspan font-size="12" dx="4.2">(d</tspan><tspan font-size="11" dy="3">2</tspan><tspan font-size="12" dy="-3" dx="4.2">= 10 mm)</tspan></text></g>
 </svg>
 
-Panel A plots on log–log axes what one flat command of $i_{\max}=0.10\,\mathrm{A}$ delivers from T1: a displacement that peaks at $39.2\,\mu\mathrm{m}$ at $93.57\,\mathrm{Hz}$, just below $f_0=100\,\mathrm{Hz}$, reads $38.0\,\mu\mathrm{m}$ at $100\,\mathrm{Hz}$, and falls to $3.52\,\mu\mathrm{m}$ at $250\,\mathrm{Hz}$. Against T2's thresholds of $1.0$ and $0.20\,\mu\mathrm{m}$, joined by the dashed line, those are sensation levels of $31.6$ and $24.9\,\mathrm{dB}$, shaded as the gap between each point and its threshold. Panel B unrolls the $C=100\,\mathrm{mm}$ sleeve into 16 six-millimetre discs at $6.25\,\mathrm{mm}$ pitch, only $0.25\,\mathrm{mm}$ apart, and brackets them by the $d_2=10\,\mathrm{mm}$ segments of the ruler beneath: 16 actuators, 10 resolvable sites.
+Panel A plots on log–log axes what one flat command of $i_{\max}=0.10\,\mathrm{A}$ delivers from T1: a displacement that peaks at $39.2\,\mu\mathrm{m}$ at $93.57\,\mathrm{Hz}$, just below $f_0=100\,\mathrm{Hz}$, reads $38.0\,\mu\mathrm{m}$ at $100\,\mathrm{Hz}$, and falls to $3.52\,\mu\mathrm{m}$ at $250\,\mathrm{Hz}$. Against T2's thresholds of $1.0$ and $0.20\,\mu\mathrm{m}$, joined by the dashed line, those are sensation levels of $31.6$ and $24.9\,\mathrm{dB}$ (decibels above the threshold, defined in §2), shaded as the gap between each point and its threshold. Panel B unrolls the $C=100\,\mathrm{mm}$ sleeve into 16 six-millimetre discs at $6.25\,\mathrm{mm}$ pitch, only $0.25\,\mathrm{mm}$ apart, and brackets them by the ruler beneath, cut into segments of the two-point limen $d_2=10\,\mathrm{mm}$ (§3): 16 actuators, 10 resolvable sites.
 
-### 7. Worked case: what T1 delivers, and what T3 can resolve
+### 1. Start from the information, not the actuator
+
+A tactile display deliberately stimulates skin. A kinesthetic display primarily applies force or motion to a limb, although its handle also stimulates skin. Before choosing hardware, write the target variable: contact onset, direction, slip, roughness, local shape, friction, softness, or temperature. Then ask whether realism or discriminable communication is the goal.
+
+| Display family | Controlled cue | Strength | Typical limitation |
+|---|---|---|---|
+| ERM (eccentric rotating mass) “rumble” motor | coupled vibration frequency/amplitude | cheap, salient | slow envelope; frequency and amplitude coupled |
+| LRA (linear resonant actuator) / voice coil / piezo | shaped vibration | faster, richer waveform | resonance, stroke, mounting dependence |
+| tactor array | spatial-temporal pattern | direction and alerts | masking, wiring, body-site acuity |
+| skin stretch / shear | tangential deformation | direction, slip, friction illusion | preload and no-slip contact must be controlled |
+| pin/shape display | pressure distribution/local shape | spatial form | actuator density, bulk, bandwidth |
+| variable-friction surface | friction during active scan | texture on flat screens | requires finger motion and tracking |
+| Peltier thermal display | heat flow/temperature cue | material and temperature cues | slow dynamics, heat sinking, safety |
+
+### 2. A waveform is not a percept
+
+For a sinusoid $a(t)=A\sin(2\pi ft)$, the physical variables include frequency, amplitude, phase, duration, attack/decay envelope, body site, contact area, and preload. Perception depends on all of them. Equal motor voltage does not imply equal skin acceleration, and equal acceleration does not imply equal perceived magnitude across frequencies.
+
+An eccentric rotating mass produces centrifugal force approximately proportional to $m r\omega^2$; changing speed changes both frequency and force amplitude. An LRA or voice-coil actuator offers more independent waveform control but is shaped by its own transfer function (how much it amplifies and delays each input frequency; see [[02-foundations/signal-processing#5. Bridge to control: transforms|Signal Processing §5]]), for example a large response near its resonance and a weak one away from it. Therefore characterize **the acceleration or skin displacement at the contact site**, not merely the command signal.
+
+**Three terms, defined.** The first two belong to the hardware, the third to the pair of hardware and person, and confusing them is how "we drove it at 250 Hz" becomes a perceptual claim. §6 computes all three on T1 and T2.
+
+- **Magnitude response** $Z(f)$ — a *function of frequency*, not a number: the steady-state amplitude of the output per unit amplitude of a sinusoidal input, at each frequency separately. It is defined only for a linear, time-invariant system driven long enough to settle. *Example*: the contactor displacement per newton of coil force, computed in §6 Step 3. *Non-example*: the command amplitude, which is the same at every frequency by construction and therefore carries no information about what the skin received. It matters because a constant command through a non-constant $Z$ is a *varying* stimulus, which is the whole content of "a waveform is not a percept".
+- **Resonance frequency** $f_0$ — the *undamped natural frequency of a second-order system*, where its spring and its inertia cancel, set by its own mass and stiffness and not by the drive:
+
+$$f_0=\frac{1}{2\pi}\sqrt{\frac{k_t}{m_t}},$$
+
+so it moves only if you change the suspension or the moving mass, which is exactly the knob the problem set turns. The velocity response peaks exactly at $f_0$, but the displacement response does not: for $\zeta<1/\sqrt2$ the displacement peak sits slightly below $f_0$,
+
+$$f_{\text{peak}}=f_0\sqrt{1-2\zeta^2}=100.03\sqrt{1-2(0.25)^2}=93.57\ \mathrm{Hz},$$
+
+because the damper's term $c_t\omega$ in §6's $Z(f)$ keeps growing with frequency, so the denominator bottoms out a little before the spring–inertia term reaches zero. On T1 that peak is $39.2\,\mu\mathrm{m}$, against $38.0\,\mu\mathrm{m}$ at $f_0$ itself, and the acceleration response peaks slightly *above* $f_0$ instead; for $\zeta\ge1/\sqrt2$ the displacement response has no peak and only falls from its static value. *Non-example*: the frequency the designer wants to display. A tactor driven far from $f_0$ is not broken; it is quieter, by an amount §6 computes.
+
+- **Sensation level (SL)** — the *amount by which a delivered stimulus exceeds that person's detection threshold at that frequency*, in decibels:
+
+$$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
+
+because the stimulus and the threshold are amplitudes, so the field convention of $20\log_{10}$ applies. $\mathrm{SL}=0$ is threshold and negative SL is undetectable. *Non-example*: the amplitude alone. Two frequencies at the same displacement are not equally strong, because $Z_{\text{th}}$ differs between them — which is why SL, and not micrometres, is what may be compared across frequencies.
+
+### 3. Spatial and temporal design
+
+Two nearby stimuli can merge, mask one another, or create apparent motion depending on spacing and timing. Acuity differs sharply between fingertip, palm, forearm, torso, and hairy skin. A wearable array must be tested in its actual placement, under motion and workload. Use a small vocabulary of well-separated signals before increasing symbol count; multidimensional scaling (placing the patterns as points on a map whose distances match how different users judge them) or confusion matrices (a table counting how often pattern A was reported as pattern B) reveal which patterns users actually distinguish.
+
+**Two-point limen, defined.** The **two-point limen** $d_2$ is a *distance*: the smallest separation at which two simultaneous contacts are reported as two rather than one. Its defining conditions are all external to the device — a named body site, contactor size and shape, contact force, and the judgement asked for — so a single number is meaningless without them, and the same skin gives different values under different conditions. *Example*: the $10\,\mathrm{mm}$ of T3, an illustrative value for the palmar hand. *Non-example*: the array pitch, which is a property you chose when you drew the sleeve and which says nothing about what can be told apart. It matters because $d_2$ caps the number of *locations* a spatial vocabulary can use, whatever the actuator count, and §6 Step 8 turns that cap into bits.
+
+### 4. Contact, slip, and material cues
+
+Humans regulate grip before gross slip using distributed pressure, skin stretch, vibration, and prior knowledge. A teleoperator that returns only normal force omits much of this evidence. Contact-location devices move a contact patch; shear devices deform skin without gross slip; vibration can reproduce impact transients; variable-friction displays alter tangential force during exploration. No single cue is “touch.”
+
+For hard contact, a low-frequency force loop and a short high-frequency transient may be combined. This can improve perceived hardness without demanding an unrealistically stiff stable virtual spring (a sampled spring can be rendered stably only up to a stiffness set by the device damping and the sample period, about $1600\,\mathrm{N/m}$ for P3 at $1\,\mathrm{kHz}$; [[04-robotics/haptics-teleoperation/rendering-sampling-stability#2. Why a digital spring can create energy|24.4 §2]] derives it later in the track, and nothing on this page depends on it), but the transient is open-loop energy and must remain within device and safety limits.
+
+### 5. Design checklist
+
+1. What physical event should the user detect or estimate?
+2. Which skin site remains in reliable contact during the task?
+3. What stimulus dimensions can the hardware control independently?
+4. What is the measured transfer from command to skin?
+5. Are patterns distinguishable under task workload, not just in isolation?
+6. Does the cue improve a decision or task outcome, and what false alarms does it create?
+
+**Worked: the three readings the homework asks.** “250 Hz on an ERM” still leaves amplitude, envelope, preload, area, site free; independent amplitude wants an LRA/voice coil/piezo because ERM couples $F\propto\omega^2$. Equal voltage is not equal percept across frequency. Table-top array then worn forearm skips contact reliability and workload; discriminability typically collapses.
+
+### 6. Worked case: what T1 delivers, and what T3 can resolve
 
 **Step 1 — the model.** Treat the tactor as one mass on a suspension, driven by the coil force and moving against the grip, with $z$ the contactor displacement:
 
@@ -238,9 +241,9 @@ Tier B. Using **P3** from [[02-foundations/lab-plants|0.6]], T1–T3 above, and 
 
 Two knobs move, nothing else. The suspension is stiffened to $k_t'=9860\,\mathrm{N/m}$ with the same moving mass, damping ratio, force constant and current limit; and the sleeve, still $C=100\,\mathrm{mm}$, is moved from the hand to a forearm strap where the illustrative two-point limen is $d_2'=35\,\mathrm{mm}$.
 
-1. **Draw.** The picture of §6, with both knobs moved: panel A for the stiffened tactor on the same axes as the original, keeping the old curve as a faint line so where the two curves cross is visible, and panel B for the forearm strap with the same 16 tactors.
+1. **Draw.** The picture, with both knobs moved: panel A for the stiffened tactor on the same axes as the original, keeping the old curve as a faint line so where the two curves cross is visible, and panel B for the forearm strap with the same 16 tactors.
 2. **Derive.** (a) The new $c_t'$ and $f_0'$. (b) $Z'(100)$ and $Z'(250)$, with the spring–inertia and damping terms shown separately as in Steps 4 and 5. (c) The two sensation levels. (d) How many decibels the retuning gained at 250 Hz and how many it lost at 100 Hz. (e) $N_{\max}'$ and the bits available on the forearm.
-3. **Interpret.** (a) The retuning moved $f_0$ onto the frequency where the skin is most sensitive. Using (c) and (d), was it a good trade, and what would have to be true about the intended signal for the answer to flip? (b) A team specifies its cue as "250 Hz on an ERM". Which physical variables are still free, and why is the ERM the wrong family if they need amplitude independent of frequency? (c) The same sleeve is validated on a table and then worn on a moving forearm under a real task. Which two design-checklist items of §5 were skipped, and what happens to the vocabulary — before any of §7 Step 8's arithmetic is applied?
+3. **Interpret.** (a) The retuning moved $f_0$ onto the frequency where the skin is most sensitive. Using (c) and (d), was it a good trade, and what would have to be true about the intended signal for the answer to flip? (b) A team specifies its cue as "250 Hz on an ERM". Which physical variables are still free, and why is the ERM the wrong family if they need amplitude independent of frequency? (c) The same sleeve is validated on a table and then worn on a moving forearm under a real task. Which two design-checklist items of §5 were skipped, and what happens to the vocabulary — before any of §6 Step 8's arithmetic is applied?
 
 > [!note]- How to draw it · 그리는 법
 > - Panel A on log–log axes: frequency from 20 to 1000 Hz across, displacement amplitude from $0.1$ to $100\,\mu\mathrm{m}$ up. For the retuned tactor, keep the picture's T1 curve on the same axes as a faint line.
@@ -260,6 +263,9 @@ Two knobs move, nothing else. The suspension is stiffened to $k_t'=9860\,\mathrm
 ## 한국어
 
 *햅틱 트랙의 구동 쪽 끝이다. 장치 **P3**를 피부가 닿아 있는 물체로 쓴다. [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]은 같은 핸들을 사람을 구동하는 대신 사람을 재는 데 쓴 페이지다.*
+
+> [!note] 처음이라면 · First pass
+> 대상을 읽고 그림을 보라. 평평한 명령 하나가 피부에서는 전혀 다른 자극 둘이 되고, 액추에이터 16개짜리 슬리브가 위치는 10개밖에 사 주지 못한다. 그다음 §2에서 세 용어(크기 응답, 공진, 감각 수준)를, §3에서 two-point limen을 읽고 §6 계산 절을 따라가라. §1, §4, §5는 두 번째 읽을 때 본다. 계열 표, 접촉 cue, 설계 체크리스트는 하드웨어를 읽을 때가 아니라 고를 때 연다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -282,71 +288,9 @@ Two knobs move, nothing else. The suspension is stiffened to $k_t'=9860\,\mathrm
 
 **T3 — 슬리브.** 핸들 그립을 감는 tactor 슬리브, 둘레 $C=100\,\mathrm{mm}$. 착용 부위는 손을 쥐었을 때의 손바닥 피부이고, 예시 two-point limen은 $d_2=10\,\mathrm{mm}$다. 같은 둘레의 팔뚝 밴드라면 $d_2=35\,\mathrm{mm}$가 된다.
 
-§6이 T1–T3를 그림 하나로 보여 주고 §7이 그것을 끝까지 계산한다. 과제는 서스펜션을 다시 튜닝하고 슬리브를 옮긴다.
+아래 그림이 T1–T3를 한 장에 보여 주고 §6이 그것을 끝까지 계산한다. 과제는 서스펜션을 다시 튜닝하고 슬리브를 옮긴다.
 
-### 1. 액추에이터가 아니라 정보에서 시작한다
-
-Tactile display는 피부를 의도적으로 자극한다. Kinesthetic display는 주로 사지에 힘이나 운동을 가하지만, 그 손잡이도 피부를 자극한다. 하드웨어를 고르기 전에 목표 변수를 적어라. 접촉 시작, 방향, 미끄럼, 거칠기, 국소 형상, 마찰, 부드러움, 온도 중 무엇인가. 그다음 사실적 재현이 목적인지 구별 가능한 전달이 목적인지 물어라.
-
-| 디스플레이 계열 | 제어하는 cue | 강점 | 통상적 한계 |
-|---|---|---|---|
-| ERM(편심 회전 질량) "럼블" 모터 | 결합된 진동 주파수·진폭 | 싸고 뚜렷함 | 느린 포락선. 주파수와 진폭이 묶임 |
-| LRA(선형 공진 액추에이터) · voice coil · 피에조 | 성형된 진동 | 더 빠르고 풍부한 파형 | 공진, 스트로크, 장착 의존성 |
-| Tactor 배열 | 시공간 패턴 | 방향과 경보 | masking, 배선, 부위별 예민도 |
-| 피부 신장 · 전단 | 접선 방향 변형 | 방향, 미끄럼, 마찰 착시 | 예압과 미끄러지지 않는 접촉을 통제해야 함 |
-| 핀 · 형상 디스플레이 | 압력 분포 · 국소 형상 | 공간적 형태 | 액추에이터 밀도, 부피, 대역폭 |
-| 가변 마찰 표면 | 능동 스캔 중의 마찰 | 평평한 화면 위의 질감 | 손가락 운동과 추적이 필요 |
-| 펠티에 열 디스플레이 | 열 흐름 · 온도 cue | 재질과 온도 cue | 느린 동역학, 방열, 안전 |
-
-### 2. 파형은 지각이 아니다
-
-사인파 $a(t)=A\sin(2\pi ft)$에서 물리 변수는 주파수, 진폭, 위상, 지속 시간, attack·decay 포락선, 신체 부위, 접촉 면적, 예압을 포함한다. 지각은 그 전부에 달려 있다. 같은 모터 전압이 같은 피부 가속도를 뜻하지 않고, 같은 가속도가 주파수를 가로질러 같은 지각 크기를 뜻하지도 않는다.
-
-편심 회전 질량은 대략 $mr\omega^2$에 비례하는 원심력을 만든다. 속도를 바꾸면 주파수와 힘 진폭이 함께 바뀐다. LRA나 voice coil 액추에이터는 파형을 더 독립적으로 제어하게 해 주지만 자기 전달함수(입력 주파수마다 얼마나 증폭하고 지연시키는가. [[02-foundations/signal-processing#5. 제어로 가는 다리: 변환|신호 처리 §5]] 참고)에 의해 성형된다. 예를 들어 공진 근처에서는 크게, 공진에서 먼 곳에서는 약하게 반응한다. 그러므로 명령 신호가 아니라 **접촉점에서의 가속도나 피부 변위**를 특성화하라.
-
-**세 용어의 정의.** 앞의 둘은 하드웨어의 것이고 셋째는 하드웨어와 사람이 이루는 쌍의 것이다. 이 셋을 섞는 순간 "250 Hz로 구동했다"가 지각에 관한 주장으로 둔갑한다. §7이 T1과 T2 위에서 셋을 모두 계산한다.
-
-- **크기 응답** $Z(f)$ — 숫자가 아니라 *주파수의 함수*다. 정현 입력의 단위 진폭당 정상상태 출력 진폭을, 주파수마다 따로. 선형 시불변 시스템이 정착할 만큼 길게 구동될 때만 정의된다. *예*: §7 Step 3에서 계산하는, 코일 힘 1 N당 접촉자 변위. *반례*: 명령 진폭. 설계상 모든 주파수에서 같으므로 피부가 무엇을 받았는지에 대해 아무 정보도 나르지 않는다. 중요한 이유는, 일정한 명령이 일정하지 않은 $Z$를 통과하면 *변하는* 자극이 되기 때문이다. "파형은 지각이 아니다"의 내용이 통째로 이것이다.
-- **공진 주파수** $f_0$ — *감쇠가 없을 때의 2차 시스템 고유 진동수*다. 스프링과 관성이 서로 상쇄되는 주파수이고, 구동이 아니라 자기 질량과 강성이 정한다:
-
-$$f_0=\frac{1}{2\pi}\sqrt{\frac{k_t}{m_t}},$$
-
-그러므로 서스펜션이나 가동 질량을 바꿀 때만 움직이고, 그것이 바로 과제가 돌리는 손잡이다. 속도 응답은 정확히 $f_0$에서 가장 커지지만, 변위 응답은 그렇지 않다. $\zeta<1/\sqrt2$이면 변위 봉우리는 $f_0$보다 조금 아래에 있다:
-
-$$f_{\text{peak}}=f_0\sqrt{1-2\zeta^2}=100.03\sqrt{1-2(0.25)^2}=93.57\ \mathrm{Hz},$$
-
-§7의 $Z(f)$에서 댐퍼 항 $c_t\omega$가 주파수와 함께 계속 커지므로, 분모가 스프링–관성 항이 0이 되기 조금 전에 바닥을 치기 때문이다. T1에서 그 봉우리는 $39.2\,\mu\mathrm{m}$로 $f_0$ 자체에서의 $38.0\,\mu\mathrm{m}$보다 크고, 가속도 응답은 거꾸로 $f_0$보다 조금 *위*에서 가장 커진다. $\zeta\ge1/\sqrt2$이면 변위 응답에는 봉우리가 없고 정적 값에서 떨어지기만 한다. *반례*: 설계자가 표시하고 싶은 주파수. $f_0$에서 먼 곳에서 구동되는 tactor는 고장 난 것이 아니라 더 조용한 것이고, 그 양을 §7이 계산한다.
-
-- **감각 수준(SL)** — *전달된 자극이 그 사람의 그 주파수 검출 임계값을 얼마나 넘는가*를 데시벨로 쓴 값이다:
-
-$$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
-
-자극과 임계값이 모두 진폭이므로 이 분야의 관례인 $20\log_{10}$을 쓴다. $\mathrm{SL}=0$이 임계값이고 음수면 검출되지 않는다. *반례*: 진폭 하나만 보는 것. 변위가 같은 두 주파수가 똑같이 강하지 않은 이유는 $Z_{\text{th}}$가 다르기 때문이고, 그래서 주파수를 가로질러 비교할 수 있는 것은 마이크로미터가 아니라 SL이다.
-
-### 3. 공간과 시간 설계
-
-가까운 두 자극은 간격과 타이밍에 따라 합쳐지거나, 서로를 masking하거나, apparent motion을 만든다. 예민도는 손끝, 손바닥, 팔뚝, 몸통, 털 있는 피부 사이에서 크게 다르다. 착용형 배열은 실제 착용 위치에서, 움직임과 workload 아래에서 시험해야 한다. 기호 수를 늘리기 전에 충분히 떨어진 신호의 작은 어휘부터 쓰라. 다차원 척도법(사용자가 느끼는 차이가 거리와 맞도록 패턴들을 지도 위의 점으로 배치하는 방법)이나 혼동 행렬(패턴 A가 패턴 B로 보고된 횟수를 센 표)이 사용자가 실제로 구별하는 패턴을 드러낸다.
-
-**Two-point limen의 정의.** **Two-point limen** $d_2$는 *거리*다. 동시에 닿은 두 접촉이 하나가 아니라 둘로 보고되는 최소 간격. 정의 조건이 전부 장치 바깥에 있다. 명시된 신체 부위, 접촉자의 크기와 모양, 접촉력, 그리고 무엇을 판단하게 했는가. 그래서 그 조건들 없는 단일 숫자는 뜻이 없고, 같은 피부도 조건이 달라지면 다른 값을 준다. *예*: T3의 $10\,\mathrm{mm}$, 손바닥 피부의 예시 값. *반례*: 배열 피치. 슬리브를 그릴 때 당신이 고른 값이고 무엇을 구별할 수 있는지에 대해 아무 말도 하지 않는다. 중요한 이유는 액추에이터 수와 무관하게 공간 어휘가 쓸 수 있는 *위치*의 수를 $d_2$가 제한하기 때문이고, §7 Step 8이 그 상한을 비트로 바꾼다.
-
-### 4. 접촉, 미끄럼, 재질 cue
-
-사람은 분포된 압력, 피부 신장, 진동, 사전 지식을 써서 큰 미끄럼이 나기 전에 파지력을 조절한다. 정상력만 돌려주는 원격조작기는 이 증거의 상당 부분을 빠뜨린다. 접촉 위치 장치는 접촉 패치를 움직이고, 전단 장치는 큰 미끄럼 없이 피부를 변형시키며, 진동은 충격 과도를 재현할 수 있고, 가변 마찰 디스플레이는 탐색 중 접선력을 바꾼다. 어느 한 cue도 "촉각"이 아니다.
-
-단단한 접촉에는 저주파 힘 루프와 짧은 고주파 과도를 결합할 수 있다. 이렇게 하면 비현실적으로 뻣뻣한 안정 가상 스프링(샘플링된 스프링은 장치 감쇠와 샘플 주기가 정하는 강성까지만 안정하게 렌더링된다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability#2. 디지털 스프링이 에너지를 만들 수 있는 이유|24.4 §2]] 참고)을 요구하지 않고도 지각되는 경도를 높일 수 있다. 다만 그 과도는 개루프 에너지이므로 장치와 안전의 한계 안에 머물러야 한다.
-
-### 5. 설계 체크리스트
-
-1. 사용자가 검출하거나 추정해야 할 물리적 사건은 무엇인가?
-2. 과제 중에 믿을 만한 접촉을 유지하는 피부 부위는 어디인가?
-3. 하드웨어가 독립적으로 제어할 수 있는 자극 차원은 무엇인가?
-4. 명령에서 피부까지의 측정된 전달은 무엇인가?
-5. 패턴이 고립된 상태가 아니라 과제 workload 아래에서 구별되는가?
-6. 그 cue가 결정이나 과제 결과를 개선하는가, 그리고 어떤 오경보를 만드는가?
-
-**계산해 읽기: 과제가 묻는 세 독해.** "ERM의 250 Hz"는 진폭·포락선·예압·면적·부위를 여전히 자유롭게 남긴다. 진폭을 독립적으로 쓰려면 LRA·voice coil·피에조가 필요하다. ERM은 $F\propto\omega^2$로 둘을 묶기 때문이다. 같은 전압은 주파수를 가로질러 같은 지각이 아니다. 탁자에서 시험한 배열을 팔뚝에 착용하는 것은 접촉 신뢰성과 workload를 건너뛴 것이고, 구별 성능은 보통 무너진다.
-
-### 6. 그림으로 먼저 보기
+### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 432" style="max-width:100%;height:auto" role="img" aria-label="패널 A는 로그-로그 축에서 같은 0.10 A 명령이 T1에서 고유 진동수 100 Hz의 38.0 µm(봉우리는 그 조금 아래 93.57 Hz의 39.2 µm)와 250 Hz의 3.52 µm를 전달하고 피부 임계값 1.0과 0.20 µm 위의 간격이 감각 수준 31.6 dB와 24.9 dB임을 보이고, 패널 B는 100 mm 슬리브를 펼쳐 지름 6 mm 원판 16개를 6.25 mm 피치로 10 mm 눈금 자와 맞대어 액추에이터 16개, 구별되는 위치 10개를 보인다.">
   <text x="10" y="18" font-size="12.5" fill="currentColor">A · 피부에 도달하는 것</text>
@@ -411,9 +355,71 @@ $$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
   <g font-size="13" fill="currentColor"><text x="24" y="414">액추에이터 16개</text><text x="194" y="414">구별되는 위치 10개<tspan font-size="12" dx="4.2">(d</tspan><tspan font-size="11" dy="3">2</tspan><tspan font-size="12" dy="-3" dx="4.2">= 10 mm)</tspan></text></g>
 </svg>
 
-패널 A는 평평한 명령 $i_{\max}=0.10\,\mathrm{A}$ 하나가 T1에서 전달하는 변위를 로그–로그 축에 그린 것으로, 변위는 $f_0=100\,\mathrm{Hz}$ 바로 아래인 $93.57\,\mathrm{Hz}$에서 $39.2\,\mu\mathrm{m}$의 봉우리를 이루고, $100\,\mathrm{Hz}$에서 $38.0\,\mu\mathrm{m}$, $250\,\mathrm{Hz}$에서는 $3.52\,\mu\mathrm{m}$까지 떨어진다. 점선으로 이은 T2의 임계값 $1.0$과 $0.20\,\mu\mathrm{m}$에 대면 이는 감각 수준 $31.6$과 $24.9\,\mathrm{dB}$이며, 각 점과 그 임계값 사이의 간격을 칠해 나타냈다. 패널 B는 둘레 $C=100\,\mathrm{mm}$ 슬리브를 펼쳐 지름 $6\,\mathrm{mm}$ 원판 16개를 틈이 $0.25\,\mathrm{mm}$뿐인 $6.25\,\mathrm{mm}$ 피치로 늘어놓고 아래 자의 $d_2=10\,\mathrm{mm}$ 눈금으로 묶으니, 액추에이터 16개에 구별되는 위치는 10개다.
+패널 A는 평평한 명령 $i_{\max}=0.10\,\mathrm{A}$ 하나가 T1에서 전달하는 변위를 로그–로그 축에 그린 것으로, 변위는 $f_0=100\,\mathrm{Hz}$ 바로 아래인 $93.57\,\mathrm{Hz}$에서 $39.2\,\mu\mathrm{m}$의 봉우리를 이루고, $100\,\mathrm{Hz}$에서 $38.0\,\mu\mathrm{m}$, $250\,\mathrm{Hz}$에서는 $3.52\,\mu\mathrm{m}$까지 떨어진다. 점선으로 이은 T2의 임계값 $1.0$과 $0.20\,\mu\mathrm{m}$에 대면 이는 감각 수준(임계값 위로 몇 데시벨인가, §2에서 정의) $31.6$과 $24.9\,\mathrm{dB}$이며, 각 점과 그 임계값 사이의 간격을 칠해 나타냈다. 패널 B는 둘레 $C=100\,\mathrm{mm}$ 슬리브를 펼쳐 지름 $6\,\mathrm{mm}$ 원판 16개를 틈이 $0.25\,\mathrm{mm}$뿐인 $6.25\,\mathrm{mm}$ 피치로 늘어놓고 two-point limen $d_2=10\,\mathrm{mm}$(§3) 길이로 나눈 아래 자의 눈금으로 묶으니, 액추에이터 16개에 구별되는 위치는 10개다.
 
-### 7. 대상으로 한 번 끝까지: T1이 전달하는 것과 T3가 구별하는 것
+### 1. 액추에이터가 아니라 정보에서 시작한다
+
+Tactile display는 피부를 의도적으로 자극한다. Kinesthetic display는 주로 사지에 힘이나 운동을 가하지만, 그 손잡이도 피부를 자극한다. 하드웨어를 고르기 전에 목표 변수를 적어라. 접촉 시작, 방향, 미끄럼, 거칠기, 국소 형상, 마찰, 부드러움, 온도 중 무엇인가. 그다음 사실적 재현이 목적인지 구별 가능한 전달이 목적인지 물어라.
+
+| 디스플레이 계열 | 제어하는 cue | 강점 | 통상적 한계 |
+|---|---|---|---|
+| ERM(편심 회전 질량) "럼블" 모터 | 결합된 진동 주파수·진폭 | 싸고 뚜렷함 | 느린 포락선. 주파수와 진폭이 묶임 |
+| LRA(선형 공진 액추에이터) · voice coil · 피에조 | 성형된 진동 | 더 빠르고 풍부한 파형 | 공진, 스트로크, 장착 의존성 |
+| Tactor 배열 | 시공간 패턴 | 방향과 경보 | masking, 배선, 부위별 예민도 |
+| 피부 신장 · 전단 | 접선 방향 변형 | 방향, 미끄럼, 마찰 착시 | 예압과 미끄러지지 않는 접촉을 통제해야 함 |
+| 핀 · 형상 디스플레이 | 압력 분포 · 국소 형상 | 공간적 형태 | 액추에이터 밀도, 부피, 대역폭 |
+| 가변 마찰 표면 | 능동 스캔 중의 마찰 | 평평한 화면 위의 질감 | 손가락 운동과 추적이 필요 |
+| 펠티에 열 디스플레이 | 열 흐름 · 온도 cue | 재질과 온도 cue | 느린 동역학, 방열, 안전 |
+
+### 2. 파형은 지각이 아니다
+
+사인파 $a(t)=A\sin(2\pi ft)$에서 물리 변수는 주파수, 진폭, 위상, 지속 시간, attack·decay 포락선, 신체 부위, 접촉 면적, 예압을 포함한다. 지각은 그 전부에 달려 있다. 같은 모터 전압이 같은 피부 가속도를 뜻하지 않고, 같은 가속도가 주파수를 가로질러 같은 지각 크기를 뜻하지도 않는다.
+
+편심 회전 질량은 대략 $mr\omega^2$에 비례하는 원심력을 만든다. 속도를 바꾸면 주파수와 힘 진폭이 함께 바뀐다. LRA나 voice coil 액추에이터는 파형을 더 독립적으로 제어하게 해 주지만 자기 전달함수(입력 주파수마다 얼마나 증폭하고 지연시키는가. [[02-foundations/signal-processing#5. 제어로 가는 다리: 변환|신호 처리 §5]] 참고)에 의해 성형된다. 예를 들어 공진 근처에서는 크게, 공진에서 먼 곳에서는 약하게 반응한다. 그러므로 명령 신호가 아니라 **접촉점에서의 가속도나 피부 변위**를 특성화하라.
+
+**세 용어의 정의.** 앞의 둘은 하드웨어의 것이고 셋째는 하드웨어와 사람이 이루는 쌍의 것이다. 이 셋을 섞는 순간 "250 Hz로 구동했다"가 지각에 관한 주장으로 둔갑한다. §6이 T1과 T2 위에서 셋을 모두 계산한다.
+
+- **크기 응답** $Z(f)$ — 숫자가 아니라 *주파수의 함수*다. 정현 입력의 단위 진폭당 정상상태 출력 진폭을, 주파수마다 따로. 선형 시불변 시스템이 정착할 만큼 길게 구동될 때만 정의된다. *예*: §6 Step 3에서 계산하는, 코일 힘 1 N당 접촉자 변위. *반례*: 명령 진폭. 설계상 모든 주파수에서 같으므로 피부가 무엇을 받았는지에 대해 아무 정보도 나르지 않는다. 중요한 이유는, 일정한 명령이 일정하지 않은 $Z$를 통과하면 *변하는* 자극이 되기 때문이다. "파형은 지각이 아니다"의 내용이 통째로 이것이다.
+- **공진 주파수** $f_0$ — *감쇠가 없을 때의 2차 시스템 고유 진동수*다. 스프링과 관성이 서로 상쇄되는 주파수이고, 구동이 아니라 자기 질량과 강성이 정한다:
+
+$$f_0=\frac{1}{2\pi}\sqrt{\frac{k_t}{m_t}},$$
+
+그러므로 서스펜션이나 가동 질량을 바꿀 때만 움직이고, 그것이 바로 과제가 돌리는 손잡이다. 속도 응답은 정확히 $f_0$에서 가장 커지지만, 변위 응답은 그렇지 않다. $\zeta<1/\sqrt2$이면 변위 봉우리는 $f_0$보다 조금 아래에 있다:
+
+$$f_{\text{peak}}=f_0\sqrt{1-2\zeta^2}=100.03\sqrt{1-2(0.25)^2}=93.57\ \mathrm{Hz},$$
+
+§6의 $Z(f)$에서 댐퍼 항 $c_t\omega$가 주파수와 함께 계속 커지므로, 분모가 스프링–관성 항이 0이 되기 조금 전에 바닥을 치기 때문이다. T1에서 그 봉우리는 $39.2\,\mu\mathrm{m}$로 $f_0$ 자체에서의 $38.0\,\mu\mathrm{m}$보다 크고, 가속도 응답은 거꾸로 $f_0$보다 조금 *위*에서 가장 커진다. $\zeta\ge1/\sqrt2$이면 변위 응답에는 봉우리가 없고 정적 값에서 떨어지기만 한다. *반례*: 설계자가 표시하고 싶은 주파수. $f_0$에서 먼 곳에서 구동되는 tactor는 고장 난 것이 아니라 더 조용한 것이고, 그 양을 §6이 계산한다.
+
+- **감각 수준(SL)** — *전달된 자극이 그 사람의 그 주파수 검출 임계값을 얼마나 넘는가*를 데시벨로 쓴 값이다:
+
+$$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
+
+자극과 임계값이 모두 진폭이므로 이 분야의 관례인 $20\log_{10}$을 쓴다. $\mathrm{SL}=0$이 임계값이고 음수면 검출되지 않는다. *반례*: 진폭 하나만 보는 것. 변위가 같은 두 주파수가 똑같이 강하지 않은 이유는 $Z_{\text{th}}$가 다르기 때문이고, 그래서 주파수를 가로질러 비교할 수 있는 것은 마이크로미터가 아니라 SL이다.
+
+### 3. 공간과 시간 설계
+
+가까운 두 자극은 간격과 타이밍에 따라 합쳐지거나, 서로를 masking하거나, apparent motion을 만든다. 예민도는 손끝, 손바닥, 팔뚝, 몸통, 털 있는 피부 사이에서 크게 다르다. 착용형 배열은 실제 착용 위치에서, 움직임과 workload 아래에서 시험해야 한다. 기호 수를 늘리기 전에 충분히 떨어진 신호의 작은 어휘부터 쓰라. 다차원 척도법(사용자가 느끼는 차이가 거리와 맞도록 패턴들을 지도 위의 점으로 배치하는 방법)이나 혼동 행렬(패턴 A가 패턴 B로 보고된 횟수를 센 표)이 사용자가 실제로 구별하는 패턴을 드러낸다.
+
+**Two-point limen의 정의.** **Two-point limen** $d_2$는 *거리*다. 동시에 닿은 두 접촉이 하나가 아니라 둘로 보고되는 최소 간격. 정의 조건이 전부 장치 바깥에 있다. 명시된 신체 부위, 접촉자의 크기와 모양, 접촉력, 그리고 무엇을 판단하게 했는가. 그래서 그 조건들 없는 단일 숫자는 뜻이 없고, 같은 피부도 조건이 달라지면 다른 값을 준다. *예*: T3의 $10\,\mathrm{mm}$, 손바닥 피부의 예시 값. *반례*: 배열 피치. 슬리브를 그릴 때 당신이 고른 값이고 무엇을 구별할 수 있는지에 대해 아무 말도 하지 않는다. 중요한 이유는 액추에이터 수와 무관하게 공간 어휘가 쓸 수 있는 *위치*의 수를 $d_2$가 제한하기 때문이고, §6 Step 8이 그 상한을 비트로 바꾼다.
+
+### 4. 접촉, 미끄럼, 재질 cue
+
+사람은 분포된 압력, 피부 신장, 진동, 사전 지식을 써서 큰 미끄럼이 나기 전에 파지력을 조절한다. 정상력만 돌려주는 원격조작기는 이 증거의 상당 부분을 빠뜨린다. 접촉 위치 장치는 접촉 패치를 움직이고, 전단 장치는 큰 미끄럼 없이 피부를 변형시키며, 진동은 충격 과도를 재현할 수 있고, 가변 마찰 디스플레이는 탐색 중 접선력을 바꾼다. 어느 한 cue도 "촉각"이 아니다.
+
+단단한 접촉에는 저주파 힘 루프와 짧은 고주파 과도를 결합할 수 있다. 이렇게 하면 비현실적으로 뻣뻣한 안정 가상 스프링(샘플링된 스프링은 장치 감쇠와 샘플 주기가 정하는 강성까지만 안정하게 렌더링된다. P3를 $1\,\mathrm{kHz}$로 돌리면 약 $1600\,\mathrm{N/m}$이다. 유도는 트랙 뒤쪽의 [[04-robotics/haptics-teleoperation/rendering-sampling-stability#2. 디지털 스프링이 에너지를 만들 수 있는 이유|24.4 §2]]에 있고, 이 페이지의 어느 것도 그것에 기대지 않는다)을 요구하지 않고도 지각되는 경도를 높일 수 있다. 다만 그 과도는 개루프 에너지이므로 장치와 안전의 한계 안에 머물러야 한다.
+
+### 5. 설계 체크리스트
+
+1. 사용자가 검출하거나 추정해야 할 물리적 사건은 무엇인가?
+2. 과제 중에 믿을 만한 접촉을 유지하는 피부 부위는 어디인가?
+3. 하드웨어가 독립적으로 제어할 수 있는 자극 차원은 무엇인가?
+4. 명령에서 피부까지의 측정된 전달은 무엇인가?
+5. 패턴이 고립된 상태가 아니라 과제 workload 아래에서 구별되는가?
+6. 그 cue가 결정이나 과제 결과를 개선하는가, 그리고 어떤 오경보를 만드는가?
+
+**계산해 읽기: 과제가 묻는 세 독해.** "ERM의 250 Hz"는 진폭·포락선·예압·면적·부위를 여전히 자유롭게 남긴다. 진폭을 독립적으로 쓰려면 LRA·voice coil·피에조가 필요하다. ERM은 $F\propto\omega^2$로 둘을 묶기 때문이다. 같은 전압은 주파수를 가로질러 같은 지각이 아니다. 탁자에서 시험한 배열을 팔뚝에 착용하는 것은 접촉 신뢰성과 workload를 건너뛴 것이고, 구별 성능은 보통 무너진다.
+
+### 6. 대상으로 한 번 끝까지: T1이 전달하는 것과 T3가 구별하는 것
 
 **Step 1 — 모델.** tactor를 서스펜션 위의 질량 하나로 보고, 코일 힘이 그것을 그립에 대해 구동한다고 하자. $z$를 접촉자 변위라 하면
 
@@ -484,9 +490,9 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**, 위의 T1–T3, 그리고 �
 
 손잡이 둘만 움직이고 나머지는 그대로다. 서스펜션을 $k_t'=9860\,\mathrm{N/m}$로 뻣뻣하게 만들되 가동 질량, 감쇠비, 힘 상수, 전류 한계는 같다. 그리고 둘레 $C=100\,\mathrm{mm}$ 그대로인 슬리브를 손에서 팔뚝 밴드로 옮긴다. 거기 예시 two-point limen은 $d_2'=35\,\mathrm{mm}$다.
 
-1. **그려라.** §6의 그림을 두 손잡이를 모두 옮겨 다시 그려라. 패널 A는 뻣뻣해진 tactor로 원래와 같은 축 위에 그리되 옛 곡선을 옅게 남겨 두 곡선이 어디서 교차하는지 보이게 하고, 패널 B는 같은 tactor 16개로 팔뚝 밴드에 맞춰 그려라.
+1. **그려라.** 그림을 두 손잡이를 모두 옮겨 다시 그려라. 패널 A는 뻣뻣해진 tactor로 원래와 같은 축 위에 그리되 옛 곡선을 옅게 남겨 두 곡선이 어디서 교차하는지 보이게 하고, 패널 B는 같은 tactor 16개로 팔뚝 밴드에 맞춰 그려라.
 2. **유도하라.** (a) 새 $c_t'$와 $f_0'$. (b) $Z'(100)$과 $Z'(250)$. Step 4·5처럼 스프링–관성 항과 감쇠 항을 따로 보여라. (c) 감각 수준 둘. (d) 재튜닝이 250 Hz에서 몇 dB를 벌고 100 Hz에서 몇 dB를 잃었는가. (e) 팔뚝에서의 $N_{\max}'$와 쓸 수 있는 비트.
-3. **해석하라.** (a) 재튜닝은 $f_0$를 피부가 가장 예민한 주파수로 옮겼다. (c)와 (d)를 써서, 좋은 거래였는가? 답이 뒤집히려면 의도한 신호에 대해 무엇이 참이어야 하는가? (b) 어떤 팀이 cue를 "ERM의 250 Hz"로 규정한다. 아직 자유인 물리 변수는 무엇이고, 진폭을 주파수와 독립으로 써야 한다면 ERM이 틀린 계열인 이유는? (c) 같은 슬리브를 탁자에서 검증한 뒤 실제 과제 중 움직이는 팔뚝에 착용한다. §5 체크리스트의 어느 두 항목을 건너뛰었고, §7 Step 8의 계산을 적용하기도 전에 어휘에 무슨 일이 일어나는가?
+3. **해석하라.** (a) 재튜닝은 $f_0$를 피부가 가장 예민한 주파수로 옮겼다. (c)와 (d)를 써서, 좋은 거래였는가? 답이 뒤집히려면 의도한 신호에 대해 무엇이 참이어야 하는가? (b) 어떤 팀이 cue를 "ERM의 250 Hz"로 규정한다. 아직 자유인 물리 변수는 무엇이고, 진폭을 주파수와 독립으로 써야 한다면 ERM이 틀린 계열인 이유는? (c) 같은 슬리브를 탁자에서 검증한 뒤 실제 과제 중 움직이는 팔뚝에 착용한다. §5 체크리스트의 어느 두 항목을 건너뛰었고, §6 Step 8의 계산을 적용하기도 전에 어휘에 무슨 일이 일어나는가?
 
 > [!note]- 그리는 법 · How to draw it
 > - 패널 A는 로그–로그 축이다. 가로는 주파수 20에서 1000 Hz, 세로는 변위 진폭 $0.1$에서 $100\,\mu\mathrm{m}$. 다시 튜닝한 tactor를 그릴 때는 그림의 T1 곡선을 같은 축 위에 옅은 선으로 남긴다.

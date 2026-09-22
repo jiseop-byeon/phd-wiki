@@ -8,15 +8,15 @@ mastery-when: "Raise to Working when a paper or the thesis reads motor current a
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], with its mass matrix and gravity torque from [[02-foundations/manipulator-kinematics-dynamics|10. §3 and §5]]. The integrators of [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Second-order parameters, bandwidth, and PID with anti-windup from [[04-robotics/control-theory-ce397|5. Control Theory §5, §5.5 and §7]]. The transmission ratio, reflected inertia and backdrivability, as defined on a capstan in [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1 and §3]].
-> [[02-foundations/lab-plants|0.6]]의 장치 **P2**, 그리고 [[02-foundations/manipulator-kinematics-dynamics|10. §3과 §5]]의 질량 행렬·중력 토크. [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기. [[04-robotics/control-theory-ce397|5. 제어 이론 §5, §5.5, §7]]의 2차계 파라미터, 대역폭, anti-windup이 있는 PID. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1과 §3]]에서 캡스턴 위에 정의한 전달비, 반사 관성, 역구동성.
+> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], with its mass matrix and gravity torque from [[02-foundations/manipulator-kinematics-dynamics|10. §3 and §5]]. The integrators of [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Second-order parameters, bandwidth, and PID with anti-windup from [[04-robotics/control-theory-ce397|5. Control Theory §5, §5.5 and §7]]. The gear ratio, reflected inertia and backdrivability are defined on this page (§2, §4, §7), so no later page is needed; the capstan version of all three, on a haptic handle, is optional further reading in the haptics track.
+> [[02-foundations/lab-plants|0.6]]의 장치 **P2**, 그리고 [[02-foundations/manipulator-kinematics-dynamics|10. §3과 §5]]의 질량 행렬·중력 토크. [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기. [[04-robotics/control-theory-ce397|5. 제어 이론 §5, §5.5, §7]]의 2차계 파라미터, 대역폭, anti-windup이 있는 PID. 감속비, 반사 관성, 역구동성은 이 페이지(§2, §4, §7)에서 정의하므로 뒤쪽 페이지는 필요 없다. 셋 모두의 캡스턴 판(햅틱 손잡이 위)은 햅틱 트랙에서 골라 더 읽을 거리다.
 
 ## English
 
 *Stands on [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] for P2's $M$ and $g$, and on [[04-robotics/control-theory-ce397|5. Control Theory]] for PD, bandwidth and anti-windup. Sits beside [[04-robotics/robot-systems-deployment|10. Robot Systems §2]], which lists actuators as part of embodiment without opening one. A later use of plant **P2**, now with a motor and a gearbox at each joint.*
 
 > [!note] First pass · 처음이라면
-> Read the Running object and the Worked case: one joint torque turned into amps, volts, watts and kelvin, and one entry of P2's mass matrix changed by a rotor you never see. Then §1 for the two equations, §3 for the torque–speed line, §4 for reflected inertia and §6 for why heat, not current, decides what a joint can hold. §2, §5 and §7 are what you open when you are choosing a drive rather than reading about one; §8 is the lab and §9 the reading checklist.
+> Read the Running object, the picture and the Worked case: one joint torque turned into amps, volts, watts and kelvin, and one entry of P2's mass matrix changed by a rotor you never see. Then §1 for the two equations, §3 for the torque–speed line, §4 for reflected inertia and §6 for why heat, not current, decides what a joint can hold. §2, §5 and §7 are what you open when you are choosing a drive rather than reading about one; §8 is the lab and §9 the reading checklist.
 
 ### Running object · 이 페이지의 대상
 
@@ -42,7 +42,7 @@ Each joint now gets a **drive**: a DC motor, the amplifier that feeds it, and a 
 
 Three modelling choices, stated once. **The two drives are identical**, one at each joint. **A drive adds only its rotor's spin inertia** to the arm: its mass is counted inside the catalog's point masses, so the shoulder drive, bolted to the base, adds no mass, and the elbow drive's mass is part of the $1\,\mathrm{kg}$ at the elbow. **The electrical model is a brushed DC motor's**; a brushless motor under its current controller obeys equations of the same form, and *Modern Robotics* §8.9.1 makes the same simplification. In the lab (§8) the elbow drive holds the elbow at $90^\circ$ and only the shoulder moves, so the shoulder sees exactly $M_{11}$ and $g_1(\theta_1)=9.81\,(2\cos\theta_1-\sin\theta_1)\,\mathrm{N{\cdot}m}$, which is page 10's $g_1$ with $\theta_2$ held at $90^\circ$.
 
-*Scope: this page teaches one geared DC drive on one joint of P2 — its electrical and mechanical equations, the torque–speed line, reflected inertia and what it does to the mass matrix, the two time constants that justify a current loop, the thermal and current limits, backdrivability, and the gear-ratio trade that ties them together. It does not teach motor design (magnetics, windings, commutation), power electronics (PWM bridges, field-oriented control), hydraulic actuation, joint flexibility or friction identification. The controller that uses a backdrivable, torque-controlled drive for contact is [[04-robotics/force-compliance-control|13. Force & Compliance Control]], and the capstan version of the same trade, on a haptic handle, is [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]].*
+*Scope: this page teaches one geared DC drive on one joint of P2 — its electrical and mechanical equations, the torque–speed line, reflected inertia and what it does to the mass matrix, the two time constants that justify a current loop, the thermal and current limits, backdrivability, and the gear-ratio trade that ties them together. It does not teach motor design (magnetics, windings, commutation), power electronics (PWM bridges, field-oriented control), hydraulic actuation, joint flexibility or friction identification. The controller that uses a backdrivable, torque-controlled drive for contact is [[04-robotics/force-compliance-control|13. Force & Compliance Control]], and the capstan version of the same trade, on a haptic handle, is [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]], later in the haptics track and not needed here.*
 
 ### The picture · 그림으로 먼저 보기
 
@@ -103,9 +103,9 @@ because $n=100$ divides the torque and $1/\eta=1.25$ adds a quarter on top: a lo
 
 $$i=\frac{\tau_m}{k_t}=\frac{0.2453}{0.10}=2.4525\,\mathrm{A}$$
 
-which is $24.5\%$ of the amplifier's $10\,\mathrm{A}$ and $77.6\%$ of the $3.162\,\mathrm{A}$ the winding can carry continuously (§6).
+which is $24.5\%$ of the amplifier's $10\,\mathrm{A}$ and $77.6\%$ of the $3.162\,\mathrm{A}$ the winding can carry continuously — the current whose heat $i^2R$, flowing out through $R_{th}$, holds the winding exactly at its allowed $100\,\mathrm{K}$ rise, $\sqrt{100/(10\cdot1.0)}$ (§6 derives it).
 
-**Step 4 — the voltage.** Nothing turns, so there is no back-EMF, and the current is steady, so there is no inductive drop; the winding equation of §1 leaves only $V=Ri=2.45\,\mathrm{V}$ of the $24\,\mathrm{V}$ supply.
+**Step 4 — the voltage.** The terminal voltage splits three ways, $V=Ri+L\,di/dt+k_e\omega_m$: the resistance's drop, the inductance's drop and the back-EMF of the spinning rotor (§1). Nothing turns, so there is no back-EMF, and the current is steady, so there is no inductive drop; that leaves only $V=Ri=2.45\,\mathrm{V}$ of the $24\,\mathrm{V}$ supply.
 
 **Step 5 — the heat.** The supply delivers $Vi=6.01\,\mathrm{W}$ and the arm does no work, so every one of those watts is heat, $P=i^2R=2.4525^2\cdot1.0=6.01\,\mathrm{W}$. Through the thermal resistance the winding settles at
 
@@ -117,7 +117,7 @@ above ambient, since in steady state the heat flowing out through $R_{th}$ must 
 
 $$M=\begin{pmatrix}3&1\\1&1\end{pmatrix}\ \longrightarrow\ \begin{pmatrix}4.0001&1.01\\1.01&2\end{pmatrix}\ \mathrm{kg{\cdot}m^2}$$
 
-where the $0.0001$ is the elbow rotor riding along on link 1. Every entry is kinetic energy per squared joint rate, so the gearbox's losses do not appear in it. A rotor with $1/30{,}000$ of the shoulder's inertia has become a third of it, and at the elbow the drive has doubled the arm. For the lab, one more number: what the shoulder motor actually has to accelerate, referred to the joint, is $J_{eq}=n^2J_m+M_{11}/\eta=1.0+3.75=4.75\,\mathrm{kg{\cdot}m^2}$ — the rotor at its energy value, and the link taxed by the gearbox (§2).
+where the $0.0001$ is the elbow rotor riding along on link 1. Every entry is kinetic energy per squared joint rate, so the gearbox's losses do not appear in it. A rotor with $1/30{,}000$ of the shoulder's inertia has become a third of it, and at the elbow the drive has doubled the arm.
 
 The problem set repeats these six steps at the pose where gravity is largest, and at another gear ratio.
 
@@ -152,11 +152,20 @@ where $\omega_m$ is the motor speed, $i$ the winding current and $\tau_{in}$ the
 > - **Non-example**: "a motor with twice the $k_t$ is twice as good." Rewind the same motor with twice the turns of half-section wire: $k_t$ doubles and $R$ quadruples (twice the length, half the cross-section), so the heat for a given torque, $\tau_m^2R/k_t^2$, does not change. $k_t$ trades current for voltage; the magnetics and the copper decide torque per watt.
 > - **Why it matters**: the first equation is why every drive closes a loop on *current* rather than voltage — current is torque — and the second is why speed costs voltage, which is the whole of §3's speed limit and of §7's shorted-motor brake.
 
-The identity $k_t=k_e$ is the motor's power ledger, and one instant of the §8 lift makes it concrete. At $t=0.40\,\mathrm{s}$ on the $n=100$ drive the joint turns at $1.226\,\mathrm{rad/s}$, the current is $2.824\,\mathrm{A}$ and the amplifier applies $15.05\,\mathrm{V}$. The supply delivers $Vi=42.5\,\mathrm{W}$: $8.0\,\mathrm{W}$ heats the winding, $0.1\,\mathrm{W}$ comes back out of the inductance as the current falls, and $34.6\,\mathrm{W}$ crosses the back-EMF, $e\,i$. On the mechanical side $k_ti\,\omega_m$ is the same $34.6\,\mathrm{W}$ — that equality *is* $k_t=k_e$ — of which $0.5\,\mathrm{W}$ spins up the rotor and turns its bearings, $6.8\,\mathrm{W}$ is lost in the gearbox, and $27.3\,\mathrm{W}$ reaches the link to lift it and speed it up. Sixty-four percent of what left the supply did the job.
+The identity $k_t=k_e$ is the motor's power ledger: every watt that crosses the back-EMF on the electrical side, $e\,i$, reappears on the mechanical side as $\tau_m\omega_m$. §8 closes that ledger watt by watt at one instant of its lift, once the gearbox and the simulation that produce the numbers are in place.
 
 ### 2. The gearbox: ratio, efficiency, and the load seen from the motor
 
-The gear ratio $n$ is the transmission ratio of [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §3]] for a gear train instead of a capstan: a kinematic number, motor turns per joint turn, $\omega_m=n\dot\theta$, fixed by tooth counts and independent of load. *Modern Robotics* §8.9.1 notes that robot joints often use ratios of $100$ or more, because a motor that spins fast with little torque has to be traded down to a joint that turns slowly with a lot. What a real gearbox adds to the kinematics is loss.
+> **Gear ratio, defined.** The **gear ratio** $n$ of a transmission is a *ratio of speeds*, motor turns per joint turn, and a *kinematic* number: it is fixed by the geometry of the teeth, not by the load, the speed, the direction of power flow or the losses. Two defining conditions. The motor and joint speeds are **locked in proportion** at every instant, $\omega_m=n\dot\theta$, because meshing teeth cannot slip. And for a train of simple meshing stages the ratio is **set by tooth counts**: in each stage the driven gear's count over the driving gear's, multiplied across the stages.
+>
+> $$n=\frac{\omega_m}{\dot\theta}=\prod_{k}\frac{N_{\text{driven},k}}{N_{\text{driving},k}}$$
+>
+> where $\omega_m$ is the motor speed, $\dot\theta$ the joint speed and $N_{\text{driven},k}$, $N_{\text{driving},k}$ the tooth counts of stage $k$ — so a reduction, the usual robot case, has $n>1$.
+> - **Example**: the frozen drive's $n=100$ could be two stages of a 12-tooth pinion driving a 120-tooth gear, $10\times10$; the motor's $240\,\mathrm{rad/s}$ no-load speed becomes $2.4\,\mathrm{rad/s}$ at the joint.
+> - **Non-example**: "a $100{:}1$ gearbox multiplies torque by $100$." The speed ratio is exact, but the torque ratio is $\eta n=80$ here, because the gearbox takes its cut of the power — the efficiency defined next.
+> - **Why it matters**: $n$ enters speed and torque to the first power and everything the motor side contributes at the joint squared — reflected inertia (§4), holding heat (§6), backdrivability (§7) — so choosing it is the drive's main design decision (§8).
+
+A capstan cable drive has a ratio of the same kind, set by drum radii instead of tooth counts; the haptics track's [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §3]] works that case, and nothing on this page needs it. *Modern Robotics* §8.9.1 notes that robot joints often use ratios of $100$ or more, because a motor that spins fast with little torque has to be traded down to a joint that turns slowly with a lot. What a real gearbox adds to the kinematics is loss.
 
 > **Gearbox efficiency, defined.** The **efficiency** $\eta$ of a gearbox is a *ratio of powers* — output over input, a number between $0$ and $1$ — and a property of the gearbox *at an operating condition*: it varies with load, speed and temperature, and it is not a torque ratio until the kinematics make it one. Three defining conditions. It is a **power** ratio, $\eta=P_{\text{out}}/P_{\text{in}}$. Because the kinematic ratio is exact, $\omega_m=n\dot\theta$, it becomes a **torque** ratio, $\tau_{\text{out}}=\eta n\,\tau_{in}$. And it is declared for **one direction of power flow**, the motor driving the load; when the load drives the motor the loss sits on the other side, $\tau_{in}=\eta_b\,\tau_{\text{out}}/n$, with a backward efficiency $\eta_b$ that is usually lower and that reaches zero in a self-locking gearbox.
 >
@@ -175,7 +184,7 @@ because the torque that reaches the gearbox input is whatever the magnetic torqu
 
 $$\Big(n^2J_m+\frac{M_{11}}{\eta}\Big)\ddot\theta_1=n\,k_t\,i-n^2b\,\dot\theta_1-\frac{g_1(\theta_1)}{\eta}$$
 
-so the joint's inertia, as the motor has to push it, is $J_{eq}=n^2J_m+M_{11}/\eta$: the rotor enters at the energy value of §4, and the link and its gravity enter divided by $\eta$, because only what passes through the gearbox pays its toll. The right-hand side is written in *ideal-gear* units — $nk_ti$ is the torque a lossless gearbox would deliver — and the lab's controller asks for torque in the same units. Setting $\dot\theta_1=\ddot\theta_1=0$ gives $i=g_1/(\eta nk_t)$, the Worked case's Steps 2 and 3 in one line, and the lab's line `acc = ...` is this equation solved for $\ddot\theta_1$.
+so the joint's inertia, as the motor has to push it, is $J_{eq}=n^2J_m+M_{11}/\eta$, which is $1.0+3.75=4.75\,\mathrm{kg{\cdot}m^2}$ on the $n=100$ drive: the rotor enters at the energy value of §4, and the link and its gravity enter divided by $\eta$, because only what passes through the gearbox pays its toll. The right-hand side is written in *ideal-gear* units — $nk_ti$ is the torque a lossless gearbox would deliver — and the lab's controller asks for torque in the same units. Setting $\dot\theta_1=\ddot\theta_1=0$ gives $i=g_1/(\eta nk_t)$, the Worked case's Steps 2 and 3 in one line, and the lab's line `acc = ...` is this equation solved for $\ddot\theta_1$.
 
 One regime condition, stated once: this is the equation of the motor *driving* the load. In §8's lift the link torque $M_{11}\ddot\theta_1+g_1$ stays positive while the arm rises — its smallest value in any row is $0.86\,\mathrm{N{\cdot}m}$, at $n=30$ — so power flows from motor to link for the whole rise, the direction the equation describes. The only reverse flow is the settle-back after each row's small overshoot at the end of the move, where the equation puts the loss on the wrong side; §8 says what that changes.
 
@@ -213,11 +222,16 @@ Now place the lift on it. At mid-move the lift asks for $1.17\,\mathrm{rad/s}$ a
 
 ### 4. Reflected inertia at a revolute joint, and why it can dominate
 
-Reflected inertia is defined in full on the capstan of [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §3]]: the inertia the rotor contributes at the output, fixed by equal kinetic energy, growing with the square of the ratio, and present with the power off. At a revolute joint the derivation is one line. The shoulder's stator is bolted to the base and its rotor turns at $\omega_m=n\dot\theta_1$, so
+> **Reflected inertia, defined.** The **reflected inertia** of a motor behind a transmission is *the inertia its rotor contributes at the output* — a property of the rotor and the ratio alone, not of the load, the controller or whether the drive is powered. Three defining conditions. It is fixed by **equal kinetic energy**: it is the inertia that, turning at the output's speed, stores what the rotor stores at its own speed. It **grows as the square of the ratio**, because the rotor turns $n$ times as fast as the output and kinetic energy goes as speed squared. And it is **present with the power off**, because it is mass in motion, not a control effect. At a revolute joint the derivation is one line: the shoulder's stator is bolted to the base and its rotor turns at $\omega_m=n\dot\theta_1$, so
+>
+> $$\tfrac12J_m\,\omega_m^2=\tfrac12J_m\,(n\dot\theta_1)^2=\tfrac12\,\big(n^2J_m\big)\,\dot\theta_1^2\quad\Longrightarrow\quad J_{\text{refl}}=n^2J_m$$
+>
+> which is the kinetic energy of an inertia $n^2J_m$ turning at the joint's own speed, with $J_m$ the rotor inertia and $\dot\theta_1$ the joint speed.
+> - **Example**: the frozen drive at $n=100$: $10^4\cdot10^{-4}=1.0\,\mathrm{kg{\cdot}m^2}$ at the shoulder, a third of the arm's own $M_{11}=3$ — the Worked case's Step 6.
+> - **Non-example**: the $J=J_m+M_{11}/(\eta n^2)$ of §5. That is the reflection the other way, the *link* seen from the *motor* shaft, divided by $n^2$ and taxed by $\eta$ because it passes through the gearbox; it is the right inertia for the motor's time constant and the wrong one for the arm's mass matrix.
+> - **Why it matters**: it is the one drive parameter that changes the arm's dynamics and not only its limits. It enters the mass matrix, the tip's apparent mass and the impact force below, and past a ratio this section computes it outweighs the arm itself.
 
-$$\tfrac12J_m\,\omega_m^2=\tfrac12J_m\,(n\dot\theta_1)^2=\tfrac12\,\big(n^2J_m\big)\,\dot\theta_1^2$$
-
-which is the kinetic energy of an inertia $n^2J_m$ turning at the joint's own speed. That is what the rotor adds to $M_{11}$, exactly and with no efficiency in it, because the mass matrix is kinetic energy and friction stores none. *Modern Robotics* §8.9.2 calls it apparent inertia and derives it the same way.
+That is what the rotor adds to $M_{11}$, exactly and with no efficiency in it, because the mass matrix is kinetic energy and friction stores none. *Modern Robotics* §8.9.2 calls it apparent inertia and derives it the same way; the capstan version is optional further reading in [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §3]].
 
 The elbow drive is subtler, because its stator rides on link 1. Its rotor's absolute speed is $\dot\theta_1+n\dot\theta_2$, and squaring that splits the rotor's energy three ways,
 
@@ -285,16 +299,30 @@ because the heat stored in the winding's thermal capacity $C_{th}$ is the heat m
 
 ### 7. Backdrivability at a geared joint
 
-Backdrivability is defined in full in [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]: a property of the mechanism with the power off, measured as the force — here, torque — needed to move the output, and quoted with the speed and acceleration it was measured at. What changes at a geared joint is how the motor-side terms reach the output. Each impedance on the motor side — the rotor's inertia, the bearings' viscous friction and, if the windings are shorted, the electrical damping of §1's back-EMF — is a torque proportional to motor motion, and because both the motion and the torque are scaled by $n$ on the way through, each arrives multiplied by $n^2$:
+> **Backdrivability, defined.** **Backdrivability** is *how easily a push at the output moves a transmission and the motor behind it* — a property of the mechanism, not of a controller. Three defining conditions. It is **measured at the output**, as the torque (on a linear axis, the force) a push must supply to move the joint over and above what the link's own inertia and gravity take. It is **quoted with a motion**, the speed and acceleration it was measured at, because its terms scale with both. And it is **passive**: the drive is unpowered, with the state of its windings, open or shorted, stated, because a controller can hide friction slowly but not within the milliseconds of an impact. At a geared joint each motor-side impedance — the rotor's inertia, the bearings' viscous friction and, if the windings are shorted, the electrical damping of §1's back-EMF — is a torque proportional to motor motion, and because both the motion and the torque are scaled by $n$ on the way through, each arrives multiplied by $n^2$:
+>
+> $$\tau_{\text{bd}}=n^2J_m\,\ddot\theta+n^2b\,\dot\theta+\tau_{\text{gear}}\qquad\Big(+\;n^2\frac{k_tk_e}{R}\,\dot\theta\ \ \text{if the windings are shorted}\Big)$$
+>
+> where $\dot\theta$ and $\ddot\theta$ are the joint speed and acceleration of the push, $\tau_{\text{gear}}$ is the gearbox's own friction, and the gearbox is taken as ideal (the paragraph below adds its losses).
+> - **Example**: P2's shoulder on the $n=100$ drive, open windings, pushed at $1\,\mathrm{rad/s^2}$ through $0.5\,\mathrm{rad/s}$: $\tau_{\text{bd}}=1.0+0.05=1.05\,\mathrm{N{\cdot}m}$ before gearbox friction (the first bullet below).
+> - **Non-example**: "the joint is torque-controlled, so it is backdrivable." That is active compliance, which the definition excludes: it needs power and a loop, and it cannot act within an impact, where the passive $n^2J_m$ is what the environment meets.
+> - **Why it matters**: it decides whether a person can move the arm by hand, how hard an impact is, and whether current can be read as torque — the paragraph after the bullets.
 
-$$\tau_{\text{bd}}=n^2J_m\,\ddot\theta+n^2b\,\dot\theta+\tau_{\text{gear}}\qquad\Big(+\;n^2\frac{k_tk_e}{R}\,\dot\theta\ \ \text{if the windings are shorted}\Big)$$
-
-where $\tau_{\text{bd}}$ is the torque a push at the joint must supply on top of the link's own inertia and gravity, for an ideal gearbox, and $\tau_{\text{gear}}$ is the gearbox's own friction — which the single $\eta$ of §2 does not describe at light load and which tends to grow with ratio (*Modern Robotics* §8.9.4). A lossy gearbox also divides the motor-side terms by its backward efficiency $\eta_b$, and a gearbox whose $\eta_b$ reaches zero cannot be backdriven at all; a self-locking worm gear is that extreme.
+In that formula $\tau_{\text{bd}}$ is the torque a push at the joint must supply on top of the link's own inertia and gravity, for an ideal gearbox, and $\tau_{\text{gear}}$ is the gearbox's own friction — which the single $\eta$ of §2 does not describe at light load and which tends to grow with ratio (*Modern Robotics* §8.9.4). A lossy gearbox also divides the motor-side terms by its backward efficiency $\eta_b$, and a gearbox whose $\eta_b$ reaches zero cannot be backdriven at all; a self-locking worm gear is that extreme.
 
 - **Open windings, a person pushing.** Accelerating P2's shoulder at $1\,\mathrm{rad/s^2}$ through $0.5\,\mathrm{rad/s}$ costs the push $1.0+0.05=1.05\,\mathrm{N{\cdot}m}$ for the $n=100$ drive before any gearbox friction, on top of the arm's own $M_{11}\ddot\theta=3\,\mathrm{N{\cdot}m}$ — a third more. At $n=300$ the drive's share is $9.45\,\mathrm{N{\cdot}m}$, three times the arm.
 - **Shorted windings, the arm released.** Some drives short the windings when disabled (dynamic braking); the back-EMF then drives a braking current, and at the joint the damping is $n^2k_tk_e/R=100\,\mathrm{N{\cdot}m{\cdot}s/rad}$ at $n=100$. Released at its pose, P2 sinks at the speed where that damping balances gravity, $19.62/100=0.196\,\mathrm{rad/s}$ or about $11^\circ/\mathrm{s}$ (ideal gearbox, after a brief transient), and at $0.0218\,\mathrm{rad/s}$ at $n=300$. A shorted motor is a brake that works only while the joint moves: it slows the arm and never stops it.
 
-**What this means for reading current as torque.** A drive that estimates its joint torque from its current, $\hat\tau=\eta nk_ti$, is assuming the rotor and friction terms away. At the lift's peak acceleration, $4.51\,\mathrm{rad/s^2}$, the link needs $35.5\,\mathrm{N{\cdot}m}$; the current-based estimate reads $39.1$ at $n=100$, $10\%$ high, and $68.3$ at $n=300$, $93\%$ high, because the rotor's $n^2J_m\ddot\theta$ is in the current and not in the link. Low-ratio drives keep that error small and pay in holding heat, which is §6's trade seen from the sensing side. Wensing et al. (2017) build a legged robot's actuators around this choice, controlling force collocated at the joint and quantifying backdrivability at impact with a metric they call the impact mitigation factor. The torque-based impedance control of [[04-robotics/force-compliance-control|13. §2]] is helped by exactly this kind of drive — a responsive torque interface on a backdrivable joint — and that page's admittance branch is the one written for robots that expose only position or velocity commands.
+**What this means for reading current as torque.** A drive that estimates its joint torque from its current, $\hat\tau=\eta nk_ti$, is assuming the rotor and friction terms away. At the lift's peak acceleration, $4.51\,\mathrm{rad/s^2}$, the link needs $35.5\,\mathrm{N{\cdot}m}$; the current-based estimate reads $39.1$ at $n=100$, $10\%$ high, and $68.3$ at $n=300$, $93\%$ high, because the rotor's $n^2J_m\ddot\theta$ is in the current and not in the link. Low-ratio drives keep that error small and pay in holding heat, which is §6's trade seen from the sensing side. Wensing et al. (2017) build a legged robot's actuators around this choice, controlling force collocated at the joint and quantifying backdrivability at impact with the impact mitigation factor defined below. The torque-based impedance control of [[04-robotics/force-compliance-control|13. §2]] is helped by exactly this kind of drive — a responsive torque interface on a backdrivable joint — and that page's admittance branch is the one written for robots that expose only position or velocity commands.
+
+> **Impact mitigation factor, defined.** The **impact mitigation factor** (IMF) of Wensing et al. (2017) is a *dimensionless score of backdrivability at impact* for a floating-base robot, such as a legged one — a property of its masses and reflected rotor inertias at one contact point and one configuration, not of its controller. Two inertias define it: $\Lambda$, the inertia felt at the contact point with the joints free to move (reflected rotor inertias included), and $\Lambda_L$, the same with every joint locked, so the robot lands as one rigid body. At equal impact velocity the free robot takes the impulse $\Lambda\Lambda_L^{-1}$ times the locked one, so $I-\Lambda\Lambda_L^{-1}$ is the part the free joints remove, and the factor is its determinant:
+>
+> $$\xi=\det\!\big(I-\Lambda\,\Lambda_L^{-1}\big),\qquad 0\le\xi\le1$$
+>
+> where $\xi=1$ means the free dynamics remove the whole impulse and $\xi\to0$ as $\Lambda\to\Lambda_L$, the joints behaving as if locked; $\Lambda$ and $\Lambda_L$ are operational-space inertias in the sense of [[02-foundations/manipulator-kinematics-dynamics|10. §6]], matrices over the contact's directions and plain masses for a single direction.
+> - **Example**: a one-dimensional hopper, a body of $m_b=10\,\mathrm{kg}$ on a foot of $m_f=1\,\mathrm{kg}$, with the actuator's rotor reflected to the leg joint between them as a mass $m_r$. Locked, the foot lands with $\Lambda_L=11\,\mathrm{kg}$. Free, it lands with $\Lambda=m_f+m_bm_r/(m_b+m_r)$, the foot plus body and rotor in series: $1\,\mathrm{kg}$ and $\xi=1-1/11=0.91$ for a direct drive ($m_r=0$), $6\,\mathrm{kg}$ and $\xi=1-6/11=0.45$ for a geared drive with $m_r=10\,\mathrm{kg}$.
+> - **Non-example**: P2. Its base is bolted to the ground, so locking its joints makes the tip immovable, $\Lambda_L^{-1}=0$ and $\xi=1$ for every drive, which says nothing. For a fixed-base arm the comparison is the tip mass of §4 directly — $2.0$, $3.49$ and $11.9\,\mathrm{kg}$.
+> - **Why it matters**: normalised by the locked robot, it puts legged robots of different sizes and gear ratios on one scale, and it rises as the gear ratio falls, which is the quantitative case for the low-ratio drives of the MIT Cheetah.
 
 ### 8. The lab: a cascade on P2's shoulder, and the gear-ratio sweep
 
@@ -372,6 +400,8 @@ for n in (30, 50, 80, 100, 150, 200, 300):
 - **Speed runs out at the top.** The joint's no-load speed $\omega_0/n$ falls toward the lift's $1.17\,\mathrm{rad/s}$, and with the $Ri$ drop the supply is first touched at $n=178$. At $n=200$ the loop rides the $24\,\mathrm{V}$ limit for $0.21\,\mathrm{s}$ around mid-move, but the speed it can reach there, $1.13\,\mathrm{rad/s}$, is only just short of the reference's $1.17$, so the error grows only to $19.5\,\mathrm{mrad}$. At $n=300$ it rides the limit for $0.49\,\mathrm{s}$ and the joint tops out at $0.77\,\mathrm{rad/s}$ — the voltage line's speed at the holding current, $(24-0.9)/(0.1\cdot300)$ — so the arm trails by $118\,\mathrm{mrad}$ and finishes $0.32\,\mathrm{s}$ late.
 - **The window, and what the model gets wrong at its edges.** Heat closes it below $n\approx78$ and the supply above $n\approx178$; $n=100$ sits inside with a $60\,\mathrm{K}$ hold and $8.7\,\mathrm{V}$ of headroom. Every row but $n=30$ ends slightly past the target — up to $16\,\mathrm{mrad}$, at $n=200$ — and settles back at under $0.12\,\mathrm{rad/s}$. In that settle-back the link drives the gearbox, where §2's single $\eta$ puts the loss on the wrong side; a real gearbox's static friction could stop the arm before it settles, held by less current than the table shows. The table's hold currents are the lifting values $g_1/(\eta nk_t)$, the ones a drive is sized by.
 
+**The power ledger at one instant.** §1's identity $k_t=k_e$, closed watt by watt on the $n=100$ run. At $t=0.40\,\mathrm{s}$ the joint turns at $1.226\,\mathrm{rad/s}$, the current is $2.824\,\mathrm{A}$ and the amplifier applies $15.05\,\mathrm{V}$ (print $\dot\theta$, $i$ and $V$ inside `run` at step `k == 8000` to see them). The supply delivers $Vi=42.5\,\mathrm{W}$: $i^2R=8.0\,\mathrm{W}$ heats the winding, $0.1\,\mathrm{W}$ comes back out of the inductance as the current falls, and $e\,i=k_en\dot\theta\,i=0.1\cdot100\cdot1.226\cdot2.824=34.6\,\mathrm{W}$ crosses the back-EMF. On the mechanical side $k_ti\,\omega_m$ is the same $34.6\,\mathrm{W}$ — that equality *is* $k_t=k_e$ — of which $0.5\,\mathrm{W}$ spins up the rotor and turns its bearings, and the remaining $34.1\,\mathrm{W}$ enters the gearbox, which keeps $1-\eta=20\%$ of it, $6.8\,\mathrm{W}$, and passes $27.3\,\mathrm{W}$ to the link to lift it and speed it up. Sixty-four percent of what left the supply did the job.
+
 ### 9. Reading actuator claims in a paper
 
 | The paper says | Ask |
@@ -379,7 +409,7 @@ for n in (30, 50, 80, 100, 150, 200, 300):
 | "rated torque" or "maximum torque" | Continuous or peak? At what ambient, cooling and duty, and for how long does the peak last? |
 | "payload of so many kilograms" | At which pose, which sets the moment arm, held for how long, and at what speed? A payload quoted folded is a different arm at full reach. |
 | "joint torque estimated from motor current" | The gear ratio, the gearbox efficiency in both directions, the friction model, and whether the rotor's $n^2J_m\ddot\theta$ was removed during acceleration. |
-| "backdrivable" or "transparent" | The backdrive torque with speed and acceleration stated ([[04-robotics/haptics-teleoperation/device-design-kinematics\|24.3 §1]]), the power state — open or shorted windings — and the reflected inertia $n^2J_m$. |
+| "backdrivable" or "transparent" | The backdrive torque with speed and acceleration stated (§7), the power state — open or shorted windings — and the reflected inertia $n^2J_m$. |
 | "high-bandwidth torque control" | Current-loop bandwidth is not joint-torque bandwidth: friction, gear compliance and the rotor sit between the two. |
 | "maximum speed" | At what supply voltage and what load? The voltage line moves with both. |
 
@@ -462,7 +492,7 @@ def run(n):
 ### Sources
 
 - K. M. Lynch and F. C. Park, *Modern Robotics: Mechanics, Planning, and Control*, Cambridge University Press, 2017 — §8.9 "Actuation, Gearing, and Friction": the DC motor's voltage equation, the speed–torque curve and its current and voltage limits, gearing with efficiency, apparent (reflected) inertia and the more diagonal mass matrix, and gearhead friction. The free preprint is linked from [[04-robotics/modern-robotics-book|the book guide]].
-- P. M. Wensing, A. Wang, S. Seok, D. Otten, J. Lang and S. Kim, "Proprioceptive Actuator Design in the MIT Cheetah: Impact Mitigation and High-Bandwidth Physical Interaction for Dynamic Legged Robots," *IEEE Transactions on Robotics*, vol. 33, no. 3, pp. 509–522, 2017. DOI 10.1109/TRO.2016.2640183. Cited for what its abstract states: force control collocated at the joints, and backdrivability at impact quantified as an impact mitigation factor.
+- P. M. Wensing, A. Wang, S. Seok, D. Otten, J. Lang and S. Kim, "Proprioceptive Actuator Design in the MIT Cheetah: Impact Mitigation and High-Bandwidth Physical Interaction for Dynamic Legged Robots," *IEEE Transactions on Robotics*, vol. 33, no. 3, pp. 509–522, 2017. DOI 10.1109/TRO.2016.2640183. Cited for force control collocated at the joints and for the impact mitigation factor, its §III-B3, eqs. (33)–(35).
 - Within this wiki: [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] for $M$, $g$ and $\Lambda$; [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]] for the mass matrix as kinetic energy; [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]] for the same trade on a capstan; [[04-robotics/force-compliance-control|13. Force & Compliance Control]] for what a backdrivable drive is for.
 - The drive's values are illustrative, and every number on this page was computed here from them and from P2's catalog values; recompute them rather than trusting them.
 
@@ -471,7 +501,7 @@ def run(n):
 *P2의 $M$과 $g$는 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]] 위에, PD·대역폭·anti-windup은 [[04-robotics/control-theory-ce397|5. 제어 이론]] 위에 선다. 액추에이터를 embodiment의 일부로 꼽기만 하고 열어 보지는 않는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §2]] 옆에 놓인다. 다시 쓰는 장치는 **P2**. 이제 관절마다 모터와 기어박스가 달려 있다.*
 
 > [!note] 처음이라면 · First pass
-> 이 페이지의 대상과 계산 절을 먼저 읽어라. 관절 토크 하나가 암페어·볼트·와트·켈빈으로 바뀌고, 눈에 보이지 않는 회전자 하나가 P2 질량 행렬의 원소 하나를 바꾼다. 그다음 두 방정식의 §1, 토크–속도 선의 §3, 반사 관성의 §4, 그리고 관절이 무엇을 버틸 수 있는지를 전류가 아니라 열이 정하는 이유인 §6. §2·§5·§7은 구동계에 관해 읽을 때가 아니라 고를 때 연다. §8은 랩, §9는 논문 읽기 점검표다.
+> 이 페이지의 대상, 그림, 계산 절을 먼저 읽어라. 관절 토크 하나가 암페어·볼트·와트·켈빈으로 바뀌고, 눈에 보이지 않는 회전자 하나가 P2 질량 행렬의 원소 하나를 바꾼다. 그다음 두 방정식의 §1, 토크–속도 선의 §3, 반사 관성의 §4, 그리고 관절이 무엇을 버틸 수 있는지를 전류가 아니라 열이 정하는 이유인 §6. §2·§5·§7은 구동계에 관해 읽을 때가 아니라 고를 때 연다. §8은 랩, §9는 논문 읽기 점검표다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -497,7 +527,7 @@ def run(n):
 
 모델링 선택 셋을 한 번만 적어 둔다. **두 구동계는 똑같고**, 관절마다 하나씩이다. **구동계가 팔에 더하는 것은 회전자의 자전 관성뿐이다.** 구동계의 질량은 카탈로그의 점질량 안에 들어 있다고 본다. 그래서 받침에 볼트로 고정된 어깨 구동계는 질량을 더하지 않고, 팔꿈치 구동계의 질량은 팔꿈치의 $1\,\mathrm{kg}$에 포함된다. **전기 모델은 브러시 DC 모터의 것이다.** 전류 제어기 아래의 브러시리스 모터도 같은 꼴의 식을 따르고, *Modern Robotics* §8.9.1도 같은 단순화를 한다. 랩(§8)에서는 팔꿈치 구동계가 팔꿈치를 $90^\circ$에 붙잡고 어깨만 움직이므로, 어깨는 정확히 $M_{11}$과 $g_1(\theta_1)=9.81\,(2\cos\theta_1-\sin\theta_1)\,\mathrm{N{\cdot}m}$를 본다. 10번 페이지의 $g_1$에서 $\theta_2$를 $90^\circ$로 고정한 것이다.
 
-*범위: 이 페이지는 P2의 한 관절에 달린 기어 달린 DC 구동계 하나를 가르친다. 전기 방정식과 기계 방정식, 토크–속도 선, 반사 관성과 그것이 질량 행렬에 하는 일, 전류 루프를 정당화하는 두 시정수, 열 한계와 전류 한계, 역구동성, 그리고 이것들을 한데 묶는 감속비의 맞바꿈이다. 모터 설계(자기 회로, 권선, 정류), 전력 전자(PWM 브리지, field-oriented control), 유압 구동, 관절 유연성, 마찰 동정은 가르치지 않는다. 역구동 가능한 토크 제어 구동계를 접촉에 쓰는 제어기는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]이고, 같은 맞바꿈의 캡스턴 판, 즉 햅틱 핸들 위의 이야기는 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]이다.*
+*범위: 이 페이지는 P2의 한 관절에 달린 기어 달린 DC 구동계 하나를 가르친다. 전기 방정식과 기계 방정식, 토크–속도 선, 반사 관성과 그것이 질량 행렬에 하는 일, 전류 루프를 정당화하는 두 시정수, 열 한계와 전류 한계, 역구동성, 그리고 이것들을 한데 묶는 감속비의 맞바꿈이다. 모터 설계(자기 회로, 권선, 정류), 전력 전자(PWM 브리지, field-oriented control), 유압 구동, 관절 유연성, 마찰 동정은 가르치지 않는다. 역구동 가능한 토크 제어 구동계를 접촉에 쓰는 제어기는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]이고, 같은 맞바꿈의 캡스턴 판, 즉 햅틱 핸들 위의 이야기는 햅틱 트랙 뒤쪽의 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]이며 여기에는 필요 없다.*
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -558,9 +588,9 @@ $$\tau_m=\frac{g_1}{\eta n}=\frac{19.62}{0.8\cdot100}=0.2453\,\mathrm{N{\cdot}m}
 
 $$i=\frac{\tau_m}{k_t}=\frac{0.2453}{0.10}=2.4525\,\mathrm{A}$$
 
-이고, 이것은 증폭기의 $10\,\mathrm{A}$의 $24.5\%$, 권선이 연속으로 흘릴 수 있는 $3.162\,\mathrm{A}$의 $77.6\%$다(§6).
+이고, 이것은 증폭기의 $10\,\mathrm{A}$의 $24.5\%$, 권선이 연속으로 흘릴 수 있는 $3.162\,\mathrm{A}$의 $77.6\%$다. 연속 전류란 그 열 $i^2R$이 $R_{th}$를 거쳐 빠져나가며 권선을 허용 상승 $100\,\mathrm{K}$에 딱 맞춰 두는 전류, $\sqrt{100/(10\cdot1.0)}$이다(유도는 §6).
 
-**4단계 — 전압.** 아무것도 돌지 않으니 역기전력이 없고, 전류가 일정하니 인덕턴스에 걸리는 전압도 없다. §1의 권선 방정식에는 $24\,\mathrm{V}$ 공급 중 $V=Ri=2.45\,\mathrm{V}$만 남는다.
+**4단계 — 전압.** 단자 전압은 세 곳으로 나뉜다. $V=Ri+L\,di/dt+k_e\omega_m$, 곧 저항의 강하, 인덕턴스의 강하, 도는 회전자의 역기전력이다(§1). 아무것도 돌지 않으니 역기전력이 없고, 전류가 일정하니 인덕턴스에 걸리는 전압도 없다. 그래서 $24\,\mathrm{V}$ 공급 중 $V=Ri=2.45\,\mathrm{V}$만 남는다.
 
 **5단계 — 열.** 공급은 $Vi=6.01\,\mathrm{W}$를 내고 팔은 아무 일도 하지 않으므로, 그 와트가 전부 열이 된다. $P=i^2R=2.4525^2\cdot1.0=6.01\,\mathrm{W}$. 열저항을 거쳐 권선은
 
@@ -572,7 +602,7 @@ $$\Delta T=R_{th}\,P=10\cdot6.01=60.1\,\mathrm{K}$$
 
 $$M=\begin{pmatrix}3&1\\1&1\end{pmatrix}\ \longrightarrow\ \begin{pmatrix}4.0001&1.01\\1.01&2\end{pmatrix}\ \mathrm{kg{\cdot}m^2}$$
 
-여기서 $0.0001$은 링크 1에 올라타 함께 도는 팔꿈치 회전자다. 모든 원소는 관절 속도 제곱당 운동 에너지이므로 기어박스의 손실은 여기에 나타나지 않는다. 어깨 관성의 $1/30{,}000$밖에 안 되는 회전자가 그 3분의 1이 되었고, 팔꿈치에서는 구동계가 팔을 두 배로 만들었다. 랩을 위해 숫자 하나 더. 어깨 모터가 실제로 가속해야 하는 것을 관절로 환산하면 $J_{eq}=n^2J_m+M_{11}/\eta=1.0+3.75=4.75\,\mathrm{kg{\cdot}m^2}$다. 회전자는 에너지 값 그대로, 링크는 기어박스의 세금을 붙여 들어온다(§2).
+여기서 $0.0001$은 링크 1에 올라타 함께 도는 팔꿈치 회전자다. 모든 원소는 관절 속도 제곱당 운동 에너지이므로 기어박스의 손실은 여기에 나타나지 않는다. 어깨 관성의 $1/30{,}000$밖에 안 되는 회전자가 그 3분의 1이 되었고, 팔꿈치에서는 구동계가 팔을 두 배로 만들었다.
 
 과제는 이 여섯 단계를 중력이 가장 큰 자세와 다른 감속비에서 되풀이한다.
 
@@ -607,11 +637,20 @@ $\omega_m$은 모터 속도, $i$는 권선 전류, $\tau_{in}$은 모터 축이 
 > - **비예**: "$k_t$가 두 배인 모터는 두 배 좋다." 같은 모터를 단면이 절반인 전선으로 두 배 감아 다시 만들면 $k_t$는 두 배, $R$은 네 배가 된다(길이 두 배, 단면 절반). 그래서 주어진 토크에 드는 열 $\tau_m^2R/k_t^2$은 그대로다. $k_t$는 전류와 전압을 맞바꿀 뿐이고, 와트당 토크는 자기 회로와 구리가 정한다.
 > - **왜 중요한가**: 첫 식은 모든 구동계가 전압이 아니라 *전류*에 루프를 닫는 이유다 — 전류가 곧 토크다. 둘째 식은 속도가 전압을 먹는 이유이고, 이것이 §3의 속도 한계 전부이자 §7에서 단락된 모터가 브레이크가 되는 이유다.
 
-$k_t=k_e$라는 등식은 모터의 일률 장부이고, §8 들어올리기의 한 순간이 그것을 구체적으로 보여 준다. $n=100$ 구동계에서 $t=0.40\,\mathrm{s}$일 때 관절은 $1.226\,\mathrm{rad/s}$로 돌고, 전류는 $2.824\,\mathrm{A}$, 증폭기가 거는 전압은 $15.05\,\mathrm{V}$다. 공급은 $Vi=42.5\,\mathrm{W}$를 낸다. $8.0\,\mathrm{W}$는 권선을 데우고, 전류가 줄면서 인덕턴스에서 $0.1\,\mathrm{W}$가 도로 나오고, $34.6\,\mathrm{W}$가 역기전력을 건너간다, $e\,i$. 기계 쪽에서 $k_ti\,\omega_m$도 같은 $34.6\,\mathrm{W}$다 — 그 같음이 곧 $k_t=k_e$다. 그중 $0.5\,\mathrm{W}$는 회전자를 가속하고 베어링을 돌리는 데, $6.8\,\mathrm{W}$는 기어박스에서 잃고, $27.3\,\mathrm{W}$가 링크에 닿아 팔을 들어 올리고 빠르게 한다. 공급을 떠난 것의 64퍼센트가 일을 했다.
+$k_t=k_e$라는 등식은 모터의 일률 장부다. 전기 쪽에서 역기전력을 건너가는 와트 $e\,i$는 모두 기계 쪽에서 $\tau_m\omega_m$으로 다시 나타난다. 기어박스와, 숫자를 내는 시뮬레이션이 갖춰진 뒤 §8이 들어올리기의 한 순간에서 그 장부를 와트 단위로 맞춘다.
 
 ### 2. 기어박스: 감속비, 효율, 그리고 모터에서 본 부하
 
-감속비 $n$은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §3]]의 전달비를 캡스턴 대신 기어열에 적용한 것이다. 기구학적인 숫자이고, 관절 한 바퀴당 모터 회전수, $\omega_m=n\dot\theta$이며, 잇수가 정하고 부하와 무관하다. *Modern Robotics* §8.9.1은 로봇 관절이 흔히 $100$ 이상의 감속비를 쓴다고 적는다. 빠르게 돌지만 토크가 작은 모터를, 느리게 돌지만 토크가 큰 관절로 맞바꿔야 하기 때문이다. 실제 기어박스가 기구학에 더하는 것은 손실이다.
+> **감속비의 정의.** 전동 장치의 **감속비**(gear ratio) $n$은 *속도의 비*, 곧 관절 한 바퀴당 모터 회전수이고, *기구학적인* 숫자다. 이의 기하가 정하며 부하, 속도, 일률이 흐르는 방향, 손실과는 무관하다. 정의 조건 둘. 모터와 관절의 속도는 매 순간 **비례로 묶여** 있다, $\omega_m=n\dot\theta$. 맞물린 이는 미끄러지지 않기 때문이다. 그리고 단순히 맞물리는 단들로 된 기어열이라면 그 비는 **잇수가 정한다**. 단마다 구동되는 기어의 잇수를 구동하는 기어의 잇수로 나누고, 단들에 걸쳐 곱한다.
+>
+> $$n=\frac{\omega_m}{\dot\theta}=\prod_{k}\frac{N_{\text{driven},k}}{N_{\text{driving},k}}$$
+>
+> $\omega_m$은 모터 속도, $\dot\theta$는 관절 속도, $N_{\text{driven},k}$와 $N_{\text{driving},k}$는 $k$번째 단의 잇수다. 그래서 로봇에서 흔한 감속은 $n>1$이다.
+> - **예**: 고정한 구동계의 $n=100$은 12개 이의 피니언이 120개 이의 기어를 돌리는 단 두 개, $10\times10$일 수 있다. 모터의 무부하 속도 $240\,\mathrm{rad/s}$가 관절에서는 $2.4\,\mathrm{rad/s}$가 된다.
+> - **비예**: "$100{:}1$ 기어박스는 토크를 $100$배 한다." 속도의 비는 정확하지만 토크의 비는 여기서 $\eta n=80$이다. 기어박스가 일률에서 제 몫을 떼어 가기 때문이고, 그것이 다음에 정의하는 효율이다.
+> - **왜 중요한가**: $n$은 속도와 토크에는 1제곱으로, 모터 쪽이 관절에 보태는 모든 것에는 제곱으로 들어간다 — 반사 관성(§4), 유지 열(§6), 역구동성(§7). 그래서 $n$을 고르는 것이 구동계 설계의 핵심 결정이다(§8).
+
+캡스턴 케이블 구동도 같은 종류의 비를 가지며, 잇수 대신 드럼 반지름이 정한다. 햅틱 트랙의 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §3]]이 그 경우를 다루고, 이 페이지에는 필요 없다. *Modern Robotics* §8.9.1은 로봇 관절이 흔히 $100$ 이상의 감속비를 쓴다고 적는다. 빠르게 돌지만 토크가 작은 모터를, 느리게 돌지만 토크가 큰 관절로 맞바꿔야 하기 때문이다. 실제 기어박스가 기구학에 더하는 것은 손실이다.
 
 > **기어박스 효율의 정의.** 기어박스의 **효율** $\eta$는 *일률의 비*다. 출력 나누기 입력, $0$과 $1$ 사이의 수이고, *운전 조건에서의* 기어박스 성질이다. 부하·속도·온도에 따라 변하며, 기구학이 그렇게 만들기 전까지는 토크 비가 아니다. 정의 조건 셋. **일률의 비다**: $\eta=P_{\text{out}}/P_{\text{in}}$. 기구학적 비가 정확하므로, $\omega_m=n\dot\theta$, **토크의 비가 된다**: $\tau_{\text{out}}=\eta n\,\tau_{in}$. 그리고 **일률이 흐르는 한 방향**, 즉 모터가 부하를 구동하는 방향에 대해 선언한다. 부하가 모터를 구동하면 손실이 반대편에 앉는다. $\tau_{in}=\eta_b\,\tau_{\text{out}}/n$이고, 역방향 효율 $\eta_b$는 보통 더 낮으며 자체 잠김(self-locking) 기어박스에서는 0에 이른다.
 >
@@ -630,7 +669,7 @@ $$J_m\,\dot\omega_m=k_t\,i-\frac{\tau_{\text{load}}}{n\eta}-b\,\omega_m$$
 
 $$\Big(n^2J_m+\frac{M_{11}}{\eta}\Big)\ddot\theta_1=n\,k_t\,i-n^2b\,\dot\theta_1-\frac{g_1(\theta_1)}{\eta}$$
 
-이다. 그러니 모터가 밀어야 하는 관절의 관성은 $J_{eq}=n^2J_m+M_{11}/\eta$다. 회전자는 §4의 에너지 값으로 들어오고, 링크와 그 중력은 $\eta$로 나뉘어 들어온다. 기어박스를 지나는 것만 통행료를 내기 때문이다. 우변은 *이상 기어* 단위로 쓰였다 — $nk_ti$는 손실 없는 기어박스가 전달할 토크다 — 그리고 랩의 제어기도 같은 단위로 토크를 요구한다. $\dot\theta_1=\ddot\theta_1=0$으로 두면 $i=g_1/(\eta nk_t)$, 계산 절의 2·3단계가 한 줄로 나오고, 랩의 `acc = ...` 줄은 이 식을 $\ddot\theta_1$에 대해 푼 것이다.
+이다. 그러니 모터가 밀어야 하는 관절의 관성은 $J_{eq}=n^2J_m+M_{11}/\eta$이고, $n=100$ 구동계에서는 $1.0+3.75=4.75\,\mathrm{kg{\cdot}m^2}$다. 회전자는 §4의 에너지 값으로 들어오고, 링크와 그 중력은 $\eta$로 나뉘어 들어온다. 기어박스를 지나는 것만 통행료를 내기 때문이다. 우변은 *이상 기어* 단위로 쓰였다 — $nk_ti$는 손실 없는 기어박스가 전달할 토크다 — 그리고 랩의 제어기도 같은 단위로 토크를 요구한다. $\dot\theta_1=\ddot\theta_1=0$으로 두면 $i=g_1/(\eta nk_t)$, 계산 절의 2·3단계가 한 줄로 나오고, 랩의 `acc = ...` 줄은 이 식을 $\ddot\theta_1$에 대해 푼 것이다.
 
 적용 영역 조건 하나를 한 번만 적어 둔다. 이것은 모터가 부하를 *구동하는* 식이다. §8의 들어올리기에서 링크 토크 $M_{11}\ddot\theta_1+g_1$은 팔이 올라가는 동안 양수로 남는다 — 모든 행을 통틀어 가장 작은 값이 $n=30$의 $0.86\,\mathrm{N{\cdot}m}$다 — 그래서 올라가는 내내 일률은 모터에서 링크로 흐르고, 이것이 식이 기술하는 방향이다. 거꾸로 흐르는 것은 각 행이 동작 끝에서 조금 넘어섰다가 되돌아오는 구간뿐이고, 거기서는 식이 손실을 엉뚱한 쪽에 둔다. 그것이 무엇을 바꾸는지는 §8이 말한다.
 
@@ -668,11 +707,16 @@ $$\tau_j=\frac{\eta nk_t}{R}\big(V_s-k_en\,\dot\theta\big)$$
 
 ### 4. 회전 관절의 반사 관성, 그리고 그것이 지배할 수 있는 이유
 
-반사 관성은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §3]]의 캡스턴 위에서 완전히 정의했다. 회전자가 출력에 기여하는 관성이고, 운동 에너지가 같다는 조건으로 정해지며, 비의 제곱으로 자라고, 전원이 꺼져도 있다. 회전 관절에서는 유도가 한 줄이다. 어깨의 고정자는 받침에 볼트로 고정되어 있고 회전자는 $\omega_m=n\dot\theta_1$로 도므로
+> **반사 관성의 정의.** 전동 장치 뒤에 있는 모터의 **반사 관성**(reflected inertia)은 *그 회전자가 출력에 기여하는 관성*이다. 회전자와 비만의 성질이고, 부하나 제어기, 구동계에 전원이 들어와 있는지와는 무관하다. 정의 조건 셋. **운동 에너지가 같다.** 출력의 속도로 돌면서 회전자가 제 속도로 도는 만큼의 에너지를 저장하는 관성이다. **비의 제곱으로 자란다.** 회전자는 출력의 $n$배로 돌고 운동 에너지는 속도의 제곱으로 가기 때문이다. 그리고 **전원이 꺼져도 있다.** 제어의 효과가 아니라 움직이는 질량이기 때문이다. 회전 관절에서는 유도가 한 줄이다. 어깨의 고정자는 받침에 볼트로 고정되어 있고 회전자는 $\omega_m=n\dot\theta_1$로 도므로
+>
+> $$\tfrac12J_m\,\omega_m^2=\tfrac12J_m\,(n\dot\theta_1)^2=\tfrac12\,\big(n^2J_m\big)\,\dot\theta_1^2\quad\Longrightarrow\quad J_{\text{refl}}=n^2J_m$$
+>
+> 이고, 이것은 관절 자신의 속도로 도는 관성 $n^2J_m$의 운동 에너지다. $J_m$은 회전자 관성, $\dot\theta_1$은 관절 속도다.
+> - **예**: $n=100$인 고정 구동계. 어깨에서 $10^4\cdot10^{-4}=1.0\,\mathrm{kg{\cdot}m^2}$로, 팔 자신의 $M_{11}=3$의 3분의 1이다 — 계산 절의 6단계.
+> - **비예**: §5의 $J=J_m+M_{11}/(\eta n^2)$. 이것은 반대 방향의 반사, 곧 *모터* 축에서 본 *링크*이고, $n^2$로 나뉘며 기어박스를 지나므로 $\eta$의 세금이 붙는다. 모터의 시정수에는 맞는 관성이지만 팔의 질량 행렬에는 틀린 관성이다.
+> - **왜 중요한가**: 구동계 파라미터 가운데 팔의 한계만이 아니라 동역학 자체를 바꾸는 유일한 것이다. 질량 행렬, 말단의 겉보기 질량, 아래의 충돌 힘에 들어가고, 이 절이 계산하는 비를 넘으면 팔 자체보다 무거워진다.
 
-$$\tfrac12J_m\,\omega_m^2=\tfrac12J_m\,(n\dot\theta_1)^2=\tfrac12\,\big(n^2J_m\big)\,\dot\theta_1^2$$
-
-이고, 이것은 관절 자신의 속도로 도는 관성 $n^2J_m$의 운동 에너지다. 회전자가 $M_{11}$에 더하는 것이 정확히 이것이고, 효율은 들어 있지 않다. 질량 행렬은 운동 에너지이고 마찰은 아무것도 저장하지 않기 때문이다. *Modern Robotics* §8.9.2는 이것을 겉보기 관성(apparent inertia)이라 부르고 같은 방식으로 유도한다.
+회전자가 $M_{11}$에 더하는 것이 정확히 이것이고, 효율은 들어 있지 않다. 질량 행렬은 운동 에너지이고 마찰은 아무것도 저장하지 않기 때문이다. *Modern Robotics* §8.9.2는 이것을 겉보기 관성(apparent inertia)이라 부르고 같은 방식으로 유도한다. 캡스턴 판은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §3]]에서 골라 더 읽을 수 있다.
 
 팔꿈치 구동계는 더 미묘한데, 고정자가 링크 1에 올라타 있기 때문이다. 회전자의 절대 속도는 $\dot\theta_1+n\dot\theta_2$이고, 이것을 제곱하면 회전자의 에너지가 셋으로 갈라진다.
 
@@ -740,16 +784,30 @@ $$C_{th}\,\frac{d\,\Delta T}{dt}=i^2R-\frac{\Delta T}{R_{th}}\quad\Longrightarro
 
 ### 7. 기어 달린 관절의 역구동성
 
-역구동성은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]에서 완전히 정의했다. 전원을 끈 메커니즘의 성질이고, 출력을 움직이는 데 필요한 힘 — 여기서는 토크 — 으로 재며, 잰 속도와 가속도를 함께 말한다. 기어 달린 관절에서 달라지는 것은 모터 쪽 항들이 출력에 닿는 방식이다. 모터 쪽의 임피던스 — 회전자의 관성, 베어링의 점성 마찰, 그리고 권선이 단락되어 있다면 §1의 역기전력이 만드는 전기적 댐핑 — 는 모두 모터의 운동에 비례하는 토크이고, 운동과 토크가 지나가면서 각각 $n$배가 되므로 $n^2$배가 되어 도착한다.
+> **역구동성의 정의.** **역구동성**(backdrivability)은 *출력을 미는 힘이 전동 장치와 그 뒤의 모터를 얼마나 쉽게 움직이는가*이고, 제어기가 아니라 메커니즘의 성질이다. 정의 조건 셋. **출력에서 잰다.** 링크 자신의 관성과 중력이 가져가는 몫 위에, 관절을 움직이려고 미는 쪽이 더 내야 하는 토크(직선 축이라면 힘)다. **운동과 함께 말한다.** 그 항들이 속도와 가속도 둘 다에 비례해 커지므로, 잰 속도와 가속도를 밝힌다. 그리고 **수동적이다.** 구동계에는 전원이 없고 권선의 상태(개방인가 단락인가)를 밝힌다. 제어기는 느린 마찰은 감출 수 있어도 충돌의 몇 밀리초 안에서는 그러지 못하기 때문이다. 기어 달린 관절에서 모터 쪽의 임피던스 — 회전자의 관성, 베어링의 점성 마찰, 그리고 권선이 단락되어 있다면 §1의 역기전력이 만드는 전기적 댐핑 — 는 모두 모터의 운동에 비례하는 토크이고, 운동과 토크가 지나가면서 각각 $n$배가 되므로 $n^2$배가 되어 도착한다.
+>
+> $$\tau_{\text{bd}}=n^2J_m\,\ddot\theta+n^2b\,\dot\theta+\tau_{\text{gear}}\qquad\Big(+\;n^2\frac{k_tk_e}{R}\,\dot\theta\ \ \text{권선 단락 시}\Big)$$
+>
+> $\dot\theta$와 $\ddot\theta$는 미는 동안의 관절 속도와 가속도, $\tau_{\text{gear}}$는 기어박스 자신의 마찰이고, 기어박스는 이상적이라고 둔다(손실은 아래 문단이 더한다).
+> - **예**: $n=100$ 구동계의 P2 어깨, 권선 개방, $0.5\,\mathrm{rad/s}$를 지나며 $1\,\mathrm{rad/s^2}$로 민다. 기어박스 마찰 전에 $\tau_{\text{bd}}=1.0+0.05=1.05\,\mathrm{N{\cdot}m}$다(아래 첫 항목).
+> - **비예**: "관절이 토크 제어되므로 역구동 가능하다." 그것은 능동 컴플라이언스이고 정의가 제외하는 것이다. 전원과 루프가 필요하고, 충돌 안에서는 작동하지 못하며, 거기서 환경이 만나는 것은 수동적인 $n^2J_m$이다.
+> - **왜 중요한가**: 사람이 손으로 팔을 움직일 수 있는지, 충돌이 얼마나 단단한지, 전류를 토크로 읽을 수 있는지(항목들 뒤의 문단)를 이것이 정한다.
 
-$$\tau_{\text{bd}}=n^2J_m\,\ddot\theta+n^2b\,\dot\theta+\tau_{\text{gear}}\qquad\Big(+\;n^2\frac{k_tk_e}{R}\,\dot\theta\ \ \text{권선 단락 시}\Big)$$
-
-$\tau_{\text{bd}}$는 이상적인 기어박스에서 관절을 미는 쪽이 링크 자신의 관성과 중력 위에 더 내야 하는 토크이고, $\tau_{\text{gear}}$는 기어박스 자신의 마찰이다. 이 마찰은 §2의 $\eta$ 하나로 가벼운 부하에서 기술되지 않고, 감속비와 함께 커지는 경향이 있다(*Modern Robotics* §8.9.4). 손실이 있는 기어박스는 모터 쪽 항들을 역방향 효율 $\eta_b$로 나누기도 하고, $\eta_b$가 0에 이르는 기어박스는 아예 역구동되지 않는다. 자체 잠김 웜 기어가 그 극단이다.
+그 식에서 $\tau_{\text{bd}}$는 이상적인 기어박스에서 관절을 미는 쪽이 링크 자신의 관성과 중력 위에 더 내야 하는 토크이고, $\tau_{\text{gear}}$는 기어박스 자신의 마찰이다. 이 마찰은 §2의 $\eta$ 하나로 가벼운 부하에서 기술되지 않고, 감속비와 함께 커지는 경향이 있다(*Modern Robotics* §8.9.4). 손실이 있는 기어박스는 모터 쪽 항들을 역방향 효율 $\eta_b$로 나누기도 하고, $\eta_b$가 0에 이르는 기어박스는 아예 역구동되지 않는다. 자체 잠김 웜 기어가 그 극단이다.
 
 - **권선 개방, 사람이 민다.** P2의 어깨를 $0.5\,\mathrm{rad/s}$를 지나며 $1\,\mathrm{rad/s^2}$로 가속하려면, $n=100$ 구동계에 대해 기어박스 마찰 전에 $1.0+0.05=1.05\,\mathrm{N{\cdot}m}$가 든다. 팔 자신의 $M_{11}\ddot\theta=3\,\mathrm{N{\cdot}m}$ 위에서이니 3분의 1 더다. $n=300$에서는 구동계의 몫이 $9.45\,\mathrm{N{\cdot}m}$로 팔의 세 배다.
 - **권선 단락, 팔을 놓는다.** 어떤 구동계는 꺼질 때 권선을 단락한다(동적 제동). 그러면 역기전력이 제동 전류를 흘리고, 관절에서의 댐핑은 $n=100$에서 $n^2k_tk_e/R=100\,\mathrm{N{\cdot}m{\cdot}s/rad}$다. 자세에서 놓인 P2는 그 댐핑이 중력과 맞먹는 속도, $19.62/100=0.196\,\mathrm{rad/s}$ 곧 약 $11^\circ/\mathrm{s}$로 내려앉고(이상적인 기어박스, 짧은 과도 이후), $n=300$에서는 $0.0218\,\mathrm{rad/s}$다. 단락된 모터는 관절이 움직이는 동안에만 듣는 브레이크다. 팔을 늦출 뿐 세우지는 못한다.
 
-**전류를 토크로 읽는다는 것의 의미.** 전류로 관절 토크를 추정하는 구동계, $\hat\tau=\eta nk_ti$는 회전자와 마찰 항을 없는 셈 치고 있다. 들어올리기의 최대 가속도 $4.51\,\mathrm{rad/s^2}$에서 링크에 필요한 것은 $35.5\,\mathrm{N{\cdot}m}$인데, 전류 기반 추정은 $n=100$에서 $39.1$로 $10\%$ 높고, $n=300$에서 $68.3$으로 $93\%$ 높다. 회전자의 $n^2J_m\ddot\theta$는 전류에는 들어 있고 링크에는 없기 때문이다. 감속비가 낮은 구동계는 이 오차를 작게 두고 유지 열로 값을 치른다. §6의 맞바꿈을 센싱 쪽에서 본 것이다. Wensing 외(2017)는 다리 로봇의 액추에이터를 이 선택 위에 짓는다. 힘 제어를 관절에 동위치(collocated)로 두고, 충돌 시의 역구동성을 그들이 impact mitigation factor라 부르는 지표로 잰다. [[04-robotics/force-compliance-control|13. §2]]의 토크 기반 임피던스 제어를 돕는 것이 바로 이런 구동계 — 역구동 가능한 관절 위의 반응 빠른 토크 인터페이스 — 이고, 그 페이지의 어드미턴스 쪽 가지는 위치나 속도 명령만 내주는 로봇을 위해 쓰인 것이다.
+**전류를 토크로 읽는다는 것의 의미.** 전류로 관절 토크를 추정하는 구동계, $\hat\tau=\eta nk_ti$는 회전자와 마찰 항을 없는 셈 치고 있다. 들어올리기의 최대 가속도 $4.51\,\mathrm{rad/s^2}$에서 링크에 필요한 것은 $35.5\,\mathrm{N{\cdot}m}$인데, 전류 기반 추정은 $n=100$에서 $39.1$로 $10\%$ 높고, $n=300$에서 $68.3$으로 $93\%$ 높다. 회전자의 $n^2J_m\ddot\theta$는 전류에는 들어 있고 링크에는 없기 때문이다. 감속비가 낮은 구동계는 이 오차를 작게 두고 유지 열로 값을 치른다. §6의 맞바꿈을 센싱 쪽에서 본 것이다. Wensing 외(2017)는 다리 로봇의 액추에이터를 이 선택 위에 짓는다. 힘 제어를 관절에 동위치(collocated)로 두고, 충돌 시의 역구동성을 아래에 정의하는 impact mitigation factor로 잰다. [[04-robotics/force-compliance-control|13. §2]]의 토크 기반 임피던스 제어를 돕는 것이 바로 이런 구동계 — 역구동 가능한 관절 위의 반응 빠른 토크 인터페이스 — 이고, 그 페이지의 어드미턴스 쪽 가지는 위치나 속도 명령만 내주는 로봇을 위해 쓰인 것이다.
+
+> **Impact mitigation factor의 정의.** Wensing 외(2017)의 **impact mitigation factor**(IMF)는 다리 로봇 같은 부유 베이스(floating-base) 로봇의 *충돌 시 역구동성을 재는 무차원 점수*다. 한 접촉점, 한 자세에서 그 질량과 반사된 회전자 관성이 정하는 성질이지 제어기의 성질이 아니다. 관성 둘이 이것을 정의한다. $\Lambda$는 관절이 자유롭게 움직일 때(반사된 회전자 관성 포함) 접촉점에서 느끼는 관성이고, $\Lambda_L$은 모든 관절을 잠가 로봇이 하나의 강체로 착지할 때의 같은 관성이다. 같은 충돌 속도에서 자유로운 로봇은 잠긴 로봇이 받는 충격량의 $\Lambda\Lambda_L^{-1}$배를 받으므로, $I-\Lambda\Lambda_L^{-1}$이 자유로운 관절이 덜어 내는 부분이고, 그 행렬식이 이 지표다.
+>
+> $$\xi=\det\!\big(I-\Lambda\,\Lambda_L^{-1}\big),\qquad 0\le\xi\le1$$
+>
+> $\xi=1$이면 자유 동역학이 충격량 전부를 덜어 내고, $\Lambda\to\Lambda_L$이면 $\xi\to0$, 곧 관절이 잠긴 것처럼 군다. $\Lambda$와 $\Lambda_L$은 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 뜻의 작업공간 관성으로, 접촉 방향들 위의 행렬이고 방향이 하나라면 그냥 질량이다.
+> - **예**: 1차원 호퍼. 질량 $m_b=10\,\mathrm{kg}$인 몸체가 $m_f=1\,\mathrm{kg}$인 발 위에 있고, 둘 사이 다리 관절에 액추에이터 회전자가 질량 $m_r$로 반사되어 있다. 잠그면 발은 $\Lambda_L=11\,\mathrm{kg}$로 착지한다. 풀면 $\Lambda=m_f+m_bm_r/(m_b+m_r)$, 곧 발에 몸체와 회전자를 직렬로 더한 것으로 착지한다. 직접 구동($m_r=0$)이면 $1\,\mathrm{kg}$과 $\xi=1-1/11=0.91$, $m_r=10\,\mathrm{kg}$인 기어 구동이면 $6\,\mathrm{kg}$과 $\xi=1-6/11=0.45$다.
+> - **비예**: P2. 베이스가 바닥에 볼트로 고정되어 있으므로 관절을 잠그면 말단은 움직일 수 없고, $\Lambda_L^{-1}=0$이라 어떤 구동계든 $\xi=1$이 되어 아무것도 말해 주지 않는다. 고정 베이스 팔에서는 §4의 말단 질량을 직접 비교한다 — $2.0$, $3.49$, $11.9\,\mathrm{kg}$.
+> - **왜 중요한가**: 잠긴 로봇으로 정규화하므로 크기와 감속비가 다른 다리 로봇을 한 척도에 놓고, 감속비가 낮아질수록 커진다. MIT Cheetah가 낮은 감속비 구동계를 쓰는 정량적 근거가 이것이다.
 
 ### 8. 랩: P2 어깨의 캐스케이드와 감속비 스윕
 
@@ -776,6 +834,8 @@ $\tau_{\text{bd}}$는 이상적인 기어박스에서 관절을 미는 쪽이 �
 - **위쪽에서는 속도가 바닥난다.** 관절 무부하 속도 $\omega_0/n$이 들어올리기의 $1.17\,\mathrm{rad/s}$ 쪽으로 떨어지고, $Ri$ 강하가 더해져 공급에 처음 닿는 것은 $n=178$이다. $n=200$에서 루프는 동작 중간에 $0.21\,\mathrm{s}$ 동안 $24\,\mathrm{V}$ 한계를 타지만, 거기서 낼 수 있는 속도 $1.13\,\mathrm{rad/s}$가 기준의 $1.17$에 조금 못 미칠 뿐이라 오차는 $19.5\,\mathrm{mrad}$까지만 는다. $n=300$에서는 $0.49\,\mathrm{s}$ 동안 한계를 타고 관절은 $0.77\,\mathrm{rad/s}$에서 더 오르지 못한다 — 유지 전류에서의 전압선 속도, $(24-0.9)/(0.1\cdot300)$ — 그래서 팔은 $118\,\mathrm{mrad}$ 뒤처지고 $0.32\,\mathrm{s}$ 늦게 끝난다.
 - **창, 그리고 그 가장자리에서 모델이 틀리는 것.** 열이 $n\approx78$ 아래를, 공급이 $n\approx178$ 위를 닫는다. $n=100$은 $60\,\mathrm{K}$ 유지와 $8.7\,\mathrm{V}$의 여유를 가지고 그 안에 있다. $n=30$을 뺀 모든 행이 목표를 조금 넘어서 끝나고 — 최대 $16\,\mathrm{mrad}$, $n=200$에서 — $0.12\,\mathrm{rad/s}$ 미만으로 되돌아온다. 그 되돌아오기에서는 링크가 기어박스를 구동하는데, 거기서 §2의 $\eta$ 하나는 손실을 엉뚱한 쪽에 둔다. 실제 기어박스라면 정지 마찰이 팔을 되돌아오기 전에 세우고, 표보다 적은 전류로 붙잡을 수 있다. 표의 유지 전류는 들어 올리는 값 $g_1/(\eta nk_t)$, 구동계를 고르는 기준이 되는 값이다.
 
+**한 순간의 일률 장부.** §1의 등식 $k_t=k_e$를 $n=100$ 실행에서 와트 단위로 맞춘다. $t=0.40\,\mathrm{s}$에 관절은 $1.226\,\mathrm{rad/s}$로 돌고, 전류는 $2.824\,\mathrm{A}$, 증폭기가 거는 전압은 $15.05\,\mathrm{V}$다(`run` 안에서 `k == 8000`일 때 $\dot\theta$, $i$, $V$를 출력하면 보인다). 공급은 $Vi=42.5\,\mathrm{W}$를 낸다. $i^2R=8.0\,\mathrm{W}$는 권선을 데우고, 전류가 줄면서 인덕턴스에서 $0.1\,\mathrm{W}$가 도로 나오고, $e\,i=k_en\dot\theta\,i=0.1\cdot100\cdot1.226\cdot2.824=34.6\,\mathrm{W}$가 역기전력을 건너간다. 기계 쪽에서 $k_ti\,\omega_m$도 같은 $34.6\,\mathrm{W}$다 — 그 같음이 곧 $k_t=k_e$다. 그중 $0.5\,\mathrm{W}$는 회전자를 가속하고 베어링을 돌리는 데 쓰이고, 나머지 $34.1\,\mathrm{W}$가 기어박스에 들어가 $1-\eta=20\%$인 $6.8\,\mathrm{W}$를 떼이고 $27.3\,\mathrm{W}$가 링크에 닿아 팔을 들어 올리고 빠르게 한다. 공급을 떠난 것의 64퍼센트가 일을 했다.
+
 ### 9. 논문의 액추에이터 주장 읽기
 
 | 논문의 말 | 물어볼 것 |
@@ -783,7 +843,7 @@ $\tau_{\text{bd}}$는 이상적인 기어박스에서 관절을 미는 쪽이 �
 | "정격 토크" 또는 "최대 토크" | 연속인가 최대인가? 주변 온도·냉각·듀티는 무엇이고, 최대는 얼마나 지속되는가? |
 | "가반하중 몇 kg" | 모멘트 팔을 정하는 자세는 무엇이고, 얼마나 오래, 어떤 속도로 붙잡는가? 접힌 자세의 가반하중은 다 편 팔에서는 다른 팔의 이야기다. |
 | "모터 전류로 관절 토크를 추정" | 감속비, 양방향의 기어박스 효율, 마찰 모델, 그리고 가속 중 회전자의 $n^2J_m\ddot\theta$를 뺐는가. |
-| "역구동 가능" 또는 "투명" | 속도와 가속도를 명시한 역구동 토크([[04-robotics/haptics-teleoperation/device-design-kinematics\|24.3 §1]]), 전원 상태 — 권선 개방인가 단락인가 — 그리고 반사 관성 $n^2J_m$. |
+| "역구동 가능" 또는 "투명" | 속도와 가속도를 명시한 역구동 토크(§7), 전원 상태 — 권선 개방인가 단락인가 — 그리고 반사 관성 $n^2J_m$. |
 | "고대역폭 토크 제어" | 전류 루프 대역폭은 관절 토크 대역폭이 아니다. 마찰, 기어 컴플라이언스, 회전자가 둘 사이에 있다. |
 | "최대 속도" | 어떤 공급 전압, 어떤 부하에서인가? 전압선은 둘 다와 함께 움직인다. |
 
@@ -837,6 +897,6 @@ Tier A. 이 페이지, 그 선수 지식, 대상 카탈로그만으로. P2와 �
 ### 출처
 
 - K. M. Lynch and F. C. Park, *Modern Robotics: Mechanics, Planning, and Control*, Cambridge University Press, 2017 — §8.9 "Actuation, Gearing, and Friction": DC 모터의 전압 방정식, 전류·전압 한계를 가진 속도–토크 곡선, 효율을 가진 기어, 겉보기(반사) 관성과 더 대각이 되는 질량 행렬, 기어헤드 마찰. 무료 프리프린트는 [[04-robotics/modern-robotics-book|책 안내]]에 링크되어 있다.
-- P. M. Wensing, A. Wang, S. Seok, D. Otten, J. Lang and S. Kim, "Proprioceptive Actuator Design in the MIT Cheetah: Impact Mitigation and High-Bandwidth Physical Interaction for Dynamic Legged Robots," *IEEE Transactions on Robotics*, vol. 33, no. 3, pp. 509–522, 2017. DOI 10.1109/TRO.2016.2640183. 초록이 말하는 것만 인용한다. 관절에 동위치로 둔 힘 제어, 그리고 impact mitigation factor로 정량화한 충돌 시 역구동성.
+- P. M. Wensing, A. Wang, S. Seok, D. Otten, J. Lang and S. Kim, "Proprioceptive Actuator Design in the MIT Cheetah: Impact Mitigation and High-Bandwidth Physical Interaction for Dynamic Legged Robots," *IEEE Transactions on Robotics*, vol. 33, no. 3, pp. 509–522, 2017. DOI 10.1109/TRO.2016.2640183. 관절에 동위치로 둔 힘 제어와 impact mitigation factor(§III-B3, 식 (33)–(35))를 인용한다.
 - 위키 안: $M$·$g$·$\Lambda$는 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]], 운동 에너지로서의 질량 행렬은 [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]], 캡스턴 위의 같은 맞바꿈은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]], 역구동 가능한 구동계가 무엇에 쓰이는지는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]].
 - 구동계의 값은 예시용이고, 이 페이지의 모든 숫자는 그 값과 P2의 카탈로그 값으로 여기서 계산했다. 믿지 말고 다시 계산하라.

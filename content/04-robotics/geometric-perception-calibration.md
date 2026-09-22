@@ -25,10 +25,10 @@ perception tells you *where* it is, at *what scale*, in *which frame*.
 > bundle adjustment) is a working/mastery topic.
 
 > [!note] Prerequisites
-> [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[02-foundations/optimization|Optimization]] (least squares)
+> Plants **P2** and **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[02-foundations/optimization|Optimization]] (least squares) · [[02-foundations/probability|Probability]] (maximum likelihood, §4; the scalar Kalman update P5 uses, §5)
 
 > [!note] First pass · 처음이라면
-> Read §1 (the pinhole model, with the projection written out), §5 (calibration — where most field failures actually start), §7. §2 to §4 are the machinery; read them when a paper's numbers depend on them.
+> Start with the picture and the Worked case: one point of the rig projected, triangulated, distorted and miscalibrated, with every number. Then read §1 (the pinhole model, with the projection written out), §5 (calibration — where most field failures actually start) and §7 (reading claims). §2 to §4 (depth, image features, two-view geometry, point clouds, ICP) are the machinery; read them when a paper's numbers depend on them. §6 and §7.5 are short bridges to learned perception and to visual servoing.
 
 ### Running object: the wrist rig on P2
 
@@ -183,7 +183,7 @@ The wrist rig and its landmark $L$, at $(X,Z)=(0.5,\,2.0)$ m. Left, the pinhole 
 
 ### Worked case: from the table to a pixel, and back
 
-**1. Project $L$.** In homogeneous form, with the camera frame equal to the world frame so $R = I$ and $t = 0$:
+**1. Project $L$.** In homogeneous form, with the camera frame equal to the world frame so $R = I$ and $t = 0$, and with $K$ the intrinsic matrix that holds the table's $f_x, f_y, c_x, c_y$ and skew $s$ (§1 defines it entry by entry):
 
 $$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&1\end{pmatrix}\begin{pmatrix}0.5\\0.2\\2.0\end{pmatrix} = \begin{pmatrix}940\\600\\2\end{pmatrix}$$
 
@@ -191,7 +191,7 @@ so dividing by the third entry gives $(u, v) = (470, 300)$ px, because the divis
 
 **2. The same point in camera 2, and back to depth.** $p^{c_2} = Ip^{c_1} + t = (0.5 - 0.12,\ 0.2,\ 2.0) = (0.38, 0.2, 2.0)$, which projects to $u_2 = 600 \times 0.38/2.0 + 320 = 434$ and $v_2 = 300$. The disparity is $d = 470 - 434 = 36$ px and $Z = f b / d = 2.0$ m, then $X = (u_1 - c_x)Z/f_x = 150 \times 2/600 = 0.5$ m and $Y = (v_1 - c_y)Z/f_y = 60 \times 2/600 = 0.2$ m. The rig recovers $L$ exactly, since with $R = I$ the triangulation is algebraically the inverse of the projection.
 
-**3. Where distortion moves it.** Normalized coordinates are $x_n = X/Z = 0.25$ and $y_n = Y/Z = 0.10$, so $r^2 = 0.0725$ and $r^4 = 0.00525625$. The radial factor is $1 + k_1r^2 + k_2r^4 = 1 - 0.0145 + 0.000263 = 0.985763$, giving $(x_d, y_d) = (0.246441, 0.098576)$ and a distorted pixel of $(467.864,\ 299.146)$. The landmark actually lands $2.30$ px from where the ideal model says, and that is at a modest $r = 0.269$; it grows as $r^2$ toward the image corners.
+**3. Where distortion moves it.** Distortion acts on the normalized coordinates, before $K$, through the radial factor $1 + k_1r^2 + k_2r^4$ of the Brown–Conrady model (§1 states the model and its order). Here the normalized coordinates are $x_n = X/Z = 0.25$ and $y_n = Y/Z = 0.10$, so $r^2 = 0.0725$ and $r^4 = 0.00525625$. The radial factor is $1 + k_1r^2 + k_2r^4 = 1 - 0.0145 + 0.000263 = 0.985763$, giving $(x_d, y_d) = (0.246441, 0.098576)$ and a distorted pixel of $(467.864,\ 299.146)$. The landmark actually lands $2.30$ px from where the ideal model says, and that is at a modest $r = 0.269$; it grows as $r^2$ toward the image corners.
 
 **4. What a sub-pixel calibration residual hides.** Suppose calibration returns $\hat f = 598$ px instead of $600$, everything else exact. Reproject the three target corners:
 
@@ -201,7 +201,7 @@ so dividing by the third entry gives $(u, v) = (470, 300)$ px, because the divis
 | $B=(0.5,0,2)$ | $(470,\ 240)$ | $(469.5,\ 240.0)$ | $0.50$ px |
 | $C=(0,0.4,2)$ | $(320,\ 360)$ | $(320.0,\ 359.6)$ | $0.40$ px |
 
-The RMS reprojection error is $\sqrt{(0^2 + 0.5^2 + 0.4^2)/3} = 0.370$ px — comfortably "sub-pixel", and the corner at the principal point contributes nothing at all, because a focal-length error is invisible there. Now use that calibration to back-project $B$'s detection at a known $Z = 2$ m: $X = (470-320)\times 2/598 = 0.50167$ m, an error of $1.67$ mm. The relative error is $(f - \hat f)/\hat f = 0.334\%$ of the off-axis distance, so it is $1.67$ mm at $X = 0.5$ m and $10.0$ mm at $X = 3$ m. A sub-pixel residual is a statement about the fit, not about the metre.
+The RMS reprojection error, the root-mean-square pixel distance between detected and reprojected corners (§5 defines it), is $\sqrt{(0^2 + 0.5^2 + 0.4^2)/3} = 0.370$ px — comfortably "sub-pixel", and the corner at the principal point contributes nothing at all, because a focal-length error is invisible there. Now use that calibration to back-project $B$'s detection at a known $Z = 2$ m: $X = (470-320)\times 2/598 = 0.50167$ m, an error of $1.67$ mm. The relative error is $(f - \hat f)/\hat f = 0.334\%$ of the off-axis distance, so it is $1.67$ mm at $X = 0.5$ m and $10.0$ mm at $X = 3$ m. A sub-pixel residual is a statement about the fit, not about the metre.
 
 ### 1. The pinhole camera model
 
@@ -332,7 +332,7 @@ a 12.5% jump at this range: depth error grows quadratically with distance. Acros
 
 **The idea in one sentence:** pick a few hundred points that can be found again in another image, give each a compact fingerprint, and pair fingerprints across images — those pairs are the correspondences every geometric step needs.
 
-Why sparse points instead of every pixel? Stereo depth in §2 needs to know which right-image pixel shows the same point as a left-image pixel. Calibration in §5 needs target corners located to sub-pixel accuracy. Visual odometry and SLAM ([[04-robotics/state-estimation-slam|state estimation]]) track the same points across frames to constrain pose. A point is useful only if it is **repeatable** (detected again after the view changes) and **distinctive** (its neighbourhood does not resemble many others). The pipeline has three stages, and a paper can change any one of them.
+Why sparse points instead of every pixel? Stereo depth in §2 needs to know which right-image pixel shows the same point as a left-image pixel. Calibration in §5 needs target corners, the rig's $A$, $B$ and $C$, located to sub-pixel accuracy. Visual odometry and SLAM ([[04-robotics/state-estimation-slam|state estimation]]) track the same points across frames to constrain pose. A point is useful only if it is **repeatable** (detected again after the view changes) and **distinctive** (its neighbourhood does not resemble many others). The pipeline has three stages, and a paper can change any one of them.
 
 **Detect: where the image changes in every direction.** Shift a small window by $(u,v)$ and measure how much its content changes. A first-order Taylor step gives $I(x+u,y+v)\approx I(x,y)+I_x u+I_y v$, so each pixel's difference is $I_x u+I_y v$ and its square $I_x^2u^2+2I_xI_y\,uv+I_y^2v^2$ is quadratic in $(u,v)$. Summing over the window therefore turns the change into a quadratic form:
 
@@ -377,16 +377,16 @@ Two descriptors are compared by **Hamming distance** — XOR, then count the set
 **Learned features.** SuperPoint (DeTone et al., CVPR Workshops 2018) trains one network to output keypoints and descriptors. SuperGlue (Sarlin et al., CVPR 2020) replaces nearest-neighbour-plus-ratio with a graph neural network that matches the two point sets jointly. LoFTR (Sun et al., CVPR 2021) drops the detector and matches dense transformer features, aiming at low-texture regions where detectors find few points. Each paper reports stronger matching under large viewpoint and illumination change on its benchmarks. Classic features can still be the right call. Weigh the compute budget and frame rate on an embedded robot computer, and whether the training data resembled your scenes. Textureless or repetitive construction surfaces — bare drywall, formwork, rebar grids, identical façade panels — are hard for every method, so test on your own sequences rather than trusting a benchmark ranking.
 
 > [!example] Worked example · 계산 예제
-> Take three 5×5 patches with intensities 0 or 10. Use central differences, $I_x=(I_{x+1}-I_{x-1})/2$, on the inner 3×3 pixels, with $w=1$ and $k=0.05$.
-> - **Flat** (all 10): every gradient is 0, so $M=0$, $\lambda=(0,0)$ and $R=0$.
-> - **Edge** (left two columns 0, the rest 10): $I_x=5$ at 6 pixels and $I_y=0$, so $M=\begin{pmatrix}150&0\\0&0\end{pmatrix}$, $\lambda=(0,150)$ and $R=0-0.05\cdot150^2=-1125$.
-> - **Corner** (bright lower-right 3×3 block): $I_x=5$ at 4 pixels, $I_y=5$ at 4, both at 1, so $M=\begin{pmatrix}100&25\\25&100\end{pmatrix}$, $\lambda=(75,125)$ and $R=9375-0.05\cdot200^2=7375$.
+> **Harris on the rig's calibration image.** For this example, model the calibration target as one bright plate on a dark background with $A$ as its top-left corner: camera 1 sees $A$ at the principal point $(320, 240)$, and the plate runs right toward $B$ at $(470, 240)$ and down toward $C$ at $(320, 360)$. Take three 5×5 patches from that image, with intensity 0 on the background and 10 on the plate. Use central differences, $I_x=(I_{x+1}-I_{x-1})/2$, on the inner 3×3 pixels, with $w=1$ and $k=0.05$.
+> - **Flat**, inside the plate around $(395, 300)$ (all 10): every gradient is 0, so $M=0$, $\lambda=(0,0)$ and $R=0$.
+> - **Edge**, on the plate's left border between $A$ and $C$, around $(320, 300)$ (left two columns 0, the rest 10): $I_x=5$ at 6 pixels and $I_y=0$, so $M=\begin{pmatrix}150&0\\0&0\end{pmatrix}$, $\lambda=(0,150)$ and $R=0-0.05\cdot150^2=-1125$.
+> - **Corner**, centred on $A$ (bright lower-right 3×3 block): $I_x=5$ at 4 pixels, $I_y=5$ at 4, both at 1, so $M=\begin{pmatrix}100&25\\25&100\end{pmatrix}$, $\lambda=(75,125)$ and $R=9375-0.05\cdot200^2=7375$.
 >
-> The signs follow the rule — flat 0, edge negative, corner positive — and the Shi–Tomasi scores are 0, 0 and 75.
+> The signs follow the rule — flat 0, edge negative, corner positive — and the Shi–Tomasi scores are 0, 0 and 75. Only the patch at $A$ can be located in both image directions, which is why a calibration detects the target's corners and not points along its edges.
 >
-> **Ratio test.** A descriptor's three nearest candidates lie at distances 0.20, 0.23 and 0.61. Since $0.20/0.23=0.87>0.8$, reject the match even though 0.20 is the best: two similar candidates usually mean repeated structure. The third distance plays no role. Had the second been 0.45, $0.20/0.45=0.44$ would pass.
+> **Ratio test, on $L$.** In camera 1's image of the panel, $L$'s descriptor at $(470, 300)$ is compared with camera 2's candidates. The true match at $(434, 300)$ is at distance 0.20, the same feature on the next panel over, at $(440, 300)$, at 0.23, and an unrelated point at 0.61. Since $0.20/0.23=0.87>0.8$, reject the match even though the nearest candidate is the right one: two similar candidates usually mean repeated structure, and the test cannot tell which of them is true. §2.6 shows what accepting the wrong one costs: $(440, 300)$ passes the epipolar check and triangulates $40$ cm too far. The third distance plays no role. Had the second been 0.45, $0.20/0.45=0.44$ would pass.
 
-The same response on a synthetic image, with a check that the corner pixel scores highest:
+The same response on a 20×20 crop of that calibration image around $A$, with the plate filling the crop's lower-right quadrant and a check that $A$'s pixel scores highest:
 
 ```python
 import numpy as np
@@ -400,7 +400,7 @@ def harris(img, k=0.05):
     return Sxx * Syy - Sxy**2 - k * (Sxx + Syy)**2   # det M - k (tr M)^2 at every pixel
 
 img = np.zeros((20, 20))
-img[10:, 10:] = 1.0                                  # one bright quadrant, corner at (10, 10)
+img[10:, 10:] = 1.0                                  # the plate; crop pixel (10, 10) is A at (320, 240)
 R = harris(img)
 r, c = np.unravel_index(np.argmax(R), R.shape)
 print(r, c, round(R.max(), 3), round(R[15, 10], 3), R[3, 3])   # 10 10 0.738 -0.112 0.0
@@ -424,7 +424,7 @@ $$\hat x_2^\top E\, \hat x_1 = 0, \qquad \tilde u_2^\top F\, \tilde u_1 = 0$$
 
 It holds because $\hat x_1$, $\hat x_2$ and the baseline $t$ are coplanar, and a triple product of coplanar vectors vanishes.
 
-- The **essential matrix** $E = [t]_\times R$ works in **calibrated** (normalized) coordinates, where $R, t$ are the second camera's rotation and translation relative to the first and $[t]_\times$ is the skew-symmetric matrix with $[t]_\times a = t \times a$. It has **five** degrees of freedom — three for $R$, three for $t$, minus one because scale is unrecoverable — and its singular values are $(\sigma, \sigma, 0)$, so it is rank 2.
+- The **essential matrix** $E = [t]_\times R$ works in **calibrated** (normalized) coordinates, where $R, t$ are the second camera's rotation and translation relative to the first and $[t]_\times$ is the skew-symmetric matrix with $[t]_\times a = t \times a$, the cross product written as a matrix ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §1]]). It has **five** degrees of freedom — three for $R$, three for $t$, minus one because scale is unrecoverable — and its singular values are $(\sigma, \sigma, 0)$, so it is rank 2.
 - The **fundamental matrix** $F = K_2^{-\top} E K_1^{-1}$ works in **pixels** and therefore needs no calibration at all. It has **seven** degrees of freedom: nine entries, minus one for overall scale, minus one for $\det F = 0$. It too is rank 2.
 - Both are defined **only up to scale**, since multiplying either by a constant leaves the constraint $=0$ untouched.
 - The constraint is **necessary, not sufficient.** It constrains a 2D match to a 1D line, removing one degree of freedom out of two. Everything along that line still passes.
@@ -503,7 +503,17 @@ Degeneracy depends on the measured geometry and objective. Point-to-plane residu
 | Hand–eye (camera–robot) | sensor-to-end-effector or base transform | robot motion + target ($AX=XB$) |
 | Temporal | clock offset / latency between sensors | correlation of motion signals |
 
-In the hand–eye equation $AX=XB$ for a wrist-mounted camera, $A$ is the gripper's motion between two robot poses (known from the joint encoders), $B$ is the camera's motion between the same two poses (measured from the target), and $X$ is the unknown camera-to-gripper transform. Each pair of poses gives one equation, and several pairs with different rotation axes pin $X$ down.
+**The hand–eye equation, derived.** A wrist-mounted camera looks at a calibration target that stays put while the arm moves. Write $T_{ab}$ for the transform that takes coordinates in frame $b$ to frame $a$, $p^a = T_{ab}p^b$, as §1's $T_{cw}$ does ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §3]]), with $b$ the robot base, $g$ the gripper, $c$ the camera and $t$ the target. At robot pose $i$, one chain of three transforms reaches the target from the base: the gripper pose $T_{bg_i}$ from the joint encoders, the unknown camera-to-gripper mount $X = T_{gc}$, which never changes, and the target pose $T_{c_it}$ that the camera measures (by PnP, from the target's known corners and their pixels). The target has not moved, so the chains at two robot poses $1$ and $2$ end at the same transform:
+$$T_{bg_1}\,X\,T_{c_1t} = T_{bt} = T_{bg_2}\,X\,T_{c_2t}$$
+Multiply on the left by $T_{bg_2}^{-1}$ and on the right by $T_{c_1t}^{-1}$, and the unknown target pose drops out:
+$$AX = XB, \qquad A = T_{bg_2}^{-1}T_{bg_1}, \qquad B = T_{c_2t}\,T_{c_1t}^{-1}$$
+$A$ is the gripper's motion between the two poses, known from the encoders, and $B$ is the camera's motion between the same poses, measured from the target. Both sides are one transform, the camera at pose 1 seen from the gripper at pose 2, reached along two routes: move the gripper and then step to the camera, or step to the camera and then move it. Splitting $AX = XB$ into its rotation and translation blocks shows what one motion can and cannot tell you:
+$$R_AR_X = R_XR_B, \qquad (R_A - I)\,t_X = R_Xt_B - t_A$$
+The mount's translation $t_X$, the block that holds $d_{ct}$, enters only through $R_A - I$. A motion without rotation leaves it out entirely, and a rotation about one axis leaves out its component along that axis, because $R_A - I$ sends the rotation axis to zero. So several motions with different rotation axes are needed to pin $X$ down.
+
+*Example, on the rig.* Write a transform as (rotation, translation). Put the gripper frame at P2's tool tip with its axes parallel to the camera's, so $X = \big(I,\ (0, 0, -0.04)\big)$: the camera sits $d_{ct}$ behind the tip on the tool axis. Put the target frame at the target corner $(0, 0, 2)$, so $T_{c_1t} = \big(I,\ (0, 0, 2)\big)$. P2 turns its gripper through the tool tip about the camera's $y$ axis, which is the joint-axis direction since P2 is planar, by the angle with $\cos\theta = 0.96$ and $\sin\theta = 0.28$ ($16.26°$). The encoders give $A = \big(R_y(-\theta),\ 0\big)$, with $R_y$ the rotation about $y$ and a minus sign because $A$ re-expresses the old gripper frame in the new one. The camera, $4$ cm behind the pivot, swings: the target now measures $T_{c_2t} = \big(R_y(-\theta),\ (-0.5488, 0, 1.9216)\big)$, so the three target corners appear at $(148.6, 240)$, $(300.0, 240)$ and $(148.6, 364.9)$ px, all still in the image. Then the camera's motion is $B = \big(R_y(-\theta),\ (0.0112, 0, 0.0016)\big)$, and the two routes agree:
+$$AX = XB = \big(R_y(-\theta),\ (0.0112,\ 0,\ -0.0384)\big)$$
+because $R_y(-\theta)(0, 0, -0.04) = (0.0112, 0, -0.0384)$ on the left and $(0, 0, -0.04) + (0.0112, 0, 0.0016)$ is the same vector on the right. *Non-example:* assume the camera sits at the tip, $X = I$. Then $AX$ has no translation while $XB$ keeps $(0.0112, 0, 0.0016)$, a mismatch of $11.3$ mm, the chord $2d_{ct}\sin(\theta/2)$ the camera swept. That is how one rotation exposes the $4$ cm. An offset of the same size along the joint axis, $(0, 0.04, 0)$, would leave $AX = XB$ satisfied by $X = I$ as well: a planar arm like P2, whose every rotation is about that one axis, cannot calibrate the component of the mount along it.
 
 The quality metric is usually **reprojection error**: project the estimated 3D points
 through the estimated model and measure pixel distance to their detections. Low
@@ -514,7 +524,7 @@ calibrated volume, range, or temperature, because the model was fitted only at t
 
 $$e_{ij} = \big\lVert\, \tilde u_{ij} - \pi\big(K, d, T_i, X_j\big) \,\big\rVert_2$$
 
-Three conditions are what make it *the* metric. It is measured **in the image**, where the noise actually is, so least squares on it is the maximum-likelihood estimate under isotropic Gaussian pixel noise ([[02-foundations/optimization|4. Optimization §3]]) — an error measured in metres in 3D would be weighting a quantity the camera never observed. It is **per observation**, so every $(i,j)$ pair contributes. And it depends on **every** parameter at once: move $K$, a distortion coefficient, a pose or the point, and $e_{ij}$ moves. That is why calibration and bundle adjustment are the same optimization with different variables held fixed.
+Three conditions are what make it *the* metric. It is measured **in the image**, where the noise actually is, so least squares on it is the maximum-likelihood estimate under isotropic Gaussian pixel noise ([[02-foundations/probability|3. Probability §4]] for why a Gaussian likelihood becomes squared error, [[02-foundations/optimization|4. Optimization §3]] for the solver) — an error measured in metres in 3D would be weighting a quantity the camera never observed. It is **per observation**, so every $(i,j)$ pair contributes. And it depends on **every** parameter at once: move $K$, a distortion coefficient, a pose or the point, and $e_{ij}$ moves. That is why calibration and bundle adjustment are the same optimization with different variables held fixed.
 
 **The calibration residual, stated completely.** What a calibration tool prints is the **RMS reprojection error** over all corners in all views — one number summarizing $NM$ of the above, with $N$ views and $M$ target corners:
 
@@ -551,8 +561,9 @@ scale enter?* (calibrated stereo/LiDAR, known object size, or not at all).
 
 Perception does not close a robot loop until an image or pose error becomes a velocity
 command. **PBVS** estimates two poses, forms a pose error such as
-$\xi=\operatorname{Log}(T_{current}^{-1}T_{desired})^\vee$, and commands a twist that reduces
-$\xi$. Its accuracy inherits calibration and pose-estimation errors. **IBVS** stays in the
+$\xi=\operatorname{Log}(T_{current}^{-1}T_{desired})^\vee$, where $\operatorname{Log}$ is the pose logarithm of
+[[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3 §5]] and $^\vee$ stacks its result as six numbers,
+and commands a twist ([[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3 §3]]) that reduces $\xi$. Its accuracy inherits calibration and pose-estimation errors. **IBVS** stays in the
 image: for image features $s$, $\dot s=L_s v_c$, where the image Jacobian $L_s$ depends on
 feature depth; a local law such as $v_c=-\lambda L_s^+(s-s^*)$ reduces pixel error. IBVS can
 be less sensitive to full pose reconstruction but still needs depth estimates and a
@@ -622,7 +633,7 @@ Tier B. The wrist rig of the Running object, plus **P5** as a range to a wall ([
 > [!tip]- Solutions
 > 1. The two rays to $L'$ are visibly closer to parallel than the pair at $Z = 2$; the $Z=4$ error bar must be drawn about four times the $Z=2$ one, and the distortion segment about eight times *shorter* than the one in the picture at the top of the page.
 > 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; in camera 2 the point is $(0.38, 0.2, 4.0)$, so $u_2 = 377$ and $d' = 18$ px, giving $Z = 600(0.12)/18 = 4.0$ m. (b) $d' = 17 \Rightarrow Z = 4.235$ m ($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m ($-0.211$). The first-order estimate is $Z^2/(fb) = 16/72 = 0.222$ m, between the two, and the two are unequal because $Z = fb/d$ is convex in $d$ — losing disparity costs more than gaining it, so the depth error distribution is skewed *away* from the camera even when the pixel error is symmetric. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; the factor is $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$, so the point lands at $(394.729,\ 269.892)$ and the shift is $0.291$ px. That is $7.9$ times smaller than the $2.30$ px at $Z = 2$, because the leading radial displacement in pixels is $f\lvert k_1\rvert r^3$ and $r$ halved: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, fused range $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, tip-to-wall $11.6 - 4 = 7.6\,\mathrm{cm}$.
-> 3. (a) $X$ is the unknown camera-to-gripper transform and the $4\,\mathrm{cm}$ is one translation component of it; $A$ is the gripper's motion between two robot poses, $B$ the camera's motion between the same two. A $0.37$ px residual is a *training* residual on the target views, and §5 shows a fit with exactly that residual still misplacing a point by $1.67$ mm at $0.5$ m off-axis and $10.0$ mm at $3$ m — the camera-to-gripper translation is estimated from those same views, so it inherits that extrapolation error. Only a held-out pose and a measured known length test it. (b) **The triangulated depth.** The wrong match has disparity $30$ instead of $36$, so it triangulates to $Z = 2.40$ m rather than $2.00$ m — a $40$ cm error that the epipolar residual reports as zero, because $F$ constrains a match to a line and says nothing about position *along* it. In general you add an independent constraint that is not along the epipolar line: a third view whose epipolar lines cross the first pair at an angle, a direct range measurement (the P5 sensor, or lidar), or an appearance check strong enough to tell two identical panels apart — which, on identical panels, means using their context rather than their texture.
+> 3. (a) $X$ is the unknown camera-to-gripper transform and the $4\,\mathrm{cm}$ is one translation component of it; $A$ is the gripper's motion between two robot poses, $B$ the camera's motion between the same two. It enters the equation only through $(R_A - I)t_X$, so §5's one rotation of P2 shows it as an $11.3$ mm mismatch, and a motion without rotation would not show it at all. A $0.37$ px residual is a *training* residual on the target views, and §5 shows a fit with exactly that residual still misplacing a point by $1.67$ mm at $0.5$ m off-axis and $10.0$ mm at $3$ m — the camera-to-gripper translation is estimated from those same views, so it inherits that extrapolation error. Only a held-out pose and a measured known length test it. (b) **The triangulated depth.** The wrong match has disparity $30$ instead of $36$, so it triangulates to $Z = 2.40$ m rather than $2.00$ m — a $40$ cm error that the epipolar residual reports as zero, because $F$ constrains a match to a line and says nothing about position *along* it. In general you add an independent constraint that is not along the epipolar line: a third view whose epipolar lines cross the first pair at an angle, a direct range measurement (the P5 sensor, or lidar), or an appearance check strong enough to tell two identical panels apart — which, on identical panels, means using their context rather than their texture.
 
 ### Sources
 
@@ -656,10 +667,10 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
 > 단계의 주제다.
 
 > [!note] 선수 지식
-> [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[02-foundations/optimization|최적화]] (최소제곱)
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, **P5** · [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[02-foundations/optimization|최적화]] (최소제곱) · [[02-foundations/probability|확률]] (§4의 최대우도, P5가 쓰는 §5의 스칼라 칼만 갱신)
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1(핀홀 모델, 투영식까지), §5(보정 — 현장 실패가 실제로 시작되는 곳), §7. §2~§4는 기계장치이고, 논문의 숫자가 거기 기댈 때 읽어라.
+> 그림과 계산 절부터 본다. 리그의 점 하나를 투영하고, 삼각측량하고, 왜곡하고, 잘못 보정해 보는 것을 숫자 전부와 함께 한다. 그다음 §1(핀홀 모델, 투영식까지), §5(보정 — 현장 실패가 실제로 시작되는 곳), §7(주장 읽기)을 읽는다. §2~§4(깊이, 이미지 특징, 두 시점 기하, 포인트 클라우드, ICP)는 기계장치이고, 논문의 숫자가 거기 기댈 때 읽어라. §6과 §7.5는 학습 기반 인식과 visual servoing으로 넘어가는 짧은 다리다.
 
 ### 계속 쓰는 대상: P2의 손목 리그
 
@@ -814,7 +825,7 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
 
 ### 대상으로 한 번 끝까지: 표에서 픽셀로, 그리고 되돌아
 
-**1. $L$ 을 투영한다.** 카메라 프레임을 세계 프레임과 같게 두어 $R = I$, $t = 0$ 인 동차 형태로
+**1. $L$ 을 투영한다.** 카메라 프레임을 세계 프레임과 같게 두어 $R = I$, $t = 0$ 이고, $K$ 가 표의 $f_x, f_y, c_x, c_y$ 와 skew $s$ 를 담은 내부 파라미터 행렬(§1이 성분 하나하나를 정의한다)인 동차 형태로
 
 $$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&1\end{pmatrix}\begin{pmatrix}0.5\\0.2\\2.0\end{pmatrix} = \begin{pmatrix}940\\600\\2\end{pmatrix}$$
 
@@ -822,7 +833,7 @@ $$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&
 
 **2. 같은 점을 카메라 2에서, 그리고 깊이로 되돌리기.** $p^{c_2} = Ip^{c_1} + t = (0.5 - 0.12,\ 0.2,\ 2.0) = (0.38, 0.2, 2.0)$ 이므로 $u_2 = 600 \times 0.38/2.0 + 320 = 434$, $v_2 = 300$ 이다. 시차는 $d = 470 - 434 = 36$ px, $Z = f b / d = 2.0$ m이고, 이어서 $X = (u_1 - c_x)Z/f_x = 150 \times 2/600 = 0.5$ m, $Y = (v_1 - c_y)Z/f_y = 60 \times 2/600 = 0.2$ m다. 리그가 $L$ 을 정확히 복원한다. $R = I$ 일 때 삼각측량이 대수적으로 투영의 역이기 때문이다.
 
-**3. 왜곡이 그것을 어디로 옮기는가.** 정규화 좌표는 $x_n = X/Z = 0.25$, $y_n = Y/Z = 0.10$ 이므로 $r^2 = 0.0725$, $r^4 = 0.00525625$ 다. 반경 계수는 $1 + k_1r^2 + k_2r^4 = 1 - 0.0145 + 0.000263 = 0.985763$ 이라 $(x_d, y_d) = (0.246441, 0.098576)$ 이 되고 왜곡된 픽셀은 $(467.864,\ 299.146)$ 이다. 랜드마크는 이상적 모델이 말하는 자리에서 실제로 $2.30$ px 떨어져 맺히는데, 그것도 $r = 0.269$ 라는 온건한 값에서다. 이미지 모서리로 갈수록 $r^2$ 로 자란다.
+**3. 왜곡이 그것을 어디로 옮기는가.** 왜곡은 $K$ 보다 먼저 정규화 좌표에 Brown–Conrady 모델의 반경 계수 $1 + k_1r^2 + k_2r^4$ 로 작용한다(§1이 모델과 그 순서를 적는다). 여기서 정규화 좌표는 $x_n = X/Z = 0.25$, $y_n = Y/Z = 0.10$ 이므로 $r^2 = 0.0725$, $r^4 = 0.00525625$ 다. 반경 계수는 $1 + k_1r^2 + k_2r^4 = 1 - 0.0145 + 0.000263 = 0.985763$ 이라 $(x_d, y_d) = (0.246441, 0.098576)$ 이 되고 왜곡된 픽셀은 $(467.864,\ 299.146)$ 이다. 랜드마크는 이상적 모델이 말하는 자리에서 실제로 $2.30$ px 떨어져 맺히는데, 그것도 $r = 0.269$ 라는 온건한 값에서다. 이미지 모서리로 갈수록 $r^2$ 로 자란다.
 
 **4. 서브픽셀 보정 잔차가 감추는 것.** 보정이 $600$ 대신 $\hat f = 598$ px를 돌려주고 나머지는 정확하다고 하자. 타깃 코너 셋을 다시 투영하면
 
@@ -832,7 +843,7 @@ $$\tilde u = K\,[R \mid t]\,\tilde L = \begin{pmatrix}600&0&320\\0&600&240\\0&0&
 | $B=(0.5,0,2)$ | $(470,\ 240)$ | $(469.5,\ 240.0)$ | $0.50$ px |
 | $C=(0,0.4,2)$ | $(320,\ 360)$ | $(320.0,\ 359.6)$ | $0.40$ px |
 
-RMS reprojection error는 $\sqrt{(0^2 + 0.5^2 + 0.4^2)/3} = 0.370$ px로 넉넉히 "서브픽셀"이고, 주점에 있는 코너는 아무 기여도 하지 않는다. 초점 거리 오차가 거기서는 보이지 않기 때문이다. 이제 그 보정으로 $Z = 2$ m를 아는 $B$ 의 검출을 역투영하면 $X = (470-320)\times 2/598 = 0.50167$ m, 곧 $1.67$ mm의 오차다. 상대 오차는 축에서 벗어난 거리의 $(f - \hat f)/\hat f = 0.334\%$ 이므로 $X = 0.5$ m에서 $1.67$ mm, $X = 3$ m에서 $10.0$ mm다. 서브픽셀 잔차는 적합에 대한 진술이지 미터에 대한 진술이 아니다.
+검출된 코너와 재투영된 코너 사이 픽셀 거리의 제곱평균제곱근인 RMS reprojection error(§5가 정의한다)는 $\sqrt{(0^2 + 0.5^2 + 0.4^2)/3} = 0.370$ px로 넉넉히 "서브픽셀"이고, 주점에 있는 코너는 아무 기여도 하지 않는다. 초점 거리 오차가 거기서는 보이지 않기 때문이다. 이제 그 보정으로 $Z = 2$ m를 아는 $B$ 의 검출을 역투영하면 $X = (470-320)\times 2/598 = 0.50167$ m, 곧 $1.67$ mm의 오차다. 상대 오차는 축에서 벗어난 거리의 $(f - \hat f)/\hat f = 0.334\%$ 이므로 $X = 0.5$ m에서 $1.67$ mm, $X = 3$ m에서 $10.0$ mm다. 서브픽셀 잔차는 적합에 대한 진술이지 미터에 대한 진술이 아니다.
 
 ### 1. 핀홀 카메라 모델
 
@@ -959,7 +970,7 @@ $$\begin{pmatrix}x_d\\y_d\end{pmatrix} = \underbrace{(1 + k_1r^2 + k_2r^4 + k_3r
 
 **한 문장으로:** 다른 이미지에서 다시 찾을 수 있는 점 수백 개를 고르고, 점마다 짧은 지문을 붙이고, 이미지 사이에서 지문을 짝짓는다. 그 짝이 모든 기하 단계가 필요로 하는 대응점이다.
 
-왜 모든 픽셀이 아니라 드문드문한 점인가? §2의 스테레오 깊이는 왼쪽 이미지의 픽셀이 오른쪽 어느 픽셀과 같은 점인지 알아야 한다. §5의 보정은 타깃 모서리를 서브픽셀 정확도로 찾아야 한다. Visual odometry와 SLAM([[04-robotics/state-estimation-slam|상태 추정]])은 같은 점을 프레임마다 추적해 pose를 제약한다. 점이 쓸모 있으려면 **반복성**(시점이 바뀌어도 다시 검출됨)과 **변별성**(주변이 다른 많은 곳과 닮지 않음)을 갖춰야 한다. 파이프라인은 세 단계이고, 논문은 그중 어느 단계든 바꿀 수 있다.
+왜 모든 픽셀이 아니라 드문드문한 점인가? §2의 스테레오 깊이는 왼쪽 이미지의 픽셀이 오른쪽 어느 픽셀과 같은 점인지 알아야 한다. §5의 보정은 타깃 모서리, 곧 리그의 $A$, $B$, $C$를 서브픽셀 정확도로 찾아야 한다. Visual odometry와 SLAM([[04-robotics/state-estimation-slam|상태 추정]])은 같은 점을 프레임마다 추적해 pose를 제약한다. 점이 쓸모 있으려면 **반복성**(시점이 바뀌어도 다시 검출됨)과 **변별성**(주변이 다른 많은 곳과 닮지 않음)을 갖춰야 한다. 파이프라인은 세 단계이고, 논문은 그중 어느 단계든 바꿀 수 있다.
 
 **검출: 모든 방향으로 변하는 곳.** 작은 창을 $(u,v)$만큼 옮기고 내용이 얼마나 바뀌는지 잰다. 1차 테일러 전개로 $I(x+u,y+v)\approx I(x,y)+I_x u+I_y v$이므로 픽셀마다 차이는 $I_x u+I_y v$이고, 그 제곱 $I_x^2u^2+2I_xI_y\,uv+I_y^2v^2$은 $(u,v)$의 이차식이다. 따라서 창 전체에서 더하면 변화가 이차 형식이 된다.
 
@@ -1004,16 +1015,16 @@ $$R=\det M-k\,(\operatorname{tr}M)^2=\lambda_1\lambda_2-k\,(\lambda_1+\lambda_2)
 **학습된 특징.** SuperPoint(DeTone 외, CVPR Workshops 2018)는 한 네트워크가 키포인트와 기술자를 함께 출력하도록 학습한다. SuperGlue(Sarlin 외, CVPR 2020)는 최근접 이웃과 비율 검사를 두 점 집합을 한꺼번에 짝짓는 그래프 신경망으로 바꾼다. LoFTR(Sun 외, CVPR 2021)은 검출기를 없애고 트랜스포머 특징을 조밀하게 매칭해, 검출기가 점을 거의 찾지 못하는 저텍스처 영역을 겨냥한다. 각 논문은 자기 벤치마크의 큰 시점·조명 변화에서 더 강한 매칭을 보고한다. 그래도 고전 특징이 맞는 선택일 수 있다. 임베디드 로봇 컴퓨터의 연산 예산과 프레임 속도, 학습 데이터가 내 장면과 닮았는지를 따져라. 맨 석고보드, 거푸집, 철근 격자, 똑같은 외벽 패널처럼 무늬가 없거나 반복되는 건설 현장 표면은 어떤 방법에도 어렵다. 벤치마크 순위를 믿기보다 자기 시퀀스에서 시험하라.
 
 > [!example] 계산 예제 · Worked example
-> 밝기가 0 또는 10인 5×5 패치 세 개를 잡는다. 안쪽 3×3 픽셀에서 중앙 차분 $I_x=(I_{x+1}-I_{x-1})/2$를 쓰고, $w=1$, $k=0.05$로 둔다.
-> - **평탄** (전부 10): 기울기가 모두 0이므로 $M=0$, $\lambda=(0,0)$, $R=0$이다.
-> - **에지** (왼쪽 두 열 0, 나머지 10): $I_x=5$인 픽셀이 6개이고 $I_y=0$이므로 $M=\begin{pmatrix}150&0\\0&0\end{pmatrix}$, $\lambda=(0,150)$, $R=0-0.05\cdot150^2=-1125$다.
-> - **코너** (오른쪽 아래 3×3 블록만 밝음): $I_x=5$인 픽셀 4개, $I_y=5$인 픽셀 4개, 둘 다인 픽셀 1개이므로 $M=\begin{pmatrix}100&25\\25&100\end{pmatrix}$, $\lambda=(75,125)$, $R=9375-0.05\cdot200^2=7375$다.
+> **리그의 보정 이미지 위의 Harris.** 이 예제에서는 보정 타깃을 어두운 배경 위의 밝은 판 하나로, $A$를 그 왼쪽 위 코너로 모델링한다. 카메라 1은 $A$를 주점 $(320, 240)$에서 보고, 판은 오른쪽으로 $(470, 240)$의 $B$까지, 아래로 $(320, 360)$의 $C$까지 뻗는다. 그 이미지에서 배경은 밝기 0, 판은 10인 5×5 패치 세 개를 잡는다. 안쪽 3×3 픽셀에서 중앙 차분 $I_x=(I_{x+1}-I_{x-1})/2$를 쓰고, $w=1$, $k=0.05$로 둔다.
+> - **평탄**, 판 안쪽 $(395, 300)$ 근처 (전부 10): 기울기가 모두 0이므로 $M=0$, $\lambda=(0,0)$, $R=0$이다.
+> - **에지**, $A$와 $C$ 사이 판의 왼쪽 경계 $(320, 300)$ 근처 (왼쪽 두 열 0, 나머지 10): $I_x=5$인 픽셀이 6개이고 $I_y=0$이므로 $M=\begin{pmatrix}150&0\\0&0\end{pmatrix}$, $\lambda=(0,150)$, $R=0-0.05\cdot150^2=-1125$다.
+> - **코너**, $A$를 중심으로 (오른쪽 아래 3×3 블록만 밝음): $I_x=5$인 픽셀 4개, $I_y=5$인 픽셀 4개, 둘 다인 픽셀 1개이므로 $M=\begin{pmatrix}100&25\\25&100\end{pmatrix}$, $\lambda=(75,125)$, $R=9375-0.05\cdot200^2=7375$다.
 >
-> 부호가 규칙대로다 — 평탄 0, 에지 음수, 코너 양수. Shi–Tomasi 점수는 0, 0, 75다.
+> 부호가 규칙대로다 — 평탄 0, 에지 음수, 코너 양수. Shi–Tomasi 점수는 0, 0, 75다. 두 이미지 방향 모두에서 위치를 잡을 수 있는 것은 $A$의 패치뿐이고, 보정이 타깃의 경계 위 점이 아니라 코너를 검출하는 이유가 그것이다.
 >
-> **비율 검사.** 어떤 기술자의 가장 가까운 후보 세 개가 거리 0.20, 0.23, 0.61에 있다. $0.20/0.23=0.87>0.8$이므로 0.20이 1등인데도 매칭을 버린다. 비슷한 후보가 둘이면 대개 반복 구조다. 세 번째 거리는 아무 역할도 하지 않는다. 두 번째가 0.45였다면 $0.20/0.45=0.44$로 통과했을 것이다.
+> **$L$ 위의 비율 검사.** 카메라 1이 패널을 찍은 이미지에서 $(470, 300)$에 있는 $L$의 기술자를 카메라 2의 후보들과 비교한다. $(434, 300)$의 참 짝은 거리 0.20, 옆 패널의 같은 특징인 $(440, 300)$은 0.23, 무관한 점 하나는 0.61에 있다. $0.20/0.23=0.87>0.8$이므로 가장 가까운 후보가 옳은 짝인데도 매칭을 버린다. 비슷한 후보가 둘이면 대개 반복 구조이고, 검사는 둘 중 어느 쪽이 참인지 가리지 못한다. 틀린 쪽을 받아들이면 무엇을 치르는지는 §2.6이 보여 준다. $(440, 300)$은 epipolar 검사를 통과하고 $40$ cm 멀리 삼각측량된다. 세 번째 거리는 아무 역할도 하지 않는다. 두 번째가 0.45였다면 $0.20/0.45=0.44$로 통과했을 것이다.
 
-같은 응답을 합성 이미지에 계산하고, 코너 픽셀의 점수가 가장 큰지 확인하는 코드다.
+같은 응답을 그 보정 이미지에서 $A$ 둘레를 잘라 낸 20×20 조각에 계산하는 코드다. 판이 조각의 오른쪽 아래 사분면을 채우고, $A$의 픽셀 점수가 가장 큰지 확인한다.
 
 ```python
 import numpy as np
@@ -1027,7 +1038,7 @@ def harris(img, k=0.05):
     return Sxx * Syy - Sxy**2 - k * (Sxx + Syy)**2   # det M - k (tr M)^2 at every pixel
 
 img = np.zeros((20, 20))
-img[10:, 10:] = 1.0                                  # one bright quadrant, corner at (10, 10)
+img[10:, 10:] = 1.0                                  # the plate; crop pixel (10, 10) is A at (320, 240)
 R = harris(img)
 r, c = np.unravel_index(np.argmax(R), R.shape)
 print(r, c, round(R.max(), 3), round(R[15, 10], 3), R[3, 3])   # 10 10 0.738 -0.112 0.0
@@ -1051,7 +1062,7 @@ $$\hat x_2^\top E\, \hat x_1 = 0, \qquad \tilde u_2^\top F\, \tilde u_1 = 0$$
 
 $\hat x_1$, $\hat x_2$, 기선 $t$ 가 같은 평면에 있고, 공면인 벡터들의 삼중곱이 0이기 때문에 성립한다.
 
-- **Essential matrix** $E = [t]_\times R$ 는 **보정된**(정규화) 좌표에서 작동한다. $R, t$ 는 첫 카메라에 대한 둘째 카메라의 회전과 평행 이동이고 $[t]_\times$ 는 $[t]_\times a = t \times a$ 인 반대칭 행렬이다. 자유도는 **다섯**이다 — $R$ 에서 셋, $t$ 에서 셋, 스케일을 복원할 수 없어 하나를 뺀다 — 특잇값은 $(\sigma, \sigma, 0)$ 이라 rank 2다.
+- **Essential matrix** $E = [t]_\times R$ 는 **보정된**(정규화) 좌표에서 작동한다. $R, t$ 는 첫 카메라에 대한 둘째 카메라의 회전과 평행 이동이고 $[t]_\times$ 는 $[t]_\times a = t \times a$ 인 반대칭 행렬, 곧 행렬로 쓴 외적이다([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §1]]). 자유도는 **다섯**이다 — $R$ 에서 셋, $t$ 에서 셋, 스케일을 복원할 수 없어 하나를 뺀다 — 특잇값은 $(\sigma, \sigma, 0)$ 이라 rank 2다.
 - **Fundamental matrix** $F = K_2^{-\top} E K_1^{-1}$ 는 **픽셀**에서 작동하므로 보정이 전혀 필요 없다. 자유도는 **일곱**이다: 성분 아홉에서 전체 스케일로 하나, $\det F = 0$ 으로 하나를 뺀다. 이것도 rank 2다.
 - 둘 다 **스케일을 빼고서만** 정의된다. 어느 쪽에 상수를 곱해도 제약 $=0$ 은 그대로이기 때문이다.
 - 이 제약은 **필요조건이지 충분조건이 아니다.** 2차원 짝을 1차원 선으로 줄여 자유도 둘 중 하나를 없앨 뿐이다. 그 선 위의 모든 것이 여전히 통과한다.
@@ -1130,7 +1141,17 @@ $$\min_{R,t} \sum_i \big((Rp_i + t - q_{c(i)})^\top n_{c(i)}\big)^2$$
 | Hand–eye (카메라–로봇) | 센서–말단 또는 베이스 변환 | 로봇 운동 + 타깃 ($AX=XB$) |
 | 시간 | 센서 간 클럭 오프셋/지연 | 운동 신호의 상관 |
 
-손목에 단 카메라의 hand–eye 방정식 $AX=XB$에서 $A$는 두 로봇 자세 사이의 그리퍼 운동(관절 엔코더로 안다), $B$는 같은 두 자세 사이의 카메라 운동(타깃으로 측정한다), $X$는 모르는 카메라–그리퍼 변환이다. 자세 한 쌍이 방정식 하나를 주고, 회전축이 서로 다른 여러 쌍이 모여야 $X$가 정해진다.
+**Hand–eye 방정식의 유도.** 손목에 단 카메라가, 팔이 움직이는 동안 제자리에 있는 보정 타깃을 본다. 프레임 $b$ 의 좌표를 프레임 $a$ 로 옮기는 변환을 $T_{ab}$ 로 쓴다. $p^a = T_{ab}p^b$ 이고, §1의 $T_{cw}$ 와 같은 방향이다([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §3]]). $b$ 는 로봇 베이스, $g$ 는 그리퍼, $c$ 는 카메라, $t$ 는 타깃이다. 로봇 자세 $i$ 에서는 변환 세 개의 사슬 하나가 베이스에서 타깃까지 닿는다. 관절 엔코더가 주는 그리퍼 자세 $T_{bg_i}$, 변하지 않는 모르는 카메라–그리퍼 장착 $X = T_{gc}$, 그리고 카메라가 재는 타깃 자세 $T_{c_it}$(PnP, 곧 타깃의 알려진 코너와 그 픽셀로 구한다)다. 타깃은 움직이지 않았으므로 두 로봇 자세 $1$ 과 $2$ 의 사슬은 같은 변환에서 끝난다.
+$$T_{bg_1}\,X\,T_{c_1t} = T_{bt} = T_{bg_2}\,X\,T_{c_2t}$$
+왼쪽에 $T_{bg_2}^{-1}$, 오른쪽에 $T_{c_1t}^{-1}$ 를 곱하면 모르는 타깃 자세가 빠진다.
+$$AX = XB, \qquad A = T_{bg_2}^{-1}T_{bg_1}, \qquad B = T_{c_2t}\,T_{c_1t}^{-1}$$
+$A$ 는 두 자세 사이의 그리퍼 운동으로 엔코더로 알고, $B$ 는 같은 두 자세 사이의 카메라 운동으로 타깃에서 잰다. 양변은 하나의 변환, 곧 자세 2의 그리퍼에서 본 자세 1의 카메라이고, 두 경로로 닿은 것이다. 그리퍼를 움직인 다음 카메라로 건너가거나, 카메라로 건너간 다음 그것을 움직이거나. $AX = XB$ 를 회전 블록과 평행 이동 블록으로 나누면 운동 하나가 무엇을 알려 주고 무엇을 못 알려 주는지 보인다.
+$$R_AR_X = R_XR_B, \qquad (R_A - I)\,t_X = R_Xt_B - t_A$$
+장착의 평행 이동 $t_X$, 곧 $d_{ct}$ 를 담은 블록은 $R_A - I$ 를 거쳐서만 들어온다. 회전 없는 운동은 그것을 통째로 빼고, 한 축에 대한 회전은 그 축 방향 성분을 뺀다. $R_A - I$ 가 회전축을 0으로 보내기 때문이다. 그래서 $X$ 를 정하려면 회전축이 서로 다른 운동이 여럿 필요하다.
+
+*예, 리그 위에서.* 변환을 (회전, 평행 이동)으로 쓴다. 그리퍼 프레임을 P2의 도구 끝에 두고 축을 카메라 축과 평행하게 잡으면 $X = \big(I,\ (0, 0, -0.04)\big)$ 다. 카메라가 도구 축 위에서 끝보다 $d_{ct}$ 뒤에 있다. 타깃 프레임을 타깃 코너 $(0, 0, 2)$ 에 두면 $T_{c_1t} = \big(I,\ (0, 0, 2)\big)$ 다. P2가 도구 끝을 축으로 그리퍼를 카메라의 $y$ 축 둘레로 돌린다. P2가 평면 팔이므로 이것이 관절축 방향이다. 각은 $\cos\theta = 0.96$, $\sin\theta = 0.28$ ($16.26°$)이다. 엔코더는 $A = \big(R_y(-\theta),\ 0\big)$ 를 준다. $R_y$ 는 $y$ 축 둘레 회전이고, $A$ 가 옛 그리퍼 프레임을 새 그리퍼 프레임에서 다시 쓰는 것이라 부호가 음이다. 회전 중심보다 $4$ cm 뒤에 있는 카메라는 휘둘린다. 이제 타깃은 $T_{c_2t} = \big(R_y(-\theta),\ (-0.5488, 0, 1.9216)\big)$ 로 재지므로 타깃 코너 셋은 $(148.6, 240)$, $(300.0, 240)$, $(148.6, 364.9)$ px에 보이고, 모두 여전히 이미지 안이다. 그러면 카메라 운동은 $B = \big(R_y(-\theta),\ (0.0112, 0, 0.0016)\big)$ 이고, 두 경로가 일치한다.
+$$AX = XB = \big(R_y(-\theta),\ (0.0112,\ 0,\ -0.0384)\big)$$
+왼쪽에서는 $R_y(-\theta)(0, 0, -0.04) = (0.0112, 0, -0.0384)$ 이고, 오른쪽의 $(0, 0, -0.04) + (0.0112, 0, 0.0016)$ 도 같은 벡터이기 때문이다. *반례:* 카메라가 도구 끝에 있다고, 곧 $X = I$ 라고 가정하자. 그러면 $AX$ 에는 평행 이동이 없는데 $XB$ 는 $(0.0112, 0, 0.0016)$ 을 그대로 가져 $11.3$ mm가 어긋난다. 카메라가 쓸고 간 현의 길이 $2d_{ct}\sin(\theta/2)$ 다. 회전 한 번이 $4$ cm를 드러내는 방식이 이것이다. 같은 크기의 오프셋이 관절축 방향 $(0, 0.04, 0)$ 에 있었다면 $X = I$ 도 $AX = XB$ 를 만족했을 것이다. 모든 회전이 그 한 축에 대한 것인 P2 같은 평면 팔은 장착의 그 축 방향 성분을 보정할 수 없다.
 
 품질 지표는 대개 **reprojection error**다: 추정된 3D 점을 추정된 모델로 투영해 검출
 위치와의 픽셀 거리를 잰다. 보정 세트에서 낮은 reprojection error가 보정된 부피·거리·
@@ -1140,7 +1161,7 @@ $$\min_{R,t} \sum_i \big((Rp_i + t - q_{c(i)})^\top n_{c(i)}\big)^2$$
 
 $$e_{ij} = \big\lVert\, \tilde u_{ij} - \pi\big(K, d, T_i, X_j\big) \,\big\rVert_2$$
 
-이것을 *그* 지표로 만드는 조건이 셋이다. 잡음이 실제로 있는 곳인 **이미지에서** 재므로, 이것에 대한 최소자승이 등방 가우시안 픽셀 잡음 아래의 최대우도 추정이다([[02-foundations/optimization|4. 최적화 §3]]) — 3D에서 미터로 잰 오차는 카메라가 관측한 적 없는 양에 가중치를 주는 것이다. **관측마다** 하나이므로 모든 $(i,j)$ 짝이 기여한다. 그리고 **모든** 파라미터에 동시에 의존한다: $K$, 왜곡 계수 하나, pose, 점 중 무엇을 움직여도 $e_{ij}$ 가 움직인다. 보정과 bundle adjustment가 어떤 변수를 고정하느냐만 다른 같은 최적화인 이유가 그것이다.
+이것을 *그* 지표로 만드는 조건이 셋이다. 잡음이 실제로 있는 곳인 **이미지에서** 재므로, 이것에 대한 최소자승이 등방 가우시안 픽셀 잡음 아래의 최대우도 추정이다(가우시안 우도가 왜 제곱 오차가 되는지는 [[02-foundations/probability|3. 확률 §4]], 푸는 법은 [[02-foundations/optimization|4. 최적화 §3]]) — 3D에서 미터로 잰 오차는 카메라가 관측한 적 없는 양에 가중치를 주는 것이다. **관측마다** 하나이므로 모든 $(i,j)$ 짝이 기여한다. 그리고 **모든** 파라미터에 동시에 의존한다: $K$, 왜곡 계수 하나, pose, 점 중 무엇을 움직여도 $e_{ij}$ 가 움직인다. 보정과 bundle adjustment가 어떤 변수를 고정하느냐만 다른 같은 최적화인 이유가 그것이다.
 
 **보정 잔차의 완전한 정의.** 보정 도구가 찍어 주는 값은 모든 시점의 모든 코너에 걸친 **RMS reprojection error**, 곧 시점 $N$ 개와 타깃 코너 $M$ 개에 대한 위 값 $NM$ 개를 요약한 숫자 하나다.
 
@@ -1176,8 +1197,9 @@ $$e_{\text{RMS}} = \sqrt{\frac{1}{NM}\sum_{i=1}^{N}\sum_{j=1}^{M} \big\lVert \ti
 ### 7.5 오차를 보고 고치는 명령으로: visual servoing
 
 이미지나 pose 오차가 속도 명령이 되어야 인식이 로봇 루프를 닫는다. **PBVS**는 두 자세를
-추정해 $\xi=\operatorname{Log}(T_{current}^{-1}T_{desired})^\vee$ 같은 pose error를 만들고,
-$\xi$를 줄이는 twist를 명령한다. 정확도는 보정과 pose 추정 오차를 물려받는다. **IBVS**는
+추정해 $\xi=\operatorname{Log}(T_{current}^{-1}T_{desired})^\vee$ 같은 pose error를 만들고
+($\operatorname{Log}$는 [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장 §5]]의 자세 로그, $^\vee$는 그 결과를 숫자 여섯으로 쌓는 것),
+$\xi$를 줄이는 twist([[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장 §3]])를 명령한다. 정확도는 보정과 pose 추정 오차를 물려받는다. **IBVS**는
 이미지에 남는다. 특징 $s$에 대해 $\dot s=L_s v_c$이고 image Jacobian $L_s$는 특징 깊이에
 의존한다. $v_c=-\lambda L_s^+(s-s^*)$ 같은 국소 법칙이 픽셀 오차를 줄인다. IBVS는 완전한
 pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 좋은 특징 기하가 필요하다. 어느 식도
@@ -1245,7 +1267,7 @@ Tier B. 계속 쓰는 대상의 손목 리그, 벽까지의 거리로서의 **P5
 > [!tip]- 정답 · Solutions
 > 1. $L'$ 로 가는 두 광선은 $Z = 2$ 의 짝보다 눈에 띄게 평행에 가깝다. $Z=4$ 의 오차 막대는 $Z=2$ 것의 약 네 배로, 왜곡 선분은 맨 위 그림의 것보다 약 여덟 배 *짧게* 그려야 한다.
 > 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; 카메라 2에서 점은 $(0.38, 0.2, 4.0)$ 이므로 $u_2 = 377$, $d' = 18$ px이고 $Z = 600(0.12)/18 = 4.0$ m다. (b) $d' = 17 \Rightarrow Z = 4.235$ m($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m($-0.211$). 1차 추정은 $Z^2/(fb) = 16/72 = 0.222$ m로 둘 사이에 있고, 둘이 같지 않은 것은 $Z = fb/d$ 가 $d$ 에 대해 볼록하기 때문이다 — 시차를 잃는 쪽이 얻는 쪽보다 비싸므로, 픽셀 오차가 대칭이어도 깊이 오차 분포는 카메라에서 *멀어지는* 쪽으로 기운다. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; 계수는 $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$ 이라 점은 $(394.729,\ 269.892)$ 에 맺히고 변위는 $0.291$ px다. $Z = 2$ 에서의 $2.30$ px보다 $7.9$ 배 작은데, 픽셀 단위 주도 반경 변위가 $f\lvert k_1\rvert r^3$ 이고 $r$ 이 절반이 되었기 때문이다: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, 융합 거리 $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, 말단–벽 $11.6 - 4 = 7.6\,\mathrm{cm}$.
-> 3. (a) $X$ 가 모르는 카메라–그리퍼 변환이고 $4\,\mathrm{cm}$ 는 그 평행 이동 성분 하나다. $A$ 는 두 로봇 자세 사이의 그리퍼 운동, $B$ 는 같은 두 자세 사이의 카메라 운동이다. $0.37$ px 잔차는 타깃 시점들 위의 *훈련* 잔차이고, §5는 바로 그 잔차를 가진 적합이 축에서 $0.5$ m 벗어난 점을 $1.67$ mm, $3$ m 벗어난 점을 $10.0$ mm 틀리게 놓는 것을 보인다 — 카메라–그리퍼 평행 이동도 같은 시점들에서 추정되므로 그 외삽 오차를 물려받는다. 홀드아웃 자세와 알려진 길이 측정만이 그것을 검사한다. (b) **삼각측량한 깊이.** 틀린 매칭은 시차가 $36$ 이 아니라 $30$ 이므로 $Z = 2.00$ m가 아니라 $2.40$ m로 삼각측량된다 — epipolar 잔차가 0이라고 보고하는 $40$ cm 오차다. $F$ 는 매칭을 선 위로 구속할 뿐 그 선을 *따라간* 위치에 대해서는 아무 말도 하지 않기 때문이다. 일반적으로는 epipolar 선을 따르지 않는 독립 제약을 더한다: 첫 짝의 epipolar 선과 각을 이루는 세 번째 시점, 직접 거리 측정(P5 센서나 라이다), 또는 똑같은 패널 둘을 구별할 만큼 강한 외양 검사 — 그런데 똑같은 패널에서는 그것이 질감이 아니라 맥락을 쓴다는 뜻이다.
+> 3. (a) $X$ 가 모르는 카메라–그리퍼 변환이고 $4\,\mathrm{cm}$ 는 그 평행 이동 성분 하나다. $A$ 는 두 로봇 자세 사이의 그리퍼 운동, $B$ 는 같은 두 자세 사이의 카메라 운동이다. 그것은 $(R_A - I)t_X$ 를 거쳐서만 방정식에 들어오므로, §5의 P2 회전 한 번은 그것을 $11.3$ mm의 어긋남으로 보여 주고, 회전 없는 운동은 전혀 보여 주지 못한다. $0.37$ px 잔차는 타깃 시점들 위의 *훈련* 잔차이고, §5는 바로 그 잔차를 가진 적합이 축에서 $0.5$ m 벗어난 점을 $1.67$ mm, $3$ m 벗어난 점을 $10.0$ mm 틀리게 놓는 것을 보인다 — 카메라–그리퍼 평행 이동도 같은 시점들에서 추정되므로 그 외삽 오차를 물려받는다. 홀드아웃 자세와 알려진 길이 측정만이 그것을 검사한다. (b) **삼각측량한 깊이.** 틀린 매칭은 시차가 $36$ 이 아니라 $30$ 이므로 $Z = 2.00$ m가 아니라 $2.40$ m로 삼각측량된다 — epipolar 잔차가 0이라고 보고하는 $40$ cm 오차다. $F$ 는 매칭을 선 위로 구속할 뿐 그 선을 *따라간* 위치에 대해서는 아무 말도 하지 않기 때문이다. 일반적으로는 epipolar 선을 따르지 않는 독립 제약을 더한다: 첫 짝의 epipolar 선과 각을 이루는 세 번째 시점, 직접 거리 측정(P5 센서나 라이다), 또는 똑같은 패널 둘을 구별할 만큼 강한 외양 검사 — 그런데 똑같은 패널에서는 그것이 질감이 아니라 맥락을 쓴다는 뜻이다.
 
 ### 출처
 

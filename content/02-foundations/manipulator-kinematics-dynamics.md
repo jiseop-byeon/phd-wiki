@@ -17,16 +17,16 @@ mastery-when: "This page is on the manipulation track's critical path — Master
 > 페이지다. 이 페이지 자체는 Working까지 데려다주고, Mastery는 §8의 교재와 시뮬레이터가 필요하다.
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (the $J$ and $M$ frozen there). Forward kinematics and the Jacobian — [[04-robotics/modern-robotics/ch04-forward-kinematics|MR ch.4]] and [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]], especially $\tau = J^\top\mathcal{F}$ — plus matrix inverses and positive definiteness ([[02-foundations/linear-algebra|1. Linear Algebra §3]]) and partial derivatives ([[02-foundations/calculus-backprop|2. Calculus §1]]).
-> [[02-foundations/lab-plants|0.6]]의 장치 **P2** (거기에 고정된 $J$와 $M$). 순기구학과 야코비안 — [[04-robotics/modern-robotics/ch04-forward-kinematics|MR 4장]]과 [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]], 특히 $\tau = J^\top\mathcal{F}$ — 그리고 역행렬과 양정치성([[02-foundations/linear-algebra|1. 선형대수 §3]]), 편미분([[02-foundations/calculus-backprop|2. 미적분 §1]]).
+> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (the $J$ and $M$ frozen there), matrix inverses and positive definiteness ([[02-foundations/linear-algebra|1. Linear Algebra §3]]) and partial derivatives and the chain rule ([[02-foundations/calculus-backprop|2. Calculus §1–§2]]). Forward kinematics, the Jacobian and $\tau = J^\top\mathcal{F}$ are not assumed: §1 derives them for P2, and §3 builds the mass matrix from them.
+> [[02-foundations/lab-plants|0.6]]의 장치 **P2** (거기에 고정된 $J$와 $M$), 역행렬과 양정치성([[02-foundations/linear-algebra|1. 선형대수 §3]]), 편미분과 연쇄 법칙([[02-foundations/calculus-backprop|2. 미적분 §1–§2]]). 순기구학, 야코비안, $\tau = J^\top\mathcal{F}$는 전제하지 않는다. §1이 P2에 대해 유도하고, §3이 그것으로 질량 행렬을 만든다.
 
 ## English
 
-*Stands on [[02-foundations/linear-algebra|1. Linear Algebra]] and the Modern Robotics chapter summaries (ch.4 and ch.5), which already teach FK and the Jacobian.
+*Stands on [[02-foundations/linear-algebra|1. Linear Algebra]] and the P2 catalog; the forward kinematics, Jacobian and $\tau=J^\top\mathcal{F}$ it needs are derived for P2 in §1, and the Modern Robotics chapter summaries ([[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]] and [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]]) teach them for any arm — read them alongside.
 It adds the one piece of physics contact needs, and closes the track into [[04-robotics/force-compliance-control|13. Force & Compliance Control]].*
 
-This page does **not** re-teach forward kinematics, inverse kinematics, or the Jacobian —
-the *Modern Robotics* chapter summaries do that, and they do it with worked 2R examples.
+This page does **not** teach forward kinematics, inverse kinematics, or the Jacobian in general —
+the *Modern Robotics* chapter summaries do that, with worked 2R examples, and §1 derives only the P2 cases the dynamics needs.
 It exists because those chapters stop at the place the manipulation track most needs to
 continue: **dynamics**, and the equation that carries joint-space dynamics into the task
 space where contact actually happens.
@@ -35,7 +35,7 @@ The whole page is really one question: *when a controller commands a motion or a
 the end-effector, what does the arm's own mass do to that command?*
 
 > [!note] First pass · 처음이라면
-> Read §2 for the equation, §3 to compute a mass matrix by hand, §6 for the bridge to force control — that is the reason this page is on the critical path. §4, §5 and §7 are what you read when a paper's dynamics claims start to matter.
+> Read the picture and §1 (the three kinematic facts, derived for P2), §2 for the equation, §3 to derive a mass matrix by hand, and §6 for the bridge to force control — that is the reason this page is on the critical path. §4, §5 and §7 are what you read when a paper's dynamics claims start to matter, and §8 is the checklist for reading one.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -138,6 +138,10 @@ Three results are used constantly below, so they are worth stating in one place:
 | Velocity kinematics | $v = J(\theta)\,\dot\theta$ — joint rates map to tip velocity | [[04-robotics/modern-robotics/ch05-velocity-kinematics\|MR ch.5 §1]] |
 | Statics duality | $\tau = J^\top(\theta)\,\mathcal{F}$ — the same matrix maps wrenches back to torques | [[04-robotics/modern-robotics/ch05-velocity-kinematics\|MR ch.5 §3]] |
 
+**For P2, all three take a few lines.** Write $\theta_{12}=\theta_1+\theta_2$, $c_1=\cos\theta_1$, $s_{12}=\sin\theta_{12}$ and so on. The elbow and the tip sit at
+$$p_1=L_1\,(c_1,\ s_1),\qquad p_2=p_1+L_2\,(c_{12},\ s_{12})$$
+which is the forward kinematics, since each link adds its length along its own absolute angle (P2's tool is at $p_2$). Differentiating in time with the chain rule gives $v=J(\theta)\,\dot\theta$, where the columns of $J=\partial p_2/\partial\theta$ are $\partial p_2/\partial\theta_1=(-L_1s_1-L_2s_{12},\ L_1c_1+L_2c_{12})$ and $\partial p_2/\partial\theta_2=(-L_2s_{12},\ L_2c_{12})$. At $\theta=(0°,90°)$ they are $(-1,1)$ and $(-1,0)$, the catalog's $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$. The duality follows from power. Set the arm's own mass aside for a moment (its inertia and weight become §2's $M$ and $g$): a massless arm stores no energy, so the power the motors put in, $\tau^\top\dot\theta$, equals the power the tip delivers, $\mathcal{F}^\top v=\mathcal{F}^\top J\dot\theta$, for every $\dot\theta$; hence $\tau=J^\top\mathcal{F}$. Pressing down with $\mathcal{F}=(0,-10)$ N at this pose takes $\tau=(-10,\ 0)$ N·m.
+
 Everything on this page is what happens when you add **mass** to that picture.
 
 The distinction matters because a reachable motion is not necessarily a motion the actuators can produce under load. For example, a pose solver can place a drywall sheet geometrically while ignoring the effort needed to accelerate and hold it. **The reading this gives you.** Identify whether a paper establishes pose feasibility, velocity feasibility, static support, or dynamic execution. Each adds a different condition; solving the earlier problem does not silently solve the later one.
@@ -168,7 +172,11 @@ $\partial T/\partial\theta = 0$, and the Coriolis term would vanish outright. It
 extra force; it is the bookkeeping cost of a configuration-dependent mass. Second, $C$ is
 **not unique**: only the product $C\dot\theta$ is determined, so different books write
 different $C$ matrices for the same robot. Papers pick the factorization that makes
-$\dot M - 2C$ skew-symmetric (a matrix $A$ with $A^\top = -A$, so $x^\top A x = 0$ for every $x$; see [[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §4]]), because that identity is what most stability proofs use.
+$\dot M - 2C$ skew-symmetric (a matrix $A$ with $A^\top = -A$, so $x^\top A x = 0$ for every $x$; see [[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §1]]), because that identity is what most stability proofs use.
+
+Here is the one step it buys. Along any motion the kinetic energy changes at the rate $\frac{d}{dt}\big(\tfrac12\dot\theta^\top M\dot\theta\big)=\dot\theta^\top M\ddot\theta+\tfrac12\dot\theta^\top\dot M\dot\theta$, and substituting $M\ddot\theta=\tau-C\dot\theta-g$ from the manipulator equation gives
+$$\frac{d}{dt}\Big(\tfrac12\dot\theta^\top M\dot\theta\Big)=\dot\theta^\top(\tau-g)+\tfrac12\dot\theta^\top(\dot M-2C)\,\dot\theta=\dot\theta^\top(\tau-g)$$
+because the skew-symmetric middle term is zero. So the velocity terms do no work: kinetic energy changes only by the power of the motors and of gravity, which is the passivity step a Lyapunov stability proof leans on. With §4's $C$, at $\theta=(0°,90°)$ and $\dot\theta=(1,2)$ rad/s, $\tfrac12\dot\theta^\top\dot M\dot\theta=-6$ and $\dot\theta^\top C\dot\theta=-6$, so the two cancel.
 
 Four terms, each with a distinct physical job:
 
@@ -205,11 +213,20 @@ Start by holding the arm still without contact. Both velocity and acceleration v
 
 ### 3. Worked example — the 2R arm's mass matrix
 
-Take the planar 2R arm from MR ch.4–5, with point masses at the end of each link:
-$m_1 = m_2 = 1$ kg, $L_1 = L_2 = 1$ m. Writing the kinetic energy as
-$T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$ and collecting terms gives
+Take plant P2, the planar 2R arm of §1, with point masses at the end of each link:
+$m_1 = m_2 = 1$ kg, $L_1 = L_2 = 1$ m. The mass matrix is, by definition, the matrix that writes the kinetic energy as
+$T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$, so build $T$ mass by mass, in three steps.
+
+1. **Each mass's velocity Jacobian.** Differentiate each position of §1 in time. The elbow mass moves with $v_1=J_1\dot\theta$ and the tip mass with $v_2=J_2\dot\theta$, where
+   $$J_1=\begin{pmatrix}-L_1s_1&0\\L_1c_1&0\end{pmatrix},\qquad J_2=\begin{pmatrix}-L_1s_1-L_2s_{12}&-L_2s_{12}\\L_1c_1+L_2c_{12}&L_2c_{12}\end{pmatrix}$$
+   so $J_1$'s second column is zero, because turning the elbow does not move the elbow mass, and $J_2$ is §1's tip Jacobian.
+2. **Add the kinetic energies.** A point mass has kinetic energy $\tfrac12 m\lVert v\rVert^2$ and nothing else, and $\lVert J\dot\theta\rVert^2=\dot\theta^\top J^\top J\,\dot\theta$, so
+   $$T=\tfrac12\dot\theta^\top\big(m_1J_1^\top J_1+m_2J_2^\top J_2\big)\dot\theta \quad\Longrightarrow\quad M(\theta)=m_1J_1^\top J_1+m_2J_2^\top J_2$$
+3. **Simplify.** $J_1^\top J_1=\mathrm{diag}(L_1^2,\ 0)$. In $J_2^\top J_2$ the $(1,1)$ entry is $(L_1s_1+L_2s_{12})^2+(L_1c_1+L_2c_{12})^2=L_1^2+L_2^2+2L_1L_2\,(c_1c_{12}+s_1s_{12})$, and $c_1c_{12}+s_1s_{12}=\cos(\theta_{12}-\theta_1)=\cos\theta_2$. The same identity makes the $(1,2)$ entry $L_2^2+L_1L_2\cos\theta_2$, and the $(2,2)$ entry is $L_2^2$. Adding the two masses:
 
 $$M(\theta) = \begin{pmatrix} (m_1{+}m_2)L_1^2 + m_2L_2^2 + 2m_2L_1L_2\cos\theta_2 & m_2(L_2^2 + L_1L_2\cos\theta_2) \\ m_2(L_2^2 + L_1L_2\cos\theta_2) & m_2L_2^2 \end{pmatrix}$$
+
+Check it at the catalog pose $\theta=(0°,90°)$: there $J_1=\begin{pmatrix}0&0\\1&0\end{pmatrix}$ and $J_2=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, so $M=\mathrm{diag}(1,0)+\begin{pmatrix}2&1\\1&1\end{pmatrix}=\begin{pmatrix}3&1\\1&1\end{pmatrix}$, the catalog's $M$. The same matrix comes out of the Lagrangian route of §2, which [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]] carries through on this arm; *Modern Robotics* ch.8 then handles links whose mass is spread out, where each link also carries rotational kinetic energy about its centre of mass.
 
 Read the entries. A diagonal term is the effective inertia associated with one joint's
 velocity while the other is held fixed; it can include the masses and inertias of several
@@ -228,6 +245,8 @@ Evaluate at three configurations:
 | $0°$ | straight out | $5$ | $\begin{pmatrix}5&2\\2&1\end{pmatrix}$ |
 | $90°$ | elbow square | $3$ | $\begin{pmatrix}3&1\\1&1\end{pmatrix}$ |
 | $180°$ | folded back | $1$ | $\begin{pmatrix}1&0\\0&1\end{pmatrix}$ |
+
+The $M_{11}$ column has a one-line physical reading. Turning joint 1 alone swings each mass on a circle about the shoulder, so $M_{11}=m_1r_1^2+m_2r_2^2$ with $r$ each mass's distance from joint 1. The elbow mass is always $1$ m out and the tip mass is $2$, $\sqrt2$ and $0$ m out in the three poses, which gives $1+4=5$, $1+2=3$ and $1+0=1$.
 
 <svg viewBox="0 0 560 206" style="max-width:100%;height:auto" role="img" aria-label="the same two-link arm at three elbow angles, with joint-one inertia falling from five to three to one">
   <g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
@@ -317,7 +336,7 @@ parameters in §7, which is why it is rarely used raw on real hardware.
 
 With tracking error $e = \theta_{\text{des}} - \theta$ and gain matrices $K_p$ and $K_d$, the controller is
 $$\tau = M(\theta)\big(\ddot\theta_{\text{des}} + K_d\,\dot e + K_p\,e\big) + C(\theta,\dot\theta)\,\dot\theta + g(\theta)$$
-Substituting it into the manipulator equation gives $M(\theta)(\ddot e + K_d\dot e + K_p e) = 0$, and since $M$ is invertible, $\ddot e + K_d\dot e + K_p e = 0$ when the model is exact: every joint becomes an independent linear mass-spring-damper, whatever the pose. With $K_p = 100$ and $K_d = 20$ per joint the natural frequency is $\sqrt{100} = 10$ rad/s and the damping ratio is $20/(2\sqrt{100}) = 1$, critically damped ([[04-robotics/control-theory-ce397|5. Control Theory §7]]). Non-example: independent-joint PD, $\tau = K_p e + K_d\dot e$ with no model, leaves $M(\theta)$ in the closed loop, so §3's factor-of-five inertia change alters how fast and how damped its response is.
+Substituting it into the manipulator equation gives $M(\theta)(\ddot e + K_d\dot e + K_p e) = 0$, and since $M$ is invertible, $\ddot e + K_d\dot e + K_p e = 0$ when the model is exact: every joint becomes an independent linear mass-spring-damper, whatever the pose. Matching that error equation to the standard second-order form $\ddot e+2\zeta\omega_n\dot e+\omega_n^2e=0$ names the two numbers that describe its response: the **natural frequency** $\omega_n=\sqrt{K_p}$, how fast the error is pulled back, and the **damping ratio** $\zeta=K_d/(2\sqrt{K_p})$, whether it overshoots ($\zeta<1$ oscillates, $\zeta>1$ creeps back, and $\zeta=1$, called critically damped, is the fastest return without overshoot). With $K_p = 100$ and $K_d = 20$ per joint, $\omega_n=\sqrt{100} = 10$ rad/s and $\zeta=20/(2\sqrt{100}) = 1$, critically damped ([[04-robotics/control-theory-ce397|5. Control Theory §7]] designs such gains). Non-example: independent-joint PD, $\tau = K_p e + K_d\dot e$ with no model, leaves $M(\theta)$ in the closed loop, so §3's factor-of-five inertia change alters how fast and how damped its response is.
 
 ### 6. Operational-space dynamics — the bridge to force control
 
@@ -341,7 +360,7 @@ MR ch.5 turns out to be the load-bearing result of the whole manipulation track.
 $$\mathcal{F} = \Lambda(\theta)\,\dot v + \Lambda(\theta)\big(J M^{-1} C\,\dot\theta - \dot J\,\dot\theta\big) + \Lambda(\theta)\,J M^{-1} g(\theta)$$
 where $v$ is the end-effector velocity, $\dot v$ its acceleration and $\mathcal{F}$ the force (wrench) applied at the tip. So a tip force has three jobs: accelerate the apparent mass $\Lambda$, cancel the velocity terms as seen at the tip, and hold up gravity as seen at the tip. This is MR's eq. 8.90, $\mathcal{F} = \Lambda\dot v + \eta$, with $\eta$ written out.
 
-**Worked out for the 2R arm** at $\theta = (0°, 90°)$. From MR ch.5, the tip Jacobian there
+**Worked out for the 2R arm** at $\theta = (0°, 90°)$. From §1, the tip Jacobian there
 is $J = \begin{pmatrix}-1 & -1\\ 1 & 0\end{pmatrix}$, and from §3,
 $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$ with $\det M = 2$, so
 
@@ -525,17 +544,17 @@ print(Lam, tau_hold, tau_acc)
 
 ### Sources
 
-- *Modern Robotics* (Lynch & Park) ch.8 (dynamics) and ch.11 (control) — see [[04-robotics/modern-robotics-book|the book guide]] for the free official PDF. The mass-matrix form in §3 is the standard planar 2R result derived there.
+- *Modern Robotics* (Lynch & Park) ch.8 (dynamics) and ch.11 (control) — see [[04-robotics/modern-robotics-book|the book guide]] for the free official PDF. The mass-matrix form in §3, derived here from the two point masses' velocity Jacobians, is the standard planar 2R result; ch.8 reaches it by the Lagrangian route.
 - O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal on Robotics and Automation*, vol. 3, no. 1, pp. 43–53, 1987 — the origin of $\Lambda$ and of task-space control. (The journal is "Journal *on*", not "of".)
 - The numeric examples on this page were computed here from the stated masses and lengths, not quoted from a source; recompute them rather than trusting them.
 
 ## 한국어
 
-*[[02-foundations/linear-algebra|1. 선형대수]]와 Modern Robotics 챕터 요약(4·5장) 위에 선다 — FK·IK·야코비안은 거기가 이미 가르친다.
+*[[02-foundations/linear-algebra|1. 선형대수]]와 P2 카탈로그 위에 선다. 필요한 순기구학, 야코비안, $\tau=J^\top\mathcal{F}$는 §1이 P2에 대해 유도하고, Modern Robotics 챕터 요약([[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]과 [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]])이 임의의 팔에 대해 가르친다 — 함께 읽어라.
 이 페이지는 접촉이 요구하는 물리 한 조각을 더하며, [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]로 트랙을 닫는다.*
 
-이 페이지는 순기구학·역기구학·야코비안을 **다시 가르치지 않는다** — *Modern Robotics* 챕터
-요약이 이미 2R 계산 예제와 함께 그 일을 한다. 이 페이지가 존재하는 이유는, 그 챕터들이
+이 페이지는 순기구학·역기구학·야코비안을 일반적으로 **가르치지 않는다** — *Modern Robotics* 챕터
+요약이 2R 계산 예제와 함께 그 일을 하고, §1은 동역학에 필요한 P2의 경우만 유도한다. 이 페이지가 존재하는 이유는, 그 챕터들이
 매니퓰레이션 트랙에서 가장 이어져야 할 지점에서 멈추기 때문이다: **동역학**, 그리고 관절
 공간 동역학을 실제로 접촉이 일어나는 작업 공간으로 옮기는 방정식.
 
@@ -543,7 +562,7 @@ print(Lam, tau_hold, tau_acc)
 질량은 그 명령에 무슨 짓을 하는가?*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §2로 방정식을, §3으로 질량 행렬을 손으로, §6으로 힘 제어까지 잇는 다리를 — 이 페이지가 임계 경로에 있는 이유가 §6이다. §4·§5·§7은 논문의 동역학 주장이 중요해지기 시작할 때 읽는다.
+> 그림과 §1(기구학의 세 사실, P2에 대해 유도), §2로 방정식을, §3으로 질량 행렬을 손으로 유도하고, §6으로 힘 제어까지 잇는 다리를 읽어라 — 이 페이지가 임계 경로에 있는 이유가 §6이다. §4·§5·§7은 논문의 동역학 주장이 중요해지기 시작할 때 읽고, §8은 그런 논문을 읽을 때의 점검표다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -646,6 +665,10 @@ print(Lam, tau_hold, tau_acc)
 | 속도 기구학 | $v = J(\theta)\,\dot\theta$ — 관절 속도가 끝점 속도로 | [[04-robotics/modern-robotics/ch05-velocity-kinematics\|MR 5장 §1]] |
 | 정역학 쌍대성 | $\tau = J^\top(\theta)\,\mathcal{F}$ — 같은 행렬이 렌치를 토크로 되돌린다 | [[04-robotics/modern-robotics/ch05-velocity-kinematics\|MR 5장 §3]] |
 
+**P2라면 셋 모두 몇 줄이면 된다.** $\theta_{12}=\theta_1+\theta_2$, $c_1=\cos\theta_1$, $s_{12}=\sin\theta_{12}$ 등으로 쓰자. 엘보와 말단은
+$$p_1=L_1\,(c_1,\ s_1),\qquad p_2=p_1+L_2\,(c_{12},\ s_{12})$$
+에 있고, 각 링크가 자기 절대 각도 방향으로 길이만큼 더해지므로 이것이 순기구학이다(P2의 도구는 $p_2$에 있다). 연쇄 법칙으로 시간 미분하면 $v=J(\theta)\,\dot\theta$이고, $J=\partial p_2/\partial\theta$의 열은 $\partial p_2/\partial\theta_1=(-L_1s_1-L_2s_{12},\ L_1c_1+L_2c_{12})$와 $\partial p_2/\partial\theta_2=(-L_2s_{12},\ L_2c_{12})$다. $\theta=(0°,90°)$에서 이 열은 $(-1,1)$과 $(-1,0)$, 곧 카탈로그의 $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$이다. 쌍대성은 일률에서 나온다. 팔 자신의 질량은 잠시 제쳐 두자(그 관성과 무게는 §2의 $M$과 $g$가 된다). 질량 없는 팔은 에너지를 저장하지 않으므로, 모터가 넣는 일률 $\tau^\top\dot\theta$가 말단이 내보내는 일률 $\mathcal{F}^\top v=\mathcal{F}^\top J\dot\theta$와 모든 $\dot\theta$에서 같다. 따라서 $\tau=J^\top\mathcal{F}$다. 이 자세에서 $\mathcal{F}=(0,-10)$ N으로 누르려면 $\tau=(-10,\ 0)$ N·m가 든다.
+
 이 페이지 전체는 그 그림에 **질량**을 더하면 무슨 일이 일어나는가이다.
 
 도달 가능한 동작도 부하 아래 구동기가 만들 수 있는 동작은 아닐 수 있다. 자세 해법은 드라이월 시트를 기하적으로 놓으면서 가속하고 유지할 노력을 무시할 수 있다. **여기서 얻는 독법.** 논문이 자세 가능성, 속도 가능성, 정적 지지, 동적 실행 중 무엇을 확립하는지 본다. 각각 다른 조건을 추가하므로 앞 문제를 풀어도 뒤 문제가 자동으로 풀리지는 않는다.
@@ -675,8 +698,12 @@ $\dot M\dot\theta - \frac{\partial T}{\partial\theta}$가 $C(\theta,\dot\theta)\
 때문에 존재한다** — 관성 행렬이 상수라면 $\dot M = 0$이고 $\partial T/\partial\theta = 0$이라
 코리올리 항은 통째로 사라진다. 추가된 힘이 아니라 *자세에 따라 변하는 질량을 쓰는 장부상의
 대가*다. 둘째, $C$는 **유일하지 않다**. 결정되는 것은 곱 $C\dot\theta$뿐이라서 책마다 같은
-로봇에 다른 $C$ 행렬을 쓴다. 논문들은 $\dot M - 2C$가 반대칭(skew-symmetric, $A^\top = -A$인 행렬이라 모든 $x$에 대해 $x^\top A x = 0$; [[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §4]] 참고)이 되는 분해를 고르는데, 대부분의
+로봇에 다른 $C$ 행렬을 쓴다. 논문들은 $\dot M - 2C$가 반대칭(skew-symmetric, $A^\top = -A$인 행렬이라 모든 $x$에 대해 $x^\top A x = 0$; [[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §1]] 참고)이 되는 분해를 고르는데, 대부분의
 안정성 증명이 그 항등식을 쓰기 때문이다.
+
+그 항등식이 사 주는 한 단계는 이것이다. 어떤 운동에서든 운동에너지의 변화율은 $\frac{d}{dt}\big(\tfrac12\dot\theta^\top M\dot\theta\big)=\dot\theta^\top M\ddot\theta+\tfrac12\dot\theta^\top\dot M\dot\theta$이고, 매니퓰레이터 방정식의 $M\ddot\theta=\tau-C\dot\theta-g$를 대입하면
+$$\frac{d}{dt}\Big(\tfrac12\dot\theta^\top M\dot\theta\Big)=\dot\theta^\top(\tau-g)+\tfrac12\dot\theta^\top(\dot M-2C)\,\dot\theta=\dot\theta^\top(\tau-g)$$
+가 된다. 가운데 반대칭 항이 0이기 때문이다. 그래서 속도 항은 일을 하지 않는다. 운동에너지는 모터와 중력의 일률만큼만 변하고, 이것이 리아푸노프 안정성 증명이 기대는 수동성(passivity) 단계다. §4의 $C$로 $\theta=(0°,90°)$, $\dot\theta=(1,2)$ rad/s에서 계산하면 $\tfrac12\dot\theta^\top\dot M\dot\theta=-6$, $\dot\theta^\top C\dot\theta=-6$이라 둘이 상쇄된다.
 
 네 항이고, 각각 다른 물리적 역할을 한다:
 
@@ -710,10 +737,19 @@ $$\text{inverse: } \tau = M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\th
 
 ### 3. 계산 예제 — 2R 팔의 질량 행렬
 
-MR 4~5장의 평면 2R 팔에 각 링크 끝의 점질량을 둔다: $m_1 = m_2 = 1$ kg, $L_1 = L_2 = 1$ m.
-운동 에너지를 $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$로 쓰고 항을 모으면
+§1의 평면 2R 팔, 곧 장치 P2에 각 링크 끝의 점질량을 둔다: $m_1 = m_2 = 1$ kg, $L_1 = L_2 = 1$ m.
+질량 행렬은 정의상 운동 에너지를 $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$로 쓰게 하는 행렬이므로, $T$를 질량 하나씩 세 단계로 쌓는다.
+
+1. **질량마다의 속도 야코비안.** §1의 각 위치를 시간으로 미분한다. 엘보 질량은 $v_1=J_1\dot\theta$로, 말단 질량은 $v_2=J_2\dot\theta$로 움직이고,
+   $$J_1=\begin{pmatrix}-L_1s_1&0\\L_1c_1&0\end{pmatrix},\qquad J_2=\begin{pmatrix}-L_1s_1-L_2s_{12}&-L_2s_{12}\\L_1c_1+L_2c_{12}&L_2c_{12}\end{pmatrix}$$
+   이다. 엘보를 돌려도 엘보 질량은 움직이지 않으므로 $J_1$의 둘째 열은 0이고, $J_2$는 §1의 말단 야코비안이다.
+2. **운동 에너지를 더한다.** 점질량의 운동 에너지는 $\tfrac12 m\lVert v\rVert^2$가 전부이고 $\lVert J\dot\theta\rVert^2=\dot\theta^\top J^\top J\,\dot\theta$이므로
+   $$T=\tfrac12\dot\theta^\top\big(m_1J_1^\top J_1+m_2J_2^\top J_2\big)\dot\theta \quad\Longrightarrow\quad M(\theta)=m_1J_1^\top J_1+m_2J_2^\top J_2$$
+3. **정리한다.** $J_1^\top J_1=\mathrm{diag}(L_1^2,\ 0)$이다. $J_2^\top J_2$의 $(1,1)$ 성분은 $(L_1s_1+L_2s_{12})^2+(L_1c_1+L_2c_{12})^2=L_1^2+L_2^2+2L_1L_2\,(c_1c_{12}+s_1s_{12})$이고, $c_1c_{12}+s_1s_{12}=\cos(\theta_{12}-\theta_1)=\cos\theta_2$다. 같은 항등식으로 $(1,2)$ 성분은 $L_2^2+L_1L_2\cos\theta_2$가 되고, $(2,2)$ 성분은 $L_2^2$다. 두 질량의 몫을 더하면
 
 $$M(\theta) = \begin{pmatrix} (m_1{+}m_2)L_1^2 + m_2L_2^2 + 2m_2L_1L_2\cos\theta_2 & m_2(L_2^2 + L_1L_2\cos\theta_2) \\ m_2(L_2^2 + L_1L_2\cos\theta_2) & m_2L_2^2 \end{pmatrix}$$
+
+카탈로그 자세 $\theta=(0°,90°)$에서 검산하자. 거기서 $J_1=\begin{pmatrix}0&0\\1&0\end{pmatrix}$, $J_2=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$이므로 $M=\mathrm{diag}(1,0)+\begin{pmatrix}2&1\\1&1\end{pmatrix}=\begin{pmatrix}3&1\\1&1\end{pmatrix}$, 카탈로그의 $M$이다. §2의 라그랑주 경로로도 같은 행렬이 나오며, [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]]이 바로 이 팔에서 그 경로를 끝까지 밟는다. *Modern Robotics* 8장은 이어서 질량이 퍼져 있는 링크를 다루는데, 그때는 링크마다 질량 중심 둘레의 회전 운동 에너지가 더해진다.
 
 원소를 읽어라. 대각 항은 다른 관절을 고정했을 때 한 관절 속도에 대응하는 유효 관성으로,
 그 관절의 "자기" 링크뿐 아니라 여러 하류 링크의 질량과 관성을 포함할 수 있다. 비대각의
@@ -731,6 +767,8 @@ $$M(\theta_2) = \begin{pmatrix} 3 + 2\cos\theta_2 & 1 + \cos\theta_2 \\ 1 + \cos
 | $0°$ | 곧게 뻗음 | $5$ | $\begin{pmatrix}5&2\\2&1\end{pmatrix}$ |
 | $90°$ | 팔꿈치 직각 | $3$ | $\begin{pmatrix}3&1\\1&1\end{pmatrix}$ |
 | $180°$ | 접힘 | $1$ | $\begin{pmatrix}1&0\\0&1\end{pmatrix}$ |
+
+$M_{11}$ 열은 한 줄로 물리적으로 읽힌다. 관절 1만 돌리면 각 질량이 어깨 둘레의 원을 그리므로, 관절 1에서 각 질량까지의 거리를 $r$이라 할 때 $M_{11}=m_1r_1^2+m_2r_2^2$다. 엘보 질량은 늘 $1$ m 밖에 있고 말단 질량은 세 자세에서 $2$, $\sqrt2$, $0$ m 밖에 있으므로 $1+4=5$, $1+2=3$, $1+0=1$이다.
 
 <svg viewBox="0 0 560 206" style="max-width:100%;height:auto" role="img" aria-label="같은 2링크 팔의 세 팔꿈치 각도, 1번 관절 관성이 5에서 3, 1로 줄어든다">
   <g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
@@ -817,7 +855,7 @@ $$\tau = M(\theta)\,\ddot\theta_{\text{des}} + C(\theta,\dot\theta)\,\dot\theta 
 
 추종 오차 $e = \theta_{\text{des}} - \theta$와 게인 행렬 $K_p$, $K_d$로 쓰면 제어기는
 $$\tau = M(\theta)\big(\ddot\theta_{\text{des}} + K_d\,\dot e + K_p\,e\big) + C(\theta,\dot\theta)\,\dot\theta + g(\theta)$$
-이다. 매니퓰레이터 방정식에 대입하면 $M(\theta)(\ddot e + K_d\dot e + K_p e) = 0$이고, $M$이 가역이므로 모델이 정확할 때 $\ddot e + K_d\dot e + K_p e = 0$이다. 자세와 상관없이 모든 관절이 독립된 선형 질량-스프링-댐퍼가 된다. 관절마다 $K_p = 100$, $K_d = 20$이면 고유 진동수는 $\sqrt{100} = 10$ rad/s, 감쇠비는 $20/(2\sqrt{100}) = 1$로 임계 감쇠다([[04-robotics/control-theory-ce397|5. 제어 이론 §7]]). 반례: 모델 없는 독립 관절 PD $\tau = K_p e + K_d\dot e$는 폐루프에 $M(\theta)$가 남으므로, §3의 5배 관성 변화가 응답의 빠르기와 감쇠를 바꾼다.
+이다. 매니퓰레이터 방정식에 대입하면 $M(\theta)(\ddot e + K_d\dot e + K_p e) = 0$이고, $M$이 가역이므로 모델이 정확할 때 $\ddot e + K_d\dot e + K_p e = 0$이다. 자세와 상관없이 모든 관절이 독립된 선형 질량-스프링-댐퍼가 된다. 그 오차 방정식을 표준 2차 꼴 $\ddot e+2\zeta\omega_n\dot e+\omega_n^2e=0$에 맞추면 응답을 기술하는 두 숫자에 이름이 붙는다. 오차를 얼마나 빨리 끌어당기는지인 **고유 진동수** $\omega_n=\sqrt{K_p}$, 그리고 오버슈트 여부를 정하는 **감쇠비** $\zeta=K_d/(2\sqrt{K_p})$다($\zeta<1$이면 진동하고, $\zeta>1$이면 느리게 기어 돌아오며, 임계 감쇠라 부르는 $\zeta=1$은 오버슈트 없이 가장 빨리 돌아오는 경우다). 관절마다 $K_p = 100$, $K_d = 20$이면 $\omega_n=\sqrt{100} = 10$ rad/s, $\zeta=20/(2\sqrt{100}) = 1$로 임계 감쇠다(이런 게인의 설계는 [[04-robotics/control-theory-ce397|5. 제어 이론 §7]]). 반례: 모델 없는 독립 관절 PD $\tau = K_p e + K_d\dot e$는 폐루프에 $M(\theta)$가 남으므로, §3의 5배 관성 변화가 응답의 빠르기와 감쇠를 바꾼다.
 
 ### 6. 작업공간(operational space) 동역학 — 힘 제어로 가는 다리
 
@@ -841,7 +879,7 @@ $\Lambda$는 **작업 공간 관성 행렬**이다 — 밖에서 볼 때 말단�
 $$\mathcal{F} = \Lambda(\theta)\,\dot v + \Lambda(\theta)\big(J M^{-1} C\,\dot\theta - \dot J\,\dot\theta\big) + \Lambda(\theta)\,J M^{-1} g(\theta)$$
 이다. $v$는 말단 속도, $\dot v$는 그 가속도, $\mathcal{F}$는 끝점에 가하는 힘(렌치)이다. 그래서 끝점 힘에는 세 가지 일이 있다: 겉보기 질량 $\Lambda$를 가속하고, 끝점에서 본 속도 항을 상쇄하고, 끝점에서 본 중력을 떠받친다. MR 식 8.90 $\mathcal{F} = \Lambda\dot v + \eta$에서 $\eta$를 풀어 쓴 것이다.
 
-**계산: 2R 팔, $\theta = (0°, 90°)$.** MR 5장에서 그 자세의 끝점 야코비안은
+**계산: 2R 팔, $\theta = (0°, 90°)$.** §1에서 그 자세의 끝점 야코비안은
 $J = \begin{pmatrix}-1 & -1\\ 1 & 0\end{pmatrix}$이고, §3에서
 $M = \begin{pmatrix}3&1\\1&1\end{pmatrix}$, $\det M = 2$이므로
 
@@ -1001,6 +1039,6 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\quad M=\begin{pmatrix}3&1\\1&1\end{p
 
 ### 출처 · Sources
 
-- *Modern Robotics* (Lynch & Park) 8장(동역학)·11장(제어) — 공식 무료 PDF는 [[04-robotics/modern-robotics-book|책 가이드]]에. §3의 질량 행렬 형태는 거기서 유도되는 표준 평면 2R 결과다.
+- *Modern Robotics* (Lynch & Park) 8장(동역학)·11장(제어) — 공식 무료 PDF는 [[04-robotics/modern-robotics-book|책 가이드]]에. §3의 질량 행렬 형태는 여기서 두 점질량의 속도 야코비안으로 유도한 표준 평면 2R 결과이고, 8장은 라그랑주 경로로 같은 결과에 이른다.
 - O. Khatib, "A unified approach for motion and force control of robot manipulators: The operational space formulation," *IEEE Journal on Robotics and Automation*, vol. 3, no. 1, pp. 43–53, 1987 — $\Lambda$와 작업 공간 제어의 출처. (저널명은 "Journal *on*"이며 "of"가 아니다.)
 - 이 페이지의 수치 예제는 명시된 질량과 길이로부터 여기서 직접 계산한 것이며 어느 출처에서 인용한 것이 아니다. 믿지 말고 다시 계산하라.

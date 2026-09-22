@@ -245,7 +245,7 @@ al. 1988). These few numbers do a surprising amount of engineering work in §3�
 > where $F$ is a sigmoid CDF (logistic, Weibull, cumulative Gaussian), $\alpha$ its location and $\beta$ its spread — the general form of Wichmann & Hill (2001) — so thresholds are read from $F$, and $\gamma$ and $\lambda$ are there to keep guessing and lapsing from being mistaken for sensitivity.
 >
 > - **Example**: S8's observer on the comparison axis, with $\gamma=\lambda=0$, $F=\Phi$, $\alpha=400\,\mathrm{N/m}$ and $\beta=\sigma=136.40\,\mathrm{N/m}$. Its percent-correct curve for $k_c\ge k_{\text{ref}}$ is the upper half of the same function, which starts at the two-alternative guess rate of one half.
-> - **Non-example**: a staircase track, level against trial number. It is the record of one procedure run on the function, not the function. Nor is a set of measured proportions joined by straight segments, which is data — [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]] draws it that way on purpose.
+> - **Non-example**: a staircase track, level against trial number. It is the record of one procedure run on the function, not the function. Nor is a set of measured proportions joined by straight segments, which is data — the picture at the top of [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 Human Haptics & Psychophysics]] draws it that way on purpose.
 > - **Why it matters**: every threshold, JND and PSE on this page is a point read off this function, so changing the task, the response category or the lapse rate changes all of them at once.
 
 > **Point of subjective equality (PSE), defined.** The **PSE** is a *stimulus level* on the comparison axis: the comparison the observer judges greater exactly as often as smaller. Three defining conditions. It needs a **comparison task with a stated reference**. It is where the comparison curve crosses **one half**. And it is read on a curve that **spans the reference** from below to above — a curve of "comparison judged greater", not of percent correct.
@@ -254,7 +254,7 @@ al. 1988). These few numbers do a surprising amount of engineering work in §3�
 >
 > where $\psi_c$ is the comparison curve and $I_{\text{ref}}$ the reference — so the bias is a constant error of this observer with this device and this order of presentation, not noise to be averaged away.
 >
-> - **Example**: S8's observer has $\mathrm{PSE}=400\,\mathrm{N/m}$ and zero bias, by construction; the force participant of [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]] has a bias of $+43\,\mathrm{mN}$.
+> - **Example**: S8's observer has $\mathrm{PSE}=400\,\mathrm{N/m}$ and zero bias, by construction; the force participant of [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]] has a bias of $+43\,\mathrm{mN}$.
 > - **Non-example**: the 50% point of a forced-choice percent-correct curve, $\Delta k=0$. That is the guess rate, not equality of appearance — which is why a staircase scored correct or wrong cannot measure a PSE at all.
 > - **Why it matters**: bias and sensitivity are separate findings. A display that shifts this observer's PSE renders every wall systematically stiffer or softer, and no JND will say so.
 
@@ -410,7 +410,7 @@ evidence it needs is the subject of
 
 ### 7. The lab: a staircase on the frozen observer
 
-The Worked case assumed the staircase lands on its 70.7% point, and §2 listed what that assumption costs. This section runs the staircase on S8's observer and measures the cost. The listing defines the observer and a fixed-step 1-up-$n$-down staircase. Every run starts at $\Delta k=200\,\mathrm{N/m}$ — a comparison 50% stiffer than the reference, which this observer gets right on 92.9% of trials: the easy start a participant needs to learn the task. A run stops at a set number of reversals, discards the first two and averages the rest, as in [[04-robotics/haptics-teleoperation/experiments-readings|24.6 §7]]. Part 1 is one run. Part 2 is the sweep, step size against the number of reversals, 2000 runs per cell. Part 3 isolates the step's own bias with one long run per step, started at the true value.
+The Worked case assumed the staircase lands on its 70.7% point, and §2 listed what that assumption costs. This section runs the staircase on S8's observer and measures the cost. The listing defines the observer and a fixed-step 1-up-$n$-down staircase. Every run starts at $\Delta k=200\,\mathrm{N/m}$ — a comparison 50% stiffer than the reference, which this observer gets right on 92.9% of trials: the easy start a participant needs to learn the task. A run stops at a set number of reversals, discards the first two and averages the rest, as in [[04-robotics/haptics-teleoperation/experiments-readings|24.6 §6]]. Part 1 is one run. Part 2 is the sweep, step size against the number of reversals, 2000 runs per cell. Part 3 isolates the step's own bias with one long run per step, started at the true value.
 
 ```python
 # S8: a 1-up-n-down staircase on the frozen stiffness observer, then the sweep.
@@ -898,7 +898,7 @@ $$\frac{\Delta k_{70.7}\,d}{k_{\text{ref}}\,\Delta x}=\frac{0.186}{0.0245}=7.57\
 > 여기서 $F$는 S자형 CDF(로지스틱, 와이블, 누적 가우시안), $\alpha$는 위치, $\beta$는 퍼짐이다 — Wichmann & Hill(2001)의 일반형 — 그러니 임계값은 $F$에서 읽고, $\gamma$와 $\lambda$는 찍기와 실수가 민감도로 오인되지 않게 하려고 있다.
 >
 > - **예**: 비교 축 위의 S8 관찰자, $\gamma=\lambda=0$, $F=\Phi$, $\alpha=400\,\mathrm{N/m}$, $\beta=\sigma=136.40\,\mathrm{N/m}$. $k_c\ge k_{\text{ref}}$에서의 정답률 곡선은 같은 함수의 위쪽 절반이고, 두 선택지의 추측률인 절반에서 시작한다.
-> - **반례**: 수준을 시행 번호에 대해 그린 계단법 트랙. 함수 위에서 돌린 절차 하나의 기록이지 함수가 아니다. 측정한 비율들을 직선으로 이은 것도 함수가 아니다. 그것은 데이터이고, [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]]는 일부러 그렇게 그린다.
+> - **반례**: 수준을 시행 번호에 대해 그린 계단법 트랙. 함수 위에서 돌린 절차 하나의 기록이지 함수가 아니다. 측정한 비율들을 직선으로 이은 것도 함수가 아니다. 그것은 데이터이고, [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 인간 햅틱과 심리물리]] 맨 위의 그림이 일부러 그렇게 그린다.
 > - **왜 중요한가**: 이 페이지의 모든 임계값, JND, PSE는 이 함수에서 읽은 점이므로, 과제나 응답 범주나 실수율을 바꾸면 그 모두가 한꺼번에 바뀐다.
 
 > **주관적 동등점(PSE)의 정의.** PSE는 비교 축 위의 *자극 수준*이다: 관찰자가 더 크다고도, 더 작다고도 똑같이 자주 판단하는 비교 자극. 정의 조건은 셋이다. 비교 과제, 그것도 **명시된 기준** 하나가 있는 비교 과제가 필요하다. 비교 곡선이 **절반** 선을 지나는 곳이다. 그리고 기준의 아래에서 위까지 **기준을 가로지르는 곡선** 위에서 읽는다 — 정답률 곡선이 아니라 "비교가 더 크다고 판단됨"의 곡선.
@@ -907,7 +907,7 @@ $$\frac{\Delta k_{70.7}\,d}{k_{\text{ref}}\,\Delta x}=\frac{0.186}{0.0245}=7.57\
 >
 > 여기서 $\psi_c$는 비교 곡선, $I_{\text{ref}}$는 기준이다 — 그러니 편향은 이 관찰자가 이 장치와 이 제시 순서에서 갖는 상수 오차이지, 평균으로 지울 잡음이 아니다.
 >
-> - **예**: S8의 관찰자는 구성상 $\mathrm{PSE}=400\,\mathrm{N/m}$, 편향 0이다. [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]]의 힘 참가자는 편향이 $+43\,\mathrm{mN}$이다.
+> - **예**: S8의 관찰자는 구성상 $\mathrm{PSE}=400\,\mathrm{N/m}$, 편향 0이다. [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]]의 힘 참가자는 편향이 $+43\,\mathrm{mN}$이다.
 > - **반례**: 강제선택 정답률 곡선의 50% 점, $\Delta k=0$. 그것은 추측률이지 겉보기의 동등이 아니다 — 정답/오답으로 채점하는 계단법이 PSE를 아예 잴 수 없는 이유다.
 > - **왜 중요한가**: 편향과 민감도는 서로 다른 발견이다. 이 관찰자의 PSE를 옮기는 디스플레이는 모든 벽을 체계적으로 더 단단하게 또는 더 무르게 렌더링하고, 어떤 JND도 그것을 말해 주지 않는다.
 
@@ -1047,7 +1047,7 @@ JND 7%에 해당하는 약 0.14 N은 선별 참고값이지 의도적 조절의 
 
 ### 7. 랩: 고정된 관찰자 위의 계단법
 
-계산 절은 계단법이 70.7% 점에 내려앉는다고 가정했고, §2는 그 가정의 비용을 늘어놓았다. 이 절은 S8의 관찰자 위에서 계단법을 돌려 그 비용을 잰다. 코드(영어 절)는 관찰자와 고정 스텝 1-up-$n$-down 계단법을 정의한다. 모든 run은 $\Delta k=200\,\mathrm{N/m}$에서 시작한다 — 기준보다 50% 단단한 비교 벽으로, 이 관찰자가 92.9%의 시행에서 맞힌다. 참가자가 과제를 익히는 데 필요한 쉬운 출발점이다. run은 정해진 수의 반전에서 멈추고, 처음 둘을 버리고 나머지를 평균한다 — [[04-robotics/haptics-teleoperation/experiments-readings|24.6 §7]]과 같다. Part 1은 run 하나, Part 2는 스텝 크기 대 반전 수의 스윕으로 칸마다 2000 run, Part 3은 참값에서 출발한 긴 run 하나씩으로 스텝 자체의 편향을 떼어 낸다.
+계산 절은 계단법이 70.7% 점에 내려앉는다고 가정했고, §2는 그 가정의 비용을 늘어놓았다. 이 절은 S8의 관찰자 위에서 계단법을 돌려 그 비용을 잰다. 코드(영어 절)는 관찰자와 고정 스텝 1-up-$n$-down 계단법을 정의한다. 모든 run은 $\Delta k=200\,\mathrm{N/m}$에서 시작한다 — 기준보다 50% 단단한 비교 벽으로, 이 관찰자가 92.9%의 시행에서 맞힌다. 참가자가 과제를 익히는 데 필요한 쉬운 출발점이다. run은 정해진 수의 반전에서 멈추고, 처음 둘을 버리고 나머지를 평균한다 — [[04-robotics/haptics-teleoperation/experiments-readings|24.6 §6]]과 같다. Part 1은 run 하나, Part 2는 스텝 크기 대 반전 수의 스윕으로 칸마다 2000 run, Part 3은 참값에서 출발한 긴 run 하나씩으로 스텝 자체의 편향을 떼어 낸다.
 
 **Part 1.** 코드는 $\sigma=136.40\,\mathrm{N/m}$와 참 임계값 $74.33\,\mathrm{N/m}$, 곧 $2.5\,\mathrm{mm}$에서 7.57 카운트를 출력한다. $\delta=20\,\mathrm{N/m}$, 반전 16의 run 하나는 55 시행이 걸리고 $92.9\,\mathrm{N/m}$를 돌려준다 — 25% 높고, 스윕의 퍼짐이 run 하나에 대해 예측하는 바로 그만큼이다.
 

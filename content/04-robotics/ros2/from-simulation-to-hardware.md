@@ -14,12 +14,17 @@ mastery-when: "Go deeper when you are writing the hardware component or the moto
 > **Working** — 시뮬레이션에서 돌던 스택을 실제 기계 위로 안전하게 옮기고, 아무것도 움직이지 않을 때 진단할 정도. 안전 기능을 인증하거나 모터 제어기 펌웨어를 작성할 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> A stack that already runs in simulation under a controller: [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]. The silent-failure mechanisms in [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]] and the ordered checks in [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]] are used here rather than re-taught. Baseline throughout: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**.
-> 이미 시뮬레이션에서 제어기 아래 돌아가는 스택([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]의 조용한 실패 메커니즘과 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]의 순서 있는 점검은 여기서 다시 가르치지 않고 사용한다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**.
+> A stack that already runs in simulation under a controller: [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]. The silent-failure mechanisms in [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] and [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]], and the ordered checks in [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]] are used here rather than re-taught. Read [[04-robotics/hri-safety|11. HRI & Safety]] alongside §7, which defers the safety standards to it; the operational side of a deployed machine, and the source of P6's $70\,\mathrm{ms}$, is [[04-robotics/robot-systems-deployment|10. Robot Systems & Deployment]]. Baseline throughout: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**.
+> 이미 시뮬레이션에서 제어기 아래 돌아가는 스택([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]와 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]의 조용한 실패 메커니즘과 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]의 순서 있는 점검은 여기서 다시 가르치지 않고 사용한다. 안전 표준을 넘겨받는 [[04-robotics/hri-safety|11. HRI & Safety]]는 §7과 나란히 읽고, 배치된 기계의 운용 쪽과 P6의 $70\,\mathrm{ms}$의 출처는 [[04-robotics/robot-systems-deployment|10. Robot Systems & Deployment]]다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**.
+
+> [!note] First pass · 처음이라면
+> Read the Running object and the picture, then the Worked case; its one-line glosses point to §3 (the loop and its `period` argument) and §5 (the network term). Then §1 (what changes), §2–§3 (the seam, and `read`–`update`–`write`, ending with how to measure the Worked case's three invented latencies on your own machine) and §7 (safety), and do §9, whose software lines you can rehearse today on the 25.7 arm. §4–§6 and §8 are reference for when you are choosing or wiring a machine; §10 is the checklist for a real robot that does nothing.
 
 ### Running object · 이 페이지의 대상
 
 Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] on a *real* cart: the same encoder, the same rates, the same budget as in [[04-robotics/ros2/simulation-and-control|25.7]], with the Gazebo plugin swapped for a vendor hardware component behind the same `<ros2_control>` seam. Keeping every catalog number fixed is the point — what changes is only what is below the seam, and this page prices that change.
+
+*One object on paper, one you can run.* The real P6 cart exists only on this page, and its three bus and network latencies below are invented; §3 ends with how to measure them on whatever machine you do get. The exercise (§9) is a checklist for your own machine, and its software lines can be rehearsed now on the 25.7 arm in Gazebo, where each prints the simulation answer the checklist tells you to see replaced (§9 lists them).
 
 | Symbol | Value | What it is here |
 |---|---:|---|
@@ -173,7 +178,7 @@ and the two bus round trips take $t_r+t_w = 1.2+0.8 = 2.0\,\mathrm{ms}$ of it, w
 
 $$f_{\max} = \frac{1}{t_r+t_w} = \frac{1}{0.0020} = 500\,\mathrm{Hz},$$
 
-because the bus cannot be asked for a round trip it has not finished. P6's $200\,\mathrm{Hz}$ sits at $40\%$ of that ceiling, which is comfortable. Ask for $1000\,\mathrm{Hz}$ and the cycle is $1.0\,\mathrm{ms}$ against $2.0\,\mathrm{ms}$ of unavoidable bus time — exactly §3's warning, and note what the system does about it: a *throttled warning* while the loop quietly runs slower than requested. Nothing errors, nothing stops, and `update_rate` still reads 1000 in the parameter listing.
+because the bus cannot be asked for a round trip it has not finished. P6's $200\,\mathrm{Hz}$ sits at $40\%$ of that ceiling. That is Step 1's $40\%$ again, since $f_c/f_{\max}=f_c\,(t_r+t_w)=(t_r+t_w)/T_c=2.0/5.0$: the share of the ceiling you use is the share of each cycle the bus takes. What makes it comfortable is the rest, $60\%$ of the cycle or $3.0\,\mathrm{ms}$ left for `update()`. Ask for $1000\,\mathrm{Hz}$ and the cycle is $1.0\,\mathrm{ms}$ against $2.0\,\mathrm{ms}$ of unavoidable bus time — exactly §3's warning, and note what the system does about it: a *throttled warning* while the loop quietly runs slower than requested. Nothing errors, nothing stops, and `update_rate` still reads 1000 in the parameter listing.
 
 **Step 3 — the jitter, in the units the encoder reports.** One encoder count is $\Delta p = 1/2048 = 0.488\,\mathrm{mm}$, so differencing two reads one nominal cycle apart gives $\Delta p/T_c = 97.7\,\mathrm{mm/s}$. Now let one cycle overrun to $7\,\mathrm{ms}$. If the code divides by the nominal period instead of the `period` argument that §3's `read(time, period)` signature hands it, the same single count is reported as $97.7\,\mathrm{mm/s}$ when the truth is
 
@@ -342,7 +347,35 @@ name, as above.
 One caveat on that by-name form: the header marks `set_state(name, value)` and `get_command(name)` as *not real-time safe*, since each call builds a string and does a map lookup. For a hard loop, look the handles up once in `on_configure` and use the handle overloads, e.g. `set_state(handle, value, false)`.
 
 > [!warning] This API moved inside the Jazzy line, so check your own version
-> `on_init(const HardwareInfo &)` is deprecated in favour of the `HardwareComponentInterfaceParams` overload shown here, and both old export methods are deprecated. `apt` currently ships 4.48.0 while the `jazzy` branch is at 4.48.1; both have the same headers. The refactor came earlier in the Jazzy 4.x line — `hardware_component_interface.hpp` first appears in 4.36.0 — and `system_interface.hpp` is now a 73-line file that includes `hardware_component_interface.hpp` and declares only the one thing `SystemInterface` adds, a pure-virtual `write()`; everything else you override is declared in the included header. Before writing a component, run `ros2 pkg xml -t version hardware_interface` and read the header you actually have. Do not copy a skeleton out of a blog post, and treat the one above as dated rather than permanent.
+> - `on_init(const HardwareInfo &)` is deprecated in favour of the `HardwareComponentInterfaceParams` overload shown here, and both old export methods are deprecated.
+> - `apt` currently ships 4.48.0 while the `jazzy` branch is at 4.48.1; both have the same headers.
+> - The refactor came earlier in the Jazzy 4.x line: `hardware_component_interface.hpp` first appears in 4.36.0. `system_interface.hpp` is now a 73-line file that includes it and declares only the one thing `SystemInterface` adds, a pure-virtual `write()`; everything else you override is declared in the included header.
+> - Before writing a component, run `ros2 pkg xml -t version hardware_interface` and read the header you actually have. Do not copy a skeleton out of a blog post, and treat the one above as dated rather than permanent.
+
+#### Measuring $t_r$, $t_w$ and $t_n$ on your own machine
+
+The Worked case's three latencies are invented, and the Running object says so. Each can be replaced by a measured one with the component you already have and one terminal.
+
+**$t_r$ and $t_w$, the bus round trips.** Time the bus call inside `read()` with a monotonic clock and keep the worst value; keep the worst `period` too, since that is the overrun Step 3 prices:
+
+```cpp
+// needs <algorithm> and <chrono>
+hardware_interface::return_type MyRobotHardware::read(
+  const rclcpp::Time &, const rclcpp::Duration & period)
+{
+  const auto t0 = std::chrono::steady_clock::now();
+  encoder_radians_ = read_encoder_over_bus();                // the round trip being priced
+  const auto t1 = std::chrono::steady_clock::now();
+  t_r_max_ms_ = std::max(t_r_max_ms_, std::chrono::duration<double, std::milli>(t1 - t0).count());
+  period_max_ms_ = std::max(period_max_ms_, period.seconds() * 1e3);
+  set_state("joint_1/position", encoder_radians_);
+  return hardware_interface::return_type::OK;
+}
+```
+
+Reading `steady_clock` and taking a `std::max` allocate nothing, so the measurement does not disturb the loop it measures. Time the call inside `write()` the same way for $t_w$, and print the maxima from `on_deactivate` with `RCLCPP_INFO(rclcpp::get_logger("MyRobotHardware"), ...)`. Report the worst over a run, not the mean: Step 5's argument is that the worst period is the number that matters.
+
+**$t_n$, the network term.** Run `ros2 topic delay /goal` twice: on the vision machine, where no network is crossed, and on the robot, where one is. `delay` is arrival time minus header stamp, so the difference between the two readings is the transport across the network — once `chronyc tracking` says the two clocks agree (§5), because any offset between them adds straight into it.
 
 ### 4. Drivers, and what to check before trusting one
 
@@ -353,7 +386,7 @@ Most of the time you will not write the hardware component — the vendor or a c
 - **Which interfaces does it export?** An arm that exports only `position` command interfaces cannot run a torque or impedance controller no matter what the arm's datasheet claims, because the driver is the limiting surface.
 - **Is there an emergency stop path that does not go through your code?** Ask before buying, not after.
 - **How does it behave on disconnection?** Unplug the cable while it runs. A driver that returns `ERROR` and deactivates is correct; one that keeps returning the last state forever is dangerous, because every node downstream will believe the robot is exactly where it last was.
-- **Does it publish diagnostics and joint states at a stated rate?** `ros2 topic hz` on the real thing, compared with what the documentation claims, is a two-minute test that has saved people months.
+- **Does it publish diagnostics and joint states at a stated rate?** `ros2 topic hz` on the real thing, compared with what the documentation claims, is a two-minute test that has saved people months. On P6 the answer is sharp: the joint state broadcaster publishes once per cycle, so `ros2 topic hz /joint_states` should read $200$. A reading of $190$ means ten cycles a second, one in twenty, are late or missing, which is the Worked case's Step 5 overrun showing up as a rate.
 
 ### 5. DDS across a network
 
@@ -438,6 +471,8 @@ And the thing nobody puts in the purchase justification: **none of them teaches 
 ### 9. Exercise: a readiness checklist
 
 You may not have hardware yet, so the exercise is the artefact that comes before hardware. Write this out for your specific machine and make every line *verifiable* — a command to run or a physical thing to observe, not an intention.
+
+Lines 5–8 can be rehearsed today on the 25.7 arm in Gazebo, and doing so shows you the answers that have to change. Line 5 prints `gz_ros2_control/GazeboSimSystem`; line 6 shows the interfaces already claimed, because 25.7's launch file activates the controllers at start; line 7 prints `True`; line 8 prints `200`, with no bus behind it to time. On the real machine each of those must read the other way.
 
 **Before power:**
 
@@ -538,12 +573,17 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. En
 > **Working** — enough to bring a simulated stack onto a real machine safely and diagnose it, not to certify a safety function.
 
 > [!note] 선수 지식 · Prerequisites
-> 이미 시뮬레이션에서 제어기 아래 돌아가는 스택([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time]]의 조용한 실패와 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]의 순서 있는 점검은 여기서 사용만 한다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**.
-> A stack already running in simulation under a controller; Jazzy on Ubuntu 24.04 throughout.
+> 이미 시뮬레이션에서 제어기 아래 돌아가는 스택([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]와 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]의 조용한 실패와 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]의 순서 있는 점검은 여기서 사용만 한다. 안전 표준을 넘겨받는 [[04-robotics/hri-safety|11. HRI & Safety]]는 §7과 나란히 읽고, 배치된 기계의 운용 쪽과 P6의 $70\,\mathrm{ms}$의 출처는 [[04-robotics/robot-systems-deployment|10. Robot Systems & Deployment]]다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**.
+> A stack already running in simulation under a controller; 11. HRI & Safety alongside §7; Jazzy on Ubuntu 24.04 throughout.
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 대상과 그림을 보고 Worked case로 가라. 그 안의 한 줄 설명들이 §3(루프와 그 `period` 인자)과 §5(네트워크 항)를 가리킨다. 그다음 §1(무엇이 달라지는가), §2–§3(이음매와 `read`–`update`–`write`. 끝에 Worked case의 지어낸 지연 셋을 당신의 기계에서 재는 법이 있다), §7(안전)을 읽고 §9를 하라. 그 소프트웨어 줄들은 오늘 25.7의 팔에서 미리 돌려 볼 수 있다. §4–§6과 §8은 기계를 고르거나 배선할 때 찾는 참고 자료이고, §10은 아무것도 하지 않는 실제 로봇을 위한 점검표다.
 
 ### 이 페이지의 대상 · Running object
 
 *실제* 카트 위의 [[02-foundations/lab-plants|0.6 Lab Plants]] 장치 **P6**. 엔코더도 속도도 예산도 [[04-robotics/ros2/simulation-and-control|25.7]]과 같고, 같은 `<ros2_control>` 이음매 뒤의 Gazebo 플러그인만 벤더 하드웨어 컴포넌트로 바꿨다. 카탈로그 숫자를 전부 그대로 두는 것이 요점이다. 달라지는 것은 이음매 아래뿐이고, 이 페이지는 그 변화에 값을 매긴다.
+
+*종이 위의 대상 하나, 돌려 볼 수 있는 대상 하나.* 실제 P6 카트는 이 페이지에만 있고, 아래 표의 버스·네트워크 지연 셋은 지어낸 값이다. §3의 끝이 실제로 손에 넣는 기계에서 그것들을 재는 법을 보여 준다. 실습(§9)은 당신 기계를 위한 점검표이고, 그 소프트웨어 줄들은 지금 Gazebo 속 25.7의 팔에서 미리 돌려 볼 수 있다. 그러면 줄마다 점검표가 바뀌어야 한다고 말하는 시뮬레이션 쪽 답이 찍힌다(§9가 그것들을 적어 둔다).
 
 | 기호 | 값 | 여기서의 뜻 |
 |---|---:|---|
@@ -697,7 +737,7 @@ $$T_c = \frac{1}{200} = 5.0\,\mathrm{ms}$$
 
 $$f_{\max} = \frac{1}{t_r+t_w} = \frac{1}{0.0020} = 500\,\mathrm{Hz}$$
 
-다. 아직 끝나지 않은 왕복을 버스에 다시 요구할 수는 없기 때문이다. P6의 $200\,\mathrm{Hz}$는 그 천장의 $40\%$라 넉넉하다. $1000\,\mathrm{Hz}$를 요구하면 주기 $1.0\,\mathrm{ms}$에 피할 수 없는 버스 시간 $2.0\,\mathrm{ms}$가 맞선다. §3의 경고 그대로이고, 시스템이 그에 대해 무엇을 하는지 눈여겨보라. 루프가 조용히 요청보다 느리게 도는 동안 *스로틀된 경고* 한 줄이다. 오류도 없고 정지도 없으며, 파라미터 목록의 `update_rate`는 여전히 1000을 읽는다.
+다. 아직 끝나지 않은 왕복을 버스에 다시 요구할 수는 없기 때문이다. P6의 $200\,\mathrm{Hz}$는 그 천장의 $40\%$다. 이것은 Step 1의 $40\%$가 다시 나온 것이다. $f_c/f_{\max}=f_c\,(t_r+t_w)=(t_r+t_w)/T_c=2.0/5.0$이므로, 천장 중 쓰는 몫은 곧 주기마다 버스가 가져가는 몫이다. 넉넉하다고 말하게 하는 것은 나머지, 곧 `update()`에 남는 주기의 $60\%$, $3.0\,\mathrm{ms}$다. $1000\,\mathrm{Hz}$를 요구하면 주기 $1.0\,\mathrm{ms}$에 피할 수 없는 버스 시간 $2.0\,\mathrm{ms}$가 맞선다. §3의 경고 그대로이고, 시스템이 그에 대해 무엇을 하는지 눈여겨보라. 루프가 조용히 요청보다 느리게 도는 동안 *스로틀된 경고* 한 줄이다. 오류도 없고 정지도 없으며, 파라미터 목록의 `update_rate`는 여전히 1000을 읽는다.
 
 **Step 3 — 지터를 엔코더가 보고하는 단위로.** 엔코더 한 카운트는 $\Delta p = 1/2048 = 0.488\,\mathrm{mm}$이므로, 공칭 주기 하나 떨어진 두 읽기를 차분하면 $\Delta p/T_c = 97.7\,\mathrm{mm/s}$다. 이제 한 주기가 $7\,\mathrm{ms}$로 overrun 났다고 하자. 코드가 §3의 `read(time, period)` 시그니처가 건네주는 `period` 대신 공칭 주기로 나눈다면, 같은 한 카운트가 $97.7\,\mathrm{mm/s}$로 보고된다. 참값은
 
@@ -864,7 +904,18 @@ method to export custom StateInterfaces which are not defined in the URDF file."
 이름으로 접근하는 형태에는 단서가 하나 있다. 헤더는 `set_state(name, value)`와 `get_command(name)`을 *실시간 안전하지 않다*고 표시한다. 호출마다 문자열을 만들고 맵을 조회하기 때문이다. 엄격한 루프라면 `on_configure`에서 핸들을 한 번 찾아 두고 핸들 오버로드, 예컨대 `set_state(handle, value, false)`를 쓴다.
 
 > [!warning] 이 API는 Jazzy 계열 *안에서* 움직였으니 자기 버전을 확인하라
-> `on_init(const HardwareInfo &)`는 deprecated이고 위에 보인 `HardwareComponentInterfaceParams` 오버로드가 대신 쓰인다. 옛 export 메서드 둘도 deprecated다. `apt`는 현재 4.48.0을, `jazzy` 브랜치는 4.48.1을 두고 있으며 둘의 헤더는 같다. 재편은 Jazzy 4.x 계열의 더 이른 시점에 있었고 — `hardware_component_interface.hpp`가 4.36.0에서 처음 나온다 — `system_interface.hpp`는 이제 73줄짜리로 `hardware_component_interface.hpp`를 포함하고, `SystemInterface`가 더하는 단 하나, 즉 순수 가상 `write()`만 선언한다. 나머지 재정의 대상은 전부 포함된 헤더 쪽에 있다. 컴포넌트를 쓰기 전에 `ros2 pkg xml -t version hardware_interface`로 자기 버전을 확인하고 실제로 설치된 헤더를 읽어라. 블로그에서 뼈대를 복사하지 말고, 위의 뼈대도 영구적인 것이 아니라 시점이 박힌 것으로 다뤄라.
+> - `on_init(const HardwareInfo &)`는 deprecated이고 위에 보인 `HardwareComponentInterfaceParams` 오버로드가 대신 쓰인다. 옛 export 메서드 둘도 deprecated다.
+> - `apt`는 현재 4.48.0을, `jazzy` 브랜치는 4.48.1을 두고 있으며 둘의 헤더는 같다.
+> - 재편은 Jazzy 4.x 계열의 더 이른 시점에 있었다. `hardware_component_interface.hpp`가 4.36.0에서 처음 나온다. `system_interface.hpp`는 이제 그것을 포함하는 73줄짜리 파일로, `SystemInterface`가 더하는 단 하나, 곧 순수 가상 `write()`만 선언한다. 나머지 재정의 대상은 전부 포함된 헤더 쪽에 있다.
+> - 컴포넌트를 쓰기 전에 `ros2 pkg xml -t version hardware_interface`로 자기 버전을 확인하고 실제로 설치된 헤더를 읽어라. 블로그에서 뼈대를 복사하지 말고, 위의 뼈대도 영구적인 것이 아니라 시점이 박힌 것으로 다뤄라.
+
+#### 당신의 기계에서 $t_r$, $t_w$, $t_n$ 재기
+
+Worked case의 지연 셋은 지어낸 값이고, 이 페이지의 대상이 그렇다고 밝힌다. 이미 가진 컴포넌트와 터미널 하나로 각각을 잰 값으로 바꿀 수 있다.
+
+**버스 왕복 $t_r$와 $t_w$.** `read()` 안의 버스 호출을 단조 시계로 재고 최악값을 남긴다. Step 3이 값을 매긴 overrun이 그것이므로 최악의 `period`도 남긴다. 코드는 영어 절 §3의 같은 자리에 있다. `steady_clock`을 읽고 `std::max`를 취하는 일은 아무것도 할당하지 않으므로, 재는 행위가 재는 대상인 루프를 흔들지 않는다. `write()` 안의 호출도 같은 방식으로 재어 $t_w$를 얻고, 최대값들은 `on_deactivate`에서 `RCLCPP_INFO(rclcpp::get_logger("MyRobotHardware"), ...)`로 찍는다. 평균이 아니라 한 실행의 최악값을 보고하라. Step 5의 논지가 중요한 숫자는 최악의 주기라는 것이다.
+
+**네트워크 항 $t_n$.** `ros2 topic delay /goal`을 두 번 돌린다. 네트워크를 건너지 않는 비전 기계에서 한 번, 건너는 로봇에서 한 번. `delay`는 도착 시각에서 헤더 스탬프를 뺀 값이므로 두 읽기의 차이가 네트워크를 건너는 전송 시간이다. 단, `chronyc tracking`이 두 시계가 맞는다고 말한 뒤에만 그렇다(§5). 두 시계 사이의 어긋남은 그 차이에 그대로 더해지기 때문이다.
 
 ### 4. 드라이버, 그리고 믿기 전에 확인할 것
 
@@ -875,7 +926,7 @@ method to export custom StateInterfaces which are not defined in the URDF file."
 - **어떤 인터페이스를 export하는가?** `position` 명령 인터페이스만 내보내는 팔은 데이터시트가 무엇을 주장하든 토크나 임피던스 제어기를 돌릴 수 없다. 드라이버가 한계면이기 때문이다.
 - **당신 코드를 거치지 않는 비상정지 경로가 있는가?** 사고 나서가 아니라 사기 전에 물어라.
 - **연결이 끊기면 어떻게 행동하는가?** 돌아가는 중에 케이블을 뽑아 보라. `ERROR`를 반환하고 비활성화되는 드라이버가 옳다. 마지막 상태를 영원히 계속 반환하는 드라이버는 위험하다. 하류의 모든 노드가 로봇이 마지막 그 자리에 정확히 있다고 믿기 때문이다.
-- **진단과 joint state를 명시된 주기로 publish하는가?** 실물에 `ros2 topic hz`를 걸어 문서가 주장하는 값과 비교하는 2분짜리 시험이 사람들의 몇 달을 구한 적이 있다.
+- **진단과 joint state를 명시된 주기로 publish하는가?** 실물에 `ros2 topic hz`를 걸어 문서가 주장하는 값과 비교하는 2분짜리 시험이 사람들의 몇 달을 구한 적이 있다. P6에서는 답이 날카롭다. joint state broadcaster는 주기마다 한 번 발행하므로 `ros2 topic hz /joint_states`는 $200$을 읽어야 한다. $190$이 나오면 초당 열 주기, 스무 번에 한 번이 늦거나 빠진 것이고, Worked case Step 5의 overrun이 주기로 드러난 것이다.
 
 ### 5. 네트워크를 건너는 DDS
 
@@ -960,6 +1011,8 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 ### 9. 실습: 준비 완료 점검표
 
 아직 하드웨어가 없을 수 있으니, 실습은 하드웨어보다 먼저 오는 산출물이다. 당신의 특정 기계에 대해 이것을 적되, 모든 줄을 *확인 가능*하게 — 실행할 명령이거나 눈으로 볼 물리적 사실이지, 의도가 아니게 — 만들어라.
+
+5–8번 줄은 오늘 Gazebo 속 25.7의 팔에서 미리 돌려 볼 수 있고, 그러면 바뀌어야 할 답이 눈에 보인다. 5번은 `gz_ros2_control/GazeboSimSystem`을 찍고, 6번은 25.7의 launch 파일이 시작할 때 제어기를 활성화하므로 인터페이스가 이미 claimed로 나오며, 7번은 `True`를 찍고, 8번은 뒤에 잴 버스가 없는 `200`을 찍는다. 실제 기계에서는 그 하나하나가 반대로 읽혀야 한다.
 
 **전원 전:**
 

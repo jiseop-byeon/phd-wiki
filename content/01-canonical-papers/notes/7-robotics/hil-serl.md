@@ -19,8 +19,8 @@ mastery-when: "Raise to Mastery when real-world RL becomes the method the thesis
 **Luo, Xu, Wu & Levine, *Science Robotics* 10(105), eads5033, 2025** — [arXiv:2410.21845](https://arxiv.org/abs/2410.21845) · [Project](https://hil-serl.github.io/)
 
 > [!note] Math on-ramp · 수학 준비물
-> Off-policy RL and why sample efficiency is the binding constraint on real hardware ([[02-foundations/rl-basics|7. §3–§6]]), plus the interactive-versus-offline argument in [[02-foundations/rl-basics|7. §6]] — this paper is that argument's strongest evidence.
-> off-policy RL과 실제 하드웨어에서 표본 효율이 왜 결정적 제약인지([[02-foundations/rl-basics|7. §3~§6]]), 그리고 [[02-foundations/rl-basics|7. §6]]의 상호작용 대 오프라인 논증 — 이 논문이 그 논증의 가장 강한 증거다.
+> Off-policy RL and why sample efficiency is the binding constraint on real hardware ([[02-foundations/rl-basics|7. §3–§5]]), plus the interactive-versus-offline argument in [[02-foundations/rl-robot-learning|7.5 §1]] — this paper is that argument's strongest evidence.
+> off-policy RL과 실제 하드웨어에서 표본 효율이 왜 결정적 제약인지([[02-foundations/rl-basics|7. §3~§5]]), 그리고 [[02-foundations/rl-robot-learning|7.5 §1]]의 상호작용 대 오프라인 논증 — 이 논문이 그 논증의 가장 강한 증거다.
 
 ## English
 
@@ -56,14 +56,14 @@ The paper also reports that the learned policies span both **reactive and predic
 
 ### Impact & follow-ups
 
-HIL-SERL is the strongest existing evidence for the claim in [[02-foundations/rl-basics|7. §6]] that **interactive learning beats offline learning** on contact-rich manipulation, and it moved real-world RL from "in principle" to "this afternoon". Publication in *Science Robotics* rather than a robotics conference is itself a signal about how the community read the result.
+HIL-SERL is the strongest existing evidence for the claim in [[02-foundations/rl-robot-learning|7.5 §1]] that **interactive learning beats offline learning** on contact-rich manipulation, and it moved real-world RL from "in principle" to "this afternoon". Publication in *Science Robotics* rather than a robotics conference is itself a signal about how the community read the result.
 
 **For construction**: an afternoon per task on the real hardware is a plausible budget for a site process that will be repeated thousands of times — bolt fastening, panel seating, connector insertion. The blocker is not training time; it is that the operator has to stand there, and that the reward signal for "the connection is sound" is not something a camera can see.
 
 ### Connections
 
 - [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets §11]] — how to read the success rates in this paper's tables: trials, initial-state distribution, seen/unseen split, and whose evaluation it is
-- [[02-foundations/rl-basics|7. RL Basics §6]] — the interactive-versus-offline argument this anchors
+- [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]] — the interactive-versus-offline argument this anchors
 - [[04-robotics/force-compliance-control|13. Force & Compliance Control]] — the contact regime these tasks live in
 - [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] — the imitation baseline it is measured against
 - [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] — where the demonstrations and corrections come from
@@ -109,14 +109,14 @@ RL에는 오래된 약속 — 복잡한 조작 기술의 자율적 습득 — �
 
 ### 영향과 후속 연구
 
-HIL-SERL은 접촉이 많은 조작에서 **상호작용적 학습이 오프라인 학습을 이긴다**는 [[02-foundations/rl-basics|7. §6]]의 주장을 뒷받침하는 현존하는 가장 강한 증거이고, 실제 환경 RL을 "원리적으로는"에서 "오늘 오후에"로 옮겼다. 로보틱스 학회가 아니라 *Science Robotics*에 실렸다는 사실 자체가 커뮤니티가 이 결과를 어떻게 읽었는지에 대한 신호다.
+HIL-SERL은 접촉이 많은 조작에서 **상호작용적 학습이 오프라인 학습을 이긴다**는 [[02-foundations/rl-robot-learning|7.5 §1]]의 주장을 뒷받침하는 현존하는 가장 강한 증거이고, 실제 환경 RL을 "원리적으로는"에서 "오늘 오후에"로 옮겼다. 로보틱스 학회가 아니라 *Science Robotics*에 실렸다는 사실 자체가 커뮤니티가 이 결과를 어떻게 읽었는지에 대한 신호다.
 
 **건설의 경우**: 수천 번 반복될 현장 공정 — 볼트 체결, 패널 안착, 커넥터 삽입 — 에 대해 실제 하드웨어에서 과제당 오후 한나절은 그럴듯한 예산이다. 병목은 학습 시간이 아니다. 조작자가 거기 서 있어야 한다는 것, 그리고 "접합이 제대로 되었다"는 보상 신호가 카메라로 볼 수 있는 것이 아니라는 것이 병목이다.
 
 ### 연결
 
 - [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §11]] — 이 논문 표의 성공률을 읽는 법: 시행 횟수, 초기 상태 분포, seen/unseen 분할, 그리고 누구의 평가인가
-- [[02-foundations/rl-basics|7. RL 기초 §6]] — 이것이 정박하는 상호작용 대 오프라인 논증
+- [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]] — 이것이 정박하는 상호작용 대 오프라인 논증
 - [[04-robotics/force-compliance-control|13. 힘과 컴플라이언스 제어]] — 이 과제들이 사는 접촉 영역
 - [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] — 비교 대상이 되는 모방학습 베이스라인
 - [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집]] — 시연과 교정이 오는 곳

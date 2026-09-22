@@ -13,8 +13,8 @@ mastery-when: "Raise to Mastery only if locomotion becomes the platform your con
 > **Working** — 정본을 정확히 읽고 이 플랫폼들을 쓸 만큼. 그것을 진전시키기 위해서가 아니라.
 
 > [!note] Prerequisites · 선수 지식
-> You need RL and policy gradients ([[02-foundations/rl-basics|7. RL Basics §4]]), the manipulator equation and why actuator models matter ([[02-foundations/manipulator-kinematics-dynamics|10. §2, §7]]), and DAgger ([[01-canonical-papers/notes/4-vla/dagger|DAgger]]) — because distillation here is DAgger with a simulator as the expert.
-> RL과 정책 경사([[02-foundations/rl-basics|7. RL 기초 §4]]), 매니퓰레이터 방정식과 액추에이터 모델이 중요한 이유([[02-foundations/manipulator-kinematics-dynamics|10. §2, §7]]), 그리고 DAgger([[01-canonical-papers/notes/4-vla/dagger|DAgger]])가 필요하다 — 여기서의 증류가 시뮬레이터를 전문가로 삼은 DAgger이기 때문이다.
+> You need RL and policy gradients ([[02-foundations/rl-basics|7. RL Basics §4]]), the manipulator equation and why actuator models matter ([[02-foundations/manipulator-kinematics-dynamics|10. §2, §7]]), DAgger ([[01-canonical-papers/notes/4-vla/dagger|DAgger]]) — because distillation here is DAgger with a simulator as the expert — and **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], which rides on Q in the Worked case. Two earlier pages already use this page's Q, and the page points back to both: [[04-robotics/convex-mpc-legged|8. Convex MPC]], the model-based controller §1.5 contrasts the learned line with, whose QP plans on Q's contact schedule, and [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]], whose slope gate the Worked case derives. Q's numbers are defined here, so neither is needed to follow this page.
+> RL과 정책 경사([[02-foundations/rl-basics|7. RL 기초 §4]]), 매니퓰레이터 방정식과 액추에이터 모델이 중요한 이유([[02-foundations/manipulator-kinematics-dynamics|10. §2, §7]]), DAgger([[01-canonical-papers/notes/4-vla/dagger|DAgger]]; 여기서의 증류가 시뮬레이터를 전문가로 삼은 DAgger이기 때문이다), 그리고 Worked case에서 Q의 등에 타는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 P2가 필요하다. 학습 순서상 앞선 두 페이지가 이미 이 페이지의 Q를 쓰고, 이 페이지는 둘을 모두 되짚는다. §1.5가 학습 계열과 대비하는 모델 기반 제어기로서 QP가 Q의 접촉 스케줄 위에서 계획하는 [[04-robotics/convex-mpc-legged|8. Convex MPC]], 그리고 Worked case가 유도하는 경사 관문을 비용 지도에 쓰는 [[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]]이다. Q의 숫자는 여기서 정의하므로 이 페이지를 따라가는 데 둘 다 필요하지는 않다.
 
 ## English
 
@@ -22,12 +22,15 @@ mastery-when: "Raise to Mastery only if locomotion becomes the platform your con
 Privileged teacher–student distillation is the idea to take from here, and the page doubles as practice at correcting over-citation.*
 
 > [!note] First pass · 처음이라면
-> Read §1, then §2 — privileged teacher–student distillation is the one idea to take away — then §3, where each canonical result is pinned to what it actually claimed. §1.5 is there for when you meet a biped paper written in the classical language. The running object, the picture and the worked derivation on them are the lecture the problem set assumes; do those in order (object, picture, §1.5, worked) if you are here for the course rather than for the literature.
+> Read the running object and the picture, then §1, then §1.5.3 (the capture point and the linear inverted pendulum — the Worked case runs on it), then the Worked case on Q, which the problem set assumes. Then §2 — privileged teacher–student distillation, the one idea to take away — and §3, where each canonical result is pinned to what it actually claimed. Second pass: the rest of §1.5 (support polygon, ZMP, why the learned line drops them, limit cycles), for when you meet a biped paper written in the classical language, and §4–§6 (the parkour contrast, 2025–2026, the tooling that dates a paper).
 
 ### Running object · 이 페이지의 장치
 
 None of the six plants in [[02-foundations/lab-plants|0.6 Lab Plants]] is a legged body, so this
-page freezes its own and the next two pages reuse it rather than inventing a second one.
+page freezes its own, and two pages reuse it rather than inventing a second one:
+[[04-robotics/convex-mpc-legged|8. Convex MPC]] and
+[[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]]. Both come *before*
+this page in study order, so a reader meets Q there first and finds its full definition here.
 
 **Q — the frozen quadruped.** One rigid body on four massless legs, standing square.
 
@@ -54,7 +57,7 @@ on Q's back, and the worked derivation below ends by computing what that arm cos
 also the body of the QP on [[04-robotics/convex-mpc-legged|8. Convex MPC]] and the robot whose
 costmap is built on [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]].
 
-The humanoid in §1.5 with $z=0.9$ m is a *different* body, kept because that is the size the
+The humanoid in §1.5.3 with $z=0.9$ m is a *different* body, kept because that is the size the
 capture-point literature is written about. When the two disagree it is because they are two
 machines, not because one number is stale.
 
@@ -112,28 +115,46 @@ Everything below is the learned line, and it does not speak the language most le
 before roughly 2019 were written in. You still need that language to read them, so here it
 is at literacy depth, with the reason it is absent from the rest of this page.
 
-- **Support polygon** — the convex hull of the contact points on the ground. The classical
-  stability question is whether a particular point stays inside it. Written out, with $c_1,\dots,c_k$ the contact points projected onto the ground plane, it is every weighted average of them with nonnegative weights summing to one:
-$$\mathcal{S}=\mathrm{conv}\{c_1,\dots,c_k\}=\Big\{\sum_i\lambda_ic_i:\ \lambda_i\ge0,\ \sum_i\lambda_i=1\Big\}$$
-  The **static stability criterion** requires the vertical projection of the centre of mass (CoM) to lie in $\mathcal S$, because nonnegative vertical foot forces can only produce a resultant located inside the hull, and standing still needs that resultant directly under the CoM. Example: feet at $(\pm0.3,\pm0.15)$ m give a $0.6\times0.3$ m rectangle, and a CoM projection at $(0.1,0.05)$ m is inside. Non-example: in a trot only a diagonal pair is down, the polygon collapses to the segment between them, and the CoM is almost never on that segment, yet trotting robots do not fall, since a trot is balanced dynamically, not statically.
-- **ZMP (zero-moment point)** — the point on the ground where the ground reaction force
-  produces no horizontal moment. Keep the ZMP strictly inside the support polygon and the
-  foot cannot rotate about its edge; let it reach the boundary and the foot tips. Almost
-  every walking-pattern generator of that era is a device for producing a ZMP trajectory the
-  robot can track. On flat ground the ZMP coincides with the **centre of pressure**, the force-weighted average of the contact points,
-$$p_{\text{ZMP}}=\frac{\sum_i f_{z,i}\,c_i}{\sum_i f_{z,i}}$$
-  where $f_{z,i}\ge0$ is the vertical force at contact $c_i$; the vertical forces produce no horizontal moment about this point, so it satisfies the definition. Because the weights are nonnegative, a ZMP measured from real forces is always inside the polygon; the criterion is about the ZMP the *planned motion* demands. For a CoM at constant height $z$ (the linear inverted pendulum below) that demand is $p=x-(z/g)\,\ddot x$, with $x$ the CoM's horizontal position. Example: four feet at $x=0.3,0.3,-0.3,-0.3$ m carrying $40,30,20,10$ N put the ZMP at $x=0.12$ m. A CoM at $z=0.9$ m accelerating forward at $1$ m/s² demands a ZMP $0.9/9.81=0.092$ m behind the CoM, so a foot reaching $0.125$ m behind it allows at most $9.81\times0.125/0.9=1.36$ m/s² before the demanded ZMP leaves the foot and it tips.
-- **Capture point / DCM (divergent component of motion)** — where you would have to place
-  the next footfall to come to a complete stop. From the linear inverted pendulum model with
-  centre-of-mass height $z$, $\;\omega_0 = \sqrt{g/z}\;$ and the capture point sits
-  $\;\dot x/\omega_0\;$ ahead of the centre of mass. **Worked:** a humanoid with
-  $z = 0.9$ m has $\omega_0 = \sqrt{9.81/0.9} = 3.30$ rad/s, so at $\dot x = 0.5$ m/s it
-  must step $0.5/3.30 = 0.15$ m ahead to stop; at $1.0$ m/s, $0.30$ m. DCM is the
-  three-dimensional generalisation used by modern whole-body controllers. The model behind it is the **linear inverted pendulum**: a point mass at constant height $z$ on a massless leg whose foot, the ZMP, is at $p$. Its dynamics and the capture point $\xi$ are
-$$\ddot x=\omega_0^2\,(x-p),\qquad \xi=x+\frac{\dot x}{\omega_0},\qquad \dot\xi=\omega_0\,(\xi-p)$$
-  so the last equation follows by differentiating $\xi$ and substituting the first. It has a positive rate $\omega_0$, so $\xi$ runs away from $p$ exponentially unless the foot is placed on $\xi$; placing it there makes $\dot\xi=0$ and the CoM comes to rest over the foot. Non-example: step 5 cm short of $\xi$ with $\omega_0=3.30$ rad/s, and the gap grows to $0.05\,e^{3.30\times0.5}=0.26$ m within half a second.
+#### 1.5.1 Support polygon
 
-**Why this page does not use any of it.** ZMP assumes a flat, known, co-planar support
+**Support polygon** — the convex hull of the contact points on the ground. The classical
+stability question is whether a particular point stays inside it. Written out, with $c_1,\dots,c_k$ the contact points projected onto the ground plane, it is every weighted average of them with nonnegative weights summing to one:
+
+$$\mathcal{S}=\mathrm{conv}\{c_1,\dots,c_k\}=\Big\{\sum_i\lambda_ic_i:\ \lambda_i\ge0,\ \sum_i\lambda_i=1\Big\}$$
+
+The **static stability criterion** requires the vertical projection of the centre of mass (CoM) to lie in $\mathcal S$, because nonnegative vertical foot forces can only produce a resultant located inside the hull, and standing still needs that resultant directly under the CoM. Example: feet at $(\pm0.3,\pm0.15)$ m give a $0.6\times0.3$ m rectangle, and a CoM projection at $(0.1,0.05)$ m is inside. Non-example: in a trot only a diagonal pair is down, the polygon collapses to the segment between them, and the CoM is almost never on that segment, yet trotting robots do not fall, since a trot is balanced dynamically, not statically.
+
+#### 1.5.2 Zero-moment point
+
+**ZMP (zero-moment point)** — the point on the ground where the ground reaction force
+produces no horizontal moment. Keep the ZMP strictly inside the support polygon and the
+foot cannot rotate about its edge; let it reach the boundary and the foot tips. Almost
+every walking-pattern generator of that era is a device for producing a ZMP trajectory the
+robot can track. On flat ground the ZMP coincides with the **centre of pressure**, the force-weighted average of the contact points,
+
+$$p_{\text{ZMP}}=\frac{\sum_i f_{z,i}\,c_i}{\sum_i f_{z,i}}$$
+
+where $f_{z,i}\ge0$ is the vertical force at contact $c_i$; the vertical forces produce no horizontal moment about this point, so it satisfies the definition. Because the weights are nonnegative, a ZMP measured from real forces is always inside the polygon; the criterion is about the ZMP the *planned motion* demands. For a CoM at constant height $z$ (the linear inverted pendulum below) that demand is $p=x-(z/g)\,\ddot x$, with $x$ the CoM's horizontal position. Example: four feet at $x=0.3,0.3,-0.3,-0.3$ m carrying $40,30,20,10$ N put the ZMP at $x=0.12$ m. A CoM at $z=0.9$ m accelerating forward at $1$ m/s² demands a ZMP $0.9/9.81=0.092$ m behind the CoM, so a foot reaching $0.125$ m behind it allows at most $9.81\times0.125/0.9=1.36$ m/s² before the demanded ZMP leaves the foot and it tips.
+
+#### 1.5.3 Capture point and the linear inverted pendulum
+
+*The Worked case runs on this subsection, so it is required reading; the rest of §1.5 is for reading classical papers.*
+
+**Capture point / DCM (divergent component of motion)** — where you would have to place
+the next footfall to come to a complete stop. From the linear inverted pendulum model with
+centre-of-mass height $z$, $\;\omega_0 = \sqrt{g/z}\;$ and the capture point sits
+$\;\dot x/\omega_0\;$ ahead of the centre of mass. **Worked:** a humanoid with
+$z = 0.9$ m has $\omega_0 = \sqrt{9.81/0.9} = 3.30$ rad/s, so at $\dot x = 0.5$ m/s it
+must step $0.5/3.30 = 0.15$ m ahead to stop; at $1.0$ m/s, $0.30$ m. DCM is the
+three-dimensional generalisation used by modern whole-body controllers. The model behind it is the **linear inverted pendulum**: a point mass at constant height $z$ on a massless leg whose foot, the ZMP, is at $p$. Its dynamics and the capture point $\xi$ are
+
+$$\ddot x=\omega_0^2\,(x-p),\qquad \xi=x+\frac{\dot x}{\omega_0},\qquad \dot\xi=\omega_0\,(\xi-p)$$
+
+so the last equation follows by differentiating $\xi$ and substituting the first. It has a positive rate $\omega_0$, so $\xi$ runs away from $p$ exponentially unless the foot is placed on $\xi$; placing it there makes $\dot\xi=0$ and the CoM comes to rest over the foot. Non-example: step 5 cm short of $\xi$ with $\omega_0=3.30$ rad/s, and the gap grows to $0.05\,e^{3.30\times0.5}=0.26$ m within half a second.
+
+#### 1.5.4 Why this page does not use any of it
+
+ZMP assumes a flat, known, co-planar support
 surface and a foot that makes full contact with it. That assumption is what the learned line
 gave up on purpose: on rubble, on a slope, on a toe-only foothold, the support polygon is not
 the object ZMP needs. What replaces it is not a better criterion but a different bargain:
@@ -144,6 +165,8 @@ by *pre-specifying* the contact schedule).
 
 So: expect ZMP and capture point in humanoid, biped and whole-body-control papers, and expect
 their absence in the learned results §3 covers. Neither absence is an oversight.
+
+#### 1.5.5 Limit cycle and the return map
 
 **The third word: limit cycle.** A limit cycle is an isolated closed trajectory in state
 space — a nonlinear system's own preferred oscillation, which it returns to after a small
@@ -166,6 +189,8 @@ reward actually selects for, when it rewards forward velocity without prescribin
 a limit cycle the network found on its own. The trotting and bounding patterns that emerge
 unbidden in those papers are that object appearing without being asked for.
 
+**Where the classical vocabulary is written down.**
+
 - M. Vukobratović and B. Borovac, "Zero-moment point — thirty five years of its life,"
   *International Journal of Humanoid Robotics*, vol. 1, no. 1, 2004.
 - J. Pratt, J. Carff, S. Drakunov, A. Goswami, "Capture Point: A Step toward Humanoid Push
@@ -175,7 +200,7 @@ unbidden in those papers are that object appearing without being asked for.
 
 ### Worked on Q · 장치로 한 번 끝까지
 
-Everything here is the linear inverted pendulum of §1.5 evaluated on Q's rows, plus the gait
+Everything here is the linear inverted pendulum of §1.5.3 evaluated on Q's rows, plus the gait
 arithmetic that turns it into a speed limit. Do it once here and the problem set is a change of
 knobs rather than a first derivation.
 
@@ -190,7 +215,7 @@ becomes $0.05\,e^{1}=0.136$ m of it one time constant later. A 10 Hz controller 
 samples per time constant; that is the arithmetic behind §2's policies running at 50 Hz and above, and behind
 every locomotion stack having a fast inner loop.
 
-**2. The capture point.** From §1.5, $\xi=x+\dot x/\omega_0$, and placing the next foot on $\xi$
+**2. The capture point.** From §1.5.3, $\xi=x+\dot x/\omega_0$, and placing the next foot on $\xi$
 makes $\dot\xi=0$, so the distance the foot must go ahead of the CoM to bring Q to rest in one step is
 
 $$\xi-x=\frac{\dot x}{\omega_0}=\frac{1.0}{5.72}=0.175\ \mathrm{m}$$
@@ -251,7 +276,7 @@ Reaching the $1.60$ m/s stroke limit from rest therefore takes at least $1.60/5.
 of one gait cycle. Per foot: standing square, each carries $mg/4=29.43$ N; in the trot only two are
 down, so each carries $mg/2=58.86$ N and may push sideways with at most $\mu f_z=0.6\times58.86=35.3$
 N. Those three numbers are exactly what [[04-robotics/convex-mpc-legged|8. Convex MPC]] turns into
-constraint rows, and the $\mu$ that produces them is the single physical condition §1.5 says the
+constraint rows, and the $\mu$ that produces them is the single physical condition §1.5.4 says the
 learned controllers still rely on.
 
 **7. What P2 costs Q.** Mount **P2** ([[02-foundations/lab-plants|0.6]]) with its shoulder at Q's
@@ -590,12 +615,15 @@ Commanded speed $\dot x=0.6$ m/s. Leg length, hip offset, mass and $\mu$ are unc
 가져갈 발상은 특권 교사–학생 증류이고, 이 페이지는 동시에 과잉 인용을 교정하는 연습장이다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 다음 §2 — 가져갈 발상은 특권 교사–학생 증류 하나다 — 그다음 각 정본이 실제로 무엇을 주장했는지 못 박아 둔 §3. §1.5는 고전 언어로 쓰인 이족 논문을 만났을 때를 위해 있다. 이 페이지의 장치와 그림, 그리고 그 위에서 끝까지 해 본 유도는 과제가 전제하는 강의다. 문헌이 아니라 수업 때문에 왔다면 장치 → 그림 → §1.5 → 유도 순서로 읽어라.
+> 장치와 그림을 먼저 보고, §1, 그다음 §1.5.3(capture point와 선형 도립진자 — Worked case가 이 위에서 돈다), 그다음 과제가 전제하는 Q 위의 Worked case를 읽어라. 그러고 나서 §2 — 가져갈 발상은 특권 교사–학생 증류 하나다 — 와 각 정본이 실제로 무엇을 주장했는지 못 박아 둔 §3. 두 번째 읽기: 고전 언어로 쓰인 이족 논문을 만났을 때를 위한 §1.5의 나머지(지지 다각형, ZMP, 학습 계열이 그것을 버린 이유, 극한주기), 그리고 §4–§6(파쿠르의 대조, 2025~26년, 논문의 연대를 정하는 도구).
 
 ### 이 페이지의 장치 · Running object
 
 [[02-foundations/lab-plants|0.6 Lab Plants]]의 여섯 장치 중 다리 달린 몸은 없다. 그래서 이
-페이지가 자기 장치를 고정하고, 다음 두 페이지는 새 장치를 만드는 대신 이것을 다시 쓴다.
+페이지가 자기 장치를 고정하고, 두 페이지가 새 장치를 만드는 대신 이것을 다시 쓴다.
+[[04-robotics/convex-mpc-legged|8. Convex MPC]]와
+[[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]]이다. 둘 다 학습 순서상
+이 페이지보다 *앞에* 오므로, 독자는 Q를 거기서 먼저 만나고 그 온전한 정의를 여기서 찾는다.
 
 **Q — 고정된 사족.** 질량 없는 다리 네 개 위의 단일 강체. 네 발을 정사각으로 딛고 선다.
 
@@ -622,7 +650,7 @@ Q는 이 위키의 관통 과제를 나른다: [[02-foundations/lab-plants|0.6]]
 [[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]]에서는 비용 지도를
 받는 로봇으로 다시 나온다.
 
-§1.5의 $z=0.9$ m 휴머노이드는 *다른* 몸이다. capture point 문헌이 그 크기에 대해 쓰였기 때문에
+§1.5.3의 $z=0.9$ m 휴머노이드는 *다른* 몸이다. capture point 문헌이 그 크기에 대해 쓰였기 때문에
 그대로 둔다. 두 숫자가 어긋나면 하나가 낡아서가 아니라 기계가 둘이기 때문이다.
 
 ### 그림으로 먼저 보기 · The picture
@@ -677,26 +705,44 @@ Q는 이 위키의 관통 과제를 나른다: [[02-foundations/lab-plants|0.6]]
 않는다. 그 논문들을 읽으려면 그 언어가 여전히 필요하므로, 문해력 수준으로 여기 적어 둔다 —
 그리고 이 페이지의 나머지에서 왜 빠져 있는지도 함께.
 
-- **지지 다각형(support polygon)** — 지면 접촉점들의 볼록 껍질. 고전적 안정성 질문은 어떤
-  점이 그 안에 머무는가다. 풀어 쓰면, 지면에 투영한 접촉점 $c_1,\dots,c_k$에 대해 합이 1인 음이 아닌 가중치로 만든 모든 가중 평균이다.
-$$\mathcal{S}=\mathrm{conv}\{c_1,\dots,c_k\}=\Big\{\sum_i\lambda_ic_i:\ \lambda_i\ge0,\ \sum_i\lambda_i=1\Big\}$$
-  **정적 안정성 기준**은 무게중심(CoM)의 수직 투영이 $\mathcal S$ 안에 있기를 요구한다. 음이 아닌 수직 발 힘들은 껍질 안에 놓인 합력만 만들 수 있고, 가만히 서 있으려면 그 합력이 CoM 바로 아래에 있어야 하기 때문이다. 예: 발이 $(\pm0.3,\pm0.15)$ m에 있으면 $0.6\times0.3$ m 직사각형이고, $(0.1,0.05)$ m의 CoM 투영은 그 안에 있다. 반례: 속보(trot)에서는 대각선 한 쌍만 땅에 있어 다각형이 둘 사이의 선분으로 줄어들고, CoM은 거의 그 선분 위에 있지 않다. 그래도 속보하는 로봇은 넘어지지 않는다. 속보는 정적으로가 아니라 동적으로 균형을 잡기 때문이다.
-- **ZMP(zero-moment point)** — 지면 반력이 수평 모멘트를 만들지 않는 지면 위의 점. ZMP가
-  지지 다각형 안에 확실히 있으면 발이 모서리를 축으로 회전하지 못하고, 경계에 닿으면 발이
-  들린다. 그 시대의 보행 패턴 생성기는 사실상 로봇이 추종할 수 있는 ZMP 궤적을 만들어 내는
-  장치다. 평지에서 ZMP는 접촉점들을 힘으로 가중 평균한 **압력 중심**과 일치한다.
-$$p_{\text{ZMP}}=\frac{\sum_i f_{z,i}\,c_i}{\sum_i f_{z,i}}$$
-  $f_{z,i}\ge0$는 접촉점 $c_i$의 수직력이다. 이 점에 대해 수직력들은 수평 모멘트를 만들지 않으므로 정의를 만족한다. 가중치가 음이 아니므로 실제 힘으로 잰 ZMP는 언제나 다각형 안에 있다. 기준이 문제 삼는 것은 *계획한 운동*이 요구하는 ZMP다. 높이 $z$가 일정한 CoM(아래의 선형 도립진자)에서 그 요구는 $p=x-(z/g)\,\ddot x$이고 $x$는 CoM의 수평 위치다. 예: $x=0.3,0.3,-0.3,-0.3$ m의 네 발이 $40,30,20,10$ N을 받치면 ZMP는 $x=0.12$ m다. $z=0.9$ m의 CoM이 앞으로 $1$ m/s²로 가속하면 CoM보다 $0.9/9.81=0.092$ m 뒤의 ZMP를 요구하므로, CoM 뒤로 $0.125$ m까지 뻗은 발은 요구 ZMP가 발을 벗어나 발이 들리기 전까지 최대 $9.81\times0.125/0.9=1.36$ m/s²를 허용한다.
-- **Capture point / DCM(divergent component of motion)** — 완전히 멈추려면 다음 발을 어디에
-  디뎌야 하는가. 무게중심 높이 $z$의 선형 도립진자 모형에서 $\;\omega_0 = \sqrt{g/z}\;$이고,
-  capture point는 무게중심보다 $\;\dot x/\omega_0\;$만큼 앞에 있다. **계산 예제:**
-  $z = 0.9$ m인 휴머노이드는 $\omega_0 = \sqrt{9.81/0.9} = 3.30$ rad/s이므로
-  $\dot x = 0.5$ m/s에서 멈추려면 $0.5/3.30 = 0.15$ m 앞을 디뎌야 하고, $1.0$ m/s에서는
-  $0.30$ m다. DCM은 현대 전신 제어기가 쓰는 3차원 일반화다. 그 뒤의 모델은 **선형 도립진자**다. 높이 $z$가 일정한 점질량이 질량 없는 다리 위에 있고, 그 발(곧 ZMP)이 $p$에 있다. 동역학과 capture point $\xi$는 다음과 같다.
-$$\ddot x=\omega_0^2\,(x-p),\qquad \xi=x+\frac{\dot x}{\omega_0},\qquad \dot\xi=\omega_0\,(\xi-p)$$
-  마지막 식은 $\xi$를 미분하고 첫 식을 대입하면 나온다. 비율 $\omega_0$가 양수이므로 발을 $\xi$ 위에 놓지 않으면 $\xi$는 $p$에서 지수적으로 멀어진다. 거기에 놓으면 $\dot\xi=0$이 되고 CoM이 발 위에서 멈춘다. 반례: $\omega_0=3.30$ rad/s에서 $\xi$보다 5 cm 짧게 디디면 그 간격이 반 초 만에 $0.05\,e^{3.30\times0.5}=0.26$ m로 커진다.
+#### 1.5.1 지지 다각형
 
-**이 페이지가 그중 아무것도 쓰지 않는 이유.** ZMP는 평평하고 알려진 동일 평면의 지지면과,
+**지지 다각형(support polygon)** — 지면 접촉점들의 볼록 껍질. 고전적 안정성 질문은 어떤
+점이 그 안에 머무는가다. 풀어 쓰면, 지면에 투영한 접촉점 $c_1,\dots,c_k$에 대해 합이 1인 음이 아닌 가중치로 만든 모든 가중 평균이다.
+
+$$\mathcal{S}=\mathrm{conv}\{c_1,\dots,c_k\}=\Big\{\sum_i\lambda_ic_i:\ \lambda_i\ge0,\ \sum_i\lambda_i=1\Big\}$$
+
+정적 안정성 기준(**static stability criterion**)은 무게중심(CoM)의 수직 투영이 $\mathcal S$ 안에 있기를 요구한다. 음이 아닌 수직 발 힘들은 껍질 안에 놓인 합력만 만들 수 있고, 가만히 서 있으려면 그 합력이 CoM 바로 아래에 있어야 하기 때문이다. 예: 발이 $(\pm0.3,\pm0.15)$ m에 있으면 $0.6\times0.3$ m 직사각형이고, $(0.1,0.05)$ m의 CoM 투영은 그 안에 있다. 반례: 속보(trot)에서는 대각선 한 쌍만 땅에 있어 다각형이 둘 사이의 선분으로 줄어들고, CoM은 거의 그 선분 위에 있지 않다. 그래도 속보하는 로봇은 넘어지지 않는다. 속보는 정적으로가 아니라 동적으로 균형을 잡기 때문이다.
+
+#### 1.5.2 영모멘트점
+
+**ZMP(zero-moment point)** — 지면 반력이 수평 모멘트를 만들지 않는 지면 위의 점. ZMP가
+지지 다각형 안에 확실히 있으면 발이 모서리를 축으로 회전하지 못하고, 경계에 닿으면 발이
+들린다. 그 시대의 보행 패턴 생성기는 사실상 로봇이 추종할 수 있는 ZMP 궤적을 만들어 내는
+장치다. 평지에서 ZMP는 접촉점들을 힘으로 가중 평균한 압력 중심(**centre of pressure**)과 일치한다.
+
+$$p_{\text{ZMP}}=\frac{\sum_i f_{z,i}\,c_i}{\sum_i f_{z,i}}$$
+
+$f_{z,i}\ge0$는 접촉점 $c_i$의 수직력이다. 이 점에 대해 수직력들은 수평 모멘트를 만들지 않으므로 정의를 만족한다. 가중치가 음이 아니므로 실제 힘으로 잰 ZMP는 언제나 다각형 안에 있다. 기준이 문제 삼는 것은 *계획한 운동*이 요구하는 ZMP다. 높이 $z$가 일정한 CoM(아래의 선형 도립진자)에서 그 요구는 $p=x-(z/g)\,\ddot x$이고 $x$는 CoM의 수평 위치다. 예: $x=0.3,0.3,-0.3,-0.3$ m의 네 발이 $40,30,20,10$ N을 받치면 ZMP는 $x=0.12$ m다. $z=0.9$ m의 CoM이 앞으로 $1$ m/s²로 가속하면 CoM보다 $0.9/9.81=0.092$ m 뒤의 ZMP를 요구하므로, CoM 뒤로 $0.125$ m까지 뻗은 발은 요구 ZMP가 발을 벗어나 발이 들리기 전까지 최대 $9.81\times0.125/0.9=1.36$ m/s²를 허용한다.
+
+#### 1.5.3 Capture point와 선형 도립진자
+
+*Worked case가 이 소절 위에서 돌기 때문에 이 소절은 필수다. §1.5의 나머지는 고전 논문을 읽기 위한 것이다.*
+
+**Capture point / DCM(divergent component of motion)** — 완전히 멈추려면 다음 발을 어디에
+디뎌야 하는가. 무게중심 높이 $z$의 선형 도립진자 모형에서 $\;\omega_0 = \sqrt{g/z}\;$이고,
+capture point는 무게중심보다 $\;\dot x/\omega_0\;$만큼 앞에 있다. **계산 예제:**
+$z = 0.9$ m인 휴머노이드는 $\omega_0 = \sqrt{9.81/0.9} = 3.30$ rad/s이므로
+$\dot x = 0.5$ m/s에서 멈추려면 $0.5/3.30 = 0.15$ m 앞을 디뎌야 하고, $1.0$ m/s에서는
+$0.30$ m다. DCM은 현대 전신 제어기가 쓰는 3차원 일반화다. 그 뒤의 모델은 선형 도립진자(**linear inverted pendulum**)다. 높이 $z$가 일정한 점질량이 질량 없는 다리 위에 있고, 그 발(곧 ZMP)이 $p$에 있다. 동역학과 capture point $\xi$는 다음과 같다.
+
+$$\ddot x=\omega_0^2\,(x-p),\qquad \xi=x+\frac{\dot x}{\omega_0},\qquad \dot\xi=\omega_0\,(\xi-p)$$
+
+마지막 식은 $\xi$를 미분하고 첫 식을 대입하면 나온다. 비율 $\omega_0$가 양수이므로 발을 $\xi$ 위에 놓지 않으면 $\xi$는 $p$에서 지수적으로 멀어진다. 거기에 놓으면 $\dot\xi=0$이 되고 CoM이 발 위에서 멈춘다. 반례: $\omega_0=3.30$ rad/s에서 $\xi$보다 5 cm 짧게 디디면 그 간격이 반 초 만에 $0.05\,e^{3.30\times0.5}=0.26$ m로 커진다.
+
+#### 1.5.4 이 페이지가 그중 아무것도 쓰지 않는 이유
+
+ZMP는 평평하고 알려진 동일 평면의 지지면과,
 그 면에 발이 온전히 닿는 상황을 전제한다. 학습 계열이 의도적으로 포기한 것이 바로 그
 전제다: 잔해 위, 경사면, 발끝만 걸친 디딤에서는 지지 다각형이 ZMP가 요구하는 그 대상이
 아니다. 그것을 대신하는 것은 더 나은 기준이 아니라 다른 거래다: 제어기는 검증된 균형 기준을
@@ -706,6 +752,8 @@ $$\ddot x=\omega_0^2\,(x-p),\qquad \xi=x+\frac{\dot x}{\omega_0},\qquad \dot\xi=
 
 정리하면: 휴머노이드·이족·전신 제어 논문에서는 ZMP와 capture point를 예상하고, §3이 다루는
 학습 기반 결과들에서는 그것들의 부재를 예상하라. 어느 쪽 부재도 실수가 아니다.
+
+#### 1.5.5 극한주기와 복귀 사상
 
 **세 번째 단어: 극한주기(limit cycle).** 극한주기는 상태 공간 안의 고립된 닫힌 궤적이다 —
 비선형계가 스스로 선호하는 진동이고, 살짝 밀면 그리로 되돌아오며, 주기를 일러 주는 외부 시계가
@@ -727,6 +775,8 @@ $$x^\star=P(x^\star),\qquad \Big|\lambda_i\Big(\tfrac{\partial P}{\partial x}(x^
 그 논문들에서 시키지 않았는데 나타나는 속보(trot)와 바운드 패턴이 바로 그 대상이 요청 없이
 등장한 것이다.
 
+**고전 어휘가 적힌 곳.**
+
 - M. Vukobratović, B. Borovac, "Zero-moment point — thirty five years of its life,"
   *International Journal of Humanoid Robotics*, vol. 1, no. 1, 2004.
 - J. Pratt, J. Carff, S. Drakunov, A. Goswami, "Capture Point: A Step toward Humanoid Push
@@ -736,7 +786,7 @@ $$x^\star=P(x^\star),\qquad \Big|\lambda_i\Big(\tfrac{\partial P}{\partial x}(x^
 
 ### 장치로 한 번 끝까지 · Worked on Q
 
-여기 있는 것은 전부 §1.5의 선형 도립진자를 Q의 줄에 대입한 것이고, 거기에 그것을 속도 한계로
+여기 있는 것은 전부 §1.5.3의 선형 도립진자를 Q의 줄에 대입한 것이고, 거기에 그것을 속도 한계로
 바꾸는 보행 산수를 더한 것이다. 여기서 한 번 해 두면 과제는 첫 유도가 아니라 손잡이를 하나
 돌리는 일이 된다.
 
@@ -751,7 +801,7 @@ $$\omega_0=\sqrt{\frac{g}{z}}=\sqrt{\frac{9.81}{0.30}}=5.72\ \mathrm{rad/s},\qqu
 얻지 못한다. §2의 정책이 50 Hz 이상으로 도는 이유, 그리고 모든 보행 스택에 빠른 내부 루프가 있는
 이유가 이 산수다.
 
-**2. Capture point.** §1.5에서 $\xi=x+\dot x/\omega_0$이고 다음 발을 $\xi$에 놓으면
+**2. Capture point.** §1.5.3에서 $\xi=x+\dot x/\omega_0$이고 다음 발을 $\xi$에 놓으면
 $\dot\xi=0$이 되므로, Q를 한 걸음에 멈추려면 발이 무게중심보다 앞서야 하는 거리는 다음과 같다.
 
 $$\xi-x=\frac{\dot x}{\omega_0}=\frac{1.0}{5.72}=0.175\ \mathrm{m}$$
@@ -810,7 +860,7 @@ $$a_{\max}=\frac{\mu\,m\,g}{m}=\mu g=0.6\times9.81=5.89\ \mathrm{m/s}^2$$
 둘만 땅에 있으므로 각각 $mg/2=58.86$ N을 받치며 옆으로는 많아야
 $\mu f_z=0.6\times58.86=35.3$ N을 밀 수 있다. 이 세 숫자가 정확히
 [[04-robotics/convex-mpc-legged|8. Convex MPC]]가 제약 행으로 바꾸는 것이고, 그것을 만들어 내는
-$\mu$가 §1.5가 말한 대로 학습 제어기도 여전히 기대는 유일한 물리 조건이다.
+$\mu$가 §1.5.4가 말한 대로 학습 제어기도 여전히 기대는 유일한 물리 조건이다.
 
 **7. P2가 Q에 물리는 비용.** [[02-foundations/lab-plants|0.6]]의 **P2**를 어깨가 Q의 무게중심에
 오도록 얹는다. P2의 고정 자세 $\theta=(0^\circ,90^\circ)$에서 $1$ kg 질량 둘은 어깨보다 $1$ m

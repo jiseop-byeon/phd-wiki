@@ -7,22 +7,22 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 §4]] (matrix multiplication, transpose, inverse) · [[02-foundations/engineering-math|0.5 §10]] (Σ, argmax, norm notation) · [[02-foundations/neural-network-basics|0.8]] for the machine-learning words the examples use (layer, token, embedding)
-> [[02-foundations/engineering-math|0.5 §4]](행렬곱·전치·역행렬) · [[02-foundations/engineering-math|0.5 §10]](Σ·argmax·노름 표기) · 예제에 쓰이는 기계학습 어휘(층·토큰·임베딩)는 [[02-foundations/neural-network-basics|0.8]]
+> [[02-foundations/engineering-math|0.5 §1]] (partial derivatives, gradient) · [[02-foundations/engineering-math|0.5 §4]] (matrix multiplication, transpose, inverse) · [[02-foundations/engineering-math|0.5 §4.5]] (linearity) · [[02-foundations/engineering-math|0.5 §10]] (Σ, argmax, norm notation) · plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/neural-network-basics|0.8]] for the machine-learning words the examples use (layer, token, embedding)
+> [[02-foundations/engineering-math|0.5 §1]](편미분·그래디언트) · [[02-foundations/engineering-math|0.5 §4]](행렬곱·전치·역행렬) · [[02-foundations/engineering-math|0.5 §4.5]](선형성) · [[02-foundations/engineering-math|0.5 §10]](Σ·argmax·노름 표기) · [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2** · 예제에 쓰이는 기계학습 어휘(층·토큰·임베딩)는 [[02-foundations/neural-network-basics|0.8]]
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 
 *Stands on [[02-foundations/engineering-math|0.5]] and [[02-foundations/neural-network-basics|0.8]]. First corner of the core triangle: a matrix is a map, with a rank,
-eigenvalues and an SVD. Four later pages name this one as a prerequisite — calculus, probability, optimization and SE(3).*
+eigenvalues and an SVD. The later pages that name it as a prerequisite include calculus, probability, optimization, SE(3) and manipulator dynamics.*
 
 Deep learning *is* linear algebra with nonlinearities between the matrix multiplies.
 This page is a course-depth treatment: definitions, derivations, worked examples, and
 where each concept appears in the papers of this wiki.
 
 > [!note] First pass · 처음이라면
-> Read §1 for what a matrix is, then the 2×2 worked example in §3, then §6 for the high-dimensional intuition papers assume. Come back for §4 (SVD) when a paper factorises something, §4.5 the first time you meet $J^\dagger$ on the robotics track, and §5 when you reach the control track.
+> Read the picture, §1 for what a matrix is, §2 through rank and least squares (the gradient derivation included), then the 2×2 worked example in §3 and §6 for the high-dimensional intuition papers assume. The problem set needs one more piece: the shape table and the P2 worked case in §4.5, with the condition number $\kappa_2$ from §3. Second pass: the rest of §3 (conditioning, definiteness) when an optimizer or a covariance needs it, §4 (SVD) when a paper factorises something, the rest of §4.5 the first time you meet $J^\dagger$ on the robotics track, and §5 when you reach the control track.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -86,7 +86,7 @@ where each concept appears in the papers of this wiki.
   <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">Ellipse area π·σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = π·|det J| = π, the circle's own. Straight arm: parallel columns, x lost.</tspan></text>
 </svg>
 
-Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at its frozen pose $\theta=(0^\circ,90^\circ)$, drawn as what §4.5 means by "a matrix is a map": the columns of $J$ are the tip velocities for one unit of each joint rate, $(-1,1)$ for the whole arm turning about the base and $(-1,0)$ for the forearm turning about the elbow, each perpendicular to its own joint-to-tip segment. Under $J$ the unit circle of joint rates becomes an ellipse with semi-axes $\sigma_1=1.618$ and $\sigma_2=0.618$, so $\kappa_2(J)=2.618$, and its area $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$ is the circle's own because $\det J=1$. In the right panel the arm is straight, $\theta=(0^\circ,0^\circ)$: the columns $(0,2)$ and $(0,1)$ are parallel, the ellipse has collapsed to a segment with $\det J=0$ and $\kappa_2=\infty$, and the lost direction is $x$.
+Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at its frozen pose $\theta=(0^\circ,90^\circ)$, drawn as what §1 means by "a matrix is a map" (§4.5 works this pose as its P2 case): the columns of $J$ are the tip velocities for one unit of each joint rate, $(-1,1)$ for the whole arm turning about the base and $(-1,0)$ for the forearm turning about the elbow, each perpendicular to its own joint-to-tip segment. Under $J$ the unit circle of joint rates becomes an ellipse with semi-axes $\sigma_1=1.618$ and $\sigma_2=0.618$, so $\kappa_2(J)=2.618$, and its area $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$ is the circle's own because $\det J=1$. In the right panel the arm is straight, $\theta=(0^\circ,0^\circ)$: the columns $(0,2)$ and $(0,1)$ are parallel, the ellipse has collapsed to a segment with $\det J=0$ and $\kappa_2=\infty$, and the lost direction is $x$.
 
 ### 1. Vectors, matrices, and what multiplication means
 
@@ -181,8 +181,28 @@ In the attention example above, select one row of the score matrix. That row con
   solves $Ax = b$, then so does $x_0 + z$ for every $z$ in the null space, so the solution is
   unique exactly when the null space is trivial.
 - **Least squares** — the most-used derivation in applied math. Overdetermined $Ax \approx b$:
-  minimize $\|Ax - b\|^2$. Setting the gradient to zero:
-  $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
+  minimize $\|Ax - b\|^2$. At the minimum the gradient ([[02-foundations/engineering-math|0.5 §1]])
+  is zero, so the first job is that gradient, and it needs nothing beyond partial derivatives.
+  **The gradient, derived.** *Expand.* A squared norm is a vector dotted with itself,
+  $\|r\|^2 = r^\top r$, and transposes reverse products, so
+  $$\|Ax-b\|^2 = (Ax-b)^\top(Ax-b) = x^\top A^\top A\,x - 2\,b^\top A x + b^\top b$$
+  where the two cross terms $x^\top A^\top b$ and $b^\top A x$ merged because each is a
+  $1\times1$ number and one is the other's transpose. What is left is a *quadratic form*
+  $x^\top M x$ with $M = A^\top A$, a linear term $q^\top x$ with $q = -2A^\top b$, and a constant.
+  *Differentiate each piece, one coordinate $x_k$ at a time.* In $q^\top x = \sum_i q_i x_i$ only
+  the $i = k$ term contains $x_k$, so its partial derivative is $q_k$ and its gradient is $q$.
+  The quadratic form written out is $x^\top M x = \sum_i\sum_j M_{ij}x_ix_j$ (§3 reads it term by
+  term), and $x_k$ sits in the terms with $i = k$ and in those with $j = k$ (the diagonal term
+  $M_{kk}x_k^2$, which is both, gives $2M_{kk}x_k$ — one $M_{kk}x_k$ to each sum), so
+  $$\frac{\partial}{\partial x_k}\,x^\top M x = \sum_j M_{kj}x_j + \sum_i M_{ik}x_i = (Mx)_k + (M^\top x)_k$$
+  and its gradient is $(M + M^\top)x$, which is $2Mx$ because $M = A^\top A$ is symmetric,
+  $(A^\top A)^\top = A^\top A$. The constant contributes nothing. Adding the pieces,
+  $$\nabla_x \|Ax-b\|^2 = 2A^\top A\,x - 2A^\top b = 2A^\top(Ax - b)$$
+  the matrix version of $\frac{d}{dx}(ax-b)^2 = 2a(ax-b)$, which is exactly what it becomes when
+  every matrix is $1\times1$. It is checked on numbers in the worked example below, and
+  [[02-foundations/calculus-backprop|2. Calculus §2]] reaches it again in one line through the
+  chain rule. Setting it to zero:
+  $$2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
   (the **normal equations**), unique when $A$'s columns are linearly independent — VMLS (Boyd & Vandenberghe's *Introduction to Applied Linear Algebra*, see Going deeper below) makes that
   assumption explicitly, and it is what makes $A^\top A$ invertible. Geometrically: $A\hat{x}$ is the orthogonal projection of $b$
   onto $\text{col}(A)$, and the residual is perpendicular to it. That projection is itself a
@@ -199,7 +219,13 @@ In the attention example above, select one row of the score matrix. That row con
   $b - A\hat x = (-\tfrac16, \tfrac13, -\tfrac16)$ — and check the geometry claim directly:
   its sum is $0$ and its dot product with $(1,2,3)$ is $-\tfrac16 + \tfrac23 - \tfrac12 = 0$.
   The residual really is perpendicular to both columns of $A$, which is exactly what
-  "orthogonal projection" asserts. That check costs ten seconds and catches most sign errors. The same normal equations fitted to a heater's recorded input and output, with the covariance of the estimate they return, are [[04-robotics/system-identification|5.5 System Identification §3]].
+  "orthogonal projection" asserts. That check costs ten seconds and catches most sign errors.
+  **Check the gradient formula on the same numbers.** Written out, the loss is
+  $f(c,m) = (c+m-1)^2 + (c+2m-3)^2 + (c+3m-4)^2$. At the trial point $(c,m) = (0,1)$ the
+  residuals $Ax - b$ are $(0,-1,-1)$. Differentiating $f$ term by term gives
+  $\partial f/\partial c = 2(0-1-1) = -4$ and $\partial f/\partial m = 2(1\cdot0 + 2(-1) + 3(-1)) = -10$;
+  the formula gives $2A^\top(0,-1,-1) = 2(-2,\,-5) = (-4,\,-10)$ ✓. At $\hat x$ it gives
+  $2A^\top(\tfrac16,-\tfrac13,\tfrac16) = (0,0)$ — the residual check above, read as a gradient. The same normal equations fitted to a heater's recorded input and output, with the covariance of the estimate they return, are [[04-robotics/system-identification|5.5 System Identification §3]].
 <svg viewBox="0 0 560 242" style="max-width:100%;height:auto" role="img" aria-label="a vector b above the plane spanned by the columns of A, its projection inside the plane, and the residual meeting the plane at a right angle">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.65">
     <polygon points="40,150 232,106 344,146 152,190"/>
@@ -393,13 +419,17 @@ For the line-fitting example, the first column says how changing the intercept m
 
 ### 4. SVD — a universal factorization, available for every matrix
 
+*Second pass. The first pass skips this section; come back when a paper factorises something.*
+
 - **Every** matrix (any shape, any rank): $A = U\Sigma V^\top$ with **orthogonal** $U, V$ (columns unit-length and mutually
   perpendicular, so multiplying by one is a pure rotation/reflection — it stretches nothing) and
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$. Reading: rotate (input
   basis $V$) → scale (singular values) → rotate (output basis $U$).
 - **The pieces, named.** For $A \in \mathbb{R}^{m\times n}$, $U$ is $m\times m$, $\Sigma$ is
   $m\times n$ with zeros off the diagonal, and $V$ is $n\times n$. A square matrix $Q$ is
-  **orthogonal** when $Q^\top Q = I$, which is why it preserves lengths:
+  **orthogonal** when $Q^\top Q = I$ — the same word as §1's orthogonal *vectors*, one level up:
+  entry $(i,j)$ of $Q^\top Q$ is the dot product of columns $i$ and $j$, so $Q^\top Q = I$ says
+  the columns are unit vectors, pairwise orthogonal in §1's sense. That is why it preserves lengths:
   $\|Qx\|^2 = x^\top Q^\top Q x = \|x\|^2$. A $30°$ rotation keeps $\|(3,4)\| = 5$; the
   non-example $\text{diag}(2,1)$ has $\text{diag}(2,1)^\top\text{diag}(2,1) = \text{diag}(4,1) \ne I$
   and stretches. Read column by column, the SVD says
@@ -478,6 +508,8 @@ Return to the singular example above. Its zero singular value means a component 
 **Check your understanding.** When truncated SVD discards a weak direction, it accepts reconstruction error in exchange for a simpler or more stable representation. It does not prove that the discarded direction is unimportant for your task. A low-variance feature can still carry the distinction a classifier or robot needs; the matrix approximation objective and the downstream objective must be kept separate.
 
 ### 4.5 The pseudo-inverse — what $J^\dagger$ means
+
+*Second pass, with one exception: the first pass needs only the shape table and the P2 worked case below, which the problem set uses. The rest is for the first time $J^\dagger$ appears on the robotics track.*
 
 The symbol $A^\dagger$ appears all over the robotics track — $J^\dagger$ for inverse
 kinematics, $J^\dagger$ again in operational-space control — and it is the object that
@@ -573,6 +605,8 @@ runs: singular values → pseudo-inverse → what happens when one of them vanis
 Levenberg–Marquardt. Four names, one idea.
 
 ### 5. The control-theory connection
+
+*Second pass, for when you reach the control track. Nothing else on this page depends on it.*
 
 Linear algebra *is* the language of control ([[04-robotics/index|control track]]):
 
@@ -696,13 +730,13 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 ## 한국어
 
 *[[02-foundations/engineering-math|0.5]]와 [[02-foundations/neural-network-basics|0.8]] 위에 선다. 핵심 삼각형의 첫 꼭짓점이다: 행렬은 랭크와 고윳값과 SVD를 가진
-사상이다. 뒤의 네 페이지 — 미적분, 확률, 최적화, SE(3) — 가 이 페이지를 선수로 지목한다.*
+사상이다. 이 페이지를 선수로 지목하는 뒤 페이지에는 미적분, 확률, 최적화, SE(3), 매니퓰레이터 동역학이 있다.*
 
 딥러닝은 행렬곱 사이에 비선형성을 끼운 선형대수 *그 자체*다. 이 페이지는 교재 수준의
 서술이다: 정의, 유도, 계산 예시, 그리고 각 개념이 이 위키의 논문들 어디에서 나타나는지.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1로 행렬이 무엇인지, 그다음 §3의 2×2 계산 예제, 그다음 §6의 고차원 직관. §4(SVD)는 논문이 무언가를 분해할 때, §4.5는 로보틱스 트랙에서 $J^\dagger$를 처음 만날 때, §5는 제어 트랙에 닿았을 때 돌아오라.
+> 그림, §1로 행렬이 무엇인지, §2는 랭크와 최소제곱까지(그래디언트 유도 포함), 그다음 §3의 2×2 계산 예제와 논문이 전제하는 §6의 고차원 직관을 읽어라. 과제에는 하나가 더 필요하다: §4.5의 모양별 표와 P2 계산, 그리고 §3의 조건수 $\kappa_2$. 두 번째 읽기: §3의 나머지(조건수, 정부호성)는 최적화기나 공분산이 필요로 할 때, §4(SVD)는 논문이 무언가를 분해할 때, §4.5의 나머지는 로보틱스 트랙에서 $J^\dagger$를 처음 만날 때, §5는 제어 트랙에 닿았을 때 돌아오라.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -766,7 +800,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">타원 넓이 π·σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = π·|det J| = π, 원의 넓이 그대로다. 편 팔: 두 열이 평행하고 x가 사라진다.</tspan></text>
 </svg>
 
-고정 자세 $\theta=(0^\circ,90^\circ)$의 장치 P2([[02-foundations/lab-plants|0.6 Lab Plants]])로 §4.5가 말하는 "행렬은 사상이다"를 그린 것으로, $J$의 두 열은 관절 속도 하나를 단위만큼 줄 때의 말단 속도, 곧 팔 전체가 베이스를 중심으로 돌 때의 $(-1,1)$과 전완이 엘보를 중심으로 돌 때의 $(-1,0)$이며 각각 자기 관절에서 말단으로 가는 선분에 수직이다. $J$는 관절 속도의 단위원을 반축이 $\sigma_1=1.618$, $\sigma_2=0.618$인 타원으로 옮기므로 $\kappa_2(J)=2.618$이고, $\det J=1$이라 타원의 넓이 $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$는 원의 넓이 그대로다. 오른쪽 칸은 곧게 편 팔 $\theta=(0^\circ,0^\circ)$로, 두 열 $(0,2)$와 $(0,1)$이 평행하고 타원이 선분으로 주저앉아 $\det J=0$, $\kappa_2=\infty$이며 사라진 방향은 $x$다.
+고정 자세 $\theta=(0^\circ,90^\circ)$의 장치 P2([[02-foundations/lab-plants|0.6 Lab Plants]])로 §1이 말하는 "행렬은 사상이다"를 그린 것으로(§4.5가 이 자세를 P2 계산으로 푼다), $J$의 두 열은 관절 속도 하나를 단위만큼 줄 때의 말단 속도, 곧 팔 전체가 베이스를 중심으로 돌 때의 $(-1,1)$과 전완이 엘보를 중심으로 돌 때의 $(-1,0)$이며 각각 자기 관절에서 말단으로 가는 선분에 수직이다. $J$는 관절 속도의 단위원을 반축이 $\sigma_1=1.618$, $\sigma_2=0.618$인 타원으로 옮기므로 $\kappa_2(J)=2.618$이고, $\det J=1$이라 타원의 넓이 $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$는 원의 넓이 그대로다. 오른쪽 칸은 곧게 편 팔 $\theta=(0^\circ,0^\circ)$로, 두 열 $(0,2)$와 $(0,1)$이 평행하고 타원이 선분으로 주저앉아 $\det J=0$, $\kappa_2=\infty$이며 사라진 방향은 $x$다.
 
 ### 1. 벡터, 행렬, 그리고 곱셈의 의미
 
@@ -853,8 +887,28 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   $Ax = b$의 해이면 영공간의 모든 $z$에 대해 $x_0 + z$도 해이므로, 해는 영공간이 자명할 때만
   유일하다.
 - **최소제곱** — 응용수학에서 가장 많이 쓰는 유도. 과결정 $Ax \approx b$:
-  $\|Ax - b\|^2$ 최소화. 그래디언트를 0으로 놓으면:
-  $$\nabla_x \|Ax-b\|^2 = 2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
+  $\|Ax - b\|^2$ 최소화. 최솟점에서는 그래디언트([[02-foundations/engineering-math|0.5 §1]])가
+  0이므로, 먼저 할 일은 그 그래디언트를 구하는 것이고 편미분만 있으면 된다.
+  **그래디언트 유도.** *전개한다.* 노름의 제곱은 벡터를 자기 자신과 내적한 것,
+  $\|r\|^2 = r^\top r$이고 전치는 곱의 순서를 뒤집으므로
+  $$\|Ax-b\|^2 = (Ax-b)^\top(Ax-b) = x^\top A^\top A\,x - 2\,b^\top A x + b^\top b$$
+  이다. 두 교차항 $x^\top A^\top b$와 $b^\top A x$는 각각 $1\times1$ 숫자이고 하나가 다른 하나의
+  전치이므로 합쳐졌다. 남은 것은 $M = A^\top A$인 *이차형식* $x^\top M x$, $q = -2A^\top b$인
+  일차항 $q^\top x$, 그리고 상수다.
+  *조각마다, 좌표 $x_k$ 하나씩 미분한다.* $q^\top x = \sum_i q_i x_i$에서 $x_k$를 담은 항은
+  $i = k$ 하나뿐이므로 편미분은 $q_k$, 그래디언트는 $q$다. 이차형식을 풀어 쓰면
+  $x^\top M x = \sum_i\sum_j M_{ij}x_ix_j$(§3이 항별로 읽는다)이고, $x_k$는 $i = k$인 항들과
+  $j = k$인 항들에 들어 있다(둘 다인 대각항 $M_{kk}x_k^2$는 $2M_{kk}x_k$를 내어 두 합에
+  $M_{kk}x_k$씩 들어간다). 그래서
+  $$\frac{\partial}{\partial x_k}\,x^\top M x = \sum_j M_{kj}x_j + \sum_i M_{ik}x_i = (Mx)_k + (M^\top x)_k$$
+  이고 그래디언트는 $(M + M^\top)x$다. $M = A^\top A$는 $(A^\top A)^\top = A^\top A$로 대칭이므로
+  이것은 $2Mx$다. 상수는 아무것도 보태지 않는다. 조각들을 더하면
+  $$\nabla_x \|Ax-b\|^2 = 2A^\top A\,x - 2A^\top b = 2A^\top(Ax - b)$$
+  이다. $\frac{d}{dx}(ax-b)^2 = 2a(ax-b)$의 행렬판이고, 모든 행렬이 $1\times1$이면 정확히 그것이
+  된다. 아래 계산 예제에서 숫자로 검산하고,
+  [[02-foundations/calculus-backprop|2. 미적분 §2]]는 연쇄 법칙 한 줄로 같은 식에 다시 닿는다.
+  0으로 놓으면
+  $$2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
   (**정규방정식**). $A$의 열이 일차독립일 때 유일하다. VMLS(Boyd·Vandenberghe의 *Introduction to Applied Linear Algebra*, 아래 더 깊이 참고)가 그 가정을 명시하고, 그것이 $A^\top A$를 가역으로 만든다. 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
   잔차는 거기에 수직이다. 그 투영 자체가 행렬이다.
   $$P = A(A^\top A)^{-1}A^\top, \qquad P^2 = P, \qquad P^\top = P$$
@@ -869,7 +923,13 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   기하 주장을 직접 검산해 보라: 합이 $0$이고 $(1,2,3)$과의 내적이
   $-\tfrac16 + \tfrac23 - \tfrac12 = 0$이다. 잔차가 정말로 $A$의 두 열 모두에 수직이고,
   그것이 "직교 투영"이 주장하는 바로 그것이다. 이 검산은 10초면 되고 부호 실수의 대부분을
-  잡아낸다. 같은 정규방정식을 히터의 입출력 기록에 맞추고 추정의 공분산까지 구하는 것이 [[04-robotics/system-identification|5.5 시스템 식별 §3]]이다.
+  잡아낸다.
+  **같은 숫자로 그래디언트 공식도 검산한다.** 풀어 쓰면 손실은
+  $f(c,m) = (c+m-1)^2 + (c+2m-3)^2 + (c+3m-4)^2$이다. 시험점 $(c,m) = (0,1)$에서 잔차
+  $Ax - b$는 $(0,-1,-1)$이다. $f$를 항별로 미분하면 $\partial f/\partial c = 2(0-1-1) = -4$,
+  $\partial f/\partial m = 2(1\cdot0 + 2(-1) + 3(-1)) = -10$이고, 공식은
+  $2A^\top(0,-1,-1) = 2(-2,\,-5) = (-4,\,-10)$ ✓을 준다. $\hat x$에서는
+  $2A^\top(\tfrac16,-\tfrac13,\tfrac16) = (0,0)$ — 위의 잔차 검산을 그래디언트로 읽은 것이다. 같은 정규방정식을 히터의 입출력 기록에 맞추고 추정의 공분산까지 구하는 것이 [[04-robotics/system-identification|5.5 시스템 식별 §3]]이다.
 <svg viewBox="0 0 560 242" style="max-width:100%;height:auto" role="img" aria-label="A의 열들이 만드는 평면 위로 벡터 b가 떠 있고 그 투영이 평면 안에 있으며 잔차가 평면과 직각으로 만난다">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.65">
     <polygon points="40,150 232,106 344,146 152,190"/>
@@ -1060,13 +1120,17 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 
 ### 4. SVD — 모든 행렬에 존재하는 보편적 분해
 
+*두 번째 읽기. 처음에는 이 절을 건너뛰고, 논문이 무언가를 분해할 때 돌아오라.*
+
 - **모든** 행렬(모양·랭크 불문): $A = U\Sigma V^\top$, $U, V$는 **직교행렬**(열들이 길이 1이고 서로 수직 — 그래서 곱하는
   것은 순수한 회전/반사이고 아무것도 늘이지 않는다),
   $\Sigma = \text{diag}(\sigma_1 \ge \sigma_2 \ge \cdots \ge 0)$.
   독해: 회전(입력 기저 $V$) → 스케일(특이값) → 회전(출력 기저 $U$).
 - **조각들의 이름.** $A \in \mathbb{R}^{m\times n}$이면 $U$는 $m\times m$, $\Sigma$는 대각선
   밖이 0인 $m\times n$, $V$는 $n\times n$이다. 정방 행렬 $Q$가 $Q^\top Q = I$를 만족하면
-  **직교행렬**이고, 그래서 길이를 보존한다: $\|Qx\|^2 = x^\top Q^\top Q x = \|x\|^2$. $30°$ 회전은
+  **직교행렬**(orthogonal matrix)이다 — §1의 직교하는 *벡터*와 같은 말을 한 단계 위에서 쓴 것이다: $Q^\top Q$의
+  $(i,j)$ 성분은 열 $i$와 열 $j$의 내적이므로, $Q^\top Q = I$는 열들이 길이 1이고 §1의 뜻으로
+  서로 직교한다는 말이다. 그래서 길이를 보존한다: $\|Qx\|^2 = x^\top Q^\top Q x = \|x\|^2$. $30°$ 회전은
   $\|(3,4)\| = 5$를 그대로 두고, 비예시 $\text{diag}(2,1)$은
   $\text{diag}(2,1)^\top\text{diag}(2,1) = \text{diag}(4,1) \ne I$라서 늘인다. 열 하나씩 읽으면
   SVD는 이렇게 말한다.
@@ -1139,6 +1203,8 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 **이해 확인.** 절단 SVD가 약한 방향을 버리면 복원 오차를 받아들이는 대신 더 단순하거나 안정적인 표현을 얻는다. 버린 방향이 내 과제에 중요하지 않다는 증거는 아니다. 분산이 작은 특징도 분류기나 로봇이 필요한 구분을 담을 수 있다. 행렬 근사 목적과 후속 과제 목적을 나눠야 한다.
 
 ### 4.5 유사역행렬 — $J^\dagger$가 무슨 뜻인가
+
+*두 번째 읽기이되 한 가지는 예외다: 처음에는 아래의 모양별 표와 과제가 쓰는 P2 계산만 필요하다. 나머지는 로보틱스 트랙에서 $J^\dagger$가 처음 나올 때를 위한 것이다.*
 
 기호 $A^\dagger$는 로보틱스 트랙 곳곳에 나온다 — 역기구학의 $J^\dagger$, 작업공간 제어의
 $J^\dagger$ — 그리고 위의 SVD와 이 위키의 모든 솔버를 잇는 대상이다. 마주치는 행렬 대부분이
@@ -1227,6 +1293,8 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
 → 그중 하나가 사라지면 벌어지는 일 → 감쇠 → Levenberg–Marquardt. 이름 넷, 발상 하나.
 
 ### 5. 제어이론과의 연결
+
+*두 번째 읽기 — 제어 트랙에 닿았을 때를 위한 절이다. 이 페이지의 다른 부분은 이 절에 기대지 않는다.*
 
 선형대수는 제어의 언어 *그 자체*다 ([[04-robotics/index|제어 트랙]]):
 

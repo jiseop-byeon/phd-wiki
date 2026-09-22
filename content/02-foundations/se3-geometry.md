@@ -23,7 +23,7 @@ space of rigid-body poses. This page is the working set for reading VLA action s
 [[04-robotics/modern-robotics-book|Modern Robotics ch. 3]].
 
 > [!note] First pass · 처음이라면
-> Read §1 (rotation order, with the coordinates), §3 (poses compose by matrix product), §5 (where this shows up). §2 is a table to consult, and §4 is the on-ramp to Modern Robotics — read it when you get there.
+> Read the picture, §1 (rotation order with the coordinates, and the cross product that tests handedness), §3 (poses compose by matrix product) and §5 (where this shows up). §2 is a table to consult; its quaternion product is what to check when a paper composes quaternions. §4 (twists and the adjoint map) is the on-ramp to Modern Robotics — read it when you get there, or before problem-set item 3, which uses its adjoint.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -159,11 +159,15 @@ Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at $\theta=(0^\ci
   $$R_x(\theta)=\begin{pmatrix}1&0&0\\0&c&-s\\0&s&c\end{pmatrix},\quad R_y(\theta)=\begin{pmatrix}c&0&s\\0&1&0\\-s&0&c\end{pmatrix},\quad R_z(\theta)=\begin{pmatrix}c&-s&0\\s&c&0\\0&0&1\end{pmatrix}$$
   with $c=\cos\theta$ and $s=\sin\theta$, so each leaves its own axis fixed and applies the 2D rotation to the other two coordinates. $R_y$'s signs look flipped because the right-hand rule orders that plane as $z$ then $x$. A positive $\theta$ turns counterclockwise when you look from the positive axis back toward the origin.
 - **Checking a matrix is a rotation**, which you should do whenever you build one: columns
-
   must have length 1, be mutually perpendicular, and $\det = +1$. For $R_z(90°)$: columns are
   $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ — unit length ✓, pairwise dot products all 0 ✓, and
   $\det = +1$ ✓. A $\det$ of $-1$ means you built a **reflection**, which mirrors the robot
   rather than turning it — a real and common bug when converting conventions.
+- **The cross product and its matrix, stated completely.** The cross product is an operation that takes two vectors in $\mathbb{R}^3$ and returns a third; it exists only in three dimensions. For $a=(a_1,a_2,a_3)$ and $b=(b_1,b_2,b_3)$,
+  $$a\times b=\big(a_2b_3-a_3b_2,\ \ a_3b_1-a_1b_3,\ \ a_1b_2-a_2b_1\big)$$
+  so the result has three defining properties: it is perpendicular to both inputs, $a^\top(a\times b)=b^\top(a\times b)=0$; its length is $\lVert a\rVert\lVert b\rVert\sin\varphi$, with $\varphi$ the angle between them, which is the area of the parallelogram they span; and its direction follows the right-hand rule (curl the fingers from $a$ toward $b$ and the thumb points along $a\times b$). Two rules follow from the formula. It is **anticommutative**, $b\times a=-a\times b$, so $a\times a=0$; and it is **not associative**. Because every component is linear in $b$, "cross with $a$" is a matrix, the **skew-symmetric matrix** of $a$:
+  $$[a]_\times=\begin{pmatrix}0&-a_3&a_2\\a_3&0&-a_1\\-a_2&a_1&0\end{pmatrix},\qquad a\times b=[a]_\times b$$
+  so $[a]_\times^\top=-[a]_\times$ (that is what skew-symmetric means): zeros on the diagonal and exactly three free entries, the components of $a$. Example: $a=(1,2,3)$ and $b=(4,5,6)$ give $a\times b=(-3,6,-3)$, and both checks vanish, $a^\top(a\times b)=-3+12-9=0$ and $b^\top(a\times b)=-12+30-18=0$; for the axes, $x\times y=z$, $y\times z=x$ and $z\times x=y$. Non-example: associativity fails, since $(x\times x)\times y=0$ while $x\times(x\times y)=x\times z=-y$. **Why it matters here:** for a matrix with orthonormal columns $r_1,r_2,r_3$, $\det R=(r_1\times r_2)^\top r_3$, which is $+1$ exactly when $r_3=r_1\times r_2$. That is the right-handedness test the picture writes as $x_b\times y_b=+z_b$. The same product builds the third column of the 6D representation (§2), and $[\cdot]_\times$ carries Rodrigues' formula (§2) and angular velocity (§4).
 
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="the same point rotated by z then x lands on the z axis, and by x then z lands on the y axis">
   <defs><marker id="seA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
@@ -235,10 +239,13 @@ A unit quaternion is another constrained coordinate system. Its sign ambiguity m
   so the definition has three parts: the three angles, the three axes, and their order. Read left to right it is yaw, then pitch about the *new* $y$, then roll about the *newest* $x$ (intrinsic); read right to left it is roll, pitch, yaw about the *fixed* world axes (extrinsic). Both readings give the same matrix, which is why papers must say which convention they use. **Gimbal lock, with numbers:** at $\theta=90°$ the product depends only on $\psi-\phi$. $(\psi,\theta,\phi)=(30°,90°,10°)$ and $(50°,90°,30°)$ both give $\begin{pmatrix}0&-0.342&0.940\\0&0.940&0.342\\-1&0&0\end{pmatrix}$, so one of the three angles has stopped doing anything.
 - **Axis-angle.** A unit axis $\hat\omega$ and an angle $\theta$, often stored as the **rotation vector** $r=\theta\hat\omega$ (three numbers). The matrix is given by Rodrigues' formula,
   $$R=I+\sin\theta\,[\hat\omega]_\times+(1-\cos\theta)\,[\hat\omega]_\times^2$$
-  where $[\hat\omega]_\times$ is the skew-symmetric matrix of §4, so the rotation is built from the identity plus two terms that act only perpendicular to the axis. Example: $\hat\omega=(0,0,1)$, $\theta=90°$ gives exactly $R_z(90°)$. It is derived in [[04-robotics/modern-robotics/ch03-rigid-body-motions|Rigid-Body Motions §2]].
+  where $[\hat\omega]_\times$ is the skew-symmetric matrix of §1, so the rotation is built from the identity plus two terms that act only perpendicular to the axis. Example: $\hat\omega=(0,0,1)$, $\theta=90°$ gives exactly $R_z(90°)$. It is derived in [[04-robotics/modern-robotics/ch03-rigid-body-motions|Rigid-Body Motions §2]].
 - **Unit quaternion.** Four numbers $q=(w,x,y,z)$ with one constraint, $w^2+x^2+y^2+z^2=1$. The rotation by $\theta$ about $\hat\omega$ is
   $$q=\big(\cos\tfrac{\theta}{2},\ \sin\tfrac{\theta}{2}\,\hat\omega\big)$$
-  and it acts on a vector $v$ by the quaternion product $q\otimes(0,v)\otimes q^{*}$, where $q^{*}=(w,-x,-y,-z)$ is the conjugate; composing rotations is multiplying quaternions. The half angle is the source of the **double cover**: $\theta+360°$ describes the same rotation but gives $-q$. Example: $R_z(90°)$ is $q=(0.707,\,0,\,0,\,0.707)$, and both $q$ and $-q$ send $(1,0,0)$ to $(0,1,0)$, although $\lVert q-(-q)\rVert=2$. The correct rotation distance ignores the sign: $\text{angle}(q_1,q_2)=2\arccos\lvert q_1^\top q_2\rvert$, which for the identity $(1,0,0,0)$ and this $q$ is $2\arccos0.707=90°$.
+  and it acts on a vector $v$ by the quaternion product $q\otimes(0,v)\otimes q^{*}$ (the Hamilton product $\otimes$, stated in full in the next item), where $q^{*}=(w,-x,-y,-z)$ is the conjugate; composing rotations is multiplying quaternions. The half angle is the source of the **double cover**: $\theta+360°$ describes the same rotation but gives $-q$. Example: $R_z(90°)$ is $q=(0.707,\,0,\,0,\,0.707)$, and both $q$ and $-q$ send $(1,0,0)$ to $(0,1,0)$, although $\lVert q-(-q)\rVert=2$. The correct rotation distance ignores the sign: $\text{angle}(q_1,q_2)=2\arccos\lvert q_1^\top q_2\rvert$, which for the identity $(1,0,0,0)$ and this $q$ is $2\arccos0.707=90°$.
+  - **The quaternion (Hamilton) product, stated completely.** Write a quaternion as a scalar and a 3-vector, $q=(w,\mathbf{v})$, meaning $w+xi+yj+zk$ with Hamilton's rules $i^2=j^2=k^2=ijk=-1$ (so $ij=k=-ji$, $jk=i=-kj$, $ki=j=-ik$). Multiplying two of them out and collecting terms gives
+    $$q_1\otimes q_2=\big(w_1w_2-\mathbf{v}_1^\top\mathbf{v}_2,\ \ w_1\mathbf{v}_2+w_2\mathbf{v}_1+\mathbf{v}_1\times\mathbf{v}_2\big)$$
+    with the cross product of §1 in the vector part. In components the scalar part is $w_1w_2-x_1x_2-y_1y_2-z_1z_2$ and the $x$ part is $w_1x_2+x_1w_2+y_1z_2-z_1y_2$; the $y$ and $z$ parts follow by cycling $x\to y\to z\to x$. Its conditions: it is associative, the product of two unit quaternions is again a unit quaternion, and it is **not commutative**, because the cross-product term changes sign when the factors swap. $q_1\otimes q_2$ is the rotation $q_2$ followed by $q_1$, matching $R(q_1)R(q_2)$. Worked, on the example above with $q=(c,0,0,s)$, $c=s=0.707$ and $v=(1,0,0)$: first $q\otimes(0,v)=\big(-(0,0,s)^\top(1,0,0),\ c\,(1,0,0)+(0,0,s)\times(1,0,0)\big)=(0,\ c,\ s,\ 0)$; then multiplying by $q^{*}=(c,0,0,-s)$ gives $(0,\ c^2-s^2,\ 2cs,\ 0)=(0,\ 0,\ 1,\ 0)$, the vector $(0,1,0)$. With $-q$ both outer factors flip sign and the two signs cancel, which is the double cover in one line. Composition: $q\otimes q=(c^2-s^2,\ 0,\ 0,\ 2cs)=(0,0,0,1)$, the $180°$ turn about $z$. Non-example: the entry-by-entry product $(c^2,0,0,s^2)=(0.5,0,0,0.5)$ has norm $0.707$, so it is not even a unit quaternion. Order matters exactly as in §1: $R_z$ first, then $R_x$, is $q_x\otimes q_z=(0.5,\ 0.5,\ -0.5,\ 0.5)$ with $q_x=(c,s,0,0)$, and it sends $(1,0,0)$ to $(0,0,1)$, while $q_z\otimes q_x=(0.5,\ 0.5,\ 0.5,\ 0.5)$ sends it to $(0,1,0)$.
 - **Slerp** (spherical linear interpolation). Between unit quaternions $q_0,q_1$ with $\cos\Omega=q_0^\top q_1$, for $t\in[0,1]$:
   $$\text{slerp}(q_0,q_1;t)=\frac{\sin\big((1-t)\Omega\big)}{\sin\Omega}\,q_0+\frac{\sin(t\Omega)}{\sin\Omega}\,q_1$$
   so the result stays on the unit sphere and the rotation angle grows at constant rate. Example: from the identity to $R_z(90°)$ ($\Omega=45°$) at $t=0.5$ it gives $(0.924,\,0,\,0,\,0.383)$, which is $R_z(45°)$. The plain average $(0.854,\,0,\,0,\,0.354)$ has norm $0.924$, so it is not a unit quaternion until renormalised. (Flip $q_1$ to $-q_1$ first if $q_0^\top q_1<0$, so the interpolation takes the short way round.)
@@ -259,7 +266,7 @@ A unit quaternion is another constrained coordinate system. Its sign ambiguity m
     so points are rotated and shifted, while directions are only rotated. With $R=R_z(90°)$, $p=(2,0,0)$: the point $(1,0,0)$ goes to $(2,1,0)$, the direction $(1,0,0)$ goes to $(0,1,0)$. The inverse checks out on the same $T$: $-R^\top p=(0,2,0)$, and $T^{-1}$ sends the point $(2,0,0)$ back to the origin, as it should, since that is where $T$ put the origin.
   - **Worked: $T$ of plant P2.** Catalog pose $\theta=(0^\circ,90^\circ)$, tip at $(1,1)$ ([[02-foundations/lab-plants|0.6]]). The second link is vertical, so the tip $x$-axis is along $+y_s$. Then $R=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$, $p=(1,1,0)$, and
     $$T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}.$$
-    $\mathrm{Ad}_T$ rewrites one twist in another frame; $J$ stacks joint screws at this pose. They are not the same map. Changing the velocity frame left-multiplies $J$'s columns by $\mathrm{Ad}$. The problem set asks you to write this $T$.
+    §4 builds from this same $T$ the $6\times6$ adjoint $\mathrm{Ad}_T$, which rewrites a velocity from tool coordinates into base coordinates. The problem set asks you to write this $T$.
   - **What the subscripts mean.** $T_{AB}$ is the pose of frame $B$ expressed in frame $A$: its $R$ columns are $B$'s axes written in $A$'s coordinates, and its $p$ is $B$'s origin in $A$'s coordinates. Used as a map it converts coordinates, $x_A=T_{AB}\,x_B$, which is why inner subscripts must match to multiply. $T_{world\leftarrow cam}$ below is the same object written with an arrow.
 
 <svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="frame composition: world to base to camera">
@@ -307,12 +314,16 @@ A unit quaternion is another constrained coordinate system. Its sign ambiguity m
   - **Angular velocity, stated completely.** A vector $\omega\in\mathbb{R}^3$ with two parts: its **direction** is the instantaneous rotation axis, oriented by the right-hand rule (curl the fingers with the motion, the thumb points along $\omega$), and its **magnitude** $\lVert\omega\rVert$ is the turning rate in rad/s. For a body spinning about an axis through the origin, a body point at position $p$ moves with
     $$\dot p=\omega\times p$$
     so points on the axis stay still and speed grows with distance from it. Example: $\omega=(0,0,2)$ rad/s and $p=(1,0,0)$ m give $\dot p=(0,2,0)$ m/s: perpendicular to both the axis and the point's offset.
-  - **The skew-symmetric matrix $[\omega]_\times$, stated completely.** The $3\times3$ matrix that performs "cross with $\omega$":
+  - **The skew-symmetric matrix $[\omega]_\times$** is §1's cross-product matrix written for the angular velocity, the $3\times3$ matrix that performs "cross with $\omega$":
     $$[\omega]_\times=\begin{pmatrix}0&-\omega_3&\omega_2\\\omega_3&0&-\omega_1\\-\omega_2&\omega_1&0\end{pmatrix},\qquad [\omega]_\times v=\omega\times v$$
     so it is **skew-symmetric**, $[\omega]_\times^\top=-[\omega]_\times$, with zeros on the diagonal and exactly three free entries, the components of $\omega$. Example: $\omega=(0,0,1)$ gives $[\omega]_\times(1,0,0)=(0,1,0)$, the same as $\omega\times(1,0,0)$. Its sign pattern is developed in [[04-robotics/modern-robotics/ch03-rigid-body-motions|Rigid-Body Motions §1]].
   - **Twist, stated completely.** A six-vector $\mathcal{V}=(\omega,v)$ with two parts: the angular velocity $\omega$, and a linear part $v$ that is the velocity of the body point *currently at the frame's origin* (whether or not the body actually occupies that point). Every body point $p$ then moves with
     $$\dot p=v+\omega\times p$$
     because a rigid velocity is the origin point's velocity plus the rotation about it. Example: a joint about the vertical axis through $q=(1,0,0)$ turning at $\omega=(0,0,1)$ has $v=-\omega\times q=(0,-1,0)$. The point on the axis gets $(0,-1,0)+(0,1,0)=0$ and stays still, as it must; the point $(2,0,0)$ gets $(0,1,0)$. Non-example: reading $v$ as the tool-tip velocity, which is only true when the tip sits at the frame origin. Which origin that is, space or body, is worked through in [[04-robotics/modern-robotics/ch03-rigid-body-motions|Rigid-Body Motions §3]], and the two descriptions of one motion in [[04-robotics/modern-robotics/ch03-rigid-body-motions|Rigid-Body Motions §4]].
+  - **The adjoint map $\mathrm{Ad}_T$, stated completely.** A twist's six numbers depend on the frame they are written in, and the adjoint of a pose $T=(R,p)$ is the $6\times6$ matrix that converts them. If $\mathcal{V}_b=(\omega_b,v_b)$ is a twist written in frame $\{b\}$ and $T=T_{sb}$ is the pose of $\{b\}$ in $\{s\}$, the same motion written in $\{s\}$ is
+    $$\mathcal{V}_s=\mathrm{Ad}_T\,\mathcal{V}_b,\qquad \mathrm{Ad}_T=\begin{pmatrix}R&0\\ {[p]_\times}R&R\end{pmatrix}$$
+    and three steps give it. A body point at $x_b$ in $\{b\}$ sits at $x_s=Rx_b+p$ in $\{s\}$, and its velocity, being a direction, is only rotated (§3): $\dot x_s=R(v_b+\omega_b\times x_b)$. A rotation preserves the cross product, $R(a\times b)=(Ra)\times(Rb)$, so $\dot x_s=Rv_b+(R\omega_b)\times(x_s-p)$. Rearranged, $\dot x_s=\big(Rv_b+p\times R\omega_b\big)+(R\omega_b)\times x_s$, which has the twist form $v_s+\omega_s\times x_s$ with $\omega_s=R\omega_b$ and $v_s=Rv_b+[p]_\times R\,\omega_b$. Its conditions: it is linear, it is invertible with $\mathrm{Ad}_T^{-1}=\mathrm{Ad}_{T^{-1}}$, and it composes like the poses, $\mathrm{Ad}_{T_1T_2}=\mathrm{Ad}_{T_1}\mathrm{Ad}_{T_2}$. **Worked on P2's pose** ($R=R_z(90°)$ and $p=(1,1,0)$ from §3): $[p]_\times R=\begin{pmatrix}0&0&1\\0&0&-1\\1&1&0\end{pmatrix}$. The tool spinning about its own $z$-axis at $1$ rad/s is $\mathcal{V}_b=(0,0,1,\ 0,0,0)$, and $\mathrm{Ad}_T$ turns it into $\mathcal{V}_s=(0,0,1,\ 1,-1,0)$: the same spin, but with a linear part $(1,-1,0)$, because $v_s$ is the velocity of the body point at the *base* origin, $\sqrt2$ from the spin axis, and $\omega\times(0-p)=(1,-1,0)$. The tip itself gets $v_s+\omega_s\times p=(1,-1,0)+(-1,1,0)=0$, as a point on the axis must. Sliding along the tool's $x$-axis at $1$ m/s, $\mathcal{V}_b=(0,0,0,\ 1,0,0)$, becomes $(0,0,0,\ 0,1,0)$: straight up the page, as the picture's $x_b$ arrow says. Non-example: $\mathrm{Ad}_T$ is not $T$ applied to the six numbers, and it is not $\mathrm{diag}(R,R)$. Dropping the $[p]_\times R$ block gives the spin a zero linear part in the base frame, which is the tool-tip misreading of the twist non-example above.
+  - **Why it matters: $\mathrm{Ad}_T$ and the Jacobian are different maps.** A manipulator Jacobian $J$ stacks one twist per joint, the twist the body gets when that joint turns at unit speed, so $\mathcal{V}=J\dot\theta$. For P2 at this pose, in base coordinates, joint 1 is the axis through the origin, $(0,0,1,\ 0,0,0)$, and joint 2 is the axis through the elbow $q=(1,0,0)$ worked in the twist item above, $(0,0,1,\ 0,-1,0)$. To write them in the tool frame instead, multiply each column by $\mathrm{Ad}_{T^{-1}}$ ($T^{-1}$ has $R^\top$ and $-R^\top p=(-1,1,0)$, the picture's margin box), which gives $(0,0,1,\ 1,1,0)$ and $(0,0,1,\ 0,1,0)$. So $\mathrm{Ad}$ is a fixed change of coordinates applied to $J$'s columns, while $J$ itself changes with $\theta$. The two views agree on the physics: the tip velocity from the base-frame columns, $v_s+\omega_s\times p$, is $(-1,1,0)$ and $(-1,0,0)$, the catalog's $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, and $R$ times the tool-frame linear parts $(1,1,0)$ and $(0,1,0)$ gives the same two vectors.
 - Small rotation ≈ $I + [\hat\omega\theta]_\times$. Why skew-symmetric? A rotation keeps
   lengths fixed, so $R^\top R = I$; differentiating at $R=I$ gives $\dot R + \dot R^\top = 0$,
   i.e. the generator $\dot R$ *must* be skew — its off-diagonal $\pm$ entries are exactly the
@@ -400,7 +411,7 @@ Tier B. **P2** at $\theta=(0^\circ,90^\circ)$. This page §3–4. Planar, so $R=
 > 1. Base at $(0,0)$; elbow $(1,0)$; tip $(1,1)$ with $x_{\mathrm{tip}}$ up and $y_{\mathrm{tip}}$ left.
 > 2. $R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$, $p=(1,1,0)$, so
 >    $T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$.
-> 3. Not the same map. $J$ is pose-dependent and stacks joint screws; $\mathrm{Ad}_T$ is a change of frame for a single twist. Changing the velocity frame left-multiplies $J$'s columns by $\mathrm{Ad}$ — it does not replace $J$.
+> 3. Not the same map. $J$ is pose-dependent and stacks joint screws; $\mathrm{Ad}_T$ is a change of frame for a single twist. Changing the velocity frame left-multiplies $J$'s columns by $\mathrm{Ad}$ — it does not replace $J$. At this pose (§4), $\mathrm{Ad}_{T^{-1}}$ sends joint 2's base-frame column $(0,0,1,\ 0,-1,0)$ to the tool-frame column $(0,0,1,\ 0,1,0)$.
 
 ### Robotics bridge
 
@@ -416,7 +427,7 @@ VLA 논문이 다음으로 이것을 요구하기 때문이다: 로봇의 상태
 지수 좌표)는 [[04-robotics/modern-robotics-book|Modern Robotics 3장]]의 몫이다.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1(회전 순서, 좌표까지), §3(자세는 행렬곱으로 합성된다), §5(어디에 나타나는가). §2는 찾아보는 표이고, §4는 Modern Robotics로 가는 진입로다 — 거기 도착할 때 읽어라.
+> 그림, §1(회전 순서를 좌표로, 그리고 좌우 방향을 검사하는 외적), §3(자세는 행렬곱으로 합성된다), §5(어디에 나타나는가)를 먼저 읽어라. §2는 찾아보는 표이고, 그 쿼터니언 곱은 논문이 쿼터니언을 합성할 때 확인할 곳이다. §4(트위스트와 수반 사상)는 Modern Robotics로 가는 진입로다 — 거기 도착할 때, 또는 그 수반 사상을 쓰는 과제 3번 전에 읽어라.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -545,7 +556,6 @@ $\theta=(0^\circ,90^\circ)$의 장치 **P2**([[02-foundations/lab-plants|0.6 Lab
 
   같은 회전 둘, 전혀 다른 두 위치. 미묘한 일은 하나도 없다: 두 번째 회전은 첫 번째 회전이
   *남겨둔* 자리에 작용한다. 논문의 $R_{world}R_{body}$와 $R_{body}R_{world}$가 서로 다른 운동을
-
   기술하는 이유이고, 로보틱스의 모든 규약 불일치가 결국 이것인 이유다.
 - **임의 각도의 기본 회전.** 위의 두 행렬은 좌표축 둘레 세 회전의 $\theta=90°$ 경우다.
   $$R_x(\theta)=\begin{pmatrix}1&0&0\\0&c&-s\\0&s&c\end{pmatrix},\quad R_y(\theta)=\begin{pmatrix}c&0&s\\0&1&0\\-s&0&c\end{pmatrix},\quad R_z(\theta)=\begin{pmatrix}c&-s&0\\s&c&0\\0&0&1\end{pmatrix}$$
@@ -554,6 +564,11 @@ $\theta=(0^\circ,90^\circ)$의 장치 **P2**([[02-foundations/lab-plants|0.6 Lab
   서로 수직이며, $\det = +1$이어야 한다. $R_z(90°)$라면 열이 $(0,1,0)$, $(-1,0,0)$, $(0,0,1)$ —
   길이 1 ✓, 서로의 내적이 모두 0 ✓, $\det = +1$ ✓. $\det$가 $-1$이면 **반사**를 만든 것이고,
   로봇을 돌리는 대신 거울에 비춘 셈이다 — 규약 변환에서 실제로 자주 나는 버그다.
+- **외적과 그 행렬의 완전한 정의.** 외적은 $\mathbb{R}^3$의 벡터 둘을 받아 셋째 벡터를 돌려주는 연산이고, 3차원에서만 정의된다. $a=(a_1,a_2,a_3)$와 $b=(b_1,b_2,b_3)$에 대해
+  $$a\times b=\big(a_2b_3-a_3b_2,\ \ a_3b_1-a_1b_3,\ \ a_1b_2-a_2b_1\big)$$
+  이므로 결과에는 정의 성질이 셋 있다. 두 입력 모두에 수직이고($a^\top(a\times b)=b^\top(a\times b)=0$), 길이는 두 벡터 사이 각을 $\varphi$라 할 때 $\lVert a\rVert\lVert b\rVert\sin\varphi$로 둘이 펼치는 평행사변형의 넓이이며, 방향은 오른손 법칙을 따른다(손가락을 $a$에서 $b$ 쪽으로 감으면 엄지가 $a\times b$를 가리킨다). 식에서 규칙 둘이 따라 나온다. 순서를 바꾸면 부호가 바뀌는 **반교환** 연산이어서 $b\times a=-a\times b$, 따라서 $a\times a=0$이고, 결합법칙은 **성립하지 않는다**. 모든 성분이 $b$에 선형이므로 "$a$와 외적"은 행렬이 되고, 그것이 $a$의 **반대칭 행렬** $[a]_\times$다.
+  $$[a]_\times=\begin{pmatrix}0&-a_3&a_2\\a_3&0&-a_1\\-a_2&a_1&0\end{pmatrix},\qquad a\times b=[a]_\times b$$
+  그래서 $[a]_\times^\top=-[a]_\times$(반대칭의 뜻)이고, 대각이 0이며 자유 성분은 정확히 셋, $a$의 성분이다. 예: $a=(1,2,3)$, $b=(4,5,6)$이면 $a\times b=(-3,6,-3)$이고, 두 검산 $a^\top(a\times b)=-3+12-9=0$과 $b^\top(a\times b)=-12+30-18=0$이 모두 성립한다. 좌표축끼리는 $x\times y=z$, $y\times z=x$, $z\times x=y$다. 반례: 결합법칙은 깨진다. $(x\times x)\times y=0$인데 $x\times(x\times y)=x\times z=-y$다. **여기서 중요한 이유:** 열 $r_1,r_2,r_3$이 정규직교인 행렬에서 $\det R=(r_1\times r_2)^\top r_3$이고, 이 값은 $r_3=r_1\times r_2$일 때 정확히 $+1$이다. 그림이 $x_b\times y_b=+z_b$로 적은 오른손 검사가 이것이다. 같은 곱이 6D 표현의 셋째 열을 만들고(§2), $[\cdot]_\times$가 로드리게스 공식(§2)과 각속도(§4)를 나른다.
 
 <svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="같은 점을 z 다음 x로 돌리면 z축에 도착하고 x 다음 z로 돌리면 y축에 도착한다">
   <defs><marker id="seAk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
@@ -624,10 +639,13 @@ $\theta=(0^\circ,90^\circ)$의 장치 **P2**([[02-foundations/lab-plants|0.6 Lab
   이므로 정의에는 세 부분이 있다. 세 각, 세 축, 그리고 그 순서다. 왼쪽부터 읽으면 yaw, 그다음 *새* $y$축 둘레 pitch, 그다음 *가장 새로운* $x$축 둘레 roll(내재적)이고, 오른쪽부터 읽으면 *고정된* 월드 축 둘레로 roll, pitch, yaw(외재적)다. 두 독법이 같은 행렬을 주므로 논문은 어느 규약인지 밝혀야 한다. **숫자로 본 짐벌 락:** $\theta=90°$에서 곱은 $\psi-\phi$에만 의존한다. $(\psi,\theta,\phi)=(30°,90°,10°)$와 $(50°,90°,30°)$가 모두 $\begin{pmatrix}0&-0.342&0.940\\0&0.940&0.342\\-1&0&0\end{pmatrix}$를 주므로, 세 각 중 하나는 아무 일도 하지 않게 된다.
 - **축-각.** 단위 축 $\hat\omega$와 각 $\theta$이고, 흔히 **회전 벡터** $r=\theta\hat\omega$(숫자 셋)로 저장한다. 행렬은 로드리게스 공식으로 주어진다.
   $$R=I+\sin\theta\,[\hat\omega]_\times+(1-\cos\theta)\,[\hat\omega]_\times^2$$
-  $[\hat\omega]_\times$는 §4의 반대칭 행렬이므로, 회전은 항등행렬에 축에 수직인 방향에만 작용하는 두 항을 더해 만들어진다. 예: $\hat\omega=(0,0,1)$, $\theta=90°$이면 정확히 $R_z(90°)$다. 유도는 [[04-robotics/modern-robotics/ch03-rigid-body-motions|강체 운동 §2]]에 있다.
+  $[\hat\omega]_\times$는 §1의 반대칭 행렬이므로, 회전은 항등행렬에 축에 수직인 방향에만 작용하는 두 항을 더해 만들어진다. 예: $\hat\omega=(0,0,1)$, $\theta=90°$이면 정확히 $R_z(90°)$다. 유도는 [[04-robotics/modern-robotics/ch03-rigid-body-motions|강체 운동 §2]]에 있다.
 - **단위 쿼터니언.** 제약 하나 $w^2+x^2+y^2+z^2=1$이 붙은 숫자 넷 $q=(w,x,y,z)$다. $\hat\omega$ 둘레 $\theta$ 회전은
   $$q=\big(\cos\tfrac{\theta}{2},\ \sin\tfrac{\theta}{2}\,\hat\omega\big)$$
-  이고 벡터 $v$에는 쿼터니언 곱 $q\otimes(0,v)\otimes q^{*}$로 작용한다. $q^{*}=(w,-x,-y,-z)$는 켤레다. 회전 합성은 쿼터니언 곱이다. 반각이 **이중 덮개**의 원인이다. $\theta+360°$는 같은 회전인데 $-q$를 준다. 예: $R_z(90°)$는 $q=(0.707,\,0,\,0,\,0.707)$이고, $q$와 $-q$ 모두 $(1,0,0)$을 $(0,1,0)$으로 보내지만 $\lVert q-(-q)\rVert=2$다. 올바른 회전 거리는 부호를 무시한다. $\text{angle}(q_1,q_2)=2\arccos\lvert q_1^\top q_2\rvert$이고, 항등 $(1,0,0,0)$과 이 $q$ 사이에서는 $2\arccos0.707=90°$다.
+  이고 벡터 $v$에는 쿼터니언 곱 $q\otimes(0,v)\otimes q^{*}$로 작용한다(해밀턴 곱 $\otimes$는 바로 다음 항목에서 완전히 정의한다). $q^{*}=(w,-x,-y,-z)$는 켤레다. 회전 합성은 쿼터니언 곱이다. 반각이 **이중 덮개**의 원인이다. $\theta+360°$는 같은 회전인데 $-q$를 준다. 예: $R_z(90°)$는 $q=(0.707,\,0,\,0,\,0.707)$이고, $q$와 $-q$ 모두 $(1,0,0)$을 $(0,1,0)$으로 보내지만 $\lVert q-(-q)\rVert=2$다. 올바른 회전 거리는 부호를 무시한다. $\text{angle}(q_1,q_2)=2\arccos\lvert q_1^\top q_2\rvert$이고, 항등 $(1,0,0,0)$과 이 $q$ 사이에서는 $2\arccos0.707=90°$다.
+  - **쿼터니언(해밀턴) 곱의 완전한 정의.** 쿼터니언을 스칼라와 3차원 벡터로 쓰자, $q=(w,\mathbf{v})$. 곧 $w+xi+yj+zk$이고 해밀턴 규칙 $i^2=j^2=k^2=ijk=-1$을 따른다($ij=k=-ji$, $jk=i=-kj$, $ki=j=-ik$). 둘을 곱해 전개하고 항을 모으면
+    $$q_1\otimes q_2=\big(w_1w_2-\mathbf{v}_1^\top\mathbf{v}_2,\ \ w_1\mathbf{v}_2+w_2\mathbf{v}_1+\mathbf{v}_1\times\mathbf{v}_2\big)$$
+    이고, 벡터 부분에 §1의 외적이 들어 있다. 성분으로 쓰면 스칼라 부분은 $w_1w_2-x_1x_2-y_1y_2-z_1z_2$, $x$ 부분은 $w_1x_2+x_1w_2+y_1z_2-z_1y_2$이고, $y$와 $z$ 부분은 $x\to y\to z\to x$로 돌려 얻는다. 조건: 결합법칙이 성립하고, 단위 쿼터니언 둘의 곱은 다시 단위 쿼터니언이며, 인수를 맞바꾸면 외적 항의 부호가 바뀌므로 교환법칙은 **성립하지 않는다**. $q_1\otimes q_2$는 $q_2$ 다음 $q_1$을 한 회전으로, $R(q_1)R(q_2)$와 맞는다. 계산: 위 예의 $q=(c,0,0,s)$, $c=s=0.707$, $v=(1,0,0)$에서 먼저 $q\otimes(0,v)=\big(-(0,0,s)^\top(1,0,0),\ c\,(1,0,0)+(0,0,s)\times(1,0,0)\big)=(0,\ c,\ s,\ 0)$이고, 여기에 $q^{*}=(c,0,0,-s)$를 곱하면 $(0,\ c^2-s^2,\ 2cs,\ 0)=(0,\ 0,\ 1,\ 0)$, 곧 벡터 $(0,1,0)$이다. $-q$를 쓰면 바깥 두 인수의 부호가 모두 뒤집혀 서로 상쇄되니, 이것이 이중 덮개를 한 줄로 보인 것이다. 합성: $q\otimes q=(c^2-s^2,\ 0,\ 0,\ 2cs)=(0,0,0,1)$, $z$ 둘레 $180°$ 회전이다. 반례: 성분끼리 곱한 $(c^2,0,0,s^2)=(0.5,0,0,0.5)$는 노름이 $0.707$이라 단위 쿼터니언조차 아니다. 순서는 §1과 똑같이 중요하다. $R_z$ 먼저 그다음 $R_x$는 $q_x=(c,s,0,0)$으로 $q_x\otimes q_z=(0.5,\ 0.5,\ -0.5,\ 0.5)$이고 $(1,0,0)$을 $(0,0,1)$로 보내지만, $q_z\otimes q_x=(0.5,\ 0.5,\ 0.5,\ 0.5)$는 $(0,1,0)$으로 보낸다.
 - **slerp**(구면 선형 보간). $\cos\Omega=q_0^\top q_1$인 단위 쿼터니언 $q_0,q_1$ 사이에서 $t\in[0,1]$에 대해
   $$\text{slerp}(q_0,q_1;t)=\frac{\sin\big((1-t)\Omega\big)}{\sin\Omega}\,q_0+\frac{\sin(t\Omega)}{\sin\Omega}\,q_1$$
   그래서 결과가 단위 구면 위에 머물고 회전각이 일정한 속도로 커진다. 예: 항등에서 $R_z(90°)$로($\Omega=45°$) $t=0.5$에서 $(0.924,\,0,\,0,\,0.383)$, 곧 $R_z(45°)$를 준다. 단순 평균 $(0.854,\,0,\,0,\,0.354)$는 노름이 $0.924$라 다시 정규화하기 전까지 단위 쿼터니언이 아니다. ($q_0^\top q_1<0$이면 먼저 $q_1$을 $-q_1$로 뒤집어 짧은 쪽으로 보간한다.)
@@ -648,7 +666,7 @@ $\theta=(0^\circ,90^\circ)$의 장치 **P2**([[02-foundations/lab-plants|0.6 Lab
     그래서 점은 회전하고 이동하지만 방향은 회전만 한다. $R=R_z(90°)$, $p=(2,0,0)$이면 점 $(1,0,0)$은 $(2,1,0)$으로, 방향 $(1,0,0)$은 $(0,1,0)$으로 간다. 같은 $T$로 역도 확인된다. $-R^\top p=(0,2,0)$이고, $T^{-1}$은 점 $(2,0,0)$을 원점으로 되돌린다. $T$가 원점을 그 자리에 놓았으므로 당연하다.
   - **계산: 장치 P2의 $T$.** 카탈로그 자세 $\theta=(0^\circ,90^\circ)$, 말단 $(1,1)$([[02-foundations/lab-plants|0.6]]). 둘째 링크가 수직이므로 말단 $x$축은 $+y_s$. $R=R_z(90^\circ)$, $p=(1,1,0)$,
     $$T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}.$$
-    $\mathrm{Ad}_T$는 트위스트 하나의 프레임 변환이고 $J$는 이 자세의 관절 스크류 묶음이다. 같은 사상이 아니다. 과제는 이 $T$를 쓰라고 한다.
+    §4는 바로 이 $T$로, 속도를 도구 좌표에서 베이스 좌표로 다시 쓰는 $6\times6$ 수반 행렬 $\mathrm{Ad}_T$를 만든다. 과제는 이 $T$를 쓰라고 한다.
   - **아래 첨자의 뜻.** $T_{AB}$는 프레임 $A$에서 표현한 프레임 $B$의 자세다. $R$의 열은 $A$ 좌표로 쓴 $B$의 축이고, $p$는 $A$ 좌표로 쓴 $B$의 원점이다. 사상으로 쓰면 좌표를 변환한다, $x_A=T_{AB}\,x_B$. 곱하려면 안쪽 첨자가 맞아야 하는 이유다. 아래의 $T_{world\leftarrow cam}$은 같은 대상을 화살표로 쓴 것이다.
 
 <svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="프레임 합성: 월드에서 베이스, 베이스에서 카메라">
@@ -695,12 +713,16 @@ $\theta=(0^\circ,90^\circ)$의 장치 **P2**([[02-foundations/lab-plants|0.6 Lab
   - **각속도의 완전한 정의.** 두 부분을 가진 벡터 $\omega\in\mathbb{R}^3$다. **방향**은 순간 회전축이고 오른손 법칙으로 향한다(손가락을 운동 방향으로 감으면 엄지가 $\omega$를 가리킨다). **크기** $\lVert\omega\rVert$는 rad/s 단위의 회전 속도다. 원점을 지나는 축 둘레로 도는 물체에서 위치 $p$의 물체 점은
     $$\dot p=\omega\times p$$
     로 움직이므로, 축 위의 점은 가만히 있고 축에서 멀수록 빠르다. 예: $\omega=(0,0,2)$ rad/s, $p=(1,0,0)$ m이면 $\dot p=(0,2,0)$ m/s로, 축과 점의 오프셋 모두에 수직이다.
-  - **반대칭 행렬 $[\omega]_\times$의 완전한 정의.** "$\omega$와 외적"을 수행하는 $3\times3$ 행렬이다.
+  - **반대칭 행렬 $[\omega]_\times$.** §1의 외적 행렬을 각속도에 대해 쓴 것으로, "$\omega$와 외적"을 수행하는 $3\times3$ 행렬이다.
     $$[\omega]_\times=\begin{pmatrix}0&-\omega_3&\omega_2\\\omega_3&0&-\omega_1\\-\omega_2&\omega_1&0\end{pmatrix},\qquad [\omega]_\times v=\omega\times v$$
     그래서 **반대칭**, $[\omega]_\times^\top=-[\omega]_\times$이고, 대각이 0이며 자유 성분은 정확히 셋, $\omega$의 성분이다. 예: $\omega=(0,0,1)$이면 $[\omega]_\times(1,0,0)=(0,1,0)$으로 $\omega\times(1,0,0)$과 같다. 부호 패턴은 [[04-robotics/modern-robotics/ch03-rigid-body-motions|강체 운동 §1]]에서 전개한다.
   - **트위스트의 완전한 정의.** 두 부분을 가진 6차원 벡터 $\mathcal{V}=(\omega,v)$다. 각속도 $\omega$, 그리고 *지금 프레임 원점에 있는* 물체 점의 속도인 선형 부분 $v$(물체가 실제로 그 점을 차지하든 아니든). 그러면 모든 물체 점 $p$는
     $$\dot p=v+\omega\times p$$
     로 움직인다. 강체 속도는 원점 점의 속도에 그 둘레의 회전을 더한 것이기 때문이다. 예: $q=(1,0,0)$을 지나는 수직축 둘레로 $\omega=(0,0,1)$로 도는 관절은 $v=-\omega\times q=(0,-1,0)$이다. 축 위의 점은 $(0,-1,0)+(0,1,0)=0$을 받아 당연히 가만히 있고, 점 $(2,0,0)$은 $(0,1,0)$을 받는다. 반례: $v$를 도구 끝 속도로 읽는 것. 끝이 프레임 원점에 있을 때만 참이다. 그 원점이 공간 원점인지 바디 원점인지는 [[04-robotics/modern-robotics/ch03-rigid-body-motions|강체 운동 §3]]에서, 한 운동의 두 기술은 [[04-robotics/modern-robotics/ch03-rigid-body-motions|강체 운동 §4]]에서 다룬다.
+  - **수반 사상(adjoint map) $\mathrm{Ad}_T$의 완전한 정의.** 트위스트의 여섯 숫자는 어느 프레임으로 쓰느냐에 달려 있고, 자세 $T=(R,p)$의 수반 행렬은 그 숫자들을 변환하는 $6\times6$ 행렬이다. $\mathcal{V}_b=(\omega_b,v_b)$가 프레임 $\{b\}$로 쓴 트위스트이고 $T=T_{sb}$가 $\{s\}$에서 본 $\{b\}$의 자세라면, 같은 운동을 $\{s\}$로 쓴 것은
+    $$\mathcal{V}_s=\mathrm{Ad}_T\,\mathcal{V}_b,\qquad \mathrm{Ad}_T=\begin{pmatrix}R&0\\ {[p]_\times}R&R\end{pmatrix}$$
+    이고, 세 단계로 나온다. $\{b\}$에서 $x_b$에 있는 물체 점은 $\{s\}$에서 $x_s=Rx_b+p$에 있고, 그 속도는 방향이므로 회전만 된다(§3), $\dot x_s=R(v_b+\omega_b\times x_b)$. 회전은 외적을 보존하므로($R(a\times b)=(Ra)\times(Rb)$) $\dot x_s=Rv_b+(R\omega_b)\times(x_s-p)$다. 정리하면 $\dot x_s=\big(Rv_b+p\times R\omega_b\big)+(R\omega_b)\times x_s$로 트위스트 꼴 $v_s+\omega_s\times x_s$이고, $\omega_s=R\omega_b$, $v_s=Rv_b+[p]_\times R\,\omega_b$다. 조건: 선형이고, 역이 $\mathrm{Ad}_T^{-1}=\mathrm{Ad}_{T^{-1}}$로 존재하며, 자세처럼 합성된다, $\mathrm{Ad}_{T_1T_2}=\mathrm{Ad}_{T_1}\mathrm{Ad}_{T_2}$. **P2의 자세에서 계산**(§3의 $R=R_z(90°)$, $p=(1,1,0)$): $[p]_\times R=\begin{pmatrix}0&0&1\\0&0&-1\\1&1&0\end{pmatrix}$. 도구가 자기 $z$축 둘레로 $1$ rad/s로 도는 $\mathcal{V}_b=(0,0,1,\ 0,0,0)$에 $\mathrm{Ad}_T$를 곱하면 $\mathcal{V}_s=(0,0,1,\ 1,-1,0)$이다. 회전은 같은데 선형 부분이 $(1,-1,0)$인 것은, $v_s$가 회전축에서 $\sqrt2$ 떨어진 *베이스* 원점에 있는 물체 점의 속도이고 $\omega\times(0-p)=(1,-1,0)$이기 때문이다. 말단 자신은 $v_s+\omega_s\times p=(1,-1,0)+(-1,1,0)=0$을 받는다. 축 위의 점이니 당연하다. 도구 $x$축을 따라 $1$ m/s로 미끄러지는 $\mathcal{V}_b=(0,0,0,\ 1,0,0)$은 $(0,0,0,\ 0,1,0)$, 곧 그림의 $x_b$ 화살표대로 지면 위쪽이 된다. 반례: $\mathrm{Ad}_T$는 여섯 숫자에 $T$를 적용한 것이 아니고, $\mathrm{diag}(R,R)$도 아니다. $[p]_\times R$ 블록을 빼면 회전의 베이스 프레임 선형 부분이 0이 되는데, 이것이 위 트위스트 반례의 도구 끝 속도 오독이다.
+  - **중요한 이유: $\mathrm{Ad}_T$와 야코비안은 다른 사상이다.** 매니퓰레이터 야코비안 $J$는 관절마다 트위스트 하나, 곧 그 관절이 단위 속도로 돌 때 물체가 받는 트위스트를 쌓은 것이라 $\mathcal{V}=J\dot\theta$다. 이 자세의 P2를 베이스 좌표로 쓰면 관절 1은 원점을 지나는 축 $(0,0,1,\ 0,0,0)$이고, 관절 2는 위 트위스트 항목에서 계산한 엘보 $q=(1,0,0)$을 지나는 축 $(0,0,1,\ 0,-1,0)$이다. 이것을 도구 프레임으로 쓰려면 각 열에 $\mathrm{Ad}_{T^{-1}}$을 곱한다($T^{-1}$은 $R^\top$과 $-R^\top p=(-1,1,0)$, 곧 그림의 여백 상자다). 결과는 $(0,0,1,\ 1,1,0)$과 $(0,0,1,\ 0,1,0)$이다. 그러니 $\mathrm{Ad}$는 $J$의 열에 적용하는 고정된 좌표 변환이고, $J$ 자체는 $\theta$에 따라 바뀐다. 두 관점은 물리에서 일치한다. 베이스 프레임 열로 구한 말단 속도 $v_s+\omega_s\times p$는 $(-1,1,0)$과 $(-1,0,0)$, 곧 카탈로그의 $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$이고, 도구 프레임 선형 부분 $(1,1,0)$과 $(0,1,0)$에 $R$을 곱해도 같은 두 벡터가 나온다.
 - 미소 회전 ≈ $I + [\hat\omega\theta]_\times$. 왜 반대칭인가? 회전은 길이를 보존하므로
   $R^\top R = I$; $R=I$에서 미분하면 $\dot R + \dot R^\top = 0$, 즉 생성원 $\dot R$는 *반드시*
   반대칭이고, 그 비대각 $\pm$ 성분이 정확히 회전축 $\omega$의 성분이다($[\cdot]_\times$가
@@ -786,7 +808,7 @@ Tier B. **P2**, $\theta=(0^\circ,90^\circ)$. 이 페이지 §3–4. 평면이므
 > 1. 베이스 $(0,0)$, 엘보 $(1,0)$, 말단 $(1,1)$. $x_{\mathrm{tip}}$은 위, $y_{\mathrm{tip}}$은 왼쪽.
 > 2. $R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$, $p=(1,1,0)$,
 >    $T=\begin{pmatrix}0&-1&0&1\\1&0&0&1\\0&0&1&0\\0&0&0&1\end{pmatrix}$.
-> 3. 같은 사상이 아니다. $J$는 자세에 의존하며 관절 스크류를 쌓고, $\mathrm{Ad}_T$는 트위스트 하나의 프레임 변환이다. 속도 프레임을 바꾸면 $J$의 열에 $\mathrm{Ad}$를 왼쪽 곱할 뿐, $J$를 대체하지 않는다.
+> 3. 같은 사상이 아니다. $J$는 자세에 의존하며 관절 스크류를 쌓고, $\mathrm{Ad}_T$는 트위스트 하나의 프레임 변환이다. 속도 프레임을 바꾸면 $J$의 열에 $\mathrm{Ad}$를 왼쪽 곱할 뿐, $J$를 대체하지 않는다. 이 자세에서(§4) $\mathrm{Ad}_{T^{-1}}$은 관절 2의 베이스 프레임 열 $(0,0,1,\ 0,-1,0)$을 도구 프레임 열 $(0,0,1,\ 0,1,0)$으로 보낸다.
 
 ### 로보틱스 다리
 

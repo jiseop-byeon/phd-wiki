@@ -16,8 +16,8 @@ mastery-when: "This is the contribution-bearing layer of contact-rich manipulati
 > 모든 주장이 결국 이 제어기들 중 하나에 관한 주장이기 때문이다.
 
 > [!note] Prerequisites · 선수 지식
-> You need the manipulator equation and the operational-space inertia $\Lambda$ ([[02-foundations/manipulator-kinematics-dynamics|10. §2, §6]]), friction and contact modes ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2–3]]), and closed-loop stability and bandwidth ([[04-robotics/control-theory-ce397|Control Theory §5, §7]]).
-> 매니퓰레이터 방정식과 작업 공간 관성 $\Lambda$([[02-foundations/manipulator-kinematics-dynamics|10. §2, §6]]), 마찰과 접촉 모드([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2–3]]), 폐루프 안정성과 대역폭([[04-robotics/control-theory-ce397|제어 이론 §5, §7]])이 필요하다.
+> You need **P2** at its catalog pose ([[02-foundations/lab-plants|0.6 Lab Plants]]), the manipulator equation and the operational-space inertia $\Lambda$ ([[02-foundations/manipulator-kinematics-dynamics|10. §2, §6]]), friction and contact modes ([[04-robotics/contact-force-tactile|Contact, Force & Tactile §2–3]]), and closed-loop stability and bandwidth ([[04-robotics/control-theory-ce397|Control Theory §5, §7]]).
+> 카탈로그 자세의 **P2**([[02-foundations/lab-plants|0.6 Lab Plants]]), 매니퓰레이터 방정식과 작업 공간 관성 $\Lambda$([[02-foundations/manipulator-kinematics-dynamics|10. §2, §6]]), 마찰과 접촉 모드([[04-robotics/contact-force-tactile|접촉·힘·촉각 §2–3]]), 폐루프 안정성과 대역폭([[04-robotics/control-theory-ce397|제어 이론 §5, §7]])이 필요하다.
 
 ## English
 
@@ -29,7 +29,9 @@ Contact turns position error into force, so control stops being a choice between
 > owes you, and they end on the single ratio that decides the whole argument. Then §1, why
 > stiff position tracking becomes dangerous in contact, with the stiffness numbers, then §2
 > for impedance versus admittance, then §7. §3 to §5 are what you read
-> when you are actually choosing a controller rather than reading about one.
+> when you are actually choosing a controller rather than reading about one; §6 (where a
+> learned policy sits) and §8 (the path to Mastery) are for when a learning-for-contact paper
+> is on the desk.
 
 ### Running object: P2, the panel, and one target impedance
 
@@ -179,7 +181,7 @@ and the elbow carries exactly none of it. That is not a rounding: the second col
 
 **Step 2 — the mass the panel actually meets.** $\Lambda_y=2$ kg. The arm is $m_1+m_2=2$ kg of metal, and the coincidence is a trap: $\Lambda_x=1$ kg at the *same* pose, from the same 2 kg. Apparent mass is a property of the pose and the direction, which is why §4's operational-space formulation exists and why $M_d=\Lambda_y$ is the target inertia that asks the controller for no inertia shaping at all.
 
-**Step 3 — the static behaviour.** The panel pushes the robot up, so $F_{ext}=+10$ N, and at equilibrium the target reduces to its spring term:
+**Step 3 — the static behaviour.** The **target impedance** is the closed-loop behaviour the controller is asked to produce, a virtual mass–spring–damper $M_d\ddot e+D_d\dot e+K_de=F_{ext}$, where $e=x-x_d$ is the tip's displacement from its reference and $F_{ext}$ the force on the robot (§2 defines it term by term). The panel pushes the robot up, so $F_{ext}=+10$ N, and at equilibrium $\ddot e=\dot e=0$, so the target reduces to its spring term:
 
 $$e=\frac{F_{ext}}{K_d}=\frac{10}{500}=0.020\ \mathrm{m}$$
 
@@ -404,8 +406,11 @@ For a derivation from a point-mass robot to torque commands, see [MIT's manipula
 ### 3. Hybrid position/force control
 
 Mason's constraint analysis says which directions belong to the environment. Raibert and
-Craig's 1981 architecture is how you act on that: choose a task frame, and a diagonal
-**selection matrix** $S$ of ones and zeros that assigns each direction to one controller.
+Craig's 1981 architecture is how you act on that: choose a **task frame** — a coordinate
+frame at the contact whose axes run along the surface normal and tangents, so that each axis
+is either blocked or free (defined with the constraints below) — and a diagonal
+**selection matrix** $S$ of ones and zeros that assigns each of its directions to one
+controller.
 
 $$\tau = J^\top\left[\,S\,\mathcal{F}_{\text{pos}} + (I - S)\,\mathcal{F}_{\text{force}}\right]$$
 
@@ -520,7 +525,11 @@ base-placement choice in [[04-robotics/navigation-mobile-manipulation|16. §3]].
 ### 5. Contact transitions — where the theory earns its keep
 
 Steady contact is the easy part. The hard part is the microsecond the robot arrives, and
-the argument here is quantitative rather than rhetorical.
+the argument here is quantitative rather than rhetorical. It runs in three parts: the impact
+itself (§5.1), the passive compliance that is the only thing acting at its timescale (§5.2),
+and the passivity limit on what an active controller can add (§5.3).
+
+#### 5.1 The impact, from one energy balance
 
 Assume an undamped one-axis linear impact, constant apparent mass, a linear spring, and fully stored-and-returned energy. The end-effector's apparent mass $\Lambda$ meets stiffness $K$ at approach speed $v$, giving a half-sine contact with
 
@@ -539,7 +548,11 @@ ten and divides the contact time by ten** — in this model the impulse is conse
 changes. Mechanical compliance moves both numbers directly; pre-impact control can most directly reduce $v$. For measured impacts, check the force-time trace and identified equivalent $\Lambda,K,D$.
 
 Take the $\Lambda = 2$ kg from [[02-foundations/manipulator-kinematics-dynamics|10. §6]] and
-a gentle approach at $v = 5$ cm/s. That $\Lambda$ is the bare arm's: geared drives add their rotors' reflected inertia, and with the frozen drive of [[04-robotics/actuators-drives|10.5 Actuators & Drives §4]] at a gear ratio of 100 the same $10^5\,\mathrm{N/m}$ touchdown peaks at $29.5\,\mathrm{N}$ instead of $22.4$.
+a gentle approach at $v = 5$ cm/s. That $\Lambda$ is the bare arm's, and geared drives add their rotors' reflected inertia. The frozen drive of [[04-robotics/actuators-drives|10.5 Actuators & Drives §4]] at a gear ratio of $n=100$ puts $n^2J_m=1.0\ \mathrm{kg\,m^2}$ on each diagonal entry of P2's mass matrix and $nJ_m=0.01$ off it, so $M=\begin{pmatrix}3&1\\1&1\end{pmatrix}$ becomes $\begin{pmatrix}4.0001&1.01\\1.01&2\end{pmatrix}\ \mathrm{kg\,m^2}$ (that page's worked case, Step 6). The mass the tip presents to an impact along the panel normal $\hat y$ is $m_y=1/(\hat y^\top JM^{-1}J^\top\hat y)$, and at this pose $\hat y^\top J=(1,\ 0)$ — only the shoulder moves the tip in $y$, on a $1$ m lever — so
+
+$$m_y=\frac{1}{(M^{-1})_{11}}=\frac{\det M}{M_{22}}=M_{11}-\frac{M_{12}^2}{M_{22}}$$
+
+which is the shoulder's inertia with the elbow left free: $3-1^2/1=2$ kg for the bare arm, the $\Lambda_y$ above, and $4.0001-1.01^2/2=3.490$ kg geared. So the same $10^5\,\mathrm{N/m}$ touchdown peaks at $F_{\max}=0.05\sqrt{3.490\times10^5}=29.5\,\mathrm{N}$ instead of $22.4$, and lasts $\pi\sqrt{3.490/10^5}=18.6$ ms instead of $14.05$. It is not the diagonal entry $\Lambda_{yy}=3.98$ kg of the geared $\Lambda$: the drives couple $x$ and $y$, a frictionless push along $\hat y$ leaves $x$ free, and the mass such a push meets is $1/(\Lambda^{-1})_{yy}$, which is $m_y$ again.
 
 | Interface | $K$ (N/m) | $F_{\max}$ | contact duration | 1 kHz samples inside the contact |
 |---|---:|---:|---:|---:|
@@ -585,6 +598,8 @@ same factor: $F_{\max} \propto \sqrt{K}$ and $t_{\text{contact}} \propto 1/\sqrt
 softening from the structural $10^5$ to $10^4$ buys $\sqrt{10} \approx 3.2\times$ in each, and against the bottom row's idealisation $\sqrt{1000} \approx 32\times$. The force becomes
 something the arm can survive *and* the event becomes long enough to regulate. The same approach run end to end on P2, switching to impedance before contact, pressing a compliantly mounted panel and sweeping $K_d$ against the approach speed, is [[04-robotics/capstone-panel-contact|26. Capstone]].
 
+#### 5.2 Passive compliance: wedging, jamming and the remote centre
+
 The lesson generalises past the arithmetic: **passive compliance is not a cheap substitute
 for active control; it is the only thing that acts at contact bandwidth.** Whitney's 1982
 quasi-static analysis of compliantly supported insertion is the mature version of this
@@ -625,6 +640,8 @@ it acts at the speed of the material. **Non-example**: a soft spring in the wris
 but its compliance centre is at the *wrist*, where a lateral force also rotates the peg — that
 is compliance without an RCC, and it makes the coupling worse, not better.
 It solves the insertion problem in aluminium, with no sensor and no latency.
+
+#### 5.3 Passivity — the limit on the active alternative
 
 All of this assumes you know a transition happened. Detecting it is a separate estimation
 problem, defined with its mode set and its failure cases in [[04-robotics/contact-force-tactile|Contact, Force & Tactile §7]]; the
@@ -706,18 +723,20 @@ on a single soft-to-stiff scale.
 Several recent systems point in the same direction, although it is not yet a settled or
 one-way convergence: **a VLA can act as a slower semantic layer that parameterises a
 classical high-rate inner loop.** This is one increasingly visible way to combine learned
-task reasoning with established contact-control machinery.
+task reasoning with established contact-control machinery. Weigh the evidence before the
+claim: of the three systems below only ForceVLA has been through peer review, PaCo-VLA and
+VIDP are preprints, and every number quoted is the authors' own, not a replication.
 
-- **ForceVLA** (NeurIPS 2025) treats 6-axis force/torque as a **primary** input channel
+- **ForceVLA** (NeurIPS 2025, peer-reviewed) treats 6-axis force/torque as a **primary** input channel
   rather than an auxiliary one, fused through a force-aware mixture of experts during action
   decoding — reporting +23.2% average success and up to 80% on plug insertion.
-- **PaCo-VLA** goes further and is the sharpest single datapoint: it reframes VLA outputs as
+- **PaCo-VLA** (preprint, under review) goes further and would be the sharpest single datapoint if it holds up in review: it reframes VLA outputs as
   **task-level compliance proposals** and interposes a high-frequency **passivity shield**
   with energy-tank accounting, claiming zero passivity violations under adversarial
   compliance shifts. Passivity and energy tanks are 1990s interaction-control theory being
   used as a **runtime safety contract on a foundation model** — Colgate and Hogan's condition
   from §5, enforced at execution time.
-- **VIDP** predicts pose *and* task compliance — stiffness profiles — jointly, without force
+- **VIDP** (preprint) predicts pose *and* task compliance — stiffness profiles — jointly, without force
   sensors, separating geometric adaptation from intentional compliance change in the
   demonstrations.
 
@@ -726,7 +745,8 @@ classical contact line — Tedrake's group on contact-mode explosion and non-smo
 gradients — goes largely uncited by the frontier VLA papers, and the flagship releases remain
 position-controlled and largely force-blind. The cited systems show that some groups
 deploying VLAs on contact-rich tasks have found impedance, admittance, or passivity layers
-useful; they do not establish that every system needs the same interface.
+useful; they do not establish that every system needs the same interface, and two of the
+three are not yet peer-reviewed evidence of even that.
 
 > [!note] The prediction worth recording
 > If the merge completes, **the interface will be compliance parameters, not positions.**
@@ -857,7 +877,7 @@ Tier B. Using only this page, its prerequisites and the object catalog. The runn
 접촉이 위치 오차를 힘으로 바꾸므로, 제어는 둘 중 하나를 고르는 일이 아니라 둘 사이의 관계를 고르는 일이 된다.*
 
 > [!note] 처음이라면 · First pass
-> 먼저 아래의 계속 쓰는 대상과 계산 예제를 읽어라. 이 페이지가 갚아야 할 계산 하나이고, 논증 전체를 결정하는 비 하나로 끝난다. 그다음 §1 — 뻣뻣한 위치 추종이 접촉에서 왜 위험해지는지, 강성 숫자까지 — 그다음 임피던스 대 어드미턴스인 §2, 그다음 §7. §3~§5는 제어기에 관해 읽는 것이 아니라 실제로 고를 때 읽는다.
+> 먼저 아래의 계속 쓰는 대상과 계산 예제를 읽어라. 이 페이지가 갚아야 할 계산 하나이고, 논증 전체를 결정하는 비 하나로 끝난다. 그다음 §1 — 뻣뻣한 위치 추종이 접촉에서 왜 위험해지는지, 강성 숫자까지 — 그다음 임피던스 대 어드미턴스인 §2, 그다음 §7. §3~§5는 제어기에 관해 읽는 것이 아니라 실제로 고를 때 읽고, §6(학습된 정책이 앉는 자리)과 §8(Mastery로 가는 길)은 접촉을 학습하는 논문이 책상 위에 있을 때 읽는다.
 
 ### 계속 쓰는 대상: P2, 패널, 그리고 목표 임피던스 하나 · Running object
 
@@ -1007,7 +1027,7 @@ $$\tau=J^\top F=\begin{pmatrix}-1&1\\-1&0\end{pmatrix}\begin{pmatrix}0\\-10\end{
 
 **2단계 — 패널이 실제로 만나는 질량.** $\Lambda_y=2$ kg이다. 팔의 쇳덩이도 $m_1+m_2=2$ kg이라 이 일치가 함정이다. *같은* 자세에서 같은 2 kg으로부터 $\Lambda_x=1$ kg이 나온다. 겉보기 질량은 자세와 방향의 성질이고, §4의 작업공간 정식화가 존재하는 이유이자 $M_d=\Lambda_y$가 제어기에게 관성 성형을 전혀 요구하지 않는 목표 관성인 이유다.
 
-**3단계 — 정적 거동.** 패널이 로봇을 위로 밀므로 $F_{ext}=+10$ N이고, 평형에서 목표 식은 스프링 항만 남는다.
+**3단계 — 정적 거동.** **목표 임피던스**(target impedance)는 제어기가 만들어 내도록 요청받는 폐루프 거동, 곧 가상의 질량–스프링–댐퍼 $M_d\ddot e+D_d\dot e+K_de=F_{ext}$다. 여기서 $e=x-x_d$는 기준에서 벗어난 말단의 변위, $F_{ext}$는 로봇에 걸리는 힘이다(§2가 항마다 정의한다). 패널이 로봇을 위로 밀므로 $F_{ext}=+10$ N이고, 평형에서는 $\ddot e=\dot e=0$이므로 목표 식은 스프링 항만 남는다.
 
 $$e=\frac{F_{ext}}{K_d}=\frac{10}{500}=0.020\ \mathrm{m}$$
 
@@ -1225,8 +1245,10 @@ $$Z(s)=\frac{F_{ext}(s)}{V(s)}=M_ds+D_d+\frac{K_d}{s},\qquad Y(s)=\frac{1}{Z(s)}
 ### 3. 하이브리드 위치/힘 제어
 
 Mason의 제약 분석이 어느 방향이 환경의 것인지를 말해 준다. Raibert와 Craig의 1981년
-아키텍처는 그것을 실행하는 방법이다: 과제 프레임을 고르고, 각 방향을 어느 제어기에 배정할지를
-0과 1로 적은 대각 **선택 행렬** $S$를 고른다.
+아키텍처는 그것을 실행하는 방법이다: **과제 프레임** — 접촉점에 두고 축을 표면 법선과 접선에
+맞춘 좌표계로, 그래서 각 축이 막혔거나 자유롭거나 둘 중 하나가 된다(아래에서 제약과 함께
+정의한다) — 을 고르고, 그 방향 각각을 어느 제어기에 배정할지를 0과 1로 적은 대각 **선택 행렬**
+$S$를 고른다.
 
 $$\tau = J^\top\left[\,S\,\mathcal{F}_{\text{pos}} + (I - S)\,\mathcal{F}_{\text{force}}\right]$$
 
@@ -1331,7 +1353,10 @@ QP를 풀고 있고, 우선순위 계층은 그 안에서 제약 가중치나 QP
 ### 5. 접촉 천이 — 이론이 값을 하는 지점
 
 정상 접촉은 쉬운 부분이다. 어려운 것은 로봇이 도착하는 그 순간이고, 여기서의 논증은 수사가
-아니라 정량적이다.
+아니라 정량적이다. 논증은 세 부분이다. 충돌 자체(§5.1), 그 시간 척도에서 작동하는 유일한 것인
+수동 컴플라이언스(§5.2), 그리고 능동 제어기가 더할 수 있는 것에 대한 수동성의 한계(§5.3).
+
+#### 5.1 에너지 균형 하나에서 나오는 충돌
 
 무감쇠 1축 선형 충돌, 일정한 겉보기 질량, 선형 스프링, 완전한 에너지 저장·반환을 가정하자. 말단의 겉보기 질량 $\Lambda$가 접근 속도 $v$로 강성 $K$를 만나면 접촉은 반주기 사인이고
 
@@ -1348,7 +1373,11 @@ $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lamb
 이 모델에서는 역적이 보존되고 모양만 바뀐다. 기계적 유연성은 두 숫자를 직접 움직이고, 충돌 전 제어가 가장 직접적으로 줄일 수 있는 값은 $v$다. 실제 충돌에서는 힘-시간 파형과 식별한 등가 $\Lambda,K,D$를 확인해야 한다.
 
 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 $\Lambda = 2$ kg와 부드러운
-접근 $v = 5$ cm/s를 넣자. 그 $\Lambda$는 맨 팔의 것이다. 기어 달린 구동계는 회전자의 반사 관성을 거기에 더하고, [[04-robotics/actuators-drives|10.5 액추에이터·구동계 §4]]의 고정 구동계를 감속비 100으로 달면 같은 $10^5\,\mathrm{N/m}$ 착지의 정점이 $22.4$가 아니라 $29.5\,\mathrm{N}$이 된다.
+접근 $v = 5$ cm/s를 넣자. 그 $\Lambda$는 맨 팔의 것이고, 기어 달린 구동계는 회전자의 반사 관성을 거기에 더한다. [[04-robotics/actuators-drives|10.5 액추에이터·구동계 §4]]의 고정 구동계를 감속비 $n=100$으로 달면 P2의 질량 행렬 대각 원소마다 $n^2J_m=1.0\ \mathrm{kg\,m^2}$, 비대각에 $nJ_m=0.01$이 더해져 $M=\begin{pmatrix}3&1\\1&1\end{pmatrix}$이 $\begin{pmatrix}4.0001&1.01\\1.01&2\end{pmatrix}\ \mathrm{kg\,m^2}$가 된다(그 페이지의 계산 예제 6단계). 패널 법선 $\hat y$ 방향 충돌에서 말단이 내보이는 질량은 $m_y=1/(\hat y^\top JM^{-1}J^\top\hat y)$이고, 이 자세에서는 $\hat y^\top J=(1,\ 0)$ — 말단을 $y$로 움직이는 것은 $1$ m 지렛대 위의 어깨뿐이다 — 이므로
+
+$$m_y=\frac{1}{(M^{-1})_{11}}=\frac{\det M}{M_{22}}=M_{11}-\frac{M_{12}^2}{M_{22}}$$
+
+이고, 이것은 팔꿈치를 풀어 둔 어깨의 관성이다. 맨 팔은 $3-1^2/1=2$ kg로 위의 $\Lambda_y$이고, 기어를 달면 $4.0001-1.01^2/2=3.490$ kg이다. 그래서 같은 $10^5\,\mathrm{N/m}$ 착지의 정점이 $22.4$가 아니라 $F_{\max}=0.05\sqrt{3.490\times10^5}=29.5\,\mathrm{N}$이 되고, 지속 시간은 $14.05$ ms가 아니라 $\pi\sqrt{3.490/10^5}=18.6$ ms가 된다. 기어 단 $\Lambda$의 대각 원소 $\Lambda_{yy}=3.98$ kg이 아니다. 구동계가 $x$와 $y$를 결합시키고, 마찰 없는 $\hat y$ 방향 밀기는 $x$를 풀어 두므로, 그런 밀기가 만나는 질량은 $1/(\Lambda^{-1})_{yy}$, 곧 다시 $m_y$다.
 
 | 접촉면 | $K$ (N/m) | $F_{\max}$ | 접촉 지속 | 접촉 중 1 kHz 샘플 수 |
 |---|---:|---:|---:|---:|
@@ -1394,6 +1423,8 @@ $10^4$으로 무르게 하면 각각 $\sqrt{10} \approx 3.2\times$를, 맨 아�
 $\sqrt{1000} \approx 32\times$를 산다. 힘은 팔이 견딜 만한 것이 되고, *동시에*
 사건이 조절할 수 있을 만큼 길어진다. 같은 접근을 P2 위에서 끝까지, 곧 접촉 전에 임피던스로 전환하고 컴플라이언트하게 장착된 패널을 누르며 $K_d$와 접근 속도를 스윕하면서 돌린 것이 [[04-robotics/capstone-panel-contact|26. 캡스톤]]이다.
 
+#### 5.2 수동 컴플라이언스: wedging, jamming, 그리고 원격 중심
+
 교훈은 산수 너머로 일반화된다: **수동 컴플라이언스는 능동 제어의 값싼 대체품이 아니라, 접촉
 대역폭에서 작동하는 유일한 것이다.** Whitney의 1982년 준정적 분석이 이 발상의 성숙한 판본이다 —
 챔퍼가 있는 경우와 없는 경우의 peg-in-hole에 대해, 정렬 오차가 언제 wedging이나 jamming을
@@ -1425,6 +1456,8 @@ $\sqrt{1000} \approx 32\times$를 산다. 힘은 팔이 견딜 만한 것이 되
 작동한다. **반례**: 손목에 넣은 무른 스프링은 유연하지만 컴플라이언스 중심이 *손목*에 있어서 횡력이
 부재를 회전까지 시킨다. RCC 없는 컴플라이언스이고, 결합을 줄이는 것이 아니라 키운다.
 알루미늄으로, 센서 없이, 지연 없이 삽입 문제를 푼다.
+
+#### 5.3 수동성 — 능동적 대안의 한계
 
 이 모두는 천이가 일어났다는 것을 안다고 전제한다. 그것을 알아내는 일은 별개의 추정 문제이고, 모드
 집합과 실패 사례까지 정의한 곳은 [[04-robotics/contact-force-tactile|접촉·힘·촉각 §7]]이다. 여기의 논증은 그 추정이 울린 다음 샘플에서 시작한다.
@@ -1496,24 +1529,27 @@ $$\mathrm{Re}\,Z(j\omega)\ge0\quad\text{for all }\omega$$
 
 최근 여러 시스템은 한 방향을 보여 주지만 아직 합의나 일방향 수렴은 아니다. **VLA를 고전적
 고속 내부 루프를 매개변수화하는 느린 의미 층으로 쓰는 설계가 늘고 있다.** 다음 사례는 이 선택이
-유용할 수 있음을 보이지만 모든 접촉 시스템의 유일한 인터페이스를 확정하지는 않는다.
+유용할 수 있음을 보이지만 모든 접촉 시스템의 유일한 인터페이스를 확정하지는 않는다. 주장보다
+근거를 먼저 달아 보라. 아래 세 시스템 가운데 동료 심사를 거친 것은 ForceVLA뿐이고 PaCo-VLA와
+VIDP는 프리프린트이며, 인용한 숫자는 모두 재현이 아니라 저자 자신의 것이다.
 
-- **ForceVLA**(NeurIPS 2025)는 6축 힘/토크를 부차가 아니라 **주** 입력 채널로 다루고, 행동
+- **ForceVLA**(NeurIPS 2025, 동료 심사 거침)는 6축 힘/토크를 부차가 아니라 **주** 입력 채널로 다루고, 행동
   디코딩 중에 힘 인지 mixture of experts로 융합한다 — 평균 성공률 +23.2%, 플러그 삽입에서 최대
   80%를 보고한다.
-- **PaCo-VLA**는 한 걸음 더 나아가며 가장 날카로운 단일 근거다: VLA의 출력을 **과제 수준
+- **PaCo-VLA**(프리프린트, 심사 중)는 한 걸음 더 나아가며, 심사를 통과한다면 가장 날카로운 단일 근거가 된다: VLA의 출력을 **과제 수준
   컴플라이언스 제안**으로 재해석하고, 에너지 탱크 회계를 갖춘 고주파 **수동성 방패**(passivity
   shield)를 끼워 넣어, 적대적인 컴플라이언스 변화에서도 수동성 위반이 0이라고 주장한다.
   수동성과 에너지 탱크는 1990년대 상호작용 제어 이론이며, 그것이 **파운데이션 모델 위의 런타임
   안전 계약**으로 쓰이고 있다 — §5의 Colgate–Hogan 조건을 실행 시점에 강제하는 것이다.
-- **VIDP**는 자세 *와* 과제 컴플라이언스 — 강성 프로파일 — 를 힘 센서 없이 함께 예측하며,
+- **VIDP**(프리프린트)는 자세 *와* 과제 컴플라이언스 — 강성 프로파일 — 를 힘 센서 없이 함께 예측하며,
   시연 안에서 기하적 적응과 의도적 컴플라이언스 변화를 구분한다.
 
 정직한 균형추: 이것은 **실무**의 수렴이지 공동체의 수렴이 아니다. 고전적 접촉 계열 — 접촉 모드
 폭발과 비평활 접촉 그래디언트에 관한 Tedrake 그룹의 작업 — 은 프런티어 VLA 논문들에 거의 인용되지
 않고, 대표 릴리스들은 여전히 위치 제어되고 대체로 힘에 눈이 멀어 있다. 실제로 일어나는 일은,
 접촉이 많은 과제에 VLA를 배치하는 일부 그룹이 임피던스·어드미턴스·수동성 계층을 유용하게
-사용하고 있다는 것이다. 모든 시스템에 같은 인터페이스가 필요하다는 근거는 아니다.
+사용하고 있다는 것이다. 모든 시스템에 같은 인터페이스가 필요하다는 근거는 아니며, 셋 중 둘은
+아직 그것조차 동료 심사를 거친 근거가 아니다.
 
 > [!note] 기록해 둘 예측
 > 그 합류가 완성된다면 **인터페이스는 위치가 아니라 컴플라이언스 파라미터일 것이다.**

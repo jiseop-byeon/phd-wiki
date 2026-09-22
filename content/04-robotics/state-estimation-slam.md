@@ -18,10 +18,10 @@ Sensors do not reveal the world directly: they provide partial, delayed, and noi
 > Read state-estimation and SLAM papers without confusing state, observation, estimate, or map; interpret covariance, drift, loop closure, and sensor-fusion claims; and judge whether the reported evaluation supports robust deployment. Full filter and bundle-adjustment implementations are a working/mastery topic.
 
 > [!note] Prerequisites
-> [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/optimization|Optimization]] · [[02-foundations/signal-processing|Signal Processing]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]]
+> Plants **P5** and **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] (the scalar Kalman filter of §5, the Mahalanobis distance and $\chi^2$ gate of §6) · [[02-foundations/optimization|Optimization]] · [[02-foundations/signal-processing|Signal Processing]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]]
 
 > [!note] First pass · 처음이라면
-> Read §2 — the four words nobody separates — then §4 for the predict/correct loop, then §6 to do the one-dimensional update by hand. §5, §7 and §8 are the reference half; open them against a specific paper.
+> Start with the picture and the Worked case: one predict–correct–gate cycle on P5 with every number. Then read §1–§4 in order (the loop, the four words nobody separates, the two models, predict and correct), §6 to do the update by hand, and §7.1 for the SLAM posterior and why association is where it breaks. §5, §7.2–§7.4 and §8 are the reference half; open them against a specific paper. §8.5 is a self-contained unit on multi-object tracking, for a second pass or a tracking paper. §9 is the checklist to carry into any paper's evaluation.
 
 ### Running object: P5's panel on P6's clock
 
@@ -203,32 +203,32 @@ One predict–correct–gate cycle on P5's range axis, drawn to scale in centime
 
 Start from the belief the catalog's own update leaves: $\hat x = 11.6\,\mathrm{cm}$, $P = 0.8\,\mathrm{cm}^2$ (P5's scalar Kalman step, reproduced in §6). One step of P6's clock passes and a new range arrives.
 
-**1. Predict.** The motion model is $f(x, u) = x - u\Delta t$ with $u\Delta t = 1\,\mathrm{cm}$ (advancing toward the panel shortens the range), so $A = 1$ and §5's predict equations give
+**1. Predict.** The motion model is $f(x, u) = x - u\Delta t$ with $u\Delta t = 1\,\mathrm{cm}$ (advancing toward the panel shortens the range), so the state-transition factor is $A = 1$ and the predict equations of [[02-foundations/probability|3. Probability §5]], restated in §5 below, give
 
 $$\hat x^- = 11.6 - 1 = 10.6\ \mathrm{cm}, \qquad P^- = 1^2 \times 0.8 + 1 = 1.8\ \mathrm{cm}^2$$
 
 because $A = 1$ carries the variance through unchanged and the independent process noise $Q$ adds its own $1\,\mathrm{cm}^2$ on top.
 
-**2. Innovation covariance and gain, before any measurement is looked at.** With $H = 1$,
+**2. Innovation covariance and gain, before any measurement is looked at.** With $H = 1$, since the sensor reads the range itself, the innovation covariance and Kalman gain of [[02-foundations/probability|3. Probability §5]] are
 
 $$S = P^- + R = 1.8 + 1 = 2.8\ \mathrm{cm}^2, \qquad \sqrt{S} = 1.673\ \mathrm{cm}, \qquad K = \frac{P^-}{S} = \frac{1.8}{2.8} = 0.6429$$
 
 Both are fixed by the model alone, since neither $S$ nor $K$ contains $z$. That is why the gate below can be drawn before the reading arrives.
 
-**3. Gate.** The squared Mahalanobis distance of the innovation is $d^2 = y^2/S$ (§8.5 defines the gate in full, including the $\chi^2$ table the threshold comes from; do not re-derive it here). In one dimension a $3\sigma$ gate is $d^2 < 9$, equivalently $|y| < 3\sqrt{S} = 5.02\,\mathrm{cm}$.
+**3. Gate.** The squared Mahalanobis distance of the innovation is $d^2 = y^2/S$, the miss measured in units of its own predicted spread. For a correct association it follows a $\chi^2$ distribution with one degree of freedom, which is where the threshold comes from ([[02-foundations/probability|3. Probability §6]]); §8.5.2 builds the gate for many objects. In one dimension a $3\sigma$ gate is $d^2 < 9$, equivalently $|y| < 3\sqrt{S} = 5.02\,\mathrm{cm}$.
 
 | Candidate | $y = z - \hat x^-$ | $d^2 = y^2/S$ | $3\sigma$ gate | $\hat x^+ = \hat x^- + Ky$ | $P^+ = (1-K)P^-$ |
 |---|---:|---:|---|---:|---:|
 | panel, $z = 10.5$ | $-0.100$ | $0.0036$ | accept | $10.536$ | $0.6429$ |
 | passer-by, $z = 18$ | $+7.400$ | $19.557$ | reject | $15.357$ | $0.6429$ |
 
-**4. What the wrong association costs, in the filter's own units.** Fuse the passer-by anyway and the estimate lands $15.357 - 10.5 = 4.857\,\mathrm{cm}$ beyond the panel while reporting $P^+ = 0.6429\,\mathrm{cm}^2$. §2's consistency check turns that into one number, the NEES of the resulting estimate:
+**4. What the wrong association costs, in the filter's own units.** Fuse the passer-by anyway and the estimate lands $15.357 - 10.5 = 4.857\,\mathrm{cm}$ beyond the panel while reporting $P^+ = 0.6429\,\mathrm{cm}^2$. §2's consistency check turns that into one number, the NEES (normalized estimation error squared: the true error squared, divided by the variance the filter reported; §2 defines it) of the resulting estimate:
 
 $$\epsilon = \frac{(10.5 - 15.357)^2}{0.6429} = 36.7$$
 
 A consistent one-dimensional filter averages $\epsilon \approx 1$, so $36.7$ is not a large error inside a wide belief: it is a confident belief about the wrong place. A tool driven to that range strikes the panel $4.9\,\mathrm{cm}$ before it expects contact. The gate, not the covariance, is what separates the two rows of the table, because both rows report the identical $P^+$.
 
-**5. One check worth doing by hand.** The Joseph form $P^+ = (1-K)^2P^- + K^2R$ gives $0.6429$, the same value as $(1-K)P^-$, which it must for the optimal $K$; the two disagree only when the gain used is not the optimal one, which is exactly when the Joseph form is worth its extra arithmetic.
+**5. One check worth doing by hand.** The Joseph form $P^+ = (1-K)^2P^- + K^2R$ comes straight from the error: with measurement noise $v$, the new error is $x - \hat x^+ = (1-K)(x - \hat x^-) - Kv$, two independent terms whose variances add. It gives $0.6429$, the same value as $(1-K)P^-$, which it must for the optimal $K$. The two disagree only when the gain used is not the optimal one ($K = 0.5$ gives $0.70$ against $0.90$, and only the $0.70$ is the true variance), which is exactly when the Joseph form is worth its extra arithmetic.
 
 ### 1. Position in the robot loop
 
@@ -396,7 +396,7 @@ $$\sum_k \lVert h_k(G \cdot X_k) - z_k \rVert^2_{\Sigma_k} = \sum_k \lVert h_k(X
 The minimum is then a whole family of solutions rather than a point, and a prior factor on one pose removes it. *Example:* 1-D poses $x_0, x_1, x_2$, a prior fixing $x_0 = 0$, odometry $x_1 - x_0 = 1$ and $x_2 - x_1 = 1$, and a loop closure $x_2 - x_0 = 1.8$, all with unit variance. Odometry alone says $x_2 = 2$. Least squares gives $x_1 = 0.933$ and $x_2 = 1.867$, spreading the 0.2 m disagreement over the three constraints as residuals of $-0.067$, $-0.067$ and $+0.067$. *Non-example:* drop the prior, and $(x_0, x_1, x_2) = (5, 5.933, 6.867)$ has exactly the same relative residuals and cost. That shift is the gauge.
 
 > [!note] Filter and smoother are one update · 필터와 스무더는 같은 갱신
-> If Gauss–Newton and marginalising are new to you, skip this note and return after §7, where both appear. The last row of that table looks like a different subject from the rows above it. It is not. A graph back end repeatedly solves $A\,\Delta x = b$ for a correction and adds it to the current estimate, and a Gauss–Newton step on that cost started from the prior mean is the EKF update, while iterating it is exactly the iterated EKF — the same weighted residual cost, rearranged into information form rather than covariance form. Bell and Cathey proved the filter case ([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)) and [Bell (1994)](https://doi.org/10.1137/0804035) extended it to the smoother. What separates the two families is therefore not the solver but which variables are kept and which are marginalised away: a filter carries the newest state, a smoother keeps the trajectory.
+> If Gauss–Newton and marginalising are new to you, skip this note and return after §7.1 and §7.3, where they appear. The last row of that table looks like a different subject from the rows above it. It is not. A graph back end repeatedly solves $A\,\Delta x = b$ for a correction and adds it to the current estimate, and a Gauss–Newton step on that cost started from the prior mean is the EKF update, while iterating it is exactly the iterated EKF — the same weighted residual cost, rearranged into information form rather than covariance form. Bell and Cathey proved the filter case ([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)) and [Bell (1994)](https://doi.org/10.1137/0804035) extended it to the smoother. What separates the two families is therefore not the solver but which variables are kept and which are marginalised away: a filter carries the newest state, a smoother keeps the trajectory.
 
 ### 6. Worked example: one-dimensional update
 
@@ -412,7 +412,7 @@ Here the measurement variance is smaller than the prediction variance, so the co
 
 **Try changing an assumption without recalculating.** If the measurement were much less precise, the gain should decrease and the estimate stay nearer the prediction. If the measurement reused information already inside the prediction, this formula would overcount evidence unless the correlation were modeled. Being able to predict those directions is a stronger first-pass check than memorizing 0.8 and 11.6.
 
-**Worked: P5 after the catalog update, then a wrong association.** Units centimetres. After the update above the belief is $11.6$, $P=0.8$ ([[02-foundations/lab-plants|0.6]]). P2 is carrying a tool toward a panel; this range *is* that panel. Predict a $1\,\mathrm{cm}$ advance with $Q=1$: $x=10.6$, $P=1.8$. Innovation $\sigma=\sqrt{P+R}=\sqrt{2.8}=1.67\,\mathrm{cm}$, so a 3-σ gate is $5.0\,\mathrm{cm}$. A range $z=10.5$ is $0.1\,\mathrm{cm}$ from the prediction, inside the gate: $K=1.8/2.8=0.643$, $\hat x=10.536$, $P=0.643$. A passer-by at $z=18$ is $7.4\,\mathrm{cm}$ from it, outside the gate: reject it. If you fuse it anyway, $\hat x=15.36$ with the *same* $P=0.643$ — confident, five centimetres too far, and a tool driven to that range would strike the panel five centimetres before it expects contact. Association is not a covariance question; the gate is the whole difference. The problem set is this cycle as a drawing and a filled template.
+**Worked: P5 after the catalog update.** These numbers are P5's catalog update ([[02-foundations/lab-plants|0.6]]), and the belief they leave, $11.6\,\mathrm{cm}$ with $P = 0.8\,\mathrm{cm}^2$, is where the Worked case at the top of the page starts. It runs the next step (predict, gate, correct) and prices a wrong association; the problem set runs two steps more.
 
 ### 7. Odometry, localization, mapping, and SLAM
 
@@ -422,6 +422,10 @@ Here the measurement variance is smaller than the prediction variance, so the co
 | Localization | a map | robot pose in the map |
 | Mapping | robot poses | map structure |
 | SLAM | neither is perfectly known | trajectory and map jointly |
+
+The main line of this section is §7.1: each row of the table is a posterior, the SLAM posterior factors into a graph, and the one variable no sensor reports, the data association, is where SLAM breaks. §7.2–§7.4 are the machinery papers name without explaining it: the odometry front ends and the IMU mechanics they share (§7.2), how a back end stays bounded by marginalizing old states (§7.3), and what a map stores (§7.4).
+
+### 7.1 The SLAM posterior, data association, and loop closure
 
 **The four problems as posteriors.** Each row is a different conditional distribution, which is what makes the table exact. Write $x_{1:t}$ for the trajectory, $m$ for the map (for example landmark positions $m = \{m_1, \dots, m_N\}$), $z_{1:t}$ for the measurements and $u_{1:t}$ for the inputs.
 - **Localization** conditions on a known map: $p(x_t \mid z_{1:t}, u_{1:t}, m)$.
@@ -442,7 +446,7 @@ Each term is one factor of §5's factor graph, which is why graph-based SLAM bac
 $$p(x_{0:t}, m \mid z_{1:t}, u_{1:t}) = \sum_{c_{1:t}} p(x_{0:t}, m, c_{1:t} \mid z_{1:t}, u_{1:t})$$
 - Almost every working system replaces that sum with its **maximum-likelihood assignment** — one hard choice of $c_{1:t}$, then optimization as if it were known — because the sum has exponentially many terms.
 
-That last substitution is the whole risk. The machinery for making the choice safely is the same for a landmark here and for a tracked object in §8.5: score each candidate by the squared Mahalanobis distance of its innovation, reject everything above a $\chi^2$ threshold, and choose among the survivors. **Gating and the association algorithms — nearest neighbour, GNN, JPDA, MHT — are defined in §8.5 below and are not repeated here**; the only difference is what a mistake costs. *Example:* the accepted row of the Worked case is an association decision, $d^2 = 0.0036$ against a gate of 9. *Non-example:* the rejected row fused anyway is a wrong $c_k$; in SLAM the same mistake inserts a factor tied to the wrong landmark, and least squares bends the whole map to satisfy it rather than reporting a conflict. A tracker recovers from a swap after a few frames. A map does not recover from a false loop closure, which is why the front end's gate is a mapping decision and not a bookkeeping detail.
+That last substitution is the whole risk. The machinery for making the choice safely is the same for a landmark here and for a tracked object in §8.5: score each candidate by the squared Mahalanobis distance of its innovation, reject everything above a $\chi^2$ threshold ([[02-foundations/probability|3. Probability §6]]), and choose among the survivors. **Gating (§8.5.2) and the association algorithms — nearest neighbour, GNN, JPDA, MHT (§8.5.3) — are defined there and are not repeated here**; the only difference is what a mistake costs. *Example:* the accepted row of the Worked case is an association decision, $d^2 = 0.0036$ against a gate of 9. *Non-example:* the rejected row fused anyway is a wrong $c_k$; in SLAM the same mistake inserts a factor tied to the wrong landmark, and least squares bends the whole map to satisfy it rather than reporting a conflict. A tracker recovers from a swap after a few frames. A map does not recover from a false loop closure, which is why the front end's gate is a mapping decision and not a bookkeeping detail.
 
 A SLAM **front end** extracts features ([[04-robotics/geometric-perception-calibration|3.5 §2.5]]) or geometric constraints and performs data association. The **back end** optimizes poses, landmarks, and sometimes calibration variables — as a nonlinear least squares problem over the graph, solved by Gauss–Newton or Levenberg–Marquardt, which is what "we optimize with Ceres/g2o/GTSAM" means ([[02-foundations/optimization|4. Optimization §3.5]]). Loop closure can correct accumulated drift, but a false closure can corrupt the entire map.
 
@@ -452,6 +456,16 @@ which is the random walk of [[02-foundations/probability|3. Probability §5]]. H
 - **Loop closure** is a measurement between the current pose $x_j$ and a much earlier pose $x_i$ ($j \gg i$), produced when the front end recognizes a place it has already seen. It enters the back end as one more relative factor, the pose of $x_j$ expressed in $x_i$'s frame ([[02-foundations/se3-geometry|8. SE(3) §3]]):
 $$z_{ij} \approx x_i^{-1} x_j$$
 Because it links the two ends of a long chain, least squares redistributes the accumulated drift along the whole loop, as in §5's example where a 0.2 m disagreement spread over all three edges. A **false** closure is the same factor between two places that merely look alike.
+
+> [!warning] "Drift-free" and "loop closure" are claims about different things
+> Loop closure removes accumulated drift *only along paths that return to a previously visited
+> place*. A robot that drives out and never comes back gets no correction from it, and its
+> error grows the whole way — which is exactly the construction-site case, where the machine
+> follows the work face outward. When a paper reports drift as a percentage of trajectory
+> length, check whether the trajectory contained loops, because that single fact can change
+> the number by an order of magnitude.
+
+### 7.2 Odometry front ends: VO, VIO, LO, LIO, preintegration and deskewing
 
 **The odometry family you will actually meet.** Almost every 2023–2026 field-robotics system
 paper names its front end by acronym and assumes you know what the letters buy. They differ
@@ -480,7 +494,9 @@ $\operatorname{Exp}$ turns a rotation vector into a rotation matrix ([[02-founda
 $$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
 so every point is placed where it would have been seen had the whole sweep been instantaneous. *Example:* a robot moving at 1 m/s with a 0.1 s sweep travels 0.1 m between the first and last points, so without deskewing a flat wall appears offset by up to 10 cm across one scan.
 
-**Keyframes** are the other structural idea: rather than optimize every frame, the back end
+### 7.3 Keyframes, marginalization, and the information matrix
+
+**Keyframes** are the back end's structural idea: rather than optimize every frame, the back end
 keeps a sparse subset and marginalizes the rest, which is what keeps the problem bounded as
 the session grows.
 
@@ -505,13 +521,7 @@ so large entries mean tight knowledge, the opposite of covariance. Three propert
 $$\Lambda = \begin{pmatrix}2&-1&0\\-1&2&-1\\0&-1&1\end{pmatrix}, \qquad \Sigma = \Lambda^{-1} = \begin{pmatrix}1&1&1\\1&2&2\\1&2&3\end{pmatrix}$$
 $\Lambda_{02} = 0$ says $x_0$ and $x_2$ are independent once $x_1$ is known, even though $\Sigma_{02} = 1$ shows they are correlated. The variances grow 1, 2, 3 along the chain, which is drift. Marginalizing $x_1$ with $A = 2$, $B = (-1, -1)$ and $C = \operatorname{diag}(2, 1)$ gives $S = \begin{pmatrix}1.5&-0.5\\-0.5&0.5\end{pmatrix}$. The zero has filled in, and $S^{-1} = \begin{pmatrix}1&1\\1&3\end{pmatrix}$ equals the $(x_0, x_2)$ block of $\Sigma$, as it must.
 
-> [!warning] "Drift-free" and "loop closure" are claims about different things
-> Loop closure removes accumulated drift *only along paths that return to a previously visited
-> place*. A robot that drives out and never comes back gets no correction from it, and its
-> error grows the whole way — which is exactly the construction-site case, where the machine
-> follows the work face outward. When a paper reports drift as a percentage of trajectory
-> length, check whether the trajectory contained loops, because that single fact can change
-> the number by an order of magnitude.
+### 7.4 Map representations: TSDF, ESDF, and what a map does not store
 
 **Distance-field maps.** Beyond the occupancy grid of
 [[04-robotics/planning-decision-making|4. Planning §2]], mapping systems commonly store a
@@ -559,20 +569,26 @@ Here $\lVert e\rVert^2_{P} = e^\top P^{-1}e$, so each term is weighted by its ow
 
 A multi-object tracker runs one filter per object, and before any filter can update it must decide which of this frame's detections belongs to which track, which are new objects, and which are clutter.
 
-**Why this is harder than one filter.** §4–§6 assumed the measurement came from the state being estimated. With many objects that assumption becomes a decision made every frame, under four complications:
+This section is a self-contained unit, and its main line is §8.5.1–§8.5.3: why many objects turn the origin of each measurement into a decision, the gate that rules pairs out, and the assignment among the pairs that survive, worked on one example. §8.5.4–§8.5.6 are what a tracking paper builds around that core: track life cycles, detector-based trackers and their scores, and the pitfalls to check.
+
+#### 8.5.1 Why tracking many objects is harder than running one filter
+
+§4–§6 assumed the measurement came from the state being estimated. With many objects that assumption becomes a decision made every frame, under four complications:
 
 - the number of objects is unknown and changes as they enter and leave;
 - some detections are **clutter** (false alarms) that belong to no object;
 - a real object can go **undetected** — occluded, or simply missed;
 - nothing labels which detection came from which object.
 
-The SLAM front end of §7 faces the same correspondence problem with landmarks. A wrong answer there corrupts the map; here it swaps identities.
+The SLAM front end of §7.1 faces the same correspondence problem with landmarks. A wrong answer there corrupts the map; here it swaps identities.
 
 **Each track keeps its own filter.** Track $j$ carries a Kalman (or EKF) mean and covariance and predicts where its next detection should land, $\hat z_j = H\hat x_j^-$. The spread around that prediction is the innovation covariance
 
 $$S_j = HP_j^-H^\top + R$$
 
 It is the same matrix inside the §5 gain, since $K = P^-H^\top S^{-1}$. So $S_j$ adds the track's own prediction uncertainty to the sensor noise, and it grows while the track goes unobserved.
+
+#### 8.5.2 Gating: a $\chi^2$ test on each innovation
 
 **Gating throws out implausible pairs.** Score each detection–track pair by the squared Mahalanobis distance of its innovation — the miss measured in units of the track's own spread $S_j$, which is Euclidean distance after whitening ([[02-foundations/probability|3. Probability §6]]) — and keep the pair only below a threshold $\gamma$:
 
@@ -582,6 +598,8 @@ The threshold comes from a table because, for a correct pair under the linear-Ga
 
 - The gate is an **ellipse shaped by $S_j$**, not a circle. A track uncertain along its direction of travel accepts detections farther ahead of it than beside it.
 - Gating does two jobs. It rejects clutter, and it makes association cheap, because most pairs never enter it. A rectangular gate is sometimes run first as a coarser, cheaper screen.
+
+#### 8.5.3 Association: greedy, GNN, JPDA, MHT and random-set filters
 
 **Association decides who gets which detection.**
 
@@ -593,25 +611,10 @@ since the first constraint gives each track exactly one detection and the second
 - **MHT** (multiple hypothesis tracking; Reid 1979) keeps several association histories alive across frames, lets later data decide between them, and prunes the hypothesis tree to stay tractable.
 - **Random-finite-set filters** such as the PHD filter (Mahler 2003) treat the whole collection of objects as one random set and propagate its first moment — a density whose integral over any region is the expected number of objects in that region. They estimate how many objects there are and where, without carrying per-object identities.
 
-**Track management gives tracks a life cycle.** A detection outside every gate starts a **tentative** track. It is **confirmed** once associated in M of the last N frames, and a confirmed track is **deleted** after too many consecutive misses. M and N trade confirmation delay against false tracks. If each frame independently associates with probability $p$, the chance of at least $M$ associations in $N$ frames is the binomial tail, because each of the $\binom{N}{k}$ arrangements of $k$ hits has probability $p^k(1-p)^{N-k}$:
-$$P(\text{confirm}) = \sum_{k=M}^{N} \binom{N}{k} p^k (1-p)^{N-k}$$
-With 2-of-3, a real object detected with probability 0.9 per frame confirms within three frames with probability $0.972$: it needs at least two detections in three, so $3\cdot0.9^2\cdot0.1 + 0.9^3 = 0.243 + 0.729$. A clutter blob that reappears in the gate with probability 0.1 per frame confirms with probability $0.028$, from $3\cdot0.1^2\cdot0.9 + 0.1^3 = 0.027 + 0.001$.
-
-**How detector-based trackers use the same skeleton.** Most vision tracking today is tracking-by-detection. SORT (Bewley et al., ICIP 2016) runs a constant-velocity Kalman filter on each bounding box and the Hungarian algorithm on an IoU cost, with a minimum-IoU cutoff in place of a χ² gate. **IoU** (intersection over union, defined in [[02-foundations/ml-practice|9. ML Practice §3]]) is $|A\cap B|/|A\cup B|$ for two boxes $A$ and $B$: two 2×2 boxes offset by 1 along $x$ share area 2 out of a union of 6, so IoU $= 1/3$, and offset by 2 they share nothing, so IoU $= 0$. DeepSORT (Wojke et al., ICIP 2017) adds an appearance embedding from a re-identification network alongside Mahalanobis gating, so a person who reappears after occlusion can keep their identity.
-
-**How tracking is scored.** Two metrics dominate, and they weight identity very differently.
-
-- **MOTA** (Bernardin & Stiefelhagen 2008) is $1 - \sum(\mathrm{FN}+\mathrm{FP}+\mathrm{IDSW})/\sum \mathrm{GT}$ over all frames, which makes it detection-dominated: 50 misses, 30 false positives and 20 **identity switches** over 1000 ground-truth boxes give MOTA $= 0.90$, and the switches cost only 0.02 of it. Per frame $t$, $\mathrm{FN}_t$ counts ground-truth objects with no matched hypothesis, $\mathrm{FP}_t$ hypotheses matched to no object, $\mathrm{IDSW}_t$ objects whose matched track ID differs from the one they had last time they were matched, and $\mathrm{GT}_t$ ground-truth objects:
-$$\text{MOTA} = 1 - \frac{\sum_t (\mathrm{FN}_t + \mathrm{FP}_t + \mathrm{IDSW}_t)}{\sum_t \mathrm{GT}_t}$$
-Because errors are summed without a cap, MOTA is not a fraction in $[0,1]$. *Non-example:* 1200 false positives on 1000 ground-truth boxes give MOTA $= -0.2$.
-- **HOTA** (Luiten et al., IJCV 2021) is the geometric mean of a detection score and an association score, averaged over localization thresholds, so association failures cannot hide behind good detection. At a localization threshold $\alpha$ (the IoU a detection needs to count as matched), with TP, FN and FP the matched, missed and false detections:
-$$\text{HOTA}_\alpha = \sqrt{\text{DetA}_\alpha \cdot \text{AssA}_\alpha}, \qquad \text{DetA}_\alpha = \frac{|\text{TP}|}{|\text{TP}| + |\text{FN}| + |\text{FP}|}, \qquad \text{AssA}_\alpha = \frac{1}{|\text{TP}|}\sum_{c\in\text{TP}} \frac{|\text{TPA}(c)|}{|\text{TPA}(c)| + |\text{FNA}(c)| + |\text{FPA}(c)|}$$
-For each true positive $c$, TPA$(c)$ are the true positives with the same ground-truth ID and the same predicted ID as $c$, FNA$(c)$ the detections of that ground-truth ID given another or no predicted ID, and FPA$(c)$ the detections with that predicted ID on another or no ground-truth object; HOTA averages $\text{HOTA}_\alpha$ over $\alpha = 0.05, 0.10, \dots, 0.95$. *Example:* 90 TP, 10 FN and 10 FP give DetA $= 0.818$; if associations average an overlap of only 0.5, HOTA$_\alpha = \sqrt{0.818 \cdot 0.5} = 0.64$, so poor identity keeping pulls the score down even with good detection.
-
 > [!example] Worked example · 계산 예제
 > **Two tracks, three detections, 2-D positions in metres.** T1 predicts $\hat z_1 = (0, 0)$ with $S_1 = I$. T2 predicts $\hat z_2 = (4, 0)$ with $S_2 = \mathrm{diag}(4, 1)$: it is moving along $x$ and uncertain in that direction. Detections are D1 $= (1, 0)$, D2 $= (-1, 1)$, D3 $= (1, 4)$.
 > - *Distance matrix $d^2$.* T1 to D1, D2, D3: $1.00,\ 2.00,\ 17.00$. T2 to D1, D2, D3: $2.25,\ 7.25,\ 18.25$. For T2–D1 the innovation is $(-3, 0)$, so $d^2 = 9/4 = 2.25$ although the plain distance is 3 m.
-> - *Gate at 9.21.* D3 fails both gates, so it is clutter or a new object and starts a tentative track. Four pairs survive.
+> - *Gate at 9.21.* D3 fails both gates, so it is clutter or a new object and starts a tentative track (§8.5.4). Four pairs survive.
 > - *Brute-force assignment.* Of the six ways to give the tracks distinct detections, two pass the gate: {T1–D1, T2–D2} costs $1 + 7.25 = 8.25$, and {T1–D2, T2–D1} costs $2 + 2.25 = 4.25$. GNN picks the second.
 > - *Greedy.* $1.00$ is the smallest entry, so greedy commits T1–D1 first. That leaves T2 only D2, at $7.25$ close to its gate edge, for a total of $8.25$ — the less likely assignment.
 > - *JPDA on the same numbers*, assuming both tracks are detected and nothing else falls in the gates: the two joint events are weighted $e^{-8.25/2} : e^{-4.25/2}$, which normalizes to $0.119 : 0.881$. Weighting T1's two detections by its own likelihoods alone would instead give D1 $0.622$ — the joint constraint is what reverses the preference.
@@ -645,6 +648,27 @@ for (t, d), v in sorted(d2.items(), key=lambda kv: kv[1]):
         used.add(d)
 print("greedy:", sum(d2[p] for p in greedy), greedy)
 ```
+
+#### 8.5.4 Track management: tentative, confirmed, deleted
+
+**Track management gives tracks a life cycle.** A detection outside every gate starts a **tentative** track. It is **confirmed** once associated in M of the last N frames, and a confirmed track is **deleted** after too many consecutive misses. M and N trade confirmation delay against false tracks. If each frame independently associates with probability $p$, the chance of at least $M$ associations in $N$ frames is the binomial tail, because each of the $\binom{N}{k}$ arrangements of $k$ hits has probability $p^k(1-p)^{N-k}$:
+$$P(\text{confirm}) = \sum_{k=M}^{N} \binom{N}{k} p^k (1-p)^{N-k}$$
+With 2-of-3, a real object detected with probability 0.9 per frame confirms within three frames with probability $0.972$: it needs at least two detections in three, so $3\cdot0.9^2\cdot0.1 + 0.9^3 = 0.243 + 0.729$. A clutter blob that reappears in the gate with probability 0.1 per frame confirms with probability $0.028$, from $3\cdot0.1^2\cdot0.9 + 0.1^3 = 0.027 + 0.001$.
+
+#### 8.5.5 Tracking by detection, and how tracking is scored
+
+**How detector-based trackers use the same skeleton.** Most vision tracking today is tracking-by-detection. SORT (Bewley et al., ICIP 2016) runs a constant-velocity Kalman filter on each bounding box and the Hungarian algorithm on an IoU cost, with a minimum-IoU cutoff in place of a χ² gate. **IoU** (intersection over union, defined in [[02-foundations/ml-practice|9. ML Practice §3]]) is $|A\cap B|/|A\cup B|$ for two boxes $A$ and $B$: two 2×2 boxes offset by 1 along $x$ share area 2 out of a union of 6, so IoU $= 1/3$, and offset by 2 they share nothing, so IoU $= 0$. DeepSORT (Wojke et al., ICIP 2017) adds an appearance embedding from a re-identification network alongside Mahalanobis gating, so a person who reappears after occlusion can keep their identity.
+
+**How tracking is scored.** Two metrics dominate, and they weight identity very differently.
+
+- **MOTA** (Bernardin & Stiefelhagen 2008) is $1 - \sum(\mathrm{FN}+\mathrm{FP}+\mathrm{IDSW})/\sum \mathrm{GT}$ over all frames, which makes it detection-dominated: 50 misses, 30 false positives and 20 **identity switches** over 1000 ground-truth boxes give MOTA $= 0.90$, and the switches cost only 0.02 of it. Per frame $t$, $\mathrm{FN}_t$ counts ground-truth objects with no matched hypothesis, $\mathrm{FP}_t$ hypotheses matched to no object, $\mathrm{IDSW}_t$ objects whose matched track ID differs from the one they had last time they were matched, and $\mathrm{GT}_t$ ground-truth objects:
+$$\text{MOTA} = 1 - \frac{\sum_t (\mathrm{FN}_t + \mathrm{FP}_t + \mathrm{IDSW}_t)}{\sum_t \mathrm{GT}_t}$$
+Because errors are summed without a cap, MOTA is not a fraction in $[0,1]$. *Non-example:* 1200 false positives on 1000 ground-truth boxes give MOTA $= -0.2$.
+- **HOTA** (Luiten et al., IJCV 2021) is the geometric mean of a detection score and an association score, averaged over localization thresholds, so association failures cannot hide behind good detection. At a localization threshold $\alpha$ (the IoU a detection needs to count as matched), with TP, FN and FP the matched, missed and false detections:
+$$\text{HOTA}_\alpha = \sqrt{\text{DetA}_\alpha \cdot \text{AssA}_\alpha}, \qquad \text{DetA}_\alpha = \frac{|\text{TP}|}{|\text{TP}| + |\text{FN}| + |\text{FP}|}, \qquad \text{AssA}_\alpha = \frac{1}{|\text{TP}|}\sum_{c\in\text{TP}} \frac{|\text{TPA}(c)|}{|\text{TPA}(c)| + |\text{FNA}(c)| + |\text{FPA}(c)|}$$
+For each true positive $c$, TPA$(c)$ are the true positives with the same ground-truth ID and the same predicted ID as $c$, FNA$(c)$ the detections of that ground-truth ID given another or no predicted ID, and FPA$(c)$ the detections with that predicted ID on another or no ground-truth object; HOTA averages $\text{HOTA}_\alpha$ over $\alpha = 0.05, 0.10, \dots, 0.95$. *Example:* 90 TP, 10 FN and 10 FP give DetA $= 0.818$; if associations average an overlap of only 0.5, HOTA$_\alpha = \sqrt{0.818 \cdot 0.5} = 0.64$, so poor identity keeping pulls the score down even with good detection.
+
+#### 8.5.6 Pitfalls, and tracking on a construction site
 
 **Pitfalls, and what to check in a tracking paper.**
 
@@ -700,7 +724,7 @@ You should be able to:
 2. Recompute the example if the sensor variance is $16\,\mathrm{cm}^2$.
 3. Why is global localization a natural particle-filter problem?
 4. What experiment would support a claim of robustness to construction-site vibration?
-5. In the §8.5 example, set $S_2 = I$. Recompute T2's distances, apply the gate, and compare GNN with greedy.
+5. In the §8.5.3 example, set $S_2 = I$. Recompute T2's distances, apply the gate, and compare GNN with greedy.
 6. A tracker paper swaps in a new detector, MOTA rises from 0.80 to 0.82 over 10,000 ground-truth boxes, and the paper claims better tracking. What else do you need to see?
 
 > [!tip]- Answers
@@ -793,10 +817,10 @@ for q in (0.25, 0.5, 1.0, 2.0, 4.0):    # sweep: Q = q, R = 1
 > 판단한다. 필터·번들 조정의 완전한 구현은 실무/숙달 단계의 주제다.
 
 > [!note] 선수 지식
-> [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/optimization|최적화]] · [[02-foundations/signal-processing|신호처리]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]]
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P5**, **P6** · [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]](§5의 스칼라 칼만 필터, §6의 마할라노비스 거리와 $\chi^2$ 게이트) · [[02-foundations/optimization|최적화]] · [[02-foundations/signal-processing|신호처리]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]]
 
 > [!note] 처음이라면 · First pass
-> 먼저 §2 — 아무도 구분하지 않는 네 단어 — 그다음 §4의 예측·보정 루프, 그다음 §6에서 1차원 갱신을 손으로. §5·§7·§8은 참고서 쪽 절반이니 특정 논문을 놓고 펴라.
+> 그림과 계산 절부터 본다. P5 위의 예측·보정·게이트 한 순환이 숫자 전부와 함께 있다. 그다음 §1–§4를 차례로(루프, 아무도 구분하지 않는 네 단어, 두 모델, 예측과 보정), §6에서 갱신을 손으로, §7.1에서 SLAM 사후 분포와 연관이 왜 무너지는 자리인지를 읽는다. §5, §7.2–§7.4, §8은 참고서 쪽 절반이니 특정 논문을 놓고 펴라. §8.5는 다중 물체 추적을 다루는 독립 단위라서 두 번째 읽기나 추적 논문을 읽을 때 편다. §9는 어느 논문의 평가를 읽든 들고 갈 점검표다.
 
 ### 계속 쓰는 대상: P6의 시계 위에 놓인 P5의 패널
 
@@ -978,32 +1002,32 @@ P5의 거리 축 위에 센티미터 축척대로 그린 예측·보정·게이�
 
 카탈로그 자신의 갱신이 남긴 belief에서 출발한다: $\hat x = 11.6\,\mathrm{cm}$, $P = 0.8\,\mathrm{cm}^2$(P5의 스칼라 칼만 스텝, §6에 다시 나온다). P6의 시계로 한 스텝이 지나고 새 거리 측정이 온다.
 
-**1. 예측.** 운동 모델은 $f(x, u) = x - u\Delta t$ 이고(패널로 다가가면 거리가 줄어든다) $u\Delta t = 1\,\mathrm{cm}$ 이므로 $A = 1$ 이다. §5의 예측 식은
+**1. 예측.** 운동 모델은 $f(x, u) = x - u\Delta t$ 이고(패널로 다가가면 거리가 줄어든다) $u\Delta t = 1\,\mathrm{cm}$ 이므로 상태 전이 계수는 $A = 1$ 이다. [[02-foundations/probability|3. 확률 §5]]의 예측 식(아래 §5에 다시 나온다)은
 
 $$\hat x^- = 11.6 - 1 = 10.6\ \mathrm{cm}, \qquad P^- = 1^2 \times 0.8 + 1 = 1.8\ \mathrm{cm}^2$$
 
 $A = 1$ 이 분산을 그대로 통과시키고, 독립인 과정 잡음 $Q$ 가 자기 몫 $1\,\mathrm{cm}^2$ 를 그 위에 더하기 때문이다.
 
-**2. Innovation 공분산과 이득 — 측정을 보기 전에.** $H = 1$ 이면
+**2. Innovation 공분산과 이득 — 측정을 보기 전에.** 센서가 거리 자체를 읽으므로 $H = 1$ 이고, [[02-foundations/probability|3. 확률 §5]]의 innovation 공분산과 칼만 이득은
 
 $$S = P^- + R = 1.8 + 1 = 2.8\ \mathrm{cm}^2, \qquad \sqrt{S} = 1.673\ \mathrm{cm}, \qquad K = \frac{P^-}{S} = \frac{1.8}{2.8} = 0.6429$$
 
 $S$ 에도 $K$ 에도 $z$ 가 들어 있지 않으므로 둘은 모델만으로 정해진다. 아래 게이트를 측정이 도착하기 전에 그릴 수 있는 이유가 그것이다.
 
-**3. 게이트.** Innovation의 제곱 마할라노비스 거리는 $d^2 = y^2/S$ 다(게이트의 완전한 정의와 문턱이 나오는 $\chi^2$ 표는 §8.5에 있다. 여기서 다시 유도하지 않는다). 1차원에서 3-σ 게이트는 $d^2 < 9$, 같은 말로 $|y| < 3\sqrt{S} = 5.02\,\mathrm{cm}$ 다.
+**3. 게이트.** Innovation의 제곱 마할라노비스 거리는 $d^2 = y^2/S$ 다. 빗나간 정도를 예측된 자기 퍼짐의 단위로 잰 것이다. 연관이 옳으면 이것은 자유도 1의 $\chi^2$ 분포를 따르고, 문턱은 거기서 나온다([[02-foundations/probability|3. 확률 §6]]). 여러 물체에 대한 게이트는 §8.5.2가 짓는다. 1차원에서 3-σ 게이트는 $d^2 < 9$, 같은 말로 $|y| < 3\sqrt{S} = 5.02\,\mathrm{cm}$ 다.
 
 | 후보 | $y = z - \hat x^-$ | $d^2 = y^2/S$ | 3-σ 게이트 | $\hat x^+ = \hat x^- + Ky$ | $P^+ = (1-K)P^-$ |
 |---|---:|---:|---|---:|---:|
 | 패널, $z = 10.5$ | $-0.100$ | $0.0036$ | 통과 | $10.536$ | $0.6429$ |
 | 통행인, $z = 18$ | $+7.400$ | $19.557$ | 기각 | $15.357$ | $0.6429$ |
 
-**4. 틀린 연관의 비용을, 필터 자신의 단위로.** 통행인을 그래도 융합하면 추정값은 패널을 $15.357 - 10.5 = 4.857\,\mathrm{cm}$ 지나친 자리에 놓이면서 $P^+ = 0.6429\,\mathrm{cm}^2$ 를 보고한다. §2의 일관성 검사가 그것을 숫자 하나로 바꾼다. 그 추정값의 NEES는
+**4. 틀린 연관의 비용을, 필터 자신의 단위로.** 통행인을 그래도 융합하면 추정값은 패널을 $15.357 - 10.5 = 4.857\,\mathrm{cm}$ 지나친 자리에 놓이면서 $P^+ = 0.6429\,\mathrm{cm}^2$ 를 보고한다. §2의 일관성 검사가 그것을 숫자 하나로 바꾼다. 그 추정값의 NEES(normalized estimation error squared: 참 오차의 제곱을 필터가 보고한 분산으로 나눈 것, §2가 정의한다)는
 
 $$\epsilon = \frac{(10.5 - 15.357)^2}{0.6429} = 36.7$$
 
 일관된 1차원 필터는 $\epsilon \approx 1$ 을 평균하므로, $36.7$ 은 넓은 belief 안의 큰 오차가 아니라 틀린 장소에 대한 확신이다. 그 거리까지 몰고 간 도구는 접촉을 예상한 지점보다 $4.9\,\mathrm{cm}$ 먼저 패널에 부딪힌다. 표의 두 행을 가르는 것은 공분산이 아니라 게이트다. 두 행이 똑같은 $P^+$ 를 보고하기 때문이다.
 
-**5. 손으로 해 볼 만한 확인 하나.** Joseph 형태 $P^+ = (1-K)^2P^- + K^2R$ 도 $0.6429$ 를 주는데, 최적 $K$ 에서는 $(1-K)P^-$ 와 반드시 같아야 한다. 둘이 어긋나는 것은 쓰는 이득이 최적이 아닐 때뿐이고, Joseph 형태가 추가 계산값을 하는 것도 바로 그때다.
+**5. 손으로 해 볼 만한 확인 하나.** Joseph 형태 $P^+ = (1-K)^2P^- + K^2R$ 는 오차에서 곧바로 나온다. 측정 잡음을 $v$ 라 하면 새 오차는 $x - \hat x^+ = (1-K)(x - \hat x^-) - Kv$ 이고, 서로 독립인 두 항이므로 분산이 더해진다. 이것도 $0.6429$ 를 주는데, 최적 $K$ 에서는 $(1-K)P^-$ 와 반드시 같아야 한다. 둘이 어긋나는 것은 쓰는 이득이 최적이 아닐 때뿐이고($K = 0.5$ 면 $0.70$ 대 $0.90$ 이고, 참 분산은 $0.70$ 쪽뿐이다), Joseph 형태가 추가 계산값을 하는 것도 바로 그때다.
 
 ### 1. 로봇 루프 안에서의 위치
 
@@ -1177,7 +1201,7 @@ $$\sum_k \lVert h_k(G \cdot X_k) - z_k \rVert^2_{\Sigma_k} = \sum_k \lVert h_k(X
 그래서 최소점은 한 점이 아니라 해의 한 족이 되고, pose 하나에 prior factor를 걸면 없어진다. *예:* 1차원 pose $x_0, x_1, x_2$, $x_0 = 0$ 을 고정하는 prior, 오도메트리 $x_1 - x_0 = 1$ 과 $x_2 - x_1 = 1$, loop closure $x_2 - x_0 = 1.8$, 모두 단위 분산. 오도메트리만 보면 $x_2 = 2$ 다. 최소자승은 $x_1 = 0.933$, $x_2 = 1.867$ 을 주어 0.2 m의 불일치를 세 제약에 $-0.067$, $-0.067$, $+0.067$ 의 잔차로 나눈다. *반례:* prior를 빼면 $(x_0, x_1, x_2) = (5, 5.933, 6.867)$ 이 정확히 같은 상대 잔차와 같은 비용을 갖는다. 그 평행 이동이 게이지다.
 
 > [!note] 필터와 스무더는 같은 갱신 · Filter and smoother are one update
-> Gauss–Newton과 주변화가 처음이라면 이 노트는 건너뛰고 둘이 나오는 §7을 읽은 뒤 돌아오라. 표의 마지막 줄은 위의 줄들과 다른 주제처럼 보인다. 아니다. 그래프 back end는 $A\,\Delta x = b$를 반복해서 풀어 보정량을 구하고 그것을 현재 추정값에 더한다. 사전 평균에서 시작한 그 비용의 Gauss–Newton 한 스텝이 EKF 갱신이고, 그것을 반복하면 정확히 iterated EKF다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보 형태로 정리했을 뿐이다. 두 계열을 가르는 것은 solver가 아니라 어떤 변수를 남기고 어떤 변수를 marginalize하는가다. 필터는 가장 최근 상태만 들고 가고, 스무더는 궤적을 남긴다. 필터 경우는 Bell과 Cathey가 증명했고([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)), [Bell(1994)](https://doi.org/10.1137/0804035)가 스무더까지 확장했다.
+> Gauss–Newton과 주변화가 처음이라면 이 노트는 건너뛰고 둘이 나오는 §7.1과 §7.3을 읽은 뒤 돌아오라. 표의 마지막 줄은 위의 줄들과 다른 주제처럼 보인다. 아니다. 그래프 back end는 $A\,\Delta x = b$를 반복해서 풀어 보정량을 구하고 그것을 현재 추정값에 더한다. 사전 평균에서 시작한 그 비용의 Gauss–Newton 한 스텝이 EKF 갱신이고, 그것을 반복하면 정확히 iterated EKF다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보 형태로 정리했을 뿐이다. 두 계열을 가르는 것은 solver가 아니라 어떤 변수를 남기고 어떤 변수를 marginalize하는가다. 필터는 가장 최근 상태만 들고 가고, 스무더는 궤적을 남긴다. 필터 경우는 Bell과 Cathey가 증명했고([IEEE Trans. Automatic Control, 1993](https://doi.org/10.1109/9.250476)), [Bell(1994)](https://doi.org/10.1137/0804035)가 스무더까지 확장했다.
 
 ### 6. 계산 예제: 1차원 갱신
 
@@ -1195,7 +1219,7 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{cm}$$
 
 **계산 없이 가정 하나를 바꿔 본다.** 측정이 훨씬 부정확하면 이득이 줄고 추정은 예측에 가까이 남아야 한다. 측정이 이미 예측에 들어간 정보를 재사용한다면 상관을 모델링하지 않은 이 식은 증거를 중복 계산한다. 0.8과 11.6을 외우기보다 변화 방향을 예측하는 것이 더 좋은 첫 이해 확인이다.
 
-**계산: 카탈로그 갱신 뒤의 P5, 그다음 틀린 연관.** 단위 센티미터. 위 갱신 뒤 belief는 $11.6$, $P=0.8$([[02-foundations/lab-plants|0.6]]). P2가 패널로 도구를 나르고, 이 거리가 그 패널이다. $Q=1$로 $1\,\mathrm{cm}$ 전진을 예측하면 $x=10.6$, $P=1.8$. 혁신 $\sigma=\sqrt{P+R}=\sqrt{2.8}=1.67\,\mathrm{cm}$, 3-σ 게이트는 $5.0\,\mathrm{cm}$. $z=10.5$는 예측에서 $0.1\,\mathrm{cm}$로 게이트 안: $K=1.8/2.8=0.643$, $\hat x=10.536$, $P=0.643$. 통행인 $z=18$은 예측에서 $7.4\,\mathrm{cm}$로 게이트 밖: 기각. 그래도 넣으면 $\hat x=15.36$에 $P$는 그대로 $0.643$ — 확신하고 5 cm 멀고, 그 거리까지 몰고 간 도구는 접촉을 예상한 지점보다 5 cm 먼저 패널에 부딪힌다. 연관은 공분산 질문이 아니다. 차이는 전부 게이트에서 난다. 과제는 이 순환을 그림과 템플릿으로 묻는 것이다.
+**계산: 카탈로그 갱신 뒤의 P5.** 이 숫자들이 P5의 카탈로그 갱신이고([[02-foundations/lab-plants|0.6]]), 그것이 남기는 belief, 곧 $11.6\,\mathrm{cm}$ 와 $P = 0.8\,\mathrm{cm}^2$ 가 페이지 맨 위 계산 절의 출발점이다. 계산 절은 다음 스텝(예측, 게이트, 보정)을 돌리고 틀린 연관의 값을 매기며, 과제는 두 스텝을 더 돌린다.
 
 ### 7. Odometry, localization, mapping, SLAM
 
@@ -1205,6 +1229,10 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{cm}$$
 | Localization | 지도 | 지도 안의 로봇 pose |
 | Mapping | 로봇 pose들 | 지도 구조 |
 | SLAM | 어느 쪽도 완전히 모름 | 궤적과 지도를 동시에 |
+
+이 절의 본줄기는 §7.1이다. 표의 각 행은 하나의 사후 분포이고, SLAM 사후 분포는 그래프로 인수분해되며, 어느 센서도 보고하지 않는 변수 하나, 곧 data association이 SLAM이 무너지는 자리다. §7.2–§7.4는 논문이 설명 없이 이름만 대는 기구들이다. 오도메트리 front end와 그것들이 공유하는 IMU 기법(§7.2), back end가 옛 상태를 주변화해 크기를 유한하게 지키는 방법(§7.3), 지도가 무엇을 저장하는가(§7.4).
+
+### 7.1 SLAM 사후 분포, data association, loop closure
 
 **네 문제를 사후 분포로.** 각 행은 서로 다른 조건부 분포이고, 그것이 이 표를 정확하게 만든다. 궤적을 $x_{1:t}$, 지도를 $m$(예를 들어 landmark 위치 $m = \{m_1, \dots, m_N\}$), 측정을 $z_{1:t}$, 입력을 $u_{1:t}$ 로 쓴다.
 - **Localization**은 알려진 지도에 조건부다: $p(x_t \mid z_{1:t}, u_{1:t}, m)$.
@@ -1225,7 +1253,7 @@ $$p(x_{0:t}, m \mid z_{1:t}, u_{1:t}) \propto p(x_0) \prod_{k=1}^t p(x_k \mid x_
 $$p(x_{0:t}, m \mid z_{1:t}, u_{1:t}) = \sum_{c_{1:t}} p(x_{0:t}, m, c_{1:t} \mid z_{1:t}, u_{1:t})$$
 - 실제로 돌아가는 시스템은 거의 전부 그 합을 **최대우도 배정** 하나로 갈음한다. $c_{1:t}$ 를 한 번 딱 정하고 그것이 알려진 값인 양 최적화하는데, 합의 항 수가 지수적이기 때문이다.
 
-마지막 갈음이 위험의 전부다. 그 선택을 안전하게 하는 장치는 여기의 landmark나 §8.5의 추적 대상이나 똑같다: 후보마다 innovation의 제곱 마할라노비스 거리로 점수를 매기고, $\chi^2$ 문턱을 넘는 것을 버리고, 남은 것 중에서 고른다. **게이팅과 연관 알고리즘 — 최근접 이웃, GNN, JPDA, MHT — 의 정의는 아래 §8.5에 있고 여기서 되풀이하지 않는다.** 다른 것은 실수의 대가뿐이다. *예:* 위 계산 예제에서 통과한 행이 association 결정이다. 게이트 9에 대해 $d^2 = 0.0036$ 이었다. *반례:* 기각된 행을 그래도 융합하면 틀린 $c_k$ 이고, SLAM에서 같은 실수는 엉뚱한 landmark에 묶인 factor를 넣는다. 그러면 최소자승은 충돌을 보고하는 대신 지도 전체를 휘어 그 factor를 만족시킨다. 추적기는 몇 프레임이면 뒤바뀐 정체에서 회복한다. 지도는 잘못된 loop closure에서 회복하지 못한다. Front end의 게이트가 장부 정리가 아니라 매핑 결정인 이유가 그것이다.
+마지막 갈음이 위험의 전부다. 그 선택을 안전하게 하는 장치는 여기의 landmark나 §8.5의 추적 대상이나 똑같다: 후보마다 innovation의 제곱 마할라노비스 거리로 점수를 매기고, $\chi^2$ 문턱([[02-foundations/probability|3. 확률 §6]])을 넘는 것을 버리고, 남은 것 중에서 고른다. **게이팅(§8.5.2)과 연관 알고리즘 — 최근접 이웃, GNN, JPDA, MHT(§8.5.3) — 의 정의는 거기 있고 여기서 되풀이하지 않는다.** 다른 것은 실수의 대가뿐이다. *예:* 위 계산 예제에서 통과한 행이 association 결정이다. 게이트 9에 대해 $d^2 = 0.0036$ 이었다. *반례:* 기각된 행을 그래도 융합하면 틀린 $c_k$ 이고, SLAM에서 같은 실수는 엉뚱한 landmark에 묶인 factor를 넣는다. 그러면 최소자승은 충돌을 보고하는 대신 지도 전체를 휘어 그 factor를 만족시킨다. 추적기는 몇 프레임이면 뒤바뀐 정체에서 회복한다. 지도는 잘못된 loop closure에서 회복하지 못한다. Front end의 게이트가 장부 정리가 아니라 매핑 결정인 이유가 그것이다.
 
 SLAM **front end**는 특징([[04-robotics/geometric-perception-calibration|3.5 §2.5]])·기하 제약을 추출하고 data association을 수행한다. **back
 end**는 pose, landmark, 때로는 보정 변수까지 최적화한다 — 그래프 위의 비선형 최소자승 문제로,
@@ -1239,6 +1267,15 @@ $$\sigma_k = \sigma\sqrt{k}$$
 - **Loop closure**는 현재 pose $x_j$ 와 훨씬 이전 pose $x_i$($j \gg i$) 사이의 측정이고, front end가 이미 본 장소를 알아볼 때 생긴다. Back end에는 $x_j$ 를 $x_i$ 프레임으로 쓴 상대 factor 하나로 들어간다([[02-foundations/se3-geometry|8. SE(3) §3]]).
 $$z_{ij} \approx x_i^{-1} x_j$$
 긴 사슬의 양끝을 잇기 때문에, 최소자승은 §5의 예제에서 0.2 m의 불일치를 세 변에 나눈 것처럼 누적 drift를 루프 전체에 재분배한다. **잘못된** closure는 서로 닮았을 뿐인 두 장소 사이의 같은 factor다.
+
+> [!warning] "drift-free"와 "loop closure"는 서로 다른 것에 대한 주장이다
+> Loop closure는 *이전에 방문한 장소로 돌아오는 경로에 한해서만* 누적 drift를 없앤다. 나갔다가
+> 돌아오지 않는 로봇은 아무 보정도 받지 못하고 오차가 가는 내내 자란다 — 그리고 그것이 정확히
+> 건설 현장의 경우다. 기계가 작업면을 따라 바깥으로 나아가기 때문이다. 논문이 drift를 궤적
+> 길이의 백분율로 보고하면, 그 궤적에 루프가 있었는지를 확인하라. 그 사실 하나가 숫자를 한
+> 자릿수 바꿔 놓을 수 있다.
+
+### 7.2 오도메트리 front end: VO, VIO, LO, LIO, preintegration과 deskewing
 
 **실제로 마주칠 오도메트리 계열.** 2023~2026년 필드 로보틱스 시스템 논문은 거의 전부 자기
 front end를 약어로 부르고, 그 글자들이 무엇을 사는지 안다고 전제한다. 차이는 어떤 센서를
@@ -1254,19 +1291,21 @@ front end를 약어로 부르고, 그 글자들이 무엇을 사는지 안다고
 두 경우 모두 **관성**이라는 항이 구체적인 일을 한다: IMU는 밀리초 단위에서 정확하고 분 단위에서
 쓸모없으며, 카메라와 라이다는 그 반대다. 그래서 융합하면 서로의 실패 시간대를 덮어 준다. 논문에
 반복해서 나오는 두 기구를 알아볼 수 있어야 한다: **IMU preintegration** — 두 keyframe 사이의
-IMU 표본 여럿을 하나의 제약으로 요약해서 최적화기가 모든 표본을 지고 가지 않게 하는 것. 회전 벡터를 회전 행렬로 보내는 $\operatorname{Exp}$는 [[02-foundations/se3-geometry|8. 3D 기하 §2]]다. 그리고
+IMU 표본 여럿을 하나의 제약으로 요약해서 최적화기가 모든 표본을 지고 가지 않게 하는 것. 그리고
 **deskewing**, 라이다 스캔이 훑는 *동안* 로봇이 움직였다는 사실을 보정하는 것. 빠른 플랫폼에서
 deskewing을 빠뜨린 논문은 왜곡된 스캔으로 만든 지도를 보고하고 있는 것이다. IMU의 각 오차 항이 얼마나 빨리 자라는지, 곧 "밀리초에는 정확하고 분에는 쓸모없다"의 정량적 형태는 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §3]]에서 유도한다.
 
 **Preintegration과 deskewing을 풀어 쓰면.** IMU는 $\Delta t$ 간격의 표본 $k$ 마다 각속도 $\tilde\omega_k$ 와 비력 $\tilde a_k$ 를 보고하고, 자이로 bias $b_g$ 와 가속도계 bias $b_a$ 가 그것을 오염시킨다. Keyframe $i$ 와 $j$ 사이의 preintegration은 그 표본들을 keyframe $i$ 의 몸체 프레임에서 **상대 운동 증분** 셋으로 합친다(Forster 외, *IEEE T-RO* 2017). $\Delta R_{ik}$ 와 $\Delta v_{ik}$ 는 표본 $k$ 까지의 부분합이다.
 $$\Delta R_{ij} = \prod_{k=i}^{j-1} \operatorname{Exp}\big((\tilde\omega_k - b_g)\Delta t\big), \quad \Delta v_{ij} = \sum_{k=i}^{j-1} \Delta R_{ik}(\tilde a_k - b_a)\Delta t, \quad \Delta p_{ij} = \sum_{k=i}^{j-1} \big[\Delta v_{ik}\Delta t + \tfrac12 \Delta R_{ik}(\tilde a_k - b_a)\Delta t^2\big]$$
-이 증분들은 keyframe $i$ 의 전역 pose, 속도, 중력에 의존하지 않는다. 그것들은 증분을 상태와 비교할 때에만 들어오므로, 합은 한 번 계산해서 최적화기의 모든 반복에서 재사용된다. 나중의 bias 갱신은 다시 합하는 대신 1차 보정으로 적용한다. *예:* 200 Hz의 표본 100개 동안 회전 없이 $x$ 방향 $0.5$ m/s²가 일정하고 bias가 0이면, 0.5 s에 $\Delta v = 0.25$ m/s와 $\Delta p = 0.0625$ m를 준다. 익숙한 $\tfrac12 aT^2$ 다. 두 bias $b_g$와 $b_a$가 어떻게 떠도는지, 그리고 추정기가 그것을 상태로 들고 가게 하는 랜덤 워크 과정 잡음은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §3과 §8]]에 있다.
+$\operatorname{Exp}$는 회전 벡터를 회전 행렬로 보낸다([[02-foundations/se3-geometry|8. 3D 기하 §2]]). 이 증분들은 keyframe $i$ 의 전역 pose, 속도, 중력에 의존하지 않는다. 그것들은 증분을 상태와 비교할 때에만 들어오므로, 합은 한 번 계산해서 최적화기의 모든 반복에서 재사용된다. 나중의 bias 갱신은 다시 합하는 대신 1차 보정으로 적용한다. *예:* 200 Hz의 표본 100개 동안 회전 없이 $x$ 방향 $0.5$ m/s²가 일정하고 bias가 0이면, 0.5 s에 $\Delta v = 0.25$ m/s와 $\Delta p = 0.0625$ m를 준다. 익숙한 $\tfrac12 aT^2$ 다. 두 bias $b_g$와 $b_a$가 어떻게 떠도는지, 그리고 추정기가 그것을 상태로 들고 가게 하는 랜덤 워크 과정 잡음은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §3과 §8]]에 있다.
 
 **Deskewing**은 스윕 도중 시각 $t_k$ 에 잡힌 라이다 점 $p_k$ 를 기준 시각 $t_s$ 의 센서 프레임으로 다시 쓴다. 센서 pose $T(t)$ 는 IMU나 오도메트리에서 보간한다.
 $$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
 그래서 모든 점이 스윕 전체가 순간이었다면 보였을 자리에 놓인다. *예:* 1 m/s로 움직이는 로봇이 0.1 s 스윕을 돌면 첫 점과 마지막 점 사이에 0.1 m를 지나므로, deskewing 없이는 평평한 벽이 한 스캔 안에서 최대 10 cm 어긋나 보인다.
 
-**Keyframe**이 나머지 한 축이다: 모든 프레임을 최적화하는 대신 성긴 부분집합만 남기고 나머지를
+### 7.3 Keyframe, 주변화, 정보 행렬
+
+**Keyframe**이 back end의 구조적 발상이다: 모든 프레임을 최적화하는 대신 성긴 부분집합만 남기고 나머지를
 주변화(marginalize)하며, 그것이 세션이 길어져도 문제 크기를 유한하게 유지하는 방법이다.
 
 *주변화*에는 알아 둘 만한 구체적인 뜻이 있는데, 비용이 가는 곳이 거기이기 때문이다. 정보
@@ -1288,12 +1327,7 @@ $$\Lambda = \Sigma^{-1}, \qquad \xi = \Sigma^{-1}\mu$$
 $$\Lambda = \begin{pmatrix}2&-1&0\\-1&2&-1\\0&-1&1\end{pmatrix}, \qquad \Sigma = \Lambda^{-1} = \begin{pmatrix}1&1&1\\1&2&2\\1&2&3\end{pmatrix}$$
 를 갖는다. $\Lambda_{02} = 0$ 은 $x_1$ 을 알고 나면 $x_0$ 와 $x_2$ 가 독립이라고 말하는데, $\Sigma_{02} = 1$ 은 둘이 상관되어 있음을 보인다. 분산이 사슬을 따라 1, 2, 3으로 자라는 것이 drift다. $A = 2$, $B = (-1, -1)$, $C = \operatorname{diag}(2, 1)$ 로 $x_1$ 을 주변화하면 $S = \begin{pmatrix}1.5&-0.5\\-0.5&0.5\end{pmatrix}$ 이다. 0이 메워졌고, $S^{-1} = \begin{pmatrix}1&1\\1&3\end{pmatrix}$ 은 $\Sigma$ 의 $(x_0, x_2)$ 블록과 같다 — 그래야만 한다.
 
-> [!warning] "drift-free"와 "loop closure"는 서로 다른 것에 대한 주장이다
-> Loop closure는 *이전에 방문한 장소로 돌아오는 경로에 한해서만* 누적 drift를 없앤다. 나갔다가
-> 돌아오지 않는 로봇은 아무 보정도 받지 못하고 오차가 가는 내내 자란다 — 그리고 그것이 정확히
-> 건설 현장의 경우다. 기계가 작업면을 따라 바깥으로 나아가기 때문이다. 논문이 drift를 궤적
-> 길이의 백분율로 보고하면, 그 궤적에 루프가 있었는지를 확인하라. 그 사실 하나가 숫자를 한
-> 자릿수 바꿔 놓을 수 있다.
+### 7.4 지도 표현: TSDF, ESDF, 그리고 지도가 저장하지 않는 것
 
 **거리장 지도.** [[04-robotics/planning-decision-making|4. 계획·의사결정 §2]]의 점유 격자
 너머로, 매핑 시스템은 흔히 **TSDF**(truncated signed distance field)를 쓴다: 일반적인 깊이
@@ -1340,20 +1374,26 @@ $\lVert e\rVert^2_{P} = e^\top P^{-1}e$ 이므로 각 항은 자기 불확실성
 
 다중 물체 추적기는 물체마다 필터를 하나씩 돌리는데, 어느 필터든 갱신하기 전에 이번 프레임의 검출 중 무엇이 어느 트랙의 것이고, 무엇이 새 물체이며, 무엇이 클러터인지부터 정해야 한다.
 
-**필터 하나보다 어려운 이유.** §4–§6은 측정이 추정 중인 상태에서 나왔다고 가정했다. 물체가 여럿이면 그 가정이 매 프레임 내려야 하는 결정이 되고, 네 가지가 겹친다:
+이 절은 독립된 단위이고, 본줄기는 §8.5.1–§8.5.3이다. 물체가 여럿이면 측정 하나하나의 출처가 왜 결정이 되는지, 짝을 걸러 내는 게이트, 살아남은 짝 사이의 할당을 예제 하나로 끝까지 푼다. §8.5.4–§8.5.6은 추적 논문이 그 핵심 둘레에 짓는 것들이다. 트랙의 생애 주기, 검출기 기반 추적기와 그 점수, 확인할 함정.
+
+#### 8.5.1 물체가 여럿이면 필터 하나보다 어려운 이유
+
+§4–§6은 측정이 추정 중인 상태에서 나왔다고 가정했다. 물체가 여럿이면 그 가정이 매 프레임 내려야 하는 결정이 되고, 네 가지가 겹친다:
 
 - 물체 수를 모르고, 물체가 들어오고 나가며 수가 바뀐다;
 - 어떤 검출은 어느 물체에도 속하지 않는 **클러터**(오경보)다;
 - 실제 물체가 가려지거나 그냥 놓쳐서 **검출되지 않을** 수 있다;
 - 어느 검출이 어느 물체에서 왔는지 알려 주는 표지가 없다.
 
-§7의 SLAM front end도 landmark를 두고 같은 대응 문제를 푼다. 거기서 틀리면 지도가 망가지고, 여기서 틀리면 정체(identity)가 뒤바뀐다.
+§7.1의 SLAM front end도 landmark를 두고 같은 대응 문제를 푼다. 거기서 틀리면 지도가 망가지고, 여기서 틀리면 정체(identity)가 뒤바뀐다.
 
 **트랙마다 자기 필터를 가진다.** 트랙 $j$는 칼만(또는 EKF) 평균과 공분산을 들고, 다음 검출이 떨어질 위치 $\hat z_j = H\hat x_j^-$를 예측한다. 그 예측 둘레의 퍼짐이 innovation 공분산이다.
 
 $$S_j = HP_j^-H^\top + R$$
 
 $K = P^-H^\top S^{-1}$이므로 이것은 §5 이득 안에 들어 있던 바로 그 행렬이다. 따라서 $S_j$는 트랙 자신의 예측 불확실성에 센서 잡음을 더한 것이고, 트랙이 관측되지 않는 동안 커진다.
+
+#### 8.5.2 게이팅: innovation마다 하는 $\chi^2$ 검정
 
 **게이팅은 말이 안 되는 짝을 버린다.** 검출–트랙 짝마다 innovation의 제곱 마할라노비스 거리를 매기고 — 빗나간 정도를 트랙 자신의 퍼짐 $S_j$ 단위로 잰 것으로, 백색화한 뒤의 유클리드 거리와 같다([[02-foundations/probability|3. 확률 §6]]) — 문턱 $\gamma$ 아래인 짝만 남긴다:
 
@@ -1363,6 +1403,8 @@ $$d^2_{ij} = (z_i-\hat z_j)^\top S_j^{-1}(z_i-\hat z_j) < \gamma$$
 
 - 게이트는 원이 아니라 **$S_j$가 모양을 정하는 타원**이다. 진행 방향으로 불확실한 트랙은 옆보다 앞쪽으로 더 먼 검출을 받아들인다.
 - 게이팅은 두 가지 일을 한다. 클러터를 거르고, 대부분의 짝이 아예 연관 단계에 들어가지 않으므로 연관을 싸게 만든다. 더 거칠고 싼 사각형 게이트를 먼저 돌리기도 한다.
+
+#### 8.5.3 연관: 탐욕, GNN, JPDA, MHT, 랜덤 집합 필터
 
 **연관은 누가 어느 검출을 가질지 정한다.**
 
@@ -1374,25 +1416,10 @@ $$\min_{a_{ij}\in\{0,1\}} \sum_{(i,j)\ \text{gated}} a_{ij}\, d^2_{ij} \quad \te
 - **MHT**(multiple hypothesis tracking; Reid 1979)는 여러 연관 이력을 프레임을 넘어 살려 두고 뒤의 데이터가 고르게 하며, 감당할 수 있도록 가설 트리를 가지치기한다.
 - PHD 필터(Mahler 2003) 같은 **랜덤 유한 집합 필터**는 물체 전체를 하나의 랜덤 집합으로 보고 그 1차 모멘트를 전파한다 — 어느 영역에서 적분하든 그 영역 안 물체 수의 기댓값이 나오는 밀도다. 물체별 정체를 들고 다니지 않고, 물체가 몇 개이며 어디 있는지를 추정한다.
 
-**트랙 관리는 트랙에 생애 주기를 준다.** 모든 게이트 밖의 검출은 **잠정**(tentative) 트랙을 시작한다. 최근 N 프레임 중 M번 연관되면 **확정**(confirmed)되고, 확정 트랙은 연속으로 너무 많이 놓치면 **삭제**(deleted)된다. M과 N은 확정 지연과 거짓 트랙을 맞바꾼다. 프레임마다 독립적으로 확률 $p$로 연관된다면, $N$ 프레임에서 적어도 $M$번 연관될 확률은 이항 분포의 꼬리다. $k$번 맞는 $\binom{N}{k}$가지 배열이 각각 확률 $p^k(1-p)^{N-k}$를 가지기 때문이다:
-$$P(\text{confirm}) = \sum_{k=M}^{N} \binom{N}{k} p^k (1-p)^{N-k}$$
-2-of-3이라면 프레임마다 0.9 확률로 검출되는 실제 물체는 세 프레임 안에 $0.972$의 확률로 확정된다: 셋 중 적어도 두 번 검출되어야 하므로 $3\cdot0.9^2\cdot0.1 + 0.9^3 = 0.243 + 0.729$다. 프레임마다 0.1 확률로 게이트에 다시 나타나는 클러터 덩어리는 $3\cdot0.1^2\cdot0.9 + 0.1^3 = 0.027 + 0.001$에서 $0.028$의 확률로 확정된다.
-
-**검출기 기반 추적기도 같은 뼈대를 쓴다.** 오늘날 비전 추적의 대부분은 tracking-by-detection이다. SORT(Bewley et al., ICIP 2016)는 바운딩 박스마다 등속 칼만 필터를 돌리고 IoU 비용 위에서 헝가리안 알고리즘을 쓰며, χ² 게이트 대신 최소 IoU 문턱을 둔다. **IoU**(intersection over union, [[02-foundations/ml-practice|9. ML 실무 §3]])는 두 박스 $A,B$에 대해 $|A\cap B|/|A\cup B|$다. $x$ 방향으로 1만큼 어긋난 2×2 박스 둘은 합집합 넓이 6 가운데 2를 공유하므로 IoU $= 1/3$이고, 2만큼 어긋나면 공유하는 것이 없어 IoU $= 0$이다. DeepSORT(Wojke et al., ICIP 2017)는 마할라노비스 게이팅에 재식별(re-identification) 네트워크의 외양 임베딩을 더해, 가려졌다 다시 나타난 사람이 정체를 유지할 수 있게 한다.
-
-**추적의 채점 방식.** 두 지표가 주로 쓰이는데, 정체에 두는 비중이 크게 다르다.
-
-- **MOTA**(Bernardin & Stiefelhagen 2008)는 모든 프레임에 걸친 $1 - \sum(\mathrm{FN}+\mathrm{FP}+\mathrm{IDSW})/\sum \mathrm{GT}$라서 검출이 지배한다: 정답 박스 1000개에서 놓침 50, 오검출 30, **정체 전환**(ID switch) 20이면 MOTA $= 0.90$이고, 전환이 깎는 몫은 0.02뿐이다. 프레임 $t$마다 $\mathrm{FN}_t$는 짝지어진 가설이 없는 정답 물체의 수, $\mathrm{FP}_t$는 어떤 물체와도 짝지어지지 않은 가설의 수, $\mathrm{IDSW}_t$는 짝지어진 트랙 ID가 지난번 짝지어졌을 때의 ID와 다른 물체의 수, $\mathrm{GT}_t$는 정답 물체의 수다:
-$$\text{MOTA} = 1 - \frac{\sum_t (\mathrm{FN}_t + \mathrm{FP}_t + \mathrm{IDSW}_t)}{\sum_t \mathrm{GT}_t}$$
-오류를 상한 없이 더하므로 MOTA는 $[0,1]$ 안의 비율이 아니다. *반례:* 정답 박스 1000개에 오검출 1200개면 MOTA $= -0.2$다.
-- **HOTA**(Luiten et al., IJCV 2021)는 검출 점수와 연관 점수의 기하평균을 위치 문턱들에 걸쳐 평균한 것이라, 좋은 검출 뒤에 연관 실패가 숨지 못한다. 위치 문턱 $\alpha$(검출이 짝지어진 것으로 세어지려면 필요한 IoU)에서, TP, FN, FP를 각각 짝지어진 검출, 놓친 검출, 거짓 검출이라 하면
-$$\text{HOTA}_\alpha = \sqrt{\text{DetA}_\alpha \cdot \text{AssA}_\alpha}, \qquad \text{DetA}_\alpha = \frac{|\text{TP}|}{|\text{TP}| + |\text{FN}| + |\text{FP}|}, \qquad \text{AssA}_\alpha = \frac{1}{|\text{TP}|}\sum_{c\in\text{TP}} \frac{|\text{TPA}(c)|}{|\text{TPA}(c)| + |\text{FNA}(c)| + |\text{FPA}(c)|}$$
-이다. 참 양성 $c$마다 TPA$(c)$는 $c$와 정답 ID도 같고 예측 ID도 같은 참 양성들, FNA$(c)$는 그 정답 ID의 검출 가운데 다른 예측 ID를 받았거나 예측 ID가 없는 것들, FPA$(c)$는 그 예측 ID를 단 검출 가운데 다른 정답 물체 위에 있거나 정답 물체가 없는 것들이다. HOTA는 $\text{HOTA}_\alpha$를 $\alpha = 0.05, 0.10, \dots, 0.95$에 걸쳐 평균한다. *예:* TP 90, FN 10, FP 10이면 DetA $= 0.818$이다. 연관이 평균 0.5만큼만 겹친다면 HOTA$_\alpha = \sqrt{0.818 \cdot 0.5} = 0.64$이므로, 검출이 좋아도 정체를 제대로 지키지 못하면 점수가 내려간다.
-
 > [!example] 계산 예제 · Worked example
 > **트랙 둘, 검출 셋, 미터 단위 2차원 위치.** T1은 $\hat z_1 = (0, 0)$, $S_1 = I$를 예측한다. T2는 $\hat z_2 = (4, 0)$, $S_2 = \mathrm{diag}(4, 1)$을 예측한다: $x$ 방향으로 움직이고 있어 그 방향이 불확실하다. 검출은 D1 $= (1, 0)$, D2 $= (-1, 1)$, D3 $= (1, 4)$.
 > - *거리 행렬 $d^2$.* T1에서 D1, D2, D3까지: $1.00,\ 2.00,\ 17.00$. T2에서 D1, D2, D3까지: $2.25,\ 7.25,\ 18.25$. T2–D1의 innovation은 $(-3, 0)$이므로 평범한 거리는 3 m인데도 $d^2 = 9/4 = 2.25$다.
-> - *9.21 게이트.* D3는 두 게이트 모두 통과하지 못하므로 클러터이거나 새 물체이고, 잠정 트랙을 시작한다. 남는 짝은 넷이다.
+> - *9.21 게이트.* D3는 두 게이트 모두 통과하지 못하므로 클러터이거나 새 물체이고, 잠정 트랙을 시작한다(§8.5.4). 남는 짝은 넷이다.
 > - *전수 할당.* 두 트랙에 서로 다른 검출을 주는 여섯 방법 중 게이트를 통과하는 것은 둘이다: {T1–D1, T2–D2}는 $1 + 7.25 = 8.25$, {T1–D2, T2–D1}는 $2 + 2.25 = 4.25$. GNN은 두 번째를 고른다.
 > - *탐욕.* $1.00$이 가장 작은 원소라 탐욕은 T1–D1을 먼저 확정한다. 그러면 T2에는 게이트 가장자리에 가까운 $7.25$의 D2만 남아 합이 $8.25$ — 덜 그럴듯한 할당이 된다.
 > - *같은 숫자로 JPDA*: 두 트랙이 모두 검출되고 게이트에 다른 것이 없다고 가정하면, 두 결합 사건의 가중치는 $e^{-8.25/2} : e^{-4.25/2}$이고 정규화하면 $0.119 : 0.881$이다. T1의 두 검출을 T1 자신의 우도만으로 가중하면 오히려 D1이 $0.622$를 받는다 — 선호를 뒤집는 것은 결합 제약이다.
@@ -1426,6 +1453,27 @@ for (t, d), v in sorted(d2.items(), key=lambda kv: kv[1]):
         used.add(d)
 print("greedy:", sum(d2[p] for p in greedy), greedy)
 ```
+
+#### 8.5.4 트랙 관리: 잠정, 확정, 삭제
+
+**트랙 관리는 트랙에 생애 주기를 준다.** 모든 게이트 밖의 검출은 **잠정**(tentative) 트랙을 시작한다. 최근 N 프레임 중 M번 연관되면 **확정**(confirmed)되고, 확정 트랙은 연속으로 너무 많이 놓치면 **삭제**(deleted)된다. M과 N은 확정 지연과 거짓 트랙을 맞바꾼다. 프레임마다 독립적으로 확률 $p$로 연관된다면, $N$ 프레임에서 적어도 $M$번 연관될 확률은 이항 분포의 꼬리다. $k$번 맞는 $\binom{N}{k}$가지 배열이 각각 확률 $p^k(1-p)^{N-k}$를 가지기 때문이다:
+$$P(\text{confirm}) = \sum_{k=M}^{N} \binom{N}{k} p^k (1-p)^{N-k}$$
+2-of-3이라면 프레임마다 0.9 확률로 검출되는 실제 물체는 세 프레임 안에 $0.972$의 확률로 확정된다: 셋 중 적어도 두 번 검출되어야 하므로 $3\cdot0.9^2\cdot0.1 + 0.9^3 = 0.243 + 0.729$다. 프레임마다 0.1 확률로 게이트에 다시 나타나는 클러터 덩어리는 $3\cdot0.1^2\cdot0.9 + 0.1^3 = 0.027 + 0.001$에서 $0.028$의 확률로 확정된다.
+
+#### 8.5.5 검출 기반 추적, 그리고 추적의 채점
+
+**검출기 기반 추적기도 같은 뼈대를 쓴다.** 오늘날 비전 추적의 대부분은 tracking-by-detection이다. SORT(Bewley et al., ICIP 2016)는 바운딩 박스마다 등속 칼만 필터를 돌리고 IoU 비용 위에서 헝가리안 알고리즘을 쓰며, χ² 게이트 대신 최소 IoU 문턱을 둔다. **IoU**(intersection over union, [[02-foundations/ml-practice|9. ML 실무 §3]])는 두 박스 $A,B$에 대해 $|A\cap B|/|A\cup B|$다. $x$ 방향으로 1만큼 어긋난 2×2 박스 둘은 합집합 넓이 6 가운데 2를 공유하므로 IoU $= 1/3$이고, 2만큼 어긋나면 공유하는 것이 없어 IoU $= 0$이다. DeepSORT(Wojke et al., ICIP 2017)는 마할라노비스 게이팅에 재식별(re-identification) 네트워크의 외양 임베딩을 더해, 가려졌다 다시 나타난 사람이 정체를 유지할 수 있게 한다.
+
+**추적의 채점 방식.** 두 지표가 주로 쓰이는데, 정체에 두는 비중이 크게 다르다.
+
+- **MOTA**(Bernardin & Stiefelhagen 2008)는 모든 프레임에 걸친 $1 - \sum(\mathrm{FN}+\mathrm{FP}+\mathrm{IDSW})/\sum \mathrm{GT}$라서 검출이 지배한다: 정답 박스 1000개에서 놓침 50, 오검출 30, **정체 전환**(ID switch) 20이면 MOTA $= 0.90$이고, 전환이 깎는 몫은 0.02뿐이다. 프레임 $t$마다 $\mathrm{FN}_t$는 짝지어진 가설이 없는 정답 물체의 수, $\mathrm{FP}_t$는 어떤 물체와도 짝지어지지 않은 가설의 수, $\mathrm{IDSW}_t$는 짝지어진 트랙 ID가 지난번 짝지어졌을 때의 ID와 다른 물체의 수, $\mathrm{GT}_t$는 정답 물체의 수다:
+$$\text{MOTA} = 1 - \frac{\sum_t (\mathrm{FN}_t + \mathrm{FP}_t + \mathrm{IDSW}_t)}{\sum_t \mathrm{GT}_t}$$
+오류를 상한 없이 더하므로 MOTA는 $[0,1]$ 안의 비율이 아니다. *반례:* 정답 박스 1000개에 오검출 1200개면 MOTA $= -0.2$다.
+- **HOTA**(Luiten et al., IJCV 2021)는 검출 점수와 연관 점수의 기하평균을 위치 문턱들에 걸쳐 평균한 것이라, 좋은 검출 뒤에 연관 실패가 숨지 못한다. 위치 문턱 $\alpha$(검출이 짝지어진 것으로 세어지려면 필요한 IoU)에서, TP, FN, FP를 각각 짝지어진 검출, 놓친 검출, 거짓 검출이라 하면
+$$\text{HOTA}_\alpha = \sqrt{\text{DetA}_\alpha \cdot \text{AssA}_\alpha}, \qquad \text{DetA}_\alpha = \frac{|\text{TP}|}{|\text{TP}| + |\text{FN}| + |\text{FP}|}, \qquad \text{AssA}_\alpha = \frac{1}{|\text{TP}|}\sum_{c\in\text{TP}} \frac{|\text{TPA}(c)|}{|\text{TPA}(c)| + |\text{FNA}(c)| + |\text{FPA}(c)|}$$
+이다. 참 양성 $c$마다 TPA$(c)$는 $c$와 정답 ID도 같고 예측 ID도 같은 참 양성들, FNA$(c)$는 그 정답 ID의 검출 가운데 다른 예측 ID를 받았거나 예측 ID가 없는 것들, FPA$(c)$는 그 예측 ID를 단 검출 가운데 다른 정답 물체 위에 있거나 정답 물체가 없는 것들이다. HOTA는 $\text{HOTA}_\alpha$를 $\alpha = 0.05, 0.10, \dots, 0.95$에 걸쳐 평균한다. *예:* TP 90, FN 10, FP 10이면 DetA $= 0.818$이다. 연관이 평균 0.5만큼만 겹친다면 HOTA$_\alpha = \sqrt{0.818 \cdot 0.5} = 0.64$이므로, 검출이 좋아도 정체를 제대로 지키지 못하면 점수가 내려간다.
+
+#### 8.5.6 함정, 그리고 건설 현장의 추적
 
 **함정, 그리고 추적 논문에서 확인할 것.**
 
@@ -1481,7 +1529,7 @@ $\operatorname{trans}(E_i)$ 의 RMS와 그 회전각의 RMS로 보고한다.
 2. 센서 분산이 $16\,\mathrm{cm}^2$일 때 위 예제를 다시 계산하라.
 3. 전역 localization이 파티클 필터에 자연스러운 문제인 이유는?
 4. "건설 현장 진동에 강건하다"는 주장을 지지하려면 어떤 실험이 필요한가?
-5. §8.5 예제에서 $S_2 = I$로 두라. T2의 거리를 다시 계산하고, 게이트를 적용하고, GNN과 탐욕을 비교하라.
+5. §8.5.3 예제에서 $S_2 = I$로 두라. T2의 거리를 다시 계산하고, 게이트를 적용하고, GNN과 탐욕을 비교하라.
 6. 한 추적 논문이 검출기를 바꾸자 정답 박스 10,000개에서 MOTA가 0.80에서 0.82로 올랐고, 추적이 나아졌다고 주장한다. 무엇을 더 봐야 하는가?
 
 > [!tip]- 정답 · Answers

@@ -58,7 +58,7 @@ Every algorithm on this page is one row of the table below. Learn the recurrence
 | Closest pair (§8) | $T(n) = 2T(n/2) + O(n)$ | $\Theta(n \log n)$ | the strip scan is linear |
 | Karatsuba (§8) | $T(n) = 3T(n/2) + O(n)$ | $\Theta(n^{\log_2 3})$ | leaves dominate |
 
-**When divide-and-conquer is the wrong tool.** If the pieces *overlap*, meaning the same subproblem is reached through many paths, plain recursion repeats work exponentially; that is the signal for dynamic programming ([[02-foundations/algorithms/dynamic-programming|11.5 §1]]). Merge sort's two halves never share an element, so there is nothing to cache.
+**When divide-and-conquer is the wrong tool.** If the pieces *overlap*, meaning the same subproblem is reached through many paths, plain recursion repeats work exponentially; that is the signal for dynamic programming, which stores each subproblem's answer the first time it is computed and looks it up afterwards (memoization, [[02-foundations/algorithms/complexity-recursion|11.1 §5]]; the full method is [[02-foundations/algorithms/dynamic-programming|11.5 §1]]). Merge sort's two halves never share an element, so there is nothing to cache.
 
 **Two Python pitfalls that change the complexity.**
 
@@ -124,6 +124,69 @@ Split the inversions into those inside the left half, those inside the right hal
 > - Output 3, then 4. Adds nothing.
 >
 > Total: $1 + 1 + 1 = 3$. Check by listing all pairs: (3, 1), (3, 2), (4, 2).
+
+<svg viewBox="0 0 560 286" style="max-width:100%;height:auto" role="img" aria-label="Merge sort on [3, 1, 4, 2]: the halves [3, 1] and [4, 2] each hold one inversion, and the final merge adds one split inversion when 2 is output while 3 waits; 3 in total.">
+  <line x1="250" y1="41" x2="150" y2="69" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="250" y1="41" x2="350" y2="69" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="150" y1="91" x2="100" y2="119" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="100" y1="141" x2="150" y2="169" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="150" y1="91" x2="200" y2="119" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="200" y1="141" x2="150" y2="169" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="150" y1="191" x2="250" y2="219" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="350" y1="91" x2="300" y2="119" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="300" y1="141" x2="350" y2="169" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="350" y1="91" x2="400" y2="119" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="400" y1="141" x2="350" y2="169" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="350" y1="191" x2="250" y2="219" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <rect x="202" y="19" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="214" y="34.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="226" y="19" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="238" y="34.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="250" y="19" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="262" y="34.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="274" y="19" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="286" y="34.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="126" y="69" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="138" y="84.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="150" y="69" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="162" y="84.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="326" y="69" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="338" y="84.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="350" y="69" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="362" y="84.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="88" y="119" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="100" y="134.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="188" y="119" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="200" y="134.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="288" y="119" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="300" y="134.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="388" y="119" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="400" y="134.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="126" y="169" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.14"/>
+  <text x="138" y="184.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="150" y="169" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.14"/>
+  <text x="162" y="184.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="326" y="169" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.14"/>
+  <text x="338" y="184.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="350" y="169" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.14"/>
+  <text x="362" y="184.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="202" y="219" width="24" height="22" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.22"/>
+  <text x="214" y="234.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="226" y="219" width="24" height="22" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.22"/>
+  <text x="238" y="234.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="250" y="219" width="24" height="22" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.22"/>
+  <text x="262" y="234.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="274" y="219" width="24" height="22" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.22"/>
+  <text x="286" y="234.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="120" y="205" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.9">1 inversion: (3, 1)</text>
+  <text x="380" y="205" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.9">1 inversion: (4, 2)</text>
+  <text x="308" y="234" font-size="11" fill="currentColor">2 is output while 3 waits: +1 split</text>
+  <text x="14" y="66" font-size="11" fill="currentColor" fill-opacity="0.7">split</text>
+  <text x="14" y="186" font-size="11" fill="currentColor" fill-opacity="0.7">merge</text>
+  <text x="308" y="264" font-size="12" fill="currentColor" font-weight="bold">total 1 + 1 + 1 = 3</text>
+</svg>
+
+The worked example as merge sort runs it: dashed lines split $[3, 1, 4, 2]$ down to single elements, solid lines merge back up. The merges of $[3]$ with $[1]$ and of $[4]$ with $[2]$ each count one inversion; in the final merge, 2 leaves the right half while 3 is still waiting on the left, adding `len(left) - i` = 1 split inversion, for 3 in all.
 
 **Where this is used: ranking agreement.** Suppose two rankings of the same $n$ items: the order in which a simulator ranks ten policy checkpoints, and the order of their real-robot success rates; or a learned reward model's ranking of trajectories against a human's. A pair of items is **concordant** if both rankings put them in the same order and **discordant** otherwise. With $r_A(x)$ and $r_B(x)$ the positions of item $x$ in the two rankings, the pair $x, y$ is concordant when $(r_A(x) - r_A(y))(r_B(x) - r_B(y)) > 0$ and discordant when that product is negative; it is zero only for a tie. Kendall's tau is the fraction of concordant pairs minus the fraction of discordant ones:
 
@@ -224,6 +287,125 @@ print(hoare_partition(b, 0, 5), b)    # 1 [1, 2, 7, 9, 4, 5]
 > - `j=4`: 1 < 5, swap `a[2]` and `a[4]`, giving $[4, 2, 1, 9, 7, 5]$, `i = 3`.
 >
 > Finally swap the pivot into `a[3]`, giving $[4, 2, 1, 5, 7, 9]$. The pivot 5 is at index 3, with smaller elements on its left and larger ones on its right.
+
+<svg viewBox="0 0 560 330" style="max-width:100%;height:auto" role="img" aria-label="Lomuto partition of [4, 7, 2, 9, 1, 5] around pivot 5, one row per step: the shaded prefix a[0:i] holds the elements smaller than 5, and the final swap puts 5 at index 3, giving [4, 2, 1, 5, 7, 9].">
+  <text x="55" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <text x="85" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">1</text>
+  <text x="115" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">2</text>
+  <text x="145" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">3</text>
+  <text x="175" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">4</text>
+  <text x="205" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <rect x="40" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="55" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">4</text>
+  <rect x="70" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="85" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">7</text>
+  <rect x="100" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="115" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">2</text>
+  <rect x="130" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="145" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">9</text>
+  <rect x="160" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="50" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="40" y1="46" x2="40" y2="76" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="65.5" font-size="11" fill="currentColor">start: pivot a[5] = 5, i = 0</text>
+  <rect x="40" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="85" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">7</text>
+  <rect x="100" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="115" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">2</text>
+  <rect x="130" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="145" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">9</text>
+  <rect x="160" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="82" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="70" y1="78" x2="70" y2="108" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="97.5" font-size="11" fill="currentColor">j = 0: 4 &lt; 5, swap a[0]↔a[0], i = 1</text>
+  <rect x="40" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="85" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="100" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="115" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">2</text>
+  <rect x="130" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="145" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">9</text>
+  <rect x="160" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="114" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="70" y1="110" x2="70" y2="140" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="129.5" font-size="11" fill="currentColor">j = 1: 7 ≥ 5, nothing</text>
+  <rect x="40" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="85" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">2</text>
+  <rect x="100" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="115" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="130" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="145" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">9</text>
+  <rect x="160" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="146" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="100" y1="142" x2="100" y2="172" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="161.5" font-size="11" fill="currentColor">j = 2: 2 &lt; 5, swap a[1]↔a[2], i = 2</text>
+  <rect x="40" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="85" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">2</text>
+  <rect x="100" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="115" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="130" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="145" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">9</text>
+  <rect x="160" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="178" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="100" y1="174" x2="100" y2="204" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="193.5" font-size="11" fill="currentColor">j = 3: 9 ≥ 5, nothing</text>
+  <rect x="40" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="85" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">2</text>
+  <rect x="100" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="115" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">1</text>
+  <rect x="130" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="145" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">9</text>
+  <rect x="160" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="175" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="190" y="210" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="130" y1="206" x2="130" y2="236" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="225.5" font-size="11" fill="currentColor">j = 4: 1 &lt; 5, swap a[2]↔a[4], i = 3</text>
+  <rect x="40" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="85" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">2</text>
+  <rect x="100" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="115" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">1</text>
+  <rect x="130" y="242" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.12"/>
+  <text x="145" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <rect x="160" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0"/>
+  <text x="175" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="190" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0"/>
+  <text x="205" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">9</text>
+  <line x1="130" y1="238" x2="130" y2="268" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="257.5" font-size="11" fill="currentColor" font-weight="bold">end: swap a[3]↔a[5]; 5 is final at 3</text>
+  <rect x="40" y="276" width="14" height="12" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="59" y="286" font-size="11" fill="currentColor">&lt; pivot: a[lo:i]</text>
+  <rect x="156" y="276" width="14" height="12" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="175" y="286" font-size="11" fill="currentColor">≥ pivot</text>
+  <rect x="40" y="296" width="14" height="12" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-dasharray="3 2"/>
+  <text x="59" y="306" font-size="11" fill="currentColor">not yet examined</text>
+  <rect x="169.7" y="296" width="14" height="12" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="188.7" y="306" font-size="11" fill="currentColor">pivot</text>
+  <line x1="237" y1="294" x2="237" y2="309" stroke="currentColor" stroke-width="2.6"/>
+  <text x="246" y="306" font-size="11" fill="currentColor">boundary i</text>
+</svg>
+
+The same trace, one row per step of the loop. The shaded prefix left of the bar is `a[lo:i]`, the elements already known to be smaller than the pivot; plain cells were examined and are not smaller; dashed cells are not examined yet. The last swap moves the pivot 5 from index 5 to index 3, where it is final.
 
 **Why the pivot choice decides everything.** If the pivot lands at rank $q$, so that $q$ elements go left and $n - 1 - q$ go right, quicksort's cost satisfies
 $$T(n) = T(q) + T(n - 1 - q) + \Theta(n), \qquad T(0) = T(1) = \Theta(1)$$
@@ -465,7 +647,7 @@ with the minimum of an empty set taken as `len(a)`, so both are defined for ever
 - **Overflow in C++ and Java.** `(lo + hi) / 2` can overflow. Write `lo + (hi - lo) / 2`. Python integers do not overflow.
 - **Real-valued answers.** Stop after a fixed number of iterations, say 100, instead of testing `hi - lo > eps`, which can loop forever when `eps` is below floating-point resolution.
 
-**Robotics use: bracketing a timestamp.** To estimate a pose or a joint angle at an image's timestamp, find the two buffered samples that bracket it and interpolate between them. The buffer is sorted by time, so this is an upper-bound search. Stamps must be in the same clock, which is the subject of [[04-robotics/ros2/qos-executors-time|25.5 §10]].
+**Robotics use: bracketing a timestamp.** To estimate a pose or a joint angle at an image's timestamp, find the two buffered samples that bracket it and interpolate between them. The buffer is sorted by time, so this is an upper-bound search. Stamps must be in the same clock, which is the subject of [[04-robotics/ros2/executors-callbacks-time|25.5.1 §3]].
 
 ```python
 from bisect import bisect_right
@@ -639,6 +821,44 @@ print(fib[0][1])                                           # 55, the 10th Fibona
 
 The strip can still contain almost every point, so the step that makes the combine linear is a packing argument. Sort the strip's points by $y$. A pair closer than $\delta$ has a $y$-difference below $\delta$. Above any point, cover the $2\delta \times \delta$ rectangle around the line with eight $\delta/2 \times \delta/2$ squares, four on each side. Two points in the same square would be on the same side and at most $\delta/\sqrt{2} < \delta$ apart, which contradicts $\delta$ being the smallest distance within a side. So each square holds at most one point, and each point needs to be compared only with the next **7** points in $y$-order. If you keep the $y$-order by merging, as merge sort does, instead of re-sorting the strip in every call, the combine is $O(n)$ and $T(n) = 2T(n/2) + O(n) = O(n \log n)$. Re-sorting in every call gives $O(n \log^2 n)$. In robotics code, "find all pairs closer than $r$" is usually solved with a grid or spatial hash of cell size $r$, or with a KD-tree. The divide-and-conquer version is the interview example of a combine step that a geometric argument makes linear.
 
+<svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="Closest-pair combine step: above a strip point p, the 2δ by δ rectangle around the dividing line is covered by eight δ/2 squares; two points in one square would be on the same side and at most δ/√2 apart, so each square holds at most one point.">
+  <rect x="160" y="44" width="240" height="194" stroke="none" fill="currentColor" fill-opacity="0.05"/>
+  <rect x="160" y="94" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="160" y="154" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="220" y="94" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="220" y="154" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="280" y="94" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="280" y="154" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="340" y="94" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="340" y="154" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="160" y="94" width="240" height="120" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <line x1="280" y1="38" x2="280" y2="244" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="286" y="50" font-size="12" fill="currentColor" font-weight="bold">x = ℓ</text>
+  <text x="150" y="204" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">left half</text>
+  <text x="424" y="204" font-size="11" fill="currentColor" fill-opacity="0.8">right half</text>
+  <line x1="160" y1="80" x2="400" y2="80" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <line x1="160" y1="76" x2="160" y2="84" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <line x1="400" y1="76" x2="400" y2="84" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <text x="220" y="75" font-size="12" fill="currentColor" text-anchor="middle">2δ</text>
+  <line x1="414" y1="94" x2="414" y2="214" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <line x1="410" y1="94" x2="418" y2="94" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <line x1="410" y1="214" x2="418" y2="214" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <text x="420" y="158" font-size="12" fill="currentColor">δ</text>
+  <text x="190" y="230" font-size="11" fill="currentColor" text-anchor="middle">δ/2</text>
+  <line x1="160" y1="94" x2="220" y2="154" stroke="currentColor" stroke-width="1.0" stroke-dasharray="2 2"/>
+  <text x="152" y="104" font-size="11" fill="currentColor" text-anchor="end">δ/√2 ≈ 0.71δ &lt; δ</text>
+  <circle cx="244" cy="214" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="166" cy="112" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="292" cy="178" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="388" cy="100" r="3.4" stroke="none" fill="currentColor"/>
+  <line x1="244" y1="214" x2="292" y2="178" stroke="currentColor" stroke-width="1.0"/>
+  <text x="236" y="230" font-size="12" fill="currentColor" font-weight="bold">p</text>
+  <text x="288" y="208" font-size="11" fill="currentColor">0.5δ</text>
+  <text x="280" y="272" font-size="11" fill="currentColor" text-anchor="middle">8 squares, at most 1 point each: compare p with the next 7 in y-order</text>
+</svg>
+
+The packing argument drawn. $p$ is a strip point, and the rectangle holds every point above it that could still be closer than $\delta$: width $2\delta$ around the line $x = \ell$, height $\delta$. Each of its eight $\delta/2 \times \delta/2$ squares lies on one side, and two points in one square would be at most $\delta/\sqrt 2 \approx 0.71\delta$ apart, closer than the closest pair on that side, so each square holds at most one point. Here the right-side point $0.5\delta$ from $p$ is the cross pair the combine step finds.
+
 **Karatsuba multiplication.** Split two $n$-digit numbers into high and low halves: with base $B$ (10 for decimal digits) and $m = n/2$, write $x = x_1 B^m + x_0$ and $y = y_1 B^m + y_0$. Their product is
 $$xy = z_2 B^{2m} + z_1 B^m + z_0, \qquad z_2 = x_1 y_1, \quad z_0 = x_0 y_0, \quad z_1 = (x_1 + x_0)(y_1 + y_0) - z_2 - z_0$$
 where the last identity holds because $(x_1 + x_0)(y_1 + y_0) = x_1 y_1 + x_1 y_0 + x_0 y_1 + x_0 y_0$, so subtracting $z_2$ and $z_0$ leaves the middle term $x_1 y_0 + x_0 y_1$. Karatsuba (1962) therefore needs three half-size multiplications instead of four. For $1234 \times 5678$: $z_2 = 12 \cdot 56 = 672$, $z_0 = 34 \cdot 78 = 2652$, $z_1 = 46 \cdot 134 - 672 - 2652 = 2840$, and $672 \cdot 10^4 + 2840 \cdot 10^2 + 2652 = 7006652$. That gives $T(n) = 3T(n/2) + O(n) = O(n^{\log_2 3}) \approx O(n^{1.585})$, which is the algorithm CPython uses for large integers.
@@ -654,6 +874,7 @@ where the last identity holds because $(x_1 + x_0)(y_1 + y_0) = x_1 y_1 + x_1 y_
 7. A C++ program sorts with `std::sort(v.begin(), v.end(), [](double a, double b) { return a <= b; });` and crashes only on some inputs. Explain why, and name a second way the same comparator could break even with `<`.
 8. You need the 100 largest scores from a stream of $10^8$ detections that does not fit in memory. Compare `heapq.nlargest`, sorting, and quickselect in time and memory. Which one can you actually use?
 9. In the closest-pair combine step, why is it enough to compare each strip point with the next 7 points in $y$-order, and what would the running time be if you compared it with every point in the strip?
+10. Close the page and write `quicksort(a)` with a random pivot and the three-way partition from a blank file. Test it on `[3, 1, 3, 3, 9, 0, 3, 2, 3]`, `[]`, `[5]` and 1000 copies of one value, then compare it line by line with the code in §3. Which line did you get wrong, and which invariant does that line break?
 
 > [!tip]- Answers
 > 1. Yes, it is still sorted: on a tie, taking the right element first still outputs the smaller-or-equal element. It is no longer stable. With `key` comparing the second field, the input `[("a", 1), ("b", 1)]` splits into `[("a", 1)]` and `[("b", 1)]`, and `<` is false on the tie, so the merge outputs `("b", 1)` first, reversing the two equal items.
@@ -665,6 +886,7 @@ where the last identity holds because $(x_1 + x_0)(y_1 + y_0) = x_1 y_1 + x_1 y_
 > 7. `a <= b` is true when `a == b`, so `cmp(a, a)` is true. That violates irreflexivity, one of the strict weak ordering requirements, and the behaviour is undefined: the implementation's partition loop can step past the range because it assumes an element is never "less than" itself. Even with `a < b`, the comparator breaks if the data contain NaN, because NaN is incomparable to every value while those values are comparable to each other, so "incomparable" is no longer transitive. Filter NaNs out first, or order them explicitly.
 > 8. `heapq.nlargest(100, stream)`: $O(n \log k)$, about $10^8 \times 7$ cheap operations, with only 100 items in memory, and it consumes the iterator. Sorting needs all $10^8$ items in memory and $O(n \log n)$ time. Quickselect is $O(n)$ expected but also needs the whole array in memory, so it is not usable on the stream. The heap is the one to use.
 > 9. Above a given strip point, any point closer than $\delta$ lies in a $2\delta \times \delta$ rectangle. That rectangle is covered by 8 squares of side $\delta/2$, and each square holds at most one point, since two points in one square would be on the same side at distance $\le \delta/\sqrt{2} < \delta$. So the rectangle holds at most 8 points, counting the point itself, and at most 7 others need checking. Comparing with every strip point costs up to $O(n^2)$ per combine when the strip holds most points, so the whole algorithm degrades to $O(n^2)$.
+> 10. Write the invariant first, as a comment: `a[lo:lt] < pivot`, `a[lt:i] == pivot`, `a[i:gt+1]` not yet examined, `a[gt+1:hi+1] > pivot`. The three usual slips each break it. Advancing `i` after swapping with `a[gt]` skips the element just swapped in, which was never examined. Starting with `gt = hi + 1` while looping on `i <= gt` reads one slot past the range. Recursing on both sides instead of looping on the larger one lets a bad run of pivots push the stack to depth $n$. A correct version sorts the first input to `[0, 1, 2, 3, 3, 3, 3, 3, 9]`, returns at once on `[]` and `[5]`, and finishes 1000 equal values in a single partition pass, because every element lands in the "equal" region and both outer ranges are empty.
 
 ### Sources
 
@@ -729,7 +951,7 @@ $$T(n) = a\,T(n/b) + f(n) \ \text{ for } n > n_0, \qquad T(n) = \Theta(1) \ \tex
 | 최근접 쌍 (§8) | $T(n) = 2T(n/2) + O(n)$ | $\Theta(n \log n)$ | 띠 스캔이 선형 |
 | Karatsuba (§8) | $T(n) = 3T(n/2) + O(n)$ | $\Theta(n^{\log_2 3})$ | 리프가 지배 |
 
-**분할 정복이 맞지 않는 경우.** 조각이 *겹치면*, 즉 같은 부분 문제에 여러 경로로 도달하면, 단순한 재귀는 같은 일을 지수적으로 반복한다. 그것이 동적 계획법의 신호다([[02-foundations/algorithms/dynamic-programming|11.5 §1]]). 병합 정렬의 두 절반은 원소를 공유하지 않으므로 캐시할 것이 없다.
+**분할 정복이 맞지 않는 경우.** 조각이 *겹치면*, 즉 같은 부분 문제에 여러 경로로 도달하면, 단순한 재귀는 같은 일을 지수적으로 반복한다. 그것이 동적 계획법의 신호다. 동적 계획법은 각 부분 문제의 답을 처음 계산할 때 저장해 두고 이후에는 찾아 쓴다(메모이제이션, [[02-foundations/algorithms/complexity-recursion|11.1 §5]]. 방법 전체는 [[02-foundations/algorithms/dynamic-programming|11.5 §1]]). 병합 정렬의 두 절반은 원소를 공유하지 않으므로 캐시할 것이 없다.
 
 **복잡도를 바꾸는 Python 함정 두 가지.**
 
@@ -795,6 +1017,69 @@ $$\operatorname{inv}(a) = \big|\{(i, j) : 1 \le i < j \le n,\ a[i] > a[j]\}\big|
 > - 3, 그다음 4를 출력한다. 더할 것 없음.
 >
 > 합계: $1 + 1 + 1 = 3$. 모든 쌍을 나열해 확인: (3, 1), (3, 2), (4, 2).
+
+<svg viewBox="0 0 560 286" style="max-width:100%;height:auto" role="img" aria-label="[3, 1, 4, 2]에 대한 병합 정렬. 두 절반 [3, 1]과 [4, 2]에 역순쌍이 하나씩 있고, 마지막 병합에서 3이 기다리는 동안 2가 출력될 때 분할 역순쌍이 하나 더해져 모두 3개다.">
+  <line x1="250" y1="41" x2="150" y2="69" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="250" y1="41" x2="350" y2="69" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="150" y1="91" x2="100" y2="119" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="100" y1="141" x2="150" y2="169" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="150" y1="91" x2="200" y2="119" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="200" y1="141" x2="150" y2="169" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="150" y1="191" x2="250" y2="219" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="350" y1="91" x2="300" y2="119" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="300" y1="141" x2="350" y2="169" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="350" y1="91" x2="400" y2="119" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6" stroke-dasharray="4 3"/>
+  <line x1="400" y1="141" x2="350" y2="169" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="350" y1="191" x2="250" y2="219" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <rect x="202" y="19" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="214" y="34.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="226" y="19" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="238" y="34.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="250" y="19" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="262" y="34.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="274" y="19" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="286" y="34.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="126" y="69" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="138" y="84.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="150" y="69" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="162" y="84.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="326" y="69" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="338" y="84.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="350" y="69" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="362" y="84.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="88" y="119" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="100" y="134.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="188" y="119" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="200" y="134.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="288" y="119" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="300" y="134.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="388" y="119" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.05"/>
+  <text x="400" y="134.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="126" y="169" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.14"/>
+  <text x="138" y="184.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="150" y="169" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.14"/>
+  <text x="162" y="184.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="326" y="169" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.14"/>
+  <text x="338" y="184.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="350" y="169" width="24" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.14"/>
+  <text x="362" y="184.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <rect x="202" y="219" width="24" height="22" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.22"/>
+  <text x="214" y="234.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="226" y="219" width="24" height="22" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.22"/>
+  <text x="238" y="234.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <rect x="250" y="219" width="24" height="22" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.22"/>
+  <text x="262" y="234.5" font-size="12" fill="currentColor" text-anchor="middle">3</text>
+  <rect x="274" y="219" width="24" height="22" stroke="currentColor" stroke-width="1.6" fill="currentColor" fill-opacity="0.22"/>
+  <text x="286" y="234.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <text x="120" y="205" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.9">역순쌍 1개: (3, 1)</text>
+  <text x="380" y="205" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.9">역순쌍 1개: (4, 2)</text>
+  <text x="308" y="234" font-size="11" fill="currentColor">3이 기다리는 동안 2 출력: 분할 +1</text>
+  <text x="14" y="66" font-size="11" fill="currentColor" fill-opacity="0.7">나누기</text>
+  <text x="14" y="186" font-size="11" fill="currentColor" fill-opacity="0.7">병합</text>
+  <text x="308" y="264" font-size="12" fill="currentColor" font-weight="bold">합계 1 + 1 + 1 = 3</text>
+</svg>
+
+계산 예제를 병합 정렬이 도는 대로 그렸다. 점선은 $[3, 1, 4, 2]$를 원소 하나까지 나누고, 실선은 다시 병합해 올라간다. $[3]$과 $[1]$, $[4]$와 $[2]$의 병합이 각각 역순쌍 하나를 세고, 마지막 병합에서는 왼쪽에 3이 아직 기다리는 동안 오른쪽에서 2가 나가므로 `len(left) - i` = 1개의 분할 역순쌍이 더해져 모두 3개다.
 
 **쓰이는 곳: 순위 일치도.** 같은 $n$개 항목에 대한 두 순위가 있다고 하자. 시뮬레이터가 매긴 정책 체크포인트 열 개의 순위와 실제 로봇 성공률의 순위, 또는 학습된 보상 모델이 매긴 궤적 순위와 사람이 매긴 순위. 두 순위가 어떤 쌍을 같은 순서로 두면 그 쌍은 **일치**(concordant), 아니면 **불일치**(discordant)다. 두 순위에서 항목 $x$의 위치를 $r_A(x)$, $r_B(x)$라 하면, 쌍 $x, y$는 $(r_A(x) - r_A(y))(r_B(x) - r_B(y)) > 0$일 때 일치, 그 곱이 음수일 때 불일치이며, 0은 동점일 때뿐이다. Kendall의 tau는 일치 쌍의 비율에서 불일치 쌍의 비율을 뺀 값이다.
 
@@ -895,6 +1180,125 @@ print(hoare_partition(b, 0, 5), b)    # 1 [1, 2, 7, 9, 4, 5]
 > - `j=4`: 1 < 5, `a[2]`와 `a[4]`를 스왑해 $[4, 2, 1, 9, 7, 5]$, `i = 3`.
 >
 > 마지막으로 피벗을 `a[3]`으로 스왑하면 $[4, 2, 1, 5, 7, 9]$. 피벗 5가 인덱스 3에 있고, 왼쪽에는 더 작은 원소, 오른쪽에는 더 큰 원소가 있다.
+
+<svg viewBox="0 0 560 330" style="max-width:100%;height:auto" role="img" aria-label="[4, 7, 2, 9, 1, 5]를 피벗 5로 Lomuto 파티션하는 과정을 한 단계에 한 줄씩 그렸다. 음영인 앞부분 a[0:i]에 5보다 작은 원소가 모이고, 마지막 스왑이 5를 인덱스 3에 놓아 [4, 2, 1, 5, 7, 9]가 된다.">
+  <text x="55" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">0</text>
+  <text x="85" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">1</text>
+  <text x="115" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">2</text>
+  <text x="145" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">3</text>
+  <text x="175" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">4</text>
+  <text x="205" y="28" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.6">5</text>
+  <rect x="40" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="55" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">4</text>
+  <rect x="70" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="85" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">7</text>
+  <rect x="100" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="115" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">2</text>
+  <rect x="130" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="145" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">9</text>
+  <rect x="160" y="50" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="50" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="65.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="40" y1="46" x2="40" y2="76" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="65.5" font-size="11" fill="currentColor">시작: 피벗 a[5] = 5, i = 0</text>
+  <rect x="40" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="85" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">7</text>
+  <rect x="100" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="115" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">2</text>
+  <rect x="130" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="145" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">9</text>
+  <rect x="160" y="82" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="82" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="97.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="70" y1="78" x2="70" y2="108" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="97.5" font-size="11" fill="currentColor">j = 0: 4 &lt; 5, a[0]↔a[0] 스왑, i = 1</text>
+  <rect x="40" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="85" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="100" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="115" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">2</text>
+  <rect x="130" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="145" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">9</text>
+  <rect x="160" y="114" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="114" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="129.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="70" y1="110" x2="70" y2="140" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="129.5" font-size="11" fill="currentColor">j = 1: 7 ≥ 5, 아무 일 없음</text>
+  <rect x="40" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="85" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">2</text>
+  <rect x="100" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="115" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="130" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="145" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">9</text>
+  <rect x="160" y="146" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="146" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="161.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="100" y1="142" x2="100" y2="172" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="161.5" font-size="11" fill="currentColor">j = 2: 2 &lt; 5, a[1]↔a[2] 스왑, i = 2</text>
+  <rect x="40" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="85" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">2</text>
+  <rect x="100" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="115" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="130" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="145" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">9</text>
+  <rect x="160" y="178" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.55" stroke-dasharray="3 2"/>
+  <text x="175" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.5">1</text>
+  <rect x="190" y="178" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="193.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="100" y1="174" x2="100" y2="204" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="193.5" font-size="11" fill="currentColor">j = 3: 9 ≥ 5, 아무 일 없음</text>
+  <rect x="40" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="85" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">2</text>
+  <rect x="100" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="115" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">1</text>
+  <rect x="130" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="145" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">9</text>
+  <rect x="160" y="210" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="175" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="190" y="210" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205" y="225.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <line x1="130" y1="206" x2="130" y2="236" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="225.5" font-size="11" fill="currentColor">j = 4: 1 &lt; 5, a[2]↔a[4] 스왑, i = 3</text>
+  <rect x="40" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="55" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">4</text>
+  <rect x="70" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="85" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">2</text>
+  <rect x="100" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="115" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">1</text>
+  <rect x="130" y="242" width="30" height="22" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.12"/>
+  <text x="145" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0" font-weight="bold">5</text>
+  <rect x="160" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0"/>
+  <text x="175" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">7</text>
+  <rect x="190" y="242" width="30" height="22" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.0"/>
+  <text x="205" y="257.5" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="1.0">9</text>
+  <line x1="130" y1="238" x2="130" y2="268" stroke="currentColor" stroke-width="2.6"/>
+  <text x="236" y="257.5" font-size="11" fill="currentColor" font-weight="bold">끝: a[3]↔a[5] 스왑, 5는 3에서 확정</text>
+  <rect x="40" y="276" width="14" height="12" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.26"/>
+  <text x="59" y="286" font-size="11" fill="currentColor">&lt; 피벗: a[lo:i]</text>
+  <rect x="150.8" y="276" width="14" height="12" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="169.8" y="286" font-size="11" fill="currentColor">≥ 피벗</text>
+  <rect x="40" y="296" width="14" height="12" stroke="currentColor" stroke-width="1.0" fill="currentColor" fill-opacity="0.04" stroke-dasharray="3 2"/>
+  <text x="59" y="306" font-size="11" fill="currentColor">아직 보지 않음</text>
+  <rect x="146.7" y="296" width="14" height="12" stroke="currentColor" stroke-width="2.0" fill="currentColor" fill-opacity="0.04"/>
+  <text x="165.7" y="306" font-size="11" fill="currentColor">피벗</text>
+  <line x1="208.7" y1="294" x2="208.7" y2="309" stroke="currentColor" stroke-width="2.6"/>
+  <text x="217.7" y="306" font-size="11" fill="currentColor">경계 i</text>
+</svg>
+
+같은 과정을 루프 한 단계에 한 줄씩 그렸다. 막대 왼쪽의 음영 부분이 `a[lo:i]`, 즉 피벗보다 작다고 이미 확인된 원소들이고, 흰 칸은 확인했지만 작지 않은 원소, 점선 칸은 아직 보지 않은 원소다. 마지막 스왑이 피벗 5를 인덱스 5에서 인덱스 3으로 옮기고, 5는 거기서 확정된다.
 
 **피벗 선택이 모든 것을 정하는 이유.** 피벗이 순위 $q$에 떨어져 $q$개가 왼쪽, $n - 1 - q$개가 오른쪽으로 가면, 파티션은 선형이고 피벗 자신은 어느 재귀 호출에도 들어가지 않으므로 퀵정렬의 비용은 다음을 만족한다.
 $$T(n) = T(q) + T(n - 1 - q) + \Theta(n), \qquad T(0) = T(1) = \Theta(1)$$
@@ -1136,7 +1540,7 @@ $$\text{lower}(x) = \min\{i : a[i] \ge x\}, \qquad \text{upper}(x) = \min\{i : a
 - **C++과 Java의 오버플로.** `(lo + hi) / 2`는 넘칠 수 있다. `lo + (hi - lo) / 2`로 써라. Python 정수는 넘치지 않는다.
 - **실수 값의 답.** `hi - lo > eps`를 검사하지 말고 100번 같은 고정 횟수 후에 멈춰라. `eps`가 부동소수점 해상도보다 작으면 영원히 돈다.
 
-**로보틱스 활용: 타임스탬프 사이 찾기.** 이미지 타임스탬프에서의 자세나 관절각을 추정하려면, 그 시각을 사이에 둔 두 버퍼 샘플을 찾아 보간한다. 버퍼는 시간순으로 정렬되어 있으므로 이것은 upper bound 탐색이다. 스탬프는 같은 시계 기준이어야 하며, 그것이 [[04-robotics/ros2/qos-executors-time|25.5 §10]]의 주제다.
+**로보틱스 활용: 타임스탬프 사이 찾기.** 이미지 타임스탬프에서의 자세나 관절각을 추정하려면, 그 시각을 사이에 둔 두 버퍼 샘플을 찾아 보간한다. 버퍼는 시간순으로 정렬되어 있으므로 이것은 upper bound 탐색이다. 스탬프는 같은 시계 기준이어야 하며, 그것이 [[04-robotics/ros2/executors-callbacks-time|25.5.1 §3]]의 주제다.
 
 ```python
 from bisect import bisect_right
@@ -1310,6 +1714,44 @@ print(fib[0][1])                                           # 55, the 10th Fibona
 
 띠에도 거의 모든 점이 들어 있을 수 있으므로, 합치기를 선형으로 만드는 단계는 채우기(packing) 논증이다. 띠의 점들을 $y$로 정렬한다. $\delta$보다 가까운 쌍은 $y$ 차이가 $\delta$ 미만이다. 어떤 점 위쪽으로, 선을 가운데 둔 $2\delta \times \delta$ 직사각형을 한 변 $\delta/2$인 정사각형 여덟 개로 덮는다. 양쪽에 네 개씩이다. 같은 정사각형에 두 점이 있으면 같은 쪽에 있으면서 거리가 많아야 $\delta/\sqrt{2} < \delta$가 되어, $\delta$가 한쪽 안에서의 최소 거리라는 사실에 모순이다. 그러므로 정사각형마다 점은 많아야 하나이고, 각 점은 $y$ 순서로 다음 **7개** 점과만 비교하면 된다. 매 호출마다 띠를 다시 정렬하지 않고 병합 정렬처럼 병합으로 $y$ 순서를 유지하면 합치기가 $O(n)$이고 $T(n) = 2T(n/2) + O(n) = O(n \log n)$이다. 매 호출마다 다시 정렬하면 $O(n \log^2 n)$이다. 로보틱스 코드에서 "$r$보다 가까운 모든 쌍 찾기"는 보통 셀 크기 $r$인 격자나 공간 해시, 또는 KD-tree로 푼다. 분할 정복 버전은 기하학적 논증이 합치기를 선형으로 만드는 인터뷰 예제다.
 
+<svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="최근접 쌍의 합치기 단계. 띠 점 p 위쪽에서 분할선 둘레의 2δ × δ 직사각형을 한 변 δ/2인 정사각형 8개로 덮는다. 한 정사각형의 두 점은 같은 쪽에 있고 거리가 δ/√2 이하이므로, 정사각형마다 점은 많아야 하나다.">
+  <rect x="160" y="44" width="240" height="194" stroke="none" fill="currentColor" fill-opacity="0.05"/>
+  <rect x="160" y="94" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="160" y="154" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="220" y="94" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="220" y="154" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="280" y="94" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="280" y="154" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="340" y="94" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="340" y="154" width="60" height="60" stroke="currentColor" stroke-width="1.0" fill="none" stroke-opacity="0.8"/>
+  <rect x="160" y="94" width="240" height="120" stroke="currentColor" stroke-width="1.8" fill="none"/>
+  <line x1="280" y1="38" x2="280" y2="244" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="286" y="50" font-size="12" fill="currentColor" font-weight="bold">x = ℓ</text>
+  <text x="150" y="204" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.8">왼쪽 절반</text>
+  <text x="424" y="204" font-size="11" fill="currentColor" fill-opacity="0.8">오른쪽 절반</text>
+  <line x1="160" y1="80" x2="400" y2="80" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <line x1="160" y1="76" x2="160" y2="84" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <line x1="400" y1="76" x2="400" y2="84" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <text x="220" y="75" font-size="12" fill="currentColor" text-anchor="middle">2δ</text>
+  <line x1="414" y1="94" x2="414" y2="214" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <line x1="410" y1="94" x2="418" y2="94" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <line x1="410" y1="214" x2="418" y2="214" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.8"/>
+  <text x="420" y="158" font-size="12" fill="currentColor">δ</text>
+  <text x="190" y="230" font-size="11" fill="currentColor" text-anchor="middle">δ/2</text>
+  <line x1="160" y1="94" x2="220" y2="154" stroke="currentColor" stroke-width="1.0" stroke-dasharray="2 2"/>
+  <text x="152" y="104" font-size="11" fill="currentColor" text-anchor="end">δ/√2 ≈ 0.71δ &lt; δ</text>
+  <circle cx="244" cy="214" r="4" stroke="none" fill="currentColor"/>
+  <circle cx="166" cy="112" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="292" cy="178" r="3.4" stroke="none" fill="currentColor"/>
+  <circle cx="388" cy="100" r="3.4" stroke="none" fill="currentColor"/>
+  <line x1="244" y1="214" x2="292" y2="178" stroke="currentColor" stroke-width="1.0"/>
+  <text x="236" y="230" font-size="12" fill="currentColor" font-weight="bold">p</text>
+  <text x="288" y="208" font-size="11" fill="currentColor">0.5δ</text>
+  <text x="280" y="272" font-size="11" fill="currentColor" text-anchor="middle">정사각형 8개, 각각 점 많아야 1개: p를 y 순서로 다음 7개와만 비교</text>
+</svg>
+
+채우기 논증을 그린 것이다. $p$는 띠의 한 점이고, 직사각형은 그 위쪽에서 여전히 $\delta$보다 가까울 수 있는 점이 모두 들어가는 영역으로, 선 $x = \ell$ 둘레의 폭 $2\delta$, 높이 $\delta$다. $\delta/2 \times \delta/2$ 정사각형 여덟 개는 각각 한쪽에만 속하고, 한 정사각형 안의 두 점은 거리가 많아야 $\delta/\sqrt 2 \approx 0.71\delta$여서 그쪽의 최근접 쌍보다 가깝게 되므로, 정사각형마다 점은 많아야 하나다. 여기서 $p$와 $0.5\delta$ 떨어진 오른쪽 점이 합치기 단계가 찾아내는, 양쪽에 걸친 쌍이다.
+
 **Karatsuba 곱셈.** 두 $n$자리 수를 윗절반과 아랫절반으로 나눈다. 밑 $B$(십진 자릿수라면 10)와 $m = n/2$로 $x = x_1 B^m + x_0$, $y = y_1 B^m + y_0$라 쓰면 곱은 다음과 같다.
 $$xy = z_2 B^{2m} + z_1 B^m + z_0, \qquad z_2 = x_1 y_1, \quad z_0 = x_0 y_0, \quad z_1 = (x_1 + x_0)(y_1 + y_0) - z_2 - z_0$$
 $(x_1 + x_0)(y_1 + y_0) = x_1 y_1 + x_1 y_0 + x_0 y_1 + x_0 y_0$이므로 $z_2$와 $z_0$를 빼면 가운데 항 $x_1 y_0 + x_0 y_1$만 남는다. 그래서 Karatsuba(1962)는 절반 크기 곱셈을 네 번이 아니라 세 번만 한다. $1234 \times 5678$이면 $z_2 = 12 \cdot 56 = 672$, $z_0 = 34 \cdot 78 = 2652$, $z_1 = 46 \cdot 134 - 672 - 2652 = 2840$이고 $672 \cdot 10^4 + 2840 \cdot 10^2 + 2652 = 7006652$다. 그러면 $T(n) = 3T(n/2) + O(n) = O(n^{\log_2 3}) \approx O(n^{1.585})$이고, CPython이 큰 정수에 쓰는 알고리즘이 이것이다.
@@ -1325,6 +1767,7 @@ $(x_1 + x_0)(y_1 + y_0) = x_1 y_1 + x_1 y_0 + x_0 y_1 + x_0 y_0$이므로 $z_2$�
 7. C++ 프로그램이 `std::sort(v.begin(), v.end(), [](double a, double b) { return a <= b; });`로 정렬하다가 어떤 입력에서만 죽는다. 이유를 설명하고, `<`로 바꿔도 같은 비교자가 깨질 수 있는 두 번째 경우를 들어라.
 8. 메모리에 들어가지 않는 검출 결과 $10^8$개 스트림에서 점수 상위 100개가 필요하다. `heapq.nlargest`, 정렬, quickselect를 시간과 메모리로 비교하라. 실제로 쓸 수 있는 것은?
 9. 최근접 쌍의 합치기 단계에서 각 띠 점을 $y$ 순서로 다음 7개 점과만 비교해도 되는 이유는? 띠의 모든 점과 비교하면 실행 시간은 어떻게 되는가?
+10. 페이지를 닫고 무작위 피벗과 삼분할 파티션을 쓰는 `quicksort(a)`를 빈 파일에서 써라. `[3, 1, 3, 3, 9, 0, 3, 2, 3]`, `[]`, `[5]`, 한 값의 사본 1000개로 시험한 뒤 §3의 코드와 한 줄씩 비교하라. 어느 줄을 틀렸고, 그 줄은 어떤 불변식을 깨는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 그렇다, 여전히 정렬된다. 동점에서 오른쪽 원소를 먼저 가져가도 작거나 같은 원소를 출력하기 때문이다. 안정성은 잃는다. `key`가 두 번째 필드를 비교할 때 입력 `[("a", 1), ("b", 1)]`은 `[("a", 1)]`과 `[("b", 1)]`로 나뉘고, 동점에서 `<`가 거짓이므로 병합이 `("b", 1)`을 먼저 출력해 같은 두 항목의 순서가 뒤집힌다.
@@ -1336,6 +1779,7 @@ $(x_1 + x_0)(y_1 + y_0) = x_1 y_1 + x_1 y_0 + x_0 y_1 + x_0 y_0$이므로 $z_2$�
 > 7. `a == b`일 때 `a <= b`가 참이므로 `cmp(a, a)`가 참이다. 이것은 strict weak ordering의 요건 중 비반사성을 어기며, 동작은 정의되지 않는다. 구현의 파티션 루프는 원소가 자기 자신보다 "작을" 리 없다고 가정하므로 범위를 넘어갈 수 있다. `a < b`로 바꿔도 데이터에 NaN이 있으면 깨진다. NaN은 모든 값과 비교 불가능인데 그 값들끼리는 비교 가능하므로 "비교 불가능" 관계가 더 이상 추이적이지 않다. NaN을 먼저 걸러내거나 명시적으로 순서를 매겨라.
 > 8. `heapq.nlargest(100, stream)`: $O(n \log k)$, 가벼운 연산 약 $10^8 \times 7$번이고, 메모리에는 100개만 두며, 이터레이터를 그대로 소비한다. 정렬은 $10^8$개 전부를 메모리에 올려야 하고 $O(n \log n)$ 시간이 든다. Quickselect는 기댓값 $O(n)$이지만 역시 배열 전체가 메모리에 있어야 하므로 스트림에는 쓸 수 없다. 힙을 써라.
 > 9. 주어진 띠 점 위쪽에서 $\delta$보다 가까운 점은 $2\delta \times \delta$ 직사각형 안에 있다. 그 직사각형은 한 변 $\delta/2$인 정사각형 8개로 덮이고, 한 정사각형의 두 점은 같은 쪽에서 거리 $\le \delta/\sqrt{2} < \delta$가 되므로 정사각형마다 점은 많아야 하나다. 따라서 직사각형에는 자기 자신을 포함해 많아야 8개가 있고, 확인할 다른 점은 많아야 7개다. 띠의 모든 점과 비교하면 띠에 점이 대부분 들어 있을 때 합치기 한 번이 $O(n^2)$까지 들고, 알고리즘 전체가 $O(n^2)$로 나빠진다.
+> 10. 불변식을 먼저 주석으로 적어라: `a[lo:lt] < pivot`, `a[lt:i] == pivot`, `a[i:gt+1]`은 아직 보지 않음, `a[gt+1:hi+1] > pivot`. 흔한 실수 세 가지가 각각 이것을 깬다. `a[gt]`와 바꾼 뒤 `i`를 전진시키면 방금 들어온, 아직 보지 않은 원소를 건너뛴다. `i <= gt`로 돌면서 `gt = hi + 1`로 시작하면 범위 밖 한 칸을 읽는다. 큰 쪽을 루프로 돌리지 않고 양쪽 모두 재귀하면 나쁜 피벗이 이어질 때 스택 깊이가 $n$까지 간다. 올바른 구현은 첫 입력을 `[0, 1, 2, 3, 3, 3, 3, 3, 9]`로 정렬하고, `[]`와 `[5]`에서는 바로 끝나며, 같은 값 1000개는 파티션 한 번에 끝낸다. 모든 원소가 "같음" 영역에 들어가 바깥 두 범위가 비기 때문이다.
 
 ### 출처
 

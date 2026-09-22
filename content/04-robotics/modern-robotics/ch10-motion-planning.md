@@ -10,12 +10,15 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.10** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> You need the C-space idea from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]] — specifically the panel's C-obstacle derived there — and the basics of graph search (BFS/Dijkstra).
-> [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 C-space 개념, 특히 거기서 유도한 패널의 C-장애물과 그래프 탐색(BFS/다익스트라)의 기초가 필요하다.
+> You need the C-space idea from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]] — specifically the panel's C-obstacle derived there — and graph search: BFS and Dijkstra's algorithm from [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms §2 and §4]], which Step 5 runs.
+> [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 C-space 개념, 특히 거기서 유도한 패널의 C-장애물과, 그래프 탐색 — 5단계가 돌리는 BFS와 다익스트라 알고리즘, [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘 §2·§4]] — 이 필요하다.
 
 ## English
 
 **Core question**: how do we find a collision-free path through C-space?
+
+> [!note] First pass · 처음이라면
+> Read the running plant, the picture and the whole worked case (Steps 1–5: the collision test, the grid count, the direct edge that fails, the edge a coarse test misses, and the detour Dijkstra finds), then §3, because the difference between its two completeness guarantees is the sentence papers most often get wrong. §1, the chapter as one list (A\*, RRT, PRM, kinodynamic planning, and the grid-size example), and §2, which restates Steps 1 and 3 as definitions, are the second pass. Then the self-check and the problem set, which moves the wall to $x \ge 1.5$.
 
 ### Running plant · 이 페이지의 장치
 
@@ -127,7 +130,15 @@ $$d_{\max} = \sqrt2 - 1 = 0.4142\ \mathrm{m}$$
 
 so the edge ch.9 spent a whole chapter timing drives the arm **41 cm into the panel** at its midpoint. Both endpoints have $d = 0$; only the interior offends. Checking $m = 1$ interior sample already catches it, because that sample is $\lambda = 0.5$ exactly.
 
-**Step 4 — an edge that a careless test misses.** Not every violation sits at a midpoint. The edge $B = (90°,-90°)$ to $C = (60°,90°)$ has length $182.48°$ and penetrates over only $\lambda \in (0,\ 0.155]$, peaking at $d = 0.0201\,\mathrm{m}$ near $\lambda = 0.077$ — a $2\,\mathrm{cm}$ bite spread over a $28.2°$ band. With $m$ evenly spaced interior samples the spacing is $182.48°/(m+1)$, so
+**Step 4 — an edge that a careless test misses.** Not every violation sits at a midpoint. Take the edge $B = (90°,-90°)$ to $C = (60°,90°)$. Along it $\theta_1 = 90° - 30°\lambda$ and $\theta_2 = -90° + 180°\lambda$ (a $180°$ change is equally short either way round the circle; this page takes the way through $\theta_2 = 0$), so $\theta_1 + \theta_2 = 150°\lambda$, the elbow's $x = \cos\theta_1 = \sin(30°\lambda)$ never exceeds $0.5$, and the tip's $x$-coordinate is
+
+$$p_x(\lambda) = \sin(30°\lambda) + \cos(150°\lambda)$$
+
+because $\cos(90° - u) = \sin u$ again. Write $u = 30°\lambda$ in radians, so that $150°\lambda = 5u$. Near $\lambda = 0$, $\sin u \approx u$ and $\cos 5u \approx 1 - 25u^2/2$, so
+
+$$d(\lambda) = p_x(\lambda) - 1 \approx u - 12.5\,u^2$$
+
+a parabola that is positive for $0 < u < 0.08$ and peaks at $u = 0.04$ with $d = 0.02$. Dividing by $30° = 0.5236\,\mathrm{rad}$ puts the peak at $\lambda = 0.076$ and the end of the band at $\lambda = 0.153$. Solving the exact conditions numerically — $dp_x/d\lambda = 0$, i.e. $\cos u = 5\sin 5u$, for the peak and $d = 0$ for the band's end — moves these only in the third digit: the peak is $d = 0.0201\,\mathrm{m}$ at $\lambda = 0.077$, and the edge penetrates over $\lambda \in (0,\ 0.155]$. The edge is $\sqrt{30^2 + 180^2} = 182.48°$ long, so this is a $2\,\mathrm{cm}$ bite spread over a $0.155 \times 182.48° = 28.2°$ band. With $m$ evenly spaced interior samples the spacing is $182.48°/(m+1)$ and the first sample sits at $\lambda = 1/(m+1)$, which lands in the band only when $1/(m+1) \le 0.155$, i.e. $m \ge 6$:
 
 | $m$ | spacing | verdict |
 |---:|---:|---|
@@ -162,7 +173,7 @@ All ten pairs get the edge test, edge length being the Euclidean distance on the
 | $C$–$E$ | $2.6954$ | free |
 | $D$–$E$ | $1.3349$ | free |
 
-Now run Dijkstra from $A$. The direct edge is gone, so the candidates are $A$–$E$–$B = 3.3322 + 1.1107 = 4.4429$, $A$–$D$–$B = 2.3416 + 2.1589 = 4.5005$, $A$–$C$–$D$–$B = 4.6870$, and $A$–$D$–$E$–$B = 4.7872$. The winner is
+Now run Dijkstra from $A$ ([[02-foundations/algorithms/graph-algorithms|11.6 §4]]: repeatedly finalize the unvisited node with the smallest distance so far). The direct edge is gone, so the candidates are $A$–$E$–$B = 3.3322 + 1.1107 = 4.4429$, $A$–$D$–$B = 2.3416 + 2.1589 = 4.5005$, $A$–$C$–$D$–$B = 4.6870$, and $A$–$D$–$E$–$B = 4.7872$. The winner is
 
 $$A \to E \to B, \qquad \text{cost } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = \pi\sqrt2$$
 
@@ -174,7 +185,7 @@ because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so
   navigation in [[04-robotics/modern-robotics/ch02-configuration-space|configuration space]], where the robot is a point.
 - **Grid/graph search**: discretize C-space, run **A\*** (Dijkstra + admissible heuristic, i.e. a cost-to-go guess that never overestimates the true remaining cost)
   — complete on the grid, and optimal there given an admissible heuristic plus the revisit
-  bookkeeping a closed set needs (see [[04-robotics/planning-decision-making|4. Planning & Decision-Making]] §3; the correctness proof and an implementation are [[02-foundations/algorithms/graph-algorithms|11.6 §6]]), but the grid explodes exponentially with dof.
+  bookkeeping a closed set needs (the closed set is the nodes already expanded; one must be reopened if a cheaper route to it turns up later; see [[04-robotics/planning-decision-making|4. Planning & Decision-Making]] §3, and for the correctness proof and an implementation [[02-foundations/algorithms/graph-algorithms|11.6 §6]]), but the grid explodes exponentially with dof.
 - **Sampling-based planning** — the high-dof workhorses:
   - **RRT**: grow a tree by sampling random configurations and extending toward them;
     RRT\* adds rewiring for asymptotic optimality.
@@ -269,6 +280,9 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 ## 한국어
 
 **핵심 질문**: C-space를 통과하는 충돌 없는 경로를 어떻게 찾는가?
+
+> [!note] 처음이라면 · First pass
+> 이 페이지의 장치, 그림, 그리고 계산 전체(1–5단계: 충돌 검사, 격자 세기, 실패하는 직통 간선, 거친 검사가 놓치는 간선, 다익스트라가 찾는 우회)를 읽고, 그다음 §3을 읽어라. 두 완전성 보장의 차이가 논문이 가장 자주 틀리는 문장이기 때문이다. 이 장을 목록 하나로 정리한 §1(A\*, RRT, PRM, 키노다이나믹 계획, 격자 크기 예제)과 1·3단계를 정의로 다시 쓴 §2는 두 번째 읽기다. 그다음 스스로 점검과, 벽을 $x \ge 1.5$로 옮기는 과제.
 
 ### 이 페이지의 장치 · Running plant
 
@@ -380,7 +394,15 @@ $$d_{\max} = \sqrt2 - 1 = 0.4142\ \mathrm{m}$$
 
 따라서 9장이 한 장을 통째로 들여 시간을 입힌 그 간선은 중간점에서 팔을 **패널 안으로 41 cm** 밀어 넣는다. 양 끝점은 $d = 0$이고 내부만 위반한다. 내부 표본 $m = 1$이면 이미 잡힌다. 그 표본이 정확히 $\lambda = 0.5$이기 때문이다.
 
-**4단계 — 부주의한 검사가 놓치는 간선.** 모든 위반이 중간점에 있지는 않다. 간선 $B = (90°,-90°) \to C = (60°,90°)$는 길이가 $182.48°$인데 $\lambda \in (0,\ 0.155]$에서만 파고들고 $\lambda \approx 0.077$에서 $d = 0.0201\,\mathrm{m}$로 최대다. $28.2°$ 띠에 퍼진 $2\,\mathrm{cm}$짜리 한 입이다. 내부 표본 $m$개를 고르게 두면 간격이 $182.48°/(m+1)$이므로
+**4단계 — 부주의한 검사가 놓치는 간선.** 모든 위반이 중간점에 있지는 않다. 간선 $B = (90°,-90°) \to C = (60°,90°)$를 보자. 그 위에서 $\theta_1 = 90° - 30°\lambda$, $\theta_2 = -90° + 180°\lambda$이고($180°$ 변화는 원의 어느 쪽으로 돌아도 똑같이 짧다. 이 페이지는 $\theta_2 = 0$을 지나는 쪽을 택한다), 따라서 $\theta_1 + \theta_2 = 150°\lambda$, 엘보의 $x = \cos\theta_1 = \sin(30°\lambda)$는 $0.5$를 넘지 않으며, 말단의 $x$ 좌표는
+
+$$p_x(\lambda) = \sin(30°\lambda) + \cos(150°\lambda)$$
+
+다. 이번에도 $\cos(90° - u) = \sin u$이기 때문이다. $u = 30°\lambda$를 라디안으로 쓰면 $150°\lambda = 5u$다. $\lambda = 0$ 근처에서 $\sin u \approx u$, $\cos 5u \approx 1 - 25u^2/2$이므로
+
+$$d(\lambda) = p_x(\lambda) - 1 \approx u - 12.5\,u^2$$
+
+이고, 이 포물선은 $0 < u < 0.08$에서 양수이며 $u = 0.04$에서 $d = 0.02$로 최대다. $30° = 0.5236\,\mathrm{rad}$로 나누면 최대점은 $\lambda = 0.076$, 띠의 끝은 $\lambda = 0.153$이다. 정확한 조건 — 최대점은 $dp_x/d\lambda = 0$, 곧 $\cos u = 5\sin 5u$, 띠의 끝은 $d = 0$ — 을 수치로 풀면 셋째 자리만 바뀐다. 최대는 $\lambda = 0.077$에서 $d = 0.0201\,\mathrm{m}$이고, 간선은 $\lambda \in (0,\ 0.155]$에서 파고든다. 간선 길이가 $\sqrt{30^2 + 180^2} = 182.48°$이므로 $0.155 \times 182.48° = 28.2°$ 띠에 퍼진 $2\,\mathrm{cm}$짜리 한 입이다. 내부 표본 $m$개를 고르게 두면 간격이 $182.48°/(m+1)$이고 첫 표본은 $\lambda = 1/(m+1)$에 놓이는데, 그것이 띠에 떨어지는 것은 $1/(m+1) \le 0.155$, 곧 $m \ge 6$일 때뿐이다:
 
 | $m$ | 간격 | 판정 |
 |---:|---:|---|
@@ -415,7 +437,7 @@ $$d_{\max} = \sqrt2 - 1 = 0.4142\ \mathrm{m}$$
 | $C$–$E$ | $2.6954$ | 자유 |
 | $D$–$E$ | $1.3349$ | 자유 |
 
-이제 $A$에서 다익스트라를 돌린다. 직통 간선이 사라졌으므로 후보는 $A$–$E$–$B = 3.3322 + 1.1107 = 4.4429$, $A$–$D$–$B = 2.3416 + 2.1589 = 4.5005$, $A$–$C$–$D$–$B = 4.6870$, $A$–$D$–$E$–$B = 4.7872$다. 승자는
+이제 $A$에서 다익스트라를 돌린다([[02-foundations/algorithms/graph-algorithms|11.6 §4]]: 아직 확정되지 않은 노드 중 지금까지의 거리가 가장 작은 것을 차례로 확정한다). 직통 간선이 사라졌으므로 후보는 $A$–$E$–$B = 3.3322 + 1.1107 = 4.4429$, $A$–$D$–$B = 2.3416 + 2.1589 = 4.5005$, $A$–$C$–$D$–$B = 4.6870$, $A$–$D$–$E$–$B = 4.7872$다. 승자는
 
 $$A \to E \to B, \qquad \text{비용 } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = \pi\sqrt2$$
 
@@ -427,7 +449,7 @@ $$A \to E \to B, \qquad \text{비용 } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = 
   [[04-robotics/modern-robotics/ch02-configuration-space|컨피규레이션 공간]]에서의 항해이고,
   거기서 로봇은 점이다.
 - **격자/그래프 탐색**: C-space를 이산화하고 **A\***(다익스트라 + 허용 가능 휴리스틱, 즉 실제 남은 비용을 절대 과대추정하지 않는 비용 추정)를
-  돌린다 — 격자 위에서 완전하고, 허용 가능 휴리스틱에 더해 닫힌 집합이 요구하는 재방문 처리까지 갖추면 최적이다([[04-robotics/planning-decision-making|4. 계획과 의사결정]] §3. 정확성 증명과 구현은 [[02-foundations/algorithms/graph-algorithms|11.6 §6]]). 다만 격자가 자유도에 지수적으로 폭발한다.
+  돌린다 — 격자 위에서 완전하고, 허용 가능 휴리스틱에 더해 닫힌 집합이 요구하는 재방문 처리까지 갖추면 최적이다. 닫힌 집합은 이미 확장한 노드들이고, 나중에 그중 하나로 가는 더 싼 경로가 나타나면 그 노드를 다시 열어야 한다([[04-robotics/planning-decision-making|4. 계획과 의사결정]] §3. 정확성 증명과 구현은 [[02-foundations/algorithms/graph-algorithms|11.6 §6]]). 다만 격자가 자유도에 지수적으로 폭발한다.
 - **샘플링 기반 계획** — 고자유도의 주력:
   - **RRT**: 무작위 컨피규레이션을 샘플링하고 그쪽으로 확장하며 트리를 키운다; RRT\*는
     재배선을 더해 점근적 최적성을 얻는다.

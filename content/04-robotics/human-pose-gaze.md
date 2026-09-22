@@ -21,7 +21,7 @@ A robot that must anticipate a person cannot observe intent. It observes a body.
 > [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]] · [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]]
 
 > [!note] First pass · 처음이라면
-> Read the running object and the six derivations on it, then §1 — the representation ladder tells you what any given paper is even outputting — then §3 on reading MPJPE as a physical quantity, then §4, the substitution nobody states. §2 and §5 are for comparing methods.
+> Read the running object and the six derivations on it, then §1 — the representation ladder tells you what any given paper is even outputting — then §3 on reading MPJPE as a physical quantity, then §4, the substitution nobody states. §2 and §5 are for comparing methods; §6 and §7 are for judging whether a result survives a work site, and belong to the second pass. In step 3, the Procrustes solve box and its code can wait for the second pass too — the first pass needs only its result, $37.0$ mm.
 
 ### Running object · 이 페이지의 대상
 
@@ -193,11 +193,13 @@ Panel (a) is K5 from above, its facing arrow $u$ at $\psi = 36.87^\circ$ square 
 > $$u = \big(p_{\mathrm{L\,sh}} - p_{\mathrm{R\,sh}}\big) \times \hat{z}, \qquad \psi = \operatorname{atan2}\!\big(u_y,\, u_x\big)$$
 > where $u$ is the (unnormalised) forward vector, $p_{\mathrm{L\,sh}}$ and $p_{\mathrm{R\,sh}}$ are
 > the left and right shoulder keypoints, $\hat{z} = (0,0,1)$ is the vertical, $\times$ is the cross
-> product, and $\operatorname{atan2}$
-> returns the azimuth in $(-180^\circ, 180^\circ]$. The cross product with $\hat{z}$ drops the
-> vertical component of the shoulder vector, so a shoulder error that is purely up or down costs
+> product ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §1]]), and $\operatorname{atan2}$
+> returns the azimuth in $(-180^\circ, 180^\circ]$. With $\hat z$ as the second factor the
+> cross product's components reduce to
+> $(a,b,c)\times(0,0,1)=(b\cdot1-c\cdot0,\ c\cdot0-a\cdot1,\ a\cdot0-b\cdot0)=(b,\,-a,\,0)$: it drops the
+> vertical component $c$ of the shoulder vector, so a shoulder error that is purely up or down costs
 > no facing at all.
-> **Example, on K5.** $p_2 - p_3 = (-0.24,\ 0.32,\ 0)$, so $u = (0.32,\ 0.24,\ 0)$, which
+> **Example, on K5.** $p_2 - p_3 = (-0.24,\ 0.32,\ 0)$, so $u = (b,\,-a,\,0) = (0.32,\ 0.24,\ 0)$, which
 > normalises to $(0.8,\ 0.6,\ 0)$ and gives $\psi = \operatorname{atan2}(0.6, 0.8) = 36.87^\circ$.
 > **Non-example.** The azimuth of the shoulder line itself is
 > $\operatorname{atan2}(0.32, -0.24) = 126.87^\circ$; it is not the facing, and it is $90^\circ$
@@ -268,7 +270,85 @@ $$\mathrm{MPJPE}(\hat{B}) = \frac{50 + 50 + 50 + 30 + 30}{5} = \frac{210}{5} = 4
 > that is the right isolation. For a robot that has to know which way a worker is turned, it is
 > the deletion of the answer.
 
-$\hat{B}$ is not a similarity transform of K5, so its Procrustes fit is a genuine least-squares problem and the one step on this page that wants a solver rather than a pencil: it returns $s^\ast = 1.0008$ and leaves $\mathrm{PA\text{-}MPJPE}(\hat{B}) = 37.0$ mm.
+$\hat{B}$ is not a similarity transform of K5, so its Procrustes fit is a genuine least-squares problem. It has a closed-form solution, and it is worth knowing, because every PA-MPJPE in a results table was computed with it.
+
+> [!info] Definition — the similarity Procrustes solve
+> A **closed-form estimator**: a recipe that takes two ordered point sets and returns the rotation,
+> scale and translation minimising the summed squared distance between them — the
+> $(s^\ast, R^\ast, t^\ast)$ of the PA-MPJPE box. It is Umeyama's (1991) solution; fixing $s = 1$
+> gives the rotation-only fit. Four conditions: the **correspondence is given** (joint $j$ of the
+> prediction goes with joint $j$ of the truth, and the solve never searches for it); the
+> cross-covariance below has **rank at least 2** — in practice, neither skeleton lies on one line —
+> so that the rotation is unique; the **sign correction** $D$ is applied, which is what enforces
+> $\det R^\ast = +1$; and the objective is the **sum of squares**, so the fit minimises the RMS
+> residual, not the mean of norms that PA-MPJPE then reports.
+> $$C=\tfrac{1}{J}\textstyle\sum_j(p_j-\bar p)(\hat p_j-\bar{\hat p})^{\top}=U\Sigma V^{\top},\quad D=\mathrm{diag}\big(1,1,\det(UV^{\top})\big),\quad R^\ast=UDV^{\top},\quad s^\ast=\frac{\operatorname{tr}(\Sigma D)}{\tfrac{1}{J}\sum_j\lVert\hat p_j-\bar{\hat p}\rVert^2},\quad t^\ast=\bar p-s^\ast R^\ast\,\bar{\hat p}$$
+> where $\bar p$ and $\bar{\hat p}$ are the centroids of the truth and the prediction, $C$ is the
+> $3\times3$ cross-covariance of the two centred sets, $U\Sigma V^\top$ is its singular value
+> decomposition ([[02-foundations/linear-algebra|1. Linear Algebra §4]]) with singular values
+> $\sigma_1\ge\sigma_2\ge\sigma_3\ge0$ on the diagonal of $\Sigma$, and $D$ flips the last singular
+> direction exactly when the best unconstrained fit would be a reflection.
+> **Example.** $\hat{B}$ onto K5, worked below: $s^\ast = 1.0008$, $R^\ast$ a $3.71^\circ$ rotation,
+> and $\mathrm{PA\text{-}MPJPE} = 37.0$ mm.
+> **Non-example.** Matching the centroids alone is not the solve. Translating $\hat B$ so that its
+> centroid lands on K5's removes the $12.8$ mm offset and leaves a mean error of $39.5$ mm, not
+> $37.0$; the last $2.5$ mm is what the rotation and scale buy. Nor is a fit that skips $D$. K5's five
+> joints all lie in one vertical plane, so $\sigma_3 = 0$ exactly, and the mirrored fit $UV^\top$
+> scores the *same* $37.0$ mm: without the determinant condition the metric cannot tell a skeleton
+> from its mirror image.
+> **Why it matters.** It is the step that turns MPJPE into PA-MPJPE in every paper, and it removes
+> orientation error whatever caused it — including the facing error step 4 is about to measure.
+
+Run it on $\hat B$. The centroids are $\bar p = (0,\ 0,\ 0.350)$ and $\bar{\hat p} = (0.008,\ 0.008,\ 0.356)$ m, $12.8$ mm apart. The centred prediction's mean squared radius is $\tfrac15\sum_j\lVert\hat p_j-\bar{\hat p}\rVert^2 = 0.56668/5 = 0.113336\ \mathrm{m^2}$, and the cross-covariance is
+
+$$C=\begin{pmatrix}0.00846&-0.01272&-0.00174\\-0.01128&0.01696&0.00232\\0.00170&0.00320&0.08790\end{pmatrix}\ \mathrm{m^2}$$
+
+A $3\times3$ SVD is the one step on this page that wants a solver rather than a pencil, so the code below does it. It returns $\sigma = (0.088046,\ 0.025379,\ 0)$ and $\det(UV^\top) = -1$, so $D = \mathrm{diag}(1,1,-1)$ — with $\sigma_3 = 0$ the flip costs nothing — and then the scale is arithmetic again, because $\operatorname{tr}(\Sigma D) = \sigma_1 + \sigma_2 - \sigma_3$:
+
+$$s^\ast = \frac{0.088046 + 0.025379 - 0}{0.113336} = \frac{0.113425}{0.113336} = 1.0008$$
+
+$\hat B$'s offsets are almost scale-neutral, so the fit barely stretches it; what it does do is turn it by $3.71^\circ$ and shift it by $t^\ast = (5.0,\ -3.6,\ -6.4)$ mm. The five aligned residuals are $28.966$, $41.569$, $55.440$, $33.784$ and $25.481$ mm, so
+
+$$\mathrm{PA\text{-}MPJPE}(\hat B) = \frac{28.966 + 41.569 + 55.440 + 33.784 + 25.481}{5} = \frac{185.240}{5} = 37.048\ \mathrm{mm}$$
+
+which is the $37.0$ mm of the table in step 4.
+
+```python
+import numpy as np
+
+# K5 (truth) and B-hat = K5 + its frozen offsets; rows: head, L shoulder, R shoulder, L hip, R hip (m)
+P = np.array([
+    [0, 0, .75], [-.12, .16, .5], [.12, -.16, .5], [-.09, .12, 0], [.09, -.12, 0],
+])
+B = P + np.array([
+    [.03, .04, 0], [0, .03, .04], [0, -.03, -.04], [.02, -.02, .01], [-.01, .02, .02],
+])
+
+def procrustes(pred, true):
+    """Similarity Procrustes: the s, R, t minimising sum_j ||s R pred_j + t - true_j||^2."""
+    mp, mt = pred.mean(0), true.mean(0)
+    X, Y = pred - mp, true - mt                              # centre both sets
+    C = Y.T @ X / len(pred)                                  # 3x3 cross-covariance
+    U, S, Vt = np.linalg.svd(C)
+    D = np.diag([1.0, 1.0, np.sign(np.linalg.det(U @ Vt))])  # forbid a reflection
+    R = U @ D @ Vt
+    s = np.trace(np.diag(S) @ D) / (X ** 2).sum(1).mean()
+    return s, R, mt - s * R @ mp, S
+
+s, R, t, S = procrustes(B, P)
+res = np.linalg.norm((s * (R @ B.T)).T + t - P, axis=1) * 1000
+print("singular values:", S.round(6))
+print(f"s* = {s:.4f}, rotation = {np.degrees(np.arccos((np.trace(R) - 1) / 2)):.2f} deg")
+print("residuals (mm):", res.round(3), f"-> PA-MPJPE = {res.mean():.3f} mm")
+```
+
+```text
+singular values: [0.088046 0.025379 0.      ]
+s* = 1.0008, rotation = 3.71 deg
+residuals (mm): [28.966 41.569 55.44  33.784 25.481] -> PA-MPJPE = 37.048 mm
+```
+
+The alignment took $5.0$ mm off $\hat B$'s MPJPE of $42.0$, and all $36.55$ mm off $\hat A$'s.
 
 **4. The facing error, and the reversal.** Apply step 1 to each prediction. $\hat{A}$ is a rigid yaw, so its facing is the truth plus the yaw: $36.87^\circ + 15^\circ = 51.87^\circ$, an error of $+15.0^\circ$. For $\hat{B}$, the predicted shoulder vector is $\hat{p}_2 - \hat{p}_3 = (-0.24,\ 0.38,\ 0.08)$; crossing with $\hat{z}$ gives $u_{\hat B} = (0.38,\ 0.24,\ 0)$ and $\psi_{\hat B} = \operatorname{atan2}(0.24, 0.38) = 32.28^\circ$, an error of $-4.59^\circ$.
 
@@ -322,7 +402,36 @@ Six metres. Past that C20 has under four pixels on an iris, and §4's table stop
 
 $$\Delta\theta = 2\arctan\!\frac{0.15}{0.80} = 2 \times 10.62^\circ = 21.24^\circ$$
 
-so each target sits only $10.6^\circ$ off the midline. Let $E$ be the **eye-only range**: the gaze amplitude below which the head does not move at all. For any $E \ge 10.6^\circ$ the worker selects either object with the eyes alone, the head never turns, and **head pose carries exactly zero bits about which object was chosen**. $E$ is the number no study reports for a manipulation workspace, and it is the whole content of §4's warning. Compare the street case on C20: the same $0.30$ m separation at $20$ m subtends $0.86^\circ$ and $30$ px, so the camera resolves the *targets* twenty-five times better than it resolves the 1.2-pixel *eye* that would select between them. Both regimes fail, and they fail for opposite reasons.
+so each target sits only $10.6^\circ$ off the midline. Whether the head says anything about that choice depends on one property of the person.
+
+> [!info] Definition — eye-only range $E$
+> An **angle**, and a property of a person doing a task, not of a camera or an estimator: the
+> largest gaze shift that person makes with the eyes alone, the head staying still. Four
+> conditions. It is measured on **gaze shifts**, the change of gaze direction in the world, which
+> is the head's rotation plus the eyes' rotation in the head. It depends on the **task and the
+> population** — posture, target layout, a tool in hand — so it must be measured in the workspace
+> it is used for, not borrowed from a seated laboratory. It is a **statistic of observed shifts**, so
+> a study must say which one it reports: the largest head-free shift, or the amplitude at which half
+> the shifts recruit the head. And it is **behavioural, not mechanical**: it is not how far the eyes
+> *can* turn in the head, which is a larger, anatomical limit, but how far people turn them before
+> they move the head.
+> $$\Delta\gamma = \Delta h + \Delta e, \qquad E = \max\big\{\lvert\Delta\gamma\rvert \ :\ \Delta h = 0\big\}$$
+> where $\Delta\gamma$ is a gaze shift, $\Delta h$ the head rotation and $\Delta e$ the eye-in-head
+> rotation during it, all as angles about the same axis, and the maximum is over the shifts
+> observed in the task.
+> **Example.** The bench below. With a hypothetical $E = 15^\circ$, both targets, $10.6^\circ$ off
+> the midline, are reached with $\Delta h = 0$ and the head carries no information about the choice.
+> With a hypothetical $E = 5^\circ$, a shift to either target recruits the head, and the direction
+> of $\Delta h$ says which. Neither value is a measurement; the page's point is that nobody has
+> made one.
+> **Non-example.** A head-pose estimator's angular error is not $E$: that is how badly a camera
+> system measures $h$, and it could be zero while $E$ still makes $h$ useless. Nor is the
+> oculomotor range, for the last reason above.
+> **Why it matters.** When every target a task has to discriminate sits within $E$ of where the
+> person is already looking, no head-pose estimator of any accuracy can recover which one was chosen. It is the
+> number §4's warning is about.
+
+For any $E \ge 10.6^\circ$ the worker selects either object with the eyes alone, the head never turns, and **head pose carries exactly zero bits about which object was chosen**. $E$ is the number no study reports for a manipulation workspace, and it is the whole content of §4's warning. Compare the street case on C20: the same $0.30$ m separation at $20$ m subtends $0.86^\circ$ and $30$ px, so the camera resolves the *targets* twenty-five times better than it resolves the 1.2-pixel *eye* that would select between them. Both regimes fail, and they fail for opposite reasons.
 
 ### 1. The representation ladder
 
@@ -376,7 +485,7 @@ Read it as a per-joint Euclidean distance averaged over the $J$ joints, so that 
 > unaligned rotation error or a task-specific orientation metric.
 
 > [!example] Worked example · 계산 예제
-> **Turning 40 mm MPJPE into a decision.** Standard anthropometry (Drillis & Contini) puts
+> **Turning 40 mm MPJPE into a decision.** Standard anthropometry (Drillis & Contini 1966, in Sources) puts
 > forearm length at $0.146H$; for a 1.75 m adult that is 256 mm. A Human3.6M MPJPE of 40 mm is
 > therefore $40/256 = \mathbf{16\%}$ of a forearm — the joint is placed within about a sixth of
 > the segment it terminates.
@@ -534,6 +643,11 @@ Tier B. Using **K5** and **C20** from the running object above, and this page on
 > residual creating a many-to-one ambiguity (Ba & Odobez 2009), and no equivalent measurement
 > exists for close-range manipulation. That absence is a gap you could measure.
 
+**Anthropometry and alignment**
+
+- R. Drillis and R. Contini, "Body Segment Parameters," Technical Report No. 1166-03, New York University, School of Engineering and Science, Research Division, 1966, prepared for the Office of Vocational Rehabilitation, U.S. Department of Health, Education and Welfare — the source of the segment-length proportions of stature used in §3's worked example (forearm $0.146H$). It is a technical report, not a refereed paper, and most readers meet it through the segment-length figure reproduced in D. A. Winter, *Biomechanics and Motor Control of Human Movement* (Wiley).
+- S. Umeyama, "Least-Squares Estimation of Transformation Parameters Between Two Point Patterns," *IEEE TPAMI*, vol. 13, no. 4, pp. 376–380, 1991 — the closed-form similarity Procrustes solve of worked step 3, including the determinant correction that excludes reflections.
+
 ## 한국어
 
 *J군이다. [[04-robotics/geometric-perception-calibration|3.5 기하 인식]]·[[02-foundations/se3-geometry|SE(3)]]·[[04-robotics/video-action-understanding|20. 비디오]] 위에 선다.
@@ -550,7 +664,7 @@ Tier B. Using **K5** and **C20** from the running object above, and this page on
 > [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]] · [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]]
 
 > [!note] 처음이라면 · First pass
-> 먼저 이 페이지의 대상과 그 위에서 하는 여섯 개의 유도, 그다음 §1 — 표현의 사다리가 어떤 논문이 대체 무엇을 출력하는지 알려 준다 — 그다음 MPJPE를 물리량으로 읽는 §3, 그다음 아무도 밝히지 않는 대체인 §4. §2·§5는 방법을 비교할 때다.
+> 먼저 이 페이지의 대상과 그 위에서 하는 여섯 개의 유도, 그다음 §1 — 표현의 사다리가 어떤 논문이 대체 무엇을 출력하는지 알려 준다 — 그다음 MPJPE를 물리량으로 읽는 §3, 그다음 아무도 밝히지 않는 대체인 §4. §2·§5는 방법을 비교할 때다. §6·§7은 결과가 작업 현장에서 살아남는지 판단할 때이고 두 번째 읽기에 속한다. 3단계의 Procrustes 풀이 상자와 그 코드도 두 번째 읽기로 미뤄도 된다 — 첫 읽기에는 그 결과인 $37.0$ mm만 있으면 된다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -721,10 +835,12 @@ Tier B. Using **K5** and **C20** from the running object above, and this page on
 > $$u = \big(p_{\mathrm{L\,sh}} - p_{\mathrm{R\,sh}}\big) \times \hat{z}, \qquad \psi = \operatorname{atan2}\!\big(u_y,\, u_x\big)$$
 > 여기서 $u$는 정규화 전의 앞 방향 벡터, $p_{\mathrm{L\,sh}}$와 $p_{\mathrm{R\,sh}}$는 왼쪽·오른쪽
 > 어깨 키포인트, $\hat{z} = (0,0,1)$은
-> 수직 방향, $\times$는 외적, $\operatorname{atan2}$는 $(-180^\circ, 180^\circ]$의 방위각을
-> 돌려준다. $\hat{z}$와의 외적이 어깨 벡터의 수직 성분을 떨어뜨리므로, 순전히 위아래로만 난
-> 어깨 오차는 facing을 전혀 건드리지 않는다.
-> **예 (K5).** $p_2 - p_3 = (-0.24,\ 0.32,\ 0)$이므로 $u = (0.32,\ 0.24,\ 0)$이고, 정규화하면
+> 수직 방향, $\times$는 외적([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §1]]), $\operatorname{atan2}$는 $(-180^\circ, 180^\circ]$의 방위각을
+> 돌려준다. 둘째 인수가 $\hat z$이면 외적의 성분은
+> $(a,b,c)\times(0,0,1)=(b\cdot1-c\cdot0,\ c\cdot0-a\cdot1,\ a\cdot0-b\cdot0)=(b,\,-a,\,0)$으로 줄어든다.
+> 어깨 벡터의 수직 성분 $c$가 떨어져 나가므로, 순전히 위아래로만 난 어깨 오차는 facing을 전혀
+> 건드리지 않는다.
+> **예 (K5).** $p_2 - p_3 = (-0.24,\ 0.32,\ 0)$이므로 $u = (b,\,-a,\,0) = (0.32,\ 0.24,\ 0)$이고, 정규화하면
 > $(0.8,\ 0.6,\ 0)$, 따라서 $\psi = \operatorname{atan2}(0.6, 0.8) = 36.87^\circ$다.
 > **반례.** 어깨선 자체의 방위각은 $\operatorname{atan2}(0.32, -0.24) = 126.87^\circ$인데 이건
 > facing이 아니고, 정의상 $90^\circ$ 어긋나 있다. 두 번째 반례는 라벨 없는 어깨선이다. 두 어깨를
@@ -785,7 +901,44 @@ $$\mathrm{MPJPE}(\hat{B}) = \frac{50 + 50 + 50 + 30 + 30}{5} = \frac{210}{5} = 4
 > **왜 중요한가.** 관절 형상을 배치에서 분리해 준다. 손 형상 논문에는 옳은 분리다. 작업자가 어느
 > 쪽으로 돌았는지 알아야 하는 로봇에는 답을 삭제하는 일이다.
 
-$\hat{B}$는 K5의 닮음 변환이 아니므로 Procrustes 적합이 진짜 최소제곱 문제가 되고, 이 페이지에서 연필 대신 솔버가 필요한 유일한 단계다. 적합 결과는 $s^\ast = 1.0008$이고 $\mathrm{PA\text{-}MPJPE}(\hat{B}) = 37.0$ mm가 남는다.
+$\hat{B}$는 K5의 닮음 변환이 아니므로 Procrustes 적합이 진짜 최소제곱 문제가 된다. 그 문제에는 닫힌 형태의 해가 있고, 결과표의 모든 PA-MPJPE가 그것으로 계산되었으므로 알아 둘 가치가 있다.
+
+> [!info] 정의 — 닮음 Procrustes 풀이
+> **닫힌 형태의 추정기** 다. 순서가 매겨진 점 집합 둘을 받아, 둘 사이의 거리 제곱합을 최소로 하는
+> 회전·스케일·평행이동 — PA-MPJPE 상자의 $(s^\ast, R^\ast, t^\ast)$ — 을 돌려주는 절차다. Umeyama(1991)의
+> 해이고, $s = 1$로 고정하면 회전만의 적합이 된다. 조건이 넷이다. **대응이 주어져 있다**(예측의 관절
+> $j$는 정답의 관절 $j$와 짝이고, 풀이는 그 짝을 찾지 않는다). 아래 교차공분산의 **랭크가 2 이상** 이다
+> — 실제로는 어느 골격도 한 직선 위에 있지 않다는 뜻이다 — 그래야 회전이 유일하다. **부호 보정** $D$를
+> 적용한다. $\det R^\ast = +1$을 강제하는 것이 이것이다. 그리고 목적은 **제곱합** 이므로, 적합은 PA-MPJPE가
+> 나중에 보고하는 노름의 평균이 아니라 RMS 잔차를 최소화한다.
+> $$C=\tfrac{1}{J}\textstyle\sum_j(p_j-\bar p)(\hat p_j-\bar{\hat p})^{\top}=U\Sigma V^{\top},\quad D=\mathrm{diag}\big(1,1,\det(UV^{\top})\big),\quad R^\ast=UDV^{\top},\quad s^\ast=\frac{\operatorname{tr}(\Sigma D)}{\tfrac{1}{J}\sum_j\lVert\hat p_j-\bar{\hat p}\rVert^2},\quad t^\ast=\bar p-s^\ast R^\ast\,\bar{\hat p}$$
+> $\bar p$와 $\bar{\hat p}$는 정답과 예측의 무게중심, $C$는 중심을 뺀 두 집합의 $3\times3$ 교차공분산,
+> $U\Sigma V^\top$는 그 특잇값 분해([[02-foundations/linear-algebra|1. 선형대수 §4]])이고 $\Sigma$의
+> 대각에 특잇값 $\sigma_1\ge\sigma_2\ge\sigma_3\ge0$이 놓인다. $D$는 제약 없는 최적 적합이 반사일 때에만
+> 마지막 특이 방향을 뒤집는다.
+> **예.** 아래에서 계산하는 $\hat{B}$ → K5: $s^\ast = 1.0008$, $R^\ast$는 $3.71^\circ$ 회전,
+> $\mathrm{PA\text{-}MPJPE} = 37.0$ mm.
+> **반례.** 무게중심만 맞추는 것은 이 풀이가 아니다. $\hat B$를 옮겨 무게중심을 K5의 무게중심에 얹으면
+> $12.8$ mm 어긋남이 사라지고 평균 오차 $39.5$ mm가 남는다. $37.0$이 아니다. 마지막 $2.5$ mm가 회전과
+> 스케일이 사 오는 몫이다. $D$를 건너뛴 적합도 이 풀이가 아니다. K5의 다섯 관절은 모두 한 수직 평면
+> 위에 있으므로 $\sigma_3 = 0$이 정확히 성립하고, 거울상 적합 $UV^\top$도 *똑같이* $37.0$ mm를 받는다.
+> 행렬식 조건이 없으면 지표는 골격과 그 거울상을 구별하지 못한다.
+> **왜 중요한가.** 모든 논문에서 MPJPE를 PA-MPJPE로 바꾸는 단계가 이것이고, 원인이 무엇이든 방향
+> 오차를 지운다 — 4단계가 곧 잴 facing 오차까지 포함해서.
+
+$\hat B$에 돌려 보자. 무게중심은 $\bar p = (0,\ 0,\ 0.350)$과 $\bar{\hat p} = (0.008,\ 0.008,\ 0.356)$ m로 $12.8$ mm 떨어져 있다. 중심을 뺀 예측의 평균 제곱 반지름은 $\tfrac15\sum_j\lVert\hat p_j-\bar{\hat p}\rVert^2 = 0.56668/5 = 0.113336\ \mathrm{m^2}$이고, 교차공분산은
+
+$$C=\begin{pmatrix}0.00846&-0.01272&-0.00174\\-0.01128&0.01696&0.00232\\0.00170&0.00320&0.08790\end{pmatrix}\ \mathrm{m^2}$$
+
+이다. $3\times3$ SVD는 이 페이지에서 연필 대신 솔버가 필요한 유일한 단계라서 코드가 맡는다(코드와 출력은 영어 절에 있다). 결과는 $\sigma = (0.088046,\ 0.025379,\ 0)$이고 $\det(UV^\top) = -1$이므로 $D = \mathrm{diag}(1,1,-1)$ — $\sigma_3 = 0$이라 뒤집어도 잃는 것이 없다 — 이며, 그다음 스케일은 다시 산수다. $\operatorname{tr}(\Sigma D) = \sigma_1 + \sigma_2 - \sigma_3$이기 때문이다:
+
+$$s^\ast = \frac{0.088046 + 0.025379 - 0}{0.113336} = \frac{0.113425}{0.113336} = 1.0008$$
+
+$\hat B$의 오차는 스케일에 거의 중립이라 적합은 그것을 거의 늘이지 않는다. 대신 $3.71^\circ$ 돌리고 $t^\ast = (5.0,\ -3.6,\ -6.4)$ mm만큼 옮긴다. 정렬 뒤 다섯 잔차는 $28.966$, $41.569$, $55.440$, $33.784$, $25.481$ mm이므로
+
+$$\mathrm{PA\text{-}MPJPE}(\hat B) = \frac{28.966 + 41.569 + 55.440 + 33.784 + 25.481}{5} = \frac{185.240}{5} = 37.048\ \mathrm{mm}$$
+
+이고, 4단계 표의 $37.0$ mm가 이것이다. 정렬은 $\hat B$의 MPJPE $42.0$에서 $5.0$ mm를 덜어 냈고, $\hat A$의 것은 $36.55$ mm 전부를 덜어 냈다.
 
 **4. facing 오차, 그리고 역전.** 1단계를 두 예측에 각각 적용한다. $\hat{A}$는 강체 요각이므로 facing이 정답에 요각을 더한 값, 즉 $36.87^\circ + 15^\circ = 51.87^\circ$이고 오차는 $+15.0^\circ$다. $\hat{B}$는 예측 어깨 벡터가 $\hat{p}_2 - \hat{p}_3 = (-0.24,\ 0.38,\ 0.08)$이고, $\hat{z}$와 외적하면 $u_{\hat B} = (0.38,\ 0.24,\ 0)$, 따라서 $\psi_{\hat B} = \operatorname{atan2}(0.24, 0.38) = 32.28^\circ$, 오차는 $-4.59^\circ$다.
 
@@ -836,7 +989,30 @@ $$n_{\mathrm{head}} = \frac{2000 \times 0.16}{20} = 16.0\ \mathrm{px}, \qquad n_
 
 $$\Delta\theta = 2\arctan\!\frac{0.15}{0.80} = 2 \times 10.62^\circ = 21.24^\circ$$
 
-이므로 각 대상은 정중선에서 $10.6^\circ$밖에 떨어져 있지 않다. 머리가 아예 움직이지 않는 시선 진폭의 상한을 **눈만의 범위** $E$라 하자. $E \ge 10.6^\circ$인 한 작업자는 눈만으로 어느 쪽이든 고르고 머리는 끝까지 돌지 않으며, 따라서 **머리 자세는 어느 물체를 골랐는지에 대해 정확히 0비트를 담는다.** 조작 작업공간에 대한 $E$를 보고한 연구가 없고, 그것이 §4 경고의 내용 전부다. 도로 쪽과 비교해 보라. C20에서 같은 $0.30$ m 간격은 $20$ m에서 $0.86^\circ$, 즉 30픽셀이다. 카메라는 *대상들* 을 둘 사이를 고르는 1.2픽셀짜리 *눈* 보다 25배 잘 분해한다. 두 영역 모두 실패하고, 실패하는 이유가 서로 반대다.
+이므로 각 대상은 정중선에서 $10.6^\circ$밖에 떨어져 있지 않다. 머리가 그 선택에 대해 무언가를 말하는지는 사람의 성질 하나에 달려 있다.
+
+> [!info] 정의 — 눈만의 범위 $E$
+> **각도** 이고, 카메라나 추정기가 아니라 과제를 하는 사람의 성질이다. 머리를 가만둔 채 눈만으로
+> 하는 가장 큰 시선 이동이다. 조건이 넷이다. **시선 이동** — 세계 안에서 시선 방향이 바뀐 양으로,
+> 머리의 회전에 머리 안에서 눈이 돈 양을 더한 것 — 위에서 잰다. **과제와 집단** 에 따라 달라진다 —
+> 자세, 대상 배치, 손에 든 공구 — 그러므로 앉아서 하는 실험실에서 빌려 오지 말고 그것을 쓸
+> 작업공간에서 재야 한다. **관측된 이동들의 통계량** 이므로 연구는 어느 것을 보고하는지 밝혀야 한다.
+> 머리 없이 한 가장 큰 이동인지, 이동의 절반이 머리를 끌어들이는 진폭인지. 그리고 **기계적이 아니라
+> 행동적** 이다. 눈이 머리 안에서 돌 *수 있는* 범위 — 그것은 더 큰 해부학적 한계다 — 가 아니라,
+> 사람들이 머리를 움직이기 전에 실제로 눈을 돌리는 범위다.
+> $$\Delta\gamma = \Delta h + \Delta e, \qquad E = \max\big\{\lvert\Delta\gamma\rvert \ :\ \Delta h = 0\big\}$$
+> $\Delta\gamma$는 시선 이동, $\Delta h$는 그동안의 머리 회전, $\Delta e$는 머리 안에서의 눈 회전이고, 모두
+> 같은 축 둘레의 각이며, 최댓값은 그 과제에서 관측된 이동들에 대해 취한다.
+> **예.** 아래의 작업대. 가상의 $E = 15^\circ$라면 정중선에서 $10.6^\circ$ 떨어진 두 대상 모두 $\Delta h = 0$으로
+> 닿고, 머리는 선택에 대해 아무 정보도 담지 않는다. 가상의 $E = 5^\circ$라면 어느 대상으로 가든 머리가
+> 끌려오고, $\Delta h$의 방향이 어느 쪽인지 말해 준다. 둘 다 측정값이 아니다. 이 페이지의 요점은 아무도
+> 그것을 재지 않았다는 것이다.
+> **반례.** 머리 자세 추정기의 각 오차는 $E$가 아니다. 그것은 카메라 시스템이 $h$를 얼마나 잘못 재는가이고,
+> 그 오차가 0이어도 $E$ 때문에 $h$가 쓸모없을 수 있다. 안구 운동 범위도 위의 마지막 이유로 $E$가 아니다.
+> **왜 중요한가.** 과제가 구별해야 하는 대상이 모두 사람이 이미 보고 있는 방향에서 $E$ 안에 놓이면, 어떤 정확도의 머리 자세
+> 추정기도 어느 것을 골랐는지 되찾을 수 없다. §4의 경고가 가리키는 숫자가 이것이다.
+
+$E \ge 10.6^\circ$인 한 작업자는 눈만으로 어느 쪽이든 고르고 머리는 끝까지 돌지 않으며, 따라서 **머리 자세는 어느 물체를 골랐는지에 대해 정확히 0비트를 담는다.** 조작 작업공간에 대한 $E$를 보고한 연구가 없고, 그것이 §4 경고의 내용 전부다. 도로 쪽과 비교해 보라. C20에서 같은 $0.30$ m 간격은 $20$ m에서 $0.86^\circ$, 즉 30픽셀이다. 카메라는 *대상들* 을 둘 사이를 고르는 1.2픽셀짜리 *눈* 보다 25배 잘 분해한다. 두 영역 모두 실패하고, 실패하는 이유가 서로 반대다.
 
 ### 1. 표현의 사다리
 
@@ -889,7 +1065,7 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 > 능력을 판단할 수 없다. 방향이 의도 단서라면 정렬 전 회전 오차나 과제별 방향 지표가 필요하다.
 
 > [!example] 계산 예제 · Worked example
-> **MPJPE 40 mm를 결정으로 바꾸기.** 표준 인체 측정(Drillis & Contini)은 아래팔 길이를
+> **MPJPE 40 mm를 결정으로 바꾸기.** 표준 인체 측정(Drillis & Contini 1966, 출처 참고)은 아래팔 길이를
 > $0.146H$로 잡는다. 키 1.75 m 성인이면 256 mm다. 따라서 Human3.6M의 MPJPE 40 mm는 아래팔의
 > $40/256 = \mathbf{16\%}$다 — 관절이 자신이 끝맺는 분절의 6분의 1 안쪽에 놓인다는 뜻이다.
 >
@@ -1040,3 +1216,8 @@ Tier B. 위의 대상 **K5** 와 **C20**, 그리고 이 페이지만 사용한�
 > 앉은 다자 상황에서 머리 방향이 시선의 약 2/3를 설명하고(Stiefelhagen & Zhu 2002),
 > 나머지가 다대일 모호성을 만들며(Ba & Odobez 2009), 근거리 조작에 대한 동등한 측정은
 > 존재하지 않는다. 그 부재가 당신이 측정할 수 있는 빈틈이다.
+
+**인체 측정과 정렬**
+
+- R. Drillis and R. Contini, "Body Segment Parameters," Technical Report No. 1166-03, New York University, School of Engineering and Science, Research Division, 1966, 미국 보건교육복지부 직업재활국(Office of Vocational Rehabilitation) 위탁 — §3 계산 예제가 쓰는, 키에 대한 분절 길이 비(아래팔 $0.146H$)의 출처다. 심사를 거친 논문이 아니라 기술 보고서이고, 대부분의 독자는 D. A. Winter, *Biomechanics and Motor Control of Human Movement*(Wiley)에 다시 실린 분절 길이 그림으로 이것을 만난다.
+- S. Umeyama, "Least-Squares Estimation of Transformation Parameters Between Two Point Patterns," *IEEE TPAMI*, vol. 13, no. 4, pp. 376–380, 1991 — 유도 3단계의 닫힌 형태 닮음 Procrustes 풀이이며, 반사를 배제하는 행렬식 보정까지 포함한다.

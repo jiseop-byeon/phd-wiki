@@ -15,12 +15,12 @@ mastery-when: "Raise the chapters and tools used by the thesis to Working; maste
 textbook; the chapter summaries are in [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]], and groups B through J are written in its vocabulary.*
 
 > [!info] Depth target · 깊이 목표
-> Track-level ★: read the summarized chapters alongside the book until screw-theory notation (twists, wrenches, PoE, Jacobians) reads fluently. Full exercise sets are optional.
-> 트랙 수준 ★: 스크류 이론 표기(twist·wrench·PoE·야코비안)가 술술 읽힐 때까지 요약과 원서를 함께 본다. 연습문제 전체 풀이는 선택이다.
+> Track-level ★: read the summarized chapters alongside the book until screw-theory notation (twists, wrenches, PoE — the product of exponentials, defined in §1 — and Jacobians) reads fluently. Full exercise sets are optional.
+> 트랙 수준 ★: 스크류 이론 표기(twist·wrench·PoE(지수곱, §1에서 정의)·야코비안)가 술술 읽힐 때까지 요약과 원서를 함께 본다. 연습문제 전체 풀이는 선택이다.
 
 > [!note] Prerequisites · 선수 지식
-> **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the planar 2R arm with its frozen $J$ and $M$ · [[02-foundations/linear-algebra|1. Linear Algebra]] (matrix inverse and transpose)
-> [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2** — 평면 2R 팔과 고정된 $J$, $M$ · [[02-foundations/linear-algebra|1. 선형대수]](역행렬과 전치)
+> **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the planar 2R arm with its frozen $J$ and $M$ · [[02-foundations/linear-algebra|1. Linear Algebra]] (matrix inverse and transpose) · [[02-foundations/calculus-backprop|2. Calculus & Backpropagation]] (the Jacobian as the matrix of partial derivatives — the same $J$ the routing table multiplies by) · [[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §4]] (twists, screw axes and the exponential $e^{[\mathcal S]\theta}$ that §1's product of exponentials multiplies — this book's core object, introduced gently there first)
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2** — 평면 2R 팔과 고정된 $J$, $M$ · [[02-foundations/linear-algebra|1. 선형대수]](역행렬과 전치) · [[02-foundations/calculus-backprop|2. 미적분과 역전파]](편미분을 모은 행렬로서의 야코비안 — 배분 표가 곱하는 바로 그 $J$) · [[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §4]](twist, 스크류 축, 그리고 §1의 지수곱이 곱하는 지수 $e^{[\mathcal S]\theta}$ — 이 책의 핵심 대상을 먼저 부드럽게 소개한 곳)
 
 > [!note] First pass · 처음이라면
 > This page is a map, not a chapter. Read the routing rule in the worked case, route one question of your own with it, then open the chapter it names. The maps themselves are derived on the chapter pages, never here.
@@ -68,12 +68,12 @@ The picture for this page is the routing map: the arm's six quantities in two co
 
 | differential order $n$ | forward — joints → tip | inverse — tip → joints |
 |---|---|---|
-| 0 · pose | $x = f(\theta)$, product of exponentials — [[04-robotics/modern-robotics/ch04-forward-kinematics\|ch.4]] | $\theta$ from $x$ — [[04-robotics/modern-robotics/ch06-inverse-kinematics\|ch.6]] |
+| 0 · pose | $x = f(\theta)$, product of exponentials (PoE, defined in §1) — [[04-robotics/modern-robotics/ch04-forward-kinematics\|ch.4]] | $\theta$ from $x$ — [[04-robotics/modern-robotics/ch06-inverse-kinematics\|ch.6]] |
 | 1 · velocity | $v = J\dot\theta$ — [[04-robotics/modern-robotics/ch05-velocity-kinematics\|ch.5]] | $\dot\theta = J^{-1}v$ — [[04-robotics/modern-robotics/ch05-velocity-kinematics\|ch.5]] |
 | 1 · static force | $F = J^{-\top}\tau$ — [[04-robotics/modern-robotics/ch05-velocity-kinematics\|ch.5 §3]] | $\tau = J^{\top}F$ — [[04-robotics/modern-robotics/ch05-velocity-kinematics\|ch.5 §3]] |
 | 2 · dynamics | $\ddot\theta = M^{-1}(\tau - h)$ — [[04-robotics/modern-robotics/ch08-dynamics\|ch.8]] | $\tau = M(\theta)\ddot\theta + h$ — [[04-robotics/modern-robotics/ch08-dynamics\|ch.8]] |
 
-Here $h = h(\theta, \dot\theta)$ collects the velocity-product and gravity terms, which vanish for P2 at rest in the horizontal plane. Five questions are not a map between two of the six quantities at one instant, and each has its own chapter: how many numbers $\theta$ holds and what space they live in is [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]]; a whole time history $\theta(t)$ meeting speed and acceleration limits is [[04-robotics/modern-robotics/ch09-trajectory-generation|ch.9]]; a collision-free path through that space is [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]]; a feedback law from measured error to commanded torque is [[04-robotics/modern-robotics/ch11-robot-control|ch.11]]; and whether a set of contacts can resist a wrench is [[04-robotics/modern-robotics/ch12-grasping|ch.12]]. A base that drives instead of standing still is [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|ch.13]].
+Here $h = h(\theta, \dot\theta)$ collects the velocity-product and gravity terms, which vanish for P2 at rest in the horizontal plane. Five questions are not a map between two of the six quantities at one instant, and each has its own chapter: how many numbers $\theta$ holds and what space they live in is [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]]; a whole time history $\theta(t)$ meeting speed and acceleration limits is [[04-robotics/modern-robotics/ch09-trajectory-generation|ch.9]]; a collision-free path through that space is [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]]; a feedback law from measured error to commanded torque is [[04-robotics/modern-robotics/ch11-robot-control|ch.11]]; and whether a set of contacts can resist a wrench — a force and a moment taken together — is the question called *force closure*, in [[04-robotics/modern-robotics/ch12-grasping|ch.12]]. A base that drives instead of standing still is [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|ch.13]].
 
 **The stated question.** *P2 sits at the catalog pose with its tip on the panel at $(1,1)$ m. The tip must slide along the panel at $0.2$ m/s in $+x$ while pressing into it with $10$ N in $-y$. What do the two joints do?*
 
@@ -109,6 +109,14 @@ classical D-H parameters), which is exactly the formulation modern manipulation 
 uses. The authors provide the **full book PDF free** at the official site, plus video
 lectures and software (Python/MATLAB/Mathematica) on the course wiki, and a 6-course
 Coursera specialization.
+
+> [!info] Definition — product of exponentials (PoE)
+> **What kind of thing it is:** a *way of writing* forward kinematics, the map $x = f(\theta)$ in the routing table's top-left cell — not a different map and not an algorithm. **Three conditions.** (1) Each joint is described by one **screw axis** $\mathcal S_i$, the twist the end-effector would have if that joint alone turned at unit speed ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §4]]). (2) All the screw axes and the home pose are written **in one fixed frame at one home configuration** $\theta = 0$, with no frame per link. (3) The joint motions **compose by matrix product in joint order**, each factor the rigid motion of turning joint $i$ by $\theta_i$ about its own axis:
+> $$T(\theta) = e^{[\mathcal S_1]\theta_1}\,e^{[\mathcal S_2]\theta_2}\cdots e^{[\mathcal S_n]\theta_n}\,M_{\text{home}}$$
+> where $T(\theta)$ is the end-effector pose, $M_{\text{home}}$ that pose at $\theta = 0$ (the book writes it $M$; on this page $M$ is already P2's mass matrix), and $e^{[\mathcal S_i]\theta_i}$ the matrix exponential of joint $i$'s screw axis times its angle — derived on [[04-robotics/modern-robotics/ch04-forward-kinematics|MR ch.4]], not here.
+> **Example.** P2 in the plane: at home both links lie along $+x$ and the tip is at $(2,0)$; joint 1 turns about the origin and joint 2 about $(1,0)$. At the catalog pose $\theta = (0^\circ, 90^\circ)$ the first factor is the identity and the second turns the home tip by $90^\circ$ about $(1,0)$, to $(1,0) + (0,1) = (1,1)$ — the tip this page freezes.
+> **Non-example.** The exponential of the *sum*, $e^{[\mathcal S_1]\theta_1 + [\mathcal S_2]\theta_2}M_{\text{home}}$. At $\theta = (90^\circ, 90^\circ)$ the product puts the tip at $(-1, 1)$ — elbow first, to $(1,1)$, then the whole arm about the origin — while the sum is a single $180^\circ$ turn about $(0.5, 0)$ and puts it at $(-1, 0)$, a metre away with the same orientation. The two joint motions do not commute, and their order is the whole content of "product". A D–H table is not PoE either: it describes the same $f$ with four numbers per link, one frame per link.
+> **Why it matters.** A paper that writes $e^{[\mathcal S]\theta}$ or "screw axes" is in this formulation and routes to ch.3–4 line by line; one that writes $(a, \alpha, d, \theta)$ tables is in D–H, and the book will not match its notation even where it computes the same arm.
 
 ### 2. The study path used in this wiki
 
@@ -209,12 +217,12 @@ flowchart LR
 
 | 미분 차수 $n$ | 순방향 — 관절 → 말단 | 역방향 — 말단 → 관절 |
 |---|---|---|
-| 0 · 자세 | $x = f(\theta)$, 지수곱 — [[04-robotics/modern-robotics/ch04-forward-kinematics\|4장]] | $x$에서 $\theta$ — [[04-robotics/modern-robotics/ch06-inverse-kinematics\|6장]] |
+| 0 · 자세 | $x = f(\theta)$, 지수곱(PoE, §1에서 정의) — [[04-robotics/modern-robotics/ch04-forward-kinematics\|4장]] | $x$에서 $\theta$ — [[04-robotics/modern-robotics/ch06-inverse-kinematics\|6장]] |
 | 1 · 속도 | $v = J\dot\theta$ — [[04-robotics/modern-robotics/ch05-velocity-kinematics\|5장]] | $\dot\theta = J^{-1}v$ — [[04-robotics/modern-robotics/ch05-velocity-kinematics\|5장]] |
 | 1 · 정역학 힘 | $F = J^{-\top}\tau$ — [[04-robotics/modern-robotics/ch05-velocity-kinematics\|5장 §3]] | $\tau = J^{\top}F$ — [[04-robotics/modern-robotics/ch05-velocity-kinematics\|5장 §3]] |
 | 2 · 동역학 | $\ddot\theta = M^{-1}(\tau - h)$ — [[04-robotics/modern-robotics/ch08-dynamics\|8장]] | $\tau = M(\theta)\ddot\theta + h$ — [[04-robotics/modern-robotics/ch08-dynamics\|8장]] |
 
-$h = h(\theta, \dot\theta)$는 속도곱 항과 중력 항을 모은 것이고, 수평면에 정지한 P2에서는 사라진다. 한 순간의 여섯 양 사이 사상이 아닌 질문이 다섯 가지 있고 각각 자기 장이 있다. $\theta$가 숫자 몇 개이고 어떤 공간에 사는지는 [[04-robotics/modern-robotics/ch02-configuration-space|2장]], 속도·가속도 한계를 지키는 시간 이력 $\theta(t)$ 전체는 [[04-robotics/modern-robotics/ch09-trajectory-generation|9장]], 그 공간을 지나는 충돌 없는 경로는 [[04-robotics/modern-robotics/ch10-motion-planning|10장]], 측정 오차에서 명령 토크로 가는 피드백 법칙은 [[04-robotics/modern-robotics/ch11-robot-control|11장]], 접촉 집합이 어떤 렌치를 견딜 수 있는지는 [[04-robotics/modern-robotics/ch12-grasping|12장]]이다. 고정 대신 달리는 베이스는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|13장]]이다.
+$h = h(\theta, \dot\theta)$는 속도곱 항과 중력 항을 모은 것이고, 수평면에 정지한 P2에서는 사라진다. 한 순간의 여섯 양 사이 사상이 아닌 질문이 다섯 가지 있고 각각 자기 장이 있다. $\theta$가 숫자 몇 개이고 어떤 공간에 사는지는 [[04-robotics/modern-robotics/ch02-configuration-space|2장]], 속도·가속도 한계를 지키는 시간 이력 $\theta(t)$ 전체는 [[04-robotics/modern-robotics/ch09-trajectory-generation|9장]], 그 공간을 지나는 충돌 없는 경로는 [[04-robotics/modern-robotics/ch10-motion-planning|10장]], 측정 오차에서 명령 토크로 가는 피드백 법칙은 [[04-robotics/modern-robotics/ch11-robot-control|11장]], 접촉 집합이 어떤 렌치 — 힘과 모멘트를 한데 묶은 것 — 를 견딜 수 있는지, 곧 *힘 닫힘*(force closure)이라 부르는 질문은 [[04-robotics/modern-robotics/ch12-grasping|12장]]이다. 고정 대신 달리는 베이스는 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|13장]]이다.
 
 **주어진 질문.** *P2가 카탈로그 자세로 말단을 패널 위 $(1,1)$ m에 두고 있다. 말단은 $-y$로 $10$ N을 누르면서 $+x$로 $0.2$ m/s로 패널을 따라 미끄러져야 한다. 두 관절은 무엇을 하는가?*
 
@@ -248,6 +256,14 @@ $$\tau_{\text{inertial}} = M\ddot\theta = \begin{pmatrix}3&1\\1&1\end{pmatrix}\b
 스크류 이론/지수 좌표 정식화를 쓰는데, 이것이 정확히 현대 매니퓰레이션 연구가 쓰는
 표기다. 저자들이 공식 사이트에서 **책 전체 PDF를 무료로** 제공하고, 코스 위키에 강의
 영상과 소프트웨어(Python/MATLAB/Mathematica), Coursera에 6과목 특화 과정이 있다.
+
+> [!info] 정의 — 지수곱(product of exponentials, PoE)
+> **무엇인가:** 순기구학, 곧 배분 표 왼쪽 위 칸의 사상 $x = f(\theta)$를 *쓰는 방식*이다. 다른 사상도 알고리즘도 아니다. **세 조건.** (1) 관절마다 **스크류 축** $\mathcal S_i$ 하나로 기술한다. 그 관절 하나만 단위 속도로 돌 때 말단이 갖는 twist다([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §4]]). (2) 모든 스크류 축과 홈 자세를 **고정 좌표계 하나, 홈 자세 하나** $\theta = 0$에서 적고, 링크마다 좌표계를 두지 않는다. (3) 관절 운동은 **관절 순서대로 행렬 곱으로 합성**되고, 각 인수는 관절 $i$를 자기 축 둘레로 $\theta_i$만큼 돌리는 강체 운동이다.
+> $$T(\theta) = e^{[\mathcal S_1]\theta_1}\,e^{[\mathcal S_2]\theta_2}\cdots e^{[\mathcal S_n]\theta_n}\,M_{\text{home}}$$
+> $T(\theta)$는 말단 자세, $M_{\text{home}}$은 $\theta = 0$에서의 그 자세(책은 $M$으로 쓰지만 이 페이지에서 $M$은 이미 P2의 질량 행렬이다), $e^{[\mathcal S_i]\theta_i}$는 관절 $i$의 스크류 축에 각을 곱한 것의 행렬 지수다 — 유도는 여기가 아니라 [[04-robotics/modern-robotics/ch04-forward-kinematics|MR 4장]]에서 한다.
+> **예.** 평면의 P2: 홈에서 두 링크가 모두 $+x$를 따라 놓이고 말단은 $(2,0)$이다. 관절 1은 원점, 관절 2는 $(1,0)$ 둘레로 돈다. 카탈로그 자세 $\theta = (0^\circ, 90^\circ)$에서 첫 인수는 항등이고, 둘째 인수가 홈의 말단을 $(1,0)$ 둘레로 $90^\circ$ 돌려 $(1,0) + (0,1) = (1,1)$로 보낸다 — 이 페이지가 고정한 말단이다.
+> **반례.** *합*의 지수 $e^{[\mathcal S_1]\theta_1 + [\mathcal S_2]\theta_2}M_{\text{home}}$. $\theta = (90^\circ, 90^\circ)$에서 곱은 말단을 $(-1, 1)$에 둔다 — 팔꿈치가 먼저 $(1,1)$로, 그다음 팔 전체가 원점 둘레로 — 반면 합은 $(0.5, 0)$ 둘레의 $180^\circ$ 회전 한 번이라 말단을 $(-1, 0)$에 둔다. 방향은 같고 위치는 1 m 어긋난다. 두 관절 운동은 교환되지 않고, 그 순서가 "곱"의 내용 전부다. D–H 표도 PoE가 아니다. 같은 $f$를 링크마다 좌표계 하나와 숫자 넷으로 기술한다.
+> **왜 중요한가.** $e^{[\mathcal S]\theta}$나 "스크류 축"을 쓰는 논문은 이 정식화에 있어 3–4장과 줄 단위로 맞아떨어지고, $(a, \alpha, d, \theta)$ 표를 쓰는 논문은 D–H에 있어서 같은 팔을 계산하더라도 책의 표기와 맞지 않는다.
 
 ### 2. 이 위키의 학습 경로
 
@@ -301,7 +317,6 @@ Tier C. 주장 읽기와 배분, 관통 과제 [[02-foundations/lab-plants|0.6]]
 
 ### Connections · 연결
 
-- Prereqs · 선수: [[02-foundations/linear-algebra|1. 선형대수]] (회전 행렬, 고유값) · [[02-foundations/calculus-backprop|2. 미적분]] (야코비안) · [[02-foundations/se3-geometry|8. SE(3)]] (this book's core object, introduced gently there first · 이 책의 핵심 대상을 먼저 부드럽게 소개한 곳)
 - Next · 다음: [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]] → [[04-robotics/state-estimation-slam|3. State Estimation]] (트랙 순서를 따른다)
 
 ### After reading · 읽고 나면 말할 수 있어야 하는 것

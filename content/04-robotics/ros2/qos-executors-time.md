@@ -1,25 +1,44 @@
 ---
-title: "25.5 QoS, Executors and Time"
+title: "25.5 Quality of Service"
 tags: [robotics, ros2, systems]
 study-depth: Working
 wiki-support: Working
-depth-goal: "Diagnose the three ROS 2 failures that produce no error — an incompatible QoS pair, a callback that blocks its own executor, and a node reading the wrong clock — and fix each with a command or a two-line change."
-mastery-when: "Go deeper when you are doing response-time analysis of a control chain, or writing a custom executor, rather than making an ordinary node behave."
+depth-goal: "Predict from both ends' QoS profiles whether a publisher and a subscription connect, find the silent mismatch with one command, and size history depth, lifespan and deadline for a stream against a latency budget."
+mastery-when: "Go deeper when you are tuning a DDS vendor's transport or analysing the end-to-end latency of a control chain, rather than making two nodes connect."
 ---
 
 ## English
 
 > [!abstract] Depth target · 깊이 목표
-> **Working** — enough to recognise all three silent failures in a running system and fix them. Not enough to do formal timing analysis of an executor.
-> **Working** — 돌아가는 시스템에서 세 가지 조용한 실패를 알아보고 고칠 정도. Executor의 형식적 타이밍 분석을 할 정도는 아니다.
+> **Working** — enough to recognise a QoS mismatch in a running system, fix it, and choose a stream's profile against a latency budget. Not enough to tune a DDS vendor's transport.
+> **Working** — 돌아가는 시스템에서 QoS 불일치를 알아보고 고치며, 지연 예산에 맞춰 스트림의 프로파일을 고를 정도. DDS 벤더의 전송 계층을 튜닝할 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]] (where middleware, DDS and `rmw` are defined), [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] and [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] — you should have written a publisher, a subscriber and a service client. Everything here runs on **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, the baseline of [[04-robotics/ros2/index|25. ROS 2]]; no workspace is needed, the exercises run from the command line and from plain Python files.
-> [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다), [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
+> [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is]] (where middleware, DDS and `rmw` are defined) and [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] — you should have written a publisher and a subscriber and inspected a topic with `ros2 topic info` and `ros2 topic echo`. The numbers are plant P6 of [[02-foundations/lab-plants|0.6 Lab Plants]]. Everything here runs on **ROS 2 Jazzy Jalisco on Ubuntu 24.04**, the baseline of [[04-robotics/ros2/index|25. ROS 2]]; no workspace is needed, and the exercise runs from the command line.
+> [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다)와 [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]] — 퍼블리셔와 서브스크라이버를 한 번씩 써 봤고 `ros2 topic info`와 `ros2 topic echo`로 토픽을 살펴봤다고 가정한다. 숫자는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 P6이다. 기준 환경은 Ubuntu 24.04의 **ROS 2 Jazzy Jalisco**. 워크스페이스는 필요 없고, 실습은 커맨드라인에서 돌아간다.
 
-### The picture: one P6 edge, its two profiles, and a queue during a stall
+> [!note] First pass · 처음이라면
+> Read the picture, then §3 (the request-versus-offered rule every connection obeys) and §7 (the one command that prints both profiles), then the Worked case — it sits after §7 because it uses all of §2–§5. §2's policy table and §5's profile table are reference you come back to; §4 is the one warning you might get, §6 the code, and §8 the fifteen-minute exercise that makes §3 stick. §1 says why the page exists and §9 where the rest lives.
 
-<svg viewBox="0 0 560 566" style="max-width:100%;height:auto" role="img" aria-label="Top: the /goal edge from /camera to /controller with the offered and requested QoS profiles stacked on the arrow; only the reliability pair, best effort offered against reliable requested, is crossed. Middle: ten goals stamped 20 to 200 ms arrive during a 200 ms stall; a depth-5 window keeps the newest five, aged 80, 60, 40, 20 and 0 ms, and only the 80 ms one crosses the 70 ms budget line. Bottom: on a 0 to 200 ms clock, forty control firings that do not happen, ten vision publications on time, and the 40 ms deadline met at every bracket.">
+### Running object · 이 페이지의 대상
+
+Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]], the 1-D cart and its clock, seen as one edge of its graph: `/goal`, from the camera node to the timer-driven controller of [[04-robotics/ros2/nodes-topics-messages|25.2]]. P6 freezes the rates and the budget; the two QoS profiles are this page's own.
+
+| Symbol | Value | What it is here |
+|---|---|---|
+| $T_{\text{vision}}$ | $20\,\mathrm{ms}$ ($50\,\mathrm{Hz}$) | the camera publishes one goal on `/goal` per period |
+| $T_{\text{ctrl}}$ | $5\,\mathrm{ms}$ ($200\,\mathrm{Hz}$) | the controller's timer, which acts on the newest goal it holds |
+| $B$ | $70\,\mathrm{ms}$ | end-to-end budget, camera mid-exposure to applied force |
+| offered | best effort, keep last 5, volatile, deadline $40\,\mathrm{ms}$ | the camera's publisher — **page-local** |
+| requested | reliable, keep last 10, volatile, deadline $40\,\mathrm{ms}$ | the controller's subscription before the fix — **page-local** |
+
+One fact about `/goal` decides §5's choice of profile for it: it is a stream of set-points, each replacing the one published $20\,\mathrm{ms}$ before, so a lost sample costs $20\,\mathrm{ms}$ of freshness and the next one repairs it. It is called a goal, but it behaves like a sensor.
+
+*Scope: this page teaches Quality of Service — the policies, the rule that decides whether two endpoints connect, the one warning and the one command, the predefined profiles, and how to size depth, lifespan and deadline against P6's budget. It does not teach what runs your callbacks or which clock stamps a message — executors, callback groups, `use_sim_time` — which are [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]]; nor per-topic QoS overrides for recording, which are [[04-robotics/ros2/debugging-data-reproducibility|25.10]].*
+
+### The picture: one P6 edge, its two profiles, and its queue during a pause
+
+<svg viewBox="0 0 560 416" style="max-width:100%;height:auto" role="img" aria-label="Top: the /goal edge from /camera to /controller with the offered and requested QoS profiles stacked on the arrow; only the reliability pair, best effort offered against reliable requested, is crossed. Bottom: ten goals stamped 20 to 200 ms arrive while the controller takes nothing for 200 ms; a depth-5 window keeps the newest five, aged 80, 60, 40, 20 and 0 ms, and only the 80 ms one crosses the 70 ms budget line.">
   <defs><marker id="q5eopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="q5esol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">One edge, both profiles, as ros2 topic info --verbose prints them</text>
   <ellipse cx="54" cy="124" rx="42" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
@@ -58,7 +77,7 @@ mastery-when: "Go deeper when you are doing response-time analysis of a control 
   <text x="382" y="156" font-size="11" fill-opacity="0.9" fill="currentColor">reliable requested,</text>
   <text x="382" y="169" font-size="11" fill-opacity="0.9" fill="currentColor">best effort offered:</text>
   <text x="382" y="182" font-size="11" fill-opacity="0.75" fill="currentColor">no connection, no error</text>
-  <text x="12" y="244" font-size="12" fill-opacity="0.8" fill="currentColor">The queue during a 200 ms stall, after the fix: subscriber KEEP_LAST (5)</text>
+  <text x="12" y="244" font-size="12" fill-opacity="0.8" fill="currentColor">The queue during a 200 ms pause, after the fix: subscriber KEEP_LAST (5)</text>
   <rect x="26" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
   <text x="48" y="286" font-size="11" text-anchor="middle" fill-opacity="0.5" fill="currentColor">20</text>
   <rect x="76" y="270" width="44" height="24" rx="2" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="3 2" fill="none"/>
@@ -100,75 +119,20 @@ mastery-when: "Go deeper when you are doing response-time analysis of a control 
   <line x1="26" y1="381" x2="520" y2="381" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.9" stroke-dasharray="6 3" fill="none"/>
   <text x="270" y="376" font-size="11" text-anchor="end" fill-opacity="0.9" fill="currentColor">70 ms budget</text>
   <text x="298" y="404" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">↑ delivered first</text>
-  <text x="520" y="404" font-size="11" text-anchor="end" fill-opacity="0.6" fill="currentColor">age when the executor returns</text>
-  <text x="12" y="448" font-size="12" fill-opacity="0.8" fill="currentColor">The clock, 0 to 200 ms: the executor stalls, the camera does not</text>
-  <text x="30" y="468" font-size="11" fill-opacity="0.7" fill="currentColor">40 control firings (every 5 ms), none of them happen</text>
-  <path d="M42.5 487v-9M55.0 487v-9M67.5 487v-9M80.0 487v-9M92.5 487v-9M105.0 487v-9M117.5 487v-9M130.0 487v-9M142.5 487v-9M155.0 487v-9M167.5 487v-9M180.0 487v-9M192.5 487v-9M205.0 487v-9M217.5 487v-9M230.0 487v-9M242.5 487v-9M255.0 487v-9M267.5 487v-9M280.0 487v-9M292.5 487v-9M305.0 487v-9M317.5 487v-9M330.0 487v-9M342.5 487v-9M355.0 487v-9M367.5 487v-9M380.0 487v-9M392.5 487v-9M405.0 487v-9M417.5 487v-9M430.0 487v-9M442.5 487v-9M455.0 487v-9M467.5 487v-9M480.0 487v-9M492.5 487v-9M505.0 487v-9M517.5 487v-9M530.0 487v-9" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 2" fill="none"/>
-  <line x1="30" y1="488" x2="530" y2="488" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" fill="none"/>
-  <path d="M80.0 488v12M130.0 488v12M180.0 488v12M230.0 488v12M280.0 488v12M330.0 488v12M380.0 488v12M430.0 488v12M480.0 488v12M530.0 488v12" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.9" fill="none"/>
-  <path d="M31.5 505V510H128.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="80" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
-  <path d="M131.5 505V510H228.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="180" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
-  <path d="M231.5 505V510H328.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="280" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
-  <path d="M331.5 505V510H428.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="380" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
-  <path d="M431.5 505V510H528.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="480" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ met</text>
-  <text x="30" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">0</text>
-  <text x="130" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">40</text>
-  <text x="230" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">80</text>
-  <text x="330" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">120</text>
-  <text x="430" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">160</text>
-  <text x="530" y="539" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">200 ms</text>
-  <text x="30" y="554" font-size="11" fill-opacity="0.75" fill="currentColor">10 vision publications (every 20 ms), all on time;</text>
-  <text x="530" y="554" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">requested deadline 40 ms: met at every bracket</text>
+  <text x="520" y="404" font-size="11" text-anchor="end" fill-opacity="0.6" fill="currentColor">age when the controller resumes</text>
 </svg>
 
-**P6** from [[02-foundations/lab-plants|0.6 Lab Plants]]: on top, the `/goal` edge from the $50\,\mathrm{Hz}$ camera to the controller on its $5\,\mathrm{ms}$ timer, with both QoS profiles written out as `ros2 topic info --verbose` prints them and one crossed line out of five — `BEST_EFFORT` offered against `RELIABLE` requested, which gives no connection and no error. In the middle is the system after that fix, with the subscriber on `KEEP_LAST (5)`: of the ten goals published during a $200\,\mathrm{ms}$ executor stall, the newest five survive, aged $80$, $60$, $40$, $20$ and $0\,\mathrm{ms}$, and only the $80\,\mathrm{ms}$ one is past the $70\,\mathrm{ms}$ budget. On the clock at the bottom, all forty $5\,\mathrm{ms}$ control firings of the stall fail to happen while the ten vision publications arrive on time, so the requested $40\,\mathrm{ms}$ deadline is met at every bracket: the camera did not stop, the executor did.
-
-### Worked case: how deep a queue P6 needs, and what a 200 ms stall does to it
-
-The two periods first, because every count below is one of them divided into the stall:
-
-$$T_{\text{vision}}=\frac{1}{50\,\mathrm{Hz}}=20\,\mathrm{ms},\qquad T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=5\,\mathrm{ms}$$
-
-and the event is section 8's: one callback in the controller holds the single-threaded executor for $D=200\,\mathrm{ms}$, from $t=0$ to $t=200\,\mathrm{ms}$. The camera is healthy throughout and publishes at $20, 40, \ldots, 200\,\mathrm{ms}$.
-
-**Step 1 — what accumulates.** During the stall the publisher emits
-
-$$n=\frac{D}{T_{\text{vision}}}=\frac{200}{20}=10\ \text{samples},\qquad \frac{D}{T_{\text{ctrl}}}=\frac{200}{5}=40\ \text{control firings lost}$$
-
-so ten goals arrive with nobody to take them, and forty commands are never sent. Neither number appears in any log.
-
-**Step 2 — what survives, under the profile the fix in step 7 gives you.** Messages are not queued at the client-library level; they sit in the middleware under the *subscription's* history, so it is the controller's own depth that decides this, not the camera's. Take the controller after it has adopted the sensor-data profile to match the best-effort camera — that profile is `KEEP_LAST (5)`. Each arrival past the fifth pushes out the oldest, so five of the ten are discarded before your code exists to see them. At $t=200\,\mathrm{ms}$ the survivors are the samples stamped $120,140,160,180,200$, whose ages are
-
-$$200-\{120,140,160,180,200\}=\{80,60,40,20,0\}\ \mathrm{ms}$$
-
-because age is just the elapsed time since the stamp. The five dropped ones had ages $100$ through $180\,\mathrm{ms}$.
-
-**Step 3 — the order they come out in, which is the part that hurts.** From one publisher the survivors are delivered in publication order, so the first callback after the stall is handed the **oldest** survivor, at $80\,\mathrm{ms}$, and the freshest goal is the fifth callback you run. (Section 8's round-robin is about which *topic* an overloaded executor services next, not about the order of samples within one.) So the controller's first action after recovering is to steer towards a goal that is older than its entire $70\,\mathrm{ms}$ budget.
-
-**Step 4 — score the survivors against the budget.** Of $\{80,60,40,20,0\}\,\mathrm{ms}$, exactly four are at or under $70\,\mathrm{ms}$ and one is not. So a depth of five bought one guaranteed-useless callback and three extra old ones, to deliver the single sample — the $0\,\mathrm{ms}$ one — that the controller actually wanted. Set the depth to 1 and nine samples are dropped instead of five, the callback runs once, and it runs on the newest goal. **For a control input, a deep queue is not a safety margin; it is a backlog you will have to throw away with the motor still moving.** Depth belongs to streams where every sample matters — a bag recorder, a counter, an integrator — not to "where should I go now".
-
-**Step 5 — make the middleware do the age check.** Lifespan is the policy for this, and it is the one most people never set: a sample older than the lifespan is stale, and expired samples are dropped silently and never received. Set `lifespan` to the budget itself, $70\,\mathrm{ms}$, and the $80\,\mathrm{ms}$ survivor never reaches your callback at all — the four inside the budget do. You have moved a check you would otherwise write in every callback into the profile, where `ros2 topic info --verbose` can show it to a colleague.
-
-**Step 6 — and what the deadline does not tell you here.** The camera offers a $40\,\mathrm{ms}$ deadline and the controller requests $40\,\mathrm{ms}$, which is compatible since the request is no more stringent than the offer, and a healthy P6 camera publishing every $20\,\mathrm{ms}$ meets it with $20\,\mathrm{ms}$ to spare. During this stall it goes on meeting it, on every interval, and no *requested deadline missed* event is raised — the camera published on time and the middleware received on time. Deadline watches the gap between messages on the topic; it cannot see that your executor stopped taking them. The stall in the problem set is the other one, where the camera itself goes quiet for $200\,\mathrm{ms}$: there the deadline does fire, and the first frame afterwards carries a stamp $200\,\mathrm{ms}$ old, which is $130\,\mathrm{ms}$ past a budget of $70$. Two failures, the same duration, and only one of them has an event to tell you about it.
-
-**Step 7 — none of which happens if the reliability line is crossed.** Read the top panel of the picture above again. Camera offering best effort against a controller requesting reliable never connects, so the count in step 1 is not ten, it is zero, forever, with both nodes healthy. Rule that out first with `ros2 topic info /goal --verbose`, then reason about depth.
+P6's `/goal` edge, from the $50\,\mathrm{Hz}$ camera to the controller on its $5\,\mathrm{ms}$ timer. On top, both QoS profiles as `ros2 topic info --verbose` prints them, with one crossed line out of five — `BEST_EFFORT` offered against `RELIABLE` requested, which gives no connection and no error. Below, the same edge after the controller adopts the sensor-data profile, `KEEP_LAST (5)`: of the ten goals published while the controller takes nothing for $200\,\mathrm{ms}$, the newest five survive, aged $80$, $60$, $40$, $20$ and $0\,\mathrm{ms}$, and only the $80\,\mathrm{ms}$ one is past the $70\,\mathrm{ms}$ budget.
 
 ### 1. Why this page exists
 
 Most ROS 2 problems announce themselves. A wrong topic name gives you an empty `ros2 topic echo`. A missing package gives you an error. A type mismatch refuses to build.
 
-Three mechanisms do not announce themselves, and they are the three on this page:
+Three mechanisms do not announce themselves. This page is the first of them; the other two — a callback that blocks its own executor, and a node reading the wrong clock — are [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]].
 
 - **QoS.** A publisher and a subscriber on the same topic with the same type do not connect, because their delivery policies are incompatible. Both processes are healthy. Both appear in `ros2 node list`. No message is ever exchanged.
-- **Executors.** A callback blocks waiting for something that can only be produced by another callback that the same executor thread is supposed to run. The node stops responding. It does not crash, it does not log, and its publishers stay advertised.
-- **Time.** A node reads the wall clock while the rest of the system is running on simulated or replayed time. Its timestamps are consistent with nothing, its timeouts fire at the wrong moments, and every value it produces looks plausible.
 
-The shared symptom is "nothing happens". The shared cure is knowing that these three exist and having one command each.
+The symptom is "nothing happens". The cure is knowing that the mechanism exists and having one command for it — here `ros2 topic info --verbose`, §7.
 
 ### 2. The QoS policies
 
@@ -255,7 +219,7 @@ Choosing eight policies per endpoint is not a reasonable ask, so ROS 2 ships pro
 | Parameters | Keep last (1000) | Reliable | Volatile | Parameter traffic; the deep queue keeps requests from being lost |
 | System default | middleware's own | middleware's own | middleware's own | Only when you deliberately want the DDS vendor's defaults |
 
-**Sensor data** is the one you will reach for and the one that creates most mismatches, because it changes reliability. Use it when the consumer wants the latest sample as soon as it is captured and can tolerate losing some: camera frames, lidar scans, IMU. Do not use it for a topic whose messages are individually meaningful — a goal, an emergency stop, a mode change.
+**Sensor data** is the one you will reach for and the one that creates most mismatches, because it changes reliability. Use it when the consumer wants the latest sample as soon as it is captured and can tolerate losing some: camera frames, lidar scans, IMU. Do not use it for a topic whose messages are individually meaningful — sent once, or not made irrelevant by the next one: a one-shot goal such as a navigation target, an emergency stop, a mode change. The test is whether the next message makes a lost one irrelevant. P6's `/goal` passes it despite its name: a $50\,\mathrm{Hz}$ stream in which each set-point replaces the one $20\,\mathrm{ms}$ before is a sensor-like stream, and the Worked case below gives it this profile for that reason.
 
 **Transient local** replaces ROS 1's *latching* publisher: it persists its samples for late-joining subscriptions, so a node started ten minutes after the map was published still receives the map. Two examples from stacks you will use:
 
@@ -351,125 +315,37 @@ ros2 topic echo /image --qos-reliability reliable   # now it fails the same way 
 
 `ros2 topic pub` has the same family of flags (`--qos-profile`, `--qos-reliability`, `--qos-durability`, `--qos-depth`, `--qos-history`, `--qos-liveliness`) and defaults to the `default` profile with no adaptation.
 
-### 8. Executors: one thread or many
+### Worked case: how deep a queue P6 needs, and what a 200 ms pause does to it
 
-Callbacks do not run by themselves. An **executor** owns one or more OS threads, watches the middleware for available messages and expired timers through a *wait set*, and invokes the corresponding callbacks. `rclpy.spin(node)` and `rclcpp::spin(node)` are shorthand for instantiating a single-threaded executor, adding the node and spinning it.
+Everything in §2–§5, on P6's `/goal`. The two periods first, because every count below is one of them divided into the pause:
 
-rclcpp offers `SingleThreadedExecutor`, `MultiThreadedExecutor`, and `StaticSingleThreadedExecutor`, which caches the node's entity list (its publishers, subscriptions, timers, services and clients — everything that can have a callback) and rebuilds it only when entities are added or removed — so, since the Jazzy executor rework, it is no longer limited to nodes that create everything during initialisation. Jazzy also ships an experimental `EventsExecutor`. rclpy offers the first two.
+$$T_{\text{vision}}=\frac{1}{50\,\mathrm{Hz}}=20\,\mathrm{ms},\qquad T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=5\,\mathrm{ms}$$
 
-Two consequences that beginners get wrong:
+and the event is this: the controller takes no messages for $D=200\,\mathrm{ms}$, from $t=0$ to $t=200\,\mathrm{ms}$, because one of its callbacks runs that long and nothing else in its node runs meanwhile — why, and how to stop it, is [[04-robotics/ros2/executors-callbacks-time|25.5.1 §1]]. The camera is healthy throughout and publishes at $20, 40, \ldots, 200\,\mathrm{ms}$.
 
-- **One thread means one callback at a time, and a long callback delays everything.** A 200 ms callback on a node whose control timer fires at 100 Hz does not "run in the background"; it stalls the timer. Incoming messages are not queued at the client-library level — they stay in the middleware until a callback takes them, which is a deliberate difference from ROS 1, and means QoS depth (not some ROS-side buffer) decides what survives the stall: under *keep last*, the middleware holds only the newest N samples and each new arrival pushes out the oldest.
-- **The order is round-robin, not FIFO.** The wait set reports only *whether* a topic has messages, not how many or how old, so an overloaded executor processes topics in rotation rather than in arrival order.
+**Step 1 — what accumulates.** During the pause the publisher emits
 
-### 9. Callback groups, and the deadlock 25.3 left open
+$$n=\frac{D}{T_{\text{vision}}}=\frac{200}{20}=10\ \text{samples},\qquad \frac{D}{T_{\text{ctrl}}}=\frac{200}{5}=40\ \text{control firings lost}$$
 
-Callbacks can be organised into **callback groups**, created with `create_callback_group` in rclcpp and by constructing the group class in rclpy. There are two kinds:
+so ten goals arrive with nobody to take them, and forty commands are never sent. Neither number appears in any log.
 
-- **Mutually exclusive**: its callbacks are never executed in parallel with each other. Effectively, the group behaves as if it had its own single-threaded executor.
-- **Reentrant**: its callbacks may run in parallel, including several concurrent invocations of the *same* callback.
+**Step 2 — what survives, under the profile the fix in step 7 gives you.** Messages are not queued at the client-library level; they sit in the middleware under the *subscription's* history, so it is the controller's own depth that decides this, not the camera's. Take the controller after it has adopted the sensor-data profile of §5 to match the best-effort camera — that profile is `KEEP_LAST (5)`. It is the right family of profile for this topic and not a breach of §5's rule, because `/goal` is a stream in which each set-point replaces the one $20\,\mathrm{ms}$ before it; a navigation goal sent once would be the case the rule forbids. Each arrival past the fifth pushes out the oldest, so five of the ten are discarded before your code exists to see them. At $t=200\,\mathrm{ms}$ the survivors are the samples stamped $120,140,160,180,200$, whose ages are
 
-Callbacks in *different* groups may always run in parallel. Anything created without naming a group joins the node's **default callback group, which is mutually exclusive**. Hold a reference to any group you create — if it is garbage-collected, its callbacks stop being triggered.
+$$200-\{120,140,160,180,200\}=\{80,60,40,20,0\}\ \mathrm{ms}$$
 
-That default is the whole story behind the deadlock. If every entity in a node uses the default group, the node behaves exactly as if it were on a single-threaded executor *even when you gave it a multi-threaded one*. Choosing `MultiThreadedExecutor` and assigning no groups buys you nothing.
+because age is just the elapsed time since the stamp. The five dropped ones had ages $100$ through $180\,\mathrm{ms}$.
 
-Now the failure [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] left open. A timer callback makes a synchronous service call — `client.call(request)` in rclpy, or waiting on the future returned by `async_send_request` in rclcpp:
+**Step 3 — the order they come out in, which is the part that hurts.** From one publisher the survivors are delivered in publication order, so the first callback after the pause is handed the **oldest** survivor, at $80\,\mathrm{ms}$, and the freshest goal is the fifth callback you run. (The executor's round-robin, [[04-robotics/ros2/executors-callbacks-time|25.5.1 §1]], is about which *topic* an overloaded executor services next, not about the order of samples within one.) So the controller's first action after recovering is to steer towards a goal that is older than its entire $70\,\mathrm{ms}$ budget.
 
-```python
-def _timer_cb(self):
-    self.get_logger().info('Sending request')
-    _ = self.client.call(Empty.Request())          # blocks here, forever
-    self.get_logger().info('Received response')
-```
+**Step 4 — score the survivors against the budget.** Of $\{80,60,40,20,0\}\,\mathrm{ms}$, exactly four are at or under $70\,\mathrm{ms}$ and one is not. So a depth of five bought one guaranteed-useless callback and three extra old ones, to deliver the single sample — the $0\,\mathrm{ms}$ one — that the controller actually wanted. Set the depth to 1 and nine samples are dropped instead of five, the callback runs once, and it runs on the newest goal. **For a control input, a deep queue is not a safety margin; it is a backlog you will have to throw away with the motor still moving.** Depth belongs to streams where every sample matters — a bag recorder, a counter, an integrator — not to "where should I go now".
 
-You see `Sending request` once. You never see `Received response`, and the timer never fires again. The server logs that it received the request and responded.
+**Step 5 — make the middleware do the age check.** Lifespan is the policy for this, and it is the one most people never set: a sample older than the lifespan is stale, and expired samples are dropped silently and never received. Set `lifespan` to the budget itself, $70\,\mathrm{ms}$, and the $80\,\mathrm{ms}$ survivor never reaches your callback at all — the four inside the budget do. You have moved a check you would otherwise write in every callback into the profile, where `ros2 topic info --verbose` can show it to a colleague.
 
-The mechanism: a synchronous call is not the absence of callbacks, it is a *hidden* callback. Step by step:
+**Step 6 — and what the deadline does not tell you here.** The camera offers a $40\,\mathrm{ms}$ deadline and the controller requests $40\,\mathrm{ms}$, which is compatible since the request is no more stringent than the offer, and a healthy P6 camera publishing every $20\,\mathrm{ms}$ meets it with $20\,\mathrm{ms}$ to spare. During this pause it goes on meeting it, on every interval, and no *requested deadline missed* event is raised — the camera published on time and the middleware received on time. Deadline watches the gap between messages on the topic; it cannot see that your controller stopped taking them. The gap in the problem set is the other one, where the camera itself goes quiet for $200\,\mathrm{ms}$: there the deadline does fire, and the first frame afterwards carries a stamp $200\,\mathrm{ms}$ old, which is $130\,\mathrm{ms}$ past a budget of $70$. Two failures, the same duration, and only one of them has an event to tell you about it.
 
-1. The timer callback starts running and calls `client.call()`, which waits for the result.
-2. The client hands its callback group to the future, and the result becomes available only when that future's done-callback runs.
-3. That done-callback and the timer callback are in the same mutually exclusive group, so the done-callback cannot start while the timer callback is still running.
-4. The timer callback is still on the stack waiting for the result — so the done-callback can never be scheduled, and the wait never ends.
-5. The stuck timer callback also blocks its own next firing, which is why the node goes completely quiet rather than merely missing one response.
+**Step 7 — none of which happens if the reliability line is crossed.** Read the top panel of the picture above again. Camera offering best effort against a controller requesting reliable never connects, so the count in step 1 is not ten, it is zero, forever, with both nodes healthy. Rule that out first with `ros2 topic info /goal --verbose`, then reason about depth.
 
-The rule:
-
-> If you make a synchronous call inside a callback, the callback and the client must be in **different callback groups**, or in the **same reentrant group** — and the node must be on a multi-threaded executor.
-
-Both halves are required. Groups *permit* parallelism; a multi-threaded executor *supplies* the second thread. On a single-threaded executor the call deadlocks no matter how you arrange the groups, because there is one thread and it is already busy.
-
-| Timer group | Client group | Executor | Outcome |
-|---|---|---|---|
-| default | default | multi-threaded | **Deadlock** |
-| group A (mutually exclusive) | same group A | multi-threaded | **Deadlock** — a different group does not help if it is the same one |
-| group A (mutually exclusive) | group B (mutually exclusive) | multi-threaded | Works |
-| shared reentrant group | shared reentrant group | multi-threaded | Works |
-| default | group A (mutually exclusive) | multi-threaded | Works |
-| any arrangement | any arrangement | single-threaded | **Deadlock** |
-
-The fix in Python is two lines in the constructor:
-
-```python
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
-
-client_cb_group = MutuallyExclusiveCallbackGroup()
-timer_cb_group = MutuallyExclusiveCallbackGroup()
-self.client = self.create_client(Empty, 'test_service', callback_group=client_cb_group)
-self.call_timer = self.create_timer(1, self._timer_cb, callback_group=timer_cb_group)
-```
-
-and in C++, `create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive)` twice, passed to `create_client` and `create_wall_timer`.
-
-The safer alternative, and the one the documentation prefers: **do not call synchronously inside a callback at all.** Use `async_send_request` with a done-callback and there is no group puzzle to solve. A blocking call is worth the care only where it genuinely simplifies the code — a one-shot query at startup, say.
-
-### 10. Time: `use_sim_time`, `/clock`, and the wall clock
-
-ROS 2 gives you three time abstractions: **SystemTime** (the machine's clock), **SteadyTime** (monotonic, for hardware timeouts, never comparable to the other two), and **ROSTime**, which is what you should use for anything that gets published or compared with a message stamp.
-
-ROSTime reports the same as SystemTime *until a ROS time source is active*. It becomes active when the node's `use_sim_time` parameter is set. From then on, the node's clock returns the latest value received on the `/clock` topic (`rosgraph_msgs/msg/Clock`), published by the simulator or by bag playback. The consequences you have to design for:
-
-- A time of **zero means uninitialised**, not "the epoch". A node that starts before `/clock` is published reads zero until the first clock message.
-- **Time can jump backwards** — a looping bag replay does exactly that. Client libraries let you register jump handlers; algorithms that assume monotonic time will misbehave.
-- The rate and granularity of `/clock` are unspecified, and timestamp accuracy is bounded by network latency multiplied by the real-time factor: a run that needs accurate stamps should be slowed down, not sped up.
-
-Which is why the following is a bug, even though it runs:
-
-```python
-import time
-stamp = time.time()            # wall clock: ignores /clock entirely
-```
-
-```python
-stamp = self.get_clock().now().to_msg()    # ROS time: follows /clock when use_sim_time is set
-```
-
-Under simulation the wall-clock version drifts against every other timestamp by the real-time factor; under bag replay it stamps two-year-old sensor data with today's date, and TF lookups against it fail or silently extrapolate. It is one of very few bugs whose symptom is *worse* results rather than no results.
-
-Timers split the same way. In rclpy, `create_timer(period, callback)` uses the node's clock, so it follows simulated time. In rclcpp, `create_wall_timer` deliberately uses the wall clock and does **not** follow `/clock`, while `create_timer(period, callback, group)` uses the node clock and does — a controller that must tick in simulated time needs the latter. Note also the rclcpp header warning: do not construct `rclcpp::Clock(RCL_ROS_TIME)` by hand, because an unattached clock silently runs on system time; use `this->get_clock()`.
-
-Turning it on:
-
-```bash
-ros2 run my_pkg my_node --ros-args -p use_sim_time:=true
-ros2 param set /my_node use_sim_time true
-```
-
-```python
-# in a launch file
-Node(package='my_pkg', executable='my_node', parameters=[{'use_sim_time': True}])
-```
-
-And on the source side, bag playback becomes a clock with one flag:
-
-```bash
-ros2 bag play my_bag --clock          # publishes /clock at 40 Hz by default
-ros2 bag play my_bag --clock 200      # or at a rate you choose
-```
-
-The failure mode to expect: `use_sim_time` set on *some* nodes. Half the graph is on simulated time and half on wall time, transforms between them fail, and every node individually looks correct. Set it in the launch file for the whole system, and check it with `ros2 param get <node> use_sim_time` on a node you did not write.
-
-### 11. Exercise: break a topic with QoS, then fix it
+### 8. Exercise: break a topic with QoS, then fix it
 
 Three sourced terminals, no workspace, about fifteen minutes.
 
@@ -524,69 +400,17 @@ ros2 topic echo /demo_latched --qos-durability transient_local   # the retained 
 
 You are done when you can say, without looking, which of the four reliability combinations and which of the four durability combinations fail to connect.
 
-### 12. The failure to diagnose: the node that stops when you add a second callback
+### 9. What this page does not cover
 
-The realistic version of section 9, and the shape it takes in a real week: a node works, you add one more thing to it, and it dies quietly.
+What runs your callbacks, what happens to the rest of a node when one of them blocks, and which clock stamps a message — executors, callback groups and `use_sim_time` — are the other two silent failures, on [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]]. Per-topic QoS overrides for recording and replay, and the ordered set of checks to run when a system misbehaves, are [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]. DDS vendor tuning (buffer sizes, multicast, shared-memory transports) is in the vendor's documentation, not in ROS 2's. Intra-process communication and composition, which let nodes in one process pass messages without serialising them through the middleware, are the ROS 2 composition documentation.
 
-Save this as `deadlock_demo.py` and run it with `python3 deadlock_demo.py` in a sourced terminal, with `ros2 run demo_nodes_py add_two_ints_server` running in another:
+### After reading · 읽고 나면
 
-```python
-import rclpy
-from rclpy.node import Node
-from rclpy.executors import MultiThreadedExecutor
-from example_interfaces.srv import AddTwoInts
-
-
-class Poller(Node):
-    def __init__(self):
-        super().__init__('poller')
-        self.client = self.create_client(AddTwoInts, 'add_two_ints')
-        self.client.wait_for_service()
-        self.timer = self.create_timer(1.0, self.on_timer)
-
-    def on_timer(self):
-        self.get_logger().info('calling')
-        req = AddTwoInts.Request(a=2, b=3)
-        result = self.client.call(req)          # synchronous call inside a callback
-        self.get_logger().info(f'got {result.sum}')
-
-
-rclpy.init()
-node = Poller()
-executor = MultiThreadedExecutor()
-executor.add_node(node)
-executor.spin()
-```
-
-**Symptom.** One `calling`. No `got 5`. No error, no traceback, no exit. The server's terminal shows it handled the request. `ros2 node list` still shows `/poller`; it answers nothing and its timer never fires again.
-
-**Why it looks like "adding a second callback broke it".** The client alone works, the timer alone works, and only the combination — a blocking wait inside one callback for a result another callback must deliver — deadlocks. The bisection instinct ("it worked before I added the timer") therefore points at the wrong thing.
-
-**How to find it.** In order:
-
-1. `ros2 node list` — the node is alive. That rules out a crash.
-2. `ros2 topic hz /rosout` or simply watching the log — no output at all, rather than errors, points at a stuck thread rather than a logic bug.
-3. `ros2 service list` and `ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 2, b: 3}"` from a third terminal — the server answers you instantly. The server is not the problem.
-4. Now the decisive question, which is about your own source, not the graph: *does any callback in this node block on something another callback must produce?* A synchronous service call, `spin_until_future_complete` inside a callback, an action `get_result` wait, `time.sleep` in a callback waiting for a message.
-5. Confirm by running with a `MultiThreadedExecutor` and two separate mutually exclusive callback groups, one for the client and one for the timer. If it starts working, that was it.
-
-**The fix**, as in section 9: put the timer and the client in different callback groups on a multi-threaded executor, or convert the call to `call_async` with a done-callback — the second is what to do in code you will maintain.
-
-Practise this one deliberately, because no command hands you the answer: there is no error message, the symptom matches a dozen other causes, and the fix lives in a part of the code most people never touch. Recognising the *shape* — a callback waiting for a callback — is the whole skill.
-
-### 13. What this page does not cover
-
-Per-topic QoS overrides for recording and replay, and the ordered set of checks to run when a system misbehaves, are [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]. Real-time execution — RT kernels, memory locking, response-time analysis of callback chains, and the rclc executor with its explicit execution order — is beyond this track; the Casini et al. ECRTS 2019 analysis of ROS 2 processing chains is the entry point. The code-level half of the same concern — keeping heap allocation, locks and exceptions out of a callback that runs every cycle — is [[02-foundations/algorithms/interview-code|11.7 §6]]. DDS vendor tuning (buffer sizes, multicast, shared-memory transports) is in the vendor's documentation, not in ROS 2's. How `/clock` actually gets published by a simulator, and what `use_sim_time` does to a controller, arrive with Gazebo in [[04-robotics/ros2/index|25. ROS 2]]. Intra-process communication and composition, which change the executor picture substantially, are the ROS 2 composition documentation.
-
-### Sources
-
-- ROS 2 Jazzy documentation — Concepts: Quality of Service settings (policies, profiles, compatibility tables, QoS events, matched events).
-- ROS 2 Jazzy documentation — Concepts: Executors (executor types, callback groups, wait set, scheduling semantics).
-- ROS 2 Jazzy documentation — How-to Guides: Using Callback Groups (deadlock example, working and non-working configurations).
-- ROS 2 Jazzy documentation — Tutorials: Using quality-of-service settings for lossy networks.
-- ROS 2 design article — Clock and Time (SystemTime, SteadyTime, ROSTime, the `/clock` time source, `use_sim_time`, time jumps).
-- Source, Jazzy branches, for values and messages quoted verbatim: `rmw/qos_profiles.h` (profile contents), `rclcpp/subscription_base.cpp` and `publisher_base.cpp`, `rclpy/event_handler.py` (default incompatible-QoS warnings), `rclpy/topic_endpoint_info.py` (the `--verbose` output format), `ros2cli/ros2topic` (QoS flags and `echo`'s publisher-matching behaviour), `ros2bag` play verb (`--clock`), `robot_state_publisher` and `nav2_map_server` (transient-local publishers).
-- Daniel Casini, Tobias Blass, Ingo Lütkebohle, Björn Brandenburg, "Response-Time Analysis of ROS 2 Processing Chains under Reservation-Based Scheduling", ECRTS 2019.
+- State the request-versus-offered rule, and apply it to reliability, durability, deadline and liveliness without the tables.
+- Find a mismatch with `ros2 topic info --verbose`, and say why `ros2 topic echo` printing data proves nothing about your node.
+- Choose a predefined profile for a topic, and decide whether best effort suits something called a goal by asking whether the next message makes a lost one irrelevant.
+- Size history depth and lifespan for a control input against a latency budget, and say why a deep queue is a backlog.
+- Say which silent failure a deadline event can report and which it cannot.
 
 ### Self-check
 
@@ -594,21 +418,18 @@ Per-topic QoS overrides for recording and replay, and the ordered set of checks 
    why is the reverse case different?
 2. Your node subscribes to `/map` and never receives anything, but `ros2 topic echo /map`
    prints a map immediately. What is going on?
-3. You put your node on a `MultiThreadedExecutor` and the synchronous service call in your
-   timer still deadlocks. Why?
-4. A node stamps its messages with `time.time()`. Everything works in the lab and the numbers
-   are wrong on a bag replay. What exactly goes wrong, and what should it call?
-5. P6's controller stalls its executor for $200\,\mathrm{ms}$ while the $50\,\mathrm{Hz}$
+3. P6's controller takes no messages for $200\,\mathrm{ms}$ while the $50\,\mathrm{Hz}$
    camera keeps publishing. With `KEEP_LAST (5)`, how many goals are lost, how old is the
    first one your callback is handed, and how many survivors are inside the
    $70\,\mathrm{ms}$ budget? Would a deadline have told you?
+4. §5 says not to use the sensor-data profile for a goal, and the Worked case uses it for
+   P6's `/goal`. Which is right, and what one question settles it for any topic?
 
 > [!tip]- Answers
 > 1. They connect. The request is the minimum quality the subscription will accept and the offer is the maximum the publisher can provide, so a reliable publisher over-satisfies a best-effort request. The reverse — best-effort publisher, reliable subscription — asks for a guarantee that is not on offer, so no connection is made and no message is exchanged.
 > 2. Almost certainly durability. The map server publishes transient local, once, before your node started; your node requests the default volatile profile, which connects legitimately but receives only new messages. `ros2 topic echo` inspects the publishers and adapts its own request to transient local, so it gets the retained sample. Fix your subscription to request transient local, and remember that `echo` succeeding does not prove your node can.
-> 3. Because you did not assign callback groups. Everything created without a group joins the node's default group, which is mutually exclusive, so the node behaves as if it were single-threaded. The timer callback holds the group while waiting, and the future's hidden done-callback — which must run for the result to appear — cannot be scheduled in the same mutually exclusive group. Put the client and the timer in different groups, or in one shared reentrant group.
-> 4. `time.time()` is the wall clock and ignores `/clock` entirely, so under replay it stamps data recorded two years ago with today's time; under simulation it drifts against the rest of the system by the real-time factor. Downstream TF lookups and any comparison with other message stamps then fail or silently extrapolate. It should call `self.get_clock().now()` on the node's clock, with `use_sim_time` set for the whole graph — and use `create_timer` rather than a wall timer if its period must follow simulated time.
-> 5. Ten goals are published during the stall ($200/20$) and five are lost, because `KEEP_LAST (5)` keeps only the newest five and each arrival pushes out the oldest. At the instant the executor returns the survivors are $\{80,60,40,20,0\}\,\mathrm{ms}$ old and they arrive in publication order, so the first callback is handed the $80\,\mathrm{ms}$ one — already past the budget — and the freshest goal is the fifth callback. Four of the five survivors are inside $70\,\mathrm{ms}$. No deadline event is raised: the camera published on time and the middleware received on time, so nothing on the topic missed its interval. Depth 1, or a $70\,\mathrm{ms}$ lifespan, is the fix; a deeper queue is a backlog, not a margin.
+> 3. Ten goals are published during the pause ($200/20$) and five are lost, because `KEEP_LAST (5)` keeps only the newest five and each arrival pushes out the oldest. At the instant the controller resumes the survivors are $\{80,60,40,20,0\}\,\mathrm{ms}$ old and they arrive in publication order, so the first callback is handed the $80\,\mathrm{ms}$ one — already past the budget — and the freshest goal is the fifth callback. Four of the five survivors are inside $70\,\mathrm{ms}$. No deadline event is raised: the camera published on time and the middleware received on time, so nothing on the topic missed its interval. Depth 1, or a $70\,\mathrm{ms}$ lifespan, is the fix; a deeper queue is a backlog, not a margin.
+> 4. Both. The rule is about messages that are individually meaningful — sent once, or not made irrelevant by the next one — and P6's `/goal` is not one: it is a $50\,\mathrm{Hz}$ stream in which each set-point replaces the one $20\,\mathrm{ms}$ before, so a lost sample costs $20\,\mathrm{ms}$ of freshness and the next one repairs it. The question is whether the next message makes a lost one irrelevant. If it does, best effort with a shallow depth is right; if it does not — a navigation goal sent once, an emergency stop, a mode change — ask for reliable, and for something published once and needed by late joiners, transient local too.
 
 ### Problem set · 과제
 
@@ -623,7 +444,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm
 > - Write every policy line in both boxes — reliability, history, durability, deadline, liveliness — not only the one you suspect.
 > - Rule each pair of lines against the tables in §3 and cross only the incompatible pair: one crossed line is the whole failure, and the others being fine is exactly why it is hard to see.
 > - On the clock, draw the $5\,\mathrm{ms}$ control ticks above the axis and the vision publications at their $20\,\mathrm{ms}$ spacing below it, so a gap in either line shows.
-> - Draw the requested deadline as a repeating bracket on the vision line, and mark each bracket met or missed from the gaps between messages on the topic, not from whether the executor ran (in the picture above the camera never stopped, so every bracket is met).
+> - Draw the requested deadline as a repeating bracket on the vision line, and mark each bracket met or missed from the gaps between messages on the topic, not from whether the controller took them (in the Worked case the camera never stopped, so every bracket is met; in this problem it does stop).
 > - Write each frame's stamp beside it and draw the $70\,\mathrm{ms}$ budget as a line, so a frame older than the budget sits visibly on the wrong side of it.
 
 > [!tip]- Solutions
@@ -631,19 +452,44 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm
 > 2. (a) No — reliable request vs best-effort offer. (b) $130\,\mathrm{ms}$ over budget. (c) Healthy $20\,\mathrm{ms}$ period meets $40\,\mathrm{ms}$; a $200\,\mathrm{ms}$ gap misses and fires *requested deadline missed*.
 > 3. Incompatible reliability; `echo` adapts, the node does not. Fixing QoS still leaves a $200\,\mathrm{ms}$ stamp inside a $70\,\mathrm{ms}$ budget — the force is applied to a goal the cart has already rolled past.
 
+### Sources
+
+- ROS 2 Jazzy documentation — Concepts: Quality of Service settings (policies, profiles, compatibility tables, QoS events, matched events).
+- ROS 2 Jazzy documentation — Tutorials: Using quality-of-service settings for lossy networks.
+- Source, Jazzy branches, for values and messages quoted verbatim: `rmw/qos_profiles.h` (profile contents), `rclcpp/subscription_base.cpp` and `publisher_base.cpp`, `rclpy/event_handler.py` (default incompatible-QoS warnings), `rclpy/topic_endpoint_info.py` (the `--verbose` output format), `ros2cli/ros2topic` (QoS flags and `echo`'s publisher-matching behaviour), `robot_state_publisher` and `nav2_map_server` (transient-local publishers).
+
 ## 한국어
 
 > [!abstract] 깊이 목표 · Depth target
-> **Working** — 돌아가는 시스템에서 세 가지 조용한 실패를 알아보고 고칠 정도. Executor의 형식적 타이밍 분석을 할 정도는 아니다.
-> **Working** — enough to recognise and fix all three silent failures, not to do formal timing analysis.
+> **Working** — 돌아가는 시스템에서 QoS 불일치를 알아보고 고치며, 지연 예산에 맞춰 스트림의 프로파일을 고를 정도. DDS 벤더의 전송 계층을 튜닝할 정도는 아니다.
+> **Working** — enough to recognise and fix a QoS mismatch and size a stream's profile, not to tune DDS transports.
 
 > [!note] 선수 지식 · Prerequisites
-> [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다), [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]]와 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 퍼블리셔, 서브스크라이버, 서비스 클라이언트를 한 번씩 써 봤다고 가정한다. 기준 환경은 [[04-robotics/ros2/index|25. ROS 2]]와 같은 **Ubuntu 24.04의 ROS 2 Jazzy Jalisco**이고, 워크스페이스는 필요 없다. 실습은 커맨드라인과 평범한 Python 파일로 돌아간다.
-> 25.1, 25.2 and 25.3 are assumed; everything runs on ROS 2 Jazzy on Ubuntu 24.04 without a workspace.
+> [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]](미들웨어, DDS, `rmw`를 정의한다)와 [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]] — 퍼블리셔와 서브스크라이버를 한 번씩 써 봤고 `ros2 topic info`와 `ros2 topic echo`로 토픽을 살펴봤다고 가정한다. 숫자는 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 P6이다. 기준 환경은 [[04-robotics/ros2/index|25. ROS 2]]와 같은 Ubuntu 24.04의 **ROS 2 Jazzy Jalisco**. 워크스페이스는 필요 없고, 실습은 커맨드라인에서 돌아간다.
+> 25.1 and 25.2 are assumed, with P6 from 0.6; everything runs on ROS 2 Jazzy on Ubuntu 24.04 without a workspace.
+
+> [!note] 처음이라면 · First pass
+> 그림을 보고, 3절(모든 연결이 따르는 request 대 offered 규칙)과 7절(두 프로파일을 찍어 주는 명령 하나)을 읽은 다음 대상으로 한 번 끝까지로 간다. 그것은 2–5절을 모두 쓰므로 7절 뒤에 있다. 2절의 정책 표와 5절의 프로파일 표는 돌아와서 찾아보는 참고이고, 4절은 운이 좋으면 나오는 경고 한 줄, 6절은 코드, 8절은 3절을 몸에 붙이는 15분짜리 실습이다. 1절은 이 페이지가 왜 있는지, 9절은 나머지가 어디 있는지 말한다.
+
+### 이 페이지의 대상 · Running object
+
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6** — 1차원 카트와 그 시계 — 를 그래프의 간선 하나로 본다. 카메라 노드에서 [[04-robotics/ros2/nodes-topics-messages|25.2]]의 타이머 구동 제어기로 가는 `/goal`이다. 주기와 예산은 P6이 고정하고, 두 QoS 프로파일은 이 페이지의 것이다.
+
+| 기호 | 값 | 여기서 무엇인가 |
+|---|---|---|
+| $T_{\text{vision}}$ | $20\,\mathrm{ms}$ ($50\,\mathrm{Hz}$) | 카메라가 주기마다 `/goal`에 목표 하나를 발행한다 |
+| $T_{\text{ctrl}}$ | $5\,\mathrm{ms}$ ($200\,\mathrm{Hz}$) | 제어기의 타이머. 들고 있는 가장 새 목표로 동작한다 |
+| $B$ | $70\,\mathrm{ms}$ | 카메라 노출 중간부터 힘이 걸리기까지의 종단 간 예산 |
+| 제공(offered) | best effort, keep last 5, volatile, deadline $40\,\mathrm{ms}$ | 카메라의 퍼블리셔 — **이 페이지 고유** |
+| 요청(requested) | reliable, keep last 10, volatile, deadline $40\,\mathrm{ms}$ | 고치기 전 제어기의 서브스크립션 — **이 페이지 고유** |
+
+`/goal`에 관한 사실 하나가 5절에서 이 토픽의 프로파일을 정한다. 이것은 설정점의 스트림이고, 각 메시지는 $20\,\mathrm{ms}$ 전에 발행된 것을 대체한다. 그래서 샘플 하나를 잃으면 $20\,\mathrm{ms}$어치 신선도를 잃을 뿐이고 다음 샘플이 그것을 메운다. 이름은 목표지만 센서처럼 행동한다.
+
+*범위: 이 페이지는 서비스 품질(QoS)을 가르친다 — 정책들, 두 끝점이 연결되는지를 정하는 규칙, 경고 한 줄과 명령 하나, 미리 정의된 프로파일, 그리고 P6의 예산에 맞춰 depth, lifespan, deadline을 정하는 법. 콜백을 무엇이 돌리는지, 메시지에 어느 시계로 스탬프를 찍는지 — executor, 콜백 그룹, `use_sim_time` — 는 가르치지 않으며 그것은 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]에 있다. 기록용 토픽별 QoS 오버라이드는 [[04-robotics/ros2/debugging-data-reproducibility|25.10]]에 있다.*
 
 ### 그림으로 먼저 보기: P6의 간선 하나, 프로파일 둘, 그리고 정지 동안의 큐 · The picture
 
-<svg viewBox="0 0 560 566" style="max-width:100%;height:auto" role="img" aria-label="위: /camera에서 /controller로 가는 /goal 간선 위에 제공 프로파일과 요청 프로파일을 위아래로 쌓았고, best effort 제공 대 reliable 요청인 reliability 짝에만 가위표가 있다. 가운데: 200 ms 정지 동안 20에서 200 ms 스탬프의 목표 열 개가 도착하고, 깊이 5의 창이 가장 새 다섯(나이 80, 60, 40, 20, 0 ms)을 남기며, 70 ms 예산선을 넘는 것은 80 ms 하나뿐이다. 아래: 0에서 200 ms 시계 위의 일어나지 않은 제어 발화 마흔 개, 제때 도착한 비전 발행 열 개, 모든 괄호에서 충족된 40 ms deadline.">
+<svg viewBox="0 0 560 416" style="max-width:100%;height:auto" role="img" aria-label="위: /camera에서 /controller로 가는 /goal 간선 위에 제공 프로파일과 요청 프로파일을 위아래로 쌓았고, best effort 제공 대 reliable 요청인 reliability 짝에만 가위표가 있다. 아래: 제어기가 200 ms 동안 아무것도 가져가지 않는 사이 20에서 200 ms 스탬프의 목표 열 개가 도착하고, 깊이 5의 창이 가장 새 다섯(나이 80, 60, 40, 20, 0 ms)을 남기며, 70 ms 예산선을 넘는 것은 80 ms 하나뿐이다.">
   <defs><marker id="q5kopen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 1 1 L 9 5 L 1 9" fill="none" stroke="currentColor" stroke-width="1.6"/></marker><marker id="q5ksol" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <text x="12" y="20" font-size="12" fill-opacity="0.8" fill="currentColor">간선 하나, 프로파일 둘 (ros2 topic info --verbose가 찍는 그대로)</text>
   <ellipse cx="54" cy="124" rx="42" ry="15" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" fill="none"/>
@@ -724,75 +570,20 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm
   <line x1="26" y1="381" x2="520" y2="381" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.9" stroke-dasharray="6 3" fill="none"/>
   <text x="270" y="376" font-size="11" text-anchor="end" fill-opacity="0.9" fill="currentColor">70 ms 예산</text>
   <text x="298" y="404" font-size="11" text-anchor="middle" fill-opacity="0.7" fill="currentColor">↑ 먼저 전달됨</text>
-  <text x="520" y="404" font-size="11" text-anchor="end" fill-opacity="0.6" fill="currentColor">executor가 돌아온 순간의 나이</text>
-  <text x="12" y="448" font-size="12" fill-opacity="0.8" fill="currentColor">시계, 0에서 200 ms: 멈춘 것은 executor이고 카메라가 아니다</text>
-  <text x="30" y="468" font-size="11" fill-opacity="0.7" fill="currentColor">제어 발화 40개(5 ms마다), 하나도 일어나지 않음</text>
-  <path d="M42.5 487v-9M55.0 487v-9M67.5 487v-9M80.0 487v-9M92.5 487v-9M105.0 487v-9M117.5 487v-9M130.0 487v-9M142.5 487v-9M155.0 487v-9M167.5 487v-9M180.0 487v-9M192.5 487v-9M205.0 487v-9M217.5 487v-9M230.0 487v-9M242.5 487v-9M255.0 487v-9M267.5 487v-9M280.0 487v-9M292.5 487v-9M305.0 487v-9M317.5 487v-9M330.0 487v-9M342.5 487v-9M355.0 487v-9M367.5 487v-9M380.0 487v-9M392.5 487v-9M405.0 487v-9M417.5 487v-9M430.0 487v-9M442.5 487v-9M455.0 487v-9M467.5 487v-9M480.0 487v-9M492.5 487v-9M505.0 487v-9M517.5 487v-9M530.0 487v-9" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 2" fill="none"/>
-  <line x1="30" y1="488" x2="530" y2="488" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" fill="none"/>
-  <path d="M80.0 488v12M130.0 488v12M180.0 488v12M230.0 488v12M280.0 488v12M330.0 488v12M380.0 488v12M430.0 488v12M480.0 488v12M530.0 488v12" stroke="currentColor" stroke-width="2.2" stroke-opacity="0.9" fill="none"/>
-  <path d="M31.5 505V510H128.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="80" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
-  <path d="M131.5 505V510H228.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="180" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
-  <path d="M231.5 505V510H328.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="280" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
-  <path d="M331.5 505V510H428.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="380" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
-  <path d="M431.5 505V510H528.5V505" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" fill="none"/>
-  <text x="480" y="523" font-size="11" text-anchor="middle" fill-opacity="0.9" fill="currentColor">✓ 충족</text>
-  <text x="30" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">0</text>
-  <text x="130" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">40</text>
-  <text x="230" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">80</text>
-  <text x="330" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">120</text>
-  <text x="430" y="539" font-size="11" text-anchor="middle" fill-opacity="0.75" fill="currentColor">160</text>
-  <text x="530" y="539" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">200 ms</text>
-  <text x="30" y="554" font-size="11" fill-opacity="0.75" fill="currentColor">비전 발행 10개(20 ms마다), 전부 제때;</text>
-  <text x="530" y="554" font-size="11" text-anchor="end" fill-opacity="0.75" fill="currentColor">요청한 deadline 40 ms: 모든 괄호에서 충족</text>
+  <text x="520" y="404" font-size="11" text-anchor="end" fill-opacity="0.6" fill="currentColor">제어기가 재개한 순간의 나이</text>
 </svg>
 
-위 패널은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P6** 간선 하나, 곧 $50\,\mathrm{Hz}$ 카메라에서 $5\,\mathrm{ms}$ 타이머의 제어기로 가는 `/goal`에 두 QoS 프로파일을 `ros2 topic info --verbose`가 찍는 그대로 적은 것이고, 다섯 줄 중 가위표는 `BEST_EFFORT` 제공 대 `RELIABLE` 요청 하나뿐이며 그 결과는 연결 없음, 오류도 없음이다. 가운데는 그것을 고친 뒤 구독자가 `KEEP_LAST (5)`인 시스템으로, $200\,\mathrm{ms}$ executor 정지 동안 발행된 목표 열 개 중 가장 새 다섯이 나이 $80$, $60$, $40$, $20$, $0\,\mathrm{ms}$로 살아남고, $70\,\mathrm{ms}$ 예산을 넘는 것은 $80\,\mathrm{ms}$ 하나뿐이다. 아래 시계에서는 정지 동안의 $5\,\mathrm{ms}$ 제어 발화 마흔 번이 하나도 일어나지 않는 반면 비전 발행 열 번은 모두 제때 도착하므로, 요청한 $40\,\mathrm{ms}$ deadline은 모든 괄호에서 충족된다 — 멈춘 것은 카메라가 아니라 executor였다.
-
-### 대상으로 한 번 끝까지: P6에 필요한 큐 깊이와 200 ms 정지가 하는 일 · Worked case
-
-주기 둘부터. 아래의 모든 개수가 정지 시간을 이 둘 중 하나로 나눈 값이기 때문이다.
-
-$$T_{\text{vision}}=\frac{1}{50\,\mathrm{Hz}}=20\,\mathrm{ms},\qquad T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=5\,\mathrm{ms}$$
-
-사건은 8절의 것이다. 제어기의 콜백 하나가 단일 스레드 executor를 $t=0$부터 $t=200\,\mathrm{ms}$까지 $D=200\,\mathrm{ms}$ 동안 붙든다. 그동안 카메라는 멀쩡하고 $20, 40, \ldots, 200\,\mathrm{ms}$에 발행한다.
-
-**1단계 — 무엇이 쌓이는가**. 정지 동안 퍼블리셔가 내보내는 것은
-
-$$n=\frac{D}{T_{\text{vision}}}=\frac{200}{20}=10\ \text{개},\qquad \frac{D}{T_{\text{ctrl}}}=\frac{200}{5}=40\ \text{번의 제어 발화 손실}$$
-
-이므로 가져갈 사람 없는 목표가 열 개 도착하고 명령 마흔 번이 나가지 않는다. 두 숫자 모두 어떤 로그에도 남지 않는다.
-
-**2단계 — 7단계의 수정이 남기는 프로파일에서 무엇이 살아남는가**. 메시지는 클라이언트 라이브러리 층에 쌓이지 않고 *구독*의 history 아래 미들웨어에 앉는다. 즉 여기서 정하는 것은 카메라의 깊이가 아니라 제어기 자신의 깊이다. best effort 카메라에 맞추려고 제어기가 sensor-data 프로파일을 받아들인 뒤를 보자. 그 프로파일이 `KEEP_LAST (5)`다. 여섯 번째부터는 도착할 때마다 가장 오래된 것을 밀어내므로, 열 중 다섯은 당신 코드가 보기도 전에 버려진다. $t=200\,\mathrm{ms}$에 살아남은 것은 스탬프 $120,140,160,180,200$이고 그 나이는
-
-$$200-\{120,140,160,180,200\}=\{80,60,40,20,0\}\ \mathrm{ms}$$
-
-나이는 스탬프 이후 흐른 시간일 뿐이기 때문이다. 버려진 다섯의 나이는 $100$에서 $180\,\mathrm{ms}$였다.
-
-**3단계 — 나오는 순서, 이쪽이 아픈 부분**. 퍼블리셔 하나에서 온 생존자들은 발행 순서대로 전달되므로, 정지 이후 첫 콜백이 받는 것은 나이 $80\,\mathrm{ms}$의 **가장 오래된** 생존자이고 가장 새 목표는 다섯 번째 콜백이다. (8절의 round-robin은 과부하 executor가 다음에 어느 *토픽*을 볼지에 대한 것이지 한 토픽 안 샘플 순서가 아니다.) 그래서 제어기가 회복한 직후 처음 하는 일은 자기 $70\,\mathrm{ms}$ 예산 전체보다 오래된 목표를 향해 모는 것이다.
-
-**4단계 — 생존자를 예산에 채점한다**. $\{80,60,40,20,0\}\,\mathrm{ms}$ 중 정확히 넷이 $70\,\mathrm{ms}$ 이하이고 하나가 아니다. 즉 깊이 5는 확실히 쓸모없는 콜백 하나와 낡은 콜백 셋을 사서, 제어기가 실제로 원한 단 하나 — 나이 $0$짜리 — 를 배달한 셈이다. 깊이를 1로 두면 다섯 대신 아홉이 버려지고, 콜백은 한 번 돌며, 그 한 번이 가장 새 목표 위에서 돈다. **제어 입력에서 깊은 큐는 안전 여유가 아니라, 모터가 도는 중에 버려야 할 밀린 짐이다.** 깊이는 샘플 하나하나가 의미를 갖는 스트림 — bag 기록기, 계수기, 적분기 — 의 것이지 "지금 어디로 갈까"의 것이 아니다.
-
-**5단계 — 나이 검사는 미들웨어에 시킨다**. 그 정책이 lifespan이고, 대부분이 끝내 설정하지 않는 바로 그것이다. lifespan보다 오래된 샘플은 stale이고, 만료된 샘플은 조용히 버려져 아예 수신되지 않는다. `lifespan`을 예산 그 자체인 $70\,\mathrm{ms}$로 두면 나이 $80\,\mathrm{ms}$ 생존자는 콜백에 닿지도 않고 예산 안의 넷만 닿는다. 콜백마다 손으로 쓰게 될 검사를 프로파일로 옮긴 것이고, 거기서는 `ros2 topic info --verbose`가 동료에게 그것을 보여 줄 수 있다.
-
-**6단계 — 그리고 여기서 deadline이 말해 주지 않는 것**. 카메라가 $40\,\mathrm{ms}$ deadline을 제공하고 제어기가 $40\,\mathrm{ms}$를 요청하면 호환이다. 요청이 제공보다 더 엄격하지 않기 때문이다. 그리고 $20\,\mathrm{ms}$마다 발행하는 건강한 P6 카메라는 $20\,\mathrm{ms}$의 여유를 두고 그것을 충족한다. 이번 정지 동안에도 모든 구간에서 계속 충족하고, *requested deadline missed*는 한 번도 올라오지 않는다. 카메라는 제때 발행했고 미들웨어는 제때 수신했기 때문이다. deadline은 토픽 위 메시지 사이의 간격을 보지, 당신의 executor가 그것을 가져가기를 멈췄다는 사실은 보지 못한다. 과제의 정지는 반대쪽, 카메라 자신이 $200\,\mathrm{ms}$ 조용해지는 경우다. 그쪽에서는 deadline이 울리고, 그 뒤 첫 프레임은 $200\,\mathrm{ms}$ 된 스탬프를 달고 오며 $70\,\mathrm{ms}$ 예산을 $130\,\mathrm{ms}$ 넘긴다. 길이가 같은 고장 둘인데 알려 주는 이벤트가 있는 쪽은 하나뿐이다.
-
-**7단계 — 물론 reliability 줄에 가위표가 있으면 이 중 아무것도 일어나지 않는다**. 위의 그림에서 맨 위 패널을 다시 보라. 카메라의 best effort 제공에 제어기의 reliable 요청은 연결되지 않으므로 1단계의 개수는 열이 아니라 영이고, 영원히 영이며, 노드 둘은 멀쩡하다. `ros2 topic info /goal --verbose`로 그것부터 배제한 다음에 깊이를 따져라.
+P6의 `/goal` 간선, 곧 $50\,\mathrm{Hz}$ 카메라에서 $5\,\mathrm{ms}$ 타이머의 제어기로 가는 간선이다. 위에는 두 QoS 프로파일을 `ros2 topic info --verbose`가 찍는 그대로 적었고, 다섯 줄 중 가위표는 `BEST_EFFORT` 제공 대 `RELIABLE` 요청 하나뿐이며 그 결과는 연결 없음, 오류도 없음이다. 아래는 제어기가 sensor-data 프로파일 `KEEP_LAST (5)`를 받아들인 뒤의 같은 간선으로, 제어기가 $200\,\mathrm{ms}$ 동안 아무것도 가져가지 않는 사이 발행된 목표 열 개 중 가장 새 다섯이 나이 $80$, $60$, $40$, $20$, $0\,\mathrm{ms}$로 살아남고, $70\,\mathrm{ms}$ 예산을 넘는 것은 $80\,\mathrm{ms}$ 하나뿐이다.
 
 ### 1. 이 페이지가 존재하는 이유
 
 ROS 2의 문제는 대개 스스로를 알린다. 토픽 이름을 틀리면 `ros2 topic echo`가 비고, 패키지가 없으면 오류가 나고, 타입이 어긋나면 빌드가 거부된다.
 
-스스로를 알리지 않는 기전이 셋 있고, 이 페이지가 그 셋이다.
+스스로를 알리지 않는 기전이 셋 있다. 이 페이지는 그 첫째이고, 나머지 둘 — 자기 executor를 막는 콜백, 엉뚱한 시계를 읽는 노드 — 은 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]이다.
 
 - **QoS.** 같은 토픽, 같은 타입인데도 전달 정책이 호환되지 않아 퍼블리셔와 서브스크라이버가 연결되지 않는다. 두 프로세스 다 멀쩡하고, `ros2 node list`에도 다 나오고, 메시지는 한 개도 오가지 않는다.
-- **Executor.** 어떤 콜백이, 같은 executor 스레드가 실행해야 하는 다른 콜백만이 만들어 낼 수 있는 것을 기다리며 막힌다. 노드는 응답을 멈춘다. 죽지도 않고, 로그도 남기지 않고, 퍼블리셔는 광고된 채로 남는다.
-- **시간.** 시스템 나머지가 시뮬레이션 시간이나 재생 시간 위에서 도는데 어떤 노드가 벽시계를 읽는다. 그 노드의 타임스탬프는 무엇과도 맞지 않고, 타임아웃은 엉뚱한 순간에 터지고, 내놓는 값은 전부 그럴듯해 보인다.
 
-증상은 공통적으로 "아무 일도 일어나지 않음"이다. 처방도 공통이다. 이 셋이 존재한다는 것을 알고, 각각에 대해 명령 하나씩을 갖고 있으면 된다.
+증상은 "아무 일도 일어나지 않음"이다. 처방은 이 기전이 존재한다는 것을 알고 명령 하나를 갖고 있는 것이다. 여기서는 7절의 `ros2 topic info --verbose`다.
 
 ### 2. QoS 정책들
 
@@ -819,7 +610,7 @@ deadline, lifespan, liveliness는 대부분 설정하지 않는 셋이고, 그�
 
 외워야 할 규칙이다. 4절의 모든 것이 여기서 따라 나온다.
 
-> 서브스크립션은 받아들일 수 있는 *최소 품질*을 **request**한다. 퍼블리셔는 제공할 수 있는 *최대 품질*을 **offer**한다. 요청의 **모든** 정책이 대응하는 제공보다 더 까다롭지 않을 때만 연결된다.
+> 서브스크립션은 받아들일 수 있는 *최소 품질*을 요청(**request**)한다. 퍼블리셔는 제공할 수 있는 *최대 품질*을 제공(**offer**)한다. 요청의 **모든** 정책이 대응하는 제공보다 더 까다롭지 않을 때만 연결된다.
 
 호환성은 쌍 단위이고 다른 참여자와 무관하다. 퍼블리셔 하나가 서로 다른 요청 프로파일을 가진 여러 서브스크립션을 동시에 상대할 수 있고, 제3의 노드가 있어도 판정은 바뀌지 않는다.
 
@@ -847,7 +638,7 @@ deadline과 lease duration은 기간에 대해 같은 모양을 따른다. 퍼�
 
 ### 4. 조용한 사례, 그리고 운이 좋으면 나오는 경고 한 줄
 
-정석 사례. 카메라 드라이버가 30 Hz로 발행하고, 합리적으로 작성되어 있다. 프레임을 떨어뜨리는 편이 막히는 것보다 나으므로 **best effort**를 offer한다. 당신은 QoS를 생각하지 않고 서브스크라이버를 쓴다. 기본 프로파일, 즉 **reliable**이 된다. 제공되지 않는 품질을 요청한 것이다.
+정석 사례. 카메라 드라이버가 30 Hz로 발행하고, 합리적으로 작성되어 있다. 프레임을 떨어뜨리는 편이 막히는 것보다 나으므로 **best effort** 쪽을 offer한다. 당신은 QoS를 생각하지 않고 서브스크라이버를 쓴다. 기본 프로파일, 즉 **reliable** 쪽이 된다. 제공되지 않는 품질을 요청한 것이다.
 
 결과: `ros2 node list`에 두 노드가 다 있다. `ros2 topic list`에 토픽이 있다. `ros2 topic info`는 퍼블리셔 1, 서브스크립션 1을 보고한다. 콜백은 한 번도 실행되지 않는다.
 
@@ -879,9 +670,9 @@ rclcpp 서브스크립션은 "No messages will be sent to it"이라고 쓰고 �
 | Parameters | Keep last (1000) | Reliable | Volatile | 파라미터 트래픽. 깊은 큐가 요청 유실을 막는다 |
 | System default | 미들웨어 기본값 | 미들웨어 기본값 | 미들웨어 기본값 | DDS 벤더 기본값을 일부러 원할 때만 |
 
-**Sensor data**는 가장 자주 손이 가고 가장 많은 불일치를 만든다. reliability를 바꾸기 때문이다. 소비자가 캡처 직후의 최신 샘플을 원하고 일부 손실을 감당할 수 있을 때 쓴다. 카메라 프레임, 라이다 스캔, IMU. 메시지 하나하나가 개별적으로 의미를 갖는 토픽 — 목표, 비상 정지, 모드 변경 — 에는 쓰지 마라.
+**Sensor data** 프로파일은 가장 자주 손이 가고 가장 많은 불일치를 만든다. reliability를 바꾸기 때문이다. 소비자가 캡처 직후의 최신 샘플을 원하고 일부 손실을 감당할 수 있을 때 쓴다. 카메라 프레임, 라이다 스캔, IMU. 메시지 하나하나가 개별적으로 의미를 갖는 토픽 — 한 번만 보내지거나 다음 메시지로 대체되지 않는 것, 곧 내비게이션 목표 같은 일회성 목표, 비상 정지, 모드 변경 — 에는 쓰지 마라. 판별 기준은 다음 메시지가 잃어버린 메시지를 무의미하게 만드느냐다. P6의 `/goal`은 이름과 달리 이 기준을 통과한다. 각 설정점이 $20\,\mathrm{ms}$ 전의 것을 대체하는 $50\,\mathrm{Hz}$ 스트림은 센서 같은 스트림이고, 아래 대상으로 한 번 끝까지가 여기에 이 프로파일을 주는 이유가 그것이다.
 
-**Transient local**은 ROS 1의 *latching* 퍼블리셔를 대신한다. 늦게 들어오는 구독자를 위해 샘플을 보존하므로, 지도가 발행되고 10분 뒤에 뜬 노드도 그 지도를 받는다. 실제로 쓰게 될 스택의 예 둘:
+**Transient local** durability는 ROS 1의 *latching* 퍼블리셔를 대신한다. 늦게 들어오는 구독자를 위해 샘플을 보존하므로, 지도가 발행되고 10분 뒤에 뜬 노드도 그 지도를 받는다. 실제로 쓰게 될 스택의 예 둘:
 
 - `robot_state_publisher`는 `robot_description`에 URDF를 `rclcpp::QoS(1).transient_local()`로 발행한다. RViz를 맨 마지막에 켜도 로봇 생김새를 아는 이유다.
 - Nav2의 map server는 점유 격자를 `rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable()`로 발행하며, 소스의 주석은 이것이 ROS 1 latched 토픽을 흉내 내기 위한 것이라고 적고 있다.
@@ -975,125 +766,37 @@ ros2 topic echo /image --qos-reliability reliable   # 이제 당신 노드와 �
 
 `ros2 topic pub`도 같은 계열의 플래그(`--qos-profile`, `--qos-reliability`, `--qos-durability`, `--qos-depth`, `--qos-history`, `--qos-liveliness`)를 갖고, 기본값은 `default` 프로파일이며 이쪽은 맞춰 주지 않는다.
 
-### 8. Executor: 스레드 하나인가 여럿인가
+### 대상으로 한 번 끝까지: P6에 필요한 큐 깊이와 200 ms 정지가 하는 일 · Worked case
 
-콜백은 저절로 돌지 않는다. **Executor**가 OS 스레드 하나 이상을 소유하고, *wait set*을 통해 미들웨어에 도착한 메시지와 만료된 타이머를 감시하며 해당 콜백을 호출한다. `rclpy.spin(node)`와 `rclcpp::spin(node)`는 단일 스레드 executor를 만들고 노드를 붙여 spin하는 것의 축약이다.
+2–5절 전부를 P6의 `/goal` 위에서 계산한다. 주기 둘부터. 아래의 모든 개수가 정지 시간을 이 둘 중 하나로 나눈 값이기 때문이다.
 
-rclcpp는 `SingleThreadedExecutor`, `MultiThreadedExecutor`, 그리고 노드의 엔티티 목록(퍼블리셔, 서브스크립션, 타이머, 서비스, 클라이언트 — 콜백을 가질 수 있는 모든 것)을 캐시했다가 엔티티가 추가·제거될 때만 다시 만드는 `StaticSingleThreadedExecutor`를 제공한다. Jazzy의 executor 재작성 이후로는 모든 것을 초기화 때 만드는 노드에만 쓸 수 있다는 제한이 없어졌다. Jazzy에는 실험적인 `EventsExecutor`도 있다. rclpy는 앞의 둘을 제공한다.
+$$T_{\text{vision}}=\frac{1}{50\,\mathrm{Hz}}=20\,\mathrm{ms},\qquad T_{\text{ctrl}}=\frac{1}{200\,\mathrm{Hz}}=5\,\mathrm{ms}$$
 
-초심자가 틀리는 귀결 둘:
+사건은 이렇다. 제어기가 $t=0$부터 $t=200\,\mathrm{ms}$까지 $D=200\,\mathrm{ms}$ 동안 메시지를 하나도 가져가지 않는다. 콜백 하나가 그만큼 오래 돌고, 그동안 그 노드의 다른 것은 아무것도 돌지 않기 때문이다 — 왜 그런지, 어떻게 막는지는 [[04-robotics/ros2/executors-callbacks-time|25.5.1 §1]]이다. 그동안 카메라는 멀쩡하고 $20, 40, \ldots, 200\,\mathrm{ms}$에 발행한다.
 
-- **스레드 하나는 한 번에 콜백 하나를 뜻하고, 긴 콜백은 모든 것을 지연시킨다.** 100 Hz 제어 타이머를 가진 노드에서 200 ms짜리 콜백은 "뒤에서 도는" 것이 아니라 타이머를 세운다. 도착한 메시지는 클라이언트 라이브러리 층에 쌓이지 않고 콜백이 가져갈 때까지 미들웨어에 남는다. ROS 1과의 의도적인 차이이고, 그 정체 구간에서 무엇이 살아남는지는 ROS 쪽 버퍼가 아니라 QoS depth가 정한다는 뜻이다. *keep last*에서는 미들웨어가 가장 최근 샘플 N개만 들고 있고, 새 샘플이 올 때마다 가장 오래된 것이 밀려난다.
-- **순서는 FIFO가 아니라 라운드 로빈이다.** wait set은 어떤 토픽에 메시지가 *있는지*만 보고할 뿐 몇 개인지, 얼마나 오래됐는지는 보고하지 않는다. 그래서 과부하된 executor는 도착 순서가 아니라 토픽을 돌아가며 처리한다.
+**1단계 — 무엇이 쌓이는가**. 정지 동안 퍼블리셔가 내보내는 것은
 
-### 9. 콜백 그룹, 그리고 25.3이 남겨 둔 교착
+$$n=\frac{D}{T_{\text{vision}}}=\frac{200}{20}=10\ \text{개},\qquad \frac{D}{T_{\text{ctrl}}}=\frac{200}{5}=40\ \text{번의 제어 발화 손실}$$
 
-콜백은 **콜백 그룹**으로 묶을 수 있다. rclcpp에서는 `create_callback_group`으로, rclpy에서는 그룹 클래스를 생성해서 만든다. 두 종류가 있다.
+이므로 가져갈 사람 없는 목표가 열 개 도착하고 명령 마흔 번이 나가지 않는다. 두 숫자 모두 어떤 로그에도 남지 않는다.
 
-- **Mutually exclusive**: 이 그룹의 콜백들은 서로 병렬로 실행되지 않는다. 사실상 그룹이 자기만의 단일 스레드 executor를 가진 것처럼 동작한다.
-- **Reentrant**: 이 그룹의 콜백은 병렬로 실행될 수 있고, *같은* 콜백의 동시 실행도 허용된다.
+**2단계 — 7단계의 수정이 남기는 프로파일에서 무엇이 살아남는가**. 메시지는 클라이언트 라이브러리 층에 쌓이지 않고 *구독*의 history 아래 미들웨어에 앉는다. 즉 여기서 정하는 것은 카메라의 깊이가 아니라 제어기 자신의 깊이다. best effort 카메라에 맞추려고 제어기가 5절의 sensor-data 프로파일을 받아들인 뒤를 보자. 그 프로파일이 `KEEP_LAST (5)`다. 이것은 이 토픽에 맞는 계열의 프로파일이고 5절의 규칙을 어기는 것도 아니다. `/goal`은 각 설정점이 $20\,\mathrm{ms}$ 전의 것을 대체하는 스트림이기 때문이다. 한 번만 보내는 내비게이션 목표라면 그 규칙이 금하는 경우다. 여섯 번째부터는 도착할 때마다 가장 오래된 것을 밀어내므로, 열 중 다섯은 당신 코드가 보기도 전에 버려진다. $t=200\,\mathrm{ms}$에 살아남은 것은 스탬프 $120,140,160,180,200$이고 그 나이는
 
-*다른* 그룹의 콜백끼리는 언제나 병렬 실행이 가능하다. 그룹을 지정하지 않고 만든 것은 전부 노드의 **기본 콜백 그룹에 들어가고, 그것은 mutually exclusive다.** 직접 만든 그룹은 참조를 붙들고 있어야 한다. 수거되면 그 콜백은 더 이상 트리거되지 않는다.
+$$200-\{120,140,160,180,200\}=\{80,60,40,20,0\}\ \mathrm{ms}$$
 
-그 기본값이 교착의 전말이다. 노드의 모든 엔티티가 기본 그룹을 쓰면, *멀티 스레드 executor를 줬더라도* 노드는 단일 스레드 executor 위에 있는 것과 똑같이 동작한다. `MultiThreadedExecutor`를 고르고 그룹을 하나도 지정하지 않으면 얻는 것이 없다.
+나이는 스탬프 이후 흐른 시간일 뿐이기 때문이다. 버려진 다섯의 나이는 $100$에서 $180\,\mathrm{ms}$였다.
 
-이제 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]]이 남겨 둔 실패다. 타이머 콜백이 동기 서비스 호출을 한다. rclpy의 `client.call(request)`, 또는 rclcpp에서 `async_send_request`가 돌려준 future를 기다리는 것.
+**3단계 — 나오는 순서, 이쪽이 아픈 부분**. 퍼블리셔 하나에서 온 생존자들은 발행 순서대로 전달되므로, 정지 이후 첫 콜백이 받는 것은 나이 $80\,\mathrm{ms}$의 **가장 오래된** 생존자이고 가장 새 목표는 다섯 번째 콜백이다. (executor의 round-robin([[04-robotics/ros2/executors-callbacks-time|25.5.1 §1]])은 과부하 executor가 다음에 어느 *토픽*을 볼지에 대한 것이지 한 토픽 안 샘플 순서가 아니다.) 그래서 제어기가 회복한 직후 처음 하는 일은 자기 $70\,\mathrm{ms}$ 예산 전체보다 오래된 목표를 향해 모는 것이다.
 
-```python
-def _timer_cb(self):
-    self.get_logger().info('Sending request')
-    _ = self.client.call(Empty.Request())          # 여기서 영원히 막힌다
-    self.get_logger().info('Received response')
-```
+**4단계 — 생존자를 예산에 채점한다**. $\{80,60,40,20,0\}\,\mathrm{ms}$ 중 정확히 넷이 $70\,\mathrm{ms}$ 이하이고 하나가 아니다. 즉 깊이 5는 확실히 쓸모없는 콜백 하나와 낡은 콜백 셋을 사서, 제어기가 실제로 원한 단 하나 — 나이 $0$짜리 — 를 배달한 셈이다. 깊이를 1로 두면 다섯 대신 아홉이 버려지고, 콜백은 한 번 돌며, 그 한 번이 가장 새 목표 위에서 돈다. **제어 입력에서 깊은 큐는 안전 여유가 아니라, 모터가 도는 중에 버려야 할 밀린 짐이다.** 깊이는 샘플 하나하나가 의미를 갖는 스트림 — bag 기록기, 계수기, 적분기 — 의 것이지 "지금 어디로 갈까"의 것이 아니다.
 
-`Sending request`가 한 번 보인다. `Received response`는 영영 없고, 타이머는 다시 울리지 않는다. 서버 쪽 터미널에는 요청을 받아 응답했다고 찍힌다.
+**5단계 — 나이 검사는 미들웨어에 시킨다**. 그 정책이 lifespan이고, 대부분이 끝내 설정하지 않는 바로 그것이다. lifespan보다 오래된 샘플은 stale이고, 만료된 샘플은 조용히 버려져 아예 수신되지 않는다. `lifespan`을 예산 그 자체인 $70\,\mathrm{ms}$로 두면 나이 $80\,\mathrm{ms}$ 생존자는 콜백에 닿지도 않고 예산 안의 넷만 닿는다. 콜백마다 손으로 쓰게 될 검사를 프로파일로 옮긴 것이고, 거기서는 `ros2 topic info --verbose`가 동료에게 그것을 보여 줄 수 있다.
 
-기전: 동기 호출은 콜백이 없는 것이 아니라 콜백이 *숨어 있는* 것이다. 단계별로:
+**6단계 — 그리고 여기서 deadline이 말해 주지 않는 것**. 카메라가 $40\,\mathrm{ms}$ deadline을 제공하고 제어기가 $40\,\mathrm{ms}$를 요청하면 호환이다. 요청이 제공보다 더 엄격하지 않기 때문이다. 그리고 $20\,\mathrm{ms}$마다 발행하는 건강한 P6 카메라는 $20\,\mathrm{ms}$의 여유를 두고 그것을 충족한다. 이번 정지 동안에도 모든 구간에서 계속 충족하고, *requested deadline missed*는 한 번도 올라오지 않는다. 카메라는 제때 발행했고 미들웨어는 제때 수신했기 때문이다. deadline은 토픽 위 메시지 사이의 간격을 보지, 당신의 제어기가 그것을 가져가기를 멈췄다는 사실은 보지 못한다. 과제의 공백은 반대쪽, 카메라 자신이 $200\,\mathrm{ms}$ 조용해지는 경우다. 그쪽에서는 deadline이 울리고, 그 뒤 첫 프레임은 $200\,\mathrm{ms}$ 된 스탬프를 달고 오며 $70\,\mathrm{ms}$ 예산을 $130\,\mathrm{ms}$ 넘긴다. 길이가 같은 고장 둘인데 알려 주는 이벤트가 있는 쪽은 하나뿐이다.
 
-1. 타이머 콜백이 실행을 시작하고 `client.call()`을 부르며, 이 호출은 결과를 기다린다.
-2. 클라이언트는 자기 콜백 그룹을 future에 넘기고, 결과는 그 future의 done-callback이 실행되어야만 나온다.
-3. 그 done-callback과 타이머 콜백은 같은 mutually exclusive 그룹에 있으므로, 타이머 콜백이 실행 중인 동안 done-callback은 시작할 수 없다.
-4. 타이머 콜백은 결과를 기다리며 여전히 스택에 남아 있다. 그래서 done-callback은 영영 스케줄되지 못하고, 기다림은 끝나지 않는다.
-5. 막힌 타이머 콜백은 자기 다음 발화도 막으므로, 노드는 응답 하나를 놓치는 정도가 아니라 완전히 조용해진다.
+**7단계 — 물론 reliability 줄에 가위표가 있으면 이 중 아무것도 일어나지 않는다**. 위의 그림에서 맨 위 패널을 다시 보라. 카메라의 best effort 제공에 제어기의 reliable 요청은 연결되지 않으므로 1단계의 개수는 열이 아니라 영이고, 영원히 영이며, 노드 둘은 멀쩡하다. `ros2 topic info /goal --verbose`로 그것부터 배제한 다음에 깊이를 따져라.
 
-규칙:
-
-> 콜백 안에서 동기 호출을 한다면, 그 콜백과 클라이언트는 **서로 다른 콜백 그룹**에 있거나 **같은 reentrant 그룹**에 있어야 한다 — 그리고 노드는 멀티 스레드 executor 위에 있어야 한다.
-
-두 조건 다 필요하다. 그룹은 병렬을 *허용*하고, 멀티 스레드 executor가 두 번째 스레드를 *공급*한다. 단일 스레드 executor에서는 그룹을 어떻게 배치하든 교착한다. 스레드가 하나뿐이고 이미 바쁘기 때문이다.
-
-| 타이머 그룹 | 클라이언트 그룹 | Executor | 결과 |
-|---|---|---|---|
-| 기본 | 기본 | 멀티 스레드 | **교착** |
-| 그룹 A (mutually exclusive) | 같은 그룹 A | 멀티 스레드 | **교착** — 같은 그룹이면 기본이 아니어도 소용없다 |
-| 그룹 A (mutually exclusive) | 그룹 B (mutually exclusive) | 멀티 스레드 | 동작 |
-| 공유 reentrant 그룹 | 공유 reentrant 그룹 | 멀티 스레드 | 동작 |
-| 기본 | 그룹 A (mutually exclusive) | 멀티 스레드 | 동작 |
-| 어떤 배치든 | 어떤 배치든 | 단일 스레드 | **교착** |
-
-Python에서의 수정은 생성자 두 줄이다.
-
-```python
-from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from rclpy.executors import MultiThreadedExecutor
-
-client_cb_group = MutuallyExclusiveCallbackGroup()
-timer_cb_group = MutuallyExclusiveCallbackGroup()
-self.client = self.create_client(Empty, 'test_service', callback_group=client_cb_group)
-self.call_timer = self.create_timer(1, self._timer_cb, callback_group=timer_cb_group)
-```
-
-C++에서는 `create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive)`을 두 번 만들어 `create_client`와 `create_wall_timer`에 넘긴다.
-
-더 안전한 대안이자 문서가 선호하는 쪽: **콜백 안에서는 아예 동기 호출을 하지 않는 것이다.** `async_send_request`와 done-callback을 쓰면 풀어야 할 그룹 퍼즐 자체가 없다. 막고 기다리는 호출은 그것이 코드를 실제로 단순하게 만들 때 — 예컨대 기동 시 한 번 하는 질의 — 에만 값어치가 있다.
-
-### 10. 시간: `use_sim_time`, `/clock`, 그리고 벽시계
-
-ROS 2는 시간 추상을 셋 준다. **SystemTime**(머신의 시계), **SteadyTime**(단조 증가. 하드웨어 타임아웃용이며 다른 둘과 비교 불가), 그리고 **ROSTime**. 발행되거나 메시지 스탬프와 비교되는 모든 것에는 ROSTime을 써야 한다.
-
-ROSTime은 *ROS 시간 소스가 활성화되기 전까지는* SystemTime과 같은 값을 보고한다. 활성화 조건은 노드의 `use_sim_time` 파라미터가 설정되는 것이다. 그 뒤로 노드의 시계는 `/clock` 토픽(`rosgraph_msgs/msg/Clock`)으로 받은 최신 값을 돌려준다. 이 토픽은 시뮬레이터나 bag 재생이 발행한다. 설계할 때 감안해야 할 귀결들:
-
-- 시간 **0은 초기화되지 않았다는 뜻**이지 에포크가 아니다. `/clock` 발행 전에 뜬 노드는 첫 clock 메시지까지 0을 읽는다.
-- **시간이 뒤로 점프할 수 있다.** 루프 재생이 바로 그렇게 한다. 점프 핸들러를 등록할 수 있지만, 단조 증가를 가정한 알고리즘은 오작동한다.
-- `/clock`의 주기와 해상도는 규정되어 있지 않고, 타임스탬프 정확도는 네트워크 지연에 실시간 계수를 곱한 만큼으로 제한된다. 정확한 스탬프가 필요한 실행은 빠르게가 아니라 느리게 돌려야 한다.
-
-그래서 아래는 실행은 되지만 버그다.
-
-```python
-import time
-stamp = time.time()            # 벽시계: /clock을 완전히 무시한다
-```
-
-```python
-stamp = self.get_clock().now().to_msg()    # ROS 시간: use_sim_time이 켜지면 /clock을 따른다
-```
-
-시뮬레이션에서 벽시계 버전은 다른 모든 타임스탬프에 대해 실시간 계수만큼 어긋나고, bag 재생에서는 2년 전 센서 데이터에 오늘 날짜를 찍는다. 그러면 그 값에 대한 TF 조회는 실패하거나 조용히 외삽한다. 증상이 "결과 없음"이 아니라 "더 나쁜 결과"인 드문 버그다.
-
-타이머도 같은 분기를 갖는다. rclpy의 `create_timer(period, callback)`은 노드 시계를 쓰므로 시뮬레이션 시간을 따른다. rclcpp의 `create_wall_timer`는 의도적으로 벽시계를 쓰고 `/clock`을 따르지 **않으며**, `create_timer(period, callback, group)`이 노드 시계를 쓴다. 제어기가 시뮬레이션 시간으로 tick해야 한다면 후자가 필요하다. rclcpp 헤더의 경고도 기억하라. `rclcpp::Clock(RCL_ROS_TIME)`을 직접 생성하지 마라. 붙이지 않은 시계는 조용히 시스템 시간으로 돈다. `this->get_clock()`을 쓴다.
-
-켜는 방법:
-
-```bash
-ros2 run my_pkg my_node --ros-args -p use_sim_time:=true
-ros2 param set /my_node use_sim_time true
-```
-
-```python
-# 런치 파일에서
-Node(package='my_pkg', executable='my_node', parameters=[{'use_sim_time': True}])
-```
-
-공급하는 쪽에서는 플래그 하나로 bag 재생이 시계가 된다.
-
-```bash
-ros2 bag play my_bag --clock          # 기본 40 Hz로 /clock 발행
-ros2 bag play my_bag --clock 200      # 원하는 주기로
-```
-
-예상해야 할 실패 양상: `use_sim_time`이 *일부* 노드에만 설정된 경우다. 그래프의 절반은 시뮬레이션 시간, 절반은 벽시계 위에 있고, 그 사이의 변환은 실패하는데 노드는 하나씩 보면 전부 멀쩡하다. 런치 파일에서 시스템 전체에 설정하고, 남이 쓴 노드는 `ros2 param get <node> use_sim_time`으로 확인하라.
-
-### 11. 실습: QoS로 토픽을 망가뜨리고 고치기
+### 8. 실습: QoS로 토픽을 망가뜨리고 고치기
 
 source된 터미널 셋, 워크스페이스 없이 15분쯤.
 
@@ -1148,69 +851,17 @@ ros2 topic echo /demo_latched --qos-durability transient_local   # 보관본이 
 
 reliability 네 조합과 durability 네 조합 중 어느 것이 연결에 실패하는지 보지 않고 말할 수 있으면 끝난 것이다.
 
-### 12. 진단할 실패: 콜백을 하나 더 붙이자 멈추는 노드
+### 9. 이 페이지가 다루지 않는 것
 
-9절의 현실판이고, 실제 한 주에 나타나는 모양이다. 노드가 잘 돌던 중에 뭔가 하나를 더 붙였더니 조용히 죽는다.
+콜백을 무엇이 돌리는지, 콜백 하나가 막히면 노드의 나머지에 무슨 일이 생기는지, 메시지에 어느 시계로 스탬프를 찍는지 — executor, 콜백 그룹, `use_sim_time` — 는 나머지 두 조용한 실패이고 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]에 있다. 기록과 재생 시의 토픽별 QoS 오버라이드, 그리고 시스템이 이상할 때 돌릴 순서 있는 점검 목록은 [[04-robotics/ros2/debugging-data-reproducibility|25.10 디버깅, 데이터, 재현성]]에 있다. DDS 벤더 튜닝(버퍼 크기, 멀티캐스트, 공유 메모리 전송)은 ROS 2가 아니라 벤더 문서에 있다. 한 프로세스 안의 노드들이 미들웨어를 거쳐 직렬화하지 않고 메시지를 넘기게 하는 프로세스 내 통신과 composition은 ROS 2 composition 문서를 보라.
 
-아래를 `deadlock_demo.py`로 저장하고, 다른 터미널에서 `ros2 run demo_nodes_py add_two_ints_server`를 띄운 채 source된 터미널에서 `python3 deadlock_demo.py`로 실행한다.
+### 읽고 나면 · After reading
 
-```python
-import rclpy
-from rclpy.node import Node
-from rclpy.executors import MultiThreadedExecutor
-from example_interfaces.srv import AddTwoInts
-
-
-class Poller(Node):
-    def __init__(self):
-        super().__init__('poller')
-        self.client = self.create_client(AddTwoInts, 'add_two_ints')
-        self.client.wait_for_service()
-        self.timer = self.create_timer(1.0, self.on_timer)
-
-    def on_timer(self):
-        self.get_logger().info('calling')
-        req = AddTwoInts.Request(a=2, b=3)
-        result = self.client.call(req)          # 콜백 안의 동기 호출
-        self.get_logger().info(f'got {result.sum}')
-
-
-rclpy.init()
-node = Poller()
-executor = MultiThreadedExecutor()
-executor.add_node(node)
-executor.spin()
-```
-
-**증상.** `calling` 한 번. `got 5`는 없음. 오류도, 트레이스백도, 종료도 없음. 서버 터미널에는 요청을 처리했다고 찍힌다. `ros2 node list`에는 `/poller`가 여전히 있다. 아무것에도 응답하지 않고 타이머는 다시 울리지 않는다.
-
-**왜 "콜백을 하나 더 붙여서 깨진 것"처럼 보이는가.** 클라이언트만 있으면 동작하고 타이머만 있어도 동작한다. 깨지는 것은 조합 — 다른 콜백이 내놓아야 할 결과를 한 콜백 안에서 막고 기다리는 것 — 뿐이므로, "타이머를 붙이기 전에는 됐다"는 이분 탐색 본능이 엉뚱한 곳을 가리킨다.
-
-**찾는 법.** 순서대로:
-
-1. `ros2 node list` — 노드는 살아 있다. 크래시는 배제된다.
-2. `ros2 topic hz /rosout`, 또는 그냥 로그를 본다. 오류가 아니라 출력이 전혀 없다는 것은 논리 버그가 아니라 막힌 스레드를 가리킨다.
-3. 세 번째 터미널에서 `ros2 service list`와 `ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 2, b: 3}"` — 서버는 즉시 답한다. 서버는 문제가 아니다.
-4. 이제 결정적인 질문. 그래프가 아니라 자기 소스에 대한 질문이다. *이 노드의 어떤 콜백이 다른 콜백이 만들어야 할 것을 기다리며 막히는가?* 동기 서비스 호출, 콜백 안의 `spin_until_future_complete`, 액션 `get_result` 대기, 메시지를 기다리는 콜백 안의 `time.sleep`.
-5. `MultiThreadedExecutor`와 클라이언트용·타이머용 mutually exclusive 그룹 둘로 바꿔 돌려 확인한다. 동작하기 시작하면 그것이 원인이었다.
-
-**수정**은 9절과 같다. 멀티 스레드 executor 위에서 타이머와 클라이언트를 다른 콜백 그룹에 넣거나, 호출을 `call_async`와 done-callback으로 바꾼다. 계속 유지할 코드라면 후자가 답이다.
-
-이것은 일부러 연습해 둘 값어치가 있다. 답을 대신 알려 주는 명령이 없기 때문이다. 오류 메시지가 없고, 증상이 다른 열두 가지 원인과 똑같고, 수정 지점이 대부분 손대지 않는 부분에 있다. *모양* — 콜백이 콜백을 기다린다 — 을 알아보는 것이 기술의 전부다.
-
-### 13. 이 페이지가 다루지 않는 것
-
-기록과 재생 시의 토픽별 QoS 오버라이드, 그리고 시스템이 이상할 때 돌릴 순서 있는 점검 목록은 [[04-robotics/ros2/debugging-data-reproducibility|25.10 디버깅, 데이터, 재현성]]에 있다. 실시간 실행 — RT 커널, 메모리 고정, 콜백 체인의 응답 시간 분석, 실행 순서를 명시하는 rclc executor — 는 이 트랙 밖이다. 시작점은 Casini 외의 ECRTS 2019 분석이다. 같은 문제의 코드 쪽 절반 — 매 주기 도는 콜백에서 힙 할당, 락, 예외를 빼내는 것 — 은 [[02-foundations/algorithms/interview-code|11.7 §6]]에 있다. DDS 벤더 튜닝(버퍼 크기, 멀티캐스트, 공유 메모리 전송)은 ROS 2가 아니라 벤더 문서에 있다. 시뮬레이터가 `/clock`을 실제로 어떻게 발행하는지, `use_sim_time`이 제어기에 무엇을 하는지는 Gazebo와 함께 [[04-robotics/ros2/index|25. ROS 2]]에서 온다. Executor 그림을 크게 바꾸는 프로세스 내 통신과 composition은 ROS 2 composition 문서를 보라.
-
-### 출처
-
-- ROS 2 Jazzy 문서 — Concepts: Quality of Service settings(정책, 프로파일, 호환성 표, QoS 이벤트, matched 이벤트).
-- ROS 2 Jazzy 문서 — Concepts: Executors(executor 종류, 콜백 그룹, wait set, 스케줄링 의미).
-- ROS 2 Jazzy 문서 — How-to Guides: Using Callback Groups(교착 예제, 동작하는 구성과 동작하지 않는 구성).
-- ROS 2 Jazzy 문서 — Tutorials: Using quality-of-service settings for lossy networks.
-- ROS 2 design article — Clock and Time(SystemTime, SteadyTime, ROSTime, `/clock` 시간 소스, `use_sim_time`, 시간 점프).
-- 그대로 인용한 값과 메시지의 출처(Jazzy 브랜치 소스): `rmw/qos_profiles.h`(프로파일 내용), `rclcpp/subscription_base.cpp`와 `publisher_base.cpp`, `rclpy/event_handler.py`(기본 incompatible-QoS 경고), `rclpy/topic_endpoint_info.py`(`--verbose` 출력 형식), `ros2cli/ros2topic`(QoS 플래그와 `echo`의 퍼블리셔 맞춤 동작), `ros2bag` play verb(`--clock`), `robot_state_publisher`와 `nav2_map_server`(transient local 퍼블리셔).
-- Daniel Casini, Tobias Blass, Ingo Lütkebohle, Björn Brandenburg, "Response-Time Analysis of ROS 2 Processing Chains under Reservation-Based Scheduling", ECRTS 2019.
+- request 대 offered 규칙을 말하고, 표 없이 reliability, durability, deadline, liveliness에 적용할 수 있다.
+- `ros2 topic info --verbose`로 불일치를 찾고, `ros2 topic echo`가 데이터를 찍는다는 것이 내 노드에 대해 아무것도 증명하지 않는 이유를 말할 수 있다.
+- 토픽에 미리 정의된 프로파일을 고르고, "다음 메시지가 잃어버린 메시지를 무의미하게 만드는가"를 물어 목표라는 이름의 토픽에 best effort가 맞는지 판단할 수 있다.
+- 지연 예산에 맞춰 제어 입력의 history depth와 lifespan을 정하고, 깊은 큐가 밀린 짐인 이유를 말할 수 있다.
+- deadline 이벤트가 알려 줄 수 있는 조용한 실패와 알려 줄 수 없는 조용한 실패를 구분할 수 있다.
 
 ### 스스로 점검
 
@@ -1218,21 +869,18 @@ executor.spin()
    그리고 반대 경우는 왜 다른가?
 2. 내 노드는 `/map`을 구독하는데 아무것도 못 받고, `ros2 topic echo /map`은 지도를 바로
    찍는다. 무슨 일인가?
-3. 노드를 `MultiThreadedExecutor`에 올렸는데도 타이머 안의 동기 서비스 호출이 여전히
-   교착한다. 왜인가?
-4. 어떤 노드가 `time.time()`으로 메시지에 스탬프를 찍는다. 실험실에서는 잘 되는데 bag
-   재생에서는 숫자가 틀린다. 정확히 무엇이 잘못됐고, 무엇을 불러야 하나?
-5. $50\,\mathrm{Hz}$ 카메라가 계속 발행하는 동안 P6 제어기의 executor가
-   $200\,\mathrm{ms}$ 멈춘다. `KEEP_LAST (5)`에서 목표를 몇 개 잃고, 콜백이 처음 받는
+3. $50\,\mathrm{Hz}$ 카메라가 계속 발행하는 동안 P6 제어기가 $200\,\mathrm{ms}$ 동안
+   메시지를 가져가지 않는다. `KEEP_LAST (5)`에서 목표를 몇 개 잃고, 콜백이 처음 받는
    것은 몇 밀리초짜리이며, 생존자 중 몇 개가 $70\,\mathrm{ms}$ 예산 안인가? deadline이
    알려 주었겠는가?
+4. 5절은 목표에 sensor-data 프로파일을 쓰지 말라고 하는데, 대상으로 한 번 끝까지는 P6의
+   `/goal`에 그것을 쓴다. 어느 쪽이 맞고, 어떤 토픽에든 답을 정해 주는 질문 하나는 무엇인가?
 
 > [!tip]- 정답 · Answers
 > 1. 연결된다. 요청은 서브스크립션이 받아들일 최소 품질이고 제공은 퍼블리셔가 낼 수 있는 최대 품질이므로, reliable 퍼블리셔는 best effort 요청을 넘치게 만족시킨다. 반대 — best effort 퍼블리셔와 reliable 서브스크립션 — 는 제공되지 않는 보장을 요구하므로 연결이 만들어지지 않고 메시지가 하나도 오가지 않는다.
 > 2. 거의 확실히 durability다. map server는 transient local로, 내 노드가 뜨기 전에 한 번 발행했다. 내 노드는 기본 volatile을 요청하므로 연결은 정당하게 되지만 새 메시지만 받는다. `ros2 topic echo`는 퍼블리셔를 조사해 자기 요청을 transient local로 맞추므로 보존된 샘플을 받는다. 구독 쪽을 transient local로 고치고, `echo`가 된다고 해서 내 노드가 받을 수 있다는 증명이 되지는 않는다는 것을 기억하라.
-> 3. 콜백 그룹을 지정하지 않았기 때문이다. 그룹 없이 만든 것은 전부 노드 기본 그룹에 들어가고 그것은 mutually exclusive이므로, 노드는 단일 스레드처럼 동작한다. 타이머 콜백이 기다리는 동안 그룹을 붙들고 있고, 결과가 나오려면 실행되어야 하는 future의 숨은 done-callback은 같은 mutually exclusive 그룹에서 스케줄될 수 없다. 클라이언트와 타이머를 다른 그룹에 두거나, 공유된 reentrant 그룹 하나에 두어라.
-> 4. `time.time()`은 벽시계이고 `/clock`을 완전히 무시한다. 그래서 재생에서는 2년 전에 기록된 데이터에 오늘 시각을 찍고, 시뮬레이션에서는 시스템 나머지에 대해 실시간 계수만큼 어긋난다. 그러면 하류의 TF 조회와 다른 메시지 스탬프와의 비교가 실패하거나 조용히 외삽한다. 노드 시계의 `self.get_clock().now()`를 부르고 그래프 전체에 `use_sim_time`을 설정해야 하며, 주기가 시뮬레이션 시간을 따라야 한다면 wall timer가 아니라 `create_timer`를 쓴다.
-> 5. 정지 동안 목표 열 개가 발행되고($200/20$) 다섯을 잃는다. `KEEP_LAST (5)`는 가장 새 다섯만 남기고 도착할 때마다 가장 오래된 것을 밀어내기 때문이다. executor가 돌아온 순간 생존자의 나이는 $\{80,60,40,20,0\}\,\mathrm{ms}$이고 발행 순서대로 전달되므로, 첫 콜백이 받는 것은 이미 예산을 넘긴 $80\,\mathrm{ms}$짜리이고 가장 새 목표는 다섯 번째 콜백이다. 생존자 다섯 중 넷이 $70\,\mathrm{ms}$ 안이다. deadline 이벤트는 울리지 않는다. 카메라는 제때 발행했고 미들웨어는 제때 수신했으므로 토픽 위에서 구간을 놓친 것이 없기 때문이다. 처방은 깊이 1, 또는 $70\,\mathrm{ms}$ lifespan이다. 깊은 큐는 여유가 아니라 밀린 짐이다.
+> 3. 정지 동안 목표 열 개가 발행되고($200/20$) 다섯을 잃는다. `KEEP_LAST (5)`는 가장 새 다섯만 남기고 도착할 때마다 가장 오래된 것을 밀어내기 때문이다. 제어기가 다시 받기 시작한 순간 생존자의 나이는 $\{80,60,40,20,0\}\,\mathrm{ms}$이고 발행 순서대로 전달되므로, 첫 콜백이 받는 것은 이미 예산을 넘긴 $80\,\mathrm{ms}$짜리이고 가장 새 목표는 다섯 번째 콜백이다. 생존자 다섯 중 넷이 $70\,\mathrm{ms}$ 안이다. deadline 이벤트는 울리지 않는다. 카메라는 제때 발행했고 미들웨어는 제때 수신했으므로 토픽 위에서 구간을 놓친 것이 없기 때문이다. 처방은 깊이 1, 또는 $70\,\mathrm{ms}$ lifespan이다. 깊은 큐는 여유가 아니라 밀린 짐이다.
+> 4. 둘 다 맞다. 규칙은 메시지 하나하나가 개별적으로 의미를 갖는 토픽 — 한 번만 보내지거나 다음 메시지로 대체되지 않는 것 — 에 관한 것이고, P6의 `/goal`은 그런 토픽이 아니다. 각 설정점이 $20\,\mathrm{ms}$ 전의 것을 대체하는 $50\,\mathrm{Hz}$ 스트림이므로, 샘플 하나를 잃으면 $20\,\mathrm{ms}$어치 신선도를 잃고 다음 샘플이 그것을 메운다. 질문은 '다음 메시지가 잃어버린 메시지를 무의미하게 만드는가'다. 그렇다면 얕은 depth의 best effort가 맞다. 아니라면 — 한 번 보내는 내비게이션 목표, 비상 정지, 모드 변경 — reliable을 요청하고, 한 번 발행되어 늦게 온 쪽이 필요로 하는 것이라면 transient local까지 요청한다.
 
 ### 과제 · Problem set
 
@@ -1247,10 +895,16 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 카메라 노출 중간부�
 > - 두 상자 모두에 정책 줄을 전부 적는다 — reliability, history, durability, deadline, liveliness. 의심 가는 하나만 적지 않는다.
 > - 줄을 짝지어 3절의 표에 대보고 비호환인 짝에만 가위표를 친다. 가위표 하나가 고장 전부이고, 나머지가 멀쩡하다는 사실이 바로 이 고장이 잘 안 보이는 이유다.
 > - 시계에는 축 위에 $5\,\mathrm{ms}$ 제어 틱을, 축 아래에 $20\,\mathrm{ms}$ 간격의 비전 발행을 그려 어느 줄의 빈틈이든 보이게 한다.
-> - 요청한 deadline은 비전 줄 위의 반복 괄호로 그리고, 괄호마다 충족인지 놓침인지를 executor가 돌았는지가 아니라 토픽 위 메시지 사이의 간격으로 판정한다(위의 그림에서는 카메라가 한 번도 멈추지 않았으므로 모든 괄호가 충족).
+> - 요청한 deadline은 비전 줄 위의 반복 괄호로 그리고, 괄호마다 충족인지 놓침인지를 제어기가 가져갔는지가 아니라 토픽 위 메시지 사이의 간격으로 판정한다(대상으로 한 번 끝까지에서는 카메라가 한 번도 멈추지 않았으므로 모든 괄호가 충족되고, 이 과제에서는 카메라가 멈춘다).
 > - 프레임마다 옆에 스탬프를 적고 $70\,\mathrm{ms}$ 예산을 선으로 그어, 예산보다 오래된 프레임이 눈에 띄게 선의 반대편에 있게 한다.
 
 > [!tip]- 정답 · Solutions
 > 1. 카메라 best-effort → 제어기 reliable: 짝에 X. 타임라인: 스탬프 $t-200\,\mathrm{ms}$; 틱 $0,5,\ldots,65$; $70$에 예산이 끝나고 프레임은 아직 $130\,\mathrm{ms}$ 늦다.
 > 2. (a) 아니오 — reliable 요청 대 best-effort 제공. (b) 예산 초과 $130\,\mathrm{ms}$. (c) 건강한 $20\,\mathrm{ms}$ 주기는 $40\,\mathrm{ms}$를 통과; $200\,\mathrm{ms}$ 공백은 *requested deadline missed*.
 > 3. 신뢰성 비호환. `echo`는 맞추고 노드는 안 맞춘다. QoS를 고쳐도 $70\,\mathrm{ms}$ 예산 안에 $200\,\mathrm{ms}$ 스탬프가 남는다 — 힘은 카트가 이미 지나간 목표에 걸린다.
+
+### 출처
+
+- ROS 2 Jazzy 문서 — Concepts: Quality of Service settings(정책, 프로파일, 호환성 표, QoS 이벤트, matched 이벤트).
+- ROS 2 Jazzy 문서 — Tutorials: Using quality-of-service settings for lossy networks.
+- 그대로 인용한 값과 메시지의 출처(Jazzy 브랜치 소스): `rmw/qos_profiles.h`(프로파일 내용), `rclcpp/subscription_base.cpp`와 `publisher_base.cpp`, `rclpy/event_handler.py`(기본 incompatible-QoS 경고), `rclpy/topic_endpoint_info.py`(`--verbose` 출력 형식), `ros2cli/ros2topic`(QoS 플래그와 `echo`의 퍼블리셔 맞춤 동작), `robot_state_publisher`와 `nav2_map_server`(transient local 퍼블리셔).

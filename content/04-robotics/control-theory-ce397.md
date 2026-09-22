@@ -10,7 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 ## English
 
-*First page of group D, and the cheapest to enter: engineering math and [[02-foundations/linear-algebra|linear algebra]] are enough.
+*First page of group D, and the cheapest to enter: engineering math and [[02-foundations/linear-algebra|linear algebra]] carry the main line.
 What feedback buys and what it costs is settled here; [[04-robotics/lqr-lqg|6]], [[04-robotics/mpc|7]] and [[04-robotics/convex-mpc-legged|8]] are all built on top of it.*
 
 > [!info] Depth target · 깊이 목표
@@ -18,7 +18,7 @@ What feedback buys and what it costs is settled here; [[04-robotics/lqr-lqg|6]],
 > 로보틱스 논문의 상태공간 모델·안정성·극점/고유값 주장·가제어성/가관측성 서술을 정확히 읽고, 제어기가 무엇을 약속할 수 있고 없는지 말할 수 있으면 된다. 이 페이지가 그 읽기 수준을 처음부터 끝까지 가르친다; 여기 예제 너머의 제어기 *설계*는 패킷과 [[04-robotics/lqr-lqg|LQR]]/[[04-robotics/mpc|MPC]]의 몫이다.
 
 > [!note] Prerequisites
-> [[02-foundations/engineering-math|0.5 Engineering Math §8–9]] (linear ODEs, $\dot x = ax \Rightarrow x = x_0e^{at}$, Laplace, poles) · [[02-foundations/linear-algebra|1. Linear Algebra §1–3, §5]] (matrix multiplication, eigenvalues, the state-space section). Nothing else — if you can differentiate, multiply matrices, and read $e^{at}$, this page is self-contained.
+> [[02-foundations/engineering-math|0.5 Engineering Math §8–9]] (linear ODEs, $\dot x = ax \Rightarrow x = x_0e^{at}$, Laplace, poles) · [[02-foundations/linear-algebra|1. Linear Algebra §1–3, §5]] (matrix multiplication, eigenvalues, the state-space section) · [[02-foundations/lab-plants|0.6 Lab Plants]] (plant P4, the heater every section reuses) · [[02-foundations/lab-kernel|0.7 Lab Kernel §2]] (explicit Euler, which §4 and the problem set step the loop with) · [[02-foundations/signal-processing|6. Signal Processing §1 and §4]] (input–output stability; why differentiating a noisy signal amplifies the noise). With those, the page is self-contained: the frequency-response reading of §5.5 is built on the page, point by point.
 
 Control is the layer that makes a physical system do what you meant. Every robotics paper
 either designs one, wraps a learned policy in one, or quietly relies on one — and almost
@@ -26,7 +26,7 @@ every claim about *stability*, *tracking*, *bandwidth*, or *robustness* is a cla
 page's vocabulary.
 
 > [!note] First pass · 처음이라면
-> The longest page in group D. First pass: §1 — the leaky heater, with the numbers — then §4 for stability, then §10 for reading control claims. §5.5 — margins, sensitivity, and what no controller can do — is the other reading-skill section; save it for a second pass. It is read off a frequency-response (Nyquist) plot, which this page introduces only in a short primer at the start of §5.5; if that primer is not enough, read Åström & Murray ch.9 first. §2, §3 and §5 to §8 are the machinery, and they read much faster once §1 has told you what feedback is for.
+> The longest page in group D. First pass: §1 — the leaky heater, with the numbers — then §4 for stability, then §10 for reading control claims. §5.5 — margins, sensitivity, and what no controller can do — is the other reading-skill section; save it for a second pass. It is read off a frequency-response (Nyquist) plot, which the primer at the start of §5.5 builds point by point on the same loop the margins then use, so no outside text is needed. §2, §3 and §5 to §8 are the machinery, and they read much faster once §1 has told you what feedback is for. [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11]], robot control on P2, comes after this page and builds on it.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -373,6 +373,21 @@ provably out of reach no matter how the controller is designed.
 > [!example] Worked example · 계산 예제
 > Take $L(s) = 1/(s+1)$. At $\omega = 1$ rad/s, $L(i) = 1/(1+i) = 0.5 - 0.5i$, with magnitude $0.707$ and angle $-45°$: a 1 rad/s sine comes out at 71% amplitude, lagging by 45°. At $\omega = 0$ the value is $1$, and as $\omega \to \infty$ it shrinks to $0$, so the Nyquist plot is a half-circle from $1$ to $0$ below the real axis, never near $-1$.
 
+> [!example] Worked example, point by point · 한 점씩 계산
+> The loop the margins below are measured on, $L(s)=2/(s+1)^3$. Each factor $1/(1+i\omega)$ has magnitude $1/\sqrt{1+\omega^2}$ and angle $-\arctan\omega$, so $|L|=2/(1+\omega^2)^{3/2}$ and $\angle L=-3\arctan\omega$. Seven frequencies, each turned into a point $|L|(\cos\angle L+i\sin\angle L)$ of the complex plane:
+>
+> | $\omega$ (rad/s) | $\lvert L\rvert$ | $\angle L$ | $L(i\omega)$ | distance to $-1$ |
+> |---:|---:|---:|---|---:|
+> | 0 | 2.000 | 0° | 2.000 | 3.000 |
+> | 0.5 | 1.431 | −79.7° | 0.256 − 1.408i | 1.887 |
+> | 0.766 | 1.000 | −112.4° | −0.381 − 0.925i | 1.113 |
+> | 1 | 0.707 | −135.0° | −0.500 − 0.500i | 0.707 |
+> | 1.225 | 0.506 | −152.3° | −0.448 − 0.235i | 0.600 |
+> | 1.732 | 0.250 | −180.0° | −0.250 | 0.750 |
+> | 2.5 | 0.102 | −204.6° | −0.093 + 0.043i | 0.908 |
+>
+> Plot the seven points and join them in order of $\omega$. The curve leaves $2$ on the positive real axis, swings clockwise through the lower half-plane, crosses the unit circle at $\omega=0.766$, comes closest to $-1$ at $\omega=1.225$, crosses the negative real axis at $-0.25$ when $\omega=\sqrt3=1.732$, and curls into the origin from above. It never encircles $-1$, and three numbers can already be read off the sketch: the crossing at $-0.25$, the angle where the curve meets the unit circle, and the smallest distance, $0.600$. Those are the three margins defined below.
+
 **Read the closed loop from the open loop.** Write the loop transfer function
 $L(s) = P(s)C(s)$ — plant times controller, going once around the loop. The closed loop is
 stable when the Nyquist plot of $L(i\omega)$ keeps the right relationship to the point $-1$
@@ -422,6 +437,8 @@ margin is $s_m = 0.27$. Its step response rings badly, because the closed loop h
 with $\zeta = 0.014$. The Nyquist curve passes close to $-1$ in a direction that is neither
 pure gain nor pure phase, so both classical margins look at it and see nothing. **A paper
 that reports only gain and phase margins has not shown you that its loop is robust.**
+
+**Recap before sensitivity.** The Nyquist criterion answers *whether* the loop is stable; the three margins answer *how far* it is from instability — along gain, along phase, and in any direction at all — and only the last, $s_m$, bounds the other two. What follows turns $s_m$ into the sensitivity peak $M_s$, then asks what no controller can buy.
 
 **The sensitivity functions are where the claim actually lives.** With $L = PC$, define
 
@@ -502,7 +519,7 @@ sensitivity can be made arbitrarily small —
 
 $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 
-summed over right-half-plane poles of $L$. Read it as a conservation law: if the controller is itself stable, the right-hand side is fixed by the plant before any controller is designed, and the controller only decides *where* on the frequency axis that fixed area sits. If $L$ has no right-half-plane poles (a stable plant *and* a stable controller) the right side
+summed over right-half-plane poles of $L$. This result, with its complementary form below, is cited rather than derived on this page: it comes from applying Cauchy's integral theorem to $\log S(s)$ around a contour that encloses the right half-plane, where the assumption $sL(s)\to0$ makes the large arc contribute nothing and each unstable pole of $L$, which is a zero of $S$, contributes $\pi p_k$ (Bode 1945 for stable loops, Freudenberg & Looze 1985 for the unstable case; Åström & Murray ch.14 state it with its assumptions). Read it as a conservation law: if the controller is itself stable, the right-hand side is fixed by the plant before any controller is designed, and the controller only decides *where* on the frequency axis that fixed area sits. If $L$ has no right-half-plane poles (a stable plant *and* a stable controller) the right side
 is **zero**: on a linear frequency axis, the area where $\log|S|$ is negative (disturbances
 attenuated) must be exactly paid for by area where it is positive (disturbances amplified).
 This is the **waterbed effect** — push sensitivity down in the band you care about and it
@@ -809,18 +826,18 @@ examples *are* your domain.
 
 ## 한국어
 
-*D군의 첫 페이지이자 진입 비용이 가장 낮은 곳이다 — 공업수학과 [[02-foundations/linear-algebra|선형대수]]면 읽힌다.
+*D군의 첫 페이지이자 진입 비용이 가장 낮은 곳이다 — 본줄기는 공업수학과 [[02-foundations/linear-algebra|선형대수]]면 읽힌다.
 피드백이 무엇을 사고 무엇을 대가로 치르는지가 여기서 정해지고, [[04-robotics/lqr-lqg|6]]·[[04-robotics/mpc|7]]·[[04-robotics/convex-mpc-legged|8]]번이 그 위에 쌓인다.*
 
 > [!note] 선수 지식
-> [[02-foundations/engineering-math|0.5 공업수학 §8–9]] (선형 미분방정식, $\dot x = ax \Rightarrow x = x_0e^{at}$, 라플라스, 극점) · [[02-foundations/linear-algebra|1. 선형대수 §1–3, §5]] (행렬곱, 고유값, 상태공간 절). 그 외에는 없다 — 미분할 수 있고, 행렬을 곱할 수 있고, $e^{at}$를 읽을 수 있으면 이 페이지는 자체 완결이다.
+> [[02-foundations/engineering-math|0.5 공업수학 §8–9]] (선형 미분방정식, $\dot x = ax \Rightarrow x = x_0e^{at}$, 라플라스, 극점) · [[02-foundations/linear-algebra|1. 선형대수 §1–3, §5]] (행렬곱, 고유값, 상태공간 절) · [[02-foundations/lab-plants|0.6 Lab Plants]] (모든 절이 다시 쓰는 히터, 장치 P4) · [[02-foundations/lab-kernel|0.7 Lab Kernel §2]] (§4와 과제가 루프를 한 스텝씩 밟는 명시적 오일러) · [[02-foundations/signal-processing|6. 신호 처리 §1, §4]] (입출력 안정성, 잡음 섞인 신호를 미분하면 잡음이 증폭되는 이유). 이것들이 있으면 이 페이지는 자체 완결이다. §5.5의 주파수 응답 읽기는 페이지 안에서 한 점씩 쌓아 올린다.
 
 제어는 물리 시스템이 *의도한 대로* 움직이게 만드는 층이다. 모든 로보틱스 논문은 제어기를
 설계하거나, 학습된 정책을 제어기로 감싸거나, 말없이 제어기에 기대고 있다 — 그리고
 *안정성·추종·대역폭·강건성*에 대한 거의 모든 주장이 이 페이지의 어휘로 쓰여 있다.
 
 > [!note] 처음이라면 · First pass
-> D군에서 가장 긴 페이지다. 1차 통과: §1 — 새는 히터, 숫자까지 — 그다음 §4의 안정성, 그다음 §10의 제어 주장 읽기. §5.5 — 여유, 감도, 그리고 어떤 제어기도 할 수 없는 것 — 이 나머지 하나의 읽기 기술 절이니 2회독에 두라. 그 절은 주파수 응답(나이퀴스트) 선도를 읽는 절인데, 이 페이지는 §5.5 첫머리의 짧은 입문으로만 그것을 소개한다. 그 입문으로 부족하면 Åström & Murray 9장을 먼저 읽어라. §2·§3·§5~§8은 기계장치이고, §1이 피드백이 무엇을 위한 것인지 말해 준 뒤에 훨씬 빨리 읽힌다.
+> D군에서 가장 긴 페이지다. 1차 통과: §1 — 새는 히터, 숫자까지 — 그다음 §4의 안정성, 그다음 §10의 제어 주장 읽기. §5.5 — 여유, 감도, 그리고 어떤 제어기도 할 수 없는 것 — 이 나머지 하나의 읽기 기술 절이니 2회독에 두라. 그 절은 주파수 응답(나이퀴스트) 선도를 읽는 절인데, §5.5 첫머리의 입문이 뒤에서 여유를 재는 바로 그 루프 위에서 선도를 한 점씩 쌓아 올리므로 바깥 교재가 필요 없다. §2·§3·§5~§8은 기계장치이고, §1이 피드백이 무엇을 위한 것인지 말해 준 뒤에 훨씬 빨리 읽힌다. P2 위의 로봇 제어인 [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]]은 이 페이지 다음에 오고, 이 페이지 위에 쌓인다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -1142,6 +1159,21 @@ $2\zeta\omega_n = b/m$이므로 $\zeta = b/(2\sqrt{km})$이다. 유도는 그게
 > [!example] 계산 예제 · Worked example
 > $L(s) = 1/(s+1)$을 보자. $\omega = 1$ rad/s에서 $L(i) = 1/(1+i) = 0.5 - 0.5i$이고, 크기는 $0.707$, 각은 $-45°$다. 1 rad/s 사인파가 진폭 71%로, 45° 늦게 나온다는 뜻이다. $\omega = 0$에서 값은 $1$이고 $\omega \to \infty$이면 $0$으로 줄어드니, 나이퀴스트 선도는 실수축 아래에서 $1$부터 $0$까지 가는 반원이고 $-1$ 근처에는 가지 않는다.
 
+> [!example] 계산 예제, 한 점씩 · Worked example, point by point
+> 아래에서 여유를 잴 루프 $L(s)=2/(s+1)^3$을 보자. 인수 $1/(1+i\omega)$ 하나는 크기가 $1/\sqrt{1+\omega^2}$, 각이 $-\arctan\omega$이므로 $|L|=2/(1+\omega^2)^{3/2}$, $\angle L=-3\arctan\omega$다. 주파수 일곱 개를 각각 복소평면의 점 $|L|(\cos\angle L+i\sin\angle L)$로 바꾼다.
+>
+> | $\omega$ (rad/s) | $\lvert L\rvert$ | $\angle L$ | $L(i\omega)$ | $-1$까지 거리 |
+> |---:|---:|---:|---|---:|
+> | 0 | 2.000 | 0° | 2.000 | 3.000 |
+> | 0.5 | 1.431 | −79.7° | 0.256 − 1.408i | 1.887 |
+> | 0.766 | 1.000 | −112.4° | −0.381 − 0.925i | 1.113 |
+> | 1 | 0.707 | −135.0° | −0.500 − 0.500i | 0.707 |
+> | 1.225 | 0.506 | −152.3° | −0.448 − 0.235i | 0.600 |
+> | 1.732 | 0.250 | −180.0° | −0.250 | 0.750 |
+> | 2.5 | 0.102 | −204.6° | −0.093 + 0.043i | 0.908 |
+>
+> 일곱 점을 찍고 $\omega$ 순서로 이어 보라. 곡선은 양의 실수축의 $2$에서 출발해 아래 반평면을 시계 방향으로 돌고, $\omega=0.766$에서 단위원을 지나고, $\omega=1.225$에서 $-1$에 가장 가까워지고, $\omega=\sqrt3=1.732$에서 음의 실수축을 $-0.25$로 지난 뒤, 위쪽에서 원점으로 말려 들어간다. $-1$을 감싸 돌지 않으며, 스케치에서 이미 숫자 셋을 읽을 수 있다. $-0.25$의 교차점, 곡선이 단위원과 만나는 곳의 각, 그리고 최소 거리 $0.600$. 아래에서 정의하는 세 여유가 그것이다.
+
 **폐루프를 개루프에서 읽는다.** 루프 전달함수 $L(s) = P(s)C(s)$를 쓴다 — 플랜트 곱하기
 제어기, 루프를 한 바퀴 돈 것. 폐루프는 $L(i\omega)$의 나이퀴스트 선도가 점 $-1$과 올바른
 관계를 유지할 때 안정하다(폐루프를 발산시키는 것은 $1 + L = 0$이니, 위험이 있는 곳이
@@ -1187,6 +1219,8 @@ $\varphi_m = 67.6°$다. 곡선이 $-1$에 가장 가까워지는 거리는 $1.2
 순수한 이득도 순수한 위상도 아닌 방향에서 $-1$에 가까이 지나가므로, 고전적인 두 여유는 그것을
 쳐다보고도 아무것도 보지 못한다. **이득 여유와 위상 여유만 보고한 논문은 자기 루프가
 강건하다는 것을 보인 적이 없다.**
+
+**감도로 넘어가기 전에 정리.** 나이퀴스트 판별법은 루프가 안정한지 *여부*에 답하고, 세 여유는 불안정에서 *얼마나 먼지* — 이득 방향으로, 위상 방향으로, 그리고 어느 방향으로든 — 에 답하며, 나머지 둘을 묶어 주는 것은 마지막 $s_m$뿐이다. 이어지는 부분은 $s_m$을 감도의 최댓값 $M_s$로 바꾸고, 어떤 제어기로도 살 수 없는 것이 무엇인지 묻는다.
 
 **주장이 실제로 사는 곳은 감도 함수다.** $L = PC$에 대해 다음을 정의한다.
 
@@ -1258,7 +1292,7 @@ $\frac{1-s\tau/2}{1+s\tau/2}$는 $2/\tau$에 영점을 갖는다. 그러므로 7
 
 $$\int_0^\infty \log|S(i\omega)| \, d\omega = \pi \sum_k p_k$$
 
-이고, 합은 $L$의 우반평면 극점에 대해 취한다. 보존 법칙으로 읽어라. 제어기 자체가 안정하다면 우변은 제어기를 설계하기도 전에 플랜트가 정해 놓은 값이고, 제어기가 정하는 것은 그 고정된 넓이가 주파수 축의 *어디에* 놓이는가뿐이다. $L$에 우반평면 극점이 없으면(플랜트*와* 제어기가 모두 안정하면) 우변은 **0**이다.
+이고, 합은 $L$의 우반평면 극점에 대해 취한다. 이 결과는 아래의 상보 형태와 함께 이 페이지에서 유도하지 않고 인용해 온다. 우반평면을 감싸는 경로를 따라 $\log S(s)$에 코시 적분 정리를 적용하면 나오는데, 가정 $sL(s)\to0$ 덕분에 큰 호의 기여가 0이 되고, $S$의 영점인 $L$의 불안정 극점 하나하나가 $\pi p_k$를 보탠다(안정한 루프는 Bode 1945, 불안정한 경우는 Freudenberg & Looze 1985. Åström & Murray 14장이 가정과 함께 적어 둔다). 보존 법칙으로 읽어라. 제어기 자체가 안정하다면 우변은 제어기를 설계하기도 전에 플랜트가 정해 놓은 값이고, 제어기가 정하는 것은 그 고정된 넓이가 주파수 축의 *어디에* 놓이는가뿐이다. $L$에 우반평면 극점이 없으면(플랜트*와* 제어기가 모두 안정하면) 우변은 **0**이다.
 선형 주파수 축 위에서 $\log|S|$가 음수인 넓이(외란이 감쇠되는 구간)는 양수인
 넓이(외란이 증폭되는 구간)로 정확히 값을 치러야 한다. 이것이 **워터베드 효과**다 — 관심
 있는 대역에서 감도를 눌러 내리면 어딘가에서 반드시 올라온다. 불안정한 플랜트나 제어기는 우변을 양수로

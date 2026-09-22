@@ -10,15 +10,19 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.3** — [[04-robotics/modern-robotics-book|book guide & free PDF]] · prerequisite: [[02-foundations/se3-geometry|8. SE(3)]]
 
 > [!note] Prerequisites · 선수 지식
-> You should be able to: ① multiply rotation matrices and use $R^{-1} = R^\top$ ([[02-foundations/se3-geometry|SE(3) §1]]) ② compute a cross product $\omega \times v$ ③ solve $\dot x = ax \Rightarrow x = e^{at}x_0$ ([[02-foundations/engineering-math|0.5 §8]]). If any of the three is shaky, read that page first.
-> 다음을 할 수 있어야 한다: ① 회전 행렬 곱셈과 $R^{-1} = R^\top$ ([[02-foundations/se3-geometry|SE(3) §1]]) ② 외적 $\omega \times v$ 계산 ③ $\dot x = ax \Rightarrow x = e^{at}x_0$ ([[02-foundations/engineering-math|0.5 공업수학 §8]]). 셋 중 하나라도 흔들리면 해당 페이지를 먼저 읽어라.
+> You should be able to: ① multiply rotation matrices and use $R^{-1} = R^\top$ ([[02-foundations/se3-geometry|SE(3) §1]]) ② compute a cross product $\omega \times v$ ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §1]]) ③ solve $\dot x = ax \Rightarrow x = e^{at}x_0$ ([[02-foundations/engineering-math|0.5 §8]]). If any of the three is shaky, read that page first. The object throughout is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> 다음을 할 수 있어야 한다: ① 회전 행렬 곱셈과 $R^{-1} = R^\top$ ([[02-foundations/se3-geometry|SE(3) §1]]) ② 외적 $\omega \times v$ 계산 ([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §1]]) ③ $\dot x = ax \Rightarrow x = e^{at}x_0$ ([[02-foundations/engineering-math|0.5 공업수학 §8]]). 셋 중 하나라도 흔들리면 해당 페이지를 먼저 읽어라. 전체에서 쓰는 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**다.
 
 ## English
 
 **Core question**: how do we represent and compose rotations, poses, and velocities of rigid bodies — without singularities?
 
 This is the longest-feeling chapter of the book, and the one worth ~30% of your total
-study time: every later chapter is this machinery applied. Take it in four steps.
+study time: every later chapter is this machinery applied. Take it in four steps, then two
+more that later chapters call on.
+
+> [!note] First pass · 처음이라면
+> Read the picture, §1, and §2 with its worked check, then §3 and §4 through the worked $T_{sb}$ of P2: that is the vocabulary every later chapter uses. §5 (the pose exponential and logarithm) and §6 (wrenches) are second pass — come back to §5 when ch.4 multiplies exponentials and ch.6 takes a pose error, and to §6 when ch.5 derives $\tau = J^\top\mathcal{F}$. The check-your-understanding paragraphs of §1 and §3 can wait too.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -97,13 +101,14 @@ $[\hat z] = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&0\end{pmatrix}$,
 $[\hat z]^2 = \begin{pmatrix}-1&0&0\\0&-1&0\\0&0&0\end{pmatrix}$, so
 $$R = I + (1)[\hat z] + (1)[\hat z]^2 = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},$$
 which is exactly $R_z(90°)$ — it sends $\hat x \to \hat y$. Every rotation is *one*
-axis-angle exponential (Euler's theorem); $\log$ recovers $(\hat\omega, \theta)$ from $R$.
+axis-angle exponential (Euler's theorem); $\log$ recovers $(\hat\omega, \theta)$ from $R$ (the formula is in §5.3).
 This exp/log pair is the door between the Lie group (rotations) and the Lie algebra
 (angular velocities) — and the reason poses can be interpolated and averaged correctly.
 
 ### 3. Twists: body velocity is six numbers — but read $v$ carefully
 
 A moving body's velocity is a **twist** $\mathcal{V} = (\omega, v) \in \mathbb{R}^6$.
+Written as the $4\times4$ matrix $[\mathcal{V}] = \begin{pmatrix}[\omega] & v\\ 0 & 0\end{pmatrix}$ it is an element of $\mathfrak{se}(3)$, the Lie algebra of SE(3) — the pose counterpart of §2's angular velocities — and its six coordinates are $(\omega_x, \omega_y, \omega_z, v_x, v_y, v_z)$.
 **The meaning of $v$ depends on the reference frame and origin.** A space twist describes a velocity field relative to the fixed space origin; a body twist uses the moving body origin. Do not identify their linear components without specifying those choices. Every nonzero twist is a
 **screw**: rotate about an axis while translating along it. The **pitch** $h$ is how far the
 body advances along the axis per radian it turns about it, in metres per radian, so a screw
@@ -129,7 +134,7 @@ A special case worth memorizing: if $p = 0$ (pure rotation), this is just "rotat
 halves": $\omega_s = R\,\omega_b$, $v_s = R\,v_b$. **Frame subscripts are not decoration**
 — most sign errors in later chapters are $s$/$b$ confusions, so write the subscript every
 time. The pose exponential works like the rotation one:
-$T = e^{[\mathcal{S}]\theta}$ means "follow screw $\mathcal{S}$ for angle $\theta$."
+$T = e^{[\mathcal{S}]\theta}$ means "follow screw $\mathcal{S}$ for angle $\theta$," and §5 computes it.
 
 **Worked: $T_{sb}$ of plant P2.** Catalog pose $\theta=(0^\circ,90^\circ)$, tip at $(1,1)$ ([[02-foundations/lab-plants|0.6]]). Put $\{b\}$ at the tip with its $x$-axis along the forearm, so along $+\hat y_s$. A right-handed frame with $z$ out of the page then has $y_b=-\hat x_s$, and
 
@@ -163,9 +168,161 @@ A pure $z$-rotation of the *whole arm about the origin* has space twist $\mathca
 
 
 
+### 5. The pose exponential and logarithm on SE(3)
+
+§2 turned a rotation axis and an angle into a rotation matrix; this section does the same for a whole pose, then inverts it. Here a **screw axis** is a twist $\mathcal{S} = (\omega, v)$ of §3 normalized in one of two ways: either $\|\omega\| = 1$, and $\theta$ is an angle in radians turned about the axis, or $\omega = 0$ and $\|v\| = 1$, and $\theta$ is a distance in metres slid along $v$. Its bracket is the $4\times4$ element of $\mathfrak{se}(3)$ from §3,
+
+$$[\mathcal{S}] = \begin{pmatrix}[\omega] & v\\ 0 & 0\end{pmatrix}$$
+
+and following the screw for $\theta$ from the identity is the linear ODE $dT/d\theta = [\mathcal{S}]\,T$ with $T(0) = I$ — §2's $\dot R = [\omega_s]R$ one size up — so its solution is the matrix exponential $T = e^{[\mathcal{S}]\theta}$.
+
+**5.1 The closed form.** Every power of $[\mathcal{S}]$ keeps the same pattern, $[\mathcal{S}]^k = \begin{pmatrix}[\omega]^k & [\omega]^{k-1}v\\ 0 & 0\end{pmatrix}$ for $k \ge 1$, so the series splits into a rotation block and a translation column:
+
+$$e^{[\mathcal{S}]\theta} = \begin{pmatrix} e^{[\omega]\theta} & G(\theta)\,v \\ 0 & 1 \end{pmatrix}, \qquad G(\theta) = I\theta + [\omega]\frac{\theta^2}{2!} + [\omega]^2\frac{\theta^3}{3!} + [\omega]^3\frac{\theta^4}{4!} + \cdots$$
+
+The rotation block is Rodrigues' formula of §2. For $G$, the same identity $[\omega]^3 = -[\omega]$ folds the series: the $[\omega]$ terms collect $\theta^2/2! - \theta^4/4! + \cdots = 1 - \cos\theta$ and the $[\omega]^2$ terms collect $\theta^3/3! - \theta^5/5! + \cdots = \theta - \sin\theta$, so
+
+$$G(\theta) = I\theta + (1-\cos\theta)\,[\omega] + (\theta-\sin\theta)\,[\omega]^2 \qquad (\|\omega\| = 1)$$
+
+which is MR Prop. 3.25. Read it physically: $G(\theta)v = \int_0^\theta e^{[\omega]\varphi}v\,d\varphi$ is the linear velocity $v$, carried round by the rotation accumulated so far and summed over the motion; integrating Rodrigues' formula term by term gives the same three coefficients.
+
+- **Example, on P2.** The elbow screw $\mathcal{S}_2 = (0,0,1;\ 0,-1,0)$ through $q_2 = (1,0,0)$, at $\theta = \pi/2$. With $[\hat z]^2 = \mathrm{diag}(-1,-1,0)$, $1 - \cos\frac{\pi}{2} = 1$ and $\frac{\pi}{2} - \sin\frac{\pi}{2} = 0.5708$:
+
+  $$G(\tfrac{\pi}{2}) = \begin{pmatrix}1&-1&0\\1&1&0\\0&0&\pi/2\end{pmatrix}, \qquad G v_2 = \begin{pmatrix}1\\-1\\0\end{pmatrix}, \qquad e^{[\mathcal{S}_2]\pi/2} = \begin{pmatrix}0&-1&0&1\\1&0&0&-1\\0&0&1&0\\0&0&0&1\end{pmatrix}$$
+
+  since the first two diagonal entries of $G$ are $\frac{\pi}{2} - 0.5708 = 1$. The translation column is where the origin goes: it sits at $-q_2 = (-1,0)$ from the axis, a quarter turn takes that to $(0,-1)$, and adding $q_2$ back gives $(1,-1)$. The elbow itself, on the axis, stays put: $R_z(90^\circ)(1,0,0) + (1,-1,0) = (1,0,0)$.
+- **Non-example.** $\begin{pmatrix} e^{[\omega]\theta} & v\theta \\ 0 & 1\end{pmatrix}$, rotating and translating as if the two were independent. For $\mathcal{S}_2$ it puts the origin at $(0,-1.5708,0)$ instead of $(1,-1,0)$ and moves the elbow to $(0,-0.5708,0)$ — a revolute joint whose own axis moves. The correction $G(\theta) - I\theta$ is exactly the rotation's effect on the translation.
+
+**5.2 Pure translation.** When $\omega = 0$, $[\mathcal{S}]^2 = 0$ (the top-left block is zero, so the product has nothing left), and the series stops after its linear term:
+
+$$e^{[\mathcal{S}]\theta} = \begin{pmatrix} I & v\,\theta \\ 0 & 1 \end{pmatrix} \qquad (\omega = 0,\ \|v\| = 1)$$
+
+— the infinite-pitch screw of §3, a slide of $\theta$ metres along $v$ with no rotation. The rotational formula happens to give the same $G = I\theta$ when $[\omega] = 0$, but its $\theta$ is an angle and this one is a length, which is why the two cases are stated apart. *On P2*: the home pose $M$ of [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], tip at $(2,0,0)$ with $R = I$, is exactly this with $v = (1,0,0)$ and $\theta = 2\,\mathrm{m}$.
+
+**5.3 The matrix logarithm.** The inverse question: given $T = (R, p)$, find a screw $\mathcal{S}$ and $\theta$ with $e^{[\mathcal{S}]\theta} = T$. Such a pair always exists — every rigid displacement is a motion along one screw (the Chasles–Mozzi theorem) — and the closed form says how to read it off (MR §3.3.3.2):
+
+1. If $R = I$, the motion is a pure translation: $\omega = 0$, $\theta = \|p\|$, $v = p/\|p\|$.
+2. Otherwise take the rotation's logarithm first. The trace of Rodrigues' formula is $\operatorname{tr}R = 3 - 2(1-\cos\theta) = 1 + 2\cos\theta$, because $\operatorname{tr}[\omega] = 0$ and $\operatorname{tr}[\omega]^2 = -2\|\omega\|^2 = -2$; and $R - R^\top = 2\sin\theta\,[\omega]$, because $[\omega]$ is antisymmetric while $I$ and $[\omega]^2$ are symmetric. So, for $\theta \in (0, \pi)$,
+
+$$\theta = \arccos\frac{\operatorname{tr}R - 1}{2}, \qquad [\omega] = \frac{R - R^\top}{2\sin\theta}, \qquad v = G^{-1}(\theta)\,p$$
+
+with the inverse of 5.1's $G$,
+
+$$G^{-1}(\theta) = \frac{1}{\theta}\,I - \frac{1}{2}\,[\omega] + \Bigl(\frac{1}{\theta} - \frac{1}{2}\cot\frac{\theta}{2}\Bigr)[\omega]^2$$
+
+which you can confirm by multiplying out $G\,G^{-1}$ with $[\omega]^3 = -[\omega]$ and $[\omega]^4 = -[\omega]^2$. At $\theta = \pi$, where $\sin\theta = 0$, read the axis from $R = I + 2[\omega]^2 = 2\omega\omega^\top - I$ instead, i.e. $\omega\omega^\top = (R + I)/2$.
+
+- **Example, on P2.** Three logarithms, one per case. (i) $e^{[\mathcal{S}_2]\pi/2}$ of 5.1: $\operatorname{tr}R = 1$ gives $\theta = \pi/2$, $(R - R^\top)/2 = [\hat z]$, and $G^{-1}(\frac{\pi}{2}) = \begin{pmatrix}0.5&0.5&0\\-0.5&0.5&0\\0&0&2/\pi\end{pmatrix}$ takes $p = (1,-1,0)$ to $v = (0,-1,0)$: $\mathcal{S}_2$ comes back. (ii) §4's $T_{sb}$, same $R$ but $p = (1,1,0)$: $v = G^{-1}p = (1,0,0)$, and $v = -\omega\times q$ puts the axis through $q = (0,1,0)$. The tool frame is reached from $\{s\}$ by one quarter turn about the vertical through $(0,1)$, a point on neither link, which is why a logarithm's screw is a property of the displacement, not of the arm. (iii) $M$: $R = I$, so case 1 gives $\theta = 2$ and $v = (1,0,0)$, the slide of 5.2.
+- **Why it matters.** The exponential builds poses from joint motions — ch.4's product of exponentials is nothing else. The logarithm turns a pose *error* into a six-vector a Jacobian can act on: numerical IK ([[04-robotics/modern-robotics/ch06-inverse-kinematics|ch.6 §2]]) iterates on $[\log(T_{now}^{-1}T_{goal})]^\vee$, where $^\vee$ reads the six coordinates back out of the $4\times4$ matrix.
+
+The block below checks every number of this section: the closed form against the raw power series, the pure translation, and the three logarithms with a round trip through the exponential.
+
+```python
+# Pose exponential and logarithm on SE(3), checked on P2's screws (§5).
+import numpy as np
+
+def bracket(w):
+    x, y, z = w
+    return np.array([(0, -z, y), (z, 0, -x), (-y, x, 0)], float)
+
+def exp_screw(S, th):
+    """e^{[S]th} by the closed form: 5.1 for a unit omega, 5.2 for omega = 0."""
+    w, v = np.asarray(S[:3], float), np.asarray(S[3:], float)
+    T = np.eye(4)
+    if np.allclose(w, 0):
+        T[:3, 3] = v * th
+        return T
+    W = bracket(w)
+    T[:3, :3] = np.eye(3) + np.sin(th) * W + (1 - np.cos(th)) * W @ W
+    G = np.eye(3) * th + (1 - np.cos(th)) * W + (th - np.sin(th)) * W @ W
+    T[:3, 3] = G @ v
+    return T
+
+def exp_series(S, th, terms=40):
+    """The same exponential by summing its power series, as an independent check."""
+    X = np.zeros((4, 4))
+    X[:3, :3], X[:3, 3] = bracket(S[:3]), S[3:]
+    out, term = np.eye(4), np.eye(4)
+    for k in range(1, terms):
+        term = term @ (X * th) / k
+        out = out + term
+    return out
+
+def log_pose(T):
+    """(S, th) with e^{[S]th} = T, by 5.3; valid for R = I or th in (0, pi)."""
+    R, p = T[:3, :3], T[:3, 3]
+    if np.allclose(R, np.eye(3)):
+        th = np.linalg.norm(p)
+        return np.r_[0, 0, 0, p / th], th
+    th = np.arccos((np.trace(R) - 1) / 2)
+    W = (R - R.T) / (2 * np.sin(th))
+    w = np.array([W[2, 1], W[0, 2], W[1, 0]])
+    Ginv = np.eye(3) / th - W / 2 + (1 / th - 1 / (2 * np.tan(th / 2))) * W @ W
+    return np.r_[w, Ginv @ p], th
+
+S2 = np.array([0, 0, 1, 0, -1, 0.])     # elbow screw, axis through q2 = (1, 0, 0)
+M = np.eye(4)
+M[0, 3] = 2                              # P2's home pose: tip at (2, 0, 0), R = I
+E2 = exp_screw(S2, np.pi / 2)
+T_sb = E2 @ M                            # the tool pose of §4
+print("e^[S2]pi/2 =\n", E2.round(4) + 0.0)
+print("closed form = series:", np.allclose(E2, exp_series(S2, np.pi / 2)))
+print("M is a pure translation:", np.allclose(exp_screw([0, 0, 0, 1, 0, 0], 2.0), M))
+for name, T in [("e^[S2]pi/2", E2), ("T_sb", T_sb), ("M", M)]:
+    S, th = log_pose(T)
+    print(f"log {name}: S = {S.round(4) + 0.0}, theta = {th:.4f},",
+          "round trip:", np.allclose(exp_screw(S, th), T))
+```
+
+It prints $e^{[\mathcal{S}_2]\pi/2}$ as above, `closed form = series: True`, `M is a pure translation: True`, and the three logarithms $(0,0,1;\ 0,-1,0)$ at $\theta = 1.5708$, $(0,0,1;\ 1,0,0)$ at $1.5708$ and $(0,0,0;\ 1,0,0)$ at $2.0000$, each with a `True` round trip.
+
 **Why learning people should care**: exp/log maps are how you interpolate poses, average
 rotations, and define losses on SE(3) — the machinery under SE(3) diffusion/flow action
 heads ([[01-canonical-papers/notes/4-vla/pi0|π0]]-style).
+
+### 6. Wrenches — the force dual of twists
+
+A twist says how a body moves; a **wrench** says how it is pushed. It is the six-vector that collects a moment and a force acting on a rigid body, both written in one frame $\{a\}$:
+
+$$\mathcal{F}_a = (m_a,\ f_a) \in \mathbb{R}^6, \qquad m_a = r_a \times f_a$$
+
+where $f_a$ is the linear force in newtons, $r_a$ is any point on its line of action in $\{a\}$ coordinates, and $m_a$ is the moment, in N·m, that the force exerts about the origin of $\{a\}$. The definition has three conditions: both halves are expressed in the same frame; the moment is taken about that frame's *origin*, so — exactly like a twist's $v$ in §3 — the moment half changes when the reference point moves even though the force does not; and wrenches acting on one body add componentwise only when written in the same frame. Sliding $r_a$ along the force's own line changes nothing, since the added part is parallel to $f_a$ and its cross product with $f_a$ vanishes. A wrench with $f = 0$ is a **pure moment**. The order, moment first, matches the twist's $(\omega, v)$ so that the two pair component by component.
+
+**Power.** A body point at $r_a$ moves at $v_a + \omega_a \times r_a$ (the velocity field of §3), so a force $f_a$ applied there delivers $f_a\cdot(v_a + \omega_a\times r_a) = v_a\cdot f_a + \omega_a\cdot(r_a\times f_a)$, the last step by the cyclic rule of the scalar triple product. Hence
+
+$$P = \mathcal{V}_a^\top\mathcal{F}_a = \omega_a\cdot m_a + v_a\cdot f_a$$
+
+in watts: rotation against moment plus translation against force. This pairing is why the moment goes with $\omega$ and the force with $v$.
+
+**Frame change.** Power is physical, so it cannot depend on the frame it is written in: $\mathcal{V}_b^\top\mathcal{F}_b = \mathcal{V}_a^\top\mathcal{F}_a$ for every motion. Substituting §4's $\mathcal{V}_a = [\mathrm{Ad}_{T_{ab}}]\mathcal{V}_b$ gives $\mathcal{V}_b^\top\mathcal{F}_b = \mathcal{V}_b^\top[\mathrm{Ad}_{T_{ab}}]^\top\mathcal{F}_a$ for every $\mathcal{V}_b$, so
+
+$$\mathcal{F}_b = [\mathrm{Ad}_{T_{ab}}]^\top\,\mathcal{F}_a$$
+
+(MR Prop. 3.27): twists change frame through the adjoint and wrenches through its transpose. Written out with the block form of §4, $f_b = R^\top f_a$ and $m_b = R^\top(m_a - p\times f_a)$ — rotate the force, and move the moment's reference point from $\{a\}$'s origin to $\{b\}$'s origin at $p$.
+
+- **Example, on P2.** The force of [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5]]'s statics, $f = (0,-10,0)\,\mathrm{N}$ applied by the tool at the tip $p = (1,1,0)$, with $T_{sb}$ from §4. In $\{s\}$ the moment is $p\times f = (0,0,-10)\,\mathrm{N\,m}$, so $\mathcal{F}_s = (0,0,-10;\ 0,-10,0)$. In $\{b\}$, $\mathcal{F}_b = [\mathrm{Ad}_{T_{sb}}]^\top\mathcal{F}_s = (0,0,0;\ -10,0,0)$: no moment, because the force acts at $\{b\}$'s own origin, and a force along $-\hat x_b$, straight back down the forearm. Power checks the pair. Turning joint 1 at $1\,\mathrm{rad/s}$ is the space twist $\mathcal{S}_1 = (0,0,1;\ 0,0,0)$, and $\mathcal{S}_1^\top\mathcal{F}_s = -10\,\mathrm{W}$; the same motion written in $\{b\}$ is $(0,0,1;\ 1,1,0)$, and pairing it with $\mathcal{F}_b$ gives $1\cdot(-10) = -10\,\mathrm{W}$ again. With joint 2's screw $\mathcal{S}_2$ the pairing is $1\cdot(-10) + (-1)(-10) = 0$. Those two numbers are the joint torques $\tau = (-10, 0)\,\mathrm{N\,m}$ of [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5 §3]], because a joint torque is the power delivered per unit joint rate.
+- **Non-example.** $\mathcal{F}_s = (0,0,0;\ 0,-10,0)$, the force with its moment dropped as if it acted at the base. Paired with $\mathcal{S}_1$ it gives $0\,\mathrm{W}$: it claims the shoulder holds a $10\,\mathrm{N}$ load on a $1\,\mathrm{m}$ lever arm for free. A wrench's moment belongs to a reference point, and forgetting it is §3's $v_s$-versus-$\dot p$ error in force form.
+- **Why it matters.** $\tau = J^\top\mathcal{F}$ in [[04-robotics/modern-robotics/ch05-velocity-kinematics|ch.5 §3]] is this power pairing; a six-axis force–torque sensor reports a wrench in its own frame, which the adjoint transpose moves to the tool; and grasp analysis in [[04-robotics/modern-robotics/ch12-grasping|ch.12]] is sums of contact wrenches written in one frame.
+
+```python
+# The 10 N tip force of ch.5 as a wrench, in {s} and in {b}, and its power (§6).
+def adjoint(T):
+    R, p = T[:3, :3], T[:3, 3]
+    A = np.zeros((6, 6))
+    A[:3, :3], A[3:, 3:], A[3:, :3] = R, R, bracket(p) @ R
+    return A
+
+p, f = T_sb[:3, 3], np.array([0, -10, 0.])
+F_s = np.r_[np.cross(p, f), f]                  # (m_s, f_s): moment about the base
+F_b = adjoint(T_sb).T @ F_s                      # frame change by the adjoint transpose
+S1 = np.array([0, 0, 1, 0, 0, 0.])              # shoulder screw
+V1_b = adjoint(np.linalg.inv(T_sb)) @ S1         # joint 1 at 1 rad/s, written in {b}
+print("F_s =", F_s + 0.0, " F_b =", F_b.round(4) + 0.0)
+print("power of joint 1 in {s}:", float(S1 @ F_s), " in {b}:", round(float(V1_b @ F_b), 4))
+print("tau = (S1.F_s, S2.F_s) =", (float(S1 @ F_s), float(S2 @ F_s)))
+```
+
+It prints $\mathcal{F}_s = (0,0,-10;\ 0,-10,0)$ and $\mathcal{F}_b = (0,0,0;\ -10,0,0)$, the power $-10$ in both frames, and $\tau = (-10, 0)$.
 
 ### Self-check
 
@@ -174,12 +331,16 @@ heads ([[01-canonical-papers/notes/4-vla/pi0|π0]]-style).
    speed 1 rad/s). What is its space twist $\mathcal{V}_s = (\omega_s, v_s)$?
 3. Why does $[\hat\omega]^3 = -[\hat\omega]$ terminate the exponential series?
 4. If $T$ is a pure translation by $p$, what does $[\text{Ad}_T]$ do to a twist?
+5. What is $e^{[\mathcal{S}_1]\pi/2}$ for P2's shoulder screw $\mathcal{S}_1 = (0,0,1;\ 0,0,0)$, and why is its translation column zero?
+6. The tip force is $f = (10, 0, 0)\,\mathrm{N}$ instead, still at $p = (1,1,0)$. Write $\mathcal{F}_s$ and the two joint torques $\mathcal{S}_i^\top\mathcal{F}_s$.
 
 > [!tip]- Answers
 > 1. $\sin 180° = 0$ and $1-\cos 180° = 2$, so $R = I + 0 + 2[\hat z]^2 = \text{diag}(-1,-1,1)$ — the x and y axes flip, z is untouched.
 > 2. $\omega_s = (0,0,1)$; the space-frame linear part is $v_s = -\omega \times q = -(0,0,1)\times(0,2,0) = (2,0,0)$ — the body point currently at the origin moves at 2 m/s in $+x$, even though the axis itself is stationary. This is §3's warning made numerical.
 > 3. Because powers of a $3\times3$ skew-symmetric matrix cycle back to multiples of itself ($[\hat\omega]^3 = -[\hat\omega]$), every term of the infinite series collapses into a coefficient on $[\hat\omega]$ or $[\hat\omega]^2$ — leaving Rodrigues' three terms.
 > 4. It leaves $\omega$ unchanged and maps $v \mapsto v + p\times\omega$ — the linear velocity is corrected by exactly the offset of the axis, which is why frame subscripts must be written every time.
+> 5. $v_1 = 0$, so $G(\theta)v_1 = 0$ and $e^{[\mathcal{S}_1]\pi/2} = \begin{pmatrix}R_z(90^\circ) & 0\\ 0 & 1\end{pmatrix}$: the axis passes through the origin, so the origin does not move (§5.1).
+> 6. $m_s = p\times f = (0,0,-10)$, so $\mathcal{F}_s = (0,0,-10;\ 10,0,0)$. Then $\tau_1 = \mathcal{S}_1^\top\mathcal{F}_s = -10$ and $\tau_2 = \mathcal{S}_2^\top\mathcal{F}_s = 1\cdot(-10) + (-1)\cdot 0 = -10\,\mathrm{N\,m}$ — the same $(-10,-10)$ that ch.5's $J^\top(10, 0)$ gives (§6).
 
 ### Problem set · 과제
 
@@ -207,7 +368,11 @@ Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-pl
 **핵심 질문**: 강체의 회전·자세·속도를 특이점 없이 어떻게 표현하고 합성하는가?
 
 책에서 가장 길게 느껴지는 장이고, 전체 공부 시간의 약 30%를 써도 되는 장이다 —
-이후의 모든 장이 이 기계장치의 응용이기 때문이다. 네 단계로 나눠 잡아라.
+이후의 모든 장이 이 기계장치의 응용이기 때문이다. 네 단계로 나눠 잡고, 이후 장들이
+불러 쓰는 두 단계를 더하라.
+
+> [!note] 처음이라면 · First pass
+> 그림, §1, 검산 예제가 있는 §2를 읽고, 이어서 §3과 §4를 P2의 $T_{sb}$ 계산까지 읽어라. 이후의 모든 장이 쓰는 어휘가 이것이다. §5(자세 지수와 로그)와 §6(렌치)은 두 번째 읽기다. 4장이 지수를 곱하고 6장이 자세 오차를 잡을 때 §5로, 5장이 $\tau = J^\top\mathcal{F}$를 유도할 때 §6으로 돌아오라. §1과 §3의 '이해 확인' 문단도 나중에 읽어도 된다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -284,13 +449,14 @@ $$R = e^{[\hat\omega]\theta} = I + \sin\theta\,[\hat\omega] + (1-\cos\theta)\,[\
 $[\hat z] = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&0\end{pmatrix}$, $[\hat z]^2 = \begin{pmatrix}-1&0&0\\0&-1&0\\0&0&0\end{pmatrix}$을 대입하면
 $$R = I + (1)[\hat z] + (1)[\hat z]^2 = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix}$$
 — 정확히 $R_z(90°)$이고, $\hat x$를 $\hat y$로 보낸다. 모든 회전은 *하나의* 축-각
-지수다(오일러 정리); $\log$가 $R$에서 $(\hat\omega, \theta)$를 복원한다. 이 exp/log 쌍이
+지수다(오일러 정리); $\log$가 $R$에서 $(\hat\omega, \theta)$를 복원한다(식은 §5.3). 이 exp/log 쌍이
 리 군(회전)과 리 대수(각속도) 사이의 문이고 — 자세를 올바르게 보간하고 평균할 수 있는
 이유다.
 
 ### 3. Twist: 강체의 속도는 여섯 숫자 — 단, $v$를 조심해서 읽어라
 
 움직이는 강체의 속도는 **twist** $\mathcal{V} = (\omega, v) \in \mathbb{R}^6$이다.
+$4\times4$ 행렬 $[\mathcal{V}] = \begin{pmatrix}[\omega] & v\\ 0 & 0\end{pmatrix}$로 쓰면 SE(3)의 리 대수 $\mathfrak{se}(3)$의 원소이고(§2 각속도의 자세판이다), 여섯 좌표는 $(\omega_x, \omega_y, \omega_z, v_x, v_y, v_z)$다.
 **$v$의 뜻은 기준 프레임과 원점에 달렸다.** 공간 트위스트는 고정 공간 원점을 기준으로 속도장을 나타내고, 바디 트위스트는 움직이는 바디 원점을 쓴다. 이 선택 없이 두 선형 성분을 같은 것으로 읽으면 안 된다. 0이 아닌 모든 twist는
 **스크류**다: 축 둘레로 돌면서 그 축 방향으로 나아가는 운동이다. **피치** $h$는 축 둘레로
 1라디안 도는 동안 그 축 방향으로 얼마나 나아가는가이고 단위는 m/rad다. 즉 $h = 0.01$ m/rad인
@@ -314,7 +480,7 @@ $$\mathcal{V}_s = [\text{Ad}_T]\,\mathcal{V}_b, \qquad [\text{Ad}_T] = \begin{pm
 $\omega_s = R\,\omega_b$, $v_s = R\,v_b$. **프레임 아래 첨자는 장식이 아니다** — 이후
 장들의 부호 실수 대부분이 $s$/$b$ 혼동이므로, 매번 아래 첨자를 써라. 자세의 지수도
 회전과 같다: $T = e^{[\mathcal{S}]\theta}$ = "스크류 $\mathcal{S}$를 $\theta$만큼
-따라가라."
+따라가라." 그것을 계산하는 것이 §5다.
 
 **계산: 장치 P2의 $T_{sb}$.** 카탈로그 자세 $\theta=(0^\circ,90^\circ)$, 말단 $(1,1)$([[02-foundations/lab-plants|0.6]]). $\{b\}$를 말단에 두고 $x$축을 전완, 곧 $+\hat y_s$에 둔다. 지면 밖으로 $z$인 오른손 프레임이면 $y_b=-\hat x_s$이고
 
@@ -348,9 +514,84 @@ $$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p
 
 
 
+### 5. SE(3)의 자세 지수와 로그
+
+§2는 회전축과 각을 회전 행렬로 바꿨다. 이 절은 자세 전체에 대해 같은 일을 하고, 그 역을 구한다. 여기서 **스크류 축**은 §3의 twist $\mathcal{S} = (\omega, v)$를 두 방식 중 하나로 정규화한 것이다. $\|\omega\| = 1$이면 $\theta$는 축 둘레로 도는 각(라디안)이고, $\omega = 0$이고 $\|v\| = 1$이면 $\theta$는 $v$ 방향으로 미끄러지는 거리(미터)다. 그 괄호는 §3의 $\mathfrak{se}(3)$ 원소인 $4\times4$ 행렬
+
+$$[\mathcal{S}] = \begin{pmatrix}[\omega] & v\\ 0 & 0\end{pmatrix}$$
+
+이고, 항등에서 출발해 스크류를 $\theta$만큼 따라가는 것은 $T(0) = I$인 선형 미분방정식 $dT/d\theta = [\mathcal{S}]\,T$(§2의 $\dot R = [\omega_s]R$를 한 치수 키운 것)이므로, 해는 행렬 지수 $T = e^{[\mathcal{S}]\theta}$다.
+
+**5.1 닫힌 형태.** $[\mathcal{S}]$의 거듭제곱은 모두 같은 꼴을 유지한다. $k \ge 1$이면 $[\mathcal{S}]^k = \begin{pmatrix}[\omega]^k & [\omega]^{k-1}v\\ 0 & 0\end{pmatrix}$이므로 급수가 회전 블록과 병진 열로 갈라진다:
+
+$$e^{[\mathcal{S}]\theta} = \begin{pmatrix} e^{[\omega]\theta} & G(\theta)\,v \\ 0 & 1 \end{pmatrix}, \qquad G(\theta) = I\theta + [\omega]\frac{\theta^2}{2!} + [\omega]^2\frac{\theta^3}{3!} + [\omega]^3\frac{\theta^4}{4!} + \cdots$$
+
+회전 블록은 §2의 로드리게스 공식이다. $G$에서는 같은 항등식 $[\omega]^3 = -[\omega]$가 급수를 접는다. $[\omega]$ 항은 $\theta^2/2! - \theta^4/4! + \cdots = 1 - \cos\theta$로, $[\omega]^2$ 항은 $\theta^3/3! - \theta^5/5! + \cdots = \theta - \sin\theta$로 모이므로
+
+$$G(\theta) = I\theta + (1-\cos\theta)\,[\omega] + (\theta-\sin\theta)\,[\omega]^2 \qquad (\|\omega\| = 1)$$
+
+이고, 이것이 MR 명제 3.25다. 물리적으로 읽으면 $G(\theta)v = \int_0^\theta e^{[\omega]\varphi}v\,d\varphi$는 선속도 $v$를 지금까지 쌓인 회전으로 돌려 가며 운동 전체에 걸쳐 더한 것이다. 로드리게스 공식을 항별로 적분해도 같은 세 계수가 나온다.
+
+- **예, P2에서.** $q_2 = (1,0,0)$을 지나는 엘보 스크류 $\mathcal{S}_2 = (0,0,1;\ 0,-1,0)$, $\theta = \pi/2$. $[\hat z]^2 = \mathrm{diag}(-1,-1,0)$, $1 - \cos\frac{\pi}{2} = 1$, $\frac{\pi}{2} - \sin\frac{\pi}{2} = 0.5708$이므로
+
+  $$G(\tfrac{\pi}{2}) = \begin{pmatrix}1&-1&0\\1&1&0\\0&0&\pi/2\end{pmatrix}, \qquad G v_2 = \begin{pmatrix}1\\-1\\0\end{pmatrix}, \qquad e^{[\mathcal{S}_2]\pi/2} = \begin{pmatrix}0&-1&0&1\\1&0&0&-1\\0&0&1&0\\0&0&0&1\end{pmatrix}$$
+
+  이다. $G$의 앞 두 대각 성분이 $\frac{\pi}{2} - 0.5708 = 1$이기 때문이다. 병진 열은 원점이 가는 곳이다. 원점은 축에서 $-q_2 = (-1,0)$에 있고, 4분의 1바퀴 돌면 $(0,-1)$, $q_2$를 되더하면 $(1,-1)$이다. 축 위의 엘보는 제자리에 있다: $R_z(90^\circ)(1,0,0) + (1,-1,0) = (1,0,0)$.
+- **반례.** 회전과 병진이 서로 독립인 것처럼 돌리고 옮기는 $\begin{pmatrix} e^{[\omega]\theta} & v\theta \\ 0 & 1\end{pmatrix}$. $\mathcal{S}_2$에서는 원점을 $(1,-1,0)$이 아니라 $(0,-1.5708,0)$에 놓고 엘보를 $(0,-0.5708,0)$으로 옮긴다. 자기 축이 움직이는 회전 관절이다. 보정 $G(\theta) - I\theta$가 정확히 회전이 병진에 미치는 효과다.
+
+**5.2 순수 병진.** $\omega = 0$이면 $[\mathcal{S}]^2 = 0$이고(왼쪽 위 블록이 0이라 곱에 남는 것이 없다) 급수는 일차 항 뒤에서 멈춘다:
+
+$$e^{[\mathcal{S}]\theta} = \begin{pmatrix} I & v\,\theta \\ 0 & 1 \end{pmatrix} \qquad (\omega = 0,\ \|v\| = 1)$$
+
+§3의 피치 무한대 스크류, 곧 회전 없이 $v$ 방향으로 $\theta$미터 미끄러지는 운동이다. $[\omega] = 0$이면 회전용 공식도 우연히 같은 $G = I\theta$를 주지만, 그쪽의 $\theta$는 각이고 이쪽은 길이라서 두 경우를 따로 쓴다. *P2에서*: [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 홈 자세 $M$(말단 $(2,0,0)$, $R = I$)이 정확히 $v = (1,0,0)$, $\theta = 2\,\mathrm{m}$인 이 경우다.
+
+**5.3 행렬 로그.** 거꾸로 묻는다. $T = (R, p)$가 주어지면 $e^{[\mathcal{S}]\theta} = T$인 스크류 $\mathcal{S}$와 $\theta$를 찾는다. 그런 쌍은 항상 있고(모든 강체 변위는 스크류 하나를 따르는 운동이다 — 샬–모치 정리), 닫힌 형태가 그것을 읽어 내는 법을 알려 준다(MR §3.3.3.2):
+
+1. $R = I$이면 순수 병진이다: $\omega = 0$, $\theta = \|p\|$, $v = p/\|p\|$.
+2. 아니면 회전의 로그부터 구한다. $\operatorname{tr}[\omega] = 0$이고 $\operatorname{tr}[\omega]^2 = -2\|\omega\|^2 = -2$이므로 로드리게스 공식의 대각합은 $\operatorname{tr}R = 3 - 2(1-\cos\theta) = 1 + 2\cos\theta$이고, $[\omega]$는 반대칭이며 $I$와 $[\omega]^2$는 대칭이므로 $R - R^\top = 2\sin\theta\,[\omega]$다. 따라서 $\theta \in (0, \pi)$에서
+
+$$\theta = \arccos\frac{\operatorname{tr}R - 1}{2}, \qquad [\omega] = \frac{R - R^\top}{2\sin\theta}, \qquad v = G^{-1}(\theta)\,p$$
+
+이고, 5.1의 $G$의 역은
+
+$$G^{-1}(\theta) = \frac{1}{\theta}\,I - \frac{1}{2}\,[\omega] + \Bigl(\frac{1}{\theta} - \frac{1}{2}\cot\frac{\theta}{2}\Bigr)[\omega]^2$$
+
+이다. $[\omega]^3 = -[\omega]$와 $[\omega]^4 = -[\omega]^2$로 $G\,G^{-1}$을 곱해 펼치면 확인된다. $\sin\theta = 0$인 $\theta = \pi$에서는 대신 $R = I + 2[\omega]^2 = 2\omega\omega^\top - I$, 곧 $\omega\omega^\top = (R + I)/2$에서 축을 읽는다.
+
+- **예, P2에서.** 경우마다 로그 하나씩, 셋. (i) 5.1의 $e^{[\mathcal{S}_2]\pi/2}$: $\operatorname{tr}R = 1$에서 $\theta = \pi/2$, $(R - R^\top)/2 = [\hat z]$이고, $G^{-1}(\frac{\pi}{2}) = \begin{pmatrix}0.5&0.5&0\\-0.5&0.5&0\\0&0&2/\pi\end{pmatrix}$가 $p = (1,-1,0)$을 $v = (0,-1,0)$으로 보낸다. $\mathcal{S}_2$가 돌아온다. (ii) §4의 $T_{sb}$: $R$은 같고 $p = (1,1,0)$이라 $v = G^{-1}p = (1,0,0)$이고, $v = -\omega\times q$가 축을 $q = (0,1,0)$에 둔다. 도구 프레임은 $\{s\}$에서 $(0,1)$을 지나는 연직축 둘레로 4분의 1바퀴 한 번에 닿는다. 어느 링크 위에도 없는 점이고, 로그의 스크류가 팔이 아니라 변위의 성질인 이유다. (iii) $M$: $R = I$라 경우 1이 $\theta = 2$, $v = (1,0,0)$을 준다. 5.2의 미끄러짐이다.
+- **왜 중요한가.** 지수는 관절 운동에서 자세를 만든다. 4장의 지수 곱이 바로 그것이다. 로그는 자세 *오차*를 야코비안이 다룰 수 있는 6차원 벡터로 바꾼다. 수치 IK([[04-robotics/modern-robotics/ch06-inverse-kinematics|6장 §2]])는 $[\log(T_{now}^{-1}T_{goal})]^\vee$ 위에서 반복하고, $^\vee$는 $4\times4$ 행렬에서 여섯 좌표를 다시 읽어 낸다.
+
+이 절의 모든 숫자는 영어 절반의 첫째 파이썬 블록이 확인한다. 닫힌 형태를 거듭제곱 급수 자체와 대조하고, 순수 병진을 확인하고, 세 로그를 지수로 되돌려 본다. 출력은 위의 $e^{[\mathcal{S}_2]\pi/2}$, 급수와의 일치 `True`, $M$이 순수 병진이라는 `True`, 그리고 세 로그 $(0,0,1;\ 0,-1,0)$·$\theta = 1.5708$, $(0,0,1;\ 1,0,0)$·$1.5708$, $(0,0,0;\ 1,0,0)$·$2.0000$이며 되돌림은 모두 `True`다.
+
 **학습 쪽에서 중요한 이유**: exp/log 사상이 자세 보간, 회전 평균, SE(3) 위의 손실 정의의
 방법이고 — SE(3) 디퓨전/flow 행동 헤드([[01-canonical-papers/notes/4-vla/pi0|π0]]류)의
 밑바닥 기계장치다.
+
+### 6. 렌치 — 트위스트의 힘 쌍대
+
+twist가 강체가 어떻게 움직이는지를 말한다면 **렌치**(wrench)는 어떻게 밀리는지를 말한다. 강체에 작용하는 모멘트와 힘을 한 프레임 $\{a\}$에서 함께 쓴 6차원 벡터다:
+
+$$\mathcal{F}_a = (m_a,\ f_a) \in \mathbb{R}^6, \qquad m_a = r_a \times f_a$$
+
+여기서 $f_a$는 선형 힘(N), $r_a$는 그 작용선 위의 아무 점($\{a\}$ 좌표, m), $m_a$는 그 힘이 $\{a\}$의 원점에 대해 만드는 모멘트(N·m)다. 정의 조건은 셋이다. 두 절반은 같은 프레임으로 쓴다. 모멘트는 그 프레임의 *원점*에 대해 잡으므로, §3에서 twist의 $v$가 그랬듯 힘이 그대로여도 기준점이 옮겨 가면 모멘트 절반이 바뀐다. 한 강체에 작용하는 렌치들은 같은 프레임으로 썼을 때에만 성분별로 더해진다. $r_a$를 힘 자신의 작용선을 따라 옮겨도 아무것도 바뀌지 않는다. 더해지는 부분이 $f_a$에 평행해 $f_a$와의 외적이 0이기 때문이다. $f = 0$인 렌치는 **순수 모멘트**다. 모멘트를 앞에 두는 순서는 twist의 $(\omega, v)$와 맞춰 성분끼리 짝짓기 위한 것이다.
+
+**일률.** $r_a$에 있는 물체 점은 $v_a + \omega_a \times r_a$로 움직이므로(§3의 속도장), 거기 걸린 힘 $f_a$가 내는 일률은 $f_a\cdot(v_a + \omega_a\times r_a) = v_a\cdot f_a + \omega_a\cdot(r_a\times f_a)$다. 마지막 단계는 스칼라 삼중곱의 순환 규칙이다. 따라서
+
+$$P = \mathcal{V}_a^\top\mathcal{F}_a = \omega_a\cdot m_a + v_a\cdot f_a$$
+
+이고 단위는 와트다. 회전 곱하기 모멘트 더하기 병진 곱하기 힘이다. 모멘트가 $\omega$와, 힘이 $v$와 짝을 이루는 이유가 이 짝짓기다.
+
+**프레임 변환.** 일률은 물리량이라 어느 프레임으로 쓰느냐에 달릴 수 없다. 모든 운동에 대해 $\mathcal{V}_b^\top\mathcal{F}_b = \mathcal{V}_a^\top\mathcal{F}_a$다. §4의 $\mathcal{V}_a = [\mathrm{Ad}_{T_{ab}}]\mathcal{V}_b$를 대입하면 모든 $\mathcal{V}_b$에 대해 $\mathcal{V}_b^\top\mathcal{F}_b = \mathcal{V}_b^\top[\mathrm{Ad}_{T_{ab}}]^\top\mathcal{F}_a$이므로
+
+$$\mathcal{F}_b = [\mathrm{Ad}_{T_{ab}}]^\top\,\mathcal{F}_a$$
+
+이다(MR 명제 3.27). twist는 adjoint로, 렌치는 그 전치로 프레임을 바꾼다. §4의 블록 형태로 풀어 쓰면 $f_b = R^\top f_a$, $m_b = R^\top(m_a - p\times f_a)$다. 힘은 회전시키고, 모멘트의 기준점은 $\{a\}$의 원점에서 $p$에 있는 $\{b\}$의 원점으로 옮긴다.
+
+- **예, P2에서.** [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장]] 정역학의 힘, 곧 도구가 말단 $p = (1,1,0)$에서 가하는 $f = (0,-10,0)\,\mathrm{N}$과 §4의 $T_{sb}$. $\{s\}$에서 모멘트는 $p\times f = (0,0,-10)\,\mathrm{N\,m}$이므로 $\mathcal{F}_s = (0,0,-10;\ 0,-10,0)$이다. $\{b\}$에서는 $\mathcal{F}_b = [\mathrm{Ad}_{T_{sb}}]^\top\mathcal{F}_s = (0,0,0;\ -10,0,0)$이다. 힘이 $\{b\}$ 자신의 원점에 걸리므로 모멘트가 없고, 힘은 $-\hat x_b$ 방향, 곧 전완을 따라 곧장 되돌아가는 방향이다. 일률이 이 쌍을 검산한다. 관절 1을 $1\,\mathrm{rad/s}$로 돌리는 것은 공간 twist $\mathcal{S}_1 = (0,0,1;\ 0,0,0)$이고 $\mathcal{S}_1^\top\mathcal{F}_s = -10\,\mathrm{W}$다. 같은 운동을 $\{b\}$로 쓰면 $(0,0,1;\ 1,1,0)$이고, $\mathcal{F}_b$와 짝지으면 다시 $1\cdot(-10) = -10\,\mathrm{W}$다. 관절 2의 스크류 $\mathcal{S}_2$와는 $1\cdot(-10) + (-1)(-10) = 0$이다. 이 두 숫자가 [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장 §3]]의 관절 토크 $\tau = (-10, 0)\,\mathrm{N\,m}$다. 관절 토크는 관절 속도 단위당 전달되는 일률이기 때문이다.
+- **반례.** 모멘트를 빼 버리고 힘이 베이스에 걸린 것처럼 쓴 $\mathcal{F}_s = (0,0,0;\ 0,-10,0)$. $\mathcal{S}_1$과 짝지으면 $0\,\mathrm{W}$가 나온다. 어깨가 $1\,\mathrm{m}$ 지렛대 끝의 $10\,\mathrm{N}$ 하중을 공짜로 든다는 주장이다. 렌치의 모멘트는 기준점에 속하고, 그것을 잊는 것은 §3의 $v_s$ 대 $\dot p$ 실수를 힘으로 옮긴 것이다.
+- **왜 중요한가.** [[04-robotics/modern-robotics/ch05-velocity-kinematics|5장 §3]]의 $\tau = J^\top\mathcal{F}$가 바로 이 일률 짝짓기다. 6축 힘-토크 센서는 자기 프레임의 렌치를 보고하고, adjoint 전치가 그것을 도구로 옮긴다. [[04-robotics/modern-robotics/ch12-grasping|12장]]의 파지 해석은 한 프레임에서 쓴 접촉 렌치들을 더하는 일이다.
+
+위 숫자는 영어 절반의 둘째 파이썬 블록이 확인한다. 출력은 $\mathcal{F}_s = (0,0,-10;\ 0,-10,0)$, $\mathcal{F}_b = (0,0,0;\ -10,0,0)$, 두 프레임 모두 일률 $-10$, 그리고 $\tau = (-10, 0)$이다.
 
 ### 스스로 점검
 
@@ -359,12 +600,16 @@ $$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p
    space twist $\mathcal{V}_s = (\omega_s, v_s)$는?
 3. $[\hat\omega]^3 = -[\hat\omega]$가 지수 급수를 세 항으로 끝내는 이유는?
 4. $T$가 $p$만큼의 순수 병진이면 $[\text{Ad}_T]$는 twist에 무슨 일을 하는가?
+5. P2의 어깨 스크류 $\mathcal{S}_1 = (0,0,1;\ 0,0,0)$에 대해 $e^{[\mathcal{S}_1]\pi/2}$는 무엇이고, 병진 열이 왜 0인가?
+6. 말단 힘이 대신 $f = (10, 0, 0)\,\mathrm{N}$이고 여전히 $p = (1,1,0)$에 걸린다. $\mathcal{F}_s$와 두 관절 토크 $\mathcal{S}_i^\top\mathcal{F}_s$를 써라.
 
 > [!tip]- 정답 · Answers
 > 1. $\sin 180° = 0$, $1-\cos 180° = 2$이므로 $R = I + 0 + 2[\hat z]^2 = \text{diag}(-1, -1, 1)$ — x·y축이 뒤집히고 z는 그대로다.
 > 2. $\omega_s = (0,0,1)$; 공간 프레임의 선형 성분은 $v_s = -\omega \times q = -(0,0,1)\times(0,2,0) = (2,0,0)$ — 지금 원점에 있는 물체 위의 점이 $+x$로 2 m/s로 움직인다는 뜻이고, 축 자체는 정지해 있다. §3의 경고를 수치로 옮긴 것이다.
 > 3. 3×3 반대칭 행렬의 거듭제곱이 자기 자신의 배수로 되돌아오기 때문 — 급수의 모든 항이 $[\hat\omega]$, $[\hat\omega]^2$의 계수로 흡수된다.
 > 4. $\omega$는 그대로, $v \mapsto v + p \times \omega$.
+> 5. $v_1 = 0$이므로 $G(\theta)v_1 = 0$이고 $e^{[\mathcal{S}_1]\pi/2} = \begin{pmatrix}R_z(90^\circ) & 0\\ 0 & 1\end{pmatrix}$다. 축이 원점을 지나므로 원점이 움직이지 않는다(§5.1).
+> 6. $m_s = p\times f = (0,0,-10)$이므로 $\mathcal{F}_s = (0,0,-10;\ 10,0,0)$. 그러면 $\tau_1 = \mathcal{S}_1^\top\mathcal{F}_s = -10$, $\tau_2 = \mathcal{S}_2^\top\mathcal{F}_s = 1\cdot(-10) + (-1)\cdot 0 = -10\,\mathrm{N\,m}$로, 5장의 $J^\top(10, 0)$이 주는 $(-10,-10)$과 같다(§6).
 
 ### 과제 · Problem set
 

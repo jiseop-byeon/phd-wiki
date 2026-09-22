@@ -49,10 +49,11 @@ paper in this wiki** (individual papers may require deeper references): math cor
 - [[02-foundations/information-theory|5. Information Theory]] — entropy, cross-entropy, KL divergence, mutual information, the ELBO
 - [[02-foundations/signal-processing|6. Signal Processing]] — sampling, FFT, filtering, sensor-pipeline habits
 - [[02-foundations/rl-basics|7. Reinforcement Learning Basics]] — MDPs, value functions, policy gradients/PPO, model-based RL → world models
+- [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning]] — RL versus imitation, reward design and shaping, exploration and curriculum, RL on a real machine, reading an RL results section, learning the reward from preferences
 - [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]] — rotations, quaternions, homogeneous transforms — the language of robot actions and camera poses
 - [[02-foundations/ml-practice|9. ML Practice & Evaluation]] — data splits, overfitting, and the metrics dictionary for reading results tables
 
-When the eleven pages (0.5–9) are done, take the **gate check** at the end of
+When pages 0.5–9 are done, take the **gate check** at the end of
 [[02-foundations/overview|0. Overview]]: fourteen common cumulative questions that decide
 whether to start the paper track. Eleven or more is a pass; question 15 is an optional
 manipulation check.
@@ -118,10 +119,11 @@ Skip the interview track unless a coding interview or a lab implementation inter
 - [[02-foundations/information-theory|5. 정보이론]] — 엔트로피, 교차 엔트로피, KL divergence, 상호 정보량, ELBO
 - [[02-foundations/signal-processing|6. 신호처리]] — 샘플링, FFT, 필터링, 센서 파이프라인 습관
 - [[02-foundations/rl-basics|7. 강화학습 기초]] — MDP, 가치 함수, 정책 그래디언트/PPO, 모델 기반 RL → 월드모델
+- [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL]] — RL 대 모방, 보상 설계와 셰이핑, 탐색과 커리큘럼, 실제 기계 위의 RL, RL 결과 절 읽기, 선호로부터 보상 학습
 - [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]] — 회전, 쿼터니언, 동차 변환 — 로봇 행동과 카메라 자세의 언어
 - [[02-foundations/ml-practice|9. ML 실무와 평가]] — 데이터 분할, 과적합, 결과 표를 읽는 지표 사전
 
-열한 페이지(0.5~9)를 마쳤으면 [[02-foundations/overview|0. Overview]] 끝의 **통과 점검**을 보라:
+0.5~9 페이지를 마쳤으면 [[02-foundations/overview|0. Overview]] 끝의 **통과 점검**(gate check)을 보라:
 논문 트랙으로 넘어갈지를 판정하는 공통 누적 14문항이고, 11개 이상이면 통과다. 15번은
 매니퓰레이션 경로의 선택 점검이다.
 

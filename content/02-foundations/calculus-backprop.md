@@ -22,7 +22,7 @@ differentiation. Course-depth treatment: from Taylor expansion to a fully worked
 example, plus the gradient pathologies that shaped architecture history.
 
 > [!note] First pass · 처음이라면
-> Read §1, then §3 — do the two-layer example by hand, it is the whole page in one calculation — then §6. §4 and §5 are for when you are reading an architecture paper and want to know why it is shaped that way.
+> Read the picture and §1, then §2 up to its *Autodiff mechanics* bullet, which can wait, then §3 — do the two-layer example by hand, it is the whole page in one calculation — then §6. §4 and §5 are second-pass: for when you are reading an architecture paper and want to know why it is shaped that way.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -172,6 +172,9 @@ For a vector output, read the Jacobian one column at a time: perturb one input w
   $$\frac{\partial L}{\partial x_j} = \sum_{i=1}^{m}\frac{\partial L}{\partial y_i}\,\frac{\partial y_i}{\partial x_j}$$
   because a nudge to $x_j$ reaches $L$ through each $y_i$ separately and the first-order effects add. Stacking that sum over $j$ is exactly $\nabla_x L = J^\top\,\nabla_y L$.
   - **Worked.** Use the Jacobian example from §1, $y=(x_1x_2,\;x_1+x_2^2)$ at $x=(1,2)$, so $y=(2,5)$, and let $L=y_1y_2$. Then $\nabla_y L=(y_2,\,y_1)=(5,2)$ and $\nabla_x L=J^\top(5,2)=\begin{pmatrix}2&1\\1&4\end{pmatrix}(5,2)=(12,\,13)$. A central finite difference on $L=x_1x_2(x_1+x_2^2)$ returns $(12.000,\,13.000)$ ✓.
+  - **The same rule, back on least squares.** [[02-foundations/linear-algebra|1. Linear Algebra §2]] derived $\nabla_x\lVert Ax-b\rVert^2 = 2A^\top(Ax-b)$ by expanding the square; this rule gives it in one line. Put $y = Ax - b$ and $L = \lVert y\rVert^2 = \sum_i y_i^2$. Each $y_i = \sum_j A_{ij}x_j - b_i$ is linear in $x$, so the Jacobian is $J = A$, and $\nabla_y L = 2y$. So
+    $$\nabla_x L = J^\top\nabla_y L = A^\top\,2(Ax-b) = 2A^\top(Ax-b)$$
+    and setting it to zero gives that page's normal equations. On its line fit — $A$ with rows $(1,1)$, $(1,2)$, $(1,3)$ and $b=(1,3,4)$ — at $(c,m) = (0,1)$: $y = (0,-1,-1)$, $\nabla_y L = (0,-2,-2)$, and $A^\top(0,-2,-2) = (-4,\,-10)$, the value found there by hand.
 - Two evaluation orders for that product:
   - **Forward mode**: propagate $\partial/\partial x_i$ input-side first — one pass *per input*.
   - **Reverse mode**: propagate $\partial L/\partial(\cdot)$ output-side first — one pass *per output*.
@@ -269,8 +272,8 @@ $L = \tfrac12(0.5-1)^2 = 0.125$. Backward, one line per step above:
 | 4 | $\delta_1 = \partial L/\partial h \odot \mathbb{1}[z>0]$ | mask is $(1,1,1)$ since $z>0$, so $\delta_1 = (-0.5,\,0.5,\,-0.25)$ |
 | 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
 
-**Worked: one SGD step on P1.** This *is* plant P1 ([[02-foundations/lab-plants|0.6]]). With $\eta=0.1$ only on $W_2$:
-$W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$. The same $h$ then gives $\hat y=1.20$ and $L=0.020$. One step overshot $y=1$ — $\eta=0.1$ is not small on this scale ([[02-foundations/optimization|4]]). The problem set asks you to fill a template that prints these numbers.
+**Worked: one SGD step on P1.** This *is* plant P1 ([[02-foundations/lab-plants|0.6]]). With learning rate $\eta=0.1$ (the $\alpha$ of [[02-foundations/neural-network-basics|0.8 §3]]; this page writes $\eta$, as most papers do) only on $W_2$:
+$W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$. The same $h$ then gives $\hat y=1.20$ and $L=0.020$. One step overshot $y=1$ — $\eta=0.1$ is not small on this scale ([[02-foundations/optimization|4]]). *The scale, in numbers:* a step on $W_2$ alone moves the prediction by $-\eta\,\delta_2\,h^\top h = 7\eta$, since $\delta_2=-0.5$ and $h^\top h = 1+4+9 = 14$. So $\eta = 1/14 \approx 0.071$ lands exactly on $y=1$, any larger $\eta$ overshoots, and past $\eta = 1/7 \approx 0.143$ the new loss $\tfrac12(7\eta-0.5)^2$ is above the old $0.125$ — the step makes things worse. The problem set asks you to fill a template that prints these numbers, and to sweep $\eta$ across that boundary.
 
 Three things to notice, and they generalize to every network you will read about:
 - **The sign says what to do — locally.** $\delta_2 = -0.5$ is negative because the
@@ -322,6 +325,8 @@ bug detector in existence.
 
 ### 4. Gradients through the classic layers
 
+*Second pass. Each bullet is one layer's backward rule, fully derived; read the one a paper in front of you uses. The first pass jumps from §3 to §6.*
+
 - **Softmax + cross-entropy** — the tidiest result in the field, and *not* a legacy topic:
   it is still how every LLM is trained (next-token prediction is one softmax over the
   vocabulary, scored by cross-entropy — the loss $-\log p_{\text{true}}$, derived in [[02-foundations/information-theory|5. Information Theory §2]]), how every classification head works, and softmax is
@@ -359,6 +364,8 @@ bug detector in existence.
   Once units saturate it is far worse, since $\sigma'(4) \approx 0.018$. The full gradient also carries weight Jacobians. This single inequality explains a decade of architecture history.
 
 ### 5. The pathologies that shaped architectures
+
+*Second pass, like §4: architecture history (LSTM, BatchNorm, ResNet) and the graph-cutting tools (stop-gradient, reparameterization, EMA), for when a paper leans on one of them.*
 
 - **Vanishing gradients**: products of Jacobians with norms < 1 decay exponentially with
   depth/time. Treatments, in historical order:
@@ -440,13 +447,14 @@ Tier A. Plant **P1** from [[02-foundations/lab-plants|0.6]] — the same net as 
 
 1. **Draw.** Computational graph of P1: $x \to z=W_1 x \to h=\mathrm{ReLU}(z) \to \hat y=W_2 h \to L=\tfrac12(\hat y-y)^2$. Label every node with its numerical value from the catalog.
 2. **Derive.** $\delta_2=\partial L/\partial\hat y$, $\partial L/\partial W_2$, $\partial L/\partial h$, $\delta_1=\partial L/\partial z$, $\partial L/\partial W_1$. Then one SGD step at $\eta=0.1$ on $W_2$ only.
-3. **Do.** Fill `?`. Print new $W_2$ and new $L$ after that one step (forward again with the updated $W_2$, same $x$).
+3. **Do.** Fill `?`. Print new $W_2$ and new $L$ after that one step (forward again with the updated $W_2$, same $x$). Then let the loop at the end redo the step from the original $W_2$ for $\eta = 0.05,\ 1/14,\ 0.1,\ 1/7,\ 0.2$: at which $\eta$ does one step land exactly on $y=1$, and past which one does it leave the loss above $0.125$?
 
 ```python
-# P1 one SGD step. Fill ?.
+# P1 one SGD step, then an eta sweep. Fill ?.
 import numpy as np
 W1 = np.array(((1., 0.), (0., 1.), (1., 1.)))
 W2 = np.array((1., -1., 0.5)).reshape(1, 3)
+W2_0 = W2.copy()                    # the catalog W2, kept for the sweep
 x = np.array((1., 2.)).reshape(2, 1)
 y = 1.0
 eta = 0.1
@@ -460,6 +468,9 @@ W2 = W2 - eta * dW2
 yhat2 = (W2 @ h).item()
 L2 = 0.5 * (yhat2 - y) ** 2
 print(d2, W2, L, L2)
+for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
+    yhat_s = ((W2_0 - ?) @ h).item()    # one step at eta_s from the catalog W2
+    print(f"{eta_s:.4f}  {yhat_s:.3f}  {0.5 * (yhat_s - y) ** 2:.5f}")
 ```
 
 > [!note]- How to draw it · 그리는 법
@@ -475,6 +486,33 @@ print(d2, W2, L, L2)
 > 1. Values: $z=h=(1,2,3)$, $\hat y=0.5$, $L=0.125$.
 > 2. $\delta_2=0.5-1=-0.5$. $\partial L/\partial W_2=\delta_2 h^\top=(-0.5,-1,-1.5)$. $\partial L/\partial h=W_2^\top\delta_2=(-0.5,0.5,-0.25)$. ReLU mask is $(1,1,1)$, so $\delta_1$ is the same. $\partial L/\partial W_1=\delta_1 x^\top=\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
 > 3. Blanks: `d2 = yhat - y`, `dW2 = d2 * h.T`. Prints $-0.5$, `W2 = (1.05, -0.9, 0.65)`, $L=0.125$, $L_2=0.5(0.5+0.1\cdot(0.5\cdot1+1\cdot2+1.5\cdot3)-1)^2$. New $\hat y=W_2 h=1.05-1.8+1.95=1.20$, $L_2=0.5(0.20)^2=0.020$. One step overshot the target (ŷ went from 0.5 through 1 to 1.20) — $\eta=0.1$ is not small on this scale. That is the point of [[02-foundations/optimization|4]].
+>
+> The sweep's blank is `eta_s * dW2`. The loop alone, filled and run:
+>
+> ```python
+> import numpy as np
+> W1 = np.array(((1., 0.), (0., 1.), (1., 1.)))
+> W2_0 = np.array((1., -1., 0.5)).reshape(1, 3)
+> x = np.array((1., 2.)).reshape(2, 1)
+> y = 1.0
+> h = np.maximum(W1 @ x, 0.0)
+> dW2 = ((W2_0 @ h).item() - y) * h.T
+> for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
+>     yhat_s = ((W2_0 - eta_s * dW2) @ h).item()
+>     print(f"{eta_s:.4f}  {yhat_s:.3f}  {0.5 * (yhat_s - y) ** 2:.5f}")
+> ```
+>
+> prints
+>
+> ```
+> 0.0500  0.850  0.01125
+> 0.0714  1.000  0.00000
+> 0.1000  1.200  0.02000
+> 0.1429  1.500  0.12500
+> 0.2000  1.900  0.40500
+> ```
+>
+> Every row is $\hat y = 0.5 + 7\eta$, as §3 derived. $\eta = 1/14$ lands on $y=1$ exactly; $\eta = 1/7$ swings to $1.5$ and only ties the old loss $0.125$; $\eta = 0.2$ leaves the loss more than three times worse than where it started. The $0.05$ row is the hand update of [[02-foundations/neural-network-basics|0.8 §3]].
 
 ## 한국어
 
@@ -486,7 +524,7 @@ print(d2, W2, L, L2)
 그래디언트 병리들.
 
 > [!note] 처음이라면 · First pass
-> 먼저 §1 다음 §3 — 2층 예제를 손으로 풀어라, 그 계산 하나가 이 페이지의 전부다 — 그다음 §6. §4·§5는 구조 논문을 읽으며 왜 그 모양인지 알고 싶어질 때다.
+> 먼저 그림과 §1, 그다음 §2를 *자동 미분의 동작* 항목 앞까지(그 항목은 미뤄도 된다), 그다음 §3 — 2층 예제를 손으로 풀어라, 그 계산 하나가 이 페이지의 전부다 — 그다음 §6. §4·§5는 두 번째 읽기다: 구조 논문을 읽으며 왜 그 모양인지 알고 싶어질 때.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -635,6 +673,9 @@ print(d2, W2, L, L2)
   $$\frac{\partial L}{\partial x_j} = \sum_{i=1}^{m}\frac{\partial L}{\partial y_i}\,\frac{\partial y_i}{\partial x_j}$$
   $x_j$를 미는 효과가 각 $y_i$를 따로 거쳐 $L$에 닿고 1차 효과는 더해지기 때문이다. 이 합을 $j$에 대해 쌓으면 정확히 $\nabla_x L = J^\top\,\nabla_y L$이다.
   - **계산.** §1의 야코비안 예제 $y=(x_1x_2,\;x_1+x_2^2)$를 $x=(1,2)$에서 쓰면 $y=(2,5)$이고, $L=y_1y_2$로 두자. $\nabla_y L=(y_2,\,y_1)=(5,2)$이고 $\nabla_x L=J^\top(5,2)=\begin{pmatrix}2&1\\1&4\end{pmatrix}(5,2)=(12,\,13)$이다. $L=x_1x_2(x_1+x_2^2)$에 중앙 유한 차분을 걸면 $(12.000,\,13.000)$ ✓.
+  - **같은 규칙으로 최소제곱에 돌아가기.** [[02-foundations/linear-algebra|1. 선형대수 §2]]는 제곱을 전개해서 $\nabla_x\lVert Ax-b\rVert^2 = 2A^\top(Ax-b)$를 유도했다. 이 규칙이면 한 줄이다. $y = Ax - b$, $L = \lVert y\rVert^2 = \sum_i y_i^2$로 두자. 각 $y_i = \sum_j A_{ij}x_j - b_i$는 $x$에 대해 선형이므로 야코비안은 $J = A$이고, $\nabla_y L = 2y$다. 그래서
+    $$\nabla_x L = J^\top\nabla_y L = A^\top\,2(Ax-b) = 2A^\top(Ax-b)$$
+    이고, 이것을 0으로 놓은 것이 그 페이지의 정규방정식이다. 그 페이지의 직선 맞춤 — 행이 $(1,1)$, $(1,2)$, $(1,3)$인 $A$와 $b=(1,3,4)$ — 에서 $(c,m) = (0,1)$이면 $y = (0,-1,-1)$, $\nabla_y L = (0,-2,-2)$이고 $A^\top(0,-2,-2) = (-4,\,-10)$, 거기서 손으로 구한 값과 같다.
 - 이 곱의 두 가지 계산 순서:
   - **순방향 모드**: $\partial/\partial x_i$를 입력 쪽부터 전파 — *입력마다* 한 패스.
   - **역방향 모드**: $\partial L/\partial(\cdot)$를 출력 쪽부터 전파 — *출력마다* 한 패스.
@@ -726,7 +767,7 @@ $L = \tfrac12(0.5-1)^2 = 0.125$. 역전파는 위 단계마다 한 줄씩:
 | 4 | $\delta_1 = \partial L/\partial h \odot \mathbb{1}[z>0]$ | $z>0$이라 마스크가 $(1,1,1)$, 따라서 $\delta_1 = (-0.5,\,0.5,\,-0.25)$ |
 | 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
 
-**계산: P1에서 SGD 한 스텝.** 이것이 장치 P1이다([[02-foundations/lab-plants|0.6]]). $\eta=0.1$로 $W_2$만: $W_2\leftarrow(1.05,-0.9,0.65)$. 같은 $h$로 $\hat y=1.20$, $L=0.020$. 한 스텝이 $y=1$을 지나쳤다. 과제는 이 숫자를 출력하는 템플릿이다.
+**계산: P1에서 SGD 한 스텝.** 이것이 장치 P1이다([[02-foundations/lab-plants|0.6]]). 학습률 $\eta=0.1$([[02-foundations/neural-network-basics|0.8 §3]]의 $\alpha$다. 이 페이지는 대부분의 논문처럼 $\eta$로 쓴다)로 $W_2$만: $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$. 같은 $h$로 $\hat y=1.20$, $L=0.020$. 한 스텝이 $y=1$을 지나쳤다 — 이 스케일에서 $\eta=0.1$은 작지 않다([[02-foundations/optimization|4]]). *그 스케일을 숫자로:* $W_2$만 한 스텝 움직이면 예측이 $-\eta\,\delta_2\,h^\top h = 7\eta$만큼 움직인다. $\delta_2=-0.5$이고 $h^\top h = 1+4+9 = 14$이기 때문이다. 그래서 $\eta = 1/14 \approx 0.071$이면 정확히 $y=1$에 닿고, 그보다 크면 지나치며, $\eta = 1/7 \approx 0.143$을 넘으면 새 손실 $\tfrac12(7\eta-0.5)^2$이 원래의 $0.125$보다 커진다 — 스텝이 오히려 나쁘게 만든다. 과제는 이 숫자를 출력하는 템플릿을 채우고, 그 경계를 가로질러 $\eta$를 쓸어 보게 한다.
 
 눈여겨볼 것 셋, 그리고 이 셋은 앞으로 읽을 모든 신경망에 그대로 적용된다:
 - **부호는 국소적으로 무엇을 할지 말해준다.** $\delta_2 = -0.5$가 음수인 이유는 예측이
@@ -776,6 +817,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 
 ### 4. 고전 층들의 그래디언트
 
+*두 번째 읽기. 항목마다 층 하나의 역방향 규칙을 끝까지 유도한다. 지금 읽는 논문이 쓰는 층만 읽어라. 처음에는 §3에서 §6으로 건너뛴다.*
+
 - **Softmax + 교차 엔트로피** — 이 분야에서 가장 깔끔한 결과이고, 지나간 주제가 *아니다*:
   지금도 모든 LLM이 이것으로 학습된다(다음 토큰 예측 = 어휘 전체에 대한 softmax 하나를
   교차 엔트로피 — 손실 $-\log p_{\text{정답}}$, 유도는 [[02-foundations/information-theory|5. 정보이론 §2]] — 로 채점하는 것). 모든 분류 헤드가 이것이고, softmax는 어텐션 내부의 연산
@@ -812,6 +855,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
   설계사(史) 10년을 설명한다.
 
 ### 5. 구조를 만든 병리들
+
+*§4처럼 두 번째 읽기다: 구조의 역사(LSTM, BatchNorm, ResNet)와 그래프를 끊는 도구들(stop-gradient, 재매개변수화, EMA). 논문이 그중 하나에 기댈 때 읽어라.*
 
 - **그래디언트 소실**: 노름 < 1인 야코비안들의 곱은 깊이/시간에 지수적으로 붕괴.
   역사 순서의 처방:
@@ -894,7 +939,7 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P1**. 오일러 없음. “루프
 
 1. **그리기.** P1 계산 그래프. 카탈로그 수치를 각 노드에 써라.
 2. **유도.** $\delta_2$, $\partial L/\partial W_2$, $\partial L/\partial h$, $\delta_1$, $\partial L/\partial W_1$. $\eta=0.1$로 $W_2$만 SGD 한 스텝.
-3. **실행.** 영어 템플릿. 새 $W_2$와 한 스텝 뒤 $L$을 출력하라.
+3. **실행.** 영어 템플릿. 새 $W_2$와 한 스텝 뒤 $L$을 출력하라. 그다음 끝의 루프가 원래 $W_2$에서 $\eta = 0.05,\ 1/14,\ 0.1,\ 1/7,\ 0.2$로 스텝을 다시 하게 하라: 어느 $\eta$에서 한 스텝이 정확히 $y=1$에 닿고, 어느 $\eta$를 넘으면 손실이 $0.125$보다 커지는가?
 
 > [!note]- 그리는 법 · How to draw it
 > - 순전파 사슬은 왼쪽에서 오른쪽으로, 상자 다섯을 화살표 넷으로 잇는다. $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$이고, 상자마다 안에 카탈로그 값을 쓴다.
@@ -908,4 +953,4 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P1**. 오일러 없음. “루프
 > [!tip]- 정답 · Solutions
 > 1. $z=h=(1,2,3)$, $\hat y=0.5$, $L=0.125$.
 > 2. $\delta_2=-0.5$, $\partial L/\partial W_2=(-0.5,-1,-1.5)$, $\partial L/\partial h=(-0.5,0.5,-0.25)=\delta_1$, $\partial L/\partial W_1=\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$. $W_2\leftarrow(1.05,-0.9,0.65)$.
-> 3. 빈칸은 영어 해. 새 $\hat y=1.20$, $L_2=0.020$. 한 스텝이 목표를 지나쳤다 — 이 스케일에서 $\eta=0.1$은 작지 않다.
+> 3. 빈칸은 영어 해. 새 $\hat y=1.20$, $L_2=0.020$. 한 스텝이 목표를 지나쳤다 — 이 스케일에서 $\eta=0.1$은 작지 않다. 쓸기 빈칸은 `eta_s * dW2`이고(실행 코드는 영어 해), 출력은 $\eta = 0.05,\ 0.0714,\ 0.1,\ 0.1429,\ 0.2$에서 $\hat y = 0.850,\ 1.000,\ 1.200,\ 1.500,\ 1.900$, $L = 0.01125,\ 0,\ 0.02,\ 0.125,\ 0.405$다. 매 행이 §3에서 유도한 $\hat y = 0.5 + 7\eta$다. $\eta = 1/14$은 정확히 $y=1$에 닿고, $\eta = 1/7$은 $1.5$까지 흔들려 원래 손실 $0.125$와 같아질 뿐이며, $\eta = 0.2$는 손실을 처음보다 세 배 넘게 나쁘게 만든다. $0.05$ 행은 [[02-foundations/neural-network-basics|0.8 §3]]의 손 계산 갱신이다.

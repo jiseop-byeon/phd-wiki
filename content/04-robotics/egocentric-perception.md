@@ -21,7 +21,7 @@ Move the camera from the room to the head and the perception problem changes cha
 > [[04-robotics/video-action-understanding|20. Video Representation & Action Understanding]] · [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]]
 
 > [!note] First pass · 처음이라면
-> Read the running object and the six derivations on it, then §1 — first-person is a different observability regime, not a worse camera angle — then §3 on head motion as an attention proxy and where it breaks, then §8. §5 and §6 matter when you are judging whether a benchmark result survives a helmet camera.
+> Read the running object and the six derivations on it, then §1 — first-person is a different observability regime, not a worse camera angle — then §3 on head motion as an attention proxy and where it breaks, then §8. §5 and §6 matter when you are judging whether a benchmark result survives a helmet camera. §2, §4 and §7 map the task families, the anticipation cue cascade and the neighbouring pages; skim them on the first pass.
 
 ### Running object · 이 페이지의 대상
 
@@ -38,9 +38,9 @@ A head-mounted camera is not a plant from [[02-foundations/lab-plants|0.6 Lab Pl
 | the feature on the bench | $d$ | a 6 mm bolt head |
 | eye height, standing | $h$ | 1.65 m |
 | head pitch below horizontal, for the floor case | $\theta$ | $40^\circ$ |
-| head angular rates, from §3 | $\omega$ | 90 °/s walking, 300 °/s a moderate look-around |
+| head angular rates | $\omega$ | 90 °/s walking, 300 °/s a moderate look-around |
 
-Distortion is taken as zero and the pixels as square, so the pinhole relation $u = f\,X/Z$ holds exactly and every derivation below is arithmetic. The two angular rates are the ones §3 already cites; nothing on this page introduces a new measured value.
+Distortion is taken as zero and the pixels as square, so the pinhole relation $u = f\,X/Z$ holds exactly and every derivation below is arithmetic. The two head rates come from one measurement. Grossman et al. (1988, in Sources) recorded the head rotations of 20 people walking and running in place and of the same people turning their heads vigorously on purpose: the group median of each person's peak rate did not exceed $90$ °/s during locomotion and was $780$ °/s in vigorous voluntary yaw. So $90$ °/s is the measured locomotion figure, and $300$ °/s is a page-chosen look-around between the two measured values, not a measurement of its own. §3 uses the same pair.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -138,6 +138,29 @@ Helmet camera E1 in three panels, each to scale. From the side, the $58.7^\circ$
 > **Why it matters.** Spec sheets give a field of view and every calculation below needs $f$, so
 > converting between them, in the right direction and at the right sensor extent, is step zero of
 > reading any camera claim.
+
+Two fields of view describe one rectangle of directions, and comparing two cameras by how much of the world each sees needs that rectangle as one number.
+
+> [!info] Definition — solid angle of a field of view
+> An **area on the unit sphere** around the projection centre, in steradians (sr): the set of
+> viewing directions the camera captures, the two-dimensional counterpart of a plane angle. The
+> whole sphere is $4\pi = 12.57$ sr. Conditions: a **rectilinear** projection; a **rectangular**
+> sensor **centred on the optical axis**, whose full angles are the HFOV and VFOV just defined; and it
+> counts **directions, not pixels** — step 2 shows the pixels per unit angle vary across the frame.
+> $$\Omega = 4\arcsin\!\Big(\sin\frac{\mathrm{HFOV}}{2}\,\sin\frac{\mathrm{VFOV}}{2}\Big)$$
+> where $\Omega$ is the solid angle in steradians. It is what integrating the solid angle each
+> pixel subtends, $\mathrm{d}\Omega = f\,\mathrm{d}u\,\mathrm{d}v/(f^2+u^2+v^2)^{3/2}$ at pixel
+> offset $(u, v)$ from the centre, over the whole sensor gives in closed form.
+> **Example.** E1:
+> $4\arcsin(\sin 45^\circ \sin 29.36^\circ) = 4\arcsin(0.7071 \times 0.4903) = 4\arcsin(0.3467) = 1.416$
+> sr, $11.3\%$ of the sphere; summing $\mathrm{d}\Omega$ over E1's
+> $1920 \times 1080$ pixels gives the same $1.416$ sr.
+> **Non-example.** The product of the two angles in radians is not the solid angle. For E1 it is
+> $(\pi/2)(1.0248) = 1.610$ sr, $14\%$ too large, for the same reason the diagonal field of view is
+> not a quadrature sum: on a sphere, angles do not multiply like lengths on a plane. The product
+> approaches $\Omega$ only for narrow fields of view.
+> **Why it matters.** Horizontal field of view alone misleads when two cameras differ in aspect
+> ratio, and the problem set's second camera is compared with E1 by exactly this number.
 
 **2. How much angle a pixel covers, and why §3's number is the frame average.** The pixel angle is defined at [[04-robotics/human-pose-gaze|21. Pose & Gaze, Worked step 5]]: on axis one pixel subtends $1/f$ radians, so on E1 that is $1/960 = 1.042$ mrad $= 0.0597^\circ$, i.e. **16.76 px per degree**. Off axis a rectilinear projection stretches angle, and differentiating $u = f\tan\phi$ gives $\mathrm{d}u/\mathrm{d}\phi = f\sec^2\phi$, so
 
@@ -286,8 +309,8 @@ It fails in three predictable places:
 
 > [!example] Worked example · 계산 예제
 > **Putting a number on the head-motion problem.** A 1920-pixel image over a 90° horizontal
-> field of view gives $1920/90 = 21.3$ pixels per degree. Grossman et al. (1988) found the group-median
-> peak head velocity while walking or running did not exceed 90 °/s, while vigorous voluntary head rotation reached a median peak of about 780 °/s; a moderate look-around of 300 °/s sits between. At a 1/60 s exposure, 90 °/s smears the image by $90 \times 0.0167 = 1.5° = 32$
+> field of view gives $1920/90 = 21.3$ pixels per degree. Grossman et al. (1988, the running object's source) found the group-median
+> peak head velocity while walking or running in place did not exceed 90 °/s, while vigorous voluntary horizontal head rotation reached a group-median peak of 780 °/s; the page's moderate look-around of 300 °/s sits between. At a 1/60 s exposure, 90 °/s smears the image by $90 \times 0.0167 = 1.5° = 32$
 > pixels; at 300 °/s it is $5.0° = 107$ pixels. A hand at 0.5 m spans roughly 180 pixels, so a
 > turn of the head blurs it across a fifth to more than half its own width.
 >
@@ -406,7 +429,7 @@ Tier B. Using **E1** from the running object above, and this page only. A vendor
 
 > [!tip]- Solutions
 > 1. E2's cone must be drawn narrower than E1's in both directions — the sensor shrank and the focal length grew, so both fields of view fall. Panel 3's two rays become coplanar with the vertical, because with $b_x = 0$ the whole offset lies in the sagittal plane, so the parallax is a pure pitch error and none of it is left–right. That is a real simplification and it does not reduce the magnitude.
-> 2. (a) $\mathrm{HFOV} = 2\arctan(640/1200) = \mathbf{56.14^\circ}$, $\mathrm{VFOV} = 2\arctan(360/1200) = \mathbf{33.40^\circ}$ — against E1's $90^\circ$ and $58.7^\circ$, so E2 sees about two-fifths of the solid angle ($0.54$ sr against $1.42$ sr).
+> 2. (a) $\mathrm{HFOV} = 2\arctan(640/1200) = \mathbf{56.14^\circ}$, $\mathrm{VFOV} = 2\arctan(360/1200) = \mathbf{33.40^\circ}$ — against E1's $90^\circ$ and $58.7^\circ$, so E2 sees about two-fifths of the solid angle: by step 1's formula, $4\arcsin(\sin 28.07^\circ \sin 16.70^\circ) = 0.543$ sr against E1's $1.416$ sr, a ratio of $0.38$.
 > (b) On axis $1200 \times \pi/180 = \mathbf{20.94}$ px/deg; frame average $1280/56.14 = \mathbf{22.80}$ px/deg.
 > (c) $\mathrm{GSD} = 1200/1200$, i.e. $\mathbf{1.00}$ mm/px exactly; footprint $1.20 \times 1280/1200 = \mathbf{1.28}$ m by $1.20 \times 720/1200 = \mathbf{0.72}$ m; the bolt head is $6/1.00 = \mathbf{6.0}$ px — *coarser* than E1's $7.2$ px, because the extra focal length did not keep up with the extra distance.
 > (d) $\beta = 200 \times (1/120) = 1.667^\circ$, so on axis $1.667 \times 20.94 = \mathbf{34.9}$ px, which is $\mathbf{5.8}$ times the bolt head. The halved exposure bought a real improvement over E1 and did not come close to solving it.
@@ -435,6 +458,10 @@ Tier B. Using **E1** from the running object above, and this page only. A vendor
 - S. Nair, A. Rajeswaran, V. Kumar, C. Finn, and A. Gupta, "R3M: A Universal Visual Representation for Robot Manipulation," *CoRL 2022*. [arXiv:2203.12601](https://arxiv.org/abs/2203.12601) — pretrains on Ego4D with time-contrastive learning and video-language alignment, then freezes the representation; a Franka learns real cluttered-apartment tasks from about 20 demonstrations.
 - K. Shaw, S. Bahl, and D. Pathak, "VideoDex: Learning Dexterity from Internet Videos," *CoRL 2022*. [arXiv:2212.04498](https://arxiv.org/abs/2212.04498) — retargets human hand trajectories into a robot hand embodiment, adding *action* and physical priors on top of visual priors. The contrast to R3M, which transfers only a visual representation.
 
+**Head motion**
+
+- G. E. Grossman, R. J. Leigh, L. A. Abel, D. J. Lanska, and S. E. Thurston, "Frequency and velocity of rotational head perturbations during locomotion," *Experimental Brain Research*, vol. 70, no. 3, pp. 470–476, 1988. [doi:10.1007/BF00247595](https://doi.org/10.1007/BF00247595) — magnetic search-coil recordings of yaw and pitch head rotation in 20 normal subjects walking in place, running in place, and making vigorous voluntary horizontal and vertical head rotations. The group median of maximal head velocity did not exceed 90 °/s while walking or running, and was 780 °/s in vigorous voluntary yaw — the two measured values behind E1's head rates. Note what it is: locomotion *in place*, in a laboratory, not overground walking at a work site.
+
 ## 한국어
 
 *J군이다. [[04-robotics/geometric-perception-calibration|3.5]]·[[04-robotics/human-pose-gaze|21. 자세·시선]]·[[04-robotics/video-action-understanding|20. 비디오]] 위에 선다.
@@ -451,7 +478,7 @@ Tier B. Using **E1** from the running object above, and this page only. A vendor
 > [[04-robotics/video-action-understanding|20. 비디오 표현과 행동 이해]] · [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]] · [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]]
 
 > [!note] 처음이라면 · First pass
-> 먼저 이 페이지의 대상과 그 위에서 하는 여섯 개의 유도, 그다음 §1 — 1인칭은 나쁜 카메라 각도가 아니라 다른 관측 가능성 체제다 — 그다음 머리 움직임이 주의의 대용인 이유와 깨지는 지점인 §3, 그다음 §8. §5·§6은 벤치마크 결과가 헬멧 카메라에서 살아남을지 판단할 때 중요해진다.
+> 먼저 이 페이지의 대상과 그 위에서 하는 여섯 개의 유도, 그다음 §1 — 1인칭은 나쁜 카메라 각도가 아니라 다른 관측 가능성 체제다 — 그다음 머리 움직임이 주의의 대용인 이유와 깨지는 지점인 §3, 그다음 §8. §5·§6은 벤치마크 결과가 헬멧 카메라에서 살아남을지 판단할 때 중요해진다. §2·§4·§7은 과제군, 예측의 단서 사슬, 이웃 페이지를 정리하니 첫 읽기에는 훑어라.
 
 ### 이 페이지의 대상 · Running object
 
@@ -468,9 +495,9 @@ Tier B. Using **E1** from the running object above, and this page only. A vendor
 | 작업대 위의 대상 | $d$ | 6 mm 볼트 머리 |
 | 선 자세의 눈높이 | $h$ | 1.65 m |
 | 바닥 계산용 머리 하향 피치 | $\theta$ | $40^\circ$ |
-| 머리 각속도, §3에서 | $\omega$ | 걸을 때 90 °/s, 적당히 둘러볼 때 300 °/s |
+| 머리 각속도 | $\omega$ | 걸을 때 90 °/s, 적당히 둘러볼 때 300 °/s |
 
-왜곡은 0, 픽셀은 정사각으로 두므로 핀홀 관계 $u = f\,X/Z$가 정확히 성립하고 아래 유도가 전부 산수가 된다. 두 각속도는 §3이 이미 인용한 값이며, 이 페이지는 새로운 측정값을 하나도 들여오지 않는다.
+왜곡은 0, 픽셀은 정사각으로 두므로 핀홀 관계 $u = f\,X/Z$가 정확히 성립하고 아래 유도가 전부 산수가 된다. 두 머리 각속도는 측정 하나에서 온다. Grossman 외(1988, 출처 참고)는 20명이 제자리에서 걷고 뛸 때와, 같은 사람들이 의도적으로 힘껏 고개를 돌릴 때의 머리 회전을 기록했다. 각자의 최대 속도의 집단 중앙값은 이동 중에는 $90$ °/s를 넘지 않았고, 의도적으로 힘껏 좌우로 돌릴 때는 $780$ °/s였다. 그러니 $90$ °/s는 측정된 이동 중의 값이고, $300$ °/s는 두 측정값 사이에서 이 페이지가 고른 둘러보기 속도이지 따로 잰 값이 아니다. §3도 같은 두 값을 쓴다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -565,6 +592,28 @@ Tier B. Using **E1** from the running object above, and this page only. A vendor
 > 픽셀이고, 그다음에 아크탄젠트를 한 번 취한다.
 > **왜 중요한가.** 스펙 시트는 화각을 주고 아래의 모든 계산은 $f$를 필요로 하므로, 올바른 방향과
 > 올바른 센서 크기로 둘 사이를 오가는 것이 모든 카메라 주장 읽기의 0단계다.
+
+두 화각은 방향들이 이루는 직사각형 하나를 묘사하고, 두 카메라가 세상을 얼마나 보는지 비교하려면 그 직사각형을 수 하나로 나타내야 한다.
+
+> [!info] 정의 — 화각의 입체각
+> 투영 중심을 둘러싼 **단위 구 위의 넓이** 이고 단위는 스테라디안(sr)이다. 카메라가 담는 시선
+> 방향들의 집합이며, 평면각의 2차원 짝이다. 구 전체는 $4\pi = 12.57$ sr이다. 조건: **직선 보존**
+> 투영일 것; **광축에 중심을 둔 직사각형** 센서이고, 그 전체 각이 방금 정의한 HFOV와 VFOV일 것;
+> 그리고 **픽셀이 아니라 방향** 을 센다는 것 — 단위 각당 픽셀 수가 프레임 안에서 달라진다는 것은
+> 2단계가 보여 준다.
+> $$\Omega = 4\arcsin\!\Big(\sin\frac{\mathrm{HFOV}}{2}\,\sin\frac{\mathrm{VFOV}}{2}\Big)$$
+> $\Omega$는 스테라디안 단위의 입체각이다. 중심에서 $(u, v)$만큼 떨어진 픽셀 하나가 벌리는 입체각
+> $\mathrm{d}\Omega = f\,\mathrm{d}u\,\mathrm{d}v/(f^2+u^2+v^2)^{3/2}$를 센서 전체에 걸쳐 적분한 것을 닫힌
+> 형태로 쓴 것이 이 식이다.
+> **예.** E1:
+> $4\arcsin(\sin 45^\circ \sin 29.36^\circ) = 4\arcsin(0.7071 \times 0.4903) = 4\arcsin(0.3467) = 1.416$
+> sr로 구의 $11.3\%$다. E1의 $1920 \times 1080$ 픽셀에 걸쳐 $\mathrm{d}\Omega$를
+> 더해도 같은 $1.416$ sr이 나온다.
+> **반례.** 두 각을 라디안으로 곱한 값은 입체각이 아니다. E1에서 그것은 $(\pi/2)(1.0248) = 1.610$ sr로
+> $14\%$ 크다. 대각 화각이 제곱합이 아닌 것과 같은 이유다. 구 위에서 각은 평면 위의 길이처럼 곱해지지
+> 않는다. 곱은 화각이 좁을 때에만 $\Omega$에 가까워진다.
+> **왜 중요한가.** 두 카메라의 가로세로비가 다르면 수평 화각만으로는 오도되고, 과제의 두 번째
+> 카메라가 E1과 비교되는 것이 바로 이 숫자다.
 
 **2. 픽셀 하나가 덮는 각, 그리고 §3의 숫자가 프레임 평균인 이유.** 픽셀 각의 정의는 [[04-robotics/human-pose-gaze|21. 자세·시선, Worked step 5]]에 있다. 광축 위에서 픽셀 하나는 $1/f$ 라디안을 벌리므로 E1에서는 $1/960 = 1.042$ mrad $= 0.0597^\circ$, 즉 **도당 16.76픽셀** 이다. 축을 벗어나면 직선 보존 투영이 각을 늘이고, $u = f\tan\phi$를 미분하면 $\mathrm{d}u/\mathrm{d}\phi = f\sec^2\phi$이므로
 
@@ -703,8 +752,8 @@ flowchart TD
 
 > [!example] 계산 예제 · Worked example
 > **머리 움직임 문제에 숫자를 붙이기.** 수평 화각 90°를 1920픽셀에 담으면
-> $1920/90 = 21.3$ 픽셀/도다. Grossman 외(1988)는 걷거나 뛸 때 머리 최대 속도의 집단 중앙값이
-> 90 °/s를 넘지 않았고, 힘껏 의도적으로 고개를 돌리면 중앙값 최대 약 780 °/s에 이른다고 보고했다. 적당히 둘러보는 300 °/s는 그 사이다. 노출 1/60초에서 90 °/s는 영상을
+> $1920/90 = 21.3$ 픽셀/도다. Grossman 외(1988, 이 페이지 대상의 출처)는 제자리에서 걷거나 뛸 때 머리 최대 속도의 집단 중앙값이
+> 90 °/s를 넘지 않았고, 힘껏 의도적으로 고개를 좌우로 돌리면 집단 중앙값 최대가 780 °/s라고 보고했다. 이 페이지가 고른 적당한 둘러보기 300 °/s는 그 사이다. 노출 1/60초에서 90 °/s는 영상을
 > $90 \times 0.0167 = 1.5° = 32$픽셀만큼 번지게 하고, 300 °/s에서는 $5.0° = 107$픽셀이다.
 > 0.5 m 앞의 손은 대략 180픽셀을 차지하니, 고개 한 번 돌리는 동안 손은 제 폭의 5분의 1에서
 > 절반 넘게까지 번진다.
@@ -823,7 +872,7 @@ Tier B. 위의 대상 **E1**, 그리고 이 페이지만 사용한다. 어떤 �
 
 > [!tip]- 정답 · Solutions
 > 1. E2의 원뿔은 두 방향 모두 E1보다 좁게 그려야 한다. 센서는 작아지고 초점거리는 커졌으니 두 화각 모두 줄어든다. 패널 3의 두 광선은 수직면 안에 놓인다. $b_x = 0$이라 오프셋 전체가 시상면에 있어서 시차가 순수한 피치 오차가 되고 좌우 성분이 전혀 없기 때문이다. 실제로 단순해지는 것이 맞지만 크기가 줄어드는 것은 아니다.
-> 2. (a) $\mathrm{HFOV} = 2\arctan(640/1200) = \mathbf{56.14^\circ}$, $\mathrm{VFOV} = 2\arctan(360/1200) = \mathbf{33.40^\circ}$ — E1의 $90^\circ$·$58.7^\circ$에 견주면 입체각의 약 5분의 2다($0.54$ sr 대 $1.42$ sr).
+> 2. (a) $\mathrm{HFOV} = 2\arctan(640/1200) = \mathbf{56.14^\circ}$, $\mathrm{VFOV} = 2\arctan(360/1200) = \mathbf{33.40^\circ}$ — E1의 $90^\circ$·$58.7^\circ$에 견주면 입체각의 약 5분의 2다. 1단계의 식으로 $4\arcsin(\sin 28.07^\circ \sin 16.70^\circ) = 0.543$ sr이고 E1은 $1.416$ sr이므로 비는 $0.38$이다.
 > (b) 광축 위 $1200 \times \pi/180 = \mathbf{20.94}$ px/deg, 프레임 평균 $1280/56.14 = \mathbf{22.80}$ px/deg.
 > (c) $\mathrm{GSD} = 1200/1200$, 즉 정확히 $\mathbf{1.00}$ mm/px. 발자국은 $1.20 \times 1280/1200 = \mathbf{1.28}$ m $\times$ $1.20 \times 720/1200 = \mathbf{0.72}$ m. 볼트 머리는 $6/1.00 = \mathbf{6.0}$ px로 E1의 $7.2$ px보다 *거칠다*. 늘어난 초점거리가 늘어난 거리를 따라잡지 못했기 때문이다.
 > (d) $\beta = 200 \times (1/120) = 1.667^\circ$이므로 광축 위 $1.667 \times 20.94 = \mathbf{34.9}$ px, 볼트 머리의 $\mathbf{5.8}$ 배다. 노출을 절반으로 줄인 것은 E1 대비 실질적 개선이지만 해결 근처에도 못 갔다.
@@ -850,3 +899,7 @@ Tier B. 위의 대상 **E1**, 그리고 이 페이지만 사용한다. 어떤 �
 - D. Shan, J. Geng, M. Shu, and D. F. Fouhey, "Understanding Human Hands in Contact at Internet Scale," *CVPR 2020* (Oral) — 100DOH(영상 131일치)를 내놓고, 손 위치·좌우·*접촉 상태*·접촉 중인 물체 상자를 예측하는 검출기를 함께 공개했다. 사람 비디오에서 접촉 사건을 캐내는 사실상의 표준 도구다.
 - S. Nair, A. Rajeswaran, V. Kumar, C. Finn, and A. Gupta, "R3M: A Universal Visual Representation for Robot Manipulation," *CoRL 2022*. [arXiv:2203.12601](https://arxiv.org/abs/2203.12601) — Ego4D에서 시간 대조 학습과 비디오-언어 정렬로 사전학습한 뒤 표현을 동결한다. Franka가 어질러진 실제 아파트 과제를 시연 20개 남짓으로 학습한다.
 - K. Shaw, S. Bahl, and D. Pathak, "VideoDex: Learning Dexterity from Internet Videos," *CoRL 2022*. [arXiv:2212.04498](https://arxiv.org/abs/2212.04498) — 사람 손 궤적을 로봇 손 신체로 재타깃해서, 시각 사전지식 위에 *행동*과 물리 사전지식을 더한다. 시각 표현만 옮기는 R3M과 대비된다.
+
+**머리 움직임**
+
+- G. E. Grossman, R. J. Leigh, L. A. Abel, D. J. Lanska, and S. E. Thurston, "Frequency and velocity of rotational head perturbations during locomotion," *Experimental Brain Research*, vol. 70, no. 3, pp. 470–476, 1988. [doi:10.1007/BF00247595](https://doi.org/10.1007/BF00247595) — 자기 탐색 코일로 정상인 20명의 머리 요·피치 회전을 기록했다. 제자리 걷기, 제자리 뛰기, 그리고 의도적으로 힘껏 좌우·상하로 고개 돌리기다. 최대 머리 속도의 집단 중앙값은 걷거나 뛸 때 90 °/s를 넘지 않았고, 힘껏 좌우로 돌릴 때는 780 °/s였다 — E1의 머리 각속도 뒤에 있는 두 측정값이다. 무엇을 잰 것인지 기억하라. 실험실에서의 *제자리* 이동이지, 작업 현장을 실제로 걸어 다니는 것이 아니다.

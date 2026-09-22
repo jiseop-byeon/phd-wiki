@@ -8,8 +8,8 @@ mastery-when: "Master two-port absolute-stability or wave-variable synthesis whe
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Passivity as an energy inequality at a port, and why a sampled or delayed loop can inject energy, from [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2 and §4]]; impedance versus admittance causality from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]; phase margin from [[04-robotics/control-theory-ce397|Control Theory §5.5]].
-> 포트에서의 에너지 부등식으로서의 수동성과, 샘플링되거나 지연된 루프가 에너지를 주입할 수 있는 이유는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2와 §4]]. 임피던스 대 어드미턴스 인과성은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]. 위상 여유는 [[04-robotics/control-theory-ce397|제어 이론 §5.5]].
+> Passivity as an energy inequality at a port, and why a sampled or delayed loop can inject energy, from [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2 and §4]]; impedance versus admittance causality from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]; phase margin from [[04-robotics/control-theory-ce397|Control Theory §5.5]]; and the constant-delay passivity proof for wave variables from [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §3]], which §4 cites rather than repeats.
+> 포트에서의 에너지 부등식으로서의 수동성과, 샘플링되거나 지연된 루프가 에너지를 주입할 수 있는 이유는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2와 §4]]. 임피던스 대 어드미턴스 인과성은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]. 위상 여유는 [[04-robotics/control-theory-ce397|제어 이론 §5.5]]. wave 변수로 일정 지연 채널이 수동적이 된다는 증명은 [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집 §3]]이고, §4는 그것을 다시 쓰지 않고 인용한다.
 
 ## English
 
@@ -49,17 +49,25 @@ Five steps on the pair above. Everything §2 to §4 assert in words is a number 
 
 **Step 1 — what the operator's hand feels when nothing is touching.** With the follower in free space the operator still feels the leader itself, $Z=ms+b$. At $1\,\mathrm{Hz}$ that is $\lvert 0.04\cdot j2\pi+0.8\rvert=0.839\,\mathrm{N{\cdot}s/m}$, so moving the leader at $5\,\mathrm{cm/s}$ costs $0.042\,\mathrm{N}$ of drag against an environment that is producing nothing at all. At $10\,\mathrm{Hz}$ the same handle reads $2.64\,\mathrm{N{\cdot}s/m}$, or $0.132\,\mathrm{N}$ — the inertia has taken over. §1 calls this quantity $h_{11}$ and transparency asks for it to be zero, which is why a teleoperator can fail its own specification before the channel is switched on.
 
-**Step 2 — the stiffness the delay leaves.** First decide which delay is in the loop. Leader motion goes out to the follower and the follower's wall force comes back, so if the follower tracks its delayed command, the force reaching the leader is the wall acting on the leader's *own* position one round trip earlier: the loop delay is $T_D=2T_d=100\,\mathrm{ms}$, and this step assumes exactly that. Then price that delay. The §2 bound of 24.4, $K\le 2b/T$, reads as $K\le b/(T/2)$: the zero-order hold acts like half a period of delay. Diolaiti, Niemeyer, Barbagli and Salisbury (2006) show that a loop delay adds to that half period *in full*: with $\beta=b/(KT)$ and $\tau_D=T_D/T$, the viscous boundary moves from $\beta\ge\tfrac12$ to $\beta\ge\tfrac12+\tau_D$, which is $b\ge KT/2+KT_D$. So
+**Step 2 — the stiffness the delay leaves.** First decide which delay is in the loop. Leader motion goes out to the follower and the follower's wall force comes back, so if the follower tracks its delayed command, the force reaching the leader is the wall acting on the leader's *own* position one round trip earlier: the loop delay is $T_D=2T_d=100\,\mathrm{ms}$, and this step assumes exactly that. Then price that delay. The §2 bound of 24.4, $K\le 2b/T$, reads as $K\le b/(T/2)$: the zero-order hold acts like half a period of delay. Diolaiti, Niemeyer, Barbagli and Salisbury (2006), the paper whose $(\beta,\sigma)$ plane [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]] already used, show that a loop delay adds to that half period *in full*: with $\beta=b/(KT)$ and $\tau_D=T_D/T$, the viscous boundary moves from $\beta\ge\tfrac12$ to $\beta\ge\tfrac12+\tau_D$, which is $b\ge KT/2+KT_D$. So
 
 $$K\le\frac{b}{T/2+2T_d}=\frac{0.8}{0.0005+0.100}=7.96\,\mathrm{N/m}$$
 
-because the device damper's phase lead is the only thing paying for lag, and the lag it must now cover is the hold's half millisecond plus the whole $100\,\mathrm{ms}$ round trip. At unit impedance scale, $s_fs_x=1$ (unscaled, or Step 4's $s_f=10$, $s_x=0.1$), the leader feels the catalog wall itself, $k_w=400\,\mathrm{N/m}$, which misses that ceiling by a factor of $400/7.96=50.3$; the local ceiling of $1600\,\mathrm{N/m}$ has fallen by $1600/7.96=201$, which is $1+2\tau_D$ at $\tau_D=100$. If only one direction were delayed, $T_D=T_d$ and the ceiling would be $0.8/0.0505=15.8\,\mathrm{N/m}$, still $25.3$ times under the wall. The shortcut of writing $T+T_d$ where 24.4 has $T$ is wrong twice: $2b/(T+T_d)=b/(T/2+T_d/2)$ charges the delay at half its value, as if it were a hold, and it counts one direction only, so it returns $31.4\,\mathrm{N/m}$, about four times the ceiling. The wall the follower actually touches is unchanged; what changed is how much of it may be reflected.
+because the device damper's phase lead is the only thing paying for lag, and the lag it must now cover is the hold's half millisecond plus the whole $100\,\mathrm{ms}$ round trip. At unit impedance scale, $s_fs_x=1$ (unscaled, or Step 4's $s_f=10$, $s_x=0.1$), the leader feels the catalog wall itself, $k_w=400\,\mathrm{N/m}$, which misses that ceiling by a factor of $400/7.96=50.3$; the local ceiling of $1600\,\mathrm{N/m}$ has fallen by $1600/7.96=201$, which is $1+2\tau_D$ at $\tau_D=100$. Three delay assumptions circulate, and they give three different ceilings; only the first is this step's.
+
+| delay assumption | lag the damper pays for | ceiling on $K$ | $k_w=400$ is over it by |
+|---|---:|---:|---:|
+| round trip, $T_D=2T_d$ (this step) | $T/2+2T_d=0.1005\,\mathrm{s}$ | $7.96\,\mathrm{N/m}$ | $50.3\times$ |
+| one direction only, $T_D=T_d$ | $T/2+T_d=0.0505\,\mathrm{s}$ | $15.8\,\mathrm{N/m}$ | $25.3\times$ |
+| shortcut $2b/(T+T_d)$, wrong | $(T+T_d)/2=0.0255\,\mathrm{s}$ | $31.4\,\mathrm{N/m}$ | $12.8\times$ |
+
+The shortcut writes $T+T_d$ where 24.4 has $T$ and is wrong twice: $2b/(T+T_d)=b/(T/2+T_d/2)$ charges the delay at half its value, as if it were a hold, and it counts one direction only, so it returns about four times the true ceiling. The wall the follower actually touches is unchanged; what changed is how much of it may be reflected.
 
 **Step 3 — power-preserving scaling, and why nobody ships it.** With $x_f=s_xx_l$ and $F_l=s_fF_f$ the power ratio is $s_f/s_x$ (§3), so power preservation means $s_f=s_x=0.1$. Let the follower hold $F_f=1\,\mathrm{N}$, which on the catalog wall is a penetration of $1/400=2.5\,\mathrm{mm}$. The leader then reflects
 
 $$F_l=s_fF_f=0.1\cdot 1=0.1\,\mathrm{N}$$
 
-and whether that is a cue is a question about the hand. The force discrimination this track measures, in [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]], found a JND of $0.4107\,\mathrm{N}$ near $5\,\mathrm{N}$, a Weber fraction $k=0.4107/5.0429=0.0814$, and Weber's law reads that as a JND of $k$ times whatever force the hand already carries. Here the hand carries $s_fF_f$ and a follower change $\Delta F_f$ reaches it as $s_f\Delta F_f$, so the change is felt when
+and whether that is a cue is a question about the hand. The force discrimination this track measures, in [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]], found a JND of $0.4107\,\mathrm{N}$ near $5\,\mathrm{N}$, a Weber fraction $k=0.4107/5.0429=0.0814$, and Weber's law reads that as a JND of $k$ times whatever force the hand already carries. Here the hand carries $s_fF_f$ and a follower change $\Delta F_f$ reaches it as $s_f\Delta F_f$, so the change is felt when
 
 $$s_f\,\Delta F_f\ge k\,s_fF_f\quad\Longleftrightarrow\quad\Delta F_f\ge kF_f=0.0814\cdot1=0.081\,\mathrm{N}$$
 
@@ -194,7 +202,7 @@ Leader motion is sent to the follower; follower wall force $F_a$ is sent back. O
 
 > [!tip]- Solutions
 > 1. Four signals $F_1,v_1,F_2,v_2$; delay on both directions or at least on force; wall switch at the follower. Arrows for force into the two-port.
-> 2. (a) $F_l=0.1\,\mathrm{N}$ — too faint to rely on, but not because it is under a JND. With 24.1 §6's $k=0.0814$, $s_f$ divides out of $s_f\Delta F_f\ge ks_fF_f$, so the smallest follower change the hand feels is $kF_f=0.081\,\mathrm{N}$ whatever $s_f$ is; the trouble is that $0.1\,\mathrm{N}$ is twenty times below $2.03\,\mathrm{N}$, the lowest force at which 24.1 measured $k$, where it had already risen to $0.0896$. (b) Ratio $100$; extra power from actuators; force-amplifying teleoperators do not inherit passivity. (c) $T_D=2T_d=100\,\mathrm{ms}$: the follower tracks a command already $T_d$ old, and its force takes $T_d$ more to come back. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$ fails by a factor of $50.3$. One direction only: $0.8/0.0505=15.8\,\mathrm{N/m}$. Not $2b/(T+T_d)=31.4$, which charges the delay at half its value.
+> 2. (a) $F_l=0.1\,\mathrm{N}$ — too faint to rely on, but not because it is under a JND. With 24.1 §5's $k=0.0814$, $s_f$ divides out of $s_f\Delta F_f\ge ks_fF_f$, so the smallest follower change the hand feels is $kF_f=0.081\,\mathrm{N}$ whatever $s_f$ is; the trouble is that $0.1\,\mathrm{N}$ is twenty times below $2.03\,\mathrm{N}$, the lowest force at which 24.1 measured $k$, where it had already risen to $0.0896$. (b) Ratio $100$; extra power from actuators; force-amplifying teleoperators do not inherit passivity. (c) $T_D=2T_d=100\,\mathrm{ms}$: the follower tracks a command already $T_d$ old, and its force takes $T_d$ more to come back. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$ fails by a factor of $50.3$. One direction only: $0.8/0.0505=15.8\,\mathrm{N/m}$. Not $2b/(T+T_d)=31.4$, which charges the delay at half its value.
 > 3. No. Passivity bounds energy generation, not transparency or speed. Added dissipation can stabilize and make the wall feel sluggish — the trade §4 names.
 
 ### Sources
@@ -239,17 +247,25 @@ flowchart LR
 
 **1단계 — 아무것도 닿지 않을 때 손이 느끼는 것.** follower가 자유공간에 있어도 조작자는 leader 자체, $Z=ms+b$를 느낀다. $1\,\mathrm{Hz}$에서 $\lvert 0.04\cdot j2\pi+0.8\rvert=0.839\,\mathrm{N{\cdot}s/m}$이므로 leader를 $5\,\mathrm{cm/s}$로 움직이는 데 아무것도 내지 않는 환경에 대해 $0.042\,\mathrm{N}$의 끌림을 쓴다. $10\,\mathrm{Hz}$에서 같은 핸들이 $2.64\,\mathrm{N{\cdot}s/m}$, 즉 $0.132\,\mathrm{N}$이 된다. 관성이 넘겨받은 것이다. §1은 이 양을 $h_{11}$이라 부르고 투명성은 그것이 0이기를 요구한다. 원격조작기가 채널을 켜기도 전에 자기 규격에 미달할 수 있는 이유다.
 
-**2단계 — 지연이 남겨 주는 강성.** 먼저 루프에 어느 지연이 들어가는지 정한다. leader 운동은 follower로 나가고 follower의 벽 힘은 돌아오므로, follower가 지연된 명령을 추종한다면 leader에 도착하는 힘은 왕복 한 번 전의 leader *자신의* 위치에 벽이 작용한 힘이다. 루프 지연은 $T_D=2T_d=100\,\mathrm{ms}$이고, 이 단계는 바로 그것을 가정한다. 다음은 지연의 값이다. 24.4 §2의 경계 $K\le 2b/T$는 $K\le b/(T/2)$로 읽힌다. zero-order hold가 반 주기의 지연처럼 작용한다는 뜻이다. Diolaiti, Niemeyer, Barbagli, Salisbury(2006)는 루프 지연이 그 반 주기에 *온전히* 더해짐을 보였다. $\beta=b/(KT)$, $\tau_D=T_D/T$로 두면 점성 경계가 $\beta\ge\tfrac12$에서 $\beta\ge\tfrac12+\tau_D$로, 즉 $b\ge KT/2+KT_D$로 옮겨 간다. 그러므로
+**2단계 — 지연이 남겨 주는 강성.** 먼저 루프에 어느 지연이 들어가는지 정한다. leader 운동은 follower로 나가고 follower의 벽 힘은 돌아오므로, follower가 지연된 명령을 추종한다면 leader에 도착하는 힘은 왕복 한 번 전의 leader *자신의* 위치에 벽이 작용한 힘이다. 루프 지연은 $T_D=2T_d=100\,\mathrm{ms}$이고, 이 단계는 바로 그것을 가정한다. 다음은 지연의 값이다. 24.4 §2의 경계 $K\le 2b/T$는 $K\le b/(T/2)$로 읽힌다. zero-order hold가 반 주기의 지연처럼 작용한다는 뜻이다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]이 이미 $(\beta,\sigma)$ 평면으로 쓴 논문인 Diolaiti, Niemeyer, Barbagli, Salisbury(2006)는 루프 지연이 그 반 주기에 *온전히* 더해짐을 보였다. $\beta=b/(KT)$, $\tau_D=T_D/T$로 두면 점성 경계가 $\beta\ge\tfrac12$에서 $\beta\ge\tfrac12+\tau_D$로, 즉 $b\ge KT/2+KT_D$로 옮겨 간다. 그러므로
 
 $$K\le\frac{b}{T/2+2T_d}=\frac{0.8}{0.0005+0.100}=7.96\,\mathrm{N/m}$$
 
-이다. 지연을 갚는 것은 장치 댐퍼의 위상 앞섬뿐인데, 그것이 이제 덮어야 할 지연이 홀드의 반 밀리초에 $100\,\mathrm{ms}$ 왕복 전체를 더한 것이기 때문이다. 임피던스 스케일이 1이면($s_fs_x=1$. 스케일이 없거나 4단계의 $s_f=10$, $s_x=0.1$) leader는 카탈로그 벽 $k_w=400\,\mathrm{N/m}$을 그대로 느끼고, 이는 그 천장을 $400/7.96=50.3$배 넘는다. 로컬 천장 $1600\,\mathrm{N/m}$은 $1600/7.96=201$분의 1로 내려앉았고, 이 배수는 $\tau_D=100$에서의 $1+2\tau_D$다. 한 방향만 지연된다면 $T_D=T_d$이고 천장은 $0.8/0.0505=15.8\,\mathrm{N/m}$, 여전히 벽의 $25.3$분의 1이다. 24.4의 $T$ 자리에 $T+T_d$를 쓰는 지름길은 두 번 틀린다. $2b/(T+T_d)=b/(T/2+T_d/2)$는 지연을 홀드처럼 절반 값으로 치르고, 한 방향만 센다. 그래서 천장의 약 네 배인 $31.4\,\mathrm{N/m}$이 나온다. follower가 실제로 만지는 벽은 그대로다. 바뀐 것은 그중 얼마를 반사해도 되는가다.
+이다. 지연을 갚는 것은 장치 댐퍼의 위상 앞섬뿐인데, 그것이 이제 덮어야 할 지연이 홀드의 반 밀리초에 $100\,\mathrm{ms}$ 왕복 전체를 더한 것이기 때문이다. 임피던스 스케일이 1이면($s_fs_x=1$. 스케일이 없거나 4단계의 $s_f=10$, $s_x=0.1$) leader는 카탈로그 벽 $k_w=400\,\mathrm{N/m}$을 그대로 느끼고, 이는 그 천장을 $400/7.96=50.3$배 넘는다. 로컬 천장 $1600\,\mathrm{N/m}$은 $1600/7.96=201$분의 1로 내려앉았고, 이 배수는 $\tau_D=100$에서의 $1+2\tau_D$다. 지연에 대한 가정은 세 가지가 돌아다니고, 천장도 셋이 나온다. 이 단계의 것은 첫째뿐이다.
+
+| 지연 가정 | 댐퍼가 갚아야 할 지연 | $K$의 천장 | $k_w=400$이 넘는 배수 |
+|---|---:|---:|---:|
+| 왕복, $T_D=2T_d$ (이 단계) | $T/2+2T_d=0.1005\,\mathrm{s}$ | $7.96\,\mathrm{N/m}$ | $50.3\times$ |
+| 한 방향만, $T_D=T_d$ | $T/2+T_d=0.0505\,\mathrm{s}$ | $15.8\,\mathrm{N/m}$ | $25.3\times$ |
+| 지름길 $2b/(T+T_d)$, 틀림 | $(T+T_d)/2=0.0255\,\mathrm{s}$ | $31.4\,\mathrm{N/m}$ | $12.8\times$ |
+
+24.4의 $T$ 자리에 $T+T_d$를 쓰는 지름길은 두 번 틀린다. $2b/(T+T_d)=b/(T/2+T_d/2)$는 지연을 홀드처럼 절반 값으로 치르고, 한 방향만 센다. 그래서 참 천장의 약 네 배가 나온다. follower가 실제로 만지는 벽은 그대로다. 바뀐 것은 그중 얼마를 반사해도 되는가다.
 
 **3단계 — 일률 보존 스케일링, 그리고 아무도 그것을 출하하지 않는 이유.** $x_f=s_xx_l$, $F_l=s_fF_f$이면 일률 비는 $s_f/s_x$이므로(§3) 일률 보존은 $s_f=s_x=0.1$을 뜻한다. follower가 $F_f=1\,\mathrm{N}$을 쥔다고 하자. 카탈로그 벽에서 침투 $1/400=2.5\,\mathrm{mm}$다. 그러면 leader가 반사하는 것은
 
 $$F_l=s_fF_f=0.1\cdot 1=0.1\,\mathrm{N}$$
 
-이다. 이것이 cue가 되는지는 손에 대한 질문이다. 이 트랙의 힘 변별 측정인 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §6]]은 $5\,\mathrm{N}$ 부근에서 JND $0.4107\,\mathrm{N}$, 즉 Weber 분수 $k=0.4107/5.0429=0.0814$를 얻었다. Weber 법칙은 이것을 손이 이미 받치고 있는 힘이 무엇이든 그 $k$배가 JND라는 뜻으로 읽는다. 여기서 손이 받치는 힘은 $s_fF_f$이고 follower의 변화 $\Delta F_f$는 손에 $s_f\Delta F_f$로 도착하므로, 변화가 느껴지는 조건은
+이다. 이것이 cue가 되는지는 손에 대한 질문이다. 이 트랙의 힘 변별 측정인 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §5]]는 $5\,\mathrm{N}$ 부근에서 JND $0.4107\,\mathrm{N}$, 즉 Weber 분수 $k=0.4107/5.0429=0.0814$를 얻었다. Weber 법칙은 이것을 손이 이미 받치고 있는 힘이 무엇이든 그 $k$배가 JND라는 뜻으로 읽는다. 여기서 손이 받치는 힘은 $s_fF_f$이고 follower의 변화 $\Delta F_f$는 손에 $s_f\Delta F_f$로 도착하므로, 변화가 느껴지는 조건은
 
 $$s_f\,\Delta F_f\ge k\,s_fF_f\quad\Longleftrightarrow\quad\Delta F_f\ge kF_f=0.0814\cdot1=0.081\,\mathrm{N}$$
 
@@ -384,7 +400,7 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**를 리더와 팔로워 *둘 
 
 > [!tip]- 정답 · Solutions
 > 1. 신호 넷 $F_1,v_1,F_2,v_2$; 양방향 또는 적어도 힘 쪽 지연; 팔로워의 벽 스위치. 2포트 안으로 들어가는 힘 화살표.
-> 2. (a) $F_l=0.1\,\mathrm{N}$ — 믿고 쓰기엔 너무 약하지만, JND보다 작아서가 아니다. 24.1 §6의 $k=0.0814$에서는 $s_f\Delta F_f\ge ks_fF_f$의 $s_f$가 약분되므로 손이 느끼는 가장 작은 follower 변화는 $s_f$와 무관하게 $kF_f=0.081\,\mathrm{N}$이다. 문제는 $0.1\,\mathrm{N}$이 24.1이 $k$를 잰 가장 낮은 힘 $2.03\,\mathrm{N}$(거기서 이미 $0.0896$으로 올랐다)보다 스무 배 낮다는 것이다. (b) 비 $100$; 여분 일률은 액추에이터에서; 힘을 증폭하는 원격조작기는 수동성을 물려받지 못한다. (c) $T_D=2T_d=100\,\mathrm{ms}$. 팔로워는 이미 $T_d$ 늦은 명령을 추종하고, 그 힘이 돌아오는 데 $T_d$가 더 걸린다. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$은 $50.3$배로 실패. 한 방향만이면 $0.8/0.0505=15.8\,\mathrm{N/m}$. 지연을 절반 값으로 치르는 $2b/(T+T_d)=31.4$가 아니다.
+> 2. (a) $F_l=0.1\,\mathrm{N}$ — 믿고 쓰기엔 너무 약하지만, JND보다 작아서가 아니다. 24.1 §5의 $k=0.0814$에서는 $s_f\Delta F_f\ge ks_fF_f$의 $s_f$가 약분되므로 손이 느끼는 가장 작은 follower 변화는 $s_f$와 무관하게 $kF_f=0.081\,\mathrm{N}$이다. 문제는 $0.1\,\mathrm{N}$이 24.1이 $k$를 잰 가장 낮은 힘 $2.03\,\mathrm{N}$(거기서 이미 $0.0896$으로 올랐다)보다 스무 배 낮다는 것이다. (b) 비 $100$; 여분 일률은 액추에이터에서; 힘을 증폭하는 원격조작기는 수동성을 물려받지 못한다. (c) $T_D=2T_d=100\,\mathrm{ms}$. 팔로워는 이미 $T_d$ 늦은 명령을 추종하고, 그 힘이 돌아오는 데 $T_d$가 더 걸린다. $b/(T/2+2T_d)=0.8/0.1005=7.96\,\mathrm{N/m}$; $400$은 $50.3$배로 실패. 한 방향만이면 $0.8/0.0505=15.8\,\mathrm{N/m}$. 지연을 절반 값으로 치르는 $2b/(T+T_d)=31.4$가 아니다.
 > 3. 아니다. 수동성은 에너지 생성을 묶지 투명성이나 속도를 묶지 않는다. 소산을 더하면 안정되면서 벽이 둔해질 수 있다 — §4가 이름 붙인 거래다.
 
 ### 출처

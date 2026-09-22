@@ -9,7 +9,7 @@ wiki-support: Working
 
 ## English
 
-*Group G, and the only page in it. Stands on [[04-robotics/robot-systems-deployment|10. Robot Systems]] and [[02-foundations/ml-practice|ML Practice]].
+*Group G, and the only page in it. Stands on [[04-robotics/robot-systems-deployment|10. Robot Systems]] and [[02-foundations/ml-practice|ML Practice]], with [[04-robotics/planning-decision-making|4. Planning]] and [[02-foundations/rl-basics|7. RL Basics]] under §3.5.
 The point where a success rate stops being a sufficient answer, because someone is standing next to the machine.*
 
 When people operate, supervise, share space with, or depend on a robot, task success alone is not enough. Human–robot interaction studies authority, information, workload, trust, and performance; safety analysis asks which hazards can cause harm and how risk is reduced.
@@ -21,14 +21,14 @@ When people operate, supervise, share space with, or depend on a robot, task suc
 > This page is a literacy guide for reading research, not a certification or legal-compliance guide. Applicable laws and standards must be checked from current official sources for the specific machine, workplace, and jurisdiction.
 
 > [!note] Prerequisites
-> [[02-foundations/ml-practice|ML Practice & Evaluation]] · [[04-robotics/robot-systems-deployment|Robot Systems]] — §9 connects onward to [[05-construction-robotics/index|Construction Robotics]] (the next track, not a prerequisite).
+> [[02-foundations/lab-plants|0.6 Lab Plants]] (plant P2) · [[02-foundations/ml-practice|ML Practice & Evaluation]] · [[04-robotics/robot-systems-deployment|Robot Systems]]. For §3.5: [[04-robotics/planning-decision-making|4. Planning]] (the POMDP and belief update of its §7), [[02-foundations/rl-basics|7. RL Basics]] (the noisy-rational expert and inverse RL of its §11), the multivariable chain rule of [[02-foundations/calculus-backprop|2. Calculus §2]] and the optimality conditions of [[02-foundations/optimization|4. Optimization §3]]; the Stackelberg game and the implicit differentiation §3.5 uses are taught there, on this page. §9 connects onward to [[05-construction-robotics/index|Construction Robotics]] (the next track, not a prerequisite).
 
 > [!note] First pass · 처음이라면
-> Read the running object and the worked case below — they are the one calculation this page owes you — then §1 and §2, where most confusion in this literature is one of these two spectra being collapsed, then §6 for the safety vocabulary, then §10, which works one interpretation end to end.
+> Read the running object, the picture and the worked case below — they are the one calculation this page owes you — then §1 and §2, where most confusion in this literature is one of these two spectra being collapsed, then §6 for the safety vocabulary, then §10, which works one interpretation end to end. Second pass: §3 and §3.5 (shared control, and the human as a model inside the robot's decision — the page's one mathematical section, with its own prerequisites above), §4–§5 (human performance, interfaces) and §7–§9 (study design, evaluation, the construction context).
 
 ### Running object: the P2 safety cell
 
-**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the planar 2R arm, $L_1 = L_2 = 1$ m — carrying a tool, at the pose $\theta = (0^\circ, 90^\circ)$ where the tip sits at $(1,1)$ m and seats the tool on a panel. The arm stands in a cell that one operator may walk into while it works. The numbers below are the ones §6's example already uses, with the reaction time split one step finer so that the detector is visible as its own term.
+**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the planar 2R arm, $L_1 = L_2 = 1$ m — carrying a tool, at the pose $\theta = (0^\circ, 90^\circ)$ where the tip sits at $(1,1)$ m and seats the tool on a panel. The arm stands in a cell that one operator may walk into while it works. The numbers below are the ones §6's example already uses, with the reaction time split one step finer so that the detector is visible as its own term. That split feeds only the picture's clock and the problem set's slower-detector question; every $S_p$ formula on the page, from the Worked case to §6, uses only the sum $T_r$.
 
 | Symbol | Value | What it is |
 |---|---:|---|
@@ -231,7 +231,7 @@ The blend of §3 sets by hand how much the human is trusted; the methods below p
 
 $$P(u \mid x, g) = \frac{\exp\big(\beta\,Q_g(x,u)\big)}{\sum_{u'}\exp\big(\beta\,Q_g(x,u')\big)}, \qquad b'(g) \propto b(g)\,P(u \mid x, g)$$
 
-$Q_g(x,u)$ is the value of command $u$ for someone heading to $g$ (a negative cost-to-go), and $\beta$ is how rational the user is assumed to be. This noisy-rational model is the same exponential model that [[02-foundations/rl-basics|RL Basics §11]] calls a noisy expert, here applied to one command, and since better commands are exponentially more likely but never certain, one sloppy input moves the belief without flipping it.
+$Q_g(x,u)$ is the value of command $u$ for someone heading to $g$ (a negative cost-to-go), and $\beta$ is how rational the user is assumed to be. This noisy-rational model is the same exponential model that [[02-foundations/rl-robot-learning|RL for Robot Learning §6]] calls a noisy expert, here applied to one command, and since better commands are exponentially more likely but never certain, one sloppy input moves the belief without flipping it.
 
 Exact planning over beliefs is intractable, so the paper uses **hindsight optimisation**, the QMDP approximation:
 
@@ -253,18 +253,25 @@ Each robot action $a$ is scored as if the goal would be revealed right after it.
 >
 > **The reading this gives you.** The ratio $e^{2\beta}$ per command holds only because the two goals' normalisers are equal here; in general they differ and must be computed, so check that a paper's likelihood is normalised per goal.
 
-**Interaction as a game.** When the human reacts to the robot, the robot's action changes what the human will do, so the planner should optimise through that response. Sadigh, Sastry, Seshia & Dragan (RSS 2016) cast driving next to a human as a Stackelberg (leader–follower) game over a short receding horizon:
+**Interaction as a game.** When the human reacts to the robot, the robot's action changes what the human will do, so the planner should optimise through that response. A **Stackelberg game** is a two-player game with an order of play: the *leader* commits to an action first, the *follower* observes it and plays a **best response**, an action that maximises the follower's own reward given the leader's, and the leader chooses knowing that response is coming. *Non-example:* a simultaneous game, in which neither player sees the other's action before choosing, so the leader has no response to optimise through. Sadigh, Sastry, Seshia & Dragan (RSS 2016) cast driving next to a human as a Stackelberg game over a short receding horizon, with the robot as leader:
 
 $$u_R^* = \arg\max_{u_R} R_R\big(x, u_R, u_H^*(x, u_R)\big), \qquad u_H^*(x, u_R) = \arg\max_{u_H} R_H(x, u_R, u_H)$$
 
-The robot leads because the human is assumed to see its planned controls over the horizon: the human can then only respond to them, while the robot picks its controls knowing that response is coming. $R_H$ is learned from driving data by inverse RL, which recovers a reward from demonstrated behaviour ([[02-foundations/rl-basics|RL Basics §11]]), and treated as a deterministic best response. To optimise with gradients, note that $\partial R_H/\partial u_H = 0$ holds at $u_H^*$ for every $u_R$. Differentiating that identity in $u_R$, with the chain rule running through $u_H^*(u_R)$, gives $\frac{\partial^2 R_H}{\partial u_H^2}\frac{\partial u_H^*}{\partial u_R} + \frac{\partial^2 R_H}{\partial u_H\,\partial u_R} = 0$; solving for the slope, and feeding it into the robot's total derivative, gives
+The robot leads because the human is assumed to see its planned controls over the horizon: the human can then only respond to them, while the robot picks its controls knowing that response is coming. $R_H$ is learned from driving data by inverse RL, which recovers a reward from demonstrated behaviour ([[02-foundations/rl-robot-learning|RL for Robot Learning §6]]), and treated as a deterministic best response.
 
+**The gradient through the human's response, in three steps.** To optimise $u_R$ with gradients the robot needs the slope $\partial u_H^*/\partial u_R$, yet it never has $u_H^*$ as a formula, only as the solution of an optimisation. **Implicit differentiation** gets the slope anyway, by differentiating the equation that defines $u_H^*$ instead of $u_H^*$ itself.
+
+1. *The defining equation.* At an interior maximum the gradient in the maximising variable vanishes (the first-order condition of [[02-foundations/optimization|4. Optimization §3]]), so for every $u_R$
+$$\frac{\partial R_H}{\partial u_H}\big(x,\,u_R,\,u_H^*(x,u_R)\big)=0$$
+2. *Differentiate both sides in $u_R$.* The left side depends on $u_R$ twice, directly and through $u_H^*$, so the chain rule ([[02-foundations/calculus-backprop|2. Calculus §2]]) gives two terms, while the right side stays zero:
+$$\frac{d}{du_R}\Big[\frac{\partial R_H}{\partial u_H}\Big]=\frac{\partial^2 R_H}{\partial u_H\,\partial u_R}+\frac{\partial^2 R_H}{\partial u_H^2}\,\frac{\partial u_H^*}{\partial u_R}=0$$
+3. *Solve for the slope and feed it into the robot's objective.* Move the mixed term across and multiply by the inverse of the Hessian $\partial^2R_H/\partial u_H^2$; the robot's total derivative is the chain rule once more, since $R_R$ too depends on $u_R$ directly and through $u_H^*$:
 $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H^2}\Big)^{-1}\frac{\partial^2 R_H}{\partial u_H\,\partial u_R}, \qquad \frac{dR_R}{du_R} = \frac{\partial R_R}{\partial u_R} + \frac{\partial R_R}{\partial u_H}\,\frac{\partial u_H^*}{\partial u_R}$$
 
-so the chain rule needs second derivatives of $R_H$ at its optimum, not a derivative through the inner solver. That requires $R_H$ smooth, an interior optimum, and an invertible Hessian. Unscripted behaviours emerge: the autonomous car nudges in front of a human-driven car so that it slows, or backs up at an intersection so the human crosses first. A follow-up (Sadigh et al., IROS 2016) adds the drop in belief entropy about the driver's type to $R_R$, so the car inches forward to learn whether the driver is attentive. The risk is that the model does double duty: a nudge is efficient only if $R_H$ is right, and people are not deterministic optimisers — they adapt to a robot that keeps pushing.
+So the gradient needs second derivatives of $R_H$ at its optimum, not a derivative through the inner solver. The steps hold under the conditions of the implicit function theorem, and they are the ones to check in a paper: $R_H$ twice continuously differentiable, the optimum interior (step 1), and the Hessian invertible there (step 3). The second-order sufficient condition of [[02-foundations/optimization|4. Optimization §3]], read for a maximum as a negative-definite Hessian, guarantees the last. With vector controls the Hessian is a square matrix over the components of $u_H$ and the mixed term has one column per component of $u_R$; the formulas do not change. Unscripted behaviours emerge: the autonomous car nudges in front of a human-driven car so that it slows, or backs up at an intersection so the human crosses first. A follow-up (Sadigh et al., IROS 2016) adds the drop in belief entropy about the driver's type to $R_R$, so the car inches forward to learn whether the driver is attentive. The risk is that the model does double duty: a nudge is efficient only if $R_H$ is right, and people are not deterministic optimisers — they adapt to a robot that keeps pushing.
 
 > [!example] Worked example · 계산 예제
-> **A scalar Stackelberg game.** Human reward $R_H = -u_H^2 + (2 - u_R)\,u_H$, so the best response is $u_H^* = 1 - 0.5\,u_R$: the further the robot moves in, the more the human slows. The implicit formula gives $-(-2)^{-1}(-1) = -0.5$, the same slope. Robot reward $R_R = -(u_R - 1)^2 - 2u_H^2$: stay near its own target 1 and keep the human slow.
+> **A scalar Stackelberg game.** Human reward $R_H = -u_H^2 + (2 - u_R)\,u_H$, so the best response is $u_H^* = 1 - 0.5\,u_R$: the further the robot moves in, the more the human slows. Here $\partial^2R_H/\partial u_H^2=-2$ and $\partial^2R_H/\partial u_H\partial u_R=-1$, so step 2 reads $-1+(-2)\,\partial u_H^*/\partial u_R=0$ and step 3 gives $-(-2)^{-1}(-1) = -0.5$, the same slope. Robot reward $R_R = -(u_R - 1)^2 - 2u_H^2$: stay near its own target 1 and keep the human slow.
 >
 > - Treating $u_H$ as fixed, the robot picks $u_R = 1$; the human answers $u_H = 0.5$, and $R_R = -0.5$.
 > - Through the response, $dR_R/du_R = 4 - 3u_R$ (1.0 at $u_R = 1$, matching a finite difference), so $u_R^* = 4/3$, $u_H = 1/3$, $R_R = -1/3$.
@@ -500,7 +507,7 @@ A procurement decision has landed on the cell. The new person-tracker is cheaper
 
 ## 한국어
 
-*G군이고 그 안의 유일한 페이지다. [[04-robotics/robot-systems-deployment|10. 로봇 시스템]]과 [[02-foundations/ml-practice|ML 실무]] 위에 선다.
+*G군이고 그 안의 유일한 페이지다. [[04-robotics/robot-systems-deployment|10. 로봇 시스템]]과 [[02-foundations/ml-practice|ML 실무]] 위에 서고, §3.5 밑에는 [[04-robotics/planning-decision-making|4. 계획]]과 [[02-foundations/rl-basics|7. RL 기초]]가 있다.
 기계 옆에 사람이 서 있기 때문에 성공률이 더는 충분한 답이 아니게 되는 지점이다.*
 
 사람이 로봇을 조작·감독하거나, 공간을 공유하거나, 로봇에 의존할 때 과제 성공만으로는
@@ -517,14 +524,14 @@ A procurement decision has landed on the cell. The new person-tracker is cheaper
 > 기계·작업장·관할권에 적용되는 법과 표준은 최신 공식 출처에서 확인해야 한다.
 
 > [!note] 선수 지식
-> [[02-foundations/ml-practice|ML 실무와 평가]] · [[04-robotics/robot-systems-deployment|로봇 시스템]] — §9는 [[05-construction-robotics/index|건설로봇]](다음 트랙, 선수 지식 아님)으로 이어진다.
+> [[02-foundations/lab-plants|0.6 Lab Plants]](플랜트 P2) · [[02-foundations/ml-practice|ML 실무와 평가]] · [[04-robotics/robot-systems-deployment|로봇 시스템]]. §3.5에는 [[04-robotics/planning-decision-making|4. 계획]](그 §7의 POMDP와 믿음 갱신), [[02-foundations/rl-basics|7. RL 기초]](그 §11의 noisy-rational 전문가와 역강화학습), [[02-foundations/calculus-backprop|2. 미적분 §2]]의 다변수 연쇄 법칙, [[02-foundations/optimization|4. 최적화 §3]]의 최적성 조건이 필요하다. §3.5가 쓰는 Stackelberg 게임과 암묵 미분은 이 페이지의 그 자리에서 가르친다. §9는 [[05-construction-robotics/index|건설로봇]](다음 트랙, 선수 지식 아님)으로 이어진다.
 
 > [!note] 처음이라면 · First pass
-> 먼저 아래의 계속 쓰는 대상과 끝까지 계산해 보는 예제 — 이 페이지가 독자에게 빚진 계산은 그 하나다 — 그다음 §1과 §2, 이 문헌의 혼란 대부분이 이 두 스펙트럼 중 하나를 뭉갠 것이다, 그다음 §6의 안전 어휘, 그다음 한 해석을 끝까지 해 보는 §10.
+> 먼저 아래의 계속 쓰는 대상, 그림, 끝까지 계산해 보는 예제 — 이 페이지가 독자에게 빚진 계산은 그 하나다 — 그다음 §1과 §2, 이 문헌의 혼란 대부분이 이 두 스펙트럼 중 하나를 뭉갠 것이다, 그다음 §6의 안전 어휘, 그다음 한 해석을 끝까지 해 보는 §10. 2차 통과: §3과 §3.5(공유 제어, 그리고 로봇의 결정 안에 든 사람 모델 — 이 페이지에서 유일하게 수학적인 절이고, 위에 따로 적은 선수 지식이 필요하다), §4~§5(인간 성능, 인터페이스), §7~§9(연구 설계, 평가, 건설 맥락).
 
 ### 계속 쓰는 대상: P2 안전 셀
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2** — 평면 2R 팔, $L_1 = L_2 = 1$ m — 가 도구를 들고 $\theta = (0^\circ, 90^\circ)$ 자세에 있다. 말단은 $(1,1)$ m에서 패널에 도구를 안착시킨다. 팔은 작업 중에도 작업자 한 명이 걸어 들어올 수 있는 셀 안에 서 있다. 아래 숫자는 §6 예제가 이미 쓰는 것과 같고, 검출기가 자기 항으로 보이도록 반응 시간만 한 단계 더 쪼갰다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2** — 평면 2R 팔, $L_1 = L_2 = 1$ m — 가 도구를 들고 $\theta = (0^\circ, 90^\circ)$ 자세에 있다. 말단은 $(1,1)$ m에서 패널에 도구를 안착시킨다. 팔은 작업 중에도 작업자 한 명이 걸어 들어올 수 있는 셀 안에 서 있다. 아래 숫자는 §6 예제가 이미 쓰는 것과 같고, 검출기가 자기 항으로 보이도록 반응 시간만 한 단계 더 쪼갰다. 이 쪼갬은 그림의 시계와 과제의 느려진 검출기 질문에만 쓰인다. 계산 절부터 §6까지 이 페이지의 모든 $S_p$ 식은 합 $T_r$만 쓴다.
 
 | 기호 | 값 | 뜻 |
 |---|---:|---|
@@ -729,7 +736,7 @@ $$\frac{\partial S_p}{\partial T_r} = v_h + v_r = 2.6\ \mathrm{m/s}, \qquad \fra
 
 $$P(u \mid x, g) = \frac{\exp\big(\beta\,Q_g(x,u)\big)}{\sum_{u'}\exp\big(\beta\,Q_g(x,u')\big)}, \qquad b'(g) \propto b(g)\,P(u \mid x, g)$$
 
-$Q_g(x,u)$는 $g$로 가려는 사람에게 명령 $u$가 갖는 가치(음의 cost-to-go)이고, $\beta$는 사용자가 얼마나 합리적이라고 가정하는지다. 이 noisy-rational 모델은 [[02-foundations/rl-basics|RL 기초 §11]]이 noisy expert라고 부르는 바로 그 지수형 모델을 명령 하나에 적용한 것이다. 더 좋은 명령일수록 지수적으로 더 그럴듯하지만 확실하지는 않기 때문에, 엉성한 입력 하나는 믿음을 움직일 뿐 뒤집지 않는다.
+$Q_g(x,u)$는 $g$로 가려는 사람에게 명령 $u$가 갖는 가치(음의 cost-to-go)이고, $\beta$는 사용자가 얼마나 합리적이라고 가정하는지다. 이 noisy-rational 모델은 [[02-foundations/rl-robot-learning|로봇 학습을 위한 RL §6]]이 noisy expert라고 부르는 바로 그 지수형 모델을 명령 하나에 적용한 것이다. 더 좋은 명령일수록 지수적으로 더 그럴듯하지만 확실하지는 않기 때문에, 엉성한 입력 하나는 믿음을 움직일 뿐 뒤집지 않는다.
 
 믿음 위의 정확한 계획은 계산 불가능하므로 이 논문은 **hindsight optimization**, 곧 QMDP 근사를 쓴다:
 
@@ -751,18 +758,25 @@ $$Q(b, a) \approx \sum_g b(g)\,Q_g(x, a)$$
 >
 > **여기서 얻는 독법.** 명령 하나당 비율 $e^{2\beta}$는 여기서 두 목표의 정규화 상수가 같기 때문에만 성립한다. 일반적으로는 다르므로 계산해야 한다. 논문의 우도가 목표별로 정규화됐는지 확인하라.
 
-**게임으로서의 상호작용.** 사람이 로봇에 반응하면 로봇의 행동이 사람이 할 일을 바꾸므로, 플래너는 그 반응을 거쳐 최적화해야 한다. Sadigh, Sastry, Seshia & Dragan(RSS 2016)은 사람 옆에서의 주행을 짧은 receding horizon 위의 Stackelberg(선도자–추종자) 게임으로 세운다:
+**게임으로서의 상호작용.** 사람이 로봇에 반응하면 로봇의 행동이 사람이 할 일을 바꾸므로, 플래너는 그 반응을 거쳐 최적화해야 한다. **Stackelberg 게임**은 두 사람이 순서를 두고 하는 게임이다. *선도자*가 먼저 행동을 확정하고, *추종자*는 그것을 본 뒤 **최적 반응**(best response), 곧 선도자의 행동이 주어졌을 때 자기 보상을 최대로 하는 행동을 두며, 선도자는 그 반응이 올 것을 알고 고른다. *비예:* 동시 게임. 어느 쪽도 고르기 전에 상대의 행동을 보지 못하므로, 선도자가 거쳐서 최적화할 반응이 없다. Sadigh, Sastry, Seshia & Dragan(RSS 2016)은 사람 옆에서의 주행을 짧은 receding horizon 위의 Stackelberg 게임으로 세우고, 로봇을 선도자로 둔다:
 
 $$u_R^* = \arg\max_{u_R} R_R\big(x, u_R, u_H^*(x, u_R)\big), \qquad u_H^*(x, u_R) = \arg\max_{u_H} R_H(x, u_R, u_H)$$
 
-사람이 horizon 동안 로봇의 계획된 제어를 본다고 가정하기 때문에 로봇이 선도자다: 그러면 사람은 그 제어에 반응할 수밖에 없고, 로봇은 그 반응이 올 것을 알고 제어를 고른다. $R_H$는 주행 데이터에서 역강화학습 — 시연된 행동으로부터 보상을 복원하는 방법([[02-foundations/rl-basics|RL 기초 §11]]) — 으로 배우고, 결정론적 최적 반응으로 취급한다. 경사로 최적화하려면, $u_H^*$에서 $\partial R_H/\partial u_H = 0$이 모든 $u_R$에 대해 성립한다는 점을 쓴다. 그 항등식을 $u_R$로 미분하면, 연쇄 법칙이 $u_H^*(u_R)$를 거쳐 $\frac{\partial^2 R_H}{\partial u_H^2}\frac{\partial u_H^*}{\partial u_R} + \frac{\partial^2 R_H}{\partial u_H\,\partial u_R} = 0$을 주고, 이를 기울기에 대해 풀고 로봇의 전미분에 넣으면 다음과 같다.
+사람이 horizon 동안 로봇의 계획된 제어를 본다고 가정하기 때문에 로봇이 선도자다: 그러면 사람은 그 제어에 반응할 수밖에 없고, 로봇은 그 반응이 올 것을 알고 제어를 고른다. $R_H$는 주행 데이터에서 역강화학습 — 시연된 행동으로부터 보상을 복원하는 방법([[02-foundations/rl-robot-learning|로봇 학습을 위한 RL §6]]) — 으로 배우고, 결정론적 최적 반응으로 취급한다.
 
+**사람의 반응을 거치는 경사, 세 단계로.** 경사로 $u_R$을 최적화하려면 로봇에게 기울기 $\partial u_H^*/\partial u_R$가 필요하지만, 로봇은 $u_H^*$를 식으로 가진 적이 없고 최적화의 해로만 가진다. **암묵 미분**(implicit differentiation)은 $u_H^*$ 자체가 아니라 $u_H^*$를 정의하는 방정식을 미분해서 그래도 기울기를 얻는다.
+
+1. *정의하는 방정식.* 내부 최댓점에서는 최대화하는 변수에 대한 경사가 0이므로([[02-foundations/optimization|4. 최적화 §3]]의 1계 조건), 모든 $u_R$에 대해
+$$\frac{\partial R_H}{\partial u_H}\big(x,\,u_R,\,u_H^*(x,u_R)\big)=0$$
+2. *양변을 $u_R$로 미분한다.* 좌변은 $u_R$에 두 번, 곧 직접 그리고 $u_H^*$를 거쳐 의존하므로 연쇄 법칙([[02-foundations/calculus-backprop|2. 미적분 §2]])이 두 항을 주고, 우변은 0 그대로다:
+$$\frac{d}{du_R}\Big[\frac{\partial R_H}{\partial u_H}\Big]=\frac{\partial^2 R_H}{\partial u_H\,\partial u_R}+\frac{\partial^2 R_H}{\partial u_H^2}\,\frac{\partial u_H^*}{\partial u_R}=0$$
+3. *기울기에 대해 풀고 로봇의 목적함수에 넣는다.* 혼합 항을 넘기고 헤시안 $\partial^2R_H/\partial u_H^2$의 역을 곱한다. $R_R$도 $u_R$에 직접 그리고 $u_H^*$를 거쳐 의존하므로 로봇의 전미분은 다시 한 번 연쇄 법칙이다:
 $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H^2}\Big)^{-1}\frac{\partial^2 R_H}{\partial u_H\,\partial u_R}, \qquad \frac{dR_R}{du_R} = \frac{\partial R_R}{\partial u_R} + \frac{\partial R_R}{\partial u_H}\,\frac{\partial u_H^*}{\partial u_R}$$
 
-이므로 연쇄 법칙에는 내부 풀이기를 거친 미분이 아니라 최적점에서 $R_H$의 2계 도함수만 필요하다. 이를 위해 $R_H$가 매끄럽고, 최적점이 내부에 있고, 헤시안이 가역이어야 한다. 아무도 스크립트하지 않은 행동이 나온다. 자율주행차가 사람이 모는 차 앞으로 비집고 들어가 그 차를 늦추거나, 교차로에서 살짝 후진해 사람이 먼저 건너게 한다. 후속 연구(Sadigh et al., IROS 2016)는 운전자 유형에 대한 믿음의 엔트로피 감소를 $R_R$에 더해, 차가 조금씩 앞으로 나가며 운전자가 주의하고 있는지 알아내게 한다. 위험은 모델이 두 가지 일을 한다는 데 있다. 비집고 들어가기는 $R_H$가 맞을 때만 효율적이고, 사람은 결정론적 최적화기가 아니며 계속 밀어붙이는 로봇에 적응한다.
+그러므로 경사에는 내부 풀이기를 거친 미분이 아니라 최적점에서 $R_H$의 2계 도함수만 필요하다. 이 단계들은 암묵 함수 정리의 조건 아래에서 성립하고, 논문에서 확인할 것도 바로 그 조건들이다. $R_H$가 두 번 연속 미분 가능하고, 최적점이 내부에 있고(1단계), 거기서 헤시안이 가역이어야 한다(3단계). 마지막 것은 최댓점에 대해 음의 정부호 헤시안으로 읽은 [[02-foundations/optimization|4. 최적화 §3]]의 2계 충분 조건이 보장한다. 제어가 벡터라면 헤시안은 $u_H$의 성분들 위의 정사각 행렬이고 혼합 항은 $u_R$의 성분마다 열 하나를 가진다. 식은 바뀌지 않는다. 아무도 스크립트하지 않은 행동이 나온다. 자율주행차가 사람이 모는 차 앞으로 비집고 들어가 그 차를 늦추거나, 교차로에서 살짝 후진해 사람이 먼저 건너게 한다. 후속 연구(Sadigh et al., IROS 2016)는 운전자 유형에 대한 믿음의 엔트로피 감소를 $R_R$에 더해, 차가 조금씩 앞으로 나가며 운전자가 주의하고 있는지 알아내게 한다. 위험은 모델이 두 가지 일을 한다는 데 있다. 비집고 들어가기는 $R_H$가 맞을 때만 효율적이고, 사람은 결정론적 최적화기가 아니며 계속 밀어붙이는 로봇에 적응한다.
 
 > [!example] 계산 예제 · Worked example
-> **스칼라 Stackelberg 게임.** 사람 보상 $R_H = -u_H^2 + (2 - u_R)\,u_H$이면 최적 반응은 $u_H^* = 1 - 0.5\,u_R$이다. 로봇이 더 들어올수록 사람은 더 늦춘다. 암묵 미분 공식은 $-(-2)^{-1}(-1) = -0.5$로 같은 기울기를 준다. 로봇 보상 $R_R = -(u_R - 1)^2 - 2u_H^2$: 자기 목표 1 근처에 머물고 사람을 느리게 둔다.
+> **스칼라 Stackelberg 게임.** 사람 보상 $R_H = -u_H^2 + (2 - u_R)\,u_H$이면 최적 반응은 $u_H^* = 1 - 0.5\,u_R$이다. 로봇이 더 들어올수록 사람은 더 늦춘다. 여기서 $\partial^2R_H/\partial u_H^2=-2$, $\partial^2R_H/\partial u_H\partial u_R=-1$이므로 2단계는 $-1+(-2)\,\partial u_H^*/\partial u_R=0$이 되고, 3단계는 $-(-2)^{-1}(-1) = -0.5$로 같은 기울기를 준다. 로봇 보상 $R_R = -(u_R - 1)^2 - 2u_H^2$: 자기 목표 1 근처에 머물고 사람을 느리게 둔다.
 >
 > - $u_H$를 고정으로 취급하면 로봇은 $u_R = 1$을 고르고, 사람은 $u_H = 0.5$로 답하며 $R_R = -0.5$다.
 > - 반응을 거치면 $dR_R/du_R = 4 - 3u_R$($u_R = 1$에서 1.0, 유한 차분과 일치)이므로 $u_R^* = 4/3$, $u_H = 1/3$, $R_R = -1/3$이다.

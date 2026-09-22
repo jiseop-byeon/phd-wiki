@@ -20,7 +20,7 @@ mastery-when: "Raise to Mastery only if the thesis contribution is itself an alg
 Almost every coding interview ends with "what is the time and space complexity?", and a research-lab interview adds "why is this slow on the real data?". Both questions have the same answer: count how many times the dominant operation runs as a function of the input size, and say which case you are counting. This page gives you the vocabulary (O, Ω, Θ), the three counting tools (loops, recurrences, amortization), and the one search pattern — backtracking — that turns "try everything" into correct code.
 
 > [!note] First pass · 처음이라면
-> Read §1, §2 and §7 first: they are what you will say out loud in every interview. §3 and §4 are needed the first time a recursion or a growing array appears in your answer. §5 and §6 are the code patterns — practise them from a blank file.
+> Read §1, §2 and §7 first: they are what you will say out loud in every interview. In §1, skip the block "P, NP, NP-hard, and pseudo-polynomial time" on a first pass and return to it when 11.4 or 11.5 calls a problem NP-hard. §3 and §4 are needed the first time a recursion or a growing array appears in your answer. §5 and §6 are the code patterns — practise them from a blank file.
 
 ### 1. What an interviewer means by "efficient"
 
@@ -36,7 +36,7 @@ The average case needs a probability distribution $D_n$ over the inputs of size 
 $$T_{\text{avg}}(n) = \mathbb{E}_{x \sim D_n}[\text{cost}(x)], \qquad T_{\text{exp}}(n) = \max_{x \in I_n} \mathbb{E}_{r}[\text{cost}(x, r)]$$
 Example: insertion sort (§2) does one shift per *inversion*, a pair of positions $i < j$ holding $x_i > x_j$. For $n = 4$ the reversed input has $4 \cdot 3 / 2 = 6$ inversions, so $T_{\text{worst}}(4) = 6$ shifts; over all $24$ orderings taken as equally likely the mean is $3 = n(n-1)/4$, so $T_{\text{avg}}(4) = 3$. An average is only as meaningful as its distribution: sensor logs that arrive nearly sorted are not uniformly random orderings.
 
-**The doubling check.** Growth rates make a testable prediction: what happens to the running time when $n$ doubles. Measure the time at $n$ and at $2n$; the ratio tells you the class.
+**The doubling check.** Growth rates make a testable prediction: what happens to the running time when $n$ doubles. Measure the time at $n$ and at $2n$; the ratio tells you the class. Until §2 defines them exactly, read $\Theta(g)$ as "grows like $g$, up to a constant factor, once $n$ is large" and $O(g)$ as "grows no faster than $g$": $3n^2 + 40n + 7$ is $\Theta(n^2)$ and also $O(n^3)$, but not $\Theta(n^3)$.
 
 | Growth | Time when $n$ doubles |
 |---|---|
@@ -104,7 +104,7 @@ For subset sum below, $V$ adds up the certificate's numbers and compares with $T
 > [!example] Worked example · 계산 예제
 > **Subset sum** (NP-complete; Karp 1972): do some of the numbers $\{3, 34, 4, 12, 5, 2\}$ add up to exactly $T = 9$?
 > - *Why it is in NP.* The certificate $\{4, 5\}$ is checked with one addition, $4 + 5 = 9$. Finding a certificate is the hard part: trying every subset means $2^6 = 64$ candidates here, and $2^n$ in general.
-> - *A pseudo-polynomial algorithm.* A DP in the style of the knapsack table in 11.5 fills a yes/no table with one row per number and one column per target $0, 1, \dots, T$. That is $6 \times 10 = 60$ cells, $O(nT)$ time, and it answers yes ($\{4, 5\}$ and $\{3, 4, 2\}$ both work).
+> - *A pseudo-polynomial algorithm.* A dynamic program (DP: a table in which each entry is computed once from entries for smaller inputs; the knapsack table of [[02-foundations/algorithms/dynamic-programming|11.5]] is one) fills a yes/no table with one row per number and one column per target $0, 1, \dots, T$. Cell $(i, t)$ answers "do some of the first $i$ numbers sum to $t$?", and it is yes when cell $(i-1, t)$ is, or when cell $(i-1, t - x_i)$ is, with $x_i$ the $i$-th number. That is $6 \times 10 = 60$ cells, $O(nT)$ time, and it answers yes ($\{4, 5\}$ and $\{3, 4, 2\}$ both work).
 > - *Why that does not prove P = NP.* Change the target to $T = 10^9$. The input barely grows, since $10^9$ needs 30 bits where $9$ needed 4, but the table grows to $6 \times (10^9 + 1) \approx 6 \times 10^9$ cells, while brute force is still 64 subsets. The DP is fast when $T$ is small, not when the input is short.
 
 ### 2. Big-O, Ω, Θ precisely, and reading loops
@@ -190,6 +190,68 @@ print(triangle(10), halvings(1024), longest_window([2, 1, 3, 1, 1, 4], 5))  # 45
 
 Start with merge sort ([[02-foundations/algorithms/sorting-divide-conquer|11.3 §2]] builds it in full): to sort $n$ elements it sorts two halves recursively and then spends about $n$ steps merging them, so its cost satisfies $T(n) = 2T(n/2) + n$. An equation like this, giving the cost for size $n$ in terms of the cost of the recursive calls plus the work done outside them, is a **recurrence**. The universal way to solve one is the **recursion tree**: draw one node per call, write the non-recursive work in each node, add up each level, then add up the levels.
 
+<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="Recursion tree of T(n) = 2T(n/2) + n for n = 8: every level does 8 units of work, four levels, 32 in total.">
+  <text x="14" y="24" font-size="12" fill="currentColor" fill-opacity="0.75">level</text>
+  <text x="266" y="24" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.75">work in each node = piece size</text>
+  <text x="500" y="24" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.75">level total</text>
+  <text x="14" y="62" font-size="12" fill="currentColor">j = 0</text>
+  <rect x="251" y="47" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="266" y="62.5" font-size="12" fill="currentColor" text-anchor="middle">8</text>
+  <line x1="266" y1="69" x2="178" y2="97" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="266" y1="69" x2="354" y2="97" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="500" y="62" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">1 × 8 = 8</text>
+  <text x="14" y="112" font-size="12" fill="currentColor">j = 1</text>
+  <rect x="163" y="97" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="178" y="112.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="178" y1="119" x2="134" y2="147" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="178" y1="119" x2="222" y2="147" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <rect x="339" y="97" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="354" y="112.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="354" y1="119" x2="310" y2="147" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="354" y1="119" x2="398" y2="147" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="500" y="112" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2 × 4 = 8</text>
+  <text x="14" y="162" font-size="12" fill="currentColor">j = 2</text>
+  <rect x="119" y="147" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="134" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="134" y1="169" x2="112" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="134" y1="169" x2="156" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <rect x="207" y="147" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="222" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="222" y1="169" x2="200" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="222" y1="169" x2="244" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <rect x="295" y="147" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="310" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="310" y1="169" x2="288" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="310" y1="169" x2="332" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <rect x="383" y="147" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="398" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="398" y1="169" x2="376" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="398" y1="169" x2="420" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="500" y="162" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">4 × 2 = 8</text>
+  <text x="14" y="212" font-size="12" fill="currentColor">j = 3</text>
+  <rect x="97" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="112" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="141" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="156" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="185" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="200" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="229" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="244" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="273" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="288" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="317" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="332" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="361" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="376" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="405" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="420" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="500" y="212" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">8 × 1 = 8</text>
+  <line x1="450" y1="228" x2="550" y2="228" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"/>
+  <text x="548" y="250" font-size="12" fill="currentColor" text-anchor="end">4 levels × 8 = 32 = 8 · (log<tspan dy="3" font-size="10.2">2</tspan><tspan dy="-3" dx="3.8">8 + 1)</tspan></text>
+</svg>
+
+The recursion tree of merge sort's recurrence $T(n) = 2T(n/2) + n$ at $n = 8$, with $T(1) = 1$. Each box is one call and holds its non-recursive work, the size of its piece; level $j$ has $2^j$ calls of size $8/2^j$, so every level sums to 8, and the four levels give $32 = 8(\log_2 8 + 1)$, the total the worked example below derives.
+
 For divide-and-conquer with equal-sized pieces, the tree has a regular shape. Suppose each call on size $n$ makes $a$ recursive calls on size $n/b$ and does $O(n^d)$ work to split and combine, which in symbols is
 
 $$T(n) = a\,T(n/b) + O(n^d)$$
@@ -255,6 +317,102 @@ $$1 + 2 + 4 + \cdots + 2^k = 2^{k+1} - 1 < 2n$$
 
 A second way to see it, useful when asked to *explain* rather than sum: charge each append 3 units. One pays for writing the element; two are saved. By the time the array of capacity $m$ is full again, the $m/2$ elements added since the last resize have saved $m$ units, which is exactly what copying $m$ elements costs. The savings never go negative, so 3 per append always suffices.
 
+<svg viewBox="0 0 560 378" style="max-width:100%;height:auto" role="img" aria-label="Dynamic array doubling from capacity 1: append i costs 1 except at 2, 3, 5, 9, 17, where it also copies 1, 2, 4, 8, 16 elements; the running total 48 stays under 3i = 51.">
+  <text x="14" y="22" font-size="12" fill="currentColor" fill-opacity="0.8">cost of append i</text>
+  <line x1="52" y1="150" x2="548" y2="150" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <rect x="62" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="89.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="89.5" y="138" width="16" height="6" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="97.5" y="133" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <rect x="117" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="117" y="132" width="16" height="12" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="125" y="127" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <rect x="144.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="172" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="172" y="120" width="16" height="24" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="180" y="115" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">5</text>
+  <rect x="199.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="227" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="254.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="282" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="282" y="96" width="16" height="48" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="290" y="91" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">9</text>
+  <rect x="309.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="337" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="364.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="392" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="419.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="447" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="474.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="502" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="502" y="48" width="16" height="96" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="510" y="43" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">17</text>
+  <rect x="150" y="31" width="12" height="10" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <text x="167" y="40" font-size="11" fill="currentColor">write</text>
+  <rect x="210.6" y="31" width="12" height="10" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="227.6" y="40" font-size="11" fill="currentColor">copy all elements (full array)</text>
+  <text x="14" y="193.8" font-size="12" fill="currentColor" fill-opacity="0.8">total cost of the first i appends</text>
+  <line x1="52" y1="330" x2="548" y2="330" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="52" y1="330" x2="52" y2="205.8" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="48" y1="330" x2="52" y2="330" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="44" y="334" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">0</text>
+  <line x1="48" y1="284" x2="52" y2="284" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="44" y="288" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">20</text>
+  <line x1="48" y1="238" x2="52" y2="238" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="44" y="242" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">40</text>
+  <path d="M70 323.1 L510 212.7" stroke="currentColor" stroke-width="1.3" fill="none" stroke-opacity="0.8" stroke-dasharray="5 4" stroke-linejoin="round"/>
+  <path d="M70 327.7 L97.5 323.1 L125 316.2 L152.5 313.9 L180 302.4 L207.5 300.1 L235 297.8 L262.5 295.5 L290 274.8 L317.5 272.5 L345 270.2 L372.5 267.9 L400 265.6 L427.5 263.3 L455 261 L482.5 258.7 L510 219.6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+  <circle cx="70" cy="327.7" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="97.5" cy="323.1" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="125" cy="316.2" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="152.5" cy="313.9" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="180" cy="302.4" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="207.5" cy="300.1" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="235" cy="297.8" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="262.5" cy="295.5" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="290" cy="274.8" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="317.5" cy="272.5" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="345" cy="270.2" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="372.5" cy="267.9" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="400" cy="265.6" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="427.5" cy="263.3" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="455" cy="261" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="482.5" cy="258.7" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="510" cy="219.6" r="2.2" stroke="none" fill="currentColor"/>
+  <text x="518" y="210.7" font-size="12" fill="currentColor" font-weight="bold">51</text>
+  <text x="518" y="231.6" font-size="12" fill="currentColor" font-weight="bold">48</text>
+  <line x1="110" y1="213.8" x2="134" y2="213.8" stroke="currentColor" stroke-width="1.6"/>
+  <text x="140" y="217.8" font-size="11" fill="currentColor">actual Σ c<tspan dy="3" font-size="10">i</tspan></text>
+  <line x1="218.9" y1="213.8" x2="242.9" y2="213.8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" stroke-dasharray="5 4"/>
+  <text x="248.9" y="217.8" font-size="11" fill="currentColor">3i (charge 3 per append)</text>
+  <line x1="70" y1="330" x2="70" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="70" y="346" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="97.5" y1="330" x2="97.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="97.5" y="346" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="125" y1="330" x2="125" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="125" y="346" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="152.5" y1="330" x2="152.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="180" y1="330" x2="180" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="180" y="346" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="207.5" y1="330" x2="207.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="235" y1="330" x2="235" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="262.5" y1="330" x2="262.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="290" y1="330" x2="290" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="290" y="346" font-size="11" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="317.5" y1="330" x2="317.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="345" y1="330" x2="345" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="372.5" y1="330" x2="372.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="400" y1="330" x2="400" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="427.5" y1="330" x2="427.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="455" y1="330" x2="455" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="482.5" y1="330" x2="482.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="510" y1="330" x2="510" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="510" y="346" font-size="11" fill="currentColor" text-anchor="middle">17</text>
+  <text x="300" y="364" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">append i</text>
+</svg>
+
+Seventeen appends into the doubling `DynamicArray` of the code below, starting at capacity 1. Appends 2, 3, 5, 9 and 17 find the array full and copy 1, 2, 4, 8 and 16 elements, so they cost 2, 3, 5, 9 and 17; every other append costs 1. The running total, 48 after 17 appends, stays under the 3 per append that the charging argument allows ($3 \cdot 17 = 51$).
+
 **The accounting and potential methods, stated as contracts.** Give operation $i$ a charge $\hat c_i$. The charges are valid when, on every sequence and at every prefix length $k$, the total charged never falls below the total actually spent, so the saved credit never goes negative:
 $$\sum_{i=1}^{k} \hat c_i \ge \sum_{i=1}^{k} c_i \quad \text{for all } k$$
 The **potential method** keeps that credit as a function $\Phi$ of the structure's state $D_i$ after operation $i$, and defines each charge as actual cost plus the change in potential:
@@ -312,7 +470,7 @@ for i in range(300):
 print(resizes)                        # gaps between resizes keep growing
 ```
 
-**Amortized is not worst-case per operation.** On a robot this distinction is real. A control callback that appends to a vector at 1 kHz is fast on average, but the one call that reallocates can blow the deadline. In real-time code, call `reserve(n)` (C++) or preallocate (`[0.0] * n`, a NumPy array) before the loop starts. Where callbacks run and what a missed deadline does to the rest of the system is [[04-robotics/ros2/qos-executors-time|25.5 QoS, Executors and Time §8]].
+**Amortized is not worst-case per operation.** On a robot this distinction is real. A control callback that appends to a vector at 1 kHz is fast on average, but the one call that reallocates can blow the deadline. In real-time code, call `reserve(n)` (C++) or preallocate (`[0.0] * n`, a NumPy array) before the loop starts. Where callbacks run and what a missed deadline does to the rest of the system is [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time §1]].
 
 ### 5. Recursion done right
 
@@ -412,6 +570,71 @@ def backtrack(state):
 ```
 
 Before coding, answer four questions: *What is one decision? What are the options for it? How is a choice undone? When is a solution complete?* The calls form a **decision tree**: the root is the empty partial solution, each edge is one choice, each leaf is a complete candidate.
+
+<svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="Decision tree of subsets([1, 2, 3]): each level decides one element, the left branch leaves it out and the right branch takes it; 15 calls, 8 leaves.">
+  <text x="14" y="38" font-size="12" fill="currentColor">i = 0</text>
+  <text x="14" y="53" font-size="11" fill="currentColor" fill-opacity="0.75">1 call</text>
+  <text x="14" y="100" font-size="12" fill="currentColor">i = 1</text>
+  <text x="14" y="115" font-size="11" fill="currentColor" fill-opacity="0.75">2 calls</text>
+  <text x="14" y="162" font-size="12" fill="currentColor">i = 2</text>
+  <text x="14" y="177" font-size="11" fill="currentColor" fill-opacity="0.75">4 calls</text>
+  <text x="14" y="224" font-size="12" fill="currentColor">i = 3</text>
+  <text x="14" y="239" font-size="11" fill="currentColor" fill-opacity="0.75">8 leaves</text>
+  <rect x="294.5" y="29" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="319.5" y="44.5" font-size="12" fill="currentColor" text-anchor="middle">[]</text>
+  <rect x="180.5" y="91" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205.5" y="106.5" font-size="12" fill="currentColor" text-anchor="middle">[]</text>
+  <line x1="319.5" y1="51" x2="205.5" y2="91" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="123.5" y="153" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="148.5" y="168.5" font-size="12" fill="currentColor" text-anchor="middle">[]</text>
+  <line x1="205.5" y1="113" x2="148.5" y2="153" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="95" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="120" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[]</text>
+  <line x1="148.5" y1="175" x2="120" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="152" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="177" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[3]</text>
+  <line x1="148.5" y1="175" x2="177" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="237.5" y="153" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="262.5" y="168.5" font-size="12" fill="currentColor" text-anchor="middle">[2]</text>
+  <line x1="205.5" y1="113" x2="262.5" y2="153" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="209" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="234" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[2]</text>
+  <line x1="262.5" y1="175" x2="234" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="266" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="291" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[2,3]</text>
+  <line x1="262.5" y1="175" x2="291" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="408.5" y="91" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="433.5" y="106.5" font-size="12" fill="currentColor" text-anchor="middle">[1]</text>
+  <line x1="319.5" y1="51" x2="433.5" y2="91" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="351.5" y="153" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="376.5" y="168.5" font-size="12" fill="currentColor" text-anchor="middle">[1]</text>
+  <line x1="433.5" y1="113" x2="376.5" y2="153" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="323" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="348" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[1]</text>
+  <line x1="376.5" y1="175" x2="348" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="380" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="405" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[1,3]</text>
+  <line x1="376.5" y1="175" x2="405" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="465.5" y="153" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="490.5" y="168.5" font-size="12" fill="currentColor" text-anchor="middle">[1,2]</text>
+  <line x1="433.5" y1="113" x2="490.5" y2="153" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="437" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="462" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[1,2]</text>
+  <line x1="490.5" y1="175" x2="462" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="494" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="519" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[1,2,3]</text>
+  <line x1="490.5" y1="175" x2="519" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <text x="236.5" y="75" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">skip 1</text>
+  <text x="402.5" y="75" font-size="11" fill="currentColor" fill-opacity="0.85">take 1</text>
+  <line x1="24" y1="266" x2="50" y2="266" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <text x="56" y="270" font-size="11" fill="currentColor">leave nums[i] out</text>
+  <line x1="176" y1="266" x2="202" y2="266" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <text x="208" y="270" font-size="11" fill="currentColor">take nums[i]</text>
+  <rect x="301" y="258" width="22" height="14" rx="3" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="329" y="270" font-size="11" fill="currentColor">leaf: copy recorded</text>
+</svg>
+
+The decision tree of `subsets([1, 2, 3])` from the code below, in the order the code explores it: the call at depth $i$ decides `nums[i]`, first leaving it out (dashed), then taking it (solid). The levels hold 1, 2, 4 and 8 calls, 15 in all, and each of the 8 leaves records a copy of `path`; these are the 15 calls and 8 leaves counted under "Complexity of a search tree" below.
 
 - **Subsets.** One decision per element: leave it out, or take it. The tree has $2^n$ leaves; copying each finished subset costs $O(n)$, so $\Theta(n\,2^n)$ time — unavoidable, since the output itself has that size — and $O(n)$ extra space for the path and the stack.
 - **Permutations.** Decision $i$ is which unused element goes in position $i$. There are $n!$ leaves and fewer than $e \cdot n!$ nodes in total, so $\Theta(n \cdot n!)$ time including the copies.
@@ -564,7 +787,7 @@ A complete complexity answer has five parts, and saying them in order sounds org
 코딩 인터뷰는 거의 언제나 "시간·공간 복잡도는?"으로 끝나고, 연구실 인터뷰는 "실제 데이터에서는 왜 느린가?"를 덧붙인다. 두 질문의 답은 같다. 가장 지배적인 연산이 입력 크기의 함수로 몇 번 실행되는지 세고, 어떤 경우(case)를 세었는지 말하는 것이다. 이 페이지는 그 어휘(O, Ω, Θ), 세는 도구 세 가지(반복문, 점화식, 분할상환), 그리고 "전부 시도하기"를 올바른 코드로 바꾸는 탐색 패턴 하나 — 백트래킹 — 를 준다.
 
 > [!note] 처음이라면 · First pass
-> §1, §2, §7을 먼저 읽어라. 모든 인터뷰에서 소리 내어 말하게 될 내용이다. §3과 §4는 답에 재귀나 늘어나는 배열이 처음 등장할 때 필요하다. §5와 §6은 코드 패턴이다 — 빈 파일에서 연습하라.
+> §1, §2, §7을 먼저 읽어라. 모든 인터뷰에서 소리 내어 말하게 될 내용이다. §1 안의 "P, NP, NP-난해, 의사 다항 시간" 부분은 처음에는 건너뛰고, 11.4나 11.5가 어떤 문제를 NP-난해라고 부를 때 돌아와라. §3과 §4는 답에 재귀나 늘어나는 배열이 처음 등장할 때 필요하다. §5와 §6은 코드 패턴이다 — 빈 파일에서 연습하라.
 
 ### 1. 인터뷰에서 말하는 "효율적"의 뜻
 
@@ -580,7 +803,7 @@ $$T_{\text{worst}}(n) = \max_{x \in I_n} \text{cost}(x)$$
 $$T_{\text{avg}}(n) = \mathbb{E}_{x \sim D_n}[\text{cost}(x)], \qquad T_{\text{exp}}(n) = \max_{x \in I_n} \mathbb{E}_{r}[\text{cost}(x, r)]$$
 예: 삽입 정렬(§2)은 *역전*(inversion), 즉 위치 $i < j$에 $x_i > x_j$가 놓인 쌍 하나마다 한 번 민다. $n = 4$에서 뒤집힌 입력의 역전은 $4 \cdot 3 / 2 = 6$개이므로 $T_{\text{worst}}(4) = 6$번이고, $24$가지 순서를 모두 같은 확률로 보면 평균은 $3 = n(n-1)/4$이므로 $T_{\text{avg}}(4) = 3$이다. 평균은 그 분포만큼만 의미가 있다. 거의 정렬된 채 들어오는 센서 로그는 균일한 무작위 순서가 아니다.
 
-**두 배 점검.** 증가율은 검증 가능한 예측을 준다: $n$을 두 배로 늘리면 실행 시간이 어떻게 되는가. $n$과 $2n$에서 시간을 재면 그 비율이 복잡도 부류를 알려 준다.
+**두 배 점검.** 증가율은 검증 가능한 예측을 준다: $n$을 두 배로 늘리면 실행 시간이 어떻게 되는가. $n$과 $2n$에서 시간을 재면 그 비율이 복잡도 부류를 알려 준다. §2에서 정확히 정의하기 전까지는 $\Theta(g)$를 "$n$이 크면 상수 배를 빼고 $g$처럼 자란다", $O(g)$를 "$g$보다 빨리 자라지 않는다"로 읽어라. $3n^2 + 40n + 7$은 $\Theta(n^2)$이고 $O(n^3)$이기도 하지만 $\Theta(n^3)$은 아니다.
 
 | 증가율 | $n$이 두 배일 때 시간 |
 |---|---|
@@ -648,7 +871,7 @@ $$x \in A \iff f(x) \in B$$
 > [!example] 계산 예제 · Worked example
 > **부분집합 합**(NP-완전; Karp 1972): 수 $\{3, 34, 4, 12, 5, 2\}$ 중 몇 개를 골라 합이 정확히 $T = 9$가 되게 할 수 있는가?
 > - *NP에 속하는 이유.* 증거 $\{4, 5\}$는 덧셈 한 번 $4 + 5 = 9$로 검사된다. 어려운 것은 증거를 찾는 일이다. 모든 부분집합을 시도하면 여기서는 $2^6 = 64$개, 일반적으로는 $2^n$개다.
-> - *의사 다항 알고리즘.* 11.5의 배낭 표와 같은 방식의 DP가 수마다 행 하나, 목표값 $0, 1, \dots, T$마다 열 하나인 예/아니오 표를 채운다. $6 \times 10 = 60$칸, $O(nT)$ 시간이고, 답은 예다($\{4, 5\}$와 $\{3, 4, 2\}$ 둘 다 된다).
+> - *의사 다항 알고리즘.* 동적 계획법(DP: 표의 각 칸을 더 작은 입력의 칸들로부터 한 번씩만 계산하는 방법. [[02-foundations/algorithms/dynamic-programming|11.5]]의 배낭 표가 그 예다)이 수마다 행 하나, 목표값 $0, 1, \dots, T$마다 열 하나인 예/아니오 표를 채운다. 칸 $(i, t)$는 "처음 $i$개 수 중 몇 개의 합이 $t$가 될 수 있는가?"에 답하고, 칸 $(i-1, t)$가 예이거나 칸 $(i-1, t - x_i)$가 예이면 예다. $x_i$는 $i$번째 수다. $6 \times 10 = 60$칸, $O(nT)$ 시간이고, 답은 예다($\{4, 5\}$와 $\{3, 4, 2\}$ 둘 다 된다).
 > - *그래도 P = NP가 증명되지 않는 이유.* 목표를 $T = 10^9$로 바꾸자. $9$는 4비트, $10^9$는 30비트이므로 입력은 거의 늘지 않지만, 표는 $6 \times (10^9 + 1) \approx 6 \times 10^9$칸으로 커진다. 전수 조사는 여전히 부분집합 64개다. DP가 빠른 조건은 입력이 짧은 것이 아니라 $T$가 작은 것이다.
 
 ### 2. Big-O, Ω, Θ의 정확한 뜻과 반복문 읽기
@@ -734,6 +957,68 @@ print(triangle(10), halvings(1024), longest_window([2, 1, 3, 1, 1, 4], 5))  # 45
 
 병합 정렬부터 보자([[02-foundations/algorithms/sorting-divide-conquer|11.3 §2]]에서 완전히 만든다). $n$개 원소를 정렬하려고 두 절반을 재귀로 정렬한 뒤 병합하는 데 약 $n$단계를 쓰므로, 비용은 $T(n) = 2T(n/2) + n$을 만족한다. 이처럼 크기 $n$의 비용을 재귀 호출들의 비용과 그 바깥에서 하는 일의 합으로 쓴 식이 점화식(**recurrence**)이다. 점화식을 푸는 만능 방법은 재귀 트리(**recursion tree**)다. 호출마다 노드를 하나 그리고, 각 노드에 재귀가 아닌 일의 양을 적고, 층마다 더한 뒤 층들을 더한다.
 
+<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="n = 8에서 T(n) = 2T(n/2) + n의 재귀 트리. 모든 층의 일이 8이고 층이 넷이라 합은 32다.">
+  <text x="14" y="24" font-size="12" fill="currentColor" fill-opacity="0.75">층</text>
+  <text x="266" y="24" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.75">노드마다 일 = 조각 크기</text>
+  <text x="500" y="24" font-size="12" fill="currentColor" text-anchor="middle" fill-opacity="0.75">층 합계</text>
+  <text x="14" y="62" font-size="12" fill="currentColor">j = 0</text>
+  <rect x="251" y="47" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="266" y="62.5" font-size="12" fill="currentColor" text-anchor="middle">8</text>
+  <line x1="266" y1="69" x2="178" y2="97" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="266" y1="69" x2="354" y2="97" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="500" y="62" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">1 × 8 = 8</text>
+  <text x="14" y="112" font-size="12" fill="currentColor">j = 1</text>
+  <rect x="163" y="97" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="178" y="112.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="178" y1="119" x2="134" y2="147" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="178" y1="119" x2="222" y2="147" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <rect x="339" y="97" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="354" y="112.5" font-size="12" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="354" y1="119" x2="310" y2="147" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="354" y1="119" x2="398" y2="147" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="500" y="112" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2 × 4 = 8</text>
+  <text x="14" y="162" font-size="12" fill="currentColor">j = 2</text>
+  <rect x="119" y="147" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="134" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="134" y1="169" x2="112" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="134" y1="169" x2="156" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <rect x="207" y="147" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="222" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="222" y1="169" x2="200" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="222" y1="169" x2="244" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <rect x="295" y="147" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="310" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="310" y1="169" x2="288" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="310" y1="169" x2="332" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <rect x="383" y="147" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="398" y="162.5" font-size="12" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="398" y1="169" x2="376" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <line x1="398" y1="169" x2="420" y2="197" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55"/>
+  <text x="500" y="162" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">4 × 2 = 8</text>
+  <text x="14" y="212" font-size="12" fill="currentColor">j = 3</text>
+  <rect x="97" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="112" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="141" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="156" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="185" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="200" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="229" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="244" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="273" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="288" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="317" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="332" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="361" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="376" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <rect x="405" y="197" width="30" height="22" rx="4" stroke="currentColor" stroke-width="1.2" fill="currentColor" fill-opacity="0.06"/>
+  <text x="420" y="212.5" font-size="12" fill="currentColor" text-anchor="middle">1</text>
+  <text x="500" y="212" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">8 × 1 = 8</text>
+  <line x1="450" y1="228" x2="550" y2="228" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.5"/>
+  <text x="548" y="250" font-size="12" fill="currentColor" text-anchor="end">층 4개 × 8 = 32 = 8 · (log<tspan dy="3" font-size="10.2">2</tspan><tspan dy="-3" dx="3.8">8 + 1)</tspan></text>
+</svg>
+
+병합 정렬의 점화식 $T(n) = 2T(n/2) + n$($T(1) = 1$)을 $n = 8$에서 그린 재귀 트리다. 상자 하나가 호출 하나이고, 상자 안의 수는 재귀가 아닌 일, 곧 조각 크기다. $j$층에는 크기 $8/2^j$인 호출이 $2^j$개 있어 층마다 합이 8이고, 네 층을 더하면 아래 계산 예제가 구하는 $32 = 8(\log_2 8 + 1)$이 된다.
+
 크기가 같은 조각으로 나누는 분할정복에서는 트리 모양이 규칙적이다. 크기 $n$의 호출이 크기 $n/b$의 재귀 호출을 $a$번 하고, 나누고 합치는 데 $O(n^d)$ 일을 한다고 하자. 기호로 쓰면 다음과 같다:
 
 $$T(n) = a\,T(n/b) + O(n^d)$$
@@ -799,6 +1084,102 @@ $$1 + 2 + 4 + \cdots + 2^k = 2^{k+1} - 1 < 2n$$
 
 합을 계산하기보다 *설명*하라는 요청을 받을 때 쓸 두 번째 관점: append마다 3단위를 청구한다. 1단위는 원소를 쓰는 데 쓰고 2단위는 저축한다. 용량 $m$인 배열이 다시 가득 찰 때까지, 지난 확장 이후 추가된 $m/2$개 원소가 $m$단위를 모았고, 이것이 원소 $m$개를 복사하는 비용과 정확히 같다. 저축이 음수가 되는 일이 없으므로 append당 3이면 언제나 충분하다.
 
+<svg viewBox="0 0 560 378" style="max-width:100%;height:auto" role="img" aria-label="용량 1에서 두 배씩 느는 동적 배열. append i의 비용은 1이고, 2, 3, 5, 9, 17번째에서만 원소 1, 2, 4, 8, 16개를 복사한다. 누적 합 48은 3i = 51 아래에 있다.">
+  <text x="14" y="22" font-size="12" fill="currentColor" fill-opacity="0.8">append i의 비용</text>
+  <line x1="52" y1="150" x2="548" y2="150" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <rect x="62" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="89.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="89.5" y="138" width="16" height="6" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="97.5" y="133" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">2</text>
+  <rect x="117" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="117" y="132" width="16" height="12" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="125" y="127" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">3</text>
+  <rect x="144.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="172" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="172" y="120" width="16" height="24" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="180" y="115" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">5</text>
+  <rect x="199.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="227" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="254.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="282" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="282" y="96" width="16" height="48" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="290" y="91" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">9</text>
+  <rect x="309.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="337" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="364.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="392" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="419.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="447" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="474.5" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="502" y="144" width="16" height="6" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <rect x="502" y="48" width="16" height="96" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="510" y="43" font-size="12" fill="currentColor" text-anchor="middle" font-weight="bold">17</text>
+  <rect x="150" y="31" width="12" height="10" stroke="currentColor" stroke-width="0.8" fill="currentColor" fill-opacity="0.75"/>
+  <text x="167" y="40" font-size="11" fill="currentColor">쓰기</text>
+  <rect x="205" y="31" width="12" height="10" stroke="currentColor" stroke-width="0.9" fill="currentColor" fill-opacity="0.18"/>
+  <text x="222" y="40" font-size="11" fill="currentColor">원소 전부 복사(배열이 가득 참)</text>
+  <text x="14" y="193.8" font-size="12" fill="currentColor" fill-opacity="0.8">처음 i번 append의 총비용</text>
+  <line x1="52" y1="330" x2="548" y2="330" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="52" y1="330" x2="52" y2="205.8" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="48" y1="330" x2="52" y2="330" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="44" y="334" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">0</text>
+  <line x1="48" y1="284" x2="52" y2="284" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="44" y="288" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">20</text>
+  <line x1="48" y1="238" x2="52" y2="238" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="44" y="242" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.7">40</text>
+  <path d="M70 323.1 L510 212.7" stroke="currentColor" stroke-width="1.3" fill="none" stroke-opacity="0.8" stroke-dasharray="5 4" stroke-linejoin="round"/>
+  <path d="M70 327.7 L97.5 323.1 L125 316.2 L152.5 313.9 L180 302.4 L207.5 300.1 L235 297.8 L262.5 295.5 L290 274.8 L317.5 272.5 L345 270.2 L372.5 267.9 L400 265.6 L427.5 263.3 L455 261 L482.5 258.7 L510 219.6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+  <circle cx="70" cy="327.7" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="97.5" cy="323.1" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="125" cy="316.2" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="152.5" cy="313.9" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="180" cy="302.4" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="207.5" cy="300.1" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="235" cy="297.8" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="262.5" cy="295.5" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="290" cy="274.8" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="317.5" cy="272.5" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="345" cy="270.2" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="372.5" cy="267.9" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="400" cy="265.6" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="427.5" cy="263.3" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="455" cy="261" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="482.5" cy="258.7" r="2.2" stroke="none" fill="currentColor"/>
+  <circle cx="510" cy="219.6" r="2.2" stroke="none" fill="currentColor"/>
+  <text x="518" y="210.7" font-size="12" fill="currentColor" font-weight="bold">51</text>
+  <text x="518" y="231.6" font-size="12" fill="currentColor" font-weight="bold">48</text>
+  <line x1="110" y1="213.8" x2="134" y2="213.8" stroke="currentColor" stroke-width="1.6"/>
+  <text x="140" y="217.8" font-size="11" fill="currentColor">실제 Σ c<tspan dy="3" font-size="10">i</tspan></text>
+  <line x1="207.8" y1="213.8" x2="231.8" y2="213.8" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8" stroke-dasharray="5 4"/>
+  <text x="237.8" y="217.8" font-size="11" fill="currentColor">3i (append마다 3 청구)</text>
+  <line x1="70" y1="330" x2="70" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="70" y="346" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="97.5" y1="330" x2="97.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="97.5" y="346" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="125" y1="330" x2="125" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="125" y="346" font-size="11" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="152.5" y1="330" x2="152.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="180" y1="330" x2="180" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="180" y="346" font-size="11" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="207.5" y1="330" x2="207.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="235" y1="330" x2="235" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="262.5" y1="330" x2="262.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="290" y1="330" x2="290" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="290" y="346" font-size="11" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="317.5" y1="330" x2="317.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="345" y1="330" x2="345" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="372.5" y1="330" x2="372.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="400" y1="330" x2="400" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="427.5" y1="330" x2="427.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="455" y1="330" x2="455" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="482.5" y1="330" x2="482.5" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="510" y1="330" x2="510" y2="333" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <text x="510" y="346" font-size="11" fill="currentColor" text-anchor="middle">17</text>
+  <text x="300" y="364" font-size="11" fill="currentColor" text-anchor="middle" fill-opacity="0.8">append 번호 i</text>
+</svg>
+
+아래 코드의 두 배 증가 `DynamicArray`에 용량 1부터 append를 17번 한 그림이다. 2, 3, 5, 9, 17번째 append는 가득 찬 배열을 만나 원소 1, 2, 4, 8, 16개를 복사하므로 비용이 2, 3, 5, 9, 17이고, 나머지 append는 모두 1이다. 누적 합은 17번 뒤 48로, 청구 논증이 허용하는 append당 3($3 \cdot 17 = 51$) 아래에 머문다.
+
 **회계 방법과 퍼텐셜 방법을 계약으로.** 연산 $i$에 청구액 $\hat c_i$를 준다. 모든 수열의 모든 앞부분 길이 $k$에서 청구 총액이 실제 지출 총액 밑으로 떨어지지 않으면 청구가 유효하다. 그러면 저축된 크레딧이 음수가 되지 않기 때문이다:
 $$\sum_{i=1}^{k} \hat c_i \ge \sum_{i=1}^{k} c_i \quad \text{for all } k$$
 **퍼텐셜 방법**(potential method)은 그 크레딧을 연산 $i$ 이후 자료구조 상태 $D_i$의 함수 $\Phi$로 들고 있고, 청구액을 실제 비용 더하기 퍼텐셜 변화로 정의한다:
@@ -856,7 +1237,7 @@ for i in range(300):
 print(resizes)                        # gaps between resizes keep growing
 ```
 
-**분할상환은 연산 하나하나의 최악 경우가 아니다.** 로봇에서는 이 구분이 실제 문제다. 1 kHz로 벡터에 append하는 제어 콜백은 평균적으로 빠르지만, 재할당이 일어나는 그 한 번의 호출이 마감 시간을 넘길 수 있다. 실시간 코드에서는 루프가 시작되기 전에 `reserve(n)`(C++)을 부르거나 미리 할당하라(`[0.0] * n`, NumPy 배열). 콜백이 어디서 실행되고 마감을 놓치면 나머지 시스템에 무슨 일이 생기는지는 [[04-robotics/ros2/qos-executors-time|25.5 QoS, 실행기와 시간 §8]]에 있다.
+**분할상환은 연산 하나하나의 최악 경우가 아니다.** 로봇에서는 이 구분이 실제 문제다. 1 kHz로 벡터에 append하는 제어 콜백은 평균적으로 빠르지만, 재할당이 일어나는 그 한 번의 호출이 마감 시간을 넘길 수 있다. 실시간 코드에서는 루프가 시작되기 전에 `reserve(n)`(C++)을 부르거나 미리 할당하라(`[0.0] * n`, NumPy 배열). 콜백이 어디서 실행되고 마감을 놓치면 나머지 시스템에 무슨 일이 생기는지는 [[04-robotics/ros2/executors-callbacks-time|25.5.1 실행기, 콜백 그룹과 시간 §1]]에 있다.
 
 ### 5. 재귀를 제대로 쓰기
 
@@ -954,6 +1335,71 @@ def backtrack(state):
 ```
 
 코딩하기 전에 네 질문에 답하라. *결정 하나는 무엇인가? 그 선택지는 무엇인가? 선택은 어떻게 되돌리는가? 해는 언제 완성되는가?* 호출들은 결정 트리(**decision tree**)를 이룬다. 뿌리는 빈 부분해, 각 간선은 선택 하나, 각 잎은 완성된 후보다.
+
+<svg viewBox="0 0 560 292" style="max-width:100%;height:auto" role="img" aria-label="subsets([1, 2, 3])의 결정 트리. 층마다 원소 하나를 정하며 왼쪽 가지는 빼고 오른쪽 가지는 넣는다. 호출 15번, 잎 8개.">
+  <text x="14" y="38" font-size="12" fill="currentColor">i = 0</text>
+  <text x="14" y="53" font-size="11" fill="currentColor" fill-opacity="0.75">호출 1번</text>
+  <text x="14" y="100" font-size="12" fill="currentColor">i = 1</text>
+  <text x="14" y="115" font-size="11" fill="currentColor" fill-opacity="0.75">호출 2번</text>
+  <text x="14" y="162" font-size="12" fill="currentColor">i = 2</text>
+  <text x="14" y="177" font-size="11" fill="currentColor" fill-opacity="0.75">호출 4번</text>
+  <text x="14" y="224" font-size="12" fill="currentColor">i = 3</text>
+  <text x="14" y="239" font-size="11" fill="currentColor" fill-opacity="0.75">잎 8개</text>
+  <rect x="294.5" y="29" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="319.5" y="44.5" font-size="12" fill="currentColor" text-anchor="middle">[]</text>
+  <rect x="180.5" y="91" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="205.5" y="106.5" font-size="12" fill="currentColor" text-anchor="middle">[]</text>
+  <line x1="319.5" y1="51" x2="205.5" y2="91" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="123.5" y="153" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="148.5" y="168.5" font-size="12" fill="currentColor" text-anchor="middle">[]</text>
+  <line x1="205.5" y1="113" x2="148.5" y2="153" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="95" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="120" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[]</text>
+  <line x1="148.5" y1="175" x2="120" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="152" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="177" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[3]</text>
+  <line x1="148.5" y1="175" x2="177" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="237.5" y="153" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="262.5" y="168.5" font-size="12" fill="currentColor" text-anchor="middle">[2]</text>
+  <line x1="205.5" y1="113" x2="262.5" y2="153" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="209" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="234" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[2]</text>
+  <line x1="262.5" y1="175" x2="234" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="266" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="291" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[2,3]</text>
+  <line x1="262.5" y1="175" x2="291" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="408.5" y="91" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="433.5" y="106.5" font-size="12" fill="currentColor" text-anchor="middle">[1]</text>
+  <line x1="319.5" y1="51" x2="433.5" y2="91" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="351.5" y="153" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="376.5" y="168.5" font-size="12" fill="currentColor" text-anchor="middle">[1]</text>
+  <line x1="433.5" y1="113" x2="376.5" y2="153" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="323" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="348" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[1]</text>
+  <line x1="376.5" y1="175" x2="348" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="380" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="405" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[1,3]</text>
+  <line x1="376.5" y1="175" x2="405" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="465.5" y="153" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.1" fill="currentColor" fill-opacity="0.04"/>
+  <text x="490.5" y="168.5" font-size="12" fill="currentColor" text-anchor="middle">[1,2]</text>
+  <line x1="433.5" y1="113" x2="490.5" y2="153" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <rect x="437" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="462" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[1,2]</text>
+  <line x1="490.5" y1="175" x2="462" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <rect x="494" y="215" width="50" height="22" rx="4" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="519" y="230.5" font-size="12" fill="currentColor" text-anchor="middle">[1,2,3]</text>
+  <line x1="490.5" y1="175" x2="519" y2="215" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <text x="236.5" y="75" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">1 빼기</text>
+  <text x="402.5" y="75" font-size="11" fill="currentColor" fill-opacity="0.85">1 넣기</text>
+  <line x1="24" y1="266" x2="50" y2="266" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7" stroke-dasharray="4 3"/>
+  <text x="56" y="270" font-size="11" fill="currentColor">nums[i]를 뺀다</text>
+  <line x1="158" y1="266" x2="184" y2="266" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.7"/>
+  <text x="190" y="270" font-size="11" fill="currentColor">nums[i]를 넣는다</text>
+  <rect x="302.9" y="258" width="22" height="14" rx="3" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity="0.12"/>
+  <text x="330.9" y="270" font-size="11" fill="currentColor">잎: 사본을 기록</text>
+</svg>
+
+아래 코드의 `subsets([1, 2, 3])`가 탐색하는 순서대로 그린 결정 트리다. 깊이 $i$의 호출이 `nums[i]`를 정하는데, 먼저 빼고(점선) 다음에 넣는다(실선). 층마다 호출이 1, 2, 4, 8번으로 모두 15번이고, 잎 8개가 각각 `path`의 사본을 기록한다. 아래 "탐색 트리의 복잡도"에서 세는 호출 15번과 잎 8개가 이것이다.
 
 - **부분집합.** 원소마다 결정 하나: 빼거나 넣는다. 트리의 잎은 $2^n$개이고 완성된 부분집합을 복사하는 데 $O(n)$이 드므로 시간은 $\Theta(n\,2^n)$ — 출력 자체가 그 크기이니 피할 수 없다 — 이고, 경로와 스택에 $O(n)$ 추가 공간을 쓴다.
 - **순열.** $i$번째 결정은 아직 쓰지 않은 원소 중 무엇을 $i$번 자리에 둘지다. 잎은 $n!$개, 전체 노드는 $e \cdot n!$개 미만이므로 복사까지 포함해 $\Theta(n \cdot n!)$.

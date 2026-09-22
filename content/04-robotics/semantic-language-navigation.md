@@ -44,7 +44,7 @@ Three labelled objects fill three cells, which the agent therefore cannot enter:
 
 A and B are a partition across the left of the room; C is the short wall the television is mounted on. The instruction is fixed too: **"go to the television."** The agent carries an object-centric map of the kind §7 describes, so the three labels and their cells are given; what it has to do is ground the instruction onto one of them and then stop somewhere legal.
 
-Finally, the agent's open-vocabulary detector has already scored each map node against the goal phrase. These three cosine similarities are frozen page-local numbers, not measurements from any system: $s_{\text{sofa}} = 0.11$, $s_{\text{tv}} = 0.34$, $s_{\text{plant}} = 0.09$.
+Finally, the agent's open-vocabulary detector has already scored each map node against the goal phrase. *Open-vocabulary* describes the detector — it can score any phrase against any region, with no fixed label list — not the choice this page makes with it: the candidates are the three labelled nodes and nothing else, a closed set fixed here, and that closed set is what the worked case's grounding score normalises over. These three cosine similarities are frozen page-local numbers, not measurements from any system: $s_{\text{sofa}} = 0.11$, $s_{\text{tv}} = 0.34$, $s_{\text{plant}} = 0.09$.
 
 *Scope: this page teaches the two definitions this literature is written in — the ObjectNav success criterion and SPL — and how a grounding score and a map geometry combine into a stop decision. It does not teach how the frontier is chosen or the local controller drives ([[04-robotics/navigation-mobile-manipulation|16. Navigation & Mobile Manipulation]]), how the vision-language features are trained ([[01-canonical-papers/notes/3-vlm/clip|CLIP]]), or outdoor traversability ([[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]]).*
 
@@ -132,7 +132,7 @@ The worked case on G4, instruction "go to the television": the sofa, tv and plan
 > [!info] Definition · 정의 — grounding score
 > **What kind of thing it is.** A *probability distribution over a closed candidate set*: one number per candidate object, non-negative, summing to 1 across exactly the candidates considered. It is not a similarity, and it is not a confidence that the goal exists.
 >
-> **Its defining conditions.** Three. (i) The candidate set is **closed and declared** — the scores are normalised over exactly those objects, so an object outside the set cannot be chosen and its absence is invisible in the numbers. (ii) The map is **order-preserving** in the raw scores: the highest similarity is always the highest grounding score. (iii) A **temperature** $T > 0$ sets the sharpness and is a design choice, not something the vision-language model reports.
+> **Its defining conditions.** Three. (i) The candidate set is **closed and declared** — the scores are normalised over exactly those objects, so an object outside the set cannot be chosen and its absence is invisible in the numbers. This holds even when the detector that produced the raw scores is open-vocabulary: the vocabulary is open, the candidate set is not. (ii) The map is **order-preserving** in the raw scores: the highest similarity is always the highest grounding score. (iii) A **temperature** $T > 0$ sets the sharpness and is a design choice, not something the vision-language model reports.
 >
 > $$g(o) = \frac{\exp\big(s_o / T\big)}{\sum_{o' \in \mathcal{O}} \exp\big(s_{o'} / T\big)}$$
 >
@@ -260,16 +260,27 @@ pick long-term exploration goals on it. It won the 2020 challenge and its archit
 still the backbone.
 
 **Move 2 — replace the learned scorer with a pretrained VLM, and train nothing ObjectNav-specific.**
+Three papers make this move, each differently.
+
 **VLFM** builds an occupancy map, extracts frontiers, and scores each frontier by
-**vision-language similarity to the goal text**, choosing where to explore next. No ObjectNav
-training data at all (it still follows waypoints with a PointNav policy trained for 2.5B steps on HM3D), and it deployed on a real Spot. **ESC** does the same job with LLM
-commonsense — object-and-room co-occurrence — compiled into soft logic predicates over a
-frontier scorer. A soft logic predicate is a rule such as "a frontier near a sofa is likely
-near the TV" whose truth value lies between 0 and 1 instead of being true or false, so the
-scorer can pick the frontier that best satisfies all the weighted rules at once. And **CoWs** established that a zero-shot pipeline "matches the navigation
-efficiency of a state-of-the-art ZSON (Zero-Shot Object-goal Navigation) method trained for 500M steps" — parity on SPL, not on
-success, on Habitat MP3D (SPL 4.9 vs 4.8, success 9.2 vs 15.3), where the paper says its own comparison "indicates that there can be benefits to
-in-domain learning over CoW baselines". On RoboTHOR the same CoW beats the prior zero-shot model by 15.6 points in success. It is also weak at exploiting complex language.
+**vision-language similarity to the goal text**, choosing where to explore next. VLFM uses no
+ObjectNav training data at all — it still follows waypoints with a PointNav policy trained for
+2.5B steps on HM3D — and it was deployed on a real Spot.
+
+**ESC** does the same job with LLM commonsense — object-and-room co-occurrence — compiled into
+soft logic predicates over a frontier scorer. A soft logic predicate is a rule such as "a frontier
+near a sofa is likely near the TV" whose truth value lies between 0 and 1 instead of being true or
+false, so ESC's scorer can pick the frontier that best satisfies all the weighted rules at once.
+
+**CoWs** is a benchmark study of such zero-shot pipelines, and its two headline numbers come from
+two benchmarks and two metrics. On Habitat MP3D, a CoW "matches the navigation efficiency of a
+state-of-the-art ZSON (Zero-Shot Object-goal Navigation) method trained for 500M steps" — parity
+on SPL (4.9 vs 4.8), not on success (9.2 vs 15.3), and the paper says its own comparison "indicates
+that there can be benefits to in-domain learning over CoW baselines". On RoboTHOR, the same CoW's
+success rate is 15.6 percentage points above that of the prior zero-shot model trained for
+RoboTHOR. So the MP3D number is an efficiency tie and the RoboTHOR number is a success gain, and
+neither implies the other. CoWs also found that its baselines often fail to use a language
+description beyond the object's name.
 
 **Move 3 — throw the modular apparatus away.** See §5.
 
@@ -291,18 +302,27 @@ Gervet et al. tested classical, modular-learning and end-to-end approaches on re
 
 The load-bearing conclusion is not the gap itself but its explanation: simulators fail as
 evaluation benchmarks for **two** reasons — the visual sim-to-real gap, and **misaligned
-error patterns**. All three families sat near 80% in simulation, so simulation could not tell them apart, and because simulation and reality fail in *different ways* it cannot tell you which bottleneck to fix. Among end-to-end design variants, **the choices that raised simulation scores lowered real-world scores.** A leaderboard can be climbed without the thing it
-measures improving.
+error patterns**.
+
+All three families sat near 80% in simulation, so simulation could not tell them apart. And
+because simulation and reality fail in *different ways*, simulation cannot tell you which
+bottleneck to fix either.
+
+Among end-to-end design variants, **the choices that raised simulation scores lowered real-world
+scores.** A leaderboard can be climbed without the thing it measures improving.
 
 ### 5. VLN, and the paper that admitted the benchmark was cheating
 
 **R2R** created the task and the Matterport3D Simulator: follow a natural-language route
 instruction through a real building. But R2R is **discrete** — the agent teleports between
-nodes of a pre-built navigation graph. **RxR** added multilingual instructions and
-word-level temporal alignment to poses (each spoken word is timestamped against where the
-annotator was on the path, which tells a model and an evaluator which stretch of the path each
-phrase describes), and corrected R2R's path bias (R2R paths are all
-shortest paths, which lets an agent cheat).
+nodes of a pre-built navigation graph.
+
+**RxR** changed three things. It added multilingual instructions. It added word-level temporal
+alignment to poses: each spoken word is timestamped against where the annotator was on the path,
+which tells a model and an evaluator which stretch of the path each phrase describes. And it
+corrected R2R's path bias — R2R's paths are all shortest paths, which lets an agent cheat: once
+it has guessed the goal, the shortest path to it *is* the route, so the route description need not
+be read.
 
 **VLN-CE is the most consequential paper in this literature.** It ports R2R into Habitat with
 **low-level continuous actions**, removing three assumptions at once — known topology, oracle
@@ -313,10 +333,12 @@ simplifying assumptions.**
 The empirical companion is Anderson et al.'s sim-to-real study: **55.9% in simulation →
 46.8% real with a pre-built map → 22.5% real with no prior mapping.**
 
-The transformer era — **HAMT** (a hierarchical [[01-canonical-papers/notes/1-foundations/vit|ViT]], or Vision Transformer, an image model that splits each view into patches and processes them as a token sequence, over the full history of past panoramas,
-gaining most on long trajectories) and **DUET** (a topological map built on the fly,
-combining coarse global planning including backtracking with fine local encoding) — is the
-high-water mark of the discrete paradigm, and worth reading as such.
+The transformer era is the high-water mark of the discrete paradigm, and worth reading as such.
+**HAMT** runs a hierarchical [[01-canonical-papers/notes/1-foundations/vit|ViT]] — a Vision
+Transformer, an image model that splits each view into patches and processes them as a token
+sequence — over the full history of past panoramas, and gains most on long trajectories.
+**DUET** builds a topological map on the fly and combines coarse global planning, including
+backtracking, with fine local encoding.
 
 Then **NaVid** supplied a different branch: a video VLM taking **monocular RGB video only — no maps, no
 odometry, no depth** — and emitting actions directly. It threw away the entire modular
@@ -382,9 +404,15 @@ Simultaneously the institutional scaffolding came down. The Habitat Challenge re
 Embodied AI Workshop ran four challenges and **none was ObjectNav**; CVPR 2026 ran three and
 **all three were manipulation**.
 
-Where the energy went is measurable: **open-vocabulary mobile manipulation**, where HomeRobot
-reports ~20% real-world success and the challenge post-mortem records a baseline of **0.8%**
-rising to a winning **10.8%** — a 13× improvement that still leaves the task ~90% unsolved.
+Where the energy went is measurable: **open-vocabulary mobile manipulation** (OVMM) — find any
+named object in an unseen home and place it on a named receptacle. Both numbers below score
+success on that whole pick-and-place task, but in different settings, so they are not a sequence.
+
+HomeRobot's ~20% is **real-world** success of the paper's own baselines on a Hello Robot Stretch.
+
+The NeurIPS 2023 challenge post-mortem's **0.8%** rising to a winning **10.8%** is **simulation**,
+on the hardest version of the task: "real perception", meaning the agent's own detections rather
+than ground-truth segmentation. That is a 13× improvement that still leaves the task ~90% unsolved.
 That is a leaderboard worth climbing; a saturated six-category ObjectNav was not.
 
 The successors that did appear are open-vocabulary by construction: **HM3D-OVON** (379
@@ -548,7 +576,7 @@ Tier B. Hand derivation on **G4**, using only this page and its prerequisites. S
 
 A와 B는 방 왼쪽을 가로지르는 칸막이이고, C는 텔레비전이 걸린 짧은 벽이다. 지시도 고정이다: **"텔레비전으로 가라."** 에이전트는 §7이 말하는 종류의 물체 중심 지도를 들고 있어서 라벨 셋과 그 칸은 주어져 있다. 해야 할 일은 지시를 그중 하나에 접지(ground)하고, 합법적인 곳에 멈추는 것이다.
 
-마지막으로, 에이전트의 open-vocabulary 검출기가 각 지도 노드를 목표 구절과 이미 대조해 두었다. 이 코사인 유사도 셋은 어떤 시스템의 측정값이 아니라 이 페이지가 고정한 숫자다: $s_{\text{sofa}} = 0.11$, $s_{\text{tv}} = 0.34$, $s_{\text{plant}} = 0.09$.
+마지막으로, 에이전트의 open-vocabulary 검출기가 각 지도 노드를 목표 구절과 이미 대조해 두었다. *Open-vocabulary*는 검출기를 두고 하는 말이다 — 고정된 라벨 목록 없이 어떤 구절이든 어떤 영역에든 점수를 매길 수 있다는 뜻 — 이 페이지가 그것으로 하는 선택을 두고 하는 말이 아니다. 후보는 라벨이 붙은 노드 셋뿐인, 여기서 고정한 닫힌 집합이고, 예제의 접지 점수가 정규화하는 대상이 바로 그 닫힌 집합이다. 이 코사인 유사도 셋은 어떤 시스템의 측정값이 아니라 이 페이지가 고정한 숫자다: $s_{\text{sofa}} = 0.11$, $s_{\text{tv}} = 0.34$, $s_{\text{plant}} = 0.09$.
 
 *범위: 이 페이지는 이 문헌이 쓰인 두 정의 — ObjectNav 성공 기준과 SPL — 와, 접지 점수와 지도 기하가 어떻게 정지 결정 하나로 합쳐지는지를 가르친다. 프런티어를 어떻게 고르고 지역 제어기가 어떻게 모는지([[04-robotics/navigation-mobile-manipulation|16. 내비게이션과 모바일 조작]]), 시각-언어 특징을 어떻게 학습하는지([[01-canonical-papers/notes/3-vlm/clip|CLIP]]), 실외 traversability([[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]])는 가르치지 않는다.*
 
@@ -636,7 +664,7 @@ A와 B는 방 왼쪽을 가로지르는 칸막이이고, C는 텔레비전이 �
 > [!info] 정의 · Definition — 접지 점수(grounding score)
 > **어떤 종류의 것인가.** *닫힌 후보 집합 위의 확률 분포*다. 후보마다 숫자 하나, 음이 아니고, 고려한 후보 전체에 대해 합이 정확히 1이다. 유사도가 아니고, 목표가 존재한다는 확신도 아니다.
 >
-> **정의 조건.** 셋이다. (i) 후보 집합은 **닫혀 있고 명시되어야** 한다 — 점수는 정확히 그 물체들에 대해 정규화되므로, 집합 밖의 물체는 선택될 수 없고 그 부재는 숫자에 전혀 드러나지 않는다. (ii) 원 점수에 대해 **순서를 보존한다**: 유사도가 가장 높은 것이 언제나 접지 점수도 가장 높다. (iii) **온도** $T > 0$가 뾰족함을 정하며, 이는 설계 선택이지 시각-언어 모델이 보고하는 값이 아니다.
+> **정의 조건.** 셋이다. (i) 후보 집합은 **닫혀 있고 명시되어야** 한다 — 점수는 정확히 그 물체들에 대해 정규화되므로, 집합 밖의 물체는 선택될 수 없고 그 부재는 숫자에 전혀 드러나지 않는다. 원 점수를 만든 검출기가 open-vocabulary여도 마찬가지다. 어휘는 열려 있어도 후보 집합은 닫혀 있다. (ii) 원 점수에 대해 **순서를 보존한다**: 유사도가 가장 높은 것이 언제나 접지 점수도 가장 높다. (iii) **온도** $T > 0$가 뾰족함을 정하며, 이는 설계 선택이지 시각-언어 모델이 보고하는 값이 아니다.
 >
 > $$g(o) = \frac{\exp\big(s_o / T\big)}{\sum_{o' \in \mathcal{O}} \exp\big(s_{o'} / T\big)}$$
 >
@@ -754,16 +782,27 @@ $$\text{SPL}_{\text{거리만}} = \frac{1.000 + 0.556 + 1.000}{3} = 0.852, \qqua
 RL을 이긴다는 것이다. **SemExp**가 그 골격에 의미 지도를 넣고, 학습된 전역 정책이 그 위에서
 장기 탐색 목표를 고르게 했다. 2020년 챌린지를 우승했고 그 아키텍처가 여전히 중추다.
 
-**2수 — 학습된 채점기를 사전학습 VLM으로 갈고, ObjectNav 전용으로는 아무것도 학습하지 않기.** **VLFM**은 점유 지도를
-만들고 프런티어를 뽑은 뒤, 각 프런티어를 **목표 텍스트와의 시각-언어 유사도**로 채점해 다음에
-어디를 탐색할지 고른다. ObjectNav 학습 데이터가 하나도 없고(웨이포인트 추종에는 HM3D에서 25억 스텝 학습한 PointNav 정책을 쓴다), 실제 Spot에 배치되었다. **ESC**는
-같은 일을 LLM 상식 — 물체-방 동시 출현 — 을 프런티어 채점기 위의 소프트 논리 술어로 컴파일해
-한다. 소프트 논리 술어란 "소파 근처의 프런티어는 TV 근처일 가능성이 높다" 같은 규칙인데, 참과
-거짓이 아니라 0과 1 사이의 참값을 가지므로 채점기는 가중된 규칙 전부를 가장 잘 만족하는
-프런티어를 고를 수 있다. 그리고 **CoWs**가, zero-shot 파이프라인이 "5억 스텝을 학습한 최신 ZSON(Zero-Shot Object-goal Navigation) 방법의 주행 효율과
-대등하다"는 것을 보였다 — Habitat MP3D에서 대등한 것은 SPL이지 성공률이 아니다(SPL 4.9 vs 4.8, 성공률 9.2 vs 15.3). 성공률에서는 논문 스스로 그
-비교가 "CoW 계열보다 in-domain 학습이 이로울 수 있음을 시사한다"고 적는다. RoboTHOR에서는 같은 CoW가 이전 zero-shot 모델보다 성공률이 15.6포인트 높다. 복잡한 언어를 활용하는
-데는 약하다는 것을 확립했다.
+**2수 — 학습된 채점기를 사전학습 VLM으로 갈고, ObjectNav 전용으로는 아무것도 학습하지 않기.**
+이 수를 둔 논문이 셋이고, 두는 방식은 저마다 다르다.
+
+**VLFM** 은 점유 지도를 만들고 프런티어를 뽑은 뒤, 각 프런티어를 **목표 텍스트와의 시각-언어
+유사도** 로 채점해 다음에 어디를 탐색할지 고른다. VLFM은 ObjectNav 학습 데이터를 하나도 쓰지
+않고 — 웨이포인트 추종에는 여전히 HM3D에서 25억 스텝 학습한 PointNav 정책을 쓴다 — 실제 Spot에
+배치되었다.
+
+**ESC** 는 같은 일을 LLM 상식 — 물체-방 동시 출현 — 을 프런티어 채점기 위의 소프트 논리 술어로
+컴파일해 한다. 소프트 논리 술어란 "소파 근처의 프런티어는 TV 근처일 가능성이 높다" 같은 규칙인데,
+참과 거짓이 아니라 0과 1 사이의 참값을 가지므로 ESC의 채점기는 가중된 규칙 전부를 가장 잘
+만족하는 프런티어를 고를 수 있다.
+
+**CoWs** 는 그런 zero-shot 파이프라인들의 벤치마크 연구이고, 대표 숫자 둘은 서로 다른 벤치마크의
+서로 다른 지표에서 나온다. Habitat MP3D에서 CoW는 "5억 스텝을 학습한 최신 ZSON(Zero-Shot
+Object-goal Navigation) 방법의 주행 효율과 대등하다" — 대등한 것은 SPL(4.9 vs 4.8)이지 성공률(9.2
+vs 15.3)이 아니며, 논문 스스로 그 비교가 "CoW 계열보다 in-domain 학습이 이로울 수 있음을
+시사한다"고 적는다. RoboTHOR에서는 같은 CoW의 성공률이 RoboTHOR용으로 학습한 이전 zero-shot
+모델보다 15.6퍼센트포인트 높다. 그러니 MP3D 숫자는 효율의 동률이고 RoboTHOR 숫자는 성공률의
+이득이며, 어느 쪽도 다른 쪽을 함의하지 않는다. CoWs는 또 그 기준선들이 물체 이름 이상의 언어
+서술을 활용하지 못하는 경우가 많다는 것도 확인했다.
 
 **3수 — 모듈형 장치를 통째로 버리기.** §5를 보라.
 
@@ -782,17 +821,25 @@ Gervet 등이 고전·모듈형 학습·종단간 접근을 **실제 가정 여�
 | **종단간 학습** | **시뮬레이션 77% → 실세계 23%** |
 
 부하를 지는 결론은 격차 자체가 아니라 그 설명이다: 시뮬레이터가 평가 벤치마크로서 실패하는
-이유가 **둘**이라는 것 — 시각적 sim-to-real 격차, 그리고 **어긋난 실패 패턴**. 세 계열 모두 시뮬레이션에서 80% 근처라
-시뮬레이션으로는 서로를 가를 수 없었고, 시뮬레이션과 현실이 *다른 방식으로* 실패하므로 무엇을 고쳐야 할지도 알려 주지 못한다. 종단간 설계 변형들 사이에서는 **시뮬레이션 점수를 올린 선택이 실세계 점수를 낮췄다.** 재는
-대상이 나아지지 않은 채로 리더보드를 오를 수 있다.
+이유가 **둘** 이라는 것 — 시각적 sim-to-real 격차, 그리고 **어긋난 실패 패턴**.
+
+세 계열 모두 시뮬레이션에서 80% 근처라 시뮬레이션으로는 서로를 가를 수 없었다. 그리고
+시뮬레이션과 현실이 *다른 방식으로* 실패하므로, 시뮬레이션은 어느 병목을 고쳐야 할지도 알려 주지
+못한다.
+
+종단간 설계 변형들 사이에서는 **시뮬레이션 점수를 올린 선택이 실세계 점수를 낮췄다.** 재는 대상이
+나아지지 않은 채로 리더보드를 오를 수 있다.
 
 ### 5. VLN, 그리고 벤치마크가 부정행위였음을 인정한 논문
 
 **R2R**이 과제와 Matterport3D 시뮬레이터를 만들었다: 실제 건물에서 자연어 경로 지시를 따르기.
 그러나 R2R은 **이산적**이다 — 에이전트가 미리 만든 내비게이션 그래프의 노드 사이를 순간이동한다.
-**RxR**이 다국어 지시와 자세에 대한 단어 수준 시간 정렬(말한 단어마다 그때 주석자가 경로 위 어디에 있었는지 시각을
-맞춰, 모델과 평가자가 각 구절이 경로의 어느 구간을 가리키는지 알 수 있게 한다)을 더하고, R2R의 경로 편향(R2R 경로가
-전부 최단 경로여서 에이전트가 부정행위를 할 수 있다)을 교정했다.
+
+**RxR** 은 세 가지를 바꿨다. 다국어 지시를 더했다. 자세에 대한 단어 수준 시간 정렬을 더했다: 말한
+단어마다 그때 주석자가 경로 위 어디에 있었는지 시각을 맞춰, 모델과 평가자가 각 구절이 경로의 어느
+구간을 가리키는지 알 수 있게 한다. 그리고 R2R의 경로 편향을 교정했다 — R2R 경로는 전부 최단
+경로여서 에이전트가 부정행위를 할 수 있다. 목표만 짐작하면 그리로 가는 최단 경로가 *곧* 지시된
+경로이므로, 경로 서술을 읽을 필요가 없다.
 
 **VLN-CE가 이 문헌에서 가장 중대한 논문이다.** R2R을 **저수준 연속 행동**과 함께 Habitat으로
 옮겨, 세 가정을 한 번에 제거한다 — 알려진 위상, 오라클 내비게이션, 완벽한 위치추정 — 그리고
@@ -802,9 +849,11 @@ Gervet 등이 고전·모듈형 학습·종단간 접근을 **실제 가정 여�
 그 경험적 짝이 Anderson 등의 sim-to-real 연구다: **시뮬레이션 55.9% → 사전 지도가 있는 실제
 46.8% → 사전 지도 없는 실제 22.5%.**
 
-트랜스포머 시대 — **HAMT**(지난 파노라마 전체 이력에 대한 계층적 [[01-canonical-papers/notes/1-foundations/vit|ViT]](Vision Transformer, 각 시야를 패치로 잘라 토큰 열로 처리하는 이미지 모델), 긴 궤적에서 가장 크게
-이득)와 **DUET**(즉석에서 만드는 위상 지도, 되돌아가기를 포함한 거친 전역 계획과 미세 지역
-인코딩의 결합) — 는 이산 패러다임의 정점이고, 그렇게 읽을 가치가 있다.
+트랜스포머 시대는 이산 패러다임의 정점이고, 그렇게 읽을 가치가 있다. **HAMT** 는 지난 파노라마
+전체 이력 위에 계층적 [[01-canonical-papers/notes/1-foundations/vit|ViT]] — Vision Transformer, 각
+시야를 패치로 잘라 토큰 열로 처리하는 이미지 모델 — 를 돌리고, 긴 궤적에서 가장 크게 이득을 본다.
+**DUET** 는 위상 지도를 즉석에서 만들고, 되돌아가기를 포함한 거친 전역 계획과 미세한 지역 인코딩을
+결합한다.
 
 그다음 **NaVid**가 다른 가지를 열었다: **단안 RGB 비디오만 — 지도도, 오도메트리도, 깊이도 없이** — 받아
 행동을 직접 내는 비디오 VLM이다. HAMT와 DUET의 모듈형 장치를 버렸고 여러 후속 video-VLA가
@@ -866,8 +915,14 @@ Gervet 등이 고전·모듈형 학습·종단간 접근을 **실제 가정 여�
 되었고 2023년판이 마지막이었다. CVPR 2025 Embodied AI 워크숍은 챌린지 넷을 돌렸고 **그중 ObjectNav는
 없었다.** CVPR 2026은 셋을 돌렸고 **셋 다 매니퓰레이션이었다.**
 
-에너지가 간 곳은 측정 가능하다: **open-vocabulary 모바일 조작**이다. HomeRobot이 실세계 성공률
-약 20%를 보고하고, 챌린지 사후 보고가 기준선 **0.8%**, 우승 **10.8%** 를 기록한다 — 13배
+에너지가 간 곳은 측정 가능하다: **open-vocabulary 모바일 조작**(OVMM) — 처음 보는 집에서 이름으로
+지정한 아무 물체나 찾아, 이름으로 지정한 받침면 위에 놓는 과제다. 아래 두 숫자는 모두 그
+집어-놓기 과제 전체의 성공률이지만 설정이 달라서, 하나의 흐름으로 이어지는 숫자가 아니다.
+
+HomeRobot의 약 20%는 논문 자체 기준선이 Hello Robot Stretch로 낸 **실세계** 성공률이다.
+
+NeurIPS 2023 챌린지 사후 보고의 기준선 **0.8%** → 우승 **10.8%** 는 **시뮬레이션**, 그것도 과제의
+가장 어려운 판 — 정답 분할 대신 에이전트 자신의 검출을 쓰는 "실제 인지" — 에서의 숫자다. 13배
 개선인데도 과제는 여전히 약 90% 미해결이다. 그것이 오를 가치가 있는 리더보드이고, 포화된 6범주
 ObjectNav는 아니었다.
 

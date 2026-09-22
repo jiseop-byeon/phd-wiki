@@ -16,8 +16,8 @@ those two operations are called once they are a network. It is the one page you 
 > 논문에서 *네트워크·층·손실·배치·에포크·하이퍼파라미터·사전학습*을 멈추지 않고 읽고, 신경망을 이미 가진 수학으로 이해할 수 있으면 된다. 직접 모델을 학습시키는 것은 여기의 목표가 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 Engineering Math §1 (derivatives), §4 (matrix arithmetic), §10 (notation)]]. Nothing about machine learning is assumed — this page exists precisely so that the rest of the foundations do not have to assume it.
-> [[02-foundations/engineering-math|0.5 공업수학 §1(미분), §4(행렬 연산), §10(표기법)]]. 기계학습 지식은 전혀 전제하지 않는다 — 나머지 기초 페이지들이 그것을 전제하지 않아도 되도록 이 페이지가 존재한다.
+> [[02-foundations/engineering-math|0.5 Engineering Math §1 (derivatives, chain rule), §4 (matrix arithmetic), §4.5 (linearity), §10 (notation)]] · plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]]. Nothing about machine learning is assumed — this page exists precisely so that the rest of the foundations do not have to assume it.
+> [[02-foundations/engineering-math|0.5 공업수학 §1(미분·연쇄 법칙), §4(행렬 연산), §4.5(선형성), §10(표기법)]] · [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**. 기계학습 지식은 전혀 전제하지 않는다 — 나머지 기초 페이지들이 그것을 전제하지 않아도 되도록 이 페이지가 존재한다.
 
 Pages 1–9 use words like *layer*, *loss*, and *minibatch* the way a mechanics textbook
 uses *force*. If you studied engineering mathematics but never machine learning, this page
@@ -25,7 +25,7 @@ is the twenty minutes that makes the rest readable. **Everything here is arithme
 already know** — matrix multiplication and derivatives — wearing unfamiliar names.
 
 > [!note] First pass · 처음이라면
-> The shortest page in the track, and the one to read straight through. Twenty minutes here is what makes pages 1 to 9 readable at all; there is nothing to defer.
+> The shortest page in the track, and the one to read straight through: the picture, §1–§5 and the table of §6. Twenty minutes there is what makes pages 1 to 9 readable at all. The one part to defer is §6's closing subsection, *The same words, with their formulas* — second-pass material, for when a paper's claim needs checking against its formula.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -143,7 +143,7 @@ Take a 2 → 3 → 1 network, $\sigma = \text{ReLU}$, biases zero:
 
 $$W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}, \quad W_2 = \begin{pmatrix}1 & -1 & 0.5\end{pmatrix}, \quad x = \begin{pmatrix}1\\2\end{pmatrix}$$
 
-- $W_1x = (1,\; 2,\; 3)$ → ReLU leaves it unchanged (all positive) → $h = (1,2,3)$.
+- $z = W_1x = (1,\; 2,\; 3)$, the **pre-activation** (the layer's value before $\sigma$) → ReLU leaves it unchanged (all positive) → $h = (1,2,3)$.
 - $\hat y = W_2h = 1 - 2 + 1.5 = 0.5$.
 
 <svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="2-3-1 network with the worked numbers">
@@ -226,7 +226,7 @@ flowchart LR
 
 The target in the example is 1 and the prediction is 0.5. For the stated squared loss, the derivative with respect to the prediction is therefore −0.5. Its sign says that increasing the prediction locally reduces the loss. To turn that into a weight update, multiply by how that particular weight changes the prediction—the chain rule. Different weights can have different signs, even though they all contribute to the same output error.
 
-**One full update, by hand.** Since $\hat y = W_2 h$, the prediction changes with $W_2$ by $\partial \hat y / \partial W_2 = h = (1, 2, 3)$, so the chain rule gives
+**One full update, by hand.** Take one weight at a time. $L$ depends on $W_{2,i}$ only through $\hat y$, so this is the scalar chain rule of [[02-foundations/engineering-math|0.5 §1]], $(f(g(x)))' = f'(g(x))\,g'(x)$, with $g$ the map from $W_{2,i}$ to $\hat y$ and $f$ the loss. And since $\hat y = W_2h = \sum_i W_{2,i}h_i$ is linear in each weight, $\partial\hat y/\partial W_{2,i} = h_i$; stacked over $i$, $\partial \hat y / \partial W_2 = h = (1, 2, 3)$. So
 
 $$\frac{\partial L}{\partial W_2} = \frac{\partial L}{\partial \hat y}\,\frac{\partial \hat y}{\partial W_2} = (-0.5)\,(1,\ 2,\ 3) = (-0.5,\ -1,\ -1.5)$$
 
@@ -261,7 +261,7 @@ These units matter because equal epoch counts can conceal unequal optimization e
 | **Parameter** | gradient descent, from data | every entry of $W$ and $b$ |
 | **Hyperparameter** | a chosen configuration or search procedure | learning rate, batch size, number of layers, width, how long to train |
 
-**The test that decides.** Look at the update $\theta \leftarrow \theta - \alpha\, g_{\mathcal{B}}$ of §4. A number is a **parameter** if and only if it is inside $\theta$, so that step changes it. It is a **hyperparameter** if it is fixed before that loop runs and shapes the loop itself — $\alpha$, $B$, $L$, each $n_\ell$, the number of epochs — and it is chosen by comparing runs on validation data, never on the test set ([[02-foundations/ml-practice|9. ML Practice §1]]). **The boundary case:** the same quantity can sit on either side depending on the paper. SAC's entropy temperature is a hand-set hyperparameter in the original version and a learned parameter in the version that tunes it by gradient ([[02-foundations/rl-basics|7. RL Basics §8]]), so check which one a table means.
+**The test that decides.** Look at the update $\theta \leftarrow \theta - \alpha\, g_{\mathcal{B}}$ of §4. A number is a **parameter** if and only if it is inside $\theta$, so that step changes it. It is a **hyperparameter** if it is fixed before that loop runs and shapes the loop itself — $\alpha$, $B$, $L$, each $n_\ell$, the number of epochs — and it is chosen by comparing runs on validation data, never on the test set ([[02-foundations/ml-practice|9. ML Practice §1]]). **The boundary case:** the same quantity can sit on either side depending on the paper. SAC's entropy temperature is a hand-set hyperparameter in the original version and a learned parameter in the version that tunes it by gradient ([[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §3]]), so check which one a table means.
 
 An **ablation** changes one hyperparameter or component and reports the effect; that is how
 papers argue a piece mattered ([[02-foundations/ml-practice|9. ML Practice §4]]).
@@ -270,7 +270,7 @@ failure this whole vocabulary exists to manage (page 9 again; the complete defin
 
 ### 6. The rest of the vocabulary, in one table
 
-These are not concepts to master here — just labels, so the word does not stop you:
+The table is the label layer: one line per word, so the word does not stop you — not a concept to master here. The subsection after it, *The same words, with their formulas*, is the second layer, each word written as a formula with one number, and it is second-pass reading: skip it now and open it when a paper's claim needs checking.
 
 | Word | What it means, minimally |
 |---|---|
@@ -287,7 +287,7 @@ These are not concepts to master here — just labels, so the word does not stop
 | **autoregressive** | producing output one token at a time, each conditioned on the ones already produced. Generating $n$ tokens takes $n$ sequential forward passes, which is why long outputs are slow |
 | **language model** | a network trained to predict the next token over a large text corpus. That single objective is what the VLM and VLA track builds on — the "L" in VLM |
 | **autoencoder** | a network trained to reproduce its own input through a narrow middle, so the middle becomes a compressed representation. *Masked* autoencoders hide part of the input and reconstruct it; *variational* ones make the middle a distribution |
-| **adapter** | a small set of extra parameters inserted into a frozen model so only they are trained. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]] can remove its extra matrix-multiplication cost when its update is merged into the base weights before inference (the low-rank update $BA$ is added into $W$ once, so inference runs a single ordinary matrix $W + BA$), which helps explain its broad use |
+| **adapter** | a small set of extra parameters inserted into a frozen model so only they are trained. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]] can remove its extra matrix-multiplication cost when its update is merged into the base weights before inference (the low-rank update $BA$ — *rank* counts the independent directions a matrix can output, [[02-foundations/linear-algebra\|1. Linear Algebra §2]] — is added into $W$ once, so inference runs a single ordinary matrix $W + BA$), which helps explain its broad use |
 | **activation** | the nonlinearity between layers. **ReLU** ($\max(0,x)$) is the default; **GELU** and **SiLU/Swish** are smooth variants used in transformers. Without one, stacked layers collapse to a single matrix (§1) |
 
 #### The same words, with their formulas
@@ -313,7 +313,7 @@ A label is enough to keep reading; the formula is what lets you check a paper's 
   so a frozen backbone still runs in every forward pass but receives no update.
 - **Adapter (LoRA as the example).** A small set of new parameters added to a frozen weight matrix $W \in \mathbb{R}^{d \times k}$:
   $$W' = W + BA, \qquad B \in \mathbb{R}^{d \times r},\ \ A \in \mathbb{R}^{r \times k},\ \ r \ll \min(d, k)$$
-  where only $A$ and $B$ are trained, so the update $BA$ has rank at most $r$. For $d = k = 4096$ and $r = 8$, the adapter trains $r(d + k) = 65{,}536$ numbers against the $16{,}777{,}216$ of $W$ — 0.39%. Merging adds $BA$ into $W$ once, so inference is one ordinary matrix multiply ([[01-canonical-papers/notes/1-foundations/lora|LoRA]]). What that 0.39% saves in training — model-state memory falls to about an eighth, not to 0.39%, and compute by about a third — is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]].
+  where only $A$ and $B$ are trained, so the update $BA$ has rank at most $r$: every output $BAx = B(Ax)$ is a combination of $B$'s $r$ columns, so it spans at most $r$ directions ([[02-foundations/linear-algebra|1. Linear Algebra §2]]). For $d = k = 4096$ and $r = 8$, the adapter trains $r(d + k) = 65{,}536$ numbers against the $16{,}777{,}216$ of $W$ — 0.39%. Merging adds $BA$ into $W$ once, so inference is one ordinary matrix multiply ([[01-canonical-papers/notes/1-foundations/lora|LoRA]]). What that 0.39% saves in training — model-state memory falls to about an eighth, not to 0.39%, and compute by about a third — is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]].
 - **GELU and SiLU/Swish.** Smooth activations: $\text{GELU}(z) = z\,\Phi(z)$ with $\Phi$ the standard normal CDF, and $\text{SiLU}(z) = z\,\sigma(z)$ with $\sigma$ the sigmoid. At $z = -1.5,\ 0,\ 2$ they give $-0.100,\ 0,\ 1.954$ and $-0.274,\ 0,\ 1.762$. Unlike ReLU, both let a small negative value through, and both are nonlinear, so the §1 requirement holds.
 
 With these, the worked attention example on
@@ -382,7 +382,7 @@ numbers a paper reports about them is [[02-foundations/ml-practice|9. ML Practic
 것은 전부 이미 아는 산수** — 행렬곱과 미분 — 가 낯선 이름을 쓰고 있는 것뿐이다.
 
 > [!note] 처음이라면 · First pass
-> 트랙에서 가장 짧고, 순서대로 끝까지 읽으면 되는 유일한 페이지다. 여기 쓰는 20분이 1~9번을 읽히게 만든다. 미뤄 둘 절이 없다.
+> 트랙에서 가장 짧고, 순서대로 끝까지 읽으면 되는 페이지다: 그림, §1~§5, §6의 표. 거기 쓰는 20분이 1~9번을 읽히게 만든다. 미뤄 둘 것은 §6 끝의 소절 *같은 단어들, 수식과 함께* 하나뿐이다 — 논문의 주장을 그 수식으로 확인해야 할 때 여는 두 번째 읽기 분량이다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -500,7 +500,7 @@ $W_2(W_1x) = (W_2W_1)x$ — 행렬 하나가 되어 깊이가 아무것도 사�
 
 $$W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}, \quad W_2 = \begin{pmatrix}1 & -1 & 0.5\end{pmatrix}, \quad x = \begin{pmatrix}1\\2\end{pmatrix}$$
 
-- $W_1x = (1,\; 2,\; 3)$ → 전부 양수라 ReLU가 그대로 통과 → $h = (1,2,3)$.
+- $z = W_1x = (1,\; 2,\; 3)$, 곧 **사전 활성값**(pre-activation, $\sigma$를 거치기 전의 층 값) → 전부 양수라 ReLU가 그대로 통과 → $h = (1,2,3)$.
 - $\hat y = W_2h = 1 - 2 + 1.5 = 0.5$.
 
 <svg viewBox="0 0 470 190" style="max-width:100%;height:auto" role="img" aria-label="계산 예제 숫자가 붙은 2-3-1 신경망">
@@ -534,11 +534,11 @@ $$W_1 = \begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}, \quad W_2 = \begin{pmatrix}1 
 **파라미터 세기.** $W_1$이 $3\times2 = 6$개, $b_1$이 3개, $W_2$가 $1\times3=3$개,
 $b_2$가 1개 — **13개**. 논문의 "7B 파라미터"는 정확히 이렇게 센 것이다. 일반식은 층마다 행렬 하나와 편향 하나다.
 
-**계산: 장치 P1.** 카탈로그는 편향을 0으로 고정하므로([[02-foundations/lab-plants|0.6]]) 가중치 $6+3=9$개만 센다. 그림이 그 그래프다. $z=(1,2,3)$에서 ReLU는 항등. $z_3=-3$이면 그 경로가 죽는다. 과제는 편향을 끈 이 개수다.
-
 $$P = \sum_{\ell=1}^{L} \big(n_\ell\, n_{\ell-1} + n_\ell\big)$$
 
 $\ell$층에 가중치가 $n_\ell \times n_{\ell-1}$개, 편향이 $n_\ell$개 있기 때문이다. 여기서는 $(3\cdot2 + 3) + (1\cdot3 + 1) = 9 + 4 = 13$이다.
+
+**계산: 장치 P1.** 카탈로그는 편향을 0으로 고정하므로([[02-foundations/lab-plants|0.6]]) 가중치 $6+3=9$개만 센다. 그림이 이미 그 그래프다: $x=(1,2)$, $z=h=(1,2,3)$, $\hat y=0.5$, $W_1$은 $3\times 2$, $W_2$는 $1\times 3$. $z=(1,2,3)$에서는 모든 유닛이 양수라 ReLU가 항등이고 $\partial h_i/\partial z_i=1$이다. $z_3$가 $-3$이었다면 $h_3=0$이 되어 그 경로(와 $W_{2,3}$)가 죽는다. 과제는 편향을 끈 이 개수다.
 
 ### 3. 학습 = 측정된 오차로 그 숫자들을 고르기
 
@@ -581,7 +581,7 @@ flowchart LR
 
 예제에서 정답은 1이고 예측은 0.5다. 주어진 제곱 손실을 예측값으로 미분하면 −0.5다. 예측을 조금 키우면 손실이 줄어든다는 부호다. 이를 가중치 갱신으로 바꾸려면 해당 가중치가 예측을 얼마나 바꾸는지도 곱해야 한다. 이것이 연쇄법칙이다. 같은 출력 오차에 기여해도 가중치별 미분 부호는 다를 수 있다.
 
-**갱신 한 번을 손으로.** $\hat y = W_2 h$이므로 $W_2$에 따른 예측의 변화는 $\partial \hat y / \partial W_2 = h = (1, 2, 3)$이고, 연쇄법칙이 다음을 준다.
+**갱신 한 번을 손으로.** 가중치를 하나씩 본다. $L$은 $\hat y$를 거쳐서만 $W_{2,i}$에 의존하므로, 이것은 [[02-foundations/engineering-math|0.5 §1]]의 스칼라 연쇄 법칙 $(f(g(x)))' = f'(g(x))\,g'(x)$에서 $g$가 $W_{2,i}$를 $\hat y$로 보내는 사상, $f$가 손실인 경우다. 그리고 $\hat y = W_2h = \sum_i W_{2,i}h_i$는 각 가중치에 대해 선형이므로 $\partial\hat y/\partial W_{2,i} = h_i$이고, $i$에 대해 쌓으면 $\partial \hat y / \partial W_2 = h = (1, 2, 3)$이다. 그래서
 
 $$\frac{\partial L}{\partial W_2} = \frac{\partial L}{\partial \hat y}\,\frac{\partial \hat y}{\partial W_2} = (-0.5)\,(1,\ 2,\ 3) = (-0.5,\ -1,\ -1.5)$$
 
@@ -616,7 +616,7 @@ $\partial L/\partial \hat y = \hat y - y = -0.5$는 제곱 손실의 미분이�
 | **파라미터** | 경사 하강이 데이터에서 | $W$와 $b$의 모든 성분 |
 | **하이퍼파라미터** | 설정 선택이나 탐색 절차로 | 학습률, 배치 크기, 층 수, 너비, 학습 기간 |
 
-**구분하는 기준.** §4의 갱신 $\theta \leftarrow \theta - \alpha\, g_{\mathcal{B}}$를 보라. 어떤 숫자가 $\theta$ 안에 있어서 그 스텝이 바꾸면, 그리고 그때에만 **파라미터**다. 그 루프가 돌기 전에 고정되어 루프 자체의 모양을 정하는 것 — $\alpha$, $B$, $L$, 각 $n_\ell$, 에포크 수 — 은 **하이퍼파라미터**이고, 테스트 집합이 아니라 검증 데이터에서 실행들을 비교해 고른다([[02-foundations/ml-practice|9. ML 실무 §1]]). **경계 사례:** 같은 양이 논문에 따라 어느 쪽에나 설 수 있다. SAC의 엔트로피 온도는 원래 버전에서는 손으로 정하는 하이퍼파라미터이고, 그래디언트로 조정하는 버전에서는 학습되는 파라미터다([[02-foundations/rl-basics|7. RL 기초 §8]]). 표가 어느 쪽을 뜻하는지 확인하라.
+**구분하는 기준.** §4의 갱신 $\theta \leftarrow \theta - \alpha\, g_{\mathcal{B}}$를 보라. 어떤 숫자가 $\theta$ 안에 있어서 그 스텝이 바꾸면, 그리고 그때에만 **파라미터**다. 그 루프가 돌기 전에 고정되어 루프 자체의 모양을 정하는 것 — $\alpha$, $B$, $L$, 각 $n_\ell$, 에포크 수 — 은 **하이퍼파라미터**이고, 테스트 집합이 아니라 검증 데이터에서 실행들을 비교해 고른다([[02-foundations/ml-practice|9. ML 실무 §1]]). **경계 사례:** 같은 양이 논문에 따라 어느 쪽에나 설 수 있다. SAC의 엔트로피 온도는 원래 버전에서는 손으로 정하는 하이퍼파라미터이고, 그래디언트로 조정하는 버전에서는 학습되는 파라미터다([[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §3]]). 표가 어느 쪽을 뜻하는지 확인하라.
 
 **절제 실험**(ablation)은 하이퍼파라미터나 구성요소 하나를 바꿔 그 효과를 보고하는 것이고,
 논문이 어떤 부품이 중요했다고 논증하는 방식이다
@@ -625,7 +625,7 @@ $\partial L/\partial \hat y = \hat y - y = -0.5$는 제곱 손실의 미분이�
 
 ### 6. 나머지 어휘, 표 하나로
 
-여기서 숙달할 개념이 아니라 라벨일 뿐이다 — 그 단어에서 멈추지 않도록:
+표는 라벨 층이다: 단어마다 한 줄, 그 단어에서 멈추지 않도록 — 여기서 숙달할 개념이 아니다. 그 뒤의 소절 *같은 단어들, 수식과 함께*가 둘째 층으로, 단어마다 식 하나와 숫자 하나를 주며, 두 번째 읽기 분량이다: 지금은 건너뛰고 논문의 주장을 확인해야 할 때 열어라.
 
 | 단어 | 최소한의 의미 |
 |---|---|
@@ -642,7 +642,7 @@ $\partial L/\partial \hat y = \hat y - y = -0.5$는 제곱 손실의 미분이�
 | **자기회귀(autoregressive)** | 이미 만든 토큰들에 조건부로 한 번에 한 토큰씩 출력을 만드는 것. $n$개 토큰을 만들려면 순전파를 $n$번 차례로 해야 하므로 긴 출력이 느린 이유 |
 | **언어 모델(language model)** | 큰 텍스트 말뭉치에서 다음 토큰을 예측하도록 학습한 신경망. 그 목적함수 하나 위에 VLM·VLA 트랙이 서 있다 — VLM의 "L"이다 |
 | **오토인코더(autoencoder)** | 좁은 가운데를 통과시켜 자기 입력을 재현하도록 학습해서, 그 가운데가 압축된 표현이 되게 하는 신경망. *마스킹* 오토인코더는 입력 일부를 가리고 복원하고, *변분* 오토인코더는 가운데를 분포로 만든다 |
-| **어댑터(adapter)** | 얼린 모델에 끼워 넣어 그것만 학습시키는 작은 추가 파라미터 묶음. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]]는 추론 전에 갱신을 기본 가중치에 병합할 수 있을 때(저랭크 갱신 $BA$를 $W$에 한 번 더해 두면 추론은 평범한 행렬 $W + BA$ 하나로 돈다) 추가 행렬곱 비용을 없앨 수 있어 널리 쓰인다 |
+| **어댑터(adapter)** | 얼린 모델에 끼워 넣어 그것만 학습시키는 작은 추가 파라미터 묶음. [[01-canonical-papers/notes/1-foundations/lora\|LoRA]]는 추론 전에 갱신을 기본 가중치에 병합할 수 있을 때(저랭크 갱신 $BA$ — *랭크*는 행렬이 출력할 수 있는 독립 방향의 수, [[02-foundations/linear-algebra\|1. 선형대수 §2]] — 를 $W$에 한 번 더해 두면 추론은 평범한 행렬 $W + BA$ 하나로 돈다) 추가 행렬곱 비용을 없앨 수 있어 널리 쓰인다 |
 | **활성함수(activation)** | 층 사이의 비선형성. **ReLU**($\max(0,x)$)가 기본이고, **GELU**와 **SiLU/Swish**가 트랜스포머에서 쓰는 매끄러운 변형이다. 이것이 없으면 쌓은 층이 행렬 하나로 무너진다(§1) |
 
 #### 같은 단어들, 수식과 함께
@@ -668,7 +668,7 @@ $\partial L/\partial \hat y = \hat y - y = -0.5$는 제곱 손실의 미분이�
   그래서 얼린 백본은 매 순전파에서 여전히 계산되지만 갱신은 받지 않는다.
 - **어댑터(예: LoRA).** 얼린 가중치 행렬 $W \in \mathbb{R}^{d \times k}$에 더하는 작은 새 파라미터 묶음이다.
   $$W' = W + BA, \qquad B \in \mathbb{R}^{d \times r},\ \ A \in \mathbb{R}^{r \times k},\ \ r \ll \min(d, k)$$
-  $A$와 $B$만 학습하므로 갱신 $BA$의 랭크는 최대 $r$이다. $d = k = 4096$, $r = 8$이면 어댑터는 $W$의 $16{,}777{,}216$개에 대해 $r(d + k) = 65{,}536$개, 곧 0.39%만 학습한다. 병합하면 $BA$를 $W$에 한 번 더해 두므로 추론은 평범한 행렬곱 하나다([[01-canonical-papers/notes/1-foundations/lora|LoRA]]). 그 0.39%가 학습에서 아끼는 것 — 모델 상태 메모리는 0.39%가 아니라 약 8분의 1로 줄고, 연산은 약 3분의 1이 준다 — 은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]에 있다.
+  $A$와 $B$만 학습하므로 갱신 $BA$의 랭크는 최대 $r$이다: 모든 출력 $BAx = B(Ax)$가 $B$의 열 $r$개의 조합이라 많아야 $r$개 방향만 펼치기 때문이다([[02-foundations/linear-algebra|1. 선형대수 §2]]). $d = k = 4096$, $r = 8$이면 어댑터는 $W$의 $16{,}777{,}216$개에 대해 $r(d + k) = 65{,}536$개, 곧 0.39%만 학습한다. 병합하면 $BA$를 $W$에 한 번 더해 두므로 추론은 평범한 행렬곱 하나다([[01-canonical-papers/notes/1-foundations/lora|LoRA]]). 그 0.39%가 학습에서 아끼는 것 — 모델 상태 메모리는 0.39%가 아니라 약 8분의 1로 줄고, 연산은 약 3분의 1이 준다 — 은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]에 있다.
 - **GELU와 SiLU/Swish.** 매끄러운 활성함수다. $\text{GELU}(z) = z\,\Phi(z)$이고 $\Phi$는 표준정규 누적분포함수, $\text{SiLU}(z) = z\,\sigma(z)$이고 $\sigma$는 시그모이드다. $z = -1.5,\ 0,\ 2$에서 각각 $-0.100,\ 0,\ 1.954$와 $-0.274,\ 0,\ 1.762$다. ReLU와 달리 작은 음수를 통과시키고, 둘 다 비선형이므로 §1의 요구를 만족한다.
 
 이것들이 있으면 [[02-foundations/linear-algebra|1. 선형대수 §1]]의 어텐션 계산 예제 —

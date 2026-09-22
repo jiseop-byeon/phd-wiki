@@ -20,8 +20,8 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Brohan et al., RSS 2023** — [arXiv](https://arxiv.org/abs/2212.06817) · [PDF](https://arxiv.org/pdf/2212.06817) · [Code](https://github.com/google-research/robotics_transformer) · [Official](https://robotics-transformer1.github.io)
 
 > [!note] Math on-ramp · 수학 준비물
-> [[02-foundations/rl-basics|7. RL Basics §6]] for behaviour cloning and its ceiling, and [[02-foundations/calculus-backprop|2. Calculus §4]] for the loss: discretizing each of 11 action dimensions into 256 bins turns *control into classification*, scored by cross-entropy. Hold that fact — it is the hinge between this paper and [[01-canonical-papers/notes/4-vla/diffusion-policy|continuous-output policies]].
-> 행동 복제와 그 상한은 [[02-foundations/rl-basics|7. RL 기초 §6]], 손실은 [[02-foundations/calculus-backprop|2. 미적분 §4]]: 11개 행동 차원을 각각 256구간으로 이산화하면 *제어가 분류*가 되고 교차 엔트로피로 채점된다. 이 사실을 붙들어라 — 이 논문과 [[01-canonical-papers/notes/4-vla/diffusion-policy|연속 출력 정책]] 사이의 경첩이다.
+> [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]] for behaviour cloning and its ceiling, and [[02-foundations/calculus-backprop|2. Calculus §4]] for the loss: discretizing each of 11 action dimensions into 256 bins turns *control into classification*, scored by cross-entropy. Hold that fact — it is the hinge between this paper and [[01-canonical-papers/notes/4-vla/diffusion-policy|continuous-output policies]].
+> 행동 복제와 그 상한은 [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]], 손실은 [[02-foundations/calculus-backprop|2. 미적분 §4]]: 11개 행동 차원을 각각 256구간으로 이산화하면 *제어가 분류*가 되고 교차 엔트로피로 채점된다. 이 사실을 붙들어라 — 이 논문과 [[01-canonical-papers/notes/4-vla/diffusion-policy|연속 출력 정책]] 사이의 경첩이다.
 
 ## English
 
