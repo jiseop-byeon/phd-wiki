@@ -121,6 +121,10 @@ For example, trace a panel from initial localization through contact to acceptan
 > localized, and fixtured every part. Count setup, calibration, material feeding,
 > inspection, recovery, and finishing before assigning an autonomy level.
 
+### 5. Where this stream is moving (2019–2025)
+
+Counted as in [[05-construction-robotics/lineage|lineage §6]]: assembly, fabrication and printing papers rose from $33$ in 2019–2021 to $59$ in 2023–2025 but fell from $27\%$ to $23\%$ of construction robot papers, still one of the three largest streams. Its centre of gravity is off-site: vision-guided assembly of prefabricated components (Liu et al., *AutCon* 162, 2024, [DOI](https://doi.org/10.1016/j.autcon.2024.105385)), human–robot collaboration in timber prefabrication (Yang et al., *AutCon* 160, 2024, [DOI](https://doi.org/10.1016/j.autcon.2024.105333)), modular construction manufacturing (Fu et al., *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105196), a review), and robotic 3D printing of concrete components for residential buildings (Alabbasi et al., *AutCon* 148, 2023, [DOI](https://doi.org/10.1016/j.autcon.2023.104751)). Contact-rich assembly on an active site stays rare, which is [[05-construction-robotics/construction-manipulation|9. Construction Manipulation §3]]'s finding seen from the volume side.
+
 ### Problem set
 
 Tier B. **S1** from [[05-construction-robotics/site-engineering|2.5]], holes $400\,\mathrm{mm}$ apart unless the question changes $L$. The lineages below are for question 3, not a second derivation.
@@ -264,6 +268,10 @@ flowchart LR
 > [!warning] 주장 읽기
 > “자율 시공”이 사람이 모든 부품을 준비·정합·고정한 뒤의 공구 운동만 뜻할 수 있다. 준비,
 > 보정, 재료 공급, 검사, 복구, 마감까지 세고 자율 수준을 판단하라.
+
+### 5. 이 흐름은 어디로 가고 있나 (2019–2025)
+
+[[05-construction-robotics/lineage|계보 §6]]과 같은 방식으로 세면, 조립·제작·프린팅 논문은 2019–2021년 $33$편에서 2023–2025년 $59$편으로 늘었지만 건설 로봇 논문 가운데 비율은 $27\%$에서 $23\%$로 줄었고, 여전히 가장 큰 세 흐름 가운데 하나다. 무게중심은 현장 밖이다. 비전으로 안내하는 프리패브 부재 조립(Liu 외, *AutCon* 162, 2024, [DOI](https://doi.org/10.1016/j.autcon.2024.105385)), 목구조 프리패브의 인간–로봇 협업(Yang 외, *AutCon* 160, 2024, [DOI](https://doi.org/10.1016/j.autcon.2024.105333)), 모듈러 건설 제작(Fu 외, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105196), 리뷰), 그리고 주거 건물용 콘크리트 부재의 로봇 3D 프린팅(Alabbasi 외, *AutCon* 148, 2023, [DOI](https://doi.org/10.1016/j.autcon.2023.104751)). 가동 중인 현장의 접촉 많은 조립은 여전히 드물고, 이것은 [[05-construction-robotics/construction-manipulation|9. 건설 조작 §3]]의 발견을 양 쪽에서 본 것이다.
 
 ### 과제
 

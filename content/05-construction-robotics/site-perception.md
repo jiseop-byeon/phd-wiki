@@ -95,6 +95,10 @@ evaluated, and whether the system ran online on the moving platform.
 
 Evaluation needs an independent reference because alignment can hide the error being measured. For example, checking detected anchor positions against the same model used to register the scan can reward agreement with the model rather than agreement with the built site. **The reading this gives you.** Identify which reference was independently measured, how unobserved regions enter the denominator, and whether the final robot action stayed within its required tolerance.
 
+### 5. Where this stream is moving (2019–2025)
+
+Counted as in [[05-construction-robotics/lineage|lineage §6]], perception, inspection, localization and navigation is the fastest-growing stream: from $16$ robot papers in 2019–2021 to $61$ in 2023–2025, from $13\%$ to $24\%$ of construction robot papers. Three shifts carry it. Robots became mobile scanners: robot-assisted scanning and point-cloud segmentation of building interiors (Hu et al., *AutCon* 152, 2023, [DOI](https://doi.org/10.1016/j.autcon.2023.104949)) and a crack-recognition robot that is the stream's most-cited paper (Hu et al., *AutCon* 159, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105262)). Quadrupeds arrived as BIM-guided scanning platforms (Park et al., *AutCon* 152, 2023, [DOI](https://doi.org/10.1016/j.autcon.2023.104911); Chen et al., *AutCon* 170, 2025, [DOI](https://doi.org/10.1016/j.autcon.2024.105930)). And the stream acquired shared data and a map of itself: the ConSLAM dataset (Trzeciak et al., *J. Computing in Civil Engineering* 37, 2023, [DOI](https://doi.org/10.1061/jccee5.cpeng-5212)) and the SLAM review of Yarovoi and Cho (*AutCon* 162, 2024, [DOI](https://doi.org/10.1016/j.autcon.2024.105344)).
+
 ### After reading
 
 - Separate localization, state reconstruction, comparison-to-plan, and inspection.
@@ -213,6 +217,10 @@ voxel/transformer가 더 강할 수 있지만, 두 논문은 포인트 클라우
 > 보정, 정합, 모델 공차, 실제 시공 편차를 구분해야 한다.
 
 정렬이 측정할 오차를 가릴 수 있어 독립 기준이 필요하다. 스캔 정합에 쓴 모델로 검출 앵커 위치를 검사하면 실제 현장보다 모델과의 일치를 보상할 수 있다. **여기서 얻는 독법.** 어떤 기준을 독립 측정했는지, 미관측 영역을 분모에 어떻게 넣었는지, 최종 로봇 행동이 요구 허용오차 안에 있었는지 확인한다.
+
+### 5. 이 흐름은 어디로 가고 있나 (2019–2025)
+
+[[05-construction-robotics/lineage|계보 §6]]과 같은 방식으로 세면, 인식·점검·위치 추정·내비게이션은 가장 빨리 크는 흐름이다. 로봇 논문이 2019–2021년 $16$편에서 2023–2025년 $61$편으로, 건설 로봇 논문의 $13\%$에서 $24\%$로 늘었다. 세 가지 변화가 이것을 이끈다. 로봇이 움직이는 스캐너가 됐다. 로봇을 이용한 건물 내부 스캔과 점군 분할(Hu 외, *AutCon* 152, 2023, [DOI](https://doi.org/10.1016/j.autcon.2023.104949)), 그리고 이 흐름에서 가장 많이 인용된 균열 인식 로봇(Hu 외, *AutCon* 159, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105262)). 사족 로봇이 BIM을 따르는 스캔 플랫폼으로 들어왔다(Park 외, *AutCon* 152, 2023, [DOI](https://doi.org/10.1016/j.autcon.2023.104911); Chen 외, *AutCon* 170, 2025, [DOI](https://doi.org/10.1016/j.autcon.2024.105930)). 그리고 흐름이 공유 데이터와 스스로의 지도를 얻었다. ConSLAM 데이터셋(Trzeciak 외, *J. Computing in Civil Engineering* 37, 2023, [DOI](https://doi.org/10.1061/jccee5.cpeng-5212))과 Yarovoi와 Cho의 SLAM 리뷰(*AutCon* 162, 2024, [DOI](https://doi.org/10.1016/j.autcon.2024.105344))다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

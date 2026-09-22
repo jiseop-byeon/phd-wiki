@@ -56,6 +56,7 @@ roof-inspection robots; Shayan Shayesteh → Appalachian State; M. Habibnezhad �
 | CMU CEE ([profile](https://www.cmu.edu/cee/people/faculty/akinci.html)) | Burcu Akinci | BIM + 3D imaging/sensing for facility histories; led a 2020–21 NSF *planning grant* for a National Institute for AI in Construction (institute itself not launched); **Dean of CMU Engineering from 2026-01**; CMU context: Fujitsu–CMU Physical AI Research Center opened 2026-04 |
 | Univ. of Florida | Jing "Eric" Du | haptics-based robot teleoperation, human-robot shared perception, VR/AR HRC |
 | Oregon State (CoRIS) | Joseph Louis | construction teleoperation and earthmoving-operations simulation |
+| Columbia University (formerly UBC) | Zhengbo Zou | reinforcement and imitation learning for construction-robot control; safety-constrained RL for human–robot collaboration; e.g. Huang et al., *AutCon* 146, 2023, [DOI](https://doi.org/10.1016/j.autcon.2022.104691) |
 | USC (legacy) | Behrokh Khoshnevis | **Contour Crafting** — the origin of construction 3D printing |
 | UT Austin ME/ARL (adjacent groups) | Luis Sentis (HCRL), Mitch Pryor (NRG) | humanoid/whole-body control and field robotics |
 | **UT Austin CS — Texas Robotics** | **Yuke Zhu** ([RPL](https://rpl.cs.utexas.edu/)), **Roberto Martín-Martín** (RobIn Lab) | **manipulation learning — the nearest on-path group to this program.** Both co-authored [[01-canonical-papers/notes/4-vla/robomimic\|robomimic]], whose own affiliation line reads "Stanford, UT Austin, NVIDIA"; Martín-Martín is also on [[01-canonical-papers/notes/4-vla/open-x-embodiment\|Open X-Embodiment]]. Martín-Martín's CS395T *Robot Manipulation and Learning* syllabus and reading list are public |
@@ -79,16 +80,33 @@ excavation lineage at CMU (Stentz/Singh, 1990s) lives in the
 | ITE, TU Braunschweig | Norman Hack | shotcrete 3D printing at structural scale (DFG TRR 277 Additive Manufacturing in Construction); GKR alumnus |
 | UMIT/[Algoryx](https://www.algoryx.se/), Umeå Univ. | Martin Servin | RL + world models for autonomous wheel loaders with Komatsu/Epiroc — the Nordic counterpart to RSL's earthmoving-learning line |
 | Imperial/UCL consortium | Mirko Kovac · Robert Stuart-Smith | **aerial additive manufacturing** — drones 3D-printing in flight (Nature 2022) |
+| RWTH Aachen University | Sigrid Brell-Çokcan | teleoperated and semi-autonomous construction machines, especially for deconstruction; among the most prolific authors of 2021–2025; e.g. Lee and Brell-Çokcan, *Construction Robotics* 7, 2023, [DOI](https://doi.org/10.1007/s41693-023-00111-9) |
+| University of Cambridge | Ioannis Brilakis | datasets and perception for construction robots: ConSLAM, excavator pose from synthetic data, crack segmentation on an unmanned wheeled robot; e.g. Trzeciak et al., *J. Computing in Civil Engineering* 37, 2023, [DOI](https://doi.org/10.1061/jccee5.cpeng-5212) |
+| OTH Regensburg (formerly TU Munich) | Thomas Linner | construction-robotics education and, at TUM, the cable-driven curtain-wall installation robot (Iturralde et al., *AutCon* 138, 2022, [DOI](https://doi.org/10.1016/j.autcon.2022.104235)) |
 
-### Asia
+### Asia and Oceania
 
-*(Coverage note: Chinese academic and OEM heavy-machinery programs — the XCMG/Zhejiang/Tongji orbit increasingly visible at ICRA — are not yet mapped here; flagged for a future survey.)*
+*By volume this is now the largest region of the field ([[05-construction-robotics/lineage|lineage §5]]). The rows added on 2026-09-22 were checked against the affiliations printed on each group's own 2021–2025 papers, with one representative paper each. Six mainland institutions among the twenty busiest of 2021–2025 — Zhejiang ($20$ papers), Tongji and Southeast ($17$ each), HUST ($15$), Chongqing ($14$) and Tsinghua ($13$) — are not yet mapped to groups, because their counts could not yet be separated from the manufacturing robotics the same count contains. Treat them as institutions to search, not as absences; the heavy-machinery OEM programmes (XCMG and its orbit) are likewise unmapped.*
 
 | Lab | PI | Known for |
 |---|---|---|
 | [IRiS Lab](https://iris.kaist.ac.kr/), KAIST CEE | Jee-Hwan Ryu | telerobotics + construction robotics (RA-L 2024 Best Paper); the Korean anchor of the ICRA construction-robotics community |
 | [Construction API Lab](https://www.con-api.team/), National Taiwan Univ. | Jacob J. Lin | vision+BIM production monitoring moving into robot handover (Golparvar-Fard alumnus, Reconstruct co-founder) |
 | SNU CEE | Youngjib Ham (2024–) · Changbum Ahn | vision/thermography diagnostics; wearable sensing (the Korean branch of the UIUC/UMich trees) |
+| Hong Kong Polytechnic University | Heng Li | worker and equipment-operator sensing turned toward robots: EEG fatigue of equipment operators, thermal-image hand gestures for worker–robot collaboration, excavator 3D pose (with Monash); e.g. Wu et al., *AEI* 56, 2023, [DOI](https://doi.org/10.1016/j.aei.2023.101939) |
+| University of Hong Kong | Weisheng Lu | human–robot collaboration in modular, off-site construction and robot + BIM facility inspection; e.g. Fu et al., *AutCon* 158, 2024 (review), [DOI](https://doi.org/10.1016/j.autcon.2023.105196) |
+| University of Hong Kong · City University of Hong Kong | Jia Pan · Xiaowei Luo | co-authors of the most-cited on-site human–robot collaboration paper of 2023, Zhang et al., *AutCon* 150, [DOI](https://doi.org/10.1016/j.autcon.2023.104812); Pan also co-authored Baidu's excavation-trajectory work |
+| HKUST | Jack C. P. Cheng | BIM as the robot's map: coverage path planning for indoor robots, excavator full-body pose from onboard sensors; e.g. Chen et al., *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105160) |
+| HKUST | Yantao Yu | worker–robot collaboration: worker intentions from partial observations, multi-robot team composition, a 2014–2024 human-centric HRC review; e.g. Pan and Yu, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105184) |
+| Baidu RAL | Liangjun Zhang | the AES autonomous excavator (*Science Robotics* 2021), excavation trajectory optimization and learning, TNES terrain mapping and excavation; see [[05-construction-robotics/lineage\|lineage, Era 4]] |
+| Jilin University | Jixin Wang and colleagues | excavator trajectory generation from expert operators' skills; equipment activity recognition; e.g. Feng et al., *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105247) |
+| Monash University | Mehrdad Arashpour | vision-based excavator pose estimation trained on synthetic data with domain randomization; e.g. Assadzadeh et al., *AutCon* 134, 2022, [DOI](https://doi.org/10.1016/j.autcon.2021.104089) |
+
+### Middle East
+
+| Lab / group | PI | Known for |
+|---|---|---|
+| NYU Abu Dhabi | Borja García de Soto | multi-robot data collection on sites, IFC/BIM-guided robot navigation, a case study of an overhead-drilling robot in the UAE; e.g. Prieto et al., *Journal of Field Robotics* 41, 2024, [DOI](https://doi.org/10.1002/rob.22316) |
 
 ### Manufacturing robotics (adjacent departments)
 
@@ -186,6 +204,7 @@ The groups differ less by country than by what they put on the site:
 | CMU CEE ([프로필](https://www.cmu.edu/cee/people/faculty/akinci.html)) | Burcu Akinci | BIM + 3D 이미징/센싱; 건설 AI 국가 연구소는 2020–21 NSF *기획 과제*였고 연구소 자체는 미설립; **2026년 1월부터 CMU 공대 학장**; CMU 맥락: Fujitsu–CMU Physical AI Research Center 2026-04 출범 |
 | 플로리다대 | Jing "Eric" Du | 햅틱 기반 로봇 원격조작, 인간-로봇 공유 인식, VR/AR HRC |
 | Oregon State (CoRIS) | Joseph Louis | 건설 원격조작과 토공 작업 시뮬레이션 |
+| 컬럼비아대(전 UBC) | Zhengbo Zou | 건설 로봇 제어를 위한 강화학습과 모방학습, 인간–로봇 협업을 위한 안전 제약 강화학습. 예: Huang 외, *AutCon* 146, 2023, [DOI](https://doi.org/10.1016/j.autcon.2022.104691) |
 | USC (유산) | Behrokh Khoshnevis | **Contour Crafting** — 건설 3D 프린팅의 기원 |
 | UT Austin ME/ARL (인접 그룹) | Luis Sentis (HCRL), Mitch Pryor (NRG) | 휴머노이드/전신 제어와 필드 로보틱스 |
 | **UT Austin CS — Texas Robotics** | **Yuke Zhu** ([RPL](https://rpl.cs.utexas.edu/)), **Roberto Martín-Martín** (RobIn Lab) | **조작 학습 — 이 프로그램 경로에 가장 가까운 그룹.** 둘 다 [[01-canonical-papers/notes/4-vla/robomimic\|robomimic]] 공저자이고, 그 노트의 affiliation 줄이 "Stanford, UT Austin, NVIDIA"다. Martín-Martín은 [[01-canonical-papers/notes/4-vla/open-x-embodiment\|Open X-Embodiment]]에도 참여. CS395T *Robot Manipulation and Learning* 강의계획서와 읽기 목록이 공개돼 있다 |
@@ -208,16 +227,33 @@ The groups differ less by country than by what they put on the site:
 | ITE, TU Braunschweig | Norman Hack | 구조 스케일 숏크리트 3D 프린팅 (DFG TRR 277); GKR 출신 |
 | UMIT/[Algoryx](https://www.algoryx.se/), 우메오대 | Martin Servin | Komatsu/Epiroc와 자율 휠로더 RL·월드모델 — RSL 토공 학습 라인의 북유럽 대응물 |
 | Imperial/UCL 컨소시엄 | Mirko Kovac · Robert Stuart-Smith | **공중 적층 제조** — 비행 중 3D 프린팅하는 드론 (Nature 2022) |
+| 아헨공대 | Sigrid Brell-Çokcan | 원격조작·반자율 건설 기계, 특히 해체 작업. 2021–2025년 가장 많이 낸 저자 가운데 하나. 예: Lee와 Brell-Çokcan, *Construction Robotics* 7, 2023, [DOI](https://doi.org/10.1007/s41693-023-00111-9) |
+| 케임브리지대 | Ioannis Brilakis | 건설 로봇을 위한 데이터셋과 인식: ConSLAM, 합성 데이터로 굴착기 자세, 무인 바퀴 로봇 위 균열 분할. 예: Trzeciak 외, *J. Computing in Civil Engineering* 37, 2023, [DOI](https://doi.org/10.1061/jccee5.cpeng-5212) |
+| OTH 레겐스부르크(전 뮌헨공대) | Thomas Linner | 건설 로보틱스 교육, 그리고 뮌헨공대 시절의 케이블 구동 커튼월 설치 로봇(Iturralde 외, *AutCon* 138, 2022, [DOI](https://doi.org/10.1016/j.autcon.2022.104235)) |
 
-### 아시아
+### 아시아와 오세아니아
 
-*(커버리지 주석: 중국 학계·OEM 중장비 프로그램 — ICRA에서 점점 눈에 띄는 XCMG/저장/퉁지 궤도 — 은 아직 이 지도에 없다; 향후 조사 대상으로 표기.)*
+*양으로 보면 이제 분야에서 가장 큰 지역이다([[05-construction-robotics/lineage|계보 §5]]). 2026-09-22에 더한 행은 각 그룹 자신의 2021–2025년 논문에 인쇄된 소속으로 확인했고, 대표 논문을 하나씩 달았다. 2021–2025년 가장 많이 낸 스무 곳에 드는 중국 본토 기관 여섯 — 저장대($20$편), 퉁지대와 동남대(각 $17$), 화중과기대($15$), 충칭대($14$), 칭화대($13$) — 은 아직 그룹으로 나누지 않았다. 같은 집계에 섞인 제조 로봇 연구와 아직 가를 수 없었기 때문이다. 없는 것이 아니라 찾아볼 기관으로 읽는다. 중장비 제조사 프로그램(XCMG와 그 주변)도 마찬가지로 아직 지도에 없다.*
 
 | 랩 | PI | 대표 분야 |
 |---|---|---|
 | [IRiS Lab](https://iris.kaist.ac.kr/), KAIST 건설환경 | 류지환 | 텔레로보틱스 + 건설로봇 (RA-L 2024 Best Paper); ICRA 건설로봇 커뮤니티의 한국 앵커 |
 | [Construction API Lab](https://www.con-api.team/), 국립대만대 | Jacob J. Lin | 비전+BIM 생산 모니터링에서 로봇 전달로 확장 중 (Golparvar-Fard 출신, Reconstruct 공동창업) |
 | 서울대 건설환경 | Youngjib Ham (2024–) · Changbum Ahn | 비전/열화상 진단; 웨어러블 센싱 (UIUC/UMich 나무의 한국 가지) |
+| 홍콩이공대 | Heng Li | 로봇으로 향한 작업자·장비 운전자 센싱: 장비 운전자의 EEG 피로, 작업자–로봇 협업을 위한 열화상 손 제스처, 굴착기 3D 자세(모나시대와 함께). 예: Wu 외, *AEI* 56, 2023, [DOI](https://doi.org/10.1016/j.aei.2023.101939) |
+| 홍콩대 | Weisheng Lu | 모듈러·공장 제작 건설의 인간–로봇 협업, 로봇 + BIM 시설 점검. 예: Fu 외, *AutCon* 158, 2024(리뷰), [DOI](https://doi.org/10.1016/j.autcon.2023.105196) |
+| 홍콩대 · 홍콩성시대 | Jia Pan · Xiaowei Luo | 2023년 가장 많이 인용된 현장 인간–로봇 협업 논문의 공저자, Zhang 외, *AutCon* 150, [DOI](https://doi.org/10.1016/j.autcon.2023.104812). Pan은 바이두의 굴착 궤적 연구에도 공저자로 참여 |
+| 홍콩과기대 | Jack C. P. Cheng | 로봇의 지도로서의 BIM: 실내 로봇 커버리지 경로 계획, 탑재 센서로 굴착기 전신 자세 추정. 예: Chen 외, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105160) |
+| 홍콩과기대 | Yantao Yu | 작업자–로봇 협업: 부분 관측에서 작업자 의도 학습, 다중 로봇 팀 구성, 2014–2024 인간 중심 HRC 리뷰. 예: Pan과 Yu, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105184) |
+| 바이두 RAL | Liangjun Zhang | AES 자율 굴착기(*Science Robotics* 2021), 굴착 궤적 최적화와 학습, TNES 지형 매핑·굴착. [[05-construction-robotics/lineage\|계보, 4시대]] 참조 |
+| 지린대 | Jixin Wang과 동료들 | 숙련 운전자 기술에서 굴착기 궤적 생성, 장비 작업 동작 인식. 예: Feng 외, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105247) |
+| 모나시대 | Mehrdad Arashpour | 합성 데이터와 도메인 무작위화로 학습한 비전 기반 굴착기 자세 추정. 예: Assadzadeh 외, *AutCon* 134, 2022, [DOI](https://doi.org/10.1016/j.autcon.2021.104089) |
+
+### 중동
+
+| 랩 | PI | 대표 분야 |
+|---|---|---|
+| 뉴욕대 아부다비 | Borja García de Soto | 현장의 다중 로봇 데이터 수집, IFC/BIM을 따르는 로봇 내비게이션, UAE의 천장 드릴링 로봇 사례 연구. 예: Prieto 외, *Journal of Field Robotics* 41, 2024, [DOI](https://doi.org/10.1002/rob.22316) |
 
 ### 제조 로봇 (타 학과)
 

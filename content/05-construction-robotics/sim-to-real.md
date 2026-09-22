@@ -153,6 +153,10 @@ outside the training range.
 >
 > **The reading this gives you.** Ask for variables, ranges, and dependencies before accepting a robustness claim. In the first hypothetical setting, about 74% of joint real conditions lie outside the randomization box. That is not a predicted failure rate, nor proof that all points inside were adequately sampled. Real parameter correlations also change the coverage; separate training support from actual transfer evaluation.
 
+### 5. Where this stream is moving (2019–2025)
+
+Counted as in [[05-construction-robotics/lineage|lineage §6]], construction robot titles that name learning — deep, reinforcement or imitation — rose from $9$ in 2019–2021 to $30$ in 2023–2025, from $7\%$ to $12\%$ of construction robot papers. The learning-for-control work in these journals includes reinforcement learning boosted by virtual demonstrations for long-horizon construction tasks (Huang et al., *AutCon* 146, 2023, [DOI](https://doi.org/10.1016/j.autcon.2022.104691)), prediction-based path planning via deep reinforcement learning (Cai et al., *J. Computing in Civil Engineering* 37, 2023, [DOI](https://doi.org/10.1061/(asce)cp.1943-5487.0001056)), safety-constrained reinforcement learning for human–robot collaboration (Duan et al., *AutCon* 174, 2025, [DOI](https://doi.org/10.1016/j.autcon.2025.106130)), and learning from demonstration, surveyed by Li et al. (*AEI* 62, 2024, [DOI](https://doi.org/10.1016/j.aei.2024.102625)). Transfer demonstrated on real hardware at construction scale is harder to find; [[01-canonical-papers/notes/8-construction/apolinarska-timber|Apolinarska et al.'s timber insertion]] is a verified construction-journal example, and foundation models had reached these journals in one title by 2025. So when you place a construction-journal learning paper on §3's ladder, read its methods section for where it was evaluated before assuming a rung.
+
 ### After reading
 
 - Separate dynamics, contact, sensing, task, and implementation gaps.
@@ -330,6 +334,10 @@ Zero-shot transfer는 배치 전에 목표 도메인 학습 업데이트가 없�
 > **개별 범위의 포함률과 동시 포함률은 다르다.** 무작위화한 파라미터 6개가 각각 실제 주변분포의 80%를 덮는다고 하자. 실제 파라미터들이 독립이면 모든 범위 안에 실제 조건이 들어갈 확률은 0.8⁶ ≈ **26%** 수준이다. 각각 90%를 덮으면 0.9⁶ ≈ **53%** 수준이다.
 >
 > **여기서 얻는 독법.** 강건성 주장을 읽기 전에 변수, 범위, 의존 관계를 확인한다. 첫 가상 설정에서는 실제 결합 조건의 약 74%가 무작위화 상자 밖에 있다. 이는 예상 실패율이 아니며 상자 안을 충분히 표집했다는 증거도 아니다. 실제 파라미터의 상관도 포함률을 바꾼다. 학습 범위와 실제 전이 평가를 구분한다.
+
+### 5. 이 흐름은 어디로 가고 있나 (2019–2025)
+
+[[05-construction-robotics/lineage|계보 §6]]과 같은 방식으로 세면, 학습 — 딥, 강화, 모방 — 을 말하는 건설 로봇 제목은 2019–2021년 $9$편에서 2023–2025년 $30$편으로, 건설 로봇 논문의 $7\%$에서 $12\%$로 늘었다. 이 학술지들의 제어 학습 연구에는 가상 시연으로 끌어올린 장기 건설 작업의 강화학습(Huang 외, *AutCon* 146, 2023, [DOI](https://doi.org/10.1016/j.autcon.2022.104691)), 심층 강화학습을 쓴 예측 기반 경로 계획(Cai 외, *J. Computing in Civil Engineering* 37, 2023, [DOI](https://doi.org/10.1061/(asce)cp.1943-5487.0001056)), 인간–로봇 협업을 위한 안전 제약 강화학습(Duan 외, *AutCon* 174, 2025, [DOI](https://doi.org/10.1016/j.autcon.2025.106130)), 그리고 Li 외가 정리한 시연 학습(*AEI* 62, 2024, [DOI](https://doi.org/10.1016/j.aei.2024.102625))이 있다. 건설 규모의 실제 하드웨어에서 보인 전이는 찾기 더 어렵다. [[01-canonical-papers/notes/8-construction/apolinarska-timber|Apolinarska 외의 목재 삽입]]이 확인된 건설 학술지의 예이고, 파운데이션 모델은 2025년까지 이 학술지들에 제목 하나로만 닿았다. 그러니 건설 학술지의 학습 논문을 §3의 사다리에 올릴 때는, 단을 가정하기 전에 방법 절에서 어디서 평가했는지 읽어라.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

@@ -177,6 +177,10 @@ soil bin supports almost no claim.
 >
 > **The reading this gives you.** Ask which term changed and whether the other stayed fixed. A policy can change both filling and motion; hydraulics constrain achievable cycle time but do not determine it alone. These are ideal cycle figures, excluding downtime, setup, and recovery. A field-productivity claim must include those costs in its time denominator.
 
+### 7. Where this stream is moving (2019–2025)
+
+Counted as in [[05-construction-robotics/lineage|lineage §6]]: robot-titled earthmoving papers in the four construction journals rose from $24$ in 2019–2021 to $41$ in 2023–2025, but fell from $20\%$ to $16\%$ of construction robot papers. Of the $41$, $18$ plan or control the machine, $12$ perceive it and $11$ do both or neither, and none mentions reinforcement or imitation learning. The construction journals therefore carry the classical half of this page's pipeline — trajectory optimization, trajectories built from expert operators' skills (Feng et al., *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105247), from Jilin University), and perception of the machine: excavator 3D pose (Assadzadeh et al., *AEI* 55, 2023, [DOI](https://doi.org/10.1016/j.aei.2023.101875)) and productivity from activity recognition (Chen et al., *AutCon* 146, 2023, [DOI](https://doi.org/10.1016/j.autcon.2022.104702)). The learning half runs in robotics venues: [[01-canonical-papers/notes/8-construction/aes|AES]] and its successors from Baidu, [[01-canonical-papers/notes/8-construction/heap|HEAP]] and [[01-canonical-papers/notes/8-construction/ext|ExT]] from ETH, and [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]]. A search for learned excavation that stays in *Automation in Construction* will conclude that it barely exists; one that stays in RA-L will miss the machine-perception and operator-skill work it could build on.
+
 ### After reading
 
 - Explain why hydraulic actuation and soil contact make excavators harder than
@@ -372,6 +376,10 @@ flowchart LR
 > **충전율과 사이클 시간을 나눈다.** 가상의 버킷 1.2 m³, 충전율 0.85, 사이클 25 s면 연속 사이클의 이상적 생산성은 1.2 × 0.85 × 3600/25 ≈ **146.9 m³/h** 수준이다. 충전율을 고정하고 사이클을 10% 줄여 22.5 s로 만들면 **163.2 m³/h** 수준이다. 사이클을 고정하고 충전율을 10% 올려 0.935로 만들면 **161.6 m³/h** 수준이다.
 >
 > **여기서 얻는 독법.** 어느 항을 바꿨고 다른 항은 유지됐는지 묻는다. 정책은 충전과 동작 모두를 바꿀 수 있다. 유압은 가능한 사이클 시간을 제한하지만 혼자 결정하지는 않는다. 이 값은 중단, 준비, 회복을 제외한 이상적 사이클 수치다. 현장 생산성은 그 비용을 시간 분모에 포함해야 한다.
+
+### 7. 이 흐름은 어디로 가고 있나 (2019–2025)
+
+[[05-construction-robotics/lineage|계보 §6]]과 같은 방식으로 세면, 네 건설 학술지의 로봇 제목 토공 논문은 2019–2021년 $24$편에서 2023–2025년 $41$편으로 늘었지만, 건설 로봇 논문 가운데 비율은 $20\%$에서 $16\%$로 줄었다. $41$편 가운데 $18$편은 기계를 계획하거나 제어하고, $12$편은 기계를 인식하며, $11$편은 둘 다이거나 어느 쪽도 아니다. 강화학습이나 모방학습을 말하는 제목은 없다. 그러니 건설 학술지는 이 페이지 파이프라인의 고전적인 절반을 싣는다. 궤적 최적화, 숙련 운전자의 기술로 만든 궤적(Feng 외, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105247), 지린대), 그리고 기계의 인식이다. 굴착기 3D 자세(Assadzadeh 외, *AEI* 55, 2023, [DOI](https://doi.org/10.1016/j.aei.2023.101875))와 작업 동작 인식으로 계산한 생산성(Chen 외, *AutCon* 146, 2023, [DOI](https://doi.org/10.1016/j.autcon.2022.104702)). 학습 쪽 절반은 로봇 학회·학술지에서 돈다. 바이두의 [[01-canonical-papers/notes/8-construction/aes|AES]]와 그 후속, ETH의 [[01-canonical-papers/notes/8-construction/heap|HEAP]]과 [[01-canonical-papers/notes/8-construction/ext|ExT]], 그리고 [[01-canonical-papers/notes/8-construction/exact-2024|ExACT]]. *Automation in Construction*에만 머무는 학습 굴착 검색은 그런 연구가 거의 없다고 결론 내릴 것이고, RA-L에만 머무는 검색은 그 위에 쌓을 수 있는 기계 인식과 운전자 기술 연구를 놓칠 것이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

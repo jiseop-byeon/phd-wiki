@@ -128,6 +128,10 @@ a small study is not evidence of low operational risk.
 >
 > **The reading this gives you.** A worker-facing evaluation must count interruptions and responses, not only classifier recall. Repeated false alarms can consume attention and change later compliance. Check whether alerts are grouped, suppressed, or acknowledged, and report the resulting workload and missed hazards under the actual interaction policy.
 
+### 5. Where this stream is moving (2019–2025)
+
+Counted as in [[05-construction-robotics/lineage|lineage §6]], human–robot collaboration and worker-centred work grew more than any other stream: from $13$ robot papers in 2019–2021 to $64$ in 2023–2025, from $11\%$ to $25\%$ of construction robot papers, now narrowly the largest. Its newer work reads the worker rather than only keeping people away: worker intentions from partial observations (Pan and Yu, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105184)), thermal-image hand gestures (Wu et al., *AEI* 56, 2023, [DOI](https://doi.org/10.1016/j.aei.2023.101939)), prediction-based path planning with deep reinforcement learning (Cai et al., *J. Computing in Civil Engineering* 37, 2023, [DOI](https://doi.org/10.1061/(asce)cp.1943-5487.0001056)), and biosignals and trust as topics of their own (Chen et al., *AEI* 68, 2025, [DOI](https://doi.org/10.1016/j.aei.2025.103652); Chang et al., *J. Computing in Civil Engineering* 38, 2024, [DOI](https://doi.org/10.1061/jccee5.cpeng-5656)). Several of these groups are in Hong Kong or in the Michigan tree ([[05-construction-robotics/labs|labs map]]). The period's one large-language-model paper in these journals is here too: an LLM with a virtual-reality interface for collaborative human–robot construction work (Park, Menassa and Kamat, *J. Computing in Civil Engineering* 39, 2025, [DOI](https://doi.org/10.1061/jccee5.cpeng-6106)).
+
 ### After reading
 
 - Distinguish worker sensing from closed-loop worker-centered robotics.
@@ -275,6 +279,10 @@ COMMUNICATE 쪽에 가깝다. *적응적 자율성*은 로봇이 스스로 하�
 > **경보를 한 교대의 중단으로 읽는다.** [[04-robotics/human-intent-prediction|사람 의도 예측 §5]]의 가상 기저율 예제는 명시한 가정에서 **정밀도 26.9%**, **교대당 오경보 1,411회**를 얻는다. 해당 예제의 사건 빈도와 문턱값을 함께 읽는다. 배포된 작업자 인터페이스의 측정값은 아니다.
 >
 > **여기서 얻는 독법.** 작업자 대상 평가는 분류기 재현율뿐 아니라 중단과 대응을 세야 한다. 반복 오경보는 주의를 소비하고 이후 순응 행동을 바꿀 수 있다. 경보의 묶음, 억제, 확인 응답 규칙을 확인하고 실제 상호작용 정책의 작업부하와 놓친 위험을 보고한다.
+
+### 5. 이 흐름은 어디로 가고 있나 (2019–2025)
+
+[[05-construction-robotics/lineage|계보 §6]]과 같은 방식으로 세면, 인간–로봇 협업과 작업자 중심 연구는 어느 흐름보다 많이 컸다. 로봇 논문이 2019–2021년 $13$편에서 2023–2025년 $64$편으로, 건설 로봇 논문의 $11\%$에서 $25\%$로 늘어 근소하게 가장 큰 흐름이 됐다. 새 연구는 사람을 떼어 놓기만 하는 대신 작업자를 읽는다. 부분 관측에서 작업자 의도(Pan과 Yu, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105184)), 열화상 손 제스처(Wu 외, *AEI* 56, 2023, [DOI](https://doi.org/10.1016/j.aei.2023.101939)), 심층 강화학습을 쓴 예측 기반 경로 계획(Cai 외, *J. Computing in Civil Engineering* 37, 2023, [DOI](https://doi.org/10.1061/(asce)cp.1943-5487.0001056)), 그리고 그 자체로 주제가 된 생체 신호와 신뢰(Chen 외, *AEI* 68, 2025, [DOI](https://doi.org/10.1016/j.aei.2025.103652); Chang 외, *J. Computing in Civil Engineering* 38, 2024, [DOI](https://doi.org/10.1061/jccee5.cpeng-5656)). 이 그룹들 가운데 여럿이 홍콩이나 미시간 계보에 있다([[05-construction-robotics/labs|연구실 지도]]). 이 기간 이 학술지들의 유일한 대규모 언어 모델 논문도 여기 있다. 인간–로봇 협업 건설 작업을 위해 LLM을 가상현실 인터페이스와 묶은 연구(Park, Menassa, Kamat, *J. Computing in Civil Engineering* 39, 2025, [DOI](https://doi.org/10.1061/jccee5.cpeng-6106))다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

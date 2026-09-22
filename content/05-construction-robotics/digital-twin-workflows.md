@@ -116,6 +116,10 @@ digital twin.
 
 A useful evaluation deliberately encounters disagreement because an always-consistent model never tests the update mechanism. For example, observe an installed part at a pose that differs from its design and trace whether verification changes the next action. **The reading this gives you.** Separate detecting mismatch, updating the model, and acting on the update. Success at the first step does not establish the complete feedback claim.
 
+### 5. Where this stream is moving (2019–2025)
+
+Counted as in [[05-construction-robotics/lineage|lineage §6]], BIM and digital-twin papers that involve robots quadrupled, from $6$ in 2019–2021 to $25$ in 2023–2025, and doubled their share to $10\%$ of construction robot papers. The movement is BIM becoming the robot's map: BIM-based initialization of indoor mobile robots (Zhao et al., *AutCon* 146, 2023, [DOI](https://doi.org/10.1016/j.autcon.2022.104647)), BIM-based coverage path planning (Chen et al., *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105160)), robot + BIM facility inspection (Chen et al., *AEI* 55, 2023, [DOI](https://doi.org/10.1016/j.aei.2022.101838)), live semantic data from building twins for robot navigation (Pauwels et al., *AEI* 56, 2023, [DOI](https://doi.org/10.1016/j.aei.2023.101959)), and BIM-guided quadruped scanning. The other direction of §1's loop, robot observations updating the twin, is demonstrated mainly at laboratory scale, for example by the Michigan line ([[01-canonical-papers/notes/8-construction/bim-digital-twin|Wang et al. 2024]]).
+
 ### After reading
 
 - Distinguish a digital model, digital shadow, closed-loop twin, and process twin.
@@ -253,6 +257,10 @@ flowchart LR
 > 과제를 끝까지 추적하라.
 
 항상 맞는 모델로는 갱신 기전을 시험하지 못하므로 불일치를 만나는 평가가 필요하다. 설치 부품이 설계와 다른 자세로 관측됐을 때 검증이 다음 행동을 바꾸는지 추적한다. **여기서 얻는 독법.** 불일치 감지, 모델 갱신, 갱신에 따른 행동을 나눈다. 첫 단계의 성공만으로 전체 피드백 주장이 성립하지는 않는다.
+
+### 5. 이 흐름은 어디로 가고 있나 (2019–2025)
+
+[[05-construction-robotics/lineage|계보 §6]]과 같은 방식으로 세면, 로봇이 관여하는 BIM·디지털 트윈 논문은 2019–2021년 $6$편에서 2023–2025년 $25$편으로 네 배가 됐고, 건설 로봇 논문 가운데 비율도 두 배인 $10\%$가 됐다. 움직임의 방향은 BIM이 로봇의 지도가 되는 것이다. BIM 기반 실내 이동 로봇 초기화(Zhao 외, *AutCon* 146, 2023, [DOI](https://doi.org/10.1016/j.autcon.2022.104647)), BIM 기반 커버리지 경로 계획(Chen 외, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105160)), 로봇 + BIM 시설 점검(Chen 외, *AEI* 55, 2023, [DOI](https://doi.org/10.1016/j.aei.2022.101838)), 로봇 내비게이션을 위한 건물 트윈의 실시간 의미 데이터(Pauwels 외, *AEI* 56, 2023, [DOI](https://doi.org/10.1016/j.aei.2023.101959)), 그리고 BIM을 따르는 사족 로봇 스캔. §1 루프의 다른 방향, 로봇의 관측이 트윈을 갱신하는 쪽은 주로 실험실 규모에서 보였다. 예를 들어 미시간 계열의 연구다([[01-canonical-papers/notes/8-construction/bim-digital-twin|Wang 외 2024]]).
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

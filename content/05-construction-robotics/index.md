@@ -17,8 +17,8 @@ domain. The literature spans four disciplines, so it is scattered across their v
 - **Electrical engineering**: control and systems venues
 
 Start with the two maps — [[05-construction-robotics/lineage|1. Research Lineage]] (three
-genealogies: technical eras, academic family trees, machine evolution) and
-[[05-construction-robotics/labs|2. Labs Map]] (who does this research, verified 2026-07) —
+genealogies: technical eras, academic family trees, machine evolution, plus a measured picture of who publishes most today and how each stream moved since 2019) and
+[[05-construction-robotics/labs|2. Labs Map]] (who does this research, verified 2026-07, with Asia, Oceania and the Middle East added 2026-09) —
 then complete [[05-construction-robotics/site-engineering|2.5 Site Robotics as an Engineering System]]. It turns one work package into requirements, frames, uncertainty, safety, productivity, and an evidence ladder. Only then read by stream below. Curated papers live in
 [[01-canonical-papers/canonical-list|section 8 of the canonical list]].
 
@@ -89,8 +89,8 @@ this field's specific literature.
 - **전기전자**: 제어·시스템 계열
 
 두 개의 지도에서 시작하라 — [[05-construction-robotics/lineage|1. Research Lineage]](세
-가지 계보: 기술 시대, 학술 가계도, 기계 진화)와
-[[05-construction-robotics/labs|2. Labs Map]](누가 이 연구를 하는가, 2026-07 검증) —
+가지 계보: 기술 시대, 학술 가계도, 기계 진화, 그리고 지금 누가 가장 많이 내고 흐름마다 2019년 이후 어떻게 움직였는지 잰 그림)와
+[[05-construction-robotics/labs|2. Labs Map]](누가 이 연구를 하는가, 2026-07 검증, 아시아·오세아니아·중동은 2026-09에 추가) —
 그다음 [[05-construction-robotics/site-engineering|2.5 Site Robotics as an Engineering System]]을 마친다. 하나의 작업 package를 요구조건·frame·불확실성·안전·생산성·증거 사다리로 바꾸는 교과다. 그 뒤 아래 스트림별로 읽는다. 큐레이션된 논문은
 [[01-canonical-papers/canonical-list|핵심 논문 리스트 8번 섹션]]에 있다.
 
