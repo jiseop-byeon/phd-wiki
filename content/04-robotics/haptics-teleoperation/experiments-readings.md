@@ -115,6 +115,8 @@ $$\text{actuator command}\rightarrow\text{delivered mechanical stimulus}\rightar
 
 Each arrow needs a measurement. A motor command is not a measured skin stimulus; a questionnaire is not controller performance; faster completion does not identify which cue caused the improvement. A strong study combines physical calibration, behavioral outcomes, and subjective reports.
 
+**The chain, filled in from one study.** Kuchenbecker, Fiene and Niemeyer's journal study is a clean example. *Command*: an open-loop transient scaled by the incoming velocity, which averaged $0.10\,\mathrm{m/s}$. *Delivered stimulus*: measured with an accelerometer on the handle; their device transmitted well from $20$ to $250\,\mathrm{Hz}$, peaking at $125\,\mathrm{Hz}$, so the command was shaped to that band. *Perception*: sixteen people, blinded by a barrier and white-noise headphones, rated the realism of three real and nine virtual surfaces on a $1$–$7$ scale. *Outcome*: penetration into the surface was logged, and the firm proportional wall penetrated less than some event-based walls yet was rated less realistic. Every arrow was measured, which is why the study can say that realism is not penetration.
+
 ### 2. Minimal protocol
 
 1. **Question and estimand:** “Does shear cue A reduce peak contact force relative to vibration B for novice operators?” is testable; “Is haptics better?” is not. The estimand is the precise quantity the study is designed to estimate, here the mean reduction in peak contact force.
@@ -144,6 +146,8 @@ NASA-TLX measures six self-reported workload dimensions—mental, physical, temp
 | representative workload study | performance under a closer context | long-term adoption or safety |
 | field/longitudinal study | operational behavior over time | mechanism without additional controls |
 
+Where the readings of this track sit on the ladder. Bench response: Okamura and colleagues' measured tap vibrations ($18$, $592$ and $1153\,\mathrm{Hz}$ for rubber, wood and aluminium). Threshold: the JNDs Srinivasan and Basdogan collect ($7\%$ for force and stiffness). Identification: the same vibration models let new users name the material in $83.3\%$ of trials. Controlled task improvement: Richard and Cutkosky's targeting study, in which moderate friction made the easiest targets $17\%$ (real) and $23\%$ (simulated) faster. Closer-to-real operation: Rodríguez-Seda and colleagues flying two small helicopters in formation from one desktop device over round-trip delays of $93$ and $124\,\mathrm{ms}$. None of the readings reaches the field or longitudinal rung; a thesis that needs it must build it.
+
 ### 4. Annotated reading sequence
 
 1. **Hannaford & Okamura, “Haptics,” Springer Handbook of Robotics, 2nd ed., 2016.** The compact field map: human sensing → device design → rendering → stability → tactile displays. [Official chapter page](https://handbookofrobotics.org/view-chapter/42), [DOI](https://doi.org/10.1007/978-3-319-32552-1_42).
@@ -161,6 +165,20 @@ NASA-TLX measures six self-reported workload dimensions—mental, physical, temp
 
 The algorithms in items 9–12 — penalty and proxy rendering, event-based transients and friction display — are worked through in [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 Haptic Rendering Algorithms]].
 
+The second half of the material adds the readings below; [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8]] and [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9]] work through them.
+
+13. **Srinivasan & Basdogan, "Haptics in virtual environments: taxonomy, research status, and challenges," Computers & Graphics 21(4), 1997.** The human numbers every device is designed against (24.1 §1, §3), the rendering pipeline, and texture by normal perturbation (24.9 §4). [DOI](https://doi.org/10.1016/S0097-8493(97)00030-7).
+14. **Wu, Basdogan & Srinivasan, "Visual, haptic, and bimodal perception of size and stiffness in virtual environments," ASME IMECE 1999.** Vision and touch correct each other's perspective biases (24.1 §4). Read for the design, which measures each channel alone before combining them.
+15. **Hale & Stanney, "Deriving haptic design guidelines from human physiological, psychophysical, and neurological foundations," IEEE CG&A 24(2), 2004.** Tactile cues for alerts and orientation, kinesthetic cues for manipulation (24.1 §4, 24.2 §1). A guideline paper: check each rule against a measured study before relying on it. [DOI](https://doi.org/10.1109/MCG.2004.1274059).
+16. **Okamura, Cutkosky & Dennerlein, "Reality-based models for vibration feedback in virtual environments," IEEE/ASME T-Mech 6(3), 2001.** Measured decaying-sinusoid models of tapping, frequency scaling into the displayable band, and an identification test (24.7 §4). [DOI](https://doi.org/10.1109/3516.951362).
+17. **Ruspini, Kolarov & Khatib, "Haptic interaction in virtual environments," IROS 1997.** The conference companion of item 10: the proxy as a small quadratic program, friction through proxy motion, two-pass force shading, and the split between servo and proxy update (24.7 §3, 24.9 §1 and §4).
+18. **Hannaford, "A design framework for teleoperators with kinesthetic feedback," IEEE T-RA 5(4), 1989.** The hybrid matrix and its ideal; read with 24.8 §1–§2.
+19. **Hashtrudi-Zaad & Salcudean, "Analysis of control architectures for teleoperation systems with impedance/admittance master and slave manipulators," IJRR 20(6), 2001.** Llewellyn's test in teleoperation, the transmitted impedance and Z-width, and which architecture suits which hardware (24.8 §3–§5).
+20. **Hokayem & Spong, "Bilateral teleoperation: An historical survey," Automatica 42(12), 2006.** The map of delay compensation from move-and-wait to passivity (24.8 §7). [DOI](https://doi.org/10.1016/j.automatica.2006.06.027).
+21. **Nuño, Basañez & Ortega, "Passivity-based control for bilateral teleoperation: A tutorial," Automatica 47(3), 2011.** The damping-injection conditions under variable delay (24.8 §7). [DOI](https://doi.org/10.1016/j.automatica.2011.01.004).
+22. **Muradore & Fiorini, "A review of bilateral teleoperation algorithms," Acta Polytechnica Hungarica 13(1), 2016.** Six controllers on one bench, with the hardware effects a paper must report (24.5 §6).
+23. **Rodríguez-Seda et al., "Bilateral teleoperation of multiple mobile agents: Coordinated motion and collision avoidance," IEEE T-CST 18(4), 2010.** One leader, several delayed followers, and a virtual follower that bridges the sample rates (24.8 §8). [DOI](https://doi.org/10.1109/TCST.2009.2030176).
+
 ### 5. How the supplied course materials were selected
 
 | Local material class | Public learning use |
@@ -172,8 +190,10 @@ The algorithms in items 9–12 — penalty and proxy rendering, event-based tran
 | project options/rubric | transferable project-design and evaluation criteria; private contacts and unverified claims excluded |
 | consent, recruitment, pre/post surveys | ethics, eligibility, workload, privacy, and measurement design; no form copied or treated as a reusable approval |
 | licensed readings | annotated concepts and official DOI/publisher links; PDFs remain private |
+| feedback-control lecture notes | standard second-order step specifications (24.4 §6); the notes themselves are not reproduced |
+| rendering lab assignment and device firmware | which effects a first lab builds and where microcontroller implementations go wrong (24.9 §2–§3); problems are original and the firmware is not published |
 
-The packet covers the first half of a full haptics course particularly well. It does not contain all later lecture/lab materials named in the syllabus—such as the complete CHAI3D, advanced teleoperation, and ROS sequence—so this guide does not reconstruct those lectures or claim to cover them.
+The packet at first covered the first half of a full haptics course. A later update added a lecture introducing CHAI3D, a set of feedback-control lecture notes, a rendering lab assignment with its device firmware, and the teleoperation and rendering readings listed as items 13–23 above; [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8]] and [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9]] were written from them, and 24.4 §6 uses the notes' standard second-order formulas. The firmware informed only the generic pitfalls of 24.9 §2; no course-provided code or assignment text is reproduced. The packet still does not contain the full later sequence (for example ROS), and this guide does not reconstruct it.
 
 **Worked: the three readings the homework asks.** “Haptics is better” with TLX and time down has no named estimand and skipped the skin stimulus. $n=600$ is nested trials; the unit is 20 people. Bench response is not detectability; task improvement is not field generality.
 
@@ -360,6 +380,8 @@ $$\text{액추에이터 명령}\rightarrow\text{실제 전달된 역학 자극}\
 
 화살표마다 측정이 필요하다. 모터 명령은 측정된 피부 자극이 아니고, 설문은 제어기 성능이 아니며, 수행 시간이 줄었다는 것만으로 어떤 cue가 그 개선을 일으켰는지 알 수 없다. 강한 연구는 물리적 보정, 행동 결과, 주관 보고 셋을 함께 놓는다.
 
+**연구 하나로 채운 사슬.** Kuchenbecker, Fiene, Niemeyer의 학술지 연구가 깔끔한 예다. *명령*: 들어오는 속도로 크기를 정한 개루프 과도 신호로, 그 속도는 평균 $0.10\,\mathrm{m/s}$였다. *전달된 자극*: 핸들에 단 가속도계로 쟀고, 장치는 $20$에서 $250\,\mathrm{Hz}$까지 잘 전달하며 $125\,\mathrm{Hz}$에서 가장 컸으므로 명령을 그 대역에 맞췄다. *지각*: 가림막과 백색잡음 헤드폰으로 눈과 귀를 가린 16명이 실제 표면 셋과 가상 표면 아홉의 사실감을 $1$–$7$ 척도로 매겼다. *결과*: 표면 침투를 기록했고, 단단한 비례 벽은 일부 사건 기반 벽보다 덜 침투했는데도 덜 사실적으로 평가됐다. 모든 화살표를 쟀기 때문에 이 연구는 사실감이 침투가 아니라고 말할 수 있다.
+
 ### 2. 최소 프로토콜
 
 1. **질문과 estimand:** "전단 cue A가 초보 조작자에게서 진동 B 대비 최대 접촉력을 줄이는가"는 검정 가능하고, "햅틱이 더 나은가"는 아니다. Estimand는 연구가 추정하도록 설계된 정확한 양이고, 여기서는 최대 접촉력의 평균 감소량이다.
@@ -389,6 +411,8 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 | 대표성 있는 workload 연구 | 더 가까운 맥락에서의 수행 | 장기 채택이나 안전 |
 | 현장·종단 연구 | 시간에 걸친 운용 행동 | 추가 통제 없이는 기전 |
 
+이 트랙의 읽기 자료가 사다리의 어디에 서는가. 벤치 응답: Okamura와 동료들이 잰 두드림 진동(고무, 나무, 알루미늄에서 $18$, $592$, $1153\,\mathrm{Hz}$). 임계값: Srinivasan과 Basdogan이 모은 JND(힘과 강성 $7\%$). 식별: 같은 진동 모형으로 처음 보는 사용자가 $83.3\%$의 시행에서 재질을 맞혔다. 통제된 과업 개선: Richard와 Cutkosky의 조준 연구에서 적당한 마찰이 가장 쉬운 표적을 $17\%$(실제), $23\%$(모사) 빠르게 했다. 실제에 더 가까운 운용: Rodríguez-Seda와 동료들이 데스크톱 장치 하나로 작은 헬리콥터 두 대를 왕복 $93$과 $124\,\mathrm{ms}$ 지연 너머로 편대 비행시켰다. 현장이나 종단 연구 단에 닿는 읽기 자료는 없고, 그것이 필요한 학위논문은 직접 쌓아야 한다.
+
 ### 4. 주석 달린 읽기 순서
 
 1. **Hannaford & Okamura, "Haptics," Springer Handbook of Robotics 2판, 2016.** 압축된 분야 지도다. 인간 감각 → 장치 설계 → 렌더링 → 안정성 → 촉각 디스플레이. [공식 장 페이지](https://handbookofrobotics.org/view-chapter/42), [DOI](https://doi.org/10.1007/978-3-319-32552-1_42).
@@ -406,6 +430,20 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 
 9–12번의 알고리즘 — 벌점·proxy 렌더링, 사건 기반 과도 신호, 마찰 표시 — 은 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 햅틱 렌더링 알고리즘]]에서 계산 예제와 함께 풀어 둔다.
 
+자료의 후반부가 아래 읽기 자료를 더한다. [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8]]과 [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9]]가 이것들을 다룬다.
+
+13. **Srinivasan & Basdogan, "Haptics in virtual environments: taxonomy, research status, and challenges," Computers & Graphics 21(4), 1997.** 모든 장치 설계의 기준이 되는 사람의 숫자(24.1 §1, §3), 렌더링 파이프라인, 법선 흔들기로 만든 질감(24.9 §4). [DOI](https://doi.org/10.1016/S0097-8493(97)00030-7).
+14. **Wu, Basdogan & Srinivasan, "Visual, haptic, and bimodal perception of size and stiffness in virtual environments," ASME IMECE 1999.** 시각과 촉각이 서로의 원근 편향을 바로잡는다(24.1 §4). 두 채널을 섞기 전에 각각을 따로 재는 설계를 보라.
+15. **Hale & Stanney, "Deriving haptic design guidelines from human physiological, psychophysical, and neurological foundations," IEEE CG&A 24(2), 2004.** 경보와 방향에는 촉각 단서, 조작에는 운동감각 단서(24.1 §4, 24.2 §1). 지침 논문이니, 기대기 전에 각 규칙을 측정 연구와 대조하라. [DOI](https://doi.org/10.1109/MCG.2004.1274059).
+16. **Okamura, Cutkosky & Dennerlein, "Reality-based models for vibration feedback in virtual environments," IEEE/ASME T-Mech 6(3), 2001.** 두드림을 잰 감쇠 사인파 모형, 보여 줄 수 있는 대역으로의 주파수 이동, 식별 실험(24.7 §4). [DOI](https://doi.org/10.1109/3516.951362).
+17. **Ruspini, Kolarov & Khatib, "Haptic interaction in virtual environments," IROS 1997.** 10번의 학회 짝 논문. 작은 이차 계획 문제로서의 proxy, proxy 운동으로 만든 마찰, 두 번에 나눈 힘 셰이딩, 서보와 proxy 갱신의 분리(24.7 §3, 24.9 §1과 §4).
+18. **Hannaford, "A design framework for teleoperators with kinesthetic feedback," IEEE T-RA 5(4), 1989.** 하이브리드 행렬과 그 이상값. 24.8 §1–§2와 함께 읽는다.
+19. **Hashtrudi-Zaad & Salcudean, "Analysis of control architectures for teleoperation systems with impedance/admittance master and slave manipulators," IJRR 20(6), 2001.** 원격조작에서의 Llewellyn 판정, 전달 임피던스와 Z-width, 어떤 구조가 어떤 하드웨어에 맞는지(24.8 §3–§5).
+20. **Hokayem & Spong, "Bilateral teleoperation: An historical survey," Automatica 42(12), 2006.** 움직이고 기다리기에서 수동성까지 지연 보상의 지도(24.8 §7). [DOI](https://doi.org/10.1016/j.automatica.2006.06.027).
+21. **Nuño, Basañez & Ortega, "Passivity-based control for bilateral teleoperation: A tutorial," Automatica 47(3), 2011.** 가변 지연에서의 감쇠 주입 조건(24.8 §7). [DOI](https://doi.org/10.1016/j.automatica.2011.01.004).
+22. **Muradore & Fiorini, "A review of bilateral teleoperation algorithms," Acta Polytechnica Hungarica 13(1), 2016.** 실험대 하나에서의 제어기 여섯, 그리고 논문이 보고해야 할 하드웨어 효과(24.5 §6).
+23. **Rodríguez-Seda 외, "Bilateral teleoperation of multiple mobile agents: Coordinated motion and collision avoidance," IEEE T-CST 18(4), 2010.** 리더 하나, 지연된 팔로워 여럿, 그리고 샘플 주기를 잇는 가상 팔로워(24.8 §8). [DOI](https://doi.org/10.1109/TCST.2009.2030176).
+
 ### 5. 제공된 과목 자료를 어떻게 선별했는가
 
 | 로컬 자료 부류 | 공개 학습 용도 |
@@ -417,8 +455,10 @@ NASA-TLX는 정신적·신체적·시간적 요구, 지각된 수행, 노력, �
 | 프로젝트 선택지와 평가표 | 이전 가능한 프로젝트 설계·평가 기준. 사적 연락처와 미검증 주장은 제외 |
 | 동의서, 모집 자료, 사전·사후 설문 | 윤리, 참가 자격, workload, 개인정보, 측정 설계. 양식을 옮기거나 재사용 가능한 승인으로 취급하지 않음 |
 | 라이선스 읽기 자료 | 주석 단 개념과 공식 DOI·출판사 링크. PDF는 비공개 |
+| 피드백 제어 강의 노트 | 표준 2차 계 계단 응답 사양(24.4 §6). 노트 자체는 옮기지 않음 |
+| 렌더링 실습 과제와 장치 펌웨어 | 첫 실습이 쌓는 효과와 마이크로컨트롤러 구현이 틀리는 곳(24.9 §2–§3). 문제는 독자적으로 만들고 펌웨어는 공개하지 않음 |
 
-이 자료 묶음은 햅틱 과목 전반부를 특히 잘 덮는다. syllabus가 예고한 후반 강의·실습 자료 전부 — 완전한 CHAI3D, 고급 원격조작, ROS 순서 같은 것 — 를 담고 있지는 않다. 그래서 이 안내는 그 강의들을 복원하지 않으며, 다룬다고 주장하지도 않는다.
+이 자료 묶음은 처음에 햅틱 과목 전반부를 덮었다. 이후 갱신으로 CHAI3D를 소개하는 강의, 피드백 제어 강의 노트, 장치 펌웨어가 딸린 렌더링 실습 과제, 그리고 위의 13–23번 원격조작·렌더링 읽기 자료가 더해졌다. [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8]]과 [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9]]는 그것으로 썼고, 24.4 §6은 노트의 표준 2차 계 공식을 쓴다. 펌웨어는 24.9 §2의 일반적인 함정에만 쓰였고, 강의용 코드나 과제 문구는 옮기지 않았다. 묶음에는 여전히 후반 순서 전체(이를테면 ROS)가 없고, 이 안내는 그것을 복원하지 않는다.
 
 **계산해 읽기: 과제가 묻는 세 독해.** TLX가 내려가고 시간이 줄었다는 "햅틱이 더 낫다"에는 이름 붙은 estimand가 없고 피부 자극을 건너뛰었다. $n=600$은 nested trial이고 단위는 사람 20명이다. 벤치 응답은 검출 가능성이 아니고, 과제 개선은 현장 일반화가 아니다.
 

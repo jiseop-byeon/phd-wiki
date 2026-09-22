@@ -122,6 +122,8 @@ A four-channel architecture may transmit position/velocity and force in both dir
 
 ### 3. Scaling must preserve the intended power relation
 
+*In one sentence:* scaling is how a hand's centimetre becomes a micro-tool's millimetre and a micro-tool's millinewton becomes something a hand can feel; the question is what happens to power on the way.
+
 Suppose remote position is scaled by $x_f=s_xx_l$. If reflected force is $F_l=s_fF_f$, then power scales as
 
 $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
@@ -168,9 +170,13 @@ A two-port can be represented by impedance, admittance, hybrid, or transmission 
 
 The classic two-port design literature demonstrates that desired port impedances and stability constraints can be expressed together, but the resulting gain choice depends on plant models and the assumed task impedance. It does not produce a task-independent “best teleoperator.”
 
+**One two-port, read with the five questions.** Take the position–position pair of [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8]]: two P3 handles joined by a spring–damper coupling. (1) Inputs are the hand's velocity and the environment's force; outputs are the hand force and the follower velocity, the hybrid form. (2) Both ports are impedance-causal, since P3 reads motion and commands force. (3) The self term $h_{11}$, what the hand feels in free space, is $1.61+0.49j\,\mathrm{N{\cdot}s/m}$ at $1\,\mathrm{Hz}$ against an ideal of $0$; the cross terms carry the coupling. (4) The terminations allowed are any passive hand and environment. (5) The criterion is absolute stability: Llewellyn's $\eta(\omega)\ge1$ holds at every frequency without delay and fails below $19\,\mathrm{Hz}$ with $50\,\mathrm{ms}$ each way. Five answers, and the reader knows what the model claims and where it stops.
+
 ### 6. Evidence checklist
 
 Report round-trip delay and jitter, control rates, force/position scaling, saturation, local controller gains, contact objects, human grip/instructions, and both objective performance and subjective workload. A free-space trajectory plus one soft object does not establish transparency across the device's operating envelope.
+
+What a real bench adds to this list shows in Muradore and Fiorini's comparison of six controllers on one single-axis bench with a simulated network: force sensors with a negative bias, a motor dead zone below about $0.5\,\mathrm{V}$, force quantization of about $0.15\,\mathrm{N}$, and a PD controller that stayed stable through hard contact but turned sluggish as the delay grew. None of these appears in a free-space trajectory, and each decides what happens at contact. Report them.
 
 ### Self-check
 
@@ -209,7 +215,7 @@ Leader motion is sent to the follower; follower wall force $F_a$ is sent back. O
 ### Sources
 
 - N. Diolaiti, G. Niemeyer, F. Barbagli, J. K. Salisbury, "Stability of Haptic Rendering: Discretization, Quantization, Time Delay, and Coulomb Effects," *IEEE Transactions on Robotics*, vol. 22, no. 2, pp. 256–268, 2006 — the delayed dissipation criterion of Step 2, $\beta\ge\tfrac12+\tau_D$ with $\beta=b/(KT)$ and $\tau_D$ the combined loop delay over the sample period (Sec. III-D, eq. (19), Fig. 5); their describing-function analysis puts the viscous boundary at the same $\beta=\tfrac12+\tau_D$ by approximating the zero-order hold as half a sample of delay lumped with $\tau_D$.
-
+- R. Muradore, P. Fiorini, "A review of bilateral teleoperation algorithms," *Acta Polytechnica Hungarica* 13(1):191–208, 2016.
 ## 한국어
 
 > [!note] 처음이라면 · First pass
@@ -321,6 +327,8 @@ $$\frac{P_l}{P_f}=\frac{s_f}{s_x}=\frac{10}{0.1}=100$$
 
 ### 3. 스케일링은 의도한 일률 관계를 보존해야 한다
 
+*한 문장으로:* 스케일링은 손의 센티미터를 미세 도구의 밀리미터로, 미세 도구의 밀리뉴턴을 손이 느낄 수 있는 무엇으로 바꾸는 일이다. 문제는 그 사이에 일률이 어떻게 되느냐다.
+
 원격 위치가 $x_f=s_xx_l$로 스케일된다고 하자. 반사되는 힘이 $F_l=s_fF_f$이면 일률은 이렇게 스케일된다.
 
 $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
@@ -367,9 +375,13 @@ $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 
 고전적인 2-port 설계 문헌은 원하는 포트 임피던스와 안정성 제약을 함께 표현할 수 있음을 보이지만, 거기서 나오는 이득 선택은 플랜트 모델과 가정한 과제 임피던스에 달려 있다. 과제와 무관한 "최선의 원격조작기"를 만들어 주지는 않는다.
 
+**다섯 질문으로 읽은 2포트 하나.** [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8]]의 위치–위치 쌍을 보자. P3 핸들 두 개를 스프링–댐퍼 결합으로 이은 것이다. (1) 입력은 손의 속도와 환경의 힘, 출력은 손의 힘과 팔로워 속도로, 하이브리드 형식이다. (2) P3는 운동을 읽고 힘을 명령하므로 두 포트 모두 임피던스 인과성이다. (3) 손이 자유 공간에서 느끼는 자기 항 $h_{11}$은 $1\,\mathrm{Hz}$에서 $1.61+0.49j\,\mathrm{N{\cdot}s/m}$로, 이상값 $0$과 비교된다. 교차 항이 결합을 나른다. (4) 허용하는 종단은 임의의 수동적인 손과 환경이다. (5) 판정은 절대 안정성이다. Llewellyn의 $\eta(\omega)\ge1$이 지연 없이는 모든 주파수에서 성립하고, 한 방향 $50\,\mathrm{ms}$에서는 $19\,\mathrm{Hz}$ 아래에서 깨진다. 답 다섯 개면 모형이 무엇을 주장하고 어디서 멈추는지 안다.
+
 ### 6. 증거 체크리스트
 
 왕복 지연과 jitter, 제어 주기, 힘·위치 스케일, 포화, local 제어기 이득, 접촉 물체, 사람의 파지 방식과 지시문, 그리고 객관적 성능과 주관적 workload를 함께 보고해야 한다. 자유공간 궤적 하나에 부드러운 물체 하나를 더한 것으로는 장치의 운용 범위 전체에 걸친 transparency를 입증할 수 없다.
+
+실제 실험대가 이 목록에 무엇을 더하는지는 Muradore와 Fiorini가 모사 네트워크를 단 1축 실험대 하나에서 제어기 여섯 개를 비교한 결과에서 보인다. 음의 편향이 있는 힘 센서, 약 $0.5\,\mathrm{V}$ 아래의 모터 불감대, 약 $0.15\,\mathrm{N}$의 힘 양자화, 그리고 단단한 접촉을 지나도 안정했지만 지연이 커질수록 굼떠진 PD 제어기다. 이 가운데 어느 것도 자유 공간 궤적에는 나타나지 않고, 모두 접촉에서 일어나는 일을 정한다. 보고하라.
 
 ### 스스로 점검
 
@@ -408,3 +420,4 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**를 리더와 팔로워 *둘 
 ### 출처
 
 - N. Diolaiti, G. Niemeyer, F. Barbagli, J. K. Salisbury, "Stability of Haptic Rendering: Discretization, Quantization, Time Delay, and Coulomb Effects," *IEEE Transactions on Robotics*, vol. 22, no. 2, pp. 256–268, 2006 — 2단계의 지연 소산 조건 $\beta\ge\tfrac12+\tau_D$. $\beta=b/(KT)$, $\tau_D$는 합친 루프 지연을 샘플 주기로 나눈 값이다(Sec. III-D, 식 (19), 그림 5). 논문의 describing function 해석은 zero-order hold를 반 샘플의 지연으로 근사해 $\tau_D$와 합치고, 같은 점성 경계 $\beta=\tfrac12+\tau_D$에 이른다.
+- R. Muradore, P. Fiorini, "A review of bilateral teleoperation algorithms," *Acta Polytechnica Hungarica* 13(1):191–208, 2016.

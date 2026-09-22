@@ -115,7 +115,11 @@ where positive $x$ denotes penetration. The nearest geometric point is not alway
 
 **Model the loop before tuning it.** For a one-DOF impedance device the standard model is a mass–damper, $m\ddot x+b\dot x=F_a$, where $F_a$ is the actuator force and $b$ is the physical damping that §2 will need. The hand is commonly modelled as a spring–damper attached to the handle, and the virtual environment closes the loop by turning measured position into $F_a$. That block diagram is linear only on paper. The wall is a unilateral switch, the encoder quantizes, the amplifier saturates, and the person changes grip and stiffness during the task. That is why the rest of this page reasons with energy and passivity rather than with the poles of a linear model; the linear tools are in [[04-robotics/control-theory-ce397|5. Control Theory]]. The full nonlinear hybrid model, with non-volitional human dynamics, quantization, delay and the velocity filter, is Colonnese & Okamura (§3).
 
+How fast is fast enough depends on what is rendered. The handbook chapter by Hannaford and Okamura puts the rendering cycle at under $1\,\mathrm{ms}$ for stiff contact; Hayward and MacLean note that $100\,\mathrm{Hz}$ may suffice when the simulation is soft or the device unresponsive, and that a stiff, responsive device can need rates as high as $10\,\mathrm{kHz}$. The mechanism caps what any rate can buy: they report resonances and antiresonances in force-feedback devices as low as $10$–$30\,\mathrm{Hz}$, just above the few hertz at which a hand moves on purpose.
+
 ### 2. Why a digital spring can create energy
+
+*In one sentence:* a digital wall always pushes with a force that is one sample out of date, and an out-of-date spring gives back a little more energy than it took; this section finds how much, and what must dissipate it.
 
 The controller samples position and holds a force until the next update. During one interval $T$, a constant velocity $v$ moves $\Delta x=vT$. The zero-order hold makes the force lag the ideal spring. A useful worst-case energy estimate is
 
@@ -183,6 +187,8 @@ Colonnese and Okamura put all of this into one model — device and human dynami
 
 ### 4. Passivity, stability, and Z-width
 
+*In one sentence:* passivity asks only whether the device, seen from the handle, can ever give back more energy than it has received; if it cannot, no passive hand can destabilize it, and the Z-width is how wide a range of such behaviours the device can show.
+
 A port is a force/velocity pair through which power flows into or out of a system, and a one-port has exactly one such pair (here, the handle). With power defined positive into a one-port, passivity requires
 
 $$E(t)=E_0+\int_0^t F(\tau)^\top v(\tau)d\tau\ge0.$$
@@ -246,6 +252,9 @@ For a discrete sample, a common observer uses $\Delta E_k=T F_k^\top v_k$ with a
 4. Add velocity estimation and damping while plotting phase/noise.
 5. Raise stiffness gradually; stop at sustained oscillation, saturation, overheating, or unsafe force.
 6. Separate numerical instability, mechanical resonance, friction limit cycle, and collision/proxy discontinuity.
+
+7. Compare one logged contact step with the prediction. In sustained contact with the catalog wall and hand, the Worked case's polynomial ($\omega_n=141\,\mathrm{rad/s}$, $\zeta=0.78$) predicts, through the standard second-order formulas $M_p=e^{-\pi\zeta/\sqrt{1-\zeta^2}}$, $t_p=\pi/\omega_d$, $t_s\approx4.6/\zeta\omega_n$ and $t_r\approx1.8/\omega_n$: $2.0\%$ overshoot, a peak at $35\,\mathrm{ms}$, $1\%$ settling in $42\,\mathrm{ms}$ and a $12.7\,\mathrm{ms}$ rise. A logged step that rings much longer means a term is missing: damping you assumed and do not have, or a longer force-update period than you think.
+8. Measure how often the force *command* changes, not only how often the loop runs; a force law computed in a slower loop sets a longer $T$ ([[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 §2]]).
 
 ### Self-check
 
@@ -322,7 +331,8 @@ for k in range(n):
 - N. Diolaiti, G. Niemeyer, F. Barbagli, J. K. Salisbury, "Stability of haptic rendering: discretization, quantization, time delay, and Coulomb effects," *IEEE Transactions on Robotics* 22(2):256–268, 2006. DOI 10.1109/TRO.2005.862487 — the $(\beta,\sigma)$ stability plane of §3; [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]] uses the same paper for the delayed bound.
 - J. E. Colgate, J. M. Brown, "Factors affecting the Z-width of a haptic display," *Proc. IEEE ICRA* 1994, pp. 3205–3210. DOI 10.1109/ROBOT.1994.351077 — the measured Z-width and the physical-damping lever of §4.
 - N. Colonnese, A. M. Okamura, "Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping," *International Journal of Robotics Research* 35(9):1103–1120, 2016 (online 2015). DOI 10.1177/0278364915596234 — the combined model named in §1 and §3.
-
+- B. Hannaford, A. M. Okamura, "Haptics," in B. Siciliano, O. Khatib (eds.), *Springer Handbook of Robotics*, 2nd ed., Springer, 2016, ch. 42. DOI 10.1007/978-3-319-32552-1_42.
+- V. Hayward, K. E. MacLean, "Do it yourself haptics: Part I," *IEEE Robotics & Automation Magazine* 14(4):88–104, 2007. DOI 10.1109/M-RA.2007.907921.
 ## 한국어
 
 > [!note] 처음이라면 · First pass
@@ -427,7 +437,11 @@ $$F_k=\begin{cases}-Kx_k-B\hat v_k,&x_k>0\\0,&x_k\le 0,\end{cases}$$
 
 **튜닝 전에 루프를 모델링하라.** 1자유도 임피던스 장치의 표준 모델은 질량–댐퍼 $m\ddot x+b\dot x=F_a$다. $F_a$는 액추에이터 힘이고 $b$는 §2에서 필요해질 물리적 댐핑이다. 손은 흔히 핸들에 붙은 스프링–댐퍼로 모델링하고, 가상 환경이 측정된 위치를 $F_a$로 바꾸어 루프를 닫는다. 이 블록선도는 종이 위에서만 선형이다. 벽은 한쪽으로만 켜지는 스위치이고, encoder는 양자화하고, 증폭기는 포화하며, 사람은 과제 도중에 파지와 강성을 바꾼다. 그래서 이 페이지의 나머지는 선형 모델의 극점이 아니라 에너지와 수동성으로 추론한다. 선형 도구는 [[04-robotics/control-theory-ce397|5. 제어 이론]]에 있다. 비의지적 인간 동역학, 양자화, 지연, 속도 필터까지 넣은 완전한 비선형 하이브리드 모델은 Colonnese & Okamura다(§3).
 
+얼마나 빨라야 충분한지는 무엇을 렌더링하느냐에 달렸다. Hannaford와 Okamura의 핸드북 장은 단단한 접촉에서 렌더링 한 주기를 $1\,\mathrm{ms}$ 안으로 두고, Hayward와 MacLean은 시뮬레이션이 무르거나 장치가 둔하면 $100\,\mathrm{Hz}$로도 충분할 수 있지만 단단하고 민첩한 장치는 $10\,\mathrm{kHz}$까지 필요할 수 있다고 적는다. 기구가 어떤 주기로도 살 수 없는 한계를 정한다. 그들은 힘 반향 장치의 공진과 반공진이 $10$–$30\,\mathrm{Hz}$까지 낮을 수 있다고 보고하는데, 손이 의도해서 움직이는 몇 헤르츠 바로 위다.
+
 ### 2. 디지털 스프링이 에너지를 만들 수 있는 이유
+
+*한 문장으로:* 디지털 벽은 언제나 한 샘플 늦은 힘으로 밀고, 늦은 스프링은 받은 것보다 조금 더 많은 에너지를 돌려준다. 이 절은 그것이 얼마인지, 무엇이 그것을 소산해야 하는지 찾는다.
 
 제어기는 위치를 샘플링하고 다음 갱신까지 힘을 유지한다. 한 주기 $T$ 동안 일정 속도 $v$는 $\Delta x=vT$만큼 움직인다. Zero-order hold 때문에 힘이 이상적인 스프링보다 늦는다. 쓸 만한 최악의 경우 에너지 추정은
 
@@ -495,6 +509,8 @@ Colonnese와 Okamura는 이것을 전부 한 모델에 넣었다 — 장치와 �
 
 ### 4. 수동성, 안정성, Z-width
 
+*한 문장으로:* 수동성은 핸들에서 본 장치가 받은 것보다 많은 에너지를 돌려줄 수 있느냐만 묻는다. 그럴 수 없으면 어떤 수동적인 손도 장치를 불안정하게 만들지 못하고, Z-width는 장치가 보여 줄 수 있는 그런 거동의 폭이다.
+
 포트는 일률이 시스템으로 들어오거나 나가는 힘·속도 쌍이고, 1-포트는 그런 쌍을 정확히 하나(여기서는 손잡이) 가진다. 일률을 1-포트로 들어가는 방향을 양으로 정의하면 수동성은 다음을 요구한다.
 
 $$E(t)=E_0+\int_0^t F(\tau)^\top v(\tau)d\tau\ge0.$$
@@ -559,6 +575,9 @@ Z-width에는 두 끝이 있고, 각각을 정하는 것이 다르다. 아래 �
 5. 강성을 점진적으로 올리고, 지속 진동·포화·과열·위험한 힘에서 멈춘다.
 6. 수치 불안정, 기계 공진, 마찰 limit cycle, 충돌/proxy 불연속을 구분한다.
 
+7. 기록한 접촉 계단 응답 하나를 예측과 비교한다. 카탈로그 벽과 손으로 지속 접촉할 때, 계산 절의 다항식($\omega_n=141\,\mathrm{rad/s}$, $\zeta=0.78$)은 표준 2차 공식 $M_p=e^{-\pi\zeta/\sqrt{1-\zeta^2}}$, $t_p=\pi/\omega_d$, $t_s\approx4.6/\zeta\omega_n$, $t_r\approx1.8/\omega_n$으로 오버슈트 $2.0\%$, 최고점 $35\,\mathrm{ms}$, $1\%$ 정착 $42\,\mathrm{ms}$, 상승 $12.7\,\mathrm{ms}$를 예측한다. 기록한 계단 응답이 훨씬 오래 울리면 항 하나가 빠진 것이다. 있다고 가정했지만 없는 감쇠이거나, 생각보다 긴 힘 갱신 주기다.
+8. 루프가 얼마나 자주 도는지만이 아니라 힘 *명령*이 얼마나 자주 바뀌는지 잰다. 더 느린 루프에서 계산한 힘 법칙은 더 긴 $T$를 정한다([[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 §2]]).
+
 ### 스스로 점검
 
 1. 더 매끄러운 속도 추정이 왜 가상 벽을 *덜* 안정하게 만들 수 있는가?
@@ -611,3 +630,5 @@ $$F_h=k_h(x_d-x)+b_h(0-\dot x)$$
 - N. Diolaiti, G. Niemeyer, F. Barbagli, J. K. Salisbury, "Stability of haptic rendering: discretization, quantization, time delay, and Coulomb effects," *IEEE Transactions on Robotics* 22(2):256–268, 2006. DOI 10.1109/TRO.2005.862487 — §3의 $(\beta,\sigma)$ 안정성 평면. [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5]]는 지연 경계에 같은 논문을 쓴다.
 - J. E. Colgate, J. M. Brown, "Factors affecting the Z-width of a haptic display," *Proc. IEEE ICRA* 1994, pp. 3205–3210. DOI 10.1109/ROBOT.1994.351077 — §4의 측정된 Z-width와 물리적 댐핑이라는 지렛대.
 - N. Colonnese, A. M. Okamura, "Stability and quantization-error analysis of haptic rendering of virtual stiffness and damping," *International Journal of Robotics Research* 35(9):1103–1120, 2016(온라인 2015). DOI 10.1177/0278364915596234 — §1과 §3이 이름을 댄 통합 모델.
+- B. Hannaford, A. M. Okamura, "Haptics," in B. Siciliano, O. Khatib (eds.), *Springer Handbook of Robotics*, 2nd ed., Springer, 2016, ch. 42. DOI 10.1007/978-3-319-32552-1_42.
+- V. Hayward, K. E. MacLean, "Do it yourself haptics: Part I," *IEEE Robotics & Automation Magazine* 14(4):88–104, 2007. DOI 10.1109/M-RA.2007.907921.

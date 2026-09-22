@@ -137,6 +137,8 @@ Every impedance-type haptic loop does the same four things, once per servo perio
 
 One fact shapes all of it. With an impedance device nothing is rigid: every contact is a spring, $F = Kx$, and $K$ is capped by the device and the sample rate. So the design question is never "how do I render a rigid wall" but "how do I make a soft spring *feel* like one". The answers fall into three families: better geometry (§2–§3), perceptual tricks (§4), and surface properties layered on top (§5–§6).
 
+How far away is “rigid”? Srinivasan and Basdogan put the stiffness at which touch alone judges a wall rigid at roughly $25\,\mathrm{N/mm}$, and Kuchenbecker, Fiene and Niemeyer measured a wooden block's steady stiffness at about seventy times the largest proportional gain their device could hold stably. P3's ceiling at $1\,\mathrm{kHz}$ is $1.6\,\mathrm{N/mm}$ ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]). Every family below is a way of making up one to two orders of magnitude, and [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 §1]] shows how the four steps are split between a fast and a slow loop in a real program.
+
 ### 2. Penalty-based rendering
 
 The simplest algorithm treats penetration as a spring compression. For a wall with unit normal $\hat n$ through a point $p_0$, the penetration depth of the device point $p$ is $d = (p_0 - p)\cdot\hat n$, and
@@ -187,11 +189,17 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
 This resolves all three failures at once. The proxy remembers which side of the wall it entered from, so a thin plate holds; it follows the surface continuously around edges, so there is no flip; and the force direction is always proxy-minus-device, so it never points *into* the object. Friction comes almost free: let the proxy lag the device point tangentially until the tangential spring force exceeds a friction cone, then let it slip. The same proxy idea extends to streaming point clouds (Ryden & Chizeck, *IEEE ToH* 6(3), 2013), which is how telepresence systems render a depth camera's view as a touchable surface. On a one-degree-of-freedom device the proxy is trivial — the surface is a single coordinate — which is why a 1-DOF wall can be written as the penalty form in 24.4 without meeting any of these problems. The idea also scales up. Deformable objects replace the rigid surface with a simulated mesh that the proxy presses on (for example Ding & Hasegawa, EuroHaptics 2020), and multi-point hand or exoskeleton interfaces give each contact link its own proxy (Galvan, Ramirez, Deshpande & Fey, WHC 2023).
 
+**How the proxy is computed, in Ruspini, Kolarov and Khatib's IROS version.** The proxy is a massless sphere whose radius is larger than the gaps in the mesh, so that a “polygon soup” with no topology still holds it. Growing every obstacle by that radius turns the sphere into a point, and each servo tick becomes a small quadratic program: move the proxy toward the device point, and where it hits, find the point of the local free space nearest the user, $\min_x\lVert x-p\rVert$ subject to $n_i^\top x\ge0$ for each active constraint plane. In three dimensions at most three planes can be active at once, so the solve is a tiny linear system, and the distance to the user shrinks at every iteration, which is why the proxy moves stably whenever the user does. Friction needs no finger velocity at all: the proxy simply stays put while the device point is inside the friction cone, $\lvert f_t\rvert\le\mu_s\lvert f_n\rvert$, and once it slips, a viscous term limits how far it travels per tick. On a three-degree-of-freedom PHANToM served by a $200\,\mathrm{MHz}$ processor they rendered models of more than $24{,}000$ polygons, with over $40$ simultaneous contacts, stably at position gains above $1800\,\mathrm{N/m}$ and with no artificial damping. They also drew the *proxy*, not the finger, on screen, because a tool that visibly stops at the surface makes the surface seem stiffer.
+
 ### 4. Perceptual tricks: event-based haptics
 
 The stiffness ceiling is a physics limit. Perceived hardness, it turns out, is not mostly about stiffness. When you tap a table, what tells you it is hard is the short, high-frequency transient at the instant of contact, not the steady spring afterwards. Kuchenbecker, Fiene and Niemeyer (*IEEE TVCG* 12(2), 2006) built on this: keep the proportional wall soft enough to be stable, and at the moment of contact add a brief **open-loop transient** — a fixed-width pulse, a decaying sinusoid, or a recorded acceleration profile scaled to the incoming velocity (**acceleration matching**).
 
 Their user study (WHC 2005, nine subjects, eleven samples rated for realism on a 1–7 scale, average tap speed 0.11 m/s) is the evidence to remember: real wood was rated most realistic, followed by wood-on-foam and the acceleration-matched virtual surfaces; plain foam and the two proportional-only virtual walls were rated least realistic. The acceleration-matched library recorded from the wood-on-foam sample was rated at the same level as that sample. Two caveats travel with the result. The transients are large force spikes, and users drove the device into saturation an average of five times each, most often with the decaying sinusoid and acceleration matching. And realism was a rating, not a task outcome — see [[04-robotics/haptics-teleoperation/experiments-readings|24.6]] for why that distinction matters.
+
+**Why a spring cannot do it, in numbers.** The journal paper makes the argument quantitative. A proportional wall is a linear loop, so what the hand receives is shaped by the user's motion and the loop's resonance $\sqrt{k/m}$; at $1000\,\mathrm{N/m}$, a typical maximum for their device, that resonance sits at or below about $15\,\mathrm{Hz}$, while tapping metal or glass produces transients above $1\,\mathrm{kHz}$, so a spring would need roughly $10^6\,\mathrm{N/m}$, a thousand times more. Their decaying-sinusoid transient is $F(t)=A\lvert v_{\text{in}}\rvert\,e^{\ln(0.01)\,t/d}\sin(2\pi ft)$ for $0<t\le d$: it decays to $1\%$ over its duration $d$, is played open-loop on top of the wall, and latches the contact state while it plays. The journal version reports a second study: sixteen people, blinded by a barrier and white-noise headphones, rated three real and nine virtual surfaces. Real wood came first; then wood-on-foam together with all six event-based surfaces; then the proportional walls with foam. The stiffness under a transient made no significant difference, and a transient roughly halved the penetration of the wall it was added to.
+
+**Measured models of real materials.** Okamura, Cutkosky and Dennerlein built the same idea from recordings. Tapping rubber, wood and aluminium with a stylus, they fitted $Q(t)=A\,v\,e^{-Bt}\sin(2\pi ft)$, with amplitude proportional to impact speed $v$, decay $B$ and frequency $f$, and found $f\approx18$, $592$ and $1153\,\mathrm{Hz}$. Their device's response fell with frequency and skin is most sensitive near $250\,\mathrm{Hz}$, so they moved the frequencies into the band both could handle while keeping their order; in a rating study the preferred models used $30$, $100$ and $300\,\mathrm{Hz}$. With identical stiffness and only the vibration differing, fourteen new users named the material in $35$ of $42$ trials ($83.3\%$), confusing wood and rubber most, and some felt the surfaces were slightly active, the same caution Kuchenbecker's group met.
 
 A second trick lives in the graphics: never draw the tool penetrating the surface, even though it does. Vision dominates, and the surface is judged stiffer when the picture says the tool stopped. Wu, Basdogan and Srinivasan (ASME IMECE 1999) measured this visual effect on perceived stiffness. Both tricks are honest in the same sense: they render the *cue* the nervous system uses, not the physics the device cannot produce.
 
@@ -204,7 +212,7 @@ A pure spring wall feels active and slippery. Two cheap additions fix most of it
 
 Real friction has a stuck state, and rendering it means switching between two regimes. The **Karnopp model** (*J. Dyn. Sys. Meas. Control* 107(1), 1985) is the workhorse: while the point is *stuck*, the friction force equals the applied tangential force up to a static limit $F_s$; once $\lvert F_a\rvert > F_s$ the point *slides* with friction $F_d\,\mathrm{sgn}(v) + b v$; when speed drops below a small threshold $D_v$ it sticks again and the velocity is set to zero. The threshold is the trick that makes it computable: exact zero velocity never occurs in sampled data. The **Dahl** and **elasto-plastic** models (Dupont, Armstrong & Hayward, ACC 2000) replace the switch with a bristle-like state that captures pre-sliding displacement, and the Hayward–Armstrong variant (2000) removes the position drift the original Dahl model has.
 
-Those three are the ones a rendering paper will name, and they differ in exactly one structural decision each, so each gets its defining condition stated rather than described.
+Those three are the ones a rendering paper will name, and they differ in exactly one structural decision each, so each gets its defining condition stated rather than described. If you need only one, use Karnopp: it has no state to integrate, and it is what most lab devices run. The other two matter when an object must stay put for seconds (a held tool, a virtual fixture) or when the paper you are reading renders pre-sliding.
 
 > **Karnopp model, defined.** The **Karnopp model** is a *two-mode switched map*: a mode variable, stuck or slipping, plus one algebraic force law per mode. It has no continuous internal state at all, which is what separates it from the two below. Its defining condition is a **velocity dead-zone**: the mode is decided by $\lvert v\rvert<D_v$, and inside that band the velocity is *set to zero* and the friction force is whatever balances the applied tangential force, up to $F_s$.
 >
@@ -250,6 +258,8 @@ Is friction worth rendering? Richard and Cutkosky (ICRA 2002) measured it with F
 ### 7. Reading a rendering paper
 
 Four questions separate the claims. **Which algorithm computes the force** — penalty, proxy, or something learned — because that fixes what cannot be rendered (thin objects, edges, friction). **What device, at what stiffness** — the "Nerf World" complaint that force feedback feels soft is a device limit, and a rendering result on a $200$ N/m wall does not transfer to a $2000$ N/m one. **Is realism a rating or a task outcome** — the event-based study measured ratings; the friction study measured completion time and errors; both are legitimate, and they answer different questions. **Where is the perceptual trick** — an acceleration transient or a visual clamp is a valid contribution, but it is a claim about the human, not about the physics, and it should be evaluated with the tools of [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]].
+
+The event-based study is also the cleanest warning against equating realism with a physical measure: real wood and wood-on-foam penetrated less than $0.25\,\mathrm{mm}$ and foam and the soft proportional wall more than $2\,\mathrm{mm}$, but the firm proportional wall penetrated less than some event-based walls and was still rated less realistic. A rendering paper that reports only penetration, or only stiffness, has measured the device, not the percept.
 
 ### After reading
 
@@ -417,6 +427,8 @@ $$K\ \ge\ \frac{F^{\max}}{\text{두께}/2}=\frac{2.0}{0.002}=1000\,\mathrm{N/m}$
 
 사실 하나가 전부를 결정한다. 임피던스 장치에서는 아무것도 강체가 아니다. 모든 접촉은 스프링 $F = Kx$이고, $K$는 장치와 샘플링 주기가 상한을 정한다. 그러니 설계 질문은 "강체 벽을 어떻게 렌더링하나"가 아니라 "무른 스프링을 어떻게 강체처럼 *느껴지게* 하나"다. 답은 세 계열로 나뉜다. 더 나은 기하(§2–§3), 지각적 트릭(§4), 그 위에 얹는 표면 특성(§5–§6).
 
+“단단함”은 얼마나 멀리 있는가. Srinivasan과 Basdogan은 촉각만으로 벽을 단단하다고 판단하는 강성을 대략 $25\,\mathrm{N/mm}$로 두고, Kuchenbecker, Fiene, Niemeyer는 나무 블록의 정상 강성을 자기 장치가 안정하게 버틸 수 있던 가장 큰 비례 이득의 약 70배로 쟀다. $1\,\mathrm{kHz}$에서 P3의 천장은 $1.6\,\mathrm{N/mm}$다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]). 아래의 모든 계열은 한두 자릿수를 메우는 방법이고, 실제 프로그램에서 네 단계가 빠른 루프와 느린 루프로 어떻게 나뉘는지는 [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 §1]]에 있다.
+
 ### 2. 벌점 기반 렌더링
 
 가장 단순한 알고리즘은 침투를 스프링 압축으로 다룬다. 단위 법선 $\hat n$이 점 $p_0$를 지나는 벽에 대해, 장치 점 $p$의 침투 깊이는 $d = (p_0 - p)\cdot\hat n$이고
@@ -467,11 +479,17 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
 이것이 세 실패를 한꺼번에 푼다. proxy가 어느 쪽에서 벽에 들어왔는지 기억하므로 얇은 판이 버틴다. 모서리를 돌 때 표면을 연속으로 따라가므로 뒤집힘이 없다. 힘의 방향이 언제나 proxy 빼기 장치이므로 물체 *안쪽*을 가리키는 일이 없다. 마찰은 거의 공짜로 온다. 접선 방향 스프링 힘이 마찰 원뿔을 넘을 때까지 proxy를 접선 방향으로 뒤처지게 두고, 넘으면 미끄러지게 한다. 같은 proxy 발상은 스트리밍 점군으로 확장되어(Ryden & Chizeck, *IEEE ToH* 6(3), 2013), 텔레프레즌스 시스템이 깊이 카메라의 시야를 만질 수 있는 표면으로 렌더링하는 방식이 된다. 1자유도 장치에서는 proxy가 자명하다 — 표면이 좌표 하나다 — 그래서 24.4의 1자유도 벽은 이 문제들을 하나도 만나지 않고 벌점 형태로 쓸 수 있다. 이 발상은 규모도 키울 수 있다. 변형 물체는 강체 표면 대신 proxy가 누르는 시뮬레이션 메시를 쓰고(예: Ding & Hasegawa, EuroHaptics 2020), 손이나 외골격의 다점 인터페이스는 접촉 링크마다 proxy를 둔다(Galvan, Ramirez, Deshpande & Fey, WHC 2023).
 
+**proxy를 계산하는 법, Ruspini, Kolarov, Khatib의 IROS 판.** proxy는 반지름이 메시의 틈보다 큰, 질량 없는 구다. 그래서 위상 정보가 없는 “폴리곤 수프”도 그것을 붙잡는다. 모든 장애물을 그 반지름만큼 키우면 구가 점이 되고, 매 서보 틱은 작은 이차 계획 문제가 된다. proxy를 장치 점 쪽으로 옮기고, 부딪치면 활성 제약 평면마다 $n_i^\top x\ge0$인 조건에서 $\min_x\lVert x-p\rVert$, 곧 사용자에게 가장 가까운 국소 자유 공간의 점을 찾는다. 3차원에서는 한 번에 많아야 세 평면만 활성일 수 있으므로 풀이는 작은 선형계이고, 매 반복마다 사용자까지의 거리가 줄어든다. 사용자가 안정하게 움직이면 proxy도 안정하게 움직이는 이유다. 마찰에는 손가락 속도가 전혀 필요 없다. 장치 점이 마찰 원뿔 $\lvert f_t\rvert\le\mu_s\lvert f_n\rvert$ 안에 있는 동안 proxy는 그냥 제자리에 있고, 미끄러지기 시작하면 점성 항이 틱당 움직이는 거리를 제한한다. $200\,\mathrm{MHz}$ 프로세서가 받치는 3자유도 PHANToM에서 그들은 $24{,}000$개가 넘는 폴리곤의 모형을, $40$개가 넘는 동시 접촉과 함께, $1800\,\mathrm{N/m}$ 넘는 위치 이득에서 인공 감쇠 없이 안정하게 렌더링했다. 또 화면에는 손가락이 아니라 *proxy*를 그렸다. 표면에서 눈에 띄게 멈추는 도구가 표면을 더 단단하게 보이게 하기 때문이다.
+
 ### 4. 지각적 트릭: 사건 기반 햅틱
 
 강성 천장은 물리 한계다. 그런데 지각되는 단단함은 대부분 강성의 문제가 아니다. 탁자를 두드릴 때 단단하다고 알려 주는 것은 접촉 순간의 짧은 고주파 과도 신호이지 그 뒤의 정상 스프링이 아니다. Kuchenbecker, Fiene, Niemeyer(*IEEE TVCG* 12(2), 2006)는 여기서 출발했다. 비례 벽은 안정할 만큼 무르게 두고, 접촉 순간에 짧은 **개루프 과도 신호**를 더한다 — 고정 폭 펄스, 감쇠 정현파, 또는 진입 속도에 맞춰 크기를 조절한 기록된 가속도 프로파일(**가속도 정합**).
 
 기억할 증거는 그들의 사용자 연구다(WHC 2005, 피험자 9명, 시료 11개를 1–7점 현실감으로 평가, 평균 두드림 속도 0.11 m/s). 실제 나무가 가장 현실적이라 평가됐고, 폼 위의 나무와 가속도 정합 가상 표면이 그 뒤를 이었다. 맨 폼과 비례 제어만 쓴 두 가상 벽이 가장 낮았다. 폼 위 나무에서 기록한 가속도 정합 라이브러리는 그 시료와 같은 수준으로 평가됐다. 단서 둘이 결과에 따라붙는다. 과도 신호는 큰 힘 스파이크라서 사용자가 장치를 평균 다섯 번씩 포화시켰고, 감쇠 정현파와 가속도 정합에서 가장 잦았다. 그리고 현실감은 평가 점수이지 과제 결과가 아니다 — 그 구분이 왜 중요한지는 [[04-robotics/haptics-teleoperation/experiments-readings|24.6]].
+
+**스프링으로는 안 되는 이유, 숫자로.** 학술지 논문은 이 논증을 정량적으로 만든다. 비례 벽은 선형 루프이므로 손이 받는 것은 사용자의 운동과 루프의 공진 $\sqrt{k/m}$가 모양을 정한다. 그들의 장치에서 전형적인 최대인 $1000\,\mathrm{N/m}$에서 그 공진은 약 $15\,\mathrm{Hz}$ 이하에 있지만, 금속이나 유리를 두드리면 $1\,\mathrm{kHz}$ 넘는 과도 신호가 나오므로, 스프링이라면 대략 $10^6\,\mathrm{N/m}$, 천 배가 필요하다. 그들의 감쇠 사인파 과도 신호는 $0<t\le d$에서 $F(t)=A\lvert v_{\text{in}}\rvert\,e^{\ln(0.01)\,t/d}\sin(2\pi ft)$다. 지속 시간 $d$ 동안 $1\%$까지 줄고, 벽 위에 개루프로 얹어 재생하며, 재생하는 동안 접촉 상태를 붙들어 둔다. 학술지 판은 두 번째 연구를 보고한다. 가림막과 백색잡음 헤드폰으로 가린 16명이 실제 표면 셋과 가상 표면 아홉을 평가했다. 실제 나무가 첫째, 그다음이 폼 위의 나무와 여섯 사건 기반 표면 모두, 그다음이 비례 벽들과 폼이었다. 과도 신호 밑의 강성은 유의한 차이를 내지 않았고, 과도 신호는 그것을 더한 벽의 침투를 대략 절반으로 줄였다.
+
+**실제 재질을 잰 모형.** Okamura, Cutkosky, Dennerlein은 같은 발상을 기록에서 쌓았다. 스타일러스로 고무, 나무, 알루미늄을 두드려, 충돌 속도 $v$에 비례하는 진폭, 감쇠 $B$, 주파수 $f$를 가진 $Q(t)=A\,v\,e^{-Bt}\sin(2\pi ft)$를 맞추고 $f\approx18$, $592$, $1153\,\mathrm{Hz}$를 얻었다. 장치의 응답은 주파수와 함께 떨어지고 피부는 $250\,\mathrm{Hz}$ 근처에서 가장 민감하므로, 순서는 지키면서 주파수를 둘 다 다룰 수 있는 대역으로 옮겼다. 평가 연구에서 선호된 모형은 $30$, $100$, $300\,\mathrm{Hz}$를 썼다. 강성은 같고 진동만 다를 때 처음 보는 사용자 14명이 $42$번 중 $35$번($83.3\%$) 재질을 맞혔고, 나무와 고무를 가장 많이 헷갈렸으며, 일부는 표면이 조금 능동적이라고 느꼈다. Kuchenbecker의 연구진이 만난 것과 같은 경고다.
 
 두 번째 트릭은 그래픽에 있다. 도구가 실제로는 표면을 뚫고 들어가더라도 뚫는 모습을 절대 그리지 않는다. 시각이 지배하므로, 그림이 도구가 멈췄다고 말하면 표면은 더 단단하다고 판단된다. Wu, Basdogan, Srinivasan(ASME IMECE 1999)이 인지 강성에 대한 이 시각 효과를 측정했다. 두 트릭은 같은 의미에서 정직하다. 장치가 낼 수 없는 물리가 아니라 신경계가 쓰는 *단서*를 렌더링하는 것이다.
 
@@ -484,7 +502,7 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 
 실제 마찰에는 붙어 있는 상태가 있고, 이를 렌더링하려면 두 영역을 전환해야 한다. **Karnopp 모델**(*J. Dyn. Sys. Meas. Control* 107(1), 1985)이 주력이다. 점이 *붙어 있는* 동안 마찰력은 정지 한계 $F_s$까지 가해진 접선 힘과 같다. $\lvert F_a\rvert > F_s$가 되면 점은 $F_d\,\mathrm{sgn}(v) + b v$의 마찰을 받으며 *미끄러진다*. 속도가 작은 문턱 $D_v$ 아래로 떨어지면 다시 붙고 속도는 0으로 놓는다. 이 문턱이 계산 가능하게 만드는 요령이다. 샘플링된 데이터에서 정확한 0 속도는 결코 나오지 않는다. **Dahl** 모델과 **탄소성** 모델(Dupont, Armstrong, Hayward, ACC 2000)은 이 스위치를 미끄러지기 전 변위를 담는 강모(bristle) 같은 상태로 바꾸고, Hayward–Armstrong 변형(2000)은 원래 Dahl 모델의 위치 표류를 없앤다.
 
-렌더링 논문이 이름을 부를 셋이 이것들이고, 각각 구조적 결정 딱 하나에서 갈라진다. 그러니 서술 대신 각자의 정의 조건을 적는다.
+렌더링 논문이 이름을 부를 셋이 이것들이고, 각각 구조적 결정 딱 하나에서 갈라진다. 그러니 서술 대신 각자의 정의 조건을 적는다. 하나만 필요하다면 Karnopp를 쓴다. 적분할 상태가 없고, 대부분의 실습 장치가 쓰는 것이 이것이다. 나머지 둘은 물체가 몇 초 동안 제자리에 있어야 할 때(쥔 도구, 가상 고정구)나 읽는 논문이 미끄럼 전 변위를 렌더링할 때 중요해진다.
 
 > **Karnopp 모델의 정의.** **Karnopp 모델**은 *두 모드의 전환 사상*이다. 붙음/미끄러짐의 모드 변수 하나와 모드마다 하나씩의 대수적 힘 법칙이다. 연속인 내부 상태가 전혀 없고, 그것이 아래 둘과 갈리는 지점이다. 정의 조건은 **속도 사영역**(dead-zone)이다. 모드를 $\lvert v\rvert<D_v$로 판정하고, 그 띠 안에서는 속도를 *0으로 놓으며*, 마찰력은 $F_s$까지 가해진 접선 힘을 그대로 상쇄하는 값이 된다.
 >
@@ -530,6 +548,8 @@ $$F = K\,(p_{\text{proxy}} - p_{\text{device}})$$
 ### 7. 렌더링 논문 읽기
 
 질문 넷이 주장을 가른다. **어느 알고리즘이 힘을 계산하는가** — 벌점, proxy, 아니면 학습된 것 — 그것이 렌더링할 수 없는 것(얇은 물체, 모서리, 마찰)을 정하기 때문이다. **어떤 장치를, 어떤 강성으로** — 힘 피드백이 무르게 느껴진다는 "Nerf World" 불평은 장치 한계이고, $200$ N/m 벽의 렌더링 결과는 $2000$ N/m 벽으로 옮겨지지 않는다. **현실감이 평가 점수인가 과제 결과인가** — 사건 기반 연구는 점수를 쟀고 마찰 연구는 완료 시간과 오류를 쟀다. 둘 다 정당하고 서로 다른 질문에 답한다. **지각적 트릭은 어디 있는가** — 가속도 과도 신호나 시각적 고정은 정당한 기여지만 물리가 아니라 인간에 대한 주장이고, [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]의 도구로 평가해야 한다.
+
+사건 기반 연구는 사실감을 물리량과 같게 보지 말라는 가장 깔끔한 경고이기도 하다. 실제 나무와 폼 위의 나무는 $0.25\,\mathrm{mm}$ 미만, 폼과 무른 비례 벽은 $2\,\mathrm{mm}$ 넘게 침투했지만, 단단한 비례 벽은 일부 사건 기반 벽보다 덜 침투하고도 덜 사실적이라고 평가됐다. 침투만, 또는 강성만 보고하는 렌더링 논문은 지각이 아니라 장치를 잰 것이다.
 
 ### 읽고 나면
 
@@ -589,3 +609,4 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**. 카탈로그 벽 $k_w=400$,
 - A. M. Okamura, M. R. Cutkosky, J. T. Dennerlein, "Reality-based models for vibration feedback in virtual environments," *IEEE/ASME Transactions on Mechatronics* 6(3):245–252, 2001. DOI 10.1109/3516.951362.
 - Y. Ding, S. Hasegawa, EuroHaptics 2020, LNCS 12272. DOI 10.1007/978-3-030-58147-3_27.
 - M. Galvan, C. Ramirez, A. D. Deshpande, A. M. Fey, WHC 2023, pp. 176–182. DOI 10.1109/WHC56415.2023.10224434.
+- D. C. Ruspini, K. Kolarov, O. Khatib, "Haptic interaction in virtual environments," *Proc. IEEE/RSJ IROS*, 1997, pp. 128–133.

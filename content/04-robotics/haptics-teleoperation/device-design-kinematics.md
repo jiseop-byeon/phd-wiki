@@ -95,6 +95,8 @@ so the rotor alone accounts for $10$ of the catalog's $40$ grams — a quarter o
 
 ### 1. Impedance and admittance causality
 
+*In one sentence:* an impedance device reads where you moved it and decides how hard to push back; an admittance device reads how hard you pushed and decides where to move.
+
 An **impedance display** measures motion and commands force: $x,\dot x\mapsto F$. It should feel light and backdrivable in free space, so low inertia, friction, cogging (torque ripple from the attraction between rotor magnets and stator slots, felt as small detents when you turn an unpowered motor by hand), backlash, and cable drag matter. An **admittance display** measures force and commands motion: $F\mapsto x,\dot x$. It relies on a high-bandwidth motion servo and is often built on a non-backdrivable industrial mechanism. These are interface causalities, not synonyms for impedance or admittance control used around an arbitrary robot.
 
 Network theory describes any power exchange as an effort–flow pair whose product is power: force times velocity in mechanics, voltage times current in a circuit. Only one member of the pair can be independently imposed at a port (a connection point through which power enters or leaves). In mechanics the pair is force and velocity, and instantaneous power is $P=F^\top v$. This energy view will reappear in passivity and bilateral teleoperation.
@@ -144,6 +146,8 @@ The computation only means anything if the units and the coordinate frames line 
 sides.
 
 P3 itself is the simplest family, one capstan-driven axis whose Jacobian is the scalar $r_m$, so the chain above collapses to a single line for it. Beyond one axis, two mechanism families dominate teaching and commercial devices. A **serial** arm such as the 3-DOF Geomagic Touch (formerly Phantom Omni) chains links from base to stylus. Its forward kinematics and Jacobian come straight from the link lengths, and its singular configurations are worth computing before choosing a workspace. A **pantograph** is a planar closed-chain linkage driven by two base-mounted motors. Because the motors do not ride on the moving links, moving inertia stays low, which is exactly what free-space transparency asks for. The costs are a smaller workspace and a Jacobian that has to be derived from the loop-closure constraint rather than read off a single chain.
+
+Two numbers from the handbook chapter by Hannaford and Okamura make the chain concrete. Their example single-axis device mounts a $500$-count encoder on the motor; quadrature decoding gives $2000$ counts per revolution, and the capstan ratio and lever arm turn that into $22.4\,\mathrm{\mu m}$ at the handle, against P3's $61.4\,\mathrm{\mu m}$ (Worked case): the same chain, with a finer encoder and a larger transmission. With more than one joint the Jacobian also sets how *evenly* the device behaves. Its **isotropy**, the ratio of the smallest to the largest singular value of $J$, is $1$ where a unit motor effort gives the same handle force in every direction and falls toward $0$ near a singularity, which is why the ideal device is described as free of singular configurations and of the neighbourhood around them.
 
 ### 3. Actuation is not “PWM equals force”
 
@@ -199,9 +203,13 @@ Quadrature encoders provide counts and direction; angle requires counts-per-revo
 > - **Non-example**: quoting $N=256$ because that is the number of slots on the disc. Quadrature decoding gives four counts per slot, so the true $N$ is $1024$ and the true $\Delta x$ is four times *smaller*; a paper that makes this mistake under-reports its own resolution by a factor of four, which is the problem set's item 3.
 > - **Why it matters**: it is the $\Delta$ in the quantization ceiling above, and it is the one term in that ceiling that faster computation cannot touch — it is bought with hardware, once. It also sets the finest stiffness step a perception study can run on the device: pressed to a depth $d$, a step $\delta$ on a wall $k$ has to clear one count, $\delta\,d\ge k\,\Delta x$ — the one-count condition of [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §3]].
 
+Hayward and MacLean's rules for building a device put two of these points bluntly. A haptic device is a bidirectional transducer, so *where* a response is measured matters: the controller sees the response between motor and sensor, but the user feels it where the device is touched. And a sensor must resolve the motion of interest: in their example, a $400$-count encoder cannot resolve oscillation of an unloaded small motor beyond about $10\,\mathrm{Hz}$, and for fast, small motion an accelerometer is the better choice.
+
 ### 5. Design from two ends
 
 From the person: workspace, grasp, comfortable continuous/peak force, perceptual bandwidth, and safety. From the virtual task: minimum free-space impedance, maximum stable wall stiffness, directions of force, update rate, collision complexity, and desired cue. A useful design maximizes the intersection; no scalar “best haptic device” captures it.
+
+**What the person asks of the device, in numbers.** Srinivasan and Basdogan and Salisbury, Conti and Barbagli list the same desirable properties, and each has a number on P3. *Free motion should feel free*: low back-drive inertia and friction. P3's handle costs $0.24\,\mathrm{N}$ to move at $5\,\mathrm{cm/s}$ and $5\,\mathrm{m/s^2}$ (Worked case), six times the $0.04\,\mathrm{N}$ a person can control ([[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §1]]), so its free space is felt. *Range, resolution and bandwidth should match the hand*: the user must not push through a rigid object by out-forcing the device (P3 saturates at $2.0\,\mathrm{N}$, below the $5$–$15\,\mathrm{N}$ people use to explore), and stiff objects must not feel soft, which asks for about $25\,\mathrm{N/mm}$ where P3 stops at $1.6\,\mathrm{N/mm}$. *Inertia, friction, stiffness and resonance should be the same in every direction*, so that the device adds no cue of its own. And the **grounding** decides what can be displayed at all: a glove grounds its forces on the hand and cannot show an object's net weight; an exoskeleton grounds on the body and loads the arm with its own mass; a desk-mounted device can show weight, but only inside its workspace. Designing from both ends means writing these numbers for the person and for the task side by side, and seeing which one the mechanism cannot meet.
 
 ### Self-check
 
@@ -237,6 +245,13 @@ The translating handle is driven by an inextensible capstan: motor pulley radius
 > 1. The chain is the picture's with a pulley half the size, so the sector is drawn ten times the pulley. Cable length is still conserved: $x=r_m\theta_m=0.005\,\theta_m$ and $\tau_m=F\,r_m=0.005\,F$, and $r_s$ appears in neither. One count is $\Delta x=0.005\cdot2\pi/1024=30.7\,\mu\mathrm{m}$, half the picture's $61.4\,\mu\mathrm{m}$, and the $0.020\,\mathrm{N{\cdot}m}$ amplifier now reaches $F^{\max}=0.020/0.005=4.0\,\mathrm{N}$, twice as much. The price is in the square: the rotor's inertia felt at the handle is $J_m/r_m^2=1.0\times10^{-6}/0.005^2=0.040\,\mathrm{kg}$, four times the picture's $0.010\,\mathrm{kg}$. Halving $r_m$ doubles resolution and force and quadruples the felt rotor mass.
 > 2. (a) $\Delta\theta_m=2\pi/N=2\pi/1024$, so $\Delta x=r_m\Delta\theta_m=0.010\cdot 2\pi/1024=6.14\times10^{-5}\,\mathrm{m}$ (61.4 µm). (b) $\Delta F=k_w\Delta x=400\cdot 6.14\times10^{-5}=0.0245\,\mathrm{N}$. (c) $F^{\max}=\tau_m^{\max}/r_m=0.020/0.010=2.0\,\mathrm{N}$. Saturation penetration $\delta=F^{\max}/k_w=2/400=0.005\,\mathrm{m}$ (5 mm), i.e. at $x=0.035\,\mathrm{m}$. (d) At $x=0.036$ the unsaturated law wants $F=k_w(0.006)=2.4\,\mathrm{N}>2.0$, so the amplifier is already saturated and the spring law is a lie.
 > 3. Using $r_s$ in place of $r_m$ multiplies $x$ and divides $F$ by $r_s/r_m=5$. Every Newton you publish would be off by five. Quadrature $4\times$ on 256 slots is 1024 counts: treating $N=256$ inflates $\Delta x$ by four, so the wall would feel four times coarser and you would under-report resolution.
+
+### Sources
+
+- B. Hannaford, A. M. Okamura, "Haptics," in B. Siciliano, O. Khatib (eds.), *Springer Handbook of Robotics*, 2nd ed., Springer, 2016, ch. 42. DOI 10.1007/978-3-319-32552-1_42 — the encoder-to-handle resolution example and mechanism isotropy of §2.
+- V. Hayward, K. E. MacLean, "Do it yourself haptics: Part I," *IEEE Robotics & Automation Magazine* 14(4):88–104, 2007. DOI 10.1109/M-RA.2007.907921 — the measurement-location and resolution rules of §4.
+- M. A. Srinivasan, C. Basdogan, "Haptics in virtual environments: taxonomy, research status, and challenges," *Computers & Graphics* 21(4):393–404, 1997. DOI 10.1016/S0097-8493(97)00030-7 — the desirable device properties of §5.
+- K. Salisbury, F. Conti, F. Barbagli, "Haptic rendering: introductory concepts," *IEEE Computer Graphics and Applications* 24(2):24–32, 2004. DOI 10.1109/MCG.2004.1274058 — device grounding and desirable properties in §5.
 
 ## 한국어
 
@@ -322,6 +337,8 @@ $$m_{\text{refl}} = \frac{J_m}{r_m^2} = \frac{1.0\times10^{-6}}{(0.010)^2}=0.010
 
 ### 1. 임피던스·어드미턴스 인과성
 
+*한 문장으로:* 임피던스 장치는 손이 어디로 움직였는지 읽고 얼마나 세게 되밀지 정하고, 어드미턴스 장치는 손이 얼마나 세게 밀었는지 읽고 어디로 움직일지 정한다.
+
 **Impedance display**는 운동을 측정해 힘을 명령한다: $x,\dot x\mapsto F$. 자유공간에서 가볍고 backdrivable해야 하므로 관성·마찰·cogging(회전자 자석과 고정자 슬롯 사이의 인력에서 생기는 토크 요동. 전원 없는 모터를 손으로 돌릴 때 작은 걸림으로 느껴진다)·backlash·케이블 항력이 중요하다. **Admittance display**는 힘을 측정해 운동을 명령한다: $F\mapsto x,\dot x$. 고대역폭 motion servo에 의존하며 역구동이 되지 않는 산업용 메커니즘 위에 만드는 경우가 많다. 이것은 인터페이스의 인과성이며, 임의의 로봇에 두르는 impedance/admittance 제어기와 같은 말이 아니다.
 
 네트워크 이론은 모든 일률 교환을 곱이 일률이 되는 effort–flow 쌍으로 기술한다. 역학에서는 힘×속도, 회로에서는 전압×전류다. 한 포트(일률이 들어오거나 나가는 연결점)에서 이 쌍 중 독립적으로 부과할 수 있는 것은 하나뿐이다. 역학에서 그 쌍은 힘과 속도이고 순간 일률은 $P=F^\top v$다. 이 에너지 관점은 수동성과 양방향 원격조작에서 다시 등장한다.
@@ -370,6 +387,8 @@ $$\tau=J^\top F=\begin{bmatrix}0.2&0\\0.1&0.15\end{bmatrix}\begin{bmatrix}5\\-2\
 단위와 좌표 프레임이 함께 맞아야 이 계산이 물리적 의미를 가진다.
 
 P3 자체는 가장 단순한 계열, 곧 캡스턴으로 구동하는 축 하나이고 야코비안이 스칼라 $r_m$이어서 위의 사슬이 한 줄로 줄어든다. 축이 하나를 넘으면 교육용과 상용 장치에서는 메커니즘 계열 둘이 주를 이룬다. 3자유도 Geomagic Touch(옛 Phantom Omni) 같은 **직렬** 팔은 베이스에서 스타일러스까지 링크를 잇는다. 순기구학과 야코비안이 링크 길이에서 곧바로 나오고, 작업공간을 정하기 전에 특이 자세를 계산해 둘 가치가 있다. **팬터그래프**는 베이스에 고정된 모터 둘이 구동하는 평면 폐쇄 사슬 링크다. 모터가 움직이는 링크 위에 실리지 않으므로 움직이는 관성이 작고, 이것이 바로 자유공간 투명성이 요구하는 것이다. 대가는 더 작은 작업공간, 그리고 사슬 하나에서 읽어 낼 수 없어 루프 폐쇄 제약에서 유도해야 하는 야코비안이다.
+
+Hannaford와 Okamura의 핸드북 장에서 가져온 두 숫자가 이 사슬을 구체적으로 만든다. 그들의 예제 1축 장치는 모터에 $500$카운트 인코더를 달고, 직교 복호로 한 바퀴에 $2000$카운트를 얻으며, 캡스턴 비와 레버 팔이 그것을 핸들에서 $22.4\,\mathrm{\mu m}$로 바꾼다. P3의 $61.4\,\mathrm{\mu m}$(계산 절)와 같은 사슬에 더 촘촘한 인코더와 더 큰 전동을 쓴 것이다. 관절이 둘 이상이면 야코비안은 장치가 얼마나 *고르게* 거동하는지도 정한다. $J$의 가장 작은 특이값과 가장 큰 특이값의 비인 **등방성**은, 단위 모터 노력이 모든 방향에서 같은 핸들 힘을 주는 곳에서 $1$이고 특이점 근처에서 $0$으로 떨어진다. 이상적인 장치를 특이 자세와 그 근방이 없는 장치로 묘사하는 이유다.
 
 ### 3. PWM은 곧 힘이 아니다
 
@@ -425,9 +444,13 @@ Quadrature encoder는 count와 방향을 준다. 각도를 얻으려면 회전�
 > - **비예**: 디스크의 슬롯이 $256$개라서 $N=256$이라고 적는 것. 쿼드러처 디코드가 슬롯당 네 카운트를 주므로 참 $N$은 $1024$이고 참 $\Delta x$는 네 배 *작다*. 이 실수를 한 논문은 자기 해상도를 네 배 낮게 보고하는 셈이고, 과제 3번이 그것이다.
 > - **왜 중요한가**: 위 양자화 천장의 $\Delta$가 이것이고, 그 천장에서 빠른 연산으로 건드릴 수 없는 유일한 항이다. 하드웨어로 한 번에 사는 값이다. 지각 연구가 이 장치에서 돌릴 수 있는 가장 고운 강성 단도 이것이 정한다. 깊이 $d$까지 누를 때 벽 $k$ 위의 단 $\delta$는 카운트 하나를 넘어야 한다($\delta\,d\ge k\,\Delta x$). [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §3]]의 한 카운트 조건이다.
 
+Hayward와 MacLean이 장치를 만들 때 지키라고 한 규칙이 이 가운데 두 가지를 직설적으로 말한다. 햅틱 장치는 양방향 변환기이므로 응답을 *어디서* 재느냐가 중요하다. 제어기는 모터와 센서 사이의 응답을 보지만, 사용자는 장치를 만지는 곳에서 그것을 느낀다. 그리고 센서는 관심 있는 운동을 가려낼 만큼 촘촘해야 한다. 그들의 예에서 $400$카운트 인코더는 부하 없는 작은 모터의 약 $10\,\mathrm{Hz}$ 넘는 진동을 가려내지 못하고, 빠르고 작은 운동에는 가속도계가 더 나은 선택이다.
+
 ### 5. 양쪽에서 설계하기
 
 사람 쪽에서: 작업공간, 파지, 편안한 지속/최대 힘, 지각 대역폭, 안전. 가상 과제 쪽에서: 자유공간 최소 임피던스, 안정하게 낼 수 있는 최대 벽 강성, 힘의 방향, 갱신 주기, 충돌 복잡도, 원하는 cue. 좋은 설계는 이 두 집합의 교집합을 최대로 만든다. "최고의 햅틱 장치"라는 하나의 스칼라 지표는 존재하지 않는다.
+
+**사람이 장치에 요구하는 것, 숫자로.** Srinivasan과 Basdogan, 그리고 Salisbury, Conti, Barbagli는 같은 바람직한 성질을 나열하고, 각각에 P3의 숫자가 있다. *자유 운동은 자유롭게 느껴져야 한다.* 역구동 관성과 마찰이 작아야 한다. P3 핸들은 $5\,\mathrm{cm/s}$, $5\,\mathrm{m/s^2}$로 움직이는 데 $0.24\,\mathrm{N}$이 드는데(계산 절), 사람이 조절할 수 있는 $0.04\,\mathrm{N}$([[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §1]])의 여섯 배이므로 자유 공간이 느껴진다. *범위, 분해능, 대역폭이 손과 맞아야 한다.* 사용자가 장치보다 센 힘으로 단단한 물체를 뚫고 나가면 안 되는데(P3는 $2.0\,\mathrm{N}$에서 포화해, 사람이 탐색에 쓰는 $5$–$15\,\mathrm{N}$보다 낮다), 단단한 물체가 무르게 느껴져서도 안 되고, 그것은 약 $25\,\mathrm{N/mm}$를 요구하는데 P3는 $1.6\,\mathrm{N/mm}$에서 멈춘다. *관성, 마찰, 강성, 공진이 모든 방향에서 같아야* 장치가 제 단서를 보태지 않는다. 그리고 **접지**(grounding)가 무엇을 보여 줄 수 있는지 자체를 정한다. 장갑은 힘을 손에 접지하므로 물체의 알짜 무게를 보여 주지 못하고, 외골격은 몸에 접지하며 제 질량을 팔에 싣고, 책상에 고정한 장치는 무게를 보여 줄 수 있지만 작업 공간 안에서만이다. 양쪽에서 설계한다는 것은 사람 쪽과 과업 쪽의 이 숫자들을 나란히 적고, 기구가 어느 것을 못 맞추는지 보는 것이다.
 
 ### 스스로 점검
 
@@ -463,3 +486,10 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**, 이 페이지, [[04-robotic
 > 1. 사슬은 위 그림과 같고 풀리만 반 크기이므로, 섹터는 풀리의 열 배로 그린다. 케이블 길이는 여전히 보존된다. $x=r_m\theta_m=0.005\,\theta_m$, $\tau_m=F\,r_m=0.005\,F$이고 $r_s$는 어느 쪽에도 없다. 한 카운트는 $\Delta x=0.005\cdot2\pi/1024=30.7\,\mu\mathrm{m}$로 위 그림의 $61.4\,\mu\mathrm{m}$의 절반이고, $0.020\,\mathrm{N{\cdot}m}$ 증폭기는 이제 $F^{\max}=0.020/0.005=4.0\,\mathrm{N}$, 두 배까지 낸다. 대가는 제곱에 있다. 핸들에서 느끼는 로터 관성은 $J_m/r_m^2=1.0\times10^{-6}/0.005^2=0.040\,\mathrm{kg}$으로 위 그림의 $0.010\,\mathrm{kg}$의 네 배다. $r_m$을 반으로 줄이면 해상도와 힘은 두 배, 느끼는 로터 질량은 네 배가 된다.
 > 2. (a) $\Delta\theta_m=2\pi/1024$, $\Delta x=0.010\cdot 2\pi/1024=6.14\times10^{-5}\,\mathrm{m}$ (61.4 µm). (b) $\Delta F=400\cdot 6.14\times10^{-5}=0.0245\,\mathrm{N}$. (c) $F^{\max}=0.020/0.010=2.0\,\mathrm{N}$. 포화 침투 $\delta=2/400=0.005\,\mathrm{m}$ (5 mm), 즉 $x=0.035\,\mathrm{m}$. (d) $x=0.036$에서 포화 없는 법칙은 $F=2.4\,\mathrm{N}>2.0$을 원하므로 증폭기는 이미 포화이고 스프링 법칙은 거짓이다.
 > 3. $r_m$ 자리에 $r_s$를 쓰면 $x$는 5배, $F$는 $1/5$. 발표하는 뉴턴마다 다섯 배가 틀린다. 256 슬롯의 쿼드러처 $4\times$가 1024 카운트다. $N=256$으로 쓰면 $\Delta x$가 네 배가 되어 벽이 네 배 거칠고 해상도를 낮게 보고하게 된다.
+
+### 출처
+
+- B. Hannaford, A. M. Okamura, "Haptics," in B. Siciliano, O. Khatib (eds.), *Springer Handbook of Robotics*, 2nd ed., Springer, 2016, ch. 42. DOI 10.1007/978-3-319-32552-1_42 — §2의 인코더–핸들 분해능 예와 기구 등방성.
+- V. Hayward, K. E. MacLean, "Do it yourself haptics: Part I," *IEEE Robotics & Automation Magazine* 14(4):88–104, 2007. DOI 10.1109/M-RA.2007.907921 — §4의 측정 위치와 분해능 규칙.
+- M. A. Srinivasan, C. Basdogan, "Haptics in virtual environments: taxonomy, research status, and challenges," *Computers & Graphics* 21(4):393–404, 1997. DOI 10.1016/S0097-8493(97)00030-7 — §5의 바람직한 장치 성질.
+- K. Salisbury, F. Conti, F. Barbagli, "Haptic rendering: introductory concepts," *IEEE Computer Graphics and Applications* 24(2):24–32, 2004. DOI 10.1109/MCG.2004.1274058 — §5의 장치 접지와 바람직한 성질.

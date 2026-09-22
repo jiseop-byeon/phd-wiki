@@ -131,6 +131,8 @@ The common receptor labels are useful but approximate. In the names, SA = slowly
 
 Frequency bands overlap and depend on contactor size, site, preload, and waveform. A statement such as “250 Hz is optimal” is incomplete without those conditions.
 
+**Numbers to design against.** Srinivasan and Basdogan collected the figures a device designer needs, and they are worth knowing by heart. The hand has $19$ bones and about $22$ degrees of freedom. The fingerpad localizes a point to about $0.15\,\mathrm{mm}$, separates two points about $1\,\mathrm{mm}$ apart, and on a smooth surface detects a single dot $2\,\mathrm{\mu m}$ high; it feels vibration up to about $1\,\mathrm{kHz}$, most sensitively near $250\,\mathrm{Hz}$ at sub-micrometre amplitude. Joint angle is resolved to about $2^\circ$ at the fingers and wrist and $1^\circ$ at the shoulder. The fingers press $50$–$100\,\mathrm{N}$ at most, explore at $5$–$15\,\mathrm{N}$, and control force to about $0.04\,\mathrm{N}$ or $1\%$, whichever is larger. The asymmetry that shapes every haptic loop is between sensing and acting: a hand *commands* motion only up to about $1$–$2\,\mathrm{Hz}$ for unexpected signals, $2$–$5\,\mathrm{Hz}$ for periodic ones and about $10\,\mathrm{Hz}$ as a reflex, yet it *senses* to a kilohertz. A device therefore has to be quiet and accurate far above any speed the user will ever drive it, which is why [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] runs its loop at $1\,\mathrm{kHz}$ for a hand that moves at a few hertz.
+
 ### 2. Threshold, PSE, and JND
 
 A **psychometric function** maps physical stimulus $x$ to response probability, for example $P(\text{comparison judged stronger}\mid x)$. Its midpoint can define the **point of subjective equality** (PSE). In a two-alternative comparison, one common convention reads the just-noticeable difference (JND) off the curve: $x_{75}$ and $x_{25}$ are the stimulus levels judged stronger 75% and 25% of the time, so half their gap measures how far the stimulus must move from the PSE before judgments shift reliably.
@@ -166,6 +168,8 @@ Worked interpretation: if a force JND is 8% near 5 N, a first estimate of a noti
 
 Measure false alarms as well as hits. Signal-detection analysis separates sensitivity (how well a person can actually tell stimulus from no stimulus) from response criterion (how willing they are to say "yes" when unsure), because a cautious and a liberal participant can have the same sensitivity but very different hit rates. Randomize condition order, include training, predefine exclusions, and record contact force, motion, latency, and task success rather than relying only on preference.
 
+**Where to put the stimulus levels.** A method needs a starting guess, and published JNDs supply it. For active squeezing with touch alone, Srinivasan and Basdogan report JNDs of about $7\%$ for force and elastic stiffness, $12\%$ for viscosity and $20\%$ for mass, and for motion about $11\%$ for velocity and $17\%$ for acceleration. So a staircase for stiffness around P3's $400\,\mathrm{N/m}$ wall should start well above $0.07\times400=28\,\mathrm{N/m}$ and be able to step well below it, while the same staircase for a virtual mass of $0.04\,\mathrm{kg}$ works around $8\,\mathrm{g}$. The same source gives a device target that is itself a perceptual claim: a wall needs roughly $25\,\mathrm{N/mm}$ to be judged rigid by touch alone, though about $5\,\mathrm{N/mm}$ can be enough when other cues agree, and both are far above the $1.6\,\mathrm{N/mm}$ P3 can render at $1\,\mathrm{kHz}$ ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]).
+
 ### 4. Multisensory and workload claims
 
 Under particular Gaussian/noise assumptions, two estimates with variances $\sigma_v^2$ and $\sigma_h^2$ combine by precision weighting:
@@ -173,6 +177,10 @@ Under particular Gaussian/noise assumptions, two estimates with variances $\sigm
 $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$$
 
 This is a model, not a universal law of sensory dominance. Reliability, temporal alignment, task relevance, priors, attention, and conflict determine whether cues fuse, compete, or remain separate. Likewise, moving a warning from vision to touch does not automatically reduce workload; representative multitask testing is necessary.
+
+**Evidence that the channels correct each other.** Wu, Basdogan and Srinivasan (1999) had people judge the size and stiffness of virtual objects drawn in perspective, by vision, by touch, or both. With vision alone, farther objects were judged smaller — the perspective bias — and adding touch reduced it. With touch alone, farther compliant objects were judged *softer*, and adding vision reduced that bias. Neither channel simply won; each corrected the other's error, which is what the weighting above predicts when both are informative. Earlier work, reported by Srinivasan and Basdogan, showed the lopsided case: a display that distorts the tool's visible motion changes the judged stiffness, and sharper impact sounds make a surface seem stiffer, though less strongly than vision. So a stiffness claim made with graphics on must say what the graphics showed.
+
+**From physiology to a design rule.** Hale and Stanney (2004) turn such findings into guidance: tactile cues (vibration, pressure) suit alerts and spatial orientation, and kinesthetic cues suit hand–eye coordination and manipulation. Their examples show the range: a vibrotactile vest that tells a pilot which way is down when vision and the inner ear disagree, and car navigation by *sensory saltation*, in which taps at a few sites on the back are felt as one point hopping across the skin. A guideline is a starting point; the workload caution above still applies.
 
 **Worked: the fusion the homework asks.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$ gives weights $4:1$, so $\hat x=\tfrac45 x_v+\tfrac15 x_h$, not vision alone. A force JND of $8\%$ near $5\,\mathrm{N}$ is a *population* increment of $0.4\,\mathrm{N}$; $5.2$ versus $5.0$ is half a JND and does not license “every participant notices.” Detection of a $250\,\mathrm{Hz}$ vibration is not insertion success: the chain is detectability $\to$ action $\to$ outcome.
 
@@ -264,6 +272,12 @@ Same participant, same handle, same 2AFC task, but the reference is moved down t
 > 1. Panel A is unchanged except for the two force labels: the chain, the handle constants and the timeline are the same object. Panel B has six new points at $p=0.100,0.250,0.450,0.675,0.850,0.950$; the $p=0.25$ line meets the data exactly at a tested level, so that foot lands on a plotted point rather than inside a segment.
 > 2. (a) $p=0.250$ *is* the measured proportion at $1.85\,\mathrm{N}$, so $x_{25}=1.85\,\mathrm{N}$ with no interpolation — the criterion coincided with a tested level. $x_{50}=2.00+0.15(0.500-0.450)/(0.675-0.450)=2.00+0.15(0.2222)=2.0333\,\mathrm{N}$. $x_{75}=2.15+0.15(0.750-0.675)/(0.850-0.675)=2.15+0.15(0.4286)=2.2143\,\mathrm{N}$. (b) $\mathrm{JND}=(2.2143-1.85)/2=0.3643/2=0.1821\,\mathrm{N}$ and $k=0.1821/2.0333=0.0896$, i.e. $9.0\%$. (c) $\mathrm{PSE}-F_{\text{ref}}=2.0333-2.00=+0.0333\,\mathrm{N}$ (33 mN), a smaller absolute bias than at 5 N but a larger one relative to the JND. (d) $0.1821/0.0245=7.4$ counts, and $0.1821/400=4.55\times10^{-4}\,\mathrm{m}=0.46\,\mathrm{mm}$ of penetration. The margin over quantization has fallen by more than half, from about 17 counts to about 7; it is still comfortable, but this is the direction in which a low-force experiment eventually becomes a hardware experiment.
 > 3. (a) The qualitative half survived: the absolute increment shrank with the reference, $0.4107\to0.1821\,\mathrm{N}$ for $5.04\to2.03\,\mathrm{N}$. The quantitative half did not: $k$ rose from $8.14\%$ to $8.96\%$, so $\Delta I/I$ is not constant across this range. Weber's law is a local approximation and these two operating points are not in the same locality. (b) $5.2$ versus $5.0$ is a $0.2\,\mathrm{N}$ difference against a $0.41\,\mathrm{N}$ JND — about half a JND, which is inside the uncertain region, and even at exactly one JND the convention only fixes the 75% point of one participant's curve. Neither "every participant" nor "notices" follows. (c) Detectability $\to$ action $\to$ task outcome. Measure the delivered skin stimulus (not the command), the control behaviour (contact force, timing), and the insertion outcome, separately; detection is one link of three. (d) $\hat x=(\sigma_v^{-2}x_v+\sigma_h^{-2}x_h)/(\sigma_v^{-2}+\sigma_h^{-2})=\tfrac45x_v+\tfrac15x_h$. The weights are $4:1$, not $1:0$, so "dominates" dropped both the haptic term and the assumption list (Gaussian, independent, temporally aligned).
+
+### Sources
+
+- M. A. Srinivasan, C. Basdogan, "Haptics in virtual environments: taxonomy, research status, and challenges," *Computers & Graphics* 21(4):393–404, 1997. DOI 10.1016/S0097-8493(97)00030-7 — the design numbers of §1 and the JNDs and rigid-wall targets of §3, and the earlier multisensory results reported in §4.
+- W.-C. Wu, C. Basdogan, M. A. Srinivasan, "Visual, haptic, and bimodal perception of size and stiffness in virtual environments," *Proc. ASME Dynamic Systems and Control Division*, DSC-Vol. 67, 1999, pp. 19–26 — the size and stiffness judgments of §4.
+- K. S. Hale, K. M. Stanney, "Deriving haptic design guidelines from human physiological, psychophysical, and neurological foundations," *IEEE Computer Graphics and Applications* 24(2):33–39, 2004. DOI 10.1109/MCG.2004.1274059 — the design guidelines of §4.
 
 ## 한국어
 
@@ -385,6 +399,8 @@ $p$는 그 수준의 40시행 중 참가자가 *비교* 구간을 더 세다고 
 
 주파수 대역은 서로 겹치고 접촉자 크기, 부위, 예압, 파형에 따라 달라진다. "250 Hz가 최적"이라는 진술은 그 조건들 없이는 불완전하다.
 
+**설계할 때 기준이 되는 숫자.** Srinivasan과 Basdogan은 장치 설계자에게 필요한 숫자를 모아 두었고, 외워 둘 만하다. 손에는 뼈가 $19$개, 자유도가 약 $22$개 있다. 손가락 끝은 한 점의 위치를 약 $0.15\,\mathrm{mm}$ 안으로 짚고, 약 $1\,\mathrm{mm}$ 떨어진 두 점을 가르며, 매끈한 면에서는 높이 $2\,\mathrm{\mu m}$인 점 하나를 알아챈다. 진동은 약 $1\,\mathrm{kHz}$까지 느끼고, $250\,\mathrm{Hz}$ 근처에서 마이크로미터보다 작은 진폭으로 가장 민감하다. 관절 각도는 손가락과 손목에서 약 $2^\circ$, 어깨에서 $1^\circ$까지 가린다. 손가락은 많아야 $50$–$100\,\mathrm{N}$으로 누르고, 탐색할 때는 $5$–$15\,\mathrm{N}$을 쓰며, 힘을 약 $0.04\,\mathrm{N}$ 또는 $1\%$ 가운데 큰 쪽까지 조절한다. 모든 햅틱 루프를 결정하는 비대칭은 감각과 행동 사이에 있다. 손은 예상 못 한 신호에는 약 $1$–$2\,\mathrm{Hz}$, 주기적인 신호에는 $2$–$5\,\mathrm{Hz}$, 반사로는 약 $10\,\mathrm{Hz}$까지만 운동을 *명령*하지만, 감각은 킬로헤르츠까지 한다. 그래서 장치는 사용자가 결코 몰지 않을 빠르기보다 훨씬 위에서까지 조용하고 정확해야 한다. 몇 헤르츠로 움직이는 손을 위해 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]가 루프를 $1\,\mathrm{kHz}$로 돌리는 이유다.
+
 ### 2. 임계값, PSE, JND
 
 **심리측정 함수**는 물리 자극 $x$를 반응 확률로 사상한다. 예를 들어 $P(\text{비교 자극이 더 강하다고 판정}\mid x)$이다. 그 중간점이 **주관적 등가점**(PSE)을 정의할 수 있다. 2대안 비교에서 흔한 관례 하나는 곡선에서 최소 식별차(JND)를 읽는 것이다. $x_{75}$와 $x_{25}$는 더 강하다고 판정되는 비율이 각각 75%와 25%인 자극 수준이므로, 그 간격의 절반은 판단이 믿을 만하게 바뀌려면 자극이 PSE에서 얼마나 움직여야 하는지를 잰다.
@@ -420,6 +436,8 @@ $$k=\frac{\mathrm{JND}}{I},$$
 
 hit뿐 아니라 false alarm도 재라. 신호 검출 분석이 민감도(자극이 있을 때와 없을 때를 실제로 얼마나 잘 구별하는가)와 반응 기준(확신이 없을 때 "있다"고 답하려는 경향)을 분리해 준다. 신중한 참가자와 대담한 참가자는 민감도가 같아도 hit 비율이 크게 다를 수 있기 때문이다. 조건 순서를 무작위화하고, 훈련을 넣고, 제외 기준을 미리 정하고, 선호도에만 기대지 말고 접촉력·운동·지연·과제 성공을 기록하라.
 
+**자극 수준을 어디에 둘까.** 방법에는 첫 추측이 필요하고, 발표된 JND가 그것을 준다. 촉각만으로 능동적으로 쥐어 볼 때 Srinivasan과 Basdogan이 보고한 JND는 힘과 탄성 강성 약 $7\%$, 점성 $12\%$, 질량 $20\%$이고, 운동에서는 속도 약 $11\%$, 가속도 $17\%$다. 그러니 P3의 $400\,\mathrm{N/m}$ 벽 근처의 강성 staircase는 $0.07\times400=28\,\mathrm{N/m}$보다 넉넉히 위에서 시작해 그보다 넉넉히 아래까지 내려갈 수 있어야 하고, $0.04\,\mathrm{kg}$ 가상 질량에 대한 같은 staircase는 $8\,\mathrm{g}$ 근처에서 일한다. 같은 출처는 그 자체가 지각 주장인 장치 목표도 준다. 촉각만으로 단단하다고 판단되려면 벽이 대략 $25\,\mathrm{N/mm}$여야 하지만, 다른 단서가 맞아떨어지면 약 $5\,\mathrm{N/mm}$로도 충분할 수 있다. 둘 다 P3가 $1\,\mathrm{kHz}$에서 렌더링할 수 있는 $1.6\,\mathrm{N/mm}$보다 훨씬 위다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]).
+
 ### 4. 다감각과 workload 주장
 
 특정한 가우시안·잡음 가정 아래에서 분산이 $\sigma_v^2$와 $\sigma_h^2$인 두 추정치는 정밀도 가중으로 결합된다.
@@ -427,6 +445,10 @@ hit뿐 아니라 false alarm도 재라. 신호 검출 분석이 민감도(자극
 $$\hat x=\frac{\sigma_v^{-2}x_v+\sigma_h^{-2}x_h}{\sigma_v^{-2}+\sigma_h^{-2}}.$$
 
 이것은 모델이지 감각 우세의 보편 법칙이 아니다. 신뢰도, 시간 정렬, 과제 관련성, prior, 주의, 충돌이 cue가 융합할지 경쟁할지 따로 남을지를 결정한다. 마찬가지로 경고를 시각에서 촉각으로 옮긴다고 workload가 자동으로 줄지 않는다. 대표성 있는 다중 과제 시험이 필요하다.
+
+**채널이 서로를 바로잡는다는 근거.** Wu, Basdogan, Srinivasan(1999)은 원근법으로 그린 가상 물체의 크기와 강성을 시각만, 촉각만, 또는 둘 다로 판단하게 했다. 시각만으로는 멀리 있는 물체를 더 작다고 판단했고(원근 편향), 촉각을 더하면 그 편향이 줄었다. 촉각만으로는 멀리 있는 말랑한 물체를 더 *무르다고* 판단했고, 시각을 더하면 그 편향이 줄었다. 어느 채널도 그냥 이기지 않았다. 둘 다 정보를 줄 때 위의 가중이 예측하는 대로, 서로의 오차를 바로잡았다. Srinivasan과 Basdogan이 전하는 이전 연구는 한쪽으로 기운 경우를 보였다. 도구의 보이는 운동을 왜곡하는 화면은 판단된 강성을 바꾸고, 더 날카로운 충돌음은 표면을 더 단단하게 느끼게 하지만 시각만큼 세지는 않다. 그러니 그래픽을 켠 채 한 강성 주장은 그래픽이 무엇을 보여 줬는지 말해야 한다.
+
+**생리학에서 설계 규칙으로.** Hale과 Stanney(2004)는 이런 결과를 지침으로 바꾼다. 촉각 단서(진동, 압력)는 경보와 공간 방향 감각에, 운동감각 단서는 손–눈 협응과 조작에 맞는다. 그들의 예가 폭을 보여 준다. 시각과 속귀가 어긋날 때 조종사에게 어느 쪽이 아래인지 알려 주는 진동 조끼, 그리고 등의 몇 곳을 두드리면 한 점이 피부 위를 건너뛰는 것처럼 느껴지는 *감각 도약*(sensory saltation)을 이용한 자동차 길 안내다. 지침은 출발점일 뿐이고, 위의 workload 경고는 여전히 적용된다.
 
 **계산해 읽기: 과제가 묻는 융합.** $\sigma_v=2\,\mathrm{mm}$, $\sigma_h=4\,\mathrm{mm}$이면 가중이 $4:1$이므로 $\hat x=\tfrac45x_v+\tfrac15x_h$이지 시각 단독이 아니다. $5\,\mathrm{N}$ 부근 힘 JND $8\%$는 *모집단* 증분 $0.4\,\mathrm{N}$이고, $5.2$ 대 $5.0$은 JND의 절반이라 "모든 참가자가 알아챈다"를 허락하지 않는다. $250\,\mathrm{Hz}$ 진동을 검출했다는 것은 삽입 성공이 아니다. 사슬은 검출 가능성 $\to$ 행동 $\to$ 결과다.
 
@@ -518,3 +540,9 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**와 이 페이지를 쓴다. 
 > 1. 패널 A는 힘 라벨 둘 말고는 그대로다. 사슬, 핸들 상수, 타임라인은 같은 대상이다. 패널 B에는 $p=0.100,0.250,0.450,0.675,0.850,0.950$의 새 점 여섯이 들어간다. $p=0.25$ 선이 시험한 수준에서 데이터를 정확히 만나므로, 그 발은 구간 안이 아니라 찍은 점 위에 떨어진다.
 > 2. (a) $p=0.250$은 $1.85\,\mathrm{N}$에서 측정된 비율 *그 자체*이므로 $x_{25}=1.85\,\mathrm{N}$, 보간이 없다. 기준이 시험한 수준과 일치했다. $x_{50}=2.00+0.15(0.500-0.450)/(0.675-0.450)=2.00+0.15(0.2222)=2.0333\,\mathrm{N}$. $x_{75}=2.15+0.15(0.750-0.675)/(0.850-0.675)=2.15+0.15(0.4286)=2.2143\,\mathrm{N}$. (b) $\mathrm{JND}=(2.2143-1.85)/2=0.3643/2=0.1821\,\mathrm{N}$, $k=0.1821/2.0333=0.0896$, 즉 $9.0\%$. (c) $\mathrm{PSE}-F_{\text{ref}}=2.0333-2.00=+0.0333\,\mathrm{N}$(33 mN). 5 N일 때보다 절대 편향은 작지만 JND 대비로는 크다. (d) $0.1821/0.0245=7.4$ 카운트, $0.1821/400=4.55\times10^{-4}\,\mathrm{m}=0.46\,\mathrm{mm}$ 침투. 양자화 대비 여유가 약 17 카운트에서 약 7 카운트로 절반 넘게 줄었다. 아직 넉넉하지만, 저힘 실험이 언젠가 하드웨어 실험으로 바뀌는 방향이 이쪽이다.
 > 3. (a) 정성적 절반은 살아남았다. 기준이 $5.04\to2.03\,\mathrm{N}$로 내려가자 절대 증분도 $0.4107\to0.1821\,\mathrm{N}$로 줄었다. 정량적 절반은 죽었다. $k$가 $8.14\%$에서 $8.96\%$로 올랐으므로 이 범위에서 $\Delta I/I$는 상수가 아니다. Weber 법칙은 국소 근사이고 이 두 작동점은 같은 국소가 아니다. (b) $5.2$ 대 $5.0$은 $0.2\,\mathrm{N}$ 차이이고 JND는 $0.41\,\mathrm{N}$이다. JND의 절반쯤이라 불확실 구간 안이며, 정확히 1 JND라 해도 그 관례는 한 참가자 곡선의 75% 점을 고정할 뿐이다. "모든 참가자"도 "알아챈다"도 따라 나오지 않는다. (c) 검출 $\to$ 행동 $\to$ 과제 결과. 전달된 피부 자극(명령이 아님), 제어 행동(접촉력, 타이밍), 삽입 결과를 따로 잰다. 검출은 세 고리 중 하나다. (d) $\hat x=(\sigma_v^{-2}x_v+\sigma_h^{-2}x_h)/(\sigma_v^{-2}+\sigma_h^{-2})=\tfrac45x_v+\tfrac15x_h$. 가중은 $4:1$이지 $1:0$이 아니므로, "우세"는 햅틱 항과 가정 목록(가우시안, 독립, 시간 정렬)을 함께 떨어뜨렸다.
+
+### 출처
+
+- M. A. Srinivasan, C. Basdogan, "Haptics in virtual environments: taxonomy, research status, and challenges," *Computers & Graphics* 21(4):393–404, 1997. DOI 10.1016/S0097-8493(97)00030-7 — §1의 설계 숫자, §3의 JND와 단단한 벽 목표, §4가 전하는 이전 다감각 결과.
+- W.-C. Wu, C. Basdogan, M. A. Srinivasan, "Visual, haptic, and bimodal perception of size and stiffness in virtual environments," *Proc. ASME Dynamic Systems and Control Division*, DSC-Vol. 67, 1999, pp. 19–26 — §4의 크기·강성 판단.
+- K. S. Hale, K. M. Stanney, "Deriving haptic design guidelines from human physiological, psychophysical, and neurological foundations," *IEEE Computer Graphics and Applications* 24(2):33–39, 2004. DOI 10.1109/MCG.2004.1274059 — §4의 설계 지침.

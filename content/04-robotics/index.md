@@ -105,7 +105,7 @@ decision layer these pages feed.
 
 Read after sections D–E and before designing a force-feedback interface or a haptic human study.
 
-- [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]] — human touch and psychophysics, tactile-display design, device kinematics and actuation, sampled virtual-contact stability, rendering algorithms, bilateral teleoperation, and experimental evidence
+- [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]] — human touch and psychophysics, tactile-display design, device kinematics and actuation, sampled virtual-contact stability, rendering algorithms, bilateral teleoperation, experimental evidence, teleoperation architectures and delay, and rendering in practice
 
 ### L. Build track
 
@@ -218,7 +218,7 @@ The specializations branch from the common track rather than add to it. At the s
 - **H. Manipulation (12–16):** 7–32 sessions over five Tier B pages and the two Modern Robotics chapters read alongside them — [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] with 15 and [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] with 16, two sessions each.
 - **I. Unstructured-environment navigation (17–19):** 3–13 sessions over three Tier B pages.
 - **J. Human perception & intent (20–23):** 4–15 sessions over four Tier B pages.
-- **K. Haptics & teleoperation (24):** 8–19 sessions over the hub and its seven sub-pages, one of them a Tier A lab.
+- **K. Haptics & teleoperation (24):** 10–27 sessions over the hub and its nine sub-pages, three of them Tier A labs (24.4, 24.8, 24.9).
 - **L. Build track (25):** 12–44 sessions over the hub and its eleven sub-pages, before the build time a real workspace adds.
 
 ### Where this track leads
@@ -340,7 +340,7 @@ B절 다음에 읽는다; 이 페이지들이 먹이는 결정 계층은 G절에
 
 D–E절 다음에 읽으며, 힘 반향 인터페이스나 햅틱 인간 대상 연구를 설계하기 전에 필요한 전문 트랙이다.
 
-- [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]] — 인간 촉각과 심리물리, 촉각 디스플레이 설계, 장치 기구학·구동, 샘플링된 가상 접촉의 안정성, 렌더링 알고리즘, 양방향 원격조작, 실험 증거
+- [[04-robotics/haptics-teleoperation/index|24. Haptics & Teleoperation]] — 인간 촉각과 심리물리, 촉각 디스플레이 설계, 장치 기구학·구동, 샘플링된 가상 접촉의 안정성, 렌더링 알고리즘, 양방향 원격조작, 실험 증거, 원격조작 구조와 지연, 실제 렌더링
 
 ### L. 만드는 트랙
 
@@ -454,7 +454,7 @@ F절(10. 로봇 시스템)과 나란히, 컴퓨터에서 무언가를 돌려 보
 - **H. 매니퓰레이션(12–16):** Tier B 다섯 페이지와 그와 함께 읽는 Modern Robotics 두 장 — 15와 함께 [[04-robotics/modern-robotics/ch12-grasping|MR 12장]], 16과 함께 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]], 각각 2회 — 에 7–32회.
 - **I. 비정형 환경 내비게이션(17–19):** Tier B 세 페이지에 3–13회.
 - **J. 사람 인지와 의도(20–23):** Tier B 네 페이지에 4–15회.
-- **K. 햅틱·원격조작(24):** 허브와 하위 페이지 일곱(그중 하나는 Tier A 실습)에 8–19회.
+- **K. 햅틱·원격조작(24):** 허브와 하위 페이지 아홉(그중 셋은 Tier A 실습: 24.4, 24.8, 24.9)에 10–27회.
 - **L. 만드는 트랙(25):** 허브와 하위 페이지 열한 개에 12–44회. 실제 워크스페이스가 더하는 빌드 시간은 빠져 있다.
 
 ### 이 트랙이 향하는 곳

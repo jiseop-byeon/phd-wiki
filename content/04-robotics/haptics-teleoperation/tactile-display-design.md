@@ -122,6 +122,8 @@ A tactile display deliberately stimulates skin. A kinesthetic display primarily 
 | variable-friction surface | friction during active scan | texture on flat screens | requires finger motion and tracking |
 | Peltier thermal display | heat flow/temperature cue | material and temperature cues | slow dynamics, heat sinking, safety |
 
+Two readings make this first step concrete. Srinivasan and Basdogan separate displays by what reaches the skin: when the task is done through a tool (a probe, a scalpel, a stylus), the hand only ever receives the tool's *net* force, so a kinesthetic display can in principle deliver everything; when the finger touches the object directly, the information is in how pressure is *distributed* over the fingerpad, which only a tactile display can deliver. Hale and Stanney add the use: tactile cues for alerts and orientation, kinesthetic cues for manipulation ([[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §4]]). Choosing a family in the table above is choosing which of these the task needs.
+
 ### 2. A waveform is not a percept
 
 For a sinusoid $a(t)=A\sin(2\pi ft)$, the physical variables include frequency, amplitude, phase, duration, attack/decay envelope, body site, contact area, and preload. Perception depends on all of them. Equal motor voltage does not imply equal skin acceleration, and equal acceleration does not imply equal perceived magnitude across frequencies.
@@ -159,6 +161,10 @@ Humans regulate grip before gross slip using distributed pressure, skin stretch,
 
 For hard contact, a low-frequency force loop and a short high-frequency transient may be combined. This can improve perceived hardness without demanding an unrealistically stiff stable virtual spring (a sampled spring can be rendered stably only up to a stiffness set by the device damping and the sample period, about $1600\,\mathrm{N/m}$ for P3 at $1\,\mathrm{kHz}$; [[04-robotics/haptics-teleoperation/rendering-sampling-stability#2. Why a digital spring can create energy|24.4 §2]] derives it later in the track, and nothing on this page depends on it), but the transient is open-loop energy and must remain within device and safety limits.
 
+Material is one of the clearest cues carried this way. Okamura, Cutkosky and Dennerlein tapped rubber, wood and aluminium with a stylus and found that each rings as a decaying sinusoid whose amplitude grows with impact speed, at about $18$, $592$ and $1153\,\mathrm{Hz}$ respectively. With the same stiffness behind every surface and only that vibration changed, new users named the material in $35$ of $42$ trials ($83.3\%$), most often confusing wood with rubber: a tactile cue, delivered through a kinesthetic device, carrying information the force loop could not. [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §4]] gives the model and how its frequencies were moved into the band the device could display.
+
+Temperature carries material the same way. In a study cited in Hannaford and Okamura's handbook chapter, a Peltier display on the back of the index finger let subjects identify materials such as ice, a soldering iron, insulating foam and aluminium from thermal cues alone $90\%$ of the time.
+
 ### 5. Design checklist
 
 1. What physical event should the user detect or estimate?
@@ -169,6 +175,8 @@ For hard contact, a low-frequency force loop and a short high-frequency transien
 6. Does the cue improve a decision or task outcome, and what false alarms does it create?
 
 **Worked: the three readings the homework asks.** “250 Hz on an ERM” still leaves amplitude, envelope, preload, area, site free; independent amplitude wants an LRA/voice coil/piezo because ERM couples $F\propto\omega^2$. Equal voltage is not equal percept across frequency. Table-top array then worn forearm skips contact reliability and workload; discriminability typically collapses.
+
+**Holding item 4 to a number.** Item 4 is where most designs are thinnest. Hayward and MacLean note that tactor drivers are often built to resonate near $250\,\mathrm{Hz}$, where skin is most sensitive, and driven in short bursts to counter adaptation. A command-to-skin transfer measured only at that resonance says little about any other frequency, so measure it at every frequency the design will use, as the Worked case does for T1 at two, before comparing percepts across them.
 
 ### 6. Worked case: what T1 delivers, and what T3 can resolve
 
@@ -259,6 +267,14 @@ Two knobs move, nothing else. The suspension is stiffened to $k_t'=9860\,\mathrm
 > 1. Panel A: the peak moves up with $f_0$ to just below 250 Hz, $f_0'\sqrt{1-2\zeta^2}=234\,\mathrm{Hz}$, and drops, because a stiffer suspension both shifts $f_0$ and reduces the resonant amplitude $F_0/(2\zeta k_t)$; the two curves cross between the operating points. Panel B: the same 16 marks at $6.25\,\mathrm{mm}$, but the ruler beneath now has $35\,\mathrm{mm}$ segments, so only two brackets fit across the sleeve.
 > 2. (a) $c_t'=0.5\sqrt{9860(0.0040)}=0.5\sqrt{39.44}=3.1401\,\mathrm{N\cdot s/m}$ and $f_0'=\frac{1}{2\pi}\sqrt{9860/0.0040}=\frac{1}{2\pi}\sqrt{2465000}=249.9\,\mathrm{Hz}$. (b) At 100 Hz: $k_t'-m_t\omega^2=9860-1579.14=8280.86$, $c_t'\omega=1972.96$, denominator $8512.65$, so $Z'(100)=0.030/8512.65=3.52\times10^{-6}\,\mathrm{m}=3.52\,\mu\mathrm{m}$. At 250 Hz: $k_t'-m_t\omega^2=9860-9869.60=-9.60$, $c_t'\omega=4932.40$, denominator $4932.41$, so $Z'(250)=0.030/4932.41=6.08\times10^{-6}\,\mathrm{m}=6.08\,\mu\mathrm{m}$, which the shortcut $0.030/(2(0.25)(9860))=6.09\times10^{-6}$ confirms. (c) $\mathrm{SL}'(100)=20\log_{10}(3.52/1.0)=10.9\,\mathrm{dB}$ and $\mathrm{SL}'(250)=20\log_{10}(6.08/0.20)=29.7\,\mathrm{dB}$. (d) Gained $29.7-24.9=4.7\,\mathrm{dB}$ at 250 Hz; lost $31.6-10.9=20.7\,\mathrm{dB}$ at 100 Hz. (e) $N_{\max}'=\lfloor100/35\rfloor=2$ sites, so $\log_2 2=1.00$ bit against the 4.00 bits the 16 tactors were meant to carry.
 > 3. (a) A bad trade for any signal that uses both frequencies: $4.7\,\mathrm{dB}$ bought at 250 Hz cost $20.7\,\mathrm{dB}$ at 100 Hz, and the reason the gain is so small is Step 7 — the skin had already paid back most of the old rolloff. It flips only if the display is genuinely single-frequency near 250 Hz, where the lost band costs nothing, or if $10.9\,\mathrm{dB}$ at 100 Hz still clears the margin the task needs under workload. (b) Amplitude, envelope, duration, preload, contact area, and body site are all still free. An ERM couples frequency to force, $F\propto\omega^2$, so amplitude cannot be set independently; that needs an LRA, voice coil, or piezo. (c) Checklist items 2 and 5: which skin site stays in reliable contact during the task, and whether patterns remain distinguishable under workload. Preload is lost and regained as the arm moves, masking rises, and the table-top vocabulary collapses — the arithmetic of Step 8 gives an *upper* bound of 2 sites on the forearm, and losing contact reliability means the worn system does not even reach it.
+
+### Sources
+
+- M. A. Srinivasan, C. Basdogan, "Haptics in virtual environments: taxonomy, research status, and challenges," *Computers & Graphics* 21(4):393–404, 1997. DOI 10.1016/S0097-8493(97)00030-7 — tool-mediated versus direct touch in §1.
+- K. S. Hale, K. M. Stanney, "Deriving haptic design guidelines from human physiological, psychophysical, and neurological foundations," *IEEE Computer Graphics and Applications* 24(2):33–39, 2004. DOI 10.1109/MCG.2004.1274059 — the cue-to-use guideline of §1.
+- A. M. Okamura, M. R. Cutkosky, J. T. Dennerlein, "Reality-based models for vibration feedback in virtual environments," *IEEE/ASME Transactions on Mechatronics* 6(3):245–252, 2001. DOI 10.1109/3516.951362 — the tap-vibration frequencies and identification rate of §4.
+- B. Hannaford, A. M. Okamura, "Haptics," in B. Siciliano, O. Khatib (eds.), *Springer Handbook of Robotics*, 2nd ed., Springer, 2016, ch. 42. DOI 10.1007/978-3-319-32552-1_42 — the thermal identification study cited in §4.
+- V. Hayward, K. E. MacLean, "Do it yourself haptics: Part I," *IEEE Robotics & Automation Magazine* 14(4):88–104, 2007. DOI 10.1109/M-RA.2007.907921 — tactor resonance and burst driving in §5.
 
 ## 한국어
 
@@ -371,6 +387,8 @@ Tactile display는 피부를 의도적으로 자극한다. Kinesthetic display�
 | 가변 마찰 표면 | 능동 스캔 중의 마찰 | 평평한 화면 위의 질감 | 손가락 운동과 추적이 필요 |
 | 펠티에 열 디스플레이 | 열 흐름 · 온도 cue | 재질과 온도 cue | 느린 동역학, 방열, 안전 |
 
+두 읽기 자료가 이 첫 단계를 구체적으로 만든다. Srinivasan과 Basdogan은 피부에 무엇이 닿느냐로 디스플레이를 가른다. 과업이 도구(탐침, 메스, 스타일러스)를 거치면 손은 도구의 *알짜* 힘만 받으므로 원리적으로 운동감각 디스플레이가 전부를 줄 수 있다. 손가락이 물체를 직접 만지면 정보는 손가락 끝 위에 압력이 어떻게 *분포*하느냐에 있고, 그것은 촉각 디스플레이만 줄 수 있다. Hale과 Stanney는 쓰임을 더한다. 촉각 단서는 경보와 방향에, 운동감각 단서는 조작에 쓴다([[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §4]]). 위 표에서 부류를 고르는 것은 과업이 이 가운데 무엇을 필요로 하는지 고르는 것이다.
+
 ### 2. 파형은 지각이 아니다
 
 사인파 $a(t)=A\sin(2\pi ft)$에서 물리 변수는 주파수, 진폭, 위상, 지속 시간, attack·decay 포락선, 신체 부위, 접촉 면적, 예압을 포함한다. 지각은 그 전부에 달려 있다. 같은 모터 전압이 같은 피부 가속도를 뜻하지 않고, 같은 가속도가 주파수를 가로질러 같은 지각 크기를 뜻하지도 않는다.
@@ -408,6 +426,10 @@ $$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
 
 단단한 접촉에는 저주파 힘 루프와 짧은 고주파 과도를 결합할 수 있다. 이렇게 하면 비현실적으로 뻣뻣한 안정 가상 스프링(샘플링된 스프링은 장치 감쇠와 샘플 주기가 정하는 강성까지만 안정하게 렌더링된다. P3를 $1\,\mathrm{kHz}$로 돌리면 약 $1600\,\mathrm{N/m}$이다. 유도는 트랙 뒤쪽의 [[04-robotics/haptics-teleoperation/rendering-sampling-stability#2. 디지털 스프링이 에너지를 만들 수 있는 이유|24.4 §2]]에 있고, 이 페이지의 어느 것도 그것에 기대지 않는다)을 요구하지 않고도 지각되는 경도를 높일 수 있다. 다만 그 과도는 개루프 에너지이므로 장치와 안전의 한계 안에 머물러야 한다.
 
+재질은 이런 방식으로 실어 나르는 가장 또렷한 단서 가운데 하나다. Okamura, Cutkosky, Dennerlein은 스타일러스로 고무, 나무, 알루미늄을 두드려, 각각이 충돌 속도에 따라 진폭이 커지는 감쇠 사인파로 울리며 그 주파수가 각각 약 $18$, $592$, $1153\,\mathrm{Hz}$임을 찾았다. 모든 표면 뒤의 강성은 같게 두고 그 진동만 바꿨을 때, 처음 보는 사용자들이 $42$번 중 $35$번($83.3\%$) 재질을 맞혔고, 가장 흔한 혼동은 나무와 고무였다. 운동감각 장치로 전달한 촉각 단서가 힘 루프로는 줄 수 없던 정보를 실어 나른 것이다. 모형과, 장치가 보여 줄 수 있는 대역으로 주파수를 어떻게 옮겼는지는 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §4]]에 있다.
+
+온도도 같은 방식으로 재질을 실어 나른다. Hannaford와 Okamura의 핸드북 장이 인용한 연구에서, 검지 등에 댄 펠티어 디스플레이만으로 피험자들이 얼음, 납땜 인두, 단열 폼, 알루미늄 같은 재질을 $90\%$ 맞혔다.
+
 ### 5. 설계 체크리스트
 
 1. 사용자가 검출하거나 추정해야 할 물리적 사건은 무엇인가?
@@ -418,6 +440,8 @@ $$\mathrm{SL}=20\log_{10}\frac{Z}{Z_{\text{th}}},$$
 6. 그 cue가 결정이나 과제 결과를 개선하는가, 그리고 어떤 오경보를 만드는가?
 
 **계산해 읽기: 과제가 묻는 세 독해.** "ERM의 250 Hz"는 진폭·포락선·예압·면적·부위를 여전히 자유롭게 남긴다. 진폭을 독립적으로 쓰려면 LRA·voice coil·피에조가 필요하다. ERM은 $F\propto\omega^2$로 둘을 묶기 때문이다. 같은 전압은 주파수를 가로질러 같은 지각이 아니다. 탁자에서 시험한 배열을 팔뚝에 착용하는 것은 접촉 신뢰성과 workload를 건너뛴 것이고, 구별 성능은 보통 무너진다.
+
+**4번을 숫자에 붙들어 두기.** 대부분의 설계가 가장 허술한 곳이 4번이다. Hayward와 MacLean은 촉각 구동기가 흔히 피부가 가장 민감한 $250\,\mathrm{Hz}$ 근처에서 공진하도록 만들어지고, 순응을 막으려고 짧은 버스트로 구동된다고 적는다. 그 공진에서만 잰 명령–피부 전달은 다른 주파수에 대해 거의 말해 주지 않으므로, 여러 주파수의 지각을 비교하기 전에 설계가 쓸 모든 주파수에서 재라. 계산 절이 T1을 두 주파수에서 재는 것처럼.
 
 ### 6. 대상으로 한 번 끝까지: T1이 전달하는 것과 T3가 구별하는 것
 
@@ -508,3 +532,11 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P3**, 위의 T1–T3, 그리고 �
 > 1. 패널 A: 봉우리가 $f_0$를 따라 250 Hz 바로 아래, $f_0'\sqrt{1-2\zeta^2}=234\,\mathrm{Hz}$로 옮겨 가면서 낮아진다. 뻣뻣한 서스펜션은 $f_0$를 옮기는 동시에 공진 진폭 $F_0/(2\zeta k_t)$를 줄이기 때문이다. 두 곡선은 작동점 사이에서 교차한다. 패널 B: $6.25\,\mathrm{mm}$ 피치의 같은 16개 표시. 다만 아래 자의 눈금이 $35\,\mathrm{mm}$가 되어 슬리브 전체에 괄호가 둘밖에 들어가지 않는다.
 > 2. (a) $c_t'=0.5\sqrt{9860(0.0040)}=0.5\sqrt{39.44}=3.1401\,\mathrm{N\cdot s/m}$, $f_0'=\frac{1}{2\pi}\sqrt{9860/0.0040}=\frac{1}{2\pi}\sqrt{2465000}=249.9\,\mathrm{Hz}$. (b) 100 Hz에서 $k_t'-m_t\omega^2=9860-1579.14=8280.86$, $c_t'\omega=1972.96$, 분모 $8512.65$이므로 $Z'(100)=0.030/8512.65=3.52\times10^{-6}\,\mathrm{m}=3.52\,\mu\mathrm{m}$. 250 Hz에서 $k_t'-m_t\omega^2=9860-9869.60=-9.60$, $c_t'\omega=4932.40$, 분모 $4932.41$이므로 $Z'(250)=0.030/4932.41=6.08\times10^{-6}\,\mathrm{m}=6.08\,\mu\mathrm{m}$. 지름길 $0.030/(2(0.25)(9860))=6.09\times10^{-6}$이 확인해 준다. (c) $\mathrm{SL}'(100)=20\log_{10}(3.52/1.0)=10.9\,\mathrm{dB}$, $\mathrm{SL}'(250)=20\log_{10}(6.08/0.20)=29.7\,\mathrm{dB}$. (d) 250 Hz에서 $29.7-24.9=4.7\,\mathrm{dB}$ 벌고, 100 Hz에서 $31.6-10.9=20.7\,\mathrm{dB}$ 잃었다. (e) $N_{\max}'=\lfloor100/35\rfloor=2$ 위치이므로 $\log_2 2=1.00$비트. tactor 16개가 나르기로 했던 4.00비트에 견줘 그렇다.
 > 3. (a) 두 주파수를 모두 쓰는 신호라면 나쁜 거래다. 250 Hz에서 산 $4.7\,\mathrm{dB}$의 값으로 100 Hz에서 $20.7\,\mathrm{dB}$를 치렀고, 벌이가 그토록 적은 이유가 Step 7이다. 피부가 이미 옛 감쇠의 대부분을 되갚아 주고 있었다. 뒤집히는 경우는 두 가지다. 디스플레이가 정말로 250 Hz 부근 단일 주파수여서 잃은 대역이 아무 값도 하지 않거나, 100 Hz의 $10.9\,\mathrm{dB}$가 workload 아래에서도 과제가 요구하는 여유를 여전히 넘거나. (b) 진폭, 포락선, 지속 시간, 예압, 접촉 면적, 부위가 모두 자유롭다. ERM은 주파수와 힘을 $F\propto\omega^2$로 묶으므로 진폭을 독립으로 정할 수 없다. LRA, voice coil, 피에조가 필요하다. (c) 체크리스트 항목 2와 5다. 과제 중 믿을 만한 접촉을 유지하는 부위, 그리고 workload 아래에서도 패턴이 구별되는가. 팔이 움직이면 예압이 사라졌다 돌아오고 masking이 늘어 탁자 위 어휘가 무너진다. Step 8의 계산은 팔뚝에서 위치 2개라는 *상한*을 줄 뿐이고, 접촉 신뢰성을 잃은 착용 시스템은 그 상한에 닿지도 못한다.
+
+### 출처
+
+- M. A. Srinivasan, C. Basdogan, "Haptics in virtual environments: taxonomy, research status, and challenges," *Computers & Graphics* 21(4):393–404, 1997. DOI 10.1016/S0097-8493(97)00030-7 — §1의 도구를 거친 촉각 대 직접 촉각.
+- K. S. Hale, K. M. Stanney, "Deriving haptic design guidelines from human physiological, psychophysical, and neurological foundations," *IEEE Computer Graphics and Applications* 24(2):33–39, 2004. DOI 10.1109/MCG.2004.1274059 — §1의 단서–쓰임 지침.
+- A. M. Okamura, M. R. Cutkosky, J. T. Dennerlein, "Reality-based models for vibration feedback in virtual environments," *IEEE/ASME Transactions on Mechatronics* 6(3):245–252, 2001. DOI 10.1109/3516.951362 — §4의 두드림 진동 주파수와 식별률.
+- B. Hannaford, A. M. Okamura, "Haptics," in B. Siciliano, O. Khatib (eds.), *Springer Handbook of Robotics*, 2nd ed., Springer, 2016, ch. 42. DOI 10.1007/978-3-319-32552-1_42 — §4가 인용한 온도 식별 연구.
+- V. Hayward, K. E. MacLean, "Do it yourself haptics: Part I," *IEEE Robotics & Automation Magazine* 14(4):88–104, 2007. DOI 10.1109/M-RA.2007.907921 — §5의 촉각 구동기 공진과 버스트 구동.

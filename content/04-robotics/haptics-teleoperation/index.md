@@ -27,8 +27,10 @@ flowchart LR
 5. [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 Bilateral Teleoperation]] — two-port models, transparency, scaling, delay, and passivity.
 6. [[04-robotics/haptics-teleoperation/experiments-readings|24.6 Experiments & Reading Map]] — human studies, workload, evidence, and an annotated source sequence.
 7. [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 Haptic Rendering Algorithms]] — penalty and proxy rendering, event-based contact transients, friction models, textures, and simulated dynamic objects.
+8. [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 Teleoperation Architectures, Absolute Stability & Delay]] — hybrid parameters, position–position and position–force pairs, transmitted impedance, Llewellyn's test, four channels, and what each delay remedy guarantees.
+9. [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 Rendering in Practice: Loops, Effects & Passivity Control]] — fast and slow loops, where the force is computed, the one-degree-of-freedom effect library, implicit surfaces, the sampled wall's energy leaks, and the time-domain passivity observer and controller.
 
-The fastest useful route is **24.1 → 24.3 → 24.4**. Add 24.2 for tactile-display work, 24.7 for virtual-environment rendering, and 24.5 for force-reflecting teleoperation. The broader demonstration-collection interpretation is in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]].
+The fastest useful route is **24.1 → 24.3 → 24.4**. Add 24.2 for tactile-display work, 24.7 and then 24.9 for virtual-environment rendering, and 24.5 and then 24.8 for force-reflecting teleoperation. The broader demonstration-collection interpretation is in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]].
 
 ### Prerequisite map
 
@@ -85,8 +87,10 @@ flowchart LR
 5. [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 Bilateral Teleoperation]] — 2-port 모델, 투명성, 스케일링, 지연, 수동성.
 6. [[04-robotics/haptics-teleoperation/experiments-readings|24.6 Experiments & Reading Map]] — 인간 실험, workload, 증거, 주석 달린 원문 순서.
 7. [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 Haptic Rendering Algorithms]] — 벌점·proxy 렌더링, 사건 기반 접촉 과도 신호, 마찰 모델, 질감, 동적 물체 시뮬레이션.
+8. [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 Teleoperation Architectures, Absolute Stability & Delay]] — 하이브리드 매개변수, 위치–위치와 위치–힘 쌍, 전달 임피던스, Llewellyn 판정, 네 채널, 지연 처방마다 보장하는 것.
+9. [[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 Rendering in Practice: Loops, Effects & Passivity Control]] — 빠른 루프와 느린 루프, 힘을 계산하는 곳, 1자유도 효과 목록, 음함수 곡면, 샘플된 벽의 에너지 누설, 시간 영역 수동성 관측기와 제어기.
 
-가장 빠른 핵심 경로는 **24.1 → 24.3 → 24.4**다. 촉각 디스플레이 연구에는 24.2를, 가상 환경 렌더링에는 24.7을, 힘 반영 원격조작에는 24.5를 더한다. 원격조작을 로봇 학습 데이터 수집으로 보는 관점은 [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]]에 있다.
+가장 빠른 핵심 경로는 **24.1 → 24.3 → 24.4**다. 촉각 디스플레이 연구에는 24.2를, 가상 환경 렌더링에는 24.7과 그다음 24.9를, 힘 반영 원격조작에는 24.5와 그다음 24.8을 더한다. 원격조작을 로봇 학습 데이터 수집으로 보는 관점은 [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]]에 있다.
 
 ### 선수 지식
 
