@@ -110,8 +110,11 @@ graph TD
     PlaNetE --> DreamerE["Dreamer v1-v3<br/>2020-23"]
     JEPAE["JEPA position paper 2022"] --> IJEPAE["I-JEPA 2023"]
     IJEPAE --> VJEPAE["V-JEPA 1-2 2024-25"]
+    VJEPAE --> LeWME["LeJEPA, LeWorldModel<br/>2025-26: planning in the latent"]
     DreamerE --> GenieE["Genie 1-2 2024"]
     GenieE --> PhysAIE["world models for physical AI<br/>Cosmos 2025"]
+    GenieE --> Genie3E["Genie 3 2025<br/>real-time renderer"]
+    WLE["World Labs 2025-26<br/>3D scenes: Marble, Atlas"] -. "renderer and simulator rows" .-> PhysAIE
     SoraE["Sora 2024<br/>the thesis Cosmos names"] --> PhysAIE
     VJEPAE -. "a contrast, not a parent" .-> PhysAIE
 ```
@@ -219,8 +222,11 @@ graph TD
     PlaNet --> Dreamer["Dreamer v1–v3<br/>(2020–23)"]
     JEPA["JEPA 선언문 (2022)"] --> IJEPA["I-JEPA (2023)"]
     IJEPA --> VJEPA["V-JEPA 1–2 (2024–25)"]
+    VJEPA --> LeWM["LeJEPA, LeWorldModel<br/>(2025–26): 잠재 공간에서 계획"]
     Dreamer --> Genie["Genie 1–2 (2024)"]
     Genie --> PhysAI["Physical AI용 월드모델<br/>(Cosmos, 2025)"]
+    Genie --> Genie3["Genie 3 (2025)<br/>실시간 렌더러"]
+    WL["World Labs (2025–26)<br/>3D 장면: Marble, Atlas"] -. "렌더러·시뮬레이터 행" .-> PhysAI
     Sora["Sora (2024)<br/>Cosmos가 지목한 테제"] --> PhysAI
     VJEPA -. "부모가 아니라 대조" .-> PhysAI
 ```

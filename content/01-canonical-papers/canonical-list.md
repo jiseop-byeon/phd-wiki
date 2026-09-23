@@ -108,10 +108,11 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [x] ◐ [[notes/5-world-models/world-models|World Models]] (Ha & Schmidhuber, NeurIPS 2018)
 - [x] ○ [[notes/5-world-models/planet|PlaNet]] (Hafner et al., ICML 2019)
 - [x] ◐ [[notes/5-world-models/dreamer|Dreamer → DreamerV2 → DreamerV3]] (Hafner et al., 2020–2023, Nature 2025)
-- [x] ◐ [[notes/5-world-models/jepa|JEPA line]] — LeCun 2022 position paper → I-JEPA (CVPR 2023) → V-JEPA / V-JEPA 2 (2024–2025)
-- [x] ◐ [[notes/5-world-models/genie|Genie]] (Bruce et al., ICML 2024) → Genie 2 (2024)
+- [x] ◐ [[notes/5-world-models/jepa|JEPA line]] — LeCun 2022 position paper → I-JEPA (CVPR 2023) → V-JEPA / V-JEPA 2 (2024–2025) → LeJEPA, LeWorldModel (2025–2026)
+- [x] ◐ [[notes/5-world-models/genie|Genie]] (Bruce et al., ICML 2024) → Genie 2 (2024) → Genie 3 (2025)
 - [x] ○ [[notes/5-world-models/sora|Sora]] — *Video Generation Models as World Simulators* (OpenAI, 2024)
 - [x] ◐ [[notes/5-world-models/cosmos|Cosmos]] — world foundation models for physical AI (NVIDIA, 2025)
+- [x] ○ [[notes/5-world-models/world-labs|World Labs]] — Marble, RTFM, Atlas and *A Functional Taxonomy of World Models* (technical posts, 2025–2026)
 
 ## 6. Diffusion & Generative Models
 

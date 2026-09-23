@@ -16,7 +16,7 @@ mastery-when: "Raise when learned dynamics, latent planning, uncertainty, or mod
 *Stands on the filter of [[04-robotics/state-estimation-slam|3. State Estimation]] and the return of [[02-foundations/rl-basics|7. RL]]. First use of object **D5**.*
 
 > [!note] First pass
-> Read the running object, the worked case, §§1–3, and problems 1–2. Return to §5 when a paper reports a rollout horizon or a one-step prediction loss.
+> Read the running object, the worked case, §§1–3, and problems 1–2. Return to §5 when a paper reports a rollout horizon or a one-step prediction loss, and read §6 before comparing two systems that are both called world models.
 
 ### Running object · 이 페이지의 대상
 
@@ -227,7 +227,7 @@ That paragraph names a phenomenon that is often used loosely, and the loose use 
 
 Representation learning asks whether latents preserve useful state. Prediction asks whether future observations/states are calibrated. Control asks whether imagined rollouts improve real return or success. Generation quality alone answers none of the other two.
 
-Read [[01-canonical-papers/notes/5-world-models/planet|PlaNet]], [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]], and JEPA/Genie entries with this component table.
+Read [[01-canonical-papers/notes/5-world-models/planet|PlaNet]], [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]], [[01-canonical-papers/notes/5-world-models/jepa|JEPA]], [[01-canonical-papers/notes/5-world-models/genie|Genie]] and [[01-canonical-papers/notes/5-world-models/world-labs|World Labs]] with this component table, and §6 before comparing two systems that both call themselves world models.
 
 ### 5. The horizon sweep
 
@@ -312,9 +312,27 @@ Four readings.
 
 **Replanning erases all of it on this plant.** Re-solving after every executed step gives a true 10-step return of $-1.2153$ for $\hat\lambda=0.8$, $0.9$ *and* $0.7$ alike, at every planning horizon $H\ge2$. The myopic $H=1$ planner returns $-2.7458$ even with the *correct* model, since with a one-step horizon the action only ever shows up as its own penalty. So on D5 the horizon matters more than the model, and the cheap fix — one extra solve per step — is worth more than the accurate model. That is a statement about a scalar linear plant with a stable gain; it is the kind of claim that has to be re-measured before it is carried to a real system, which is precisely what §3's list of remedies is a list of.
 
+### 6. Three things called a world model
+
+§1 took one world model apart into five components. By 2026 the phrase also names whole systems that share little but the name, and the cleanest way to sort them — the functional taxonomy World Labs published in June 2026 ([[01-canonical-papers/notes/5-world-models/world-labs|World Labs]]) — asks what a system *outputs*. The three answers are three rows of §1's table. A **renderer** outputs pixels, the observation decoder's job. A **simulator** outputs state that a program can compute on, the transition's job. A **planner** outputs actions, the planner's job.
+
+D5 already shows the split. Its map $f(z,a)=0.8z+0.5a$ is a simulator in this sense: it outputs the next state. §5's enumeration over $\mathcal A$ wraps it into a planner, which outputs an action. Nothing on this page renders; a decoder from $z$ to an image would make it one.
+
+| function | outputs | examples | what a manipulation robot gets | what it does not get |
+|---|---|---|---|---|
+| renderer | pixels, for a viewer | [[01-canonical-papers/notes/5-world-models/sora\|Sora]]; [[01-canonical-papers/notes/5-world-models/genie\|Genie 3]], real time at $720$p and $24$ frames per second with navigation inputs; World Labs' RTFM; the video models of [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] | images and video to train perception, and synthetic demonstrations | any guarantee of physics: a renderer may show what cannot happen |
+| simulator | state — geometry, physics, dynamics | physics engines such as MuJoCo and Isaac; World Labs' Marble (Gaussian splats, meshes, coarse collider meshes) and Atlas (real-to-sim reconstructions) | environments to train and test in, built faster than by hand | contact: a generated scene carries geometry, while mass, stiffness and friction must come from an engine |
+| planner | actions | VLAs ([[03-deep-learning/vla/index\|4. VLA]]); JEPA world models that plan — V-JEPA 2-AC, DINO-WM, LeWorldModel ([[01-canonical-papers/notes/5-world-models/jepa\|JEPA]]) | actions, directly or through a short search in a latent | long horizons and contact: V-JEPA 2-AC's tasks are short tabletop ones, and a 2026 preprint audit reports released JEPA world models ranking candidate actions wrongly |
+
+The boundaries blur, and the taxonomy says so. Renderers are becoming action-conditioned — Genie 3 takes navigation inputs, and Cosmos was fine-tuned to predict a robot's next frame from its action vector — and a planner can carry a renderer inside it. So the question to ask of any system called a world model is §4's question with one word sharpened: *what does it output*, and which decision can that output support?
+
+The companies sort the same way. LeCun's AMI Labs, launched in Paris in March 2026, builds JEPA-based world models: the planner row. World Labs builds renderers and simulators. DeepMind's Genie 3 is a renderer that takes actions, and NVIDIA's Cosmos a renderer meant to be post-trained into data generators. A company's row can change with its next release; a paper states what its model outputs, which is why the notes cite papers.
+
+For a construction manipulator the rows answer different needs. A renderer can multiply site images for perception. A scene generator can build site-like environments for navigation and coarse placement. Only a planner, or a physics engine running under a generated scene, answers what a push does to a panel on its anchors — and none of the three yet predicts contact forces. D5 is the planner row in its smallest form, and §5's lesson, to measure the rollout and not the one-step loss, is the one that carries to every row.
+
 ### After reading
 
-Decompose a world-model paper into five components, identify its rollout horizon, its uncertainty treatment, and whether its reported prediction error is teacher-forced or free-running, and name the real-world decision metric supporting its claim. If the paper plots absolute rollout error against horizon, check whether the plotted quantity can fall for the reason the $H=20$ row falls.
+Decompose a world-model paper into five components, identify its rollout horizon, its uncertainty treatment, and whether its reported prediction error is teacher-forced or free-running, and name the real-world decision metric supporting its claim. If the paper plots absolute rollout error against horizon, check whether the plotted quantity can fall for the reason the $H=20$ row falls. For any system called a world model, say whether it outputs pixels, state or actions, and which decision that output can support.
 
 ### Self-check
 
@@ -323,6 +341,7 @@ Decompose a world-model paper into five components, identify its rollout horizon
 3. The $\hat\lambda=0.9$ column has regret $0$ at every horizon but a gap that grows. What is a planner losing, if anything?
 4. Why does the $H=1$ MPC run score $-2.7458$ even with the exact model?
 5. D5's reward charges $-z_t^2$ on the state *before* the action. Whose number changes if the convention is switched to charging $z_{t+1}$, and does the ranking of $(-1,0)$ against $(0,0)$ survive it?
+6. A start-up announces a "world model for robots" that turns a phone video of a building site into an explorable 3D scene. Place it among §6's three functions, and say what would still have to be supplied before a manipulator could learn to seat a panel on its anchors inside that scene.
 
 > [!tip]- Answers
 > 1. One-step MSE $10^{-4}$ is an error of $10^{-2}$ in the state. The amplification is $(1-0.95^{20})/(1-0.95)=12.83$, so the bound is about $0.128$ — three orders of magnitude worse than the loss suggests. It is not the number to quote because it assumes every one-step error is that large, in the same direction, and independent of the state; on D5 the true errors decayed with the state and the actual $\delta_{20}$ came out well under the bound. The bound is the right thing to ask a paper for, and the measured free-running curve is the right thing to demand alongside it.
@@ -330,6 +349,7 @@ Decompose a world-model paper into five components, identify its rollout horizon
 > 3. Nothing, on this action grid. The gap means the plant keeps outperforming the model's promise, which is a reporting problem rather than a control problem: the same paper's predicted returns are systematically too low. The moment the grid is fine enough that the ordering of near-optimal plans changes, that pessimism starts costing regret too — which is why the $0$ in this column is a property of this grid and is stated as such.
 > 4. With $H=1$ the planner maximizes $-z_0^2-0.1a_0^2$ over $a_0$, and $z_0$ does not depend on $a_0$. The only term the action touches is its own penalty, so the optimizer always picks $a_0=0$ and the state coasts down at $0.8$ per step. The failure is the horizon, not the model — the same run with the *wrong* model and $H=2$ scores $-1.2153$.
 > 5. Every return on the page shifts, because the sum loses the constant $-z_0^2=-1$ and gains $-z_H^2$. For $(-1,0)$: $-(0.3^2+0.1)-(0.24^2)=-0.1900-0.0576=-0.2476$; for $(0,0)$: $-0.64-0.4096=-1.0496$. The ranking survives and the margin widens from $0.45$ to $0.80$, which is the point: a reward convention changes the numbers a paper prints without changing which plan is better, so two papers' returns are not comparable until the convention is stated.
+> 6. A simulator, and only the geometric part of one: it outputs state in the form of a scene — the Marble and Atlas kind — not pixels for a viewer and not actions. To learn a panel insertion in it you would still need a physics engine running under the scene, with the panel's mass and inertia, the stiffness and friction at the anchors and the gripper, and colliders fine enough for contact rather than the coarse ones scene generators export; then sensor models, and a real-robot test to measure what the policy lost in the move. None of that is in a generated scene, which is §6's point: the scene answers where things are, and only a physics engine or a planner that has learned contact answers what a push does.
 
 ### Problem set · 과제
 
@@ -368,7 +388,7 @@ def roll_b(lm, bt, acts, z=z0):        # a model that may be wrong about beta to
 *[[04-robotics/state-estimation-slam|3. State Estimation]]의 필터와 [[02-foundations/rl-basics|7. RL]]의 return 위에 선다. 대상 **D5**를 처음 쓴다.*
 
 > [!note] 처음이라면
-> 대상, 계산, §1–3, 문제 1–2를 먼저 한다. 논문이 rollout horizon이나 one-step 예측 손실을 보고하면 §5로 돌아온다.
+> 대상, 계산, §1–3, 문제 1–2를 먼저 한다. 논문이 rollout horizon이나 one-step 예측 손실을 보고하면 §5로 돌아온다. 둘 다 월드모델이라 불리는 두 시스템을 견주기 전에는 §6을 읽는다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -567,6 +587,8 @@ optimizer는 모델이 높게 평가하는 trajectory를 적극 찾으므로 학
 
 representation은 latent가 state를 보존하는지, prediction은 미래가 calibrated됐는지, control은 상상 rollout이 실제 return을 높이는지 묻는다. 생성 화질만으로 나머지를 증명하지 못한다.
 
+[[01-canonical-papers/notes/5-world-models/planet|PlaNet]], [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]], [[01-canonical-papers/notes/5-world-models/jepa|JEPA]], [[01-canonical-papers/notes/5-world-models/genie|Genie]], [[01-canonical-papers/notes/5-world-models/world-labs|World Labs]]를 이 구성요소 표와 함께 읽고, 둘 다 월드모델이라 자처하는 두 시스템을 견주기 전에는 §6을 읽어라.
+
 ### 5. Horizon 쓸기
 
 한 대상 위의 측정 셋: 자유 진행 오차가 그것을 이루는 one-step 오차와 어떻게 다른지, planner가 두 틀린 이득 각각에 얼마를 잃는지, replanning이 무엇을 치르고 무엇을 되찾는지. 행동 격자가 $\mathcal A$이므로 planner는 $5^H$개 sequence를 전수 조사하고, 결과 속에 optimizer 선택이 숨지 않는다. 코드는 영어 절에 한 번만 싣는다.
@@ -602,9 +624,27 @@ representation은 latent가 state를 보존하는지, prediction은 미래가 ca
 
 **이 플랜트에서 replanning은 그 전부를 지운다.** 실행한 스텝마다 다시 풀면 $\hat\lambda=0.8$, $0.9$, $0.7$ 모두 $H\ge2$인 모든 계획 horizon에서 참 10-스텝 return이 $-1.2153$이다. 근시안적 $H=1$ planner는 *맞는* 모델로도 $-2.7458$을 받는다. horizon이 하나면 행동이 자기 벌점으로만 나타나기 때문이다. 그러므로 D5에서는 모델보다 horizon이 중요하고, 값싼 처방 — 스텝당 한 번 더 푸는 것 — 이 정확한 모델보다 값지다. 이것은 안정 이득을 가진 스칼라 선형 플랜트에 대한 진술이고, 실제 시스템으로 옮기기 전에 다시 재야 하는 종류의 주장이다. §3의 처방 목록이 바로 그 목록이다.
 
+### 6. 월드모델이라 불리는 세 가지
+
+§1은 월드모델 하나를 다섯 구성요소로 나눴다. 2026년에 이 말은 이름 말고는 공통점이 거의 없는 시스템 전체도 가리키고, 그것들을 가르는 가장 깔끔한 방법 — World Labs가 2026년 6월에 낸 기능 분류([[01-canonical-papers/notes/5-world-models/world-labs|World Labs]]) — 은 시스템이 무엇을 *내놓는지* 묻는다. 세 답은 §1 표의 세 행이다. **렌더러**는 픽셀을 내놓고, 관측 디코더의 일이다. **시뮬레이터**는 프로그램이 계산할 수 있는 상태를 내놓고, 전이의 일이다. **플래너**는 행동을 내놓고, 플래너의 일이다.
+
+D5가 이미 그 분할을 보여 준다. 사상 $f(z,a)=0.8z+0.5a$는 이 뜻의 시뮬레이터다. 다음 상태를 내놓는다. §5가 $\mathcal A$ 위를 모두 훑는 것은 그것을 행동을 내놓는 플래너로 감싼다. 이 페이지에는 렌더링하는 것이 없다. $z$에서 이미지로 가는 디코더를 붙이면 렌더러가 된다.
+
+| 기능 | 내놓는 것 | 예 | 조작 로봇이 얻는 것 | 얻지 못하는 것 |
+|---|---|---|---|---|
+| 렌더러 | 보는 사람을 위한 픽셀 | [[01-canonical-papers/notes/5-world-models/sora\|Sora]]; 내비게이션 입력을 받으며 $720$p, 초당 $24$프레임으로 실시간인 [[01-canonical-papers/notes/5-world-models/genie\|Genie 3]]; World Labs의 RTFM; [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]]의 비디오 모델 | 인식을 학습시킬 이미지와 비디오, 합성 시연 | 물리의 보장. 렌더러는 일어날 수 없는 일도 보여 줄 수 있다 |
+| 시뮬레이터 | 상태 — 기하, 물리, 동역학 | MuJoCo, Isaac 같은 물리 엔진; World Labs의 Marble(Gaussian splat, 메시, 거친 충돌용 메시)과 Atlas(real-to-sim 재구성) | 손으로보다 빨리 만든, 학습하고 시험할 환경 | 접촉. 생성된 장면은 기하를 지니고, 질량·강성·마찰은 엔진이 대야 한다 |
+| 플래너 | 행동 | VLA([[03-deep-learning/vla/index\|4. VLA]]); 계획하는 JEPA 월드모델 — V-JEPA 2-AC, DINO-WM, LeWorldModel([[01-canonical-papers/notes/5-world-models/jepa\|JEPA]]) | 곧바로, 또는 잠재 공간의 짧은 탐색을 거친 행동 | 긴 지평과 접촉. V-JEPA 2-AC의 과제는 짧은 탁상 과제이고, 2026년의 프리프린트 감사는 공개된 JEPA 월드모델이 행동 후보의 순위를 틀리게 매긴다고 보고한다 |
+
+경계는 흐려지고, 분류도 그렇게 말한다. 렌더러는 행동 조건을 갖춰 간다 — Genie 3는 내비게이션 입력을 받고, Cosmos는 로봇의 행동 벡터로 다음 프레임을 예측하도록 미세조정되었다 — 그리고 플래너는 안에 렌더러를 품을 수 있다. 그러니 월드모델이라 불리는 시스템에 물을 것은 §4의 질문을 한 단어 날카롭게 한 것이다. *무엇을 내놓는가*, 그리고 그 출력이 어떤 결정을 받칠 수 있는가?
+
+회사들도 같은 방식으로 갈린다. 2026년 3월 파리에서 출범한 LeCun의 AMI Labs는 JEPA 기반 월드모델을 만든다. 플래너 행이다. World Labs는 렌더러와 시뮬레이터를 만든다. DeepMind의 Genie 3는 행동을 받는 렌더러이고, NVIDIA의 Cosmos는 데이터 생성기로 사후학습되도록 만든 렌더러다. 회사의 행은 다음 출시에 바뀔 수 있지만 논문은 제 모델이 무엇을 내놓는지 적는다. 노트들이 논문을 인용하는 이유다.
+
+건설 매니퓰레이터에게 세 행은 서로 다른 필요에 답한다. 렌더러는 인식을 위한 현장 이미지를 늘릴 수 있다. 장면 생성기는 내비게이션과 거친 배치를 위한 현장 같은 환경을 지을 수 있다. 앵커 위의 패널을 밀면 무슨 일이 생기는지는 플래너만, 또는 생성된 장면 밑에서 도는 물리 엔진만 답한다 — 그리고 셋 중 어느 것도 아직 접촉력을 예측하지 않는다. D5는 가장 작은 형태의 플래너 행이고, 한 스텝 손실이 아니라 rollout을 재라는 §5의 교훈이 모든 행으로 옮겨 가는 교훈이다.
+
 ### 읽고 나면
 
-월드모델 논문을 다섯 구성요소로 분해하고, rollout horizon과 불확실성 처리를 짚고, 보고된 예측 오차가 teacher forcing인지 자유 진행인지 가려내고, 주장을 받치는 실세계 의사결정 metric을 말할 수 있다. 논문이 절대 rollout 오차를 horizon에 대해 그렸다면, 그 양이 §5의 $H=20$ 행이 내려온 이유로 내려올 수 있는지 확인한다.
+월드모델 논문을 다섯 구성요소로 분해하고, rollout horizon과 불확실성 처리를 짚고, 보고된 예측 오차가 teacher forcing인지 자유 진행인지 가려내고, 주장을 받치는 실세계 의사결정 metric을 말할 수 있다. 논문이 절대 rollout 오차를 horizon에 대해 그렸다면, 그 양이 §5의 $H=20$ 행이 내려온 이유로 내려올 수 있는지 확인한다. 월드모델이라 불리는 어떤 시스템이든 픽셀·상태·행동 가운데 무엇을 내놓는지, 그 출력이 어떤 결정을 받칠 수 있는지 말한다.
 
 ### 스스로 점검
 
@@ -613,6 +653,7 @@ representation은 latent가 state를 보존하는지, prediction은 미래가 ca
 3. $\hat\lambda=0.9$ 열은 모든 horizon에서 regret이 $0$인데 gap은 자란다. planner는 무엇을 잃고 있는가, 잃는 것이 있다면?
 4. $H=1$ MPC가 정확한 모델로도 $-2.7458$인 이유는?
 5. D5의 보상은 행동 *이전* 상태에 $-z_t^2$을 매긴다. $z_{t+1}$에 매기는 규약으로 바꾸면 누구의 숫자가 바뀌고, $(-1,0)$과 $(0,0)$의 순위는 살아남는가?
+6. 어느 스타트업이 건설 현장을 휴대폰으로 찍은 영상을 돌아다닐 수 있는 3D 장면으로 바꾸는 "로봇을 위한 월드모델"을 발표했다. §6의 세 기능 가운데 어디에 두겠으며, 매니퓰레이터가 그 장면 안에서 패널을 앵커에 앉히는 법을 배우려면 무엇을 더 대야 하는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. one-step MSE $10^{-4}$는 상태 오차 $10^{-2}$다. 증폭은 $(1-0.95^{20})/(1-0.95)=12.83$이므로 상계는 약 $0.128$이고, 손실이 시사하는 것보다 세 자릿수 나쁘다. 그대로 인용하면 안 되는 이유는 모든 one-step 오차가 그 크기로, 같은 방향으로, 상태와 무관하게 난다고 가정하기 때문이다. D5에서는 실제 오차가 상태와 함께 줄었고 실제 $\delta_{20}$은 상계보다 한참 작았다. 상계는 논문에 요구할 옳은 값이고, 함께 요구할 옳은 값은 측정된 자유 진행 곡선이다.
@@ -620,6 +661,7 @@ representation은 latent가 state를 보존하는지, prediction은 미래가 ca
 > 3. 이 행동 격자에서는 없다. gap은 플랜트가 모델의 약속을 계속 웃돈다는 뜻이고, 제어 문제라기보다 보고 문제다. 같은 논문의 예측 return이 체계적으로 낮다. 격자가 촘촘해져 최적 근처 계획들의 순서가 바뀌는 순간부터는 이 비관도 regret을 치르기 시작한다. 그래서 이 열의 $0$은 이 격자의 성질이고, 그렇게 적어야 한다.
 > 4. $H=1$이면 planner는 $a_0$에 대해 $-z_0^2-0.1a_0^2$을 최대화하는데 $z_0$은 $a_0$에 의존하지 않는다. 행동이 건드리는 항은 자기 벌점뿐이라 언제나 $a_0=0$을 고르고 상태는 스텝당 $0.8$로 흘러내린다. 실패한 것은 모델이 아니라 horizon이다. *틀린* 모델로도 $H=2$면 $-1.2153$이다.
 > 5. 페이지의 모든 return이 옮겨 간다. 합에서 상수 $-z_0^2=-1$이 빠지고 $-z_H^2$이 들어온다. $(-1,0)$은 $-(0.3^2+0.1)-(0.24^2)=-0.2476$, $(0,0)$은 $-0.64-0.4096=-1.0496$이다. 순위는 살아남고 차이는 $0.45$에서 $0.80$으로 벌어진다. 요점이 그것이다. 보상 규약은 어떤 계획이 나은지를 바꾸지 않은 채 논문이 인쇄하는 숫자를 바꾸므로, 규약을 밝히기 전까지 두 논문의 return은 비교 대상이 아니다.
+> 6. 시뮬레이터, 그것도 그 기하 부분뿐이다. 장면 형태의 상태를 내놓는다 — Marble과 Atlas 같은 종류 — 보는 사람을 위한 픽셀도, 행동도 아니다. 그 안에서 패널 삽입을 배우려면 여전히 장면 밑에서 도는 물리 엔진이 있어야 하고, 패널의 질량과 관성, 앵커와 그리퍼에서의 강성과 마찰, 장면 생성기가 내보내는 거친 것이 아니라 접촉을 다룰 만큼 촘촘한 충돌 기하가 필요하다. 그다음 센서 모델, 그리고 옮겨 가며 정책이 잃은 것을 재는 실제 로봇 시험이다. 그 어느 것도 생성된 장면 안에 없고, 그것이 §6의 요점이다. 장면은 무엇이 어디 있는지 답하고, 밀면 무슨 일이 생기는지는 물리 엔진이나 접촉을 배운 플래너만 답한다.
 
 ### 과제 · Problem set
 

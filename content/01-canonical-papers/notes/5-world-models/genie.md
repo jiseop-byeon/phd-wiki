@@ -9,7 +9,7 @@ pdf: https://arxiv.org/pdf/2402.15391
 project: https://deepmind.google/blog/genie-2-a-large-scale-foundation-world-model/
 tags: [paper, world-models, generative]
 status: note-complete
-last_verified: 2026-07-22
+last_verified: 2026-09-22
 study-depth: Literacy
 depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
 mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
@@ -59,11 +59,19 @@ video, making the whole internet a training ground for interactive environments?
   and mapped to real action spaces — a path to RL without action-labeled data.
 - **Genie 2 (2024)**: scaled to 3D worlds with minutes-long consistent rollouts, framed as
   a training ground for embodied agents.
+- **Genie 3 (August 2025)**: real time — $720$p at $24$ frames per second, answering
+  navigation inputs several times a second and staying consistent for a few minutes, plus
+  text-prompted "world events" such as a change of weather; tested with DeepMind's SIMA
+  agent and released as a limited research preview
+  ([announcement](https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/)).
+  Its own limits: a narrow direct action space for agents and poor multi-agent interaction.
 
 ### Limitations & critique
 
-- 1 FPS interaction and short consistent horizons (v1); hallucinated physics — plausible ≠
-  correct, the standing issue for using generated worlds as training grounds.
+- 1 FPS interaction and short consistent horizons (v1; Genie 3 reached real time and a few
+  minutes); hallucinated physics — plausible ≠ correct, the standing issue for using
+  generated worlds as training grounds. World Labs' taxonomy files Genie 3 as a *renderer*
+  ([[world-labs|World Labs]]).
 - 2D-game-biased data (v1); latent actions may not match real robot action granularity.
 - Closed models; evaluation of "world quality" remains ad hoc.
 
@@ -118,11 +126,17 @@ simulator that generates embodied training data at scale — the base of
   행동 라벨 없는 RL로 가는 길.
 - **Genie 2 (2024)**: 3D 세계로 확장, 수 분 길이의 일관된 롤아웃 — 체화 에이전트의
   훈련장으로 자리매김.
+- **Genie 3 (2025년 8월)**: 실시간 — 초당 $24$프레임의 $720$p로, 내비게이션 입력에 초당
+  여러 번 답하고 몇 분 동안 일관되며, 날씨 변화 같은 텍스트 "세계 이벤트"를 받는다.
+  DeepMind의 SIMA 에이전트로 시험했고 제한된 연구 미리보기로 공개했다
+  ([발표](https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/)).
+  스스로 밝힌 한계는 에이전트의 직접 행동 공간이 좁고 여러 에이전트의 상호작용이 약하다는 것이다.
 
 ### 한계와 비판
 
-- 1 FPS 상호작용과 짧은 일관성 지평(v1); 환각된 물리 — 그럴듯함 ≠ 정확함, 생성된 세계를
-  훈련장으로 쓸 때의 상시 문제.
+- 1 FPS 상호작용과 짧은 일관성 지평(v1; Genie 3는 실시간과 몇 분에 닿았다); 환각된 물리 —
+  그럴듯함 ≠ 정확함, 생성된 세계를 훈련장으로 쓸 때의 상시 문제. World Labs의 분류는
+  Genie 3를 *렌더러*로 둔다([[world-labs|World Labs]]).
 - 2D 게임 편향 데이터(v1); 잠재 행동이 실제 로봇 행동의 입도와 안 맞을 수 있다.
 - 비공개 모델; "세계 품질"의 평가가 여전히 임기응변적.
 

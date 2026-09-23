@@ -46,6 +46,11 @@ implicit-function idea was in the air (occupancy networks); NeRF made it *photor
   into a Fourier basis makes the high-frequency directions as easy to fit as the low ones.
 - **Differentiable volume rendering**: integrate color×density along each ray; loss = pixel
   MSE against input photos. Hierarchical coarse-to-fine sampling.
+  - **Volume rendering, stated completely.** Along a ray $\mathbf r(t)=\mathbf o+t\mathbf d$, the colour is
+    $$C(\mathbf r)=\int_{t_n}^{t_f}T(t)\,\sigma(\mathbf r(t))\,\mathbf c(\mathbf r(t),\mathbf d)\,dt,\qquad T(t)=\exp\Big(-\int_{t_n}^{t}\sigma(\mathbf r(s))\,ds\Big)$$
+    where $\sigma$ is the density, $\mathbf c$ the view-dependent colour and $T(t)$ the **transmittance**, the probability that the ray reaches $t$ unblocked. With samples $t_i$ spaced $\delta_i$ apart it becomes the sum the code computes,
+    $$\hat C=\sum_{i=1}^{N}T_i\,\alpha_i\,\mathbf c_i,\qquad \alpha_i=1-e^{-\sigma_i\delta_i},\qquad T_i=\prod_{j<i}(1-\alpha_j)=e^{-\sum_{j<i}\sigma_j\delta_j},$$
+    front-to-back **alpha compositing**, which is also what [[3d-gaussian-splatting|3DGS]] computes with Gaussians in place of samples. By hand, three samples $\delta=0.5$ apart with densities $(0.2,\ 2,\ 4)$ and grey levels $(0.9,\ 0.2,\ 0.5)$: the opacities are $\alpha=(0.095,\ 0.632,\ 0.865)$, the transmittances $T=(1,\ 0.905,\ 0.333)$, so the weights $T_i\alpha_i=(0.095,\ 0.572,\ 0.288)$ sum to $0.955$ and leave $0.045$ for the background, and $\hat C=0.344$. The second sample, the first dense one, takes $57\%$ of the pixel and hides most of what lies behind it. Every weight depends on $\sigma$, so the photo loss reaches the geometry — which is how pictures alone teach the density.
 - View-direction input captures specular/reflective effects.
 
 ### Results
@@ -99,6 +104,11 @@ data generation ([[cosmos|world-model data engines]]).
   MLP가 고주파를 표현하게 한다. 그것 없이는 못 하는 이유가 **스펙트럼 편향**이다: 좌표 MLP는 저주파를 고주파보다 훨씬 빨리 맞추므로, 날것의 $(x,y,z)$ 입력으로는 복원된 radiance field가 과하게 매끄럽게 나온다. 입력을 푸리에 기저로 들어올리면 고주파 방향도 저주파만큼 맞추기 쉬워진다.
 - **미분 가능한 볼륨 렌더링**: 광선을 따라 색×밀도를 적분; 손실 = 입력 사진과의 픽셀 MSE.
   거친→세밀 계층 샘플링.
+  - **볼륨 렌더링의 완전한 정의.** 광선 $\mathbf r(t)=\mathbf o+t\mathbf d$를 따라 색은
+    $$C(\mathbf r)=\int_{t_n}^{t_f}T(t)\,\sigma(\mathbf r(t))\,\mathbf c(\mathbf r(t),\mathbf d)\,dt,\qquad T(t)=\exp\Big(-\int_{t_n}^{t}\sigma(\mathbf r(s))\,ds\Big)$$
+    이다. $\sigma$는 밀도, $\mathbf c$는 시선에 따라 달라지는 색, $T(t)$는 **투과율**(transmittance)로, 광선이 막히지 않고 $t$에 닿을 확률이다. 간격 $\delta_i$로 뽑은 샘플 $t_i$에서는 코드가 계산하는 합이 된다.
+    $$\hat C=\sum_{i=1}^{N}T_i\,\alpha_i\,\mathbf c_i,\qquad \alpha_i=1-e^{-\sigma_i\delta_i},\qquad T_i=\prod_{j<i}(1-\alpha_j)=e^{-\sum_{j<i}\sigma_j\delta_j}$$
+    앞에서 뒤로 가는 **알파 합성**(alpha compositing)이고, [[3d-gaussian-splatting|3DGS]]가 샘플 대신 가우시안으로 계산하는 것도 이것이다. 손으로 해 보면, 간격 $\delta=0.5$인 샘플 셋의 밀도가 $(0.2,\ 2,\ 4)$, 회색 값이 $(0.9,\ 0.2,\ 0.5)$일 때 불투명도는 $\alpha=(0.095,\ 0.632,\ 0.865)$, 투과율은 $T=(1,\ 0.905,\ 0.333)$이므로 가중치 $T_i\alpha_i=(0.095,\ 0.572,\ 0.288)$의 합은 $0.955$이고 배경 몫으로 $0.045$가 남으며, $\hat C=0.344$다. 둘째 샘플, 곧 처음 만나는 밀한 샘플이 픽셀의 $57\%$를 가져가고 그 뒤에 있는 것을 대부분 가린다. 모든 가중치가 $\sigma$에 의존하므로 사진 손실이 기하에 닿는다. 사진만으로 밀도를 가르칠 수 있는 이유가 그것이다.
 - 시선 방향 입력이 반사/광택 효과를 담는다.
 
 ### 결과

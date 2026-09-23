@@ -45,7 +45,9 @@ them soft, differentiable, and optimizable.
 - **Adaptive density control**: clone/split Gaussians where detail is missing, prune
   transparent ones.
 - **Tile-based differentiable rasterizer**: visibility-sorted alpha blending — the
-  engineering core enabling real-time rates.
+  engineering core enabling real-time rates. The blend is NeRF's compositing sum
+  $\hat C=\sum_i T_i\alpha_i\mathbf c_i$ with $T_i=\prod_{j<i}(1-\alpha_j)$, where each $\alpha_i$ is a Gaussian's
+  learned opacity times its projected 2D footprint at the pixel ([[nerf|NeRF]], worked by hand).
 
 ### Results
 
@@ -97,7 +99,9 @@ real-time as-built capture.
   클라우드로 초기화, 렌더링 손실로 최적화.
 - **적응적 밀도 제어**: 디테일이 부족한 곳은 가우시안을 복제/분할, 투명한 것은 제거.
 - **타일 기반 미분 가능 래스터라이저**: 가시성 정렬 알파 블렌딩 — 실시간을 가능하게 한
-  공학적 핵심.
+  공학적 핵심. 그 블렌딩은 NeRF의 합성 합 $\hat C=\sum_i T_i\alpha_i\mathbf c_i$,
+  $T_i=\prod_{j<i}(1-\alpha_j)$이고, 각 $\alpha_i$는 가우시안의 학습된 불투명도에 그 픽셀에서의
+  투영된 2D 발자국을 곱한 값이다([[nerf|NeRF]]에 손계산이 있다).
 
 ### 결과
 

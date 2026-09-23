@@ -31,6 +31,8 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 | Physical Intelligence | robot foundation models (π series) | [[01-canonical-papers/notes/4-vla/pi0\|π0]] |
 | NVIDIA | GR00T humanoid models, Cosmos world models, Isaac sim | [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]], [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] |
 | Meta AI (FAIR) | JEPA line, open vision backbones (DINOv2) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
+| AMI Labs (Paris) | Yann LeCun's company, launched March 2026 to build JEPA-based world models for robotics and industry — the *planner* row of [[03-deep-learning/world-models/index\|5. World Models §6]] | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
+| World Labs | Fei-Fei Li's company: generated 3D worlds (Marble), real-time rendering (RTFM), an omni model (Atlas), and the renderer–simulator–planner taxonomy | [[01-canonical-papers/notes/5-world-models/world-labs\|World Labs]] |
 | Tesla / Figure / 1X / Agility | humanoid hardware + in-house VLA stacks | context for humanoid papers |
 | Unitree | affordable humanoids/quadrupeds — academia's default hardware | — |
 | Hugging Face | LeRobot: open-source robot learning framework | practical entry point |
@@ -59,6 +61,8 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 | Physical Intelligence | 로봇 파운데이션 모델 (π 시리즈) | [[01-canonical-papers/notes/4-vla/pi0\|π0]] |
 | NVIDIA | GR00T 휴머노이드 모델, Cosmos 월드모델, Isaac 시뮬레이션 | [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]], [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] |
 | Meta AI (FAIR) | JEPA 계열, 오픈 비전 백본 (DINOv2) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
+| AMI Labs (파리) | Yann LeCun이 2026년 3월 출범시킨 회사로, 로봇과 산업을 위한 JEPA 기반 월드모델을 만든다 — [[03-deep-learning/world-models/index\|5. 월드모델 §6]]의 *플래너* 행 | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
+| World Labs | 페이페이 리의 회사: 생성된 3D 세계(Marble), 실시간 렌더링(RTFM), 옴니 모델(Atlas), 그리고 렌더러–시뮬레이터–플래너 분류 | [[01-canonical-papers/notes/5-world-models/world-labs\|World Labs]] |
 | Tesla / Figure / 1X / Agility | 휴머노이드 하드웨어 + 자체 VLA 스택 | 휴머노이드 논문의 맥락 |
 | Unitree | 저가 휴머노이드/사족보행 — 학계의 기본 하드웨어 | — |
 | Hugging Face | LeRobot: 오픈소스 로봇 학습 프레임워크 | 실습 진입점 |
