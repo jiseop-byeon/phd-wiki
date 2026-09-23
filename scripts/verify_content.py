@@ -407,6 +407,74 @@ for p in md_files:
         err(p, f"SVG id defined more than once on the page: {', '.join(_dup)} — "
                f"give the Korean half's copy its own id")
 
+# --- 18. Session tables assign every section of the pages they schedule ------
+# A track index's session table is the course's syllabus. A section added to a
+# scheduled page without a row is taught but never assigned: nine deep-learning
+# sections and two of MR ch.3 went unassigned until 2026-09-22. A page counts as
+# scheduled when a row introduces it (object, plant, diagram, worked case, or
+# "all"); a page the table only cross-reads by section — 13 and 24.4 in the
+# robotics track's session 81 — is exempt. Sections are the `### N.` and
+# `### N.M` headings of the English half; the Korean table must match row for row.
+_SCHED_TRACKS = ("03-deep-learning/index.md", "04-robotics/index.md",
+                 "06-research-practice/index.md")
+_sched_row = re.compile(r"^\| (?:\*\*)?\d+(?:\*\*)? \|")
+_sched_link = re.compile(r"\[\[([^|\]\\]+)\\?\|([^\]]+)\]\]")
+_sched_intro = re.compile(r"\b(object|plant|diagram|worked case|all)\b")
+
+
+def _sched_halves(text):
+    body = re.sub(r"^---\n.*?\n---\n", "", text, flags=re.S)
+    m = re.search(r"^## 한국어", body, re.M)
+    return (body[:m.start()], body[m.start():]) if m else (body, "")
+
+
+def _sched_key(s):
+    return tuple(int(x) for x in s.split("."))
+
+
+for _track in _SCHED_TRACKS:
+    _tp = os.path.join(CONTENT, _track)
+    _en, _ko = _sched_halves(open(_tp, encoding="utf-8").read())
+    _rows_en = [l for l in _en.splitlines() if _sched_row.match(l)]
+    _rows_ko = [l for l in _ko.splitlines() if _sched_row.match(l)]
+    if len(_rows_en) != len(_rows_ko):
+        err(_tp, f"session table has {len(_rows_en)} rows in English and {len(_rows_ko)} in Korean")
+    _bold = sum(1 for l in _rows_en if l.startswith("| **"))
+    _tot_en = re.search(r"^\*\*Totals\.\*\* (\d+) sessions for the Working pass, (\d+) of them bold", _en, re.M)
+    _tot_ko = re.search(r"^\*\*합계\.\*\* Working 통과는 (\d+)회이고 그중 굵은 회차가 (\d+)회", _ko, re.M)
+    for _lang, _tot in (("English", _tot_en), ("Korean", _tot_ko)):
+        if not _tot:
+            err(_tp, f"session table's {_lang} Totals line not found in its expected wording")
+        elif (int(_tot.group(1)), int(_tot.group(2))) != (len(_rows_en), _bold):
+            err(_tp, f"{_lang} Totals say {_tot.group(1)} sessions, {_tot.group(2)} bold; "
+                     f"the table has {len(_rows_en)} rows, {_bold} bold")
+    _labels = {lab: path for l in _rows_en for path, lab in _sched_link.findall(l)}
+    _intro, _cov = set(), collections.defaultdict(set)
+    for l in _rows_en:
+        _cell = _sched_link.sub(r"\2", l.split(" | ")[1])
+        _cur = None
+        for _seg in re.split(r",? and (?=\S)", _cell):
+            _seg = _seg.strip()
+            _m = re.match(r"(MR ch\.\d+|\d+(?:\.\d+)*)\b", _seg)
+            if _m and _m.group(1) in _labels:
+                _cur, _seg = _labels[_m.group(1)], _seg[_m.end():]
+                if _sched_intro.search(_seg):
+                    _intro.add(_cur)
+            if _cur is None:
+                continue
+            if re.search(r"\ball\b", _seg):
+                _cov[_cur].add(("0", "9999"))
+            for _a, _b in re.findall(r"§(\d+(?:\.\d+)?)(?:[–-](\d+(?:\.\d+)?))?", _seg):
+                _cov[_cur].add((_a, _b or _a))
+    for _page in sorted(_intro):
+        _pp = os.path.join(CONTENT, _page + ".md")
+        _secs = re.findall(r"^### (\d+(?:\.\d+)?)\.? ", _sched_halves(open(_pp, encoding="utf-8").read())[0], re.M)
+        _miss = [s for s in _secs
+                 if not any(_sched_key(a) <= _sched_key(s) <= _sched_key(b) for a, b in _cov[_page])]
+        if _miss:
+            err(_tp, f"session table never assigns {_page}.md " + ", ".join("§" + s for s in _miss)
+                     + " — add a row, and update the Totals line")
+
 errors = list(dict.fromkeys(errors))
 if errors:
     print(f"CONTENT CHECK FAILED — {len(errors)} problem(s):")
