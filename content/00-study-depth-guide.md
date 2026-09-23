@@ -81,8 +81,8 @@ Not every department subject belongs here. No thermofluids, no structures sequen
 | Rigid-body robotics | SE(3), FK/IK/Jacobian, dynamics, trajectories, planning | MR summaries + page 10 |
 | Contact and haptics | unilateral contact, impedance, rendering, teleoperation | robotics E, H, K |
 | Systems | timing, frames, ROS 2, logs | robotics F, L |
-| Learning as engineering | backprop, nets, evaluation, *then* CV / VLM / VLA / diffusion / world models as courses | 0.7, 2, 9 + the six modules in [[03-deep-learning/index\|3. Deep Learning]] |
-| Construction domain | site constraints, one worked assembly task; other streams stay maps | [[05-construction-robotics/site-engineering\|5.2.5 Site Robotics]] + [[05-construction-robotics/assembly-fabrication\|5.4 Assembly]] as the worked stream; the rest of [[05-construction-robotics/index\|5. Construction]] remains a map |
+| Learning as engineering | backprop, nets, evaluation, *then* CV / VLM / VLA / diffusion / world models as courses, and the GPU that runs them | 0.7, 2, 9 + the six modules in [[03-deep-learning/index\|3. Deep Learning]], with [[03-deep-learning/foundations/gpu-computing\|1.4 GPU Computing]] |
+| Construction domain | site constraints, and two frozen site objects, S1 and S2, worked through every stream | [[05-construction-robotics/site-engineering\|2.5 Site Robotics]] and every stream page of [[05-construction-robotics/index\|5. Construction]], courses since 2026-09-23; the lineage, labs and industry pages remain maps |
 
 Filling a hole means writing a course page in that cell, not promoting the whole field to Mastery.
 
@@ -98,6 +98,7 @@ Filling a hole means writing a course page in that cell, not promoting the whole
 | VLM | Literacy; selected encoders at Working | multimodal grounding or semantic reasoning is modified |
 | VLA, imitation learning, robot learning | Working | policy learning, action representation, or data mixture carries the novelty |
 | Diffusion, flow matching, world models | Literacy broadly; directly used methods at Working | the generative objective, dynamics model, or planner is modified |
+| GPU computing and CUDA ([[03-deep-learning/foundations/gpu-computing\|1.4]]) | Literacy for writing CUDA C++ kernels; Working for performance reasoning, batching and profiling | a custom GPU simulator (soil, deformable materials) or on-robot latency engineering carries the contribution |
 | Kinematics, dynamics, planning, control, robot systems | Working | the corresponding subsystem is modified or defended as novel |
 | HRI and safety | Working for deployed field systems | interaction, safety assurance, or human factors is the contribution |
 | Construction lineage, labs, industry map | Literacy | these are landscape maps, not implementation methods |
@@ -260,8 +261,8 @@ If the honest answer is "it would be interesting", the answer is no.
 | 강체 로보틱스 | SE(3), FK/IK/야코비안, 동역학, 궤적, 계획 | MR 요약 + 페이지 10 |
 | 접촉과 햅틱 | 단방향 접촉, 임피던스, 렌더링, 원격조작 | 로보틱스 E, H, K |
 | 시스템 | 타이밍, 프레임, ROS 2, 로그 | 로보틱스 F, L |
-| 공학으로서의 학습 | 역전파, 네트워크, 평가, *그다음* CV / VLM / VLA / 디퓨전 / 월드모델을 교과로 | 0.7, 2, 9 + [[03-deep-learning/index\|3. 딥러닝]]의 여섯 모듈 |
-| 건설 도메인 | 현장 제약, 조립 과제 하나; 다른 스트림은 지도로 남긴다 | [[05-construction-robotics/site-engineering\|5.2.5 Site Robotics]] + 교과인 [[05-construction-robotics/assembly-fabrication\|5.4 Assembly]]; [[05-construction-robotics/index\|5. Construction]]의 나머지는 지도 |
+| 공학으로서의 학습 | 역전파, 네트워크, 평가, *그다음* CV / VLM / VLA / 디퓨전 / 월드모델을 교과로, 그리고 그것을 돌리는 GPU | 0.7, 2, 9 + [[03-deep-learning/index\|3. 딥러닝]]의 여섯 모듈과 [[03-deep-learning/foundations/gpu-computing\|1.4 GPU 계산]] |
+| 건설 도메인 | 현장 제약, 그리고 모든 흐름에서 계산하는 고정 현장 대상 둘, S1과 S2 | [[05-construction-robotics/site-engineering\|2.5 Site Robotics]]와 [[05-construction-robotics/index\|5. Construction]]의 모든 흐름 페이지. 2026-09-23부터 교과이고, 계보·연구실·산업 페이지는 지도로 남는다 |
 
 구멍을 메우는 것은 그 칸에 교과 페이지를 쓰는 일이지, 분야 전체를 Mastery로 올리는 일이 아니다.
 
@@ -277,6 +278,7 @@ If the honest answer is "it would be interesting", the answer is no.
 | VLM | Literacy, 선택한 encoder는 Working | 멀티모달 grounding이나 의미 추론을 수정할 때 |
 | VLA·모방학습·로봇러닝 | Working | 정책·행동 표현·데이터 혼합이 기여일 때 |
 | 디퓨전·flow matching·world model | 넓게 Literacy, 직접 쓰는 방법은 Working | 생성 목적함수·동역학 모델·planner를 수정할 때 |
+| GPU 계산과 CUDA([[03-deep-learning/foundations/gpu-computing\|1.4]]) | CUDA C++ 커널 작성은 Literacy, 성능 판단·배치·프로파일링은 Working | 맞춤 GPU 시뮬레이터(흙, 변형 재료)나 로봇 위 지연 공학이 기여를 짊어질 때 |
 | 기구학·동역학·계획·제어·로봇 시스템 | Working | 해당 subsystem이 novelty일 때 |
 | HRI·안전 | 현장 배치 연구에서는 Working | 상호작용·안전 보증·human factors가 기여일 때 |
 | 건설 계보·랩·산업 지도 | Literacy | 구현 방법이 아닌 분야 지도 |

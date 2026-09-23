@@ -24,6 +24,7 @@ Start with [[03-deep-learning/lab-objects|0. Deep-Learning Lab Objects]]. The si
    - [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models]] — the recurrent network and backpropagation through time, vanishing and exploding gradients, the LSTM and GRU, linear state-space models (S4, Mamba), and linear attention, the delta rule and the attention hybrids of 2025, on D5
    - [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]] — scaled dot-product attention, masks, heads, position, the block and its cost, and the mixture-of-experts sublayer, on D2's patch tokens
    - [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale]] — initialization, normalization and residual paths as variance budgets, mixed precision, memory and compute per parameter, compute-optimal allocation and LoRA, and fp8 and fp4 precision for inference on the robot, on D1, a twenty-layer MLP and an illustrative 100M-parameter Transformer
+   - [[03-deep-learning/foundations/gpu-computing|1.4 GPU Computing for Robot Learning]] — the CUDA execution model, coalescing, arithmetic intensity and the roofline, batching across parallel environments, reading a CUDA kernel, profiling and host–device synchronization, and deployment on Jetson, on a policy MLP and a course GPU
 2. [[03-deep-learning/computer-vision/index|Computer Vision]] — convolution and patch tokens; classification, detection, segmentation, depth and 3D outputs
 3. [[03-deep-learning/vlm/index|Vision–Language Models]] — dual encoders, fusion, generation, contrastive batches and grounding, and where modalities meet, up to omni-modal models
 4. [[03-deep-learning/vla/index|Vision–Language–Action]] — action representations, behavior cloning, chunking, control interfaces and evidence; token and denoiser action heads, the embodiment gap, and in-context imitation
@@ -89,33 +90,39 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
 | 26 | 1.3 §8–9, problem set 4 | first pass + problem set | LoRA's parameter count (§8); problem 4: full fine-tuning of the illustrative 7B model needs $112$ GB of model states, $4.7$ times the $24$ GB device. |
 | 27 | 1.3 §10, problem set 3 | lab and sweep | The variance table, the residual stream, the sixteen-bit run and the budget print; problem 3's widened, deepened MLP-20 run with a fourth initialization. |
 | 28 | 1.3 §11, self-check 7 | first pass | The four-weight block to fp4 by hand: scale $0.14$, each small weight off by $0.02$; then the outlier $8.4$ raises the scale to $1.4$ and stores all three as zero. The floor per token on Jetson Thor: $22.0$, $11.0$ and $6.2$ ms in bf16, fp8 and NVFP4. Self-check 7: what to measure before quantizing a $2$ Hz policy. |
-| **29** | [[03-deep-learning/vlm/index\|3]] object D3, diagram, worked case | first pass + worked case by hand | Nine dot products, row losses $(0.407606,\,0.757448,\,0.642002)$ and $\mathcal L=0.602352$ against $\log3=1.098612$, with the solution covered. |
-| **30** | 3 §1–4, self-check, problem set 1–3 | first pass + problem set | Solutions 1–3: row 1 at $\tau=1/4$ is $(4,2,0)$ with $p=0.867$ and loss $0.143$; grounding in the valve pixels stays untested. |
-| 31 | 3 §5, problem set 4 | lab and sweep | The temperature sweep reproduced, including the one-wrong batch's minimum at $\tau=0.1639$; problem 4's duplicate-caption variant and its losses. |
-| 32 | 3 §6, self-check 6 | first pass | The four places modalities meet — at the end (CLIP, D3), through a bridge (Flamingo), in one sequence (Chameleon, Transfusion), omni-modal (GPT-4o, Qwen2.5-Omni) — and what each buys and costs. Self-check 6: what an "omni-modal" robot model must output before it is a VLA. |
-| **33** | [[03-deep-learning/vla/index\|4]] object D4, diagram, worked case | first pass + worked case by hand | The chunk rebuilt from the axis rule; $m=2$, a worst age of $0.20$ s at $k=3$, and $\ell=0.20$ s against $1.00$ s at $k=20$. |
-| **34** | 4 §1–3, self-check, problem set 1–2 | first pass + problem set | Solutions 1–2: a 50 Hz controller makes $m=5$ — the faster controller raised the minimum chunk — and a worst age of $0.18$ s at $k=5$, against $0.30$ s at 20 Hz. |
-| 35 | 4 §4–5, problem set 3 | lab and sweep | The chunk-length sweep's latency column matches $\ell(k)$ row for row; problem 3's twice-moving target run. |
-| 36 | 4 §6, self-check 7 | first pass | D4's $256$-bin step, $0.16$ mm against $2$ mm of perception jitter; the crossover at $H=5$, where denoising a chunk becomes cheaper than decoding its tokens; why a unimodal head sends $(-1,0)$ and $(1,0)$ to $(0,0)$. Self-check 7: ECoT's $7\to350$ tokens per step, and D4's $6$ passes a chunk becoming $349$. |
-| 37 | 4 §7, self-check 6 | first pass | D4's normalized chunk executed on arm B, overshooting by $6$ and $3$ cm, two and a half times the intended motion; the five designs and what each pays; OXE's large-data rows, RT-1-X at $27\%$ against RT-1's $40\%$ on Bridge and the 55B RT-2-X back to $50\%$. Self-check 6: $70\%$ and $75\%$ at $100$ trials have overlapping intervals, $[0.60,\,0.78]$ and $[0.66,\,0.82]$. |
-| 38 | 4 §8, self-check 8 | first pass | A twelve-second D4 demonstration as the prompt: $240$ steps and $720$ tokens before the first action; GEN-1.5's $59\%$ from one demonstration against $83\%$ after ten gradient steps. Self-check 8: which of the three conditions to check first, and the comparison that makes the number a decision. |
-| **39** | [[03-deep-learning/world-models/index\|5]] object D5, diagram, worked case | first pass + worked case by hand | Returns $-1.19$ and $-1.64$; $\delta_H=0.9^H-0.8^H$, $0.26281$ at $H=5$, peaking at $H=6$ with $0.269297$. |
-| **40** | 5 §1–3, self-check, problem set 1–2 | first pass + problem set | Solutions 1–2 at $\hat\lambda=0.85$: $e_t=0.05\cdot0.8^t$, $\delta_H=0.85^H-0.8^H$, $\delta_5=0.116025$. |
-| 41 | 5 §4–5, problem set 3 | lab and sweep | The horizon sweep reproduced; problem 3's mis-learned action gain gives regret $0.0000$, $0.0325$, $0.0693$, $0.0929$ for $H=2$–$5$. |
-| 42 | 5 §6, self-check 6 | first pass | D5's map $f(z,a)=0.8z+0.5a$ placed as a simulator and §5's enumeration as a planner; the three functions told apart by what they output, and what each gives a manipulator. Self-check 6: the phone-video site scene placed, and what it still lacks for seating a panel. |
-| **43** | [[03-deep-learning/diffusion/vae-gan\|6.1]] object, diagram, worked case | first pass + worked case by hand | $\ln p_\theta(2.5)=-0.725791$, met exactly by the ELBO at the exact encoder; the wrong encoder's gap $0.154544$; $D^*(2)=0.622459$ at $m=2.5$. |
-| **44** | 6.1 §1–2, §5–6 | first pass | The ELBO as an identity, with the Gaussian KL (§2); the optimal discriminator and Jensen–Shannon (§5); why the original generator loss stops learning (§6). |
-| **45** | 6.1 problem set 1–2, self-check | problem set | Solutions 1–2: the swapped decoder keeps the marginal $\mathcal N(2,\,0.25)$ and $\ln p_\theta(2.5)=-0.725791$; its posterior is $\mathcal N(0.6,\,0.8^2)$. |
-| 46 | 6.1 §3–4 | first pass | Why the reparameterization gradient has low variance (§3); the linear VAE's ridge and posterior collapse (§4). |
-| 47 | 6.1 §7, §9 | first pass | Mode collapse and the Wasserstein distance (§7); VAE, GAN and diffusion set side by side (§9). |
-| 48 | 6.1 §8, problem set 3 | lab and sweep | SGD on the linear VAE and the GAN's gradient on a grid print; problem 3's KL warm-up run. |
-| 49 | 6.1 §10, self-check 7 | first pass | The VQ lookup at $x=2.5$ by hand: $k=2$ and $\hat x=2.4$; the encoder receives $-0.15$ and the code $-0.2$. The two-code VQ's $0.0908$ at $\ln2=0.693$ nats against the continuous VAE's $0.09$ at $0.5108$. Self-check 7: codebook usage before vocabulary size. |
-| **50** | [[03-deep-learning/diffusion/index\|6]] object D6, diagram, worked case | first pass + worked case by hand | $\alpha_5=0.907029$, one DDPM step to $\mu_4=1.180159$, and the one-shot $\hat x_0=1.85$ — an error of $0.15=0.2\times0.75$. |
-| **51** | 6 §1–2, self-check, problem set 1–2 | first pass + problem set | Solutions 1–2 with $\epsilon=+1$: $x_5=2.2$; a perfect predictor returns $2$ and the biased one $1.85$ again. |
-| 52 | 6 §3–5, problem set 3 | lab and sweep | The sampler-step table reproduced; problem 3's sample-dependent error run, and why §5's closed form no longer predicts it. |
-| 53 | The cumulative problem set above | problem set | All three problems match their Solutions, every number reproduced by hand. |
+| **29** | [[03-deep-learning/foundations/gpu-computing\|1.4]] object, diagram, worked case | first pass + worked case by hand | MLP-256 on G-100: $83{,}968$ weights; at $N=1$ layer 2 moves $132{,}096$ bytes for $131{,}072$ FLOPs, intensity $0.992$, memory-bound, and the whole pass takes $15.17$ µs, $98.9\%$ of it launches; at $N=4{,}096$ it takes $25.19$ µs, $6.15$ ns per environment. |
+| **30** | 1.4 §1–2 | first pass | The CUDA execution model — kernel, block, grid, warp — and latency hiding (§1); a warp's fp32 load in $4$ sectors at stride 1 and $32$ at stride 8 (§2). |
+| 31 | 1.4 §3–4 | first pass | The roofline with its ridge at $100$ FLOP/byte (§3); the layer caps $51.2$, $128$ and $7.76$, and layer 2 crossing the ridge at $N=457$ (§4). |
+| 32 | 1.4 §5–6 | first pass | Vectorized environments and Rudin et al.'s $4{,}096$ robots (§5); the naive and tiled matrix multiplies, loading $481.9\times$ and $15.1\times$ the read-once bytes at $T=1$ and $32$ (§6). |
+| 33 | 1.4 §7–8, self-check, problem set 1–2, 4 | problem set | A sync after each layer costs $25.19$ µs at $N=4{,}096$ against $15.19$ for one graph launch and $11.88$ for a fused kernel (§7); the engine built on the robot and the control budget (§8); Solutions: at $2$ TB/s the ridge falls to $50$ and $N=1$ is still $99.4\%$ launches; layer 1's cap $51.2$ stays below the ridge at any batch; a `perf_counter()` around an asynchronous call times only the launches. |
+| 34 | 1.4 §9, problem set 3 | lab and sweep | The lab: the launch share falls from $98.9\%$ at $N=1$ to $27.0\%$ at $N=16{,}384$, and kernels equal launches at $N=6{,}037$; problem 3's MLP-512 variant. |
+| **35** | [[03-deep-learning/vlm/index\|3]] object D3, diagram, worked case | first pass + worked case by hand | Nine dot products, row losses $(0.407606,\,0.757448,\,0.642002)$ and $\mathcal L=0.602352$ against $\log3=1.098612$, with the solution covered. |
+| **36** | 3 §1–4, self-check, problem set 1–3 | first pass + problem set | Solutions 1–3: row 1 at $\tau=1/4$ is $(4,2,0)$ with $p=0.867$ and loss $0.143$; grounding in the valve pixels stays untested. |
+| 37 | 3 §5, problem set 4 | lab and sweep | The temperature sweep reproduced, including the one-wrong batch's minimum at $\tau=0.1639$; problem 4's duplicate-caption variant and its losses. |
+| 38 | 3 §6, self-check 6 | first pass | The four places modalities meet — at the end (CLIP, D3), through a bridge (Flamingo), in one sequence (Chameleon, Transfusion), omni-modal (GPT-4o, Qwen2.5-Omni) — and what each buys and costs. Self-check 6: what an "omni-modal" robot model must output before it is a VLA. |
+| **39** | [[03-deep-learning/vla/index\|4]] object D4, diagram, worked case | first pass + worked case by hand | The chunk rebuilt from the axis rule; $m=2$, a worst age of $0.20$ s at $k=3$, and $\ell=0.20$ s against $1.00$ s at $k=20$. |
+| **40** | 4 §1–3, self-check, problem set 1–2 | first pass + problem set | Solutions 1–2: a 50 Hz controller makes $m=5$ — the faster controller raised the minimum chunk — and a worst age of $0.18$ s at $k=5$, against $0.30$ s at 20 Hz. |
+| 41 | 4 §4–5, problem set 3 | lab and sweep | The chunk-length sweep's latency column matches $\ell(k)$ row for row; problem 3's twice-moving target run. |
+| 42 | 4 §6, self-check 7 | first pass | D4's $256$-bin step, $0.16$ mm against $2$ mm of perception jitter; the crossover at $H=5$, where denoising a chunk becomes cheaper than decoding its tokens; why a unimodal head sends $(-1,0)$ and $(1,0)$ to $(0,0)$. Self-check 7: ECoT's $7\to350$ tokens per step, and D4's $6$ passes a chunk becoming $349$. |
+| 43 | 4 §7, self-check 6 | first pass | D4's normalized chunk executed on arm B, overshooting by $6$ and $3$ cm, two and a half times the intended motion; the five designs and what each pays; OXE's large-data rows, RT-1-X at $27\%$ against RT-1's $40\%$ on Bridge and the 55B RT-2-X back to $50\%$. Self-check 6: $70\%$ and $75\%$ at $100$ trials have overlapping intervals, $[0.60,\,0.78]$ and $[0.66,\,0.82]$. |
+| 44 | 4 §8, self-check 8 | first pass | A twelve-second D4 demonstration as the prompt: $240$ steps and $720$ tokens before the first action; GEN-1.5's $59\%$ from one demonstration against $83\%$ after ten gradient steps. Self-check 8: which of the three conditions to check first, and the comparison that makes the number a decision. |
+| **45** | [[03-deep-learning/world-models/index\|5]] object D5, diagram, worked case | first pass + worked case by hand | Returns $-1.19$ and $-1.64$; $\delta_H=0.9^H-0.8^H$, $0.26281$ at $H=5$, peaking at $H=6$ with $0.269297$. |
+| **46** | 5 §1–3, self-check, problem set 1–2 | first pass + problem set | Solutions 1–2 at $\hat\lambda=0.85$: $e_t=0.05\cdot0.8^t$, $\delta_H=0.85^H-0.8^H$, $\delta_5=0.116025$. |
+| 47 | 5 §4–5, problem set 3 | lab and sweep | The horizon sweep reproduced; problem 3's mis-learned action gain gives regret $0.0000$, $0.0325$, $0.0693$, $0.0929$ for $H=2$–$5$. |
+| 48 | 5 §6, self-check 6 | first pass | D5's map $f(z,a)=0.8z+0.5a$ placed as a simulator and §5's enumeration as a planner; the three functions told apart by what they output, and what each gives a manipulator. Self-check 6: the phone-video site scene placed, and what it still lacks for seating a panel. |
+| **49** | [[03-deep-learning/diffusion/vae-gan\|6.1]] object, diagram, worked case | first pass + worked case by hand | $\ln p_\theta(2.5)=-0.725791$, met exactly by the ELBO at the exact encoder; the wrong encoder's gap $0.154544$; $D^*(2)=0.622459$ at $m=2.5$. |
+| **50** | 6.1 §1–2, §5–6 | first pass | The ELBO as an identity, with the Gaussian KL (§2); the optimal discriminator and Jensen–Shannon (§5); why the original generator loss stops learning (§6). |
+| **51** | 6.1 problem set 1–2, self-check | problem set | Solutions 1–2: the swapped decoder keeps the marginal $\mathcal N(2,\,0.25)$ and $\ln p_\theta(2.5)=-0.725791$; its posterior is $\mathcal N(0.6,\,0.8^2)$. |
+| 52 | 6.1 §3–4 | first pass | Why the reparameterization gradient has low variance (§3); the linear VAE's ridge and posterior collapse (§4). |
+| 53 | 6.1 §7, §9 | first pass | Mode collapse and the Wasserstein distance (§7); VAE, GAN and diffusion set side by side (§9). |
+| 54 | 6.1 §8, problem set 3 | lab and sweep | SGD on the linear VAE and the GAN's gradient on a grid print; problem 3's KL warm-up run. |
+| 55 | 6.1 §10, self-check 7 | first pass | The VQ lookup at $x=2.5$ by hand: $k=2$ and $\hat x=2.4$; the encoder receives $-0.15$ and the code $-0.2$. The two-code VQ's $0.0908$ at $\ln2=0.693$ nats against the continuous VAE's $0.09$ at $0.5108$. Self-check 7: codebook usage before vocabulary size. |
+| **56** | [[03-deep-learning/diffusion/index\|6]] object D6, diagram, worked case | first pass + worked case by hand | $\alpha_5=0.907029$, one DDPM step to $\mu_4=1.180159$, and the one-shot $\hat x_0=1.85$ — an error of $0.15=0.2\times0.75$. |
+| **57** | 6 §1–2, self-check, problem set 1–2 | first pass + problem set | Solutions 1–2 with $\epsilon=+1$: $x_5=2.2$; a perfect predictor returns $2$ and the biased one $1.85$ again. |
+| 58 | 6 §3–5, problem set 3 | lab and sweep | The sampler-step table reproduced; problem 3's sample-dependent error run, and why §5's closed form no longer predicts it. |
+| 59 | The cumulative problem set above | problem set | All three problems match their Solutions, every number reproduced by hand. |
 
-**Totals.** 53 sessions for the Working pass, 24 of them bold. A Literacy pass is the bold rows, or one session a page — 10 — when only each object and worked case are read. Plan on up to a fifth more for problems redone and labs debugged.
+**Totals.** 59 sessions for the Working pass, 26 of them bold. A Literacy pass is the bold rows, or one session a page — 11 — when only each object and worked case are read. Plan on up to a fifth more for problems redone and labs debugged.
 
 ## 한국어
 
@@ -135,6 +142,7 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
    - [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델]] — 순환 신경망과 시간 역전파, 그래디언트 소실과 폭발, LSTM과 GRU, 선형 상태공간 모델(S4, Mamba), 선형 어텐션과 델타 규칙, 2025년의 어텐션 하이브리드. 대상은 D5
    - [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]] — scaled dot-product attention, mask, head, 위치 정보, 블록과 그 비용, 전문가 혼합(MoE) 부층. 대상은 D2의 패치 토큰
    - [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습]] — 분산 예산으로 본 초기화·정규화·잔차 경로, 혼합 정밀도, 파라미터당 메모리와 연산량, compute-optimal 배분과 LoRA, 로봇 위 추론을 위한 fp8·fp4 정밀도. 대상은 D1, 20층 MLP, 예시용 1억 파라미터 Transformer
+   - [[03-deep-learning/foundations/gpu-computing|1.4 로봇 학습을 위한 GPU 계산]] — CUDA 실행 모델, 병합 접근, 산술 강도와 루프라인, 병렬 환경에 걸친 배치, CUDA 커널 읽기, 프로파일링과 호스트–디바이스 동기화, Jetson 배포. 대상은 정책 MLP와 교과용 GPU
 2. [[03-deep-learning/computer-vision/index|Computer Vision]] — convolution·patch token과 분류·검출·분할·depth·3D 출력
 3. [[03-deep-learning/vlm/index|Vision–Language Models]] — dual encoder, fusion, generation, contrastive batch, grounding, 그리고 모달리티가 만나는 자리와 옴니모달 모델
 4. [[03-deep-learning/vla/index|Vision–Language–Action]] — 행동 표현, behavior cloning, chunking, 제어 interface, 증거. 토큰 헤드와 노이즈 제거 헤드, embodiment 격차, in-context 모방학습
@@ -200,30 +208,36 @@ Tier B. [[03-deep-learning/lab-objects|0. Lab Objects]]의 대상 가운데 둘�
 | 26 | 1.3 §8–9, 과제 4 | 첫 읽기 + 과제 | LoRA의 파라미터 수(§8). 과제 4: 예시 7B 모델의 full fine-tuning은 모델 상태만 $112$ GB로 $24$ GB 장치의 $4.7$배다. |
 | 27 | 1.3 §10, 과제 3 | 실습과 스윕 | 분산 표, 잔차 흐름, 16비트 실행, 예산이 찍힌다. 과제 3: 넓히고 깊게 한 MLP-20을 네 번째 초기화로 돌린다. |
 | 28 | 1.3 §11, 스스로 점검 7 | 첫 읽기 | 가중치 넷짜리 블록을 손으로 fp4에 넣는다. 스케일 $0.14$, 작은 가중치마다 $0.02$씩 틀린다. 이상값 $8.4$가 스케일을 $1.4$로 올려 셋 모두 0으로 저장된다. Jetson Thor에서 토큰당 하한은 bf16, fp8, NVFP4에서 $22.0$, $11.0$, $6.2$ ms. 스스로 점검 7: $2$ Hz 정책을 양자화하기 전에 잴 것. |
-| **29** | [[03-deep-learning/vlm/index\|3]] 대상 D3·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 풀이를 가리고 내적 아홉 개, 행 손실 $(0.407606,\,0.757448,\,0.642002)$, 그리고 $\log3=1.098612$에 대한 $\mathcal L=0.602352$. |
-| **30** | 3 §1–4, 스스로 점검, 과제 1–3 | 첫 읽기 + 과제 | 정답 1–3: $\tau=1/4$의 행 1은 $(4,2,0)$, $p=0.867$, 손실 $0.143$. 밸브 픽셀에 대한 grounding은 시험되지 않은 채로 남는다. |
-| 31 | 3 §5, 과제 4 | 실습과 스윕 | temperature 스윕을 재현한다(한 쌍이 틀린 배치의 최소 $\tau=0.1639$ 포함). 과제 4의 중복 캡션 변형과 그 손실. |
-| 32 | 3 §6, 스스로 점검 6 | 첫 읽기 | 모달리티가 만나는 네 자리 — 끝에서(CLIP, D3), 다리를 거쳐(Flamingo), 한 시퀀스 안에서(Chameleon, Transfusion), 옴니모달(GPT-4o, Qwen2.5-Omni) — 와 각각이 얻고 치르는 것. 스스로 점검 6: "옴니모달" 로봇 모델이 VLA가 되려면 무엇을 내놓아야 하는가. |
-| **33** | [[03-deep-learning/vla/index\|4]] 대상 D4·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 축 규칙으로 청크를 다시 만든다. $m=2$, $k=3$의 최악 나이 $0.20$ s, 그리고 $\ell=0.20$ s 대 $k=20$의 $1.00$ s. |
-| **34** | 4 §1–3, 스스로 점검, 과제 1–2 | 첫 읽기 + 과제 | 정답 1–2: 50 Hz 제어기에서는 $m=5$ — 빨라진 제어기가 최소 청크를 키웠다 — 이고 $k=5$의 최악 나이는 20 Hz의 $0.30$ s 대신 $0.18$ s. |
-| 35 | 4 §4–5, 과제 3 | 실습과 스윕 | 청크 길이 스윕의 지연 열이 $\ell(k)$와 행마다 맞는다. 과제 3의 두 번 움직이는 목표를 돌린다. |
-| 36 | 4 §6, 스스로 점검 7 | 첫 읽기 | D4의 $256$구간 한 칸 $0.16$ mm 대 지각 지터 $2$ mm. 청크를 노이즈 제거하는 쪽이 토큰을 디코딩하는 쪽보다 싸지는 교차점 $H=5$. 단봉 헤드가 $(-1,0)$과 $(1,0)$을 $(0,0)$으로 보내는 이유. 스스로 점검 7: ECoT의 스텝당 토큰 $7\to350$, 청크당 D4의 $6$패스가 $349$패스가 된다. |
-| 37 | 4 §7, 스스로 점검 6 | 첫 읽기 | 정규화한 D4 청크를 팔 B에서 실행하면 $6$ cm와 $3$ cm를 지나쳐 의도한 움직임의 두 배 반이 된다. 다섯 설계와 각각이 치르는 대가. OXE의 대규모 데이터 행: Bridge에서 RT-1-X는 $27\%$, RT-1은 $40\%$이고, 55B RT-2-X가 $50\%$로 되찾는다. 스스로 점검 6: $100$회 시행의 $70\%$와 $75\%$는 구간 $[0.60,\,0.78]$과 $[0.66,\,0.82]$가 겹친다. |
-| 38 | 4 §8, 스스로 점검 8 | 첫 읽기 | 12초짜리 D4 시연을 프롬프트로: $240$ 스텝, 첫 행동 전에 토큰 $720$개. GEN-1.5는 시연 하나로 $59\%$, 그래디언트 열 스텝 뒤 $83\%$. 스스로 점검 8: 세 조건 가운데 먼저 확인할 것과, 숫자를 결정으로 바꾸는 비교. |
-| **39** | [[03-deep-learning/world-models/index\|5]] 대상 D5·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | return $-1.19$와 $-1.64$. $\delta_H=0.9^H-0.8^H$는 $H=5$에서 $0.26281$이고 $H=6$에서 최대 $0.269297$. |
-| **40** | 5 §1–3, 스스로 점검, 과제 1–2 | 첫 읽기 + 과제 | 정답 1–2($\hat\lambda=0.85$): $e_t=0.05\cdot0.8^t$, $\delta_H=0.85^H-0.8^H$, $\delta_5=0.116025$. |
-| 41 | 5 §4–5, 과제 3 | 실습과 스윕 | horizon 스윕을 재현한다. 과제 3의 잘못 학습된 행동 이득은 $H=2$–$5$에서 regret $0.0000$, $0.0325$, $0.0693$, $0.0929$를 준다. |
-| 42 | 5 §6, 스스로 점검 6 | 첫 읽기 | D5의 사상 $f(z,a)=0.8z+0.5a$는 시뮬레이터이고 §5의 전수 조사는 플래너다. 세 기능을 내놓는 것으로 가르고, 각각이 매니퓰레이터에 주는 것을 말한다. 스스로 점검 6: 휴대폰 영상으로 만든 현장 장면의 자리와, 패널을 앉히는 데 아직 없는 것. |
-| **43** | [[03-deep-learning/diffusion/vae-gan\|6.1]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | $\ln p_\theta(2.5)=-0.725791$을 정확한 encoder의 ELBO가 그대로 맞춘다. 틀린 encoder의 간극은 $0.154544$. $m=2.5$에서 $D^*(2)=0.622459$. |
-| **44** | 6.1 §1–2, §5–6 | 첫 읽기 | 항등식으로서의 ELBO와 가우시안 KL(§2). 최적 판별기와 Jensen–Shannon(§5). 원래 생성기 손실이 학습을 멈추는 이유(§6). |
-| **45** | 6.1 과제 1–2, 스스로 점검 | 과제 | 정답 1–2: 바꾼 decoder도 주변분포 $\mathcal N(2,\,0.25)$와 $\ln p_\theta(2.5)=-0.725791$을 유지한다. 사후분포는 $\mathcal N(0.6,\,0.8^2)$. |
-| 46 | 6.1 §3–4 | 첫 읽기 | reparameterization 그래디언트의 분산이 낮은 이유(§3). 선형 VAE의 능선과 사후 붕괴(§4). |
-| 47 | 6.1 §7, §9 | 첫 읽기 | 모드 붕괴와 Wasserstein 거리(§7). VAE, GAN, diffusion을 나란히 놓는다(§9). |
-| 48 | 6.1 §8, 과제 3 | 실습과 스윕 | 선형 VAE의 SGD와 격자 위 GAN 그래디언트가 찍힌다. 과제 3의 KL warm-up을 돌린다. |
-| 49 | 6.1 §10, 스스로 점검 7 | 첫 읽기 | $x=2.5$에서 VQ 조회를 손으로: $k=2$, $\hat x=2.4$. encoder는 $-0.15$를, 코드는 $-0.2$를 받는다. 코드 둘짜리 VQ는 $\ln2=0.693$ nats에서 $0.0908$, 연속 VAE는 $0.5108$ nats에서 $0.09$. 스스로 점검 7: 어휘 크기보다 먼저 볼 코드북 사용률. |
-| **50** | [[03-deep-learning/diffusion/index\|6]] 대상 D6·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | $\alpha_5=0.907029$, DDPM 한 스텝으로 $\mu_4=1.180159$, 한 번에 추정한 $\hat x_0=1.85$ — 오차 $0.15=0.2\times0.75$. |
-| **51** | 6 §1–2, 스스로 점검, 과제 1–2 | 첫 읽기 + 과제 | 정답 1–2($\epsilon=+1$): $x_5=2.2$. 완벽한 예측기는 $2$를, 편향된 예측기는 다시 $1.85$를 준다. |
-| 52 | 6 §3–5, 과제 3 | 실습과 스윕 | sampler 스텝 표를 재현한다. 과제 3의 샘플 의존 오차를 돌리고, §5의 닫힌 형태가 더는 맞지 않는 이유를 말한다. |
-| 53 | 위 누적 과제 | 과제 | 세 문제 모두 정답과 맞고, 모든 숫자를 손으로 재현한다. |
+| **29** | [[03-deep-learning/foundations/gpu-computing\|1.4]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | G-100 위의 MLP-256: 가중치 $83{,}968$개. $N=1$에서 층 2는 $131{,}072$ FLOP에 $132{,}096$바이트를 옮겨 산술 강도 $0.992$로 메모리에 묶이고, 전체 패스 $15.17$ µs의 $98.9\%$가 launch다. $N=4{,}096$에서는 $25.19$ µs, 환경당 $6.15$ ns. |
+| **30** | 1.4 §1–2 | 첫 읽기 | CUDA 실행 모델 — 커널, 블록, 그리드, 워프 — 과 지연 숨기기(§1). 워프의 fp32 읽기는 보폭 1에서 섹터 $4$개, 보폭 8에서 $32$개(§2). |
+| 31 | 1.4 §3–4 | 첫 읽기 | 능선이 $100$ FLOP/byte인 루프라인(§3). 층별 상한 $51.2$, $128$, $7.76$, 그리고 층 2가 $N=457$에서 능선을 넘는 것(§4). |
+| 32 | 1.4 §5–6 | 첫 읽기 | 벡터화한 환경과 Rudin 외의 로봇 $4{,}096$대(§5). 단순한 행렬곱과 타일링한 행렬곱이 $T=1$과 $32$에서 한 번 읽기 바이트의 $481.9$배와 $15.1$배를 읽는 것(§6). |
+| 33 | 1.4 §7–8, 스스로 점검, 과제 1–2, 4 | 과제 | $N=4{,}096$에서 층마다 동기화하면 $25.19$ µs, 그래프 한 번이면 $15.19$, 융합 커널이면 $11.88$(§7). 로봇에서 빌드하는 엔진과 제어 예산(§8). 정답과 대조: $2$ TB/s면 능선이 $50$으로 내려가도 $N=1$은 여전히 $99.4\%$가 launch. 층 1의 상한 $51.2$는 어떤 배치에서도 능선 아래. 비동기 호출을 감싼 `perf_counter()`는 launch만 잰다. |
+| 34 | 1.4 §9, 과제 3 | 실습과 스윕 | 실습: launch 비중이 $N=1$의 $98.9\%$에서 $N=16{,}384$의 $27.0\%$로 떨어지고, $N=6{,}037$에서 커널과 launch가 같아진다. 과제 3의 MLP-512 변형. |
+| **35** | [[03-deep-learning/vlm/index\|3]] 대상 D3·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 풀이를 가리고 내적 아홉 개, 행 손실 $(0.407606,\,0.757448,\,0.642002)$, 그리고 $\log3=1.098612$에 대한 $\mathcal L=0.602352$. |
+| **36** | 3 §1–4, 스스로 점검, 과제 1–3 | 첫 읽기 + 과제 | 정답 1–3: $\tau=1/4$의 행 1은 $(4,2,0)$, $p=0.867$, 손실 $0.143$. 밸브 픽셀에 대한 grounding은 시험되지 않은 채로 남는다. |
+| 37 | 3 §5, 과제 4 | 실습과 스윕 | temperature 스윕을 재현한다(한 쌍이 틀린 배치의 최소 $\tau=0.1639$ 포함). 과제 4의 중복 캡션 변형과 그 손실. |
+| 38 | 3 §6, 스스로 점검 6 | 첫 읽기 | 모달리티가 만나는 네 자리 — 끝에서(CLIP, D3), 다리를 거쳐(Flamingo), 한 시퀀스 안에서(Chameleon, Transfusion), 옴니모달(GPT-4o, Qwen2.5-Omni) — 와 각각이 얻고 치르는 것. 스스로 점검 6: "옴니모달" 로봇 모델이 VLA가 되려면 무엇을 내놓아야 하는가. |
+| **39** | [[03-deep-learning/vla/index\|4]] 대상 D4·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 축 규칙으로 청크를 다시 만든다. $m=2$, $k=3$의 최악 나이 $0.20$ s, 그리고 $\ell=0.20$ s 대 $k=20$의 $1.00$ s. |
+| **40** | 4 §1–3, 스스로 점검, 과제 1–2 | 첫 읽기 + 과제 | 정답 1–2: 50 Hz 제어기에서는 $m=5$ — 빨라진 제어기가 최소 청크를 키웠다 — 이고 $k=5$의 최악 나이는 20 Hz의 $0.30$ s 대신 $0.18$ s. |
+| 41 | 4 §4–5, 과제 3 | 실습과 스윕 | 청크 길이 스윕의 지연 열이 $\ell(k)$와 행마다 맞는다. 과제 3의 두 번 움직이는 목표를 돌린다. |
+| 42 | 4 §6, 스스로 점검 7 | 첫 읽기 | D4의 $256$구간 한 칸 $0.16$ mm 대 지각 지터 $2$ mm. 청크를 노이즈 제거하는 쪽이 토큰을 디코딩하는 쪽보다 싸지는 교차점 $H=5$. 단봉 헤드가 $(-1,0)$과 $(1,0)$을 $(0,0)$으로 보내는 이유. 스스로 점검 7: ECoT의 스텝당 토큰 $7\to350$, 청크당 D4의 $6$패스가 $349$패스가 된다. |
+| 43 | 4 §7, 스스로 점검 6 | 첫 읽기 | 정규화한 D4 청크를 팔 B에서 실행하면 $6$ cm와 $3$ cm를 지나쳐 의도한 움직임의 두 배 반이 된다. 다섯 설계와 각각이 치르는 대가. OXE의 대규모 데이터 행: Bridge에서 RT-1-X는 $27\%$, RT-1은 $40\%$이고, 55B RT-2-X가 $50\%$로 되찾는다. 스스로 점검 6: $100$회 시행의 $70\%$와 $75\%$는 구간 $[0.60,\,0.78]$과 $[0.66,\,0.82]$가 겹친다. |
+| 44 | 4 §8, 스스로 점검 8 | 첫 읽기 | 12초짜리 D4 시연을 프롬프트로: $240$ 스텝, 첫 행동 전에 토큰 $720$개. GEN-1.5는 시연 하나로 $59\%$, 그래디언트 열 스텝 뒤 $83\%$. 스스로 점검 8: 세 조건 가운데 먼저 확인할 것과, 숫자를 결정으로 바꾸는 비교. |
+| **45** | [[03-deep-learning/world-models/index\|5]] 대상 D5·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | return $-1.19$와 $-1.64$. $\delta_H=0.9^H-0.8^H$는 $H=5$에서 $0.26281$이고 $H=6$에서 최대 $0.269297$. |
+| **46** | 5 §1–3, 스스로 점검, 과제 1–2 | 첫 읽기 + 과제 | 정답 1–2($\hat\lambda=0.85$): $e_t=0.05\cdot0.8^t$, $\delta_H=0.85^H-0.8^H$, $\delta_5=0.116025$. |
+| 47 | 5 §4–5, 과제 3 | 실습과 스윕 | horizon 스윕을 재현한다. 과제 3의 잘못 학습된 행동 이득은 $H=2$–$5$에서 regret $0.0000$, $0.0325$, $0.0693$, $0.0929$를 준다. |
+| 48 | 5 §6, 스스로 점검 6 | 첫 읽기 | D5의 사상 $f(z,a)=0.8z+0.5a$는 시뮬레이터이고 §5의 전수 조사는 플래너다. 세 기능을 내놓는 것으로 가르고, 각각이 매니퓰레이터에 주는 것을 말한다. 스스로 점검 6: 휴대폰 영상으로 만든 현장 장면의 자리와, 패널을 앉히는 데 아직 없는 것. |
+| **49** | [[03-deep-learning/diffusion/vae-gan\|6.1]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | $\ln p_\theta(2.5)=-0.725791$을 정확한 encoder의 ELBO가 그대로 맞춘다. 틀린 encoder의 간극은 $0.154544$. $m=2.5$에서 $D^*(2)=0.622459$. |
+| **50** | 6.1 §1–2, §5–6 | 첫 읽기 | 항등식으로서의 ELBO와 가우시안 KL(§2). 최적 판별기와 Jensen–Shannon(§5). 원래 생성기 손실이 학습을 멈추는 이유(§6). |
+| **51** | 6.1 과제 1–2, 스스로 점검 | 과제 | 정답 1–2: 바꾼 decoder도 주변분포 $\mathcal N(2,\,0.25)$와 $\ln p_\theta(2.5)=-0.725791$을 유지한다. 사후분포는 $\mathcal N(0.6,\,0.8^2)$. |
+| 52 | 6.1 §3–4 | 첫 읽기 | reparameterization 그래디언트의 분산이 낮은 이유(§3). 선형 VAE의 능선과 사후 붕괴(§4). |
+| 53 | 6.1 §7, §9 | 첫 읽기 | 모드 붕괴와 Wasserstein 거리(§7). VAE, GAN, diffusion을 나란히 놓는다(§9). |
+| 54 | 6.1 §8, 과제 3 | 실습과 스윕 | 선형 VAE의 SGD와 격자 위 GAN 그래디언트가 찍힌다. 과제 3의 KL warm-up을 돌린다. |
+| 55 | 6.1 §10, 스스로 점검 7 | 첫 읽기 | $x=2.5$에서 VQ 조회를 손으로: $k=2$, $\hat x=2.4$. encoder는 $-0.15$를, 코드는 $-0.2$를 받는다. 코드 둘짜리 VQ는 $\ln2=0.693$ nats에서 $0.0908$, 연속 VAE는 $0.5108$ nats에서 $0.09$. 스스로 점검 7: 어휘 크기보다 먼저 볼 코드북 사용률. |
+| **56** | [[03-deep-learning/diffusion/index\|6]] 대상 D6·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | $\alpha_5=0.907029$, DDPM 한 스텝으로 $\mu_4=1.180159$, 한 번에 추정한 $\hat x_0=1.85$ — 오차 $0.15=0.2\times0.75$. |
+| **57** | 6 §1–2, 스스로 점검, 과제 1–2 | 첫 읽기 + 과제 | 정답 1–2($\epsilon=+1$): $x_5=2.2$. 완벽한 예측기는 $2$를, 편향된 예측기는 다시 $1.85$를 준다. |
+| 58 | 6 §3–5, 과제 3 | 실습과 스윕 | sampler 스텝 표를 재현한다. 과제 3의 샘플 의존 오차를 돌리고, §5의 닫힌 형태가 더는 맞지 않는 이유를 말한다. |
+| 59 | 위 누적 과제 | 과제 | 세 문제 모두 정답과 맞고, 모든 숫자를 손으로 재현한다. |
 
-**합계.** Working 통과는 53회이고 그중 굵은 회차가 24회다. Literacy 통과는 굵은 회차만 하는 것이고, 대상과 끝까지 계산만 읽으면 페이지당 1회로 10회다. 다시 푸는 과제와 실습 디버깅을 위해 최대 5분의 1을 더 잡는다.
+**합계.** Working 통과는 59회이고 그중 굵은 회차가 26회다. Literacy 통과는 굵은 회차만 하는 것이고, 대상과 끝까지 계산만 읽으면 페이지당 1회로 11회다. 다시 푸는 과제와 실습 디버깅을 위해 최대 5분의 1을 더 잡는다.

@@ -157,7 +157,7 @@ met.
 | Route | Literacy pass | Working pass | What completion means |
 |---|---:|---:|---|
 | Foundations 0.5–10 | about 15–25 sessions | about 35–60 sessions | cumulative gate + selected problem sets |
-| Deep-learning bridge courses 1–6 with 1.1–1.3 and 6.1 | about 10–25 | about 45–55 | ten problem sets with their labs + the cumulative problem set; Working only for modules used in experiments |
+| Deep-learning bridge courses 1–6 with 1.1–1.4 and 6.1 | about 11–26 | about 50–60 | eleven problem sets with their labs + the cumulative problem set; Working only for modules used in experiments |
 | Robotics common track 1–11 with 3.2, 5.5, 10.5, then 26 | about 25–40 | about 80–100 | running-task checkpoints + cumulative problem set + capstone lab |
 | One robotics specialization | about 3–12 | about 13–56 | the selected pages' problem sets or build artifacts |
 | Construction track 1–9 with 2.5 and 7.5 | about 11–20 | about 40–50 | eight problem sets on S1 and S2, three of them with labs, + the site-system ledger |
@@ -407,7 +407,7 @@ graph LR
 | 경로 | Literacy 통과 | Working 통과 | 완료의 뜻 |
 |---|---:|---:|---|
 | 기초 0.5–10 | 약 15–25회 | 약 35–60회 | 누적 gate + 선택한 problem set |
-| 딥러닝 브리지 교과 1–6과 1.1–1.3, 6.1 | 약 10–25회 | 약 45–55회 | 과제 열 개와 그 실습 + 누적 과제; 실험에 쓰는 모듈만 Working |
+| 딥러닝 브리지 교과 1–6과 1.1–1.4, 6.1 | 약 11–26회 | 약 50–60회 | 과제 열한 개와 그 실습 + 누적 과제; 실험에 쓰는 모듈만 Working |
 | 로보틱스 공통 1–11(3.2, 5.5, 10.5 포함), 이어서 26 | 약 25–40회 | 약 80–100회 | running-task 확인 + 누적 과제 + 캡스톤 실습 |
 | 로보틱스 전문화 하나 | 약 3–12회 | 약 13–56회 | 선택 페이지의 과제 또는 build 산출물 |
 | 건설 트랙 1–9, 2.5와 7.5 포함 | 약 11–20회 | 약 40–50회 | S1과 S2 위의 과제 여덟, 그중 셋은 실습 포함, + 현장 시스템 장부 |
