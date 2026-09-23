@@ -14,7 +14,7 @@ mastery-when: "Raise when multimodal grounding, representation, or language-cond
 ## English
 
 > [!note] First pass
-> Read D3, §2, and questions 1–2. Work the Worked case by hand — nine dot products, three row losses, one average — before you open §5. Return to §3 when a caption or VQA number is treated as grounding.
+> Read D3, §2, and questions 1–2. Work the Worked case by hand — nine dot products, three row losses, one average — before you open §5. Return to §3 when a caption or VQA number is treated as grounding, and read §6 when a paper calls its model early-fusion, omni-modal or any-to-any.
 
 ### Running object: D3
 
@@ -26,7 +26,7 @@ Similarity logits are $\ell_{ij}=v_i^\top t_j/\tau$. Rows ask “which text matc
 
 Everything on this page follows from those six vectors and one knob. All are unit length, so each dot product is the cosine of the angle between two of them, and the three images sit at $0^\circ$, $60^\circ$ and $90^\circ$. Matched pairs are *exactly* aligned — this is a batch the encoder has already solved — so the only thing that can go wrong on D3 is the objective itself, which is what makes it the right object for reading a contrastive loss. Two page-local variants are frozen here for §5 and the problem set, changing one vector each. **The one-wrong batch** moves image 2 to $v_2'=(0,1)$, i.e. to $90^\circ$, so the encoder now places it on top of caption 3. **The duplicate-caption batch** sets $t_3=t_2$, so captions 2 and 3 are the same sentence and the "negative" in row 2 is a correct match.
 
-*Scope: this page teaches the contrastive objective of a dual encoder — the similarity matrix, the two directions, the temperature, the negatives, and what the resulting number does and does not certify — and the vocabulary that separates conditioning from grounding. It does not teach the image encoder, which is [[03-deep-learning/computer-vision/index|2. Computer Vision §1]]; nor the cross-attention that fusion models use, which is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §1]] and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]; nor the loss and optimizer machinery around the objective, which is [[03-deep-learning/foundations/index|1. Learning Systems §6]]; nor generative decoding, captioning metrics, or action, which are the generative entries of the [[01-canonical-papers/canonical-list|canonical list]] and the [[03-deep-learning/vla/index|VLA course]]. The retrieval metrics named in §3 are defined in [[02-foundations/ml-practice|9. ML Practice §3]].*
+*Scope: this page teaches the contrastive objective of a dual encoder — the similarity matrix, the two directions, the temperature, the negatives, and what the resulting number does and does not certify — and the vocabulary that separates conditioning from grounding. It does not teach the image encoder, which is [[03-deep-learning/computer-vision/index|2. Computer Vision §1]]; nor the cross-attention that fusion models use, which is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §1]] and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]; nor the loss and optimizer machinery around the objective, which is [[03-deep-learning/foundations/index|1. Learning Systems §6]]; nor generative decoding, captioning metrics, or action, which are the generative entries of the [[01-canonical-papers/canonical-list|canonical list]] and the [[03-deep-learning/vla/index|VLA course]] — §6 only places those larger models by where their modalities meet. The retrieval metrics named in §3 are defined in [[02-foundations/ml-practice|9. ML Practice §3]].*
 
 ### The picture
 
@@ -276,6 +276,23 @@ print("log 3 in bits =", round(float(np.log(3)/np.log(2)), 6), "  log 2 =", roun
 - **With one pair wrong, the loss is not monotone in $\tau$ and has an interior minimum.** The right-hand column falls to $0.527329$ at $\tau=1/4$, turns, and reaches $2.463960$ at $\tau=1/100$ — worse than the no-information $\log 3$. A grid search over $\tau\in[0.01,3]$ puts the minimum at $\tau=0.1639$, $\mathcal L=0.507409$. Sharpening amplifies whatever the model believes, and below the optimum it is amplifying a mistake. This is the sentence in the problem set's old solution — "sharper logits improve confidence here but also sharpen mistakes" — with the turning point measured.
 - **A large enough $\tau$ hides the error completely.** At $\tau=2$ the wrong encoder scores $0.932611$ against the correct encoder's $0.933538$ — marginally *better*. The two curves cross at $\tau\approx1.6542$. Above that, the softmax is so flat that a $30^\circ$ encoding error is invisible in the loss, which is worth remembering whenever a training curve is used as evidence that an encoder is working.
 
+### 6. Where the modalities meet: from VLM to omni-modal
+
+§1 sorted vision–language models by what they output. Every multimodal model can also be placed by *where its modalities meet*, and that one choice sets what it can generate, what it costs, and whether a robot's actions can join it. D3 is the latest possible meeting point: an image and a caption never see each other and meet only in one dot product, $\ell_{ij}=v_i^\top t_j/\tau$.
+
+| where they meet | how | examples | what it buys | what it costs |
+|---|---|---|---|---|
+| at the end | two encoders and one similarity | [[01-canonical-papers/notes/3-vlm/clip\|CLIP]], D3 | ranking a million items for the price of dot products | no generation, and nothing about a pair beyond one angle |
+| through a bridge | visual features enter a language model by cross-attention, a small query transformer, or a projection into its token space | [[01-canonical-papers/notes/3-vlm/flamingo\|Flamingo]], [[01-canonical-papers/notes/3-vlm/blip-2\|BLIP-2]], [[01-canonical-papers/notes/3-vlm/llava\|LLaVA]], [[01-canonical-papers/notes/3-vlm/paligemma\|PaliGemma]] | text generated about an image | the image is read, never generated; one joint pass per pair |
+| in one sequence | every modality becomes positions in one transformer — as discrete codes (Chameleon) or as continuous patches trained with a diffusion loss (Transfusion) | Chameleon (2024); Transfusion (2024) | images and text read and generated in any interleaving | every image costs many positions; discrete codes lose detail, and Transfusion reports scaling better than a model over quantized image tokens |
+| omni-modal | the one-sequence design widened to audio and video, in and out, trained end to end | GPT-4o (2024); Qwen2.5-Omni (2025) | one network that perceives and answers in speech | the longest sequences of all, since every second of audio and video adds positions |
+
+On D3 the difference is countable. Three images and three captions cost six encoder passes, after which all nine pairs are scored by dot products; a model that meets the modalities in one sequence needs nine joint passes for the same nine scores, and in exchange can say *why* a pair matches or write the caption itself. That is §1's cost argument, carried to its end.
+
+**The omni models, briefly.** GPT-4o accepts any mix of text, audio, image and video and produces text, audio and images from one network trained across all of them; its system card reports answers to speech in as little as $232$ ms, $320$ ms on average — the latency of a human reply ([OpenAI, 2024](https://arxiv.org/abs/2410.21276)). Qwen2.5-Omni streams text and speech at once by splitting the work: a *Thinker*, the language model, writes text, and a *Talker* turns the Thinker's hidden states into audio tokens, while a time-aligned position embedding keeps interleaved video and audio in step ([Qwen, 2025](https://arxiv.org/abs/2503.20215)). The early-fusion ancestors are Chameleon, which tokenizes images with a codebook of the kind in [[03-deep-learning/diffusion/vae-gan|6.1 §10]] ([Chameleon Team, 2024](https://arxiv.org/abs/2405.09818)), and Transfusion, which trains one transformer with next-token prediction on text and diffusion on images ([Zhou et al., 2024](https://arxiv.org/abs/2408.11039)).
+
+**Action is one more modality.** π0 builds on Transfusion — language by next-token prediction, actions by flow matching, and separate weights per modality inside one attention, the Mixture of Transformers of [[03-deep-learning/vla/index|4. VLA §6]]. A VLA is therefore an early-fusion model whose extra output modality is action, and Gemini Robotics built one directly on Gemini 2.0, a large multimodal model ([Gemini Robotics Team, 2025](https://arxiv.org/abs/2503.20020)). Inputs widen the same way: ManiWAV put a microphone in the gripper and learned contact-rich skills from audio and video together, because sound carried contact events and surface materials that vision alone left ambiguous ([Liu et al., 2024](https://arxiv.org/abs/2406.19464)). A construction site is where that matters — loud, cluttered, often poorly lit — and where a worker's spoken instruction is the natural interface. So read "omni-modal" in a robot paper as two questions: which modalities go in, and whether action is among those that come out.
+
 ### Self-check
 
 1. Why does D3's image-to-text loss equal its text-to-image loss, and is that a property of contrastive learning?
@@ -283,6 +300,7 @@ print("log 3 in bits =", round(float(np.log(3)/np.log(2)), 6), "  log 2 =", roun
 3. Lowering $\tau$ from $1/2$ to $1/4$ raises $p_{11}$ from $0.665$ to $0.867$. Which retrieval decisions changed?
 4. Row 2 pushes $0.359$ of its mass away from caption 3. What has to be true about caption 3 for that to be correct supervision?
 5. A model answers "red valve" correctly. Name the experiment that distinguishes conditioning from grounding, and say why higher accuracy cannot substitute for it.
+6. A robot paper calls its model "omni-modal" because it takes images, language and audio. Which two questions from §6 place it, and what would have to be true for it to be a VLA?
 
 > [!tip]- Answers
 > 1. Because $v_i=t_i$ for every $i$, so the similarity matrix is symmetric and transposing it changes nothing. It is a property of this object, not of the method: any batch whose matched pairs are not exactly aligned gives two different direction losses, which is why the objective sums both.
@@ -290,6 +308,7 @@ print("log 3 in bits =", round(float(np.log(3)/np.log(2)), 6), "  log 2 =", roun
 > 3. None. Dividing by a positive constant preserves the order of the logits, so every arg max, every ranking and therefore every recall@$k$ is unchanged. Only the loss moved.
 > 4. Caption 3 must not describe image 2. On D3 that is assumed rather than checked — it holds because the batch was built that way — and the problem set's duplicate-caption variant is the case where the assumption is false and the gradient is actively wrong.
 > 5. Intervene on the image: occlude or recolour the valve and see whether the answer follows. Accuracy cannot substitute because a language prior that answers "red" for valves scores well with no visual evidence, so the benchmark number is consistent with both explanations.
+> 6. Where its modalities meet — at the end, through a bridge, or in one sequence — and which modalities it *outputs*. Taking images, language and audio in says only what it perceives. It is a VLA only if action is among its outputs, trained with a loss on actions and run at a control rate; otherwise it is a perception model feeding someone else's policy, and its "omni" describes the ears, not the hands.
 
 ### Problem set · 과제
 
@@ -344,7 +363,7 @@ print("best tau = %.4f at L = %.6f" % (grid[Ld.argmin()], Ld.min()))
 ## 한국어
 
 > [!note] 처음이라면
-> D3, §2, 문제 1–2를 먼저 한다. §5를 열기 전에 계산 절 — 내적 아홉 개, 행 loss 셋, 평균 하나 — 을 손으로 끝낸다. caption이나 VQA 숫자를 grounding으로 읽을 때 §3으로 돌아온다.
+> D3, §2, 문제 1–2를 먼저 한다. §5를 열기 전에 계산 절 — 내적 아홉 개, 행 loss 셋, 평균 하나 — 을 손으로 끝낸다. caption이나 VQA 숫자를 grounding으로 읽을 때 §3으로 돌아오고, 논문이 모델을 조기 결합, 옴니모달, any-to-any라고 부르면 §6을 읽는다.
 
 ### 계속 쓰는 대상: D3
 
@@ -356,7 +375,7 @@ logit은 $\ell_{ij}=v_i^\top t_j/\tau$다. 행은 이미지에 맞는 텍스트,
 
 이 페이지의 전부가 그 벡터 여섯 개와 손잡이 하나에서 나온다. 모두 단위 길이라 각 내적은 두 벡터 사이 각의 코사인이고, 세 이미지는 $0^\circ$, $60^\circ$, $90^\circ$에 놓인다. 짝이 맞는 쌍은 *정확히* 정렬되어 있다. 즉 encoder가 이미 풀어 놓은 배치라서, D3에서 잘못될 수 있는 것은 목적함수 자체뿐이다. 대조 loss를 읽기에 알맞은 대상인 이유가 그것이다. §5와 과제를 위해 벡터 하나씩만 바꾼 페이지 고유 변형 둘도 여기서 고정한다. **한 쌍이 틀린 배치**는 이미지 2를 $v_2'=(0,1)$, 즉 $90^\circ$로 옮겨 encoder가 캡션 3 위에 겹쳐 놓게 한다. **중복 캡션 배치**는 $t_3=t_2$로 두어 캡션 2와 3이 같은 문장이 되고, 행 2의 "negative"가 실제로는 맞는 짝이 된다.
 
-*범위: 이 페이지는 dual encoder의 대조 목적함수 — similarity matrix, 두 방향, temperature, negative, 그리고 그 결과 숫자가 보증하는 것과 보증하지 못하는 것 — 와 conditioning을 grounding에서 가르는 어휘를 가르친다. 이미지 encoder는 가르치지 않는다. 그것은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전 §1]]이다. fusion 모델이 쓰는 cross-attention도 아니다. 그것은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §1]]과 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 목적함수 주변의 loss·optimizer 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §6]]이다. 생성 디코딩, 캡션 metric, 행동도 아니다. 그것은 [[01-canonical-papers/canonical-list|canonical list]]의 생성 항목과 [[03-deep-learning/vla/index|VLA 교과]]다. §3에 이름만 나오는 retrieval metric은 [[02-foundations/ml-practice|9. ML 실무 §3]]에 정의되어 있다.*
+*범위: 이 페이지는 dual encoder의 대조 목적함수 — similarity matrix, 두 방향, temperature, negative, 그리고 그 결과 숫자가 보증하는 것과 보증하지 못하는 것 — 와 conditioning을 grounding에서 가르는 어휘를 가르친다. 이미지 encoder는 가르치지 않는다. 그것은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전 §1]]이다. fusion 모델이 쓰는 cross-attention도 아니다. 그것은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §1]]과 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 목적함수 주변의 loss·optimizer 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §6]]이다. 생성 디코딩, 캡션 metric, 행동도 아니다. 그것은 [[01-canonical-papers/canonical-list|canonical list]]의 생성 항목과 [[03-deep-learning/vla/index|VLA 교과]]다. §6은 그 더 큰 모델들을 모달리티가 만나는 곳으로만 자리 매긴다. §3에 이름만 나오는 retrieval metric은 [[02-foundations/ml-practice|9. ML 실무 §3]]에 정의되어 있다.*
 
 ### 그림으로 먼저 보기
 
@@ -559,6 +578,23 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 - **한 쌍이 틀리면 loss는 $\tau$에 대해 단조가 아니고 내부 최소를 가진다.** 오른쪽 열은 $\tau=1/4$의 $0.527329$까지 내려갔다가 돌아서서 $\tau=1/100$에서 $2.463960$에 이른다. 정보가 없을 때의 $\log 3$보다 나쁘다. $\tau\in[0.01,3]$ 격자 탐색은 최소를 $\tau=0.1639$, $\mathcal L=0.507409$에 둔다. 날카롭게 하는 것은 모델이 믿는 것을 증폭하는 일이고, 최적점 아래에서는 실수를 증폭한다. 과제의 옛 정답에 있던 문장 — "맞을 때 더 자신 있지만 오류도 날카로워진다" — 의 전환점을 측정한 것이 이것이다.
 - **$\tau$가 충분히 크면 오류가 완전히 숨는다.** $\tau=2$에서 틀린 encoder는 $0.932611$로 맞는 encoder의 $0.933538$보다 근소하게 *낫다*. 두 곡선은 $\tau\approx1.6542$에서 교차한다. 그 위에서는 softmax가 너무 평평해 $30^\circ$의 인코딩 오류가 loss에 보이지 않는다. 학습 곡선을 encoder가 잘 작동한다는 증거로 쓸 때마다 기억할 일이다.
 
+### 6. 모달리티가 만나는 곳: VLM에서 옴니모달까지
+
+§1은 시각–언어 모델을 무엇을 내놓는지로 갈랐다. 모든 멀티모달 모델은 *모달리티가 어디서 만나는지*로도 자리를 정할 수 있고, 그 선택 하나가 무엇을 생성할 수 있는지, 비용이 얼마인지, 로봇의 행동이 거기 합류할 수 있는지를 정한다. D3는 가장 늦은 만남이다. 이미지와 캡션은 서로를 보지 않고, 내적 하나 $\ell_{ij}=v_i^\top t_j/\tau$에서만 만난다.
+
+| 만나는 곳 | 방식 | 예 | 사는 것 | 치르는 것 |
+|---|---|---|---|---|
+| 끝에서 | 인코더 둘과 유사도 하나 | [[01-canonical-papers/notes/3-vlm/clip\|CLIP]], D3 | 내적 값만으로 백만 개를 순위 매김 | 생성이 없고, 한 쌍에 대해 각도 하나 이상은 모른다 |
+| 다리를 거쳐 | 시각 특징이 cross-attention, 작은 질의 트랜스포머, 또는 토큰 공간으로의 투영을 거쳐 언어 모델로 들어간다 | [[01-canonical-papers/notes/3-vlm/flamingo\|Flamingo]], [[01-canonical-papers/notes/3-vlm/blip-2\|BLIP-2]], [[01-canonical-papers/notes/3-vlm/llava\|LLaVA]], [[01-canonical-papers/notes/3-vlm/paligemma\|PaliGemma]] | 이미지에 대해 생성한 텍스트 | 이미지는 읽기만 하고 생성하지 못한다. 쌍마다 결합 패스 한 번 |
+| 한 시퀀스 안에서 | 모든 모달리티가 한 트랜스포머의 위치가 된다 — 이산 코드로(Chameleon), 또는 디퓨전 손실로 학습하는 연속 패치로(Transfusion) | Chameleon(2024); Transfusion(2024) | 어떤 순서로 섞여도 이미지와 텍스트를 읽고 생성 | 이미지 하나가 위치를 많이 차지한다. 이산 코드는 세부를 잃고, Transfusion은 양자화한 이미지 토큰 위의 모델보다 스케일이 낫다고 보고한다 |
+| 옴니모달 | 한 시퀀스 설계를 오디오와 비디오로, 입력과 출력 모두로 넓혀 끝에서 끝까지 학습 | GPT-4o(2024); Qwen2.5-Omni(2025) | 인식하고 말로 답하는 신경망 하나 | 가장 긴 시퀀스. 오디오와 비디오는 초마다 위치를 더한다 |
+
+D3에서는 그 차이를 셀 수 있다. 이미지 셋과 캡션 셋은 인코더 패스 여섯 번이면 되고, 그다음 아홉 쌍 전부를 내적으로 채점한다. 모달리티를 한 시퀀스에서 만나게 하는 모델은 같은 아홉 점수에 결합 패스 아홉 번이 들고, 그 대가로 한 쌍이 *왜* 맞는지 말하거나 캡션을 직접 쓸 수 있다. §1의 비용 논증을 끝까지 밀고 간 것이다.
+
+**옴니 모델, 짧게.** GPT-4o는 텍스트·오디오·이미지·비디오를 어떻게 섞어도 받고, 그 모두로 학습한 신경망 하나에서 텍스트·오디오·이미지를 낸다. 시스템 카드는 말에 대한 응답이 빠르면 $232$ ms, 평균 $320$ ms라고 보고한다. 사람이 대꾸하는 지연이다([OpenAI, 2024](https://arxiv.org/abs/2410.21276)). Qwen2.5-Omni는 일을 나눠 텍스트와 음성을 동시에 흘려보낸다. 언어 모델인 *Thinker*가 텍스트를 쓰고, *Talker*가 Thinker의 은닉 상태를 오디오 토큰으로 바꾸며, 시간에 맞춘 위치 임베딩이 섞인 비디오와 오디오의 박자를 맞춘다([Qwen, 2025](https://arxiv.org/abs/2503.20215)). 조기 결합의 조상은, [[03-deep-learning/diffusion/vae-gan|6.1 §10]]과 같은 종류의 코드북으로 이미지를 토큰화하는 Chameleon([Chameleon Team, 2024](https://arxiv.org/abs/2405.09818))과, 트랜스포머 하나를 텍스트에는 다음 토큰 예측으로, 이미지에는 디퓨전으로 학습하는 Transfusion([Zhou 외, 2024](https://arxiv.org/abs/2408.11039))이다.
+
+**행동은 모달리티가 하나 더 느는 것이다.** π0는 Transfusion 위에 지었다. 언어는 다음 토큰 예측으로, 행동은 flow matching으로 배우고, 하나의 attention 안에서 모달리티마다 가중치를 따로 둔다. [[03-deep-learning/vla/index|4. VLA §6]]의 Mixture of Transformers다. 그러니 VLA는 출력 모달리티에 행동이 더해진 조기 결합 모델이고, Gemini Robotics는 대형 멀티모달 모델인 Gemini 2.0 위에 곧바로 그것을 지었다([Gemini Robotics Team, 2025](https://arxiv.org/abs/2503.20020)). 입력도 같은 방식으로 넓어진다. ManiWAV는 그리퍼에 마이크를 달아 오디오와 비디오를 함께 써서 접촉이 많은 기술을 배웠다. 시각만으로는 모호했던 접촉 사건과 표면 재질을 소리가 실어 날랐기 때문이다([Liu 외, 2024](https://arxiv.org/abs/2406.19464)). 건설 현장은 그것이 중요한 곳이다 — 시끄럽고, 어수선하고, 자주 어둡다 — 그리고 작업자의 말로 된 지시가 자연스러운 인터페이스인 곳이다. 그러니 로봇 논문의 "옴니모달"은 두 질문으로 읽어라. 어떤 모달리티가 들어가는가, 그리고 나오는 것 가운데 행동이 있는가.
+
 ### 스스로 점검 · Self-check
 
 1. D3에서 image→text loss와 text→image loss가 같은 이유는 무엇이고, 그것은 대조학습의 성질인가.
@@ -566,6 +602,7 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 3. $\tau$를 $1/2$에서 $1/4$로 낮추면 $p_{11}$이 $0.665$에서 $0.867$이 된다. 어떤 retrieval 결정이 바뀌었는가.
 4. 행 2는 질량의 $0.359$를 캡션 3에서 밀어낸다. 그것이 올바른 지도가 되려면 캡션 3에 대해 무엇이 참이어야 하는가.
 5. 모델이 "red valve"를 맞혔다. conditioning과 grounding을 가르는 실험을 말하고, 더 높은 정확도가 그것을 대신할 수 없는 이유를 말하라.
+6. 어느 로봇 논문이 이미지·언어·오디오를 받는다는 이유로 자기 모델을 "옴니모달"이라 부른다. §6의 어떤 두 질문이 그것의 자리를 정하며, VLA가 되려면 무엇이 참이어야 하는가?
 
 > [!tip]- 정답 · Answers
 > 1. 모든 $i$에서 $v_i=t_i$라 similarity matrix가 대칭이고 전치해도 달라지지 않기 때문이다. 방법의 성질이 아니라 이 대상의 성질이다. 맞는 쌍이 정확히 정렬되지 않은 배치는 두 방향 loss가 다르고, 그래서 목적함수가 둘을 더한다.
@@ -573,6 +610,7 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 > 3. 아무것도 바뀌지 않았다. 양수로 나누는 것은 logit 순서를 보존하므로 모든 arg max, 모든 순위, 따라서 모든 recall@$k$가 그대로다. 움직인 것은 loss뿐이다.
 > 4. 캡션 3이 이미지 2를 서술하지 않아야 한다. D3에서 그것은 확인된 것이 아니라 가정이다. 배치를 그렇게 만들었으므로 성립할 뿐이다. 과제의 중복 캡션 변형이 그 가정이 거짓이고 gradient가 실제로 틀린 경우다.
 > 5. 이미지에 개입한다. valve를 가리거나 색을 바꾸고 답이 따라가는지 본다. 정확도로 대신할 수 없는 이유는, valve에 "red"라고 답하는 언어 prior가 시각 증거 없이도 좋은 점수를 받기 때문이다. 벤치마크 숫자는 두 설명 모두와 양립한다.
+> 6. 모달리티가 어디서 만나는지 — 끝에서, 다리를 거쳐, 한 시퀀스 안에서 — 그리고 어떤 모달리티를 *내놓는지*다. 이미지·언어·오디오를 받는다는 것은 무엇을 지각하는지만 말한다. 행동이 출력에 있고, 행동에 대한 손실로 학습되며, 제어 주기로 돌 때에만 VLA다. 그렇지 않으면 다른 누군가의 정책을 먹이는 인식 모델이고, 그 "옴니"는 손이 아니라 귀를 말한다.
 
 ### 과제 · Problem set
 
