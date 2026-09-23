@@ -35,12 +35,17 @@ EXCLUDE_SUBSTR = ("/algorithms/", "lab-plants", "lab-kernel", "lab-objects", "mo
                   # subject of its own to derive; an index page that is not named index.md.
                   "02-foundations/overview",
                   # Reading maps of the deep-learning track (tags: moc / reference).
-                  "03-deep-learning/lineage", "03-deep-learning/physical-ai-ecosystem")
+                  "03-deep-learning/lineage", "03-deep-learning/physical-ai-ecosystem",
+                  # Maps of the construction track: its lineage, its labs and its industry.
+                  # Every other construction page has been a course page since 2026-09-23.
+                  "05-construction-robotics/lineage", "05-construction-robotics/labs",
+                  "05-construction-robotics/industry-deployment")
 PATTERNS = ("content/02-foundations/*.md", "content/04-robotics/*.md",
             "content/04-robotics/modern-robotics/*.md",
             "content/04-robotics/haptics-teleoperation/*.md",
             "content/04-robotics/ros2/*.md",
             "content/03-deep-learning/*.md", "content/03-deep-learning/*/*.md",
+            "content/05-construction-robotics/*.md",
             "content/06-research-practice/*.md")
 # A deep-learning module is taught in its folder's index.md; every other index.md is a map.
 COURSE_INDEX = re.compile(r"^03-deep-learning/[^/]+/index\.md$")

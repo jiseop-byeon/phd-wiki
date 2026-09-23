@@ -416,7 +416,7 @@ for p in md_files:
 # robotics track's session 81 — is exempt. Sections are the `### N.` and
 # `### N.M` headings of the English half; the Korean table must match row for row.
 _SCHED_TRACKS = ("03-deep-learning/index.md", "04-robotics/index.md",
-                 "06-research-practice/index.md")
+                 "05-construction-robotics/index.md", "06-research-practice/index.md")
 _sched_row = re.compile(r"^\| (?:\*\*)?\d+(?:\*\*)? \|")
 _sched_link = re.compile(r"\[\[([^|\]\\]+)\\?\|([^\]]+)\]\]")
 _sched_intro = re.compile(r"\b(object|plant|diagram|worked case|all)\b")
