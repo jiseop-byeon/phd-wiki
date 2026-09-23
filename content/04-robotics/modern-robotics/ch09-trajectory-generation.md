@@ -142,14 +142,36 @@ because $1.5\Delta\theta/v_{\max} = \sqrt{6\Delta\theta/a_{\max}}$ squares to $2
 
 ### 1. The chapter in one list
 
+*In one sentence:* a trajectory is a path plus a time scaling, the cubic and quintic are the polynomial scalings fixed by their end conditions, and the fastest scaling under actuator limits rides those limits the whole way.
+
 - **Path vs trajectory**: a path is geometry $\theta(s), s\in[0,1]$; a trajectory adds
   **time scaling** $s(t)$ — MR's clean separation that lets you design shape and timing
   independently.
+
+> **Path and trajectory, defined.** A **path** is *a map from a parameter to configurations*, $\theta: [0,1] \to \mathcal{C}$, with $\theta(0)$ the start and $\theta(1)$ the goal: geometry with no time in it. A **trajectory** is *a map from time to configurations* with exactly two parts, a path and a time scaling $s: [0,T] \to [0,1]$ (§2), composed (MR §9.1).
+>
+> $$\theta(t) = \theta\big(s(t)\big), \qquad \theta(s) = \theta^{\text{start}} + s\,\big(\theta^{\text{goal}} - \theta^{\text{start}}\big),\ \ s \in [0, 1]$$
+>
+> where the second formula is the straight line in joint space that this page times; because the two parts meet only in the composition, each can be changed without touching the other.
+>
+> - **Example**: the elbow flip passes $\theta(0.5) = (45°,\ 0°)$ whatever the timing: the trapezoid gets there at $t = 2.163\,\mathrm{s}$, the cubic at $2.945\,\mathrm{s}$ — one path, two trajectories.
+> - **Non-example**: that straight line read as the tip's path. It is straight in joint space only: the tip starts and ends at $(1,1)$ yet passes $(1.414,\ 1.414)$ at $s = 0.5$, $0.414\,\mathrm{m}$ inside the panel. A path is a curve in C-space, so what the tool does along it must be checked in the workspace, as the warning above says.
+
 - **Point-to-point time scalings**: cubic ($s = 3t^2/T^2 - 2t^3/T^3$: zero endpoint
   velocities) and quintic (zero endpoint accelerations too — smoother torques);
   **trapezoidal** velocity profiles (accelerate–cruise–decelerate) — what industrial
   controllers actually run.
   - The quintic's numbers, derived: with $u = t/T$ it is $s = 10u^3 - 15u^4 + 6u^5$, the one quintic with $s$, $\dot s$ and $\ddot s$ fixed at both ends ($0, 0, 0$ and $1, 0, 0$). Then $\dot s = (30/T)\,u^2(1-u)^2$ peaks at $u = \tfrac12$ at $30/16 = 1.875/T$, and $\ddot s = (60/T^2)\,u(1-u)(1-2u)$ peaks where $1 - 6u + 6u^2 = 0$, at $u = \tfrac12 - \sqrt3/6 = 0.2113$, with value $(10/\sqrt3)/T^2 = 5.77/T^2$. Those are the two coefficients the worked example below uses.
+
+> **Cubic and quintic time scalings, defined.** A **polynomial time scaling** is *a time scaling (§2) that is a polynomial in $t$*, with one coefficient per boundary condition it meets (MR §9.2.2.1). The **cubic** meets four: the **endpoints**, $s(0) = 0$ and $s(T) = 1$, and **rest at both ends**, $\dot s(0) = \dot s(T) = 0$. The **quintic** meets six: those four and **zero acceleration at both ends**, $\ddot s(0) = \ddot s(T) = 0$.
+>
+> $$s_3 = 3u^2 - 2u^3, \qquad s_5 = 10u^3 - 15u^4 + 6u^5, \qquad u = t/T$$
+>
+> where $u$ is normalized time, so $T$ only stretches a fixed shape; the peaks are $\dot s = 1.5/T$ and $|\ddot s| = 6/T^2$ for the cubic, $1.875/T$ and $5.77/T^2$ for the quintic.
+>
+> - **Example**: the elbow flip. The cubic needs $T = 5.890\,\mathrm{s}$; the quintic, peaking higher in speed, needs $1.875\pi/0.8 = 7.363\,\mathrm{s}$. Both are velocity-bound.
+> - **Non-example**: $s = t/T$, linear interpolation. It meets the endpoints but not rest: at $T = \pi/0.8 = 3.927\,\mathrm{s}$ the elbow jumps from $0$ to $0.8\,\mathrm{rad/s}$ at $t = 0$, an infinite acceleration. The cubic removes that jump but keeps one in acceleration, $0.543\,\mathrm{rad/s^2}$ at $t = 0$: an infinite jerk, which MR warns can set the robot vibrating, and the jump the quintic removes.
+
 - **Via points**: interpolate through waypoints with splines — watch for overshoot between
   close points.
 - **Time-optimal time scaling**: given actuator limits and the
@@ -158,6 +180,16 @@ because $1.5\Delta\theta/v_{\max} = \sqrt{6\Delta\theta/a_{\max}}$ squares to $2
   bang-bang structure (at every instant the path acceleration sits at its maximum or its
   minimum, never in between — typically full acceleration, then a switch to full deceleration).
   - With constant limits on one joint the structure takes two lines to see. A move that starts and ends at rest has $|\dot\theta(t)| \le \min(a_{\max}t,\ v_{\max},\ a_{\max}(T - t))$ at every instant, so the distance it can cover in time $T$ is at most the area under that bound — which is exactly the trapezoid of the worked case, reached only by full acceleration, cruise at the limit, full deceleration. So the elbow flip's $4.327\,\mathrm{s}$ cannot be beaten under these limits; drop the speed limit and the bound becomes a triangle, the pure bang-bang flip taking $2\sqrt{\pi/2} = 2.507\,\mathrm{s}$.
+
+> **Time-optimal time scaling, defined.** A **time-optimal time scaling** is *the solution of a minimization*: of all time scalings of one path, the one that finishes first (MR §9.4). Three conditions pose it. The **path is fixed**, so only $s(t)$ is chosen. The motion is **rest to rest and monotone**: $s(0) = \dot s(0) = \dot s(T) = 0$, $s(T) = 1$, $\dot s \ge 0$. And the **actuator limits hold at every instant**: torque (acceleration) limits become bounds on the path acceleration, $L(s,\dot s) \le \ddot s \le U(s,\dot s)$, which MR derives through the dynamics, and velocity limits bound the path speed, $\dot s \le \dot s_{\max}(s)$.
+>
+> $$T = \int_0^1 \frac{ds}{\dot s(s)} \ \to\ \min \quad \text{subject to} \quad L(s,\dot s) \le \ddot s \le U(s,\dot s),\ \ 0 \le \dot s \le \dot s_{\max}(s)$$
+>
+> where $\dot s(s)$ is the path speed at each point of the path and $\dot s_{\max}(s)$ its bound (in MR's torque-only setting, the velocity limit curve where $L = U$); time is the integral of $1/\dot s$, so the optimum keeps $\dot s$ as high as these bounds allow everywhere (MR, after eq. 9.39). On the elbow flip this page's limits give $|\ddot s| \le 2/\pi = 0.637\,\mathrm{1/s^2}$ and $\dot s \le 0.8/\pi = 0.255\,\mathrm{1/s}$, and the speed bound is what puts a cruise in the optimum.
+>
+> - **Example**: the elbow flip's $4.327\,\mathrm{s}$ trapezoid; with no speed limit, the bang-bang triangle's $2.507\,\mathrm{s}$.
+> - **Non-example**: the cubic at its limit, $5.890\,\mathrm{s}$: the fastest *cubic*, a best $T$ for one fixed shape, and $1.361$ times the optimum. "Time-optimal" must name its limits: under MR's torque limits $L$ and $U$ change along the path, and the trapezoid is in general no longer optimal.
+
 - Smoothness matters physically: discontinuous acceleration = torque spikes = vibration
   (the torque is $\tau = M(\theta)\ddot\theta + c + g$ from ch.8, and $c$, $g$ vary smoothly
   with the state, so a jump in $\ddot\theta$ is a jump in commanded torque)
@@ -191,13 +223,13 @@ $$\dot\theta(t) = \frac{d\theta}{ds}\,\dot s, \qquad \ddot\theta(t) = \frac{d\th
 
 where the second term vanishes for a straight-line path in joint space, because $d^2\theta/ds^2 = 0$ there, which is why P2's elbow flip reduces to $\ddot\theta_i = \Delta\theta_i\,\ddot s$.
 
-- **Example**: the cubic $s = 3t^2/T^2 - 2t^3/T^3$. Check the conditions: $s(0)=0$, $s(T)=1$, $\dot s = 6t/T^2 - 6t^2/T^3 = (6t/T^2)(1 - t/T) \ge 0$ on $[0,T]$, and $\dot s(0) = \dot s(T) = 0$.
+- **Example**: the cubic $s = 3t^2/T^2 - 2t^3/T^3$. Check the conditions: $s(0)=0$, $s(T)=1$, $\dot s = 6t/T^2 - 6t^2/T^3 = (6t/T^2)(1 - t/T) \ge 0$ on $[0,T]$, and $\dot s(0) = \dot s(T) = 0$. On the elbow flip with $T = 5.8905\,\mathrm{s}$ it reaches $s = 0.5$ at $t = 2.945\,\mathrm{s}$, with the elbow at $0°$ moving at its peak, $\pi \cdot 1.5/5.8905 = 0.8\,\mathrm{rad/s}$.
 - **Non-example**: $s(t) = \sin(2\pi t/T)$. It is smooth and it starts at $0$, but it is not monotone and $s(T) = 0 \neq 1$ — it returns to the start, so it is not a point-to-point scaling at all.
 - **Why it matters**: because the scaling is a separate object, an actuator-limit question ("can this motor do it?") never touches the geometry, and a clearance question ("does this path hit the panel?") never touches the timing. Mixing them is how a planner gets blamed for a motor's limits.
 
 ### 3. The trapezoidal profile, defined
 
-A **trapezoidal velocity profile** is the time scaling whose *velocity* $\dot s$ is piecewise linear with three phases — constant acceleration $+a_{\max}$, constant velocity $v_{\max}$, constant deceleration $-a_{\max}$ — so that both actuator limits are attained rather than approached. Applied to a joint move of size $\Delta\theta$, its duration is
+A **trapezoidal velocity profile** is the rest-to-rest time scaling whose *velocity* $\dot s$ is piecewise linear with three phases — constant acceleration, constant velocity, constant deceleration of the same size (MR §9.2.2.2). Its two free parameters are the cruise speed and the ramp acceleration, and this page sets them at the actuator limits, so the elbow ramps at $\pm a_{\max}$ and cruises at $v_{\max}$, attaining both limits rather than approaching them — the choice MR identifies as the fastest straight-line motion those limits allow. Applied to a joint move of size $\Delta\theta$, its duration is
 
 $$T_{\text{trap}} = \frac{\Delta\theta}{v_{\max}} + \frac{v_{\max}}{a_{\max}} \qquad \text{when } \Delta\theta \ge \frac{v_{\max}^2}{a_{\max}}$$
 
@@ -205,8 +237,9 @@ because the cruise covers $\Delta\theta - v_{\max}^2/a_{\max}$ at speed $v_{\max
 
 - **Example**: P2's elbow flip, $T_{\text{trap}} = 4.327\,\mathrm{s}$ with an $81.5\,\%$ cruise.
 - **Degenerate case, not a non-example**: when $\Delta\theta < v_{\max}^2/a_{\max}$ the cruise phase has negative length, the profile collapses to a **triangle**, and the duration is $T_{\text{tri}} = 2\sqrt{\Delta\theta/a_{\max}}$ with a peak velocity $a_{\max}T/2$ that never reaches $v_{\max}$. Using the trapezoid formula there returns a *longer* time than the triangle takes, which is the standard way this calculation is got wrong.
-- **Non-example**: a velocity profile that is trapezoidal in *shape* but whose top is at $0.6\,v_{\max}$. It is a perfectly legal time scaling and it is not the trapezoidal profile, because the defining property is saturation of both limits, not the silhouette.
-- **Why it matters**: its two parameters *are* the machine's two spec numbers, so a datasheet maps onto it without solving anything. That is why industrial controllers run it and why it is the baseline any fancier scaling has to beat. Both are joint limits, though: a trapezoid that saturates them can still drive the tip past a task-space speed limit, which [[04-robotics/capstone-panel-contact|26. Capstone §3]] catches and repairs with a tip-speed cap.
+- **Non-example**: a trapezoid for each joint, each at its own limits. The shoulder's alone would finish in $2.363\,\mathrm{s}$, when the elbow, on its $4.327\,\mathrm{s}$ profile, is still $1.411\,\mathrm{rad}$ from its goal: the joints no longer share one $s(t)$, so the arm leaves the straight joint-space path, and a clearance check made on that path no longer covers the motion.
+- **Same shape, not the fastest**: the page's profile with its top lowered to $0.6\,v_{\max} = 0.48\,\mathrm{rad/s}$ is still trapezoidal, but it takes $3.1416/0.48 + 0.48/2 = 6.785\,\mathrm{s}$, longer than the cubic's $5.890\,\mathrm{s}$: the speed comes from saturating both limits, not from the silhouette.
+- **Why it matters**: its two parameters can be set directly to the machine's two spec numbers, so a datasheet maps onto it without solving anything. That is why industrial controllers run it and why it is the baseline any fancier scaling has to beat. Both are joint limits, though: a trapezoid that saturates them can still drive the tip past a task-space speed limit, which [[04-robotics/capstone-panel-contact|26. Capstone §3]] catches and repairs with a tip-speed cap.
 
 **Wiki connections**: [[01-canonical-papers/notes/4-vla/act|action chunks]] and
 [[01-canonical-papers/notes/4-vla/diffusion-policy|denoised trajectories]] are *learned*
@@ -223,7 +256,7 @@ on real hardware for safety/limits.
 > [!tip]- Answers
 > 1. $s(0)=0$, $s(T)=1$; $\dot s = 6t/T^2 - 6t^2/T^3$, so $\dot s(0) = \dot s(T) = 0$ — it starts and ends at rest, which is exactly the point-to-point requirement.
 > 2. Quintic also zeroes the endpoint *accelerations*, so torque is continuous at the ends (no jolt). The cost is a higher peak velocity for the same duration ($1.875/T$ vs $1.5/T$) — note the peak *acceleration* is actually lower than cubic's ($5.77/T^2$ vs $6/T^2$), so it is speed, not torque, that you pay.
-> 3. Its parameters *are* the actuator limits: maximum velocity and maximum acceleration appear directly in the profile, so a machine spec maps onto it one-to-one without solving anything.
+> 3. Its parameters can be set directly to the actuator limits: maximum velocity and maximum acceleration appear directly in the profile, so a machine spec maps onto it one-to-one without solving anything.
 > 4. $\Delta\theta_1 = 1.5708 > \Delta\theta^{*} = 0.32$, so it is still a true trapezoid, and $1.5708 > \Delta\theta^{\dagger} = 0.853$, so velocity binds. $T_{\text{trap}} = 1.5708/0.8 + 0.4 = 1.963 + 0.4 = 2.363\,\mathrm{s}$ — the $\Delta\theta/v_{\max}$ term is exactly half the elbow's, while the $v_{\max}/a_{\max}$ ramp term does not scale with the move at all.
 
 ### Problem set · 과제
@@ -373,17 +406,49 @@ $1.5\Delta\theta/v_{\max} = \sqrt{6\Delta\theta/a_{\max}}$를 제곱하면 $2.25
 
 ### 1. 이 장을 목록 하나로
 
+*한 문장으로:* 궤적은 경로에 시간 스케일링을 더한 것이고, 3차와 5차는 끝 조건으로 정해지는 다항식 스케일링이며, 액추에이터 한계 아래 가장 빠른 스케일링은 내내 그 한계를 타고 간다.
+
 - **경로 vs 궤적**: 경로는 기하 $\theta(s), s\in[0,1]$; 궤적은 **시간 스케일링** $s(t)$를
   더한 것 — 모양과 타이밍을 독립적으로 설계하게 해주는 MR의 깔끔한 분리.
+
+> **경로와 궤적의 정의.** **경로**(path)는 *매개변수에서 컨피규레이션으로 가는 사상* $\theta: [0,1] \to \mathcal{C}$이고, $\theta(0)$이 출발, $\theta(1)$이 목표다. 시간이 들어 있지 않은 기하다. **궤적**(trajectory)은 *시간에서 컨피규레이션으로 가는 사상*이고, 경로와 시간 스케일링 $s: [0,T] \to [0,1]$(§2), 정확히 두 부분을 합성한 것이다(MR §9.1).
+>
+> $$\theta(t) = \theta\big(s(t)\big), \qquad \theta(s) = \theta^{\text{start}} + s\,\big(\theta^{\text{goal}} - \theta^{\text{start}}\big),\ \ s \in [0, 1]$$
+>
+> 여기서 둘째 식은 이 페이지가 시간을 입히는 관절 공간의 직선이다. 두 부분은 합성에서만 만나므로 하나를 바꿔도 다른 하나는 그대로다.
+>
+> - **예**: 엘보 뒤집기는 타이밍과 상관없이 $\theta(0.5) = (45°,\ 0°)$를 지난다. 사다리꼴은 $t = 2.163\,\mathrm{s}$에, 3차는 $2.945\,\mathrm{s}$에 거기 닿는다. 경로 하나, 궤적 둘이다.
+> - **비예**: 그 직선을 말단의 경로로 읽는 것. 관절 공간에서만 직선이다. 말단은 $(1,1)$에서 출발해 $(1,1)$로 돌아오지만 $s = 0.5$에서 패널 안 $0.414\,\mathrm{m}$인 $(1.414,\ 1.414)$을 지난다. 경로는 C-space의 곡선이므로, 그 위에서 도구가 하는 일은 위의 경고처럼 작업 영역에서 따로 확인해야 한다.
+
 - **점대점 시간 스케일링**: 3차($s = 3t^2/T^2 - 2t^3/T^3$: 양 끝 속도 0)와 5차(양 끝
   가속도까지 0 — 토크가 더 매끄럽다); **사다리꼴** 속도 프로파일(가속–순항–감속) — 산업
   제어기가 실제로 도는 방식.
   - 5차의 숫자를 유도하면: $u = t/T$로 $s = 10u^3 - 15u^4 + 6u^5$이고, 양 끝에서 $s$, $\dot s$, $\ddot s$를($0, 0, 0$과 $1, 0, 0$으로) 고정하는 유일한 5차식이다. 그러면 $\dot s = (30/T)\,u^2(1-u)^2$은 $u = \tfrac12$에서 최대 $30/16 = 1.875/T$이고, $\ddot s = (60/T^2)\,u(1-u)(1-2u)$는 $1 - 6u + 6u^2 = 0$인 $u = \tfrac12 - \sqrt3/6 = 0.2113$에서 최대이며 그 값은 $(10/\sqrt3)/T^2 = 5.77/T^2$이다. 아래 계산 예제가 쓰는 두 계수가 이것이다.
+
+> **3차와 5차 시간 스케일링의 정의.** **다항식 시간 스케일링**(polynomial time scaling)은 *$t$의 다항식인 시간 스케일링*(§2)이고, 만족하는 경계 조건 하나마다 계수가 하나씩이다(MR §9.2.2.1). **3차**는 넷을 만족한다. **양 끝** $s(0) = 0$, $s(T) = 1$과 **양 끝의 정지** $\dot s(0) = \dot s(T) = 0$이다. **5차**는 여섯을 만족한다. 그 넷에 **양 끝의 가속도 0**, 곧 $\ddot s(0) = \ddot s(T) = 0$을 더한다.
+>
+> $$s_3 = 3u^2 - 2u^3, \qquad s_5 = 10u^3 - 15u^4 + 6u^5, \qquad u = t/T$$
+>
+> 여기서 $u$는 정규화한 시간이라 $T$는 정해진 모양을 늘일 뿐이다. 최댓값은 3차가 $\dot s = 1.5/T$, $|\ddot s| = 6/T^2$, 5차가 $1.875/T$, $5.77/T^2$다.
+>
+> - **예**: 엘보 뒤집기. 3차는 $T = 5.890\,\mathrm{s}$가 필요하고, 속도 최댓값이 더 높은 5차는 $1.875\pi/0.8 = 7.363\,\mathrm{s}$가 필요하다. 둘 다 속도 구속이다.
+> - **비예**: 선형 보간 $s = t/T$. 양 끝은 만족하지만 정지는 만족하지 않는다. $T = \pi/0.8 = 3.927\,\mathrm{s}$이면 $t = 0$에서 엘보 속도가 $0$에서 $0.8\,\mathrm{rad/s}$로 뛴다. 무한대의 가속도다. 3차는 그 도약을 없애지만 가속도의 도약, 곧 $t = 0$에서의 $0.543\,\mathrm{rad/s^2}$은 남긴다. MR이 로봇을 떨게 할 수 있다고 경고하는 무한대의 저크이고, 5차가 없애는 것이 바로 이 도약이다.
+
 - **경유점**: 스플라인으로 웨이포인트들을 통과 — 가까운 점 사이의 오버슈트를 조심.
 - **시간 최적 스케일링**: 액추에이터 한계와
   [[04-robotics/modern-robotics/ch08-dynamics|동역학]]이 주어졌을 때 고정 경로 위에서 가장
   빠른 $s(t)$ 찾기 — 고전적 뱅뱅 구조(매 순간 경로 가속도가 최댓값이나 최솟값에 붙어 있고 그 사이 값은 쓰지 않는다 — 보통 최대 가속 후 최대 감속으로 전환)를 갖는 [[02-foundations/optimization|최적화]] 문제.
   - 관절 하나에 한계가 일정하면 이 구조는 두 줄로 보인다. 정지에서 출발해 정지로 끝나는 이동은 매 순간 $|\dot\theta(t)| \le \min(a_{\max}t,\ v_{\max},\ a_{\max}(T - t))$이므로, 시간 $T$ 동안 갈 수 있는 거리는 그 상한 아래의 넓이를 넘지 못한다. 그 넓이가 바로 '장치로 한 번 끝까지'의 사다리꼴이고, 최대 가속, 한계에서의 순항, 최대 감속으로만 거기 닿는다. 그래서 이 한계에서 엘보 뒤집기의 $4.327\,\mathrm{s}$는 더 줄일 수 없다. 속도 한계를 없애면 상한이 삼각형이 되고, 순수 뱅뱅 뒤집기는 $2\sqrt{\pi/2} = 2.507\,\mathrm{s}$가 걸린다.
+
+> **시간 최적 스케일링의 정의.** **시간 최적 스케일링**(time-optimal time scaling)은 *최소화 문제의 해*다. 한 경로의 모든 시간 스케일링 가운데 가장 먼저 끝나는 것이다(MR §9.4). 세 조건이 문제를 세운다. **경로는 고정**이라 $s(t)$만 고른다. 운동은 **정지에서 정지로, 단조롭게** 간다. $s(0) = \dot s(0) = \dot s(T) = 0$, $s(T) = 1$, $\dot s \ge 0$이다. 그리고 **액추에이터 한계가 매 순간 지켜진다**. 토크(가속도) 한계는 경로 가속도의 범위 $L(s,\dot s) \le \ddot s \le U(s,\dot s)$가 되고(MR은 이것을 동역학을 거쳐 유도한다), 속도 한계는 경로 속도를 $\dot s \le \dot s_{\max}(s)$로 묶는다.
+>
+> $$T = \int_0^1 \frac{ds}{\dot s(s)} \ \to\ \min \quad \text{제약:} \quad L(s,\dot s) \le \ddot s \le U(s,\dot s),\ \ 0 \le \dot s \le \dot s_{\max}(s)$$
+>
+> 여기서 $\dot s(s)$는 경로의 각 지점에서의 경로 속도이고 $\dot s_{\max}(s)$는 그 상한이다(토크 한계만 있는 MR의 설정에서는 $L = U$가 되는 속도 한계 곡선). 시간은 $1/\dot s$의 적분이므로 최적해는 어디서나 이 범위가 허용하는 만큼 $\dot s$를 높게 유지한다(MR, 식 9.39 뒤). 엘보 뒤집기에서 이 페이지의 한계는 $|\ddot s| \le 2/\pi = 0.637\,\mathrm{1/s^2}$와 $\dot s \le 0.8/\pi = 0.255\,\mathrm{1/s}$를 주고, 최적해에 순항 구간을 넣는 것은 속도 상한이다.
+>
+> - **예**: 엘보 뒤집기의 $4.327\,\mathrm{s}$ 사다리꼴. 속도 한계가 없으면 뱅뱅 삼각형의 $2.507\,\mathrm{s}$.
+> - **비예**: 한계까지 몰아붙인 3차, $5.890\,\mathrm{s}$. 가장 빠른 *3차*, 곧 정해진 한 모양 안에서의 최선의 $T$이고, 최적의 $1.361$배다. "시간 최적"은 한계를 밝혀야 한다. MR의 토크 한계 아래에서는 $L$과 $U$가 경로를 따라 바뀌고, 사다리꼴은 일반적으로 더 이상 최적이 아니다.
+
 - 매끄러움은 물리적으로 중요하다: 불연속 가속도 = 토크 스파이크 = 진동
   (8장의 토크는 $\tau = M(\theta)\ddot\theta + c + g$이고 $c$, $g$는 상태에 따라 매끄럽게
   변하므로, $\ddot\theta$가 튀면 명령 토크도 튄다)
@@ -417,22 +482,23 @@ $$\dot\theta(t) = \frac{d\theta}{ds}\,\dot s, \qquad \ddot\theta(t) = \frac{d\th
 
 관절 공간의 직선 경로에서는 $d^2\theta/ds^2 = 0$이라 둘째 항이 사라지고, 그래서 P2의 엘보 뒤집기가 $\ddot\theta_i = \Delta\theta_i\,\ddot s$로 줄어든다.
 
-- **예**: 3차 $s = 3t^2/T^2 - 2t^3/T^3$. 조건을 확인하면 $s(0)=0$, $s(T)=1$, $\dot s = 6t/T^2 - 6t^2/T^3 = (6t/T^2)(1 - t/T) \ge 0$($[0,T]$ 위에서), 그리고 $\dot s(0) = \dot s(T) = 0$.
-- **반례**: $s(t) = \sin(2\pi t/T)$. 매끄럽고 $0$에서 시작하지만 단조가 아니고 $s(T) = 0 \neq 1$이다. 출발점으로 돌아오므로 애초에 점대점 스케일링이 아니다.
+- **예**: 3차 $s = 3t^2/T^2 - 2t^3/T^3$. 조건을 확인하면 $s(0)=0$, $s(T)=1$, $\dot s = 6t/T^2 - 6t^2/T^3 = (6t/T^2)(1 - t/T) \ge 0$($[0,T]$ 위에서), 그리고 $\dot s(0) = \dot s(T) = 0$. $T = 5.8905\,\mathrm{s}$인 엘보 뒤집기에서는 $t = 2.945\,\mathrm{s}$에 $s = 0.5$에 닿고, 그때 엘보는 $0°$에서 최고 속도 $\pi \cdot 1.5/5.8905 = 0.8\,\mathrm{rad/s}$로 움직인다.
+- **비예**: $s(t) = \sin(2\pi t/T)$. 매끄럽고 $0$에서 시작하지만 단조가 아니고 $s(T) = 0 \neq 1$이다. 출발점으로 돌아오므로 애초에 점대점 스케일링이 아니다.
 - **왜 중요한가**: 스케일링이 별개의 대상이라서, 액추에이터 한계 질문("이 모터가 할 수 있나?")이 기하를 건드리지 않고, 여유 공간 질문("이 경로가 패널에 부딪히나?")이 타이밍을 건드리지 않는다. 둘을 섞는 것이 모터의 한계를 계획기 탓으로 돌리는 방식이다.
 
 ### 3. 사다리꼴 프로파일의 정의
 
-**사다리꼴 속도 프로파일**은 *속도* $\dot s$가 구간별 일차인 시간 스케일링이다. 구간은 셋 — 일정 가속 $+a_{\max}$, 일정 속도 $v_{\max}$, 일정 감속 $-a_{\max}$ — 이고, 두 액추에이터 한계에 접근하는 것이 아니라 실제로 도달한다. 크기 $\Delta\theta$인 관절 이동에 적용하면 소요 시간은
+**사다리꼴 속도 프로파일**은 정지에서 출발해 정지로 끝나며 *속도* $\dot s$가 구간별 일차인 시간 스케일링이다. 구간은 셋 — 일정 가속, 일정 속도, 같은 크기의 일정 감속 — 이다(MR §9.2.2.2). 자유 파라미터는 순항 속도와 램프 가속도 둘이고, 이 페이지는 그것을 액추에이터 한계에 맞춰 엘보가 $\pm a_{\max}$로 가감속하고 $v_{\max}$로 순항하게 한다. 그래서 두 한계에 접근하는 것이 아니라 실제로 도달하며, MR은 이 선택을 그 한계 아래에서 가능한 가장 빠른 직선 운동으로 꼽는다. 크기 $\Delta\theta$인 관절 이동에 적용하면 소요 시간은
 
 $$T_{\text{trap}} = \frac{\Delta\theta}{v_{\max}} + \frac{v_{\max}}{a_{\max}} \qquad (\Delta\theta \ge \frac{v_{\max}^2}{a_{\max}}\text{일 때})$$
 
 이다. 순항이 $\Delta\theta - v_{\max}^2/a_{\max}$를 속도 $v_{\max}$로 덮고 두 램프가 합쳐서 $v_{\max}/a_{\max}$를 쓰기 때문이다. 엘보로 확인하면 $3.1416/0.8 + 0.8/2 = 3.9270 + 0.4 = 4.327\,\mathrm{s}$, 위에서 길게 유도한 그 숫자다.
 
 - **예**: P2의 엘보 뒤집기, $T_{\text{trap}} = 4.327\,\mathrm{s}$, 순항 $81.5\,\%$.
-- **축퇴하는 경우이지 반례는 아닌 것**: $\Delta\theta < v_{\max}^2/a_{\max}$이면 순항 구간의 길이가 음수가 되어 프로파일이 **삼각형**으로 무너지고, 소요 시간은 $T_{\text{tri}} = 2\sqrt{\Delta\theta/a_{\max}}$, 최대 속도는 $v_{\max}$에 닿지 못하는 $a_{\max}T/2$다. 거기에 사다리꼴 공식을 쓰면 삼각형이 실제로 걸리는 것보다 *긴* 시간이 나오고, 이 계산이 틀리는 표준적인 방식이 그것이다.
-- **반례**: 모양은 사다리꼴인데 꼭대기가 $0.6\,v_{\max}$인 속도 프로파일. 완전히 합법적인 시간 스케일링이지만 사다리꼴 프로파일은 아니다. 정의하는 성질은 실루엣이 아니라 두 한계의 포화이기 때문이다.
-- **왜 중요한가**: 파라미터 둘이 곧 기계 사양의 숫자 둘이라, 데이터시트가 아무것도 풀지 않고 그대로 대응된다. 산업 제어기가 이것을 돌리는 이유이자, 더 정교한 스케일링이 이겨야 하는 기준선인 이유다. 다만 둘 다 관절 한계다. 두 한계를 포화시키는 사다리꼴도 말단을 작업 공간의 속도 한계 너머로 몰 수 있고, [[04-robotics/capstone-panel-contact|26. 캡스톤 §3]]이 그것을 잡아 말단 속도 상한으로 고친다.
+- **축퇴하는 경우이지 비예는 아닌 것**: $\Delta\theta < v_{\max}^2/a_{\max}$이면 순항 구간의 길이가 음수가 되어 프로파일이 **삼각형**으로 무너지고, 소요 시간은 $T_{\text{tri}} = 2\sqrt{\Delta\theta/a_{\max}}$, 최대 속도는 $v_{\max}$에 닿지 못하는 $a_{\max}T/2$다. 거기에 사다리꼴 공식을 쓰면 삼각형이 실제로 걸리는 것보다 *긴* 시간이 나오고, 이 계산이 틀리는 표준적인 방식이 그것이다.
+- **비예**: 관절마다 제 한계에 맞춘 사다리꼴 하나씩. 어깨만 따로 보면 $2.363\,\mathrm{s}$에 끝나는데, 그때 $4.327\,\mathrm{s}$짜리 프로파일을 타는 엘보는 아직 목표에서 $1.411\,\mathrm{rad}$ 떨어져 있다. 관절들이 더 이상 하나의 $s(t)$를 공유하지 않으므로 팔은 관절 공간의 직선 경로를 벗어나고, 그 경로에서 한 여유 공간 검사는 이 운동을 더 이상 보장하지 않는다.
+- **모양은 같아도 가장 빠르지는 않다**: 이 페이지의 프로파일에서 꼭대기만 $0.6\,v_{\max} = 0.48\,\mathrm{rad/s}$로 낮춘 것도 사다리꼴이지만, $3.1416/0.48 + 0.48/2 = 6.785\,\mathrm{s}$가 걸려 3차의 $5.890\,\mathrm{s}$보다도 길다. 빠름은 실루엣이 아니라 두 한계의 포화에서 나온다.
+- **왜 중요한가**: 파라미터 둘을 기계 사양의 숫자 둘에 그대로 맞출 수 있어, 데이터시트가 아무것도 풀지 않고 그대로 대응된다. 산업 제어기가 이것을 돌리는 이유이자, 더 정교한 스케일링이 이겨야 하는 기준선인 이유다. 다만 둘 다 관절 한계다. 두 한계를 포화시키는 사다리꼴도 말단을 작업 공간의 속도 한계 너머로 몰 수 있고, [[04-robotics/capstone-panel-contact|26. 캡스톤 §3]]이 그것을 잡아 말단 속도 상한으로 고친다.
 
 **위키 연결**: [[01-canonical-papers/notes/4-vla/act|행동 청크]]와
 [[01-canonical-papers/notes/4-vla/diffusion-policy|노이즈 제거된 궤적]]은 정확히 이 장의 *학습된*
@@ -449,7 +515,7 @@ $$T_{\text{trap}} = \frac{\Delta\theta}{v_{\max}} + \frac{v_{\max}}{a_{\max}} \q
 > [!tip]- 정답
 > 1. $s(0)=0$, $s(T)=1$이고 $\dot s = 6t/T^2 - 6t^2/T^3$이므로 $\dot s(0) = \dot s(T) = 0$이다. 양 끝에서 정지하며, 이것이 점대점 이동이 요구하는 조건 그대로다.
 > 2. 5차는 양 끝의 *가속도*까지 0으로 만들어 끝에서 토크가 연속이다(덜컥거림이 없다). 대가는 같은 소요 시간에서 최대 속도가 커지는 것이다($1.875/T$ 대 $1.5/T$). 최대 *가속도*는 오히려 3차보다 작으므로($5.77/T^2$ 대 $6/T^2$) 치르는 것은 토크가 아니라 속도다.
-> 3. 파라미터가 곧 액추에이터 한계이기 때문이다. 최대 속도와 최대 가속도가 프로파일에 그대로 들어가므로 기계 사양이 아무것도 풀지 않고 1:1로 대응된다.
+> 3. 파라미터를 액추에이터 한계에 그대로 맞출 수 있기 때문이다. 최대 속도와 최대 가속도가 프로파일에 그대로 들어가므로 기계 사양이 아무것도 풀지 않고 1:1로 대응된다.
 > 4. $\Delta\theta_1 = 1.5708$은 $\Delta\theta^{*} = 0.32$보다 크므로 여전히 진짜 사다리꼴이고, $\Delta\theta^{\dagger} = 0.853$보다도 크므로 속도가 걸린다. $T_{\text{trap}} = 1.5708/0.8 + 0.4 = 1.963 + 0.4 = 2.363\,\mathrm{s}$다. $\Delta\theta/v_{\max}$ 항만 엘보의 절반이고, 램프 항 $v_{\max}/a_{\max}$는 이동 크기와 아예 무관하다.
 
 ### 과제 · Problem set

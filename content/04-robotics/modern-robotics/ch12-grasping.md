@@ -145,6 +145,16 @@ because the two contacts share the load and each converts preload into $\mu$ tim
   normal; a point contact with friction can push anywhere inside the **friction cone** —
   half-angle $\alpha = \tan^{-1}\mu$. For $\mu = 0.5$, $\alpha \approx 26.6°$: the physical
   meaning of a friction coefficient is *an angle*. First-order form closure's "at least 4 planar contacts" is falsified by second-order curvature with two contacts, named below.
+
+> **Contact models, defined.** A **contact model** is *a rule for which wrenches one contact can transmit to the body*. MR states the three point-contact models by the motions each forbids (§12.1.5), each forbidding more than the last: a **frictionless point contact** forbids only penetration along the normal, a **point contact with friction** also forbids slip, and a **soft finger** also forbids spin about the contact normal, since a deforming fingertip touches over an area. On the force side each admits more: a push along the inward normal; any force in the friction cone, whose Coulomb form is MR §12.2.1 (§2 here); and that force plus a moment about the normal, whose size MR does not bound. In the plane the last two coincide, since that moment is not a planar wrench component.
+>
+> $$\text{frictionless: } f = f_n\hat n,\ f_n \ge 0; \qquad \text{with friction: } \lVert f_t\rVert \le \mu f_n; \qquad \text{soft finger: } \lVert f_t\rVert \le \mu f_n \ \text{plus a moment } m_n\hat n$$
+>
+> where $f_n$ is the push along the inward normal $\hat n$, $f_t$ the tangential part and $m_n$ a moment about $\hat n$, which a model using soft fingers must bound itself. Counting free directions gives $1$, $3$ and $4$ wrench components in space and $1$, $2$ and $2$ in the plane, as many as the motion constraints each contact imposes.
+>
+> - **Example**: finger 1 on the tile. Frictionless, it transmits only $f_n(1, 0, 0)$; with $\mu = 0.5$, any nonnegative mix of $(1, 0.5, -0.05)$ and $(1, -0.5, 0.05)$, so the frozen $20$ N squeeze allows up to $10$ N of vertical force there.
+> - **Non-example**: the two fingers as hard point contacts in space. Both act on the $x$ axis, at $r = (\pm 0.100, 0, 0)$, so every force they apply has moment $r_y f_z - r_z f_y = 0$ about it: their wrenches span $5$ of $6$ dimensions, and a torque about the jaw axis turns the tile at any $\mu$ and squeeze. Soft fingers supply that moment.
+
 - **Form closure**: the geometry alone traps the object (no friction needed) — for
   frictionless point contacts, at least 4 contacts in the plane and 7 in space (both counts
   derived from the closure test in §3). Robust but demanding. Those counts are for **first-order** form closure, which is the qualifier that
@@ -158,7 +168,7 @@ because the two contacts share the load and each converts preload into $\mu$ tim
   are usually force closures with 2–3 fingers.
 - **The antipodal intuition** (worked): for a **planar body with two frictional point
   contacts**, the line joining the contacts must lie inside both friction cones — "the
-  fingers can see each other through their cones." In spatial grasping, two hard point
+  fingers can see each other through their cones." The antipodal grasp is defined, with its three conditions, in [[04-robotics/grasping|15. Grasping §3]]. In spatial grasping, two hard point
   contacts cannot resist torque about their connecting axis, because each contact force acts
   at a point on that axis and so has no lever arm about it; at least three point contacts
   are needed. Two **soft-finger** contacts can add torsional moments and achieve spatial
@@ -182,9 +192,13 @@ $$w(r, f) = (f_x,\ f_y,\ r_x f_y - r_y f_x)$$
 where $r$ is the contact position in the body frame and $f$ the force the finger applies to the body, so the third entry is the moment about the frame's origin. Changing the frame origin changes $m_z$ but not $f$, which is why every wrench on this page is referred to the tile's centre of mass.
 
 - **Example**: edge $1^{+}$ above, $w = (1,\ 0.5,\ -0.05)$ — pushing right, dragging up, and rotating the tile clockwise because the upward drag acts $0.100\,\mathrm{m}$ to the left of centre.
-- **Non-example**: the pair $(f_x, f_y)$ alone. Two grasps with identical contact forces and different contact *locations* hold the tile differently, and dropping $m_z$ makes them look the same.
+- **Non-example**: the pair $(f_x, f_y)$ alone. Two grasps with identical contact forces and different contact *locations* hold the tile differently, and dropping $m_z$ makes them look the same. Step 5 has such a pair: the pinwheel and the edge-midpoint four apply the same forces $(\pm 1, 0)$ and $(0, \pm 1)$, yet with $m_z$ their wrench matrices have rank $3$ and $2$, one holding the tile and one letting it spin, which a force-only check cannot tell apart.
 
 A **friction cone** at a point contact is the *set of forces the contact can transmit*. Its defining conditions are two, and both are inequalities: the normal component cannot pull, $f_n \ge 0$; and the tangential component obeys Coulomb, $|f_t| \le \mu f_n$. Equivalently it is the circular cone of half-angle $\alpha = \tan^{-1}\mu$ about the inward normal, and in the plane it degenerates to a wedge with two edges $\hat n \pm \mu \hat t$.
+
+$$\mathcal{FC} = \{f :\ f_n \ge 0,\ \lVert f_t\rVert \le \mu f_n\}, \qquad \alpha = \tan^{-1}\mu, \qquad \text{plane: } \mathcal{FC} = \{\lambda_+(\hat n + \mu\hat t) + \lambda_-(\hat n - \mu\hat t) :\ \lambda_\pm \ge 0\}$$
+
+where $f_n = f \cdot \hat n$ is the push along the inward normal, $f_t = f - f_n\hat n$ the tangential part and $\mu$ Coulomb's coefficient; MR §12.2.1 writes the spatial cone with the normal along $z$, as $\sqrt{f_x^2 + f_y^2} \le \mu f_z$. The plane form holds because a planar cone has exactly two edges, and every force between them is a nonnegative mix of the two.
 
 - **Example**: $\mu = 0.5$ gives $\alpha = 26.565°$; $\mu = 1.0$ gives exactly $45°$.
 - **Non-example**: "$\mu$ is the cone angle." Doubling $\mu$ from $0.5$ to $1.0$ doubles the allowed force *ratio* but takes the angle from $26.565°$ to $45°$, not to $53.13°$. The cone angle is the arctangent, and it saturates at $90°$ however large $\mu$ becomes.
@@ -203,6 +217,15 @@ with $n = 3$ in the plane and $6$ in space, because a strictly positive combinat
 - **Non-example, count**: four frictionless normals all passing through the centre of mass. Four contacts is the textbook minimum and this arrangement still has rank 2. The minimum is necessary, never sufficient.
 - **The minimum, derived from the test**: rank $n$ needs at least $n$ generators, and a nonzero $\lambda$ with $\sum_i \lambda_i w_i = 0$ means the null space of $[w_1 \cdots w_k]$ is not just zero, so rank–nullity gives $k - n \ge 1$. Hence $k \ge n + 1$: four frictionless contacts in the plane and seven in space (MR §12.1.7.1, Theorem 12.6). For force closure the generators are cone edges rather than contacts, which is how two frictional planar contacts, with two edges each, reach the four that $n = 3$ needs.
 - **Why it matters**: the test costs a small linear program and gives a yes or no. It gives no margin, no required preload, and no answer at all about whether the fingers can be placed there — which is why Step 6 exists and why grasp *quality* metrics are a separate literature.
+
+> **Internal force, defined.** An **internal force** is *a set of contact forces, one per contact, whose net wrench on the body is zero*: it squeezes without pushing or turning, so the hand can set its size freely (MR §12.2.3). Three conditions define it. **Zero net force**. **Zero net moment**, so equal and opposite is not enough: the pushes must share a line. **Each part inside its own cone**. When a load is held, the contact forces are a load-carrying part plus an internal part, and the internal part is what brings each total force inside its cone; the frozen preload is its size.
+>
+> $$\sum_i f_{\text{int},i} = 0, \qquad \sum_i r_i \times f_{\text{int},i} = 0, \qquad f_{\text{int},i} \in \mathcal{FC}_i; \qquad \text{tile: } f_{\text{int}} = (s\hat n_1,\ s\hat n_2),\ \ s \ge \frac{W}{2\mu}$$
+>
+> where $f_{\text{int},i}$ is the internal part at contact $i$, $r_i$ its position, $\mathcal{FC}_i$ its cone and $s$ the squeeze. The tile has four force components and three independent wrench equations, so its internal forces form one line, equal pushes along the contact line; the bound on $s$ is Step 6's, since each finger's friction $\mu s$ must cover $W/2$.
+>
+> - **Example**: the frozen $s = 20$ N adds $(20 - 20,\ 0,\ 0) = 0$ to the tile and gives each finger $\mu s = 10$ N of friction against the $2.4525$ N it carries, Step 6's safety factor of $4.08$.
+> - **Non-example**: $20$ N pushes along the normals from fingers at $(-0.100, +0.025)$ and $(+0.100, -0.025)$. The forces cancel but the moments add to $-1.00$ N·m, so the pair turns the tile instead of squeezing it. For those contacts the internal force lies along the line joining them, $14.0°$ off each normal, and exists only because $14.0° < 26.565°$.
 
 ### Self-check
 
@@ -374,6 +397,16 @@ $$f_n^{\min} = \frac{W}{2\mu} = \frac{4.905}{2 \times 0.5} = 4.905\ \mathrm{N}$$
 - **접촉 모델**: 마찰 없는 점 접촉은 표면 법선 방향으로만 *밀 수* 있다; 마찰 있는 점
   접촉은 **마찰 원뿔** 안 어디로든 밀 수 있다 — 반각 $\alpha = \tan^{-1}\mu$.
   $\mu = 0.5$면 $\alpha \approx 26.6°$: 마찰 계수의 물리적 의미는 *각도*다. 1차 form closure의 "평면 접촉 최소 4개"는 아래에 이름을 적은 2차 곡률 효과, 접촉 둘로 반증된다.
+
+> **접촉 모델의 정의.** **접촉 모델**(contact model)은 *접촉 하나가 물체에 전달할 수 있는 렌치를 정하는 규칙*이다. MR은 점 접촉 모델 셋을 각 접촉이 막는 운동으로 정의하며(§12.1.5), 뒤의 것일수록 더 많이 막는다. **마찰 없는 점 접촉**(frictionless point contact)은 법선 방향의 침투만 막고, **마찰 있는 점 접촉**(point contact with friction)은 미끄럼도 막으며, **soft finger**는 접촉 법선 둘레의 회전까지 막는다. 변형되는 손가락 끝은 면적으로 닿기 때문이다. 힘 쪽에서는 뒤의 것일수록 더 많이 허용한다. 안쪽 법선 방향의 밀기, 마찰 원뿔 안의 어떤 힘(쿨롱 원뿔은 MR §12.2.1, 여기서는 §2), 그리고 그 힘에 법선 둘레 모멘트를 더한 것인데, 그 모멘트의 크기를 MR은 제한하지 않는다. 평면에서는 그 모멘트가 평면 렌치의 성분이 아니므로 뒤의 둘이 같다.
+>
+> $$\text{마찰 없음: } f = f_n\hat n,\ f_n \ge 0; \qquad \text{마찰 있음: } \lVert f_t\rVert \le \mu f_n; \qquad \text{soft finger: } \lVert f_t\rVert \le \mu f_n\text{에 모멘트 } m_n\hat n\text{ 추가}$$
+>
+> 여기서 $f_n$은 안쪽 법선 $\hat n$ 방향의 밀기, $f_t$는 접선 성분, $m_n$은 $\hat n$ 둘레의 모멘트이고, soft finger를 쓰는 모델은 그 한계를 스스로 정해야 한다. 자유로운 방향을 세면 렌치 성분이 공간에서 $1$, $3$, $4$개, 평면에서 $1$, $2$, $2$개로, 각 접촉이 가하는 운동 구속의 수와 같다.
+>
+> - **예**: 타일의 손가락 1. 마찰이 없으면 $f_n(1, 0, 0)$만 전달하고, $\mu = 0.5$면 $(1, 0.5, -0.05)$와 $(1, -0.5, 0.05)$의 음이 아닌 결합이면 무엇이든 전달한다. 그래서 고정된 $20$ N 쥐기로 그 손가락에서 연직 힘을 $10$ N까지 낼 수 있다.
+> - **비예**: 두 손가락을 공간의 hard point 접촉으로 본 것. 둘 다 $x$축 위의 $r = (\pm 0.100, 0, 0)$에 작용하므로, 가하는 모든 힘의 그 축 둘레 모멘트가 $r_y f_z - r_z f_y = 0$이다. 렌치가 $6$차원 중 $5$차원만 생성하고, 조 축 둘레의 토크는 어떤 $\mu$와 쥐기에서도 타일을 돌린다. soft finger가 그 모멘트를 준다.
+
 - **Form closure**: 기하만으로 물체를 가둔다(마찰 불필요) — 마찰 없는 점 접촉에서 평면
   최소 4개, 공간 최소 7개의 접촉이 필요하다(두 수 모두 §3에서 closure 검사로부터 유도한다). 강건하지만 요구가 크다. 이 수는 **1차**
   form closure에 대한 것이고, 그 단서가 핵심이다. 접촉 구속을 선형화해서 얻은 결과라 접촉
@@ -384,7 +417,7 @@ $$f_n^{\min} = \frac{W}{2\mu} = \frac{4.905}{2 \times 0.5} = 4.905\ \mathrm{N}$$
   마찰 원뿔들이 렌치 공간 전체를 양의 결합으로 생성해야 한다(모든 렌치가 원뿔 방향들의 *음이 아닌* 결합이어야 한다는 뜻이다. 접촉은 밀 수만 있고 당길 수 없기 때문이다). 실용적 파지는 대개 손가락
   2~3개의 force closure다.
 - **대척 파지의 직관** (예제): **평면 물체와 마찰 점접촉 둘**의 모델에서는 두 접촉점을
-  잇는 선이 두 마찰 원뿔 안에 있어야 한다 — "두 손가락이 원뿔을 통해 서로를 본다."
+  잇는 선이 두 마찰 원뿔 안에 있어야 한다 — "두 손가락이 원뿔을 통해 서로를 본다." 대척 파지의 세 정의 조건은 [[04-robotics/grasping|15. 파지 §3]]에 있다.
   공간에서는 hard point 접촉 둘만으로 두 점을 잇는 축 둘레의 토크를 막을 수 없어(각 접촉력이 그 축 위의 점에 작용하므로 축에 대한 지렛대 팔이 없다) 최소 세
   점접촉이 필요하다. **Soft-finger** 접촉 둘은 비틀림 모멘트를 더해 공간 force closure가
   가능하다. Closure를 주장하기 전에 접촉 모델부터 밝혀야 한다. hard 접촉 둘이 실패한다는
@@ -405,9 +438,13 @@ $$w(r, f) = (f_x,\ f_y,\ r_x f_y - r_y f_x)$$
 이고 $r$은 물체 좌표계의 접촉 위치, $f$는 손가락이 물체에 주는 힘이므로 셋째 성분은 좌표 원점 둘레의 모멘트다. 원점을 바꾸면 $m_z$는 바뀌고 $f$는 안 바뀐다. 이 페이지의 모든 렌치를 타일의 질량 중심 기준으로 쓰는 이유다.
 
 - **예**: 위의 모서리 $1^{+}$, $w = (1,\ 0.5,\ -0.05)$ — 오른쪽으로 밀고, 위로 끌고, 타일을 시계 방향으로 돌린다. 위로 끄는 힘이 중심에서 왼쪽으로 $0.100\,\mathrm{m}$ 떨어진 곳에 작용하기 때문이다.
-- **반례**: 쌍 $(f_x, f_y)$만. 접촉력은 같고 접촉 *위치*가 다른 두 파지는 타일을 다르게 잡는데, $m_z$를 버리면 둘이 같아 보인다.
+- **반례**: 쌍 $(f_x, f_y)$만. 접촉력은 같고 접촉 *위치*가 다른 두 파지는 타일을 다르게 잡는데, $m_z$를 버리면 둘이 같아 보인다. 5단계에 그런 쌍이 있다. 바람개비와 변 중점 배치는 같은 힘 $(\pm 1, 0)$과 $(0, \pm 1)$을 가하지만, $m_z$를 넣으면 렌치 행렬의 랭크가 $3$과 $2$라 하나는 타일을 붙잡고 하나는 돌게 둔다. 힘만 보는 검사로는 둘을 가를 수 없다.
 
 점 접촉의 **마찰 원뿔**은 *그 접촉이 전달할 수 있는 힘들의 집합*이다. 정의 조건은 둘이고 둘 다 부등식이다. 법선 성분은 당길 수 없다, 즉 $f_n \ge 0$. 접선 성분은 쿨롱을 지킨다, 즉 $|f_t| \le \mu f_n$. 같은 말로, 안쪽 법선 둘레의 반각 $\alpha = \tan^{-1}\mu$인 원뿔이며, 평면에서는 모서리 $\hat n \pm \mu \hat t$ 둘을 가진 쐐기로 축퇴한다.
+
+$$\mathcal{FC} = \{f :\ f_n \ge 0,\ \lVert f_t\rVert \le \mu f_n\}, \qquad \alpha = \tan^{-1}\mu, \qquad \text{평면: } \mathcal{FC} = \{\lambda_+(\hat n + \mu\hat t) + \lambda_-(\hat n - \mu\hat t) :\ \lambda_\pm \ge 0\}$$
+
+여기서 $f_n = f \cdot \hat n$은 안쪽 법선 방향의 밀기, $f_t = f - f_n\hat n$은 접선 성분, $\mu$는 쿨롱 계수다. MR §12.2.1은 법선을 $z$로 두고 공간 원뿔을 $\sqrt{f_x^2 + f_y^2} \le \mu f_z$로 쓴다. 평면 형태가 성립하는 것은 평면 원뿔의 모서리가 정확히 둘이고, 그 사이의 모든 힘이 두 모서리의 음이 아닌 결합이기 때문이다.
 
 - **예**: $\mu = 0.5$면 $\alpha = 26.565°$; $\mu = 1.0$이면 정확히 $45°$.
 - **반례**: "$\mu$가 원뿔 각이다". $\mu$를 $0.5$에서 $1.0$으로 두 배 하면 허용 힘 *비*는 두 배가 되지만 각은 $26.565°$에서 $45°$가 되지 $53.13°$가 되지 않는다. 원뿔 각은 아크탄젠트이고, $\mu$가 아무리 커져도 $90°$에서 포화한다.
@@ -426,6 +463,15 @@ $$\text{closure} \iff \exists\,\lambda > 0,\ \textstyle\sum_i \lambda_i w_i = 0 
 - **반례(개수)**: 질량 중심을 모두 지나는 마찰 없는 법선 넷. 넷은 교과서적 최소치인데 이 배치는 랭크가 2다. 최소치는 필요조건일 뿐 절대 충분조건이 아니다.
 - **검사에서 유도한 최소치**: 랭크 $n$에는 생성자가 적어도 $n$개 필요하고, $\sum_i \lambda_i w_i = 0$인 0이 아닌 $\lambda$가 있다는 것은 $[w_1 \cdots w_k]$의 영공간이 0만이 아니라는 뜻이므로, 랭크–널리티 정리가 $k - n \ge 1$을 준다. 따라서 $k \ge n + 1$, 곧 평면에서 마찰 없는 접촉 넷, 공간에서 일곱이다(MR §12.1.7.1, 정리 12.6). force closure에서는 생성자가 접촉이 아니라 원뿔 모서리이므로, 모서리를 둘씩 가진 평면 마찰 접촉 둘이 $n = 3$에 필요한 넷을 채운다.
 - **왜 중요한가**: 검사는 작은 선형계획 하나 값이고 예/아니오를 준다. 여유도, 필요한 예압도, 손가락을 거기 놓을 수 있는지도 말해 주지 않는다. 6단계가 있는 이유이자 파지 *품질* 지표가 별개의 문헌인 이유다.
+
+> **내력의 정의.** **내력**(internal force)은 *접촉마다 하나씩인 접촉력의 집합으로, 물체에 주는 합 렌치가 0인 것*이다. 밀지도 돌리지도 않고 쥐기만 하므로 손이 그 크기를 마음대로 정할 수 있다(MR §12.2.3). 정의 조건은 셋이다. **합력이 0**이다. **합 모멘트가 0**이다. 그래서 크기가 같고 방향이 반대인 것만으로는 부족하고, 두 밀기가 한 직선 위에 있어야 한다. **각 성분이 제 원뿔 안에 있다.** 하중을 들 때 접촉력은 하중을 나르는 부분과 내력 부분의 합이고, 각 합력을 원뿔 안으로 들여놓는 것이 내력 부분이다. 고정된 예압이 그 크기다.
+>
+> $$\sum_i f_{\text{int},i} = 0, \qquad \sum_i r_i \times f_{\text{int},i} = 0, \qquad f_{\text{int},i} \in \mathcal{FC}_i; \qquad \text{타일: } f_{\text{int}} = (s\hat n_1,\ s\hat n_2),\ \ s \ge \frac{W}{2\mu}$$
+>
+> 여기서 $f_{\text{int},i}$는 접촉 $i$의 내력 부분, $r_i$는 그 위치, $\mathcal{FC}_i$는 그 원뿔, $s$는 쥐는 힘이다. 타일은 힘 성분이 넷이고 독립인 렌치 방정식이 셋이므로, 내력은 직선 하나, 곧 접촉선을 따라 같은 크기로 미는 것뿐이다. $s$의 하한은 6단계의 것이다. 손가락마다 마찰 $\mu s$가 $W/2$를 덮어야 하기 때문이다.
+>
+> - **예**: 고정된 $s = 20$ N은 타일에 $(20 - 20,\ 0,\ 0) = 0$을 더하고, 손가락마다 나르는 $2.4525$ N에 맞서 마찰 $\mu s = 10$ N을 준다. 6단계의 안전율 $4.08$이다.
+> - **비예**: $(-0.100, +0.025)$와 $(+0.100, -0.025)$의 손가락이 법선을 따라 미는 $20$ N. 힘은 상쇄되지만 모멘트가 더해져 $-1.00$ N·m가 되므로, 이 쌍은 타일을 쥐는 대신 돌린다. 그 접촉들의 내력은 둘을 잇는 선을 따라 각 법선에서 $14.0°$ 기울어 있고, $14.0° < 26.565°$이기 때문에만 존재한다.
 
 ### 스스로 점검
 

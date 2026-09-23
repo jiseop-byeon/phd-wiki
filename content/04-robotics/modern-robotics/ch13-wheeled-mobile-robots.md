@@ -159,16 +159,38 @@ Slip beats quantization by a factor of $38.6$, so **odometry decay is a tyre bud
 
 ### 1. The chapter in one list
 
+*In one sentence:* a conventional-wheeled (nonholonomic) base is a unicycle whose rolling forbids sideways motion at every instant, and because that constraint does not integrate, the base still reaches every pose.
+
 - **The unicycle model** — the essential kinematics of most mobile bases:
   $$\dot x = v\cos\theta, \qquad \dot y = v\sin\theta, \qquad \dot\theta = \omega$$
   Two inputs $(v, \omega)$, three configuration variables — the deficit *is* the
   nonholonomic constraint (no sideways velocity).
+
+> **The unicycle model, defined.** The **unicycle model** is *a kinematic control system*: velocities are the inputs, and the configuration $q = (x, y, \theta)$ moves along two vector fields (MR §13.3.1 orders it $(\phi, x, y)$). Three conditions define it. **Rolling without slipping**: the wheel's contact point has no velocity along the axle, and its speed along the heading is $r$ times the wheel rate, so the sideways direction is forbidden by one Pfaffian constraint, linear in $\dot q$. **Driftless**: zero input means zero motion. **Linear in the inputs**: $\dot q = G(q)u$, with vector fields that depend on $q$. That the constraint does not integrate is a consequence, not an assumption: MR §13.3.2 proves it with the Lie bracket (Theorem 13.7; the controllability box below), which makes it nonholonomic in the sense of [[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §3]], removing a direction of motion, not a dimension.
+>
+> $$\dot q = \begin{pmatrix}\cos\theta\\ \sin\theta\\ 0\end{pmatrix} v + \begin{pmatrix}0\\ 0\\ 1\end{pmatrix}\omega = G(q)\,u, \qquad A(q)\,\dot q = \dot x\sin\theta - \dot y\cos\theta = 0, \qquad A(q)\,G(q) = 0$$
+>
+> where $u = (v, \omega)$ and $A(q) = (\sin\theta,\ -\cos\theta,\ 0)$ is the forbidden sideways direction; $AG = 0$ says every input obeys the constraint, so the two columns of $G$ are all the motion left.
+>
+> - **Example**: the quarter turn's wheel travel, $1.884956$ m right and $1.256637$ m left, ends at $(1, 1)$ as one arc and at $(1.457, 0.200)$ as a straight line and then the right wheel alone: $0.921$ m apart, both facing $90°$. The pose is not a function of the wheel angles.
+> - **Non-example**: one wheel rolling along P6's line, where $\dot x = r\dot\phi$ integrates to $x = r\phi + c$: holonomic, so $2048$ counts always mean one metre. P6-D keeps one such integral, the heading $\theta = (s_R - s_L)/(2d)$ in the wheel travels, and loses position, which §2 must therefore integrate.
+
 - **Differential drive, worked**: wheel radius $r$, half-axle $d$, wheel speeds
   $\omega_R, \omega_L$:
   $$v = \frac{r(\omega_R + \omega_L)}{2}, \qquad \omega = \frac{r(\omega_R - \omega_L)}{2d}$$
   Numbers: $r = 0.1$ m, $d = 0.2$ m, $\omega_R = 10$, $\omega_L = 5$ rad/s
   → $v = 0.75$ m/s, $\omega = 1.25$ rad/s — a gentle left arc. Equal speeds → straight;
   opposite speeds → turn in place.
+
+> **Differential drive, defined.** A **differential drive** is *a base whose two coaxial wheels are driven independently*, and its kinematics is the linear map from their rates to the unicycle's inputs (MR §13.3.1.2). Three conditions define it. **Two wheels on one axis**, $2d$ apart, each of radius $r$. **Each rolls without slipping**, so its ground speed is $r$ times its rate. **The reference point is the axle's midpoint**, the one point on the axle whose speed is the mean of the two wheels'.
+>
+> $$v = \frac{r(\omega_R + \omega_L)}{2}, \qquad \omega = \frac{r(\omega_R - \omega_L)}{2d} \qquad\Longleftrightarrow\qquad \omega_R = \frac{v + \omega d}{r},\ \ \omega_L = \frac{v - \omega d}{r}$$
+>
+> where $\omega_R, \omega_L$ are the wheel rates and $d$ the half-track; the difference is divided by $2d$ because a body turning at $\omega$ gives two points $2d$ apart speeds that differ by $2d\,\omega$.
+>
+> - **Example**: P6-D on the quarter turn, $v = 0.5$ m/s and $\omega = 0.5$ rad/s. The wheels run at $0.6$ and $0.4$ m/s, which is $7.540$ and $5.027$ rad/s, or $1228.8$ and $819.2$ counts per second.
+> - **Non-example**: the track, $0.400$ m, entered where the half-track belongs. Nothing fails loudly, but Step 4's counts then read $\Delta\theta = 0.628418/0.8 = 45.01°$ instead of $90.01°$, and the reported pose lands $0.586$ m from $(1, 1)$. Check whether a formula's $d$ is the half-track or the track before trusting its heading.
+
 - **Nonholonomy ≠ unreachability**: a car cannot move sideways *instantaneously*, yet can
   parallel-park into any pose — for these ideal rolling models (unicycle, diff-drive,
   car), the velocity constraints restrict *paths*, not the reachable set. The deep consequence (Brockett): no **continuous** time-invariant feedback can stabilize
@@ -179,6 +201,16 @@ Slip beats quantization by a factor of $38.6$, so **odometry decay is a tyre bud
   Brockett's 1983 paper, *Asymptotic Stability and Feedback Stabilization*.) Planning
   has the matching consequence: search edges must be drivable curves — Reeds–Shepp shots,
   state lattices, Hybrid A\* ([[04-robotics/planning-decision-making|4. Planning §5.5]]). A base putting P2's origin in front of the panel therefore cannot use a sideways shuffle as a legal edge, and still reaches the pose.
+
+> **Controllability, defined.** **Controllability** is *a property of a control system $\dot q = G(q)u$ with its admissible inputs, judged from a configuration $q$* (MR §13.3.2). Two of MR's notions carry this page's claim. The robot is **controllable** from $q$ if every goal can be reached in finite time by some admissible input history. It is **small-time locally controllable** (STLC) from $q$ if, for every time $T > 0$ and every neighbourhood $W$ of $q$, the set it can reach by time $T$ without leaving $W$ is itself a neighbourhood of $q$: it can move a little in every direction, however cramped the space.
+>
+> $$[g_1, g_2] = \frac{\partial g_2}{\partial q}\,g_1 - \frac{\partial g_1}{\partial q}\,g_2 = \bigl(\sin\theta,\ -\cos\theta,\ 0\bigr), \qquad \det\bigl[\,g_1\ \ g_2\ \ [g_1, g_2]\,\bigr] = 1$$
+>
+> where $g_1$ and $g_2$ are the columns of $G$, driving and turning. Their Lie bracket is the forbidden sideways direction; since it completes the rank and both inputs can be reversed, MR's Theorem 13.7 gives STLC at every $q$, and STLC everywhere gives controllability in the obstacle-free plane.
+>
+> - **Example**: forward $0.100$ m, turn $+0.100$ rad in place, back $0.100$ m, turn $-0.100$ rad. Both wheels end at zero net counts and the heading is unchanged, yet the cart sits $9.98$ mm to its right and $0.50$ mm ahead: about $\epsilon^2 = 0.01$ m along the bracket.
+> - **Non-example**: the linearization at $q = 0$. $G(0)$ has a zero $y$ row, rank $2 < 3$, so the linear model says $y$ never changes and the cart is not linearly controllable; by the same rank deficit, MR's Theorem 13.1 rules out any continuous time-invariant feedback that parks it at a point. Controllable does not mean stabilizable that way.
+
 - **Odometry and its decay**: integrating wheel encoders gives pose, but slip and
   quantization make the error grow without bound — the concrete reason mobile robots fuse
   odometry with external sensing via the
@@ -196,10 +228,10 @@ Slip beats quantization by a factor of $38.6$, so **odometry decay is a tyre bud
 
 $$\hat q_{k+1} = \hat q_k \oplus f(\Delta n_{R,k}, \Delta n_{L,k})$$
 
-where $\oplus$ is the pose update of Step 3, so the estimate is a running sum and errors compose rather than average out.
+where $\hat q_k = (x, y, \theta)$ is the estimate after tick $k$, $f$ turns that tick's two count differences into the displacement $(\Delta s, \Delta\theta)$ of Step 3's lines 1–2, and $\oplus$ applies it at the midpoint heading, line 3, so the estimate is a running sum and errors compose rather than average out.
 
 - **Example**: the quarter turn of Step 4 — $0.317\,\mathrm{mm}$ of position error out of $1.57\,\mathrm{m}$ from quantization alone, with no external sensor consulted.
-- **Non-example**: a wheel-encoder estimate that a GNSS fix has corrected. That is *fusion*, and it is a different object with a different error behaviour: bounded rather than growing ([[04-robotics/state-estimation-slam|State Estimation §8]]).
+- **Non-example**: a wheel-encoder estimate that a GNSS fix has corrected. That is *fusion*, and it is a different object with a different error behaviour: bounded rather than growing ([[04-robotics/state-estimation-slam|State Estimation §8]]). Under Step 6's $1\,\%$ slip, odometry alone is $471$ mm off after a further $10$ m and $942$ mm after $20$ m, while a fix-corrected estimate stays at the order of the fix's own error however far the cart drives.
 - **Why it matters**: odometry's error is unbounded *in the long run* and excellent *in the short run*, which is exactly the opposite of a global sensor. Fusion exists because those two profiles are complementary, not because either is bad. The growth law behind both halves of that sentence, each error term's power of $t$ once it has been integrated, is derived for inertial dead reckoning in [[04-robotics/sensor-models|3.2 Sensor Models & Noise §3]].
 
 ### 3. The instantaneous centre of rotation, defined
@@ -272,7 +304,7 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 | 바퀴 1회전당 카운트 | 디코드 후 쿼드러처 $1024$ | 여기서 정의 |
 | 바퀴 둘레 | $1024/2048 = 0.500\ \mathrm{m}$ | 위 두 행이 강제 |
 | **바퀴 반지름 $r$** | $0.500/2\pi = 1/(4\pi) = 0.079577\ \mathrm{m}$ | 유도; 지름 $159.2\,\mathrm{mm}$ |
-| **반축거 $d$** | $0.200\ \mathrm{m}$, 축거는 $0.400\ \mathrm{m}$ | 여기서 정의, §1 계산 예제와 일치 |
+| **반윤거 $d$** | $0.200\ \mathrm{m}$, 윤거(좌우 바퀴 간격)는 $0.400\ \mathrm{m}$ | 여기서 정의, §1 계산 예제와 일치 |
 | 카운트당 거리 | $1/2048 = 0.48828\ \mathrm{mm}$ | 유도 |
 | 제어 주기 | $5\ \mathrm{ms}$ ($200\,\mathrm{Hz}$) | **P6** |
 | 비전 주기 | $20\ \mathrm{ms}$ ($50\,\mathrm{Hz}$) | **P6** |
@@ -349,7 +381,7 @@ $$\dot x = v\cos\theta, \qquad \dot y = v\sin\theta, \qquad \dot\theta = \omega$
 
 바디 $x$축이 각 $\theta$를 향하기 때문이다. 입력 둘, 상태 셋. 이 부족분이 *곧* 비홀로노믹 제약이고, $A(\theta)\dot\theta = 0$ 꼴로 쓰면 $\dot x\sin\theta - \dot y\cos\theta = 0$이다.
 
-**2단계 — 바퀴 둘에서 $(v,\omega)$로.** 각 바퀴의 접지점은 자기 지면 속력 $\dot s_R$, $\dot s_L$로 움직인다. 바디 좌표계 중점은 그 평균이고 회전율은 차이를 축거로 나눈 것이다:
+**2단계 — 바퀴 둘에서 $(v,\omega)$로.** 각 바퀴의 접지점은 자기 지면 속력 $\dot s_R$, $\dot s_L$로 움직인다. 바디 좌표계 중점은 그 평균이고 회전율은 차이를 윤거로 나눈 것이다:
 
 $$v = \frac{\dot s_R + \dot s_L}{2} = \frac{r(\omega_R + \omega_L)}{2}, \qquad \omega = \frac{\dot s_R - \dot s_L}{2d} = \frac{r(\omega_R - \omega_L)}{2d}$$
 
@@ -401,15 +433,37 @@ $$\delta\theta = \frac{1/2048}{2d} = \frac{1/2048}{0.4} = 0.0012207\ \mathrm{rad
 
 ### 1. 이 장을 목록 하나로
 
+*한 문장으로:* 일반 바퀴를 단 비홀로노믹 베이스는 구름 때문에 매 순간 옆으로 못 가는 외바퀴 모델이지만, 그 제약이 적분되지 않으므로 여전히 모든 자세에 닿는다.
+
 - **외바퀴(unicycle) 모델** — 대부분의 모바일 베이스의 본질적 기구학:
   $$\dot x = v\cos\theta, \qquad \dot y = v\sin\theta, \qquad \dot\theta = \omega$$
   입력 둘 $(v, \omega)$에 컨피규레이션 변수 셋 — 이 부족분이 *곧* 비홀로노믹 제약이다
   (옆 방향 속도 없음).
-- **차동 구동 계산 예제**: 바퀴 반지름 $r$, 반축거 $d$, 바퀴 속도 $\omega_R, \omega_L$:
+
+> **외바퀴 모델의 정의.** **외바퀴 모델**(unicycle model)은 *기구학적 제어 시스템*이다. 입력이 속도이고, 컨피규레이션 $q = (x, y, \theta)$가 벡터장 둘을 따라 움직인다(MR §13.3.1은 순서를 $(\phi, x, y)$로 쓴다). 정의 조건은 셋이다. **미끄럼 없는 구름**: 바퀴 접지점은 차축 방향 속도가 없고, 방위 방향 속력은 바퀴 회전율의 $r$배다. 그래서 옆 방향이 $\dot q$에 선형인 파피안 제약 하나로 금지된다. **드리프트 항이 없다**: 입력이 0이면 운동도 0이다. **입력에 선형이다**: $\dot q = G(q)u$이고, 벡터장은 $q$에 따라 달라진다. 이 제약이 적분되지 않는다는 것은 가정이 아니라 결과다. MR §13.3.2가 리 괄호로 증명하며(정리 13.7, 아래 가제어성 상자), 그래서 이 제약은 [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §3]]의 뜻으로 비홀로노믹이고, 차원이 아니라 운동 방향 하나를 없앤다.
+>
+> $$\dot q = \begin{pmatrix}\cos\theta\\ \sin\theta\\ 0\end{pmatrix} v + \begin{pmatrix}0\\ 0\\ 1\end{pmatrix}\omega = G(q)\,u, \qquad A(q)\,\dot q = \dot x\sin\theta - \dot y\cos\theta = 0, \qquad A(q)\,G(q) = 0$$
+>
+> 여기서 $u = (v, \omega)$이고 $A(q) = (\sin\theta,\ -\cos\theta,\ 0)$은 금지된 옆 방향이다. $AG = 0$은 모든 입력이 제약을 지킨다는 뜻이므로, $G$의 두 열이 남은 운동의 전부다.
+>
+> - **예**: 1/4 회전의 바퀴 주행, 오른쪽 $1.884956$ m와 왼쪽 $1.256637$ m를 호 하나로 달리면 $(1, 1)$에서, 직진한 뒤 오른 바퀴만 돌리면 $(1.457, 0.200)$에서 끝난다. 둘은 $0.921$ m 떨어져 있고 둘 다 $90°$를 향한다. 자세는 바퀴 각의 함수가 아니다.
+> - **비예**: P6의 직선 위를 구르는 바퀴 하나. 여기서 $\dot x = r\dot\phi$는 $x = r\phi + c$로 적분되어 홀로노믹이므로, $2048$ 카운트는 언제나 1미터다. P6-D에는 그런 적분이 하나, 곧 바퀴 주행으로 쓴 방위 $\theta = (s_R - s_L)/(2d)$만 남고 위치는 없다. 그래서 §2가 위치를 적분해야 한다.
+
+- **차동 구동 계산 예제**: 바퀴 반지름 $r$, 반윤거 $d$, 바퀴 속도 $\omega_R, \omega_L$:
   $$v = \frac{r(\omega_R + \omega_L)}{2}, \qquad \omega = \frac{r(\omega_R - \omega_L)}{2d}$$
   숫자로: $r = 0.1$ m, $d = 0.2$ m, $\omega_R = 10$, $\omega_L = 5$ rad/s
   → $v = 0.75$ m/s, $\omega = 1.25$ rad/s — 완만한 좌회전 호. 같은 속도 → 직진;
   반대 속도 → 제자리 회전.
+
+> **차동 구동의 정의.** **차동 구동**(differential drive)은 *같은 축 위의 두 바퀴를 따로 구동하는 베이스*이고, 그 기구학은 두 바퀴의 회전율을 외바퀴 모델의 입력으로 보내는 선형 사상이다(MR §13.3.1.2). 정의 조건은 셋이다. **한 축 위의 두 바퀴**: 서로 $2d$ 떨어져 있고 반지름은 각각 $r$이다. **각 바퀴가 미끄럼 없이 구른다**: 그래서 지면 속력이 회전율의 $r$배다. **기준점은 차축 중점이다**: 차축 위에서 속력이 두 바퀴 속력의 평균인 유일한 점이다.
+>
+> $$v = \frac{r(\omega_R + \omega_L)}{2}, \qquad \omega = \frac{r(\omega_R - \omega_L)}{2d} \qquad\Longleftrightarrow\qquad \omega_R = \frac{v + \omega d}{r},\ \ \omega_L = \frac{v - \omega d}{r}$$
+>
+> 여기서 $\omega_R, \omega_L$은 바퀴 회전율, $d$는 반윤거다. 차이를 $2d$로 나누는 것은 $\omega$로 도는 몸체에서 $2d$ 떨어진 두 점의 속력 차가 $2d\,\omega$이기 때문이다.
+>
+> - **예**: 1/4 회전 위의 P6-D, $v = 0.5$ m/s, $\omega = 0.5$ rad/s. 바퀴는 $0.6$과 $0.4$ m/s, 곧 $7.540$과 $5.027$ rad/s, 초당 $1228.8$과 $819.2$ 카운트로 돈다.
+> - **비예**: 반윤거 자리에 윤거 $0.400$ m를 넣은 것. 아무것도 요란하게 실패하지 않지만, 4단계의 카운트가 $90.01°$ 대신 $\Delta\theta = 0.628418/0.8 = 45.01°$로 읽히고, 보고된 자세는 $(1, 1)$에서 $0.586$ m 떨어진 곳에 내린다. 방위를 믿기 전에 공식의 $d$가 반윤거인지 윤거인지 확인하라.
+
 - **비홀로노미 ≠ 도달 불가**: 자동차는 *순간적으로* 옆으로 못 가지만 평행 주차로 어떤
   자세든 도달한다 — 이상적 구름 모델(외바퀴·차동 구동·자동차)에서 속도 제약은 *경로*를
   제한할 뿐 도달 집합을 제한하지 않는다. 깊은
@@ -421,6 +475,16 @@ $$\delta\theta = \frac{1/2048}{2d} = \frac{1/2048}{0.4} = 0.0012207\ \mathrm{rad
   계획 쪽의 짝이 되는 귀결은, 탐색의
   간선이 주행 가능한 곡선이어야 한다는 것이다 — Reeds–Shepp 연결, 상태 격자, Hybrid A\*
   ([[04-robotics/planning-decision-making|4. 계획 §5.5]]). 그래서 P2의 원점을 패널 앞에 두는 베이스도 옆으로 미끄러지는 간선은 쓸 수 없고, 그래도 그 자세에는 도달한다.
+
+> **가제어성의 정의.** **가제어성**(controllability)은 *허용 입력과 함께 주어진 제어 시스템 $\dot q = G(q)u$의 성질*이고, 컨피규레이션 $q$에서 판정한다(MR §13.3.2). 이 페이지의 주장을 떠받치는 것은 MR의 개념 둘이다. 모든 목표에 어떤 허용 입력 이력으로 유한 시간에 닿을 수 있으면 로봇은 $q$에서 **가제어**(controllable)다. 모든 시간 $T > 0$과 $q$의 모든 근방 $W$에 대해, $W$를 벗어나지 않고 시간 $T$까지 닿을 수 있는 집합이 그 자체로 $q$의 근방이면 $q$에서 **소시간 국소 가제어**(small-time locally controllable, STLC)다. 공간이 아무리 좁아도 모든 방향으로 조금씩 움직일 수 있다는 뜻이다.
+>
+> $$[g_1, g_2] = \frac{\partial g_2}{\partial q}\,g_1 - \frac{\partial g_1}{\partial q}\,g_2 = \bigl(\sin\theta,\ -\cos\theta,\ 0\bigr), \qquad \det\bigl[\,g_1\ \ g_2\ \ [g_1, g_2]\,\bigr] = 1$$
+>
+> 여기서 $g_1$과 $g_2$는 $G$의 두 열, 곧 전진과 회전이다. 둘의 리 괄호(Lie bracket)가 금지된 옆 방향이고, 그것이 랭크를 채우는 데다 두 입력 모두 부호를 뒤집을 수 있으므로 MR의 정리 13.7이 모든 $q$에서 STLC를 준다. 모든 곳에서 STLC이면 장애물 없는 평면에서 가제어다.
+>
+> - **예**: 전진 $0.100$ m, 제자리 $+0.100$ rad 회전, 후진 $0.100$ m, $-0.100$ rad 회전. 두 바퀴의 알짜 카운트는 0이고 방위도 그대로인데, 카트는 오른쪽으로 $9.98$ mm, 앞으로 $0.50$ mm 옮겨 가 있다. 괄호 방향으로 약 $\epsilon^2 = 0.01$ m다.
+> - **비예**: $q = 0$에서의 선형화. $G(0)$의 $y$ 행이 0이라 랭크가 $2 < 3$이므로 선형 모델은 $y$가 결코 변하지 않는다고 말하고, 카트는 선형 가제어가 아니다. 같은 랭크 부족 때문에 MR의 정리 13.1은 카트를 한 점에 세우는 연속 시불변 피드백을 모두 배제한다. 가제어라고 그렇게 안정화할 수 있는 것은 아니다.
+
 - **오도메트리와 그 붕괴**: 바퀴 엔코더 적분으로 자세를 얻지만, 미끄럼과 양자화로 오차가
   무한정 자란다 — 모바일 로봇이 오도메트리를 외부 센싱과
   [[02-foundations/probability|칼만 필터 기계장치]]로 융합하는(그리고 규모가 커지면 SLAM으로
@@ -438,10 +502,10 @@ $$\delta\theta = \frac{1/2048}{2d} = \frac{1/2048}{0.4} = 0.0012207\ \mathrm{rad
 
 $$\hat q_{k+1} = \hat q_k \oplus f(\Delta n_{R,k}, \Delta n_{L,k})$$
 
-여기서 $\oplus$는 3단계의 자세 갱신이므로 추정은 누적합이고, 오차는 평균으로 상쇄되지 않고 합성된다.
+여기서 $\hat q_k = (x, y, \theta)$는 틱 $k$ 뒤의 추정, $f$는 그 틱의 카운트 차 둘을 3단계 1–2번 줄의 변위 $(\Delta s, \Delta\theta)$로 바꾸는 함수, $\oplus$는 그것을 중간점 방위로 더하는 3번 줄이다. 그래서 추정은 누적합이고, 오차는 평균으로 상쇄되지 않고 합성된다.
 
 - **예**: 4단계의 1/4 회전 — 외부 센서를 한 번도 보지 않고 $1.57\,\mathrm{m}$ 중 $0.317\,\mathrm{mm}$의 위치 오차가 양자화만으로 나온다.
-- **반례**: GNSS 픽스가 교정한 바퀴 엔코더 추정. 그것은 *융합*이고, 오차 거동이 다른 별개의 대상이다. 자라는 것이 아니라 유계다([[04-robotics/state-estimation-slam|상태 추정 §8]]).
+- **반례**: GNSS 픽스가 교정한 바퀴 엔코더 추정. 그것은 *융합*이고, 오차 거동이 다른 별개의 대상이다. 자라는 것이 아니라 유계다([[04-robotics/state-estimation-slam|상태 추정 §8]]). 6단계의 $1\,\%$ 미끄럼이면 오도메트리만으로는 $10$ m를 더 가서 $471$ mm, $20$ m에서 $942$ mm 틀리지만, 픽스로 교정한 추정은 카트가 얼마나 멀리 가든 픽스 자신의 오차 정도에 머문다.
 - **왜 중요한가**: 오도메트리의 오차는 *장기적으로* 무계이고 *단기적으로* 훌륭하며, 이는 전역 센서와 정확히 반대다. 융합이 존재하는 이유는 어느 한쪽이 나빠서가 아니라 두 프로파일이 상보적이기 때문이다. 그 문장의 두 절반 뒤에 있는 성장 법칙, 곧 적분된 오차 항마다의 $t$의 거듭제곱은 관성 추측 항법에 대해 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §3]]에서 유도한다.
 
 ### 3. 순간 회전 중심의 정의

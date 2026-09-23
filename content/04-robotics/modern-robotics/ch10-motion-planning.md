@@ -183,9 +183,19 @@ because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so
 
 - **The framing**: obstacles in the workspace become **C-space obstacles** — planning is
   navigation in [[04-robotics/modern-robotics/ch02-configuration-space|configuration space]], where the robot is a point.
+
+> **The motion-planning problem, defined.** The **path-planning problem** is *a query with a feasibility condition*: given a start configuration $q_{\text{start}}$ and a goal $q_{\text{goal}}$, find a path between them (MR §10.1.1). A solution meets three conditions. **Its ends are the query's configurations**, joint angles rather than tool poses. **It is continuous**, a curve in $\mathcal{C}$ and not a list of points. **Every point on it is free**, in $\mathcal{C}_{\text{free}}$ as [[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]] defines it, not only its ends. The general **motion-planning problem** adds the dynamics: a state, controls and a duration.
+>
+> $$\text{find } q:[0,1]\to\mathcal{C}_{\text{free}}\ \text{continuous},\ q(0)=q_{\text{start}},\ q(1)=q_{\text{goal}}; \qquad \text{find } T,\ u(\cdot):\ \dot x=f(x,u),\ u(t)\in\mathcal{U},\ x(0)=x_{\text{start}},\ x(T)=x_{\text{goal}},\ q\bigl(x(t)\bigr)\in\mathcal{C}_{\text{free}}\ \forall t\in[0,T]$$
+>
+> where $x$ is the state (the configuration, plus the velocity when the inputs are forces), $u$ the control, $\mathcal{U}$ its allowed set and $f$ the equations of motion. The second problem contains the first, since a path fixes where the robot goes but not when, which ch.9's time scaling supplies.
+>
+> - **Example**: P2's query $A \to B$, solved by $A \to E \to B$: two straight segments, $4.4429$ rad long, with $d \le 0$ at every point.
+> - **Non-example**: ch.9's straight line from $A$ to $B$. Both ends are free, $d = 0$, but its midpoint $(45°, 0°)$ has $d = 0.4142$ m, so it fails the third condition, and no time scaling can repair a path that is not free.
+
 - **Grid/graph search**: discretize C-space, run **A\*** (Dijkstra + admissible heuristic, i.e. a cost-to-go guess that never overestimates the true remaining cost)
   — complete on the grid, and optimal there given an admissible heuristic plus the revisit
-  bookkeeping a closed set needs (the closed set is the nodes already expanded; one must be reopened if a cheaper route to it turns up later; see [[04-robotics/planning-decision-making|4. Planning & Decision-Making]] §3, and for the correctness proof and an implementation [[02-foundations/algorithms/graph-algorithms|11.6 §6]]), but the grid explodes exponentially with dof.
+  bookkeeping a closed set needs (the closed set is the nodes already expanded; one must be reopened if a cheaper route to it turns up later; see [[04-robotics/planning-decision-making|4. Planning & Decision-Making]] §3, and for the definitions of admissible and consistent, the correctness proof and an implementation [[02-foundations/algorithms/graph-algorithms|11.6 §6]]), but the grid explodes exponentially with dof.
 - **Sampling-based planning** — the high-dof workhorses:
   - **RRT**: grow a tree by sampling random configurations and extending toward them;
     RRT\* adds rewiring for asymptotic optimality.
@@ -193,6 +203,16 @@ because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so
   - Guarantee: **probabilistic completeness** — the probability of finding an existing solution
     tends to one as sampling continues. *Resolution* completeness is a different, grid-relative guarantee: it finds a solution if one exists at the chosen discretization resolution (MR §10.1), so a passage narrower than the grid can be missed. Both are weaker than full completeness. No promise about when, or how ugly; hence
     post-smoothing.
+
+> **RRT and PRM, defined.** A **sampling-based planner** is *an algorithm that grows a graph in $\mathcal{C}_{\text{free}}$ from sampled configurations*, defined by three conditions (MR §10.5). **Dense samples**: drawn, usually uniformly, so that they eventually come arbitrarily close to every configuration. **Tested edges**: two configurations are joined only if §2's edge test passes between them. **A growth rule**, where the two differ: an **RRT** grows one tree from $q_{\text{start}}$ for one query, while a **PRM** builds a roadmap before any query and searches it for every later query on the same world.
+>
+> $$\text{RRT: } q_{\text{new}} = q_{\text{near}} + \min\Bigl(1,\ \frac{\epsilon}{\lVert q_{\text{rand}} - q_{\text{near}}\rVert}\Bigr)\,(q_{\text{rand}} - q_{\text{near}}); \qquad \text{PRM: } \{q_i, q\} \text{ is an edge} \iff \bigl(q \in N_k(q_i) \text{ or } q_i \in N_k(q)\bigr) \text{ and the edge test passes}$$
+>
+> where $q_{\text{rand}}$ is the sample, $q_{\text{near}}$ the tree node nearest it, $\epsilon$ the step and $N_k(q_i)$ the $k$ samples nearest $q_i$; the roadmap is undirected, so a node can end with more than $k$ neighbours (MR Algorithm 10.4), and the step is capped to keep each new edge short enough to test.
+>
+> - **Example**: an RRT step from $A$ toward the sample $E$ with $\epsilon = 30°$ lands at $(21.21°, 68.79°)$, $d = -0.068$ m, on a segment kept free by $\theta_1 + \theta_2 = 90°$, which holds the tip at $x = \cos\theta_1 \le 1$. The five-node roadmap is a PRM with every pair tried: a second query, $C \to B$, is answered as $C \to D \to B$, $3.6399$ rad, with no new edge test.
+> - **Non-example**: the same five nodes joined without the edge test. All ten edges stand, Dijkstra returns the direct $A$–$B$ at $3.5124$ rad, and the arm goes $0.4142$ m into the panel. Free samples are half the method; tested edges are the other half.
+
 - Nonholonomic/kinodynamic planning: keep sampling configurations or states, but replace the straight-line local planner with one that respects the constraints — integrate a discrete set of controls, or use Reeds–Shepp curves for cars (MR §10.5.1.3) — when
   velocity constraints bind (cars, [[04-robotics/convex-mpc-legged|legged machines]]).
 
@@ -208,30 +228,48 @@ because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so
 
 ### 2. The collision test, defined
 
-A **configuration collision test** is a *predicate* on a single configuration: given $q$, it returns whether $\mathcal{A}(q) \cap \mathcal{O} \neq \varnothing$, i.e. whether $q \in \mathcal{C}_{\text{obs}}$. It is the only way a planner ever learns about the world; the planner itself has no picture of the obstacle. An **edge test** is the derived predicate on a pair, and the honest version of it is not a predicate at all but an approximation:
+A **configuration collision test** is a *predicate* on a single configuration: given $q$, it returns whether $\mathcal{A}(q) \cap \operatorname{int}\mathcal{O} \neq \varnothing$, i.e. whether $q \in \mathcal{C}_{\text{obs}}$. Testing the interior is this wiki's convention, so that contact counts as free ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]]); MR §10.2.2 states the closed test instead, reporting a collision whenever its signed distance is $\le 0$, contact included. It is the only way a planner ever learns about the world; the planner itself has no picture of the obstacle. Three conditions make it a valid test (MR §10.2.2): it checks the **whole body** $\mathcal{A}(q)$, every link rather than a representative point; it is **exact or conservative**, never reporting a penetrating configuration as free, so an approximation may only grow the robot or the obstacle; and it is **pointwise**, silent about every configuration between two it has tested. An **edge test** is the derived predicate on a pair, and the honest version of it is not a predicate at all but an approximation:
 
 $$\text{edge}(q_1,q_2) \text{ declared free} \iff d\bigl((1-\lambda)q_1 + \lambda q_2\bigr) \le 0 \ \text{ for } \lambda = \tfrac{1}{m+1}, \dots, \tfrac{m}{m+1}$$
 
 because testing a continuum would cost infinitely much, so a finite $m$ stands in for it and the result is only as true as $m$ is large.
 
-- **Example**: P2's test above, three arithmetic lines and one comparison. A real manipulator's is a broad-phase bounding-volume pass followed by a narrow-phase mesh–mesh query, but the interface is the same predicate.
-- **Non-example**: "the tip is outside the wall." That tests one *point* of the robot, not the robot, so it passes any configuration in which a link crosses the obstacle while the tip does not — stand the wall closer than $L_1$ and a folded elbow goes straight through it unseen. For P2 and this wall the two tests happen to agree, and ch.2's derivation is what establishes that; it is not a general licence to test the tip alone.
+- **Example**: P2's test above, three arithmetic lines and one comparison. At $C = (60°, 90°)$ they give $e_x = 0.5$, $p_x = -0.366$ and $d = -0.500$, free; at the $A$–$B$ midpoint $(45°, 0°)$, $p_x = \sqrt2$ and $d = 0.4142$, a collision. A real manipulator's is a broad-phase bounding-volume pass followed by a narrow-phase mesh–mesh query, but the interface is the same predicate.
+- **Non-example**: "the tip is outside the wall." That tests one *point* of the robot, not the robot, so it passes any configuration in which a link crosses the obstacle while the tip does not — stand the wall closer than $L_1$ and a folded elbow goes straight through it unseen. With the wall at $x \ge 0.5$, the folded pose $(0°, 180°)$ puts the tip back at the base, $x = 0$, and passes, while link 1 reaches $x = 1$, half a metre through the wall. For P2 and this wall the two tests happen to agree, and ch.2's derivation is what establishes that; it is not a general licence to test the tip alone.
 - **Why it matters**: every completeness claim in §3 is a claim about this predicate being called on enough points. Planners are usually correct; the discretization of their edge test is what fails.
 
 ### 3. Two completeness guarantees, defined apart
 
-Both are weaker than **completeness** proper, which means: if a solution exists, the algorithm finds one in finite time, and if none exists it says so.
+Both guarantees are weaker than **completeness** proper, so it comes first.
 
-- **Resolution completeness** is relative to a chosen discretization: if a solution exists *that the discretization can represent*, the algorithm finds it. Its failure mode is geometric — a free passage narrower than the grid spacing is invisible, and Step 2 of the worked section shows the same effect on the obstacle, whose area the node sample understates by $5.6$ cells out of $144$.
-- **Probabilistic completeness** is relative to the number of samples: the probability of finding an existing solution tends to $1$ as sampling continues. Its failure mode is temporal — the guarantee names no deadline, so a planner may still be running when the control period ends.
+> **Completeness, defined.** **Completeness** is *a property of a planning algorithm over a class of problems*, not of one run or one path, and it has two conditions (MR §10.1.2). **Success**: if a solution exists, the algorithm finds one in finite time. **Honest failure**: if none exists, it says so in finite time. Both guarantees below weaken the first condition, and neither can certify that no path exists.
+>
+> $$\forall P:\quad \mathrm{Sol}(P) \neq \varnothing \Rightarrow \text{a solution is returned in finite time}, \qquad \mathrm{Sol}(P) = \varnothing \Rightarrow \text{failure is reported in finite time}$$
+>
+> where $P$ ranges over the class and $\mathrm{Sol}(P)$ is the set of solutions of §1's path-planning problem; the quantifier covers every problem, which is why no single run can show completeness.
+>
+> - **Example**: for P2 and this wall, a planner that folds, swings and unfolds. The folded circle $\theta_2 = 180°$ is free at every $\theta_1$, and each slice $\theta_1 = \text{const}$ is blocked on at most one interval, $|\theta_1 + \theta_2| < \arccos(1 - \cos\theta_1)$, which never contains $180°$, so a $\theta_2$-only move joins any free configuration to that circle. That circle is MR §10.3's exact roadmap, and the planner decides every query: $A \to (0°, 180°) \to (90°, 180°) \to B$, $270° = 4.7124$ rad.
+> - **Non-example**: graph search on a sampled roadmap, which looks complete because Dijkstra always stops. Keep only $A$, $B$ and $C$: both edges into $B$ are blocked, so it reports failure while $\mathcal{C}_{\text{free}}$ holds $A \to E \to B$. That failure is a fact about three samples.
 
-$$\lim_{n \to \infty} P[\text{solution found in } n \text{ samples}] = 1$$
+> **Resolution completeness, defined.** **Resolution completeness** is *completeness relative to a chosen discretization*: if a solution exists *that the discretization can represent*, through nodes at spacing $\delta$ and the moves between them, the algorithm finds it, and otherwise it reports failure, for the grid and not for $\mathcal{C}_{\text{free}}$ (MR §10.1.2; A\* on a grid, §10.4). Its failure mode is geometric — a free passage narrower than the grid spacing is invisible, and Step 2 of the worked section shows the same effect on the obstacle, whose area the node sample understates by $5.6$ cells out of $144$.
+>
+> $$\mathrm{Sol}_\delta(P) \neq \varnothing \Rightarrow \text{a grid solution is returned}, \qquad \mathrm{Sol}_\delta(P) = \varnothing \Rightarrow \text{failure is reported}$$
+>
+> where $\mathrm{Sol}_\delta(P)$ holds the paths built from grid moves whose nodes and edges pass the tests. Neither answer transfers by itself, since a path in $\mathcal{C}_{\text{free}}$ need not lie on the grid and a grid path is free only if its edge tests were exact (Step 4).
+>
+> - **Example**: A\* on P2's $30°$ grid, 8-connected, a diagonal step costing $\sqrt2 \times 30°$ and every step edge-tested, joins $A$ to $B$ at $90° + 90°\sqrt2 = 217.3° = 3.7922$ rad. With $123$ free or touching nodes, a failure would have come after at most $123$ expansions.
+> - **Non-example**: reading a grid answer as an answer about $\mathcal{C}_{\text{free}}$. Searched 4-connected, the same nodes give $270° = 4.7124$ rad; each result is exact for its move set, and a grid planner reporting failure at $30°$ would be no more evidence that no path exists.
 
-because the sampler eventually puts points in every region of positive measure, which is also why a passage of *zero* measure — an exactly-touching contact configuration like $A$ or $B$ — is never found by sampling at all and must be supplied by the query.
+> **Probabilistic completeness, defined.** **Probabilistic completeness** is *completeness relative to the number of samples*: the probability of finding an existing solution tends to $1$ as sampling continues (MR §10.1.2). It needs a dense sampler and a solution with clearance, a neighbourhood of positive measure ([[04-robotics/planning-decision-making|4. Planning §5]] calls it robust). Its failure mode is temporal — the guarantee names no deadline, so a planner may still be running when the control period ends.
+>
+> $$\lim_{n \to \infty} P[\text{solution found in } n \text{ samples}] = 1$$
+>
+> because the sampler eventually puts points in every region of positive measure, which is also why a passage of *zero* measure — an exactly-touching contact configuration like $A$ or $B$ — is never found by sampling at all and must be supplied by the query.
+>
+> - **Example**: a PRM that tries each sample against $A$ and $B$. About $25\,\%$ of the torus sees both along free straight edges, $E$ among it, so it fails only if all $n$ uniform draws miss that region, probability about $0.75^n$: $0.056$ at $n = 10$, $0.0032$ at $n = 20$. The five-node roadmap is one such draw, and its $0.058\,\mathrm{rad}$ margin between the best and second-best path is decided by which three samples were drawn.
+> - **Non-example**: an RRT whose sampler always returns the goal. Every step from $A$ toward $B$ enters the panel, $0.038$ m deep after $5°$, so the tree never leaves $A$: probability $0$ for every $n$. Nor is an RRT still running evidence that no path exists; that reads this guarantee as completeness.
 
-- **Example**: the five-node roadmap above is not probabilistically complete at five nodes; it becomes so in the limit. Its margin of $0.058\,\mathrm{rad}$ between the best and second-best path is decided by which three samples were drawn.
-- **Non-example of each**: an RRT that has not returned yet is not evidence that no path exists (that would be reading probabilistic completeness as completeness); a grid planner reporting failure at $30°$ is not evidence either (that would be reading resolution completeness as completeness).
-- **Why it matters**: a paper that reports "the planner failed" has reported a fact about its resolution or its budget, not about the robot's workspace, unless it says which.
+**Why it matters**: a paper that reports "the planner failed" has reported a fact about its resolution or its budget, not about the robot's workspace, unless it says which.
 
 **Wiki connections**: the classical layer that learned policies increasingly *absorb* —
 a [[01-canonical-papers/notes/4-vla/pi0|VLA]] implicitly plans in its forward pass, and
@@ -448,14 +486,34 @@ $$A \to E \to B, \qquad \text{비용 } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = 
 - **프레이밍**: 작업 영역(workspace)의 장애물이 **C-space 장애물**이 된다 — 계획은
   [[04-robotics/modern-robotics/ch02-configuration-space|컨피규레이션 공간]]에서의 항해이고,
   거기서 로봇은 점이다.
+
+> **운동 계획 문제의 정의.** **경로 계획 문제**(path-planning problem)는 *실행 가능 조건이 붙은 질의*다. 시작 자세 $q_{\text{start}}$와 목표 $q_{\text{goal}}$이 주어지면 둘을 잇는 경로를 찾는다(MR §10.1.1). 해는 세 조건을 만족한다. **양 끝이 질의의 컨피규레이션이다.** 도구 자세가 아니라 관절 각이다. **연속이다.** 점의 목록이 아니라 $\mathcal{C}$ 안의 곡선이다. **모든 점이 자유다.** 양 끝만이 아니라 경로 위의 모든 점이 [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]가 정의하는 $\mathcal{C}_{\text{free}}$ 안에 있다. 일반적인 **운동 계획 문제**(motion-planning problem)는 여기에 동역학, 곧 상태와 제어 입력과 지속 시간을 더한다.
+>
+> $$\text{연속 경로 } q:[0,1]\to\mathcal{C}_{\text{free}}\text{를 찾되 } q(0)=q_{\text{start}},\ q(1)=q_{\text{goal}}; \qquad T\text{와 } u(\cdot)\text{를 찾되 } \dot x=f(x,u),\ u(t)\in\mathcal{U},\ x(0)=x_{\text{start}},\ x(T)=x_{\text{goal}},\ q\bigl(x(t)\bigr)\in\mathcal{C}_{\text{free}}\ \forall t\in[0,T]$$
+>
+> 여기서 $x$는 상태(입력이 힘이면 자세에 속도를 더한 것), $u$는 제어 입력, $\mathcal{U}$는 허용 입력 집합, $f$는 운동 방정식이다. 뒤의 문제가 앞의 문제를 품는다. 경로는 로봇이 어디로 가는지만 정하고 언제 가는지는 정하지 않으며, 그것은 9장의 시간 스케일링이 채우기 때문이다.
+>
+> - **예**: P2의 질의 $A \to B$와 그 해 $A \to E \to B$. 직선 선분 둘, 길이 $4.4429$ rad이고 모든 점에서 $d \le 0$이다.
+> - **비예**: 9장의 $A$–$B$ 직선. 양 끝은 $d = 0$으로 자유지만 중간점 $(45°, 0°)$에서 $d = 0.4142$ m라 셋째 조건을 어긴다. 자유가 아닌 경로는 어떤 시간 스케일링으로도 고칠 수 없다.
+
 - **격자/그래프 탐색**: C-space를 이산화하고 **A\***(다익스트라 + 허용 가능 휴리스틱, 즉 실제 남은 비용을 절대 과대추정하지 않는 비용 추정)를
-  돌린다 — 격자 위에서 완전하고, 허용 가능 휴리스틱에 더해 닫힌 집합이 요구하는 재방문 처리까지 갖추면 최적이다. 닫힌 집합은 이미 확장한 노드들이고, 나중에 그중 하나로 가는 더 싼 경로가 나타나면 그 노드를 다시 열어야 한다([[04-robotics/planning-decision-making|4. 계획과 의사결정]] §3. 정확성 증명과 구현은 [[02-foundations/algorithms/graph-algorithms|11.6 §6]]). 다만 격자가 자유도에 지수적으로 폭발한다.
+  돌린다 — 격자 위에서 완전하고, 허용 가능 휴리스틱에 더해 닫힌 집합이 요구하는 재방문 처리까지 갖추면 최적이다. 닫힌 집합은 이미 확장한 노드들이고, 나중에 그중 하나로 가는 더 싼 경로가 나타나면 그 노드를 다시 열어야 한다([[04-robotics/planning-decision-making|4. 계획과 의사결정]] §3. 허용성과 일관성의 정의, 정확성 증명과 구현은 [[02-foundations/algorithms/graph-algorithms|11.6 §6]]). 다만 격자가 자유도에 지수적으로 폭발한다.
 - **샘플링 기반 계획** — 고자유도의 주력:
   - **RRT**: 무작위 컨피규레이션을 샘플링하고 그쪽으로 확장하며 트리를 키운다; RRT\*는
     재배선을 더해 점근적 최적성을 얻는다.
   - **PRM**: 많이 샘플링해 이웃을 로드맵으로 연결한 뒤 질의한다.
   - 보장: **확률적 완전성** — 표본을 계속 뽑으면 존재하는 해를 찾을 확률이 1로 간다. *해상도* 완전성은 격자에 상대적인 다른 보장이다: 선택한 이산화 해상도에서 해가 존재하면 찾는다(MR §10.1). 그래서 격자보다 좁은 통로는 놓칠 수 있다. 둘 다 완전한 완전성보다 약하다. (언제인지, 얼마나 못생겼는지는
     약속 없음; 그래서 사후 평활화를 한다).
+
+> **RRT와 PRM의 정의.** **표본 기반 계획기**(sampling-based planner)는 *표본으로 뽑은 자세들로 $\mathcal{C}_{\text{free}}$ 안에 그래프를 키우는 알고리즘*이고, 정의 조건은 셋이다(MR §10.5). **조밀한 표본**: 대개 균등하게 뽑아서, 결국 모든 자세에 임의로 가까이 다가가게 한다. **검사한 간선**: 두 자세는 그 사이가 §2의 간선 검사를 통과할 때만 잇는다. **성장 규칙**, 둘이 갈리는 곳이다. **RRT**는 질의 하나를 위해 $q_{\text{start}}$에서 트리 하나를 키우고, **PRM**은 질의 전에 로드맵을 만들어 두고 같은 세계에 대한 이후의 질의마다 그것을 탐색한다.
+>
+> $$\text{RRT: } q_{\text{new}} = q_{\text{near}} + \min\Bigl(1,\ \frac{\epsilon}{\lVert q_{\text{rand}} - q_{\text{near}}\rVert}\Bigr)\,(q_{\text{rand}} - q_{\text{near}}); \qquad \text{PRM: } \{q_i, q\}\text{가 간선} \iff \bigl(q \in N_k(q_i)\ \text{또는}\ q_i \in N_k(q)\bigr)\text{이고 간선 검사를 통과}$$
+>
+> 여기서 $q_{\text{rand}}$는 표본, $q_{\text{near}}$는 그에 가장 가까운 트리 노드, $\epsilon$은 보폭, $N_k(q_i)$는 $q_i$에 가장 가까운 표본 $k$개다. 로드맵은 방향 없는 그래프라 한 노드의 이웃이 $k$개보다 많아질 수 있다(MR 알고리즘 10.4). 보폭에 상한을 두는 것은 새 간선을 검사할 수 있을 만큼 짧게 유지하기 위해서다.
+>
+> - **예**: $A$에서 표본 $E$ 쪽으로 $\epsilon = 30°$인 RRT 한 스텝은 $(21.21°, 68.79°)$에 닿고 거기서 $d = -0.068$ m다. 그 선분은 $\theta_1 + \theta_2 = 90°$가 유지되어 말단이 $x = \cos\theta_1 \le 1$에 머물므로 자유다. 다섯 노드 로드맵은 모든 쌍을 시도한 PRM이다. 둘째 질의 $C \to B$에는 새 간선 검사 없이 $C \to D \to B$, $3.6399$ rad으로 답한다.
+> - **비예**: 같은 다섯 노드를 간선 검사 없이 이은 것. 간선 열 개가 모두 서고, 다익스트라는 직통 $A$–$B$를 $3.5124$ rad으로 돌려주며, 팔은 패널 안으로 $0.4142$ m 들어간다. 자유 표본은 방법의 절반이고, 검사한 간선이 나머지 절반이다.
+
 - 비홀로노믹/키노다이나믹 계획: 속도 제약이 물 때도 컨피규레이션이나 상태는 계속 샘플링하되, 직선 국소 계획기를 제약을 지키는 것으로 바꾼다 — 이산 제어 집합을 적분하거나 자동차라면 Reeds–Shepp 곡선을 쓴다(MR §10.5.1.3)(자동차, [[04-robotics/convex-mpc-legged|보행 기계]]).
 
 > [!example] 계산 예제 · Worked example
@@ -470,30 +528,48 @@ $$A \to E \to B, \qquad \text{비용 } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = 
 
 ### 2. 충돌 검사의 정의
 
-**자세 충돌 검사**는 자세 하나에 대한 *술어*다. $q$가 주어지면 $\mathcal{A}(q) \cap \mathcal{O} \neq \varnothing$인지, 즉 $q \in \mathcal{C}_{\text{obs}}$인지를 돌려준다. 계획기가 세계에 대해 배우는 유일한 통로이며, 계획기 자신은 장애물의 그림을 갖고 있지 않다. **간선 검사**는 쌍에 대해 파생된 술어인데, 정직한 형태는 술어가 아니라 근사다:
+**자세 충돌 검사**는 자세 하나에 대한 *술어*다. $q$가 주어지면 $\mathcal{A}(q) \cap \operatorname{int}\mathcal{O} \neq \varnothing$인지, 즉 $q \in \mathcal{C}_{\text{obs}}$인지를 돌려준다. 내부와 견주는 것은 접촉을 자유로 세려는 이 위키의 약속이고([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]), MR §10.2.2는 대신 닫힌 검사를 적어 부호 있는 거리가 $0$ 이하이면, 곧 접촉까지 충돌로 보고한다. 계획기가 세계에 대해 배우는 유일한 통로이며, 계획기 자신은 장애물의 그림을 갖고 있지 않다. 유효한 검사가 되는 조건은 셋이다(MR §10.2.2). **몸 전체** $\mathcal{A}(q)$를 본다. 대표점 하나가 아니라 모든 링크다. **정확하거나 보수적**이다. 파고든 자세를 자유라고 보고하는 일이 없어야 하므로, 근사는 로봇이나 장애물을 키우는 쪽으로만 한다. **점별**이다. 검사한 두 자세 사이의 자세에 대해서는 아무것도 말하지 않는다. **간선 검사**는 쌍에 대해 파생된 술어인데, 정직한 형태는 술어가 아니라 근사다:
 
 $$\text{간선}(q_1,q_2)\text{을 자유로 선언} \iff \lambda = \tfrac{1}{m+1}, \dots, \tfrac{m}{m+1}\text{에서 } d\bigl((1-\lambda)q_1 + \lambda q_2\bigr) \le 0$$
 
 연속체를 검사하면 비용이 무한이므로 유한한 $m$이 그 자리를 대신하고, 결과는 $m$이 큰 만큼만 참이기 때문이다.
 
-- **예**: 위의 P2 검사, 산술 세 줄과 비교 하나. 실제 매니퓰레이터의 검사는 경계 부피 광역 탐색 뒤 메시-메시 정밀 질의지만 인터페이스는 같은 술어다.
-- **반례**: "말단이 벽 밖에 있다". 이것은 로봇이 아니라 로봇의 *점 하나*를 검사한다. 말단은 넘지 않는데 링크가 장애물을 가로지르는 자세를 그대로 통과시킨다. 벽을 $L_1$보다 가까이 세우면 접은 엘보가 아무 신호 없이 벽을 통과한다. P2와 이 벽에서는 두 검사가 우연히 일치하고, 그것을 세우는 것이 2장의 유도다. 말단만 검사해도 된다는 일반 면허가 아니다.
+- **예**: 위의 P2 검사, 산술 세 줄과 비교 하나. $C = (60°, 90°)$에서는 $e_x = 0.5$, $p_x = -0.366$, $d = -0.500$으로 자유이고, $A$–$B$ 중간점 $(45°, 0°)$에서는 $p_x = \sqrt2$, $d = 0.4142$로 충돌이다. 실제 매니퓰레이터의 검사는 경계 부피 광역 탐색 뒤 메시-메시 정밀 질의지만 인터페이스는 같은 술어다.
+- **반례**: "말단이 벽 밖에 있다". 이것은 로봇이 아니라 로봇의 *점 하나*를 검사한다. 말단은 넘지 않는데 링크가 장애물을 가로지르는 자세를 그대로 통과시킨다. 벽을 $L_1$보다 가까이 세우면 접은 엘보가 아무 신호 없이 벽을 통과한다. 벽이 $x \ge 0.5$에 있으면 접은 자세 $(0°, 180°)$는 말단을 베이스 자리 $x = 0$으로 되돌려 검사를 통과하지만, 링크 1은 $x = 1$까지 뻗어 벽을 반 미터 관통한다. P2와 이 벽에서는 두 검사가 우연히 일치하고, 그것을 세우는 것이 2장의 유도다. 말단만 검사해도 된다는 일반 면허가 아니다.
 - **왜 중요한가**: §3의 모든 완전성 주장은 이 술어가 충분히 많은 점에서 불린다는 주장이다. 계획기는 보통 옳고, 무너지는 것은 간선 검사의 이산화다.
 
 ### 3. 완전성 보장 둘을 갈라 정의하기
 
-둘 다 진짜 **완전성**보다 약하다. 완전성이란 해가 있으면 유한 시간에 찾고 없으면 없다고 말하는 성질이다.
+두 보장 모두 진짜 **완전성**보다 약하므로, 완전성부터 정의한다.
 
-- **해상도 완전성**은 고른 이산화에 상대적이다. *그 이산화가 표현할 수 있는* 해가 존재하면 찾는다. 실패 방식은 기하적이다. 격자 간격보다 좁은 자유 통로는 보이지 않고, 위 2단계는 같은 효과를 장애물 쪽에서 보여 준다. 노드 표본이 그 넓이를 $144$칸 중 $5.6$칸만큼 적게 말한다.
-- **확률적 완전성**은 표본 수에 상대적이다. 표본을 계속 뽑으면 존재하는 해를 찾을 확률이 $1$로 간다. 실패 방식은 시간적이다. 보장에 기한이 없어서, 제어 주기가 끝나도 계획기가 아직 돌고 있을 수 있다.
+> **완전성의 정의.** **완전성**(completeness)은 실행 한 번이나 경로 하나가 아니라 *문제 부류 전체에 대한 계획 알고리즘의 성질*이고, 조건은 둘이다(MR §10.1.2). **성공**: 해가 있으면 유한 시간에 하나를 찾는다. **정직한 실패**: 해가 없으면 유한 시간에 없다고 말한다. 아래의 두 보장은 첫 조건을 약하게 만들고, 어느 쪽도 경로가 없다는 것을 보증하지 못한다.
+>
+> $$\forall P:\quad \mathrm{Sol}(P) \neq \varnothing \Rightarrow \text{유한 시간에 해를 돌려준다}, \qquad \mathrm{Sol}(P) = \varnothing \Rightarrow \text{유한 시간에 실패를 보고한다}$$
+>
+> 여기서 $P$는 부류 안의 모든 문제를 돌고, $\mathrm{Sol}(P)$는 §1의 경로 계획 문제의 해 집합이다. 한정사가 모든 문제에 걸리므로 실행 한 번으로는 완전성을 보일 수 없다.
+>
+> - **예**: P2와 이 벽에 대해서는 접고, 돌리고, 펴는 계획기. 접은 원 $\theta_2 = 180°$는 모든 $\theta_1$에서 자유이고, 각 단면 $\theta_1 = \text{const}$는 많아야 구간 하나 $|\theta_1 + \theta_2| < \arccos(1 - \cos\theta_1)$에서 막히며 그 구간은 $180°$를 품지 않는다. 그래서 $\theta_2$만 움직이면 어떤 자유 자세도 그 원에 이어진다. 그 원이 MR §10.3의 정확한 로드맵이고, 계획기는 모든 질의를 판정한다. $A \to (0°, 180°) \to (90°, 180°) \to B$, $270° = 4.7124$ rad.
+> - **비예**: 표본 로드맵 위의 그래프 탐색. 다익스트라는 늘 멈추므로 완전해 보인다. $A$, $B$, $C$만 남기면 $B$로 드는 간선 둘이 모두 막혀 실패를 보고하지만, $\mathcal{C}_{\text{free}}$에는 $A \to E \to B$가 있다. 그 실패는 표본 셋에 대한 사실이다.
 
-$$\lim_{n \to \infty} P[\text{표본 } n \text{개 안에 해를 찾음}] = 1$$
+> **해상도 완전성의 정의.** **해상도 완전성**(resolution completeness)은 *고른 이산화에 상대적인 완전성*이다. 간격 $\delta$의 노드와 그 사이 이동으로 *그 이산화가 표현할 수 있는* 해가 존재하면 찾고, 없으면 실패를 보고한다. $\mathcal{C}_{\text{free}}$가 아니라 그 격자에 대해서다(MR §10.1.2, 격자 위의 A\*는 §10.4). 실패 방식은 기하적이다. 격자 간격보다 좁은 자유 통로는 보이지 않고, 위 2단계는 같은 효과를 장애물 쪽에서 보여 준다. 노드 표본이 그 넓이를 $144$칸 중 $5.6$칸만큼 적게 말한다.
+>
+> $$\mathrm{Sol}_\delta(P) \neq \varnothing \Rightarrow \text{격자 위의 해를 돌려준다}, \qquad \mathrm{Sol}_\delta(P) = \varnothing \Rightarrow \text{실패를 보고한다}$$
+>
+> 여기서 $\mathrm{Sol}_\delta(P)$는 노드와 간선이 검사를 통과한 격자 이동으로 만든 경로의 집합이다. 어느 답도 저절로 옮겨 가지 않는다. $\mathcal{C}_{\text{free}}$의 경로가 격자 위에 있을 필요는 없고, 격자 경로는 간선 검사가 정확했을 때만 자유이기 때문이다(4단계).
+>
+> - **예**: P2의 $30°$ 격자 위의 A\*. 8연결이고 대각 이동의 비용은 $\sqrt2 \times 30°$이며 모든 이동에 간선 검사를 한다. $A$와 $B$를 $90° + 90°\sqrt2 = 217.3° = 3.7922$ rad으로 잇는다. 자유이거나 닿는 노드가 $123$개이므로, 실패였다면 확장 $123$번 안에 보고했을 것이다.
+> - **비예**: 격자의 답을 $\mathcal{C}_{\text{free}}$에 대한 답으로 읽는 것. 같은 노드를 4연결로 탐색하면 $270° = 4.7124$ rad이 나온다. 각 결과는 제 이동 집합에 대해서만 정확하고, $30°$에서 실패를 보고한 격자 계획기도 경로가 없다는 증거가 못 된다.
 
-표본기가 결국 양의 측도를 가진 모든 영역에 점을 놓기 때문이다. 바로 그래서 측도가 *0*인 통로 — $A$나 $B$처럼 정확히 닿는 접촉 자세 — 는 샘플링으로 영영 찾을 수 없고 질의가 직접 넣어 주어야 한다.
+> **확률적 완전성의 정의.** **확률적 완전성**(probabilistic completeness)은 *표본 수에 상대적인 완전성*이다. 표본을 계속 뽑으면 존재하는 해를 찾을 확률이 $1$로 간다(MR §10.1.2). 표본기가 조밀해야 하고, 해가 여유, 곧 양의 측도를 가진 근방을 가져야 한다([[04-robotics/planning-decision-making|4. 계획 §5]]는 이런 해를 robust하다고 한다). 실패 방식은 시간적이다. 보장에 기한이 없어서, 제어 주기가 끝나도 계획기가 아직 돌고 있을 수 있다.
+>
+> $$\lim_{n \to \infty} P[\text{표본 } n \text{개 안에 해를 찾음}] = 1$$
+>
+> 표본기가 결국 양의 측도를 가진 모든 영역에 점을 놓기 때문이다. 바로 그래서 측도가 *0*인 통로 — $A$나 $B$처럼 정확히 닿는 접촉 자세 — 는 샘플링으로 영영 찾을 수 없고 질의가 직접 넣어 주어야 한다.
+>
+> - **예**: 표본마다 $A$와 $B$에 이어 보는 PRM. 원환면의 약 $25\,\%$가 자유 직선 간선으로 둘을 모두 보고 $E$도 그 안에 있으므로, 이 계획기가 실패하려면 균등 추출 $n$번이 모두 그 영역을 빗나가야 하고, 그 확률은 약 $0.75^n$, 곧 $n = 10$에서 $0.056$, $n = 20$에서 $0.0032$다. 다섯 노드 로드맵은 그런 한 번의 추출이고, 최선과 차선 사이 $0.058\,\mathrm{rad}$의 여유는 어떤 표본 셋이 뽑혔는지가 결정한다.
+> - **비예**: 표본기가 늘 목표만 돌려주는 RRT. $A$에서 $B$ 쪽으로 가는 모든 스텝이 패널 안으로 들어가고, $5°$만 가도 $0.038$ m 깊이다. 그래서 트리는 $A$를 떠나지 못하고, 확률은 모든 $n$에서 $0$이다. 아직 돌고 있는 RRT도 경로가 없다는 증거가 아니다. 그렇게 읽으면 이 보장을 완전성으로 읽은 것이다.
 
-- **예**: 위의 다섯 노드 로드맵은 다섯 개에서는 확률적으로 완전하지 않고 극한에서 그렇게 된다. 최선과 차선 사이 $0.058\,\mathrm{rad}$의 여유는 어떤 표본 셋이 뽑혔는지가 결정한다.
-- **각각의 반례**: 아직 돌아오지 않은 RRT는 경로가 없다는 증거가 아니다(확률적 완전성을 완전성으로 읽은 것). $30°$에서 실패를 보고한 격자 계획기도 증거가 아니다(해상도 완전성을 완전성으로 읽은 것).
-- **왜 중요한가**: "계획기가 실패했다"고 보고한 논문은 어느 쪽인지 밝히지 않는 한 로봇의 작업 영역이 아니라 자기 해상도나 자기 예산에 관한 사실을 보고한 것이다.
+**왜 중요한가**: "계획기가 실패했다"고 보고한 논문은 어느 쪽인지 밝히지 않는 한 로봇의 작업 영역이 아니라 자기 해상도나 자기 예산에 관한 사실을 보고한 것이다.
 
 **위키 연결**: 학습된 정책이 점점 *흡수*하는 고전 계층 —
 [[01-canonical-papers/notes/4-vla/pi0|VLA]]는 forward pass 안에서 암묵적으로 계획하고,

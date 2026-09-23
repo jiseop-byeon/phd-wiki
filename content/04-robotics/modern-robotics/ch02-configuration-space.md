@@ -142,15 +142,37 @@ They are the same point of task space and two different points of C-space, and t
 
 ### 1. Configuration, degrees of freedom, and Grübler
 
+*In one sentence:* a robot's configuration space is the set of its complete configurations, its dimension is the dof that Grübler's formula counts, its shape — a torus for P2 — decides which configurations are near each other, and the task space and workspace are different sets again, sets of tool configurations.
+
 - **Configuration** = a complete specification of every point of the robot; the minimum
   number of coordinates needed = **degrees of freedom (dof)**. C-space = the set of all
   configurations.
 - **Grübler's formula**: for a mechanism of $N$ links **counting the ground link** and $J$ joints with joint freedoms $f_i$:
   $\text{dof} = m(N - 1 - J) + \sum_i f_i$ ($m = 3$ planar, $6$ spatial). Worked: the planar
   four-bar → $3(4-1-4)+4 = 1$ dof — one number describes the whole mechanism.
+
+> **Configuration space and degrees of freedom, defined.** The **configuration space** (C-space) $\mathcal{C}$ is *a set*: every configuration the robot can take, where a **configuration** is a **complete** specification of the position of every point of the robot. The **degrees of freedom** are *a number*, the dimension of $\mathcal{C}$: the **smallest** count of **real-valued** coordinates that represents a configuration (MR Def. 2.1). Grübler's formula counts it for rigid links and joints (MR §2.2.2):
+>
+> $$\text{dof} = m(N - 1 - J) + \sum_{i=1}^{J} f_i$$
+>
+> where $m$ is a free rigid body's dof ($3$ planar, $6$ spatial), $N$ the links **with the ground counted**, $J$ the joints and $f_i$ joint $i$'s freedoms; the $N - 1$ moving links start with $m(N-1)$ freedoms and each joint removes $m - f_i$, so the count is exact only when those removals are **independent**, and a lower bound otherwise.
+>
+> - **Example**: P2, $3(3 - 1 - 2) + 2 = 2$: $(\theta_1, \theta_2)$ is a complete configuration.
+> - **Non-example**: the tip position $(1,1)$, two real numbers but not a configuration: $(0°, 90°)$ and $(90°, -90°)$ both put the tip there (Step 6). A policy whose state is the tip cannot tell A, link 2 flush on the face, from B, touching only at the tip.
+
 - **Topology matters**: a 2R arm's C-space is a torus ($T^2 = S^1 \times S^1$), not a plane —
   angles wrap. This is exactly why naive angle regression breaks
   ([[02-foundations/se3-geometry|8. SE(3) §2]]) and why "C-space distance" needs care.
+
+> **C-space topology, defined.** The **topology** of a C-space is *a property of the space itself*, not of its coordinates: two spaces share it when one can be **deformed continuously** into the other **without cutting or gluing** (MR §2.3.1). Two facts fix it for a 2R arm: each angle **wraps**, $\theta_i$ and $\theta_i + 360°$ being one configuration, so each joint lives on a circle $S^1$; and the joints are **independent**, so the space is the product of the circles.
+>
+> $$\mathcal{C}_{\text{P2}} = S^1 \times S^1 = T^2, \qquad (\theta_1,\ \theta_2) \sim (\theta_1 + 360°\,k_1,\ \theta_2 + 360°\,k_2),\ \ k_1, k_2 \in \mathbb{Z}$$
+>
+> where $T^2$ is the torus and $\sim$ reads "is the same configuration as"; it is a torus because P2 has no joint limits, which would turn each circle into a closed interval.
+>
+> - **Example**: $(170°, 0°)$ and $(-170°, 0°)$ are $20°$ apart on the torus; the short move swings the straight arm past $\theta_1 = 180°$, away from the panel, and stays free.
+> - **Non-example**: the square chart read as the plane $\mathbb{R}^2$. There the two points are $340°$ apart, and the straight line between them passes $\theta_1 = 0$, where the straight arm is $1\,\mathrm{m}$ inside the panel: a planner interpolating in the chart takes the long way, through the wall.
+
 - Representations: **explicit** (minimal coordinates, may have singularities — e.g. Euler angles at gimbal lock, where two of the three angles turn the same axis; [[02-foundations/se3-geometry|SE(3) §2]]) vs
   **implicit** (embed in higher-dim space + constraints — like rotation matrices with
   $R^\top R = I$). MR consistently chooses implicit — the same choice modern robot
@@ -163,6 +185,15 @@ They are the same point of task space and two different points of C-space, and t
   for a given arm. A target 2 m from the base of an arm with 1 m of reach is a valid point
   of the task space but not of that arm's workspace.
 
+> **Task space and workspace, defined.** Both are *sets of end-effector configurations*, not of robot configurations, each written in the end-effector freedoms the user chooses to represent (MR §2.5). The **task space** $\mathcal{X}$ is where the task is naturally written, **chosen by the task** independently of the robot. The **workspace** $\mathcal{W}$ is the set of end-effector configurations the robot **can reach**, fixed by its structure independently of the task.
+>
+> $$\mathcal{W} = \{\, f(\theta) \;:\; \theta \in \mathcal{C} \,\}$$
+>
+> where $f$ is the forward kinematics of [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]] in the coordinates chosen for $\mathcal{W}$, so the workspace is the image of the C-space; when $\mathcal{X}$ and $\mathcal{W}$ share coordinates, a task point outside $\mathcal{W}$ is infeasible. The **reachable workspace** $f(\mathcal{C}_{\text{free}})$ keeps only §2's free configurations.
+>
+> - **Example**: "put the tip on $(1,1)$" lives in $\mathcal{X} = \mathbb{R}^2$, where P2's workspace is the disc of radius $L_1 + L_2 = 2\,\mathrm{m}$; $(1,1)$, at $1.414\,\mathrm{m}$, is inside. With the panel the reachable workspace is the part with $x \le 1$, and $(1,1)$ lies on its edge.
+> - **Non-example**: the pose $(1, 1, 45°)$, tip on target with tool heading $\theta_1 + \theta_2 = 45°$, in the task space $\mathbb{R}^2 \times S^1$. In those coordinates P2's workspace has only headings $0°$ (B) and $90°$ (A) at $(1,1)$; $45°$ would put the elbow at $(0.293, 0.293)$, $0.414\,\mathrm{m}$ from the base instead of $1$. A reachable point with a prescribed tool angle can still be infeasible.
+
 > [!example] Worked example · 계산 예제
 > Grübler: $\text{dof} = m(N-1-J) + \sum_i f_i$, with the ground counted in $N$.
 > - **Planar four-bar** (MR Example 2.3): $m = 3$, links $N = 4$ (ground + crank + coupler + rocker), $J = 4$ revolute joints, each $f_i = 1$. $3(4-1-4) + 4 = -3 + 4 = 1$. Fix the crank angle and the whole loop is determined.
@@ -172,19 +203,23 @@ They are the same point of task space and two different points of C-space, and t
 
 ### 2. C-obstacles and free space, defined
 
-A **C-obstacle** is a *subset of the configuration space*, not of the workspace. Given a rigid obstacle $\mathcal{O}$ in the world and the set $\mathcal{A}(\theta)$ of world points the robot body occupies at configuration $\theta$, the definition has exactly two conditions — it is a set of configurations, and membership is decided by intersection of bodies:
+A **C-obstacle** is a *subset of the configuration space*, not of the workspace. Given a rigid obstacle $\mathcal{O}$ in the world and the set $\mathcal{A}(\theta)$ of world points the robot body occupies at configuration $\theta$, the definition has three conditions — it is a set of configurations; membership is decided by intersection of bodies; and only **penetration** counts, so the body must meet the obstacle's interior $\operatorname{int}\mathcal{O}$ and a configuration that merely touches the surface stays free (MR §10.1). Counting contact as free is this wiki's choice, since the running task ends in contact; MR is not uniform here, for its collision test counts $d = 0$ as collision (§10.2.2), §10.3 adds the boundary to $\mathcal{C}_{\text{free}}$ only as an exception, and §13.3.2.1 takes free space open and obstacles closed, as MoveIt's planning scene does by treating contact as failure ([[04-robotics/ros2/manipulation-moveit2|25.8 MoveIt 2]]). Joint limits, where a robot has them, are C-obstacles too (MR §10.2.1), or they cut each circle to an interval as in §1's topology box (MR §2.3.1); MR models them either way, and P2 has none:
 
-$$\mathcal{C}_{\text{obs}} = \{\,\theta \in \mathcal{C} \;:\; \mathcal{A}(\theta) \cap \mathcal{O} \neq \varnothing\,\}, \qquad \mathcal{C}_{\text{free}} = \mathcal{C} \setminus \mathcal{C}_{\text{obs}}$$
+$$\mathcal{C}_{\text{obs}} = \{\,\theta \in \mathcal{C} \;:\; \mathcal{A}(\theta) \cap \operatorname{int}\mathcal{O} \neq \varnothing\,\}, \qquad \mathcal{C}_{\text{free}} = \mathcal{C} \setminus \mathcal{C}_{\text{obs}}$$
 
-where $\mathcal{C}$ is the whole configuration space, so $\mathcal{C}_{\text{free}}$ is everything the robot may legally be. The point of the definition is that it turns a robot of some shape moving among obstacles into a *point* moving in $\mathcal{C}_{\text{free}}$, which is why every planner in [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]] is written for a point.
+where $\mathcal{C}$ is the whole configuration space and, for the panel, $\operatorname{int}\mathcal{O}$ is $x > 1$, the collision test of the Running plant, so $\mathcal{C}_{\text{free}}$ is everything the robot may legally be, contact included. The point of the definition is that it turns a robot of some shape moving among obstacles into a *point* moving in $\mathcal{C}_{\text{free}}$, which is why every planner in [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]] is written for a point.
 
 - **Example**: the lens derived above, $\{\cos\theta_1 + \cos(\theta_1{+}\theta_2) > 1\}$, occupying 18.478 % of P2's torus. It was obtained not by drawing the wall in C-space — the wall has no picture there — but by evaluating the workspace collision test at each configuration.
-- **Non-example**: the wall itself, $\{x \ge 1\}$. A workspace region is not a C-obstacle, and the two do not even have the same dimension in general; a point obstacle in a 2-D workspace becomes a *curve* in a 2-D C-space.
+- **Non-example**: the wall itself, $\{x \ge 1\}$. A workspace region is not a C-obstacle, and the two do not even have the same dimension in general; a point obstacle in a 2-D workspace becomes a *curve* in a 2-D C-space. Nor does touching the wall put a configuration in the C-obstacle: at the contact pose A $= (0°, 90°)$ all of link 2 lies on $x = 1$, inside $\{x \ge 1\}$, yet $d = 0$, so A is on the lens's boundary and in $\mathcal{C}_{\text{free}}$.
 - **Why it matters**: the shape of $\mathcal{C}_{\text{obs}}$, not the shape of the wall, decides whether a planner's straight-line edge is legal. [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]] checks exactly this set, and this page is where its test comes from.
 
 ### 3. Holonomic and nonholonomic constraints, defined
 
-A **constraint** on a mechanism is a condition its motion must satisfy. Two kinds, distinguished by one test — whether the condition can be written without velocities.
+A **constraint** on a mechanism is a condition its motion must satisfy. Two kinds, distinguished by one test — whether the condition can be written without velocities. Both can be put in the same velocity form, a **Pfaffian constraint**, and the test asks whether that form integrates (MR §2.4):
+
+$$A(\theta)\,\dot\theta = 0, \qquad \text{holonomic (integrable)} \iff A(\theta) = M(\theta)\,\frac{\partial g}{\partial\theta}(\theta)\ \text{for some } g \text{ and invertible } M(\theta)$$
+
+where $\theta \in \mathbb{R}^n$, $A(\theta)$ is $k \times n$ with one row per constraint, $g: \mathbb{R}^n \to \mathbb{R}^k$, and $M(\theta)$ is an invertible $k \times k$ matrix, an integrating factor (MR states the case $M = I$); the test has this form because differentiating $g(\theta(t)) = 0$ in time gives exactly $\frac{\partial g}{\partial\theta}\dot\theta = 0$, so an integrable velocity constraint says nothing that $g(\theta) = 0$ did not. On P2 at the catalog pose $(0°, 90°)$ the contact constraint gives $A(\theta) = (-1,\ -1)$: the only allowed joint rates are multiples of $(1, -1)$, and $(1, -1)\,\mathrm{rad/s}$ slides the tip up the face at $(0, 1)\,\mathrm{m/s}$.
 
 - A **holonomic constraint** is an equation on configuration alone, $g(\theta) = 0$. Each independent one reduces the dimension of the configuration space by one, because it confines $\theta$ to a level set of $g$. *Example*: P2's tip held on the panel face, $\cos\theta_1 + \cos(\theta_1{+}\theta_2) = 1$, leaving a 1-D contact curve. *Example*: a closed loop, which is why the four-bar has 1 dof and not 4.
 - A **nonholonomic constraint** is an equation on velocity, $A(\theta)\dot\theta = 0$, that is *not* the time derivative of any $g(\theta) = 0$. It removes a direction of motion at every configuration but removes no dimension from the reachable set. *Example*: a wheel that cannot slide sideways ([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|ch.13]]): a car reaches every pose, just not along every path.
@@ -352,14 +387,36 @@ $$A = \int_{-\pi/2}^{\pi/2} 2\arccos(1 - \cos u)\,du = 7.2949\ \mathrm{rad}^2$$
 
 ### 1. 컨피규레이션·자유도·그뤼블러
 
+*한 문장으로:* 로봇의 컨피규레이션 공간은 완전한 컨피규레이션들의 집합이고, 그 차원이 그뤼블러 공식이 세는 자유도이며, 그 모양 — P2에서는 원환면 — 이 어떤 컨피규레이션끼리 가까운지를 정하고, 작업 공간과 작업 영역은 또 다른 집합, 곧 도구 컨피규레이션의 집합이다.
+
 - **컨피규레이션** = 로봇 모든 점의 완전한 지정; 필요한 최소 좌표 수 = **자유도(dof)**.
   C-space = 모든 컨피규레이션의 집합.
 - **그뤼블러 공식**: **접지 링크를 포함해** 링크 $N$개, 관절 $J$개, 관절 자유도 $f_i$인 기구에서
   $\text{dof} = m(N - 1 - J) + \sum_i f_i$ ($m = 3$ 평면, $6$ 공간). 계산 예: 평면 4절
   링크 → $3(4-1-4)+4 = 1$ 자유도 — 숫자 하나가 기구 전체를 기술한다.
+
+> **컨피규레이션 공간과 자유도의 정의.** **컨피규레이션 공간**(configuration space, C-space) $\mathcal{C}$는 *집합*으로, 로봇이 취할 수 있는 모든 컨피규레이션을 모은 것이다. **컨피규레이션**은 로봇 모든 점의 위치를 **완전히** 정한 것이다. **자유도**(degrees of freedom, dof)는 *수*, 곧 $\mathcal{C}$의 차원이며, 컨피규레이션을 나타내는 **실숫값** 좌표의 **최소** 개수다(MR 정의 2.1). 강체 링크와 관절로 된 기구라면 그뤼블러 공식이 이것을 센다(MR §2.2.2).
+>
+> $$\text{dof} = m(N - 1 - J) + \sum_{i=1}^{J} f_i$$
+>
+> 여기서 $m$은 자유로운 강체의 자유도(평면 $3$, 공간 $6$), $N$은 **접지를 포함한** 링크 수, $J$는 관절 수, $f_i$는 관절 $i$의 자유도다. 움직이는 링크 $N - 1$개가 자유도 $m(N-1)$에서 출발하고 관절마다 $m - f_i$개를 빼앗으므로, 빼앗는 것들이 **서로 독립**일 때에만 정확하고 아니면 하한이다.
+>
+> - **예**: P2는 $3(3 - 1 - 2) + 2 = 2$이다. $(\theta_1, \theta_2)$가 완전한 컨피규레이션이다.
+> - **비예**: 말단 위치 $(1,1)$. 실수 두 개이지만 컨피규레이션이 아니다. $(0°, 90°)$과 $(90°, -90°)$이 모두 말단을 거기 둔다(6단계). 말단만 상태로 쥔 정책은 링크 2가 면에 붙은 A와 말단만 닿는 B를 구별하지 못한다.
+
 - **위상이 중요하다**: 2R 팔의 C-space는 평면이 아니라 원환면($T^2 = S^1 \times S^1$) —
   각도는 감긴다. 순진한 각도 회귀가 깨지는 정확한 이유이고
   ([[02-foundations/se3-geometry|8. SE(3) §2]]), "C-space 거리"에 주의가 필요한 이유다.
+
+> **C-space 위상의 정의.** C-space의 **위상**(topology)은 좌표가 아니라 *공간 자체의 성질*이다. 한 공간을 **자르거나 붙이지 않고 연속으로 변형**해 다른 공간을 만들 수 있으면 두 공간은 위상이 같다(MR §2.3.1). 2R 팔의 위상은 두 사실이 정한다. 각은 **감긴다**. $\theta_i$와 $\theta_i + 360°$가 같은 컨피규레이션이므로 관절마다 원 $S^1$ 위에 산다. 그리고 두 관절은 **서로 독립**이라 공간은 두 원의 곱이다.
+>
+> $$\mathcal{C}_{\text{P2}} = S^1 \times S^1 = T^2, \qquad (\theta_1,\ \theta_2) \sim (\theta_1 + 360°\,k_1,\ \theta_2 + 360°\,k_2),\ \ k_1, k_2 \in \mathbb{Z}$$
+>
+> 여기서 $T^2$는 원환면이고 $\sim$는 "같은 컨피규레이션이다"로 읽는다. P2에 관절 한계가 없어서 원환면이다. 한계가 있으면 각 원이 닫힌 구간으로 바뀐다.
+>
+> - **예**: $(170°, 0°)$과 $(-170°, 0°)$은 원환면에서 $20°$ 떨어져 있다. 짧은 이동은 곧게 편 팔을 패널 반대쪽으로, $\theta_1 = 180°$를 지나 돌리고 내내 자유롭다.
+> - **비예**: 정사각형 도표를 평면 $\mathbb{R}^2$로 읽는 것. 거기서 두 점은 $340°$ 떨어져 있고, 둘을 잇는 직선은 곧게 편 팔이 패널 안 $1\,\mathrm{m}$에 있는 $\theta_1 = 0$을 지난다. 도표에서 보간하는 계획기는 먼 길로, 벽을 뚫고 간다.
+
 - 표현: **명시적**(최소 좌표, 특이점 가능 — 예: 짐벌 락에서 세 오일러 각 중 둘이 같은 축을 돌리게 된다; [[02-foundations/se3-geometry|SE(3) §2]]) vs **암시적**(고차원에 묻고 제약 추가 —
   $R^\top R = I$인 회전 행렬처럼). MR은 일관되게 암시적을 고른다 — 현대 로봇 학습과 같은
   선택이다.
@@ -370,6 +427,15 @@ $$A = \int_{-\pi/2}^{\pi/2} 2\arccos(1 - \cos u)\,du = 7.2949\ \mathrm{rad}^2$$
   바로 그 팔로는 그 과제를 못 한다는 뜻이다. 도달 거리가 1 m인 팔의 베이스에서 2 m 떨어진
   목표는 작업 공간의 올바른 점이지만 그 팔의 작업 영역에는 속하지 않는다.
 
+> **작업 공간과 작업 영역의 정의.** 둘 다 로봇의 컨피규레이션이 아니라 *말단 장치 컨피규레이션의 집합*이고, 둘 다 사용자가 나타내기로 고른 말단 장치 자유도로 쓴다(MR §2.5). **작업 공간**(task space) $\mathcal{X}$는 과제를 자연스럽게 쓰는 공간이고, 로봇과 무관하게 **과제가 고른다**. **작업 영역**(workspace) $\mathcal{W}$는 로봇이 **도달할 수 있는** 말단 장치 컨피규레이션의 집합이고, 과제와 무관하게 로봇의 구조가 정한다.
+>
+> $$\mathcal{W} = \{\, f(\theta) \;:\; \theta \in \mathcal{C} \,\}$$
+>
+> 여기서 $f$는 [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 순기구학을 $\mathcal{W}$에 고른 좌표로 쓴 것이므로, 작업 영역은 C-space의 상이다. $\mathcal{X}$와 $\mathcal{W}$가 좌표를 공유하면 $\mathcal{W}$ 밖의 과제 점은 실행 불가능하다. **도달 작업 영역**(reachable workspace) $f(\mathcal{C}_{\text{free}})$는 §2의 자유 컨피규레이션만 남긴다.
+>
+> - **예**: "말단을 $(1,1)$에 둔다"는 $\mathcal{X} = \mathbb{R}^2$에서 쓰고, 거기서 P2의 작업 영역은 반지름 $L_1 + L_2 = 2\,\mathrm{m}$인 원판이다. $1.414\,\mathrm{m}$ 거리의 $(1,1)$은 그 안에 있다. 패널이 있으면 도달 작업 영역은 그중 $x \le 1$인 부분이고, $(1,1)$은 그 가장자리에 있다.
+> - **비예**: 자세 $(1, 1, 45°)$, 곧 말단은 목표에 두고 도구 방향 $\theta_1 + \theta_2$를 $45°$로 정한, 작업 공간 $\mathbb{R}^2 \times S^1$의 점. 그 좌표로 쓴 P2의 작업 영역에서 $(1,1)$의 방향은 $0°$(B)와 $90°$(A)뿐이고, $45°$라면 엘보가 베이스에서 $1$이 아니라 $0.414\,\mathrm{m}$ 떨어진 $(0.293, 0.293)$에 놓여야 한다. 도달할 수 있는 점이라도 도구 각도까지 정하면 실행 불가능할 수 있다.
+
 > [!example] 계산 예제 · Worked example
 > 그뤼블러: $\text{dof} = m(N-1-J) + \sum_i f_i$, 접지는 $N$에 포함한다.
 > - **평면 4절 링크**(MR 예제 2.3): $m = 3$, 링크 $N = 4$(접지 + 크랭크 + 커플러 + 로커), 회전관절 $J = 4$, 각 $f_i = 1$. $3(4-1-4) + 4 = -3 + 4 = 1$. 크랭크 각 하나를 정하면 루프 전체가 정해진다.
@@ -379,23 +445,27 @@ $$A = \int_{-\pi/2}^{\pi/2} 2\arccos(1 - \cos u)\,du = 7.2949\ \mathrm{rad}^2$$
 
 ### 2. C-장애물과 자유 공간의 정의
 
-**C-장애물**은 작업 영역이 아니라 *컨피규레이션 공간의 부분집합*이다. 세계에 강체 장애물 $\mathcal{O}$가 있고 자세 $\theta$에서 로봇 몸체가 차지하는 세계 점들의 집합을 $\mathcal{A}(\theta)$라 할 때, 정의에 들어가는 조건은 정확히 두 개다. 자세들의 집합이라는 것, 그리고 소속 여부를 물체끼리의 교집합으로 판정한다는 것:
+**C-장애물**은 작업 영역이 아니라 *컨피규레이션 공간의 부분집합*이다. 세계에 강체 장애물 $\mathcal{O}$가 있고 자세 $\theta$에서 로봇 몸체가 차지하는 세계 점들의 집합을 $\mathcal{A}(\theta)$라 할 때, 정의에 들어가는 조건은 셋이다. 자세들의 집합이라는 것, 소속 여부를 물체끼리의 교집합으로 판정한다는 것, 그리고 **침투**만 충돌로 친다는 것이다. 몸체가 장애물의 내부 $\operatorname{int}\mathcal{O}$와 만나야 하고, 표면에 닿기만 한 자세는 자유다(MR §10.1). 접촉을 자유로 치는 것은 이 위키의 선택이다. 관통 과제가 접촉으로 끝나기 때문이다. MR은 여기서 한결같지 않다. 충돌 검사는 $d = 0$을 충돌로 세고(§10.2.2), §10.3은 경계를 $\mathcal{C}_{\text{free}}$에 넣는 것을 예외로만 다루며, §13.3.2.1은 자유 공간을 열린 집합, 장애물을 닫힌 집합으로 잡는다. 접촉을 실패로 치는 MoveIt의 planning scene도 이쪽이다([[04-robotics/ros2/manipulation-moveit2|25.8 MoveIt 2]]). 관절 한계가 있는 로봇이라면 그것도 C-장애물이거나(MR §10.2.1) §1의 위상 상자에서처럼 각 원을 구간으로 자른다(MR §2.3.1). MR은 두 방식을 다 쓰고, P2에는 관절 한계가 없다:
 
-$$\mathcal{C}_{\text{obs}} = \{\,\theta \in \mathcal{C} \;:\; \mathcal{A}(\theta) \cap \mathcal{O} \neq \varnothing\,\}, \qquad \mathcal{C}_{\text{free}} = \mathcal{C} \setminus \mathcal{C}_{\text{obs}}$$
+$$\mathcal{C}_{\text{obs}} = \{\,\theta \in \mathcal{C} \;:\; \mathcal{A}(\theta) \cap \operatorname{int}\mathcal{O} \neq \varnothing\,\}, \qquad \mathcal{C}_{\text{free}} = \mathcal{C} \setminus \mathcal{C}_{\text{obs}}$$
 
-여기서 $\mathcal{C}$는 컨피규레이션 공간 전체이므로 $\mathcal{C}_{\text{free}}$가 로봇이 합법적으로 있을 수 있는 전부다. 이 정의의 요점은 모양을 가진 로봇이 장애물 사이를 지나가는 문제를 $\mathcal{C}_{\text{free}}$ 안을 움직이는 *점*의 문제로 바꾼다는 것이고, [[04-robotics/modern-robotics/ch10-motion-planning|10장]]의 모든 계획기가 점을 위해 쓰인 이유가 그것이다.
+여기서 $\mathcal{C}$는 컨피규레이션 공간 전체이고, 패널의 $\operatorname{int}\mathcal{O}$는 '이 페이지의 장치'가 정한 충돌 판정 그대로 $x > 1$이다. 그러므로 $\mathcal{C}_{\text{free}}$가 접촉까지 포함해 로봇이 합법적으로 있을 수 있는 전부다. 이 정의의 요점은 모양을 가진 로봇이 장애물 사이를 지나가는 문제를 $\mathcal{C}_{\text{free}}$ 안을 움직이는 *점*의 문제로 바꾼다는 것이고, [[04-robotics/modern-robotics/ch10-motion-planning|10장]]의 모든 계획기가 점을 위해 쓰인 이유가 그것이다.
 
 - **예**: 위에서 유도한 렌즈 $\{\cos\theta_1 + \cos(\theta_1{+}\theta_2) > 1\}$, P2 원환면의 18.478 %. 이것은 C-space에 벽을 그려서 얻은 것이 아니라 — 벽은 거기에 그림이 없다 — 각 자세에서 작업 영역의 충돌 검사를 평가해서 얻은 것이다.
-- **반례**: 벽 자체 $\{x \ge 1\}$. 작업 영역의 영역은 C-장애물이 아니고, 일반적으로 차원조차 같지 않다. 2차원 작업 영역의 점 장애물은 2차원 C-space에서 *곡선*이 된다.
+- **비예**: 벽 자체 $\{x \ge 1\}$. 작업 영역의 영역은 C-장애물이 아니고, 일반적으로 차원조차 같지 않다. 2차원 작업 영역의 점 장애물은 2차원 C-space에서 *곡선*이 된다. 벽에 닿는다고 C-장애물에 드는 것도 아니다. 접촉 자세 A $= (0°, 90°)$에서는 링크 2 전체가 $x = 1$ 위, 곧 $\{x \ge 1\}$ 안에 놓이지만 $d = 0$이라 A는 렌즈의 경계에, 곧 $\mathcal{C}_{\text{free}}$에 있다.
 - **왜 중요한가**: 계획기의 직선 간선이 합법인지를 결정하는 것은 벽의 모양이 아니라 $\mathcal{C}_{\text{obs}}$의 모양이다. [[04-robotics/modern-robotics/ch10-motion-planning|10장]]이 검사하는 것이 정확히 이 집합이고, 그 검사가 나오는 곳이 이 페이지다.
 
 ### 3. 홀로노믹 제약과 비홀로노믹 제약의 정의
 
-기구에 걸린 **제약**은 그 운동이 만족해야 하는 조건이다. 속도 없이 쓸 수 있는가 하나로 두 종류가 갈린다.
+기구에 걸린 **제약**은 그 운동이 만족해야 하는 조건이다. 속도 없이 쓸 수 있는가 하나로 두 종류가 갈린다. 둘 다 같은 속도 꼴, 곧 **파피안 제약**(Pfaffian constraint)으로 쓸 수 있고, 판정은 그 꼴이 적분되는가를 묻는다(MR §2.4):
+
+$$A(\theta)\,\dot\theta = 0, \qquad \text{홀로노믹(적분 가능)} \iff A(\theta) = M(\theta)\,\frac{\partial g}{\partial\theta}(\theta)\ \text{(어떤 } g\text{와 가역 } M(\theta)\text{에 대해)}$$
+
+여기서 $\theta \in \mathbb{R}^n$, $A(\theta)$는 제약마다 한 행씩인 $k \times n$ 행렬, $g: \mathbb{R}^n \to \mathbb{R}^k$, $M(\theta)$는 가역인 $k \times k$ 행렬, 곧 적분 인자다(MR은 $M = I$인 경우로 쓴다). $g(\theta(t)) = 0$을 시간으로 미분하면 정확히 $\frac{\partial g}{\partial\theta}\dot\theta = 0$이 나오므로 판정이 이런 꼴이 되고, 적분되는 속도 제약은 $g(\theta) = 0$이 이미 말한 것 이상을 말하지 않는다. 카탈로그 자세 $(0°, 90°)$의 P2에서 접촉 제약은 $A(\theta) = (-1,\ -1)$을 준다. 허용되는 관절 속도는 $(1, -1)$의 배수뿐이고, $(1, -1)\,\mathrm{rad/s}$는 말단을 면을 따라 $(0, 1)\,\mathrm{m/s}$로 밀어 올린다.
 
 - **홀로노믹 제약**은 자세만의 방정식 $g(\theta) = 0$이다. 독립인 것 하나마다 컨피규레이션 공간의 차원이 하나 줄어든다. $\theta$를 $g$의 등위집합에 가두기 때문이다. *예*: P2의 말단을 패널 면에 붙들어 두는 $\cos\theta_1 + \cos(\theta_1{+}\theta_2) = 1$, 남는 것은 1차원 접촉 곡선. *예*: 닫힌 루프, 4절 링크의 자유도가 4가 아니라 1인 이유.
 - **비홀로노믹 제약**은 속도에 대한 방정식 $A(\theta)\dot\theta = 0$인데, 어떤 $g(\theta) = 0$의 시간 미분도 아닌 것이다. 모든 자세에서 운동 방향 하나를 없애지만 도달 가능 집합의 차원은 줄이지 않는다. *예*: 옆으로 미끄러지지 못하는 바퀴([[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|13장]]). 자동차는 모든 자세에 도달하지만 모든 경로로 가지는 못한다.
-- **구별의 반례**: "말단은 패널 밖에 있어야 한다"는 둘 중 어느 것도 아니다. *부등식*이기 때문이다. 차원도 방향도 없애지 않고 열린 영역을 지울 뿐이다. 이 셋을 섞는 것이 자유도 계산이 틀리는 표준적인 방식이다.
+- **구별의 비예**: "말단은 패널 밖에 있어야 한다"는 둘 중 어느 것도 아니다. *부등식*이기 때문이다. 차원도 방향도 없애지 않고 열린 영역을 지울 뿐이다. 이 셋을 섞는 것이 자유도 계산이 틀리는 표준적인 방식이다.
 
 **위키 연결**: C-space는 로봇 [[02-foundations/rl-basics|MDP]]의 "상태" 절반이고, VLA 행동
 공간은 그 위의 좌표다.

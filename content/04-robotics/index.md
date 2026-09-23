@@ -19,7 +19,7 @@ flowchart LR
     SYS -.-> C
 ```
 
-**Start here.** The common track is sections A–G, read in order — section D is pages 5–8, with 5.5 — and it ends with the cumulative problem set and the capstone (M); sections H–L are optional branches, taken when your work needs one. Three labels appear below and never conflict: the letters A–M group pages by topic, the page numbers 1–26 are the study order, and the session numbers 1–91 of the schedule are 60–90-minute sittings in that order (5. Control Theory is group D, page 5, sessions 48–52).
+**Start here.** The common track is sections A–G, read in order — section D is pages 5–8, with 5.5 — and it ends with the cumulative problem set and the capstone (M); sections H–L are optional branches, taken when your work needs one. Three labels appear below and never conflict: the letters A–M group pages by topic, the page numbers 1–26 are the study order, and the session numbers 1–95 of the schedule are 60–90-minute sittings in that order (5. Control Theory is group D, page 5, sessions 52–56).
 
 ### A. Geometry, mechanics & motion
 
@@ -129,101 +129,105 @@ One row is one 60–90-minute session of the common track, in the study order of
 |---:|---|---|---|
 | **1** | [[04-robotics/modern-robotics-book\|1]] all, and the hub [[04-robotics/modern-robotics/index\|2]] | first pass + problem set | One question of your own routed to its chapter by the worked case's rule; both Tier C sets checked against their Solutions, including the joint torques of a $+x$ press. |
 | **2** | [[04-robotics/modern-robotics/ch02-configuration-space\|MR ch.2]] plant, diagram, worked case | first pass + worked case by hand | The C-obstacle shaded on the torus with the solution covered: the share of the torus it blocks and the dimension of the contact set, then uncovered and compared. |
-| 3 | MR ch.2 §1–3, self-check, problem set | problem set | Solutions: the angle at which the wall at $x=1.5$ pinches the free space and the share it blocks; whether the dimension or the dof changes. |
-| **4** | [[04-robotics/modern-robotics/ch03-rigid-body-motions\|MR ch.3]] homework diagram, §1–4 | first pass + worked case by hand | $T_{sb}$ of the tip at the frozen pose written by hand, and why the space twist's $v_s$ is not the tip velocity (§4). |
-| 5 | MR ch.3 §5 | first pass | The elbow screw's $G(\pi/2)$ and $e^{[\mathcal S_2]\pi/2}$ by the closed form (5.1); the same screw recovered by the logarithm, $\operatorname{tr}R=1$ giving $\theta=\pi/2$ (5.3); the listing's round trip run. |
-| 6 | MR ch.3 §6 | first pass | The tip wrench $\mathcal F_s=(0,0,-10;\ 0,-10,0)$ paired with both joint screws: $\tau=(-10,0)$ N·m, the same $-10$ W in $\{s\}$ and $\{b\}$; the non-example that drops the moment and claims $0$ W. |
-| 7 | MR ch.3 self-check, problem set | problem set | Solutions: the elbow-axis twist $(\omega_s, v_s)$ and the configuration group of the planar arm, each checked against the page. |
-| **8** | [[04-robotics/modern-robotics/ch04-forward-kinematics\|MR ch.4]] homework diagram, PoE, worked example, worked case | first pass + worked case by hand | PoE and geometry checked to agree on the tip at $\theta=(0^\circ,90^\circ)$ and at $(90^\circ,90^\circ)$. |
-| 9 | MR ch.4 self-check, problem set | problem set | Solutions: both screw axes $\mathcal S_1$, $\mathcal S_2$ and the home configuration $M$, each checked against the page. |
-| **10** | [[04-robotics/modern-robotics/ch05-velocity-kinematics\|MR ch.5]] homework diagram, §1–2 | first pass + worked case by hand | $J$ at the frozen pose, $J^{-1}$ and the joint rates for $v=(0,-0.25)$, worked with the solution covered, then compared. |
-| 11 | MR ch.5 §3–4 | first pass | The statics box at rest, $J_s^\top\mathcal F_s=(-10,0)$; the singular pose $(0,0)$, where $J^\top(10,0)=(0,0)$; the ellipsoid's semi-axes $1.618$ and $0.618$ at the frozen pose, and $\mu_1=57.3$ at $(0^\circ,5^\circ)$. |
-| 12 | MR ch.5 self-check, problem set 1–2 | problem set | Solutions 1–2, including the statics torque $\tau=J^\top F$ for $F=(2,-5)$. |
-| 13 | MR ch.5 problem set 3 | lab and sweep | Live and frozen $J$ run at $T=0.01$ and their end points compared with the page's; then only $T$ changed to $0.05$, and what changes named. |
-| **14** | [[04-robotics/modern-robotics/ch06-inverse-kinematics\|MR ch.6]] homework diagram, worked case | first pass + worked case by hand | Near the singularity: how far the undamped step moves the joints, and how much damping at $\lambda=0.3$ reduces $\lVert e\rVert$, computed then compared. |
-| 15 | MR ch.6 §1–4 | first pass | The solution set of $(1,1)$ — two branches — and of $(2.5,0)$ — empty; Newton–Raphson from $(20^\circ,70^\circ)$ with residuals $0.347$, $0.066$, $0.0021$; damped least squares at $\lambda=0.3$ cutting the gain from $12.8$ to $0.81$. |
-| 16 | MR ch.6 self-check, problem set | problem set | Solutions: the two IK branches, and where the tip lands if you average them — is that the target? |
-| **17** | [[04-robotics/modern-robotics/ch08-dynamics\|MR ch.8]] plant, diagram, worked case | first pass + worked case by hand | At rest only the gravity term survives: $\tau=g(\theta)$ at the frozen pose by hand, and a check that forward dynamics fed that torque holds the arm still. |
-| 18 | MR ch.8 §1–3 | first pass | At $\dot\theta=(1,-1)$ the velocity term $c=(1,1)$, split into Coriolis $(2,0)$ and centripetal $(-1,1)$; gravity $(19.62,\,0)$ at the catalog pose; $\tau=(23.62,\,2)$ for $\ddot\theta=(1,0)$, and back again by forward dynamics. |
-| 19 | MR ch.8 self-check, problem set | problem set | Solutions: the mass matrix at the straight pose, its determinant and its eigenvalues, each checked against the page. |
-| **20** | [[04-robotics/modern-robotics/ch09-trajectory-generation\|MR ch.9]] plant, diagram, worked case | first pass + worked case by hand | The cubic's crossover $\Delta\theta^\dagger$ computed, and which limit binds each move on the page. |
-| 21 | MR ch.9 §1–3, self-check, problem set | problem set | Solutions: the profile shape of the re-geared move and its duration against the original's. |
-| **22** | [[04-robotics/state-estimation-slam\|3]] object, diagram, worked case | first pass + worked case by hand | The predict step ($\hat x^-$, $P^-$), then $S$, $K$ and the gate, redone with the solution covered; the Joseph form checked to give the same $P^+$. |
-| **23** | 3 §1–4, §6 | first pass | §6's scalar update redone by hand to its fused mean and variance; the four quantities of §2 kept apart in one sentence each. |
-| 24 | 3 §5 | first pass | For an estimator named in a paper, its family in §5 and the Kalman assumption that family gives up. |
-| 25 | 3 §7–8 | first pass | What odometry drifts in, and what one loop closure corrects (§7). |
-| 26 | 3 §8.5, §9 | first pass | §8.5's two-track example by hand: the GNN and greedy assignment costs, and JPDA's association probabilities. |
-| 27 | 3 problem set 3 | lab and sweep | The lab's cases (a) and (b) printed and compared with the page; the $q=Q/R$ sweep table filled. |
-| 28 | 3 problem set 1–2, self-check | problem set | Solutions: the two gate half-widths, and where a rejected reading leaves the belief — no update, or a zero-gain one? |
-| **29** | [[04-robotics/sensor-models\|3.2]] object, diagram, worked case | first pass + worked case by hand | The three measurement variances (encoder, camera, range sensor), each from its sensor's own specification. |
-| **30** | 3.2 §1–3 | first pass | A noise density turned into a per-sample σ at two rates (§2); for each error term, what one integration makes of it (§3). |
-| **31** | 3.2 §7 | lab and sweep | The listing's drift laws set against simulation at 1 s; $N$ and $B$ read back off the Allan plot. |
-| 32 | 3.2 §4–6, §8 | first pass | Three numbers read off one Allan-deviation plot (§6), and where each goes in $Q$ or $R$ (§8). |
-| 33 | 3.2 self-check, problem set | problem set + lab and sweep | Solutions 1–2 (the quantization step and its $\sigma_q$ at 4096 counts/m); problem 3's record-length sweep printed. |
-| **34** | [[04-robotics/geometric-perception-calibration\|3.5]] object, diagram, worked case | first pass + worked case by hand | The RMS reprojection error, then the metric error it hides at $X=0.5$ m and at $3$ m — and which of the two the RMS certifies, the fit or the metre. |
-| **35** | 3.5 §1, §5, §7 | first pass | A table point projected to a pixel with the full pinhole model (§1); which calibration a sub-pixel residual does not certify (§5). |
-| 36 | 3.5 §2, §2.5, §2.6 | first pass | Depth from disparity $Z=fb/d$ and its $\pm1$ px error (§2); §2.5's listing run; one triangulation by hand (§2.6). |
-| 37 | 3.5 §3–4 | first pass | One ICP iteration — correspondences, then the best rigid fit (§4); a table point carried into the gripper frame, $(0.5,\,0.2,\,1.96)$ m, and the $3.6$ cm a $1^\circ$ hand–eye error adds there (§3). |
-| 38 | 3.5 §6, §7.5 | first pass | Metric scale three ways, each the same $Z^2$ law with its own baseline (§6); what visual servoing closes its loop on, and the gain $\lambda=22.4\,\mathrm{s^{-1}}$ at which a $70$ ms delay destabilizes it (§7.5). |
-| 39 | 3.5 self-check, problem set | problem set | Solutions: the projected pixel, the disparity and the depth; and which unknown of $AX=XB$ carries the error a sub-pixel residual cannot certify. |
-| **40** | [[04-robotics/planning-decision-making\|4]] homework diagram, §1, §3–4 and the worked case | first pass + worked case by hand | Both IK branches costed under the max-norm and under the joint-Euclidean distance, and which metric breaks the tie. |
-| **41** | 4 §2 | first pass | The five spaces of §2 named for P2 at the panel, and the panel's C-obstacle written as a set in $\mathcal C$. |
-| **42** | [[04-robotics/modern-robotics/ch10-motion-planning\|MR ch.10]] plant, diagram, worked case | first pass + worked case by hand | The roadmap's shortest route and its length, and how much longer it is than the blocked direct edge, found by hand then compared. |
-| 43 | MR ch.10 §1–3, self-check, problem set | problem set | Solutions: the direct edge's clearance with the wall at $1.5$, and the blocked-node count set against the true blocked area. |
-| 44 | 4 §5, §5.5 | first pass | §5.5's listing run; for a planner named in a paper, its family and what that family cannot promise. |
-| 45 | 4 §6–7 | first pass | What replanning under uncertainty adds to a trajectory optimizer, in two sentences. |
-| 46 | 4 §8–9 | first pass | Which guarantees survive a learned piece: a learned heuristic still rules out branch B while $\varepsilon<\sqrt2$, and a learned sampler misses §5's 1% passage with probability $0.8^{20}=0.012$ against $0.99^{20}=0.818$ (§8); the Wilson interval $[0.70,\,0.97]$ for 18 of 20 (§9). |
-| 47 | 4 self-check, problem set | problem set | Solutions: where the segment meets the obstacle boundary, and whether the open segment is free; which contact quantities ($k_w$, $\mu$, $F_n$) search cannot see. |
-| **48** | [[04-robotics/control-theory-ce397\|5]] homework diagram, §1–3 | first pass + worked case by hand | §1's heater: the open-loop steady state under $d$, and how much $u=-9x$ shrinks it, by hand. |
-| **49** | 5 §4, §10 | first pass | Stable, asymptotically stable and Hurwitz told apart; §4's P4-under-Euler bound redone; §10's questions put to one control claim. |
-| 50 | 5 §5, §5.5 | first pass | The three margins of §5.5's worked loop, and why sensitivity and complementary sensitivity cannot both be small at one frequency. |
-| 51 | 5 §6–9 | first pass | Controllability and observability of a two-state example by rank (§6); one pole-placement gain by hand (§7). |
-| 52 | 5 self-check, problem set | lab and sweep + problem set | The four runs of problem 3 and where each ends, against the page; the continuous pole and the largest stable $K$ at $T=0.1$. |
-| **53** | [[04-robotics/modern-robotics/ch11-robot-control\|MR ch.11]] plant, diagram, worked case | first pass + worked case by hand | Computed torque against PD at the catalog pose; the task-space force $F=\Lambda a$ and the joint torque for $a=(1,1)$, by hand then compared. |
-| 54 | MR ch.11 §1–3 | first pass | The error dynamics $\ddot e+20\dot e+100e=0$ and its double root $-10$; plain PD's gravity sag $e=(0.215,\,0.023)$ rad, which a tenfold $K_p$ cuts to $0.020$ rad at the shoulder but not to zero, against PD with gravity compensation. |
-| 55 | MR ch.11 self-check, problem set | problem set | Solutions: the computed-torque command and the acceleration it produces, set against PD's coupled response. |
-| **56** | [[04-robotics/system-identification\|5.5]] object, diagram, worked case | first pass + worked case by hand | P4's exact $a$ and $b$ at $T=0.1$ s; the five-reading estimate turned back into $\tau$, with its one-sd band. |
-| **57** | 5.5 §1–4 | first pass | Least squares on the regression by hand (§3); when $\Phi^\top\Phi$ is singular, and why the input decides it (§4). |
-| **58** | 5.5 §8 | lab and sweep | The three-input lab run: which input fails to excite and how its covariance shows it; which error tells the inputs apart. |
-| 59 | 5.5 §5–7 | first pass | Which criterion, equation error or output error, leaves a bias under sensor noise, and why (§5); a held-out simulation check (§6); $\tau$ back from $a$ (§7). |
-| 60 | 5.5 §9–10, self-check | first pass | P2's inertial parameters written as one linear regression (§9); §10's questions put to one identification claim. |
-| 61 | 5.5 problem set | problem set + lab and sweep | Solutions: the exact $a$, $b$ at $T=0.2$ s; the rank problem 3's closed-loop record prints at $r=0$, and why. |
-| **62** | [[04-robotics/lqr-lqg\|6]] homework diagram, §1–2 | first pass | The Riccati equation read term by term (§1); §2's two conditions named, and what each one buys. |
-| **63** | 6 §3–4, self-check, problem set | worked case by hand + problem set | Solutions: the stabilizing $P$ and $K$ at $Q=R=1$, the closed-loop pole and $x_{ss}$, and the same two numbers at the hand gain $K=4$. |
-| **64** | [[04-robotics/mpc\|7]] homework diagram, §1, §3–4 | first pass | When the QP is convex (§1); two of §3's failure modes found in a paper's MPC section. |
-| 65 | 7 §2, self-check, problem set | problem set | Solutions: what $u=-99x$ asks at $x=1$ and whether $\lvert u\rvert\le1$ allows it; the interval the steady state can sit in, and what that says about why MPC exists. |
-| **66** | [[04-robotics/convex-mpc-legged\|8]] object, diagram and the five modelling moves | first pass | The paper's QP sized at $N=10$ — decision variables and pyramid inequalities counted; the approximation behind each move named. |
-| 67 | 8 worked on Q, steps 1–7 | worked case by hand | $\alpha$ and $e_0/\alpha$, and the $2\times2$ normal equations solved at $\lambda=1$ with the solution covered, then compared. |
-| 68 | 8 steps 8–10, self-check, problem set | lab and sweep + problem set | Solutions: starting $5$ cm high, $e_0/\alpha$ and the unconstrained $f_z^{\mathrm{tot}}$, and which row binds; the sweep table filled. |
-| **69** | [[04-robotics/contact-force-tactile\|9]] object, diagram, worked case | first pass + worked case by hand | From gap to grip: the normal force while closing, and the friction margins of the wipe and of the grip, both on the same assumed $\mu$. |
-| **70** | 9 §1, §5–6 | first pass | Position, force, impedance and admittance told apart by what each commands and what each measures (§5), then placed in §6's wall-wiping task. |
-| 71 | 9 §2–4 | first pass | A friction cone's half-angle and the largest sticking tangential force by hand (§2); form against force closure on one grasp (§4). |
-| 72 | 9 §7–9, self-check, problem set | problem set | Solutions: the normal force at $8$ mm and the tangential force $\mu=0.35$ allows; whether the $1$ N wipe holds, and what gives way instead. |
-| **73** | [[04-robotics/robot-systems-deployment\|10]] homework diagram, §1–3, §10 | first pass | The $70$ ms observation-to-action budget rebuilt from its four parts (§3); one field failure placed in §10's taxonomy. |
-| 74 | 10 §4–6 | first pass | A TF tree for the panel cell with each transform's direction named (§4); one task's preconditions, timeout and recovery written (§6). |
-| 75 | 10 §6.5–9, §11 | first pass | §6.5's listing run; §9's staged-deployment ladder applied to the panel task. |
-| 76 | 10 self-check, problem set | lab and sweep + problem set | The template's five printed numbers checked against the page: how far a $200$ ms-old frame is over budget, and how many control ticks stale. |
-| **77** | [[04-robotics/actuators-drives\|10.5]] object, diagram, worked case | first pass + worked case by hand | One joint torque turned into amps, volts, watts and kelvin; the equivalent inertia $J_{eq}=n^2J_m+M_{11}/\eta$ at the catalog numbers. |
-| **78** | 10.5 §1–3 | first pass | The two motor equations (§1), and one drive's torque–speed line drawn with both ends (§3). |
-| **79** | 10.5 §4–7 | first pass | Reflected inertia $n^2J_m$ set against the link's (§4); the continuous torque heat allows (§6). |
-| 80 | 10.5 §8, problem set 3 | lab and sweep | The seven-ratio sweep rerun at $V_s=48$ V; which rows change, and why the others do not. |
-| 81 | 10.5 §9, self-check, problem set 1–2 | problem set | Solutions: the $n=200$ drive's current-limited torque; the current and temperature rise at the worst gravity pose, and whether that pose can be held indefinitely. |
-| **82** | [[04-robotics/hri-safety\|11]] object, diagram, worked case | first pass + worked case by hand | The separation distance $S_p$ term by term, and which term dominates; what remains if the robot stops dead. |
-| **83** | 11 §1–3, §6, §10 | first pass | The two spectra of §1–2 kept apart; §6's safety vocabulary used correctly in §10's worked interpretation. |
-| 84 | 11 §3.5, §4–5, §7–9 | first pass | Goal inference and the QMDP action of §3.5 explained on two candidate goals; one design flaw of §7 named in a human study. |
-| 85 | 11 self-check, problem set | problem set | Solutions: the new $S_p$ and where the detection field must start, and whether speed scaling can buy the latency back. |
-| 86 | The cumulative problem set below | problem set | All four parts of problem 2 checked against the Solutions: joint rates, holding torque, the stiffness bound and the fused range. |
-| **87** | [[04-robotics/force-compliance-control\|13]] §1, §2, §5 and [[04-robotics/haptics-teleoperation/rendering-sampling-stability\|24.4]] §2 | first pass | The two sections the capstone needs from the specialisations: impedance versus admittance and the contact transition (13), and the sampled-wall bound (24.4) — each stated in one line from memory. |
-| **88** | [[04-robotics/capstone-panel-contact\|26]] object, diagram, worked case | first pass + worked case by hand | The report: time of first contact and peak force against the $11$ N limit — and the uncertainty band that limit sits in. |
-| **89** | 26 §5–6 | first pass + lab and sweep | The whole-loop lab run; each of §5's four checks traced to the page that owns it. |
-| 90 | 26 §1–4, §7 | first pass | The inflated C-obstacle (§2) and the tip-speed cap (§3) derived at the catalog numbers; one thing §7 says the simulation cannot certify. |
-| 91 | 26 self-check, problem set | problem set + lab and sweep | Solutions: the fused range and the planner's face position; the sweep table's $t_c$, $F_{\text{pk}}$ and verdicts filled. |
+| 3 | MR ch.2 §1–3 | first pass | Grübler's count $3(3-1-2)+2=2$ for P2, and the tip $(1,1)$ reached from two configurations, so a tip position is not a configuration (§1); contact counted as free and only penetration as collision, this wiki's convention (§2); the Pfaffian constraint $A=(-1,-1)$ at $(0^\circ,90^\circ)$ (§3). |
+| 4 | MR ch.2 self-check, problem set | problem set | Solutions: the angle at which the wall at $x=1.5$ pinches the free space and the share it blocks; whether the dimension or the dof changes. |
+| **5** | [[04-robotics/modern-robotics/ch03-rigid-body-motions\|MR ch.3]] homework diagram, §1–2 | first pass + worked case by hand | $T_{sb}$ of the tip at the frozen pose written by hand; $[\hat z]p=(-1,1,0)$, and the angular velocity $(0,0,-0.2)$ read from $\dot R$ at an elbow rate of $-0.2$ rad/s (§1–§2). |
+| 6 | MR ch.3 §3–4 | first pass | The space and body twists $(0,0,1;\,0,0,0)$ and $(0,0,1;\,1,1,0)$ of the same motion, and why the space twist's $v_s$ is not the tip velocity; the adjoint map carrying $J_b$'s columns to $J_s$'s (§4). |
+| 7 | MR ch.3 §5 | first pass | The elbow screw's $G(\pi/2)$ and $e^{[\mathcal S_2]\pi/2}$ by the closed form (5.1); the same screw recovered by the logarithm, $\operatorname{tr}R=1$ giving $\theta=\pi/2$ (5.3); the listing's round trip run. |
+| 8 | MR ch.3 §6 | first pass | The tip wrench $\mathcal F_s=(0,0,-10;\ 0,-10,0)$ paired with both joint screws: $\tau=(-10,0)$ N·m, the same $-10$ W in $\{s\}$ and $\{b\}$; the non-example that drops the moment and claims $0$ W. |
+| 9 | MR ch.3 self-check, problem set | problem set | Solutions: the elbow-axis twist $(\omega_s, v_s)$ and the configuration group of the planar arm, each checked against the page. |
+| **10** | [[04-robotics/modern-robotics/ch04-forward-kinematics\|MR ch.4]] homework diagram, PoE, worked example, worked case | first pass + worked case by hand | PoE and geometry checked to agree on the tip at $\theta=(0^\circ,90^\circ)$ and at $(90^\circ,90^\circ)$. |
+| 11 | MR ch.4 self-check, problem set | problem set | Solutions: both screw axes $\mathcal S_1$, $\mathcal S_2$ and the home configuration $M$, each checked against the page. |
+| **12** | [[04-robotics/modern-robotics/ch05-velocity-kinematics\|MR ch.5]] homework diagram, §1–2 | first pass + worked case by hand | $J$ at the frozen pose, $J^{-1}$ and the joint rates for $v=(0,-0.25)$, worked with the solution covered, then compared. |
+| 13 | MR ch.5 §3–4 | first pass | The statics box at rest, $J_s^\top\mathcal F_s=(-10,0)$; the singular pose $(0,0)$, where $J^\top(10,0)=(0,0)$; the ellipsoid's semi-axes $1.618$ and $0.618$ at the frozen pose, and $\mu_1=57.3$ at $(0^\circ,5^\circ)$. |
+| 14 | MR ch.5 self-check, problem set 1–2 | problem set | Solutions 1–2, including the statics torque $\tau=J^\top F$ for $F=(2,-5)$. |
+| 15 | MR ch.5 problem set 3 | lab and sweep | Live and frozen $J$ run at $T=0.01$ and their end points compared with the page's; then only $T$ changed to $0.05$, and what changes named. |
+| **16** | [[04-robotics/modern-robotics/ch06-inverse-kinematics\|MR ch.6]] homework diagram, worked case | first pass + worked case by hand | Near the singularity: how far the undamped step moves the joints, and how much damping at $\lambda=0.3$ reduces $\lVert e\rVert$, computed then compared. |
+| 17 | MR ch.6 §1–4 | first pass | The solution set of $(1,1)$ — two branches — and of $(2.5,0)$ — empty; Newton–Raphson from $(20^\circ,70^\circ)$ with residuals $0.347$, $0.066$, $0.0021$; damped least squares at $\lambda=0.3$ cutting the gain from $12.8$ to $0.81$. |
+| 18 | MR ch.6 self-check, problem set | problem set | Solutions: the two IK branches, and where the tip lands if you average them — is that the target? |
+| **19** | [[04-robotics/modern-robotics/ch08-dynamics\|MR ch.8]] plant, diagram, worked case | first pass + worked case by hand | At rest only the gravity term survives: $\tau=g(\theta)$ at the frozen pose by hand, and a check that forward dynamics fed that torque holds the arm still. |
+| 20 | MR ch.8 §1–3 | first pass | At $\dot\theta=(1,-1)$ the velocity term $c=(1,1)$, split into Coriolis $(2,0)$ and centripetal $(-1,1)$; gravity $(19.62,\,0)$ at the catalog pose; $\tau=(23.62,\,2)$ for $\ddot\theta=(1,0)$, and back again by forward dynamics. |
+| 21 | MR ch.8 self-check, problem set | problem set | Solutions: the mass matrix at the straight pose, its determinant and its eigenvalues, each checked against the page. |
+| **22** | [[04-robotics/modern-robotics/ch09-trajectory-generation\|MR ch.9]] plant, diagram, worked case | first pass + worked case by hand | The cubic's crossover $\Delta\theta^\dagger$ computed, and which limit binds each move on the page. |
+| 23 | MR ch.9 §1–3 | first pass | Path against trajectory: $\theta(0.5)=(45^\circ,0^\circ)$ reached at $2.163$ s by the trapezoid and $2.945$ s by the cubic; the cubic's $5.890$ s against the quintic's $7.363$ s; the time-optimal $4.327$ s, and why the speed bound makes it a trapezoid rather than the $2.507$ s triangle. |
+| 24 | MR ch.9 self-check, problem set | problem set | Solutions: the profile shape of the re-geared move and its duration against the original's. |
+| **25** | [[04-robotics/state-estimation-slam\|3]] object, diagram, worked case | first pass + worked case by hand | The predict step ($\hat x^-$, $P^-$), then $S$, $K$ and the gate, redone with the solution covered; the Joseph form checked to give the same $P^+$. |
+| **26** | 3 §1–4, §6 | first pass | §6's scalar update redone by hand to its fused mean and variance; the four quantities of §2 kept apart in one sentence each. |
+| 27 | 3 §5 | first pass | For an estimator named in a paper, its family in §5 and the Kalman assumption that family gives up. |
+| 28 | 3 §7–8 | first pass | What odometry drifts in, and what one loop closure corrects (§7). |
+| 29 | 3 §8.5, §9 | first pass | §8.5's two-track example by hand: the GNN and greedy assignment costs, and JPDA's association probabilities. |
+| 30 | 3 problem set 3 | lab and sweep | The lab's cases (a) and (b) printed and compared with the page; the $q=Q/R$ sweep table filled. |
+| 31 | 3 problem set 1–2, self-check | problem set | Solutions: the two gate half-widths, and where a rejected reading leaves the belief — no update, or a zero-gain one? |
+| **32** | [[04-robotics/sensor-models\|3.2]] object, diagram, worked case | first pass + worked case by hand | The three measurement variances (encoder, camera, range sensor), each from its sensor's own specification. |
+| **33** | 3.2 §1–3 | first pass | A noise density turned into a per-sample σ at two rates (§2); for each error term, what one integration makes of it (§3). |
+| **34** | 3.2 §7 | lab and sweep | The listing's drift laws set against simulation at 1 s; $N$ and $B$ read back off the Allan plot. |
+| 35 | 3.2 §4–6, §8 | first pass | Three numbers read off one Allan-deviation plot (§6), and where each goes in $Q$ or $R$ (§8). |
+| 36 | 3.2 self-check, problem set | problem set + lab and sweep | Solutions 1–2 (the quantization step and its $\sigma_q$ at 4096 counts/m); problem 3's record-length sweep printed. |
+| **37** | [[04-robotics/geometric-perception-calibration\|3.5]] object, diagram, worked case | first pass + worked case by hand | The RMS reprojection error, then the metric error it hides at $X=0.5$ m and at $3$ m — and which of the two the RMS certifies, the fit or the metre. |
+| **38** | 3.5 §1, §5, §7 | first pass | A table point projected to a pixel with the full pinhole model (§1); which calibration a sub-pixel residual does not certify (§5). |
+| 39 | 3.5 §2, §2.5, §2.6 | first pass | Depth from disparity $Z=fb/d$ and its $\pm1$ px error (§2); §2.5's listing run; one triangulation by hand (§2.6). |
+| 40 | 3.5 §3–4 | first pass | One ICP iteration — correspondences, then the best rigid fit (§4); a table point carried into the gripper frame, $(0.5,\,0.2,\,1.96)$ m, and the $3.6$ cm a $1^\circ$ hand–eye error adds there (§3). |
+| 41 | 3.5 §6, §7.5 | first pass | Metric scale three ways, each the same $Z^2$ law with its own baseline (§6); what visual servoing closes its loop on, and the gain $\lambda=22.4\,\mathrm{s^{-1}}$ at which a $70$ ms delay destabilizes it (§7.5). |
+| 42 | 3.5 self-check, problem set | problem set | Solutions: the projected pixel, the disparity and the depth; and which unknown of $AX=XB$ carries the error a sub-pixel residual cannot certify. |
+| **43** | [[04-robotics/planning-decision-making\|4]] homework diagram, §1, §3–4 and the worked case | first pass + worked case by hand | Both IK branches costed under the max-norm and under the joint-Euclidean distance, and which metric breaks the tie. |
+| **44** | 4 §2 | first pass | The five spaces of §2 named for P2 at the panel, and the panel's C-obstacle written as a set in $\mathcal C$. |
+| **45** | [[04-robotics/modern-robotics/ch10-motion-planning\|MR ch.10]] plant, diagram, worked case | first pass + worked case by hand | The roadmap's shortest route and its length, and how much longer it is than the blocked direct edge, found by hand then compared. |
+| 46 | MR ch.10 §1–3 | first pass | A to E to B at $\pi\sqrt2=4.4429$ rad with $d\le0$ throughout; the three completeness notions on P2: the exact roadmap's $4.7124$ rad, A\* on the $30^\circ$ grid at $3.7922$ rad, and a roadmap that fails with probability near $0.75^n$. |
+| 47 | MR ch.10 self-check, problem set | problem set | Solutions: the direct edge's clearance with the wall at $1.5$, and the blocked-node count set against the true blocked area. |
+| 48 | 4 §5, §5.5 | first pass | §5.5's listing run; for a planner named in a paper, its family and what that family cannot promise. |
+| 49 | 4 §6–7 | first pass | What replanning under uncertainty adds to a trajectory optimizer, in two sentences. |
+| 50 | 4 §8–9 | first pass | Which guarantees survive a learned piece: a learned heuristic still rules out branch B while $\varepsilon<\sqrt2$, and a learned sampler misses §5's 1% passage with probability $0.8^{20}=0.012$ against $0.99^{20}=0.818$ (§8); the Wilson interval $[0.70,\,0.97]$ for 18 of 20 (§9). |
+| 51 | 4 self-check, problem set | problem set | Solutions: where the segment meets the obstacle boundary, and whether the open segment is free; which contact quantities ($k_w$, $\mu$, $F_n$) search cannot see. |
+| **52** | [[04-robotics/control-theory-ce397\|5]] homework diagram, §1–3 | first pass + worked case by hand | §1's heater: the open-loop steady state under $d$, and how much $u=-9x$ shrinks it, by hand. |
+| **53** | 5 §4, §10 | first pass | Stable, asymptotically stable and Hurwitz told apart; §4's P4-under-Euler bound redone; §10's questions put to one control claim. |
+| 54 | 5 §5, §5.5 | first pass | The three margins of §5.5's worked loop, and why sensitivity and complementary sensitivity cannot both be small at one frequency. |
+| 55 | 5 §6–9 | first pass | Controllability and observability of a two-state example by rank (§6); one pole-placement gain by hand (§7). |
+| 56 | 5 self-check, problem set | lab and sweep + problem set | The four runs of problem 3 and where each ends, against the page; the continuous pole and the largest stable $K$ at $T=0.1$. |
+| **57** | [[04-robotics/modern-robotics/ch11-robot-control\|MR ch.11]] plant, diagram, worked case | first pass + worked case by hand | Computed torque against PD at the catalog pose; the task-space force $F=\Lambda a$ and the joint torque for $a=(1,1)$, by hand then compared. |
+| 58 | MR ch.11 §1–3 | first pass | The error dynamics $\ddot e+20\dot e+100e=0$ and its double root $-10$; plain PD's gravity sag $e=(0.215,\,0.023)$ rad, which a tenfold $K_p$ cuts to $0.020$ rad at the shoulder but not to zero, against PD with gravity compensation. |
+| 59 | MR ch.11 self-check, problem set | problem set | Solutions: the computed-torque command and the acceleration it produces, set against PD's coupled response. |
+| **60** | [[04-robotics/system-identification\|5.5]] object, diagram, worked case | first pass + worked case by hand | P4's exact $a$ and $b$ at $T=0.1$ s; the five-reading estimate turned back into $\tau$, with its one-sd band. |
+| **61** | 5.5 §1–4 | first pass | Least squares on the regression by hand (§3); when $\Phi^\top\Phi$ is singular, and why the input decides it (§4). |
+| **62** | 5.5 §8 | lab and sweep | The three-input lab run: which input fails to excite and how its covariance shows it; which error tells the inputs apart. |
+| 63 | 5.5 §5–7 | first pass | Which criterion, equation error or output error, leaves a bias under sensor noise, and why (§5); a held-out simulation check (§6); $\tau$ back from $a$ (§7). |
+| 64 | 5.5 §9–10, self-check | first pass | P2's inertial parameters written as one linear regression (§9); §10's questions put to one identification claim. |
+| 65 | 5.5 problem set | problem set + lab and sweep | Solutions: the exact $a$, $b$ at $T=0.2$ s; the rank problem 3's closed-loop record prints at $r=0$, and why. |
+| **66** | [[04-robotics/lqr-lqg\|6]] homework diagram, §1–2 | first pass | The Riccati equation read term by term (§1); §2's two conditions named, and what each one buys. |
+| **67** | 6 §3–4, self-check, problem set | worked case by hand + problem set | Solutions: the stabilizing $P$ and $K$ at $Q=R=1$, the closed-loop pole and $x_{ss}$, and the same two numbers at the hand gain $K=4$. |
+| **68** | [[04-robotics/mpc\|7]] homework diagram, §1, §3–4 | first pass | When the QP is convex (§1); two of §3's failure modes found in a paper's MPC section. |
+| 69 | 7 §2, self-check, problem set | problem set | Solutions: what $u=-99x$ asks at $x=1$ and whether $\lvert u\rvert\le1$ allows it; the interval the steady state can sit in, and what that says about why MPC exists. |
+| **70** | [[04-robotics/convex-mpc-legged\|8]] object, diagram and the five modelling moves | first pass | The paper's QP sized at $N=10$ — decision variables and pyramid inequalities counted; the approximation behind each move named. |
+| 71 | 8 worked on Q, steps 1–7 | worked case by hand | $\alpha$ and $e_0/\alpha$, and the $2\times2$ normal equations solved at $\lambda=1$ with the solution covered, then compared. |
+| 72 | 8 steps 8–10, self-check, problem set | lab and sweep + problem set | Solutions: starting $5$ cm high, $e_0/\alpha$ and the unconstrained $f_z^{\mathrm{tot}}$, and which row binds; the sweep table filled. |
+| **73** | [[04-robotics/contact-force-tactile\|9]] object, diagram, worked case | first pass + worked case by hand | From gap to grip: the normal force while closing, and the friction margins of the wipe and of the grip, both on the same assumed $\mu$. |
+| **74** | 9 §1, §5–6 | first pass | Position, force, impedance and admittance told apart by what each commands and what each measures (§5), then placed in §6's wall-wiping task. |
+| 75 | 9 §2–4 | first pass | A friction cone's half-angle and the largest sticking tangential force by hand (§2); form against force closure on one grasp (§4). |
+| 76 | 9 §7–9, self-check, problem set | problem set | Solutions: the normal force at $8$ mm and the tangential force $\mu=0.35$ allows; whether the $1$ N wipe holds, and what gives way instead. |
+| **77** | [[04-robotics/robot-systems-deployment\|10]] homework diagram, §1–3, §10 | first pass | The $70$ ms observation-to-action budget rebuilt from its four parts (§3); one field failure placed in §10's taxonomy. |
+| 78 | 10 §4–6 | first pass | A TF tree for the panel cell with each transform's direction named (§4); one task's preconditions, timeout and recovery written (§6). |
+| 79 | 10 §6.5–9, §11 | first pass | §6.5's listing run; §9's staged-deployment ladder applied to the panel task. |
+| 80 | 10 self-check, problem set | lab and sweep + problem set | The template's five printed numbers checked against the page: how far a $200$ ms-old frame is over budget, and how many control ticks stale. |
+| **81** | [[04-robotics/actuators-drives\|10.5]] object, diagram, worked case | first pass + worked case by hand | One joint torque turned into amps, volts, watts and kelvin; the equivalent inertia $J_{eq}=n^2J_m+M_{11}/\eta$ at the catalog numbers. |
+| **82** | 10.5 §1–3 | first pass | The two motor equations (§1), and one drive's torque–speed line drawn with both ends (§3). |
+| **83** | 10.5 §4–7 | first pass | Reflected inertia $n^2J_m$ set against the link's (§4); the continuous torque heat allows (§6). |
+| 84 | 10.5 §8, problem set 3 | lab and sweep | The seven-ratio sweep rerun at $V_s=48$ V; which rows change, and why the others do not. |
+| 85 | 10.5 §9, self-check, problem set 1–2 | problem set | Solutions: the $n=200$ drive's current-limited torque; the current and temperature rise at the worst gravity pose, and whether that pose can be held indefinitely. |
+| **86** | [[04-robotics/hri-safety\|11]] object, diagram, worked case | first pass + worked case by hand | The separation distance $S_p$ term by term, and which term dominates; what remains if the robot stops dead. |
+| **87** | 11 §1–3, §6, §10 | first pass | The two spectra of §1–2 kept apart; §6's safety vocabulary used correctly in §10's worked interpretation. |
+| 88 | 11 §3.5, §4–5, §7–9 | first pass | Goal inference and the QMDP action of §3.5 explained on two candidate goals; one design flaw of §7 named in a human study. |
+| 89 | 11 self-check, problem set | problem set | Solutions: the new $S_p$ and where the detection field must start, and whether speed scaling can buy the latency back. |
+| 90 | The cumulative problem set below | problem set | All four parts of problem 2 checked against the Solutions: joint rates, holding torque, the stiffness bound and the fused range. |
+| **91** | [[04-robotics/force-compliance-control\|13]] §1, §2, §5 and [[04-robotics/haptics-teleoperation/rendering-sampling-stability\|24.4]] §2 | first pass | The two sections the capstone needs from the specialisations: impedance versus admittance and the contact transition (13), and the sampled-wall bound (24.4) — each stated in one line from memory. |
+| **92** | [[04-robotics/capstone-panel-contact\|26]] object, diagram, worked case | first pass + worked case by hand | The report: time of first contact and peak force against the $11$ N limit — and the uncertainty band that limit sits in. |
+| **93** | 26 §5–6 | first pass + lab and sweep | The whole-loop lab run; each of §5's four checks traced to the page that owns it. |
+| 94 | 26 §1–4, §7 | first pass | The inflated C-obstacle (§2) and the tip-speed cap (§3) derived at the catalog numbers; one thing §7 says the simulation cannot certify. |
+| 95 | 26 self-check, problem set | problem set + lab and sweep | Solutions: the fused range and the planner's face position; the sweep table's $t_c$, $F_{\text{pk}}$ and verdicts filled. |
 
-**Totals.** 91 sessions for the Working pass, 39 of them bold. A Literacy pass is the bold rows, or one session a page — 25, counting session 87 — when only each object and worked case are read. Plan on up to a fifth more for problems redone and labs debugged.
+**Totals.** 95 sessions for the Working pass, 39 of them bold. A Literacy pass is the bold rows, or one session a page — 25, counting session 91 — when only each object and worked case are read. Plan on up to a fifth more for problems redone and labs debugged.
 
 The specializations branch from the common track rather than add to it. At the same sizing — about 1,600 words a session across the table above — each group runs from one session a page for a first pass to its Working pass:
 
-- **H. Manipulation (12–16):** 7–35 sessions over five pages (15 is a Tier A lab) and the two Modern Robotics chapters read alongside them — [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] with 15 and [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] with 16, two sessions each.
+- **H. Manipulation (12–16):** 7–36 sessions over five pages (15 is a Tier A lab) and the two Modern Robotics chapters read alongside them — [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] with 15 and [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] with 16, two sessions each.
 - **I. Unstructured-environment navigation (17–19):** 3–15 sessions over three pages, 17 a Tier A lab.
 - **J. Human perception & intent (20–23):** 4–16 sessions over four pages, 23 a Tier A lab.
 - **K. Haptics & teleoperation (24):** 10–28 sessions over the hub and its nine sub-pages, three of them Tier A labs (24.4, 24.8, 24.9). The track is course-driven; for the research program alone its core is 24.4, 24.5, 24.8 and §5–§6 of 24.9, about 4–13 sessions ([[07-research-program/index|Research Program §6]]).
@@ -263,7 +267,7 @@ flowchart LR
     SYS -.-> C
 ```
 
-**여기서 시작.** 공통 트랙은 A–G절이고 순서대로 읽는다 — D절은 5–8번 페이지와 5.5다 — 그리고 누적 과제와 캡스톤(M)으로 끝난다. H–L절은 선택 가지이니 연구에 필요할 때 하나를 고른다. 아래에는 세 가지 표지가 나오며 서로 충돌하지 않는다: A–M 글자는 주제별 묶음, 1–26 페이지 번호는 학습 순서, 학습 일정의 회차 번호 1–91는 그 순서를 따른 60–90분짜리 한 번의 공부다(5. 제어 이론은 D절, 5번 페이지, 48–52회차).
+**여기서 시작.** 공통 트랙은 A–G절이고 순서대로 읽는다 — D절은 5–8번 페이지와 5.5다 — 그리고 누적 과제와 캡스톤(M)으로 끝난다. H–L절은 선택 가지이니 연구에 필요할 때 하나를 고른다. 아래에는 세 가지 표지가 나오며 서로 충돌하지 않는다: A–M 글자는 주제별 묶음, 1–26 페이지 번호는 학습 순서, 학습 일정의 회차 번호 1–95는 그 순서를 따른 60–90분짜리 한 번의 공부다(5. 제어 이론은 D절, 5번 페이지, 52–56회차).
 
 ### A. 기하·역학·운동
 
@@ -373,101 +377,105 @@ F절(10. 로봇 시스템)과 나란히, 컴퓨터에서 무언가를 돌려 보
 |---:|---|---|---|
 | **1** | [[04-robotics/modern-robotics-book\|1]] 전체와 허브 [[04-robotics/modern-robotics/index\|2]] | 첫 읽기 + 과제 | 자기 질문 하나를 계산 예제의 규칙으로 해당 장에 배분한다. 두 페이지의 Tier C 과제를 정답과 맞춰 보고, $+x$ 누름의 관절 토크도 확인한다. |
 | **2** | [[04-robotics/modern-robotics/ch02-configuration-space\|MR 2장]] 장치·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 풀이를 가리고 토러스에 C-장애물을 칠한다. 막히는 비율과 접촉 집합의 차원을 구한 뒤 풀이를 펴서 비교한다. |
-| 3 | MR 2장 §1–3, 스스로 점검, 과제 | 과제 | 정답과 대조: $x=1.5$의 벽이 자유 공간을 좁히는 각과 막는 비율, 그리고 차원이나 자유도가 바뀌는지. |
-| **4** | [[04-robotics/modern-robotics/ch03-rigid-body-motions\|MR 3장]] 과제 그림, §1–4 | 첫 읽기 + 손 계산 | 고정 자세에서 말단의 $T_{sb}$를 손으로 쓰고, 공간 twist의 $v_s$가 말단 속도가 아닌 이유를 말한다(§4). |
-| 5 | MR 3장 §5 | 첫 읽기 | 팔꿈치 스크루의 $G(\pi/2)$와 $e^{[\mathcal S_2]\pi/2}$를 닫힌 형태로 구한다(5.1). $\operatorname{tr}R=1$에서 $\theta=\pi/2$를 읽어 로그로 같은 스크루를 되찾는다(5.3). 목록의 왕복 검사를 돌린다. |
-| 6 | MR 3장 §6 | 첫 읽기 | 말단 렌치 $\mathcal F_s=(0,0,-10;\ 0,-10,0)$를 두 관절 스크루와 짝지어 $\tau=(-10,0)$ N·m를 얻는다. $\{s\}$와 $\{b\}$에서 같은 $-10$ W. 모멘트를 뺀 비예시가 $0$ W를 주장하는 이유. |
-| 7 | MR 3장 스스로 점검, 과제 | 과제 | 정답과 대조: 팔꿈치 축 twist $(\omega_s, v_s)$와 평면 팔의 형상 군. |
-| **8** | [[04-robotics/modern-robotics/ch04-forward-kinematics\|MR 4장]] 과제 그림, PoE, 2R 계산 예제, 끝까지 계산 | 첫 읽기 + 손 계산 | $\theta=(0^\circ,90^\circ)$와 $(90^\circ,90^\circ)$에서 PoE와 기하가 말단 위치에 대해 일치하는지 확인한다. |
-| 9 | MR 4장 스스로 점검, 과제 | 과제 | 정답과 대조: 두 나사축 $\mathcal S_1$, $\mathcal S_2$와 기준 형상 $M$. |
-| **10** | [[04-robotics/modern-robotics/ch05-velocity-kinematics\|MR 5장]] 과제 그림, §1–2 | 첫 읽기 + 손 계산 | 풀이를 가리고 고정 자세의 $J$, $J^{-1}$, $v=(0,-0.25)$에 대한 관절 속도를 구한 뒤 비교한다. |
-| 11 | MR 5장 §3–4 | 첫 읽기 | 정지한 팔의 정역학 상자, $J_s^\top\mathcal F_s=(-10,0)$. $J^\top(10,0)=(0,0)$이 되는 특이 자세 $(0,0)$. 고정 자세에서 타원체의 반축 $1.618$과 $0.618$, $(0^\circ,5^\circ)$에서 $\mu_1=57.3$. |
-| 12 | MR 5장 스스로 점검, 과제 1–2 | 과제 | 정답 1–2와 대조한다. $F=(2,-5)$에 대한 정역학 토크 $\tau=J^\top F$도 포함. |
-| 13 | MR 5장 과제 3 | 실습과 스윕 | $T=0.01$에서 매 스텝 $J$와 고정 $J$를 돌려 끝점을 페이지와 비교한다. 그다음 $T$만 $0.05$로 바꾸고 무엇이 달라지는지 말한다. |
-| **14** | [[04-robotics/modern-robotics/ch06-inverse-kinematics\|MR 6장]] 과제 그림, 끝까지 계산 | 첫 읽기 + 손 계산 | 특이점 근처에서 감쇠 없는 스텝이 관절을 얼마나 움직이는지, $\lambda=0.3$의 감쇠가 $\lVert e\rVert$를 얼마나 줄이는지 계산한 뒤 비교한다. |
-| 15 | MR 6장 §1–4 | 첫 읽기 | $(1,1)$의 해 집합은 가지 둘, $(2.5,0)$의 해 집합은 공집합. $(20^\circ,70^\circ)$에서 시작한 뉴턴–랩슨의 잔차 $0.347$, $0.066$, $0.0021$. $\lambda=0.3$의 감쇠 최소제곱이 이득을 $12.8$에서 $0.81$로 줄인다. |
-| 16 | MR 6장 스스로 점검, 과제 | 과제 | 정답과 대조: IK 가지 둘, 그리고 둘을 평균하면 말단이 어디에 놓이는지 — 그곳이 목표인가? |
-| **17** | [[04-robotics/modern-robotics/ch08-dynamics\|MR 8장]] 장치·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 정지 상태에서는 중력 항만 남는다: 고정 자세의 $\tau=g(\theta)$를 손으로 구하고, 그 토크를 넣은 순동역학이 팔을 그대로 붙잡아 두는지 확인한다. |
-| 18 | MR 8장 §1–3 | 첫 읽기 | $\dot\theta=(1,-1)$에서 속도 항 $c=(1,1)$을 코리올리 $(2,0)$와 원심(MR의 centripetal) $(-1,1)$로 가른다. 카탈로그 자세의 중력 $(19.62,\,0)$. $\ddot\theta=(1,0)$에 필요한 $\tau=(23.62,\,2)$를 구하고 정동역학으로 되돌린다. |
-| 19 | MR 8장 스스로 점검, 과제 | 과제 | 정답과 대조: 편 자세의 질량 행렬, 그 행렬식과 고유값. |
-| **20** | [[04-robotics/modern-robotics/ch09-trajectory-generation\|MR 9장]] 장치·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 3차 다항식의 교차점 $\Delta\theta^\dagger$를 구하고, 페이지의 두 이동이 각각 어느 한계에 묶이는지 말한다. |
-| 21 | MR 9장 §1–3, 스스로 점검, 과제 | 과제 | 정답과 대조: 기어를 바꾼 이동의 프로파일 모양과, 원래 이동 대비 걸리는 시간. |
-| **22** | [[04-robotics/state-estimation-slam\|3]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 예측 단계($\hat x^-$, $P^-$)와 이어서 $S$, $K$, 게이트를 풀이를 가리고 다시 한다. Joseph 형태가 같은 $P^+$를 주는지 확인한다. |
-| **23** | 3 §1–4, §6 | 첫 읽기 | §6의 스칼라 갱신을 손으로 다시 해 융합 평균과 분산에 닿는다. §2의 네 양을 한 문장씩으로 구분한다. |
-| 24 | 3 §5 | 첫 읽기 | 논문에 나온 추정기 하나를 §5의 계열에 넣고, 그 계열이 버리는 칼만 가정을 댄다. |
-| 25 | 3 §7–8 | 첫 읽기 | 오도메트리가 무엇에서 드리프트하는지, loop closure 하나가 무엇을 고치는지(§7). |
-| 26 | 3 §8.5, §9 | 첫 읽기 | §8.5의 트랙 두 개 예제를 손으로: GNN과 greedy의 배정 비용, JPDA의 연관 확률. |
-| 27 | 3 과제 3 | 실습과 스윕 | 실습의 (a)와 (b) 경우를 찍어 페이지와 비교한다. $q=Q/R$ 스윕 표를 채운다. |
-| 28 | 3 과제 1–2, 스스로 점검 | 과제 | 정답과 대조: 게이트 반폭 둘, 그리고 기각된 측정이 믿음을 어디에 두는지 — 갱신이 없는 것인가, 이득 0의 갱신인가? |
-| **29** | [[04-robotics/sensor-models\|3.2]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 측정 분산 셋(엔코더, 카메라, 거리 센서)을 각 센서의 사양에서 구한다. |
-| **30** | 3.2 §1–3 | 첫 읽기 | 잡음 밀도를 두 주기에서 샘플당 σ로 바꾼다(§2). 오차 항마다 한 번의 적분이 그것을 무엇으로 만드는지 말한다(§3). |
-| **31** | 3.2 §7 | 실습과 스윕 | listing의 드리프트 법칙을 1 s에서 시뮬레이션과 비교한다. 앨런 그림에서 $N$과 $B$를 다시 읽는다. |
-| 32 | 3.2 §4–6, §8 | 첫 읽기 | 앨런 편차 그림 하나에서 숫자 셋을 읽고(§6), 각각이 $Q$와 $R$ 중 어디로 가는지 말한다(§8). |
-| 33 | 3.2 스스로 점검, 과제 | 과제 + 실습과 스윕 | 정답 1–2(4096 counts/m에서 양자화 간격과 $\sigma_q$)와 대조한다. 과제 3의 기록 길이 스윕을 찍는다. |
-| **34** | [[04-robotics/geometric-perception-calibration\|3.5]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | RMS 재투영 오차를 구하고, 그것이 $X=0.5$ m와 $3$ m에서 숨기는 미터 오차를 구한다 — 그리고 RMS가 보증하는 것이 적합인지 미터인지 말한다. |
-| **35** | 3.5 §1, §5, §7 | 첫 읽기 | 테이블의 점 하나를 핀홀 모델 전체로 픽셀에 투영한다(§1). sub-pixel 잔차가 보증하지 않는 보정이 무엇인지 말한다(§5). |
-| 36 | 3.5 §2, §2.5, §2.6 | 첫 읽기 | 시차에서 깊이 $Z=fb/d$와 그 $\pm1$ px 오차(§2). §2.5의 listing 실행. 삼각측량 한 번을 손으로(§2.6). |
-| 37 | 3.5 §3–4 | 첫 읽기 | ICP 한 반복 — 대응을 정하고 최적 강체 정합(§4). 탁자 위 점을 그리퍼 좌표계로 옮기면 $(0.5,\,0.2,\,1.96)$ m이고, 손–눈 회전 오차 $1^\circ$가 거기에 $3.6$ cm를 더한다(§3). |
-| 38 | 3.5 §6, §7.5 | 첫 읽기 | 미터 척도를 얻는 세 길이 모두 같은 $Z^2$ 법칙에 기준선만 다르다는 것(§6). visual servoing이 무엇에 대해 루프를 닫는지, 그리고 $70$ ms 지연이 루프를 불안정하게 만드는 이득 $\lambda=22.4\,\mathrm{s^{-1}}$(§7.5). |
-| 39 | 3.5 스스로 점검, 과제 | 과제 | 정답과 대조: 투영된 픽셀, 시차, 깊이. 그리고 sub-pixel 잔차가 보증하지 못하는 오차가 $AX=XB$의 어느 미지수에 들어 있는지. |
-| **40** | [[04-robotics/planning-decision-making\|4]] 과제 그림, §1, §3–4와 끝까지 계산 | 첫 읽기 + 손 계산 | max-norm과 관절 유클리드 거리로 IK 가지 둘의 비용을 매기고, 어느 거리가 동률을 깨는지 본다. |
-| **41** | 4 §2 | 첫 읽기 | §2의 다섯 공간을 패널 앞의 P2에 대해 이름 붙이고, 패널의 C-장애물을 $\mathcal C$ 안의 집합으로 쓴다. |
-| **42** | [[04-robotics/modern-robotics/ch10-motion-planning\|MR 10장]] 장치·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 로드맵의 최단 경로와 그 길이, 막힌 직선 간선보다 얼마나 긴지를 손으로 구한 뒤 비교한다. |
-| 43 | MR 10장 §1–3, 스스로 점검, 과제 | 과제 | 정답과 대조: 벽이 $1.5$에 있을 때 직선 간선의 여유, 그리고 막힌 노드 수 대 실제 막힌 넓이. |
-| 44 | 4 §5, §5.5 | 첫 읽기 | §5.5의 listing 실행. 논문에 나온 planner 하나의 계열과, 그 계열이 약속하지 못하는 것. |
-| 45 | 4 §6–7 | 첫 읽기 | 불확실성 아래의 replanning이 궤적 최적화에 더하는 것을 두 문장으로. |
-| 46 | 4 §8–9 | 첫 읽기 | 학습된 부품이 들어와도 남는 보장: 학습한 휴리스틱은 $\varepsilon<\sqrt2$인 동안 가지 B를 여전히 배제하고, 학습한 샘플러가 §5의 1% 통로를 놓칠 확률은 균일 샘플링의 $0.99^{20}=0.818$ 대신 $0.8^{20}=0.012$다(§8). 20번 중 18번 성공의 Wilson 구간 $[0.70,\,0.97]$(§9). |
-| 47 | 4 스스로 점검, 과제 | 과제 | 정답과 대조: 선분이 장애물 경계와 만나는 곳, 그리고 열린 선분이 자유로운지. 탐색이 보지 못하는 접촉 양($k_w$, $\mu$, $F_n$). |
-| **48** | [[04-robotics/control-theory-ce397\|5]] 과제 그림, §1–3 | 첫 읽기 + 손 계산 | §1의 히터: $d$ 아래 개루프 정상 상태와, $u=-9x$가 그것을 얼마나 줄이는지를 손으로. |
-| **49** | 5 §4, §10 | 첫 읽기 | 안정, 점근 안정, Hurwitz를 구분한다. §4의 Euler 적분 P4 경계를 다시 하고, §10의 질문을 제어 주장 하나에 던진다. |
-| 50 | 5 §5, §5.5 | 첫 읽기 | §5.5 예제 루프의 세 여유, 그리고 감도와 상보 감도가 한 주파수에서 함께 작을 수 없는 이유. |
-| 51 | 5 §6–9 | 첫 읽기 | 상태 둘인 예의 가제어성과 가관측성을 랭크로 판정한다(§6). 극점 배치 이득 하나를 손으로(§7). |
-| 52 | 5 스스로 점검, 과제 | 실습과 스윕 + 과제 | 과제 3의 네 실행과 각각이 끝나는 곳을 페이지와 대조한다. 연속 극점과 $T=0.1$에서 안정한 최대 $K$. |
-| **53** | [[04-robotics/modern-robotics/ch11-robot-control\|MR 11장]] 장치·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 카탈로그 자세에서 계산 토크 대 PD. $a=(1,1)$에 대한 작업 공간 힘 $F=\Lambda a$와 관절 토크를 손으로 구한 뒤 비교한다. |
-| 54 | MR 11장 §1–3 | 첫 읽기 | 오차 동역학 $\ddot e+20\dot e+100e=0$과 그 중근 $-10$. 순수 PD의 중력 처짐 $e=(0.215,\,0.023)$ rad는 $K_p$를 열 배로 올려도 어깨에서 $0.020$ rad까지만 줄고 0이 되지 않는다. 중력 보상을 더한 PD와 견준다. |
-| 55 | MR 11장 스스로 점검, 과제 | 과제 | 정답과 대조: 계산 토크 명령과 그것이 내는 가속도, 그리고 PD의 결합된 응답. |
-| **56** | [[04-robotics/system-identification\|5.5]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | $T=0.1$ s에서 P4의 정확한 $a$, $b$. 측정 다섯 개의 추정을 $\tau$로 되돌리고 그 1 표준편차 구간을 구한다. |
-| **57** | 5.5 §1–4 | 첫 읽기 | 회귀의 최소제곱을 손으로(§3). $\Phi^\top\Phi$가 특이해지는 때와, 그것을 입력이 정하는 이유(§4). |
-| **58** | 5.5 §8 | 실습과 스윕 | 입력 셋 실습 실행: 어느 입력이 여기에 실패하고 공분산이 그것을 어떻게 보여 주는지. 입력들을 구분하는 것은 어느 오차인지. |
-| 59 | 5.5 §5–7 | 첫 읽기 | 방정식 오차와 출력 오차 두 기준 중 어느 쪽이 센서 잡음 아래에서 편향을 남기고 왜 그런지(§5). held-out 시뮬레이션 검사(§6). $a$에서 $\tau$로(§7). |
-| 60 | 5.5 §9–10, 스스로 점검 | 첫 읽기 | P2의 관성 파라미터를 선형 회귀 하나로 쓴다(§9). §10의 질문을 식별 주장 하나에 던진다. |
-| 61 | 5.5 과제 | 과제 + 실습과 스윕 | 정답과 대조: $T=0.2$ s의 정확한 $a$, $b$. 과제 3의 폐루프 기록이 $r=0$에서 찍는 랭크와 그 이유. |
-| **62** | [[04-robotics/lqr-lqg\|6]] 과제 그림, §1–2 | 첫 읽기 | Riccati 방정식을 항마다 읽는다(§1). §2의 두 조건을 대고 각각이 무엇을 사는지 말한다. |
-| **63** | 6 §3–4, 스스로 점검, 과제 | 손 계산 + 과제 | 정답과 대조: $Q=R=1$의 안정화 $P$와 $K$, 폐루프 극점과 $x_{ss}$, 그리고 손으로 고른 이득 $K=4$에서의 같은 두 수. |
-| **64** | [[04-robotics/mpc\|7]] 과제 그림, §1, §3–4 | 첫 읽기 | QP가 볼록인 때(§1). 논문의 MPC 절에서 §3의 실패 모드 두 개를 찾는다. |
-| 65 | 7 §2, 스스로 점검, 과제 | 과제 | 정답과 대조: $x=1$에서 $u=-99x$가 요구하는 값과 $\lvert u\rvert\le1$이 그것을 허용하는지. 정상 상태가 놓일 수 있는 구간, 그리고 그것이 MPC의 존재 이유에 대해 말하는 것. |
-| **66** | [[04-robotics/convex-mpc-legged\|8]] 대상, 과제 그림, 모델링 수 다섯 개 | 첫 읽기 | $N=10$에서 논문의 QP 크기 — 결정 변수와 피라미드 부등식의 수를 센다. 수마다 뒤에 있는 근사를 댄다. |
-| 67 | 8 Q로 끝까지, 1–7단계 | 손 계산 | 풀이를 가리고 $\alpha$와 $e_0/\alpha$를 구하고 $\lambda=1$에서 $2\times2$ 정규방정식을 푼 뒤 비교한다. |
-| 68 | 8 8–10단계, 스스로 점검, 과제 | 실습과 스윕 + 과제 | 정답과 대조: $5$ cm 높게 시작할 때 $e_0/\alpha$와 제약 없는 $f_z^{\mathrm{tot}}$, 그리고 어느 행이 걸리는지. 스윕 표를 채운다. |
-| **69** | [[04-robotics/contact-force-tactile\|9]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 틈에서 파지까지: 닫히는 동안의 법선력, 그리고 같은 가정값 $\mu$ 위의 닦기와 파지의 마찰 여유. |
-| **70** | 9 §1, §5–6 | 첫 읽기 | 위치·힘·임피던스·어드미턴스를 각각 무엇을 명령하고 무엇을 재는지로 구분하고(§5), §6의 벽 닦기 과제에 놓는다. |
-| 71 | 9 §2–4 | 첫 읽기 | 마찰 원뿔의 반각과 붙어 있을 수 있는 최대 접선력을 손으로(§2). 파지 하나에서 form closure 대 force closure(§4). |
-| 72 | 9 §7–9, 스스로 점검, 과제 | 과제 | 정답과 대조: $8$ mm에서의 법선력과 $\mu=0.35$가 허용하는 접선력. $1$ N 닦기가 버티는지, 그리고 대신 무엇이 버티지 못하는지. |
-| **73** | [[04-robotics/robot-systems-deployment\|10]] 과제 그림, §1–3, §10 | 첫 읽기 | 관측에서 행동까지 $70$ ms 예산을 네 부분으로 다시 세운다(§3). 현장 실패 하나를 §10의 분류에 넣는다. |
-| 74 | 10 §4–6 | 첫 읽기 | 패널 셀의 TF 트리를 변환마다 방향을 붙여 그린다(§4). 작업 하나의 전제 조건, timeout, 복구를 쓴다(§6). |
-| 75 | 10 §6.5–9, §11 | 첫 읽기 | §6.5의 listing 실행. §9의 단계적 배포 사다리를 패널 과제에 적용한다. |
-| 76 | 10 스스로 점검, 과제 | 실습과 스윕 + 과제 | 템플릿이 찍는 다섯 수를 페이지와 대조한다: $200$ ms 묵은 프레임이 예산을 얼마나 넘는지, 제어 틱 몇 개만큼 낡았는지. |
-| **77** | [[04-robotics/actuators-drives\|10.5]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 관절 토크 하나를 암페어·볼트·와트·켈빈으로 바꾼다. 카탈로그 숫자로 등가 관성 $J_{eq}=n^2J_m+M_{11}/\eta$. |
-| **78** | 10.5 §1–3 | 첫 읽기 | 모터의 두 방정식(§1)과, 구동기 하나의 토크–속도 선을 양 끝까지 그린다(§3). |
-| **79** | 10.5 §4–7 | 첫 읽기 | 반사 관성 $n^2J_m$을 링크의 관성과 비교한다(§4). 열이 허락하는 연속 토크(§6). |
-| 80 | 10.5 §8, 과제 3 | 실습과 스윕 | 일곱 기어비 스윕을 $V_s=48$ V로 다시 돌린다. 어느 행이 바뀌는지, 나머지는 왜 그대로인지. |
-| 81 | 10.5 §9, 스스로 점검, 과제 1–2 | 과제 | 정답과 대조: $n=200$ 구동기의 전류 한계 토크. 중력이 가장 큰 자세의 전류와 온도 상승, 그리고 그 자세를 무기한 버틸 수 있는지. |
-| **82** | [[04-robotics/hri-safety\|11]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 분리 거리 $S_p$를 항마다 구하고 어느 항이 지배하는지 본다. 로봇을 완전히 세워도 남는 거리. |
-| **83** | 11 §1–3, §6, §10 | 첫 읽기 | §1–2의 두 스펙트럼을 섞지 않는다. §10의 해석 예제에서 §6의 안전 어휘를 바르게 쓴다. |
-| 84 | 11 §3.5, §4–5, §7–9 | 첫 읽기 | §3.5의 목표 추론과 QMDP 행동을 후보 목표 둘로 설명한다. 인간 대상 연구 하나에서 §7의 설계 결함 하나를 찾는다. |
-| 85 | 11 스스로 점검, 과제 | 과제 | 정답과 대조: 새 $S_p$와 감지 영역이 시작해야 하는 곳, 그리고 속도 조절로 지연을 되살 수 있는지. |
-| 86 | 아래 누적 과제 | 과제 | 과제 2의 네 부분을 정답과 대조한다: 관절 속도, 유지 토크, 강성 한계, 융합 거리. |
-| **87** | [[04-robotics/force-compliance-control\|13]] §1, §2, §5와 [[04-robotics/haptics-teleoperation/rendering-sampling-stability\|24.4]] §2 | 첫 읽기 | 캡스톤이 전문화 트랙에서 빌려 오는 두 절: 임피던스 대 어드미턴스와 접촉 천이(13), 샘플된 벽의 한계(24.4) — 각각을 기억으로 한 줄씩 말할 수 있으면 된다. |
-| **88** | [[04-robotics/capstone-panel-contact\|26]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 보고: 첫 접촉 시각과 $11$ N 한계 대비 최대 힘 — 그리고 그 한계가 들어 있는 불확실성 띠. |
-| **89** | 26 §5–6 | 첫 읽기 + 실습과 스윕 | 루프 전체 실습 실행. §5의 네 검사를 각각 그것을 소유한 페이지까지 추적한다. |
-| 90 | 26 §1–4, §7 | 첫 읽기 | 부풀린 C-장애물(§2)과 말단 속도 상한(§3)을 카탈로그 숫자로 유도한다. §7이 시뮬레이션으로 보증할 수 없다고 말하는 것 하나. |
-| 91 | 26 스스로 점검, 과제 | 과제 + 실습과 스윕 | 정답과 대조: 융합 거리와 planner의 면 위치. 스윕 표의 $t_c$, $F_{\text{pk}}$, 판정을 채운다. |
+| 3 | MR 2장 §1–3 | 첫 읽기 | P2의 그뤼블러 계산 $3(3-1-2)+2=2$, 그리고 형상 둘에서 도달하는 말단 $(1,1)$: 말단 위치는 형상이 아니다(§1). 접촉은 자유로, 파고드는 것만 충돌로 세는 이 위키의 약속(§2). $(0^\circ,90^\circ)$에서의 파프 구속 $A=(-1,-1)$(§3). |
+| 4 | MR 2장 스스로 점검, 과제 | 과제 | 정답과 대조: $x=1.5$의 벽이 자유 공간을 좁히는 각과 막는 비율, 그리고 차원이나 자유도가 바뀌는지. |
+| **5** | [[04-robotics/modern-robotics/ch03-rigid-body-motions\|MR 3장]] 과제 그림, §1–2 | 첫 읽기 + 손 계산 | 고정 자세에서 말단의 $T_{sb}$를 손으로 쓴다. $[\hat z]p=(-1,1,0)$, 그리고 팔꿈치 속도 $-0.2$ rad/s에서 $\dot R$로 읽은 각속도 $(0,0,-0.2)$(§1–§2). |
+| 6 | MR 3장 §3–4 | 첫 읽기 | 같은 운동의 공간 트위스트 $(0,0,1;\,0,0,0)$와 물체 트위스트 $(0,0,1;\,1,1,0)$, 그리고 공간 트위스트의 $v_s$가 말단 속도가 아닌 이유. $J_b$의 열을 $J_s$의 열로 옮기는 수반 사상(§4). |
+| 7 | MR 3장 §5 | 첫 읽기 | 팔꿈치 스크루의 $G(\pi/2)$와 $e^{[\mathcal S_2]\pi/2}$를 닫힌 형태로 구한다(5.1). $\operatorname{tr}R=1$에서 $\theta=\pi/2$를 읽어 로그로 같은 스크루를 되찾는다(5.3). 목록의 왕복 검사를 돌린다. |
+| 8 | MR 3장 §6 | 첫 읽기 | 말단 렌치 $\mathcal F_s=(0,0,-10;\ 0,-10,0)$를 두 관절 스크루와 짝지어 $\tau=(-10,0)$ N·m를 얻는다. $\{s\}$와 $\{b\}$에서 같은 $-10$ W. 모멘트를 뺀 비예시가 $0$ W를 주장하는 이유. |
+| 9 | MR 3장 스스로 점검, 과제 | 과제 | 정답과 대조: 팔꿈치 축 twist $(\omega_s, v_s)$와 평면 팔의 형상 군. |
+| **10** | [[04-robotics/modern-robotics/ch04-forward-kinematics\|MR 4장]] 과제 그림, PoE, 2R 계산 예제, 끝까지 계산 | 첫 읽기 + 손 계산 | $\theta=(0^\circ,90^\circ)$와 $(90^\circ,90^\circ)$에서 PoE와 기하가 말단 위치에 대해 일치하는지 확인한다. |
+| 11 | MR 4장 스스로 점검, 과제 | 과제 | 정답과 대조: 두 나사축 $\mathcal S_1$, $\mathcal S_2$와 기준 형상 $M$. |
+| **12** | [[04-robotics/modern-robotics/ch05-velocity-kinematics\|MR 5장]] 과제 그림, §1–2 | 첫 읽기 + 손 계산 | 풀이를 가리고 고정 자세의 $J$, $J^{-1}$, $v=(0,-0.25)$에 대한 관절 속도를 구한 뒤 비교한다. |
+| 13 | MR 5장 §3–4 | 첫 읽기 | 정지한 팔의 정역학 상자, $J_s^\top\mathcal F_s=(-10,0)$. $J^\top(10,0)=(0,0)$이 되는 특이 자세 $(0,0)$. 고정 자세에서 타원체의 반축 $1.618$과 $0.618$, $(0^\circ,5^\circ)$에서 $\mu_1=57.3$. |
+| 14 | MR 5장 스스로 점검, 과제 1–2 | 과제 | 정답 1–2와 대조한다. $F=(2,-5)$에 대한 정역학 토크 $\tau=J^\top F$도 포함. |
+| 15 | MR 5장 과제 3 | 실습과 스윕 | $T=0.01$에서 매 스텝 $J$와 고정 $J$를 돌려 끝점을 페이지와 비교한다. 그다음 $T$만 $0.05$로 바꾸고 무엇이 달라지는지 말한다. |
+| **16** | [[04-robotics/modern-robotics/ch06-inverse-kinematics\|MR 6장]] 과제 그림, 끝까지 계산 | 첫 읽기 + 손 계산 | 특이점 근처에서 감쇠 없는 스텝이 관절을 얼마나 움직이는지, $\lambda=0.3$의 감쇠가 $\lVert e\rVert$를 얼마나 줄이는지 계산한 뒤 비교한다. |
+| 17 | MR 6장 §1–4 | 첫 읽기 | $(1,1)$의 해 집합은 가지 둘, $(2.5,0)$의 해 집합은 공집합. $(20^\circ,70^\circ)$에서 시작한 뉴턴–랩슨의 잔차 $0.347$, $0.066$, $0.0021$. $\lambda=0.3$의 감쇠 최소제곱이 이득을 $12.8$에서 $0.81$로 줄인다. |
+| 18 | MR 6장 스스로 점검, 과제 | 과제 | 정답과 대조: IK 가지 둘, 그리고 둘을 평균하면 말단이 어디에 놓이는지 — 그곳이 목표인가? |
+| **19** | [[04-robotics/modern-robotics/ch08-dynamics\|MR 8장]] 장치·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 정지 상태에서는 중력 항만 남는다: 고정 자세의 $\tau=g(\theta)$를 손으로 구하고, 그 토크를 넣은 순동역학이 팔을 그대로 붙잡아 두는지 확인한다. |
+| 20 | MR 8장 §1–3 | 첫 읽기 | $\dot\theta=(1,-1)$에서 속도 항 $c=(1,1)$을 코리올리 $(2,0)$와 원심(MR의 centripetal) $(-1,1)$로 가른다. 카탈로그 자세의 중력 $(19.62,\,0)$. $\ddot\theta=(1,0)$에 필요한 $\tau=(23.62,\,2)$를 구하고 정동역학으로 되돌린다. |
+| 21 | MR 8장 스스로 점검, 과제 | 과제 | 정답과 대조: 편 자세의 질량 행렬, 그 행렬식과 고유값. |
+| **22** | [[04-robotics/modern-robotics/ch09-trajectory-generation\|MR 9장]] 장치·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 3차 다항식의 교차점 $\Delta\theta^\dagger$를 구하고, 페이지의 두 이동이 각각 어느 한계에 묶이는지 말한다. |
+| 23 | MR 9장 §1–3 | 첫 읽기 | 경로 대 궤적: $\theta(0.5)=(45^\circ,0^\circ)$에 사다리꼴은 $2.163$ s, 3차는 $2.945$ s에 닿는다. 3차의 $5.890$ s 대 5차의 $7.363$ s. 최소 시간 $4.327$ s, 그리고 속도 한계 때문에 $2.507$ s짜리 삼각형이 아니라 사다리꼴이 되는 이유. |
+| 24 | MR 9장 스스로 점검, 과제 | 과제 | 정답과 대조: 기어를 바꾼 이동의 프로파일 모양과, 원래 이동 대비 걸리는 시간. |
+| **25** | [[04-robotics/state-estimation-slam\|3]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 예측 단계($\hat x^-$, $P^-$)와 이어서 $S$, $K$, 게이트를 풀이를 가리고 다시 한다. Joseph 형태가 같은 $P^+$를 주는지 확인한다. |
+| **26** | 3 §1–4, §6 | 첫 읽기 | §6의 스칼라 갱신을 손으로 다시 해 융합 평균과 분산에 닿는다. §2의 네 양을 한 문장씩으로 구분한다. |
+| 27 | 3 §5 | 첫 읽기 | 논문에 나온 추정기 하나를 §5의 계열에 넣고, 그 계열이 버리는 칼만 가정을 댄다. |
+| 28 | 3 §7–8 | 첫 읽기 | 오도메트리가 무엇에서 드리프트하는지, loop closure 하나가 무엇을 고치는지(§7). |
+| 29 | 3 §8.5, §9 | 첫 읽기 | §8.5의 트랙 두 개 예제를 손으로: GNN과 greedy의 배정 비용, JPDA의 연관 확률. |
+| 30 | 3 과제 3 | 실습과 스윕 | 실습의 (a)와 (b) 경우를 찍어 페이지와 비교한다. $q=Q/R$ 스윕 표를 채운다. |
+| 31 | 3 과제 1–2, 스스로 점검 | 과제 | 정답과 대조: 게이트 반폭 둘, 그리고 기각된 측정이 믿음을 어디에 두는지 — 갱신이 없는 것인가, 이득 0의 갱신인가? |
+| **32** | [[04-robotics/sensor-models\|3.2]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 측정 분산 셋(엔코더, 카메라, 거리 센서)을 각 센서의 사양에서 구한다. |
+| **33** | 3.2 §1–3 | 첫 읽기 | 잡음 밀도를 두 주기에서 샘플당 σ로 바꾼다(§2). 오차 항마다 한 번의 적분이 그것을 무엇으로 만드는지 말한다(§3). |
+| **34** | 3.2 §7 | 실습과 스윕 | listing의 드리프트 법칙을 1 s에서 시뮬레이션과 비교한다. 앨런 그림에서 $N$과 $B$를 다시 읽는다. |
+| 35 | 3.2 §4–6, §8 | 첫 읽기 | 앨런 편차 그림 하나에서 숫자 셋을 읽고(§6), 각각이 $Q$와 $R$ 중 어디로 가는지 말한다(§8). |
+| 36 | 3.2 스스로 점검, 과제 | 과제 + 실습과 스윕 | 정답 1–2(4096 counts/m에서 양자화 간격과 $\sigma_q$)와 대조한다. 과제 3의 기록 길이 스윕을 찍는다. |
+| **37** | [[04-robotics/geometric-perception-calibration\|3.5]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | RMS 재투영 오차를 구하고, 그것이 $X=0.5$ m와 $3$ m에서 숨기는 미터 오차를 구한다 — 그리고 RMS가 보증하는 것이 적합인지 미터인지 말한다. |
+| **38** | 3.5 §1, §5, §7 | 첫 읽기 | 테이블의 점 하나를 핀홀 모델 전체로 픽셀에 투영한다(§1). sub-pixel 잔차가 보증하지 않는 보정이 무엇인지 말한다(§5). |
+| 39 | 3.5 §2, §2.5, §2.6 | 첫 읽기 | 시차에서 깊이 $Z=fb/d$와 그 $\pm1$ px 오차(§2). §2.5의 listing 실행. 삼각측량 한 번을 손으로(§2.6). |
+| 40 | 3.5 §3–4 | 첫 읽기 | ICP 한 반복 — 대응을 정하고 최적 강체 정합(§4). 탁자 위 점을 그리퍼 좌표계로 옮기면 $(0.5,\,0.2,\,1.96)$ m이고, 손–눈 회전 오차 $1^\circ$가 거기에 $3.6$ cm를 더한다(§3). |
+| 41 | 3.5 §6, §7.5 | 첫 읽기 | 미터 척도를 얻는 세 길이 모두 같은 $Z^2$ 법칙에 기준선만 다르다는 것(§6). visual servoing이 무엇에 대해 루프를 닫는지, 그리고 $70$ ms 지연이 루프를 불안정하게 만드는 이득 $\lambda=22.4\,\mathrm{s^{-1}}$(§7.5). |
+| 42 | 3.5 스스로 점검, 과제 | 과제 | 정답과 대조: 투영된 픽셀, 시차, 깊이. 그리고 sub-pixel 잔차가 보증하지 못하는 오차가 $AX=XB$의 어느 미지수에 들어 있는지. |
+| **43** | [[04-robotics/planning-decision-making\|4]] 과제 그림, §1, §3–4와 끝까지 계산 | 첫 읽기 + 손 계산 | max-norm과 관절 유클리드 거리로 IK 가지 둘의 비용을 매기고, 어느 거리가 동률을 깨는지 본다. |
+| **44** | 4 §2 | 첫 읽기 | §2의 다섯 공간을 패널 앞의 P2에 대해 이름 붙이고, 패널의 C-장애물을 $\mathcal C$ 안의 집합으로 쓴다. |
+| **45** | [[04-robotics/modern-robotics/ch10-motion-planning\|MR 10장]] 장치·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 로드맵의 최단 경로와 그 길이, 막힌 직선 간선보다 얼마나 긴지를 손으로 구한 뒤 비교한다. |
+| 46 | MR 10장 §1–3 | 첫 읽기 | A에서 E를 거쳐 B까지 $\pi\sqrt2=4.4429$ rad, 내내 $d\le0$. P2 위의 완전성 세 가지: 정확한 로드맵의 $4.7124$ rad, $30^\circ$ 격자 위 A\*의 $3.7922$ rad, 그리고 실패 확률이 $0.75^n$ 가까이인 로드맵. |
+| 47 | MR 10장 스스로 점검, 과제 | 과제 | 정답과 대조: 벽이 $1.5$에 있을 때 직선 간선의 여유, 그리고 막힌 노드 수 대 실제 막힌 넓이. |
+| 48 | 4 §5, §5.5 | 첫 읽기 | §5.5의 listing 실행. 논문에 나온 planner 하나의 계열과, 그 계열이 약속하지 못하는 것. |
+| 49 | 4 §6–7 | 첫 읽기 | 불확실성 아래의 replanning이 궤적 최적화에 더하는 것을 두 문장으로. |
+| 50 | 4 §8–9 | 첫 읽기 | 학습된 부품이 들어와도 남는 보장: 학습한 휴리스틱은 $\varepsilon<\sqrt2$인 동안 가지 B를 여전히 배제하고, 학습한 샘플러가 §5의 1% 통로를 놓칠 확률은 균일 샘플링의 $0.99^{20}=0.818$ 대신 $0.8^{20}=0.012$다(§8). 20번 중 18번 성공의 Wilson 구간 $[0.70,\,0.97]$(§9). |
+| 51 | 4 스스로 점검, 과제 | 과제 | 정답과 대조: 선분이 장애물 경계와 만나는 곳, 그리고 열린 선분이 자유로운지. 탐색이 보지 못하는 접촉 양($k_w$, $\mu$, $F_n$). |
+| **52** | [[04-robotics/control-theory-ce397\|5]] 과제 그림, §1–3 | 첫 읽기 + 손 계산 | §1의 히터: $d$ 아래 개루프 정상 상태와, $u=-9x$가 그것을 얼마나 줄이는지를 손으로. |
+| **53** | 5 §4, §10 | 첫 읽기 | 안정, 점근 안정, Hurwitz를 구분한다. §4의 Euler 적분 P4 경계를 다시 하고, §10의 질문을 제어 주장 하나에 던진다. |
+| 54 | 5 §5, §5.5 | 첫 읽기 | §5.5 예제 루프의 세 여유, 그리고 감도와 상보 감도가 한 주파수에서 함께 작을 수 없는 이유. |
+| 55 | 5 §6–9 | 첫 읽기 | 상태 둘인 예의 가제어성과 가관측성을 랭크로 판정한다(§6). 극점 배치 이득 하나를 손으로(§7). |
+| 56 | 5 스스로 점검, 과제 | 실습과 스윕 + 과제 | 과제 3의 네 실행과 각각이 끝나는 곳을 페이지와 대조한다. 연속 극점과 $T=0.1$에서 안정한 최대 $K$. |
+| **57** | [[04-robotics/modern-robotics/ch11-robot-control\|MR 11장]] 장치·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 카탈로그 자세에서 계산 토크 대 PD. $a=(1,1)$에 대한 작업 공간 힘 $F=\Lambda a$와 관절 토크를 손으로 구한 뒤 비교한다. |
+| 58 | MR 11장 §1–3 | 첫 읽기 | 오차 동역학 $\ddot e+20\dot e+100e=0$과 그 중근 $-10$. 순수 PD의 중력 처짐 $e=(0.215,\,0.023)$ rad는 $K_p$를 열 배로 올려도 어깨에서 $0.020$ rad까지만 줄고 0이 되지 않는다. 중력 보상을 더한 PD와 견준다. |
+| 59 | MR 11장 스스로 점검, 과제 | 과제 | 정답과 대조: 계산 토크 명령과 그것이 내는 가속도, 그리고 PD의 결합된 응답. |
+| **60** | [[04-robotics/system-identification\|5.5]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | $T=0.1$ s에서 P4의 정확한 $a$, $b$. 측정 다섯 개의 추정을 $\tau$로 되돌리고 그 1 표준편차 구간을 구한다. |
+| **61** | 5.5 §1–4 | 첫 읽기 | 회귀의 최소제곱을 손으로(§3). $\Phi^\top\Phi$가 특이해지는 때와, 그것을 입력이 정하는 이유(§4). |
+| **62** | 5.5 §8 | 실습과 스윕 | 입력 셋 실습 실행: 어느 입력이 여기에 실패하고 공분산이 그것을 어떻게 보여 주는지. 입력들을 구분하는 것은 어느 오차인지. |
+| 63 | 5.5 §5–7 | 첫 읽기 | 방정식 오차와 출력 오차 두 기준 중 어느 쪽이 센서 잡음 아래에서 편향을 남기고 왜 그런지(§5). held-out 시뮬레이션 검사(§6). $a$에서 $\tau$로(§7). |
+| 64 | 5.5 §9–10, 스스로 점검 | 첫 읽기 | P2의 관성 파라미터를 선형 회귀 하나로 쓴다(§9). §10의 질문을 식별 주장 하나에 던진다. |
+| 65 | 5.5 과제 | 과제 + 실습과 스윕 | 정답과 대조: $T=0.2$ s의 정확한 $a$, $b$. 과제 3의 폐루프 기록이 $r=0$에서 찍는 랭크와 그 이유. |
+| **66** | [[04-robotics/lqr-lqg\|6]] 과제 그림, §1–2 | 첫 읽기 | Riccati 방정식을 항마다 읽는다(§1). §2의 두 조건을 대고 각각이 무엇을 사는지 말한다. |
+| **67** | 6 §3–4, 스스로 점검, 과제 | 손 계산 + 과제 | 정답과 대조: $Q=R=1$의 안정화 $P$와 $K$, 폐루프 극점과 $x_{ss}$, 그리고 손으로 고른 이득 $K=4$에서의 같은 두 수. |
+| **68** | [[04-robotics/mpc\|7]] 과제 그림, §1, §3–4 | 첫 읽기 | QP가 볼록인 때(§1). 논문의 MPC 절에서 §3의 실패 모드 두 개를 찾는다. |
+| 69 | 7 §2, 스스로 점검, 과제 | 과제 | 정답과 대조: $x=1$에서 $u=-99x$가 요구하는 값과 $\lvert u\rvert\le1$이 그것을 허용하는지. 정상 상태가 놓일 수 있는 구간, 그리고 그것이 MPC의 존재 이유에 대해 말하는 것. |
+| **70** | [[04-robotics/convex-mpc-legged\|8]] 대상, 과제 그림, 모델링 수 다섯 개 | 첫 읽기 | $N=10$에서 논문의 QP 크기 — 결정 변수와 피라미드 부등식의 수를 센다. 수마다 뒤에 있는 근사를 댄다. |
+| 71 | 8 Q로 끝까지, 1–7단계 | 손 계산 | 풀이를 가리고 $\alpha$와 $e_0/\alpha$를 구하고 $\lambda=1$에서 $2\times2$ 정규방정식을 푼 뒤 비교한다. |
+| 72 | 8 8–10단계, 스스로 점검, 과제 | 실습과 스윕 + 과제 | 정답과 대조: $5$ cm 높게 시작할 때 $e_0/\alpha$와 제약 없는 $f_z^{\mathrm{tot}}$, 그리고 어느 행이 걸리는지. 스윕 표를 채운다. |
+| **73** | [[04-robotics/contact-force-tactile\|9]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 틈에서 파지까지: 닫히는 동안의 법선력, 그리고 같은 가정값 $\mu$ 위의 닦기와 파지의 마찰 여유. |
+| **74** | 9 §1, §5–6 | 첫 읽기 | 위치·힘·임피던스·어드미턴스를 각각 무엇을 명령하고 무엇을 재는지로 구분하고(§5), §6의 벽 닦기 과제에 놓는다. |
+| 75 | 9 §2–4 | 첫 읽기 | 마찰 원뿔의 반각과 붙어 있을 수 있는 최대 접선력을 손으로(§2). 파지 하나에서 form closure 대 force closure(§4). |
+| 76 | 9 §7–9, 스스로 점검, 과제 | 과제 | 정답과 대조: $8$ mm에서의 법선력과 $\mu=0.35$가 허용하는 접선력. $1$ N 닦기가 버티는지, 그리고 대신 무엇이 버티지 못하는지. |
+| **77** | [[04-robotics/robot-systems-deployment\|10]] 과제 그림, §1–3, §10 | 첫 읽기 | 관측에서 행동까지 $70$ ms 예산을 네 부분으로 다시 세운다(§3). 현장 실패 하나를 §10의 분류에 넣는다. |
+| 78 | 10 §4–6 | 첫 읽기 | 패널 셀의 TF 트리를 변환마다 방향을 붙여 그린다(§4). 작업 하나의 전제 조건, timeout, 복구를 쓴다(§6). |
+| 79 | 10 §6.5–9, §11 | 첫 읽기 | §6.5의 listing 실행. §9의 단계적 배포 사다리를 패널 과제에 적용한다. |
+| 80 | 10 스스로 점검, 과제 | 실습과 스윕 + 과제 | 템플릿이 찍는 다섯 수를 페이지와 대조한다: $200$ ms 묵은 프레임이 예산을 얼마나 넘는지, 제어 틱 몇 개만큼 낡았는지. |
+| **81** | [[04-robotics/actuators-drives\|10.5]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 관절 토크 하나를 암페어·볼트·와트·켈빈으로 바꾼다. 카탈로그 숫자로 등가 관성 $J_{eq}=n^2J_m+M_{11}/\eta$. |
+| **82** | 10.5 §1–3 | 첫 읽기 | 모터의 두 방정식(§1)과, 구동기 하나의 토크–속도 선을 양 끝까지 그린다(§3). |
+| **83** | 10.5 §4–7 | 첫 읽기 | 반사 관성 $n^2J_m$을 링크의 관성과 비교한다(§4). 열이 허락하는 연속 토크(§6). |
+| 84 | 10.5 §8, 과제 3 | 실습과 스윕 | 일곱 기어비 스윕을 $V_s=48$ V로 다시 돌린다. 어느 행이 바뀌는지, 나머지는 왜 그대로인지. |
+| 85 | 10.5 §9, 스스로 점검, 과제 1–2 | 과제 | 정답과 대조: $n=200$ 구동기의 전류 한계 토크. 중력이 가장 큰 자세의 전류와 온도 상승, 그리고 그 자세를 무기한 버틸 수 있는지. |
+| **86** | [[04-robotics/hri-safety\|11]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 분리 거리 $S_p$를 항마다 구하고 어느 항이 지배하는지 본다. 로봇을 완전히 세워도 남는 거리. |
+| **87** | 11 §1–3, §6, §10 | 첫 읽기 | §1–2의 두 스펙트럼을 섞지 않는다. §10의 해석 예제에서 §6의 안전 어휘를 바르게 쓴다. |
+| 88 | 11 §3.5, §4–5, §7–9 | 첫 읽기 | §3.5의 목표 추론과 QMDP 행동을 후보 목표 둘로 설명한다. 인간 대상 연구 하나에서 §7의 설계 결함 하나를 찾는다. |
+| 89 | 11 스스로 점검, 과제 | 과제 | 정답과 대조: 새 $S_p$와 감지 영역이 시작해야 하는 곳, 그리고 속도 조절로 지연을 되살 수 있는지. |
+| 90 | 아래 누적 과제 | 과제 | 과제 2의 네 부분을 정답과 대조한다: 관절 속도, 유지 토크, 강성 한계, 융합 거리. |
+| **91** | [[04-robotics/force-compliance-control\|13]] §1, §2, §5와 [[04-robotics/haptics-teleoperation/rendering-sampling-stability\|24.4]] §2 | 첫 읽기 | 캡스톤이 전문화 트랙에서 빌려 오는 두 절: 임피던스 대 어드미턴스와 접촉 천이(13), 샘플된 벽의 한계(24.4) — 각각을 기억으로 한 줄씩 말할 수 있으면 된다. |
+| **92** | [[04-robotics/capstone-panel-contact\|26]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | 보고: 첫 접촉 시각과 $11$ N 한계 대비 최대 힘 — 그리고 그 한계가 들어 있는 불확실성 띠. |
+| **93** | 26 §5–6 | 첫 읽기 + 실습과 스윕 | 루프 전체 실습 실행. §5의 네 검사를 각각 그것을 소유한 페이지까지 추적한다. |
+| 94 | 26 §1–4, §7 | 첫 읽기 | 부풀린 C-장애물(§2)과 말단 속도 상한(§3)을 카탈로그 숫자로 유도한다. §7이 시뮬레이션으로 보증할 수 없다고 말하는 것 하나. |
+| 95 | 26 스스로 점검, 과제 | 과제 + 실습과 스윕 | 정답과 대조: 융합 거리와 planner의 면 위치. 스윕 표의 $t_c$, $F_{\text{pk}}$, 판정을 채운다. |
 
-**합계.** Working 통과는 91회이고 그중 굵은 회차가 39회다. Literacy 통과는 굵은 회차만 하는 것이고, 대상과 끝까지 계산만 읽으면 페이지당 1회로 87회차를 포함해 25회다. 다시 푸는 과제와 실습 디버깅을 위해 최대 5분의 1을 더 잡는다.
+**합계.** Working 통과는 95회이고 그중 굵은 회차가 39회다. Literacy 통과는 굵은 회차만 하는 것이고, 대상과 끝까지 계산만 읽으면 페이지당 1회로 91회차를 포함해 25회다. 다시 푸는 과제와 실습 디버깅을 위해 최대 5분의 1을 더 잡는다.
 
 전문화는 공통 트랙에 더해지는 것이 아니라 거기서 갈라진다. 같은 산정 — 위 표 전체에서 회차당 약 1,600단어 — 으로, 각 묶음은 첫 읽기(페이지당 1회)에서 Working 통과까지 다음 범위다:
 
-- **H. 매니퓰레이션(12–16):** 다섯 페이지(15는 Tier A 실습)와 그와 함께 읽는 Modern Robotics 두 장 — 15와 함께 [[04-robotics/modern-robotics/ch12-grasping|MR 12장]], 16과 함께 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]], 각각 2회 — 에 7–35회.
+- **H. 매니퓰레이션(12–16):** 다섯 페이지(15는 Tier A 실습)와 그와 함께 읽는 Modern Robotics 두 장 — 15와 함께 [[04-robotics/modern-robotics/ch12-grasping|MR 12장]], 16과 함께 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]], 각각 2회 — 에 7–36회.
 - **I. 비정형 환경 내비게이션(17–19):** 세 페이지(17은 Tier A 실습)에 3–15회.
 - **J. 사람 인지와 의도(20–23):** 네 페이지(23은 Tier A 실습)에 4–16회.
 - **K. 햅틱·원격조작(24):** 허브와 하위 페이지 아홉(그중 셋은 Tier A 실습: 24.4, 24.8, 24.9)에 10–28회. 과목이 이끈 트랙이고, 연구 프로그램만 보면 핵심은 24.4, 24.5, 24.8, 24.9의 §5–§6으로 약 4–13회다([[07-research-program/index|연구 프로그램 §6]]).
