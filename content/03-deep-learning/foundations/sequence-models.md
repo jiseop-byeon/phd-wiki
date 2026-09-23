@@ -16,7 +16,7 @@ mastery-when: "Raise when a recurrent, gated or state-space backbone, or the sta
 *Stands on [[03-deep-learning/foundations/index|1. Learning Systems]] and [[02-foundations/calculus-backprop|2. Calculus & Backprop]]. Second use of object **D5**, whose home is [[03-deep-learning/world-models/index|5. World Models]]: that page runs D5 forward to measure how a rollout's error grows, and this one reads the same line as the smallest recurrent network and runs it backwards. The sibling page [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]] is the other way to read a sequence.*
 
 > [!note] First pass · 처음이라면
-> Look at the picture first, then work the Worked case with a calculator: two steps forward, two back, five kernel taps, and the same two outputs again by convolution. Read §1–§3 and do problems 1–2. Open §4–§6 when a paper says "clipping", "forget-gate bias" or "GRU", and §7–§10 when it says "state space", "S4", "Mamba" or "linear time". §11 runs all of it.
+> Look at the picture first, then work the Worked case with a calculator: two steps forward, two back, five kernel taps, and the same two outputs again by convolution. Read §1–§3 and do problems 1–2. Open §4–§6 when a paper says "clipping", "forget-gate bias" or "GRU", and §7–§10 when it says "state space", "S4", "Mamba" or "linear time". §11 runs §1–§10 as code. Read §13 when a paper mixes linear and full-attention layers or claims a long memory.
 
 ### Running object · 이 페이지의 대상
 
@@ -511,6 +511,34 @@ Four readings.
 - **Time-invariant or selective.** Whether a layer convolves or selects decides both its cost (§10) and whether it can drop an input for what it contains (§9). "State-space model" alone does not say which.
 - **Recurrence in robotics clothing.** A Kalman filter with its steady-state gain $K$ is a linear time-invariant recurrence, $\hat x_t=(I-KH)A\hat x_{t-1}+(I-KH)Bu_t+Kz_t$ — a linear RNN whose weights come from a Riccati equation rather than from gradient descent, and whose memory is the spectral radius of $(I-KH)A$ ([[04-robotics/state-estimation-slam|3. State Estimation §5]]). The rollout error of [[03-deep-learning/world-models/index|5. World Models]], $\delta_H=\sum_t\hat\lambda^{H-1-t}e_t$, is this page's convolution with the one-step errors as input and powers of $\hat\lambda$ as the kernel. And [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]] trains its actor by backpropagating through imagined latent rollouts of a GRU-based model — BPTT through a learned world model, with the same products of Jacobians.
 
+### 13. Linear attention, the delta rule, and the hybrids of 2025
+
+§10 ended on a trade: attention's generation cache grows with every token, a linear recurrence carries a state of fixed size. Between 2020 and 2025 the two were shown to be closer than they look, and the largest models now mix them.
+
+**Attention written as a recurrence.** Replace softmax attention's $\exp(q^\top k)$ by a product of feature maps $\phi(q)^\top\phi(k)$, and the sum over the past factors: every output reads one running matrix,
+
+$$S_t=S_{t-1}+v_t\,\phi(k_t)^\top,\qquad o_t=\frac{S_t\,\phi(q_t)}{z_t^\top\phi(q_t)},\qquad z_t=z_{t-1}+\phi(k_t)$$
+
+a linear recurrence with a $d_v\times d_k$ state, the kind §7 computes. Katharopoulos et al. ([2020](https://arxiv.org/abs/2006.16236)) called it "Transformers are RNNs": time linear in the sequence length instead of quadratic, and up to $4{,}000$ times faster autoregressive prediction on very long sequences. Dao and Gu's Mamba-2 ([ICML 2024](https://arxiv.org/abs/2405.21060)) made the link exact in the other direction — a selective SSM of §9 with a scalar decay is a masked form of linear attention — and its core layer runs two to eight times faster than Mamba's.
+
+**What an additive memory cannot do.** Each step adds an outer product, so memories with overlapping keys blur together, a capacity limit Schlag, Irie and Schmidhuber ([2021](https://arxiv.org/abs/2102.11174)) derived by reading the state as "fast weights" written by the network. Their fix writes like a learning rule instead of a sum.
+
+> **The delta rule, defined.** A **delta-rule memory** is a *linear recurrence whose write corrects what the memory already returns for the new key, instead of adding to it*. Three defining conditions. The state is a **matrix read by a key**, $o=S\,k$. Each write **measures the error** between the value to be stored and what the state returns for its key. And it **moves the state along the key by a step $\beta$** — one step of least-squares regression of values on keys.
+>
+> $$S_t=S_{t-1}+\beta_t\,\big(v_t-S_{t-1}k_t\big)\,k_t^\top$$
+>
+> so with a unit key and $\beta_t=1$ the memory returns $v_t$ for $k_t$ exactly after the write.
+>
+> - **Example**: DeltaNet, made trainable in parallel over the sequence by Yang et al. ([2024](https://arxiv.org/abs/2406.06484)); Gated DeltaNet adds a decay $\alpha_t$ before the write, $S_t=\alpha_tS_{t-1}+\dots$, so the memory can also erase quickly — gating for erasure, the delta rule for targeted updates ([Yang, Kautz and Hatamizadeh, ICLR 2025](https://arxiv.org/abs/2412.06464)).
+> - **Non-example**: the additive linear attention above. It stores $v_tk_t^\top$ whatever the memory already holds.
+> - **Non-example**: softmax attention. It stores nothing: it keeps every key and value in the cache and re-reads them all.
+
+**By hand, two memories that overlap.** Store the value $1$ under the key $k_1=(1,0)$ and then $-1$ under $k_2=(0.6,0.8)$; both keys have unit length and overlap by $k_1^\top k_2=0.6$. Additively, $S=(1,0)+(-0.6,-0.8)=(0.4,-0.8)$, which returns $0.4$ for $k_1$ and $-0.4$ for $k_2$ — both memories blurred. By the delta rule with $\beta=1$, the first write gives $S_1=(1,0)$; the second measures the error $-1-S_1k_2=-1.6$ and writes $S_2=(1,0)-1.6\,(0.6,0.8)=(0.04,-1.28)$, which returns exactly $-1$ for $k_2$ and $0.04$ for $k_1$. The newest memory is exact and the overlapping old one is overwritten — an online regression with limited room, not a blur. With orthogonal keys both rules store both values exactly.
+
+**The hybrids.** A fixed-size state cannot hold everything, so the 2025 models keep a few full-attention layers among many linear ones. Jamba interleaves Transformer and Mamba layers with mixture-of-experts sublayers and fits in a single $80$ GB GPU, with strong results up to $256$K tokens of context ([Lieber et al., 2024](https://arxiv.org/abs/2403.19887)). Qwen3-Next stacks $48$ layers as twelve repeats of three Gated DeltaNet layers and one gated full-attention layer, each followed by an MoE sublayer of $512$ experts, with $80$B parameters, $3$B active and a native context of $262{,}144$ tokens ([model card](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct)). Only one layer in four keeps a KV cache, so at equal width the cache is a quarter of an all-attention stack's, and the other three carry a state that does not grow.
+
+**Why a robot cares.** Memory is the next thing policies are asked for — thirty seconds of context in GEN-1.5, a demonstration held in the prompt in [[03-deep-learning/vla/index|4. VLA §8]] — and its price is this section's arithmetic. On a PaliGemma-sized backbone, with $18$ layers and one key–value head of width $256$ in bf16, each token costs $2\times18\times256\times2=18{,}432$ bytes of cache, and every step re-reads all of them; a delta-rule layer's state stays the same size however long the robot has been working. Read a long-memory robot claim with §10's table beside it: which rows its layers sit in, and what it pays per step to remember.
+
 ### After reading
 
 - [ ] Unroll a linear RNN over a short sequence and backpropagate through time by hand, writing the shared weight's gradient as a sum with one term per step.
@@ -520,6 +548,7 @@ Four readings.
 - [ ] Write a linear SSM as a recurrence and as a convolution, compute its kernel, and name the three conditions the convolution needs.
 - [ ] Discretize a scalar continuous system by zero-order hold and read $\Delta$ as a keep-or-write dial.
 - [ ] Say which of recurrence, convolution, scan and attention a paper trains and deploys with, and what each costs in sequential steps and in generation memory.
+- [ ] Write linear attention as a recurrence, store two overlapping memories additively and by the delta rule, and say what a 3:1 hybrid keeps in its cache.
 
 ### Self-check
 
@@ -529,6 +558,7 @@ Four readings.
 4. An LSTM whose forget-gate bias starts at 0 carries its cell gradient worse than D5's plain linear recurrence. Using the lab's $T=20$ numbers, say why, and say what the gate structure does guarantee.
 5. S4 and Mamba are both linear in their state. Why can S4 train as a convolution and Mamba cannot, and what does Mamba use instead?
 6. For D5, the influence of $a_0$ on $z_{20}$ and the sensitivity $\partial z_{20}/\partial a_0$ are the same number. What is it, and why is the equality special to linear time-invariant recurrences?
+7. A policy must hold a $30$ s demonstration at $10$ frames per second and $256$ tokens per frame on a PaliGemma-sized backbone. How large is its KV cache, and what would a 3:1 hybrid of the same width change?
 
 > [!tip]- Answers
 > 1. It keeps $g_2z_1=0.072$, the term from the last step, and loses $g_1z_0=0.192$, which is $73\%$ of the $0.264$. The lost term is the credit assigned through the earlier step — how $\lambda$'s action on $z_0$ affected the loss one step later — so it is exactly the dependency across time that a recurrence exists to learn. A longer window keeps more of it, and on D5 every term beyond a $k$-step window carries a factor of $0.8^k$ or smaller.
@@ -537,6 +567,7 @@ Four readings.
 > 4. With $b_f=0$ the forget gate sits near $\sigma(0)=0.5$, so the direct cell path multiplies by about $0.5$ per step: $5.2\times10^{-7}$ at $T=20$ against D5's $0.0115$. What the structure guarantees is a path from $c_0$ to $c_T$ whose factors are the forget gates themselves, with no $W$ and no $\tanh'$ — so the decay rate is a learnable number that can sit near $1$. With $b_f=3$ the same cell keeps $0.385$ along that path. The guarantee is the path, not its rate.
 > 5. S4's $\Delta$, $B$ and $C$ are the same at every step, so the layer is time-invariant and has a single kernel $K_m=CA^mB$ that one convolution applies to the whole sequence. Mamba recomputes them from each input, so the weight on an input depends on when it arrived, and no single kernel exists. The recurrence is still linear in the state, so each step is an affine map, and affine maps compose associatively; Mamba computes all states with a parallel scan over those maps.
 > 6. $K_{19}=0.5\cdot0.8^{19}=0.0072$: changing $a_0$ by $\delta$ changes $z_{20}$ by exactly $0.0072\,\delta$, whatever $\delta$ is and whatever the other inputs are, and that is also the derivative. For a tanh RNN the effect of a change is not proportional to its size, and the local derivative depends on every other input through the saturation, so neither "influence" nor "sensitivity" is a single number, let alone the same one.
+> 7. $30\times10\times256=76{,}800$ tokens at $18{,}432$ bytes each is about $1.42$ GB, re-read at every generated step. With one attention layer in four at the same width, the cache falls to a quarter, about $0.35$ GB, and the other three layers carry states whose size does not depend on how much the robot has seen — the difference between a memory that grows with the task and one that does not.
 
 ### Problem set · 과제
 
@@ -592,13 +623,18 @@ for bf, Ug in ((1.0, 0.0), (3.0, 0.8)):          # the recommended bias; a candi
 - A. Gu and T. Dao, "Mamba: Linear-Time Sequence Modeling with Selective State Spaces," arXiv:2312.00752, 2023; *COLM 2024* — selection, the zero-order hold, Theorem 1, the interpretation of $\Delta$, and the scan.
 - I. Goodfellow, Y. Bengio and A. Courville, *Deep Learning*, MIT Press, 2016, ch. 10 — §10.7 on long-term dependencies, §10.10 on gated RNNs, §10.11.1 on clipping.
 - Every number on this page was computed here from D5's catalog values and the two objects frozen above, with NumPy 2.0.2; none is measured.
+- Katharopoulos, A., Vyas, A., Pappas, N. & Fleuret, F. "Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention." *ICML*, 2020.
+- Schlag, I., Irie, K. & Schmidhuber, J. "Linear Transformers Are Secretly Fast Weight Programmers." *ICML*, 2021.
+- Yang, S. et al. "Parallelizing Linear Transformers with the Delta Rule over Sequence Length." arXiv:2406.06484, 2024; Yang, S., Kautz, J. & Hatamizadeh, A. "Gated Delta Networks: Improving Mamba2 with Delta Rule." *ICLR*, 2025.
+- Dao, T. & Gu, A. "Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality." *ICML*, 2024.
+- Lieber, O. et al. "Jamba: A Hybrid Transformer-Mamba Language Model." arXiv:2403.19887, 2024; Qwen, "Qwen3-Next-80B-A3B-Instruct" model card, Hugging Face.
 
 ## 한국어
 
 *[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[02-foundations/calculus-backprop|2. 미적분과 역전파]] 위에 선다. 대상 **D5**, 두 번째 사용. D5의 집은 [[03-deep-learning/world-models/index|5. 월드모델]]이다. 그 페이지는 D5를 앞으로 돌려 rollout 오차가 어떻게 자라는지 재고, 이 페이지는 같은 식을 가장 작은 순환 신경망으로 읽어 뒤로 돌린다. 자매 페이지 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]가 시퀀스를 읽는 또 하나의 방법이다.*
 
 > [!note] 처음이라면 · First pass
-> 그림을 먼저 보고, 계산기를 들고 계산 절을 따라간다. 앞으로 두 스텝, 뒤로 두 스텝, 커널 탭 다섯 개, 그리고 같은 두 출력을 합성곱으로 한 번 더. §1–§3을 읽고 문제 1–2를 푼다. 논문이 "clipping", "forget 게이트 bias", "GRU"라고 하면 §4–§6을, "상태공간", "S4", "Mamba", "선형 시간"이라고 하면 §7–§10을 연다. §11이 전부를 돌린다.
+> 그림을 먼저 보고, 계산기를 들고 계산 절을 따라간다. 앞으로 두 스텝, 뒤로 두 스텝, 커널 탭 다섯 개, 그리고 같은 두 출력을 합성곱으로 한 번 더. §1–§3을 읽고 문제 1–2를 푼다. 논문이 "clipping", "forget 게이트 bias", "GRU"라고 하면 §4–§6을, "상태공간", "S4", "Mamba", "선형 시간"이라고 하면 §7–§10을 연다. §11이 §1–§10을 코드로 돌린다. 논문이 선형 층과 전체 어텐션 층을 섞거나 긴 기억을 내세우면 §13을 읽는다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -992,6 +1028,34 @@ $T=20$의 D5에서는 차이가 손으로 보인다. 점화식은 곱셈 $40$번
 - **시불변인가, 선택적인가.** 층이 합성곱을 하는지 선택을 하는지가 비용(§10)과, 담긴 내용을 보고 입력을 버릴 수 있는지(§9)를 함께 정한다. "상태공간 모델"이라는 말만으로는 어느 쪽인지 알 수 없다.
 - **로보틱스 옷을 입은 점화식.** 정상상태 이득 $K$를 쓰는 칼만 필터는 선형 시불변 점화식 $\hat x_t=(I-KH)A\hat x_{t-1}+(I-KH)Bu_t+Kz_t$다. 가중치가 경사 하강이 아니라 리카티 방정식에서 오는 선형 RNN이고, 그 기억은 $(I-KH)A$의 스펙트럼 반경이다([[04-robotics/state-estimation-slam|3. 상태 추정 §5]]). [[03-deep-learning/world-models/index|5. 월드모델]]의 rollout 오차 $\delta_H=\sum_t\hat\lambda^{H-1-t}e_t$는 한 스텝 오차를 입력으로, $\hat\lambda$의 거듭제곱을 커널로 하는 이 페이지의 합성곱이다. 그리고 [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]]는 GRU 기반 모델의 상상 속 잠재 rollout을 거슬러 역전파해 actor를 학습한다. 학습된 월드모델을 통한 BPTT이고, 야코비안의 곱도 같다.
 
+### 13. 선형 어텐션, 델타 규칙, 그리고 2025년의 하이브리드
+
+§10은 교환 하나로 끝났다. 어텐션의 생성 캐시는 토큰마다 자라고, 선형 재귀는 고정된 크기의 상태를 지닌다. 2020년부터 2025년 사이에 둘이 보기보다 가깝다는 것이 밝혀졌고, 가장 큰 모델들은 이제 둘을 섞는다.
+
+**재귀로 쓴 어텐션.** 소프트맥스 어텐션의 $\exp(q^\top k)$를 특징 사상의 곱 $\phi(q)^\top\phi(k)$로 바꾸면 과거에 대한 합이 인수분해되어, 모든 출력이 달리는 행렬 하나를 읽는다.
+
+$$S_t=S_{t-1}+v_t\,\phi(k_t)^\top,\qquad o_t=\frac{S_t\,\phi(q_t)}{z_t^\top\phi(q_t)},\qquad z_t=z_{t-1}+\phi(k_t)$$
+
+$d_v\times d_k$ 상태를 가진 선형 재귀, §7이 계산하는 종류다. Katharopoulos 외([2020](https://arxiv.org/abs/2006.16236))는 이것을 "Transformers are RNNs"라 불렀다. 시간이 시퀀스 길이의 제곱이 아니라 일차로 들고, 아주 긴 시퀀스에서 자기회귀 예측이 최대 $4{,}000$배 빨랐다. Dao와 Gu의 Mamba-2([ICML 2024](https://arxiv.org/abs/2405.21060))는 반대 방향에서 그 연결을 정확히 했다. 스칼라 감쇠를 가진 §9의 선택적 SSM은 가려진 형태의 선형 어텐션이고, 그 핵심 층은 Mamba보다 두 배에서 여덟 배 빠르다.
+
+**더하기만 하는 기억이 못 하는 것.** 스텝마다 외적을 더하므로 키가 겹치는 기억들은 뒤섞인다. Schlag, Irie, Schmidhuber([2021](https://arxiv.org/abs/2102.11174))는 상태를 망이 써넣는 "빠른 가중치"로 읽어 이 용량 한계를 끌어냈다. 그들의 처방은 합이 아니라 학습 규칙처럼 쓰는 것이다.
+
+> **델타 규칙의 정의.** **델타 규칙 기억**(delta-rule memory)은 *새 키에 대해 기억이 이미 돌려주는 것을 더하는 대신 바로잡는 쓰기를 가진 선형 재귀*다. 정의 조건은 셋이다. 상태는 **키로 읽는 행렬**, $o=S\,k$다. 쓸 때마다 저장할 값과 상태가 그 키에 돌려주는 값 사이의 **오차를 잰다.** 그리고 **키 방향으로 $\beta$만큼 상태를 옮긴다.** 값을 키에 회귀하는 최소제곱의 한 걸음이다.
+>
+> $$S_t=S_{t-1}+\beta_t\,\big(v_t-S_{t-1}k_t\big)\,k_t^\top$$
+>
+> 그래서 단위 키와 $\beta_t=1$이면, 쓰고 난 기억은 $k_t$에 정확히 $v_t$를 돌려준다.
+>
+> - **예**: Yang 외([2024](https://arxiv.org/abs/2406.06484))가 시퀀스 길이에 걸쳐 병렬로 학습할 수 있게 만든 DeltaNet. Gated DeltaNet은 쓰기 앞에 감쇠 $\alpha_t$를 더해 $S_t=\alpha_tS_{t-1}+\dots$로 만들어, 기억이 빨리 지울 수도 있게 한다. 지우는 데는 게이트, 겨냥한 갱신에는 델타 규칙이다([Yang, Kautz, Hatamizadeh, ICLR 2025](https://arxiv.org/abs/2412.06464)).
+> - **반례**: 위의 더하기 선형 어텐션. 기억이 이미 무엇을 지녔든 $v_tk_t^\top$를 저장한다.
+> - **반례**: 소프트맥스 어텐션. 아무것도 저장하지 않는다. 모든 키와 값을 캐시에 두고 전부 다시 읽는다.
+
+**손으로, 겹치는 기억 둘.** 키 $k_1=(1,0)$ 아래 값 $1$을, 이어서 $k_2=(0.6,0.8)$ 아래 $-1$을 저장한다. 두 키 모두 길이가 1이고 $k_1^\top k_2=0.6$만큼 겹친다. 더하기로는 $S=(1,0)+(-0.6,-0.8)=(0.4,-0.8)$이 되어 $k_1$에 $0.4$, $k_2$에 $-0.4$를 돌려준다. 두 기억 다 흐려졌다. $\beta=1$인 델타 규칙으로는 첫 쓰기가 $S_1=(1,0)$을 주고, 둘째 쓰기가 오차 $-1-S_1k_2=-1.6$을 재어 $S_2=(1,0)-1.6\,(0.6,0.8)=(0.04,-1.28)$을 쓴다. $k_2$에는 정확히 $-1$을, $k_1$에는 $0.04$를 돌려준다. 가장 새 기억은 정확하고 겹치는 옛 기억은 덮어써진다. 흐림이 아니라 공간이 한정된 온라인 회귀다. 키가 직교하면 두 규칙 모두 두 값을 정확히 저장한다.
+
+**하이브리드.** 고정된 크기의 상태는 모든 것을 담을 수 없으므로, 2025년의 모델들은 많은 선형 층 사이에 전체 어텐션 층 몇 개를 둔다. Jamba는 Transformer 층과 Mamba 층을 번갈아 두고 전문가 혼합 부층을 더해, $80$ GB GPU 한 장에 들어가면서 문맥 $256$K 토큰까지 강한 결과를 낸다([Lieber 외, 2024](https://arxiv.org/abs/2403.19887)). Qwen3-Next는 $48$층을 Gated DeltaNet 세 층과 게이트 전체 어텐션 한 층의 열두 번 반복으로 쌓고, 각 층 뒤에 전문가 $512$개의 MoE 부층을 두며, 파라미터 $80$B 중 $3$B가 활성이고 기본 문맥은 $262{,}144$ 토큰이다([모델 카드](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct)). 네 층 중 한 층만 KV 캐시를 두므로, 같은 폭에서 캐시는 모두 어텐션인 스택의 4분의 1이고, 나머지 세 층은 자라지 않는 상태를 지닌다.
+
+**로봇이 신경 쓰는 이유.** 기억은 정책에 다음으로 요구되는 것이다 — GEN-1.5의 30초 문맥, [[03-deep-learning/vla/index|4. VLA §8]]에서 프롬프트에 든 시연 — 그리고 그 값이 이 절의 셈이다. PaliGemma 크기의 백본, 곧 $18$층에 폭 $256$인 key–value 헤드 하나를 bf16으로 두면 토큰마다 캐시 $2\times18\times256\times2=18{,}432$바이트가 들고, 모든 스텝이 그것을 전부 다시 읽는다. 델타 규칙 층의 상태는 로봇이 얼마나 오래 일했든 크기가 같다. 긴 기억을 내세우는 로봇 주장은 §10의 표를 옆에 두고 읽어라. 그 층들이 어느 행에 있으며, 기억하려고 스텝마다 무엇을 치르는가.
+
 ### 읽고 나면 · After reading
 
 - [ ] 짧은 시퀀스 위에 선형 RNN을 펼치고 손으로 시간 역전파를 하며, 공유 가중치의 그래디언트를 스텝마다 항 하나인 합으로 쓸 수 있다.
@@ -1001,6 +1065,7 @@ $T=20$의 D5에서는 차이가 손으로 보인다. 점화식은 곱셈 $40$번
 - [ ] 선형 SSM을 점화식과 합성곱으로 쓰고, 커널을 계산하고, 합성곱에 필요한 조건 셋을 댈 수 있다.
 - [ ] 스칼라 연속 시스템을 zero-order hold로 이산화하고, $\Delta$를 간직하거나 쓰는 다이얼로 읽을 수 있다.
 - [ ] 논문이 점화식, 합성곱, 스캔, 어텐션 가운데 무엇으로 학습하고 배포하는지, 각각이 순차 스텝과 생성 메모리에서 무엇을 치르는지 말할 수 있다.
+- [ ] 선형 어텐션을 재귀로 쓰고, 겹치는 기억 둘을 더하기와 델타 규칙으로 저장해 보고, 3:1 하이브리드가 캐시에 무엇을 남기는지 말할 수 있다.
 
 ### 스스로 점검
 
@@ -1010,6 +1075,7 @@ $T=20$의 D5에서는 차이가 손으로 보인다. 점화식은 곱셈 $40$번
 4. forget 게이트 bias를 0에서 시작한 LSTM은 셀 그래디언트를 D5의 평범한 선형 점화식보다 못하게 나른다. 실습의 $T=20$ 숫자로 이유를 말하고, 게이트 구조가 실제로 보장하는 것을 말하라.
 5. S4와 Mamba는 둘 다 상태에 대해 선형이다. 왜 S4는 합성곱으로 학습할 수 있고 Mamba는 못 하며, Mamba는 대신 무엇을 쓰는가?
 6. D5에서 $a_0$이 $z_{20}$에 미치는 영향과 민감도 $\partial z_{20}/\partial a_0$은 같은 숫자다. 그 숫자는 무엇이며, 왜 이 일치가 선형 시불변 점화식에만 있는가?
+7. 정책이 PaliGemma 크기의 백본에서 초당 $10$프레임, 프레임마다 토큰 $256$개로 $30$초 시연을 지녀야 한다. KV 캐시는 얼마나 크며, 같은 폭의 3:1 하이브리드는 무엇을 바꾸는가?
 
 > [!tip]- 정답 · Answers
 > 1. 마지막 스텝의 항 $g_2z_1=0.072$를 간직하고, $0.264$의 $73\%$인 $g_1z_0=0.192$를 잃는다. 잃는 항은 이전 스텝을 거쳐 배정된 공로, 곧 $z_0$에 대한 $\lambda$의 작용이 한 스텝 뒤의 손실에 어떻게 영향을 주었는지다. 그러니 점화식이 배우려고 존재하는 시간을 건너는 의존성 바로 그것이다. 창을 길게 하면 더 많이 간직하고, D5에서 $k$ 스텝 창 너머의 항은 모두 $0.8^k$ 이하의 인자를 진다.
@@ -1018,6 +1084,7 @@ $T=20$의 D5에서는 차이가 손으로 보인다. 점화식은 곱셈 $40$번
 > 4. $b_f=0$이면 forget 게이트가 $\sigma(0)=0.5$ 근처에 앉아, 직접 셀 경로가 스텝당 약 $0.5$를 곱한다. $T=20$에서 D5의 $0.0115$에 대해 $5.2\times10^{-7}$이다. 구조가 보장하는 것은 $c_0$에서 $c_T$로 가는 경로의 인자가 $W$도 $\tanh'$도 없이 forget 게이트 그 자체라는 것이다. 그래서 감쇠율이 1 가까이에 앉을 수 있는, 학습 가능한 숫자가 된다. $b_f=3$이면 같은 셀이 그 경로를 따라 $0.385$를 간직한다. 보장되는 것은 경로이지 그 비율이 아니다.
 > 5. S4의 $\Delta$, $B$, $C$는 모든 스텝에서 같으므로 층이 시불변이고, 합성곱 한 번이 시퀀스 전체에 적용하는 단일 커널 $K_m=CA^mB$를 갖는다. Mamba는 입력마다 그것들을 다시 계산하므로 입력에 걸리는 가중치가 도착 시점에 의존하고, 단일 커널이 없다. 점화식은 여전히 상태에 대해 선형이라 각 스텝이 아핀 사상이고, 아핀 사상의 합성은 결합적이다. Mamba는 그 사상들 위의 병렬 스캔으로 모든 상태를 계산한다.
 > 6. $K_{19}=0.5\cdot0.8^{19}=0.0072$다. $a_0$을 $\delta$만큼 바꾸면 $\delta$가 얼마든, 다른 입력이 무엇이든 $z_{20}$이 정확히 $0.0072\,\delta$만큼 바뀌고, 그것이 곧 미분이기도 하다. tanh RNN에서는 변화의 효과가 그 크기에 비례하지 않고, 국소 미분이 포화를 통해 다른 모든 입력에 의존하므로, "영향"도 "민감도"도 한 숫자가 아니며 같은 숫자는 더더욱 아니다.
+> 7. $30\times10\times256=76{,}800$ 토큰에 토큰당 $18{,}432$바이트면 약 $1.42$ GB이고, 생성하는 스텝마다 다시 읽는다. 같은 폭에서 네 층 중 한 층만 어텐션이면 캐시는 4분의 1, 약 $0.35$ GB로 줄고, 나머지 세 층은 로봇이 얼마나 보았든 크기가 변하지 않는 상태를 지닌다. 과제와 함께 자라는 기억과 자라지 않는 기억의 차이다.
 
 ### 과제 · Problem set
 
@@ -1053,3 +1120,8 @@ Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D5**, 이 페이지
 - A. Gu and T. Dao, "Mamba: Linear-Time Sequence Modeling with Selective State Spaces," arXiv:2312.00752, 2023; *COLM 2024* — 선택, zero-order hold, 정리 1, $\Delta$의 해석, 스캔.
 - I. Goodfellow, Y. Bengio and A. Courville, *Deep Learning*, MIT Press, 2016, 10장 — 긴 의존성의 §10.7, 게이트 RNN의 §10.10, clipping의 §10.11.1.
 - 이 페이지의 모든 숫자는 D5의 카탈로그 값과 위에서 고정한 두 대상에서 NumPy 2.0.2로 여기서 계산했다. 측정한 것은 없다.
+- Katharopoulos, A., Vyas, A., Pappas, N. & Fleuret, F. "Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention." *ICML*, 2020.
+- Schlag, I., Irie, K. & Schmidhuber, J. "Linear Transformers Are Secretly Fast Weight Programmers." *ICML*, 2021.
+- Yang, S. et al. "Parallelizing Linear Transformers with the Delta Rule over Sequence Length." arXiv:2406.06484, 2024; Yang, S., Kautz, J. & Hatamizadeh, A. "Gated Delta Networks: Improving Mamba2 with Delta Rule." *ICLR*, 2025.
+- Dao, T. & Gu, A. "Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality." *ICML*, 2024.
+- Lieber, O. et al. "Jamba: A Hybrid Transformer-Mamba Language Model." arXiv:2403.19887, 2024; Qwen, "Qwen3-Next-80B-A3B-Instruct" 모델 카드, Hugging Face.

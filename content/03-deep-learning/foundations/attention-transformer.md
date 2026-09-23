@@ -16,7 +16,7 @@ mastery-when: "Raise when an attention variant, a positional scheme, or inferenc
 *Stands on [[03-deep-learning/foundations/index|1. Learning Systems]] and [[03-deep-learning/computer-vision/index|2. Computer Vision]]. Second use of object **D2**, whose home is the vision page: that page names attention and hands it on, and [[03-deep-learning/vlm/index|3. VLM]], [[03-deep-learning/vla/index|4. VLA]] and every Transformer-based paper note assume what is taught here.*
 
 > [!note] First pass · 처음이라면
-> Look at the picture first, then work the Worked case with a calculator — one head, sixteen scores, four softmax rows, four outputs, and the same head under a causal mask. Read §1–§3 and do problems 1–2. Open §4–§7 when a paper says "heads", "RoPE", "pre-norm" or "KV cache"; §8 runs all of it.
+> Look at the picture first, then work the Worked case with a calculator — one head, sixteen scores, four softmax rows, four outputs, and the same head under a causal mask. Read §1–§3 and do problems 1–2. Open §4–§7 when a paper says "heads", "RoPE", "pre-norm" or "KV cache"; §8 runs §1–§7 as code. Open §9 when a paper gives a model two parameter counts, total and active.
 
 ### Running object · 이 페이지의 대상
 
@@ -470,6 +470,30 @@ At every length the cached and uncached outputs agree with full causal attention
 - **The $\sqrt{d_k}$ does exactly one job.** Across widths the raw standard deviation follows $\sqrt{d_k}$ — $1.99$, $3.99$, $7.96$, $16.01$, $31.97$ — and every raw column drifts toward saturation, the largest weight from $0.42$ to $0.96$ and $\lVert J\rVert_F$ from $0.32$ to $0.06$. The scaled columns stay put at $0.23$–$0.25$, $2.36$–$2.38$ and $0.30$–$0.31$. The division removes the width from the problem, at initialisation.
 - **D2's worked row sits in the useful middle.** The $\alpha$ sweep places the worked scale ($0.707$) between the uniform row ($\alpha=0$, $\lVert J\rVert_F=0.4330$: all gradient, no selection) and saturation ($\alpha=4$, $0.0011$: selection, no gradient). Doubling the unscaled scores cuts $\lVert J\rVert_F$ five-fold, from $0.2741$ to $0.0543$, for a rise in the largest weight from $0.78$ to $0.96$.
 
+### 9. Mixture of experts: a feed-forward sublayer that routes
+
+§6's block applies one MLP to every token. A mixture-of-experts layer keeps several MLPs — the experts — and lets a small learned router send each token to only a few of them. Many of the largest language backbones of 2025–2026 are built this way — DeepSeek-V3 and Qwen3-Next below — and a VLA inherits whatever its backbone is.
+
+> **Mixture of experts, defined.** A **mixture-of-experts (MoE) layer** is a *sublayer that replaces one feed-forward network with $E$ of them and computes only a few per token*. Three defining conditions. There are **$E$ expert networks with separate weights**, usually copies of §6's MLP. A **learned router scores the experts for each token and only the top $k$ run** — conditional computation, so most experts do nothing for a given token. And the output is the **router-weighted sum of the selected experts**.
+>
+> $$\mathrm{MoE}(x)=\sum_{i\in\mathrm{Top}k(p(x))}p_i(x)\,E_i(x),\qquad p(x)=\operatorname{softmax}(xW_r)$$
+>
+> where $W_r\in\mathbb R^{d\times E}$ is the router and $E_i$ the $i$-th expert — so the layer holds $E$ experts' parameters but spends only $k$ experts' arithmetic on each token.
+>
+> - **Example**: the Switch Transformer routes each token to one expert, $k=1$ ([Fedus et al., 2022](https://arxiv.org/abs/2101.03961)); Mixtral 8x7B routes to two of eight, so each token has $47$B parameters available but uses $13$B ([Jiang et al., 2024](https://arxiv.org/abs/2401.04088)).
+> - **Non-example**: an ensemble. Every member runs on every input and the outputs are averaged, so the compute grows with the number of members; nothing is routed.
+> - **Non-example**: the Mixture of Transformers of [[03-deep-learning/vla/index|4. VLA §6]], as in π0. Weights are separate per modality, but a token's *type* chooses them; there is no learned router and no top-$k$.
+
+**On D2, by hand.** Give §6's block two experts and a router that reads the brightness coordinates, $W_r$ with columns $(1,0,0,0)$ and $(0,1,0,0)$. Token $x_1=(0,1,-1,-1)$ gets logits $(0,1)$, so $p=(0.269,\ 0.731)$ and it goes to expert 2 with weight $0.731$; the bright tokens $x_2$ and $x_4$ go to expert 1, the dark ones $x_1$ and $x_3$ to expert 2. Two tokens each: balanced.
+
+A router can also collapse. If both of its columns read brightness the same way, $(1,1,0,0)$ and $(0,0,0,0)$, every token scores $(1,0)$ and all four go to expert 1, which then does all the work while expert 2 learns nothing. The Switch Transformer's auxiliary loss catches this. With $f_i$ the fraction of tokens sent to expert $i$ and $P_i$ the router's mean probability for it,
+
+$$L_{\text{aux}}=E\sum_{i=1}^{E}f_i\,P_i$$
+
+is $2\,(0.5\cdot0.5+0.5\cdot0.5)=1$ for the balanced router, its minimum, and $2\,(1\cdot0.731+0\cdot0.269)=1.46$ for the collapsed one; added to the training loss, it pushes the router back toward even use. DeepSeek-V3 balances instead with a per-expert bias that is adjusted without an auxiliary loss ([DeepSeek-AI, 2024](https://arxiv.org/abs/2412.19437)).
+
+**Counting, and what it means on a robot.** §6 counted a block at $12d^2+13d$, $244$ numbers at $d=4$. With $E=2$ experts and the router, the block holds $4(d^2+d)+E(8d^2+5d)+dE+4d=400$, but a token routed to one expert touches only $252$ of them. Scaled up, the gap is the point: DeepSeek-V3 holds $671$B parameters and activates $37$B per token; Qwen3-Next holds $80$B and activates $3$B, routing each token to $10$ of $512$ experts plus one shared. Compute follows the active parameters and memory follows the total, because any expert may be chosen next and all must be resident. On a robot, where [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §11]] showed decoding to be bound by memory bandwidth, an MoE backbone saves arithmetic but not memory — which is one reason 4-bit formats matter on board.
+
 ### After reading
 
 - [ ] Compute one attention head on four tokens by hand — $Q$, $K$, $V$, the score table, the softmax rows, the outputs — and say what one row of $A$ means.
@@ -479,6 +503,7 @@ At every length the cached and uncached outputs agree with full causal attention
 - [ ] Prove that attention is permutation-equivariant and say what a learned table, a sinusoid and RoPE each supply.
 - [ ] Write a pre-norm block, define LayerNorm, count a block's $12d^2+13d$ parameters and $12nd^2+2n^2d$ multiply-adds, and say when the $n^2$ term takes over.
 - [ ] Say what a KV cache stores, why it is exact, and what its memory grows with.
+- [ ] Route D2's tokens through a two-expert router by hand, compute the load-balancing loss, and say what an MoE saves and what it does not.
 
 ### Self-check
 
@@ -488,6 +513,7 @@ At every length the cached and uncached outputs agree with full causal attention
 4. Under a causal mask in raster order, which D2 token loses all knowledge of the edge, and which keeps its brightness reading exactly? Why does a ViT encoder not use this mask?
 5. Why is a KV cache exact for a causal decoder and useless for a bidirectional encoder, and what does its memory grow with?
 6. LayerNorm and BatchNorm both subtract a mean and divide by a standard deviation. Over what does each compute them, and which property of LayerNorm keeps the block permutation-equivariant?
+7. A backbone has $80$B parameters of which $3$B are active per token, and a robot team says it "costs like a 3B model". What in that is true, and what is not?
 
 > [!tip]- Answers
 > 1. $Q$ is $n\times d_k$; $S$ and $A$ are $n\times n$; one head's output is $n\times d_v$; the concatenation is $n\times hd_v=n\times d$, and $W_O$ keeps it $n\times d$. The softmax runs along each row, over keys for a fixed query, so row $i$ is token $i$'s distribution over the tokens it reads — the weights of the convex combination that is its output.
@@ -496,6 +522,7 @@ At every length the cached and uncached outputs agree with full causal attention
 > 4. Token 1: it may read only itself, so its bright share falls from $0.804$ to $0$. Token 2 still sees the edge, because its across-edge neighbour, token 1, comes first; on these scores its reading is even exactly unchanged, $0.195570$. A ViT encoder generates nothing, so there is no future to hide; the mask would only throw away, for each patch, every patch after it — for token 1, its only view of the edge.
 > 5. Causal attention makes position $s$'s keys and values at every layer depend only on tokens $1,\dots,s$, so appending a token leaves them unchanged and reusing them gives identical numbers (the lab agrees to $10^{-12}$). In a bidirectional encoder every earlier token reads the new one, so its next-layer keys and values change and nothing stays valid. The cache grows linearly in context length, layers and width — $2Lnd$ numbers per sequence, 512 KiB per token for the illustrative $d=4096$, 32-layer, 16-bit decoder of §7.
 > 6. LayerNorm computes them over the $d$ features of one token; BatchNorm over the samples of a batch, feature by feature. LayerNorm never mixes tokens or samples, so it acts identically on every token and commutes with reordering them; it also computes the same thing at batch size one and at test time.
+> 7. Per token it multiplies — and, decoding one token at a time, reads — only the active parameters, so its arithmetic and its bandwidth per token resemble a 3B model's. Its memory does not: any expert may be chosen next, so all $80$B must be resident, $160$ GB in bf16, beyond a $128$ GB Jetson Thor, and about $45$ GB in NVFP4 ([[03-deep-learning/foundations/training-at-scale|1.3 §11]]).
 
 ### Problem set · 과제
 
@@ -602,13 +629,18 @@ for n in (16, 64, 256, 1024, 4096):
 - Shazeer, N. "Fast transformer decoding: One write-head is all you need." arXiv:1911.02150, 2019.
 - Ainslie, J., Lee-Thorp, J., de Jong, M., Zemlyanskiy, Y., Lebrón, F. & Sanghai, S. "GQA: Training generalized multi-query transformer models from multi-head checkpoints." *EMNLP*, 2023.
 - Su, J., Lu, Y., Pan, S., Murtadha, A., Wen, B. & Liu, Y. "RoFormer: Enhanced transformer with rotary position embedding." arXiv:2104.09864, 2021.
+- Shazeer, N. et al. "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer." *ICLR*, 2017.
+- Fedus, W., Zoph, B. & Shazeer, N. "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity." *JMLR* 23(120), 2022 — top-1 routing and the auxiliary load-balancing loss.
+- Jiang, A. Q. et al. "Mixtral of Experts." arXiv:2401.04088, 2024 — 47B total, 13B active.
+- DeepSeek-AI. "DeepSeek-V3 Technical Report." arXiv:2412.19437, 2024 — 671B total, 37B active, balancing without an auxiliary loss.
+- Qwen. "Qwen3-Next-80B-A3B-Instruct" model card, Hugging Face — 80B total, 3B active, 512 experts with 10 routed and 1 shared.
 
 ## 한국어
 
 *[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]] 위에 선다. 대상 **D2** — 집은 비전 페이지 — 를 두 번째로 쓴다. 그 페이지가 이름만 대고 넘긴 어텐션을 여기서 가르치며, [[03-deep-learning/vlm/index|3. VLM]], [[03-deep-learning/vla/index|4. VLA]], 그리고 Transformer를 쓰는 모든 논문 노트가 이 내용을 전제한다.*
 
 > [!note] 처음이라면 · First pass
-> 그림을 먼저 본 뒤, 계산기로 계산 절을 따라간다. 헤드 하나, 점수 열여섯 개, softmax 행 넷, 출력 넷, 그리고 인과 마스크를 건 같은 헤드다. §1–§3을 읽고 문제 1–2를 푼다. §4–§7은 논문이 "헤드", "RoPE", "pre-norm", "KV 캐시"를 말할 때 연다. §8이 전부를 돌린다.
+> 그림을 먼저 본 뒤, 계산기로 계산 절을 따라간다. 헤드 하나, 점수 열여섯 개, softmax 행 넷, 출력 넷, 그리고 인과 마스크를 건 같은 헤드다. §1–§3을 읽고 문제 1–2를 푼다. §4–§7은 논문이 "헤드", "RoPE", "pre-norm", "KV 캐시"를 말할 때 연다. §8이 §1–§7을 코드로 돌린다. 논문이 모델에 파라미터 수를 둘 — 전체와 활성 — 주면 §9를 연다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -944,6 +976,30 @@ $n^2$이 먼저 무는 곳은 메모리다. 표준 구현은 헤드마다 $n\tim
 - **$\sqrt{d_k}$는 정확히 한 가지 일을 한다.** 폭에 걸쳐 날점수의 표준편차는 $\sqrt{d_k}$를 따르고 — $1.99$, $3.99$, $7.96$, $16.01$, $31.97$ — 날것의 모든 열이 포화 쪽으로 흘러간다. 최대 가중치는 $0.42$에서 $0.96$으로, $\lVert J\rVert_F$는 $0.32$에서 $0.06$으로. 스케일한 열은 $0.23$–$0.25$, $2.36$–$2.38$, $0.30$–$0.31$에 머문다. 나눗셈이 초기화 때 문제에서 폭을 지운다.
 - **D2의 계산 행은 쓸모 있는 가운데에 있다.** $\alpha$ 스윕은 계산 절의 스케일($0.707$)을 균등한 행($\alpha=0$, $\lVert J\rVert_F=0.4330$: 그래디언트는 전부, 선택은 없음)과 포화($\alpha=4$, $0.0011$: 선택은 있고 그래디언트는 없음) 사이에 놓는다. 스케일 없는 점수를 두 배로 하면 $\lVert J\rVert_F$가 $0.2741$에서 $0.0543$으로 다섯 배 줄고, 최대 가중치는 $0.78$에서 $0.96$으로 오른다.
 
+### 9. 전문가 혼합: 경로를 고르는 feed-forward 부층
+
+§6의 블록은 모든 토큰에 MLP 하나를 쓴다. 전문가 혼합 층은 MLP 여러 개 — 전문가 — 를 두고, 작은 학습된 라우터가 각 토큰을 그중 몇 개에만 보내게 한다. 2025–2026년의 가장 큰 언어 백본 상당수가 이렇게 지어졌고 — 아래의 DeepSeek-V3와 Qwen3-Next — VLA는 백본이 무엇이든 그것을 물려받는다.
+
+> **전문가 혼합의 정의.** **전문가 혼합**(mixture of experts, MoE) **층**은 *feed-forward 망 하나를 $E$개로 바꾸고 토큰마다 몇 개만 계산하는 부층*이다. 정의 조건은 셋이다. **가중치가 따로인 전문가 망 $E$개**가 있고, 대개 §6 MLP의 복사본이다. **학습된 라우터가 토큰마다 전문가에 점수를 매기고 상위 $k$개만 돈다.** 조건부 계산이라, 주어진 토큰에 대해 대부분의 전문가는 아무것도 하지 않는다. 그리고 출력은 **고른 전문가들을 라우터 가중치로 더한 합**이다.
+>
+> $$\mathrm{MoE}(x)=\sum_{i\in\mathrm{Top}k(p(x))}p_i(x)\,E_i(x),\qquad p(x)=\operatorname{softmax}(xW_r)$$
+>
+> 여기서 $W_r\in\mathbb R^{d\times E}$는 라우터, $E_i$는 $i$번째 전문가다. 그래서 층은 전문가 $E$개의 파라미터를 지니지만 토큰마다 전문가 $k$개의 연산만 쓴다.
+>
+> - **예**: Switch Transformer는 토큰마다 전문가 하나로 보낸다, $k=1$([Fedus 외, 2022](https://arxiv.org/abs/2101.03961)). Mixtral 8x7B는 여덟 중 둘로 보내므로, 각 토큰이 쓸 수 있는 파라미터는 $47$B이지만 쓰는 것은 $13$B다([Jiang 외, 2024](https://arxiv.org/abs/2401.04088)).
+> - **반례**: 앙상블. 모든 구성원이 모든 입력에서 돌고 출력을 평균하므로 연산이 구성원 수만큼 늘고, 경로를 고르지 않는다.
+> - **반례**: π0처럼 [[03-deep-learning/vla/index|4. VLA §6]]의 Mixture of Transformers. 가중치가 모달리티마다 따로지만 토큰의 *종류*가 그것을 고른다. 학습된 라우터도 top-$k$도 없다.
+
+**D2에서, 손으로.** §6의 블록에 전문가 둘과, 밝기 좌표를 읽는 라우터 — 열이 $(1,0,0,0)$과 $(0,1,0,0)$인 $W_r$ — 를 준다. 토큰 $x_1=(0,1,-1,-1)$은 로짓 $(0,1)$을 얻어 $p=(0.269,\ 0.731)$이므로 가중치 $0.731$로 전문가 2에 간다. 밝은 토큰 $x_2$와 $x_4$는 전문가 1로, 어두운 $x_1$과 $x_3$은 전문가 2로 간다. 둘씩이다. 균형이 맞는다.
+
+라우터는 무너질 수도 있다. 두 열이 밝기를 같은 방식으로 읽어 $(1,1,0,0)$과 $(0,0,0,0)$이면, 모든 토큰이 $(1,0)$을 받아 넷 다 전문가 1로 가고, 전문가 1이 일을 다 하는 동안 전문가 2는 아무것도 배우지 않는다. Switch Transformer의 보조 손실이 이것을 잡는다. $f_i$를 전문가 $i$로 보낸 토큰 비율, $P_i$를 그 전문가에 대한 라우터의 평균 확률이라 하면
+
+$$L_{\text{aux}}=E\sum_{i=1}^{E}f_i\,P_i$$
+
+는 균형 잡힌 라우터에서 $2\,(0.5\cdot0.5+0.5\cdot0.5)=1$로 최솟값이고, 무너진 라우터에서 $2\,(1\cdot0.731+0\cdot0.269)=1.46$이다. 학습 손실에 더하면 라우터를 고르게 쓰는 쪽으로 되민다. DeepSeek-V3는 대신 보조 손실 없이 조정하는 전문가별 편향으로 균형을 맞춘다([DeepSeek-AI, 2024](https://arxiv.org/abs/2412.19437)).
+
+**세기, 그리고 로봇에서의 뜻.** §6은 블록을 $12d^2+13d$, $d=4$에서 숫자 $244$개로 셌다. 전문가 $E=2$개와 라우터를 넣으면 블록은 $4(d^2+d)+E(8d^2+5d)+dE+4d=400$개를 지니지만, 전문가 하나로 간 토큰은 그중 $252$개만 건드린다. 규모를 키우면 그 차이가 요점이다. DeepSeek-V3는 파라미터 $671$B를 지니고 토큰마다 $37$B를 활성화한다. Qwen3-Next는 $80$B를 지니고 $3$B를 활성화하며, 토큰마다 전문가 $512$개 중 $10$개와 공유 전문가 하나로 보낸다. 연산은 활성 파라미터를 따르고 메모리는 전체를 따른다. 다음에 어느 전문가든 고를 수 있으니 모두 올라와 있어야 하기 때문이다. [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §11]]이 디코딩은 메모리 대역폭에 묶인다고 보인 로봇에서, MoE 백본은 연산을 아끼지만 메모리는 아끼지 않는다. 4비트 형식이 로봇 위에서 중요한 이유 하나가 그것이다.
+
 ### 읽고 나면 · After reading
 
 - [ ] 토큰 넷 위에서 어텐션 헤드 하나를 손으로 계산하고 — $Q$, $K$, $V$, 점수 표, softmax 행, 출력 — $A$의 행 하나가 무슨 뜻인지 말할 수 있다.
@@ -953,6 +1009,7 @@ $n^2$이 먼저 무는 곳은 메모리다. 표준 구현은 헤드마다 $n\tim
 - [ ] 어텐션이 순열 등변임을 증명하고, 학습된 표, 정현파, RoPE가 각각 무엇을 공급하는지 말할 수 있다.
 - [ ] pre-norm 블록을 쓰고, LayerNorm을 정의하고, 블록의 파라미터 $12d^2+13d$개와 곱셈-덧셈 $12nd^2+2n^2d$번을 세고, $n^2$ 항이 언제 지배하는지 말할 수 있다.
 - [ ] KV 캐시가 무엇을 저장하는지, 왜 정확한지, 메모리가 무엇과 함께 자라는지 말할 수 있다.
+- [ ] D2의 토큰을 전문가 둘인 라우터로 손으로 보내고, 부하 균형 손실을 계산하고, MoE가 무엇을 아끼고 무엇을 아끼지 않는지 말할 수 있다.
 
 ### 스스로 점검
 
@@ -962,6 +1019,7 @@ $n^2$이 먼저 무는 곳은 메모리다. 표준 구현은 헤드마다 $n\tim
 4. 래스터 순서의 인과 마스크에서, 모서리에 대한 앎을 전부 잃는 D2 토큰은 무엇이고 밝기 읽기를 정확히 유지하는 토큰은 무엇인가? ViT 인코더는 왜 이 마스크를 쓰지 않는가?
 5. KV 캐시는 왜 인과 디코더에서 정확하고 양방향 인코더에서는 쓸모가 없으며, 그 메모리는 무엇과 함께 자라는가?
 6. LayerNorm과 BatchNorm은 둘 다 평균을 빼고 표준편차로 나눈다. 각각 무엇에 걸쳐 그것을 계산하며, LayerNorm의 어떤 성질이 블록의 순열 등변성을 지키는가?
+7. 어떤 백본은 파라미터 $80$B 가운데 토큰마다 $3$B가 활성이고, 로봇 팀은 그것이 "3B 모델만큼 든다"고 말한다. 그 말에서 무엇이 참이고 무엇이 아닌가?
 
 > [!tip]- 정답 · Answers
 > 1. $Q$는 $n\times d_k$, $S$와 $A$는 $n\times n$, 헤드 하나의 출력은 $n\times d_v$, 이어 붙인 것은 $n\times hd_v=n\times d$이고 $W_O$가 그것을 $n\times d$로 유지한다. softmax는 각 행을 따라, 곧 쿼리 하나를 고정하고 키에 걸쳐 돈다. 그래서 행 $i$는 토큰 $i$가 읽는 토큰들에 대한 분포이고, 그 출력인 볼록 결합의 가중치다.
@@ -970,6 +1028,7 @@ $n^2$이 먼저 무는 곳은 메모리다. 표준 구현은 헤드마다 $n\tim
 > 4. 토큰 1이다. 자기 자신만 읽을 수 있어서 밝은 몫이 $0.804$에서 $0$으로 떨어진다. 토큰 2는 모서리 건너편 이웃인 토큰 1이 앞에 오므로 여전히 모서리를 보고, 이 점수에서는 읽기가 아예 정확히 같은 $0.195570$이다. ViT 인코더는 아무것도 생성하지 않으니 숨길 미래가 없다. 마스크는 각 패치에서 뒤에 오는 패치를 모두 버릴 뿐이고, 토큰 1에게는 모서리를 보는 유일한 창을 버린다.
 > 5. 인과 어텐션에서는 위치 $s$의 모든 층의 키와 값이 토큰 $1,\dots,s$에만 의존하므로, 토큰을 덧붙여도 바뀌지 않고 다시 쓰면 같은 숫자가 나온다(실습은 $10^{-12}$까지 일치한다). 양방향 인코더에서는 앞선 모든 토큰이 새 토큰을 읽으므로 다음 층의 키와 값이 바뀌고, 유효하게 남는 것이 없다. 캐시는 문맥 길이, 층 수, 폭에 선형으로 자란다. 시퀀스당 $2Lnd$개이고, §7의 $d=4096$, 32층, 16비트 예시 디코더에서는 토큰당 512 KiB다.
 > 6. LayerNorm은 토큰 하나의 $d$개 특징에 걸쳐, BatchNorm은 특징마다 배치의 샘플들에 걸쳐 계산한다. LayerNorm은 토큰이나 샘플을 섞는 일이 없으므로 모든 토큰에 똑같이 작용하고 토큰의 재배열과 교환된다. 배치 크기 1에서도, 시험 때도 같은 것을 계산한다.
+> 7. 토큰마다 활성 파라미터만 곱하고 — 토큰을 하나씩 디코딩할 때는 — 그것만 읽으므로, 토큰당 연산과 대역폭은 3B 모델과 비슷하다. 메모리는 그렇지 않다. 다음에 어느 전문가든 고를 수 있으니 $80$B 모두가 올라와 있어야 하고, bf16으로 $160$ GB라 $128$ GB의 Jetson Thor를 넘으며, NVFP4로 약 $45$ GB다([[03-deep-learning/foundations/training-at-scale|1.3 §11]]).
 
 ### 과제 · Problem set
 
@@ -1016,3 +1075,8 @@ Tier A. 이 페이지, 선수 페이지, [[03-deep-learning/lab-objects|0. Lab O
 - Shazeer, N. "Fast transformer decoding: One write-head is all you need." arXiv:1911.02150, 2019.
 - Ainslie, J., Lee-Thorp, J., de Jong, M., Zemlyanskiy, Y., Lebrón, F. & Sanghai, S. "GQA: Training generalized multi-query transformer models from multi-head checkpoints." *EMNLP*, 2023.
 - Su, J., Lu, Y., Pan, S., Murtadha, A., Wen, B. & Liu, Y. "RoFormer: Enhanced transformer with rotary position embedding." arXiv:2104.09864, 2021.
+- Shazeer, N. et al. "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer." *ICLR*, 2017.
+- Fedus, W., Zoph, B. & Shazeer, N. "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity." *JMLR* 23(120), 2022 — top-1 경로와 보조 부하 균형 손실.
+- Jiang, A. Q. et al. "Mixtral of Experts." arXiv:2401.04088, 2024 — 전체 47B, 활성 13B.
+- DeepSeek-AI. "DeepSeek-V3 Technical Report." arXiv:2412.19437, 2024 — 전체 671B, 활성 37B, 보조 손실 없는 균형.
+- Qwen. "Qwen3-Next-80B-A3B-Instruct" 모델 카드, Hugging Face — 전체 80B, 활성 3B, 전문가 512개 중 10개 경로와 1개 공유.

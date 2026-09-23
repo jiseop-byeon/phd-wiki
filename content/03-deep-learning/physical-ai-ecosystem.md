@@ -52,7 +52,7 @@ NVIDIA is the one player that sells every layer a robot-learning project touches
 
 | layer | the pieces | what a robot researcher uses it for | in this wiki |
 |---|---|---|---|
-| compute on the robot | **Jetson Thor**: a Blackwell GPU rated at $2{,}070$ FP4 TFLOPS (sparse), $128$ GB of memory, $40$–$130$ W, aimed at humanoids | running a VLA such as GR00T on board rather than over a network | [[04-robotics/robot-systems-deployment\|10. Robot Systems]] for the latency budget |
+| compute on the robot | **Jetson Thor**: a Blackwell GPU rated at $2{,}070$ FP4 TFLOPS (sparse), $128$ GB of memory, $40$–$130$ W, aimed at humanoids | running a VLA such as GR00T on board rather than over a network; what its fp4 rating means for a policy is [[03-deep-learning/foundations/training-at-scale\|1.3 §11]] | [[04-robotics/robot-systems-deployment\|10. Robot Systems]] for the latency budget |
 | scene description | **OpenUSD** scenes in **Omniverse** | one scene file shared by the simulator, the renderer and the tools | — |
 | simulation | **Isaac Sim** (the simulator: PhysX physics, RTX-rendered sensors); **Isaac Lab** (the robot-learning framework on top, successor of Isaac Gym and Orbit; 3.0 in early access since 2026-09-16); **Newton** (an open GPU physics engine begun with Google DeepMind and Disney Research, MuJoCo-Warp as its main solver) | reinforcement learning at thousands of parallel environments, and simulated evaluation | [[06-research-practice/simulators-benchmarks-datasets\|Simulators, Benchmarks & Datasets §2]], with its license and version traps |
 | data generation | **Isaac Lab Mimic** (about ten teleoperated demonstrations, cut into subtasks and re-posed around the objects, become about a thousand); **GR00T-Dreams** (DreamGen: a video world model fine-tuned on the robot makes new videos, and pseudo-actions are recovered from them); **Cosmos-Transfer** (turns simulator renderings into realistic video) | more demonstrations than a team can teleoperate | [[04-robotics/teleoperation-demonstration\|12. Teleoperation]], [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] |
@@ -107,7 +107,7 @@ NVIDIA는 로봇 학습 프로젝트가 닿는 모든 층 — 로봇에 실리�
 
 | 층 | 구성 | 로봇 연구자가 쓰는 곳 | 이 위키에서 |
 |---|---|---|---|
-| 로봇 위 연산 | **Jetson Thor**: FP4 기준 $2{,}070$ TFLOPS(희소)의 Blackwell GPU, 메모리 $128$ GB, $40$–$130$ W, 휴머노이드를 겨냥 | GR00T 같은 VLA를 네트워크 너머가 아니라 로봇 위에서 돌리기 | 지연 예산은 [[04-robotics/robot-systems-deployment\|10. 로봇 시스템]] |
+| 로봇 위 연산 | **Jetson Thor**: FP4 기준 $2{,}070$ TFLOPS(희소)의 Blackwell GPU, 메모리 $128$ GB, $40$–$130$ W, 휴머노이드를 겨냥 | GR00T 같은 VLA를 네트워크 너머가 아니라 로봇 위에서 돌리기. fp4 수치가 정책에 무엇을 뜻하는지는 [[03-deep-learning/foundations/training-at-scale\|1.3 §11]] | 지연 예산은 [[04-robotics/robot-systems-deployment\|10. 로봇 시스템]] |
 | 장면 기술 | **Omniverse**의 **OpenUSD** 장면 | 시뮬레이터·렌더러·도구가 함께 쓰는 장면 파일 하나 | — |
 | 시뮬레이션 | **Isaac Sim**(시뮬레이터: PhysX 물리, RTX로 렌더링한 센서); **Isaac Lab**(그 위의 로봇 학습 프레임워크, Isaac Gym과 Orbit의 후속, 3.0은 2026-09-16부터 얼리 액세스); **Newton**(Google DeepMind·Disney Research와 시작한 오픈 GPU 물리 엔진, 주 솔버는 MuJoCo-Warp) | 병렬 환경 수천 개의 강화학습, 시뮬레이션 평가 | 라이선스와 버전 함정까지 [[06-research-practice/simulators-benchmarks-datasets\|시뮬레이터·벤치마크·데이터셋 §2]] |
 | 데이터 생성 | **Isaac Lab Mimic**(원격조작 시연 약 열 개를 하위 과제로 자르고 물체 기준으로 다시 놓아 약 천 개로 늘린다); **GR00T-Dreams**(DreamGen: 로봇에 맞춰 미세조정한 비디오 월드모델이 새 영상을 만들고, 거기서 의사 행동을 복원한다); **Cosmos-Transfer**(시뮬레이터 렌더링을 실제 같은 영상으로 바꾼다) | 팀이 원격조작할 수 있는 것보다 많은 시연 | [[04-robotics/teleoperation-demonstration\|12. 원격조작]], [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] |

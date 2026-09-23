@@ -20,7 +20,7 @@ mastery-when: "Raise to Mastery when a reward design, an RL fine-tuning recipe o
 7. RL Basics gave the MDP, the Bellman equations, TD learning, the deadly triad, policy gradients and PPO. A robot-learning paper spends its pages elsewhere: whether the policy learns from demonstrations or from a reward, what that reward says, how the policy finds anything worth learning, how RL is run on a machine that can break, how the experiment was set up, and how a reward can be learned from people when nobody can write it down. That layer is this page.
 
 > [!note] First pass · 처음이라면
-> Read the running object, the picture and the Worked case first: they are §1 and §2 on one two-state MDP. Then read §1 (which half of the field your papers live in) and §2 (the reward), then §4 and §5, which are what a robot paper's method and experiment sections are made of. §3, on exploration, is short: read it when a paper's exploration scheme puzzles you. §6, learning the reward, is second-pass unless you read RLHF, DPO or inverse-RL papers; it assumes §2, and its four subsections can be read one at a time.
+> Read the running object, the picture and the Worked case first: they are §1 and §2 on one two-state MDP. Then read §1 (which half of the field your papers live in) and §2 (the reward), then §4 and §5, which are what a robot paper's method and experiment sections are made of. §3, on exploration, is short: read it when a paper's exploration scheme puzzles you. §6, learning the reward, is second-pass unless you read RLHF, DPO or inverse-RL papers; it assumes §2, and its four subsections can be read one at a time. Read §8 when a paper post-trains a policy from success alone, or says GRPO.
 
 ### Running object · 이 페이지의 대상
 
@@ -643,6 +643,26 @@ so moving is better exactly while $p<0.9/1.9=0.474$. Nothing in the world change
 
 **When it is not the problem.** Coordination often has a control answer that needs no learning at all: [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 §8]] couples one leader to several followers with passivity-preserving couplings plus an avoidance function, and construction fleets today are supervised centrally rather than trained jointly ([[05-construction-robotics/lineage|lineage, Era 3]]). For the research program here the core is one manipulator in contact ([[07-research-program/index|7. §7]]), so multi-agent learning stays at Literacy: know the failure mode, and reach for it only if the contribution is the coordination itself.
 
+### 8. Group-relative RL: reasoning models, and VLAs that learn from success
+
+The reasoning language models of 2025 were trained with a policy-gradient method whose shape fits robots unusually well. DeepSeek-R1-Zero learned to reason from reinforcement learning alone, with rewards a program can check — was the final answer right, was the format kept — and no human-written reasoning traces; self-reflection and verification emerged along the way ([DeepSeek-AI, *Nature* 645, 2025](https://arxiv.org/abs/2501.12948)). The optimizer was GRPO.
+
+> **Group-relative policy optimization, defined.** **GRPO** is a *policy-gradient estimator whose baseline is a group of samples from the same starting point* rather than a learned value function. Three defining conditions. For each prompt or start state it **samples a group of $G$ outcomes from the current policy**. Each outcome's **advantage is its reward standardized within the group**, so no critic network is trained. And the policy is **updated with PPO's clipped ratio** ([[02-foundations/rl-basics|7. RL Basics §4]]), with a KL penalty to a reference policy added to the loss rather than to the reward.
+>
+> $$\hat A_i=\frac{r_i-\operatorname{mean}(r_1,\dots,r_G)}{\operatorname{std}(r_1,\dots,r_G)},\qquad J(\theta)=\mathbb E\Big[\frac1G\sum_{i=1}^{G}\frac{1}{|o_i|}\sum_{t}\min\big(\rho_{i,t}\hat A_i,\ \operatorname{clip}(\rho_{i,t},1-\varepsilon,1+\varepsilon)\,\hat A_i\big)-\beta\,D_{\mathrm{KL}}\big(\pi_\theta\,\Vert\,\pi_{\text{ref}}\big)\Big]$$
+>
+> where $o_i$ is the $i$-th sampled output, $|o_i|$ its length in tokens or steps, and $\rho_{i,t}$ the ratio of the new policy's probability for its $t$-th token to the old policy's — so every token of an output shares that output's advantage.
+>
+> - **Example**: DeepSeekMath, where GRPO was introduced: RL on English instruction data lifted GSM8K from $82.9\%$ to $88.2\%$ and MATH from $46.8\%$ to $51.7\%$ ([Shao et al., 2024](https://arxiv.org/abs/2402.03300)).
+> - **Non-example**: PPO with a critic. Its baseline is a value network $V_\psi$ trained alongside the policy, which is the memory GRPO saves.
+> - **Non-example**: DPO (§6.3). It samples nothing and computes no reward; it learns from a fixed set of preference pairs.
+
+**On the bucket MDP, by hand.** Reward a rollout $1$ if the policy moves the bucket at once from $A$ and $0$ if it waits. Four rollouts from $A$ — move, wait, wait, move — give rewards $(1,0,0,1)$, mean $0.5$, standard deviation $0.5$, and advantages $(+1,-1,-1,+1)$: two pushes up on $\log\pi(\text{move}\mid A)$ and two down on $\log\pi(\text{wait}\mid A)$. [[02-foundations/rl-basics|7. RL Basics §4]] took its baseline $b=0.6$ from a known policy; GRPO estimates it from the group. Two other groups show what the estimator does. One success in four, $(1,0,0,0)$, gets $+1.73$ against $-0.58$ for each failure: a rare success is pushed hard. Four successes, $(1,1,1,1)$, have a standard deviation of zero, so no member differs from the mean and the group teaches nothing — the same holds for four failures. (These use the population standard deviation; the sample form, dividing by $G-1$, scales every advantage here by $\sqrt{3/4}$ and changes no sign.)
+
+**Why it fits robots.** A robot's most natural reward is a binary success check, and its most natural group is one start state rolled out several times. RIPT-VLA post-trains pretrained VLAs from sparse binary success alone, with dynamic rollout sampling that drops the uninformative all-same groups and a leave-one-out advantage; it reports QueST improved by $21.2\%$ and OpenVLA-OFT raised to $97.5\%$ ([Tan et al., 2025](https://arxiv.org/abs/2505.17016)). VLA-RL treats a manipulation trajectory as a multi-turn conversation so that an autoregressive VLA can be trained online at the trajectory level ([Lu et al., 2025](https://arxiv.org/abs/2505.18719)). The reasoning models also showed that thinking longer can be bought at test time: s1 fine-tuned on only $1{,}000$ curated examples and controlled its thinking by "budget forcing" — cutting it short, or appending *Wait* to lengthen it ([Muennighoff et al., 2025](https://arxiv.org/abs/2501.19393)). On a robot that extra thinking is paid in rate, the cost counted in [[03-deep-learning/vla/index|4. VLA §6]].
+
+**What to ask of a group-relative robot paper**, beside §5's checklist: where the rollouts ran, simulation or the real machine, and how many went into each update; what decides success, since the success detector *is* the reward; the group size, and what happened to groups that all succeeded or all failed; the KL reference; and whether the gain held on the real robot at its control rate.
+
 ### After reading
 
 - [ ] Compute a behaviour-cloned policy's value on the bucket and its gap to the optimum, and say what DAgger changes about BC's training distribution.
@@ -653,6 +673,7 @@ so moving is better exactly while $p<0.9/1.9=0.474$. Nothing in the world change
 - [ ] Convert a paper's environment-step count into simulated hours per environment and real-machine time, and tell termination from truncation in a TD target.
 - [ ] Take one Bradley–Terry gradient step by hand, and derive the DPO loss from the KL-regularized optimum.
 - [ ] On the two-machine bucket, find the probability at which the other machine's policy flips your own best action, and say what centralized training with decentralized execution buys.
+- [ ] Compute GRPO advantages for a group of binary outcomes by hand, say why an all-success group teaches nothing, and list what to ask of a robot paper that uses it.
 
 > [!tip] Going deeper · 더 깊이
 > Sutton and Barto's [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html) is the book [[02-foundations/rl-basics|7. RL Basics]] compresses. It does not cover §1 and §4 — imitation against RL, and RL on a physical machine — which is what this page adds. The primary sources, section by section, are under Sources below.
@@ -677,6 +698,7 @@ so moving is better exactly while $p<0.9/1.9=0.474$. Nothing in the world change
 8. A reward model gives $R(A) = 2.0$ and $R(B) = 1.0$. What does Bradley–Terry predict for
    $P(A \succ B)$, and what changes if every reward is shifted by $+10$? The paper reports 95%
    held-out preference accuracy — why is that not yet evidence that the robot policy works?
+9. A VLA post-trained with GRPO on binary success rises from $60\%$ to $90\%$ in simulation. With groups of eight, most groups are now all-success. What is the estimator doing, and what would you change?
 
 > [!tip]- Answers
 > 1. Predicting $k$ actions at once cuts by a factor of $k$ the number of times the policy re-conditions on its own (possibly drifted) state, so off-distribution drift accumulates more slowly. The trade is reactivity: during chunk execution new observations are only partially incorporated (or not at all), so a disturbance mid-chunk is answered late.
@@ -687,6 +709,7 @@ so moving is better exactly while $p<0.9/1.9=0.474$. Nothing in the world change
 > 6. $r = 0$ (every policy is optimal), any positive rescaling such as $2r$, or $r$ plus a potential-based shaping term $\gamma\Phi(s') - \Phi(s)$ (§2). MaxEnt IRL keeps only distributions that match the expert's feature counts and, among those, takes the maximum-entropy one; that fixes an exponential-family model $P_w(\tau) \propto \exp(w^\top f(\tau))$ whose $w$ is fitted by maximum likelihood.
 > 7. At $w = 0$ both trajectories have probability $0.5$, so the model expects $f = 2$ and the gradient is $3 - 2 = 1$. Because $E[f] < 3$ for every finite $w$, the gradient never reaches zero and $w$ grows without bound; only a regularizer, or a demonstration of $\tau_2$, gives a finite answer.
 > 8. $\sigma(2.0 - 1.0) = \sigma(1) = 0.731$. The shift changes nothing, since only the difference enters. Held-out accuracy is measured on pairs drawn from the data the model was trained near; a policy optimized against the model moves toward behaviour where the model has seen nothing and can be exploited (reward hacking, §2). The evidence that counts is a policy trained on the learned reward and scored on the true task metric.
+> 9. An all-success group has zero spread, so every member's advantage is zero and the group contributes no gradient: learning stops exactly where the policy has become good, and the remaining failures sit in the few mixed groups. Keep the informative groups — RIPT-VLA's dynamic rollout sampling drops the all-same ones — draw harder start states, or enlarge the group; then check the gain on the real robot at its control rate, since the simulator's success detector was the whole reward.
 
 ### Problem set · 과제
 
@@ -716,6 +739,10 @@ Tier B. The running object with two knobs changed: discount $\gamma = 0.95$, and
 - §3: T. P. Lillicrap et al., "Continuous control with deep reinforcement learning," ICLR 2016 — DDPG and its Ornstein–Uhlenbeck noise with $\theta_{\text{OU}} = 0.15$. T. Haarnoja et al., "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor," ICML 2018 — the maximum-entropy objective ([[01-canonical-papers/notes/1-foundations/sac|SAC note]]).
 - §6: Ratliff, Bagnell & Zinkevich, "Maximum Margin Planning" (ICML 2006); Ziebart, Maas, Bagnell & Dey, "Maximum Entropy Inverse Reinforcement Learning" (AAAI 2008); Ho & Ermon, "Generative Adversarial Imitation Learning" (NeurIPS 2016); Bradley & Terry, "Rank Analysis of Incomplete Block Designs: I. The Method of Paired Comparisons" (*Biometrika*, 1952); Basu, Yang, Hungerman, Singhal & Dragan, "Do You Want Your Autonomous Car To Drive Like You?" (HRI 2017); Christiano et al., "Deep Reinforcement Learning from Human Preferences" (NeurIPS 2017); Sadigh et al., "Active Preference-Based Learning of Reward Functions" (RSS 2017); Ouyang et al., "Training language models to follow instructions with human feedback" (NeurIPS 2022; the [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT note]]); Rafailov et al., "Direct Preference Optimization: Your Language Model is Secretly a Reward Model" (NeurIPS 2023).
 - The numeric examples on this page, the bucket's included, were computed here from the stated numbers, not quoted from a source; recompute them rather than trusting them.
+- Shao, Z. et al. "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models." arXiv:2402.03300, 2024 — GRPO, §4.1.
+- DeepSeek-AI. "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning." *Nature* 645:633–638, 2025.
+- Muennighoff, N. et al. "s1: Simple test-time scaling." arXiv:2501.19393, 2025.
+- Tan, S. et al. "Interactive Post-Training for Vision-Language-Action Models" (RIPT-VLA). arXiv:2505.17016, 2025; Lu, G. et al. "VLA-RL: Towards Masterful and General Robotic Manipulation with Scalable Reinforcement Learning." arXiv:2505.18719, 2025.
 
 ## 한국어
 
@@ -724,7 +751,7 @@ Tier B. The running object with two knobs changed: discount $\gamma = 0.95$, and
 7. RL 기초는 MDP, 벨만 방정식, TD 학습, deadly triad, 정책 그래디언트와 PPO를 주었다. 로봇 학습 논문은 지면을 다른 데 쓴다. 정책이 시연에서 배우는가 보상에서 배우는가, 그 보상이 무엇을 말하는가, 정책이 배울 거리를 어떻게 찾아내는가, 부서질 수 있는 기계 위에서 RL을 어떻게 돌리는가, 실험을 어떻게 짰는가, 그리고 아무도 보상을 적어 내지 못할 때 사람에게서 보상을 어떻게 배우는가. 이 페이지가 그 층이다.
 
 > [!note] 처음이라면 · First pass
-> 이 페이지의 대상, 그림, 대상으로 한 번 끝까지를 먼저 읽는다. 셋은 두 상태 MDP 하나 위에서 본 §1과 §2다. 이어서 §1(당신의 논문이 이 분야의 어느 절반에 사는가)과 §2(보상)를, 그다음 로봇 논문의 방법 절과 실험 절을 이루는 §4와 §5를 읽는다. §3 탐색은 짧으니 논문의 탐색 방식이 궁금해질 때 읽으면 된다. §6 보상 학습은 RLHF·DPO·역강화학습 논문을 읽는 것이 아니라면 2차 통과로 미룬다. §2를 전제하고, 네 소절은 하나씩 따로 읽을 수 있다.
+> 이 페이지의 대상, 그림, 대상으로 한 번 끝까지를 먼저 읽는다. 셋은 두 상태 MDP 하나 위에서 본 §1과 §2다. 이어서 §1(당신의 논문이 이 분야의 어느 절반에 사는가)과 §2(보상)를, 그다음 로봇 논문의 방법 절과 실험 절을 이루는 §4와 §5를 읽는다. §3 탐색은 짧으니 논문의 탐색 방식이 궁금해질 때 읽으면 된다. §6 보상 학습은 RLHF·DPO·역강화학습 논문을 읽는 것이 아니라면 2차 통과로 미룬다. §2를 전제하고, 네 소절은 하나씩 따로 읽을 수 있다. 논문이 성공 여부만으로 정책을 사후학습하거나 GRPO를 말하면 §8을 읽는다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -1294,6 +1321,26 @@ $$Q_1(\text{move})=(1-p)\cdot 9+p\cdot 7.1=9-1.9p,\qquad Q_1(\text{wait})=8.1$$
 
 **그 문제가 아닐 때.** 조율에는 학습이 전혀 필요 없는 제어 쪽 답이 있는 경우가 많다. [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 §8]]은 리더 하나를 여러 팔로워에 수동성을 지키는 결합과 회피 함수로 잇고, 오늘의 건설 기계 편대는 함께 학습되는 대신 중앙에서 감독된다([[05-construction-robotics/lineage|계보, 3시대]]). 여기 연구 프로그램의 코어는 접촉하는 매니퓰레이터 한 대이므로([[07-research-program/index|7. §7]]) 다중 에이전트 학습은 Literacy에 둔다. 실패 방식을 알아 두고, 조율 자체가 기여일 때만 꺼낸다.
 
+### 8. 그룹 상대 RL: 추론 모델, 그리고 성공에서 배우는 VLA
+
+2025년의 추론 언어 모델들은 로봇에 유난히 잘 맞는 모양의 정책 그래디언트 방법으로 학습되었다. DeepSeek-R1-Zero는 사람이 쓴 추론 기록 없이, 프로그램이 확인할 수 있는 보상 — 최종 답이 맞았나, 형식을 지켰나 — 만으로 강화학습을 해서 추론을 익혔고, 그 과정에서 자기 반성과 검증이 창발했다([DeepSeek-AI, *Nature* 645, 2025](https://arxiv.org/abs/2501.12948)). 최적화기는 GRPO였다.
+
+> **그룹 상대 정책 최적화의 정의.** **GRPO**(group relative policy optimization)는 학습된 가치 함수가 아니라 *같은 출발점에서 뽑은 표본 묶음을 기준선으로 쓰는 정책 그래디언트 추정량*이다. 정의 조건은 셋이다. 프롬프트나 시작 상태마다 **현재 정책에서 결과 $G$개의 묶음을 뽑는다.** 각 결과의 **이득은 묶음 안에서 표준화한 보상**이므로 비평가 망을 학습하지 않는다. 그리고 정책은 **PPO의 잘린 비율로 갱신**하며([[02-foundations/rl-basics|7. RL 기초 §4]]), 기준 정책에 대한 KL 벌점을 보상이 아니라 손실에 더한다.
+>
+> $$\hat A_i=\frac{r_i-\operatorname{mean}(r_1,\dots,r_G)}{\operatorname{std}(r_1,\dots,r_G)},\qquad J(\theta)=\mathbb E\Big[\frac1G\sum_{i=1}^{G}\frac{1}{|o_i|}\sum_{t}\min\big(\rho_{i,t}\hat A_i,\ \operatorname{clip}(\rho_{i,t},1-\varepsilon,1+\varepsilon)\,\hat A_i\big)-\beta\,D_{\mathrm{KL}}\big(\pi_\theta\,\Vert\,\pi_{\text{ref}}\big)\Big]$$
+>
+> 여기서 $o_i$는 $i$번째로 뽑은 출력, $|o_i|$는 토큰이나 스텝으로 센 그 길이, $\rho_{i,t}$는 $t$번째 토큰에 대한 새 정책 확률과 옛 정책 확률의 비다. 그래서 한 출력의 모든 토큰이 그 출력의 이득을 나눠 갖는다.
+>
+> - **예**: GRPO가 처음 나온 DeepSeekMath. 영어 지시 데이터로 한 RL이 GSM8K를 $82.9\%$에서 $88.2\%$로, MATH를 $46.8\%$에서 $51.7\%$로 올렸다([Shao 외, 2024](https://arxiv.org/abs/2402.03300)).
+> - **반례**: 비평가를 둔 PPO. 기준선이 정책과 함께 학습하는 가치 망 $V_\psi$이고, GRPO가 아끼는 메모리가 바로 그것이다.
+> - **반례**: DPO(§6.3). 아무것도 뽑지 않고 보상도 계산하지 않는다. 고정된 선호 쌍에서 배운다.
+
+**버킷 MDP에서, 손으로.** 정책이 $A$에서 곧바로 버킷을 옮기면 보상 $1$, 기다리면 $0$을 준다. $A$에서 네 번 돌려 옮기기, 기다리기, 기다리기, 옮기기가 나오면 보상은 $(1,0,0,1)$, 평균 $0.5$, 표준편차 $0.5$, 이득은 $(+1,-1,-1,+1)$이다. $\log\pi(\text{move}\mid A)$를 두 번 올리고 $\log\pi(\text{wait}\mid A)$를 두 번 내린다. [[02-foundations/rl-basics|7. RL 기초 §4]]는 알려진 정책에서 기준선 $b=0.6$을 얻었고, GRPO는 그것을 묶음에서 추정한다. 다른 두 묶음이 추정량의 성격을 보여 준다. 넷 중 성공 하나인 $(1,0,0,0)$은 실패 하나마다 $-0.58$에 비해 $+1.73$을 받는다. 드문 성공을 세게 민다. 네 번 모두 성공한 $(1,1,1,1)$은 표준편차가 0이라 평균과 다른 구성원이 없고, 묶음이 아무것도 가르치지 않는다. 네 번 모두 실패해도 같다. (모집단 표준편차를 썼다. $G-1$로 나누는 표본 표준편차는 여기서 모든 이득을 $\sqrt{3/4}$배 할 뿐 부호를 바꾸지 않는다.)
+
+**로봇에 맞는 이유.** 로봇에게 가장 자연스러운 보상은 성공 여부를 확인하는 이진 판정이고, 가장 자연스러운 묶음은 시작 상태 하나를 여러 번 돌린 것이다. RIPT-VLA는 사전학습된 VLA를 드문 이진 성공 보상만으로 사후학습하며, 모두 같은 결과라 정보가 없는 묶음을 버리는 동적 롤아웃 추출과 하나를 뺀 나머지로 구하는 이득을 쓴다. QueST가 $21.2\%$ 나아지고 OpenVLA-OFT가 $97.5\%$에 이르렀다고 보고한다([Tan 외, 2025](https://arxiv.org/abs/2505.17016)). VLA-RL은 조작 궤적을 여러 차례 주고받는 대화로 다뤄, 자기회귀 VLA를 궤적 단위로 온라인 학습하게 한다([Lu 외, 2025](https://arxiv.org/abs/2505.18719)). 추론 모델은 더 오래 생각하는 것을 시험 때 살 수 있다는 것도 보였다. s1은 정선한 예제 $1{,}000$개로만 미세조정하고, 생각을 끊거나 *Wait*를 덧붙여 늘리는 "예산 강제"로 생각의 길이를 조절했다([Muennighoff 외, 2025](https://arxiv.org/abs/2501.19393)). 로봇에서 그 추가 생각은 rate로 치르고, 그 비용은 [[03-deep-learning/vla/index|4. VLA §6]]이 센다.
+
+**그룹 상대 로봇 논문에 물을 것**, §5의 점검표에 더해: 롤아웃을 어디서 — 시뮬레이션인가 실제 기계인가 — 돌렸고 갱신마다 몇 개가 들어갔나. 무엇이 성공을 판정하나. 성공 검출기가 곧 보상이다. 묶음 크기, 그리고 모두 성공하거나 모두 실패한 묶음은 어떻게 했나. KL 기준은 무엇인가. 그리고 이득이 실제 로봇에서 제 제어 주기로 유지되었나.
+
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 버킷에서 행동 복제한 정책의 가치와 최적값과의 차이를 계산하고, DAgger가 BC의 학습 분포에서 무엇을 바꾸는지 말한다.
@@ -1304,6 +1351,7 @@ $$Q_1(\text{move})=(1-p)\cdot 9+p\cdot 7.1=9-1.9p,\qquad Q_1(\text{wait})=8.1$$
 - [ ] 논문의 environment step 수를 환경당 시뮬레이션 시간과 실기계 시간으로 바꾸고, TD 타깃에서 종료와 절단을 구분한다.
 - [ ] Bradley–Terry 그래디언트 한 스텝을 손으로 밟고, KL 정규화 최적해에서 DPO 손실을 유도한다.
 - [ ] 기계 두 대의 버킷에서 상대의 정책이 내 최적 행동을 뒤집는 확률을 구하고, 중앙 집중 학습·분산 실행이 무엇을 사 오는지 말할 수 있다.
+- [ ] 이진 결과 묶음의 GRPO 이득을 손으로 계산하고, 모두 성공한 묶음이 왜 아무것도 가르치지 않는지, 그것을 쓰는 로봇 논문에 무엇을 물을지 말할 수 있다.
 
 > [!tip] 더 깊이 · Going deeper
 > Sutton·Barto의 [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html)은 [[02-foundations/rl-basics|7. RL 기초]]가 압축한 책이다. 그 책은 §1과 §4 — 모방 대 RL, 물리 기계 위의 RL — 를 다루지 않고, 이 페이지가 더하는 것이 바로 그 부분이다. 절마다의 1차 출처는 아래 출처에 모았다.
@@ -1325,6 +1373,7 @@ $$Q_1(\text{move})=(1-p)\cdot 9+p\cdot 7.1=9-1.9p,\qquad Q_1(\text{wait})=8.1$$
 8. 보상 모델이 $R(A) = 2.0$, $R(B) = 1.0$을 준다. Bradley–Terry가 예측하는 $P(A \succ B)$는
    얼마이고, 모든 보상을 $+10$만큼 옮기면 무엇이 바뀌는가? 논문이 보류된 선호에 대해 95% 정확도를
    보고했다 — 왜 그것이 아직 로봇 정책이 작동한다는 증거가 아닌가?
+9. 이진 성공으로 GRPO 사후학습한 VLA가 시뮬레이션에서 $60\%$에서 $90\%$로 올랐다. 묶음이 여덟 개씩이고 이제 대부분의 묶음이 모두 성공이다. 추정량은 무엇을 하고 있으며, 무엇을 바꾸겠는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 정책이 자기 오차 위에서 다시 예측하는 횟수가 $k$분의 1로 줄어 분포 이탈이 느려진다; 대가는 반응성 — 청크 실행 중에 들어온 새 관측을 (부분적으로만) 반영한다.
@@ -1335,6 +1384,7 @@ $$Q_1(\text{move})=(1-p)\cdot 9+p\cdot 7.1=9-1.9p,\qquad Q_1(\text{wait})=8.1$$
 > 6. $r = 0$(모든 정책이 최적), $2r$ 같은 양수배, 또는 $r$에 포텐셜 기반 shaping 항 $\gamma\Phi(s') - \Phi(s)$를 더한 것(§2). MaxEnt IRL은 전문가의 특징 합을 맞추는 분포만 남기고 그중 엔트로피가 최대인 것을 택한다. 그러면 지수족 모델 $P_w(\tau) \propto \exp(w^\top f(\tau))$가 정해지고 $w$는 최대우도로 맞춘다.
 > 7. $w = 0$에서 두 궤적의 확률이 각각 $0.5$이므로 모델의 기대 $f$는 $2$, 그래디언트는 $3 - 2 = 1$이다. 유한한 모든 $w$에서 $E[f] < 3$이므로 그래디언트가 0에 닿지 않고 $w$는 한없이 커진다. 정규화나 $\tau_2$의 시연이 있어야 유한한 답이 나온다.
 > 8. $\sigma(2.0 - 1.0) = \sigma(1) = 0.731$. 차이만 들어가므로 평행이동은 아무것도 바꾸지 않는다. 보류 정확도는 모델이 학습된 데이터 근처에서 뽑은 쌍으로 잰 것이다. 모델에 대해 최적화한 정책은 모델이 아무것도 보지 못한 거동 쪽으로 움직여 모델을 공략할 수 있다(reward hacking, §2). 의미 있는 증거는 학습된 보상으로 학습한 정책을 참 과제 지표로 채점한 결과다.
+> 9. 모두 성공한 묶음은 퍼짐이 0이므로 모든 구성원의 이득이 0이고 묶음은 그래디언트를 내지 않는다. 정책이 좋아진 바로 그곳에서 학습이 멈추고, 남은 실패는 몇 안 되는 섞인 묶음에 있다. 정보가 있는 묶음을 남기고 — RIPT-VLA의 동적 롤아웃 추출이 모두 같은 묶음을 버린다 — 더 어려운 시작 상태를 뽑거나 묶음을 키운다. 그다음 시뮬레이터의 성공 검출기가 보상의 전부였으므로, 실제 로봇에서 제 제어 주기로 이득을 확인한다.
 
 ### 과제 · Problem set
 
@@ -1364,3 +1414,7 @@ Tier B. 이 페이지의 대상에서 손잡이 둘을 바꾼다. 할인율 $\ga
 - §3: T. P. Lillicrap 외, "Continuous control with deep reinforcement learning," ICLR 2016 — DDPG와 $\theta_{\text{OU}} = 0.15$인 Ornstein–Uhlenbeck 노이즈. T. Haarnoja 외, "Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor," ICML 2018 — 최대 엔트로피 목적함수([[01-canonical-papers/notes/1-foundations/sac|SAC 노트]]).
 - §6: Ratliff, Bagnell & Zinkevich, "Maximum Margin Planning" (ICML 2006); Ziebart, Maas, Bagnell & Dey, "Maximum Entropy Inverse Reinforcement Learning" (AAAI 2008); Ho & Ermon, "Generative Adversarial Imitation Learning" (NeurIPS 2016); Bradley & Terry, "Rank Analysis of Incomplete Block Designs: I. The Method of Paired Comparisons" (*Biometrika*, 1952); Basu, Yang, Hungerman, Singhal & Dragan, "Do You Want Your Autonomous Car To Drive Like You?" (HRI 2017); Christiano 외, "Deep Reinforcement Learning from Human Preferences" (NeurIPS 2017); Sadigh 외, "Active Preference-Based Learning of Reward Functions" (RSS 2017); Ouyang 외, "Training language models to follow instructions with human feedback" (NeurIPS 2022; [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT 노트]]); Rafailov 외, "Direct Preference Optimization: Your Language Model is Secretly a Reward Model" (NeurIPS 2023).
 - 이 페이지의 수치 예제는 버킷의 것까지 모두 명시된 숫자로부터 여기서 직접 계산한 것이며 어느 출처에서 인용한 것이 아니다. 믿지 말고 다시 계산하라.
+- Shao, Z. et al. "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models." arXiv:2402.03300, 2024 — GRPO, §4.1.
+- DeepSeek-AI. "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning." *Nature* 645:633–638, 2025.
+- Muennighoff, N. et al. "s1: Simple test-time scaling." arXiv:2501.19393, 2025.
+- Tan, S. et al. "Interactive Post-Training for Vision-Language-Action Models"(RIPT-VLA). arXiv:2505.17016, 2025; Lu, G. et al. "VLA-RL: Towards Masterful and General Robotic Manipulation with Scalable Reinforcement Learning." arXiv:2505.18719, 2025.

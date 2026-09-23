@@ -16,7 +16,7 @@ mastery-when: "Raise when the training recipe, the compute budget, or parameter-
 *Stands on [[03-deep-learning/foundations/index|1. Learning Systems]] and [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]]. Second use of object **D1**, whose home is 1. Learning Systems: that page lists initialization, precision and hardware among the items of a training recipe ([[03-deep-learning/foundations/index|1. Learning Systems §5]]) and asks a scaling claim to separate parameters, data and compute ([[03-deep-learning/foundations/index|1. Learning Systems §4]]). This page puts a number on each of those items. [[03-deep-learning/vlm/index|3. VLM]] and [[03-deep-learning/vla/index|4. VLA]] rely on §8 whenever a pretrained model is adapted.*
 
 > [!note] First pass · 처음이라면
-> Look at the picture first, then work the Worked case with a calculator — D1's variances under three initializations, and T-100M's compute, time, memory, tokens per parameter and one LoRA fraction. Read §1, §5 and §6 and do problems 1–2. Open §2–§4 when a paper says "BatchNorm", "pre-norm" or "bf16", and §7–§8 when it quotes a token count or a LoRA rank; §10 runs all of it.
+> Look at the picture first, then work the Worked case with a calculator — D1's variances under three initializations, and T-100M's compute, time, memory, tokens per parameter and one LoRA fraction. Read §1, §5 and §6 and do problems 1–2. Open §2–§4 when a paper says "BatchNorm", "pre-norm" or "bf16", and §7–§8 when it quotes a token count or a LoRA rank; §10 runs §1–§9 as code. Open §11 before putting a trained model on a robot.
 
 ### Running object · 이 페이지의 대상
 
@@ -535,6 +535,42 @@ and the fit budget by budget:
 - **Sixteen bits turn a scale problem into a failure.** In fp32 the $\mathcal N(0,1)$ network is merely absurd at layer 20; in fp16 it is infinite by layer 6, where the predicted standard deviation, $8\cdot32^{5/2}=46{,}341$, puts the tails past $65{,}504$. The unscaled gradient and the in-place fp16 update fail the same way — silently, with no error raised.
 - **The iso-FLOP sweep holds the time fixed and trades memory for tokens.** Every row costs the same 3.33 h, while model states run from 0.4 GB to 6.4 GB and tokens per parameter from 320 to 1.25. The fit picks the middle row by its loss, which the table does not contain: it says what each choice costs, not which is best, and the $\sqrt{10}$ steps of the second table are the equal-proportion rule made visible.
 
+### 11. Precision at inference: fitting the model on the robot
+
+§4's non-example set aside weights quantized for deployment, because nothing there learns. That is the case a robot lives in: a trained policy has to fit the memory beside the machine and answer inside the control period. Two more rows extend §4's table — the formats inference now runs in — and the 4-bit one needs a scale to be usable at all.
+
+| format | sign · exponent · fraction bits | largest | smallest normal | smallest subnormal | spacing just above 1 |
+|---|---|---:|---:|---:|---:|
+| fp8 E4M3 | 1 · 4 · 3 | $448$ | $2^{-6}$ | $2^{-9}$ | $2^{-3}=0.125$ |
+| fp8 E5M2 | 1 · 5 · 2 | $57{,}344$ | $2^{-14}$ | $2^{-16}$ | $2^{-2}=0.25$ |
+| fp4 E2M1 | 1 · 2 · 1 | $6$ | $1$ | $0.5$ | $0.5$ |
+
+fp4 has only eight magnitudes — $0,\ 0.5,\ 1,\ 1.5,\ 2,\ 3,\ 4,\ 6$ — so a weight of $0.05$ and one of $0.84$ cannot both be written in it directly. The remedy is to store a **scale** with every small block of values.
+
+> **Post-training quantization, defined.** **Post-training quantization** is a *deployment transformation of a trained model* — a change to how its numbers are stored and multiplied, not a change of what it learned. Three defining conditions. It is applied **after training, with no gradient steps** (quantization-aware training, which trains with the rounding in the loop, is a different method). Each weight is **replaced by a low-bit code times a scale shared by a group** — a tensor, a channel, or a block of a few values. And the matrix product **either dequantizes the weights on the fly or runs in low precision itself**, the latter only when the activations are quantized too.
+>
+> $$\hat w=s\cdot Q\!\left(\frac{w}{s}\right),\qquad s=\frac{\max_{j\in\text{block}}|w_j|}{q_{\max}}$$
+>
+> where $Q$ rounds to the nearest code and $q_{\max}$ is the largest code, $6$ for fp4 — so every block uses the whole range of the format, and the error is set by the block's largest value.
+>
+> - **Example**: NVFP4, NVIDIA's format: fp4 E2M1 codes in blocks of $16$ with an fp8 E4M3 scale per block and an fp32 scale per tensor, $4.5$ bits per value in all, about $3.5$ times smaller than fp16 ([NVIDIA, 2025](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/)). The open MX formats use blocks of $32$ with a power-of-two scale ([Rouhani et al., 2023](https://arxiv.org/abs/2310.10537)).
+> - **Non-example**: §4's mixed precision. It changes how a model is trained and leaves nothing smaller behind.
+> - **Non-example**: pruning or distillation. They change which function is computed; quantization keeps the function and changes its precision.
+
+**By hand, one block of four.** Take the weights $(0.30,\ -0.12,\ 0.05,\ 0.84)$. The scale is $s=0.84/6=0.14$, the scaled values are $(2.143,\ -0.857,\ 0.357,\ 6)$, the nearest codes $(2,\ -1,\ 0.5,\ 6)$, and the stored weights $(0.28,\ -0.14,\ 0.07,\ 0.84)$ — each of the three small ones off by $0.02$. Now let one weight be an outlier, $8.4$ in place of $0.84$. The scale grows tenfold to $1.4$, the three small weights scale to $0.21$, $-0.09$ and $0.04$, all below fp4's first step, and all three are stored as **zero**: an error of $0.19$ in root mean square, nine times worse, caused by one number. That is why NVFP4 uses blocks of $16$ rather than whole tensors, and why the first large-model quantization methods treat outliers apart: LLM.int8() keeps the few outlier feature dimensions in 16-bit and the rest in 8-bit ([Dettmers et al., 2022](https://arxiv.org/abs/2208.07339)); GPTQ rounds weights using second-order information, one-shot, $175$B parameters in about four GPU hours ([Frantar et al., 2023](https://arxiv.org/abs/2210.17323)); AWQ protects the roughly $1\%$ of weight channels that the activations say matter most ([Lin et al., 2024](https://arxiv.org/abs/2306.00978)).
+
+**Why fewer bytes means faster, on a robot.** Generating one token at batch size one reads every weight once and does about two operations with it, so the arithmetic intensity is about $2$ operations per parameter divided by the bytes per parameter — $1$ per byte in bf16, $3.6$ in NVFP4. A Jetson Thor offers $2{,}070$ sparse fp4 TFLOPS against $273$ GB/s of memory bandwidth, a ridge of about $7{,}600$ operations per byte ([[03-deep-learning/physical-ai-ecosystem|the NVIDIA stack]]), so decoding sits two thousand times below it: memory-bound, and its speed is the bytes read per token. For a 3B-parameter policy:
+
+| precision | weight bytes | time to read them once | a D4 chunk of $6$ tokens ([[03-deep-learning/vla/index\|4. VLA §6]]) |
+|---|---:|---:|---:|
+| bf16 | $6.0$ GB | $22.0$ ms | $132$ ms |
+| fp8 | $3.0$ GB | $11.0$ ms | $66$ ms |
+| NVFP4 | $1.69$ GB | $6.2$ ms | $37$ ms |
+
+These are lower bounds — they ignore the prefill, the KV cache and every overhead — but they set the order: at bf16 a six-token chunk overruns two of D4's $50$ ms control periods, at NVFP4 it fits in one.
+
+**The robot's own evidence.** OpenVLA served its 7B policy three ways on eight BridgeData V2 tasks, $80$ rollouts each: bf16 succeeded $71.3\pm4.8\%$ of the time in $16.8$ GB, int4 $71.9\pm4.7\%$ in $7.0$ GB, and int8 only $58.1\pm5.1\%$ in $10.2$ GB. The authors trace the int8 loss to speed, not precision. Offline, both 8-bit and 4-bit matched bf16's token accuracy; but int8's extra quantization operations slowed inference, and on their A5000 GPU it ran at $1.2$ Hz against the $5$ Hz controller the training data were recorded with, which changed the dynamics the policy had learned. int4 ran at $3$ Hz, its smaller memory traffic more than paying for its overhead ([[01-canonical-papers/notes/4-vla/openvla|OpenVLA]]). On a robot, quantization reaches the success rate through latency — the budget of [[04-robotics/robot-systems-deployment|10. Robot Systems]] — as well as through accuracy, so a quantized policy has to be evaluated closed-loop, at its real control rate.
+
 ### After reading
 
 - [ ] Derive $\operatorname{Var}(z)=n_{\text{in}}\operatorname{Var}(w)\,\mathbb E[h^2]$, say which three assumptions it uses, and explain why He uses $2/n_{\text{in}}$ and Xavier $2/(n_{\text{in}}+n_{\text{out}})$.
@@ -545,6 +581,7 @@ and the fit budget by budget:
 - [ ] Break 16 bytes per parameter into its five parts and 6 FLOPs per parameter per token into its three products.
 - [ ] Solve $C=6ND$ against $D\approx20N$ and say what kind of claim the 20 is.
 - [ ] Count a LoRA adapter's parameters and say why its memory saving is capped near $8\times$ and its compute saving near a third.
+- [ ] Quantize a block to fp4 by hand, say what one outlier does to it, and say why a quantized policy must be judged at its real control rate.
 
 ### Self-check
 
@@ -554,6 +591,7 @@ and the fit budget by budget:
 4. Why does mixed precision keep an fp32 master copy when every matrix product runs in 16 bits? Give the smallest increase to a weight equal to 1 that survives in fp16 and in bf16, and say why a decrease has a smaller threshold.
 5. Where do the 6 FLOPs per parameter per token come from, and what does freezing a weight under LoRA change in that count?
 6. A lab trains a $10^9$-parameter model on $5\times10^9$ tokens and calls it compute-optimal. What does the twenty-tokens fit say, and what would you ask before disagreeing?
+7. A 7B policy runs at $2$ Hz in bf16 on the robot's GPU, and a colleague proposes int8 to save memory. What does §11 predict for its closed-loop success, and what would you measure before deciding?
 
 > [!tip]- Answers
 > 1. A ReLU zeroes half of a symmetric input, so $\mathbb E[h^2]=\operatorname{Var}(z)/2$, and the per-layer factor is $n_{\text{in}}\operatorname{Var}(w)/2$. $2/n_{\text{in}}$ makes it one; $1/n_{\text{in}}$ makes it $\tfrac12$, the same factor Xavier has at MLP-20's square layers, so the standard deviation falls by $2^{-19/2}$: from about $1$ at layer 1 to $1.38\times10^{-3}$ at layer 20.
@@ -562,6 +600,7 @@ and the fit budget by budget:
 > 4. Updates are added to weights and rounded to the weight's format, and a 16-bit format is too coarse to hold a small update: the spacing just above 1 is $2^{-10}$ in fp16 and $2^{-7}$ in bf16, so an increase survives only above half of it, $2^{-11}=4.9\times10^{-4}$ in fp16 and $2^{-8}=3.9\times10^{-3}$ in bf16. Just below 1 the numbers belong to the next lower power of two, $[1/2,1)$, where the spacing is half as wide, so a decrease survives above $2^{-12}$ in fp16 and $2^{-9}$ in bf16. The fp32 master accumulates the updates; the 16-bit copy is re-rounded from it.
 > 5. Three products per weight per token, one multiply and one add each: the forward product, the activation gradient $W^\top\partial L/\partial z$, and the weight gradient $\partial L/\partial z\,h^\top$. A frozen weight skips the weight gradient but still passes activation gradients down to the adapters below, so it costs 4, not 2 — which is why LoRA saves about a third of the compute however small its rank.
 > 6. $D/N=5$, a quarter of the fit's 20: for $C=6\cdot10^9\cdot5\times10^9=3\times10^{19}$ the fit would put $N=\sqrt{C/120}=5\times10^8$ and $D=10^{10}$. Before disagreeing, ask what loss and data they optimized, whether they fitted their own ratio on their own data — the 20 belongs to the fitting family, not to learning — and whether "optimal" was meant to include inference cost.
+> 7. Decoding is bound by memory bandwidth, so fewer bytes *can* make it faster — but only if the quantized kernels are efficient. OpenVLA's int8 ran slower, at $1.2$ Hz against a $5$ Hz training controller, and lost thirteen points of success although its offline token accuracy matched bf16; its int4 matched bf16 at less than half the memory. Measure the achieved control rate and the closed-loop success at that rate, not the offline accuracy.
 
 ### Problem set · 과제
 
@@ -651,13 +690,18 @@ print("C = %.4g FLOPs  N_opt = %.4g  D_opt = %.4g" % (C, N_opt, 20*N_opt))
 - Hu, E. J. et al. "LoRA: Low-rank adaptation of large language models." *ICLR*, 2022 — §4.1, equation 3 (the update, its initialization and the $\alpha/r$ scale); §4.2 (training speed and memory on GPT-3 175B).
 - Goyal, P. et al. "Accurate, large minibatch SGD: Training ImageNet in 1 hour." arXiv:1706.02677, 2017 — §2.1 (linear scaling rule), §2.2 (gradual warmup).
 - Vaswani, A. et al. "Attention is all you need." *NIPS*, 2017 — §5.3, equation 3.
+- Micikevicius, P. et al. "FP8 Formats for Deep Learning." arXiv:2209.05433, 2022 — E4M3 and E5M2.
+- Rouhani, B. D. et al. "Microscaling Data Formats for Deep Learning." arXiv:2310.10537, 2023 — the MX block formats.
+- NVIDIA. "Introducing NVFP4 for Efficient and Accurate Low-Precision Inference." Technical blog, 2025-06-24 — 16-value blocks, E4M3 block scale, fp32 tensor scale, 4.5 bits per value.
+- Dettmers, T. et al. "LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale." *NeurIPS*, 2022; Frantar, E. et al. "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers." *ICLR*, 2023; Lin, J. et al. "AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration." *MLSys*, 2024.
+- Kim, M. J. et al. "OpenVLA: An Open-Source Vision-Language-Action Model." *CoRL*, 2024 — Table 2 and §5.4, quantized inference.
 
 ## 한국어
 
 *[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]] 위에 선다. 대상 **D1** — 집은 1. 학습 시스템 — 을 두 번째로 쓴다. 그 페이지는 초기화, 정밀도와 하드웨어를 학습 recipe의 항목으로 나열하고([[03-deep-learning/foundations/index|1. 학습 시스템 §5]]), scaling 주장에 파라미터·데이터·연산량을 분리하라고 요구한다([[03-deep-learning/foundations/index|1. 학습 시스템 §4]]). 이 페이지는 그 항목 하나하나에 숫자를 붙인다. [[03-deep-learning/vlm/index|3. VLM]]과 [[03-deep-learning/vla/index|4. VLA]]는 사전학습 모델을 적응시킬 때마다 §8에 기댄다.*
 
 > [!note] 처음이라면 · First pass
-> 그림을 먼저 본 뒤 계산기로 계산 절을 따라간다. 세 초기화 아래 D1의 분산, 그리고 T-100M의 연산량·시간·메모리·파라미터당 토큰 수·LoRA 비율 하나다. §1, §5, §6을 읽고 문제 1–2를 푼다. 논문이 "BatchNorm", "pre-norm", "bf16"을 말하면 §2–§4를, 토큰 수나 LoRA 랭크를 인용하면 §7–§8을 연다. §10이 전부를 돌린다.
+> 그림을 먼저 본 뒤 계산기로 계산 절을 따라간다. 세 초기화 아래 D1의 분산, 그리고 T-100M의 연산량·시간·메모리·파라미터당 토큰 수·LoRA 비율 하나다. §1, §5, §6을 읽고 문제 1–2를 푼다. 논문이 "BatchNorm", "pre-norm", "bf16"을 말하면 §2–§4를, 토큰 수나 LoRA 랭크를 인용하면 §7–§8을 연다. §10이 §1–§9를 코드로 돌린다. 학습한 모델을 로봇에 올리기 전에는 §11을 연다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -1063,6 +1107,42 @@ $$\eta_t=d^{-1/2}\min\big(t^{-1/2},\ t\,T_w^{-3/2}\big)$$
 - **16비트는 스케일 문제를 실패로 바꾼다.** fp32에서 $\mathcal N(0,1)$ 신경망은 20층에서 그저 터무니없을 뿐인데, fp16에서는 6층에서 무한대다. 거기서 예측 표준편차 $8\cdot32^{5/2}=46{,}341$이 꼬리를 $65{,}504$ 너머로 민다. 스케일하지 않은 그래디언트와 제자리 fp16 갱신도 같은 방식으로, 오류 하나 없이 조용히 실패한다.
 - **iso-FLOP sweep은 시간을 고정하고 메모리와 토큰을 맞바꾼다.** 모든 행이 같은 3.33 h를 치르는데 모델 상태는 0.4 GB에서 6.4 GB까지, 파라미터당 토큰은 320에서 1.25까지 간다. 적합은 손실로 가운데 행을 고르는데, 손실은 표에 없다. 표는 각 선택의 비용을 말할 뿐 어느 것이 최선인지는 말하지 않고, 둘째 표의 $\sqrt{10}$ 걸음이 같은 비율 규칙을 눈에 보이게 한다.
 
+### 11. 추론 시의 정밀도: 모델을 로봇에 올리기
+
+§4의 반례는 배포를 위해 양자화한 가중치를 따로 두었다. 거기서는 아무것도 배우지 않기 때문이다. 로봇이 사는 곳이 바로 그 경우다. 학습된 정책은 기계 옆의 메모리에 들어가야 하고 제어 주기 안에 답해야 한다. §4의 표에 두 줄을 더하면 추론이 지금 도는 형식이 되고, 4비트 형식은 스케일이 있어야 쓸 수 있다.
+
+| 형식 | 부호 · 지수 · 가수 비트 | 최대 | 가장 작은 정규수 | 가장 작은 비정규수 | 1 바로 위의 간격 |
+|---|---|---:|---:|---:|---:|
+| fp8 E4M3 | 1 · 4 · 3 | $448$ | $2^{-6}$ | $2^{-9}$ | $2^{-3}=0.125$ |
+| fp8 E5M2 | 1 · 5 · 2 | $57{,}344$ | $2^{-14}$ | $2^{-16}$ | $2^{-2}=0.25$ |
+| fp4 E2M1 | 1 · 2 · 1 | $6$ | $1$ | $0.5$ | $0.5$ |
+
+fp4의 크기는 $0,\ 0.5,\ 1,\ 1.5,\ 2,\ 3,\ 4,\ 6$ 여덟 개뿐이라, $0.05$인 가중치와 $0.84$인 가중치를 둘 다 그대로 적을 수 없다. 처방은 작은 값 묶음마다 **스케일**을 함께 저장하는 것이다.
+
+> **사후학습 양자화의 정의.** **사후학습 양자화**(post-training quantization)는 *학습된 모델의 배포 변환*이다. 숫자를 저장하고 곱하는 방식을 바꿀 뿐, 배운 것을 바꾸지 않는다. 정의 조건은 셋이다. **학습이 끝난 뒤, 경사 스텝 없이** 적용한다(반올림을 루프에 넣고 학습하는 양자화 인식 학습은 다른 방법이다). 각 가중치를 **묶음이 공유하는 스케일에 저비트 코드를 곱한 값으로 바꾼다.** 묶음은 텐서, 채널, 또는 값 몇 개의 블록이다. 그리고 행렬 곱은 **가중치를 그때그때 역양자화하거나, 스스로 저정밀도로 돈다.** 뒤의 것은 활성값도 양자화할 때에만 된다.
+>
+> $$\hat w=s\cdot Q\!\left(\frac{w}{s}\right),\qquad s=\frac{\max_{j\in\text{block}}|w_j|}{q_{\max}}$$
+>
+> 여기서 $Q$는 가장 가까운 코드로 반올림하고 $q_{\max}$는 가장 큰 코드, fp4에서는 $6$이다. 그래서 모든 블록이 형식의 범위 전체를 쓰고, 오차는 블록에서 가장 큰 값이 정한다.
+>
+> - **예**: NVIDIA의 NVFP4. fp4 E2M1 코드를 $16$개씩 묶고 블록마다 fp8 E4M3 스케일, 텐서마다 fp32 스케일을 둔다. 값당 모두 $4.5$비트로 fp16보다 약 $3.5$배 작다([NVIDIA, 2025](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/)). 공개 MX 형식은 2의 거듭제곱 스케일로 $32$개씩 묶는다([Rouhani 외, 2023](https://arxiv.org/abs/2310.10537)).
+> - **반례**: §4의 혼합 정밀도. 모델을 학습하는 방식을 바꿀 뿐 더 작은 것을 남기지 않는다.
+> - **반례**: 가지치기나 증류. 계산하는 함수 자체를 바꾼다. 양자화는 함수를 두고 정밀도를 바꾼다.
+
+**손으로, 넷짜리 블록 하나.** 가중치 $(0.30,\ -0.12,\ 0.05,\ 0.84)$를 보자. 스케일은 $s=0.84/6=0.14$, 스케일로 나눈 값은 $(2.143,\ -0.857,\ 0.357,\ 6)$, 가장 가까운 코드는 $(2,\ -1,\ 0.5,\ 6)$, 저장되는 가중치는 $(0.28,\ -0.14,\ 0.07,\ 0.84)$로 작은 셋이 각각 $0.02$씩 틀린다. 이제 가중치 하나를 이상값으로, $0.84$ 대신 $8.4$로 하자. 스케일은 열 배인 $1.4$가 되고, 작은 세 가중치는 $0.21$, $-0.09$, $0.04$로 나뉘어 모두 fp4의 첫 칸보다 작아지며, 셋 다 **0**으로 저장된다. 제곱평균 오차가 $0.19$로 아홉 배 나빠지고, 원인은 숫자 하나다. NVFP4가 텐서 전체가 아니라 $16$개 블록을 쓰는 이유이고, 큰 모델의 첫 양자화 방법들이 이상값을 따로 다루는 이유다. LLM.int8()은 몇 안 되는 이상값 특징 차원을 16비트로, 나머지를 8비트로 둔다([Dettmers 외, 2022](https://arxiv.org/abs/2208.07339)). GPTQ는 2차 정보로 가중치를 한 번에 반올림해 $175$B 파라미터를 GPU 약 네 시간에 처리한다([Frantar 외, 2023](https://arxiv.org/abs/2210.17323)). AWQ는 활성값이 가장 중요하다고 말하는 약 $1\%$의 가중치 채널을 보호한다([Lin 외, 2024](https://arxiv.org/abs/2306.00978)).
+
+**로봇에서 바이트가 적으면 빠른 이유.** 배치 1에서 토큰 하나를 생성하면 모든 가중치를 한 번 읽고 그것으로 연산을 두 번쯤 한다. 그래서 산술 강도는 파라미터당 연산 약 $2$를 파라미터당 바이트로 나눈 값이다. bf16에서 바이트당 $1$, NVFP4에서 $3.6$이다. Jetson Thor는 메모리 대역폭 $273$ GB/s에 희소 fp4 $2{,}070$ TFLOPS를 내므로 경계점이 바이트당 약 $7{,}600$ 연산이고([[03-deep-learning/physical-ai-ecosystem|NVIDIA 스택]]), 디코딩은 그보다 이천 배 아래에 있다. 메모리에 묶여 있고, 속도는 토큰마다 읽는 바이트다. 3B 파라미터 정책이라면:
+
+| 정밀도 | 가중치 바이트 | 한 번 읽는 시간 | 토큰 $6$개짜리 D4 청크([[03-deep-learning/vla/index\|4. VLA §6]]) |
+|---|---:|---:|---:|
+| bf16 | $6.0$ GB | $22.0$ ms | $132$ ms |
+| fp8 | $3.0$ GB | $11.0$ ms | $66$ ms |
+| NVFP4 | $1.69$ GB | $6.2$ ms | $37$ ms |
+
+이것은 하한이다. prefill, KV 캐시, 모든 부가 비용을 무시한다. 그래도 크기를 정한다. bf16에서 토큰 여섯 개 청크는 D4의 $50$ ms 제어 주기 둘을 넘기고, NVFP4에서는 하나에 들어간다.
+
+**로봇 자신의 증거.** OpenVLA는 7B 정책을 세 방식으로 올려 BridgeData V2 과제 여덟 개에서 각각 $80$번 돌렸다. bf16은 $16.8$ GB로 $71.3\pm4.8\%$, int4는 $7.0$ GB로 $71.9\pm4.7\%$, int8은 $10.2$ GB로 $58.1\pm5.1\%$에 그쳤다. 저자들은 int8의 손실을 정밀도가 아니라 속도로 설명한다. 오프라인에서는 8비트와 4비트 모두 bf16과 토큰 정확도가 같았다. 그러나 int8의 양자화 부가 연산이 추론을 늦춰, 그들의 A5000 GPU에서 학습 데이터를 기록한 $5$ Hz 제어기 대신 $1.2$ Hz로만 돌았고, 정책이 배운 동역학이 바뀌었다. int4는 $3$ Hz로 돌았다. 줄어든 메모리 전송이 부가 비용을 넘어선 것이다([[01-canonical-papers/notes/4-vla/openvla|OpenVLA]]). 로봇에서 양자화는 정확도뿐 아니라 지연 — [[04-robotics/robot-systems-deployment|10. 로봇 시스템]]의 예산 — 을 거쳐 성공률에 닿는다. 그러니 양자화한 정책은 실제 제어 주기로 폐루프에서 평가해야 한다.
+
 ### 읽고 나면 · After reading
 
 - [ ] $\operatorname{Var}(z)=n_{\text{in}}\operatorname{Var}(w)\,\mathbb E[h^2]$를 유도하고, 쓰는 가정 셋을 말하고, He가 $2/n_{\text{in}}$을, Xavier가 $2/(n_{\text{in}}+n_{\text{out}})$을 쓰는 이유를 설명한다.
@@ -1073,6 +1153,7 @@ $$\eta_t=d^{-1/2}\min\big(t^{-1/2},\ t\,T_w^{-3/2}\big)$$
 - [ ] 파라미터당 16바이트를 다섯 부분으로, 파라미터당 토큰당 6 FLOP을 세 곱으로 나눈다.
 - [ ] $C=6ND$를 $D\approx20N$에 대해 풀고, 20이 어떤 종류의 주장인지 말한다.
 - [ ] LoRA 어댑터의 파라미터를 세고, 메모리 절약이 $8\times$ 근처에서, 연산량 절약이 3분의 1 근처에서 막히는 이유를 말한다.
+- [ ] 블록 하나를 손으로 fp4로 양자화하고, 이상값 하나가 무엇을 하는지, 양자화한 정책을 왜 실제 제어 주기로 판단해야 하는지 말한다.
 
 ### 스스로 점검 · Self-check
 
@@ -1082,6 +1163,7 @@ $$\eta_t=d^{-1/2}\min\big(t^{-1/2},\ t\,T_w^{-3/2}\big)$$
 4. 모든 행렬곱이 16비트로 도는데 혼합 정밀도는 왜 fp32 마스터 사본을 두는가? 1인 가중치에 대해 fp16과 bf16에서 살아남는 가장 작은 증가를 말하고, 감소의 문턱이 왜 더 작은지 말하라.
 5. 파라미터당 토큰당 6 FLOP은 어디서 오며, LoRA에서 가중치를 얼리면 그 셈에서 무엇이 바뀌는가?
 6. 어떤 연구실이 $10^9$파라미터 모델을 $5\times10^9$토큰으로 학습하고 연산 최적이라 부른다. 20토큰 적합은 무엇을 말하고, 반박하기 전에 무엇을 묻겠는가?
+7. 7B 정책이 로봇 GPU에서 bf16으로 $2$ Hz에 돈다. 동료가 메모리를 아끼려고 int8을 제안한다. §11은 폐루프 성공률에 대해 무엇을 예측하며, 결정 전에 무엇을 재겠는가?
 
 > [!tip]- 정답 · Answers
 > 1. ReLU는 대칭 입력의 절반을 0으로 만들므로 $\mathbb E[h^2]=\operatorname{Var}(z)/2$이고 층당 배율은 $n_{\text{in}}\operatorname{Var}(w)/2$다. $2/n_{\text{in}}$이 그것을 1로 만든다. $1/n_{\text{in}}$이면 배율이 $\tfrac12$, 곧 MLP-20의 정사각 층에서 Xavier가 갖는 배율과 같아서 표준편차가 $2^{-19/2}$배로 떨어진다. 1층에서 약 $1$이던 것이 20층에서 $1.38\times10^{-3}$이다.
@@ -1090,6 +1172,7 @@ $$\eta_t=d^{-1/2}\min\big(t^{-1/2},\ t\,T_w^{-3/2}\big)$$
 > 4. 갱신은 가중치에 더해진 뒤 가중치의 형식으로 반올림되는데, 16비트 형식은 작은 갱신을 담기에 너무 거칠다. 1 바로 위의 간격이 fp16에서 $2^{-10}$, bf16에서 $2^{-7}$이므로 증가는 그 절반 위에서만 살아남는다. fp16에서 $2^{-11}=4.9\times10^{-4}$, bf16에서 $2^{-8}=3.9\times10^{-3}$이다. 1 바로 아래의 수들은 한 단계 낮은 거듭제곱 구간 $[1/2,1)$에 속해 간격이 반이므로, 감소는 fp16에서 $2^{-12}$, bf16에서 $2^{-9}$ 위에서 살아남는다. fp32 마스터가 갱신을 누적하고, 16비트 사본은 거기서 다시 반올림된다.
 > 5. 가중치 하나, 토큰 하나당 곱 셋이고 각각 곱셈 하나와 덧셈 하나다. 순방향 곱, activation 그래디언트 $W^\top\partial L/\partial z$, 가중치 그래디언트 $\partial L/\partial z\,h^\top$다. 얼린 가중치는 가중치 그래디언트를 건너뛰지만 아래의 어댑터로 activation 그래디언트는 여전히 넘겨야 하므로 2가 아니라 4를 치른다. 랭크가 아무리 작아도 LoRA가 연산량을 약 3분의 1만 아끼는 이유다.
 > 6. $D/N=5$로 적합의 20의 4분의 1이다. $C=6\cdot10^9\cdot5\times10^9=3\times10^{19}$에서 적합은 $N=\sqrt{C/120}=5\times10^8$, $D=10^{10}$을 둔다. 반박하기 전에 어떤 손실과 데이터를 최적화했는지, 자기 데이터로 자기 비율을 적합했는지 — 20은 학습이 아니라 적합한 계열에 속한다 — 그리고 "최적"에 추론 비용까지 넣을 생각이었는지를 묻는다.
+> 7. 디코딩은 메모리 대역폭에 묶이므로 바이트가 줄면 빨라*질 수 있다*. 단, 양자화 커널이 효율적일 때에만이다. OpenVLA의 int8은 더 느려져 학습 제어기의 $5$ Hz 대신 $1.2$ Hz로 돌았고, 오프라인 토큰 정확도는 bf16과 같았는데도 성공률을 13%p 잃었다. int4는 메모리를 절반 넘게 줄이고 bf16과 같았다. 오프라인 정확도가 아니라 실제로 도달한 제어 주기와 그 주기에서의 폐루프 성공률을 잰다.
 
 ### 과제 · Problem set
 
@@ -1141,3 +1224,8 @@ Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Ob
 - Hu, E. J. et al. "LoRA: Low-rank adaptation of large language models." *ICLR*, 2022 — §4.1, equation 3 (the update, its initialization and the $\alpha/r$ scale); §4.2 (training speed and memory on GPT-3 175B).
 - Goyal, P. et al. "Accurate, large minibatch SGD: Training ImageNet in 1 hour." arXiv:1706.02677, 2017 — §2.1 (linear scaling rule), §2.2 (gradual warmup).
 - Vaswani, A. et al. "Attention is all you need." *NIPS*, 2017 — §5.3, equation 3.
+- Micikevicius, P. et al. "FP8 Formats for Deep Learning." arXiv:2209.05433, 2022 — E4M3과 E5M2.
+- Rouhani, B. D. et al. "Microscaling Data Formats for Deep Learning." arXiv:2310.10537, 2023 — MX 블록 형식.
+- NVIDIA. "Introducing NVFP4 for Efficient and Accurate Low-Precision Inference." 기술 블로그, 2025-06-24 — 16개 블록, E4M3 블록 스케일, fp32 텐서 스케일, 값당 4.5비트.
+- Dettmers, T. et al. "LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale." *NeurIPS*, 2022; Frantar, E. et al. "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers." *ICLR*, 2023; Lin, J. et al. "AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration." *MLSys*, 2024.
+- Kim, M. J. et al. "OpenVLA: An Open-Source Vision-Language-Action Model." *CoRL*, 2024 — 표 2와 §5.4, 양자화 추론.
