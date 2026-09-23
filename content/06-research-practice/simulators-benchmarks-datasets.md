@@ -265,15 +265,16 @@ For example, a wall-wiping experiment can need both a model of contact and a rec
 | Simulator | Maintainer | License | Canonical paper | The one thing it is best at |
 |---|---|---|---|---|
 | **MuJoCo** | Google DeepMind | Apache-2.0 | Todorov, Erez & Tassa, IROS 2012 | fast, stable articulated dynamics; analytically invertible |
-| **Isaac Sim** / **Isaac Lab** | NVIDIA | see caveat below / BSD-3 | none / Orbit, RA-L 2023 | thousands of GPU-parallel envs, RTX-photoreal sensors |
+| **Isaac Sim** / **Isaac Lab** | NVIDIA | see caveat below / BSD-3 | none / arXiv 2511.04831 (2025), successor of Orbit, RA-L 2023 | thousands of GPU-parallel envs, RTX-photoreal sensors |
+| **Newton** | Linux Foundation project begun by Disney Research, Google DeepMind and NVIDIA | Apache-2.0 | none found (cite the repository) | GPU physics on Warp, differentiable, MuJoCo-Warp as its main solver plus cloth, cables, soft bodies and MPM |
 | **PyBullet** | community | Zlib | **none** (cite the `@misc`) | easy, mature, CPU-friendly |
 | **Gazebo** (`gz`) | Open Source Robotics Alliance | Apache-2.0 | Koenig & Howard, IROS 2004 | ROS 2 integration, sensors, headless CI |
 | **Drake** | MIT origin, led by Toyota Research Institute | BSD-3 | **none** (cite the `@misc`) | **hydroelastic contact** — a contact patch with a pressure distribution |
 | **SAPIEN** | UCSD SU Lab / Hillbot | see caveat | Xiang et al., CVPR 2020 | part-level articulated objects, via PartNet-Mobility |
 
-Four things in that table need saying out loud, because each is a way to be wrong in print.
+Five things in that table need saying out loud, because each is a way to be wrong in print.
 
-> [!warning] Four status traps
+> [!warning] Five status traps
 > - **Isaac Gym is deprecated.** NVIDIA's own page says: "This is legacy software. Developers
 >   may download and continue to use it, but it is no longer supported." `IsaacGymEnvs` and
 >   `OmniIsaacGymEnvs` are both archived read-only (GitHub does not expose the archive date). Use Isaac Lab.
@@ -286,6 +287,11 @@ Four things in that table need saying out loud, because each is a way to be wron
 > - **SAPIEN's license is genuinely ambiguous**: the repo LICENSE says Apache-2.0, the PyPI
 >   metadata says MIT, and GitHub's detector says NOASSERTION. State the ambiguity rather
 >   than picking one.
+> - **"Isaac Lab" no longer names one physics engine.** Isaac Lab 3.0 (early access on
+>   2026-09-16, general availability targeted for the end of October 2026) lets one task switch
+>   between PhysX and Newton without code changes, and its Newton workflows run without Isaac
+>   Sim at all. A result now needs the Isaac Lab version *and* the physics backend, or it cannot
+>   be reproduced.
 
 **PyBullet, Drake, Isaac Sim and Genesis have no peer-reviewed paper.** All four officially
 direct you to a `@misc` or a URL. That is fine — but write "we used Drake [software
@@ -804,7 +810,7 @@ cite a comparison, say whose evaluation it was.**
 
 ### After reading
 
-- [ ] Name the four status traps in §2 and why each one produces a wrong sentence.
+- [ ] Name the five status traps in §2 and why each one produces a wrong sentence.
 - [ ] Say what MuJoCo and Drake each mean by a contact, and when the difference matters.
 - [ ] Give the honest recommendation for terrain simulation and the accuracy caveat attached.
 - [ ] State what the OXE schema cannot represent, and why that matters here.
@@ -901,7 +907,7 @@ Checked against official sources on **2026-08-22**. Scale figures are from each 
 abstract unless marked otherwise; claims resting on absence mean the official pages were
 checked and contained nothing.
 
-**Simulators** — [MuJoCo](https://mujoco.readthedocs.io/) (Todorov, Erez & Tassa, IROS 2012, pp. 5026–5033, DOI 10.1109/IROS.2012.6386109); [Isaac Sim](https://developer.nvidia.com/isaac/sim) and [Isaac Lab](https://isaac-sim.github.io/IsaacLab/) (predecessor Orbit: Mittal et al., *RA-L* 8(6), 2023, DOI 10.1109/LRA.2023.3270034); [the Isaac Gym legacy notice](https://developer.nvidia.com/isaac-gym); [Bullet](https://github.com/bulletphysics/bullet3); [Gazebo](https://gazebosim.org/docs/latest/releases/) and the [Classic end-of-life notice](https://classic.gazebosim.org/) (Koenig & Howard, IROS 2004, pp. 2149–2154); [Drake](https://drake.mit.edu/) and its [hydroelastic contact guide](https://drake.mit.edu/doxygen_cxx/group__hydroelastic__user__guide.html); [SAPIEN](https://github.com/haosulab/SAPIEN) (Xiang et al., CVPR 2020, pp. 11094–11104); [Genesis World](https://github.com/Genesis-Embodied-AI/genesis-world), [the benchmark issue](https://github.com/Genesis-Embodied-AI/genesis-world/issues/181) and [the MuJoCo discussion](https://github.com/google-deepmind/mujoco/discussions/2303).
+**Simulators** — [MuJoCo](https://mujoco.readthedocs.io/) (Todorov, Erez & Tassa, IROS 2012, pp. 5026–5033, DOI 10.1109/IROS.2012.6386109); [Isaac Sim](https://developer.nvidia.com/isaac/sim) and [Isaac Lab](https://isaac-sim.github.io/IsaacLab/) (NVIDIA, "Isaac Lab: A GPU-Accelerated Simulation Framework for Multi-Modal Robot Learning," arXiv:2511.04831, 2025; predecessor Orbit: Mittal et al., *RA-L* 8(6), 2023, DOI 10.1109/LRA.2023.3270034) and its [3.0 early-access release notes](https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0-EA); [Newton](https://github.com/newton-physics/newton); [the Isaac Gym legacy notice](https://developer.nvidia.com/isaac-gym); [Bullet](https://github.com/bulletphysics/bullet3); [Gazebo](https://gazebosim.org/docs/latest/releases/) and the [Classic end-of-life notice](https://classic.gazebosim.org/) (Koenig & Howard, IROS 2004, pp. 2149–2154); [Drake](https://drake.mit.edu/) and its [hydroelastic contact guide](https://drake.mit.edu/doxygen_cxx/group__hydroelastic__user__guide.html); [SAPIEN](https://github.com/haosulab/SAPIEN) (Xiang et al., CVPR 2020, pp. 11094–11104); [Genesis World](https://github.com/Genesis-Embodied-AI/genesis-world), [the benchmark issue](https://github.com/Genesis-Embodied-AI/genesis-world/issues/181) and [the MuJoCo discussion](https://github.com/google-deepmind/mujoco/discussions/2303).
 
 **Terrain** — [agxTerrain user manual](https://www.algoryx.se/documentation/complete/agx/tags/latest/doc/UserManual/source/agxTerrain.html); M. Servin, T. Berglund, S. Nystedt, "A multiscale model of terrain dynamics for real-time earthmoving simulation," *Advanced Modeling and Simulation in Engineering Sciences* 8:11, 2021, DOI 10.1186/s40323-021-00196-3; [Vortex Studio licensing](https://vortexstudio.atlassian.net/wiki/spaces/VSD2511/pages/4607410452); [Project Chrono terrain models](https://api.projectchrono.org/vehicle_terrain.html) and Unjhawala et al., [arXiv:2507.05643](https://arxiv.org/abs/2507.05643) for CRM.
 
@@ -1136,15 +1142,16 @@ $$d\ \ge\ k\,\Delta t$$
 | 시뮬레이터 | 유지 주체 | 라이선스 | 정본 논문 | 가장 잘하는 한 가지 |
 |---|---|---|---|---|
 | **MuJoCo** | Google DeepMind | Apache-2.0 | Todorov, Erez & Tassa, IROS 2012 | 빠르고 안정적인 관절 동역학, 해석적으로 역산 가능 |
-| **Isaac Sim** / **Isaac Lab** | NVIDIA | 아래 단서 참고 / BSD-3 | 없음 / Orbit, RA-L 2023 | GPU 병렬 수천 환경, RTX 실사 센서 |
+| **Isaac Sim** / **Isaac Lab** | NVIDIA | 아래 단서 참고 / BSD-3 | 없음 / arXiv 2511.04831(2025), Orbit(RA-L 2023)의 후속 | GPU 병렬 수천 환경, RTX 실사 센서 |
+| **Newton** | Disney Research·Google DeepMind·NVIDIA가 시작한 Linux Foundation 프로젝트 | Apache-2.0 | 찾지 못함(저장소를 인용) | Warp 위의 GPU 물리, 미분 가능, 주 솔버는 MuJoCo-Warp이고 천·케이블·연체·MPM도 |
 | **PyBullet** | 커뮤니티 | Zlib | **없음** (`@misc`를 인용) | 쉽고 성숙하며 CPU 친화적 |
 | **Gazebo** (`gz`) | Open Source Robotics Alliance | Apache-2.0 | Koenig & Howard, IROS 2004 | ROS 2 통합, 센서, 헤드리스 CI |
 | **Drake** | MIT 출발, Toyota Research Institute 주도 | BSD-3 | **없음** (`@misc`를 인용) | **하이드로일래스틱 접촉** — 압력 분포를 가진 접촉면 |
 | **SAPIEN** | UCSD SU Lab / Hillbot | 아래 단서 참고 | Xiang et al., CVPR 2020 | PartNet-Mobility 기반 부품 수준 관절 물체 |
 
-이 표에서 소리 내어 말해야 할 것이 넷 있다. 각각이 활자로 틀리는 방법이기 때문이다.
+이 표에서 소리 내어 말해야 할 것이 다섯 있다. 각각이 활자로 틀리는 방법이기 때문이다.
 
-> [!warning] 상태에 관한 함정 넷
+> [!warning] 상태에 관한 함정 다섯
 > - **Isaac Gym은 지원 종료되었다.** NVIDIA 자신의 페이지가 말한다: "This is legacy software.
 >   Developers may download and continue to use it, but it is no longer supported."
 >   `IsaacGymEnvs`와 `OmniIsaacGymEnvs`는 둘 다 읽기 전용으로 보관되었다(GitHub은 보관 날짜를 공개하지 않는다). Isaac Lab을 쓰라.
@@ -1156,6 +1163,10 @@ $$d\ \ge\ k\,\Delta t$$
 >   사용에 관한 상표 문제" 때문이었다.
 > - **SAPIEN의 라이선스는 실제로 모호하다**: 저장소 LICENSE는 Apache-2.0, PyPI 메타데이터는
 >   MIT, GitHub 탐지기는 NOASSERTION이라고 한다. 하나를 고르지 말고 모호함을 진술하라.
+> - **"Isaac Lab"은 더 이상 물리 엔진 하나를 가리키지 않는다.** Isaac Lab 3.0(2026-09-16 얼리
+>   액세스, 정식판은 2026년 10월 말 목표)은 한 과제가 코드 수정 없이 PhysX와 Newton 사이를
+>   바꿀 수 있게 하고, Newton 작업 흐름은 Isaac Sim 없이도 돈다. 이제 결과에는 Isaac Lab 버전
+>   *과* 물리 백엔드가 함께 적혀야 재현된다.
 
 **PyBullet·Drake·Isaac Sim·Genesis에는 심사받은 논문이 없다.** 넷 다 공식적으로 `@misc`나 URL을
 인용하라고 안내한다. 그래도 괜찮다 — 다만 "Drake [소프트웨어 인용]을 사용했다"라고 쓰고,
@@ -1591,7 +1602,7 @@ VLA·확산 정책·로코모션 논문에서 백분율이 등장하고, 비교�
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
-- [ ] §2의 상태 함정 넷을 대고, 각각이 어떤 틀린 문장을 만드는지 말한다.
+- [ ] §2의 상태 함정 다섯을 대고, 각각이 어떤 틀린 문장을 만드는지 말한다.
 - [ ] MuJoCo와 Drake가 각각 접촉을 무엇으로 여기는지, 그 차이가 언제 중요한지 말한다.
 - [ ] 지형 시뮬레이션의 정직한 권고와 거기 붙는 정확도 단서를 댄다.
 - [ ] OXE 스키마가 표현할 수 없는 것과, 그것이 여기서 왜 중요한지 말한다.
@@ -1656,7 +1667,7 @@ Tier A. 이 페이지, [[02-foundations/lab-kernel|0.7 Lab Kernel]], [[02-founda
 **2026-08-22**에 공식 출처로 확인했다. 규모 수치는 따로 표시하지 않는 한 각 논문 자신의
 초록에서 인용한 것이고, 부재에 근거한 주장은 공식 페이지를 확인했으나 아무것도 없었다는 뜻이다.
 
-**시뮬레이터** — [MuJoCo](https://mujoco.readthedocs.io/)(Todorov, Erez & Tassa, IROS 2012, pp. 5026–5033, DOI 10.1109/IROS.2012.6386109); [Isaac Sim](https://developer.nvidia.com/isaac/sim)과 [Isaac Lab](https://isaac-sim.github.io/IsaacLab/)(선행 Orbit: Mittal et al., *RA-L* 8(6), 2023, DOI 10.1109/LRA.2023.3270034); [Isaac Gym 레거시 고지](https://developer.nvidia.com/isaac-gym); [Bullet](https://github.com/bulletphysics/bullet3); [Gazebo](https://gazebosim.org/docs/latest/releases/)와 [Classic 수명 종료 고지](https://classic.gazebosim.org/)(Koenig & Howard, IROS 2004, pp. 2149–2154); [Drake](https://drake.mit.edu/)와 [하이드로일래스틱 접촉 가이드](https://drake.mit.edu/doxygen_cxx/group__hydroelastic__user__guide.html); [SAPIEN](https://github.com/haosulab/SAPIEN)(Xiang et al., CVPR 2020, pp. 11094–11104); [Genesis World](https://github.com/Genesis-Embodied-AI/genesis-world), [벤치마크 이슈](https://github.com/Genesis-Embodied-AI/genesis-world/issues/181), [MuJoCo 논의](https://github.com/google-deepmind/mujoco/discussions/2303).
+**시뮬레이터** — [MuJoCo](https://mujoco.readthedocs.io/)(Todorov, Erez & Tassa, IROS 2012, pp. 5026–5033, DOI 10.1109/IROS.2012.6386109); [Isaac Sim](https://developer.nvidia.com/isaac/sim)과 [Isaac Lab](https://isaac-sim.github.io/IsaacLab/)(NVIDIA, "Isaac Lab: A GPU-Accelerated Simulation Framework for Multi-Modal Robot Learning," arXiv:2511.04831, 2025; 선행 Orbit: Mittal et al., *RA-L* 8(6), 2023, DOI 10.1109/LRA.2023.3270034)과 [3.0 얼리 액세스 릴리스 노트](https://github.com/isaac-sim/IsaacLab/releases/tag/v3.0.0-EA); [Newton](https://github.com/newton-physics/newton); [Isaac Gym 레거시 고지](https://developer.nvidia.com/isaac-gym); [Bullet](https://github.com/bulletphysics/bullet3); [Gazebo](https://gazebosim.org/docs/latest/releases/)와 [Classic 수명 종료 고지](https://classic.gazebosim.org/)(Koenig & Howard, IROS 2004, pp. 2149–2154); [Drake](https://drake.mit.edu/)와 [하이드로일래스틱 접촉 가이드](https://drake.mit.edu/doxygen_cxx/group__hydroelastic__user__guide.html); [SAPIEN](https://github.com/haosulab/SAPIEN)(Xiang et al., CVPR 2020, pp. 11094–11104); [Genesis World](https://github.com/Genesis-Embodied-AI/genesis-world), [벤치마크 이슈](https://github.com/Genesis-Embodied-AI/genesis-world/issues/181), [MuJoCo 논의](https://github.com/google-deepmind/mujoco/discussions/2303).
 
 **지형** — [agxTerrain 사용자 매뉴얼](https://www.algoryx.se/documentation/complete/agx/tags/latest/doc/UserManual/source/agxTerrain.html); M. Servin, T. Berglund, S. Nystedt, "A multiscale model of terrain dynamics for real-time earthmoving simulation," *Advanced Modeling and Simulation in Engineering Sciences* 8:11, 2021, DOI 10.1186/s40323-021-00196-3; [Vortex Studio 라이선싱](https://vortexstudio.atlassian.net/wiki/spaces/VSD2511/pages/4607410452); [Project Chrono 지형 모델](https://api.projectchrono.org/vehicle_terrain.html)과 CRM은 Unjhawala et al., [arXiv:2507.05643](https://arxiv.org/abs/2507.05643).
 

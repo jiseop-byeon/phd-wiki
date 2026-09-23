@@ -9,7 +9,7 @@ pdf: https://arxiv.org/pdf/2501.03575
 code: https://github.com/nvidia-cosmos/cosmos-predict1
 tags: [paper, world-models, generative]
 status: note-complete
-last_verified: 2026-07-22
+last_verified: 2026-09-22
 study-depth: Literacy
 depth-goal: "Explain the problem, inputs and outputs, central claim, evidence, and one limitation."
 mastery-when: "Raise to Working when the paper becomes a baseline, dependency, or implementation choice."
@@ -78,6 +78,15 @@ synthetic data for [[gr00t-n1|GR00T]]-class VLAs, closed-loop policy evaluation,
 Cosmos-Reason/Transfer successors. For data-scarce domains — construction sites included —
 this "pretrain a world model, post-train to your domain" pattern is the one to watch.
 
+**The families since.**
+
+- **Cosmos-Transfer1** (March 2025): world generation controlled by segmentation, depth or edge maps with adaptive weights across the frame — aimed at sim-to-real and at enriching driving data.
+- **Cosmos-Reason1** (March 2025; 7B and 56B): a vision–language model for physical common sense that states embodied decisions, such as the next step, in language through long chains of thought.
+- **Cosmos-Predict2.5** and **Cosmos-Transfer2.5** (October 2025): Predict2.5 is flow-based, unifies text-, image- and video-to-world generation, uses Cosmos-Reason1 to ground its text, trains on 200M curated clips and comes at 2B and 14B, for synthetic data, policy evaluation and closed-loop simulation; Transfer2.5 translates sim-to-real and real-to-real at 3.5 times smaller than Transfer1. Released under the NVIDIA Open Model License.
+- A **Cosmos-Reason2-2B** model is the vision–language backbone of [[gr00t-n1|GR00T N1.7]].
+
+In [[03-deep-learning/world-models/index|5. World Models §6]]'s terms, Predict and Transfer are renderers built to feed planners, and Reason has become part of one.
+
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > "World foundation model platform" is a claim about a platform — reusable infrastructure — not a claim to have achieved accurate physical simulation; the paper itself concedes the physics benchmarks remain approximate. Read it as a declaration of what is being built rather than of what has been achieved.
 
@@ -140,6 +149,15 @@ this "pretrain a world model, post-train to your domain" pattern is the one to w
 VLA를 위한 합성 데이터, 폐루프 정책 평가, Cosmos-Reason/Transfer 후속들. 데이터가 귀한
 도메인 — 건설 현장 포함 — 에서 "월드모델을 사전학습하고 내 도메인으로 사후학습"하는 이
 패턴이 주시해야 할 방향이다.
+
+**그 뒤의 계열.**
+
+- **Cosmos-Transfer1**(2025년 3월): 분할·깊이·윤곽 지도로 제어하는 세계 생성으로, 화면의 곳마다 가중치를 적응적으로 둔다. sim-to-real과 주행 데이터 보강을 겨냥한다.
+- **Cosmos-Reason1**(2025년 3월, 7B와 56B): 물리 상식을 위한 시각–언어 모델로, 다음 단계 같은 체화된 결정을 긴 사고 사슬을 거쳐 언어로 말한다.
+- **Cosmos-Predict2.5**와 **Cosmos-Transfer2.5**(2025년 10월): Predict2.5는 flow 기반으로 텍스트·이미지·비디오→세계 생성을 하나로 묶고, Cosmos-Reason1로 텍스트를 접지하며, 정선된 클립 2억 개로 학습해 2B와 14B로 나왔다. 합성 데이터, 정책 평가, 폐루프 시뮬레이션을 위한 것이다. Transfer2.5는 Transfer1보다 3.5배 작으면서 sim-to-real과 real-to-real 변환을 한다. NVIDIA Open Model License로 공개했다.
+- **Cosmos-Reason2-2B** 모델이 [[gr00t-n1|GR00T N1.7]]의 시각–언어 백본이다.
+
+[[03-deep-learning/world-models/index|5. 월드모델 §6]]의 말로 하면, Predict와 Transfer는 플래너를 먹이려고 만든 렌더러이고, Reason은 플래너의 일부가 되었다.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > "world foundation model platform"은 플랫폼(재사용 가능한 인프라) 주장이지 물리 시뮬레이션의 정확성 달성 주장이 아니다 — 물리 벤치마크는 아직 근사 수준임을 논문도 인정한다. "무엇이 됐다"보다 "무엇을 지으려는가"의 선언으로 읽어라.

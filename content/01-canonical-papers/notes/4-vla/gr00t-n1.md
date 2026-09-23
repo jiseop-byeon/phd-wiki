@@ -9,7 +9,7 @@ pdf: https://arxiv.org/pdf/2503.14734
 code: https://github.com/NVIDIA/Isaac-GR00T
 tags: [paper, vla, robot-learning, humanoid]
 status: note-complete
-last_verified: 2026-07-22
+last_verified: 2026-09-22
 study-depth: Working
 wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
@@ -86,9 +86,14 @@ is not an implementation detail — it is why a 1.34B VLM can be in the loop at 
 
 The reference open humanoid stack and the loudest statement of the **"physical AI" data
 strategy**: real data is the scarce apex, so simulation and generative world models
-([[01-canonical-papers/canonical-list|section 5]]) must fill the base. Successors (GR00T N1.5+,
-Cosmos-integrated pipelines) iterate on exactly that coupling — the direction most relevant
-to data-scarce domains like construction robotics.
+([[01-canonical-papers/canonical-list|section 5]]) must fill the base. Its successors iterate on exactly that coupling — the direction most relevant to data-scarce
+domains like construction robotics — and all were released as open weights:
+
+- **N1.5** (June 2025): the vision–language model, an Eagle 2.5 variant, is frozen in both pretraining and fine-tuning; a FLARE objective (future latent representation alignment) is added beside flow matching so that human video without action labels can teach; and the data add neural trajectories from DreamGen. NVIDIA reports language following on the real GR-1 humanoid rising from $46.6\%$ to $93.3\%$, and success on twelve new verbs learned from DreamGen data from $13.1\%$ to $38.3\%$.
+- **N1.6** (late 2025): an Eagle-based 2B backbone, a 29-dimensional state and action, an action horizon of 16.
+- **N1.7** (2026, now general availability): 3B parameters, with **Cosmos-Reason2-2B** (Qwen3-VL architecture) as the vision–language backbone and a flow-matching DiT action head. Actions become *relative* end-effector deltas shared by robots and people, so that $20{,}000$ hours of human video (EgoScale) and robot demonstrations train the same head; state and action grow to 132 dimensions and the horizon to 40. Code is Apache 2.0 and the weights carry the NVIDIA Open Model License.
+
+Read the three together as the data pyramid made concrete — human video and generated trajectories at the base, one relative action convention so both reach the head — with NVIDIA's own physical-reasoning model from [[cosmos|Cosmos]] now inside the policy. How that relative convention meets the embodiment gap is [[03-deep-learning/vla/index|4. VLA §7]].
 
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > The "open" in "open foundation model" means weights and code, not the full data; and the verified scope of "generalist humanoid" is short-horizon, tabletop-adjacent tasks. This paper's strongest contribution is best read as the data-pyramid *strategy statement* rather than the model itself.
@@ -158,8 +163,14 @@ flowchart LR
 ### 영향과 후속 연구
 
 기준 오픈 휴머노이드 스택이자 **"physical AI" 데이터 전략**의 가장 큰 선언: 실데이터는
-희소한 꼭짓점이므로 시뮬레이션과 생성형 월드모델([[01-canonical-papers/canonical-list|5번 섹션]])이 바닥을 채워야 한다. 후속(GR00T N1.5+, Cosmos 통합 파이프라인)이 정확히 그
-결합을 반복 개선 중 — 건설로봇처럼 데이터가 귀한 도메인에 가장 직결되는 방향이다.
+희소한 꼭짓점이므로 시뮬레이션과 생성형 월드모델([[01-canonical-papers/canonical-list|5번 섹션]])이 바닥을 채워야 한다. 후속 버전들이 정확히 그 결합을 반복 개선했고 — 건설로봇처럼 데이터가 귀한 도메인에 가장
+직결되는 방향이다 — 모두 가중치를 공개했다.
+
+- **N1.5**(2025년 6월): Eagle 2.5 변형인 시각–언어 모델을 사전학습과 미세조정 모두에서 동결하고, flow matching 옆에 FLARE 목적함수(미래 잠재 표현 정렬)를 더해 행동 label 없는 사람 비디오도 가르칠 수 있게 했으며, 데이터에 DreamGen의 신경 궤적을 더했다. NVIDIA는 실제 GR-1 휴머노이드의 언어 따르기가 $46.6\%$에서 $93.3\%$로, DreamGen 데이터로 배운 새 동사 열두 개의 성공률이 $13.1\%$에서 $38.3\%$로 올랐다고 보고한다.
+- **N1.6**(2025년 말): Eagle 기반 2B 백본, 29차원 상태와 행동, 행동 지평 16.
+- **N1.7**(2026, 현재 정식판): 파라미터 3B, 시각–언어 백본은 **Cosmos-Reason2-2B**(Qwen3-VL 구조), 행동 헤드는 flow-matching DiT다. 행동이 로봇과 사람이 함께 쓰는 *상대* end-effector 변화량이 되어, 사람 비디오 $20{,}000$시간(EgoScale)과 로봇 시연이 같은 헤드를 학습시킨다. 상태와 행동은 132차원, 지평은 40으로 늘었다. 코드는 Apache 2.0, 가중치는 NVIDIA Open Model License다.
+
+셋을 함께 읽으면 데이터 피라미드가 구체화된 모습이다. 바닥에 사람 비디오와 생성된 궤적이 있고, 하나의 상대 행동 규약이 둘을 헤드로 이으며, [[cosmos|Cosmos]]의 물리 추론 모델이 이제 정책 안에 들어와 있다. 그 상대 규약이 embodiment 격차와 어떻게 만나는지는 [[03-deep-learning/vla/index|4. VLA §7]]에 있다.
 
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > "open foundation model"의 open은 가중치·코드이지 데이터 전체가 아니고, "generalist humanoid"의 검증 범위는 짧은 지평의 탁상 인접 과제다. 이 논문의 가장 강한 기여는 모델 자체보다 데이터 피라미드라는 전략 선언으로 읽는 것이 정확하다.

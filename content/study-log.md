@@ -14,6 +14,16 @@ tags: [log]
 
 ## 2026-09
 
+### 2026-09-22 (9) NVIDIA 생태계를 층별로, 그리고 GR00T·π0·Cosmos의 후속
+
+GR00T, π0, Cosmos, Isaac Sim·Lab이 다 잘 돼 있느냐는 질문에서 시작했다. 논문 노트는 있었지만 후속 버전과, 조각들이 한 스택으로 어떻게 이어지는지가 비어 있었다.
+
+- **생태계 페이지 "NVIDIA 스택, 층별로".** 로봇 위 연산(Jetson Thor) → 장면 기술(OpenUSD, Omniverse) → 시뮬레이션(Isaac Sim, Isaac Lab, Newton) → 데이터 생성(Isaac Lab Mimic, GR00T-Dreams/DreamGen, Cosmos-Transfer) → 월드모델(Cosmos-Predict, Cosmos-Reason) → 로봇 파운데이션 모델(GR00T) → 배치(Isaac ROS, cuRobo)를 한 표로, 각 층을 연구자가 무엇에 쓰는지와 위키의 어디가 다루는지와 함께 적었다. 층을 잇는 흐름과, 공개 가중치 ≠ 공개 데이터, 접촉 물리가 가장 약한 층이라는 읽기 주의를 붙였다.
+- **노트의 후속.** GR00T: N1.5(2025년 6월, VLM 동결, FLARE로 사람 비디오 학습, 실제 GR-1 언어 따르기 46.6%→93.3%), N1.6, N1.7(3B, Cosmos-Reason2-2B 백본, 로봇과 사람이 함께 쓰는 상대 end-effector 행동, 사람 비디오 2만 시간). π0: FAST(DCT 압축 토큰화, 학습 최대 5배 빠름), π0.5(새 집에서 치우기), π*0.6(RECAP, RSS 2026). Cosmos: Transfer1, Reason1(7B·56B), Predict2.5·Transfer2.5(2B·14B, 클립 2억 개). π0 노트 한국어의 겹친 문구도 고쳤다.
+- **시뮬레이터 페이지.** Isaac Lab의 인용을 arXiv 백서(2511.04831)로 바꾸고, Newton 행과 다섯째 상태 함정("Isaac Lab은 이제 물리 엔진 하나가 아니다": 3.0 얼리 액세스에서 PhysX↔Newton 전환, Isaac Sim 없는 실행, 정식판 2026년 10월 말 목표)을 더했다.
+- **VLA 페이지.** §6에 FAST가 토큰 수를 줄이는 방식을, §7에 GR00T N1.7의 상대 행동 규약을 이었다. 용어집에 GR00T, Newton(물리 엔진), FAST를 더하고 Isaac Lab과 WFM 항목을 갱신했다. FAST와 Newton은 다른 뜻(코너 검출기, 뉴턴 법칙)과 툴팁이 겹치지 않게 자동 강조에서 뺐다.
+- 수치는 모두 1차 출처로 확인했다: 논문 초록(OpenAlex와 arXiv), GR00T README와 Hugging Face 모델 카드, GR00T N1.5 연구 페이지, Isaac Lab 저장소와 3.0 릴리스 노트, Isaac Lab Mimic·Isaac ROS 문서, Newton 저장소, Jetson Thor 제품 페이지.
+
 ### 2026-09-22 (8) 월드모델을 셋으로 가르다: JEPA 이후, World Labs, Genie 3, 그리고 NeRF의 렌더링 식
 
 AMI와 World Labs의 월드모델도 다루느냐는 질문에서 시작했다. JEPA 노트가 V-JEPA 2에서 멈춰 있었고 World Labs는 없었다.

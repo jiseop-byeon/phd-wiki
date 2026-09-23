@@ -11,7 +11,7 @@ code: https://github.com/Physical-Intelligence/openpi
 project: https://www.physicalintelligence.company/blog/pi0
 tags: [paper, vla, robot-learning, diffusion]
 status: note-complete
-last_verified: 2026-07-22
+last_verified: 2026-09-22
 study-depth: Working
 wiki-support: Literacy
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
@@ -89,6 +89,12 @@ Set the current VLA design point: **VLM + continuous chunked action expert** is 
 default (π0.5, and [[gr00t-n1|GR00T N1]]'s dual-system echo it). Made "flow matching" a
 robotics vocabulary word and pretrain/post-train the standard framing for robot foundation
 models.
+
+**The line after π0.**
+
+- **FAST** (Pertsch et al., January 2025): a compression tokenizer for actions, built on the discrete cosine transform, so that dexterous high-frequency chunks become a few tokens instead of one per dimension per step; a universal FAST+ tokenizer was trained on one million real trajectories, and π0-FAST matched the diffusion π0 while training up to five times faster. Why fewer tokens matter is the sequential-decode count of [[03-deep-learning/vla/index|4. VLA §6]].
+- **π0.5** (April 2025): co-training on heterogeneous data — several robots, web data, object detections and high-level subtask prediction — which the authors report as the first end-to-end system to clean kitchens and bedrooms in entirely new homes.
+- **π\*0.6** (November 2025; RSS 2026): learning from deployment. RECAP (RL with Experience and Corrections via Advantage-conditioned Policies) trains on demonstrations, the robot's own rollouts and the corrections an operator makes during execution, by conditioning the policy on an estimated advantage.
 
 > [!question] Reading the claim · 핵심 주장 읽는 법
 > "General robot control" should be read as "demonstration-based control across several platforms and tasks", not as a claim of general intelligence. Laundry folding is a genuine horizon-and-precision milestone, but it sits on 10,000 hours of undisclosed data, which makes the method's independent contribution hard to isolate — keep the "method vs data" question open while reading.
@@ -178,14 +184,20 @@ flowchart LR
 로보틱스 어휘로 만들었고, 사전학습/사후학습을 로봇 파운데이션 모델의 표준 프레임으로
 만들었다.
 
+**π0 이후의 계열.**
+
+- **FAST**(Pertsch 외, 2025년 1월): 이산 코사인 변환 위에 지은 행동용 압축 토크나이저로, 손재주가 필요한 고주파 청크가 차원마다 스텝마다 토큰 하나가 아니라 몇 개의 토큰이 된다. 실제 궤적 100만 개로 범용 FAST+ 토크나이저를 학습했고, π0-FAST는 학습을 최대 다섯 배 빠르게 하면서 디퓨전 π0와 맞먹었다. 토큰이 적은 것이 왜 중요한지는 [[03-deep-learning/vla/index|4. VLA §6]]의 순차 디코딩 셈이다.
+- **π0.5**(2025년 4월): 이질적인 데이터 — 여러 로봇, 웹 데이터, 물체 검출, 상위 하위 과제 예측 — 로 함께 학습하며, 저자들은 완전히 새로운 집에서 부엌과 침실을 치우는 첫 end-to-end 시스템이라고 보고한다.
+- **π\*0.6**(2025년 11월, RSS 2026): 배치에서 배운다. RECAP(RL with Experience and Corrections via Advantage-conditioned Policies)은 시연, 로봇 자신의 실행, 실행 중 운영자가 한 수정을 추정한 이득에 정책을 조건화해 학습한다.
+
 > [!question] 핵심 주장 읽는 법 · Reading the claim
 > "general robot control"은 "여러 플랫폼·과제에 걸친 시연 기반 제어"로 읽어야지 범용 지능 주장이 아니다. 빨래 개기는 지평과 정밀도의 이정표지만, 비공개 1만 시간 데이터 위의 결과라 방법의 독립 기여를 분리하기 어렵다 — "방법 vs 데이터" 질문을 항상 옆에 두고 읽어라.
 >
 > **독립 평가.** 출처는 Wang, Leonard, Daniilidis, Jayaraman, Hu의
 > ["Evaluating π₀ in the Wild"](https://penn-pal-lab.github.io/Pi0-Experiment-in-the-Wild/),
 > UPenn GRASP Lab이다. arXiv 논문이 아니라 연구실 프로젝트 페이지여서 이전 검색이 놓쳤다.
-> 측면·손목 카메라를 단 Franka Panda에서 π0-FAST-DROID로 **300회 이상**을 돌렸고 대표 수치는
-> 대표 수치는 **평균 진행률 42.3퍼센트**. 두 지표를 구분해서 읽어야 한다. *progress*는 부분 점수이고
+> 측면·손목 카메라를 단 Franka Panda에서 π0-FAST-DROID로 **300회 이상**을 돌렸고
+> 대표 수치는 **평균 진행률 42.3퍼센트**다. 두 지표를 구분해서 읽어야 한다. *progress*는 부분 점수이고
 > *success*는 과제 완수다. 범주별 성공률은 pick-and-place·pour·YCB·인간 상호작용이 24%,
 > 관절 물체가 28.5%, 그리고 **천 조작이 19.4퍼센트**. 접기에서는 "티셔츠를 오른쪽에서 왼쪽으로 접어라"가
 > 진행률 80%, "티셔츠 접기를 끝내라"가 0%인데, 둘 다 문구가 다른 프롬프트의 진행률이지 완료율이
