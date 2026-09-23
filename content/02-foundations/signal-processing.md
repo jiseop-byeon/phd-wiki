@@ -424,10 +424,11 @@ Transforms help because they expose how a system changes each frequency and how 
 
 ### 6. Sensor-pipeline habits (field-tested)
 
-- Log **raw**, filter later; never filter twice implicitly (driver + your code).
-- Timestamp at the sensor, synchronize clocks before fusing (extrinsics *and* time offsets
-  for camera-LiDAR-IMU).
-- Check the spectrum before choosing a filter: name the noise before you fight it.
+Three habits, each with the reason it exists and, on P3's $1\,\mathrm{kHz}$ loop from the picture, what skipping it costs.
+
+- **Log raw, filter later; never filter twice implicitly (driver + your code).** A raw log can be filtered again any way you like after the fact; a filtered log has already discarded what the filter removed, and its delay cannot be taken back. Filtering twice is the silent version of the same loss, because the delays of filters in series add. Each symmetric 5-tap moving average of §4 delays by $(M-1)/2 = 2$ samples, so one in the driver and one in your controller delay P3's position by $2 + 2 = 4$ samples: $4\,\mathrm{ms}$ at $1\,\mathrm{kHz}$, eight times the hold's average lag of $0.5\,\mathrm{ms}$ (§2). At the handle's $30.7\,\mathrm{mm/s}$ that is $30.7 \times 4 = 122.8\,\mu\mathrm{m}$, two encoder counts of travel into the wall before the filtered signal shows the crossing.
+- **Timestamp at the sensor, synchronize clocks before fusing (extrinsics *and* time offsets for camera-LiDAR-IMU).** A reading describes the world at the instant it was taken, not the instant it arrived, and a time error $\delta$ on something moving at speed $v$ becomes a position error $v\delta$. That error is a bias, not scatter, so no noise setting absorbs it. On P3, stamping a position when the controller reads it, one tick after the encoder latched it, gives $\delta = 1\,\mathrm{ms}$ and an error of $30.7\,\mu\mathrm{m}$, half a count. Across machines the offsets reach tens of milliseconds: on P6's cart a range reading that arrives $70\,\mathrm{ms}$ late at $0.5\,\mathrm{m/s}$ describes the world $3.5\,\mathrm{cm}$ ago, three and a half times that sensor's noise (the running object of [[04-robotics/state-estimation-slam|3. State Estimation]]). A time offset is calibrated like an extrinsic, by correlating the motion two sensors see ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §5]]).
+- **Check the spectrum before choosing a filter: name the noise before you fight it.** A cutoff has to fall between the band that carries the signal and the band that carries the noise, and only a spectrum shows where that gap is. On P3 the velocity from differenced positions alternates $0$ and $61.4\,\mathrm{mm/s}$ (the picture), a pattern that repeats every two ticks and so sits at $500\,\mathrm{Hz}$, the Nyquist frequency, while hand-and-wall contact lives below $30\,\mathrm{Hz}$ (problem 2). The 5-tap average of §4 has gain $|\sin(5\pi f)/(5\sin\pi f)|$, which is $0.2$ at $f = 0.5$ and $0.965$ at $30\,\mathrm{Hz}$ ($f = 0.03$): it shrinks the swing around the true $30.7\,\mathrm{mm/s}$ from $\pm30.7$ to $\pm6.1\,\mathrm{mm/s}$ and passes the contact band almost whole, for $2\,\mathrm{ms}$ of delay. The chatter is quantization, not random noise, and it has a failure no average fixes: when the handle creeps, a whole window can pass without a new count and the averaged velocity reads exactly zero ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]).
 
 > [!tip] Going deeper · 더 깊이
 > Oppenheim and Schafer's *Discrete-Time Signal Processing* is the standard course this page compresses. §2 proves the sampling theorem in four steps; its sampling and DFT chapters add the convergence details and practical reconstruction filters that proof leaves out.
@@ -857,10 +858,11 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 ### 6. 센서 파이프라인 습관 (현장 검증됨)
 
-- **원시** 데이터로 기록하고 필터링은 나중에; 암묵적 이중 필터링(드라이버 + 내 코드) 금지.
-- 센서에서 타임스탬프를 찍고, 융합 전에 시계를 동기화(카메라-LiDAR-IMU의 외부 파라미터
-  *그리고* 시간 오프셋).
-- 필터를 고르기 전에 스펙트럼부터 봐라: 싸울 노이즈의 이름부터 알아내라.
+습관 셋이다. 저마다 그것이 있는 이유와, 그림의 $1\,\mathrm{kHz}$ P3 루프에서 그것을 건너뛰면 치르는 값을 함께 적는다.
+
+- **원시 데이터로 기록하고 필터링은 나중에; 암묵적 이중 필터링(드라이버 + 내 코드) 금지.** 원시 기록은 나중에 얼마든지 다른 방식으로 다시 거를 수 있지만, 걸러진 기록은 필터가 없앤 것을 이미 버렸고 그 지연은 되돌릴 수 없다. 두 번 거르는 것은 같은 손실의 조용한 판이다. 직렬로 이은 필터의 지연은 더해지기 때문이다. §4의 대칭 5탭 이동 평균 하나가 $(M-1)/2 = 2$ 샘플을 늦추므로, 드라이버에 하나, 제어기에 하나 있으면 P3의 위치가 $2 + 2 = 4$ 샘플 늦어진다. $1\,\mathrm{kHz}$에서 $4\,\mathrm{ms}$이고, 홀드의 평균 지연 $0.5\,\mathrm{ms}$(§2)의 여덟 배다. 핸들의 $30.7\,\mathrm{mm/s}$에서 그것은 $30.7 \times 4 = 122.8\,\mu\mathrm{m}$, 걸러진 신호가 벽 통과를 보여 주기 전에 벽 안으로 들어간 엔코더 두 카운트다.
+- **센서에서 타임스탬프를 찍고, 융합 전에 시계를 동기화(카메라-LiDAR-IMU의 외부 파라미터 *그리고* 시간 오프셋).** 측정값은 도착한 순간이 아니라 측정한 순간의 세계를 말하고, 속도 $v$로 움직이는 것의 시간 오차 $\delta$는 위치 오차 $v\delta$가 된다. 그 오차는 흩어짐이 아니라 편향이어서 어떤 잡음 설정도 흡수하지 못한다. P3에서 위치를 엔코더가 잡은 순간이 아니라 한 틱 뒤 제어기가 읽는 순간에 찍으면 $\delta = 1\,\mathrm{ms}$, 오차는 $30.7\,\mu\mathrm{m}$로 카운트의 절반이다. 기계 사이로 넘어가면 오프셋은 수십 밀리초에 이른다. P6의 카트에서 $70\,\mathrm{ms}$ 늦게 도착한 거리 측정은 $0.5\,\mathrm{m/s}$에서 $3.5\,\mathrm{cm}$ 전의 세계를 말하고, 이는 그 센서 잡음의 3.5배다([[04-robotics/state-estimation-slam|3. 상태 추정]]의 대상 절). 시간 오프셋은 외부 파라미터처럼 보정하는 양이고, 두 센서가 보는 운동의 상관으로 추정한다([[04-robotics/geometric-perception-calibration|3.5 기하 인식 §5]]).
+- **필터를 고르기 전에 스펙트럼부터 봐라: 싸울 노이즈의 이름부터 알아내라.** 차단 주파수는 신호가 사는 대역과 잡음이 사는 대역 사이에 놓여야 하고, 그 틈이 어디인지는 스펙트럼만이 보여 준다. P3에서 위치를 차분해 얻은 속도는 $0$과 $61.4\,\mathrm{mm/s}$를 오간다(그림). 두 틱마다 되풀이되는 무늬이므로 나이퀴스트 주파수인 $500\,\mathrm{Hz}$에 있고, 손과 벽의 접촉은 $30\,\mathrm{Hz}$ 아래에 산다(과제 2). §4의 5탭 평균의 이득은 $|\sin(5\pi f)/(5\sin\pi f)|$로, $f = 0.5$에서 $0.2$, $30\,\mathrm{Hz}$($f = 0.03$)에서 $0.965$다. 그래서 참값 $30.7\,\mathrm{mm/s}$ 둘레의 흔들림을 $\pm30.7$에서 $\pm6.1\,\mathrm{mm/s}$로 줄이면서 접촉 대역은 거의 그대로 통과시키고, 그 값으로 $2\,\mathrm{ms}$의 지연을 치른다. 이 떨림은 무작위 잡음이 아니라 양자화이고, 어떤 평균으로도 고치지 못하는 고장이 있다. 핸들이 기어가듯 움직이면 창 하나가 새 카운트 없이 통째로 지나가, 평균한 속도가 정확히 0이 된다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]).
 
 > [!tip] 더 깊이 · Going deeper
 > 이 페이지가 압축한 표준 강의는 Oppenheim·Schafer의 *Discrete-Time Signal Processing*이다. §2가 샘플링 정리를 네 단계로 증명한다. 그 책의 샘플링·DFT 장은 그 증명이 생략한 수렴의 세부와 실제 복원 필터를 더한다.

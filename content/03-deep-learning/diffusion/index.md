@@ -219,6 +219,10 @@ so the same network error is harmless at a clean level and ruinous at a noisy on
 
 ### 1. Training target and sampling process are different
 
+*In one sentence:* training corrupts a known datum by a fixed recipe with a closed form, so the network always has a free label, while generation has no datum and must walk back through the levels with the network — so the loss and the sampler are two separate things a paper has to report.
+
+*If you need only one thing from this section:* training reaches any level in one line — on D6, $0.8(2)+0.6(-1)=1$ — while generation pays one network call per level it visits, $N$ calls or $2N$ under guidance, and §5 prices that $N$ (the forward- and reverse-process boxes below).
+
 The common noise-prediction loss is
 
 $$L=\mathbb E_{x_0,\epsilon,t}\|\epsilon-\epsilon_\theta(x_t,t,c)\|^2.$$
@@ -303,6 +307,12 @@ Diffusion objectives learn quantities associated with a noisy probability path. 
 ### 4. Robot policy consequences
 
 For images, extra sampling steps cost latency. For action policies they also determine control rate and how often observations can correct a plan. Report solver, step count, action horizon, receding execution, and wall-clock latency. Fewer numerical steps are useful only if closed-loop quality is maintained.
+
+Each item on that list answers a different question. The solver says what the $N$ calls compute, since one trained network gives different samples at the same $N$ under an ancestral, a DDIM-style or a higher-order sampler (§1). The step count $N$ is the number of network calls. The action horizon $H$ is how many actions one sample produces, so it spreads a sample's cost over the control steps it covers. The receding execution — the $k\le H$ actions run before the policy looks again — sets how long the robot moves open loop. And the wall-clock latency is the one the controller actually feels, because it depends on the hardware and on what can be cached, not on $N$ alone.
+
+On D6 the chain from $N$ to the robot takes two lines. At $c=5\,\mathrm{ms}$ a sample costs $t_{\mathrm{inf}}=Nc$, and a 20 Hz controller consumes one action every $\Delta t=50\,\mathrm{ms}$, so the smallest chunk that keeps it supplied is $m=\lceil Nc/\Delta t\rceil$, the rule the worked case of [[03-deep-learning/vla/index|4. VLA]] derives for D4. $N=10$ gives $t_{\mathrm{inf}}=50\,\mathrm{ms}$ and $m=1$. The full $N=20$ gives $100\,\mathrm{ms}$ and $m=2$: buying §5's last row, an error of $0.058333$ instead of $0.085200$, obliges the policy to commit at least two actions per observation, and even at that smallest chunk every action it executes is $100$ to $150\,\mathrm{ms}$ old, against $50\,\mathrm{ms}$ at $N=10$. The step count has become a statement about feedback.
+
+π0 shows the same arithmetic on real robots. Its flow head integrates $10$ steps to produce a chunk of $H=50$ actions, and its authors execute chunks open loop: on their $50\,\mathrm{Hz}$ robots they infer every $0.5\,\mathrm{s}$, after $25$ actions, and on the $20\,\mathrm{Hz}$ UR5e and Franka every $0.8\,\mathrm{s}$, after $16$. So on the $50\,\mathrm{Hz}$ robots an observation corrects the plan twice a second, not fifty times, whatever the control rate suggests; they also report that temporal ensembling of overlapping chunks hurt performance ([[01-canonical-papers/notes/4-vla/pi0|π0]]). Why ten steps fit the budget is the cached observation of [[03-deep-learning/vla/index|4. VLA §6]], where they take $27\,\mathrm{ms}$ in all, and the trade between chunk length and feedback is [[03-deep-learning/vla/index|4. VLA §3]].
 
 Read [[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]], DDIM, score-SDE, flow-matching, and DiT notes before [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] and $\pi_0$.
 
@@ -603,6 +613,10 @@ $$\frac{\partial\hat x_0}{\partial\hat\epsilon}=-\frac{\sqrt{1-\bar\alpha_i}}{\s
 
 ### 1. 학습 target과 sampling은 다르다
 
+*한 문장으로:* 학습은 알려진 자료를 닫힌 형태가 있는 정해진 방식으로 오염시키므로 신경망에게는 늘 공짜 label이 있고, 생성에는 자료가 없어서 신경망을 부르며 레벨을 거슬러 내려와야 한다. 그래서 손실과 sampler는 논문이 따로 보고해야 할 두 가지다.
+
+*이 절에서 하나만 가져간다면:* 학습은 어느 레벨이든 한 줄로 간다. D6에서는 $0.8(2)+0.6(-1)=1$이다. 반면 생성은 방문하는 레벨마다 신경망을 한 번 부르므로 $N$번, guidance를 쓰면 $2N$번을 치르고, 그 $N$의 값을 매기는 곳이 §5다(아래 forward·reverse process 상자).
+
 $L=\mathbb E\|\epsilon-\epsilon_\theta(x_t,t,c)\|^2$. 학습은 깨끗한 $x_0$에서 임의 시간의 $x_t$를 바로 만든다. 생성에는 $x_0$가 없으므로 noise에서 시작해 반복적으로 적분한다. noise·clean data·score·velocity·flow vector 중 무엇을 예측하는지 번역한 뒤 비교한다.
 
 저 두 문장은 서로 다른 두 대상을 부르고 있고, diffusion에 대한 혼동은 거의 전부 그 둘에 이름을 하나만 준 데서 온다.
@@ -678,7 +692,15 @@ diffusion은 noisy probability path와 관련된 양을 학습하고, flow match
 
 ### 4. 로봇 정책에서의 결과
 
-sampling step은 latency·control rate·재관측 주기를 바꾼다. solver·step 수·action horizon·receding execution·실제 시간을 보고해야 한다.
+이미지에서는 sampling step을 늘리면 latency가 늘 뿐이다. 행동 정책에서는 step이 control rate와, 관측이 계획을 얼마나 자주 고칠 수 있는지까지 정한다. solver·step 수·action horizon·receding execution·실제 시간을 보고해야 하고, 수치 step을 줄이는 것은 폐루프 품질이 유지될 때만 쓸모가 있다.
+
+목록의 항목은 각자 다른 질문에 답한다. solver는 $N$번의 호출이 무엇을 계산하는지를 말한다. 학습된 신경망 하나가 같은 $N$에서도 ancestral, DDIM 계열, 고차 sampler에 따라 다른 표본을 내기 때문이다(§1). step 수 $N$은 신경망 호출 횟수다. action horizon $H$는 표본 하나가 내놓는 행동 수이므로, 표본 하나의 비용을 그것이 덮는 제어 스텝들에 나눠 준다. receding execution, 곧 정책이 다시 보기 전에 실행하는 $k\le H$개의 행동은 로봇이 open loop로 움직이는 시간을 정한다. 그리고 실제 시간은 제어기가 실제로 느끼는 값이다. $N$만이 아니라 하드웨어와, 무엇을 캐시할 수 있는지에 달려 있기 때문이다.
+
+D6에서 $N$이 로봇에 닿는 사슬은 두 줄이다. $c=5\,\mathrm{ms}$이면 표본 하나에 $t_{\mathrm{inf}}=Nc$가 들고, 20 Hz 제어기는 $\Delta t=50\,\mathrm{ms}$마다 행동 하나를 쓰므로, 제어기에 행동이 끊기지 않게 하는 가장 작은 chunk는 $m=\lceil Nc/\Delta t\rceil$이다. [[03-deep-learning/vla/index|4. VLA]]의 계산 절이 D4에서 유도하는 규칙이다. $N=10$이면 $t_{\mathrm{inf}}=50\,\mathrm{ms}$, $m=1$이다. $N=20$을 다 쓰면 $100\,\mathrm{ms}$, $m=2$다. §5의 마지막 행, 곧 오차 $0.085200$ 대신 $0.058333$을 사면 정책은 관측 하나에 행동을 적어도 둘씩 맡겨야 하고, 그 가장 작은 chunk에서도 실행되는 행동은 모두 $100$–$150\,\mathrm{ms}$ 묵은 것이 된다. $N=10$에서는 $50\,\mathrm{ms}$다. step 수가 피드백에 대한 진술이 된 것이다.
+
+π0가 같은 산수를 실제 로봇에서 보여 준다. flow 헤드가 $10$스텝을 적분해 행동 $H=50$개의 chunk를 만들고, 저자들은 chunk를 open loop로 실행한다. $50\,\mathrm{Hz}$ 로봇에서는 $0.5\,\mathrm{s}$마다, 곧 행동 $25$개 뒤에 추론하고, $20\,\mathrm{Hz}$인 UR5e와 Franka에서는 $0.8\,\mathrm{s}$마다, 행동 $16$개 뒤에 추론한다. 그러니 $50\,\mathrm{Hz}$ 로봇에서 관측이 계획을 고치는 것은 제어 주기가 어떻게 보이든 초당 쉰 번이 아니라 두 번이다. 겹치는 chunk를 섞는 temporal ensembling은 오히려 성능을 떨어뜨렸다고도 보고한다([[01-canonical-papers/notes/4-vla/pi0|π0]]). 열 스텝이 예산에 들어가는 이유는 [[03-deep-learning/vla/index|4. VLA §6]]의 캐시한 관측이고, 거기서 열 스텝은 합쳐 $27\,\mathrm{ms}$다. chunk 길이와 피드백 사이의 교환은 [[03-deep-learning/vla/index|4. VLA §3]]에 있다.
+
+[[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]], DDIM, score-SDE, flow matching, DiT 노트를 먼저 읽고 [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]와 $\pi_0$로 간다.
 
 ### 5. Sampler step 쓸기
 

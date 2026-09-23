@@ -258,6 +258,8 @@ sound like they should exist and do not. Each one is a citable gap.
 
 For example, a wall-wiping experiment can need both a model of contact and a record of real force feedback. A simulator supplies predictions under its contact assumptions; a dataset supplies only the channels that were collected; a benchmark supplies a task and scoring rule. None automatically supplies the other two.
 
+**On RS1.** The variable that decides RS1 is the peak contact force, and the three tools reach it in three different ways. A simulator computes it, so its integrator is part of the answer: the worked case's drop on the stiff wall at $0.15\,\mathrm{m/s}$ peaks at an exact $6\,\mathrm{N}$, a pass under RS1's $10\,\mathrm{N}$ rule, while explicit Euler at a $1\,\mathrm{ms}$ step reports $12\,\mathrm{N}$, a failure (§3 prices this over a sweep). A dataset can replay it only if a force channel was recorded, and only at the rate it was recorded: RH20T's force/torque stream runs at $100\,\mathrm{Hz}$ (§7), so the drop cell's $31.4\,\mathrm{ms}$ contact on the panel gets three or four samples, and the one nearest the peak can read as little as $\cos(100 \times 0.005) = 0.878$ of it, 12% low. A benchmark could fix RS1's $10\,\mathrm{N}$ line and its trial protocol for everyone, but none exists for on-site construction manipulation (§6).
+
 **The reading this gives you.** Write the variable that decides the research claim before selecting a tool. Then inspect whether the tool represents, measures, or merely assumes that variable. This order prevents choosing an attractive platform and later discovering that its available observations cannot answer the intended question.
 
 ### 2. Simulators — general purpose
@@ -299,6 +301,10 @@ citation]", not a fabricated venue.
 
 ### 3. The axis that actually matters: how contact is modelled
 
+*In one sentence:* simulators differ less in speed than in what they do when two objects touch, and a simulator's time step and update rule can move a contact force far enough to turn a pass into a failure.
+
+*If you need only one thing from this section:* the stable-step rule for semi-implicit Euler on a contact, $\Delta t<2/\omega=2\sqrt{m/k}$ — $20\,\mathrm{ms}$ for P3's handle on RS1's panel and $2\,\mathrm{ms}$ on the hundredfold stiffer wall — and the fact that explicit Euler has no stable step on an undamped contact at all, gaining sixteenfold energy per bounce at $\omega\Delta t=1$; the sweep below prices both.
+
 For this program the interesting difference between simulators is not speed. It is what
 each one *means* by a contact.
 
@@ -323,6 +329,8 @@ Flex deformables, 3.3.0 made native convex collision the default, and **3.3.5 ad
 SDF support plus a contact sensor and a tactile sensor** — the latter "measuring the
 penetration depth between two objects at given points". For a project about
 [[04-robotics/tactile-visuotactile|tactile manipulation]], that is a material change.
+
+#### The drop cell's question, in four definitions
 
 **The claim on the running object.** Those bullets are three answers to one question, and the drop cell asks it in numbers: *what may a contact do between two time steps?* A penalty spring answers "push back in proportion to the overlap", and the worked case followed that answer to its consequences — a contact frequency the step has to resolve, and an integrator that decides whether the resolved contact keeps its energy, gains it, or throws the body out. Four definitions make the argument portable to any simulator; then the lab runs it.
 
@@ -369,6 +377,8 @@ penetration depth between two objects at given points". For a project about
 > - **Non-example**: the semi-implicit handle's energy at step 1 of the worked case, twice $E_{\text{in}}$. It was measured mid-contact, so it includes spring energy that is returned.
 > - **Non-example**: explicit Euler's $16$ on the stiff wall at $1\,\mathrm{ms}$ is a correctly measured energy ratio, but it is not the contact's; it is the integrator's. The definition measures the simulation, which is what makes it useful.
 > - **Why it matters**: it is a one-number test of any simulator's contact that needs no force sensor. Drop a body with no damping configured; if it comes back faster than it arrived, the step or the integrator is wrong for that contact.
+
+#### The sweep: two integrators, five steps, three walls
 
 **Lab — one drop, two integrators, a sweep over $\Delta t$ and $k$.** The listing runs the drop cell as the worked case did, on three stiffnesses — the panel, the stiff wall, and a tenfold step between them — at five steps from $0.1$ to $20\,\mathrm{ms}$, and reports the energy ratio and the peak penetration for each integrator. It uses the two integrators of [[02-foundations/lab-kernel|0.7 §2 and §3]] and nothing else; a second loop reruns part of the sweep with the frozen dampers.
 
@@ -450,6 +460,8 @@ The damped rerun, $\zeta=0.1$ on both walls, where the exact ratio is $0.554$. E
 | 40,000 | 8 | 2 | 80 | 2.00 | **100.8** | **11.56** |
 | 40,000 | 8 | 5 | 200 | 5.00 | **2,500** | **625** |
 
+#### Reading the sweep
+
 Reading the two tables.
 
 **It is one table in $\omega\Delta t$.** The panel at $1\,\mathrm{ms}$ and the stiff wall at $0.1\,\mathrm{ms}$ share $\omega\Delta t=0.1$ and give the same ratios, $1.372$ and $1.002$; only the millimetres differ, by the factor $v_0/\omega$. So do the panel at $20\,\mathrm{ms}$ and the stiff wall at $2\,\mathrm{ms}$. Nothing but $\omega\Delta t$ decides how a step treats a contact, which is why step 4's bound, $\Delta t<2/\omega$, is the whole rule.
@@ -467,6 +479,8 @@ Since the drop cell starts on a sample ($\varphi=0$), its column can only sit at
 **One scene, one step.** A simulator steps every contact in a scene with the same $\Delta t$, so the stiffest contact on the lightest body decides it. With the panel and the stiff wall in one scene, $1\,\mathrm{ms}$ is the largest step on this grid that keeps semi-implicit Euler inside its interval for both; at that step the panel gets about 31 steps per contact and the stiff wall three.
 
 **Damping does what step 6 said.** Explicit Euler becomes stable where $d\ge k\Delta t$ — the panel at $0.1$ and $1\,\mathrm{ms}$, the stiff wall at $0.1\,\mathrm{ms}$ — and even there it overstates the restitution: $0.776$ against the exact $0.554$ at $\omega\Delta t=0.1$. On its boundary (the panel at $2\,\mathrm{ms}$) a bounce still gains 9%. Semi-implicit Euler tracks $0.554$ closely until its narrowed interval ends: $0.922$ at $\omega\Delta t=1$, inside the interval and already far off, and $11.6$ at $2\,\mathrm{ms}$, outside it — worse than the undamped $9$.
+
+#### What the sweep says about real simulators
 
 **What the table says about the simulators above.** None of the simulators in §2 is the drop cell, and nothing in these tables measures one of them. What the tables do is put a price on choices that §2 and §3 already attribute to them.
 
@@ -798,7 +812,7 @@ so most published comparisons are the authors' own reproductions of someone else
 That is not dishonest, and it is also not independent. Where a genuinely third-party
 evaluation exists it is worth more than the headline, and the gap between the two is
 frequently large — see [[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet et al.]]
-(77% in simulation to 23% in six real homes) and π0's independent re-evaluation. **When you
+(end-to-end navigation: the best-in-simulation variant, 77% on the benchmark, scored 0% in a real home, and the deployed variant fell from 48% to 23% across six homes) and π0's independent re-evaluation. **When you
 cite a comparison, say whose evaluation it was.**
 
 > [!warning] The three questions that settle most policy tables
@@ -1135,6 +1149,8 @@ $$d\ \ge\ k\,\Delta t$$
 
 예를 들어 벽 닦기 실험에는 접촉 모델과 실제 힘 피드백 기록이 모두 필요할 수 있다. 시뮬레이터는 접촉 가정 아래의 예측을 준다. 데이터셋에는 수집한 채널만 있다. 벤치마크는 과제와 채점 규칙을 준다. 어느 하나가 나머지 둘을 자동으로 제공하지는 않는다.
 
+**RS1에서.** RS1을 결정하는 변수는 최대 접촉력이고, 세 도구는 저마다 다른 길로 거기에 닿는다. 시뮬레이터는 그것을 계산하므로 적분기가 답의 일부가 된다. 계산 절에서 단단한 벽에 $0.15\,\mathrm{m/s}$로 떨어뜨린 낙하는 정확히 $6\,\mathrm{N}$에서 정점을 찍어 RS1의 $10\,\mathrm{N}$ 규칙으로 합격인데, $1\,\mathrm{ms}$ 스텝의 명시적 오일러는 $12\,\mathrm{N}$, 곧 불합격을 보고한다(§3이 이것을 스윕으로 값 매긴다). 데이터셋은 힘 채널이 기록되었을 때만, 그것도 기록된 속도로만 그것을 재생할 수 있다. RH20T의 힘/토크 스트림은 $100\,\mathrm{Hz}$이므로(§7), 패널 위 낙하 셀의 $31.4\,\mathrm{ms}$ 접촉에는 샘플이 서너 개 들어가고, 정점에 가장 가까운 샘플도 정점의 $\cos(100 \times 0.005) = 0.878$배까지, 곧 12% 낮게 읽힐 수 있다. 벤치마크는 RS1의 $10\,\mathrm{N}$ 선과 시행 프로토콜을 모두에게 고정해 줄 수 있지만, 현장 건설 조작을 위한 벤치마크는 없다(§6).
+
 **여기서 얻는 독법.** 도구를 고르기 전에 연구 주장을 결정할 변수를 적는다. 도구가 이를 표현하는지, 측정하는지, 가정만 하는지 확인한다. 이 순서를 따르면 플랫폼을 고른 뒤 관측으로 원하는 질문에 답할 수 없음을 뒤늦게 깨닫는 일을 줄인다.
 
 ### 2. 시뮬레이터 — 범용
@@ -1174,6 +1190,10 @@ $$d\ \ge\ k\,\Delta t$$
 
 ### 3. 실제로 중요한 축: 접촉을 어떻게 모델링하는가
 
+*한 문장으로:* 시뮬레이터들은 속도보다 두 물체가 닿을 때 무엇을 하느냐에서 더 크게 다르고, 시뮬레이터의 시간 스텝과 갱신 규칙은 접촉력을 합격이 불합격으로 뒤집힐 만큼 움직일 수 있다.
+
+*이 절에서 하나만 가져간다면:* 접촉 위의 반암시적 오일러가 지켜야 하는 안정 스텝 규칙 $\Delta t<2/\omega=2\sqrt{m/k}$ — RS1의 패널 위 P3 핸들에서 $20\,\mathrm{ms}$, 백 배 단단한 벽에서 $2\,\mathrm{ms}$ — 그리고 감쇠 없는 접촉에서는 명시적 오일러에 안정 스텝이 아예 없어 $\omega\Delta t=1$에서 튕김 한 번마다 에너지가 열여섯 배가 된다는 사실. 아래 스윕이 둘 다 값을 매긴다.
+
 이 프로그램에서 시뮬레이터 사이의 흥미로운 차이는 속도가 아니다. 각각이 접촉을 *무엇으로
 여기는가*다.
 
@@ -1193,6 +1213,8 @@ MuJoCo 3.x가 접촉이 많은 작업 쪽으로 움직이고 있는 것은 추�
 도입했고, 3.3.0이 네이티브 볼록 충돌을 기본값으로 만들었으며, **3.3.5가 네이티브 SDF 지원과
 함께 접촉 센서와 촉각 센서를 추가했다** — 뒤의 것은 "주어진 점들에서 두 물체 사이의 침투
 깊이를 측정"한다. [[04-robotics/tactile-visuotactile|촉각 조작]] 프로젝트에는 실질적인 변화다.
+
+#### 낙하 셀의 질문, 정의 넷으로
 
 **이 페이지의 대상으로 본 주장.** 위의 항목들은 한 질문에 대한 세 가지 답이고, 낙하 셀은 그 질문을 숫자로 묻는다. *두 시간 스텝 사이에서 접촉은 무엇을 해도 되는가?* 페널티 스프링의 답은 "겹친 만큼 되민다"이고, 계산 절은 그 답을 끝까지 따라갔다. 스텝이 분해해야 하는 접촉 진동수, 그리고 분해된 접촉이 에너지를 지키는지, 얻는지, 물체를 튕겨 내 버리는지를 정하는 적분기. 정의 넷이 이 논증을 어느 시뮬레이터에나 옮길 수 있게 하고, 그다음 랩이 그것을 돌린다.
 
@@ -1240,6 +1262,8 @@ MuJoCo 3.x가 접촉이 많은 작업 쪽으로 움직이고 있는 것은 추�
 > - **비예**: $1\,\mathrm{ms}$의 단단한 벽에서 명시적 오일러의 $16$은 제대로 잰 에너지 비이지만, 접촉의 것이 아니라 적분기의 것이다. 이 정의는 시뮬레이션을 재고, 그것이 쓸모다.
 > - **왜 중요한가**: 힘 센서 없이 어떤 시뮬레이터의 접촉이든 숫자 하나로 시험할 수 있다. 감쇠를 설정하지 않은 물체를 떨어뜨려 들어올 때보다 빨리 튀어나오면, 그 접촉에 대해 스텝이나 적분기가 틀린 것이다.
 
+#### 스윕: 적분기 둘, 스텝 다섯, 벽 셋
+
 **랩 — 낙하 한 번, 적분기 둘, $\Delta t$와 $k$에 대한 스윕.** 영어 절의 코드가 계산 절처럼 낙하 셀을 돌린다. 강성 셋 — 패널, 단단한 벽, 그 사이의 열 배 단계 — 에서 $0.1$부터 $20\,\mathrm{ms}$까지 다섯 스텝으로, 각 적분기의 에너지 비와 최대 침투를 보고한다. [[02-foundations/lab-kernel|0.7 §2와 §3]]의 두 적분기만 쓰고, 두 번째 루프는 고정된 댐퍼로 스윕 일부를 다시 돌린다.
 
 감쇠 없는 스윕, 코드가 출력하는 그대로다. 굵게 쓴 칸이 불안정한 스텝이다. $d=0$에서 명시적 오일러는 안정 스텝이 아예 없으므로 명시적 칸은 전부이고(그 열은 각 스텝의 대가를 보여 준다), 반암시적 칸은 $\omega\Delta t\ge2$인 것이다.
@@ -1275,6 +1299,8 @@ MuJoCo 3.x가 접촉이 많은 작업 쪽으로 움직이고 있는 것은 추�
 | 40,000 | 8 | 2 | 80 | 2.00 | **100.8** | **11.56** |
 | 40,000 | 8 | 5 | 200 | 5.00 | **2,500** | **625** |
 
+#### 스윕 읽기
+
 표 두 개를 읽는 법.
 
 **$\omega\Delta t$에 대한 표 하나다.** $1\,\mathrm{ms}$의 패널과 $0.1\,\mathrm{ms}$의 단단한 벽은 $\omega\Delta t=0.1$을 공유하고 같은 비 $1.372$와 $1.002$를 준다. 밀리미터만 $v_0/\omega$만큼 다르다. $20\,\mathrm{ms}$의 패널과 $2\,\mathrm{ms}$의 단단한 벽도 그렇다. 스텝이 접촉을 어떻게 다루는지는 $\omega\Delta t$ 하나로 정해지고, 그래서 4단계의 경계 $\Delta t<2/\omega$가 규칙의 전부다.
@@ -1292,6 +1318,8 @@ $$1-\tfrac14(\omega\Delta t)^2\ \le\ \frac{E_{\text{out}}}{E_{\text{in}}}\ \le\ 
 **장면 하나, 스텝 하나.** 시뮬레이터는 한 장면의 모든 접촉을 같은 $\Delta t$로 전진하므로, 가장 단단한 접촉 위의 가장 가벼운 물체가 스텝을 정한다. 패널과 단단한 벽이 한 장면에 있으면, 이 격자에서 둘 모두 반암시적 오일러를 구간 안에 두는 가장 큰 스텝은 $1\,\mathrm{ms}$다. 그 스텝에서 패널은 접촉당 약 31스텝, 단단한 벽은 세 스텝을 받는다.
 
 **감쇠는 6단계가 말한 대로 한다.** 명시적 오일러는 $d\ge k\Delta t$인 곳 — $0.1$과 $1\,\mathrm{ms}$의 패널, $0.1\,\mathrm{ms}$의 단단한 벽 — 에서 안정해지지만, 거기서도 반발을 과대평가한다. $\omega\Delta t=0.1$에서 정확한 $0.554$ 대신 $0.776$이다. 경계(패널, $2\,\mathrm{ms}$)에서는 튕김이 여전히 9%를 얻는다. 반암시적 오일러는 좁아진 구간이 끝날 때까지 $0.554$를 잘 따라간다. $\omega\Delta t=1$에서는 구간 안인데도 이미 크게 벗어난 $0.922$, 구간 밖인 $2\,\mathrm{ms}$에서는 감쇠 없는 $9$보다 나쁜 $11.6$이다.
+
+#### 스윕이 실제 시뮬레이터에 대해 말하는 것
 
 **이 표가 위의 시뮬레이터들에 대해 말하는 것.** §2의 시뮬레이터 중 어느 것도 낙하 셀이 아니고, 이 표의 무엇도 그중 하나를 재지 않는다. 표가 하는 일은 §2와 §3이 이미 그 시뮬레이터들에 귀속시킨 선택에 값을 매기는 것이다.
 
@@ -1591,8 +1619,8 @@ VLA·확산 정책·로코모션 논문에서 백분율이 등장하고, 비교�
 **1차 평가 대 독립 평가.** 로봇 학습 결과는 재현 비용이 커서, 출판된 비교 대부분은 저자들이
 남의 방법을 직접 재현한 것이다. 부정직한 것은 아니지만 독립적인 것도 아니다. 진짜 제3자
 평가가 존재한다면 그것이 헤드라인보다 값어치가 있고, 둘 사이의 격차는 자주 크다 —
-[[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet 등]](시뮬 77% →
-실제 주택 여섯 곳 23%)과 π0의 독립 재평가를 보라. **비교를 인용할 때는 누구의 평가인지 밝혀라.**
+[[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet 등]](end-to-end 내비게이션: 벤치마크 77%로 시뮬레이션에서 가장 좋았던 변형은 실제 집에서 0%,
+배치한 변형은 48%에서 주택 여섯 곳 23%로)과 π0의 독립 재평가를 보라. **비교를 인용할 때는 누구의 평가인지 밝혀라.**
 
 > [!warning] 정책 표 대부분을 결판내는 세 질문
 > **1. 시행 몇 회이고, 어떤 초기 상태 분포에서인가?** **2. 이것은 시뮬레이션인가, 실험실

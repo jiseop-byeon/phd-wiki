@@ -207,6 +207,10 @@ Separate training/tuning/test data and document the unit of split. Random frames
 
 ### 4. Trials and uncertainty
 
+*In one sentence:* a handful of trials cannot pin down how often something works, so how many trials to run has to be decided before the experiment, and the lab checks that decision by running the whole experiment many thousands of times on a computer.
+
+*If you need only one thing from this section:* a success rate from $n$ trials is uncertain by up to $\pm1/\sqrt{n}$ — $\pm32$ points at the pilot's $10$ per arm — and RS1's success outcome needs $32$ trials per arm for power $0.8$, which the lab below confirms by simulation ($0.82$ at $32$).
+
 Report trial count, independent runs, failures, exclusions, aggregation, and an uncertainty measure appropriate to the design. A seed captures only software randomness; physical trials vary through calibration, wear, temperature, material, timing, and people.
 
 Predeclare primary outcomes when many metrics and conditions make cherry-picking likely. Statistical significance and practical importance are different ([[02-foundations/ml-practice|ML Practice §5]]). Which test fits is decided by what number each trial yields and whether both methods ran on the same trials ([[02-foundations/probability|3. Probability §6]]). Two literacy-level tools for reasoning about n.
@@ -755,6 +759,10 @@ $d = \Delta/\sigma$가 Cohen의 d이기 때문이다. 파일럿의 $\hat d = 1.6
 **RS1에서는.** 파일럿이 A의 문턱과 B의 이득을 골랐으므로 그 스무 번의 시행은 튜닝 데이터다. 설계와 계획용 효과를 정하는 데는 써도 되지만 확증 검정에 들어가서는 안 된다. 다시 쓰는 것은 [[02-foundations/ml-practice|9. ML 실무 §1]]의 시험 집합 누수를 실험의 형태로 저지르는 일이다. 주장이 여러 패널 위치에서 성립해야 한다면 적어도 한 위치는 튜닝에서 완전히 빼 둔다.
 
 ### 4. 시행 수와 불확실성
+
+*한 문장으로:* 시행 몇 번으로는 무언가가 얼마나 자주 되는지 못 박을 수 없으므로 시행 수는 실험 전에 정해야 하고, 랩은 실험 전체를 컴퓨터에서 만 번 넘게 돌려 그 결정을 확인한다.
+
+*이 절에서 하나만 가져간다면:* $n$회 시행에서 얻은 성공률의 불확실성은 최대 $\pm1/\sqrt{n}$ — 파일럿의 팔당 $10$회에서 $\pm32$%p — 이고, RS1의 성공 결과는 검정력 $0.8$을 위해 팔당 $32$회가 필요하며, 아래 랩이 시뮬레이션으로 그것을 확인한다($32$에서 $0.82$).
 
 시행 수, 독립 실행, 실패, 제외, 집계 방식, 설계에 맞는 불확실성 지표를 보고하라. 시드는
 소프트웨어 무작위성만 잡는다; 물리 시행은 보정, 마모, 온도, 재료, 타이밍, 사람을 통해

@@ -143,8 +143,11 @@ different objectives, and they sometimes conflict: an interface that gives the o
 beautiful force feedback but takes ten minutes to set up per session will lose to a cruder
 one that collects a thousand episodes a day.
 
+**What "cost" means, on this page's rig.** The frozen session log of the Running object turns the objective into a number. The rig logged $120$ attempts in $4.0\ \mathrm{h}$; $96$ succeeded at the task and $8$ of those were discarded for dropout or clipped force, so $88$ are usable, and the cost is $c = 4.0 \times 3600/88 = 164\ \mathrm{s}$ of operator time per usable episode — $22$ an hour. A thousand usable episodes from this rig is therefore $1000 \times 164\ \mathrm{s} = 45.5\ \mathrm{h}$, nearly six eight-hour days, where "a thousand a day" would need one every $28.8\ \mathrm{s}$ of an eight-hour day. Two readings follow. The quantity that transfers between labs is the cost per *usable* episode, not per attempt — Step 6 of the Worked case shows the per-attempt figure understating it by $1.36\times$. And "quality" is not one number either: §6 defines four statistics of a corpus that can be computed before any policy is trained, and the dashed arrow of the loop, failures telling you what to demonstrate next, is what they are for. The compounding-error argument behind that arrow is [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]]. The other half of the objective, whether the policy works when the human lets go, is judged by the last two rows of §8's table: success measured from which initial states, and on the setup that collected the data or on another one.
+
 This is also the entry point where prior XR and interface work transfers directly: hand
 tracking, pose estimation, and latency budgets are the same problems wearing robot clothes.
+The latency budget is defined in §3 and itemised term by term in Step 5 of the Worked case.
 
 ### 2. Architectures — unilateral, bilateral, and what "transparency" means
 
@@ -229,6 +232,12 @@ compromise, and a paper that reports only one of the two is reporting half its r
 
 ### 3. Why delay is not just "slower" — passivity
 
+*In one sentence:* a force that arrives late can push energy into the operator's hand that nothing in the machine supplied, and the two repairs are a channel built so that it cannot create energy, paid for in a softer feel, or a round trip short enough for the task, counted term by term rather than read off a ping.
+
+*If you need only one thing from this section:* a spring whose force arrives $T_d$ late gives back $W_{\text{cycle}} = \pi kA^2\sin(\omega T_d)$ more than it took, every cycle — $2.955\ \mathrm{mJ}$ on P3's $400\ \mathrm{N/m}$ wall at $50\ \mathrm{ms}$, $23.4$ times what its damper removes — worked in the passivity box below and in Step 2 of the Worked case after §9.
+
+#### Passivity, and how a delay breaks it
+
 Delay is the reason this field has its own theory rather than borrowing control theory
 wholesale. The system is a chain of springs, masses, and dampers, all of which are
 **passive**: they cannot deliver more energy than they initially stored plus what enters
@@ -252,6 +261,8 @@ of the two can transfer energy *into* the system. The direct interconnection los
 arbitrary-delay passivity guarantee, and larger delay worsens the stability–transparency
 tradeoff. Lower gain or bandwidth can stabilize some models at the cost of transparency,
 but it is not an arbitrary-delay guarantee.
+
+#### The wave-variable repair, and its price
 
 The classical repair is the **scattering transformation**, or equivalently the **wave
 variables** of Niemeyer and Slotine (1991). Instead of sending velocity and force across the channel, send the
@@ -289,6 +300,8 @@ The cost is transparency: wave-variable teleoperation feels soft and drifts in p
 because the guarantee was bought by throwing away exactly the high-frequency fidelity that
 made the coupling feel real. This is the tradeoff of §2 appearing again, now as a theorem
 rather than a tuning knob.
+
+#### What a delay claim must state: the latency budget
 
 > [!warning] Reading claims about delay
 > "Our method is stable under delay" needs three qualifiers before it means anything: is the
@@ -538,6 +551,8 @@ Concretely, the pipeline of §1 applied to a task from
 [[05-construction-robotics/assembly-fabrication|Assembly & Fabrication]]: an operator
 teleoperates the fitting task, contact-rich episodes are recorded with force and vision,
 a policy is trained, and the residual failures say which situations to demonstrate next.
+
+**Where the operator sits is the first design decision, and §3's allowance prices it.** Hazard removal puts the operator far from the machine, which is why the commercial systems of [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving §5]] moved the human from the cab to a screen. A screen carries sight, not force, so unless the station adds force feedback the architecture is unilateral in §2's sense, and the corpus it logs holds no felt contact. Collecting force-bearing data from far away runs into the allowance instead. On this page's rig the two network legs are $110$ of the $150\ \mathrm{ms}$ round trip, and keeping the contact under $F_{\max} = 20\ \mathrm{N}$ against the $10^4\ \mathrm{N/m}$ wall caps the approach at $v \le F_{\max}/(k_e T_{\text{rt}}) = 20/(10^4 \times 0.150) = 13.3\ \mathrm{mm/s}$ — $3.75$ times slower than the $50\ \mathrm{mm/s}$ an operator beside the follower may use, where the loop shrinks to $40\ \mathrm{ms}$ and meets the allowance with no margin. Every contact approach in a remote session takes $3.75$ times as long, and §6's cost per usable episode rises with it. The remaining option is §3's third move, closing the force loop at the follower: it frees the operator's speed and changes what the corpus records — the force the follower regulated, not a force a person felt.
 
 This is also where the domain's difficulty becomes an advantage rather than an excuse: the
 variation between two instances of the same construction task is exactly the variation that
@@ -873,8 +888,11 @@ flowchart LR
 아름다운 힘 피드백을 주지만 세션마다 10분씩 셋업이 필요한 인터페이스는, 하루에 에피소드
 천 개를 모으는 조잡한 인터페이스에 진다.
 
+**이 페이지의 장비에서 "비용"이 뜻하는 것.** 이 페이지 대상에 고정해 둔 세션 기록이 그 목표를 숫자로 바꾼다. 장비는 $4.0\ \mathrm{h}$ 동안 시도 $120$회를 기록했고, $96$회가 과제에 성공했으며, 그중 $8$회가 통신 끊김이나 잘린 힘 때문에 버려져 쓸 수 있는 것은 $88$개다. 그러니 비용은 쓸 수 있는 에피소드 하나에 조작자 시간 $c = 4.0 \times 3600/88 = 164\ \mathrm{s}$, 한 시간에 $22$개다. 이 장비로 쓸 수 있는 에피소드 천 개를 모으면 $1000 \times 164\ \mathrm{s} = 45.5\ \mathrm{h}$, 8시간짜리 하루로 거의 엿새다. "하루에 천 개"라면 8시간 동안 $28.8\ \mathrm{s}$마다 하나가 나와야 한다. 여기서 두 가지를 읽는다. 연구실 사이에 옮겨 가는 양은 시도당이 아니라 *쓸 수 있는* 에피소드당 비용이다 — Worked case 6단계가 시도당 수치가 그것을 $1.36$배 낮춰 잡는 것을 보인다. 그리고 "품질"도 숫자 하나가 아니다. §6이 정책을 학습하기 전에 계산할 수 있는 코퍼스 통계 넷을 정의하고, 루프의 점선 화살표 — 실패가 다음에 무엇을 시연할지 알려 준다 — 가 바로 그 통계의 쓰임이다. 그 화살표 뒤의 오차 누적 논증은 [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]]이다. 목표의 다른 절반, 곧 사람이 손을 놓았을 때 정책이 작동하는가는 §8 표의 마지막 두 행으로 판단한다. 성공을 어떤 초기 상태에서 쟀는가, 그리고 데이터를 모은 그 장비에서 평가했는가 아니면 다른 장비에서인가.
+
 기존 XR·인터페이스 경험이 그대로 옮겨 오는 진입점이기도 하다: 손 추적, 자세 추정, 지연
 예산은 로봇 옷을 입은 같은 문제다.
+지연 예산은 §3에서 정의하고 Worked case 5단계에서 항별로 나눈다.
 
 ### 2. 아키텍처 — 단방향, 양방향, 그리고 "투명성"의 뜻
 
@@ -956,6 +974,12 @@ Lawrence의 4채널 분석(1993) — 위치/속도와 힘이 각각 양방향으
 
 ### 3. 지연이 단지 "느린 것"이 아닌 이유 — 수동성
 
+*한 문장으로:* 늦게 도착한 힘은 기계 안의 어떤 부품도 공급하지 않은 에너지를 조작자의 손에 밀어 넣을 수 있고, 처방은 에너지를 만들 수 없도록 지은 채널(대가는 더 무른 느낌)이거나, ping 하나로 읽지 않고 항별로 센 왕복 시간을 과제가 허용하는 만큼 짧게 만드는 것이다.
+
+*이 절에서 하나만 가져간다면:* 힘이 $T_d$만큼 늦게 도착하는 스프링은 매 주기 받은 것보다 $W_{\text{cycle}} = \pi kA^2\sin(\omega T_d)$만큼 더 돌려준다 — $50\ \mathrm{ms}$에서 P3의 $400\ \mathrm{N/m}$ 벽이면 $2.955\ \mathrm{mJ}$, 댐퍼가 없애는 양의 $23.4$배다 — 아래 수동성 상자와 §9 뒤 Worked case 2단계에서 계산한다.
+
+#### 수동성, 그리고 지연이 그것을 깨는 방식
+
 지연이야말로 이 분야가 제어 이론을 통째로 빌려 오는 대신 자기 이론을 갖게 된 이유다.
 시스템은 스프링·질량·감쇠기의 사슬이고, 이들은 **수동적(passive)** 이다: 처음 저장한 에너지와
 포트로 들어온 에너지보다 더 많이 내보낼 수 없다. 수동적인 부품을 연결하면 전체도 수동적으로
@@ -977,6 +1001,8 @@ Lawrence의 4채널 분석(1993) — 위치/속도와 힘이 각각 양방향으
 이상 임의 지연에 대한 수동성 기반 안정 보장을 갖지 않으며, 지연이 커질수록 안정성–투명성
 절충이 악화된다. 특정 모델에서는 게인이나 대역폭을 낮춰 안정화할 수 있지만 성능을 희생하며,
 임의 지연을 보장하는 해법은 아니다.
+
+#### wave variable이라는 처방과 그 대가
 
 고전적 처방은 **산란 변환**(scattering transformation), 동등하게 Niemeyer와 Slotine(1991)의
 **wave variable**이다.
@@ -1011,6 +1037,8 @@ $$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfr
 대가는 투명성이다. wave variable 원격조작은 무르게 느껴지고 위치가 표류한다. 보장을 산
 대가로, 결합을 진짜처럼 느끼게 만들던 고주파 충실도를 정확히 그만큼 버렸기 때문이다.
 §2의 트레이드오프가 이제 튜닝 손잡이가 아니라 정리(theorem)의 형태로 다시 나타난 것이다.
+
+#### 지연 주장이 밝혀야 할 것: 지연 예산
 
 > [!warning] 지연에 관한 주장 읽기
 > "우리 방법은 지연 하에서 안정하다"가 의미를 가지려면 세 가지 한정이 필요하다: 지연이
@@ -1237,6 +1265,8 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
 작업 하나에 §1의 파이프라인을 적용하는 것이다: 조작자가 끼움 작업을 원격조작하고, 접촉이
 많은 에피소드를 힘과 비전과 함께 기록하고, 정책을 학습하고, 남은 실패가 다음에 어떤 상황을
 시연할지 알려준다.
+
+**조작자가 어디에 앉는가가 첫 설계 결정이고, §3의 허용치가 그 값을 매긴다.** 위험 제거는 조작자를 기계에서 멀리 떨어뜨리고, 그래서 [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공·중장비 §5]]의 상용 시스템들은 사람을 운전석에서 화면 앞으로 옮겼다. 화면은 시각을 나를 뿐 힘을 나르지 않으므로, 조작 스테이션이 힘 피드백을 더하지 않는 한 그 아키텍처는 §2의 의미에서 단방향이고, 거기서 기록한 코퍼스에는 느낀 접촉이 없다. 멀리서 힘이 실린 데이터를 모으려 하면 이번에는 허용치에 부딪힌다. 이 페이지의 장비에서는 네트워크 두 구간이 왕복 $150\ \mathrm{ms}$ 중 $110$을 차지하고, $10^4\ \mathrm{N/m}$ 벽에 대해 접촉을 $F_{\max} = 20\ \mathrm{N}$ 아래로 두려면 접근 속도가 $v \le F_{\max}/(k_e T_{\text{rt}}) = 20/(10^4 \times 0.150) = 13.3\ \mathrm{mm/s}$로 묶인다 — 팔로워 옆에 앉은 조작자가 쓸 수 있는 $50\ \mathrm{mm/s}$보다 $3.75$배 느리다. 옆에 앉으면 루프가 $40\ \mathrm{ms}$로 줄어 여유 없이 허용치에 맞는다. 원격 세션에서는 모든 접촉 접근이 $3.75$배 길어지고, §6의 쓸 수 있는 에피소드당 비용도 따라 오른다. 남은 선택지는 §3의 셋째 수, 곧 팔로워에서 힘 루프를 닫는 것이다. 조작자의 속도를 풀어 주는 대신 코퍼스가 기록하는 것이 바뀐다 — 사람이 느낀 힘이 아니라 팔로워가 조절한 힘이다.
 
 도메인의 어려움이 변명이 아니라 이점이 되는 지점이기도 하다: 같은 건설 작업의 두 사례
 사이의 변동이야말로, 하나의 스크립트 궤적 대신 시연 데이터셋을 모을 가치가 있게 만드는

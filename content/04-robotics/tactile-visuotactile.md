@@ -169,6 +169,12 @@ panel seated in it differ by less than the camera's depth noise. That is the arg
 this page, and it is narrower than "touch is important": touch earns its place on the
 specific tasks where the decisive variable is inside the contact.
 
+**How much less, on S1.** "Less than the camera's depth noise" is a number, and the one-reading detection rule of [[02-foundations/probability|3. Probability §6]] turns it into an error rate. Let *resting* and *seated* differ by the $0.5\ \mathrm{mm}$ seating tolerance of the Worked case's Step 5, give the two hypotheses equal priors, and put the threshold halfway, at $0.25\ \mathrm{mm}$. A reading with Gaussian error $\sigma$ then lands on the wrong side with probability $\Pr(Z > 0.25/\sigma)$, where $Z$ is a standard normal variable. For the wrist camera, $\sigma_v = 2.0\ \mathrm{mm}$, that is $\Pr(Z > 0.125) = 0.450$ — a coin flip, and that is with the joint in full view. For the tactile in-hand estimate, $\sigma_t = 0.2\ \mathrm{mm}$, it is $\Pr(Z > 1.25) = 0.106$, the same offset-to-noise ratio, $2.5$, as the contact detector worked on that page.
+
+The slip row fails for a different reason. At $Q/\mu P = 0.50$, $37\%$ of S1's contact area is already sliding while the object has moved exactly $0\ \mathrm{mm}$ (§3), so a camera tracking the object sees no motion at any resolution and any frame rate. The seating row is a *noise* limit, which a better camera would shrink; the slip row is a *definition*, which no camera can.
+
+That split is also how to read a paper's motivation. A tactile paper should name the row its task turns on and say which kind of limit that row is. If the deciding variable is one a camera could see at the moment it matters — where a part sits on the table, say — the gain the paper reports has to come from somewhere else, and §6's vision-only ablation is where that shows. The contact modes behind the rows are [[04-robotics/contact-force-tactile|9. Contact §1–§2]]; the construction versions of the last two rows are §5.
+
 ### 2. What the sensors actually measure
 
 Tactile sensors are usually grouped by transduction. The more useful grouping for reading
@@ -512,6 +518,10 @@ Each is a *classification* framed at the contact, feeding a planner — which is
 §2's latency note says touch is good for, and not the closed-loop force regulation that
 belongs to [[04-robotics/force-compliance-control|13]].
 
+**Which transducer answers which framing** follows from §2.5's passband and §3's resolution, and S1 prices both. Two of the four questions ask about a *state* that must still hold after the motion stops — *is the part seated*, *is this resistance the correct interference* — so they need a family with $|H(0)| = 1$. S1's piezoelectric element reads a held $5\ \mathrm{N}$ as $0.25\ \mathrm{N}$ after $30\ \mathrm{s}$ (the Worked case's Step 2): it can report the instant of seating, and not, half a minute later, that the part is still seated. The interference question is also read against depth: a press fit's resistance grows in proportion to the engaged length, while an obstruction's jumps at one depth, so it needs force and insertion depth logged together — a wrist force/torque sensor and the arm's own joint encoders, before any tactile pad. The fastening question asks about a *change* while the bolt turns — a thread that binds early instead of running in freely — so a change family, piezoelectric or acoustic, suits the event, and a wrist force/torque sensor adds the honest torque the binding builds. The tool-use question is two questions: *engaged* is a state, while *slipping in the grip* is §3's incipient slip, which S1's optical sensor resolves from $Q/\mu P = 0.074$ and its $4\times4$ taxel array never resolves, at any rate. A gripper meant to answer all four therefore needs at least one state family and one family that resolves the patch, and a paper built on any of them should say which transducer answered which question. This is the *decisive sensing* column of the task matrix in [[05-construction-robotics/construction-manipulation|9. Construction Manipulation §2]], read against transduction.
+
+Because each framing is a classification, a paper built on one owes a confusion matrix, not one success rate. Its two errors cost different amounts — calling a cross-threaded bolt *started* can ruin the thread, while the opposite error costs a retry — so the two error rates belong in the table separately ([[02-foundations/ml-practice|9. ML Practice §3]]), and the threshold that trades one for the other is a design choice the paper should state.
+
 > [!warning] Scope, from the research program
 > [[07-research-program/index|7. Research Program §7]] keeps **tactile sensor hardware** out
 > of the contribution. Building a new sensor is a different dissertation. Using an existing
@@ -827,6 +837,12 @@ Tier B. Using only this page, its prerequisites and **S1**. Four knobs move, not
 차이다. 이것이 이 페이지의 논거이고, "촉각은 중요하다"보다 좁다: 촉각은 **결정적 변수가
 접촉 안에 있는** 특정 작업에서 자기 자리를 번다.
 
+**S1에서 얼마나 작은가.** "카메라의 깊이 잡음보다 작다"는 숫자이고, [[02-foundations/probability|3. 확률 §6]]의 판독 하나로 판정하는 검출 규칙이 그것을 오류율로 바꾼다. *기대어 있음*과 *안착함*이 Worked case 5단계의 안착 공차 $0.5\ \mathrm{mm}$만큼 다르다고 하고, 두 가설에 같은 사전확률을 주고, 문턱을 한가운데인 $0.25\ \mathrm{mm}$에 둔다. 그러면 가우시안 오차가 $\sigma$인 판독이 반대쪽으로 넘어갈 확률은 표준정규 변수 $Z$에 대해 $\Pr(Z > 0.25/\sigma)$다. 손목 카메라는 $\sigma_v = 2.0\ \mathrm{mm}$이므로 $\Pr(Z > 0.125) = 0.450$ — 동전 던지기이고, 그것도 이음부가 온전히 보일 때다. 촉각의 손 안 추정은 $\sigma_t = 0.2\ \mathrm{mm}$이므로 $\Pr(Z > 1.25) = 0.106$이다. 그 페이지에서 계산한 접촉 검출기와 같은 오프셋 대 잡음 비 $2.5$다.
+
+미끄러짐 행은 다른 이유로 실패한다. $Q/\mu P = 0.50$에서 S1 접촉 면적의 $37\%$가 이미 활주하는데 물체는 정확히 $0\ \mathrm{mm}$ 움직였으므로(§3), 물체를 추적하는 카메라는 어떤 해상도와 어떤 프레임률로도 움직임을 보지 못한다. 안착 행은 더 좋은 카메라가 줄일 수 있는 *잡음* 한계이고, 미끄러짐 행은 어떤 카메라도 줄일 수 없는 *정의*다.
+
+그 구분이 논문의 동기를 읽는 법이기도 하다. 촉각 논문은 자기 과제가 표의 어느 행에 걸려 있는지, 그 행이 어느 쪽 한계인지 밝혀야 한다. 결정 변수가 그것이 중요해지는 순간에 카메라가 볼 수 있는 것 — 이를테면 부재가 테이블 어디에 놓였는가 — 이라면, 논문이 보고하는 이득은 다른 데서 와야 하고, 그것이 드러나는 곳이 §6의 비전만 ablation이다. 행들 뒤의 접촉 모드는 [[04-robotics/contact-force-tactile|9. 접촉 §1–§2]]에 있고, 마지막 두 행의 건설판은 §5다.
+
 ### 2. 센서가 실제로 재는 것
 
 촉각 센서는 보통 변환 원리로 묶인다. 논문을 읽을 때 더 쓸모 있는 묶음은 **무슨 물리량이
@@ -1137,6 +1153,10 @@ Calandra 등의 재파지 연구가 다른 원형이다: 표현을 위한 융합
 각각은 접촉에서 정의된 *분류*이고, 계획기에 먹인다 — §2의 지연 이야기가 촉각이 잘하는 일이라고
 말한 바로 그것이며, [[04-robotics/force-compliance-control|13번]]에 속하는 폐루프 힘 조절이
 아니다.
+
+**어느 변환기가 어느 프레이밍에 답하는가**는 §2.5의 통과 대역과 §3의 해상도에서 나오고, S1이 둘 다 값을 매긴다. 네 질문 중 둘은 움직임이 멈춘 뒤에도 유지돼야 하는 *상태*를 묻는다 — *부재가 안착했는가*, *이 저항이 올바른 억지 끼워맞춤인가*. 그러니 $|H(0)| = 1$인 계열이 필요하다. S1의 압전 소자는 쥐고 있는 $5\ \mathrm{N}$을 $30\ \mathrm{s}$ 뒤 $0.25\ \mathrm{N}$으로 읽는다(Worked case 2단계). 안착하는 순간은 보고할 수 있어도, 30초 뒤 부재가 여전히 안착해 있다는 것은 보고하지 못한다. 끼워맞춤 질문은 깊이에 견주어 읽기도 한다. 억지 끼워맞춤의 저항은 물린 길이에 비례해 자라고 걸림의 저항은 한 깊이에서 튀므로, 힘과 삽입 깊이를 함께 기록해야 한다 — 촉각 패드보다 먼저 손목 힘/토크 센서와 팔 자신의 관절 엔코더다. 체결 질문은 볼트가 도는 동안의 *변화*를 묻는다 — 나사산이 부드럽게 들어가는 대신 초반부터 걸리는가. 그러니 그 사건에는 변화 계열인 압전이나 음향이 맞고, 손목 힘/토크 센서가 걸림이 쌓는 정직한 토크를 보탠다. 공구 사용 질문은 두 질문이다. *물렸는가*는 상태이고, *손 안에서 미끄러지는가*는 §3의 초기 미끄러짐이다. S1의 광학 센서는 그것을 $Q/\mu P = 0.074$부터 분해하고, $4\times4$ 택셀 배열은 어떤 속도로도 분해하지 못한다. 그러니 넷 모두에 답하려는 그리퍼에는 상태 계열 하나와 패치를 분해하는 계열 하나가 적어도 있어야 하고, 그중 무엇 위에 선 논문이든 어느 변환기가 어느 질문에 답했는지 밝혀야 한다. [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션 §2]] 작업 매트릭스의 *결정적 센싱* 열을 변환 방식에 비춰 읽은 것이 이것이다.
+
+각 프레이밍이 분류이므로, 그 위에 선 논문은 성공률 하나가 아니라 혼동 행렬을 보고해야 한다. 두 오류의 값이 다르다 — 나사산이 어긋난 볼트를 *제대로 물렸다*고 부르면 나사산을 망칠 수 있고, 반대 오류는 재시도 한 번이다. 그러니 두 오류율은 표에 따로 들어가야 하고([[02-foundations/ml-practice|9. ML 실무 §3]]), 하나를 다른 하나와 맞바꾸는 문턱은 논문이 밝혀야 할 설계 선택이다.
 
 > [!warning] 연구 프로그램이 정한 범위
 > [[07-research-program/index|7. 연구 프로그램 §7]]은 **촉각 센서 하드웨어**를 기여 범위 밖에

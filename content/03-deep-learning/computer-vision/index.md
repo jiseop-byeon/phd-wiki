@@ -363,6 +363,10 @@ D2 shows the cost of that trade in one line. Its four flattened patches are $(0,
 
 ### 2. The output defines the problem
 
+*In one sentence:* a vision task is fixed by what the model outputs and how that output is scored, so a headline number means little until you know the metric's threshold, its matching rule and what it averages over.
+
+*If you need only one thing from this section:* the threshold belongs to the metric, not to the method — D2's one box at $\mathrm{IoU}=0.6$ is a hit at $0.5$ and a miss at $0.75$, which is why the same three predictions score $\mathrm{AP}@0.5=0.833$ and COCO $\mathrm{mAP}=0.600$ (the mAP box below; §5 computes both).
+
 | Task | Output | Typical metric | Metric caveat |
 |---|---|---|---|
 | classification | one label/distribution per image | top-1 accuracy | hides class imbalance |
@@ -375,6 +379,8 @@ The architecture name does not define the claim. A backbone can feed several hea
 
 Every metric in that table is defined below or linked, because a table row whose metric is only named is a row that cannot be checked. The general dictionary, with the same formulas written for any Results table, is [[02-foundations/ml-practice|9. ML Practice §3]]; what follows adds what a vision paper specifically gets wrong about them, on D2's own boxes and masks. **Top-1 accuracy** is the fraction of images whose highest-scoring class is the true one — it is the $k=1$ case of top-$k$ and needs no more than that here.
 
+#### Overlap between two regions: IoU
+
 > **Intersection over union, defined.** **IoU** is a *similarity score between two regions of the same image* — a dimensionless ratio of areas (or of pixel counts), not a distance, not an error, and not a probability. Three defining conditions. It is **symmetric**: $\mathrm{IoU}(A,B)=\mathrm{IoU}(B,A)$, so it says nothing about which region is the prediction. It is **normalised by the union**, not by either region, which is what stops a huge box from scoring well by swallowing the truth. And it is **scale-free**: multiply both regions' coordinates by 10 and the number is unchanged.
 >
 > $$\mathrm{IoU}(A,B)=\frac{|A\cap B|}{|A\cup B|}=\frac{|A\cap B|}{|A|+|B|-|A\cap B|}$$
@@ -385,6 +391,8 @@ Every metric in that table is defined below or linked, because a table row whose
 > - **Non-example**: the overlap fraction $|A\cap B|/|B|$. A prediction covering the whole $8\times8$ image scores $1.0$ on that and $16/64=0.25$ on IoU. The union in the denominator is exactly the term that punishes a lazy large box, and a paper reporting "coverage" is not reporting IoU.
 > - **Non-example**: a similarity that degrades gracefully. Two boxes that do not touch have $\mathrm{IoU}=0$ whether they are 1 pixel apart or 100, so IoU carries no gradient information outside contact — which is why detectors are trained on coordinate regression or on GIoU-style variants and *evaluated* on IoU.
 > - **Why it matters**: every detection and segmentation number on this page is a count of IoU comparisons against a threshold, so the threshold is part of the metric and never part of the method. D2's single $0.6$ box is a true positive at $0.5$ and a false positive at $0.75$, and §5 shows what that does to the headline.
+
+#### Ranking detections: AP and mAP
 
 > **Average precision and mAP, defined.** **AP** is the *area under one class's precision–recall curve, at one IoU threshold* — a summary of a ranking, not of a single decision, which is why it needs confidences and not just boxes. Four defining conditions, and papers lose comparability by dropping any of them. Detections are **ranked by confidence** and matched **greedily to unmatched ground truth**, so a second box on an object already claimed is a false positive however good it is. A match counts only if its **IoU reaches the threshold $t$**. Recall is normalised by the **number of ground-truth objects**, so missed objects enter as recall that is never reached. And **mAP averages AP over classes** — and, in the COCO convention, over ten thresholds as well.
 >
@@ -397,6 +405,8 @@ Every metric in that table is defined below or linked, because a table row whose
 > - **Non-example**: a VOC number compared with a COCO number. VOC mAP is $\mathrm{AP}(0.5)$; COCO mAP is the mean over $t=0.50,0.55,\dots,0.95$. On D2 those are $0.833$ and $0.600$ — a 23-point gap produced entirely by the convention, with no change to the detector.
 > - **Why it matters**: mAP is the only number most detection papers report, and it hides three separate choices — the threshold set, the matching rule, and the class weighting. A method that improves mAP by improving localisation and one that improves it by improving ranking are different contributions with the same headline.
 
+#### Averaging over classes: mIoU
+
 > **Mean IoU, and what a segmentation metric averages over.** **mIoU** is the *mean, over classes, of the per-class IoU computed on pooled pixel counts* — and the averaging unit is the whole claim. Three defining conditions. The per-class IoU is computed from **pixel counts, $\mathrm{IoU}_c=TP_c/(TP_c+FP_c+FN_c)$**, so a class with more pixels contributes more evidence to *its own* score. The outer average is **over classes, uniformly**: each class gets weight $1/C$ whatever its pixel count, which is the deliberate opposite of pixel accuracy. And the pooling is **over the whole evaluation set before the ratio is taken**, so mIoU is not the average of per-image mIoUs, and a per-image average is a different and usually larger number.
 >
 > $$\mathrm{mIoU}=\frac1C\sum_{c=1}^{C}\frac{TP_c}{TP_c+FP_c+FN_c}\qquad\text{versus}\qquad \mathrm{acc}_{\text{pixel}}=\frac{\sum_c TP_c}{\text{total pixels}}$$
@@ -407,6 +417,8 @@ Every metric in that table is defined below or linked, because a table row whose
 > - **Non-example**: pixel accuracy. On any image with a dominant background it is close to the background fraction and nearly independent of the model, which is why segmentation benchmarks abandoned it.
 > - **Non-example**: "IoU" quoted for a whole dataset with no class index. That is either mIoU with $C$ unstated or the IoU of one binary foreground, and the two move in opposite directions when a rare class fails.
 > - **Why it matters**: the uniform class weight is protection, not a guarantee. On a 20-class benchmark, 19 classes at $0.80$ and the cable at $0.00$ gives $\mathrm{mIoU}=19\cdot0.80/20=0.76$ — four points below a clean run, comfortably inside normal variation, for a class the robot is about to drive into. mIoU protects a rare class against a *large* background; it does not protect it against 19 other classes.
+
+#### Depth: three errors that disagree by design
 
 The depth row's three metrics complete the table. For predicted depths $\hat d_i$ against ground truth $d_i$ over $N$ valid pixels,
 
@@ -952,6 +964,10 @@ D2가 그 거래의 대가를 한 줄로 보여 준다. 평탄화한 네 패치�
 
 ### 2. 출력이 문제를 정의한다
 
+*한 문장으로:* 시각 과제는 모델이 무엇을 출력하고 그 출력을 어떻게 채점하느냐로 정해진다. 그래서 headline 숫자는 metric의 임계값, 매칭 규칙, 무엇에 대해 평균하는지를 알기 전에는 거의 아무 말도 하지 않는다.
+
+*이 절에서 하나만 가져간다면:* 임계값은 방법이 아니라 metric에 속한다. IoU가 $0.6$인 D2의 박스 하나가 $0.5$에서는 맞고 $0.75$에서는 틀리며, 그래서 같은 세 예측이 $\mathrm{AP}@0.5=0.833$과 COCO $\mathrm{mAP}=0.600$을 받는다(아래 mAP 상자, 두 값을 모두 계산하는 곳은 §5).
+
 | 과제 | 출력 | 대표 metric | 주의 |
 |---|---|---|---|
 | 분류 | 이미지당 label/분포 | top-1 accuracy | 클래스 불균형을 숨김 |
@@ -964,6 +980,8 @@ backbone 이름보다 출력 표현·loss·평가 protocol을 먼저 본다.
 
 표의 모든 metric은 아래에서 정의하거나 연결한다. 이름만 적힌 metric의 행은 검산할 수 없는 행이기 때문이다. 어떤 Results 표에도 쓰이는 일반 사전은 [[02-foundations/ml-practice|9. ML 실무 §3]]에 있고, 아래는 비전 논문이 특히 틀리는 부분을 D2의 박스와 마스크 위에서 더한다. **Top-1 accuracy**는 최고 점수 클래스가 정답인 이미지의 비율, 즉 top-$k$의 $k=1$이고 여기서는 그 이상이 필요 없다.
 
+#### 두 영역의 겹침: IoU
+
 > **Intersection over union의 정의.** **IoU**는 *같은 이미지 안의 두 영역 사이의 유사도 점수*다. 넓이(또는 픽셀 수)의 무차원 비이지 거리도, 오차도, 확률도 아니다. 정의 조건 셋. **대칭**이라 $\mathrm{IoU}(A,B)=\mathrm{IoU}(B,A)$이므로 어느 쪽이 예측인지에 대해 아무 말도 하지 않는다. 어느 한쪽이 아니라 **합집합으로 정규화**되므로, 거대한 박스가 정답을 삼켜서 좋은 점수를 받는 일이 막힌다. 그리고 **척도 무관**이라 두 영역의 좌표에 10을 곱해도 값이 같다.
 >
 > $$\mathrm{IoU}(A,B)=\frac{|A\cap B|}{|A\cup B|}=\frac{|A\cap B|}{|A|+|B|-|A\cap B|}$$
@@ -974,6 +992,8 @@ backbone 이름보다 출력 표현·loss·평가 protocol을 먼저 본다.
 > - **비예**: 피복 비율 $|A\cap B|/|B|$. $8\times8$ 전체를 덮는 예측은 그 값이 $1.0$이고 IoU로는 $16/64=0.25$다. 분모의 합집합이 게으른 큰 박스를 벌주는 항이고, "coverage"를 보고하는 논문은 IoU를 보고한 것이 아니다.
 > - **비예**: 완만하게 나빠지는 유사도. 닿지 않는 두 박스는 1픽셀 떨어졌든 100픽셀 떨어졌든 $\mathrm{IoU}=0$이라, 접촉 밖에서는 IoU가 아무 기울기 정보도 나르지 않는다. 검출기를 좌표 회귀나 GIoU 계열로 *학습*하고 IoU로 *평가*하는 이유다.
 > - **왜 중요한가**: 이 페이지의 모든 검출·분할 수치가 임계값에 대한 IoU 비교의 개수다. 그러므로 임계값은 metric의 일부이지 방법의 일부가 아니다. D2의 $0.6$짜리 박스 하나가 $0.5$에서는 참양성, $0.75$에서는 거짓양성이고, 그것이 headline에 무엇을 하는지를 §5가 보여 준다.
+
+#### 검출의 순위: AP와 mAP
 
 > **Average precision과 mAP의 정의.** **AP**는 *한 클래스의, 한 IoU 임계값에서의 precision–recall 곡선 아래 넓이*다. 단일 결정이 아니라 순위를 요약하므로 박스만이 아니라 신뢰도가 필요하다. 정의 조건 넷이고, 논문은 이 중 하나를 빠뜨려 비교 가능성을 잃는다. 검출은 **신뢰도 순으로 정렬**되고 **아직 매칭되지 않은 정답에 탐욕적으로 매칭**되므로, 이미 차지된 물체에 붙은 두 번째 박스는 아무리 좋아도 거짓양성이다. **IoU가 임계값 $t$에 도달할 때만** 매칭으로 센다. recall은 **정답 물체 수**로 정규화하므로 놓친 물체는 도달되지 않는 recall로 들어온다. 그리고 **mAP는 AP를 클래스에 대해 평균**하고, COCO 관례에서는 임계값 열 개에 대해서도 평균한다.
 >
@@ -986,6 +1006,8 @@ backbone 이름보다 출력 표현·loss·평가 protocol을 먼저 본다.
 > - **비예**: VOC 수치와 COCO 수치의 비교. VOC의 mAP는 $\mathrm{AP}(0.5)$이고 COCO의 mAP는 $t=0.50,0.55,\dots,0.95$의 평균이다. D2에서 각각 $0.833$과 $0.600$이다. 검출기는 그대로인데 관례만으로 23포인트가 벌어진다.
 > - **왜 중요한가**: 대부분의 검출 논문이 보고하는 유일한 숫자가 mAP인데, 이 숫자는 임계값 집합·매칭 규칙·클래스 가중이라는 세 선택을 숨긴다. 위치 정확도를 올려 mAP를 올린 방법과 순위를 올려 mAP를 올린 방법은 다른 기여인데 headline이 같다.
 
+#### 클래스에 대한 평균: mIoU
+
 > **Mean IoU, 그리고 분할 metric이 무엇에 대해 평균하는가.** **mIoU**는 *묶은 픽셀 수로 계산한 클래스별 IoU를 클래스에 대해 평균한 값*이고, 평균의 단위가 주장 전체다. 정의 조건 셋. 클래스별 IoU는 **픽셀 수로** $\mathrm{IoU}_c=TP_c/(TP_c+FP_c+FN_c)$처럼 계산되므로, 픽셀이 많은 클래스는 *자기 점수*에 더 많은 증거를 낸다. 바깥 평균은 **클래스에 대해 균등**하다. 픽셀 수와 무관하게 각 클래스가 $1/C$의 가중을 받는데, 이것이 pixel accuracy와 정확히 반대되는 의도적 선택이다. 그리고 비를 취하기 전에 **평가 집합 전체에서 묶는다**. 그래서 mIoU는 이미지별 mIoU의 평균이 아니고, 이미지별 평균은 보통 더 큰 다른 숫자다.
 >
 > $$\mathrm{mIoU}=\frac1C\sum_{c=1}^{C}\frac{TP_c}{TP_c+FP_c+FN_c}\qquad\text{대}\qquad \mathrm{acc}_{\text{pixel}}=\frac{\sum_c TP_c}{\text{전체 픽셀}}$$
@@ -996,6 +1018,8 @@ backbone 이름보다 출력 표현·loss·평가 protocol을 먼저 본다.
 > - **비예**: pixel accuracy. 배경이 지배적인 이미지에서는 배경 비율에 가깝고 모델과 거의 무관하다. 분할 벤치마크가 이것을 버린 이유다.
 > - **비예**: 클래스 지표 없이 데이터셋 전체에 붙은 "IoU". $C$를 적지 않은 mIoU이거나 이진 전경 하나의 IoU인데, 희귀 클래스가 실패할 때 둘은 반대로 움직인다.
 > - **왜 중요한가**: 균등한 클래스 가중은 보호이지 보증이 아니다. 20클래스 벤치마크에서 19개가 $0.80$이고 케이블이 $0.00$이면 $\mathrm{mIoU}=19\cdot0.80/20=0.76$이다. 깨끗한 run보다 4포인트 낮고 정상 변동 안쪽인데, 로봇이 곧 들이받을 클래스가 그것이다. mIoU는 희귀 클래스를 *큰 배경*으로부터 지키지, 다른 19개 클래스로부터 지키지 않는다.
+
+#### 깊이: 설계상 엇갈리는 세 오차
 
 depth 행의 metric 셋이 표를 완성한다. 유효 픽셀 $N$개에서 예측 깊이 $\hat d_i$와 정답 $d_i$에 대해
 

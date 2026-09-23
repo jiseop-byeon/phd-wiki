@@ -109,7 +109,13 @@ It also matters directly: legged platforms are what most of
 [[04-robotics/traversability-off-road|17. Traversability & Off-Road Autonomy]] runs on, and
 the field's single highest-leverage training idea was invented here.
 
+**Why the numbers here travel.** The body every derivation on this page runs on, **Q**, is also the body of [[04-robotics/convex-mpc-legged|8. Convex MPC]] and of 17's costmap, so results computed here are used there: the sideways force one foot of a trotting Q may use, $\mu f_z=0.6\times58.86=35.3$ N, is a constraint row of 8's QP, and the $22.0^\circ$ slope at which Q carrying P2 tips over is 17's slope gate (Worked on Q, steps 6–7). The reading practice is just as concrete: §3 pins five landmark results to what each one showed, and its warning box corrects three over-citations against what the papers actually report.
+
 ### 1.5 The classical vocabulary this page does not use
+
+*In one sentence:* older legged-robot papers judge balance by where the body's weight falls relative to the feet; this section teaches just enough of that language to read them, and says why the learned controllers on the rest of the page dropped it.
+
+*If you need only one thing from this section:* the capture point, where the next foot must land to stop, sits $\dot x/\omega_0$ ahead of the centre of mass with $\omega_0=\sqrt{g/z}$; for a humanoid with its centre of mass at $0.9$ m walking at $0.5$ m/s that is $0.15$ m (§1.5.3), and the Worked case on Q runs on it.
 
 Everything below is the learned line, and it does not speak the language most legged papers
 before roughly 2019 were written in. You still need that language to read them, so here it
@@ -300,6 +306,10 @@ carrying P2. That $22.0^\circ$ is the slope gate the costmap on
 
 ### 2. The idea worth taking away: privileged teacher-student distillation
 
+*In one sentence:* train one controller in simulation where it can see everything, then train a second to copy it using only what the real robot can feel, and the copy learns to guess the hidden ground from how its own body has just moved.
+
+*If you need only one thing from this section:* the student never sees what the teacher saw. The blind students of Lee 2020 and RMA infer the terrain from proprioception alone: in RMA's version $17$ privileged numbers about the environment are compressed into $8$, and an adaptation module estimates those $8$ from $0.5$ s of the robot's own motion, running at $10$ Hz beside a $100$ Hz policy (the RMA paragraph below). A perceptive student such as Miki 2022's sees a noisy height map, never the simulator's ground truth.
+
 If you learn one thing from this page, learn this. It has no analogue in classical robotics,
 and it — not any particular reward design — is what made rough-terrain locomotion work.
 
@@ -346,6 +356,8 @@ The student does not learn to perceive. It learns to **infer the privileged quan
 how the body has just been moving** — which is why a blind robot can adapt to mud it cannot
 see, after it has stepped in it.
 
+#### RMA, and how far the pattern spread
+
 **RMA** is a close relative that positions itself explicitly against Lee 2020 — no predefined trajectory generator and no actuator model — with a sharper deployment story in three steps.
 First, it compresses a 17-dimensional privileged environment vector into an **8-dimensional latent** (these dimensions, the 0.5 s history and both rates are body figures, not abstract ones).
 Second, an adaptation module estimates that latent from 0.5 s of proprioceptive history, by supervised regression trained
@@ -357,6 +369,8 @@ The pattern has since generalised well past locomotion: multi-expert distillatio
 generalist, model-based experts relabelling passive data, and — in a different guise — the
 teacher-student structure inside sim-to-real recipes generally
 ([[05-construction-robotics/sim-to-real|Sim-to-Real §2]]).
+
+#### The recipe inside the training loop
 
 **What is inside the training loop these papers share.** The distillation story above is the
 contribution; the four things below are the *recipe*, assumed without explanation in every
@@ -699,7 +713,13 @@ Q는 이 위키의 관통 과제를 나른다: [[02-foundations/lab-plants|0.6]]
 직접적으로도 중요하다: [[04-robotics/traversability-off-road|17. Traversability와 오프로드 자율성]]의
 대부분이 레그드 플랫폼 위에서 돌아가고, 이 분야의 가장 파급력 큰 학습 아이디어가 여기서 나왔다.
 
+**여기 숫자가 다른 페이지로 옮겨 가는 이유.** 이 페이지의 모든 유도가 쓰는 몸체 **Q**는 [[04-robotics/convex-mpc-legged|8. Convex MPC]]와 17의 비용 지도의 몸체이기도 해서, 여기서 계산한 결과가 거기서 쓰인다. trot하는 Q의 발 하나가 쓸 수 있는 옆 방향 힘 $\mu f_z=0.6\times58.86=35.3$ N은 8의 QP의 제약 행이고, P2를 실은 Q가 넘어지는 경사 $22.0^\circ$는 17의 경사 관문이다(장치로 한 번 끝까지의 6~7단계). 읽기 연습도 그만큼 구체적이다. §3이 대표 결과 다섯을 각각 실제로 보인 것에 고정하고, 그 경고 상자가 과잉 인용 셋을 논문이 실제로 보고한 것에 비추어 바로잡는다.
+
 ### 1.5 이 페이지가 쓰지 않는 고전 어휘
+
+*한 문장으로:* 예전 보행 로봇 논문들은 몸의 무게가 발에 대해 어디로 떨어지는가로 균형을 판정한다. 이 절은 그 논문들을 읽을 만큼만 그 언어를 가르치고, 이 페이지 나머지의 학습 제어기가 왜 그것을 버렸는지 말한다.
+
+*이 절에서 하나만 가져간다면:* capture point, 곧 멈추려면 다음 발이 디뎌야 할 곳은 무게중심보다 $\dot x/\omega_0$ 앞에 있고 $\omega_0=\sqrt{g/z}$다. 무게중심 높이 $0.9$ m인 휴머노이드가 $0.5$ m/s로 걸으면 $0.15$ m다(§1.5.3). 장치로 한 번 끝까지가 이것 위에서 돈다.
 
 아래는 전부 학습 기반 계열이고, 대략 2019년 이전의 보행 논문 대부분이 쓰던 언어를 쓰지
 않는다. 그 논문들을 읽으려면 그 언어가 여전히 필요하므로, 문해력 수준으로 여기 적어 둔다 —
@@ -884,6 +904,10 @@ $\arctan(0.15/0.371)=22.0^\circ$다. 이 $22.0^\circ$가
 
 ### 2. 가져갈 발상: privileged teacher-student 증류
 
+*한 문장으로:* 모든 것을 볼 수 있는 시뮬레이션에서 제어기 하나를 학습시키고, 실제 로봇이 느낄 수 있는 것만으로 그것을 따라 하는 두 번째 제어기를 학습시키면, 그 사본은 자기 몸이 방금 어떻게 움직였는가로 보이지 않는 지면을 추측하는 법을 배운다.
+
+*이 절에서 하나만 가져간다면:* 학생은 교사가 본 것을 결코 보지 못한다. Lee 2020과 RMA의 눈먼 학생은 고유수용감각만으로 지형을 추론한다. RMA판에서는 환경에 관한 특권적 숫자 $17$개를 $8$개로 압축하고, 적응 모듈이 그 $8$개를 로봇 자신의 움직임 $0.5$초에서 추정하며, $100$ Hz 정책 옆에서 $10$ Hz로 돈다(아래 RMA 문단). Miki 2022처럼 지각을 쓰는 학생도 시뮬레이터의 실제 값이 아니라 잡음 섞인 높이 지도만 본다.
+
 이 페이지에서 하나만 배운다면 이것이다. 고전 로보틱스에 대응물이 없고, 거친 지형 로코모션을
 동작하게 만든 것이 어떤 보상 설계가 아니라 이것이다.
 
@@ -927,6 +951,8 @@ $\arctan(0.15/0.371)=22.0^\circ$다. 이 $22.0^\circ$가
 학생은 지각하는 법을 배우지 않는다. **몸이 방금 어떻게 움직였는가로부터 특권적 양들을 추론하는
 법**을 배운다 — 눈이 먼 로봇이 보지 못하는 진흙에, 한 번 밟은 뒤에는 적응할 수 있는 이유다.
 
+#### RMA, 그리고 이 패턴이 퍼진 범위
+
 **RMA**는 Lee 2020에 맞서 자신을 명시적으로 위치시킨 가까운 친척이고 — 미리 정한 궤적 생성기도 액추에이터 모델도 없다 — 배치 이야기가 세 단계로 더 날카롭다.
 첫째, 17차원 특권적 환경 벡터를 **8차원 잠재**로 압축한다(이 차원·0.5초 이력·두 주기는 초록이 아니라 본문 수치다).
 둘째, 적응 모듈이 그 잠재를 0.5초의 고유수용감각 이력에서 지도 회귀로 추정하며, 이 회귀는
@@ -937,6 +963,8 @@ $\arctan(0.15/0.371)=22.0^\circ$다. 이 $22.0^\circ$가
 이 패턴은 이후 로코모션을 훨씬 넘어 일반화되었다: 다수 전문가를 일반가로 증류하기, 모델 기반
 전문가가 수동 데이터를 다시 라벨하기, 그리고 다른 옷을 입고 sim-to-real 레시피 일반의 교사-학생
 구조로([[05-construction-robotics/sim-to-real|Sim-to-Real §2]]).
+
+#### 학습 루프 안의 레시피
 
 **이 논문들이 공유하는 학습 루프 안에 있는 것.** 위의 증류 이야기가 기여라면, 아래 넷은
 *레시피*이고, 2024~26년 모든 로코모션 방법 절이 설명 없이 전제한다. 실제 공학의 대부분도

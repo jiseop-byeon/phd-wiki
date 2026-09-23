@@ -200,6 +200,10 @@ poles because modal coefficients, zeros, and output choice also matter.
 
 ### 4. Asymptotic stability, and the two half-stories
 
+*In one sentence:* a loop is asymptotically stable when anything that knocks it off its resting point dies away on its own, and merely stable when the state only stays nearby; this section shows how to read that off the model's numbers, why the reading changes once a computer runs the loop in steps, and how an energy that never rises proves stability without solving anything, while one that keeps falling proves the dying away.
+
+*If you need only one thing from this section:* a gain that is safe in continuous time can be unstable once the loop is sampled. For P4 stepped by explicit Euler at $T=0.1$ s the multiplier $1-T(1+K)$ must stay inside the unit circle, so $K<19$, and Self-check 1's $K=99$ gives $-9$ and grows (*Worked: P4 under explicit Euler*, after the table).
+
 **The definitions, each named.** Stability is a property of an **equilibrium** of an autonomous
 system $\dot x = f(x)$ (no input, or the input already fixed by a controller), meaning a state
 $x_e$ with $f(x_e) = 0$. Shift coordinates so that $x_e = 0$. There are two levels:
@@ -364,9 +368,15 @@ can be described by one number for speed and one for ringing.
 
 ### 5.5 Margins, sensitivity, and what feedback cannot do
 
+*In one sentence:* a loop that works on paper can still be one small change away from failing; this section measures how far away that is, and shows that some limits belong to the machine itself, so no controller can remove them.
+
+*If you need only one thing from this section:* the stability margin $s_m$, the closest the loop's Nyquist curve comes to $-1$. It equals $1/M_s$ and it bounds the gain and phase margins, not the other way round; on the worked loop $L=2/(s+1)^3$ it is $0.60$, so disturbances near $1.22$ rad/s come out 67% larger than without feedback (*Three margins on one loop* and *Sensitivity, bandwidth and internal stability*, below).
+
 Section 5 gave you the poles of a closed loop you already have. This section is about the
 question papers actually argue over: **how close is that loop to not working**, and what is
 provably out of reach no matter how the controller is designed.
+
+#### The Nyquist plot and the stability criterion
 
 **Primer: frequency response and the Nyquist plot.** Substitute $s = i\omega$ into a stable transfer function and you get a complex number for each frequency $\omega$. Its magnitude is how much a sine wave at that frequency is amplified once transients die out, and its angle is how far the output sine lags the input. The **Nyquist plot** is the curve these complex numbers trace in the complex plane as $\omega$ sweeps from $0$ to $\infty$. (The full definition of frequency response, with the steady-state sine formula, is [[02-foundations/engineering-math|0.5 §9]].)
 
@@ -410,6 +420,8 @@ $L = 0.5/(s-1)$ traces a circle of radius $0.25$ centred at $-0.25$ that never r
 $N = 0$, $Z = 1$, and the closed-loop pole is $s = +0.5$. Too little gain cannot stabilize an
 unstable plant.
 
+#### Three margins on one loop
+
 **Three margins, and they are not interchangeable.** Let $\omega_{pc}$ be the *phase
 crossover* — where $\angle L = -180°$ — and $\omega_{gc}$ the *gain crossover*, where
 $|L| = 1$.
@@ -439,6 +451,8 @@ pure gain nor pure phase, so both classical margins look at it and see nothing. 
 that reports only gain and phase margins has not shown you that its loop is robust.**
 
 **Recap before sensitivity.** The Nyquist criterion answers *whether* the loop is stable; the three margins answer *how far* it is from instability — along gain, along phase, and in any direction at all — and only the last, $s_m$, bounds the other two. What follows turns $s_m$ into the sensitivity peak $M_s$, then asks what no controller can buy.
+
+#### Sensitivity, bandwidth and internal stability
 
 **The sensitivity functions are where the claim actually lives.** With $L = PC$, define
 
@@ -487,6 +501,8 @@ single unstable entry is a signal that can blow up. *Example:* $P = 1/(s-1)$ wit
 $C = (s-1)/s$ gives $L = 1/s$, so $S = s/(s+1)$ and $T = 1/(s+1)$ are both stable; but
 $PS = s/\big((s-1)(s+1)\big)$ keeps the pole at $s = 1$, so a load disturbance grows like $e^{t}$.
 
+#### Delay as a phase budget
+
 **Delay is the version of this you will actually hit.** A pure delay $\tau$ contributes
 phase $-\omega\tau$ and no gain change. Let $\varphi_0$ be the loop's phase margin before
 that delay and $\varphi_{req}$ the margin the design must retain. If crossover does not move
@@ -512,6 +528,8 @@ the delay rather than treating this first-order budget as an exact redesign.
 Delay also behaves like a right-half-plane zero, which is the deeper reason it is expensive:
 the first-order Padé approximation $\frac{1-s\tau/2}{1+s\tau/2}$ has a zero at $2/\tau$, so
 79 ms is a zero at 25.3 rad/s (4.0 Hz) sitting right where you wanted bandwidth.
+
+#### Limits no controller escapes
 
 **Bode's integral — the constraint no design escapes.** The takeaway first, in one sentence: push sensitivity down in one frequency band and it must rise in another (the *waterbed effect*); the integral below says exactly how much, and why an unstable plant makes it worse. For an internally stable loop with
 $sL(s) \to 0$ **as $s \to \infty$** — the book calls that assumption essential, and without it the
@@ -721,6 +739,10 @@ point only*. Three consequences you will meet in papers:
   linearity outright — which is why the excavation literature spends as much effort on
   actuator models as on policies
   ([[05-construction-robotics/earthmoving-heavy-machinery|earthmoving stream §1]]).
+
+**Worked: the rail on P4.** Give the heater of §1 the rail $|u|\le1$ that [[04-robotics/mpc|7. MPC]] puts on it, keep $K=9$, and raise the disturbance to $d=2$. The linear answer is $x=d/(1+K)=0.2$, which needs $u=-Kx=-1.8$; the rail stops the command at $-1$, so the heater settles at $x=d+u=1.0$, five times the linear prediction. The division by $1+K$ that §1 sold holds only while the command it needs, $Kd/(1+K)=0.9\,d$, fits inside the rail, that is $d\le1.11$, and once the rail binds, raising $K$ buys nothing: the saturated steady state $x=d-1$ does not contain $K$ at all.
+
+**Worked: why a schedule, on P2.** In the horizontal plane with the elbow held, P2's shoulder is one inertia, $M_{11}=3+2\cos\theta_2$, which runs from $5\ \mathrm{kg\,m^2}$ straight out to $1$ folded back ([[02-foundations/manipulator-kinematics-dynamics|10. §3]]). A PD pair tuned at the frozen pose, $M_{11}=3$, for $\omega_n=\sqrt{K_p/M_{11}}=10$ rad/s and $\zeta=K_d/(2\sqrt{K_pM_{11}})=0.7$ is $K_p=300$ N·m/rad and $K_d=42$ N·m·s/rad. The same pair gives $\omega_n=7.7$ rad/s and $\zeta=0.54$ straight out, so the overshoot that damping ratio implies, $e^{-\pi\zeta/\sqrt{1-\zeta^2}}$, grows from 4.6% to 13%, and it gives $\omega_n=17.3$ rad/s with $\zeta=1.21$ folded, an overdamped loop. A schedule stores one pair per $\theta_2$; computed torque removes the dependence by multiplying by $M(\theta)$ itself ([[04-robotics/modern-robotics/ch11-robot-control|MR ch.11]]).
 
 ### 10. Reading control claims in papers
 
@@ -998,6 +1020,10 @@ $\det(A-\lambda I) = \lambda^2 + \lambda + 4 = 0 \Rightarrow \lambda = -0.5 \pm 
 
 ### 4. 점근 안정성, 그리고 한 이야기의 두 반쪽
 
+*한 문장으로:* 쉬던 자리에서 밀려나도 그 흔들림이 저절로 잦아들면 루프는 점근 안정하고, 상태가 가까이 머물기만 하면 그냥 안정하다. 이 절은 그것을 모델의 숫자에서 읽는 법, 컴퓨터가 루프를 한 걸음씩 돌리면 그 읽기가 왜 달라지는지, 그리고 늘지 않는 에너지 하나가 식을 풀지 않고도 안정을 증명하고 계속 줄어드는 에너지는 잦아듦까지 증명하는 방법을 보인다.
+
+*이 절에서 하나만 가져간다면:* 연속 시간에서 안전한 게인도 루프를 샘플링하면 불안정해질 수 있다. $T=0.1$ s의 명시적 오일러로 돌린 P4에서는 배수 $1-T(1+K)$가 단위원 안에 있어야 하므로 $K<19$이고, 스스로 점검 1의 $K=99$는 $-9$를 주어 커진다(표 뒤의 *계산: 명시적 오일러 아래의 P4*).
+
 **정의, 조건마다 이름을 붙여.** 안정성은 자율계 $\dot x = f(x)$(입력이 없거나 제어기가 입력을 이미
 정해 둔 시스템)의 **평형점**, 즉 $f(x_e) = 0$인 상태 $x_e$의 성질이다. 좌표를 옮겨 $x_e = 0$으로
 두자. 수준은 둘이다.
@@ -1149,9 +1175,15 @@ $2\zeta\omega_n = b/m$이므로 $\zeta = b/(2\sqrt{km})$이다. 유도는 그게
 
 ### 5.5 여유, 감도, 그리고 피드백이 할 수 없는 것
 
+*한 문장으로:* 종이 위에서 작동하는 루프도 작은 변화 하나 앞에서 무너질 수 있다. 이 절은 그 거리가 얼마인지 재고, 어떤 한계는 기계 자체에 속해 있어서 어떤 제어기로도 없앨 수 없음을 보인다.
+
+*이 절에서 하나만 가져간다면:* 안정 여유 $s_m$, 곧 루프의 나이퀴스트 곡선이 $-1$에 가장 가까이 오는 거리다. 그것은 $1/M_s$와 같고 이득 여유와 위상 여유를 묶어 주지만 그 역은 성립하지 않는다. 계산 루프 $L=2/(s+1)^3$에서는 $0.60$이므로, $1.22$ rad/s 근처의 외란은 피드백이 없을 때보다 67% 커져서 나온다(아래 *한 루프 위의 세 여유*와 *감도, 대역폭, 내부 안정성*).
+
 5절은 이미 손에 쥔 폐루프의 극점을 주었다. 이 절은 논문이 실제로 다투는 질문에 관한 것이다.
 **그 루프가 작동하지 않는 상태에 얼마나 가까운가**, 그리고 제어기를 어떻게 설계하든 증명
 가능하게 손에 닿지 않는 것은 무엇인가.
+
+#### 나이퀴스트 선도와 안정 판별법
 
 **입문: 주파수 응답과 나이퀴스트 선도.** 안정한 전달함수에 $s = i\omega$를 넣으면 주파수 $\omega$마다 복소수 하나가 나온다. 그 크기는 과도 응답이 사라진 뒤 그 주파수의 사인파가 몇 배로 커지는지이고, 각은 출력 사인파가 입력보다 얼마나 늦는지다. **나이퀴스트 선도**는 $\omega$를 $0$에서 $\infty$까지 훑을 때 이 복소수들이 복소평면에 그리는 곡선이다. (정상 상태 사인파 공식을 포함한 주파수 응답의 완전한 정의는 [[02-foundations/engineering-math|0.5 §9]]에 있다.)
 
@@ -1192,6 +1224,8 @@ $Z = 0$일 때 정확히 안정하고, 그러려면 불안정한 개루프 극�
 그려 $-1$에 닿지 않으므로 $N = 0$, $Z = 1$이고 폐루프 극점은 $s = +0.5$다. 이득이 모자라면 불안정한
 플랜트를 안정화할 수 없다.
 
+#### 한 루프 위의 세 여유
+
 **여유는 셋이고, 서로 대체되지 않는다.** $\omega_{pc}$를 *위상 교차* — $\angle L = -180°$가
 되는 곳 — 로, $\omega_{gc}$를 $|L| = 1$이 되는 *이득 교차*로 두자.
 
@@ -1220,6 +1254,8 @@ $\varphi_m = 67.6°$다. 곡선이 $-1$에 가장 가까워지는 거리는 $1.2
 강건하다는 것을 보인 적이 없다.**
 
 **감도로 넘어가기 전에 정리.** 나이퀴스트 판별법은 루프가 안정한지 *여부*에 답하고, 세 여유는 불안정에서 *얼마나 먼지* — 이득 방향으로, 위상 방향으로, 그리고 어느 방향으로든 — 에 답하며, 나머지 둘을 묶어 주는 것은 마지막 $s_m$뿐이다. 이어지는 부분은 $s_m$을 감도의 최댓값 $M_s$로 바꾸고, 어떤 제어기로도 살 수 없는 것이 무엇인지 묻는다.
+
+#### 감도, 대역폭, 내부 안정성
 
 **주장이 실제로 사는 곳은 감도 함수다.** $L = PC$에 대해 다음을 정의한다.
 
@@ -1264,6 +1300,8 @@ $$S = \frac{1}{1+PC}, \quad T = \frac{PC}{1+PC}, \quad PS = \frac{P}{1+PC}, \qua
 $T = 1/(s+1)$은 모두 안정하다. 그러나 $PS = s/\big((s-1)(s+1)\big)$에는 $s = 1$ 극점이 남아
 부하 외란이 $e^{t}$처럼 커진다.
 
+#### 위상 예산으로 본 지연
+
 **지연이 실제로 부딪힐 판본이다.** 순수 지연 $\tau$는 위상 $-\omega\tau$를 더할 뿐 이득은
 바꾸지 않는다. $\varphi_0$를 지연을 넣기 전 루프의 위상 여유, $\varphi_{req}$를 설계가 남겨야
 할 위상 여유라 하자. 교차 주파수가 크게 움직이지 않는다는 근사 아래 지연 예산은
@@ -1286,6 +1324,8 @@ $(1.571-0.785)/31.4=25$ ms다. 거꾸로 79 ms가 주어지면 **지연 전 90°
 지연은 우반평면 영점처럼 굴기도 하는데, 그것이 지연이 비싼 더 깊은 이유다. 1차 파데 근사
 $\frac{1-s\tau/2}{1+s\tau/2}$는 $2/\tau$에 영점을 갖는다. 그러므로 79 ms는 25.3 rad/s(4.0 Hz)의
 영점이고, 바로 당신이 대역폭을 원하던 자리에 앉는다.
+
+#### 어떤 제어기도 벗어나지 못하는 한계
 
 **보드 적분 — 어떤 설계도 벗어나지 못하는 제약.** 요점부터 한 문장으로: 한 주파수 대역에서 감도를 눌러 내리면 다른 대역에서 반드시 올라온다(*워터베드 효과*). 아래 적분은 그 양이 정확히 얼마인지, 그리고 불안정한 플랜트가 왜 사정을 더 나쁘게 만드는지 말해 준다. $s \to \infty$에서 $sL(s) \to 0$인 내부 안정 루프에 대해(책은 이 가정을 필수라고 부르고, 이것이 없으면 감도를 얼마든지 작게 만들 수 있다고 적는다)
 
@@ -1474,6 +1514,10 @@ $L$의 확률적 버전이
 - **미모델링 동역학**: 유압 밸브 데드존, 백래시, 유연 링크가 선형성을 정면으로 깬다 —
   굴착 문헌이 정책만큼 액추에이터 모델에 공을 들이는 이유다
   ([[05-construction-robotics/earthmoving-heavy-machinery|토공 스트림 §1]]).
+
+**계산: P4에 레일을 걸면.** §1의 히터에 [[04-robotics/mpc|7. MPC]]가 거는 레일 $|u|\le1$을 걸고, $K=9$는 그대로 둔 채 외란을 $d=2$로 키우자. 선형 답은 $x=d/(1+K)=0.2$이고 그러려면 $u=-Kx=-1.8$이 필요한데, 레일이 명령을 $-1$에서 멈추므로 히터는 $x=d+u=1.0$에 자리 잡는다. 선형 예측의 다섯 배다. §1이 약속한 $1+K$로 나누기는 그것이 요구하는 명령 $Kd/(1+K)=0.9\,d$가 레일 안에 들어가는 동안, 즉 $d\le1.11$인 동안만 성립하고, 레일에 걸린 뒤에는 $K$를 올려도 얻는 것이 없다. 포화된 정상 상태 $x=d-1$에는 $K$가 아예 들어 있지 않다.
+
+**계산: P2에 스케줄이 필요한 이유.** 수평면에서 엘보를 붙잡아 두면 P2의 어깨는 관성 하나, $M_{11}=3+2\cos\theta_2$이고, 이 값은 곧게 편 자세의 $5\ \mathrm{kg\,m^2}$에서 완전히 접은 자세의 $1$까지 움직인다([[02-foundations/manipulator-kinematics-dynamics|10. §3]]). 고정 자세 $M_{11}=3$에서 $\omega_n=\sqrt{K_p/M_{11}}=10$ rad/s, $\zeta=K_d/(2\sqrt{K_pM_{11}})=0.7$이 되도록 맞춘 PD 쌍은 $K_p=300$ N·m/rad, $K_d=42$ N·m·s/rad이다. 같은 쌍이 곧게 편 자세에서는 $\omega_n=7.7$ rad/s, $\zeta=0.54$를 주므로 그 감쇠비가 뜻하는 오버슈트 $e^{-\pi\zeta/\sqrt{1-\zeta^2}}$가 4.6%에서 13%로 커지고, 접은 자세에서는 $\omega_n=17.3$ rad/s, $\zeta=1.21$로 과감쇠 루프가 된다. 스케줄은 $\theta_2$마다 쌍 하나를 저장하고, computed torque는 $M(\theta)$ 자체를 곱해 이 의존성을 없앤다([[04-robotics/modern-robotics/ch11-robot-control|MR 11장]]).
 
 ### 10. 논문의 제어 주장 읽기
 

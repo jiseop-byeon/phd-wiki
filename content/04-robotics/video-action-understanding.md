@@ -249,6 +249,12 @@ The standard diagnostic is to compare against a single-frame baseline, and to te
 
 ### 3. Backbone families
 
+*In one sentence:* video networks differ mainly in how many seconds of video one pass can look at and what that costs, and a behaviour longer than that window is never seen whole, however good the score inside it.
+
+*If you need only one thing from this section:* the temporal receptive field $T_{\mathrm{RF}} = Ns/r$ — $2.56$ s for I3D, $8.5$ s for TimeSformer's default clip, $0.25$ s for V8's per-frame detector — defined and worked in the box below.
+
+#### Five families, and what each one costs
+
 ```mermaid
 flowchart LR
     A["Two-stream<br/>RGB + optical flow"] --> B["3D CNN<br/>C3D, I3D"]
@@ -264,6 +270,8 @@ flowchart LR
 | SlowFast | slow high-capacity pathway for semantics + fast low-capacity pathway for motion | cheaper than uniform 3D | two-pathway design is hand-set |
 | Video transformer | attention over space-time tokens; often factorized into separate temporal and spatial attention (TimeSformer: temporal then spatial within each block) | attention is $O(N^2)$ in tokens | data-hungry; long video is still hard |
 | Masked video pretraining | reconstruct masked spacetime patches, then fine-tune | large pretraining cost, cheap fine-tune | pretraining data distribution leaks into results |
+
+#### How much time one forward pass can see
 
 The practical consequence for a robotics application is the **temporal receptive field**, defined in the box below: the backbones in the table see between about **0.4 s and 12 s** of video in one forward pass. Behaviour that unfolds over a minute — approach, hesitation, decision — is not inside the window, and a longer window is not free.
 
@@ -281,6 +289,8 @@ The practical consequence for a robotics application is the **temporal receptive
 > **Non-example.** "Eight frames" is not a receptive field. TimeSformer's 8 frames span 8.5 s, while 8 consecutive frames at 25 fps span $8/25 = 0.32$ s — the same count, about 27 times apart. Nor is the length of the test video, for the reason in (ii).
 >
 > **Why it matters.** A behaviour longer than $T_{\mathrm{RF}}$ is never inside one window, so no accuracy inside the window can model it. The workaround is aggregation over clips (§6), and a paper that uses it should say so rather than report the video's length as the model's reach.
+
+#### What attention connects, and what it does not prove
 
 Space-time attention works because tokens carry both image-patch content and a position in the clip. Query–key similarity weights let a patch depicting a hand draw information from a tool or from another time, rather than treating each frame in isolation.
 
@@ -322,6 +332,8 @@ Video understanding supplies the temporal representation that everything downstr
 - [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] extracts the human-specific channel from that representation.
 - [[04-robotics/egocentric-perception|22. Egocentric & First-Person Perception]] changes the viewpoint and therefore what is observable.
 - [[04-robotics/human-intent-prediction|23. Human Intent & Trajectory Prediction]] is anticipation with a decision attached.
+
+Each hand-off carries a number. V8's detector sees one frame, $0.25$ s (§3): enough to report a hand, not an approach, which needs a second frame. At the P2 cell's $v_h = 1.6$ m/s a hand moves $1.6 \times 0.25 = 0.40$ m between frames, a third of the $1.24$ m separation distance, and waiting for that second frame costs $2.6 \times 0.25 = 0.65$ m of $S_p$ at Step 4's rate. So page 21's output must arrive with its delay from mid-exposure, and page 23's as a curve over $\tau$ (§4).
 
 ### 8. Reading claims and evaluations
 
@@ -649,6 +661,12 @@ $$I(y; x_1) \approx I(y; x_{1:T})$$
 
 ### 3. 백본 계보
 
+*한 문장으로:* 비디오 신경망들은 주로 한 번의 순전파가 영상 몇 초를 볼 수 있는가와 그 비용에서 갈리고, 그 창보다 긴 행동은 창 안의 점수가 아무리 좋아도 한 번도 통째로 보이지 않는다.
+
+*이 절에서 하나만 가져간다면:* 시간 수용 영역 $T_{\mathrm{RF}} = Ns/r$이다 — I3D는 $2.56$초, TimeSformer의 기본 클립은 $8.5$초, V8의 프레임별 검출기는 $0.25$초이며, 아래 상자에서 정의하고 계산한다.
+
+#### 다섯 계열과 각각의 비용
+
 ```mermaid
 flowchart LR
     A["Two-stream<br/>RGB + optical flow"] --> B["3D CNN<br/>C3D, I3D"]
@@ -664,6 +682,8 @@ flowchart LR
 | SlowFast | 의미용 느린 고용량 경로 + 움직임용 빠른 저용량 경로 | 균일 3D보다 저렴 | 두 경로 설계가 수작업 |
 | 비디오 트랜스포머 | 시공간 토큰에 대한 어텐션, 보통 시간 어텐션과 공간 어텐션으로 분해(TimeSformer는 블록마다 시간 다음 공간) | 토큰 수에 $O(N^2)$ | 데이터 요구량 큼, 긴 영상은 여전히 난제 |
 | 마스킹 사전학습 | 마스킹된 시공간 패치 복원 후 미세조정 | 사전학습 비용 큼, 미세조정은 저렴 | 사전학습 데이터 분포가 결과에 스며듦 |
+
+#### 순전파 한 번이 볼 수 있는 시간
 
 로보틱스 응용에서 실질적 귀결은 아래 상자에서 정의하는 **시간 수용 영역** 이다. 표의 백본들은 한 번의 순전파에서 영상을 약 **0.4초에서 12초** 까지 본다. 접근–망설임–결정처럼 1분에 걸쳐 펼쳐지는 행동은 그 창 안에 없고, 창을 늘리는 건 공짜가 아니다.
 
@@ -681,6 +701,8 @@ flowchart LR
 > **비-예.** "8프레임"은 수용 영역이 아니다. TimeSformer의 8프레임은 8.5초에 걸치지만, 25 fps의 연속 8프레임은 $8/25 = 0.32$초에 걸친다 — 같은 개수가 약 27배 차이 난다. 테스트 영상의 길이도 (ii)의 이유로 수용 영역이 아니다.
 >
 > **왜 중요한가.** $T_{\mathrm{RF}}$보다 긴 행동은 어떤 창 안에도 온전히 들어오지 않으므로, 창 안의 정확도가 아무리 높아도 그것을 모델링할 수 없다. 우회책은 클립들에 걸친 집계(§6)이고, 그것을 쓴 논문은 영상의 길이를 모델의 도달 범위로 보고하지 말고 집계를 썼다고 밝혀야 한다.
+
+#### 어텐션이 잇는 것과 증명하지 않는 것
 
 시공간 어텐션의 토큰에는 영상 패치 내용과 클립 안의 위치가 담긴다. 쿼리–키 유사도 가중치로 손 패치가 도구나 다른 시각의 정보를 가져와 프레임을 따로 보지 않게 한다.
 
@@ -722,6 +744,8 @@ $\tau=1\,\mathrm{s}$만 보면 A가 1점 이긴다. 그러나 B는 훨씬 천천
 - [[04-robotics/human-pose-gaze|21. 사람 자세·손·시선]]이 그 표현에서 사람 채널을 뽑는다.
 - [[04-robotics/egocentric-perception|22. 자기중심·1인칭 인지]]는 시점을 바꿔 관측 가능한 것 자체를 바꾼다.
 - [[04-robotics/human-intent-prediction|23. 인간 의도·궤적 예측]]은 결정이 붙은 anticipation이다.
+
+넘겨줄 때마다 숫자가 따라간다. V8의 검출기는 프레임 하나, $0.25$초를 본다(§3). 손이 *있다*고는 말해도 *다가온다*고는 말하지 못하고, 접근에는 둘째 프레임이 필요하다. P2 셀의 $v_h = 1.6$ m/s로 손은 프레임 사이에 $1.6 \times 0.25 = 0.40$ m, 보호 이격 거리 $1.24$ m의 3분의 1을 움직이고, 그 둘째 프레임을 기다리면 4단계의 비율로 $S_p$가 $2.6 \times 0.25 = 0.65$ m 늘어난다. 그러니 21번 페이지의 출력은 노출 중앙부터의 지연과 함께, 23번 페이지의 출력은 $\tau$에 대한 곡선으로 넘어와야 한다(§4).
 
 ### 8. 주장과 평가 읽기
 

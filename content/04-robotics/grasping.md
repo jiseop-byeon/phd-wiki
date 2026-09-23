@@ -224,6 +224,14 @@ mathematics of that claim, and its modern half is a way of predicting the claim 
 depth image without ever writing it down. Both halves are worth reading, because the
 learned methods are trained on labels the classical theory produces.
 
+**Touching is not holding, on the tile.** Grasp **C** of the running object touches the tile at two points and may squeeze as hard as the budget allows, and it still cannot hold the tile: the line between its contacts leaves the bottom contact at $72.6^\circ$ from the normal, so force closure would need $\mu\ge3.20$ (Step 3 of the worked case), and at $\mu=0.5$ no squeeze balances even the tile's own weight. Touching is a statement about gaps; holding is a statement about forces.
+
+**"Whatever the world does next" is a set of wrenches.** For the tile the first member is its own weight, $W=4.905$ N downward. Grasp **A** carries it on friction alone, so at $\mu=0.5$ the fingers must squeeze with at least $W/\mu=9.81$ N in total, $4.905$ N each, which is ch.12's number. That squeeze holds with zero margin: each contact sits on the edge of its cone, where the 1 N wipe in the worked case of [[04-robotics/contact-force-tactile|9. Contact, Force & Tactile]] sat. The task then adds its own members. Lift the tile at $2\ \mathrm{m/s^2}$ and the friction needed grows to $m(g+a)=0.5\times11.81=5.905$ N, so the minimum squeeze rises by 20%, to $11.81$ N; a snag on a neighbouring panel adds a force and a twist in directions gravity never pulls. The squeeze itself costs the object nothing: pressing both normals equally is the internal force $(1,0,1,0)$ that $G_A$ sends to zero (Step 1), which is why a grasp can buy margin by squeezing harder without disturbing the load balance, up to the force budget.
+
+**The claim splits into three questions, and the page answers them in order.** *Can* the contacts resist a wrench in every direction, given enough squeeze? That is closure, a yes-or-no about directions (§3). *How much* can they resist under a bounded squeeze? That is quality, a number in newtons such as grasp A's $\epsilon_A=6.667$ N (§4). *Against which loads* does this task need it? That is the task, and on the tile it reverses the ranking: A wins both quality numbers, while B lifts twice as much, $20.0$ N against $10.0$ N, because B carries the weight on a normal force (Step 5).
+
+**What it changes when you read a grasp paper.** A reported "grasp success" is often a lift test, which checks one member of the set, the weight, in one direction; a shake after the lift adds inertial wrenches, and a transport-and-place trial adds the task's own. So read a success rate as a claim about the wrenches its trials actually applied (§7's first question). The learned half inherits this arithmetic rather than replacing it: Dex-Net 2.0 trained its network on $6.7$ million synthetic examples labelled by analytic grasp metrics (§5), so a learned grasp score is trained to predict the classical number and inherits whatever that number assumes.
+
 ### 2. The friction cone, and why closure is a cone question
 
 A frictionless point contact can push only along the surface normal. With Coulomb friction
@@ -548,6 +556,12 @@ of §2–§4 and on a site nobody measures it. A grasp planner that assumes $\mu
 surface that is actually 0.3 has half the cone it thinks it has. This is a concrete,
 defensible thing to be robust to — and the tactile route to estimating it is
 [[04-robotics/tactile-visuotactile|14. §3]].
+
+**The last row, on the tile.** Take grasp **A** under the $20$ N total budget. Believing $\mu=0.6$, the planner credits it with $\mu F=12.0$ N of lift, a margin of $2.45$ over the tile's $W=4.905$ N; on a surface that is really $0.3$ it has $6.0$ N and a margin of $1.22$, and the $2\ \mathrm{m/s^2}$ lift of §1, which needs $5.905$ N of friction, leaves almost nothing. Making A safe on every surface down to the worked case's dusty $\mu=0.2$ would take a total squeeze of $W/0.2=24.5$ N, more than the budget. Grasp **B** does not have this problem in the direction that matters. It carries the weight on its lower contact's *normal*, so its $20.0$ N of lift is the same at every $\mu$, and only its sideways and twist capacities shrink with friction. That is Step 5's reversal again, now as a design rule for a site where nobody measures $\mu$: choose the grasp whose dominant load rides on normals, and spend friction only on the loads you cannot avoid.
+
+**The panel row: where you hold it sets the load.** Hold the tile with grasp B $0.05$ m off its centre of mass, and gravity also becomes a twist about the grasp, $W\times0.05=0.245$ N·m, which only friction can carry because B's normals pass through the grasp centre. The lower finger already spends $4.905$ N of the budget on the weight, so the upper normal can be at most $(20-4.905)/2=7.55$ N, and the two opposed tangential forces can make at most $0.1\,\mu\times7.55$ N·m: $0.377$ N·m at $\mu=0.5$, enough, and $0.151$ N·m at $\mu=0.2$, not enough, so the tile turns out of the grip. A drywall sheet held near one end has a lever arm of metres rather than centimetres, and a flexible sheet also moves its own contacts as it sags.
+
+**Where to take it next.** [[05-construction-robotics/construction-manipulation|9. Construction Manipulation §2]] places each site task in a matrix of primitive, decisive sensing and hardest uncertainty; it is where bricklaying is filed as a weight and cycle-time problem, and panel installation as a large, flexible part whose base pose error dominates.
 
 ### 7. Reading a grasp paper
 
@@ -931,6 +945,14 @@ $$Q_{v,A} = \tfrac16\left|\det\begin{bmatrix} 0 & -20 & 20 \\ -40 & 0 & 20 \\ -4
 현대적 절반은 그것을 적어 보지도 않은 채 깊이 이미지에서 예측하는 방법이다. 두 절반을 다
 읽을 가치가 있다. 학습된 방법들이 고전 이론이 만들어낸 라벨로 학습되기 때문이다.
 
+**닿는 것은 쥐는 것이 아니다, 타일에서.** 이 페이지 대상의 파지 **C**는 타일에 두 점으로 닿고 예산이 허락하는 만큼 세게 쥘 수 있지만, 그래도 타일을 쥐지 못한다. 두 접촉을 잇는 선이 아래 접촉에서 법선과 $72.6^\circ$를 이루므로 force closure에는 $\mu\ge3.20$이 필요하고(대상으로 한 번 끝까지의 3단계), $\mu=0.5$에서는 어떤 쥐는 힘으로도 타일 자신의 무게조차 평형시키지 못한다. 닿는다는 것은 틈에 관한 진술이고, 쥔다는 것은 힘에 관한 진술이다.
+
+**"다음에 세상이 무슨 짓을 하든"은 렌치의 집합이다.** 타일에서 그 첫 원소는 자기 무게, 아래로 $W=4.905$ N이다. 파지 **A**는 그것을 마찰만으로 버티므로, $\mu=0.5$에서 손가락들은 합해서 적어도 $W/\mu=9.81$ N, 하나당 $4.905$ N으로 쥐어야 한다. MR 12장의 숫자다. 그 쥐는 힘은 여유 0으로 버틴다. 각 접촉이 원뿔의 가장자리에 앉아 있고, [[04-robotics/contact-force-tactile|9. 접촉·힘·촉각]]의 대상으로 한 번 끝까지에서 1 N 닦기가 앉았던 자리와 같다. 그다음 작업이 자기 원소를 더한다. 타일을 $2\ \mathrm{m/s^2}$로 들어 올리면 필요한 마찰이 $m(g+a)=0.5\times11.81=5.905$ N으로 커지므로 최소 쥐는 힘이 20% 올라 $11.81$ N이 되고, 옆 패널에 걸리면 중력이 결코 당기지 않는 방향으로 힘과 비틀림이 더해진다. 쥐는 힘 자체는 물체에 아무 대가도 치르게 하지 않는다. 두 법선을 똑같이 누르는 것은 $G_A$가 0으로 보내는 내부 힘 $(1,0,1,0)$이고(1단계), 그래서 파지는 하중 균형을 흐트러뜨리지 않고 더 세게 쥐어 여유를 살 수 있다. 힘 예산이 허락하는 데까지.
+
+**그 주장은 세 질문으로 갈리고, 이 페이지는 순서대로 답한다.** 충분히 쥔다면 접촉들이 *모든* 방향의 렌치에 저항할 *수 있는가*? 그것이 closure이고, 방향에 관한 예/아니오다(§3). 쥐는 힘이 묶여 있을 때 *얼마나* 저항하는가? 그것이 품질이고, 파지 A의 $\epsilon_A=6.667$ N 같은 뉴턴 단위의 숫자다(§4). 이 작업이 *어떤 하중에* 대해 그것을 필요로 하는가? 그것이 작업이고, 타일에서는 순위를 뒤집는다. A가 두 품질 숫자에서 모두 이기지만, B는 무게를 법선력으로 지므로 $20.0$ N 대 $10.0$ N으로 두 배를 든다(5단계).
+
+**파지 논문을 읽을 때 달라지는 것.** 보고된 "파지 성공"은 흔히 들어 올리기 시험이고, 그것은 집합의 원소 하나, 곧 무게를 한 방향으로만 확인한다. 들어 올린 뒤 흔들면 관성 렌치가 더해지고, 옮겨서 놓는 시행은 작업 자신의 렌치를 더한다. 그러니 성공률은 그 시행들이 실제로 가한 렌치에 관한 주장으로 읽어라(§7의 첫 질문). 학습 쪽 절반은 이 산수를 대체하지 않고 물려받는다. Dex-Net 2.0은 해석적 파지 지표로 라벨한 합성 예제 $670$만 개로 네트워크를 학습했으므로(§5), 학습된 파지 점수는 고전적 숫자를 예측하도록 학습되고 그 숫자가 가정하는 것을 그대로 물려받는다.
+
 ### 2. 마찰 원뿔, 그리고 closure가 원뿔의 문제인 이유
 
 마찰 없는 점접촉은 표면 법선 방향으로만 밀 수 있다. 마찰계수 $\mu$의 쿨롱 마찰이 있으면
@@ -1225,6 +1247,12 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
 재지 않는다. $\mu = 0.6$을 가정한 파지 계획기가 실제로는 0.3인 표면 위에 있으면, 자기가
 가졌다고 생각하는 원뿔의 절반만 가진 것이다. 견고성을 주장할 만한 구체적이고 방어 가능한
 대상이며, 그것을 추정하는 촉각 경로는 [[04-robotics/tactile-visuotactile|14. §3]]에 있다.
+
+**마지막 행을 타일에서.** 총 $20$ N 예산 아래의 파지 **A**를 보자. $\mu=0.6$을 믿는 계획기는 그것에 $\mu F=12.0$ N의 들기 능력, 곧 타일의 $W=4.905$ N에 대해 여유 $2.45$를 준다. 실제로 $0.3$인 표면에서는 $6.0$ N, 여유 $1.22$이고, 마찰 $5.905$ N을 요구하는 §1의 $2\ \mathrm{m/s^2}$ 들어 올리기에는 남는 것이 거의 없다. 대상으로 한 번 끝까지의 먼지 낀 $\mu=0.2$까지 모든 표면에서 A를 안전하게 하려면 총 $W/0.2=24.5$ N으로 쥐어야 하는데, 예산보다 크다. 파지 **B**는 중요한 방향에서 이 문제가 없다. 무게를 아래 접촉의 *법선*으로 지므로 $20.0$ N의 들기 능력이 어떤 $\mu$에서도 같고, 마찰과 함께 줄어드는 것은 옆 방향과 비틀림 능력뿐이다. 5단계의 뒤집힘이 다시 나온 것이고, 이번에는 아무도 $\mu$를 재지 않는 현장의 설계 규칙이다. 주된 하중이 법선에 실리는 파지를 고르고, 마찰은 피할 수 없는 하중에만 써라.
+
+**패널 행: 어디를 잡느냐가 하중을 정한다.** 파지 B로 타일을 무게중심에서 $0.05$ m 비껴 잡으면 중력은 파지 둘레의 비틀림 $W\times0.05=0.245$ N·m도 되는데, B의 법선은 파지 중심을 지나므로 그것을 질 수 있는 것은 마찰뿐이다. 아래 손가락이 이미 예산 중 $4.905$ N을 무게에 쓰므로 위 법선은 많아야 $(20-4.905)/2=7.55$ N이고, 서로 반대인 두 접선력이 만들 수 있는 모멘트는 많아야 $0.1\,\mu\times7.55$ N·m다. $\mu=0.5$에서는 $0.377$ N·m로 충분하고, $\mu=0.2$에서는 $0.151$ N·m로 모자라 타일이 쥔 손에서 돌아 빠진다. 한쪽 끝 가까이를 잡은 드라이월 시트는 모멘트 팔이 센티미터가 아니라 미터이고, 유연한 시트는 처지면서 자기 접촉까지 옮긴다.
+
+**다음으로 갈 곳.** [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션 §2]]가 현장 작업마다 동작 원형, 결정적 센싱, 가장 어려운 불확실성의 매트릭스에 자리를 준다. 조적은 무게와 사이클 타임의 문제로, 패널 설치는 베이스 자세 오차가 지배하는 크고 유연한 부재의 문제로 분류되는 곳이 거기다.
 
 ### 7. 파지 논문 읽기
 

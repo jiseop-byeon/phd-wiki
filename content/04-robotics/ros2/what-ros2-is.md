@@ -337,6 +337,8 @@ ros2 run turtlesim turtle_teleop_key
 
 `ros2 run <package> <executable>` is the primitive: start one executable from one installed package. Put the cursor in terminal 2 and press the arrow keys; the turtle moves and draws. Note that each press produces a short motion, not continuous travel — deliberately, because a robot that keeps executing the last command after the operator's link drops is a hazard.
 
+The short motion is a timer in the simulator, and its numbers are worth reading once. Each arrow press publishes one `geometry_msgs/msg/Twist` — for the up arrow, `linear.x` $=2.0$, the teleop node's `scale_linear` default — and `turtlesim_node` stores it and zeroes the velocity once more than $1.0\,\mathrm{s}$ has passed since the last command arrived. So one press moves the turtle about $2.0\times1.0=2.0$ units, holding the key down is many presses at the terminal's key-repeat rate, and the `ros2 topic pub` of §10 keeps the turtle circling only because it republishes once a second by default, renewing the timeout; stop it and the turtle halts about a second later. Two details carry over to real robots. The timer runs from the command's *arrival*, on the receiver's clock, because `Twist` carries no stamp, so it can see a silent link but not a late one; knowing how old the data is needs a stamped message ([[04-robotics/ros2/debugging-data-reproducibility|25.10 §3]]). And the length is a design number: on P6 the same guard is the $70\,\mathrm{ms}$ budget, $14$ control ticks, and a one-second timeout borrowed from turtlesim would let the cart run $200$ ticks on a command nobody is sending any more.
+
 ### 9. Reading the graph
 
 Everything below runs in a third sourced terminal while the first two keep running. This is the actual skill on this page.
@@ -490,6 +492,7 @@ Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes
 - ROS 2 Jazzy documentation — Releases (distribution and EOL table).
 - Open Robotics, "ROS Noetic End-of-Life: May 31, 2025" (ROS Discourse announcement).
 - Gazebo documentation — ROS installation / ROS 2 and Gazebo version pairings.
+- `ros/ros_tutorials` (jazzy branch) — turtlesim `src/turtle.cpp` (the velocity zeroed 1.0 s after the last command arrived) and `tutorials/teleop_turtle_key.cpp` (one `Twist` per key press, `scale_linear` default 2.0); `ros2/ros2cli` (jazzy branch) — `ros2topic/verb/pub.py` (default rate 1 Hz).
 
 ### Self-check
 
@@ -862,6 +865,8 @@ ros2 run turtlesim turtle_teleop_key
 
 `ros2 run <package> <executable>`이 기본 단위다. 설치된 패키지 하나에서 실행 파일 하나를 띄운다. 터미널 2에 커서를 두고 화살표 키를 누르면 거북이가 움직이며 선을 그린다. 한 번 누르면 짧게 움직이고 멈춘다는 점을 보라. 의도된 설계다. 조작자와의 링크가 끊긴 뒤에도 마지막 명령을 계속 수행하는 로봇은 위험 요소다.
 
+짧은 움직임은 시뮬레이터 안의 타이머이고, 그 숫자는 한 번 읽어 둘 만하다. 화살표를 한 번 누를 때마다 `geometry_msgs/msg/Twist`가 하나 발행된다. 위 화살표라면 `linear.x` $=2.0$이고, teleop 노드의 `scale_linear` 기본값이다. `turtlesim_node`는 그것을 저장해 두었다가, 마지막 명령이 도착한 지 $1.0\,\mathrm{s}$가 넘으면 속도를 0으로 만든다. 그래서 한 번 누르면 거북이는 약 $2.0\times1.0=2.0$ 단위를 가고, 키를 누르고 있는 것은 터미널의 키 반복 속도로 여러 번 누르는 것이며, 10절의 `ros2 topic pub`가 거북이를 계속 돌게 하는 것도 기본값으로 1초에 한 번씩 다시 발행해 타임아웃을 갱신하기 때문일 뿐이다. 그것을 멈추면 거북이는 약 1초 뒤에 선다. 실제 로봇으로 옮겨 가는 세부가 둘 있다. 타이머는 명령의 *도착*에서부터, 받는 쪽의 시계로 잰다. `Twist`에는 스탬프가 없어서 끊긴 링크는 볼 수 있어도 늦은 링크는 보지 못한다. 데이터가 얼마나 묵었는지 알려면 스탬프가 있는 메시지가 필요하다([[04-robotics/ros2/debugging-data-reproducibility|25.10 §3]]). 그리고 그 길이는 설계로 정하는 숫자다. P6에서 같은 보호 장치는 $70\,\mathrm{ms}$ 예산, 곧 제어 틱 $14$개이고, turtlesim에서 빌려 온 1초 타임아웃이라면 카트는 아무도 더는 보내지 않는 명령으로 $200$틱을 달린다.
+
 ### 9. 그래프 읽기
 
 아래는 앞의 두 터미널을 살려 둔 채 source된 세 번째 터미널에서 실행한다. 이 페이지의 실제 기술이다.
@@ -1015,6 +1020,7 @@ ros2: command not found
 - ROS 2 Jazzy 문서 — Releases(배포판 및 EOL 표).
 - Open Robotics, "ROS Noetic End-of-Life: May 31, 2025" (ROS Discourse 공지).
 - Gazebo 문서 — ROS 설치 / ROS 2와 Gazebo 버전 짝.
+- `ros/ros_tutorials`(jazzy 브랜치) — turtlesim `src/turtle.cpp`(마지막 명령이 도착하고 1.0 s 뒤 속도를 0으로)와 `tutorials/teleop_turtle_key.cpp`(키 한 번에 `Twist` 하나, `scale_linear` 기본 2.0), `ros2/ros2cli`(jazzy 브랜치) — `ros2topic/verb/pub.py`(기본 발행률 1 Hz).
 
 ### 스스로 점검
 

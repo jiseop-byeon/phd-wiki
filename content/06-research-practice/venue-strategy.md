@@ -161,6 +161,10 @@ that program-committee reviewing "does not rise to the level of careful refereei
 
 ### 2. What each venue's review process will actually do
 
+*In one sentence:* venues differ most in whether you may answer the reviewers before they decide and whether you must wait for a yearly deadline, and construction and general-science venues judge a robotics result by different standards than robotics venues do.
+
+*If you need only one thing from this section:* the time-to-decision $t_{\text{dec}}=t_{\text{wait}}+t_{\text{review}}$ — a rolling venue such as RA-L has $t_{\text{wait}}=0$, while an annual deadline can add anywhere up to $12$ months; it is defined after the transfer table and worked on RS1 in the Worked case's step 3.
+
 The differences that matter day to day are not prestige rankings — they are **whether you
 get to reply**, and **when you can submit**.
 
@@ -276,6 +280,8 @@ so every RSS or CoRL selectivity figure in circulation is third-party. Writing "
 figure is published" is more accurate than repeating one, and in a research-statement
 context it is also more credible.
 
+**What the counts give, worked.** ICRA's 2025 counts divide to $1{,}606/4{,}250 = 37.8\%$ for the papers that went through its review. The 503 journal transfers reached ICRA through an IEEE RAS journal instead (§2), and a reader who adds them to the accepted count gets $(1{,}606 + 503)/4{,}250 = 49.6\%$, one who adds them to both counts $44.4\%$: three rates from one official statement, so a quoted ICRA rate has to carry its arithmetic. The IROS figure checks the other way: $1{,}991/4{,}306 = 46.2\%$, which the organisers state as 46%. For RS1 no rate entered the decision. The Worked case chose between ICRA and RA-L by what each route blocks and when each lets the paper in, and an average over four thousand submissions says little about how one two-controller comparison will be read (§2's warning box).
+
 ### 4. The RA-L route, which changed
 
 This is the item most likely to be wrong in advice a student has already absorbed.
@@ -303,6 +309,8 @@ flowchart LR
 One eligibility rule catches people: only **non-evolutionary** published papers are
 eligible. A journal paper that was itself an extension of an earlier conference paper
 cannot be taken back to a conference.
+
+**On RS1's calendar.** The change is worth exactly one term of §2's time-to-decision. Under the old track RS1's paper would have waited for a conference-specific deadline, $t_{\text{wait}} = a$ with $0 \le a < 12$ months, the same wait as a plain ICRA submission; on today's rolling route $t_{\text{wait}} = 0$. Acceptance then starts a second clock: the presentation must fall within $270/30.44 = 8.9$ months, at one conference, and because the paper enters no proceedings, RS1's authors list one journal article and no conference paper. The eligibility rule gives the Worked case's advice about the pilot a second reason. RS1's RA-L paper extends no earlier paper, so it may be presented; had the pilot appeared at ICRA first and the confirmatory study gone to RA-L as its extension, the RA-L paper would be evolutionary and could not be taken to any conference.
 
 ### 5. Extending a conference paper into a journal paper
 
@@ -618,6 +626,10 @@ Computing Researchers*가 현재의 언어로 다시 말한다: 엄격하게 심
 
 ### 2. 각 venue의 심사 과정이 실제로 하는 일
 
+*한 문장으로:* venue들은 결정 전에 심사자에게 답할 수 있는가와 1년에 한 번 오는 마감을 기다려야 하는가에서 가장 크게 다르고, 건설 venue와 일반 과학 venue는 로보틱스 결과를 로보틱스 venue와 다른 잣대로 심사한다.
+
+*이 절에서 하나만 가져간다면:* 결정까지의 시간 $t_{\text{dec}}=t_{\text{wait}}+t_{\text{review}}$ — RA-L 같은 상시 venue는 $t_{\text{wait}}=0$이지만 연 1회 마감은 최대 $12$개월까지 더할 수 있다. 이관 표 뒤에서 정의하고, ‘대상으로 한 번 끝까지’의 Step 3에서 RS1로 계산한다.
+
 매일 중요한 차이는 명성 순위가 아니라 **답변할 기회가 있는가**와 **언제 낼 수 있는가**다.
 
 | Venue | 익명성 | 반박문 | 주기 |
@@ -722,6 +734,8 @@ ICRA 비율은 누군가의 산수다. 쓴다면 그렇다고 밝혀라. 둘째,
 않으므로** 떠도는 모든 RSS·CoRL 선택성 수치가 제3자의 것이다. "공식 수치는 발표되지 않았다"고
 쓰는 편이 하나를 되풀이하는 것보다 정확하고, 연구 계획서 맥락에서는 더 믿음직하기도 하다.
 
+**건수로 해 본 산수.** ICRA 2025의 건수를 나누면 그 심사를 거친 논문에 대해 $1{,}606/4{,}250 = 37.8\%$다. 저널 이관 503편은 IEEE RAS 저널을 거쳐 ICRA에 온 논문이고(§2), 그것을 채택 건수에 더한 독자는 $(1{,}606 + 503)/4{,}250 = 49.6\%$를, 두 건수에 모두 더한 독자는 $44.4\%$를 얻는다. 공식 진술 하나에서 비율이 셋 나오므로, ICRA 비율을 인용할 때는 그 산수를 함께 적어야 한다. IROS 수치는 반대 방향으로 검산된다. $1{,}991/4{,}306 = 46.2\%$이고, 주최 측은 이것을 46%로 밝힌다. RS1에서는 어떤 비율도 결정에 들어가지 않았다. ‘대상으로 한 번 끝까지’는 ICRA와 RA-L 사이를 경로마다 무엇을 막는가와 언제 제출하게 해 주는가로 골랐고, 4천 편이 넘는 제출의 평균은 두 제어기를 비교한 논문 하나가 어떻게 읽힐지에 대해 거의 말해 주지 않는다(§2의 경고 상자).
+
 ### 4. 바뀐 RA-L 경로
 
 학생이 이미 흡수한 조언에서 가장 틀려 있기 쉬운 항목이다.
@@ -745,6 +759,8 @@ flowchart LR
 
 사람들이 걸리는 자격 규칙 하나: **비진화적(non-evolutionary)** 으로 출판된 논문만 자격이 있다.
 그 자체가 앞선 학회 논문의 확장이었던 저널 논문은 다시 학회로 가져갈 수 없다.
+
+**RS1의 일정표에서.** 이 변화의 값은 정확히 §2의 결정까지의 시간 가운데 한 항이다. 옛 트랙이었다면 RS1의 논문은 학회별 마감을 기다려야 했고, 그 대기는 $t_{\text{wait}} = a$, $0 \le a < 12$개월로 평범한 ICRA 제출과 같았다. 지금의 상시 경로에서는 $t_{\text{wait}} = 0$이다. 채택되면 두 번째 시계가 돈다. 발표는 $270/30.44 = 8.9$개월 안에 학회 한 곳에서 해야 하고, 논문이 프로시딩에 들어가지 않으므로 RS1의 저자는 저널 논문 하나를 적고 학회 논문은 적지 않는다. 자격 규칙은 ‘대상으로 한 번 끝까지’가 파일럿에 대해 한 조언에 두 번째 이유를 준다. RS1의 RA-L 논문은 앞선 어떤 논문도 확장하지 않으므로 발표할 수 있다. 파일럿이 먼저 ICRA에 실리고 확증 연구가 그 확장으로 RA-L에 갔다면, 그 RA-L 논문은 진화적이어서 어느 학회에도 가져갈 수 없었을 것이다.
 
 ### 5. 학회 논문을 저널 논문으로 확장하기
 

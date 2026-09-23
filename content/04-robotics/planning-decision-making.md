@@ -117,6 +117,12 @@ The plan/policy split matters most: a plan is one answer for one start, and a po
 
 ### 2. Spaces and constraints
 
+*In one sentence:* before a planner can search, the problem has to be written in the right space, the robot's joint angles rather than the room, and the map has to be stored in a form the planner can read, with its costs and its unknown cells marked.
+
+*If you need only one thing from this section:* a C-obstacle is a set of configurations, not a region of the room; in the disc-robot example below, the empty point $(0.6,1.5)$ m lies inside $\mathcal{C}_{\text{obs}}$ because a robot centred there would overlap the square.
+
+#### The five spaces, and the configuration space defined
+
 - **Workspace:** physical positions occupied by the robot and obstacles.
 - **Configuration space:** robot configurations; obstacles become forbidden regions.
 - **State space:** configuration plus variables such as velocity.
@@ -139,6 +145,8 @@ The **path-planning problem** is then: given $q_{\text{start}},q_{\text{goal}}\i
 > MR ch.2 derives the C-obstacle of an *arm*, where it is a curved lens on a torus. Here is the other case, the one the grid inflation below depends on. A disc robot of radius 0.5 m that translates without rotating has configuration $q=(x,y)$, its centre, so $\mathcal{C}=\mathbb{R}^2$. With a square obstacle $[1,2]\times[1,2]$ m, $q\in\mathcal{C}_{\text{obs}}$ exactly when the centre is closer than 0.5 m to the square. $q=(0.6,1.5)$ is 0.4 m from it, so it is in $\mathcal{C}_{\text{obs}}$ even though the workspace *point* $(0.6,1.5)$ is empty. $q=(0.4,1.5)$ is 0.6 m away and free.
 >
 > **Non-example:** the C-obstacle is not the square grown into the box $[0.5,2.5]^2$. Its corners are rounded, because it is the square's Minkowski sum with the disc. So $q=(0.6,0.6)$, inside that box, is 0.566 m from the corner $(1,1)$ and free, while $(0.7,0.7)$, at 0.424 m, is not. This is the inflation of the list below, and it is exact only because the robot is a disc.
+
+#### How the map is stored: grids, costs and frontiers
 
 **How that space is actually stored.** Two pages of this wiki send you here for occupancy and
 cost representations, so they belong in this section rather than in a system paper's
@@ -206,6 +214,8 @@ appendix.
 > discovered but not yet expanded. That is a **different object** from an exploration frontier
 > on a map, though not an unrelated one: both name the boundary between what has been explored
 > and what has not, one in a graph and one in a grid. Papers rarely disambiguate.
+
+#### Global and local planners
 
 **Global and local.** Navigation stacks split planning in two: a **global planner** searches
 the whole costmap for a route (§3–§5), and a **local planner** repeatedly picks the next few
@@ -412,6 +422,10 @@ $$P\Big(\lim_{n\to\infty}c_n=c^*\Big)=1$$
 
 ### 5.5 Planning under dynamics: kinodynamic search, lattices, and flatness
 
+*In one sentence:* a car cannot slide sideways and a crane's load swings, so the pieces a planner strings together have to be motions the machine can actually drive, and this section shows four standard ways to make such pieces.
+
+*If you need only one thing from this section:* whether a curve can be driven is decided by its shape, not by the speed along it; §5.5.5's parabola has curvature $2\,\mathrm{m^{-1}}$ at its vertex at every speed, twice what a $1\,\mathrm{m}$ turning radius allows.
+
 A robot that cannot move in every direction at every speed needs a planner whose edges are motions the machine can execute, so the straight-line connection that grid edges and §5's sampling tree assume has to be replaced by a steering rule that respects the dynamics.
 
 #### 5.5.1 Why a geometric path is not enough
@@ -570,12 +584,24 @@ Online replanning incorporates new observations. Reported replanning frequency i
 
 Learned components may provide a heuristic, cost, dynamics/world model, value function, proposal distribution, trajectory generator, or entire policy. A VLA that outputs actions is usually a policy; a world model that rolls out futures supports planning only when a selection or optimization procedure uses those futures.
 
+**What a learned piece does to the guarantees.** A learned component keeps the guarantee of the slot it fills only if it meets that slot's conditions, and a trained network is measured on a test set, never shown to meet a condition everywhere. Two slots, worked on this page's own numbers.
+
+*A learned heuristic in A\*.* A regressor of cost-to-go is rarely admissible (§3). If its overestimate is bounded everywhere, $h\le\varepsilon h^*$ for some factor $\varepsilon>1$, the argument behind weighted A\* ([[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms §6]]), with a node reopened whenever a cheaper route reaches it, still bounds the returned cost by $\varepsilon C^*$. On the Worked case, branch B costs $\sqrt2=1.414$ times branch A, so any $\varepsilon<1.414$ still forces A\* to return A. The bound also needs $h=0$ at every goal, since $h^*$ is zero there, and regression does not enforce that: on the Worked case's three-node graph, a network that reads more than $0.651$ rad higher at $q_A$ than at $q_B$ makes $f(q_A)=1.5708+h(q_A)$ exceed $f(q_B)=2.2214+h(q_B)$, and A\* returns the branch that costs $41\%$ more.
+
+*A learned sampler in a sampling planner.* Probabilistic completeness (§5) needs only that every region of $\mathcal{C}_{\text{free}}$ keeps a positive chance of being sampled. In §5's narrow passage, a learned proposal that puts $20\%$ of its samples in the passage still misses after $20$ samples with probability $0.8^{20}=0.012$, against $0.99^{20}=0.818$ for uniform sampling; but a proposal that never samples some region has lost the guarantee on every map whose only solution runs there. Drawing half the samples uniformly keeps every region's chance at no less than half its uniform value, $0.005$ per sample for this passage, which restores the guarantee, and on this passage the mixture still misses only $0.895^{20}=0.109$ of the time.
+
+So the question to put to a paper is which slot its network fills and which of that slot's conditions still hold. A learned policy or trajectory generator fills no slot that carries a guarantee at all, which is what the warning below is about.
+
 > [!warning] Reading the claim · 핵심 주장 읽는 법
 > “Generates plausible trajectories” does not imply collision-free, dynamically feasible, stable, or safe execution. Check explicit constraints, downstream controllers, replanning, and closed-loop robot results.
 
 ### 9. Evaluation and failure modes
 
 Check success rate, collision rate, path/trajectory cost, planning and execution time, optimality gap (the relative excess cost $(C-C^*)/C^*$, so an 11 m path against a 10 m optimum is a 10% gap), constraint violation, replanning rate, robustness to map/state error, and closed-loop execution. Separate planning failure, perception failure, tracking failure, and hardware failure.
+
+**Four of those numbers need their conditions, worked on this page.** An optimality gap is relative to a cost. On the Worked case, branch B's gap is $(2.2214-1.5708)/1.5708=41\%$ under joint-space length and $0\%$ under the max-norm, where both branches take $1.571$ s at $1$ rad/s per joint, so a gap that does not name its metric says nothing. A success rate is relative to its trial count. Eighteen successes in twenty is $90\%$ with a 95% Wilson interval of $[0.70,\ 0.97]$, a rival's sixteen of twenty gives $[0.58,\ 0.92]$, and a twenty-trial table that separates two planners by two successes has not ranked them ([[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]). And planning time is a distribution. In §5's narrow passage the number of samples to the first success is geometric, with mean $1/0.01=100$, median $69$ and 95th percentile $299$, because $0.99^n$ first drops below $0.05$ at $n=299$; a planner reported by its mean hides a tail three times as long. And a replanning rate is bounded by the rate of new information. Replanning at $10$ Hz from a costmap refreshed at $2$ Hz makes five plans per map, four of them from data already used, and a new obstacle can wait up to one map period plus one planning period, $0.5+0.1=0.6$ s not counting computation, before any plan reflects it: $0.6$ m of travel at $1$ m/s. That is the sampling-latency argument of [[04-robotics/robot-systems-deployment|10. Robot Systems §3]].
+
+**Attribute a failure before counting it.** A collision in execution is a planning failure only if the collision model the planner checked is the one the robot met. In the Worked case's step 5, a tip-only check passes branch B, yet against an infinite wall at $x=1$ its elbow is inside the obstacle for every $s>0$. The search did what it was told, so that collision belongs to the collision model, not to the planner. Keeping the first violated contract apart from the visible outcome is the failure taxonomy of [[04-robotics/robot-systems-deployment|10. Robot Systems §10]], and [[06-research-practice/failure-analysis-system-evaluation|3. Failure Analysis §1]] applies it to a whole log.
 
 ### After reading
 
@@ -763,6 +789,12 @@ $$x:[0,T]\to\mathcal{X},\qquad u:[0,T]\to\mathcal{U}$$
 
 ### 2. 공간과 제약
 
+*한 문장으로:* 계획기가 탐색을 시작하기 전에, 문제는 올바른 공간 — 방이 아니라 로봇의 관절각 — 에 적혀 있어야 하고, 지도는 비용과 미지의 칸이 표시된 채 계획기가 읽을 수 있는 꼴로 저장되어 있어야 한다.
+
+*이 절에서 하나만 가져간다면:* C-장애물은 방의 한 영역이 아니라 컨피규레이션의 집합이다. 아래 원판 로봇 예에서 비어 있는 점 $(0.6,1.5)$ m가 $\mathcal{C}_{\text{obs}}$ 안에 드는 것은, 그곳에 중심을 둔 로봇이 사각형과 겹치기 때문이다.
+
+#### 다섯 공간, 그리고 컨피규레이션 공간의 정의
+
 - **작업 영역(workspace):** 로봇과 장애물이 차지하는 물리적 위치.
 - **컨피규레이션 공간:** 로봇 컨피규레이션; 장애물은 금지 영역이 된다.
 - **상태 공간:** 컨피규레이션 + 속도 같은 변수.
@@ -786,6 +818,8 @@ $\mathcal{C}$는 **C-장애물** $\mathcal{C}_{\text{obs}}$와 **자유 공간**
 > MR 2장은 *팔*의 C-장애물을 유도한다. 거기서는 토러스 위의 휘어진 렌즈다. 여기서는 다른 쪽 경우, 아래의 격자 팽창이 기대고 있는 경우를 본다. 회전하지 않고 평행이동만 하는 반경 0.5 m 원판 로봇의 컨피규레이션은 중심 $q=(x,y)$이므로 $\mathcal{C}=\mathbb{R}^2$다. 정사각형 장애물 $[1,2]\times[1,2]$ m가 있으면, 중심이 정사각형에서 0.5 m보다 가까울 때 정확히 $q\in\mathcal{C}_{\text{obs}}$다. $q=(0.6,1.5)$는 0.4 m 떨어져 있으므로, 작업 영역의 *점* $(0.6,1.5)$는 비어 있는데도 $\mathcal{C}_{\text{obs}}$에 속한다. $q=(0.4,1.5)$는 0.6 m 떨어져 있어 자유다.
 >
 > **반례:** C-장애물은 정사각형을 상자 $[0.5,2.5]^2$로 키운 것이 아니다. 정사각형과 원판의 민코프스키 합이라 모서리가 둥글다. 그래서 그 상자 안의 $q=(0.6,0.6)$은 모서리 $(1,1)$에서 0.566 m라 자유이고, 0.424 m인 $(0.7,0.7)$은 자유가 아니다. 이것이 아래 목록의 팽창이며, 로봇이 원판이기 때문에만 정확하다.
+
+#### 지도를 저장하는 방식: 격자, 비용, 프런티어
 
 **그 공간을 실제로 저장하는 방법.** 이 위키의 두 페이지가 점유·비용 표현을 위해 여기로
 보내므로, 시스템 논문의 부록이 아니라 이 절에 있어야 한다.
@@ -848,6 +882,8 @@ $\mathcal{C}$는 **C-장애물** $\mathcal{C}_{\text{obs}}$와 **자유 공간**
 > *frontier 노드*라고 쓴다. 지도 위의 탐색 frontier와는 다른 대상이고, 단어만 같을 뿐 서로
 > 무관하지는 않다: 둘 다 탐색된 것과 아닌 것의 경계를 가리키고, 하나는 그래프에서 하나는
 > 격자에서 그럴 뿐이다. 논문들은 이것을 거의 구분해 주지 않는다.
+
+#### 전역 계획기와 지역 계획기
 
 **전역과 지역.** 내비게이션 스택은 계획을 둘로 나눈다: **전역 계획기**가 비용 지도 전체에서
 경로를 탐색하고(§3~§5), **지역 계획기**가 그 경로와 로봇의 동역학, 그리고 그사이 나타난
@@ -1054,6 +1090,10 @@ $$P\Big(\lim_{n\to\infty}c_n=c^*\Big)=1$$
 
 ### 5.5 동역학을 지키는 계획: kinodynamic 탐색, 격자, 평탄성
 
+*한 문장으로:* 자동차는 옆으로 미끄러질 수 없고 크레인의 짐은 흔들리므로, 계획기가 이어 붙이는 조각은 그 기계가 실제로 몰 수 있는 운동이어야 하고, 이 절은 그런 조각을 만드는 표준적인 방법 넷을 보인다.
+
+*이 절에서 하나만 가져간다면:* 곡선을 몰 수 있는지는 그 위를 달리는 속도가 아니라 곡선의 모양이 정한다. §5.5.5의 포물선은 어떤 속도로 달려도 꼭짓점의 곡률이 $2\,\mathrm{m^{-1}}$로, 최소 회전 반경 $1\,\mathrm{m}$가 허용하는 값의 두 배다.
+
 모든 방향으로 모든 속도로 움직일 수 없는 로봇에는 간선이 곧 그 기계가 실행할 수 있는 운동인 계획기가 필요하다. 그래서 격자의 간선과 §5의 표본 트리가 가정하는 직선 연결을, 동역학을 지키는 조향 규칙으로 바꿔야 한다.
 
 #### 5.5.1 기하학적 경로만으로 부족한 이유
@@ -1219,6 +1259,14 @@ $$b'(s')=\eta\,Z(o\mid s',a)\sum_{s\in\mathcal{S}}T(s'\mid s,a)\,b(s)$$
 정책 전체 중 무엇이든 될 수 있다. 행동을 출력하는 VLA는 대개 정책이다; 미래를 롤아웃하는
 월드모델은 그 미래를 *선택·최적화 절차가 사용할 때에만* 계획을 지원한다.
 
+**학습된 조각이 보장에 하는 일.** 학습된 구성 요소는 자기가 채우는 자리의 보장을, 그 자리의 조건을 만족할 때에만 물려받는다. 그런데 학습된 신경망은 시험 집합에서 측정될 뿐, 어떤 조건을 모든 곳에서 만족한다고 증명되는 일은 없다. 두 자리를 이 페이지의 숫자로 풀어 보자.
+
+*A\* 안의 학습된 휴리스틱.* 남은 비용을 회귀하는 신경망은 거의 admissible하지 않다(§3). 과대평가가 모든 곳에서 유계라면, 곧 어떤 배수 $\varepsilon>1$에 대해 $h\le\varepsilon h^*$라면, 더 싼 경로가 닿을 때마다 노드를 다시 여는 한 가중 A\*의 논증([[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘 §6]])이 그대로 반환 비용을 $\varepsilon C^*$ 이하로 묶는다. Worked case에서 가지 B는 가지 A의 $\sqrt2=1.414$배이므로, $\varepsilon<1.414$이기만 하면 A\*는 여전히 A를 돌려준다. 이 한계는 모든 목표에서 $h=0$이기를 요구하기도 한다. 거기서 $h^*$가 0이기 때문인데, 회귀는 이것을 강제하지 않는다. Worked case의 노드 세 개짜리 그래프에서 신경망이 $q_A$에서 $q_B$보다 $0.651$ rad 넘게 높게 읽으면 $f(q_A)=1.5708+h(q_A)$가 $f(q_B)=2.2214+h(q_B)$를 넘고, A\*는 $41\%$ 더 비싼 가지를 돌려준다.
+
+*표본 기반 계획기 안의 학습된 샘플러.* 확률적 완전성(§5)이 요구하는 것은 $\mathcal{C}_{\text{free}}$의 모든 영역이 뽑힐 확률을 양수로 유지하는 것뿐이다. §5의 좁은 통로에서, 표본의 $20\%$를 통로에 넣는 학습된 제안 분포는 표본 $20$개 뒤에도 확률 $0.8^{20}=0.012$로만 놓치고, 균일 표본은 $0.99^{20}=0.818$로 놓친다. 그러나 어떤 영역을 전혀 뽑지 않는 제안 분포는, 유일한 해가 그 영역을 지나는 모든 지도에서 보장을 잃는다. 표본의 절반을 균일하게 뽑으면 모든 영역의 확률이 균일할 때의 절반 아래로 떨어지지 않고, 이 통로라면 표본당 $0.005$이므로 보장이 돌아온다. 이 통로에서 그 혼합은 여전히 $0.895^{20}=0.109$만큼만 놓친다.
+
+그러니 논문에 던질 질문은 그 신경망이 어느 자리를 채우고, 그 자리의 조건 가운데 무엇이 아직 성립하느냐다. 학습된 정책이나 궤적 생성기는 보장이 딸린 자리를 하나도 채우지 않으며, 아래 경고가 말하는 것이 바로 그것이다.
+
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
 > "그럴듯한 궤적을 생성한다"는 충돌 없음, 동역학적 실행 가능, 안정, 안전한 실행을
 > 함의하지 않는다. 명시적 제약, 하류 제어기, replanning, 폐루프 로봇 결과를 확인하라.
@@ -1228,6 +1276,10 @@ $$b'(s')=\eta\,Z(o\mid s',a)\sum_{s\in\mathcal{S}}T(s'\mid s,a)\,b(s)$$
 성공률, 충돌률, 경로/궤적 비용, 계획·실행 시간, 최적성 갭(상대 초과 비용 $(C-C^*)/C^*$, 그래서 최적 10 m에 대한 11 m 경로는 10% 갭이다), 제약 위반, replanning 빈도,
 지도/상태 오차에 대한 강건성, 폐루프 실행을 확인하라. 계획 실패, 인식 실패, 추종 실패,
 하드웨어 실패를 분리하라.
+
+**그중 네 숫자에는 조건이 따라붙어야 하고, 이 페이지에서 계산할 수 있다.** 최적성 갭은 비용에 대해 상대적이다. Worked case에서 가지 B의 갭은 관절 공간 길이로는 $(2.2214-1.5708)/1.5708=41\%$이고, 두 가지 모두 관절마다 $1$ rad/s로 $1.571$ s 걸리는 max-norm으로는 $0\%$다. 그러므로 척도를 밝히지 않은 갭은 아무것도 말하지 않는다. 성공률은 시도 횟수에 대해 상대적이다. 스무 번 중 열여덟 번 성공은 $90\%$이고 95% Wilson 구간은 $[0.70,\ 0.97]$이며, 경쟁자의 스무 번 중 열여섯 번은 $[0.58,\ 0.92]$이다. 두 계획기를 성공 두 번 차이로 가르는 20회짜리 표는 순위를 정하지 못했다([[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]). 그리고 계획 시간은 분포다. §5의 좁은 통로에서 첫 성공까지의 표본 수는 기하 분포를 따르고, 평균은 $1/0.01=100$, 중앙값은 $69$, 95번째 백분위수는 $299$다. $0.99^n$이 처음으로 $0.05$ 아래로 내려가는 것이 $n=299$이기 때문이다. 평균으로 보고된 계획기는 세 배 긴 꼬리를 감춘다. 그리고 재계획 주기는 새 정보가 들어오는 주기에 묶인다. $2$ Hz로 갱신되는 비용 지도에서 $10$ Hz로 재계획하면 지도 하나당 계획이 다섯 번 나오고 그중 넷은 이미 쓴 데이터로 만든 것이며, 새 장애물이 계획에 반영되기까지는 계산 시간을 빼고도 지도 한 주기와 계획 한 주기, 곧 최대 $0.5+0.1=0.6$ s가 걸릴 수 있다. $1$ m/s에서 $0.6$ m를 가는 시간이다. [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]의 샘플링 지연 논증이 바로 이것이다.
+
+**세기 전에 실패의 원인을 가려라.** 실행 중 충돌이 계획 실패인 것은 계획기가 검사한 충돌 모델이 로봇이 실제로 만난 것과 같을 때뿐이다. Worked case의 5단계에서 말단만 보는 검사는 가지 B를 통과시키지만, $x=1$의 무한한 벽에 대해서는 모든 $s>0$에서 팔꿈치가 장애물 안에 있다. 탐색은 시킨 대로 했으므로 그 충돌은 계획기가 아니라 충돌 모델의 몫이다. 처음 어겨진 약속을 눈에 보이는 결과와 따로 두는 것이 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §10]]의 실패 분류이고, [[06-research-practice/failure-analysis-system-evaluation|3. 실패 분석 §1]]이 그것을 로그 하나 전체에 적용한다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

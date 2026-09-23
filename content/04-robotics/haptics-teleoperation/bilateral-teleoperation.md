@@ -128,10 +128,12 @@ Suppose remote position is scaled by $x_f=s_xx_l$. If reflected force is $F_l=s_
 
 $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 
-Power-preserving scaling requires $s_f=s_x$ under this convention; other conventions or deliberate power amplification change the relation. A paper must distinguish geometric scaling, force scaling, actuator gain, and unit conversion.
+Power-preserving scaling requires $s_f=s_x$ under this convention; other conventions or deliberate power amplification change the relation. A paper must keep four factors apart, because each can pass for another. **Geometric scaling** $s_x$ is a kinematic choice: it sets how far the follower moves per leader millimetre, and with it the workspace and how much tremor reaches the tool. **Force scaling** $s_f$ is the knob this page argues about, and together with $s_x$ it fixes both the power ratio above and the impedance scale $s_fs_x$ of §2. **Actuator gain** — amplifier and motor constant, from commanded to delivered newtons — is a calibration, not a choice, so a gain $10\%$ off multiplies the effective $s_f$ by $1.1$ without appearing anywhere in the paper. And a **unit conversion** should equal exactly $1$ in physical terms, so an error in one, millimetres read as metres, is a silent scale of $1000$.
 
 > [!example] Worked example · 계산 예제
 > A micro-manipulation setup scales motion down, $s_x=0.1$. The leader moves 20 mm at 50 mm/s, so the follower moves 2 mm at 5 mm/s, and it touches tissue with $F_f=0.5$ N, which is $P_f=0.5\times0.005=2.5$ mW. Power-preserving scaling, $s_f=s_x=0.1$, reflects only $F_l=0.05$ N, too faint to use. Choosing $s_f=10$ instead reflects $F_l=5$ N, and the leader port now carries $P_l=5\times0.05=250$ mW, which is $s_f/s_x=100$ times the follower power. That extra power comes from the actuators, so a force-amplifying teleoperator cannot inherit passivity from its parts; its stability has to be argued separately.
+
+**What the scaling does to the delay ceiling.** The stiffness the leader feels is the impedance scale times the wall, $K = s_fs_x\,k_w$, and that is the $K$ in the delay ceiling of Step 2. Power-preserving scaling on the running pair gives $K = 0.1 \times 0.1 \times 400 = 4\,\mathrm{N/m}$, under the $7.96\,\mathrm{N/m}$ that the $100\,\mathrm{ms}$ round trip leaves, with a factor of $1.99$ to spare. The useful amplification, $s_f = 10$, gives $K = 10 \times 0.1 \times 400 = 400\,\mathrm{N/m}$, $50.3$ times over it. So on this pair the honest scaling is the stable one and the faint one at once, and the amplified one is strong enough to feel and over the ceiling — which is why §4's stabilizers exist, and why Step 4 says a force-amplifying pair needs its own stability argument.
 
 ### 4. Why delay is hard
 
@@ -333,10 +335,12 @@ $$\frac{P_l}{P_f}=\frac{s_f}{s_x}=\frac{10}{0.1}=100$$
 
 $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 
-이 규약에서 일률을 보존하는 스케일링은 $s_f=s_x$를 요구한다. 다른 규약이나 의도적인 power amplification은 관계를 바꾼다. 논문은 기하 스케일, 힘 스케일, 액추에이터 이득, 단위 변환을 구분해야 한다.
+이 규약에서 일률을 보존하는 스케일링은 $s_f=s_x$를 요구한다. 다른 규약이나 의도적인 power amplification은 관계를 바꾼다. 논문은 네 인자를 떼어 놓아야 한다. 저마다 다른 것으로 행세할 수 있기 때문이다. **기하 스케일** $s_x$는 기구학적 선택이다. leader 1밀리미터당 follower가 얼마나 움직이는지를 정하고, 그와 함께 작업 공간과 도구에 닿는 떨림의 양을 정한다. **힘 스케일** $s_f$는 이 페이지가 따지는 손잡이이고, $s_x$와 함께 위의 일률 비와 §2의 임피던스 스케일 $s_fs_x$를 둘 다 정한다. **액추에이터 이득** — 증폭기와 모터 상수, 명령한 뉴턴에서 실제로 나온 뉴턴까지 — 은 선택이 아니라 교정이다. 그래서 이득이 $10\%$ 틀리면 유효 $s_f$가 $1.1$배가 되는데도 논문 어디에도 나타나지 않는다. 그리고 **단위 변환**은 물리적으로 정확히 $1$이어야 하므로, 그 오류 — 밀리미터를 미터로 읽는 것 — 는 소리 없는 $1000$배 스케일이다.
 
 > [!example] 계산 예제 · Worked example
 > 미세 조작 장치가 운동을 $s_x=0.1$로 줄인다고 하자. leader가 50 mm/s로 20 mm 움직이면 follower는 5 mm/s로 2 mm 움직이고, 조직에 $F_f=0.5$ N으로 닿으면 $P_f=0.5\times0.005=2.5$ mW다. 일률 보존 스케일링 $s_f=s_x=0.1$은 $F_l=0.05$ N만 돌려주는데, 쓰기엔 너무 약하다. 대신 $s_f=10$을 고르면 $F_l=5$ N이 반사되고 leader 포트의 일률은 $P_l=5\times0.05=250$ mW, 즉 follower 일률의 $s_f/s_x=100$배가 된다. 그 여분의 일률은 액추에이터에서 나오므로, 힘을 증폭하는 원격조작기는 부품들로부터 수동성을 물려받을 수 없고 안정성을 따로 논증해야 한다.
+
+**스케일링이 지연 천장에 하는 일.** leader가 느끼는 강성은 임피던스 스케일 곱하기 벽, $K = s_fs_x\,k_w$이고, 이것이 2단계의 지연 천장에 들어가는 $K$다. 이 페이지의 쌍에서 일률 보존 스케일링은 $K = 0.1 \times 0.1 \times 400 = 4\,\mathrm{N/m}$를 주는데, $100\,\mathrm{ms}$ 왕복이 남기는 $7.96\,\mathrm{N/m}$ 아래이고 여유가 $1.99$배다. 쓸모 있는 증폭 $s_f = 10$은 $K = 10 \times 0.1 \times 400 = 400\,\mathrm{N/m}$를 주어 천장을 $50.3$배 넘는다. 그러니 이 쌍에서 정직한 스케일링은 안정한 쪽이자 희미한 쪽이고, 증폭한 스케일링은 손이 느낄 만큼 세면서 천장을 넘는다 — §4의 안정화 기법들이 있는 이유이고, 4단계가 힘을 증폭하는 쌍에는 따로 안정성 논증이 필요하다고 말하는 이유다.
 
 ### 4. 지연이 어려운 이유
 

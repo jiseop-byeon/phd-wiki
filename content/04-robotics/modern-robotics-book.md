@@ -103,6 +103,10 @@ so the shoulder carries $-10$ N·m of contact and $-1$ N·m of inertia — a 10%
 
 ### 1. What the book is
 
+*In one sentence:* Modern Robotics is the free textbook this track takes its vocabulary from, and what sets it apart is that it writes every pose and joint motion with screw axes and matrix exponentials instead of a frame per link.
+
+*If you need only one thing from this section:* the product of exponentials — one screw axis per joint, all written in one fixed frame and multiplied in joint order — which puts P2's tip at $(1,1)$ at the catalog pose, and whose order is the whole point: the product and the exponential of the sum put the tip a metre apart (the definition box below).
+
 **What it is**: the standard modern textbook for robot kinematics, dynamics, planning, and
 control — built on the screw-theory/exponential-coordinates formulation (rather than
 classical D-H parameters), which is exactly the formulation modern manipulation research
@@ -136,6 +140,8 @@ Chapter summaries live in [[04-robotics/modern-robotics/index|2. Modern Robotics
 **Why it matters for this wiki**: every VLA paper's action space (end-effector poses,
 joint commands) and every simulator's dynamics assume this material; SE(3) fluency is the
 entry ticket to manipulation research.
+
+On P2 both halves of that sentence have numbers. An end-effector action space carries ch.5's Jacobian inside it: the tip velocity $(0.2,\ 0)$ m/s is $\dot\theta=(0,\ -0.2)$ rad/s at the catalog pose, but with the elbow at $5^\circ$ the same command needs $\dot\theta=(2.286,\ -4.581)$ rad/s, about $26$ times the joint speed, because $\det J=\sin\theta_2$ has fallen from $1$ to $0.087$ ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §4]]; the policy's side is [[03-deep-learning/vla/index|4. VLA §1]]). A simulator is ch.8's forward dynamics: the $(-10,\ 0)$ N·m holding the worked case's press is balanced only by the panel's reaction, so a simulated contact that fails to push back turns it at once into $\ddot\theta=M^{-1}\tau=(-5,\ 5)$ rad/s².
 
 ### Problem set · 과제
 
@@ -252,6 +258,10 @@ $$\tau_{\text{inertial}} = M\ddot\theta = \begin{pmatrix}3&1\\1&1\end{pmatrix}\b
 
 ### 1. 무엇인가
 
+*한 문장으로:* Modern Robotics는 이 트랙이 어휘를 가져오는 무료 교과서이고, 이 책을 다른 책과 가르는 점은 모든 자세와 관절 운동을 링크마다 좌표계를 두는 대신 스크류 축과 행렬 지수로 쓴다는 것이다.
+
+*이 절에서 하나만 가져간다면:* 지수곱이다. 관절마다 스크류 축 하나를 두고, 모두 고정 좌표계 하나에서 적어, 관절 순서대로 곱한다. 카탈로그 자세에서 P2의 말단을 $(1,1)$에 두며, 순서가 요점 전부다. 곱과 합의 지수는 말단을 1 m 떨어진 곳에 둔다(아래 정의 상자).
+
 **무엇인가**: 로봇 기구학·동역학·플래닝·제어의 현대 표준 교과서 — 고전 D-H 파라미터 대신
 스크류 이론/지수 좌표 정식화를 쓰는데, 이것이 정확히 현대 매니퓰레이션 연구가 쓰는
 표기다. 저자들이 공식 사이트에서 **책 전체 PDF를 무료로** 제공하고, 코스 위키에 강의
@@ -281,6 +291,8 @@ $$\tau_{\text{inertial}} = M\ddot\theta = \begin{pmatrix}3&1\\1&1\end{pmatrix}\b
 **이 위키에서 중요한 이유**: 모든 VLA 논문의 행동 공간(말단 자세, 관절 명령)과 모든
 시뮬레이터의 동역학이 이 내용을 전제한다; SE(3)에 능숙해지는 것이 매니퓰레이션 연구의
 입장권이다.
+
+P2에서는 그 문장의 두 반쪽에 모두 숫자가 붙는다. 말단 좌표의 행동 공간은 그 안에 5장의 야코비안을 싣고 있다. 말단 속도 $(0.2,\ 0)$ m/s는 카탈로그 자세에서 $\dot\theta=(0,\ -0.2)$ rad/s이지만, 팔꿈치를 $5^\circ$로 두면 같은 명령에 $\dot\theta=(2.286,\ -4.581)$ rad/s, 관절 속도로 약 $26$배가 든다. $\det J=\sin\theta_2$가 $1$에서 $0.087$로 떨어졌기 때문이다([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]]. 정책 쪽은 [[03-deep-learning/vla/index|4. VLA §1]]). 시뮬레이터는 8장의 순동역학이다. 계산 예제의 누르기를 버티는 $(-10,\ 0)$ N·m는 패널의 반력으로만 균형을 이루므로, 시뮬레이션의 접촉이 되밀어 주지 못하면 그 토크는 곧바로 $\ddot\theta=M^{-1}\tau=(-5,\ 5)$ rad/s²가 된다.
 
 ### 과제 · Problem set
 

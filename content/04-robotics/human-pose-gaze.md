@@ -506,6 +506,10 @@ Read it as a per-joint Euclidean distance averaged over the $J$ joints, so that 
 
 ### 4. Gaze, and the substitution nobody flags
 
+*In one sentence:* where a person is looking is the best single clue to what they will do next, but beyond a few metres a camera cannot resolve their eyes, so systems quietly measure which way the head points and call it gaze.
+
+*If you need only one thing from this section:* on C20 the iris is $1.2$ px wide at $20$ m and drops under four pixels beyond $6.0$ m, so any "gaze" reported at site range is head pose; check a paper's claim with $n_{\mathrm{px}}=fd/D$ (the paragraph after the table).
+
 Gaze is the strongest single predictor of near-future action in humans, and the hardest to measure. Three regimes:
 
 | Method | Requires | Accuracy | Range |
@@ -1082,6 +1086,10 @@ $$\text{MPJPE} = \frac{1}{J}\sum_{j=1}^{J}\big\lVert \hat{p}_j - p_j \big\rVert_
 > 읽어라.
 
 ### 4. 시선, 그리고 아무도 밝히지 않는 대체
+
+*한 문장으로:* 사람이 어디를 보는지가 다음 행동에 대한 가장 강한 단일 단서이지만, 몇 미터만 넘어가도 카메라가 눈을 분해하지 못하므로, 시스템은 머리가 향한 방향을 조용히 재고 그것을 시선이라 부른다.
+
+*이 절에서 하나만 가져간다면:* C20에서 홍채는 $20$ m에서 $1.2$ px이고 $6.0$ m를 넘으면 네 픽셀 아래로 떨어지므로, 현장 거리에서 보고된 "시선"은 머리 자세다. 논문의 주장은 $n_{\mathrm{px}}=fd/D$로 확인하라(표 다음 문단).
 
 시선은 사람의 근미래 행동에 대한 가장 강한 단일 예측자이자 측정이 가장 어려운 것이다. 세 가지 영역:
 

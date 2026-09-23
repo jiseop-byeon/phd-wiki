@@ -155,6 +155,10 @@ $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_
 
 The cost structure is the practical difference, and it follows from where the two modalities meet. A dual encoder computes $N$ image vectors and $M$ text vectors once and then scores any pair with a dot product, so ranking a query against a million images is a million multiply-adds. A fusion model has to run the joint network once per pair, so the same ranking is a million forward passes. That is why retrieval systems are built on dual encoders and why fusion models appear where the pair set is small — and it explains, without any appeal to quality, which architecture a paper's task forced on it.
 
+**Zero-shot classification, on D3.** A dual encoder classifies by retrieval: write one caption per class, embed each once, and pick the caption closest to the image. Read D3's three captions as three class prompts and image 2's cosines to them are $(0.5,\ 1,\ 0.866025)$, so it is classified correctly, as class 2 — by a margin of only $1-0.866025=0.133975$ over class 3, the $30^\circ$ between their vectors. At $\tau=1/2$ that margin becomes a probability of $0.468861$, less than one half, and the decision is still right, because dividing by $\tau$ never moves the arg max. What this family outputs is a ranking, and its probabilities depend on a knob the ranking ignores (§2's temperature box). [[01-canonical-papers/notes/3-vlm/clip|CLIP]] is this procedure at scale: trained on $400$ million image–text pairs from the web, it matched the original supervised ResNet-50 on ImageNet zero-shot, without using any of ImageNet's training labels.
+
+**What the other two families buy.** A fusion model reads the image and the text together, text tokens attending to image patches through cross-attention ([[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §1]]), so it can score what a single angle cannot, such as which object a word in the caption refers to. A generative model writes the caption instead of scoring it, one sequential decoder pass per token, so a $20$-token answer costs $20$ passes after the image is read. Its fluency shows that it is conditioned on the image; whether it is grounded is §3's separate question, and §6 re-sorts all three families by where their modalities meet.
+
 ### 2. Contrastive learning, by hand
 
 Image 1 dots are $v_1^\top t_j=(1,1/2,0)$. Dividing by $\tau=1/2$ gives logits $(2,1,0)$. Its correct-pair probability is
@@ -208,7 +212,11 @@ Those two words carry the whole section, so both get definitions rather than a c
 
 ### 4. From VLM to robot use
 
-VLM representations can supply semantic labels, language-conditioned goals, reward signals, or a backbone for a VLA. None of these alone supplies control frequency, action feasibility, or recovery. Read [[01-canonical-papers/notes/3-vlm/clip|CLIP]] first, then fusion/generative entries and the [[03-deep-learning/vla/index|VLA course]]. How such a backbone is adapted — full fine-tuning or LoRA, and what each costs in memory and compute — is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]].
+VLM representations can supply semantic labels, language-conditioned goals, reward signals, or a backbone for a VLA. None of these alone supplies control frequency, action feasibility, or recovery.
+
+Each use leans on a different part of the model, and D3's numbers show where each can mislead. As a **semantic label** — which object does "the valve" mean — the VLM answers with a ranking, which is what a dual encoder is good at. As a **goal or success detector** it has to turn a similarity into a yes or no, and that needs a threshold set on the robot's own scenes: image 2 matches caption 2 exactly, cosine $1$, yet at $\tau=1/2$ its probability against the three captions is $0.468861$, so a detector that fires above one half calls a perfect match a failure, while at $\tau=1/4$ the same embeddings give $0.581234$ and the verdict flips with nothing in the scene changed. As a **reward** the cosine is flattest where precision matters: turning an embedding from $60^\circ$ off its caption to $0^\circ$ gains $0.5$, and the last $10^\circ$ of that turn gain only $0.015192$, three percent of it. As a **backbone** it supplies features but not a rate: OpenVLA, a 7B VLM turned into a policy, is capped near $6\,\mathrm{Hz}$ by decoding its action tokens one at a time, and π0 spends $32\,\mathrm{ms}$ on one pass over its observation before its action expert starts ([[03-deep-learning/vla/index|4. VLA §6]]).
+
+Read [[01-canonical-papers/notes/3-vlm/clip|CLIP]] first, then fusion/generative entries and the [[03-deep-learning/vla/index|VLA course]]. How such a backbone is adapted — full fine-tuning or LoRA, and what each costs in memory and compute — is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]].
 
 ### 5. The lab: what the temperature does, and to whom
 
@@ -504,6 +512,10 @@ $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_
 
 실무적 차이는 비용 구조이고, 그것은 두 양상이 어디서 만나는지에서 따라 나온다. dual encoder는 이미지 벡터 $N$개와 텍스트 벡터 $M$개를 한 번 계산해 두고 어떤 쌍이든 내적 하나로 점수를 매기므로, 질의 하나를 백만 장에 대해 순위 매기는 일이 곱셈덧셈 백만 번이다. fusion model은 쌍마다 결합 신경망을 한 번씩 돌려야 하므로 같은 순위 매기기가 순전파 백만 번이다. 검색 시스템이 dual encoder 위에 세워지는 이유이고, fusion model이 쌍 집합이 작은 곳에 나타나는 이유다. 품질을 들먹이지 않고도, 논문의 과제가 어떤 구조를 강요했는지 설명해 준다.
 
+**D3에서 본 zero-shot 분류.** dual encoder는 검색으로 분류한다. 클래스마다 캡션을 하나씩 쓰고, 각각 한 번 임베딩한 뒤, 이미지에 가장 가까운 캡션을 고른다. D3의 캡션 셋을 클래스 프롬프트 셋으로 읽으면 이미지 2의 코사인은 $(0.5,\ 1,\ 0.866025)$이므로 클래스 2로 맞게 분류된다. 그러나 클래스 3과의 차이는 $1-0.866025=0.133975$, 두 벡터 사이의 $30^\circ$뿐이다. $\tau=1/2$에서 그 차이는 확률 $0.468861$이 되어 절반에 못 미치는데도 결정은 여전히 맞다. $\tau$로 나누는 것은 arg max를 결코 옮기지 않기 때문이다. 이 계열이 내놓는 것은 순위이고, 그 확률은 순위가 무시하는 손잡이에 달려 있다(§2의 temperature 상자). [[01-canonical-papers/notes/3-vlm/clip|CLIP]]은 이 절차를 규모로 키운 것이다. 웹의 이미지–텍스트 쌍 $4$억 개로 학습해, ImageNet의 학습 label을 하나도 쓰지 않은 zero-shot으로 원래의 지도학습 ResNet-50과 맞먹었다.
+
+**나머지 두 계열이 사는 것.** fusion model은 이미지와 텍스트를 함께 읽는다. 텍스트 토큰이 cross-attention으로 이미지 패치를 참조하므로([[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §1]]), 캡션의 어느 단어가 어느 물체를 가리키는지처럼 각도 하나로는 매길 수 없는 것을 채점할 수 있다. generative model은 캡션을 채점하는 대신 쓴다. 토큰마다 순차 디코더 패스가 하나이므로, 이미지를 읽은 뒤 $20$토큰짜리 답에 패스 $20$번이 든다. 유창함은 이미지에 conditioned되어 있다는 증거이고, grounded인지는 §3의 별개 질문이다. §6은 세 계열을 모달리티가 만나는 곳에 따라 다시 정렬한다.
+
 ### 2. 대조학습 계산
 
 이미지 1의 내적은 $v_1^\top t_j=(1,1/2,0)$이고 $\tau=1/2$로 나누면 logit $(2,1,0)$이다. 정답 확률은 $0.665$, loss는 $0.408$이다. 전체 목적함수는 image→text와 text→image cross-entropy를 평균한다. batch의 다른 항목은 sampled negative라서 false negative와 batch 구성이 학습을 바꾼다.
@@ -553,7 +565,11 @@ $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_
 
 ### 4. 로봇으로의 연결
 
-VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 제어 주기·행동 가능성·recovery를 자동으로 주지 않는다. 그런 backbone을 적응시키는 법 — 전체 파인튜닝이나 LoRA, 그리고 각각이 메모리와 연산에서 치르는 비용 — 은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]에 있다.
+VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 제어 주기·행동 가능성·recovery를 자동으로 주지 않는다.
+
+쓰임마다 모델의 다른 부분에 기대고, D3의 숫자가 저마다 어디서 오도할 수 있는지 보여 준다. **의미 label** — "밸브"가 어느 물체인가 — 로 쓰면 VLM은 순위로 답하고, 그것이 dual encoder가 잘하는 일이다. **목표나 성공 판정기**로 쓰면 유사도를 예·아니오로 바꿔야 하고, 그러려면 로봇 자신의 장면에서 정한 임계값이 필요하다. 이미지 2는 캡션 2와 정확히 맞아 코사인이 $1$인데도 $\tau=1/2$에서 캡션 셋에 대한 확률은 $0.468861$이다. 절반을 넘을 때 켜지는 판정기는 완벽한 일치를 실패라 부르고, $\tau=1/4$에서는 같은 임베딩이 $0.581234$를 주어 장면이 하나도 바뀌지 않았는데 판정이 뒤집힌다. **reward**로 쓰면 코사인은 정밀함이 필요한 곳에서 가장 평평하다. 임베딩을 캡션에서 $60^\circ$ 떨어진 곳에서 $0^\circ$로 돌리면 $0.5$를 얻지만, 그 마지막 $10^\circ$가 주는 것은 $0.015192$, 그중 3퍼센트뿐이다. **backbone**으로 쓰면 특징은 주지만 주기는 주지 않는다. VLM을 정책으로 바꾼 7B의 OpenVLA는 행동 토큰을 하나씩 디코드하느라 $6\,\mathrm{Hz}$ 근처에서 막히고, π0는 action expert가 시작하기 전에 관측을 한 번 지나는 데 $32\,\mathrm{ms}$를 쓴다([[03-deep-learning/vla/index|4. VLA §6]]).
+
+[[01-canonical-papers/notes/3-vlm/clip|CLIP]]을 먼저 읽고, fusion·generative 항목과 [[03-deep-learning/vla/index|VLA 교과]]로 간다. 그런 backbone을 적응시키는 법 — 전체 파인튜닝이나 LoRA, 그리고 각각이 메모리와 연산에서 치르는 비용 — 은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]에 있다.
 
 ### 5. 실습: temperature가 하는 일과, 그 대상
 

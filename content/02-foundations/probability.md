@@ -419,6 +419,10 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 
 ### 6. Detection, hypothesis tests, and whitening
 
+*In one sentence:* a robot often has to answer yes or no from noisy numbers — is it touching something, is one method really better, does this reading belong to the object it tracks — and every such answer trades false alarms against misses through the line it draws.
+
+*If you need only one thing from this section:* each of its three tools compares one number with one threshold, and moving the threshold only trades one error for the other — on the wrist force sensor of §6.1, cutting false alarms from $0.106$ to $0.01$ cost detections from $0.894$ down to $0.569$, and only a better sensor lifts both; it is the first worked example below.
+
 #### 6.1 Detection — deciding from one reading
 
 - **Detection is a decision, not an estimate.** Often a robot must choose between two explanations of a reading $y$: $H_0$ (nothing there, e.g. no contact) or $H_1$ (something there, e.g. contact). There are two ways to be wrong. A **false alarm** says $H_1$ when $H_0$ is true (probability $P_{FA}$). A **miss** says $H_0$ when $H_1$ is true (probability $1 - P_D$, where $P_D$ is the detection probability). Statistics names the same two errors **type I** (false alarm, rate $P_{FA}$) and **type II** (miss, rate $1 - P_D$), and calls $P_D$ the **power** of the test. The rules below all compare one statistic, the likelihood ratio, against a threshold:
@@ -522,6 +526,10 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 > The positive covariance says the two coordinates tend to err together. A residual that goes against that pattern is far more surprising. This is the "same displacement, different surprise" point of §3, in numbers.
 
 ### 7. Markov chains and hidden Markov models
+
+*In one sentence:* many processes a robot meets forget their past once you know their present — a machine that is working, idle or broken, a wear state heard only through vibration — and that one assumption lets you predict where they settle, recover what you cannot see, and draw samples from distributions you cannot write down.
+
+*If you need only one thing from this section:* the stationary distribution, the solution of $\pi P = \pi$ — for the working, idle or broken machine of §7.1 it is $(0.643,\ 0.214,\ 0.143)$, broken one hour in seven, and from the worst start the chain is within $0.01$ of it after $5$ hours; §7.1's worked example solves it by hand.
 
 #### 7.1 Markov chains
 
@@ -1118,6 +1126,10 @@ flowchart LR
 
 ### 6. 검출, 가설 검정, 백색화
 
+*한 문장으로:* 로봇은 잡음 섞인 숫자로 예·아니오를 답해야 할 때가 많고 — 무언가에 닿았는가, 한 방법이 정말 더 나은가, 이 측정값이 추적 중인 물체의 것인가 — 그런 답은 모두 어디에 선을 긋느냐로 오경보와 놓침을 맞바꾼다.
+
+*이 절에서 하나만 가져간다면:* 이 절의 세 도구는 모두 숫자 하나를 문턱값 하나와 비교하고, 문턱값을 옮기면 한 오류를 다른 오류와 바꿀 뿐이라는 것 — §6.1의 손목 힘 센서에서 오경보를 $0.106$에서 $0.01$로 줄이자 검출이 $0.894$에서 $0.569$로 떨어졌고, 둘을 함께 올리는 것은 더 좋은 센서뿐이다. 아래 첫 계산 예제다.
+
 #### 6.1 검출 — 측정값 하나로 결정하기
 
 - **검출은 추정이 아니라 결정이다.** 로봇은 측정값 $y$에 대한 두 설명 중 하나를 골라야 할 때가 많다: $H_0$(아무것도 없음, 예: 접촉 없음) 또는 $H_1$(무언가 있음, 예: 접촉). 틀리는 방식은 두 가지다. **오경보는** $H_0$가 참인데 $H_1$이라고 말하는 것이다(확률 $P_{FA}$). **놓침은** $H_1$이 참인데 $H_0$라고 말하는 것이다(확률 $1 - P_D$, $P_D$는 검출 확률). 통계학은 같은 두 오류를 **제1종 오류**(오경보, 비율 $P_{FA}$)와 **제2종 오류**(놓침, 비율 $1 - P_D$)라 부르고, $P_D$를 검정의 **검정력**이라 부른다. 아래 규칙들은 모두 같은 통계량인 우도비를 문턱값과 비교한다:
@@ -1222,6 +1234,10 @@ flowchart LR
 > 양의 공분산은 두 좌표가 함께 틀리는 경향이 있다는 뜻이다. 그 패턴을 거스르는 잔차는 훨씬 더 뜻밖이다. §3의 "같은 변위, 다른 놀라움"을 숫자로 본 것이다.
 
 ### 7. 마르코프 체인과 은닉 마르코프 모델
+
+*한 문장으로:* 로봇이 만나는 과정 가운데 많은 것은 현재를 알면 과거를 잊는다 — 작동·대기·고장 중 하나인 기계, 진동으로만 들리는 마모 상태 — 그리고 이 가정 하나로 그 과정이 어디에 자리 잡는지 예측하고, 보이지 않는 것을 복원하고, 식으로 적을 수 없는 분포에서 표본을 뽑을 수 있다.
+
+*이 절에서 하나만 가져간다면:* 정상 분포, 곧 $\pi P = \pi$의 해 — §7.1의 작동·대기·고장 기계에서는 $(0.643,\ 0.214,\ 0.143)$이어서 일곱 시간에 한 시간꼴로 고장 나 있고, 최악의 출발점에서도 $5$시간 뒤면 그것과의 거리가 $0.01$ 안으로 들어온다. §7.1의 계산 예제가 손으로 푼다.
 
 #### 7.1 마르코프 체인
 

@@ -286,6 +286,8 @@ There is a mechanical reason as well as a design one. By default a node runs on 
 
 So the rule is not a style preference: **if the work is long, or cancellable, or you want progress, it is an action.**
 
+*Quickly* is measured against the fastest callback that shares the executor. On P6 that is the controller's $5\,\mathrm{ms}$ tick, and the Worked case above prices a $1\,\mathrm{ms}$ and a $20\,\mathrm{ms}$ handler against it. Two further costs are easy to miss. **Requests queue.** A single-threaded executor answers one request at a time, so of $k$ calls that arrive together the last is answered after $kD$, where $D$ is the handler's length: three clients calling a $20\,\mathrm{ms}$ service at once get the last reply after $3\times20=60\,\mathrm{ms}$, $86\%$ of P6's $70\,\mathrm{ms}$ budget, though no single handler was slow. **A service cannot be stopped.** The protocol has no cancel: a client that stops waiting only discards the reply when it comes, while the handler runs its full length and holds the server's executor throughout. Preemption is what an action adds (§4), and it is why the rule above says *cancellable*.
+
 ### 4. Actions: long-running goals
 
 *Pattern 2 of 4 — actions, §4–§5.*
@@ -426,6 +428,8 @@ auto handle_accepted = [this](const std::shared_ptr<GoalHandleFibonacci> goal_ha
 ```
 
 That comment is section 3, restated by the library's own authors. Python's simple `ActionServer` hides the same hazard — a long `execute_callback` on a single-threaded executor blocks everything else in the node — which is why the `rclpy` examples pair a full action server with a `MultiThreadedExecutor` and a `ReentrantCallbackGroup`.
+
+On P6 the hazard has a size. Send the server above a goal with `order` $10$: `range(1, 10)` runs $9$ steps, so the client sees $9$ feedback messages a second apart and then a result after about $9\,\mathrm{s}$, the $11$ numbers $0, 1, 1, \ldots, 55$ — by the box's count in §4, $2+9+2=13$ messages plus status. Put P6's control timer in the same node under `rclpy.spin`, whose executor is single-threaded, and each `time.sleep(1)` holds the only thread for $1/0.005=200$ ticks, $1800$ over the goal: nine seconds of a cart on one held command. Give the timer and the action server separate callback groups on a `MultiThreadedExecutor` and the ticks run on another thread while the execute callback sleeps. The interface is unchanged; only where the work runs has moved.
 
 ### 6. Parameters: configuring a node
 
@@ -589,7 +593,7 @@ on a goal that is by then about four seconds old. So the lifecycle takes the sta
 
 #### 8.3 Where you will meet it: Nav2
 
-This is not academic: **Nav2 is built on it**, and you will meet it in [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]]. Its `map_server`, `planner_server` and `controller_server` are lifecycle-enabled, and `nav2_lifecycle_manager` drives them through `configure` and `activate` in ordered groups on startup, and in reverse on shutdown, via its `<manager_name>/manage_nodes` service (e.g. `lifecycle_manager_navigation/manage_nodes`). It also holds a **bond** (a periodic heartbeat exchanged between the manager and a server) with each server, so a node that crashes after activation is noticed and the stack is brought down rather than left half-running; `bond_timeout` (default 4.0 s) is how long it waits. When Nav2 "does nothing" on startup, ask which state its servers are in — `ros2 lifecycle get` answers in one line.
+This is not academic: **Nav2 is built on it**, and you will meet it in [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]]. Its `map_server`, `planner_server` and `controller_server` are lifecycle-enabled, and `nav2_lifecycle_manager` drives them through `configure` and `activate` in ordered groups on startup, and in reverse on shutdown, via its `<manager_name>/manage_nodes` service (e.g. `lifecycle_manager_navigation/manage_nodes`). It also holds a **bond** (a periodic heartbeat exchanged between the manager and a server) with each server, so a node that crashes after activation is noticed and the manager sets out to bring the stack down rather than leave it half-running — though, as [[04-robotics/ros2/navigation-nav2|25.9 §8]] shows from the source, that teardown can stall at the crashed server, so it is not a way to stop the robot; `bond_timeout` (default 4.0 s) is how long it waits. When Nav2 "does nothing" on startup, ask which state its servers are in — `ros2 lifecycle get` answers in one line.
 
 ### 9. Exercise: an action server that reports feedback
 
@@ -687,7 +691,7 @@ Custom `.srv` and `.action` packages appear here only far enough to build one; t
 > 1. Action. A service blocks the caller and cannot be preempted, and on a single-threaded executor a 30-second service callback stops every other callback in that node — timers, subscriptions, other services. Official guidance is that services return quickly and long work belongs in an action, which also gives you feedback and a cancellation path.
 > 2. No. Read-only parameters can only be set at startup, and every C++ node declares read-only `qos_overrides./parameter_events.*` parameters, so a dump-then-load round trip on an rclcpp node prints those failures. To apply them, pass the same file at startup with `--ros-args --params-file`, which does update read-only parameters.
 > 3. A synchronous service call from inside a callback. The executor cannot preempt the running callback to deliver the response, so the call waits forever — no exception, no warning, no failure. Confirm by checking that the node produced output before the first trigger; fix with `call_async`, or a separate callback group plus a multi-threaded executor.
-> 4. Because bringup order matters and partial startup is dangerous. The lifecycle manager transitions the servers through `configure` and `activate` in ordered groups (reverse on shutdown), so nothing publishes or accepts goals before its resources exist, then holds a bond with each so a crash after activation brings the stack down deterministically. `ros2 lifecycle get <node>` is the one-line answer to "why is Nav2 doing nothing".
+> 4. Because bringup order matters and partial startup is dangerous. The lifecycle manager transitions the servers through `configure` and `activate` in ordered groups (reverse on shutdown), so nothing publishes or accepts goals before its resources exist, then holds a bond with each so a crash after activation is detected and the manager starts bringing the stack down — a teardown that can stall at the crashed server ([[04-robotics/ros2/navigation-nav2|25.9 §8]]), so a safety stop must not depend on it. `ros2 lifecycle get <node>` is the one-line answer to "why is Nav2 doing nothing".
 > 5. Four: $\lfloor 20/5\rfloor=4$ firings cannot happen while the executor is inside the handler, because a single-threaded executor runs one callback to completion at a time. The motor holds its last command for $20\,\mathrm{ms}$ instead of $5$, and $20\,\mathrm{ms}$ is $28.6\%$ of the $70\,\mathrm{ms}$ budget — one request costing what a permanent drop to a $50\,\mathrm{Hz}$ loop would cost. If the handler instead makes a synchronous service call from inside that timer callback, the duration is not $20\,\mathrm{ms}$ but unbounded, which is section 10.
 
 ### Problem set · 과제
@@ -989,6 +993,8 @@ ros2 service call /add_two_ints example_interfaces/srv/AddTwoInts "{a: 2, b: 3}"
 
 그러니 이 규칙은 취향이 아니다. **오래 걸리거나, 취소 가능해야 하거나, 진행 상황이 필요하면 액션이다.**
 
+*빨리*는 같은 executor를 쓰는 가장 빠른 콜백에 대어 잰다. P6에서 그것은 제어기의 $5\,\mathrm{ms}$ 틱이고, 위의 계산 절이 $1\,\mathrm{ms}$와 $20\,\mathrm{ms}$ 핸들러의 값을 거기에 대어 매긴다. 놓치기 쉬운 비용이 둘 더 있다. **요청은 줄을 선다.** 단일 스레드 executor는 요청을 한 번에 하나씩 처리하므로, 한꺼번에 도착한 호출 $k$개 가운데 마지막 것은 핸들러 길이가 $D$일 때 $kD$ 뒤에야 답을 받는다. 클라이언트 셋이 $20\,\mathrm{ms}$짜리 서비스를 동시에 부르면 마지막 응답은 $3\times20=60\,\mathrm{ms}$ 뒤에 오고, 이는 P6 예산 $70\,\mathrm{ms}$의 $86\%$다. 느린 핸들러는 하나도 없었는데도 그렇다. **서비스는 멈출 수 없다.** 프로토콜에 취소가 없다. 기다리다 포기한 클라이언트는 응답이 왔을 때 버릴 뿐이고, 핸들러는 끝까지 돌며 그동안 내내 서버의 executor를 붙잡는다. 선점은 액션이 더해 주는 것이고(4절), 위의 규칙이 *취소 가능해야 하면*이라고 말하는 이유다.
+
 ### 4. 액션: 장시간 목표
 
 *네 패턴 중 둘째 — 액션, 4–5절.*
@@ -1129,6 +1135,8 @@ auto handle_accepted = [this](const std::shared_ptr<GoalHandleFibonacci> goal_ha
 ```
 
 저 주석은 라이브러리를 쓴 사람들이 3절을 다시 말한 것이다. Python의 간단한 `ActionServer` 형태는 같은 위험을 감춘다. 단일 스레드 executor에서 긴 `execute_callback`은 그 노드의 나머지 전부를 막는다. `rclpy` 예제가 완전한 액션 서버에 `MultiThreadedExecutor`와 `ReentrantCallbackGroup`을 짝지어 두는 이유다.
+
+P6에서는 그 위험에 크기가 있다. 위 서버에 `order` $10$인 목표를 보내면 `range(1, 10)`이 $9$단계를 돌므로, 클라이언트는 1초 간격의 피드백 $9$개를 받고 약 $9\,\mathrm{s}$ 뒤에 결과, 곧 $0, 1, 1, \ldots, 55$의 수 $11$개를 받는다. 4절 상자의 셈으로는 상태 갱신 말고도 $2+9+2=13$개의 메시지다. P6의 제어 타이머를 같은 노드에 두고 단일 스레드 executor인 `rclpy.spin`으로 돌리면, `time.sleep(1)` 한 번마다 유일한 스레드가 $1/0.005=200$틱 동안 묶이고 목표 하나에 $1800$틱이 사라진다. 카트가 명령 하나를 쥔 채 9초를 보내는 것이다. 타이머와 액션 서버에 서로 다른 콜백 그룹을 주고 `MultiThreadedExecutor`에서 돌리면, execute 콜백이 자는 동안 틱은 다른 스레드에서 돈다. 인터페이스는 그대로이고, 일이 도는 자리만 옮겨졌다.
 
 ### 6. 파라미터: 노드 설정하기
 
@@ -1292,7 +1300,7 @@ $$\frac{4.0\,\mathrm{s}}{T_{\text{ctrl}}}=\frac{4.0}{0.005}=800\ \text{틱},\qqu
 
 #### 8.3 만나게 될 곳: Nav2
 
-학술적인 이야기가 아니다. **Nav2가 이 위에 세워져 있고**, [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]에서 만나게 된다. `map_server`, `planner_server`, `controller_server`가 라이프사이클 노드이고, `nav2_lifecycle_manager`가 자기 `<manager_name>/manage_nodes` 서비스(예: `lifecycle_manager_navigation/manage_nodes`)를 통해 기동 시 순서 지어진 그룹으로 `configure`와 `activate`를, 종료 시에는 역순으로 몰아간다. 또 각 서버와 **bond**(관리자와 서버가 주기적으로 주고받는 heartbeat)를 유지해서, 활성화 뒤에 죽은 노드를 알아채고 반쯤 돌아가는 상태로 두는 대신 스택 전체를 내린다. `bond_timeout`(기본 4.0초)이 판단까지 기다리는 시간이다. Nav2가 기동 후 "아무것도 안 할" 때 첫 질문은 서버들이 어느 상태인가이고, `ros2 lifecycle get`이 한 줄로 답한다.
+학술적인 이야기가 아니다. **Nav2가 이 위에 세워져 있고**, [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]에서 만나게 된다. `map_server`, `planner_server`, `controller_server`가 라이프사이클 노드이고, `nav2_lifecycle_manager`가 자기 `<manager_name>/manage_nodes` 서비스(예: `lifecycle_manager_navigation/manage_nodes`)를 통해 기동 시 순서 지어진 그룹으로 `configure`와 `activate`를, 종료 시에는 역순으로 몰아간다. 또 각 서버와 **bond**(관리자와 서버가 주기적으로 주고받는 heartbeat)를 유지해서, 활성화 뒤에 죽은 노드를 알아채고, 반쯤 돌아가는 상태로 두는 대신 스택 전체를 내리려 한다. 다만 [[04-robotics/ros2/navigation-nav2|25.9 §8]]이 소스로 보이듯 그 정리는 죽은 서버에서 멈출 수 있으니, 로봇을 세우는 수단으로 쓰면 안 된다. `bond_timeout`(기본 4.0초)이 판단까지 기다리는 시간이다. Nav2가 기동 후 "아무것도 안 할" 때 첫 질문은 서버들이 어느 상태인가이고, `ros2 lifecycle get`이 한 줄로 답한다.
 
 ### 9. 실습: 피드백을 보고하는 액션 서버
 
@@ -1389,7 +1397,7 @@ ros2 service list | grep add_two_ints   # 서버는 멀쩡히 있다
 > 1. 액션이다. 서비스는 호출자를 막고 선점할 수 없으며, 단일 스레드 executor에서 30초짜리 서비스 콜백은 그 노드의 다른 모든 콜백 — 타이머, 구독, 다른 서비스 — 도 함께 멈춘다. 공식 지침은 서비스가 빨리 반환해야 하고 장시간 작업은 액션의 몫이라는 것이다. 액션은 덤으로 피드백과 취소 경로를 준다.
 > 2. 아니다. 읽기 전용 파라미터는 기동 시에만 설정된다. 모든 C++ 노드가 읽기 전용 `qos_overrides./parameter_events.*`를 선언하므로, rclcpp 노드에서 dump 후 load를 왕복하면 그 실패가 찍힌다. 꼭 적용해야 하면 같은 파일을 기동 시 `--ros-args --params-file`로 넘겨라. 그쪽은 읽기 전용 파라미터도 갱신한다.
 > 3. 콜백 안에서 한 동기 서비스 호출. executor가 실행 중인 콜백을 선점해 응답을 전달할 수 없어서 호출이 영원히 기다린다. 예외도, 경고도, 실패도 없다. 첫 트리거 이전에는 출력이 있었는지 확인해 확증하고, `call_async`나 별도 콜백 그룹 + 다중 스레드 executor로 고친다.
-> 4. 기동 순서가 중요하고 부분 기동이 위험하기 때문이다. 라이프사이클 관리자가 서버들을 순서 지어진 그룹으로 `configure`와 `activate`를 거치게(종료 시에는 역순으로) 하므로, 자원이 생기기 전에는 무엇도 발행하거나 목표를 받지 않는다. 그다음 각 서버와 bond를 유지해서, 활성화 이후의 충돌이 스택을 반쯤 살아 있는 상태로 남기지 않고 결정론적으로 내리게 한다. "Nav2가 왜 아무것도 안 하지"에 대한 한 줄 답은 `ros2 lifecycle get <node>`다.
+> 4. 기동 순서가 중요하고 부분 기동이 위험하기 때문이다. 라이프사이클 관리자가 서버들을 순서 지어진 그룹으로 `configure`와 `activate`를 거치게(종료 시에는 역순으로) 하므로, 자원이 생기기 전에는 무엇도 발행하거나 목표를 받지 않는다. 그다음 각 서버와 bond를 유지해서, 활성화 이후의 충돌을 알아채고 스택을 내리기 시작한다. 그 정리는 죽은 서버에서 멈출 수 있으므로([[04-robotics/ros2/navigation-nav2|25.9 §8]]) 안전 정지를 여기에 기대면 안 된다. "Nav2가 왜 아무것도 안 하지"에 대한 한 줄 답은 `ros2 lifecycle get <node>`다.
 > 5. 넷이다. executor가 핸들러 안에 있는 동안에는 타이머가 돌 수 없으므로 $\lfloor 20/5\rfloor=4$번의 발화를 잃는다. 단일 스레드 executor는 콜백 하나를 끝까지 돌린 다음에야 다음 것을 집기 때문이다. 모터는 $5$가 아니라 $20\,\mathrm{ms}$ 동안 마지막 명령을 붙들고, $20\,\mathrm{ms}$는 $70\,\mathrm{ms}$ 예산의 $28.6\%$다. 요청 하나가 루프를 영구히 $50\,\mathrm{Hz}$로 떨어뜨리는 것과 같은 값을 문 셈이다. 그 핸들러가 타이머 콜백 안에서 동기 서비스 호출을 한다면 소요는 $20\,\mathrm{ms}$가 아니라 무한이고, 그것이 10절이다.
 
 ### 과제 · Problem set

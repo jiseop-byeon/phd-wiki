@@ -203,7 +203,7 @@ The label “autonomous” is incomplete without the task, operating domain, int
   </g>
 </svg>
 
-
+**The rung belongs to a function, not to the robot.** In the P2 cell the tool's motion may sit on any row of the table, while the stop function sits on the last row whatever the tool is doing: from detection to brake command it takes $T_r=0.10$ s with no person in the decision, and the worked case's $S_p=1.24$ m is sized on that. Route the same stop through a supervisor's judgment and $T_r$ becomes a human reaction time; at $\partial S_p/\partial T_r=2.6$ m/s every extra $0.1$ s of it costs $0.26$ m of floor. A single autonomy label on a paper therefore hides at least two rungs, one for the task and one for safety, and each needs its own intervention policy, reset procedure and fallback.
 
 ### 2. Human in, on, and out of the loop
 
@@ -212,6 +212,8 @@ The label “autonomous” is incomplete without the task, operating domain, int
 - **Out of the loop:** no runtime human role within the stated scope.
 
 Intervention, approval, takeover, teleoperation recovery, and physical reset are different. Papers should report which occurred and whether they count as failures.
+
+**Why the counting rule decides the headline number.** Suppose a study of the P2 cell's tool-seating task runs $50$ attempts: $40$ finish untouched, $6$ finish after an operator takes over, and $4$ need a physical reset. Autonomous success is $40/50=80\%$. Counting the rescued runs as successes gives $46/50=92\%$, and the $12$ points between the two figures are human work that the headline absorbs. A paper that reports 92% without its counting rule has hidden that work; §10 fixes the rule before the runs are watched, and §8 keeps the intervention rate beside the success rate.
 
 ### 3. Shared control and authority
 
@@ -225,7 +227,13 @@ The conflict is about which side to pass, not simply how much assistance to appl
 
 ### 3.5 Modelling the human inside the robot's decision
 
+*In one sentence:* instead of fixing by hand how much to trust the person, the robot can guess where the person is heading from what they do, or predict how they will react to its own moves, and either way it is only as good as that model of the person.
+
+*If you need only one thing from this section:* in the first worked example below, with $\beta=1$, one command toward a goal moves a 50/50 belief to $0.881$, and the QMDP robot takes the middle move that serves both goals until the belief passes $0.625$, then commits.
+
 The blend of §3 sets by hand how much the human is trusted; the methods below put a model of the human inside the robot's optimisation instead, either as a hidden goal to infer or as an agent who reacts to the robot.
+
+#### Inferring the goal from the joystick
 
 **Shared autonomy as inference over the goal.** The robot does not know where the user is heading, so it treats the goal as the hidden state of a POMDP ([[04-robotics/planning-decision-making|Planning & Decision-Making §7]]) and each joystick command as an observation of it. Javdani, Srinivasa & Bagnell (RSS 2015) model the user as noisy-rational over a discrete goal set and update a belief $b(g)$ by Bayes' rule:
 
@@ -253,6 +261,8 @@ Each robot action $a$ is scored as if the goal would be revealed right after it.
 >
 > **The reading this gives you.** The ratio $e^{2\beta}$ per command holds only because the two goals' normalisers are equal here; in general they differ and must be computed, so check that a paper's likelihood is normalised per goal.
 
+#### When the human responds to the robot
+
 **Interaction as a game.** When the human reacts to the robot, the robot's action changes what the human will do, so the planner should optimise through that response. A **Stackelberg game** is a two-player game with an order of play: the *leader* commits to an action first, the *follower* observes it and plays a **best response**, an action that maximises the follower's own reward given the leader's, and the leader chooses knowing that response is coming. *Non-example:* a simultaneous game, in which neither player sees the other's action before choosing, so the leader has no response to optimise through. Sadigh, Sastry, Seshia & Dragan (RSS 2016) cast driving next to a human as a Stackelberg game over a short receding horizon, with the robot as leader:
 
 $$u_R^* = \arg\max_{u_R} R_R\big(x, u_R, u_H^*(x, u_R)\big), \qquad u_H^*(x, u_R) = \arg\max_{u_H} R_H(x, u_R, u_H)$$
@@ -278,6 +288,8 @@ So the gradient needs second derivatives of $R_H$ at its optimum, not a derivati
 >
 > The leader pushes a third past its own target, and only the modelled slope −0.5 justifies it. If this human does not yield ($u_H = 1$), the push costs the robot: $R_R = -2.11$ instead of $-2.00$ at $u_R = 1$.
 
+#### Where the human model must stop
+
 **Construction bridge.** A crane slewing a load or an excavator swinging near a signal person or spotter has the same structure with a far less forgiving downside. Yielding under an uncertain belief is the conservative direction; probing is not, because an excavator that inches its bucket toward a spotter to see whether they step back is information gathering whose failure case is contact. Two things must stay outside the learned human model. The separation and stop functions of §6 must hold under every plausible hypothesis about the person, not the belief-weighted average that QMDP optimises. And a stop signal is a command with authority, not one more likelihood term. An "influence the human" objective belongs only inside that constraint set; a shorter cycle bought by workers learning to step aside is a change in their exposure, not a safety result.
 
 **What to check in papers.** Is the goal set closed, or can the true goal lie outside it and produce a confidently wrong belief? Was $\beta$ fitted or assumed, and is the belief calibrated ([[04-robotics/human-intent-prediction|23. Human Intent §4]])? Were the gains measured with real people, or with simulated users drawn from the very model the robot assumes?
@@ -296,11 +308,19 @@ Pair ratings with behavior during recoverable system errors. Can the operator de
 
 Visual, audio, haptic, and physical interfaces can show state, intent, uncertainty, warnings, and required action. “Intuitive,” “transparent,” or “natural” are claims requiring measurements. More alarms can reduce safety through alarm fatigue; more explanations can increase workload.
 
+**An interface is a timing claim first.** A person walking into the P2 cell at $v_h=1.6$ m/s crosses the $1.24$ m of protective distance in $1.24/1.6=0.78$ s, and the stop function acts inside that time without them. A warning meant to change what the person does before the stop is needed has to come earlier, and every second they need to notice and respond costs $1.6$ m of floor in front of the field. **Alarm fatigue is base-rate arithmetic.** If the same warning also fires on every routine approach, say $40$ an hour, while one approach per $8$-hour shift is actually hazardous, then one firing in $320$ matters, and operators learn, correctly on that evidence, to ignore it: the crack detector of [[02-foundations/probability|3. Probability §1]] applied to a person. On a site the channel matters too. A gloved worker loses fine touch but keeps vibration near $250$ Hz, unless the gloves are anti-vibration gloves, which are certified (ISO 10819) by how much they attenuate exactly that band; and powered tools fill the same band ([[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §5]]). So "intuitive" has to be shown as detection rate and response time under the site's own noise and gloves.
+
 ### 6. Safety vocabulary
+
+*In one sentence:* safety paragraphs are written in a small set of defined words and standard numbers, and each says something exact (which machine, which kind of contact, how much floor a moving robot needs around it) that the surrounding prose often blurs.
+
+*If you need only one thing from this section:* the protective separation distance is a sum of six terms, and stopping the robot dead only takes it from $1.24$ m to $0.99$ m, because most of it is the person walking in while the robot reacts and brakes (the worked example at the end of this section, and term by term in the Worked case above).
 
 This section gives you the words a safety paragraph is written in, in four steps. First the
 general vocabulary, then which standard defines what. Then the four collaboration methods, and
 last a worked example of what the separation distance costs.
+
+#### Terms, and the standards that define them
 
 **The general vocabulary.**
 
@@ -347,6 +367,8 @@ The takeaway: each standard is scoped to a kind of machine, so check the machine
 > written for outdoor autonomous earth-moving machines. The real gap is narrower and more
 > interesting — learned perception, and a site layout that changes weekly.
 
+#### Four ways to share the space
+
 **The four collaboration methods.** These are the vocabulary a pHRI paper's safety paragraph is
 written in. Note that the 2025 revision **renamed the first one**. What the 2011 edition and
 TS 15066 call a *safety-rated monitored stop* is **monitored standstill** in ISO 10218-2:2025.
@@ -381,6 +403,8 @@ earth-moving machine** against ISO 17757, an **arm working next to a person** ag
 10218, an **AMR moving material in a plant** against ISO 3691-4. None of them was written for
 an unfenced, weather-exposed site whose layout changes week to week. But say that against the
 named standard, not against "safety" in general.
+
+#### The separation distance in numbers
 
 **What the separation distance costs.** The example below puts numbers on the six-term sum.
 
@@ -433,6 +457,8 @@ Choose measures that cover the proposed benefit and its plausible failure mode. 
 ### 9. Construction and field context
 
 Heavy machinery adds blind spots, momentum, noise, dust, vibration, PPE, remote operation, spotters, mixed work zones, trained operators, workflow constraints, and consequential failure. State who holds responsibility, who can stop the machine, and how communication works during degraded operation.
+
+**Momentum, in the cell's own arithmetic.** A heavy machine's momentum enters the separation distance as stopping time. Differentiating the worked case's sum in $T_s$ gives $\partial S_p/\partial T_s=v_h+\tfrac12v_r=2.1$ m/s at the cell's speeds, because the person keeps walking while the machine brakes and the machine covers half its speed times the stopping time. A boom that needs $1.0$ s longer than P2's $0.30$ s to stop therefore needs $2.1$ m more separation, before its higher tip speed is even counted. A stop relayed by a spotter's radio call adds to $T_r$ instead, at $2.6$ m/s per second of delay. Noise, dust and gloves degrade the warning channels of §5 at the same time, and an autonomous earth-moving machine is read against ISO 17757 rather than ISO 10218 (§6). The worker-facing side of the same problem is [[05-construction-robotics/hrc-worker-centered|6. HRC & Worker-Centered Robotics]].
 
 ### 10. Worked interpretation
 
@@ -704,7 +730,7 @@ $$\frac{\partial S_p}{\partial T_r} = v_h + v_r = 2.6\ \mathrm{m/s}, \qquad \fra
   </g>
 </svg>
 
-
+**단계는 로봇이 아니라 기능에 붙는다.** P2 셀에서 공구의 움직임은 표의 어느 행에든 있을 수 있지만, 정지 기능은 공구가 무엇을 하든 마지막 행에 있다. 감지에서 제동 명령까지 사람의 판단 없이 $T_r=0.10$ s가 걸리고, 대상으로 한 번 끝까지의 $S_p=1.24$ m가 그것을 기준으로 잡혀 있다. 같은 정지를 감독자의 판단을 거치게 하면 $T_r$은 사람의 반응 시간이 되고, $\partial S_p/\partial T_r=2.6$ m/s이므로 추가되는 $0.1$ s마다 바닥이 $0.26$ m씩 더 든다. 그러니 논문의 자율성 라벨 하나는 적어도 두 단계, 곧 작업의 단계와 안전의 단계를 숨기고, 각 단계에는 따로 개입 정책, 리셋 절차, 폴백이 필요하다.
 
 ### 2. Human in / on / out of the loop
 
@@ -714,6 +740,8 @@ $$\frac{\partial S_p}{\partial T_r} = v_h + v_r = 2.6\ \mathrm{m/s}, \qquad \fra
 
 개입, 승인, 인수(takeover), 원격조작 회복, 물리적 리셋은 서로 다르다. 논문은 무엇이
 일어났고 그것이 실패로 집계되는지 보고해야 한다.
+
+**집계 규칙이 대표 숫자를 정하는 이유.** P2 셀의 공구 안착 작업을 연구하며 $50$회를 시도했다고 하자. $40$회는 손대지 않고 끝나고, $6$회는 운용자가 인수한 뒤 끝나며, $4$회는 물리적 리셋이 필요하다. 자율 성공률은 $40/50=80\%$다. 구조된 시행을 성공으로 세면 $46/50=92\%$가 되고, 두 숫자 사이의 $12$%p는 대표 숫자가 흡수한 사람의 일이다. 집계 규칙 없이 92%를 보고한 논문은 그 일을 숨긴 것이다. §10은 시행을 보기 전에 규칙을 고정하고, §8은 성공률 옆에 개입률을 둔다.
 
 ### 3. 공유 제어와 권한
 
@@ -730,7 +758,13 @@ $$\frac{\partial S_p}{\partial T_r} = v_h + v_r = 2.6\ \mathrm{m/s}, \qquad \fra
 
 ### 3.5 로봇의 결정 안에 사람을 모델링하기
 
+*한 문장으로:* 사람을 얼마나 믿을지를 손으로 정하는 대신, 로봇은 사람이 하는 행동에서 어디로 가려는지 추측하거나 자기 움직임에 사람이 어떻게 반응할지 예측할 수 있다. 어느 쪽이든 사람에 대한 그 모델만큼만 좋다.
+
+*이 절에서 하나만 가져간다면:* 아래 첫 계산 예제에서 $\beta=1$이면 목표 쪽 명령 한 번이 반반이던 믿음을 $0.881$로 옮기고, QMDP 로봇은 믿음이 $0.625$를 넘을 때까지 두 목표 모두에 쓸모 있는 가운데 이동을 고르다가 그다음에 한쪽으로 확정한다.
+
 §3의 블렌딩은 사람을 얼마나 믿을지를 손으로 정한다. 아래 방법들은 대신 사람의 모델을 로봇의 최적화 안에 넣는다. 추론할 숨은 목표로 넣거나, 로봇에 반응하는 행위자로 넣는다.
+
+#### 조이스틱에서 목표를 추론하기
 
 **목표에 대한 추론으로서의 공유 자율성.** 로봇은 사용자가 어디로 가려는지 모르므로, 목표를 POMDP([[04-robotics/planning-decision-making|계획과 의사결정 §7]])의 숨은 상태로, 조이스틱 명령 하나하나를 그 관측으로 다룬다. Javdani, Srinivasa & Bagnell(RSS 2015)은 사용자를 이산 목표 집합 위의 noisy-rational 행위자로 모델링하고 믿음(belief) $b(g)$를 베이즈 규칙으로 갱신한다:
 
@@ -758,6 +792,8 @@ $$Q(b, a) \approx \sum_g b(g)\,Q_g(x, a)$$
 >
 > **여기서 얻는 독법.** 명령 하나당 비율 $e^{2\beta}$는 여기서 두 목표의 정규화 상수가 같기 때문에만 성립한다. 일반적으로는 다르므로 계산해야 한다. 논문의 우도가 목표별로 정규화됐는지 확인하라.
 
+#### 사람이 로봇에 반응할 때
+
 **게임으로서의 상호작용.** 사람이 로봇에 반응하면 로봇의 행동이 사람이 할 일을 바꾸므로, 플래너는 그 반응을 거쳐 최적화해야 한다. **Stackelberg 게임**은 두 사람이 순서를 두고 하는 게임이다. *선도자*가 먼저 행동을 확정하고, *추종자*는 그것을 본 뒤 **최적 반응**(best response), 곧 선도자의 행동이 주어졌을 때 자기 보상을 최대로 하는 행동을 두며, 선도자는 그 반응이 올 것을 알고 고른다. *비예:* 동시 게임. 어느 쪽도 고르기 전에 상대의 행동을 보지 못하므로, 선도자가 거쳐서 최적화할 반응이 없다. Sadigh, Sastry, Seshia & Dragan(RSS 2016)은 사람 옆에서의 주행을 짧은 receding horizon 위의 Stackelberg 게임으로 세우고, 로봇을 선도자로 둔다:
 
 $$u_R^* = \arg\max_{u_R} R_R\big(x, u_R, u_H^*(x, u_R)\big), \qquad u_H^*(x, u_R) = \arg\max_{u_H} R_H(x, u_R, u_H)$$
@@ -783,6 +819,8 @@ $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H
 >
 > 선도자는 자기 목표보다 3분의 1 더 밀고 들어가며, 그것을 정당화하는 것은 모델의 기울기 −0.5뿐이다. 이 사람이 양보하지 않으면($u_H = 1$) 그 밀기는 로봇에게 손해다: $u_R = 1$일 때의 $-2.00$ 대신 $R_R = -2.11$.
 
+#### 사람 모델이 멈춰야 할 곳
+
 **건설로 잇기.** 짐을 선회시키는 크레인이나 신호수·유도원 근처에서 선회하는 굴착기는 같은 구조이지만 실패의 대가가 훨씬 가혹하다. 믿음이 불확실할 때 양보하는 것은 보수적인 방향이다. 탐색은 그렇지 않다. 유도원이 물러서는지 보려고 버킷을 조금씩 들이미는 굴착기는, 실패하면 접촉으로 끝나는 정보 수집이기 때문이다. 두 가지는 학습된 사람 모델 밖에 두어야 한다. §6의 이격·정지 기능은 QMDP가 최적화하는 믿음 가중 평균이 아니라, 사람에 대한 그럴듯한 모든 가설 아래에서 성립해야 한다. 그리고 정지 신호는 권한을 가진 명령이지 우도 항 하나가 아니다. "사람에게 영향을 주는" 목적함수는 그 제약 집합 안에만 있어야 한다. 작업자가 비켜서는 법을 익혀서 얻은 짧은 사이클은 그들의 노출이 바뀐 것이지 안전 결과가 아니다.
 
 **논문에서 확인할 것.** 목표 집합이 닫혀 있는가, 아니면 진짜 목표가 그 밖에 있어 확신에 찬 틀린 믿음이 나올 수 있는가? $\beta$는 적합했는가 가정했는가, 그리고 믿음은 보정됐는가([[04-robotics/human-intent-prediction|23. 인간 의도 §4]])? 이득은 실제 사람으로 측정했는가, 아니면 로봇이 가정한 바로 그 모델에서 뽑은 모의 사용자로 측정했는가?
@@ -806,11 +844,19 @@ $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H
 있다. "Intuitive", "transparent", "natural"은 측정을 요구하는 주장이다. 경보가 많으면
 경보 피로로 오히려 안전이 떨어질 수 있고, 설명이 많으면 작업 부하가 늘 수 있다.
 
+**인터페이스는 무엇보다 시간에 관한 주장이다.** $v_h=1.6$ m/s로 P2 셀에 걸어 들어오는 사람은 보호 거리 $1.24$ m를 $1.24/1.6=0.78$ s에 지나고, 정지 기능은 그 사람 없이 그 시간 안에 작동한다. 정지가 필요해지기 전에 사람의 행동을 바꾸려는 경고라면 더 일찍 와야 하고, 사람이 알아채고 반응하는 데 드는 1초마다 감지 영역 앞에 바닥 $1.6$ m가 더 든다. **경보 피로는 기저율 산수다.** 같은 경고가 일상적인 접근마다, 이를테면 시간당 $40$번 울리고 $8$시간 교대에 실제로 위험한 접근이 한 번이라면, 의미 있는 경고는 $320$번에 한 번이고, 운용자는 그 증거대로라면 올바르게 그것을 무시하는 법을 배운다. [[02-foundations/probability|3. 확률 §1]]의 균열 검출기를 사람에게 적용한 것이다. 현장에서는 채널도 중요하다. 장갑 낀 작업자는 섬세한 촉각을 잃지만 $250$ Hz 근처의 진동은 느낀다. 다만 방진 장갑은 바로 그 대역을 얼마나 감쇠하는가로 인증되므로(ISO 10819) 예외이고, 동력 공구도 같은 대역을 채운다([[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §5]]). 그러니 "직관적"이라는 주장은 현장의 소음과 장갑 아래에서 잰 검출률과 반응 시간으로 보여야 한다.
+
 ### 6. 안전 어휘
+
+*한 문장으로:* 안전 문단은 정의가 정해진 몇 안 되는 용어와 표준 번호로 쓰이고, 그 하나하나가 어느 기계인지, 어떤 접촉인지, 움직이는 로봇 둘레에 바닥이 얼마나 필요한지를 정확히 말한다. 주변 문장은 그것을 흐리기 일쑤다.
+
+*이 절에서 하나만 가져간다면:* 보호 이격 거리는 여섯 항의 합이고, 로봇을 아예 세워도 $1.24$ m가 $0.99$ m로 줄 뿐이다. 대부분이 로봇이 반응하고 제동하는 동안 사람이 걸어 들어오는 거리이기 때문이다(이 절 끝의 계산 예제, 그리고 위의 대상으로 한 번 끝까지에서 항별로).
 
 이 절은 안전 문단이 쓰이는 어휘를 네 단계로 준다. 먼저 일반 어휘, 다음으로 어느 표준이 무엇을
 정의하는지 본다. 이어서 네 가지 협동 방법을 보고, 마지막으로 이격 거리가 무엇을 앗아가는지
 계산 예제로 확인한다.
+
+#### 용어, 그리고 그것을 정의하는 표준
 
 **일반 어휘.**
 
@@ -856,6 +902,8 @@ $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H
 > 옥외 자율 토공 기계를 위해 쓰였다. 진짜 빈틈은 더 좁고 더 흥미롭다 — 학습된 인지, 그리고
 > 주 단위로 바뀌는 현장 배치.
 
+#### 공간을 나누는 네 가지 방법
+
 **네 가지 협동 방법.** 이것이 pHRI 논문의 안전 문단이 쓰이는 어휘다. 2025년 개정이
 **첫 번째의 이름을 바꿨다는 점**을 유의하라. 2011년판과 TS 15066이 *safety-rated monitored
 stop*이라 부르는 것이 ISO 10218-2:2025에서는 **monitored standstill**이다. 협동 응용 외에도
@@ -886,6 +934,8 @@ SSM을 가능하게 한다고 주장하는 모든 학습 기반 인지 논문은
 일하는 **팔**은 ISO 10218, 공장에서 자재를 나르는 **AMR**은 ISO 3691-4. 그중 어느 것도 울타리
 없이 날씨에 노출되고 배치가 주 단위로 바뀌는 현장을 위해 쓰이지 않았다. 다만 그것을 "안전"
 일반이 아니라 이름을 댄 표준에 대고 말하라.
+
+#### 숫자로 본 이격 거리
 
 **이격 거리가 무엇을 앗아가는가.** 아래 예제는 여섯 항의 합에 숫자를 넣어 본다.
 
@@ -949,6 +999,8 @@ near miss, 생산성, 사용성, 학습·피로 효과를 재라. 낮은 개입�
 중장비는 사각지대, 관성, 소음, 먼지, 진동, PPE, 원격 운용, 신호수(spotter), 혼재 작업
 구역, 숙련 운용자, 공정 제약, 결과가 무거운 실패를 더한다. 책임이 누구에게 있고, 누가
 기계를 멈출 수 있고, 성능 저하 운용 중 소통이 어떻게 되는지를 명시하라.
+
+**관성, 이 셀의 산수로.** 중장비의 관성은 정지 시간으로 이격 거리에 들어온다. 대상으로 한 번 끝까지의 합을 $T_s$로 미분하면 이 셀의 속도에서 $\partial S_p/\partial T_s=v_h+\tfrac12v_r=2.1$ m/s다. 기계가 제동하는 동안 사람은 계속 걷고, 기계는 속도의 절반에 정지 시간을 곱한 만큼 움직이기 때문이다. 그러니 멈추는 데 P2의 $0.30$ s보다 $1.0$ s 더 걸리는 붐은, 더 빠른 말단 속도를 따지기도 전에 이격 거리가 $2.1$ m 더 필요하다. 신호수의 무전으로 전달되는 정지는 대신 $T_r$에 더해지고, 지연 1초마다 $2.6$ m다. 소음, 먼지, 장갑은 동시에 §5의 경고 채널을 깎아 먹고, 자율 토공 기계는 ISO 10218이 아니라 ISO 17757로 읽는다(§6). 같은 문제의 작업자 쪽 면은 [[05-construction-robotics/hrc-worker-centered|6. HRC와 작업자 중심 로보틱스]]가 다룬다.
 
 ### 10. 해석 예제
 

@@ -299,13 +299,21 @@ Two conventions worth knowing because they shape the labels:
 
 ### 3. Why head motion is an attention proxy — and where it fails
 
+*In one sentence:* where a worker's head points is a fair guess at what they are attending to when they turn to look at something new, but not during quick glances, not while walking, and less so for experts; and a fast head turn also smears the very frames a system needs.
+
+*If you need only one thing from this section:* at E1's $1/60$ s exposure a $300$ °/s look-around smears the image by $5.0^\circ$, which is $107$ px at the frame-average $21.3$ px/deg, so the moments a system exists for are exactly the blurred ones (the worked example below).
+
 Large gaze shifts are executed by a coordinated eye-then-head movement, so head direction tracks the target of attention for substantial reorientations. This is why egocentric camera pose carries intent information even without an eye tracker.
+
+#### Three places the proxy fails
 
 It fails in three predictable places:
 
 1. **Small glances.** Checking a mirror, a peripheral hazard, or a colleague's hands may involve eyes only. These are short, frequent, and often decision-relevant — exactly the events a head-only proxy misses.
 2. **Sustained fixation with body motion.** Walking while looking ahead produces head motion driven by gait, not attention. Gait-frequency components must be removed before treating head motion as a signal. Because walking repeats at a steady step rate, this is a filtering job: suppress that frequency band ([[02-foundations/signal-processing|signal processing §3–4]]).
 3. **Habitual action.** Skilled workers execute familiar motions with reduced visual guidance. Expertise systematically weakens the attention–head coupling, which means a model trained on novices degrades on experts — the population you would deploy on.
+
+#### The head-motion problem in numbers
 
 > [!example] Worked example · 계산 예제
 > **Putting a number on the head-motion problem.** A 1920-pixel image over a 90° horizontal
@@ -742,13 +750,21 @@ flowchart TD
 
 ### 3. 머리 움직임이 주의의 대용인 이유 — 그리고 실패 지점
 
+*한 문장으로:* 작업자가 새로운 것을 보려고 고개를 돌릴 때 머리가 가리키는 곳은 주의 대상에 대한 괜찮은 추측이지만, 짧은 곁눈질이나 걷는 동안에는 그렇지 않고 숙련자에게서는 덜 맞는다. 게다가 빠른 고개 돌림은 시스템이 필요로 하는 바로 그 프레임을 번지게 한다.
+
+*이 절에서 하나만 가져간다면:* E1의 노출 $1/60$초에서 $300$ °/s 둘러보기는 영상을 $5.0^\circ$ 번지게 하고, 이는 프레임 평균 $21.3$ px/deg로 $107$ px다. 시스템이 존재하는 이유인 순간이 정확히 번진 순간이다(아래 계산 예제).
+
 큰 시선 이동은 눈–머리 협응으로 수행되므로, 상당한 재정향에서는 머리 방향이 주의 대상을 추종한다. 아이트래커 없이도 자기중심 카메라 자세가 의도 정보를 담는 이유다.
+
+#### 대용이 실패하는 세 곳
 
 예측 가능한 세 곳에서 실패한다:
 
 1. **작은 곁눈질.** 거울, 주변 위험, 동료의 손을 확인하는 건 눈만 움직일 수 있다. 짧고, 잦고, 결정에 관련된다 — 머리만 보는 대용이 놓치는 바로 그 사건들이다.
 2. **몸이 움직이는 중의 지속 응시.** 앞을 보며 걸으면 머리 움직임이 주의가 아니라 보행에서 나온다. 머리 움직임을 신호로 쓰기 전에 **보행 주파수 성분을 제거해야 한다.** 걸음은 일정한 박자로 반복되므로 이것은 필터링 문제다. 그 주파수 대역을 억제하면 된다([[02-foundations/signal-processing|신호 처리 §3–4]]).
 3. **습관화된 동작.** 숙련 작업자는 익숙한 동작을 시각 안내를 줄인 채 수행한다. 숙련도가 주의–머리 결합을 체계적으로 약화시키므로, 초보로 학습한 모델은 숙련자에서 나빠진다 — **배포 대상이 바로 그 집단이다.**
+
+#### 숫자로 본 머리 움직임 문제
 
 > [!example] 계산 예제 · Worked example
 > **머리 움직임 문제에 숫자를 붙이기.** 수평 화각 90°를 1920픽셀에 담으면

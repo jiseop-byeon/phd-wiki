@@ -392,7 +392,11 @@ Rope, cloth, soil, wet concrete, cables, and bulk material have high-dimensional
 
 ### 8. Learning and sim-to-real
 
-Learning may estimate residual dynamics, contact state, friction/material properties, grasp scores, or a tactile-conditioned policy. Domain randomization ([[04-robotics/legged-locomotion|18. Legged Locomotion §2]] defines it, with its objective) can broaden training conditions, but the chosen randomization distribution defines what variation was covered. Privileged simulator state ([[05-construction-robotics/sim-to-real|Sim-to-Real §2]]) can aid training while being unavailable at deployment; check how the policy replaces it at test time. One pushing task shows all three: a residual-dynamics network learns the difference between the simulator's predicted next state and the real one; domain randomization resamples μ and object mass every episode; and the policy trains with the simulator's exact object pose but must deploy with a pose estimated from the camera.
+Learning may estimate residual dynamics, contact state, friction/material properties, grasp scores, or a tactile-conditioned policy. Domain randomization ([[05-construction-robotics/sim-to-real|7.5 Sim-to-Real §2]] defines it, with its objective; [[04-robotics/legged-locomotion|18. Legged Locomotion §2]] shows it at work) can broaden training conditions, but the chosen randomization distribution defines what variation was covered. Privileged simulator state ([[05-construction-robotics/sim-to-real|Sim-to-Real §2]]) can aid training while being unavailable at deployment; check how the policy replaces it at test time. One pushing task shows all three: a residual-dynamics network learns the difference between the simulator's predicted next state and the real one; domain randomization resamples μ and object mass every episode; and the policy trains with the simulator's exact object pose but must deploy with a pose estimated from the camera.
+
+**Worked on the running object: what a randomization range buys.** Randomize $\mu$ uniformly over $[0.25,0.75]$ around the table's $0.5$. At the Worked case's $f_n=2.00$ N the friction bound $\mu f_n$ then runs from $0.50$ to $1.50$ N, so the 1 N wipe sticks in exactly the half of the episodes with $\mu\ge0.5$ and slides in the other half. A policy that must succeed in every episode learns to press harder: holding 1 N at $\mu=0.25$ takes $f_n\ge1/0.25=4.00$ N, which is $\delta=4.00/400=10$ mm past the face instead of 5. The robustness was bought as a firmer press, and only inside the range: a wet panel at $\mu=0.15$ carries $0.15\times4.00=0.60$ N at that press, and the wipe slides. The contact model hides the same trap. A policy that learned to command 5 mm past the face in a simulator whose penalty stiffness is $400$ N/m (§3) learned a 2 N press only in that simulator; on a panel ten times stiffer the same 5 mm asks for $4000\times0.005=20$ N.
+
+**The reading this gives you.** The randomization table in a paper's appendix is the scope of its robustness claim. Check whether the deployment's $\mu$, mass and contact stiffness lie inside those ranges, and whether the policy outputs a force or a position offset, because a position offset becomes a force only through a stiffness the simulator chose. How widely real contact stiffness ranges is tabulated in [[04-robotics/force-compliance-control|13. Force & Compliance Control §1]].
 
 ### 9. Evaluation and paper language
 
@@ -885,12 +889,16 @@ $$M_d\ddot x_c+D\,(\dot x_c-\dot x_d)+K\,(x_c-x_d)=F_{ext}$$
 ### 8. 학습과 sim-to-real
 
 학습은 잔차 동역학, 접촉 상태, 마찰/재료 성질, 파지 점수, 촉각 조건부 정책을 추정할 수
-있다. Domain randomization([[04-robotics/legged-locomotion|18. 레그드 로코모션 §2]]이 목적함수와 함께 정의한다)은 학습 조건을 넓히지만, 선택한 randomization 분포가 곧
+있다. Domain randomization([[05-construction-robotics/sim-to-real|7.5 Sim-to-Real §2]]이 목적함수와 함께 정의하고, [[04-robotics/legged-locomotion|18. 레그드 로코모션 §2]]이 쓰이는 모습을 보인다)은 학습 조건을 넓히지만, 선택한 randomization 분포가 곧
 "어떤 변동까지 커버했는가"를 정의한다. 시뮬레이터의 특권 정보(privileged state, [[05-construction-robotics/sim-to-real|Sim-to-Real §2]])는 학습을
 돕지만 배포 시에는 없다 — 정책이 시험 시점에 그것을 무엇으로 대체하는지 확인하라.
 밀기 과제 하나에 셋이 다 들어간다. 잔차 동역학 네트워크는 시뮬레이터가 예측한 다음 상태와
 실제 다음 상태의 차이를 배우고, domain randomization은 에피소드마다 μ와 물체 질량을 새로
 뽑으며, 정책은 시뮬레이터의 정확한 물체 자세로 학습하지만 배포 때는 카메라로 추정한 자세만 쓴다.
+
+**계속 쓰는 대상으로 계산: randomization 범위가 사 주는 것.** $\mu$를 표의 $0.5$를 가운데 둔 $[0.25,0.75]$에서 균일하게 뽑자. 대상으로 한 번 끝까지의 $f_n=2.00$ N에서 마찰 경계 $\mu f_n$은 $0.50$에서 $1.50$ N까지 걸치므로, 1 N 닦기는 $\mu\ge0.5$인 정확히 절반의 에피소드에서 고착하고 나머지 절반에서 미끄러진다. 모든 에피소드에서 성공해야 하는 정책은 더 세게 누르는 법을 배운다. $\mu=0.25$에서 1 N을 버티려면 $f_n\ge1/0.25=4.00$ N이 필요하고, 이는 면에서 5 mm가 아니라 $\delta=4.00/400=10$ mm 들어간 것이다. 강건성은 더 센 누름으로 산 것이고, 그것도 범위 안에서만이다. $\mu=0.15$인 젖은 패널은 그 누름에서 $0.15\times4.00=0.60$ N만 버티고, 닦기는 미끄러진다. 접촉 모델에도 같은 함정이 숨어 있다. 페널티 강성이 $400$ N/m인 시뮬레이터(§3)에서 면 너머 5 mm를 명령하도록 배운 정책은 그 시뮬레이터 안에서만 2 N 누름을 배운 것이고, 열 배 단단한 패널에서는 같은 5 mm가 $4000\times0.005=20$ N을 요구한다.
+
+**여기서 얻는 독법.** 논문 부록의 randomization 표가 곧 그 강건성 주장의 범위다. 배포 환경의 $\mu$, 질량, 접촉 강성이 그 범위 안에 있는지, 그리고 정책이 힘을 내는지 위치 오프셋을 내는지 확인하라. 위치 오프셋은 시뮬레이터가 고른 강성을 거쳐야만 힘이 되기 때문이다. 실제 접촉 강성이 얼마나 넓게 퍼지는지는 [[04-robotics/force-compliance-control|13. 힘과 컴플라이언스 제어 §1]]에 표로 있다.
 
 ### 9. 평가와 논문 표현
 

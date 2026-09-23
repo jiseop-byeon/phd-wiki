@@ -564,6 +564,8 @@ ros2 interface show turtle_watch_interfaces/msg/SpeedReport
 
 The naming convention you will see everywhere is `<something>_msgs` or `<something>_interfaces`. Follow it; people grep for it.
 
+**Choosing the field types is part of the contract.** The Worked case's cart message stores `counts` as `int32`, and on P6's encoder that choice is arithmetic, not taste: a signed 16-bit field tops out at $2^{15}-1=32\,767$ counts, which at $N=2048$ counts/m is $32\,767/2048=16.0\,\mathrm{m}$ from home, so an `int16` would wrap on any rail longer than sixteen metres, while `int32` lasts $2^{31}/2048\approx1.05\times10^{6}\,\mathrm{m}$. Resist writing $N$ into the file as a constant (`float64 COUNTS_PER_M=2048.0`): constants are fixed when the code is generated (§4), so a recalibrated encoder would mean regenerating this package and rebuilding every consumer — the blast radius above — for a number that belongs in a parameter ([[04-robotics/ros2/services-actions-parameters|25.3 §6]]). Units and scale go in comments, which `ros2 interface show` prints beside the fields.
+
 ### 8. When pub–sub is the wrong pattern
 
 Topics are for continuous data streams — sensor readings, robot state, commands. They are asynchronous and one-way. Three shapes do not fit, and forcing them produces code that works on a good day:
@@ -571,6 +573,8 @@ Topics are for continuous data streams — sensor readings, robot state, command
 - **You need an answer.** "Is this grasp reachable?" over a topic means publishing a request, subscribing to a reply topic, and inventing a correlation ID so you know which reply is yours. That is a request–response protocol, badly. Use a **service**.
 - **The work takes a long time and you may want to stop it.** "Drive to the kitchen" runs for minutes, should report progress, and must be cancellable when a person walks in. A service will not do either — the documentation is explicit that services are expected to return quickly and should never be used for long-running processes. Use an **action**.
 - **It is configuration, not data.** A gain, a frame name, a camera exposure. Publishing it on a topic means a node that starts late never learns the value. Use **parameters**.
+
+The same three shapes can be told apart by time, and P6's two rates give the scale. A topic suits data whose value decays with age: each `/goal` is superseded $20\,\mathrm{ms}$ after it is published and each motor command $5\,\mathrm{ms}$ after, so a lost message costs one period and the next repairs it, with nobody needing to hear back. A service suits a question whose answer comes back well inside the caller's period, which for P6's controller is $5\,\mathrm{ms}$; 25.3's worked case counts what a slower answer costs. An action suits work that outlives many periods: even a one-second move spans $200$ control ticks and $50$ camera frames, long enough that progress should be reported and a cancel must be possible. A parameter suits a value that changes on a human time scale. Published once on a topic with the default durability, P6's gain never reaches a controller that starts later; republished at the control rate, it costs $200\times3600=720\,000$ messages an hour to carry a number that changed once.
 
 All three are [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]. The tell, when you are unsure: if the sender needs to know what happened to the message, it is not a topic.
 
@@ -1406,6 +1410,8 @@ ros2 interface show turtle_watch_interfaces/msg/SpeedReport
 
 어디서나 보게 될 작명 관례는 `<something>_msgs` 또는 `<something>_interfaces`다. 따르라. 사람들이 그걸로 grep한다.
 
+**필드 타입을 고르는 일도 계약의 일부다.** 계산 절의 카트 메시지는 `counts`를 `int32`로 담는데, P6의 엔코더에서 이 선택은 취향이 아니라 산수다. 부호 있는 16비트 필드는 $2^{15}-1=32\,767$ counts가 최대이고, $N=2048$ counts/m에서 이는 원점으로부터 $32\,767/2048=16.0\,\mathrm{m}$다. 그러니 `int16`은 16미터보다 긴 레일이면 넘쳐서 되감기고, `int32`는 $2^{31}/2048\approx1.05\times10^{6}\,\mathrm{m}$까지 버틴다. $N$을 파일에 상수(`float64 COUNTS_PER_M=2048.0`)로 적고 싶은 유혹은 참아라. 상수는 코드가 생성될 때 고정되므로(4절), 엔코더를 다시 교정하면 이 패키지를 다시 생성하고 모든 소비자를 다시 빌드해야 한다. 위에서 말한 파급 범위를, 파라미터에 있어야 할 숫자 하나 때문에 치르는 셈이다([[04-robotics/ros2/services-actions-parameters|25.3 §6]]). 단위와 배율은 주석에 적고, `ros2 interface show`가 그것을 필드 옆에 찍어 준다.
+
 ### 8. pub–sub이 틀린 패턴일 때
 
 토픽은 연속적인 데이터 스트림 — 센서 값, 로봇 상태, 명령 — 을 위한 것이다. 비동기이고 단방향이다. 맞지 않는 모양이 셋 있고, 억지로 끼우면 운 좋은 날에만 동작하는 코드가 나온다.
@@ -1413,6 +1419,8 @@ ros2 interface show turtle_watch_interfaces/msg/SpeedReport
 - **답이 필요할 때.** "이 파지가 도달 가능한가?"를 토픽으로 하려면 요청을 publish하고 응답 토픽을 subscribe하고, 어느 응답이 내 것인지 알기 위해 상관 ID를 발명해야 한다. 요청–응답 프로토콜을 엉성하게 다시 만드는 것이다. **서비스**(service)를 써라.
 - **오래 걸리고 중간에 멈추고 싶을 때.** "주방으로 이동"은 몇 분이 걸리고, 진행 상황을 보고해야 하며, 사람이 들어오면 취소되어야 한다. 서비스는 둘 다 못 한다. 문서가 명시적으로 적는다 — 서비스는 빨리 반환할 것으로 기대되고 장시간 프로세스에 절대 써서는 안 된다. **액션**(action)을 써라.
 - **데이터가 아니라 설정일 때.** 게인, 프레임 이름, 카메라 노출. 이것을 토픽으로 내보내면 늦게 시작한 노드는 그 값을 영영 모른다. **파라미터**(parameter)를 써라.
+
+같은 세 모양은 시간으로도 가를 수 있고, P6의 두 주기가 그 눈금이다. 토픽은 나이가 들수록 값이 떨어지는 데이터에 맞다. `/goal`은 발행되고 $20\,\mathrm{ms}$ 뒤에, 모터 명령은 $5\,\mathrm{ms}$ 뒤에 다음 것으로 대체되므로, 메시지 하나를 잃으면 한 주기를 잃고 다음 것이 그것을 메우며, 누구도 답을 들을 필요가 없다. 서비스는 답이 호출한 쪽의 주기 안에 넉넉히 돌아오는 질문에 맞고, P6 제어기에게 그 주기는 $5\,\mathrm{ms}$다. 더 느린 답이 무엇을 치르게 하는지는 25.3의 계산 절이 센다. 액션은 여러 주기를 넘기는 일에 맞다. 1초짜리 이동 하나도 제어 틱 $200$개와 카메라 프레임 $50$장에 걸치니, 진행을 보고해야 하고 취소가 가능해야 할 만큼 길다. 파라미터는 사람의 시간 척도로 바뀌는 값에 맞다. 기본 durability의 토픽으로 한 번 발행하면 P6의 게인은 나중에 시작한 제어기에 끝내 닿지 않고, 제어 주기로 다시 발행하면 한 번 바뀐 숫자 하나를 나르느라 시간당 $200\times3600=720\,000$개의 메시지를 쓴다.
 
 셋 다 [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]]에 있다. 헷갈릴 때의 판별법: 보내는 쪽이 그 메시지가 어떻게 됐는지 알아야 한다면 그것은 토픽이 아니다.
 

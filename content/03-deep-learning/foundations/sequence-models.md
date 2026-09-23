@@ -262,6 +262,10 @@ $$h_t=z_t\odot h_{t-1}+(1-z_t)\odot\tanh\big(W_gx_t+U_g(r_t\odot h_{t-1})+b_g\bi
 
 with $z_t=\sigma(W_zx_t+U_zh_{t-1}+b_z)$ and $r_t=\sigma(W_rx_t+U_rh_{t-1}+b_r)$. So a GRU is an LSTM whose forget gate is $z_t$, whose input gate is $1-z_t$, and which has no output gate: the same additive keep path, with $\operatorname{diag}(z_t)$ where the LSTM has $\operatorname{diag}(f_t)$, in three weight blocks instead of four — three quarters of the LSTM's parameters at equal width, $55{,}680$ against $74{,}240$ at §1's illustrative size. Cho et al. put $z_t$ on the old state as above; Chung et al.'s 2014 comparison of gated units writes the same unit with $1-z_t$ there, so read the equation, not the letter. The GRU is also the deterministic path of the recurrent state-space model in [[01-canonical-papers/notes/5-world-models/planet|PlaNet]].
 
+**The coupling, on the page's frozen cell.** Hold the keep fraction fixed to isolate what the coupling does: give a GRU's update gate the value of the scalar LSTM cell's forget gate at its first step with $b_f=3$, $z_1=0.880797$, and the same candidate, $-0.761594$. The GRU keeps the same fraction of the old state but can write only $1-z_1=0.119203$ of the candidate, where the LSTM's separate input gate wrote $i_1=0.268941$ of it. From an old state of $1$, the LSTM's cell reaches $0.675973$ and the GRU-form state $0.790013$. In a GRU, keeping and writing always sum to one, so the new state is a weighted average of the old state and a candidate in $(-1,1)$, and a state that starts in $[-1,1]$ never leaves it. The LSTM's two gates here sum to $1.149738$, so its cell has no such bound and can grow past $1$ — without limit when $f_t=1$, the 1997 cell of §5's boundary case. Along the keep path the gradient factor is $\prod_t\operatorname{diag}(z_t)$, so §5's arithmetic carries over with $b_z$ in place of $b_f$, and §9 recovers this same keep path from Mamba's discretization.
+
+**Read the code's GRU as well as the paper's.** PyTorch's `nn.GRU` (checked in version 2.6) applies the reset gate after the recurrent matrix, $\tanh\big(W_{in}x_t+b_{in}+r_t\odot(W_{hn}h_{t-1}+b_{hn})\big)$, where Cho et al. apply it before, inside $U_g(r_t\odot h_{t-1})$, and it keeps an input bias and a recurrent bias for every gate. At §1's illustrative size it therefore counts $56{,}064$ parameters against the formula's $55{,}680$, and its LSTM $74{,}752$ against $74{,}240$; the differences, $3\times128$ and $4\times128$, are the second biases. A parameter count copied from a framework, or a GRU taken from a codebase, may not be the equation in the paper.
+
 ### 7. Linear state-space models: one system, two computations
 
 Drop the nonlinearity and give the state room. The linear time-invariant state-space model is
@@ -618,6 +622,7 @@ for bf, Ug in ((1.0, 0.0), (3.0, 0.8)):          # the recommended bias; a candi
 - R. Pascanu, T. Mikolov and Y. Bengio, "On the difficulty of training recurrent neural networks," *ICML 2013*, PMLR 28(3):1310–1318 — the singular-value conditions of §3 and gradient-norm clipping.
 - K. Cho, B. van Merriënboer, C. Gulcehre, D. Bahdanau, F. Bougares, H. Schwenk and Y. Bengio, "Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation," *EMNLP 2014*, pp. 1724–1734 — the GRU.
 - J. Chung, C. Gulcehre, K. Cho and Y. Bengio, "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling," arXiv:1412.3555, 2014 (NIPS 2014 Deep Learning workshop) — the GRU written with the opposite gate convention.
+- PyTorch 2.6 documentation, `torch.nn.GRU` and `torch.nn.LSTM` — the reset gate applied after the recurrent matrix and the separate input and recurrent biases of §6; the counts $56{,}064$ and $74{,}752$ follow from that formula and match the library's own count.
 - R. Jozefowicz, W. Zaremba and I. Sutskever, "An Empirical Exploration of Recurrent Network Architectures," *ICML 2015*, PMLR 37:2342–2350 — the forget-gate bias of 1.
 - A. Gu, K. Goel and C. Ré, "Efficiently Modeling Long Sequences with Structured State Spaces," *ICLR 2022* (arXiv:2111.00396) — S4: the bilinear discretization, the convolution kernel, the normal-plus-low-rank parameterization.
 - A. Gu and T. Dao, "Mamba: Linear-Time Sequence Modeling with Selective State Spaces," arXiv:2312.00752, 2023; *COLM 2024* — selection, the zero-order hold, Theorem 1, the interpretation of $\Delta$, and the scan.
@@ -880,6 +885,10 @@ $$h_t=z_t\odot h_{t-1}+(1-z_t)\odot\tanh\big(W_gx_t+U_g(r_t\odot h_{t-1})+b_g\bi
 
 여기서 $z_t=\sigma(W_zx_t+U_zh_{t-1}+b_z)$, $r_t=\sigma(W_rx_t+U_rh_{t-1}+b_r)$다. 그러니 GRU는 forget 게이트가 $z_t$, 입력 게이트가 $1-z_t$이고 출력 게이트가 없는 LSTM이다. 같은 덧셈 간직 경로이고, LSTM의 $\operatorname{diag}(f_t)$ 자리에 $\operatorname{diag}(z_t)$가 있으며, 가중치 묶음이 넷이 아니라 셋이다. 같은 폭에서 LSTM 파라미터의 4분의 3, §1의 예시 크기에서 $74{,}240$ 대 $55{,}680$이다. Cho 등은 위처럼 옛 상태에 $z_t$를 걸었고, Chung 등의 2014년 게이트 유닛 비교는 같은 유닛을 거기에 $1-z_t$를 걸어 쓴다. 그러니 글자가 아니라 식을 읽어라. GRU는 [[01-canonical-papers/notes/5-world-models/planet|PlaNet]]의 순환 상태공간 모델에서 결정론적 경로이기도 하다.
 
+**고정한 셀에서 본 결합.** 결합이 하는 일만 떼어 보려고 간직하는 비율을 고정한다. 스칼라 LSTM 셀이 $b_f=3$으로 첫 스텝에서 낸 forget 게이트 값 $z_1=0.880797$을 GRU의 갱신 게이트에 주고, 후보도 같은 $-0.761594$로 둔다. GRU는 옛 상태를 같은 비율로 간직하지만 후보는 $1-z_1=0.119203$만큼만 쓸 수 있고, LSTM의 따로 된 입력 게이트는 후보를 $i_1=0.268941$만큼 썼다. 옛 상태 $1$에서 출발하면 LSTM의 셀은 $0.675973$, GRU 꼴의 상태는 $0.790013$에 이른다. GRU에서는 간직과 쓰기가 늘 합해 1이므로 새 상태는 옛 상태와 $(-1,1)$ 안의 후보의 가중평균이고, $[-1,1]$에서 출발한 상태는 그 밖으로 나가지 못한다. 여기서 LSTM의 두 게이트는 합이 $1.149738$이라 셀에는 그런 한계가 없고 $1$을 넘어 자랄 수 있다. $f_t=1$이면, 곧 §5의 경계 사례인 1997년 셀이면 끝없이 자란다. 간직 경로만 따라가면 그래디언트 인자는 $\prod_t\operatorname{diag}(z_t)$이므로 §5의 산수가 $b_f$ 자리에 $b_z$를 넣어 그대로 옮겨 오고, §9는 같은 간직 경로를 Mamba의 이산화에서 다시 얻는다.
+
+**논문의 GRU뿐 아니라 코드의 GRU도 읽어라.** PyTorch의 `nn.GRU`(버전 2.6에서 확인)는 리셋 게이트를 순환 행렬 뒤에 건다. 후보가 $\tanh\big(W_{in}x_t+b_{in}+r_t\odot(W_{hn}h_{t-1}+b_{hn})\big)$이고, Cho 등은 $U_g(r_t\odot h_{t-1})$처럼 앞에 건다. 또 게이트마다 입력 bias와 순환 bias를 따로 둔다. 그래서 §1의 예시 크기에서 공식의 $55{,}680$ 대신 $56{,}064$개를 세고, LSTM은 $74{,}240$ 대신 $74{,}752$개를 센다. 차이 $3\times128$과 $4\times128$이 둘째 bias다. 프레임워크에서 베낀 파라미터 수나 코드베이스에서 가져온 GRU는 논문의 식이 아닐 수 있다.
+
 ### 7. 선형 상태공간 모델: 시스템 하나, 계산 둘
 
 비선형성을 빼고 상태에 자리를 주자. 선형 시불변 상태공간 모델은
@@ -1115,6 +1124,7 @@ Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D5**, 이 페이지
 - R. Pascanu, T. Mikolov and Y. Bengio, "On the difficulty of training recurrent neural networks," *ICML 2013*, PMLR 28(3):1310–1318 — §3의 특이값 조건과 그래디언트 노름 clipping.
 - K. Cho, B. van Merriënboer, C. Gulcehre, D. Bahdanau, F. Bougares, H. Schwenk and Y. Bengio, "Learning Phrase Representations using RNN Encoder–Decoder for Statistical Machine Translation," *EMNLP 2014*, pp. 1724–1734 — GRU.
 - J. Chung, C. Gulcehre, K. Cho and Y. Bengio, "Empirical Evaluation of Gated Recurrent Neural Networks on Sequence Modeling," arXiv:1412.3555, 2014 (NIPS 2014 Deep Learning 워크숍) — 게이트 규약을 반대로 쓴 GRU.
+- PyTorch 2.6 문서, `torch.nn.GRU`와 `torch.nn.LSTM` — §6의, 순환 행렬 뒤에 거는 리셋 게이트와 따로 두는 입력·순환 bias. $56{,}064$와 $74{,}752$는 그 식에서 나오고, 라이브러리가 직접 센 값과 같다.
 - R. Jozefowicz, W. Zaremba and I. Sutskever, "An Empirical Exploration of Recurrent Network Architectures," *ICML 2015*, PMLR 37:2342–2350 — forget 게이트 bias 1.
 - A. Gu, K. Goel and C. Ré, "Efficiently Modeling Long Sequences with Structured State Spaces," *ICLR 2022* (arXiv:2111.00396) — S4: 쌍선형 이산화, 합성곱 커널, 정규 더하기 저계수 매개변수화.
 - A. Gu and T. Dao, "Mamba: Linear-Time Sequence Modeling with Selective State Spaces," arXiv:2312.00752, 2023; *COLM 2024* — 선택, zero-order hold, 정리 1, $\Delta$의 해석, 스캔.

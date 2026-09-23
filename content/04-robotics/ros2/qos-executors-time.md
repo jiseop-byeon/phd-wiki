@@ -134,7 +134,13 @@ Three mechanisms do not announce themselves. This page is the first of them; the
 
 The symptom is "nothing happens". The cure is knowing that the mechanism exists and having one command for it — here `ros2 topic info --verbose`, §7.
 
+On P6 the silence has a size. When the two ends of `/goal` disagree on a policy that must match (§3), the camera still publishes $50$ goals a second and the controller receives none of them, while its timer goes on firing $200$ times a second on the last goal it held, or on none. A minute of that fault is $60\times200=12\,000$ control ticks without a fresh goal, and not one line in any log. The page's two P6 questions follow in that order: whether `/goal` connects at all (§3, checked with §7's command), and, once it does, how old a goal may be when the controller acts on it, which the Worked case settles against the $70\,\mathrm{ms}$ budget.
+
 ### 2. The QoS policies
+
+*In one sentence:* each publisher and each subscriber carries its own short list of delivery settings — how many messages to keep, whether to resend lost ones, whether to save the last one for latecomers, how long a message stays worth delivering, how often one must arrive — and this section lists them and what each one controls.
+
+*If you need only one thing from this section:* a profile belongs to one end, not to the topic, and its depth and lifespan decide what a paused subscriber is handed — P6's controller at depth $5$ through a $200\,\mathrm{ms}$ pause keeps goals aged $80$ to $0\,\mathrm{ms}$, and a $70\,\mathrm{ms}$ lifespan lets only the $4$ inside the budget through; it is worked in the *QoS profile, defined* box below.
 
 A QoS *profile* is a set of *policies*, applied independently to each publisher, subscription, service server and client. The base profile carries:
 
@@ -613,7 +619,13 @@ ROS 2의 문제는 대개 스스로를 알린다. 토픽 이름을 틀리면 `ro
 
 증상은 "아무 일도 일어나지 않음"이다. 처방은 이 기전이 존재한다는 것을 알고 명령 하나를 갖고 있는 것이다. 여기서는 7절의 `ros2 topic info --verbose`다.
 
+P6에서는 그 침묵에 크기가 있다. `/goal`의 두 끝이 서로 맞아야 하는 정책(3절)에서 어긋나면, 카메라는 여전히 초당 $50$개의 목표를 발행하는데 제어기는 하나도 받지 못하고, 그 타이머는 쥐고 있던 마지막 목표로, 혹은 목표 없이 초당 $200$번씩 계속 돈다. 그 고장이 1분이면 새 목표 없는 제어 틱이 $60\times200=12\,000$번이고, 어느 로그에도 한 줄이 남지 않는다. 이 페이지가 P6에 대해 묻는 두 질문도 그 순서를 따른다. 먼저 `/goal`이 애초에 연결되는가(3절, 7절의 명령으로 확인), 그리고 연결된 뒤에는 제어기가 목표에 따라 움직이는 순간 그 목표가 얼마나 묵어도 되는가다. 뒤의 것은 대상으로 한 번 끝까지가 $70\,\mathrm{ms}$ 예산에 대어 정한다.
+
 ### 2. QoS 정책들
+
+*한 문장으로:* 퍼블리셔와 서브스크라이버는 저마다 짧은 전달 설정 목록을 들고 있다 — 메시지를 몇 개 보관할지, 잃은 것을 다시 보낼지, 늦게 들어온 쪽을 위해 마지막 것을 남겨 둘지, 메시지가 얼마 동안 전달할 가치가 있는지, 얼마나 자주 와야 하는지 — 이 절은 그것들을 나열하고 각각이 무엇을 정하는지 적는다.
+
+*이 절에서 하나만 가져간다면:* 프로파일은 토픽이 아니라 한쪽 끝의 것이고, 그 depth와 lifespan이 멈췄던 서브스크라이버가 무엇을 건네받을지 정한다는 것 — depth $5$인 P6 제어기가 $200\,\mathrm{ms}$ 정지를 지나면 나이 $80$에서 $0\,\mathrm{ms}$까지의 목표를 쥐고 있고, lifespan을 $70\,\mathrm{ms}$로 두면 예산 안의 $4$개만 통과한다. 아래 *QoS 프로파일의 정의* 상자에서 계산한다.
 
 QoS *프로파일*은 *정책*의 묶음이고, 퍼블리셔·서브스크립션·서비스 서버·클라이언트마다 독립적으로 적용된다. 기본 프로파일이 담는 것:
 

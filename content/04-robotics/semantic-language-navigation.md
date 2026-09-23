@@ -206,6 +206,8 @@ That converts exploration from a coverage problem into an inference problem over
 object-and-room co-occurrence, and it is why a vision-language model turns out to be a
 navigation component.
 
+**The shift, on G4.** Classically the goal would arrive as a coordinate, say the cell $(3,0)$, and breadth-first search would return $\ell=3$ m and be done. Given the word "television" instead, that same $3$ m walk is the end of two inferences the classical problem never posed. The first is which node the word names, which the worked case answers with a grounding score of $0.846$ on the tv. The second is which of that node's three four-adjacent cells counts as reaching it, and only two do, because wall **C** hides the object from the third. Neither inference is path-finding, and episode 3 of the worked case fails in the second with the first one right. In an unseen building the map itself is missing, so the first inference becomes a bet on where a television is likely to be: a classical explorer drives to the nearest frontier ([[04-robotics/planning-decision-making|4. Planning §2]]), while a semantic one ranks the frontiers by how well what the camera has seen in their direction matches the goal word, as VLFM does (§3).
+
 ### 2. ObjectNav — the definition, stated precisely
 
 The agent spawns at a random pose in a **previously unseen** environment, is given only a
@@ -310,6 +312,10 @@ bottleneck to fix either.
 
 Among end-to-end design variants, **the choices that raised simulation scores lowered real-world
 scores.** A leaderboard can be climbed without the thing it measures improving.
+
+**The evidence behind the table** ([[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet et al. 2023]]). The real-world rows are $60$ episodes per method, ten in each of the six homes, $45$ hours of robot time in all, so $90\%$ is $54$ episodes of $60$ and $23\%$ is $14$. The simulation rows come from a benchmark of $1{,}093$ episodes, on which the three families span $4$ points; in the homes they span $67$. The inversion among end-to-end variants was measured in a controlled study that scanned one home into simulation and ran four variants on the same ten episodes in both: the variant that scored $77\%$ on the benchmark scored $0\%$ in the real home, and the one that scored $48\%$, the variant taken to all six homes, scored $30\%$. So the table's $77\%$ and $23\%$ belong to two different end-to-end variants, the best on the benchmark and the best in the scanned home: the paper reports the approach at its best in each world.
+
+**Misaligned, in numbers.** Similar success rates do not mean the same failures. The modular policy scored $80\%$ on the scanned replica and $90\%$ in the real home, yet the correlation between its per-episode outcomes in the two worlds (the sim-vs-real correlation coefficient) was only $0.70$, because the two worlds failed it on different episodes. On the benchmark, $10.1$ of its $18.6$ points of failure were segmentation errors, which caused no real-world failure at all; the real failures came mostly from depth errors (mirrors, TVs, a door approached at an angle) that benchmarks usually do not model. G4's worked case shows the mechanism at the size of one wall: an evaluator that checks distance only scores its three episodes at SPL $0.852$ instead of $0.519$, and cannot point at the failure a real robot would have.
 
 ### 5. VLN, and the paper that admitted the benchmark was cheating
 
@@ -736,6 +742,8 @@ $$\text{SPL}_{\text{거리만}} = \frac{1.000 + 0.556 + 1.000}{3} = 0.852, \qqua
 그것이 탐색을 커버리지 문제에서 물체-방 동시 출현에 대한 추론 문제로 바꾸고, 시각-언어 모델이
 내비게이션 구성 요소가 되는 이유다.
 
+**G4에서 본 전환.** 고전적으로라면 목표는 좌표, 예컨대 칸 $(3,0)$으로 주어지고, 너비 우선 탐색이 $\ell=3$ m를 돌려주면 끝난다. 대신 "텔레비전"이라는 단어가 주어지면, 같은 $3$ m 걸음은 고전적 문제가 한 번도 묻지 않은 두 추론의 끝이다. 첫째는 그 단어가 어느 노드를 가리키느냐이고, 끝까지 계산한 예제는 tv에 접지 점수 $0.846$을 주어 답한다. 둘째는 그 노드의 4-인접 칸 셋 가운데 어디에 서야 닿았다고 치느냐이고, 벽 **C**가 셋째 칸에서 물체를 가리므로 둘만 된다. 어느 추론도 경로 찾기가 아니며, 그 예제의 에피소드 3은 첫째를 맞히고 둘째에서 실패한다. 처음 보는 건물에서는 지도 자체가 없으므로, 첫째 추론은 텔레비전이 있을 법한 곳에 거는 내기가 된다. 고전적 탐색기는 가장 가까운 프런티어로 가고([[04-robotics/planning-decision-making|4. 계획 §2]]), 의미 탐색기는 VLFM처럼(§3) 카메라가 그 방향에서 본 것이 목표 단어와 얼마나 맞는지로 프런티어의 순위를 매긴다.
+
 ### 2. ObjectNav — 정의를 정확히
 
 에이전트가 **처음 보는** 환경의 임의 자세에서 시작해, 목표 물체의 *범주*만 받고, **아무 인스턴스**
@@ -829,6 +837,10 @@ Gervet 등이 고전·모듈형 학습·종단간 접근을 **실제 가정 여�
 
 종단간 설계 변형들 사이에서는 **시뮬레이션 점수를 올린 선택이 실세계 점수를 낮췄다.** 재는 대상이
 나아지지 않은 채로 리더보드를 오를 수 있다.
+
+**표 뒤의 증거**([[01-canonical-papers/notes/9-navigation/gervet-real-world-objectnav|Gervet et al. 2023]]). 실세계 행은 방법마다 에피소드 $60$개, 여섯 집에서 열 개씩, 로봇 시간으로 모두 $45$시간이다. 그러니 $90\%$는 $60$개 중 $54$개, $23\%$는 $14$개다. 시뮬레이션 행은 에피소드 $1{,}093$개짜리 벤치마크에서 나왔고, 거기서 세 계열은 $4$포인트 안에 모인다. 실제 집에서는 $67$포인트로 벌어진다. 종단간 변형들 사이의 역전은 집 하나를 스캔해 시뮬레이션에 옮기고 네 변형을 같은 에피소드 열 개로 양쪽에서 돌린 통제 실험에서 측정되었다. 벤치마크에서 $77\%$를 낸 변형은 실제 그 집에서 $0\%$였고, $48\%$를 낸 변형, 곧 여섯 집 전체로 가져간 것은 $30\%$였다. 그러니 표의 $77\%$와 $23\%$는 서로 다른 두 종단간 변형, 곧 벤치마크에서 가장 좋았던 것과 스캔한 집에서 가장 좋았던 것의 숫자다. 논문은 이 접근을 각 세계에서 가장 좋은 모습으로 보고한다.
+
+**어긋남을 숫자로.** 성공률이 비슷하다고 실패가 같은 것은 아니다. 모듈형 정책은 스캔한 복제본에서 $80\%$, 실제 집에서 $90\%$였지만, 두 세계에서의 에피소드별 결과 사이의 상관(sim-vs-real 상관계수)은 $0.70$에 그쳤다. 두 세계가 서로 다른 에피소드에서 실패했기 때문이다. 벤치마크에서 실패 $18.6$포인트 가운데 $10.1$포인트는 분할 오류였는데, 실세계에서는 분할 오류로 실패한 에피소드가 하나도 없었다. 실세계 실패는 주로 깊이 오류(거울, TV, 비스듬히 다가간 문)에서 왔고, 벤치마크는 보통 이것을 모델링하지 않는다. G4의 끝까지 계산한 예제가 이 기제를 벽 하나 크기로 보여 준다. 거리만 검사하는 평가기는 세 에피소드에 SPL $0.519$ 대신 $0.852$를 주고, 실제 로봇이 겪을 실패를 가리키지 못한다.
 
 ### 5. VLN, 그리고 벤치마크가 부정행위였음을 인정한 논문
 

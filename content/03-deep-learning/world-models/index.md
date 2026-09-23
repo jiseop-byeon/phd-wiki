@@ -206,6 +206,10 @@ The second row is the one this page computes with, and it carries three conditio
 
 Suppose the learned coefficient is $0.9$ rather than $0.8$. With zero actions and $z_0=1$, true state after 5 steps is $0.8^5=0.328$ while the model predicts $0.9^5=0.590$. Small one-step bias compounds. Evaluate rollout horizon and downstream decisions, not only one-step loss.
 
+The two evaluations in that last sentence are computed differently, and a paper should say which one it reports. **Teacher-forced** evaluation starts every prediction from the true state, $\hat z_{t+1}=\hat\lambda z_t$, so it scores only the fresh one-step error $e_t$; it is what a validation loss on logged transitions measures. **Free-running** evaluation starts each prediction from the model's own previous one, $\hat z_{t+1}=\hat\lambda\hat z_t$, which is what a planner does when it imagines a rollout. Over the same five zero-action steps of D5, $\hat\lambda=0.9$ has a teacher-forced RMSE of $0.070420$ and a free-running RMSE of $0.207760$, three times larger — one model, one trajectory, two numbers.
+
+The free-running number also depends on something the one-step loss cannot see, the model's own gain. $\hat\lambda'=0.7$ is off by exactly as much per step, so its teacher-forced RMSE is the same $0.070420$, yet its free-running RMSE is $0.151833$ and its gap after five steps is $0.7^5-0.8^5=-0.159610$ against $0.262810$: each model carries its old error forward through its own gain, and $0.7$ forgets faster. [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §3]] reads the same fact backwards, as a gradient that shrinks through a gain below one. What the error does to a *decision* is a third question. $\hat\lambda=0.9$ values the plans $(-1,0)$ and $(0,0)$ at $-1.26$ and $-1.81$, both wrong, and still ranks them in the true order, $-1.19$ above $-1.64$; §3 is about the case where the ranking breaks, and §5 sweeps all three quantities.
+
 ### 3. Planning can exploit model errors
 
 An optimizer searches specifically for trajectories the model rates highly. It can find unrealistic blind spots outside the training distribution. Ensembles, uncertainty penalties, short horizons, replanning, conservative objectives, and real-data correction limit—not eliminate—this problem.
@@ -227,7 +231,11 @@ That paragraph names a phenomenon that is often used loosely, and the loose use 
 
 Representation learning asks whether latents preserve useful state. Prediction asks whether future observations/states are calibrated. Control asks whether imagined rollouts improve real return or success. Generation quality alone answers none of the other two.
 
+D5 shows two of these uses coming apart. Judged as a predictor, $\hat\lambda'=0.7$ is the better of the two learned models: after five free-running steps it is off by $0.159610$, against $0.262810$ for $\hat\lambda=0.9$ (§2). Judged as a controller it is the worse: planned five steps ahead and executed open loop it loses $0.0929$ of return, while $\hat\lambda=0.9$ loses nothing (the planning table of §5). Prediction and control rank the same two models in opposite orders, so a world-model claim has to be read against the use it is making. D5's latent is the state itself, so the representation question does not arise, and it has no decoder, so it would score nothing on generation and still plan.
+
 Read [[01-canonical-papers/notes/5-world-models/planet|PlaNet]], [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]], [[01-canonical-papers/notes/5-world-models/jepa|JEPA]], [[01-canonical-papers/notes/5-world-models/genie|Genie]] and [[01-canonical-papers/notes/5-world-models/world-labs|World Labs]] with this component table, and §6 before comparing two systems that both call themselves world models.
+
+Sorted by the use their evidence speaks to, they separate cleanly. PlaNet and Dreamer report return on control tasks, so theirs are control claims: PlaNet plans in its latent at every step, Dreamer trains a policy inside imagination, and DreamerV3 runs one configuration across more than $150$ tasks. JEPA's I-JEPA evidence is linear-probe accuracy, a representation claim, and V-JEPA 2's planning on real robots is its control claim. Genie is a generation claim — an action-controllable video model of $11$B parameters whose abstract reports no quantitative result for controllability or physical fidelity. World Labs publishes demonstrations and no paper, so its evidence is the company's own.
 
 ### 5. The horizon sweep
 
@@ -566,6 +574,10 @@ $$\delta_H=\sum_{t=0}^{H-1}\hat\lambda^{\,H-1-t}\,e_t$$
 
 실제 계수 0.8 대신 0.9를 학습했다면 5 step 뒤 실제 $0.328$, 예측 $0.590$이다. 작은 one-step bias가 누적되므로 one-step loss뿐 아니라 rollout horizon과 downstream decision을 평가한다.
 
+그 마지막 문장의 두 평가는 계산법이 다르고, 논문은 어느 쪽을 보고하는지 밝혀야 한다. **Teacher-forced** 평가는 모든 예측을 참 상태에서 시작하므로($\hat z_{t+1}=\hat\lambda z_t$) 새로 생긴 one-step 오차 $e_t$만 채점한다. 기록된 전이에 대한 validation loss가 재는 것이 이것이다. **Free-running** 평가는 각 예측을 모델 자신의 직전 예측에서 시작하고($\hat z_{t+1}=\hat\lambda\hat z_t$), planner가 rollout을 상상할 때 하는 일이 이것이다. D5의 같은 zero-action 다섯 스텝에서 $\hat\lambda=0.9$의 teacher-forced RMSE는 $0.070420$, free-running RMSE는 $0.207760$으로 세 배다. 모델 하나, 궤적 하나에서 나온 두 숫자다.
+
+free-running 숫자는 one-step loss가 볼 수 없는 것, 곧 모델 자신의 gain에도 달려 있다. $\hat\lambda'=0.7$은 스텝마다 정확히 같은 만큼 틀리므로 teacher-forced RMSE가 똑같이 $0.070420$인데, free-running RMSE는 $0.151833$이고 다섯 스텝 뒤 간격은 $0.262810$이 아니라 $0.7^5-0.8^5=-0.159610$이다. 모델마다 옛 오차를 자기 gain으로 실어 나르고, $0.7$이 더 빨리 잊기 때문이다. [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §3]]은 같은 사실을 거꾸로, 1보다 작은 gain을 지나며 줄어드는 그래디언트로 읽는다. 오차가 *결정*에 무엇을 하는지는 셋째 질문이다. $\hat\lambda=0.9$는 계획 $(-1,0)$과 $(0,0)$을 $-1.26$과 $-1.81$로, 둘 다 틀리게 평가하지만 순서는 여전히 참 순서, 곧 $-1.19$가 $-1.64$보다 위다. 순위가 깨지는 경우가 §3의 주제이고, §5는 세 양을 모두 쓸어 본다.
+
 ### 3. Planner는 모델 오류를 악용한다
 
 optimizer는 모델이 높게 평가하는 trajectory를 적극 찾으므로 학습 분포 밖 허점을 찾을 수 있다. ensemble·uncertainty penalty·짧은 horizon·replanning·보수적 목적함수·실자료 보정은 이를 줄이지만 없애지 않는다.
@@ -587,7 +599,11 @@ optimizer는 모델이 높게 평가하는 trajectory를 적극 찾으므로 학
 
 representation은 latent가 state를 보존하는지, prediction은 미래가 calibrated됐는지, control은 상상 rollout이 실제 return을 높이는지 묻는다. 생성 화질만으로 나머지를 증명하지 못한다.
 
+D5에서 이 쓰임 가운데 둘이 갈라진다. 예측기로 보면 학습된 두 모델 중 $\hat\lambda'=0.7$이 낫다. free-running 다섯 스텝 뒤 오차가 $\hat\lambda=0.9$의 $0.262810$에 비해 $0.159610$이다(§2). 제어기로 보면 더 나쁘다. 다섯 스텝 앞을 계획해 open loop로 실행하면 return을 $0.0929$ 잃고, $\hat\lambda=0.9$는 하나도 잃지 않는다(§5의 계획 표). 예측과 제어가 같은 두 모델을 반대 순서로 매기므로, 월드모델 주장은 그것이 내세우는 쓰임에 비추어 읽어야 한다. D5의 latent는 상태 그 자체라 representation 질문은 생기지 않고, decoder가 없으니 생성으로는 아무 점수도 못 받으면서 계획은 한다.
+
 [[01-canonical-papers/notes/5-world-models/planet|PlaNet]], [[01-canonical-papers/notes/5-world-models/dreamer|Dreamer]], [[01-canonical-papers/notes/5-world-models/jepa|JEPA]], [[01-canonical-papers/notes/5-world-models/genie|Genie]], [[01-canonical-papers/notes/5-world-models/world-labs|World Labs]]를 이 구성요소 표와 함께 읽고, 둘 다 월드모델이라 자처하는 두 시스템을 견주기 전에는 §6을 읽어라.
+
+증거가 말하는 쓰임으로 가르면 깔끔하게 나뉜다. PlaNet과 Dreamer는 제어 과제의 return을 보고하므로 제어 주장이다. PlaNet은 매 스텝 latent 안에서 계획하고, Dreamer는 상상 속에서 정책을 학습하며, DreamerV3는 설정 하나로 $150$개가 넘는 과제를 돈다. JEPA의 I-JEPA 증거는 linear probe 정확도라 representation 주장이고, 실제 로봇에서 V-JEPA 2가 한 계획이 그 제어 주장이다. Genie는 생성 주장이다. 파라미터 $11$B의 행동 제어 가능한 비디오 모델이지만, 초록은 제어 가능성이나 물리적 충실도에 대한 정량 결과를 하나도 보고하지 않는다. World Labs는 논문 없이 시연을 공개하므로 그 증거는 회사 자신의 것이다.
 
 ### 5. Horizon 쓸기
 

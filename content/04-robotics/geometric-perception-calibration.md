@@ -326,7 +326,11 @@ a 12.5% jump at this range: depth error grows quadratically with distance. Acros
   <g font-size="11" fill="currentColor"><text x="30" y="240" opacity="0.9">Disparity is horizontal pixel displacement; it shrinks with the triangulation angle for far points.</text></g>
 </svg>
 
+**Why the error grows as $Z^2$.** Differentiate $Z=fb/d$: $dZ/dd=-fb/d^2=-Z^2/(fb)$, so a disparity error of $\Delta d$ pixels moves the depth by about $Z^2\Delta d/(fb)$. On the rig $fb=600\times0.12=72$ px·m, so one pixel is $4/72=0.056$ m at the landmark's $2$ m, which is $2.8\%$ of the range, and $64/72=0.89$ m at $8$ m: the error bars drawn in the picture. Set against the lateral $Z/f$ per pixel of the stereo example above, the ratio of the two errors is $Z/b$: $16.7$ at $2$ m and $67$ at $8$ m, which is why a stereo point's uncertainty is a needle along the ray rather than a ball. The first-order value sits between the exact errors on either side, which are unequal (at $8$ m, $+1.00$ m for $d=8$ against $-0.80$ m for $d=10$); problem 2(b) asks why.
 
+**The same law, run backwards, sizes a rig.** Holding $\pm1$ cm at $2$ m with one pixel of matching error needs $fb\ge Z^2/\Delta Z=4/0.01=400$ px·m, a baseline of $0.67$ m at $f=600$ px, more than five times this rig's. Sub-pixel matching buys it back: a matcher good to $0.2$ px needs only $0.13$ m. When a paper quotes a stereo depth error, ask at what range, since the same rig's error at $4$ m is sixteen times its error at $1$ m.
+
+**Stereo also has a near limit.** At P5's $12$ cm reading the disparity would be $72/0.12=600$ px, nearly the whole $640$-px width, so the two views barely overlap, and a matcher that searches disparities up to $128$ px sees nothing nearer than $72/128=0.56$ m. That blind zone is why the rig takes the panel's range from P5's scalar sensor rather than from stereo, and the problem set fuses it.
 
 ### 2.5 Image features: detect, describe, match
 
@@ -461,6 +465,12 @@ map — and multi-sensor pipelines stand or fall on the **extrinsic calibration*
 those frames ([[04-robotics/robot-systems-deployment|the TF tree at runtime]]). A
 plausible-looking cloud in the wrong frame produces systematic, learning-resistant errors.
 
+**How dense, and why the grid is worth keeping.** One $640\times480$ depth image gives at most $307{,}200$ points, one per pixel with a valid depth. Neighbouring pixels land $Z/f$ apart on a surface facing the camera, $3.3$ mm at the landmark's $2$ m and $13.3$ mm at $8$ m, so the same scene is sampled four times more coarsely at four times the range, and ICP (§4) finds fewer and noisier correspondences on far surfaces. A cloud that keeps the image grid is called **organized**: a point's neighbours are found by pixel index rather than by a spatial search, which makes the normals that point-to-plane ICP needs cheap to estimate.
+
+**The frame, worked on the rig.** $L=(0.5,\ 0.2,\ 2.0)$ m is a camera-frame coordinate. The arm plans in the tool frame, and §5's hand–eye transform for this rig, $X=\big(I,\ (0,0,-0.04)\big)$, moves it there: $p^{g}=R_Xp^{c}+t_X=(0.5,\ 0.2,\ 1.96)$ m. One link further, the base frame is $p^{b}=T_{bg}\,X\,p^{c}$, with $T_{bg}$ from P2's joint encoders, the same chain §5 writes for the target. Two kinds of frame error follow, and they behave differently. Skip $X$, treating camera coordinates as tool coordinates, and every point in the cloud is off by the same $4$ cm along the tool axis at every range: a bias that no amount of training data averages away, which is what "learning-resistant" means in practice. Get the rotation of $X$ wrong by $1^\circ$ instead, and a point moves by $2\sin(0.5^\circ)=1.75$ cm per metre of its distance from the rotation axis: $L$, $2.06$ m from the camera's $y$ axis, moves $3.6$ cm, and a point $0.5$ m from it moves under $1$ cm. A translation error is constant; a rotation error grows with range.
+
+**A frame is also a time.** A cloud captured while the arm moves belongs to the camera pose at the instant of capture. Pair it with the arm's pose from another instant and the whole cloud lands in the wrong frame by the distance the camera moved in between, $3$ mm for a camera moving at $0.10$ m/s and a $30$ ms mismatch. Which transform is looked up for which time stamp is the TF tree of [[04-robotics/robot-systems-deployment|10. Robot Systems §4]]; which calibration fixes $X$ is §5. When a point-cloud paper quotes millimetres, ask in which frame, and whether the extrinsic and the time stamp that put the cloud there were estimated or assumed.
+
 ### 4. Registration and ICP
 
 **Registration** aligns two geometries: a scan with another scan, a point cloud with a part model, or a site scan with BIM. The unknown is a rigid transform $T\in SE(3)$. Before optimizing it, ask which points are supposed to represent the same surface.
@@ -542,6 +552,16 @@ geometry, [[01-canonical-papers/notes/2-computer-vision/nerf|NeRF]]/[[01-canonic
 When reading, ask: *which stage is learned, which is geometric, and where does metric
 scale enter?* (calibrated stereo/LiDAR, known object size, or not at all).
 
+**Where scale enters, on the rig.** There are three places, and all three obey the same $Z^2$ law with a different baseline $B$: a measurement error $\delta$ moves the depth by about $Z^2\delta/B$, with $B=fb=72$ px·m for stereo, $B=f\ell=300$ px·m for the $0.5$ m known length, and $B=s$ for the anchors.
+
+*Calibrated stereo* is §2's: $fb=72$ px·m gives $5.6$ cm per pixel of disparity at $2$ m.
+
+*A known length* works the same way, with the object as the baseline. The target corners $A$ and $B$ are $0.5$ m apart and $150$ px apart in the image, so $Z=f\ell/\Delta u=600\times0.5/150=2.0$ m with $\ell=0.5$ m the known length, and one pixel of error in that separation moves the depth by $Z^2/(f\ell)=4/300=1.3$ cm, four times better than the stereo pair, because the target is a longer baseline than $b=0.12$ m.
+
+*Alignment to anchors* is how a learned relative depth becomes metric. A network that predicts inverse depth up to scale and shift outputs $r=s/Z+t$ with $s$ and $t$ unknown, so it needs at least two pixels of known depth at different ranges. Suppose it outputs $r=0.80$ at $L$ (stereo: $Z=2.0$ m) and $r=0.35$ at the $8$ m point of §2; then $s=1.2$ and $t=0.2$, and a third pixel with $r=0.50$ is at $Z=4.0$ m. An output error of $\pm0.01$ moves that pixel between $3.87$ and $4.14$ m, and a pixel at $8$ m between $7.50$ and $8.57$ m: inverse depth stays bounded, but its errors grow with range just as stereo's do. Two anchors at the same depth fix nothing, since they give one equation in two unknowns.
+
+**The same question for reconstructions.** A single moving camera recovers a scene only up to a similarity transform, seven numbers of which one is the scale, so a NeRF or 3DGS model fitted to poses from monocular structure-from-motion is in arbitrary units until one known length fixes it. That length can be the $0.5$ m target edge, or the arm's own motion: P2's encoders, through the hand–eye $X$ of §5, say how far the camera moved, so two images of a static scene taken before and after a sideways move of $0.12$ m are §2's stereo pair in time. The canonical notes make the same point for learned depth: [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]'s robust relative depth still needs a metric head and scale calibration on a new site.
+
 ### 7. Reading claims and evaluations
 
 | Paper phrase | Check before accepting it |
@@ -571,6 +591,12 @@ well-conditioned feature geometry. Neither equation alone guarantees visibility,
 limits, global convergence, or collision avoidance. Read a "closed-loop perception" claim
 by identifying the error, Jacobian, control rate, depth source, and recovery outside the
 local basin.
+
+**Worked on the rig: IBVS on one point.** Take the landmark's pixel $(470,300)$ as the current feature and the principal point as the goal, so the error in normalized coordinates is $e=(0.25,\ 0.10)$. For a camera that only translates parallel to the image, the two relevant columns of $L_s$ carry $-1/Z$ on the diagonal, and the law $v_c=-\lambda L_s^+e$ becomes $v_c=\lambda\hat Z e$: with $\lambda=0.5\ \mathrm{s^{-1}}$ and $\hat Z=2.0$ m it commands $(0.25,\ 0.10)$ m/s, and the error decays as $e^{-\lambda t}$, to $5\%$ after $6$ s. A depth estimate of $1.0$ m instead of $2.0$ m halves the rate to $0.25\ \mathrm{s^{-1}}$ without breaking convergence. In the full six-column matrix depth appears only in the translation columns, so a wrong $\hat Z$ also shifts the split between translating and rotating, and the path bends.
+
+**Why IBVS is called robust to calibration.** If the goal image $s^*$ was recorded with the camera at the goal, IBVS converges to that image, and to that pose when the features pin the pose down: four or more points in general position do, three allow up to four poses, and the single point of the example above leaves four of the six degrees of freedom free. Focal-length and hand–eye errors change the path and the speed, as long as the loop still converges, but not the end point. PBVS computes its error through the calibrated model, so the error survives convergence. With the Worked case's $\hat f=598$ px, a PBVS loop told to hold the $0.5$ m target edge at $2.0$ m reads that depth as $\hat f\cdot0.5/\Delta u$, stops where $\Delta u=149.5$ px, and is then truly at $2.0067$ m, $6.7$ mm too far even after it has converged. Assume $X=I$ instead of the $4$ cm offset, and a PBVS tool goal lands $4$ cm off along the tool axis.
+
+**The gain is a bandwidth, so delay bounds it.** The closed loop $\dot e=-\lambda e$ comes from the open loop $L(s)=\lambda/s$, an integrator with crossover at $\lambda$ and a $90^\circ$ phase margin, and a delay $\tau$ spends $\lambda\tau$ radians of that margin. At the $70$ ms camera-to-force budget of **P6** ([[02-foundations/lab-plants|0.6]]) that is $2^\circ$ at $\lambda=0.5\ \mathrm{s^{-1}}$ and $40^\circ$ at $\lambda=10\ \mathrm{s^{-1}}$, leaving $50^\circ$, and the loop goes unstable near $\lambda=\pi/(2\tau)=22.4\ \mathrm{s^{-1}}$. The general form is the delay budget of [[04-robotics/control-theory-ce397|5. Control Theory §5.5]].
 
 ### After reading
 
@@ -964,7 +990,11 @@ $$\begin{pmatrix}x_d\\y_d\end{pmatrix} = \underbrace{(1 + k_1r^2 + k_2r^4 + k_3r
   <g font-size="11" fill="currentColor"><text x="30" y="240" opacity="0.9">시차는 수평 픽셀 이동량이며, 먼 점에서는 삼각측량 각도와 함께 작아진다.</text></g>
 </svg>
 
+**오차가 $Z^2$로 자라는 이유.** $Z=fb/d$를 미분하면 $dZ/dd=-fb/d^2=-Z^2/(fb)$이므로, 시차 오차 $\Delta d$ 픽셀은 깊이를 약 $Z^2\Delta d/(fb)$만큼 옮긴다. 이 리그에서는 $fb=600\times0.12=72$ px·m이므로 1픽셀이 랜드마크의 $2$ m에서 $4/72=0.056$ m, 곧 거리의 $2.8\%$이고, $8$ m에서는 $64/72=0.89$ m다. 그림에 그린 오차 막대가 그것이다. 위 스테레오 예제의 가로 방향 1픽셀 $Z/f$와 견주면 두 오차의 비는 $Z/b$다. $2$ m에서 $16.7$, $8$ m에서 $67$이고, 스테레오 점의 불확실성이 공이 아니라 광선을 따라 늘어난 바늘인 이유가 그것이다. 1차 값은 양쪽의 정확한 오차 사이에 있고, 두 정확한 오차는 같지 않다($8$ m에서 $d=8$이면 $+1.00$ m, $d=10$이면 $-0.80$ m). 왜 그런지는 과제 2(b)가 묻는다.
 
+**같은 법칙을 거꾸로 돌리면 리그의 크기가 정해진다.** $2$ m에서 매칭 오차 1픽셀로 $\pm1$ cm를 지키려면 $fb\ge Z^2/\Delta Z=4/0.01=400$ px·m, 곧 $f=600$ px에서 기선 $0.67$ m가 필요하다. 이 리그의 다섯 배가 넘는다. 서브픽셀 매칭이 그것을 되사 준다. $0.2$ px까지 맞추는 매처라면 $0.13$ m면 된다. 논문이 스테레오 깊이 오차를 인용하면 어느 거리에서인지 물어라. 같은 리그의 $4$ m 오차는 $1$ m 오차의 열여섯 배다.
+
+**스테레오에는 가까운 쪽 한계도 있다.** P5의 판독값 $12$ cm에서는 시차가 $72/0.12=600$ px로 $640$ px 폭을 거의 다 차지하므로 두 시점이 거의 겹치지 않고, 시차를 $128$ px까지만 찾는 매처는 $72/128=0.56$ m보다 가까운 것을 아무것도 보지 못한다. 리그가 패널까지의 거리를 스테레오가 아니라 P5의 스칼라 센서에서 받는 이유가 그 사각지대이고, 과제가 그것을 융합한다.
 
 ### 2.5 이미지 특징: 검출, 기술, 매칭
 
@@ -1099,6 +1129,12 @@ $X = (u-c_x)Z/f_x$, $Y=(v-c_y)Z/f_y$. 모든 클라우드는 어떤 프레임(�
 ([[04-robotics/robot-systems-deployment|런타임에서는 TF 트리]]). 그럴듯해 보여도 틀린
 프레임의 클라우드는 학습으로 잘 고쳐지지 않는 계통 오차를 만든다.
 
+**얼마나 촘촘한가, 그리고 격자를 남겨 둘 이유.** $640\times480$ 깊이 이미지 한 장은 유효한 깊이를 가진 픽셀마다 점 하나씩, 많아야 $307{,}200$개의 점을 준다. 카메라를 마주 보는 면에서 이웃 픽셀은 $Z/f$만큼 떨어져 찍힌다. 랜드마크의 $2$ m에서 $3.3$ mm, $8$ m에서 $13.3$ mm이므로, 같은 장면이 네 배 먼 곳에서는 네 배 성기게 표본화되고, ICP(§4)는 먼 면에서 더 적고 더 시끄러운 대응점을 얻는다. 이미지 격자를 유지한 클라우드를 **격자형**(organized) 클라우드라 한다. 점의 이웃을 공간 탐색이 아니라 픽셀 인덱스로 찾으므로, point-to-plane ICP에 필요한 법선을 싸게 추정할 수 있다.
+
+**리그로 계산한 프레임.** $L=(0.5,\ 0.2,\ 2.0)$ m는 카메라 프레임 좌표다. 팔은 공구 프레임에서 계획하고, 이 리그에 대한 §5의 손–눈 변환 $X=\big(I,\ (0,0,-0.04)\big)$가 그것을 옮긴다: $p^{g}=R_Xp^{c}+t_X=(0.5,\ 0.2,\ 1.96)$ m. 한 고리 더 가면 베이스 프레임은 $p^{b}=T_{bg}\,X\,p^{c}$이고, $T_{bg}$는 P2의 관절 엔코더에서 온다. §5가 표적에 대해 쓰는 것과 같은 사슬이다. 여기서 두 종류의 프레임 오차가 나오고, 둘은 다르게 행동한다. $X$를 빼먹고 카메라 좌표를 공구 좌표로 쓰면 클라우드의 모든 점이 거리와 상관없이 공구 축을 따라 똑같이 $4$ cm 어긋난다. 학습 데이터를 아무리 모아도 평균으로 지워지지 않는 편향이고, "학습으로 잘 고쳐지지 않는다"는 말의 실제 뜻이 그것이다. 대신 $X$의 회전을 $1^\circ$ 틀리면 점은 회전축에서의 거리 1미터마다 $2\sin(0.5^\circ)=1.75$ cm씩 움직인다. 카메라 $y$축에서 $2.06$ m 떨어진 $L$은 $3.6$ cm, $0.5$ m 떨어진 점은 $1$ cm 미만이다. 병진 오차는 일정하고, 회전 오차는 거리와 함께 자란다.
+
+**프레임은 시각이기도 하다.** 팔이 움직이는 동안 찍은 클라우드는 찍힌 순간의 카메라 자세에 속한다. 그것을 다른 순간의 팔 자세와 짝지으면 클라우드 전체가 그 사이 카메라가 움직인 거리만큼 틀린 프레임에 놓인다. $0.10$ m/s로 움직이는 카메라와 $30$ ms의 어긋남이면 $3$ mm다. 어느 타임스탬프에 어느 변환을 조회하는지는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §4]]의 TF 트리이고, $X$를 정하는 보정은 §5다. 포인트 클라우드 논문이 밀리미터를 인용하면 어느 프레임에서인지, 그리고 클라우드를 거기 놓은 extrinsic과 타임스탬프가 추정한 것인지 가정한 것인지 물어라.
+
 ### 4. Registration과 ICP
 
 **Registration**은 두 기하를 정렬한다. 스캔끼리, 점군과 부품 모델, 현장 스캔과 BIM이 대상이다. 미지수는 강체 변환 $T\in SE(3)$다. 최적화하기 전에 어떤 점끼리 같은 표면을 나타내는지부터 물어야 한다.
@@ -1179,6 +1215,16 @@ $$e_{\text{RMS}} = \sqrt{\frac{1}{NM}\sum_{i=1}^{N}\sum_{j=1}^{M} \big\lVert \ti
 읽을 때 물어라: *어느 단계가 학습이고 어느 단계가 기하이며, 미터 스케일은 어디서
 들어오는가?* (보정된 스테레오/LiDAR, 알려진 물체 크기, 또는 아예 없음).
 
+**리그에서 스케일이 들어오는 곳.** 세 곳이 있고, 셋 모두 기선 $B$만 다른 같은 $Z^2$ 법칙을 따른다. 측정 오차 $\delta$는 깊이를 약 $Z^2\delta/B$만큼 옮기며, 스테레오는 $B=fb=72$ px·m, $0.5$ m 알려진 길이는 $B=f\ell=300$ px·m, 기준점 맞추기는 $B=s$다.
+
+*보정된 스테레오*는 §2의 것이다. $fb=72$ px·m이므로 $2$ m에서 시차 1픽셀이 $5.6$ cm다.
+
+*알려진 길이*는 물체를 기선으로 삼아 같은 방식으로 작동한다. 표적 모서리 $A$와 $B$는 $0.5$ m 떨어져 있고 영상에서 $150$ px 떨어져 있으므로 알려진 길이 $\ell=0.5$ m로 $Z=f\ell/\Delta u=600\times0.5/150=2.0$ m이며, 그 간격을 1픽셀 틀리면 깊이가 $Z^2/(f\ell)=4/300=1.3$ cm 움직인다. 표적이 $b=0.12$ m보다 긴 기선이므로 스테레오 쌍보다 네 배 좋다.
+
+*기준점에 맞추기*는 학습된 상대 깊이가 미터가 되는 방법이다. 스케일과 오프셋을 모른 채 역깊이를 예측하는 네트워크는 $s$와 $t$를 모르는 $r=s/Z+t$를 내놓으므로, 서로 다른 거리에 깊이를 아는 픽셀이 적어도 둘 필요하다. 네트워크가 $L$(스테레오: $Z=2.0$ m)에서 $r=0.80$, §2의 $8$ m 점에서 $r=0.35$를 낸다고 하자. 그러면 $s=1.2$, $t=0.2$이고, $r=0.50$인 세 번째 픽셀은 $Z=4.0$ m에 있다. 출력 오차 $\pm0.01$은 그 픽셀을 $3.87$에서 $4.14$ m 사이로, $8$ m에 있는 픽셀을 $7.50$에서 $8.57$ m 사이로 옮긴다. 역깊이는 유계로 남지만, 그 오차는 스테레오와 똑같이 거리와 함께 자란다. 같은 깊이에 있는 기준점 둘은 아무것도 정하지 못한다. 미지수 둘에 식 하나이기 때문이다.
+
+**복원에도 같은 질문을.** 움직이는 카메라 하나는 장면을 닮음 변환까지만 복원한다. 숫자 일곱 개이고 그중 하나가 스케일이다. 그래서 단안 structure-from-motion의 자세로 맞춘 NeRF나 3DGS 모델은 알려진 길이 하나가 정해 주기 전까지 임의 단위에 있다. 그 길이는 $0.5$ m 표적 모서리일 수도 있고, 팔 자신의 움직임일 수도 있다. P2의 엔코더가 §5의 손–눈 $X$를 거쳐 카메라가 얼마나 움직였는지 말해 주므로, 정지한 장면을 옆으로 $0.12$ m 옮기기 전과 후에 찍은 영상 두 장은 시간 속의 §2 스테레오 쌍이다. 정본 노트도 학습된 깊이에 대해 같은 말을 한다. [[01-canonical-papers/notes/2-computer-vision/depth-anything|Depth Anything]]의 강건한 상대 깊이도 새 현장에서는 미터 헤드와 스케일 보정이 여전히 필요하다.
+
 ### 7. 주장과 평가 읽기
 
 | 논문 표현 | 받아들이기 전에 확인할 것 |
@@ -1205,6 +1251,12 @@ $\xi$를 줄이는 twist([[04-robotics/modern-robotics/ch03-rigid-body-motions|M
 pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 좋은 특징 기하가 필요하다. 어느 식도
 시야 유지, 구동기 한계, 전역 수렴, 충돌 회피를 혼자 보장하지 않는다. "closed-loop perception"
 주장은 오차·야코비안·제어 주기·깊이 출처와 국소 수렴 영역 밖의 회복을 확인해 읽는다.
+
+**리그로 계산: 점 하나에 대한 IBVS.** 랜드마크의 픽셀 $(470,300)$을 현재 특징으로, 주점을 목표로 두면 정규화 좌표에서 오차는 $e=(0.25,\ 0.10)$이다. 영상면에 평행하게 병진만 하는 카메라라면 $L_s$의 관련된 두 열은 대각선에 $-1/Z$를 가지므로, 법칙 $v_c=-\lambda L_s^+e$는 $v_c=\lambda\hat Z e$가 된다. $\lambda=0.5\ \mathrm{s^{-1}}$, $\hat Z=2.0$ m이면 $(0.25,\ 0.10)$ m/s를 명령하고, 오차는 $e^{-\lambda t}$로 줄어 $6$ s 뒤에는 $5\%$가 남는다. 깊이 추정이 $2.0$ m가 아니라 $1.0$ m이면 수렴은 깨지지 않고 속도만 $0.25\ \mathrm{s^{-1}}$로 반이 된다. 여섯 열 전체에서 깊이는 병진 열에만 나타나므로, 틀린 $\hat Z$는 병진과 회전 사이의 몫도 바꾸고 경로가 휜다.
+
+**IBVS가 보정에 강건하다고 불리는 이유.** 목표 영상 $s^*$를 카메라가 목표에 있을 때 기록했다면, IBVS는 그 영상으로 수렴하고, 특징이 자세를 못 박아 줄 때 그 자세로도 수렴한다. 일반 위치의 점 넷 이상이면 그렇고, 점 셋은 자세를 최대 네 개까지 허용하며, 위 예제의 점 하나는 자유도 여섯 중 넷을 풀어 둔다. 초점 거리와 손–눈 오차는 루프가 수렴하는 한 경로와 속도를 바꿀 뿐 끝점은 바꾸지 않는다. PBVS는 보정된 모델을 거쳐 오차를 계산하므로 그 오차가 수렴 뒤에도 남는다. 대상으로 한 번 끝까지의 $\hat f=598$ px로, $0.5$ m 표적 모서리를 $2.0$ m에 두라는 PBVS 루프는 그 깊이를 $\hat f\cdot0.5/\Delta u$로 읽어 $\Delta u=149.5$ px에서 멈추고, 그때 실제로는 $2.0067$ m에 있다. 수렴한 뒤에도 $6.7$ mm 멀다. $4$ cm 오프셋 대신 $X=I$를 가정하면 PBVS의 공구 목표가 공구 축을 따라 $4$ cm 어긋난다.
+
+**게인은 대역폭이므로 지연이 그것을 묶는다.** 폐루프 $\dot e=-\lambda e$는 개루프 $L(s)=\lambda/s$에서 나오는데, 이것은 $\lambda$에서 교차하고 위상 여유가 $90^\circ$인 적분기이며, 지연 $\tau$가 그 여유에서 $\lambda\tau$ 라디안을 쓴다. **P6**([[02-foundations/lab-plants|0.6]])의 카메라–힘 예산 $70$ ms라면 $\lambda=0.5\ \mathrm{s^{-1}}$에서 $2^\circ$, $\lambda=10\ \mathrm{s^{-1}}$에서 $40^\circ$를 써 $50^\circ$가 남고, $\lambda=\pi/(2\tau)=22.4\ \mathrm{s^{-1}}$ 근처에서 루프가 불안정해진다. 일반형은 [[04-robotics/control-theory-ce397|5. 제어 이론 §5.5]]의 지연 예산이다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

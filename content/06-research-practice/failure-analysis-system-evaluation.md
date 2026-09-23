@@ -206,6 +206,10 @@ Declare whether intervention terminates an attempt, whether later completion is 
 
 ### 6. Reliability and field exposure
 
+*In one sentence:* how reliable a robot is shows only when its failures are counted against how long it ran, and a short run with no failures proves much less than it seems to.
+
+*If you need only one thing from this section:* a failure rate is failures divided by exposure, with an exact interval around it — F1's six failures in $200$ h give $0.030$ per hour with a $95\%$ interval of $[0.0110,\ 0.0653]$, an MTBF of $33.3$ h and an availability of $0.982$; each is worked in the definition boxes below.
+
 Report failures per hour/cycle/distance as well as per-episode success when appropriate. Availability includes uptime and repair/recovery time. Rare severe failures require much greater exposure than ordinary task errors; zero observed events does not establish zero risk.
 
 Exposure also does not stop accumulating when the paper is finished. A deployed system meets
@@ -578,6 +582,10 @@ flowchart LR
 **RS1에서는.** 사건 5에서는 아무것도 회복하지 않았다. 하드웨어 정지는 시도를 끝낸 안전 기능, 곧 보호 정지이고, 점검 뒤의 재시작은 개입이었다. 힘 기록이 무효였던 사건 3과 4를 다시 돌리는 것은 새 시행을 시작하는 리셋이다. 사건 5를 제어기 A의 실패한 RS1 시행으로 셀지는 시행 전에 선언한 규칙이 정한다([[06-research-practice/experimental-design-reproducibility|2. 실험 설계 §7]]). 이것을 "시험 장치 결함"으로 제외하면 A를 덜 안전하게 만드는 바로 그 실패 방식 — A의 정지는 신선한 힘 신호에 의존한다 — 을 A의 기록에서 지우게 된다. 그러니 방어 가능한 보고는 이것을 실패한 시도로 남기고 원인을 표시한다.
 
 ### 6. 신뢰성과 현장 노출
+
+*한 문장으로:* 로봇이 얼마나 믿을 만한지는 실패를 그것이 돌아간 시간에 견주어 셀 때에만 드러나고, 실패 없이 끝난 짧은 운전은 보기보다 훨씬 적은 것을 증명한다.
+
+*이 절에서 하나만 가져간다면:* 실패율은 실패 수를 노출로 나눈 것이고 그 둘레에 정확 구간이 붙는다는 것 — F1의 $200$ h 동안 실패 여섯 번은 시간당 $0.030$, $95\%$ 구간 $[0.0110,\ 0.0653]$, MTBF $33.3$ h, 가용성 $0.982$를 준다. 아래 정의 상자들이 하나씩 계산한다.
 
 적절할 때 에피소드당 성공만이 아니라 시간/사이클/거리당 실패도 보고하라. 가용성
 (availability)은 가동 시간과 수리·회복 시간을 포함한다. 드물고 심각한 실패는 일반 과제

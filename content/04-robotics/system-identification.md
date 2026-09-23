@@ -131,6 +131,12 @@ since the free response over a period is $e^{\alpha T}$ and the held input accum
 - **It is linear in $(a,b)$ and nonlinear in $\alpha$.** So identify $(a,b)$ by least squares and convert afterwards (§7); fitting $\alpha$ directly would put the unknown inside an exponential.
 - **The pole map does not depend on the hold; the input side does.** $a=e^{\alpha T}$ is the free response, which never sees what the input does between samples, while $b$ is built from the hold. An actuator that does not hold its command — one that ramps or smooths it between samples — changes the input side of the correct sampled model, its coefficient and possibly how many past inputs appear, but not the pole. Fit an input side that matches the actuator, because an error there leaks into $\hat a$ as well.
 
+**The input side, priced on P4.** Suppose the heater's driver ramped each new command in over the period, linearly from $u_{k-1}$ to $u_k$, instead of holding it. The free response is untouched, so $a=0.904837$ still, but the input term splits in two, because part of each period is now driven by the previous command:
+
+$$x_{k+1}=a\,x_k+b_0\,u_k+b_1\,u_{k-1},\qquad b_0=0.048374,\quad b_1=0.046788$$
+
+and $b_0+b_1=0.095163=b$, so the DC gain is still $1$. Fit the two-parameter structure of §3 to this actuator's exact, noise-free records and the missing $u_{k-1}$ lands in the pole: $\hat\tau=1.10\,\mathrm{s}$ from the step, $1.35\,\mathrm{s}$ from §8's PRBS, and $\hat a=1.048$ from the worked case's five commands, a pole no stable heater has (§7's first check). Add $u_{k-1}$ as a third regressor and least squares returns all three coefficients exactly. An identified pole is therefore only as good as the model of what the actuator does between samples, and a paper that reports one should say which hold it assumed.
+
 ### 3. Least squares on the regression
 
 Write the sampled model with its unexplained part made explicit:
@@ -272,6 +278,10 @@ Three more things to check before trusting a converted number.
 - **$0<\hat a<1$** for a stable real pole. $\hat a\ge1$ is an integrator or an unstable plant. $\hat a\le0$ is no first-order continuous model at all, since $e^{\alpha T}>0$ for every real $\alpha$; it means the structure is wrong or the sampling is far too slow.
 - **The DC gain has no logarithm in it** and is correspondingly robust. The step under output noise $\sigma=0.1$ gets $\hat K=0.3444/(1-0.6418)=0.961$ while its $\hat\tau$ is $0.23\,\mathrm{s}$.
 - **Warning — do not map back with Euler.** $\hat\alpha\approx(\hat a-1)/T$ looks like the inverse of the explicit-Euler step and is wrong by a fixed amount: from the exact $a$ it gives $-0.9516$ instead of $-1$, a $4.8\,\%$ error no amount of data removes, growing to $21\,\%$ at $T=0.5\,\mathrm{s}$.
+
+**The whole map, on the worked case's estimate.** From $(\hat a,\hat b)=(0.90183,\ 0.095644)$ at $T=0.1\,\mathrm{s}$, $\hat\alpha=\ln0.90183/0.1=-1.0333\,\mathrm{s^{-1}}$ and $\hat\beta=\hat\alpha\hat b/(\hat a-1)=1.0067$. The input gain is off by $0.7\,\%$ while the pole is off by $3.3\,\%$, and $-\hat\beta/\hat\alpha=0.974$ is the worked case's $\hat K$, as it must be.
+
+**Why a model is carried in continuous time.** A controller seldom runs at the rate the record was taken at, and a sampled model is valid only at its own $T$. To use the heater in a $50\,\mathrm{Hz}$ loop, go back through $(\hat\alpha,\hat\beta)$ and sample again with §2's map at $T=0.02\,\mathrm{s}$: that gives $e^{-1.0333\times0.02}=0.97955$ and $0.019927$, against the true $0.98020$ and $0.019801$. Reusing the $10\,\mathrm{Hz}$ pair unchanged at $50\,\mathrm{Hz}$ instead runs a heater whose time constant is $-0.02/\ln0.904837=0.2\,\mathrm{s}$, five times too fast, and a controller tuned on that model is tuned for the wrong plant. The matrix version of the same resampling is [[04-robotics/control-theory-ce397|5. Control Theory §4]].
 
 ### 8. Lab: three inputs, one heater
 
@@ -630,6 +640,12 @@ $$a=e^{\alpha T},\qquad b=\frac{e^{\alpha T}-1}{\alpha}\,\beta$$
 - **$(a,b)$에 선형이고 $\alpha$에는 비선형이다.** 그러니 $(a,b)$를 최소제곱으로 식별하고 나중에 변환한다(§7). $\alpha$를 직접 맞추면 미지수가 지수함수 안에 들어간다.
 - **극점 사상은 홀드에 의존하지 않고, 입력 쪽은 의존한다.** $a=e^{\alpha T}$는 자유 응답이라 샘플 사이에 입력이 무엇을 하는지 보지 않는다. $b$는 홀드로부터 만들어진다. 명령을 유지하지 않는 액추에이터 — 샘플 사이에 명령을 경사로 잇거나 매끄럽게 만드는 것 — 는 올바른 샘플 모델의 입력 쪽, 곧 그 계수와 경우에 따라 과거 입력이 몇 개 들어가는지를 바꾸지만 극점은 바꾸지 않는다. 액추에이터에 맞는 입력 쪽을 맞춰라. 거기서 생긴 오차는 $\hat a$로도 새어 들어가기 때문이다.
 
+**입력 쪽의 값을 P4에서 매기면.** 히터의 구동기가 새 명령을 유지하지 않고 한 주기에 걸쳐 $u_{k-1}$에서 $u_k$까지 직선으로 올린다고 하자. 자유 응답은 그대로이므로 $a=0.904837$도 그대로지만, 입력 항은 둘로 갈라진다. 이제 각 주기의 일부를 이전 명령이 구동하기 때문이다:
+
+$$x_{k+1}=a\,x_k+b_0\,u_k+b_1\,u_{k-1},\qquad b_0=0.048374,\quad b_1=0.046788$$
+
+그리고 $b_0+b_1=0.095163=b$이므로 DC 이득은 여전히 $1$이다. 이 액추에이터의 정확하고 잡음 없는 기록에 §3의 두 파라미터 구조를 맞추면 빠진 $u_{k-1}$이 극점으로 들어간다. 계단에서는 $\hat\tau=1.10\,\mathrm{s}$, §8의 PRBS에서는 $1.35\,\mathrm{s}$, 계산 절의 명령 다섯 개에서는 $\hat a=1.048$로, 안정한 히터에는 있을 수 없는 극점이다(§7의 첫째 확인). $u_{k-1}$을 셋째 회귀 변수로 더하면 최소제곱은 세 계수를 모두 정확히 돌려준다. 그러므로 식별된 극점은 샘플 사이에 액추에이터가 무엇을 하는지에 대한 모델만큼만 옳고, 극점을 보고하는 논문은 어떤 홀드를 가정했는지 밝혀야 한다.
+
 ### 3. 회귀 위의 최소제곱
 
 설명되지 않는 부분을 드러내 샘플 모델을 쓴다:
@@ -771,6 +787,10 @@ $$\frac{\delta\tau}{\tau}=-\frac{\delta\alpha}{\alpha}=\frac{\delta a}{a}\cdot\f
 - 안정한 실수 극점이려면 **$0<\hat a<1$**. $\hat a\ge1$은 적분기이거나 불안정한 플랜트다. $\hat a\le0$은 1차 연속 모델이 아예 아니다. 모든 실수 $\alpha$에 대해 $e^{\alpha T}>0$이기 때문이다. 구조가 틀렸거나 샘플링이 너무 느리다는 뜻이다.
 - **DC 이득에는 로그가 없고**, 그만큼 튼튼하다. 출력 잡음 $\sigma=0.1$의 계단은 $\hat\tau$가 $0.23\,\mathrm{s}$인데도 $\hat K=0.3444/(1-0.6418)=0.961$을 얻는다.
 - **경고 — 오일러로 되돌리지 마라.** $\hat\alpha\approx(\hat a-1)/T$는 명시적 오일러 스텝의 역처럼 보이지만 고정된 양만큼 틀린다. 정확한 $a$에서 $-1$ 대신 $-0.9516$을 주는데, 어떤 양의 데이터도 없애지 못하는 $4.8\,\%$ 오차이고, $T=0.5\,\mathrm{s}$에서는 $21\,\%$로 커진다.
+
+**계산 절의 추정값에 사상 전체를 적용하면.** $T=0.1\,\mathrm{s}$의 $(\hat a,\hat b)=(0.90183,\ 0.095644)$에서 $\hat\alpha=\ln0.90183/0.1=-1.0333\,\mathrm{s^{-1}}$, $\hat\beta=\hat\alpha\hat b/(\hat a-1)=1.0067$이다. 입력 이득은 $0.7\,\%$ 틀렸고 극점은 $3.3\,\%$ 틀렸으며, $-\hat\beta/\hat\alpha=0.974$는 당연히 계산 절의 $\hat K$와 같다.
+
+**모델을 연속 시간으로 들고 다니는 이유.** 제어기가 기록을 얻은 주기로 도는 일은 드물고, 샘플 모델은 자기 $T$에서만 맞다. 히터를 $50\,\mathrm{Hz}$ 루프에서 쓰려면 $(\hat\alpha,\hat\beta)$로 돌아가 §2의 사상으로 $T=0.02\,\mathrm{s}$에서 다시 샘플링한다. 그러면 $e^{-1.0333\times0.02}=0.97955$와 $0.019927$이 나오고, 참값은 $0.98020$과 $0.019801$이다. $10\,\mathrm{Hz}$ 쌍을 그대로 $50\,\mathrm{Hz}$에서 쓰면 시상수가 $-0.02/\ln0.904837=0.2\,\mathrm{s}$인, 다섯 배 빠른 히터를 돌리는 셈이고, 그 모델로 조정한 제어기는 엉뚱한 플랜트에 맞춰진다. 같은 재샘플링의 행렬판은 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]다.
 
 ### 8. 랩: 입력 셋, 히터 하나
 

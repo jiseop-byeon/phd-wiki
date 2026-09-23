@@ -180,6 +180,12 @@ When a paper says “action,” identify whether it means joint position, veloci
 
 ### 3. Timing and a latency budget
 
+*In one sentence:* a robot always acts on the world as it was a moment ago, and this section adds up how long that moment is, stage by stage, and asks whether the slowest cycle still finishes on time.
+
+*If you need only one thing from this section:* the $70\,\mathrm{ms}$ budget is a sum of four named parts (the table below), not a frame rate, and a delay is a distance, $7\,\mathrm{cm}$ at $1\,\mathrm{m/s}$; P6's version, a goal $200\,\mathrm{ms}$ late, is worked in the paragraph "Worked: plant P6" further down.
+
+#### The example budget, and what a delay costs
+
 | Component | Example latency |
 |---|---:|
 | Camera exposure/readout | 15 ms |
@@ -189,6 +195,8 @@ When a paper says “action,” identify whether it means joint position, veloci
 | **Observation-to-action** | **70 ms** |
 
 At 1 m/s, 70 ms corresponds to 7 cm of motion before the new command has effect. Frequency is not latency: a 30 Hz system may still act on old frames. Check sampling rate, inference rate, jitter, deadline misses, queueing, timestamp policy, and whether latency was measured end-to-end. Whether a distance like those 7 cm is too large depends on what it would correct: set against an estimate's σ, it is the staleness distance of [[04-robotics/capstone-panel-contact|26. Capstone §5]].
+
+#### The latency budget, term by term
 
 **The budget, as a sum.** **Observation-to-action latency** $L$ is the elapsed time from the physical event to the moment the command derived from that event takes effect on the actuator. It is not one measurement but a sum of named terms, each of which some component owns:
 
@@ -204,6 +212,8 @@ The terms add because the stages are in series and each must finish before the n
 - $T_{\text{ctrl}}$ — **actuation**, one controller period before the command is applied.
 
 **Non-example:** adding the *rates* is not a budget. "A 30 Hz camera, a 25 Hz policy and a 500 Hz controller" does not reduce to any latency at all, because rates do not add, and the fastest stage in a series chain still contributes its own fixed delay. Two systems with identical rates can differ by 50 ms in $L$ purely in queueing and timestamp policy.
+
+#### Deadlines and jitter
 
 **Deadline and jitter, defined.** A periodic task with period $T$ is **released** at $r_k=r_0+kT$ and finishes at $f_k$, so its **response time** is $R_k=f_k-r_k$. Its **deadline** $D$ is the time after release by which it must finish, usually $D=T$, and a **deadline miss** is any instance with $R_k>D$. The strength of the deadline is a separate claim from its value, and there are three:
 
@@ -221,6 +231,8 @@ since what a deadline argument needs is the extreme and not the centre — a sta
 > P6's control loop at 200 Hz, so $T=D=5$ ms. Five measured response times: $1.2, 1.5, 4.8, 1.3, 1.4$ ms. The mean is $2.04$ ms, the peak-to-peak jitter is $4.8-1.2=\mathbf{3.6}$ ms, there are **zero** deadline misses, and the margin at the worst instance is $5.0-4.8=0.2$ ms — that tick used $96\%$ of its period.
 >
 > **Non-example — quoting the mean as the rate.** $1000/2.04=490$ Hz describes a loop that does not exist. The loop is 200 Hz, and one tick in five came within $0.2$ ms of missing. The mean is the number that looks good in a table; the maximum is the number that decides whether the system works. Move the identical task under the $1$ ms haptic deadline named below and **all five** instances miss, with no change to the mean at all.
+
+#### P6's budget, and one visuomotor loop added up
 
 **Worked: plant P6.** Encoder $N=2048$ counts/m, so one count is $1000/2048=0.488\,\mathrm{mm}$. Vision at $50\,\mathrm{Hz}$ ($20\,\mathrm{ms}$), control at $200\,\mathrm{Hz}$ ($5\,\mathrm{ms}$), budget $70\,\mathrm{ms}$ from camera mid-exposure to force ([[02-foundations/lab-plants|0.6]]). A vision message $200\,\mathrm{ms}$ old at the controller is $130\,\mathrm{ms}$ over budget and $200/5=40$ stale ticks. At $0.10\,\mathrm{m/s}$ the cart travels $20\,\mathrm{mm}$ ($41$ counts) in that age. The estimator on [[04-robotics/state-estimation-slam|3]] cannot save you: the goal is late, not noisy. The problem set is this timeline as a drawing. The silent-failure drill (TF stamp, QoS) is [[04-robotics/ros2/qos-executors-time|25.5]]. What P6's sensors do contribute as noise, sensor by sensor, is modelled on [[04-robotics/sensor-models|3.2 Sensor Models & Noise]]. Budgets tighten by more than an
 order of magnitude when the loop renders stiff contact: a haptic servo must close in about 1 ms with bounded jitter,
@@ -278,6 +290,10 @@ so the millisecond is the unit rather than the frame
 
 ### 4. Coordinate frames and TF trees
 
+*In one sentence:* every position a robot uses is written from some viewpoint at some moment, and the TF tree is the bookkeeping that gives one answer to "where is this thing, seen from there, at that time".
+
+*If you need only one thing from this section:* a loop closure rewrites only the `map` → `odom` edge, so a goal stored in `map` jumps $30\,\mathrm{cm}$ while the robot stands still, worked in the example that ends this section.
+
 Common frames include world, map, odom, base, sensor, end-effector, tool, and object. Every transform needs a direction and timestamp. A plausible numeric matrix in the wrong convention can create a systematic failure that learning cannot repair reliably.
 
 **A transform, and the direction that names it.** A transform ${}^{a}T_{b}\in SE(3)$ has two readings that are the same matrix: it takes the coordinates of a point in frame $b$ to its coordinates in frame $a$, and it *is* the pose of frame $b$ expressed in frame $a$. Written with both indices, transforms chain by cancelling the inner one, and invert by transposing the rotation:
@@ -306,7 +322,17 @@ For example, suppose the base sits at $(1.0, 2.0)$ m in odom and a goal is store
 
 ROS is one implementation ecosystem, not the system architecture itself. “Runs on ROS” says little about latency, determinism, safety, or deployment quality.
 
+**Each row is a promise about time as well as data.** Put P6's traffic on the table and the row is forced. The $50\,\mathrm{Hz}$ goal is a *topic*, because each goal replaces the one $20\,\mathrm{ms}$ before it, so a lost one is repaired by the next. "Drive the cart to $p=0.5\,\mathrm{m}$" is an *action*, because it runs for seconds, reports progress, and must be cancellable when the goal changes. Setting a controller gain is a *service* or parameter call, one request and one reply, because it must not be lost without anyone noticing. And the cart's frames are *TF*, because a goal is useless without the frame and the stamp it was measured in (§4).
+
+**The queue is a term in §3's budget.** The middleware buffers messages under a history depth $N$ ([[04-robotics/ros2/qos-executors-time|25.5 Quality of Service §2]]). Under the default profile, keep-last $10$, a controller that stalls for $200\,\mathrm{ms}$ resumes on a queue of goals and is handed the oldest first, $(10-1)\times20=180\,\mathrm{ms}$ old, which is $110\,\mathrm{ms}$ over the $70\,\mathrm{ms}$ budget, and it reaches the newest goal only at its tenth callback. Nothing in the algorithm changed; one line of configuration did. That is why "runs on ROS" is not a latency claim: the same node graph has a different worst-case goal age under a different profile.
+
 ### 6. Behavior orchestration and task execution
+
+*In one sentence:* something has to decide which planner or controller runs right now and what happens when it fails, and a behavior tree makes that decision again at every tick from three possible answers: done, failed, or still working.
+
+*If you need only one thing from this section:* the three-valued tick (Success, Failure, Running) and what it buys in the example tree below, where `batteryOK` turning false mid-drive halts `FollowPath` on the very next tick and enters recovery.
+
+#### The execution layer and its vocabulary
 
 Between the task command and the planner/controller usually sits an **execution layer**
 — a finite-state machine (FSM), behavior tree, or task executive — that decides *which*
@@ -333,6 +359,8 @@ Idle → Detect object → Plan grasp → Execute → Verify
 Behavior trees compose these modularly and are common in field systems; FSMs are simpler
 but tangle as states multiply.
 
+#### Behavior trees, defined by what a tick returns
+
 **Behavior tree, defined by what a tick returns.** A behavior tree is a rooted tree whose leaves are **actions** (do something) and **conditions** (test something), and whose interior nodes are **control-flow nodes**. It is executed by a **tick**: a signal injected at the root at a fixed rate and propagated to children according to each node's type. Every ticked node returns exactly one of three statuses, and that three-valued return is the entire design:
 
 $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\}$$
@@ -342,6 +370,8 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 - **Sequence** — ticks its children left to right. Returns **Failure** at the first child that fails, **Running** at the first that is Running, and **Success** only when every child has succeeded. It is a logical **AND** over its children, and it is how a precondition is written: put the condition first, and the action after it never runs while the condition is false.
 - **Fallback** (also called **selector**) — ticks left to right and returns **Success** at the first child that succeeds, **Running** at the first that is Running, and **Failure** only when every child has failed. It is a logical **OR**, and it is the recovery construct, since the children after the first are the alternatives tried in order.
 - **Decorator** — has **exactly one child**, and transforms either the child's returned status or whether the child is ticked at all. `Inverter` swaps Success and Failure; `RetryUntilSuccessful(n)` re-ticks a failing child up to $n$ times; `Timeout(ms)` fails a child that runs too long; `RateController(hz)` ticks its child only at the given rate and repeats the last status in between. The one-child rule is exactly what separates a decorator from a control-flow node.
+
+#### The tick contract, one tree, and what a tree is not
 
 **The tick contract** is the part that gets skipped and then produces bugs. Three clauses: a tick re-enters from the **root** every cycle, so conditions are re-evaluated continuously and an action that is already Running is abandoned the moment an earlier sibling's condition turns false — that reactivity is what a tree buys over a chain of calls. A node that was Running and is no longer on the ticked path must therefore be explicitly **halted**, so every action node owes a halt implementation as well as a tick. And status is *returned*, never stored as a transition, because there are no edges between siblings at all.
 
@@ -353,9 +383,13 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 
 ### 6.5 Architecture lineages and formal task specifications
 
+*In one sentence:* robot software settled on three layers that run at three speeds, and temporal logic is a way to write down what those layers must always, eventually, or never do, precisely enough for a computer to check a design or to build a controller from the rule.
+
+*If you need only one thing from this section:* a specification can be satisfiable and still not realizable; the panel-delivery formula below is met by a fault-free run that delivers A and then B, yet no controller can guarantee it, because the zone sensor may fail before the first delivery.
+
 The execution layer of §6 is the middle tier of a design robotics reached after two extremes failed, and temporal logic states what that design must guarantee precisely enough to check or to generate it.
 
-**Three lineages.**
+#### Three architecture lineages
 
 - **Sense–plan–act** (the Shakey-era deliberative pipeline): sensing builds a world model, a planner reasons on it, a controller executes. The planner is a bottleneck the controller waits on, and the controller never sees sensors directly, so the robot cannot react while it thinks.
 - **Subsumption** (Brooks 1986): parallel reactive behaviours, each wiring sensors to actuators; a higher layer *suppresses* a lower one's input or *inhibits* its output. No world model, so reaction is fast; no long-horizon planning either.
@@ -369,7 +403,11 @@ The execution layer of §6 is the middle tier of a design robotics reached after
 
 Tiers talk through §5's split: topics carry data, services and actions carry commands with a reply. **The reading this gives you.** "The LLM plans" replaces the deliberator only; recovery still lives in the sequencer and stability in the controller.
 
+#### Temporal logic, from propositions up
+
 **Temporal logic.** A **proposition** is a named fact that is true or false at each step, such as $\mathit{near}$ or $\mathit{stop}$, and the Boolean connectives combine propositions within one step: $\neg\varphi$ (not), $\varphi\wedge\psi$ (and), $\varphi\vee\psi$ (or), and $\varphi\rightarrow\psi$ (if $\varphi$ then $\psi$), which is false only when $\varphi$ holds and $\psi$ does not, so it is true *vacuously* at every step where $\varphi$ is false. Temporal logic is logic about sequences over time: a formula is judged true or false of a whole run — a list of steps, each recording which propositions hold — rather than of one moment. LTL (Pnueli 1977) adds four operators to Boolean propositions over discrete steps: $\mathsf{X}\,\varphi$ (next step), $\mathsf{F}\,\varphi$ (eventually), $\mathsf{G}\,\varphi$ (always), $\varphi\,\mathsf{U}\,\psi$ ($\varphi$ at every step until $\psi$, which must occur). Patterns: safety $\mathsf{G}\,\neg\mathit{collision}$; liveness $\mathsf{G}\mathsf{F}\,\mathit{atCharger}$ (from every step, a charger visit still lies ahead, so on an infinite run the robot returns infinitely often); response $\mathsf{G}(\mathit{req}\rightarrow\mathsf{F}\,\mathit{grant})$; sequencing $\mathsf{F}(a\wedge\mathsf{F}\,b)$.
+
+#### Model checking, synthesis, and the logics robots actually use
 
 *Model checking* asks whether every behaviour of a given design satisfies $\varphi$, and returns yes or a counterexample. *Reactive synthesis* builds a controller that satisfies $\varphi$ against every sequence of environment inputs, choosing each output from the past alone, because a real robot must act before it sees the next input.
 
@@ -378,6 +416,8 @@ That causality is what separates two words. $\varphi$ is *satisfiable* if some i
 Synthesis for full LTL is doubly exponential in formula size (Pnueli & Rosner 1989). Roughly, turning the formula into an automaton costs one exponential, and making that automaton deterministic, so the controller always knows which obligations are pending, costs another. So robotics uses fragments such as GR(1), *Generalized Reactivity(1)* (initial conditions, `always` step constraints, `always eventually` goals), solvable in time polynomial in the game's state space (Piterman, Pnueli & Sa'ar 2006) and applied to reactive mission and motion planning by Kress-Gerwin, Fainekos & Pappas (2009).
 
 For continuous signals, signal temporal logic adds time intervals and real-valued predicates, with a robustness score saying by how much a signal satisfies or violates the formula (Maler & Nickovic 2004; Donzé & Maler 2010). For "distance always above 2 m" the score is the worst margin: a run whose closest approach is 2.5 m scores $+0.5$ m, and one that dips to 1.8 m scores $-0.2$ m.
+
+#### Writing one specification, and checking it on a log
 
 **Writing a spec.** "Always keep 2 m from any worker; eventually deliver panel A then panel B; if the zone sensor fails, stop." Let $\mathit{near}$ = within 2 m of a worker (from perception), $\mathit{fail}$ = zone-sensor fault, $\mathit{dA},\mathit{dB}$ = panel delivered, $\mathit{stop}$ = zero velocity commanded. Reading "stop" as "by the next step, and stay stopped":
 
@@ -438,6 +478,8 @@ A dead node can leave a live command because downstream hardware may retain the 
 
 Record intrinsic/extrinsic calibration, zero offsets, units, frame conventions, controller gains, firmware, model weights, software commit, hardware revision, and runtime configuration. A random seed does not reproduce an experiment when calibration and physical hardware differ.
 
+**Worked: plant P6.** Calibration numbers enter every later number, so they are recorded with the run. P6's encoder is $2048$ counts/m. A controller configured with a nominal $2000$ counts/m converts each count to $0.500\,\mathrm{mm}$ instead of $0.488\,\mathrm{mm}$, so after the cart has truly travelled $1\,\mathrm{m}$, $2048$ counts, it believes it is at $2048/2000=1.024\,\mathrm{m}$. That is $24\,\mathrm{mm}$, or $49$ counts, of error that grows with distance and repeats exactly on every run, and no number of seeds reveals it, because nothing random produced it. A clock offset is the same kind of error in time: if the vision node's clock runs $10\,\mathrm{ms}$ ahead of the controller's, every goal is $10\,\mathrm{ms}$ older than its stamp says, a hidden term in §3's budget worth $1\,\mathrm{mm}$ at $0.10\,\mathrm{m/s}$. How each calibration is estimated, the temporal one included, is [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration §5]], and the list a lab must keep so that a run can be traced back to the hardware state it used is [[06-research-practice/experimental-design-reproducibility|Experimental Design §7]].
+
 ### 9. Simulation and staged deployment
 
 | Stage | Purpose |
@@ -464,6 +506,8 @@ For example, a collision at t = 12.4 s can originate in a pose stream that stopp
 ### 11. Resource constraints
 
 Onboard/offboard compute changes latency, network dependence, power, thermal limits, privacy, and failure modes. Report compute, memory, bandwidth, battery/power, thermal throttling, payload, and real-time load—not model parameter count alone.
+
+**Worked: a policy on P6's clock.** A parameter count sets an inference floor only together with the bytes each parameter takes and the memory bandwidth, because at batch size one a dense model reads every weight from memory at least once per forward pass. Suppose P6's vision node were a 3-billion-parameter policy on a Jetson Thor. In bf16 its weights are $6.0\,\mathrm{GB}$, and reading them once at $273\,\mathrm{GB/s}$ takes $22.0\,\mathrm{ms}$, longer than the $20\,\mathrm{ms}$ vision period before any arithmetic is done, while the same weights in NVFP4 read in $6.2\,\mathrm{ms}$ ([[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §11]]). The rate a policy actually runs at then reaches its success rate. OpenVLA's authors served their 7B policy in int8 at $1.2\,\mathrm{Hz}$ on their evaluation GPU, against the $5\,\mathrm{Hz}$ controller its training data were recorded with, and success on eight BridgeData V2 tasks fell from $71.3\%$ in bf16 to $58.1\%$; int4 ran at $3\,\mathrm{Hz}$ and matched bf16 at $71.9\%$ ([[01-canonical-papers/notes/4-vla/openvla|OpenVLA]]). A resource report therefore gives the bytes, the hardware and the rate the loop really ran at, not the parameter count alone.
 
 ### After reading
 
@@ -731,6 +775,12 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 
 ### 3. 타이밍과 지연 예산
 
+*한 문장으로:* 로봇은 언제나 조금 전의 세계를 보고 행동한다. 이 절은 그 '조금 전'이 얼마인지 단계마다 더해 보고, 가장 느린 주기도 제시간에 끝나는지 묻는다.
+
+*이 절에서 하나만 가져간다면:* $70\,\mathrm{ms}$ 예산은 프레임 주파수가 아니라 이름 붙은 네 부분(아래 표)의 합이고, 지연은 곧 거리다. $1\,\mathrm{m/s}$에서 $7\,\mathrm{cm}$다. P6의 경우, $200\,\mathrm{ms}$ 늦은 목표는 아래 '계산: 장치 P6' 문단에 풀려 있다.
+
+#### 예시 예산, 그리고 지연이 치르는 값
+
 | 구성요소 | 예시 지연 |
 |---|---:|
 | 카메라 노출/판독 | 15 ms |
@@ -739,7 +789,9 @@ Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언�
 | 명령 처리 | 5 ms |
 | **관측→행동** | **70 ms** |
 
-1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다. 그 7 cm가 너무 큰지는 그것이 무엇을 고치느냐에 달렸다. 추정의 σ와 견준 것이 [[04-robotics/capstone-panel-contact|26. 캡스톤 §5]]의 낡음 거리다.
+1 m/s에서 70 ms는 새 명령이 효과를 내기 전 7 cm의 이동에 해당한다. **주파수는 지연이 아니다**: 30 Hz 시스템도 옛 프레임 위에서 행동할 수 있다. 샘플링 주기, 추론 주기, 지터, 데드라인 미스, 큐잉, 타임스탬프 정책, 그리고 지연이 끝-끝으로 측정됐는지 확인하라. 그 7 cm가 너무 큰지는 그것이 무엇을 고치느냐에 달렸다. 추정의 σ와 견준 것이 [[04-robotics/capstone-panel-contact|26. 캡스톤 §5]]의 낡음 거리다.
+
+#### 지연 예산, 항 하나씩
 
 **예산을 합으로 쓰면.** **관측-행동 지연** $L$은 물리적 사건이 일어난 순간부터 그 사건에서 나온 명령이 구동기에 효과를 내는 순간까지의 경과 시간이다. 측정값 하나가 아니라 이름 붙은 항들의 합이고, 각 항에는 그것을 책임지는 구성 요소가 있다:
 
@@ -755,6 +807,8 @@ $$L=\tfrac12 T_{\text{cam}}+t_{\text{exp}}+t_{\text{tx}}+t_{\text{inf}}+t_{\text
 - $T_{\text{ctrl}}$ — **구동**. 명령이 적용되기까지의 제어 주기 하나.
 
 **반례:** *주파수*를 더하는 것은 예산이 아니다. "30 Hz 카메라, 25 Hz 정책, 500 Hz 제어기"는 어떤 지연으로도 환원되지 않는다. 주파수는 더해지지 않고, 직렬 사슬에서는 가장 빠른 단계도 제 몫의 고정 지연을 보태기 때문이다. 주파수가 똑같은 두 시스템이 큐잉과 타임스탬프 정책만으로 $L$에서 50 ms 차이가 날 수 있다.
+
+#### 데드라인과 지터
 
 **데드라인과 지터의 정의.** 주기 $T$인 주기 작업은 $r_k=r_0+kT$에 **릴리스**되어 $f_k$에 끝나므로 **응답 시간**은 $R_k=f_k-r_k$다. **데드라인** $D$는 릴리스 이후 그때까지는 끝나야 하는 시각이고(보통 $D=T$), $R_k>D$인 인스턴스가 **데드라인 미스**다. 데드라인의 강도는 그 값과는 별개의 주장이고, 세 가지가 있다:
 
@@ -772,6 +826,8 @@ $$J=\max_k R_k-\min_k R_k$$
 > P6의 제어 루프는 200 Hz이므로 $T=D=5$ ms다. 측정된 응답 시간 다섯 개: $1.2, 1.5, 4.8, 1.3, 1.4$ ms. 평균은 $2.04$ ms, 최대-최소 지터는 $4.8-1.2=\mathbf{3.6}$ ms, 데드라인 미스는 **0회**, 그리고 최악의 인스턴스에서 여유는 $5.0-4.8=0.2$ ms — 그 틱은 제 주기의 $96\%$를 썼다.
 >
 > **반례 — 평균을 주파수로 인용하기.** $1000/2.04=490$ Hz는 존재하지 않는 루프를 묘사한다. 루프는 200 Hz이고, 다섯 틱 중 하나는 미스까지 $0.2$ ms를 남겼다. 평균은 표에서 보기 좋은 수이고, 최댓값은 시스템이 동작하는지를 결정하는 수다. 똑같은 작업을 아래에 나오는 햅틱 $1$ ms 데드라인으로 옮기면 평균은 하나도 달라지지 않은 채 **다섯 개 전부**가 미스한다.
+
+#### P6의 예산, 그리고 시각–운동 루프 하나의 합
 
 **계산: 장치 P6.** 엔코더 $N=2048$ counts/m, 한 카운트 $0.488\,\mathrm{mm}$. 비전 $50\,\mathrm{Hz}$($20\,\mathrm{ms}$), 제어 $200\,\mathrm{Hz}$($5\,\mathrm{ms}$), 노출 중간부터 힘까지 예산 $70\,\mathrm{ms}$([[02-foundations/lab-plants|0.6]]). 제어기에서 $200\,\mathrm{ms}$ 늙은 비전은 예산 초과 $130\,\mathrm{ms}$, 낡은 틱 40개. $0.10\,\mathrm{m/s}$면 그 나이 동안 $20\,\mathrm{mm}$(41 카운트). [[04-robotics/state-estimation-slam|3]]의 추정기는 구하지 못한다. 목표가 늦은 것이지 잡음이 아니다. 과제는 이 타임라인을 그림으로 묻는 것이다. 조용한 실패(TF 스탬프, QoS)는 [[04-robotics/ros2/qos-executors-time|25.5]]. P6의 센서들이 실제로 보태는 잡음은 센서마다 [[04-robotics/sensor-models|3.2 센서 모델과 잡음]]에 모델링되어 있다.
 
@@ -797,10 +853,6 @@ $$J=\max_k R_k-\min_k R_k$$
   </g>
 </svg>
 
- **주파수는 지연이
-아니다**: 30 Hz 시스템도 옛 프레임 위에서 행동할 수 있다. 샘플링 주기, 추론 주기, 지터,
-데드라인 미스, 큐잉, 타임스탬프 정책, 그리고 지연이 끝-끝으로 측정됐는지 확인하라.
-
 > [!example] 계산 예제 · Worked example
 > **루프 하나를 더해 보기.** 대표적인 시각–운동 스택을 잡자: 30 Hz 카메라(평균 샘플링 지연
 > $\tfrac{1}{2}\times 33.3 = 16.7$ ms), 노출과 판독 12 ms, GPU 호스트로의 전송 5 ms, 정책 추론
@@ -824,6 +876,10 @@ $$J=\max_k R_k-\min_k R_k$$
 > 알려 준다: 10 Hz 추론은 10 Hz 루프가 아니고, 그 차이가 이 표의 나머지 전부다.
 
 ### 4. 좌표계와 TF 트리
+
+*한 문장으로:* 로봇이 쓰는 모든 위치는 어떤 관점에서 어떤 순간에 적힌 것이고, TF 트리는 "이것이 저기서 보면, 그 시각에, 어디에 있는가"에 답을 하나만 주는 장부다.
+
+*이 절에서 하나만 가져간다면:* 루프 폐쇄는 `map` → `odom` 간선 하나만 다시 쓰므로, `map`에 저장된 목표는 로봇이 가만히 있는데도 $30\,\mathrm{cm}$ 튄다. 이 절 끝의 예가 그것을 계산한다.
 
 흔한 프레임: world, map, odom, base, sensor, end-effector, tool, object. 모든 변환에는
 방향과 타임스탬프가 필요하다. 그럴듯한 숫자 행렬이라도 관례가 틀리면 학습이 안정적으로
@@ -856,7 +912,17 @@ $${}^{a}T_{c}={}^{a}T_{b}\,{}^{b}T_{c},\qquad {}^{b}T_{a}=\big({}^{a}T_{b}\big)^
 ROS는 하나의 구현 생태계이지 시스템 구조 그 자체가 아니다. "ROS에서 돈다"는 지연,
 결정론, 안전, 배포 품질에 대해 거의 말해 주지 않는다.
 
+**행마다 데이터뿐 아니라 시간에 관한 약속이 들어 있다.** P6의 통신을 표에 올려 보면 어느 행을 쓸지가 정해진다. $50\,\mathrm{Hz}$ 목표는 *topic*이다. 목표 하나가 $20\,\mathrm{ms}$ 앞의 것을 대체하므로, 하나를 잃어도 다음 것이 메워 주기 때문이다. "카트를 $p=0.5\,\mathrm{m}$로 몰아라"는 *action*이다. 몇 초 동안 돌고, 진행 상황을 보고하고, 목표가 바뀌면 취소될 수 있어야 하기 때문이다. 제어기 이득 설정은 *service*나 파라미터 호출이다. 요청 하나에 응답 하나이고, 아무도 모르게 사라지면 안 되기 때문이다. 그리고 카트의 프레임은 *TF*다. 목표는 그것이 측정된 프레임과 스탬프 없이는 쓸모가 없기 때문이다(§4).
+
+**큐는 §3 예산의 한 항이다.** 미들웨어는 메시지를 history depth $N$ 아래 쌓아 둔다([[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS) §2]]). 기본 프로파일인 keep-last $10$에서, $200\,\mathrm{ms}$ 멈췄던 제어기는 쌓인 목표들 앞에서 다시 돌기 시작해 가장 오래된 것부터 받는다. $(10-1)\times20=180\,\mathrm{ms}$ 묵은 목표로, $70\,\mathrm{ms}$ 예산을 $110\,\mathrm{ms}$ 넘겼고, 가장 새 목표에는 열 번째 콜백에서야 닿는다. 알고리즘은 하나도 바뀌지 않았고 설정 한 줄이 바뀌었다. "ROS에서 돈다"가 지연에 대한 주장이 아닌 이유가 이것이다. 같은 노드 그래프라도 프로파일이 다르면 최악의 목표 나이가 다르다.
+
 ### 6. 행동 오케스트레이션과 과제 실행
+
+*한 문장으로:* 지금 어느 계획기나 제어기를 돌릴지, 그리고 실패하면 무엇을 할지 누군가는 정해야 하고, behavior tree는 매 tick마다 세 가지 답 — 끝났다, 실패했다, 아직 하는 중이다 — 가운데 하나로 그 결정을 새로 내린다.
+
+*이 절에서 하나만 가져간다면:* 3값 tick(Success, Failure, Running)과 그것이 아래 예제 트리에서 사 주는 것이다. 주행 중에 `batteryOK`가 거짓이 되면 바로 다음 tick이 `FollowPath`를 halt하고 복구로 들어간다.
+
+#### 실행 계층과 그 어휘
 
 과제 명령과 플래너/제어기 사이에는 보통 **실행 계층**이 있다 — 유한상태기계(FSM),
 behavior tree, 또는 task executive — 지금 *어느* 플래너·정책·제어기를 돌릴지, 실패하면
@@ -883,6 +949,8 @@ Idle → 물체 감지 → 파지 계획 → 실행 → 검증
 Behavior tree는 이를 모듈적으로 합성하고 필드 시스템에서 흔하다; FSM은 단순하지만
 상태가 늘면 얽힌다.
 
+#### tick이 반환하는 것으로 정의하는 behavior tree
+
 **tick이 무엇을 반환하는가로 정의하는 behavior tree.** Behavior tree는 잎이 **action**(무언가를 한다)과 **condition**(무언가를 검사한다)이고 내부 노드가 **제어 흐름 노드**인 뿌리 있는 트리다. 실행은 **tick**으로 이루어진다. 정해진 주기로 뿌리에 주입되어 각 노드의 종류에 따라 자식으로 전파되는 신호다. tick된 모든 노드는 세 상태 중 정확히 하나를 반환하고, 이 3값 반환이 설계의 전부다:
 
 $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\}$$
@@ -892,6 +960,8 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 - **Sequence** — 자식을 왼쪽에서 오른쪽으로 tick한다. 실패하는 첫 자식에서 **Failure**, Running인 첫 자식에서 **Running**, 모든 자식이 성공했을 때만 **Success**를 반환한다. 자식들에 대한 논리 **AND**이고, 선행 조건을 쓰는 방법이 이것이다. 조건을 앞에 두면 조건이 거짓인 동안 뒤의 action은 절대 돌지 않는다.
 - **Fallback**(**selector**라고도 한다) — 왼쪽에서 오른쪽으로 tick하며, 성공하는 첫 자식에서 **Success**, Running인 첫 자식에서 **Running**, 모든 자식이 실패했을 때만 **Failure**를 반환한다. 논리 **OR**이며, 첫째 뒤의 자식들이 순서대로 시도되는 대안이므로 이것이 복구 구성물이다.
 - **Decorator** — 자식이 **정확히 하나**이고, 그 자식이 반환한 상태나 자식을 tick할지 여부 자체를 바꾼다. `Inverter`는 Success와 Failure를 맞바꾸고, `RetryUntilSuccessful(n)`은 실패하는 자식을 최대 $n$번 다시 tick하며, `Timeout(ms)`는 너무 오래 도는 자식을 실패시키고, `RateController(hz)`는 주어진 주기로만 자식을 tick하고 그 사이에는 마지막 상태를 되풀이한다. 자식이 하나라는 규칙이 decorator를 제어 흐름 노드와 갈라놓는 바로 그것이다.
+
+#### tick 계약, 트리 하나, 그리고 트리가 아닌 것
 
 **tick 계약**은 건너뛰었다가 버그를 만드는 부분이다. 조항이 셋이다. tick은 매 주기 **뿌리**에서 다시 들어오므로 조건이 계속 재평가되고, 앞선 형제의 조건이 거짓이 되는 순간 이미 Running이던 action이 버려진다 — 호출 사슬에 견주어 트리가 사 주는 것이 그 반응성이다. 따라서 Running이었다가 tick 경로에서 빠진 노드는 명시적으로 **halt**되어야 하고, 그래서 모든 action 노드는 tick뿐 아니라 halt 구현까지 진다. 그리고 상태는 *반환*될 뿐 전이로 저장되지 않는다. 형제 사이에는 애초에 간선이 없기 때문이다.
 
@@ -903,9 +973,13 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 
 ### 6.5 아키텍처 계보와 형식적 작업 명세
 
+*한 문장으로:* 로봇 소프트웨어는 세 속도로 도는 세 층에 자리를 잡았고, 시간 논리는 그 층들이 항상, 언젠가, 또는 결코 해서는 안 되는 일을 컴퓨터가 설계를 검사하거나 그 규칙에서 제어기를 만들 수 있을 만큼 정확히 적는 방법이다.
+
+*이 절에서 하나만 가져간다면:* 명세는 충족 가능하면서도 실현 불가능할 수 있다. 아래의 패널 배달 식은 A 다음 B를 배달하는 고장 없는 실행이면 만족되지만, 첫 배달 전에 구역 센서가 고장 날 수 있으므로 어떤 제어기도 그것을 보장하지 못한다.
+
 §6의 실행 계층은 두 극단이 실패한 뒤 로보틱스가 도달한 설계의 가운데 층이고, 시간 논리는 그 설계가 보장해야 할 것을 검사하거나 생성할 수 있을 만큼 정확하게 적는 언어다.
 
-**세 계보.**
+#### 아키텍처의 세 계보
 
 - **Sense–plan–act** (Shakey 시대의 숙고형 파이프라인): 센싱이 세계 모델을 만들고, 플래너가 그 위에서 추론하고, 제어기가 실행한다. 제어기는 병목인 플래너를 기다려야 하고, 센서를 직접 보지 못하므로 로봇은 생각하는 동안 반응하지 못한다.
 - **Subsumption** (Brooks 1986): 각자 센서를 액추에이터에 잇는 반응형 행동들이 병렬로 돈다. 상위 층은 하위 층의 입력을 *억제*(suppress)하거나 출력을 *차단*(inhibit)한다. 세계 모델이 없어 반응은 빠르지만 긴 지평의 계획도 없다.
@@ -919,7 +993,11 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 
 층 사이 통신은 §5의 구분을 따른다: 토픽은 데이터를, 서비스와 액션은 응답이 있는 명령을 나른다. **여기서 얻는 독법.** "LLM이 계획한다"는 deliberator만 바꾼 것이다. 회복은 여전히 sequencer에, 안정성은 여전히 controller에 있다.
 
+#### 명제에서 출발하는 시간 논리
+
 **시간 논리.** **명제**(proposition)는 $\mathit{near}$나 $\mathit{stop}$처럼 단계마다 참 또는 거짓인 이름 붙은 사실이고, 불리언 연결사는 한 단계 안에서 명제를 묶는다: $\neg\varphi$(아니다), $\varphi\wedge\psi$(그리고), $\varphi\vee\psi$(또는), 그리고 $\varphi\rightarrow\psi$($\varphi$이면 $\psi$). 마지막 것은 $\varphi$가 참이고 $\psi$가 거짓일 때만 거짓이므로, $\varphi$가 거짓인 단계에서는 *공허하게*(vacuously) 참이다. 시간 논리는 시간에 따른 열(sequence)에 대한 논리다: 식의 참·거짓을 한 순간이 아니라 실행 전체 — 단계마다 어떤 명제가 참인지 적은 목록 — 에 대해 판정한다. LTL(Pnueli 1977)은 이산 단계마다의 불리언 명제에 네 연산자를 더한다: $\mathsf{X}\,\varphi$(다음 단계), $\mathsf{F}\,\varphi$(언젠가), $\mathsf{G}\,\varphi$(항상), $\varphi\,\mathsf{U}\,\psi$($\psi$가 올 때까지 매 단계 $\varphi$, 그리고 $\psi$는 반드시 온다). 패턴: 안전성 $\mathsf{G}\,\neg\mathit{collision}$, 활성(liveness) $\mathsf{G}\mathsf{F}\,\mathit{atCharger}$(어느 단계에서 보든 충전소 방문이 아직 앞에 남아 있으므로, 무한 실행에서 로봇은 무한히 자주 돌아온다), 응답 $\mathsf{G}(\mathit{req}\rightarrow\mathsf{F}\,\mathit{grant})$, 순서 $\mathsf{F}(a\wedge\mathsf{F}\,b)$.
+
+#### 모델 검사, 합성, 그리고 로봇이 실제로 쓰는 논리
 
 *모델 검사*는 주어진 설계의 모든 거동이 $\varphi$를 만족하는지 묻고, 예 또는 반례 궤적을 돌려준다. *반응형 합성*은 모든 환경 입력 열에 대해 $\varphi$를 만족하는 제어기를 만들며, 각 출력은 과거만 보고 고른다. 실제 로봇은 다음 입력을 보기 전에 행동해야 하기 때문이다.
 
@@ -928,6 +1006,8 @@ $$\text{tick}(n)\in\{\,\textsf{Success},\ \textsf{Failure},\ \textsf{Running}\,\
 완전한 LTL의 합성은 식 크기에 대해 이중 지수적이다(Pnueli & Rosner 1989). 대략, 식을 오토마톤으로 바꾸는 데 지수 하나, 제어기가 어떤 의무가 남아 있는지 늘 알도록 그 오토마톤을 결정적으로 만드는 데 또 지수 하나가 든다. 그래서 로보틱스는 GR(1), 곧 *Generalized Reactivity(1)* 같은 부분 논리를 쓴다(초기 조건, `always` 단계 제약, `always eventually` 목표). GR(1)은 게임 상태 공간 크기의 다항 시간에 풀리고(Piterman, Pnueli & Sa'ar 2006), Kress-Gerwin, Fainekos & Pappas(2009)가 반응형 임무·운동 계획에 적용했다.
 
 연속 신호에는 signal temporal logic이 시간 구간과 실수값 술어를 붙이고, robustness 점수가 신호가 식을 얼마나 여유 있게 만족하거나 위반하는지 말해 준다(Maler & Nickovic 2004; Donzé & Maler 2010). "거리가 항상 2 m 초과"라면 점수는 가장 나쁜 여유다: 가장 가까이 온 거리가 2.5 m인 실행은 $+0.5$ m, 1.8 m까지 파고든 실행은 $-0.2$ m를 받는다.
+
+#### 명세 하나 쓰기, 그리고 로그 위에서 검사하기
 
 **명세 쓰기.** "작업자와 항상 2 m를 유지하라; 언젠가 패널 A를, 그다음 패널 B를 배달하라; 구역 센서가 고장 나면 멈춰라." $\mathit{near}$ = 작업자 2 m 이내(인식이 설정), $\mathit{fail}$ = 구역 센서 고장, $\mathit{dA},\mathit{dB}$ = 패널 배달 완료, $\mathit{stop}$ = 영속도 명령으로 두자. "멈춰라"를 "다음 단계까지 멈추고 계속 멈춰 있어라"로 읽으면:
 
@@ -991,6 +1071,8 @@ print(ev(('and', safe, ('and', seq, react)), tr),                  # False
 커밋, 하드웨어 리비전, 런타임 설정을 기록하라. 보정과 물리적 하드웨어가 다르면 랜덤
 시드는 실험을 재현하지 못한다.
 
+**계산: 장치 P6.** 보정 숫자는 그 뒤의 모든 숫자에 들어가므로 실행과 함께 기록한다. P6의 엔코더는 $2048$ counts/m다. 명목값 $2000$ counts/m로 설정된 제어기는 카운트 하나를 $0.488\,\mathrm{mm}$가 아니라 $0.500\,\mathrm{mm}$로 바꾸므로, 카트가 실제로 $1\,\mathrm{m}$, 곧 $2048$ 카운트를 간 뒤에 자신이 $2048/2000=1.024\,\mathrm{m}$에 있다고 믿는다. 거리에 따라 자라고 매 실행에서 똑같이 되풀이되는 $24\,\mathrm{mm}$, 곧 $49$ 카운트의 오차이고, 무작위로 생긴 것이 아니므로 시드를 몇 번 바꿔도 드러나지 않는다. 시계 오프셋은 시간에서 생기는 같은 종류의 오차다. 비전 노드의 시계가 제어기의 시계보다 $10\,\mathrm{ms}$ 앞서 가면 모든 목표는 스탬프가 말하는 것보다 $10\,\mathrm{ms}$ 더 묵었고, 이것은 §3 예산에 숨은 항으로 $0.10\,\mathrm{m/s}$에서 $1\,\mathrm{mm}$다. 시간 보정까지 포함해 각 보정을 어떻게 추정하는지는 [[04-robotics/geometric-perception-calibration|3.5 기하 인식과 보정 §5]]에, 실행 하나를 그때의 하드웨어 상태까지 거슬러 추적할 수 있도록 실험실이 남겨야 할 목록은 [[06-research-practice/experimental-design-reproducibility|실험 설계 §7]]에 있다.
+
 ### 9. 시뮬레이션과 단계적 배포
 
 | 단계 | 목적 |
@@ -1021,6 +1103,8 @@ t = 12.4 s의 충돌은 t = 10.3 s부터 갱신되지 않은 위치 스트림에
 온보드/오프보드 컴퓨트는 지연, 네트워크 의존, 전력, 열 한계, 프라이버시, 실패 모드를
 바꾼다. 모델 파라미터 수만이 아니라 컴퓨트, 메모리, 대역폭, 배터리/전력, 열 스로틀링,
 페이로드, 실시간 부하를 보고하라.
+
+**계산: P6의 시계 위의 정책.** 파라미터 수가 추론 시간의 하한을 정하는 것은 파라미터 하나가 차지하는 바이트 수, 그리고 메모리 대역폭과 함께일 때뿐이다. 배치 크기 1의 밀집(dense) 모델은 순전파 한 번마다 모든 가중치를 메모리에서 적어도 한 번 읽기 때문이다. P6의 비전 노드가 Jetson Thor 위의 30억 파라미터 정책이라고 하자. bf16이면 가중치가 $6.0\,\mathrm{GB}$이고 $273\,\mathrm{GB/s}$로 한 번 읽는 데 $22.0\,\mathrm{ms}$가 걸려, 산술을 하나도 하기 전에 이미 $20\,\mathrm{ms}$ 비전 주기보다 길다. 같은 가중치를 NVFP4로 두면 $6.2\,\mathrm{ms}$에 읽는다([[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §11]]). 그리고 정책이 실제로 도는 주기가 성공률에까지 닿는다. OpenVLA 저자들은 7B 정책을 int8로 평가용 GPU에서 $1.2\,\mathrm{Hz}$로 돌렸는데, 학습 데이터를 기록한 제어기는 $5\,\mathrm{Hz}$였고, BridgeData V2 과제 여덟 개의 성공률이 bf16의 $71.3\%$에서 $58.1\%$로 떨어졌다. int4는 $3\,\mathrm{Hz}$로 돌며 $71.9\%$로 bf16과 같았다([[01-canonical-papers/notes/4-vla/openvla|OpenVLA]]). 그래서 자원 보고는 파라미터 수만이 아니라 바이트, 하드웨어, 그리고 루프가 실제로 돈 주기를 적는다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

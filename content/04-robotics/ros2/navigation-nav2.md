@@ -381,12 +381,16 @@ lifecycle_manager:
     bond_respawn_max_duration: 10.0
 ```
 
-It also holds a **bond** with each server — a heartbeat. If a server crashes or stops responding for `bond_timeout` seconds, the manager transitions the *entire stack* down rather than leaving a robot driving on a half-dead navigation system. That is a safety decision, and it is why a single crashed node takes the whole stack with it. With `autostart: false` nothing activates until you press **Startup** in the RViz Nav2 panel, which is the behaviour you want while debugging.
+It also holds a **bond** with each server — a heartbeat. If a server crashes or stops responding for `bond_timeout` seconds, the manager sets out to transition the *entire stack* down rather than leave a robot driving on a half-dead navigation system. That is a safety decision, and it is why a single crashed node is meant to take the whole stack with it; how far the teardown actually gets after a crash is worked out below. With `autostart: false` nothing activates until you press **Startup** in the RViz Nav2 panel, which is the behaviour you want while debugging.
 
 ```bash
 ros2 lifecycle list /planner_server
 ros2 lifecycle get /controller_server
 ```
+
+The bond is a slow guard, and Nav2's own clocks show how slow. Each server sends a heartbeat every $0.1\,\mathrm{s}$ (its `bond_heartbeat_period`), the manager checks its bonds every $0.2\,\mathrm{s}$, and it declares a server down only after `bond_timeout` passes without a heartbeat: $4.0/0.1=40$ missed beats, or $4.0\times20=80$ cycles of the controller server's default $20\,\mathrm{Hz}$. If the base keeps executing its last velocity command meanwhile, P6's cart at the page-local $0.25\,\mathrm{m/s}$ covers $0.25\times4.0=1.0\,\mathrm{m}$, $2048$ counts, before the teardown even begins. [[04-robotics/ros2/services-actions-parameters|25.3 §8.2]] counts the same $4.0\,\mathrm{s}$ in P6's $200\,\mathrm{Hz}$ ticks and reaches the same verdict: the bond is how the stack learns that a server died, not the guard on the $70\,\mathrm{ms}$ budget.
+
+Both directions are ordered passes over `node_names`. Startup configures every server in list order and only then activates every one, so no server goes active beside one that is still unconfigured; the reset after a broken bond deactivates in reverse order. The controller server's deactivation always publishes a zero velocity, but do not count on it after a crash: the dead server has no lifecycle service left to answer, the pass that reaches it gets no further, and the servers listed before it are not deactivated. With the controller server first in the list, as above, it is deactivated last, so a server dying anywhere else in the stack can leave it active. The stop that P6's budget needs belongs in the base's own loop, as a stamp or timeout check on the last command.
 
 ### 9. Costmap filters and keepout zones
 
@@ -616,6 +620,7 @@ For the algorithms underneath — search, sampling, MPC, and what optimality mea
 - `ros2/geometry2`, `jazzy` branch — `tf2_tools` and `tf2_ros` executables.
 - Nav2 documentation (Jazzy) — Configuration Guide: Behavior-Tree Navigator (`bt_loop_duration`), [docs.nav2.org](https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/configuring_bt_navigator/); RoundRobin, [docs.nav2.org](https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/bt_plugins/controls/RoundRobin/).
 - `ros-navigation/navigation2`, `jazzy` branch — `nav2_costmap_2d`: `inflation_layer.hpp` (`computeCost`), `inflation_layer.cpp` (the radius cut-off; the larger of old and new cost), `cost_values.hpp`, `layered_costmap.cpp` (reset, then the layers in order), [GitHub](https://github.com/ros-navigation/navigation2/tree/jazzy/nav2_costmap_2d); `nav2_behavior_tree/plugins/control/round_robin_node.cpp` and `nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml` (the retries, and the recoveries' order and sizes), [GitHub](https://github.com/ros-navigation/navigation2/tree/jazzy/nav2_behavior_tree).
+- `ros-navigation/navigation2`, `jazzy` branch — `nav2_lifecycle_manager/src/lifecycle_manager.cpp` (startup that configures every node before activating any, the bond check every 200 ms, and the reverse-order hard reset that stops at a server it cannot reach); `nav2_util/src/lifecycle_node.cpp` (`bond_heartbeat_period`, default 0.1 s) and `lifecycle_service_client.cpp` (a 5 s wait for the lifecycle service, then an exception); `nav2_controller/src/controller_server.cpp` (the zero velocity published on deactivation; the `controller_frequency` default).
 
 ### Self-check
 
@@ -1027,12 +1032,16 @@ lifecycle_manager:
     bond_respawn_max_duration: 10.0
 ```
 
-또 각 서버와 **bond**, 즉 심장박동을 유지한다. 서버가 죽거나 `bond_timeout` 초 동안 응답하지 않으면 매니저는 *스택 전체* 를 내린다. 반쯤 죽은 내비게이션 시스템 위에서 로봇이 계속 달리게 두지 않기 위해서다. 이것은 안전에 대한 결정이고, 노드 하나가 죽으면 스택 전부가 함께 내려가는 이유다. `autostart: false`면 RViz Nav2 패널에서 **Startup** 을 누를 때까지 아무것도 활성화되지 않는다. 디버깅 중에는 그 동작이 맞다.
+또 각 서버와 **bond**, 즉 심장박동을 유지한다. 서버가 죽거나 `bond_timeout` 초 동안 응답하지 않으면 매니저는 *스택 전체* 를 내리려 한다. 반쯤 죽은 내비게이션 시스템 위에서 로봇이 계속 달리게 두지 않기 위해서다. 이것은 안전에 대한 결정이고, 노드 하나가 죽으면 스택 전부가 함께 내려가도록 설계된 이유다. 서버가 죽은 뒤 내림이 실제로 어디까지 가는지는 아래에서 따진다. `autostart: false`면 RViz Nav2 패널에서 **Startup** 을 누를 때까지 아무것도 활성화되지 않는다. 디버깅 중에는 그 동작이 맞다.
 
 ```bash
 ros2 lifecycle list /planner_server
 ros2 lifecycle get /controller_server
 ```
+
+bond는 느린 보호 장치이고, Nav2 자신의 시계로 재 보면 얼마나 느린지 드러난다. 각 서버는 $0.1\,\mathrm{s}$마다 심장박동을 보내고(`bond_heartbeat_period`), 매니저는 $0.2\,\mathrm{s}$마다 bond를 살피며, `bond_timeout` 동안 박동이 한 번도 오지 않아야 비로소 서버가 죽었다고 판정한다. 박동으로는 $4.0/0.1=40$번, 제어 서버의 기본 $20\,\mathrm{Hz}$로는 $4.0\times20=80$주기다. 그동안 베이스가 마지막 속도 명령을 계속 실행한다면, 페이지 국소 속도 $0.25\,\mathrm{m/s}$의 P6 카트는 내림이 시작되기도 전에 $0.25\times4.0=1.0\,\mathrm{m}$, 곧 $2048$ counts를 간다. [[04-robotics/ros2/services-actions-parameters|25.3 §8.2]]는 같은 $4.0\,\mathrm{s}$를 P6의 $200\,\mathrm{Hz}$ 틱으로 세어 같은 판정에 이른다. bond는 서버가 죽었음을 스택이 알게 되는 통로이지, $70\,\mathrm{ms}$ 예산을 지키는 장치가 아니다.
+
+두 방향 모두 `node_names`를 차례로 훑는다. 기동은 목록 순서대로 모든 서버를 configure한 뒤에야 모두를 activate하므로, 아직 configure되지 않은 서버 옆에서 active가 되는 서버는 없다. bond가 끊긴 뒤의 reset은 역순으로 deactivate한다. 제어 서버는 deactivate될 때 언제나 영속도를 발행하지만, 서버가 죽은 뒤에는 그것을 믿지 마라. 죽은 서버에는 응답할 라이프사이클 서비스가 남아 있지 않아서 그 서버에 이른 deactivate 단계는 거기서 더 나아가지 못하고, 목록에서 그보다 앞에 있는 서버들은 deactivate되지 않는다. 위처럼 제어 서버가 목록 맨 앞에 있으면 가장 늦게 deactivate되므로, 스택의 다른 어디에서 서버가 죽든 제어 서버가 active로 남을 수 있다. P6의 예산이 요구하는 멈춤은 베이스 자신의 루프 안에, 마지막 명령에 대한 스탬프나 타임아웃 검사로 있어야 한다.
 
 ### 9. Costmap 필터와 keepout 구역
 
@@ -1264,6 +1273,7 @@ ros2 param dump /controller_server
 - `ros2/geometry2`, `jazzy` 브랜치 — `tf2_tools`와 `tf2_ros` 실행 파일.
 - Nav2 문서(Jazzy) — Configuration Guide: Behavior-Tree Navigator(`bt_loop_duration`), [docs.nav2.org](https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/configuring_bt_navigator/); RoundRobin, [docs.nav2.org](https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/bt_plugins/controls/RoundRobin/).
 - `ros-navigation/navigation2`, `jazzy` 브랜치 — `nav2_costmap_2d`: `inflation_layer.hpp`(`computeCost`), `inflation_layer.cpp`(반지름 차단, 옛 비용과 새 비용 중 큰 쪽), `cost_values.hpp`, `layered_costmap.cpp`(되돌린 뒤 계층을 순서대로), [GitHub](https://github.com/ros-navigation/navigation2/tree/jazzy/nav2_costmap_2d); `nav2_behavior_tree/plugins/control/round_robin_node.cpp`와 `nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml`(재시도 횟수, 복구의 순서와 크기), [GitHub](https://github.com/ros-navigation/navigation2/tree/jazzy/nav2_behavior_tree).
+- `ros-navigation/navigation2`, `jazzy` 브랜치 — `nav2_lifecycle_manager/src/lifecycle_manager.cpp`(모든 노드를 configure한 뒤에야 activate하는 기동, 200 ms마다의 bond 검사, 닿지 못하는 서버에서 멈추는 역순 hard reset), `nav2_util/src/lifecycle_node.cpp`(`bond_heartbeat_period`, 기본 0.1 s)와 `lifecycle_service_client.cpp`(라이프사이클 서비스를 5 s 기다린 뒤 예외), `nav2_controller/src/controller_server.cpp`(deactivate 때 발행하는 영속도, `controller_frequency` 기본값).
 
 ### 스스로 점검
 

@@ -115,6 +115,8 @@ workspace where the manipulability ellipsoid has collapsed
 ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §4]]) and it can barely
 move in the direction the task needs.
 
+**On P2, in numbers.** Put the panel at $(2,1)$ m, as in the picture. "Reach the panel" is satisfied by any base within $2$ m of it, a disc of $12.6\ \mathrm{m}^2$. The tip-to-base distance $r$ fixes the elbow, $\cos\theta_2=(r^2-2)/2$, and with it the manipulability $w=\lvert\sin\theta_2\rvert$ of §2: a base parked at $r=1.9$ m reaches the panel with $w=0.59$, and one at $r=2.0$ m reaches it with the arm straight and $w=0$, a singular arm that can push hard along the forearm and cannot move along it. The band where $w\ge0.99$, from $1.311$ to $1.511$ m, covers $1.77\ \mathrm{m}^2$, only $14\%$ of the disc, and the picture's $2\sigma$ localization disc, of radius $10$ cm, is as wide as that band, which is the problem §4 budgets.
+
 So the navigation goal is not a point on a map. It is a set of base poses from which the
 whole task — not one waypoint, the whole reach — is comfortably executable, and computing
 that set is the subject of §3.
@@ -407,6 +409,8 @@ Three responses appear in the literature:
 - **Accepting drift and closing the loop at the task.** If the contact stage can correct
   centimetres, localization only has to get you into the band of §3.
 
+**How much drift the band tolerates.** The $w\ge0.99$ band of §3 is $20$ cm wide, so a base aimed at its middle may land up to $10$ cm off in range and keep $w\ge0.99$. With the $\sigma=5$ cm localization of §4's budget that half-width is $2\sigma$, and the base lands inside it with probability $\mathrm{erf}(2/\sqrt2)=0.954$. Drift is what accumulates between re-anchorings, and it has to be judged against those $10$ cm, not against zero: at an assumed odometry drift of $1\%$ of distance travelled, a $30$ m approach accumulates $30$ cm, three times the half-width. A changing site does something else: it makes yesterday's map wrong, so the map cannot be the anchor. That is why the responses above re-anchor instead of trusting the map, the first two to an external reference (the total station's measurements, or a BIM model or earlier point cloud) and the third to the part itself at the task.
+
 For the landscape, Yarovoi and Cho's 2024 review of SLAM for construction robotics
 (*Automation in Construction*) is the survey that does exist here.
 
@@ -582,6 +586,8 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 베이스는 팔을 작업 영역 가장자리에 두어 가조작성 타원체가 붕괴한
 ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]]) 자리에서 정작 작업이
 필요로 하는 방향으로 거의 움직이지 못하게 만든다.
+
+**P2에서, 숫자로.** 그림처럼 패널을 $(2,1)$ m에 두자. "패널에 닿는다"는 패널에서 $2$ m 안의 어느 베이스로든 만족되고, 그것은 넓이 $12.6\ \mathrm{m}^2$의 원판이다. 말단–베이스 거리 $r$이 엘보를 정하고($\cos\theta_2=(r^2-2)/2$), 그와 함께 §2의 가조작성 $w=\lvert\sin\theta_2\rvert$도 정해진다. $r=1.9$ m에 선 베이스는 $w=0.59$로 패널에 닿고, $r=2.0$ m에 선 베이스는 팔을 곧게 편 채 $w=0$으로 닿는다. 특이 자세라서 팔뚝 방향으로 세게 밀 수는 있어도 그 방향으로 움직이지는 못한다. $w\ge0.99$인 띠, 곧 $1.311$에서 $1.511$ m까지는 $1.77\ \mathrm{m}^2$로 원판의 $14\%$뿐이고, 그림의 반지름 $10$ cm짜리 $2\sigma$ 위치 원이 그 띠만큼 넓다. 그것이 §4가 예산으로 다루는 문제다.
 
 그러므로 내비게이션 목표는 지도 위의 점이 아니다. **전체 작업이** — 웨이포인트 하나가 아니라
 도달 전체가 — 여유 있게 실행 가능한 베이스 자세들의 집합이고, 그 집합을 계산하는 것이 §3의
@@ -847,6 +853,8 @@ $\pm2\sigma$ 구간은 $20$ cm다 — $w\ge0.99$ 띠 전체이고, 느슨한 $w\
   평가했다.
 - **드리프트를 받아들이고 작업에서 루프를 닫기.** 접촉 단계가 센티미터를 교정할 수 있다면,
   위치추정은 §3의 띠 안에만 데려다주면 된다.
+
+**띠가 견디는 드리프트의 양.** §3의 $w\ge0.99$ 띠는 폭이 $20$ cm이므로, 그 가운데를 겨냥한 베이스는 거리 방향으로 $10$ cm까지 벗어나도 $w\ge0.99$를 지킨다. §4 예산의 위치추정 $\sigma=5$ cm라면 그 반폭이 $2\sigma$이고, 베이스가 그 안에 들어올 확률은 $\mathrm{erf}(2/\sqrt2)=0.954$다. 드리프트는 기준을 다시 잡는 사이사이에 쌓이는 것이고, 0이 아니라 이 $10$ cm에 대고 판단해야 한다. 이동 거리의 $1\%$라고 가정한 오도메트리 드리프트라면 $30$ m를 접근하는 동안 $30$ cm가 쌓여 반폭의 세 배가 된다. 변하는 현장은 그와 다른 일을 한다. 어제의 지도를 틀리게 만들어 지도를 기준으로 삼을 수 없게 한다. 위의 대응들이 지도를 믿지 않고 기준을 다시 잡는 이유가 그것이다. 앞의 둘은 외부 기준(토털 스테이션의 측정, 또는 BIM 모델이나 이전 포인트 클라우드)에, 셋째는 작업 지점에서 부재 자체에 기댄다.
 
 분야 조감으로는 Yarovoi와 Cho의 2024년 건설 로보틱스 SLAM 리뷰(*Automation in Construction*)가
 여기서는 실제로 존재하는 서베이다.

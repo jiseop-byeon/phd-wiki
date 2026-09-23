@@ -459,6 +459,10 @@ ros2 run controller_manager spawner joint_trajectory_controller --param-file con
 
 `spawner` takes `--controller-manager` (when the manager is not at `/controller_manager`), `--inactive` to stop at configured, and `--activate-as-group`. `unspawner` reverses it.
 
+Two of these verbs repay a closer look. `list_hardware_interfaces` is §6's claim rule made visible: every command interface is printed `[available]` or `[unavailable]` and `[claimed]` or `[unclaimed]`, so a controller that loads and configures but will not activate is explained in one line — its interface is already claimed or is not there, as §6's box reads it for P6's `cart/velocity`.
+
+`switch_controllers` has a default worth knowing. Given neither `--strict` nor `--best-effort`, the manager applies its `defaults.switch_controller.strictness` parameter, which is `best_effort`: a controller that cannot activate is dropped from the request while the deactivations still run, so `--deactivate a --activate b` can leave P6's cart with no active controller at all, the very window §7's atomic switch exists to close. `--strict` makes the request all or nothing, and a hand-over on a moving cart should use it. The switch is also timed against the loop rather than dropped into the middle of it: the manager waits until an `update()` has finished, within about one period, $5\,\mathrm{ms}$ at P6's `update_rate: 200`, and the controllers named in the request skip their updates until the switch is done. The CLI waits up to `--switch-timeout`, $5.0\,\mathrm{s}$ by default, $5.0/0.005=1000$ of P6's cycles, before it reports the switch as failed.
+
 ### 9. The controllers you will actually use
 
 `ros2_controllers` ships a set; four cover most work.
@@ -732,6 +736,7 @@ Writing a hardware component of your own — a real driver behind the same inter
 - `ros_gz` (ros2 branch) — `ros_gz_bridge` README (direction syntax, YAML config); `ros_gz_sim` README and `create.cpp` argument list.
 - Gazebo documentation — Releases (Harmonic, Jetty support windows); ROS 2 Integration; Migration from Ignition.
 - Open Robotics Discourse — "Gazebo Classic End-of-Life" (Gazebo 11 end of life, January 2025).
+- `ros2_control` source (jazzy branch) — `ros2controlcli/verb/switch_controllers.py` (`--strict`, `--best-effort`, `--switch-timeout` default 5.0 s) and `list_hardware_interfaces.py` (the `[available]`/`[unavailable]` and `[claimed]`/`[unclaimed]` labels); `controller_manager/src/controller_manager_parameters.yaml` (`defaults.switch_controller.strictness`, default `best_effort`); `controller_manager/src/controller_manager.cpp` (strict versus best-effort handling of a controller that cannot activate; the switch waiting for the end of an `update()` while the controllers it names skip theirs).
 
 ### Self-check
 
@@ -1223,6 +1228,10 @@ ros2 run controller_manager spawner joint_trajectory_controller --param-file con
 
 `spawner`는 `--controller-manager`(매니저가 `/controller_manager`에 없을 때), configured에서 멈추는 `--inactive`, 그리고 `--activate-as-group`을 받는다. `unspawner`가 되돌린다.
 
+이 동사들 가운데 둘은 한 번 더 들여다볼 만하다. `list_hardware_interfaces`는 §6의 점유 규칙을 눈에 보이게 한 것이다. 모든 명령 인터페이스가 `[available]` 또는 `[unavailable]`, 그리고 `[claimed]` 또는 `[unclaimed]`로 찍히므로, 적재와 설정은 되는데 활성화되지 않는 제어기는 한 줄로 설명된다. 그 인터페이스가 이미 점유되었거나 아예 없는 것이다. §6의 상자가 P6의 `cart/velocity`를 그렇게 읽는다.
+
+`switch_controllers`에는 알아 둘 기본값이 있다. `--strict`도 `--best-effort`도 주지 않으면 매니저는 자기 파라미터 `defaults.switch_controller.strictness`를 따르는데, 그 값이 `best_effort`다. 활성화할 수 없는 제어기는 요청에서 빠지고 비활성화는 그대로 실행되므로, `--deactivate a --activate b`는 P6의 카트에 활성 제어기가 하나도 없는 상태를 남길 수 있다. §7의 원자적 전환이 없애려는 바로 그 구간이다. `--strict`는 요청을 전부 아니면 전무로 만들고, 움직이는 카트를 인계할 때는 그것을 써야 한다. 전환은 루프 한가운데 끼어드는 대신 루프에 맞춰 이뤄진다. 매니저는 `update()` 하나가 끝나기를 기다리는데, 이는 대략 한 주기 안, P6의 `update_rate: 200`에서 $5\,\mathrm{ms}$ 안이다. 그리고 요청에 이름이 오른 제어기들은 전환이 끝날 때까지 update를 건너뛴다. CLI는 `--switch-timeout`, 기본 $5.0\,\mathrm{s}$, 곧 P6의 $5.0/0.005=1000$주기까지 기다린 뒤에야 전환이 실패했다고 알린다.
+
 ### 9. 실제로 쓰게 될 제어기들
 
 `ros2_controllers`가 한 묶음을 제공한다. 넷이 대부분의 작업을 덮는다.
@@ -1496,6 +1505,7 @@ Subscription count가 0이면 제어기가 듣지 않는 토픽에 publish하고
 - `ros_gz`(ros2 브랜치) — `ros_gz_bridge` README(방향 문법, YAML 설정); `ros_gz_sim` README와 `create.cpp` 인자 목록.
 - Gazebo 문서 — Releases(Harmonic, Jetty 지원 기간); ROS 2 Integration; Migration from Ignition.
 - Open Robotics Discourse — "Gazebo Classic End-of-Life"(Gazebo 11 지원 종료, 2025년 1월).
+- `ros2_control` 소스(jazzy 브랜치) — `ros2controlcli/verb/switch_controllers.py`(`--strict`, `--best-effort`, 기본 5.0 s인 `--switch-timeout`)와 `list_hardware_interfaces.py`(`[available]`/`[unavailable]`, `[claimed]`/`[unclaimed]` 표시), `controller_manager/src/controller_manager_parameters.yaml`(`defaults.switch_controller.strictness`, 기본 `best_effort`), `controller_manager/src/controller_manager.cpp`(활성화할 수 없는 제어기를 strict와 best effort가 다루는 방식, `update()` 하나가 끝나기를 기다리는 전환과 그동안 update를 건너뛰는 해당 제어기).
 
 ### 스스로 점검
 

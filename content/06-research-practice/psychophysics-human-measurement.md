@@ -190,6 +190,10 @@ because a count is the smallest force change the rendered wall can make. Written
 
 ### 1. Two thresholds
 
+*In one sentence:* a person has two kinds of limit — the faintest thing they can notice at all, and the smallest change they can notice on top of something already there — and every number in this section is read off one curve of how often they answer "yes" or "stiffer".
+
+*If you need only one thing from this section:* the Weber fraction $w=\Delta I/I$, about $23\%$ for stiffness — S8's observer calls a $492\,\mathrm{N/m}$ wall stiffer than the $400\,\mathrm{N/m}$ reference on $75\%$ of trials, a JND of $92.0\,\mathrm{N/m}$; it is worked in the Weber-fraction definition below and carried to encoder counts in §3.
+
 Everything downstream rests on two quantities:
 
 - **Absolute (detection) threshold** — the smallest stimulus a person can detect at all.
@@ -400,6 +404,10 @@ questions, and papers routinely blur them:
 - **Workload / experience**: what did it cost the person? NASA-TLX (Hart & Staveland
   1988) and its kin are self-report; they measure something real that is not
   perception and not task time.
+
+**Fitts' law on S8's handle.** Moving P3's handle to a band $D = 30\,\mathrm{mm}$ away and as wide as S8's press depth, $W = 2.5\,\mathrm{mm}$, is a task of $ID = \log_2(2 \times 30/2.5) = \log_2 24 = 4.58$ bits; halving the band to $1.25\,\mathrm{mm}$ adds exactly one bit, since it doubles $2D/W$. That index is set by the task's geometry, so "the haptic condition reduced difficulty" cannot mean a smaller $ID$. It means less time at the same index: the line $MT = a + b\,ID$, fitted per condition, sits lower or climbs less steeply. A performance claim therefore reports times at matched indices — the design Richard and Cutkosky used for rendered friction, with twenty subjects and nine indices ([[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §5]]).
+
+**On RS1, the three are three studies.** The $3.16\,\mathrm{N}$ gap in mean peak force is an outcome of the machine. Whether an operator can tell A's contact from B's is perception, S8's kind. If RS1's paper added operators, "they finished sooner" would be performance and "they found it less demanding" workload — and NASA-TLX has a raw and a weighted scoring that need not agree, so the paper must name one ([[04-robotics/haptics-teleoperation/experiments-readings|24.6 §2]]). Each needs participants as its unit (§2).
 
 A claim of the form "haptic feedback improved teleoperation" should say which of the
 three it measured. One that measured workload and concludes perception has changed
@@ -845,6 +853,10 @@ $$\frac{\Delta k_{70.7}\,d}{k_{\text{ref}}\,\Delta x}=\frac{0.186}{0.0245}=7.57\
 
 ### 1. 두 개의 임계값
 
+*한 문장으로:* 사람에게는 두 종류의 한계가 있다 — 아예 알아챌 수 있는 가장 희미한 것, 그리고 이미 있는 것 위에서 알아챌 수 있는 가장 작은 변화 — 그리고 이 절의 모든 숫자는 그 사람이 "예"나 "더 단단하다"고 답하는 빈도를 그린 곡선 하나에서 읽는다.
+
+*이 절에서 하나만 가져간다면:* Weber 분율 $w=\Delta I/I$, 강성에서는 약 $23\%$ — S8의 관찰자는 $492\,\mathrm{N/m}$ 벽을 $400\,\mathrm{N/m}$ 기준보다 단단하다고 시행의 $75\%$에서 답하고, 이것이 JND $92.0\,\mathrm{N/m}$다. 아래 Weber 분율의 정의에서 계산하고 §3에서 엔코더 카운트로 옮긴다.
+
 이후의 모든 것이 두 양 위에 선다:
 
 - **절대(검출) 임계값** — 사람이 검출할 수 있는 가장 작은 자극. 조작적으로는: 적합된
@@ -1038,6 +1050,10 @@ JND 7%에 해당하는 약 0.14 N은 선별 참고값이지 의도적 조절의 
   이라서 "햅틱 조건이 난이도를 낮췄다"에는 표준적 조작화가 있다(Fitts 1954).
 - **작업부하/경험**: 그것이 사람에게 얼마의 비용이었는가? NASA-TLX(Hart & Staveland
   1988) 계열은 자기보고다. 지각도 과제 시간도 아닌, 실재하는 무언가를 잰다.
+
+**S8의 핸들에서 본 Fitts의 법칙.** P3의 핸들을 $D = 30\,\mathrm{mm}$ 떨어진 띠, S8의 누름 깊이만큼 넓은 $W = 2.5\,\mathrm{mm}$ 띠로 옮기는 과제는 $ID = \log_2(2 \times 30/2.5) = \log_2 24 = 4.58$비트다. 띠를 $1.25\,\mathrm{mm}$로 반으로 좁히면 $2D/W$가 두 배가 되므로 정확히 1비트가 더해진다. 이 지수는 과제의 기하가 정하므로, "햅틱 조건이 난이도를 낮췄다"는 $ID$가 작아졌다는 뜻일 수 없다. 같은 지수에서 시간이 줄었다는 뜻이다. 조건마다 맞춘 직선 $MT = a + b\,ID$가 더 낮게 놓이거나 덜 가파르게 오른다. 그래서 성능 주장은 지수를 맞춘 채 시간을 보고한다 — Richard와 Cutkosky가 렌더링된 마찰에 쓴 설계가 이것이고, 피험자 20명에 지수 아홉 개였다([[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §5]]).
+
+**RS1에서 셋은 서로 다른 세 연구다.** 평균 최대 힘의 $3.16\,\mathrm{N}$ 차이는 기계의 결과다. 조작자가 A의 접촉과 B의 접촉을 구별할 수 있는가는 지각, 곧 S8의 종류다. RS1의 논문이 조작자를 더한다면 "더 빨리 끝냈다"는 성능이고 "덜 힘들었다"는 작업부하다 — 그리고 NASA-TLX에는 원점수 방식과 가중 방식이 있어 둘이 일치할 필요가 없으므로 논문은 어느 쪽인지 밝혀야 한다([[04-robotics/haptics-teleoperation/experiments-readings|24.6 §2]]). 어느 쪽이든 단위는 참가자다(§2).
 
 "햅틱 피드백이 원격조작을 개선했다" 형태의 주장은 셋 중 무엇을 쟀는지 말해야 한다.
 작업부하를 재고 지각을 결론 내린 논문은 중간에 차선을 바꾼 것이다 — 심사자의 용어로는

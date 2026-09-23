@@ -244,6 +244,10 @@ flowchart LR
 
 The controller rarely receives the true state $x_t$. It acts on an estimate $\hat{x}_t$ or a belief distribution. Poor estimation can therefore appear downstream as a planning or control failure.
 
+**Two arrows enter the estimator, and both carry time.** The input arrow is the command the controller has just sent, and it enters because the predict step uses it: on P5 the filter shortens the predicted range by $u\Delta t=1$ cm per step because the tool was commanded forward, so a command the actuator did not carry out enters the estimate as a wrong prediction. The sensor arrow runs on its own clock. P5's range arrives with P6's $50$ Hz vision while P6's controller ticks at $200$ Hz, so each corrected estimate serves $4$ control ticks. Held unchanged, it is $0.5\times0.015=0.75$ cm behind the tool by the fourth tick, which is why an estimator predicts forward between corrections instead of holding its last answer.
+
+**How an estimation error shows up downstream.** Take the running object's $70$ ms latency at $u=0.5$ m/s. Every range describes where the tool was $3.5$ cm ago, so the tool touches the panel while the estimate still reads $3.5$ cm of clearance. In the log that is a contact $70$ ms earlier than the controller expected, with a force spike, while a controller that tracked $\hat x$ to within $0.1$ cm reports $0.1$ cm of tracking error the whole way: an estimation failure filed as a control failure. So when a paper reports tracking error, check what it was measured against, because error relative to $\hat x$ measures the controller and only error against ground truth measures the robot. The latency also caps the speed at which a camera correction helps at all. The staleness of $3.5$ cm is $3.9$ times the estimate's own spread $\sqrt{0.8}=0.894$ cm, and the check $vL\le\sigma$ of [[04-robotics/capstone-panel-contact|26. Capstone §5]] allows at most $0.894/0.070=12.8$ cm/s. Taking such a latency apart term by term is [[04-robotics/robot-systems-deployment|10. Robot Systems §3]].
+
 ### 2. Four quantities that must not be conflated
 
 | Quantity | Meaning | Example |
@@ -346,6 +350,12 @@ show up as an inconsistent filter, and the fix is different in each case.
 
 ### 5. Method families
 
+*In one sentence:* every estimator here makes the same two moves, predict and correct, and the families differ only in how they store the belief: one Gaussian, a Gaussian pushed through a straight-line approximation, a few chosen points, a cloud of samples, or a whole trajectory solved at once.
+
+*If you need only one thing from this section:* the Kalman gain is computed from the covariances, not tuned; for P5 it is $K=4/(4+1)=0.8$, worked in §6, and the other rows of the table exist for when the Kalman filter's linear, Gaussian, single-peaked assumptions do not hold.
+
+#### The families at a glance, and the Kalman gain
+
 | Family | Representation and use | Main caution |
 |---|---|---|
 | Kalman filter | Linear-Gaussian mean and covariance | Model must fit the assumptions |
@@ -360,6 +370,8 @@ $$K=P^-H^\top(HP^-H^\top+R)^{-1}, \qquad \hat{x}^+=\hat{x}^-+K(z-H\hat{x}^-)$$
 
 $K$ is not a hand-set trust weight: it follows from predicted covariance $P^-$, sensor covariance $R$, and observation geometry $H$. For both filters written as code — one Kalman predict/update with the Joseph-form covariance, and particle resampling triggered by the effective sample size — see [[02-foundations/algorithms/robotics-ai-problems|11.8 §4]] and [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]]. When the model is time-invariant and $P$ converges, $K$ becomes a constant and the filter is a linear time-invariant recurrence in $\hat x$ — a linear RNN whose weights come from a Riccati equation rather than from gradient descent ([[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §12]]).
 
+#### The Kalman filter and its extended form
+
 **The Kalman filter, stated completely.** It is the Bayes filter of §4 specialised to §3's **linear-Gaussian** model, where it is exact rather than approximate. It needs four conditions: linear dynamics $x_t = Ax_{t-1} + Bu_t + w_t$; a linear observation $z_t = Hx_t + v_t$; zero-mean white Gaussian noises $w_t\sim\mathcal N(0,Q)$ and $v_t\sim\mathcal N(0,R)$, independent of each other; and a Gaussian initial belief. Under them every belief stays Gaussian, because affine maps and conditioning keep Gaussians Gaussian ([[02-foundations/probability|3. Probability §3]]), so the filter carries only a mean and a covariance. The **predict** step pushes both through the dynamics:
 $$\hat x^- = A\hat x + Bu, \qquad P^- = APA^\top + Q$$
 This holds since the mean of $Ax + Bu + w$ is $A\hat x + Bu$, the covariance of $Ax$ is $APA^\top$, and independent noise adds its own $Q$. The **update** step forms the **innovation** $y$ (measurement minus predicted measurement), its covariance $S$, and the gain:
@@ -372,6 +384,8 @@ $$F_t = \frac{\partial f}{\partial x}\Big|_{\hat x_{t-1},\,u_t}, \qquad H_t = \f
 so $F_t$ is taken at the previous estimate and $H_t$ at the prediction, the best available guesses of where the linearization belongs. The mean still goes through the nonlinear models and only the covariance uses the Jacobians:
 $$\hat x_t^- = f(\hat x_{t-1}, u_t), \qquad P_t^- = F_tP_{t-1}F_t^\top + Q, \qquad y_t = z_t - h(\hat x_t^-)$$
 and the update is the Kalman update above with $H_t$ in place of $H$. *Example:* a robot predicted at $(3, 4)$ m with $P^- = I$ m² measures its range to a landmark at the origin, $h(x) = \sqrt{x_1^2 + x_2^2}$, with $R = 1$ m². Then $h(\hat x^-) = 5$ and $H = (x_1, x_2)/h = (0.6, 0.8)$, so $S = 0.36 + 0.64 + 1 = 2$ and $K = (0.3, 0.4)$. A reading of 4.5 m gives $y = -0.5$ and $\hat x^+ = (2.85, 3.80)$, a correction straight toward the landmark, the only direction a range constrains, and $P^+ = \begin{pmatrix}0.82&-0.24\\-0.24&0.68\end{pmatrix}$. *Non-example (why EKFs become inconsistent):* the Jacobian is exact only at its linearization point, so when $P^-$ is large the belief covers regions where $h$ curves away from its tangent, and the reported $P^+$ comes out too small.
+
+#### Sigma points and particles
 
 **Sigma points, stated completely.** The UKF's **unscented transform** replaces the Jacobian with $2n+1$ deterministic samples of an $n$-dimensional Gaussian $\mathcal N(\hat x, P)$. In Julier and Uhlmann's basic form, with a spread parameter $\kappa$:
 $$\chi_0 = \hat x, \qquad \chi_{\pm i} = \hat x \pm \big(\sqrt{(n+\kappa)P}\big)_i, \qquad W_0 = \frac{\kappa}{n+\kappa}, \qquad W_{\pm i} = \frac{1}{2(n+\kappa)}$$
@@ -386,6 +400,8 @@ $$N_{\text{eff}} = \frac{1}{\sum_i \big(w_t^{[i]}\big)^2}$$
 It equals $N$ for uniform weights and 1 when one particle holds all the weight, so it counts how many particles are really contributing.
 
 *Example:* particles at 9, 10 and 12 m with equal previous weights, a reading $z = 12$ m and Gaussian noise $\sigma = 1$ m give likelihoods $e^{-4.5}, e^{-2}, e^{0}$, that is $0.011, 0.135, 1$. The weights are $0.010, 0.118, 0.872$, the weighted mean is 11.73 m, and $N_{\text{eff}} = 1.29$ out of 3, so it is time to resample. The code is in [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]].
+
+#### Factor graphs, and why a filter and a smoother share one update
 
 **Factor graphs, stated completely.** A **factor graph** is a bipartite graph with **variable nodes** (poses, landmarks, calibration) and **factor nodes**, each factor $\phi_k$ connected only to the variables $X_k$ its measurement involves. It represents a factorization of the posterior:
 $$p(X \mid Z) \propto \prod_k \phi_k(X_k), \qquad \phi_k(X_k) \propto \exp\!\big(-\tfrac12 \lVert h_k(X_k) - z_k \rVert^2_{\Sigma_k}\big)$$
@@ -422,6 +438,8 @@ Here the measurement variance is smaller than the prediction variance, so the co
 | Localization | a map | robot pose in the map |
 | Mapping | robot poses | map structure |
 | SLAM | neither is perfectly known | trajectory and map jointly |
+
+**The four rows on the running object.** What each row takes as known decides whether its error can stop growing. *Odometry* is the predict step run alone, advancing $u\Delta t=1$ cm per step with no range reading. Every step adds $Q=1$ cm², so from the Worked case's starting belief the variance is $0.8+k$ after $k$ steps: after ten steps, $200$ ms, it is $10.8$ cm², a spread of $3.3$ cm when the estimate says only $1.6$ cm of range remains, so dead reckoning alone cannot tell whether the tool has already touched. *Localization* adds a range to a panel whose position is known, a map with one landmark in it. With a reading every step the predicted variance never exceeds the Worked case's $1.8$ cm², and the corrected one stays at or below $0.643$ cm²; the problem set finds where it settles. *Mapping* swaps the known and the unknown: trust the encoder for where the tool is, and the same ranges locate the panel. *SLAM* knows neither, and a range $z=m-x$ fixes only the difference between panel and tool. A tool at $x=0$ with the panel at $m=11.6$ cm and a tool at $x=5$ cm with the panel at $m=16.6$ cm predict the same reading, so without an anchor the whole solution can slide, which is §5's gauge freedom in one dimension. In a ROS system these rows are frames: odometry publishes `odom` → `base_link`, which drifts, and localization publishes `map` → `odom`, which jumps ([[04-robotics/robot-systems-deployment|10. Robot Systems §4]]).
 
 The main line of this section is §7.1: each row of the table is a posterior, the SLAM posterior factors into a graph, and the one variable no sensor reports, the data association, is where SLAM breaks. §7.2–§7.4 are the machinery papers name without explaining it: the odometry front ends and the IMU mechanics they share (§7.2), how a back end stays bounded by marginalizing old states (§7.3), and what a map stores (§7.4).
 
@@ -566,6 +584,10 @@ $$\text{loose: } \min_x \sum_s \lVert x - \hat x_s \rVert^2_{P_s}, \qquad \text{
 Here $\lVert e\rVert^2_{P} = e^\top P^{-1}e$, so each term is weighted by its own uncertainty. *Example:* a standalone GNSS fix needs pseudoranges to at least four satellites, for three position coordinates plus the receiver clock offset. Under a bridge with two satellites visible, a loosely coupled system has no GNSS estimate to fuse, while a tightly coupled one still adds the two pseudorange residuals, and they still constrain the solution.
 
 ### 8.5 Tracking many objects: gating, association, and track management
+
+*In one sentence:* when several objects are in view, the filter first has to decide which detection belongs to which object, and a wrong pairing does more harm than noise because the filter then believes it.
+
+*If you need only one thing from this section:* choose the pairing with the smallest total Mahalanobis cost rather than committing the nearest pair first; in §8.5.3's example GNN's total of $4.25$ beats greedy's $8.25$.
 
 A multi-object tracker runs one filter per object, and before any filter can update it must decide which of this frame's detections belongs to which track, which are new objects, and which are clutter.
 
@@ -1044,6 +1066,10 @@ flowchart LR
 제어기는 진짜 상태 $x_t$를 받는 일이 거의 없다. 추정값 $\hat{x}_t$ 또는 belief 분포 위에서
 행동한다. 그래서 추정이 나쁘면 하류에서 계획·제어 실패처럼 *보인다*.
 
+**추정기로 들어가는 화살표는 둘이고, 둘 다 시간을 싣고 온다.** 입력 화살표는 제어기가 방금 보낸 명령이고, 예측 단계가 그것을 쓰기 때문에 들어온다. P5에서 필터가 예측 거리를 단계마다 $u\Delta t=1$ cm씩 줄이는 것은 공구에 전진 명령이 내려졌기 때문이다. 그러니 구동기가 실행하지 못한 명령은 잘못된 예측이 되어 추정에 들어간다. 센서 화살표는 제 시계로 돈다. P5의 거리는 P6의 $50$ Hz 비전과 함께 오고 P6의 제어기는 $200$ Hz로 돌므로, 보정된 추정 하나가 제어 틱 $4$개를 맡는다. 그대로 쥐고 있으면 넷째 틱에서는 공구보다 $0.5\times0.015=0.75$ cm 뒤처진다. 추정기가 마지막 답을 쥐고 있지 않고 보정 사이에 앞으로 예측하는 이유다.
+
+**추정 오류가 하류에서 보이는 모습.** 계속 쓰는 대상의 $70$ ms 지연을 $u=0.5$ m/s에서 보자. 모든 거리는 공구가 $3.5$ cm 전에 있던 곳을 말하므로, 추정이 아직 $3.5$ cm 남았다고 읽는 동안 공구는 패널에 닿는다. 로그에서는 제어기가 예상한 것보다 $70$ ms 이른 접촉과 힘의 급증으로 보이고, $\hat x$를 $0.1$ cm 안으로 추종한 제어기는 내내 추종 오차 $0.1$ cm를 보고한다. 추정의 실패가 제어의 실패로 분류되는 것이다. 그러니 논문이 추종 오차를 보고하면 무엇에 대해 잰 것인지 확인하라. $\hat x$에 대한 오차는 제어기를 재고, 실제 값에 대한 오차만이 로봇을 잰다. 지연은 카메라 보정이 도움이 되는 속도에도 상한을 건다. $3.5$ cm의 낡음은 추정 자신의 퍼짐 $\sqrt{0.8}=0.894$ cm의 $3.9$배이고, [[04-robotics/capstone-panel-contact|26. 캡스톤 §5]]의 검사 $vL\le\sigma$는 최대 $0.894/0.070=12.8$ cm/s만 허용한다. 이런 지연을 항 하나씩 나누는 방법은 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]에 있다.
+
 ### 2. 절대 혼동하면 안 되는 네 가지
 
 | 양 | 의미 | 예 |
@@ -1150,6 +1176,12 @@ $z_{1:t-1}$이 떨어지고 관측 모델 $p(z_t\mid x_t)$가 나타난다.
 
 ### 5. 방법 계열
 
+*한 문장으로:* 여기 나오는 추정기는 모두 예측하고 보정하는 같은 두 동작을 하고, 계열은 믿음을 어떻게 담아 두느냐만 다르다. 가우시안 하나, 직선 근사를 거친 가우시안, 고른 점 몇 개, 표본 구름, 또는 한꺼번에 푸는 궤적 전체.
+
+*이 절에서 하나만 가져간다면:* 칼만 이득은 조정하는 값이 아니라 공분산에서 계산되는 값이다. P5에서는 $K=4/(4+1)=0.8$이고 §6에서 계산한다. 표의 나머지 행은 칼만 필터의 선형·가우시안·봉우리 하나 가정이 성립하지 않을 때를 위한 것이다.
+
+#### 계열 한눈에 보기, 그리고 칼만 이득
+
 | 계열 | 표현과 용도 | 주된 주의점 |
 |---|---|---|
 | 칼만 필터 | 선형-가우시안 평균·공분산([[02-foundations/probability\|3. 확률 §3]]) | 모델이 가정에 맞아야 함 |
@@ -1165,6 +1197,8 @@ $$K=P^-H^\top(HP^-H^\top+R)^{-1}, \qquad \hat{x}^+=\hat{x}^-+K(z-H\hat{x}^-)$$
 $K$는 손으로 정하는 신뢰 가중치가 아니다: 예측 공분산 $P^-$, 센서 공분산 $R$, 관측 기하
 $H$에서 *따라 나온다*. 두 필터를 코드로 옮긴 것 — Joseph 형태 공분산을 쓰는 칼만 예측·갱신 한 스텝과, 유효 표본 크기로 시점을 정하는 파티클 재표집 — 은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §4]]와 [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]]에 있다. 모델이 시불변이고 $P$가 수렴하면 $K$가 상수가 되어, 필터는 $\hat x$에 대한 선형 시불변 점화식이 된다. 가중치가 경사 하강이 아니라 리카티 방정식에서 오는 선형 RNN이다([[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §12]]).
 
+#### 칼만 필터와 그 확장형
+
 **칼만 필터의 완전한 정의.** §4의 베이즈 필터를 §3의 **선형-가우시안** 모델에 특수화한 것이고, 거기서는 근사가 아니라 정확하다. 조건이 넷이다: 선형 동역학 $x_t = Ax_{t-1} + Bu_t + w_t$; 선형 관측 $z_t = Hx_t + v_t$; 서로 독립인 평균 0의 백색 가우시안 잡음 $w_t\sim\mathcal N(0,Q)$ 와 $v_t\sim\mathcal N(0,R)$; 가우시안 초기 belief. 이 아래에서는 모든 belief가 가우시안으로 남는다. 아핀 사상과 조건부화가 가우시안을 가우시안으로 보내기 때문이다([[02-foundations/probability|3. 확률 §3]]). 그래서 필터는 평균과 공분산만 들고 간다. **예측** 단계는 둘을 동역학에 통과시킨다.
 $$\hat x^- = A\hat x + Bu, \qquad P^- = APA^\top + Q$$
 $Ax + Bu + w$ 의 평균이 $A\hat x + Bu$ 이고, $Ax$ 의 공분산이 $APA^\top$ 이며, 독립 잡음이 자기 $Q$ 를 더하기 때문이다. **갱신** 단계는 **innovation** $y$(측정에서 예측 측정을 뺀 것), 그 공분산 $S$, 그리고 이득을 만든다.
@@ -1177,6 +1211,8 @@ $$F_t = \frac{\partial f}{\partial x}\Big|_{\hat x_{t-1},\,u_t}, \qquad H_t = \f
 이므로 $F_t$ 는 직전 추정값에서, $H_t$ 는 예측값에서 잡는다. 선형화를 놓을 자리로 그 시점에 쓸 수 있는 가장 좋은 추측이기 때문이다. 평균은 여전히 비선형 모델을 통과하고 공분산만 야코비안을 쓴다.
 $$\hat x_t^- = f(\hat x_{t-1}, u_t), \qquad P_t^- = F_tP_{t-1}F_t^\top + Q, \qquad y_t = z_t - h(\hat x_t^-)$$
 갱신은 $H$ 자리에 $H_t$ 를 넣은 위의 칼만 갱신이다. *예:* $(3, 4)$ m로 예측된 로봇이 $P^- = I$ m²를 들고 원점의 랜드마크까지 거리 $h(x) = \sqrt{x_1^2 + x_2^2}$ 를 $R = 1$ m²로 잰다. $h(\hat x^-) = 5$, $H = (x_1, x_2)/h = (0.6, 0.8)$ 이므로 $S = 0.36 + 0.64 + 1 = 2$, $K = (0.3, 0.4)$ 다. $4.5$ m를 읽으면 $y = -0.5$, $\hat x^+ = (2.85, 3.80)$ — 거리가 구속하는 유일한 방향인 랜드마크 쪽으로 곧장 보정되고, $P^+ = \begin{pmatrix}0.82&-0.24\\-0.24&0.68\end{pmatrix}$ 다. *반례(EKF가 비일관해지는 이유):* 야코비안은 선형화점에서만 정확하므로, $P^-$ 가 크면 belief가 $h$ 의 접선에서 휘어 나가는 영역까지 덮고, 보고되는 $P^+$ 는 너무 작게 나온다.
+
+#### 시그마 포인트와 파티클
 
 **시그마 포인트의 완전한 정의.** UKF의 **무향 변환**(unscented transform)은 야코비안을 $n$ 차원 가우시안 $\mathcal N(\hat x, P)$ 의 결정적 표본 $2n+1$ 개로 대체한다. Julier와 Uhlmann의 기본형은 퍼짐 파라미터 $\kappa$ 와 함께 다음과 같다.
 $$\chi_0 = \hat x, \qquad \chi_{\pm i} = \hat x \pm \big(\sqrt{(n+\kappa)P}\big)_i, \qquad W_0 = \frac{\kappa}{n+\kappa}, \qquad W_{\pm i} = \frac{1}{2(n+\kappa)}$$
@@ -1191,6 +1227,8 @@ $$N_{\text{eff}} = \frac{1}{\sum_i \big(w_t^{[i]}\big)^2}$$
 가중치가 균일하면 $N$ 이고 한 파티클이 전부를 가지면 1이므로, 실제로 기여하는 파티클이 몇 개인지를 센다.
 
 *예:* 이전 가중치가 같은 파티클이 9, 10, 12 m에 있고 측정이 $z = 12$ m, 가우시안 잡음이 $\sigma = 1$ m이면 우도는 $e^{-4.5}, e^{-2}, e^{0}$, 곧 $0.011, 0.135, 1$ 이다. 가중치는 $0.010, 0.118, 0.872$, 가중 평균은 11.73 m, $N_{\text{eff}}$ 는 3 중 1.29이므로 재표집할 때다. 코드는 [[02-foundations/algorithms/robotics-ai-problems|11.8 §5]]에 있다.
+
+#### Factor graph, 그리고 필터와 스무더가 같은 갱신인 이유
 
 **Factor graph의 완전한 정의.** **Factor graph**는 **변수 노드**(pose, landmark, 보정값)와 **factor 노드**로 이루어진 이분 그래프이고, 각 factor $\phi_k$ 는 자기 측정이 관여하는 변수 $X_k$ 에만 연결된다. 사후 분포의 인수분해를 나타낸다.
 $$p(X \mid Z) \propto \prod_k \phi_k(X_k), \qquad \phi_k(X_k) \propto \exp\!\big(-\tfrac12 \lVert h_k(X_k) - z_k \rVert^2_{\Sigma_k}\big)$$
@@ -1229,6 +1267,8 @@ $$K=\frac{4}{4+1}=0.8, \qquad \hat{x}^+=10+0.8(12-10)=11.6\ \mathrm{cm}$$
 | Localization | 지도 | 지도 안의 로봇 pose |
 | Mapping | 로봇 pose들 | 지도 구조 |
 | SLAM | 어느 쪽도 완전히 모름 | 궤적과 지도를 동시에 |
+
+**네 행을 계속 쓰는 대상 위에서.** 각 행이 무엇을 알려진 것으로 두느냐가 그 오차가 자라기를 멈출 수 있는지를 정한다. *Odometry*는 거리 측정 없이 예측 단계만 돌리는 것이다. 단계마다 $u\Delta t=1$ cm씩 나아가고, 단계마다 $Q=1$ cm²가 더해지므로 계산 절의 출발 belief에서 $k$단계 뒤의 분산은 $0.8+k$다. 열 단계, 곧 $200$ ms 뒤에는 $10.8$ cm²로, 추정이 남은 거리를 $1.6$ cm라고 말할 때 퍼짐이 $3.3$ cm다. 추측 항법만으로는 공구가 이미 닿았는지조차 알 수 없다. *Localization*은 위치가 알려진 패널, 곧 랜드마크 하나짜리 지도까지의 거리를 더한다. 단계마다 측정이 오면 예측 분산은 계산 절의 $1.8$ cm²를 넘는 일이 없고, 보정된 분산은 $0.643$ cm² 이하에 머문다. 어디에 자리 잡는지는 과제가 구한다. *Mapping*은 알려진 것과 모르는 것을 맞바꾼다. 공구의 위치는 엔코더를 믿고, 같은 거리들로 패널의 위치를 찾는다. *SLAM*은 둘 다 모르고, 거리 $z=m-x$는 패널과 공구의 차이만 고정한다. $x=0$의 공구와 $m=11.6$ cm의 패널, 그리고 $x=5$ cm의 공구와 $m=16.6$ cm의 패널은 같은 측정을 예측하므로, 앵커가 없으면 해 전체가 미끄러질 수 있다. 1차원에서 본 §5의 게이지 자유도다. ROS 시스템에서는 이 행들이 프레임이다. odometry는 드리프트하는 `odom` → `base_link`를, localization은 튀는 `map` → `odom`을 발행한다([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §4]]).
 
 이 절의 본줄기는 §7.1이다. 표의 각 행은 하나의 사후 분포이고, SLAM 사후 분포는 그래프로 인수분해되며, 어느 센서도 보고하지 않는 변수 하나, 곧 data association이 SLAM이 무너지는 자리다. §7.2–§7.4는 논문이 설명 없이 이름만 대는 기구들이다. 오도메트리 front end와 그것들이 공유하는 IMU 기법(§7.2), back end가 옛 상태를 주변화해 크기를 유한하게 지키는 방법(§7.3), 지도가 무엇을 저장하는가(§7.4).
 
@@ -1371,6 +1411,10 @@ $$\text{loose: } \min_x \sum_s \lVert x - \hat x_s \rVert^2_{P_s}, \qquad \text{
 $\lVert e\rVert^2_{P} = e^\top P^{-1}e$ 이므로 각 항은 자기 불확실성으로 가중된다. *예:* 단독 GNSS 해는 위성 넷 이상까지의 pseudorange가 필요하다. 위치 세 좌표에 수신기 클럭 오프셋이 더해지기 때문이다. 다리 밑에서 위성이 둘만 보이면 loosely coupled 시스템은 융합할 GNSS 추정값 자체가 없지만, tightly coupled 시스템은 그 두 pseudorange 잔차를 여전히 더하고 그것들이 해를 구속한다.
 
 ### 8.5 여러 물체 추적: 게이팅, 연관, 트랙 관리
+
+*한 문장으로:* 물체가 여럿 보이면 필터는 먼저 어느 검출이 어느 물체의 것인지 정해야 하고, 잘못된 짝짓기는 필터가 그것을 그대로 믿어 버리므로 잡음보다 더 큰 해를 끼친다.
+
+*이 절에서 하나만 가져간다면:* 가장 가까운 짝부터 확정하지 말고 마할라노비스 비용의 합이 가장 작은 짝짓기를 골라라. §8.5.3의 예에서 GNN의 합 $4.25$가 탐욕 할당의 $8.25$를 이긴다.
 
 다중 물체 추적기는 물체마다 필터를 하나씩 돌리는데, 어느 필터든 갱신하기 전에 이번 프레임의 검출 중 무엇이 어느 트랙의 것이고, 무엇이 새 물체이며, 무엇이 클러터인지부터 정해야 한다.
 

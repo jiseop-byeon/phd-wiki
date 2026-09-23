@@ -246,12 +246,12 @@ For a discrete sample, a common observer uses $\Delta E_k=T F_k^\top v_k$ with a
 
 ### 6. Debugging order
 
-1. Disable contact force and verify units, signs, frames, encoder direction, and motor current limits.
-2. Log actual loop period and worst-case jitter, not only requested rate.
-3. Add a low-stiffness wall without damping; inspect penetration, force, and energy.
-4. Add velocity estimation and damping while plotting phase/noise.
-5. Raise stiffness gradually; stop at sustained oscillation, saturation, overheating, or unsafe force.
-6. Separate numerical instability, mechanical resonance, friction limit cycle, and collision/proxy discontinuity.
+1. Disable contact force and verify units, signs, frames, encoder direction, and motor current limits. Every later step reads force and position through these conversions, so check them with the amplifier off: moved by hand, P3's handle should read $6.14\,\mathrm{mm}$ of travel per $100$ counts ([[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]), and a wall with a flipped sign pulls the handle in, which looks like instability and is not.
+2. Log actual loop period and worst-case jitter, not only requested rate. The leak of §2 is paid period by period, so the worst period matters, not the mean: a loop that averages $1\,\mathrm{ms}$ but sometimes takes $5\,\mathrm{ms}$ renders the catalog wall at a leak-to-dissipation ratio of $k_wT/(2b) = 400 \times 0.005/1.6 = 1.25$ during those periods, a generator however good the mean looks.
+3. Add a low-stiffness wall without damping; inspect penetration, force, and energy. A wall well inside the ceiling separates sign and geometry errors from stability: at the catalog $400\,\mathrm{N/m}$, a quarter of the $1600$ ceiling, a steady $1\,\mathrm{N}$ push should sit $2.5\,\mathrm{mm}$ in, about $41$ counts, and the logged $\sum TF_av$ should come out negative, since a wall left compressed at the end of a push is holding energy it took from the handle.
+4. Add velocity estimation and damping while plotting phase/noise. At $T = 1\,\mathrm{ms}$ one count reads as a velocity step of $\Delta x/T = 0.0614\,\mathrm{m/s}$ (§3), so a virtual damper $B = 0.4\,\mathrm{N{\cdot}s/m}$ jumps by $0.025\,\mathrm{N}$ per count, as much as one count of the wall itself, and the same $B$ halves the stiffness ceiling to $800\,\mathrm{N/m}$ (§4).
+5. Raise stiffness gradually; stop at sustained oscillation, saturation, overheating, or unsafe force. Near the $1600\,\mathrm{N/m}$ ceiling the $2.0\,\mathrm{N}$ amplifier limit of [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]] is reached at $2.0/1600 = 1.25\,\mathrm{mm}$ of penetration, so a wall that goes soft beyond that depth is saturating, not failing the bound; and a wall that stays quiet above $1600$ with a hand on the handle is being paid for by $b_h$, as case D shows.
+6. Separate numerical instability, mechanical resonance, friction limit cycle, and collision/proxy discontinuity. Each has its own fix: the integrator (§2) for the first, the mechanism for the second, $f_c$ and $\Delta$ in §3's $(\beta,\sigma)$ plane for the third, and a proxy ([[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §3]]) for the fourth. The second is the easiest to mistake for the contact itself: the Worked case's contact mode rings at $\omega_d = \omega_n\sqrt{1-\zeta^2} \approx 89\,\mathrm{rad/s}$, about $14\,\mathrm{Hz}$, inside the $10$–$30\,\mathrm{Hz}$ range at which §1 reports that device resonances can already appear. Change $k_w$ and watch: the contact mode moves, since $\omega_n^2 = (k_h + k_w)/m$, and a structural resonance does not.
 
 7. Compare one logged contact step with the prediction. In sustained contact with the catalog wall and hand, the Worked case's polynomial ($\omega_n=141\,\mathrm{rad/s}$, $\zeta=0.78$) predicts, through the standard second-order formulas $M_p=e^{-\pi\zeta/\sqrt{1-\zeta^2}}$, $t_p=\pi/\omega_d$, $t_s\approx4.6/\zeta\omega_n$ and $t_r\approx1.8/\omega_n$: $2.0\%$ overshoot, a peak at $35\,\mathrm{ms}$, $1\%$ settling in $42\,\mathrm{ms}$ and a $12.7\,\mathrm{ms}$ rise. A logged step that rings much longer means a term is missing: damping you assumed and do not have, or a longer force-update period than you think.
 8. Measure how often the force *command* changes, not only how often the loop runs; a force law computed in a slower loop sets a longer $T$ ([[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 §2]]).
@@ -568,12 +568,12 @@ Z-width에는 두 끝이 있고, 각각을 정하는 것이 다르다. 아래 �
 
 ### 6. 디버깅 순서
 
-1. 접촉력을 끄고 단위·부호·프레임·encoder 방향·모터 전류 한계를 확인한다.
-2. 요청한 주기가 아니라 실제 loop period와 최악의 jitter를 기록한다.
-3. 댐핑 없이 낮은 강성의 벽을 넣고 침투량·힘·에너지를 관찰한다.
-4. 속도 추정과 댐핑을 더하면서 위상과 noise를 함께 그린다.
-5. 강성을 점진적으로 올리고, 지속 진동·포화·과열·위험한 힘에서 멈춘다.
-6. 수치 불안정, 기계 공진, 마찰 limit cycle, 충돌/proxy 불연속을 구분한다.
+1. 접촉력을 끄고 단위·부호·프레임·encoder 방향·모터 전류 한계를 확인한다. 뒤의 모든 단계가 이 변환들을 거쳐 힘과 위치를 읽으므로 증폭기를 끈 채로 확인한다. P3 핸들을 손으로 움직였을 때 $100$카운트가 핸들 이동 $6.14\,\mathrm{mm}$로 읽혀야 하고([[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]), 부호가 뒤집힌 벽은 핸들을 안으로 끌어당긴다. 불안정처럼 보이지만 불안정이 아니다.
+2. 요청한 주기가 아니라 실제 loop period와 최악의 jitter를 기록한다. §2의 누설은 주기마다 치러지므로 평균이 아니라 최악의 주기가 중요하다. 평균 $1\,\mathrm{ms}$이지만 가끔 $5\,\mathrm{ms}$가 걸리는 루프는 그 주기들 동안 카탈로그 벽을 누설 대 소산 비 $k_wT/(2b) = 400 \times 0.005/1.6 = 1.25$로 렌더링한다. 평균이 아무리 좋아 보여도 그 순간에는 발생기다.
+3. 댐핑 없이 낮은 강성의 벽을 넣고 침투량·힘·에너지를 관찰한다. 천장보다 한참 안쪽의 벽은 부호·기하 오류를 안정성 문제와 떼어 놓는다. 천장 $1600$의 4분의 1인 카탈로그 $400\,\mathrm{N/m}$에서 꾸준한 $1\,\mathrm{N}$ 밀기는 $2.5\,\mathrm{mm}$, 약 $41$카운트 들어간 자리에 머물러야 하고, 기록한 $\sum TF_av$는 음수로 나와야 한다. 밀기가 끝났을 때 눌린 채 남은 벽은 핸들에게서 가져간 에너지를 쥐고 있기 때문이다.
+4. 속도 추정과 댐핑을 더하면서 위상과 noise를 함께 그린다. $T = 1\,\mathrm{ms}$에서 한 카운트는 속도 계단 $\Delta x/T = 0.0614\,\mathrm{m/s}$로 읽히므로(§3), 가상 댐퍼 $B = 0.4\,\mathrm{N{\cdot}s/m}$는 카운트마다 $0.025\,\mathrm{N}$씩 뛴다. 벽 자체의 한 카운트만큼이고, 같은 $B$가 강성 천장을 $800\,\mathrm{N/m}$로 반으로 줄인다(§4).
+5. 강성을 점진적으로 올리고, 지속 진동·포화·과열·위험한 힘에서 멈춘다. $1600\,\mathrm{N/m}$ 천장 근처에서는 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]의 증폭기 한계 $2.0\,\mathrm{N}$에 침투 $2.0/1600 = 1.25\,\mathrm{mm}$에서 닿는다. 그 깊이 너머에서 물러지는 벽은 경계를 어긴 것이 아니라 포화한 것이다. 그리고 손이 핸들을 쥔 채 $1600$ 위에서도 조용한 벽은 조건 D가 보이듯 $b_h$가 값을 치르고 있는 것이다.
+6. 수치 불안정, 기계 공진, 마찰 limit cycle, 충돌/proxy 불연속을 구분한다. 고치는 곳이 저마다 다르다. 첫째는 적분기(§2), 둘째는 기구, 셋째는 §3의 $(\beta,\sigma)$ 평면에서의 $f_c$와 $\Delta$, 넷째는 proxy([[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §3]])다. 접촉 자체와 가장 헷갈리기 쉬운 것은 둘째다. 계산 절의 접촉 모드는 $\omega_d = \omega_n\sqrt{1-\zeta^2} \approx 89\,\mathrm{rad/s}$, 약 $14\,\mathrm{Hz}$로 울리는데, §1이 장치 공진이 벌써 나타날 수 있다고 적은 $10$–$30\,\mathrm{Hz}$ 안이다. $k_w$를 바꿔 보라. 접촉 모드는 $\omega_n^2 = (k_h + k_w)/m$이므로 움직이고, 구조 공진은 움직이지 않는다.
 
 7. 기록한 접촉 계단 응답 하나를 예측과 비교한다. 카탈로그 벽과 손으로 지속 접촉할 때, 계산 절의 다항식($\omega_n=141\,\mathrm{rad/s}$, $\zeta=0.78$)은 표준 2차 공식 $M_p=e^{-\pi\zeta/\sqrt{1-\zeta^2}}$, $t_p=\pi/\omega_d$, $t_s\approx4.6/\zeta\omega_n$, $t_r\approx1.8/\omega_n$으로 오버슈트 $2.0\%$, 최고점 $35\,\mathrm{ms}$, $1\%$ 정착 $42\,\mathrm{ms}$, 상승 $12.7\,\mathrm{ms}$를 예측한다. 기록한 계단 응답이 훨씬 오래 울리면 항 하나가 빠진 것이다. 있다고 가정했지만 없는 감쇠이거나, 생각보다 긴 힘 갱신 주기다.
 8. 루프가 얼마나 자주 도는지만이 아니라 힘 *명령*이 얼마나 자주 바뀌는지 잰다. 더 느린 루프에서 계산한 힘 법칙은 더 긴 $T$를 정한다([[04-robotics/haptics-teleoperation/rendering-in-practice|24.9 §2]]).

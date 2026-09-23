@@ -270,6 +270,10 @@ failure this whole vocabulary exists to manage (page 9 again; the complete defin
 
 ### 6. The rest of the vocabulary, in one table
 
+*In one sentence:* most of the remaining words in a paper's model description name small, concrete things — a piece of input, a stored vector, a raw score, a saved copy of the weights, a few extra trainable numbers — and each can be pinned down in one line, and, when a claim needs checking, in one formula.
+
+*If you need only one thing from this section:* logits are raw scores and softmax turns them into probabilities that depend only on the differences between scores — $z=(2.0,\ 1.0,\ 0.1)$ gives $p=(0.659,\ 0.242,\ 0.099)$, and adding $10$ to every score changes nothing; it is worked in *The same words, with their formulas* below.
+
 The table is the label layer: one line per word, so the word does not stop you — not a concept to master here. The subsection after it, *The same words, with their formulas*, is the second layer, each word written as a formula with one number, and it is second-pass reading: skip it now and open it when a paper's claim needs checking.
 
 | Word | What it means, minimally |
@@ -624,6 +628,10 @@ $\partial L/\partial \hat y = \hat y - y = -0.5$는 제곱 손실의 미분이�
 나빠지는 것)이 이 어휘 전체가 관리하려는 실패다(역시 9페이지. 학습 곡선 진단까지 포함한 완전한 정의는 [[02-foundations/ml-practice|9. ML 실무 §2]]).
 
 ### 6. 나머지 어휘, 표 하나로
+
+*한 문장으로:* 논문의 모델 설명에 남은 단어 대부분은 작고 구체적인 것 — 입력 한 조각, 저장된 벡터 하나, 날 점수, 가중치를 저장한 사본, 몇 개 더한 학습 가능한 숫자 — 의 이름이고, 저마다 한 줄로, 주장을 확인해야 할 때는 식 하나로 못 박을 수 있다.
+
+*이 절에서 하나만 가져간다면:* 로짓은 날 점수이고 softmax는 그것을 점수들 사이의 차이에만 의존하는 확률로 바꾼다는 것 — $z=(2.0,\ 1.0,\ 0.1)$은 $p=(0.659,\ 0.242,\ 0.099)$를 주고, 모든 점수에 $10$을 더해도 아무것도 바뀌지 않는다. 아래 *같은 단어들, 수식과 함께*에서 계산한다.
 
 표는 라벨 층이다: 단어마다 한 줄, 그 단어에서 멈추지 않도록 — 여기서 숙달할 개념이 아니다. 그 뒤의 소절 *같은 단어들, 수식과 함께*가 둘째 층으로, 단어마다 식 하나와 숫자 하나를 주며, 두 번째 읽기 분량이다: 지금은 건너뛰고 논문의 주장을 확인해야 할 때 열어라.
 

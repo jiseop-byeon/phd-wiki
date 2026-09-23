@@ -441,6 +441,10 @@ RL results depend on protocol more than those of almost any other subfield. What
 
 ### 6. Learning the reward: inverse RL and preferences
 
+*In one sentence:* when nobody can write the goal down as a score, the score itself can be learned from what a person does or from which of two attempts they prefer — but many different scores explain the same behaviour, so each method is a rule for picking one of them, and the learned score still has to be optimized afterwards.
+
+*If you need only one thing from this section:* the Bradley–Terry model $P(A \succ B)=\sigma\big(R(A)-R(B)\big)$, fitted as logistic regression on reward differences — it is the reward model behind RLHF and the loss DPO rewrites, and in §6.3's worked example one answer "A is better" moves $w$ from $(0.2,\ 0.6)$ to $(0.499,\ 0.301)$ and lowers the loss from $0.913$ to $0.599$.
+
 §2 treated the reward as something an engineer writes. Sometimes nobody can write it down,
 but someone can *show* the behaviour, or say which of two attempts was better. Then the
 reward itself becomes the thing to learn.
@@ -1139,6 +1143,10 @@ RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할
   그래서 $d = 1$이면 미래가 빠진다. **종료**(과제가 정말 끝남: 목표 도달, 또는 기계 전도)는 $d = 1$이다. **절단**(과제가 계속될 상태에서 시계가 다 됨)은 $s'$에 여전히 미래가 있으므로 $d = 0$을 유지해야 한다. 계산 예: $r = 1$, $\gamma = 0.99$, $V(s') = 10$이면 부트스트랩 타깃은 $10.9$이고, 시간 초과를 종료로 표시하면 $1$, 곧 올바른 타깃의 10분의 1도 안 되는 값이 시간 한계 근처의 모든 상태에 들어간다.
 
 ### 6. 보상을 배우기: 역강화학습과 선호
+
+*한 문장으로:* 아무도 목표를 점수로 적어 내지 못할 때는 사람이 하는 일이나 두 시도 중 어느 쪽을 더 좋아하는지에서 점수 자체를 배울 수 있지만, 같은 행동을 설명하는 점수가 여럿이므로 방법마다 그중 하나를 고르는 규칙이 되고, 배운 점수는 그 뒤에 여전히 최적화해야 한다.
+
+*이 절에서 하나만 가져간다면:* 보상 차이에 대한 로지스틱 회귀로 맞추는 Bradley–Terry 모델 $P(A \succ B)=\sigma\big(R(A)-R(B)\big)$ — RLHF의 보상 모델이자 DPO가 고쳐 쓰는 손실이고, §6.3의 계산 예제에서 "A가 낫다"는 답 하나가 $w$를 $(0.2,\ 0.6)$에서 $(0.499,\ 0.301)$로 옮기고 손실을 $0.913$에서 $0.599$로 낮춘다.
 
 §2는 보상을 엔지니어가 써 넣는 것으로 다뤘다. 그런데 때로는 아무도 보상을 적어 내지 못하고,
 대신 누군가 거동을 *보여 주거나* 두 시도 중 어느 쪽이 나았는지 말해 줄 수는 있다. 그러면

@@ -148,6 +148,10 @@ The distinction matters because a reachable motion is not necessarily a motion t
 
 ### 2. The manipulator equation
 
+*In one sentence:* the torque each joint motor must supply is what it takes to accelerate an arm whose effective mass changes with its pose, plus what the joints' motions do to one another, plus the arm's weight — and a contact adds a push of its own that no one commanded.
+
+*If you need only one thing from this section:* the same equation runs both ways — $\tau = M\ddot\theta + C\dot\theta + g$ gives the torque a motion needs, and $\ddot\theta = M^{-1}(\tau - C\dot\theta - g)$ the motion a torque produces, at every pose since $M$ is always invertible; the end of the section works it on P2, which at $\theta=(0°,90°)$ with the motors off starts to fall at $\ddot\theta=(-9.81,\ 9.81)$ rad/s².
+
 $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
 
 This is the **equation of motion** of an $n$-joint rigid arm: $n$ coupled second-order differential equations, one torque balance per joint, so every term has units of torque (N·m for a revolute joint). $\theta \in \mathbb{R}^n$ holds the joint angles and $\dot\theta$, $\ddot\theta$ their velocities and accelerations; $M(\theta)$ and $C(\theta,\dot\theta)$ are $n \times n$ matrices; $g(\theta)$ and $\tau$ are $n$-vectors of torques. For the 2R arm below, $n = 2$.
@@ -339,6 +343,10 @@ $$\tau = M(\theta)\big(\ddot\theta_{\text{des}} + K_d\,\dot e + K_p\,e\big) + C(
 Substituting it into the manipulator equation gives $M(\theta)(\ddot e + K_d\dot e + K_p e) = 0$, and since $M$ is invertible, $\ddot e + K_d\dot e + K_p e = 0$ when the model is exact: every joint becomes an independent linear mass-spring-damper, whatever the pose. Matching that error equation to the standard second-order form $\ddot e+2\zeta\omega_n\dot e+\omega_n^2e=0$ names the two numbers that describe its response: the **natural frequency** $\omega_n=\sqrt{K_p}$, how fast the error is pulled back, and the **damping ratio** $\zeta=K_d/(2\sqrt{K_p})$, whether it overshoots ($\zeta<1$ oscillates, $\zeta>1$ creeps back, and $\zeta=1$, called critically damped, is the fastest return without overshoot). With $K_p = 100$ and $K_d = 20$ per joint, $\omega_n=\sqrt{100} = 10$ rad/s and $\zeta=20/(2\sqrt{100}) = 1$, critically damped ([[04-robotics/control-theory-ce397|5. Control Theory §7]] designs such gains). Non-example: independent-joint PD, $\tau = K_p e + K_d\dot e$ with no model, leaves $M(\theta)$ in the closed loop, so §3's factor-of-five inertia change alters how fast and how damped its response is.
 
 ### 6. Operational-space dynamics — the bridge to force control
+
+*In one sentence:* seen from the tool tip, the arm behaves like a mass that is heavier in some directions than in others and that changes as the arm moves, and that apparent mass decides how a push at the tip turns into motion.
+
+*If you need only one thing from this section:* the operational-space inertia $\Lambda=(JM^{-1}J^\top)^{-1}$, which for P2 at $\theta=(0°,90°)$ is $\mathrm{diag}(1,2)$ kg — pushed sideways the tip feels like 1 kg and pushed up like 2 kg, although the arm carries 2 kg of mass; it is worked for the 2R arm right after the full task-space equation.
 
 Everything so far lives in joint space. Contact does not: contact happens at the
 end-effector, in task space. The transformation is the single most important equation on
@@ -675,6 +683,10 @@ $$p_1=L_1\,(c_1,\ s_1),\qquad p_2=p_1+L_2\,(c_{12},\ s_{12})$$
 
 ### 2. 매니퓰레이터 방정식
 
+*한 문장으로:* 관절 모터마다 내야 하는 토크는 자세에 따라 유효 질량이 바뀌는 팔을 가속하는 몫, 관절들의 운동이 서로에게 미치는 몫, 팔의 무게를 버티는 몫을 더한 것이고, 접촉은 아무도 명령하지 않은 밀기를 하나 더 보탠다.
+
+*이 절에서 하나만 가져간다면:* 같은 방정식이 양쪽으로 쓰인다는 것 — $\tau = M\ddot\theta + C\dot\theta + g$는 운동에 필요한 토크를, $\ddot\theta = M^{-1}(\tau - C\dot\theta - g)$는 토크가 만드는 운동을 주고, $M$은 언제나 가역이므로 모든 자세에서 성립한다. 이 절 끝에서 P2로 계산하는데, $\theta=(0°,90°)$에서 모터를 끄면 $\ddot\theta=(-9.81,\ 9.81)$ rad/s²로 떨어지기 시작한다.
+
 $$M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\theta + g(\theta) = \tau$$
 
 이것은 관절이 $n$개인 강체 팔의 **운동 방정식**(equation of motion)이다. 관절마다 토크 균형 하나씩, 서로 결합된 2계 미분방정식 $n$개이므로 모든 항의 단위가 토크다(회전 관절이면 N·m). $\theta \in \mathbb{R}^n$은 관절각, $\dot\theta$와 $\ddot\theta$는 그 속도와 가속도이고, $M(\theta)$와 $C(\theta,\dot\theta)$는 $n \times n$ 행렬, $g(\theta)$와 $\tau$는 토크의 $n$차원 벡터다. 아래 2R 팔에서는 $n = 2$다.
@@ -858,6 +870,10 @@ $$\tau = M(\theta)\big(\ddot\theta_{\text{des}} + K_d\,\dot e + K_p\,e\big) + C(
 이다. 매니퓰레이터 방정식에 대입하면 $M(\theta)(\ddot e + K_d\dot e + K_p e) = 0$이고, $M$이 가역이므로 모델이 정확할 때 $\ddot e + K_d\dot e + K_p e = 0$이다. 자세와 상관없이 모든 관절이 독립된 선형 질량-스프링-댐퍼가 된다. 그 오차 방정식을 표준 2차 꼴 $\ddot e+2\zeta\omega_n\dot e+\omega_n^2e=0$에 맞추면 응답을 기술하는 두 숫자에 이름이 붙는다. 오차를 얼마나 빨리 끌어당기는지인 **고유 진동수** $\omega_n=\sqrt{K_p}$, 그리고 오버슈트 여부를 정하는 **감쇠비** $\zeta=K_d/(2\sqrt{K_p})$다($\zeta<1$이면 진동하고, $\zeta>1$이면 느리게 기어 돌아오며, 임계 감쇠라 부르는 $\zeta=1$은 오버슈트 없이 가장 빨리 돌아오는 경우다). 관절마다 $K_p = 100$, $K_d = 20$이면 $\omega_n=\sqrt{100} = 10$ rad/s, $\zeta=20/(2\sqrt{100}) = 1$로 임계 감쇠다(이런 게인의 설계는 [[04-robotics/control-theory-ce397|5. 제어 이론 §7]]). 반례: 모델 없는 독립 관절 PD $\tau = K_p e + K_d\dot e$는 폐루프에 $M(\theta)$가 남으므로, §3의 5배 관성 변화가 응답의 빠르기와 감쇠를 바꾼다.
 
 ### 6. 작업공간(operational space) 동역학 — 힘 제어로 가는 다리
+
+*한 문장으로:* 공구 끝에서 보면 팔은 어떤 방향으로는 더 무겁고 어떤 방향으로는 더 가벼우며 팔이 움직이면 바뀌는 질량처럼 행동하고, 끝을 미는 힘이 운동으로 바뀌는 방식을 그 겉보기 질량이 정한다.
+
+*이 절에서 하나만 가져간다면:* 작업공간 관성 $\Lambda=(JM^{-1}J^\top)^{-1}$ — P2의 $\theta=(0°,90°)$에서 $\mathrm{diag}(1,2)$ kg이어서, 팔이 실제로 2 kg을 싣고 있는데도 끝은 옆으로 밀면 1 kg, 위로 밀면 2 kg처럼 느껴진다. 완전한 작업공간 방정식 바로 뒤에서 2R 팔로 계산한다.
 
 여기까지는 전부 관절 공간이다. 접촉은 그렇지 않다: 접촉은 말단에서, 작업 공간에서 일어난다.
 그 변환이 이 페이지에서 가장 중요한 방정식이다.

@@ -119,6 +119,10 @@ Each arrow needs a measurement. A motor command is not a measured skin stimulus;
 
 ### 2. Minimal protocol
 
+*In one sentence:* before anyone is tested, write down the one number the study exists to produce — about whom, from which measurement, by which criterion — because every other line of the protocol, from who takes part to how trials are counted, is a choice made about that number.
+
+*If you need only one thing from this section:* the estimand, the first of the three terms defined below the list, and what its absence costs in §6 Step 5, where one participant's "JND" comes out as $0.4107\,\mathrm{N}$ or $0.5167\,\mathrm{N}$, $26\%$ apart, depending on a criterion nobody wrote down.
+
 1. **Question and estimand:** “Does shear cue A reduce peak contact force relative to vibration B for novice operators?” is testable; “Is haptics better?” is not. The estimand is the precise quantity the study is designed to estimate, here the mean reduction in peak contact force.
 2. **Participants and exclusions:** population, handedness if relevant, sensorimotor conditions, prior experience, stopping criteria.
 3. **Conditions:** feedback mode, delay, gain, task difficulty, and any secondary workload.
@@ -383,6 +387,10 @@ $$\text{액추에이터 명령}\rightarrow\text{실제 전달된 역학 자극}\
 **연구 하나로 채운 사슬.** Kuchenbecker, Fiene, Niemeyer의 학술지 연구가 깔끔한 예다. *명령*: 들어오는 속도로 크기를 정한 개루프 과도 신호로, 그 속도는 평균 $0.10\,\mathrm{m/s}$였다. *전달된 자극*: 핸들에 단 가속도계로 쟀고, 장치는 $20$에서 $250\,\mathrm{Hz}$까지 잘 전달하며 $125\,\mathrm{Hz}$에서 가장 컸으므로 명령을 그 대역에 맞췄다. *지각*: 가림막과 백색잡음 헤드폰으로 눈과 귀를 가린 16명이 실제 표면 셋과 가상 표면 아홉의 사실감을 $1$–$7$ 척도로 매겼다. *결과*: 표면 침투를 기록했고, 단단한 비례 벽은 일부 사건 기반 벽보다 덜 침투했는데도 덜 사실적으로 평가됐다. 모든 화살표를 쟀기 때문에 이 연구는 사실감이 침투가 아니라고 말할 수 있다.
 
 ### 2. 최소 프로토콜
+
+*한 문장으로:* 참가자 선정부터 시행 세는 법까지 프로토콜의 모든 줄은 연구가 내놓으려는 숫자 하나 — 누구에 관한, 어떤 측정에서 나온, 어떤 기준으로 정한 — 를 두고 내린 선택이므로, 누구를 시험하기 전에 그 숫자부터 적는다.
+
+*이 절에서 하나만 가져간다면:* 목록 아래에서 정의하는 세 용어 가운데 첫째인 estimand와, 그것이 없을 때 치르는 값을 보이는 §6 Step 5다. 거기서 한 참가자의 "JND"가 아무도 적어 두지 않은 기준에 따라 $0.4107\,\mathrm{N}$도 되고 $0.5167\,\mathrm{N}$도 되며, 둘은 $26\%$ 다르다.
 
 1. **질문과 estimand:** "전단 cue A가 초보 조작자에게서 진동 B 대비 최대 접촉력을 줄이는가"는 검정 가능하고, "햅틱이 더 나은가"는 아니다. Estimand는 연구가 추정하도록 설계된 정확한 양이고, 여기서는 최대 접촉력의 평균 감소량이다.
 2. **참가자와 제외:** 모집단, 필요하면 손잡이, 감각운동 조건, 사전 경험, 중단 기준.

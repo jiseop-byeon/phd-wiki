@@ -105,6 +105,10 @@ axis-angle exponential (Euler's theorem); $\log$ recovers $(\hat\omega, \theta)$
 This exp/log pair is the door between the Lie group (rotations) and the Lie algebra
 (angular velocities) — and the reason poses can be interpolated and averaged correctly.
 
+**On P2.** The worked check is P2's forearm. At the catalog pose $\theta_1+\theta_2=90^\circ$, so the forearm frame's orientation is exactly this $R_z(90^\circ)$, the $R_{sb}$ of §4. Every rotation of a planar arm is about the one $z$-axis, and rotations about one axis commute, so for P2 the space and body forms of the ODE coincide, $\omega_s=\omega_b$. Turn the elbow at the $-0.2$ rad/s of the book guide's worked case ([[04-robotics/modern-robotics-book|1. Modern Robotics]]) and after $1$ s the forearm has turned $-0.2$ rad: Rodrigues' formula with $\sin(-0.2)=-0.198669$ and $1-\cos0.2=0.019933$ gives $R_z(78.54^\circ)$, still exactly orthonormal.
+
+**Why the exponential and not a step.** Integrate $\dot R=[\omega]R$ with one Euler step instead, $R\leftarrow(I+[\omega]\Delta t)R$, and the result leaves the rotation group: over that same second each column of $R$ is stretched by $\sqrt{1+0.2^2}=1.019804$, a $2\%$ error in what should be a unit vector. Smaller steps shrink the error but never remove it: $100$ steps of $0.01$ s leave $1.000200$ after that second, and $100$ s of such steps bring it back to $2\%$. The exponential of $[\omega]\Delta t$ is exactly a rotation at any step size, which is why an IMU's gyroscope readings are integrated as a product of exponentials ([[04-robotics/state-estimation-slam|3. State Estimation §7.2]]).
+
 ### 3. Twists: body velocity is six numbers — but read $v$ carefully
 
 A moving body's velocity is a **twist** $\mathcal{V} = (\omega, v) \in \mathbb{R}^6$.
@@ -169,6 +173,10 @@ A pure $z$-rotation of the *whole arm about the origin* has space twist $\mathca
 
 
 ### 5. The pose exponential and logarithm on SE(3)
+
+*In one sentence:* a whole pose — rotation and position together — is reached by following one screw for one amount, so it is the exponential of a twist, and the logarithm reads that screw and that amount back from any pose.
+
+*If you need only one thing from this section:* the translation column is $G(\theta)v$, not $v\theta$, because the rotation carries the linear velocity round as it goes — on P2's elbow screw at a quarter turn this puts the origin at $(1,-1,0)$, where the naive form puts it at $(0,-1.5708,0)$ (5.1's example and non-example).
 
 §2 turned a rotation axis and an angle into a rotation matrix; this section does the same for a whole pose, then inverts it. Here a **screw axis** is a twist $\mathcal{S} = (\omega, v)$ of §3 normalized in one of two ways: either $\|\omega\| = 1$, and $\theta$ is an angle in radians turned about the axis, or $\omega = 0$ and $\|v\| = 1$, and $\theta$ is a distance in metres slid along $v$. Its bracket is the $4\times4$ element of $\mathfrak{se}(3)$ from §3,
 
@@ -453,6 +461,10 @@ $$R = I + (1)[\hat z] + (1)[\hat z]^2 = \begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{
 리 군(회전)과 리 대수(각속도) 사이의 문이고 — 자세를 올바르게 보간하고 평균할 수 있는
 이유다.
 
+**P2에서.** 검산 예제는 P2의 전완이다. 카탈로그 자세에서 $\theta_1+\theta_2=90^\circ$이므로 전완 프레임의 방향이 정확히 이 $R_z(90^\circ)$, 곧 §4의 $R_{sb}$다. 평면 팔의 회전은 모두 하나뿐인 $z$축 둘레이고 한 축 둘레의 회전끼리는 교환되므로, P2에서는 미분방정식의 공간 형태와 바디 형태가 일치해 $\omega_s=\omega_b$다. 책 안내 페이지의 계산 예제([[04-robotics/modern-robotics-book|1. Modern Robotics]])처럼 엘보를 $-0.2$ rad/s로 돌리면 $1$ s 뒤 전완은 $-0.2$ rad 돌아 있다. $\sin(-0.2)=-0.198669$와 $1-\cos0.2=0.019933$을 넣은 로드리게스 공식이 $R_z(78.54^\circ)$를 주고, 이것은 여전히 정확히 정규직교다.
+
+**한 스텝이 아니라 지수인 이유.** $\dot R=[\omega]R$을 오일러 한 스텝 $R\leftarrow(I+[\omega]\Delta t)R$로 적분하면 결과가 회전군을 벗어난다. 같은 1초 동안 $R$의 각 열이 $\sqrt{1+0.2^2}=1.019804$배로 늘어나, 단위 벡터여야 할 것에 $2\%$ 오차가 생긴다. 스텝을 줄이면 오차는 줄지만 사라지지 않는다. $0.01$ s 스텝 $100$번이면 그 1초 뒤 $1.000200$이고, 그런 스텝으로 $100$ s를 적분하면 다시 $2\%$가 된다. $[\omega]\Delta t$의 지수는 어떤 스텝 크기에서도 정확히 회전이고, IMU의 자이로 측정을 지수들의 곱으로 적분하는 이유가 이것이다([[04-robotics/state-estimation-slam|3. 상태 추정 §7.2]]).
+
 ### 3. Twist: 강체의 속도는 여섯 숫자 — 단, $v$를 조심해서 읽어라
 
 움직이는 강체의 속도는 **twist** $\mathcal{V} = (\omega, v) \in \mathbb{R}^6$이다.
@@ -515,6 +527,10 @@ $$R_{sb}=R_z(90^\circ)=\begin{pmatrix}0&-1&0\\1&0&0\\0&0&1\end{pmatrix},\qquad p
 
 
 ### 5. SE(3)의 자세 지수와 로그
+
+*한 문장으로:* 자세 전체 — 회전과 위치를 함께 — 는 스크류 하나를 한 양만큼 따라가서 도달하므로 twist의 지수이고, 로그는 어떤 자세에서든 그 스크류와 양을 다시 읽어 낸다.
+
+*이 절에서 하나만 가져간다면:* 병진 열은 $v\theta$가 아니라 $G(\theta)v$다. 회전이 진행하면서 선속도를 함께 돌려 놓기 때문이다. P2의 엘보 스크류로 4분의 1바퀴를 돌면 원점은 $(1,-1,0)$에 가고, 순진한 형태는 그것을 $(0,-1.5708,0)$에 둔다(5.1의 예와 반례).
 
 §2는 회전축과 각을 회전 행렬로 바꿨다. 이 절은 자세 전체에 대해 같은 일을 하고, 그 역을 구한다. 여기서 **스크류 축**은 §3의 twist $\mathcal{S} = (\omega, v)$를 두 방식 중 하나로 정규화한 것이다. $\|\omega\| = 1$이면 $\theta$는 축 둘레로 도는 각(라디안)이고, $\omega = 0$이고 $\|v\| = 1$이면 $\theta$는 $v$ 방향으로 미끄러지는 거리(미터)다. 그 괄호는 §3의 $\mathfrak{se}(3)$ 원소인 $4\times4$ 행렬
 

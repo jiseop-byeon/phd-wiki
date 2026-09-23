@@ -277,6 +277,10 @@ Write this table on something near your desk. Then, when a system breaks, run it
 
 ### 3. The introspection tools, gathered
 
+*In one sentence:* when a ROS 2 system misbehaves, a handful of ready-made tools let you look at what is really running — which programs are connected, how often and how late their messages arrive, and what settings each one holds — instead of guessing from the code.
+
+*If you need only one thing from this section:* a rate and a latency are different measurements, and only `ros2 topic delay` reads the stamp — P6's `/goal` arriving at a steady $50\,\mathrm{Hz}$ but $200\,\mathrm{ms}$ after its stamp reads $50$ on `hz` and $0.200\,\mathrm{s}$ on `delay`, $130\,\mathrm{ms}$ over the $70\,\mathrm{ms}$ budget; it is worked in the *Latency, defined* box below.
+
 `ros2 doctor` is the zero-effort first look. With no arguments it runs every check and prints `All <n> checks passed` or a count of failures; warnings are ignored by default, so add `--include-warnings` (`-iw`) to treat them as failures. On a running system it reports publishers without subscribers and subscribers without publishers, which is check 4 done automatically across the whole graph.
 
 ```bash
@@ -1075,6 +1079,10 @@ $$186.6\times60 = 11.2\,\mathrm{GB}$$
 이 표를 책상 근처에 붙여 두어라. 그리고 고장이 나면 확신하는 항목까지 포함해 전부 돌려라.
 
 ### 3. 내성(introspection) 도구 모음
+
+*한 문장으로:* ROS 2 시스템이 이상하게 굴 때는 이미 만들어진 도구 몇 가지로 실제로 무엇이 돌고 있는지 — 어떤 프로그램이 서로 이어져 있는지, 메시지가 얼마나 자주, 얼마나 늦게 오는지, 각자 어떤 설정을 들고 있는지 — 를 들여다볼 수 있으니, 코드를 보며 짐작할 필요가 없다.
+
+*이 절에서 하나만 가져간다면:* 도착률과 지연은 서로 다른 측정이고 스탬프를 읽는 것은 `ros2 topic delay`뿐이라는 것 — 꾸준히 $50\,\mathrm{Hz}$로 오되 스탬프보다 $200\,\mathrm{ms}$ 늦게 도착하는 P6의 `/goal`은 `hz`에서 $50$, `delay`에서 $0.200\,\mathrm{s}$로 읽히고, $70\,\mathrm{ms}$ 예산을 $130\,\mathrm{ms}$ 넘는다. 아래 *지연의 정의* 상자에서 계산한다.
 
 `ros2 doctor`는 품이 안 드는 첫 관찰이다. 인자 없이 돌리면 모든 점검을 하고 `All <n> checks passed` 또는 실패 개수를 찍는다. 경고는 기본적으로 무시되므로 실패로 취급하려면 `--include-warnings`(`-iw`)를 붙인다. 돌아가는 시스템에서는 구독자 없는 퍼블리셔와 퍼블리셔 없는 구독자를 보고하는데, 이는 그래프 전체에 대해 4번 점검을 자동으로 한 것이다.
 

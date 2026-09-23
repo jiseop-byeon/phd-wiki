@@ -402,6 +402,10 @@ kilometre-scale routes after *seconds* of real data, matching methods that need
 
 ### 3. The geometric side did not go away
 
+*In one sentence:* learned traversability still runs on a map of ground heights that carries its own uncertainty, the careful geometric planners judge a route by its bad outcomes rather than its average one, and far from the vehicle a lidar sees so little ground that geometry has almost nothing left to judge.
+
+*If you need only one thing from this section:* the two routes past the frozen patch in the CVaR box below — the mean prefers route A, $15.0$ s against $16.0$ s, while $\mathrm{CVaR}_{0.1}$ prefers route B, $18$ s against $60$ s — which is the whole difference between planning for the average and planning against the tail.
+
 Two things a learning-first reading would miss.
 
 **The elevation map underneath.** Nearly every legged-navigation paper assumes a
@@ -523,6 +527,8 @@ cites retraining for a new environment dropping from weeks to a day.
 GOOSE-Ex is the one to notice from this wiki's angle: an off-road perception dataset that
 includes construction machinery is the nearest existing bridge between this page and
 [[05-construction-robotics/construction-manipulation|9. Construction Manipulation]].
+
+**A class label is not a verdict, and the frozen patch shows it.** A segmentation dataset of RUGD's kind labels the south-east cell *rock*, one label on one ninth of the window, yet the worked derivation after §1 turned that cell into opposite verdicts: a step term of $1.600$ that gates Q and one of $0.600$ that leaves T clear, and for Q carrying P2 a slope term that rises from $0.818$ to $0.929$ with no change in the ground. The label carries neither the robot nor its configuration, and item 5 of the problem set shows that it does not carry the height either. Each later dataset added one of the missing quantities. RELLIS-3D's lidar supplies geometry, but only near the vehicle: with §3's lidar the $0.60\ \mathrm{m}$ patch is crossed by $0.60/0.39 = 1.5$ rings at $10\ \mathrm{m}$ and $0.60/1.4 = 0.43$ at $20\ \mathrm{m}$, so no single scan fills its three rows at either range, and the heights have to come from an elevation map that accumulates scans. TartanDrive's interactions supply what the vehicle actually did — IMU, shock travel and wheel speed are among its seven modalities, the raw material of §2's proprioceptive rows. And GOOSE-Ex's excavator and quadruped supply a pair of robots, the kind of pair §1's first consequence is about. So when a paper cites one of these datasets as evidence of traversability, ask §6's second question first: a segmentation benchmark can show that terrain classes were recognised, never that a named robot could cross them.
 
 ### 6. Reading a traversability paper
 
@@ -1075,6 +1081,10 @@ $25^\circ$가 아니라 $22^\circ$다. ([[04-robotics/legged-locomotion|18. 레�
 
 ### 3. 기하학적 쪽이 사라진 것은 아니다
 
+*한 문장으로:* 학습된 traversability도 여전히 저마다 불확실성을 지닌 지면 높이 지도 위에서 돌고, 신중한 기하 계획기는 경로를 평균이 아니라 나쁜 결과로 판단하며, 차량에서 멀어지면 라이다가 보는 지면이 너무 적어 기하가 판단할 거리가 거의 남지 않는다.
+
+*이 절에서 하나만 가져간다면:* 아래 CVaR 상자에서 고정된 패치를 지나는 두 경로다 — 평균은 경로 A를 고르고($15.0$초 대 $16.0$초) $\mathrm{CVaR}_{0.1}$은 경로 B를 고르며($18$초 대 $60$초), 평균에 맞춘 계획과 꼬리에 맞선 계획의 차이가 이것 전부다.
+
 학습 위주로만 읽으면 놓치는 것 둘.
 
 **밑에 깔린 고도 지도.** 거의 모든 레그드 내비게이션 논문이, 자세 추정 드리프트와 센서 불확실성을
@@ -1181,6 +1191,8 @@ CVaR은 세부가 아니라 모델링 선택으로 알아 둘 가치가 있다: 
 이 위키의 각도에서 눈여겨볼 것은 GOOSE-Ex다: 건설 기계를 포함한 오프로드 인식 데이터셋이,
 이 페이지와 [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션]] 사이의
 가장 가까운 기존 다리다.
+
+**클래스 라벨은 판정이 아니며, 고정된 패치가 그것을 보여 준다.** RUGD 같은 분할 데이터셋은 남동쪽 셀을 *바위*라고 라벨한다. 창의 9분의 1에 붙은 라벨 하나다. 그런데 §1 뒤의 유도는 그 셀을 반대 판정으로 바꿨다. 단차 항 $1.600$은 Q를 관문에 걸고 $0.600$은 T를 통과시키며, P2를 실은 Q에서는 지면이 하나도 바뀌지 않았는데 경사 항이 $0.818$에서 $0.929$로 오른다. 라벨은 로봇도 그 자세도 담지 않고, 과제 5번은 높이도 담지 않는다는 것을 보인다. 뒤의 데이터셋들은 빠진 양을 하나씩 보탰다. RELLIS-3D의 라이다는 기하를 주지만 차량 가까이에서만이다. §3의 라이다로는 $0.60\ \mathrm{m}$ 패치를 $10\ \mathrm{m}$에서 링 $0.60/0.39 = 1.5$개, $20\ \mathrm{m}$에서 $0.60/1.4 = 0.43$개가 지나가므로, 어느 거리에서도 스캔 한 번으로는 세 줄을 채우지 못하고 높이는 스캔을 쌓아 가는 고도 지도에서 와야 한다. TartanDrive의 상호작용은 차량이 실제로 한 일을 준다 — 일곱 모달리티 가운데 IMU, 서스펜션 변위, 바퀴 회전수가 있고, 그것이 §2 표의 고유수용감각 행들이 배우는 재료다. 그리고 GOOSE-Ex의 굴착기와 4족은 로봇 한 쌍, 곧 §1의 첫째 귀결이 말하는 종류의 쌍을 준다. 그러니 논문이 이 데이터셋 중 하나를 traversability의 증거로 인용하면 §6의 둘째 질문부터 물어라. 분할 벤치마크는 지형 클래스를 알아봤다는 것은 보일 수 있어도, 이름 붙은 로봇이 그곳을 건널 수 있다는 것은 결코 보이지 못한다.
 
 ### 6. Traversability 논문 읽기
 

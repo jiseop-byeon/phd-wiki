@@ -185,6 +185,10 @@ The first-order prediction is $-\eta\lVert g\rVert^2=-0.1\times1.591249=-0.15912
 
 ### 1. A paper's model is a typed computation
 
+*In one sentence:* a model described in words becomes checkable only once every tensor has a shape and every number is sorted into learned, computed or chosen — and on D1 that typing turns two logits into a probability and a loss in two lines.
+
+*If you need only one thing from this section:* the three-way split — a parameter is written by the optimizer, an activation by the input, a hyperparameter by a person — because it decides whether "smaller", "cheaper to train" or "cheaper to tune" is being claimed; the box below sorts D1's numbers, $12$ parameters or $17$ with the biases.
+
 Architecture prose becomes checkable only after attaching shapes. For a batch of $B$ samples, $X\in\mathbb R^{B\times2}$, $H\in\mathbb R^{B\times3}$, and $S\in\mathbb R^{B\times2}$. Parameters are learned; activations are sample-dependent; hyperparameters are chosen outside gradient descent. If these three are mixed, parameter counts and claims about efficiency become unreliable.
 
 > **Parameter, activation, hyperparameter — the three-way split, defined.** All three are *numbers in the same program*, which is why they get confused; they differ in **what changes them**. A **parameter** is a number the optimizer writes: it has a gradient, it is counted in "model size", and it is saved in the checkpoint — D1's $W_1$ and $W_2$, 12 of them, or 17 with the zero biases. An **activation** is a number produced by running the model on an input: it has no gradient of its own to store, it changes with every sample, and it is what dominates training memory — D1's $z$, $h$, $s$, $p$. A **hyperparameter** is a number chosen outside gradient descent, by a human or a search: the learning rate $\eta$, the decay $\lambda$, the batch size, the number of hidden units.
@@ -255,6 +259,10 @@ Why that derivative is so clean is worth one line, because it is the reason the 
 
 Repeated test-guided tuning leaks test information. A paper that reports its best seed without a predeclared selection rule estimates luck as well as method quality. The split discipline itself, including what counts as a leak, is [[02-foundations/ml-practice|9. ML Practice §1]].
 
+D1 shows why the three cannot be merged. It has one sample, so it has only a training loss, and §6's sweep ranks step sizes on that loss alone. Its row at $\eta=8$ has a cross-entropy of exactly $0$, a perfect fit to the only data there is, while its regularised objective, $0.599431$, is four times the minimum, and nothing in the table can say whether the weights it reached would classify a second input. That is the job of a validation set: it scores the candidates on data none of them was fit to, and the test set then scores only the one candidate that was picked.
+
+The best-seed sentence has a size. If a method's score varies from seed to seed roughly normally with standard deviation $\sigma$, the best of $k$ seeds lands on average $1.163\sigma$ above the method's mean for $k=5$ and $1.539\sigma$ for $k=10$ — the expected maximum of $k$ standard normal draws. At $\sigma=0.5$ points the best of five reports about $0.58$ points that no rerun will reproduce, the size of many claimed gains. Report the mean and spread over all seeds, or declare the selection rule before looking; what seed-to-seed spread does to a small gain is [[06-research-practice/experimental-design-reproducibility|2. Experimental Design §3]].
+
 ### 4. Regularization and scaling are claims with controls
 
 Weight decay, augmentation, dropout, early stopping, more data, and more compute can all improve a result through different mechanisms. A scaling claim needs axes—parameters, data, compute—and a controlled comparison. “Our larger model is better” does not identify which axis caused the gain. How compute is counted from the other two axes, $C\approx6ND$, and how a fixed budget is split between them are [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §6–§7]].
@@ -275,6 +283,10 @@ Of those, weight decay is the one §6 needs, so it gets a definition rather than
 ### 5. How to read a training recipe
 
 Extract: data mixture and split; preprocessing; initialization; objective and coefficients; optimizer and schedule; batch size and number of updates; precision and hardware; checkpoint selection; seeds and uncertainty. Then ask which choices are essential by reading ablations. This is the operational bridge to [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]], [[01-canonical-papers/notes/1-foundations/resnet|ResNet]], [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]], and [[01-canonical-papers/notes/1-foundations/adam|Adam]]. Three of those items — initialization, precision and hardware — are given numbers, per layer, per parameter and per token, in [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale]].
+
+Each item is on the list because changing it alone changes the reported number, and D1 shows three of them. **Preprocessing**: feed the same weights $2x=(2,4)$ instead of $x$ and, because a ReLU network with zero biases is positively homogeneous, every logit doubles to $s=(4,2)$ and the loss falls from $0.313262$ to $0.126928$ with no weight changed — an input scaled one way in training and another at test time is a different model. **The objective's coefficients**: the same catalog weights score $0.563262$ at $\lambda=0.1$ (§4), so a loss quoted without its $\lambda$ cannot be compared with one that has it. **The optimizer and the number of updates**: after the same $200$ steps, $\eta=0.1$ still sits at $0.143118$ while $\eta=0.5$ has reached the minimum $0.140339$ (§6), so "trained for 200 steps" says little without the step size. Data, checkpoint selection and seeds are §3's questions, and the vocabulary a paper uses for the rest — warmup and cosine schedules, decoupled weight decay, gradient accumulation, weight averaging — is [[02-foundations/ml-practice|9. ML Practice §6]].
+
+An ablation is how a reader learns which item carries the result: change one, hold the others and the training budget fixed, and report the difference with its spread ([[06-research-practice/experimental-design-reproducibility|2. Experimental Design §5]]). Each of the four notes above has such an item. AlexNet's recipe includes dropout of $0.5$ and heavy augmentation; ResNet puts batch normalization after every convolution and uses no dropout; the Transformer's post-norm layout depends on its learning-rate warmup, and removing the warmup cost most of the quality in Xiong et al.'s ablation, BLEU $8.45$ against about $34$; and Adam's defaults, $\beta_1=0.9$ and $\beta_2=0.999$, are hyperparameters a recipe has to state even when it keeps them.
 
 ### 6. The lab: the step size has a boundary, and it is measurable
 
@@ -634,6 +646,10 @@ $$p=(0.831865,\ 0.168135),\qquad L=0.184085,\qquad \Delta L=-0.129177\ \text{nat
 
 ### 1. 모델은 형식이 붙은 계산이다
 
+*한 문장으로:* 말로 쓴 모델은 텐서마다 모양을 붙이고 숫자마다 학습되는 것·계산되는 것·고르는 것으로 나눈 뒤에야 검증할 수 있다. D1에서는 그렇게 형식을 붙이면 logit 두 개가 두 줄 만에 확률과 loss가 된다.
+
+*이 절에서 하나만 가져간다면:* 세 갈래 구분이다. 파라미터는 optimizer가, activation은 입력이, 하이퍼파라미터는 사람이 쓴다. 이 구분이 주장이 "더 작다", "학습이 싸다", "튜닝이 싸다" 중 무엇인지를 정한다. 아래 상자가 D1의 숫자를 나누는데, 파라미터는 $12$개, bias까지 세면 $17$개다.
+
 배치 크기 $B$이면 $X\in\mathbb R^{B\times2}$, $H\in\mathbb R^{B\times3}$, $S\in\mathbb R^{B\times2}$. 파라미터는 학습되고, activation은 샘플마다 달라지며, 하이퍼파라미터는 경사하강 밖에서 고른다.
 
 > **파라미터·activation·하이퍼파라미터, 세 갈래의 정의.** 셋 다 *같은 프로그램 안의 숫자*라서 헷갈린다. 구분은 **무엇이 그 값을 바꾸는가**다. **파라미터**는 optimizer가 쓰는 숫자다. gradient가 있고, "모델 크기"에 세어지고, checkpoint에 저장된다. D1에서는 $W_1$과 $W_2$의 12개, bias 0까지 세면 17개다. **activation**은 입력을 흘려서 만들어지는 숫자다. 자기 gradient를 저장하지 않고, 샘플마다 바뀌며, 학습 메모리를 지배한다. D1의 $z$, $h$, $s$, $p$가 그것이다. **하이퍼파라미터**는 경사하강 밖에서 사람이나 탐색이 고르는 숫자다. learning rate $\eta$, decay $\lambda$, batch 크기, 은닉 유닛 수.
@@ -694,7 +710,11 @@ one-hot $y$에 대해 softmax와 cross-entropy를 합치면 $\partial L/\partial
 - validation: checkpoint와 hyperparameter 중 무엇을 고를 것인가.
 - test: 이미 고정한 결정을 미사용 자료에서 평가하면 어떤가.
 
-test를 보며 계속 조정하면 test 정보가 학습 절차로 샌다. 분할 규율과 무엇이 유출인지는 [[02-foundations/ml-practice|9. ML 실무 §1]]에 있다.
+test를 보며 계속 조정하면 test 정보가 학습 절차로 샌다. 미리 정한 선택 규칙 없이 가장 좋은 seed를 보고한 논문은 방법의 질과 함께 운도 추정한 것이다. 분할 규율과 무엇이 유출인지는 [[02-foundations/ml-practice|9. ML 실무 §1]]에 있다.
+
+D1이 셋을 합칠 수 없는 이유를 보여 준다. 샘플이 하나뿐이라 train loss밖에 없고, §6의 sweep은 그 loss 하나로 보폭의 순위를 매긴다. $\eta=8$ 행의 cross-entropy는 정확히 $0$으로, 가진 자료 전부에 완벽히 맞췄다. 그런데 정규화된 목적함수는 $0.599431$로 최솟값의 네 배이고, 그 가중치가 두 번째 입력을 맞게 분류할지는 표의 어떤 숫자도 말해 주지 못한다. 그것이 validation 집합의 일이다. 어느 후보도 맞추는 데 쓰지 않은 자료로 후보들을 채점하고, test 집합은 그렇게 고른 후보 하나만 채점한다.
+
+가장 좋은 seed라는 문장에는 크기가 있다. 한 방법의 점수가 seed마다 표준편차 $\sigma$로 대략 정규분포를 따르면, seed $k$개 중 최고는 평균적으로 방법의 평균보다 $k=5$일 때 $1.163\sigma$, $k=10$일 때 $1.539\sigma$ 위에 놓인다. 표준정규 표본 $k$개의 최댓값의 기댓값이다. $\sigma=0.5$포인트면 다섯 개 중 최고는 다시 돌려도 재현되지 않는 약 $0.58$포인트를 보고하고, 이는 흔히 주장되는 개선의 크기다. 모든 seed의 평균과 퍼짐을 보고하거나, 보기 전에 선택 규칙을 선언한다. seed 사이의 퍼짐이 작은 개선에 무엇을 하는지는 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계 §3]]에 있다.
 
 ### 4. 정규화와 scaling은 통제가 필요한 주장이다
 
@@ -715,7 +735,11 @@ weight decay, augmentation, dropout, early stopping, 데이터와 compute 증가
 
 ### 5. 학습 recipe 읽기
 
-데이터 혼합·split, 전처리, 초기화, 목적함수, optimizer·schedule, batch와 update 수, precision·hardware, checkpoint 선택, seed와 불확실성을 뽑는다. 그다음 ablation에서 무엇이 필수인지 확인한다. 그중 초기화, precision, hardware 세 항목에 층마다, 파라미터마다, 토큰마다 숫자를 붙이는 것이 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습]]이다.
+데이터 혼합·split, 전처리, 초기화, 목적함수와 계수, optimizer·schedule, batch와 update 수, precision·hardware, checkpoint 선택, seed와 불확실성을 뽑는다. 그다음 ablation에서 무엇이 필수인지 확인한다. 이것이 [[01-canonical-papers/notes/1-foundations/alexnet|AlexNet]], [[01-canonical-papers/notes/1-foundations/resnet|ResNet]], [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]], [[01-canonical-papers/notes/1-foundations/adam|Adam]]으로 가는 실무 다리다. 그중 초기화, precision, hardware 세 항목에 층마다, 파라미터마다, 토큰마다 숫자를 붙이는 것이 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습]]이다.
+
+항목마다 목록에 오른 이유는 그것 하나만 바꿔도 보고되는 숫자가 바뀌기 때문이고, D1이 그중 셋을 보여 준다. **전처리**: 같은 가중치에 $x$ 대신 $2x=(2,4)$를 넣으면, bias가 0인 ReLU 망은 양의 동차이므로 logit이 모두 두 배가 되어 $s=(4,2)$이고, 가중치 하나 바꾸지 않았는데 loss가 $0.313262$에서 $0.126928$로 떨어진다. 학습 때와 test 때 입력의 척도가 다르면 다른 모델인 셈이다. **목적함수의 계수**: 같은 카탈로그 가중치가 $\lambda=0.1$에서는 $0.563262$를 받으므로(§4), $\lambda$ 없이 인용한 loss는 $\lambda$가 붙은 loss와 비교할 수 없다. **optimizer와 update 수**: 똑같이 $200$스텝을 돈 뒤에도 $\eta=0.1$은 아직 $0.143118$에 있고 $\eta=0.5$는 최솟값 $0.140339$에 도달했으므로(§6), "200스텝 학습"은 보폭 없이는 거의 아무 말도 하지 않는다. 데이터, checkpoint 선택, seed는 §3의 질문이고, 나머지 항목에 논문이 쓰는 어휘 — warmup과 cosine schedule, decoupled weight decay, gradient accumulation, 가중치 평균 — 는 [[02-foundations/ml-practice|9. ML 실무 §6]]에 있다.
+
+ablation은 어느 항목이 결과를 떠받치는지 독자가 알아내는 방법이다. 하나를 바꾸고, 나머지와 학습 예산은 고정한 채, 차이를 그 퍼짐과 함께 보고한다([[06-research-practice/experimental-design-reproducibility|2. 실험 설계 §5]]). 위 네 노트에는 저마다 그런 항목이 있다. AlexNet의 recipe에는 $0.5$의 dropout과 강한 augmentation이 들어 있다. ResNet은 모든 convolution 뒤에 batch normalization을 두고 dropout을 쓰지 않는다. Transformer의 post-norm 배치는 learning-rate warmup에 기대고, Xiong 외의 ablation에서 warmup을 빼자 품질 대부분을 잃어 BLEU가 약 $34$ 대신 $8.45$였다. 그리고 Adam의 기본값 $\beta_1=0.9$, $\beta_2=0.999$는 recipe가 그대로 쓰더라도 적어야 하는 하이퍼파라미터다.
 
 ### 6. 실습: 보폭에는 경계가 있고, 그 경계는 측정된다
 
