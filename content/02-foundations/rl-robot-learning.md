@@ -627,6 +627,22 @@ $w^\top(\phi(A) - \phi(B)) = 0$.
 | How is it evaluated? | ① the recovered reward against a known true reward (possible only in simulation); ② a policy trained on the learned reward, scored on the *true* task metric; ③ accuracy on held-out preferences. They answer different questions: high ③ does not by itself show good ② |
 | What stops reward hacking? | a learned reward is a proxy exactly like a hand-written one (§2), and it is least reliable where it saw no data — which is where an optimizing policy goes. Look for a KL anchor to a reference policy (§4) or continued querying as the policy changes |
 
+### 7. More than one learner, briefly
+
+Everything above assumes one learner in a stationary world. A site has several machines, so it is worth knowing exactly which assumption breaks and what the field does about it. This section is Literacy depth: enough to read a multi-agent paper and to recognize when the problem is not one.
+
+**What breaks, on this page's own object.** Put two machines in the bucket MDP with one loading spot at $B$. Alone, moving is worth $Q^*(A,\text{move})=9$ and waiting $8.1$. If both move at once they collide, bounce back to $A$ and pay a repair cost of $1$, so each gets $7.1$. Then machine 1's value of moving depends on how often machine 2 moves, $p$:
+
+$$Q_1(\text{move})=(1-p)\cdot 9+p\cdot 7.1=9-1.9p,\qquad Q_1(\text{wait})=8.1$$
+
+so moving is better exactly while $p<0.9/1.9=0.474$. Nothing in the world changed, yet machine 1's optimal action flips when machine 2 learns — the transition and reward the MDP of [[02-foundations/rl-basics|7. RL Basics §1]] assumes to be *fixed* now contain another policy that is moving. This is **non-stationarity**, the defining difficulty of multi-agent learning, and it is why two independent learners can chase each other around $p=0.474$ instead of settling. The game also has two pure equilibria — one moves, the other waits — so "which machine yields" is a coordination choice that the reward alone does not make.
+
+**Two more costs.** The joint action space multiplies: $n$ machines with $|\mathcal A|$ actions each give $|\mathcal A|^n$ joint actions, so five machines with ten actions each is $10^5$ — a critic over joint actions stops being tabular immediately. And a shared reward hides **credit assignment**: if the site's throughput rises, which machine caused it? Per-agent rewards fix attribution and create incentives to hoard; shared rewards do the opposite.
+
+**What the field does.** The standard compromise is **centralized training, decentralized execution**: during training a critic sees every agent's observation and action, while each policy at run time sees only its own — so the critic is stationary even though each agent's world is not, and deployment still needs no shared channel. Value factorization (summing per-agent values, or mixing them monotonically) buys a decentralized argmax from a joint value; a shared critic with per-agent policies is the policy-gradient version. Parameter sharing across identical machines cuts the sample cost. Read a paper for four things: how many agents at training versus at test, whether execution is really decentralized, whether the baseline is *independent learners* rather than a single-agent method, and whether the reward is shared or per-agent.
+
+**When it is not the problem.** Coordination often has a control answer that needs no learning at all: [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 §8]] couples one leader to several followers with passivity-preserving couplings plus an avoidance function, and construction fleets today are supervised centrally rather than trained jointly ([[05-construction-robotics/lineage|lineage, Era 3]]). For the research program here the core is one manipulator in contact ([[07-research-program/index|7. §7]]), so multi-agent learning stays at Literacy: know the failure mode, and reach for it only if the contribution is the coordination itself.
+
 ### After reading
 
 - [ ] Compute a behaviour-cloned policy's value on the bucket and its gap to the optimum, and say what DAgger changes about BC's training distribution.
@@ -636,6 +652,7 @@ $w^\top(\phi(A) - \phi(B)) = 0$.
 - [ ] Say why a reward penalty is not a safety guarantee, and name the two mechanisms that are stronger.
 - [ ] Convert a paper's environment-step count into simulated hours per environment and real-machine time, and tell termination from truncation in a TD target.
 - [ ] Take one Bradley–Terry gradient step by hand, and derive the DPO loss from the KL-regularized optimum.
+- [ ] On the two-machine bucket, find the probability at which the other machine's policy flips your own best action, and say what centralized training with decentralized execution buys.
 
 > [!tip] Going deeper · 더 깊이
 > Sutton and Barto's [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html) is the book [[02-foundations/rl-basics|7. RL Basics]] compresses. It does not cover §1 and §4 — imitation against RL, and RL on a physical machine — which is what this page adds. The primary sources, section by section, are under Sources below.
@@ -1261,6 +1278,22 @@ $w$의 공간을 초평면 $w^\top(\phi(A) - \phi(B)) = 0$을 따라 반으로 �
 | 어떻게 평가하는가? | ① 복원한 보상을 알려진 참 보상과 비교(시뮬레이션에서만 가능) ② 학습된 보상으로 학습한 정책을 *참* 과제 지표로 채점 ③ 보류된 선호에 대한 정확도. 서로 다른 질문에 답한다: ③이 높다고 그것만으로 ②가 좋다는 뜻은 아니다 |
 | 무엇이 reward hacking을 막는가? | 학습된 보상도 손으로 쓴 보상과 똑같은 대리물이고(§2), 데이터를 못 본 곳에서 가장 믿을 수 없는데 최적화하는 정책이 가는 곳이 바로 거기다. 기준 정책으로의 KL 닻(§4)이나 정책이 바뀌는 동안의 지속적 질의가 있는지 보라 |
 
+### 7. 학습자가 둘 이상일 때, 짧게
+
+위의 모든 내용은 정상(stationary) 세계의 학습자 하나를 가정한다. 현장에는 기계가 여러 대 있으니, 정확히 어떤 가정이 깨지고 분야가 그것에 무엇을 하는지는 알아 둘 만하다. 이 절은 Literacy 깊이다. 다중 에이전트 논문을 읽고, 그 문제가 아닐 때를 알아볼 만큼만 다룬다.
+
+**무엇이 깨지는가, 이 페이지의 대상 위에서.** 버킷 MDP에 기계를 두 대 놓고 $B$의 적재 자리는 하나라고 하자. 혼자라면 이동의 값은 $Q^*(A,\text{move})=9$, 대기는 $8.1$이다. 둘이 동시에 움직이면 부딪쳐 $A$로 되돌아오고 수리 비용 $1$을 치러 각자 $7.1$을 받는다. 그러면 기계 1의 이동 가치는 기계 2가 얼마나 자주 움직이는지 $p$에 달린다.
+
+$$Q_1(\text{move})=(1-p)\cdot 9+p\cdot 7.1=9-1.9p,\qquad Q_1(\text{wait})=8.1$$
+
+즉 $p<0.9/1.9=0.474$인 동안만 이동이 낫다. 세계는 하나도 바뀌지 않았는데 기계 2가 학습하면 기계 1의 최적 행동이 뒤집힌다. [[02-foundations/rl-basics|7. RL 기초 §1]]의 MDP가 *고정*이라고 가정한 전이와 보상 안에 이제 움직이는 다른 정책이 들어 있는 것이다. 이것이 다중 에이전트 학습을 정의하는 어려움인 **비정상성**이고, 독립 학습자 둘이 $p=0.474$ 근처에서 서로를 쫓기만 하고 수렴하지 않을 수 있는 이유다. 이 게임에는 순수 균형도 둘 있다. 하나가 가고 하나가 기다리는 것인데, "어느 기계가 양보하는가"는 보상만으로는 정해지지 않는 조율의 선택이다.
+
+**추가되는 비용 둘.** 결합 행동 공간이 곱해진다. 행동이 각 $|\mathcal A|$개인 기계 $n$대면 결합 행동은 $|\mathcal A|^n$개이므로, 행동 열 개짜리 다섯 대면 $10^5$이다. 결합 행동 위의 크리틱은 곧바로 표로 다룰 수 없게 된다. 그리고 공유 보상은 **기여 배분**을 감춘다. 현장 처리량이 올랐다면 어느 기계 덕분인가? 에이전트별 보상은 귀속을 분명히 하지만 자기 몫만 챙길 유인을 만들고, 공유 보상은 그 반대다.
+
+**분야는 무엇을 하나.** 표준적인 절충은 **중앙 집중 학습, 분산 실행**이다. 학습할 때 크리틱은 모든 에이전트의 관측과 행동을 보고, 실행할 때 각 정책은 자기 것만 본다. 그래서 각 에이전트의 세계는 비정상이어도 크리틱은 정상이고, 배치에는 공유 채널이 필요 없다. 가치 분해(에이전트별 가치를 더하거나 단조롭게 섞는 것)는 결합 가치에서 분산 argmax를 사 오고, 에이전트별 정책에 크리틱 하나를 두는 것이 정책 그래디언트 판이다. 같은 기계끼리 파라미터를 공유하면 표본 비용이 준다. 논문에서는 넷을 본다. 학습 때와 시험 때의 에이전트 수, 실행이 정말 분산인지, 기준선이 *독립 학습자*인지 아니면 단일 에이전트 기법인지, 보상이 공유인지 에이전트별인지.
+
+**그 문제가 아닐 때.** 조율에는 학습이 전혀 필요 없는 제어 쪽 답이 있는 경우가 많다. [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 §8]]은 리더 하나를 여러 팔로워에 수동성을 지키는 결합과 회피 함수로 잇고, 오늘의 건설 기계 편대는 함께 학습되는 대신 중앙에서 감독된다([[05-construction-robotics/lineage|계보, 3시대]]). 여기 연구 프로그램의 코어는 접촉하는 매니퓰레이터 한 대이므로([[07-research-program/index|7. §7]]) 다중 에이전트 학습은 Literacy에 둔다. 실패 방식을 알아 두고, 조율 자체가 기여일 때만 꺼낸다.
+
 ### 읽고 나면 말할 수 있어야 하는 것
 
 - [ ] 버킷에서 행동 복제한 정책의 가치와 최적값과의 차이를 계산하고, DAgger가 BC의 학습 분포에서 무엇을 바꾸는지 말한다.
@@ -1270,6 +1303,7 @@ $w$의 공간을 초평면 $w^\top(\phi(A) - \phi(B)) = 0$을 따라 반으로 �
 - [ ] 보상 페널티가 왜 안전 보장이 아닌지 말하고, 더 강한 두 장치를 댄다.
 - [ ] 논문의 environment step 수를 환경당 시뮬레이션 시간과 실기계 시간으로 바꾸고, TD 타깃에서 종료와 절단을 구분한다.
 - [ ] Bradley–Terry 그래디언트 한 스텝을 손으로 밟고, KL 정규화 최적해에서 DPO 손실을 유도한다.
+- [ ] 기계 두 대의 버킷에서 상대의 정책이 내 최적 행동을 뒤집는 확률을 구하고, 중앙 집중 학습·분산 실행이 무엇을 사 오는지 말할 수 있다.
 
 > [!tip] 더 깊이 · Going deeper
 > Sutton·Barto의 [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html)은 [[02-foundations/rl-basics|7. RL 기초]]가 압축한 책이다. 그 책은 §1과 §4 — 모방 대 RL, 물리 기계 위의 RL — 를 다루지 않고, 이 페이지가 더하는 것이 바로 그 부분이다. 절마다의 1차 출처는 아래 출처에 모았다.

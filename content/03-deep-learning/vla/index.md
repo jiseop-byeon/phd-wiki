@@ -314,9 +314,28 @@ Five readings, in the order a reviewer should take them.
 
 The design conclusion for this robot: $k$ between 3 and 5 — a commitment of 0.15–0.25 s — removes every reversal and more than half the wasted travel while keeping reaction within 250 ms. Going further to $k=20$ saves a further 5.5 cm of travel and costs three quarters of a second of blindness, which is only a good trade if nothing in the scene moves.
 
+### 6. Two action heads: tokens and denoisers
+
+§1 said the action representation is part of the method. The head that produces it is the other half, and the field has settled on two families plus a hybrid. Both answer §2's averaging problem, and they pay for it differently.
+
+**Discrete tokens.** Cut each action dimension into bins and classify, so control becomes next-token prediction and the whole apparatus of a pretrained language model transfers unchanged. [[01-canonical-papers/notes/4-vla/rt-1|RT-1]] uses $11$ dimensions at $256$ bins each; [[01-canonical-papers/notes/4-vla/openvla|OpenVLA]] maps the same $256$ bins onto reserved LM tokens. Quantization is rarely the accuracy limit: on **D4**, $256$ bins spread over $\pm a_{\max}=\pm0.02\,\mathrm{m}$ give a step of $0.04/256=0.16\,\mathrm{mm}$, about thirteen times finer than the page's own perception jitter $\sigma=2\,\mathrm{mm}$. The cost is sequential: one decode per token, so a chunk of $H$ actions in $D$ dimensions needs $D\times H$ forward passes — $2\times3=6$ for D4's frozen chunk. That is what caps autoregressive token policies near $6\,\mathrm{Hz}$ in OpenVLA's measurements.
+
+**Denoisers.** Sample the whole chunk instead: [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] denoises a $16$-action chunk conditioned on the observation, at about $10$ DDIM-style steps at inference, and executes the first few before re-planning — the receding horizon of [[04-robotics/mpc|7. MPC]]. [[01-canonical-papers/notes/4-vla/pi0|π0]] replaces diffusion with flow matching in a separate action expert on a VLM backbone and reports $50\,\mathrm{Hz}$ continuous chunks. Its cost is $N$ passes *whatever the chunk length*, which gives the crossover: a token head is cheaper while $D\times H<N$, a denoiser once the chunk is longer. On D4 with $D=2$ and $N=10$, the crossover sits at $H=5$ — below it, tokens; above it, denoising.
+
+**A third answer, and what they share.** [[01-canonical-papers/notes/4-vla/act|ACT]] keeps plain regression but conditions on a CVAE latent, so the latent picks the mode that the mean of §2 destroyed. All three exist because $L_{\mathrm{BC}}$ under a unimodal head returns the average of valid actions: for the two demonstrations $(-1,0)$ and $(1,0)$ it returns $(0,0)$, straight into the obstacle. A token head keeps both modes *in its bin distribution* — but only if the action is **sampled or taken as the argmax**; average the distribution and $(0,0)$ returns. A denoiser draws one mode by construction. A CVAE draws one per latent.
+
+| | tokens | denoiser (diffusion or flow) | CVAE regression |
+|---|---|---|---|
+| passes per chunk | $D\times H$, sequential | $N$, independent of $H$ | $1$ |
+| multimodality | in the bin distribution, if you sample | by construction | via the latent |
+| precision limit | bin width (on D4, $0.16\,\mathrm{mm}$) | denoising steps cut for speed | regression variance |
+| what it inherits | a pretrained LM's weights and language generalization | diffusion's sampler, and MPC's receding horizon | a plain Transformer decoder |
+
+So the choice follows the budget of §3 rather than fashion: keep tokens when the language backbone's generalization is the point and chunks are short; move to a denoiser when the chunk is long or the demonstrations are strongly multimodal; and in either case check the head against $\ell(k)$ before believing a demo video.
+
 ### After reading
 
-For any VLA, fill one row containing observation, language, action space/frame/rate, horizon $H$, executed stride $k$, training data/objective, controller, replanning, and evidence ladder. If the paper gives $H$ but not $k$, the row is incomplete and so is its latency claim.
+For any VLA, fill one row containing observation, language, action space/frame/rate, horizon $H$, executed stride $k$, training data/objective, controller, replanning, and evidence ladder. If the paper gives $H$ but not $k$, the row is incomplete and so is its latency claim. Name the action head too — tokens, denoiser or CVAE — and say which of §6's costs it pays.
 
 ### Self-check
 
@@ -596,9 +615,28 @@ semantic generalization, motor competence, embodiment transfer, recovery를 나�
 
 이 로봇의 설계 결론: $k$가 3에서 5 사이 — 확정 구간 0.15–0.25초 — 이면 반전이 전부 사라지고 낭비된 이동의 절반 이상이 사라지며 반응은 250 ms 안에 머문다. $k=20$까지 가면 이동거리를 $5.5\,\mathrm{cm}$ 더 아끼는 대신 0.75초의 눈감음을 치르는데, 장면이 전혀 움직이지 않을 때만 좋은 거래다.
 
+### 6. 두 가지 행동 헤드: 토큰과 노이즈 제거기
+
+§1은 행동 표현도 방법의 일부라고 했다. 그것을 만들어 내는 헤드가 나머지 절반이고, 분야는 두 계열과 하나의 절충으로 정리됐다. 둘 다 §2의 평균 문제에 답하지만, 치르는 값이 다르다.
+
+**이산 토큰.** 행동 차원마다 구간으로 자르고 분류한다. 제어가 다음 토큰 예측이 되므로 사전학습된 언어 모델의 장치 전체가 그대로 옮겨 온다. [[01-canonical-papers/notes/4-vla/rt-1|RT-1]]은 $11$차원에 각 $256$구간을 쓰고, [[01-canonical-papers/notes/4-vla/openvla|OpenVLA]]는 같은 $256$구간을 예약된 LM 토큰에 대응시킨다. 양자화가 정확도의 한계인 경우는 드물다. **D4**에서 $256$구간을 $\pm a_{\max}=\pm0.02\,\mathrm{m}$에 펼치면 한 칸이 $0.04/256=0.16\,\mathrm{mm}$로, 이 페이지의 지각 지터 $\sigma=2\,\mathrm{mm}$보다 열세 배쯤 촘촘하다. 대가는 순차성이다. 토큰 하나에 디코드 한 번이므로 $D$차원 행동 $H$개의 청크에는 $D\times H$번의 전방 패스가 든다. D4의 고정 청크는 $2\times3=6$번이다. OpenVLA의 측정에서 자기회귀 토큰 정책의 제어 주기가 $6\,\mathrm{Hz}$ 근처에서 막히는 이유가 이것이다.
+
+**노이즈 제거기.** 대신 청크 전체를 표본으로 뽑는다. [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]는 관측을 조건으로 행동 $16$개의 청크를 추론 시 약 $10$번의 DDIM식 스텝으로 복원하고, 앞의 몇 개만 실행한 뒤 다시 계획한다. [[04-robotics/mpc|7. MPC]]의 receding horizon이다. [[01-canonical-papers/notes/4-vla/pi0|π0]]는 확산 대신 flow matching을 VLM 백본 위의 별도 행동 전문가에 넣고 $50\,\mathrm{Hz}$ 연속 청크를 보고한다. 비용은 *청크 길이와 무관하게* $N$번의 패스이고, 여기서 교차점이 나온다. $D\times H<N$인 동안은 토큰 헤드가 싸고, 청크가 그보다 길어지면 노이즈 제거기가 싸다. $D=2$, $N=10$인 D4에서 교차점은 $H=5$다. 그 아래면 토큰, 위면 노이즈 제거다.
+
+**세 번째 답, 그리고 셋의 공통점.** [[01-canonical-papers/notes/4-vla/act|ACT]]는 평범한 회귀를 유지하되 CVAE 잠재변수로 조건화해, §2의 평균이 부순 봉우리를 잠재변수가 고르게 한다. 셋 모두 존재하는 이유는 단봉 헤드 아래의 $L_{\mathrm{BC}}$가 타당한 행동들의 평균을 돌려주기 때문이다. 시연 $(-1,0)$과 $(1,0)$에 대해 그것은 장애물 한가운데인 $(0,0)$이다. 토큰 헤드는 두 봉우리를 *구간 분포 안에* 간직하지만, 행동을 **표본으로 뽑거나 argmax로 고를 때만** 그렇다. 분포를 평균 내면 $(0,0)$이 돌아온다. 노이즈 제거기는 구성상 한 봉우리를 뽑고, CVAE는 잠재변수마다 하나를 뽑는다.
+
+| | 토큰 | 노이즈 제거기(확산·flow) | CVAE 회귀 |
+|---|---|---|---|
+| 청크당 패스 | $D\times H$번, 순차 | $N$번, $H$와 무관 | $1$번 |
+| 다봉성 | 표본으로 뽑으면 구간 분포 안에 | 구성상 | 잠재변수로 |
+| 정밀도 한계 | 구간 폭(D4에서 $0.16\,\mathrm{mm}$) | 속도를 위해 줄인 스텝 수 | 회귀 분산 |
+| 물려받는 것 | 사전학습 LM의 가중치와 언어 일반화 | 확산의 샘플러, MPC의 receding horizon | 평범한 트랜스포머 디코더 |
+
+그러니 선택은 유행이 아니라 §3의 예산을 따른다. 언어 백본의 일반화가 요점이고 청크가 짧으면 토큰을 유지하고, 청크가 길거나 시연이 강하게 다봉이면 노이즈 제거기로 옮기며, 어느 쪽이든 시연 영상을 믿기 전에 헤드를 $\ell(k)$에 대어 확인한다.
+
 ### 읽고 나면
 
-VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stride $k$·data/objective·controller·replanning·evidence로 한 줄에 명세할 수 있다. 논문이 $H$는 주고 $k$를 주지 않았다면 그 줄은 불완전하고 지연 주장도 불완전하다.
+VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stride $k$·data/objective·controller·replanning·evidence로 한 줄에 명세할 수 있다. 논문이 $H$는 주고 $k$를 주지 않았다면 그 줄은 불완전하고 지연 주장도 불완전하다. 행동 헤드가 토큰인지 노이즈 제거기인지 CVAE인지도 적고, §6의 비용 가운데 무엇을 치르는지 말한다.
 
 ### 스스로 점검
 
