@@ -16,11 +16,11 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 > [!warning] Rosters go stale · 명단은 낡는다
 > Companies, products and "who runs what" change faster than anything else in this wiki, and
 > nothing on this page is load-bearing for a claim. The tables were last reviewed on
-> **2026-09-09**, and the NVIDIA, AMI Labs and World Labs rows with the NVIDIA stack on
-> **2026-09-22**; treat every row as a pointer to check, not as a current fact. Where a row
+> **2026-09-09**, and the NVIDIA, Google DeepMind, Generalist AI, Dyna Robotics, AMI Labs and World Labs rows with
+> the NVIDIA stack on **2026-09-22**; treat every row as a pointer to check, not as a current fact. Where a row
 > matters to an argument, cite the paper note it links to rather than this page.
 > 회사·제품·"누가 무엇을 돌리는가"는 이 위키에서 가장 빨리 바뀌고, 이 페이지의 어떤 항목도
-> 주장의 근거가 되지 않는다. 표는 **2026-09-09**에 마지막으로 훑었고, NVIDIA·AMI Labs·World Labs 행과 NVIDIA 스택은 **2026-09-22**에 확인했다. 각 줄을 현재 사실이 아니라
+> 주장의 근거가 되지 않는다. 표는 **2026-09-09**에 마지막으로 훑었고, NVIDIA·Google DeepMind·Generalist AI·Dyna Robotics·AMI Labs·World Labs 행과 NVIDIA 스택은 **2026-09-22**에 확인했다. 각 줄을 현재 사실이 아니라
 > 확인할 포인터로 다뤄라. 어떤 줄이 논증에 걸린다면 이 페이지가 아니라 그 줄이 가리키는 논문
 > 노트를 인용하라.
 
@@ -28,8 +28,10 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 
 | Player | What they do | In this wiki |
 |---|---|---|
-| Google DeepMind | RT series, Genie, ALOHA lineage research | [[01-canonical-papers/notes/4-vla/rt-2\|RT-2]], [[01-canonical-papers/notes/5-world-models/genie\|Genie]] |
-| Physical Intelligence | robot foundation models (π series) | [[01-canonical-papers/notes/4-vla/pi0\|π0]] |
+| Google DeepMind | RT series; Gemini Robotics 1.5 (thinking before acting, motion transfer) and 2 (whole-body humanoid control, July 2026; ER 2 public, the VLA in early access); Genie; ALOHA lineage research | [[01-canonical-papers/notes/4-vla/rt-2\|RT-2]], [[01-canonical-papers/notes/4-vla/gemini-robotics\|Gemini Robotics]], [[01-canonical-papers/notes/5-world-models/genie\|Genie]] |
+| Physical Intelligence | robot foundation models: π0, π0-FAST, π0.5, and π\*0.6, which learns from deployment | [[01-canonical-papers/notes/4-vla/pi0\|π0]] |
+| Generalist AI | GEN-0 (2025, over 270,000 hours of real manipulation data), GEN-1 (April 2026), GEN-1.5 (August 2026: a new task from one demonstration in the prompt) | [[03-deep-learning/vla/index\|4. VLA §8]] |
+| Dyna Robotics | DYNA-1, then DYNA-2 (August 2026): a world-action model pretrained on over a million hours of human video | [[03-deep-learning/vla/index\|4. VLA §7]] |
 | NVIDIA | GR00T humanoid models, Cosmos world models, Isaac Sim and Isaac Lab — every layer, laid out in the next section | [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]], [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] |
 | Meta AI (FAIR) | JEPA line, open vision backbones (DINOv2) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
 | AMI Labs (Paris) | Yann LeCun's company, launched March 2026 to build JEPA-based world models for robotics and industry — the *planner* row of [[03-deep-learning/world-models/index\|5. World Models §6]] | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
@@ -76,8 +78,10 @@ NVIDIA is the one player that sells every layer a robot-learning project touches
 
 | 플레이어 | 하는 일 | 이 위키에서 |
 |---|---|---|
-| Google DeepMind | RT 시리즈, Genie, ALOHA 계열 연구 | [[01-canonical-papers/notes/4-vla/rt-2\|RT-2]], [[01-canonical-papers/notes/5-world-models/genie\|Genie]] |
-| Physical Intelligence | 로봇 파운데이션 모델 (π 시리즈) | [[01-canonical-papers/notes/4-vla/pi0\|π0]] |
+| Google DeepMind | RT 시리즈; Gemini Robotics 1.5(행동 전의 생각, 모션 전이)와 2(휴머노이드 전신 제어, 2026년 7월; ER 2는 공개, VLA는 초기 파트너만); Genie; ALOHA 계열 연구 | [[01-canonical-papers/notes/4-vla/rt-2\|RT-2]], [[01-canonical-papers/notes/4-vla/gemini-robotics\|Gemini Robotics]], [[01-canonical-papers/notes/5-world-models/genie\|Genie]] |
+| Physical Intelligence | 로봇 파운데이션 모델: π0, π0-FAST, π0.5, 그리고 배치에서 배우는 π\*0.6 | [[01-canonical-papers/notes/4-vla/pi0\|π0]] |
+| Generalist AI | GEN-0(2025, 실제 조작 데이터 27만 시간 이상), GEN-1(2026년 4월), GEN-1.5(2026년 8월: 프롬프트 속 시연 하나로 새 과제) | [[03-deep-learning/vla/index\|4. VLA §8]] |
+| Dyna Robotics | DYNA-1, 그리고 DYNA-2(2026년 8월): 사람 비디오 100만 시간 이상으로 사전학습한 월드–액션 모델 | [[03-deep-learning/vla/index\|4. VLA §7]] |
 | NVIDIA | GR00T 휴머노이드 모델, Cosmos 월드모델, Isaac Sim과 Isaac Lab — 모든 층을 다음 절에 펼쳤다 | [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]], [[01-canonical-papers/notes/5-world-models/cosmos\|Cosmos]] |
 | Meta AI (FAIR) | JEPA 계열, 오픈 비전 백본 (DINOv2) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
 | AMI Labs (파리) | Yann LeCun이 2026년 3월 출범시킨 회사로, 로봇과 산업을 위한 JEPA 기반 월드모델을 만든다 — [[03-deep-learning/world-models/index\|5. 월드모델 §6]]의 *플래너* 행 | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |

@@ -14,6 +14,16 @@ tags: [log]
 
 ## 2026-09
 
+### 2026-09-22 (11) 시연을 프롬프트로, 사람 손이라는 몸, Gemini Robotics 2
+
+GEN-1.5, physical prompting, in-context learning, DYNA-2, Gemini Robotics 2를 다루느냐는 질문들에 답해 넣었다. in-context learning은 GPT-3 노트에 언어 모델의 뜻으로만 있었고 나머지는 없었다.
+
+- **4. VLA §8 "시연을 프롬프트로: in-context 모방학습"(Working).** 정의(시연은 입력 안에, 파라미터 불변, 새 과제)와 반례 둘. KAT(2024, 언어로만 학습한 GPT-4 Turbo가 키포인트 토큰으로 흉내) → ICRT(2024, 감각운동 궤적 프롬프트) → GEN-1.5(2026년 8월, 3–12초 시연 하나로 새 과제 열 개 평균 59%, 5분 분량 데이터로 경사 스텝 열 번이면 83%). D4에서 12초 시연이 토큰 720개임을 셌고, 주장에 물을 것 넷(사전학습에 있었나, 시행 수, 프롬프트 지연, 같은 데이터의 미세조정)을 적었다.
+- **§7 "사람 손이 가장 큰 몸이 되어 간다".** GR00T N1.7(사람 비디오 2만 시간), DYNA-2(로봇 데이터 없이 사람 비디오 100만 시간, 3D 손 자세에서 의사 행동), GEN-0(실제 조작 27만 시간). DYNA-2의 거듭제곱 지수를 계산해 보였다. 천 배의 데이터로 사람 데이터 오차는 약 12%, zero-shot 로봇 행동 오차는 약 39% 준다. 설계 표에 다섯째 행(Gemini Robotics 1.5의 Motion Transfer)을 더했다.
+- **§6.** Gemini Robotics 1.5의 행동 전 생각과 GEN-0의 "harmonic reasoning"(빠른 층·느린 층을 나누지 않는 비동기 흐름)을 추론의 디코딩 비용으로 이었다. 월드모델 §6에는 DYNA-2의 월드–액션 모델을 "렌더러를 품은 플래너"로 넣었다.
+- **Gemini Robotics 노트(새로, ◐).** 1.0(2025년 3월, 시연 100개로 새 과제), 1.5(2025년 10월, Motion Transfer, 행동 전 생각, ER 1.5), 2(2026년 7월, 휴머노이드 전신 제어, 22자유도 손, ER 2는 공개·VLA는 초기 파트너만, 결과는 범위로 보고). 생태계 페이지에 Generalist AI와 Dyna Robotics 행을 더하고 DeepMind·Physical Intelligence 행을 갱신했다. 용어집에 in-context 모방학습과 월드–액션 모델을 더했다.
+- 근거: arXiv 초록(KAT, ICRT, Gemini Robotics 1.0·1.5), 회사 원문(Generalist AI의 GEN-0·GEN-1.5 글, Dyna의 DYNA-2 보고서, DeepMind의 Gemini Robotics 2 발표). 회사 발표의 숫자는 회사 평가임을 본문에 밝혔다.
+
 ### 2026-09-22 (10) 모달리티가 만나는 곳: VLM에서 옴니모달까지
 
 멀티모달·옴니모달도 다루느냐는 질문에 답해 3. VLM §6을 더했다. 멀티모달의 두 뜻(여러 입력의 결합, 여러 해의 다봉성)은 이미 다루고 있었고, 빠진 것은 옴니모달이었다.

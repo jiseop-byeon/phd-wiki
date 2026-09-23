@@ -16,7 +16,7 @@ mastery-when: "Raise when policy architecture, action representation, data mixtu
 *Stands on the VLM encoder of [[03-deep-learning/vlm/index|3. VLM]] and the rate budget of [[04-robotics/robot-systems-deployment|10. Robot Systems]]. First use of object **D4**.*
 
 > [!note] First pass
-> Read the running object, the worked case, §§1–3, and problems 1–2. Return to §4 when a paper reports a success rate, and to §5 when one changes its chunk length. Go to §6 when a paper names its action head or reasons in words before acting, and to §7 when it claims transfer across robots.
+> Read the running object, the worked case, §§1–3, and problems 1–2. Return to §4 when a paper reports a success rate, and to §5 when one changes its chunk length. Go to §6 when a paper names its action head or reasons in words before acting, to §7 when it claims transfer across robots, and to §8 when a demonstration in the prompt replaces training.
 
 ### Running object · 이 페이지의 대상
 
@@ -38,7 +38,7 @@ $$\pi_\theta(a_{t:t+H-1}\mid o_{\le t},l),\qquad a_i=(\Delta x_i,\Delta y_i).$$
 
 The instruction is not decoration here: "left, then down" *is* the axis order the policy plans in, which is why the frozen chunk moves in $x$ twice and then in $y$ once.
 
-*Scope: this page teaches the interface between a language-conditioned policy and a robot — action representation, the behaviour-cloning objective, how long a chunk may be committed, which head produces it and at what cost, what a reported success rate does and does not prove, and what changes when one policy drives many bodies. It does not teach the vision–language encoder that produces $o_t$, which is [[03-deep-learning/vlm/index|3. VLM]]; nor how a pretrained backbone is fine-tuned to a new robot, in full or with LoRA, which is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]]; nor the generative head that turns multimodal demonstrations into an action distribution, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]; nor the controller that turns a delta into a torque, which is [[04-robotics/force-compliance-control|11. Force & Compliance Control]]; nor where demonstrations come from, which is [[04-robotics/teleoperation-demonstration|12. Teleoperation]].*
+*Scope: this page teaches the interface between a language-conditioned policy and a robot — action representation, the behaviour-cloning objective, how long a chunk may be committed, which head produces it and at what cost, what a reported success rate does and does not prove, what changes when one policy drives many bodies, and what it means to learn a task from the prompt. It does not teach the vision–language encoder that produces $o_t$, which is [[03-deep-learning/vlm/index|3. VLM]]; nor how a pretrained backbone is fine-tuned to a new robot, in full or with LoRA, which is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]]; nor the generative head that turns multimodal demonstrations into an action distribution, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]; nor the controller that turns a delta into a torque, which is [[04-robotics/force-compliance-control|11. Force & Compliance Control]]; nor where demonstrations come from, which is [[04-robotics/teleoperation-demonstration|12. Teleoperation]].*
 
 ### The picture · 그림으로 먼저 보기
 
@@ -337,7 +337,7 @@ The design conclusion for this robot: $k$ between 3 and 5 — a commitment of 0.
 
 So the choice follows the budget of §3 rather than fashion: keep tokens when the language backbone's generalization is the point and chunks are short; move to a denoiser when the chunk is long or the demonstrations are strongly multimodal; and in either case check the head against $\ell(k)$ before believing a demo video.
 
-**Reasoning is paid in the same currency.** A token head can also be taught to write before it acts. RT-2 tried this as a small variant that states a plan in words — "Plan: pick energy drink" — before its action tokens ([[01-canonical-papers/notes/4-vla/rt-2|RT-2]]). Embodied chain-of-thought (ECoT; Zawalski et al. 2024) makes it systematic: OpenVLA is fine-tuned to write a plan, the current sub-task, a movement primitive, object bounding boxes and the gripper's position in the image, and only then the action, from reasoning labels generated automatically by pretrained detectors and a large language model. That raised OpenVLA's absolute success rate by $28$ points on generalization tasks — new objects, scenes, viewpoints and instructions — with no additional robot data. Every reasoning token is a sequential decode, exactly like an action token, and ECoT's tokens per step went from $7$ to $350$. On D4, a chain of that length would turn the token head's $6$ passes into $343+6=349$. The paper's remedy is §3's trade in another place: regenerate the high-level plan and sub-task only every fifth step, which made inference about a quarter faster and, on a three-task subset, succeeded $72\%$ of the time against $63\%$ for reasoning afresh at every step. What reasoning buys is generalization and a failure you can read — a wrong bounding box shows where the policy went wrong. What it costs is rate, so a reasoning policy's control frequency belongs in the same row as its success rate.
+**Reasoning is paid in the same currency.** A token head can also be taught to write before it acts. RT-2 tried this as a small variant that states a plan in words — "Plan: pick energy drink" — before its action tokens ([[01-canonical-papers/notes/4-vla/rt-2|RT-2]]). Embodied chain-of-thought (ECoT; Zawalski et al. 2024) makes it systematic: OpenVLA is fine-tuned to write a plan, the current sub-task, a movement primitive, object bounding boxes and the gripper's position in the image, and only then the action, from reasoning labels generated automatically by pretrained detectors and a large language model. That raised OpenVLA's absolute success rate by $28$ points on generalization tasks — new objects, scenes, viewpoints and instructions — with no additional robot data. Every reasoning token is a sequential decode, exactly like an action token, and ECoT's tokens per step went from $7$ to $350$. On D4, a chain of that length would turn the token head's $6$ passes into $343+6=349$. The paper's remedy is §3's trade in another place: regenerate the high-level plan and sub-task only every fifth step, which made inference about a quarter faster and, on a three-task subset, succeeded $72\%$ of the time against $63\%$ for reasoning afresh at every step. What reasoning buys is generalization and a failure you can read — a wrong bounding box shows where the policy went wrong. What it costs is rate, so a reasoning policy's control frequency belongs in the same row as its success rate. Gemini Robotics 1.5 builds the idea into a production VLA, interleaving its actions with multi-level reasoning in natural language beside a separate embodied-reasoning model for planning and progress estimation ([[01-canonical-papers/notes/4-vla/gemini-robotics|Gemini Robotics]]). Generalist's GEN-0 argues for the opposite arrangement: sensing and acting tokens in asynchronous, continuous-time streams, with no fast–slow split. Both are claims about where the reasoning's decodes are spent, which is the question this paragraph's arithmetic asks.
 
 ### 7. One policy, many bodies: the embodiment gap
 
@@ -351,7 +351,7 @@ So the choice follows the budget of §3 rather than fashion: keep tokens when th
 
 Nothing in a normalized label says which robot it came from. Only the observation can, and only if the camera view or the proprioception differs enough to tell.
 
-**Four designs, each paying somewhere.** The canonical generalist policies close the gap in four ways.
+**Five designs, each paying somewhere.** The generalist policies close the gap in five ways.
 
 | design | how the body enters the policy | what it costs |
 |---|---|---|
@@ -359,8 +359,11 @@ Nothing in a normalized label says which robot it came from. Only the observatio
 | pad to the largest body ([[01-canonical-papers/notes/4-vla/pi0\|π0]]) | an 18-D action — two 6-DoF arms, two grippers, a mobile base and a torso lift — zero-padded for smaller robots, missing cameras masked | D4 would fill 2 of 18 dimensions: free for a denoiser, whose $N$ passes do not depend on width, while a token head would decode $18\times3=54$ tokens for D4's chunk instead of $6$ |
 | a head per body ([[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]]) | a shared trunk, with new observation and action tokens and a small head for each new robot (Octo), or embodiment-specific encoders and decoders around one model (GR00T) | every new body needs data of its own; Octo's recipe is about $100$ demonstrations and $5$ hours of fine-tuning |
 | latent actions from video (the idea of [[01-canonical-papers/notes/5-world-models/genie\|Genie]], at the base of GR00T's data) | actions inferred as discrete codes between video frames, with no action labels ([[03-deep-learning/diffusion/vae-gan\|6.1 §10]]) | a latent action is not a command: a body-specific layer must still map it to one |
+| learned transfer across bodies ([[01-canonical-papers/notes/4-vla/gemini-robotics\|Gemini Robotics]] 1.5) | one VLA trained on heterogeneous multi-embodiment data with a Motion Transfer mechanism in its architecture; its successor's on-device model adapts to a new body with a few hours of data | the mechanism is described in a technical report but not released, and the evaluation is the company's |
 
 GR00T's later versions moved part of the way back toward a shared convention: N1.7 (2026) represents actions as *relative* end-effector deltas shared by robots and human video, which is what lets $20{,}000$ hours of human video train the same head ([[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T N1]]). It is a coarse alignment in OXE's spirit, so the questions below apply to it too: in what units, in which frame, at what rate.
+
+**Human hands are becoming the largest body in the pool.** GR00T N1.7 pretrains on $20{,}000$ hours of human video; DYNA-2 (Dyna Robotics, August 2026) on more than a million hours of head-mounted human video with no robot data at all, recovering pseudo-actions from 3D hand poses ([Dyna](https://www.dyna.co/dyna-2)); GEN-0 (Generalist AI, 2025) on over $270{,}000$ hours of real manipulation recorded by thousands of devices and robots ([Generalist AI](https://generalistai.com/blog)). DYNA-2 states its gains as power laws, and the exponents are worth reading before the adjectives. Held-out human-data error falls as $D^{-0.0184}$, so a thousandfold more video lowers it by about $12\%$; zero-shot robot-action error falls as $D^{-0.0713}$, about $39\%$ per thousandfold. The gains are real, smooth and slow, and a customer deployment passed $87\%$ of the time against $46\%$ for its predecessor at the same post-training budget. The gap these models still have to cross is this section's own: a human hand is a body with its own kinematics, and a pseudo-action is an estimate of what it did.
 
 **What the evidence says.** OXE's results split on how much data the target robot already has. On five robots with small datasets of their own, RT-1-X trained on the pool beat each lab's original method on four, and its mean success was $50\%$ higher than that of either the original method or RT-1 trained on the robot's own data. With a lot of data, it lost. On the WidowX's Bridge tasks it scored $27\%$ at both evaluation sites, against $40\%$ and $30\%$ for RT-1 trained on that data alone; on the Google robot's RT-1 tasks, $73\%$ against $92\%$. The 55B RT-2-X recovered — $50\%$, $30\%$ and $91\%$ — so the paper reads the loss as underfitting: a small model spends its capacity on the other bodies. Transfer of skills is also real. RT-2-X roughly tripled RT-2's score on emergent skills whose objects and motions appear only in the WidowX's data, and removing that dataset significantly reduced the gain.
 
@@ -373,9 +376,34 @@ GR00T's later versions moved part of the way back toward a shared convention: N1
 
 A construction machine sits at the far end of both axes. It will have little data of its own for a long time, which is where pooling helped. And its body is unlike anything in the pool — the OXE note finds nothing construction-like there — which is where coarse alignment is weakest and the D4-and-B arithmetic bites hardest. For such a body, convert the convention explicitly, in physical units and seconds, rather than trusting the policy to infer it from a camera image.
 
+### 8. A demonstration as the prompt: in-context imitation
+
+Everything so far teaches a policy by changing its weights. In-context learning — the finding of [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]] that a large model can pick up a task from examples in its prompt, with no weight update — has a robot form: put a demonstration of the new task into the policy's context and let it imitate.
+
+> **In-context imitation, defined.** **In-context imitation learning** is a property of a *trained policy at test time*: it performs a task it was not trained on, specified only by demonstrations placed in its input. Three defining conditions. The demonstration is **in the input**, as observation–action sequences, not in the training set. **No parameter changes** between receiving the demonstration and acting. And the task is **new** to the model, since imitating a task it already learned is retrieval or conditioning, not learning.
+>
+> $$a_{t:t+H-1}\sim\pi_\theta\big(\,\cdot\mid \underbrace{(o,a)^{\text{demo}}_{1:T}}_{\text{the prompt}},\ o_{\le t}\big),\qquad \theta\ \text{fixed}$$
+>
+> - **Example**: GEN-1.5's "physical prompting" below — a few seconds of a new task, dropped into the context of a model that is not retrained.
+> - **Non-example**: fine-tuning on the same five-minute demonstration set. The data are identical; condition two fails, and it costs a training run.
+> - **Non-example**: a language instruction naming a skill the policy was trained on. The input specifies the task, but condition three fails: nothing new is learned.
+
+**Three steps to 2026.** Keypoint Action Tokens (Di Palo and Johns, 2024) wrote visual keypoints and action trajectories as text and let an off-the-shelf GPT-4 Turbo, trained only on language, imitate from a few demonstrations — on par with diffusion policies in the low-data regime ([arXiv:2403.19578](https://arxiv.org/abs/2403.19578)). ICRT (Fu et al., 2024) trained a causal transformer on sensorimotor trajectories and prompted it on a Franka with teleoperated trajectories of an unseen task ([arXiv:2408.15980](https://arxiv.org/abs/2408.15980)). **GEN-1.5** (Generalist AI, August 2026) calls it *physical prompting*: a $3$–$12$ s sensorimotor demonstration, recorded with handheld grippers or by the robot itself, is placed in the context of a multimodal model that keeps $30$ s of memory and emits actions at $100$ Hz ([Generalist AI](https://generalistai.com/blog/gen-1.5)). Across ten short dexterous tasks — jars, zippers, a wallet — one demonstration gave $59\pm10\%$ success with no gradient step, and ten gradient steps on five minutes of data, about fifty demonstrations, gave $83\pm9\%$. The company says nothing in the architecture or training was built for in-context learning, and names the limits itself: short-horizon tasks, modest rates, skills more brittle than fine-tuned ones.
+
+**The price of a prompt, on D4.** A demonstration in the context is paid in tokens. Twelve seconds at D4's $20$ Hz is $240$ steps; with one observation token and $D=2$ action tokens per step, that is $720$ tokens encoded before the first action. With a key–value cache they are encoded once, but every later token still attends over them, so the prompt adds to each step's attention cost for as long as it stays in the context — the sequential budget of §6, now spent on memory instead of reasoning. The same twelve seconds at GEN-1.5's $100$ Hz is $1{,}200$ action steps.
+
+**What to ask of an in-context claim**, beside §4's evidence ladder:
+
+- was the task, or one close to it, in pretraining — the line between learning and retrieval;
+- how many trials, and what counts as success;
+- how long the prompt is, and what latency it adds before the first action;
+- the fine-tuned result at matched data, because GEN-1.5's own numbers price the choice: seconds of demonstration and no training for $59\%$, five minutes and a short training run for $83\%$.
+
+For a construction crew the appeal is plain — show a new fixing task once with a handheld gripper and let the machine do it — and so is the caution: the evidence so far is short, simple, table-scale tasks.
+
 ### After reading
 
-For any VLA, fill one row containing observation, language, action space/frame/rate, horizon $H$, executed stride $k$, training data/objective, controller, replanning, and evidence ladder. If the paper gives $H$ but not $k$, the row is incomplete and so is its latency claim. Name the action head too — tokens, denoiser or CVAE — and say which of §6's costs it pays. For a policy trained on many robots, say how the body enters it — alignment, padding, a head of its own or latent actions — and count the tokens decoded before the first action, reasoning included.
+For any VLA, fill one row containing observation, language, action space/frame/rate, horizon $H$, executed stride $k$, training data/objective, controller, replanning, and evidence ladder. If the paper gives $H$ but not $k$, the row is incomplete and so is its latency claim. Name the action head too — tokens, denoiser or CVAE — and say which of §6's costs it pays. For a policy trained on many robots, say how the body enters it — alignment, padding, a head of its own or latent actions — and count the tokens decoded before the first action, reasoning included. For a claim of learning from the prompt, separate it from retrieval and from fine-tuning at matched data.
 
 ### Self-check
 
@@ -386,6 +414,7 @@ For any VLA, fill one row containing observation, language, action space/frame/r
 5. Which of D4's frozen numbers would have to change for the axis-at-a-time plan to cost the same travel as a straight line?
 6. A cross-embodiment policy fine-tuned on 5,000 demonstrations of your arm succeeds $70\%$ of the time; a specialist trained on those 5,000 alone succeeds $75\%$. Before calling it negative transfer, what do you check, and which of OXE's results does it resemble?
 7. ECoT raised OpenVLA's success by $28$ points. On §6's scale, what did that cost, and what would you ask before putting it on a 20 Hz arm?
+8. A company reports $59\%$ success on new tasks from one demonstration placed in the prompt. Which of §8's three conditions would you check first, and what comparison turns the number into a decision?
 
 > [!tip]- Answers
 > 1. $a_{\max}/\Delta t=0.02/0.05=0.4\,\mathrm{m/s}$. A demonstration at $0.8\,\mathrm{m/s}$ cannot be represented: every label saturates at the clip, so the cloned policy is systematically slow and the error is invisible in a per-step loss computed *after* clipping. Units and limits are part of the label, not of the deployment.
@@ -395,6 +424,7 @@ For any VLA, fill one row containing observation, language, action space/frame/r
 > 5. The target. The travel penalty is $\lVert g\rVert_1/\lVert g\rVert_2$, so it is $1$ only when the target lies on an axis: $g=(-0.06,0)$ would cost the same 6 cm by either plan. No change to $a_{\max}$, $\delta$, or the rates removes it, because it is a property of the instruction's axis order and the target direction.
 > 6. First the counting of §4: at $100$ trials each, $70\%$ and $75\%$ have overlapping intervals, $[0.60,\ 0.78]$ and $[0.66,\ 0.82]$, so nothing has been ranked yet. Then the conventions of §7: whether your arm's actions entered the pool in the same units, frame and rate as its labels — the D4-and-B case shows a normalized label moving a body two and a half times too far. If both hold up, it resembles OXE's large-data regime, where RT-1-X lost to the specialist ($27\%$ against $40\%$, $73\%$ against $92\%$) and the 55B RT-2-X closed the gap. The next experiment is therefore capacity — a larger model, or a head of its own for your arm — reported against the specialist baseline.
 > 7. Sequential decodes: $7$ tokens per step became $350$, so D4's $6$ passes per chunk would become $349$. Ask for the control frequency actually reached and how the chain is scheduled — ECoT's own five-step hold of the plan and sub-task ran about a quarter faster and scored $72\%$ against $63\%$ on its subset — and whether the gain was measured on the kind of generalization your task needs: new objects, scenes, viewpoints or instructions. A plan held for five steps is a chunk of plans, so §3's age arithmetic applies to it: at 20 Hz the plan acting on the fifth step is at least $0.20\,\mathrm{s}$ older than the scene.
+> 8. Condition three first: whether these tasks, or ones close to them, were in pretraining, because imitating a task already learned is retrieval, and a strong model will do it from any cue. Then the comparison at matched data: GEN-1.5's own fine-tune reached $83\%$ with five minutes of data and ten gradient steps, so the decision is whether $24$ points and less brittleness are worth a short training run per task. Add the prompt's cost in latency and the trial count behind the $59\%$.
 
 ### Problem set · 과제
 
@@ -442,12 +472,16 @@ The notes linked from §1–§7 carry each paper's own citation. The numbers of 
 - Open X-Embodiment Collaboration. "Open X-Embodiment: Robotic Learning Datasets and RT-X Models." *ICRA*, 2024, pp. 6892–6903 — the coarse 7-D alignment, and Table I's large-data comparison.
 - Zawalski, M., Chen, W., Pertsch, K., Mees, O., Finn, C. & Levine, S. "Robotic Control via Embodied Chain-of-Thought Reasoning." *CoRL*, 2024 — the reasoning steps, the $28$-point gain, $7$ against $350$ tokens per step, and the five-step hold (Table 2).
 - Liang, W., Yu, L., Luo, L., Iyer, S. et al. "Mixture-of-Transformers: A Sparse and Scalable Architecture for Multi-Modal Foundation Models." arXiv:2411.04996, 2024 — per-modality weights under global self-attention, and $55.8\%$ of the FLOPs in the 7B text-and-image setting.
+- Di Palo, N. & Johns, E. "Keypoint Action Tokens Enable In-Context Imitation Learning in Robotics." arXiv:2403.19578, 2024; Fu, L. et al. "In-Context Imitation Learning via Next-Token Prediction." arXiv:2408.15980, 2024 — the two research steps before physical prompting.
+- Generalist AI. "GEN-1.5: Embodied Foundation Models are One-Shot Learners" (2026-08-19) and "GEN-0" (2025-11-04), company posts — physical prompting, $59$ and $83\%$, the 270,000 hours.
+- Dyna Robotics. "Dyna-2: A 1-Million-Hour Scaling Law for World-Action Models" (August 2026), company report — the power laws, the fine-tuning budgets and the $87$ against $46\%$.
+- Gemini Robotics Team. "Gemini Robotics 1.5: Pushing the Frontier of Generalist Robots with Advanced Embodied Reasoning, Thinking, and Motion Transfer." arXiv:2510.03342, 2025 — Motion Transfer and thinking before acting.
 ## 한국어
 
 *[[03-deep-learning/vlm/index|3. VLM]]의 인코더와 [[04-robotics/robot-systems-deployment|10. Robot Systems]]의 주기 예산 위에 선다. 대상 **D4**를 처음 쓴다.*
 
 > [!note] 처음이라면
-> 대상, 계산, §1–3, 문제 1–2를 먼저 한다. 논문이 성공률을 보고하면 §4로, chunk 길이를 바꾸면 §5로 돌아온다. 행동 헤드를 밝히거나 행동 전에 말로 추론하면 §6으로, 로봇 사이의 전이를 주장하면 §7로 간다.
+> 대상, 계산, §1–3, 문제 1–2를 먼저 한다. 논문이 성공률을 보고하면 §4로, chunk 길이를 바꾸면 §5로 돌아온다. 행동 헤드를 밝히거나 행동 전에 말로 추론하면 §6으로, 로봇 사이의 전이를 주장하면 §7로, 프롬프트 속 시연이 학습을 대신하면 §8로 간다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -467,7 +501,7 @@ The notes linked from §1–§7 carry each paper's own citation. The numbers of 
 
 여기서 instruction은 장식이 아니다. "왼쪽으로 간 다음 아래로"가 정책이 계획하는 축 순서 자체이고, 그래서 고정된 chunk가 $x$로 두 번, $y$로 한 번 움직인다.
 
-*범위: 이 페이지는 언어 조건 정책과 로봇 사이의 interface를 가르친다 — 행동 표현, behaviour cloning 목적함수, chunk를 얼마나 오래 확정해도 되는지, 어떤 헤드가 그것을 어떤 비용으로 만드는지, 보고된 success rate가 무엇을 증명하고 무엇을 증명하지 않는지, 정책 하나가 여러 몸을 몰 때 무엇이 달라지는지. $o_t$를 만드는 vision–language 인코더는 가르치지 않는다. 그것은 [[03-deep-learning/vlm/index|3. VLM]]이다. 사전학습된 backbone을 새 로봇에 맞게 전체로든 LoRA로든 파인튜닝하는 법도 아니다. 그것은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]이다. 다봉 시연을 행동 분포로 바꾸는 생성 head도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다. delta를 토크로 바꾸는 제어기도 아니다. 그것은 [[04-robotics/force-compliance-control|11. 힘·컴플라이언스 제어]]다. 시연이 어디서 오는지도 아니다. 그것은 [[04-robotics/teleoperation-demonstration|12. 원격조작]]이다.*
+*범위: 이 페이지는 언어 조건 정책과 로봇 사이의 interface를 가르친다 — 행동 표현, behaviour cloning 목적함수, chunk를 얼마나 오래 확정해도 되는지, 어떤 헤드가 그것을 어떤 비용으로 만드는지, 보고된 success rate가 무엇을 증명하고 무엇을 증명하지 않는지, 정책 하나가 여러 몸을 몰 때 무엇이 달라지는지, 프롬프트에서 과제를 배운다는 것이 무엇인지. $o_t$를 만드는 vision–language 인코더는 가르치지 않는다. 그것은 [[03-deep-learning/vlm/index|3. VLM]]이다. 사전학습된 backbone을 새 로봇에 맞게 전체로든 LoRA로든 파인튜닝하는 법도 아니다. 그것은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]이다. 다봉 시연을 행동 분포로 바꾸는 생성 head도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다. delta를 토크로 바꾸는 제어기도 아니다. 그것은 [[04-robotics/force-compliance-control|11. 힘·컴플라이언스 제어]]다. 시연이 어디서 오는지도 아니다. 그것은 [[04-robotics/teleoperation-demonstration|12. 원격조작]]이다.*
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -693,7 +727,7 @@ semantic generalization, motor competence, embodiment transfer, recovery를 나�
 
 그러니 선택은 유행이 아니라 §3의 예산을 따른다. 언어 백본의 일반화가 요점이고 청크가 짧으면 토큰을 유지하고, 청크가 길거나 시연이 강하게 다봉이면 노이즈 제거기로 옮기며, 어느 쪽이든 시연 영상을 믿기 전에 헤드를 $\ell(k)$에 대어 확인한다.
 
-**추론도 같은 화폐로 치른다.** 토큰 헤드는 행동하기 전에 글을 쓰도록 배울 수도 있다. RT-2는 행동 토큰 앞에 계획을 말로 적는 작은 변형 — "Plan: pick energy drink" — 으로 이것을 시도했다([[01-canonical-papers/notes/4-vla/rt-2|RT-2]]). Embodied chain-of-thought(ECoT, Zawalski 외 2024)는 그것을 체계로 만든다. OpenVLA를 미세조정해 계획, 지금의 하위 과제, 움직임 기본 동작, 물체의 bounding box, 이미지 속 그리퍼 위치를 쓰고 그다음에야 행동을 내게 하며, 추론 label은 사전학습된 검출기와 대규모 언어 모델이 자동으로 만든다. 그것으로 OpenVLA의 절대 성공률이 일반화 과제 — 새 물체, 장면, 시점, 지시 — 에서 로봇 데이터를 더하지 않고 $28$%p 올랐다. 추론 토큰 하나하나가 행동 토큰과 똑같은 순차 디코딩이고, ECoT의 스텝당 토큰은 $7$개에서 $350$개가 되었다. D4에서 그 길이의 사슬은 토큰 헤드의 $6$번 통과를 $343+6=349$번으로 바꾼다. 논문의 처방은 §3의 교환을 다른 곳에 쓰는 것이다. 상위 계획과 하위 과제를 다섯 스텝마다 한 번만 새로 만들자 추론이 약 4분의 1 빨라졌고, 과제 세 개짜리 부분집합에서 성공률이 매 스텝 새로 추론할 때의 $63\%$에 비해 $72\%$였다. 추론이 사는 것은 일반화와 읽을 수 있는 실패다 — 틀린 bounding box가 정책이 어디서 어긋났는지 보여 준다. 치르는 것은 rate이므로, 추론하는 정책의 제어 주파수는 성공률과 같은 행에 적어야 한다.
+**추론도 같은 화폐로 치른다.** 토큰 헤드는 행동하기 전에 글을 쓰도록 배울 수도 있다. RT-2는 행동 토큰 앞에 계획을 말로 적는 작은 변형 — "Plan: pick energy drink" — 으로 이것을 시도했다([[01-canonical-papers/notes/4-vla/rt-2|RT-2]]). Embodied chain-of-thought(ECoT, Zawalski 외 2024)는 그것을 체계로 만든다. OpenVLA를 미세조정해 계획, 지금의 하위 과제, 움직임 기본 동작, 물체의 bounding box, 이미지 속 그리퍼 위치를 쓰고 그다음에야 행동을 내게 하며, 추론 label은 사전학습된 검출기와 대규모 언어 모델이 자동으로 만든다. 그것으로 OpenVLA의 절대 성공률이 일반화 과제 — 새 물체, 장면, 시점, 지시 — 에서 로봇 데이터를 더하지 않고 $28$%p 올랐다. 추론 토큰 하나하나가 행동 토큰과 똑같은 순차 디코딩이고, ECoT의 스텝당 토큰은 $7$개에서 $350$개가 되었다. D4에서 그 길이의 사슬은 토큰 헤드의 $6$번 통과를 $343+6=349$번으로 바꾼다. 논문의 처방은 §3의 교환을 다른 곳에 쓰는 것이다. 상위 계획과 하위 과제를 다섯 스텝마다 한 번만 새로 만들자 추론이 약 4분의 1 빨라졌고, 과제 세 개짜리 부분집합에서 성공률이 매 스텝 새로 추론할 때의 $63\%$에 비해 $72\%$였다. 추론이 사는 것은 일반화와 읽을 수 있는 실패다 — 틀린 bounding box가 정책이 어디서 어긋났는지 보여 준다. 치르는 것은 rate이므로, 추론하는 정책의 제어 주파수는 성공률과 같은 행에 적어야 한다. Gemini Robotics 1.5는 이 발상을 실제 제품 VLA에 넣어, 계획과 진행 추정을 맡는 별도의 체화 추론 모델 옆에서 행동 사이사이에 자연어로 된 여러 층의 추론을 끼운다([[01-canonical-papers/notes/4-vla/gemini-robotics|Gemini Robotics]]). Generalist의 GEN-0은 반대 배치를 주장한다. 빠른 층과 느린 층을 나누지 않고, 감지 토큰과 행동 토큰을 비동기 연속 시간 흐름으로 둔다. 둘 다 추론의 디코딩을 어디에 쓰느냐에 관한 주장이고, 이 단락의 셈이 묻는 질문이 그것이다.
 
 ### 7. 정책 하나, 몸 여럿: embodiment 격차
 
@@ -707,7 +741,7 @@ semantic generalization, motor competence, embodiment transfer, recovery를 나�
 
 정규화된 label 어디에도 그것이 어느 로봇에서 왔는지 적혀 있지 않다. 말해 줄 수 있는 것은 관측뿐이고, 그것도 카메라 시점이나 고유수용 감각이 가려낼 만큼 다를 때뿐이다.
 
-**설계 넷, 각자 어딘가에서 치른다.** 대표적인 범용 정책들은 격차를 네 가지로 메운다.
+**설계 다섯, 각자 어딘가에서 치른다.** 범용 정책들은 격차를 다섯 가지로 메운다.
 
 | 설계 | 몸이 정책에 들어가는 방식 | 대가 |
 |---|---|---|
@@ -715,8 +749,11 @@ semantic generalization, motor competence, embodiment transfer, recovery를 나�
 | 가장 큰 몸에 맞춰 채우기([[01-canonical-papers/notes/4-vla/pi0\|π0]]) | 18차원 행동 — 6자유도 팔 둘, 그리퍼 둘, 이동 베이스, 몸통 승강 — 을 작은 로봇은 0으로 채우고, 없는 카메라는 가린다 | D4는 18차원 가운데 2개를 채운다. $N$번 통과가 폭과 무관한 노이즈 제거기에는 공짜지만, 토큰 헤드는 D4의 chunk에 $6$개 대신 $18\times3=54$개 토큰을 디코딩해야 한다 |
 | 몸마다 헤드([[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]]) | 공유 몸통에 새 로봇마다 새 관측·행동 토큰과 작은 헤드를 붙이거나(Octo), 모델 하나 둘레에 embodiment별 인코더와 디코더를 둔다(GR00T) | 새 몸마다 자기 데이터가 필요하다. Octo의 방법은 시연 약 $100$개와 미세조정 $5$시간이다 |
 | 비디오에서 잠재 행동([[01-canonical-papers/notes/5-world-models/genie\|Genie]]의 발상, GR00T 데이터의 바닥) | 행동 label 없이 비디오 프레임 사이의 이산 코드로 추론한 행동([[03-deep-learning/diffusion/vae-gan\|6.1 §10]]) | 잠재 행동은 명령이 아니다. 몸에 맞춘 층이 여전히 그것을 명령으로 옮겨야 한다 |
+| 몸 사이의 학습된 전이([[01-canonical-papers/notes/4-vla/gemini-robotics\|Gemini Robotics]] 1.5) | 여러 몸의 이질적인 데이터로 학습한 VLA 하나가 구조 안에 Motion Transfer 메커니즘을 두고, 후속의 온디바이스 모델은 새 몸에 몇 시간의 데이터로 적응한다 | 메커니즘은 기술 보고서에 설명될 뿐 공개되지 않았고, 평가는 회사의 것이다 |
 
 GR00T의 후속 버전은 공유 규약 쪽으로 일부 되돌아왔다. N1.7(2026)은 행동을 로봇과 사람 비디오가 함께 쓰는 *상대* end-effector 변화량으로 나타내고, 그래서 사람 비디오 $20{,}000$시간이 같은 헤드를 학습시킬 수 있다([[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T N1]]). OXE 방식의 거친 정렬이므로 아래 질문이 그대로 적용된다. 어떤 단위로, 어느 좌표계에서, 어떤 주기로.
+
+**사람 손이 모인 데이터에서 가장 큰 몸이 되어 간다.** GR00T N1.7은 사람 비디오 $20{,}000$시간으로 사전학습하고, DYNA-2(Dyna Robotics, 2026년 8월)는 로봇 데이터 없이 머리에 단 카메라로 찍은 사람 비디오 100만 시간 이상으로 사전학습하며 의사 행동을 3D 손 자세에서 복원하고([Dyna](https://www.dyna.co/dyna-2)), GEN-0(Generalist AI, 2025)은 수천 대의 장치와 로봇이 기록한 실제 조작 $270{,}000$시간 이상으로 사전학습한다([Generalist AI](https://generalistai.com/blog)). DYNA-2는 이득을 거듭제곱 법칙으로 적는데, 형용사보다 지수를 먼저 읽을 만하다. 보류한 사람 데이터의 오차는 $D^{-0.0184}$로 떨어지므로 비디오를 천 배 늘려도 약 $12\%$ 낮아지고, zero-shot 로봇 행동 오차는 $D^{-0.0713}$로 천 배마다 약 $39\%$ 떨어진다. 이득은 실재하고, 매끄럽고, 느리다. 그리고 같은 사후학습 예산에서 고객 현장 합격률이 이전 모델의 $46\%$에 비해 $87\%$였다. 이 모델들이 아직 건너야 할 격차는 이 절 자신의 것이다. 사람 손도 제 기구학을 가진 몸이고, 의사 행동은 그 손이 한 일의 추정이다.
 
 **증거가 말하는 것.** OXE의 결과는 대상 로봇이 이미 가진 데이터가 얼마인지에 따라 갈린다. 자기 데이터가 적은 로봇 다섯에서, 모은 데이터로 학습한 RT-1-X는 넷에서 각 연구실의 원래 방법을 이겼고, 평균 성공률이 원래 방법이나 그 로봇 데이터로만 학습한 RT-1보다 $50\%$ 높았다. 데이터가 많을 때는 졌다. WidowX의 Bridge 과제에서 두 평가 장소 모두 $27\%$로, 그 데이터로만 학습한 RT-1의 $40\%$와 $30\%$에 못 미쳤고, Google 로봇의 RT-1 과제에서는 $92\%$ 대비 $73\%$였다. 55B RT-2-X는 회복했다 — $50\%$, $30\%$, $91\%$. 그래서 논문은 그 패배를 과소적합으로 읽는다. 작은 모델은 용량을 다른 몸들에 쓴다. 기술의 전이도 실재한다. RT-2-X는 물체와 동작이 WidowX 데이터에만 있는 창발 기술에서 RT-2의 점수를 대략 세 배로 올렸고, 그 데이터셋을 빼자 이득이 크게 줄었다.
 
@@ -729,9 +766,34 @@ GR00T의 후속 버전은 공유 규약 쪽으로 일부 되돌아왔다. N1.7(2
 
 건설 기계는 두 축 모두의 먼 끝에 있다. 오랫동안 자기 데이터가 적을 것이고, 모으기가 도움이 된 곳이 거기다. 그리고 몸이 모인 데이터의 어떤 것과도 다르다 — OXE 노트는 거기서 건설 비슷한 것을 하나도 찾지 못한다 — 거친 정렬이 가장 약하고 D4와 B의 계산이 가장 아프게 무는 곳이 거기다. 그런 몸에서는 정책이 카메라 이미지로 규약을 짐작하리라 믿지 말고, 물리 단위와 초로 규약을 명시적으로 변환하라.
 
+### 8. 시연을 프롬프트로: in-context 모방학습
+
+지금까지는 모두 가중치를 바꿔서 정책을 가르쳤다. In-context learning — 큰 모델이 가중치 갱신 없이 프롬프트의 예시에서 과제를 익힌다는 [[01-canonical-papers/notes/1-foundations/gpt-3|GPT-3]]의 발견 — 에는 로봇판이 있다. 새 과제의 시연을 정책의 문맥에 넣고 흉내 내게 하는 것이다.
+
+> **In-context 모방학습의 정의.** **In-context 모방학습**(in-context imitation learning)은 *시험 때의 학습된 정책*이 갖는 성질이다. 학습하지 않은 과제를 입력에 넣은 시연만으로 지정받아 수행한다. 정의 조건은 셋이다. 시연은 학습 데이터가 아니라 관측–행동 시퀀스로 **입력 안에** 있다. 시연을 받고 행동하기까지 **파라미터가 바뀌지 않는다**. 그리고 과제는 모델에게 **새것**이다. 이미 배운 과제를 흉내 내는 것은 학습이 아니라 검색이나 조건화다.
+>
+> $$a_{t:t+H-1}\sim\pi_\theta\big(\,\cdot\mid \underbrace{(o,a)^{\text{demo}}_{1:T}}_{\text{프롬프트}},\ o_{\le t}\big),\qquad \theta\ \text{고정}$$
+>
+> - **예**: 아래 GEN-1.5의 "physical prompting". 새 과제의 몇 초를 다시 학습하지 않는 모델의 문맥에 넣는다.
+> - **반례**: 같은 5분짜리 시연 묶음으로 미세조정하기. 데이터는 같지만 둘째 조건이 깨지고, 학습을 한 번 돌려야 한다.
+> - **반례**: 정책이 학습한 기술을 이름으로 부르는 언어 지시. 입력이 과제를 지정하지만 셋째 조건이 깨진다. 새로 배우는 것이 없다.
+
+**2026년까지 세 걸음.** Keypoint Action Tokens(Di Palo·Johns, 2024)는 시각 키포인트와 행동 궤적을 텍스트로 적어, 언어로만 학습한 기성 GPT-4 Turbo가 시연 몇 개로 흉내 내게 했고, 데이터가 적은 영역에서 디퓨전 정책과 대등했다([arXiv:2403.19578](https://arxiv.org/abs/2403.19578)). ICRT(Fu 외, 2024)는 감각운동 궤적으로 인과 트랜스포머를 학습하고, Franka에서 처음 보는 과제의 원격조작 궤적으로 프롬프트했다([arXiv:2408.15980](https://arxiv.org/abs/2408.15980)). **GEN-1.5**(Generalist AI, 2026년 8월)는 이것을 *physical prompting*이라 부른다. 손에 드는 그리퍼나 로봇 자신으로 기록한 $3$–$12$초짜리 감각운동 시연을, $30$초의 기억을 지니고 $100$ Hz로 행동을 내는 멀티모달 모델의 문맥에 넣는다([Generalist AI](https://generalistai.com/blog/gen-1.5)). 병, 지퍼, 지갑 같은 짧은 손재주 과제 열 개에서 시연 하나는 경사 스텝 없이 $59\pm10\%$ 성공을 냈고, 5분 분량 데이터, 곧 시연 약 쉰 개로 경사 스텝 열 번을 밟자 $83\pm9\%$였다. 회사는 구조에도 학습에도 in-context learning을 위해 만든 것이 없다고 하고, 한계도 스스로 적는다. 짧은 지평의 과제, 수수한 성공률, 미세조정한 기술보다 부서지기 쉬운 기술.
+
+**D4에서 본 프롬프트의 값.** 문맥 속 시연은 토큰으로 치른다. D4의 $20$ Hz에서 12초는 $240$ 스텝이고, 스텝마다 관측 토큰 하나와 행동 토큰 $D=2$개면 첫 행동 전에 $720$개 토큰을 인코딩한다. key–value 캐시가 있으면 한 번만 인코딩하지만, 뒤의 모든 토큰이 여전히 그것들에 주의를 두므로, 프롬프트는 문맥에 남아 있는 동안 스텝마다 attention 비용을 더한다. §6의 순차 예산을 이번에는 추론이 아니라 기억에 쓰는 것이다. GEN-1.5의 $100$ Hz에서 같은 12초는 행동 $1{,}200$ 스텝이다.
+
+**in-context 주장에 물을 것**, §4의 증거 사다리에 더해:
+
+- 그 과제, 또는 그와 가까운 과제가 사전학습에 있었는가 — 학습과 검색 사이의 선.
+- 시행은 몇 번이고, 무엇을 성공으로 쳤는가.
+- 프롬프트는 얼마나 길고, 첫 행동 전에 지연을 얼마나 더하는가.
+- 같은 데이터로 미세조정한 결과. GEN-1.5 자신의 숫자가 선택의 값을 매긴다. 시연 몇 초에 학습 없이 $59\%$, 5분과 짧은 학습으로 $83\%$.
+
+건설 작업반에게 끌리는 점은 분명하다 — 새 고정 작업을 손에 드는 그리퍼로 한 번 보여 주고 기계가 하게 한다 — 그리고 주의할 점도 분명하다. 지금까지의 증거는 짧고 단순한 탁상 규모 과제다.
+
 ### 읽고 나면
 
-VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stride $k$·data/objective·controller·replanning·evidence로 한 줄에 명세할 수 있다. 논문이 $H$는 주고 $k$를 주지 않았다면 그 줄은 불완전하고 지연 주장도 불완전하다. 행동 헤드가 토큰인지 노이즈 제거기인지 CVAE인지도 적고, §6의 비용 가운데 무엇을 치르는지 말한다. 여러 로봇으로 학습한 정책이라면 몸이 어떻게 들어가는지 — 정렬, 채우기, 자기 헤드, 잠재 행동 — 말하고, 첫 행동 전에 디코딩하는 토큰을 추론까지 포함해 센다.
+VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stride $k$·data/objective·controller·replanning·evidence로 한 줄에 명세할 수 있다. 논문이 $H$는 주고 $k$를 주지 않았다면 그 줄은 불완전하고 지연 주장도 불완전하다. 행동 헤드가 토큰인지 노이즈 제거기인지 CVAE인지도 적고, §6의 비용 가운데 무엇을 치르는지 말한다. 여러 로봇으로 학습한 정책이라면 몸이 어떻게 들어가는지 — 정렬, 채우기, 자기 헤드, 잠재 행동 — 말하고, 첫 행동 전에 디코딩하는 토큰을 추론까지 포함해 센다. 프롬프트에서 배운다는 주장이라면 검색과도, 같은 데이터의 미세조정과도 갈라 읽는다.
 
 ### 스스로 점검
 
@@ -742,6 +804,7 @@ VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stri
 5. 축을 하나씩 쓰는 계획이 직선과 같은 이동거리를 쓰려면 D4의 고정 숫자 중 무엇이 바뀌어야 하는가?
 6. 당신의 팔로 모은 시연 5,000개로 미세조정한 교차-embodiment 정책이 $70\%$ 성공하고, 그 5,000개만으로 학습한 전문 모델이 $75\%$ 성공한다. 음의 전이라고 부르기 전에 무엇을 확인하며, OXE의 어느 결과와 닮았는가?
 7. ECoT는 OpenVLA의 성공률을 $28$%p 올렸다. §6의 잣대로 그 대가는 무엇이었고, 20 Hz 팔에 올리기 전에 무엇을 묻겠는가?
+8. 어느 회사가 프롬프트에 넣은 시연 하나로 새 과제에서 $59\%$ 성공을 보고한다. §8의 세 조건 가운데 무엇을 먼저 확인하겠으며, 어떤 비교가 그 숫자를 결정으로 바꾸는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $a_{\max}/\Delta t=0.02/0.05=0.4\,\mathrm{m/s}$. $0.8\,\mathrm{m/s}$의 시연은 표현되지 않는다. 모든 label이 클립에 걸리므로 복제된 정책은 체계적으로 느리고, 클립 *이후*에 계산한 스텝별 손실에는 그 오차가 보이지 않는다. 단위와 한계는 배포가 아니라 label의 일부다.
@@ -751,6 +814,7 @@ VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stri
 > 5. 목표다. 이동거리 벌점은 $\lVert g\rVert_1/\lVert g\rVert_2$이므로 목표가 축 위에 있을 때만 1이다. $g=(-0.06,0)$이면 어느 계획이든 같은 6 cm다. $a_{\max}$나 $\delta$나 주기를 바꿔도 없어지지 않는다. instruction의 축 순서와 목표 방향의 성질이기 때문이다.
 > 6. 먼저 §4의 셈이다. 각각 $100$번이라면 $70\%$와 $75\%$의 구간 $[0.60,\ 0.78]$과 $[0.66,\ 0.82]$가 겹치므로 아직 아무것도 순위가 정해지지 않았다. 그다음 §7의 규약이다. 당신 팔의 행동이 label과 같은 단위, 좌표계, 주기로 모은 데이터에 들어갔는가 — D4와 B의 경우는 정규화된 label이 몸을 두 배 반이나 멀리 움직이는 것을 보인다. 둘 다 문제가 없다면 OXE의 데이터가 많은 영역과 닮았다. 거기서 RT-1-X는 전문 모델에 졌고($27\%$ 대 $40\%$, $73\%$ 대 $92\%$) 55B RT-2-X가 그 차이를 메웠다. 그러니 다음 실험은 용량이다 — 더 큰 모델, 또는 당신 팔만의 헤드 — 이고, 전문 모델 기준선과 나란히 보고한다.
 > 7. 순차 디코딩이다. 스텝당 토큰 $7$개가 $350$개가 되었으므로 D4의 chunk당 $6$번 통과는 $349$번이 된다. 실제로 도달한 제어 주파수와 사슬을 어떻게 스케줄하는지 물어라 — ECoT 자신의 다섯 스텝 계획·하위 과제 유지는 약 4분의 1 빨랐고 부분집합에서 $63\%$ 대비 $72\%$였다 — 그리고 이득을 당신 과제에 필요한 종류의 일반화, 곧 새 물체·장면·시점·지시에서 쟀는지. 다섯 스텝 동안 유지하는 계획은 계획의 chunk이므로 §3의 나이 계산이 그대로 적용된다. 20 Hz에서 다섯째 스텝에 작용하는 계획은 장면보다 적어도 $0.20\,\mathrm{s}$ 늙었다.
+> 8. 셋째 조건이 먼저다. 그 과제, 또는 그와 가까운 과제가 사전학습에 있었는가. 이미 배운 과제를 흉내 내는 것은 검색이고, 강한 모델은 어떤 단서로도 그것을 해낸다. 그다음은 같은 데이터에서의 비교다. GEN-1.5 자신의 미세조정은 5분 분량 데이터와 경사 스텝 열 번으로 $83\%$에 닿았으므로, 결정은 $24$%p와 덜 부서지는 기술이 과제마다 짧은 학습 한 번의 값어치가 있느냐다. 프롬프트가 더하는 지연과 $59\%$ 뒤의 시행 수도 함께 본다.
 
 ### 과제 · Problem set
 
@@ -779,3 +843,7 @@ Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D4**, 이 페이지
 - Open X-Embodiment Collaboration. "Open X-Embodiment: Robotic Learning Datasets and RT-X Models." *ICRA*, 2024, pp. 6892–6903 — 거친 7차원 정렬과 Table I의 대규모 데이터 비교.
 - Zawalski, M., Chen, W., Pertsch, K., Mees, O., Finn, C. & Levine, S. "Robotic Control via Embodied Chain-of-Thought Reasoning." *CoRL*, 2024 — 추론 단계, $28$%p 이득, 스텝당 토큰 $7$ 대 $350$, 다섯 스텝 유지(Table 2).
 - Liang, W., Yu, L., Luo, L., Iyer, S. 외. "Mixture-of-Transformers: A Sparse and Scalable Architecture for Multi-Modal Foundation Models." arXiv:2411.04996, 2024 — 전역 self-attention 아래 모달리티별 가중치, 7B 텍스트·이미지 설정에서 FLOPs의 $55.8\%$.
+- Di Palo, N. & Johns, E. "Keypoint Action Tokens Enable In-Context Imitation Learning in Robotics." arXiv:2403.19578, 2024; Fu, L. 외. "In-Context Imitation Learning via Next-Token Prediction." arXiv:2408.15980, 2024 — physical prompting 이전의 두 연구 걸음.
+- Generalist AI. "GEN-1.5: Embodied Foundation Models are One-Shot Learners"(2026-08-19)와 "GEN-0"(2025-11-04), 회사 글 — physical prompting, $59$와 $83\%$, 27만 시간.
+- Dyna Robotics. "Dyna-2: A 1-Million-Hour Scaling Law for World-Action Models"(2026년 8월), 회사 보고서 — 거듭제곱 법칙, 미세조정 예산, $87$ 대 $46\%$.
+- Gemini Robotics Team. "Gemini Robotics 1.5: Pushing the Frontier of Generalist Robots with Advanced Embodied Reasoning, Thinking, and Motion Transfer." arXiv:2510.03342, 2025 — Motion Transfer와 행동 전의 생각.

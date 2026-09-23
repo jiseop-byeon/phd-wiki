@@ -100,6 +100,7 @@ Chronological — the CNN and RNN branches start at ImageNet 2012 and merge at t
 - [x] ◐ [[notes/4-vla/openvla|OpenVLA]] (Kim et al., CoRL 2024)
 - [x] ★ [[notes/4-vla/pi0|π0]] — *A Vision-Language-Action Flow Model* (Physical Intelligence, RSS 2025)
 - [x] ◐ [[notes/4-vla/gr00t-n1|GR00T N1]] — NVIDIA humanoid foundation model (2025)
+- [x] ◐ [[notes/4-vla/gemini-robotics|Gemini Robotics]] — 1.0 → 1.5 → 2, a VLA and an embodied reasoner on Gemini (Google DeepMind, 2025–2026)
 - [x] ◐ [[notes/4-vla/robomimic|robomimic]] — Mandlekar et al., CoRL 2021 — 시연 데이터에서 무엇이 중요한가
 - [x] ○ [[notes/4-vla/dagger|DAgger]] — Ross, Gordon & Bagnell, AISTATS 2011 — 복합 오차의 원리적 해법
 
