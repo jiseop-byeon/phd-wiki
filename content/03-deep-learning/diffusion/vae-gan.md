@@ -16,7 +16,7 @@ mastery-when: "Raise when a VAE latent space, an adversarial loss, or a likeliho
 *Stands on the Gaussian algebra of [[02-foundations/probability|3. Probability §3]], the KL divergence of [[02-foundations/information-theory|5. Information Theory §3]], the ELBO of [[02-foundations/information-theory|5. Information Theory §5]] and the reparameterization stated in [[02-foundations/calculus-backprop|2. Calculus & Backprop §5]]. Second use of object **D6**, whose home is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]: this page is that module's prerequisite lecture on the two generative models diffusion displaced, and it widens D6's single datum into a distribution.*
 
 > [!note] First pass · 처음이라면
-> Read the running object and the Worked case, then §1, §2, §5 and §6, and do problems 1–2. Open §3 and §4 when a VAE trains noisily or ignores its latent, §7 when a GAN paper says "mode collapse" or "Wasserstein", and §9 before comparing any generative model with diffusion. §8 runs all of it.
+> Read the running object and the Worked case, then §1, §2, §5 and §6, and do problems 1–2. Open §3 and §4 when a VAE trains noisily or ignores its latent, §7 when a GAN paper says "mode collapse" or "Wasserstein", §9 before comparing any generative model with diffusion, and §10 when a paper turns images, video or actions into tokens. §8 runs §2–§7 in code.
 
 ### Running object · 이 페이지의 대상
 
@@ -45,7 +45,7 @@ The prior is fixed. The decoder has parameters $\theta=(w,\mu,\sigma_x)$ — slo
 
 The frozen decoder is one point on a ridge of equally good optima. It is frozen rather than derived because the likelihood cannot choose among them — that is §4's result — and §8 shows which one SGD picks instead.
 
-*Scope: this page teaches the two generative models that came before diffusion, on one 1-D distribution — the latent-variable model and its ELBO, the reparameterization gradient, the linear VAE solved exactly and its posterior collapse; the GAN game, its optimal discriminator and the Jensen–Shannon divergence, why the original generator loss stops learning, mode collapse, and the Wasserstein distance. It does not teach the KL divergence or Jensen's inequality themselves, which are [[02-foundations/information-theory|5. Information Theory §3]]; nor deep encoders, decoders and convolutional GANs, which are architectures of [[03-deep-learning/computer-vision/index|2. Computer Vision]]; nor discrete-latent autoencoders and diffusion inside a VAE's latent space, which are the [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]] note; nor sample-quality metrics such as FID, which are [[02-foundations/ml-practice|9. ML Practice §3]]; nor diffusion itself, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]].*
+*Scope: this page teaches the two generative models that came before diffusion, on one 1-D distribution — the latent-variable model and its ELBO, the reparameterization gradient, the linear VAE solved exactly and its posterior collapse; the GAN game, its optimal discriminator and the Jensen–Shannon divergence, why the original generator loss stops learning, mode collapse, and the Wasserstein distance; and, briefly, the discrete latents of the VQ-VAE. It does not teach the KL divergence or Jensen's inequality themselves, which are [[02-foundations/information-theory|5. Information Theory §3]]; nor deep encoders, decoders and convolutional GANs, which are architectures of [[03-deep-learning/computer-vision/index|2. Computer Vision]]; nor diffusion inside a VAE's latent space, which is the [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]] note, while discrete-latent autoencoders get only the short §10; nor sample-quality metrics such as FID, which are [[02-foundations/ml-practice|9. ML Practice §3]]; nor diffusion itself, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]].*
 
 ### The picture · 그림으로 먼저 보기
 
@@ -511,6 +511,35 @@ Each column bought its strength with another column's weakness. The diffusion co
 
 Read the diffusion column against the VAE column, because that is where it came from. A diffusion model is a latent-variable model whose "encoder" — the forward process — is fixed in advance rather than learned. With nothing learned on the encoder side there is no inference network to lag behind the decoder, and so nothing like §4's collapse; and since every KL in its bound is between Gaussians of known variance, the bound reduces to the plain regression of D6's §1. What it pays is the sampling-cost row: its encoder jumps to any level in one step, while its decoder must walk back one call per level, and that walk is the step count D6's §5 prices against a control period.
 
+### 10. Discrete latents: the VQ-VAE, briefly
+
+Every latent on this page so far is a real number. The **VQ-VAE** (vector-quantized VAE; van den Oord, Vinyals and Kavukcuoglu 2017) makes it one of $K$ learned vectors instead, so that an image, a video clip or a stretch of motion becomes a short list of integers — tokens — that a transformer can predict with a softmax, exactly as it predicts words. That is why this model, rather than the VAE of §1–§4, sits under the tokenizers this wiki keeps meeting: the video tokenizer and the eight latent actions of [[01-canonical-papers/notes/5-world-models/genie|Genie]], and the VQGAN autoencoder option behind [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]].
+
+**Three pieces.** An encoder output $z_e(x)$, a codebook of $K$ vectors $e_1,\dots,e_K$, and a lookup that replaces $z_e$ by its nearest code,
+
+$$k=\arg\min_j\ \lVert z_e(x)-e_j\rVert,\qquad z_q(x)=e_k,$$
+
+which the decoder reads in place of $z_e$. The posterior is now deterministic — all its mass on code $k$ — and against a uniform prior over the $K$ codes the KL term of §2 equals $\ln K$ for every $x$, a constant that drops out of training. The trade the Worked case measured between reconstruction and KL is gone: the latent's capacity is fixed by $K$, and no term of the loss can push it to zero, which is how the model sidesteps §4's posterior collapse.
+
+**The gradient, and two extra losses.** The lookup has no useful derivative: moving $z_e$ a little leaves $k$, and so $z_q$, unchanged. VQ-VAE copies the decoder's gradient from $z_q$ straight onto $z_e$ — the straight-through estimator of [[02-foundations/calculus-backprop|2. Calculus & Backprop §6]], written with a stop-gradient as $z_e+\mathrm{sg}[z_q-z_e]$, whose forward value is $z_q$ and whose backward slope is one. The codebook receives nothing along that path, so the loss adds two terms, each with one side stopped:
+
+$$L=-\ln p(x\mid z_q)+\big\lVert \mathrm{sg}[z_e]-e_k\big\rVert^2+\beta\,\big\lVert z_e-\mathrm{sg}[e_k]\big\rVert^2$$
+
+The middle term, the **codebook loss**, moves the chosen code toward the encoder's output. The last, the **commitment loss**, pulls the encoder toward its code so that its outputs do not drift off while the codes chase them. The paper uses $\beta=0.25$ and saw no change in results for any $\beta$ from $0.1$ to $2$. The copied slope is the decoder's slope at $z_q$ used as if it were the slope at $z_e$, a fair stand-in only while $z_e$ stays near its code — one more thing the commitment term keeps true.
+
+**By hand, on this page's data.** A one-dimensional toy: encoder $z_e=x-2$, codebook $(e_1,e_2)=(-0.4,\ 0.4)$, decoder $\hat x=z_q+2$ with a squared-error reconstruction, $\beta=0.25$, and the query $x=2.5$.
+
+- **Lookup.** $z_e=0.5$ is $0.9$ from $e_1$ and $0.1$ from $e_2$, so $k=2$, $z_q=0.4$ and $\hat x=2.4$.
+- **Losses.** Reconstruction $(2.5-2.4)^2=0.01$, codebook $(0.5-0.4)^2=0.01$, commitment $0.25\times0.01=0.0025$.
+- **Gradients.** The reconstruction's slope at $z_q$, $-2(2.5-2.4)=-0.2$, is copied to $z_e$ and asks the encoder to move up. The commitment term adds $2\beta(0.5-0.4)=+0.05$, pulling it back toward the code, so the encoder receives $-0.15$ in all. The code $e_2$ receives $-2(0.5-0.4)=-0.2$ from the codebook loss and moves up toward $0.5$.
+- **Where the codes settle.** Averaged over the data, the codebook loss moves each code to the mean of the outputs assigned to it — k-means, one datum at a time. For $z_e\sim\mathcal N(0,0.5^2)$ split at zero, those means are $\pm0.5\sqrt{2/\pi}=\pm0.3989$, so the toy's $\pm0.4$ barely moves on average, and its mean squared error is $0.25(1-2/\pi)=0.0908$.
+
+Read that last number against the Worked case. The continuous VAE at its frozen optimum reconstructs, with $z$ drawn from its encoder, to a mean squared error of $0.09$ while writing $0.5108$ nats into $z$ — exactly the least any code can spend on a Gaussian for that error, $\tfrac12\ln(0.25/0.09)$. The two-code VQ reaches $0.0908$ at the $\ln2=0.693$ nats a uniform prior charges, $0.187$ nats above that least, and the excess grows with the codebook: $0.32$ nats at four codes, $0.40$ at eight. What a discrete code buys is therefore not compression but a vocabulary — a prior over integers, which a transformer learns with the same cross-entropy it uses for words. VQ-VAE's own prior was an autoregressive PixelCNN over the grid of codes, fitted after the autoencoder; for $128\times128$ ImageNet images that grid was $32\times32$ codes from $K=512$, about $42.6$ times fewer bits than the pixels.
+
+**One failure to recognize.** A code that no encoder output selects receives no gradient from either loss and never moves. Put a third code at $e_3=4$ in the toy: it wins only when $z_e>2.2$, $4.4$ standard deviations out, about five data in a million, so in practice it is dead. Dead codes shrink the working vocabulary below $K$ without showing in the reconstruction error, so read a tokenizer's codebook usage — how many of its $K$ codes the data actually selects — next to that error. Finite scalar quantization (Mentzer et al. 2023) removes the problem by fixing the codebook to a grid: each of a few latent coordinates is rounded to one of a handful of levels, with no codebook or commitment loss to train. The discrete tokenizers of [[01-canonical-papers/notes/5-world-models/cosmos|Cosmos]] use it, with levels $(8,8,8,5,5,5)$ on six coordinates, a vocabulary of $8^3\cdot5^3=64{,}000$.
+
+**Where it meets robots.** The $256$-bin action tokens of [[03-deep-learning/vla/index|4. VLA §6]] are a quantizer too, and a fixed one: each action dimension is cut into equal bins set by hand, a scalar codebook with nothing learned. A VQ-VAE learns where its codes go, and one code can stand for a whole vector — a patch of an image or, in Genie, the entire change between two video frames. Genie forces every such change through a codebook of eight, and the eight codes come out as a controllable action vocabulary learned from gameplay video without a single action label.
+
 ### After reading
 
 - [ ] Say why $\ln p(x)$ of a latent-variable model is intractable in general, in three steps, and what sampling from the posterior would buy.
@@ -520,6 +549,7 @@ Read the diffusion column against the VAE column, because that is where it came 
 - [ ] Solve the linear VAE as probabilistic PCA, find its ridge, and name the two causes of posterior collapse and the fix for each.
 - [ ] Derive $D^*$ and $V(D^*,G)=-\ln4+2\,\mathrm{JS}$, say why the saturating generator gradient vanishes, and what the non-saturating loss minimizes instead.
 - [ ] Define mode collapse and $W_1$, and say what each of the VAE, the GAN and diffusion traded for its strength.
+- [ ] Say what a VQ-VAE's lookup, copied gradient, codebook loss and commitment loss each do, why its KL term is the constant $\ln K$, and what a discrete code buys that a continuous one does not.
 
 ### Self-check
 
@@ -529,6 +559,7 @@ Read the diffusion column against the VAE column, because that is where it came 
 4. A GAN's discriminator reaches 100% accuracy early in training and the generator stops improving. Which generator loss was in use, and which columns of §8's table explain it?
 5. In §7 the generator's best reply to a fixed discriminator improved its own loss from 1.4286 to 0.4055 and worsened the game's JS from 0.0927 to $\ln2$. How can both be true, and what does it mean for reading a GAN's generator loss?
 6. Diffusion displaced GANs in image generation. From §9's table, name the property diffusion gave up, and the number D6's module attaches to it for a 20 Hz robot policy.
+7. A tokenizer paper reports that its $K=1024$ codebook reconstructs better than its $K=256$ one and concludes that the larger vocabulary is better for the transformer trained on its codes. What would you check first, from §10, and why is reconstruction alone the wrong scoreboard?
 
 > [!tip]- Answers
 > 1. The ridge of §4. The frozen optimum and the collapsed decoder both score $-0.725791$ on average, and one writes $0.5108$ nats into $z$ while the other writes none (§8's two runs show the same pair, $0.4823$ against $0.0008$). An ELBO says how well the model explains the data, not whether the latent does the explaining. Support needs the rate — the data-averaged KL term — or a downstream use of $z$, reported next to the ELBO.
@@ -537,6 +568,7 @@ Read the diffusion column against the VAE column, because that is where it came 
 > 4. The saturating loss, $\ln(1-D(G(z)))$. Perfect accuracy means $\mathbb E_{p_g}[D^*]\approx0$, and $g_{\text{sat}}=4(m-2)\,\mathbb E_{p_g}[D^*]$ goes with it — the $\mathbb E_{p_g}[D^*]$ and $g_{\text{sat}}$ columns, from $0.2744$ at $m=4$ to $3.7\times10^{-8}$ at $m=8$, while the JS column sits within $3\times10^{-9}$ of $\ln2$. The non-saturating loss would have had $g_{\text{ns}}=24$ at $m=8$, at the price of very noisy updates when the discriminator is noisy and near-perfect.
 > 5. The generator is scored against the current discriminator, the game against the best one. Against a fixed $D$ the non-saturating loss is smallest when every sample sits where $D$ is largest, $x=2$ here, so the point mass is the best reply; the game evaluates the generator against the best $D$ for it, and against a point mass that $D$ separates perfectly, $\mathrm{JS}=\ln2$. A falling generator loss therefore says the generator beat the current discriminator, not that $p_g$ moved toward $p_{\text{data}}$.
 > 6. Sampling cost. A GAN draws a sample in one pass; a diffusion sampler spends one network call per level it visits. On D6's numbers — $5\,\mathrm{ms}$ a call, a $50\,\mathrm{ms}$ period at 20 Hz — ten calls fill the whole period, and the affordable rows are four or five calls, at errors $0.150$ and $0.129$ ([[03-deep-learning/diffusion/index|6. Diffusion & Flow §5]]). That gap is why one-step generators distilled from diffusion models matter for robot policies.
+> 7. Codebook usage first. Dead codes, like §10's $e_3$, shrink the working vocabulary below $K$ without showing in the reconstruction error, and a larger codebook has more room for them, so $1024$ nominal codes may be far fewer in use. Then the rate: a uniform prior charges $\ln K$, $6.93$ nats per code against $5.55$, and on this page's Gaussian a discrete code already pays more than a continuous one for the same error — $0.187$ nats more at two codes, $0.40$ at eight. Reconstruction is bought with rate. The reason to have discrete codes at all is the prior a transformer fits over them, so the scoreboard is how well that prior, the downstream generator or policy, does, with usage and reconstruction reported beside it.
 
 ### Problem set · 과제
 
@@ -585,13 +617,16 @@ for warm in (500, 1000, 2000):
 - He, J., Spokoyny, D., Neubig, G. & Berg-Kirkpatrick, T. "Lagging Inference Networks and Posterior Collapse in Variational Autoencoders." *ICLR*, 2019.
 - Bowman, S. R., Vilnis, L., Vinyals, O., Dai, A. M., Jozefowicz, R. & Bengio, S. "Generating Sentences from a Continuous Space." *CoNLL*, 2016 — KL cost annealing.
 - Dhariwal, P. & Nichol, A. "Diffusion Models Beat GANs on Image Synthesis." *NeurIPS*, 2021.
+- van den Oord, A., Vinyals, O. & Kavukcuoglu, K. "Neural Discrete Representation Learning." *NeurIPS*, 2017 — the VQ-VAE: nearest-code lookup, the copied gradient, the codebook and commitment losses with $\beta=0.25$, the constant KL $\ln K$, and a PixelCNN prior fitted over the codes.
+- Mentzer, F., Minnen, D., Agustsson, E. & Tschannen, M. "Finite Scalar Quantization: VQ-VAE Made Simple." *ICLR*, 2024 — a fixed grid of levels in place of a learned codebook, with no commitment loss and no codebook collapse.
+- Max, J. "Quantizing for Minimum Distortion." *IRE Transactions on Information Theory* 6(1):7–12, 1960 — the optimal quantizers of a Gaussian, whose mean squared errors $0.3634\sigma^2$, $0.1175\sigma^2$ and $0.0345\sigma^2$ at two, four and eight levels §10 uses.
 
 ## 한국어
 
 *[[02-foundations/probability|3. 확률 §3]]의 가우시안 대수, [[02-foundations/information-theory|5. 정보이론 §3]]의 KL 발산, [[02-foundations/information-theory|5. 정보이론 §5]]의 ELBO, [[02-foundations/calculus-backprop|2. 미적분과 역전파 §5]]에서 진술한 reparameterization 위에 선다. 대상 **D6**를 두 번째로 쓴다. 집은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]이고, 이 페이지는 그 모듈의 선수 강의로서 diffusion이 밀어낸 두 생성 모델을 다루며, D6의 자료 하나를 분포로 넓힌다.*
 
 > [!note] 처음이라면 · First pass
-> 대상과 계산 절을 읽고 §1, §2, §5, §6을 본 뒤 문제 1–2를 푼다. VAE가 시끄럽게 학습되거나 잠재변수를 무시하면 §3과 §4를, GAN 논문이 "mode collapse"나 "Wasserstein"을 말하면 §7을, 어떤 생성 모델이든 diffusion과 견주기 전에는 §9를 연다. §8이 그 전부를 돌린다.
+> 대상과 계산 절을 읽고 §1, §2, §5, §6을 본 뒤 문제 1–2를 푼다. VAE가 시끄럽게 학습되거나 잠재변수를 무시하면 §3과 §4를, GAN 논문이 "mode collapse"나 "Wasserstein"을 말하면 §7을, 어떤 생성 모델이든 diffusion과 견주기 전에는 §9를, 논문이 이미지·비디오·행동을 토큰으로 바꾸면 §10을 연다. §8은 §2–§7을 코드로 돌린다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -620,7 +655,7 @@ $$z\sim\mathcal N(0,1),\qquad p_\theta(x\mid z)=\mathcal N\big(x;\ wz+\mu,\ \sig
 
 고정된 디코더는 똑같이 좋은 최적점들이 이루는 능선 위의 한 점이다. 유도하지 않고 고정한 것은 우도가 그 가운데 하나를 고르지 못하기 때문이고 — 그것이 §4의 결과다 — SGD가 대신 무엇을 고르는지는 §8이 보인다.
 
-*범위: 이 페이지는 diffusion 이전의 두 생성 모델을 1차원 분포 하나 위에서 가르친다. 잠재변수 모델과 그 ELBO, reparameterization 그래디언트, 정확히 풀리는 선형 VAE와 그 사후분포 붕괴, 그리고 GAN 게임, 최적 판별기와 Jensen–Shannon 발산, 원래의 생성기 손실이 왜 학습을 멈추는지, 모드 붕괴, Wasserstein 거리다. KL 발산과 옌센 부등식 자체는 가르치지 않는다. 그것은 [[02-foundations/information-theory|5. 정보이론 §3]]이다. 깊은 인코더·디코더와 합성곱 GAN도 아니다. 그것은 [[03-deep-learning/computer-vision/index|2. Computer Vision]]의 architecture다. 이산 잠재변수 오토인코더와 VAE의 잠재 공간 안에서 돌리는 diffusion도 아니다. 그것은 [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]] 노트다. FID 같은 표본 품질 지표도 아니다. 그것은 [[02-foundations/ml-practice|9. ML Practice §3]]이다. diffusion 자체도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다.*
+*범위: 이 페이지는 diffusion 이전의 두 생성 모델을 1차원 분포 하나 위에서 가르친다. 잠재변수 모델과 그 ELBO, reparameterization 그래디언트, 정확히 풀리는 선형 VAE와 그 사후분포 붕괴, 그리고 GAN 게임, 최적 판별기와 Jensen–Shannon 발산, 원래의 생성기 손실이 왜 학습을 멈추는지, 모드 붕괴, Wasserstein 거리, 그리고 짧게 VQ-VAE의 이산 잠재변수다. KL 발산과 옌센 부등식 자체는 가르치지 않는다. 그것은 [[02-foundations/information-theory|5. 정보이론 §3]]이다. 깊은 인코더·디코더와 합성곱 GAN도 아니다. 그것은 [[03-deep-learning/computer-vision/index|2. Computer Vision]]의 architecture다. VAE의 잠재 공간 안에서 돌리는 diffusion도 아니다. 그것은 [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]] 노트이고, 이산 잠재변수 오토인코더는 짧은 §10에서만 다룬다. FID 같은 표본 품질 지표도 아니다. 그것은 [[02-foundations/ml-practice|9. ML Practice §3]]이다. diffusion 자체도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다.*
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -970,6 +1005,35 @@ $$g_{\text{sat}}=\frac{\partial}{\partial m}\mathbb E_z\Big[\ln\big(1-D^*(G_m(z)
 
 diffusion 열은 VAE 열과 견주어 읽어야 한다. 거기서 왔기 때문이다. diffusion 모델은 "인코더" — forward process — 가 학습되지 않고 미리 고정된 잠재변수 모델이다. 인코더 쪽에서 학습되는 것이 없으니 디코더보다 뒤처질 추론망도 없고, 그래서 §4의 붕괴 같은 것도 없다. 그리고 하한 안의 모든 KL이 분산이 알려진 가우시안 사이의 것이므로, 하한이 D6 §1의 평범한 회귀로 줄어든다. 치르는 것은 표본 비용 행이다. 인코더는 어떤 레벨로든 한 걸음에 뛰지만 디코더는 레벨마다 한 번씩 걸어 돌아와야 하고, 그 걸음이 D6 §5가 제어 주기와 견주어 값을 매기는 스텝 수다.
 
+### 10. 이산 잠재변수: VQ-VAE, 짧게
+
+이 페이지의 잠재변수는 지금까지 모두 실수였다. **VQ-VAE**(vector-quantized VAE, 벡터 양자화 VAE. van den Oord, Vinyals, Kavukcuoglu 2017)는 그것을 학습된 벡터 $K$개 가운데 하나로 바꾼다. 그러면 이미지 한 장, 비디오 한 토막, 움직임 한 구간이 짧은 정수 목록 — 토큰 — 이 되고, transformer는 단어를 예측하듯 softmax로 그것을 예측할 수 있다. 이 위키가 거듭 만나는 토크나이저 밑에 §1–§4의 VAE가 아니라 이 모델이 있는 이유가 그것이다. [[01-canonical-papers/notes/5-world-models/genie|Genie]]의 비디오 토크나이저와 잠재 행동 여덟 개, 그리고 [[01-canonical-papers/notes/6-diffusion/latent-diffusion|Latent Diffusion]] 뒤의 선택지인 VQGAN 오토인코더.
+
+**세 부분.** 인코더 출력 $z_e(x)$, 벡터 $K$개로 된 코드북 $e_1,\dots,e_K$, 그리고 $z_e$를 가장 가까운 코드로 바꾸는 조회다.
+
+$$k=\arg\min_j\ \lVert z_e(x)-e_j\rVert,\qquad z_q(x)=e_k$$
+
+디코더는 $z_e$ 대신 이것을 읽는다. 이제 사후분포는 결정적이다 — 질량 전부가 코드 $k$에 있다. 그리고 $K$개 코드 위의 균등 사전분포에 대해 §2의 KL 항은 모든 $x$에서 $\ln K$, 학습에서 빠지는 상수가 된다. 계산 절이 잰 재구성과 KL 사이의 교환이 사라진다. 잠재변수의 용량은 $K$가 정하고, 손실의 어떤 항도 그것을 0으로 밀 수 없다. 이 모델이 §4의 사후분포 붕괴를 비켜 가는 방식이 이것이다.
+
+**그래디언트, 그리고 손실 두 개 더.** 조회에는 쓸 만한 도함수가 없다. $z_e$를 조금 움직여도 $k$, 따라서 $z_q$는 그대로다. VQ-VAE는 디코더의 그래디언트를 $z_q$에서 $z_e$로 그대로 복사한다. [[02-foundations/calculus-backprop|2. 미적분과 역전파 §6]]의 straight-through 추정기이고, stop-gradient로 쓰면 $z_e+\mathrm{sg}[z_q-z_e]$다. 순방향 값은 $z_q$, 역방향 기울기는 1이다. 이 길로는 코드북에 아무것도 가지 않으므로, 손실은 한쪽을 멈춘 항 두 개를 더한다.
+
+$$L=-\ln p(x\mid z_q)+\big\lVert \mathrm{sg}[z_e]-e_k\big\rVert^2+\beta\,\big\lVert z_e-\mathrm{sg}[e_k]\big\rVert^2$$
+
+가운데 항인 **코드북 손실**(codebook loss)은 고른 코드를 인코더 출력 쪽으로 옮긴다. 마지막 항인 **commitment 손실**(commitment loss)은 인코더를 자기 코드 쪽으로 당겨, 코드가 쫓아오는 동안 출력이 멀리 떠나지 않게 한다. 논문은 $\beta=0.25$를 쓰고, $0.1$부터 $2$까지 어떤 $\beta$에서도 결과가 달라지지 않았다고 적는다. 복사한 기울기는 $z_q$에서의 디코더 기울기를 $z_e$에서의 기울기인 양 쓰는 것이므로, $z_e$가 자기 코드 가까이 있을 때에만 쓸 만한 대용품이다. commitment 항이 지켜 주는 것이 하나 더 있는 셈이다.
+
+**이 페이지의 자료 위에서 손으로.** 1차원 장난감이다. 인코더 $z_e=x-2$, 코드북 $(e_1,e_2)=(-0.4,\ 0.4)$, 제곱 오차로 재구성하는 디코더 $\hat x=z_q+2$, $\beta=0.25$, 질의점 $x=2.5$.
+
+- **조회.** $z_e=0.5$는 $e_1$에서 $0.9$, $e_2$에서 $0.1$ 떨어져 있으므로 $k=2$, $z_q=0.4$, $\hat x=2.4$다.
+- **손실.** 재구성 $(2.5-2.4)^2=0.01$, 코드북 $(0.5-0.4)^2=0.01$, commitment $0.25\times0.01=0.0025$.
+- **그래디언트.** $z_q$에서의 재구성 기울기 $-2(2.5-2.4)=-0.2$가 $z_e$로 복사되어 인코더에게 위로 가라고 한다. commitment 항이 $2\beta(0.5-0.4)=+0.05$를 더해 코드 쪽으로 되당기므로, 인코더가 받는 것은 모두 $-0.15$다. 코드 $e_2$는 코드북 손실에서 $-2(0.5-0.4)=-0.2$를 받아 $0.5$ 쪽으로 올라간다.
+- **코드가 자리 잡는 곳.** 자료 전체로 평균하면 코드북 손실은 각 코드를 자기에게 배정된 출력들의 평균으로 옮긴다. 자료 하나씩 도는 k-means다. $z_e\sim\mathcal N(0,0.5^2)$를 0에서 나누면 그 평균은 $\pm0.5\sqrt{2/\pi}=\pm0.3989$이므로 장난감의 $\pm0.4$는 평균적으로 거의 움직이지 않고, 그 평균 제곱 오차는 $0.25(1-2/\pi)=0.0908$이다.
+
+마지막 숫자를 계산 절과 견주어 읽어라. 고정된 최적점의 연속 VAE는 인코더에서 $z$를 뽑아 재구성할 때 평균 제곱 오차 $0.09$를 남기면서 $z$에 $0.5108$ nats를 쓴다. 가우시안에서 그 오차를 내는 어떤 부호든 써야 하는 최소, $\tfrac12\ln(0.25/0.09)$와 정확히 같다. 코드 두 개의 VQ는 균등 사전분포가 매기는 $\ln2=0.693$ nats로 $0.0908$에 닿는다. 그 최소보다 $0.187$ nats 많고, 초과분은 코드북과 함께 커진다. 코드 네 개에서 $0.32$ nats, 여덟 개에서 $0.40$. 그러니 이산 부호가 사는 것은 압축이 아니라 어휘다. 정수 위의 사전분포이고, transformer는 단어에 쓰는 것과 같은 cross-entropy로 그것을 배운다. VQ-VAE 자신의 사전분포는 오토인코더를 학습한 뒤 코드 격자 위에 맞춘 자기회귀 PixelCNN이었다. $128\times128$ ImageNet 이미지에서 그 격자는 $K=512$에서 고른 $32\times32$개 코드로, 픽셀보다 비트가 약 $42.6$배 적었다.
+
+**알아볼 실패 하나.** 어떤 인코더 출력도 고르지 않는 코드는 두 손실 어느 쪽에서도 그래디언트를 받지 못해 움직이지 않는다. 장난감에 셋째 코드 $e_3=4$를 넣어 보라. $z_e>2.2$, 표준편차 $4.4$개 바깥에서만, 자료 백만 개에 다섯 개꼴로 이기므로 실제로는 죽은 코드다. 죽은 코드는 재구성 오차에 드러나지 않은 채 쓰이는 어휘를 $K$보다 줄이므로, 토크나이저의 코드북 사용률 — $K$개 가운데 자료가 실제로 고르는 코드 수 — 을 그 오차 옆에서 읽어라. 유한 스칼라 양자화(finite scalar quantization, Mentzer 외 2023)는 코드북을 격자로 고정해 이 문제를 없앤다. 몇 안 되는 잠재 좌표를 각각 몇 개 수준 가운데 하나로 반올림하고, 학습할 코드북 손실도 commitment 손실도 없다. [[01-canonical-papers/notes/5-world-models/cosmos|Cosmos]]의 이산 토크나이저가 이것을 쓰고, 좌표 여섯 개에 수준 $(8,8,8,5,5,5)$, 어휘 $8^3\cdot5^3=64{,}000$개다.
+
+**로봇과 만나는 곳.** [[03-deep-learning/vla/index|4. VLA §6]]의 $256$칸 행동 토큰도 양자화기이고, 고정된 것이다. 행동의 각 차원을 손으로 정한 같은 폭의 칸으로 자른, 아무것도 학습하지 않는 스칼라 코드북이다. VQ-VAE는 코드가 갈 곳을 배우고, 코드 하나가 벡터 전체를 대신할 수 있다. 이미지의 패치 하나, 또는 Genie에서는 비디오 두 프레임 사이의 변화 전체다. Genie는 그런 변화를 모두 코드 여덟 개짜리 코드북으로 통과시키고, 그 여덟 코드는 행동 label 하나 없이 게임 영상에서 배운, 조종할 수 있는 행동 어휘로 나온다.
+
 ### 읽고 나면 · After reading
 
 - [ ] 잠재변수 모델의 $\ln p(x)$를 일반적으로 계산할 수 없는 이유를 세 단계로 말하고, 사후분포에서 뽑으면 무엇을 사는지 말할 수 있다.
@@ -979,6 +1043,7 @@ diffusion 열은 VAE 열과 견주어 읽어야 한다. 거기서 왔기 때문�
 - [ ] 선형 VAE를 확률적 PCA로 풀고, 그 능선을 찾고, 사후분포 붕괴의 두 원인과 각각의 처방을 말할 수 있다.
 - [ ] $D^*$와 $V(D^*,G)=-\ln4+2\,\mathrm{JS}$를 유도하고, 포화 생성기 그래디언트가 사라지는 이유와 non-saturating 손실이 대신 무엇을 최소화하는지 말할 수 있다.
 - [ ] 모드 붕괴와 $W_1$을 정의하고, VAE, GAN, diffusion이 각각 강점을 위해 무엇을 내주었는지 말할 수 있다.
+- [ ] VQ-VAE의 조회, 복사한 그래디언트, 코드북 손실, commitment 손실이 각각 무엇을 하는지, KL 항이 왜 상수 $\ln K$인지, 이산 부호가 연속 부호에 없는 무엇을 사는지 말할 수 있다.
 
 ### 스스로 점검 · Self-check
 
@@ -988,6 +1053,7 @@ diffusion 열은 VAE 열과 견주어 읽어야 한다. 거기서 왔기 때문�
 4. 어떤 GAN의 판별기가 학습 초기에 정확도 100%에 이르고 생성기가 더는 나아지지 않는다. 어느 생성기 손실을 쓰고 있었고, §8 표의 어느 열들이 그것을 설명하는가?
 5. §7에서 고정된 판별기에 대한 생성기의 최선의 응수는 자기 손실을 1.4286에서 0.4055로 개선하고 게임의 JS를 0.0927에서 $\ln2$로 악화시켰다. 둘이 어떻게 동시에 참일 수 있으며, GAN의 생성기 손실을 읽는 일에 무엇을 뜻하는가?
 6. 이미지 생성에서 diffusion이 GAN을 밀어냈다. §9의 표에서 diffusion이 내준 성질을 짚고, 20 Hz 로봇 정책에 대해 D6 모듈이 그것에 붙이는 숫자를 말하라.
+7. 어떤 토크나이저 논문이 $K=1024$ 코드북이 $K=256$보다 재구성을 잘한다고 보고하고, 그 코드 위에서 학습하는 transformer에게 더 큰 어휘가 낫다고 결론짓는다. §10에서 무엇을 먼저 확인하겠으며, 재구성만으로 점수를 매기면 왜 틀리는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. §4의 능선이다. 고정된 최적점과 붕괴한 디코더는 둘 다 평균 $-0.725791$을 얻는데, 하나는 $z$에 $0.5108$ nats를 쓰고 다른 하나는 아무것도 쓰지 않는다(§8의 두 실행이 같은 쌍을 보인다. $0.4823$ 대 $0.0008$). ELBO는 모델이 자료를 얼마나 잘 설명하는지를 말하지, 설명을 잠재변수가 하는지를 말하지 않는다. 받치려면 rate — 자료에 대해 평균한 KL 항 — 나 $z$의 하류 쓰임을 ELBO 옆에 보고해야 한다.
@@ -996,6 +1062,7 @@ diffusion 열은 VAE 열과 견주어 읽어야 한다. 거기서 왔기 때문�
 > 4. 포화 손실 $\ln(1-D(G(z)))$다. 완벽한 정확도는 $\mathbb E_{p_g}[D^*]\approx0$을 뜻하고, $g_{\text{sat}}=4(m-2)\,\mathbb E_{p_g}[D^*]$가 함께 사라진다. $\mathbb E_{p_g}[D^*]$ 열과 $g_{\text{sat}}$ 열이 $m=4$의 $0.2744$에서 $m=8$의 $3.7\times10^{-8}$로 가는 동안 JS 열은 $\ln2$와 $3\times10^{-9}$ 안에 머문다. non-saturating 손실이었다면 $m=8$에서 $g_{\text{ns}}=24$였겠지만, 판별기가 시끄럽고 거의 완벽할 때는 매우 시끄러운 걸음이라는 대가가 있다.
 > 5. 생성기는 지금의 판별기를 상대로, 게임은 최선의 판별기를 상대로 점수를 매긴다. 고정된 $D$를 상대로 non-saturating 손실은 모든 표본이 $D$가 가장 큰 곳, 여기서는 $x=2$에 앉을 때 가장 작으므로 점질량이 최선의 응수다. 게임은 생성기를 그에게 최선인 $D$를 상대로 평가하고, 그 $D$가 완벽히 가르는 점질량을 상대로 $\mathrm{JS}=\ln2$다. 그러므로 내려가는 생성기 손실은 생성기가 지금의 판별기를 이겼다는 말이지 $p_g$가 $p_{\text{data}}$ 쪽으로 움직였다는 말이 아니다.
 > 6. 표본 비용이다. GAN은 한 번에 표본을 뽑고, diffusion sampler는 방문하는 레벨마다 신경망을 한 번 부른다. D6의 숫자로 — 호출당 $5\,\mathrm{ms}$, 20 Hz의 주기 $50\,\mathrm{ms}$ — 열 번이면 주기 전체가 차고, 감당할 수 있는 행은 네 번이나 다섯 번, 오차 $0.150$과 $0.129$다([[03-deep-learning/diffusion/index|6. Diffusion & Flow §5]]). diffusion 모델에서 증류한 한 걸음 생성기가 로봇 정책에서 중요한 이유가 그 차이다.
+> 7. 먼저 코드북 사용률이다. §10의 $e_3$ 같은 죽은 코드는 재구성 오차에 드러나지 않은 채 쓰이는 어휘를 $K$보다 줄이고, 코드북이 클수록 그런 코드가 생길 자리도 많으므로, 명목상 $1024$개가 실제로는 훨씬 적게 쓰일 수 있다. 그다음은 rate다. 균등 사전분포는 $\ln K$, 코드 하나에 $6.93$ nats 대 $5.55$ nats를 매기고, 이 페이지의 가우시안에서 이산 부호는 같은 오차에 이미 연속 부호보다 많이 낸다. 코드 두 개에서 $0.187$ nats, 여덟 개에서 $0.40$ nats 더. 재구성은 rate로 사는 것이다. 애초에 이산 코드를 두는 이유는 transformer가 그 위에 맞추는 사전분포이므로, 점수는 그 사전분포, 곧 하류의 생성기나 정책이 얼마나 잘하는지이고, 사용률과 재구성은 그 옆에 보고한다.
 
 ### 과제 · Problem set
 
@@ -1037,3 +1104,6 @@ Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D6**, 이 페이지
 - He, J., Spokoyny, D., Neubig, G. & Berg-Kirkpatrick, T. "Lagging Inference Networks and Posterior Collapse in Variational Autoencoders." *ICLR*, 2019.
 - Bowman, S. R., Vilnis, L., Vinyals, O., Dai, A. M., Jozefowicz, R. & Bengio, S. "Generating Sentences from a Continuous Space." *CoNLL*, 2016 — KL 비용 annealing.
 - Dhariwal, P. & Nichol, A. "Diffusion Models Beat GANs on Image Synthesis." *NeurIPS*, 2021.
+- van den Oord, A., Vinyals, O. & Kavukcuoglu, K. "Neural Discrete Representation Learning." *NeurIPS*, 2017 — VQ-VAE. 가장 가까운 코드 조회, 복사한 그래디언트, $\beta=0.25$의 코드북·commitment 손실, 상수 KL $\ln K$, 코드 위에 맞춘 PixelCNN 사전분포.
+- Mentzer, F., Minnen, D., Agustsson, E. & Tschannen, M. "Finite Scalar Quantization: VQ-VAE Made Simple." *ICLR*, 2024 — 학습하는 코드북 대신 고정된 수준 격자. commitment 손실도 코드북 붕괴도 없다.
+- Max, J. "Quantizing for Minimum Distortion." *IRE Transactions on Information Theory* 6(1):7–12, 1960 — 가우시안의 최적 양자화기. §10이 쓰는 수준 두·네·여덟 개의 평균 제곱 오차 $0.3634\sigma^2$, $0.1175\sigma^2$, $0.0345\sigma^2$.

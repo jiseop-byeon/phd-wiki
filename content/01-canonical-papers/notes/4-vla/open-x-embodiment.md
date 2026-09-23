@@ -53,7 +53,7 @@ incompatible formats on incompatible robots. NLP and vision scaled on shared cor
 
 ### Results
 
-- **In the small-data regime, RT-1-X beats each lab's own specialist model on that lab's robot** — a ~50% *relative* gain in mean success. Positive transfer across bodies is real but bounded: the paper states that in the large-dataset setting RT-1-X does **not** outperform an RT-1 baseline trained on the embodiment-specific dataset alone.
+- **In the small-data regime, RT-1-X beats each lab's own original method on 4 of the 5 robots tested** — and its mean success is 50% higher than that of either the original method or RT-1 trained on the robot's own data. Positive transfer across bodies is real but bounded: the paper states that in the large-dataset setting RT-1-X does **not** outperform an RT-1 baseline trained on the embodiment-specific dataset alone.
 - RT-2-X roughly triples RT-2's performance on emergent-skill evaluations involving
   objects/skills from other datasets.
 - Established the shared-corpus norm: nearly every subsequent generalist policy trains on OXE.
@@ -111,7 +111,7 @@ Common Crawl)로 스케일했는데 로보틱스에는 그런 것이 없었다. 
 
 ### 결과
 
-- **소규모 데이터 영역에서** RT-1-X가 각 랩의 전문 모델을 그 랩의 로봇에서 이긴다 — 평균 성공률 기준 약 50%의 *상대적* 향상. 몸을 건너는 양의 전이는 실재하되 한정적이다: 논문은 대규모 데이터 설정에서 RT-1-X가 해당 신체 전용 데이터만으로 학습한 RT-1 베이스라인을 능가하지 **못한다**고 밝힌다.
+- **소규모 데이터 영역에서** RT-1-X가 시험한 로봇 다섯 가운데 넷에서 각 랩의 원래 방법을 이긴다 — 평균 성공률은 원래 방법이나 그 로봇 데이터로만 학습한 RT-1보다 50% 높다. 몸을 건너는 양의 전이는 실재하되 한정적이다: 논문은 대규모 데이터 설정에서 RT-1-X가 해당 신체 전용 데이터만으로 학습한 RT-1 베이스라인을 능가하지 **못한다**고 밝힌다.
 - RT-2-X는 다른 데이터셋의 물체/기술이 관여된 창발 능력 평가에서 RT-2 성능을 약 3배로.
 - 공유 코퍼스 규범을 확립: 이후 거의 모든 범용 정책이 OXE로 학습된다.
 

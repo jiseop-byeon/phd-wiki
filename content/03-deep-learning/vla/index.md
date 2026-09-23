@@ -16,7 +16,7 @@ mastery-when: "Raise when policy architecture, action representation, data mixtu
 *Stands on the VLM encoder of [[03-deep-learning/vlm/index|3. VLM]] and the rate budget of [[04-robotics/robot-systems-deployment|10. Robot Systems]]. First use of object **D4**.*
 
 > [!note] First pass
-> Read the running object, the worked case, §§1–3, and problems 1–2. Return to §4 when a paper reports a success rate, and to §5 when one changes its chunk length.
+> Read the running object, the worked case, §§1–3, and problems 1–2. Return to §4 when a paper reports a success rate, and to §5 when one changes its chunk length. Go to §6 when a paper names its action head or reasons in words before acting, and to §7 when it claims transfer across robots.
 
 ### Running object · 이 페이지의 대상
 
@@ -38,7 +38,7 @@ $$\pi_\theta(a_{t:t+H-1}\mid o_{\le t},l),\qquad a_i=(\Delta x_i,\Delta y_i).$$
 
 The instruction is not decoration here: "left, then down" *is* the axis order the policy plans in, which is why the frozen chunk moves in $x$ twice and then in $y$ once.
 
-*Scope: this page teaches the interface between a language-conditioned policy and a robot — action representation, the behaviour-cloning objective, how long a chunk may be committed, and what a reported success rate does and does not prove. It does not teach the vision–language encoder that produces $o_t$, which is [[03-deep-learning/vlm/index|3. VLM]]; nor how a pretrained backbone is fine-tuned to a new robot, in full or with LoRA, which is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]]; nor the generative head that turns multimodal demonstrations into an action distribution, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]; nor the controller that turns a delta into a torque, which is [[04-robotics/force-compliance-control|11. Force & Compliance Control]]; nor where demonstrations come from, which is [[04-robotics/teleoperation-demonstration|12. Teleoperation]].*
+*Scope: this page teaches the interface between a language-conditioned policy and a robot — action representation, the behaviour-cloning objective, how long a chunk may be committed, which head produces it and at what cost, what a reported success rate does and does not prove, and what changes when one policy drives many bodies. It does not teach the vision–language encoder that produces $o_t$, which is [[03-deep-learning/vlm/index|3. VLM]]; nor how a pretrained backbone is fine-tuned to a new robot, in full or with LoRA, which is [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §8]]; nor the generative head that turns multimodal demonstrations into an action distribution, which is [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]; nor the controller that turns a delta into a torque, which is [[04-robotics/force-compliance-control|11. Force & Compliance Control]]; nor where demonstrations come from, which is [[04-robotics/teleoperation-demonstration|12. Teleoperation]].*
 
 ### The picture · 그림으로 먼저 보기
 
@@ -185,7 +185,7 @@ With $n_j=20$ and $k=3$: $\lceil 22/3\rceil=8$, so the boundary is step $24$ and
 
 Joint position, joint velocity, torque, end-effector pose, delta pose, gripper state, and discrete action tokens have different feasibility and control assumptions. "The model outputs actions" is incomplete without units, frame, rate, horizon, and the downstream controller.
 
-If D4 predicts $(0.02,0)$ three times in metres but the low-level interface interprets centimetres, the intended 6 cm motion becomes 0.06 cm. Representation errors are physical errors.
+If D4 predicts $(0.02,0)$ three times in metres but the low-level interface interprets centimetres, the intended 6 cm motion becomes 0.06 cm. Representation errors are physical errors. Pool data from several robots and the same kind of error becomes systematic, which §7 measures.
 
 ### 2. Behavior cloning and multimodality
 
@@ -228,6 +228,8 @@ The worked case turned that sentence into two formulas, $\text{age}_{\max}=(m+k-
 ### 4. What VLA evidence proves
 
 Separate semantic generalization (choosing the relevant object), motor competence (executing contact-rich motion), embodiment transfer, and recovery. Success rate must define episode, reset, intervention, tolerance, and environment variation. An impressive video is a sample, not an estimator.
+
+**How much a success rate says.** A success rate is a count, and a count carries an interval — the Wilson interval of [[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]. At 95%, $8$ successes in $10$ trials give $[0.49,\ 0.94]$ and $6$ in $10$ give $[0.31,\ 0.83]$, so a ten-trial table showing $80\%$ against $60\%$ has not ranked the two policies. At $100$ trials each the intervals, $[0.71,\ 0.87]$ and $[0.50,\ 0.69]$, no longer overlap; they first separate at about $85$ trials per policy. A clean run proves less than it seems: $n$ successes in a row exclude, at 95%, only failure rates above $1-0.05^{1/n}\approx3/n$, so thirty straight successes still allow a failure rate of $9.5\%$. Ask for $n$ beside every percentage, and for the intervals whenever two percentages are compared. A claim of embodiment transfer raises further questions of its own, collected in §7.
 
 Read [[01-canonical-papers/notes/4-vla/rt-1|RT-1]], [[01-canonical-papers/notes/4-vla/rt-2|RT-2]], [[01-canonical-papers/notes/4-vla/act|ACT]], and [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] in that order before newer generalist policies.
 
@@ -322,6 +324,8 @@ The design conclusion for this robot: $k$ between 3 and 5 — a commitment of 0.
 
 **Denoisers.** Sample the whole chunk instead: [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]] denoises a $16$-action chunk conditioned on the observation, at about $10$ DDIM-style steps at inference, and executes the first few before re-planning — the receding horizon of [[04-robotics/mpc|7. MPC]]. [[01-canonical-papers/notes/4-vla/pi0|π0]] replaces diffusion with flow matching in a separate action expert on a VLM backbone and reports $50\,\mathrm{Hz}$ continuous chunks. Its cost is $N$ passes *whatever the chunk length*, which gives the crossover: a token head is cheaper while $D\times H<N$, a denoiser once the chunk is longer. On D4 with $D=2$ and $N=10$, the crossover sits at $H=5$ — below it, tokens; above it, denoising.
 
+**Why π0's expert is a separate set of weights.** π0 is one transformer with two sets of weights: image and text tokens pass through the $3$B PaliGemma weights, robot-state and action tokens through a $300$M set of their own, and the two meet only in self-attention. π0 calls this a mixture of experts with two elements. Liang et al. (2024), studying the same split for text, images and speech, call it a **Mixture of Transformers**: every weight except the embeddings — feed-forward layers, attention projections, layer norms — is kept separate per modality, while attention still runs over the whole sequence, and in their 7B text-and-image setting it matched a dense model at $55.8\%$ of the training FLOPs. Unlike the usual mixture of experts, no learned gate chooses: a token's type decides its weights. The split is also what makes $N$ passes affordable. The observation is encoded once and its keys and values are cached, so each of π0's ten flow steps reruns only the small expert on the action tokens. On an RTX 4090 the ten steps together take $27\,\mathrm{ms}$, less than the single $32\,\mathrm{ms}$ pass over the observation, in a $73\,\mathrm{ms}$ total on board.
+
 **A third answer, and what they share.** [[01-canonical-papers/notes/4-vla/act|ACT]] keeps plain regression but conditions on a CVAE latent, so the latent picks the mode that the mean of §2 destroyed. All three exist because $L_{\mathrm{BC}}$ under a unimodal head returns the average of valid actions: for the two demonstrations $(-1,0)$ and $(1,0)$ it returns $(0,0)$, straight into the obstacle. A token head keeps both modes *in its bin distribution* — but only if the action is **sampled or taken as the argmax**; average the distribution and $(0,0)$ returns. A denoiser draws one mode by construction. A CVAE draws one per latent.
 
 | | tokens | denoiser (diffusion or flow) | CVAE regression |
@@ -333,9 +337,43 @@ The design conclusion for this robot: $k$ between 3 and 5 — a commitment of 0.
 
 So the choice follows the budget of §3 rather than fashion: keep tokens when the language backbone's generalization is the point and chunks are short; move to a denoiser when the chunk is long or the demonstrations are strongly multimodal; and in either case check the head against $\ell(k)$ before believing a demo video.
 
+**Reasoning is paid in the same currency.** A token head can also be taught to write before it acts. RT-2 tried this as a small variant that states a plan in words — "Plan: pick energy drink" — before its action tokens ([[01-canonical-papers/notes/4-vla/rt-2|RT-2]]). Embodied chain-of-thought (ECoT; Zawalski et al. 2024) makes it systematic: OpenVLA is fine-tuned to write a plan, the current sub-task, a movement primitive, object bounding boxes and the gripper's position in the image, and only then the action, from reasoning labels generated automatically by pretrained detectors and a large language model. That raised OpenVLA's absolute success rate by $28$ points on generalization tasks — new objects, scenes, viewpoints and instructions — with no additional robot data. Every reasoning token is a sequential decode, exactly like an action token, and ECoT's tokens per step went from $7$ to $350$. On D4, a chain of that length would turn the token head's $6$ passes into $343+6=349$. The paper's remedy is §3's trade in another place: regenerate the high-level plan and sub-task only every fifth step, which made inference about a quarter faster and, on a three-task subset, succeeded $72\%$ of the time against $63\%$ for reasoning afresh at every step. What reasoning buys is generalization and a failure you can read — a wrong bounding box shows where the policy went wrong. What it costs is rate, so a reasoning policy's control frequency belongs in the same row as its success rate.
+
+### 7. One policy, many bodies: the embodiment gap
+
+§1 showed that a unit error is a physical error on one robot. Pool demonstrations from many robots and the same error becomes systematic, because each robot's logs speak its own action convention. [[01-canonical-papers/notes/4-vla/open-x-embodiment|Open X-Embodiment]] pooled 22 robots, aligned their actions only coarsely, and its authors say plainly that "the same action vector may induce very different motions for different robots." That sentence is the **embodiment gap** as a policy sees it: everything that makes one action mean different motions on two bodies, or one motion need different actions — units and scale, coordinate frame, absolute or delta values, control rate, action dimension, kinematic limits, and where the camera sits.
+
+**The gap on D4, in numbers.** Pool D4 with a second arm, B, that logs the same kind of 2-D end-effector delta but allows $a_{\max}=0.05\,\mathrm{m}$ per step at $5\,\mathrm{Hz}$, and normalize each dataset by its own limit so that both fill $[-1,1]$.
+
+- D4's frozen chunk becomes $(-1,0)$, $(-1,0)$, $(0,-1)$.
+- Executed on B, the same numbers move $(-0.05,0)$, $(-0.05,0)$, $(0,-0.05)$: $0.10\,\mathrm{m}$ left and $0.05\,\mathrm{m}$ down in $3\times0.2=0.6\,\mathrm{s}$, where D4 moves $0.04$ and $0.02\,\mathrm{m}$ in $0.15\,\mathrm{s}$.
+- Aimed at D4's target $g=(-0.04,-0.02)$, B overshoots by $6$ and $3\,\mathrm{cm}$ — two and a half times the intended motion — at $0.05/0.2=0.25\,\mathrm{m/s}$ where D4 moves at $0.02/0.05=0.4\,\mathrm{m/s}$.
+
+Nothing in a normalized label says which robot it came from. Only the observation can, and only if the camera view or the proprioception differs enough to tell.
+
+**Four designs, each paying somewhere.** The canonical generalist policies close the gap in four ways.
+
+| design | how the body enters the policy | what it costs |
+|---|---|---|
+| coarse alignment (the RT-X models of [[01-canonical-papers/notes/4-vla/open-x-embodiment\|OXE]]) | one 7-D end-effector action — position, rotation and gripper, or their rates — and one canonical camera per dataset; frames and absolute-or-delta conventions left as each robot had them | the policy must recognize the body from the image, and two robots that look alike share one convention |
+| pad to the largest body ([[01-canonical-papers/notes/4-vla/pi0\|π0]]) | an 18-D action — two 6-DoF arms, two grippers, a mobile base and a torso lift — zero-padded for smaller robots, missing cameras masked | D4 would fill 2 of 18 dimensions: free for a denoiser, whose $N$ passes do not depend on width, while a token head would decode $18\times3=54$ tokens for D4's chunk instead of $6$ |
+| a head per body ([[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]]) | a shared trunk, with new observation and action tokens and a small head for each new robot (Octo), or embodiment-specific encoders and decoders around one model (GR00T) | every new body needs data of its own; Octo's recipe is about $100$ demonstrations and $5$ hours of fine-tuning |
+| latent actions from video (the idea of [[01-canonical-papers/notes/5-world-models/genie\|Genie]], at the base of GR00T's data) | actions inferred as discrete codes between video frames, with no action labels ([[03-deep-learning/diffusion/vae-gan\|6.1 §10]]) | a latent action is not a command: a body-specific layer must still map it to one |
+
+**What the evidence says.** OXE's results split on how much data the target robot already has. On five robots with small datasets of their own, RT-1-X trained on the pool beat each lab's original method on four, and its mean success was $50\%$ higher than that of either the original method or RT-1 trained on the robot's own data. With a lot of data, it lost. On the WidowX's Bridge tasks it scored $27\%$ at both evaluation sites, against $40\%$ and $30\%$ for RT-1 trained on that data alone; on the Google robot's RT-1 tasks, $73\%$ against $92\%$. The 55B RT-2-X recovered — $50\%$, $30\%$ and $91\%$ — so the paper reads the loss as underfitting: a small model spends its capacity on the other bodies. Transfer of skills is also real. RT-2-X roughly tripled RT-2's score on emergent skills whose objects and motions appear only in the WidowX's data, and removing that dataset significantly reduced the gain.
+
+**What to ask of a cross-embodiment claim**, adding to §4's evidence ladder:
+
+- the action convention of each dataset — units, frame, absolute or delta, rate — and how it was converted;
+- how the body is identified: by the image alone, by padding, or by a head of its own;
+- how much data the target robot contributes;
+- the specialist trained on that data alone, as the baseline, because OXE shows the verdict flips with it.
+
+A construction machine sits at the far end of both axes. It will have little data of its own for a long time, which is where pooling helped. And its body is unlike anything in the pool — the OXE note finds nothing construction-like there — which is where coarse alignment is weakest and the D4-and-B arithmetic bites hardest. For such a body, convert the convention explicitly, in physical units and seconds, rather than trusting the policy to infer it from a camera image.
+
 ### After reading
 
-For any VLA, fill one row containing observation, language, action space/frame/rate, horizon $H$, executed stride $k$, training data/objective, controller, replanning, and evidence ladder. If the paper gives $H$ but not $k$, the row is incomplete and so is its latency claim. Name the action head too — tokens, denoiser or CVAE — and say which of §6's costs it pays.
+For any VLA, fill one row containing observation, language, action space/frame/rate, horizon $H$, executed stride $k$, training data/objective, controller, replanning, and evidence ladder. If the paper gives $H$ but not $k$, the row is incomplete and so is its latency claim. Name the action head too — tokens, denoiser or CVAE — and say which of §6's costs it pays. For a policy trained on many robots, say how the body enters it — alignment, padding, a head of its own or latent actions — and count the tokens decoded before the first action, reasoning included.
 
 ### Self-check
 
@@ -344,6 +382,8 @@ For any VLA, fill one row containing observation, language, action space/frame/r
 3. Why does the $k=2$ row of §5 have *more* reversals than $k=1$, although its chunk is longer?
 4. A lab replaces the MSE head with a mixture of two Gaussians and the offline action error gets worse. Give a reading of that result under which the policy improved.
 5. Which of D4's frozen numbers would have to change for the axis-at-a-time plan to cost the same travel as a straight line?
+6. A cross-embodiment policy fine-tuned on 5,000 demonstrations of your arm succeeds $70\%$ of the time; a specialist trained on those 5,000 alone succeeds $75\%$. Before calling it negative transfer, what do you check, and which of OXE's results does it resemble?
+7. ECoT raised OpenVLA's success by $28$ points. On §6's scale, what did that cost, and what would you ask before putting it on a 20 Hz arm?
 
 > [!tip]- Answers
 > 1. $a_{\max}/\Delta t=0.02/0.05=0.4\,\mathrm{m/s}$. A demonstration at $0.8\,\mathrm{m/s}$ cannot be represented: every label saturates at the clip, so the cloned policy is systematically slow and the error is invisible in a per-step loss computed *after* clipping. Units and limits are part of the label, not of the deployment.
@@ -351,6 +391,8 @@ For any VLA, fill one row containing observation, language, action space/frame/r
 > 3. Reversals are counted per step, and both rows are in the regime where a fresh, independently jittered plan arrives faster than the tool can finish a 2 cm move. Which of the two counts more depends on where the boundaries land in the frozen jitter sequence. The result to quote is the threshold at $k=3$, not the difference between 6 and 10.
 > 4. Offline error is measured against individual demonstrated actions, and the MSE head minimizes it by predicting the mean of modes. A mixture that puts half its mass on each of $(-1,0)$ and $(1,0)$ has a *higher* average distance to any single label while being the only one of the two that ever outputs a demonstrated action. The evidence that settles it is closed-loop success, not the loss.
 > 5. The target. The travel penalty is $\lVert g\rVert_1/\lVert g\rVert_2$, so it is $1$ only when the target lies on an axis: $g=(-0.06,0)$ would cost the same 6 cm by either plan. No change to $a_{\max}$, $\delta$, or the rates removes it, because it is a property of the instruction's axis order and the target direction.
+> 6. First the counting of §4: at $100$ trials each, $70\%$ and $75\%$ have overlapping intervals, $[0.60,\ 0.78]$ and $[0.66,\ 0.82]$, so nothing has been ranked yet. Then the conventions of §7: whether your arm's actions entered the pool in the same units, frame and rate as its labels — the D4-and-B case shows a normalized label moving a body two and a half times too far. If both hold up, it resembles OXE's large-data regime, where RT-1-X lost to the specialist ($27\%$ against $40\%$, $73\%$ against $92\%$) and the 55B RT-2-X closed the gap. The next experiment is therefore capacity — a larger model, or a head of its own for your arm — reported against the specialist baseline.
+> 7. Sequential decodes: $7$ tokens per step became $350$, so D4's $6$ passes per chunk would become $349$. Ask for the control frequency actually reached and how the chain is scheduled — ECoT's own five-step hold of the plan and sub-task ran about a quarter faster and scored $72\%$ against $63\%$ on its subset — and whether the gain was measured on the kind of generalization your task needs: new objects, scenes, viewpoints or instructions. A plan held for five steps is a chunk of plans, so §3's age arithmetic applies to it: at 20 Hz the plan acting on the fifth step is at least $0.20\,\mathrm{s}$ older than the scene.
 
 ### Problem set · 과제
 
@@ -389,12 +431,21 @@ def lag(src, e):                       # latency from change e to the first info
 > 2. (a) $\Delta t=0.02\,\mathrm{s}$, so $m=\lceil 0.10/0.02\rceil=5$ — the faster controller *raised* the minimum chunk from 2 steps to 5. (b) $(m+k-1)\Delta t=(5+4)\times0.02=0.18\,\mathrm{s}$, against $0.30\,\mathrm{s}$ at 20 Hz. (c) The change is now at step $n_j=50$; $k=5$: $\lceil 55/5\rceil=11$, boundary 55, $\ell=5\times0.02=0.10\,\mathrm{s}$; $k=20$: $\lceil55/20\rceil=3$, boundary 60, $\ell=10\times0.02=0.20\,\mathrm{s}$. (d) At equal $k$ the faster controller cut latency (0.25 → 0.10 s at $k=5$) and smoothed the motion, but it bought nothing against the inference clock: the shortest committed interval is still $t_{\mathrm{inf}}=0.10\,\mathrm{s}$ of motion, now spelled as 5 actions instead of 2.
 > 3. Blanks: `return g_after if obs < njump2 else g_before` and `src[n] >= e`. Running it: $k=2$ gives 36.22 cm, 9 reversals, lags $0.10/0.10\,\mathrm{s}$; $k=3$ gives 28.78 cm, 0, $0.20/0.10$; $k=5$ gives 20.60 cm, 0, $0.25/0.25$; $k=10$ gives 14.10 cm, 0, $0.50/0.50$; $k=20$ gives 13.90 cm, 0, $1.00/1.00$. The changes are $1.00\,\mathrm{s}$ apart, so $k=20$'s reaction arrives exactly as the next change happens — it never acts on a target that is still there — and the largest $k$ that still reacts in time is **10**. Two things are worth saying about the last two rows. Travel has saturated: 14.10 against 13.90 cm is a 1.4% gain for twice the blindness, and the ideal is 14 cm, so $k=10$ is already spending essentially nothing on re-deciding. And the smoothness column stopped paying at $k=3$. Past that point a longer chunk is buying a quantity the robot has already bought, with latency it cannot get back.
 
+
+### Sources
+
+The notes linked from §1–§7 carry each paper's own citation. The numbers of §6 and §7 that come from a paper body rather than a note are from:
+
+- Black, K. et al. "π0: A Vision-Language-Action Flow Model for General Robot Control." arXiv:2410.24164, 2024 — the two sets of weights, the cached observation and ten flow steps (appendix Table I: $14$, $32$ and $27\,\mathrm{ms}$, $73\,\mathrm{ms}$ on board), and the 18-dimensional zero-padded action.
+- Open X-Embodiment Collaboration. "Open X-Embodiment: Robotic Learning Datasets and RT-X Models." *ICRA*, 2024, pp. 6892–6903 — the coarse 7-D alignment, and Table I's large-data comparison.
+- Zawalski, M., Chen, W., Pertsch, K., Mees, O., Finn, C. & Levine, S. "Robotic Control via Embodied Chain-of-Thought Reasoning." *CoRL*, 2024 — the reasoning steps, the $28$-point gain, $7$ against $350$ tokens per step, and the five-step hold (Table 2).
+- Liang, W., Yu, L., Luo, L., Iyer, S. et al. "Mixture-of-Transformers: A Sparse and Scalable Architecture for Multi-Modal Foundation Models." arXiv:2411.04996, 2024 — per-modality weights under global self-attention, and $55.8\%$ of the FLOPs in the 7B text-and-image setting.
 ## 한국어
 
 *[[03-deep-learning/vlm/index|3. VLM]]의 인코더와 [[04-robotics/robot-systems-deployment|10. Robot Systems]]의 주기 예산 위에 선다. 대상 **D4**를 처음 쓴다.*
 
 > [!note] 처음이라면
-> 대상, 계산, §1–3, 문제 1–2를 먼저 한다. 논문이 성공률을 보고하면 §4로, chunk 길이를 바꾸면 §5로 돌아온다.
+> 대상, 계산, §1–3, 문제 1–2를 먼저 한다. 논문이 성공률을 보고하면 §4로, chunk 길이를 바꾸면 §5로 돌아온다. 행동 헤드를 밝히거나 행동 전에 말로 추론하면 §6으로, 로봇 사이의 전이를 주장하면 §7로 간다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -414,7 +465,7 @@ def lag(src, e):                       # latency from change e to the first info
 
 여기서 instruction은 장식이 아니다. "왼쪽으로 간 다음 아래로"가 정책이 계획하는 축 순서 자체이고, 그래서 고정된 chunk가 $x$로 두 번, $y$로 한 번 움직인다.
 
-*범위: 이 페이지는 언어 조건 정책과 로봇 사이의 interface를 가르친다 — 행동 표현, behaviour cloning 목적함수, chunk를 얼마나 오래 확정해도 되는지, 보고된 success rate가 무엇을 증명하고 무엇을 증명하지 않는지. $o_t$를 만드는 vision–language 인코더는 가르치지 않는다. 그것은 [[03-deep-learning/vlm/index|3. VLM]]이다. 사전학습된 backbone을 새 로봇에 맞게 전체로든 LoRA로든 파인튜닝하는 법도 아니다. 그것은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]이다. 다봉 시연을 행동 분포로 바꾸는 생성 head도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다. delta를 토크로 바꾸는 제어기도 아니다. 그것은 [[04-robotics/force-compliance-control|11. 힘·컴플라이언스 제어]]다. 시연이 어디서 오는지도 아니다. 그것은 [[04-robotics/teleoperation-demonstration|12. 원격조작]]이다.*
+*범위: 이 페이지는 언어 조건 정책과 로봇 사이의 interface를 가르친다 — 행동 표현, behaviour cloning 목적함수, chunk를 얼마나 오래 확정해도 되는지, 어떤 헤드가 그것을 어떤 비용으로 만드는지, 보고된 success rate가 무엇을 증명하고 무엇을 증명하지 않는지, 정책 하나가 여러 몸을 몰 때 무엇이 달라지는지. $o_t$를 만드는 vision–language 인코더는 가르치지 않는다. 그것은 [[03-deep-learning/vlm/index|3. VLM]]이다. 사전학습된 backbone을 새 로봇에 맞게 전체로든 LoRA로든 파인튜닝하는 법도 아니다. 그것은 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §8]]이다. 다봉 시연을 행동 분포로 바꾸는 생성 head도 아니다. 그것은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]다. delta를 토크로 바꾸는 제어기도 아니다. 그것은 [[04-robotics/force-compliance-control|11. 힘·컴플라이언스 제어]]다. 시연이 어디서 오는지도 아니다. 그것은 [[04-robotics/teleoperation-demonstration|12. 원격조작]]이다.*
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -545,7 +596,7 @@ def lag(src, e):                       # latency from change e to the first info
 
 관절 위치·속도·torque, 말단 pose·delta pose, gripper, action token은 물리 가정이 다르다. 단위·frame·rate·horizon·하위 controller가 없으면 "행동 출력"은 불완전하다.
 
-D4가 $(0.02,0)$을 미터로 세 번 예측했는데 하위 interface가 센티미터로 해석하면, 의도한 6 cm가 0.06 cm가 된다. 표현 오차는 물리 오차다.
+D4가 $(0.02,0)$을 미터로 세 번 예측했는데 하위 interface가 센티미터로 해석하면, 의도한 6 cm가 0.06 cm가 된다. 표현 오차는 물리 오차다. 여러 로봇의 데이터를 모으면 같은 종류의 오차가 체계적이 되고, §7이 그것을 잰다.
 
 ### 2. Behavior cloning과 다봉성
 
@@ -583,7 +634,11 @@ $L_{BC}=H^{-1}\sum_h\|a_{t+h}-\hat a_{t+h}\|^2$. 장애물의 좌우로 지나�
 
 ### 4. 증거 읽기
 
-semantic generalization, motor competence, embodiment transfer, recovery를 나눈다. success rate에는 episode·reset·intervention·tolerance·환경 변동 정의가 필요하다.
+semantic generalization, motor competence, embodiment transfer, recovery를 나눈다. success rate에는 episode·reset·intervention·tolerance·환경 변동 정의가 필요하다. 인상적인 영상은 추정량이 아니라 표본 하나다.
+
+**성공률 하나가 말해 주는 만큼.** 성공률은 셈이고, 셈에는 구간이 따른다. [[06-research-practice/experimental-design-reproducibility|Experimental Design §4]]의 Wilson 구간이다. 95%에서 $10$번 가운데 $8$번 성공은 $[0.49,\ 0.94]$, $10$번 가운데 $6$번은 $[0.31,\ 0.83]$이므로, $80\%$ 대 $60\%$를 보여 주는 10회짜리 표는 두 정책의 순위를 정하지 못했다. 각각 $100$번이면 구간 $[0.71,\ 0.87]$과 $[0.50,\ 0.69]$가 더는 겹치지 않고, 처음 갈라지는 것은 정책당 약 $85$번에서다. 실패 없는 연속 성공은 보이는 것보다 덜 증명한다. $n$번 연속 성공은 95%에서 $1-0.05^{1/n}\approx3/n$보다 큰 실패율만 배제하므로, 서른 번 연속 성공도 실패율 $9.5\%$를 허용한다. 모든 백분율 옆에 $n$을, 두 백분율을 견줄 때는 구간을 요구하라. embodiment 전이 주장은 따로 물을 것이 더 있고, §7에 모았다.
+
+새로운 범용 정책보다 먼저 [[01-canonical-papers/notes/4-vla/rt-1|RT-1]], [[01-canonical-papers/notes/4-vla/rt-2|RT-2]], [[01-canonical-papers/notes/4-vla/act|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]를 그 순서로 읽어라.
 
 ### 5. Chunk 길이 쓸기
 
@@ -623,6 +678,8 @@ semantic generalization, motor competence, embodiment transfer, recovery를 나�
 
 **노이즈 제거기.** 대신 청크 전체를 표본으로 뽑는다. [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]는 관측을 조건으로 행동 $16$개의 청크를 추론 시 약 $10$번의 DDIM식 스텝으로 복원하고, 앞의 몇 개만 실행한 뒤 다시 계획한다. [[04-robotics/mpc|7. MPC]]의 receding horizon이다. [[01-canonical-papers/notes/4-vla/pi0|π0]]는 확산 대신 flow matching을 VLM 백본 위의 별도 행동 전문가에 넣고 $50\,\mathrm{Hz}$ 연속 청크를 보고한다. 비용은 *청크 길이와 무관하게* $N$번의 패스이고, 여기서 교차점이 나온다. $D\times H<N$인 동안은 토큰 헤드가 싸고, 청크가 그보다 길어지면 노이즈 제거기가 싸다. $D=2$, $N=10$인 D4에서 교차점은 $H=5$다. 그 아래면 토큰, 위면 노이즈 제거다.
 
+**π0의 expert가 따로 된 가중치인 이유.** π0는 가중치 두 벌을 가진 transformer 하나다. 이미지와 텍스트 토큰은 $3$B PaliGemma 가중치를, 로봇 상태와 행동 토큰은 자기 몫의 $300$M 가중치를 지나고, 둘은 self-attention에서만 만난다. π0는 이것을 원소 둘짜리 mixture of experts라고 부른다. 같은 분할을 텍스트·이미지·음성에 대해 연구한 Liang 외(2024)는 **Mixture of Transformers**(MoT)라고 부른다. 임베딩을 뺀 모든 가중치 — feed-forward 층, attention 투영, layer norm — 를 모달리티마다 따로 두되 attention은 여전히 시퀀스 전체에 걸치고, 그들의 7B 텍스트·이미지 설정에서 밀집 모델과 같은 성능을 학습 FLOPs의 $55.8\%$로 냈다. 보통의 mixture of experts와 달리 학습된 게이트가 고르지 않는다. 토큰의 종류가 가중치를 정한다. $N$번의 통과를 감당할 수 있게 하는 것도 이 분할이다. 관측은 한 번 인코딩하고 그 key와 value를 캐시에 두므로, π0의 flow 스텝 열 번은 매번 행동 토큰 위의 작은 expert만 다시 돌린다. RTX 4090에서 열 스텝을 합쳐 $27\,\mathrm{ms}$로, 관측을 한 번 지나는 $32\,\mathrm{ms}$보다 짧고, 로봇 위 전체는 $73\,\mathrm{ms}$다.
+
 **세 번째 답, 그리고 셋의 공통점.** [[01-canonical-papers/notes/4-vla/act|ACT]]는 평범한 회귀를 유지하되 CVAE 잠재변수로 조건화해, §2의 평균이 부순 봉우리를 잠재변수가 고르게 한다. 셋 모두 존재하는 이유는 단봉 헤드 아래의 $L_{\mathrm{BC}}$가 타당한 행동들의 평균을 돌려주기 때문이다. 시연 $(-1,0)$과 $(1,0)$에 대해 그것은 장애물 한가운데인 $(0,0)$이다. 토큰 헤드는 두 봉우리를 *구간 분포 안에* 간직하지만, 행동을 **표본으로 뽑거나 argmax로 고를 때만** 그렇다. 분포를 평균 내면 $(0,0)$이 돌아온다. 노이즈 제거기는 구성상 한 봉우리를 뽑고, CVAE는 잠재변수마다 하나를 뽑는다.
 
 | | 토큰 | 노이즈 제거기(확산·flow) | CVAE 회귀 |
@@ -634,9 +691,43 @@ semantic generalization, motor competence, embodiment transfer, recovery를 나�
 
 그러니 선택은 유행이 아니라 §3의 예산을 따른다. 언어 백본의 일반화가 요점이고 청크가 짧으면 토큰을 유지하고, 청크가 길거나 시연이 강하게 다봉이면 노이즈 제거기로 옮기며, 어느 쪽이든 시연 영상을 믿기 전에 헤드를 $\ell(k)$에 대어 확인한다.
 
+**추론도 같은 화폐로 치른다.** 토큰 헤드는 행동하기 전에 글을 쓰도록 배울 수도 있다. RT-2는 행동 토큰 앞에 계획을 말로 적는 작은 변형 — "Plan: pick energy drink" — 으로 이것을 시도했다([[01-canonical-papers/notes/4-vla/rt-2|RT-2]]). Embodied chain-of-thought(ECoT, Zawalski 외 2024)는 그것을 체계로 만든다. OpenVLA를 미세조정해 계획, 지금의 하위 과제, 움직임 기본 동작, 물체의 bounding box, 이미지 속 그리퍼 위치를 쓰고 그다음에야 행동을 내게 하며, 추론 label은 사전학습된 검출기와 대규모 언어 모델이 자동으로 만든다. 그것으로 OpenVLA의 절대 성공률이 일반화 과제 — 새 물체, 장면, 시점, 지시 — 에서 로봇 데이터를 더하지 않고 $28$%p 올랐다. 추론 토큰 하나하나가 행동 토큰과 똑같은 순차 디코딩이고, ECoT의 스텝당 토큰은 $7$개에서 $350$개가 되었다. D4에서 그 길이의 사슬은 토큰 헤드의 $6$번 통과를 $343+6=349$번으로 바꾼다. 논문의 처방은 §3의 교환을 다른 곳에 쓰는 것이다. 상위 계획과 하위 과제를 다섯 스텝마다 한 번만 새로 만들자 추론이 약 4분의 1 빨라졌고, 과제 세 개짜리 부분집합에서 성공률이 매 스텝 새로 추론할 때의 $63\%$에 비해 $72\%$였다. 추론이 사는 것은 일반화와 읽을 수 있는 실패다 — 틀린 bounding box가 정책이 어디서 어긋났는지 보여 준다. 치르는 것은 rate이므로, 추론하는 정책의 제어 주파수는 성공률과 같은 행에 적어야 한다.
+
+### 7. 정책 하나, 몸 여럿: embodiment 격차
+
+§1은 로봇 하나에서 단위 오류가 물리적 오류임을 보였다. 여러 로봇의 시연을 한데 모으면 같은 오류가 체계적이 된다. 로봇마다 로그가 자기 행동 규약으로 말하기 때문이다. [[01-canonical-papers/notes/4-vla/open-x-embodiment|Open X-Embodiment]]는 로봇 22대를 모으고 행동을 거칠게만 맞췄으며, 저자들은 같은 행동 벡터가 로봇마다 매우 다른 움직임을 낳을 수 있다고 분명히 적는다. 그 문장이 정책이 보는 **embodiment 격차**(embodiment gap)다. 한 행동이 두 몸에서 다른 움직임을 뜻하게 하거나 한 움직임에 다른 행동이 필요하게 만드는 모든 것 — 단위와 스케일, 좌표계, 절대값인지 변화량인지, 제어 주기, 행동 차원, 기구학적 한계, 카메라가 놓인 곳.
+
+**D4에서 숫자로 본 격차.** D4를 둘째 팔 B와 합친다. B는 같은 종류의 2차원 end-effector 변화량을 기록하지만 $5\,\mathrm{Hz}$에서 스텝당 $a_{\max}=0.05\,\mathrm{m}$까지 허용한다. 각 데이터셋을 자기 한계로 정규화해 둘 다 $[-1,1]$을 채우게 한다.
+
+- D4의 고정 chunk는 $(-1,0)$, $(-1,0)$, $(0,-1)$이 된다.
+- 같은 숫자를 B에서 실행하면 $(-0.05,0)$, $(-0.05,0)$, $(0,-0.05)$만큼 움직인다. $3\times0.2=0.6\,\mathrm{s}$ 동안 왼쪽으로 $0.10\,\mathrm{m}$, 아래로 $0.05\,\mathrm{m}$이고, D4는 $0.15\,\mathrm{s}$ 동안 $0.04$와 $0.02\,\mathrm{m}$를 움직인다.
+- D4의 목표 $g=(-0.04,-0.02)$를 겨누면 B는 $6$과 $3\,\mathrm{cm}$를 지나친다 — 의도한 움직임의 두 배 반이다. 속도는 D4의 $0.02/0.05=0.4\,\mathrm{m/s}$ 대신 $0.05/0.2=0.25\,\mathrm{m/s}$다.
+
+정규화된 label 어디에도 그것이 어느 로봇에서 왔는지 적혀 있지 않다. 말해 줄 수 있는 것은 관측뿐이고, 그것도 카메라 시점이나 고유수용 감각이 가려낼 만큼 다를 때뿐이다.
+
+**설계 넷, 각자 어딘가에서 치른다.** 대표적인 범용 정책들은 격차를 네 가지로 메운다.
+
+| 설계 | 몸이 정책에 들어가는 방식 | 대가 |
+|---|---|---|
+| 거친 정렬([[01-canonical-papers/notes/4-vla/open-x-embodiment\|OXE]]의 RT-X 모델) | 7차원 end-effector 행동 하나 — 위치, 회전, 그리퍼, 또는 그 변화율 — 와 데이터셋마다 대표 카메라 하나. 좌표계와 절대·변화량 규약은 각 로봇의 것 그대로 | 정책이 이미지에서 몸을 알아봐야 하고, 닮아 보이는 두 로봇은 한 규약을 나눠 쓴다 |
+| 가장 큰 몸에 맞춰 채우기([[01-canonical-papers/notes/4-vla/pi0\|π0]]) | 18차원 행동 — 6자유도 팔 둘, 그리퍼 둘, 이동 베이스, 몸통 승강 — 을 작은 로봇은 0으로 채우고, 없는 카메라는 가린다 | D4는 18차원 가운데 2개를 채운다. $N$번 통과가 폭과 무관한 노이즈 제거기에는 공짜지만, 토큰 헤드는 D4의 chunk에 $6$개 대신 $18\times3=54$개 토큰을 디코딩해야 한다 |
+| 몸마다 헤드([[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/gr00t-n1\|GR00T N1]]) | 공유 몸통에 새 로봇마다 새 관측·행동 토큰과 작은 헤드를 붙이거나(Octo), 모델 하나 둘레에 embodiment별 인코더와 디코더를 둔다(GR00T) | 새 몸마다 자기 데이터가 필요하다. Octo의 방법은 시연 약 $100$개와 미세조정 $5$시간이다 |
+| 비디오에서 잠재 행동([[01-canonical-papers/notes/5-world-models/genie\|Genie]]의 발상, GR00T 데이터의 바닥) | 행동 label 없이 비디오 프레임 사이의 이산 코드로 추론한 행동([[03-deep-learning/diffusion/vae-gan\|6.1 §10]]) | 잠재 행동은 명령이 아니다. 몸에 맞춘 층이 여전히 그것을 명령으로 옮겨야 한다 |
+
+**증거가 말하는 것.** OXE의 결과는 대상 로봇이 이미 가진 데이터가 얼마인지에 따라 갈린다. 자기 데이터가 적은 로봇 다섯에서, 모은 데이터로 학습한 RT-1-X는 넷에서 각 연구실의 원래 방법을 이겼고, 평균 성공률이 원래 방법이나 그 로봇 데이터로만 학습한 RT-1보다 $50\%$ 높았다. 데이터가 많을 때는 졌다. WidowX의 Bridge 과제에서 두 평가 장소 모두 $27\%$로, 그 데이터로만 학습한 RT-1의 $40\%$와 $30\%$에 못 미쳤고, Google 로봇의 RT-1 과제에서는 $92\%$ 대비 $73\%$였다. 55B RT-2-X는 회복했다 — $50\%$, $30\%$, $91\%$. 그래서 논문은 그 패배를 과소적합으로 읽는다. 작은 모델은 용량을 다른 몸들에 쓴다. 기술의 전이도 실재한다. RT-2-X는 물체와 동작이 WidowX 데이터에만 있는 창발 기술에서 RT-2의 점수를 대략 세 배로 올렸고, 그 데이터셋을 빼자 이득이 크게 줄었다.
+
+**교차-embodiment 주장에 물을 것**, §4의 증거 사다리에 더해:
+
+- 각 데이터셋의 행동 규약 — 단위, 좌표계, 절대·변화량, 주기 — 과 그것을 어떻게 변환했는가.
+- 몸을 무엇으로 알아보는가. 이미지만으로, 채우기로, 아니면 자기 헤드로.
+- 대상 로봇이 데이터를 얼마나 보태는가.
+- 그 데이터만으로 학습한 전문 모델을 기준선으로. OXE는 판정이 그것에 따라 뒤집힘을 보인다.
+
+건설 기계는 두 축 모두의 먼 끝에 있다. 오랫동안 자기 데이터가 적을 것이고, 모으기가 도움이 된 곳이 거기다. 그리고 몸이 모인 데이터의 어떤 것과도 다르다 — OXE 노트는 거기서 건설 비슷한 것을 하나도 찾지 못한다 — 거친 정렬이 가장 약하고 D4와 B의 계산이 가장 아프게 무는 곳이 거기다. 그런 몸에서는 정책이 카메라 이미지로 규약을 짐작하리라 믿지 말고, 물리 단위와 초로 규약을 명시적으로 변환하라.
+
 ### 읽고 나면
 
-VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stride $k$·data/objective·controller·replanning·evidence로 한 줄에 명세할 수 있다. 논문이 $H$는 주고 $k$를 주지 않았다면 그 줄은 불완전하고 지연 주장도 불완전하다. 행동 헤드가 토큰인지 노이즈 제거기인지 CVAE인지도 적고, §6의 비용 가운데 무엇을 치르는지 말한다.
+VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stride $k$·data/objective·controller·replanning·evidence로 한 줄에 명세할 수 있다. 논문이 $H$는 주고 $k$를 주지 않았다면 그 줄은 불완전하고 지연 주장도 불완전하다. 행동 헤드가 토큰인지 노이즈 제거기인지 CVAE인지도 적고, §6의 비용 가운데 무엇을 치르는지 말한다. 여러 로봇으로 학습한 정책이라면 몸이 어떻게 들어가는지 — 정렬, 채우기, 자기 헤드, 잠재 행동 — 말하고, 첫 행동 전에 디코딩하는 토큰을 추론까지 포함해 센다.
 
 ### 스스로 점검
 
@@ -645,6 +736,8 @@ VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stri
 3. §5에서 $k=2$의 반전이 $k=1$보다 *많은* 이유는 무엇인가? chunk는 더 긴데도.
 4. MSE head를 2성분 가우시안 혼합으로 바꿨더니 offline action error가 나빠졌다. 그런데도 정책이 좋아졌다고 읽을 수 있는 독법을 대라.
 5. 축을 하나씩 쓰는 계획이 직선과 같은 이동거리를 쓰려면 D4의 고정 숫자 중 무엇이 바뀌어야 하는가?
+6. 당신의 팔로 모은 시연 5,000개로 미세조정한 교차-embodiment 정책이 $70\%$ 성공하고, 그 5,000개만으로 학습한 전문 모델이 $75\%$ 성공한다. 음의 전이라고 부르기 전에 무엇을 확인하며, OXE의 어느 결과와 닮았는가?
+7. ECoT는 OpenVLA의 성공률을 $28$%p 올렸다. §6의 잣대로 그 대가는 무엇이었고, 20 Hz 팔에 올리기 전에 무엇을 묻겠는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $a_{\max}/\Delta t=0.02/0.05=0.4\,\mathrm{m/s}$. $0.8\,\mathrm{m/s}$의 시연은 표현되지 않는다. 모든 label이 클립에 걸리므로 복제된 정책은 체계적으로 느리고, 클립 *이후*에 계산한 스텝별 손실에는 그 오차가 보이지 않는다. 단위와 한계는 배포가 아니라 label의 일부다.
@@ -652,6 +745,8 @@ VLA 하나를 observation·language·action/frame/rate·horizon $H$·실행 stri
 > 3. 반전은 스텝마다 세고, 두 행 모두 새로 흔들린 계획이 도구가 2 cm를 끝내기도 전에 도착하는 영역에 있다. 둘 중 어느 쪽이 더 많은지는 경계가 고정된 흔들림 수열의 어디에 떨어지는지가 정한다. 인용할 결과는 $k=3$의 문턱이지 6과 10의 차이가 아니다.
 > 4. offline error는 개별 시연 행동을 상대로 재고, MSE head는 mode들의 평균을 내놓아 그것을 최소화한다. $(-1,0)$과 $(1,0)$에 절반씩 질량을 둔 혼합은 어떤 단일 label과의 평균 거리가 *더 크면서*, 둘 중 시연된 행동을 실제로 내놓는 유일한 쪽이다. 판정하는 증거는 loss가 아니라 폐루프 성공이다.
 > 5. 목표다. 이동거리 벌점은 $\lVert g\rVert_1/\lVert g\rVert_2$이므로 목표가 축 위에 있을 때만 1이다. $g=(-0.06,0)$이면 어느 계획이든 같은 6 cm다. $a_{\max}$나 $\delta$나 주기를 바꿔도 없어지지 않는다. instruction의 축 순서와 목표 방향의 성질이기 때문이다.
+> 6. 먼저 §4의 셈이다. 각각 $100$번이라면 $70\%$와 $75\%$의 구간 $[0.60,\ 0.78]$과 $[0.66,\ 0.82]$가 겹치므로 아직 아무것도 순위가 정해지지 않았다. 그다음 §7의 규약이다. 당신 팔의 행동이 label과 같은 단위, 좌표계, 주기로 모은 데이터에 들어갔는가 — D4와 B의 경우는 정규화된 label이 몸을 두 배 반이나 멀리 움직이는 것을 보인다. 둘 다 문제가 없다면 OXE의 데이터가 많은 영역과 닮았다. 거기서 RT-1-X는 전문 모델에 졌고($27\%$ 대 $40\%$, $73\%$ 대 $92\%$) 55B RT-2-X가 그 차이를 메웠다. 그러니 다음 실험은 용량이다 — 더 큰 모델, 또는 당신 팔만의 헤드 — 이고, 전문 모델 기준선과 나란히 보고한다.
+> 7. 순차 디코딩이다. 스텝당 토큰 $7$개가 $350$개가 되었으므로 D4의 chunk당 $6$번 통과는 $349$번이 된다. 실제로 도달한 제어 주파수와 사슬을 어떻게 스케줄하는지 물어라 — ECoT 자신의 다섯 스텝 계획·하위 과제 유지는 약 4분의 1 빨랐고 부분집합에서 $63\%$ 대비 $72\%$였다 — 그리고 이득을 당신 과제에 필요한 종류의 일반화, 곧 새 물체·장면·시점·지시에서 쟀는지. 다섯 스텝 동안 유지하는 계획은 계획의 chunk이므로 §3의 나이 계산이 그대로 적용된다. 20 Hz에서 다섯째 스텝에 작용하는 계획은 장면보다 적어도 $0.20\,\mathrm{s}$ 늙었다.
 
 ### 과제 · Problem set
 
@@ -671,3 +766,12 @@ Tier A. [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D4**, 이 페이지
 > 1. 장면 → 관측(나이 $n-m$) → 정책($t_{\mathrm{inf}}$) → chunk 버퍼(길이 $k$) → 제어기($\Delta t$) → 로봇 → 장면. 버퍼에서 관측으로 돌아가는 변은 $k$ 스텝마다만 닫힌다. 없는 변은 버퍼 → 장면이다. 계획이 세계를 움직이지 않고 실행된 행동만 움직인다. 그 변을 그리는 것은 예측을 상태로 가정하는 것이고, 개루프 chunk가 검증된 것처럼 보고되는 경로가 그것이다.
 > 2. (a) $\Delta t=0.02\,\mathrm{s}$이므로 $m=\lceil 0.10/0.02\rceil=5$. 더 빠른 제어기가 최소 chunk를 2에서 5로 *올렸다*. (b) $(5+4)\times0.02=0.18\,\mathrm{s}$, 20 Hz의 $0.30\,\mathrm{s}$와 비교된다. (c) 변화는 이제 스텝 $n_j=50$이다. $k=5$: $\lceil55/5\rceil=11$, 경계 55, $\ell=0.10\,\mathrm{s}$. $k=20$: $\lceil55/20\rceil=3$, 경계 60, $\ell=0.20\,\mathrm{s}$. (d) 같은 $k$에서 더 빠른 제어기는 지연을 줄이고($k=5$에서 0.25 → 0.10초) 움직임을 매끄럽게 했지만, 추론 시계에 대해서는 아무것도 사지 못했다. 가장 짧은 확정 구간은 여전히 $t_{\mathrm{inf}}=0.10\,\mathrm{s}$의 움직임이고, 이제 행동 2개가 아니라 5개로 적힐 뿐이다.
 > 3. 빈칸은 `return g_after if obs < njump2 else g_before`와 `src[n] >= e`다. 돌려 보면 $k=2$는 36.22 cm, 반전 9, 지연 $0.10/0.10\,\mathrm{s}$. $k=3$은 28.78 cm, 0, $0.20/0.10$. $k=5$는 20.60 cm, 0, $0.25/0.25$. $k=10$은 14.10 cm, 0, $0.50/0.50$. $k=20$은 13.90 cm, 0, $1.00/1.00$이다. 변화 간격이 $1.00\,\mathrm{s}$이므로 $k=20$의 반응은 다음 변화와 정확히 동시에 도착한다. 아직 거기 있는 목표에 대해서는 한 번도 움직이지 못한다는 뜻이고, 제때 반응하는 가장 큰 $k$는 **10**이다. 마지막 두 행에서 할 말이 둘이다. 이동거리는 포화했다. 14.10 대 13.90 cm는 눈감는 시간을 두 배로 치르고 1.4%를 얻은 것이고, 이상값이 14 cm이므로 $k=10$은 이미 다시 결정하는 데 사실상 아무것도 쓰지 않는다. 그리고 매끄러움 열은 $k=3$에서 값을 다 치렀다. 그 뒤의 긴 chunk는 로봇이 이미 산 것을 다시 사면서 되돌릴 수 없는 지연을 치른다.
+
+### 출처 · Sources
+
+§1–§7이 잇는 노트들이 각 논문의 인용을 담는다. §6과 §7의 숫자 가운데 노트가 아니라 논문 본문에서 온 것의 출처는 다음과 같다.
+
+- Black, K. 외. "π0: A Vision-Language-Action Flow Model for General Robot Control." arXiv:2410.24164, 2024 — 가중치 두 벌, 캐시한 관측과 flow 스텝 열 번(부록 Table I: $14$, $32$, $27\,\mathrm{ms}$, 로봇 위 $73\,\mathrm{ms}$), 0으로 채운 18차원 행동.
+- Open X-Embodiment Collaboration. "Open X-Embodiment: Robotic Learning Datasets and RT-X Models." *ICRA*, 2024, pp. 6892–6903 — 거친 7차원 정렬과 Table I의 대규모 데이터 비교.
+- Zawalski, M., Chen, W., Pertsch, K., Mees, O., Finn, C. & Levine, S. "Robotic Control via Embodied Chain-of-Thought Reasoning." *CoRL*, 2024 — 추론 단계, $28$%p 이득, 스텝당 토큰 $7$ 대 $350$, 다섯 스텝 유지(Table 2).
+- Liang, W., Yu, L., Luo, L., Iyer, S. 외. "Mixture-of-Transformers: A Sparse and Scalable Architecture for Multi-Modal Foundation Models." arXiv:2411.04996, 2024 — 전역 self-attention 아래 모달리티별 가중치, 7B 텍스트·이미지 설정에서 FLOPs의 $55.8\%$.
