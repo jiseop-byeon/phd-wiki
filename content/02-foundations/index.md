@@ -62,7 +62,7 @@ manipulation check.
 
 Page 10 is **not part of the common curriculum**. Pages 0–9 are the common introductory
 map; for a specific paper or optional path, follow that page's prerequisite box. Page 10
-belongs to the manipulation-first path in [[07-research-program/index|7. Research Program]].
+belongs to the dissertation path of [[07-research-program/index|7. Research Program §8]], where it follows the gate.
 The *Modern Robotics* notes cover [[04-robotics/modern-robotics/ch08-dynamics|ch.8 dynamics]]
 and [[04-robotics/modern-robotics/ch11-robot-control|ch.11 control]]; page 10 reorganizes the
 ch.5, ch.8, and ch.11 ideas into one path through operational-space inertia and force control.
@@ -130,8 +130,8 @@ Skip the interview track unless a coding interview or a lab implementation inter
 ### 전문화 트랙
 
 10번은 **공통 커리큘럼이 아니다**. 0~9번은 공통 입문 지도이고, 개별 논문과 선택 경로의
-선수 지식은 해당 페이지의 선수 상자를 따른다. 10번은 [[07-research-program/index|7. 연구 프로그램]]의
-매니퓰레이션 우선 경로에 속한다. *Modern Robotics* 노트도
+선수 지식은 해당 페이지의 선수 상자를 따른다. 10번은 [[07-research-program/index|7. 연구 프로그램 §8]]의
+학위논문 경로에 속하고, 거기서 통과 점검 바로 뒤에 온다. *Modern Robotics* 노트도
 [[04-robotics/modern-robotics/ch08-dynamics|8장 동역학]]과
 [[04-robotics/modern-robotics/ch11-robot-control|11장 제어]]를 다루지만, 10번은 5·8·11장의
 핵심을 작업공간 관성과 힘 제어까지 한 흐름으로 재구성한다.

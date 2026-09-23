@@ -407,6 +407,7 @@ Reading the table:
 - **One estimate, no noise.** The panel is read once, at home, and the simulation's sensor is exact. A second reading would shrink $\sigma$ — [[02-foundations/probability|3. Probability §5]] runs the sequence — and with it the force band of §4.
 - **Geometry.** Point contact, frictionless face, zero-thickness links. The elbow's clearance was checked; the tool's orientation was not controlled, because a 2R arm has no spare joint for it.
 - **Model error.** The computed-torque model is exact except for $b$. A real arm carries payload and friction error, which enters the error dynamics as the disturbance ch.11 §2 describes.
+- **A classical policy.** Every command here comes from a model and a gain; nothing was learned. Running a policy learned from demonstrations into the same kind of contact — what behaviour cloning's per-step errors compound into at the pin, and which fix keeps the tool inside its tolerance — is [[05-construction-robotics/imitating-contact|10. Imitating Contact]], on the construction track's S1 panel.
 
 ### After reading
 
@@ -780,6 +781,7 @@ Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면
 - **추정 하나, 잡음 없음.** 패널은 홈에서 한 번 읽고, 시뮬레이션의 센서는 정확하다. 두 번째 측정은 $\sigma$를 줄이고 — [[02-foundations/probability|3. 확률 §5]]가 그 순서를 돌린다 — 그와 함께 §4의 힘 띠도 줄인다.
 - **기하.** 점 접촉, 마찰 없는 면, 두께 없는 링크. 엘보의 여유는 확인했지만 공구의 방향은 제어하지 않았다. 2R 팔에는 그럴 여분의 관절이 없다.
 - **모델 오차.** 계산 토크의 모델은 $b$를 빼면 정확하다. 실제 팔은 탑재물과 마찰의 오차를 싣고, 그것은 11장 §2가 말하는 교란으로 오차 동역학에 들어간다.
+- **고전 정책.** 여기의 명령은 모두 모델과 이득에서 나오고, 배운 것은 없다. 시연에서 배운 정책을 같은 종류의 접촉으로 돌리는 것 — 행동 복제의 스텝당 오류가 핀에서 무엇으로 불어나는지, 어떤 해법이 공구를 허용오차 안에 붙잡아 두는지 — 은 건설 트랙의 S1 패널 위에서 [[05-construction-robotics/imitating-contact|10. 접촉 모방]]이 다룬다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

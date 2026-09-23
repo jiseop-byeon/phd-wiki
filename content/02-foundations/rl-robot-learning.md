@@ -195,7 +195,9 @@ illustration, not a theorem. The theorem has the same shape: Ross, Gordon and Ba
 no-regret method such as DAgger reaches $O(\epsilon T)$ — the difference between a horizon
 you can grow and one you cannot. **Action chunking** (group 3 below) is the cheap version of
 the same move: predicting $k$ steps at once turns a $T$-step task into a $T/k$-decision
-task, sliding you back down the horizon axis.
+task, sliding you back down the horizon axis. [[05-construction-robotics/imitating-contact|10. Imitating Contact §3]] prices both bounds on a
+construction task, S1's last 40 mm: at $\epsilon=0.02$ the first allows $T^2\epsilon=32$ steps adrift
+where the lead-in absorbs $15$, so it covers only a $27$-step phase, while the second covers $750$.
 
 *Group 2 — reading a dataset section.* Demos come from teleoperation
 ([[01-canonical-papers/notes/4-vla/act|ALOHA]]-style rigs, VR, kinesthetic teaching), scripted
@@ -928,7 +930,9 @@ $$Q'(A,\text{이동}) = 10 + 0.9 \times 10 = 19, \qquad Q'(A,\text{대기}) = 1 
 $O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방법은 $O(\epsilon T)$에
 도달함을 보인다 — 늘릴 수 있는 지평과 늘릴 수 없는 지평의 차이다. 아래 묶음 3의 **행동 청킹**은
 같은 수를 싸게 두는 것이다: $k$스텝을 한 번에 예측하면 $T$스텝 과제가 $T/k$번의 결정 과제가
-되어, 이 곡선의 지평 축을 왼쪽으로 되돌린다.
+되어, 이 곡선의 지평 축을 왼쪽으로 되돌린다. [[05-construction-robotics/imitating-contact|10. 접촉 모방 §3]]은 두 상한에 건설 작업,
+S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것은 리드인이 흡수하는 $15$스텝에 대해
+표류 $T^2\epsilon=32$스텝을 허락하므로 $27$스텝짜리 단계까지만 덮고, 뒤의 것은 $750$스텝을 덮는다.
 
 *묶음 2 — 데이터셋 절 읽기.* 시연은 원격조작([[01-canonical-papers/notes/4-vla/act|ALOHA]]식
 장비, VR, 직접 교시), 스크립트 정책, 교차-embodiment 풀링

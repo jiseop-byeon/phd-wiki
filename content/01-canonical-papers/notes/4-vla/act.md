@@ -50,7 +50,8 @@ and the algorithmic fragility needed fixing at once.
 - **ALOHA hardware**: two leader arms puppeteer two follower arms (joint-space mapping),
   4 cameras, open-source, built to a stated 20k USD budget (§III, not the abstract) — high-quality bimanual demos at 50 Hz become easy to collect.
 - **ACT**: a CVAE whose decoder is a Transformer — conditioned on images + joint positions
-  (+ a latent style variable $z$), it outputs the next $k{=}100$ joint-space actions.
+  (+ a latent style variable $z$), it outputs the next $k{=}100$ joint-space actions. At test time
+  $z$ is fixed at the prior mean, zero, so the decoder is deterministic (§IV-B).
 
 <svg viewBox="0 0 620 226" style="max-width:100%;height:auto" role="img" aria-label="single-step prediction versus action chunking, drawn on the same timeline">
   <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="60" y1="61" x2="540" y2="61"/><line x1="60" y1="56" x2="60" y2="66"/><line x1="84" y1="56" x2="84" y2="66"/><line x1="108" y1="56" x2="108" y2="66"/><line x1="132" y1="56" x2="132" y2="66"/><line x1="156" y1="56" x2="156" y2="66"/><line x1="180" y1="56" x2="180" y2="66"/><line x1="204" y1="56" x2="204" y2="66"/><line x1="228" y1="56" x2="228" y2="66"/><line x1="252" y1="56" x2="252" y2="66"/><line x1="276" y1="56" x2="276" y2="66"/><line x1="300" y1="56" x2="300" y2="66"/><line x1="324" y1="56" x2="324" y2="66"/><line x1="348" y1="56" x2="348" y2="66"/><line x1="372" y1="56" x2="372" y2="66"/><line x1="396" y1="56" x2="396" y2="66"/><line x1="420" y1="56" x2="420" y2="66"/><line x1="444" y1="56" x2="444" y2="66"/><line x1="468" y1="56" x2="468" y2="66"/><line x1="492" y1="56" x2="492" y2="66"/><line x1="516" y1="56" x2="516" y2="66"/><line x1="540" y1="56" x2="540" y2="66"/></g>
@@ -130,7 +131,8 @@ defined how modern policies output actions.
 - **ALOHA 하드웨어**: 리더 팔 두 개로 팔로워 팔 두 개를 인형처럼 조종(관절 공간 매핑),
   카메라 4대, 오픈소스, 논문 §III가 밝힌 2만 달러 예산(초록에는 가격이 없다) — 50 Hz 고품질 양팔 시연 수집이 쉬워진다.
 - **ACT**: 디코더가 Transformer인 CVAE — 이미지 + 관절 위치(+ 스타일 잠재변수 $z$)를
-  조건으로 다음 $k{=}100$개의 관절 공간 행동을 출력.
+  조건으로 다음 $k{=}100$개의 관절 공간 행동을 출력. 실행할 때는 $z$를 사전분포의 평균인
+  0에 고정하므로 디코더가 결정적이다(§IV-B).
 
 <svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="단일 스텝 예측과 행동 청킹을 같은 타임라인 위에 그린 것">
   <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="60" y1="61" x2="540" y2="61"/><line x1="60" y1="56" x2="60" y2="66"/><line x1="84" y1="56" x2="84" y2="66"/><line x1="108" y1="56" x2="108" y2="66"/><line x1="132" y1="56" x2="132" y2="66"/><line x1="156" y1="56" x2="156" y2="66"/><line x1="180" y1="56" x2="180" y2="66"/><line x1="204" y1="56" x2="204" y2="66"/><line x1="228" y1="56" x2="228" y2="66"/><line x1="252" y1="56" x2="252" y2="66"/><line x1="276" y1="56" x2="276" y2="66"/><line x1="300" y1="56" x2="300" y2="66"/><line x1="324" y1="56" x2="324" y2="66"/><line x1="348" y1="56" x2="348" y2="66"/><line x1="372" y1="56" x2="372" y2="66"/><line x1="396" y1="56" x2="396" y2="66"/><line x1="420" y1="56" x2="420" y2="66"/><line x1="444" y1="56" x2="444" y2="66"/><line x1="468" y1="56" x2="468" y2="66"/><line x1="492" y1="56" x2="492" y2="66"/><line x1="516" y1="56" x2="516" y2="66"/><line x1="540" y1="56" x2="540" y2="66"/></g>

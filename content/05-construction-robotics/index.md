@@ -51,6 +51,10 @@ Cross-cutting layers (not streams — every stream uses them):
 - [[05-construction-robotics/construction-manipulation|9. Construction Manipulation]] — the
   manipulation lens across the streams: task-to-primitive matrix, the simulation–lab–site
   ladder applied to contact-rich work, and how to choose a defensible core task
+- [[05-construction-robotics/imitating-contact|10. Imitating Contact]] — the learning half on
+  S1's last 40 mm: what behaviour cloning assumes and the compounding error it costs in
+  millimetres, two demonstrators averaged into one mean, DAgger, impedance targets as the
+  action, a residual bounded by the site, and how many trials a seating claim needs
 - The **reading frame** below — how to evaluate any paper from any stream
 
 ### Reading frame for construction-robotics papers
@@ -80,7 +84,7 @@ this field's specific literature.
 
 ### Session schedule · 학습 일정
 
-One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] sets the unit and keeps the pacing table these counts feed. The track runs on S1 and S2, the two site objects frozen in [[05-construction-robotics/site-engineering|2.5]]. The three maps (1, 2, 8) take one session each; 2.5 comes before any stream; after it the streams 3–7 and the cross-cutting 7.5 may be taken in any order, and 9 reads best last because it builds on 4's two-hole geometry and 6's hold. A **bold** row belongs to the Literacy pass.
+One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] sets the unit and keeps the pacing table these counts feed. The track runs on S1 and S2, the two site objects frozen in [[05-construction-robotics/site-engineering|2.5]]. The three maps (1, 2, 8) take one session each; 2.5 comes before any stream; after it the streams 3–7 and the cross-cutting 7.5 may be taken in any order; 9 follows them because it builds on 4's two-hole geometry and 6's hold, and 10 reads last because it runs a learned policy on 9's pin; 10 also leans on robotics [[04-robotics/teleoperation-demonstration|12]], [[04-robotics/force-compliance-control|13]] and the [[04-robotics/capstone-panel-contact|capstone]], and on [[03-deep-learning/vla/index|VLA]] §2–§4 and §6. A **bold** row belongs to the Literacy pass.
 
 | # | Page and sections | Activity | Check that ends the session |
 |---:|---|---|---|
@@ -125,8 +129,14 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
 | **39** | 9 worked case | worked case by hand | Capture $0.988$ per hole and $0.976$ per panel; a $95$th-percentile error of $3.29$ mm; a side force of $329$ N stiff against $1.6$ N compliant; a vertical stiffness of $9{,}810$ N/m. |
 | 40 | 9 §4–6, problem set 3 | lab and sweep | Anchor papers by what they demonstrate, and a task chosen concretely (§4–§6); the base-error sweep: panel capture first falls below $90\%$ at $3$ mm, and the lead-in grows about $1.3$ mm per millimetre. |
 | 41 | 9 self-check, problem set 1–2, 4 | problem set | Solutions: $\sigma=1.75$ mm at a $3$ mm base term, a $5.31$ mm lead-in, $K\ge19{,}620$ N/m, wedging from $10.6^\circ$, and $124$ straight successes to rule out $2.4\%$. |
+| **42** | [[05-construction-robotics/imitating-contact\|10]] object, diagram | first pass | S1's last $40$ mm as a learning problem: a creep of $0.2$ mm per step ($8$ mm uncorrected) and the operator's corridor $[-0.12,\ 0.92]$ mm; a cloned policy's errors at $24$ and $9$ mm end $6.0$ and $3.0$ mm off, so it seats $0.98^{25}=0.603$. |
+| 43 | 10 §1–3 | first pass | The three seating conditions (§1); behaviour cloning's conditions and a cloned gain of $0.054$ against the operator's $0.5$ (§2); compounding error, $12.84$ steps adrift against a bound of $32$, horizons $27$ and $750$ (§3). |
+| 44 | 10 §4–5 | first pass | Two routes averaged into $-12.5$ mm and a switch probability of $0.478$ (§4); DAgger at $40$ min a round, two rounds reaching $0.980$ against $0.960$ for $16$ h of demonstrations (§5). |
+| **45** | 10 §6–8, worked case | worked case by hand | $329$ N stiff against $1.6$ N compliant, and the $19.6$ mm anchor at the handover (§6); the residual's worst case $2.33$ mm and $B\le0.43$ (§7); Wilson $[0.764,\ 0.991]$ for $19/20$ and $59$ straight successes (§8); the trail $0.446$, $0.603$, $1.000$, $2.33$ mm. |
+| 46 | 10 §9, problem set 3 | lab and sweep | Mistakes on $0.0225$ of the operator's states against $0.233$ of the policy's own; BC $0.875$, DAgger $0.950$–$0.995$, residual $1.000$; the corpus sweep $0.556$–$0.960$; BC from the site's start $0.656$; problem 3: first below $90\%$ at $T=40$. |
+| 47 | 10 self-check, problem set 1–2, 4 | problem set | Solutions: $\epsilon=0.01$ over $60$ mm gives $0.636$; a $0.3$ mm creep gives $0.535$ and $B\le0.36$; $38/40$ gives $[0.835,\ 0.986]$; the $20$-trial claim is compatible with $23.6\%$ failure. |
 
-**Totals.** 41 sessions for the Working pass, 19 of them bold. A Literacy pass is the bold rows, or one session a page — 11 — when only each object and worked case are read. Plan on up to a fifth more for problems redone and labs debugged.
+**Totals.** 47 sessions for the Working pass, 21 of them bold. A Literacy pass is the bold rows, or one session a page — 12 — when only each object and worked case are read. Plan on up to a fifth more for problems redone and labs debugged.
 
 ## 한국어
 
@@ -156,7 +166,7 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
 3. [[05-construction-robotics/site-perception|5. Site Perception, Scan-to-BIM & Inspection]] —
    LiDAR/포인트 클라우드, BIM 정합, 자율 스캔 로봇, 공정 모니터링, 점검 플랫폼. S1의 브래킷 구멍으로 계산한다 — 점 간격, 정합, 보호 대역을 둔 합격 판정
 4. [[05-construction-robotics/hrc-worker-centered|6. HRC & Worker-Centered Robotics]] —
-   로봇 루프 안의 생리 신호 센싱, 의도 인식 계획, 근접 안전, 외골격, 원격조작. S1의 통로와 붙들기로 계산한다 — 중계 정지가 있는 이격 거리, 해제 시험
+   로봇 루프 안의 생리 신호 센싱, 의도 인식 계획, 근접 안전, 외골격, 원격조작. S1의 통로와 지지로 계산한다 — 중계 정지가 있는 이격 거리, 해제 시험
 5. [[05-construction-robotics/digital-twin-workflows|7. Digital Twins & BIM-Driven Workflows]] —
    인터페이스 층: 공정 수준 트윈, BIM→로봇 과제 생성, 폐루프 실행, 과제 할당. S1의 좌표 사슬로 계산한다 — 오차 합성, 상태의 나이
 
@@ -169,6 +179,10 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
 - [[05-construction-robotics/construction-manipulation|9. 건설 매니퓰레이션]] — 스트림을
   가로지르는 조작의 렌즈: 작업–원시동작 매트릭스, 접촉이 많은 작업에 적용한 시뮬–실험실–현장
   사다리, 그리고 방어 가능한 핵심 작업 고르기
+- [[05-construction-robotics/imitating-contact|10. 접촉 모방]] — S1의 마지막 40 mm에서 본
+  학습 절반: 행동 복제가 가정하는 것과 그것이 밀리미터로 치르는 복합 오차, 시연자 둘이
+  평균 하나로 뭉개지는 것, DAgger, 행동으로서의 임피던스 목표, 현장이 한계를 긋는 잔차,
+  안착 주장에 필요한 시행 수
 - 아래의 **읽기 틀** — 어느 스트림의 논문이든 평가하는 법
 
 ### 건설로봇 논문 읽기 틀 · Reading frame
@@ -197,7 +211,7 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
 
 ### 학습 일정 · Session schedule
 
-한 행이 60–90분 학습 회차 하나다. 그 단위와, 이 회차 수가 들어가는 페이스 표는 [[02-foundations/overview|0. Overview]]에 있다. 이 트랙은 [[05-construction-robotics/site-engineering|2.5]]에서 고정한 두 현장 대상 S1과 S2로 돌아간다. 지도 셋(1, 2, 8)은 각각 한 회차이고, 2.5는 어느 흐름보다 먼저 한다. 그 뒤로 흐름 3–7과 가로지르는 7.5는 어떤 순서로 해도 되고, 9는 4의 두 구멍 기하와 6의 붙들기 위에 서므로 마지막에 읽는 것이 좋다. **굵은** 행이 Literacy 통과에 속한다.
+한 행이 60–90분 학습 회차 하나다. 그 단위와, 이 회차 수가 들어가는 페이스 표는 [[02-foundations/overview|0. Overview]]에 있다. 이 트랙은 [[05-construction-robotics/site-engineering|2.5]]에서 고정한 두 현장 대상 S1과 S2로 돌아간다. 지도 셋(1, 2, 8)은 각각 한 회차이고, 2.5는 어느 흐름보다 먼저 한다. 그 뒤로 흐름 3–7과 가로지르는 7.5는 어떤 순서로 해도 되고, 9는 4의 두 구멍 기하와 6의 지지 위에 서므로 그 뒤에 읽고, 10은 9의 핀 위에서 학습된 정책을 돌리므로 마지막에 읽는다. 10은 로보틱스의 [[04-robotics/teleoperation-demonstration|12]], [[04-robotics/force-compliance-control|13]], [[04-robotics/capstone-panel-contact|캡스톤]]과 [[03-deep-learning/vla/index|VLA]] §2–§4, §6에도 기댄다. **굵은** 행이 Literacy 통과에 속한다.
 
 | # | 페이지와 절 | 활동 | 회차를 끝내는 확인 |
 |---:|---|---|---|
@@ -221,10 +235,10 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
 | 18 | 5 §3–4, 대상으로 한 번 끝까지 | 손 계산 | 스캔 점 $1.00$ mm, 중심 $0.289$ mm, 정합 $0.354$ mm, 2시그마로 $0.913$ mm. 필요한 가장자리 점 $16$개. 보호 대역을 둔 합격 한계 $4.09$ mm, 그리고 $3.9$ mm로 잰 구멍이 허용오차 밖일 확률 $0.8\%$. |
 | 19 | 5 §5, 과제 3 | 실습과 스윕 | 몬테카를로 실습: 시뮬레이션한 지도 항은 $11.5$ m에서 처음 실패하고, 그 너머에서는 거리에 따라 판정이 뒤집힌다. |
 | 20 | 5 스스로 점검, 과제 1–2, 4 | 과제 | 정답과 대조: $15$ m에서 점 간격 $4.5$ mm, 가장자리 점 $16$개, 2시그마 $1.27$ mm로 지도 항을 넘는다. 표적 오차를 두 배로 하면 어느 거리도 맞추지 못한다. |
-| **21** | [[05-construction-robotics/hrc-worker-centered\|6]] 대상, 과제 그림, 대상으로 한 번 끝까지 | 첫 읽기 + 손 계산 | 맑은 공기에서 $S_p=1.30$ m(보행자 몫 $61.5\%$), 먼지 속 $1.50$ m, 중계 정지로 $3.40$ m. 모퉁이 속도 $0.5$, $0.17$ m/s, 또는 없음. 붙들기의 $2.5$ N 밀기와 해제 시험의 $3.92$ mm 처짐. |
+| **21** | [[05-construction-robotics/hrc-worker-centered\|6]] 대상, 과제 그림, 대상으로 한 번 끝까지 | 첫 읽기 + 손 계산 | 맑은 공기에서 $S_p=1.30$ m(보행자 몫 $61.5\%$), 먼지 속 $1.50$ m, 중계 정지로 $3.40$ m. 모퉁이 속도 $0.5$, $0.17$ m/s, 또는 없음. 지지의 $2.5$ N 밀기와 해제 시험의 $3.92$ mm 처짐. |
 | **22** | 6 §1–3 | 첫 읽기 | S1 위에서 정의한 폐루프 적응형 HRC(§1). 연구 계보와 조심해서 읽을 주장(§2–§3). |
 | 23 | 6 §4–6 | 첫 읽기 | 노출 산수: 한 달 $320$회 통과로는 통과당 비율 상한이 $0.93\%$이고, $10^4$번에 한 번을 보이려면 $29{,}956$회가 든다(§4). 정지 사슬과 가려짐으로 제한된 속도(§6). |
-| 24 | 6 §7–8 | 첫 읽기 | 작업자에게는 부드럽고 패널에는 단단한 붙들기, 그리고 볼트 하나로는 해제 시험을 통과하지 못하는 이유(§7). 작업자 상태 추정이 로봇의 한계를 좁힐 수는 있어도 넓힐 수는 없다는 일방향 허가(§8). |
+| 24 | 6 §7–8 | 첫 읽기 | 작업자에게는 부드럽고 패널에는 단단한 지지, 그리고 볼트 하나로는 해제 시험을 통과하지 못하는 이유(§7). 작업자 상태 추정이 로봇의 한계를 좁힐 수는 있어도 넓힐 수는 없다는 일방향 허가(§8). |
 | 25 | 6 스스로 점검, 과제 | 과제 | 정답과 대조: $2.0$ m/s의 차선. $1.25$ m/s² 제동이면 모퉁이 속도가 $0.17$에서 $0.44$ m/s로 오른다. $5$ N 밀기에는 $K_x\le1{,}000$ N/m. $K_z$를 두 배로 하면 처짐 $1.96$ mm. |
 | **26** | [[05-construction-robotics/digital-twin-workflows\|7]] 대상, 과제 그림 | 첫 읽기 | BIM에서 현장 기준점, 로봇 베이스, 공구로 옮겨 가는 S1의 구멍 A. 설계 좌표를 겨눈 명령은 $6.56$ mm, 트윈이 스캔한 구멍을 겨눈 명령은 $2.66$ mm 빗나가고, 허용오차는 $\pm5$ mm다. 상태의 나이가 $14.5$분에 지도 항을 넘는다. |
 | **27** | 7 §1–2 | 첫 읽기 | 닫힌 워크플로와 좌표 사슬을 따라 합성되는 오차(§1). 어느 데이터 흐름이 자동화되었는가로 가르는 디지털 모델·섀도·트윈(§2). |
@@ -242,5 +256,11 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
 | **39** | 9 대상으로 한 번 끝까지 | 손 계산 | 구멍당 포착 $0.988$, 패널당 $0.976$. $95$번째 백분위 오차 $3.29$ mm. 옆 힘은 단단한 팔 $329$ N 대 유연한 팔 $1.6$ N. 수직 강성 $9{,}810$ N/m. |
 | 40 | 9 §4–6, 과제 3 | 실습과 스윕 | 실제로 실증한 것으로 정렬한 앵커 논문과 구체적으로 고른 작업(§4–§6). 베이스 오차 훑기: 패널 포착은 $3$ mm에서 처음 $90\%$ 아래로 떨어지고, 리드인은 1밀리미터마다 약 $1.3$ mm 커져야 한다. |
 | 41 | 9 스스로 점검, 과제 1–2, 4 | 과제 | 정답과 대조: 베이스 항 $3$ mm에서 $\sigma=1.75$ mm, 리드인 $5.31$ mm, $K\ge19{,}620$ N/m, $10.6^\circ$부터 쐐기 걸림, $2.4\%$를 배제하는 $124$번 연속 성공. |
+| **42** | [[05-construction-robotics/imitating-contact\|10]] 대상, 과제 그림 | 첫 읽기 | 학습 문제로서의 S1 마지막 $40$ mm: 스텝당 크리프 $0.2$ mm(보정하지 않으면 $8$ mm)와 조작자의 회랑 $[-0.12,\ 0.92]$ mm. 복제한 정책의 오류가 $24$ mm와 $9$ mm에서 나면 $6.0$ mm와 $3.0$ mm 벗어나 끝나므로, 안착 확률은 $0.98^{25}=0.603$이다. |
+| 43 | 10 §1–3 | 첫 읽기 | 안착의 세 조건(§1). 행동 복제의 조건과, 조작자의 $0.5$에 대한 복제 이득 $0.054$(§2). 복합 오차: 표류 $12.84$스텝 대 상한 $32$, 지평 $27$과 $750$(§3). |
+| 44 | 10 §4–5 | 첫 읽기 | 두 경로가 평균 $-12.5$ mm로 뭉개지는 것과 전환 확률 $0.478$(§4). 라운드당 $40$분인 DAgger: 두 라운드의 $0.980$ 대 시연 $16$ h의 $0.960$(§5). |
+| **45** | 10 §6–8, 대상으로 한 번 끝까지 | 손 계산 | 단단한 팔 $329$ N 대 유연한 팔 $1.6$ N, 하중을 넘길 때의 고정점 $19.6$ mm(§6). 잔차의 최악 $2.33$ mm와 $B\le0.43$(§7). $19/20$의 Wilson $[0.764,\ 0.991]$, 연속 성공 $59$번(§8). 계산의 흐름 $0.446$, $0.603$, $1.000$, $2.33$ mm. |
+| 46 | 10 §9, 과제 3 | 실습과 스윕 | 조작자 상태의 $0.0225$ 대 정책 자신의 상태의 $0.233$에서 나는 실수. BC $0.875$, DAgger $0.950$–$0.995$, 잔차 $1.000$. 코퍼스 훑기 $0.556$–$0.960$. 현장 출발점에서의 BC $0.656$. 과제 3: $T=40$에서 처음 $90\%$ 아래. |
+| 47 | 10 스스로 점검, 과제 1–2, 4 | 과제 | 정답과 대조: $60$ mm에서 $\epsilon=0.01$이면 $0.636$, 크리프 $0.3$ mm면 $0.535$와 $B\le0.36$, $38/40$은 $[0.835,\ 0.986]$, $20$회 주장은 실패율 $23.6\%$와 양립한다. |
 
-**합계.** Working 통과는 41회이고 그중 굵은 회차가 19회다. Literacy 통과는 굵은 회차만 하는 것이고, 대상과 끝까지 계산만 읽으면 페이지당 1회로 11회다. 다시 푸는 과제와 실습 디버깅을 위해 최대 5분의 1을 더 잡는다.
+**합계.** Working 통과는 47회이고 그중 굵은 회차가 21회다. Literacy 통과는 굵은 회차만 하는 것이고, 대상과 끝까지 계산만 읽으면 페이지당 1회로 12회다. 다시 푸는 과제와 실습 디버깅을 위해 최대 5분의 1을 더 잡는다.

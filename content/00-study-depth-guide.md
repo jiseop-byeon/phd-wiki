@@ -167,11 +167,11 @@ Which pages those six areas actually are, so the row is something you can act on
 | grasping | [[04-robotics/grasping\|15. Grasping]] |
 | manipulator dynamics and the operational-space bridge | [[02-foundations/manipulator-kinematics-dynamics\|10. Manipulator Kinematics & Dynamics]] |
 | teleoperation and demonstration collection | [[04-robotics/teleoperation-demonstration\|12. Teleoperation & Demonstration]] |
-| imitation learning as used for manipulation | **no page of its own** — it is split across [[02-foundations/rl-robot-learning\|7.5 RL for Robot Learning §1]] (compounding error, the BC/DAgger argument), the method notes ([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]), and §6 of the teleoperation page (what the data does and does not contain) |
+| imitation learning as used for manipulation | [[05-construction-robotics/imitating-contact\|10. Imitating Contact]] — behaviour cloning on S1's seating, compounding error in millimetres, DAgger, impedance targets as the action, a bounded residual and the trial count; it builds on [[02-foundations/rl-robot-learning\|7.5 RL for Robot Learning §1]] (the BC/DAgger argument as first met), the method notes ([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]) and §6 of the teleoperation page (what the data does and does not contain) |
 
-The last row is the honest one: five of the six areas have a page marked `study-depth:
-Mastery`, and imitation learning does not. Promote those three places together when the
-thesis turns that way.
+Since 2026-09-23 each of the six areas has a page marked `study-depth: Mastery`. Imitation
+learning was the last: until then it was split across the three places its row still names,
+and page 10 now carries it on S1.
 
 > [!important] Mastery here is narrower than "manipulation"
 > This profile does **not** promote all of manipulation to Mastery. Kinematics, inverse
@@ -346,10 +346,11 @@ Mastery, SE(3)·인식·제어·sim-to-real은 Working, 나머지 모델 계열�
 | 파지 | [[04-robotics/grasping\|15. 파지]] |
 | 매니퓰레이터 동역학과 작업공간으로 잇는 다리 | [[02-foundations/manipulator-kinematics-dynamics\|10. 매니퓰레이터 기구학·동역학]] |
 | 원격조작과 시연 수집 | [[04-robotics/teleoperation-demonstration\|12. 원격조작과 시연 수집]] |
-| 조작에 쓰는 모방학습 | **전용 페이지가 없다** — [[02-foundations/rl-robot-learning\|7.5 로봇 학습을 위한 RL §1]](복합 오차, BC/DAgger 논증), 방법 노트들([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]), 그리고 원격조작 페이지 §6(그 데이터에 무엇이 있고 없는지)에 나뉘어 있다 |
+| 조작에 쓰는 모방학습 | [[05-construction-robotics/imitating-contact\|10. 접촉 모방]] — S1 안착 위의 행동 복제, 밀리미터로 잰 복합 오차, DAgger, 행동으로서의 임피던스 목표, 한계를 둔 잔차와 시행 수. [[02-foundations/rl-robot-learning\|7.5 로봇 학습을 위한 RL §1]](처음 만나는 BC/DAgger 논증), 방법 노트들([[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]]), 원격조작 페이지 §6(그 데이터에 무엇이 있고 없는지) 위에 선다 |
 
-마지막 행이 정직한 쪽이다: 여섯 중 다섯은 `study-depth: Mastery`가 붙은 페이지가 있고
-모방학습만 없다. 논문이 그쪽으로 틀면 저 세 곳을 함께 올려라.
+2026-09-23부터 여섯 영역 모두에 `study-depth: Mastery`가 붙은 페이지가 있다. 모방학습이
+마지막이었다. 그전까지는 이 행이 지금도 드는 세 곳에 나뉘어 있었고, 이제 10번 페이지가 S1
+위에서 그것을 진다.
 
 > [!important] 여기서의 Mastery는 "매니퓰레이션"보다 좁다
 > 이 프로파일은 매니퓰레이션 전체를 Mastery로 올리지 **않는다**. 기구학, 역기구학, 궤적

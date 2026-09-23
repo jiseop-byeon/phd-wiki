@@ -26,7 +26,7 @@ flowchart LR
 - [[04-robotics/modern-robotics-book|1. Modern Robotics]] — book guide and scope
 - [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]] — chapters 2–6 and 8–13; chapters 10–13 are read later, alongside the pages they serve (see the study-order note below)
 - Chapter 7 (closed-chain kinematics) is intentionally optional: this track prioritizes open-chain manipulation, control, physical interaction, and field/mobile robotics literacy.
-- On the manipulation-first path, follow ch.2–6 with [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] — the dynamics half those summaries stop short of, and the operational-space inertia that makes section E readable.
+- On the dissertation path ([[07-research-program/index|7. Research Program §8]]), [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]] comes before ch.2–6, right after the foundations gate: it derives the kinematics it needs on P2 itself, and supplies the dynamics half those summaries stop short of and the operational-space inertia that makes section E readable.
 
 > [!tip] Learn with one running task · 하나의 과제로 배우기
 > Use “move a tool to a panel and make controlled contact” as a running example. The arm is plant **P2** and the panel has stiffness of plant **P3**, both frozen in [[02-foundations/lab-plants|0.6 Lab Plants]]. Geometry expresses the target in the robot's frame. Forward kinematics predicts the tip from joint angles; inverse kinematics asks which joint angles can reach that target. The Jacobian relates small motions, and dynamics turns desired acceleration into torque. Estimation supplies the uncertain state; planning chooses a feasible route; feedback corrects motion; contact control determines the force–motion response at the panel.
@@ -69,7 +69,7 @@ Depth target: classical control solid; MPC to formulation and representative app
 
 ### H. Manipulation specialization
 
-Optional relative to the common track above — these belong to the manipulation-first path in [[07-research-program/index|7. Research Program]]. Read them after section E.
+Optional relative to the common track above. 12, 13 and 15 are on the dissertation path of [[07-research-program/index|7. Research Program §8]], and 14 and 16 join it when its §9 says. Read them after section E.
 
 One survey is worth reading before all five, because it is the citation a manipulation thesis introduction is expected to engage with: **Billard & Kragic, "Trends and challenges in robot manipulation," *Science* 364(6446), eaat8414, 2019** — a field-level statement of what manipulation still cannot do, and the frame reviewers will place a new contribution inside. Its companion on the learning side is **Kroemer, Niekum & Konidaris, "A Review of Robot Learning for Manipulation," *JMLR* 22(30), pp. 1–82, 2021** — note the year: it circulates as a 2019 preprint and is often miscited that way.
 
@@ -274,7 +274,7 @@ flowchart LR
 - [[04-robotics/modern-robotics-book|1. Modern Robotics]] — 책 가이드와 범위
 - [[04-robotics/modern-robotics/index|2. Modern Robotics Summary]] — 2–6장, 8–13장. 10–13장은 나중에, 그 장이 받쳐 주는 페이지와 함께 읽는다(아래 학습 순서 참고)
 - 7장(폐쇄 사슬 기구학)은 의도적으로 선택 사항이다: 이 트랙은 개연쇄 매니퓰레이션, 제어, 물리 상호작용, 현장/모바일 로보틱스 문해력을 우선한다.
-- 매니퓰레이션 우선 경로에서는 2~6장 다음에 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]]을 읽는다 — 그 요약들이 못 미치고 멈춘 동역학 절반, 그리고 E절을 읽을 수 있게 만드는 작업 공간 관성.
+- 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])에서는 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]]을 2~6장보다 먼저, 기초 통과 점검 바로 뒤에 읽는다. 필요한 기구학을 P2 위에서 스스로 유도하고, 그 요약들이 못 미치고 멈춘 동역학 절반과 E절을 읽을 수 있게 만드는 작업 공간 관성을 준다.
 
 > [!tip] 하나의 과제로 배우기 · Learn with one running task
 > “도구를 패널까지 옮겨 힘을 조절하며 접촉한다”를 계속 같은 예로 쓴다. 팔은 장치 **P2**, 패널 강성은 장치 **P3**이며 둘 다 [[02-foundations/lab-plants|0.6 Lab Plants]]에 고정되어 있다. 기하는 목표를 로봇 프레임으로 표현한다. 순기구학은 관절각에서 도구 끝을 예측하고, 역기구학은 목표에 도달할 관절각을 묻는다. 자코비안은 작은 운동을 연결하고 동역학은 원하는 가속도를 토크로 바꾼다. 추정은 불확실한 상태를 주고, 계획은 가능한 경로를 고르고, 피드백은 운동을 보정하며, 접촉 제어는 패널에서의 힘–운동 반응을 정한다.
@@ -317,7 +317,7 @@ flowchart LR
 
 ### H. 매니퓰레이션 전문화
 
-위의 공통 트랙에 대해 선택 사항이다 — [[07-research-program/index|7. 연구 프로그램]]의 매니퓰레이션 우선 경로에 속한다. E절 다음에 읽는다.
+위의 공통 트랙에 대해 선택 사항이다. 12, 13, 15는 [[07-research-program/index|7. 연구 프로그램 §8]]의 학위논문 경로에 있고, 14와 16은 그 §9가 말할 때 합류한다. E절 다음에 읽는다.
 
 다섯 편보다 먼저 읽을 서베이가 하나 있다. 매니퓰레이션 논문 서론이 상대해야 하는 인용이기 때문이다: **Billard & Kragic, "Trends and challenges in robot manipulation," *Science* 364(6446), eaat8414, 2019** — 매니퓰레이션이 아직 하지 못하는 것에 대한 분야 수준의 진술이고, 리뷰어가 새 기여를 놓고 볼 프레임이다. 학습 쪽 짝은 **Kroemer, Niekum & Konidaris, "A Review of Robot Learning for Manipulation," *JMLR* 22(30), pp. 1–82, 2021**이다 — 연도에 주의하라. 2019년 프리프린트로 유통되어 그렇게 잘못 인용되는 일이 잦다.
 

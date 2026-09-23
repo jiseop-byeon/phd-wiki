@@ -160,7 +160,7 @@ met.
 | Deep-learning bridge courses 1–6 with 1.1–1.4 and 6.1 | about 11–26 | about 50–60 | eleven problem sets with their labs + the cumulative problem set; Working only for modules used in experiments |
 | Robotics common track 1–11 with 3.2, 5.5, 10.5, then 26 | about 25–40 | about 80–100 | running-task checkpoints + cumulative problem set + capstone lab |
 | One robotics specialization | about 3–12 | about 13–56 | the selected pages' problem sets or build artifacts |
-| Construction track 1–9 with 2.5 and 7.5 | about 11–20 | about 40–50 | eight problem sets on S1 and S2, three of them with labs, + the site-system ledger |
+| Construction track 1–10 with 2.5 and 7.5 | about 12–21 | about 45–55 | nine problem sets on S1 and S2, four of them with labs, + the site-system ledger |
 | Research practice 1–8 | about 8–20 | about 35–45 | eight problem sets on RS1, three of them with labs |
 | Paper track | ongoing | contribution-dependent | ★·◐·○ policy, not a fixed end date |
 
@@ -410,7 +410,7 @@ graph LR
 | 딥러닝 브리지 교과 1–6과 1.1–1.4, 6.1 | 약 11–26회 | 약 50–60회 | 과제 열한 개와 그 실습 + 누적 과제; 실험에 쓰는 모듈만 Working |
 | 로보틱스 공통 1–11(3.2, 5.5, 10.5 포함), 이어서 26 | 약 25–40회 | 약 80–100회 | running-task 확인 + 누적 과제 + 캡스톤 실습 |
 | 로보틱스 전문화 하나 | 약 3–12회 | 약 13–56회 | 선택 페이지의 과제 또는 build 산출물 |
-| 건설 트랙 1–9, 2.5와 7.5 포함 | 약 11–20회 | 약 40–50회 | S1과 S2 위의 과제 여덟, 그중 셋은 실습 포함, + 현장 시스템 장부 |
+| 건설 트랙 1–10, 2.5와 7.5 포함 | 약 12–21회 | 약 45–55회 | S1과 S2 위의 과제 아홉, 그중 넷은 실습 포함, + 현장 시스템 장부 |
 | 연구 실무 1–8 | 약 8–20회 | 약 35–45회 | RS1 위의 과제 여덟 개, 그중 셋은 실습 포함 |
 | 논문 트랙 | 계속됨 | 기여에 따라 다름 | 고정 종료일이 아니라 ★·◐·○ 정책 |
 

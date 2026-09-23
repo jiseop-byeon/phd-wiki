@@ -334,12 +334,12 @@ The design conclusion for this robot: $k$ between 3 and 5 — a commitment of 0.
 
 **Why π0's expert is a separate set of weights.** π0 is one transformer with two sets of weights: image and text tokens pass through the $3$B PaliGemma weights, robot-state and action tokens through a $300$M set of their own, and the two meet only in self-attention. π0 calls this a mixture of experts with two elements. Liang et al. (2024), studying the same split for text, images and speech, call it a **Mixture of Transformers**: every weight except the embeddings — feed-forward layers, attention projections, layer norms — is kept separate per modality, while attention still runs over the whole sequence, and in their 7B text-and-image setting it matched a dense model at $55.8\%$ of the training FLOPs. Unlike the usual mixture of experts ([[03-deep-learning/foundations/attention-transformer|1.2 §9]]), no learned gate chooses: a token's type decides its weights. The split is also what makes $N$ passes affordable. The observation is encoded once and its keys and values are cached, so each of π0's ten flow steps reruns only the small expert on the action tokens. On an RTX 4090 the ten steps together take $27\,\mathrm{ms}$, less than the single $32\,\mathrm{ms}$ pass over the observation, in a $73\,\mathrm{ms}$ total on board.
 
-**A third answer, and what they share.** [[01-canonical-papers/notes/4-vla/act|ACT]] keeps plain regression but conditions on a CVAE latent, so the latent picks the mode that the mean of §2 destroyed. All three exist because $L_{\mathrm{BC}}$ under a unimodal head returns the average of valid actions: for the two demonstrations $(-1,0)$ and $(1,0)$ it returns $(0,0)$, straight into the obstacle. A token head keeps both modes *in its bin distribution* — but only if the action is **sampled or taken as the argmax**; average the distribution and $(0,0)$ returns. A denoiser draws one mode by construction. A CVAE draws one per latent.
+**A third answer, and what they share.** [[01-canonical-papers/notes/4-vla/act|ACT]] keeps plain regression but trains it as a CVAE, so the variation between demonstrations goes into a latent instead of blurring the fit; at test time it fixes the latent at the prior mean, zero, and decodes deterministically (Zhao et al. 2023, §IV-B), so on the robot no latent picks a mode. All three exist because $L_{\mathrm{BC}}$ under a unimodal head returns the average of valid actions: for the two demonstrations $(-1,0)$ and $(1,0)$ it returns $(0,0)$, straight into the obstacle. A token head keeps both modes *in its bin distribution* — but only if the action is **sampled or taken as the argmax**; average the distribution and $(0,0)$ returns. A denoiser draws one mode by construction. A CVAE could draw one per sampled latent, but ACT decodes one chunk at $z=0$ and its temporal ensembling averages overlapping chunks, so near a fork the averaging can bring §2's mean back ([[05-construction-robotics/imitating-contact|10. Imitating Contact §4]]).
 
 | | tokens | denoiser (diffusion or flow) | CVAE regression |
 |---|---|---|---|
 | passes per chunk | $D\times H$, sequential | $N$, independent of $H$ | $1$ |
-| multimodality | in the bin distribution, if you sample | by construction | via the latent |
+| multimodality | in the bin distribution, if you sample | by construction | in training, through the latent; ACT decodes at $z=0$ |
 | precision limit | bin width (on D4, $0.16\,\mathrm{mm}$) | denoising steps cut for speed | regression variance |
 | what it inherits | a pretrained LM's weights and language generalization | diffusion's sampler, and MPC's receding horizon | a plain Transformer decoder |
 
@@ -738,12 +738,12 @@ semantic generalization, motor competence, embodiment transfer, recovery를 나�
 
 **π0의 expert가 따로 된 가중치인 이유.** π0는 가중치 두 벌을 가진 transformer 하나다. 이미지와 텍스트 토큰은 $3$B PaliGemma 가중치를, 로봇 상태와 행동 토큰은 자기 몫의 $300$M 가중치를 지나고, 둘은 self-attention에서만 만난다. π0는 이것을 원소 둘짜리 mixture of experts라고 부른다. 같은 분할을 텍스트·이미지·음성에 대해 연구한 Liang 외(2024)는 **Mixture of Transformers**(MoT)라고 부른다. 임베딩을 뺀 모든 가중치 — feed-forward 층, attention 투영, layer norm — 를 모달리티마다 따로 두되 attention은 여전히 시퀀스 전체에 걸치고, 그들의 7B 텍스트·이미지 설정에서 밀집 모델과 같은 성능을 학습 FLOPs의 $55.8\%$로 냈다. 보통의 mixture of experts([[03-deep-learning/foundations/attention-transformer|1.2 §9]])와 달리 학습된 게이트가 고르지 않는다. 토큰의 종류가 가중치를 정한다. $N$번의 통과를 감당할 수 있게 하는 것도 이 분할이다. 관측은 한 번 인코딩하고 그 key와 value를 캐시에 두므로, π0의 flow 스텝 열 번은 매번 행동 토큰 위의 작은 expert만 다시 돌린다. RTX 4090에서 열 스텝을 합쳐 $27\,\mathrm{ms}$로, 관측을 한 번 지나는 $32\,\mathrm{ms}$보다 짧고, 로봇 위 전체는 $73\,\mathrm{ms}$다.
 
-**세 번째 답, 그리고 셋의 공통점.** [[01-canonical-papers/notes/4-vla/act|ACT]]는 평범한 회귀를 유지하되 CVAE 잠재변수로 조건화해, §2의 평균이 부순 봉우리를 잠재변수가 고르게 한다. 셋 모두 존재하는 이유는 단봉 헤드 아래의 $L_{\mathrm{BC}}$가 타당한 행동들의 평균을 돌려주기 때문이다. 시연 $(-1,0)$과 $(1,0)$에 대해 그것은 장애물 한가운데인 $(0,0)$이다. 토큰 헤드는 두 봉우리를 *구간 분포 안에* 간직하지만, 행동을 **표본으로 뽑거나 argmax로 고를 때만** 그렇다. 분포를 평균 내면 $(0,0)$이 돌아온다. 노이즈 제거기는 구성상 한 봉우리를 뽑고, CVAE는 잠재변수마다 하나를 뽑는다.
+**세 번째 답, 그리고 셋의 공통점.** [[01-canonical-papers/notes/4-vla/act|ACT]]는 평범한 회귀를 유지하되 CVAE로 학습해, 시연 사이의 변동이 적합을 흐리는 대신 잠재변수에 담기게 한다. 실행할 때는 잠재변수를 사전분포의 평균인 0에 고정하고 결정적으로 디코딩하므로(Zhao 외 2023, §IV-B), 로봇 위에서 봉우리를 고르는 잠재변수는 없다. 셋 모두 존재하는 이유는 단봉 헤드 아래의 $L_{\mathrm{BC}}$가 타당한 행동들의 평균을 돌려주기 때문이다. 시연 $(-1,0)$과 $(1,0)$에 대해 그것은 장애물 한가운데인 $(0,0)$이다. 토큰 헤드는 두 봉우리를 *구간 분포 안에* 간직하지만, 행동을 **표본으로 뽑거나 argmax로 고를 때만** 그렇다. 분포를 평균 내면 $(0,0)$이 돌아온다. 노이즈 제거기는 구성상 한 봉우리를 뽑는다. CVAE는 잠재변수를 뽑을 때마다 하나를 뽑을 수 있지만, ACT는 $z=0$에서 청크 하나를 디코딩하고 시간 앙상블로 겹치는 청크를 평균하므로, 갈림길 근처에서는 그 평균이 §2의 평균을 다시 불러올 수 있다([[05-construction-robotics/imitating-contact|10. 접촉 모방 §4]]).
 
 | | 토큰 | 노이즈 제거기(확산·flow) | CVAE 회귀 |
 |---|---|---|---|
 | 청크당 패스 | $D\times H$번, 순차 | $N$번, $H$와 무관 | $1$번 |
-| 다봉성 | 표본으로 뽑으면 구간 분포 안에 | 구성상 | 잠재변수로 |
+| 다봉성 | 표본으로 뽑으면 구간 분포 안에 | 구성상 | 학습에서 잠재변수로. ACT는 $z=0$으로 디코딩한다 |
 | 정밀도 한계 | 구간 폭(D4에서 $0.16\,\mathrm{mm}$) | 속도를 위해 줄인 스텝 수 | 회귀 분산 |
 | 물려받는 것 | 사전학습 LM의 가중치와 언어 일반화 | 확산의 샘플러, MPC의 receding horizon | 평범한 트랜스포머 디코더 |
 

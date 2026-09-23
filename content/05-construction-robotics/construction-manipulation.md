@@ -317,6 +317,8 @@ the [[07-research-program/index|research program]] is built on.
 - [ ] Apply the five task-selection criteria and reject at least one tempting task.
 - [ ] State two things construction gives back to general manipulation research.
 
+Next, [[05-construction-robotics/imitating-contact|10. Imitating Contact]] keeps this page's pin and lead-in and asks what a policy learned from demonstrations does in S1's last 40 mm: how behaviour cloning's per-step errors compound into millimetres at the pin, and which fix keeps the policy inside the lead-in.
+
 ### Self-check
 
 1. Why does hybrid position/force control fail on a construction panel-fitting task that it
@@ -728,6 +730,8 @@ $$P(r\le r_c)=1-e^{-r_c^2/2\sigma^2}=1-e^{-16/3.62}=0.988$$
 - [ ] 현장 검증된 매니퓰레이션 사례 셋을 대고 접촉·배치 증거의 차이를 말한다.
 - [ ] 작업 선정 다섯 기준을 적용해, 끌리는 작업 하나를 최소한 탈락시킨다.
 - [ ] 건설이 일반 조작 연구에 되돌려주는 것 둘을 말한다.
+
+다음 [[05-construction-robotics/imitating-contact|10. 접촉 모방]]은 이 페이지의 핀과 리드인을 그대로 두고, 시연에서 배운 정책이 S1의 마지막 40 mm에서 무엇을 하는지 묻는다. 행동 복제의 스텝당 오류가 핀에서 몇 밀리미터로 불어나는지, 어떤 해법이 정책을 리드인 안에 붙잡아 두는지다.
 
 ### 스스로 점검
 
