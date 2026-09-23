@@ -378,6 +378,13 @@ human's intent reaches the robot, and how cheap it is to produce an hour of demo
   Interface's premise — "in-the-wild robot teaching without in-the-wild robots" (Chi et al.,
   RSS 2024). Extremely cheap and collectible anywhere, at the price of an **embodiment gap** — the data must be
   transferred to a robot whose camera placement, reachable workspace, and dynamics differ.
+- **No robot and no gripper: gloves and human video.** Since 2025 the cheapest end of the spectrum
+  has moved past the handheld gripper. Sunday Robotics trained its ACT-1 home model on data from
+  people wearing sensor gloves, with no robot data at all, and reports that $90\%$ of the glove
+  data converts to robot data ([company post](https://www.sunday.ai/journal/no-robot-data)); DYNA-2
+  and GR00T N1.7 pretrain on a million and twenty thousand hours of human video, recovering
+  pseudo-actions from hand poses ([[03-deep-learning/vla/index|4. VLA §7]]). The embodiment gap of
+  the previous item widens to a human hand, and nothing on this list records force.
 - **Haptic device or exoskeleton.** Genuine bilateral force feedback and the highest
   fidelity available, at the highest cost per hour.
 
@@ -1089,6 +1096,12 @@ $$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfr
   가르치기"(Chi et al., RSS 2024). 대단히 싸고 어디서나 모을 수 있지만 **embodiment 격차**를
   대가로 치른다 — 카메라 배치, 도달 가능한 작업 영역, 동역학이 다른 로봇으로 데이터를
   옮겨야 한다.
+- **로봇도 그리퍼도 없이: 장갑과 사람 비디오.** 2025년부터 스펙트럼의 가장 싼 끝이 휴대형
+  그리퍼를 넘어섰다. Sunday Robotics는 센서 장갑을 낀 사람의 데이터로, 로봇 데이터 없이 가정용
+  모델 ACT-1을 학습했고 장갑 데이터의 $90\%$가 로봇 데이터로 변환된다고 보고한다([회사 글](https://www.sunday.ai/journal/no-robot-data)).
+  DYNA-2와 GR00T N1.7은 사람 비디오 100만 시간과 2만 시간으로 사전학습하며 손 자세에서 의사
+  행동을 복원한다([[03-deep-learning/vla/index|4. VLA §7]]). 앞 항목의 embodiment 격차가 사람 손까지
+  넓어지고, 이 목록의 어느 것도 힘을 기록하지 않는다.
 - **햅틱 장치 또는 외골격.** 진짜 양방향 힘 피드백과 최고 충실도를, 시간당 최고 비용에.
 
 건설에서는 대개 비용 축이 결정한다. 현장 데이터는 실험실에서 모을 수 없고, 보정된 리그가

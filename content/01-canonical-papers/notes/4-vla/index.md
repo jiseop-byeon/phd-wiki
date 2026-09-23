@@ -81,6 +81,24 @@ and the comparison is about deployability rather than capability.
 > needs to be — the list is for papers you will cite, and these are for orienting yourself in a
 > literature that produces a new survey every few months.
 
+### 4. The generalists of 2025–2026 that have no note
+
+Some models are met often enough to recognize but have no paper note, usually because the only source is a company post. Checked against those sources on 2026-09-22; read each row as a claim about what exists, and hold it to [[03-deep-learning/vla/index|4. VLA §4]] before it carries an argument.
+
+| model (maker, date) | what it is built from | rates and data | evidence |
+|---|---|---|---|
+| Helix (Figure, February 2025) | a 7B open vision–language model as "System 2" at $7$–$9$ Hz over an 80M "System 1" policy at $200$ Hz; $35$ degrees of freedom of the upper body, fingers included | about $500$ hours of teleoperation; runs on embedded GPUs on the robot | [company post](https://www.figure.ai/news/helix), no success rates |
+| Redwood AI (1X, June 2025) | a 160M VLA for whole-body mobile manipulation on the NEO humanoid | on the robot's GPU at about $5$ Hz; teleoperated and autonomous episodes, failures included | [company post](https://www.1x.tech/discover/redwood-ai) |
+| Large Behavior Models (Toyota Research Institute, July 2025) | multitask Diffusion Policies at scale | blind, randomized real and simulated trials with statistical confidence: multitask pretraining learned new tasks from a fraction of single-task data | [paper](https://arxiv.org/abs/2507.05331) |
+| LBM on Atlas (Boston Dynamics with TRI, August 2025) | a 450M diffusion transformer trained by flow matching, whole-body control of all $50$ degrees of freedom | $30$ Hz, chunks of $48$ actions ($1.6$ s); VR teleoperation with foot tracking, plus simulation | [company post](https://bostondynamics.com/blog/large-behavior-models-atlas-find-new-footing/); names tactile force control as open work |
+| SmolVLA (Hugging Face, June 2025) | a small VLA trained on community-collected LeRobot data, with asynchronous inference | trains on one GPU, runs on consumer GPUs or CPUs; reported comparable to VLAs ten times larger | [paper](https://arxiv.org/abs/2506.01844), open code and data |
+| GraspVLA (May 2025) | a grasping VLA pretrained on SynGrasp-1B, a billion synthetic frames, with internet semantics | synthetic action data only, zero-shot real grasping | [paper](https://arxiv.org/abs/2505.03233) |
+| ACT-1 (Sunday Robotics, November 2025) | a mobile-manipulation model trained on no robot data: people wearing Skill Capture Gloves in homes | clearing a table into a dishwasher: $21$ objects, $68$ interactions, over $130$ ft; needs a 3D map of a new home; $90\%$ of glove data converts to robot data | [company post](https://www.sunday.ai/journal/no-robot-data) |
+| Skild Brain and S1 (Skild AI, September 2025 and August 2026) | an "omni-bodied" policy trained in simulation on $100{,}000$ robot bodies; S1 learns a new task from one video in its context | adapts in seconds to unseen or damaged bodies; S1 reports $66\%$ on unseen tasks against $9\%$ for a VLA baseline | company posts ([omni-bodied](https://www.skild.ai/blogs/omni-bodied), [S1](https://skild.ai/blogs/s1)) |
+| CraftNet (Sharpa, January 2026) | a vision–tactile–language–action hierarchy: a $1$ Hz VLM, $10$ Hz motion planning, and a $100$ Hz tactile and force loop for the last millimetre | no numbers or paper | [company post](https://www.sharpa.com/blogs/news/sharpa-announces-craftnet-a-hierarchical-vtla-model-for-fine-manipulation) |
+
+GEN-0 and GEN-1.5 (Generalist AI) and DYNA-2 (Dyna Robotics) are read in [[03-deep-learning/vla/index|4. VLA §7–§8]]; Gemini Robotics has its own [[gemini-robotics|note]]. Two patterns run through the table. The rates stack in layers — a slow reasoner over a fast controller, now with a third, tactile layer at $100$ Hz in CraftNet — which is the two-rate structure of [[gr00t-n1|GR00T]] carried one level further. And the data move off the robot: gloves, handheld grippers, human video and simulation replace teleoperation as the bulk of what a policy sees. Only three rows come with a paper or a statistical evaluation.
+
 ## 한국어
 
 로봇 파운데이션 모델 — RT-1부터 GR00T N1까지. 이 페이지는 지도이고, 읽기 순서는
@@ -150,3 +168,21 @@ VLA 서베이는 모자라지 않고, 서로 분류가 다르다. 각자 이 분
 > 원하면 Yu 외와 SmolVLA를 읽어라. 둘 다 핵심 논문 리스트에 없고, 있을 필요도 없다. 리스트는
 > 인용할 논문을 위한 것이고, 이들은 몇 달마다 새 서베이가 나오는 문헌 속에서 방향을 잡기 위한
 > 것이다.
+
+### 4. 노트가 없는 2025–2026년의 범용 정책들
+
+알아볼 만큼 자주 만나지만 노트가 없는 모델들이 있다. 대개 출처가 회사 글뿐이기 때문이다. 2026-09-22에 그 출처들과 대조했다. 각 행을 무엇이 있다는 주장으로 읽고, 논증을 싣기 전에 [[03-deep-learning/vla/index|4. VLA §4]]에 비춰 보라.
+
+| 모델(만든 곳, 날짜) | 무엇으로 지었나 | 주기와 데이터 | 증거 |
+|---|---|---|---|
+| Helix(Figure, 2025년 2월) | $7$–$9$ Hz의 "System 2"인 7B 공개 시각–언어 모델 아래 $200$ Hz의 "System 1"인 80M 정책. 손가락까지 상체 $35$자유도 | 원격조작 약 $500$시간. 로봇 위 임베디드 GPU에서 돈다 | [회사 글](https://www.figure.ai/news/helix), 성공률 없음 |
+| Redwood AI(1X, 2025년 6월) | NEO 휴머노이드의 전신 이동 조작을 위한 160M VLA | 로봇 GPU에서 약 $5$ Hz. 실패를 포함한 원격조작·자율 에피소드 | [회사 글](https://www.1x.tech/discover/redwood-ai) |
+| Large Behavior Model(Toyota Research Institute, 2025년 7월) | 규모를 키운 다중 과제 Diffusion Policy | 통계적 신뢰도를 갖춘 블라인드 무작위 실제·시뮬레이션 시행. 다중 과제 사전학습은 단일 과제 데이터의 일부만으로 새 과제를 익혔다 | [논문](https://arxiv.org/abs/2507.05331) |
+| Atlas의 LBM(Boston Dynamics와 TRI, 2025년 8월) | flow matching으로 학습한 450M 디퓨전 트랜스포머, $50$자유도 전신 제어 | $30$ Hz, 행동 $48$개 청크($1.6$초). 발 추적을 넣은 VR 원격조작과 시뮬레이션 | [회사 글](https://bostondynamics.com/blog/large-behavior-models-atlas-find-new-footing/). 촉각 힘 제어를 남은 과제로 꼽는다 |
+| SmolVLA(Hugging Face, 2025년 6월) | 커뮤니티가 모은 LeRobot 데이터로 학습한 작은 VLA, 비동기 추론 | GPU 한 장으로 학습하고 소비자용 GPU나 CPU에서 돈다. 열 배 큰 VLA와 비슷하다고 보고 | [논문](https://arxiv.org/abs/2506.01844), 코드와 데이터 공개 |
+| GraspVLA(2025년 5월) | 합성 프레임 10억 개인 SynGrasp-1B와 인터넷 의미 정보로 사전학습한 파지 VLA | 합성 행동 데이터만으로 실제 파지를 zero-shot | [논문](https://arxiv.org/abs/2505.03233) |
+| ACT-1(Sunday Robotics, 2025년 11월) | 로봇 데이터 없이, 집에서 Skill Capture Glove를 낀 사람의 데이터로 학습한 이동 조작 모델 | 식탁을 치워 식기세척기에 넣기: 물체 $21$개, 조작 $68$번, $130$ft 이상 이동. 새 집에는 3D 지도가 필요하고, 장갑 데이터의 $90\%$가 로봇 데이터로 변환된다 | [회사 글](https://www.sunday.ai/journal/no-robot-data) |
+| Skild Brain과 S1(Skild AI, 2025년 9월과 2026년 8월) | 시뮬레이션에서 로봇 몸 $100{,}000$종으로 학습한 "옴니바디" 정책. S1은 문맥 속 비디오 하나로 새 과제를 익힌다 | 처음 보는 몸이나 망가진 몸에 몇 초 만에 적응. S1은 처음 보는 과제에서 VLA 기준선 $9\%$ 대비 $66\%$를 보고 | 회사 글([옴니바디](https://www.skild.ai/blogs/omni-bodied), [S1](https://skild.ai/blogs/s1)) |
+| CraftNet(Sharpa, 2026년 1월) | 시각–촉각–언어–행동 계층. $1$ Hz VLM, $10$ Hz 동작 계획, 마지막 1밀리미터를 위한 $100$ Hz 촉각·힘 루프 | 수치도 논문도 없음 | [회사 글](https://www.sharpa.com/blogs/news/sharpa-announces-craftnet-a-hierarchical-vtla-model-for-fine-manipulation) |
+
+GEN-0과 GEN-1.5(Generalist AI), DYNA-2(Dyna Robotics)는 [[03-deep-learning/vla/index|4. VLA §7–§8]]에서 읽고, Gemini Robotics는 따로 [[gemini-robotics|노트]]가 있다. 표에는 두 흐름이 지나간다. 주기가 층층이 쌓인다 — 빠른 제어기 위의 느린 추론기, 그리고 CraftNet에서는 $100$ Hz의 셋째 촉각 층까지 — 이것은 [[gr00t-n1|GR00T]]의 두 주기 구조를 한 단계 더 민 것이다. 그리고 데이터가 로봇을 떠난다. 장갑, 손에 드는 그리퍼, 사람 비디오, 시뮬레이션이 정책이 보는 것의 대부분으로 원격조작을 대신한다. 논문이나 통계적 평가가 딸린 행은 셋뿐이다.

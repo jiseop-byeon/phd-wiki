@@ -14,6 +14,16 @@ tags: [log]
 
 ## 2026-09
 
+### 2026-09-22 (12) sudoremove의 새 항목을 녹이다: 노트가 없는 범용 정책들, 회사, 손
+
+sudoremove 지식 창고(항목 113개)와 대조해 우리 위키에 없던 모델·회사·하드웨어를 찾아 1차 출처로 확인한 뒤 넣었다. 글은 가져오지 않고, 각 항목을 회사 원문이나 논문에서 다시 확인했다.
+
+- **VLA 지도 §4 "노트가 없는 2025–2026년 범용 정책들".** Helix(Figure: 7B 추론기 7–9 Hz 위 80M 정책 200 Hz, 상체 35자유도, 원격조작 약 500시간), Redwood(1X: 160M, 로봇 위 약 5 Hz), TRI LBM(블라인드 무작위 평가), Atlas LBM(450M DiT, 30 Hz, 48개 청크 1.6초, 50자유도), SmolVLA, GraspVLA(합성 10억 프레임), Sunday ACT-1(로봇 데이터 없이 장갑), Skild Brain·S1(몸 10만 종 시뮬레이션, 비디오 in-context 66% 대 9%), Sharpa CraftNet(1·10·100 Hz, 촉각 System 0). 각 행에 증거의 종류(논문 셋, 나머지는 회사 글)를 적었다.
+- **VLA §7·§8.** Skild의 옴니바디 정책을 다섯째 설계의 극단으로, S1을 비디오 프롬프트의 in-context learning으로 이었다.
+- **생태계 페이지.** Figure·1X 행을 모델로 채우고 Boston Dynamics·TRI, Skild AI, Sunday Robotics, Sharpa 행을 더했으며, Hugging Face 행에 SmolVLA와 SO-100/101을 넣었다. 하드웨어에 로봇 손(SharpaWave 22자유도 등)과 저가 공개 팔을 더했다.
+- **12. 원격조작 §4.** 인터페이스 스펙트럼에 "로봇도 그리퍼도 없이: 장갑과 사람 비디오"(ACT-1, DYNA-2, GR00T N1.7)를 더했다.
+- Covariant RFM-1은 회사 페이지가 사라져(404) 확인할 수 없어 넣지 않았다. 변형호 님(NotoriousH2)의 공개 자료도 조사했으나, LLM 공학(RAG, 에이전트, 서빙) 중심이라 이번 배포에는 넣지 않고 후보만 정리했다.
+
 ### 2026-09-22 (11) 시연을 프롬프트로, 사람 손이라는 몸, Gemini Robotics 2
 
 GEN-1.5, physical prompting, in-context learning, DYNA-2, Gemini Robotics 2를 다루느냐는 질문들에 답해 넣었다. in-context learning은 GPT-3 노트에 언어 모델의 뜻으로만 있었고 나머지는 없었다.

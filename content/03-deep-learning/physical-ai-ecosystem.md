@@ -36,9 +36,13 @@ frontier tracking see [sudoremove](https://sudoremove.com/) (Korean physical-AI 
 | Meta AI (FAIR) | JEPA line, open vision backbones (DINOv2) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
 | AMI Labs (Paris) | Yann LeCun's company, launched March 2026 to build JEPA-based world models for robotics and industry — the *planner* row of [[03-deep-learning/world-models/index\|5. World Models §6]] | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
 | World Labs | Fei-Fei Li's company: generated 3D worlds (Marble), real-time rendering (RTFM), an omni model (Atlas), and the renderer–simulator–planner taxonomy | [[01-canonical-papers/notes/5-world-models/world-labs\|World Labs]] |
-| Tesla / Figure / 1X / Agility | humanoid hardware + in-house VLA stacks | context for humanoid papers |
+| Figure / 1X / Tesla / Agility | humanoid hardware with in-house models: Figure's Helix (a 7B reasoner over a 200 Hz controller) and 1X's Redwood (160M, on the robot at about 5 Hz) | [[01-canonical-papers/notes/4-vla/index\|VLA map §4]] |
+| Boston Dynamics with Toyota Research Institute | Large Behavior Models; a 450M diffusion transformer driving all 50 degrees of freedom of Atlas at 30 Hz | [[01-canonical-papers/notes/4-vla/index\|VLA map §4]] |
+| Skild AI | an "omni-bodied" policy trained on 100,000 simulated bodies; S1, in-context learning from one video | [[01-canonical-papers/notes/4-vla/index\|VLA map §4]], [[03-deep-learning/vla/index\|4. VLA §8]] |
+| Sunday Robotics | ACT-1, a home mobile-manipulation model trained on glove data with no robot data | [[01-canonical-papers/notes/4-vla/index\|VLA map §4]] |
+| Sharpa | the SharpaWave dexterous hand and CraftNet, a vision–tactile–language–action hierarchy with a 100 Hz tactile loop | [[01-canonical-papers/notes/4-vla/index\|VLA map §4]] |
 | Unitree | affordable humanoids/quadrupeds — academia's default hardware | — |
-| Hugging Face | LeRobot: open-source robot learning framework | practical entry point |
+| Hugging Face | LeRobot: open-source robot learning framework, the low-cost SO-100/SO-101 arms, and SmolVLA, a small VLA trained on community data | practical entry point; [[01-canonical-papers/notes/4-vla/index\|VLA map §4]] |
 | Stanford / Berkeley / CMU labs | ALOHA, Octo, OpenVLA | [[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/openvla\|OpenVLA]] |
 | Columbia / Toyota Research Institute / MIT | Diffusion Policy — diffusion as the action head | [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]] |
 
@@ -62,9 +66,10 @@ NVIDIA is the one player that sells every layer a robot-learning project touches
 
 ### Standard hardware in papers
 
-- **Arms**: Franka Panda (research default), WidowX (low-cost eval), UR series (industrial)
+- **Arms**: Franka Panda (research default), WidowX (low-cost eval), UR series (industrial); open low-cost arms for community data — LeRobot SO-100/SO-101, Koch, OpenArm
 - **Bimanual**: ALOHA / ALOHA 2 / Mobile ALOHA — the data-collection workhorse
-- **Humanoids**: Unitree G1/H1, Fourier GR-1, Tesla Optimus, Figure, 1X NEO
+- **Humanoids**: Unitree G1/H1, Fourier GR-1, Tesla Optimus, Figure, 1X NEO, Boston Dynamics Atlas (the TRI LBM platform), Apptronik Apollo (a Gemini Robotics 2 test platform)
+- **Hands**: Allegro, LEAP, Inspire, Shadow Dexterous Hand, PSYONIC Ability, and the 22-degree-of-freedom SharpaWave that Gemini Robotics 2 drives — the hand is where the 2026 announcements put their weakest numbers and open problems, from Gemini Robotics 2's multi-finger tasks to the Atlas LBM's tactile force control
 - **Quadrupeds**: Unitree Go/B series, ANYmal, Boston Dynamics Spot
 - **Construction-relevant**: excavator retrofits, Spot on sites, Built Robotics — see [[05-construction-robotics/index|construction robotics]]
 
@@ -86,9 +91,13 @@ NVIDIA is the one player that sells every layer a robot-learning project touches
 | Meta AI (FAIR) | JEPA 계열, 오픈 비전 백본 (DINOv2) | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
 | AMI Labs (파리) | Yann LeCun이 2026년 3월 출범시킨 회사로, 로봇과 산업을 위한 JEPA 기반 월드모델을 만든다 — [[03-deep-learning/world-models/index\|5. 월드모델 §6]]의 *플래너* 행 | [[01-canonical-papers/notes/5-world-models/jepa\|JEPA]] |
 | World Labs | 페이페이 리의 회사: 생성된 3D 세계(Marble), 실시간 렌더링(RTFM), 옴니 모델(Atlas), 그리고 렌더러–시뮬레이터–플래너 분류 | [[01-canonical-papers/notes/5-world-models/world-labs\|World Labs]] |
-| Tesla / Figure / 1X / Agility | 휴머노이드 하드웨어 + 자체 VLA 스택 | 휴머노이드 논문의 맥락 |
+| Figure / 1X / Tesla / Agility | 자체 모델을 가진 휴머노이드 하드웨어: Figure의 Helix(200 Hz 제어기 위의 7B 추론기), 1X의 Redwood(160M, 로봇 위에서 약 5 Hz) | [[01-canonical-papers/notes/4-vla/index\|VLA 지도 §4]] |
+| Boston Dynamics와 Toyota Research Institute | Large Behavior Model. Atlas의 50자유도 전부를 30 Hz로 모는 450M 디퓨전 트랜스포머 | [[01-canonical-papers/notes/4-vla/index\|VLA 지도 §4]] |
+| Skild AI | 시뮬레이션 속 몸 10만 종으로 학습한 "옴니바디" 정책. 비디오 하나로 in-context learning을 하는 S1 | [[01-canonical-papers/notes/4-vla/index\|VLA 지도 §4]], [[03-deep-learning/vla/index\|4. VLA §8]] |
+| Sunday Robotics | 로봇 데이터 없이 장갑 데이터로 학습한 가정용 이동 조작 모델 ACT-1 | [[01-canonical-papers/notes/4-vla/index\|VLA 지도 §4]] |
+| Sharpa | SharpaWave 다지 손과, 100 Hz 촉각 루프를 둔 시각–촉각–언어–행동 계층 CraftNet | [[01-canonical-papers/notes/4-vla/index\|VLA 지도 §4]] |
 | Unitree | 저가 휴머노이드/사족보행 — 학계의 기본 하드웨어 | — |
-| Hugging Face | LeRobot: 오픈소스 로봇 학습 프레임워크 | 실습 진입점 |
+| Hugging Face | LeRobot: 오픈소스 로봇 학습 프레임워크, 저가 SO-100/SO-101 팔, 그리고 커뮤니티 데이터로 학습한 작은 VLA SmolVLA | 실습 진입점; [[01-canonical-papers/notes/4-vla/index\|VLA 지도 §4]] |
 | Stanford/Berkeley/CMU 랩들 | ALOHA, Octo, OpenVLA | [[01-canonical-papers/notes/4-vla/act\|ACT]], [[01-canonical-papers/notes/4-vla/octo\|Octo]], [[01-canonical-papers/notes/4-vla/openvla\|OpenVLA]] |
 | Columbia / Toyota Research Institute / MIT | Diffusion Policy — 확산 모델을 행동 헤드로 | [[01-canonical-papers/notes/4-vla/diffusion-policy\|Diffusion Policy]] |
 
@@ -112,8 +121,9 @@ NVIDIA는 로봇 학습 프로젝트가 닿는 모든 층 — 로봇에 실리�
 
 ### 논문에 등장하는 표준 하드웨어
 
-- **팔**: Franka Panda(연구 기본값), WidowX(저가 평가용), UR 시리즈(산업용)
+- **팔**: Franka Panda(연구 기본값), WidowX(저가 평가용), UR 시리즈(산업용); 커뮤니티 데이터를 위한 저가 공개 팔 — LeRobot SO-100/SO-101, Koch, OpenArm
 - **양팔**: ALOHA / ALOHA 2 / Mobile ALOHA — 데이터 수집의 주력 장비
-- **휴머노이드**: Unitree G1/H1, Fourier GR-1, Tesla Optimus, Figure, 1X NEO
+- **휴머노이드**: Unitree G1/H1, Fourier GR-1, Tesla Optimus, Figure, 1X NEO, Boston Dynamics Atlas(TRI LBM의 플랫폼), Apptronik Apollo(Gemini Robotics 2의 시험 플랫폼)
+- **손**: Allegro, LEAP, Inspire, Shadow Dexterous Hand, PSYONIC Ability, 그리고 Gemini Robotics 2가 모는 22자유도 SharpaWave — 2026년 발표들이 가장 약한 수치와 남은 과제를 두는 곳이 손이다. Gemini Robotics 2의 다지 과제부터 Atlas LBM의 촉각 힘 제어까지
 - **사족보행**: Unitree Go/B 시리즈, ANYmal, Boston Dynamics Spot
 - **건설 관련**: 굴착기 개조, 현장의 Spot, Built Robotics — [[05-construction-robotics/index|건설로봇]] 참고
