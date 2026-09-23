@@ -142,10 +142,10 @@ For example, start with a panel-fitting failure you can reproduce (panel fitting
 **How it was counted, on 2026-09-22.** Two sources, because neither is complete alone.
 
 - **Volume and topics** come from Crossref: every research article in *Automation in Construction*, *Advanced Engineering Informatics*, the *Journal of Computing in Civil Engineering* and *Construction Robotics* since 2019, about $8{,}800$ records, kept when the title names a robot, excavator, manipulator, teleoperation, exoskeleton, quadruped or humanoid. *Advanced Engineering Informatics* also publishes manufacturing and warehouse robotics — only $40\%$ of its robot titles concern construction — so its records additionally had to name a construction object. Titles alone miss papers that say "robot" only in the abstract, so read the counts as a floor.
-- **Countries and institutions** come from [OpenAlex](https://openalex.org): robot-centred papers (title or abstract) in those four venues plus the ISARC proceedings, and construction papers in seven robotics journals (RA-L, T-RO, *Science Robotics*, the *Journal of Field Robotics*, *Field Robotics*, *Autonomous Robots*, IJRR). A country or institution is credited once for each paper with at least one author there, so shares overlap. This slice still contains the manufacturing robotics of *Advanced Engineering Informatics*, which is the caveat on the country paragraph below.
+- **Countries and institutions** come from [OpenAlex](https://openalex.org): robot-centred papers (title or abstract) in those four venues plus the ISARC proceedings, and construction papers in seven robotics journals (RA-L, T-RO, *Science Robotics*, the *Journal of Field Robotics*, *Field Robotics*, *Autonomous Robots*, IJRR). *Advanced Engineering Informatics* papers count only when the title or abstract also names a construction object, the rule of the Crossref slice. That removes $124$ of its $174$ robot papers of 2021–2025, nearly all of them manufacturing, logistics and factory robotics. The rule errs both ways — it drops about ten construction papers that name their subject in other words (masonry, cranes, "in construction") and admits about as many factory papers that mention a construction word — but those errors are small beside what it removes. A country or institution is credited once for each paper with at least one author there, so shares overlap.
 - ICRA and IROS proceedings are indexed too patchily in either source to count; the [[08-research-radar/index|Research Radar]] covers them from DBLP.
 
-<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="Left: construction robot papers per year in four construction journals, 2019 to 2025, rising from 27 to 95, between 5.5 and 7.5 percent of the articles in those journals. Right: the share of papers with at least one author from each country, 2016–2020 against 2021–2025; China rises from 9 to 29 percent and the United States from 19 to 22 percent, in a corpus that includes some manufacturing robotics.">
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="Left: construction robot papers per year in four construction journals, 2019 to 2025, rising from 27 to 95, between 5.5 and 7.5 percent of the articles in those journals. Right: the share of papers with at least one author from each country, 2016–2020 against 2021–2025; China goes from 9 to 23 percent and the United States from 19 to 24 percent.">
 <text x="34" y="22" font-size="12.5" fill="currentColor" font-weight="600">construction robot papers per year</text>
 <rect x="37.0" y="190.9" width="24.0" height="49.1" fill="currentColor" fill-opacity="0.45"/>
 <rect x="37.0" y="190.9" width="24.0" height="0.0" fill="currentColor" fill-opacity="0.9"/>
@@ -177,60 +177,60 @@ For example, start with a panel-fitting failure you can reproduce (panel fitting
 <text x="34" y="290" font-size="10.5" fill="currentColor">5.5–7.5% of their articles each year</text>
 <text x="280" y="22" font-size="12.5" fill="currentColor" font-weight="600">share of papers with an author from…</text>
 <text x="339" y="51" font-size="10.5" fill="currentColor" text-anchor="end">China</text>
-<rect x="345" y="41" width="40.8" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="48" width="128.9" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="477.9" y="53" font-size="10" fill="currentColor">9 → 29%</text>
+<rect x="345" y="41" width="37.4" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="48" width="99.6" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="448.6" y="53" font-size="10" fill="currentColor">9 → 23%</text>
 <text x="339" y="71" font-size="10.5" fill="currentColor" text-anchor="end">United States</text>
-<rect x="345" y="61" width="81.5" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="68" width="95.6" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="444.6" y="73" font-size="10" fill="currentColor">19 → 22%</text>
+<rect x="345" y="61" width="81.8" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="68" width="105.2" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="454.2" y="73" font-size="10" fill="currentColor">19 → 24%</text>
 <text x="339" y="91" font-size="10.5" fill="currentColor" text-anchor="end">Germany</text>
-<rect x="345" y="81" width="38.8" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="88" width="38.1" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="387.8" y="93" font-size="10" fill="currentColor">9 → 9%</text>
+<rect x="345" y="81" width="39.4" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="88" width="42.0" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="391.0" y="93" font-size="10" fill="currentColor">9 → 10%</text>
 <text x="339" y="111" font-size="10.5" fill="currentColor" text-anchor="end">Hong Kong</text>
-<rect x="345" y="101" width="15.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="108" width="35.7" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="384.7" y="113" font-size="10" fill="currentColor">4 → 8%</text>
+<rect x="345" y="101" width="14.1" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="108" width="36.9" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="385.9" y="113" font-size="10" fill="currentColor">3 → 8%</text>
 <text x="339" y="131" font-size="10.5" fill="currentColor" text-anchor="end">United Kingdom</text>
-<rect x="345" y="121" width="18.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="128" width="23.2" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="372.2" y="133" font-size="10" fill="currentColor">4 → 5%</text>
+<rect x="345" y="121" width="19.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="128" width="21.3" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="370.3" y="133" font-size="10" fill="currentColor">4 → 5%</text>
 <text x="339" y="151" font-size="10.5" fill="currentColor" text-anchor="end">South Korea</text>
-<rect x="345" y="141" width="20.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="148" width="21.2" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="370.2" y="153" font-size="10" fill="currentColor">5 → 5%</text>
+<rect x="345" y="141" width="21.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="148" width="22.9" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="371.9" y="153" font-size="10" fill="currentColor">5 → 5%</text>
 <text x="339" y="171" font-size="10.5" fill="currentColor" text-anchor="end">Canada</text>
-<rect x="345" y="161" width="16.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="168" width="20.8" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="369.8" y="173" font-size="10" fill="currentColor">4 → 5%</text>
+<rect x="345" y="161" width="17.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="168" width="22.4" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="371.4" y="173" font-size="10" fill="currentColor">4 → 5%</text>
 <text x="339" y="191" font-size="10.5" fill="currentColor" text-anchor="end">Switzerland</text>
-<rect x="345" y="181" width="18.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="188" width="18.8" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="367.9" y="193" font-size="10" fill="currentColor">4 → 4%</text>
+<rect x="345" y="181" width="19.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="188" width="20.1" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="369.1" y="193" font-size="10" fill="currentColor">4 → 5%</text>
 <text x="339" y="211" font-size="10.5" fill="currentColor" text-anchor="end">Japan</text>
-<rect x="345" y="201" width="16.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="208" width="17.9" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="366.9" y="213" font-size="10" fill="currentColor">4 → 4%</text>
+<rect x="345" y="201" width="17.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="208" width="18.5" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="367.5" y="213" font-size="10" fill="currentColor">4 → 4%</text>
 <text x="339" y="231" font-size="10.5" fill="currentColor" text-anchor="end">Australia</text>
-<rect x="345" y="221" width="20.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="228" width="13.0" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="369.9" y="233" font-size="10" fill="currentColor">5 → 3%</text>
+<rect x="345" y="221" width="20.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="228" width="14.0" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="369.2" y="233" font-size="10" fill="currentColor">5 → 3%</text>
 <text x="339" y="251" font-size="10.5" fill="currentColor" text-anchor="end">Singapore</text>
-<rect x="345" y="241" width="18.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="248" width="8.7" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="367.9" y="253" font-size="10" fill="currentColor">4 → 2%</text>
-<rect x="345" y="268" width="12" height="6" fill="currentColor" fill-opacity="0.35"/><text x="361" y="275" font-size="10.5" fill="currentColor">2016–20 (n=440)</text>
-<rect x="345" y="280" width="12" height="7" fill="currentColor" fill-opacity="0.9"/><text x="361" y="288" font-size="10.5" fill="currentColor">2021–25 (n=906)</text>
+<rect x="345" y="241" width="18.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="248" width="8.4" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="367.2" y="253" font-size="10" fill="currentColor">4 → 2%</text>
+<rect x="345" y="268" width="12" height="6" fill="currentColor" fill-opacity="0.35"/><text x="361" y="275" font-size="10.5" fill="currentColor">2016–20 (n=433)</text>
+<rect x="345" y="280" width="12" height="7" fill="currentColor" fill-opacity="0.9"/><text x="361" y="288" font-size="10.5" fill="currentColor">2021–25 (n=782)</text>
 </svg>
 
 **Growth tracked the journals, not a breakout.** Construction robot papers in the four journals went from $27$ in 2019 to $52$ in 2021 and $95$–$98$ in 2024–2025, more than three times as many. But the journals themselves grew about as fast, and robot papers stayed between $5.5\%$ and $7.5\%$ of their articles every year. The seven robotics journals together carried only $3$ to $16$ construction papers a year. Construction robotics is still discussed mostly where roboticists do not read, which is one reason [[05-construction-robotics/construction-manipulation|9 §3]] finds so few site-verified results in the robotics literature.
 
-**Who publishes it changed.** In the OpenAlex slice, papers with an author in mainland China went from $9\%$ of 2016–2020 ($n=440$) to $29\%$ of 2021–2025 ($n=906$), the United States from $19\%$ to $22\%$, and Hong Kong from $4\%$ to $8\%$; Germany held at $9\%$, and Australia and Singapore fell to $3\%$ and $2\%$. Chinese groups are prominent in the manufacturing robotics that this slice still contains, so whether mainland China has passed the United States *in construction robotics alone* is not settled by this count. What survives any such correction is the shape: China and the United States are now the two largest sources, followed by Germany and Hong Kong at about $8$–$9\%$ each, and the United States and Switzerland, home of §2's trees, together account for about a quarter of the volume, not most of it.
+**Who publishes it changed.** With *Advanced Engineering Informatics* filtered, the slice holds $433$ papers for 2016–2020 and $782$ for 2021–2025. Papers with an author in mainland China went from $8.5\%$ to $22.8\%$, close to three times the share; the United States from $18.7\%$ to $24.0\%$; Hong Kong from $3.2\%$ to $8.4\%$. Germany held at $9$–$10\%$, and Australia and Singapore fell to $3.2\%$ and $1.9\%$. Whether China has passed the United States depends on one venue. Counting every venue in the slice, the United States still leads, $188$ papers to $178$, but $28$ of its $71$ papers of 2025 are ISARC papers from the symposium's Montreal meeting, against $5$ from its Lille meeting in 2024. In the journals alone, every venue but ISARC, China leads, $162$ to $149$ over 2021–2025, and published more than the United States in 2022, 2023 and 2024, the two being level in 2025 at $42$ and $43$. Filtering out the manufacturing papers therefore turned "China first" into "level", and left the shape intact: China and the United States are the two largest sources, Germany and Hong Kong follow at $8$–$10\%$ each, and the United States and Switzerland, home of §2's trees, appear on fewer than three papers in ten.
 
-**The busiest institutions, 2021–2025**, with the same caveat: Hong Kong Polytechnic University ($32$ papers), ETH Zurich ($25$), the University of Hong Kong ($24$), HKUST ($22$), Zhejiang University ($20$), TU Munich ($18$), Tongji and Southeast ($17$ each), Michigan ($16$) and HUST ($15$), then Stuttgart, Chongqing, Tsinghua, Princeton, Florida, RWTH Aachen, Jilin, EPFL and Seoul National. For the three Hong Kong universities the papers were checked one by one and are construction work: worker sensing and equipment-operator fatigue, BIM-guided inspection and coverage planning, excavator pose estimation, worker-intention learning. The individually most prolific authors are mostly the European fabrication-and-automation school (Brell-Çokcan at RWTH, Menges at Stuttgart, Linner, Bock, Gramazio and Kohler), NYU Abu Dhabi's García de Soto, Hong Kong's Heng Li (PolyU) and Weisheng Lu (HKU), and the Michigan tree of §2 (Kamat, Menassa, Ham, Jebelli, Liang).
+**The busiest institutions, 2021–2025**: Hong Kong Polytechnic University ($26$ papers), ETH Zurich ($25$), the University of Hong Kong ($24$), HKUST ($21$), TU Munich and Zhejiang University ($17$ each), Michigan ($16$), Stuttgart ($14$) and Southeast ($13$), then Tongji, Princeton and RWTH Aachen ($12$ each), Texas A&M, Seoul National, Jilin and Tsinghua ($11$ each), and Alberta, Penn State and EPFL ($10$ each). The filter cut hardest where factory robotics is strong: HUST fell from $15$ papers to $8$ and out of the list, Tongji from $17$ to $12$, Chongqing from $14$ to $9$, and Hong Kong Polytechnic lost six, all factory, warehouse or general-automation papers. The three Hong Kong universities' remaining papers were read one by one, and all but two are construction work: worker sensing and equipment-operator fatigue, BIM-guided inspection and coverage planning, excavator pose estimation, worker-intention learning, modular construction. The individually most prolific authors are mostly the European fabrication-and-automation school (Brell-Çokcan at RWTH, Menges at Stuttgart, Linner, Bock, Gramazio and Kohler), NYU Abu Dhabi's García de Soto, Weisheng Lu (HKU), and the Michigan tree of §2 (Kamat, Menassa, Jebelli, Liang) with Ham from its Illinois tree; Brilakis, Jack C. P. Cheng, Hutter, Zou and Liangjun Zhang follow at eight papers each.
 
-**What this means for reading the map.** The genealogy of §2 is right about where the *US* field's faculty came from, and ETH and Michigan are near the top by volume too. But by volume the centre has moved east: three of the five busiest institutions are in Hong Kong, and the [[05-construction-robotics/labs|labs map]] now lists the groups behind them. Volume is not influence — the most-cited systems of §1, AES, HEAP and the dry-stone wall, each came from one group — but a literature search that starts only from the US and Swiss trees misses much of the current field.
+**What this means for reading the map.** The genealogy of §2 is right about where the *US* field's faculty came from, and ETH and Michigan are near the top by volume too. But by volume the field now has two centres, and the eastern one is where the growth was: China's share nearly tripled, and three of the five busiest institutions are in Hong Kong. The [[05-construction-robotics/labs|labs map]] now lists the groups behind them, the mainland ones included. Volume is not influence — the most-cited systems of §1, AES, HEAP and the dry-stone wall, each came from one group — but a literature search that starts only from the US and Swiss trees misses much of the current field.
 
 ### 6. How the streams moved, and where to start reading
 
@@ -259,7 +259,7 @@ The foundation-model wave is almost absent here: one paper by 2025, pairing a la
 - Chang et al., "Toward a Framework for Trust Building between Humans and Robots in the Construction Industry," *J. Computing in Civil Engineering* 38, 2024, and Chen et al., "Biosignal measurement for human-robot collaboration in construction: A systematic review," *Advanced Engineering Informatics* 68, 2025.
 - Yarovoi and Cho, "Review of simultaneous localization and mapping (SLAM) for construction robotics applications," *Automation in Construction* 162, 2024, and Chen et al., "Localization and navigation of construction robots: A human-centric review," *Automation in Construction* 187, 2026.
 - Pauwels et al., "Live semantic data from building digital twins for robot navigation: Overview of data transfer methods," *Advanced Engineering Informatics* 56, 2023.
-- Li et al., "Learning from demonstration for autonomous generation of robotic trajectory: Status quo and forward-looking overview," *Advanced Engineering Informatics* 62, 2024.
+- Li et al., "Learning from demonstration for autonomous generation of robotic trajectory: Status quo and forward-looking overview," *Advanced Engineering Informatics* 62, 2024 — written by manufacturing researchers and not a construction review; read it for the methods of the learning stream.
 - Çapunaman and Gürsoy, "Vision-augmented robotic fabrication (V-aRF): systematic review…," *Construction Robotics* 8, 2024, and Cisneros-Gonzalez et al., "Digital technologies and robotics in mass-timber manufacturing: a systematic literature review," *Construction Robotics* 8, 2024.
 - Khan et al., "Advancing exoskeleton research in construction: Systematic review," *Automation in Construction* 188, 2026.
 
@@ -402,10 +402,10 @@ Kamat–Menassa의 제자들에게서 방사**된다(Feng, Yu, Liang, Wang, Park
 **어떻게 셌는가, 2026-09-22.** 어느 하나만으로는 완전하지 않아 두 출처를 썼다.
 
 - **양과 주제**는 Crossref에서 왔다. 2019년 이후 *Automation in Construction*, *Advanced Engineering Informatics*, *Journal of Computing in Civil Engineering*, *Construction Robotics*의 모든 연구 논문, 약 $8{,}800$편 가운데 제목에 robot, excavator, manipulator, teleoperation, exoskeleton, quadruped, humanoid가 든 것을 남겼다. *Advanced Engineering Informatics*는 제조·물류 로봇도 싣고 그 로봇 제목의 $40\%$만 건설에 관한 것이어서, 그 학술지의 논문은 건설 대상도 제목에 이름으로 나와야 남겼다. 초록에서만 "로봇"을 말하는 논문은 제목 기준에서 빠지므로, 숫자는 하한으로 읽는다.
-- **나라와 기관**은 [OpenAlex](https://openalex.org)에서 왔다. 그 네 곳과 ISARC 논문집의 로봇 중심 논문(제목이나 초록), 그리고 로봇 학술지 일곱 — RA-L, T-RO, *Science Robotics*, *Journal of Field Robotics*, *Field Robotics*, *Autonomous Robots*, IJRR — 의 건설 논문이다. 나라나 기관은 그곳 저자가 적어도 한 명 있는 논문마다 한 번씩 세므로 비율은 겹친다. 이 갈래에는 *Advanced Engineering Informatics*의 제조 로봇 논문이 아직 섞여 있고, 그것이 아래 나라 문단의 단서다.
+- **나라와 기관**은 [OpenAlex](https://openalex.org)에서 왔다. 그 네 곳과 ISARC 논문집의 로봇 중심 논문(제목이나 초록), 그리고 로봇 학술지 일곱 — RA-L, T-RO, *Science Robotics*, *Journal of Field Robotics*, *Field Robotics*, *Autonomous Robots*, IJRR — 의 건설 논문이다. *Advanced Engineering Informatics*의 논문은 제목이나 초록이 건설 대상도 이름으로 말할 때만 센다. Crossref 갈래와 같은 규칙이다. 그러면 그 학술지의 2021–2025년 로봇 논문 $174$편 가운데 $124$편이 빠지고, 거의 모두 제조·물류·공장 로봇이다. 규칙은 양쪽으로 틀린다. 주제를 다른 말로 부르는 건설 논문 약 열 편(석조, 크레인, "건설에서")을 빼고, 건설 낱말을 한 번 쓴 공장 논문을 비슷한 수만큼 들인다. 그러나 그 오차는 규칙이 빼는 양에 비하면 작다. 나라나 기관은 그곳 저자가 적어도 한 명 있는 논문마다 한 번씩 세므로 비율은 겹친다.
 - ICRA와 IROS 논문집은 두 출처 모두에 너무 드문드문 색인되어 셀 수 없고, [[08-research-radar/index|Research Radar]]가 DBLP로 그것을 덮는다.
 
-<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 건설 학술지 네 곳의 연도별 건설 로봇 논문 수, 2019년 27편에서 2025년 95편으로, 그 학술지 논문의 5.5–7.5퍼센트. 오른쪽: 각 나라 저자가 적어도 한 명 있는 논문의 비율, 2016–2020 대 2021–2025. 중국은 9퍼센트에서 29퍼센트로, 미국은 19퍼센트에서 22퍼센트로 올랐다. 이 자료에는 제조 로봇 논문이 일부 섞여 있다.">
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: 건설 학술지 네 곳의 연도별 건설 로봇 논문 수, 2019년 27편에서 2025년 95편으로, 그 학술지 논문의 5.5–7.5퍼센트. 오른쪽: 각 나라 저자가 적어도 한 명 있는 논문의 비율, 2016–2020 대 2021–2025. 중국은 9퍼센트에서 23퍼센트로, 미국은 19퍼센트에서 24퍼센트로 바뀌었다.">
 <text x="34" y="22" font-size="12.5" fill="currentColor" font-weight="600">연도별 건설 로봇 논문 수</text>
 <rect x="37.0" y="190.9" width="24.0" height="49.1" fill="currentColor" fill-opacity="0.45"/>
 <rect x="37.0" y="190.9" width="24.0" height="0.0" fill="currentColor" fill-opacity="0.9"/>
@@ -437,60 +437,60 @@ Kamat–Menassa의 제자들에게서 방사**된다(Feng, Yu, Liang, Wang, Park
 <text x="34" y="290" font-size="10.5" fill="currentColor">해마다 그 학술지 논문의 5.5–7.5%</text>
 <text x="280" y="22" font-size="12.5" fill="currentColor" font-weight="600">나라별 저자가 있는 논문 비율</text>
 <text x="339" y="51" font-size="10.5" fill="currentColor" text-anchor="end">중국</text>
-<rect x="345" y="41" width="40.8" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="48" width="128.9" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="477.9" y="53" font-size="10" fill="currentColor">9 → 29%</text>
+<rect x="345" y="41" width="37.4" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="48" width="99.6" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="448.6" y="53" font-size="10" fill="currentColor">9 → 23%</text>
 <text x="339" y="71" font-size="10.5" fill="currentColor" text-anchor="end">미국</text>
-<rect x="345" y="61" width="81.5" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="68" width="95.6" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="444.6" y="73" font-size="10" fill="currentColor">19 → 22%</text>
+<rect x="345" y="61" width="81.8" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="68" width="105.2" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="454.2" y="73" font-size="10" fill="currentColor">19 → 24%</text>
 <text x="339" y="91" font-size="10.5" fill="currentColor" text-anchor="end">독일</text>
-<rect x="345" y="81" width="38.8" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="88" width="38.1" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="387.8" y="93" font-size="10" fill="currentColor">9 → 9%</text>
+<rect x="345" y="81" width="39.4" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="88" width="42.0" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="391.0" y="93" font-size="10" fill="currentColor">9 → 10%</text>
 <text x="339" y="111" font-size="10.5" fill="currentColor" text-anchor="end">홍콩</text>
-<rect x="345" y="101" width="15.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="108" width="35.7" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="384.7" y="113" font-size="10" fill="currentColor">4 → 8%</text>
+<rect x="345" y="101" width="14.1" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="108" width="36.9" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="385.9" y="113" font-size="10" fill="currentColor">3 → 8%</text>
 <text x="339" y="131" font-size="10.5" fill="currentColor" text-anchor="end">영국</text>
-<rect x="345" y="121" width="18.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="128" width="23.2" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="372.2" y="133" font-size="10" fill="currentColor">4 → 5%</text>
+<rect x="345" y="121" width="19.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="128" width="21.3" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="370.3" y="133" font-size="10" fill="currentColor">4 → 5%</text>
 <text x="339" y="151" font-size="10.5" fill="currentColor" text-anchor="end">한국</text>
-<rect x="345" y="141" width="20.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="148" width="21.2" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="370.2" y="153" font-size="10" fill="currentColor">5 → 5%</text>
+<rect x="345" y="141" width="21.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="148" width="22.9" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="371.9" y="153" font-size="10" fill="currentColor">5 → 5%</text>
 <text x="339" y="171" font-size="10.5" fill="currentColor" text-anchor="end">캐나다</text>
-<rect x="345" y="161" width="16.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="168" width="20.8" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="369.8" y="173" font-size="10" fill="currentColor">4 → 5%</text>
+<rect x="345" y="161" width="17.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="168" width="22.4" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="371.4" y="173" font-size="10" fill="currentColor">4 → 5%</text>
 <text x="339" y="191" font-size="10.5" fill="currentColor" text-anchor="end">스위스</text>
-<rect x="345" y="181" width="18.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="188" width="18.8" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="367.9" y="193" font-size="10" fill="currentColor">4 → 4%</text>
+<rect x="345" y="181" width="19.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="188" width="20.1" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="369.1" y="193" font-size="10" fill="currentColor">4 → 5%</text>
 <text x="339" y="211" font-size="10.5" fill="currentColor" text-anchor="end">일본</text>
-<rect x="345" y="201" width="16.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="208" width="17.9" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="366.9" y="213" font-size="10" fill="currentColor">4 → 4%</text>
+<rect x="345" y="201" width="17.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="208" width="18.5" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="367.5" y="213" font-size="10" fill="currentColor">4 → 4%</text>
 <text x="339" y="231" font-size="10.5" fill="currentColor" text-anchor="end">호주</text>
-<rect x="345" y="221" width="20.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="228" width="13.0" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="369.9" y="233" font-size="10" fill="currentColor">5 → 3%</text>
+<rect x="345" y="221" width="20.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="228" width="14.0" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="369.2" y="233" font-size="10" fill="currentColor">5 → 3%</text>
 <text x="339" y="251" font-size="10.5" fill="currentColor" text-anchor="end">싱가포르</text>
-<rect x="345" y="241" width="18.9" height="6" fill="currentColor" fill-opacity="0.35"/>
-<rect x="345" y="248" width="8.7" height="7" fill="currentColor" fill-opacity="0.9"/>
-<text x="367.9" y="253" font-size="10" fill="currentColor">4 → 2%</text>
-<rect x="345" y="268" width="12" height="6" fill="currentColor" fill-opacity="0.35"/><text x="361" y="275" font-size="10.5" fill="currentColor">2016–20 (n=440)</text>
-<rect x="345" y="280" width="12" height="7" fill="currentColor" fill-opacity="0.9"/><text x="361" y="288" font-size="10.5" fill="currentColor">2021–25 (n=906)</text>
+<rect x="345" y="241" width="18.2" height="6" fill="currentColor" fill-opacity="0.35"/>
+<rect x="345" y="248" width="8.4" height="7" fill="currentColor" fill-opacity="0.9"/>
+<text x="367.2" y="253" font-size="10" fill="currentColor">4 → 2%</text>
+<rect x="345" y="268" width="12" height="6" fill="currentColor" fill-opacity="0.35"/><text x="361" y="275" font-size="10.5" fill="currentColor">2016–20 (n=433)</text>
+<rect x="345" y="280" width="12" height="7" fill="currentColor" fill-opacity="0.9"/><text x="361" y="288" font-size="10.5" fill="currentColor">2021–25 (n=782)</text>
 </svg>
 
 **늘었지만 학술지만큼 늘었다.** 네 학술지의 건설 로봇 논문은 2019년 $27$편에서 2021년 $52$편, 2024–2025년 $95$–$98$편으로 세 배 넘게 늘었다. 그러나 학술지 자체도 거의 같은 속도로 커졌고, 로봇 논문은 해마다 그 논문의 $5.5\%$에서 $7.5\%$ 사이에 머물렀다. 로봇 학술지 일곱 곳을 합쳐도 건설 논문은 한 해 $3$–$16$편이다. 건설 로보틱스는 여전히 대부분 로봇 연구자가 읽지 않는 곳에서 논의되고, 이것이 [[05-construction-robotics/construction-manipulation|9 §3]]이 로봇 문헌에서 현장 검증 결과를 그렇게 적게 찾는 이유 가운데 하나다.
 
-**누가 내는지가 바뀌었다.** OpenAlex 갈래에서 중국 본토 저자가 있는 논문은 2016–2020년($n=440$)의 $9\%$에서 2021–2025년($n=906$)의 $29\%$로, 미국은 $19\%$에서 $22\%$로, 홍콩은 $4\%$에서 $8\%$로 늘었다. 독일은 $9\%$를 유지했고, 호주와 싱가포르는 $3\%$와 $2\%$로 떨어졌다. 이 갈래에 아직 섞인 제조 로봇 연구에서 중국 그룹이 두드러지므로, *건설 로보틱스만 놓고* 중국 본토가 미국을 앞질렀는지는 이 집계로 정해지지 않는다. 그런 보정을 해도 남는 것은 모양이다. 중국과 미국이 이제 가장 큰 두 출처이고, 독일과 홍콩이 각각 $8$–$9\%$ 정도로 뒤따르며, §2의 계보가 있는 미국과 스위스를 합쳐도 양의 약 4분의 1이지 대부분이 아니다.
+**누가 내는지가 바뀌었다.** *Advanced Engineering Informatics*를 거르면 이 갈래는 2016–2020년 $433$편, 2021–2025년 $782$편이다. 중국 본토 저자가 있는 논문은 $8.5\%$에서 $22.8\%$로 비율이 세 배 가까이 되었고, 미국은 $18.7\%$에서 $24.0\%$로, 홍콩은 $3.2\%$에서 $8.4\%$로 늘었다. 독일은 $9$–$10\%$를 유지했고, 호주와 싱가포르는 $3.2\%$와 $1.9\%$로 떨어졌다. 중국이 미국을 앞질렀는지는 한 곳에 달려 있다. 갈래의 학술지와 학회를 모두 세면 미국이 여전히 $188$편 대 $178$편으로 앞서지만, 미국의 2025년 논문 $71$편 가운데 $28$편이 몬트리올에서 열린 그해 ISARC의 논문이고, 릴에서 열린 2024년에는 $5$편이었다. ISARC를 빼고 학술지만 세면 2021–2025년 $162$편 대 $149$편으로 중국이 앞서고, 2022, 2023, 2024년에는 해마다 미국보다 많이 냈으며, 2025년에는 $42$편과 $43$편으로 비겼다. 제조 논문을 걸러 낸 결과 "중국이 1위"는 "비슷하다"가 되었고, 모양은 그대로다. 중국과 미국이 가장 큰 두 출처이고, 독일과 홍콩이 각각 $8$–$10\%$로 뒤따르며, §2의 계보가 있는 미국과 스위스는 논문 열 편 가운데 세 편이 안 되는 곳에 이름을 올린다.
 
-**2021–2025년에 가장 많이 낸 기관**, 같은 단서와 함께: 홍콩이공대($32$편), ETH 취리히($25$), 홍콩대($24$), 홍콩과기대($22$), 저장대($20$), 뮌헨공대($18$), 퉁지대와 동남대(각 $17$), 미시간대($16$), 화중과기대($15$), 그다음 슈투트가르트대, 충칭대, 칭화대, 프린스턴대, 플로리다대, 아헨공대, 지린대, EPFL, 서울대다. 홍콩 세 대학은 논문을 하나씩 확인했고 건설 연구다. 작업자 센싱과 장비 운전자 피로, BIM을 따르는 점검과 커버리지 계획, 굴착기 자세 추정, 작업자 의도 학습. 개인으로 가장 많이 낸 저자는 대부분 유럽의 제작·자동화 학파(아헨공대의 Brell-Çokcan, 슈투트가르트의 Menges, Linner, Bock, Gramazio와 Kohler)이고, 뉴욕대 아부다비의 García de Soto, 홍콩의 Heng Li(홍콩이공대)와 Weisheng Lu(홍콩대), 그리고 §2의 미시간 계보(Kamat, Menassa, Ham, Jebelli, Liang)가 뒤따른다.
+**2021–2025년에 가장 많이 낸 기관**: 홍콩이공대($26$편), ETH 취리히($25$), 홍콩대($24$), 홍콩과기대($21$), 뮌헨공대와 저장대(각 $17$), 미시간대($16$), 슈투트가르트대($14$), 동남대($13$), 그다음 퉁지대, 프린스턴대, 아헨공대(각 $12$), 텍사스 A&M, 서울대, 지린대, 칭화대(각 $11$), 앨버타대, 펜실베이니아 주립대, EPFL(각 $10$)이다. 필터는 공장 로봇이 강한 곳을 가장 크게 깎았다. 화중과기대는 $15$편에서 $8$편으로 목록에서 빠졌고, 퉁지대는 $17$에서 $12$로, 충칭대는 $14$에서 $9$로 줄었으며, 홍콩이공대는 여섯 편을 잃었는데 모두 공장·창고·일반 자동화 논문이었다. 홍콩 세 대학의 남은 논문은 하나씩 읽었고, 두 편을 빼면 모두 건설 연구다. 작업자 센싱과 장비 운전자 피로, BIM을 따르는 점검과 커버리지 계획, 굴착기 자세 추정, 작업자 의도 학습, 모듈러 건설. 개인으로 가장 많이 낸 저자는 대부분 유럽의 제작·자동화 학파(아헨공대의 Brell-Çokcan, 슈투트가르트의 Menges, Linner, Bock, Gramazio와 Kohler)이고, 뉴욕대 아부다비의 García de Soto, Weisheng Lu(홍콩대), 그리고 §2의 미시간 계보(Kamat, Menassa, Jebelli, Liang)와 일리노이 계보의 Ham이 뒤따른다. Brilakis, Jack C. P. Cheng, Hutter, Zou, Liangjun Zhang이 각각 여덟 편으로 그다음이다.
 
-**이 지도를 읽는 데 무엇을 뜻하는가.** §2의 계보는 *미국* 분야의 교수진이 어디서 왔는지에 대해서는 맞고, ETH와 미시간은 양으로도 상위에 있다. 그러나 양으로 보면 중심은 동쪽으로 옮겨 갔다. 가장 많이 낸 다섯 기관 가운데 셋이 홍콩에 있고, [[05-construction-robotics/labs|연구실 지도]]가 이제 그 뒤의 그룹들을 싣는다. 양이 곧 영향력은 아니다 — §1에서 가장 많이 인용되는 시스템인 AES, HEAP, 돌담은 각각 한 그룹에서 나왔다 — 그러나 미국과 스위스 계보에서만 출발하는 문헌 검색은 지금 분야의 많은 부분을 놓친다.
+**이 지도를 읽는 데 무엇을 뜻하는가.** §2의 계보는 *미국* 분야의 교수진이 어디서 왔는지에 대해서는 맞고, ETH와 미시간은 양으로도 상위에 있다. 그러나 양으로 보면 이제 분야에는 중심이 둘이고, 성장이 일어난 곳은 동쪽이다. 중국의 비율은 세 배 가까이 되었고, 가장 많이 낸 다섯 기관 가운데 셋이 홍콩에 있다. [[05-construction-robotics/labs|연구실 지도]]가 이제 중국 본토를 포함해 그 뒤의 그룹들을 싣는다. 양이 곧 영향력은 아니다 — §1에서 가장 많이 인용되는 시스템인 AES, HEAP, 돌담은 각각 한 그룹에서 나왔다 — 그러나 미국과 스위스 계보에서만 출발하는 문헌 검색은 지금 분야의 많은 부분을 놓친다.
 
 ### 6. 흐름들은 어떻게 움직였나, 그리고 어디서부터 읽을까
 
@@ -519,7 +519,7 @@ Kamat–Menassa의 제자들에게서 방사**된다(Feng, Yu, Liang, Wang, Park
 - Chang 외, "Toward a Framework for Trust Building between Humans and Robots in the Construction Industry," *J. Computing in Civil Engineering* 38, 2024, 그리고 Chen 외, "Biosignal measurement for human-robot collaboration in construction: A systematic review," *Advanced Engineering Informatics* 68, 2025.
 - Yarovoi와 Cho, "Review of simultaneous localization and mapping (SLAM) for construction robotics applications," *Automation in Construction* 162, 2024, 그리고 Chen 외, "Localization and navigation of construction robots: A human-centric review," *Automation in Construction* 187, 2026.
 - Pauwels 외, "Live semantic data from building digital twins for robot navigation: Overview of data transfer methods," *Advanced Engineering Informatics* 56, 2023.
-- Li 외, "Learning from demonstration for autonomous generation of robotic trajectory: Status quo and forward-looking overview," *Advanced Engineering Informatics* 62, 2024.
+- Li 외, "Learning from demonstration for autonomous generation of robotic trajectory: Status quo and forward-looking overview," *Advanced Engineering Informatics* 62, 2024 — 제조 연구자들이 쓴 것이고 건설 리뷰는 아니다. 학습 흐름의 방법을 보려고 읽는다.
 - Çapunaman과 Gürsoy, "Vision-augmented robotic fabrication (V-aRF): systematic review…," *Construction Robotics* 8, 2024, 그리고 Cisneros-Gonzalez 외, "Digital technologies and robotics in mass-timber manufacturing: a systematic literature review," *Construction Robotics* 8, 2024.
 - Khan 외, "Advancing exoskeleton research in construction: Systematic review," *Automation in Construction* 188, 2026.
 

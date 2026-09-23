@@ -86,7 +86,7 @@ excavation lineage at CMU (Stentz/Singh, 1990s) lives in the
 
 ### Asia and Oceania
 
-*By volume this is now the largest region of the field ([[05-construction-robotics/lineage|lineage §5]]). The rows added on 2026-09-22 were checked against the affiliations printed on each group's own 2021–2025 papers, with one representative paper each. Six mainland institutions among the twenty busiest of 2021–2025 — Zhejiang ($20$ papers), Tongji and Southeast ($17$ each), HUST ($15$), Chongqing ($14$) and Tsinghua ($13$) — are not yet mapped to groups, because their counts could not yet be separated from the manufacturing robotics the same count contains. Treat them as institutions to search, not as absences; the heavy-machinery OEM programmes (XCMG and its orbit) are likewise unmapped.*
+*By volume this is now the largest region of the field ([[05-construction-robotics/lineage|lineage §5]]). The rows were checked against the affiliations printed on each group's own 2021–2025 papers, with one representative paper each. The six mainland institutions among the busiest of 2021–2025 were mapped after a recount that filtered out manufacturing robotics. Five have a group whose papers are construction work and whose lead author is printed with that institution — the rows from Zhejiang to Tsinghua below. Southeast University's $13$ papers spread over several small groups — BIM-to-ROS data exchange, vision-guided assembly of prefabricated components, cable-climbing repair robots, worker EEG — with no single lead, so it has no row. The heavy-machinery OEM programmes (XCMG and its orbit) are not mapped.*
 
 | Lab | PI | Known for |
 |---|---|---|
@@ -101,6 +101,12 @@ excavation lineage at CMU (Stentz/Singh, 1990s) lives in the
 | Baidu RAL | Liangjun Zhang | the AES autonomous excavator (*Science Robotics* 2021), excavation trajectory optimization and learning, TNES terrain mapping and excavation; see [[05-construction-robotics/lineage\|lineage, Era 4]] |
 | Jilin University | Jixin Wang and colleagues | excavator trajectory generation from expert operators' skills; equipment activity recognition; e.g. Feng et al., *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105247) |
 | Monash University | Mehrdad Arashpour | vision-based excavator pose estimation trained on synthetic data with domain randomization; e.g. Assadzadeh et al., *AutCon* 134, 2022, [DOI](https://doi.org/10.1016/j.autcon.2021.104089) |
+| Zhejiang University | Jiangpeng Shu | robotic assembly of structural components planned from BIM: task and motion planning, collision-free trajectories, polyhedron-bounded collision checks; e.g. Gao et al., *AutCon* 140, 2022, [DOI](https://doi.org/10.1016/j.autcon.2022.104370) |
+| Zhejiang University | Huayong Yang · Bing Xu | hydraulic construction machinery: force-preloaded motion control of an excavation robot, excavator safety control, master–slave hydraulic manipulators with Chongqing's Min Cheng; e.g. Yang et al., *AutCon* 141, 2022, [DOI](https://doi.org/10.1016/j.autcon.2022.104402) |
+| Tongji University | Philip F. Yuan | robotic timber and fabrication at architectural scale: band-saw cutting of double-curved glulam, cooperative fabrication of natural tree-fork structures, drone bricklaying; e.g. Chai et al., *AutCon* 124, 2021, [DOI](https://doi.org/10.1016/j.autcon.2021.103571) |
+| Huazhong University of Science and Technology | Cheng Zhou · Lieyun Ding | automated earthwork machinery: complete-coverage planning for an autonomous bulldozer, an earthwork digital twin for bulldozer teleoperation, a review of deep learning for construction machinery; e.g. You et al., *Journal of Field Robotics* 40, 2023, [DOI](https://doi.org/10.1002/rob.22234) |
+| Chongqing University | Min Cheng | teleoperated hydraulic manipulators: master–slave interfaces with visual and auditory aids, task-learned virtual fixtures, concrete-pump boom trajectories, with Zhejiang's fluid-power group; e.g. Cheng et al., *Journal of Field Robotics* 41, 2024, [DOI](https://doi.org/10.1002/rob.22386) |
+| Tsinghua University | Hongling Guo | worker–robot collaboration on site: two-stage task allocation for multiple construction robots, digital-twin safety monitoring, semantic behaviour decisions; e.g. Ye et al., *AutCon* 165, 2024, [DOI](https://doi.org/10.1016/j.autcon.2024.105583) |
 
 ### Middle East
 
@@ -233,7 +239,7 @@ The groups differ less by country than by what they put on the site:
 
 ### 아시아와 오세아니아
 
-*양으로 보면 이제 분야에서 가장 큰 지역이다([[05-construction-robotics/lineage|계보 §5]]). 2026-09-22에 더한 행은 각 그룹 자신의 2021–2025년 논문에 인쇄된 소속으로 확인했고, 대표 논문을 하나씩 달았다. 2021–2025년 가장 많이 낸 스무 곳에 드는 중국 본토 기관 여섯 — 저장대($20$편), 퉁지대와 동남대(각 $17$), 화중과기대($15$), 충칭대($14$), 칭화대($13$) — 은 아직 그룹으로 나누지 않았다. 같은 집계에 섞인 제조 로봇 연구와 아직 가를 수 없었기 때문이다. 없는 것이 아니라 찾아볼 기관으로 읽는다. 중장비 제조사 프로그램(XCMG와 그 주변)도 마찬가지로 아직 지도에 없다.*
+*양으로 보면 이제 분야에서 가장 큰 지역이다([[05-construction-robotics/lineage|계보 §5]]). 각 행은 그 그룹 자신의 2021–2025년 논문에 인쇄된 소속으로 확인했고, 대표 논문을 하나씩 달았다. 2021–2025년에 많이 낸 중국 본토 기관 여섯은 제조 로봇을 걸러 낸 재집계 뒤에 그룹으로 나눴다. 다섯 곳에는 논문이 건설 연구이고 주 저자가 그 기관 소속으로 인쇄된 그룹이 있다. 아래 저장대부터 칭화대까지의 행이다. 동남대의 $13$편은 여러 작은 그룹 — BIM과 ROS 사이 데이터 교환, 비전으로 안내하는 프리캐스트 부재 조립, 케이블을 오르는 보수 로봇, 작업자 EEG — 으로 흩어져 있고 뚜렷한 중심이 없어 행을 두지 않았다. 중장비 제조사 프로그램(XCMG와 그 주변)은 지도에 없다.*
 
 | 랩 | PI | 대표 분야 |
 |---|---|---|
@@ -248,6 +254,12 @@ The groups differ less by country than by what they put on the site:
 | 바이두 RAL | Liangjun Zhang | AES 자율 굴착기(*Science Robotics* 2021), 굴착 궤적 최적화와 학습, TNES 지형 매핑·굴착. [[05-construction-robotics/lineage\|계보, 4시대]] 참조 |
 | 지린대 | Jixin Wang과 동료들 | 숙련 운전자 기술에서 굴착기 궤적 생성, 장비 작업 동작 인식. 예: Feng 외, *AutCon* 158, 2024, [DOI](https://doi.org/10.1016/j.autcon.2023.105247) |
 | 모나시대 | Mehrdad Arashpour | 합성 데이터와 도메인 무작위화로 학습한 비전 기반 굴착기 자세 추정. 예: Assadzadeh 외, *AutCon* 134, 2022, [DOI](https://doi.org/10.1016/j.autcon.2021.104089) |
+| 저장대 | Jiangpeng Shu | BIM에서 계획하는 구조 부재의 로봇 조립: 작업·동작 계획, 충돌 없는 궤적, 다면체로 감싼 충돌 검사. 예: Gao 외, *AutCon* 140, 2022, [DOI](https://doi.org/10.1016/j.autcon.2022.104370) |
+| 저장대 | Huayong Yang · Bing Xu | 유압 건설 기계: 굴착 로봇의 힘 예압 운동 제어, 굴착기 안전 제어, 충칭대 Min Cheng과 함께한 마스터–슬레이브 유압 매니퓰레이터. 예: Yang 외, *AutCon* 141, 2022, [DOI](https://doi.org/10.1016/j.autcon.2022.104402) |
+| 퉁지대 | Philip F. Yuan | 건축 규모의 로봇 목재·제작: 이중 곡면 집성재의 밴드쏘 절단, 자연 나무 갈래 구조의 협동 로봇 제작, 드론 벽돌 쌓기. 예: Chai 외, *AutCon* 124, 2021, [DOI](https://doi.org/10.1016/j.autcon.2021.103571) |
+| 화중과기대 | Cheng Zhou · Lieyun Ding | 자동화 토공 기계: 자율 불도저의 전면 커버리지 계획, 불도저 원격조작을 위한 토공 디지털 트윈, 건설 기계 딥러닝 리뷰. 예: You 외, *Journal of Field Robotics* 40, 2023, [DOI](https://doi.org/10.1002/rob.22234) |
+| 충칭대 | Min Cheng | 원격조작하는 유압 매니퓰레이터: 시각·청각을 보강한 마스터–슬레이브 인터페이스, 과제로 학습한 가상 고정구, 콘크리트 펌프 붐 궤적. 저장대 유압 그룹과 함께한다. 예: Cheng 외, *Journal of Field Robotics* 41, 2024, [DOI](https://doi.org/10.1002/rob.22386) |
+| 칭화대 | Hongling Guo | 현장의 작업자–로봇 협업: 여러 건설 로봇의 2단계 작업 배분, 디지털 트윈 안전 모니터링, 의미 기반 행동 결정. 예: Ye 외, *AutCon* 165, 2024, [DOI](https://doi.org/10.1016/j.autcon.2024.105583) |
 
 ### 중동
 
