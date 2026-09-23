@@ -192,6 +192,15 @@ int64 sum
 
 There should only ever be **one service server per service name** — with several, which one receives a request is undefined. There can be any number of clients. This is the opposite of topics, where several publishers on one name is legal (and, as [[04-robotics/ros2/describing-a-robot|25.6 Describing a Robot: URDF, TF2 and RViz]] will show, a common way to break a transform tree).
 
+> **Service, defined.** A **service** is a *named, typed request–response interface between one server and any number of clients* — a remote procedure call. Four conditions: its **type** is a `.srv` pair of messages, request then response; there is **one server per name**; **each request is answered by exactly one response, delivered to the client that sent it** and to no one else; and the handler **runs to completion on the server's executor** while the client waits, blocked or holding a future.
+>
+> $$\text{res}_{c,k}=F\big(\text{req}_{c,k}\big),\qquad t^{\text{res}}_{c,k}-t^{\text{req}}_{c,k}\ \ge\ D$$
+>
+> where $\text{req}_{c,k}$ is client $c$'s $k$-th request, $F$ the one server's handler and $D$ its run time; the pairing is the point, since a response addressed to $c$ alone means no client needs a correlation ID of its own.
+>
+> - **Example**: an operator calls `/controller/reset_odometry`: $1$ request, $1$ response, back to that operator only. The handler runs on the controller's own executor, so even $D=1\,\mathrm{ms}$ takes $1/5=20\%$ of the $5\,\mathrm{ms}$ period it lands in (Worked case, step 1).
+> - **Non-example**: request and reply built from two topics, `/reset_request` and `/reset_reply`. With two operator consoles subscribed to the reply topic, every reply reaches both — $2$ deliveries for $1$ wanted — and each console must invent an ID to find its own: the protocol a service already is, rebuilt badly ([[04-robotics/ros2/nodes-topics-messages|25.2 §8]]).
+
 A Python server. The callback receives a filled `request` and an empty `response`, fills the response in, and returns it:
 
 ```python
@@ -307,6 +316,15 @@ The goal lifecycle is the part worth memorising, because it is what distinguishe
 | Result | server | Delivered once, with a terminal status: SUCCEEDED, CANCELED or ABORTED |
 
 Every goal gets a unique ID, which is how a client keeps several in flight straight. And "what happens when a second goal arrives" is a **server policy, not a rule**: turtlesim's rotation server aborts the previous goal, but another server may reject the new one or queue it. Do not assume.
+
+> **Action, defined.** An **action** is a *named, typed, long-running goal interface between one server and any number of clients*, typed by a `.action` file of goal, result and feedback. Four conditions: the server **accepts or rejects** each goal, which carries a unique ID; while the goal executes the server **streams feedback**; the client may **request cancellation**, which the server grants or refuses; and every accepted goal ends in **exactly one result with a terminal status**, SUCCEEDED, CANCELED or ABORTED. Underneath are three services under the action's name, `_action/send_goal`, `_action/cancel_goal` and `_action/get_result`, and two topics, `_action/feedback` and `_action/status`.
+>
+> $$N_{\text{msg}}=\underbrace{2}_{\texttt{send\_goal}}+\,n_{\text{fb}}+\underbrace{2}_{\texttt{get\_result}}\ \big(+\,2\ \text{per cancel}\big)\ +\ \text{status updates}$$
+>
+> where $n_{\text{fb}}$ is the number of feedback messages, so the client's side is a few short callbacks rather than one long wait.
+>
+> - **Example**: the picture's `navigate` — goal at $0$, feedback at $0.5$, $1.0$ and $1.5\,\mathrm{s}$, result at $2\,\mathrm{s}$ — is $2+3+2=7$ messages plus status, and on the controller $1+3+1=5$ short callbacks between the $400$ ticks of those $2\,\mathrm{s}$.
+> - **Non-example**: the word "action" taken as a guarantee. Put the planner's execute callback in the controller's own node on a single-threaded executor and one $0.5\,\mathrm{s}$ step between feedbacks blocks $0.5/0.005=100$ ticks: the interface is an action and the loop is still dead, because the freedom comes from where the work runs (§5).
 
 This is why navigation and manipulation use actions. Driving to a waypoint takes minutes, the operator must be able to stop it, and the caller needs to know how far along it is — the three things a service cannot do. [[04-robotics/ros2/navigation-nav2|25.9 Navigation with Nav2]] is an action interface from top to bottom.
 
@@ -452,6 +470,15 @@ A read-only parameter can be set at startup and not afterwards. You will meet th
 
 To react to changes rather than poll, a node registers a **set-parameters callback** (`add_on_set_parameters_callback`), which inspects a proposed change and may reject it; a **pre-set** callback can amend it, and a **post-set** callback runs once it is accepted. The set callback must have no side effects — several can be chained, and none of them knows whether a later one will reject the update. Do the reacting in the post-set callback.
 
+> **Parameter, defined.** A **parameter** is a *named, typed setting owned by one node*, addressed by the node's FQN plus its own name and alive exactly as long as the node. A request to change one succeeds only if all five conditions above hold: the name is **declared**, unless the node allows undeclared ones; the value's **type** matches the declared one, unless `dynamic_typing` is set; the parameter is **not read-only**, a condition that binds only after startup (§7); the value lies in the descriptor's **range**; and every **set-parameters callback** accepts it.
+>
+> $$\text{set}(k,v)\ \text{succeeds}\iff k\in\mathcal{D}\ \wedge\ \text{type}(v)=\text{type}(k)\ \wedge\ \neg\,\text{ro}(k)\ \wedge\ v\in R(k)\ \wedge\ \textstyle\bigwedge_i c_i(k,v)$$
+>
+> where $\mathcal{D}$ is the set of declared names, $\text{ro}$ the read-only flag, $R$ the range and $c_i$ the callbacks — a conjunction, so any one clause refuses the whole change.
+>
+> - **Example**: the picture's table. `ros2 param set /controller control_period 0.01` passes every clause; `... control_period 1` fails the type clause, since YAML reads `1` as an `int64` and a `float64` was declared; `... counts_per_metre 1024` fails as read-only.
+> - **Non-example**: "accepted" read as "applied". Once `control_period` is accepted at $0.01$, a timer built from $0.005$ at startup still fires at $1/0.005=200\,\mathrm{Hz}$, not $1/0.01=100\,\mathrm{Hz}$, until a post-set callback rebuilds it. The clauses check form, not truth: the Worked case's $1024$ from a startup file is declared, well-typed and in range, and only a callback that knows the datasheet refuses it.
+
 ### 7. Setting parameters from a file and from the command line
 
 Three routes, all of them outside the source code.
@@ -483,6 +510,15 @@ ros2 run <package_name> <executable_name> --ros-args --params-file <file_name>
 
 `*` matches a single slash-delimited token and `**` matches zero or more, so `/**` is the wildcard every real launch file uses to hand one setting to a whole subsystem. Partial matches such as `foo*` are not allowed. And note the asymmetry that catches people: **a parameter file used at node startup updates all parameters, including the read-only ones** — the thing `ros2 param load` cannot do later.
 
+> **Parameter file, defined.** A **parameter file** is a *YAML mapping from node names to parameter values*, read when a node starts. Four conditions: each top-level **key names nodes** — a fully qualified name, read with a leading `/` if it lacks one, or a pattern in which `*` stands for one slash-delimited token and `**` for any number; under it sits the **literal key** `ros__parameters`; the values below it are **typed by their YAML spelling**, and each must match the type its parameter is declared with; and the file acts **at startup, before any read-only lock**, supplying the initial values the node's declarations pick up.
+>
+> $$\text{applies}(K,N)\iff \text{FQN}(N)\ \text{matches}\ K,\qquad \texttt{*}=\text{one token},\ \ \texttt{**}=\text{zero or more tokens}$$
+>
+> where $K$ is a top-level key and $N$ a node; a key that matches no node is not an error, because the file only offers values and each node takes the ones addressed to it.
+>
+> - **Example**: P6's controller runs as `/controller`, so a `/controller:` block holding `counts_per_metre: 2048` and `control_period: 0.005` sets both at startup, the read-only one included; a `/**:` block would reach the camera and the planner as well.
+> - **Non-example**: the period written in milliseconds. `control_period: 5` is an `int64` to YAML, the declaration expects a `float64`, and the controller dies at startup with "Wrong parameter type"; `control_period: 5.0` passes and runs the loop at $1/5=0.2\,\mathrm{Hz}$. The type caught the integer, never the unit.
+
 At runtime, through the parameter services every node creates automatically:
 
 ```bash
@@ -513,6 +549,15 @@ Each transition runs a callback you override: `on_configure` (allocate, open the
 One documentation trap: the demos README still says the default is failure; the source says otherwise.
 
 The payoff is that publishing is gated by state. A lifecycle publisher created in `on_configure` exists in `inactive` but transfers nothing; `publish()` is a no-op until the node is `active`. Nothing downstream sees half-initialised data.
+
+> **Managed node, defined.** A **managed node** is a *node whose visible state is one of four primary states and changes only through requested transitions*. Four conditions: it **starts in `unconfigured`**; a transition runs only when **requested**, by `ros2 lifecycle set` or a manager, and only from a state that offers it; it **completes only if its callback returns SUCCESS**, FAILURE sending the node back where it started (shutdown excepted, which ends in `finalized` either way) and ERROR into `errorprocessing`; and its lifecycle publishers **transfer nothing outside `active`**.
+>
+> $$\delta=\{(U,\text{configure},I),(I,\text{cleanup},U),(I,\text{activate},A),(A,\text{deactivate},I),(U,\text{shutdown},F),(I,\text{shutdown},F),(A,\text{shutdown},F)\}$$
+>
+> where $U$, $I$, $A$, $F$ are unconfigured, inactive, active and finalized, and each triple reads (from, requested transition, to on SUCCESS) — seven, which is why `ros2 lifecycle list` offers two transitions in $U$, three in $I$ and two in $A$.
+>
+> - **Example**: P6's camera goes $U\to I\to A$ on two requests, configure then activate; its `on_configure` waits for the first valid frame, so $0$ goals are published before activation.
+> - **Non-example**: a `LifecycleNode` left with the default callbacks. Each returns SUCCESS at once, so configure and activate succeed while the sensor is still warming, and §8.2's assumed $1.5\,\mathrm{s}$ warm-up publishes $1.5\times50=75$ invalid goals as before: the state machine gates on what the callbacks return, not on the hardware.
 
 Every managed node exposes six interfaces for free: a `<node_name>/transition_event` topic, and services `get_state`, `change_state`, `get_available_states`, `get_available_transitions`, `get_transition_graph`. The CLI wraps them:
 
@@ -622,6 +667,8 @@ Custom `.srv` and `.action` packages appear here only far enough to build one; t
 - ros2/examples — `rclpy/actions/minimal_action_server` (goal, cancel and accepted callbacks).
 - ros2/ros2cli — `ros2lifecycle` verbs (`nodes`, `list`, `get`, `set`).
 - ros-navigation/navigation2 — `nav2_lifecycle_manager` README and `lifecycle_manager.cpp` (ordered bringup, `manage_nodes` service, `bond_timeout` default).
+- `ros2/rcl`, jazzy — [`rcl_action/src/rcl_action/names.c`](https://github.com/ros2/rcl/blob/jazzy/rcl_action/src/rcl_action/names.c) (an action's three services and two topics under `<name>/_action/`) and [`rcl_lifecycle/src/default_state_machine.c`](https://github.com/ros2/rcl/blob/jazzy/rcl_lifecycle/src/default_state_machine.c) (FAILURE returns a node to the state it started from, shutdown excepted; ERROR goes to `errorprocessing`); `ros2/rcl_interfaces`, jazzy — [`lifecycle_msgs/msg/Transition.msg`](https://github.com/ros2/rcl_interfaces/blob/jazzy/lifecycle_msgs/msg/Transition.msg) (the seven transitions a user can request) and [`action_msgs/msg/GoalStatus.msg`](https://github.com/ros2/rcl_interfaces/blob/jazzy/action_msgs/msg/GoalStatus.msg) (the terminal statuses).
+- `ros2/rclcpp` and `ros2/rclpy`, jazzy — [`node_parameters.cpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/src/rclcpp/node_interfaces/node_parameters.cpp) and [`rclpy/node.py`](https://github.com/ros2/rclpy/blob/jazzy/rclpy/rclpy/node.py) (a set is refused when the name is undeclared, the type is wrong, the parameter is read-only or the value is out of range, and a wrong-typed startup value makes the declaration throw); [`rclcpp/parameter_map.cpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/src/rclcpp/parameter_map.cpp) and [`rclpy/src/rclpy/node.cpp`](https://github.com/ros2/rclpy/blob/jazzy/rclpy/src/rclpy/node.cpp) (a parameter-file key gets a leading `/` and matches a node's FQN with `*` for one token and `**` for any number).
 
 ### Self-check
 
@@ -848,6 +895,15 @@ int64 sum
 
 한 서비스 이름당 **서버는 단 하나**여야 한다. 여럿이면 어느 서버가 요청을 받을지 정의되어 있지 않다. 클라이언트는 몇 개든 된다. 토픽과 정반대다. 토픽은 한 이름에 퍼블리셔가 여럿이어도 합법이고, [[04-robotics/ros2/describing-a-robot|25.6 로봇 기술하기: URDF, TF2, RViz]]에서 보듯 그것이 변환 트리를 깨는 흔한 방법이다.
 
+> **서비스의 정의.** **서비스**(service)는 *서버 하나와 클라이언트 여럿 사이의, 이름과 타입을 가진 요청–응답 인터페이스*, 곧 원격 프로시저 호출이다. 조건은 넷이다. **타입**은 요청과 응답 메시지 한 쌍인 `.srv`다. **이름마다 서버는 하나**다. **요청 하나에는 응답이 정확히 하나 오고, 그 요청을 보낸 클라이언트에게만** 전달된다. 그리고 핸들러는 클라이언트가 막힌 채, 또는 future를 쥔 채 기다리는 동안 **서버의 executor 위에서 끝까지 돈다**.
+>
+> $$\text{res}_{c,k}=F\big(\text{req}_{c,k}\big),\qquad t^{\text{res}}_{c,k}-t^{\text{req}}_{c,k}\ \ge\ D$$
+>
+> $\text{req}_{c,k}$는 클라이언트 $c$의 $k$번째 요청, $F$는 유일한 서버의 핸들러, $D$는 그 실행 시간이다. 핵심은 짝짓기다. 응답이 $c$ 하나에게만 가므로 어느 클라이언트도 상관 ID를 따로 만들 필요가 없다.
+>
+> - **예**: 조작자가 `/controller/reset_odometry`를 부른다. 요청 $1$개, 응답 $1$개가 그 조작자에게만 돌아간다. 핸들러는 제어기 자신의 executor에서 돌므로 $D=1\,\mathrm{ms}$라도 그것이 떨어진 $5\,\mathrm{ms}$ 주기의 $1/5=20\%$를 쓴다(계산 예제 1단계).
+> - **비예**: 토픽 둘, `/reset_request`와 `/reset_reply`로 짠 요청과 응답. 조작 콘솔 둘이 응답 토픽을 구독하면 응답마다 둘 다에게 간다 — 원하는 것은 $1$인데 전달은 $2$. 콘솔마다 자기 것을 찾을 ID를 발명해야 하니, 서비스가 이미 하는 프로토콜을 엉성하게 다시 만든 셈이다([[04-robotics/ros2/nodes-topics-messages|25.2 §8]]).
+
 Python 서버. 콜백은 채워진 `request`와 빈 `response`를 받아, 응답을 채우고 반환한다.
 
 ```python
@@ -963,6 +1019,15 @@ int32[] partial_sequence
 | 결과 | 서버 | 한 번 전달되며 종단 상태가 붙는다: SUCCEEDED, CANCELED, ABORTED |
 
 모든 목표에는 고유 ID가 붙고, 클라이언트는 그것으로 여러 목표를 구분한다. 그리고 "두 번째 목표가 오면 어떻게 되는가"는 **규칙이 아니라 서버 정책이다.** turtlesim의 회전 서버는 이전 목표를 중단하지만, 다른 서버는 새 목표를 거부하거나 대기시킬 수 있다. 가정하지 마라.
+
+> **액션의 정의.** **액션**(action)은 *서버 하나와 클라이언트 여럿 사이의, 이름과 타입을 가진 장시간 목표 인터페이스*이고, 타입은 목표·결과·피드백으로 된 `.action` 파일이 정한다. 조건은 넷이다. 서버가 목표마다 **수락하거나 거절하고**, 목표에는 고유 ID가 붙는다. 목표가 실행되는 동안 서버가 **피드백을 흘려보낸다**. 클라이언트는 **취소를 요청할** 수 있고, 서버가 그것을 받아들이거나 거절한다. 그리고 수락된 목표는 모두 **종단 상태가 붙은 결과 정확히 하나**로 끝난다. SUCCEEDED, CANCELED, ABORTED 중 하나다. 속에는 액션 이름 아래의 서비스 셋 `_action/send_goal`, `_action/cancel_goal`, `_action/get_result`와 토픽 둘 `_action/feedback`, `_action/status`가 있다.
+>
+> $$N_{\text{msg}}=\underbrace{2}_{\texttt{send\_goal}}+\,n_{\text{fb}}+\underbrace{2}_{\texttt{get\_result}}\ \big(+\,2\ \text{per cancel}\big)\ +\ \text{status updates}$$
+>
+> $n_{\text{fb}}$는 피드백 메시지 수다. 그래서 클라이언트 쪽은 긴 기다림 하나가 아니라 짧은 콜백 몇 개다.
+>
+> - **예**: 그림의 `navigate` — $0$에 목표, $0.5$, $1.0$, $1.5\,\mathrm{s}$에 피드백, $2\,\mathrm{s}$에 결과 — 는 메시지 $2+3+2=7$개에 상태 갱신이 더해지고, 제어기에서는 짧은 콜백 $1+3+1=5$개가 그 $2\,\mathrm{s}$의 틱 $400$개 사이에 끼어 돈다.
+> - **비예**: "액션"이라는 이름을 보증으로 읽기. 플래너의 execute 콜백을 단일 스레드 executor 위의 제어기 노드 안에 넣으면, 피드백 사이의 $0.5\,\mathrm{s}$ 한 단계가 틱 $0.5/0.005=100$개를 막는다. 인터페이스는 액션인데 루프는 여전히 죽어 있다. 막히지 않는 자유는 일이 어디서 도는가에서 오기 때문이다(5절).
 
 내비게이션과 매니퓰레이션이 액션을 쓰는 이유가 이것이다. 경유점까지 주행은 몇 분이 걸리고, 조작자가 멈출 수 있어야 하고, 호출자는 얼마나 진행됐는지 알아야 한다. 셋 다 정확히 서비스가 못 하는 것이다. [[04-robotics/ros2/navigation-nav2|25.9 Nav2로 하는 내비게이션]]은 위에서 아래까지 액션 인터페이스다.
 
@@ -1108,6 +1173,15 @@ this->declare_parameter("my_parameter", "world", param_desc);
 
 폴링 대신 변경에 반응하려면, 제안된 변경을 검사하고 거부할 수 있는 **set-parameters 콜백**(`add_on_set_parameters_callback`), 변경을 수정할 수 있는 **pre-set** 콜백, 변경이 수락된 *뒤에* 도는 **post-set** 콜백을 등록할 수 있다. set 콜백에는 부작용이 없어야 한다. 여러 개가 사슬로 이어질 수 있고, 개별 콜백은 뒤의 콜백이 갱신을 거부할지 알 수 없다. 반응은 post-set 콜백에서 하라.
 
+> **파라미터의 정의.** **파라미터**(parameter)는 *노드 하나가 소유하는, 이름과 타입을 가진 설정값*이다. 노드의 FQN에 자기 이름을 더한 것이 주소이고, 정확히 그 노드만큼 산다. 바꾸려는 요청은 위의 다섯 조건이 모두 성립할 때만 성공한다. 이름이 **선언되어** 있다(노드가 미선언을 허용하지 않는 한). 값의 **타입**이 선언된 타입과 같다(`dynamic_typing`이 아닌 한). 파라미터가 **읽기 전용이 아니다**. 이 조건은 기동이 끝난 뒤에만 걸린다(7절). 값이 디스크립터의 **범위** 안에 있다. 그리고 모든 **set-parameters 콜백**이 받아들인다.
+>
+> $$\text{set}(k,v)\ \text{succeeds}\iff k\in\mathcal{D}\ \wedge\ \text{type}(v)=\text{type}(k)\ \wedge\ \neg\,\text{ro}(k)\ \wedge\ v\in R(k)\ \wedge\ \textstyle\bigwedge_i c_i(k,v)$$
+>
+> $\mathcal{D}$는 선언된 이름의 집합, $\text{ro}$는 읽기 전용 표시, $R$은 범위, $c_i$는 콜백이다. 논리곱이므로 한 항만 거부해도 변경 전체가 거부된다.
+>
+> - **예**: 그림의 표. `ros2 param set /controller control_period 0.01`은 모든 항을 통과한다. `... control_period 1`은 타입 항에서 떨어진다. YAML이 `1`을 `int64`로 읽는데 선언된 것은 `float64`이기 때문이다. `... counts_per_metre 1024`는 읽기 전용이라 떨어진다.
+> - **비예**: "수락됨"을 "적용됨"으로 읽기. `control_period`가 $0.01$로 수락되어도, 기동 때 $0.005$로 만든 타이머는 post-set 콜백이 다시 만들기 전까지 $1/0.01=100\,\mathrm{Hz}$가 아니라 $1/0.005=200\,\mathrm{Hz}$로 계속 돈다. 이 항들이 검사하는 것은 형식이지 참이 아니다. 기동 파일에서 온 계산 예제의 $1024$는 선언되어 있고 타입이 맞고 범위 안에 있으며, 데이터시트를 아는 콜백만이 그것을 거부한다.
+
 ### 7. 파일과 커맨드라인으로 파라미터 설정하기
 
 세 가지 경로, 모두 소스 코드 바깥이다.
@@ -1139,6 +1213,15 @@ ros2 run <package_name> <executable_name> --ros-args --params-file <file_name>
 
 `*`는 슬래시로 구분된 토큰 하나에, `**`는 0개 이상의 토큰에 대응한다. 그래서 실제 런치 파일은 하위 시스템 전체에 설정 하나를 주려고 `/**`를 쓴다. `foo*` 같은 부분 일치는 허용되지 않는다. 그리고 사람들이 걸리는 비대칭: **기동 시에 쓰는 파라미터 파일은 읽기 전용 파라미터를 포함해 모든 파라미터를 갱신한다.** 나중에 `ros2 param load`로는 못 하는 일이다.
 
+> **파라미터 파일의 정의.** **파라미터 파일**(parameter file)은 *노드 이름에서 파라미터 값으로 가는 YAML 매핑*이고, 노드가 시작할 때 읽힌다. 조건은 넷이다. 최상위 **키가 노드를 가리킨다** — 완전 이름이거나(앞의 `/`가 없으면 붙여서 읽는다), `*`는 슬래시로 나뉜 토큰 하나를, `**`는 0개 이상의 토큰을 뜻하는 패턴이다. 그 아래에 **글자 그대로의 키** `ros__parameters`가 온다. 그 아래의 값들은 **YAML 표기로 타입이 정해지고**, 각각은 그 파라미터가 선언된 타입과 맞아야 한다. 그리고 파일은 **기동 시점, 읽기 전용 잠금보다 먼저** 작용해서 노드의 선언이 집어 가는 초깃값이 된다.
+>
+> $$\text{applies}(K,N)\iff \text{FQN}(N)\ \text{matches}\ K,\qquad \texttt{*}=\text{one token},\ \ \texttt{**}=\text{zero or more tokens}$$
+>
+> $K$는 최상위 키, $N$은 노드다. 아무 노드에도 맞지 않는 키는 오류가 아니다. 파일은 값을 내놓을 뿐이고, 노드마다 자기에게 온 값만 가져가기 때문이다.
+>
+> - **예**: P6의 제어기는 `/controller`로 돌므로, `counts_per_metre: 2048`과 `control_period: 0.005`를 담은 `/controller:` 블록이 기동 때 둘 다 설정한다. 읽기 전용인 쪽도 포함해서다. `/**:` 블록이었다면 카메라와 플래너에도 닿았을 것이다.
+> - **비예**: 주기를 밀리초로 적기. `control_period: 5`는 YAML에게 `int64`이고 선언은 `float64`를 기대하므로, 제어기는 기동하자마자 "Wrong parameter type"으로 죽는다. `control_period: 5.0`은 통과해서 루프를 $1/5=0.2\,\mathrm{Hz}$로 돌린다. 타입은 정수를 잡았을 뿐, 단위는 결코 잡지 못한다.
+
 런타임에는 모든 노드가 자동으로 만드는 파라미터 서비스를 통해:
 
 ```bash
@@ -1169,6 +1252,15 @@ ros2 param load /turtlesim turtlesim.yaml
 문서 함정 하나: demos README는 아직 기본값이 실패라고 적지만, 소스는 그렇지 않다.
 
 이득은 발행이 상태로 게이팅된다는 것이다. `on_configure`에서 만든 라이프사이클 퍼블리셔는 `inactive`에 존재하지만 아무것도 전달하지 않는다. 노드가 `active`가 되기 전까지 `publish()`는 아무 일도 하지 않는다. 하류의 누구도 반쯤 초기화된 데이터를 보지 않는다.
+
+> **관리형 노드의 정의.** **관리형 노드**(managed node)는 *밖에서 보이는 상태가 네 주 상태 중 하나이고, 요청된 전이를 통해서만 바뀌는 노드*다. 조건은 넷이다. **`unconfigured`에서 시작한다**. 전이는 `ros2 lifecycle set`이나 관리자가 **요청할 때만**, 그리고 그 전이를 제공하는 상태에서만 돈다. 전이는 **콜백이 SUCCESS를 반환할 때만 완료된다**. FAILURE면 출발한 상태로 돌아가고(shutdown은 예외로, 어느 쪽이든 `finalized`에서 끝난다), ERROR면 `errorprocessing`으로 간다. 그리고 라이프사이클 퍼블리셔는 **`active` 밖에서는 아무것도 전달하지 않는다**.
+>
+> $$\delta=\{(U,\text{configure},I),(I,\text{cleanup},U),(I,\text{activate},A),(A,\text{deactivate},I),(U,\text{shutdown},F),(I,\text{shutdown},F),(A,\text{shutdown},F)\}$$
+>
+> $U$, $I$, $A$, $F$는 unconfigured, inactive, active, finalized이고, 각 삼중쌍은 (출발, 요청한 전이, SUCCESS일 때 도착)으로 읽는다. 모두 일곱이고, 그래서 `ros2 lifecycle list`는 $U$에서 전이 둘, $I$에서 셋, $A$에서 둘을 보여 준다.
+>
+> - **예**: P6의 카메라는 configure, activate 두 요청으로 $U\to I\to A$를 간다. `on_configure`가 첫 유효 프레임을 기다리므로 활성화 전에 발행되는 목표는 $0$개다.
+> - **비예**: 기본 콜백 그대로인 `LifecycleNode`. 콜백이 모두 즉시 SUCCESS를 반환하므로 센서가 아직 예열 중일 때 configure와 activate가 성공하고, 8.2절이 가정한 $1.5\,\mathrm{s}$ 워밍업 동안 무효 목표 $1.5\times50=75$개가 예전처럼 발행된다. 상태 기계가 문을 여닫는 기준은 하드웨어가 아니라 콜백이 반환하는 값이다.
 
 모든 관리형 노드는 여섯 가지 인터페이스를 공짜로 노출한다. `<node_name>/transition_event` 토픽, 그리고 `get_state`, `change_state`, `get_available_states`, `get_available_transitions`, `get_transition_graph` 서비스. CLI가 그것을 감싼다.
 
@@ -1278,6 +1370,8 @@ ros2 service list | grep add_two_ints   # 서버는 멀쩡히 있다
 - ros2/examples — `rclpy/actions/minimal_action_server`(goal, cancel, accepted 콜백).
 - ros2/ros2cli — `ros2lifecycle` 동사(`nodes`, `list`, `get`, `set`).
 - ros-navigation/navigation2 — `nav2_lifecycle_manager` README와 `lifecycle_manager.cpp`(순서 지어진 기동, `manage_nodes` 서비스, `bond_timeout` 기본값).
+- `ros2/rcl`, jazzy — [`rcl_action/src/rcl_action/names.c`](https://github.com/ros2/rcl/blob/jazzy/rcl_action/src/rcl_action/names.c)(액션 이름 아래 `<name>/_action/`의 서비스 셋과 토픽 둘), [`rcl_lifecycle/src/default_state_machine.c`](https://github.com/ros2/rcl/blob/jazzy/rcl_lifecycle/src/default_state_machine.c)(FAILURE는 노드를 출발한 상태로 돌려보내되 shutdown은 예외, ERROR는 `errorprocessing`으로); `ros2/rcl_interfaces`, jazzy — [`lifecycle_msgs/msg/Transition.msg`](https://github.com/ros2/rcl_interfaces/blob/jazzy/lifecycle_msgs/msg/Transition.msg)(사용자가 요청할 수 있는 전이 일곱), [`action_msgs/msg/GoalStatus.msg`](https://github.com/ros2/rcl_interfaces/blob/jazzy/action_msgs/msg/GoalStatus.msg)(종단 상태).
+- `ros2/rclcpp`와 `ros2/rclpy`, jazzy — [`node_parameters.cpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/src/rclcpp/node_interfaces/node_parameters.cpp), [`rclpy/node.py`](https://github.com/ros2/rclpy/blob/jazzy/rclpy/rclpy/node.py)(이름이 미선언이거나, 타입이 틀리거나, 읽기 전용이거나, 값이 범위 밖이면 설정을 거부하고, 기동 값의 타입이 틀리면 선언이 예외를 던진다); [`rclcpp/parameter_map.cpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/src/rclcpp/parameter_map.cpp)와 [`rclpy/src/rclpy/node.cpp`](https://github.com/ros2/rclpy/blob/jazzy/rclpy/src/rclpy/node.cpp)(파라미터 파일의 키는 앞에 `/`가 붙어 읽히고, `*`는 토큰 하나, `**`는 몇 개든으로 노드의 FQN과 맞춰진다).
 
 ### 스스로 점검
 

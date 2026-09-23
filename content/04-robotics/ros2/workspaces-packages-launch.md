@@ -168,6 +168,15 @@ It can, for one file in one terminal. What it will not do is let `ros2 run` find
 
 All of that comes from one idea: a **package** declares what it is and what it needs, and a **build** turns that declaration into a fixed directory layout that the ROS 2 tooling knows how to search. The cost is that there is now a copy of your code somewhere other than where you edit it. Section 13 is about the day that copy goes stale.
 
+> **Package, defined.** A **package** is a *directory*, the unit that is built, installed, depended on and released as one. Four conditions: it holds a **manifest**, `package.xml`, naming the package and its dependencies by phase (§5); it has **exactly one build type**, `ament_cmake` or `ament_python` (§4); it sits in **its own directory**, never inside another package (§2); and once built it has an **install prefix** with a marker in the ament index, which is how every tool finds it by name.
+>
+> $$\texttt{ros2 run}\ p\ e\ \longrightarrow\ \text{prefix}(p)/\texttt{lib}/p/e,\qquad \texttt{FindPackageShare}(p)\ \longrightarrow\ \text{prefix}(p)/\texttt{share}/p$$
+>
+> where $p$ is the package name, $e$ an executable and $\text{prefix}(p)$ the first entry of `AMENT_PREFIX_PATH` whose index lists $p$ (§6), so a package is found by its name, never by the path of its source.
+>
+> - **Example**: `ros2 run p6_control controller` runs `~/ros2_ws/install/p6_control/lib/p6_control/controller`, and the bringup launch file finds `p6.yaml` in `install/p6_bringup/share/p6_bringup/config/`.
+> - **Non-example**: code that builds but is not installed where the rule looks. Drop the `install(TARGETS … DESTINATION lib/${PROJECT_NAME})` rule from `p6_control` and colcon still reports $1$ package finished, while `lib/p6_control/` holds $0$ executables and `ros2 run` answers `No executable found`. A package is what the tools can find, not what compiles.
+
 ### 2. The workspace: `src`, `build`, `install`, `log`
 
 A workspace is a directory containing ROS 2 packages. You create it by hand — there is no `ros2 workspace create`:
@@ -190,6 +199,15 @@ Two habits follow. Put `build/`, `install/` and `log/` in `.gitignore`; and when
 
 `log` is the one beginners ignore. `colcon build` prints a summary, not compiler output; the full output per package is under `log/latest_build/<package>/`. Or use `colcon build --event-handlers console_direct+`, which streams it to the terminal.
 
+> **Workspace, defined.** A **workspace** is a *directory with a fixed layout*: a root holding the packages and colcon's three output directories. Four conditions: the **packages** live under the root, by convention in `src/`, one directory each and never nested; `build/`, `install/` and `log/` are **written by colcon**, each marked with a `COLCON_IGNORE` file so the next crawl skips it; `install/` holds each package's **prefix** and the **setup files**; and nothing in it is visible to a shell until that shell **sources** one of them (§6).
+>
+> $$\big(\texttt{build},\ \texttt{install},\ \texttt{log}\big)=\texttt{colcon build}\big(\texttt{src}\ \text{at}\ t_b;\ \text{underlay}\big)$$
+>
+> where $t_b$ is the time of the last build, so the three outputs are recomputable from the source and the underlay, which is why deleting them is safe, and by default `install/` shows `src/` as it was at $t_b$, not as it is now (§3, §7, §13).
+>
+> - **Example**: `~/ros2_ws` with P6's four packages in `src/` builds to `install/p6_interfaces`, `install/p6_perception`, `install/p6_control` and `install/p6_bringup`, one prefix each in colcon's default isolated layout, plus `setup.bash` and `local_setup.bash`.
+> - **Non-example**: a package nested in another. Put `p6_interfaces` inside `src/p6_control/` and colcon, which stops crawling at the first `package.xml` on a path, discovers $3$ packages instead of $4$; `p6_control` then fails to find the type it depends on, and nothing reports that a fourth package exists.
+
 ### 3. What `colcon build` actually does
 
 `colcon` is the build *tool*. Run from the workspace root:
@@ -201,11 +219,11 @@ colcon build
 
 ```text
 Starting >>> temp_sim
-Finished <<< temp_sim [1.21s]
 Starting >>> temp_filter
+Finished <<< temp_sim [1.21s]
 Finished <<< temp_filter [4.87s]
 
-Summary: 2 packages finished [6.20s]
+Summary: 2 packages finished [4.93s]
 ```
 
 Four things happened, in this order:
@@ -216,6 +234,15 @@ Four things happened, in this order:
 4. **Install.** Each package's artefacts are copied into `install/<package_name>/`, and colcon generates the environment setup files alongside them.
 
 Note step 4. By default, **install means copy**. The file the node runs is not the file you edited.
+
+> **`colcon build`, defined.** `colcon build` is a *process run from the workspace root* that turns the packages it finds into the three output directories, in four stages that are its defining conditions: **discover** every package under the root, skipping `COLCON_IGNORE` directories and never descending into a package; **order** them by the dependencies their `package.xml` files declare on each other; **build** each with the tool its build type names; and **install** each into `install/<package>/`, copying by default, beside the setup files.
+>
+> $$\text{start}(p)\ \ge\ \max_{q\,\in\,\text{dep}(p)}\ \text{finish}(q)$$
+>
+> where $\text{dep}(p)$ is the set of packages in this workspace that $p$ declares, together with their run dependencies in turn, so the build is a topological order of that graph: packages with no path between them build in parallel, up to one per CPU by default, and a dependency the underlay satisfies does not enter the order.
+>
+> - **Example**: P6. `p6_control` declares `p6_interfaces`, so it starts only after `p6_interfaces` finishes, while `p6_perception`, depending on neither (§4), builds alongside them.
+> - **Non-example**: `--packages-select p6_control` after a field is added to `CartState.msg`. It builds $1$ package and bypasses the rule, so `p6_control` compiles against the `p6_interfaces` installed by the previous build, the $3$-field type, and the error surfaces later as a type mismatch the source cannot explain (§8).
 
 ### 4. ament, and the two build types
 
@@ -341,6 +368,15 @@ source ~/ros2_ws/install/setup.bash   # overlay
 
 There are two setup files in an install directory and the difference matters. `local_setup.bash` adds only the packages in *this* workspace. `setup.bash` adds this workspace *and* the underlay it was built against. So sourcing `/opt/ros/jazzy/setup.bash` followed by the workspace's `local_setup.bash` is equivalent to sourcing the workspace's `setup.bash` alone.
 
+> **Underlay and overlay, defined.** **Underlay** and **overlay** are *roles two workspaces take in one shell*, a relation set by the order of sourcing and not a property of either directory. Three conditions: **closure**, every dependency of every overlay package being found in the underlay or the overlay; **precedence**, a package present in both resolving to the overlay; and **per-shell scope**, the relation existing only in a shell that sourced them in that order, the overlay's entries prepended to the underlay's.
+>
+> $$\text{prefix}(p)=\text{first entry of }\texttt{AMENT\_PREFIX\_PATH}\text{ that lists }p,\qquad \text{deps}(W_{\text{over}})\subseteq W_{\text{under}}\cup W_{\text{over}}$$
+>
+> where $W$ is the set of packages a workspace installs; the first clause is precedence, since the overlay's entries come first, and the second is closure.
+>
+> - **Example**: after the two `source` lines above, `ros2 pkg prefix p6_control` prints `/home/you/ros2_ws/install/p6_control` and `ros2 pkg prefix rclcpp` prints `/opt/ros/jazzy`; of `p6_control`'s dependencies (§5), `rclcpp` and `launch_ros` are in the underlay and `p6_interfaces` in the overlay, so closure holds.
+> - **Non-example**: the overlay alone. A fresh shell that sources only `~/ros2_ws/install/local_setup.bash` has $1$ of the $2$ workspaces: `p6_control` is on the path, but `rclcpp` is not, and neither is the `ros2` command — `ros2: command not found` — because closure fails. The overlay's `setup.bash` would have sourced the underlay it was built against first.
+
 Two rules that are not obvious and cost real time:
 
 - **Do not build in a terminal that has an overlay sourced, and do not source an overlay in the terminal you built in.** The official tutorial is explicit that this creates complex problems. The mechanism is that a build inherits an environment that already points at its own previous output, so a package can be built against a stale copy of itself. Use one terminal to build and other terminals to run.
@@ -397,6 +433,15 @@ Starting nodes by hand does not scale past about three, for specific reasons:
 4. **Supervision.** The launch system monitors the processes it started and reacts when one dies. A pile of terminals does not.
 
 A launch file is a *description* of a system, executed by the `launch` framework with ROS-specific actions from `launch_ros`. It can be written in Python, XML or YAML; the three are functionally equivalent. Python is used here because it is the only one in which you can compute something.
+
+> **Launch file, defined.** A **launch file** is a *program that returns a description* — in Python, `generate_launch_description()` returning a `LaunchDescription`, a list of actions — which the launch system then executes. Four conditions: it **describes and does not do**, so nothing starts while the function runs; execution is a **second phase**, in which substitutions such as `LaunchConfiguration` get their values; every `Node` action **starts one operating-system process** with the package, executable, name, namespace, parameters and remappings it was given; and the launch system **monitors** what it started, reporting or reacting when a process exits.
+>
+> $$\text{system}=\text{execute}\big(g(),\,a\big),\qquad \#\,\text{processes}=\#\,\{\texttt{Node}\ \text{actions executed}\}$$
+>
+> where $g$ is `generate_launch_description`, run first with no argument values, and $a$ the argument values, declared defaults overridden as `name:=value`, which exist only once execution begins.
+>
+> - **Example**: `ros2 launch p6_bringup p6.launch.py` executes with $a=\{\texttt{cart\_ns}:\texttt{cart1}\}$ and starts the Worked case's camera, controller and logger as $3$ processes under `/cart1`; `cart_ns:=cart2` adds $3$ more; `ros2 launch -p` prints $g()$ and starts $0$.
+> - **Non-example**: an argument used as a string while $g$ runs. `'/' + LaunchConfiguration('cart_ns')` raises a `TypeError` in the first phase, since the object has no value yet and defines no `+`, so $0$ processes start; the list `['/', LaunchConfiguration('cart_ns')]` is joined in the second phase and gives `/cart1`. Which phase a value lives in decides whether the file runs at all.
 
 ### 10. A Python launch file: description, actions, substitutions
 
@@ -698,6 +743,9 @@ Writing the nodes themselves is [[04-robotics/ros2/nodes-topics-messages|25.2 No
 - `ament_cmake_python` README — `ament_python_install_package`, `ament_python_install_module`.
 - `rosdep` command-line options (`--from-paths`, `--ignore-src`, `-r`, `-y`).
 - REP-149 — package format 3 dependency tags.
+- colcon source — [`colcon_recursive_crawl/package_discovery/recursive_crawl.py`](https://github.com/colcon/colcon-recursive-crawl/blob/master/colcon_recursive_crawl/package_discovery/recursive_crawl.py) (the crawl stops at the first directory identified as a package); [`colcon_core/verb/build.py`](https://github.com/colcon/colcon-core/blob/master/colcon_core/verb/build.py) and [`colcon_core/package_descriptor.py`](https://github.com/colcon/colcon-core/blob/master/colcon_core/package_descriptor.py) (the build order follows the dependencies declared inside the workspace, recursing through run dependencies, and ignores the rest); [`colcon_parallel_executor/executor/parallel.py`](https://github.com/colcon/colcon-parallel-executor/blob/master/colcon_parallel_executor/executor/parallel.py) (parallel workers default to the CPU count).
+- [`ament_index_python/resources.py`](https://github.com/ament/ament_index/blob/jazzy/ament_index_python/ament_index_python/resources.py), jazzy (a package resolves to the first `AMENT_PREFIX_PATH` entry whose index lists it); `ros2cli`, jazzy — [`ros2pkg/api/__init__.py`](https://github.com/ros2/ros2cli/blob/jazzy/ros2pkg/ros2pkg/api/__init__.py) and [`ros2run/command/run.py`](https://github.com/ros2/ros2cli/blob/jazzy/ros2run/ros2run/command/run.py) (`ros2 run` searches `<prefix>/lib/<package>` and otherwise answers `No executable found`).
+- ROS 2 Jazzy documentation — Concepts: [Launch](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Launch.html) (the launch system monitors the processes it starts); Tutorials: [Using substitutions](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Using-Substitutions.html) (substitutions are evaluated only when the description executes); `launch_ros` and `launch`, jazzy — [`launch_ros/actions/node.py`](https://github.com/ros2/launch_ros/blob/jazzy/launch_ros/launch_ros/actions/node.py) (`Node` is an `ExecuteProcess`) and [`launch/substitution.py`](https://github.com/ros2/launch/blob/jazzy/launch/launch/substitution.py) (a substitution defines no string operators).
 
 ### Self-check
 
@@ -895,6 +943,15 @@ Python은 컴파일이 필요 없다. 그러면 왜 Python 노드를 `python3 my
 
 전부 하나의 발상에서 나온다. **패키지**가 자기가 무엇이고 무엇을 필요로 하는지 선언하고, **빌드**가 그 선언을 ROS 2 도구가 탐색할 줄 아는 고정된 디렉터리 구조로 바꾼다. 대가는, 편집하는 곳이 아닌 다른 곳에 코드 사본이 생긴다는 것이다. 13절은 그 사본이 낡는 날에 관한 것이다.
 
+> **패키지의 정의.** **패키지**(package)는 *디렉터리*다. 하나로 빌드되고, 설치되고, 의존되고, 배포되는 단위다. 조건은 넷이다. **매니페스트** `package.xml`이 있어 패키지 이름과 단계별 의존성을 적는다(5절). **build type이 정확히 하나**, `ament_cmake`나 `ament_python`이다(4절). **자기 디렉터리**에 있고, 결코 다른 패키지 안에 있지 않다(2절). 그리고 빌드되면 ament 인덱스에 표식을 둔 **설치 prefix**가 생기고, 모든 도구가 그것으로 이름만 보고 패키지를 찾는다.
+>
+> $$\texttt{ros2 run}\ p\ e\ \longrightarrow\ \text{prefix}(p)/\texttt{lib}/p/e,\qquad \texttt{FindPackageShare}(p)\ \longrightarrow\ \text{prefix}(p)/\texttt{share}/p$$
+>
+> $p$는 패키지 이름, $e$는 실행 파일, $\text{prefix}(p)$는 `AMENT_PREFIX_PATH`의 항목 가운데 인덱스에 $p$가 올라 있는 첫 항목이다(6절). 그래서 패키지는 소스의 경로가 아니라 이름으로 찾아진다.
+>
+> - **예**: `ros2 run p6_control controller`는 `~/ros2_ws/install/p6_control/lib/p6_control/controller`를 실행하고, bringup의 launch 파일은 `p6.yaml`을 `install/p6_bringup/share/p6_bringup/config/`에서 찾는다.
+> - **비예**: 빌드는 되지만 규칙이 찾는 곳에 설치되지 않은 코드. `p6_control`에서 `install(TARGETS … DESTINATION lib/${PROJECT_NAME})` 규칙을 빼면 colcon은 여전히 패키지 $1$개 완료를 보고하지만 `lib/p6_control/`에는 실행 파일이 $0$개이고, `ros2 run`은 `No executable found`라고 답한다. 패키지란 컴파일되는 것이 아니라 도구가 찾을 수 있는 것이다.
+
 ### 2. 워크스페이스: `src`, `build`, `install`, `log`
 
 워크스페이스는 ROS 2 패키지가 들어 있는 디렉터리다. 직접 만든다 — `ros2 workspace create` 같은 것은 없다.
@@ -917,6 +974,15 @@ cd ~/ros2_ws
 
 초보가 무시하는 것은 `log`다. `colcon build`는 요약만 찍고 컴파일러 출력은 찍지 않는다. 패키지별 전체 출력은 `log/latest_build/<package>/`에 있다. 또는 `colcon build --event-handlers console_direct+`로 터미널에 흘려보낸다.
 
+> **워크스페이스의 정의.** **워크스페이스**(workspace)는 *배치가 정해진 디렉터리*다. 패키지들과 colcon의 출력 디렉터리 셋을 담는 루트다. 조건은 넷이다. **패키지**는 루트 아래, 관례상 `src/`에 하나씩 있고 결코 중첩되지 않는다. `build/`, `install/`, `log/`는 **colcon이 쓰고**, 각각 `COLCON_IGNORE` 파일로 표시되어 다음 탐색이 건너뛴다. `install/`에는 패키지마다의 **prefix**와 **setup 파일**이 있다. 그리고 셸이 그중 하나를 **source**하기 전까지는 그 안의 어느 것도 그 셸에 보이지 않는다(6절).
+>
+> $$\big(\texttt{build},\ \texttt{install},\ \texttt{log}\big)=\texttt{colcon build}\big(\texttt{src}\ \text{at}\ t_b;\ \text{underlay}\big)$$
+>
+> $t_b$는 마지막 빌드 시각이다. 세 출력은 소스와 언더레이에서 다시 계산할 수 있으므로 지워도 안전하고, 기본값에서 `install/`은 지금의 `src/`가 아니라 $t_b$ 시점의 `src/`를 보여 준다(3절, 7절, 13절).
+>
+> - **예**: `src/`에 P6의 패키지 넷이 든 `~/ros2_ws`는 `install/p6_interfaces`, `install/p6_perception`, `install/p6_control`, `install/p6_bringup`으로 빌드된다. colcon 기본인 격리 배치라 패키지마다 prefix가 하나씩이고, 여기에 `setup.bash`와 `local_setup.bash`가 붙는다.
+> - **비예**: 다른 패키지 안에 중첩된 패키지. `p6_interfaces`를 `src/p6_control/` 안에 두면, 한 경로에서 처음 만난 `package.xml`에서 탐색을 멈추는 colcon은 패키지를 $4$개가 아니라 $3$개 찾는다. 그러면 `p6_control`은 의존하는 타입을 찾지 못해 실패하고, 넷째 패키지가 있다고 알려 주는 것은 아무것도 없다.
+
 ### 3. `colcon build`가 실제로 하는 일
 
 `colcon`은 빌드 *도구*다. 워크스페이스 루트에서 실행한다.
@@ -928,11 +994,11 @@ colcon build
 
 ```text
 Starting >>> temp_sim
-Finished <<< temp_sim [1.21s]
 Starting >>> temp_filter
+Finished <<< temp_sim [1.21s]
 Finished <<< temp_filter [4.87s]
 
-Summary: 2 packages finished [6.20s]
+Summary: 2 packages finished [4.93s]
 ```
 
 이 순서로 네 가지가 일어났다.
@@ -943,6 +1009,15 @@ Summary: 2 packages finished [6.20s]
 4. **설치.** 각 패키지의 산출물을 `install/<package_name>/`으로 복사하고, 그 옆에 환경 setup 파일을 생성한다.
 
 4번을 보라. 기본값에서 **설치는 복사**다. 노드가 실행하는 파일은 당신이 편집한 파일이 아니다.
+
+> **`colcon build`의 정의.** `colcon build`는 *워크스페이스 루트에서 도는 프로세스*로, 찾은 패키지들을 출력 디렉터리 셋으로 바꾼다. 네 단계가 곧 정의 조건이다. 루트 아래의 모든 패키지를 **찾되** `COLCON_IGNORE` 디렉터리는 건너뛰고 패키지 안으로는 내려가지 않는다. `package.xml`이 서로에 대해 선언한 의존성으로 **순서를 정한다**. 각 패키지를 build type이 가리키는 도구로 **빌드한다**. 그리고 각각을 `install/<package>/`에 기본값으로는 복사해 **설치하고**, 그 옆에 setup 파일을 만든다.
+>
+> $$\text{start}(p)\ \ge\ \max_{q\,\in\,\text{dep}(p)}\ \text{finish}(q)$$
+>
+> $\text{dep}(p)$는 $p$가 선언한 이 워크스페이스 안의 패키지들에, 다시 그것들의 실행 의존성을 차례로 더한 집합이다. 그래서 빌드는 그 그래프의 위상 정렬이다. 서로 경로가 없는 패키지는 기본값으로 CPU 하나당 하나까지 병렬로 빌드되고, 언더레이가 채우는 의존성은 순서에 들어오지 않는다.
+>
+> - **예**: P6. `p6_control`은 `p6_interfaces`를 선언하므로 `p6_interfaces`가 끝난 뒤에야 시작하고, 둘 어느 쪽에도 의존하지 않는 `p6_perception`(4절)은 그 곁에서 함께 빌드된다.
+> - **비예**: `CartState.msg`에 필드를 하나 더한 뒤의 `--packages-select p6_control`. 패키지 $1$개만 빌드하고 위의 규칙을 건너뛰므로, `p6_control`은 이전 빌드가 설치한 `p6_interfaces`, 곧 필드 $3$개짜리 타입에 대해 컴파일되고, 오류는 나중에 소스로는 설명되지 않는 타입 불일치로 드러난다(8절).
 
 ### 4. ament, 그리고 두 가지 build type
 
@@ -1051,6 +1126,15 @@ source ~/ros2_ws/install/setup.bash   # 오버레이
 
 install 디렉터리에는 setup 파일이 둘이고 차이가 중요하다. `local_setup.bash`는 *이* 워크스페이스의 패키지만 추가한다. `setup.bash`는 이 워크스페이스와 *그것이 빌드된 언더레이*까지 추가한다. 그래서 `/opt/ros/jazzy/setup.bash` 다음에 워크스페이스의 `local_setup.bash`를 하는 것은 워크스페이스의 `setup.bash` 하나만 하는 것과 같다.
 
+> **언더레이와 오버레이의 정의.** **언더레이**(underlay)와 **오버레이**(overlay)는 *한 셸 안에서 두 워크스페이스가 맡는 역할*이다. 어느 디렉터리의 성질도 아니고, source한 순서가 정하는 관계다. 조건은 셋이다. **닫힘** — 오버레이에 있는 모든 패키지의 모든 의존성이 언더레이나 오버레이 안에 있다. **우선** — 양쪽에 다 있는 패키지는 오버레이 것으로 풀린다. **셸 단위 범위** — 이 관계는 그 순서로 source한 셸 안에만 있고, 오버레이의 항목이 언더레이의 항목 앞에 붙는다.
+>
+> $$\text{prefix}(p)=\text{first entry of }\texttt{AMENT\_PREFIX\_PATH}\text{ that lists }p,\qquad \text{deps}(W_{\text{over}})\subseteq W_{\text{under}}\cup W_{\text{over}}$$
+>
+> $W$는 워크스페이스가 설치하는 패키지의 집합이다. 첫 절이 우선이고(오버레이의 항목이 앞에 오므로), 둘째 절이 닫힘이다.
+>
+> - **예**: 위의 `source` 두 줄 뒤에 `ros2 pkg prefix p6_control`은 `/home/you/ros2_ws/install/p6_control`을, `ros2 pkg prefix rclcpp`는 `/opt/ros/jazzy`를 찍는다. `p6_control`의 의존성(5절) 가운데 `rclcpp`와 `launch_ros`는 언더레이에, `p6_interfaces`는 오버레이에 있으므로 닫힘이 성립한다.
+> - **비예**: 오버레이만. `~/ros2_ws/install/local_setup.bash`만 source한 새 셸에는 워크스페이스 $2$개 중 $1$개뿐이다. `p6_control`은 경로에 있지만 `rclcpp`도, `ros2` 명령 자체도 없다 — `ros2: command not found`. 닫힘이 깨졌기 때문이다. 오버레이의 `setup.bash`였다면 그것이 빌드된 언더레이를 먼저 source했을 것이다.
+
 당연해 보이지 않으면서 실제로 시간을 잡아먹는 규칙 둘.
 
 - **오버레이가 source된 터미널에서 빌드하지 말고, 빌드한 터미널에서 오버레이를 source하지 말라.** 공식 튜토리얼이 복잡한 문제를 만든다고 명시한다. 원리는, 빌드가 이미 자기 이전 출력을 가리키는 환경을 물려받아, 패키지가 자기 자신의 낡은 사본에 대해 빌드될 수 있다는 것이다. 빌드용 터미널 하나, 실행용 터미널 따로.
@@ -1106,7 +1190,16 @@ colcon build --packages-up-to temp_filter             # 이 패키지와 그 재
 3. **재현성.** 새벽 2시에 친 명령은 버전 관리에 없다. launch 파일은 있다.
 4. **감시.** launch 시스템은 자기가 띄운 프로세스를 감시하고, 하나가 죽으면 보고하거나 반응한다. 터미널 무더기는 그러지 않는다.
 
-launch 파일은 시스템의 *기술(description)*이고, `launch_ros`의 ROS 전용 액션과 함께 `launch` 프레임워크가 실행한다. Python, XML, YAML로 쓸 수 있고 셋은 기능적으로 동등하다. 여기서 Python을 쓰는 이유는 셋 중 유일하게 무언가를 계산할 수 있기 때문이다.
+launch 파일은 시스템의 *기술*(description)이고, `launch_ros`의 ROS 전용 액션과 함께 `launch` 프레임워크가 실행한다. Python, XML, YAML로 쓸 수 있고 셋은 기능적으로 동등하다. 여기서 Python을 쓰는 이유는 셋 중 유일하게 무언가를 계산할 수 있기 때문이다.
+
+> **launch 파일의 정의.** **launch 파일**(launch file)은 *기술(description)을 돌려주는 프로그램*이다. Python에서는 `generate_launch_description()`이 `LaunchDescription`, 곧 액션의 목록을 반환하고, launch 시스템이 그것을 실행한다. 조건은 넷이다. **기술할 뿐 실행하지 않는다**. 그래서 그 함수가 도는 동안에는 아무것도 뜨지 않는다. 실행은 **두 번째 단계**이고, `LaunchConfiguration` 같은 substitution은 그때 값을 얻는다. `Node` 액션 하나는 받은 패키지, 실행 파일, 이름, 네임스페이스, 파라미터, 리매핑으로 **운영체제 프로세스 하나를 띄운다**. 그리고 launch 시스템은 띄운 것을 **감시하며**, 프로세스가 끝나면 보고하거나 반응한다.
+>
+> $$\text{system}=\text{execute}\big(g(),\,a\big),\qquad \#\,\text{processes}=\#\,\{\texttt{Node}\ \text{actions executed}\}$$
+>
+> $g$는 인자 값 없이 먼저 도는 `generate_launch_description`, $a$는 인자 값 — 선언된 기본값을 커맨드라인의 `name:=value`가 덮은 것 — 이고, 이 값들은 실행이 시작된 뒤에야 존재한다.
+>
+> - **예**: `ros2 launch p6_bringup p6.launch.py`는 $a=\{\texttt{cart\_ns}:\texttt{cart1}\}$로 실행되어 계산 예제의 camera, controller, logger를 `/cart1` 아래 프로세스 $3$개로 띄운다. `cart_ns:=cart2`면 $3$개가 더 뜬다. `ros2 launch -p`는 $g()$를 찍고 $0$개를 띄운다.
+> - **비예**: $g$가 도는 동안 인자를 문자열로 다루기. `'/' + LaunchConfiguration('cart_ns')`는 첫 단계에서 `TypeError`를 낸다. 그 객체에는 아직 값이 없고 `+`도 정의되어 있지 않아서다. 그래서 프로세스는 $0$개다. 목록 `['/', LaunchConfiguration('cart_ns')]`는 둘째 단계에서 이어 붙어 `/cart1`이 된다. 값이 어느 단계에 사는지가 파일이 돌기나 할지를 정한다.
 
 ### 10. Python launch 파일: description, action, substitution
 
@@ -1408,6 +1501,9 @@ file $(ros2 pkg prefix temp_filter)/lib/temp_filter/filter
 - `ament_cmake_python` README — `ament_python_install_package`, `ament_python_install_module`.
 - `rosdep` 커맨드라인 옵션(`--from-paths`, `--ignore-src`, `-r`, `-y`).
 - REP-149 — package format 3 의존 태그.
+- colcon 소스 — [`colcon_recursive_crawl/package_discovery/recursive_crawl.py`](https://github.com/colcon/colcon-recursive-crawl/blob/master/colcon_recursive_crawl/package_discovery/recursive_crawl.py)(패키지로 식별된 첫 디렉터리에서 탐색이 멈춘다); [`colcon_core/verb/build.py`](https://github.com/colcon/colcon-core/blob/master/colcon_core/verb/build.py)와 [`colcon_core/package_descriptor.py`](https://github.com/colcon/colcon-core/blob/master/colcon_core/package_descriptor.py)(빌드 순서는 워크스페이스 안에서 선언된 의존성을 실행 의존성을 따라 재귀적으로 좇고, 나머지는 무시한다); [`colcon_parallel_executor/executor/parallel.py`](https://github.com/colcon/colcon-parallel-executor/blob/master/colcon_parallel_executor/executor/parallel.py)(병렬 작업자 수의 기본값은 CPU 수).
+- [`ament_index_python/resources.py`](https://github.com/ament/ament_index/blob/jazzy/ament_index_python/ament_index_python/resources.py), jazzy(패키지는 인덱스에 자기가 올라 있는 첫 `AMENT_PREFIX_PATH` 항목으로 풀린다); `ros2cli`, jazzy — [`ros2pkg/api/__init__.py`](https://github.com/ros2/ros2cli/blob/jazzy/ros2pkg/ros2pkg/api/__init__.py)와 [`ros2run/command/run.py`](https://github.com/ros2/ros2cli/blob/jazzy/ros2run/ros2run/command/run.py)(`ros2 run`은 `<prefix>/lib/<package>`를 찾고, 없으면 `No executable found`라고 답한다).
+- ROS 2 Jazzy 문서 — Concepts: [Launch](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Launch.html)(launch 시스템은 자기가 띄운 프로세스를 감시한다); Tutorials: [Using substitutions](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Using-Substitutions.html)(substitution은 기술이 실행될 때에만 평가된다); `launch_ros`와 `launch`, jazzy — [`launch_ros/actions/node.py`](https://github.com/ros2/launch_ros/blob/jazzy/launch_ros/launch_ros/actions/node.py)(`Node`는 `ExecuteProcess`다), [`launch/substitution.py`](https://github.com/ros2/launch/blob/jazzy/launch/launch/substitution.py)(substitution에는 문자열 연산자가 없다).
 
 ### 스스로 점검
 

@@ -59,6 +59,9 @@ NOISE = {
     "portfolio", "bearing", "arrangement", "steering", "shrinkage", "regular",
     "dependent variable", "big data", "artificial intelligence", "acceptance rate",
     "annealing", "chatgpt", "mnist",
+    # proper nouns only: Boston Dynamics' Atlas robot and World Labs' Atlas model;
+    # the wiki never uses "atlas" in its manifold sense (a set of charts)
+    "atlas",
     # covered under a different name: rl-basics teaches reward design at length
     "reward function",
     # explained where they are used rather than in a study page: euler integration

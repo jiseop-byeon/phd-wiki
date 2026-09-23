@@ -146,6 +146,15 @@ Two refinements on top of the beginner picture:
 - A node is not exactly a process. One process can host several nodes; ROS 2 calls this **composition**, and it is how a real stack avoids paying serialisation costs (converting a message to bytes and back) between nodes that happen to run on the same machine. §2.1 below defines it and says when it is worth it.
 - A node's name is not its executable's name. You saw this in 25.1: `turtlesim_node` names itself `/turtlesim`, and `--ros-args --remap __node:=my_turtle` renames it at launch without touching the code.
 
+> **Node, defined.** A **node** is a *named object inside a process* — an `rclcpp::Node` or `rclpy.node.Node` — and neither the process nor the executable, as the two refinements say. Four conditions: it is **created through a client library** and joins the graph when constructed; its **name and namespace** give its fully qualified name (FQN), the address every tool uses; it **owns its endpoints** — publishers, subscriptions, services, actions, timers, parameters — which die with it; and it **works only through callbacks**, run only while an executor spins it (§5).
+>
+> $$\text{FQN}=\begin{cases}/\,\text{name}, & \text{ns}=/\\ \text{ns}\,/\,\text{name}, & \text{otherwise}\end{cases}$$
+>
+> where ns is the namespace the node was started in and name the string its constructor passes, or a `__node:=` remap of it, so the FQN is decided at launch, not by the executable's file name.
+>
+> - **Example**: the picture's `controller`, launched into `/cart`, has the FQN `/cart/controller`; `ros2 node info /cart/controller` finds it, and its parameter services hang off that name, `/cart/controller/set_parameters` among them.
+> - **Non-example**: a process. The picture's two executables each construct one node, so `ps` and `ros2 node list` agree at $2$ only by coincidence: a container holding two components is $1$ process and $3$ nodes, the container being a node itself. Nor is an FQN unique by force: two nodes may share one, `ros2 node list` merely warns, and which answers a `ros2 param set` is then undefined.
+
 #### 2.1 Composition: several nodes in one process
 
 **Composition** is running several nodes inside one operating-system process instead of one process each. Its unit is the **component**: a node written as a C++ class whose constructor takes `rclcpp::NodeOptions`, compiled into a shared library instead of an executable with its own `main()`, and registered by name with the macro `RCLCPP_COMPONENTS_REGISTER_NODE`. A **component container** is the process that loads components, either at startup from a launch file or at runtime with `ros2 component load`. There are three conditions, and the payoff needs all three:
@@ -185,6 +194,15 @@ Names may contain alphanumerics, underscores and forward slashes; they must not 
 
 Almost every example in this track — and the tutorials — writes the relative form `'topic'`. That is correct and deliberate: a relative name is what allows the same node to be launched twice into two namespaces and produce two non-colliding graphs. It is also why a node accidentally launched into a namespace goes silent against a peer that hard-coded the absolute form.
 
+> **Topic, defined.** A **topic** is a *named, typed, many-to-many channel* — a bus, not a connection between two nodes. Four conditions: it is identified by one **resolved name**, which the table above computes from what the code wrote; it carries **one message type**, and an endpoint declaring another does not connect to it; it is **anonymous**, any number of publishers and subscriptions attaching without knowing each other; and **every matched subscription receives every message**, matched in the sense of the graph's edge rule ([[04-robotics/ros2/what-ros2-is|25.1 §3]]).
+>
+> $$f_s=\sum_{p\,\in\,P(s)}f_p$$
+>
+> where $P(s)$ is the set of publishers matched to subscription $s$ and $f_p$ their publication rates, so $s$ hears the interleaved sum of all of them, as long as it keeps up and nothing is lost in transport (QoS, 25.5).
+>
+> - **Example**: in the picture $P=\{\text{camera}\}$ on `/cart/goal`, so the controller receives $50\,\mathrm{Hz}$; a `ros2 topic echo` is one more subscription and also receives $50\,\mathrm{Hz}$, taking nothing from the controller.
+> - **Non-example**: a private line from camera to controller. Start a test script publishing on `/cart/goal` at $10\,\mathrm{Hz}$ and the controller receives $50+10=60\,\mathrm{Hz}$, $16.7\%$ of it foreign, with nothing in a goal saying which; let the controller's code write the absolute `/goal` instead and $P=\varnothing$, so $f_s=0$ with no error. Both are lawful, which is why cross-talk and silence are the two ways a topic fails.
+
 ### 4. Messages, and how to read one
 
 A message type is defined in a `.msg` file in the `msg/` directory of a package, in ROS 2's interface definition language. Each line is a field: a type, a space, a name. Optionally a third token gives a default.
@@ -199,6 +217,15 @@ string<=10 up_to_ten_characters_string
 ```
 
 Bounded forms (`[5]`, `[<=5]`, `string<=10`) give the middleware a maximum size it can allocate once. Unbounded forms do not, which is why a rate-critical path usually bounds its arrays. Field names must be lowercase with underscores, must start with a letter, and must not end with or repeat an underscore. Constants are written with `=` and must be UPPERCASE: `uint8 PHONE_TYPE_MOBILE=2`.
+
+> **Message type, defined.** A **message type** is a *record type*: an ordered list of named, typed fields under a package-qualified name. Four conditions: its **name** is `package/msg/Name`, from a `.msg` file in that package's `msg/` directory; each **field** is a built-in type, another message type, or an array of either — unbounded, fixed or bounded; its **constants** are fixed when the code is generated; and the **generated code** enforces each field's type, at compile time in C++ and at run time in Python. Meaning is never part of the type: units and frames live in names and comments.
+>
+> $$\mathcal{V}(\tau)=\mathcal{V}(t_1)\times\mathcal{V}(t_2)\times\cdots\times\mathcal{V}(t_k)$$
+>
+> where $\mathcal{V}(t)$ is the set of values of type $t$ and $t_1,\dots,t_k$ are the field types in order, so a message is one tuple from the product, with a maximum size only when every factor is bounded.
+>
+> - **Example**: the Worked case's cart state, `std_msgs/Header header`, `int32 counts`, `float64 position`, with `counts` $=1024$ and `position` $=1024/2048=0.5$. `Header` is a `builtin_interfaces/Time stamp` plus a `string frame_id`, so beside $4+4+4+8=20$ bytes of fixed-width numbers sits an unbounded string: the message has no maximum size.
+> - **Non-example**: the number's meaning. `std_msgs/msg/Float64` holding $0.5$ has one factor, a `float64`, so $0.5$ m and $0.5$ rad pass every type check alike — the trap below, and the reason §7 writes its own type.
 
 You will read far more message definitions than you write, and there is exactly one command for it:
 
@@ -318,6 +345,15 @@ if __name__ == '__main__':
 The bare `self.subscription` line at the end of `__init__` only silences a linter's unused-variable warning. It keeps nothing alive and is safe to delete; §6 says why Python, unlike C++, needs no keep-alive.
 
 Note that the topic name and the message type are identical on both sides. They have to be. Matching name and type are necessary — compatible QoS is the third condition (section 10's box) — and section 10 is what happens when one of them is off by a character.
+
+> **Publisher and subscription, defined.** A **publisher** and a **subscription** are *endpoints*: objects a node owns that bind it to one topic. Four conditions: each is **fixed at creation** to one message type, one name and one QoS profile, the arguments above; `publish()` **hands the message to the middleware** for every matched subscription and waits for none of them; a subscription **queues** what arrives, keeping at most the history depth, the `10`, and dropping the oldest beyond it; and its callback runs **once per message taken, only while the node is spun**.
+>
+> $$n_{\text{held}}\le d,\qquad t_{\text{newest}}-t_{\text{oldest}}\le(d-1)\,T$$
+>
+> where $d$ is the depth, $T$ the publisher's period and $t$ the publication times of the waiting messages, so a stalled subscription keeps the last $d$, spanning at most $(d-1)T$.
+>
+> - **Example**: P6's controller on the $50\,\mathrm{Hz}$ goals with depth $10$: a stall under $10\times20=200\,\mathrm{ms}$ loses no goal, and the goals then worked through span up to $9\times20=180\,\mathrm{ms}$, $2.6$ budgets of age a callback-driven controller would act on one by one. Depth $1$ keeps only the newest, all a controller wants; a logger that must see every goal wants the depth.
+> - **Non-example**: a subscription in a node that is never spun. It exists, `ros2 topic info` counts it, its queue holds the newest $10$ goals within $200\,\mathrm{ms}$, and $0$ callbacks run: an endpoint in the graph is not a subscriber at work.
 
 Two files of plumbing make these runnable. In `package.xml`, after the description and licence tags:
 
@@ -651,7 +687,7 @@ You are done when `ros2 topic info /turtle1/speed --verbose` shows your node as 
 
 ### 10. The failure to diagnose: the silent mismatch
 
-Two endpoints connect only if the **topic name** matches and the **message type** matches. If either differs, nothing connects — and nothing complains. Both processes start, both log normally, both appear in `ros2 node list`, and no message ever crosses. There is no error because there is no error condition: a publisher with no subscribers is a perfectly legal, extremely common state, and the middleware cannot tell that you *meant* those two to be the same channel.
+Two endpoints on one domain connect only if the **topic name** matches, the **message type** matches, and their QoS profiles are compatible ([[04-robotics/ros2/qos-executors-time|25.5 §3]]); this section is about the first two. If either differs, nothing connects — and nothing complains. Both processes start, both log normally, both appear in `ros2 node list`, and no message ever crosses. There is no error because there is no error condition: a publisher with no subscribers is a perfectly legal, extremely common state, and the middleware cannot tell that you *meant* those two to be the same channel.
 
 Reproduce it deliberately. Launch your republisher into a namespace so its relative name resolves differently:
 
@@ -769,6 +805,9 @@ Request–response, long-running cancellable goals, runtime configuration and ma
 - `ros2/examples` repository, `jazzy` branch — `rclcpp/topics/minimal_publisher/member_function.cpp`, `rclcpp/topics/minimal_subscriber/member_function.cpp`.
 - `std_msgs/msg/Float64` definition (deprecation note), `turtlesim/msg/Pose` definition.
 - `rclpy` API — `Node.create_timer` clock argument.
+- ROS 2 Jazzy documentation — Concepts: [Quality of Service settings](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html) (keep-last history stores up to depth samples; the default profile is keep last 10, reliable, volatile); [Parameters](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Parameters.html) (the parameter services each node creates under its own name).
+- [`std_msgs/msg/Header`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Header.msg) and [`builtin_interfaces/msg/Time`](https://github.com/ros2/rcl_interfaces/blob/jazzy/builtin_interfaces/msg/Time.msg), jazzy — a stamp of `int32 sec` and `uint32 nanosec` beside an unbounded `string frame_id`.
+- `ros2cli` and `rclcpp`, jazzy — [`ros2node/verb/list.py`](https://github.com/ros2/ros2cli/blob/jazzy/ros2node/ros2node/verb/list.py) (the warning when nodes share an exact name) and [`rclcpp_components/component_manager.hpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp_components/include/rclcpp_components/component_manager.hpp) (the container is itself a node, `ComponentManager` by default).
 
 ### Self-check
 
@@ -949,6 +988,15 @@ Publish–subscribe는 그 목록을 없앤다. 드라이버는 이름에 publis
 - 노드는 정확히 프로세스가 아니다. 한 프로세스가 여러 노드를 담을 수 있고, ROS 2는 이것을 **composition** 이라 부른다. 실제 스택이 같은 머신에 있는 노드들 사이의 직렬화(메시지를 바이트로 바꿨다가 되돌리는 것) 비용을 피하는 방법이 이것이다. 정의와, 언제 쓸 값어치가 있는지는 아래 2.1절이다.
 - 노드 이름은 실행 파일 이름이 아니다. 25.1에서 봤다. `turtlesim_node`는 스스로를 `/turtlesim`이라 부르고, `--ros-args --remap __node:=my_turtle`은 코드를 건드리지 않고 실행 시점에 이름을 바꾼다.
 
+> **노드의 정의.** **노드**(node)는 *프로세스 안의 이름 붙은 객체*, 곧 `rclcpp::Node`나 `rclpy.node.Node`이고, 위의 두 보정이 말하듯 프로세스도 실행 파일도 아니다. 조건은 넷이다. **클라이언트 라이브러리로 만들어지고** 생성되는 순간 그래프에 들어온다. **이름과 네임스페이스**가 합쳐 완전 이름(FQN)이 되고, 모든 도구가 그것을 주소로 쓴다. **자기 엔드포인트를 소유한다** — 퍼블리셔, 서브스크립션, 서비스, 액션, 타이머, 파라미터 — 그리고 그것들은 노드와 함께 사라진다. **콜백을 통해서만 일하고**, 콜백은 executor가 노드를 spin하는 동안에만 돈다(5절).
+>
+> $$\text{FQN}=\begin{cases}/\,\text{name}, & \text{ns}=/\\ \text{ns}\,/\,\text{name}, & \text{otherwise}\end{cases}$$
+>
+> ns는 노드가 시작된 네임스페이스, name은 생성자가 넘기는 문자열이나 그것의 `__node:=` 리맵이다. 그래서 FQN은 실행 파일 이름이 정하는 것이 아니라 실행 시점에 정해진다.
+>
+> - **예**: 그림의 `controller`는 `/cart`로 띄워졌으므로 FQN이 `/cart/controller`다. `ros2 node info /cart/controller`가 그것을 찾고, 파라미터 서비스들도 그 이름에 매달린다. `/cart/controller/set_parameters`가 그중 하나다.
+> - **비예**: 프로세스. 그림의 실행 파일 둘이 저마다 노드를 하나씩 만드니 `ps`와 `ros2 node list`가 $2$에서 일치하지만 우연일 뿐이다. 컴포넌트 둘을 실은 컨테이너는 프로세스 $1$개에 노드 $3$개다. 컨테이너 자신도 노드이기 때문이다. FQN이 강제로 유일한 것도 아니다. 두 노드가 같은 FQN을 가질 수 있고 `ros2 node list`는 경고만 하며, 그때 `ros2 param set`에 어느 쪽이 답할지는 정의되어 있지 않다.
+
 #### 2.1 Composition: 한 프로세스 안의 여러 노드
 
 **Composition** — 노드마다 프로세스 하나를 주는 대신, 노드 여럿을 운영체제 프로세스 하나 안에서 돌리는 방식이다. 그 단위는 **컴포넌트(component)** 다. 생성자가 `rclcpp::NodeOptions`를 받는 C++ 클래스로 쓴 노드를, 자기 `main()`을 가진 실행 파일이 아니라 공유 라이브러리로 컴파일하고, `RCLCPP_COMPONENTS_REGISTER_NODE` 매크로로 이름을 등록한 것이다. **컴포넌트 컨테이너(component container)** 는 컴포넌트를 싣는 프로세스로, launch 파일에서 시작 시점에 싣거나 실행 중에 `ros2 component load`로 싣는다. 조건은 셋이고, 이득을 보려면 셋 다 필요하다.
@@ -988,6 +1036,15 @@ $B$는 메시지 하나의 직렬화 크기(바이트), $f$는 발행 주기(Hz)
 
 이 트랙의 거의 모든 예제와 공식 튜토리얼은 상대 형태 `'topic'`을 쓴다. 옳고 의도적이다. 같은 노드를 서로 다른 두 네임스페이스에 두 번 띄워 충돌하지 않는 두 그래프를 만들 수 있게 하는 것이 상대 이름이다. 그리고 실수로 네임스페이스 안에 띄워진 노드가, 절대 형태를 하드코딩한 상대 노드에 대해 조용해지는 이유이기도 하다.
 
+> **토픽의 정의.** **토픽**(topic)은 *이름과 타입을 가진 다대다 채널*이다. 두 노드 사이의 연결이 아니라 버스다. 조건은 넷이다. **해석된 이름** 하나로 식별되고, 위의 표가 코드에 쓴 것에서 그 이름을 계산한다. **메시지 타입 하나**를 나르고, 다른 타입을 선언한 엔드포인트는 거기 연결되지 않는다. **익명**이라, 퍼블리셔와 서브스크립션이 몇 개든 서로를 모른 채 붙는다. 그리고 **짝지어진 모든 서브스크립션이 모든 메시지를 받는다**. 짝지어진다는 것은 그래프의 간선 규칙([[04-robotics/ros2/what-ros2-is|25.1 §3]])이 말하는 뜻이다.
+>
+> $$f_s=\sum_{p\,\in\,P(s)}f_p$$
+>
+> $P(s)$는 서브스크립션 $s$와 짝지어진 퍼블리셔의 집합, $f_p$는 그 발행 주기다. 그래서 $s$는 그 전부가 뒤섞인 합을 듣는다. 따라올 수 있고 전송 중에 잃는 것이 없다면 그렇다(QoS, 25.5).
+>
+> - **예**: 그림에서 `/cart/goal`의 $P=\{\text{camera}\}$이므로 제어기는 $50\,\mathrm{Hz}$를 받는다. `ros2 topic echo`는 서브스크립션 하나가 더 붙는 것이고, 그것도 $50\,\mathrm{Hz}$를 받으며 제어기 몫을 빼앗지 않는다.
+> - **비예**: 카메라에서 제어기로 가는 전용선. 시험 스크립트가 `/cart/goal`에 $10\,\mathrm{Hz}$로 publish하면 제어기는 $50+10=60\,\mathrm{Hz}$를 받고, 그중 $16.7\%$가 남의 것인데 목표 어디에도 출처가 적혀 있지 않다. 대신 제어기 코드가 절대 이름 `/goal`을 쓰면 $P=\varnothing$이라 오류 없이 $f_s=0$이다. 둘 다 합법이고, 그래서 혼선과 침묵이 토픽이 고장 나는 두 방식이다.
+
 ### 4. 메시지, 그리고 읽는 법
 
 메시지 타입은 패키지의 `msg/` 디렉터리 안 `.msg` 파일에, ROS 2의 인터페이스 정의 언어로 정의된다. 각 줄이 필드다. 타입, 공백, 이름. 선택적으로 세 번째 토큰이 기본값을 준다.
@@ -1002,6 +1059,15 @@ string<=10 up_to_ten_characters_string
 ```
 
 경계가 있는 형태(`[5]`, `[<=5]`, `string<=10`)는 미들웨어에 한 번에 할당할 최대 크기를 알려 준다. 경계 없는 형태는 그러지 않고, 그래서 속도가 중요한 경로는 보통 배열에 경계를 건다. 필드 이름은 소문자와 밑줄이어야 하고, 알파벳으로 시작해야 하며, 밑줄로 끝나거나 밑줄이 연달아서는 안 된다. 상수는 `=`로 쓰고 대문자여야 한다: `uint8 PHONE_TYPE_MOBILE=2`.
+
+> **메시지 타입의 정의.** **메시지 타입**(message type)은 *레코드 타입*이다. 패키지로 한정된 이름 아래, 이름과 타입이 붙은 필드를 순서대로 늘어놓은 것이다. 조건은 넷이다. **이름**은 `package/msg/Name`이고 그 패키지 `msg/` 디렉터리의 `.msg` 파일에서 온다. 각 **필드**는 내장 타입, 다른 메시지 타입, 또는 그 둘의 배열(경계 없음, 고정, 경계 있음)이다. **상수**는 코드를 생성할 때 고정된다. 그리고 **생성된 코드**가 필드마다 타입을 강제한다. C++에서는 컴파일 시점에, Python에서는 실행 시점에. 의미는 결코 타입의 일부가 아니다. 단위와 프레임은 이름과 주석에 산다.
+>
+> $$\mathcal{V}(\tau)=\mathcal{V}(t_1)\times\mathcal{V}(t_2)\times\cdots\times\mathcal{V}(t_k)$$
+>
+> $\mathcal{V}(t)$는 타입 $t$가 가질 수 있는 값의 집합, $t_1,\dots,t_k$는 순서대로 놓인 필드 타입이다. 메시지 하나는 이 곱에서 뽑은 튜플 하나이고, 모든 인수가 경계를 가질 때만 크기에 상한이 생긴다.
+>
+> - **예**: 계산 절의 카트 상태 `std_msgs/Header header`, `int32 counts`, `float64 position`에서 `counts` $=1024$, `position` $=1024/2048=0.5$. `Header`는 `builtin_interfaces/Time stamp`와 `string frame_id`이므로, 고정 폭 숫자 $4+4+4+8=20$바이트 옆에 경계 없는 문자열이 붙는다. 이 메시지에는 최대 크기가 없다.
+> - **비예**: 숫자의 뜻. $0.5$를 담은 `std_msgs/msg/Float64`는 인수가 `float64` 하나뿐이라 $0.5$ m와 $0.5$ rad가 모든 타입 검사를 똑같이 통과한다. 아래의 함정이고, 7절이 자기 타입을 쓰는 이유다.
 
 메시지 정의는 쓰는 것보다 읽는 일이 훨씬 많고, 명령은 정확히 하나다.
 
@@ -1121,6 +1187,15 @@ if __name__ == '__main__':
 `__init__` 끝의 맨 `self.subscription` 줄은 린터의 unused-variable 경고를 끌 뿐이다. 아무것도 살려 두지 않으니 지워도 된다. C++과 달리 Python에는 살려 두는 장치가 왜 필요 없는지는 6절이 말한다.
 
 양쪽의 토픽 이름과 메시지 타입이 똑같다는 점을 보라. 그래야만 한다. 이름과 타입의 일치는 필요조건이고 — 호환되는 QoS가 세 번째 조건이다(10절의 상자) — 한 글자가 어긋났을 때 무슨 일이 나는지가 10절이다.
+
+> **퍼블리셔와 서브스크립션의 정의.** **퍼블리셔**(publisher)와 **서브스크립션**(subscription)은 *엔드포인트*다. 노드가 소유하며 그 노드를 토픽 하나에 묶는 객체다. 조건은 넷이다. 각각은 **생성할 때 고정된다** — 메시지 타입 하나, 이름 하나, QoS 프로파일 하나, 곧 위의 인자들. `publish()`는 짝지어진 모든 서브스크립션 몫으로 **메시지를 미들웨어에 넘기고** 그 누구도 기다리지 않는다. 서브스크립션은 도착한 것을 **큐에 쌓되** history depth(그 `10`)까지만 두고, 넘치면 가장 오래된 것을 버린다. 그리고 콜백은 **꺼낸 메시지 하나당 한 번, 노드가 spin되는 동안에만** 돈다.
+>
+> $$n_{\text{held}}\le d,\qquad t_{\text{newest}}-t_{\text{oldest}}\le(d-1)\,T$$
+>
+> $d$는 depth, $T$는 퍼블리셔의 주기, $t$는 대기 중인 메시지의 발행 시각이다. 그래서 멈춘 서브스크립션은 마지막 $d$개만 쥐고, 그 폭은 많아야 $(d-1)T$다.
+>
+> - **예**: P6 제어기가 depth $10$으로 $50\,\mathrm{Hz}$ 목표를 구독한다. $10\times20=200\,\mathrm{ms}$보다 짧은 멈춤에서는 목표를 하나도 잃지 않고, 그 뒤에 처리하는 목표들은 최대 $9\times20=180\,\mathrm{ms}$에 걸쳐 있다. 예산 $2.6$개 분량의 나이이고, 콜백 구동 제어기라면 그것을 하나하나 실행에 옮긴다. depth $1$은 가장 새것만 남기고, 제어기가 원하는 것은 그것뿐이다. 모든 목표를 봐야 하는 로거에게는 depth가 필요하다.
+> - **비예**: 한 번도 spin되지 않는 노드의 서브스크립션. 존재하고, `ros2 topic info`가 세고, $200\,\mathrm{ms}$ 안에 큐가 가장 새 목표 $10$개로 차는데, 콜백은 $0$번 돈다. 그래프에 있는 엔드포인트가 곧 일하는 구독자는 아니다.
 
 실행 가능하게 만드는 배관은 파일 둘이다. `package.xml`의 description과 license 태그 뒤에:
 
@@ -1454,7 +1529,7 @@ self.timer = self.create_timer(0.1, self.publish_report)
 
 ### 10. 진단할 고장: 조용한 불일치
 
-두 엔드포인트가 연결되는 조건은 딱 둘이다. **토픽 이름** 일치, 그리고 **메시지 타입** 일치. 둘 중 하나라도 다르면 아무것도 연결되지 않고, 아무도 항의하지 않는다. 두 프로세스 모두 뜨고, 둘 다 정상 로그를 찍고, 둘 다 `ros2 node list`에 나오고, 메시지는 한 개도 건너가지 않는다. 오류가 없는 이유는 오류 조건이 없기 때문이다. 구독자가 없는 퍼블리셔는 완벽히 합법이고 매우 흔한 상태이며, 미들웨어는 당신이 그 둘을 같은 채널로 *의도했다*는 것을 알 길이 없다.
+한 도메인 안의 두 엔드포인트는 **토픽 이름**이 일치하고, **메시지 타입**이 일치하고, QoS 프로필이 호환될 때만 연결된다([[04-robotics/ros2/qos-executors-time|25.5 §3]]). 이 절은 앞의 둘을 다룬다. 둘 중 하나라도 다르면 아무것도 연결되지 않고, 아무도 항의하지 않는다. 두 프로세스 모두 뜨고, 둘 다 정상 로그를 찍고, 둘 다 `ros2 node list`에 나오고, 메시지는 한 개도 건너가지 않는다. 오류가 없는 이유는 오류 조건이 없기 때문이다. 구독자가 없는 퍼블리셔는 완벽히 합법이고 매우 흔한 상태이며, 미들웨어는 당신이 그 둘을 같은 채널로 *의도했다*는 것을 알 길이 없다.
 
 일부러 재현해 보라. 상대 이름이 다르게 풀리도록 republisher를 네임스페이스 안에 띄운다.
 
@@ -1563,6 +1638,9 @@ $$\Delta v=\frac{\Delta p}{T}=\frac{1/2048}{T}\quad\Longrightarrow\quad \Delta v
 - `ros2/examples` 저장소 `jazzy` 브랜치 — `rclcpp/topics/minimal_publisher/member_function.cpp`, `rclcpp/topics/minimal_subscriber/member_function.cpp`.
 - `std_msgs/msg/Float64` 정의(deprecation 주석), `turtlesim/msg/Pose` 정의.
 - `rclpy` API — `Node.create_timer`의 clock 인자.
+- ROS 2 Jazzy 문서 — Concepts: [Quality of Service settings](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Quality-of-Service-Settings.html)(keep last는 depth개까지만 저장하고, 기본 프로파일은 keep last 10, reliable, volatile); [Parameters](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Parameters.html)(노드마다 자기 이름 아래 만드는 파라미터 서비스).
+- [`std_msgs/msg/Header`](https://github.com/ros2/common_interfaces/blob/jazzy/std_msgs/msg/Header.msg)와 [`builtin_interfaces/msg/Time`](https://github.com/ros2/rcl_interfaces/blob/jazzy/builtin_interfaces/msg/Time.msg), jazzy — `int32 sec`와 `uint32 nanosec`의 스탬프 옆에 경계 없는 `string frame_id`.
+- `ros2cli`와 `rclcpp`, jazzy — [`ros2node/verb/list.py`](https://github.com/ros2/ros2cli/blob/jazzy/ros2node/ros2node/verb/list.py)(정확히 같은 이름의 노드가 있을 때의 경고), [`rclcpp_components/component_manager.hpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp_components/include/rclcpp_components/component_manager.hpp)(컨테이너 자신도 노드이고 기본 이름은 `ComponentManager`).
 
 ### 스스로 점검
 

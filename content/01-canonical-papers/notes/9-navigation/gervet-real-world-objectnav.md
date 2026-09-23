@@ -8,7 +8,7 @@ journal-ref: "Science Robotics 8(79), eadf6991"
 arxiv: https://arxiv.org/abs/2212.00922
 tags: [paper, navigation, objectnav, sim-to-real, evaluation]
 status: note-complete
-last_verified: 2026-08-22
+last_verified: 2026-09-23
 study-depth: Working
 wiki-support: Working
 depth-goal: "Read the method and evaluation closely enough to select, adapt, or diagnose it."
@@ -18,12 +18,12 @@ mastery-when: "Raise to Mastery when the thesis makes a claim about what simulat
 **Gervet, Chintala, Batra, Malik & Chaplot, *Science Robotics* 8(79), eadf6991, 2023** — [arXiv:2212.00922](https://arxiv.org/abs/2212.00922)
 
 > [!note] Math on-ramp · 수학 준비물
-> Nothing new — this is an empirical study. What you need is the ObjectNav definition and its metrics ([[04-robotics/semantic-language-navigation|19. §1–§2]]) and the sim-to-real vocabulary of [[06-research-practice/simulators-benchmarks-datasets|7. §4]].
-> 새로 필요한 것은 없다 — 경험적 연구다. ObjectNav의 정의와 지표([[04-robotics/semantic-language-navigation|19. §1~§2]]), 그리고 [[06-research-practice/simulators-benchmarks-datasets|7. §4]]의 sim-to-real 어휘면 된다.
+> Nothing new — this is an empirical study. What you need is the ObjectNav definition and its metrics ([[04-robotics/semantic-language-navigation|19. §1–§2]]) and the sim-to-real vocabulary of [[05-construction-robotics/sim-to-real|Sim-to-Real §1]].
+> 새로 필요한 것은 없다 — 경험적 연구다. ObjectNav의 정의와 지표([[04-robotics/semantic-language-navigation|19. §1~§2]]), 그리고 [[05-construction-robotics/sim-to-real|Sim-to-Real §1]]의 sim-to-real 어휘면 된다.
 
 ## English
 
-**One-line summary**: Take the leading classical, modular, and end-to-end navigation methods out of the simulator and into **six real homes with no prior maps** — modular learning holds at 90% success while end-to-end collapses from 77% in simulation to 23% in reality.
+**One-line summary**: Take the leading classical, modular, and end-to-end navigation methods out of the simulator and into **six real homes with no prior maps** — modular learning holds at 90% success, end-to-end learning succeeds in 23% of real episodes, and the end-to-end policy that scored best in simulation, 77%, scored 0% in a real home.
 
 ### Context
 
@@ -40,17 +40,17 @@ A large-scale empirical study across **six homes with no prior experience, maps,
 |---|---|---|
 | Classical | geometric map, plan to point goals | the baseline the others must beat |
 | Modular learning | classical pipeline + learned semantic sensing and exploration | **90% success** |
-| End-to-end learning | one network, sensors to actions | **23% success** (77% in simulation) |
+| End-to-end learning | one network, sensors to actions | **23% success** (48% on the simulation benchmark for this variant) |
 
 ### Results
 
 > [!important] The number to remember
-> **End-to-end learning drops from 77% in simulation to 23% in the real world.** The paper attributes this to a large image domain gap between simulation and reality. Modular learning attains **90%**. The conclusion the authors draw is architectural: **modularity and abstraction in policy design enable sim-to-real transfer** — the module interfaces are where the domain gap gets absorbed.
+> **End-to-end learning drops from 77% in simulation to 23% in the real world** — the abstract's words, which pair two policies. The 77% is the variant that scored best on the simulation benchmark, and in the controlled real home it scored 0%; the 23%, 14 of 60 episodes across the six homes, belongs to the variant chosen for the home study, which scored 48% on the benchmark (Table 1). Like for like, the deployed policy fell from 48% to 23%. The paper attributes this to a large image domain gap between simulation and reality. Modular learning attains **90%**. The conclusion the authors draw is architectural: **modularity and abstraction in policy design enable sim-to-real transfer** — the module interfaces are where the domain gap gets absorbed.
 
 The paper also names two issues that stop today's simulators from being reliable evaluation benchmarks: **(A) a large sim-to-real gap in images**, and **(B) a disconnect between simulation and real-world error modes.** (B) is the subtler and more damaging one: even if you accepted a performance drop, the *kinds* of failure differ, so simulation does not tell you what to fix.
 
 > [!warning] Reading the claim · 핵심 주장 읽는 법
-> Six homes is a real-world study, and it is still six homes — a small sample chosen by the authors. The comparison is also between *representative* methods, not exhaustive ones, so it bounds a class rather than settling it. What makes the result durable is the size of the gap, not its precision: a 54-point collapse is not a sampling artefact.
+> Six homes is a real-world study, and it is still six homes — a small sample chosen by the authors. The comparison is also between *representative* methods, not exhaustive ones, so it bounds a class rather than settling it. What makes the result durable is the size of the gap, not its precision: neither pairing — 48% to 23% for the deployed policy over 60 episodes, or 77% to 0% for the best-in-simulation one in the controlled home — is a sampling artefact.
 
 ### Limitations & critique
 
@@ -73,14 +73,14 @@ This is the paper to cite whenever a navigation result exists only in simulation
 
 ### After reading
 
-- [ ] Quote the three numbers — 90, 77, 23 — and say which method each belongs to.
+- [ ] Quote the numbers — 90, 77, 48, 23 — and say which policy each belongs to.
 - [ ] State the two reasons the authors give for simulators being unreliable benchmarks, and say which is worse.
 - [ ] Explain the mechanism they propose for why modularity transfers.
 - [ ] Name what the study's sample size does and does not let you conclude.
 
 ## 한국어
 
-**한 줄 요약**: 대표적인 고전·모듈형·end-to-end 내비게이션 방법을 시뮬레이터 밖 **사전 지도 없는 실제 주택 여섯 곳**으로 데려간다. 모듈형 학습은 90% 성공률을 지키고, end-to-end는 시뮬레이션 77%에서 현실 23%로 무너진다.
+**한 줄 요약**: 대표적인 고전·모듈형·end-to-end 내비게이션 방법을 시뮬레이터 밖 **사전 지도 없는 실제 주택 여섯 곳**으로 데려간다. 모듈형 학습은 90% 성공률을 지키고, end-to-end 학습은 실제 에피소드의 23%에서 성공하며, 시뮬레이션에서 77%로 가장 좋았던 end-to-end 정책은 실제 집에서 0%였다.
 
 ### 배경
 
@@ -97,17 +97,17 @@ This is the paper to cite whenever a navigation result exists only in simulation
 |---|---|---|
 | 고전 | 기하 지도, 점 목표까지 계획 | 나머지가 넘어야 할 기준선 |
 | 모듈형 학습 | 고전 파이프라인 + 학습된 의미 감지·탐색 | **성공률 90%** |
-| end-to-end 학습 | 센서에서 행동까지 네트워크 하나 | **성공률 23%** (시뮬레이션에서는 77%) |
+| end-to-end 학습 | 센서에서 행동까지 네트워크 하나 | **성공률 23%** (이 변형의 시뮬레이션 벤치마크 성공률은 48%) |
 
 ### 결과
 
 > [!important] 기억할 숫자
-> **end-to-end 학습이 시뮬레이션 77%에서 현실 23%로 떨어진다.** 논문은 이를 시뮬레이션과 현실 사이의 큰 이미지 도메인 격차로 돌린다. 모듈형 학습의 성공률은 **90%** 다. 저자들이 끌어내는 결론은 구조적이다: **정책 설계에서의 모듈성과 추상화가 sim-to-real 전이를 가능하게 한다** — 도메인 격차가 흡수되는 자리가 모듈 인터페이스다.
+> **end-to-end 학습이 시뮬레이션 77%에서 현실 23%로 떨어진다** — 초록의 문구이고, 서로 다른 두 정책을 잇는다. 77%는 시뮬레이션 벤치마크에서 가장 좋았던 변형의 것이고, 그 변형은 통제된 실제 집에서 0%였다. 23%, 곧 여섯 집 60회 가운데 14회는 집 실험에 고른 변형의 것이고, 그 변형의 벤치마크 성공률은 48%였다(표 1). 같은 정책끼리 비교하면 48%에서 23%로 떨어졌다. 논문은 이를 시뮬레이션과 현실 사이의 큰 이미지 도메인 격차로 돌린다. 모듈형 학습의 성공률은 **90%** 다. 저자들이 끌어내는 결론은 구조적이다: **정책 설계에서의 모듈성과 추상화가 sim-to-real 전이를 가능하게 한다** — 도메인 격차가 흡수되는 자리가 모듈 인터페이스다.
 
 논문은 오늘날의 시뮬레이터가 신뢰할 만한 평가 벤치마크가 되지 못하는 두 가지 이유도 지목한다: **(A) 이미지에서의 큰 sim-to-real 격차**, 그리고 **(B) 시뮬레이션과 현실의 실패 양상 사이의 단절.** (B)가 더 미묘하고 더 해롭다: 성능 하락을 받아들인다 해도 실패의 *종류*가 다르므로, 시뮬레이션은 무엇을 고쳐야 하는지를 알려주지 못한다.
 
 > [!warning] 핵심 주장 읽는 법 · Reading the claim
-> 여섯 집은 실제 환경 연구이고, 그래도 여섯 집이다 — 저자가 고른 작은 표본이다. 비교 대상도 망라가 아니라 *대표* 방법들이므로, 한 계열을 한정할 뿐 결판내지는 않는다. 이 결과를 오래가게 만드는 것은 정밀도가 아니라 격차의 크기다: 54포인트의 붕괴는 표집의 우연이 아니다.
+> 여섯 집은 실제 환경 연구이고, 그래도 여섯 집이다 — 저자가 고른 작은 표본이다. 비교 대상도 망라가 아니라 *대표* 방법들이므로, 한 계열을 한정할 뿐 결판내지는 않는다. 이 결과를 오래가게 만드는 것은 정밀도가 아니라 격차의 크기다: 배치한 정책의 60회에 걸친 48%→23%든, 통제된 집에서 시뮬레이션 최고 정책의 77%→0%든, 어느 쌍도 표집의 우연이 아니다.
 
 ### 한계와 비판
 
@@ -130,7 +130,7 @@ This is the paper to cite whenever a navigation result exists only in simulation
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
-- [ ] 세 숫자 — 90, 77, 23 — 를 말하고 각각이 어느 방법의 것인지 댄다.
+- [ ] 숫자 90, 77, 48, 23을 말하고 각각이 어느 정책의 것인지 댄다.
 - [ ] 시뮬레이터가 신뢰할 수 없는 벤치마크인 두 이유를 말하고 어느 쪽이 더 나쁜지 말한다.
 - [ ] 모듈성이 전이되는 이유로 저자들이 제시한 기구를 설명한다.
 - [ ] 이 연구의 표본 크기가 무엇을 결론짓게 하고 무엇을 못 하게 하는지 댄다.

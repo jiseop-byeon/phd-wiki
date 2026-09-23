@@ -188,6 +188,15 @@ A **joint** connects exactly two links — a `parent` and a `child` — and says
 
 The constraint that follows: **the links and joints must form a tree.** Every link has at most one parent joint; there is exactly one root link; no cycles. A parallel mechanism — a delta robot, a four-bar linkage — cannot be expressed as URDF, and that is a real limitation, not a beginner's misunderstanding. The common workarounds are to model the open chain and close the loop in the physics engine, or to use SDF (Simulation Description Format, the format Gazebo reads natively) instead.
 
+> **URDF model, defined.** A **URDF model** is an *XML description of a rooted tree* whose nodes are **links**, rigid bodies each defining one coordinate frame, and whose edges are **joints**. Three defining conditions. Every joint names **exactly one parent link and one child link**. The links form **a tree**: one root, at most one parent joint per link, no cycles. And every joint has a **fixed origin**, the child frame's pose in the parent frame at zero, and a **type** saying how the child moves from there by one number $q$ (§3).
+>
+> $${}_{p}T_{c}(q)=T_{\text{origin}}\,M(q),\qquad M(q)=I\ (\texttt{fixed}),\quad \mathrm{Rot}(\hat a,q)\ (\texttt{revolute},\ \texttt{continuous}),\quad \mathrm{Trans}(\hat a\,q)\ (\texttt{prismatic})$$
+>
+> where $\hat a$ is the joint axis in the child frame: the origin fixes *where* the joint is and $M$ only moves the child from there, and `robot_state_publisher` evaluates this product for every joint (§6). `planar` and `floating` need more than one number.
+>
+> - **Example**: P6's `camera_mount`, `fixed` at origin $(0.10, 0, 0.25)\,\mathrm{m}$: ${}_{\text{base}}T_{\text{cam}}$ is that translation at every instant, so a target at $x=0.40\,\mathrm{m}$ in `camera_link` is at $(0.50, 0, 0.25)\,\mathrm{m}$ in `base_link`.
+> - **Non-example**: a `<visual><origin>`. The §12 arm centres each cylinder at $z=0.2\,\mathrm{m}$, which places only the drawing; `link2`'s frame is at $z=0.4\,\mathrm{m}$ because of the *elbow's* origin. Move that $0.4$ into `link2`'s visual origin and the arm still looks right at zero, while `tf2_echo base_link link2` prints $[0, 0, 0]$ and the elbow pivots at the shoulder — an error no parser reports.
+
 Units are SI throughout, per REP 103: metres, radians, kilograms. Frames are right-handed, and the body convention is x forward, y left, z up.
 
 Getting the tree drawn on paper before writing XML saves more time than any other habit on this page. Once it is written, check it:
@@ -320,7 +329,7 @@ This node reads the model — in ROS 2 it subscribes to the `/robot_description`
 
 TF2 is the library that answers "where is frame A relative to frame B, at time t". It is where most newcomer hours are lost, so be precise about four things.
 
-**Frames form a tree, not a graph.** Each frame has exactly one parent and any number of children. There is one root. This is not a style rule; it is what makes a lookup a unique path.
+**Frames form a tree, not a graph.** Each frame has exactly one parent and any number of children. There is one root. This is not a style rule; it is what makes a lookup a unique path. The tree is defined in full, with its three conditions and what breaks when each one fails, in [[04-robotics/robot-systems-deployment|10 §4]]; the lookup that walks it is defined in §8.
 
 **Direction.** Two facts, kept apart:
 
@@ -370,6 +379,15 @@ The third argument is the part that decides whether your node works.
 - `Time()` in Python (`tf2::TimePointZero` in C++) means **the latest available transform**, not "now". This is what you want for a live query, and what the official debugging tutorial gives as the correct fix.
 - An actual timestamp — typically `msg.header.stamp` from the sensor message you are transforming — means "where were these frames when this image was taken". This is the whole point of a buffer, and it is what makes a transformed detection correct on a moving robot instead of 100 ms stale.
 - `self.get_clock().now()` means "now", and **now has not happened yet** as far as the buffer is concerned. Transforms arrive with a delay. Section 9 is the error this produces.
+
+> **Transform lookup, defined.** A **transform lookup**, `lookup_transform(target, source, t)`, is a *query on one listener's buffer* that returns ${}^{\text{target}}T_{\text{source}}$ *as it was at time $t$*. Three defining conditions. The frames must lie **in one tree**, since the answer is the product along the unique path between them. Every edge on that path must **have data at $t$**: a dynamic edge is interpolated between the two samples bracketing $t$ (linear in translation, slerp in rotation), a static edge holds at all $t$, and a $t$ outside a dynamic edge's samples is refused as *extrapolation into the future* or *into the past*. And `Time()` means **the latest instant at which every edge on the path has data**, not now.
+>
+> $${}^{a}T_{b}(t)=\big({}^{r}T_{a}(t)\big)^{-1}\,{}^{r}T_{b}(t)$$
+>
+> where $r$ is the nearest common ancestor of $a$ and $b$, and ${}^{r}T_{x}(t)$ the product of the edges from $r$ down to $x$, each taken at $t$.
+>
+> - **Example**: P6's `lookup_transform('odom', 'camera_link', msg.header.stamp)`: $r$ is `odom`, and the path is the encoder edge at the stamp times the static mount, $0.50+0.10=0.60\,\mathrm{m}$ along $x$ and $0.25\,\mathrm{m}$ up at $c=1024$. A stamp midway between samples of $1024$ and $1026$ counts interpolates that edge to $1025/2048=0.50049\,\mathrm{m}$.
+> - **Non-example**: `now()` for $t$. The newest `odom` sample is always older than now, by up to a $5\,\mathrm{ms}$ period plus delivery, so the lookup is refused, while `Time()` quietly answers for that older sample (§9): a correct tree still gives no transform, or a wrong one, when the instant is wrong.
 
 Add a `timeout` to block briefly rather than fail on the first miss, which is what you want in a startup path:
 
@@ -444,6 +462,12 @@ That is the trade you cannot escape, and it is why both frames exist. Use `odom`
 On P6 the trade has sizes. `odom` → `base_link` is the encoder itself, $p=c/2048$, so it moves in $0.488\,\mathrm{mm}$ steps and never jumps. Suppose a localisation fix — the camera seeing the rail's end stop — puts the cart at $1.000\,\mathrm{m}$ while odometry says $0.990\,\mathrm{m}$ (an illustrative gap, not a catalog number). The localisation node then publishes a `map` → `odom` correction of $0.010\,\mathrm{m}$, about $20$ counts. At that instant the cart's pose in `map` jumps by $10\,\mathrm{mm}$ and its pose in `odom` does not move, so the $200\,\mathrm{Hz}$ controller, which reads `odom`, sees no jump at all.
 
 The structure surprises people: intuition says both `map` and `odom` should be parents of `base_link`, but a frame may have only one parent, so REP 105 makes `map` the parent of `odom` instead. The consequence is that the localisation node does not publish the robot's pose directly; it publishes the `map` → `odom` correction, which is the accumulated drift of the odometry. Odometry publishes `odom` → `base_link`. Neither ever publishes the other's edge — that is section 7's rule applied to the most important edges in the system. Everything from `base_link` downward comes from `robot_state_publisher` reading your URDF.
+
+Written as transforms at one stamp, the `map` → `odom` correction is
+
+$${}^{\text{map}}T_{\text{odom}}={}^{\text{map}}\hat T_{\text{base}}\,\big({}^{\text{odom}}T_{\text{base}}\big)^{-1}$$
+
+where ${}^{\text{map}}\hat T_{\text{base}}$ is the localiser's estimate of the pose and ${}^{\text{odom}}T_{\text{base}}$ odometry's at the same stamp, so the chain `map` → `odom` → `base_link` composes back to exactly the localiser's estimate. On P6 it is the $1.000-0.990=0.010\,\mathrm{m}$ above. Publishing that $1.000\,\mathrm{m}$ as a `map` → `base_link` edge instead would give `base_link` a second parent beside odometry's $0.990\,\mathrm{m}$, which the tree of §7 does not allow.
 
 Above `map` sits an optional `earth` frame (ECEF), present only when several robots with separate maps have to be related.
 
@@ -616,6 +640,10 @@ Driving the joints for real — controllers, hardware interfaces, and the Gazebo
 - `rviz_default_plugins` source (jazzy) — RobotModel and TF display properties.
 - REP 105, Coordinate Frames for Mobile Platforms; REP 103, Standard Units of Measure and Coordinate Conventions.
 - `urdf_launch` package — `description.launch.py` and `display.launch.py`.
+- ROS 2 Jazzy documentation — Tutorials/Intermediate/URDF: [Building a visual robot model from scratch](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/Building-a-Visual-Robot-Model-with-URDF-from-Scratch.html) (a joint's origin is given in the parent's frame; a visual origin only places the geometry).
+- ROS 2 Jazzy documentation — Tutorials/Intermediate/Tf2: [Using time (C++)](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Learning-About-Tf2-And-Time-Cpp.html) (time zero means the latest available transform).
+- [`robot_state_publisher/src/robot_state_publisher.cpp`](https://github.com/ros/robot_state_publisher/blob/jazzy/src/robot_state_publisher.cpp) and [`kdl_parser/src/kdl_parser.cpp`](https://github.com/ros/kdl_parser/blob/jazzy/kdl_parser/src/kdl_parser.cpp), jazzy — each joint's transform is its origin followed by the motion about or along its axis.
+- `geometry2` source (jazzy), for §8's definition: [`tf2/src/cache.cpp`](https://github.com/ros2/geometry2/blob/jazzy/tf2/src/cache.cpp) (`TimeCache::interpolate`, linear in translation and slerp in rotation) and [`tf2/src/buffer_core.cpp`](https://github.com/ros2/geometry2/blob/jazzy/tf2/src/buffer_core.cpp) (`walkToTopParent`, and `getLatestCommonTime` for time zero).
 
 ### Self-check
 
@@ -841,6 +869,15 @@ URDF(Unified Robot Description Format)는 XML이다. 구조 요소는 정확히 
 
 여기서 따라오는 제약: **링크와 조인트는 트리를 이루어야 한다.** 모든 링크는 부모 조인트를 최대 하나 갖고, 루트 링크는 정확히 하나이며, 순환은 없다. 델타 로봇이나 4절 링크 같은 병렬 기구는 URDF로 표현할 수 없다. 이것은 초심자의 오해가 아니라 실제 한계다. 흔한 우회는 열린 사슬로 모델링하고 물리 엔진에서 루프를 닫거나, SDF(Simulation Description Format, Gazebo가 기본으로 읽는 형식)를 쓰는 것이다.
 
+> **URDF 모델의 정의.** **URDF 모델**은 *뿌리 있는 트리를 기술하는 XML*이다. 노드는 **링크**, 곧 각자 좌표 프레임 하나를 정의하는 강체이고, 간선은 **조인트**다. 정의 조건은 셋이다. 모든 조인트는 **부모 링크 하나와 자식 링크 하나**를 댄다. 링크들은 **트리**를 이룬다. 루트는 하나, 링크마다 부모 조인트는 많아야 하나, 순환은 없다. 그리고 모든 조인트에는 **고정 origin**, 곧 조인트가 0일 때 부모 프레임에서 본 자식 프레임의 자세와, 자식이 거기서 숫자 하나 $q$로 어떻게 움직이는지를 정하는 **타입**(3절)이 있다.
+>
+> $${}_{p}T_{c}(q)=T_{\text{origin}}\,M(q),\qquad M(q)=I\ (\texttt{fixed}),\quad \mathrm{Rot}(\hat a,q)\ (\texttt{revolute},\ \texttt{continuous}),\quad \mathrm{Trans}(\hat a\,q)\ (\texttt{prismatic})$$
+>
+> 여기서 $\hat a$는 자식 프레임에서 본 조인트 축이다. origin이 조인트가 *어디* 있는지를 정하고 $M$은 거기서 자식을 움직이기만 하며, `robot_state_publisher`가 조인트마다 계산하는 것이 이 곱이다(6절). `planar`와 `floating`은 숫자 하나로 쓸 수 없다.
+>
+> - **예**: origin $(0.10, 0, 0.25)\,\mathrm{m}$의 `fixed` 조인트인 P6의 `camera_mount`. ${}_{\text{base}}T_{\text{cam}}$은 언제나 그 병진이므로, `camera_link`에서 $x=0.40\,\mathrm{m}$인 표적은 `base_link`에서 $(0.50, 0, 0.25)\,\mathrm{m}$에 있다.
+> - **비예**: `<visual>` 안의 `<origin>`. 12절의 팔은 원기둥의 중심을 $z=0.2\,\mathrm{m}$에 두지만 그것은 그림의 자리일 뿐이고, `link2`의 프레임이 $z=0.4\,\mathrm{m}$에 있는 것은 *elbow의* origin 때문이다. 그 $0.4$를 `link2`의 visual origin으로 옮기면 0 자세에서 팔은 여전히 멀쩡해 보이지만, `tf2_echo base_link link2`는 $[0, 0, 0]$을 찍고 elbow는 shoulder 자리에서 꺾인다. 어떤 파서도 알려 주지 않는 오류다.
+
 단위는 REP 103에 따라 전부 SI다: 미터, 라디안, 킬로그램. 프레임은 오른손 좌표계이고, 본체 관례는 x 전방, y 좌측, z 상방이다.
 
 XML을 쓰기 전에 트리를 종이에 그려 두는 습관이 이 페이지의 어떤 것보다 시간을 아껴 준다. 다 썼으면 확인한다.
@@ -973,7 +1010,7 @@ ros2 run joint_state_publisher_gui joint_state_publisher_gui
 
 TF2는 "시각 t에 프레임 A가 B에 대해 어디 있는가"에 답하는 라이브러리다. 초심자가 가장 많은 시간을 잃는 곳이므로 네 가지를 정확히 하자.
 
-**프레임은 그래프가 아니라 트리다.** 각 프레임은 부모가 정확히 하나, 자식은 몇이든 가진다. 루트는 하나다. 취향 규칙이 아니라, 조회 경로가 유일해지는 근거다.
+**프레임은 그래프가 아니라 트리다.** 각 프레임은 부모가 정확히 하나, 자식은 몇이든 가진다. 루트는 하나다. 취향 규칙이 아니라, 조회 경로가 유일해지는 근거다. 트리의 완전한 정의, 곧 세 조건과 각 조건이 깨질 때 무엇이 고장 나는지는 [[04-robotics/robot-systems-deployment|10 §4]]에 있고, 그 트리를 걷는 조회는 8절에서 정의한다.
 
 **방향.** 두 사실을 떼어 놓자.
 
@@ -1023,6 +1060,15 @@ t = self.tf_buffer.lookup_transform('base_link', 'link2', Time())
 - Python의 `Time()`(C++의 `tf2::TimePointZero`)은 "지금"이 아니라 **가장 최근에 쓸 수 있는 변환**을 뜻한다. 실시간 질의에 원하는 값이고, 공식 디버깅 튜토리얼이 제시하는 올바른 수정이다.
 - 실제 타임스탬프 — 보통 변환하려는 센서 메시지의 `msg.header.stamp` — 는 "이 이미지가 찍혔을 때 프레임들이 어디 있었나"를 뜻한다. 버퍼가 존재하는 이유 전부이고, 움직이는 로봇에서 검출 결과가 100 ms 낡지 않고 맞게 만드는 것이 이것이다.
 - `self.get_clock().now()`는 "지금"이고, 버퍼 입장에서 **지금은 아직 오지 않았다**. 변환은 지연을 두고 도착한다. 9절이 이 오류다.
+
+> **변환 조회의 정의.** **변환 조회** `lookup_transform(target, source, t)`는 *리스너 하나의 버퍼에 대한 질의*이고, *시각 $t$에서의* ${}^{\text{target}}T_{\text{source}}$를 돌려준다. 정의 조건은 셋이다. 두 프레임은 **한 트리 안에** 있어야 한다. 답은 둘 사이의 유일한 경로를 따라 곱한 것이기 때문이다. 그 경로의 모든 간선에는 **$t$에서의 데이터가** 있어야 한다. 동적 간선은 $t$를 사이에 둔 두 샘플 사이에서 보간되고(병진은 선형, 회전은 slerp), 정적 간선은 모든 $t$에서 성립하며, 동적 간선의 샘플 범위 밖의 $t$는 *extrapolation into the future* 또는 *into the past*로 거부된다. 그리고 `Time()`은 지금이 아니라 **경로의 모든 간선에 데이터가 있는 가장 최근 순간**을 뜻한다.
+>
+> $${}^{a}T_{b}(t)=\big({}^{r}T_{a}(t)\big)^{-1}\,{}^{r}T_{b}(t)$$
+>
+> 여기서 $r$은 $a$와 $b$의 가장 가까운 공통 조상이고, ${}^{r}T_{x}(t)$는 $r$에서 $x$까지 내려가는 간선들을 각각 $t$에서 취해 곱한 것이다.
+>
+> - **예**: P6의 `lookup_transform('odom', 'camera_link', msg.header.stamp)`. $r$은 `odom`이고, 경로는 스탬프 시각의 엔코더 간선에 정적 장착을 곱한 것이다. $c=1024$에서 $x$로 $0.50+0.10=0.60\,\mathrm{m}$, 위로 $0.25\,\mathrm{m}$. $1024$와 $1026$ 카운트를 읽은 두 샘플의 한가운데 스탬프라면 엔코더 간선은 $1025/2048=0.50049\,\mathrm{m}$로 보간된다.
+> - **비예**: $t$에 `now()`를 넣는 것. 가장 새 `odom` 샘플은 언제나 지금보다 오래됐으므로 — 길게는 $5\,\mathrm{ms}$ 주기 하나에 전달 시간까지 — 조회는 거부되고, `Time()`은 그 더 오래된 샘플에 대해 조용히 답한다(9절). 트리가 맞아도 묻는 순간이 틀리면 변환은 없거나 틀린다.
 
 첫 실패에 바로 죽는 대신 잠깐 기다리려면 `timeout`을 준다. 기동 경로에서 원하는 동작이다.
 
@@ -1097,6 +1143,12 @@ map --> odom --> base_link
 P6에서는 이 맞교환에 크기가 붙는다. `odom` → `base_link`는 엔코더 그 자체, $p=c/2048$이므로 $0.488\,\mathrm{mm}$ 단위로 움직이고 도약하지 않는다. 위치추정 한 번 — 카메라가 레일 끝 멈춤쇠를 본 것 — 이 카트를 $1.000\,\mathrm{m}$에 두는데 오도메트리는 $0.990\,\mathrm{m}$라고 한다고 하자(예시용 차이이지 카탈로그 숫자가 아니다). 그러면 위치추정 노드는 $0.010\,\mathrm{m}$, 약 $20$ 카운트짜리 `map` → `odom` 보정을 publish한다. 그 순간 `map`에서의 카트 자세는 $10\,\mathrm{mm}$ 도약하고 `odom`에서의 자세는 움직이지 않으므로, `odom`을 읽는 $200\,\mathrm{Hz}$ 제어기는 아무 도약도 보지 않는다.
 
 구조가 사람을 놀라게 한다. 직관은 `map`과 `odom`이 둘 다 `base_link`의 부모여야 한다고 말하지만, 프레임은 부모를 하나만 가질 수 있으므로 REP 105는 `map`을 `odom`의 부모로 둔다. 그 귀결로, 위치추정 노드는 로봇 자세를 직접 내보내지 않는다. `map` → `odom` 보정 — 곧 누적된 오도메트리 표류 — 을 내보낸다. 오도메트리는 `odom` → `base_link`를 낸다. 어느 쪽도 상대의 간선을 내지 않는다. 7절의 규칙을 시스템에서 가장 중요한 간선들에 적용한 것이다. `base_link` 아래는 전부 `robot_state_publisher`가 당신의 URDF를 읽어서 만든다.
+
+한 스탬프에서의 변환으로 쓰면 `map` → `odom` 보정은
+
+$${}^{\text{map}}T_{\text{odom}}={}^{\text{map}}\hat T_{\text{base}}\,\big({}^{\text{odom}}T_{\text{base}}\big)^{-1}$$
+
+이다. ${}^{\text{map}}\hat T_{\text{base}}$는 위치추정이 추정한 자세, ${}^{\text{odom}}T_{\text{base}}$는 같은 스탬프의 오도메트리 자세이므로, 사슬 `map` → `odom` → `base_link`를 합성하면 정확히 위치추정의 추정값으로 돌아온다. P6에서는 위의 $1.000-0.990=0.010\,\mathrm{m}$다. 그 $1.000\,\mathrm{m}$를 `map` → `base_link` 간선으로 직접 내보내면 `base_link`는 오도메트리의 $0.990\,\mathrm{m}$ 옆에 두 번째 부모를 얻는데, 7절의 트리가 허락하지 않는 배치다.
 
 `map` 위에는 선택적인 `earth` 프레임(ECEF)이 있고, 서로 다른 지도를 가진 여러 로봇을 엮어야 할 때만 등장한다.
 
@@ -1269,6 +1321,10 @@ ros2 topic info /tf_static --verbose
 - `rviz_default_plugins` 소스(jazzy) — RobotModel과 TF display 속성.
 - REP 105, Coordinate Frames for Mobile Platforms; REP 103, Standard Units of Measure and Coordinate Conventions.
 - `urdf_launch` 패키지 — `description.launch.py`, `display.launch.py`.
+- ROS 2 Jazzy 문서 — Tutorials/Intermediate/URDF: [Building a visual robot model from scratch](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/URDF/Building-a-Visual-Robot-Model-with-URDF-from-Scratch.html)(조인트 origin은 부모 프레임에서 주어지고, visual origin은 형상의 자리만 정한다).
+- ROS 2 Jazzy 문서 — Tutorials/Intermediate/Tf2: [Using time (C++)](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/Learning-About-Tf2-And-Time-Cpp.html)(시각 0은 가장 최근에 쓸 수 있는 변환을 뜻한다).
+- jazzy의 [`robot_state_publisher/src/robot_state_publisher.cpp`](https://github.com/ros/robot_state_publisher/blob/jazzy/src/robot_state_publisher.cpp)와 [`kdl_parser/src/kdl_parser.cpp`](https://github.com/ros/kdl_parser/blob/jazzy/kdl_parser/src/kdl_parser.cpp) — 조인트마다 변환은 origin 다음에 축 둘레나 축 방향의 운동이 온다.
+- 8절의 정의에 쓴 `geometry2` 소스(jazzy): [`tf2/src/cache.cpp`](https://github.com/ros2/geometry2/blob/jazzy/tf2/src/cache.cpp)(`TimeCache::interpolate`, 병진은 선형·회전은 slerp)와 [`tf2/src/buffer_core.cpp`](https://github.com/ros2/geometry2/blob/jazzy/tf2/src/buffer_core.cpp)(`walkToTopParent`, 그리고 시각 0에 대한 `getLatestCommonTime`).
 
 ### 스스로 점검
 

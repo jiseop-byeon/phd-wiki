@@ -355,6 +355,15 @@ You could write a Gazebo plugin that reads a topic and sets joint forces. People
 - On one side, **controllers** — a joint trajectory follower, a differential drive kinematic layer, a PID (proportional–integral–derivative feedback on the error, derived in [[04-robotics/control-theory-ce397#7. Designing the feedback: pole placement and PID|5. Control Theory §7]]). A controller is an object derived from `ControllerInterface` whose `update()` reads state and writes commands. It never knows what the hardware is.
 - On the other, **hardware components** — the thing that actually talks to a motor driver, a CAN bus (a two-wire serial bus common on motor drives), an EtherCAT slave (one device on EtherCAT, an Ethernet-based real-time fieldbus), or a simulator. Three kinds exist: `System` (multi-DOF with coupling), `Actuator` (single-DOF, read and write), `Sensor` (read only).
 
+> **Hardware component, defined.** A **hardware component** is a *plugin class that stands for one piece of hardware below the seam* — a drive, a sensor board, or a simulated model. Three defining conditions. It **exports named interfaces**: state interfaces it can be read for and command interfaces it can be told (§6). Its **type fixes what it may export**: a `Sensor` only reads, an `Actuator` reads and writes one joint, and a `System` reads and writes any number of joints over one channel. And it is **declared, not built into a controller**: the `<ros2_control>` block's `type` and `<hardware><plugin>` line name it, and the controller manager loads it by that name and calls its `read()` and `write()` from the loop of §7.
+>
+> $$\mathcal{C}_{\texttt{Sensor}}=\varnothing,\qquad \mathcal{C}_{\texttt{Actuator}}\subseteq\{j\}\times\mathcal{N},\qquad \mathcal{C}_{\texttt{System}}\subseteq J\times\mathcal{N}$$
+>
+> where $\mathcal{C}$ is the set of command interfaces a component exports, each a pair `joint/name`, $j$ one joint, $J$ a set of joints and $\mathcal{N}$ the interface names (`position`, `velocity`, `effort`, …).
+>
+> - **Example**: P6's cart in Gazebo is one `System`, `gz_ros2_control/GazeboSimSystem`, exporting state $\{\texttt{cart/position},\ \texttt{cart/velocity}\}$ and command $\{\texttt{cart/velocity}\}$, read and written $200$ times per simulated second.
+> - **Non-example**: P6's camera. It senses, but it is not a `Sensor` component: its frames reach ROS as a $50\,\mathrm{Hz}$ topic through `ros_gz_bridge`, outside `read()`. That is why $T_v=20\,\mathrm{ms}$ enters the Worked case's ledger apart from $T_c$, and why no `update_rate` can shorten it.
+
 Between them sits a set of named interfaces, and *that* is the contract. The controller asks for `shoulder/position` as a command interface; something provides it. Whether that something is a servo drive or a physics engine is not the controller's problem.
 
 This is why the same joint trajectory controller, with the same YAML, runs in Gazebo and on a real arm. Moving from simulation to hardware means swapping one plugin name in the URDF — everything above the seam is untouched. That is the single most valuable property on this page, and [[04-robotics/ros2/from-simulation-to-hardware|25.11 From Simulation to Real Hardware]] is where the parts that do *not* transfer are dealt with.
@@ -390,11 +399,29 @@ They are declared in the URDF, inside a `<ros2_control>` block that lives alongs
 
 Two rules that beginners collide with. **A command interface can be claimed by at most one active controller at a time** — this is what makes the framework safe, and it is why activating a second controller on the same joints fails rather than producing two writers. And a controller will refuse to activate if an interface it needs is not provided: a controller configured with `command_interfaces: [velocity]` against a joint that declares only `position` does not start.
 
+> **Command and state interfaces, defined.** An **interface** is a *named number that a hardware component exports*, written `joint/name` — `cart/velocity` is one. Three defining conditions. A **state interface** is read above the seam, and **any number of controllers may read it** at once. A **command interface** is written, and **at most one active controller holds it**: activating a controller *claims* every command interface it lists until it is deactivated. And a controller **activates only if** every interface it lists is exported and none of its command interfaces is held already, so a name that matches nothing fails at activation, not at load.
+>
+> $$\mathrm{activate}(k)\iff R_{\text{cmd}}(k)\subseteq\mathcal{C}\setminus H\ \ \wedge\ \ R_{\text{state}}(k)\subseteq\mathcal{S}$$
+>
+> where $R_{\text{cmd}}(k)$ and $R_{\text{state}}(k)$ are the command and state interfaces controller $k$ lists, $\mathcal{C}$ and $\mathcal{S}$ those the hardware exports, and $H$ those held by the other active controllers.
+>
+> - **Example**: P6's velocity controller lists $R_{\text{cmd}}=\{\texttt{cart/velocity}\}$, which is exported and not in $H=\varnothing$, so it activates and the interface reads `[available] [claimed]`; `joint_state_broadcaster` reads `cart/position` and `cart/velocity` alongside it.
+> - **Non-example**: a second velocity controller on the same cart. Now $\texttt{cart/velocity}\in H$, so its activation is refused as "currently claimed by another controller". Two writers on one actuator is a failed activation, not a tug of war — the safety property the seam exists to give.
+
 The `<hardware><plugin>` line is the only part of this block that differs between simulation and a real robot.
 
 ### 7. The controller manager
 
 The **controller manager** is the process that holds both halves together. It loads hardware components through `pluginlib` (the ROS library that loads a C++ class from a shared library at runtime by its registered name), loads controllers through `pluginlib`, matches required interfaces against provided ones, and runs the loop: `read()` from hardware, `update()` every active controller, `write()` to hardware. Its `update_rate` parameter is that loop's frequency in Hz, default 100. It gets the robot description by subscribing to the `robot_description` topic.
+
+> **Controller manager, defined.** The **controller manager** is the *node that owns the control loop*, and not itself a controller. Three defining conditions. It **loads both sides by name**: hardware components through its resource manager, controllers through `pluginlib`. It **matches** what each controller lists against what the hardware exports, and grants or refuses activation by §6's rule. And it **runs one loop at `update_rate`**: every period it calls `read()` on the hardware, `update()` on each *active* controller and `write()` on the hardware, in that order, skipping controllers that are loaded but inactive.
+>
+> $$T_c=\frac{1}{f_c},\qquad u(t)=u_k\quad \forall\,t\in[\,kT_c,\ (k+1)T_c)$$
+>
+> where $f_c$ is `update_rate` in Hz, $100$ unless set, and $u_k$ the command written at tick $k$; it stays on the hardware until the next write, which is why $T_c$ appears in the Worked case's rate ledger.
+>
+> - **Example**: P6's `update_rate: 200` gives $T_c=5\,\mathrm{ms}$: four read–update–write cycles per $20\,\mathrm{ms}$ camera frame, each written velocity held for $5\,\mathrm{ms}$.
+> - **Non-example**: `update_rate` as the rate of the whole chain from camera to force. Raising it to $500$ shortens only the hold, from $5$ to $2\,\mathrm{ms}$, so the rate ledger falls from $20+5=25$ to $20+2=22\,\mathrm{ms}$. The manager cannot make a goal newer than the last camera frame, so the faster loop buys $3\,\mathrm{ms}$ of a $70\,\mathrm{ms}$ budget.
 
 A controller is a lifecycle object (the managed-node state machine of [[04-robotics/ros2/services-actions-parameters#8. Managed (lifecycle) nodes|25.3 §8]]) with three states that matter:
 
@@ -1092,6 +1119,15 @@ Gazebo는 URDF를 내부적으로 SDF(Simulation Description Format, 로봇과 w
 - 한쪽에는 **제어기(controller)** — 관절 궤적 추종기, 차동 구동 기구학 계층, PID(오차에 대한 비례·적분·미분 피드백, [[04-robotics/control-theory-ce397#7. 피드백 설계: 극점 배치와 PID|5. 제어 이론 §7]]에서 유도). 제어기는 `ControllerInterface`에서 파생된 객체이고, `update()`가 상태를 읽고 명령을 쓴다. 하드웨어가 무엇인지는 전혀 모른다.
 - 다른 쪽에는 **하드웨어 컴포넌트** — 모터 드라이버, CAN 버스(모터 드라이브에 흔한 2선 직렬 버스), EtherCAT 슬레이브(이더넷 기반 실시간 필드버스인 EtherCAT 위의 장치 하나), 또는 시뮬레이터와 실제로 대화하는 것. 세 종류가 있다: `System`(결합이 있는 다자유도), `Actuator`(1자유도, 읽기·쓰기), `Sensor`(읽기 전용).
 
+> **하드웨어 컴포넌트의 정의.** **하드웨어 컴포넌트**는 *이음매 아래에서 하드웨어 하나를 대신하는 플러그인 클래스*다. 그 하드웨어는 드라이브일 수도, 센서 보드일 수도, 시뮬레이션 속 모델일 수도 있다. 정의 조건은 셋이다. **이름 붙은 인터페이스를 내보낸다.** 읽을 수 있는 상태 인터페이스와 지시할 수 있는 명령 인터페이스다(6절). **타입이 내보낼 수 있는 것을 정한다.** `Sensor`는 읽기만 하고, `Actuator`는 관절 하나를 읽고 쓰며, `System`은 채널 하나로 관절 여럿을 읽고 쓴다. 그리고 **제어기에 박혀 있지 않고 선언된다.** `<ros2_control>` 블록의 `type`과 `<hardware><plugin>` 줄이 그것을 지명하고, 컨트롤러 매니저가 그 이름으로 싣고 7절의 루프에서 `read()`와 `write()`를 부른다.
+>
+> $$\mathcal{C}_{\texttt{Sensor}}=\varnothing,\qquad \mathcal{C}_{\texttt{Actuator}}\subseteq\{j\}\times\mathcal{N},\qquad \mathcal{C}_{\texttt{System}}\subseteq J\times\mathcal{N}$$
+>
+> 여기서 $\mathcal{C}$는 컴포넌트가 내보내는 명령 인터페이스의 집합이고 원소는 `joint/name` 쌍이다. $j$는 관절 하나, $J$는 관절 집합, $\mathcal{N}$은 인터페이스 이름(`position`, `velocity`, `effort`, …)이다.
+>
+> - **예**: Gazebo 안의 P6 카트는 `System` 하나, `gz_ros2_control/GazeboSimSystem`이다. 상태 $\{\texttt{cart/position},\ \texttt{cart/velocity}\}$와 명령 $\{\texttt{cart/velocity}\}$를 내보내고, 시뮬레이션 1초에 $200$번 읽히고 쓰인다.
+> - **비예**: P6의 카메라. 감지는 하지만 `Sensor` 컴포넌트가 아니다. 그 프레임은 `ros_gz_bridge`를 거쳐 $50\,\mathrm{Hz}$ 토픽으로 ROS에 닿고 `read()` 밖에 있다. 그래서 $T_v=20\,\mathrm{ms}$가 대상으로 한 번 끝까지의 장부에 $T_c$와 따로 들어가고, 어떤 `update_rate`로도 그것을 줄일 수 없다.
+
 둘 사이에 이름 붙은 인터페이스 집합이 있고, *그것이* 계약이다. 제어기는 `shoulder/position`을 명령 인터페이스로 요구하고, 무언가가 그것을 제공한다. 그 무언가가 서보 드라이브인지 물리 엔진인지는 제어기의 문제가 아니다.
 
 같은 관절 궤적 제어기가 같은 YAML로 Gazebo에서도 실제 팔에서도 도는 이유가 이것이다. 시뮬레이션에서 하드웨어로 옮긴다는 것은 URDF의 플러그인 이름 한 줄을 바꾸는 일이고, 이음매 위쪽은 손대지 않는다. 이 페이지에서 가장 값진 성질이며, 전이되지 *않는* 부분은 [[04-robotics/ros2/from-simulation-to-hardware|25.11 From Simulation to Real Hardware]]에서 다룬다.
@@ -1127,11 +1163,29 @@ URDF 안, 링크·관절 옆에 놓이는 `<ros2_control>` 블록에서 선언�
 
 초심자가 부딪히는 규칙 둘. **명령 인터페이스는 한 번에 최대 하나의 활성 제어기만 점유(claim)할 수 있다.** 이것이 이 프레임워크를 안전하게 만드는 장치이고, 같은 관절에 두 번째 제어기를 활성화하면 두 개의 writer가 생기는 대신 실패하는 이유다. 그리고 제어기는 필요한 인터페이스가 제공되지 않으면 활성화를 거부한다. `command_interfaces: [velocity]`로 설정된 제어기는 `position`만 선언한 관절에서 시작하지 않는다.
 
+> **명령 인터페이스와 상태 인터페이스의 정의.** **인터페이스**는 *하드웨어 컴포넌트가 내보내는 이름 붙은 숫자*이고, `joint/name`으로 쓴다. `cart/velocity`가 그 하나다. 정의 조건은 셋이다. **상태 인터페이스**는 이음매 위에서 읽히며, **몇 개의 제어기든 동시에 읽을 수 있다.** **명령 인터페이스**는 쓰이며, **한 번에 많아야 활성 제어기 하나가 쥔다.** 제어기를 활성화하면 그것이 나열한 명령 인터페이스를 모두 점유(claim)하고, 비활성화될 때까지 놓지 않는다. 그리고 제어기는 나열한 인터페이스가 모두 내보내져 있고 그 명령 인터페이스를 이미 쥔 쪽이 없을 **때만 활성화된다.** 그래서 아무것과도 맞지 않는 이름은 적재가 아니라 활성화에서 실패한다.
+>
+> $$\mathrm{activate}(k)\iff R_{\text{cmd}}(k)\subseteq\mathcal{C}\setminus H\ \ \wedge\ \ R_{\text{state}}(k)\subseteq\mathcal{S}$$
+>
+> 여기서 $R_{\text{cmd}}(k)$와 $R_{\text{state}}(k)$는 제어기 $k$가 나열한 명령·상태 인터페이스, $\mathcal{C}$와 $\mathcal{S}$는 하드웨어가 내보내는 명령·상태 인터페이스, $H$는 다른 활성 제어기들이 쥔 것이다.
+>
+> - **예**: P6의 속도 제어기는 $R_{\text{cmd}}=\{\texttt{cart/velocity}\}$를 나열한다. 내보내져 있고 $H=\varnothing$에 없으므로 활성화되고, 그 인터페이스는 `[available] [claimed]`로 읽힌다. 그동안 `joint_state_broadcaster`는 `cart/position`과 `cart/velocity`를 나란히 읽는다.
+> - **비예**: 같은 카트에 두 번째 속도 제어기. 이제 $\texttt{cart/velocity}\in H$이므로 활성화가 "currently claimed by another controller"로 거부된다. 한 구동기에 writer 둘은 줄다리기가 아니라 실패한 활성화이고, 이음매가 존재하는 이유인 안전성이 바로 이것이다.
+
 이 블록에서 시뮬레이션과 실제 로봇이 다른 부분은 `<hardware><plugin>` 줄 하나뿐이다.
 
 ### 7. 컨트롤러 매니저
 
 **컨트롤러 매니저(controller manager)** 는 양쪽을 붙들고 있는 프로세스다. `pluginlib`(등록된 이름으로 공유 라이브러리에서 C++ 클래스를 실행 중에 불러오는 ROS 라이브러리)으로 하드웨어 컴포넌트를 싣고, 같은 방식으로 제어기를 싣고, 요구된 인터페이스와 제공된 인터페이스를 맞추고, 루프를 돈다: 하드웨어에서 `read()`, 활성 제어기마다 `update()`, 하드웨어로 `write()`. `update_rate` 파라미터가 그 루프의 주파수(Hz)이고 기본값은 100이다. 로봇 기술은 `robot_description` 토픽을 구독해 얻는다.
+
+> **컨트롤러 매니저의 정의.** **컨트롤러 매니저**는 *제어 루프를 소유한 노드*이고, 그 자체는 제어기가 아니다. 정의 조건은 셋이다. **양쪽을 이름으로 싣는다.** 하드웨어 컴포넌트는 리소스 매니저를 통해, 제어기는 `pluginlib`으로 싣는다. 각 제어기가 나열한 것을 하드웨어가 내보내는 것과 **맞춰 보고**, 6절의 규칙으로 활성화를 허락하거나 거부한다. 그리고 **`update_rate`로 루프 하나를 돈다.** 매 주기 하드웨어의 `read()`, 각 *활성* 제어기의 `update()`, 하드웨어의 `write()`를 그 순서로 부르고, 실려 있어도 비활성인 제어기는 건너뛴다.
+>
+> $$T_c=\frac{1}{f_c},\qquad u(t)=u_k\quad \forall\,t\in[\,kT_c,\ (k+1)T_c)$$
+>
+> 여기서 $f_c$는 Hz 단위의 `update_rate`(정하지 않으면 $100$), $u_k$는 $k$번째 틱에 쓴 명령이다. 명령은 다음 쓰기까지 하드웨어에 남으므로, $T_c$가 대상으로 한 번 끝까지의 속도 장부에 들어간다.
+>
+> - **예**: P6의 `update_rate: 200`이면 $T_c=5\,\mathrm{ms}$. $20\,\mathrm{ms}$ 카메라 프레임 하나당 read–update–write가 네 번이고, 쓴 속도 명령은 하나하나 $5\,\mathrm{ms}$씩 유지된다.
+> - **비예**: `update_rate`를 카메라에서 힘까지 사슬 전체의 속도로 읽는 것. $500$으로 올려도 줄어드는 것은 유지 구간뿐이어서 $5$에서 $2\,\mathrm{ms}$가 되고, 속도 장부는 $20+5=25$에서 $20+2=22\,\mathrm{ms}$가 될 뿐이다. 매니저는 마지막 카메라 프레임보다 새 목표를 만들 수 없으므로, 빠른 루프가 $70\,\mathrm{ms}$ 예산에서 사 오는 것은 $3\,\mathrm{ms}$다.
 
 제어기는 상태 셋이 중요한 lifecycle 객체다([[04-robotics/ros2/services-actions-parameters#8. 관리형(라이프사이클) 노드|25.3 §8]]의 관리형 노드 상태 기계).
 

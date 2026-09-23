@@ -151,7 +151,25 @@ A QoS *profile* is a set of *policies*, applied independently to each publisher,
 
 Every non-duration policy also accepts *system default*, which defers to the middleware, and every duration policy accepts *default*, an unspecified duration that middleware usually treats as infinite.
 
+> **QoS profile, defined.** A **QoS profile** is a *set of policy values attached to one endpoint* — a publisher, subscription, service server or client. Three defining conditions. It gives **every policy one value**, defaults filling any you omit. It **belongs to one endpoint, not to a topic**, so each end of `/goal` carries its own. And each end sets it **independently**: history, depth and lifespan are never compared across the pair, while the other five must agree (§3). The first three obey one rule for a subscription that takes nothing for a time $D$:
+>
+> $$n_{\text{kept}}=|K|=\min\!\Big(N,\ \frac{D}{T}\Big),\qquad n_{\text{cb}}=\#\{\,k\in K:\ t-t_k\le\ell\,\}$$
+>
+> where $N$ is its *keep last* depth, $T$ the publisher's period, $K$ the samples kept, $t-t_k$ a sample's age, $\ell$ the lifespan and $n_{\text{cb}}$ how many reach the callback; each arrival past the $N$-th pushes out the oldest.
+>
+> - **Example**: P6's controller at $N=5$ through the Worked case's $200\,\mathrm{ms}$ pause keeps $\min(5,10)=5$ goals, aged $80$ to $0\,\mathrm{ms}$, and with $\ell=70\,\mathrm{ms}$, $n_{\text{cb}}=4$.
+> - **Non-example**: the camera's `KEEP_LAST (5)` read as the depth of `/goal`. A controller that fixed only its reliability, keeping `KEEP_LAST (10)`, would hold all $10$, the oldest $180\,\mathrm{ms}$ old and $110\,\mathrm{ms}$ past the budget: one end's profile says nothing about the other's, so read both (§7).
+
 Deadline, lifespan and liveliness are the three most people never set, and deadline and liveliness are the only policies that can tell you a stream has *stopped* (lifespan expires stale samples but raises no event): a deadline gives the subscription a *requested deadline missed* event, a liveliness lease gives it a *liveliness changed* event when a publisher dies quietly. Without them, a dead sensor and a slow sensor look identical. A concrete case: a 30 Hz camera sends a frame every 33 ms; if the publisher offers and the subscription requests a 40 ms deadline, the subscription gets a *requested deadline missed* event whenever more than 40 ms pass without a frame.
+
+> **Deadline and liveliness, defined.** Both are *timing contracts between a publisher and its subscriptions*, offered, requested and matched by §3's rule. A broken one raises an **event** at each end, seen only through a callback you register — never an error or a lost connection. **Deadline** has two conditions: a **promised maximum gap** $T_{\text{dl}}$ between consecutive messages, and an **event** (*requested* or *offered deadline missed*) whenever a gap exceeds it. **Liveliness** has two: a **kind** — *automatic*, renewed whenever any publisher of the node publishes, or *manual by topic*, renewed only when this publisher asserts it — and a **lease** $T_{\text{lease}}$, past which the ends get *liveliness changed* and *liveliness lost*.
+>
+> $$\text{miss}_k\iff t_{k+1}-t_k>T_{\text{dl}},\qquad \text{alive}(t)\iff t-t_{\text{renew}}\le T_{\text{lease}}$$
+>
+> where $t_k$ is when message $k$ was sent (publisher side) or received (subscription side) and $t_{\text{renew}}$ the last renewal: deadline watches the data, liveliness the writer.
+>
+> - **Example**: P6's camera every $20\,\mathrm{ms}$ against $T_{\text{dl}}=40\,\mathrm{ms}$: $20\le40$, no event; a $200\,\mathrm{ms}$ camera stall exceeds $40$ and raises one.
+> - **Non-example**: the controller's own $200\,\mathrm{ms}$ pause in the Worked case: the gaps stay $20\,\mathrm{ms}$, so nothing fires, because neither contract watches the consumer. And P6's profiles set no lease, so the lease stays *default*, usually infinite, and liveliness is never lost. A stopped stream is reported only if you set these durations.
 
 **Worked: P6's camera versus the $70\,\mathrm{ms}$ budget.** Vision at $50\,\mathrm{Hz}$ is a $20\,\mathrm{ms}$ period; a healthy camera therefore meets a $40\,\mathrm{ms}$ deadline on `/goal`. A $200\,\mathrm{ms}$ stall misses it and fires *requested deadline missed*. Separately, camera *best effort* against a controller that requests *reliable* does not connect at all — `ros2 topic echo` still prints, because `echo` adapts, while the node never runs. Fixing QoS still leaves a $200\,\mathrm{ms}$ stamp inside a $70\,\mathrm{ms}$ budget: $130\,\mathrm{ms}$ over, force applied to a goal the cart has already rolled past ([[02-foundations/lab-plants|0.6]], arithmetic on [[04-robotics/robot-systems-deployment|10]]). The problem set is this pair: incompatible reliability, then a late stamp after QoS is fixed.
 
@@ -162,6 +180,15 @@ This is the rule to memorise, because everything in section 4 follows from it.
 > A subscription **requests** a profile: the *minimum quality* it will accept. A publisher **offers** a profile: the *maximum quality* it can provide. A connection is made only if **every** policy of the request is no more stringent than the corresponding offer.
 
 Compatibility is per-pair and independent of who else is on the topic: one publisher can serve several subscriptions with different requested profiles, and the presence of a third node changes nothing.
+
+> **QoS compatibility, defined.** **Compatibility** is a *property of one publisher–subscription pair*: a yes-or-no predicate on their two profiles, blind to every other endpoint on the topic. Three defining conditions. Five policies are **ordered by strictness**: best effort below reliable, volatile below transient local, automatic below manual by topic, and for deadline and lease duration the *shorter* duration is stricter, *default* counting as infinite. The request must be **no stricter than the offer on all five at once**, so one failure refuses the pair. And history, depth and lifespan are **never compared**.
+>
+> $$\mathrm{match}(o,r)=[r_{\text{rel}}\preceq o_{\text{rel}}]\wedge[r_{\text{dur}}\preceq o_{\text{dur}}]\wedge[r_{\text{live}}\preceq o_{\text{live}}]\wedge[r_{\text{dl}}\ge o_{\text{dl}}]\wedge[r_{\text{lease}}\ge o_{\text{lease}}]$$
+>
+> where $o$ is the offered (publisher) profile, $r$ the requested (subscription) one and $\preceq$ "no stricter than"; durations compare the other way because a longer promised gap is a weaker promise, so a default publisher fails any subscription that names a deadline ($x\ge\infty$ is false).
+>
+> - **Example**: P6's `/goal` before the fix fails the first bracket, reliable $\not\preceq$ best effort, and nothing is ever delivered. After it all five hold: best effort, volatile and automatic at both ends, $40\ge40\,\mathrm{ms}$, and $\infty\ge\infty$ for the lease neither end sets.
+> - **Non-example**: the pre-fix depths, `KEEP_LAST (5)` offered against `KEEP_LAST (10)` requested. They differ in `--verbose` and draw the eye, but depth is not in the predicate: they neither block the pair nor explain its failure. A false predicate raises no error, so reading these five lines is the whole diagnosis.
 
 *Reliability:*
 
@@ -457,6 +484,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]]. Budget $70\,\mathrm
 - ROS 2 Jazzy documentation — Concepts: Quality of Service settings (policies, profiles, compatibility tables, QoS events, matched events).
 - ROS 2 Jazzy documentation — Tutorials: Using quality-of-service settings for lossy networks.
 - Source, Jazzy branches, for values and messages quoted verbatim: `rmw/qos_profiles.h` (profile contents), `rclcpp/subscription_base.cpp` and `publisher_base.cpp`, `rclpy/event_handler.py` (default incompatible-QoS warnings), `rclpy/topic_endpoint_info.py` (the `--verbose` output format), `ros2cli/ros2topic` (QoS flags and `echo`'s publisher-matching behaviour), `robot_state_publisher` and `nav2_map_server` (transient-local publishers).
+- Source, Jazzy branches, for the definitions in §2 and §3: [`rmw_dds_common/src/qos.cpp`](https://github.com/ros2/rmw_dds_common/blob/jazzy/rmw_dds_common/src/qos.cpp) (`qos_profile_check_compatible` compares reliability, durability, deadline, liveliness and lease duration, and nothing else); [`rclpy/qos.py`](https://github.com/ros2/rclpy/blob/jazzy/rclpy/rclpy/qos.py) and [`rclcpp/qos.hpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/include/rclcpp/qos.hpp) (policies left unset come from the default profile); [`rclcpp/subscription_base.cpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/src/rclcpp/subscription_base.cpp), `publisher_base.cpp` and `rclpy/event_handler.py` (deadline and liveliness events have no default handler, only the callback you register).
 
 ## 한국어
 
@@ -602,7 +630,25 @@ QoS *프로파일*은 *정책*의 묶음이고, 퍼블리셔·서브스크립션
 
 기간이 아닌 모든 정책에는 미들웨어에 위임하는 *system default*가 있고, 기간인 모든 정책에는 지정하지 않음을 뜻하는 *default*가 있다. 미들웨어는 보통 후자를 무한으로 해석한다.
 
+> **QoS 프로파일의 정의.** **QoS 프로파일**은 *끝점 하나에 붙는 정책 값의 묶음*이다. 끝점은 퍼블리셔, 서브스크립션, 서비스 서버, 클라이언트 중 하나다. 정의 조건은 셋이다. **모든 정책에 값이 하나씩** 있고, 지정하지 않은 것은 기본값으로 채워진다. **토픽이 아니라 끝점 하나에 속하므로**, `/goal`의 두 끝은 각자 제 프로파일을 갖는다. 그리고 끝마다 **따로 정한다.** history, depth, lifespan은 쌍 사이에서 비교되지 않고, 나머지 다섯은 서로 맞아야 한다(3절). 앞의 셋은 시간 $D$ 동안 아무것도 가져가지 않은 서브스크립션에서 규칙 하나를 따른다.
+>
+> $$n_{\text{kept}}=|K|=\min\!\Big(N,\ \frac{D}{T}\Big),\qquad n_{\text{cb}}=\#\{\,k\in K:\ t-t_k\le\ell\,\}$$
+>
+> 여기서 $N$은 그 서브스크립션의 *keep last* 깊이, $T$는 퍼블리셔의 주기, $K$는 남은 샘플, $t-t_k$는 샘플의 나이, $\ell$은 lifespan, $n_{\text{cb}}$는 콜백까지 가는 개수다. $N$개를 넘어 도착하는 샘플마다 가장 오래된 것을 밀어낸다.
+>
+> - **예**: $N=5$인 P6 제어기가 대상으로 한 번 끝까지의 $200\,\mathrm{ms}$ 정지를 지나면 $\min(5,10)=5$개가 남고 나이는 $80$부터 $0\,\mathrm{ms}$까지다. $\ell=70\,\mathrm{ms}$이면 $n_{\text{cb}}=4$다.
+> - **비예**: 카메라의 `KEEP_LAST (5)`를 `/goal`의 깊이로 읽는 것. reliability만 고치고 `KEEP_LAST (10)`은 그대로 둔 제어기는 $10$개를 모두 들고 있고, 가장 오래된 것은 $180\,\mathrm{ms}$ 되어 예산을 $110\,\mathrm{ms}$ 넘는다. 한쪽 끝의 프로파일은 다른 쪽에 대해 아무것도 말해 주지 않으니, 양쪽을 다 읽어라(7절).
+
 deadline, lifespan, liveliness는 대부분 설정하지 않는 셋이고, 그중 deadline과 liveliness가 스트림이 *멈췄다*는 것을 알려 줄 수 있는 유일한 정책이다(lifespan은 낡은 샘플을 만료시킬 뿐 이벤트를 내지 않는다). deadline을 걸면 서브스크립션이 *requested deadline missed* 이벤트를 받고, liveliness lease를 걸면 퍼블리셔가 조용히 죽을 때 *liveliness changed* 이벤트를 받는다. 이것이 없으면 죽은 센서와 느린 센서가 똑같아 보인다. 구체적인 예: 30 Hz 카메라는 33 ms마다 프레임을 보낸다. 퍼블리셔가 40 ms deadline을 제공하고 서브스크립션도 40 ms를 요청하면, 프레임 없이 40 ms가 넘게 지날 때마다 서브스크립션이 *requested deadline missed* 이벤트를 받는다.
+
+> **Deadline과 liveliness의 정의.** 둘은 *퍼블리셔와 그 서브스크립션 사이의 시간 계약*이고, 제공되고 요청되며 3절의 규칙으로 맞춰진다. 깨진 계약은 양 끝에 **이벤트**를 내는데, 직접 등록한 콜백으로만 보이며 오류나 연결 끊김으로 나타나지는 않는다. **Deadline**의 조건은 둘이다. 연속한 메시지 사이의 **약속된 최대 간격** $T_{\text{dl}}$, 그리고 간격이 그것을 넘을 때마다 나는 **이벤트**(*requested* 또는 *offered deadline missed*)다. **Liveliness**의 조건도 둘이다. 하나는 **종류**로, *automatic*은 같은 노드의 퍼블리셔 중 하나라도 발행하면 갱신되고 *manual by topic*은 이 퍼블리셔가 스스로 살아 있음을 알릴 때만 갱신된다. 다른 하나는 **lease** $T_{\text{lease}}$이고, 그 안에 갱신이 없으면 두 끝은 *liveliness changed*와 *liveliness lost*를 받는다.
+>
+> $$\text{miss}_k\iff t_{k+1}-t_k>T_{\text{dl}},\qquad \text{alive}(t)\iff t-t_{\text{renew}}\le T_{\text{lease}}$$
+>
+> 여기서 $t_k$는 $k$번째 메시지를 보낸 시각(퍼블리셔 쪽) 또는 받은 시각(서브스크립션 쪽), $t_{\text{renew}}$는 마지막 갱신 시각이다. deadline은 데이터를, liveliness는 쓰는 쪽을 본다.
+>
+> - **예**: $20\,\mathrm{ms}$마다 발행하는 P6 카메라와 $T_{\text{dl}}=40\,\mathrm{ms}$. $20\le40$이므로 이벤트가 없다. 카메라가 $200\,\mathrm{ms}$ 멈추면 $40$을 넘고 이벤트가 난다.
+> - **비예**: 대상으로 한 번 끝까지에서 제어기 자신이 $200\,\mathrm{ms}$ 멈추는 경우. 간격은 계속 $20\,\mathrm{ms}$이므로 아무것도 울리지 않는다. 두 계약 모두 소비자를 보지 않기 때문이다. 또 P6의 프로파일은 lease를 정하지 않으므로 lease는 *default*, 곧 대개 무한으로 남고 liveliness를 잃는 일이 없다. 멈춘 스트림은 이 기간들을 직접 정했을 때만 보고된다.
 
 **계산: P6 카메라와 $70\,\mathrm{ms}$ 예산.** 비전 $50\,\mathrm{Hz}$는 주기 $20\,\mathrm{ms}$이므로 건강한 카메라는 `/goal`의 $40\,\mathrm{ms}$ deadline을 통과한다. $200\,\mathrm{ms}$ 정지는 놓치고 *requested deadline missed*를 낸다. 별도로, 카메라 *best effort*에 제어기의 *reliable* 요청은 연결되지 않는다. `echo`는 적응해서 출력하고 노드는 안 돈다. QoS를 고쳐도 $200\,\mathrm{ms}$ 스탬프는 $70\,\mathrm{ms}$ 예산 안에 남는다. 초과 $130\,\mathrm{ms}$, 카트가 이미 지나간 목표에 힘이 나간다([[02-foundations/lab-plants|0.6]], 산수는 [[04-robotics/robot-systems-deployment|10]]). 과제는 이 쌍이다. 비호환 신뢰성, 그다음 QoS를 고친 뒤의 늦은 스탬프.
 
@@ -613,6 +659,15 @@ deadline, lifespan, liveliness는 대부분 설정하지 않는 셋이고, 그�
 > 서브스크립션은 받아들일 수 있는 *최소 품질*을 요청(**request**)한다. 퍼블리셔는 제공할 수 있는 *최대 품질*을 제공(**offer**)한다. 요청의 **모든** 정책이 대응하는 제공보다 더 까다롭지 않을 때만 연결된다.
 
 호환성은 쌍 단위이고 다른 참여자와 무관하다. 퍼블리셔 하나가 서로 다른 요청 프로파일을 가진 여러 서브스크립션을 동시에 상대할 수 있고, 제3의 노드가 있어도 판정은 바뀌지 않는다.
+
+> **QoS 호환성의 정의.** **호환성**은 *퍼블리셔–서브스크립션 쌍 하나의 성질*이다. 두 프로파일에 대한 예/아니오 술어이고, 토픽의 다른 끝점은 보지 않는다. 정의 조건은 셋이다. 다섯 정책에는 **엄격함의 순서**가 있다. best effort는 reliable보다, volatile은 transient local보다, automatic은 manual by topic보다 느슨하고, deadline과 lease duration은 기간이 *짧을수록* 엄격하며 *default*는 무한으로 친다. 요청은 **다섯 모두에서 동시에 제공보다 엄격하지 않아야** 하므로, 하나만 어긋나도 쌍은 거부된다. 그리고 history, depth, lifespan은 **아예 비교되지 않는다.**
+>
+> $$\mathrm{match}(o,r)=[r_{\text{rel}}\preceq o_{\text{rel}}]\wedge[r_{\text{dur}}\preceq o_{\text{dur}}]\wedge[r_{\text{live}}\preceq o_{\text{live}}]\wedge[r_{\text{dl}}\ge o_{\text{dl}}]\wedge[r_{\text{lease}}\ge o_{\text{lease}}]$$
+>
+> 여기서 $o$는 제공하는(퍼블리셔) 프로파일, $r$은 요청하는(서브스크립션) 프로파일, $\preceq$는 "더 엄격하지 않음"이다. 기간 둘의 부등호가 반대 방향인 것은 약속한 간격이 길수록 약한 약속이기 때문이다. 그래서 default로 둔 퍼블리셔는 deadline을 명시한 어떤 서브스크립션과도 맞지 않는다($x\ge\infty$는 거짓).
+>
+> - **예**: 고치기 전 P6의 `/goal`은 첫 괄호에서 실패한다. reliable $\not\preceq$ best effort이므로 아무것도 전달되지 않는다. 고친 뒤에는 다섯이 모두 성립한다. 양 끝 모두 best effort, volatile, automatic이고, $40\ge40\,\mathrm{ms}$이며, 어느 쪽도 정하지 않은 lease는 $\infty\ge\infty$다.
+> - **비예**: 고치기 전의 depth, 곧 `KEEP_LAST (5)` 제공 대 `KEEP_LAST (10)` 요청. `--verbose`에서 값이 달라 눈길을 끌지만 depth는 술어에 없으므로, 쌍을 막지도 않고 실패를 설명하지도 않는다. 술어가 거짓이어도 오류는 나지 않으니, 이 다섯 줄을 읽는 것이 진단의 전부다.
 
 *Reliability:*
 
@@ -908,3 +963,4 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P6**. 카메라 노출 중간부�
 - ROS 2 Jazzy 문서 — Concepts: Quality of Service settings(정책, 프로파일, 호환성 표, QoS 이벤트, matched 이벤트).
 - ROS 2 Jazzy 문서 — Tutorials: Using quality-of-service settings for lossy networks.
 - 그대로 인용한 값과 메시지의 출처(Jazzy 브랜치 소스): `rmw/qos_profiles.h`(프로파일 내용), `rclcpp/subscription_base.cpp`와 `publisher_base.cpp`, `rclpy/event_handler.py`(기본 incompatible-QoS 경고), `rclpy/topic_endpoint_info.py`(`--verbose` 출력 형식), `ros2cli/ros2topic`(QoS 플래그와 `echo`의 퍼블리셔 맞춤 동작), `robot_state_publisher`와 `nav2_map_server`(transient local 퍼블리셔).
+- 2절과 3절의 정의에 쓴 Jazzy 브랜치 소스: [`rmw_dds_common/src/qos.cpp`](https://github.com/ros2/rmw_dds_common/blob/jazzy/rmw_dds_common/src/qos.cpp)(`qos_profile_check_compatible`은 reliability, durability, deadline, liveliness, lease duration만 비교한다), [`rclpy/qos.py`](https://github.com/ros2/rclpy/blob/jazzy/rclpy/rclpy/qos.py)와 [`rclcpp/qos.hpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/include/rclcpp/qos.hpp)(지정하지 않은 정책은 기본 프로파일에서 온다), [`rclcpp/subscription_base.cpp`](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/src/rclcpp/subscription_base.cpp), `publisher_base.cpp`, `rclpy/event_handler.py`(deadline과 liveliness 이벤트에는 기본 핸들러가 없고, 등록한 콜백만 그것을 받는다).

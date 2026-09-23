@@ -299,7 +299,7 @@ $$\text{AUC} = \frac{1}{n_+ n_-} \sum_{i=1}^{n_+} \sum_{j=1}^{n_-} \Big( \mathbb
 
 where $s_i^+$ are the $n_+$ positive items' scores, $s_j^-$ the $n_-$ negatives', and $\mathbb{1}[\cdot]$ is 1 when its condition holds and 0 otherwise; a tie counts half, since it is a coin flip. The one wrong pair above is the cracked $0.60$ below the sound $0.70$. AUC $= 0.5$ is chance ordering and $1$ is perfect. **Non-example:** AUC is not accuracy at the best threshold. Sweeping E1b, the best any single threshold does is 6 of 7 panels right, $0.857$ (at $\tau = 0.75$ and again at the deployed $\tau = 0.55$), while the AUC of those same seven scores is $0.917$, because AUC never commits to a threshold and is paid only for the ordering. **Why it matters:** a paper that reports only AUC has told you the model ranks well, and nothing about what happens when somebody has to pick a threshold and dispatch an inspector.
 
-**3. The same ROC point, a different base rate.** That threshold-independence is why AUC is reported, and the base-rate independence hiding behind it is why it misleads. E1a sits at $\text{TPR} = 40/60 = 0.667$ and $\text{FPR} = 10/940 = 0.011$. Move that same detector to a better-built site where only **0.6%** of panels are cracked instead of 6%, and out of 1,000 panels it now yields $TP = 0.667 \times 6 = 4.0$ and $FP = 0.011 \times 994 = 10.6$:
+**3. The same ROC point, a different base rate.** That threshold-independence is why AUC is reported, and the base-rate independence hiding behind it is why it misleads. E1a sits at $\text{TPR} = 40/60 = 0.667$ and $\text{FPR} = 10/940 = 0.011$. Move that same detector to a better-built site where only **0.6%** of panels are cracked instead of 6%, and out of 1,000 panels it now yields $TP = 0.667 \times 6 = 4.0$ and $FP = (10/940) \times 994 = 10.6$:
 
 | | 6% cracked | 0.6% cracked |
 |---|---|---|
@@ -741,7 +741,7 @@ $$\text{AUC} = \frac{1}{n_+ n_-} \sum_{i=1}^{n_+} \sum_{j=1}^{n_-} \Big( \mathbb
 
 $s_i^+$는 양성 항목 $n_+$개의 점수, $s_j^-$는 음성 $n_-$개의 점수이고, $\mathbb{1}[\cdot]$은 조건이 성립하면 1, 아니면 0이다. 동점은 동전 던지기이므로 절반으로 센다. 위에서 틀린 한 쌍은 균열 패널의 $0.60$이 정상 패널의 $0.70$보다 낮은 쌍이다. AUC $= 0.5$는 우연 수준의 정렬이고 $1$은 완벽한 정렬이다. **반례:** AUC는 최적 문턱값에서의 정확도가 아니다. E1b를 훑으면 단일 문턱값이 낼 수 있는 최고는 일곱 장 중 여섯 장, $0.857$이고($\tau = 0.75$에서, 그리고 배포 문턱값 $\tau = 0.55$에서 다시), 같은 일곱 점수의 AUC는 $0.917$이다. AUC는 문턱값을 아예 정하지 않고 순서에 대해서만 값을 받기 때문이다. **왜 중요한가:** AUC만 보고한 논문은 모델이 순위를 잘 매긴다는 말만 한 것이고, 누군가 문턱값을 정해 점검자를 출동시켜야 할 때 무슨 일이 벌어지는지는 아무 말도 하지 않은 것이다.
 
-**3. 같은 ROC 점, 다른 기저율.** 그 문턱값 독립성이 AUC를 보고하는 이유이고, 그 뒤에 숨은 기저율 독립성이 AUC가 오도하는 이유다. E1a는 $\text{TPR} = 40/60 = 0.667$, $\text{FPR} = 10/940 = 0.011$에 있다. 같은 감지기를 더 잘 지어진 현장, 균열이 6%가 아니라 **0.6%** 수준인 곳으로 옮기면 패널 1,000장에서 $TP = 0.667 \times 6 = 4.0$, $FP = 0.011 \times 994 = 10.6$이 된다.
+**3. 같은 ROC 점, 다른 기저율.** 그 문턱값 독립성이 AUC를 보고하는 이유이고, 그 뒤에 숨은 기저율 독립성이 AUC가 오도하는 이유다. E1a는 $\text{TPR} = 40/60 = 0.667$, $\text{FPR} = 10/940 = 0.011$에 있다. 같은 감지기를 더 잘 지어진 현장, 균열이 6%가 아니라 **0.6%** 수준인 곳으로 옮기면 패널 1,000장에서 $TP = 0.667 \times 6 = 4.0$, $FP = (10/940) \times 994 = 10.6$이 된다.
 
 | | 균열 6% | 균열 0.6% |
 |---|---|---|

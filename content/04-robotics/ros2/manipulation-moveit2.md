@@ -173,6 +173,15 @@ Panel A shows who believes what: the camera publishes the panel pose at $50\,\ma
 
 You have an arm that moves when you send it a joint trajectory ([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). You want it to reach a pose on the other side of a column without hitting the column, the scaffolding, or itself. Writing that trajectory by hand means solving inverse kinematics (finding the joint angles that put the tool at a requested pose; [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]), then searching a seven-dimensional configuration space (the space of all joint-angle vectors, one axis per joint; see [[04-robotics/modern-robotics/ch02-configuration-space|MR Ch.02 — Configuration Space]]) for a collision-free path, then assigning times to it that no joint's velocity or acceleration limit forbids. MoveIt 2 is the assembled, plugin-based answer to exactly that problem, and it is the standard one in ROS 2.
 
+> **Planned trajectory, defined.** A **planned trajectory** is a *time-indexed sequence of joint states* — a path together with a time scaling — and it is what MoveIt sends a controller. Three conditions define it. Its **path** is the planner's collision-free sequence of configurations, with no time in it. Its **timing** is a time scaling in the sense of [[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9 §2]]: it starts at the start, ends at the goal and never runs backwards, and MoveIt's time-optimal generator (TOTG) also starts and ends at rest. And every joint stays **within its velocity and acceleration limits**, taken from the URDF or `joint_limits.yaml` and scaled by the request's factors between 0 and 1.
+>
+> $$\big|\gamma_j'(s)\,\dot s\big|\le\alpha_v\,\dot q_j^{\max},\qquad\big|\gamma_j'(s)\,\ddot s+\gamma_j''(s)\,\dot s^{2}\big|\le\alpha_a\,\ddot q_j^{\max}$$
+>
+> where $\gamma(s)$ with $s\in[0,1]$ is the path, $s(t)$ the time scaling, $j$ a joint and $\alpha_v,\alpha_a$ the velocity and acceleration scaling factors; the left sides are joint $j$'s velocity and acceleration, since that is what differentiating $q(t)=\gamma(s(t))$ once and twice gives.
+>
+> - **Example**: the Worked case's trajectory lasts $T_{\text{exec}}=1.50\,\mathrm{s}$ and TOTG stamps its points $0.1\,\mathrm{s}$ apart (§12 step 9), so each interval spans $0.100/0.005=20$ ticks of P6's $200\,\mathrm{Hz}$ loop, $300$ over the whole motion.
+> - **Non-example**: the planner's own output, the same configurations with no `time_from_start`. It is a path, and a controller has nothing to track it against. The mirror-image error is reading the $0.1\,\mathrm{s}$ spacing of a real trajectory as the control rate: the loop underneath still runs every $5\,\mathrm{ms}$.
+
 What it is not, stated early because each misreading costs weeks:
 
 - **It is not a controller.** MoveIt produces a time-parameterised trajectory and hands it to somebody else to track. That somebody is a `joint_trajectory_controller` from ros2_control. MoveIt never writes a torque or a velocity to hardware.
@@ -215,6 +224,15 @@ The two ends are worth saying plainly. Upstream, `move_group` is a consumer of t
 
 The URDF says the robot has joints named `panda_joint1` through `panda_joint7` and a hand. It does not say which of those constitute "the arm", what "home" means, which link is the tip you are planning the pose of, or which link pairs can never collide because they are adjacent. A planner cannot start without all four. That semantic layer is the **SRDF** (Semantic Robot Description Format; `robot_description_semantic`), and its central concept is the **planning group**: a named set of joints that a request can target.
 
+> **Planning group, defined.** A **planning group** is a *named subset of the robot model's joints*, declared in the SRDF, that fixes which variables a motion request may change. Three conditions define it. It has a **name**, which requests and named poses refer to. Its **members** are given in one of four ways — joints, links, a base-to-tip chain, or other groups — and every form resolves to a set of joints. And it **splits every plan in two**: MoveIt moves only the group's joints and leaves every other joint where the start state has it.
+>
+> $$q=(q_G,\ q_{\bar G}),\qquad q_G\in\prod_{j\in G}\,[\,q_j^{\min},\,q_j^{\max}\,],\qquad q_{\bar G}(t)=q_{\bar G}(0)\ \ \forall t$$
+>
+> where $G$ is the group, $q_G$ its joint values, $q_{\bar G}$ the rest and $t$ any time in the plan; the planner searches the box of $G$'s joint limits, so the search has as many dimensions as $G$ has joint variables, not as the URDF has joints.
+>
+> - **Example**: your arm's group `arm` from §12 step 8 is the chain `base_link` → `link2`: two joints and a two-dimensional search, which is why step 9 finds almost no dragged pose reachable.
+> - **Non-example**: P6's cart joint left out of the arm's group. It is then in $q_{\bar G}$: the plan holds it at its start value while the cart moves $0.25\times2.30=0.575\,\mathrm{m}$ during the Worked case's plan and execution. Leaving a joint out of the group does not make it stand still; it makes the plan assume it does.
+
 ```xml
 <group name="panda_arm">
   <chain base_link="panda_link0" tip_link="panda_link8"/>
@@ -248,6 +266,15 @@ response_adapters:
   - default_planning_response_adapters/ValidateSolution
   - default_planning_response_adapters/DisplayMotionPath
 ```
+
+> **Planning pipeline, defined.** A **planning pipeline** is an *ordered chain of plugins* that turns one `MotionPlanRequest` into one `MotionPlanResponse`. Three conditions define it. **Order**: the stages run in the order of the three lists above. **Short circuit**: a stage that sets a failure code ends the run, and no later stage executes. **Typing**: a request adapter may change only the request and a response adapter only the result, so the first kind can refuse or rewrite a request but never time a path, and the second can time or reject a path but never repair the start state.
+>
+> $$\text{res}=R_3\circ R_2\circ R_1\circ P\circ Q_4\circ Q_3\circ Q_2\circ Q_1(\text{req})$$
+>
+> where $Q_1,\dots,Q_4$ are the request adapters in list order, $P$ the OMPL planner and $R_1,R_2,R_3$ the response adapters, written right to left because $Q_1$ acts first.
+>
+> - **Example**: P6's encoder reports the cart one count, $1/2048=0.488\,\mathrm{mm}$, past its joint limit. $Q_3$, `CheckStartStateBounds`, returns `START_STATE_INVALID` at stage 3 of 8, and $P$ never runs.
+> - **Non-example**: treating that as a planning failure. More planning time or another `planner_id` changes stage 5, which the run never reached; the fix is the start state.
 
 What each stage buys you. The first four are request-side checks, which run before the planner and can stop it from running at all:
 
@@ -285,6 +312,15 @@ The **planning scene** is `move_group`'s model of the robot state plus the world
 - **Collision objects.** Primitives, meshes or planes you publish, each with an `id` and a frame. A column, a pallet, the table. This is how you tell the planner about geometry no sensor sees.
 - **Attached collision objects.** When the gripper closes, the object stops being an obstacle and becomes part of the robot: `attachObject(id, link, touch_links)` moves it from the world into the robot's collision model, attached to a link, with `touch_links` listing the gripper links permitted to touch it. Forgetting this is the classic bug — you grasp a brick and every subsequent plan fails because the hand is inside an obstacle.
 - **The octomap.** Depth sensors feed the occupancy map monitor, which builds a voxel occupancy grid that the collision checker treats as obstacles. Configured in `sensors_3d.yaml` with `occupancy_map_monitor/PointCloudOctomapUpdater` or `occupancy_map_monitor/DepthImageOctomapUpdater`, plus `octomap_frame` and `octomap_resolution`. Self-filtering (the `padding_scale`/`padding_offset` parameters) is what stops the robot's own arm, seen by its own camera, from becoming an obstacle to itself.
+
+> **Planning scene, defined.** The **planning scene** is a *snapshot data structure* — the robot's current state plus a model of the world — that MoveIt checks configurations against. Four conditions define it. It holds **one robot state**, from `/joint_states`; **world geometry**, the collision objects (each with an `id` and a frame) and the octomap; **attached objects**, which move with a link and count as robot; and an **allowed collision matrix** (ACM), the body pairs whose contact is ignored, the SRDF's disabled pairs among them. Nothing in it changes unless a message changes it.
+>
+> $$\text{free}(q)\iff\forall\,(a,b)\notin\text{ACM}:\ a(q)\cap b(q)=\varnothing$$
+>
+> where $a,b$ range over links, attached objects and world objects at configuration $q$; the ACM is the exception because some contact is permanent (adjacent links) and some intended (fingers on a brick). A *valid* state is free and also meets the request's constraints and any feasibility check.
+>
+> - **Example**: P6's panel enters as one collision object, applied once. Every answer in the $0.80\,\mathrm{s}$ plan concerns the panel as the request found it, up to $20\,\mathrm{ms}$ ($5.0\,\mathrm{mm}$ of cart travel) old; by the end of execution it is $2.32\,\mathrm{s}$ and $580\,\mathrm{mm}$ stale, still answering confidently.
+> - **Non-example**: a grasped brick left as a world object. The fingers overlap it and the pair is not in the ACM, so the start state is not free and every later request stops at `CheckStartStateCollision` (§4). Attaching it with `touch_links` moves it onto the robot and exempts exactly the finger–brick pairs.
 
 In Python, the scene is edited through the planning scene monitor. These snippets need the MoveIt configuration (URDF, SRDF, kinematics, planning pipelines) as parameters, so run them from a launch file built with `MoveItConfigsBuilder`, or pass `MoveItPy(..., config_dict=...)`; a bare `python3` invocation has no robot model:
 
@@ -332,6 +368,15 @@ double fraction = move_group.computeCartesianPath(waypoints, eef_step, trajector
 
 It interpolates the end-effector pose at `eef_step` intervals and solves IK at each one. **The return value is the fraction of the requested path it achieved, between 0.0 and 1.0, or -1.0 on error**, and you must check it. A partial result is the normal outcome, for reasons that are all geometric rather than algorithmic: the straight line leaves the reachable workspace; it passes through or near a singularity where the IK solution degenerates (a configuration where the arm loses the ability to move its tip in some direction, so nearby poses demand very large joint motions; see [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 — Velocity Kinematics & Statics]] §4); the interpolation crosses a branch of the IK solution and the nearest solution is a wrist flip; or an interpolated pose is in collision. (In Jazzy the older `jump_threshold` argument is deprecated and dropped from the current overload.)
 
+> **Cartesian path, defined.** A **Cartesian path** is a *joint-space path computed from a straight end-effector segment*, and `fraction` is *the share of that segment it reached*. Four conditions define it. The tool pose is **interpolated** from start to target, position linearly and orientation by slerp, in $K$ equal steps no longer than `eef_step`. Each pose is **solved by the group's kinematics plugin** (KDL's numerical Jacobian solver by default; the mathematics is [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]), seeded by the previous solution. Each solution must be **collision-free in the planning scene** (§6), since `avoid_collisions` defaults to true. And the computation **stops at the first failure**; nothing beyond it is tried.
+>
+> $$\text{fraction}=\frac{k^\ast}{K},\qquad K=\Big\lfloor\frac{L}{\Delta}\Big\rfloor+1$$
+>
+> where $L$ is the segment's length, $\Delta$ the `eef_step` and $k^\ast$ the last step that succeeded; the $+1$ is why the steps come out shorter than $\Delta$. That $K$ holds at fixed orientation; a segment that also rotates counts steps of $3.5\Delta$ radians too, and the larger count wins.
+>
+> - **Example**: Step 5's $0.20\,\mathrm{m}$ insertion at $\Delta=0.01\,\mathrm{m}$ has $K=21$ steps of $9.52\,\mathrm{mm}$. A return of $0.62$ is $k^\ast=13$, since $13/21=0.619$: $0.124\,\mathrm{m}$ reached, $76\,\mathrm{mm}$ short.
+> - **Non-example**: the same number from two waypoints. MoveIt weights each segment equally, so a $0.05\,\mathrm{m}$ approach that completes and a $0.20\,\mathrm{m}$ insertion that fails at its first step return $(1+0)/2=0.50$, though only $0.05/0.25=20\%$ of the length was covered. `fraction` is a share of your line only when the line is one segment.
+
 So the honest rule is: never execute a Cartesian result without a test on `fraction`, and decide your policy deliberately. Executing a 70 % path means stopping the tool in mid-air somewhere you did not choose. Also note that `computeCartesianPath` returns a path whose timing you may still need to fix, and that Pilz `LIN` is the alternative that either gives you the whole line or fails cleanly.
 
 ### 8. Execution: handing the trajectory to ros2_control
@@ -360,6 +405,15 @@ moveit_simple_controller_manager:
 ```
 
 Every line there is a way to fail. The controller name must match a controller that ros2_control has actually loaded and activated; the `joints` list must match the controller's own joint list; the action namespace must be where the controller is serving. And the three tolerance parameters govern execution monitoring: `allowed_start_tolerance` is how far the robot's current state may differ from the trajectory's first point before MoveIt refuses to start, and the duration parameters abort a trajectory that is running too long. Section 13 is what to do when these bite.
+
+> **Execution gate, defined.** MoveIt's **execution gate** is a *pair of checks* that its trajectory execution manager applies around one trajectory it sends as a `FollowJointTrajectory` goal. Three conditions define it. **Before sending**, joint by joint, the trajectory's first point must lie within `allowed_start_tolerance` of the current state. **While running**, the execution is stopped once it outlasts the trajectory's own duration, scaled and padded. And the gate is **MoveIt's alone**; the controller's `constraints.*` watch the tracking error separately.
+>
+> $$\big|q_j(t_0)-q_j^{(0)}\big|\le\varepsilon_s\ \ \forall j,\qquad t_{\text{run}}\le\sigma\,T+m$$
+>
+> where $q_j(t_0)$ is joint $j$ now, $q_j^{(0)}$ its value at the first point, $\varepsilon_s$ is `allowed_start_tolerance`, $T$ the trajectory's duration, $\sigma$ is `allowed_execution_duration_scaling` and $m$ is `allowed_goal_duration_margin`.
+>
+> - **Example**: under the YAML above, the Worked case's $1.50\,\mathrm{s}$ trajectory may run $1.2\times1.50+0.5=2.30\,\mathrm{s}$ before MoveIt stops it, and §12 step 10's shoulder at $0.85$ against a plan made at $0.80$ fails the start check by $0.05$, five times $\varepsilon_s$.
+> - **Non-example**: `allowed_start_tolerance: 0` read as the strictest setting. At $0$, with no per-joint values set, the manager skips the start check altogether: the arm nudged by $0.05$, or P6's cart $205\,\mathrm{mm}$ past where the plan began, starts without complaint, and the controller drags it to the first point along a path nobody planned.
 
 Underneath, `joint_trajectory_controller` applies its *own* tolerances — `constraints.goal_time`, `constraints.stopped_velocity_tolerance`, and per-joint `constraints.<joint>.trajectory` and `constraints.<joint>.goal`. Two independent tolerance systems watch the same motion, and the error message tells you which one gave up.
 
@@ -438,7 +492,7 @@ $$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20,$$
 
 so twenty control cycles fall between consecutive trajectory points and the controller interpolates across them ([[04-robotics/ros2/simulation-and-control|25.7 §11]]). The trajectory is coarse and the loop is fine, and that is the intended division: MoveIt says where and when, `ros2_control` says how often.
 
-**Step 5 — `fraction`, as a distance rather than a ratio.** Take a $0.20\,\mathrm{m}$ insertion line at §7's `eef_step` of $0.01\,\mathrm{m}$. That is $0.20/0.01 = 20$ interpolated poses and $20$ IK solves, each step being $0.01\times2048=20.5$ encoder counts of base motion — comparable to the whole start tolerance, which is worth noticing. A return of $0.62$ then means the tool reaches $0.20\times0.62=0.124\,\mathrm{m}$ and stops $0.076\,\mathrm{m}$ short: $76\,\mathrm{mm}$, or $156$ counts, of unfinished slot, with the tool halted in mid-air at a pose nobody chose. §7's rule follows directly — the number is a fraction of *your* line, so read it back in the units of the line.
+**Step 5 — `fraction`, as a distance rather than a ratio.** Take a $0.20\,\mathrm{m}$ insertion line at §7's `eef_step` of $0.01\,\mathrm{m}$. That is $\lfloor0.20/0.01\rfloor+1 = 21$ interpolated poses and $21$ IK solves (§7), each step $0.20/21\,\mathrm{m}=9.52\,\mathrm{mm}$, or $19.5$ encoder counts of base motion — comparable to the whole start tolerance's $20.5$, which is worth noticing. A return of $0.62$ then means the tool reaches $0.20\times0.62=0.124\,\mathrm{m}$ and stops $0.076\,\mathrm{m}$ short: $76\,\mathrm{mm}$, or $156$ counts, of unfinished slot, with the tool halted in mid-air at a pose nobody chose. §7's rule follows directly — the number is a fraction of *your* line, so read it back in the units of the line.
 
 **Step 6 — the two budgets, kept apart.** Nothing in Steps 1 to 5 violates P6's $70\,\mathrm{ms}$, because that budget measures camera mid-exposure to applied force on the cart's own $200\,\mathrm{Hz}$ loop, and planning is not on that chain. A $0.80\,\mathrm{s}$ plan is not a budget failure. A panel pose that reaches the *scene* $200\,\mathrm{ms}$ late is not a MoveIt failure either — MoveIt will plan against it without complaint. Both are failures of the caller to say which clock each number belongs to, and Step 3 is what happens when the two are finally forced to meet.
 
@@ -505,6 +559,8 @@ Where a grasp pose comes from is [[04-robotics/grasping|15. Grasping]]; what hap
 - `moveit/moveit2_tutorials` — Quickstart in RViz; Motion Planning Python API.
 - ros2_control documentation (Jazzy) — `joint_trajectory_controller` parameters (`constraints.*`).
 - MoveIt binary install instructions (`ros-jazzy-moveit`); ROS 2 Jazzy package index.
+- MoveIt 2 documentation — URDF and SRDF tutorial (the four ways to specify a group; only the group's joints move): [moveit.picknik.ai](https://moveit.picknik.ai/main/doc/examples/urdf_srdf/urdf_srdf_tutorial.html); Planning Scene tutorial (the allowed collision matrix; state validity): [moveit.picknik.ai](https://moveit.picknik.ai/main/doc/examples/planning_scene/planning_scene_tutorial.html); Time Parameterization tutorial (TOTG, scaling factors, `joint_limits.yaml`): [moveit.picknik.ai](https://moveit.picknik.ai/main/doc/examples/time_parameterization/time_parameterization_tutorial.html); Concepts: Kinematics (KDL as the default solver): [moveit.picknik.ai](https://moveit.picknik.ai/main/doc/concepts/kinematics.html).
+- `moveit/moveit2` (branch `jazzy`) — `cartesian_interpolator.cpp` (the step count and the per-waypoint `fraction`): [GitHub](https://github.com/moveit/moveit2/blob/jazzy/moveit_core/robot_state/src/cartesian_interpolator.cpp); `cartesian_path_service_capability.cpp` (the collision check at each pose): [GitHub](https://github.com/moveit/moveit2/blob/jazzy/moveit_ros/move_group/src/default_capabilities/cartesian_path_service_capability.cpp); `trajectory_execution_manager.cpp` (the start check, skipped at 0, and the duration bound): [GitHub](https://github.com/moveit/moveit2/blob/jazzy/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp); `planning_request_adapter.hpp` and `planning_response_adapter.hpp` (what each adapter kind may change).
 
 ### Self-check
 
@@ -711,6 +767,15 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] as the mobile base a
 
 관절 궤적을 보내면 움직이는 팔은 이미 있다([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). 이제 기둥 반대편의 어떤 자세로, 기둥도 비계도 자기 몸도 치지 않고 가야 한다. 그 궤적을 손으로 쓰려면 역기구학(요청한 자세에 도구를 두는 관절각을 찾는 일. [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]])을 풀고, 7차원 배치 공간(관절마다 축이 하나씩인, 가능한 모든 관절각 벡터의 공간. [[04-robotics/modern-robotics/ch02-configuration-space|MR Ch.02 — Configuration Space]] 참고)에서 충돌 없는 경로를 탐색하고, 어느 관절의 속도·가속도 한계도 어기지 않는 시간을 그 경로에 붙여야 한다. MoveIt 2는 정확히 그 문제에 대한 조립된 플러그인 기반 답이고, ROS 2의 표준이다.
 
+> **계획된 궤적의 정의.** **계획된 궤적**(planned trajectory)은 *시간 색인이 붙은 관절 상태의 열*이다. 곧 경로에 시간 스케일링을 더한 것이고, MoveIt이 제어기로 보내는 것이 이것이다. 정의 조건은 셋이다. **경로**는 플래너가 내놓은 충돌 없는 배치의 열이고, 시간을 담지 않는다. **시간 부여**는 [[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §2]]의 뜻에서 시간 스케일링이다. 시작점에서 출발해 목표에서 끝나고 뒤로 돌아가지 않으며, MoveIt의 시간 최적 생성기(TOTG)는 여기에 더해 정지에서 출발해 정지로 끝난다. 그리고 모든 관절이 **속도·가속도 한계 안에** 머문다. 한계는 URDF나 `joint_limits.yaml`에서 오고, 요청이 주는 0과 1 사이의 계수만큼 줄어든다.
+>
+> $$\big|\gamma_j'(s)\,\dot s\big|\le\alpha_v\,\dot q_j^{\max},\qquad\big|\gamma_j'(s)\,\ddot s+\gamma_j''(s)\,\dot s^{2}\big|\le\alpha_a\,\ddot q_j^{\max}$$
+>
+> $s\in[0,1]$인 $\gamma(s)$는 경로, $s(t)$는 시간 스케일링, $j$는 관절, $\alpha_v,\alpha_a$는 속도·가속도 스케일 계수다. 좌변이 관절 $j$의 속도와 가속도인 것은 $q(t)=\gamma(s(t))$를 한 번, 두 번 미분하면 바로 그 항들이 나오기 때문이다.
+>
+> - **예**: Worked case의 궤적은 $T_{\text{exec}}=1.50\,\mathrm{s}$ 동안 이어지고, TOTG는 점을 $0.1\,\mathrm{s}$ 간격으로 찍는다(§12의 9번). 그래서 구간 하나가 P6 $200\,\mathrm{Hz}$ 루프의 $0.100/0.005=20$틱에 걸치고, 동작 전체로는 $300$틱이다.
+> - **비예**: 플래너 자신의 출력, 곧 `time_from_start` 없이 같은 배치만 늘어놓은 것. 이것은 경로이고, 제어기는 그것을 무엇에 맞춰 따라갈지 모른다. 거울상 오류는 진짜 궤적의 $0.1\,\mathrm{s}$ 간격을 제어 주기로 읽는 것이다. 그 아래 루프는 여전히 $5\,\mathrm{ms}$마다 돈다.
+
 아닌 것 세 가지. 각각의 오해가 몇 주를 잡아먹는다.
 
 - **제어기가 아니다.** MoveIt은 시간 파라미터화된 궤적을 만들어 남에게 넘긴다. 그 남은 ros2_control의 `joint_trajectory_controller`다. MoveIt은 하드웨어에 토크나 속도를 쓰지 않는다.
@@ -753,6 +818,15 @@ ros2 node info /move_group
 
 URDF는 `panda_joint1`부터 `panda_joint7`까지의 관절과 손이 있다고 말한다. 그중 무엇이 "팔"인지, "home"이 무엇인지, 자세를 계획할 끝점 링크가 어느 것인지, 어떤 링크 쌍이 인접해 있어 절대 충돌하지 않는지는 말하지 않는다. 플래너는 이 넷 없이 시작할 수 없다. 그 의미론 계층이 **SRDF**(Semantic Robot Description Format, `robot_description_semantic`)이고, 중심 개념은 요청이 대상으로 삼을 수 있는 관절 집합에 이름을 붙인 **planning group**이다.
 
+> **Planning group의 정의.** **planning group**은 SRDF에 선언된 *로봇 모델 관절의 이름 붙은 부분집합*이고, 동작 요청이 바꿀 수 있는 변수를 정한다. 정의 조건은 셋이다. **이름**이 있어서 요청과 이름 붙은 자세가 그 이름으로 가리킨다. **구성원**은 네 방식 중 하나로 준다. 관절, 링크, 기준에서 끝까지의 사슬, 다른 그룹들이고, 어느 형식이든 결국 관절 집합이 된다. 그리고 **모든 계획을 둘로 가른다**. MoveIt은 그룹의 관절만 움직이고, 나머지 관절은 시작 상태의 값에 그대로 둔다.
+>
+> $$q=(q_G,\ q_{\bar G}),\qquad q_G\in\prod_{j\in G}\,[\,q_j^{\min},\,q_j^{\max}\,],\qquad q_{\bar G}(t)=q_{\bar G}(0)\ \ \forall t$$
+>
+> $G$는 그룹, $q_G$는 그 관절 값, $q_{\bar G}$는 나머지이고, $t$는 계획 안의 아무 시각이다. 플래너는 $G$의 관절 한계가 만드는 상자를 탐색하므로, 탐색 차원은 URDF의 관절 수가 아니라 $G$가 가진 관절 변수의 수다.
+>
+> - **예**: §12의 8번에서 만든 당신 팔의 그룹 `arm`은 `base_link` → `link2` 사슬이다. 관절 둘에 2차원 탐색이고, 9번에서 끌어다 놓은 자세가 거의 닿지 않는 이유가 이것이다.
+> - **비예**: 팔 그룹에서 빠진 P6의 카트 관절. 그 관절은 $q_{\bar G}$에 들어가므로 계획은 그것을 시작값에 묶어 두는데, Worked case의 계획과 실행 동안 카트는 $0.25\times2.30=0.575\,\mathrm{m}$를 간다. 관절을 그룹에서 빼면 그 관절이 서 있게 되는 것이 아니라, 계획이 그것이 서 있다고 가정하게 될 뿐이다.
+
 ```xml
 <group name="panda_arm">
   <chain base_link="panda_link0" tip_link="panda_link8"/>
@@ -786,6 +860,15 @@ response_adapters:
   - default_planning_response_adapters/ValidateSolution
   - default_planning_response_adapters/DisplayMotionPath
 ```
+
+> **계획 파이프라인의 정의.** **계획 파이프라인**(planning pipeline)은 `MotionPlanRequest` 하나를 `MotionPlanResponse` 하나로 바꾸는 *순서 있는 플러그인 사슬*이다. 정의 조건은 셋이다. **순서**: 단계는 위 세 목록의 순서대로 돈다. **단락**: 실패 코드를 세운 단계에서 실행이 끝나고, 그 뒤 단계는 하나도 돌지 않는다. **타입**: request 어댑터는 요청만, response 어댑터는 결과만 바꿀 수 있다. 그래서 앞의 것은 요청을 거부하거나 고쳐 쓸 수는 있어도 경로에 시간을 붙이지 못하고, 뒤의 것은 경로에 시간을 붙이거나 경로를 거부할 수는 있어도 시작 상태를 고치지 못한다.
+>
+> $$\text{res}=R_3\circ R_2\circ R_1\circ P\circ Q_4\circ Q_3\circ Q_2\circ Q_1(\text{req})$$
+>
+> $Q_1,\dots,Q_4$는 목록 순서의 request 어댑터, $P$는 OMPL 플래너, $R_1,R_2,R_3$는 response 어댑터다. $Q_1$이 가장 먼저 작용하므로 오른쪽에서 왼쪽으로 쓴다.
+>
+> - **예**: P6의 엔코더가 카트를 관절 한계에서 한 카운트, 곧 $1/2048=0.488\,\mathrm{mm}$ 넘어선 자리로 보고한다. $Q_3$인 `CheckStartStateBounds`가 8단계 중 3단계에서 `START_STATE_INVALID`를 돌려주고, $P$는 돌지 않는다.
+> - **비예**: 그것을 계획 실패로 다루는 것. 계획 시간을 늘리거나 `planner_id`를 바꾸면 5단계가 달라지는데, 실행은 거기까지 간 적이 없다. 고칠 것은 시작 상태다.
 
 각 단계가 사 주는 것. 앞의 넷은 요청 쪽 점검으로, 플래너보다 먼저 돌며 플래너가 아예 돌지 못하게 막을 수 있다.
 
@@ -823,6 +906,15 @@ Jazzy는 넷을 제공하고, 전부 별도 패키지이며, 요청마다 `plann
 - **Collision object.** 당신이 발행하는 기본 도형, 메시, 평면. 각각 `id`와 프레임을 갖는다. 기둥, 팔레트, 작업대. 어떤 센서도 보지 못하는 기하를 플래너에게 알리는 방법이다.
 - **Attached collision object.** 그리퍼가 닫히면 물체는 장애물이기를 그치고 로봇의 일부가 된다. `attachObject(id, link, touch_links)`가 물체를 세계에서 로봇 충돌 모형으로 옮겨 링크에 붙이고, `touch_links`는 물체에 닿아도 되는 그리퍼 링크들을 나열한다. 이걸 잊는 것이 고전적인 버그다. 벽돌을 잡은 뒤 손이 장애물 안에 들어가 있어서 이후 모든 계획이 실패한다.
 - **Octomap.** 깊이 센서가 occupancy map monitor에 들어가면 복셀 점유 격자가 만들어지고 충돌 검사기가 이를 장애물로 취급한다. `sensors_3d.yaml`에서 `occupancy_map_monitor/PointCloudOctomapUpdater` 또는 `occupancy_map_monitor/DepthImageOctomapUpdater`, 그리고 `octomap_frame`과 `octomap_resolution`으로 설정한다. 자기 필터링(`padding_scale`/`padding_offset` 파라미터)이 자기 카메라에 찍힌 자기 팔이 자신의 장애물이 되는 것을 막는다.
+
+> **Planning scene의 정의.** **planning scene**은 *스냅샷 자료 구조*다. 로봇의 현재 상태에 세계의 모형을 더한 것이고, MoveIt은 배치를 이것에 대고 검사한다. 정의 조건은 넷이고, 넷 다 이 구조가 쥐는 것이다. `/joint_states`에서 오는 **로봇 상태 하나**. collision object들(각각 `id`와 프레임을 가진다)과 octomap으로 된 **세계 기하**. 링크와 함께 움직이며 로봇으로 치는 **붙은 물체**(attached object). 그리고 접촉을 무시할 물체 쌍의 표인 **허용 충돌 행렬**(ACM)이고, SRDF의 비활성 쌍이 여기 들어 있다. 메시지가 바꾸지 않는 한 그 안의 어떤 것도 바뀌지 않는다.
+>
+> $$\text{free}(q)\iff\forall\,(a,b)\notin\text{ACM}:\ a(q)\cap b(q)=\varnothing$$
+>
+> $a,b$는 배치 $q$에 놓인 링크, 붙은 물체, 세계 물체를 두루 가리킨다. ACM이 예외로 들어가는 것은 어떤 접촉은 영구적이고(인접 링크) 어떤 접촉은 의도된 것(벽돌 위의 손가락)이기 때문이다. *유효*한 상태는 자유로우면서 요청의 제약과 타당성 검사까지 만족하는 상태다.
+>
+> - **예**: P6의 패널은 collision object 하나로, 한 번만 들어온다. $0.80\,\mathrm{s}$ 계획 안의 모든 답은 요청이 찾은 그대로의 패널, 곧 최대 $20\,\mathrm{ms}$(카트 이동으로 $5.0\,\mathrm{mm}$) 묵은 패널에 대한 것이다. 실행이 끝날 무렵 씬은 $2.32\,\mathrm{s}$, $580\,\mathrm{mm}$만큼 낡았는데도 여전히 자신 있게 답한다.
+> - **비예**: 쥔 벽돌을 세계 물체로 남겨 둔 것. 손가락이 벽돌과 겹치고 그 쌍은 ACM에 없으므로 시작 상태가 자유롭지 않고, 이후 모든 요청이 `CheckStartStateCollision`에서 멈춘다(§4). `touch_links`와 함께 attach하면 벽돌이 로봇 쪽으로 옮겨 가고 손가락–벽돌 쌍만 정확히 면제된다.
 
 Python에서는 planning scene monitor를 통해 편집한다. 이 코드 조각들은 MoveIt 설정(URDF, SRDF, kinematics, 계획 파이프라인)을 파라미터로 받아야 하므로, `MoveItConfigsBuilder`로 만든 launch 파일에서 돌리거나 `MoveItPy(..., config_dict=...)`로 넘겨라. 맨 `python3`로 실행하면 로봇 모델이 없다.
 
@@ -870,6 +962,15 @@ double fraction = move_group.computeCartesianPath(waypoints, eef_step, trajector
 
 `eef_step` 간격으로 말단 자세를 보간하고 각 지점에서 IK를 푼다. **반환값은 요청한 경로 중 달성한 비율로 0.0에서 1.0 사이이고, 오류일 때는 -1.0**이다. 반드시 검사해야 한다. 부분 결과는 정상적인 결과이고, 이유는 알고리즘이 아니라 전부 기하적이다: 직선이 도달 가능 작업 공간을 벗어난다, 특이점(팔이 끝점을 어떤 방향으로 움직일 능력을 잃는 자세라서, 그 근처의 자세는 매우 큰 관절 운동을 요구한다. [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 — Velocity Kinematics & Statics]] §4 참고)을 지나거나 근처를 스쳐 IK 해가 퇴화한다, 보간이 IK 해의 다른 분기를 넘어가 가장 가까운 해가 손목 뒤집기가 된다, 보간된 자세 하나가 충돌한다. (Jazzy에서 예전의 `jump_threshold` 인자는 deprecated이고 현재 오버로드에서 빠졌다.)
 
+> **Cartesian path의 정의.** **Cartesian path**는 *말단의 직선 구간 하나로부터 계산한 관절 공간 경로*이고, `fraction`은 *그 구간 중 닿은 몫*이다. 정의 조건은 넷이다. 도구 자세를 시작에서 목표까지 **보간한다**. 위치는 선형으로, 방향은 slerp로, `eef_step`보다 길지 않은 같은 간격 $K$개로 나눈다. 자세 하나하나를 **그룹의 kinematics 플러그인이 푼다**(기본은 KDL의 수치 야코비안 솔버이고, 수학은 [[04-robotics/modern-robotics/ch06-inverse-kinematics|MR ch.6]]). 앞 스텝의 해가 초기값이다. 각 해는 **planning scene에서 충돌이 없어야** 한다(§6). `avoid_collisions`의 기본값이 true이기 때문이다. 그리고 계산은 **첫 실패에서 멈춘다**. 그 너머는 시도하지 않는다.
+>
+> $$\text{fraction}=\frac{k^\ast}{K},\qquad K=\Big\lfloor\frac{L}{\Delta}\Big\rfloor+1$$
+>
+> $L$은 구간의 길이, $\Delta$는 `eef_step`, $k^\ast$는 성공한 마지막 스텝이다. 스텝이 $\Delta$보다 짧게 나오는 것은 $+1$ 때문이다. 이 $K$는 방향이 고정된 구간의 것이고, 함께 회전하는 구간은 $3.5\Delta$ 라디안짜리 스텝도 세어 둘 중 큰 쪽을 쓴다.
+>
+> - **예**: Step 5의 $0.20\,\mathrm{m}$ 삽입 구간은 $\Delta=0.01\,\mathrm{m}$에서 $9.52\,\mathrm{mm}$짜리 스텝 $K=21$개다. 반환값 $0.62$는 $13/21=0.619$이므로 $k^\ast=13$이다. $0.124\,\mathrm{m}$까지 닿았고 $76\,\mathrm{mm}$ 모자란다.
+> - **비예**: 경유점 둘에서 나온 같은 숫자. MoveIt은 구간마다 같은 무게를 주므로, 끝까지 간 $0.05\,\mathrm{m}$ 접근과 첫 스텝에서 실패한 $0.20\,\mathrm{m}$ 삽입은 $(1+0)/2=0.50$을 돌려준다. 길이로는 $0.05/0.25=20\%$만 갔는데도 그렇다. `fraction`이 내 직선의 몫인 것은 그 직선이 구간 하나일 때뿐이다.
+
 그래서 정직한 규칙은 이렇다. `fraction` 검사 없이 Cartesian 결과를 실행하지 마라. 70 % 경로를 실행한다는 것은 당신이 고르지 않은 어딘가의 허공에서 공구를 멈춘다는 뜻이다. 또한 `computeCartesianPath`가 돌려준 경로는 시간 부여를 따로 손봐야 할 수 있고, 전부 아니면 깔끔한 실패를 주는 대안이 Pilz `LIN`이다.
 
 ### 8. 실행: 궤적을 ros2_control에 넘기기
@@ -898,6 +999,15 @@ moveit_simple_controller_manager:
 ```
 
 여기 모든 줄이 실패 경로다. 제어기 이름은 ros2_control이 실제로 로드하고 활성화한 제어기와 일치해야 하고, `joints` 목록은 제어기 자신의 관절 목록과 일치해야 하며, 액션 네임스페이스는 제어기가 서비스하는 곳이어야 한다. 세 개의 허용 오차 파라미터가 실행 감시를 맡는다. `allowed_start_tolerance`는 현재 상태가 궤적 첫 점에서 얼마나 벗어나도 시작을 허용할지이고, duration 파라미터들은 너무 오래 걸리는 궤적을 중단시킨다. 이것들에 물렸을 때 무엇을 할지는 13절이다.
+
+> **실행 관문의 정의.** MoveIt의 **실행 관문**(execution gate)은 궤적 실행 관리자가 `FollowJointTrajectory` 목표로 보내는 궤적 하나의 앞뒤에 거는 *검사 한 쌍*이다. 정의 조건은 셋이다. **보내기 전에** 관절마다, 궤적 첫 점이 현재 상태로부터 `allowed_start_tolerance` 안에 있어야 한다. **도는 동안에는** 실행이 궤적 자신의 길이에 배율을 곱하고 여유를 더한 시간을 넘기는 순간 멈춘다. 그리고 이 관문은 **MoveIt만의 것**이다. 제어기의 `constraints.*`는 추종 오차를 따로 감시한다.
+>
+> $$\big|q_j(t_0)-q_j^{(0)}\big|\le\varepsilon_s\ \ \forall j,\qquad t_{\text{run}}\le\sigma\,T+m$$
+>
+> $q_j(t_0)$는 지금의 관절 $j$, $q_j^{(0)}$는 첫 점에서의 그 값, $\varepsilon_s$는 `allowed_start_tolerance`, $T$는 궤적의 길이, $\sigma$는 `allowed_execution_duration_scaling`, $m$은 `allowed_goal_duration_margin`이다.
+>
+> - **예**: 위 YAML이면 Worked case의 $1.50\,\mathrm{s}$ 궤적은 $1.2\times1.50+0.5=2.30\,\mathrm{s}$까지 돌 수 있고, 그 뒤에는 MoveIt이 멈춘다. §12의 10번에서 $0.80$에서 만든 계획에 대해 $0.85$에 가 있는 어깨는 시작 검사에서 $0.05$, 곧 $\varepsilon_s$의 다섯 배만큼 벗어난다.
+> - **비예**: `allowed_start_tolerance: 0`을 가장 엄격한 설정으로 읽는 것. 관절별 값이 따로 없으면 $0$에서 관리자는 시작 검사를 통째로 건너뛴다. $0.05$ 밀린 팔도, 계획이 시작된 자리에서 $205\,\mathrm{mm}$ 간 P6 카트도 아무 불평 없이 출발하고, 제어기는 아무도 계획하지 않은 경로로 그것을 첫 점까지 끌고 간다.
 
 그 아래에서 `joint_trajectory_controller`는 *자기* 허용 오차를 따로 적용한다 — `constraints.goal_time`, `constraints.stopped_velocity_tolerance`, 관절별 `constraints.<joint>.trajectory`와 `constraints.<joint>.goal`. 같은 동작을 독립된 두 허용 오차 체계가 감시하고 있고, 어느 쪽이 포기했는지는 오류 메시지가 알려 준다.
 
@@ -978,7 +1088,7 @@ $$\frac{100\,\mathrm{ms}}{T_c} = \frac{0.100}{0.005} = 20$$
 
 이므로 이웃한 궤적 점 사이에 제어 주기 스무 번이 들어가고 제어기가 그 사이를 보간한다([[04-robotics/ros2/simulation-and-control|25.7 §11]]). 궤적은 성기고 루프는 촘촘하다. 그것이 의도된 분업이다. MoveIt은 어디로 언제를 말하고, `ros2_control`은 얼마나 자주를 말한다.
 
-**Step 5 — `fraction`을 비율이 아니라 거리로.** $0.20\,\mathrm{m}$짜리 삽입 직선을 §7의 `eef_step` $0.01\,\mathrm{m}$로 잡자. 보간 자세 $0.20/0.01 = 20$개와 IK 해 20번이고, 한 스텝은 $0.01\times2048=20.5$ 엔코더 카운트의 베이스 이동에 해당한다. 시작 허용 오차 전체와 맞먹는 값이라 눈여겨볼 만하다. 여기서 $0.62$가 돌아왔다면 도구는 $0.20\times0.62=0.124\,\mathrm{m}$까지 가서 $0.076\,\mathrm{m}$을 남기고 멈춘다. $76\,\mathrm{mm}$, 즉 $156$ 카운트만큼 슬롯이 덜 들어갔고, 도구는 아무도 고르지 않은 자세로 허공에 서 있다. §7의 규칙이 여기서 곧바로 따라 나온다. 그 숫자는 *내가 그은* 직선의 분수이므로, 그 직선의 단위로 되읽어야 한다.
+**Step 5 — `fraction`을 비율이 아니라 거리로.** $0.20\,\mathrm{m}$짜리 삽입 직선을 §7의 `eef_step` $0.01\,\mathrm{m}$로 잡자. 보간 자세 $\lfloor0.20/0.01\rfloor+1 = 21$개와 IK 해 21번이고(§7), 한 스텝은 $0.20/21\,\mathrm{m}=9.52\,\mathrm{mm}$, 곧 $19.5$ 엔코더 카운트의 베이스 이동에 해당한다. 시작 허용 오차 전체의 $20.5$와 맞먹는 값이라 눈여겨볼 만하다. 여기서 $0.62$가 돌아왔다면 도구는 $0.20\times0.62=0.124\,\mathrm{m}$까지 가서 $0.076\,\mathrm{m}$을 남기고 멈춘다. $76\,\mathrm{mm}$, 즉 $156$ 카운트만큼 슬롯이 덜 들어갔고, 도구는 아무도 고르지 않은 자세로 허공에 서 있다. §7의 규칙이 여기서 곧바로 따라 나온다. 그 숫자는 *내가 그은* 직선의 분수이므로, 그 직선의 단위로 되읽어야 한다.
 
 **Step 6 — 두 예산을 갈라 두기.** Step 1부터 5까지의 어느 것도 P6의 $70\,\mathrm{ms}$를 어기지 않는다. 그 예산은 카트 자신의 $200\,\mathrm{Hz}$ 루프 위에서 카메라 노출 중간부터 힘까지를 재고, 계획은 그 사슬 위에 있지 않기 때문이다. $0.80\,\mathrm{s}$짜리 계획은 예산 위반이 아니다. 패널 자세가 *씬*에 $200\,\mathrm{ms}$ 늦게 닿는 것도 MoveIt의 실패가 아니다. MoveIt은 불평 없이 그것으로 계획한다. 둘 다 각 숫자가 어느 시계에 속하는지 말하지 않은 호출자의 실패이고, 두 시계가 끝내 마주치면 무슨 일이 나는지가 Step 3이다.
 
@@ -1045,6 +1155,8 @@ Panda의 마지막 두 계획 중 어느 쪽을 벽 옆에서 믿겠는지와 �
 - `moveit/moveit2_tutorials` — Quickstart in RViz, Motion Planning Python API.
 - ros2_control 문서(Jazzy) — `joint_trajectory_controller` 파라미터(`constraints.*`).
 - MoveIt 바이너리 설치 안내(`ros-jazzy-moveit`), ROS 2 Jazzy 패키지 색인.
+- MoveIt 2 문서 — URDF and SRDF 튜토리얼(그룹을 지정하는 네 방식, 그룹의 관절만 움직임): [moveit.picknik.ai](https://moveit.picknik.ai/main/doc/examples/urdf_srdf/urdf_srdf_tutorial.html), Planning Scene 튜토리얼(허용 충돌 행렬, 상태 유효성): [moveit.picknik.ai](https://moveit.picknik.ai/main/doc/examples/planning_scene/planning_scene_tutorial.html), Time Parameterization 튜토리얼(TOTG, 스케일 계수, `joint_limits.yaml`): [moveit.picknik.ai](https://moveit.picknik.ai/main/doc/examples/time_parameterization/time_parameterization_tutorial.html), Concepts: Kinematics(기본 솔버 KDL): [moveit.picknik.ai](https://moveit.picknik.ai/main/doc/concepts/kinematics.html).
+- `moveit/moveit2`(`jazzy` 브랜치) — `cartesian_interpolator.cpp`(스텝 수와 경유점별 `fraction`): [GitHub](https://github.com/moveit/moveit2/blob/jazzy/moveit_core/robot_state/src/cartesian_interpolator.cpp), `cartesian_path_service_capability.cpp`(자세마다의 충돌 검사): [GitHub](https://github.com/moveit/moveit2/blob/jazzy/moveit_ros/move_group/src/default_capabilities/cartesian_path_service_capability.cpp), `trajectory_execution_manager.cpp`(0에서 건너뛰는 시작 검사와 지속 시간 상한): [GitHub](https://github.com/moveit/moveit2/blob/jazzy/moveit_ros/planning/trajectory_execution_manager/src/trajectory_execution_manager.cpp), `planning_request_adapter.hpp`와 `planning_response_adapter.hpp`(어댑터 종류마다 바꿀 수 있는 것).
 
 ### 스스로 점검
 

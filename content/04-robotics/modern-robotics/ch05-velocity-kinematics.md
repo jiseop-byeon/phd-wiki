@@ -74,6 +74,15 @@ related by $J_s = [\text{Ad}_{T}]\,J_b$ ([[04-robotics/modern-robotics/ch03-rigi
 This is the same Jacobian as in [[02-foundations/calculus-backprop|calculus]] — here its
 columns happen to be transformed screw axes.
 
+> **Space and body Jacobians, defined.** The **space Jacobian** $J_s(\theta)$ and the **body Jacobian** $J_b(\theta)$ are *matrix-valued functions of the configuration*, each $6\times n$: one object written in two frames. Three conditions define them. Each is **linear in the joint rates at a fixed $\theta$**: a combined motion is the weighted sum of the columns. **Column $i$ is joint $i$'s screw axis at the current configuration**, the twist produced by $\dot\theta_i = 1$ with every other rate zero. And **the frame is part of the object**: $J_s$ returns twists in $\{s\}$, $J_b$ in $\{b\}$ (MR §5.1).
+>
+> $$\mathcal{V}_s = J_s\dot\theta,\quad \mathcal{V}_b = J_b\dot\theta, \qquad J_{s,i}(\theta) = [\mathrm{Ad}_{e^{[\mathcal{S}_1]\theta_1}\cdots e^{[\mathcal{S}_{i-1}]\theta_{i-1}}}]\,\mathcal{S}_i, \qquad J_s = [\mathrm{Ad}_{T_{sb}}]\,J_b$$
+>
+> where $\mathcal{S}_i$ are ch.4's screws at home and the adjoint moves joint $i$'s axis to where joints $1$ to $i-1$ have carried it, so column $i$ of $J_s$ depends only on the joints before it.
+>
+> - **Example**: P2 at the catalog pose. $\theta_1 = 0$ leaves both axes at home, so the columns of $J_s$ are $(0,0,1;\,0,0,0)$ and $(0,0,1;\,0,-1,0)$; those of $J_b$ are $(0,0,1;\,1,1,0)$ and $(0,0,1;\,0,1,0)$, and $[\mathrm{Ad}_{T_{sb}}]J_b = J_s$.
+> - **Non-example**: the bottom rows of $J_s$ read as the tip's velocity. Column 1's linear part is $(0,0,0)$, yet the tip moves at $(-1,1)\,\mathrm{m/s}$ when the shoulder turns at $1\,\mathrm{rad/s}$, because a space twist's $v$ is the velocity of the body point at the origin of $\{s\}$ ([[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §3]]). The tip's velocity is $R_{sb}v_b$: $(-1,1)$ and $(-1,0)$, the columns of §2's $J$. A resolved-rate loop built on those rows steers a point at the base, not the tool.
+
 **Build the idea column by column.** Freeze the current configuration and imagine moving only one joint. Record the instantaneous rigid-body motion of the tool in the declared frame. That response is one Jacobian column. Do the same for each joint; simultaneous joint motion is the weighted sum of those columns because this velocity relationship is linear at the fixed configuration.
 
 The qualification “at the fixed configuration” matters. Once the joints move, their axes and lever arms relative to the tool may change, so the Jacobian must be recomputed. A constant Jacobian can predict a small local displacement but is not generally a finite-motion map. Forward kinematics updates the pose; the Jacobian describes its local sensitivity.
@@ -111,6 +120,15 @@ with the body wrench $\mathcal{F}_b$, $J_s$ with $\mathcal{F}_s$.) On catalog P2
 
 **The same number from the full six-vectors.** As a space wrench this force is $\mathcal{F}_s = (0,0,-10;\ 0,-10,0)$, its moment $p\times f$ taken about the base, and at this pose the space Jacobian's columns are the screws $\mathcal{S}_1 = (0,0,1;\ 0,0,0)$ and $\mathcal{S}_2 = (0,0,1;\ 0,-1,0)$, since $\theta_1 = 0$ leaves $\mathcal{S}_2$ where it was at home. So $J_s^\top\mathcal{F}_s = (-10,\ 0)$ again, and [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §6]] repeats the check in the body frame. The $2\times2$ shortcut is exact because pairing the tip force with the tip velocity gives the same power as pairing the space wrench with the space twist.
 
+> **Statics duality, defined.** The **statics duality** is *a linear map from end-effector wrenches to joint torques*, the transpose of the velocity Jacobian at the same $\theta$, and it holds under three conditions. **Static equilibrium**: the arm is at rest, $\dot\theta = 0$ and $\ddot\theta = 0$ (MR reads the power balance in the limit $\dot\theta \to 0$), so no power goes into moving the arm and the power at the joints equals the power at the tool. **One frame for both**: $J_b$ pairs with the body wrench $\mathcal{F}_b$, $J_s$ with $\mathcal{F}_s$. And **$\mathcal{F}$ is the wrench the tool applies**; the torques that hold up the arm's own weight are added separately (MR §5.2).
+>
+> $$\tau = J^\top(\theta)\,\mathcal{F} \quad\Longleftrightarrow\quad \tau^\top\dot\theta = \mathcal{F}^\top J(\theta)\,\dot\theta \ \ \text{for every } \dot\theta$$
+>
+> where $\tau \in \mathbb{R}^n$ is the joint-torque vector, $\mathcal{F}$ the wrench (the tip force alone when paired with §2's $J$) and $J$ the Jacobian in the same frame; the transpose appears because power is a dot product, so the matrix that sends $\dot\theta$ out must send $\mathcal{F}$ back.
+>
+> - **Example**: the $10\,\mathrm{N}$ press. $\mathcal{F}_s$ with $J_s$ gives $\tau = (-10,\ 0)\,\mathrm{N\,m}$, and so does the same force in the tool frame, $\mathcal{F}_b = (0,0,0;\,-10,0,0)$, with $J_b$.
+> - **Non-example**: a wrist sensor's $\mathcal{F}_b$ multiplied by $J_s^\top$. It returns $(0,\ 0)$, as if the contact loaded no joint: the shoulder's real $10\,\mathrm{N\,m}$ vanishes because the frames were mixed.
+
 **Read the equality as an accounting rule.** A wrench does work through the motion it acts on. The Jacobian tells how a joint motion appears at the tool, so the transpose tells how that same tool wrench loads each joint. For each column, ask how strongly the wrench acts along the motion that column produces. That dot product is the corresponding joint effort.
 
 This is different from inverting a velocity equation. No inverse is needed to map a known wrench to joint loads, and the map remains meaningful at a singularity. However, solving backward for an unknown wrench from measured torques may be ambiguous or noise-sensitive. In numbers: at $\theta = (0^\circ, 5^\circ)$ the smallest singular value of $J$ is $0.039$, and its force direction, $(0.999,\ 0.052)$, lies almost exactly along the arm. A $10\,\mathrm{N}$ push that way produces a joint-torque vector of norm only $0.39\,\mathrm{N\,m}$, so a $0.1\,\mathrm{N\,m}$ error in the measured torques can hide up to $0.1/0.039 = 2.6\,\mathrm{N}$ of force along the arm, against $0.1/0.618 = 0.16\,\mathrm{N}$ at the catalog pose. It also requires separating contact loads from gravity, inertia, friction, and other contributions to measured effort.
@@ -121,11 +139,30 @@ This is different from inverting a velocity equation. No inverse is needed to ma
 
 - Near a singularity, small task-space motions demand huge joint velocities —
   $J^{-1}$ blows up. The 2R example: as $\theta_2 \to 0$, $\det J \to 0$.
+
+> **Kinematic singularity, defined.** A **kinematic singularity** is *a property of a configuration* $\theta$, judged through a chosen task Jacobian $J(\theta)$. Three conditions define it. **Rank drop**: $\operatorname{rank}J(\theta)$ falls below the largest rank $J$ reaches anywhere; for a square $J$, $\det J(\theta) = 0$. **Frame independence**: $\operatorname{rank}J_s = \operatorname{rank}J_b$ because $[\mathrm{Ad}_{T_{sb}}]$ is invertible, so the frame in which the twist is written cannot create or remove one. **Task relativity**: the rows of $J$ name the task, which point and which coordinates, and a different task has its own singular poses. At such a $\theta$ the tool cannot move instantaneously in some direction, and it holds a wrench along that direction with zero joint torque (MR §5.3).
+>
+> $$\operatorname{rank}J(\theta) < \max_{\theta'}\,\operatorname{rank}J(\theta'), \qquad \text{P2's tip: } \det J(\theta) = L_1L_2\sin\theta_2 = 0$$
+>
+> where the maximum runs over all configurations, so the test compares a pose with the arm's own best, not with the number of task rows.
+>
+> - **Example**: P2 straight, $\theta = (0^\circ, 0^\circ)$: $J = \begin{pmatrix}0&0\\2&1\end{pmatrix}$ has rank 1, the lost direction runs along the arm, and a $10\,\mathrm{N}$ force along it needs $J^\top(10, 0) = (0, 0)$. P2's $6\times2$ $J_s$ keeps rank 2 at every $\theta$, and a tool point $0.5\,\mathrm{m}$ to the side of the tip, square to the forearm, is singular at $\theta_2 = -26.6^\circ$ and $153.4^\circ$ instead: this singularity belongs to the tip-position task.
+> - **Non-example**: $\theta = (0^\circ, 5^\circ)$, nearly straight. $\det J = 0.087$ and the rank is 2, so it is not singular, yet moving the tip $0.1\,\mathrm{m/s}$ straight out costs $2.56\,\mathrm{rad/s}$ of joint rate, $16$ times the $0.158$ the catalog pose needs. Singularity is yes or no; how close a pose comes is what the ellipsoid below measures.
+
 - The **manipulability ellipsoid** is the image of the unit ball of joint velocities under
   $J$; its axes are the singular values ([[02-foundations/linear-algebra|SVD]]). Long axis
   = easy direction, short axis = hard; at a singularity one axis collapses to zero.
   The force ellipsoid is its reciprocal twin — directions that are hard to move are easy
   to hold force against, and vice versa.
+
+> **Manipulability ellipsoid, defined.** The **manipulability ellipsoid** is *a set of tool velocities attached to one configuration*: the image under $J(\theta)$ of every joint-rate vector of unit length. Two conditions define it. **Unit joint rates**: $\|\dot\theta\| = 1$ in the Euclidean norm, which weighs every joint alike, so changing one joint's units reshapes it. **One configuration**: $J$ is frozen at the $\theta$ being judged. When $J$ has full rank $m$ the image is the ellipsoid written below; at a singularity it degenerates, into a segment for P2 (MR §5.4).
+>
+> $$\bigl\{\dot q :\ \dot q^\top (JJ^\top)^{-1}\dot q = 1\bigr\}, \qquad \text{semi-axes } \sigma_i(J) = \sqrt{\lambda_i(JJ^\top)}, \qquad \mu_1 = \sigma_{\max}/\sigma_{\min}$$
+>
+> where $\dot q$ is the task velocity and $\lambda_i$ are the eigenvalues of $JJ^\top$; the set has this form because, for a square invertible $J$ like P2's, $\dot q = J\dot\theta$ turns $\dot\theta^\top\dot\theta = 1$ into $\dot q^\top (JJ^\top)^{-1}\dot q = 1$, so the axes point along the eigenvectors of $JJ^\top$. $\mu_1 \ge 1$ is MR's isotropy measure, infinite at a singularity; its square is the condition number of $JJ^\top$.
+>
+> - **Example**: P2 at the catalog pose: semi-axes $1.618$ and $0.618$, $\mu_1 = 2.618$. Nearer straight, $\mu_1 = 14.2$ at $(0^\circ, 20^\circ)$ and $57.3$ at $(0^\circ, 5^\circ)$.
+> - **Non-example**: the force ellipsoid, $\{f :\ \|J^\top f\| = 1\}$. It has the same axes and reciprocal semi-axes, $0.618$ along the long velocity axis and $1.618$ along the short one, so reading the long velocity axis as the strong direction swaps the two. A pose chosen for pressing on the panel should be judged by the force ellipsoid.
 
 <svg viewBox="0 0 560 220" style="max-width:100%;height:auto" role="img" aria-label="the 2R arm's manipulability ellipse well away from and close to a singularity">
   <ellipse cx="103.0" cy="92.0" rx="37.5" ry="14.3" transform="rotate(31.7 103.0 92.0)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="45.0" y1="150.0" x2="103.0" y2="150.0"/><line x1="103.0" y1="150.0" x2="103.0" y2="92.0"/></g><g fill="currentColor"><circle cx="45.0" cy="150.0" r="4"/><circle cx="103.0" cy="150.0" r="4"/><circle cx="103.0" cy="92.0" r="3.5"/></g>
@@ -267,6 +304,15 @@ $J_s = [\text{Ad}_{T}]\,J_b$로 연결된다
 [[02-foundations/calculus-backprop|미적분]]의 야코비안과 같은 대상이며 — 여기서는 그
 열들이 변환된 스크류 축일 뿐이다.
 
+> **공간 야코비안과 바디 야코비안의 정의.** **공간 야코비안**(space Jacobian) $J_s(\theta)$와 **바디 야코비안**(body Jacobian) $J_b(\theta)$는 *자세의 함수인 행렬*이고 크기는 $6\times n$이다. 한 대상을 두 프레임으로 쓴 것이다. 정의 조건 셋. 둘 다 **고정된 $\theta$에서 관절 속도에 선형**이다. 여러 관절이 함께 움직이면 열들의 가중합이 된다. **$i$번째 열은 현재 자세에서 관절 $i$의 스크류 축**이다. $\dot\theta_i = 1$이고 나머지 속도가 모두 0일 때 생기는 twist다. 그리고 **프레임이 대상의 일부**다. $J_s$는 $\{s\}$의 twist를, $J_b$는 $\{b\}$의 twist를 준다(MR §5.1).
+>
+> $$\mathcal{V}_s = J_s\dot\theta,\quad \mathcal{V}_b = J_b\dot\theta, \qquad J_{s,i}(\theta) = [\mathrm{Ad}_{e^{[\mathcal{S}_1]\theta_1}\cdots e^{[\mathcal{S}_{i-1}]\theta_{i-1}}}]\,\mathcal{S}_i, \qquad J_s = [\mathrm{Ad}_{T_{sb}}]\,J_b$$
+>
+> 여기서 $\mathcal{S}_i$는 4장의 홈 스크류이고, adjoint가 관절 $i$의 축을 관절 $1$부터 $i-1$까지가 옮겨 놓은 자리로 데려간다. 그래서 $J_s$의 $i$번째 열은 그 앞의 관절에만 의존한다.
+>
+> - **예**: 카탈로그 자세의 P2. $\theta_1 = 0$이라 두 축이 홈의 자리에 그대로 있으므로 $J_s$의 열은 $(0,0,1;\,0,0,0)$과 $(0,0,1;\,0,-1,0)$이다. $J_b$의 열은 $(0,0,1;\,1,1,0)$과 $(0,0,1;\,0,1,0)$이고, $[\mathrm{Ad}_{T_{sb}}]J_b = J_s$다.
+> - **비예**: $J_s$의 아래 세 행을 말단 속도로 읽는 것. 열 1의 선형부는 $(0,0,0)$인데, 어깨가 $1\,\mathrm{rad/s}$로 돌면 말단은 $(-1,1)\,\mathrm{m/s}$로 움직인다. 공간 twist의 $v$는 $\{s\}$ 원점에 있는 몸체 점의 속도이기 때문이다([[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §3]]). 말단 속도는 $R_{sb}v_b$이고, 그것이 $(-1,1)$과 $(-1,0)$, 곧 §2의 $J$의 열이다. 그 행들 위에 세운 resolved-rate 루프는 도구가 아니라 베이스에 있는 점을 조종한다.
+
 **열 하나씩 개념을 만든다.** 현재 구성을 고정하고 관절 하나만 움직인다고 상상한다. 선언한 프레임에서 도구의 순간 강체 운동을 기록하면 야코비안의 열 하나다. 관절마다 반복한다. 고정 구성의 속도 관계는 선형이므로 여러 관절의 동시 운동은 열들의 가중합이다.
 
 “고정 구성에서”가 중요하다. 관절이 움직이면 도구에 대한 축과 지레팔이 달라질 수 있어 야코비안을 다시 계산한다. 상수 야코비안은 작은 국소 변위를 예측하지만 일반적인 유한 운동 사상은 아니다. 순기구학은 자세를 갱신하고 야코비안은 국소 민감도를 말한다.
@@ -302,6 +348,15 @@ $\mathcal{F}_s$와 짝이다.) 카탈로그 P2에서 $F=(0,-10)\,\mathrm{N}$이�
 
 **같은 숫자를 6차원 벡터로.** 이 힘을 공간 렌치로 쓰면 모멘트 $p\times f$를 베이스에 대해 잡은 $\mathcal{F}_s = (0,0,-10;\ 0,-10,0)$이고, 이 자세에서 공간 야코비안의 열은 스크류 $\mathcal{S}_1 = (0,0,1;\ 0,0,0)$과 $\mathcal{S}_2 = (0,0,1;\ 0,-1,0)$이다. $\theta_1 = 0$이라 $\mathcal{S}_2$가 홈에서의 자리에 그대로 있기 때문이다. 따라서 $J_s^\top\mathcal{F}_s = (-10,\ 0)$이 다시 나오고, [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §6]]이 같은 검산을 바디 프레임에서 되풀이한다. $2\times2$ 지름길이 정확한 이유는 말단 힘과 말단 속도의 짝이 공간 렌치와 공간 twist의 짝과 같은 일률을 주기 때문이다.
 
+> **정역학 쌍대성의 정의.** **정역학 쌍대성**(statics duality)은 *말단 렌치를 관절 토크로 보내는 선형 사상*이다. 같은 $\theta$에서 속도 야코비안의 전치이고, 세 조건 아래에서 성립한다. **정적 평형**: 팔이 정지해 있다. $\dot\theta = 0$, $\ddot\theta = 0$이고(MR은 일률 균형을 $\dot\theta \to 0$의 극한으로 읽는다), 그래서 팔을 움직이는 데 드는 일률이 없고 관절 쪽 일률이 도구 쪽 일률과 같다. **둘에 같은 프레임**: $J_b$는 바디 렌치 $\mathcal{F}_b$와, $J_s$는 $\mathcal{F}_s$와 짝을 이룬다. 그리고 **$\mathcal{F}$는 도구가 가하는 렌치**다. 팔 자신의 무게를 버티는 토크는 따로 더한다(MR §5.2).
+>
+> $$\tau = J^\top(\theta)\,\mathcal{F} \quad\Longleftrightarrow\quad \tau^\top\dot\theta = \mathcal{F}^\top J(\theta)\,\dot\theta \ \ \text{for every } \dot\theta$$
+>
+> 여기서 $\tau \in \mathbb{R}^n$은 관절 토크, $\mathcal{F}$는 렌치(§2의 $J$와 짝지을 때는 말단 힘만), $J$는 같은 프레임의 야코비안이다. 전치가 나오는 것은 일률이 내적이기 때문이고, 그래서 $\dot\theta$를 내보내는 행렬이 $\mathcal{F}$를 되돌려야 한다.
+>
+> - **예**: $10\,\mathrm{N}$ 누르기. $\mathcal{F}_s$를 $J_s$와 짝지으면 $\tau = (-10,\ 0)\,\mathrm{N\,m}$이고, 같은 힘을 도구 프레임에서 쓴 $\mathcal{F}_b = (0,0,0;\,-10,0,0)$을 $J_b$와 짝지어도 같은 값이 나온다.
+> - **비예**: 손목 센서가 준 $\mathcal{F}_b$에 $J_s^\top$를 곱하는 것. 결과는 $(0,\ 0)$으로, 접촉이 어느 관절에도 부하를 주지 않는다는 듯이 나온다. 프레임을 섞었기 때문에 어깨의 실제 $10\,\mathrm{N\,m}$이 사라진 것이다.
+
 **등식을 일률의 회계 규칙으로 읽는다.** 렌치는 작용하는 운동을 통해 일을 한다. 야코비안이 관절 운동이 도구에서 어떻게 보이는지 알려 주므로 전치는 도구 렌치가 각 관절에 주는 부하를 알려 준다. 열마다 그 열이 만드는 운동에 렌치가 얼마나 작용하는지 묻는다. 그 내적이 해당 관절의 노력이다.
 
 속도 식을 역으로 푸는 것과 다르다. 알려진 렌치를 관절 부하로 바꾸는 데 역행렬은 필요 없고 특이점에서도 뜻이 있다. 반면 측정 토크에서 모르는 렌치를 찾는 역문제는 모호하거나 잡음에 민감할 수 있다. 숫자로 보면, $\theta = (0^\circ, 5^\circ)$에서 $J$의 가장 작은 특이값은 $0.039$이고 그 힘 방향 $(0.999,\ 0.052)$는 거의 정확히 팔을 따른다. 그쪽으로 $10\,\mathrm{N}$을 밀어도 관절 토크 벡터의 크기는 $0.39\,\mathrm{N\,m}$뿐이므로, 측정 토크의 $0.1\,\mathrm{N\,m}$ 오차가 팔 방향 힘을 최대 $0.1/0.039 = 2.6\,\mathrm{N}$까지 숨길 수 있다. 카탈로그 자세에서는 $0.1/0.618 = 0.16\,\mathrm{N}$이다. 측정 노력에서 중력, 관성, 마찰 등도 분리해야 한다.
@@ -312,10 +367,29 @@ $\mathcal{F}_s$와 짝이다.) 카탈로그 P2에서 $F=(0,-10)\,\mathrm{N}$이�
 
 - 특이점 근처에서는 작은 말단 운동이 거대한 관절 속도를 요구한다 — $J^{-1}$이
   폭발한다. 2R 예제에서 $\theta_2 \to 0$이면 $\det J \to 0$.
+
+> **기구학적 특이점의 정의.** **기구학적 특이점**(kinematic singularity)은 *자세의 성질*이고, 고른 과제 야코비안 $J(\theta)$로 판정한다. 정의 조건 셋. **랭크가 떨어진다**: $\operatorname{rank}J(\theta)$가 $J$가 어디서든 도달하는 가장 큰 랭크보다 작다. 정사각 $J$라면 $\det J(\theta) = 0$이다. **프레임과 무관하다**: $[\mathrm{Ad}_{T_{sb}}]$가 가역이므로 $\operatorname{rank}J_s = \operatorname{rank}J_b$이고, twist를 어느 프레임에서 쓰느냐가 특이점을 만들거나 없애지 못한다. **과제에 상대적이다**: $J$의 행이 과제, 곧 어느 점의 어떤 좌표인지를 정하고, 과제가 다르면 특이 자세도 다르다. 이런 $\theta$에서 도구는 어떤 방향으로 순간적으로 움직일 수 없고, 그 방향의 렌치는 관절 토크 없이 버틴다(MR §5.3).
+>
+> $$\operatorname{rank}J(\theta) < \max_{\theta'}\,\operatorname{rank}J(\theta'), \qquad \text{P2's tip: } \det J(\theta) = L_1L_2\sin\theta_2 = 0$$
+>
+> 최댓값은 모든 자세에 대해 잡는다. 그래서 이 판정은 한 자세를 과제 행의 개수가 아니라 그 팔이 낼 수 있는 최선과 견준다.
+>
+> - **예**: 곧게 편 P2, $\theta = (0^\circ, 0^\circ)$. $J = \begin{pmatrix}0&0\\2&1\end{pmatrix}$의 랭크는 1이고, 잃은 방향은 팔을 따르는 방향이며, 그 방향의 $10\,\mathrm{N}$ 힘에는 $J^\top(10, 0) = (0, 0)$만 있으면 된다. P2의 $6\times2$ $J_s$는 모든 $\theta$에서 랭크 2를 유지하고, 말단에서 전완과 직각으로 $0.5\,\mathrm{m}$ 옆에 둔 도구 점은 대신 $\theta_2 = -26.6^\circ$와 $153.4^\circ$에서 특이하다. 이 특이점은 말단 위치 과제의 것이다.
+> - **비예**: 거의 곧은 $\theta = (0^\circ, 5^\circ)$. $\det J = 0.087$이고 랭크가 2이므로 특이점이 아니다. 그런데도 말단을 $0.1\,\mathrm{m/s}$로 곧장 밀어내려면 관절 속도가 $2.56\,\mathrm{rad/s}$ 들고, 이는 카탈로그 자세에 드는 $0.158$의 $16$배다. 특이점은 예·아니요로 답하는 질문이고, 얼마나 가까운지는 아래 타원체가 잰다.
+
 - **가조작성 타원체**는 관절 속도 단위 공이 $J$를 통과한 상이고, 그 축들이
   특이값([[02-foundations/linear-algebra|SVD]])이다. 긴 축 = 쉬운 방향, 짧은 축 = 어려운
   방향; 특이점에서는 한 축이 0으로 붕괴한다. 힘 타원체는 그 역수 쌍둥이다 — 움직이기
   어려운 방향일수록 힘을 버티기는 쉽고, 그 반대도 성립한다.
+
+> **가조작성 타원체의 정의.** **가조작성 타원체**(manipulability ellipsoid)는 *한 자세에 붙은 도구 속도의 집합*이다. 길이가 1인 모든 관절 속도 벡터를 $J(\theta)$로 보낸 상이다. 정의 조건 셋. **단위 관절 속도**: 유클리드 노름으로 $\|\dot\theta\| = 1$이다. 이 노름은 모든 관절을 같게 치므로 한 관절의 단위를 바꾸면 모양이 바뀐다. **한 자세**: $J$는 판정하는 $\theta$에서 고정한다. **풀랭크**: $J$의 랭크가 $m$이어야 한다. 특이점에서는 납작해지고, P2에서는 선분이 된다(MR §5.4).
+>
+> $$\bigl\{\dot q :\ \dot q^\top (JJ^\top)^{-1}\dot q = 1\bigr\}, \qquad \text{semi-axes } \sigma_i(J) = \sqrt{\lambda_i(JJ^\top)}, \qquad \mu_1 = \sigma_{\max}/\sigma_{\min}$$
+>
+> 여기서 $\dot q$는 과제 속도, $\lambda_i$는 $JJ^\top$의 고윳값이다. 집합이 이런 모양인 것은, P2처럼 $J$가 정사각이고 가역이면 $\dot q = J\dot\theta$가 $\dot\theta^\top\dot\theta = 1$을 $\dot q^\top (JJ^\top)^{-1}\dot q = 1$로 바꾸기 때문이고, 그래서 축이 $JJ^\top$의 고유벡터 방향이다. $\mu_1 \ge 1$은 MR의 등방성 척도로 특이점에서 무한대가 되고, 그 제곱이 $JJ^\top$의 조건수다.
+>
+> - **예**: 카탈로그 자세의 P2는 반축이 $1.618$과 $0.618$, $\mu_1 = 2.618$이다. 곧게 펼수록 커져서 $(0^\circ, 20^\circ)$에서 $14.2$, $(0^\circ, 5^\circ)$에서 $57.3$이다.
+> - **비예**: 힘 타원체 $\{f :\ \|J^\top f\| = 1\}$. 축은 같고 반축은 역수라서, 속도의 긴 축 방향으로 $0.618$, 짧은 축 방향으로 $1.618$이다. 속도의 긴 축을 힘이 센 방향으로 읽으면 둘이 뒤바뀐다. 패널을 누를 자세는 힘 타원체로 판정해야 한다.
 
 <svg viewBox="0 0 560 220" style="max-width:100%;height:auto" role="img" aria-label="특이점에서 멀 때와 가까울 때의 2R 팔 가조작성 타원">
   <ellipse cx="103.0" cy="92.0" rx="37.5" ry="14.3" transform="rotate(31.7 103.0 92.0)" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2"/><g stroke="currentColor" stroke-width="2.4" fill="none"><line x1="45.0" y1="150.0" x2="103.0" y2="150.0"/><line x1="103.0" y1="150.0" x2="103.0" y2="92.0"/></g><g fill="currentColor"><circle cx="45.0" cy="150.0" r="4"/><circle cx="103.0" cy="150.0" r="4"/><circle cx="103.0" cy="92.0" r="3.5"/></g>

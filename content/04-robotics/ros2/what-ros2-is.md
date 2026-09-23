@@ -136,6 +136,15 @@ So you split it into processes. Now you have four new problems:
 
 A robot middleware is the layer that solves those four. ROS 2 is one such middleware, and the most widely used one in research robotics.
 
+> **Robot middleware, defined.** A **robot middleware** is a *software layer*, libraries and tools between a robot's processes and the network, and it earns the name only by meeting all four conditions above: (1) **typed data exchange** across process and machine boundaries; (2) **discovery**, so no process is told another's address; (3) **independent restart**, the survivors reconnecting on their own; (4) **a common type language** a compiler can check. ROS 2 is one, plus conventions that make it usable: shared message definitions, name rules, build and command-line tools (§2).
+>
+> $$A_{\text{wired}}=\sum_{k}n^{\text{pub}}_{k}\,n^{\text{sub}}_{k},\qquad A_{\text{middleware}}=0$$
+>
+> where $A$ counts the addresses someone must configure and keep current, $k$ runs over the data streams, and $n^{\text{pub}}_k$, $n^{\text{sub}}_k$ count the processes producing and consuming stream $k$: hand-wired, every producer–consumer pair needs one, so the count grows as a product; with discovery (§4) a process names only its streams.
+>
+> - **Example**: P6 in the picture. `/goal` has $1$ producer and $2$ consumers and `/cmd` has $1$ and $1$ (the logger), so hand-wired $A=1\cdot2+1\cdot1=3$; under ROS 2, $0$ addresses and $2$ names.
+> - **Non-example**: a raw socket. It moves bytes, condition (1) without the types, and none of (2)–(4): the $3$ addresses are kept by hand, and a camera restarted on a new port leaves both its consumers pointing at nothing. Those missing conditions are what a "just use a socket" proposal takes on (Self-check 1).
+
 ### 2. What ROS 2 is not
 
 Three misreadings cost beginners weeks.
@@ -159,6 +168,15 @@ The central idea, and the thing you will spend the rest of this track reasoning 
 - **Parameters** configure a node at startup and at runtime.
 - The **graph** is the live set of nodes and their connections. It is not written down anywhere. It is discovered at runtime, and it changes as nodes come and go.
 
+> **Computation graph, defined.** The **computation graph** is a *runtime data structure*, not a file: the nodes alive at time $t$ and the connections the middleware has matched between their endpoints. Three conditions: its **vertices** are nodes (defined in full on [[04-robotics/ros2/nodes-topics-messages|25.2 §2]]); an **edge** joins a publisher to a subscription, or a client to a server, only when the two are **matched** — same `ROS_DOMAIN_ID` (§4), same resolved name, same type, compatible QoS (§5); and it is **discovered, never declared**, so it exists only while its processes run.
+>
+> $$E(t)=\{(p,s):\ p,s\ \text{alive at }t,\ d_p=d_s,\ n_p=n_s,\ \tau_p=\tau_s,\ Q_p\sim Q_s\}$$
+>
+> where $p$ ranges over publishers and $s$ over subscriptions, $d$ is the domain ID, $n$ the resolved topic name, $\tau$ the message type and $Q_p\sim Q_s$ compatible QoS — a conjunction, so a mismatch in any one term deletes the edge without an error.
+>
+> - **Example**: P6 in the picture has $|E|=3$ — camera→controller and camera→logger on `/goal`, controller→logger on `/cmd` — and `ros2 topic info /goal` reports $1$ publisher and $2$ subscriptions.
+> - **Non-example**: the launch file or the drawing. Stop `/logger` and neither changes, but $|E|$ drops from $3$ to $1$; a shell with `ROS_DOMAIN_ID=1` sees none of P6's nodes (§11). The tools report $E(t)$, which is why the next paragraph says to interrogate the running graph rather than the source.
+
 The practical consequence: *you debug a ROS 2 system by interrogating the running graph*, not by reading source. Section 9 is the set of commands that does the interrogating, and it is the most durable thing on this page.
 
 ### 4. Why ROS 2 exists, given ROS 1
@@ -169,6 +187,15 @@ ROS 1 worked, and much of the robotics literature you will read ran on it. ROS 2
 - **Security.** ROS 1 had no authentication, encryption, or access control on the wire. ROS 2 inherits the DDS security plugins — encryption in transit, authentication of participants, data integrity, and domain-wide access control — configured per *security enclave* (a named set of keys, certificates and permissions that the nodes using it share).
 - **Embedded and small platforms.** ROS 2's layered design (client library → `rcl`, the shared C core that `rclcpp` and `rclpy` both wrap → `rmw`, the thin interface to whichever middleware is installed, detailed in Section 5 → middleware) was built so that constrained targets and microcontroller-oriented middleware variants are reachable, rather than assuming a full desktop Linux.
 - **Real-time intent.** The official documentation states plainly that real-time performance was not considered in ROS 1's early stages and that retrofitting it is intractable; ROS 2 was prototyped with those constraints in mind from the start.
+
+> **Discovery and the domain ID, defined.** **Discovery**, the mechanism in the first bullet, is a *distributed protocol every participant runs*, with no master; `ROS_DOMAIN_ID` is the *integer that scopes it*, $0$ unless the shell exports another. Four conditions: a starting node **announces itself** to nodes with the same domain ID, which answer with their own details; it **re-announces periodically**, so late arrivals are found; it **announces its departure**; and endpoints connect only if their QoS is **compatible** (§5). ROS 2 promises the partition; the DDS implementations of §5 enforce it by deriving their UDP ports from the domain ID:
+>
+> $$p_{\text{disc}}=7400+250\,d,\qquad p_{\text{uni}}=7410+250\,d+2i$$
+>
+> where $d$ is the domain ID, $p_{\text{disc}}$ the discovery multicast port and $p_{\text{uni}}$ the unicast discovery port of participant $i$, one per process on the machine, as the documentation's port calculator gives them; a port must fit in $16$ bits, so $d\le232$, and $0$–$101$ is the documented safe range on Linux.
+>
+> - **Example**: P6 on the default domain discovers on port $7400$; with `ROS_DOMAIN_ID=7` in all three shells it moves to $7400+250\cdot7=9150$, invisible to every domain-$0$ node.
+> - **Non-example**: a namespace, or a lock. A second cart in `/cart2` on domain $0$ changes names, not discovery: both carts share port $7400$ and one graph. And a domain ID is no access control; anyone exporting the same integer joins, which security enclaves (second bullet) exist to stop.
 
 And the decisive practical fact: **ROS 1 is over.** Noetic Ninjemys, the final ROS 1 distribution, reached end of life on 31 May 2025. New work starts on ROS 2. When you read a 2016–2021 paper whose code is ROS 1, you are reading an archive.
 
@@ -184,6 +211,15 @@ That borrowed layer is **DDS** (Data Distribution Service), an OMG industry stan
 - `rmw_cyclonedds_cpp` — Eclipse Cyclone DDS; also packaged.
 - `rmw_connextdds` — RTI Connext; commercial, installed separately.
 - `rmw_gurumdds_cpp` — community support.
+
+> **The rmw layer, defined.** `rmw` is an *interface*, the C API through which ROS reaches a middleware, and an **rmw implementation** is a *library* that fulfils it on one product, as `rmw_fastrtps_cpp` does on Fast DDS. Three conditions: everything above it is **vendor-agnostic** — your node, `rclpy` or `rclcpp`, and `rcl` call only `rmw`, so switching vendors needs no rebuild of your code; each process **uses one implementation**, named by the `RMW_IMPLEMENTATION` environment variable when it starts, `rmw_fastrtps_cpp` when unset; and **what crosses the wire belongs to the implementation**, not to ROS.
+>
+> $$\text{node}\ \to\ \texttt{rclpy}\,|\,\texttt{rclcpp}\ \to\ \texttt{rcl}\ \to\ \texttt{rmw}\ \to\ \texttt{rmw\_}\langle\text{impl}\rangle\ \to\ \text{vendor DDS}\ \to\ \text{network}$$
+>
+> where each arrow points to the layer that does the work; ROS 2 fixes the first four and `RMW_IMPLEMENTATION` picks the rest, so anything decided below `rmw` — discovery traffic, buffer sizes, the port formula of §4 — is a vendor property.
+>
+> - **Example**: start P6's three nodes with `RMW_IMPLEMENTATION=rmw_cyclonedds_cpp` in all three shells: the same code, the same graph of $3$ edges, a different library underneath.
+> - **Non-example**: setting it in two shells of the three. The documentation calls communication between different implementations possible in limited circumstances and **not guaranteed**, so a P6 split $2:1$ across vendors may or may not connect — one implementation for the whole system is the rule.
 
 What that buys:
 
@@ -244,6 +280,15 @@ source /opt/ros/jazzy/setup.bash
 This is not a formality. The setup file exports `PATH` (so `ros2` resolves), `AMENT_PREFIX_PATH` and `CMAKE_PREFIX_PATH` (so packages are findable), `LD_LIBRARY_PATH` and `PYTHONPATH` (so libraries and Python modules import), and ROS-specific variables. Environment variables belong to a process and are inherited only by its children, so a shell you opened before sourcing, or a second tab, has none of them.
 
 That design is deliberate: it is what lets two distributions, or a distribution and your own workspace, coexist on one machine and be selected per terminal. The cost is the discipline of sourcing.
+
+> **Sourcing, defined.** **Sourcing** a setup file is an *operation on one shell*: `source` runs the file's commands inside the current shell rather than in a child, so the variables it exports, `PATH` and `AMENT_PREFIX_PATH` among them, change that shell's environment. Three conditions: it acts on the **current shell only**; its effect reaches **only processes started from that shell afterwards**, because a process receives a copy of its parent's environment when it starts and never sees later changes; and it **accumulates**, each sourced workspace putting its paths in front of what earlier ones set (the overlays of [[04-robotics/ros2/workspaces-packages-launch|25.4 §6]]).
+>
+> $$\text{env}(c)=\text{env}(\text{parent of }c)\ \text{at the moment }c\text{ starts}$$
+>
+> where $c$ is any process, so a variable exported in one terminal exists in exactly the processes that terminal starts from then on, and in no other terminal.
+>
+> - **Example**: started by hand, P6's camera, controller and logger take three terminals, and each needs its own `source /opt/ros/jazzy/setup.bash`: $3$ sources for $3$ nodes, and a $4$th for the terminal where `ros2 topic list` runs.
+> - **Non-example**: `bash /opt/ros/jazzy/setup.bash`. It runs without an error and changes nothing you can use: the exports happened in a child shell that has already exited, so the next command still answers `ros2: command not found` (§11). Sourcing in one tab and working in another fails the same way, hence §11's `printenv` before any code.
 
 You can put it in `~/.bashrc`:
 
@@ -441,6 +486,7 @@ Writing nodes of your own is [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes
 
 - ROS 2 Jazzy documentation — Installation: Ubuntu (deb packages); Configuring your ROS 2 environment; Using turtlesim, ros2 and rqt; Understanding nodes; Understanding topics.
 - ROS 2 Jazzy documentation — Concepts: Discovery; Different ROS 2 middleware vendors; ROS 2 Security; Understanding real-time programming.
+- ROS 2 Jazzy documentation — Concepts: [The ROS_DOMAIN_ID](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Domain-ID.html) (default domain 0, the safe ranges, and the port calculator whose formula §4 writes out); [Internal ROS interfaces](https://docs.ros.org/en/jazzy/Concepts/Advanced/About-Internal-Interfaces.html) (client library → `rcl` → `rmw` → implementation); How-to guides: [Working with multiple RMW implementations](https://docs.ros.org/en/jazzy/How-To-Guides/Working-with-multiple-RMW-implementations.html) (`RMW_IMPLEMENTATION`).
 - ROS 2 Jazzy documentation — Releases (distribution and EOL table).
 - Open Robotics, "ROS Noetic End-of-Life: May 31, 2025" (ROS Discourse announcement).
 - Gazebo documentation — ROS installation / ROS 2 and Gazebo version pairings.
@@ -615,6 +661,15 @@ $$L_{\text{wait}}+L_{\text{reuse}}<T_{\text{vision}}=20\,\mathrm{ms}$$
 
 로봇 미들웨어는 이 넷을 푸는 계층이다. ROS 2가 그런 미들웨어이고, 연구 로보틱스에서 가장 널리 쓰인다.
 
+> **로봇 미들웨어의 정의.** **로봇 미들웨어**(robot middleware)는 로봇의 프로세스들과 네트워크 사이에 놓인 *소프트웨어 계층*, 곧 라이브러리와 도구의 묶음이고, 위의 네 조건을 모두 채워야만 이 이름을 얻는다. (1) 프로세스와 머신 경계를 넘는 **타입 있는 데이터 교환**, (2) 어느 프로세스도 남의 주소를 전해 듣지 않아도 되는 **탐색**, (3) 살아남은 쪽이 알아서 다시 붙는 **독립 재시작**, (4) 컴파일러가 검사할 수 있는 **공통 타입 언어**. ROS 2가 그런 미들웨어이고, 그것을 쓸 만하게 만드는 관례 — 공유 메시지 정의, 이름 규칙, 빌드와 커맨드라인 도구(2절) — 가 함께 온다.
+>
+> $$A_{\text{wired}}=\sum_{k}n^{\text{pub}}_{k}\,n^{\text{sub}}_{k},\qquad A_{\text{middleware}}=0$$
+>
+> $A$는 누군가 설정하고 최신으로 유지해야 하는 주소의 수, $k$는 데이터 스트림, $n^{\text{pub}}_k$와 $n^{\text{sub}}_k$는 스트림 $k$를 내는 프로세스와 받는 프로세스의 수다. 손으로 배선하면 생산자–소비자 쌍마다 주소가 하나씩 필요해서 곱으로 늘고, 탐색(4절)이 있으면 프로세스는 자기가 쓰는 스트림의 이름만 안다.
+>
+> - **예**: 그림의 P6. `/goal`은 생산자 $1$, 소비자 $2$이고 `/cmd`는 $1$과 $1$(로거)이므로 손 배선이면 $A=1\cdot2+1\cdot1=3$이다. ROS 2에서는 주소 $0$개, 이름 $2$개다.
+> - **비예**: 맨 소켓. 바이트를 옮기니 조건 (1)을 타입 없이 채울 뿐이고 (2)–(4)는 하나도 주지 않는다. 주소 $3$개를 손으로 관리해야 하고, 카메라가 새 포트로 재시작하면 두 소비자가 모두 아무것도 없는 곳을 가리킨다. "그냥 소켓 쓰자"는 제안이 떠안는 일이 바로 이 빠진 조건들이다(스스로 점검 1번).
+
 ### 2. ROS 2가 아닌 것
 
 초심자가 몇 주를 잃는 오해 세 가지.
@@ -638,6 +693,15 @@ $$\ell=\max\bigl(0,\;f-(r+D)\bigr)$$
 - **파라미터**는 시작 시점과 실행 중에 노드를 설정한다.
 - **그래프**는 살아 있는 노드와 연결의 집합이다. 어디에도 적혀 있지 않고, 런타임에 탐색되며, 노드가 뜨고 지면 바뀐다.
 
+> **계산 그래프의 정의.** **계산 그래프**(computation graph)는 파일이 아니라 *실행 중에만 존재하는 자료 구조*다. 시각 $t$에 살아 있는 노드들과, 미들웨어가 그 엔드포인트 사이에 맺어 준 연결이다. 조건은 셋이다. **꼭짓점**은 노드다(완전한 정의는 [[04-robotics/ros2/nodes-topics-messages|25.2 §2]]). **간선**은 퍼블리셔와 서브스크립션, 또는 클라이언트와 서버가 **짝지어졌을 때만** 생긴다 — 같은 `ROS_DOMAIN_ID`(4절), 같은 해석된 이름, 같은 타입, 호환되는 QoS(5절). 그리고 **선언되지 않고 탐색된다**. 그래서 프로세스가 도는 동안에만 존재한다.
+>
+> $$E(t)=\{(p,s):\ p,s\ \text{alive at }t,\ d_p=d_s,\ n_p=n_s,\ \tau_p=\tau_s,\ Q_p\sim Q_s\}$$
+>
+> $p$는 퍼블리셔, $s$는 서브스크립션, $d$는 도메인 ID, $n$은 해석된 토픽 이름, $\tau$는 메시지 타입, $Q_p\sim Q_s$는 QoS 호환이다. 조건들의 논리곱이므로 어느 한 항만 어긋나도 간선은 오류 없이 사라진다.
+>
+> - **예**: 그림의 P6은 $|E|=3$이다. `/goal` 위의 카메라→제어기와 카메라→로거, `/cmd` 위의 제어기→로거. `ros2 topic info /goal`은 퍼블리셔 $1$, 서브스크립션 $2$를 보고한다.
+> - **비예**: launch 파일이나 그림. `/logger`를 멈춰도 둘은 그대로지만 $|E|$는 $3$에서 $1$로 준다. `ROS_DOMAIN_ID=1`인 셸에서는 P6의 노드가 하나도 보이지 않는다(11절). 도구가 보고하는 것은 $E(t)$이고, 그래서 다음 문단이 소스가 아니라 돌아가는 그래프를 심문하라고 말한다.
+
 실무적 귀결: *ROS 2 시스템은 소스를 읽어서가 아니라 돌아가는 그래프를 심문해서 디버깅한다.* 9절이 그 심문 명령들이고, 이 페이지에서 가장 오래 쓸 내용이다.
 
 ### 4. ROS 1이 있는데 ROS 2가 존재하는 이유
@@ -648,6 +712,15 @@ ROS 1은 잘 돌아갔고, 당신이 읽을 로보틱스 문헌의 상당수가 
 - **보안.** ROS 1에는 전송 구간의 인증·암호화·접근 제어가 없었다. ROS 2는 DDS 보안 플러그인을 물려받는다 — 전송 암호화, 참여자 인증, 무결성, 도메인 전역 접근 제어. 설정 단위는 *security enclave*(그것을 쓰는 노드들이 공유하는 키·인증서·권한의 이름 붙은 묶음)다.
 - **임베디드·소형 플랫폼.** 계층 설계(클라이언트 라이브러리 → `rcl`: `rclcpp`와 `rclpy`가 함께 감싸는 공용 C 코어 → `rmw`: 설치된 미들웨어에 닿는 얇은 인터페이스, 5절에서 설명 → 미들웨어)는 데스크톱 Linux를 전제하지 않고 제약된 대상에 닿을 수 있도록 만들어졌다.
 - **실시간 의도.** 공식 문서는 ROS 1 초기 설계에서 실시간이 고려되지 않았고 이제 와서 개조하는 것은 불가능에 가깝다고 분명히 적는다. ROS 2는 그 제약을 처음부터 염두에 두고 시제품화됐다.
+
+> **탐색과 도메인 ID의 정의.** **탐색**(discovery)은 첫째 항목의 그 메커니즘으로, 마스터 없이 *모든 참여자가 함께 돌리는 분산 프로토콜*이다. `ROS_DOMAIN_ID`는 그 범위를 정하는 *정수*이고, 셸이 다른 값을 export하지 않으면 $0$이다. 조건은 넷이다. 시작하는 노드는 도메인 ID가 같은 노드들에게 **자신을 알리고**, 그들은 자기 정보로 답한다. 주기적으로 **다시 알려서** 늦게 온 쪽도 찾는다. 떠날 때 **떠난다고 알린다**. 그리고 엔드포인트는 QoS가 **호환될 때만** 연결된다(5절). ROS 2가 약속하는 것은 분리 자체이고, 5절의 DDS 구현들은 도메인 ID에서 UDP 포트를 계산하는 방식으로 그것을 지킨다.
+>
+> $$p_{\text{disc}}=7400+250\,d,\qquad p_{\text{uni}}=7410+250\,d+2i$$
+>
+> $d$는 도메인 ID, $p_{\text{disc}}$는 탐색용 멀티캐스트 포트, $p_{\text{uni}}$는 참여자 $i$의 탐색용 유니캐스트 포트이고, 참여자는 그 머신의 프로세스마다 하나다. 문서의 포트 계산기가 쓰는 식 그대로다. 포트는 $16$비트에 들어가야 하므로 $d\le232$이고, 문서가 Linux에서 안전하다고 하는 범위는 $0$–$101$이다.
+>
+> - **예**: 기본 도메인의 P6은 포트 $7400$에서 탐색한다. 세 셸 모두 `ROS_DOMAIN_ID=7`이면 $7400+250\cdot7=9150$으로 옮겨 가고, 도메인 $0$의 어떤 노드에게도 보이지 않는다.
+> - **비예**: 네임스페이스, 또는 자물쇠. 도메인 $0$에서 `/cart2`로 밀어 넣은 두 번째 카트는 이름만 바뀌고 탐색은 그대로라, 두 카트가 포트 $7400$과 그래프 하나를 함께 쓴다. 그리고 도메인 ID는 접근 제어가 아니다. 같은 정수를 export한 누구든 들어오고, 그것을 막으라고 있는 것이 보안 enclave(둘째 항목)다.
 
 그리고 결정적인 실무 사실: **ROS 1은 끝났다.** 마지막 ROS 1 배포판 Noetic Ninjemys는 2025년 5월 31일 지원이 종료됐다. 새 작업은 ROS 2에서 시작한다. 코드가 ROS 1인 2016–2021년 논문을 읽는다면 그것은 아카이브를 읽는 것이다.
 
@@ -663,6 +736,15 @@ ROS 2는 자체 와이어 프로토콜, 즉 네트워크를 오가는 바이트 
 - `rmw_cyclonedds_cpp` — Eclipse Cyclone DDS. 역시 포함.
 - `rmw_connextdds` — RTI Connext. 상용, 별도 설치.
 - `rmw_gurumdds_cpp` — 커뮤니티 지원.
+
+> **rmw 계층의 정의.** `rmw`는 *인터페이스*, 곧 ROS가 미들웨어에 닿는 C API이고, **rmw 구현**(rmw implementation)은 그것을 제품 하나 위에서 이행하는 *라이브러리*다. `rmw_fastrtps_cpp`가 Fast DDS 위에서 그렇게 한다. 조건은 셋이다. 그 위의 모든 것이 **벤더와 무관하다** — 당신의 노드, `rclpy`나 `rclcpp`, `rcl`은 `rmw`만 부르므로 벤더를 바꿔도 당신 코드를 다시 빌드할 필요가 없다. 프로세스마다 **구현 하나를 쓴다** — 프로세스가 시작할 때 `RMW_IMPLEMENTATION` 환경 변수가 정하고, 비어 있으면 `rmw_fastrtps_cpp`다. 그리고 **와이어 위로 나가는 것은 구현의 몫**이지 ROS의 몫이 아니다.
+>
+> $$\text{node}\ \to\ \texttt{rclpy}\,|\,\texttt{rclcpp}\ \to\ \texttt{rcl}\ \to\ \texttt{rmw}\ \to\ \texttt{rmw\_}\langle\text{impl}\rangle\ \to\ \text{vendor DDS}\ \to\ \text{network}$$
+>
+> 화살표는 실제 일을 하는 아래 계층을 가리킨다. 앞의 넷은 ROS 2가 고정하고 나머지는 `RMW_IMPLEMENTATION`이 고르므로, `rmw` 아래에서 정해지는 것 — 탐색 트래픽, 버퍼 크기, 4절의 포트 식 — 은 벤더의 성질이다.
+>
+> - **예**: P6의 노드 셋을 세 셸 모두 `RMW_IMPLEMENTATION=rmw_cyclonedds_cpp`로 띄운다. 같은 코드, 간선 $3$개인 같은 그래프이고, 아래의 라이브러리만 다르다.
+> - **비예**: 세 셸 중 둘에만 설정하기. 문서는 서로 다른 구현 사이의 통신이 제한된 상황에서는 될 수 있지만 **보장되지 않는다**고 적으므로, 벤더가 $2:1$로 갈린 P6은 연결될 수도 안 될 수도 있다. 시스템 전체에 구현 하나가 규칙이다.
 
 사는 것:
 
@@ -723,6 +805,15 @@ source /opt/ros/jazzy/setup.bash
 형식적인 절차가 아니다. 이 파일은 `PATH`(그래야 `ros2`가 잡힌다), `AMENT_PREFIX_PATH`와 `CMAKE_PREFIX_PATH`(패키지 탐색), `LD_LIBRARY_PATH`와 `PYTHONPATH`(라이브러리와 Python 모듈 import), 그리고 ROS 전용 변수를 내보낸다. 환경 변수는 프로세스에 속하고 자식에게만 상속되므로, source 전에 열어 둔 셸이나 두 번째 탭에는 아무것도 없다.
 
 이 설계는 의도된 것이다. 배포판 두 개, 또는 배포판과 내 워크스페이스가 한 머신에 공존하고 터미널마다 선택되게 하는 장치다. 대가는 source하는 규율이다.
+
+> **source의 정의.** setup 파일을 **source**한다는 것은 *셸 하나에 가하는 조작*이다. `source`는 파일의 명령을 자식 프로세스가 아니라 지금 셸 안에서 실행하므로, 그 파일이 export하는 `PATH`, `AMENT_PREFIX_PATH` 같은 변수가 그 셸의 환경을 바꾼다. 조건은 셋이다. **지금 셸에만** 작용한다. 그 효과는 **그 셸에서 그 뒤에 시작된 프로세스에게만** 간다. 프로세스는 시작하는 순간 부모 환경의 사본을 받고, 그 뒤의 변화는 보지 못하기 때문이다. 그리고 **쌓인다**. source한 워크스페이스마다 앞서 설정된 경로 앞에 자기 경로를 붙인다([[04-robotics/ros2/workspaces-packages-launch|25.4 §6]]의 오버레이).
+>
+> $$\text{env}(c)=\text{env}(\text{parent of }c)\ \text{at the moment }c\text{ starts}$$
+>
+> $c$는 아무 프로세스다. 그래서 한 터미널에서 export한 변수는 그 터미널이 그 뒤에 띄우는 프로세스에만 있고, 다른 어느 터미널에도 없다.
+>
+> - **예**: P6의 camera, controller, logger를 손으로 띄우면 터미널 셋이 들고, 터미널마다 따로 `source /opt/ros/jazzy/setup.bash`가 필요하다. 노드 $3$개에 source $3$번, 그리고 `ros2 topic list`를 칠 터미널에 $4$번째.
+> - **비예**: `bash /opt/ros/jazzy/setup.bash`. 오류 없이 끝나지만 쓸 수 있는 것은 아무것도 바뀌지 않는다. export는 이미 끝나 버린 자식 셸에서 일어났으므로 다음 명령은 여전히 `ros2: command not found`라고 답한다(11절). 한 탭에서 source하고 다른 탭에서 일해도 똑같이 실패한다. 11절이 코드보다 `printenv`를 먼저 보는 이유다.
 
 `~/.bashrc`에 넣을 수 있다.
 
@@ -920,6 +1011,7 @@ ros2: command not found
 
 - ROS 2 Jazzy 문서 — Installation: Ubuntu (deb packages); Configuring your ROS 2 environment; Using turtlesim, ros2 and rqt; Understanding nodes; Understanding topics.
 - ROS 2 Jazzy 문서 — Concepts: Discovery; Different ROS 2 middleware vendors; ROS 2 Security; Understanding real-time programming.
+- ROS 2 Jazzy 문서 — Concepts: [The ROS_DOMAIN_ID](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Domain-ID.html)(기본 도메인 0, 안전한 범위, 그리고 4절이 식으로 적은 포트 계산기); [Internal ROS interfaces](https://docs.ros.org/en/jazzy/Concepts/Advanced/About-Internal-Interfaces.html)(클라이언트 라이브러리 → `rcl` → `rmw` → 구현); How-to guides: [Working with multiple RMW implementations](https://docs.ros.org/en/jazzy/How-To-Guides/Working-with-multiple-RMW-implementations.html)(`RMW_IMPLEMENTATION`).
 - ROS 2 Jazzy 문서 — Releases(배포판 및 EOL 표).
 - Open Robotics, "ROS Noetic End-of-Life: May 31, 2025" (ROS Discourse 공지).
 - Gazebo 문서 — ROS 설치 / ROS 2와 Gazebo 버전 짝.

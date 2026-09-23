@@ -105,6 +105,24 @@ elbow-down; a 7-dof arm has a continuum). This multimodality is a useful analogy
 (closed-form, e.g. 6R with spherical wrist) enumerates all branches exactly; when geometry
 doesn't permit it, go numerical.
 
+> **Inverse kinematics problem, defined.** The **inverse kinematics problem** is *an equation to be solved for the joints*: given a target, find joint vectors that forward kinematics sends onto it. Three conditions define it. **The target is fixed**: a pose $X \in SE(3)$, or task coordinates $x_d$ for a position task, together with the FK map of ch.4. **The equation is exact**: $\theta$ solves it when $T(\theta) = X$, and a numerical solver meets that only to a tolerance it must state. And **its solution set is part of the problem**: $\Theta(X)$ can be empty (outside the workspace), finite (several branches) or a continuum (a redundant arm), and a solver that returns one $\theta$ has solved the problem without describing the set (MR ch.6).
+>
+> $$\Theta(X) = \{\theta \in \mathbb{R}^n :\ T(\theta) = X\} = T^{-1}(X)$$
+>
+> where $T^{-1}$ means the preimage, not an inverse function: FK is single-valued, but many joint vectors can share one pose, so a preimage need not be a single point.
+>
+> - **Example**: P2's tip target $(1,1)$ has $\Theta = \{(0^\circ, 90^\circ),\ (90^\circ, -90^\circ)\}$, angles mod $360^\circ$. The target $(2.5, 0)$ has $\Theta = \emptyset$, since it would need $\cos\theta_2 = 2.125$.
+> - **Non-example**: a reachable point taken for a reachable pose. Add the tool's direction $\phi = 45^\circ$ to the target $(1,1)$: each branch fixes $\phi = \theta_1 + \theta_2$, $90^\circ$ on one and $0^\circ$ on the other, so $\Theta = \emptyset$ although both branches reach the point. A position-only solver reports success on a pose task that P2 cannot do.
+
+> **Analytic IK, defined.** **Analytic inverse kinematics** is *a closed-form solution method*: explicit formulas that list the solution set. Three conditions define it. **Closed form**: a finite sequence of algebraic and trigonometric steps, such as the law of cosines and $\operatorname{atan2}$, with no iteration and no initial guess. **Complete**: one formula per branch, so every element of a finite $\Theta(X)$ comes out. **It decides existence**: the same formulas say when $\Theta(X) = \emptyset$. Only special geometries admit one, such as the planar 2R arm of MR's ch.6 introduction and the PUMA- and Stanford-type arms with a spherical wrist of MR §6.1.
+>
+> $$\theta_2 = \pm\arccos\frac{x^2 + y^2 - L_1^2 - L_2^2}{2L_1L_2}, \qquad \theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}\bigl(L_2\sin\theta_2,\ L_1 + L_2\cos\theta_2\bigr)$$
+>
+> where $(x, y)$ is the target and the $\pm$ gives the two branches, since the law of cosines fixes $\cos\theta_2$ and leaves the sign of $\theta_2$ open; the $\arccos$ exists exactly when its argument lies in $[-1, 1]$, which is the existence test. Steps 1–2 of the worked case derive both lines.
+>
+> - **Example**: at $(1,1)$ the argument is $0$, so $\theta_2 = \pm 90^\circ$ and $\theta_1 = 0^\circ$ or $90^\circ$: both branches, with no seed.
+> - **Non-example**: the same formula coded with $\theta_2 = \arccos(\cdot)$ and no $\pm$. It is closed-form but not complete: $\arccos$ returns values in $[0, \pi]$, so it finds $(0^\circ, 90^\circ)$ and never $(90^\circ, -90^\circ)$, and a planner that needs the other elbow to clear an obstacle is told that none exists.
+
 <svg viewBox="0 0 560 258" style="max-width:100%;height:auto" role="img" aria-label="one target reached by two joint solutions, and the average of the two overshooting it">
   <g stroke="currentColor" stroke-width="1" opacity="0.25">
     <line x1="40" y1="190" x2="250" y2="190"/><line x1="60" y1="200" x2="60" y2="30"/>
@@ -167,6 +185,15 @@ is the pseudoinverse ([[02-foundations/linear-algebra|least squares]]).
 
 This is Newton's method of [[02-foundations/optimization|4. Optimization §3]] in vector form. For a scalar equation $f(x) = 0$, Newton steps $x \leftarrow x - f(x)/f'(x)$; here the equation is $\mathrm{FK}(\theta) - x_{goal} = 0$, so the derivative $f'$ becomes the Jacobian $J$, dividing by it becomes solving $J\,\Delta\theta = e$, and when $J$ is not square or not invertible, solving means least squares — hence $J^\dagger$.
 
+> **Newton-Raphson IK, defined.** **Newton-Raphson inverse kinematics** is *an iterative root-finding algorithm*: it produces a sequence of joint vectors, not a formula. Three conditions define it. **It seeks a root of the task residual** $e(\theta) = x_d - f(\theta)$. **It re-linearizes every step**: $J$ is evaluated at the current iterate, never frozen. **It solves the linear model in least squares**: $\Delta\theta = J^\dagger e$, which is $J^{-1}e$ when $J$ is square and invertible. Two rules sit outside the definition (MR §6.2.2). The loop stops on the residual, $\|e\| \le \epsilon$, with separate bounds on $\|\omega_b\|$ and $\|v_b\|$ for a pose, since a step-size test would stop at Step 4's seed $0.586\,\mathrm{m}$ from the target. And it converges only from a seed inside a solution's basin of attraction.
+>
+> $$\theta_{k+1} = \theta_k + J^\dagger(\theta_k)\,\bigl(x_d - f(\theta_k)\bigr), \qquad \text{stop when } \|x_d - f(\theta_k)\| \le \epsilon$$
+>
+> where $f$ is forward kinematics in task coordinates and $J = \partial f/\partial\theta$; the step zeroes the first-order Taylor model of $e$, so near a regular solution each error is roughly proportional to the square of the one before.
+>
+> - **Example**: P2, target $(1,1)$, seed $(20^\circ, 70^\circ)$: $\|e\| = 0.347,\ 0.066,\ 0.0021,\ 2\times10^{-6}\,\mathrm{m}$, landing on $(0^\circ, 90^\circ)$. Seeded at $(60^\circ, -60^\circ)$ the same loop lands on $(90^\circ, -90^\circ)$ instead.
+> - **Non-example**: the same loop with $J$ frozen at the seed, a chord iteration. From $(20^\circ, 70^\circ)$ it still reaches $(0^\circ, 90^\circ)$, but after three steps $\|e\|$ is $1.2\times10^{-3}\,\mathrm{m}$ against Newton-Raphson's $2\times10^{-6}$, because each step now multiplies the error by a factor that settles near $0.06$ instead of squaring it. A solver that reuses one Jacobian to save time pays for it in iterations.
+
 **The SE(3) error in numbers, on P2.** Seed at home, $\theta = (0, 0)$, so $T_{now} = M$, and ask for $T_{goal} = T_{sb}$, the catalog tool pose of ch.3 §4. Then $M^{-1}T_{sb}$ has $R = R_z(90^\circ)$ and $p = (-1, 1, 0)$, and the logarithm of ch.3 §5 gives $e = (0, 0, \pi/2;\ 0, \pi/2, 0) = \mathcal{B}_2\cdot\frac{\pi}{2}$ — the elbow's body screw $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$ of [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]], turned a quarter turn. At home the body Jacobian's columns are ch.4's body screws, $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$ and $\mathcal{B}_2$, and $J_b^\dagger e = (0,\ \pi/2)$: one Newton step lands exactly on $(0^\circ, 90^\circ)$, because this error is itself one joint's screw. A general error is not, which is why the loop below repeats.
 
 **Follow one iteration.** Compute the current pose, express the goal error in a chosen frame, and evaluate the matching Jacobian at the current joints. Solve the local relation JΔθ ≈ e, update the joint guess, then recompute both pose and error. Repeating is necessary because the Jacobian describes only local change. A damping or step-size rule can keep the update from trusting that approximation too far.
@@ -213,6 +240,16 @@ $\theta^{(0)} = (45°, 90°)$.
   that outside literature, chosen so that $\lambda$ carries units; the optimization page
   writes $\lambda$. Do not go looking for it in the chapter. For a two-link arm coded end to
   end — analytic IK with both elbow branches, then one damped step — see [[02-foundations/algorithms/robotics-ai-problems|11.8 §6]].
+
+> **Damped least squares, defined.** **Damped least squares** (DLS) is *a regularized step rule for numerical IK*: the joint step that best reduces the linearized error while paying for its own length. Three conditions define it. **Damping $\lambda > 0$**: $JJ^\top + \lambda^2 I$ is then positive definite, so the inverse exists at every $\theta$, singular or not. **A trade-off objective**: the step minimizes the residual plus a penalty on its size. **Bounded gain**: along a singular direction with value $\sigma$ the error is scaled by $\sigma/(\sigma^2 + \lambda^2) \le 1/(2\lambda)$ instead of $1/\sigma$, and as $\lambda \to 0$ away from singularities the step returns to $J^\dagger e$.
+>
+> $$\Delta\theta = J^\top\bigl(JJ^\top + \lambda^2 I\bigr)^{-1}e = \arg\min_{\Delta\theta}\ \|J\Delta\theta - e\|^2 + \lambda^2\|\Delta\theta\|^2$$
+>
+> where $e$ is the task error and $\lambda$ the damping; the two sides agree because setting the cost's gradient to zero gives $(J^\top J + \lambda^2 I)\,\Delta\theta = J^\top e$, the Levenberg–Marquardt form above.
+>
+> - **Example**: Step 5's seed $(45^\circ, 10^\circ)$, where $\sigma_{\min} = 0.0779$. Undamped, the weak direction is amplified $12.8$ times and the step is $7.51\,\mathrm{rad}$; at $\lambda = 0.3$ its gain is $0.81$, no step can exceed $0.994\,\mathrm{rad}$, and the arm moves to $(30.3^\circ, 33.1^\circ)$ with $\|e\| = 0.506$.
+> - **Non-example**: the plain pseudoinverse $J^\dagger$, which libraries return at every $\theta$ and which therefore looks safe. It is defined everywhere, but its gain $1/\sigma$ has no upper bound as $\sigma \to 0$, which is the $7.51\,\mathrm{rad}$ step above. A solver that swaps DLS for it gains accuracy far from singularities and loses control near them.
+
 - **Redundancy** ($n > 6$): the null space of $J$ ([[02-foundations/linear-algebra|§2's null space]], this time of $J$: joint velocities with $J\dot\theta = 0$) moves joints without moving the tool —
   spend it on secondary objectives (joint limits, obstacles, singularity avoidance).
 
@@ -345,6 +382,24 @@ FK와 달리 IK의 해는 **0개, 1개, 여러 개, 무한히 많을 수** 있�
 [[01-canonical-papers/notes/4-vla/diffusion-policy|생성형 정책]]이 대안 행동을 표현하는 이유에 대한 비유다. 서로 다른 유효 해를 평균하면 무효 해가 될 수 있다. 특정 학습 정책의 성능 우위를 증명하는 것은 아니다. **해석적 IK**(닫힌 형태, 예: 구면
 손목의 6R)는 모든 가지를 정확히 열거한다; 기하가 허락하지 않으면 수치로 간다.
 
+> **역기구학 문제의 정의.** **역기구학 문제**(inverse kinematics problem)는 *관절에 대해 푸는 방정식*이다. 목표가 주어지면 순기구학이 그 목표로 보내는 관절 벡터를 찾는다. 정의 조건 셋. **목표가 고정되어 있다**: 자세 $X \in SE(3)$, 위치 과제라면 과제 좌표 $x_d$이고, 4장의 FK 사상도 함께 고정이다. **등식이 정확하다**: $T(\theta) = X$일 때 $\theta$가 해이고, 수치 해법은 스스로 밝혀야 할 허용오차 안에서만 그것을 만족한다. 그리고 **해 집합이 문제의 일부다**: $\Theta(X)$는 비어 있을 수도(작업 영역 밖), 유한할 수도(가지 여럿), 연속체일 수도(여유자유도 팔) 있고, $\theta$ 하나를 돌려준 해법은 문제를 풀었지만 집합을 기술하지는 않은 것이다(MR 6장).
+>
+> $$\Theta(X) = \{\theta \in \mathbb{R}^n :\ T(\theta) = X\} = T^{-1}(X)$$
+>
+> 여기서 $T^{-1}$은 역함수가 아니라 역상을 뜻한다. FK는 값이 하나로 정해지지만 여러 관절 벡터가 한 자세를 나눠 가질 수 있으므로, 그 역상은 원소가 하나라는 보장이 없다.
+>
+> - **예**: P2의 말단 목표 $(1,1)$은 $\Theta = \{(0^\circ, 90^\circ),\ (90^\circ, -90^\circ)\}$다(각은 $360^\circ$를 법으로). 목표 $(2.5, 0)$은 $\cos\theta_2 = 2.125$가 필요하므로 $\Theta = \emptyset$이다.
+> - **비예**: 도달 가능한 점을 도달 가능한 자세로 착각하는 것. 목표 $(1,1)$에 도구 방향 $\phi = 45^\circ$를 더해 보자. 가지마다 $\phi = \theta_1 + \theta_2$가 정해져 한쪽은 $90^\circ$, 다른 쪽은 $0^\circ$이므로, 두 가지 모두 그 점에 닿는데도 $\Theta = \emptyset$이다. 위치만 푸는 해법은 P2가 할 수 없는 자세 과제에 성공을 보고한다.
+
+> **해석적 IK의 정의.** **해석적 역기구학**(analytic inverse kinematics)은 *닫힌 형태의 풀이법*이다. 해 집합을 나열하는 명시적 공식이다. 정의 조건 셋. **닫힌 형태**: 코사인 법칙과 $\operatorname{atan2}$ 같은 대수·삼각 연산을 유한 번 거칠 뿐이고, 반복도 초기값도 없다. **완전하다**: 가지마다 공식이 하나씩 있어 유한한 $\Theta(X)$의 원소가 모두 나온다. **존재를 판정한다**: 같은 공식이 $\Theta(X) = \emptyset$인 때를 말해 준다. MR 6장 도입부의 평면 2R 팔, 그리고 MR §6.1의 구면 손목을 가진 PUMA형·Stanford형 팔처럼 특별한 기하만 이것을 허락한다.
+>
+> $$\theta_2 = \pm\arccos\frac{x^2 + y^2 - L_1^2 - L_2^2}{2L_1L_2}, \qquad \theta_1 = \operatorname{atan2}(y, x) - \operatorname{atan2}\bigl(L_2\sin\theta_2,\ L_1 + L_2\cos\theta_2\bigr)$$
+>
+> 여기서 $(x, y)$는 목표다. 코사인 법칙이 정하는 것은 $\cos\theta_2$뿐이고 $\theta_2$의 부호는 열려 있으므로 $\pm$가 두 가지를 준다. $\arccos$는 인수가 $[-1, 1]$에 들 때만 존재하므로 그것이 존재 판정이다. 두 줄 모두 '대상으로 한 번 끝까지'의 1–2단계가 유도한다.
+>
+> - **예**: $(1,1)$에서 인수가 $0$이므로 $\theta_2 = \pm 90^\circ$, $\theta_1 = 0^\circ$ 또는 $90^\circ$다. 초기값 없이 두 가지가 다 나온다.
+> - **비예**: 같은 공식을 $\pm$ 없이 $\theta_2 = \arccos(\cdot)$로 짠 코드. 닫힌 형태이지만 완전하지 않다. $\arccos$는 $[0, \pi]$의 값만 돌려주므로 $(0^\circ, 90^\circ)$만 찾고 $(90^\circ, -90^\circ)$는 끝내 찾지 못한다. 장애물을 피하려고 다른 엘보가 필요한 계획기는 그런 해가 없다는 답을 받는다.
+
 <svg viewBox="0 0 560 258" style="max-width:100%;height:auto" role="img" aria-label="같은 목표에 도달하는 두 관절 해와, 그 평균이 목표를 지나쳐 버리는 것">
   <g stroke="currentColor" stroke-width="1" opacity="0.25">
     <line x1="40" y1="190" x2="250" y2="190"/><line x1="60" y1="200" x2="60" y2="30"/>
@@ -407,6 +462,15 @@ $J^\dagger$는 유사역행렬([[02-foundations/linear-algebra|최소제곱]])�
 
 이것은 [[02-foundations/optimization|4. 최적화 §3]]의 뉴턴법을 벡터로 쓴 것이다. 스칼라 방정식 $f(x) = 0$에서 뉴턴 스텝은 $x \leftarrow x - f(x)/f'(x)$다. 여기서는 방정식이 $\mathrm{FK}(\theta) - x_{goal} = 0$이므로 도함수 $f'$가 야코비안 $J$가 되고, 그것으로 나누는 일은 $J\,\Delta\theta = e$를 푸는 일이 되며, $J$가 정사각이 아니거나 가역이 아니면 푸는 것은 최소제곱을 뜻한다. 그래서 $J^\dagger$다.
 
+> **뉴턴-랩슨 IK의 정의.** **뉴턴-랩슨 역기구학**(Newton-Raphson inverse kinematics)은 *반복 근 찾기 알고리즘*이다. 공식이 아니라 관절 벡터의 수열을 만든다. 정의 조건 셋. **과제 잔차의 근을 찾는다**: $e(\theta) = x_d - f(\theta) = 0$을 푼다. **매 스텝 다시 선형화한다**: $J$는 현재 반복점에서 계산하고, 고정하지 않는다. **선형 모형을 최소제곱으로 푼다**: $\Delta\theta = J^\dagger e$이고, $J$가 정사각이고 가역이면 $J^{-1}e$다. 정의 밖의 규칙이 둘 있다(MR §6.2.2). 루프는 잔차로 멈춘다. 곧 $\|e\| \le \epsilon$이고, 자세라면 $\|\omega_b\|$와 $\|v_b\|$에 따로 한계를 둔다. 스텝 크기로 판정하면 4단계의 초기값에서 목표와 $0.586\,\mathrm{m}$ 떨어진 채 멈추기 때문이다. 그리고 해의 끌림 영역 안에 있는 초기값에서만 수렴한다.
+>
+> $$\theta_{k+1} = \theta_k + J^\dagger(\theta_k)\,\bigl(x_d - f(\theta_k)\bigr), \qquad \text{stop when } \|x_d - f(\theta_k)\| \le \epsilon$$
+>
+> 여기서 $f$는 과제 좌표로 쓴 순기구학, $J = \partial f/\partial\theta$다. 스텝은 $e$의 1차 테일러 모형을 0으로 만들므로, 정칙인 해 근처에서는 각 오차가 대략 직전 오차의 제곱에 비례한다.
+>
+> - **예**: P2, 목표 $(1,1)$, 초기값 $(20^\circ, 70^\circ)$. $\|e\| = 0.347,\ 0.066,\ 0.0021,\ 2\times10^{-6}\,\mathrm{m}$로 줄며 $(0^\circ, 90^\circ)$에 내려앉는다. $(60^\circ, -60^\circ)$에서 시작하면 같은 루프가 대신 $(90^\circ, -90^\circ)$에 내려앉는다.
+> - **비예**: 초기값에서 $J$를 고정한 같은 루프, 곧 현(chord) 반복. $(20^\circ, 70^\circ)$에서 시작해도 $(0^\circ, 90^\circ)$에 닿기는 하지만, 세 스텝 뒤의 $\|e\|$가 뉴턴-랩슨의 $2\times10^{-6}$에 비해 $1.2\times10^{-3}\,\mathrm{m}$다. 매 스텝 오차를 제곱하는 대신 $0.06$ 근처로 모이는 비율을 곱할 뿐이기 때문이다. 시간을 아끼려고 야코비안 하나를 재사용한 해법은 그 값을 반복 횟수로 치른다.
+
 **SE(3) 오차를 숫자로, P2에서.** 홈 $\theta = (0, 0)$에서 시작하므로 $T_{now} = M$이고, 목표는 3장 §4의 카탈로그 도구 자세 $T_{goal} = T_{sb}$다. 그러면 $M^{-1}T_{sb}$는 $R = R_z(90^\circ)$, $p = (-1, 1, 0)$이고, 3장 §5의 로그가 $e = (0, 0, \pi/2;\ 0, \pi/2, 0) = \mathcal{B}_2\cdot\frac{\pi}{2}$를 준다. [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 엘보 바디 스크류 $\mathcal{B}_2 = (0,0,1;\ 0,1,0)$을 4분의 1바퀴 돌린 것이다. 홈에서 바디 야코비안의 열은 4장의 바디 스크류 $\mathcal{B}_1 = (0,0,1;\ 0,2,0)$과 $\mathcal{B}_2$이고 $J_b^\dagger e = (0,\ \pi/2)$다. 뉴턴 한 스텝이 정확히 $(0^\circ, 90^\circ)$에 떨어진다. 이 오차 자체가 관절 하나의 스크류이기 때문이다. 일반적인 오차는 그렇지 않으므로 아래 루프가 반복한다.
 
 **반복 한 번을 따라간다.** 현재 자세를 계산하고 목표 오차를 정한 프레임으로 표현한다. 현재 관절에서 그 프레임의 야코비안을 구한다. 국소 관계 JΔθ ≈ e를 풀고 관절 추정을 갱신한 뒤 자세와 오차를 다시 계산한다. 야코비안이 국소 변화만 설명하므로 반복이 필요하다. 감쇠나 보폭 규칙은 근사를 너무 멀리 믿지 않게 한다.
@@ -452,6 +516,16 @@ $\theta^{(0)} = (45°, 90°)$에서 시작.
   $\lambda$가 단위를 갖게 하려는 것이다. 최적화 페이지는 $\lambda$로 쓴다. 6장에서 이
   표기를 찾지 마라. 2링크 팔을 처음부터 끝까지 코드로 옮긴 것 — 두 팔꿈치 해를 모두 주는
   해석적 IK와 감쇠 스텝 한 번 — 은 [[02-foundations/algorithms/robotics-ai-problems|11.8 §6]]에 있다.
+
+> **감쇠 최소제곱의 정의.** **감쇠 최소제곱**(damped least squares, DLS)은 *수치 IK를 위한 정칙화된 스텝 규칙*이다. 선형화한 오차를 가장 잘 줄이면서 스텝 자신의 길이에 값을 치르는 관절 스텝이다. 정의 조건 셋. **감쇠 $\lambda > 0$**: 그러면 $JJ^\top + \lambda^2 I$가 양정부호라서 특이하든 아니든 모든 $\theta$에서 역행렬이 있다. **맞바꿈 목적함수**: 스텝은 잔차에 스텝 크기의 벌점을 더한 값을 최소화한다. **이득에 상한이 있다**: 특이값 $\sigma$인 방향의 오차에는 $1/\sigma$ 대신 $\sigma/(\sigma^2 + \lambda^2) \le 1/(2\lambda)$가 곱해지고, 특이점에서 멀 때 $\lambda \to 0$이면 스텝은 $J^\dagger e$로 돌아간다.
+>
+> $$\Delta\theta = J^\top\bigl(JJ^\top + \lambda^2 I\bigr)^{-1}e = \arg\min_{\Delta\theta}\ \|J\Delta\theta - e\|^2 + \lambda^2\|\Delta\theta\|^2$$
+>
+> 여기서 $e$는 과제 오차, $\lambda$는 감쇠다. 두 변이 같은 것은 목적함수의 기울기를 0으로 두면 위의 Levenberg–Marquardt 형태 $(J^\top J + \lambda^2 I)\,\Delta\theta = J^\top e$가 나오기 때문이다.
+>
+> - **예**: 5단계의 초기값 $(45^\circ, 10^\circ)$, $\sigma_{\min} = 0.0779$. 감쇠가 없으면 약한 방향이 $12.8$배로 증폭되어 스텝이 $7.51\,\mathrm{rad}$다. $\lambda = 0.3$이면 그 방향의 이득은 $0.81$이고, 어떤 스텝도 $0.994\,\mathrm{rad}$를 넘지 못하며, 팔은 $(30.3^\circ, 33.1^\circ)$로 가서 $\|e\| = 0.506$이 된다.
+> - **비예**: 그냥 유사역행렬 $J^\dagger$. 라이브러리가 모든 $\theta$에서 돌려주니 안전해 보인다. 어디서나 정의되지만 이득에 상한이 없다. $\sigma \to 0$이면 $1/\sigma$가 끝없이 커지고, 그것이 위의 $7.51\,\mathrm{rad}$ 스텝이다. DLS를 이것으로 바꾼 해법은 특이점에서 먼 곳의 정확도를 얻는 대신 특이점 근처의 통제를 잃는다.
+
 - **여유자유도** ($n > 6$): $J$의 영공간([[02-foundations/linear-algebra|§2의 영공간]]을 이번엔 $J$에 적용한 것: $J\dot\theta = 0$인 관절 속도들)은 도구를 움직이지 않고 관절만 움직인다 — 이를
   2차 목표(관절 한계, 장애물, 특이점 회피)에 쓴다.
 

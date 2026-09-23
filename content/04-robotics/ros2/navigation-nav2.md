@@ -213,7 +213,7 @@ Jazzy is the first distribution where `nav2_bringup` targets modern Gazebo rathe
 
 $$\mathrm{tick}(n)\in\{\texttt{SUCCESS},\ \texttt{FAILURE},\ \texttt{RUNNING}\}$$
 
-where $n$ is the node being ticked and `RUNNING` means "not finished; tick me again". Two kinds of node make up the tree. *Leaves* do the work: an action leaf starts or polls a long job — here, a goal sent to one of the servers of §3 — and returns `RUNNING` until the job ends; a condition leaf checks something and returns `SUCCESS` or `FAILURE` at once. *Control-flow nodes* have children and decide which to tick and how to combine what comes back. The plain `Sequence` ticks its children in order and returns `FAILURE` at the first failure, `SUCCESS` only when all have succeeded; the plain `Fallback` ticks them in order until one succeeds. Nav2's own control-flow nodes are variants of those two. A non-example is a finite state machine: its memory is one current state, and each transition names the next state explicitly, whereas a tree is re-ticked from the root and which leaf runs next follows from the statuses its children return. That is what lets a subtree be reused in any context and a new goal preempt a recovery mid-flight, which is the argument of the rest of this section.
+where $n$ is the node being ticked and `RUNNING` means "not finished; tick me again". Two kinds of node make up the tree. *Leaves* do the work: an action leaf starts or polls a long job — here, a goal sent to one of the servers of §3 — and returns `RUNNING` until the job ends; a condition leaf checks something and returns `SUCCESS` or `FAILURE` at once. *Control-flow nodes* have children and decide which to tick and how to combine what comes back. The plain `Sequence` ticks its children in order and returns `FAILURE` at the first failure, `SUCCESS` only when all have succeeded; the plain `Fallback` ticks them in order until one succeeds. Nav2's own control-flow nodes are variants of those two. On P6, `bt_navigator` ticks the root every `bt_loop_duration` of $10\,\mathrm{ms}$ — $100$ times a second, $2.5\,\mathrm{mm}$ of cart travel apart at $0.25\,\mathrm{m/s}$ — and the `FollowPath` leaf answers `RUNNING` to each of those ticks until the goal is reached, while the planner, behind the tree's $1\,\mathrm{Hz}$ rate limiter, is asked for a new path once per hundred ticks, every $250\,\mathrm{mm}$. A non-example is a finite state machine: its memory is one current state, and each transition names the next state explicitly, whereas a tree is re-ticked from the root and which leaf runs next follows from the statuses its children return. That is what lets a subtree be reused in any context and a new goal preempt a recovery mid-flight, which is the argument of the rest of this section.
 
 The default tree for a single goal is `navigate_to_pose_w_replanning_and_recovery.xml`, and its top two nodes tell you the whole design:
 
@@ -235,6 +235,15 @@ Why this rather than a finite state machine. In an FSM, "if the controller fails
 
 What the tree buys when recovery is needed is specifically this: **recovery is scoped.** The default tree wraps the planner in its own `RecoveryNode` whose recovery is *clear the global costmap*, and the controller in its own whose recovery is *clear the local costmap*. Only when those contextual recoveries are exhausted does execution fall into the system-level recovery subtree — clear both costmaps, spin, wait, back up — retrying the whole navigation subtree after each one. A `GoalUpdated` condition sits in the reactive fallbacks so a new goal preempts a recovery in progress. You can read the policy, edit it, and hand a different XML file per goal via the action's `behavior_tree` field.
 
+> **Recovery behaviour, defined.** A **recovery behaviour** is a *bounded corrective action* — clear a costmap, spin, wait, back up — that a `RecoveryNode` runs after the subtree it guards has failed. Four conditions define it: it **runs only on failure** of the guarded child; it is **bounded**, a single clear or a spin, wait or back-up of finite size; its success **buys one retry** and its failure fails the node; and the retries are **capped** by `number_of_retries`.
+>
+> $$n_{\text{attempts}}\le N+1,\qquad n_{\text{recoveries}}\le N$$
+>
+> where $N$ is `number_of_retries`, since each retry is paid for by one successful recovery. The default Jazzy tree sets $N=6$ at the top, and a `RoundRobin` takes the next recovery each time: clear both costmaps, spin $1.57\,\mathrm{rad}$, wait $5\,\mathrm{s}$, back up $0.30\,\mathrm{m}$ at $0.15\,\mathrm{m/s}$.
+>
+> - **Example**: a goal that keeps failing on P6 gets seven attempts with six recoveries between them — clear, spin, wait, back up, clear, spin — and the back-up ($0.30/0.15=2.0\,\mathrm{s}$, $0.30\times2048=614$ counts) plus the wait already cost $7.0\,\mathrm{s}$.
+> - **Non-example**: clearing a local costmap whose lethal cells come from a laser that sees the robot's own chassis (§13). The next update, $200\,\mathrm{ms}$ and $50\,\mathrm{mm}$ later, writes them back and every retry meets the same cause: a recovery that changes nothing is a delay, and `number_of_recoveries` (§10) shows it.
+
 ### 3. The servers, and what each owns
 
 Nav2 is a set of separate nodes, each hosting a map of named algorithm plugins behind an action interface.
@@ -246,6 +255,15 @@ Nav2 is a set of separate nodes, each hosting a map of named algorithm plugins b
 | `smoother_server` | refines a path after planning | `simple_smoother` → `nav2_smoother::SimpleSmoother` |
 | `behavior_server` | spin, back up, drive-on-heading, wait, assisted teleop | `nav2_behaviors::Spin`, `::BackUp`, `::DriveOnHeading`, `::Wait`, `::AssistedTeleop` |
 | `bt_navigator` | the behaviour tree; the goal-facing action | `nav2_bt_navigator::NavigateToPoseNavigator` |
+
+> **Planner server and controller server, defined.** Each is a *managed node that hosts named algorithm plugins behind one action*, and together they divide navigation by time scale. Four conditions define each. It is a **lifecycle node**, configured and activated in order by the lifecycle manager (§8). It holds a **map from plugin names to types** — `GridBased` → NavFn, `FollowPath` → MPPI — so a request names a plugin, not an algorithm. It serves **one kind of goal**: `ComputePathToPose` returns a path, `FollowPath` streams velocity commands until the path is done. And it **owns one costmap**: the planner the global one in `map`, the controller the local one in `odom`.
+>
+> $$\text{planner}:(x,\,x_{\text{goal}},\,C_{\text{global}})\mapsto\gamma,\qquad\text{controller}:(\gamma,\,x,\,C_{\text{local}})\mapsto u_k,\quad t_{k+1}-t_k=\frac{1}{f_{\text{ctrl}}}$$
+>
+> where $x$ is the robot's pose, $C$ a costmap, $\gamma$ the path, $u_k$ the $k$-th `/cmd_vel` and $f_{\text{ctrl}}$ the `controller_frequency`: the planner answers when asked, the controller on a clock.
+>
+> - **Example**: on P6 the default tree asks for a path once a second, every $250\,\mathrm{mm}$, and the controller answers every $50\,\mathrm{ms}$, every $12.5\,\mathrm{mm}$.
+> - **Non-example**: the `ros2_control` controller underneath, such as 25.7's `diff_drive_controller`. It is also called a controller, but it runs on the $200\,\mathrm{Hz}$ loop and turns a velocity into wheel commands; Nav2's controller only requests, and each request is re-applied for $200/20=10$ ticks (Step 2). Tuning one for the other's symptom is the classic confusion.
 
 Three points that are easy to miss. First, the plugin **name** is an alias and the plugin **type** is the implementation: DWB configured under the name `FollowPath` means every DWB parameter lives at `FollowPath.<param>`, and the behaviour tree asks for `FollowPath` without knowing which algorithm answers. Swapping controllers is a config edit, not a tree edit.
 
@@ -273,6 +291,15 @@ Each costmap is built by a stack of **layers**, which are pluginlib plugins appl
 
 The Jazzy defaults are `["static_layer", "obstacle_layer", "inflation_layer"]` for the global costmap and `["voxel_layer", "inflation_layer"]` for the local one. Order matters: inflation is last because it reads whatever the layers below it wrote.
 
+> **Costmap, defined.** A **costmap** is a *2D grid, in a named frame, whose cells hold an 8-bit cost*, rebuilt by a stack of layers. Four conditions define it. It has a **geometry**: an origin, a `resolution` in metres per cell and a size, fixed or rolling with the robot. Each cell holds a **cost from 0 to 255** with four reserved values — $0$ free, $253$ inscribed, $254$ lethal, $255$ unknown — and $1$ to $252$ graded between. It is **written by its layers in list order**: each update resets the area it covers, then lets every layer write over what the earlier ones left. And it is **refreshed at `update_frequency`**, which is not the rate it is published at.
+>
+> $$(i,j)=\Big(\Big\lfloor\frac{x-x_0}{r}\Big\rfloor,\ \Big\lfloor\frac{y-y_0}{r}\Big\rfloor\Big),\qquad C=L_n\circ\cdots\circ L_1(C_0)$$
+>
+> where $(x,y)$ is a point in the costmap's frame, $(x_0,y_0)$ the grid's origin, $r$ the resolution, $C_0$ the grid reset to free (or to unknown, when unknown space is tracked) and $L_1,\dots,L_n$ the layers in list order.
+>
+> - **Example**: the Jazzy local costmap is $3\times3\,\mathrm{m}$ at $r=0.05\,\mathrm{m}$, $60\times60=3600$ cells, and at P6's $0.25\,\mathrm{m/s}$ the cart crosses exactly one cell per $5\,\mathrm{Hz}$ update.
+> - **Non-example**: the `/local_costmap/costmap` topic that §12 step 2 measures at about $2\,\mathrm{Hz}$. It is a copy published at `publish_frequency` for display, while the controller reads the grid itself, refreshed at $5\,\mathrm{Hz}$; timing the costmap by its topic puts P6's updates $125\,\mathrm{mm}$ apart instead of $50$.
+
 Your robot's shape enters here, as either `robot_radius` (a circle) or `footprint` (a polygon). The maintainers' guidance is that a non-circular robot should give the real polygon, because several planners and all current controllers do full SE(2) footprint collision checking (SE(2) is a pose in the plane, position plus heading; its 3D counterpart SE(3) is in [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]]) and will plan into tighter spaces with it. Three exceptions where a radius is still right: the robot is tiny relative to the environment, compute is too limited for SE(2) checking, or you are using a holonomic planner (NavFn, Theta\*, Smac 2D) that ignores the footprint anyway. A holonomic planner plans as if the robot could move in any direction regardless of heading; the opposite, a nonholonomic robot such as a car, is defined in [[04-robotics/planning-decision-making#5.5 Planning under dynamics: kinodynamic search, lattices, and flatness|4. Planning §5.5]] and section 6 shows why the distinction matters.
 
 ### 5. What the inflation radius actually does
@@ -280,6 +307,15 @@ Your robot's shape enters here, as either `robot_radius` (a circle) or `footprin
 Beginners read `inflation_radius` as a safety margin: "keep the robot this far from walls." That is not what it is, and reading it that way produces the single most common misconfiguration in the ecosystem.
 
 Two distinct things are happening in the inflation layer. It writes the **inscribed** cost (253, which planners treat as collision; lethal 254 is the obstacle cell itself) within the robot's fully inscribed radius of an obstacle — that is the collision-avoidance part, and it is derived from your footprint, not from `inflation_radius`. Then, out to `inflation_radius`, it writes an **exponentially decaying** cost with `cost_scaling_factor` as the decay rate. Defaults are `inflation_radius: 0.55` and `cost_scaling_factor: 10.0` in the plugin, and `0.7` / `3.0` in the Jazzy TurtleBot configuration.
+
+> **Inflation, defined.** **Inflation** is a *function from a cell's distance to the nearest lethal cell to a cost*, which the inflation layer writes into every cell within `inflation_radius`, keeping the larger of that and what the layers below wrote. Three conditions define it, one per band. At **distance zero** the cell is the obstacle: $254$. Within the **inscribed radius** the cost is $253$, which planners treat as collision; it is the radius of the largest circle inside the footprint, so a centre that close collides at any heading. **From there out to `inflation_radius`** the cost decays exponentially at the rate `cost_scaling_factor`, and beyond it the layer writes nothing.
+>
+> $$c(d)=\begin{cases}254 & d=0\\ 253 & 0<d\le r_{\text{ins}}\\ \big\lfloor 252\,e^{-k\,(d-r_{\text{ins}})}\big\rfloor & r_{\text{ins}}<d\le R\end{cases}$$
+>
+> where $d$ is the distance in metres (cells times resolution), $r_{\text{ins}}$ the inscribed radius, $k$ the `cost_scaling_factor` and $R$ the `inflation_radius`; the skirt starts at $252$, the largest non-lethal cost, and halves every $\ln 2/k$ metres.
+>
+> - **Example**: the Jazzy TurtleBot values, $r_{\text{ins}}=0.22$, $k=3.0$, $R=0.70\,\mathrm{m}$. At $0.10\,\mathrm{m}$ past the inscribed band the cost is $\lfloor252e^{-0.3}\rfloor=186$; it halves every $0.231\,\mathrm{m}$ and at $R$ is still $59$, a slope across the whole skirt.
+> - **Non-example**: the plugin defaults, $k=10$ and $R=0.55$, read as "stay $0.55\,\mathrm{m}$ from walls". The cost halves every $69\,\mathrm{mm}$, about $1.4$ cells or $1.4$ of P6's $50\,\mathrm{mm}$ updates, and $0.30\,\mathrm{m}$ past the band it is $12$: a thin ring round a flat middle, which is this section's corner-cutting. A larger $k$ narrows the skirt; it does not widen it.
 
 That decaying skirt is not a safety margin. It is a **potential field that steers search**. NavFn, Theta\* and the Smac planners are cost-aware: given a smooth gradient they will run down the middle of a corridor and give obstacles a wide berth long before the search ever touches them. Given a thin inflation ring around the walls and a large zero-cost void in between, they have nothing to prefer inside the void, and produce paths that hug one wall or cut corners for no reason.
 
@@ -578,6 +614,8 @@ For the algorithms underneath — search, sampling, MPC, and what optimality mea
 - `ros-navigation/navigation2`, `jazzy` branch — `nav2_msgs/action/NavigateToPose.action`, `FollowPath.action`, `ComputePathToPose.action`; `nav2_bringup/params/nav2_params.yaml`; `nav2_bringup/rviz/nav2_default_view.rviz`.
 - REP 105, Coordinate Frames for Mobile Platforms.
 - `ros2/geometry2`, `jazzy` branch — `tf2_tools` and `tf2_ros` executables.
+- Nav2 documentation (Jazzy) — Configuration Guide: Behavior-Tree Navigator (`bt_loop_duration`), [docs.nav2.org](https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/configuring_bt_navigator/); RoundRobin, [docs.nav2.org](https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/bt_plugins/controls/RoundRobin/).
+- `ros-navigation/navigation2`, `jazzy` branch — `nav2_costmap_2d`: `inflation_layer.hpp` (`computeCost`), `inflation_layer.cpp` (the radius cut-off; the larger of old and new cost), `cost_values.hpp`, `layered_costmap.cpp` (reset, then the layers in order), [GitHub](https://github.com/ros-navigation/navigation2/tree/jazzy/nav2_costmap_2d); `nav2_behavior_tree/plugins/control/round_robin_node.cpp` and `nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml` (the retries, and the recoveries' order and sizes), [GitHub](https://github.com/ros-navigation/navigation2/tree/jazzy/nav2_behavior_tree).
 
 ### Self-check
 
@@ -821,7 +859,7 @@ Jazzy는 `nav2_bringup`이 Gazebo Classic이 아니라 현대 Gazebo를 대상�
 
 $$\mathrm{tick}(n)\in\{\texttt{SUCCESS},\ \texttt{FAILURE},\ \texttt{RUNNING}\}$$
 
-여기서 $n$은 tick되는 노드이고, `RUNNING`은 "아직 안 끝났으니 다시 tick하라"는 뜻이다. 트리는 두 종류의 노드로 이루어진다. *잎*이 일을 한다. 액션 잎은 긴 작업 — 여기서는 §3의 서버 하나에 보낸 목표 — 을 시작하거나 확인하고 작업이 끝날 때까지 `RUNNING`을 돌려주며, 조건 잎은 무언가를 확인해 곧바로 `SUCCESS`나 `FAILURE`를 돌려준다. *제어 흐름 노드*는 자식을 두고, 어느 자식을 tick할지와 돌아온 상태를 어떻게 합칠지 정한다. 기본 `Sequence`는 자식을 차례로 tick해 처음 실패한 자리에서 `FAILURE`를, 모두 성공했을 때만 `SUCCESS`를 돌려준다. 기본 `Fallback`은 하나가 성공할 때까지 차례로 tick한다. Nav2 자신의 제어 흐름 노드는 이 둘의 변형이다. 아닌 예는 유한 상태 기계다. 그 기억은 현재 상태 하나이고 전이마다 다음 상태를 명시적으로 지목하는 반면, 트리는 뿌리부터 다시 tick되고 다음에 어느 잎이 돌지는 자식들이 돌려준 상태에서 따라 나온다. 그 덕분에 서브트리를 어떤 맥락에서도 재사용하고, 새 목표가 진행 중인 복구를 도중에 선점할 수 있다. 이 절의 나머지가 펴는 논지가 그것이다.
+여기서 $n$은 tick되는 노드이고, `RUNNING`은 "아직 안 끝났으니 다시 tick하라"는 뜻이다. 트리는 두 종류의 노드로 이루어진다. *잎*이 일을 한다. 액션 잎은 긴 작업 — 여기서는 §3의 서버 하나에 보낸 목표 — 을 시작하거나 확인하고 작업이 끝날 때까지 `RUNNING`을 돌려주며, 조건 잎은 무언가를 확인해 곧바로 `SUCCESS`나 `FAILURE`를 돌려준다. *제어 흐름 노드*는 자식을 두고, 어느 자식을 tick할지와 돌아온 상태를 어떻게 합칠지 정한다. 기본 `Sequence`는 자식을 차례로 tick해 처음 실패한 자리에서 `FAILURE`를, 모두 성공했을 때만 `SUCCESS`를 돌려준다. 기본 `Fallback`은 하나가 성공할 때까지 차례로 tick한다. Nav2 자신의 제어 흐름 노드는 이 둘의 변형이다. P6에서 `bt_navigator`는 `bt_loop_duration`인 $10\,\mathrm{ms}$마다 뿌리를 tick한다. 1초에 $100$번이고, $0.25\,\mathrm{m/s}$에서 tick 사이에 카트는 $2.5\,\mathrm{mm}$를 간다. `FollowPath` 잎은 목표에 닿을 때까지 그 tick마다 `RUNNING`으로 답하고, 트리의 $1\,\mathrm{Hz}$ 속도 제한기 뒤에 있는 플래너는 tick 백 번에 한 번, 곧 $250\,\mathrm{mm}$마다 새 경로를 요청받는다. 아닌 예는 유한 상태 기계다. 그 기억은 현재 상태 하나이고 전이마다 다음 상태를 명시적으로 지목하는 반면, 트리는 뿌리부터 다시 tick되고 다음에 어느 잎이 돌지는 자식들이 돌려준 상태에서 따라 나온다. 그 덕분에 서브트리를 어떤 맥락에서도 재사용하고, 새 목표가 진행 중인 복구를 도중에 선점할 수 있다. 이 절의 나머지가 펴는 논지가 그것이다.
 
 단일 목표에 대한 기본 트리는 `navigate_to_pose_w_replanning_and_recovery.xml`이고, 최상위 두 노드가 설계 전부를 말해 준다.
 
@@ -843,6 +881,15 @@ $$\mathrm{tick}(n)\in\{\texttt{SUCCESS},\ \texttt{FAILURE},\ \texttt{RUNNING}\}$
 
 복구가 필요할 때 트리가 사 주는 것은 구체적으로 이것이다: **복구에 범위가 생긴다.** 기본 트리는 플래너를 자기 `RecoveryNode`로 감싸고 그 복구는 *전역 costmap 지우기*, 제어기를 자기 `RecoveryNode`로 감싸고 그 복구는 *지역 costmap 지우기* 다. 이 문맥별 복구가 소진되어야 비로소 시스템 수준 복구 서브트리 — 양쪽 costmap 지우기, 제자리 회전, 대기, 후진 — 로 떨어지고, 각 복구 뒤에 내비게이션 서브트리 전체를 재시도한다. reactive fallback 안의 `GoalUpdated` 조건 덕분에 새 목표는 진행 중인 복구가 끝나기를 기다리지 않고 선점한다. 이 정책은 읽을 수 있고, 편집할 수 있고, 액션의 `behavior_tree` 필드로 목표마다 다른 XML을 넘길 수 있다.
 
+> **복구 행동의 정의.** **복구 행동**(recovery behaviour)은 `RecoveryNode`가 자기가 감싼 서브트리가 실패한 뒤에 돌리는 *유한한 교정 동작*이다. costmap 지우기, 제자리 회전, 대기, 후진이 그것이다. 정의 조건은 넷이다. 감싼 자식이 **실패했을 때만 돈다**. 지우기 한 번이거나 크기가 유한한 회전, 대기, 후진이라 **끝이 있다**. 성공하면 감싼 자식을 **한 번 더 시도**하게 하고, 실패하면 노드가 실패한다. 그리고 재시도는 `number_of_retries`로 **상한이 걸린다**.
+>
+> $$n_{\text{attempts}}\le N+1,\qquad n_{\text{recoveries}}\le N$$
+>
+> $N$은 `number_of_retries`다. 재시도 한 번마다 성공한 복구 한 번이 값을 치르기 때문이다. Jazzy 기본 트리는 맨 위에 $N=6$을 두고, `RoundRobin`이 매번 다음 복구를 꺼낸다. 양쪽 costmap 지우기, $1.57\,\mathrm{rad}$ 회전, $5\,\mathrm{s}$ 대기, $0.15\,\mathrm{m/s}$로 $0.30\,\mathrm{m}$ 후진 순이다.
+>
+> - **예**: P6에서 계속 실패하는 목표 하나는 복구 여섯 번을 사이에 둔 시도 일곱 번을 받는다. 지우기, 회전, 대기, 후진, 지우기, 회전 순이고, 후진($0.30/0.15=2.0\,\mathrm{s}$, $0.30\times2048=614$ 카운트)과 대기만으로 벌써 $7.0\,\mathrm{s}$다.
+> - **비예**: 레이저가 로봇 자신의 차체를 보고 있어서 생긴 치명 칸을 지역 costmap에서 지우는 것(§13). $200\,\mathrm{ms}$ 뒤, 카트가 $50\,\mathrm{mm}$ 간 다음 갱신이 같은 칸을 다시 쓰므로 재시도마다 같은 원인을 만난다. 아무것도 바꾸지 못하는 복구는 지연이고, `number_of_recoveries`(§10)가 그것을 보여 준다.
+
 ### 3. 서버들, 그리고 각각이 소유하는 것
 
 Nav2는 별개 노드들의 집합이고, 각각은 이름 붙은 알고리즘 플러그인들의 맵을 액션 인터페이스 뒤에 둔다.
@@ -854,6 +901,15 @@ Nav2는 별개 노드들의 집합이고, 각각은 이름 붙은 알고리즘 �
 | `smoother_server` | 계획 뒤 경로를 다듬는다 | `simple_smoother` → `nav2_smoother::SimpleSmoother` |
 | `behavior_server` | 회전, 후진, 헤딩 주행, 대기, assisted teleop | `nav2_behaviors::Spin`, `::BackUp`, `::DriveOnHeading`, `::Wait`, `::AssistedTeleop` |
 | `bt_navigator` | 행동 트리. 목표를 받는 액션 | `nav2_bt_navigator::NavigateToPoseNavigator` |
+
+> **플래너 서버와 제어기 서버의 정의.** 둘 다 *이름 붙은 알고리즘 플러그인을 액션 하나 뒤에 두는 관리형 노드*이고, 둘이 함께 내비게이션을 시간 척도로 나눈다. 각각의 정의 조건은 넷이다. **라이프사이클 노드**라서 라이프사이클 관리자가 정해진 순서로 configure하고 activate한다(§8). **플러그인 이름에서 타입으로 가는 맵**을 쥔다. `GridBased` → NavFn, `FollowPath` → MPPI이므로 요청은 알고리즘이 아니라 플러그인 이름을 댄다. **목표 한 종류**만 받는다. `ComputePathToPose`는 경로를 돌려주고, `FollowPath`는 경로가 끝날 때까지 속도 명령을 흘려보낸다. 그리고 **costmap 하나를 소유한다**. 플래너는 `map`의 전역 costmap을, 제어기는 `odom`의 지역 costmap을 가진다.
+>
+> $$\text{planner}:(x,\,x_{\text{goal}},\,C_{\text{global}})\mapsto\gamma,\qquad\text{controller}:(\gamma,\,x,\,C_{\text{local}})\mapsto u_k,\quad t_{k+1}-t_k=\frac{1}{f_{\text{ctrl}}}$$
+>
+> $x$는 로봇 자세, $C$는 costmap, $\gamma$는 경로, $u_k$는 $k$번째 `/cmd_vel`, $f_{\text{ctrl}}$은 `controller_frequency`다. 플래너는 물을 때 답하고, 제어기는 시계에 맞춰 답한다.
+>
+> - **예**: P6에서 기본 트리는 경로를 1초에 한 번, 곧 $250\,\mathrm{mm}$마다 묻고, 제어기는 $50\,\mathrm{ms}$마다, 곧 $12.5\,\mathrm{mm}$마다 답한다.
+> - **비예**: 그 아래의 `ros2_control` 제어기, 예컨대 25.7의 `diff_drive_controller`. 이것도 제어기라고 불리지만 $200\,\mathrm{Hz}$ 루프에서 돌며 속도를 바퀴 명령으로 바꾼다. Nav2의 제어기는 요청만 하고, 요청 하나는 $200/20=10$틱 동안 다시 적용된다(Step 2). 한쪽의 증상을 보고 다른 쪽을 튜닝하는 것이 전형적인 혼동이다.
 
 놓치기 쉬운 점 셋. 첫째, 플러그인 **이름** 은 별칭이고 플러그인 **타입** 이 구현이다. DWB를 `FollowPath`라는 이름으로 설정하면 DWB의 모든 파라미터는 `FollowPath.<param>`에 놓이고, 행동 트리는 어떤 알고리즘이 답하는지 모른 채 `FollowPath`를 요청한다. 제어기 교체는 설정 수정이지 트리 수정이 아니다.
 
@@ -881,6 +937,15 @@ Nav2는 별개 노드들의 집합이고, 각각은 이름 붙은 알고리즘 �
 
 Jazzy 기본값은 전역이 `["static_layer", "obstacle_layer", "inflation_layer"]`, 지역이 `["voxel_layer", "inflation_layer"]`다. 순서가 중요하다. inflation이 마지막인 것은 아래 계층들이 쓴 결과를 읽기 때문이다.
 
+> **Costmap의 정의.** **costmap**은 *이름 붙은 프레임 위의 2D 격자로, 칸마다 8비트 비용을 담는다*. 계층들의 더미가 그것을 다시 만든다. 정의 조건은 넷이다. **기하**가 있다. 원점, 칸당 미터인 `resolution`, 크기가 있고, 고정이거나 로봇을 따라 굴러간다. 각 칸은 **0에서 255 사이의 비용**을 담고, 예약된 값이 넷이다. $0$은 자유, $253$은 내접, $254$는 치명, $255$는 미지이고, $1$에서 $252$까지는 그 사이의 등급이다. **계층들이 목록 순서대로 쓴다**. 갱신마다 그 영역을 되돌린 뒤, 각 계층이 앞 계층이 남긴 것 위에 쓴다. 그리고 **`update_frequency`로 새로 고쳐진다**. 발행되는 주기와는 다른 값이다.
+>
+> $$(i,j)=\Big(\Big\lfloor\frac{x-x_0}{r}\Big\rfloor,\ \Big\lfloor\frac{y-y_0}{r}\Big\rfloor\Big),\qquad C=L_n\circ\cdots\circ L_1(C_0)$$
+>
+> $(x,y)$는 costmap 프레임 위의 점, $(x_0,y_0)$는 격자의 원점, $r$은 해상도, $C_0$는 자유로(미지 공간을 추적하면 미지로) 되돌린 격자, $L_1,\dots,L_n$은 목록 순서의 계층이다.
+>
+> - **예**: Jazzy 지역 costmap은 $r=0.05\,\mathrm{m}$의 $3\times3\,\mathrm{m}$, 곧 $60\times60=3600$칸이고, P6의 $0.25\,\mathrm{m/s}$에서 카트는 $5\,\mathrm{Hz}$ 갱신 한 번에 정확히 한 칸을 건넌다.
+> - **비예**: §12의 2번이 약 $2\,\mathrm{Hz}$로 재는 `/local_costmap/costmap` 토픽. 그것은 표시용으로 `publish_frequency`에 맞춰 발행되는 사본이고, 제어기는 $5\,\mathrm{Hz}$로 새로 고쳐지는 격자 자체를 읽는다. costmap을 토픽으로 재면 P6의 갱신 간격이 $50$이 아니라 $125\,\mathrm{mm}$가 된다.
+
 로봇의 모양은 여기서 들어온다. `robot_radius`(원) 또는 `footprint`(다각형) 중 하나다. 관리자들의 지침은 비원형 로봇이면 실제 다각형을 주라는 것이다. 여러 플래너와 현재의 모든 제어기가 완전한 SE(2) 발자국 충돌 검사(SE(2)는 평면 위의 자세, 즉 위치와 방위다. 3차원 대응물 SE(3)는 [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]]에 있다)를 하고, 그래야 더 좁은 공간으로 계획할 수 있기 때문이다. 반지름이 여전히 옳은 예외 셋: 환경에 비해 로봇이 아주 작을 때, SE(2) 검사를 감당할 연산 자원이 없을 때, 그리고 발자국을 어차피 무시하는 홀로노믹 플래너(NavFn, Theta\*, Smac 2D)를 쓸 때. 홀로노믹 플래너는 로봇이 방위와 상관없이 어느 방향으로든 움직일 수 있는 것처럼 계획한다. 그 반대인 자동차 같은 비홀로노믹 로봇은 [[04-robotics/planning-decision-making#5.5 동역학을 지키는 계획: kinodynamic 탐색, 격자, 평탄성|4. 계획 §5.5]]에서 정의하고, 이 구분이 왜 중요한지는 6절에서 본다.
 
 ### 5. inflation radius가 실제로 하는 일
@@ -888,6 +953,15 @@ Jazzy 기본값은 전역이 `["static_layer", "obstacle_layer", "inflation_laye
 초심자는 `inflation_radius`를 안전 여유로 읽는다. "벽에서 이만큼 떨어뜨려라." 그건 이 값의 정체가 아니고, 그렇게 읽는 것이 생태계에서 가장 흔한 오설정을 만든다.
 
 inflation layer 안에서는 서로 다른 두 가지가 벌어진다. 장애물로부터 로봇의 **내접 반지름(fully inscribed radius)** 안쪽에는 내접 비용(253, 플래너가 충돌로 취급한다. 치명 254는 장애물 칸 자체다)을 쓴다 — 이것이 충돌 회피 부분이고, `inflation_radius`가 아니라 당신의 발자국에서 유도된다. 그다음 `inflation_radius`까지는 `cost_scaling_factor`를 감쇠율로 하는 **지수 감쇠** 비용을 쓴다. 플러그인 기본값은 `inflation_radius: 0.55`, `cost_scaling_factor: 10.0`이고, Jazzy TurtleBot 설정에서는 `0.7` / `3.0`이다.
+
+> **팽창의 정의.** **팽창**(inflation)은 *칸에서 가장 가까운 치명 칸까지의 거리를 비용으로 보내는 함수*이고, inflation layer가 `inflation_radius` 안의 모든 칸에 이 값과 아래 계층이 쓴 값 중 큰 쪽을 써 넣는다. 정의 조건은 띠마다 하나씩 셋이다. **거리 0**에서 칸은 장애물 자체이고 $254$다. **내접 반지름** 안에서는 $253$이고, 플래너는 이를 충돌로 다룬다. 내접 반지름은 발자국 안에 들어가는 가장 큰 원의 반지름이라서, 중심이 그만큼 가까우면 어느 방향으로든 충돌한다. **거기서 `inflation_radius`까지**는 비용이 `cost_scaling_factor`의 비율로 지수 감쇠하고, 그 너머에는 이 계층이 아무것도 쓰지 않는다.
+>
+> $$c(d)=\begin{cases}254 & d=0\\ 253 & 0<d\le r_{\text{ins}}\\ \big\lfloor 252\,e^{-k\,(d-r_{\text{ins}})}\big\rfloor & r_{\text{ins}}<d\le R\end{cases}$$
+>
+> $d$는 미터 단위 거리(칸 수 곱하기 해상도), $r_{\text{ins}}$는 내접 반지름, $k$는 `cost_scaling_factor`, $R$은 `inflation_radius`다. 자락은 치명이 아닌 가장 큰 비용인 $252$에서 시작해 $\ln 2/k$ 미터마다 절반이 된다.
+>
+> - **예**: Jazzy TurtleBot 값 $r_{\text{ins}}=0.22$, $k=3.0$, $R=0.70\,\mathrm{m}$. 내접 띠에서 $0.10\,\mathrm{m}$ 바깥의 비용은 $\lfloor252e^{-0.3}\rfloor=186$이고, $0.231\,\mathrm{m}$마다 절반이 되며, $R$에서도 여전히 $59$다. 자락 전체에 걸친 경사다.
+> - **비예**: 플러그인 기본값 $k=10$, $R=0.55$를 "벽에서 $0.55\,\mathrm{m}$ 떨어져라"로 읽는 것. 비용이 $69\,\mathrm{mm}$마다, 곧 칸 약 $1.4$개나 P6의 $50\,\mathrm{mm}$ 갱신 약 $1.4$번마다 절반이 되고, 띠에서 $0.30\,\mathrm{m}$ 바깥이면 $12$다. 평평한 가운데를 두른 얇은 고리이고, 이 절의 모서리 깎기가 여기서 나온다. $k$를 키우면 자락은 넓어지는 것이 아니라 좁아진다.
 
 그 감쇠하는 자락은 안전 여유가 아니다. **탐색을 조종하는 퍼텐셜 필드**다. NavFn, Theta\*, Smac 플래너는 비용을 인식한다. 매끄러운 경사가 주어지면 복도 한가운데로 달리고, 탐색이 장애물에 닿기 훨씬 전부터 장애물에 넓은 여유를 준다. 벽 주변에 얇은 팽창 고리만 있고 그 사이가 넓은 0 비용 공백이면, 플래너는 공백 안에서 어느 지점을 선호할 근거가 없고, 이유 없이 한쪽 벽에 붙거나 모서리를 깎는 경로를 낸다.
 
@@ -1188,6 +1262,8 @@ ros2 param dump /controller_server
 - `ros-navigation/navigation2`, `jazzy` 브랜치 — `nav2_msgs/action/NavigateToPose.action`, `FollowPath.action`, `ComputePathToPose.action`; `nav2_bringup/params/nav2_params.yaml`; `nav2_bringup/rviz/nav2_default_view.rviz`.
 - REP 105, Coordinate Frames for Mobile Platforms.
 - `ros2/geometry2`, `jazzy` 브랜치 — `tf2_tools`와 `tf2_ros` 실행 파일.
+- Nav2 문서(Jazzy) — Configuration Guide: Behavior-Tree Navigator(`bt_loop_duration`), [docs.nav2.org](https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/configuring_bt_navigator/); RoundRobin, [docs.nav2.org](https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/bt_plugins/controls/RoundRobin/).
+- `ros-navigation/navigation2`, `jazzy` 브랜치 — `nav2_costmap_2d`: `inflation_layer.hpp`(`computeCost`), `inflation_layer.cpp`(반지름 차단, 옛 비용과 새 비용 중 큰 쪽), `cost_values.hpp`, `layered_costmap.cpp`(되돌린 뒤 계층을 순서대로), [GitHub](https://github.com/ros-navigation/navigation2/tree/jazzy/nav2_costmap_2d); `nav2_behavior_tree/plugins/control/round_robin_node.cpp`와 `nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml`(재시도 횟수, 복구의 순서와 크기), [GitHub](https://github.com/ros-navigation/navigation2/tree/jazzy/nav2_behavior_tree).
 
 ### 스스로 점검
 

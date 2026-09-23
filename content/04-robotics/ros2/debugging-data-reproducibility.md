@@ -302,6 +302,15 @@ ros2 topic delay /scan           # age of the header stamp on arrival
 
 `hz` measures how often messages arrive. `bw` measures how much they cost. `delay` measures **latency**: the difference between the stamp inside the message and the time it was received, which requires the message type to have a `std_msgs/Header`. A system where `hz` is perfect and `delay` grows without bound is a system with a queue filling up somewhere, and only `delay` shows it. `--wall-time` on `hz` — that is the spelling, and it exists only on `hz`, not on `bw` or `delay` — matters under simulation. The default is the other way round from what people assume: the CLI node runs on wall time unless you pass `-s`/`--use-sim-time`, so plain `ros2 topic hz` already measures what the CPU did. Pass `-s` to measure simulated rate, and `--wall-time` to force wall time back when the clock is unreliable.
 
+> **Latency, defined.** The **latency** of a message is a *per-message time difference*: when it was received minus the time stamped inside it. Four conditions give it meaning: the message must **carry a stamp** (a `std_msgs/Header`); the stamp must mark **the instant the data describes**, a camera's exposure rather than its publication, or only transport is measured; stamp and arrival must be read on **one clock**; and it is **a distribution**, which `ros2 topic delay` summarizes as mean, minimum, maximum and standard deviation over its last $10\,000$ messages.
+>
+> $$\ell_k=t^{\text{recv}}_k-t^{\text{stamp}}_k,\qquad \hat f=\frac{1}{\operatorname{mean}_k\big(t^{\text{recv}}_k-t^{\text{recv}}_{k-1}\big)}$$
+>
+> where $\ell_k$ is message $k$'s latency and $\hat f$ the rate `hz` prints; no stamp appears in $\hat f$, so a rate cannot see a latency.
+>
+> - **Example**: P6's `/goal` at a steady $50\,\mathrm{Hz}$, each message arriving $200\,\mathrm{ms}$ after its stamp. `hz` reads $50$; `delay` reads $0.200\,\mathrm{s}$, $130\,\mathrm{ms}$ over the budget.
+> - **Non-example**: `ros2 topic delay -s` during a replay on the default `--clock` (§8). Its `now()` moves in $25\,\mathrm{ms}$ steps, so each $\ell_k$ can be off by up to $25\,\mathrm{ms}$, $36\%$ of the budget, before any real delay counts.
+
 ```bash
 ros2 param dump /my_node > my_node_params.yaml
 ```
@@ -394,6 +403,15 @@ ros2 bag record --topics /scan /odom /tf /tf_static -o run_042
 ```
 
 `--topics` takes a space-separated list; `-o` names the output directory. (The bare positional form still works and prints a deprecation notice; use `--topics`. There is no `-t` short option on `record` — `-t` belongs to `ros2 bag info`, so `record -t /scan` is an error rather than a deprecation.) A bag is a **directory** containing `metadata.yaml` and one or more storage files, not a single file.
+
+> **Bag, defined.** A **bag** is the *directory that `ros2 bag record` writes*: a `metadata.yaml` and one or more storage files, `mcap` by default. Four conditions define it. It holds **only the topics the recorder subscribed to**, each with its type and serialization format. Each message is stored with **the time the recorder received it** — system time, or the latest `/clock` under `--use-sim-time` — and playback spaces messages by those times, not by their header stamps. Its metadata **counts every topic's messages**, which is what makes `ros2 bag info` a test. And its storage **splits** by size or by duration when asked, at whichever limit comes first.
+>
+> $$n_i=f_i\,D,\qquad S\approx D\sum_i f_i\,s_i$$
+>
+> where $f_i$ is topic $i$'s rate, $D$ the recording's duration, $s_i$ its serialized message size and $S$ the payload on disk before the container's per-message overhead; both grow with rate times time, not with how much the recording can answer.
+>
+> - **Example**: P6's minute gives $n=3000$ and $12\,000$, and $S=60\times(50+200)\times64=0.96\,\mathrm{MB}$.
+> - **Non-example**: $D$ read off `ros2 bag info` in 25.7's half-speed world. The recorder stamps on the wall clock, so one simulated minute of `/joint_states`, $12\,000$ messages, is a $120\,\mathrm{s}$ bag, and $n=fD$ with $f=200$ demands $24\,000$. The bag is healthy; $f$ and $D$ were on different clocks (§14 step 3).
 
 `-a` records everything, and it is the wrong default for almost every research recording:
 
@@ -615,6 +633,15 @@ Official images are published as `ros:jazzy` (base) and `osrf/ros:jazzy-desktop`
 
 The reason this matters is not tidiness. "I ran this on my laptop and got 87%" is a story. "Here is the image digest, the commit, the bag, the parameter dump and the command" is a result, because someone else can obtain it. Those two things look identical in a paper and are different kinds of object.
 
+> **Pinned run, defined.** A **pinned run** is a *result bundled with every input that produced it, each fixed by content*, so that someone else can re-execute it and compare. Six conditions: five inputs and a verdict. The **code** is a commit hash. The **environment** is an image digest, not a tag. The **data** is the bag, with its `metadata.yaml`. The **configuration** is a `ros2 param dump` of each node that matters. The **command** is the exact invocation, flags and seeds included. And the **verdict** is a stated tolerance, because replay is not bit-identical (§9).
+>
+> $$y=F(\text{commit},\ \text{digest},\ \text{bag},\ \theta,\ \text{cmd}),\qquad \text{pass}\iff\big|y'-y\big|\le\varepsilon$$
+>
+> where $F$ is the whole pipeline, $\theta$ the parameter dump, $y$ the reported result, $y'$ a re-execution's and $\varepsilon$ the tolerance; any argument left mutable lets $F$ change while the report does not.
+>
+> - **Example**: the P6 test: the commit, the digest, the $15\,000$-message bag, the dump, `ros2 bag play run --clock 200`, and the Worked case's $\varepsilon=20\,\mathrm{ms}$.
+> - **Non-example**: the same list with `osrf/ros:jazzy-desktop` as the environment and `--clock` left at its default. The tag can be repointed to another digest, and the default clock re-quantizes the check into $25\,\mathrm{ms}$ steps: two arguments of $F$ moved and the report did not. Even a pinned replay that passes is a re-execution on recorded messages, not a reproduction in the sense of [[06-research-practice/experimental-design-reproducibility|2. Experimental Design §6]]: no new trial was run.
+
 What to record for a run — the code commit, dependencies or container, data versions, seeds, commands, configurations, calibration, frame conventions, raw logs, exclusions, and analysis scripts — is the artifact checklist in [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]] §7, which also draws the distinction between repeatability, reproducibility and replicability that you will need when a reviewer asks which one you demonstrated. That page sets the standard; this page gives you the ROS 2 tools that meet it. `ros2 param dump` and `ros2 bag info` are two of the checklist entries, obtainable in one command each.
 
 And when a run fails rather than succeeds, the discipline for turning that into an analysis rather than an anecdote is [[06-research-practice/failure-analysis-system-evaluation|3. Failure Analysis & System Evaluation]].
@@ -741,6 +768,7 @@ Tracing — instrumenting the middleware itself with LTTng to see callback-level
 - ROS 2 Jazzy documentation — How-to guides: rosbag2 Overriding QoS policies for recording and playback; Run 2 nodes in single or separate Docker containers.
 - Source, Jazzy branches, for every flag quoted: `ros2cli` (`ros2doctor/command/doctor.py`, `ros2node/verb/info.py`, `ros2param/verb/dump.py`, `ros2topic/verb/{hz,bw,delay}.py`); `rosbag2` (`ros2bag/verb/{record,play,info}.py`, repository README on storage plugins and the default `mcap`).
 - ROS 2 design article — Clock and Time (`/clock`, `use_sim_time`, time of zero as uninitialised).
+- `ros2cli`, Jazzy branch — `ros2cli/node/direct.py` (the `-s`/`--use-sim-time` option of `ros2 topic delay`): [GitHub](https://github.com/ros2/ros2cli/blob/jazzy/ros2cli/ros2cli/node/direct.py).
 
 ### Self-check
 
@@ -1073,6 +1101,15 @@ ros2 topic delay /scan           # 도착 시점 기준 header 스탬프의 나�
 
 `hz`는 얼마나 자주 오는지, `bw`는 얼마나 비싼지, `delay`는 **지연**을 잰다. 메시지 안의 스탬프와 수신 시각의 차이이고, 따라서 메시지 타입에 `std_msgs/Header`가 있어야 한다. `hz`는 완벽한데 `delay`가 끝없이 커지는 시스템은 어딘가 큐가 차오르는 시스템이고, 그것을 보여 주는 것은 `delay`뿐이다. 시뮬레이션에서는 `--wall-time`이 의미를 갖는다. 철자가 그것이고, `bw`나 `delay`가 아니라 `hz`에만 있다. 기본값은 흔한 짐작과 반대다. CLI 노드는 `-s`/`--use-sim-time`을 주지 않는 한 wall time으로 도니, 그냥 `ros2 topic hz`는 이미 CPU가 실제로 한 일을 재고 있다. 시뮬레이션 기준 속도를 재려면 `-s`를, 시계를 믿을 수 없을 때 wall time으로 되돌리려면 `--wall-time`을 준다.
 
+> **지연의 정의.** 메시지의 **지연**(latency)은 *메시지마다 재는 시간 차*다. 받은 시각에서 그 안에 찍힌 시각을 뺀 값이다. 이 숫자가 뜻을 가지려면 조건 넷이 필요하다. 메시지가 **스탬프**(`std_msgs/Header`)를 달고 있어야 한다. 스탬프는 발행 순간이 아니라 카메라 노출처럼 **데이터가 묘사하는 순간**을 찍어야 하고, 그렇지 않으면 전송만 재게 된다. 스탬프와 도착을 **한 시계**로 읽어야 한다. 그리고 지연은 **분포**다. `ros2 topic delay`는 마지막 $10\,000$개 메시지의 평균, 최소, 최대, 표준편차로 그것을 요약한다.
+>
+> $$\ell_k=t^{\text{recv}}_k-t^{\text{stamp}}_k,\qquad \hat f=\frac{1}{\operatorname{mean}_k\big(t^{\text{recv}}_k-t^{\text{recv}}_{k-1}\big)}$$
+>
+> $\ell_k$는 메시지 $k$의 지연, $\hat f$는 `hz`가 찍는 도착률이다. $\hat f$에는 스탬프가 들어 있지 않으므로 도착률은 지연을 보지 못한다.
+>
+> - **예**: 꾸준히 $50\,\mathrm{Hz}$로 오되 메시지마다 스탬프보다 $200\,\mathrm{ms}$ 늦게 도착하는 P6의 `/goal`. `hz`는 $50$을, `delay`는 $0.200\,\mathrm{s}$를 읽는다. 예산을 $130\,\mathrm{ms}$ 넘었다.
+> - **비예**: 기본 `--clock`으로 재생하는 동안의 `ros2 topic delay -s`(§8). 그 `now()`는 $25\,\mathrm{ms}$씩 뛰므로, 각 $\ell_k$는 진짜 지연을 세기도 전에 예산의 $36\%$인 최대 $25\,\mathrm{ms}$까지 어긋날 수 있다.
+
 ```bash
 ros2 param dump /my_node > my_node_params.yaml
 ```
@@ -1165,6 +1202,15 @@ ros2 bag record --topics /scan /odom /tf /tf_static -o run_042
 ```
 
 `--topics`는 공백으로 구분된 목록을 받고 `-o`는 출력 디렉터리 이름을 정한다. (맨 위치 인자는 아직 동작하고 deprecation 안내를 찍는다. `--topics`를 써라. `record`에는 `-t` 단축 옵션이 없다. `-t`는 `ros2 bag info`의 것이라, `record -t /scan`은 deprecation이 아니라 오류다.) bag은 파일 하나가 아니라 `metadata.yaml`과 하나 이상의 저장 파일을 담은 **디렉터리**다.
+
+> **Bag의 정의.** **bag**은 *`ros2 bag record`가 쓰는 디렉터리*다. `metadata.yaml`과 하나 이상의 저장 파일이 들어 있고, 저장 형식은 기본이 `mcap`이다. 정의 조건은 넷이다. **레코더가 구독한 토픽만** 담고, 토픽마다 타입과 직렬화 형식이 붙는다. 각 메시지는 **레코더가 받은 시각**과 함께 저장된다. 시스템 시각이거나, `--use-sim-time`이면 가장 최근의 `/clock`이다. 재생은 header 스탬프가 아니라 이 시각으로 메시지 간격을 맞춘다. 메타데이터가 **토픽마다 메시지 수를 센다**. `ros2 bag info`를 시험으로 만드는 것이 이것이다. 그리고 저장 파일은 요청하면 크기나 길이 중 먼저 닿는 한계에서 **나뉜다**.
+>
+> $$n_i=f_i\,D,\qquad S\approx D\sum_i f_i\,s_i$$
+>
+> $f_i$는 토픽 $i$의 속도, $D$는 녹화 길이, $s_i$는 직렬화된 메시지 크기, $S$는 컨테이너의 메시지당 오버헤드를 빼고 디스크에 쌓이는 적재량이다. 둘 다 녹화가 답할 수 있는 양이 아니라 속도 곱하기 시간에 따라 자란다.
+>
+> - **예**: P6의 1분은 $n=3000$과 $12\,000$, 그리고 $S=60\times(50+200)\times64=0.96\,\mathrm{MB}$를 준다.
+> - **비예**: 25.7의 절반 속도 월드에서 `ros2 bag info`로 읽은 $D$. 레코더가 벽시계로 시각을 찍으므로 `/joint_states`의 시뮬레이션 1분, 곧 $12\,000$개는 $120\,\mathrm{s}$짜리 bag이 되고, $f=200$으로 $n=fD$를 계산하면 $24\,000$개가 있어야 한다. bag은 멀쩡하다. $f$와 $D$가 서로 다른 시계 위에 있었을 뿐이다(§14의 3번).
 
 `-a`는 전부 기록한다. 연구용 녹화의 기본값으로는 거의 항상 틀렸다.
 
@@ -1386,6 +1432,15 @@ RUN apt-get update \
 
 이게 중요한 이유는 단정함이 아니다. "내 노트북에서 돌려서 87퍼센트가 나왔다"는 이야기다. "이미지 다이제스트, 커밋, bag, 파라미터 덤프, 명령이 여기 있다"는 결과다. 남이 얻어낼 수 있기 때문이다. 논문에서는 둘이 똑같아 보이지만 서로 다른 종류의 물건이다.
 
+> **고정된 실행의 정의.** **고정된 실행**(pinned run)은 *결과 하나를, 그것을 낸 모든 입력과 함께 내용으로 고정해 묶은 것*이다. 그래서 남이 다시 실행해 견줄 수 있다. 조건은 여섯, 곧 입력 다섯과 판정 하나다. **코드**는 커밋 해시다. **환경**은 태그가 아니라 이미지 다이제스트다. **데이터**는 `metadata.yaml`까지 포함한 bag이다. **설정**은 관련된 노드마다의 `ros2 param dump`다. **명령**은 플래그와 시드까지 포함한 정확한 호출이다. 그리고 **판정**은 명시된 허용 오차다. 재생은 비트 단위로 같지 않기 때문이다(§9).
+>
+> $$y=F(\text{commit},\ \text{digest},\ \text{bag},\ \theta,\ \text{cmd}),\qquad \text{pass}\iff\big|y'-y\big|\le\varepsilon$$
+>
+> $F$는 파이프라인 전체, $\theta$는 파라미터 덤프, $y$는 보고된 결과, $y'$는 다시 실행한 결과, $\varepsilon$은 허용 오차다. 인자 하나라도 바뀔 수 있게 남겨 두면 보고는 그대로인데 $F$가 바뀐다.
+>
+> - **예**: P6 시험. 커밋, 다이제스트, 메시지 $15\,000$개짜리 bag, 덤프, `ros2 bag play run --clock 200`, 그리고 Worked case의 $\varepsilon=20\,\mathrm{ms}$다.
+> - **비예**: 같은 목록에서 환경을 `osrf/ros:jazzy-desktop`으로 두고 `--clock`을 기본값으로 남긴 것. 태그는 다른 다이제스트로 옮겨 갈 수 있고, 기본 시계는 검사를 $25\,\mathrm{ms}$ 계단으로 다시 양자화한다. $F$의 인자 둘이 움직였는데 보고는 그대로다. 그리고 고정된 재생이 통과해도 그것은 기록된 메시지 위의 재실행이지 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계 §6]]이 말하는 재현이 아니다. 새 시행을 하나도 하지 않았다.
+
 한 번의 실행에 대해 무엇을 기록할지 — 코드 커밋, 의존성 또는 컨테이너, 데이터 버전, 시드, 명령, 설정, 보정, 프레임 규약, 원시 로그, 제외 내역, 분석 스크립트 — 는 [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]] §7의 산출물 체크리스트에 있다. 그 페이지는 repeatability, reproducibility, replicability의 구분도 준다. 리뷰어가 어느 쪽을 보였느냐고 물을 때 필요하다. 기준은 그 페이지가 세우고, 이 페이지는 그 기준을 충족하는 ROS 2 도구를 준다. `ros2 param dump`와 `ros2 bag info`는 각각 명령 하나로 얻는 체크리스트 항목이다.
 
 실행이 성공이 아니라 실패했을 때, 그것을 일화가 아닌 분석으로 바꾸는 규율은 [[06-research-practice/failure-analysis-system-evaluation|3. Failure Analysis & System Evaluation]]이다.
@@ -1512,6 +1567,7 @@ ros2 param get /my_node use_sim_time      # 노드가 들어야 한다고 믿는
 - ROS 2 Jazzy 문서 — How-to guides: rosbag2 Overriding QoS policies for recording and playback; Run 2 nodes in single or separate Docker containers.
 - 인용한 모든 플래그의 출처, Jazzy 브랜치 소스: `ros2cli`(`ros2doctor/command/doctor.py`, `ros2node/verb/info.py`, `ros2param/verb/dump.py`, `ros2topic/verb/{hz,bw,delay}.py`); `rosbag2`(`ros2bag/verb/{record,play,info}.py`, 저장 플러그인과 기본값 `mcap`에 관한 저장소 README).
 - ROS 2 design article — Clock and Time(`/clock`, `use_sim_time`, 초기화 안 됨을 뜻하는 시간 0).
+- `ros2cli`, Jazzy 브랜치 — `ros2cli/node/direct.py`(`ros2 topic delay`의 `-s`/`--use-sim-time` 옵션): [GitHub](https://github.com/ros2/ros2cli/blob/jazzy/ros2cli/ros2cli/node/direct.py).
 
 ### 스스로 점검
 

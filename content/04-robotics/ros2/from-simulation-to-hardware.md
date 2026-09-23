@@ -218,6 +218,15 @@ Nothing in your launch file changes. Almost everything under it does.
 
 **And the contact model, which was the most optimistic part of the whole stack.** Every other gap above is a parameter you can measure. Contact is usually a *model-form* error: rigid-body engines resolve contact as point constraints solved per timestep, while real impacts and stick–slip transitions are genuine discontinuities. A grasp that closed reliably in Gazebo can fail on the real object not because the friction coefficient was wrong but because the simulator could not represent the contact patch at all. [[05-construction-robotics/sim-to-real|Sim-to-Real]] treats this properly; the practical rule here is that free-space motion transfers far better than contact does, so plan your first real experiments to be free-space ones.
 
+> **Sim-to-real gap, defined.** The **sim-to-real gap** is a *set of differences between the simulated and the real plant, each on a named quantity*. Three conditions make an item part of it. It is **the same quantity measured on both sides**, with units: a latency, a noise $\sigma$, an extrinsic offset, a clock offset, a torque margin. It is either a **parameter gap**, closed by measuring and re-tuning, or a **model-form gap**, where the simulator cannot represent the phenomenon at any parameter value. And it is **charged to a budget**, because a difference matters only through the margin it consumes.
+>
+> $$\Delta q=q_{\text{real}}-q_{\text{sim}},\qquad \text{margin}_{\text{real}}=\text{margin}_{\text{sim}}-\sum_{q\in\text{budget}}\Delta q$$
+>
+> where $q$ is one quantity and the sum runs over the gaps charged to the same budget.
+>
+> - **Example**: P6's end-to-end ledger is $25\,\mathrm{ms}$ in 25.7's simulation and $32\,\mathrm{ms}$ on the real cart (Step 4), so $\Delta q=+7\,\mathrm{ms}$ — $2.0$ of bus and $5$ of network that Gazebo never charged — and the margin falls from $45$ to $38\,\mathrm{ms}$ of the $70$.
+> - **Non-example**: the contact gap written as a friction-coefficient error. No value of $\mu$ lets per-timestep point contacts represent a contact patch, so there is no $q_{\text{sim}}$ to subtract; the gap is model-form, and tuning $\mu$ against it fits noise ([[05-construction-robotics/sim-to-real|Sim-to-Real §1]]).
+
 ### 2. The seam: the hardware interface
 
 The reason any of the simulation work transfers is that `ros2_control` puts a plugin boundary between *the controller* and *the thing being controlled*, and simulation sits on the same side of that boundary as a real robot does.
@@ -241,7 +250,7 @@ Your URDF already names one, inside the `<ros2_control>` tag:
 </ros2_control>
 ```
 
-`mock_components/GenericSystem` is the one that loops commands straight back as states. Under Gazebo the plugin line instead reads `gz_ros2_control/GazeboSimSystem`. On the real machine it reads the plugin name your vendor's driver package exports. **That line is the seam.** The controller, the controller configuration YAML, the joint names, the topic names, MoveIt, Nav2 and your own nodes do not know which of the three is loaded.
+`mock_components/GenericSystem` is the one that loops commands straight back as states. Under Gazebo the plugin line instead reads `gz_ros2_control/GazeboSimSystem`. On the real machine it reads the plugin name your vendor's driver package exports. **That line is the seam.** The controller, the controller configuration YAML, the joint names, the topic names, MoveIt, Nav2 and your own nodes do not know which of the three is loaded. The hardware component and the interfaces it exports are defined in full in [[04-robotics/ros2/simulation-and-control|25.7 §5]] and [[04-robotics/ros2/simulation-and-control|25.7 §6]]; this page adds what changes when the plugin on that line is a real driver.
 
 This is worth being concrete about, because it is the single strongest argument for doing the earlier work in `ros2_control` at all rather than publishing to a vendor topic directly. A stack that talks to a vendor's own `/my_arm/set_joint_positions` topic has to be rewritten for the next arm. A stack that talks to `joint_trajectory_controller` does not.
 
@@ -271,6 +280,12 @@ hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::D
 ```
 
 Plus the lifecycle: `on_init`, `on_configure` (open the connection), `on_activate` (release brakes, enable power stage), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. The states mean what they say — in `INACTIVE` states can be read but command interfaces are not available; only in `ACTIVE` can the machine move. The split exists so a driver can be connected and its readings inspected before it is given authority to move anything. A driver that enables the motors in `on_configure` instead of `on_activate` is a driver that energises an arm the moment the launch file starts, which is a bug with physical consequences.
+
+As one rule, with $s$ the component's lifecycle state, $\mathcal S$ its state interfaces and $\mathcal C$ its command interfaces:
+
+$$\mathcal I(s)=\begin{cases}\varnothing & s=\text{UNCONFIGURED}\\ \mathcal S & s=\text{INACTIVE}\\ \mathcal S\cup\mathcal C & s=\text{ACTIVE}\end{cases}$$
+
+where $\mathcal I(s)$ is what the component makes available in state $s$, so it can be read before it can be obeyed. On P6's real cart, configured but inactive, the vendor component already reports `cart/position` in $0.488\,\mathrm{mm}$ encoder steps while `cart/velocity` offers no command for the $200\,\mathrm{Hz}$ velocity controller to claim; activation is the one transition that hands it over, and the `on_configure` driver above is the case where power arrives before that transition does.
 
 The rate is the `controller_manager` parameter `update_rate`, an integer in Hz, **default 100**, read-only after startup. Set it to what the hardware can actually service. If `read()` blocks for 15 ms on a serial round-trip, a 1000 Hz update rate is a request the loop cannot meet, and the overrun will show up as `Overrun detected! The controller manager missed its desired rate of 1000 Hz. The loop took … ms (missed cycles : …).`, throttled to at most one line per second, while the loop quietly runs slower than `update_rate` (overrun handling, `overruns.manage`, is on by default) — a warning, not an error, and easy to miss.
 
@@ -430,6 +445,15 @@ ROS 2 is **not** a real-time system, and installing it from apt gives you no dea
 
 What a real-time kernel (RT_PREEMPT) gives you: bounded scheduling latency, so a thread that is ready to run actually runs within a known time. What it does not give you: anything about the code inside that thread. Real-time behaviour requires removing nondeterministic operations from the execution path — page faults, dynamic allocation and deallocation, and synchronisation primitives that can block indefinitely. A `malloc` in your `update()` defeats the kernel entirely.
 
+> **Real-time control loop, defined.** A **real-time control loop** is a *periodic thread whose worst-case cycle is bounded and fits its period*; real-time is a property of that worst case, not of speed. Period, deadline, worst-case execution time and hard versus soft are defined in [[02-foundations/algorithms/interview-code|11.7 §6]]; here three conditions must hold together. **Bounded scheduling**: the thread starts within a known time of becoming ready, which `SCHED_FIFO` on an RT_PREEMPT kernel provides. **Bounded execution**: nothing in `read`, `update` or `write` can take unbounded time — no page faults, no allocation, no blocking wait. And **the worst case fits**: the longest cycle of a run, not the average, is within the period (jitter: [[04-robotics/robot-systems-deployment|10. Robot Systems §3]]).
+>
+> $$\max_k\big(t_{r,k}+t_{u,k}+t_{w,k}\big)\le T_c=\frac{1}{f_c}$$
+>
+> where $k$ runs over the run's cycles and $t_{r,k},t_{u,k},t_{w,k}$ are cycle $k$'s read, update and write times (framework work counted in $t_{u,k}$); the left side is the loop's worst-case execution time and $T_c$, set by `update_rate`, its deadline.
+>
+> - **Example**: P6 at $f_c=200\,\mathrm{Hz}$, $T_c=5\,\mathrm{ms}$, with $2.0\,\mathrm{ms}$ of bus in every cycle: the bound leaves all the controllers' `update()` calls together $3.0\,\mathrm{ms}$ in the *worst* cycle, not on average.
+> - **Non-example**: one second of P6 with a single $7\,\mathrm{ms}$ cycle among $200$. The mean period is $(199\times5+7)/200=5.01\,\mathrm{ms}$, "real-time at 5 ms" in a table, while the maximum is $2\,\mathrm{ms}$ past the deadline. An RT kernel over a `malloc` in `update()` produces exactly this: the scheduling was bounded and the execution was not.
+
 `controller_manager` does what can be done at this layer, and it is worth knowing what it is doing on your behalf:
 
 - its update thread attempts `SCHED_FIFO` at priority 50, which requires your user to have an `rtprio` limit granted in `/etc/security/limits.conf` — without that the attempt fails, a single `Could not enable FIFO RT scheduling policy` warning is logged at startup, and the thread runs under ordinary scheduling;
@@ -442,6 +466,12 @@ And the part that matters most for how you design the system: **hard timing live
 Once the machine can move, this stops being optional, and it stops being software.
 
 **An emergency stop is hardware.** A button that publishes a `std_msgs/msg/Bool` on a topic is not an emergency stop; it is a feature that shares a failure mode with everything it is supposed to protect against. A real E-stop is a hard-wired circuit that removes power or engages brakes independently of the computer, latches until deliberately reset, and works when the software has hung, the DDS link has dropped and the laptop has gone to sleep. Test it by pressing it while the stack is running, and then by pulling the network cable.
+
+Written as a rule, with $L$ the latch and $u_{\text{act}}$ what reaches the actuator:
+
+$$u_{\text{act}}(t)=\big(1-L(t)\big)\,u_{\text{cmd}}(t),\qquad L(t)\in\{0,1\}$$
+
+where $L$ jumps to $1$ on a press and returns to $0$ only on a deliberate reset. Nothing on the right passes through the computer; that is the point, and the reason a topic cannot implement it. On P6 the difference is a distance. A stop sent as a message waits behind whatever holds the executor, and through a $400\,\mathrm{ms}$ stall, the length of silence §1 asks every node to survive, the cart at $0.25\,\mathrm{m/s}$ covers $100\,\mathrm{mm}$ — $205$ counts, $80$ control cycles — before the message can even be handled. The wired latch cuts the power stage without waiting for any of them.
 
 Beyond the stop: limit the workspace physically where you can (a table edge, a barrier, a shortened tether), limit speed for every experiment that does not need the full envelope, limit force where the hardware supports it, and never run a new trajectory at full speed on the first attempt.
 
@@ -777,6 +807,15 @@ $$70-32 = 38\,\mathrm{ms}$$
 
 **그리고 접촉 모델 — 스택 전체에서 가장 낙관적이던 부분.** 위의 다른 간극은 전부 측정할 수 있는 파라미터다. 접촉은 대개 *모델 형식(model-form)* 오류다. 강체 엔진은 접촉을 시간 스텝마다 푸는 점 구속으로 처리하는데, 실제 충격과 stick–slip 전이는 진짜 불연속이다. Gazebo에서 안정적으로 닫히던 파지가 실물에서 실패하는 이유는 마찰 계수가 틀려서가 아니라 시뮬레이터가 접촉 면적 자체를 표현할 수 없었기 때문인 경우가 많다. [[05-construction-robotics/sim-to-real|Sim-to-Real]]이 이를 제대로 다룬다. 여기서의 실무 규칙은 자유 공간 운동이 접촉보다 훨씬 잘 이전된다는 것이고, 그러니 첫 실기 실험은 자유 공간으로 계획하라.
 
+> **Sim-to-real 간극의 정의.** **sim-to-real 간극**(sim-to-real gap)은 *시뮬레이션 플랜트와 실제 플랜트 사이의 차이들의 집합이고, 차이마다 이름 붙은 양이 있다*. 한 항목이 여기에 들려면 조건 셋이 필요하다. **양쪽에서 잰 같은 양**이어야 하고 단위가 있어야 한다. 지연, 잡음 $\sigma$, 외부 캘리브레이션 오프셋, 시계 오프셋, 토크 여유 같은 것이다. **파라미터 간극**이거나 **모델 형식 간극**이다. 앞의 것은 재고 다시 튜닝하면 닫히고, 뒤의 것은 어떤 파라미터 값으로도 시뮬레이터가 그 현상을 표현하지 못한다. 그리고 **예산에 청구된다**. 차이는 그것이 먹어 치우는 여유를 통해서만 중요하기 때문이다.
+>
+> $$\Delta q=q_{\text{real}}-q_{\text{sim}},\qquad \text{margin}_{\text{real}}=\text{margin}_{\text{sim}}-\sum_{q\in\text{budget}}\Delta q$$
+>
+> $q$는 양 하나이고, 합은 같은 예산에 청구되는 간극들 위를 돈다.
+>
+> - **예**: P6의 종단 장부는 25.7의 시뮬레이션에서 $25\,\mathrm{ms}$, 실제 카트에서 $32\,\mathrm{ms}$다(Step 4). 그러므로 $\Delta q=+7\,\mathrm{ms}$이고, Gazebo가 청구한 적 없는 버스 $2.0$과 네트워크 $5$다. 여유는 $70$ 중 $45$에서 $38\,\mathrm{ms}$로 준다.
+> - **비예**: 접촉 간극을 마찰 계수 오차로 적는 것. 어떤 $\mu$ 값으로도 시간 스텝마다의 점 접촉은 접촉 면을 표현하지 못하므로 뺄 $q_{\text{sim}}$이 없다. 이 간극은 모델 형식이고, 그것을 두고 $\mu$를 튜닝하면 잡음에 맞추게 된다([[05-construction-robotics/sim-to-real|Sim-to-Real §1]]).
+
 ### 2. 이음매: 하드웨어 인터페이스
 
 시뮬레이션 작업이 이전되는 이유는 `ros2_control`이 *제어기*와 *제어 대상* 사이에 플러그인 경계를 두고, 시뮬레이션이 실제 로봇과 같은 쪽에 앉기 때문이다.
@@ -800,7 +839,7 @@ URDF의 `<ros2_control>` 태그가 이미 하나를 지정하고 있다.
 </ros2_control>
 ```
 
-`mock_components/GenericSystem`은 명령을 그대로 상태로 되돌려 주는 컴포넌트다. Gazebo 아래에서는 그 줄이 `gz_ros2_control/GazeboSimSystem`이 된다. 실제 기계에서는 벤더 드라이버 패키지가 내보내는 플러그인 이름이 된다. **그 한 줄이 이음매다.** 제어기, 제어기 설정 YAML, 관절 이름, 토픽 이름, MoveIt, Nav2, 그리고 당신의 노드들은 셋 중 무엇이 로드됐는지 모른다.
+`mock_components/GenericSystem`은 명령을 그대로 상태로 되돌려 주는 컴포넌트다. Gazebo 아래에서는 그 줄이 `gz_ros2_control/GazeboSimSystem`이 된다. 실제 기계에서는 벤더 드라이버 패키지가 내보내는 플러그인 이름이 된다. **그 한 줄이 이음매다.** 제어기, 제어기 설정 YAML, 관절 이름, 토픽 이름, MoveIt, Nav2, 그리고 당신의 노드들은 셋 중 무엇이 로드됐는지 모른다. 하드웨어 컴포넌트와 그것이 내보내는 인터페이스의 완전한 정의는 [[04-robotics/ros2/simulation-and-control|25.7 §5]]와 [[04-robotics/ros2/simulation-and-control|25.7 §6]]에 있고, 이 페이지는 그 줄의 플러그인이 실제 드라이버일 때 달라지는 것을 더한다.
 
 이 점은 구체적으로 짚을 값어치가 있다. 앞선 작업을 벤더 토픽에 직접 publish하지 않고 `ros2_control` 안에서 한 가장 강한 이유이기 때문이다. 벤더 고유의 `/my_arm/set_joint_positions` 토픽에 말을 거는 스택은 다음 팔에서 다시 써야 한다. `joint_trajectory_controller`에 말을 거는 스택은 그렇지 않다.
 
@@ -830,6 +869,12 @@ hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::D
 ```
 
 여기에 생명주기가 붙는다: `on_init`, `on_configure`(연결을 연다), `on_activate`(브레이크를 풀고 파워 스테이지를 켠다), `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error`. 상태의 의미는 말 그대로다. `INACTIVE`에서는 상태를 읽을 수 있지만 명령 인터페이스는 제공되지 않고, `ACTIVE`에서만 기계가 움직일 수 있다. 이렇게 나눈 것은 드라이버를 연결해 읽은 값을 먼저 살펴본 뒤에야 무언가를 움직일 권한을 주기 위해서다. 모터를 `on_activate`가 아니라 `on_configure`에서 켜는 드라이버는 런치 파일이 시작되는 순간 팔에 전원을 넣는 드라이버이고, 이것은 물리적 결과를 갖는 버그다.
+
+한 줄 규칙으로 쓰면, $s$를 컴포넌트의 생명주기 상태, $\mathcal S$를 상태 인터페이스, $\mathcal C$를 명령 인터페이스라 할 때 다음과 같다.
+
+$$\mathcal I(s)=\begin{cases}\varnothing & s=\text{UNCONFIGURED}\\ \mathcal S & s=\text{INACTIVE}\\ \mathcal S\cup\mathcal C & s=\text{ACTIVE}\end{cases}$$
+
+$\mathcal I(s)$는 상태 $s$에서 컴포넌트가 내놓는 것이고, 그래서 컴포넌트는 명령을 따르기 전에 먼저 읽힐 수 있다. P6의 실제 카트에서 configure만 되고 비활성인 벤더 컴포넌트는 이미 `cart/position`을 엔코더 $0.488\,\mathrm{mm}$ 단위로 보고하지만, `cart/velocity`에는 $200\,\mathrm{Hz}$ 속도 제어기가 점유할 명령이 아직 없다. 그것을 넘겨주는 전이는 활성화 하나뿐이고, 위의 `on_configure` 드라이버는 그 전이보다 전원이 먼저 도착하는 경우다.
 
 주기는 `controller_manager` 파라미터 `update_rate`이고, Hz 단위 정수, **기본값 100**, 시작 후 읽기 전용이다. 하드웨어가 실제로 감당할 수 있는 값으로 두라. `read()`가 시리얼 왕복에 15 ms 블로킹된다면 1000 Hz 업데이트는 루프가 지킬 수 없는 요구이고, 초과분은 1초에 한 줄까지만 찍히도록 스로틀된 경고 `Overrun detected! The controller manager missed its desired rate of 1000 Hz. The loop took … ms (missed cycles : …).`로 나타나고 루프는 `update_rate`보다 조용히 느리게 돈다(초과 처리 `overruns.manage`가 기본으로 켜져 있다) — 오류가 아니라 경고이고, 놓치기 쉽다.
 
@@ -970,6 +1015,15 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 
 실시간 커널(RT_PREEMPT)이 주는 것: 유계 스케줄링 지연. 실행 준비가 된 스레드가 알려진 시간 안에 실제로 실행된다. 주지 않는 것: 그 스레드 안의 코드에 관한 어떤 것도. 실시간 동작은 실행 경로에서 비결정적 연산 — 페이지 폴트, 동적 할당과 해제, 무한히 블로킹될 수 있는 동기화 원시 — 을 제거해야 얻어진다. `update()` 안의 `malloc` 하나가 커널의 노력을 전부 무효화한다.
 
+> **실시간 제어 루프의 정의.** **실시간 제어 루프**(real-time control loop)는 *최악의 주기가 유계이고 주기 길이 안에 드는 주기적 스레드*다. 실시간은 속도가 아니라 그 최악의 성질이다. 주기, 마감, 최악 실행 시간, hard와 soft는 [[02-foundations/algorithms/interview-code|11.7 §6]]에서 정의하고, 여기서는 조건 셋이 함께 성립해야 한다. **유계 스케줄링**: 스레드가 실행 준비가 된 뒤 알려진 시간 안에 시작한다. RT_PREEMPT 커널 위의 `SCHED_FIFO`가 이것을 준다. **유계 실행**: `read`, `update`, `write` 안의 어떤 것도 한없이 걸릴 수 없다. 페이지 폴트도, 할당도, 막히는 대기도 없어야 한다. 그리고 **최악이 들어맞는다**: 평균이 아니라 한 실행에서 가장 긴 주기가 주기 길이 안에 든다(지터는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]).
+>
+> $$\max_k\big(t_{r,k}+t_{u,k}+t_{w,k}\big)\le T_c=\frac{1}{f_c}$$
+>
+> $k$는 한 실행의 주기들을 돌고, $t_{r,k},t_{u,k},t_{w,k}$는 주기 $k$의 read, update, write 시간이다(프레임워크의 일은 $t_{u,k}$에 넣는다). 좌변이 루프의 최악 실행 시간이고, `update_rate`가 정하는 $T_c$가 그 마감이다.
+>
+> - **예**: $f_c=200\,\mathrm{Hz}$, $T_c=5\,\mathrm{ms}$인 P6에서 주기마다 버스가 $2.0\,\mathrm{ms}$를 쓴다. 그러면 이 부등식은 모든 제어기의 `update()` 호출에 평균이 아니라 *최악의* 주기에서 합쳐 $3.0\,\mathrm{ms}$를 남긴다.
+> - **비예**: 주기 $200$개 중 $7\,\mathrm{ms}$짜리가 하나 섞인 P6의 1초. 평균 주기는 $(199\times5+7)/200=5.01\,\mathrm{ms}$라서 표에는 "5 ms 실시간"으로 적히지만, 최대는 마감을 $2\,\mathrm{ms}$ 넘는다. `update()` 안에 `malloc`을 둔 채 RT 커널을 쓰면 정확히 이것이 나온다. 스케줄링은 유계였고 실행은 그렇지 않았다.
+
 `controller_manager`는 이 계층에서 할 수 있는 일을 하며, 그것이 무엇인지 알아 둘 값어치가 있다.
 
 - 업데이트 스레드가 우선순위 50의 `SCHED_FIFO`를 시도한다. 이를 위해서는 `/etc/security/limits.conf`에서 사용자에게 `rtprio` 한도가 부여되어 있어야 한다. 없으면 시도가 실패하고, 기동 시 `Could not enable FIFO RT scheduling policy` 경고가 한 번 찍힌 뒤 스레드는 보통 스케줄링으로 돈다.
@@ -982,6 +1036,12 @@ ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시
 기계가 움직일 수 있게 되는 순간 이것은 선택 사항이기를 그만두고, 소프트웨어이기를 그만둔다.
 
 **비상정지는 하드웨어다.** 토픽에 `std_msgs/msg/Bool`을 publish하는 버튼은 비상정지가 아니다. 그것이 막아야 할 대상과 실패 모드를 공유하는 기능일 뿐이다. 진짜 E-stop은 컴퓨터와 독립적으로 전원을 끊거나 브레이크를 거는 하드와이어 회로이고, 의도적으로 리셋할 때까지 래치되며, 소프트웨어가 멈췄을 때도 DDS 링크가 끊겼을 때도 노트북이 잠들었을 때도 동작한다. 스택이 돌아가는 중에 눌러 보고, 그다음 네트워크 케이블을 뽑아서 시험하라.
+
+래치를 $L$, 구동기에 닿는 명령을 $u_{\text{act}}$로 쓰면 규칙은 한 줄이다.
+
+$$u_{\text{act}}(t)=\big(1-L(t)\big)\,u_{\text{cmd}}(t),\qquad L(t)\in\{0,1\}$$
+
+$L$은 버튼을 누르면 $1$로 뛰고, 의도적으로 리셋할 때만 $0$으로 돌아온다. 우변의 어느 것도 컴퓨터를 거치지 않는다는 것이 요점이고, 토픽으로는 이것을 구현할 수 없는 이유다. P6에서 그 차이는 거리다. 메시지로 보낸 정지는 executor를 붙잡고 있는 무엇이든 그 뒤에서 기다린다. §1이 모든 노드에게 견디라고 요구하는 길이인 $400\,\mathrm{ms}$의 멈춤 동안, $0.25\,\mathrm{m/s}$의 카트는 메시지를 처리할 수 있게 되기도 전에 $100\,\mathrm{mm}$, 곧 $205$ 카운트이자 제어 주기 $80$번을 간다. 배선된 래치는 그중 어느 것도 기다리지 않고 파워 스테이지를 끊는다.
 
 정지 너머로는: 가능하면 작업 공간을 물리적으로 제한하고(테이블 모서리, 차단물, 짧게 줄인 테더), 전체 범위가 필요 없는 모든 실험에서 속도를 제한하고, 하드웨어가 지원하면 힘을 제한하고, 새 궤적을 처음부터 전속으로 돌리지 마라.
 

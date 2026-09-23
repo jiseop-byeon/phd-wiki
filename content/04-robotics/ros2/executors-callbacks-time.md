@@ -102,7 +102,16 @@ Two of the three ROS 2 failures that produce no error live on this page; the thi
 
 Callbacks do not run by themselves. An **executor** owns one or more OS threads, watches the middleware for available messages and expired timers through a *wait set*, and invokes the corresponding callbacks. `rclpy.spin(node)` and `rclcpp::spin(node)` are shorthand for instantiating a single-threaded executor, adding the node and spinning it.
 
-rclcpp offers `SingleThreadedExecutor`, `MultiThreadedExecutor`, and `StaticSingleThreadedExecutor`, which caches the node's entity list (its publishers, subscriptions, timers, services and clients — everything that can have a callback) and rebuilds it only when entities are added or removed — so, since the Jazzy executor rework, it is no longer limited to nodes that create everything during initialisation. Jazzy also ships an experimental `EventsExecutor`. rclpy offers the first two.
+> **Executor, defined.** An **executor** is a *scheduler object inside one process* — neither a node nor a thread. Three defining conditions. It **holds entities**: the subscriptions, timers, services and clients of the nodes added to it. It **waits on a wait set**, which reports only *which* entities are ready — a timer due, a topic with a message in the middleware — never how many or how old. And it **runs each ready callback to completion on one of its threads**, within the limits of §2's callback groups.
+>
+> $$N_{\text{run}}(t)\le n_{\text{th}},\qquad n_{\text{late}}=\Big\lfloor\frac{D}{T}\Big\rfloor$$
+>
+> where $N_{\text{run}}(t)$ counts the callbacks running at $t$, $n_{\text{th}}$ is the thread count ($1$ for `rclpy.spin`) and $n_{\text{late}}$ the firings of a period-$T$ timer that fall due while one callback holds the only thread for $D$ — none replayed, since a late timer skips the periods it missed.
+>
+> - **Example**: P6's controller on `rclpy.spin` while calibration blocks for $D=200\,\mathrm{ms}$: $\lfloor200/5\rfloor=40$ control firings late, $40$ of the $200$ owed each second.
+> - **Non-example**: an executor that queues the goals. The $200/20=10$ goals arriving meanwhile never enter it; they wait in the middleware under the subscription's QoS depth, so `KEEP_LAST (5)` loses five before any callback runs. More threads cannot recover them, which is why executor and QoS are sized together.
+
+rclcpp offers `SingleThreadedExecutor`, `MultiThreadedExecutor`, and `StaticSingleThreadedExecutor`, which caches the node's entity list (its publishers, subscriptions, timers, services and clients — everything that can have a callback) and rebuilds it only when entities are added or removed — so, since the Jazzy executor rework, it is no longer limited to nodes that create everything during initialisation: the [Jazzy source](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/src/rclcpp/executors/static_single_threaded_executor.cpp) re-collects its entities whenever one is added or removed, while the Executors concept page still carries the older advice to use it only with such nodes. Jazzy also ships an experimental `EventsExecutor`. rclpy offers the first two.
 
 Three consequences that beginners get wrong:
 
@@ -120,6 +129,15 @@ Callbacks can be organised into **callback groups**, created with `create_callba
 - **Reentrant**: its callbacks may run in parallel, including several concurrent invocations of the *same* callback.
 
 Callbacks in *different* groups may always run in parallel. Anything created without naming a group joins the node's **default callback group, which is mutually exclusive**. Hold a reference to any group you create — if it is garbage-collected, its callbacks stop being triggered.
+
+> **Callback group, defined.** A **callback group** is a *set of one node's callbacks carrying one concurrency rule* — a permission, not a thread. Three defining conditions. **Every callback belongs to exactly one group**, the node's default unless another is named, and an entity passes its group to the callbacks it spawns, a service call's hidden done-callback included. The group's **type sets the rule inside it**: *mutually exclusive* runs at most one of its callbacks at a time, *reentrant* any number, even of the same callback. And **callbacks in different groups may overlap**, but only on threads the executor has.
+>
+> $$N^{g}_{\text{run}}(t)\le 1\ \ (g\in\mathcal{G}_{\text{ME}}),\qquad N_{\text{run}}(t)\le n_{\text{th}}$$
+>
+> where $\mathcal{G}_{\text{ME}}$ is the node's mutually exclusive groups and $N^{g}_{\text{run}}(t)$ the callbacks of $g$ running at $t$; both bounds hold at every instant, so two callbacks at once need two groups (or a reentrant one) *and* two threads.
+>
+> - **Example**: P6's calibration timer in its own mutually exclusive group, the control timer and `on_goal` in the default one, two threads: calibration holds one for $200\,\mathrm{ms}$ while the other runs all $40$ control firings and $10$ goal callbacks, and the loss is $0$.
+> - **Non-example**: the same groups on `rclpy.spin`. The groups permit overlap, but $n_{\text{th}}=1$ caps the node at one running callback, so $40$ firings are still lost — which is why the fix is always the pair, a group and a thread.
 
 That default is the whole story behind the deadlock. If every entity in a node uses the default group, the node behaves exactly as if it were on a single-threaded executor *even when you gave it a multi-threaded one*. Choosing `MultiThreadedExecutor` and assigning no groups buys you nothing.
 
@@ -178,6 +196,15 @@ The safer alternative, and the one the documentation prefers: **do not call sync
 ROS 2 gives you three time abstractions: **SystemTime** (the machine's clock), **SteadyTime** (monotonic, for hardware timeouts, never comparable to the other two), and **ROSTime**, which is what you should use for anything that gets published or compared with a message stamp.
 
 ROSTime reports the same as SystemTime *until a ROS time source is active*. It becomes active when the node's `use_sim_time` parameter is set. From then on, the node's clock returns the latest value received on the `/clock` topic (`rosgraph_msgs/msg/Clock`), published by the simulator or by bag playback — a *bag* is a recording of topics, and `ros2 bag play` publishes it again ([[04-robotics/ros2/debugging-data-reproducibility|25.10]]).
+
+> **ROS time, defined.** **ROS time** is *the value a node's own clock returns* — of the three clock types, the only one that can follow a simulator or a replay. Three defining conditions. With `use_sim_time` false it **equals system time**. With it true it is **the latest value received on `/clock`**, and **zero until the first message**, meaning *uninitialised*. And it is **not monotonic**: a looping replay sends it backwards.
+>
+> $$t_{\text{ROS}}=\begin{cases}t_{\text{sys}} & \texttt{use\_sim\_time}=\text{false}\\ t_{\text{clock}} & \texttt{use\_sim\_time}=\text{true}\end{cases}$$
+>
+> where $t_{\text{sys}}$ is the machine's clock and $t_{\text{clock}}$ the newest `/clock` stamp; node-clock timers wait on $t_{\text{ROS}}$, wall timers do not.
+>
+> - **Example**: P6 simulated at real-time factor $r=0.5$ (defined next), `use_sim_time` set: a $5\,\mathrm{ms}$ node-clock timer fires every $10\,\mathrm{ms}$ of wall time, still $20/5=4$ times per goal.
+> - **Non-example**: rclcpp's `create_wall_timer(5ms, …)` on that node never reads ROS time, so each firing spans $0.5\times5=2.5\,\mathrm{ms}$ simulated: $8$ per goal, $400\,\mathrm{Hz}$ in simulated time. A period on the wrong clock is off by exactly $r$, and no log says so.
 
 **Real-time factor.** A simulator does not promise to keep pace with the wall clock. Its *real-time factor* $r$ is the ratio of simulated time to wall time over the same stretch of a run:
 
@@ -494,7 +521,16 @@ $$\frac{D}{1000\,\mathrm{ms}}=\frac{200}{1000}=20\,\%$$
 
 콜백은 저절로 돌지 않는다. **Executor**(실행기)가 OS 스레드 하나 이상을 소유하고, *wait set*을 통해 미들웨어에 도착한 메시지와 만료된 타이머를 감시하며 해당 콜백을 호출한다. `rclpy.spin(node)`와 `rclcpp::spin(node)`는 단일 스레드 executor를 만들고 노드를 붙여 spin하는 것의 축약이다.
 
-rclcpp는 `SingleThreadedExecutor`, `MultiThreadedExecutor`, 그리고 노드의 엔티티 목록(퍼블리셔, 서브스크립션, 타이머, 서비스, 클라이언트 — 콜백을 가질 수 있는 모든 것)을 캐시했다가 엔티티가 추가·제거될 때만 다시 만드는 `StaticSingleThreadedExecutor`를 제공한다. Jazzy의 executor 재작성 이후로는 모든 것을 초기화 때 만드는 노드에만 쓸 수 있다는 제한이 없어졌다. Jazzy에는 실험적인 `EventsExecutor`도 있다. rclpy는 앞의 둘을 제공한다.
+> **Executor의 정의.** **Executor**는 *한 프로세스 안의 스케줄러 객체*다. 노드도 스레드도 아니다. 정의 조건은 셋이다. **엔티티를 들고 있다.** 붙인 노드들의 서브스크립션, 타이머, 서비스, 클라이언트다. **wait set 위에서 기다린다.** wait set은 *어느* 엔티티가 준비됐는지 — 만기된 타이머, 미들웨어에 메시지가 있는 토픽 — 만 알릴 뿐, 몇 개인지 얼마나 오래됐는지는 알리지 않는다. 그리고 **준비된 콜백을 자기 스레드 하나에서 끝까지 돌린다.** 2절의 콜백 그룹이 정한 한도 안에서다.
+>
+> $$N_{\text{run}}(t)\le n_{\text{th}},\qquad n_{\text{late}}=\Big\lfloor\frac{D}{T}\Big\rfloor$$
+>
+> 여기서 $N_{\text{run}}(t)$는 시각 $t$에 돌고 있는 콜백 수, $n_{\text{th}}$는 스레드 수(`rclpy.spin`이면 $1$), $n_{\text{late}}$는 콜백 하나가 하나뿐인 스레드를 $D$ 동안 붙드는 사이 도래하는 주기 $T$ 타이머의 발화 수다. 늦은 타이머는 놓친 주기를 건너뛰므로 그중 어느 것도 나중에 재생되지 않는다.
+>
+> - **예**: 보정이 $D=200\,\mathrm{ms}$ 동안 막히는 사이 `rclpy.spin` 위의 P6 제어기. $\lfloor200/5\rfloor=40$번의 제어 발화가 늦고, 매초 내야 할 $200$번 중 $40$번이다.
+> - **비예**: 목표를 줄 세워 두는 executor. 그동안 도착하는 목표 $200/20=10$개는 executor에 들어오지 않고 서브스크립션의 QoS depth 아래 미들웨어에서 기다리므로, `KEEP_LAST (5)`는 어떤 콜백이 돌기도 전에 다섯을 잃는다. 스레드를 늘려도 되찾을 수 없으니, executor와 QoS는 함께 정한다.
+
+rclcpp는 `SingleThreadedExecutor`, `MultiThreadedExecutor`, 그리고 노드의 엔티티 목록(퍼블리셔, 서브스크립션, 타이머, 서비스, 클라이언트 — 콜백을 가질 수 있는 모든 것)을 캐시했다가 엔티티가 추가·제거될 때만 다시 만드는 `StaticSingleThreadedExecutor`를 제공한다. Jazzy의 executor 재작성 이후로는 모든 것을 초기화 때 만드는 노드에만 쓸 수 있다는 제한이 없어졌다. [Jazzy 소스](https://github.com/ros2/rclcpp/blob/jazzy/rclcpp/src/rclcpp/executors/static_single_threaded_executor.cpp)는 엔티티가 추가되거나 제거될 때마다 목록을 다시 모으고, Executors 개념 문서에는 그런 노드에만 쓰라는 예전 권고가 아직 남아 있다. Jazzy에는 실험적인 `EventsExecutor`도 있다. rclpy는 앞의 둘을 제공한다.
 
 초심자가 틀리는 귀결 셋:
 
@@ -512,6 +548,15 @@ rclpy에 대한 단서 하나. `MultiThreadedExecutor`의 스레드들은 Python
 - **Reentrant**: 이 그룹의 콜백은 병렬로 실행될 수 있고, *같은* 콜백의 동시 실행도 허용된다.
 
 *다른* 그룹의 콜백끼리는 언제나 병렬 실행이 가능하다. 그룹을 지정하지 않고 만든 것은 전부 노드의 **기본 콜백 그룹에 들어가고, 그것은 mutually exclusive다.** 직접 만든 그룹은 참조를 붙들고 있어야 한다. 수거되면 그 콜백은 더 이상 트리거되지 않는다.
+
+> **콜백 그룹의 정의.** **콜백 그룹**은 *한 노드의 콜백을 묶어 동시 실행 규칙 하나를 붙인 집합*이다. 허가이지 스레드가 아니다. 정의 조건은 셋이다. **모든 콜백은 정확히 한 그룹에 속한다.** 따로 지정하지 않으면 노드의 기본 그룹이고, 엔티티는 자기가 만들어 내는 콜백에 — 서비스 호출의 숨은 done-callback까지 — 자기 그룹을 물려준다. **그룹의 종류가 그 안의 규칙을 정한다.** *mutually exclusive*는 그 콜백을 한 번에 하나만, *reentrant*는 같은 콜백이라도 몇 개든 돌린다. 그리고 **다른 그룹의 콜백끼리는 겹쳐 돌 수 있다.** 단, executor에 있는 스레드 위에서만이다.
+>
+> $$N^{g}_{\text{run}}(t)\le 1\ \ (g\in\mathcal{G}_{\text{ME}}),\qquad N_{\text{run}}(t)\le n_{\text{th}}$$
+>
+> 여기서 $\mathcal{G}_{\text{ME}}$는 노드의 mutually exclusive 그룹들, $N^{g}_{\text{run}}(t)$는 시각 $t$에 도는 그룹 $g$의 콜백 수다. 두 한도가 매 순간 함께 걸리므로, 콜백 둘을 동시에 돌리려면 그룹 둘(또는 reentrant 그룹 하나) *그리고* 스레드 둘이 필요하다.
+>
+> - **예**: P6의 보정 타이머는 자기 mutually exclusive 그룹에, 제어 타이머와 `on_goal`은 기본 그룹에 두고 스레드 둘로 돌린다. 보정이 스레드 하나를 $200\,\mathrm{ms}$ 붙드는 동안 다른 스레드가 제어 발화 $40$번과 목표 콜백 $10$번을 모두 돌리고, 손실은 $0$이다.
+> - **비예**: 같은 그룹 배치를 `rclpy.spin`에 올린 경우. 그룹은 겹침을 허락하지만 $n_{\text{th}}=1$이 노드를 한 번에 콜백 하나로 묶으므로 여전히 $40$번을 잃는다. 해법이 언제나 그룹과 스레드의 짝인 이유다.
 
 그 기본값이 교착의 전말이다. 노드의 모든 엔티티가 기본 그룹을 쓰면, *멀티 스레드 executor를 줬더라도* 노드는 단일 스레드 executor 위에 있는 것과 똑같이 동작한다. `MultiThreadedExecutor`를 고르고 그룹을 하나도 지정하지 않으면 얻는 것이 없다.
 
@@ -570,6 +615,15 @@ C++에서는 `create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive
 ROS 2는 시간 추상을 셋 준다. **SystemTime**(머신의 시계), **SteadyTime**(단조 증가. 하드웨어 타임아웃용이며 다른 둘과 비교 불가), 그리고 **ROSTime**. 발행되거나 메시지 스탬프와 비교되는 모든 것에는 ROSTime을 써야 한다.
 
 ROSTime은 *ROS 시간 소스가 활성화되기 전까지는* SystemTime과 같은 값을 보고한다. 활성화 조건은 노드의 `use_sim_time` 파라미터가 설정되는 것이다. 그 뒤로 노드의 시계는 `/clock` 토픽(`rosgraph_msgs/msg/Clock`)으로 받은 최신 값을 돌려준다. 이 토픽은 시뮬레이터나 bag 재생이 발행한다. bag은 토픽을 녹화한 것이고 `ros2 bag play`가 그것을 다시 발행한다([[04-robotics/ros2/debugging-data-reproducibility|25.10]]).
+
+> **ROS 시간의 정의.** **ROS 시간**은 *노드 자신의 시계가 돌려주는 값*이다. 세 시계 종류 가운데 시뮬레이터나 재생을 따라갈 수 있는 것은 이것뿐이다. 정의 조건은 셋이다. `use_sim_time`이 거짓이면 **시스템 시간과 같다.** 참이면 **`/clock`으로 받은 가장 최근 값**이고, 첫 메시지 전에는 **0**, 곧 *초기화 안 됨*이다. 그리고 **단조 증가가 아니다.** 루프 재생은 시간을 뒤로 되돌린다.
+>
+> $$t_{\text{ROS}}=\begin{cases}t_{\text{sys}} & \texttt{use\_sim\_time}=\text{false}\\ t_{\text{clock}} & \texttt{use\_sim\_time}=\text{true}\end{cases}$$
+>
+> 여기서 $t_{\text{sys}}$는 머신의 시계, $t_{\text{clock}}$은 가장 새 `/clock` 스탬프다. 노드 시계 타이머는 $t_{\text{ROS}}$를 기다리고, 벽시계 타이머는 그러지 않는다.
+>
+> - **예**: 실시간 계수 $r=0.5$(바로 아래에서 정의)로 시뮬레이션되는 P6에서 `use_sim_time`을 켜면, 노드 시계의 $5\,\mathrm{ms}$ 타이머는 벽시계 $10\,\mathrm{ms}$마다 울리고 목표 하나당 여전히 $20/5=4$번이다.
+> - **비예**: 같은 노드의 rclcpp `create_wall_timer(5ms, …)`는 ROS 시간을 읽지 않으므로 발화 하나가 시뮬레이션 시간 $0.5\times5=2.5\,\mathrm{ms}$를 덮는다. 목표당 $8$번, 시뮬레이션 시간으로 $400\,\mathrm{Hz}$다. 엉뚱한 시계 위의 주기는 정확히 $r$만큼 어긋나고, 그렇다고 말해 주는 로그는 없다.
 
 **실시간 계수.** 시뮬레이터는 벽시계와 같은 속도로 간다고 약속하지 않는다. 그 *실시간 계수*(real-time factor) $r$은 실행의 같은 구간에서 시뮬레이션 시간과 벽시계 시간의 비다.
 

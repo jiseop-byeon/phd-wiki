@@ -153,6 +153,16 @@ One pair of gains, and the arm answers with two natural frequencies a factor of 
 - **Error dynamics thinking**: design the controller so the *error* obeys a stable
   differential equation ([[02-foundations/engineering-math|0.5 §8]]) — e.g.,
   $\ddot e + K_d \dot e + K_p e = 0$ with gains picking damping/frequency.
+
+> **Error dynamics, defined.** The **error dynamics** of a controlled system is *a differential equation*: the closed loop rewritten in the error $e(t) = \theta_d(t) - \theta(t)$ (MR §11.2). The design target this chapter aims at has three named conditions. **Linear with constant coefficients**, so its behaviour is read off the roots of one polynomial. **Homogeneous**: no constant term, since a constant $c$ leaves the error settling at a nonzero value. **Stable**: every root of the characteristic polynomial has a negative real part, which for second order holds exactly when both coefficients are positive.
+>
+> $$a_p e^{(p)} + \dots + a_1\dot e + a_0 e = c, \qquad \text{target: } \ddot e + K_d\dot e + K_p e = 0 \iff \ddot e + 2\zeta\omega_n\dot e + \omega_n^2 e = 0$$
+>
+> where $p$ is the order, $a_0, \dots, a_p$ are constant coefficients and $c$ is a constant input; $\omega_n = \sqrt{K_p}$ and $\zeta = K_d/(2\sqrt{K_p})$ are the natural frequency and damping ratio of [[02-foundations/engineering-math|0.5 §8]], and a stable equation with $c \ne 0$ settles at $e_{ss} = c/a_0$ instead of $0$, since every derivative vanishes at rest.
+>
+> - **Example**: computed torque on P2 (§2) leaves each joint with $\ddot e + 20\dot e + 100e = 0$: linear, homogeneous, and stable with a double root at $-10$, so the $0.1\,\mathrm{rad}$ shoulder error of the worked case decays as $0.1(1 + 10t)e^{-10t}$ with no overshoot.
+> - **Non-example**: the $10\,\mathrm{N}$ press of §3 under PD with gravity compensated and $K_p = 100$. It loads the shoulder with $10\,\mathrm{N\,m}$, so the error equation gains a forcing term and is no longer homogeneous: the arm settles, but not at $0$: near $e = 10/100 = 0.1\,\mathrm{rad}$ to first order, and at $0.091$ or $0.112\,\mathrm{rad}$ at the shoulder, depending on which way the force acts, with about $0.01\,\mathrm{rad}$ at the elbow once $J$ is re-evaluated at the deflected pose. "Stable" and "zero steady-state error" are separate claims, and a result that reports only the first has not reported the second.
+
 - **Velocity-input regime (MR §11.3): P and PI swap the roles you expect.**
   - **P alone** gives *first-order* error dynamics, $\dot\theta_e + K_p\theta_e = c$. Here $c$
     is zero for a setpoint and nonzero for a constant-velocity target; that nonzero $c$ leaves the
@@ -169,6 +179,15 @@ One pair of gains, and the arm answers with two natural frequencies a factor of 
     roles. The same symbol does a different job in each regime, which is why gains do not
     transfer between them.
   - PID goes one order further still: its setpoint error dynamics are *third* order.
+
+> **Velocity input and torque input, defined.** **Velocity input** and **torque input** are *the two interfaces through which a controller's output reaches a joint*, named by what the drive makes true (MR §11.3–11.4). Two conditions define each. **Velocity input**: the drive makes the joint velocity equal the command, as a stepper motor or an amplifier in velocity mode does, and only while the torque this takes stays within the drive's capacity, so the robot's inertia never enters the loop. **Torque input**: the drive makes the joint torque equal the command, and the robot's own dynamics $M\ddot\theta + c + g = \tau$ then turn that torque into motion.
+>
+> $$\text{velocity: } \dot\theta = u,\ \ \text{PI} \Rightarrow \ddot e + K_p\dot e + K_i e = 0; \qquad \text{torque } (M = 1)\text{: } \ddot\theta = u,\ \ \text{PD} \Rightarrow \ddot e + K_d\dot e + K_p e = 0$$
+>
+> where $u$ is the command; the torque plant has one more integrator between command and position, so the gain in front of $\dot e$, the damper, is $K_p$ under velocity input and $K_d$ under torque input.
+>
+> - **Example**: the design $\omega_n = 10\,\mathrm{rad/s}$, $\zeta = 1$ for a P2 joint is $K_p = 100$, $K_d = 20$ under torque input with unit inertia, and $K_p = 20$, $K_i = 100$ under velocity input: the same numbers in swapped slots.
+> - **Non-example**: the torque-mode pair copied into a velocity-mode drive as $K_p = 100$, $K_i = 20$. Then $\omega_n = 4.47\,\mathrm{rad/s}$ and $\zeta = 11.2$, with roots $-99.8$ and $-0.200$, so the slow part of the error decays with a $5.0\,\mathrm{s}$ time constant instead of $0.1\,\mathrm{s}$. A gain printed without its input regime does not say what it does.
 
 > [!example] Worked example · 계산 예제
 > Torque-input PD with unit inertia: $\ddot\theta_e + K_d\dot\theta_e + K_p\theta_e = 0$, pick $K_p = 100$.
@@ -196,6 +215,15 @@ where $\hat M, \hat c, \hat g$ are the *modelled* mass matrix, velocity-product 
 - **Example**: step 1 of the worked case. $K_pe = (10,0)$ is a desired acceleration; $M(K_pe) = (30,10)$ is the torque that delivers it; the $10\,\mathrm{N\,m}$ at the zero-error elbow is condition 3 paying for the coupling, and the plant returns $\ddot\theta = (10,0)$ exactly.
 - **Non-example**: PD with gravity compensation, $\tau = K_pe + K_d\dot e + \hat g(\theta)$ — the approximation MR offers when the full model is too slow or too uncertain to evaluate. It has parts 1 (trivially) and 2 and *half* of part 3, and it is a perfectly good controller; it is simply not computed torque, because $M$ was never applied. Step 3 measures the difference on P2: $(5,-5)$ instead of $(10,0)$ from the identical error.
 - **Why it matters, and where it stops**: the cancellation is only as good as $\hat M, \hat c, \hat g$. When the model is wrong, the residual $\ (\hat M - M)\ddot\theta + (\hat c - c) + (\hat g - g)$ does not vanish — it enters the error dynamics as a disturbance the PD gains have to absorb, and both tracking and stability margin degrade as it grows. That is the precise sense in which model-based control is "only as good as its model", and it is the reason the rest of the track keeps adding layers that need less of one.
+
+> **PD control with gravity compensation, defined.** **PD control with gravity compensation** is *a setpoint control law for torque-input arms that uses only the gravity part of the model*. Three conditions define it. **A setpoint**: $\theta_d$ is constant, $\dot\theta_d = \ddot\theta_d = 0$. **Positive-definite gains**: $K_p$ and $K_d$ symmetric positive definite, here $100I$ and $20I$. **A gravity model and nothing more**: the law adds the modelled $\hat g(\theta)$ and uses no $M$ or $c$. MR shows (§11.4.2) that when $\hat g = g$ exactly and friction is neglected, the arm comes to rest at $\theta_d$ from any initial state.
+>
+> $$\tau = K_p e + K_d\dot e + \hat g(\theta), \qquad V = \tfrac12 e^\top K_p e + \tfrac12\dot\theta^\top M(\theta)\,\dot\theta, \quad \dot V = -\dot\theta^\top K_d\,\dot\theta \le 0$$
+>
+> where $V$ is an error energy, a virtual spring plus the kinetic energy, that with $\hat g = g$ can only fall while the arm moves, so convergence needs neither $M$ nor $c$, while the path to $\theta_d$ still depends on $M$.
+>
+> - **Example**: Steps 3–4 on P2: $\tau = (29.62,\ 0)\,\mathrm{N\,m}$, a first response $\ddot\theta = (5, -5)$, and two modes with $\zeta = 0.541$ and $1.307$. It converges, but not with the designed $\zeta = 1$.
+> - **Non-example**: plain PD, with $\hat g$ dropped. At the catalog pose the arm settles where $K_p e = g(\theta)$, at $e = (0.215,\ 0.023)\,\mathrm{rad}$, the shoulder $12.3^\circ$ low for as long as you wait. $K_p = 1000$ shrinks the shoulder's share to $0.020\,\mathrm{rad}$ but never to zero: the $\hat g$ term, not a larger gain, is what removes the sag.
 
 ### 3. Contact, and where control goes after this chapter
 
@@ -389,6 +417,16 @@ $$\omega_{n,i} = \sqrt{K_p\mu_i}, \qquad \zeta_i = \frac{K_d\mu_i}{2\sqrt{K_p\mu
 - **오차 동역학 사고**: *오차*가 안정한 미분방정식([[02-foundations/engineering-math|0.5 §8]])을
   따르도록 제어기를 설계한다 — 예: $\ddot e + K_d \dot e + K_p e = 0$, 이득이 감쇠/주파수를
   고른다.
+
+> **오차 동역학의 정의.** 제어되는 계의 **오차 동역학**(error dynamics)은 *미분방정식*이다. 닫힌 루프를 오차 $e(t) = \theta_d(t) - \theta(t)$로 다시 쓴 것이다(MR §11.2). 이 장이 겨누는 설계 목표에는 이름 붙은 조건이 셋 있다. **상수 계수 선형**이다. 그래서 거동을 다항식 하나의 근에서 읽는다. **제차**다. 상수항이 없어야 한다. 상수 $c$가 있으면 오차가 0이 아닌 값에 머물기 때문이다. **안정**하다. 특성 다항식의 모든 근의 실수부가 음수이고, 2차에서는 두 계수가 모두 양수일 때 정확히 그렇다.
+>
+> $$a_p e^{(p)} + \dots + a_1\dot e + a_0 e = c, \qquad \text{target: } \ddot e + K_d\dot e + K_p e = 0 \iff \ddot e + 2\zeta\omega_n\dot e + \omega_n^2 e = 0$$
+>
+> 여기서 $p$는 차수, $a_0, \dots, a_p$는 상수 계수, $c$는 상수 입력이다. $\omega_n = \sqrt{K_p}$와 $\zeta = K_d/(2\sqrt{K_p})$는 [[02-foundations/engineering-math|0.5 §8]]의 고유 진동수와 감쇠비이고, $c \ne 0$인 안정한 방정식은 정지하면 모든 도함수가 사라지므로 $0$이 아니라 $e_{ss} = c/a_0$에 머문다.
+>
+> - **예**: P2 위의 계산 토크(§2)는 각 관절에 $\ddot e + 20\dot e + 100e = 0$을 남긴다. 선형이고 제차이며, $-10$의 중근으로 안정하다. 그래서 계산 예제의 어깨 오차 $0.1\,\mathrm{rad}$는 $0.1(1 + 10t)e^{-10t}$로 오버슈트 없이 줄어든다.
+> - **비예**: 중력을 보상하고 $K_p = 100$인 PD 아래의 §3 누르기 $10\,\mathrm{N}$. 어깨에 $10\,\mathrm{N\,m}$을 얹으므로 오차 방정식에 강제항이 생겨 제차가 아니게 된다. 팔은 멈춰 서지만 $0$에는 가지 않는다. 1차 근사로 $e = 10/100 = 0.1\,\mathrm{rad}$ 근처이고, 기운 자세에서 $J$를 다시 계산하면 힘의 방향에 따라 어깨 오차가 $0.091$ 또는 $0.112\,\mathrm{rad}$, 엘보 오차가 약 $0.01\,\mathrm{rad}$다. "안정"과 "정상 상태 오차 0"은 서로 다른 주장이고, 앞의 것만 보고한 결과는 뒤의 것을 보고하지 않은 것이다.
+
 - **속도 입력 영역(MR §11.3): P와 PI에서는 이득의 역할이 예상과 뒤바뀐다.**
   - **P만** 쓰면 오차 동역학이 *1차*다($\dot\theta_e + K_p\theta_e = c$). $c$는 설정점
     추종이면 0이고 등속 목표면 0이 아니다. 그 0이 아닌 $c$가 정상 상태 오프셋 $c/K_p$를 남긴다.
@@ -403,6 +441,15 @@ $$\omega_{n,i} = \sqrt{K_p\mu_i}, \qquad \zeta_i = \frac{K_d\mu_i}{2\sqrt{K_p\mu
     $\omega_n=\sqrt{K_p}$, $\zeta = K_d/(2\sqrt{K_p})$다 — 속도 입력의 역할과 정반대다. 같은
     기호가 영역마다 다른 일을 하므로 이득은 두 영역 사이에서 옮겨 쓸 수 없다.
   - PID는 한 차수 더 간다. 설정점 오차 동역학이 *3차*다.
+
+> **속도 입력과 토크 입력의 정의.** **속도 입력**(velocity input)과 **토크 입력**(torque input)은 *제어기의 출력이 관절에 닿는 두 가지 접점*이고, 구동계가 무엇을 참으로 만드는지로 이름이 붙는다(MR §11.3–11.4). 각각을 정의하는 조건은 둘이다. **속도 입력**: 스테핑 모터나 속도 모드의 증폭기처럼 구동계가 관절 속도를 명령과 같게 만든다. 그리고 그러는 데 드는 토크가 구동계의 능력 안에 있을 때만 그렇다. 그래서 로봇의 관성이 루프에 들어오지 않는다. **토크 입력**: 구동계가 관절 토크를 명령과 같게 만들고, 로봇 자신의 동역학 $M\ddot\theta + c + g = \tau$가 그 토크를 운동으로 바꾼다.
+>
+> $$\text{velocity: } \dot\theta = u,\ \ \text{PI} \Rightarrow \ddot e + K_p\dot e + K_i e = 0; \qquad \text{torque } (M = 1)\text{: } \ddot\theta = u,\ \ \text{PD} \Rightarrow \ddot e + K_d\dot e + K_p e = 0$$
+>
+> 여기서 $u$는 명령이다. 토크 플랜트는 명령과 위치 사이에 적분기가 하나 더 있으므로, $\dot e$ 앞의 이득, 곧 댐퍼가 속도 입력에서는 $K_p$, 토크 입력에서는 $K_d$다.
+>
+> - **예**: P2 관절에 대한 설계 $\omega_n = 10\,\mathrm{rad/s}$, $\zeta = 1$은 단위 관성의 토크 입력에서 $K_p = 100$, $K_d = 20$이고, 속도 입력에서 $K_p = 20$, $K_i = 100$이다. 같은 숫자가 자리만 바꾼다.
+> - **비예**: 토크 모드의 이득 쌍을 속도 모드 구동계에 $K_p = 100$, $K_i = 20$으로 옮겨 쓰는 것. 그러면 $\omega_n = 4.47\,\mathrm{rad/s}$, $\zeta = 11.2$이고 근이 $-99.8$과 $-0.200$이라, 오차의 느린 부분이 $0.1\,\mathrm{s}$가 아니라 $5.0\,\mathrm{s}$의 시정수로 줄어든다. 입력 영역 없이 적힌 이득은 그것이 무슨 일을 하는지 말해 주지 않는다.
 
 > [!example] 계산 예제 · Worked example
 > 단위 관성의 토크 입력 PD: $\ddot\theta_e + K_d\dot\theta_e + K_p\theta_e = 0$, $K_p = 100$으로 잡는다.
@@ -430,6 +477,15 @@ $$\tau = \hat M(\theta)\bigl(\ddot\theta_d + K_pe + K_d\dot e\bigr) + \hat c(\th
 - **예**: 계산의 1단계. $K_pe = (10,0)$은 원하는 가속도이고, $M(K_pe) = (30,10)$이 그것을 만들어 내는 토크이며, 오차가 0인 엘보의 $10\,\mathrm{N\,m}$이 3번 조건이 결합의 값을 치르는 모습이다. 플랜트는 $\ddot\theta = (10,0)$을 정확히 돌려준다.
 - **반례**: 중력 보상을 붙인 PD, $\tau = K_pe + K_d\dot e + \hat g(\theta)$. 전체 모델을 평가하기에 너무 느리거나 너무 불확실할 때 MR이 내놓는 근사다. 1번(자명하게)과 2번, 그리고 3번의 *절반*을 가졌고, 충분히 좋은 제어기다. 다만 계산 토크는 아니다. $M$을 한 번도 적용하지 않았기 때문이다. 3단계가 P2에서 그 차이를 잰다. 같은 오차에서 $(10,0)$이 아니라 $(5,-5)$다.
 - **왜 중요한가, 그리고 어디서 멈추는가**: 상쇄는 $\hat M, \hat c, \hat g$만큼만 좋다. 모델이 틀리면 잔차 $(\hat M - M)\ddot\theta + (\hat c - c) + (\hat g - g)$가 사라지지 않고, PD 이득이 떠안아야 할 외란으로 오차 동역학에 들어온다. 잔차가 커질수록 추종 성능과 안정 여유가 함께 나빠진다. 모델 기반 제어가 "모델만큼만 좋다"는 말의 정확한 뜻이고, 트랙의 나머지가 모델을 덜 요구하는 층을 계속 쌓는 이유다.
+
+> **중력 보상 PD의 정의.** **중력 보상 PD**(PD control with gravity compensation)는 *모델 가운데 중력 부분만 쓰는, 토크 입력 팔의 설정점 제어 법칙*이다. 정의 조건 셋. **설정점**: $\theta_d$가 상수이고 $\dot\theta_d = \ddot\theta_d = 0$이다. **양정부호 이득**: $K_p$와 $K_d$가 대칭 양정부호이고, 여기서는 $100I$와 $20I$다. **중력 모델만 쓴다**: 법칙은 모델된 $\hat g(\theta)$를 더할 뿐 $M$이나 $c$를 쓰지 않는다. MR은 $\hat g = g$가 정확하고 마찰을 무시하면 팔이 어떤 초기 상태에서든 $\theta_d$에 멈춰 선다는 것을 보인다(§11.4.2).
+>
+> $$\tau = K_p e + K_d\dot e + \hat g(\theta), \qquad V = \tfrac12 e^\top K_p e + \tfrac12\dot\theta^\top M(\theta)\,\dot\theta, \quad \dot V = -\dot\theta^\top K_d\,\dot\theta \le 0$$
+>
+> 여기서 $V$는 가상 스프링에 운동 에너지를 더한 오차 에너지이고, $\hat g = g$이면 팔이 움직이는 동안 줄어들 수만 있다. 그래서 수렴에는 $M$도 $c$도 필요 없지만, $\theta_d$까지 가는 경로는 여전히 $M$에 달려 있다.
+>
+> - **예**: P2 위의 3–4단계. $\tau = (29.62,\ 0)\,\mathrm{N\,m}$, 첫 응답 $\ddot\theta = (5, -5)$, 그리고 $\zeta = 0.541$과 $1.307$인 두 모드. 수렴하지만 설계한 $\zeta = 1$로는 아니다.
+> - **비예**: $\hat g$를 뺀 그냥 PD. 카탈로그 자세에서 팔은 $K_p e = g(\theta)$인 곳, 곧 $e = (0.215,\ 0.023)\,\mathrm{rad}$에 머물러 어깨가 아무리 기다려도 $12.3^\circ$ 처져 있다. $K_p = 1000$이면 어깨 몫이 $0.020\,\mathrm{rad}$로 줄지만 0이 되지는 않는다. 처짐을 없애는 것은 더 큰 이득이 아니라 $\hat g$ 항이다.
 
 ### 3. 접촉, 그리고 이 장 다음의 제어
 

@@ -81,6 +81,33 @@ which is the advantage over Denavit-Hartenberg (D-H), the classical convention t
 (The **body form** $T = M\,e^{[\mathcal{B}_1]\theta_1}\cdots$ expresses the same thing
 with axes in the end-effector frame.)
 
+> **Forward kinematics, defined.** **Forward kinematics** is a *map* from joint values to the configuration of the tool, and three conditions make it one. Its **input is the joint vector alone**, $\theta \in \mathbb{R}^n$: no velocities, torques or history. Its **output is the tool frame's configuration in a chosen task space**: in general the pose $T_{sb} \in SE(3)$ of the frame $\{b\}$ in a fixed frame $\{s\}$, or task coordinates $x = f(\theta)$ such as the tip position alone when only position matters, so the frames and the task coordinates belong to the definition. And **for an open chain it is single-valued**: each $\theta$ gives exactly one output, because rigid links at fixed joint values leave nothing free; a closed chain can have several (MR ch.7).
+>
+> $$\theta \mapsto T_{sb}(\theta) = \begin{pmatrix} R(\theta) & p(\theta) \\ 0 & 1 \end{pmatrix} \in SE(3), \qquad x = f(\theta) \in \mathbb{R}^m$$
+>
+> where $R(\theta)$ and $p(\theta)$ are the tool frame's orientation and origin in $\{s\}$ and $f$ writes the same configuration in the task's $m$ coordinates; $SE(3)$ is the general case because a rigid tool has a direction as well as a location.
+>
+> - **Example**: P2 with $\{s\}$ at the shoulder and $\{b\}$ at the tip sends $(0^\circ, 90^\circ)$ to $p = (1,1,0)$, $R = R_z(90^\circ)$ and $(90^\circ, -90^\circ)$ to $p = (1,1,0)$, $R = I$; in the position task $f(\theta) = (x, y)$ both go to $(1,1)$.
+> - **Non-example**: the reverse map, from the tip back to the joints. Kinematics is easily pictured as one invertible relation, but this map is not a function: $(1,1)$ has the two preimages above and $(2.5, 0)$ has none. That is ch.6's problem, and it is why FK can be called blindly at any $\theta$ while IK must choose among branches or report that none exists.
+
+> **Home configuration, defined.** The **home configuration** $M$ is *one constant element of* $SE(3)$: the pose of the tool frame $\{b\}$ in the fixed frame $\{s\}$ with every joint at zero. Three conditions pin it down. **Every joint value is zero**, $\theta = 0$, with each joint's zero and positive direction declared first. It is **the tool frame seen from the fixed frame**, not a link frame. And it is **constant**: fixed once $\{s\}$, $\{b\}$ and the joint zeros are chosen, never updated as the robot moves.
+>
+> $$M = T_{sb}(0) = \begin{pmatrix} R_{sb}(0) & p_{sb}(0) \\ 0 & 1 \end{pmatrix} \in SE(3)$$
+>
+> where $R_{sb}(0)$ and $p_{sb}(0)$ are the tool frame's orientation and origin at the zero position; $M$ sits at the right end of the space form because every factor is a screw motion written in the fixed frame, and a motion written in $\{s\}$ multiplies from the left (MR §3.3.1); the body form's screws are written in $\{b\}$, which is why $M$ moves to their left.
+>
+> - **Example**: P2 has both links along $+\hat x$ at zero, so $R = I$ and $p = (2,0,0)$, the $M$ of Step 1.
+> - **Non-example**: the catalog pose $T(0^\circ, 90^\circ)$, "where the robot usually is". Put in place of $M$ and evaluated at that same $\theta$, it lets the elbow turn the forearm a second time: the tip lands at $(0,0)$ with $R = R_z(180^\circ)$, $1.414\,\mathrm{m}$ from the true $(1,1)$. $M$ is read once, at zero; read it wherever the arm happens to stand and every later FK call inherits the mistake.
+
+> **Product of exponentials, defined.** The **product-of-exponentials (PoE) formula** is a *representation of the forward-kinematics map*: one SE(3) exponential per joint, multiplied into $M$. Three conditions define it. Its ingredients are **the home configuration** $M$ and **one screw axis per joint, read at the zero position**: $\mathcal{S}_i$ in $\{s\}$ for the space form, $(\hat\omega_i,\ -\hat\omega_i \times q_i)$ for a revolute joint and $(0,\ \hat v_i)$ for a prismatic one with unit direction $\hat v_i$, and $\mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\mathcal{S}_i$ in $\{b\}$ for the body form. **The factors run in joint order**, $1$ to $n$ from left to right, in both forms. And **$M$ sits on the right in the space form and on the left in the body form**.
+>
+> $$T(\theta) = e^{[\mathcal{S}_1]\theta_1}\cdots e^{[\mathcal{S}_n]\theta_n}M = M\,e^{[\mathcal{B}_1]\theta_1}\cdots e^{[\mathcal{B}_n]\theta_n}, \qquad \mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\,\mathcal{S}_i$$
+>
+> where each factor is the screw motion of [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §5]]; axes read once at home serve every $\theta$, because in the space form each exponential acts before the joints nearer the base have carried its axis away (MR §4.1).
+>
+> - **Example**: P2's $\mathcal{S}_1 = (0,0,1;\,0,0,0)$, $\mathcal{S}_2 = (0,0,1;\,0,-1,0)$, $\mathcal{B}_1 = (0,0,1;\,0,2,0)$, $\mathcal{B}_2 = (0,0,1;\,0,1,0)$: both forms put the tip at $(-1,1)$ with $R_z(180^\circ)$ at $(90^\circ, 90^\circ)$.
+> - **Non-example**: $\mathcal{S}_2$ read from the arm where it stands. At $(90^\circ, 90^\circ)$ the elbow is at $(0,1)$, giving $(0,0,1;\,1,0,0)$, and the product puts the tip at $(-3,1)$, $2\,\mathrm{m}$ from $(-1,1)$, with the orientation still exactly $R_z(180^\circ)$. On a planar arm every factor turns about $\hat z$, so the rotation block is $R_z(\theta_1 + \theta_2)$ whichever axes are used; only the position column can expose a misplaced screw.
+
 ### Worked example, start to finish — planar 2R arm
 
 Links $L_1 = L_2 = 1$, both stretched along $+\hat x$ at home. The general recipe, then
@@ -271,6 +298,33 @@ $$T(\theta) = e^{[\mathcal{S}_1]\theta_1}\, e^{[\mathcal{S}_2]\theta_2} \cdots e
 프레임 기준으로 쓴* 스크류 축 하나. 중간 링크 프레임이 필요 없다 — 이것이 D-H(Denavit-Hartenberg) 대비
 장점이고(D-H는 링크마다 프레임을 붙이고 각 관절을 이전 링크 프레임에 대한 네 숫자 — 링크 길이, 비틀림, 오프셋, 관절각 — 로 기술하는 고전 규약이다; MR 부록 C, 위키에는 별도 페이지가 없다) MR의 소프트웨어 라이브러리가 PoE를 쓰는 이유다(URDF 같은 주류 로봇 형식은 여전히 부모–자식 링크 프레임을 잇는다). (**바디 형식**
 $T = M\,e^{[\mathcal{B}_1]\theta_1}\cdots$은 축을 말단 프레임에서 쓴 같은 내용이다.)
+
+> **순기구학의 정의.** **순기구학**(forward kinematics)은 관절 값에서 도구의 배치로 가는 *사상*이고, 세 조건이 그것을 사상으로 만든다. **입력은 관절 벡터 하나뿐**이다. $\theta \in \mathbb{R}^n$만 들어가고 속도도 토크도 이력도 들어가지 않는다. **출력은 고른 과제 공간에서 본 도구 프레임의 배치**다. 일반적으로는 고정 프레임 $\{s\}$에서 본 프레임 $\{b\}$의 자세 $T_{sb} \in SE(3)$이고, 위치만 중요할 때의 말단 위치처럼 과제 좌표 $x = f(\theta)$일 수도 있다. 그래서 프레임과 과제 좌표가 정의에 들어 있다. 그리고 **열린 사슬에서는 값이 하나로 정해진다**. 링크가 강체이고 관절 값이 고정되면 남는 자유가 없으므로 $\theta$ 하나에 출력이 정확히 하나다. 닫힌 사슬은 여럿일 수 있다(MR 7장).
+>
+> $$\theta \mapsto T_{sb}(\theta) = \begin{pmatrix} R(\theta) & p(\theta) \\ 0 & 1 \end{pmatrix} \in SE(3), \qquad x = f(\theta) \in \mathbb{R}^m$$
+>
+> 여기서 $R(\theta)$와 $p(\theta)$는 $\{s\}$에서 쓴 도구 프레임의 방향과 원점이고, $f$는 같은 배치를 과제의 좌표 $m$개로 쓴 것이다. $SE(3)$가 일반적인 경우인 것은 강체 도구에 위치뿐 아니라 방향도 있기 때문이다.
+>
+> - **예**: 어깨에 $\{s\}$, 말단에 $\{b\}$를 둔 P2는 $(0^\circ, 90^\circ)$를 $p = (1,1,0)$, $R = R_z(90^\circ)$로, $(90^\circ, -90^\circ)$를 $p = (1,1,0)$, $R = I$로 보낸다. 위치 과제 $f(\theta) = (x, y)$에서는 둘 다 $(1,1)$로 간다.
+> - **비예**: 거꾸로 가는 사상, 곧 말단에서 관절로 되돌아가는 사상. 기구학을 뒤집을 수 있는 관계 하나로 그리기 쉽지만, 이 사상은 함수가 아니다. $(1,1)$에는 위의 역상이 둘 있고 $(2.5, 0)$에는 하나도 없다. 그것은 6장의 문제이고, FK는 어떤 $\theta$에서든 그냥 부를 수 있는데 IK는 가지 가운데 고르거나 해가 없다고 보고해야 하는 이유다.
+
+> **홈 자세의 정의.** **홈 자세**(home configuration) $M$은 $SE(3)$의 *상수 원소 하나*다. 모든 관절이 0일 때 고정 프레임 $\{s\}$에서 본 도구 프레임 $\{b\}$의 자세다. 세 조건이 그것을 정한다. **모든 관절 값이 0이다**. 곧 $\theta = 0$이고, 각 관절의 0과 양의 방향은 먼저 선언해 둔다. **고정 프레임에서 본 도구 프레임이다.** 링크 프레임이 아니다. 그리고 **상수다.** $\{s\}$, $\{b\}$, 관절의 0을 고르면 한 번 정해지고, 로봇이 움직여도 갱신하지 않는다.
+>
+> $$M = T_{sb}(0) = \begin{pmatrix} R_{sb}(0) & p_{sb}(0) \\ 0 & 1 \end{pmatrix} \in SE(3)$$
+>
+> 여기서 $R_{sb}(0)$와 $p_{sb}(0)$는 영 자세에서 도구 프레임의 방향과 원점이다. 공간 형식에서 $M$이 오른쪽 끝에 오는 것은 모든 인자가 고정 프레임에서 쓴 스크류 운동이고, $\{s\}$에서 쓴 운동은 왼쪽에서 곱해지기 때문이다(MR §3.3.1). 바디 형식의 스크류는 $\{b\}$에서 쓰므로 $M$이 그 왼쪽으로 간다.
+>
+> - **예**: P2는 영 자세에서 두 링크가 모두 $+\hat x$를 향하므로 $R = I$, $p = (2,0,0)$이다. 1단계의 $M$이다.
+> - **비예**: "로봇이 보통 있는 곳"인 카탈로그 자세 $T(0^\circ, 90^\circ)$. $M$ 자리에 넣고 같은 $\theta$에서 계산하면 엘보가 전완을 한 번 더 돌려, 말단이 $(0,0)$, $R = R_z(180^\circ)$에 떨어지고 참값 $(1,1)$에서 $1.414\,\mathrm{m}$ 벗어난다. $M$은 영 자세에서 한 번 읽는다. 팔이 마침 서 있는 곳에서 읽으면 그 뒤의 모든 FK 호출이 그 실수를 물려받는다.
+
+> **지수 곱 공식의 정의.** **지수 곱 공식**(product of exponentials, PoE)은 *순기구학 사상을 나타내는 한 방식*이다. 관절마다 SE(3) 지수 하나를 $M$에 곱한다. 정의 조건 셋. 재료는 **홈 자세** $M$과 **영 자세에서 읽은 관절별 스크류 축 하나**다. 공간 형식이면 $\{s\}$에서 쓴 $\mathcal{S}_i$로, 회전 관절은 $(\hat\omega_i,\ -\hat\omega_i \times q_i)$, 단위 방향이 $\hat v_i$인 직동 관절은 $(0,\ \hat v_i)$다. 바디 형식이면 $\{b\}$에서 쓴 $\mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\mathcal{S}_i$다. **인자는 관절 순서대로 놓인다.** 두 형식 모두 왼쪽에서 오른쪽으로 $1$부터 $n$까지다. 그리고 **$M$은 공간 형식에서는 오른쪽, 바디 형식에서는 왼쪽에 온다.**
+>
+> $$T(\theta) = e^{[\mathcal{S}_1]\theta_1}\cdots e^{[\mathcal{S}_n]\theta_n}M = M\,e^{[\mathcal{B}_1]\theta_1}\cdots e^{[\mathcal{B}_n]\theta_n}, \qquad \mathcal{B}_i = [\mathrm{Ad}_{M^{-1}}]\,\mathcal{S}_i$$
+>
+> 여기서 각 인자는 [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §5]]의 스크류 운동이다. 홈에서 한 번 읽은 축이 모든 $\theta$에 통하는 것은, 공간 형식에서 각 지수가 베이스 쪽 관절들이 그 축을 옮겨 놓기 전에 작용하기 때문이다(MR §4.1).
+>
+> - **예**: P2의 $\mathcal{S}_1 = (0,0,1;\,0,0,0)$, $\mathcal{S}_2 = (0,0,1;\,0,-1,0)$, $\mathcal{B}_1 = (0,0,1;\,0,2,0)$, $\mathcal{B}_2 = (0,0,1;\,0,1,0)$. 두 형식 모두 $(90^\circ, 90^\circ)$에서 말단을 $(-1,1)$, $R_z(180^\circ)$에 놓는다.
+> - **비예**: 팔이 지금 서 있는 자리에서 읽은 $\mathcal{S}_2$. $(90^\circ, 90^\circ)$에서 엘보는 $(0,1)$에 있고, 거기서 읽으면 $(0,0,1;\,1,0,0)$이 되어 곱이 말단을 $(-3,1)$에 놓는다. $(-1,1)$에서 $2\,\mathrm{m}$ 벗어났는데 방향은 여전히 정확히 $R_z(180^\circ)$다. 평면 팔에서는 모든 인자가 $\hat z$ 둘레로 돌기 때문에 어떤 축을 쓰든 회전 블록이 $R_z(\theta_1 + \theta_2)$이고, 잘못 놓인 스크류를 드러낼 수 있는 것은 위치 열뿐이다.
 
 ### 처음부터 끝까지 계산 예제 — 평면 2R 팔
 
