@@ -48,8 +48,10 @@ not the product but the **infrastructure** other robot models train on.
   autoregressive ([[gpt-3|GPT]]-lineage, discrete tokens) video generators (up to ~14B),
   both text/image/video-conditionable.
 - **Post-training recipes**: camera-controlled generation, robot instruction-following
-  video prediction, multi-view driving generation — plus guardrail models; weights and
-  code released openly.
+  video prediction, *action-conditioned* next-frame prediction (the current frame plus the
+  action vector to the next one, trained on Bridge's roughly 20,000 episodes; run
+  autoregressively, an action sequence becomes a predicted video), multi-view driving
+  generation — plus guardrail models; weights and code released openly.
 
 ### Results
 
@@ -121,7 +123,9 @@ In [[03-deep-learning/world-models/index|5. World Models §6]]'s terms, Predict 
 - **두 WFM 계열**: 디퓨전 기반([[ddpm|DDPM]] 계보, 연속 잠재)과 자기회귀
   기반([[gpt-3|GPT]] 계보, 이산 토큰) 비디오 생성기(최대 ~14B), 모두 텍스트/이미지/비디오
   조건 가능.
-- **사후학습 레시피**: 카메라 제어 생성, 로봇 지시-추종 비디오 예측, 다중 시점 주행 생성 —
+- **사후학습 레시피**: 카메라 제어 생성, 로봇 지시-추종 비디오 예측, *행동 조건* 다음 프레임
+  예측(현재 프레임과 다음 프레임까지의 행동 벡터를 받는다. Bridge의 약 20,000 에피소드로
+  학습했고, 자기회귀로 돌리면 행동 열 하나가 예측 비디오가 된다), 다중 시점 주행 생성 —
   가드레일 모델 포함; 가중치와 코드 공개.
 
 ### 결과
