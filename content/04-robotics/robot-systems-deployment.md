@@ -174,7 +174,7 @@ The blocks can run at different rates. A 30 Hz camera, 10 Hz policy, and 1 kHz m
 
 ### 2. Embodiment and action interfaces
 
-Embodiment includes morphology, actuator and transmission, sensing, compliance, payload, limits, and environment coupling. Motors, hydraulics, gearing, backlash, saturation, underactuation, and bandwidth determine which actions are meaningful. One geared electric drive opened up, with its two equations, torque–speed line, reflected inertia and thermal limit, is [[04-robotics/actuators-drives|10.5 Actuators & Drives]].
+Embodiment includes morphology, actuator and transmission, sensing, compliance, payload, limits, and environment coupling. Motors, hydraulics, gearing, backlash, saturation, underactuation, and bandwidth determine which actions are meaningful. One geared electric drive opened up, with its two equations, torque–speed line, reflected inertia and thermal limit, is [[04-robotics/actuators-drives|10.5 Actuators & Drives]]; the physics under the two kinds of drive is [[02-foundations/basic-circuits-electronics|0.6.2 Basic Circuits & Electronics]] for the electric one and [[02-foundations/fluid-power|0.6.3 Fluid Power]] for the hydraulic one.
 
 When a paper says “action,” identify whether it means joint position, velocity, torque, motor current, end-effector pose, [[04-robotics/force-compliance-control|impedance target]] (a desired stiffness and damping around a reference, not a position to hit exactly), or a high-level skill. The same learned model can behave differently when the low-level interface and control rate change. An end-effector-pose action does not reach a motor until [[04-robotics/modern-robotics/ch06-inverse-kinematics|inverse kinematics (MR ch.6)]] resolves it — including its branch choices and singularities — and a waypoint action does not become motion until [[04-robotics/modern-robotics/ch09-trajectory-generation|time scaling (MR ch.9)]] gives it a velocity profile inside the actuator limits. On a wheeled base, both sit on the [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|nonholonomic kinematics of MR ch.13]].
 
@@ -205,8 +205,8 @@ $$L=\tfrac12 T_{\text{cam}}+t_{\text{exp}}+t_{\text{tx}}+t_{\text{inf}}+t_{\text
 The terms add because the stages are in series and each must finish before the next begins. Each one:
 
 - $\tfrac12 T_{\text{cam}}$ — **sampling latency**. The event occurs at a uniformly random moment inside one frame period $T_{\text{cam}}$, so on average it waits half a period before it is sampled at all, and a full period in the worst case. This is the term that does not appear in a block diagram and is the reason a *rate* is not a *latency*.
-- $t_{\text{exp}}$ — **exposure and readout**, from the start of integration to the last row leaving the sensor.
-- $t_{\text{tx}}$ — **transport**, the wire or bus to whichever computer runs the model.
+- $t_{\text{exp}}$ — **exposure and readout**, from the start of integration to the last row leaving the sensor; what each costs on a moving base, and which instant the image's stamp should name, is [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §2 and §9]].
+- $t_{\text{tx}}$ — **transport**, the wire or bus to whichever computer runs the model; what a network adds, and what one lost packet costs under TCP and under UDP, is [[02-foundations/tools/computer-networks|12.5 Computer Networks §1]], and a latency measured across two machines also carries their clock offset ([[02-foundations/tools/linux-shell|12.1 §11]]).
 - $t_{\text{inf}}$ — **inference**, the forward pass itself. This is the only term most papers report.
 - $t_{\text{dec}}$ — **decoding and IPC**, turning a network output into a command message and delivering it.
 - $T_{\text{ctrl}}$ — **actuation**, one controller period before the command is applied.
@@ -225,7 +225,7 @@ The terms add because the stages are in series and each must finish before the n
 
 $$J=\max_k R_k-\min_k R_k$$
 
-since what a deadline argument needs is the extreme and not the centre — a standard deviation hides exactly the tail that misses. Release jitter and output jitter are defined the same way on the other two instants.
+since what a deadline argument needs is the extreme and not the centre — a standard deviation hides exactly the tail that misses. Release jitter and output jitter are defined the same way on the other two instants. Jitter survives only if the log keeps it: a tick time printed with `%.3f` rounds a $120\,\mu\mathrm{s}$ lateness away, as step 5 of the Worked case of [[02-foundations/tools/config-data-formats|12.4 Config and Data Formats]] shows; and the rules that keep a C++ tick's worst case inside its period are [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code §9]].
 
 > [!example] Worked example · 계산 예제
 > P6's control loop at 200 Hz, so $T=D=5$ ms. Five measured response times: $1.2, 1.5, 4.8, 1.3, 1.4$ ms. The mean is $2.04$ ms, the peak-to-peak jitter is $4.8-1.2=\mathbf{3.6}$ ms, there are **zero** deadline misses, and the margin at the worst instance is $5.0-4.8=0.2$ ms — that tick used $96\%$ of its period.
@@ -468,7 +468,7 @@ print(ev(('and', safe, ('and', seq, react)), tr),                  # False
 - Timeout: declares data or command stale.
 - Graceful degradation: continues with reduced capability.
 - Fail-safe state: moves toward a condition intended to reduce risk.
-- Emergency stop: independent means to halt hazardous motion.
+- Emergency stop: independent means to halt hazardous motion — one that cuts power rather than asking for it, which is why it is wired and not sent as a message ([[02-foundations/basic-circuits-electronics|0.6.2 §11]]).
 
 Best-effort average timing is different from deterministic deadline behavior. Safety claims require system-level evidence, not merely a stable policy output.
 
@@ -761,7 +761,7 @@ flowchart LR
 
 Embodiment는 형태, 액추에이터와 전동 장치, 센싱, 컴플라이언스, 페이로드, 한계, 환경
 결합을 포함한다. 모터·유압·기어비·백래시·포화·부족구동·대역폭이 어떤 행동이 의미
-있는지를 결정한다. 기어 달린 전기 구동계 하나를 열어 본 것, 곧 두 방정식, 토크–속도 선, 반사 관성, 열 한계가 [[04-robotics/actuators-drives|10.5 액추에이터·구동계]]다.
+있는지를 결정한다. 기어 달린 전기 구동계 하나를 열어 본 것, 곧 두 방정식, 토크–속도 선, 반사 관성, 열 한계가 [[04-robotics/actuators-drives|10.5 액추에이터·구동계]]다. 두 종류의 구동 밑에 깔린 물리는 전기 쪽이 [[02-foundations/basic-circuits-electronics|0.6.2 기초 회로와 전자]], 유압 쪽이 [[02-foundations/fluid-power|0.6.3 유체 동력]]이다.
 
 논문이 "action"이라 하면 그것이 관절 위치·속도·토크·모터 전류·말단 pose·[[04-robotics/force-compliance-control|임피던스 타깃]]
 (정확히 도달할 위치가 아니라 기준 주위의 원하는 강성과 감쇠)·상위 스킬 중 무엇인지 확인하라. 같은 학습 모델도 저수준 인터페이스와 제어 주기가
@@ -800,8 +800,8 @@ $$L=\tfrac12 T_{\text{cam}}+t_{\text{exp}}+t_{\text{tx}}+t_{\text{inf}}+t_{\text
 단계들이 직렬이고 앞 단계가 끝나야 다음이 시작되므로 항들이 더해진다. 각 항은:
 
 - $\tfrac12 T_{\text{cam}}$ — **샘플링 지연**. 사건은 한 프레임 주기 $T_{\text{cam}}$ 안의 임의의 순간에 일어나므로, 표본으로 잡히기까지 평균 반 주기, 최악의 경우 한 주기를 기다린다. 블록 다이어그램에 나타나지 않는 항이자 *주파수*가 *지연*이 아닌 이유다.
-- $t_{\text{exp}}$ — **노출과 판독**. 적분 시작부터 마지막 행이 센서를 떠날 때까지.
-- $t_{\text{tx}}$ — **전송**. 모델을 돌리는 컴퓨터까지의 선이나 버스.
+- $t_{\text{exp}}$ — **노출과 판독**. 적분 시작부터 마지막 행이 센서를 떠날 때까지. 움직이는 베이스에서 각각이 치르는 값과, 영상의 스탬프가 어느 순간을 가리켜야 하는지는 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §2, §9]]이다.
+- $t_{\text{tx}}$ — **전송**. 모델을 돌리는 컴퓨터까지의 선이나 버스. 네트워크가 더하는 것과, 패킷 하나를 잃으면 TCP와 UDP에서 각각 얼마를 치르는지는 [[02-foundations/tools/computer-networks|12.5 컴퓨터 네트워크 §1]]이고, 두 기계에 걸쳐 잰 지연에는 두 시계의 오프셋도 들어 있다([[02-foundations/tools/linux-shell|12.1 §11]]).
 - $t_{\text{inf}}$ — **추론**. 순전파 그 자체. 대부분의 논문이 보고하는 유일한 항이다.
 - $t_{\text{dec}}$ — **디코딩과 IPC**. 신경망 출력을 명령 메시지로 바꾸고 전달하는 데 드는 시간.
 - $T_{\text{ctrl}}$ — **구동**. 명령이 적용되기까지의 제어 주기 하나.
@@ -820,7 +820,7 @@ $$L=\tfrac12 T_{\text{cam}}+t_{\text{exp}}+t_{\text{tx}}+t_{\text{inf}}+t_{\text
 
 $$J=\max_k R_k-\min_k R_k$$
 
-데드라인 논증에 필요한 것은 중심이 아니라 극단이기 때문이다 — 표준편차는 미스를 내는 꼬리를 정확히 가려 버린다. 릴리스 지터와 출력 지터도 나머지 두 시점에 대해 같은 방식으로 정의한다.
+데드라인 논증에 필요한 것은 중심이 아니라 극단이기 때문이다 — 표준편차는 미스를 내는 꼬리를 정확히 가려 버린다. 릴리스 지터와 출력 지터도 나머지 두 시점에 대해 같은 방식으로 정의한다. 지터는 로그가 간직할 때만 남는다. `%.3f`로 찍은 틱 시각은 $120\,\mu\mathrm{s}$의 늦음을 반올림해 지워 버린다. [[02-foundations/tools/config-data-formats|12.4 설정과 데이터 형식]]의 계산 절 5단계가 보이는 그대로다. 그리고 C++ 틱의 최악의 경우를 주기 안에 붙잡아 두는 규칙은 [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++ §9]]이다.
 
 > [!example] 계산 예제 · Worked example
 > P6의 제어 루프는 200 Hz이므로 $T=D=5$ ms다. 측정된 응답 시간 다섯 개: $1.2, 1.5, 4.8, 1.3, 1.4$ ms. 평균은 $2.04$ ms, 최대-최소 지터는 $4.8-1.2=\mathbf{3.6}$ ms, 데드라인 미스는 **0회**, 그리고 최악의 인스턴스에서 여유는 $5.0-4.8=0.2$ ms — 그 틱은 제 주기의 $96\%$를 썼다.
@@ -1058,7 +1058,7 @@ print(ev(('and', safe, ('and', seq, react)), tr),                  # False
 - Timeout: 데이터·명령의 만료 선언.
 - Graceful degradation: 축소된 능력으로 지속.
 - Fail-safe state: 위험을 낮추도록 의도된 상태로 이동.
-- 비상 정지: 위험한 운동을 멈추는 독립 수단.
+- 비상 정지: 위험한 운동을 멈추는 독립 수단. 전원을 요청하는 것이 아니라 끊는 수단이고, 그래서 메시지로 보내지 않고 배선으로 건다([[02-foundations/basic-circuits-electronics|0.6.2 §11]]).
 
 평균이 좋은 best-effort 타이밍과 결정론적 데드라인 거동은 다르다. 안전 주장은 안정된
 정책 출력만이 아니라 시스템 수준의 증거를 요구한다.

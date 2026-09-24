@@ -180,7 +180,7 @@ ROS 2's answer splits the problem in two, and the split is the thing to remember
 
 ### 2. URDF: a tree of links and joints
 
-URDF (Unified Robot Description Format) is XML. It has exactly two structural elements.
+URDF (Unified Robot Description Format) is XML — a tree of elements whose values are all strings, which is why a URDF's numbers are only as right as the reader that converts them ([[02-foundations/tools/config-data-formats|12.4 Config and Data Formats §5]]). It has exactly two structural elements.
 
 A **link** is a rigid body. It carries appearance, collision shape and mass properties, and it defines a coordinate frame.
 
@@ -249,7 +249,7 @@ A link has up to three sub-elements, and beginners conflate them:
 - `<collision>` is what the collision checker and the physics engine query. Its accuracy costs *every query*.
 - `<inertial>` is mass and the 3×3 rotational inertia tensor, symmetric so six numbers suffice. Only simulation and dynamics use it.
 
-**The trap: reusing the detailed visual mesh as the collision geometry.** The official URDF tutorial states the reason plainly — collision detection between two meshes is far more computationally complex than between two primitives. A motion planner samples and checks thousands of configurations per query, and a physics engine runs a narrow-phase check every step at 1 kHz. A 50,000-triangle CAD export in `<collision>` multiplies that cost by orders of magnitude, and the symptom is not an error: it is a planner that times out, a simulation whose real-time factor sits at 0.05, and a controller that misses its period. Use primitives — box, cylinder, sphere — or a convex decomposition, and make them slightly larger than the visual rather than slightly smaller. The same element doubles as a safety envelope: a cylinder that encases a sensor head keeps planned paths away from it.
+**The trap: reusing the detailed visual mesh as the collision geometry.** The official URDF tutorial states the reason plainly — collision detection between two meshes is far more computationally complex than between two primitives. A motion planner samples and checks thousands of configurations per query, and a physics engine runs a narrow-phase check every step at 1 kHz. A 50,000-triangle CAD export in `<collision>` multiplies that cost by orders of magnitude, and the symptom is not an error: it is a planner that times out, a simulation whose real-time factor sits at 0.05, and a controller that misses its period. Use primitives — box, cylinder, sphere — or a convex decomposition, and make them slightly larger than the visual rather than slightly smaller. Where such a mesh comes from, and why an exported STL is a skin of triangles rather than the solid the CAD program held, is [[02-foundations/tools/mechanical-design-fabrication|12.9 Mechanical Design and Fabrication §2]]. The same element doubles as a safety envelope: a cylinder that encases a sensor head keeps planned paths away from it.
 
 On inertia: the tutorial's guidance is that a matrix with `ixx`/`iyy`/`izz` of `1e-3` or smaller is a reasonable default for a mid-sized link, and that the identity matrix is a particularly bad choice — it corresponds to a 0.1 m box weighing 600 kg. Inertias of zero or near-zero make a simulated model collapse without warning, with every link's origin snapping to the world origin. If you ever see that in Gazebo, look at `<inertial>` first.
 
@@ -377,7 +377,7 @@ t = self.tf_buffer.lookup_transform('base_link', 'link2', Time())
 The third argument is the part that decides whether your node works.
 
 - `Time()` in Python (`tf2::TimePointZero` in C++) means **the latest available transform**, not "now". This is what you want for a live query, and what the official debugging tutorial gives as the correct fix.
-- An actual timestamp — typically `msg.header.stamp` from the sensor message you are transforming — means "where were these frames when this image was taken". This is the whole point of a buffer, and it is what makes a transformed detection correct on a moving robot instead of 100 ms stale.
+- An actual timestamp — typically `msg.header.stamp` from the sensor message you are transforming — means "where were these frames when this image was taken". This is the whole point of a buffer, and it is what makes a transformed detection correct on a moving robot instead of 100 ms stale. The lookup is only as right as the stamp: which instant an image's stamp should name, and what each millisecond of error costs on a moving base, is [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §9]].
 - `self.get_clock().now()` means "now", and **now has not happened yet** as far as the buffer is concerned. Transforms arrive with a delay. Section 9 is the error this produces.
 
 > **Transform lookup, defined.** A **transform lookup**, `lookup_transform(target, source, t)`, is a *query on one listener's buffer* that returns ${}^{\text{target}}T_{\text{source}}$ *as it was at time $t$*. Three defining conditions. The frames must lie **in one tree**, since the answer is the product along the unique path between them. Every edge on that path must **have data at $t$**: a dynamic edge is interpolated between the two samples bracketing $t$ (linear in translation, slerp in rotation), a static edge holds at all $t$, and a $t$ outside a dynamic edge's samples is refused as *extrapolation into the future* or *into the past*. And `Time()` means **the latest instant at which every edge on the path has data**, not now.
@@ -861,7 +861,7 @@ ROS 2의 답은 문제를 둘로 나눈다. 그 분할이 기억할 대상이다
 
 ### 2. URDF: 링크와 조인트의 트리
 
-URDF(Unified Robot Description Format)는 XML이다. 구조 요소는 정확히 둘이다.
+URDF(Unified Robot Description Format)는 XML이다. 값이 모두 문자열인 요소의 트리이고, 그래서 URDF의 숫자는 그것을 바꾸는 읽기 프로그램만큼만 맞다([[02-foundations/tools/config-data-formats|12.4 설정과 데이터 형식 §5]]). 구조 요소는 정확히 둘이다.
 
 **링크(link)** 는 강체다. 외형, 충돌 형상, 질량 특성을 담고, 좌표 프레임을 정의한다.
 
@@ -930,7 +930,7 @@ check_urdf my_robot.urdf
 - `<collision>`은 충돌 검사기와 물리 엔진이 질의하는 것이다. 정밀함의 대가를 *질의마다* 치른다.
 - `<inertial>`은 질량과 3×3 회전 관성 텐서다. 대칭이라 여섯 수면 충분하다. 시뮬레이션과 동역학만 쓴다.
 
-**함정: 정밀한 visual 메시를 collision 형상으로 재사용하는 것.** 공식 URDF 튜토리얼이 이유를 분명히 적는다 — 메시 대 메시 충돌 검사는 원시 도형 둘 사이보다 계산 복잡도가 훨씬 크다. 모션 플래너는 질의마다 수천 개 구성을 샘플링해 검사하고, 물리 엔진은 매 스텝 1 kHz로 좁은 단계 검사를 돈다. 삼각형 5만 개짜리 CAD 출력이 `<collision>`에 들어가면 그 비용이 자릿수 단위로 뛰고, 증상은 에러가 아니다. 시간 초과하는 플래너, 실시간 계수 0.05에 머무는 시뮬레이션, 주기를 놓치는 제어기다. 원시 도형(상자, 원기둥, 구)이나 볼록 분해를 쓰고, visual보다 약간 작게가 아니라 약간 크게 잡아라. 같은 요소가 안전 여유로도 쓰인다. 센서 헤드를 감싸는 원기둥은 계획 경로를 그 근처에서 떼어 놓는다.
+**함정: 정밀한 visual 메시를 collision 형상으로 재사용하는 것.** 공식 URDF 튜토리얼이 이유를 분명히 적는다 — 메시 대 메시 충돌 검사는 원시 도형 둘 사이보다 계산 복잡도가 훨씬 크다. 모션 플래너는 질의마다 수천 개 구성을 샘플링해 검사하고, 물리 엔진은 매 스텝 1 kHz로 좁은 단계 검사를 돈다. 삼각형 5만 개짜리 CAD 출력이 `<collision>`에 들어가면 그 비용이 자릿수 단위로 뛰고, 증상은 에러가 아니다. 시간 초과하는 플래너, 실시간 계수 0.05에 머무는 시뮬레이션, 주기를 놓치는 제어기다. 원시 도형(상자, 원기둥, 구)이나 볼록 분해를 쓰고, visual보다 약간 작게가 아니라 약간 크게 잡아라. 그런 메시가 어디서 오는지, 그리고 내보낸 STL이 왜 CAD 프로그램이 들고 있던 솔리드가 아니라 삼각형 껍질인지는 [[02-foundations/tools/mechanical-design-fabrication|12.9 실험을 위한 기계 설계와 제작 §2]]이다. 같은 요소가 안전 여유로도 쓰인다. 센서 헤드를 감싸는 원기둥은 계획 경로를 그 근처에서 떼어 놓는다.
 
 관성에 대해: 튜토리얼의 지침은 중간 크기 링크에 `ixx`/`iyy`/`izz`를 `1e-3` 이하로 두는 것이 합리적 기본값이고, 단위 행렬은 특히 나쁜 선택이라는 것이다. 단위 행렬은 한 변 0.1 m에 600 kg인 상자에 해당한다. 관성이 0이거나 0에 가까우면 시뮬레이션 모델이 경고 없이 붕괴하고 모든 링크 원점이 월드 원점으로 몰린다. Gazebo에서 그 광경을 보면 `<inertial>`부터 보라.
 
@@ -1058,7 +1058,7 @@ t = self.tf_buffer.lookup_transform('base_link', 'link2', Time())
 세 번째 인자가 노드의 동작 여부를 가른다.
 
 - Python의 `Time()`(C++의 `tf2::TimePointZero`)은 "지금"이 아니라 **가장 최근에 쓸 수 있는 변환**을 뜻한다. 실시간 질의에 원하는 값이고, 공식 디버깅 튜토리얼이 제시하는 올바른 수정이다.
-- 실제 타임스탬프 — 보통 변환하려는 센서 메시지의 `msg.header.stamp` — 는 "이 이미지가 찍혔을 때 프레임들이 어디 있었나"를 뜻한다. 버퍼가 존재하는 이유 전부이고, 움직이는 로봇에서 검출 결과가 100 ms 낡지 않고 맞게 만드는 것이 이것이다.
+- 실제 타임스탬프 — 보통 변환하려는 센서 메시지의 `msg.header.stamp` — 는 "이 이미지가 찍혔을 때 프레임들이 어디 있었나"를 뜻한다. 버퍼가 존재하는 이유 전부이고, 움직이는 로봇에서 검출 결과가 100 ms 낡지 않고 맞게 만드는 것이 이것이다. 조회는 스탬프만큼만 맞다. 영상의 스탬프가 어느 순간을 가리켜야 하는지, 그리고 움직이는 베이스에서 스탬프 오차 1 ms가 얼마를 치르게 하는지는 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §9]]이다.
 - `self.get_clock().now()`는 "지금"이고, 버퍼 입장에서 **지금은 아직 오지 않았다**. 변환은 지연을 두고 도착한다. 9절이 이 오류다.
 
 > **변환 조회의 정의.** **변환 조회** `lookup_transform(target, source, t)`는 *리스너 하나의 버퍼에 대한 질의*이고, *시각 $t$에서의* ${}^{\text{target}}T_{\text{source}}$를 돌려준다. 정의 조건은 셋이다. 두 프레임은 **한 트리 안에** 있어야 한다. 답은 둘 사이의 유일한 경로를 따라 곱한 것이기 때문이다. 그 경로의 모든 간선에는 **$t$에서의 데이터가** 있어야 한다. 동적 간선은 $t$를 사이에 둔 두 샘플 사이에서 보간되고(병진은 선형, 회전은 slerp), 정적 간선은 모든 $t$에서 성립하며, 동적 간선의 샘플 범위 밖의 $t$는 *extrapolation into the future* 또는 *into the past*로 거부된다. 그리고 `Time()`은 지금이 아니라 **경로의 모든 간선에 데이터가 있는 가장 최근 순간**을 뜻한다.

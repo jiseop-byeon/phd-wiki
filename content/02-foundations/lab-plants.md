@@ -39,7 +39,7 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\qquad M=\begin{pmatrix}3&1\\1&1\end{
 
 Operational-space inertia at this pose, for a position task: $\Lambda=(JM^{-1}J^\top)^{-1}=\mathrm{diag}(1,2)$. The tip feels twice as heavy in $y$ as in $x$. Used from FK through force control.
 
-Each joint's drive (DC motor, amplifier and $n=100$ gearbox) is frozen on [[04-robotics/actuators-drives|10.5 Actuators & Drives]]. In the horizontal plane P2's dynamics are linear in three base inertial parameters, $\pi=(2,1,1)\,\mathrm{kg\,m^2}$, and a $3\,\mathrm{kg}$ payload at the tip makes them $(5,4,4)$ ([[04-robotics/system-identification|5.5 System Identification §9]]).
+Each joint's drive (DC motor, amplifier and $n=100$ gearbox) is frozen on [[04-robotics/actuators-drives|10.5 Actuators & Drives]]. In the horizontal plane P2's dynamics are linear in three base inertial parameters, $\pi=(2,1,1)\,\mathrm{kg\,m^2}$, and a $3\,\mathrm{kg}$ payload at the tip makes them $(5,4,4)$ ([[04-robotics/system-identification|5.5 System Identification §9]]). Its torques, moments of inertia and holding torque are opened as physics in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §7–§8]].
 
 ### P3 — 1-DoF handle
 
@@ -56,7 +56,7 @@ A translating handle, impedance causality, no Jacobian (identity). Public physic
 | Capstan | $r_m=0.010\,\mathrm{m}$, $r_s=0.050\,\mathrm{m}$ | motor pulley / sector radii |
 | Encoder | $N=1024$ counts/rev | quadrature after decode |
 
-Human desired position $x_d$ is an external input. Handle position $x$ is the device state. Virtual wall: $F_a=-k_w(x-x_w)$ when $x>x_w$, else $0$. Home of [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]] and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]. [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] reuses its mass and wall in a drop cell, and [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §7]] uses it as a stiffness display for a staircase.
+Human desired position $x_d$ is an external input. Handle position $x$ is the device state. Virtual wall: $F_a=-k_w(x-x_w)$ when $x>x_w$, else $0$. Home of [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]] and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]. [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] reuses its mass and wall in a drop cell, and [[06-research-practice/psychophysics-human-measurement|8. Psychophysics & Human Measurement §7]] uses it as a stiffness display for a staircase. The spring, damper and mass–spring–damper that the handle and its wall make are opened as physics in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §3–§5]].
 
 ### P4 — leaky heater
 
@@ -74,7 +74,7 @@ A wall. Prior: $10\,\mathrm{cm}$ away, variance $4\,\mathrm{cm}^2$. Sensor: read
 
 A cart on a line, position $p$ in metres, encoder $N=2048$ counts/m. A vision node publishes a goal at $50\,\mathrm{Hz}$. A controller samples the encoder and commands a motor at $200\,\mathrm{Hz}$. End-to-end budget from camera mid-exposure to applied force: $70\,\mathrm{ms}$ (the number on [[04-robotics/robot-systems-deployment|10. Robot Systems]]). Used for timing, frames, and “nothing happens” failures in ROS 2.
 
-Its sensor noise models (encoder quantization, a single-axis IMU, a range sensor and the camera) are frozen on [[04-robotics/sensor-models|3.2 Sensor Models & Noise]].
+Its sensor noise models (encoder quantization, a single-axis IMU, a range sensor and the camera) are frozen on [[04-robotics/sensor-models|3.2 Sensor Models & Noise]], its electronics — the motor drive, the load cell, its amplifier and the ADC — on [[02-foundations/basic-circuits-electronics|0.6.2 Basic Circuits & Electronics]], and its robot computer, code and logs are the running object of the tools track, [[02-foundations/tools/index|12]].
 
 ### Where each lab lives
 
@@ -122,7 +122,7 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\qquad M=\begin{pmatrix}3&1\\1&1\end{
 
 이 자세의 위치 과제에서 작업공간 관성은 $\Lambda=(JM^{-1}J^\top)^{-1}=\mathrm{diag}(1,2)$. 말단은 $x$보다 $y$에서 두 배 무겁다. FK부터 힘 제어까지 이 팔을 쓴다.
 
-관절마다의 구동계(DC 모터, 증폭기, $n=100$ 기어박스)는 [[04-robotics/actuators-drives|10.5 액추에이터·구동계]]에서 고정한다. 수평면에서 P2의 동역학은 기저 관성 파라미터 셋 $\pi=(2,1,1)\,\mathrm{kg\,m^2}$에 선형이고, 말단의 $3\,\mathrm{kg}$ 페이로드는 그것을 $(5,4,4)$로 만든다([[04-robotics/system-identification|5.5 시스템 식별 §9]]).
+관절마다의 구동계(DC 모터, 증폭기, $n=100$ 기어박스)는 [[04-robotics/actuators-drives|10.5 액추에이터·구동계]]에서 고정한다. 수평면에서 P2의 동역학은 기저 관성 파라미터 셋 $\pi=(2,1,1)\,\mathrm{kg\,m^2}$에 선형이고, 말단의 $3\,\mathrm{kg}$ 페이로드는 그것을 $(5,4,4)$로 만든다([[04-robotics/system-identification|5.5 시스템 식별 §9]]). 그 토크, 관성 모멘트, 유지 토크를 물리로 여는 곳은 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §7–§8]]이다.
 
 ### P3 — 1자유도 핸들
 
@@ -139,7 +139,7 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix},\qquad M=\begin{pmatrix}3&1\\1&1\end{
 | 캡스턴 | $r_m=0.010\,\mathrm{m}$, $r_s=0.050\,\mathrm{m}$ | 모터 풀리 / 섹터 반지름 |
 | 엔코더 | $N=1024$ counts/rev | 디코드 후 |
 
-사람 목표 $x_d$는 외부 입력, 핸들 위치 $x$가 상태. 가상 벽: $x>x_w$이면 $F_a=-k_w(x-x_w)$, 아니면 $0$. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]과 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]의 집. [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]]은 그 질량과 벽을 낙하 셀에 다시 쓰고, [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §7]]은 그것을 강성 디스플레이로 삼아 계단법을 돌린다.
+사람 목표 $x_d$는 외부 입력, 핸들 위치 $x$가 상태. 가상 벽: $x>x_w$이면 $F_a=-k_w(x-x_w)$, 아니면 $0$. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]과 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]의 집. [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]]은 그 질량과 벽을 낙하 셀에 다시 쓰고, [[06-research-practice/psychophysics-human-measurement|8. 심리물리와 인간 측정 §7]]은 그것을 강성 디스플레이로 삼아 계단법을 돌린다. 핸들과 그 벽이 만드는 스프링, 댐퍼, 질량–스프링–댐퍼를 물리로 여는 곳은 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §3–§5]]다.
 
 ### P4 — 새는 히터
 
@@ -157,7 +157,7 @@ $x$는 온도 오차, $u$는 명령, $d$는 미지 외란. 개루프 $u=1$은 $x
 
 직선 위 카트, 위치 $p$는 미터, 엔코더 $N=2048$ counts/m. 비전 노드가 목표를 $50\,\mathrm{Hz}$로 발행. 제어기는 엔코더를 샘플해 모터를 $200\,\mathrm{Hz}$로 명령. 카메라 노출 중간부터 힘이 나갈 때까지 예산 $70\,\mathrm{ms}$([[04-robotics/robot-systems-deployment|10. 로봇 시스템]]의 숫자). 타이밍·프레임·ROS 2의 “아무 일도 안 일어남”에 쓴다.
 
-센서 잡음 모델(엔코더 양자화, 단축 IMU, 거리 센서, 카메라)은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음]]에서 고정한다.
+센서 잡음 모델(엔코더 양자화, 단축 IMU, 거리 센서, 카메라)은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음]]에서, 전자 회로 — 모터 구동계, 로드셀과 그 증폭기, ADC — 는 [[02-foundations/basic-circuits-electronics|0.6.2 기초 회로와 전자]]에서 고정하고, 로봇 컴퓨터와 코드와 로그는 도구 트랙 [[02-foundations/tools/index|12]]의 관통 대상이다.
 
 ### 랩이 사는 곳
 

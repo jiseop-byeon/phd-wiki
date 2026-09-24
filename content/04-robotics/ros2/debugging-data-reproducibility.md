@@ -406,7 +406,7 @@ Turn this on in the nodes you write. The cost is one constructor argument and th
 ros2 bag record --topics /scan /odom /tf /tf_static -o run_042
 ```
 
-`--topics` takes a space-separated list; `-o` names the output directory. (The bare positional form still works and prints a deprecation notice; use `--topics`. There is no `-t` short option on `record` — `-t` belongs to `ros2 bag info`, so `record -t /scan` is an error rather than a deprecation.) A bag is a **directory** containing `metadata.yaml` and one or more storage files, not a single file.
+`--topics` takes a space-separated list; `-o` names the output directory. (The bare positional form still works and prints a deprecation notice; use `--topics`. There is no `-t` short option on `record` — `-t` belongs to `ros2 bag info`, so `record -t /scan` is an error rather than a deprecation.) A bag is a **directory** containing `metadata.yaml` and one or more storage files, not a single file. What MCAP, the default storage, puts in a file, and how it compares with HDF5 and Parquet for a dataset, is [[02-foundations/tools/config-data-formats|12.4 Config and Data Formats §8]]; copying a day of bags off the robot without losing one is [[02-foundations/tools/linux-shell|12.1 Linux and the Shell §8]].
 
 > **Bag, defined.** A **bag** is the *directory that `ros2 bag record` writes*: a `metadata.yaml` and one or more storage files, `mcap` by default. Four conditions define it. It holds **only the topics the recorder subscribed to**, each with its type and serialization format. Each message is stored with **the time the recorder received it** — system time, or the latest `/clock` under `--use-sim-time` — and playback spaces messages by those times, not by their header stamps. Its metadata **counts every topic's messages**, which is what makes `ros2 bag info` a test. And its storage **splits** by size or by duration when asked, at whichever limit comes first.
 >
@@ -504,7 +504,7 @@ A bag also makes a bug *communicable*. "It fails here" plus a bag is a report so
 
 ### 10. Unit tests inside a ROS package
 
-The algorithm should be testable without a graph. This is the practical reason to keep the ROS edge of your node thin, as 25.1 argued: a function that takes a point cloud and returns a pose is testable in milliseconds; a node is not.
+The algorithm should be testable without a graph. This is the practical reason to keep the ROS edge of your node thin, as 25.1 argued: a function that takes a point cloud and returns a pose is testable in milliseconds; a node is not. Testing numerical code in general — assertions, regression tests against stored numbers, pytest — is [[02-foundations/tools/python-research-code|12.3 Python for Research Code §9]].
 
 **Python** (`ament_python`). Tests go in a `tests/` directory in the package root, in files matching `test_*.py`, and `setup.py` declares the dependency:
 
@@ -635,7 +635,7 @@ RUN apt-get update \
 
 Official images are published as `ros:jazzy` (base) and `osrf/ros:jazzy-desktop` (with the desktop tools). Pin the distribution in the tag, and for anything you will cite, record the image **digest** as well — a hash of the image's exact contents. Tags are mutable: the same tag can later be repointed to an image with a different digest.
 
-The reason this matters is not tidiness. "I ran this on my laptop and got 87%" is a story. "Here is the image digest, the commit, the bag, the parameter dump and the command" is a result, because someone else can obtain it. Those two things look identical in a paper and are different kinds of object.
+The reason this matters is not tidiness. "I ran this on my laptop and got 87%" is a story. "Here is the image digest, the commit, the bag, the parameter dump and the command" is a result, because someone else can obtain it. Those two things look identical in a paper and are different kinds of object. The commit is the tag per experiment of [[02-foundations/tools/git-research-code|12.2 Git for Research Code §7]], the environment outside a container is [[02-foundations/tools/python-research-code|12.3 §1]], and a run too long for one workstation, in a container on a shared cluster, is [[02-foundations/tools/gpu-clusters|12.7 GPU Clusters §3]].
 
 > **Pinned run, defined.** A **pinned run** is a *result bundled with every input that produced it, each fixed by content*, so that someone else can re-execute it and compare. Six conditions: five inputs and a verdict. The **code** is a commit hash. The **environment** is an image digest, not a tag. The **data** is the bag, with its `metadata.yaml`. The **configuration** is a `ros2 param dump` of each node that matters. The **command** is the exact invocation, flags and seeds included. And the **verdict** is a stated tolerance, because replay is not bit-identical (§9).
 >
@@ -1209,7 +1209,7 @@ ros2 service call /NodeWithLoggerService/get_logger_levels rcl_interfaces/srv/Ge
 ros2 bag record --topics /scan /odom /tf /tf_static -o run_042
 ```
 
-`--topics`는 공백으로 구분된 목록을 받고 `-o`는 출력 디렉터리 이름을 정한다. (맨 위치 인자는 아직 동작하고 deprecation 안내를 찍는다. `--topics`를 써라. `record`에는 `-t` 단축 옵션이 없다. `-t`는 `ros2 bag info`의 것이라, `record -t /scan`은 deprecation이 아니라 오류다.) bag은 파일 하나가 아니라 `metadata.yaml`과 하나 이상의 저장 파일을 담은 **디렉터리**다.
+`--topics`는 공백으로 구분된 목록을 받고 `-o`는 출력 디렉터리 이름을 정한다. (맨 위치 인자는 아직 동작하고 deprecation 안내를 찍는다. `--topics`를 써라. `record`에는 `-t` 단축 옵션이 없다. `-t`는 `ros2 bag info`의 것이라, `record -t /scan`은 deprecation이 아니라 오류다.) bag은 파일 하나가 아니라 `metadata.yaml`과 하나 이상의 저장 파일을 담은 **디렉터리**다. 기본 저장 형식인 MCAP이 파일에 무엇을 넣는지, 데이터셋으로서 HDF5·Parquet과 어떻게 다른지는 [[02-foundations/tools/config-data-formats|12.4 설정과 데이터 형식 §8]]이고, 하루치 bag을 하나도 잃지 않고 로봇에서 복사해 오는 법은 [[02-foundations/tools/linux-shell|12.1 리눅스와 셸 §8]]이다.
 
 > **Bag의 정의.** **bag**은 *`ros2 bag record`가 쓰는 디렉터리*다. `metadata.yaml`과 하나 이상의 저장 파일이 들어 있고, 저장 형식은 기본이 `mcap`이다. 정의 조건은 넷이다. **레코더가 구독한 토픽만** 담고, 토픽마다 타입과 직렬화 형식이 붙는다. 각 메시지는 **레코더가 받은 시각**과 함께 저장된다. 시스템 시각이거나, `--use-sim-time`이면 가장 최근의 `/clock`이다. 재생은 header 스탬프가 아니라 이 시각으로 메시지 간격을 맞춘다. 메타데이터가 **토픽마다 메시지 수를 센다**. `ros2 bag info`를 시험으로 만드는 것이 이것이다. 그리고 저장 파일은 요청하면 크기나 길이 중 먼저 닿는 한계에서 **나뉜다**.
 >
@@ -1307,7 +1307,7 @@ bag은 버그를 *전달 가능*하게도 만든다. "여기서 실패한다" + 
 
 ### 10. ROS 패키지 안의 단위 테스트
 
-알고리즘은 그래프 없이 테스트 가능해야 한다. 25.1이 말한 대로 노드의 ROS 가장자리를 얇게 유지하는 실질적 이유가 이것이다. 포인트 클라우드를 받아 자세를 반환하는 함수는 밀리초 단위로 테스트되고, 노드는 그렇지 않다.
+알고리즘은 그래프 없이 테스트 가능해야 한다. 25.1이 말한 대로 노드의 ROS 가장자리를 얇게 유지하는 실질적 이유가 이것이다. 포인트 클라우드를 받아 자세를 반환하는 함수는 밀리초 단위로 테스트되고, 노드는 그렇지 않다. 수치 코드의 검사 일반 — 단언, 저장해 둔 숫자에 대한 회귀 테스트, pytest — 는 [[02-foundations/tools/python-research-code|12.3 연구 코드를 위한 Python §9]]이다.
 
 **Python** (`ament_python`). 테스트는 패키지 루트의 `tests/` 디렉터리에 `test_*.py` 패턴 파일로 두고, `setup.py`가 의존을 선언한다.
 
@@ -1438,7 +1438,7 @@ RUN apt-get update \
 
 공식 이미지는 `ros:jazzy`(기본)와 `osrf/ros:jazzy-desktop`(데스크톱 도구 포함)으로 배포된다. 태그에 배포판을 고정하고, 인용할 결과라면 이미지 **다이제스트**(이미지 내용 전체의 해시)까지 기록하라. 태그는 변한다. 같은 태그가 나중에 다른 다이제스트의 이미지를 가리키도록 바뀔 수 있다.
 
-이게 중요한 이유는 단정함이 아니다. "내 노트북에서 돌려서 87퍼센트가 나왔다"는 이야기다. "이미지 다이제스트, 커밋, bag, 파라미터 덤프, 명령이 여기 있다"는 결과다. 남이 얻어낼 수 있기 때문이다. 논문에서는 둘이 똑같아 보이지만 서로 다른 종류의 물건이다.
+이게 중요한 이유는 단정함이 아니다. "내 노트북에서 돌려서 87퍼센트가 나왔다"는 이야기다. "이미지 다이제스트, 커밋, bag, 파라미터 덤프, 명령이 여기 있다"는 결과다. 남이 얻어낼 수 있기 때문이다. 논문에서는 둘이 똑같아 보이지만 서로 다른 종류의 물건이다. 커밋은 [[02-foundations/tools/git-research-code|12.2 연구 코드를 위한 Git §7]]의 실험마다 붙이는 태그이고, 컨테이너 밖의 환경은 [[02-foundations/tools/python-research-code|12.3 §1]]이며, 워크스테이션 하나에는 너무 긴 실행을 공유 클러스터의 컨테이너에서 돌리는 법은 [[02-foundations/tools/gpu-clusters|12.7 GPU 클러스터 §3]]이다.
 
 > **고정된 실행의 정의.** **고정된 실행**(pinned run)은 *결과 하나를, 그것을 낸 모든 입력과 함께 내용으로 고정해 묶은 것*이다. 그래서 남이 다시 실행해 견줄 수 있다. 조건은 여섯, 곧 입력 다섯과 판정 하나다. **코드**는 커밋 해시다. **환경**은 태그가 아니라 이미지 다이제스트다. **데이터**는 `metadata.yaml`까지 포함한 bag이다. **설정**은 관련된 노드마다의 `ros2 param dump`다. **명령**은 플래그와 시드까지 포함한 정확한 호출이다. 그리고 **판정**은 명시된 허용 오차다. 재생은 비트 단위로 같지 않기 때문이다(§9).
 >

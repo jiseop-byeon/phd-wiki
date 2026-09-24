@@ -231,7 +231,7 @@ A floating-point number is $(1+\phi)\,2^{e}$, with $\phi\in[0,1)$ the fraction a
 | fp16 | 1 · 5 · 10 | $65{,}504$ | $2^{-14}=6.10\times10^{-5}$ | $2^{-24}=5.96\times10^{-8}$ | $2^{-10}=9.77\times10^{-4}$ |
 | bf16 | 1 · 8 · 7 | $3.39\times10^{38}$ | $1.18\times10^{-38}$ | $9.2\times10^{-41}$ | $2^{-7}=7.81\times10^{-3}$ |
 
-fp16 spends its bits on precision and gets a narrow range; bf16 keeps fp32's eight exponent bits, hence fp32's range, and pays with a spacing eight times coarser than fp16's. [[02-foundations/ml-practice|9. ML Practice §6]] gives the range side of this trade; the spacing side is what the master copy is about.
+fp16 spends its bits on precision and gets a narrow range; bf16 keeps fp32's eight exponent bits, hence fp32's range, and pays with a spacing eight times coarser than fp16's. [[02-foundations/ml-practice|9. ML Practice §6]] gives the range side of this trade; the spacing side is what the master copy is about. The same spacing met in a robot's log rather than in a weight — a float32 clock that stops counting ticks, a running sum that drifts — is [[02-foundations/tools/python-research-code|12.3 Python for Research Code §5]].
 
 **Why a master copy.** An update is added to a weight, and the sum is rounded to the weight's format. Write $\mathrm{fl}_{16}(\cdot)$ for that rounding. In fp16 the next number above 1 is $1+2^{-10}$, so an increase smaller than half the gap, $2^{-11}=4.88\times10^{-4}$, rounds straight back — and below 1 the spacing halves, so a decrease is lost below $2^{-12}$:
 
@@ -276,6 +276,8 @@ because each parameter carries five numbers: the two that the matrix products re
 > - **Non-example**: inference memory. A deployed model holds its weights once, $2N=0.2$ GB for T-100M in 16 bits — one eighth of the training states. "Fits on one GPU" has to say whether it means training or inference, because the factor between them is eight before a single activation is counted.
 > - **Non-example**: activation memory. It is not per parameter but per token kept for the backward pass, it grows with batch and context, and at long contexts it can exceed the model states. The ZeRO paper files activations, temporary buffers and fragmented memory under a separate name, *residual states*, to keep them out of this ledger; recomputing activations during the backward pass instead of storing them trades that memory for compute, which the 16-byte count never sees.
 > - **Why it matters**: the count shows where each memory-saving method acts. The ZeRO paper shards the 16 bytes across $N_d$ data-parallel devices in three cumulative stages — the optimizer's 12 bytes first ($4\Psi+12\Psi/N_d$ per device in its notation, $\Psi$ being $N$, so at most a $4\times$ saving), then the gradients ($2\Psi+14\Psi/N_d$, at most $8\times$), then the weights themselves ($16\Psi/N_d$, falling linearly with $N_d$); at the third stage T-100M's 1.6 GB is 0.2 GB per device on eight devices. LoRA (§8) removes 14 of the 16 bytes for every frozen parameter. None of these touches the activations.
+
+Which of these sixteen bytes a checkpoint must keep for a run to resume exactly, and how often a long run on a shared cluster should write them, is [[02-foundations/tools/gpu-clusters|12.7 GPU Clusters §6–§7]].
 
 ### 6. Compute: six FLOPs per parameter per token
 
@@ -916,7 +918,7 @@ $$\frac{\operatorname{Var}(g_0)}{\operatorname{Var}(g_L)}=\prod_{l=1}^{L}\frac{\
 | fp16 | 1 · 5 · 10 | $65{,}504$ | $2^{-14}=6.10\times10^{-5}$ | $2^{-24}=5.96\times10^{-8}$ | $2^{-10}=9.77\times10^{-4}$ |
 | bf16 | 1 · 8 · 7 | $3.39\times10^{38}$ | $1.18\times10^{-38}$ | $9.2\times10^{-41}$ | $2^{-7}=7.81\times10^{-3}$ |
 
-fp16은 비트를 정밀도에 써서 범위가 좁다. bf16은 fp32의 지수 8비트, 곧 fp32의 범위를 지키고 fp16보다 여덟 배 거친 간격으로 값을 치른다. [[02-foundations/ml-practice|9. ML 실무 §6]]이 이 교환의 범위 쪽을 준다. 간격 쪽이 마스터 사본의 이야기다.
+fp16은 비트를 정밀도에 써서 범위가 좁다. bf16은 fp32의 지수 8비트, 곧 fp32의 범위를 지키고 fp16보다 여덟 배 거친 간격으로 값을 치른다. [[02-foundations/ml-practice|9. ML 실무 §6]]이 이 교환의 범위 쪽을 준다. 간격 쪽이 마스터 사본의 이야기다. 같은 간격을 가중치가 아니라 로봇의 로그에서 만나는 것 — 틱을 세다 멈추는 float32 시계, 떠내려가는 누적 합 — 은 [[02-foundations/tools/python-research-code|12.3 연구 코드를 위한 Python §5]]이다.
 
 **마스터 사본이 필요한 이유.** 갱신은 가중치에 더해지고, 합은 가중치의 형식으로 반올림된다. 그 반올림을 $\mathrm{fl}_{16}(\cdot)$이라 쓴다. fp16에서 1 바로 위의 수는 $1+2^{-10}$이므로 간격의 절반 $2^{-11}=4.88\times10^{-4}$보다 작은 증가는 곧바로 되돌아오고, 1 아래에서는 간격이 반으로 줄어 $2^{-12}$보다 작은 감소가 사라진다.
 
@@ -961,6 +963,8 @@ $$M_{\text{states}}=\underbrace{2N}_{\text{16-bit }\theta}+\underbrace{2N}_{\tex
 > - **비예**: 추론 메모리. 배포된 모델은 가중치를 한 번만 가지므로 T-100M을 16비트로 두면 $2N=0.2$ GB로 학습 상태의 8분의 1이다. "GPU 하나에 들어간다"는 학습을 말하는지 추론을 말하는지 밝혀야 한다. activation을 하나도 세기 전에 둘 사이가 여덟 배이기 때문이다.
 > - **비예**: activation 메모리. 파라미터마다가 아니라 역전파를 위해 둔 토큰마다 있고, 배치와 문맥에 따라 커지며, 긴 문맥에서는 모델 상태를 넘을 수 있다. ZeRO 논문은 activation, 임시 버퍼, 조각난 메모리를 *residual state*라는 별도 이름에 넣어 이 장부 밖에 둔다. activation을 저장하는 대신 역전파 때 다시 계산하면 그 메모리를 연산량과 맞바꾸는데, 16바이트 셈은 그것을 보지 못한다.
 > - **왜 중요한가**: 이 셈은 메모리 절약 기법마다 어디에 작용하는지 보여 준다. ZeRO 논문은 16바이트를 데이터 병렬 장치 $N_d$개에 누적되는 세 단계로 나눈다. optimizer의 12바이트가 먼저이고(그 표기로 장치당 $4\Psi+12\Psi/N_d$, $\Psi$가 $N$이며, 절약은 최대 $4\times$), 다음이 그래디언트(장치당 $2\Psi+14\Psi/N_d$, 최대 $8\times$), 그다음이 가중치 자체다(장치당 $16\Psi/N_d$, $N_d$에 선형으로 준다). 셋째 단계에서 T-100M의 1.6 GB는 장치 여덟 개에서 장치당 0.2 GB다. LoRA(§8)는 얼린 파라미터마다 16바이트 중 14바이트를 없앤다. 어느 것도 activation은 건드리지 않는다.
+
+이 16바이트 가운데 학습을 그대로 이어 가려면 체크포인트가 무엇을 지녀야 하는지, 공유 클러스터의 긴 학습이 그것을 얼마나 자주 써야 하는지는 [[02-foundations/tools/gpu-clusters|12.7 GPU 클러스터 §6–§7]]이다.
 
 ### 6. 연산량: 파라미터당 토큰당 6 FLOP
 

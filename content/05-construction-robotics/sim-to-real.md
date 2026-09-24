@@ -110,7 +110,7 @@ S2's slice per pass against the soil's cutting resistance. The simulator-tuned c
 | Software/hardware | control rate, saturation, dropped messages | hardware-in-the-loop, action delay and limit randomization |
 
 The important question is not “Was simulation photorealistic?” but **which variables
-that affect the policy were represented, varied, or adapted**.
+that affect the policy were represented, varied, or adapted**. Two rows have physics of their own behind them: the hydraulic delay is a chain — valve travel, pressure build-up, the oil column's spring — that [[02-foundations/fluid-power|0.6.3 Fluid Power §11]] prices on a boom cylinder, and the sensing row's dust, glare and latency are sorted by sensor in [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §7]].
 
 **S2's gap, in the contact/material row.** S2's cutting resistance is one entry of the second row, and it is one number: the simulator says $60\,\mathrm{kPa}$ and the site says whatever its soil says. On the worked case's site, $80\,\mathrm{kPa}$, the force that cuts the planned $0.1\,\mathrm{m}$ in simulation cuts $0.075\,\mathrm{m}$. The simulator's side of that comparison is not exact either: the leading real-time soil models are validated only to roughly 10–25% of a particle-level reference ([[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets §4]]), so a digging force read off any of them carries that error before the site adds its own. The shortfall is the gap, and it needs a definition precise enough to measure, because the looser use of the word names the mismatches themselves, the rows of the table, which this page calls the gap's *sources*.
 
@@ -669,7 +669,7 @@ $d_0$, $k_{\text{site}}$, 현장 분포, 범위, $\sigma_F$는 이 페이지가 
 | 구현 | 제어 주기·포화·메시지 손실 | hardware-in-the-loop, 지연·한계 랜덤화 |
 
 핵심 질문은 “그래픽이 사실적인가?”가 아니라 **정책에 영향을 주는 변수를 무엇까지 표현·
-변동·적응했는가**다.
+변동·적응했는가**다. 두 행 뒤에는 제 물리가 있다. 유압 지연은 밸브의 이동, 압력 형성, 기름 기둥의 스프링으로 이어지는 사슬이고 [[02-foundations/fluid-power|0.6.3 유체 동력 §11]]이 붐 실린더 위에서 그 값을 매긴다. 센싱 행의 먼지·눈부심·지연은 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §7]]이 센서별로 가른다.
 
 **접촉·재료 행에 있는 S2의 격차.** S2의 절삭 저항은 표 둘째 행의 한 항목이고, 숫자 하나다. 시뮬레이터는 $60\,\mathrm{kPa}$라 하고, 현장은 제 흙이 말하는 대로다. 계산 절의 현장인 $80\,\mathrm{kPa}$에서는, 시뮬레이션에서 계획한 $0.1\,\mathrm{m}$를 깎던 힘이 $0.075\,\mathrm{m}$를 깎는다. 견주는 한쪽인 시뮬레이터도 정확하지 않다. 앞선 실시간 토양 모델들도 입자 수준 기준 모델에 대해 대략 10–25%까지만 검증되어 있으므로([[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋 §4]]), 그중 어느 것에서 읽은 굴착력이든 현장이 제 오차를 더하기 전에 이미 그만큼의 오차를 안고 있다. 그 부족분이 격차이고, 잴 수 있을 만큼 정확한 정의가 필요하다. 느슨하게 쓰면 이 말은 불일치 자체, 곧 표의 행들을 가리키는데, 이 페이지는 그것을 격차의 *원천*이라 부른다.
 

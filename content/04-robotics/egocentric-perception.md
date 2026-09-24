@@ -225,7 +225,7 @@ because the ray that leaves at a given depression angle drops $h$ over exactly t
 > **Why it matters.** It decides whether the feature carrying the label still exists in the frames
 > that matter, which are exactly the frames where the wearer is turning.
 
-Run both rates of E1 through it, at all three positions in the frame:
+The translating case, a camera carried sideways past a wall, and the photons a shorter exposure gives up, are worked on a site rig in [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §1–§2]]. Run both rates of E1 through it, at all three positions in the frame:
 
 | $\omega$ | smear in degrees | on axis | frame average | at the frame edge |
 |---|---:|---:|---:|---:|
@@ -681,7 +681,7 @@ $$d_{\mathrm{near}} = \frac{h}{\tan\!\big(\theta + \mathrm{VFOV}/2\big)}, \qquad
 > **왜 중요한가.** 라벨을 담은 대상이 정작 중요한 프레임에 아직 존재하는지를 결정하고, 그 중요한
 > 프레임이란 바로 착용자가 고개를 돌리는 프레임이다.
 
-E1의 두 각속도를 프레임 안 세 자리에서 돌려 보자:
+병진의 경우, 곧 벽 옆을 가로로 지나가는 카메라와, 노출을 줄이면 잃는 광자는 현장 리그 위에서 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §1–§2]]가 계산한다. E1의 두 각속도를 프레임 안 세 자리에서 돌려 보자:
 
 | $\omega$ | 각도 번짐 | 광축 위 | 프레임 평균 | 프레임 끝 |
 |---|---:|---:|---:|---:|

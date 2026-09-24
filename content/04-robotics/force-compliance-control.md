@@ -247,6 +247,8 @@ that is the correct behaviour, not a failure.
 >
 > **Why it matters.** Every row of the table below, every $K_d$ in §2, the selection of which direction is stiff in §3, and the impact arithmetic in §5 are these same three coefficients. A contact claim with none of them reported is a claim with no units.
 
+The spring and the damper as physical elements — springs in series and in parallel, a preload, viscous damping set against Coulomb friction — are derived on P3's handle in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §3–§4]].
+
 Keep a scale of environment stiffness. It spans five orders of magnitude, and papers name the
 contact rather than the number. The same control law is safe at one end and impossible at the
 other:
@@ -396,7 +398,7 @@ The diagram shows **two common implementations**, not hardware requirements for 
 A stiff wall makes small motions produce large force changes. In an admittance loop, delayed force feedback can therefore generate an excessive corrective motion and oscillation. It **can** be stabilized with suitable dynamics, bandwidth and hardware. Stiffness alone does not prove failure. Conversely, impedance can track motion in free space. The practical question is which desired behavior the complete robot can render in the operating conditions.
 
 > [!warning] Architecture and stiffness · 구조와 강성
-> A wrist force sensor does not identify the control architecture: inspect where its signal enters and what the controller commands. Also, two passive linear springs **in series** satisfy $1/K_{eq}=1/K_1+1/K_2$; their stiffnesses do not add. That follows because the same force $F$ passes through both springs and their deflections add, $F/K_{eq}=F/K_1+F/K_2$. For $K_1=10^5$ and $K_2=10^7$ N/m, $K_{eq}=9.90\times10^4$ N/m, so the softer spring sets the series stiffness (§5 uses exactly this). Feedback stability requires a dynamic model, not just this static equivalent. Connect the control diagram to [[02-foundations/manipulator-kinematics-dynamics|10. §8]].
+> A wrist force sensor does not identify the control architecture: inspect where its signal enters and what the controller commands. What the sensor itself is — strain gauges in a bridge, an amplifier and an ADC, each with its own error — is [[02-foundations/basic-circuits-electronics|0.6.2 Basic Circuits & Electronics §9–§10]]. Also, two passive linear springs **in series** satisfy $1/K_{eq}=1/K_1+1/K_2$; their stiffnesses do not add. That follows because the same force $F$ passes through both springs and their deflections add, $F/K_{eq}=F/K_1+F/K_2$. For $K_1=10^5$ and $K_2=10^7$ N/m, $K_{eq}=9.90\times10^4$ N/m, so the softer spring sets the series stiffness (§5 uses exactly this). Feedback stability requires a dynamic model, not just this static equivalent. Connect the control diagram to [[02-foundations/manipulator-kinematics-dynamics|10. §8]].
 
 > [!question] Check the model · 모델 확인
 > If the robot settles under a steady external force, which terms remain? **Answer:** only the spring term in this fixed-reference model. If the measured response oscillates, inspect inertia, damping, feedback delay and tracking; the static spring equation alone cannot explain it.
@@ -539,7 +541,7 @@ Both follow from the model in one step each, and they are worth deriving because
 *shape* of the answer is the lesson. All the kinetic energy goes into the spring at maximum
 compression, $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$, so
 $\Delta x = v\sqrt{\Lambda/K}$ and the peak force is
-$F_{\max} = K\Delta x = v\sqrt{\Lambda K}$. The duration is half a period of that same
+$F_{\max} = K\Delta x = v\sqrt{\Lambda K}$ — the energy ledger of [[02-foundations/basic-mechanics|0.6.1 §6]], with the operational-space mass $\Lambda$ in place of a point mass. The duration is half a period of that same
 mass–spring oscillator: $\omega = \sqrt{K/\Lambda}$, so $T/2 = \pi\sqrt{\Lambda/K}$.
 
 Read the two square roots against each other. Peak force scales as $\sqrt{K}$ and duration
@@ -1091,6 +1093,8 @@ $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 >
 > **왜 중요한가.** 아래 표의 모든 행, §2의 모든 $K_d$, §3에서 어느 방향을 단단하게 둘지 고르는 일, §5의 충격 산수가 전부 이 세 계수다. 셋 중 아무것도 보고하지 않은 접촉 주장은 단위가 없는 주장이다.
 
+물리 요소로서의 스프링과 댐퍼 — 직렬·병렬 스프링, 예압, 쿨롱 마찰과 대비한 점성 감쇠 — 는 P3의 핸들 위에서 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §3–§4]]가 유도한다.
+
 환경 강성의 눈금을 갖고 있어야 한다. 환경 강성은 다섯 자릿수에 걸쳐 있고, 논문은 숫자 대신 접촉을
 이름으로 부른다. 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽 끝에서는 불가능하다:
 
@@ -1235,7 +1239,7 @@ $$Z(s)=\frac{F_{ext}(s)}{V(s)}=M_ds+D_d+\frac{K_d}{s},\qquad Y(s)=\frac{1}{Z(s)}
 단단한 벽에서는 작은 운동이 큰 힘 변화를 만든다. 어드미턴스 루프의 힘 피드백이 늦으면 보정 운동이 과해져 진동할 수 있다. 그러나 적절한 동역학·대역폭·하드웨어로 안정화할 수 있다. 강성만으로 실패를 단정할 수 없다. 반대로 임피던스도 자유 공간의 운동을 추종할 수 있다. 핵심은 전체 로봇이 해당 조건에서 어떤 거동을 실제로 구현할 수 있느냐다.
 
 > [!warning] 구조와 강성 · Architecture and stiffness
-> 손목 힘 센서만으로 제어 구조를 판정하지 않는다. 신호가 어디에 들어가며 무엇을 명령하는지 본다. 또한 수동 선형 스프링 두 개가 **직렬**이면 $1/K_{eq}=1/K_1+1/K_2$다. 강성을 더하는 것이 아니다. 같은 힘 $F$가 두 스프링을 모두 지나고 변형이 더해지므로 $F/K_{eq}=F/K_1+F/K_2$이기 때문이다. $K_1=10^5$, $K_2=10^7$ N/m이면 $K_{eq}=9.90\times10^4$ N/m로, 더 무른 스프링이 직렬 강성을 정한다(§5가 바로 이것을 쓴다). 피드백 안정성은 이 정적 등가식만으로 판단할 수 없고 동적 모델이 필요하다. 제어 블록을 [[02-foundations/manipulator-kinematics-dynamics|10. §8]]과 연결한다.
+> 손목 힘 센서만으로 제어 구조를 판정하지 않는다. 신호가 어디에 들어가며 무엇을 명령하는지 본다. 센서 자체 — 브리지 속 스트레인 게이지, 증폭기, ADC, 저마다의 오차 — 는 [[02-foundations/basic-circuits-electronics|0.6.2 기초 회로와 전자 §9–§10]]이다. 또한 수동 선형 스프링 두 개가 **직렬**이면 $1/K_{eq}=1/K_1+1/K_2$다. 강성을 더하는 것이 아니다. 같은 힘 $F$가 두 스프링을 모두 지나고 변형이 더해지므로 $F/K_{eq}=F/K_1+F/K_2$이기 때문이다. $K_1=10^5$, $K_2=10^7$ N/m이면 $K_{eq}=9.90\times10^4$ N/m로, 더 무른 스프링이 직렬 강성을 정한다(§5가 바로 이것을 쓴다). 피드백 안정성은 이 정적 등가식만으로 판단할 수 없고 동적 모델이 필요하다. 제어 블록을 [[02-foundations/manipulator-kinematics-dynamics|10. §8]]과 연결한다.
 
 > [!question] 모델 확인 · Check the model
 > 일정 외력 아래 로봇이 정지하면 어떤 항이 남는가? **답:** 고정 기준 모델의 스프링 항만 남는다. 실제 반응이 진동하면 관성·감쇠·피드백 지연·추종을 살펴본다. 정적 스프링 식만으로 진동을 설명할 수 없다.
@@ -1365,7 +1369,7 @@ $$F_{\max} = v\sqrt{\Lambda K}, \qquad t_{\text{contact}} = \pi\sqrt{\Lambda/K}$
 둘 다 이 모델에서 한 단계씩이면 나오고, 유도해 볼 값어치가 있다. 답의 *모양*이 곧 교훈이기
 때문이다. 최대 압축에서 운동에너지가 전부 스프링으로 간다:
 $\tfrac12 \Lambda v^2 = \tfrac12 K \Delta x^2$이므로 $\Delta x = v\sqrt{\Lambda/K}$이고
-최대 힘은 $F_{\max} = K\Delta x = v\sqrt{\Lambda K}$다. 지속 시간은 같은 질량–스프링
+최대 힘은 $F_{\max} = K\Delta x = v\sqrt{\Lambda K}$다. 점질량 대신 작업 공간 질량 $\Lambda$를 넣은 [[02-foundations/basic-mechanics|0.6.1 §6]]의 에너지 장부다. 지속 시간은 같은 질량–스프링
 진동자의 반주기다. $\omega = \sqrt{K/\Lambda}$이므로 $T/2 = \pi\sqrt{\Lambda/K}$.
 
 두 제곱근을 서로 견주어 읽어라. 최대 힘은 $\sqrt{K}$에 비례하고 지속 시간은 $1/\sqrt{K}$에

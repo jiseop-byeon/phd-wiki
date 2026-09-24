@@ -213,7 +213,7 @@ RS1's line sits at $10\,\mathrm{N}$. Everything in this drop is linear in $v_0$,
 
 **Step 6 — what contact damping does.** Give the wall a damper $d$. Three things change, and only the first is physics.
 
-*The bounce loses energy.* With the damping ratio $\zeta=d/(2\sqrt{km})$ of [[04-robotics/control-theory-ce397|5. Control Theory §5]], a linear spring–damper returns the fraction $e=e^{-\pi\zeta/\sqrt{1-\zeta^2}}$ of the speed — the same exponential as that section's overshoot. The drop cell's damped case has $\zeta=0.8/(2\sqrt{400\cdot0.04})=8/(2\sqrt{40{,}000\cdot0.04})=0.1$ on both walls, so that formula gives $e=0.729$ and an energy ratio $e^2=0.532$. The wall law's $\max(0,\cdot)$ lets the handle go as soon as the force reaches zero, before the damper can tug it back, so the drop cell's exact ratio is a little higher: $0.554$ ($e=0.744$), from the law solved exactly and matched by a fine-step run.
+*The bounce loses energy.* With the damping ratio $\zeta=d/(2\sqrt{km})$ of [[04-robotics/control-theory-ce397|5. Control Theory §5]], a linear spring–damper returns the fraction $e=e^{-\pi\zeta/\sqrt{1-\zeta^2}}$ of the speed — the same exponential as that section's overshoot. The drop cell's damped case has $\zeta=0.8/(2\sqrt{400\cdot0.04})=8/(2\sqrt{40{,}000\cdot0.04})=0.1$ on both walls, so that formula gives $e=0.729$ and an energy ratio $e^2=0.532$. The wall law's $\max(0,\cdot)$ lets the handle go as soon as the force reaches zero, before the damper can tug it back, so the drop cell's exact ratio is a little higher: $0.554$ ($e=0.744$), from the law solved exactly and matched by a fine-step run. With the same damper in the device instead of the wall law, acting through the whole contact, the handle leaves the wall at the formula's $0.532$ — the case [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §6]] works; where the damping sits is part of the contact model.
 
 *Explicit Euler can become stable, if the damper pays for the step.* For a lightly damped contact ($\zeta<1$) the eigenvalues of the damped explicit step have squared modulus $1-2\zeta\,\omega\Delta t+(\omega\Delta t)^2$, which is at most 1 exactly when $\omega\Delta t\le2\zeta$. Substituting $\zeta$ and $\omega$ turns that into
 
@@ -655,7 +655,7 @@ overview sheet's columns run *robot, episodes, file size, morphology, gripper, a
 RGB cameras, depth cameras, wrist cameras, language annotations, collection method,
 proprioception, scene type, control frequency* — **there is no force column and no tactile
 column.** The dominant data format cannot represent the modality that
-[[04-robotics/force-compliance-control|contact-rich manipulation]] most depends on.
+[[04-robotics/force-compliance-control|contact-rich manipulation]] most depends on. (The schema is not the file format: the same columns can ship as HDF5, Parquet or MCAP, whose promises and costs are [[02-foundations/tools/config-data-formats|12.4 Config and Data Formats §8]].)
 
 The datasets that do break the pattern:
 
@@ -1126,7 +1126,7 @@ RS1의 선은 $10\,\mathrm{N}$에 있다. 이 낙하의 모든 것이 $v_0$에 �
 
 **6단계 — 접촉 감쇠가 하는 일.** 벽에 댐퍼 $d$를 준다. 세 가지가 바뀌고, 물리는 첫째뿐이다.
 
-*튕김이 에너지를 잃는다.* [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 감쇠비 $\zeta=d/(2\sqrt{km})$로 쓰면, 선형 스프링–댐퍼는 속도의 $e=e^{-\pi\zeta/\sqrt{1-\zeta^2}}$만큼을 돌려준다. 그 절의 오버슈트와 같은 지수다. 낙하 셀의 감쇠 경우는 두 벽 모두 $\zeta=0.8/(2\sqrt{400\cdot0.04})=8/(2\sqrt{40{,}000\cdot0.04})=0.1$이므로, 이 식은 $e=0.729$, 에너지 비 $e^2=0.532$를 준다. 벽 법칙의 $\max(0,\cdot)$는 힘이 0이 되는 즉시 핸들을 놓아 주어 댐퍼가 핸들을 다시 끌어당길 틈이 없으므로, 낙하 셀의 정확한 비는 조금 더 높다. 법칙을 정확히 풀고 잘게 쪼갠 스텝으로 확인한 값이 $0.554$($e=0.744$)다.
+*튕김이 에너지를 잃는다.* [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 감쇠비 $\zeta=d/(2\sqrt{km})$로 쓰면, 선형 스프링–댐퍼는 속도의 $e=e^{-\pi\zeta/\sqrt{1-\zeta^2}}$만큼을 돌려준다. 그 절의 오버슈트와 같은 지수다. 낙하 셀의 감쇠 경우는 두 벽 모두 $\zeta=0.8/(2\sqrt{400\cdot0.04})=8/(2\sqrt{40{,}000\cdot0.04})=0.1$이므로, 이 식은 $e=0.729$, 에너지 비 $e^2=0.532$를 준다. 벽 법칙의 $\max(0,\cdot)$는 힘이 0이 되는 즉시 핸들을 놓아 주어 댐퍼가 핸들을 다시 끌어당길 틈이 없으므로, 낙하 셀의 정확한 비는 조금 더 높다. 법칙을 정확히 풀고 잘게 쪼갠 스텝으로 확인한 값이 $0.554$($e=0.744$)다. 같은 댐퍼를 벽 법칙이 아니라 장치에 두어 접촉 내내 작용하게 하면 핸들은 식이 주는 $0.532$로 벽을 떠나고, 그 경우를 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §6]]이 계산한다. 감쇠가 어디에 있느냐도 접촉 모델의 일부다.
 
 *댐퍼가 스텝 값을 치르면 명시적 오일러도 안정해질 수 있다.* 가볍게 감쇠된 접촉($\zeta<1$)에서 감쇠 있는 명시적 스텝의 고유값은 절댓값 제곱이 $1-2\zeta\,\omega\Delta t+(\omega\Delta t)^2$이고, 이것이 1 이하인 것은 정확히 $\omega\Delta t\le2\zeta$일 때다. $\zeta$와 $\omega$를 대입하면
 
@@ -1478,7 +1478,7 @@ $$1-\tfrac14(\omega\Delta t)^2\ \le\ \frac{E_{\text{out}}}{E_{\text{in}}}\ \le\ 
 박혀 있는 것이다. Open X-Embodiment 개요 시트의 열은 *로봇, 에피소드, 파일 크기, 형태, 그리퍼,
 행동 공간, RGB 카메라, 깊이 카메라, 손목 카메라, 언어 주석, 수집 방법, 고유수용감각, 장면 유형,
 제어 주파수* 로 이어진다 — **force 열도 tactile 열도 없다.** 지배적인 데이터 형식이
-[[04-robotics/force-compliance-control|접촉이 많은 조작]]이 가장 의존하는 모달리티를 표현하지 못한다.
+[[04-robotics/force-compliance-control|접촉이 많은 조작]]이 가장 의존하는 모달리티를 표현하지 못한다. (스키마는 파일 형식이 아니다. 같은 열이 HDF5로도, Parquet으로도, MCAP으로도 배포될 수 있고, 각 형식이 약속하는 것과 그 비용은 [[02-foundations/tools/config-data-formats|12.4 설정과 데이터 형식 §8]]이다.)
 
 이 패턴을 깨는 데이터셋들:
 

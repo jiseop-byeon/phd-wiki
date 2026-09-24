@@ -546,7 +546,7 @@ the theory:
 | What construction supplies | Which assumption it breaks |
 |---|---|
 | Rebar bundles, mesh | not one object; the "object" deforms and shifts internally |
-| Panels, sheet goods | large, thin, and flexible — the grasp wrench space depends on where you hold it |
+| Panels, sheet goods | large, thin, and flexible — the grasp wrench space depends on where you hold it; a facade panel is usually held by suction instead, whose hold on a vertical face is vacuum times cup area times friction ([[02-foundations/fluid-power\|0.6.3 §9]]) |
 | Bricks, blocks, aggregates | fine, and mostly a weight and cycle-time problem rather than a grasp-analysis one |
 | Bags, insulation, membranes | deformable; closure is not defined on a shape that changes |
 | Dusty, wet, or abraded surfaces | $\mu$ is unknown and varies within a shift, so every cone in §2 has an uncertain half-angle |
@@ -1238,7 +1238,7 @@ Dex-Net 2.0이 이 발상의 가장 명확한 진술이다: 파지 품질 CNN을
 | 건설이 주는 것 | 깨지는 가정 |
 |---|---|
 | 철근 다발, 메시 | 물체가 하나가 아니다. "물체"가 변형되고 내부에서 어긋난다 |
-| 패널, 판재 | 크고 얇고 휜다 — 파지 렌치 공간이 어디를 잡느냐에 달라진다 |
+| 패널, 판재 | 크고 얇고 휜다 — 파지 렌치 공간이 어디를 잡느냐에 달라진다. 외장 패널은 대개 흡착으로 잡고, 수직면에서 그 붙잡는 힘은 진공 곱하기 컵 면적 곱하기 마찰이다([[02-foundations/fluid-power\|0.6.3 §9]]) |
 | 벽돌, 블록, 골재 | 괜찮다. 파지 해석보다는 무게와 사이클 타임의 문제다 |
 | 자루, 단열재, 멤브레인 | 변형체. 변하는 형상 위에는 closure가 정의되지 않는다 |
 | 먼지·물·마모된 표면 | $\mu$를 모르고 한 교대 안에서도 변한다. §2의 모든 원뿔이 불확실한 반각을 갖는다 |

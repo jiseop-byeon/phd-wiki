@@ -451,6 +451,8 @@ Link each reported run to a configuration snapshot and a raw log, and preserve t
 
 **On RS1**, the entries that decide the peak force and are the easiest to lose: the force sensor's calibration and its low-pass cut-off (a filter lowers a recorded peak), the sensor rate, A's threshold and B's gains, the panel's measured stiffness and mounting, the approach speed and start poses, and the script that turns a force trace into a peak. Record each excluded trial with its reason, so that a reader can recover both denominators.
 
+**Where each entry is taught.** The code commit and a tag per experiment are [[02-foundations/tools/git-research-code|12.2 Git for Research Code §7]]; the pinned environment and the seeds are [[02-foundations/tools/python-research-code|12.3 Python for Research Code §1 and §7]]; the configuration snapshot and the sidecar that travels beside a log are [[02-foundations/tools/config-data-formats|12.4 Config and Data Formats §3–§4]]; the hardware revision, and a fixture that puts the part back in the same place every trial, are [[02-foundations/tools/mechanical-design-fabrication|12.9 Mechanical Design and Fabrication §1 and §7]]; the checkpoint a training run needs to survive a cluster's time limit is [[02-foundations/tools/gpu-clusters|12.7 GPU Clusters §6]]; and a paper whose figures are rebuilt from the same repository is [[02-foundations/tools/latex-figures-references|12.6 Writing Tools §10]].
+
 ### 8. Worked design
 
 Claim: tactile sensing improves insertion recovery. Use the same robot, controller, demonstrations, objects, initial offsets, and failure perturbations. Compare vision-only and vision+tactile in randomized paired trials. Report insertion success, peak force, recovery time, damage, interventions, latency, and failure taxonomy across held-out clearances/materials.
@@ -916,6 +918,8 @@ percentile bootstrap 95% CI for mean(A) - mean(B): [1.58, 4.80] N
 **여기서 얻는 독법.** 결과 하나를 골라 실제 시도까지의 전체 경로를 복원할 수 있는지 묻는다. 빠진 항목은 코드가 공개됐다는 일반 문구보다 재현성 한계를 정확히 알려 준다.
 
 **RS1에서**, 최대 힘을 좌우하면서 가장 잃어버리기 쉬운 항목: 힘 센서의 보정과 저역 통과 차단 주파수(필터는 기록된 최댓값을 낮춘다), 센서 속도, A의 문턱과 B의 이득, 패널의 측정 강성과 고정 방식, 접근 속도와 시작 자세, 힘 궤적을 최댓값으로 바꾸는 스크립트. 제외한 시행은 이유와 함께 기록해 독자가 두 분모를 모두 복원할 수 있게 한다.
+
+**항목마다 가르치는 곳.** 코드 커밋과 실험마다의 태그는 [[02-foundations/tools/git-research-code|12.2 연구 코드를 위한 Git §7]], 고정한 환경과 시드는 [[02-foundations/tools/python-research-code|12.3 연구 코드를 위한 Python §1, §7]], 설정 스냅샷과 로그 곁을 따라다니는 사이드카 파일은 [[02-foundations/tools/config-data-formats|12.4 설정과 데이터 형식 §3–§4]], 하드웨어 리비전과 부품을 매 시행 같은 자리에 돌려놓는 고정구는 [[02-foundations/tools/mechanical-design-fabrication|12.9 실험을 위한 기계 설계와 제작 §1, §7]], 학습이 클러스터의 시간 한도를 넘어 살아남는 데 필요한 체크포인트는 [[02-foundations/tools/gpu-clusters|12.7 GPU 클러스터 §6]], 그림을 같은 저장소에서 다시 만드는 논문은 [[02-foundations/tools/latex-figures-references|12.6 글쓰기 도구 §10]]이다.
 
 ### 8. 설계 예제
 

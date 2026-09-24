@@ -16,11 +16,13 @@ Derivations, implementation, and reproduction that go past the course still conc
 
 ### Start here — pick the path that matches you
 
+**See the whole field first.** The [[physical-ai-map|Physical AI Map]] draws all of physical AI as this wiki teaches it in three pictures — the whole stack, one task through it, and your route — so that on any page you can see where you are and what that page stands on.
+
 1. **Choose the required depth first**: [[00-study-depth-guide|0. Study Depth Guide]] — Literacy for every adjacent field, Working for methods you use, Mastery only for the contribution area.
-2. **Systematic self-study** (recommended): [[02-foundations/overview|Foundations 0. Overview]] → foundation pages 0.5–9 in order → the [[02-foundations/overview#Gate check — are the foundations done?|gate check]] → [[03-deep-learning/index|the six deep-learning bridge courses]] → then path 3. If you have engineering mathematics but no machine learning, [[02-foundations/neural-network-basics|0.8 What a Neural Network Is]] is the on-ramp that makes the rest readable.
+2. **Systematic self-study** (recommended): [[02-foundations/overview|Foundations 0. Overview]] → foundation pages 0.5–9 in order → the [[02-foundations/overview#Gate check — are the foundations done?|gate check]] → [[03-deep-learning/index|the six deep-learning bridge courses]] → then path 3. If you have engineering mathematics but no machine learning, [[02-foundations/neural-network-basics|0.8 What a Neural Network Is]] is the on-ramp that makes the rest readable; if your degree left out mechanics, circuits or fluid power, the physics floor — [[02-foundations/basic-mechanics|0.6.1]], [[02-foundations/basic-circuits-electronics|0.6.2]] and [[02-foundations/fluid-power|0.6.3]] — fills that gap before the robotics track.
 3. **Reading the papers**: [[01-canonical-papers/how-to-read|0. How to Read Papers]] first, then follow the prerequisite paths in the [[01-canonical-papers/canonical-list|Canonical Paper List]] — ★ papers in full, ◐ note + skim, ○ note only — with the [[03-deep-learning/lineage|Paper Lineage]] open alongside. Use the matching deep-learning course when a method must move from Literacy to Working.
 4. **Quick overview only**: [[03-deep-learning/lineage|Paper Lineage]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
-5. **The dissertation path** (manipulation first, on the construction panel — it begins at path 2's gate check, not from zero): [[07-research-program/index#8. The dissertation path, in sessions|7. Research Program §8]] lays it out in order with its sessions — the gate and [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]], the robotics common track through the [[04-robotics/capstone-panel-contact|capstone]], [[04-robotics/teleoperation-demonstration|12. Teleoperation]], [[04-robotics/force-compliance-control|13. Force & Compliance]] and [[04-robotics/grasping|15. Grasping]], the learning modules the [[03-deep-learning/vla/index|VLA]] bridge stands on, research practice 2, construction [[05-construction-robotics/site-engineering|2.5]], 4, 6 and [[05-construction-robotics/construction-manipulation|9]], and last [[05-construction-robotics/imitating-contact|10. Imitating Contact]]: about 171 sessions at Working, 69 at Literacy, before an experiment starts. §9 of the same page says what the path leaves out and when to add it back.
+5. **The dissertation path** (manipulation first, on the construction panel — it begins at path 2's gate check, not from zero): [[07-research-program/index#8. The dissertation path, in sessions|7. Research Program §8]] lays it out in order with its sessions — the gate and [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics]], the robotics common track through the [[04-robotics/capstone-panel-contact|capstone]], [[04-robotics/teleoperation-demonstration|12. Teleoperation]], [[04-robotics/force-compliance-control|13. Force & Compliance]] and [[04-robotics/grasping|15. Grasping]], the learning modules the [[03-deep-learning/vla/index|VLA]] bridge stands on, research practice 2, construction [[05-construction-robotics/site-engineering|2.5]], 4, 6 and [[05-construction-robotics/construction-manipulation|9]], and last [[05-construction-robotics/imitating-contact|10. Imitating Contact]]: about 180 sessions at Working, 71 at Literacy, before an experiment starts. §9 of the same page says what the path leaves out and when to add it back.
 
 ### Maps of Content
 
@@ -31,6 +33,7 @@ Derivations, implementation, and reproduction that go past the course still conc
 ### Reference
 
 - [[02-foundations/index|Foundations]] — course-level math & systems basics, with priority map
+- [[02-foundations/tools/index|Code, Tools & File Formats]] — the shell, Git, Python, data formats, networks, writing, GPU clusters, concurrency and fabrication, each page taken when its need first arrives
 - [[00-study-depth-guide|Study Depth Guide]] — topic-by-topic Literacy / Working / Mastery profile
 - [[01-canonical-papers/how-to-read|How to Read Papers]] — paper vocabulary, equations, claims and evidence
 - [[06-research-practice/index|Research Practice]] — questions, experiments, failure analysis, writing and peer review
@@ -52,11 +55,13 @@ Derivations, implementation, and reproduction that go past the course still conc
 
 ### 처음이라면 여기서부터 — 자신에게 맞는 경로 하나를 고르라
 
+**먼저 전체를 본다.** [[physical-ai-map|피지컬 AI 지도]]가 이 위키가 가르치는 피지컬 AI 전체를 세 그림 — 전체 스택, 그 스택을 지나는 과제 하나, 내 경로 — 으로 그린다. 어느 페이지에서든 지금 어디에 있고 그 페이지가 무엇을 딛고 서 있는지 볼 수 있다.
+
 1. **먼저 필요한 깊이를 정한다**: [[00-study-depth-guide|0. Study Depth Guide]] — 모든 인접 분야는 Literacy, 직접 쓰는 방법은 Working, 기여 영역만 Mastery.
-2. **체계적 독학** (권장): [[02-foundations/overview|기초 0. Overview]] → 기초 0.5–9를 순서대로 → [[02-foundations/overview#통과 점검 — 기초는 끝났는가|통과 점검]] → [[03-deep-learning/index|딥러닝 브리지 교과 여섯 개]] → 그다음 3번 경로로. 공업수학은 했지만 기계학습이 처음이라면 [[02-foundations/neural-network-basics|0.8 신경망이란 무엇인가]]가 나머지를 읽히게 만드는 진입로다.
+2. **체계적 독학** (권장): [[02-foundations/overview|기초 0. Overview]] → 기초 0.5–9를 순서대로 → [[02-foundations/overview#통과 점검 — 기초는 끝났는가|통과 점검]] → [[03-deep-learning/index|딥러닝 브리지 교과 여섯 개]] → 그다음 3번 경로로. 공업수학은 했지만 기계학습이 처음이라면 [[02-foundations/neural-network-basics|0.8 신경망이란 무엇인가]]가 나머지를 읽히게 만드는 진입로다. 학위 과정이 역학·회로·유체 동력 가운데 무언가를 빠뜨렸다면 물리 바닥 — [[02-foundations/basic-mechanics|0.6.1]], [[02-foundations/basic-circuits-electronics|0.6.2]], [[02-foundations/fluid-power|0.6.3]] — 이 로보틱스 트랙 전에 그 빈자리를 메운다.
 3. **논문 읽기**: [[01-canonical-papers/how-to-read|0. How to Read Papers]]를 먼저 읽고, [[01-canonical-papers/canonical-list|핵심 논문 리스트]]의 선수지식 경로를 따라 — ★는 원문 정독, ◐는 노트 후 훑기, ○는 노트로 충분 — [[03-deep-learning/lineage|계보도]]를 옆에 열어둔다. 어떤 방법을 Literacy에서 Working으로 올릴 때 해당 딥러닝 교과를 사용한다.
 4. **빠른 조감만**: [[03-deep-learning/lineage|논문 계보도]] + [[03-deep-learning/physical-ai-ecosystem|Physical AI Ecosystem]].
-5. **학위논문 경로** (조작 우선, 건설 패널 위에서 — 0에서가 아니라 2번 경로의 통과 점검에서 시작한다): [[07-research-program/index#8. 학위논문 경로, 회차로|7. 연구 프로그램 §8]]이 순서와 회차를 함께 적는다 — 통과 점검과 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]], [[04-robotics/capstone-panel-contact|캡스톤]]까지의 로보틱스 공통 트랙, [[04-robotics/teleoperation-demonstration|12. 원격조작]], [[04-robotics/force-compliance-control|13. 힘·컴플라이언스]], [[04-robotics/grasping|15. 파지]], [[03-deep-learning/vla/index|VLA]] 다리가 딛는 학습 모듈, 연구 실무 2, 건설 [[05-construction-robotics/site-engineering|2.5]], 4, 6, [[05-construction-robotics/construction-manipulation|9]], 마지막으로 [[05-construction-robotics/imitating-contact|10. 접촉 모방]]. 실험이 시작되기 전까지 Working으로 약 171회, Literacy로 69회다. 같은 페이지의 §9가 경로가 빼는 것과 그것을 다시 넣을 때를 말한다.
+5. **학위논문 경로** (조작 우선, 건설 패널 위에서 — 0에서가 아니라 2번 경로의 통과 점검에서 시작한다): [[07-research-program/index#8. 학위논문 경로, 회차로|7. 연구 프로그램 §8]]이 순서와 회차를 함께 적는다 — 통과 점검과 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]], [[04-robotics/capstone-panel-contact|캡스톤]]까지의 로보틱스 공통 트랙, [[04-robotics/teleoperation-demonstration|12. 원격조작]], [[04-robotics/force-compliance-control|13. 힘·컴플라이언스]], [[04-robotics/grasping|15. 파지]], [[03-deep-learning/vla/index|VLA]] 다리가 딛는 학습 모듈, 연구 실무 2, 건설 [[05-construction-robotics/site-engineering|2.5]], 4, 6, [[05-construction-robotics/construction-manipulation|9]], 마지막으로 [[05-construction-robotics/imitating-contact|10. 접촉 모방]]. 실험이 시작되기 전까지 Working으로 약 180회, Literacy로 71회다. 같은 페이지의 §9가 경로가 빼는 것과 그것을 다시 넣을 때를 말한다.
 
 ### 콘텐츠 지도
 
@@ -67,6 +72,7 @@ Derivations, implementation, and reproduction that go past the course still conc
 ### 참고 자료
 
 - [[02-foundations/index|기초 과목]] — 수학·시스템 기초, 우선순위 지도 포함
+- [[02-foundations/tools/index|코드·도구·파일 형식]] — 셸, Git, Python, 데이터 형식, 네트워크, 글쓰기, GPU 클러스터, 동시성, 제작. 페이지마다 그 필요가 처음 생길 때 한다
 - [[00-study-depth-guide|Study Depth Guide]] — 주제별 Literacy / Working / Mastery 기준
 - [[01-canonical-papers/how-to-read|How to Read Papers]] — 논문의 용어·수식·주장·증거 읽기
 - [[06-research-practice/index|Research Practice]] — 연구 질문, 실험, 실패 분석, 글쓰기와 peer review

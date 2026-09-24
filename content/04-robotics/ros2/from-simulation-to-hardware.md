@@ -272,7 +272,7 @@ The control loop is one thread in `controller_manager` running at a fixed rate, 
 2. the controller manager calls `update()` on every active controller, which reads those states and produces commands;
 3. the resource manager calls `write()`, which pushes those commands out to the bus.
 
-The two methods you implement have these signatures, identical for simulated and real components:
+Each is a member function of your component's class, and what that class owns — the bus handle, the buffers `read()` fills — and when it lets them go is the RAII of [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code §4]]. The two methods you implement have these signatures, identical for simulated and real components:
 
 ```cpp
 hardware_interface::return_type read(const rclcpp::Time & time, const rclcpp::Duration & period) override;
@@ -405,7 +405,7 @@ Most of the time you will not write the hardware component — the vendor or a c
 
 ### 5. DDS across a network
 
-The moment the robot is one machine and your laptop is another, discovery stops being invisible.
+The moment the robot is one machine and your laptop is another, discovery stops being invisible. The network underneath — subnets, ports, UDP multicast, and DDS and Zenoh on the wire — is [[02-foundations/tools/computer-networks|12.5 Computer Networks §2, §6 and §8]], and the shell commands that test a link, `ip`, `ping` and `ss`, are [[02-foundations/tools/linux-shell|12.1 §11]].
 
 Two terms recur below. `ROS_DOMAIN_ID` is the integer that partitions discovery, and the RMW (ROS middleware) implementation is the layer that adapts ROS 2 to one specific middleware product such as Fast DDS; both are introduced in [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] §5.
 
@@ -414,7 +414,7 @@ The rules, in the order they bite:
 - **`ROS_DOMAIN_ID` must match.** It is an integer; choose between 0 and 101 inclusive on Linux, which is the range that avoids the default ephemeral port range 32768–60999. The cutoff comes from how DDS picks UDP ports: the ports for domain *d* start at 7400 + 250·*d*, so domain 101 starts at 32650, just below 32768, while domain 102 would start at 32900, inside the ephemeral range. Different domain on the two hosts means two systems that cannot see each other at all, with no error.
 - **The hosts must be on the same subnet and multicast must work**, because default discovery is multicast (with the DDS RMWs, Fast DDS or Cyclone DDS; `rmw_zenoh_cpp` instead needs a reachable Zenoh router, and the multicast test does not apply). Jazzy also gives you `ROS_AUTOMATIC_DISCOVERY_RANGE`, with values `SUBNET` (the default), `LOCALHOST`, `OFF` and `SYSTEM_DEFAULT`, and `ROS_STATIC_PEERS`, a semicolon-separated list of addresses to discover on directly. Use the pair of them when multicast is blocked or the two machines are not on one subnet.
 - **The RMW implementation must match** on both hosts. Mixed RMW implementations often communicate but are not guaranteed to (and `rmw_zenoh_cpp` does not interoperate with any DDS RMW), so use the same one on both hosts.
-- **Clocks must be disciplined.** Run `chrony` on both machines against the same source — or PTP if you need sub-millisecond — and verify it, rather than assuming that two machines that both said "NTP" agree.
+- **Clocks must be disciplined.** Run `chrony` on both machines against the same source — or PTP if you need sub-millisecond — and verify it, rather than assuming that two machines that both said "NTP" agree. How an offset is estimated, and what an asymmetric path does to the estimate, is [[02-foundations/tools/computer-networks|12.5 §10]]; what an offset costs a fused point on a moving base, $v\,\Delta t$, is [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §9]].
 
 Test multicast directly, one command per machine:
 
@@ -443,7 +443,7 @@ The second characteristic failure appears only with large messages on WiFi: a ca
 
 ROS 2 is **not** a real-time system, and installing it from apt gives you no deadline guarantees. The official position is that ROS 2 is *designed with* real-time constraints in mind; the real-time demo itself is documented as requiring a source build against a static DDS API, currently only Connext.
 
-What a real-time kernel (RT_PREEMPT) gives you: bounded scheduling latency, so a thread that is ready to run actually runs within a known time. What it does not give you: anything about the code inside that thread. Real-time behaviour requires removing nondeterministic operations from the execution path — page faults, dynamic allocation and deallocation, and synchronisation primitives that can block indefinitely. A `malloc` in your `update()` defeats the kernel entirely.
+What a real-time kernel (RT_PREEMPT) gives you: bounded scheduling latency, so a thread that is ready to run actually runs within a known time. What it does not give you: anything about the code inside that thread. Real-time behaviour requires removing nondeterministic operations from the execution path — page faults, dynamic allocation and deallocation, and synchronisation primitives that can block indefinitely. A `malloc` in your `update()` defeats the kernel entirely; the allocations a C++ tick makes without saying so — a `push_back` past capacity, the last `shared_ptr` to a message — are counted on P6 in [[04-robotics/ros2/cpp-for-robot-code|25.0 §9]].
 
 > **Real-time control loop, defined.** A **real-time control loop** is a *periodic thread whose worst-case cycle is bounded and fits its period*; real-time is a property of that worst case, not of speed. Period, deadline, worst-case execution time and hard versus soft are defined in [[02-foundations/algorithms/interview-code|11.7 §6]]; here three conditions must hold together. **Bounded scheduling**: the thread starts within a known time of becoming ready, which `SCHED_FIFO` on an RT_PREEMPT kernel provides. **Bounded execution**: nothing in `read`, `update` or `write` can take unbounded time — no page faults, no allocation, no blocking wait. And **the worst case fits**: the longest cycle of a run, not the average, is within the period (jitter: [[04-robotics/robot-systems-deployment|10. Robot Systems §3]]).
 >
@@ -861,7 +861,7 @@ ros2 control list_controllers
 2. controller manager가 활성 제어기의 `update()`를 호출해 그 상태를 읽고 명령을 만든다.
 3. resource manager가 `write()`를 호출해 그 명령을 버스로 내보낸다.
 
-당신이 구현하는 두 메서드의 서명은 이렇고, 시뮬레이션 컴포넌트와 실제 컴포넌트가 동일하다.
+둘 다 컴포넌트 클래스의 멤버 함수이고, 그 클래스가 무엇을 소유하는지 — 버스 핸들, `read()`가 채우는 버퍼 — 와 언제 놓아주는지는 [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++ §4]]의 RAII다. 당신이 구현하는 두 메서드의 서명은 이렇고, 시뮬레이션 컴포넌트와 실제 컴포넌트가 동일하다.
 
 ```cpp
 hardware_interface::return_type read(const rclcpp::Time & time, const rclcpp::Duration & period) override;
@@ -975,7 +975,7 @@ Worked case의 지연 셋은 지어낸 값이고, 이 페이지의 대상이 그
 
 ### 5. 네트워크를 건너는 DDS
 
-로봇이 한 머신이고 노트북이 다른 머신이 되는 순간, 탐색은 더 이상 보이지 않는 존재가 아니다.
+로봇이 한 머신이고 노트북이 다른 머신이 되는 순간, 탐색은 더 이상 보이지 않는 존재가 아니다. 그 밑의 네트워크 — 서브넷, 포트, UDP 멀티캐스트, 그리고 전선 위의 DDS와 Zenoh — 는 [[02-foundations/tools/computer-networks|12.5 컴퓨터 네트워크 §2, §6, §8]]이고, 링크를 시험하는 셸 명령 `ip`, `ping`, `ss`는 [[02-foundations/tools/linux-shell|12.1 §11]]이다.
 
 아래에 두 용어가 반복된다. `ROS_DOMAIN_ID`는 탐색을 구획으로 나누는 정수이고, RMW(ROS middleware) 구현은 ROS 2를 Fast DDS 같은 특정 미들웨어 제품에 맞추는 계층이다. 둘 다 [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] §5에서 소개한다.
 
@@ -984,7 +984,7 @@ Worked case의 지연 셋은 지어낸 값이고, 이 페이지의 대상이 그
 - **`ROS_DOMAIN_ID`가 같아야 한다.** 정수이고, 리눅스에서는 0에서 101 사이를 고르라. 기본 임시 포트 범위 32768–60999를 피하는 구간이다. 경계는 DDS가 UDP 포트를 고르는 방식에서 나온다. 도메인 *d*의 포트는 7400 + 250·*d*에서 시작하므로, 도메인 101은 32768 바로 아래인 32650에서 시작하고 도메인 102는 임시 범위 안인 32900에서 시작하게 된다. 두 호스트의 도메인이 다르면 두 시스템은 서로를 전혀 보지 못하고, 오류는 없다.
 - **같은 서브넷에 있고 멀티캐스트가 되어야 한다.** 기본 탐색이 멀티캐스트이기 때문이다(DDS RMW, 즉 Fast DDS나 Cyclone DDS의 경우. `rmw_zenoh_cpp`는 대신 도달 가능한 Zenoh 라우터가 필요하고 멀티캐스트 시험은 해당되지 않는다). Jazzy에는 `ROS_AUTOMATIC_DISCOVERY_RANGE`(값은 `SUBNET`이 기본, `LOCALHOST`, `OFF`, `SYSTEM_DEFAULT`)와 세미콜론으로 구분된 주소 목록 `ROS_STATIC_PEERS`도 있다. 멀티캐스트가 막혀 있거나 두 머신이 한 서브넷이 아닐 때 이 둘을 함께 쓴다.
 - **RMW 구현이 양쪽에서 같아야 한다.** 서로 다른 RMW 구현은 통신되는 경우가 많지만 보장되지 않으므로(그리고 `rmw_zenoh_cpp`는 어떤 DDS RMW와도 상호 운용되지 않는다) 양쪽에 같은 것을 쓴다.
-- **시계가 규율되어야 한다.** 두 머신에서 같은 소스를 향해 `chrony`를 돌리고(1 ms 미만이 필요하면 PTP), 둘 다 "NTP"라고 말했으니 일치할 것이라고 가정하지 말고 확인하라.
+- **시계가 규율되어야 한다.** 두 머신에서 같은 소스를 향해 `chrony`를 돌리고(1 ms 미만이 필요하면 PTP), 둘 다 "NTP"라고 말했으니 일치할 것이라고 가정하지 말고 확인하라. 오프셋을 어떻게 추정하는지, 비대칭 경로가 그 추정에 무엇을 하는지는 [[02-foundations/tools/computer-networks|12.5 §10]]이고, 움직이는 베이스에서 오프셋이 융합된 점에 치르게 하는 값 $v\,\Delta t$는 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §9]]이다.
 
 멀티캐스트는 머신마다 한 명령으로 직접 시험한다.
 
@@ -1013,7 +1013,7 @@ sudo ufw allow in proto udp from 224.0.0.0/4
 
 ROS 2는 실시간 시스템이 **아니고**, apt로 설치한다고 마감 시한 보장이 생기지 않는다. 공식 입장은 ROS 2가 실시간 제약을 *염두에 두고 설계되었다*는 것이며, 실시간 데모 자체가 정적 DDS API에 대한 소스 빌드를 요구한다고 — 현재는 Connext만 지원된다고 — 문서화되어 있다.
 
-실시간 커널(RT_PREEMPT)이 주는 것: 유계 스케줄링 지연. 실행 준비가 된 스레드가 알려진 시간 안에 실제로 실행된다. 주지 않는 것: 그 스레드 안의 코드에 관한 어떤 것도. 실시간 동작은 실행 경로에서 비결정적 연산 — 페이지 폴트, 동적 할당과 해제, 무한히 블로킹될 수 있는 동기화 원시 — 을 제거해야 얻어진다. `update()` 안의 `malloc` 하나가 커널의 노력을 전부 무효화한다.
+실시간 커널(RT_PREEMPT)이 주는 것: 유계 스케줄링 지연. 실행 준비가 된 스레드가 알려진 시간 안에 실제로 실행된다. 주지 않는 것: 그 스레드 안의 코드에 관한 어떤 것도. 실시간 동작은 실행 경로에서 비결정적 연산 — 페이지 폴트, 동적 할당과 해제, 무한히 블로킹될 수 있는 동기화 원시 — 을 제거해야 얻어진다. `update()` 안의 `malloc` 하나가 커널의 노력을 전부 무효화한다. C++ 틱이 말없이 하는 할당 — 용량을 넘긴 `push_back`, 메시지를 가리키는 마지막 `shared_ptr` — 은 [[04-robotics/ros2/cpp-for-robot-code|25.0 §9]]가 P6 위에서 센다.
 
 > **실시간 제어 루프의 정의.** **실시간 제어 루프**(real-time control loop)는 *최악의 주기가 유계이고 주기 길이 안에 드는 주기적 스레드*다. 실시간은 속도가 아니라 그 최악의 성질이다. 주기, 마감, 최악 실행 시간, hard와 soft는 [[02-foundations/algorithms/interview-code|11.7 §6]]에서 정의하고, 여기서는 조건 셋이 함께 성립해야 한다. **유계 스케줄링**: 스레드가 실행 준비가 된 뒤 알려진 시간 안에 시작한다. RT_PREEMPT 커널 위의 `SCHED_FIFO`가 이것을 준다. **유계 실행**: `read`, `update`, `write` 안의 어떤 것도 한없이 걸릴 수 없다. 페이지 폴트도, 할당도, 막히는 대기도 없어야 한다. 그리고 **최악이 들어맞는다**: 평균이 아니라 한 실행에서 가장 긴 주기가 주기 길이 안에 든다(지터는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]).
 >

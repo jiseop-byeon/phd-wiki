@@ -40,7 +40,8 @@ EXCLUDE_SUBSTR = ("/algorithms/", "lab-plants", "lab-kernel", "lab-objects", "mo
                   # Every other construction page has been a course page since 2026-09-23.
                   "05-construction-robotics/lineage", "05-construction-robotics/labs",
                   "05-construction-robotics/industry-deployment")
-PATTERNS = ("content/02-foundations/*.md", "content/04-robotics/*.md",
+PATTERNS = ("content/02-foundations/*.md", "content/02-foundations/tools/*.md",
+            "content/04-robotics/*.md",
             "content/04-robotics/modern-robotics/*.md",
             "content/04-robotics/haptics-teleoperation/*.md",
             "content/04-robotics/ros2/*.md",
@@ -68,6 +69,7 @@ SHARED_HEADING = re.compile(r"^#{3,4} .*(Sources|출처|참고문헌)", re.M)
 FIGURE = re.compile(r"<svg|```mermaid|!\[|<img")
 DIAGRAM_HEADING = re.compile(r"^#{3,4} .*(The picture|그림으로 먼저 보기).*$", re.M)
 # The section's former name; it must not come back (renamed 2026-09-21 at the owner's request).
+WHY = re.compile(r"^> \[!note\] (Why this matters|왜 배우는가)", re.M)
 OLD_NAME = re.compile(r"homework diagram|homework drawing|과제가 그릴 그림", re.I)
 
 
@@ -143,6 +145,23 @@ def main():
                 rows.append((rel, problems))
     for rel, problems in rows:
         print(f"{rel}\n    " + "\n    ".join(problems))
+    # Rule 11 (owner, 2026-09-23): a "Why this matters · 왜 배우는가" callout before the First-pass
+    # callout in both halves. Listed separately as the worklist of the weekly updates, not yet
+    # counted as "below the contract", because the existing pages receive it week by week.
+    no_why = []
+    for pattern in PATTERNS:
+        for path in sorted(glob.glob(pattern)):
+            rel = os.path.relpath(path, "content").replace(os.sep, "/")
+            is_map = os.path.basename(path) == "index.md" and not COURSE_INDEX.match(rel)
+            if is_map or any(s in "/" + rel for s in EXCLUDE_SUBSTR):
+                continue
+            en, ko = halves(open(path, encoding="utf-8").read())
+            if en is None or not WHY.search(en) or not WHY.search(ko):
+                no_why.append(rel)
+    if no_why:
+        print(f"\n{len(no_why)} course page(s) still without the Why-this-matters callout (rule 11):")
+        for rel in no_why:
+            print(f"    {rel}")
     print(f"\n{len(rows)} page(s) below the course contract "
           f"(of {scanned} course pages scanned; track maps, catalogs, reading maps and the "
           f"algorithms track excluded).")

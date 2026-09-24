@@ -296,7 +296,7 @@ then $u = f_xx_d + c_x$ and $v = f_yy_d + c_y$. The **radial** part is even in $
 
 **Stereo worked example**: $f=600$ px, baseline $b=0.12$ m, disparity $d=9$ px
 → $Z = 600\cdot 0.12/9 = 8$ m. One pixel of disparity error ($d=8$) gives $Z=9$ m —
-a 12.5% jump at this range: depth error grows quadratically with distance. Across the optical axis the same pixel is worth only $Z/f$ metres, and turning a pixel-noise σ into the measurement variance a filter needs is [[04-robotics/sensor-models|3.2 Sensor Models & Noise §5 and §8]].
+a 12.5% jump at this range: depth error grows quadratically with distance. Across the optical axis the same pixel is worth only $Z/f$ metres, and turning a pixel-noise σ into the measurement variance a filter needs is [[04-robotics/sensor-models|3.2 Sensor Models & Noise §5 and §8]]. The table's other rows are sensors with physics of their own — a time-of-flight camera that wraps, a LiDAR whose spots grow with range — priced on this rig in [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §3–§5]].
 
 
 
@@ -380,6 +380,8 @@ Two descriptors are compared by **Hamming distance** — XOR, then count the set
 
 **Learned features.** SuperPoint (DeTone et al., CVPR Workshops 2018) trains one network to output keypoints and descriptors. SuperGlue (Sarlin et al., CVPR 2020) replaces nearest-neighbour-plus-ratio with a graph neural network that matches the two point sets jointly. LoFTR (Sun et al., CVPR 2021) drops the detector and matches dense transformer features, aiming at low-texture regions where detectors find few points. Each paper reports stronger matching under large viewpoint and illumination change on its benchmarks. Classic features can still be the right call. Weigh the compute budget and frame rate on an embedded robot computer, and whether the training data resembled your scenes. Textureless or repetitive construction surfaces — bare drywall, formwork, rebar grids, identical façade panels — are hard for every method, so test on your own sequences rather than trusting a benchmark ranking.
 
+**The learned family, compared.** Each member changes a different stage. SuperGlue matches with attention and an optimal-transport assignment that may leave a point unmatched, in real time on a GPU; its successor LightGlue (Lindenberger et al., ICCV 2023) spends less on easy, high-overlap pairs, for latency-sensitive uses. LoFTR's dense matching helps where detectors find nothing, as on bare formwork. The 3D foundation models change the question. DUSt3R (Wang et al., CVPR 2024) regresses a 3D point map for an image pair with no calibration or poses, and matches and relative cameras follow from it; MASt3R (Leroy et al., ECCV 2024) adds descriptors trained to match; [[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]] (Wang et al., CVPR 2025) predicts cameras, depth and tracks for up to hundreds of views in one pass, reporting reconstruction in under a second. None makes the third filter optional: check their matches with RANSAC on F, E, H or PnP (§2.7) — and a façade matched one panel over still fits one motion, so it passes.
+
 > [!example] Worked example · 계산 예제
 > **Harris on the rig's calibration image.** For this example, model the calibration target as one bright plate on a dark background with $A$ as its top-left corner: camera 1 sees $A$ at the principal point $(320, 240)$, and the plate runs right toward $B$ at $(470, 240)$ and down toward $C$ at $(320, 360)$. Take three 5×5 patches from that image, with intensity 0 on the background and 10 on the plate. Use central differences, $I_x=(I_{x+1}-I_{x-1})/2$, on the inner 3×3 pixels, with $w=1$ and $k=0.05$.
 > - **Flat**, inside the plate around $(395, 300)$ (all 10): every gradient is 0, so $M=0$, $\lambda=(0,0)$ and $R=0$.
@@ -457,6 +459,146 @@ $$Z = \frac{f b}{d}, \qquad X = \frac{(u_1 - c_x)Z}{f_x}, \qquad Y = \frac{(v_1 
 
 *Example:* the DLT on $L$'s pair returns $(0.5, 0.2, 2.0)$ m, identical to the closed form, because the rig is noiseless and rectified. *Why the $Z^2$ law:* differentiating $Z = fb/d$ gives $\partial Z/\partial d = -fb/d^2 = -Z^2/(fb)$, so one pixel of disparity error is worth $Z^2/(fb)$ metres — $0.056$ m at $Z = 2$ and $0.889$ m at $Z = 8$, sixteen times more for four times the range. *Non-example (degeneracy):* as the baseline shrinks toward zero, or as the point recedes, $d \to 0$ and the two rays become parallel, so $A$ loses rank and $Z$ is unconstrained. "Triangulation failed" in a paper almost always means this, not a solver bug.
 
+### 2.7 From 2D–3D matches to a pose: PnP
+
+*In one sentence:* when every match pairs a pixel with a point already known on the object, one calibrated image gives the object's pose in metres, but three points leave several answers and four can still be weak in tilt.
+
+**The problem.** To put a tool on a known thing — §5's target, a part, S1's facade panel — a robot needs its pose in metres from one image. §2.6 paired pixels with pixels and recovered motion only up to scale; here one side of each match is a known model point, which fixes the metres. This section adds a fourth target corner to the frozen rig, $D=(0.5,\ 0.4,\ 2)$ m, which completes the rectangle the other three imply: $B-A=(0.5,0,0)$ and $C-A=(0,0.4,0)$ are perpendicular and $A+(B-A)+(C-A)=D$. Camera 1 sees the corners at
+
+$$A\to(320,\,240),\qquad B\to(470,\,240),\qquad C\to(320,\,360),\qquad D\to(470,\,360)\ \text{px}$$
+
+since each is $u=600X/2+320$, $v=600Y/2+240$ by §1.
+
+> **Perspective-n-Point (PnP), defined.** **PnP** is an *estimation problem*: find the rigid transform that places a known object in the camera's frame from one image of it. Five conditions define it, and dropping one gives a different problem. The object's **points are known in its own frame**, $X_j$, from a model or a printed target. Each point's **pixel $\tilde u_j$ is given**; finding matches is §2.5's job. The camera is **calibrated**: $K$ and distortion are known (§1). The unknown is **one pose**, $R\in SO(3)$ and $t\in\mathbb R^3$, with no free scale because the model is in metres. And there are **enough points**: three non-collinear points leave finitely many poses, and four coplanar points, no three on a line, leave one when the pixels are exact.
+>
+> $$(\hat R,\hat t)=\arg\min_{R\in SO(3),\ t\in\mathbb R^3}\ \sum_{j=1}^{n}\big\lVert\,\tilde u_j-\pi\big(K,\ RX_j+t\big)\big\rVert^2$$
+>
+> where $\pi$ takes a camera-frame point to pixels as in §1, distortion included, and each term is §5's squared reprojection error, so the minimizer is the maximum-likelihood pose under isotropic Gaussian pixel noise.
+>
+> - **Example**: the four corners above, with $X_j$ in a target frame at $A$ whose axes are the camera's. The minimum is $R=I$, $t=(0,0,2)$ m, residual zero: the $T_{c_1t}$ of §5's hand–eye example.
+> - **Non-example**: reading $t$ as the camera's position. It is where the target sits in the camera's frame; the camera sits at $-R^\top t=(0,0,-2)$ m in the target's frame, §1's extrinsics trap.
+> - **Non-example**: §2.6's two-view problem, where both sides of a match are pixels and no model fixes the metres.
+> - **Why it matters**: every use at the end of this section — hand–eye calibration, grasping, S1's panel — runs this minimization.
+
+**Three points: P3P has several answers.** Each known point lies somewhere on its pixel's ray, so three points leave three unknown distances, and the three side lengths give three equations, a law of cosines per pair of rays. Eliminating two distances leaves a quartic: up to four solutions, as Persson and Nordberg state (ECCV 2018). Geometrically, the ray through $C$ cuts the sphere of radius $|AC|$ around $A$ twice, and likewise for $B$. On the rig, P3P on $A$, $B$, $C$ returns three poses that all reproject those corners exactly: the truth; the target tilted $22.62°$ about edge $AB$ ($\tan=5/12$), with $C$ slid along its ray to $(0,\ 0.369,\ 1.846)$ m, still $0.4$ m from $A$ and $0.640$ m from $B$; and the target tilted $28.07°$ about $AC$ ($\tan=8/15$), with $B$ at $(0.441,\ 0,\ 1.765)$ m.
+
+**The fourth point, or a prior, picks one.** P3P never used $D$, so $D$ is a free test: the truth puts it at $(470,\ 360)$, where it is seen, and the impostors at $(482.5,\ 360)$ and $(470,\ 376)$, $12.5$ and $16.0$ px away. A prior works too: the target's rough place in the base frame, through the encoders and §5's hand–eye transform, predicts its tilt within degrees and rules out both. Why three, not four? The camera lies on the cylinder through $A$, $B$, $C$ perpendicular to their plane: their circle has $BC$ as diameter, radius $0.320$ m, and passes through $A$, straight ahead of the camera. On this *danger cylinder*, long tied to P3P's instability, the true pose is a double root, leaving three solutions (Wang, Hu and Zhang, 2019). It shows here: move $A$'s detection $0.1$ px left and the true root vanishes, leaving only the impostors; $0.1$ px right and it splits into poses that put $A$ at $1.987$ and $2.013$ m. P3P proposes; it does not measure.
+
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="P3P on the wrist rig: left, a side view in which the ray through corner C meets the 0.4 m sphere around A at C and at C prime, so a target tilted 22.6 degrees about AB fits A, B and C; right, the image, where D lands at 482.5, 360 or 470, 376 pixels under the two impostor poses instead of 470, 360">
+  <text x="16" y="20" font-size="12" fill="currentColor" font-weight="600">side view of the plane X = 0, to scale</text>
+  <text x="300" y="20" font-size="12" fill="currentColor" font-weight="600">the image, px, to scale</text>
+  <line x1="16.0" y1="48.0" x2="270.0" y2="48.0" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="4 3"/>
+  <line x1="16.0" y1="168.0" x2="268.0" y2="218.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="4 3"/>
+  <path d="M265.4 200.2 A160.0 160.0 0 0 1 97.1 155.1" fill="none" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="216.0" y1="48.0" x2="216.0" y2="208.0" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="216.0" y1="48.0" x2="154.5" y2="195.7" stroke="currentColor" stroke-width="2.2" stroke-dasharray="6 3"/>
+  <path d="M216.0 88.0 A40 40 0 0 1 200.6 84.9" fill="none" stroke="currentColor" stroke-width="1.0"/>
+  <circle cx="216.0" cy="48.0" r="3.6" fill="currentColor" stroke="none"/>
+  <circle cx="216.0" cy="208.0" r="3.6" fill="currentColor" stroke="none"/>
+  <circle cx="154.5" cy="195.7" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="223.0" y="44.0" font-size="12" fill="currentColor">A</text>
+  <text x="222.0" y="199.0" font-size="12" fill="currentColor">C</text>
+  <text x="146.5" y="185.7" font-size="12" fill="currentColor" text-anchor="end">C′</text>
+  <text x="221.0" y="84.0" font-size="11" fill="currentColor">22.6°</text>
+  <text x="222.0" y="132.0" font-size="11" fill="currentColor">0.4 m</text>
+  <text x="177.2" y="125.8" font-size="11" fill="currentColor" text-anchor="end">0.4 m</text>
+  <text x="103.1" y="140.1" font-size="11" fill="currentColor" fill-opacity="0.85" text-anchor="middle">points 0.4 m from A</text>
+  <text x="16" y="272" font-size="11" fill="currentColor" fill-opacity="0.9">solid: true target · dashed: tilted 22.6° about AB</text>
+  <text x="16" y="288" font-size="11" fill="currentColor" fill-opacity="0.8">the camera is 2 m to the left, on the ray through A</text>
+  <path d="M311.0 55.5 L476.0 55.5 L476.0 187.5 L311.0 187.5 Z" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="311.0" cy="55.5" r="3.4" fill="currentColor" stroke="none"/>
+  <circle cx="476.0" cy="55.5" r="3.4" fill="currentColor" stroke="none"/>
+  <circle cx="311.0" cy="187.5" r="3.4" fill="currentColor" stroke="none"/>
+  <circle cx="476.0" cy="187.5" r="3.4" fill="currentColor" stroke="none"/>
+  <line x1="476.0" y1="187.5" x2="489.8" y2="187.5" stroke="currentColor" stroke-width="1.0"/>
+  <circle cx="489.8" cy="187.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="476.0" y1="187.5" x2="476.0" y2="205.1" stroke="currentColor" stroke-width="1.0"/>
+  <circle cx="476.0" cy="205.1" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="317.0" y="71.5" font-size="11" fill="currentColor">A (320, 240)</text>
+  <text x="470.0" y="71.5" font-size="11" fill="currentColor" text-anchor="end">B (470, 240)</text>
+  <text x="317.0" y="179.5" font-size="11" fill="currentColor">C (320, 360)</text>
+  <text x="470.0" y="179.5" font-size="11" fill="currentColor" text-anchor="end">D (470, 360)</text>
+  <text x="495.8" y="181.5" font-size="11" fill="currentColor">12.5 px</text>
+  <text x="484.0" y="215.1" font-size="11" fill="currentColor">16.0 px</text>
+  <text x="300" y="240" font-size="11" fill="currentColor" fill-opacity="0.9">● where seen · ○ D under the two impostors</text>
+  <text x="300" y="256" font-size="11" fill="currentColor" fill-opacity="0.9">A, B, C are the same under all three poses</text>
+</svg>
+
+Left, the plane $X=0$ seen from the side, to scale: the ray through $C$'s pixel meets the sphere of radius $0.4$ m around $A$ at $C$ and at $C'=(0,\ 0.369,\ 1.846)$ m, so a target tilted $22.6°$ about $AB$ also fits $A$, $B$ and $C$. Right, the image: under that impostor $D$ lands $12.5$ px from its detection, and $16.0$ px under the one tilted $28.1°$ about $AC$.
+
+**Four or more points: minimize the reprojection error.** With $n\ge4$ the objective is nonlinear least squares in six unknowns with $2n$ residuals, solved by Gauss–Newton or Levenberg–Marquardt ([[02-foundations/optimization|4. Optimization §3.5]]), the rotation updated as $R\leftarrow\operatorname{Exp}(\delta\omega)R$ so it stays a rotation ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §2]]). Being local, it starts from a P3P hypothesis or, for a planar target, the homography below. The listing starts it $10.4°$ and $0.55$ m off; the RMS reprojection error falls from $49.4$ px to $18$, $1.25$, $0.0073$ and $3\times10^{-7}$ px in four steps, at $R=I$, $t=(0,0,2)$ m.
+
+**How good is one view?** Linearized at the solution, with $J$ the $8\times6$ Jacobian of the pixels in the pose and independent pixel noise $\sigma$, the pose covariance is $\sigma^2(J^\top J)^{-1}$. At $\sigma=1$ px the listing gives the target's distance to $\pm13.2$ mm, its roll about the line of sight to $\pm0.37°$, and each tilt to only $\pm2.70°$. Each has its lever. Distance comes from apparent size: a pixel of the $150$ px width is $Z^2/(f\ell)=13.3$ mm, §6's known length. Roll comes from the edges' direction: a pixel across $150$ px is $0.38°$. Tilt comes only from how the image departs from a scaled rectangle: a $10°$ tilt makes the near edge just $5.2$ px longer than the far one, $fWH\sin\theta/Z^2$ with $fWH/Z^2=30$ px per radian. At the $0.5$ px marker noise that [[04-robotics/sensor-models|3.2 Sensor Models & Noise]] freezes, every number halves.
+
+The listing runs the loop, the covariance and the check on P3P's impostors:
+
+```python
+import numpy as np
+
+f, c = 600.0, np.array([320.0, 240.0])               # the rig's focal length and principal point (px)
+X = np.array([0, 0, 0, 0.5, 0, 0, 0, 0.4, 0, 0.5, 0.4, 0]).reshape(4, 3)  # A, B, C, D in a target frame at A (m)
+
+def hat(w):                                          # the matrix of w x (.)
+    return np.array([0, -w[2], w[1], w[2], 0, -w[0], -w[1], w[0], 0]).reshape(3, 3)
+
+def exp_so3(w):                                      # rotation vector -> rotation matrix (Rodrigues)
+    th = np.linalg.norm(w)
+    k = hat(np.asarray(w) / th) if th > 0 else np.zeros((3, 3))
+    return np.eye(3) + np.sin(th) * k + (1 - np.cos(th)) * k @ k
+
+def project(R, t):                                   # pixels of the corners, and their camera coordinates
+    p = X @ R.T + t
+    return f * p[:, :2] / p[:, 2:] + c, p
+
+def jacobian(R, t):                                  # d pixels / d (rotation, translation): 8 x 6
+    _, p = project(R, t)
+    rows = [f / z * np.array([1, 0, -x / z, 0, 1, -y / z]).reshape(2, 3) @ np.hstack([-hat(q), np.eye(3)])
+            for (x, y, z), q in zip(p, X @ R.T)]
+    return np.vstack(rows)
+
+def pnp(uv, R, t, steps=6):                          # Gauss-Newton on the reprojection error
+    for k in range(steps):
+        r = (uv - project(R, t)[0]).ravel()
+        print("step %d: rms %.3g px" % (k, np.sqrt(np.mean(r**2) * 2)))
+        J = jacobian(R, t)
+        d = np.linalg.solve(J.T @ J, J.T @ r)
+        R, t = exp_so3(d[:3]) @ R, t + d[3:]
+    return R, t
+
+uv = project(np.eye(3), np.array([0, 0, 2.0]))[0]    # where camera 1 sees A, B, C, D
+print(uv.tolist())
+R, t = pnp(uv, exp_so3(np.radians([6, -8, 3])), np.array([0.2, -0.1, 2.5]))
+print("R = I:", np.allclose(R, np.eye(3)), " t =", np.round(t, 6) + 0.0)
+
+# 1 px of independent noise on every coordinate: pose covariance (J^T J)^-1
+J = jacobian(R, t)
+S = np.linalg.inv(J.T @ J)
+m = R @ [0.25, 0.2, 0] + t                           # the rectangle's centre, camera frame
+g = m / np.linalg.norm(m) @ np.hstack([-hat(R @ [0.25, 0.2, 0]), np.eye(3)])
+print("distance %.1f mm | tilt %.2f, %.2f deg | roll %.2f deg"
+      % (np.sqrt(g @ S @ g) * 1e3, *np.degrees(np.sqrt(np.diag(S)[:3]))))
+
+# P3P's two extra poses: tilted about AB (tan 5/12) and about AC (tan 8/15)
+for edge, w in (("AB", [-np.arctan2(5, 12), 0, 0]), ("AC", [0, np.arctan2(8, 15), 0])):
+    q = project(exp_so3(w), np.array([0, 0, 2.0]))[0]
+    print("tilted about %s: A, B, C at %s px; D at %s, %.1f px from its detection"
+          % (edge, np.round(q[:3], 6).tolist(), np.round(q[3], 6).tolist(), np.linalg.norm(q[3] - uv[3])))
+```
+
+**PnP inside RANSAC.** Matches from §2.5 between an image and a 3D model — mapped landmarks, a part's features — contain outliers. So PnP runs inside RANSAC: draw three matches, solve P3P, score each pose by the matches it reprojects within a pixel threshold, and refine the best on its inliers. The minimal sample keeps it cheap: at half the matches inliers and $99\%$ confidence, [[02-foundations/algorithms/robotics-ai-problems|11.8 §3]]'s count is $35$ samples of three, $72$ of four, and $293$ of the six a linear solve for a general $3\times4$ camera matrix needs (eleven unknowns, two equations per point).
+
+**Planar targets: the homography route.** When every point lies on one plane, put the target frame on it, so $Z_t=0$ and the third column of $R$ drops out:
+
+$$\lambda\begin{pmatrix}u\\v\\1\end{pmatrix}=K\,[\,r_1\ \ r_2\ \ t\,]\begin{pmatrix}X_t\\Y_t\\1\end{pmatrix}=H\begin{pmatrix}X_t\\Y_t\\1\end{pmatrix}$$
+
+so the plane maps to the image by a $3\times3$ homography $H$, which four points with no three on a line fix (eight unknowns after scale, two equations each). Then $[\,r_1\ r_2\ t\,]=\lambda K^{-1}H$ with $\lambda=1/\lVert K^{-1}h_1\rVert$, because $r_1$ is a unit vector, and $r_3=r_1\times r_2$. On the rig $H=\begin{pmatrix}300&0&320\\0&300&240\\0&0&1\end{pmatrix}$ and $K^{-1}H=\operatorname{diag}(0.5,\ 0.5,\ 1)$, so $\lambda=2$, $r_1=(1,0,0)$, $r_2=(0,1,0)$, $t=(0,0,2)$ m: the same pose in closed form. With noisy corners, $r_1$ and $r_2$ come out slightly non-orthonormal, so the rotation is projected onto $SO(3)$ and used to start the refinement.
+
+**Small, distant markers flip.** The tilt lever shrinks faster than the marker. A $0.1$ m square at the target's centre spans $30$ px, and a $10°$ tilt changes its edges by $0.26$ px. Its reprojection error has two distinct local minima (Schweighofer and Pinz, 2006). Tilted $20°$ about its vertical axis, the marker faces the camera $14.0°$ off its line of sight; a second pose $13.5°$ off on the other side, $27.5°$ from the truth, reprojects its corners to $0.18$ px RMS. A pixel of noise can pick either, so the answer can jump between frames. The cures are geometric: a larger target, a closer camera, markers spread apart, or a prior that excludes one side.
+
+**Fiducial markers: AprilTag.** A fiducial solves correspondence by design. AprilTag (Olson, ICRA 2011; AprilTag 2, Wang and Olson, IROS 2016) prints a black-and-white square encoding only 4 to 12 bits; its project page credits that small payload with detection more robust and longer-range than a QR code's, and its output — the tag's precise 3D position, orientation and identity relative to the camera — is PnP on the four corners, with the printed side length as the model, so a wrong size scales the distance by the same factor. It also inherits the flip. The anchor paper of the wiki's construction-assembly lineage put two tags on every block ([[01-canonical-papers/notes/8-construction/vision-guided-assembly|Feng et al. 2015]]).
+
+**Where PnP is used.** Hand–eye calibration measures $T_{c_it}$ at every robot pose by PnP (§5), so the $\pm2.70°$ tilt noise enters $B$ in $AX=XB$, one reason that solve averages many poses. Grasping a known part is PnP between its model's points and their detections, then §3's frame chain. Aligning the tool to S1's facade panel ([[05-construction-robotics/site-engineering|2.5]]) is the same problem with the panel as the target; for a target the rig's size at $2$ m and $1$ px of corner noise, one camera promises $\pm2.2$ mm across the line of sight and $\pm13$ mm along it, against S1's $\pm5$ mm.
+
 ### 3. Point clouds and frames
 
 A depth image plus intrinsics back-projects to a **point cloud**:
@@ -469,7 +611,7 @@ plausible-looking cloud in the wrong frame produces systematic, learning-resista
 
 **The frame, worked on the rig.** $L=(0.5,\ 0.2,\ 2.0)$ m is a camera-frame coordinate. The arm plans in the tool frame, and §5's hand–eye transform for this rig, $X=\big(I,\ (0,0,-0.04)\big)$, moves it there: $p^{g}=R_Xp^{c}+t_X=(0.5,\ 0.2,\ 1.96)$ m. One link further, the base frame is $p^{b}=T_{bg}\,X\,p^{c}$, with $T_{bg}$ from P2's joint encoders, the same chain §5 writes for the target. Two kinds of frame error follow, and they behave differently. Skip $X$, treating camera coordinates as tool coordinates, and every point in the cloud is off by the same $4$ cm along the tool axis at every range: a bias that no amount of training data averages away, which is what "learning-resistant" means in practice. Get the rotation of $X$ wrong by $1^\circ$ instead, and a point moves by $2\sin(0.5^\circ)=1.75$ cm per metre of its distance from the rotation axis: $L$, $2.06$ m from the camera's $y$ axis, moves $3.6$ cm, and a point $0.5$ m from it moves under $1$ cm. A translation error is constant; a rotation error grows with range.
 
-**A frame is also a time.** A cloud captured while the arm moves belongs to the camera pose at the instant of capture. Pair it with the arm's pose from another instant and the whole cloud lands in the wrong frame by the distance the camera moved in between, $3$ mm for a camera moving at $0.10$ m/s and a $30$ ms mismatch. Which transform is looked up for which time stamp is the TF tree of [[04-robotics/robot-systems-deployment|10. Robot Systems §4]]; which calibration fixes $X$ is §5. When a point-cloud paper quotes millimetres, ask in which frame, and whether the extrinsic and the time stamp that put the cloud there were estimated or assumed.
+**A frame is also a time.** A cloud captured while the arm moves belongs to the camera pose at the instant of capture. Pair it with the arm's pose from another instant and the whole cloud lands in the wrong frame by the distance the camera moved in between, $3$ mm for a camera moving at $0.10$ m/s and a $30$ ms mismatch. Which transform is looked up for which time stamp is the TF tree of [[04-robotics/robot-systems-deployment|10. Robot Systems §4]]; which calibration fixes $X$ is §5. When a point-cloud paper quotes millimetres, ask in which frame, and whether the extrinsic and the time stamp that put the cloud there were estimated or assumed. On a moving base every millisecond of a wrong stamp is a distance, $v\,\Delta t$, and [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §9]] prices it for each sensor of the rig.
 
 ### 4. Registration and ICP
 
@@ -512,6 +654,8 @@ Degeneracy depends on the measured geometry and objective. Point-to-plane residu
 | Camera–LiDAR | extrinsic $SE(3)$ | target or mutual-feature alignment |
 | Hand–eye (camera–robot) | sensor-to-end-effector or base transform | robot motion + target ($AX=XB$) |
 | Temporal | clock offset / latency between sensors | correlation of motion signals |
+
+The camera–LiDAR row, worked on this rig with a LiDAR on the mast — its extrinsic, what a $1^\circ$ error does in pixels and in millimetres, and the check that tells rotation, translation and time apart — is [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §8]]. Every row assumes the mount does not move between calibration and use; a bracket that bends or rings breaks that, and sizing one by its tilt at the target is [[02-foundations/tools/mechanical-design-fabrication|12.9 Mechanical Design and Fabrication §6]].
 
 **The hand–eye equation, derived.** A wrist-mounted camera looks at a calibration target that stays put while the arm moves. Write $T_{ab}$ for the transform that takes coordinates in frame $b$ to frame $a$, $p^a = T_{ab}p^b$, as §1's $T_{cw}$ does ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §3]]), with $b$ the robot base, $g$ the gripper, $c$ the camera and $t$ the target. At robot pose $i$, one chain of three transforms reaches the target from the base: the gripper pose $T_{bg_i}$ from the joint encoders, the unknown camera-to-gripper mount $X = T_{gc}$, which never changes, and the target pose $T_{c_it}$ that the camera measures (by PnP, from the target's known corners and their pixels). The target has not moved, so the chains at two robot poses $1$ and $2$ end at the same transform:
 $$T_{bg_1}\,X\,T_{c_1t} = T_{bt} = T_{bg_2}\,X\,T_{c_2t}$$
@@ -611,6 +755,7 @@ local basin.
 - Name all five entries of $K$, say which are properties of the sensor and which of the lens, and apply distortion in the right order.
 - Write the epipolar constraint with $E$ and with $F$, convert an algebraic residual to a pixel distance, and say what the constraint cannot catch.
 - Triangulate a rectified pair, and state the range at which its $Z^2$ error law makes the answer useless.
+- Recover a pose from four known corners by PnP, say why three corners can leave up to four poses and what picks one, and explain why a small marker's tilt is its weakest number.
 - Write the point-to-point and point-to-plane ICP objectives and show a case where the second has a flat direction.
 - Read an RMS reprojection error as a training residual rather than an accuracy.
 
@@ -628,6 +773,7 @@ local basin.
 7. A calibration file reports $f_x = 600$, $f_y = 604$, $c_x = 318$, $c_y = 241$, $s = 0$ for the rig's $640\times480$ sensor. Which of these tells you something about the *sensor* rather than the lens, and which single value would make you suspect the image was cropped?
 8. Using the rig's $F$, a candidate match for $\tilde u_1 = (470, 300)$ sits at $(434, 306)$. Compute the algebraic residual and the point-to-line distance in pixels. Would a match at $(452, 300)$ be rejected by the same test?
 9. A calibration is refitted with $k_3$, $p_1$ and $p_2$ added, and $e_{\text{RMS}}$ drops from $0.37$ px to $0.21$ px on the same twenty views. What has been demonstrated, and what two checks would settle whether the new model is better?
+10. PnP on the four corners returns $R=I$, $t=(0,0,2)$ m. Where is the camera in the target's frame? With $1$ px of noise on every corner, which does the fit recover worse, the target's distance or its tilt, and why? What changes if the target is a $0.1$ m tag at the same place?
 
 > [!tip]- Answers
 > 1. $u = 600(-0.3)/1.5+320 = 200$, $v = 600(0.1)/1.5+240 = 280$.
@@ -639,13 +785,14 @@ local basin.
 > 7. $f_x \ne f_y$ and $s$ are sensor facts: unequal focal lengths in pixels mean non-square pixels, and $s=0$ means the pixel axes are perpendicular. The focal length itself is the lens. $c_x = 318$ is unremarkable, but $c_y = 241$ against an image height of 480 means the principal point sits $1$ px *below* centre while $c_x$ sits $2$ px left of $320$ — both normal. The value that would signal a crop is a principal point far from $(w/2, h/2)$, for instance $c_x = 240$ on a $640$-wide image, which says the array you calibrated is not the array you are now projecting into.
 > 8. $\ell = F\tilde u_1 \propto (0,\ 0.0002,\ -0.06)$. The algebraic residual is $0.0002(306) - 0.06 = 1.2\times10^{-3}$ and $\sqrt{\ell_1^2+\ell_2^2} = 0.0002$, so $d_\perp = 6.0$ px — the vertical offset, as it must be for a horizontal epipolar line. A match at $(452, 300)$ gives an algebraic residual of exactly $0$ and $d_\perp = 0$: it is *on* the line, so the epipolar test passes it. It is still wrong — it triangulates to $Z = 600(0.12)/18 = 4.0$ m instead of $2.0$ m. Moving along the epipolar line is invisible to $F$ and visible only in depth.
 > 9. Only that a model with more free parameters fits the same data better, which is guaranteed and therefore demonstrates nothing about accuracy ([[02-foundations/ml-practice|9. ML Practice §2]]). Two checks settle it: (i) hold out views the fit never saw — ideally at a different distance and tilt — and compare $e_{\text{RMS}}$ there, not on the training views; (ii) measure a known length, or a known target-to-target distance, at the actual working range, since that is the metre the calibration is for. A third useful look is the residual map by image position: genuine distortion structure appears as a radial pattern, while noise-fitting appears as speckle.
+> 10. At $-R^\top t=(0,0,-2)$ m; $t$ is where the target sits in the camera's frame, not where the camera is (§1). The distance comes out to $\pm13.2$ mm because it is read from the target's apparent size, $13.3$ mm per pixel of its $150$ px width. Each tilt comes out only to $\pm2.70°$, because tilt shows only as the image's departure from a scaled rectangle, $5.2$ px for $10°$. A $0.1$ m tag spans $30$ px and a $10°$ tilt changes its edges by $0.26$ px; worse, its reprojection error has a second minimum, and at $20°$ a pose $27.5°$ away fits its corners to $0.18$ px, so the tilt is ambiguous, not merely noisy (§2.7). A larger target, several tags spread apart, or a prior fixes it.
 
 ### Problem set · 과제
 
 Tier B. The wrist rig of the Running object, plus **P5** as a range to a wall ([[02-foundations/lab-plants|0.6]]) and the hand–eye offset $d_{ct}=4\,\mathrm{cm}$. No simulator. The Worked case ran the rig at the landmark $L$, $Z = 2.0$ m. This set moves it to $L' = (0.5,\ 0.2,\ 4.0)$ m and asks which errors grow, which shrink, and which stay put — that is the variant.
 
 1. **Draw.** Both cameras, both rays to $L'$, the two image points and the disparity between them. Beside them, and to the same scale, the $\pm1$ px depth error bar at $Z = 4$ m and the one at $Z = 2$ m from the picture above. Add the distortion shift at $L'$ as a short segment on the image plane. Three errors, three different scaling laws — the drawing has to make them look different.
-2. **Derive.** (a) Project $L'$ into both cameras: $u_1, v_1, u_2$, the disparity $d'$, and the check $Z = f b / d'$. (b) The depth error for $d' \pm 1$ px, exactly, and compare it with the first-order estimate $Z^2/(fb)$; say why the exact $+1$ and $-1$ errors are not equal. (c) The distortion shift at $L'$: compute $r$, the radial factor, and the shift in pixels, then explain the ratio to the $2.30$ px at $Z = 2$ using the leading term. (d) P5's scalar fusion: $K$, the fused camera-to-wall range, $P^+$, and the tip-to-wall number after $d_{ct}$.
+2. **Derive.** (a) Project $L'$ into both cameras: $u_1, v_1, u_2$, the disparity $d'$, and the check $Z = f b / d'$. (b) The depth error for $d' \pm 1$ px, exactly, and compare it with the first-order estimate $Z^2/(fb)$; say why the exact $+1$ and $-1$ errors are not equal. (c) The distortion shift at $L'$: compute $r$, the radial factor, and the shift in pixels, then explain the ratio to the $2.30$ px at $Z = 2$ using the leading term. (d) P5's scalar fusion: $K$, the fused camera-to-wall range, $P^+$, and the tip-to-wall number after $d_{ct}$. (e) PnP at $Z = 4$ m: move the four target corners to $(0,0,4)$, $(0.5,0,4)$, $(0,0.4,4)$ and $(0.5,0.4,4)$ m. Project them, then use §2.7's three levers to predict how the $1$ px spreads of the target's distance, roll and tilt change from $Z=2$ m.
 3. **Interpret.** (a) In $AX = XB$, which of $A$, $B$, $X$ contains the $4\,\mathrm{cm}$, and why a $0.37$ px calibration residual does not certify it. (b) A match on the repeated panel at $(440, 300)$ has an epipolar residual of exactly zero. Name the one number in part 2 that would have caught it, and say what you would add to the rig to catch it in general.
 
 > [!note]- How to draw it · 그리는 법
@@ -658,7 +805,7 @@ Tier B. The wrist rig of the Running object, plus **P5** as a range to a wall ([
 
 > [!tip]- Solutions
 > 1. The two rays to $L'$ are visibly closer to parallel than the pair at $Z = 2$; the $Z=4$ error bar must be drawn about four times the $Z=2$ one, and the distortion segment about eight times *shorter* than the one in the picture at the top of the page.
-> 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; in camera 2 the point is $(0.38, 0.2, 4.0)$, so $u_2 = 377$ and $d' = 18$ px, giving $Z = 600(0.12)/18 = 4.0$ m. (b) $d' = 17 \Rightarrow Z = 4.235$ m ($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m ($-0.211$). The first-order estimate is $Z^2/(fb) = 16/72 = 0.222$ m, between the two, and the two are unequal because $Z = fb/d$ is convex in $d$ — losing disparity costs more than gaining it, so the depth error distribution is skewed *away* from the camera even when the pixel error is symmetric. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; the factor is $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$, so the point lands at $(394.729,\ 269.892)$ and the shift is $0.291$ px. That is $7.9$ times smaller than the $2.30$ px at $Z = 2$, because the leading radial displacement in pixels is $f\lvert k_1\rvert r^3$ and $r$ halved: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, fused range $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, tip-to-wall $11.6 - 4 = 7.6\,\mathrm{cm}$.
+> 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; in camera 2 the point is $(0.38, 0.2, 4.0)$, so $u_2 = 377$ and $d' = 18$ px, giving $Z = 600(0.12)/18 = 4.0$ m. (b) $d' = 17 \Rightarrow Z = 4.235$ m ($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m ($-0.211$). The first-order estimate is $Z^2/(fb) = 16/72 = 0.222$ m, between the two, and the two are unequal because $Z = fb/d$ is convex in $d$ — losing disparity costs more than gaining it, so the depth error distribution is skewed *away* from the camera even when the pixel error is symmetric. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; the factor is $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$, so the point lands at $(394.729,\ 269.892)$ and the shift is $0.291$ px. That is $7.9$ times smaller than the $2.30$ px at $Z = 2$, because the leading radial displacement in pixels is $f\lvert k_1\rvert r^3$ and $r$ halved: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, fused range $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, tip-to-wall $11.6 - 4 = 7.6\,\mathrm{cm}$. (e) The corners land at $(320, 240)$, $(395, 240)$, $(320, 300)$ and $(395, 300)$ px, a $75\times60$ px rectangle. Distance: $Z^2/(f\ell)=16/300=53.3$ mm per pixel, four times $13.3$, since the lever carries $Z^2$. Roll: one pixel across $75$ px is $0.76°$, twice $0.38°$, since it carries $Z$. Tilt: $fWH/Z^2=7.5$ px per radian, a quarter of $30$, so its spread quadruples. The listing's covariance at $t=(0,0,4)$ gives $\pm52.7$ mm, $\pm0.73°$ and $\pm10.80°$: distance and tilt grow as $Z^2$, roll as $Z$.
 > 3. (a) $X$ is the unknown camera-to-gripper transform and the $4\,\mathrm{cm}$ is one translation component of it; $A$ is the gripper's motion between two robot poses, $B$ the camera's motion between the same two. It enters the equation only through $(R_A - I)t_X$, so §5's one rotation of P2 shows it as an $11.3$ mm mismatch, and a motion without rotation would not show it at all. A $0.37$ px residual is a *training* residual on the target views, and §5 shows a fit with exactly that residual still misplacing a point by $1.67$ mm at $0.5$ m off-axis and $10.0$ mm at $3$ m — the camera-to-gripper translation is estimated from those same views, so it inherits that extrapolation error. Only a held-out pose and a measured known length test it. (b) **The triangulated depth.** The wrong match has disparity $30$ instead of $36$, so it triangulates to $Z = 2.40$ m rather than $2.00$ m — a $40$ cm error that the epipolar residual reports as zero, because $F$ constrains a match to a line and says nothing about position *along* it. In general you add an independent constraint that is not along the epipolar line: a third view whose epipolar lines cross the first pair at an angle, a direct range measurement (the P5 sensor, or lidar), or an appearance check strong enough to tell two identical panels apart — which, on identical panels, means using their context rather than their texture.
 
 ### Sources
@@ -675,6 +822,14 @@ Tier B. The wrist rig of the Running object, plus **P5** as a range to a wall ([
 - DeTone, D., Malisiewicz, T. & Rabinovich, A. "SuperPoint: Self-supervised interest point detection and description." *CVPR Workshops*, 2018.
 - Sarlin, P.-E., DeTone, D., Malisiewicz, T. & Rabinovich, A. "SuperGlue: Learning feature matching with graph neural networks." *CVPR*, 2020.
 - Sun, J., Shen, Z., Wang, Y., Bao, H. & Zhou, X. "LoFTR: Detector-free local feature matching with transformers." *CVPR*, 2021.
+- Persson, M. & Nordberg, K. "Lambda Twist: An accurate fast robust perspective three point (P3P) solver." *European Conference on Computer Vision (ECCV)*, 2018. [ECVA page](https://www.ecva.net/papers/eccv_2018/papers_ECCV/html/Mikael_Persson_Lambda_Twist_An_ECCV_2018_paper.php); its abstract states the up-to-four P3P solutions.
+- Wang, B., Hu, H. & Zhang, C. "Companion surface of danger cylinder and its role in solution variation of P3P problem." arXiv:1906.08598, 2019, preprint. [arXiv](https://arxiv.org/abs/1906.08598); the danger cylinder, the double solution on it, and its instability.
+- Schweighofer, G. & Pinz, A. "Robust pose estimation from a planar target." *IEEE Transactions on Pattern Analysis and Machine Intelligence* 28(12), 2024–2030, 2006. [Publication record](https://tugraz.elsevierpure.com/en/publications/robust-pose-estimation-from-a-planar-target-2/); a unique pose from four coplanar points in theory, two local minima in practice.
+- Olson, E. "AprilTag: A robust and flexible visual fiducial system." *ICRA*, 2011; Wang, J. & Olson, E. "AprilTag 2: Efficient and robust fiducial detection." *IROS*, 2016. [AprilTag project page](https://april.eecs.umich.edu/software/apriltag)
+- Lindenberger, P., Sarlin, P.-E. & Pollefeys, M. "LightGlue: Local feature matching at light speed." *ICCV*, 2023. [arXiv:2306.13643](https://arxiv.org/abs/2306.13643)
+- Wang, S., Leroy, V., Cabon, Y., Chidlovskii, B. & Revaud, J. "DUSt3R: Geometric 3D vision made easy." *CVPR*, 2024. [arXiv:2312.14132](https://arxiv.org/abs/2312.14132)
+- Leroy, V., Cabon, Y. & Revaud, J. "Grounding image matching in 3D with MASt3R." *ECCV*, 2024. [arXiv:2406.09756](https://arxiv.org/abs/2406.09756)
+- Wang, J., Chen, M., Karaev, N., Vedaldi, A., Rupprecht, C. & Novotny, D. "VGGT: Visual geometry grounded transformer." *CVPR*, 2025. [arXiv:2503.11651](https://arxiv.org/abs/2503.11651)
 
 ## 한국어
 
@@ -962,7 +1117,7 @@ $$\begin{pmatrix}x_d\\y_d\end{pmatrix} = \underbrace{(1 + k_1r^2 + k_2r^4 + k_3r
 
 **스테레오 계산 예제**: $f=600$ px, 기선 $b=0.12$ m, 시차 $d=9$ px
 → $Z = 600\cdot 0.12/9 = 8$ m. 시차 1픽셀 오차($d=8$)면 $Z=9$ m — 이 거리에서 12.5%
-튄다: 깊이 오차는 거리에 제곱으로 자란다. 광축을 가로지르는 방향에서는 같은 1픽셀이 $Z/f$미터일 뿐이고, 픽셀 잡음 σ를 필터가 쓰는 측정 분산으로 바꾸는 일은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §5와 §8]]에 있다.
+튄다: 깊이 오차는 거리에 제곱으로 자란다. 광축을 가로지르는 방향에서는 같은 1픽셀이 $Z/f$미터일 뿐이고, 픽셀 잡음 σ를 필터가 쓰는 측정 분산으로 바꾸는 일은 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §5와 §8]]에 있다. 표의 다른 행은 제 물리를 가진 센서다 — 위상이 감기는 ToF 카메라, 거리와 함께 점이 커지는 LiDAR — 그 값을 이 리그 위에서 매기는 곳이 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §3–§5]]다.
 
 <svg viewBox="0 0 620 246" style="max-width:100%;height:auto" role="img" aria-label="스테레오: 가까운 점은 두 광선을 크게 벌리고, 먼 점은 거의 나란하게 만든다">
   <g stroke="currentColor" stroke-width="1.4" fill="none">
@@ -1044,6 +1199,8 @@ $$R=\det M-k\,(\operatorname{tr}M)^2=\lambda_1\lambda_2-k\,(\lambda_1+\lambda_2)
 
 **학습된 특징.** SuperPoint(DeTone 외, CVPR Workshops 2018)는 한 네트워크가 키포인트와 기술자를 함께 출력하도록 학습한다. SuperGlue(Sarlin 외, CVPR 2020)는 최근접 이웃과 비율 검사를 두 점 집합을 한꺼번에 짝짓는 그래프 신경망으로 바꾼다. LoFTR(Sun 외, CVPR 2021)은 검출기를 없애고 트랜스포머 특징을 조밀하게 매칭해, 검출기가 점을 거의 찾지 못하는 저텍스처 영역을 겨냥한다. 각 논문은 자기 벤치마크의 큰 시점·조명 변화에서 더 강한 매칭을 보고한다. 그래도 고전 특징이 맞는 선택일 수 있다. 임베디드 로봇 컴퓨터의 연산 예산과 프레임 속도, 학습 데이터가 내 장면과 닮았는지를 따져라. 맨 석고보드, 거푸집, 철근 격자, 똑같은 외벽 패널처럼 무늬가 없거나 반복되는 건설 현장 표면은 어떤 방법에도 어렵다. 벤치마크 순위를 믿기보다 자기 시퀀스에서 시험하라.
 
+**학습된 계열, 나란히 놓고 보기.** 계열의 방법마다 바꾸는 단계가 다르다. SuperGlue는 attention과, 짝이 없는 점을 남겨 둘 수 있는 최적 수송 배정으로 매칭하며 GPU에서 실시간으로 돈다. 그 후속인 LightGlue(Lindenberger 외, ICCV 2023)는 겹침이 큰 쉬운 쌍에 계산을 덜 써서 지연에 민감한 용도를 겨냥한다. LoFTR의 조밀 매칭은 맨 거푸집처럼 검출기가 아무것도 찾지 못하는 곳에서 돕는다. 3D 기반 모델(foundation model)은 질문 자체를 바꾼다. DUSt3R(Wang 외, CVPR 2024)는 보정도 자세도 없이 이미지 쌍의 3D point map을 회귀하고, 매칭과 상대 카메라가 거기서 따라 나온다. MASt3R(Leroy 외, ECCV 2024)는 매칭하도록 학습한 기술자를 더한다. [[01-canonical-papers/notes/2-computer-vision/vggt|VGGT]](Wang 외, CVPR 2025)는 수백 장까지의 시점에 대해 카메라, 깊이, 트랙을 한 번의 순전파로 예측하며, 복원이 1초 안에 끝난다고 보고한다. 어느 것도 세 번째 거르기를 생략하게 해 주지 않는다. 그 매칭도 F, E, H, PnP(§2.7)로 하는 RANSAC으로 검사해야 하고, 패널 한 칸 밀려 매칭된 외벽은 여전히 운동 하나에 맞으므로 그 검사도 통과한다.
+
 > [!example] 계산 예제 · Worked example
 > **리그의 보정 이미지 위의 Harris.** 이 예제에서는 보정 타깃을 어두운 배경 위의 밝은 판 하나로, $A$를 그 왼쪽 위 코너로 모델링한다. 카메라 1은 $A$를 주점 $(320, 240)$에서 보고, 판은 오른쪽으로 $(470, 240)$의 $B$까지, 아래로 $(320, 360)$의 $C$까지 뻗는다. 그 이미지에서 배경은 밝기 0, 판은 10인 5×5 패치 세 개를 잡는다. 안쪽 3×3 픽셀에서 중앙 차분 $I_x=(I_{x+1}-I_{x-1})/2$를 쓰고, $w=1$, $k=0.05$로 둔다.
 > - **평탄**, 판 안쪽 $(395, 300)$ 근처 (전부 10): 기울기가 모두 0이므로 $M=0$, $\lambda=(0,0)$, $R=0$이다.
@@ -1121,6 +1278,93 @@ $$Z = \frac{f b}{d}, \qquad X = \frac{(u_1 - c_x)Z}{f_x}, \qquad Y = \frac{(v_1 
 
 *예:* $L$ 의 짝에 DLT를 돌리면 닫힌 형태와 똑같이 $(0.5, 0.2, 2.0)$ m가 나온다. 리그에 잡음이 없고 rectify되어 있기 때문이다. *$Z^2$ 법칙이 나오는 곳:* $Z = fb/d$ 를 미분하면 $\partial Z/\partial d = -fb/d^2 = -Z^2/(fb)$ 이므로 시차 1픽셀 오차는 $Z^2/(fb)$ 미터의 값이다 — $Z = 2$ 에서 $0.056$ m, $Z = 8$ 에서 $0.889$ m로, 거리 4배에 열여섯 배다. *반례(퇴화):* 기선이 0으로 줄거나 점이 멀어지면 $d \to 0$ 이고 두 광선이 평행해지므로 $A$ 가 rank를 잃고 $Z$ 가 구속되지 않는다. 논문의 "삼각측량 실패"는 solver 버그가 아니라 거의 항상 이것이다.
 
+### 2.7 2D–3D 대응에서 자세로: PnP
+
+*한 문장으로:* 대응마다 픽셀이 물체 위에서 이미 아는 점과 짝지어져 있으면 보정된 이미지 한 장이 물체의 자세를 미터 단위로 주지만, 점 셋은 답을 여럿 남기고 점 넷도 기울기에서는 약할 수 있다.
+
+**문제.** 공구를 이미 아는 물체, 곧 §5의 타깃이나 부품이나 S1의 외장 패널에 가져다 대려면 로봇은 이미지 한 장에서 그 물체의 자세를 미터 단위로 알아야 한다. §2.6은 픽셀을 픽셀과 짝지었고 운동을 스케일을 빼고서만 복원했다. 여기서는 대응의 한쪽이 이미 아는 모델의 점이고, 그 모델이 미터를 정한다. 이 절은 고정된 리그에 네 번째 타깃 코너 $D=(0.5,\ 0.4,\ 2)$ m를 더한다. 나머지 세 코너가 암시하는 직사각형을 완성하는 점이다. $B-A=(0.5,0,0)$ 와 $C-A=(0,0.4,0)$ 가 수직이고 $A+(B-A)+(C-A)=D$ 다. 카메라 1은 네 코너를 다음 자리에서 본다.
+
+$$A\to(320,\,240),\qquad B\to(470,\,240),\qquad C\to(320,\,360),\qquad D\to(470,\,360)\ \text{px}$$
+
+§1에 따라 각각 $u=600X/2+320$, $v=600Y/2+240$ 이기 때문이다.
+
+> **Perspective-n-Point(PnP)의 정의.** **PnP**는 *추정 문제*다. 알고 있는 물체를 카메라 프레임에 놓는 강체 변환을, 그 물체를 찍은 이미지 한 장에서 찾는다. 정의 조건이 다섯이고, 하나를 빼면 다른 문제가 된다. 물체의 **점들은 물체 자신의 프레임에서 알려져** 있다. $X_j$ 는 모델이나 인쇄된 타깃에서 온다. 점마다 **픽셀 $\tilde u_j$ 가 주어진다**. 대응을 찾는 일은 §2.5의 몫이다. 카메라는 **보정되어** 있다. $K$ 와 왜곡을 안다(§1). 미지수는 **자세 하나**, 곧 $R\in SO(3)$ 와 $t\in\mathbb R^3$ 이고, 모델이 미터 단위이므로 남는 스케일이 없다. 그리고 **점이 충분하다**. 한 직선 위에 있지 않은 점 셋은 유한 개의 자세를 남기고, 한 평면 위에 있으면서 어느 셋도 한 직선 위에 있지 않은 점 넷은 픽셀이 정확할 때 자세 하나를 남긴다.
+>
+> $$(\hat R,\hat t)=\arg\min_{R\in SO(3),\ t\in\mathbb R^3}\ \sum_{j=1}^{n}\big\lVert\,\tilde u_j-\pi\big(K,\ RX_j+t\big)\big\rVert^2$$
+>
+> 여기서 $\pi$ 는 카메라 프레임의 점을 §1처럼 왜곡까지 넣어 픽셀로 보내고, 각 항은 §5의 재투영 오차 제곱이다. 그래서 최소점은 등방 가우시안 픽셀 잡음 아래의 최대우도 자세다.
+>
+> - **예**: 위의 네 코너이고, $X_j$ 는 $A$ 에 원점을 두고 축이 카메라 축과 같은 타깃 프레임에서 쓴다. 최소점은 $R=I$, $t=(0,0,2)$ m이고 잔차는 0이다. §5 hand–eye 예의 $T_{c_1t}$ 가 바로 이것이다.
+> - **비예**: $t$ 를 카메라의 위치로 읽는 것. $t$ 는 카메라 프레임에서 타깃이 놓인 자리이고, 카메라는 타깃 프레임에서 $-R^\top t=(0,0,-2)$ m에 있다. §1의 extrinsics 함정이다.
+> - **비예**: §2.6의 두 시점 문제. 대응의 양쪽이 모두 픽셀이고, 미터를 정해 줄 모델이 없다.
+> - **왜 중요한가**: 이 절 끝에 모은 쓰임 — hand–eye 보정, 파지, S1의 패널 — 이 모두 이 최소화를 돌린다.
+
+**점 셋: P3P의 답은 여럿이다.** 알려진 점은 저마다 자기 픽셀의 광선 위 어딘가에 있으므로 점 셋은 모르는 거리 셋을 남기고, 세 변의 길이가 광선 쌍마다 코사인 법칙 하나씩, 식 셋을 준다. 거리 둘을 소거하면 4차식이 남는다. 해는 최대 넷이고, Persson과 Nordberg(ECCV 2018)도 그렇게 적는다. 기하로 보면 $C$ 를 지나는 광선이 $A$ 둘레 반지름 $|AC|$ 의 구를 두 번 자르고, $B$ 도 마찬가지다. 리그의 $A$, $B$, $C$ 로 P3P를 풀면 세 코너를 정확히 재투영하는 자세 셋이 나온다. 참 자세, 모서리 $AB$ 둘레로 $22.62°$ 기운 타깃($\tan=5/12$), 그리고 $AC$ 둘레로 $28.07°$ 기운 타깃($\tan=8/15$)이다. 둘째에서는 $C$ 가 자기 광선을 따라 $(0,\ 0.369,\ 1.846)$ m로 미끄러졌는데도 여전히 $A$ 에서 $0.4$ m, $B$ 에서 $0.640$ m 떨어져 있고, 셋째에서는 $B$ 가 $(0.441,\ 0,\ 1.765)$ m에 있다.
+
+**네 번째 점이나 사전 정보가 하나를 고른다.** P3P는 $D$ 를 쓰지 않았으므로 $D$ 는 공짜 검사다. 참 자세는 $D$ 를 보이는 자리 $(470,\ 360)$ 에 놓고, 가짜 둘은 $(482.5,\ 360)$ 과 $(470,\ 376)$ 에 놓아 $12.5$ px와 $16.0$ px 어긋난다. 사전 정보도 같은 일을 한다. 베이스 프레임에서 타깃이 대략 어디 있는지 알면 엔코더와 §5의 hand–eye 변환이 그 기울기를 몇 도 안으로 예측하고, 그것만으로 가짜 둘이 배제된다. 왜 넷이 아니라 셋인가? 카메라가 $A$, $B$, $C$ 를 지나고 그 평면에 수직인 원기둥 위에 있기 때문이다. 세 점의 원은 $BC$ 를 지름으로 하는 반지름 $0.320$ m의 원이고, 카메라 바로 앞의 점 $A$ 를 지난다. 오래전부터 P3P의 불안정성과 이어져 온 이 *위험 원기둥*(danger cylinder) 위에서는 참 자세가 중근이 되어 해가 셋만 남는다(Wang, Hu, Zhang, 2019). 이 리그의 숫자에서도 그대로 드러난다. $A$ 의 검출을 왼쪽으로 $0.1$ px 옮기면 참 근이 사라져 가짜 둘만 남고, 오른쪽으로 $0.1$ px 옮기면 참 근이 $A$ 를 $1.987$ m와 $2.013$ m에 놓는 두 자세로 갈라진다. P3P는 후보를 낼 뿐 측정하지 않는다.
+
+<svg viewBox="0 0 560 300" style="max-width:100%;height:auto" role="img" aria-label="손목 리그의 P3P: 왼쪽은 옆에서 본 그림으로, 코너 C를 지나는 광선이 A 둘레 0.4 m 구를 C와 C′에서 만나므로 AB 둘레로 22.6도 기운 타깃도 A, B, C에 맞는다. 오른쪽은 이미지로, 가짜 자세 둘에서 D는 470, 360 픽셀이 아니라 482.5, 360과 470, 376 픽셀에 떨어진다">
+  <text x="16" y="20" font-size="12" fill="currentColor" font-weight="600">X = 0 평면을 옆에서, 축척대로</text>
+  <text x="300" y="20" font-size="12" fill="currentColor" font-weight="600">이미지, px, 축척대로</text>
+  <line x1="16.0" y1="48.0" x2="270.0" y2="48.0" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="4 3"/>
+  <line x1="16.0" y1="168.0" x2="268.0" y2="218.4" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.55" stroke-dasharray="4 3"/>
+  <path d="M265.4 200.2 A160.0 160.0 0 0 1 97.1 155.1" fill="none" stroke="currentColor" stroke-width="1.0" stroke-opacity="0.6"/>
+  <line x1="216.0" y1="48.0" x2="216.0" y2="208.0" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="216.0" y1="48.0" x2="154.5" y2="195.7" stroke="currentColor" stroke-width="2.2" stroke-dasharray="6 3"/>
+  <path d="M216.0 88.0 A40 40 0 0 1 200.6 84.9" fill="none" stroke="currentColor" stroke-width="1.0"/>
+  <circle cx="216.0" cy="48.0" r="3.6" fill="currentColor" stroke="none"/>
+  <circle cx="216.0" cy="208.0" r="3.6" fill="currentColor" stroke="none"/>
+  <circle cx="154.5" cy="195.7" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="223.0" y="44.0" font-size="12" fill="currentColor">A</text>
+  <text x="222.0" y="199.0" font-size="12" fill="currentColor">C</text>
+  <text x="146.5" y="185.7" font-size="12" fill="currentColor" text-anchor="end">C′</text>
+  <text x="221.0" y="84.0" font-size="11" fill="currentColor">22.6°</text>
+  <text x="222.0" y="132.0" font-size="11" fill="currentColor">0.4 m</text>
+  <text x="177.2" y="125.8" font-size="11" fill="currentColor" text-anchor="end">0.4 m</text>
+  <text x="103.1" y="140.1" font-size="11" fill="currentColor" fill-opacity="0.85" text-anchor="middle">A에서 0.4 m인 점들</text>
+  <text x="16" y="272" font-size="11" fill="currentColor" fill-opacity="0.9">실선: 참 타깃 · 점선: AB 둘레로 22.6° 기운 것</text>
+  <text x="16" y="288" font-size="11" fill="currentColor" fill-opacity="0.8">카메라는 2 m 왼쪽, A를 지나는 광선 위에 있다</text>
+  <path d="M311.0 55.5 L476.0 55.5 L476.0 187.5 L311.0 187.5 Z" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="311.0" cy="55.5" r="3.4" fill="currentColor" stroke="none"/>
+  <circle cx="476.0" cy="55.5" r="3.4" fill="currentColor" stroke="none"/>
+  <circle cx="311.0" cy="187.5" r="3.4" fill="currentColor" stroke="none"/>
+  <circle cx="476.0" cy="187.5" r="3.4" fill="currentColor" stroke="none"/>
+  <line x1="476.0" y1="187.5" x2="489.8" y2="187.5" stroke="currentColor" stroke-width="1.0"/>
+  <circle cx="489.8" cy="187.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <line x1="476.0" y1="187.5" x2="476.0" y2="205.1" stroke="currentColor" stroke-width="1.0"/>
+  <circle cx="476.0" cy="205.1" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="317.0" y="71.5" font-size="11" fill="currentColor">A (320, 240)</text>
+  <text x="470.0" y="71.5" font-size="11" fill="currentColor" text-anchor="end">B (470, 240)</text>
+  <text x="317.0" y="179.5" font-size="11" fill="currentColor">C (320, 360)</text>
+  <text x="470.0" y="179.5" font-size="11" fill="currentColor" text-anchor="end">D (470, 360)</text>
+  <text x="495.8" y="181.5" font-size="11" fill="currentColor">12.5 px</text>
+  <text x="484.0" y="215.1" font-size="11" fill="currentColor">16.0 px</text>
+  <text x="300" y="240" font-size="11" fill="currentColor" fill-opacity="0.9">● 보이는 자리 · ○ 가짜 자세 둘에서의 D</text>
+  <text x="300" y="256" font-size="11" fill="currentColor" fill-opacity="0.9">A, B, C는 세 자세 모두에서 같다</text>
+</svg>
+
+왼쪽은 $X=0$ 평면을 옆에서 축척대로 본 것이다. $C$ 의 픽셀을 지나는 광선이 $A$ 둘레 반지름 $0.4$ m의 구를 $C$ 와 $C'=(0,\ 0.369,\ 1.846)$ m에서 만나므로, $AB$ 둘레로 $22.6°$ 기운 타깃도 $A$, $B$, $C$ 에 맞는다. 오른쪽은 이미지로, 그 가짜 자세에서 $D$ 는 검출된 자리에서 $12.5$ px, $AC$ 둘레로 $28.1°$ 기운 가짜 자세에서는 $16.0$ px 떨어진 곳에 맺힌다.
+
+**점 넷 이상: 재투영 오차를 최소화한다.** $n\ge4$ 이면 목적함수는 미지수 여섯, 잔차 $2n$ 개의 비선형 최소자승이고, Gauss–Newton이나 Levenberg–Marquardt로 푼다([[02-foundations/optimization|4. 최적화 §3.5]]). 회전은 $R\leftarrow\operatorname{Exp}(\delta\omega)R$ 로 갱신해 계속 회전으로 남게 한다([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §2]]). 국소적인 방법이므로 P3P 후보에서, 평면 타깃이라면 아래의 homography에서 출발한다. 영어 절반의 코드는 $10.4°$, $0.55$ m 어긋난 곳에서 출발하고, RMS 재투영 오차가 $49.4$ px에서 $18$, $1.25$, $0.0073$, $3\times10^{-7}$ px로 네 스텝 만에 떨어져 $R=I$, $t=(0,0,2)$ m에 닿는다.
+
+**한 장의 이미지는 얼마나 좋은가?** 해에서 선형화하고, $J$ 를 자세에 대한 픽셀의 $8\times6$ 야코비안, 픽셀 잡음을 서로 독립인 $\sigma$ 로 두면 자세의 공분산은 $\sigma^2(J^\top J)^{-1}$ 이다. $\sigma=1$ px에서 코드는 타깃까지의 거리를 $\pm13.2$ mm, 시선 둘레의 roll을 $\pm0.37°$ 로 주지만, 두 기울기는 각각 $\pm2.70°$ 로밖에 주지 못한다. 셋은 저마다 지렛대가 다르다. 거리는 겉보기 크기에서 온다. $150$ px 폭에서 1픽셀은 $Z^2/(f\ell)=13.3$ mm, §6의 알려진 길이다. Roll은 모서리 방향에서 온다. $150$ px에 걸친 1픽셀은 $0.38°$ 다. 기울기는 이미지가 크기만 바뀐 직사각형에서 얼마나 벗어나느냐에서만 온다. $10°$ 를 기울여도 가까운 모서리가 먼 모서리보다 $5.2$ px 길어질 뿐이다. $fWH\sin\theta/Z^2$ 이고 $fWH/Z^2=30$ px/rad다. [[04-robotics/sensor-models|3.2 센서 모델과 잡음]]이 고정한 마커 잡음 $0.5$ px에서는 모든 숫자가 절반이 된다.
+
+영어 절반의 코드가 이 루프와 공분산, 그리고 P3P 가짜 자세의 확인을 돌린다. 출력은 네 코너의 픽셀, Gauss–Newton 스텝마다의 RMS($49.4$, $18$, $1.25$, $0.00733$ px, …), $R=I$ 와 $t=(0,0,2)$ m, 거리 $13.2$ mm·기울기 $2.70°$·roll $0.37°$, 그리고 가짜 자세 둘이 $A$, $B$, $C$ 의 픽셀은 그대로 두면서 $D$ 를 $(482.5,\ 360)$ 과 $(470,\ 376)$ 에 놓는다는 두 줄이다.
+
+**RANSAC 안의 PnP.** §2.5에서 이미지와 3D 모델 — 지도의 랜드마크, 부품의 특징 — 사이에 만든 대응에는 이상점이 섞여 있다. 그래서 PnP는 RANSAC 안에서 돈다. 대응 셋을 뽑아 P3P를 풀고, 각 자세를 픽셀 문턱 안으로 재투영되는 대응의 수로 채점하고, 가장 좋은 자세를 그 인라이어 전부로 다듬는다. 최소 표본이 비용을 낮춘다. 대응의 절반이 인라이어이고 신뢰도가 $99\%$ 이면 [[02-foundations/algorithms/robotics-ai-problems|11.8 §3]]의 횟수는 셋짜리 표본 $35$ 번, 넷짜리 $72$ 번, 일반 $3\times4$ 카메라 행렬을 선형으로 풀 때 필요한 여섯짜리 $293$ 번이다(미지수 열한 개, 점 하나에 식 둘).
+
+**평면 타깃: homography로 가는 길.** 모든 점이 한 평면 위에 있으면 타깃 프레임을 그 평면에 둔다. 그러면 $Z_t=0$ 이고 $R$ 의 세 번째 열이 빠진다.
+
+$$\lambda\begin{pmatrix}u\\v\\1\end{pmatrix}=K\,[\,r_1\ \ r_2\ \ t\,]\begin{pmatrix}X_t\\Y_t\\1\end{pmatrix}=H\begin{pmatrix}X_t\\Y_t\\1\end{pmatrix}$$
+
+그래서 평면은 $3\times3$ homography $H$ 로 이미지에 옮겨지고, 어느 셋도 한 직선 위에 있지 않은 점 넷이 $H$ 를 정한다(스케일을 빼면 미지수 여덟, 점마다 식 둘). 그다음 $[\,r_1\ r_2\ t\,]=\lambda K^{-1}H$ 이고, $r_1$ 이 단위 벡터이므로 $\lambda=1/\lVert K^{-1}h_1\rVert$, 그리고 $r_3=r_1\times r_2$ 다. 리그에서는 $H=\begin{pmatrix}300&0&320\\0&300&240\\0&0&1\end{pmatrix}$, $K^{-1}H=\operatorname{diag}(0.5,\ 0.5,\ 1)$ 이므로 $\lambda=2$, $r_1=(1,0,0)$, $r_2=(0,1,0)$, $t=(0,0,2)$ m다. 같은 자세가 닫힌 형태로 나온다. 코너에 잡음이 있으면 $r_1$ 과 $r_2$ 가 정확히 정규직교가 아니므로, 회전을 $SO(3)$ 에 사영해 다듬기의 출발점으로 쓴다.
+
+**작고 먼 마커는 뒤집힌다.** 기울기 지렛대는 마커보다 빨리 줄어든다. 타깃 중심에 놓인 $0.1$ m 정사각형은 $30$ px에 걸치고, $10°$ 를 기울여도 모서리가 $0.26$ px 바뀐다. 그 재투영 오차에는 서로 다른 국소 최소점이 둘 있다(Schweighofer, Pinz, 2006). 수직축 둘레로 $20°$ 기운 마커는 시선에서 $14.0°$ 벗어난 쪽을 향하는데, 반대쪽으로 $13.5°$ 벗어나 참 자세에서 $27.5°$ 떨어진 두 번째 자세가 코너를 RMS $0.18$ px로 재투영한다. 1픽셀 잡음이 어느 쪽이든 고를 수 있으므로 답이 프레임마다 둘 사이를 오갈 수 있다. 처방은 기하다. 더 큰 타깃, 더 가까운 카메라, 멀리 떨어뜨린 여러 마커, 또는 한쪽을 배제하는 사전 정보다.
+
+**피두셜 마커: AprilTag.** 피두셜은 대응 문제를 설계로 푼다. AprilTag(Olson, ICRA 2011; AprilTag 2, Wang과 Olson, IROS 2016)는 4~12비트만 담는 흑백 정사각형을 인쇄한다. 프로젝트 페이지는 그 작은 payload를 QR 코드보다 강건하고 더 먼 거리에서 되는 검출과 맞바꾼 것으로 설명한다. 출력은 카메라에 대한 태그의 정밀한 3D 위치, 방향, ID다. 그것이 네 코너에 대한 PnP이고, 인쇄된 한 변의 길이가 모델이므로 크기를 잘못 넣으면 거리가 같은 비율로 틀린다. 뒤집힘도 물려받는다. 위키의 건설 조립 계보에서 앵커 논문은 블록마다 태그를 둘씩 붙였다([[01-canonical-papers/notes/8-construction/vision-guided-assembly|Feng 외 2015]]).
+
+**PnP가 쓰이는 곳.** Hand–eye 보정은 로봇 자세마다 $T_{c_it}$ 를 PnP로 잰다(§5). 그래서 $\pm2.70°$ 의 기울기 잡음이 $AX=XB$ 의 $B$ 에 들어가고, 그 풀이가 여러 자세를 평균하는 이유 하나가 이것이다. 알고 있는 부품을 잡는 일은 부품 모델의 점과 그 검출 사이의 PnP에 §3의 프레임 사슬을 이은 것이다. 공구를 S1의 외장 패널에 맞추는 일([[05-construction-robotics/site-engineering|2.5]])은 패널을 타깃으로 한 같은 문제다. 리그 크기의 타깃이 $2$ m에 있고 코너 잡음이 $1$ px일 때 카메라 하나가 S1의 $\pm5$ mm에 대해 약속하는 것은 시선을 가로질러 $\pm2.2$ mm, 시선을 따라 $\pm13$ mm다.
+
 ### 3. 포인트 클라우드와 프레임
 
 깊이 이미지 + intrinsics를 역투영하면 **포인트 클라우드**가 된다:
@@ -1133,7 +1377,7 @@ $X = (u-c_x)Z/f_x$, $Y=(v-c_y)Z/f_y$. 모든 클라우드는 어떤 프레임(�
 
 **리그로 계산한 프레임.** $L=(0.5,\ 0.2,\ 2.0)$ m는 카메라 프레임 좌표다. 팔은 공구 프레임에서 계획하고, 이 리그에 대한 §5의 손–눈 변환 $X=\big(I,\ (0,0,-0.04)\big)$가 그것을 옮긴다: $p^{g}=R_Xp^{c}+t_X=(0.5,\ 0.2,\ 1.96)$ m. 한 고리 더 가면 베이스 프레임은 $p^{b}=T_{bg}\,X\,p^{c}$이고, $T_{bg}$는 P2의 관절 엔코더에서 온다. §5가 표적에 대해 쓰는 것과 같은 사슬이다. 여기서 두 종류의 프레임 오차가 나오고, 둘은 다르게 행동한다. $X$를 빼먹고 카메라 좌표를 공구 좌표로 쓰면 클라우드의 모든 점이 거리와 상관없이 공구 축을 따라 똑같이 $4$ cm 어긋난다. 학습 데이터를 아무리 모아도 평균으로 지워지지 않는 편향이고, "학습으로 잘 고쳐지지 않는다"는 말의 실제 뜻이 그것이다. 대신 $X$의 회전을 $1^\circ$ 틀리면 점은 회전축에서의 거리 1미터마다 $2\sin(0.5^\circ)=1.75$ cm씩 움직인다. 카메라 $y$축에서 $2.06$ m 떨어진 $L$은 $3.6$ cm, $0.5$ m 떨어진 점은 $1$ cm 미만이다. 병진 오차는 일정하고, 회전 오차는 거리와 함께 자란다.
 
-**프레임은 시각이기도 하다.** 팔이 움직이는 동안 찍은 클라우드는 찍힌 순간의 카메라 자세에 속한다. 그것을 다른 순간의 팔 자세와 짝지으면 클라우드 전체가 그 사이 카메라가 움직인 거리만큼 틀린 프레임에 놓인다. $0.10$ m/s로 움직이는 카메라와 $30$ ms의 어긋남이면 $3$ mm다. 어느 타임스탬프에 어느 변환을 조회하는지는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §4]]의 TF 트리이고, $X$를 정하는 보정은 §5다. 포인트 클라우드 논문이 밀리미터를 인용하면 어느 프레임에서인지, 그리고 클라우드를 거기 놓은 extrinsic과 타임스탬프가 추정한 것인지 가정한 것인지 물어라.
+**프레임은 시각이기도 하다.** 팔이 움직이는 동안 찍은 클라우드는 찍힌 순간의 카메라 자세에 속한다. 그것을 다른 순간의 팔 자세와 짝지으면 클라우드 전체가 그 사이 카메라가 움직인 거리만큼 틀린 프레임에 놓인다. $0.10$ m/s로 움직이는 카메라와 $30$ ms의 어긋남이면 $3$ mm다. 어느 타임스탬프에 어느 변환을 조회하는지는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §4]]의 TF 트리이고, $X$를 정하는 보정은 §5다. 포인트 클라우드 논문이 밀리미터를 인용하면 어느 프레임에서인지, 그리고 클라우드를 거기 놓은 extrinsic과 타임스탬프가 추정한 것인지 가정한 것인지 물어라. 움직이는 베이스에서 틀린 스탬프의 1밀리초는 모두 거리 $v\,\Delta t$이고, [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §9]]가 리그의 센서마다 그 값을 매긴다.
 
 ### 4. Registration과 ICP
 
@@ -1176,6 +1420,8 @@ $$\min_{R,t} \sum_i \big((Rp_i + t - q_{c(i)})^\top n_{c(i)}\big)^2$$
 | 카메라–LiDAR | extrinsic $SE(3)$ | 타깃 또는 상호 특징 정렬 |
 | Hand–eye (카메라–로봇) | 센서–말단 또는 베이스 변환 | 로봇 운동 + 타깃 ($AX=XB$) |
 | 시간 | 센서 간 클럭 오프셋/지연 | 운동 신호의 상관 |
+
+카메라–LiDAR 행을 마스트에 LiDAR를 단 이 리그 위에서 계산한 것 — 외부 파라미터, $1^\circ$ 오차가 픽셀과 밀리미터로 하는 일, 그리고 회전·평행이동·시간을 가르는 검사 — 이 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §8]]이다. 모든 행은 보정과 사용 사이에 마운트가 움직이지 않는다고 가정한다. 휘거나 떠는 브래킷은 그 가정을 깨고, 그것을 목표에서의 기울기로 설계하는 법은 [[02-foundations/tools/mechanical-design-fabrication|12.9 실험을 위한 기계 설계와 제작 §6]]이다.
 
 **Hand–eye 방정식의 유도.** 손목에 단 카메라가, 팔이 움직이는 동안 제자리에 있는 보정 타깃을 본다. 프레임 $b$ 의 좌표를 프레임 $a$ 로 옮기는 변환을 $T_{ab}$ 로 쓴다. $p^a = T_{ab}p^b$ 이고, §1의 $T_{cw}$ 와 같은 방향이다([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §3]]). $b$ 는 로봇 베이스, $g$ 는 그리퍼, $c$ 는 카메라, $t$ 는 타깃이다. 로봇 자세 $i$ 에서는 변환 세 개의 사슬 하나가 베이스에서 타깃까지 닿는다. 관절 엔코더가 주는 그리퍼 자세 $T_{bg_i}$, 변하지 않는 모르는 카메라–그리퍼 장착 $X = T_{gc}$, 그리고 카메라가 재는 타깃 자세 $T_{c_it}$(PnP, 곧 타깃의 알려진 코너와 그 픽셀로 구한다)다. 타깃은 움직이지 않았으므로 두 로봇 자세 $1$ 과 $2$ 의 사슬은 같은 변환에서 끝난다.
 $$T_{bg_1}\,X\,T_{c_1t} = T_{bt} = T_{bg_2}\,X\,T_{c_2t}$$
@@ -1271,6 +1517,7 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 - $K$ 의 다섯 성분을 모두 이름 붙이고, 어느 것이 센서의 성질이고 어느 것이 렌즈의 성질인지 말하고, 왜곡을 올바른 순서로 적용할 수 있다
 - Epipolar 제약을 $E$ 로도 $F$ 로도 쓰고, 대수적 잔차를 픽셀 거리로 바꾸고, 그 제약이 잡지 못하는 것을 말할 수 있다
 - Rectify된 짝을 삼각측량하고, $Z^2$ 오차 법칙 때문에 답이 쓸모없어지는 거리를 말할 수 있다
+- 알려진 코너 넷에서 PnP로 자세를 구하고, 코너 셋이 왜 자세를 최대 넷까지 남기는지와 무엇이 하나를 고르는지 말하고, 작은 마커에서 왜 기울기가 가장 약한 숫자인지 설명할 수 있다
 - 점대점과 점대평면 ICP 목적함수를 쓰고, 후자에 평평한 방향이 생기는 경우를 보일 수 있다
 - RMS reprojection error를 정확도가 아니라 훈련 잔차로 읽을 수 있다
 
@@ -1288,6 +1535,7 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 7. 어떤 보정 파일이 리그의 $640\times480$ 센서에 대해 $f_x = 600$, $f_y = 604$, $c_x = 318$, $c_y = 241$, $s = 0$ 을 보고한다. 이 중 렌즈가 아니라 *센서*에 대해 말해 주는 것은 무엇이고, 이미지가 잘렸다고 의심하게 만들 값은 어느 하나인가?
 8. 리그의 $F$ 로, $\tilde u_1 = (470, 300)$ 의 후보 짝이 $(434, 306)$ 에 있다. 대수적 잔차와 픽셀 단위 점-선 거리를 계산하라. $(452, 300)$ 의 짝은 같은 검사에서 기각되는가?
 9. 같은 시점 스무 장에 $k_3$, $p_1$, $p_2$ 를 더해 보정을 다시 맞추니 $e_{\text{RMS}}$ 가 $0.37$ px에서 $0.21$ px로 내려갔다. 무엇이 입증되었으며, 새 모델이 더 나은지를 가리려면 어떤 확인 둘이 필요한가?
+10. 네 코너에 PnP를 풀어 $R=I$, $t=(0,0,2)$ m를 얻었다. 타깃 프레임에서 카메라는 어디 있는가? 코너마다 $1$ px의 잡음이 있을 때 적합은 타깃의 거리와 기울기 중 무엇을 더 나쁘게 복원하며, 왜 그런가? 타깃이 같은 자리의 $0.1$ m 태그라면 무엇이 바뀌는가?
 
 > [!tip]- 정답 · Answers
 > 1. $u = 600(-0.3)/1.5+320 = 200$, $v = 600(0.1)/1.5+240 = 280$.
@@ -1299,13 +1547,14 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 > 7. $f_x \ne f_y$ 와 $s$ 가 센서의 사실이다. 픽셀 단위 초점 거리가 다르다는 것은 픽셀이 정사각이 아니라는 뜻이고, $s=0$ 은 픽셀 축이 직교한다는 뜻이다. 초점 거리 자체는 렌즈다. $c_x = 318$ 은 특별할 것이 없고, 높이 480에 대한 $c_y = 241$ 은 주점이 중심보다 $1$ px *아래*, $c_x$ 는 $320$ 보다 $2$ px 왼쪽에 있다는 뜻으로 둘 다 정상이다. 자르기를 알리는 값은 $(w/2, h/2)$ 에서 크게 벗어난 주점이다. 예를 들어 폭 $640$ 이미지에서 $c_x = 240$ 이라면, 보정한 배열과 지금 투영해 넣는 배열이 다르다는 말이다.
 > 8. $\ell = F\tilde u_1 \propto (0,\ 0.0002,\ -0.06)$ 이다. 대수적 잔차는 $0.0002(306) - 0.06 = 1.2\times10^{-3}$, $\sqrt{\ell_1^2+\ell_2^2} = 0.0002$ 이므로 $d_\perp = 6.0$ px — 수평 epipolar 선이니 당연히 수직 어긋남 그대로다. $(452, 300)$ 의 짝은 대수적 잔차가 정확히 $0$ 이고 $d_\perp = 0$ 이다. 선 *위에* 있으므로 epipolar 검사를 통과한다. 그래도 틀렸다. $Z = 600(0.12)/18 = 4.0$ m로 삼각측량되어 $2.0$ m가 아니다. Epipolar 선을 따라 움직이는 것은 $F$ 에 보이지 않고 깊이에만 보인다.
 > 9. 자유 파라미터가 많은 모델이 같은 데이터에 더 잘 맞았다는 것뿐이고, 그것은 보장된 일이므로 정확도에 대해서는 아무것도 입증하지 않는다([[02-foundations/ml-practice|9. ML 실무 §2]]). 가리는 확인이 둘이다: (i) 적합이 본 적 없는 시점 — 되도록 다른 거리와 기울기 — 을 홀드아웃으로 두고 훈련 시점이 아니라 거기서 $e_{\text{RMS}}$ 를 비교한다; (ii) 실제 작업 거리에서 알려진 길이나 타깃 간 거리를 잰다. 그것이 보정이 봉사할 미터이기 때문이다. 셋째로 이미지 위치별 잔차 지도가 유용하다. 진짜 왜곡 구조는 반경 방향 무늬로 나타나고, 잡음 적합은 얼룩으로 나타난다.
+> 10. $-R^\top t=(0,0,-2)$ m에 있다. $t$ 는 카메라 프레임에서 타깃이 놓인 자리이지 카메라의 위치가 아니다(§1). 거리는 $\pm13.2$ mm로 나온다. 타깃의 겉보기 크기에서 읽으므로 $150$ px 폭에서 1픽셀이 $13.3$ mm다. 기울기는 각각 $\pm2.70°$ 로밖에 나오지 않는다. 기울기는 이미지가 크기만 바뀐 직사각형에서 벗어나는 정도로만 드러나고, 그것이 $10°$ 에 $5.2$ px이기 때문이다. $0.1$ m 태그는 $30$ px에 걸치고 $10°$ 를 기울여도 모서리가 $0.26$ px 바뀐다. 더 나쁘게는 재투영 오차에 두 번째 최소점이 있어서, $20°$ 에서 $27.5°$ 떨어진 자세가 코너를 $0.18$ px로 맞춘다. 기울기가 그저 시끄러운 것이 아니라 모호하다(§2.7). 더 큰 타깃, 멀리 떨어뜨린 여러 태그, 또는 사전 정보가 그것을 고친다.
 
 ### 과제 · Problem set
 
 Tier B. 계속 쓰는 대상의 손목 리그, 벽까지의 거리로서의 **P5**([[02-foundations/lab-plants|0.6]]), 그리고 손-눈 오프셋 $d_{ct}=4\,\mathrm{cm}$. 시뮬레이터 없음. 위의 계산 예제는 리그를 랜드마크 $L$, $Z = 2.0$ m에서 돌렸다. 이 과제는 그것을 $L' = (0.5,\ 0.2,\ 4.0)$ m로 옮기고 어떤 오차가 자라고 어떤 오차가 줄고 어떤 오차가 그대로인지 묻는다. 그것이 변형이다.
 
 1. **그리기.** 두 카메라, $L'$ 로 가는 두 광선, 두 상점과 그 사이의 시차. 그 옆에 같은 축척으로 $Z = 4$ m에서의 $\pm1$ px 깊이 오차 막대와 위의 그림에 있던 $Z = 2$ m의 것을 함께. 이미지 평면 위에는 $L'$ 에서의 왜곡 변위를 짧은 선분으로 더한다. 오차 셋, 서로 다른 축척 법칙 셋 — 그림이 셋을 달라 보이게 해야 한다.
-2. **유도.** (a) $L'$ 을 두 카메라에 투영하라: $u_1, v_1, u_2$, 시차 $d'$, 그리고 확인 $Z = f b / d'$. (b) $d' \pm 1$ px의 깊이 오차를 정확히 구하고 1차 추정 $Z^2/(fb)$ 와 비교한 뒤, $+1$ 과 $-1$ 의 정확한 오차가 왜 같지 않은지 말하라. (c) $L'$ 에서의 왜곡 변위: $r$, 반경 계수, 픽셀 변위를 구하고, $Z = 2$ 에서의 $2.30$ px과의 비를 주도항으로 설명하라. (d) P5의 스칼라 융합: $K$, 융합한 카메라–벽 거리, $P^+$, 그리고 $d_{ct}$ 를 뺀 말단–벽 값.
+2. **유도.** (a) $L'$ 을 두 카메라에 투영하라: $u_1, v_1, u_2$, 시차 $d'$, 그리고 확인 $Z = f b / d'$. (b) $d' \pm 1$ px의 깊이 오차를 정확히 구하고 1차 추정 $Z^2/(fb)$ 와 비교한 뒤, $+1$ 과 $-1$ 의 정확한 오차가 왜 같지 않은지 말하라. (c) $L'$ 에서의 왜곡 변위: $r$, 반경 계수, 픽셀 변위를 구하고, $Z = 2$ 에서의 $2.30$ px과의 비를 주도항으로 설명하라. (d) P5의 스칼라 융합: $K$, 융합한 카메라–벽 거리, $P^+$, 그리고 $d_{ct}$ 를 뺀 말단–벽 값. (e) $Z = 4$ m의 PnP: 네 타깃 코너를 $(0,0,4)$, $(0.5,0,4)$, $(0,0.4,4)$, $(0.5,0.4,4)$ m로 옮긴다. 투영한 뒤, §2.7의 지렛대 셋으로 타깃의 거리, roll, 기울기의 $1$ px 퍼짐이 $Z=2$ m에서 어떻게 바뀌는지 예측하라.
 3. **해석.** (a) $AX = XB$ 에서 $A$, $B$, $X$ 중 무엇이 $4\,\mathrm{cm}$ 를 담고 있으며, $0.37$ px 보정 잔차가 그것을 보증하지 못하는 이유는? (b) 반복 패널 위 $(440, 300)$ 의 매칭은 epipolar 잔차가 정확히 0이다. 2번의 어느 숫자 하나가 그것을 잡았을지 말하고, 일반적으로 잡으려면 리그에 무엇을 더해야 하는지 말하라.
 
 > [!note]- 그리는 법 · How to draw it
@@ -1318,7 +1567,7 @@ Tier B. 계속 쓰는 대상의 손목 리그, 벽까지의 거리로서의 **P5
 
 > [!tip]- 정답 · Solutions
 > 1. $L'$ 로 가는 두 광선은 $Z = 2$ 의 짝보다 눈에 띄게 평행에 가깝다. $Z=4$ 의 오차 막대는 $Z=2$ 것의 약 네 배로, 왜곡 선분은 맨 위 그림의 것보다 약 여덟 배 *짧게* 그려야 한다.
-> 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; 카메라 2에서 점은 $(0.38, 0.2, 4.0)$ 이므로 $u_2 = 377$, $d' = 18$ px이고 $Z = 600(0.12)/18 = 4.0$ m다. (b) $d' = 17 \Rightarrow Z = 4.235$ m($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m($-0.211$). 1차 추정은 $Z^2/(fb) = 16/72 = 0.222$ m로 둘 사이에 있고, 둘이 같지 않은 것은 $Z = fb/d$ 가 $d$ 에 대해 볼록하기 때문이다 — 시차를 잃는 쪽이 얻는 쪽보다 비싸므로, 픽셀 오차가 대칭이어도 깊이 오차 분포는 카메라에서 *멀어지는* 쪽으로 기운다. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; 계수는 $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$ 이라 점은 $(394.729,\ 269.892)$ 에 맺히고 변위는 $0.291$ px다. $Z = 2$ 에서의 $2.30$ px보다 $7.9$ 배 작은데, 픽셀 단위 주도 반경 변위가 $f\lvert k_1\rvert r^3$ 이고 $r$ 이 절반이 되었기 때문이다: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, 융합 거리 $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, 말단–벽 $11.6 - 4 = 7.6\,\mathrm{cm}$.
+> 2. (a) $u_1 = 600(0.5)/4 + 320 = 395$, $v_1 = 600(0.2)/4 + 240 = 270$; 카메라 2에서 점은 $(0.38, 0.2, 4.0)$ 이므로 $u_2 = 377$, $d' = 18$ px이고 $Z = 600(0.12)/18 = 4.0$ m다. (b) $d' = 17 \Rightarrow Z = 4.235$ m($+0.235$); $d' = 19 \Rightarrow Z = 3.789$ m($-0.211$). 1차 추정은 $Z^2/(fb) = 16/72 = 0.222$ m로 둘 사이에 있고, 둘이 같지 않은 것은 $Z = fb/d$ 가 $d$ 에 대해 볼록하기 때문이다 — 시차를 잃는 쪽이 얻는 쪽보다 비싸므로, 픽셀 오차가 대칭이어도 깊이 오차 분포는 카메라에서 *멀어지는* 쪽으로 기운다. (c) $x_n = 0.125$, $y_n = 0.05$, $r^2 = 0.018125$, $r = 0.1346$; 계수는 $1 - 0.2(0.018125) + 0.05(0.018125)^2 = 0.996391$ 이라 점은 $(394.729,\ 269.892)$ 에 맺히고 변위는 $0.291$ px다. $Z = 2$ 에서의 $2.30$ px보다 $7.9$ 배 작은데, 픽셀 단위 주도 반경 변위가 $f\lvert k_1\rvert r^3$ 이고 $r$ 이 절반이 되었기 때문이다: $2^3 = 8$. (d) $K = 4/(4+1) = 0.8$, 융합 거리 $10 + 0.8(12-10) = 11.6\,\mathrm{cm}$, $P^+ = (1-0.8)4 = 0.8\,\mathrm{cm}^2$, 말단–벽 $11.6 - 4 = 7.6\,\mathrm{cm}$. (e) 코너는 $(320, 240)$, $(395, 240)$, $(320, 300)$, $(395, 300)$ px에 맺혀 $75\times60$ px 직사각형이 된다. 거리: $Z^2/(f\ell)=16/300=53.3$ mm/px로 $13.3$ 의 네 배다. 지렛대에 $Z^2$ 이 들어 있기 때문이다. Roll: $75$ px에 걸친 1픽셀은 $0.76°$ 로 $0.38°$ 의 두 배다. $Z$ 가 들어 있기 때문이다. 기울기: $fWH/Z^2=7.5$ px/rad로 $30$ 의 4분의 1이므로 퍼짐이 네 배가 된다. 코드의 공분산을 $t=(0,0,4)$ 에서 계산하면 $\pm52.7$ mm, $\pm0.73°$, $\pm10.80°$ 다. 거리와 기울기는 $Z^2$ 으로, roll은 $Z$ 로 자란다.
 > 3. (a) $X$ 가 모르는 카메라–그리퍼 변환이고 $4\,\mathrm{cm}$ 는 그 평행 이동 성분 하나다. $A$ 는 두 로봇 자세 사이의 그리퍼 운동, $B$ 는 같은 두 자세 사이의 카메라 운동이다. 그것은 $(R_A - I)t_X$ 를 거쳐서만 방정식에 들어오므로, §5의 P2 회전 한 번은 그것을 $11.3$ mm의 어긋남으로 보여 주고, 회전 없는 운동은 전혀 보여 주지 못한다. $0.37$ px 잔차는 타깃 시점들 위의 *훈련* 잔차이고, §5는 바로 그 잔차를 가진 적합이 축에서 $0.5$ m 벗어난 점을 $1.67$ mm, $3$ m 벗어난 점을 $10.0$ mm 틀리게 놓는 것을 보인다 — 카메라–그리퍼 평행 이동도 같은 시점들에서 추정되므로 그 외삽 오차를 물려받는다. 홀드아웃 자세와 알려진 길이 측정만이 그것을 검사한다. (b) **삼각측량한 깊이.** 틀린 매칭은 시차가 $36$ 이 아니라 $30$ 이므로 $Z = 2.00$ m가 아니라 $2.40$ m로 삼각측량된다 — epipolar 잔차가 0이라고 보고하는 $40$ cm 오차다. $F$ 는 매칭을 선 위로 구속할 뿐 그 선을 *따라간* 위치에 대해서는 아무 말도 하지 않기 때문이다. 일반적으로는 epipolar 선을 따르지 않는 독립 제약을 더한다: 첫 짝의 epipolar 선과 각을 이루는 세 번째 시점, 직접 거리 측정(P5 센서나 라이다), 또는 똑같은 패널 둘을 구별할 만큼 강한 외양 검사 — 그런데 똑같은 패널에서는 그것이 질감이 아니라 맥락을 쓴다는 뜻이다.
 
 ### 출처
@@ -1335,3 +1584,11 @@ Tier B. 계속 쓰는 대상의 손목 리그, 벽까지의 거리로서의 **P5
 - DeTone, D., Malisiewicz, T. & Rabinovich, A. "SuperPoint: Self-supervised interest point detection and description." *CVPR Workshops*, 2018.
 - Sarlin, P.-E., DeTone, D., Malisiewicz, T. & Rabinovich, A. "SuperGlue: Learning feature matching with graph neural networks." *CVPR*, 2020.
 - Sun, J., Shen, Z., Wang, Y., Bao, H. & Zhou, X. "LoFTR: Detector-free local feature matching with transformers." *CVPR*, 2021.
+- Persson, M. & Nordberg, K. "Lambda Twist: An accurate fast robust perspective three point (P3P) solver." *European Conference on Computer Vision (ECCV)*, 2018. [ECVA 페이지](https://www.ecva.net/papers/eccv_2018/papers_ECCV/html/Mikael_Persson_Lambda_Twist_An_ECCV_2018_paper.php). 초록이 P3P 해가 최대 넷임을 밝힌다.
+- Wang, B., Hu, H. & Zhang, C. "Companion surface of danger cylinder and its role in solution variation of P3P problem." arXiv:1906.08598, 2019, preprint. [arXiv](https://arxiv.org/abs/1906.08598). 위험 원기둥, 그 위의 중근, 그리고 불안정성.
+- Schweighofer, G. & Pinz, A. "Robust pose estimation from a planar target." *IEEE Transactions on Pattern Analysis and Machine Intelligence* 28(12), 2024–2030, 2006. [출판 기록](https://tugraz.elsevierpure.com/en/publications/robust-pose-estimation-from-a-planar-target-2/). 이론상 동일 평면의 점 넷이면 자세가 하나이고, 실제로는 국소 최소점이 둘이다.
+- Olson, E. "AprilTag: A robust and flexible visual fiducial system." *ICRA*, 2011; Wang, J. & Olson, E. "AprilTag 2: Efficient and robust fiducial detection." *IROS*, 2016. [AprilTag 프로젝트 페이지](https://april.eecs.umich.edu/software/apriltag)
+- Lindenberger, P., Sarlin, P.-E. & Pollefeys, M. "LightGlue: Local feature matching at light speed." *ICCV*, 2023. [arXiv:2306.13643](https://arxiv.org/abs/2306.13643)
+- Wang, S., Leroy, V., Cabon, Y., Chidlovskii, B. & Revaud, J. "DUSt3R: Geometric 3D vision made easy." *CVPR*, 2024. [arXiv:2312.14132](https://arxiv.org/abs/2312.14132)
+- Leroy, V., Cabon, Y. & Revaud, J. "Grounding image matching in 3D with MASt3R." *ECCV*, 2024. [arXiv:2406.09756](https://arxiv.org/abs/2406.09756)
+- Wang, J., Chen, M., Karaev, N., Vedaldi, A., Rupprecht, C. & Novotny, D. "VGGT: Visual geometry grounded transformer." *CVPR*, 2025. [arXiv:2503.11651](https://arxiv.org/abs/2503.11651)

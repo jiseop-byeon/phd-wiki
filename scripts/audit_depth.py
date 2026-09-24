@@ -35,15 +35,17 @@ GUIDE = os.path.join("content", "00-study-depth-guide.md")
 # guide names areas in prose; only this repo knows which files they are, so the
 # mapping lives here and the *defaults* are read from the guide.
 AREA_PATHS = {
-    "Engineering math, linear algebra, calculus, probability, optimization": (
+    "Engineering math, basic physics (0.6.1–0.6.3), linear algebra, calculus, probability, optimization": (
         "02-foundations/engineering-math", "02-foundations/linear-algebra",
         "02-foundations/calculus-backprop", "02-foundations/probability",
-        "02-foundations/optimization"),
+        "02-foundations/optimization", "02-foundations/basic-mechanics",
+        "02-foundations/basic-circuits-electronics", "02-foundations/fluid-power"),
     "Information theory": ("02-foundations/information-theory",),
     "Signal processing, state estimation, calibration, SE(3)": (
         "02-foundations/signal-processing", "02-foundations/se3-geometry",
         "04-robotics/state-estimation-slam",
-        "04-robotics/geometric-perception-calibration"),
+        "04-robotics/geometric-perception-calibration",
+        "04-robotics/perception-sensors-rigs"),
     "Deep-learning history and ecosystem maps": ("03-deep-learning/",),
     "VLM": ("notes/3-vlm/",),
     "Diffusion, flow matching, world models": (
@@ -52,6 +54,9 @@ AREA_PATHS = {
         "05-construction-robotics/lineage", "05-construction-robotics/labs",
         "05-construction-robotics/industry-deployment"),
     "Research practice": ("06-research-practice/",),
+    # Added 2026-09-23 with the tools track: its nine pages, its map and the C++ page.
+    "Programming and tools (12.1–12.9, 25.0)": (
+        "02-foundations/tools/", "04-robotics/ros2/cpp-for-robot-code"),
 }
 
 # The profile table's Literacy row, which is stricter than the generic table

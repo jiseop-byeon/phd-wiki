@@ -98,7 +98,7 @@ straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
   <text x="12" y="359" font-size="11" opacity="0.9" fill="currentColor">and 0.009, since Euler uses the slope at the start of the step, where 1 − x is largest. d = 0.</text>
 </svg>
 
-Plant **P4**, the leaky heater $\dot x=-x+u$ of §8, as a block diagram: the command $u=1$ enters a summing junction with $+$ and the fed-back $x$ with $-$, their sum is $\dot x$, and an integrator ($\int$, or $1/s$) returns the temperature error $x$, the only state, which comes back through a unit gain (no disturbance input: $d=0$ here). The inset is the step response from $x=0$: the initial slope is $1$ per second, its tangent reaches the steady value $1$ at the time constant $t=1\,\mathrm{s}$, and the curve $x=1-e^{-t}$ passes below it. In the magnified corner, forward Euler's $0.10$ and $0.19$ sit $0.005$ and $0.009$ above the exact $0.095$ and $0.181$ at $t=0.1$ and $0.2$, because Euler uses the slope at the start of each step, where $1-x$ is largest.
+The plant (in control, the physical system being controlled) **P4** — the wiki's leaky-heater test system, a temperature that slowly follows its heater command ([[02-foundations/lab-plants|0.6 Lab Plants]]) — which is the leaky heater $\dot x=-x+u$ of §8, as a block diagram: the command $u=1$ enters a summing junction with $+$ and the fed-back $x$ with $-$, their sum is $\dot x$, and an integrator ($\int$, or $1/s$) returns the temperature error $x$, the only state, which comes back through a unit gain (no disturbance input: $d=0$ here). The inset is the step response from $x=0$: the initial slope is $1$ per second, its tangent reaches the steady value $1$ at the time constant $t=1\,\mathrm{s}$, and the curve $x=1-e^{-t}$ passes below it. In the magnified corner, forward Euler's $0.10$ and $0.19$ sit $0.005$ and $0.009$ above the exact $0.095$ and $0.181$ at $t=0.1$ and $0.2$, because Euler uses the slope at the start of each step, where $1-x$ is largest.
 
 ### 1. Derivatives (→ used by 2. Calculus, 4. Optimization)
 
@@ -508,7 +508,7 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
 
 ### 8. Linear differential equations (→ control track: pages 5–7)
 
-Physical systems are described by ODEs — this is the modeling language of all of control, picked up directly in [[04-robotics/control-theory-ce397|5. Control Theory §2–4]].
+Physical systems are described by ODEs — this is the modeling language of all of control, picked up directly in [[04-robotics/control-theory-ce397|5. Control Theory §2–4]]. The mass–spring–damper this section solves is derived from a free-body diagram, with units and energy, on the plant **P3** — the wiki's one-degree-of-freedom handle pushed into a wall ([[02-foundations/lab-plants|0.6 Lab Plants]]) — in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §5]].
 
 - An **ODE** (ordinary differential equation) is an equation relating an unknown function
   of one variable, here $x(t)$, to its derivatives; its **order** is the highest derivative
@@ -805,7 +805,7 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
   <text x="12" y="359" font-size="11" opacity="0.9" fill="currentColor">있다. 오일러는 1 − x가 가장 큰 스텝 시작점의 기울기를 쓰기 때문이다. 외란은 없다: d = 0.</text>
 </svg>
 
-§8의 새는 히터 $\dot x=-x+u$, 곧 장치 P4의 블록선도로, 명령 $u=1$은 $+$로, 되먹임된 $x$는 $-$로 합산점에 들어가 그 합이 $\dot x$가 되고, 적분기($\int$ 또는 $1/s$)가 유일한 상태인 온도 오차 $x$를 돌려주며, $x$는 이득 $1$을 거쳐 되돌아온다($d=0$이라 외란 입력은 없다). 삽도는 $x=0$에서 시작한 계단 응답으로, 초당 $1$인 초기 기울기의 접선이 시정수 $t=1\,\mathrm{s}$에서 정상값 $1$에 닿고 곡선 $x=1-e^{-t}$는 그 아래로 지난다. 확대한 모서리에서는 $t=0.1$과 $0.2$의 전진 오일러 $0.10$과 $0.19$가 정확값 $0.095$와 $0.181$보다 각각 $0.005$, $0.009$ 위에 있는데, 오일러가 $1-x$가 가장 큰 스텝 시작점의 기울기를 쓰기 때문이다.
+§8의 새는 히터 $\dot x=-x+u$, 곧 제어 대상(plant: 제어하려는 물리 시스템) **P4**(위키의 연습용 1차 시스템인 '새는 히터'. 온도가 히터 명령을 천천히 따라간다, [[02-foundations/lab-plants|0.6 Lab Plants]])의 블록선도로, 명령 $u=1$은 $+$로, 되먹임된 $x$는 $-$로 합산점에 들어가 그 합이 $\dot x$가 되고, 적분기($\int$ 또는 $1/s$)가 유일한 상태인 온도 오차 $x$를 돌려주며, $x$는 이득 $1$을 거쳐 되돌아온다($d=0$이라 외란 입력은 없다). 삽도는 $x=0$에서 시작한 계단 응답으로, 초당 $1$인 초기 기울기의 접선이 시정수 $t=1\,\mathrm{s}$에서 정상값 $1$에 닿고 곡선 $x=1-e^{-t}$는 그 아래로 지난다. 확대한 모서리에서는 $t=0.1$과 $0.2$의 전진 오일러 $0.10$과 $0.19$가 정확값 $0.095$와 $0.181$보다 각각 $0.005$, $0.009$ 위에 있는데, 오일러가 $1-x$가 가장 큰 스텝 시작점의 기울기를 쓰기 때문이다.
 
 ### 1. 미분 (→ 2. 미적분, 4. 최적화에서 사용)
 
@@ -1178,7 +1178,7 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 
 ### 8. 선형 미분방정식 (→ 제어 트랙 5~7번)
 
-물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어이며, [[04-robotics/control-theory-ce397|5. 제어 이론 §2–4]]가 이것을 그대로 이어받는다.
+물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어이며, [[04-robotics/control-theory-ce397|5. 제어 이론 §2–4]]가 이것을 그대로 이어받는다. 이 절이 푸는 질량–스프링–댐퍼를 단위와 에너지까지 갖춰 자유물체도에서 유도하는 곳은, 벽을 미는 위키의 1자유도 핸들인 장치 **P3**([[02-foundations/lab-plants|0.6 Lab Plants]]) 위의 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §5]]다.
 
 - **상미분방정식**(ODE)은 한 변수의 미지 함수, 여기서는 $x(t)$와 그 도함수들 사이의 관계식이다.
   나타나는 가장 높은 도함수의 차수가 방정식의 **차수**(order)다. $x$와 그 도함수들이 1제곱으로만, $x$에

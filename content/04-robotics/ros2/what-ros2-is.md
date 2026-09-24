@@ -203,7 +203,7 @@ Which ROS 2, then. Jazzy Jalisco (May 2024) is supported until May 2029 and is t
 
 ### 5. DDS underneath: what it buys and what it costs
 
-ROS 2 does not implement its own wire protocol, meaning the byte-level format that travels over the network. It borrows one.
+ROS 2 does not implement its own wire protocol, meaning the byte-level format that travels over the network. It borrows one. What lies under any such protocol — addresses, ports, UDP and multicast — and where DDS and Zenoh sit among the robot middlewares is [[02-foundations/tools/computer-networks|12.5 Computer Networks §6 and §8]].
 
 That borrowed layer is **DDS** (Data Distribution Service), an OMG industry standard, and its wire protocol is called DDSI-RTPS. Several vendors ship DDS implementations. The ROS layer that adapts to a specific DDS product is the `rmw` (ROS middleware) interface, and several are supported:
 
@@ -277,7 +277,7 @@ sudo apt install ros-dev-tools    # colcon, rosdep, build tooling — needed fro
 source /opt/ros/jazzy/setup.bash
 ```
 
-This is not a formality. The setup file exports `PATH` (so `ros2` resolves), `AMENT_PREFIX_PATH` and `CMAKE_PREFIX_PATH` (so packages are findable), `LD_LIBRARY_PATH` and `PYTHONPATH` (so libraries and Python modules import), and ROS-specific variables. Environment variables belong to a process and are inherited only by its children, so a shell you opened before sourcing, or a second tab, has none of them.
+This is not a formality. The setup file exports `PATH` (so `ros2` resolves), `AMENT_PREFIX_PATH` and `CMAKE_PREFIX_PATH` (so packages are findable), `LD_LIBRARY_PATH` and `PYTHONPATH` (so libraries and Python modules import), and ROS-specific variables. Environment variables belong to a process and are inherited only by its children, so a shell you opened before sourcing, or a second tab, has none of them. The environment, `PATH` and `source` in general, outside ROS, are [[02-foundations/tools/linux-shell|12.1 Linux and the Shell §5]].
 
 That design is deliberate: it is what lets two distributions, or a distribution and your own workspace, coexist on one machine and be selected per terminal. The cost is the discipline of sourcing.
 
@@ -731,7 +731,7 @@ ROS 1은 잘 돌아갔고, 당신이 읽을 로보틱스 문헌의 상당수가 
 
 ### 5. 아래에 깔린 DDS: 무엇을 사고 무엇을 치르는가
 
-ROS 2는 자체 와이어 프로토콜, 즉 네트워크를 오가는 바이트 수준 형식을 구현하지 않는다. 빌려 쓴다.
+ROS 2는 자체 와이어 프로토콜, 즉 네트워크를 오가는 바이트 수준 형식을 구현하지 않는다. 빌려 쓴다. 그런 프로토콜 밑에 무엇이 있는지 — 주소, 포트, UDP와 멀티캐스트 — 와 로봇 미들웨어 가운데 DDS와 Zenoh가 어디에 서는지는 [[02-foundations/tools/computer-networks|12.5 컴퓨터 네트워크 §6, §8]]이다.
 
 빌려 쓰는 계층이 OMG 산업 표준인 **DDS**(Data Distribution Service)이고, 그 와이어 프로토콜 이름이 DDSI-RTPS다. 여러 벤더가 DDS 구현을 내놓는다. 특정 DDS 제품에 맞추는 ROS 계층이 `rmw`(ROS middleware) 인터페이스이고, 여럿이 지원된다.
 
@@ -805,7 +805,7 @@ sudo apt install ros-dev-tools    # colcon, rosdep 등 — 25.4부터 필요
 source /opt/ros/jazzy/setup.bash
 ```
 
-형식적인 절차가 아니다. 이 파일은 `PATH`(그래야 `ros2`가 잡힌다), `AMENT_PREFIX_PATH`와 `CMAKE_PREFIX_PATH`(패키지 탐색), `LD_LIBRARY_PATH`와 `PYTHONPATH`(라이브러리와 Python 모듈 import), 그리고 ROS 전용 변수를 내보낸다. 환경 변수는 프로세스에 속하고 자식에게만 상속되므로, source 전에 열어 둔 셸이나 두 번째 탭에는 아무것도 없다.
+형식적인 절차가 아니다. 이 파일은 `PATH`(그래야 `ros2`가 잡힌다), `AMENT_PREFIX_PATH`와 `CMAKE_PREFIX_PATH`(패키지 탐색), `LD_LIBRARY_PATH`와 `PYTHONPATH`(라이브러리와 Python 모듈 import), 그리고 ROS 전용 변수를 내보낸다. 환경 변수는 프로세스에 속하고 자식에게만 상속되므로, source 전에 열어 둔 셸이나 두 번째 탭에는 아무것도 없다. ROS 밖에서 일반적으로 본 환경, `PATH`, `source`는 [[02-foundations/tools/linux-shell|12.1 리눅스와 셸 §5]]이다.
 
 이 설계는 의도된 것이다. 배포판 두 개, 또는 배포판과 내 워크스페이스가 한 머신에 공존하고 터미널마다 선택되게 하는 장치다. 대가는 source하는 규율이다.
 

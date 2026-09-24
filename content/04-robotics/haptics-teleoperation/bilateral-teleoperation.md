@@ -143,7 +143,7 @@ A delayed force can arrive after velocity reverses, turning nominal damping into
 - time-domain passivity observers/controllers;
 - wave/scattering variables that make a constant-delay channel passive under assumptions (send sum and difference combinations of velocity and force instead of the raw signals; derived in [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection §3]]);
 - model-mediated teleoperation, where a fast local model renders contact while remote updates correct it;
-- shared control or predictive displays that reduce the human's need to close the fastest loop through the network.
+- shared control or predictive displays that reduce the human's need to close the fastest loop through the network — whose own one-way delay, jitter and losses are [[02-foundations/tools/computer-networks|12.5 Computer Networks §1]].
 
 Each pays somewhere: added damping reduces transparency, wave variables distort transients, local models can be wrong, and prediction/shared autonomy can alter authority — how shared autonomy arbitrates that authority by inferring the operator's goal is [[04-robotics/hri-safety|11. HRI & Safety §3.5]].
 
@@ -350,7 +350,7 @@ $$P_l=F_l\dot x_l=s_fF_f\frac{\dot x_f}{s_x}=\frac{s_f}{s_x}P_f.$$
 - 시간영역 passivity observer/controller;
 - 가정 아래에서 일정 지연 채널을 수동적으로 만드는 wave/scattering 변수(원시 신호 대신 속도와 힘의 합·차 조합을 보낸다. 유도는 [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집 §3]]);
 - 빠른 local 모델이 접촉을 렌더링하고 원격 갱신이 그것을 교정하는 model-mediated teleoperation;
-- 사람이 네트워크를 통과하는 가장 빠른 루프를 닫을 필요를 줄이는 shared control이나 predictive display.
+- 사람이 네트워크를 통과하는 가장 빠른 루프를 닫을 필요를 줄이는 shared control이나 predictive display. 그 네트워크 자체의 편도 지연, 지터, 손실은 [[02-foundations/tools/computer-networks|12.5 컴퓨터 네트워크 §1]]이다.
 
 각각 어딘가에서 값을 치른다. damping을 더하면 transparency가 줄고, wave 변수는 과도 응답을 일그러뜨리며, local 모델은 틀릴 수 있고, 예측과 shared autonomy는 권한 배분을 바꿀 수 있다 — shared autonomy가 조작자의 목표를 추론해 그 권한을 어떻게 나누는지는 [[04-robotics/hri-safety|11. HRI·안전 §3.5]]에 있다.
 

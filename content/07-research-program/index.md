@@ -117,7 +117,7 @@ contact-rich manipulation*), and the others name the conditions under which it h
 
 The layer sequence a construction manipulation system runs through. Reading a paper in
 this area is largely a matter of asking **which of these layers it claims to improve** and
-which it borrows off the shelf.
+which it borrows off the shelf. The [[physical-ai-map|Physical AI Map]] draws this stack on the three floors of tools, mathematics and physics, with every page of the wiki on it as a chip, so that any page can be placed in it.
 
 ```mermaid
 flowchart LR
@@ -183,16 +183,16 @@ If yes, it can be promoted toward Working or Mastery. If no, it stays at Literac
 is not a demotion: Literacy is exactly enough to read the field, cite it correctly, and
 recognize when it starts to matter.
 
-**Where the test has actually landed, as of 2026-09-23.** 169 pages sit at Working, 87 at
+**Where the test has actually landed, as of 2026-09-23.** 184 pages sit at Working, 88 at
 Literacy, 8 at Mastery. Twelve of the Working pages are the ROS 2 track added on 2026-09-10,
-which passes the test because running experiments on a real manipulator has no way around it. That is the opposite of what this page used to claim, and the reason
+which passes the test because running experiments on a real manipulator has no way around it. Fifteen more came on 2026-09-23 — the tools track 12 with its map and 25.0, the physics floor 0.6.1–0.6.3, and 3.6 Perception Sensors — and pass for the same reason: the rig, its code and its contact physics are how the experiment runs. That is the opposite of what this page used to claim, and the reason
 is that all three pillars count as serving the question, so anything inside them passes.
-Literacy is concentrated where it belongs — 55 of the 87 sit in
+Literacy is concentrated where it belongs — 55 of the 88 sit in
 [[01-canonical-papers/index|1. Canonical Papers]] — while the concept pages that carry a
 pillar are nearly all Working.
 
 A Working majority is not by itself evidence that the filter has stopped working, because
-[[00-study-depth-guide|0. Study Depth Guide]] prescribes Working in eight of its fourteen area
+[[00-study-depth-guide|0. Study Depth Guide]] prescribes Working in nine of its fifteen area
 rows, and Working for part of three more: applying the guide honestly *produces* these numbers. The decidable question is the
 narrower one — does any page sit **deeper** than its own area allows? `audit_depth.py` reads
 both of the guide's tables and answers it on every build. It found exactly one: the Dreamer
@@ -204,14 +204,14 @@ demote, not to restate the rule.
 
 ### 8. The dissertation path, in sessions
 
-*In one sentence:* about 171 sessions in seven blocks, in the order below, take the dissertation from the foundations gate to a learned policy seating S1's panel, and the rest of the tracks wait until the experiment calls for them.
+*In one sentence:* about 180 sessions in seven blocks, in the order below, take the dissertation from the foundations gate to a learned policy seating S1's panel, and the rest of the tracks wait until the experiment calls for them.
 
 The schedules and pacing ranges of all the tracks add up to more than four hundred sessions at Working, and most of them serve some other reader. This section is the path through them for the question of §3, in the order the pages' prerequisites allow. Each count is read off a schedule in the track indexes — the Working pass is every row, the Literacy pass the bold rows — except for the gate, foundations 10, the manipulation pages and 7.5 RL, which no schedule covers; those are sized the way the schedules are, with a session for the object and worked case, one for about 1,600 words of sections, one more for a Tier A lab and one for the problem set.
 
 | # | Block | Working | Literacy | Sessions, as scheduled | What it gives the dissertation |
 |---:|---|---:|---:|---|---|
 | 1 | The foundations gate, then [[02-foundations/manipulator-kinematics-dynamics\|10. Manipulator Kinematics & Dynamics]] | 1 + 6 | 1 + 1 | the gate check of [[02-foundations/overview\|0. Overview]] | where the foundations still have holes — each failed question names its page — and the task-space bridge a Mastery area needs |
-| 2 | The robotics common track through the [[04-robotics/capstone-panel-contact\|capstone]] | 95 | 39 | [[04-robotics/index\|robotics]] 1–95 | the classical loop closed on a panel: the baseline a learned policy has to beat |
+| 2 | The robotics common track through the [[04-robotics/capstone-panel-contact\|capstone]] | 104 | 41 | [[04-robotics/index\|robotics]] 1–104 | the classical loop closed on a panel: the baseline a learned policy has to beat |
 | 3 | [[04-robotics/teleoperation-demonstration\|12]], [[04-robotics/force-compliance-control\|13]] and [[04-robotics/grasping\|15]], with MR ch.12 | about 20 | 4 | none; robotics group H | demonstrations, impedance and grasping, three of the six Mastery areas |
 | 4 | [[02-foundations/rl-robot-learning\|7.5 RL]] §1 and §4, then deep learning 1–4 | 3 + 16 | 1 + 8 | [[03-deep-learning/index\|deep learning]] 1–3, 11–13, 35–44 | behaviour cloning's argument, the safety filter, and the VLA bridge with only the modules it stands on |
 | 5 | Research practice [[06-research-practice/experimental-design-reproducibility\|2]], and 4's worked case | 4 | 4 | [[06-research-practice/index\|research practice]] 4–6, 14 | the trial design, rule of three and Wilson interval that 2.5, 6 and 10 use |
@@ -219,13 +219,15 @@ The schedules and pacing ranges of all the tracks add up to more than four hundr
 | 7 | [[05-construction-robotics/imitating-contact\|10. Imitating Contact]] | 6 | 2 | construction 42–47 | the dissertation sentence as one object: a learned policy run into the site tolerance |
 | 8 | The rest of research practice | 32 | 16 | research practice 1–3, 7–13, 15–36 | failure analysis, writing, venues, benchmarks and human measurement, taken while the experiment runs |
 
-**Reading the table.** Blocks 1–7 come to about 171 sessions at Working and 69 at Literacy before an experiment starts; block 8 adds 32 beside it, about 203 in all. At the overview's pace of two course sessions a week, 171 sessions is about 86 weeks, so the Working pass cannot all come before the first mock-up. Take blocks 1–7 at Literacy first — 69 sessions, about 35 weeks at that pace — and take each block's remaining rows at Working when the experiment reaches its page.
+**Reading the table.** Blocks 1–7 come to about 180 sessions at Working and 71 at Literacy before an experiment starts; block 8 adds 32 beside it, about 212 in all. At the overview's pace of two course sessions a week, 180 sessions is about 90 weeks, so the Working pass cannot all come before the first mock-up. Take blocks 1–7 at Literacy first — 71 sessions, about 36 weeks at that pace — and take each block's remaining rows at Working when the experiment reaches its page. [[physical-ai-map|The Physical AI Map §3]] draws the seven blocks as a timeline, and its whole map marks every page of the path with a heavy chip.
 
 The order follows the prerequisite callouts. Block 4 comes after 2 and 3 because computer vision needs robotics 3.5 and the VLA page needs 10. Robot Systems and 12; block 5 comes before 6 because 2.5's protocol takes its trial design from it and 6's §4 its rule of three; block 7 needs every block before it. Where a page on the path leans on one section of a page off it — 2.5 on [[06-research-practice/real-world-impact|research practice 6 §2]], 9 on [[04-robotics/tactile-visuotactile|14. Tactile §1]], 6 on [[04-robotics/human-intent-prediction|23 §5]] and [[06-research-practice/psychophysics-human-measurement|research practice 8 §5]], 7.5 on [[05-construction-robotics/earthmoving-heavy-machinery|3]] for S2's machine — read that section when the callout names it.
 
 ### 9. What the path leaves out, and when to add it back
 
 Deep learning 1.1–1.4, 5, 6 and 6.1 are off the path. Add [[03-deep-learning/foundations/attention-transformer|1.2]] when the policy's backbone itself changes, [[03-deep-learning/diffusion/index|6]] and 6.1 when its action head is a denoiser, [[03-deep-learning/foundations/training-at-scale|1.3]] and [[03-deep-learning/foundations/gpu-computing|1.4]] when it trains at scale or in a parallel simulator, and [[03-deep-learning/world-models/index|5]] when it plans with a learned model. In construction, 1, 2 and 8 are maps of one session each, readable at any time, and 3, 5 and 7 are the other streams, added when the machine (3), the perception layer (5) or the BIM chain (7) enters the contribution. In robotics, 14 and 16 of group H enter when the policy's inputs include touch or the base moves; navigation, human perception and haptics when the site asks for them; and the build track when the experiment needs its rig.
+
+Two floors sit under the path without being counted in it. The physics floor, [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics]], [[02-foundations/basic-circuits-electronics|0.6.2 Circuits & Electronics]] and [[02-foundations/fluid-power|0.6.3 Fluid Power]], belongs with block 1: take the pages your degree skipped before block 2, where the robotics track starts to lean on them. The tools track, [[02-foundations/tools/index|12. Code, Tools & File Formats]], is taken one page at a time when its first need arrives — [[02-foundations/tools/linux-shell|12.1]] and [[02-foundations/tools/git-research-code|12.2]] before the first robot or cluster work, [[02-foundations/tools/python-research-code|12.3]] before the first Tier A lab if Python is new, [[02-foundations/tools/config-data-formats|12.4]] and [[02-foundations/tools/computer-networks|12.5]] when the build track first loads a parameter file or links two machines, [[02-foundations/tools/gpu-clusters|12.7]] when training first leaves your own machine, [[02-foundations/tools/concurrency|12.8]] before 25.5.1 on the rig, [[02-foundations/tools/mechanical-design-fabrication|12.9]] before building the first rig and [[02-foundations/tools/latex-figures-references|12.6]] before writing the first paper — with [[04-robotics/ros2/cpp-for-robot-code|25.0 C++]] before the build track's first C++ node.
 
 Papers follow the marks of [[01-canonical-papers/canonical-list|the canonical list]] — ★ read in full, ◐ the note and then a skim, ○ the note alone — not the folder order, at the overview's one paper session a week.
 
@@ -357,7 +359,7 @@ Papers follow the marks of [[01-canonical-papers/canonical-list|the canonical li
 ### 5. 매니퓰레이션 중심 스택
 
 건설 조작 시스템이 통과하는 층의 순서. 이 분야의 논문을 읽는 일은 대체로 **이 중 어느 층을
-개선했다고 주장하는가**, 그리고 어느 층을 기성품으로 가져다 썼는가를 묻는 일이다.
+개선했다고 주장하는가**, 그리고 어느 층을 기성품으로 가져다 썼는가를 묻는 일이다. [[physical-ai-map|피지컬 AI 지도]]는 이 스택을 도구·수학·물리의 세 바닥 위에 그리고 위키의 모든 페이지를 칩으로 올려 두어, 어느 페이지든 그 안에 자리를 찾을 수 있게 한다.
 
 ```mermaid
 flowchart LR
@@ -420,15 +422,15 @@ HRI 이론, 새 SLAM 알고리즘, 매니퓰레이션, 촉각 센서 하드웨�
 아니다: Literacy는 분야를 읽고, 정확히 인용하고, 그것이 중요해지기 시작하는 순간을 알아보는
 데 정확히 충분한 깊이다.
 
-**이 시험이 실제로 어디에 도달했는가, 2026-09-23 기준.** Working이 169쪽, Literacy가 87쪽,
+**이 시험이 실제로 어디에 도달했는가, 2026-09-23 기준.** Working이 184쪽, Literacy가 88쪽,
 Mastery가 8쪽이다. Working 중 12쪽은 2026-09-10에 더한 ROS 2 트랙이다. 실기계 매니퓰레이터로
-실험을 돌리는 데 우회로가 없으므로 입학 시험을 통과한다. 이 페이지가 예전에 주장하던 것과 반대이고, 이유는 세 기둥 모두가 연구 질문에
+실험을 돌리는 데 우회로가 없으므로 입학 시험을 통과한다. 2026-09-23에 열다섯 쪽이 더해졌다 — 도구 트랙 12와 그 지도와 25.0, 물리 바닥 0.6.1–0.6.3, 그리고 3.6 인식 센서 — 그리고 같은 이유로 통과한다. 리그와 그 코드와 접촉의 물리가 곧 실험이 돌아가는 방식이다. 이 페이지가 예전에 주장하던 것과 반대이고, 이유는 세 기둥 모두가 연구 질문에
 기여하는 것으로 계산되어 그 안에 있는 것은 전부 시험을 통과하기 때문이다. Literacy는 있어야 할
-곳에 몰려 있다 — 87쪽 중 55쪽이 [[01-canonical-papers/index|1. 핵심 논문]]에 있다 — 반면
+곳에 몰려 있다 — 88쪽 중 55쪽이 [[01-canonical-papers/index|1. 핵심 논문]]에 있다 — 반면
 기둥을 지는 개념 페이지는 거의 다 Working이다.
 
 Working이 다수라는 사실만으로는 거르는 기능이 멈췄다는 증거가 못 된다.
-[[00-study-depth-guide|깊이 가이드]]의 영역 표 열네 행 중 여덟 행이 기본값을 Working으로
+[[00-study-depth-guide|깊이 가이드]]의 영역 표 열다섯 행 중 아홉 행이 기본값을 Working으로
 정해 두었고, 세 행은 일부를 Working으로 두었기 때문이다. 가이드를 정직하게 적용하면 이 숫자가 나온다. 판정할 수 있는 질문은 더
 좁다 — 자기 영역이 허용하는 것보다 **깊게** 앉은 페이지가 있는가? `audit_depth.py`가 가이드의
 두 표를 읽어 빌드마다 이 질문에 답한다. 걸린 것은 정확히 하나, Dreamer 노트다. 논문 자체가
@@ -439,14 +441,14 @@ Working이 다수라는 사실만으로는 거르는 기능이 멈췄다는 증�
 
 ### 8. 학위논문 경로, 회차로
 
-*한 문장으로:* 아래 순서의 일곱 블록, 약 171회가 학위논문을 기초 통과 점검에서 S1 패널을 앉히는 학습된 정책까지 데려가고, 트랙의 나머지는 실험이 부를 때까지 기다린다.
+*한 문장으로:* 아래 순서의 일곱 블록, 약 180회가 학위논문을 기초 통과 점검에서 S1 패널을 앉히는 학습된 정책까지 데려가고, 트랙의 나머지는 실험이 부를 때까지 기다린다.
 
 모든 트랙의 일정표와 페이스 범위를 합치면 Working으로 400회가 넘고, 그 대부분은 다른 독자를 위한 것이다. 이 절은 §3의 질문을 위해 그 사이를 지나는 경로를, 페이지들의 선수 관계가 허락하는 순서로 적는다. 회차 수는 트랙 목차의 일정표에서 읽었다 — Working 통과는 모든 행, Literacy 통과는 굵은 행이다. 일정표가 다루지 않는 통과 점검, 기초 10, 조작 페이지들, 7.5 RL만은 일정표와 같은 방식으로 셌다. 대상과 끝까지 계산에 1회, 절 약 1,600단어에 1회, Tier A 실습에 1회 더, 과제에 1회다.
 
 | # | 블록 | Working | Literacy | 일정표의 회차 | 학위논문에 주는 것 |
 |---:|---|---:|---:|---|---|
 | 1 | 기초 통과 점검, 그다음 [[02-foundations/manipulator-kinematics-dynamics\|10. 매니퓰레이터 기구학·동역학]] | 1 + 6 | 1 + 1 | [[02-foundations/overview\|0. Overview]]의 통과 점검 | 기초에 아직 남은 구멍(틀린 문항마다 자기 페이지를 지목한다)과, Mastery 영역에 필요한 작업 공간 다리 |
-| 2 | [[04-robotics/capstone-panel-contact\|캡스톤]]까지의 로보틱스 공통 트랙 | 95 | 39 | [[04-robotics/index\|로보틱스]] 1–95 | 패널 위에서 닫은 고전 루프: 학습된 정책이 이겨야 할 기준선 |
+| 2 | [[04-robotics/capstone-panel-contact\|캡스톤]]까지의 로보틱스 공통 트랙 | 104 | 41 | [[04-robotics/index\|로보틱스]] 1–104 | 패널 위에서 닫은 고전 루프: 학습된 정책이 이겨야 할 기준선 |
 | 3 | [[04-robotics/teleoperation-demonstration\|12]], [[04-robotics/force-compliance-control\|13]], [[04-robotics/grasping\|15]]와 MR 12장 | 약 20 | 4 | 없음, 로보틱스 H묶음 | 시연, 임피던스, 파지: 여섯 Mastery 영역 가운데 셋 |
 | 4 | [[02-foundations/rl-robot-learning\|7.5 RL]] §1과 §4, 그다음 딥러닝 1–4 | 3 + 16 | 1 + 8 | [[03-deep-learning/index\|딥러닝]] 1–3, 11–13, 35–44 | 행동 복제의 논증, 안전 필터, 그리고 VLA 다리와 그것이 딛는 모듈만 |
 | 5 | 연구 실무 [[06-research-practice/experimental-design-reproducibility\|2]]와 4의 끝까지 계산 | 4 | 4 | [[06-research-practice/index\|연구 실무]] 4–6, 14 | 2.5, 6, 10이 쓰는 시행 설계, 3의 규칙, Wilson 구간 |
@@ -454,13 +456,15 @@ Working이 다수라는 사실만으로는 거르는 기능이 멈췄다는 증�
 | 7 | [[05-construction-robotics/imitating-contact\|10. 접촉 모방]] | 6 | 2 | 건설 42–47 | 학위논문의 문장을 대상 하나로: 현장 허용오차까지 돌린 학습된 정책 |
 | 8 | 연구 실무의 나머지 | 32 | 16 | 연구 실무 1–3, 7–13, 15–36 | 실험이 도는 동안 하는 실패 분석, 글쓰기, 학회, 벤치마크, 사람 측정 |
 
-**표 읽기.** 1–7 블록은 실험이 시작되기 전까지 Working으로 약 171회, Literacy로 69회이고, 8 블록이 그 곁에서 32회를 더해 모두 약 203회다. 개관이 권하는 주 2회 교과 속도로 171회는 약 86주이므로, Working 통과를 모두 첫 모형 실험 앞에 둘 수는 없다. 1–7 블록을 먼저 Literacy로 지나고(69회, 그 속도로 약 35주), 실험이 어느 페이지에 닿을 때 그 블록의 남은 행을 Working으로 한다.
+**표 읽기.** 1–7 블록은 실험이 시작되기 전까지 Working으로 약 180회, Literacy로 71회이고, 8 블록이 그 곁에서 32회를 더해 모두 약 212회다. 개관이 권하는 주 2회 교과 속도로 180회는 약 90주이므로, Working 통과를 모두 첫 모형 실험 앞에 둘 수는 없다. 1–7 블록을 먼저 Literacy로 지나고(71회, 그 속도로 약 36주), 실험이 어느 페이지에 닿을 때 그 블록의 남은 행을 Working으로 한다. [[physical-ai-map|피지컬 AI 지도 §3]]이 일곱 블록을 시간표로 그리고, 전체 지도는 경로 위의 페이지를 모두 굵은 칩으로 표시한다.
 
 순서는 선수 지식 상자를 따른다. 컴퓨터 비전이 로보틱스 3.5를, VLA 페이지가 10. 로봇 시스템과 12를 요구하므로 4 블록은 2와 3 뒤에 온다. 2.5의 프로토콜이 그 시행 설계를, 6의 §4가 그 3의 규칙을 쓰므로 5 블록은 6 앞에 온다. 7 블록은 앞의 모든 블록을 요구한다. 경로 위의 페이지가 경로 밖 페이지의 한 절에 기대는 곳 — 2.5는 [[06-research-practice/real-world-impact|연구 실무 6 §2]]에, 9는 [[04-robotics/tactile-visuotactile|14. 촉각 §1]]에, 6은 [[04-robotics/human-intent-prediction|23 §5]]와 [[06-research-practice/psychophysics-human-measurement|연구 실무 8 §5]]에, 7.5는 S2의 기계를 위해 [[05-construction-robotics/earthmoving-heavy-machinery|3]]에 기댄다 — 은 선수 지식 상자가 그 절을 부를 때 읽는다.
 
 ### 9. 경로가 빼는 것, 그리고 다시 넣을 때
 
 딥러닝 1.1–1.4, 5, 6, 6.1은 경로 밖이다. 정책의 백본 자체가 바뀌면 [[03-deep-learning/foundations/attention-transformer|1.2]]를, 행동 헤드가 노이즈 제거기면 [[03-deep-learning/diffusion/index|6]]과 6.1을, 대규모로나 병렬 시뮬레이터에서 학습하면 [[03-deep-learning/foundations/training-at-scale|1.3]]과 [[03-deep-learning/foundations/gpu-computing|1.4]]를, 학습한 모델로 계획하면 [[03-deep-learning/world-models/index|5]]를 넣는다. 건설에서 1, 2, 8은 한 회차씩인 지도라 언제 읽어도 되고, 3, 5, 7은 다른 흐름이라 기계(3), 인식 층(5), BIM 사슬(7)이 기여에 들어올 때 넣는다. 로보틱스에서 H묶음의 14와 16은 정책의 입력에 촉각이 들어오거나 베이스가 움직일 때, 내비게이션·사람 인지·햅틱은 현장이 부를 때, 만드는 트랙은 실험이 장비를 요구할 때 들어온다.
+
+경로 밑에는 회차에 세지 않은 바닥이 둘 있다. 물리 바닥 [[02-foundations/basic-mechanics|0.6.1 기초 역학]], [[02-foundations/basic-circuits-electronics|0.6.2 회로와 전자]], [[02-foundations/fluid-power|0.6.3 유체 동력]]은 1 블록에 속한다. 학위 과정이 건너뛴 페이지만, 로보틱스 트랙이 그것에 기대기 시작하는 2 블록 전에 한다. 도구 트랙 [[02-foundations/tools/index|12. 코드·도구·파일 형식]]은 필요가 처음 생길 때 한 페이지씩 한다 — 로봇이나 클러스터 작업을 처음 하기 전에 [[02-foundations/tools/linux-shell|12.1]]과 [[02-foundations/tools/git-research-code|12.2]], Python이 처음이면 첫 Tier A 실습 전에 [[02-foundations/tools/python-research-code|12.3]], 만드는 트랙이 처음으로 파라미터 파일을 읽거나 기계 두 대를 이을 때 [[02-foundations/tools/config-data-formats|12.4]]와 [[02-foundations/tools/computer-networks|12.5]], 학습이 처음으로 자기 기계를 떠날 때 [[02-foundations/tools/gpu-clusters|12.7]], 리그에서 25.5.1 전에 [[02-foundations/tools/concurrency|12.8]], 첫 리그를 만들기 전에 [[02-foundations/tools/mechanical-design-fabrication|12.9]], 첫 논문을 쓰기 전에 [[02-foundations/tools/latex-figures-references|12.6]]. 만드는 트랙의 첫 C++ 노드 전에는 [[04-robotics/ros2/cpp-for-robot-code|25.0 C++]]가 온다.
 
 논문은 폴더 순서가 아니라 [[01-canonical-papers/canonical-list|핵심 논문 리스트]]의 표기를 따른다 — ★ 원문 정독, ◐ 노트 후 훑기, ○ 노트로 충분 — 개관이 권하는 주 1회 논문 회차로.
 

@@ -93,6 +93,22 @@ from the page's numbers (currentColor so the figure follows the light/dark theme
 wide so it scales to a phone; ids unique per figure). Graphs, pipelines and state machines
 may be mermaid. A description of a figure without the figure does not meet the bar.
 
+11. WHY THIS MATTERS (owner's rule, 2026-09-23). Every course page opens, right before its
+First-pass callout in each half, with a short callout — English
+"> [!note] Why this matters · 왜 배우는가", Korean "> [!note] 왜 배우는가 · Why this matters" —
+of 3-5 sentences whose purpose is to give the reader the justification of where they stand in
+physical AI and why this matters: (0) where you are: the page's layer in the physical-AI stack of
+07-research-program §5 (perception, scene understanding, grasping, planning, manipulation, contact
+and force, learning, task completion) or the floor beneath it (mathematics, physics, tools,
+research practice), and which of the eight steps of "install that panel on the frame" it serves,
+with that phrase linked to the Physical AI Map (content/physical-ai-map.md), where the page's chip sits;
+(1) why it is needed: what goes wrong in the owner's research or robot work without it, with one
+concrete example; (2) direction: the later pages that use it (links with section) and the block of
+the dissertation path (07-research-program §8) it belongs to; (3) payoff: what the reader can do
+after the page, in one line. Specific to the page, never
+generic. Each numbered section opens with the problem it solves. scripts/audit_course_pages.py
+lists the pages that still lack the callout.
+
 Do not copy any course's slides or assignments. Original problems. Python only.
 Code once in the English half; Korean captions and interprets.
 -->
@@ -104,6 +120,9 @@ Code once in the English half; Korean captions and interprets.
 ## English
 
 *Stands on … First / later use of plant **P?** (or object **D?**).*
+
+> [!note] Why this matters · 왜 배우는가
+> Where you are in physical AI, linked to [[physical-ai-map|the Physical AI Map]] (the stack layer of 7 §5, or the floor beneath it; the step of "install that panel" it serves) · why it is needed (what goes wrong without it, one concrete example) · direction (the later pages that use it, the dissertation-path block) · payoff (what you can do after).
 
 > [!note] First pass · 처음이라면
 > …

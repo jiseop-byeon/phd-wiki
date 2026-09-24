@@ -15,8 +15,8 @@ mastery-when: "Raise to Mastery when a ROS 2 stack you wrote is the artifact a p
 > 이 위키의 다른 장은 분야를 *읽는* 법을 가르친다. 이 장은 그 안에서 *만드는* 법을 가르친다. 목표는 로봇을 기술(description)에서 과제 수행까지 데려가고, 실패했을 때 왜 실패했는지 말할 수 있는 엔지니어다.
 
 > [!note] Prerequisites · 선수 지식
-> Python, enough C++ to read a class, and a Linux terminal. Git enters late and lightly — a `.gitignore` in 25.4, then commits and clean checkouts as evidence in 25.10 — so it is needed by then, not before 25.1. No ROS experience is assumed. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]] and [[02-foundations/se3-geometry|3D Geometry & SE(3)]] make §25.6 easier but are not required first.
-> Python, 클래스를 읽을 만큼의 C++, 리눅스 터미널. Git은 늦게, 가볍게 들어온다 — 25.4의 `.gitignore`, 그리고 25.10에서 증거로 쓰는 커밋과 깨끗한 checkout — 그러니 그때까지 필요하지 25.1 전에 필요한 것은 아니다. ROS 경험은 전제하지 않는다. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장]]과 [[02-foundations/se3-geometry|3D 기하와 SE(3)]]는 §25.6을 쉽게 만들지만 먼저 읽어야 하는 것은 아니다.
+> Python ([[02-foundations/tools/python-research-code|12.3]] if it is new), enough C++ to read a class — [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code]], this track's first page, teaches it — and a Linux terminal ([[02-foundations/tools/linux-shell|12.1]]). Git enters late and lightly — a `.gitignore` in 25.4, then commits and clean checkouts as evidence in 25.10 — so it is needed by then, not before 25.1; [[02-foundations/tools/git-research-code|12.2]] teaches it. No ROS experience is assumed. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR ch.3]] and [[02-foundations/se3-geometry|3D Geometry & SE(3)]] make §25.6 easier but are not required first.
+> Python(처음이면 [[02-foundations/tools/python-research-code|12.3]]), 클래스를 읽을 만큼의 C++ — 이 트랙의 첫 페이지 [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++]]가 가르친다 — 그리고 리눅스 터미널([[02-foundations/tools/linux-shell|12.1]]). Git은 늦게, 가볍게 들어온다 — 25.4의 `.gitignore`, 그리고 25.10에서 증거로 쓰는 커밋과 깨끗한 checkout — 그러니 그때까지 필요하지 25.1 전에 필요한 것은 아니다. 가르치는 곳은 [[02-foundations/tools/git-research-code|12.2]]다. ROS 경험은 전제하지 않는다. [[04-robotics/modern-robotics/ch03-rigid-body-motions|MR 3장]]과 [[02-foundations/se3-geometry|3D 기하와 SE(3)]]는 §25.6을 쉽게 만들지만 먼저 읽어야 하는 것은 아니다.
 
 Most of this wiki exists so that a paper can be read accurately. This track exists for the
 other half of the work. A research claim in robotics is usually carried by a running system,
@@ -36,6 +36,7 @@ tutorial follower into an engineer.
 
 ```mermaid
 flowchart LR
+    Z["25.0<br/>C++ for robot code"] --> A
     A["25.1-25.3<br/>the graph"] --> B["25.4-25.5<br/>build and the silent failures"]
     B --> C["25.6-25.7<br/>a robot that moves"]
     C --> D["25.8-25.9<br/>a robot with a task"]
@@ -45,6 +46,7 @@ flowchart LR
 
 ### 2. The pages
 
+0. [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code]] — values, lifetime and ownership, classes and RAII, templates and interfaces, the build, and the rules of a real-time tick, on P6's controller: the C++ the rest of the track reads and writes.
 1. [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] — what a middleware is for, why ROS 2 exists, installation, and a system you can watch talk to itself.
 2. [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] — publish and subscribe, in Python and in the C++ that production stacks are written in.
 3. [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] — the three patterns that are not topics, and how a node is configured and started deterministically.
@@ -58,7 +60,7 @@ flowchart LR
 10. [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]] — an ordered set of checks, bags as fixtures, and containers as the difference between a reproducible result and a story.
 11. [[04-robotics/ros2/from-simulation-to-hardware|25.11 From Simulation to Real Hardware]] — latency, safety, and the decision about buying a machine.
 
-**The shortest useful route** is 25.1 → 25.2 → 25.4 → 25.6 → 25.7. That is enough to have a
+**The shortest useful route** is 25.1 → 25.2 → 25.4 → 25.6 → 25.7, with 25.0's first pass before 25.2 if you have not written C++. That is enough to have a
 robot of your own description moving under a controller, which is the point at which the rest
 stops being abstract. Add 25.8 for manipulation work, and 25.3 then 25.9 for mobile work. Read 25.5 and
 25.10 when something breaks, which will be soon.
@@ -78,7 +80,7 @@ documentation it used.
 
 ### 4. What this track does not cover
 
-It does not teach Python, C++, Linux or Git. It does not teach the control theory, kinematics,
+Python, Linux and Git are taught by the tools track, [[02-foundations/tools/index|12. Code, Tools & File Formats]] ([[02-foundations/tools/python-research-code|12.3]], [[02-foundations/tools/linux-shell|12.1]], [[02-foundations/tools/git-research-code|12.2]]), and C++ by this track's first page, [[04-robotics/ros2/cpp-for-robot-code|25.0]]; the pages after 25.0 assume them. It does not teach the control theory, kinematics,
 perception or learning that the rest of the wiki covers.
 [[04-robotics/index|4. Robotics & Physical Systems]] is where the theory lives, and this track
 is how it gets executed. It does
@@ -133,6 +135,7 @@ ROS 2는 그 분야 대부분이 쓰는 미들웨어다. 로봇을 그 안에 �
 
 ```mermaid
 flowchart LR
+    Z["25.0<br/>로봇 코드를 위한 C++"] --> A
     A["25.1-25.3<br/>그래프"] --> B["25.4-25.5<br/>빌드와 조용한 실패"]
     B --> C["25.6-25.7<br/>움직이는 로봇"]
     C --> D["25.8-25.9<br/>과제를 가진 로봇"]
@@ -142,6 +145,7 @@ flowchart LR
 
 ### 2. 페이지 목록
 
+0. [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++]] — 값·수명·소유권, 클래스와 RAII, 템플릿과 인터페이스, 빌드, 그리고 실시간 틱의 규칙을 P6의 제어기 위에서: 트랙의 나머지가 읽고 쓰는 C++.
 1. [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]] — 미들웨어가 왜 필요한지, ROS 2가 왜 존재하는지, 설치, 그리고 스스로 대화하는 것을 지켜볼 수 있는 시스템.
 2. [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]] — 발행과 구독. Python으로, 그리고 실제 제품 스택이 쓰는 C++로.
 3. [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 토픽이 아닌 세 가지 패턴, 그리고 노드를 설정하고 결정론적으로 띄우는 법.
@@ -155,7 +159,7 @@ flowchart LR
 10. [[04-robotics/ros2/debugging-data-reproducibility|25.10 디버깅, 데이터, 재현성]] — 순서 있는 점검 목록, fixture로서의 bag, 그리고 재현 가능한 결과와 이야기를 가르는 컨테이너.
 11. [[04-robotics/ros2/from-simulation-to-hardware|25.11 시뮬레이션에서 실물 하드웨어로]] — 지연, 안전, 그리고 기계를 살 것인가라는 결정.
 
-**가장 짧은 유용한 경로**는 25.1 → 25.2 → 25.4 → 25.6 → 25.7이다. 여기까지면 자기가 기술한
+**가장 짧은 유용한 경로**는 25.1 → 25.2 → 25.4 → 25.6 → 25.7이고, C++를 써 본 적이 없으면 25.2 전에 25.0의 첫 읽기를 한다. 여기까지면 자기가 기술한
 로봇이 제어기 아래 움직인다. 나머지가 추상적이기를 그만두는 지점이 거기다. 매니퓰레이션 작업에는
 25.8을, 이동 로봇 작업에는 25.3 다음 25.9를 더한다. 25.5와 25.10은 무언가 고장 났을 때 읽어라. 곧 고장 난다.
 
@@ -173,7 +177,7 @@ flowchart LR
 
 ### 4. 이 트랙이 다루지 않는 것
 
-Python, C++, 리눅스, Git은 가르치지 않는다. 위키의 나머지가 다루는 제어 이론, 기구학, 인식,
+Python, 리눅스, Git은 도구 트랙 [[02-foundations/tools/index|12. 코드·도구·파일 형식]]([[02-foundations/tools/python-research-code|12.3]], [[02-foundations/tools/linux-shell|12.1]], [[02-foundations/tools/git-research-code|12.2]])이, C++는 이 트랙의 첫 페이지 [[04-robotics/ros2/cpp-for-robot-code|25.0]]이 가르치고, 25.0 뒤의 페이지들은 그것을 전제한다. 위키의 나머지가 다루는 제어 이론, 기구학, 인식,
 학습도 가르치지 않는다. 이론이 사는 곳은 [[04-robotics/index|4. 로보틱스와 물리 시스템]]이고 이
 트랙은 그것이 *실행되는* 방식이다. 공식 튜토리얼을 대체하지도 않는다. 어떤 단계가 이미 잘
 문서화되어 있으면 그쪽으로 보내되, 그 단계가 *무엇을 위한 것인지*를 설명한다. 공식 문서가 보통

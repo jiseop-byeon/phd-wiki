@@ -273,7 +273,7 @@ The table's one-line glosses are enough to recognize a metric; these are enough 
   $\sigma$ says how much *individual runs* scatter and does not shrink as you add runs; the
   standard error $\sigma/\sqrt{n}$ says how well the *mean* is pinned down and does. At
   $n = 4$ they differ by a factor of 2, so a paper plotting the smaller one gets visually
-  tighter error bars for free — check the caption before comparing two papers' bars — robotics papers report over several *rollouts and scenes*.
+  tighter error bars for free — check the caption before comparing two papers' bars — robotics papers report over several *rollouts and scenes*. A seed that replays the same run, and still does after code is added, is [[02-foundations/tools/python-research-code|12.3 Python for Research Code §7]]; a caption that says which of the three its bars are is [[02-foundations/tools/latex-figures-references|12.6 Writing Tools §8]].
   - *The three quantities, written out* for $n$ runs with results $x_1, \dots, x_n$ and mean $\bar x$:
   $$s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar x)^2}, \qquad \text{SE} = \frac{s}{\sqrt n}, \qquad \text{95\% CI} = \bar x \pm t_{0.975,\,n-1}\cdot \text{SE}$$
   The sample standard deviation $s$ divides by $n - 1$ because $\bar x$ was estimated from the same numbers; SE shrinks with $\sqrt n$ because averaging cancels run-to-run noise; and the **confidence interval** multiplies SE by a Student-$t$ quantile $t_{0.975,\,n-1}$, which is larger than the normal 1.96 when $n$ is small. It is a procedure that covers the true mean in 95% of repeated experiments, not a 95% probability statement about this one interval. The quantile $t_{0.975,\,\nu}$ is the value that a Student-$t$ variable with $\nu=n-1$ degrees of freedom exceeds with probability 2.5%. For Gaussian run-to-run noise, $(\bar x-\mu)/\text{SE}$ follows exactly that distribution ([[02-foundations/probability|3. Probability §6]] defines it): dividing by an *estimated* SE rather than the true one adds spread, so its tails are heavier than those of the standard normal, whose 97.5% point is $1.96$. It shrinks toward $1.96$ as runs accumulate, $t_{0.975,3}=3.182$, $t_{0.975,6}=2.447$ and $t_{0.975,30}=2.042$. Worked, four seeds at 72, 76, 80, 84% success: $\bar x = 78$, $s = 5.16$, $\text{SE} = 2.58$, $t_{0.975,3} = 3.18$, so the 95% CI is $[69.8, 86.2]$. The same four runs can therefore be drawn with bars of $\pm 2.6$, $\pm 5.2$ or $\pm 8.2$ points, depending on which quantity the caption names. How to test a *difference* between two methods is [[02-foundations/probability|3. Probability §6]]; the worked case just below runs that difference on E1c's two four-seed records, and the published 16-point gap does not survive it.
@@ -365,7 +365,7 @@ so the interval contains zero and four seeds per method cannot separate the two.
 An experimental section spends a paragraph on how the model was trained, in terms this wiki's
 optimization page does not name. You are not reproducing the run — but these decide whether a
 reported number is a property of the *method* or of the *recipe*, and an ablation that changes
-one of them is not comparing what it claims.
+one of them is not comparing what it claims. Running such a recipe on a shared cluster — the batch job, its chain of restarts, the checkpoint and how often to write it — is [[02-foundations/tools/gpu-clusters|12.7 GPU Clusters §4–§7]].
 
 | Term | What it is | Why it appears in the claim |
 |---|---|---|
@@ -715,7 +715,8 @@ E1을 세 칸에 그린 것으로, 첫 칸은 $\tau=0.55$에서 E1a의 혼동 �
   표준편차 $\sigma$는 *개별 실행*이 얼마나 흩어지는지를 말하고 실행을 늘려도 줄지 않는다.
   표준오차 $\sigma/\sqrt{n}$은 *평균*이 얼마나 단단히 고정됐는지를 말하고 줄어든다.
   $n = 4$면 둘이 2배 차이이므로, 작은 쪽을 그린 논문은 공짜로 더 좁은 오차 막대를 얻는다 —
-  두 논문의 막대를 비교하기 전에 캡션을 확인하라.
+  두 논문의 막대를 비교하기 전에 캡션을 확인하라. 같은 실행을 재현하고, 코드를 더한 뒤에도 여전히 재현하는 시드는
+  [[02-foundations/tools/python-research-code|12.3 연구 코드를 위한 Python §7]]이고, 막대가 셋 가운데 무엇인지 말하는 캡션은 [[02-foundations/tools/latex-figures-references|12.6 글쓰기 도구 §8]]이다.
   - *세 양을 풀어 쓰면* 결과가 $x_1, \dots, x_n$이고 평균이 $\bar x$인 실행 $n$번에 대해
   $$s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar x)^2}, \qquad \text{SE} = \frac{s}{\sqrt n}, \qquad \text{95\% CI} = \bar x \pm t_{0.975,\,n-1}\cdot \text{SE}$$
   이다. 표본 표준편차 $s$는 $\bar x$를 같은 숫자들로 추정했기 때문에 $n - 1$로 나눈다. SE는 평균을 내면 실행 간 잡음이 상쇄되므로 $\sqrt n$에 따라 줄어든다. **신뢰구간**은 SE에 Student-$t$ 분위수 $t_{0.975,\,n-1}$을 곱하는데, $n$이 작으면 이 값이 정규분포의 1.96보다 크다. 신뢰구간은 반복 실험의 95%에서 참 평균을 덮는 절차이지, 이 구간 하나에 대한 95% 확률 진술이 아니다. 분위수 $t_{0.975,\,\nu}$는 자유도 $\nu=n-1$인 스튜던트 $t$ 변수가 확률 2.5%로 넘는 값이다. 실행 간 잡음이 가우시안이면 $(\bar x-\mu)/\text{SE}$가 정확히 그 분포를 따른다([[02-foundations/probability|3. 확률 §6]]이 정의한다). 참 SE가 아니라 *추정한* SE로 나누면 흩어짐이 더해지므로 꼬리가 표준정규분포보다 두껍고, 표준정규분포의 97.5% 점은 $1.96$이다. 실행이 쌓일수록 $1.96$ 쪽으로 줄어서 $t_{0.975,3}=3.182$, $t_{0.975,6}=2.447$, $t_{0.975,30}=2.042$다. 계산 예, 시드 넷의 성공률이 72, 76, 80, 84%면 $\bar x = 78$, $s = 5.16$, $\text{SE} = 2.58$, $t_{0.975,3} = 3.18$이므로 95% CI는 $[69.8, 86.2]$다. 같은 네 실행을 캡션이 어느 양을 말하느냐에 따라 $\pm 2.6$, $\pm 5.2$, $\pm 8.2$점 막대로 그릴 수 있다. 두 방법의 *차이*를 검정하는 법은 [[02-foundations/probability|3. 확률 §6]]에 있다. 바로 아래 계산 예제가 E1c의 네 시드 기록 둘로 그 차이를 내는데, 발표된 16포인트 격차는 거기서 살아남지 못한다.
@@ -807,7 +808,7 @@ $$4.0 \pm 2.447 \times 3.65 = 4.0 \pm 8.9 = [-4.9,\ 12.9]$$
 실험 절은 모델을 어떻게 학습시켰는지에 한 문단을 쓰는데, 그 용어들을 이 위키의 최적화
 페이지는 다루지 않는다. 우리가 그 실행을 재현하는 것은 아니다 — 그러나 이것들이 보고된
 숫자가 *방법*의 성질인지 *레시피*의 성질인지를 가르고, 이 중 하나를 바꾼 절제 실험은 자기가
-주장하는 것을 비교하고 있지 않다.
+주장하는 것을 비교하고 있지 않다. 그런 레시피를 공유 클러스터에서 돌리는 법 — 배치 작업, 재시작의 사슬, 체크포인트와 그것을 쓰는 간격 — 은 [[02-foundations/tools/gpu-clusters|12.7 GPU 클러스터 §4–§7]]이다.
 
 | 용어 | 무엇인가 | 왜 주장에 등장하는가 |
 |---|---|---|

@@ -43,6 +43,10 @@ jobs:
           python-version: "3.12"
       - name: Content QA gate
         run: python3 scripts/verify_content.py
+      - name: Physical AI Map and glossary index are current
+        run: |
+          python3 scripts/build_physical_ai_map.py --check
+          python3 scripts/build_glossary_index.py --check
       - name: Run the lab code on every page
         run: |
           python3 -m pip install --quiet "numpy>=2,<3"

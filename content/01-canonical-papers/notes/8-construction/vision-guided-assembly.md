@@ -17,8 +17,8 @@ mastery-when: "Raise to Mastery only when this method or its assumptions become 
 **Feng et al., Automation in Construction 2015** — [DOI](https://doi.org/10.1016/j.autcon.2015.06.002)
 
 > [!note] Math on-ramp · 수학 준비물
-> [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §5]] — the whole system stands on marker-based localization and hand-eye calibration, so the reprojection-error discussion there is the right lens for its accuracy numbers.
-> [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §5]] — 시스템 전체가 마커 기반 위치추정과 hand-eye 보정 위에 서 있으므로, 그 절의 재투영 오차 논의가 이 논문의 정확도 숫자를 보는 올바른 렌즈다.
+> [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §2.7 and §5]] — the whole system stands on marker-based localization, which is PnP on each tag's four corners (§2.7, where a small tag's tilt is its weakest number), and on hand-eye calibration (§5), so the reprojection-error discussion there is the right lens for its accuracy numbers.
+> [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §2.7, §5]] — 시스템 전체가 마커 기반 위치추정, 곧 태그마다 네 코너 위의 PnP(§2.7. 작은 태그는 기울기가 가장 약한 수다)와 hand-eye 보정(§5) 위에 서 있으므로, 그 절의 재투영 오차 논의가 이 논문의 정확도 숫자를 보는 올바른 렌즈다.
 
 ## English
 

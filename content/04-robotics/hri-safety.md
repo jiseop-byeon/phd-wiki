@@ -330,7 +330,7 @@ last a worked example of what the separation distance costs.
 | Risk | combination of likelihood/exposure and consequence under a method |
 | Safety constraint/envelope | boundary intended to keep operation within acceptable conditions |
 | Safe stop | controlled transition intended to reduce risk |
-| Emergency stop | dedicated means for urgent hazardous-motion stopping |
+| Emergency stop | dedicated means for urgent hazardous-motion stopping — wired to cut power, not sent as a request the software must honour ([[02-foundations/basic-circuits-electronics\|0.6.2 §11]]) |
 | Fail-safe | failure leads toward a lower-risk state |
 | Fail-operational | selected function continues despite specified failures |
 | Near miss | event without harm that could plausibly have produced it |
@@ -866,7 +866,7 @@ $$\frac{\partial u_H^*}{\partial u_R} = -\Big(\frac{\partial^2 R_H}{\partial u_H
 | Risk | 정해진 방법 아래 가능성/노출과 결과의 결합 |
 | 안전 제약/엔벨로프 | 허용 조건 안에 운용을 유지하려는 경계 |
 | Safe stop | 위험을 낮추려는 통제된 전이 |
-| 비상 정지 | 긴급한 위험 운동 정지를 위한 전용 수단 |
+| 비상 정지 | 긴급한 위험 운동 정지를 위한 전용 수단 — 소프트웨어가 따라 줘야 하는 요청으로 보내지 않고 전원을 끊도록 배선한다([[02-foundations/basic-circuits-electronics\|0.6.2 §11]]) |
 | Fail-safe | 실패가 더 낮은 위험 상태로 이어짐 |
 | Fail-operational | 명시된 실패에도 선택 기능이 지속 |
 | Near miss | 해는 없었지만 그럴듯하게 해를 낳을 수 있었던 사건 |

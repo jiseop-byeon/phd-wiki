@@ -510,7 +510,7 @@ $\operatorname{Exp}$ turns a rotation vector into a rotation matrix ([[02-founda
 
 **Deskewing** re-expresses each lidar point $p_k$, captured at time $t_k$ during the sweep, in the sensor frame at one reference time $t_s$, using the sensor pose $T(t)$ interpolated from the IMU or odometry:
 $$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
-so every point is placed where it would have been seen had the whole sweep been instantaneous. *Example:* a robot moving at 1 m/s with a 0.1 s sweep travels 0.1 m between the first and last points, so without deskewing a flat wall appears offset by up to 10 cm across one scan.
+so every point is placed where it would have been seen had the whole sweep been instantaneous. *Example:* a robot moving at 1 m/s with a 0.1 s sweep travels 0.1 m between the first and last points, so without deskewing a flat wall appears offset by up to 10 cm across one scan. Deskewing needs each point's own time, which a cloud's single header stamp does not carry; [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §5]] prices the missing column times on a rig passing S1's facade.
 
 ### 7.3 Keyframes, marginalization, and the information matrix
 
@@ -577,7 +577,7 @@ spatial memory ([[04-robotics/semantic-language-navigation|19. Semantic Navigati
 - Wheel odometry: inexpensive local motion; fails under slip. The kinematic model being integrated — and why its error grows without bound — is [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]].
 - GNSS: absolute non-drifting reference in favorable conditions, but obstruction and multipath can introduce noise and bias.
 
-**Loosely coupled** systems fuse completed subsystem estimates. **Tightly coupled** systems jointly use lower-level measurements, often preserving information but increasing model and implementation complexity. Calibration, timestamps, rolling shutter, latency, and clock offset can dominate algorithmic improvements.
+**Loosely coupled** systems fuse completed subsystem estimates. **Tightly coupled** systems jointly use lower-level measurements, often preserving information but increasing model and implementation complexity. Calibration, timestamps, rolling shutter, latency, and clock offset can dominate algorithmic improvements; each is priced in millimetres on one rig in [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §2, §8 and §9]].
 
 Written as costs, the difference is exact. A loosely coupled system first runs each subsystem $s$ to an estimate $\hat x_s$ with covariance $P_s$ and fuses those estimates; a tightly coupled system puts every raw residual $r$ (each IMU increment, each image feature, each pseudorange) into one problem:
 $$\text{loose: } \min_x \sum_s \lVert x - \hat x_s \rVert^2_{P_s}, \qquad \text{tight: } \min_x \sum_{\text{raw measurements } r} \lVert r(x) \rVert^2_{\Sigma_r}$$
@@ -1341,7 +1341,7 @@ $\operatorname{Exp}$는 회전 벡터를 회전 행렬로 보낸다([[02-foundat
 
 **Deskewing**은 스윕 도중 시각 $t_k$ 에 잡힌 라이다 점 $p_k$ 를 기준 시각 $t_s$ 의 센서 프레임으로 다시 쓴다. 센서 pose $T(t)$ 는 IMU나 오도메트리에서 보간한다.
 $$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
-그래서 모든 점이 스윕 전체가 순간이었다면 보였을 자리에 놓인다. *예:* 1 m/s로 움직이는 로봇이 0.1 s 스윕을 돌면 첫 점과 마지막 점 사이에 0.1 m를 지나므로, deskewing 없이는 평평한 벽이 한 스캔 안에서 최대 10 cm 어긋나 보인다.
+그래서 모든 점이 스윕 전체가 순간이었다면 보였을 자리에 놓인다. *예:* 1 m/s로 움직이는 로봇이 0.1 s 스윕을 돌면 첫 점과 마지막 점 사이에 0.1 m를 지나므로, deskewing 없이는 평평한 벽이 한 스캔 안에서 최대 10 cm 어긋나 보인다. deskewing에는 점마다 제 시각이 필요한데, 클라우드의 헤더 스탬프 하나는 그것을 담지 않는다. 빠진 열 시각의 값을 S1의 파사드를 지나는 리그 위에서 매기는 곳이 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §5]]다.
 
 ### 7.3 Keyframe, 주변화, 정보 행렬
 
@@ -1404,7 +1404,7 @@ $$\operatorname{esdf}(x) = \pm \min_{o \in \mathcal O} \lVert x - o \rVert$$
 
 **Loosely coupled**는 완성된 하위 추정들을 융합하고, **tightly coupled**는 저수준 측정을
 공동으로 사용해 정보를 더 보존하지만 모델·구현 복잡도가 커진다. 보정, 타임스탬프,
-롤링 셔터, 지연, 클럭 오프셋이 알고리즘 개선보다 성능을 지배할 수 있다.
+롤링 셔터, 지연, 클럭 오프셋이 알고리즘 개선보다 성능을 지배할 수 있다. 그 각각을 리그 하나 위에서 밀리미터로 값을 매기는 곳이 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §2, §8, §9]]다.
 
 비용으로 쓰면 그 차이가 정확해진다. Loosely coupled는 하위 시스템 $s$ 를 먼저 각각 돌려 추정값 $\hat x_s$ 와 공분산 $P_s$ 를 얻고 그 추정값들을 융합한다. Tightly coupled는 모든 원시 잔차 $r$(IMU 증분 하나하나, 이미지 특징 하나하나, pseudorange 하나하나)를 한 문제에 넣는다.
 $$\text{loose: } \min_x \sum_s \lVert x - \hat x_s \rVert^2_{P_s}, \qquad \text{tight: } \min_x \sum_{\text{원시 측정 } r} \lVert r(x) \rVert^2_{\Sigma_r}$$

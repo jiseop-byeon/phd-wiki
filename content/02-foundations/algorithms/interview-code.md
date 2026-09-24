@@ -246,7 +246,7 @@ Know the limits of the method. If the problem has several correct outputs (any s
 
 *From here the page changes format. §3 and §4 are lookup tables: each bold entry is one self-contained trap with a runnable check, and no entry depends on the one before. Read them straight through once, then return to single entries before an interview.*
 
-Python lets you write an interview solution in half the lines of C++, provided you know the standard library and its costs. Ask which Python version the environment runs: a few tools below need 3.9 or 3.10.
+Python lets you write an interview solution in half the lines of C++, provided you know the standard library and its costs. Ask which Python version the environment runs: a few tools below need 3.9 or 3.10. The same language used for research analysis rather than an interview — environments, views that alias a log, floats that drift, integers that wrap, seeds that replay — is [[02-foundations/tools/python-research-code|12.3 Python for Research Code]].
 
 | Need | Tool | Cost |
 |---|---|---|
@@ -660,7 +660,7 @@ Fed `3 1 2 3` on standard input, it prints `6`. After turning synchronisation of
 
 ### 5. Code that research labs read
 
-A research-lab interviewer reads your code the way a labmate will: will it be obvious what this computes, in which frame and units, and will it fail loudly when an assumption breaks? The habits are the same ones that keep interview code bug-free.
+A research-lab interviewer reads your code the way a labmate will: will it be obvious what this computes, in which frame and units, and will it fail loudly when an assumption breaks? The habits are the same ones that keep interview code bug-free. Applied to a whole analysis — a script entry point, a frozen config, a log file, regression tests against stored numbers — they are [[02-foundations/tools/python-research-code|12.3 §8–§9]].
 
 - **Names carry meaning and units.** `dist_m`, `dt_s`, `omega_radps`, `T_world_base` instead of `d`, `t`, `w`, `T`. A one-letter name is fine for a three-line loop counter; two nested loops with `i` and `j` are where the swapped-index bug lives, so name them `row` and `col`.
 - **Small functions, one job each.** Keep reading input, computing, and printing in separate functions. The computing function can then be called from a stress test or a unit test without faking input files.
@@ -810,7 +810,7 @@ assert np.array_equal(np.random.default_rng(7).normal(size=3), np.random.default
 
 ### 6. Real-time and robotics caveats
 
-A control loop that runs at 1 kHz has a deadline every millisecond, and a late answer is a wrong answer. Code that is fast on average is not enough; what matters is the *worst-case* time of one iteration, because that decides whether a deadline is missed. Three ordinary tools have unbounded or unpredictable worst cases, so real-time code keeps them out of the hot path — the code that runs every cycle.
+A control loop that runs at 1 kHz has a deadline every millisecond, and a late answer is a wrong answer. Code that is fast on average is not enough; what matters is the *worst-case* time of one iteration, because that decides whether a deadline is missed. Three ordinary tools have unbounded or unpredictable worst cases, so real-time code keeps them out of the hot path — the code that runs every cycle. The same rules counted on a C++ control tick are [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code §9]], and the locks and queues that pass data between threads without a data race are [[02-foundations/tools/concurrency|12.8 Concurrency §4–§6]].
 
 **Real-time, defined.** A periodic real-time task has three named parts: a **period** $T$ (1 ms at 1 kHz), a **deadline** $D$ by which each cycle's output must be ready (usually $D = T$), and a **worst-case execution time** (WCET) $C$, the longest one cycle can ever take on that hardware. The task is correct only if every cycle meets the deadline, which needs
 $$C \le D$$
@@ -1224,7 +1224,7 @@ assert stress(longest_run_sorted_fixed, longest_run_slow) is None
 
 *여기서부터 페이지의 형식이 바뀐다. §3과 §4는 참조표다. 굵은 글씨로 시작하는 항목 하나가 실행 가능한 확인 코드를 가진 독립된 함정 하나이고, 어떤 항목도 앞 항목에 기대지 않는다. 한 번 끝까지 읽은 뒤, 면접 전에는 필요한 항목만 다시 찾아본다.*
 
-표준 라이브러리와 그 비용을 알면, Python으로는 C++의 절반 줄 수로 인터뷰 답을 쓸 수 있다. 환경의 Python 버전을 물어보라. 아래 도구 몇 개는 3.9나 3.10이 필요하다.
+표준 라이브러리와 그 비용을 알면, Python으로는 C++의 절반 줄 수로 인터뷰 답을 쓸 수 있다. 환경의 Python 버전을 물어보라. 아래 도구 몇 개는 3.9나 3.10이 필요하다. 인터뷰가 아니라 연구 분석에 쓰는 같은 언어 — 환경, 로그를 가리키는 뷰, 떠내려가는 부동소수점, 되감기는 정수, 재현되는 시드 — 는 [[02-foundations/tools/python-research-code|12.3 연구 코드를 위한 Python]]이다.
 
 | 필요한 것 | 도구 | 비용 |
 |---|---|---|
@@ -1638,7 +1638,7 @@ int main() {
 
 ### 5. 연구실이 읽는 코드
 
-연구실 면접관은 동료가 읽듯이 코드를 읽는다. 이것이 무엇을, 어느 좌표계와 단위로 계산하는지 분명한가? 가정이 깨지면 요란하게 실패하는가? 그 습관은 인터뷰 코드에서 버그를 없애 주는 습관과 같다.
+연구실 면접관은 동료가 읽듯이 코드를 읽는다. 이것이 무엇을, 어느 좌표계와 단위로 계산하는지 분명한가? 가정이 깨지면 요란하게 실패하는가? 그 습관은 인터뷰 코드에서 버그를 없애 주는 습관과 같다. 분석 전체에 적용한 모습 — 스크립트 진입점, 고정한 설정, 로그 파일, 저장해 둔 숫자에 대한 회귀 테스트 — 은 [[02-foundations/tools/python-research-code|12.3 §8–§9]]이다.
 
 - **이름이 의미와 단위를 담는다.** `d`, `t`, `w`, `T` 대신 `dist_m`, `dt_s`, `omega_radps`, `T_world_base`. 세 줄짜리 루프 카운터라면 한 글자 이름도 괜찮다. 하지만 `i`와 `j`로 된 중첩 루프 두 개는 인덱스를 바꿔 쓰는 버그가 사는 곳이므로 `row`와 `col`로 이름을 지어라.
 - **작은 함수, 함수마다 일 하나.** 입력 읽기, 계산, 출력을 서로 다른 함수에 둔다. 그러면 계산 함수를 입력 파일을 흉내 내지 않고도 스트레스 테스트나 단위 테스트에서 부를 수 있다.
@@ -1788,7 +1788,7 @@ assert np.array_equal(np.random.default_rng(7).normal(size=3), np.random.default
 
 ### 6. 실시간과 로보틱스에서의 주의점
 
-1 kHz로 도는 제어 루프는 밀리초마다 마감이 있고, 늦은 답은 틀린 답이다. 평균적으로 빠른 코드로는 부족하다. 중요한 것은 반복 한 번의 *최악* 시간이다. 그것이 마감을 놓치는지를 결정하기 때문이다. 흔한 도구 세 가지는 최악의 경우가 무한하거나 예측할 수 없으므로, 실시간 코드는 이것들을 핫 패스 — 매 주기 도는 코드 — 밖에 둔다.
+1 kHz로 도는 제어 루프는 밀리초마다 마감이 있고, 늦은 답은 틀린 답이다. 평균적으로 빠른 코드로는 부족하다. 중요한 것은 반복 한 번의 *최악* 시간이다. 그것이 마감을 놓치는지를 결정하기 때문이다. 흔한 도구 세 가지는 최악의 경우가 무한하거나 예측할 수 없으므로, 실시간 코드는 이것들을 핫 패스 — 매 주기 도는 코드 — 밖에 둔다. 같은 규칙을 C++ 제어 틱 위에서 센 것이 [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++ §9]]이고, 데이터 경쟁 없이 스레드 사이에 데이터를 넘기는 락과 큐는 [[02-foundations/tools/concurrency|12.8 동시성 §4–§6]]이다.
 
 **실시간의 정의.** 주기적 실시간 작업에는 이름 붙은 세 부분이 있다. 주기(**period**) $T$(1 kHz면 1 ms), 각 주기의 출력이 준비되어야 하는 마감(**deadline**) $D$(보통 $D = T$), 그리고 그 하드웨어에서 한 주기가 걸릴 수 있는 가장 긴 시간인 최악 실행 시간(**worst-case execution time**, WCET) $C$다. 모든 주기가 마감을 지켜야만 작업이 옳으므로 다음이 필요하다.
 $$C \le D$$

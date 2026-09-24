@@ -128,7 +128,7 @@ S2 at the instant its bucket tip reaches the trench bottom on the finishing pass
   where and when the load leaves the claw directly — some of the field's best RL papers
   exist precisely to handle these (throwing with passive joints, IROS 2024).
 
-**Latency is a distance, and on a digging machine it has a sign.** [[04-robotics/robot-systems-deployment|10. §3]] built observation-to-action latency out of computing and communication terms and turned it into a distance: $70\,\mathrm{ms}$ at $1\,\mathrm{m/s}$ is $7\,\mathrm{cm}$. A hydraulic machine adds a term that no computer owns. Between the valve command and the motion sit the valve's travel through its dead zone, the pressure build-up, and the compliance of the oil and hoses, and how long they take depends on the valve and on which way the load moves. On HEAP's 12-tonne machine a commanded step in piston velocity reached 90% in $35\,\mathrm{ms}$ through servo valves fitted for research, but through the machine's own main valves, driven from an electric pilot stage, it took $680\,\mathrm{ms}$ when the stick moved with gravity and $850\,\mathrm{ms}$ when the boom and bucket moved against it (Jud et al. 2021, §2.4.3). Those are one machine's rise times, delay and acceleration together. S2 freezes a delay alone, the valve-to-motion latency $\tau_h=0.15\,\mathrm{s}$.
+**Latency is a distance, and on a digging machine it has a sign.** [[04-robotics/robot-systems-deployment|10. §3]] built observation-to-action latency out of computing and communication terms and turned it into a distance: $70\,\mathrm{ms}$ at $1\,\mathrm{m/s}$ is $7\,\mathrm{cm}$. A hydraulic machine adds a term that no computer owns. Between the valve command and the motion sit the valve's travel through its dead zone, the pressure build-up, and the compliance of the oil and hoses, and how long they take depends on the valve and on which way the load moves. On HEAP's 12-tonne machine a commanded step in piston velocity reached 90% in $35\,\mathrm{ms}$ through servo valves fitted for research, but through the machine's own main valves, driven from an electric pilot stage, it took $680\,\mathrm{ms}$ when the stick moved with gravity and $850\,\mathrm{ms}$ when the boom and bucket moved against it (Jud et al. 2021, §2.4.3). Those are one machine's rise times, delay and acceleration together. S2 freezes a delay alone, the valve-to-motion latency $\tau_h=0.15\,\mathrm{s}$; where such a delay comes from — the valve's travel, and the oil column acting as a spring — is worked for a boom cylinder in [[02-foundations/fluid-power|0.6.3 Fluid Power §7 and §11]].
 
 > **Latency overshoot, defined.** The **latency overshoot** is a *distance*: how far a point driven toward a target travels past it because its actuator obeys the stop command only a delay later. Three defining conditions. The point closes on the target at speed $v$ when the stop is sent; the actuator's response begins only after the latency $\tau_h$, on a hydraulic machine the valve-to-motion latency; and until then nothing the controller does can reach the motion, so it continues at $v$. The overshoot is therefore
 >
@@ -300,7 +300,8 @@ Apply the [[04-robotics/hri-safety|autonomy-spectrum vocabulary]] strictly here:
 - Commercial systems are mostly **supervised autonomy or assisted teleoperation**
   (Gravis RACK, Built Robotics' remote supervisors, Cat Command's control-room
   operators) — the human moved from the cab to a screen, and *reset/recovery is still
-  human labor*.
+  human labor*. The screen is at the end of a network whose delay and losses are its own
+  budget ([[02-foundations/tools/computer-networks|12.5 Computer Networks §11]] for the site's Wi-Fi and 5G).
 - Reading cue: find who defines the task, who watches, who recovers from failure, and
   what happens when a person enters the work zone. Papers that omit these are describing
   a demo, not autonomy.
@@ -535,7 +536,7 @@ Tier B. S2 from [[05-construction-robotics/site-engineering|2.5]], with this pag
   모터가 없으니 제어기가 짐이 집게를 떠나는 위치와 시점을 직접 명령할 수 없다 — 이 분야
   최고의 RL 논문 몇 편이 정확히 이를 다루기 위해 존재한다(수동 관절 던지기, IROS 2024).
 
-**지연은 거리이고, 굴착 기계에서는 부호가 있다.** [[04-robotics/robot-systems-deployment|10. §3]]은 관측에서 행동까지의 지연을 계산과 통신 항으로 쌓아 올리고 거리로 바꿨다. $1\,\mathrm{m/s}$에서 $70\,\mathrm{ms}$는 $7\,\mathrm{cm}$다. 유압 기계에는 어느 컴퓨터도 소유하지 않는 항이 더해진다. 밸브 명령과 움직임 사이에 밸브가 데드존을 지나는 이동, 압력 형성, 기름과 호스의 탄성이 있고, 그것이 걸리는 시간은 밸브에, 그리고 짐이 어느 쪽으로 움직이는지에 달려 있다. HEAP의 12톤 기계에서 피스톤 속도 계단 명령이 90%에 닿는 데, 연구용으로 단 서보 밸브로는 $35\,\mathrm{ms}$가 걸렸지만, 전기 파일럿단으로 구동한 기계 자신의 주 밸브로는 암이 중력 방향으로 움직일 때 $680\,\mathrm{ms}$, 붐과 버킷이 중력을 거슬러 움직일 때 $850\,\mathrm{ms}$가 걸렸다(Jud 외 2021, §2.4.3). 한 기계의 상승 시간이고 지연과 가속이 섞여 있다. S2는 지연만을 고정한다. 밸브에서 움직임까지의 지연 $\tau_h=0.15\,\mathrm{s}$다.
+**지연은 거리이고, 굴착 기계에서는 부호가 있다.** [[04-robotics/robot-systems-deployment|10. §3]]은 관측에서 행동까지의 지연을 계산과 통신 항으로 쌓아 올리고 거리로 바꿨다. $1\,\mathrm{m/s}$에서 $70\,\mathrm{ms}$는 $7\,\mathrm{cm}$다. 유압 기계에는 어느 컴퓨터도 소유하지 않는 항이 더해진다. 밸브 명령과 움직임 사이에 밸브가 데드존을 지나는 이동, 압력 형성, 기름과 호스의 탄성이 있고, 그것이 걸리는 시간은 밸브에, 그리고 짐이 어느 쪽으로 움직이는지에 달려 있다. HEAP의 12톤 기계에서 피스톤 속도 계단 명령이 90%에 닿는 데, 연구용으로 단 서보 밸브로는 $35\,\mathrm{ms}$가 걸렸지만, 전기 파일럿단으로 구동한 기계 자신의 주 밸브로는 암이 중력 방향으로 움직일 때 $680\,\mathrm{ms}$, 붐과 버킷이 중력을 거슬러 움직일 때 $850\,\mathrm{ms}$가 걸렸다(Jud 외 2021, §2.4.3). 한 기계의 상승 시간이고 지연과 가속이 섞여 있다. S2는 지연만을 고정한다. 밸브에서 움직임까지의 지연 $\tau_h=0.15\,\mathrm{s}$다. 그런 지연이 어디서 오는지 — 밸브의 이동, 그리고 스프링처럼 구는 기름 기둥 — 는 붐 실린더 하나 위에서 [[02-foundations/fluid-power|0.6.3 유체 동력 §7, §11]]이 계산한다.
 
 > **지연 오버슈트, 정의.** **지연 오버슈트**(latency overshoot)는 *거리*다. 목표로 몰고 가던 점이, 구동기가 정지 명령을 지연 뒤에야 따르는 탓에 목표를 지나쳐 가는 거리다. 정의 조건은 셋이다. 정지를 보낼 때 점이 속도 $v$로 목표에 다가가고 있다. 구동기의 반응은 지연 $\tau_h$(유압 기계에서는 밸브에서 움직임까지의 지연)가 지난 뒤에야 시작된다. 그때까지 제어기가 무엇을 해도 움직임에 닿지 못하므로 움직임은 $v$로 이어진다. 그래서 오버슈트는
 >
@@ -694,7 +695,8 @@ S2의 기계가 트렌치 바닥을 $\pm30\,\mathrm{mm}$ 안에 놓을 수 있�
   명시하는 내용은 서로 다르다 — 공통 규약을 가정하지 말고 배치 섹션에서 직접 읽어라.
 - 상용 시스템은 대부분 **감독 자율 또는 보조 원격조작**이다(Gravis RACK, Built
   Robotics의 원격 감독자, Cat Command의 관제실 운전자) — 인간이 운전석에서 화면으로
-  옮겨 갔을 뿐이고, *리셋/복구는 여전히 인간 노동*이다.
+  옮겨 갔을 뿐이고, *리셋/복구는 여전히 인간 노동*이다. 그 화면은 지연과 손실이 따로 예산이 되는 네트워크의
+  끝에 있다(현장의 Wi-Fi와 5G는 [[02-foundations/tools/computer-networks|12.5 컴퓨터 네트워크 §11]]).
 - 읽기 단서: 누가 과제를 정의하고, 누가 지켜보고, 누가 실패에서 복구하고, 사람이 작업
   구역에 들어오면 무슨 일이 일어나는지 찾아라. 이를 생략한 논문은 자율성이 아니라
   데모를 기술하고 있는 것이다.

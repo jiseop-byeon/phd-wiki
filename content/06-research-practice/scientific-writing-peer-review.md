@@ -283,7 +283,7 @@ This rewrite uses an assumption and an interface as the organizing axes. Actual 
 
 ### 4. Figures and tables
 
-A system figure should show runtime information flow, trained/frozen components, frames or rates when relevant, and train/inference differences. A result table needs units, direction of improvement, uncertainty, trial count, and clear best-value conventions. Captions should be understandable without searching the body for basic definitions.
+A system figure should show runtime information flow, trained/frozen components, frames or rates when relevant, and train/inference differences. A result table needs units, direction of improvement, uncertainty, trial count, and clear best-value conventions. Captions should be understandable without searching the body for basic definitions. The tools that make such a figure and table — a file that survives printing at a column's width, text at its print size, error bars that say what they are, and entries printed to the digits the data support — are [[02-foundations/tools/latex-figures-references|12.6 Writing Tools §6–§9]].
 
 A visual comparison is persuasive because readers perceive height and separation before inspecting a protocol. That makes missing denominators especially consequential. A success-rate bar from a small sample can look just as precise as a bar supported by much more independent exposure.
 
@@ -404,7 +404,7 @@ comparison protocol is specified, and the claim is renegotiated to match the dat
 
 ### 9. Artifact alignment
 
-Paper, appendix, code, data, model, configuration, logs, and video should refer to compatible versions and identifiers. Videos illustrate behavior but do not replace trial distributions and failure counts.
+Paper, appendix, code, data, model, configuration, logs, and video should refer to compatible versions and identifiers. Videos illustrate behavior but do not replace trial distributions and failure counts. Keeping the paper itself in the repository, beside the scripts and data that make its figures, is [[02-foundations/tools/latex-figures-references|12.6 §10]].
 
 Alignment matters because individually valid artifacts can describe different experiments. A table may use a checkpoint selected before a controller change, while the released configuration and demonstration video use the later controller. The reader can run the code successfully and still fail to reproduce the reported result.
 
@@ -748,7 +748,7 @@ Introduction이 일반적 능력을 약속하고 실험은 좁은 조건 하나�
 
 시스템 그림은 런타임 정보 흐름, 학습/동결 구성요소, 필요하면 프레임·주기, 학습/추론
 차이를 보여야 한다. 결과 표에는 단위, 개선 방향, 불확실성, 시행 수, 명확한 최고값 표기가
-필요하다. 캡션은 본문을 뒤지지 않고도 이해돼야 한다.
+필요하다. 캡션은 본문을 뒤지지 않고도 이해돼야 한다. 그런 그림과 표를 만드는 도구 — 단 폭으로 인쇄해도 버티는 파일, 인쇄 크기의 글자, 자기가 무엇인지 말하는 오차 막대, 데이터가 받쳐 주는 자릿수로 찍은 항목 — 는 [[02-foundations/tools/latex-figures-references|12.6 글쓰기 도구 §6–§9]]이다.
 
 독자는 절차보다 높이와 간격을 먼저 보기 때문에 그림은 설득력이 강하다. 그래서 분모 누락이 중요하다. 작은 표본의 성공률 막대도 훨씬 많은 독립 노출로 얻은 막대처럼 정밀해 보일 수 있다.
 
@@ -874,7 +874,7 @@ Results는 측정된 결과를 보고한다. Discussion은 원인, 한계, 이�
 ### 9. 산출물 정렬
 
 논문, 부록, 코드, 데이터, 모델, 설정, 로그, 비디오는 호환되는 버전과 식별자를 참조해야
-한다. 비디오는 행동을 보여 주지만 시행 분포와 실패 횟수를 대신하지 못한다.
+한다. 비디오는 행동을 보여 주지만 시행 분포와 실패 횟수를 대신하지 못한다. 논문 자체를 그 그림을 만드는 스크립트, 데이터와 함께 저장소에 두는 법은 [[02-foundations/tools/latex-figures-references|12.6 §10]]이다.
 
 각각 올바른 산출물도 서로 다른 실험을 설명할 수 있다. 표는 제어기를 바꾸기 전 체크포인트를 쓰고, 공개 설정과 시연 영상은 나중 제어기를 쓸 수 있다. 독자가 코드를 정상 실행해도 보고 결과를 재현하지 못하는 이유다.
 

@@ -195,7 +195,7 @@ Packages go in `src`, one directory each, never nested inside one another. After
 | `install` | colcon | the result: executables, Python modules, `share/` data, and the setup files you source | yes |
 | `log` | colcon | the full output of every build, including the one whose errors scrolled past | yes |
 
-Two habits follow. Put `build/`, `install/` and `log/` in `.gitignore`; and when a build behaves impossibly, `rm -rf build install log` and rebuild — it is cheap and removes an entire class of question.
+Two habits follow. Put `build/`, `install/` and `log/` in `.gitignore` (what else stays out of version control, and why, is [[02-foundations/tools/git-research-code|12.2 Git for Research Code §6]]); and when a build behaves impossibly, `rm -rf build install log` and rebuild — it is cheap and removes an entire class of question.
 
 `log` is the one beginners ignore. `colcon build` prints a summary, not compiler output; the full output per package is under `log/latest_build/<package>/`. Or use `colcon build --event-handlers console_direct+`, which streams it to the terminal.
 
@@ -273,7 +273,7 @@ script_dir=$base/lib/temp_sim
 install_scripts=$base/lib/temp_sim
 ```
 
-An `ament_cmake` package is a CMake project. Its minimum contents are `package.xml`, `CMakeLists.txt`, `src/`, and `include/<package_name>/`. The executable and its install rule are explicit:
+An `ament_cmake` package is a CMake project — what CMake, the compiler and the linker do with its sources is [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code §8]]. Its minimum contents are `package.xml`, `CMakeLists.txt`, `src/`, and `include/<package_name>/`. The executable and its install rule are explicit:
 
 ```cmake
 find_package(ament_cmake REQUIRED)
@@ -336,7 +336,7 @@ All five tags on one real package, `p6_control`. Its controller is a class decla
 
 Read it one tag at a time. `rclcpp` and `p6_interfaces` are compiled against, loaded when the node runs, and named in the public header, so they are `<depend>` — which is exactly `<build_depend>`, `<build_export_depend>` and `<exec_depend>` together. Eigen is header-only: it is needed to compile `p6_control` and, because the public header includes `<Eigen/Core>`, to compile any package that includes that header, which is what `<build_export_depend>` says; but there is no Eigen library to load when the node runs, so there is no `<exec_depend>`. `launch_ros` is imported only when `control.launch.py` runs, so it is run-time only. The linters run only under `colcon test`. And `<buildtool_depend>ament_cmake</buildtool_depend>`, which `ros2 pkg create` writes for you, names the build system itself — a sixth tag the table leaves out because you never choose it.
 
-A key is either the name of a package released into the ROS ecosystem (`rclpy`, `std_msgs`, `nav2_bt_navigator`) or a system-library key from the rosdistro index — `rosdep/base.yaml` for apt packages, `rosdep/python.yaml` for Python ones. `doxygen` is a key; `libdoxygen-dev` is not.
+A key is either the name of a package released into the ROS ecosystem (`rclpy`, `std_msgs`, `nav2_bt_navigator`) or a system-library key from the rosdistro index — `rosdep/base.yaml` for apt packages, `rosdep/python.yaml` for Python ones. `doxygen` is a key; `libdoxygen-dev` is not. Python packages the ROS code does not depend on — an analysis library, a plotting tool — go into a virtual environment instead, and which interpreter a `pip install` writes to, and why Ubuntu refuses the system one, is [[02-foundations/tools/python-research-code|12.3 Python for Research Code §1]].
 
 Those keys are what this command consumes, run once from the workspace root before a build:
 
@@ -359,7 +359,7 @@ Your ROS 2 installation at `/opt/ros/jazzy` is a workspace too. When you source 
 
 > Your underlay must contain the dependencies of all the packages in your overlay, and packages in your overlay override packages in the underlay.
 
-Sourcing order follows from that: underlay first, overlay second.
+Sourcing order follows from that: underlay first, overlay second. What `source` does to the shell's environment, and why each new terminal needs it again, is [[02-foundations/tools/linux-shell|12.1 Linux and the Shell §5]].
 
 ```bash
 source /opt/ros/jazzy/setup.bash      # underlay
@@ -527,7 +527,7 @@ The YAML file is **not** a launch file. It is a parameter file, and its structur
     background_r: 150
 ```
 
-The top-level key is the node's *fully qualified name* — namespace and all — and the parameters sit under a literal `ros__parameters` key (two underscores). A wrong name is silent — the file loads and sets nothing: a node launched into the `turtlesim3` namespace does not match the block above, so it runs with its defaults. A misspelled `ros__parameters` is not silent: the rcl YAML parser keeps reading keys as part of the node name until it meets a value, then fails with "Cannot have a value before ros__parameters", and the node dies at startup.
+The top-level key is the node's *fully qualified name* — namespace and all — and the parameters sit under a literal `ros__parameters` key (two underscores). A wrong name is silent — the file loads and sets nothing: a node launched into the `turtlesim3` namespace does not match the block above, so it runs with its defaults. A misspelled `ros__parameters` is not silent: the rcl YAML parser keeps reading keys as part of the node name until it meets a value, then fails with "Cannot have a value before ros__parameters", and the node dies at startup. How YAML types a value by its spelling, so that a hand-edited `0123` reaches the node as $83$, is [[02-foundations/tools/config-data-formats|12.4 Config and Data Formats §4]].
 
 When the same parameters should reach several nodes regardless of name or namespace, use the wildcard:
 
@@ -973,7 +973,7 @@ cd ~/ros2_ws
 | `install` | colcon | 결과물: 실행 파일, Python 모듈, `share/` 데이터, source할 setup 파일 | 예 |
 | `log` | colcon | 모든 빌드의 전체 출력. 화면 위로 지나가 버린 그 에러 포함 | 예 |
 
-습관 둘이 나온다. `build/`, `install/`, `log/`를 `.gitignore`에 넣는다. 빌드가 말이 안 되게 굴면 `rm -rf build install log` 후 다시 빌드한다 — 싸고, 질문 한 부류를 통째로 없앤다.
+습관 둘이 나온다. `build/`, `install/`, `log/`를 `.gitignore`에 넣는다(그 밖에 버전 관리 밖에 두어야 할 것과 그 이유는 [[02-foundations/tools/git-research-code|12.2 연구 코드를 위한 Git §6]]). 빌드가 말이 안 되게 굴면 `rm -rf build install log` 후 다시 빌드한다 — 싸고, 질문 한 부류를 통째로 없앤다.
 
 초보가 무시하는 것은 `log`다. `colcon build`는 요약만 찍고 컴파일러 출력은 찍지 않는다. 패키지별 전체 출력은 `log/latest_build/<package>/`에 있다. 또는 `colcon build --event-handlers console_direct+`로 터미널에 흘려보낸다.
 
@@ -1051,7 +1051,7 @@ script_dir=$base/lib/temp_sim
 install_scripts=$base/lib/temp_sim
 ```
 
-`ament_cmake` 패키지는 CMake 프로젝트다. 최소 구성은 `package.xml`, `CMakeLists.txt`, `src/`, `include/<package_name>/`. 실행 파일과 설치 규칙은 명시적이다.
+`ament_cmake` 패키지는 CMake 프로젝트다. CMake와 컴파일러와 링커가 그 소스로 하는 일은 [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++ §8]]이다. 최소 구성은 `package.xml`, `CMakeLists.txt`, `src/`, `include/<package_name>/`. 실행 파일과 설치 규칙은 명시적이다.
 
 ```cmake
 find_package(ament_cmake REQUIRED)
@@ -1097,7 +1097,7 @@ P6에서는 패키지 넷으로 쪼개고, 계산 예제가 전제하는 배치�
 
 다섯 태그를 실제 패키지 하나, `p6_control`에 모두 써 보자. 제어기는 공개 헤더 `include/p6_control/controller.hpp`에 선언된 클래스이고, 그 메서드는 `Eigen::Vector2d` 인자를 받으며, `p6_interfaces/msg/CartState`를 발행한다. 태그 목록은 위 영문 `package.xml` 블록 그대로다. 태그 하나씩 읽는다. `rclcpp`와 `p6_interfaces`는 컴파일할 때 쓰고, 노드가 돌 때 로드되며, 공개 헤더에 이름이 나온다. 그래서 `<depend>`이고, `<depend>`는 정확히 `<build_depend>`, `<build_export_depend>`, `<exec_depend>` 셋을 합친 것이다. Eigen은 헤더뿐인 라이브러리다. `p6_control`을 컴파일할 때 필요하고, 공개 헤더가 `<Eigen/Core>`를 include하므로 그 헤더를 include하는 모든 패키지를 컴파일할 때도 필요하다. `<build_export_depend>`가 말하는 것이 이것이다. 그러나 노드가 돌 때 로드할 Eigen 라이브러리는 없으므로 `<exec_depend>`는 없다. `launch_ros`는 `control.launch.py`가 실행될 때만 import되므로 실행 시점 전용이다. 린터는 `colcon test`에서만 돈다. 그리고 `ros2 pkg create`가 대신 써 주는 `<buildtool_depend>ament_cmake</buildtool_depend>`는 빌드 시스템 자체를 가리킨다. 표가 빠뜨린 여섯째 태그인데, 고를 일이 없기 때문이다.
 
-key는 ROS 생태계에 릴리스된 패키지 이름(`rclpy`, `std_msgs`, `nav2_bt_navigator`)이거나, rosdistro 인덱스의 시스템 라이브러리 key다 — apt는 `rosdep/base.yaml`, Python은 `rosdep/python.yaml`. `doxygen`은 key이고 `libdoxygen-dev`는 아니다.
+key는 ROS 생태계에 릴리스된 패키지 이름(`rclpy`, `std_msgs`, `nav2_bt_navigator`)이거나, rosdistro 인덱스의 시스템 라이브러리 key다 — apt는 `rosdep/base.yaml`, Python은 `rosdep/python.yaml`. `doxygen`은 key이고 `libdoxygen-dev`는 아니다. ROS 코드가 의존하지 않는 Python 패키지 — 분석 라이브러리, 그림 도구 — 는 가상 환경에 넣는다. `pip install`이 어느 인터프리터에 쓰는지, 그리고 Ubuntu가 왜 시스템 인터프리터를 거부하는지는 [[02-foundations/tools/python-research-code|12.3 연구 코드를 위한 Python §1]]이다.
 
 그 key들을 소비하는 명령이 이것이다. 빌드 전에 워크스페이스 루트에서 한 번 돌린다.
 
@@ -1120,7 +1120,7 @@ rosdep은 패키지 관리자가 아니다. 플랫폼 독립적인 key를, Ubunt
 
 > 언더레이는 오버레이에 있는 모든 패키지의 의존성을 담고 있어야 하며, 오버레이의 패키지는 언더레이의 패키지를 덮어쓴다.
 
-source 순서는 여기서 따라 나온다. 언더레이 먼저, 오버레이 나중.
+source 순서는 여기서 따라 나온다. 언더레이 먼저, 오버레이 나중. `source`가 셸의 환경에 하는 일과, 새 터미널마다 그것을 다시 해야 하는 이유는 [[02-foundations/tools/linux-shell|12.1 리눅스와 셸 §5]]이다.
 
 ```bash
 source /opt/ros/jazzy/setup.bash      # 언더레이
@@ -1288,7 +1288,7 @@ Node(
     background_r: 150
 ```
 
-최상위 키는 노드의 *완전 수식 이름*, 즉 네임스페이스까지 포함한 이름이고, 파라미터는 문자 그대로 `ros__parameters`(밑줄 두 개) 키 아래에 놓인다. 이름이 틀리면 조용하다 — 파일은 로드되고 아무것도 설정되지 않는다. `turtlesim3` 네임스페이스로 띄운 노드는 위 블록과 맞지 않아 기본값으로 돈다. `ros__parameters`의 오타는 조용하지 않다. rcl YAML 파서가 값을 만날 때까지 키를 노드 이름의 일부로 읽다가 "Cannot have a value before ros__parameters"로 실패하고, 노드는 기동하다 죽는다.
+최상위 키는 노드의 *완전 수식 이름*, 즉 네임스페이스까지 포함한 이름이고, 파라미터는 문자 그대로 `ros__parameters`(밑줄 두 개) 키 아래에 놓인다. 이름이 틀리면 조용하다 — 파일은 로드되고 아무것도 설정되지 않는다. `turtlesim3` 네임스페이스로 띄운 노드는 위 블록과 맞지 않아 기본값으로 돈다. `ros__parameters`의 오타는 조용하지 않다. rcl YAML 파서가 값을 만날 때까지 키를 노드 이름의 일부로 읽다가 "Cannot have a value before ros__parameters"로 실패하고, 노드는 기동하다 죽는다. YAML이 값의 타입을 철자로 정해서 손으로 고친 `0123`이 노드에 $83$으로 닿는 까닭은 [[02-foundations/tools/config-data-formats|12.4 설정과 데이터 형식 §4]]이다.
 
 같은 파라미터를 이름·네임스페이스와 무관하게 여러 노드에 주려면 와일드카드를 쓴다.
 

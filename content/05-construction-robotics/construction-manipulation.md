@@ -91,12 +91,12 @@ It is specific, and each item removes an assumption that factory robotics is all
 
 | Factory assumption | What construction supplies instead |
 |---|---|
-| The part is in a fixture, at a known pose | The part is where someone put it, within centimetres |
+| The part is in a fixture, at a known pose (a lab mock-up needs one too: [[02-foundations/tools/mechanical-design-fabrication\|12.9 §7]] builds it for S1's pin) | The part is where someone put it, within centimetres |
 | The workpiece is rigid and dimensioned | Panels flex, bundles of rebar (steel reinforcing bars) shift, membranes drape |
 | The environment is the same every cycle | Two instances of the same task differ; the building changes as it is built |
 | The robot is bolted down | The base moved to get here, and its pose is part of the error budget |
 | No one is inside the workspace | Trades are working alongside, and safety is regulated |
-| $\mu$ (the friction coefficient, [[04-robotics/grasping\|15. §2]]), mass, and geometry are known | Dust, moisture, and tolerance make all three uncertain |
+| $\mu$ (the friction coefficient, [[04-robotics/grasping\|15. §2]]), mass, and geometry are known | Dust, moisture, and tolerance make all three uncertain, and a suction grip's margin with them ([[02-foundations/fluid-power\|0.6.3 §9–§10]]) |
 
 Row 1 makes pure hybrid position/force control **with a fixed, presumed contact normal**
 fragile: its selection matrix depends on that frame ([[04-robotics/force-compliance-control|13. §3]]).
@@ -519,12 +519,12 @@ for base in (2.0, 3.0, 4.0, 5.0):                                # the base term
 
 | 공장의 가정 | 건설이 대신 주는 것 |
 |---|---|
-| 부재가 지그에 알려진 자세로 있다 | 부재는 누군가 놓은 자리에, 센티미터 오차로 있다 |
+| 부재가 지그에 알려진 자세로 있다(실험실 목업에도 지그가 필요하다. S1의 핀을 위한 것을 [[02-foundations/tools/mechanical-design-fabrication\|12.9 §7]]이 만든다) | 부재는 누군가 놓은 자리에, 센티미터 오차로 있다 |
 | 작업물은 강체이고 치수가 정해져 있다 | 패널은 휘고, 철근(콘크리트 속에 넣는 보강용 강봉) 다발은 어긋나고, 멤브레인은 늘어진다 |
 | 환경이 매 사이클 같다 | 같은 작업의 두 사례가 다르고, 건물은 지어지면서 변한다 |
 | 로봇이 바닥에 볼트로 고정되어 있다 | 베이스가 여기까지 이동해 왔고, 그 자세가 오차 예산의 일부다 |
 | 작업 구역 안에 아무도 없다 | 다른 공종이 옆에서 일하고, 안전이 규제된다 |
-| $\mu$(마찰 계수, [[04-robotics/grasping\|15. §2]]), 질량, 기하를 안다 | 분진·습기·공차가 셋 다 불확실하게 만든다 |
+| $\mu$(마찰 계수, [[04-robotics/grasping\|15. §2]]), 질량, 기하를 안다 | 분진·습기·공차가 셋 다 불확실하게 만들고, 흡착 파지의 여유도 함께 흔든다([[02-foundations/fluid-power\|0.6.3 §9–§10]]) |
 
 1행은 **접촉 법선을 고정해 둔 순수 하이브리드 위치/힘 제어**를 취약하게 만든다. 선택 행렬이
 그 좌표계에 의존하기 때문이다([[04-robotics/force-compliance-control|13. §3]]). 논문이 법선을 언제

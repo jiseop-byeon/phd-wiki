@@ -493,7 +493,7 @@ From the command line at startup, with `--ros-args -p name:=value`:
 ros2 run demo_nodes_cpp parameter_blackboard --ros-args -p some_int:=42 -p "a_string:=Hello world" -p "some_lists.some_integers:=[1, 2, 3, 4]"
 ```
 
-From a YAML file at startup. YAML is the plain-text format ROS 2 uses for parameter files (and for one of the three launch-file formats in 25.4): indentation nests one key under another, `[1, 2, 3]` is a list, and an unquoted value takes its type from its spelling — `42` an integer, `0.005` a float, `true` or `false` a boolean, most other words a string; quotes make anything a string. The file is keyed by node name, then the literal key `ros__parameters` (two underscores):
+From a YAML file at startup. YAML is the plain-text format ROS 2 uses for parameter files (and for one of the three launch-file formats in 25.4): indentation nests one key under another, `[1, 2, 3]` is a list, and an unquoted value takes its type from its spelling — `42` an integer, `0.005` a float, `true` or `false` a boolean, most other words a string; quotes make anything a string. The spellings that surprise — a zero-padded `0123` that the node reads as $83$, a bare `y` that it reads as true — are tabled in [[02-foundations/tools/config-data-formats|12.4 Config and Data Formats §4]]. The file is keyed by node name, then the literal key `ros__parameters` (two underscores):
 
 ```yaml
 parameter_blackboard:
@@ -1200,7 +1200,7 @@ this->declare_parameter("my_parameter", "world", param_desc);
 ros2 run demo_nodes_cpp parameter_blackboard --ros-args -p some_int:=42 -p "a_string:=Hello world" -p "some_lists.some_integers:=[1, 2, 3, 4]"
 ```
 
-기동 시 YAML 파일로. YAML은 ROS 2가 파라미터 파일(그리고 25.4의 launch 파일 세 형식 중 하나)에 쓰는 평문 형식이다. 들여쓰기가 키 아래에 키를 중첩하고, `[1, 2, 3]`은 리스트이며, 따옴표 없는 값은 철자로 타입이 정해진다 — `42`는 정수, `0.005`는 실수, `true`나 `false`는 불리언, 그 밖의 낱말은 대개 문자열. 따옴표를 치면 무엇이든 문자열이다. 파일은 노드 이름, 그다음 리터럴 키 `ros__parameters`(밑줄 두 개)로 키를 잡는다.
+기동 시 YAML 파일로. YAML은 ROS 2가 파라미터 파일(그리고 25.4의 launch 파일 세 형식 중 하나)에 쓰는 평문 형식이다. 들여쓰기가 키 아래에 키를 중첩하고, `[1, 2, 3]`은 리스트이며, 따옴표 없는 값은 철자로 타입이 정해진다 — `42`는 정수, `0.005`는 실수, `true`나 `false`는 불리언, 그 밖의 낱말은 대개 문자열. 따옴표를 치면 무엇이든 문자열이다. 뜻밖의 철자 — 노드가 $83$으로 읽는 0 붙은 `0123`, 참으로 읽는 맨 `y` — 는 [[02-foundations/tools/config-data-formats|12.4 설정과 데이터 형식 §4]]가 표로 정리한다. 파일은 노드 이름, 그다음 리터럴 키 `ros__parameters`(밑줄 두 개)로 키를 잡는다.
 
 ```yaml
 parameter_blackboard:

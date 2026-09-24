@@ -286,7 +286,7 @@ The accelerometer is integrated twice to reach position. The gyro is integrated 
 
 ### 4. Quantization as noise, and when it is not
 
-[[02-foundations/signal-processing|6. Signal Processing §2]] defines quantization for an ADC and gives its rounding error the variance $\Delta^2/12$. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]] insists that the same staircase is a deterministic function of position, not noise. Both are right, under different conditions, and the encoder's $R$ depends on which condition holds.
+[[02-foundations/signal-processing|6. Signal Processing §2]] defines quantization for an ADC and gives its rounding error the variance $\Delta^2/12$; the converter itself, with its step set by a reference voltage and a bit count on P6's load cell, is [[02-foundations/basic-circuits-electronics|0.6.2 Basic Circuits & Electronics §10]]. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]] insists that the same staircase is a deterministic function of position, not noise. Both are right, under different conditions, and the encoder's $R$ depends on which condition holds.
 
 > **Quantization noise, defined.** **Quantization noise** is a *statistical model of a deterministic error*: the error $e = \hat x - x$ of a uniform quantizer with step $\Delta$, treated as a random variable. It has three defining conditions, and the third is the one that fails in practice. The steps are **uniform**, of width $\Delta$. The error is modelled as **uniform over one step and independent of the signal**. And that model is true only when the **signal crosses many steps between samples, irregularly with respect to the grid**, so that where it lands inside a step is effectively random; Widrow and Kollár give the exact condition.
 >
@@ -311,7 +311,7 @@ Both measure position with an error that does not grow with the horizon. Each ha
 
 $$\sigma_p = \frac{Z_c\,\sigma_u}{f_x} = \frac{1.0 \times 0.5}{600}\ \mathrm m = 0.833\ \mathrm{mm}$$
 
-because one pixel spans $Z_c/f_x$ metres at depth $Z_c$. Along the optical axis the conversion is worse: depth from disparity has an error that grows as $Z^2$ ([[04-robotics/geometric-perception-calibration|3.5 §2]]). Two of the camera's errors are biases, and averaging frames does not touch them. Lens distortion moves points by a repeatable amount, $2.30\,\mathrm{px}$ at one point of 3.5's rig. And latency is a time offset: a frame acted on $70\,\mathrm{ms}$ after its exposure, which is P6's budget, shows where the cart was $35\,\mathrm{mm}$ ago at $0.5\,\mathrm{m/s}$, 42 times the pixel noise. 3. State Estimation's running object makes the same point for the range reading.
+because one pixel spans $Z_c/f_x$ metres at depth $Z_c$. Along the optical axis the conversion is worse: depth from disparity has an error that grows as $Z^2$ ([[04-robotics/geometric-perception-calibration|3.5 §2]]). Two of the camera's errors are biases, and averaging frames does not touch them. Lens distortion moves points by a repeatable amount, $2.30\,\mathrm{px}$ at one point of 3.5's rig. And latency is a time offset: a frame acted on $70\,\mathrm{ms}$ after its exposure, which is P6's budget, shows where the cart was $35\,\mathrm{mm}$ ago at $0.5\,\mathrm{m/s}$, 42 times the pixel noise. 3. State Estimation's running object makes the same point for the range reading. Where the pixel noise itself comes from, and the biases a moving base adds to it — blur, rolling-shutter skew and a stamp at the wrong instant — are [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §1–§2 and §9]]; the same page reads this range sensor as a timing instrument, its $10$ mm as $66.7$ ps of jitter ([[04-robotics/perception-sensors-rigs|3.6 §4]]).
 
 ### 6. The Allan deviation: one static log, three numbers
 
@@ -853,7 +853,7 @@ $u^{2m-2}$를 $0$부터 $t$까지 적분하면 $t^{2m-1}/(2m-1)$이기 때문이
 
 ### 4. 잡음으로서의 양자화, 그리고 잡음이 아닐 때
 
-[[02-foundations/signal-processing|6. 신호처리 §2]]는 ADC의 양자화를 정의하고 반올림 오차에 분산 $\Delta^2/12$를 준다. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]는 같은 계단이 잡음이 아니라 위치의 결정론적 함수라고 강조한다. 둘 다 맞고, 조건이 다르다. 엔코더의 $R$은 어느 조건이 성립하는지에 달려 있다.
+[[02-foundations/signal-processing|6. 신호처리 §2]]는 ADC의 양자화를 정의하고 반올림 오차에 분산 $\Delta^2/12$를 준다. 기준 전압과 비트 수가 스텝을 정하는 변환기 자체를 P6의 로드셀 위에서 본 것은 [[02-foundations/basic-circuits-electronics|0.6.2 기초 회로와 전자 §10]]이다. [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]는 같은 계단이 잡음이 아니라 위치의 결정론적 함수라고 강조한다. 둘 다 맞고, 조건이 다르다. 엔코더의 $R$은 어느 조건이 성립하는지에 달려 있다.
 
 > **양자화 잡음의 정의.** **양자화 잡음**(quantization noise)은 *결정론적 오차의 통계 모델*이다. 스텝 $\Delta$인 균일 양자화기의 오차 $e = \hat x - x$를 확률변수로 다룬다. 정의 조건은 셋이고, 실제로 깨지는 것은 셋째다. 스텝은 **균일**, 곧 모두 폭이 $\Delta$다. 오차는 **한 스텝 위에서 균일하고 신호와 독립** — 그렇게 모델링한다. 그리고 그 모델은 **신호가 샘플 사이에 여러 스텝을, 격자와 무관하게 불규칙하게 가로지를 때만** 참이다. 그래야 스텝 안 어디에 떨어지는지가 사실상 무작위가 된다. 정확한 조건은 Widrow와 Kollár가 준다.
 >
@@ -878,7 +878,7 @@ $u^{2m-2}$를 $0$부터 $t$까지 적분하면 $t^{2m-1}/(2m-1)$이기 때문이
 
 $$\sigma_p = \frac{Z_c\,\sigma_u}{f_x} = \frac{1.0 \times 0.5}{600}\ \mathrm m = 0.833\ \mathrm{mm}$$
 
-깊이 $Z_c$에서 픽셀 하나가 $Z_c/f_x$미터에 걸치기 때문이다. 광축 방향으로는 변환이 더 나쁘다. 시차로 얻은 깊이는 오차가 $Z^2$으로 자란다([[04-robotics/geometric-perception-calibration|3.5 §2]]). 카메라 오차 중 둘은 바이어스라서 프레임을 평균해도 줄지 않는다. 렌즈 왜곡은 점을 재현되는 양만큼 옮기고, 3.5 리그의 한 점에서 $2.30\,\mathrm{px}$다. 그리고 지연은 시간 오프셋이다. 노출 $70\,\mathrm{ms}$ 뒤에 쓰이는 프레임은, 이것이 P6의 예산인데, $0.5\,\mathrm{m/s}$에서 카트가 $35\,\mathrm{mm}$ 전에 있던 곳을 보여 준다. 픽셀 잡음의 42배다. 3. 상태 추정의 대상 절이 거리 판독에 대해 같은 지적을 한다.
+깊이 $Z_c$에서 픽셀 하나가 $Z_c/f_x$미터에 걸치기 때문이다. 광축 방향으로는 변환이 더 나쁘다. 시차로 얻은 깊이는 오차가 $Z^2$으로 자란다([[04-robotics/geometric-perception-calibration|3.5 §2]]). 카메라 오차 중 둘은 바이어스라서 프레임을 평균해도 줄지 않는다. 렌즈 왜곡은 점을 재현되는 양만큼 옮기고, 3.5 리그의 한 점에서 $2.30\,\mathrm{px}$다. 그리고 지연은 시간 오프셋이다. 노출 $70\,\mathrm{ms}$ 뒤에 쓰이는 프레임은, 이것이 P6의 예산인데, $0.5\,\mathrm{m/s}$에서 카트가 $35\,\mathrm{mm}$ 전에 있던 곳을 보여 준다. 픽셀 잡음의 42배다. 3. 상태 추정의 대상 절이 거리 판독에 대해 같은 지적을 한다. 픽셀 잡음 자체가 어디서 오는지, 그리고 움직이는 베이스가 거기에 더하는 바이어스 — 블러, 롤링 셔터 스큐, 엉뚱한 순간의 스탬프 — 는 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §1–§2, §9]]이고, 같은 페이지가 이 거리 센서를 시간 계측기로 읽어 그 $10$ mm를 $66.7$ ps의 지터로 본다([[04-robotics/perception-sensors-rigs|3.6 §4]]).
 
 ### 6. 앨런 편차: 정지 로그 하나, 숫자 셋
 

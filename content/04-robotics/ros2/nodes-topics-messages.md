@@ -385,7 +385,7 @@ ros2 run py_pubsub listener
 
 ### 6. The same pair in C++, and what it makes explicit
 
-Production stacks — Nav2, MoveIt 2, ros2_control, every driver you will link against — are written in C++. You will read far more rclcpp than you write, so read it now while the program is four lines long.
+Production stacks — Nav2, MoveIt 2, ros2_control, every driver you will link against — are written in C++. You will read far more rclcpp than you write, so read it now while the program is four lines long. If the C++ itself is new — references, `shared_ptr`, templates — [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code §1, §5 and §6]] teaches exactly what these listings use.
 
 ```bash
 ros2 pkg create --build-type ament_cmake --license Apache-2.0 cpp_pubsub
@@ -1231,7 +1231,7 @@ ros2 run py_pubsub listener
 
 ### 6. 같은 쌍을 C++로, 그리고 C++이 드러내는 것
 
-실제 제품 스택 — Nav2, MoveIt 2, ros2_control, 당신이 링크할 모든 드라이버 — 은 C++로 쓰였다. rclcpp는 쓰는 것보다 읽는 일이 훨씬 많을 테니, 프로그램이 네 줄일 때 읽어 두라.
+실제 제품 스택 — Nav2, MoveIt 2, ros2_control, 당신이 링크할 모든 드라이버 — 은 C++로 쓰였다. rclcpp는 쓰는 것보다 읽는 일이 훨씬 많을 테니, 프로그램이 네 줄일 때 읽어 두라. C++ 자체가 처음이라면 — 참조, `shared_ptr`, 템플릿 — 이 목록들이 쓰는 것을 [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++ §1, §5, §6]]이 그대로 가르친다.
 
 ```bash
 ros2 pkg create --build-type ament_cmake --license Apache-2.0 cpp_pubsub

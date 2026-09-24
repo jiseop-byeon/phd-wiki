@@ -219,7 +219,7 @@ Start by holding the arm still without contact. Both velocity and acceleration v
 
 Take plant P2, the planar 2R arm of §1, with point masses at the end of each link:
 $m_1 = m_2 = 1$ kg, $L_1 = L_2 = 1$ m. The mass matrix is, by definition, the matrix that writes the kinetic energy as
-$T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$, so build $T$ mass by mass, in three steps.
+$T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$, so build $T$ mass by mass, in three steps. (With the elbow locked, the same arm is one rigid body turning about the shoulder — a torque on a moment of inertia — in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §7]].)
 
 1. **Each mass's velocity Jacobian.** Differentiate each position of §1 in time. The elbow mass moves with $v_1=J_1\dot\theta$ and the tip mass with $v_2=J_2\dot\theta$, where
    $$J_1=\begin{pmatrix}-L_1s_1&0\\L_1c_1&0\end{pmatrix},\qquad J_2=\begin{pmatrix}-L_1s_1-L_2s_{12}&-L_2s_{12}\\L_1c_1+L_2c_{12}&L_2c_{12}\end{pmatrix}$$
@@ -309,7 +309,7 @@ to: at low speed the hardest terms in the equation are nearly zero.
 
 ### 5. Gravity, inverse dynamics, and computed torque
 
-Gravity comes from differentiating the potential energy: entry $i$ of $g(\theta)$ is the rate at which potential energy grows as joint $i$ turns,
+Gravity comes from differentiating the potential energy (the holding torque as plain statics, a weight times its lever arm, is [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §8]]): entry $i$ of $g(\theta)$ is the rate at which potential energy grows as joint $i$ turns,
 $$g(\theta) = \frac{\partial V}{\partial\theta}, \qquad V(\theta) = m_1 g L_1\sin\theta_1 + m_2 g\,(L_1\sin\theta_1 + L_2\sin\theta_{12})$$
 where each term is a weight times its height above joint 1, with angles measured from the horizontal and $\theta_{12} = \theta_1 + \theta_2$, so differentiating gives, for the same arm
 ($g = 9.81$ m/s²):
@@ -750,7 +750,7 @@ $$\text{inverse: } \tau = M(\theta)\,\ddot\theta + C(\theta,\dot\theta)\,\dot\th
 ### 3. 계산 예제 — 2R 팔의 질량 행렬
 
 §1의 평면 2R 팔, 곧 장치 P2에 각 링크 끝의 점질량을 둔다: $m_1 = m_2 = 1$ kg, $L_1 = L_2 = 1$ m.
-질량 행렬은 정의상 운동 에너지를 $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$로 쓰게 하는 행렬이므로, $T$를 질량 하나씩 세 단계로 쌓는다.
+질량 행렬은 정의상 운동 에너지를 $T = \tfrac12\dot\theta^\top M(\theta)\dot\theta$로 쓰게 하는 행렬이므로, $T$를 질량 하나씩 세 단계로 쌓는다. (엘보를 잠그면 같은 팔은 어깨 둘레로 도는 강체 하나, 곧 관성 모멘트에 걸린 토크가 되고, 그것을 계산한 곳이 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §7]]이다.)
 
 1. **질량마다의 속도 야코비안.** §1의 각 위치를 시간으로 미분한다. 엘보 질량은 $v_1=J_1\dot\theta$로, 말단 질량은 $v_2=J_2\dot\theta$로 움직이고,
    $$J_1=\begin{pmatrix}-L_1s_1&0\\L_1c_1&0\end{pmatrix},\qquad J_2=\begin{pmatrix}-L_1s_1-L_2s_{12}&-L_2s_{12}\\L_1c_1+L_2c_{12}&L_2c_{12}\end{pmatrix}$$
@@ -838,7 +838,7 @@ $$h\,\dot\theta_2^2 = (-1)(2)^2 = -4 \ \text{N}\cdot\text{m}$$
 
 ### 5. 중력, 역동역학, 계산 토크
 
-중력은 위치 에너지를 미분해서 나온다. $g(\theta)$의 $i$번째 원소는 관절 $i$가 돌 때 위치 에너지가 늘어나는 비율이다:
+중력은 위치 에너지를 미분해서 나온다(유지 토크를 순수한 정역학, 곧 무게 곱하기 모멘트 팔로 본 것은 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §8]]이다). $g(\theta)$의 $i$번째 원소는 관절 $i$가 돌 때 위치 에너지가 늘어나는 비율이다:
 $$g(\theta) = \frac{\partial V}{\partial\theta}, \qquad V(\theta) = m_1 g L_1\sin\theta_1 + m_2 g\,(L_1\sin\theta_1 + L_2\sin\theta_{12})$$
 각 항은 무게 곱하기 1번 관절 위의 높이이고, 각도는 수평에서 재며 $\theta_{12} = \theta_1 + \theta_2$다. 그래서 같은 팔에 대해 미분하면 ($g = 9.81$ m/s²):
 

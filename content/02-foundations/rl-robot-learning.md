@@ -418,7 +418,7 @@ RL results depend on protocol more than those of almost any other subfield. What
   environments that is 488,000 steps each; at a 50 Hz control rate, 9,760 s ≈ **2.7 hours of
   simulated experience per environment** — a few GPU-hours. The identical number on *one
   real machine* at 50 Hz would be **1.3 years**. That ratio is the whole reason robot RL
-  lives in simulation.
+  lives in simulation. Those GPU-hours usually run on a shared cluster, where a job longer than its time limit must checkpoint and resume ([[02-foundations/tools/gpu-clusters|12.7 GPU Clusters §5–§7]]).
 - **Observation and action spaces are part of the result.** What the policy sees (joint
   states? terrain heightmap? privileged soil parameters?) and what it emits (joint
   velocities? valve currents? end-effector poses?) change the problem more than the
@@ -1134,7 +1134,7 @@ RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할
 - **규모, 숫자로.** $2\times10^9$ 스텝은 엄청나 보인다. 병렬 환경 4,096개면 환경당 488,000
   스텝이고, 50 Hz 제어 주기에서 9,760초 ≈ **환경당 시뮬레이션 경험 2.7시간** — GPU 몇 시간이다.
   같은 숫자를 *실기계 한 대*에서 50 Hz로 채우면 **1.3년**이다. 이 비율이 로봇 RL이 시뮬레이션에
-  사는 이유 전부다.
+  사는 이유 전부다. 그 GPU 시간은 대개 공유 클러스터에서 돌고, 시간 한도보다 긴 작업은 체크포인트를 남기고 이어 가야 한다([[02-foundations/tools/gpu-clusters|12.7 GPU 클러스터 §5–§7]]).
 - **관측·행동 공간이 결과의 일부다.** 정책이 무엇을 보는지(관절 상태? 지형 높이맵? 특권 토질
   파라미터?)와 무엇을 내보내는지(관절 속도? 밸브 전류? 말단 자세?)가 알고리즘보다 문제를 더
   크게 바꾼다. 관측 **정규화 통계량은 모델의 일부**다 — 그것 없이 정책만 배포하는 것이 전형적인

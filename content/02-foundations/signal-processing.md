@@ -237,7 +237,8 @@ Convolution is useful because a short physical event can affect several later sa
 - Therefore: **anti-alias filter before downsampling**, always (this includes decimating
   IMU logs in software). An anti-alias filter is a low-pass filter (§4) placed before the
   sampler or the decimator that removes content above the *new* $f_s/2$, so nothing is left
-  that could fold down.
+  that could fold down. On P6's load cell the analog one is a single RC stage, sized against its
+  $12$-bit ADC in [[02-foundations/basic-circuits-electronics|0.6.2 Basic Circuits & Electronics §5 and §10]].
 - Engineering corollary: pick sensor rates from the fastest dynamics you must *observe*,
   with margin — a 10 Hz perception loop cannot even see, let alone damp, a 50 Hz vibration.
 - **Quantization** rounds each sample to one of $2^N$ levels, where $N$ is the number of bits
@@ -252,7 +253,7 @@ Convolution is useful because a short physical event can affect several later sa
   where $P_{signal}$ and $P_{noise}$ are the two powers, $6.02 = 10\log_{10}4$ is the per-bit
   gain, and $1.76$ dB comes from the sine's power relative to the $\Delta^2/12$ noise. A 12-bit
   ADC gives about $74$ dB and a 16-bit one about $98$ dB; a 12-bit converter spanning 10 V has
-  steps of $2.44$ mV and RMS quantization noise of $0.70$ mV. This is the *other* half of digitization. When a quantized sensor's error really is white, and when it is a fixed bias instead (an encoder at rest), is [[04-robotics/sensor-models|3.2 Sensor Models & Noise §4]].
+  steps of $2.44$ mV and RMS quantization noise of $0.70$ mV. This is the *other* half of digitization. When a quantized sensor's error really is white, and when it is a fixed bias instead (an encoder at rest), is [[04-robotics/sensor-models|3.2 Sensor Models & Noise §4]]. The same rounding happens when a number is printed with a fixed count of decimals, which is how a log file quietly quantizes its time column ([[02-foundations/tools/config-data-formats|12.4 Config and Data Formats §2]]).
 - Where this contract becomes a stability problem: a haptic loop rendering a virtual wall
   must close on a human hand every millisecond, and there sampling and quantization stop
   being accuracy questions and start deciding whether the device buzzes
@@ -689,7 +690,8 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
 
 - 따라서: **다운샘플링 전 안티에일리어스 필터**, 항상 (소프트웨어에서 IMU 로그를 솎아낼
   때도 포함). 안티에일리어스 필터는 샘플러나 데시메이터 앞에 두는 저역통과 필터(§4)로,
-  *새* $f_s/2$ 위의 성분을 없애 접혀 내려올 것을 남기지 않는다.
+  *새* $f_s/2$ 위의 성분을 없애 접혀 내려올 것을 남기지 않는다. P6의 로드셀에서는 아날로그 필터가 RC 단
+  하나이고, 그 $12$비트 ADC에 맞춰 크기를 정하는 곳이 [[02-foundations/basic-circuits-electronics|0.6.2 기초 회로와 전자 §5, §10]]이다.
 - 공학적 따름정리: *관측해야 할* 가장 빠른 동역학에서 여유를 두고 센서 주기를 정하라 —
   10 Hz 인식 루프는 50 Hz 진동을 감쇠는커녕 보지도 못한다.
 - **양자화**는 각 샘플을 $2^N$개 준위 중 하나로 반올림한다. $N$은 ADC(아날로그-디지털
@@ -703,7 +705,7 @@ Filtering, sampling, aliasing, and sensor timing continue in [[04-robotics/state
   이다. $P_{signal}$과 $P_{noise}$는 두 전력, $6.02 = 10\log_{10}4$는 비트당 이득이고,
   $1.76$ dB는 사인파 전력과 잡음 $\Delta^2/12$의 비에서 나온다. 12비트 ADC는 약 $74$ dB,
   16비트는 약 $98$ dB다. 10 V를 덮는 12비트 변환기의 한 칸은 $2.44$ mV, 양자화 잡음 RMS는
-  $0.70$ mV다. 디지털화의 나머지 절반이 이것이다. 양자화된 센서의 오차가 정말 백색인 조건과, 대신 고정된 바이어스가 되는 경우(정지한 엔코더)는 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §4]]에 있다.
+  $0.70$ mV다. 디지털화의 나머지 절반이 이것이다. 양자화된 센서의 오차가 정말 백색인 조건과, 대신 고정된 바이어스가 되는 경우(정지한 엔코더)는 [[04-robotics/sensor-models|3.2 센서 모델과 잡음 §4]]에 있다. 숫자를 정해진 소수 자릿수로 찍을 때도 같은 반올림이 일어나고, 로그 파일은 그렇게 시각 열을 조용히 양자화한다([[02-foundations/tools/config-data-formats|12.4 설정과 데이터 형식 §2]]).
 - 이 계약이 안정성 문제로 바뀌는 자리: 가상 벽을 렌더링하는 햅틱 루프는 사람 손을 상대로
   매 밀리초 닫혀야 하고, 거기서 샘플링과 양자화는 정확도 문제이기를 그치고 장치가 떨지
   말지를 정하는 요인이 된다

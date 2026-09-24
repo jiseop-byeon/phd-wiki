@@ -172,7 +172,7 @@ Read the two rows of $A$ as the two sentences they came from: the top row says t
 *n*-th order scalar ODE → *n*-dimensional first-order system — is how every robot joint,
 suspension, and hydraulic cylinder enters a paper's equations. A robot arm is the same
 structure with $M(\theta)$ in place of $m$
-([[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]]).
+([[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]]). The oil column of a hydraulic cylinder is itself such a spring, stiff but not rigid ([[02-foundations/fluid-power|0.6.3 Fluid Power §7]]).
 
 ### 3. Solving it: modes and the matrix exponential
 
@@ -351,7 +351,7 @@ can be described by one number for speed and one for ringing.
 - **$\omega_n$** (natural frequency) sets *speed*; **$\zeta$** (damping ratio) sets
   *ringing*: $\zeta<1$ oscillates, $\zeta=1$ is critically damped, $\zeta>1$ is sluggish
   (the three regimes, with a worked mass–spring–damper, are defined in
-  [[02-foundations/engineering-math|0.5 §8]]).
+  [[02-foundations/engineering-math|0.5 §8]], and worked on P3's handle, energy and all, in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §5]]).
 - Rules of thumb you can apply to any plot in a paper. The 2% **settling time** $t_s$ is the time
   after which the step response stays within 2% of its final value $y_\infty$. The **overshoot**
   is how far the peak exceeds that final value, as a fraction of it,
@@ -738,7 +738,7 @@ point only*. Three consequences you will meet in papers:
 - **Unmodeled dynamics**: hydraulic valve dead zones, backlash, and flexible links break
   linearity outright — which is why the excavation literature spends as much effort on
   actuator models as on policies
-  ([[05-construction-robotics/earthmoving-heavy-machinery|earthmoving stream §1]]).
+  ([[05-construction-robotics/earthmoving-heavy-machinery|earthmoving stream §1]]; a valve's latency and the oil spring behind it are [[02-foundations/fluid-power|0.6.3 Fluid Power §11]]).
 
 **Worked: the rail on P4.** Give the heater of §1 the rail $|u|\le1$ that [[04-robotics/mpc|7. MPC]] puts on it, keep $K=9$, and raise the disturbance to $d=2$. The linear answer is $x=d/(1+K)=0.2$, which needs $u=-Kx=-1.8$; the rail stops the command at $-1$, so the heater settles at $x=d+u=1.0$, five times the linear prediction. The division by $1+K$ that §1 sold holds only while the command it needs, $Kd/(1+K)=0.9\,d$, fits inside the rail, that is $d\le1.11$, and once the rail binds, raising $K$ buys nothing: the saturated steady state $x=d-1$ does not contain $K$ at all.
 
@@ -996,7 +996,7 @@ $$A = \begin{pmatrix} 0 & 1 \\ -k/m & -b/m\end{pmatrix}, \quad B = \begin{pmatri
 $A$의 두 행을 그것이 나온 두 문장으로 읽어라. 윗행은 속도가 위치의 도함수라는 말이고, 아랫행은 뉴턴 법칙을 가속도에 대해 푼 것이다. $m=1, b=1, k=4$이면 $A = \begin{pmatrix}0&1\\-4&-1\end{pmatrix}$. *n*차 스칼라 미분방정식
 → *n*차원 1차 시스템이라는 이 요령이, 모든 로봇 관절·서스펜션·유압 실린더가 논문의 수식에
 들어오는 방식이다. 로봇 팔은 $m$ 자리에 $M(\theta)$가 오는 같은 구조다
-([[04-robotics/modern-robotics/ch08-dynamics|MR 8장]]).
+([[04-robotics/modern-robotics/ch08-dynamics|MR 8장]]). 유압 실린더의 기름 기둥도 그런 스프링이다. 뻣뻣하지만 강체는 아니다([[02-foundations/fluid-power|0.6.3 유체 동력 §7]]).
 
 ### 3. 푸는 법: 모드와 행렬 지수
 
@@ -1160,7 +1160,7 @@ $2\zeta\omega_n = b/m$이므로 $\zeta = b/(2\sqrt{km})$이다. 유도는 그게
 
 - **$\omega_n$**(고유 진동수)이 *속도*를, **$\zeta$**(감쇠비)가 *울림*을 정한다:
   $\zeta<1$은 진동, $\zeta=1$은 임계 감쇠, $\zeta>1$은 굼뜸(세 영역은 질량-스프링-댐퍼 예제와 함께
-  [[02-foundations/engineering-math|0.5 §8]]에서 정의한다).
+  [[02-foundations/engineering-math|0.5 §8]]에서 정의하고, P3의 핸들 위에서 에너지까지 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §5]]가 계산한다).
 - 논문의 어떤 그래프에도 적용할 수 있는 어림법. 2% **정착 시간** $t_s$는 계단 응답이 최종값
   $y_\infty$의 2% 안에 계속 머물기 시작하는 시각이다. **오버슈트**는 최댓값이 최종값을 넘어선 정도를
   최종값에 대한 비율로 쓴 것, $M_p = (y_{max} - y_\infty)/y_\infty$다. 부족 감쇠 표준 2차
@@ -1513,7 +1513,7 @@ $L$의 확률적 버전이
   이 간극을 메우려고 [[04-robotics/mpc|MPC]]가 존재한다. 전기 관절에서 속도 포화는 전류 루프가 전압을 다 써 버린 것이다([[04-robotics/actuators-drives|10.5 액추에이터·구동계 §5]]).
 - **미모델링 동역학**: 유압 밸브 데드존, 백래시, 유연 링크가 선형성을 정면으로 깬다 —
   굴착 문헌이 정책만큼 액추에이터 모델에 공을 들이는 이유다
-  ([[05-construction-robotics/earthmoving-heavy-machinery|토공 스트림 §1]]).
+  ([[05-construction-robotics/earthmoving-heavy-machinery|토공 스트림 §1]]. 밸브의 지연과 그 뒤의 기름 스프링은 [[02-foundations/fluid-power|0.6.3 유체 동력 §11]]).
 
 **계산: P4에 레일을 걸면.** §1의 히터에 [[04-robotics/mpc|7. MPC]]가 거는 레일 $|u|\le1$을 걸고, $K=9$는 그대로 둔 채 외란을 $d=2$로 키우자. 선형 답은 $x=d/(1+K)=0.2$이고 그러려면 $u=-Kx=-1.8$이 필요한데, 레일이 명령을 $-1$에서 멈추므로 히터는 $x=d+u=1.0$에 자리 잡는다. 선형 예측의 다섯 배다. §1이 약속한 $1+K$로 나누기는 그것이 요구하는 명령 $Kd/(1+K)=0.9\,d$가 레일 안에 들어가는 동안, 즉 $d\le1.11$인 동안만 성립하고, 레일에 걸린 뒤에는 $K$를 올려도 얻는 것이 없다. 포화된 정상 상태 $x=d-1$에는 $K$가 아예 들어 있지 않다.
 

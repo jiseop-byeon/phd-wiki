@@ -24,7 +24,7 @@ The construction track runs on two frozen site objects, both defined here and re
 
 | Symbol | Value | What it is |
 |---|---:|---|
-| $m$ | $20\,\mathrm{kg}$ | panel mass; its weight is $196\,\mathrm{N}$ |
+| $m$ | $20\,\mathrm{kg}$ | panel mass; its weight is $196\,\mathrm{N}$, which P2 would hold at its tip with $215.8\,\mathrm{N{\cdot}m}$ at the shoulder ([[02-foundations/basic-mechanics\|0.6.1 §8]]) |
 | hole spacing | $400\,\mathrm{mm}$ | between the two mounting holes |
 | tolerance | $\pm5\,\mathrm{mm}$ | hole residual allowed at alignment |
 | transport | $8\,\mathrm{m}$ | rack to wall |
@@ -167,7 +167,7 @@ If S1 allocates 1, 2, 1, 0.5, and 1 mm, the sum is 5.5 mm—already over toleran
 > - **Non-example**: root-sum-square over a bias. If the map term is a survey offset, the same $1$ mm on every panel, it does not average against the others but shifts them all: $1+\sqrt{4+1+0.25+1}=3.5$ mm, not $2.69$. Correlation fails the same way: if map and base errors come from one survey and move together, they add first, $\sqrt{(1+2)^2+1+0.25+1}=3.35$ mm.
 > - **Why it matters**: the rule decides the verdict. Read linearly, S1 as specified cannot promise $\pm5$ mm; by root-sum-square it can, with room left for a larger base error. A budget reported as one number without its rule has not said which of the two its authors believe.
 
-Every transform must name source, target, update rate, timestamp, and calibration owner. A BIM frame with no measured tie to the robot frame is not a robot command.
+Every transform must name source, target, update rate, timestamp, and calibration owner. The timestamp is part of the error: on a base moving at $0.5$ m/s each millisecond of stamp error is $0.5$ mm at the hole, so the base's $2$ mm leaves the whole rig $4$ ms of unexplained time, priced sensor by sensor in [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §9]]. A BIM frame with no measured tie to the robot frame is not a robot command.
 
 ### 3. Safety is a system state
 
@@ -175,7 +175,7 @@ Every transform must name source, target, update rate, timestamp, and calibratio
 
 Separate hazard (what can cause harm), risk (severity and likelihood/exposure), safeguard, monitored variable, and safe state. Hazard, risk and the stop functions that lead to a safe state are the vocabulary of [[04-robotics/hri-safety|11. HRI & Safety §6]]; a safeguard is any measure that reduces a risk; the monitored variable and the safe state are this section's. An emergency stop is not the whole safety architecture: normal protective stops, speed/force limits, exclusion zones, human authority, restart conditions, and failure of the safety sensor all need ownership.
 
-The last column of §1's table is S1's list of safe states, one per phase, and reading it as a list is the point: which state is safe depends on what the system is doing. For each phase the specification also names the **monitored variable** whose value triggers the move into that state — suction pressure or the payload estimate while acquiring, a person's distance while transporting, both hole residuals while aligning, contact force and pose while holding, the fastening record while verifying — and who may lead the system out of it again.
+The last column of §1's table is S1's list of safe states, one per phase, and reading it as a list is the point: which state is safe depends on what the system is doing. For each phase the specification also names the **monitored variable** whose value triggers the move into that state — suction pressure or the payload estimate while acquiring, a person's distance while transporting, both hole residuals while aligning, contact force and pose while holding, the fastening record while verifying — and who may lead the system out of it again. How long the suction pressure holds once the pump stops — four cups at a safety factor of $4.8$ keep the required $2$ for $41$ s — is [[02-foundations/fluid-power|0.6.3 Fluid Power §9–§10]].
 
 > **Safe state, defined.** A **safe state** is a *state of the whole work system in one phase* — robot, payload, people and site together — not a button, a command, or a property of the robot alone. Four defining conditions. It **bounds the phase's hazards**: nothing powered moves toward a person, and the payload is supported. It is **reachable in time** from anywhere in the phase. It **does not rely on the failed function**: it holds without the sensor, power or software whose failure sent the system there. And it is **left deliberately**: leaving it needs a stated restart condition and a person with the authority to give it.
 >
@@ -350,7 +350,7 @@ S1, S2 and every number in the Worked case are course values defined on this pag
 
 | 기호 | 값 | 무엇인가 |
 |---|---:|---|
-| $m$ | $20\,\mathrm{kg}$ | 패널 질량. 무게는 $196\,\mathrm{N}$ |
+| $m$ | $20\,\mathrm{kg}$ | 패널 질량. 무게는 $196\,\mathrm{N}$이고, P2가 말단에서 그것을 들면 어깨에 $215.8\,\mathrm{N{\cdot}m}$가 든다([[02-foundations/basic-mechanics\|0.6.1 §8]]) |
 | 구멍 간격 | $400\,\mathrm{mm}$ | 두 체결 구멍 사이 |
 | 허용오차 | $\pm5\,\mathrm{mm}$ | 정렬 때 허용되는 구멍 잔차 |
 | 이동 | $8\,\mathrm{m}$ | 거치대에서 벽까지 |
@@ -493,7 +493,7 @@ S1이 1, 2, 1, 0.5, 1 mm를 할당하면 합은 5.5 mm로 이미 허용오차를
 > - **비예**: 편향 위에 씌운 제곱합의 제곱근. 지도 항이 측량 오프셋이라 모든 패널에 똑같이 $1$ mm라면, 다른 항과 평균되지 않고 모두를 한꺼번에 민다. $2.69$가 아니라 $1+\sqrt{4+1+0.25+1}=3.5$ mm다. 상관도 같은 식으로 틀린다. 지도와 베이스 오차가 한 번의 측량에서 나와 함께 움직이면 먼저 더해져서 $\sqrt{(1+2)^2+1+0.25+1}=3.35$ mm가 된다.
 > - **왜 중요한가**: 규칙이 판정을 정한다. 선형으로 읽으면 명세된 S1은 $\pm5$ mm를 약속하지 못하고, 제곱합의 제곱근으로 읽으면 약속할 수 있으며 베이스 오차가 더 커질 여지까지 남는다. 규칙 없이 숫자 하나로 보고한 예산은 저자들이 둘 중 무엇을 믿는지 말하지 않은 것이다.
 
-모든 변환에는 출발 좌표계, 도착 좌표계, 갱신 주기, 타임스탬프, 보정 책임자가 있어야 한다. 로봇 좌표계와 측정으로 묶이지 않은 BIM 좌표계는 로봇 명령이 아니다.
+모든 변환에는 출발 좌표계, 도착 좌표계, 갱신 주기, 타임스탬프, 보정 책임자가 있어야 한다. 타임스탬프도 오차의 일부다. $0.5$ m/s로 움직이는 베이스에서 스탬프 오차 1밀리초는 구멍에서 $0.5$ mm이므로, 베이스의 $2$ mm는 리그 전체에 설명되지 않은 시간 $4$ ms를 남긴다. 그 값을 센서마다 매기는 곳이 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §9]]다. 로봇 좌표계와 측정으로 묶이지 않은 BIM 좌표계는 로봇 명령이 아니다.
 
 ### 3. 안전은 시스템 상태다
 
@@ -501,7 +501,7 @@ S1이 1, 2, 1, 0.5, 1 mm를 할당하면 합은 5.5 mm로 이미 허용오차를
 
 위험원(해를 끼칠 수 있는 것), 위험도(심각도와 가능성·노출), 안전 조치, 감시 변수, 안전 상태를 구분한다. 위험원, 위험도, 그리고 안전 상태로 가는 정지 기능들은 [[04-robotics/hri-safety|11. HRI·안전 §6]]의 어휘이고, 안전 조치는 위험도를 줄이는 모든 수단이며, 감시 변수와 안전 상태가 이 절의 것이다. 비상정지만으로 안전 구조가 끝나지 않는다. 평상시의 보호 정지, 속도·힘 제한, 출입 금지 구역, 사람의 권한, 재시작 조건, 안전 센서 자체의 고장에도 모두 책임자가 있어야 한다.
 
-§1 표의 마지막 열이 단계마다 하나씩인 S1의 안전 상태 목록이고, 그것을 목록으로 읽는 것이 요점이다. 어느 상태가 안전한지는 시스템이 무엇을 하고 있느냐에 달렸다. 단계마다 명세는 그 상태로 옮기게 하는 **감시 변수**도 밝힌다 — 집을 때는 흡착 압력이나 탑재 하중 추정값, 운반할 때는 사람과의 거리, 정렬할 때는 두 구멍의 잔차, 지지할 때는 접촉력과 자세, 확인할 때는 체결 기록 — 그리고 누가 시스템을 그 상태에서 다시 데리고 나올 수 있는지도 밝힌다.
+§1 표의 마지막 열이 단계마다 하나씩인 S1의 안전 상태 목록이고, 그것을 목록으로 읽는 것이 요점이다. 어느 상태가 안전한지는 시스템이 무엇을 하고 있느냐에 달렸다. 단계마다 명세는 그 상태로 옮기게 하는 **감시 변수**도 밝힌다 — 집을 때는 흡착 압력이나 탑재 하중 추정값, 운반할 때는 사람과의 거리, 정렬할 때는 두 구멍의 잔차, 지지할 때는 접촉력과 자세, 확인할 때는 체결 기록 — 그리고 누가 시스템을 그 상태에서 다시 데리고 나올 수 있는지도 밝힌다. 펌프가 멈춘 뒤 흡착 압력이 얼마나 버티는지 — 안전율 $4.8$로 잡은 흡착컵 넷은 요구되는 $2$를 $41$ s 동안만 지킨다 — 는 [[02-foundations/fluid-power|0.6.3 유체 동력 §9–§10]]이다.
 
 > **안전 상태의 정의.** **안전 상태**(safe state)는 버튼도 명령도 로봇 혼자의 성질도 아니고, *한 단계에서 작업 시스템 전체*가 — 로봇, 탑재물, 사람, 현장이 함께 — 놓이는 상태다. 정의 조건 넷. **그 단계의 위험원을 묶어 둔다**: 동력으로 움직이는 어떤 것도 사람 쪽으로 가지 않고, 탑재물은 받쳐져 있다. **제때 닿을 수 있다**: 그 단계의 어디서든 도달한다. **고장 난 기능에 기대지 않는다**: 시스템을 그리로 보낸 센서·동력·소프트웨어 없이도 유지된다. 그리고 **의도적으로만 떠난다**: 떠나려면 밝혀 둔 재시작 조건과 그것을 허락할 권한을 가진 사람이 있어야 한다.
 >

@@ -155,7 +155,7 @@ A QoS *profile* is a set of *policies*, applied independently to each publisher,
 | Liveliness | *Automatic* \| *Manual by topic* | How a publisher is judged to still be alive |
 | Lease duration | duration | How long a publisher has to assert liveliness before it is considered lost |
 
-Every non-duration policy also accepts *system default*, which defers to the middleware, and every duration policy accepts *default*, an unspecified duration that middleware usually treats as infinite.
+Every non-duration policy also accepts *system default*, which defers to the middleware, and every duration policy accepts *default*, an unspecified duration that middleware usually treats as infinite. Reliability and history are a network's two old answers to a lost packet — resend until acknowledged, or keep only the freshest — priced on P6's goal in [[02-foundations/tools/computer-networks|12.5 Computer Networks §5–§6]], and a keep-last history is the drop-oldest bounded buffer of [[02-foundations/tools/concurrency|12.8 Concurrency §6]].
 
 > **QoS profile, defined.** A **QoS profile** is a *set of policy values attached to one endpoint* — a publisher, subscription, service server or client. Three defining conditions. It gives **every policy one value**, defaults filling any you omit. It **belongs to one endpoint, not to a topic**, so each end of `/goal` carries its own. And each end sets it **independently**: history, depth and lifespan are never compared across the pair, while the other five must agree (§3). The first three obey one rule for a subscription that takes nothing for a time $D$:
 >
@@ -640,7 +640,7 @@ QoS *프로파일*은 *정책*의 묶음이고, 퍼블리셔·서브스크립션
 | Liveliness | *Automatic* \| *Manual by topic* | 퍼블리셔가 살아 있다고 판정하는 방식 |
 | Lease duration | 기간 | 살아 있음을 주장해야 하는 기한. 넘기면 liveliness를 잃은 것으로 본다 |
 
-기간이 아닌 모든 정책에는 미들웨어에 위임하는 *system default*가 있고, 기간인 모든 정책에는 지정하지 않음을 뜻하는 *default*가 있다. 미들웨어는 보통 후자를 무한으로 해석한다.
+기간이 아닌 모든 정책에는 미들웨어에 위임하는 *system default*가 있고, 기간인 모든 정책에는 지정하지 않음을 뜻하는 *default*가 있다. 미들웨어는 보통 후자를 무한으로 해석한다. 신뢰성과 이력은 잃어버린 패킷에 대한 네트워크의 오래된 두 대답 — 확인 응답이 올 때까지 다시 보내기, 또는 가장 새것만 남기기 — 이고, P6의 목표 위에서 그 값을 매기는 곳이 [[02-foundations/tools/computer-networks|12.5 컴퓨터 네트워크 §5–§6]]이다. keep-last 이력은 [[02-foundations/tools/concurrency|12.8 동시성 §6]]의 가장 오래된 것을 버리는 유한 버퍼다.
 
 > **QoS 프로파일의 정의.** **QoS 프로파일**은 *끝점 하나에 붙는 정책 값의 묶음*이다. 끝점은 퍼블리셔, 서브스크립션, 서비스 서버, 클라이언트 중 하나다. 정의 조건은 셋이다. **모든 정책에 값이 하나씩** 있고, 지정하지 않은 것은 기본값으로 채워진다. **토픽이 아니라 끝점 하나에 속하므로**, `/goal`의 두 끝은 각자 제 프로파일을 갖는다. 그리고 끝마다 **따로 정한다.** history, depth, lifespan은 쌍 사이에서 비교되지 않고, 나머지 다섯은 서로 맞아야 한다(3절). 앞의 셋은 시간 $D$ 동안 아무것도 가져가지 않은 서브스크립션에서 규칙 하나를 따른다.
 >

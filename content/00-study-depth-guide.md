@@ -72,11 +72,13 @@ This split keeps recommendations honest without bloating every page to textbook 
 
 The **engineering-curriculum goal** is that `wiki-support` on a study page is a *course*: first pass for literacy, the rest plus the problem set for Working, without a required textbook. Mastery still names an original paper, a simulator, or a defense. Adjacent fields stay Literacy *for you*; the note is still a course.
 
-Not every department subject belongs here. No thermofluids, no structures sequence, no circuits sequence unless a plant needs it. The curriculum is the engineering a physical-AI construction roboticist actually uses:
+Not every department subject belongs here. No thermofluids, no structures sequence, no circuits sequence unless a plant needs it: the physics floor is one page each of mechanics, circuits and fluid power, each worked on a plant or site object the wiki already uses. The curriculum is the engineering a physical-AI construction roboticist actually uses:
 
 | Track | What the notes must teach | Where it lives now |
 |---|---|---|
 | Math and computing | calculus, linear algebra, probability, optimization, information; algorithms stay an interview track, with extra care only where the major uses them | [[02-foundations/overview\|2. Foundations]]; [[02-foundations/algorithms/index\|11]] is interviews, [[02-foundations/algorithms/graph-algorithms\|11.6]] and [[02-foundations/algorithms/robotics-ai-problems\|11.8]] are the major-related implementations |
+| Physics floor | forces, springs, damping and rotation; circuits from Ohm's law to the ADC; hydraulics, pneumatics and vacuum — for the reader whose degree left one out | [[02-foundations/basic-mechanics\|0.6.1]], [[02-foundations/basic-circuits-electronics\|0.6.2]], [[02-foundations/fluid-power\|0.6.3]] |
+| Tools | the shell, Git, Python for research code, data formats, networks, writing, GPU clusters, concurrency, fabrication, and C++ | [[02-foundations/tools/index\|12. Code, Tools & File Formats]] and [[04-robotics/ros2/cpp-for-robot-code\|25.0]] |
 | Signals, estimation, control | sampling, Kalman, state-space, LQR, MPC | foundations 6, robotics 3 and 5–8 |
 | Rigid-body robotics | SE(3), FK/IK/Jacobian, dynamics, trajectories, planning | MR summaries + page 10 |
 | Contact and haptics | unilateral contact, impedance, rendering, teleoperation | robotics E, H, K |
@@ -90,7 +92,7 @@ Filling a hole means writing a course page in that cell, not promoting the whole
 
 | Area | Default | Raise to Mastery when… |
 |---|---:|---|
-| Engineering math, linear algebra, calculus, probability, optimization | Working | the thesis contribution is mathematical, probabilistic, or optimization-based |
+| Engineering math, basic physics (0.6.1–0.6.3), linear algebra, calculus, probability, optimization | Working | the thesis contribution is mathematical, probabilistic, or optimization-based — for the physics floor, a new actuator, contact or mechanism model |
 | Information theory | Literacy | the objective or representation claim depends on KL, entropy, mutual information, or a variational bound |
 | Signal processing, state estimation, calibration, SE(3) | Working | sensing, localization, or calibration is the claimed contribution |
 | Deep-learning history and ecosystem maps | Literacy | never as a whole—promote the specific method instead |
@@ -99,6 +101,7 @@ Filling a hole means writing a course page in that cell, not promoting the whole
 | VLA, imitation learning, robot learning | Working | policy learning, action representation, or data mixture carries the novelty |
 | Diffusion, flow matching, world models | Literacy broadly; directly used methods at Working | the generative objective, dynamics model, or planner is modified |
 | GPU computing and CUDA ([[03-deep-learning/foundations/gpu-computing\|1.4]]) | Literacy for writing CUDA C++ kernels; Working for performance reasoning, batching and profiling | a custom GPU simulator (soil, deformable materials) or on-robot latency engineering carries the contribution |
+| Programming and tools (12.1–12.9, 25.0) | Working | the software, rig or data pipeline itself is the contribution |
 | Kinematics, dynamics, planning, control, robot systems | Working | the corresponding subsystem is modified or defended as novel |
 | HRI and safety | Working for deployed field systems | interaction, safety assurance, or human factors is the contribution |
 | Construction lineage, labs, industry map | Literacy | these are landscape maps, not implementation methods |
@@ -252,11 +255,13 @@ If the honest answer is "it would be interesting", the answer is no.
 
 **공학 교과과정의 목표**는 학습 페이지의 `wiki-support`가 *교과*인 것이다. 처음 통과는 문해력, 나머지와 과제는 Working, 필수 교재는 없다. Mastery는 여전히 원논문·시뮬레이터·방어를 지목한다. 인접 분야는 *당신*에게 Literacy로 남고, 노트는 그래도 교과다.
 
-학과 전 과목이 여기 있는 것은 아니다. 열유체·구조 시퀀스·회로 시퀀스는 장치가 요구하지 않으면 넣지 않는다. 교과는 건설 physical-AI 로보티시스트가 실제로 쓰는 공학이다.
+학과 전 과목이 여기 있는 것은 아니다. 열유체·구조 시퀀스·회로 시퀀스는 장치가 요구하지 않으면 넣지 않는다. 물리 바닥은 역학·회로·유체 동력을 한 페이지씩, 위키가 이미 쓰는 장치나 현장 대상 위에서만 다룬다. 교과는 건설 physical-AI 로보티시스트가 실제로 쓰는 공학이다.
 
 | 트랙 | 노트가 가르쳐야 하는 것 | 지금 있는 곳 |
 |---|---|---|
 | 수학과 계산 | 미적분, 선형대수, 확률, 최적화, 정보; 알고리즘은 면접 트랙으로 두고 전공이 쓰는 곳만 특별히 다룬다 | [[02-foundations/overview\|2. 기초]]; [[02-foundations/algorithms/index\|11]]은 면접, [[02-foundations/algorithms/graph-algorithms\|11.6]]과 [[02-foundations/algorithms/robotics-ai-problems\|11.8]]이 전공 관련 구현 |
+| 물리 바닥 | 힘·스프링·감쇠·회전, 옴의 법칙에서 ADC까지의 회로, 유압·공압·진공 — 학위 과정이 그중 하나를 빠뜨린 독자를 위해 | [[02-foundations/basic-mechanics\|0.6.1]], [[02-foundations/basic-circuits-electronics\|0.6.2]], [[02-foundations/fluid-power\|0.6.3]] |
+| 도구 | 셸, Git, 연구 코드를 위한 Python, 데이터 형식, 네트워크, 글쓰기, GPU 클러스터, 동시성, 제작, 그리고 C++ | [[02-foundations/tools/index\|12. 코드·도구·파일 형식]]과 [[04-robotics/ros2/cpp-for-robot-code\|25.0]] |
 | 신호·추정·제어 | 샘플링, 칼만, 상태공간, LQR, MPC | 기초 6, 로보틱스 3과 5–8 |
 | 강체 로보틱스 | SE(3), FK/IK/야코비안, 동역학, 궤적, 계획 | MR 요약 + 페이지 10 |
 | 접촉과 햅틱 | 단방향 접촉, 임피던스, 렌더링, 원격조작 | 로보틱스 E, H, K |
@@ -270,7 +275,7 @@ If the honest answer is "it would be interesting", the answer is no.
 
 | 영역 | 기본 깊이 | Mastery가 필요한 경우 |
 |---|---:|---|
-| 공업수학·선형대수·미적분·확률·최적화 | Working | 기여가 수학적 정식화·확률 모델·최적화 중 하나일 때 |
+| 공업수학·기초 물리(0.6.1–0.6.3)·선형대수·미적분·확률·최적화 | Working | 기여가 수학적 정식화·확률 모델·최적화 중 하나일 때, 물리 바닥이라면 새 액추에이터·접촉·기구 모델일 때 |
 | 정보이론 | Literacy | 목적함수나 표현에 대한 주장이 KL·엔트로피·상호정보량·변분 경계에 기대고 있을 때 |
 | 신호처리·상태추정·보정·SE(3) | Working | 센싱·위치추정·보정이 기여일 때 |
 | 딥러닝 역사·생태계 지도 | Literacy | 분야 전체를 올리는 일은 없다 — 실제로 쓰는 방법 하나만 승격 |
@@ -279,6 +284,7 @@ If the honest answer is "it would be interesting", the answer is no.
 | VLA·모방학습·로봇러닝 | Working | 정책·행동 표현·데이터 혼합이 기여일 때 |
 | 디퓨전·flow matching·world model | 넓게 Literacy, 직접 쓰는 방법은 Working | 생성 목적함수·동역학 모델·planner를 수정할 때 |
 | GPU 계산과 CUDA([[03-deep-learning/foundations/gpu-computing\|1.4]]) | CUDA C++ 커널 작성은 Literacy, 성능 판단·배치·프로파일링은 Working | 맞춤 GPU 시뮬레이터(흙, 변형 재료)나 로봇 위 지연 공학이 기여를 짊어질 때 |
+| 프로그래밍과 도구(12.1–12.9, 25.0) | Working | 소프트웨어, 리그, 데이터 파이프라인 자체가 기여일 때 |
 | 기구학·동역학·계획·제어·로봇 시스템 | Working | 해당 subsystem이 novelty일 때 |
 | HRI·안전 | 현장 배치 연구에서는 Working | 상호작용·안전 보증·human factors가 기여일 때 |
 | 건설 계보·랩·산업 지도 | Literacy | 구현 방법이 아닌 분야 지도 |

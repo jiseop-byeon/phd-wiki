@@ -153,7 +153,7 @@ The lineages differ because they place the burden of adaptation in different pla
 | Question | Why it matters |
 |---|---|
 | Is the design robot-oriented? | Co-design can remove difficulty rather than solve it in control |
-| How are parts localized? | CAD pose, markers, vision, scan registration ([[05-construction-robotics/site-perception\|5]]), or human correction imply different autonomy |
+| How are parts localized? | CAD pose, markers (PnP on a tag's corners, [[04-robotics/geometric-perception-calibration\|3.5 §2.7]]), vision, scan registration ([[05-construction-robotics/site-perception\|5]]), or human correction imply different autonomy |
 | What closes the loop? | Force, tactile, vision, geometry scan, or no verification |
 | In which frame is acceptance measured? | A robot-frame pose can pass while a hole misses the structure (§8) |
 | What is mobile? | Base error couples into end-effector accuracy |
@@ -484,7 +484,7 @@ S1에서 루프는 두 번 닫힌다. 정렬 때는 두 구멍을 한 번 스캔
 | 질문 | 의미 |
 |---|---|
 | 설계가 robot-oriented인가 | 제어가 아니라 공동설계로 난도를 제거했을 수 있다 |
-| 부품 위치를 어떻게 아나 | CAD·마커·비전·스캔 정합([[05-construction-robotics/site-perception\|5]])·인간 보정은 자율 수준이 다르다 |
+| 부품 위치를 어떻게 아나 | CAD·마커(태그 코너 위의 PnP, [[04-robotics/geometric-perception-calibration\|3.5 §2.7]])·비전·스캔 정합([[05-construction-robotics/site-perception\|5]])·인간 보정은 자율 수준이 다르다 |
 | 무엇이 루프를 닫나 | 힘·촉각·비전·형상 스캔 또는 검증 없음 |
 | 합격을 어느 좌표계에서 재나 | 로봇 좌표계의 자세는 통과해도 구멍은 구조물을 빗나갈 수 있다(§8) |
 | 무엇이 이동하나 | 베이스 오차가 말단 정확도에 들어간다 |

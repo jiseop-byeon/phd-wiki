@@ -322,6 +322,8 @@ not what the quantity is.
 > - **Non-example**: "our latency is $110\ \mathrm{ms}$", the round-trip ping. It is $73.3\%$ of that budget and omits $40\ \mathrm{ms}$ — $2.0\ \mathrm{mm}$ of extra commanded penetration at $50\ \mathrm{mm/s}$ and $20\ \mathrm{N}$ against this wall, which is the entire force allowance, hidden in the terms that were not counted.
 > - **Why it matters**: it converts "is the delay acceptable?" into arithmetic with a task-derived right-hand side, and it identifies which term to attack. A budget dominated by transport is a networking problem; one dominated by the device's own rise time, as a $15\ \mathrm{ms}$ amplifier would be on a short link, is a hardware problem that no network will fix.
 
+The transport terms themselves — one-way delay and its variation, what a lost packet costs under TCP and under UDP, and why a ping reports a round trip rather than either direction — are [[02-foundations/tools/computer-networks|12.5 Computer Networks §1 and §5–§6]].
+
 > [!example] Worked example · 계산 예제
 > **What 150 ms of round trip does on contact.** The operator moves the master at 50 mm/s and
 > the tool meets a wall. The contact force cannot reach the operator's hand for a full round
@@ -1060,6 +1062,8 @@ $$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfr
 > - **예**: 그림 아래 막대의 항 열 개(Worked case 5단계에 표로 있다)가 $150\ \mathrm{ms}$로 합쳐지고 허용치는 $20/(10^4\times 0.050) = 40\ \mathrm{ms}$다 — $3.75$배 초과이고, 네트워킹만으로는 닫을 수 없다. 전송 두 항을 지워도 정확히 $40\ \mathrm{ms}$가 남아 여유가 0이기 때문이다.
 > - **반례**: "우리 지연은 $110\ \mathrm{ms}$입니다", 즉 왕복 ping. 그 예산의 $73.3\%$이고 $40\ \mathrm{ms}$를 뺀 것이며 — $50\ \mathrm{mm/s}$에서 추가 명령 침투 $2.0\ \mathrm{mm}$, 이 벽에 대해 $20\ \mathrm{N}$ — 그것은 힘 허용치 전부가 세지 않은 항들 속에 숨은 것이다.
 > - **왜 중요한가**: "이 지연이 받아들일 만한가"를 과제에서 나온 우변을 가진 산술로 바꾸고, 어느 항을 쳐야 하는지를 짚어 준다. 전송이 지배하는 예산은 네트워킹 문제이고, 짧은 링크에서 $15\ \mathrm{ms}$ 증폭기가 그렇듯 장치 자신의 상승 시간이 지배하는 예산은 어떤 네트워크로도 고쳐지지 않는 하드웨어 문제다.
+
+전송 항 자체 — 편도 지연과 그 변동, 패킷 하나를 잃으면 TCP와 UDP에서 각각 치르는 값, 그리고 ping이 어느 한 방향이 아니라 왕복을 보고하는 이유 — 는 [[02-foundations/tools/computer-networks|12.5 컴퓨터 네트워크 §1, §5–§6]]이다.
 
 > [!example] 계산 예제 · Worked example
 > **왕복 150 ms가 접촉 순간에 하는 일.** 작업자가 마스터를 50 mm/s로 움직이는데 공구가 벽에

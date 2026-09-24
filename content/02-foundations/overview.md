@@ -42,7 +42,7 @@ not have to assume anything beyond the table above.
 
 ### Recommended study order
 
-**0.5 [[02-foundations/engineering-math|Engineering Math]]** (a reference: open the section a later page names, skip whatever reads easily) **→ 0.6 [[02-foundations/lab-plants|Lab Plants]] → 0.7 [[02-foundations/lab-kernel|Lab Kernel]]** (skim both once — every problem set names one of the plants P1–P6, and the Tier A labs step it in time) **→ 0.8 [[02-foundations/neural-network-basics|What a Neural Network Is]]** (skip if the ML vocabulary is already familiar) **→ 1. [[02-foundations/linear-algebra|Linear Algebra]] → 2. [[02-foundations/calculus-backprop|Calculus & Backprop]] → 3. [[02-foundations/probability|Probability]]** (the core triangle — everything else stands on these) **→ 4. [[02-foundations/optimization|Optimization]] → 5. [[02-foundations/information-theory|Information Theory]]** (the applied pillars) **→ 6. [[02-foundations/signal-processing|Signal Processing]] · 7. [[02-foundations/rl-basics|RL Basics]] → 7.5 [[02-foundations/rl-robot-learning|RL for Robot Learning]]** (domain bridges — order between these two is free; 7.5 follows 7) **→ 8. [[02-foundations/se3-geometry|3D Geometry & SE(3)]]** (before the robotics track and VLA papers) **· 9. [[02-foundations/ml-practice|ML Practice & Evaluation]]** (before reading any results table) **→ 10. [[02-foundations/manipulator-kinematics-dynamics|Manipulator Kinematics & Dynamics]]** (take it when the manipulation track is next; force control is unreadable without it).
+**0.5 [[02-foundations/engineering-math|Engineering Math]]** (a reference: open the section a later page names, skip whatever reads easily) **→ 0.6 [[02-foundations/lab-plants|Lab Plants]] → 0.7 [[02-foundations/lab-kernel|Lab Kernel]]** (skim both once — every problem set names one of the plants P1–P6, and the Tier A labs step it in time) **→ 0.6.1 [[02-foundations/basic-mechanics|Basic Mechanics]] · 0.6.2 [[02-foundations/basic-circuits-electronics|Circuits & Electronics]] · 0.6.3 [[02-foundations/fluid-power|Fluid Power]]** (the physics floor under the plants: take the ones where your degree left a gap and skip the rest — the robotics and construction pages stand on them) **→ 0.8 [[02-foundations/neural-network-basics|What a Neural Network Is]]** (skip if the ML vocabulary is already familiar) **→ 1. [[02-foundations/linear-algebra|Linear Algebra]] → 2. [[02-foundations/calculus-backprop|Calculus & Backprop]] → 3. [[02-foundations/probability|Probability]]** (the core triangle — everything else stands on these) **→ 4. [[02-foundations/optimization|Optimization]] → 5. [[02-foundations/information-theory|Information Theory]]** (the applied pillars) **→ 6. [[02-foundations/signal-processing|Signal Processing]] · 7. [[02-foundations/rl-basics|RL Basics]] → 7.5 [[02-foundations/rl-robot-learning|RL for Robot Learning]]** (domain bridges — order between these two is free; 7.5 follows 7) **→ 8. [[02-foundations/se3-geometry|3D Geometry & SE(3)]]** (before the robotics track and VLA papers) **· 9. [[02-foundations/ml-practice|ML Practice & Evaluation]]** (before reading any results table) **→ 10. [[02-foundations/manipulator-kinematics-dynamics|Manipulator Kinematics & Dynamics]]** (take it when the manipulation track is next; force control is unreadable without it).
 
 Each study page ends with a **problem set** as well as a self-check. The problems reuse six
 shared plants frozen in [[02-foundations/lab-plants|0.6 Lab Plants]] (a 2-layer net, a planar
@@ -157,17 +157,19 @@ met.
 | Route | Literacy pass | Working pass | What completion means |
 |---|---:|---:|---|
 | Foundations 0.5–10 | about 15–25 sessions | about 35–60 sessions | cumulative gate + selected problem sets |
+| Physics floor 0.6.1–0.6.3 | about 3–6 | about 20–25 | three problem sets, two of them with labs; only the pages your degree left out |
 | Deep-learning bridge courses 1–6 with 1.1–1.4 and 6.1 | about 11–26 | about 50–60 | eleven problem sets with their labs + the cumulative problem set; Working only for modules used in experiments |
-| Robotics common track 1–11 with 3.2, 5.5, 10.5, then 26 | about 25–40 | about 80–100 | running-task checkpoints + cumulative problem set + capstone lab |
-| One robotics specialization | about 3–12 | about 13–56 | the selected pages' problem sets or build artifacts |
+| Robotics common track 1–11 with 3.2, 3.6, 5.5, 10.5, then 26 | about 26–41 | about 95–110 | running-task checkpoints + cumulative problem set + capstone lab |
+| One robotics specialization | about 3–13 | about 13–65 | the selected pages' problem sets or build artifacts |
 | Construction track 1–10 with 2.5 and 7.5 | about 12–21 | about 45–55 | nine problem sets on S1 and S2, four of them with labs, + the site-system ledger |
 | Research practice 1–8 | about 8–20 | about 35–45 | eight problem sets on RS1, three of them with labs |
+| Tools track 12.1–12.9 with 25.0 | about 10–20 | about 65–75 | ten problem sets, five of them with labs; each page when its need first arrives |
 | Paper track | ongoing | contribution-dependent | ★·◐·○ policy, not a fixed end date |
 
 These are planning ranges, not promises. Prior knowledge can compress a first pass; doing
 the derivations and debugging a build can expand a Working pass. Do not sum every row:
 algorithms, ROS 2, haptics, navigation, human perception, and manipulation are branching
-specializations. The common robotics curriculum stops at page 11 and closes with the capstone (26), and the
+specializations, the physics floor is taken only where a degree left a gap, and the tools track one page at a time as each need arrives. The common robotics curriculum stops at page 11 and closes with the capstone (26), and the
 [[00-study-depth-guide|depth guide]] decides which branch is worth the time.
 
 A sustainable pace is four sessions per week: two course sessions, one paper session, and
@@ -300,7 +302,7 @@ flowchart TD
 
 ### 권장 학습 순서
 
-**0.5 [[02-foundations/engineering-math|공업수학]]** (참고서다: 뒤 페이지가 지목하는 절을 펴고, 술술 읽히는 것은 건너뛴다) **→ 0.6 [[02-foundations/lab-plants|Lab Plants]] → 0.7 [[02-foundations/lab-kernel|Lab Kernel]]** (둘 다 한 번 훑어 둔다 — 모든 과제가 장치 P1–P6 중 하나를 부르고, Tier A 랩은 그것을 시간에 따라 전진한다) **→ 0.8 [[02-foundations/neural-network-basics|신경망이란 무엇인가]]** (ML 어휘가 이미 익숙하면 건너뛰어도 된다) **→ 1. [[02-foundations/linear-algebra|선형대수]] → 2. [[02-foundations/calculus-backprop|미적분·역전파]] → 3. [[02-foundations/probability|확률]]** (핵심 삼각형 — 나머지 전부가 이 위에 선다) **→ 4. [[02-foundations/optimization|최적화]] → 5. [[02-foundations/information-theory|정보이론]]** (응용 기둥) **→ 6. [[02-foundations/signal-processing|신호처리]] · 7. [[02-foundations/rl-basics|RL 기초]] → 7.5 [[02-foundations/rl-robot-learning|로봇 학습을 위한 RL]]** (도메인 다리 — 이 둘의 순서는 자유, 7.5는 7 다음) **→ 8. [[02-foundations/se3-geometry|3D 기하와 SE(3)]]** (로보틱스 트랙·VLA 논문 전에) **· 9. [[02-foundations/ml-practice|ML 실무와 평가]]** (결과 표를 읽기 전에) **→ 10. [[02-foundations/manipulator-kinematics-dynamics|매니퓰레이터 기구학·동역학]]** (매니퓰레이션 트랙으로 갈 때 — 힘 제어가 이것 없이는 읽히지 않는다).
+**0.5 [[02-foundations/engineering-math|공업수학]]** (참고서다: 뒤 페이지가 지목하는 절을 펴고, 술술 읽히는 것은 건너뛴다) **→ 0.6 [[02-foundations/lab-plants|Lab Plants]] → 0.7 [[02-foundations/lab-kernel|Lab Kernel]]** (둘 다 한 번 훑어 둔다 — 모든 과제가 장치 P1–P6 중 하나를 부르고, Tier A 랩은 그것을 시간에 따라 전진한다) **→ 0.6.1 [[02-foundations/basic-mechanics|기초 역학]] · 0.6.2 [[02-foundations/basic-circuits-electronics|회로와 전자]] · 0.6.3 [[02-foundations/fluid-power|유체 동력]]** (장치 밑의 물리 바닥: 학위 과정이 빠뜨린 것만 하고 나머지는 건너뛴다 — 로보틱스와 건설 페이지가 이 위에 선다) **→ 0.8 [[02-foundations/neural-network-basics|신경망이란 무엇인가]]** (ML 어휘가 이미 익숙하면 건너뛰어도 된다) **→ 1. [[02-foundations/linear-algebra|선형대수]] → 2. [[02-foundations/calculus-backprop|미적분·역전파]] → 3. [[02-foundations/probability|확률]]** (핵심 삼각형 — 나머지 전부가 이 위에 선다) **→ 4. [[02-foundations/optimization|최적화]] → 5. [[02-foundations/information-theory|정보이론]]** (응용 기둥) **→ 6. [[02-foundations/signal-processing|신호처리]] · 7. [[02-foundations/rl-basics|RL 기초]] → 7.5 [[02-foundations/rl-robot-learning|로봇 학습을 위한 RL]]** (도메인 다리 — 이 둘의 순서는 자유, 7.5는 7 다음) **→ 8. [[02-foundations/se3-geometry|3D 기하와 SE(3)]]** (로보틱스 트랙·VLA 논문 전에) **· 9. [[02-foundations/ml-practice|ML 실무와 평가]]** (결과 표를 읽기 전에) **→ 10. [[02-foundations/manipulator-kinematics-dynamics|매니퓰레이터 기구학·동역학]]** (매니퓰레이션 트랙으로 갈 때 — 힘 제어가 이것 없이는 읽히지 않는다).
 
 각 학습 페이지 끝에는 스스로 점검과 함께 **과제가** 있다. 과제는 [[02-foundations/lab-plants|0.6 Lab Plants]]에 고정된 장치 여섯 개(2층 네트워크, 평면 2R, 1자유도 핸들, 새는 히터, 1차원 거리, 시계가 있는 카트)를 재사용한다. 연속 플랜트를 한 스텝 전진하는 법은 [[02-foundations/lab-kernel|0.7 Lab Kernel]]이다. 그 페이지의 강의가 이미 과제의 대상을 그리고 이름 붙은 장치로 유도해 두어야 한다. 과제는 변형(다른 자세, 손잡이 하나, 해석)이지 그 대상이 처음 나오는 곳이 아니다. 페이지가 끝난 것은 위키만으로 그 과제를 풀었을 때이지, 마지막 식이 익숙해 보일 때가 아니다.
 
@@ -407,16 +409,18 @@ graph LR
 | 경로 | Literacy 통과 | Working 통과 | 완료의 뜻 |
 |---|---:|---:|---|
 | 기초 0.5–10 | 약 15–25회 | 약 35–60회 | 누적 gate + 선택한 problem set |
+| 물리 바닥 0.6.1–0.6.3 | 약 3–6회 | 약 20–25회 | 과제 셋, 그중 둘은 실습 포함; 학위 과정이 빠뜨린 페이지만 |
 | 딥러닝 브리지 교과 1–6과 1.1–1.4, 6.1 | 약 11–26회 | 약 50–60회 | 과제 열한 개와 그 실습 + 누적 과제; 실험에 쓰는 모듈만 Working |
-| 로보틱스 공통 1–11(3.2, 5.5, 10.5 포함), 이어서 26 | 약 25–40회 | 약 80–100회 | running-task 확인 + 누적 과제 + 캡스톤 실습 |
-| 로보틱스 전문화 하나 | 약 3–12회 | 약 13–56회 | 선택 페이지의 과제 또는 build 산출물 |
+| 로보틱스 공통 1–11(3.2, 3.6, 5.5, 10.5 포함), 이어서 26 | 약 26–41회 | 약 95–110회 | running-task 확인 + 누적 과제 + 캡스톤 실습 |
+| 로보틱스 전문화 하나 | 약 3–13회 | 약 13–65회 | 선택 페이지의 과제 또는 build 산출물 |
 | 건설 트랙 1–10, 2.5와 7.5 포함 | 약 12–21회 | 약 45–55회 | S1과 S2 위의 과제 아홉, 그중 넷은 실습 포함, + 현장 시스템 장부 |
 | 연구 실무 1–8 | 약 8–20회 | 약 35–45회 | RS1 위의 과제 여덟 개, 그중 셋은 실습 포함 |
+| 도구 트랙 12.1–12.9와 25.0 | 약 10–20회 | 약 65–75회 | 과제 열 개, 그중 다섯은 실습 포함; 페이지마다 그 필요가 처음 생길 때 |
 | 논문 트랙 | 계속됨 | 기여에 따라 다름 | 고정 종료일이 아니라 ★·◐·○ 정책 |
 
 계획 범위이지 약속이 아니다. 선수 지식은 first pass를 줄이고, 유도와 debugging은 Working을
 늘린다. 모든 행을 더하지 않는다. 알고리즘·ROS 2·햅틱·내비게이션·사람 인지·매니퓰레이션은
-갈라지는 전문화다. 공통 로보틱스는 11번에서 끝나고 캡스톤(26)으로 마무리하며 어느 가지를 탈지는
+갈라지는 전문화이고, 물리 바닥은 학위 과정이 빠뜨린 곳만, 도구 트랙은 필요가 생길 때마다 한 페이지씩 한다. 공통 로보틱스는 11번에서 끝나고 캡스톤(26)으로 마무리하며 어느 가지를 탈지는
 [[00-study-depth-guide|깊이 가이드]]가 정한다.
 
 지속 가능한 페이스는 주 4회다: 교과 2회, 논문 1회, 복습 또는 구현 1회. 2주마다 gate를

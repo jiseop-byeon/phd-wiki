@@ -100,7 +100,7 @@ Two of the three ROS 2 failures that produce no error live on this page; the thi
 - **Executors.** A callback blocks waiting for something that can only be produced by another callback that the same executor thread is supposed to run. The node stops responding. It does not crash, it does not log, and its publishers stay advertised. That is this section, §2 and §5.
 - **Time.** A node reads the wall clock while the rest of the system is running on simulated or replayed time. Its timestamps are consistent with nothing, its timeouts fire at the wrong moments, and every value it produces looks plausible. That is §3 and §4.
 
-Callbacks do not run by themselves. An **executor** owns one or more OS threads, watches the middleware for available messages and expired timers through a *wait set*, and invokes the corresponding callbacks. `rclpy.spin(node)` and `rclcpp::spin(node)` are shorthand for instantiating a single-threaded executor, adding the node and spinning it.
+Callbacks do not run by themselves. An **executor** owns one or more OS threads, watches the middleware for available messages and expired timers through a *wait set*, and invokes the corresponding callbacks. `rclpy.spin(node)` and `rclcpp::spin(node)` are shorthand for instantiating a single-threaded executor, adding the node and spinning it. Threads, races and locks outside ROS — and a table mapping each onto executors and callback groups — are [[02-foundations/tools/concurrency|12.8 Concurrency §10]]; the rules a C++ control callback keeps so that it finishes inside its period are [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code §9]].
 
 > **Executor, defined.** An **executor** is a *scheduler object inside one process* — neither a node nor a thread. Three defining conditions. It **holds entities**: the subscriptions, timers, services and clients of the nodes added to it. It **waits on a wait set**, which reports only *which* entities are ready — a timer due, a topic with a message in the middleware — never how many or how old. And it **runs each ready callback to completion on one of its threads**, within the limits of §2's callback groups.
 >
@@ -139,7 +139,7 @@ Callbacks in *different* groups may always run in parallel. Anything created wit
 > - **Example**: P6's calibration timer in its own mutually exclusive group, the control timer and `on_goal` in the default one, two threads: calibration holds one for $200\,\mathrm{ms}$ while the other runs all $40$ control firings and $10$ goal callbacks, and the loss is $0$.
 > - **Non-example**: the same groups on `rclpy.spin`. The groups permit overlap, but $n_{\text{th}}=1$ caps the node at one running callback, so $40$ firings are still lost — which is why the fix is always the pair, a group and a thread.
 
-That default is the whole story behind the deadlock. If every entity in a node uses the default group, the node behaves exactly as if it were on a single-threaded executor *even when you gave it a multi-threaded one*. Choosing `MultiThreadedExecutor` and assigning no groups buys you nothing.
+That default is the whole story behind the deadlock — one of the four conditions any deadlock needs, which [[02-foundations/tools/concurrency|12.8 §5]] states for plain threads. If every entity in a node uses the default group, the node behaves exactly as if it were on a single-threaded executor *even when you gave it a multi-threaded one*. Choosing `MultiThreadedExecutor` and assigning no groups buys you nothing.
 
 Now the failure [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] left open. A timer callback makes a synchronous service call — `client.call(request)` in rclpy, or waiting on the future returned by `async_send_request` in rclcpp:
 
@@ -519,7 +519,7 @@ $$\frac{D}{1000\,\mathrm{ms}}=\frac{200}{1000}=20\,\%$$
 - **Executor.** 어떤 콜백이, 같은 executor 스레드가 실행해야 하는 다른 콜백만이 만들어 낼 수 있는 것을 기다리며 막힌다. 노드는 응답을 멈춘다. 죽지도 않고, 로그도 남기지 않고, 퍼블리셔는 광고된 채로 남는다. 이 절, 2절, 5절이다.
 - **시간.** 시스템 나머지가 시뮬레이션 시간이나 재생 시간 위에서 도는데 어떤 노드가 벽시계를 읽는다. 그 노드의 타임스탬프는 무엇과도 맞지 않고, 타임아웃은 엉뚱한 순간에 터지고, 내놓는 값은 전부 그럴듯해 보인다. 3절과 4절이다.
 
-콜백은 저절로 돌지 않는다. **Executor**(실행기)가 OS 스레드 하나 이상을 소유하고, *wait set*을 통해 미들웨어에 도착한 메시지와 만료된 타이머를 감시하며 해당 콜백을 호출한다. `rclpy.spin(node)`와 `rclcpp::spin(node)`는 단일 스레드 executor를 만들고 노드를 붙여 spin하는 것의 축약이다.
+콜백은 저절로 돌지 않는다. **Executor**(실행기)가 OS 스레드 하나 이상을 소유하고, *wait set*을 통해 미들웨어에 도착한 메시지와 만료된 타이머를 감시하며 해당 콜백을 호출한다. `rclpy.spin(node)`와 `rclcpp::spin(node)`는 단일 스레드 executor를 만들고 노드를 붙여 spin하는 것의 축약이다. ROS 밖의 스레드, 경쟁, 락 — 그리고 그 각각을 executor와 콜백 그룹에 대응시킨 표 — 는 [[02-foundations/tools/concurrency|12.8 동시성 §10]]이고, C++ 제어 콜백이 주기 안에 끝나도록 지키는 규칙은 [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++ §9]]이다.
 
 > **Executor의 정의.** **Executor**는 *한 프로세스 안의 스케줄러 객체*다. 노드도 스레드도 아니다. 정의 조건은 셋이다. **엔티티를 들고 있다.** 붙인 노드들의 서브스크립션, 타이머, 서비스, 클라이언트다. **wait set 위에서 기다린다.** wait set은 *어느* 엔티티가 준비됐는지 — 만기된 타이머, 미들웨어에 메시지가 있는 토픽 — 만 알릴 뿐, 몇 개인지 얼마나 오래됐는지는 알리지 않는다. 그리고 **준비된 콜백을 자기 스레드 하나에서 끝까지 돌린다.** 2절의 콜백 그룹이 정한 한도 안에서다.
 >
@@ -558,7 +558,7 @@ rclpy에 대한 단서 하나. `MultiThreadedExecutor`의 스레드들은 Python
 > - **예**: P6의 보정 타이머는 자기 mutually exclusive 그룹에, 제어 타이머와 `on_goal`은 기본 그룹에 두고 스레드 둘로 돌린다. 보정이 스레드 하나를 $200\,\mathrm{ms}$ 붙드는 동안 다른 스레드가 제어 발화 $40$번과 목표 콜백 $10$번을 모두 돌리고, 손실은 $0$이다.
 > - **비예**: 같은 그룹 배치를 `rclpy.spin`에 올린 경우. 그룹은 겹침을 허락하지만 $n_{\text{th}}=1$이 노드를 한 번에 콜백 하나로 묶으므로 여전히 $40$번을 잃는다. 해법이 언제나 그룹과 스레드의 짝인 이유다.
 
-그 기본값이 교착의 전말이다. 노드의 모든 엔티티가 기본 그룹을 쓰면, *멀티 스레드 executor를 줬더라도* 노드는 단일 스레드 executor 위에 있는 것과 똑같이 동작한다. `MultiThreadedExecutor`를 고르고 그룹을 하나도 지정하지 않으면 얻는 것이 없다.
+그 기본값이 교착의 전말이다 — 어떤 교착에나 필요한 네 조건 가운데 하나이고, [[02-foundations/tools/concurrency|12.8 §5]]가 평범한 스레드에서 그 조건들을 적는다. 노드의 모든 엔티티가 기본 그룹을 쓰면, *멀티 스레드 executor를 줬더라도* 노드는 단일 스레드 executor 위에 있는 것과 똑같이 동작한다. `MultiThreadedExecutor`를 고르고 그룹을 하나도 지정하지 않으면 얻는 것이 없다.
 
 이제 [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]]이 남겨 둔 실패다. 타이머 콜백이 동기 서비스 호출을 한다. rclpy의 `client.call(request)`, 또는 rclcpp에서 `async_send_request`가 돌려준 future를 기다리는 것.
 

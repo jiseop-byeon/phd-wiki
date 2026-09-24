@@ -23,7 +23,7 @@ n = int(round((t1 - t0) / T)) + 1
 t = [t0 + i * T for i in range(n)]
 ```
 
-$T$ is the *sample period of the controller*, not a plotting convenience. Haptic walls use $T=10^{-3}$ or smaller. Heaters and carts may use $T=10^{-2}$. If a plot is noisy because $T$ is large, that is data, not a bug.
+$T$ is the *sample period of the controller*, not a plotting convenience. Haptic walls use $T=10^{-3}$ or smaller. Heaters and carts may use $T=10^{-2}$. If a plot is noisy because $T$ is large, that is data, not a bug. Building $t$ from the integer index $i$, not by adding $T$ once per step, is what keeps a long run's clock exact; why an accumulated float clock drifts, and by how much over an hour at $200\,\mathrm{Hz}$, is [[02-foundations/tools/python-research-code|12.3 Python for Research Code §5]].
 
 ### 2. Explicit Euler
 
@@ -41,7 +41,7 @@ with $a_k=F_k/m$ using forces at step $k$. This is what the P3 template uses. It
 
 $$v_{k+1}=v_k+T\,a_k,\qquad x_{k+1}=x_k+T\,v_{k+1}$$
 
-Position is updated with the *new* velocity. For a conservative spring it nearly conserves energy; explicit Euler steadily gains it. If a lab asks you to compare the two on P3 with $b=0$ and a soft spring, this is the pair. On a contact spring of stiffness $k$, with $\omega=\sqrt{k/m}$, semi-implicit Euler stays stable only while $\omega T<2$, and explicit Euler only when a contact damper pays $d\ge kT$ — derived by hand on P3's handle in the worked case of [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] and swept over the step in its [[06-research-practice/simulators-benchmarks-datasets|§3 lab]].
+Position is updated with the *new* velocity. For a conservative spring it nearly conserves energy; explicit Euler steadily gains it. If a lab asks you to compare the two on P3 with $b=0$ and a soft spring, this is the pair. On a contact spring of stiffness $k$, with $\omega=\sqrt{k/m}$, semi-implicit Euler stays stable only while $\omega T<2$, and explicit Euler only when a contact damper pays $d\ge kT$ — derived by hand on P3's handle in the worked case of [[06-research-practice/simulators-benchmarks-datasets|7. Simulators, Benchmarks & Datasets]] and swept over the step in its [[06-research-practice/simulators-benchmarks-datasets|§3 lab]]. The equation being stepped, with its natural frequency and damping ratio, is derived on P3 in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §5]], whose lab evaluates its closed form over eight dampings ([[02-foundations/basic-mechanics|0.6.1 §10]]) — the reference an Euler run can be checked against.
 
 ### 4. Plotting convention
 
@@ -72,7 +72,7 @@ n = int(round((t1 - t0) / T)) + 1
 t = [t0 + i * T for i in range(n)]
 ```
 
-$T$는 *제어기의 샘플 주기*이지 플롯 편의 상수가 아니다. 햅틱 벽은 $T=10^{-3}$ 이하, 히터와 카트는 $T=10^{-2}$도 된다. $T$가 커서 플롯이 거친 것은 데이터가 그렇게 말한 것이지 버그가 아니다.
+$T$는 *제어기의 샘플 주기*이지 플롯 편의 상수가 아니다. 햅틱 벽은 $T=10^{-3}$ 이하, 히터와 카트는 $T=10^{-2}$도 된다. $T$가 커서 플롯이 거친 것은 데이터가 그렇게 말한 것이지 버그가 아니다. $T$를 스텝마다 더하지 않고 정수 인덱스 $i$에서 $t$를 만드는 것이 긴 실행의 시계를 정확히 지킨다. 누적한 부동소수점 시계가 왜, 그리고 $200\,\mathrm{Hz}$로 한 시간이면 얼마나 어긋나는지는 [[02-foundations/tools/python-research-code|12.3 연구 코드를 위한 Python §5]]다.
 
 ### 2. 명시적 오일러
 
@@ -90,7 +90,7 @@ $a_k=F_k/m$은 스텝 $k$의 힘. P3 템플릿이 이것이다. 1차 정확하�
 
 $$v_{k+1}=v_k+T\,a_k,\qquad x_{k+1}=x_k+T\,v_{k+1}$$
 
-위치는 *새* 속도로 갱신한다. 보존 스프링에서 에너지를 거의 보존하고, 명시적 오일러는 꾸준히 얻는다. P3에서 $b=0$과 부드러운 스프링으로 둘을 비교하라고 하면 이 쌍이다. 강성 $k$인 접촉 스프링에서 $\omega=\sqrt{k/m}$이라 하면, 반암시적 오일러는 $\omega T<2$인 동안만 안정하고 명시적 오일러는 접촉 댐퍼가 $d\ge kT$를 치를 때만 안정하다. P3의 핸들로 이것을 손으로 유도한 것이 [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]]의 계산 절이고, 스텝을 바꿔 가며 쓸어 본 것이 그 [[06-research-practice/simulators-benchmarks-datasets|§3 실습]]이다.
+위치는 *새* 속도로 갱신한다. 보존 스프링에서 에너지를 거의 보존하고, 명시적 오일러는 꾸준히 얻는다. P3에서 $b=0$과 부드러운 스프링으로 둘을 비교하라고 하면 이 쌍이다. 강성 $k$인 접촉 스프링에서 $\omega=\sqrt{k/m}$이라 하면, 반암시적 오일러는 $\omega T<2$인 동안만 안정하고 명시적 오일러는 접촉 댐퍼가 $d\ge kT$를 치를 때만 안정하다. P3의 핸들로 이것을 손으로 유도한 것이 [[06-research-practice/simulators-benchmarks-datasets|7. 시뮬레이터·벤치마크·데이터셋]]의 계산 절이고, 스텝을 바꿔 가며 쓸어 본 것이 그 [[06-research-practice/simulators-benchmarks-datasets|§3 실습]]이다. 전진시키는 방정식을 고유 진동수와 감쇠비까지 P3 위에서 유도한 곳은 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §5]]이고, 그 실습은 감쇠 여덟 값에서 닫힌 해를 계산한다([[02-foundations/basic-mechanics|0.6.1 §10]]). 오일러 실행을 맞춰 볼 기준이 그것이다.
 
 ### 4. 플롯 규약
 

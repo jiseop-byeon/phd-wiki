@@ -42,7 +42,7 @@ Each joint now gets a **drive**: a DC motor, the amplifier that feeds it, and a 
 
 Three modelling choices, stated once. **The two drives are identical**, one at each joint. **A drive adds only its rotor's spin inertia** to the arm: its mass is counted inside the catalog's point masses, so the shoulder drive, bolted to the base, adds no mass, and the elbow drive's mass is part of the $1\,\mathrm{kg}$ at the elbow. **The electrical model is a brushed DC motor's**; a brushless motor under its current controller obeys equations of the same form, and *Modern Robotics* §8.9.1 makes the same simplification. In the lab (§8) the elbow drive holds the elbow at $90^\circ$ and only the shoulder moves, so the shoulder sees exactly $M_{11}$ and $g_1(\theta_1)=9.81\,(2\cos\theta_1-\sin\theta_1)\,\mathrm{N{\cdot}m}$, which is page 10's $g_1$ with $\theta_2$ held at $90^\circ$.
 
-*Scope: this page teaches one geared DC drive on one joint of P2 — its electrical and mechanical equations, the torque–speed line, reflected inertia and what it does to the mass matrix, the two time constants that justify a current loop, the thermal and current limits, backdrivability, and the gear-ratio trade that ties them together. It does not teach motor design (magnetics, windings, commutation), power electronics (PWM bridges, field-oriented control), hydraulic actuation, joint flexibility or friction identification. The controller that uses a backdrivable, torque-controlled drive for contact is [[04-robotics/force-compliance-control|13. Force & Compliance Control]], and the capstan version of the same trade, on a haptic handle, is [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]], later in the haptics track and not needed here.*
+*Scope: this page teaches one geared DC drive on one joint of P2 — its electrical and mechanical equations, the torque–speed line, reflected inertia and what it does to the mass matrix, the two time constants that justify a current loop, the thermal and current limits, backdrivability, and the gear-ratio trade that ties them together. It does not teach motor design (magnetics, windings, commutation), power electronics (PWM bridges, field-oriented control), hydraulic actuation, joint flexibility or friction identification; the PWM bridge that drives this motor, and the motor as a circuit, are [[02-foundations/basic-circuits-electronics|0.6.2 Basic Circuits & Electronics §6–§7]], and the hydraulic cylinders of the construction machines are [[02-foundations/fluid-power|0.6.3 Fluid Power]]. The controller that uses a backdrivable, torque-controlled drive for contact is [[04-robotics/force-compliance-control|13. Force & Compliance Control]], and the capstan version of the same trade, on a haptic handle, is [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]], later in the haptics track and not needed here.*
 
 ### The picture · 그림으로 먼저 보기
 
@@ -156,6 +156,8 @@ The identity $k_t=k_e$ is the motor's power ledger: every watt that crosses the 
 
 ### 2. The gearbox: ratio, efficiency, and the load seen from the motor
 
+A lever or a gear trades force for distance, and the reflected inertia $n^2J_m$ follows from the rotor's kinetic energy; [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §9]] works both on P2's gearbox at the lossless ideal. This section adds the gearbox's efficiency and the load as the motor sees it.
+
 > **Gear ratio, defined.** The **gear ratio** $n$ of a transmission is a *ratio of speeds*, motor turns per joint turn, and a *kinematic* number: it is fixed by the geometry of the teeth, not by the load, the speed, the direction of power flow or the losses. Two defining conditions. The motor and joint speeds are **locked in proportion** at every instant, $\omega_m=n\dot\theta$, because meshing teeth cannot slip. And for a train of simple meshing stages the ratio is **set by tooth counts**: in each stage the driven gear's count over the driving gear's, multiplied across the stages.
 >
 > $$n=\frac{\omega_m}{\dot\theta}=\prod_{k}\frac{N_{\text{driven},k}}{N_{\text{driving},k}}$$
@@ -255,7 +257,7 @@ since that is where the rotor's reflected inertia equals the arm's own at joint 
 
 ### 5. Two time constants, and why the current loop comes first
 
-A motor has two speeds of its own, one per equation of §1, and how far apart they are decides how its controller is built.
+A motor has two speeds of its own, one per equation of §1, and how far apart they are decides how its controller is built. The electrical one, $L/R$, is also why a PWM drive leaves only a small ripple in the winding's current, which the lab of [[02-foundations/basic-circuits-electronics|0.6.2 §12]] sweeps.
 
 > **Electrical and mechanical time constants, defined.** A **time constant** is the *time* a first-order response takes to cover $1-e^{-1}=63\%$ of a step — the reciprocal of one real pole. A motor has two, one per equation of §1, and each is defined with the other subsystem held out of the way. The **electrical time constant** $\tau_e=L/R$ is how fast current settles after a voltage step with the rotor held still. The **mechanical time constant** $\tau_{\text{mech}}=JR/(k_tk_e)$ is how fast speed settles after a voltage step with $L$ neglected, where back-EMF acts as a damper $k_tk_e/R$ and $J$ is *everything* the motor accelerates, referred to its shaft.
 >
@@ -276,7 +278,7 @@ Where the licence expires is voltage. The current loop can only move current by 
 
 ### 6. Continuous versus peak: heat decides
 
-Holding a load does no mechanical work, so a drive that holds still turns all of its electrical power into heat — and heat, not current, is what a winding cannot survive. The winding heats at $i^2R$ and loses heat to its surroundings through a thermal resistance; in the simplest, one-node model its temperature rise $\Delta T$ obeys
+Holding a load does no mechanical work (the energy ledger of [[02-foundations/basic-mechanics|0.6.1 §6]]), so a drive that holds still turns all of its electrical power into heat — and heat, not current, is what a winding cannot survive. The winding heats at $i^2R$ and loses heat to its surroundings through a thermal resistance; in the simplest, one-node model its temperature rise $\Delta T$ obeys
 
 $$C_{th}\,\frac{d\,\Delta T}{dt}=i^2R-\frac{\Delta T}{R_{th}}\quad\Longrightarrow\quad \Delta T(t)=R_{th}\,i^2R\,\big(1-e^{-t/\tau_{th}}\big),\qquad \tau_{th}=R_{th}C_{th}$$
 
@@ -527,7 +529,7 @@ def run(n):
 
 모델링 선택 셋을 한 번만 적어 둔다. **두 구동계는 똑같고**, 관절마다 하나씩이다. **구동계가 팔에 더하는 것은 회전자의 자전 관성뿐이다.** 구동계의 질량은 카탈로그의 점질량 안에 들어 있다고 본다. 그래서 받침에 볼트로 고정된 어깨 구동계는 질량을 더하지 않고, 팔꿈치 구동계의 질량은 팔꿈치의 $1\,\mathrm{kg}$에 포함된다. **전기 모델은 브러시 DC 모터의 것이다.** 전류 제어기 아래의 브러시리스 모터도 같은 꼴의 식을 따르고, *Modern Robotics* §8.9.1도 같은 단순화를 한다. 랩(§8)에서는 팔꿈치 구동계가 팔꿈치를 $90^\circ$에 붙잡고 어깨만 움직이므로, 어깨는 정확히 $M_{11}$과 $g_1(\theta_1)=9.81\,(2\cos\theta_1-\sin\theta_1)\,\mathrm{N{\cdot}m}$를 본다. 10번 페이지의 $g_1$에서 $\theta_2$를 $90^\circ$로 고정한 것이다.
 
-*범위: 이 페이지는 P2의 한 관절에 달린 기어 달린 DC 구동계 하나를 가르친다. 전기 방정식과 기계 방정식, 토크–속도 선, 반사 관성과 그것이 질량 행렬에 하는 일, 전류 루프를 정당화하는 두 시정수, 열 한계와 전류 한계, 역구동성, 그리고 이것들을 한데 묶는 감속비의 맞바꿈이다. 모터 설계(자기 회로, 권선, 정류), 전력 전자(PWM 브리지, field-oriented control), 유압 구동, 관절 유연성, 마찰 동정은 가르치지 않는다. 역구동 가능한 토크 제어 구동계를 접촉에 쓰는 제어기는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]이고, 같은 맞바꿈의 캡스턴 판, 즉 햅틱 핸들 위의 이야기는 햅틱 트랙 뒤쪽의 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]이며 여기에는 필요 없다.*
+*범위: 이 페이지는 P2의 한 관절에 달린 기어 달린 DC 구동계 하나를 가르친다. 전기 방정식과 기계 방정식, 토크–속도 선, 반사 관성과 그것이 질량 행렬에 하는 일, 전류 루프를 정당화하는 두 시정수, 열 한계와 전류 한계, 역구동성, 그리고 이것들을 한데 묶는 감속비의 맞바꿈이다. 모터 설계(자기 회로, 권선, 정류), 전력 전자(PWM 브리지, field-oriented control), 유압 구동, 관절 유연성, 마찰 동정은 가르치지 않는다. 이 모터를 모는 PWM 브리지와 회로로 본 모터는 [[02-foundations/basic-circuits-electronics|0.6.2 기초 회로와 전자 §6–§7]]이, 건설 기계의 유압 실린더는 [[02-foundations/fluid-power|0.6.3 유체 동력]]이 다룬다. 역구동 가능한 토크 제어 구동계를 접촉에 쓰는 제어기는 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]이고, 같은 맞바꿈의 캡스턴 판, 즉 햅틱 핸들 위의 이야기는 햅틱 트랙 뒤쪽의 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]이며 여기에는 필요 없다.*
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -641,6 +643,8 @@ $k_t=k_e$라는 등식은 모터의 일률 장부다. 전기 쪽에서 역기전
 
 ### 2. 기어박스: 감속비, 효율, 그리고 모터에서 본 부하
 
+지렛대와 기어는 힘을 거리와 맞바꾸고, 반사 관성 $n^2J_m$은 회전자의 운동 에너지에서 나온다. [[02-foundations/basic-mechanics|0.6.1 기초 역학 §9]]가 둘을 손실 없는 이상 조건에서 P2의 기어박스 위에 계산한다. 이 절은 기어박스의 효율과 모터가 보는 부하를 더한다.
+
 > **감속비의 정의.** 전동 장치의 **감속비**(gear ratio) $n$은 *속도의 비*, 곧 관절 한 바퀴당 모터 회전수이고, *기구학적인* 숫자다. 이의 기하가 정하며 부하, 속도, 일률이 흐르는 방향, 손실과는 무관하다. 정의 조건 둘. 모터와 관절의 속도는 매 순간 **비례로 묶여** 있다, $\omega_m=n\dot\theta$. 맞물린 이는 미끄러지지 않기 때문이다. 그리고 단순히 맞물리는 단들로 된 기어열이라면 그 비는 **잇수가 정한다**. 단마다 구동되는 기어의 잇수를 구동하는 기어의 잇수로 나누고, 단들에 걸쳐 곱한다.
 >
 > $$n=\frac{\omega_m}{\dot\theta}=\prod_{k}\frac{N_{\text{driven},k}}{N_{\text{driving},k}}$$
@@ -740,7 +744,7 @@ $$\frac{n^2J_m}{M_{ii}}=1\quad\Longleftrightarrow\quad n=\sqrt{M_{ii}/J_m}$$
 
 ### 5. 두 시정수, 그리고 전류 루프가 먼저인 이유
 
-모터에는 §1의 방정식마다 하나씩, 자기만의 속도가 둘 있고, 둘이 얼마나 떨어져 있는지가 제어기를 어떻게 짤지를 정한다.
+모터에는 §1의 방정식마다 하나씩, 자기만의 속도가 둘 있고, 둘이 얼마나 떨어져 있는지가 제어기를 어떻게 짤지를 정한다. 전기적 속도 $L/R$은 PWM 구동이 권선 전류에 작은 리플만 남기는 이유이기도 하고, [[02-foundations/basic-circuits-electronics|0.6.2 §12]]의 실습이 그것을 스윕한다.
 
 > **전기적·기계적 시정수의 정의.** **시정수**(time constant)는 1차 응답이 계단의 $1-e^{-1}=63\%$를 가는 데 걸리는 *시간*이다. 실수 극점 하나의 역수다. 모터에는 §1의 방정식마다 하나씩 둘이 있고, 각각은 다른 하위계를 비켜 둔 채 정의한다. **전기적 시정수** $\tau_e=L/R$은 회전자를 붙잡은 채 전압 계단을 줬을 때 전류가 자리 잡는 빠르기다. **기계적 시정수** $\tau_{\text{mech}}=JR/(k_tk_e)$는 $L$을 무시하고 전압 계단을 줬을 때 속도가 자리 잡는 빠르기다. 여기서 역기전력은 댐퍼 $k_tk_e/R$로 작용하고, $J$는 모터가 가속하는 *모든 것*을 모터 축으로 환산한 것이다.
 >
@@ -761,7 +765,7 @@ $$C_i(s)=K_{pi}+\frac{K_{ii}}{s},\qquad \frac{K_{ii}}{K_{pi}}=\frac{R}{L}\ \Long
 
 ### 6. 연속 대 최대: 열이 정한다
 
-부하를 붙잡는 일은 기계적 일을 하지 않으므로, 가만히 붙잡고 있는 구동계는 전기 일률을 전부 열로 바꾼다. 그리고 권선이 견디지 못하는 것은 전류가 아니라 열이다. 권선은 $i^2R$로 데워지고 열저항을 거쳐 주변으로 열을 잃는다. 가장 단순한 단일 노드 모델에서 온도 상승 $\Delta T$는
+부하를 붙잡는 일은 기계적 일을 하지 않으므로([[02-foundations/basic-mechanics|0.6.1 §6]]의 에너지 장부), 가만히 붙잡고 있는 구동계는 전기 일률을 전부 열로 바꾼다. 그리고 권선이 견디지 못하는 것은 전류가 아니라 열이다. 권선은 $i^2R$로 데워지고 열저항을 거쳐 주변으로 열을 잃는다. 가장 단순한 단일 노드 모델에서 온도 상승 $\Delta T$는
 
 $$C_{th}\,\frac{d\,\Delta T}{dt}=i^2R-\frac{\Delta T}{R_{th}}\quad\Longrightarrow\quad \Delta T(t)=R_{th}\,i^2R\,\big(1-e^{-t/\tau_{th}}\big),\qquad \tau_{th}=R_{th}C_{th}$$
 

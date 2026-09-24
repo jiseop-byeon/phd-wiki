@@ -137,7 +137,7 @@ With backward-difference virtual damping $B$, a classic one-DOF passivity condit
 
 Worked example: with physical damping $b=0.1$ N·s/m and $T=1$ ms, the simple bound gives $K\le200$ N/m. Halving $T$ doubles that bound; adding digital damping does not substitute freely for physical dissipation because its estimate is delayed.
 
-On **P3**, the catalog damper is $b=0.8\,\mathrm{N{\cdot}s/m}$. At the haptic period $T=10^{-3}\,\mathrm{s}$ the same formula gives $K\le 2\cdot 0.8/10^{-3}=1600\,\mathrm{N/m}$. Catalog $k_w=400$ sits comfortably inside; $k_w=2500$ does not. At $T=5\times10^{-3}$ the bound falls to $320\,\mathrm{N/m}$ and even the catalog wall fails it. The $b$ in this inequality is the *device* damper. The human damper $b_h$ is not a term you may spend to claim a stiffer wall.
+On **P3**, the catalog damper is $b=0.8\,\mathrm{N{\cdot}s/m}$. At the haptic period $T=10^{-3}\,\mathrm{s}$ the same formula gives $K\le 2\cdot 0.8/10^{-3}=1600\,\mathrm{N/m}$. Catalog $k_w=400$ sits comfortably inside; $k_w=2500$ does not. At $T=5\times10^{-3}$ the bound falls to $320\,\mathrm{N/m}$ and even the catalog wall fails it. The $b$ in this inequality is the *device* damper. The human damper $b_h$ is not a term you may spend to claim a stiffer wall. What that device damper is, and the energy it takes from one push into the wall, are worked on the same handle in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §4 and §6]].
 
 The quantity the bound is really about has a name, and it is worth stating exactly, because almost every wrong intuition about stiff walls is a wrong idea about this one thing.
 
@@ -459,7 +459,7 @@ $$K\le\frac{2b}{T}$$
 
 예제: 물리 댐핑 $b=0.1$ N·s/m, $T=1$ ms이면 단순 경계는 $K\le200$ N/m다. $T$를 절반으로 줄이면 이 경계는 두 배가 된다. 디지털 댐핑을 더하는 것은 물리적 소산을 자유롭게 대체하지 못하는데, 그 추정값 자체가 늦기 때문이다.
 
-**P3**의 카탈로그 댐퍼는 $b=0.8\,\mathrm{N{\cdot}s/m}$이다. 햅틱 주기 $T=10^{-3}\,\mathrm{s}$에서 같은 식은 $K\le 1600\,\mathrm{N/m}$을 준다. 카탈로그 $k_w=400$은 안에 있고, $k_w=2500$은 아니다. $T=5\times10^{-3}$이면 경계는 $320\,\mathrm{N/m}$이 되어 카탈로그 벽도 실패한다. 이 부등식의 $b$는 *장치* 댐퍼다. 사람 댐퍼 $b_h$는 더 단단한 벽을 주장하는 데 써도 되는 항이 아니다.
+**P3**의 카탈로그 댐퍼는 $b=0.8\,\mathrm{N{\cdot}s/m}$이다. 햅틱 주기 $T=10^{-3}\,\mathrm{s}$에서 같은 식은 $K\le 1600\,\mathrm{N/m}$을 준다. 카탈로그 $k_w=400$은 안에 있고, $k_w=2500$은 아니다. $T=5\times10^{-3}$이면 경계는 $320\,\mathrm{N/m}$이 되어 카탈로그 벽도 실패한다. 이 부등식의 $b$는 *장치* 댐퍼다. 사람 댐퍼 $b_h$는 더 단단한 벽을 주장하는 데 써도 되는 항이 아니다. 그 장치 댐퍼가 무엇인지, 그리고 벽으로 한 번 밀 때 그것이 가져가는 에너지는 같은 핸들 위에서 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §4, §6]]이 계산한다.
 
 경계가 실제로 말하는 양에는 이름이 있고, 정확히 적어 둘 값어치가 있다. 단단한 벽에 대한 잘못된 직관은 거의 전부 이 하나에 대한 잘못된 생각이기 때문이다.
 

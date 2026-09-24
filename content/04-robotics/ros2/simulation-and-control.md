@@ -352,7 +352,7 @@ You could write a Gazebo plugin that reads a topic and sets joint forces. People
 
 `ros2_control` exists to put a defined seam in the middle of that path, with a stable interface on both sides:
 
-- On one side, **controllers** — a joint trajectory follower, a differential drive kinematic layer, a PID (proportional–integral–derivative feedback on the error, derived in [[04-robotics/control-theory-ce397#7. Designing the feedback: pole placement and PID|5. Control Theory §7]]). A controller is an object derived from `ControllerInterface` whose `update()` reads state and writes commands. It never knows what the hardware is.
+- On one side, **controllers** — a joint trajectory follower, a differential drive kinematic layer, a PID (proportional–integral–derivative feedback on the error, derived in [[04-robotics/control-theory-ce397#7. Designing the feedback: pole placement and PID|5. Control Theory §7]]). A controller is an object derived from `ControllerInterface` whose `update()` reads state and writes commands. It never knows what the hardware is; how a class derived from an interface is called through it, and why its base needs a virtual destructor, is [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code §7]].
 - On the other, **hardware components** — the thing that actually talks to a motor driver, a CAN bus (a two-wire serial bus common on motor drives), an EtherCAT slave (one device on EtherCAT, an Ethernet-based real-time fieldbus), or a simulator. Three kinds exist: `System` (multi-DOF with coupling), `Actuator` (single-DOF, read and write), `Sensor` (read only).
 
 > **Hardware component, defined.** A **hardware component** is a *plugin class that stands for one piece of hardware below the seam* — a drive, a sensor board, or a simulated model. Three defining conditions. It **exports named interfaces**: state interfaces it can be read for and command interfaces it can be told (§6). Its **type fixes what it may export**: a `Sensor` only reads, an `Actuator` reads and writes one joint, and a `System` reads and writes any number of joints over one channel. And it is **declared, not built into a controller**: the `<ros2_control>` block's `type` and `<hardware><plugin>` line name it, and the controller manager loads it by that name and calls its `read()` and `write()` from the loop of §7.
@@ -412,7 +412,7 @@ The `<hardware><plugin>` line is the only part of this block that differs betwee
 
 ### 7. The controller manager
 
-The **controller manager** is the process that holds both halves together. It loads hardware components through `pluginlib` (the ROS library that loads a C++ class from a shared library at runtime by its registered name), loads controllers through `pluginlib`, matches required interfaces against provided ones, and runs the loop: `read()` from hardware, `update()` every active controller, `write()` to hardware. Its `update_rate` parameter is that loop's frequency in Hz, default 100. It gets the robot description by subscribing to the `robot_description` topic.
+The **controller manager** is the process that holds both halves together. It loads hardware components through `pluginlib` (the ROS library that loads a C++ class from a shared library at runtime by its registered name), loads controllers through `pluginlib`, matches required interfaces against provided ones, and runs the loop: `read()` from hardware, `update()` every active controller, `write()` to hardware. Its `update_rate` parameter is that loop's frequency in Hz, default 100. It gets the robot description by subscribing to the `robot_description` topic. Every `update()` runs inside that period, so it may not allocate, block, wait on a contended lock or throw; the rules, counted on P6's tick, are [[04-robotics/ros2/cpp-for-robot-code|25.0 §9]].
 
 > **Controller manager, defined.** The **controller manager** is the *node that owns the control loop*, and not itself a controller. Three defining conditions. It **loads both sides by name**: hardware components through its resource manager, controllers through `pluginlib`. It **matches** what each controller lists against what the hardware exports, and grants or refuses activation by §6's rule. And it **runs one loop at `update_rate`**: every period it calls `read()` on the hardware, `update()` on each *active* controller and `write()` on the hardware, in that order, skipping controllers that are loaded but inactive.
 >
@@ -1121,7 +1121,7 @@ Gazebo는 URDF를 내부적으로 SDF(Simulation Description Format, 로봇과 w
 
 `ros2_control`은 그 경로 한가운데에 정의된 이음매를 놓고 양쪽에 안정된 인터페이스를 두려고 존재한다.
 
-- 한쪽에는 **제어기(controller)** — 관절 궤적 추종기, 차동 구동 기구학 계층, PID(오차에 대한 비례·적분·미분 피드백, [[04-robotics/control-theory-ce397#7. 피드백 설계: 극점 배치와 PID|5. 제어 이론 §7]]에서 유도). 제어기는 `ControllerInterface`에서 파생된 객체이고, `update()`가 상태를 읽고 명령을 쓴다. 하드웨어가 무엇인지는 전혀 모른다.
+- 한쪽에는 **제어기(controller)** — 관절 궤적 추종기, 차동 구동 기구학 계층, PID(오차에 대한 비례·적분·미분 피드백, [[04-robotics/control-theory-ce397#7. 피드백 설계: 극점 배치와 PID|5. 제어 이론 §7]]에서 유도). 제어기는 `ControllerInterface`에서 파생된 객체이고, `update()`가 상태를 읽고 명령을 쓴다. 하드웨어가 무엇인지는 전혀 모른다. 인터페이스에서 파생한 클래스가 그 인터페이스를 거쳐 어떻게 불리는지, 그리고 기반 클래스에 왜 가상 소멸자가 필요한지는 [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++ §7]]이다.
 - 다른 쪽에는 **하드웨어 컴포넌트** — 모터 드라이버, CAN 버스(모터 드라이브에 흔한 2선 직렬 버스), EtherCAT 슬레이브(이더넷 기반 실시간 필드버스인 EtherCAT 위의 장치 하나), 또는 시뮬레이터와 실제로 대화하는 것. 세 종류가 있다: `System`(결합이 있는 다자유도), `Actuator`(1자유도, 읽기·쓰기), `Sensor`(읽기 전용).
 
 > **하드웨어 컴포넌트의 정의.** **하드웨어 컴포넌트**는 *이음매 아래에서 하드웨어 하나를 대신하는 플러그인 클래스*다. 그 하드웨어는 드라이브일 수도, 센서 보드일 수도, 시뮬레이션 속 모델일 수도 있다. 정의 조건은 셋이다. **이름 붙은 인터페이스를 내보낸다.** 읽을 수 있는 상태 인터페이스와 지시할 수 있는 명령 인터페이스다(6절). **타입이 내보낼 수 있는 것을 정한다.** `Sensor`는 읽기만 하고, `Actuator`는 관절 하나를 읽고 쓰며, `System`은 채널 하나로 관절 여럿을 읽고 쓴다. 그리고 **제어기에 박혀 있지 않고 선언된다.** `<ros2_control>` 블록의 `type`과 `<hardware><plugin>` 줄이 그것을 지명하고, 컨트롤러 매니저가 그 이름으로 싣고 7절의 루프에서 `read()`와 `write()`를 부른다.
@@ -1181,7 +1181,7 @@ URDF 안, 링크·관절 옆에 놓이는 `<ros2_control>` 블록에서 선언�
 
 ### 7. 컨트롤러 매니저
 
-**컨트롤러 매니저(controller manager)** 는 양쪽을 붙들고 있는 프로세스다. `pluginlib`(등록된 이름으로 공유 라이브러리에서 C++ 클래스를 실행 중에 불러오는 ROS 라이브러리)으로 하드웨어 컴포넌트를 싣고, 같은 방식으로 제어기를 싣고, 요구된 인터페이스와 제공된 인터페이스를 맞추고, 루프를 돈다: 하드웨어에서 `read()`, 활성 제어기마다 `update()`, 하드웨어로 `write()`. `update_rate` 파라미터가 그 루프의 주파수(Hz)이고 기본값은 100이다. 로봇 기술은 `robot_description` 토픽을 구독해 얻는다.
+**컨트롤러 매니저(controller manager)** 는 양쪽을 붙들고 있는 프로세스다. `pluginlib`(등록된 이름으로 공유 라이브러리에서 C++ 클래스를 실행 중에 불러오는 ROS 라이브러리)으로 하드웨어 컴포넌트를 싣고, 같은 방식으로 제어기를 싣고, 요구된 인터페이스와 제공된 인터페이스를 맞추고, 루프를 돈다: 하드웨어에서 `read()`, 활성 제어기마다 `update()`, 하드웨어로 `write()`. `update_rate` 파라미터가 그 루프의 주파수(Hz)이고 기본값은 100이다. 로봇 기술은 `robot_description` 토픽을 구독해 얻는다. 모든 `update()`는 그 주기 안에서 돌므로 메모리를 할당하거나, 막히거나, 경합하는 잠금을 기다리거나, 예외를 던지면 안 된다. 그 규칙을 P6의 틱 위에서 센 것이 [[04-robotics/ros2/cpp-for-robot-code|25.0 §9]]이다.
 
 > **컨트롤러 매니저의 정의.** **컨트롤러 매니저**는 *제어 루프를 소유한 노드*이고, 그 자체는 제어기가 아니다. 정의 조건은 셋이다. **양쪽을 이름으로 싣는다.** 하드웨어 컴포넌트는 리소스 매니저를 통해, 제어기는 `pluginlib`으로 싣는다. 각 제어기가 나열한 것을 하드웨어가 내보내는 것과 **맞춰 보고**, 6절의 규칙으로 활성화를 허락하거나 거부한다. 그리고 **`update_rate`로 루프 하나를 돈다.** 매 주기 하드웨어의 `read()`, 각 *활성* 제어기의 `update()`, 하드웨어의 `write()`를 그 순서로 부르고, 실려 있어도 비활성인 제어기는 건너뛴다.
 >
