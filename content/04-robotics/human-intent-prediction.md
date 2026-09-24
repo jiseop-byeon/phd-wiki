@@ -364,7 +364,7 @@ Intent is latent. What is measurable, roughly in order of lead time:
 
 Proximity is a relation between the person and the scene, not something read off the person. It is the signed distance from the person's tracked ground position $x$ to the boundary, positive outside; for a machine envelope modelled as a circle of radius $R_h$ about the base $x_{\mathrm{base}}$, it is $d = \lVert x - x_{\mathrm{base}}\rVert - R_h$, the same boundary [[04-robotics/hri-safety|11. HRI & Safety]] measures every separation distance from ($R_h = 2.25$ m for its cell around P2, the catalog's planar two-link arm, [[02-foundations/lab-plants|0.6]]). Computing it takes scene geometry — two inputs beyond the person's track: the boundary itself in the robot's ground frame, from a site map or from the machine's own reach, and the person's ground position in that frame, from a depth sensor or from the ray through the foot of a tracked box meeting a known ground plane ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §1]], the pinhole model).
 
-This is the same cascade as [[04-robotics/egocentric-perception|22. §4]], seen from outside instead of from the head. **The design decision in any intent system is which rung you commit to,** because that fixes both the lead time and the ceiling on reliability.
+This is the same cascade as [[04-robotics/egocentric-perception|22. §4]], seen from outside instead of from the head, and a headset worn by the person measures its upper rungs directly, head pose and hands on every current headset and gaze on those with eye tracking ([[04-robotics/xr-human-robot-collaboration|23.5 XR for Human–Robot Collaboration §2]]). **The design decision in any intent system is which rung you commit to,** because that fixes both the lead time and the ceiling on reliability.
 
 > [!warning] The "subtle cue" trap
 > The cues that carry the most intent information are the ones that stop being resolvable first. A study that establishes gaze as predictive using close-range or instrumented data has not shown that a vehicle or robot camera can use it. Always state the distance at which the cue was measured and the distance at which the system must work.
@@ -1059,7 +1059,7 @@ $$v \le a\big(\Delta^{*} - t_{\mathrm{lat}}\big) = 1.5 \times (1.375 - 0.45) = 1
 
 근접은 사람만 보고 읽어 내는 것이 아니라 사람과 장면 사이의 관계다. 추적한 사람의 지면 위치 $x$에서 경계까지의 부호 있는 거리이고, 바깥쪽이 양수다. 기계 반경을 베이스 $x_{\mathrm{base}}$ 둘레 반지름 $R_h$의 원으로 두면 $d = \lVert x - x_{\mathrm{base}}\rVert - R_h$이며, [[04-robotics/hri-safety|11. HRI와 안전]]이 모든 이격 거리를 재는 기준 경계가 바로 이것이다(카탈로그의 평면 2링크 팔 P2를 둘러싼 그 셀에서 $R_h = 2.25$ m, [[02-foundations/lab-plants|0.6]]). 그것을 계산하려면 장면 기하 — 사람의 추적 궤적 말고도 입력 둘 — 가 필요하다. 하나는 로봇의 지면 좌표계에서의 경계 자체로, 현장 지도나 기계 자신의 도달 범위에서 온다. 다른 하나는 같은 좌표계에서의 사람의 지면 위치로, 깊이 센서에서 오거나, 추적 상자의 발 쪽 픽셀을 지나는 광선이 알려진 지면 평면과 만나는 점에서 온다([[04-robotics/geometric-perception-calibration|3.5 기하 인식 §1]], 핀홀 모형).
 
-이는 [[04-robotics/egocentric-perception|22. §4]]와 같은 사슬을 머리가 아니라 바깥에서 본 것이다. **어떤 의도 시스템에서도 설계 결정은 어느 단에 걸 것인가이며**, 그 선택이 선행 시간과 신뢰도 상한을 동시에 고정한다.
+이는 [[04-robotics/egocentric-perception|22. §4]]와 같은 사슬을 머리가 아니라 바깥에서 본 것이고, 사람이 쓴 헤드셋은 그 위쪽 단을 직접 잰다. 머리 자세와 손은 지금의 모든 헤드셋이, 시선은 눈 추적이 있는 헤드셋이 잰다([[04-robotics/xr-human-robot-collaboration|23.5 사람–로봇 협업을 위한 XR §2]]). **어떤 의도 시스템에서도 설계 결정은 어느 단에 걸 것인가이며**, 그 선택이 선행 시간과 신뢰도 상한을 동시에 고정한다.
 
 > [!warning] "subtle cue" 함정
 > 의도 정보를 가장 많이 담은 단서가 가장 먼저 분해 불가능해진다. 근거리나 계측 장비로 시선의 예측력을 입증한 연구가, 차량·로봇 카메라가 그것을 쓸 수 있음을 보인 것은 아니다. **단서를 측정한 거리와 시스템이 작동해야 하는 거리를 항상 밝혀라.**

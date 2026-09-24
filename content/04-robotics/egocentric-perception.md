@@ -379,7 +379,7 @@ The last row is not a technical detail. Egocentric recording of workers is human
 
 - Third-person intent work — [[04-robotics/human-intent-prediction|23. Human Intent & Trajectory Prediction]] — shares the anticipation formulation but sees the body instead of the view.
 - Shared autonomy and authority — [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]] — is what consumes an intent estimate.
-- Demonstration collection — [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] — increasingly uses head-mounted capture as the data source, making egocentric perception part of the imitation-learning pipeline rather than a separate topic.
+- Demonstration collection — [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] — increasingly uses head-mounted capture as the data source, making egocentric perception part of the imitation-learning pipeline rather than a separate topic; which headsets and glasses also record the head and hand poses that turn such capture into a demonstration is [[04-robotics/xr-human-robot-collaboration|23.5 XR for Human–Robot Collaboration §6]].
 
 ### 8. Reading claims and evaluations
 
@@ -830,7 +830,7 @@ $$p\big(y_{t+\tau}\mid x_{1:t}\big),$$
 
 - 3인칭 의도 연구 — [[04-robotics/human-intent-prediction|23. 인간 의도·궤적 예측]] — 는 anticipation 정식화를 공유하되 시야 대신 몸을 본다.
 - 공유 자율성과 권한 — [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]] — 이 의도 추정치를 소비하는 쪽이다.
-- 시연 수집 — [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] — 이 점점 머리 장착 캡처를 데이터원으로 쓰면서, 자기중심 인지가 별개 주제가 아니라 모방학습 파이프라인의 일부가 되고 있다.
+- 시연 수집 — [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] — 이 점점 머리 장착 캡처를 데이터원으로 쓰면서, 자기중심 인지가 별개 주제가 아니라 모방학습 파이프라인의 일부가 되고 있다. 어떤 헤드셋과 안경이 그런 캡처를 시연으로 만드는 머리와 손 자세까지 기록하는지는 [[04-robotics/xr-human-robot-collaboration|23.5 사람–로봇 협업을 위한 XR §6]]이 다룬다.
 
 ### 8. 주장과 평가 읽기
 

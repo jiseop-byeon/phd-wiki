@@ -405,7 +405,7 @@ Most of the time you will not write the hardware component — the vendor or a c
 
 ### 5. DDS across a network
 
-The moment the robot is one machine and your laptop is another, discovery stops being invisible. The network underneath — subnets, ports, UDP multicast, and DDS and Zenoh on the wire — is [[02-foundations/tools/computer-networks|12.5 Computer Networks §2, §6 and §8]], and the shell commands that test a link, `ip`, `ping` and `ss`, are [[02-foundations/tools/linux-shell|12.1 §11]].
+The moment the robot is one machine and your laptop, or a headset streaming a worker's head and hand poses ([[04-robotics/xr-human-robot-collaboration|23.5 XR for Human–Robot Collaboration §5]]), is another, discovery stops being invisible. The network underneath — subnets, ports, UDP multicast, and DDS and Zenoh on the wire — is [[02-foundations/tools/computer-networks|12.5 Computer Networks §2, §6 and §8]], and the shell commands that test a link, `ip`, `ping` and `ss`, are [[02-foundations/tools/linux-shell|12.1 §11]].
 
 Two terms recur below. `ROS_DOMAIN_ID` is the integer that partitions discovery, and the RMW (ROS middleware) implementation is the layer that adapts ROS 2 to one specific middleware product such as Fast DDS; both are introduced in [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] §5.
 
@@ -975,7 +975,7 @@ Worked case의 지연 셋은 지어낸 값이고, 이 페이지의 대상이 그
 
 ### 5. 네트워크를 건너는 DDS
 
-로봇이 한 머신이고 노트북이 다른 머신이 되는 순간, 탐색은 더 이상 보이지 않는 존재가 아니다. 그 밑의 네트워크 — 서브넷, 포트, UDP 멀티캐스트, 그리고 전선 위의 DDS와 Zenoh — 는 [[02-foundations/tools/computer-networks|12.5 컴퓨터 네트워크 §2, §6, §8]]이고, 링크를 시험하는 셸 명령 `ip`, `ping`, `ss`는 [[02-foundations/tools/linux-shell|12.1 §11]]이다.
+로봇이 한 머신이고 노트북이 — 또는 작업자의 머리와 손 자세를 보내는 헤드셋이([[04-robotics/xr-human-robot-collaboration|23.5 사람–로봇 협업을 위한 XR §5]]) — 다른 머신이 되는 순간, 탐색은 더 이상 보이지 않는 존재가 아니다. 그 밑의 네트워크 — 서브넷, 포트, UDP 멀티캐스트, 그리고 전선 위의 DDS와 Zenoh — 는 [[02-foundations/tools/computer-networks|12.5 컴퓨터 네트워크 §2, §6, §8]]이고, 링크를 시험하는 셸 명령 `ip`, `ping`, `ss`는 [[02-foundations/tools/linux-shell|12.1 §11]]이다.
 
 아래에 두 용어가 반복된다. `ROS_DOMAIN_ID`는 탐색을 구획으로 나누는 정수이고, RMW(ROS middleware) 구현은 ROS 2를 Fast DDS 같은 특정 미들웨어 제품에 맞추는 계층이다. 둘 다 [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] §5에서 소개한다.
 

@@ -183,7 +183,7 @@ If yes, it can be promoted toward Working or Mastery. If no, it stays at Literac
 is not a demotion: Literacy is exactly enough to read the field, cite it correctly, and
 recognize when it starts to matter.
 
-**Where the test has actually landed, as of 2026-09-23.** 184 pages sit at Working, 88 at
+**Where the test has actually landed, as of 2026-09-23.** 185 pages sit at Working, 88 at
 Literacy, 8 at Mastery. Twelve of the Working pages are the ROS 2 track added on 2026-09-10,
 which passes the test because running experiments on a real manipulator has no way around it. Fifteen more came on 2026-09-23 — the tools track 12 with its map and 25.0, the physics floor 0.6.1–0.6.3, and 3.6 Perception Sensors — and pass for the same reason: the rig, its code and its contact physics are how the experiment runs. That is the opposite of what this page used to claim, and the reason
 is that all three pillars count as serving the question, so anything inside them passes.
@@ -422,7 +422,7 @@ HRI 이론, 새 SLAM 알고리즘, 매니퓰레이션, 촉각 센서 하드웨�
 아니다: Literacy는 분야를 읽고, 정확히 인용하고, 그것이 중요해지기 시작하는 순간을 알아보는
 데 정확히 충분한 깊이다.
 
-**이 시험이 실제로 어디에 도달했는가, 2026-09-23 기준.** Working이 184쪽, Literacy가 88쪽,
+**이 시험이 실제로 어디에 도달했는가, 2026-09-23 기준.** Working이 185쪽, Literacy가 88쪽,
 Mastery가 8쪽이다. Working 중 12쪽은 2026-09-10에 더한 ROS 2 트랙이다. 실기계 매니퓰레이터로
 실험을 돌리는 데 우회로가 없으므로 입학 시험을 통과한다. 2026-09-23에 열다섯 쪽이 더해졌다 — 도구 트랙 12와 그 지도와 25.0, 물리 바닥 0.6.1–0.6.3, 그리고 3.6 인식 센서 — 그리고 같은 이유로 통과한다. 리그와 그 코드와 접촉의 물리가 곧 실험이 돌아가는 방식이다. 이 페이지가 예전에 주장하던 것과 반대이고, 이유는 세 기둥 모두가 연구 질문에
 기여하는 것으로 계산되어 그 안에 있는 것은 전부 시험을 통과하기 때문이다. Literacy는 있어야 할

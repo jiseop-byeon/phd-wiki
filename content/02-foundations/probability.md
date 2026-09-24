@@ -7,8 +7,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §3]] (integrals as expectations) · [[02-foundations/engineering-math|0.5 §10]] (set notation) · [[02-foundations/linear-algebra|1. Linear Algebra §3]] (PSD matrices, for covariance)
-> [[02-foundations/lab-plants|0.6]]의 장치 **P5** · [[02-foundations/engineering-math|0.5 §3]](기댓값으로서의 적분) · [[02-foundations/engineering-math|0.5 §10]](집합 표기) · [[02-foundations/linear-algebra|1. 선형대수 §3]](공분산을 위한 PSD 행렬)
+> Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled or measured) · [[02-foundations/engineering-math|0.5 §3]] (integrals as expectations) · [[02-foundations/engineering-math|0.5 §10]] (set notation) · [[02-foundations/linear-algebra|1. Linear Algebra §3]] (PSD matrices, for covariance)
+> [[02-foundations/lab-plants|0.6]]의 장치(plant: 제어하거나 측정하는 대상 시스템) **P5** · [[02-foundations/engineering-math|0.5 §3]](기댓값으로서의 적분) · [[02-foundations/engineering-math|0.5 §10]](집합 표기) · [[02-foundations/linear-algebra|1. 선형대수 §3]](공분산을 위한 PSD 행렬)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -19,14 +19,18 @@ It answers where losses come from, and information theory, signal processing, RL
 
 Probability is the substrate under estimation, filtering, and many standard objectives in deep
 learning. Course-depth treatment: derivations, the Gaussian toolbox, a worked MLE example,
-and the Kalman filter assembled from parts you'll have proven along the way.
+and the Kalman filter assembled from parts you'll have proven along the way. Its running object is
+plant P5 of [[02-foundations/lab-plants|0.6 Lab Plants]]: a range sensor that looks at a wall, with a crack detector as its companion.
+
+> [!note] Why this matters · 왜 배우는가
+> Probability is the mathematical floor under three layers of the physical-AI stack in [[07-research-program/index|7. Research Program §5]] — perception, contact and task completion — and in *"Install that panel on the frame"* it is how the robot finds where panel and frame are from noisy readings (P5's fused wall distance, §5.2), decides from one noisy force reading that contact has happened (§6.1), and verifies completion from a handful of trials (§6.2) (its place is marked on the [[physical-ai-map|Physical AI Map]]). Without it the numbers mislead: a crack detector that fires on 95% of cracks looks 95% trustworthy, yet where 1% of panels are cracked only 16% of its alarms are real (§1), and nine seatings in ten looks like proof while its 95% Wilson interval still runs from 60% to 98% (§6.2). The page returns all along the dissertation path of [[07-research-program/index|7. Research Program §8]]: [[04-robotics/state-estimation-slam|3. State Estimation & SLAM §6]] runs §5.2's filter on P5 and its worked case gates the next reading with §6.3's χ² test, and the [[04-robotics/capstone-panel-contact|26. Capstone]] fuses the panel's range with it (block 2); [[06-research-practice/experimental-design-reproducibility|research practice 2 §4]] designs trials with §6.2 (block 5); [[05-construction-robotics/site-engineering|2.5 Site Robotics §2]] adds up its error budget the way §2 adds variances (block 6); and [[05-construction-robotics/imitating-contact|10. Imitating Contact §2]] is §4's Gaussian maximum likelihood with §3's conditioning shrinkage (block 7). After it you can fuse two noisy measurements and say how far to trust the result, derive MSE and cross-entropy as likelihoods, and put an honest interval on a success rate.
 
 > [!note] First pass · 처음이라면
-> Read the picture, §1, §2, then §3 — the Gaussian toolbox is what actually gets used. §4 explains where your loss function came from and is worth the detour. In §5 read §5.2's scalar gain derivation now, because the picture and the problem set run on it; the vector filter and §5.1's random processes can wait until state estimation. §6 is three tools to open when you need them: §6.1 when a robot must decide from one noisy reading, §6.2 when you compare two methods' results, §6.3 when a tracker gates a measurement with the χ² distribution. §7 is for when you meet HMMs, MCMC, or diffusion's forward process.
+> Three sessions of 60–90 minutes. **Session 1, the language:** the picture, then §1 and §2 — events and Bayes' rule on the crack detector, random variables, expectation, variance and covariance; end by redoing the crack detector in self-check 1. **Session 2, Gaussians and losses:** §3, then §4, which shows that MSE and cross-entropy are maximum likelihood under a noise model — core, not a detour, because [[05-construction-robotics/imitating-contact|10. Imitating Contact §2]] trains a policy on exactly this; end with self-check 2 and 3. **Session 3, the Kalman gain:** §5.2 up to its Worked P5 case — the scalar gain derived twice and run through two readings and a motion — then self-check 4 and the problem set. The rest is second pass, each part when you need it: the vector filter at the end of §5.2 and §5.1's random processes before [[04-robotics/state-estimation-slam|3. State Estimation]]; §6.1 when a robot must decide from one noisy reading, §6.2 when you compare two methods, §6.3 when a tracker gates a measurement; §7 when you meet HMMs, MCMC or diffusion's forward process. Self-check 5–10 go with §6–§7.
 
 ### The picture · 그림으로 먼저 보기
 
-<svg viewBox="0 0 560 546" style="max-width:100%;height:auto" role="img" aria-label="plant P5: prior, likelihood and posterior of the wall distance on one axis, the Kalman gain drawn as a fraction of the innovation, and below it the estimate's error bar shrinking at each measurement and growing at the predict step">
+<svg viewBox="0 0 560 546" font-size="12" style="max-width:100%;height:auto" role="img" aria-label="plant P5: prior, likelihood and posterior of the wall distance on one axis, the Kalman gain drawn as a fraction of the innovation, and below it the estimate's error bar shrinking at each measurement and growing at the predict step">
   <defs><marker id="arPb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
   <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="50" y1="172" x2="512" y2="172"/><line x1="50" y1="172" x2="50" y2="40"/></g>
   <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="50.0" y1="172" x2="50.0" y2="176"/><line x1="96.0" y1="172" x2="96.0" y2="176"/><line x1="142.0" y1="172" x2="142.0" y2="176"/><line x1="188.0" y1="172" x2="188.0" y2="176"/><line x1="234.0" y1="172" x2="234.0" y2="176"/><line x1="280.0" y1="172" x2="280.0" y2="176"/><line x1="326.0" y1="172" x2="326.0" y2="176"/><line x1="372.0" y1="172" x2="372.0" y2="176"/><line x1="418.0" y1="172" x2="418.0" y2="176"/><line x1="464.0" y1="172" x2="464.0" y2="176"/><line x1="510.0" y1="172" x2="510.0" y2="176"/><line x1="46" y1="112.0" x2="50" y2="112.0"/><line x1="46" y1="52.0" x2="50" y2="52.0"/></g>
@@ -119,6 +123,8 @@ Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]]: the belief that 
 
 ### 1. The core language
 
+A robot never sees the world itself, only readings of it, and it must say how much to believe each explanation of those readings — cracked or sound, touching or free. This section builds the language for saying that exactly, and it ends in Bayes' rule, which updates a belief when evidence arrives.
+
 - **A probability space** is the object every statement on this page lives in. It has three named parts. The **sample space** $\Omega$ is the set of all possible outcomes (for one die, $\{1,\dots,6\}$). An **event** $A \subseteq \Omega$ is a set of outcomes you can ask about ("even" is $\{2,4,6\}$; set notation is in [[02-foundations/engineering-math|0.5 §10]]). The **probability measure** $P$ assigns each event a number. $P$ must satisfy the three **Kolmogorov axioms**:
   - **Non-negativity**: no event has negative probability, so every $P(A)$ is at least 0.
   $$P(A) \ge 0$$
@@ -130,10 +136,10 @@ Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]]: the belief that 
 - **Conditional probability** of $A$ given $B$ is the probability of $A$ once you know $B$ happened, defined for $P(B) > 0$:
   $$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
   Here $A \cap B$ is "both happen" and dividing by $P(B)$ renormalizes, so the outcomes inside $B$ again sum to 1. It re-weights the world after evidence. *Example:* a fair die shows an even number; $P(\text{six} \mid \text{even}) = \tfrac{1/6}{1/2} = \tfrac13$.
-  - **Chain rule** (the definition rearranged): $P(A,B) = P(A|B)P(B)$, and for $n$ events $P(A_1,\dots,A_n) = \prod_{i=1}^n P(A_i \mid A_1,\dots,A_{i-1})$.
+  - **Chain rule** (the definition rearranged; it shares its name with the calculus chain rule for derivatives but is a different rule): $P(A,B) = P(A|B)P(B)$, and for $n$ events $P(A_1,\dots,A_n) = \prod_{i=1}^n P(A_i \mid A_1,\dots,A_{i-1})$.
   - **Law of total probability**: if $B_1, \dots, B_k$ partition $\Omega$ (disjoint, covering everything), then
   $$P(A) = \sum_{i=1}^k P(A \mid B_i)\,P(B_i)$$
-  since $A$ splits into the disjoint pieces $A \cap B_i$ and the chain rule gives each piece. It supplies the denominator of Bayes' rule below: in the crack example, $P(+) = 0.95 \cdot 0.01 + 0.05 \cdot 0.99 = 0.059$.
+  since $A$ splits into the disjoint pieces $A \cap B_i$ and the chain rule gives each piece. It supplies the denominator of Bayes' rule below, as the crack example shows.
 - **Bayes' rule.** The chain rule above can factor a joint probability in either order —
   $P(\theta, x) = P(\theta|x)P(x)$ and $P(\theta, x) = P(x|\theta)P(\theta)$ — and both equal
   the same joint, so set them equal and divide by $P(x)$. That is the derivation:
@@ -142,60 +148,51 @@ Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]]: the belief that 
   hypothesis explains what you just saw* ($P(x|\theta)$).
   Worked example — sensor diagnosis: a crack detector fires on 95% of cracks
   ($P(+|c)=0.95$), false-alarms 5% ($P(+|\neg c)=0.05$), cracks are rare ($P(c)=0.01$).
-  $P(c|+) = \frac{0.95\cdot 0.01}{0.95\cdot 0.01 + 0.05\cdot 0.99} \approx 0.16$.
+  The denominator $P(+)$, the chance of an alarm at all, is the law of total probability above,
+  split over crack and no crack: $P(+) = 0.95 \cdot 0.01 + 0.05 \cdot 0.99 = 0.059$. So
+  $P(c|+) = \frac{0.95\cdot 0.01}{0.95\cdot 0.01 + 0.05\cdot 0.99} = \frac{0.0095}{0.059} \approx 0.16$.
   An alarm with 95% sensitivity (and a 5% false-positive rate — two separate numbers,
   not one "accuracy") is right only 16% of the time it fires — base rates dominate. This is why
   perception pipelines calibrate.
 
-<svg viewBox="0 0 560 250" style="max-width:100%;height:auto" role="img" aria-label="a thousand panels split into ten cracked and nine hundred ninety sound, with the alarms each branch produces, and a bar showing that only sixteen percent of alarms are real">
+<svg viewBox="0 0 560 162" style="max-width:100%;height:auto" role="img" aria-label="a thousand panels split into ten cracked and nine hundred ninety sound, with the alarms each branch produces, and a bar showing that only sixteen percent of alarms are real">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.6">
-    <rect x="24" y="76" width="94" height="30" rx="3"/>
-    <rect x="150" y="34" width="86" height="30" rx="3"/>
-    <rect x="150" y="118" width="86" height="30" rx="3"/>
+    <rect x="16" y="76" width="96" height="30" rx="3"/>
+    <rect x="144" y="34" width="88" height="30" rx="3"/>
+    <rect x="144" y="118" width="88" height="30" rx="3"/>
   </g>
   <g fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.1">
-    <rect x="268" y="34" width="82" height="30" rx="3"/>
-    <rect x="268" y="118" width="82" height="30" rx="3"/>
+    <rect x="302" y="34" width="86" height="30" rx="3"/>
+    <rect x="302" y="118" width="86" height="30" rx="3"/>
   </g>
   <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.65">
-    <path d="M118,86 C136,86 136,49 148,49"/>
-    <path d="M118,96 C136,96 136,133 148,133"/>
-    <line x1="236" y1="49" x2="266" y2="49"/>
-    <line x1="236" y1="133" x2="266" y2="133"/>
+    <path d="M112,86 C130,86 128,49 142,49"/>
+    <path d="M112,96 C130,96 128,133 142,133"/>
+    <line x1="232" y1="49" x2="300" y2="49"/>
+    <line x1="232" y1="133" x2="300" y2="133"/>
   </g>
-  <g font-size="10.5" fill="currentColor" text-anchor="middle">
-    <text x="71" y="95">1,000 panels</text>
-    <text x="193" y="53">10 cracked</text>
-    <text x="193" y="137">990 sound</text>
-    <text x="309" y="53">9.5 alarms</text>
-    <text x="309" y="137">49.5 alarms</text>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="64" y="95">1,000 panels</text>
+    <text x="188" y="53">10 cracked</text>
+    <text x="188" y="137">990 sound</text>
+    <text x="345" y="53">9.5 alarms</text>
+    <text x="345" y="137">49.5 alarms</text>
   </g>
-  <g font-size="9" fill="currentColor" opacity="0.8" text-anchor="middle">
-    <text x="251" y="42">95% of them</text>
-    <text x="251" y="126">5% of them</text>
+  <g font-size="10.5" fill="currentColor" opacity="0.85" text-anchor="middle">
+    <text x="266" y="43">95% of them</text>
+    <text x="266" y="127">5% of them</text>
   </g>
+  <text x="408" y="80" font-size="11" fill="currentColor">59 alarms in total</text>
+  <rect x="408" y="88" width="140" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6"/>
+  <rect x="408" y="88" width="22.5" height="26" rx="3" fill="currentColor" fill-opacity="0.34"/>
   <g font-size="10.5" fill="currentColor">
-    <text x="372" y="80">59 alarms in total</text>
+    <text x="408" y="130">9.5 real</text>
+    <text x="548" y="130" text-anchor="end">49.5 false</text>
   </g>
-  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.6">
-    <rect x="372" y="88" width="170" height="26" rx="3"/>
-  </g>
-  <g fill="currentColor" fill-opacity="0.34">
-    <rect x="372" y="88" width="27.4" height="26" rx="3"/>
-  </g>
-  <g font-size="9.5" fill="currentColor">
-    <text x="372" y="130">9.5 real</text>
-    <text x="542" y="130" text-anchor="end">49.5 false</text>
-  </g>
-  <g font-size="13" fill="currentColor" font-weight="600">
-    <text x="372" y="152">16%</text>
-  </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="212">The 95% is used on the thin branch and the 5% on the thick one, so the thick branch produces</text>
-    <text x="24" y="228">five times more alarms than the thin one even though it is the branch with nothing wrong.</text>
-    <text x="24" y="244">That ratio sets the posterior: 9.5 of 59 alarms, 16%. Nothing about the detector changed &#8212; only how rare cracks are.</text>
-  </g>
+  <text x="408" y="153" font-size="13" font-weight="600" fill="currentColor">16%</text>
 </svg>
+
+Out of 1,000 panels, the detector's 95% acts on the thin branch of 10 cracked panels and its 5% on the thick branch of 990 sound ones, so the sound panels raise 49.5 alarms against 9.5 real ones. The posterior is that ratio, 9.5 of 59 alarms or 16%: nothing about the detector changed, only how rare cracks are.
 
 - **Independence** is a property of two events (or random variables): knowing one does not change the probability of the other. The defining condition is that the joint probability factorizes,
   $$P(A \cap B) = P(A)\,P(B)$$
@@ -209,6 +206,8 @@ Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]]: the belief that 
   These factorizations are the assumptions behind graphical models, naive Bayes, and the Markov property (§5) alike, because each lets a large joint distribution be stored as a product of small pieces.
 
 ### 2. Random variables and expectation
+
+Events answer yes-or-no questions, but a sensor returns a number, and a robot needs that number's average, its spread and whether two readings move together. A random variable turns outcomes into numbers so that all three can be computed.
 
 - **A random variable** $X$ is a function from outcomes to numbers, $X : \Omega \to \mathbb{R}$; it turns "what happened" into a quantity you can add and average. *Example:* roll two dice, $\Omega$ is the 36 ordered pairs, and $X$ = the sum maps $(2,5) \mapsto 7$. A random vector does the same into $\mathbb{R}^n$. Its **distribution** is described by one of three functions:
   - **PMF** (probability mass function), for a discrete $X$: $p(x)$ *is* the probability of the value $x$. Its two conditions are $p(x) \ge 0$ and
@@ -267,16 +266,53 @@ Plant **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]]: the belief that 
 
 ### 3. The Gaussian toolbox (why Gaussians run robotics)
 
+Almost every noise model, filter and loss on this wiki is Gaussian, and the reason is practical: a Gaussian stays Gaussian under everything a robot does to a belief — rescaling it, adding independent noise, conditioning it on a reading — so a whole estimation pipeline can carry a mean and a covariance instead of a full distribution.
+
 A **multivariate Gaussian** (normal distribution) is the continuous distribution on $\mathbb{R}^n$ fixed by exactly **two** parameters, a mean vector $\mu \in \mathbb{R}^n$ and a symmetric positive-definite covariance matrix $\Sigma \in \mathbb{R}^{n\times n}$ (§2), with density
 
 $$\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$$
 
-Here $n$ is the dimension of $x$ and $|\Sigma|$ is the determinant of the covariance. The exponent is minus half the squared Mahalanobis distance of §6, so the density is highest at $x = \mu$ and falls off along ellipsoids shaped by $\Sigma$; the prefactor is whatever makes the integral equal 1. Then $E[x] = \mu$ and $\text{Cov}(x) = \Sigma$, so the two parameters are the mean and covariance. For $n = 1$ it reduces to the table entry of §2. *Example:* the standard normal $\mathcal{N}(0, 1)$ has density $0.399$ at its peak, while $\mathcal{N}(0, 0.1^2)$ has $3.99$, a density above 1, as §2 allowed.
+Here $n$ is the dimension of $x$ and $|\Sigma|$ is the determinant of the covariance. The exponent is minus half of $(x-\mu)^\top\Sigma^{-1}(x-\mu)$, the squared distance from the mean measured in units of the spread along each direction (the *squared Mahalanobis distance*, which §6.3 names and uses to gate readings), so the density is highest at $x = \mu$ and falls off along ellipsoids shaped by $\Sigma$; the prefactor is whatever makes the integral equal 1. Then $E[x] = \mu$ and $\text{Cov}(x) = \Sigma$, so the two parameters are the mean and covariance. For $n = 1$ it reduces to the table entry of §2. *Example:* the standard normal $\mathcal{N}(0, 1)$ has density $0.399$ at its peak, while $\mathcal{N}(0, 0.1^2)$ has $3.99$, a density above 1, as §2 allowed.
+
+**Decode the density before memorizing it.** μ locates the center. Σ describes spread and how coordinates vary together. The displayed inverse-and-determinant density requires a nonsingular covariance; singular Gaussians live on a lower-dimensional support (the set of values the variable can actually take, e.g. a line inside the plane) and need a different treatment. The inverse covariance inside the exponent measures how surprising a displacement is relative to that spread: the same physical displacement is less surprising along an uncertain direction than along a tightly constrained one. The factor outside the exponential normalizes the total probability; the density at a point is not itself the probability of that exact continuous value.
+
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="P5's three Gaussians moved onto one centre: standard deviations 2, 1 and 0.894 with peaks 0.199, 0.399 and 0.446, each with area one">
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="50" y1="176" x2="410" y2="176"/><line x1="50" y1="176" x2="50" y2="26"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="50" y1="176" x2="50" y2="180"/><line x1="110" y1="176" x2="110" y2="180"/><line x1="170" y1="176" x2="170" y2="180"/><line x1="230" y1="176" x2="230" y2="180"/><line x1="290" y1="176" x2="290" y2="180"/><line x1="350" y1="176" x2="350" y2="180"/><line x1="410" y1="176" x2="410" y2="180"/><line x1="46" y1="116" x2="50" y2="116"/><line x1="46" y1="56" x2="50" y2="56"/></g>
+  <path d="M50 175.3 L51.5 175.3 L53 175.2 L54.5 175.2 L56 175.1 L57.5 175 L59 175 L60.5 174.9 L62 174.8 L63.5 174.7 L65 174.6 L66.5 174.5 L68 174.4 L69.5 174.3 L71 174.2 L72.5 174.1 L74 174 L75.5 173.8 L77 173.7 L78.5 173.5 L80 173.4 L81.5 173.2 L83 173 L84.5 172.8 L86 172.6 L87.5 172.4 L89 172.2 L90.5 172 L92 171.8 L93.5 171.5 L95 171.2 L96.5 171 L98 170.7 L99.5 170.4 L101 170.1 L102.5 169.7 L104 169.4 L105.5 169 L107 168.7 L108.5 168.3 L110 167.9 L111.5 167.5 L113 167.1 L114.5 166.6 L116 166.2 L117.5 165.7 L119 165.2 L120.5 164.7 L122 164.2 L123.5 163.6 L125 163.1 L126.5 162.5 L128 161.9 L129.5 161.3 L131 160.7 L132.5 160 L134 159.4 L135.5 158.7 L137 158 L138.5 157.3 L140 156.6 L141.5 155.8 L143 155.1 L144.5 154.3 L146 153.5 L147.5 152.7 L149 151.9 L150.5 151.1 L152 150.3 L153.5 149.5 L155 148.6 L156.5 147.7 L158 146.9 L159.5 146 L161 145.1 L162.5 144.2 L164 143.3 L165.5 142.4 L167 141.5 L168.5 140.6 L170 139.7 L171.5 138.8 L173 137.9 L174.5 137 L176 136.1 L177.5 135.2 L179 134.3 L180.5 133.4 L182 132.5 L183.5 131.7 L185 130.8 L186.5 130 L188 129.2 L189.5 128.3 L191 127.6 L192.5 126.8 L194 126 L195.5 125.3 L197 124.6 L198.5 123.9 L200 123.2 L201.5 122.5 L203 121.9 L204.5 121.3 L206 120.8 L207.5 120.2 L209 119.7 L210.5 119.2 L212 118.8 L213.5 118.4 L215 118 L216.5 117.7 L218 117.3 L219.5 117.1 L221 116.8 L222.5 116.6 L224 116.5 L225.5 116.3 L227 116.2 L228.5 116.2 L230 116.2 L231.5 116.2 L233 116.2 L234.5 116.3 L236 116.5 L237.5 116.6 L239 116.8 L240.5 117.1 L242 117.3 L243.5 117.7 L245 118 L246.5 118.4 L248 118.8 L249.5 119.2 L251 119.7 L252.5 120.2 L254 120.8 L255.5 121.3 L257 121.9 L258.5 122.5 L260 123.2 L261.5 123.9 L263 124.6 L264.5 125.3 L266 126 L267.5 126.8 L269 127.6 L270.5 128.3 L272 129.2 L273.5 130 L275 130.8 L276.5 131.7 L278 132.5 L279.5 133.4 L281 134.3 L282.5 135.2 L284 136.1 L285.5 137 L287 137.9 L288.5 138.8 L290 139.7 L291.5 140.6 L293 141.5 L294.5 142.4 L296 143.3 L297.5 144.2 L299 145.1 L300.5 146 L302 146.9 L303.5 147.7 L305 148.6 L306.5 149.5 L308 150.3 L309.5 151.1 L311 151.9 L312.5 152.7 L314 153.5 L315.5 154.3 L317 155.1 L318.5 155.8 L320 156.6 L321.5 157.3 L323 158 L324.5 158.7 L326 159.4 L327.5 160 L329 160.7 L330.5 161.3 L332 161.9 L333.5 162.5 L335 163.1 L336.5 163.6 L338 164.2 L339.5 164.7 L341 165.2 L342.5 165.7 L344 166.2 L345.5 166.6 L347 167.1 L348.5 167.5 L350 167.9 L351.5 168.3 L353 168.7 L354.5 169 L356 169.4 L357.5 169.7 L359 170.1 L360.5 170.4 L362 170.7 L363.5 171 L365 171.2 L366.5 171.5 L368 171.8 L369.5 172 L371 172.2 L372.5 172.4 L374 172.6 L375.5 172.8 L377 173 L378.5 173.2 L380 173.4 L381.5 173.5 L383 173.7 L384.5 173.8 L386 174 L387.5 174.1 L389 174.2 L390.5 174.3 L392 174.4 L393.5 174.5 L395 174.6 L396.5 174.7 L398 174.8 L399.5 174.9 L401 175 L402.5 175 L404 175.1 L405.5 175.2 L407 175.2 L408.5 175.3 L410 175.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.65" stroke-dasharray="7 4"/>
+  <path d="M50 176 L51.5 176 L53 176 L54.5 176 L56 176 L57.5 176 L59 176 L60.5 176 L62 176 L63.5 176 L65 176 L66.5 176 L68 176 L69.5 176 L71 176 L72.5 176 L74 176 L75.5 176 L77 176 L78.5 176 L80 176 L81.5 176 L83 176 L84.5 176 L86 176 L87.5 176 L89 176 L90.5 176 L92 176 L93.5 176 L95 176 L96.5 176 L98 176 L99.5 176 L101 176 L102.5 176 L104 176 L105.5 176 L107 176 L108.5 176 L110 176 L111.5 176 L113 175.9 L114.5 175.9 L116 175.9 L117.5 175.9 L119 175.9 L120.5 175.8 L122 175.8 L123.5 175.8 L125 175.7 L126.5 175.7 L128 175.6 L129.5 175.6 L131 175.5 L132.5 175.4 L134 175.3 L135.5 175.2 L137 175 L138.5 174.9 L140 174.7 L141.5 174.5 L143 174.2 L144.5 173.9 L146 173.6 L147.5 173.3 L149 172.9 L150.5 172.4 L152 171.9 L153.5 171.4 L155 170.7 L156.5 170 L158 169.3 L159.5 168.4 L161 167.5 L162.5 166.5 L164 165.4 L165.5 164.1 L167 162.8 L168.5 161.4 L170 159.8 L171.5 158.1 L173 156.3 L174.5 154.4 L176 152.3 L177.5 150.1 L179 147.8 L180.5 145.3 L182 142.7 L183.5 140 L185 137.1 L186.5 134.2 L188 131.1 L189.5 127.9 L191 124.6 L192.5 121.2 L194 117.7 L195.5 114.2 L197 110.6 L198.5 107 L200 103.4 L201.5 99.8 L203 96.2 L204.5 92.6 L206 89.1 L207.5 85.7 L209 82.3 L210.5 79.1 L212 76 L213.5 73.1 L215 70.4 L216.5 67.8 L218 65.5 L219.5 63.4 L221 61.6 L222.5 60 L224 58.7 L225.5 57.7 L227 56.9 L228.5 56.5 L230 56.3 L231.5 56.5 L233 56.9 L234.5 57.7 L236 58.7 L237.5 60 L239 61.6 L240.5 63.4 L242 65.5 L243.5 67.8 L245 70.4 L246.5 73.1 L248 76 L249.5 79.1 L251 82.3 L252.5 85.7 L254 89.1 L255.5 92.6 L257 96.2 L258.5 99.8 L260 103.4 L261.5 107 L263 110.6 L264.5 114.2 L266 117.7 L267.5 121.2 L269 124.6 L270.5 127.9 L272 131.1 L273.5 134.2 L275 137.1 L276.5 140 L278 142.7 L279.5 145.3 L281 147.8 L282.5 150.1 L284 152.3 L285.5 154.4 L287 156.3 L288.5 158.1 L290 159.8 L291.5 161.4 L293 162.8 L294.5 164.1 L296 165.4 L297.5 166.5 L299 167.5 L300.5 168.4 L302 169.3 L303.5 170 L305 170.7 L306.5 171.4 L308 171.9 L309.5 172.4 L311 172.9 L312.5 173.3 L314 173.6 L315.5 173.9 L317 174.2 L318.5 174.5 L320 174.7 L321.5 174.9 L323 175 L324.5 175.2 L326 175.3 L327.5 175.4 L329 175.5 L330.5 175.6 L332 175.6 L333.5 175.7 L335 175.7 L336.5 175.8 L338 175.8 L339.5 175.8 L341 175.9 L342.5 175.9 L344 175.9 L345.5 175.9 L347 175.9 L348.5 176 L350 176 L351.5 176 L353 176 L354.5 176 L356 176 L357.5 176 L359 176 L360.5 176 L362 176 L363.5 176 L365 176 L366.5 176 L368 176 L369.5 176 L371 176 L372.5 176 L374 176 L375.5 176 L377 176 L378.5 176 L380 176 L381.5 176 L383 176 L384.5 176 L386 176 L387.5 176 L389 176 L390.5 176 L392 176 L393.5 176 L395 176 L396.5 176 L398 176 L399.5 176 L401 176 L402.5 176 L404 176 L405.5 176 L407 176 L408.5 176 L410 176" fill="none" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.85" stroke-dasharray="2 3"/>
+  <path d="M50 176 L51.5 176 L53 176 L54.5 176 L56 176 L57.5 176 L59 176 L60.5 176 L62 176 L63.5 176 L65 176 L66.5 176 L68 176 L69.5 176 L71 176 L72.5 176 L74 176 L75.5 176 L77 176 L78.5 176 L80 176 L81.5 176 L83 176 L84.5 176 L86 176 L87.5 176 L89 176 L90.5 176 L92 176 L93.5 176 L95 176 L96.5 176 L98 176 L99.5 176 L101 176 L102.5 176 L104 176 L105.5 176 L107 176 L108.5 176 L110 176 L111.5 176 L113 176 L114.5 176 L116 176 L117.5 176 L119 176 L120.5 176 L122 176 L123.5 175.9 L125 175.9 L126.5 175.9 L128 175.9 L129.5 175.9 L131 175.9 L132.5 175.8 L134 175.8 L135.5 175.7 L137 175.7 L138.5 175.6 L140 175.5 L141.5 175.4 L143 175.3 L144.5 175.2 L146 175 L147.5 174.8 L149 174.6 L150.5 174.3 L152 174 L153.5 173.7 L155 173.3 L156.5 172.9 L158 172.3 L159.5 171.8 L161 171.1 L162.5 170.3 L164 169.5 L165.5 168.6 L167 167.5 L168.5 166.3 L170 165 L171.5 163.6 L173 162 L174.5 160.2 L176 158.3 L177.5 156.3 L179 154 L180.5 151.6 L182 149 L183.5 146.2 L185 143.2 L186.5 140 L188 136.7 L189.5 133.2 L191 129.5 L192.5 125.6 L194 121.6 L195.5 117.5 L197 113.2 L198.5 108.8 L200 104.4 L201.5 99.9 L203 95.3 L204.5 90.8 L206 86.3 L207.5 81.9 L209 77.5 L210.5 73.2 L212 69.2 L213.5 65.2 L215 61.5 L216.5 58.1 L218 54.9 L219.5 52.1 L221 49.5 L222.5 47.3 L224 45.5 L225.5 44.1 L227 43 L228.5 42.4 L230 42.2 L231.5 42.4 L233 43 L234.5 44.1 L236 45.5 L237.5 47.3 L239 49.5 L240.5 52.1 L242 54.9 L243.5 58.1 L245 61.5 L246.5 65.2 L248 69.2 L249.5 73.2 L251 77.5 L252.5 81.9 L254 86.3 L255.5 90.8 L257 95.3 L258.5 99.9 L260 104.4 L261.5 108.8 L263 113.2 L264.5 117.5 L266 121.6 L267.5 125.6 L269 129.5 L270.5 133.2 L272 136.7 L273.5 140 L275 143.2 L276.5 146.2 L278 149 L279.5 151.6 L281 154 L282.5 156.3 L284 158.3 L285.5 160.2 L287 162 L288.5 163.6 L290 165 L291.5 166.3 L293 167.5 L294.5 168.6 L296 169.5 L297.5 170.3 L299 171.1 L300.5 171.8 L302 172.3 L303.5 172.9 L305 173.3 L306.5 173.7 L308 174 L309.5 174.3 L311 174.6 L312.5 174.8 L314 175 L315.5 175.2 L317 175.3 L318.5 175.4 L320 175.5 L321.5 175.6 L323 175.7 L324.5 175.7 L326 175.8 L327.5 175.8 L329 175.9 L330.5 175.9 L332 175.9 L333.5 175.9 L335 175.9 L336.5 175.9 L338 176 L339.5 176 L341 176 L342.5 176 L344 176 L345.5 176 L347 176 L348.5 176 L350 176 L351.5 176 L353 176 L354.5 176 L356 176 L357.5 176 L359 176 L360.5 176 L362 176 L363.5 176 L365 176 L366.5 176 L368 176 L369.5 176 L371 176 L372.5 176 L374 176 L375.5 176 L377 176 L378.5 176 L380 176 L381.5 176 L383 176 L384.5 176 L386 176 L387.5 176 L389 176 L390.5 176 L392 176 L393.5 176 L395 176 L396.5 176 L398 176 L399.5 176 L401 176 L402.5 176 L404 176 L405.5 176 L407 176 L408.5 176 L410 176" fill="none" stroke="currentColor" stroke-width="2.6" stroke-opacity="1.0"/>
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="50" y="192" text-anchor="middle">−6</text>
+    <text x="110" y="192" text-anchor="middle">−4</text>
+    <text x="170" y="192" text-anchor="middle">−2</text>
+    <text x="230" y="192" text-anchor="middle">0</text>
+    <text x="290" y="192" text-anchor="middle">2</text>
+    <text x="350" y="192" text-anchor="middle">4</text>
+    <text x="410" y="192" text-anchor="middle">6</text>
+    <text x="44" y="120" text-anchor="end">0.2</text>
+    <text x="44" y="60" text-anchor="end">0.4</text>
+    <text x="44" y="180" text-anchor="end">0</text>
+  </g>
+  <text x="12" y="18" font-size="11" fill="currentColor" opacity="0.85">density</text>
+  <text x="410" y="208" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">distance from the centre, x − μ (cm)</text>
+  <line x1="424" y1="52" x2="450" y2="52" stroke="currentColor" stroke-width="2.6" stroke-opacity="1.0"/>
+  <text x="456" y="56" font-size="11" fill="currentColor">posterior σ 0.894</text>
+  <text x="456" y="70" font-size="10.5" fill="currentColor" opacity="0.85">peak 0.446</text>
+  <line x1="424" y1="92" x2="450" y2="92" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.85" stroke-dasharray="2 3"/>
+  <text x="456" y="96" font-size="11" fill="currentColor">sensor σ 1</text>
+  <text x="456" y="110" font-size="10.5" fill="currentColor" opacity="0.85">peak 0.399</text>
+  <line x1="424" y1="132" x2="450" y2="132" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.65" stroke-dasharray="7 4"/>
+  <text x="456" y="136" font-size="11" fill="currentColor">prior σ 2</text>
+  <text x="456" y="150" font-size="10.5" fill="currentColor" opacity="0.85">peak 0.199</text>
+</svg>
+
+P5's three Gaussians from the picture, slid onto one centre: $\sigma = 2$ (prior), $1$ (sensor) and $0.894$ (posterior) give peak densities $0.199$, $0.399$ and $0.446$, and each curve still encloses area $1$. Every Gaussian is this one curve rescaled, so narrower means more certain and, because the area is fixed, taller.
 
 Three **closure** properties make the Gaussian the workhorse — "closure" meaning the answer
 is still a Gaussian, so **affine** operations never leave the family:
 
-1. **Affine maps**: $x\sim\mathcal{N}(\mu,\Sigma) \Rightarrow Ax + b \sim \mathcal{N}(A\mu + b,\, A\Sigma A^\top)$.
+1. **Affine maps**: $x\sim\mathcal{N}(\mu,\Sigma) \Rightarrow Ax + b \sim \mathcal{N}(A\mu + b,\, A\Sigma A^\top)$. The covariance is $E\big[A(x-\mu)(x-\mu)^\top A^\top\big] = A\Sigma A^\top$; in one dimension, $\text{Var}(ax+b) = a^2\,\text{Var}(x)$, and the shift $b$ moves only the mean.
 2. **Sums** of independent Gaussians are Gaussian (variances add).
 3. **Conditioning**: if $(x_1, x_2)$ jointly Gaussian,
    $$E[x_1|x_2] = \mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$$
@@ -286,41 +322,75 @@ is still a Gaussian, so **affine** operations never leave the family:
    $$\text{Cov}(x_1 \mid x_2) = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}$$
    and both formulas come from one step. The leftover $e = x_1 - \mu_1 - \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$ has $\text{Cov}(e, x_2) = \Sigma_{12} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{22} = 0$. It is an affine map of $(x_1, x_2)$, so $(e, x_2)$ is jointly Gaussian, and a jointly Gaussian pair with zero covariance is independent (the covariance is block-diagonal, so the density above factors into two). Knowing $x_2$ therefore fixes the bracket $\mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$ and leaves $e$ with its zero mean and its covariance, which expands to the second formula. *Example:* the P5 wall, $x_1 = x$ with mean $10$ and variance $4$, and $x_2 = z = x + v$ with independent $\text{Var}(v) = 1$, has $\Sigma_{12} = 4$ and $\Sigma_{22} = 5$, so $E[x \mid z{=}12] = 10 + \tfrac45(12 - 10) = 11.6$ and $\text{Cov}(x \mid z) = 4 - 4 \cdot 4/5 = 0.8$, the picture's posterior.
 
-Also: the **central limit theorem (CLT)** is a limit statement with three named hypotheses: $X_1, \dots, X_N$ are i.i.d. (§2), with mean $\mu$, and with *finite* variance $\sigma^2$. Then the standardized sample mean $\bar X_N = \frac1N \sum_i X_i$ converges in distribution to a standard normal:
-$$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1) \quad \text{as } N \to \infty$$
-"Converges in distribution" means the CDFs converge, so probabilities about $\bar X_N$ can be read off a Gaussian with mean $\mu$ and standard deviation $\sigma/\sqrt N$. *Example:* the mean of 30 dice has standard deviation $\sqrt{35/12}/\sqrt{30} = 0.312$, and the Gaussian approximation gives $P(|\bar X_{30} - 3.5| < 0.5) = 0.89$ against an exact $0.88$. *Non-example:* it fails without finite variance; the mean of $N$ standard Cauchy samples is again standard Cauchy for every $N$, so averaging never narrows it. The CLT is why noise models default to the Gaussian; and among continuous distributions with a given mean and variance the Gaussian has the largest differential entropy (the continuous-variable analogue of the entropy in [[02-foundations/information-theory|5. Information Theory §1]], computed from a density rather than probabilities, so unlike discrete entropy it can be negative) (Murphy PML1 §2.6.4, shown in §3.4.4) — the "least presumptuous" choice.
+For sensor fusion, the conditioning formula says: start from the expected value of the unobserved quantity, inspect how the observed quantity differs from its expectation, and transfer that discrepancy through their covariance relationship. If the quantities have no covariance and are jointly Gaussian, observing one does not shift the conditional mean of the other.
 
-<svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="the Gaussian: one shape, width set by sigma, area always one">
-  <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="40" y1="150" x2="425" y2="150"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.3" stroke-dasharray="3 3">
-    <line x1="230.0" y1="48" x2="230.0" y2="150"/><line x1="170.6" y1="114" x2="170.6" y2="150"/><line x1="289.4" y1="114" x2="289.4" y2="150"/>
+<svg viewBox="0 0 560 290" style="max-width:100%;height:auto" role="img" aria-label="P5's prior and reading as one joint Gaussian: ellipses at Mahalanobis distance 1 and 2, the conditional-mean line of slope 0.8, the vertical slice at z = 12 carrying N(11.6, 0.8), and on the right the slice's density against the prior N(10, 4)">
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="56" y1="248" x2="320" y2="248"/><line x1="56" y1="248" x2="56" y2="28"/><line x1="372" y1="248" x2="522" y2="248"/><line x1="372" y1="248" x2="372" y2="28"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="56" y1="248" x2="56" y2="252"/><line x1="100" y1="248" x2="100" y2="252"/><line x1="144" y1="248" x2="144" y2="252"/><line x1="188" y1="248" x2="188" y2="252"/><line x1="232" y1="248" x2="232" y2="252"/><line x1="276" y1="248" x2="276" y2="252"/><line x1="320" y1="248" x2="320" y2="252"/><line x1="52" y1="226" x2="56" y2="226"/><line x1="52" y1="182" x2="56" y2="182"/><line x1="52" y1="138" x2="56" y2="138"/><line x1="52" y1="94" x2="56" y2="94"/><line x1="52" y1="50" x2="56" y2="50"/><line x1="372" y1="248" x2="372" y2="252"/><line x1="432" y1="248" x2="432" y2="252"/><line x1="492" y1="248" x2="492" y2="252"/></g>
+  <path d="M237.2 98.6 L237.1 97.8 L237 97.1 L236.8 96.4 L236.4 95.8 L236 95.3 L235.5 94.9 L234.9 94.5 L234.2 94.3 L233.4 94.1 L232.6 94 L231.6 94 L230.6 94.1 L229.5 94.2 L228.3 94.5 L227 94.8 L225.7 95.2 L224.3 95.7 L222.8 96.3 L221.2 96.9 L219.6 97.6 L217.9 98.4 L216.2 99.3 L214.4 100.3 L212.6 101.3 L210.7 102.4 L208.8 103.5 L206.8 104.8 L204.8 106 L202.8 107.4 L200.7 108.8 L198.6 110.3 L196.5 111.8 L194.4 113.4 L192.3 115 L190.1 116.6 L188 118.3 L185.9 120.1 L183.7 121.8 L181.6 123.6 L179.5 125.5 L177.4 127.3 L175.3 129.2 L173.2 131.1 L171.2 133 L169.2 134.9 L167.2 136.8 L165.3 138.7 L163.4 140.6 L161.6 142.5 L159.8 144.5 L158.1 146.3 L156.4 148.2 L154.8 150.1 L153.2 151.9 L151.7 153.7 L150.3 155.5 L149 157.2 L147.7 159 L146.5 160.6 L145.4 162.2 L144.4 163.8 L143.4 165.4 L142.6 166.8 L141.8 168.3 L141.1 169.6 L140.5 170.9 L140 172.2 L139.6 173.3 L139.2 174.4 L139 175.5 L138.9 176.5 L138.8 177.4 L138.9 178.2 L139 178.9 L139.2 179.6 L139.6 180.2 L140 180.7 L140.5 181.1 L141.1 181.5 L141.8 181.7 L142.6 181.9 L143.4 182 L144.4 182 L145.4 181.9 L146.5 181.8 L147.7 181.5 L149 181.2 L150.3 180.8 L151.7 180.3 L153.2 179.7 L154.8 179.1 L156.4 178.4 L158.1 177.6 L159.8 176.7 L161.6 175.7 L163.4 174.7 L165.3 173.6 L167.2 172.5 L169.2 171.2 L171.2 170 L173.2 168.6 L175.3 167.2 L177.4 165.7 L179.5 164.2 L181.6 162.6 L183.7 161 L185.9 159.4 L188 157.7 L190.1 155.9 L192.3 154.2 L194.4 152.4 L196.5 150.5 L198.6 148.7 L200.7 146.8 L202.8 144.9 L204.8 143 L206.8 141.1 L208.8 139.2 L210.7 137.3 L212.6 135.4 L214.4 133.5 L216.2 131.5 L217.9 129.7 L219.6 127.8 L221.2 125.9 L222.8 124.1 L224.3 122.3 L225.7 120.5 L227 118.8 L228.3 117 L229.5 115.4 L230.6 113.8 L231.6 112.2 L232.6 110.6 L233.4 109.2 L234.2 107.7 L234.9 106.4 L235.5 105.1 L236 103.8 L236.4 102.7 L236.8 101.6 L237 100.5 L237.1 99.5 L237.2 98.6Z" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8"/>
+  <path d="M286.4 59.3 L286.3 57.6 L286 56.2 L285.5 54.8 L284.9 53.7 L284.1 52.6 L283 51.8 L281.8 51.1 L280.5 50.6 L278.9 50.2 L277.2 50 L275.3 50 L273.2 50.2 L271 50.5 L268.6 51 L266.1 51.6 L263.4 52.4 L260.5 53.4 L257.6 54.5 L254.5 55.8 L251.2 57.3 L247.9 58.9 L244.4 60.6 L240.9 62.5 L237.2 64.6 L233.4 66.7 L229.6 69.1 L225.7 71.5 L221.7 74.1 L217.6 76.8 L213.5 79.6 L209.3 82.5 L205.1 85.6 L200.8 88.7 L196.6 91.9 L192.3 95.2 L188 98.6 L183.7 102.1 L179.4 105.7 L175.2 109.3 L170.9 112.9 L166.7 116.6 L162.5 120.4 L158.4 124.1 L154.3 127.9 L150.3 131.8 L146.4 135.6 L142.6 139.4 L138.8 143.3 L135.1 147.1 L131.6 150.9 L128.1 154.7 L124.8 158.4 L121.5 162.2 L118.4 165.8 L115.5 169.4 L112.6 173 L109.9 176.5 L107.4 179.9 L105 183.2 L102.8 186.5 L100.7 189.6 L98.8 192.7 L97.1 195.7 L95.5 198.5 L94.2 201.2 L93 203.8 L91.9 206.3 L91.1 208.7 L90.5 210.9 L90 213 L89.7 214.9 L89.6 216.7 L89.7 218.4 L90 219.8 L90.5 221.2 L91.1 222.3 L91.9 223.4 L93 224.2 L94.2 224.9 L95.5 225.4 L97.1 225.8 L98.8 226 L100.7 226 L102.8 225.8 L105 225.5 L107.4 225 L109.9 224.4 L112.6 223.6 L115.5 222.6 L118.4 221.5 L121.5 220.2 L124.8 218.7 L128.1 217.1 L131.6 215.4 L135.1 213.5 L138.8 211.4 L142.6 209.3 L146.4 206.9 L150.3 204.5 L154.3 201.9 L158.4 199.2 L162.5 196.4 L166.7 193.5 L170.9 190.4 L175.2 187.3 L179.4 184.1 L183.7 180.8 L188 177.4 L192.3 173.9 L196.6 170.3 L200.8 166.7 L205.1 163.1 L209.3 159.4 L213.5 155.6 L217.6 151.9 L221.7 148.1 L225.7 144.2 L229.6 140.4 L233.4 136.6 L237.2 132.7 L240.9 128.9 L244.4 125.1 L247.9 121.3 L251.2 117.6 L254.5 113.8 L257.6 110.2 L260.5 106.6 L263.4 103 L266.1 99.5 L268.6 96.1 L271 92.8 L273.2 89.5 L275.3 86.4 L277.2 83.3 L278.9 80.3 L280.5 77.5 L281.8 74.8 L283 72.2 L284.1 69.7 L284.9 67.3 L285.5 65.1 L286 63 L286.3 61.1 L286.4 59.3Z" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.5"/>
+  <line x1="64.8" y1="236.6" x2="311.2" y2="39.4" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="232" y1="28" x2="232" y2="248" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 3" stroke-opacity="0.8"/>
+  <line x1="232" y1="83.1" x2="232" y2="122.5" stroke="currentColor" stroke-width="3.2"/>
+  <line x1="232" y1="102.8" x2="372" y2="102.8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6"/>
+  <circle cx="232" cy="102.8" r="4" fill="currentColor"/>
+  <circle cx="188" cy="138" r="3" fill="currentColor" fill-opacity="0.7"/>
+  <path d="M374.6 248 L374.8 246.9 L375 245.8 L375.2 244.7 L375.4 243.6 L375.6 242.5 L375.8 241.4 L376 240.3 L376.2 239.2 L376.5 238.1 L376.8 237 L377 235.9 L377.3 234.8 L377.6 233.7 L377.9 232.6 L378.3 231.5 L378.6 230.4 L379 229.3 L379.3 228.2 L379.7 227.1 L380.1 226 L380.5 224.9 L380.9 223.8 L381.4 222.7 L381.8 221.6 L382.3 220.5 L382.8 219.4 L383.3 218.3 L383.8 217.2 L384.4 216.1 L384.9 215 L385.5 213.9 L386.1 212.8 L386.7 211.7 L387.3 210.6 L388 209.5 L388.6 208.4 L389.3 207.3 L390 206.2 L390.7 205.1 L391.4 204 L392.2 202.9 L392.9 201.8 L393.7 200.7 L394.5 199.6 L395.3 198.5 L396.1 197.4 L396.9 196.3 L397.7 195.2 L398.5 194.1 L399.4 193 L400.3 191.9 L401.1 190.8 L402 189.7 L402.9 188.6 L403.8 187.5 L404.7 186.4 L405.6 185.3 L406.5 184.2 L407.4 183.1 L408.3 182 L409.2 180.9 L410.1 179.8 L411 178.7 L411.9 177.6 L412.8 176.5 L413.7 175.4 L414.6 174.3 L415.5 173.2 L416.3 172.1 L417.2 171 L418 169.9 L418.8 168.8 L419.7 167.7 L420.4 166.6 L421.2 165.5 L422 164.4 L422.7 163.3 L423.4 162.2 L424.1 161.1 L424.8 160 L425.5 158.9 L426.1 157.8 L426.7 156.7 L427.2 155.6 L427.8 154.5 L428.3 153.4 L428.8 152.3 L429.2 151.2 L429.6 150.1 L430 149 L430.3 147.9 L430.7 146.8 L430.9 145.7 L431.2 144.6 L431.4 143.5 L431.5 142.4 L431.7 141.3 L431.8 140.2 L431.8 139.1 L431.8 138 L431.8 136.9 L431.8 135.8 L431.7 134.7 L431.5 133.6 L431.4 132.5 L431.2 131.4 L430.9 130.3 L430.7 129.2 L430.3 128.1 L430 127 L429.6 125.9 L429.2 124.8 L428.8 123.7 L428.3 122.6 L427.8 121.5 L427.2 120.4 L426.7 119.3 L426.1 118.2 L425.5 117.1 L424.8 116 L424.1 114.9 L423.4 113.8 L422.7 112.7 L422 111.6 L421.2 110.5 L420.4 109.4 L419.7 108.3 L418.8 107.2 L418 106.1 L417.2 105 L416.3 103.9 L415.5 102.8 L414.6 101.7 L413.7 100.6 L412.8 99.5 L411.9 98.4 L411 97.3 L410.1 96.2 L409.2 95.1 L408.3 94 L407.4 92.9 L406.5 91.8 L405.6 90.7 L404.7 89.6 L403.8 88.5 L402.9 87.4 L402 86.3 L401.1 85.2 L400.3 84.1 L399.4 83 L398.5 81.9 L397.7 80.8 L396.9 79.7 L396.1 78.6 L395.3 77.5 L394.5 76.4 L393.7 75.3 L392.9 74.2 L392.2 73.1 L391.4 72 L390.7 70.9 L390 69.8 L389.3 68.7 L388.6 67.6 L388 66.5 L387.3 65.4 L386.7 64.3 L386.1 63.2 L385.5 62.1 L384.9 61 L384.4 59.9 L383.8 58.8 L383.3 57.7 L382.8 56.6 L382.3 55.5 L381.8 54.4 L381.4 53.3 L380.9 52.2 L380.5 51.1 L380.1 50 L379.7 48.9 L379.3 47.8 L379 46.7 L378.6 45.6 L378.3 44.5 L377.9 43.4 L377.6 42.3 L377.3 41.2 L377 40.1 L376.8 39 L376.5 37.9 L376.2 36.8 L376 35.7 L375.8 34.6 L375.6 33.5 L375.4 32.4 L375.2 31.3 L375 30.2 L374.8 29.1 L374.6 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="7 4" stroke-opacity="0.7"/>
+  <path d="M372 248 L372 246.9 L372 245.8 L372 244.7 L372 243.6 L372 242.5 L372 241.4 L372 240.3 L372 239.2 L372 238.1 L372 237 L372 235.9 L372 234.8 L372 233.7 L372 232.6 L372 231.5 L372 230.4 L372 229.3 L372 228.2 L372 227.1 L372 226 L372 224.9 L372 223.8 L372 222.7 L372 221.6 L372 220.5 L372 219.4 L372 218.3 L372 217.2 L372 216.1 L372 215 L372 213.9 L372 212.8 L372 211.7 L372 210.6 L372 209.5 L372 208.4 L372 207.3 L372 206.2 L372 205.1 L372 204 L372 202.9 L372 201.8 L372 200.7 L372 199.6 L372 198.5 L372 197.4 L372 196.3 L372 195.2 L372 194.1 L372 193 L372 191.9 L372 190.8 L372 189.7 L372 188.6 L372 187.5 L372 186.4 L372 185.3 L372 184.2 L372 183.1 L372 182 L372.1 180.9 L372.1 179.8 L372.1 178.7 L372.1 177.6 L372.1 176.5 L372.1 175.4 L372.2 174.3 L372.2 173.2 L372.3 172.1 L372.3 171 L372.4 169.9 L372.5 168.8 L372.6 167.7 L372.7 166.6 L372.8 165.5 L373 164.4 L373.2 163.3 L373.4 162.2 L373.7 161.1 L374 160 L374.3 158.9 L374.7 157.8 L375.1 156.7 L375.7 155.6 L376.2 154.5 L376.9 153.4 L377.7 152.3 L378.5 151.2 L379.4 150.1 L380.5 149 L381.7 147.9 L383 146.8 L384.4 145.7 L386 144.6 L387.8 143.5 L389.7 142.4 L391.7 141.3 L394 140.2 L396.4 139.1 L399 138 L401.8 136.9 L404.8 135.8 L408 134.7 L411.3 133.6 L414.8 132.5 L418.5 131.4 L422.4 130.3 L426.4 129.2 L430.5 128.1 L434.8 127 L439.2 125.9 L443.6 124.8 L448.1 123.7 L452.7 122.6 L457.2 121.5 L461.7 120.4 L466.1 119.3 L470.5 118.2 L474.8 117.1 L478.8 116 L482.8 114.9 L486.5 113.8 L489.9 112.7 L493.1 111.6 L495.9 110.5 L498.5 109.4 L500.7 108.3 L502.5 107.2 L503.9 106.1 L505 105 L505.6 103.9 L505.8 102.8 L505.6 101.7 L505 100.6 L503.9 99.5 L502.5 98.4 L500.7 97.3 L498.5 96.2 L495.9 95.1 L493.1 94 L489.9 92.9 L486.5 91.8 L482.8 90.7 L478.8 89.6 L474.8 88.5 L470.5 87.4 L466.1 86.3 L461.7 85.2 L457.2 84.1 L452.7 83 L448.1 81.9 L443.6 80.8 L439.2 79.7 L434.8 78.6 L430.5 77.5 L426.4 76.4 L422.4 75.3 L418.5 74.2 L414.8 73.1 L411.3 72 L408 70.9 L404.8 69.8 L401.8 68.7 L399 67.6 L396.4 66.5 L394 65.4 L391.7 64.3 L389.7 63.2 L387.8 62.1 L386 61 L384.4 59.9 L383 58.8 L381.7 57.7 L380.5 56.6 L379.4 55.5 L378.5 54.4 L377.7 53.3 L376.9 52.2 L376.2 51.1 L375.7 50 L375.1 48.9 L374.7 47.8 L374.3 46.7 L374 45.6 L373.7 44.5 L373.4 43.4 L373.2 42.3 L373 41.2 L372.8 40.1 L372.7 39 L372.6 37.9 L372.5 36.8 L372.4 35.7 L372.3 34.6 L372.3 33.5 L372.2 32.4 L372.2 31.3 L372.1 30.2 L372.1 29.1 L372.1 28" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="2.2"/>
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="56" y="264" text-anchor="middle">4</text>
+    <text x="100" y="264" text-anchor="middle">6</text>
+    <text x="144" y="264" text-anchor="middle">8</text>
+    <text x="188" y="264" text-anchor="middle">10</text>
+    <text x="232" y="264" text-anchor="middle">12</text>
+    <text x="276" y="264" text-anchor="middle">14</text>
+    <text x="320" y="264" text-anchor="middle">16</text>
+    <text x="48" y="230" text-anchor="end">6</text>
+    <text x="48" y="186" text-anchor="end">8</text>
+    <text x="48" y="142" text-anchor="end">10</text>
+    <text x="48" y="98" text-anchor="end">12</text>
+    <text x="48" y="54" text-anchor="end">14</text>
+    <text x="372" y="264" text-anchor="middle">0</text>
+    <text x="432" y="264" text-anchor="middle">0.2</text>
+    <text x="492" y="264" text-anchor="middle">0.4</text>
   </g>
-  <path d="M40.0 149.6L41.9 149.6L43.8 149.6L45.7 149.5L47.6 149.5L49.5 149.4L51.4 149.3L53.3 149.3L55.2 149.2L57.1 149.1L59.0 149.1L60.9 149.0L62.8 148.9L64.7 148.8L66.6 148.6L68.5 148.5L70.4 148.4L72.3 148.2L74.2 148.1L76.1 147.9L78.0 147.7L79.9 147.5L81.8 147.3L83.7 147.1L85.6 146.9L87.5 146.6L89.4 146.4L91.3 146.1L93.2 145.8L95.1 145.5L97.0 145.1L98.9 144.8L100.8 144.4L102.7 144.0L104.6 143.6L106.5 143.1L108.4 142.6L110.3 142.1L112.2 141.6L114.1 141.1L116.0 140.5L117.9 139.9L119.8 139.3L121.7 138.6L123.6 138.0L125.5 137.2L127.4 136.5L129.3 135.8L131.2 135.0L133.1 134.2L135.0 133.3L136.9 132.5L138.8 131.6L140.7 130.6L142.6 129.7L144.5 128.7L146.4 127.7L148.3 126.7L150.2 125.7L152.1 124.6L154.0 123.6L155.9 122.5L157.8 121.4L159.7 120.2L161.6 119.1L163.5 118.0L165.4 116.8L167.3 115.6L169.2 114.5L171.1 113.3L173.0 112.2L174.9 111.0L176.8 109.8L178.7 108.7L180.6 107.6L182.5 106.4L184.4 105.3L186.3 104.2L188.2 103.2L190.1 102.1L192.0 101.1L193.9 100.1L195.8 99.2L197.7 98.3L199.6 97.4L201.5 96.5L203.4 95.7L205.3 95.0L207.2 94.3L209.1 93.6L211.0 93.0L212.9 92.4L214.8 91.9L216.7 91.5L218.6 91.1L220.5 90.8L222.4 90.5L224.3 90.3L226.2 90.1L228.1 90.0L230.0 90.0L231.9 90.0L233.8 90.1L235.7 90.3L237.6 90.5L239.5 90.8L241.4 91.1L243.3 91.5L245.2 91.9L247.1 92.4L249.0 93.0L250.9 93.6L252.8 94.3L254.7 95.0L256.6 95.7L258.5 96.5L260.4 97.4L262.3 98.3L264.2 99.2L266.1 100.1L268.0 101.1L269.9 102.1L271.8 103.2L273.7 104.2L275.6 105.3L277.5 106.4L279.4 107.6L281.3 108.7L283.2 109.8L285.1 111.0L287.0 112.2L288.9 113.3L290.8 114.5L292.7 115.6L294.6 116.8L296.5 118.0L298.4 119.1L300.3 120.2L302.2 121.4L304.1 122.5L306.0 123.6L307.9 124.6L309.8 125.7L311.7 126.7L313.6 127.7L315.5 128.7L317.4 129.7L319.3 130.6L321.2 131.6L323.1 132.5L325.0 133.3L326.9 134.2L328.8 135.0L330.7 135.8L332.6 136.5L334.5 137.2L336.4 138.0L338.3 138.6L340.2 139.3L342.1 139.9L344.0 140.5L345.9 141.1L347.8 141.6L349.7 142.1L351.6 142.6L353.5 143.1L355.4 143.6L357.3 144.0L359.2 144.4L361.1 144.8L363.0 145.1L364.9 145.5L366.8 145.8L368.7 146.1L370.6 146.4L372.5 146.6L374.4 146.9L376.3 147.1L378.2 147.3L380.1 147.5L382.0 147.7L383.9 147.9L385.8 148.1L387.7 148.2L389.6 148.4L391.5 148.5L393.4 148.6L395.3 148.8L397.2 148.9L399.1 149.0L401.0 149.1L402.9 149.1L404.8 149.2L406.7 149.3L408.6 149.3L410.5 149.4L412.4 149.5L414.3 149.5L416.2 149.6L418.1 149.6L420.0 149.6" fill="none" stroke="currentColor" stroke-width="2"/>
-  <path d="M40.0 150.0L41.9 150.0L43.8 150.0L45.7 150.0L47.6 150.0L49.5 150.0L51.4 150.0L53.3 150.0L55.2 150.0L57.1 150.0L59.0 150.0L60.9 150.0L62.8 150.0L64.7 150.0L66.6 150.0L68.5 150.0L70.4 150.0L72.3 150.0L74.2 150.0L76.1 150.0L78.0 150.0L79.9 150.0L81.8 150.0L83.7 150.0L85.6 150.0L87.5 150.0L89.4 150.0L91.3 149.9L93.2 149.9L95.1 149.9L97.0 149.9L98.9 149.9L100.8 149.9L102.7 149.8L104.6 149.8L106.5 149.8L108.4 149.7L110.3 149.6L112.2 149.6L114.1 149.5L116.0 149.4L117.9 149.3L119.8 149.2L121.7 149.0L123.6 148.8L125.5 148.6L127.4 148.4L129.3 148.2L131.2 147.9L133.1 147.5L135.0 147.1L136.9 146.7L138.8 146.2L140.7 145.7L142.6 145.1L144.5 144.4L146.4 143.6L148.3 142.8L150.2 141.9L152.1 140.8L154.0 139.7L155.9 138.5L157.8 137.2L159.7 135.7L161.6 134.2L163.5 132.5L165.4 130.7L167.3 128.7L169.2 126.7L171.1 124.5L173.0 122.2L174.9 119.8L176.8 117.2L178.7 114.5L180.6 111.8L182.5 108.9L184.4 105.9L186.3 102.9L188.2 99.8L190.1 96.6L192.0 93.4L193.9 90.2L195.8 86.9L197.7 83.7L199.6 80.5L201.5 77.4L203.4 74.3L205.3 71.4L207.2 68.5L209.1 65.8L211.0 63.3L212.9 60.9L214.8 58.7L216.7 56.7L218.6 55.0L220.5 53.5L222.4 52.2L224.3 51.3L226.2 50.6L228.1 50.1L230.0 50.0L231.9 50.1L233.8 50.6L235.7 51.3L237.6 52.2L239.5 53.5L241.4 55.0L243.3 56.7L245.2 58.7L247.1 60.9L249.0 63.3L250.9 65.8L252.8 68.5L254.7 71.4L256.6 74.3L258.5 77.4L260.4 80.5L262.3 83.7L264.2 86.9L266.1 90.2L268.0 93.4L269.9 96.6L271.8 99.8L273.7 102.9L275.6 105.9L277.5 108.9L279.4 111.8L281.3 114.5L283.2 117.2L285.1 119.8L287.0 122.2L288.9 124.5L290.8 126.7L292.7 128.7L294.6 130.7L296.5 132.5L298.4 134.2L300.3 135.7L302.2 137.2L304.1 138.5L306.0 139.7L307.9 140.8L309.8 141.9L311.7 142.8L313.6 143.6L315.5 144.4L317.4 145.1L319.3 145.7L321.2 146.2L323.1 146.7L325.0 147.1L326.9 147.5L328.8 147.9L330.7 148.2L332.6 148.4L334.5 148.6L336.4 148.8L338.3 149.0L340.2 149.2L342.1 149.3L344.0 149.4L345.9 149.5L347.8 149.6L349.7 149.6L351.6 149.7L353.5 149.8L355.4 149.8L357.3 149.8L359.2 149.9L361.1 149.9L363.0 149.9L364.9 149.9L366.8 149.9L368.7 149.9L370.6 150.0L372.5 150.0L374.4 150.0L376.3 150.0L378.2 150.0L380.1 150.0L382.0 150.0L383.9 150.0L385.8 150.0L387.7 150.0L389.6 150.0L391.5 150.0L393.4 150.0L395.3 150.0L397.2 150.0L399.1 150.0L401.0 150.0L402.9 150.0L404.8 150.0L406.7 150.0L408.6 150.0L410.5 150.0L412.4 150.0L414.3 150.0L416.2 150.0L418.1 150.0L420.0 150.0" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.6" stroke-dasharray="6 4"/>
-  <path d="M40.0 143.1L41.9 142.9L43.8 142.7L45.7 142.5L47.6 142.2L49.5 142.0L51.4 141.7L53.3 141.5L55.2 141.3L57.1 141.0L59.0 140.7L60.9 140.5L62.8 140.2L64.7 139.9L66.6 139.6L68.5 139.4L70.4 139.1L72.3 138.8L74.2 138.5L76.1 138.2L78.0 137.9L79.9 137.6L81.8 137.3L83.7 136.9L85.6 136.6L87.5 136.3L89.4 136.0L91.3 135.6L93.2 135.3L95.1 135.0L97.0 134.6L98.9 134.3L100.8 133.9L102.7 133.6L104.6 133.3L106.5 132.9L108.4 132.6L110.3 132.2L112.2 131.8L114.1 131.5L116.0 131.1L117.9 130.8L119.8 130.4L121.7 130.1L123.6 129.7L125.5 129.3L127.4 129.0L129.3 128.6L131.2 128.3L133.1 127.9L135.0 127.5L136.9 127.2L138.8 126.8L140.7 126.5L142.6 126.1L144.5 125.8L146.4 125.5L148.3 125.1L150.2 124.8L152.1 124.4L154.0 124.1L155.9 123.8L157.8 123.5L159.7 123.2L161.6 122.8L163.5 122.5L165.4 122.2L167.3 121.9L169.2 121.6L171.1 121.4L173.0 121.1L174.9 120.8L176.8 120.6L178.7 120.3L180.6 120.0L182.5 119.8L184.4 119.6L186.3 119.3L188.2 119.1L190.1 118.9L192.0 118.7L193.9 118.5L195.8 118.3L197.7 118.2L199.6 118.0L201.5 117.8L203.4 117.7L205.3 117.5L207.2 117.4L209.1 117.3L211.0 117.2L212.9 117.1L214.8 117.0L216.7 116.9L218.6 116.9L220.5 116.8L222.4 116.8L224.3 116.7L226.2 116.7L228.1 116.7L230.0 116.7L231.9 116.7L233.8 116.7L235.7 116.7L237.6 116.8L239.5 116.8L241.4 116.9L243.3 116.9L245.2 117.0L247.1 117.1L249.0 117.2L250.9 117.3L252.8 117.4L254.7 117.5L256.6 117.7L258.5 117.8L260.4 118.0L262.3 118.2L264.2 118.3L266.1 118.5L268.0 118.7L269.9 118.9L271.8 119.1L273.7 119.3L275.6 119.6L277.5 119.8L279.4 120.0L281.3 120.3L283.2 120.6L285.1 120.8L287.0 121.1L288.9 121.4L290.8 121.6L292.7 121.9L294.6 122.2L296.5 122.5L298.4 122.8L300.3 123.2L302.2 123.5L304.1 123.8L306.0 124.1L307.9 124.4L309.8 124.8L311.7 125.1L313.6 125.5L315.5 125.8L317.4 126.1L319.3 126.5L321.2 126.8L323.1 127.2L325.0 127.5L326.9 127.9L328.8 128.3L330.7 128.6L332.6 129.0L334.5 129.3L336.4 129.7L338.3 130.1L340.2 130.4L342.1 130.8L344.0 131.1L345.9 131.5L347.8 131.8L349.7 132.2L351.6 132.6L353.5 132.9L355.4 133.3L357.3 133.6L359.2 133.9L361.1 134.3L363.0 134.6L364.9 135.0L366.8 135.3L368.7 135.6L370.6 136.0L372.5 136.3L374.4 136.6L376.3 136.9L378.2 137.3L380.1 137.6L382.0 137.9L383.9 138.2L385.8 138.5L387.7 138.8L389.6 139.1L391.5 139.4L393.4 139.6L395.3 139.9L397.2 140.2L399.1 140.5L401.0 140.7L402.9 141.0L404.8 141.3L406.7 141.5L408.6 141.7L410.5 142.0L412.4 142.2L414.3 142.5L416.2 142.7L418.1 142.9L420.0 143.1" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4" stroke-dasharray="2 3"/>
-  <g font-size="10.5" fill="currentColor" text-anchor="middle">
-    <text x="230.0" y="166">&#956;</text><text x="170.6" y="166">&#956;&#8722;&#963;</text><text x="289.4" y="166">&#956;+&#963;</text>
+  <g font-size="11" fill="currentColor">
+    <text x="320" y="282" text-anchor="end">reading z (cm)</text>
+    <text x="12" y="18">true distance x (cm)</text>
+    <text x="62" y="46">E[x | z] = 10 + 0.8 (z − 10)</text>
+    <text x="62" y="61">slope 0.8 = K</text>
+    <text x="238" y="242">slice at z = 12</text>
+    <text x="181" y="131" text-anchor="end" opacity="0.85">mean (10, 10)</text>
+    <text x="386" y="44">slice: N(11.6, 0.8)</text>
+    <text x="444" y="186" opacity="0.85">prior N(10, 4)</text>
+    <text x="522" y="282" text-anchor="end" opacity="0.85">density along x</text>
   </g>
-  <g stroke="currentColor"><line x1="40" y1="182" x2="66" y2="182" stroke-width="2"/><line x1="146" y1="182" x2="172" y2="182" stroke-width="1.6" opacity="0.6" stroke-dasharray="6 4"/><line x1="286" y1="182" x2="312" y2="182" stroke-width="1.5" opacity="0.4" stroke-dasharray="2 3"/></g>
-  <g font-size="10.5" fill="currentColor">
-    <text x="72" y="186">&#963; = 1</text><text x="178" y="186">&#963; = 0.6 (more certain)</text><text x="318" y="186">&#963; = 1.8 (less certain)</text>
-    <text x="40" y="208" opacity="0.9">Every Gaussian is this one curve rescaled. Narrower means more certain &#8212; and taller, because the area is always 1.</text>
+  <g font-size="10.5" fill="currentColor" opacity="0.75">
+    <text x="150" y="195">1σ</text>
+    <text x="106" y="239">2σ</text>
   </g>
 </svg>
 
-**Decode the density before memorizing it.** μ locates the center. Σ describes spread and how coordinates vary together. The displayed inverse-and-determinant density requires a nonsingular covariance; singular Gaussians live on a lower-dimensional support (the set of values the variable can actually take, e.g. a line inside the plane) and need a different treatment. The inverse covariance inside the exponent measures how surprising a displacement is relative to that spread: the same physical displacement is less surprising along an uncertain direction than along a tightly constrained one. The factor outside the exponential normalizes the total probability; the density at a point is not itself the probability of that exact continuous value.
+P5's prior and reading as one joint Gaussian: the true distance $x$ has mean $10$ and variance $4$, the reading $z = x + v$ adds noise of variance $1$, so $\text{Var}(z) = 5$ and $\text{Cov}(x, z) = 4$, and the ellipses are the contours at Mahalanobis distance $1$ and $2$. Knowing $z = 12$ keeps only the vertical slice at $z = 12$, where the density is $\mathcal N(11.6,\ 0.8)$, narrower than the prior $\mathcal N(10,\ 4)$ (right; the thick bar is $\pm0.894$), and its centre lies on the line $E[x \mid z] = 10 + 0.8(z - 10)$, whose slope $0.8$ is the Kalman gain $K$ of §5.2.
 
-For sensor fusion, the conditioning formula says: start from the expected value of the unobserved quantity, inspect how the observed quantity differs from its expectation, and transfer that discrepancy through their covariance relationship. If the quantities have no covariance and are jointly Gaussian, observing one does not shift the conditional mean of the other.
+Also: the **central limit theorem (CLT)** is a limit statement with three named hypotheses: $X_1, \dots, X_N$ are i.i.d. (§2), with mean $\mu$, and with *finite* variance $\sigma^2$. Then the standardized sample mean $\bar X_N = \frac1N \sum_i X_i$ converges in distribution to a standard normal:
+$$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1) \quad \text{as } N \to \infty$$
+"Converges in distribution" means the CDFs converge, so probabilities about $\bar X_N$ can be read off a Gaussian with mean $\mu$ and standard deviation $\sigma/\sqrt N$. *Example:* the mean of 30 dice has standard deviation $\sqrt{35/12}/\sqrt{30} = 0.312$, and the Gaussian approximation gives $P(|\bar X_{30} - 3.5| < 0.5) = 0.89$ against an exact $0.88$. *Non-example:* it fails without finite variance; the mean of $N$ standard Cauchy samples is again standard Cauchy for every $N$, so averaging never narrows it. The CLT is why noise models default to the Gaussian.
+
+> [!note]- Deeper · 더 깊이
+> **A second reason: maximum entropy.** Among continuous distributions with a given mean and variance, the Gaussian has the largest differential entropy — the continuous-variable analogue of the entropy of [[02-foundations/information-theory|5. Information Theory §1]], computed from a density rather than probabilities, so unlike discrete entropy it can be negative (Murphy PML1 §2.6.4, shown in §3.4.4). In that sense it is the "least presumptuous" choice: it assumes nothing beyond the mean and the variance.
 
 **Check your understanding.** A small covariance reports a narrow model distribution. It does not certify calibration or rule out bias. A sensor can be consistently wrong with very little random scatter. This distinction is essential when a robot claims high-confidence localization from an incorrect calibration.
 
 ### 4. Estimation — where loss functions come from
 
+Every standard loss is a noise model in disguise: minimizing squared error assumes Gaussian noise, minimizing cross-entropy assumes a categorical output, and adding weight decay assumes a Gaussian prior on the weights. This section derives all three from one rule, maximum likelihood, so that when a paper changes its loss you can say what assumption it changed.
+
 - **MLE** (maximum likelihood estimation) is an *estimator*: a rule that turns data into a parameter value. It has two ingredients. The **likelihood** $L(\theta) = p(x_1, \dots, x_N \mid \theta)$ is the probability (or density) of the observed data, read as a function of the parameter $\theta$ with the data held fixed; for i.i.d. data (§2) it is a product. The **MLE** is the parameter that makes the observed data most probable:
   $$\hat\theta_{\text{MLE}} = \arg\max_\theta \prod_{i=1}^N p(x_i \mid \theta) = \arg\max_\theta \sum_{i=1}^N \log p(x_i|\theta)$$
   The log changes nothing about where the maximum is, because $\log$ is increasing, but it turns the product into a sum that does not underflow and differentiates term by term. The likelihood is not a distribution over $\theta$; it need not integrate to 1 in $\theta$.
   Worked example (Gaussian mean): $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + \text{const}$ ⇒
-  maximizing likelihood ≡ minimizing squared error; $\hat\mu = \bar{x}$.
+  maximizing likelihood ≡ minimizing squared error; setting the derivative of the sum, $\sum_i (x_i-\mu)/\sigma^2$, to zero gives $\hat\mu = \bar{x}$.
   **With actual data:** five distance readings $2.1, 1.9, 2.4, 1.6, 2.0$ m of one wall.
   MLE says the best estimate is the plain average, $\hat\mu = 10.0/5 = 2.0$ m. Nothing
   fancier is optimal *given the Gaussian assumption* — and that is the point: "take the mean"
@@ -335,8 +405,7 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   though not all: contrastive and some self-supervised objectives are not simple MLE.
 - **MAP** (maximum a posteriori) estimation is MLE with a **prior** $p(\theta)$ added: it picks the mode of the posterior from Bayes' rule (§1),
   $$\hat\theta_{\text{MAP}} = \arg\max_\theta \Big[\sum_{i=1}^N \log p(x_i \mid \theta) + \log p(\theta)\Big]$$
-  since $p(\theta \mid x) \propto p(x \mid \theta)\,p(\theta)$ and the evidence $p(x)$ does not depend on $\theta$. *Example:* the five wall readings above, with Gaussian noise $\sigma = 0.3$ m and a prior $\mu \sim \mathcal{N}(0, 1^2)$. Setting the derivative of $-\sum_i (x_i - \mu)^2/(2\sigma^2) - \mu^2/2$ to zero gives $\hat\mu_{\text{MAP}} = \sum_i x_i / (N + \sigma^2/1^2) = 10.0/5.09 = 1.96$ m, pulled slightly from the MLE's $2.0$ toward the prior mean 0. With more data the pull fades, because $N$ grows while $\sigma^2$ stays fixed. A **zero-mean** Gaussian prior on the **weights** ⇒ $-\lambda\|\theta\|^2$ in the objective, i.e. $+\lambda\|\theta\|^2$ in the loss (the loss is the negative log-posterior, because we minimize a loss but maximize a posterior, so the sign flips) — a non-zero-mean prior gives $\|\theta-\mu\|^2$, and it is weights rather than biases or noise variances that are penalised —
-  weight decay is a prior in disguise; L1 prior (Laplace) ⇒ sparsity.
+  since $p(\theta \mid x) \propto p(x \mid \theta)\,p(\theta)$ and the evidence $p(x)$ does not depend on $\theta$. *Example:* the five wall readings above, with Gaussian noise $\sigma = 0.3$ m and a prior $\mu \sim \mathcal{N}(0, 1^2)$. Setting the derivative of $-\sum_i (x_i - \mu)^2/(2\sigma^2) - \mu^2/2$ to zero gives $\hat\mu_{\text{MAP}} = \sum_i x_i / (N + \sigma^2/1^2) = 10.0/5.09 = 1.96$ m, pulled slightly from the MLE's $2.0$ toward the prior mean 0. With more data the pull fades, because $N$ grows while $\sigma^2$ stays fixed. A **zero-mean** Gaussian prior on the **weights**, $\theta \sim \mathcal N(0, s^2 I)$, adds $-\|\theta\|^2/(2s^2)$ (plus a constant) to the objective, which becomes $+\lambda\|\theta\|^2$ with $\lambda = 1/(2s^2)$ in the loss, since the loss is the negative log-posterior (we minimize a loss but maximize a posterior, so the sign flips). That penalty is weight decay, a prior in disguise: a prior centred on some $\mu \ne 0$ gives $\lambda\|\theta-\mu\|^2$ instead, and in practice the weights are penalised, not the biases or the noise variances. A Laplace prior gives the L1 penalty $\lambda\|\theta\|_1$ in place of the squared one, and that drives many weights to exactly zero (sparsity).
 - Estimator quality: **bias** (how far the estimate is off *on average*, over many datasets),
   **variance** (how much it jumps around between datasets), and the tradeoff between them — the vocabulary behind
   "our estimator is unbiased but high-variance" in RL papers
@@ -351,6 +420,10 @@ For sensor fusion, the conditioning formula says: start from the expected value 
 ### 5. Random processes and the Kalman filter
 
 #### 5.1 Random processes and the Markov property
+
+*Second pass: read it before [[04-robotics/state-estimation-slam|3. State Estimation]]; the First pass goes straight to §5.2.*
+
+A sensor stream is not one random variable but one per instant, and three questions about that family decide which tools apply: do its statistics drift with time, are neighbouring samples related, and how much of the past does the next sample need? This subsection names the three answers — stationarity, whiteness and the Markov property.
 
 - A random process = an indexed family of RVs; characterized by its mean function and its
   **autocorrelation** — $E[x(t)x(t+\tau)]$, how strongly the signal at one instant predicts
@@ -378,17 +451,8 @@ For sensor fusion, the conditioning formula says: start from the expected value 
 
 #### 5.2 The Kalman filter, derived
 
-- **Kalman filter, assembled from this page**: model
-  $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$ with Gaussian $w_t \sim \mathcal{N}(0,Q)$,
-  $v_t \sim \mathcal{N}(0,R)$, white, independent of each other and of a Gaussian initial state $x_0$.
-  - *Predict* (affine property): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — here $P$ is
-    the **estimate covariance** (uncertainty of $\hat x$), $P = E[(x - \hat x)(x - \hat x)^\top]$, and $Q$ the process-noise covariance. Both lines are §3's closure rules: $Ax$ has covariance $APA^\top$ (property 1), and adding the independent $w_t$ adds $Q$ (property 2).
-  - *Update* (Gaussian conditioning): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
-    $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$.
-  - **Where the update comes from.** Before the reading, $x \sim \mathcal N(\hat x^-, P^-)$ and $y = Cx + v$ with $v$ independent of $x$. The pair $(x, y)$ is an affine map of $(x, v)$, so it is jointly Gaussian (§3, property 1), with mean $(\hat x^-,\ C\hat x^-)$ and
-  $$\text{Cov}(x, y) = \text{Cov}(x,\ Cx + v) = P^-C^\top, \qquad \text{Cov}(y) = CP^-C^\top + R$$
-  because $v$ is uncorrelated with $x$. Put $x_1 = x$ and $x_2 = y$ into §3's two conditioning formulas. The weight $\Sigma_{12}\Sigma_{22}^{-1} = P^-C^\top(CP^-C^\top+R)^{-1}$ is $K$, the conditional mean is $\hat x^- + K(y - C\hat x^-)$, and the conditional covariance is $P^- - K\,CP^- = (I - KC)P^-$: the three update lines. The difference $y - C\hat x^-$ is the **innovation** (what the reading says beyond the prediction) and $S = CP^-C^\top + R$ is its covariance; §6.3 uses both to gate readings.
-  - **Why it is optimal.** Each update computes the conditional mean $E[x_t \mid y_{1:t}]$ exactly (by induction: the predict step keeps the belief Gaussian and exact), and §2 showed the conditional expectation is the best mean-square predictor. So no estimator, linear or not, has smaller mean-square error — under exactly those assumptions (linear model, Gaussian white noise, the true $Q$ and $R$).
+A robot's belief about where the panel is must survive two events that alternate for as long as it runs: a reading, which should sharpen the belief, and a motion, which should blur it. The Kalman filter is the rule for both. On one scalar it is three short lines, derived twice below; the vector filter at the end of this subsection is the same three lines with matrices.
+
 - **The scalar gain, derived from Bayes' rule.** One scalar state with $C = 1$: the prior is $x \sim \mathcal N(\hat x^-, P^-)$ and the reading is $z = x + v$ with $v \sim \mathcal N(0, R)$ independent of $x$. Bayes' rule (§1) multiplies likelihood and prior, $p(x \mid z) \propto p(z \mid x)\,p(x)$, so the two Gaussian exponents add:
   $$\log p(x \mid z) = -\frac{(x - \hat x^-)^2}{2P^-} - \frac{(z - x)^2}{2R} + \text{const}$$
   That is a quadratic in $x$ with a negative $x^2$ coefficient, so the posterior is again a Gaussian. Its mean is where the derivative vanishes, $(x - \hat x^-)/P^- = (z - x)/R$, and its variance $P$ is read off the $x^2$ coefficient, $-\tfrac12\big(\tfrac1{P^-} + \tfrac1R\big) = -\tfrac1{2P}$:
@@ -404,7 +468,7 @@ For sensor fusion, the conditioning formula says: start from the expected value 
   $K = 0.04$ and $\hat x = 10.08$, i.e. the filter almost ignores it. The gain is just
   *relative trust*, and that is all any Kalman-gain sentence in a paper is saying.
 
-**Worked: P5 sequential.** The numbers above *are* the catalog plant ([[02-foundations/lab-plants|0.6]]). A second independent range $z_2=11$, $R=1$: $K=0.8/(0.8+1)=0.444$, $\hat x=11.333$, $P=0.444$. Predict $x\leftarrow x+1$ with $Q=1$: $x=12.333$, $P=1.444$. Then $z_3=13$: $K=0.591$, $\hat x=12.727$, $P=0.591$. A *wrong* wall at $20$ after the first update would yank to $\approx 15.3$ with the same small $P$ — confident and wrong, unless a gate stops it (§6.3 rejects it with NIS $= 39.2$). The problem set is this sequence as a drawing and a filled `correct()` template.
+**Worked: P5 sequential.** The numbers above *are* the catalog plant ([[02-foundations/lab-plants|0.6]]). A second independent range $z_2=11$, $R=1$: $K=0.8/(0.8+1)=0.444$, $\hat x=11.333$, $P=0.444$. Predict $x\leftarrow x+1$ with $Q=1$: the scalar predict step is $\hat x^- = \hat x + u$, $P^- = P + Q$, because adding the known motion $u$ shifts the mean and adding independent motion noise adds its variance (§3, property 2), so $\hat x^-=12.333$, $P^-=1.444$. Then $z_3=13$: $K=1.444/(1.444+1)=0.591$, $\hat x=12.727$, $P=0.591$. A *wrong* wall at $20$ after the first update would yank to $\approx 15.3$ with the same small $P$ — confident and wrong, unless a gate stops it (§6.3 rejects it with NIS $= 39.2$). The problem set varies it: item 1 draws a noisier sensor, item 2 moves before two readings and fuses them in either order, and item 3 runs the loop until its gain stops changing.
 
 ```mermaid
 flowchart LR
@@ -415,9 +479,25 @@ flowchart LR
     N -. "next step" .-> P
 ```
 
+**The vector filter: the same three lines with matrices.** *Second pass, before [[04-robotics/state-estimation-slam|3. State Estimation]].* A real state has several components (position and velocity, a pose), so each number above becomes a matrix: the variance $P$ becomes a covariance matrix, the motion $x \leftarrow x + 1$ becomes $x \leftarrow Ax$, and the reading $z = x + v$ becomes $y = Cx + v$, where $C$ picks out what the sensor sees. With $A = C = 1$ every line below collapses to its scalar version above.
+
+- **Kalman filter, assembled from this page**: model
+  $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$ with Gaussian $w_t \sim \mathcal{N}(0,Q)$,
+  $v_t \sim \mathcal{N}(0,R)$, white, independent of each other and of a Gaussian initial state $x_0$.
+  - *Predict* (affine property): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — here $P$ is
+    the **estimate covariance** (uncertainty of $\hat x$), $P = E[(x - \hat x)(x - \hat x)^\top]$, and $Q$ the process-noise covariance. Both lines are §3's closure rules: $Ax$ has covariance $APA^\top$ (property 1), and adding the independent $w_t$ adds $Q$ (property 2).
+  - *Update* (Gaussian conditioning): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
+    $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$.
+  - **Where the update comes from.** Before the reading, $x \sim \mathcal N(\hat x^-, P^-)$ and $y = Cx + v$ with $v$ independent of $x$. The pair $(x, y)$ is an affine map of $(x, v)$, so it is jointly Gaussian (§3, property 1), with mean $(\hat x^-,\ C\hat x^-)$ and
+  $$\text{Cov}(x, y) = \text{Cov}(x,\ Cx + v) = P^-C^\top, \qquad \text{Cov}(y) = CP^-C^\top + R$$
+  because $v$ is uncorrelated with $x$. Put $x_1 = x$ and $x_2 = y$ into §3's two conditioning formulas. The weight $\Sigma_{12}\Sigma_{22}^{-1} = P^-C^\top(CP^-C^\top+R)^{-1}$ is $K$, the conditional mean is $\hat x^- + K(y - C\hat x^-)$, and the conditional covariance is $P^- - K\,CP^- = (I - KC)P^-$: the three update lines. The difference $y - C\hat x^-$ is the **innovation** (what the reading says beyond the prediction) and $S = CP^-C^\top + R$ is its covariance; §6.3 uses both to gate readings.
+  - **Why it is optimal.** Each update computes the conditional mean $E[x_t \mid y_{1:t}]$ exactly (by induction: the predict step keeps the belief Gaussian and exact), and §2 showed the conditional expectation is the best mean-square predictor. So no estimator, linear or not, has smaller mean-square error — under exactly those assumptions (linear model, Gaussian white noise, the true $Q$ and $R$).
+
 Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalman filter) — linearize or sample; SLAM (simultaneous localization and mapping) scales this to maps ([[04-robotics/state-estimation-slam|State Estimation & SLAM]]).
 
 ### 6. Detection, hypothesis tests, and whitening
+
+*Second pass. Open each part when you need it: §6.1 when a robot must decide from one noisy reading, §6.2 when you compare two methods' results, §6.3 when a tracker gates a measurement. The First pass skips this section.*
 
 *In one sentence:* a robot often has to answer yes or no from noisy numbers — is it touching something, is one method really better, does this reading belong to the object it tracks — and every such answer trades false alarms against misses through the line it draws.
 
@@ -461,23 +541,25 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
   $$\text{FWER} = P\Big(\bigcup_{i=1}^m \{\text{test } i \text{ falsely rejects}\}\Big) \le \sum_{i=1}^m \frac{\alpha}{m} = \alpha$$
   holds since the probability of a union never exceeds the sum of the probabilities (§1), whether or not the tests are independent. For the twenty independent tests at $0.0025$ each, the FWER is $1 - 0.9975^{20} = 0.049$, just under $0.05$.
 
-**Choosing the test.** Two questions pick the row and the column: what number each trial produces, and whether both methods ran on the same trials (same objects, seeds, scenes or start states). In robot and ML experiments pairing is the usual case, and an unpaired test on paired data throws away the cancellation described above.
-
-| Outcome per trial | Paired (same trials) | Unpaired (separate trials) | Check before trusting it |
-|---|---|---|---|
-| Success rate of one method | — | Binomial CI: Wilson or exact (Clopper–Pearson) | Trials independent; no silent retries or dropped failures |
-| Success or failure, two methods | McNemar exact test on the discordant pairs | Fisher exact test on the 2×2 table | Only pairs where the methods disagree carry evidence |
-| Continuous metric (error, time) | Paired t-test; Wilcoxon signed-rank; sign-flip permutation or bootstrap of the $d_i$ | Welch t-test; Mann–Whitney U; label-permutation test | t: differences roughly normal, no heavy outliers. Wilcoxon: differences symmetric, robust to outliers. Bootstrap: unreliable with very few pairs |
-| Many seeds or tasks | Per-seed scores, CI across seeds; across tasks, stratified bootstrap | Same, per method | The seed is the unit; episodes within one seed are not independent samples |
-
-- **The table's rank and unpaired tests, in one clause each.** The **Wilcoxon signed-rank** test ranks the $|d_i|$ and asks whether the positive differences hold far more or far less than half the total rank, so it uses sizes but a single huge outlier counts only as the top rank. **Welch's t-test** compares two independent group means without assuming the two groups have equal variance. **Mann–Whitney U** pools both groups, ranks everything, and asks whether one group's ranks run systematically higher. The table's Wilson interval, Fisher exact test and Welch comparison are worked by hand on one unpaired ten-trial pilot, with the sentence each number licenses, in the worked case of [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing]].
+> [!note]- Deeper · 더 깊이
+> **Choosing the test.** Two questions pick the row and the column: what number each trial produces, and whether both methods ran on the same trials (same objects, seeds, scenes or start states). In robot and ML experiments pairing is the usual case, and an unpaired test on paired data throws away the cancellation described above.
+>
+> | Outcome per trial | Paired (same trials) | Unpaired (separate trials) | Check before trusting it |
+> |---|---|---|---|
+> | Success rate of one method | — | Binomial CI: Wilson or exact (Clopper–Pearson) | Trials independent; no silent retries or dropped failures |
+> | Success or failure, two methods | McNemar exact test on the discordant pairs | Fisher exact test on the 2×2 table | Only pairs where the methods disagree carry evidence |
+> | Continuous metric (error, time) | Paired t-test; Wilcoxon signed-rank; sign-flip permutation or bootstrap of the $d_i$ | Welch t-test; Mann–Whitney U; label-permutation test | t: differences roughly normal, no heavy outliers. Wilcoxon: differences symmetric, robust to outliers. Bootstrap: unreliable with very few pairs |
+> | Many seeds or tasks | Per-seed scores, CI across seeds; across tasks, stratified bootstrap | Same, per method | The seed is the unit; episodes within one seed are not independent samples |
+>
+> **The table's rank and unpaired tests, in one clause each.** The **Wilcoxon signed-rank** test ranks the $|d_i|$ and asks whether the positive differences hold far more or far less than half the total rank, so it uses sizes but a single huge outlier counts only as the top rank. **Welch's t-test** compares two independent group means without assuming the two groups have equal variance. **Mann–Whitney U** pools both groups, ranks everything, and asks whether one group's ranks run systematically higher. The table's Wilson interval, Fisher exact test and Welch comparison are worked by hand on one unpaired ten-trial pilot, with the sentence each number licenses, in the worked case of [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing]].
+>
+> **Many seeds or tasks.** Agarwal et al. (NeurIPS 2021) showed that point estimates from the few runs per task common in deep RL can mislead. Their fix is the **stratified bootstrap**: resample runs with replacement separately within each task, recompute the aggregate score (they favour the interquartile mean over the mean or median), repeat, and read off percentiles.
 
 - **McNemar is the sign test above, applied to discordant pairs.** A pair where both succeed or both fail says nothing about which method is better. So under $H_0$ each of the $m$ pairs where they disagree is a fair coin flip.
-- **Many seeds or tasks.** Agarwal et al. (NeurIPS 2021) showed that point estimates from the few runs per task common in deep RL can mislead. Their fix is the **stratified bootstrap**: resample runs with replacement separately within each task, recompute the aggregate score (they favour the interquartile mean over the mean or median), repeat, and read off percentiles.
 - **A confidence interval (CI)** is a *procedure*, not a single interval: a rule that maps a dataset to an interval $[L, U]$ such that, over repeated datasets drawn from the same process, the interval covers the true parameter $\theta$ with the stated probability (the **coverage** $1 - \alpha$):
   $$P\big(L(\text{data}) \le \theta \le U(\text{data})\big) = 1 - \alpha$$
   Here $L$ and $U$ are random because the data are, and $\theta$ is fixed. *Example:* for $n$ roughly Gaussian readings, $\bar x \pm t_{n-1,\,0.975}\, s/\sqrt n$ is a 95% CI. The five wall readings of §4 have $\bar x = 2.0$, $s = 0.292$ and $t_{4,\,0.975} = 2.776$, so the interval is $2.0 \pm 0.362 = [1.64, 2.36]$ m. *Non-example:* "there is a 95% probability that $\theta$ lies in $[1.64, 2.36]$" is not what the frequentist CI says; once computed, that interval either covers $\theta$ or not. The 95% is a property of the procedure, and a probability statement about $\theta$ itself needs a prior, as in §1.
-- **Effect size comes first.** Report the difference with its CI, then the p-value. The CI shows both whether zero is plausible and how large the gain could be; $p$ alone shows neither size (misreading 2 above). How many trials to run and which binomial interval to use are in [[06-research-practice/experimental-design-reproducibility|Experiment Design §4]]. Power and effect size are defined in full, and RS1's trials per arm worked from them, in the worked case of [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]].
+- **Effect size comes first.** Report the difference with its CI, then the p-value. The CI shows both whether zero is plausible and how large the gain could be; $p$ alone shows neither size (misreading 2 above). How many trials to run and which binomial interval to use are in [[06-research-practice/experimental-design-reproducibility|Experiment Design §4]]. Power and effect size are defined in full, and the trials per arm of RS1 — the research-practice track's frozen study of impedance against position control, with ten pilot trials per arm ([[06-research-practice/index|6. Research Practice]]) — worked from them, in the worked case of [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]].
 
 > [!example] Worked example · 계산 예제
 > **Two grasp policies on the same 20 objects.** A succeeds on 11 and B on 16, so 55% against 80%, which looks decisive.
@@ -510,7 +592,7 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 
 - **Gating with the NIS.** A tracker must decide whether a new reading belongs to the object it follows. Under the filter's own model the innovation of a true reading, $\nu = y - C\hat x^-$, is $\mathcal N(0, S)$ with $S = CP^-C^\top + R$ (§5.2), so its **normalized innovation squared**
   $$\text{NIS} = \nu^\top S^{-1} \nu$$
-  is the squared Mahalanobis distance of $\nu$ and is $\chi^2_m$, where $m$ is the measurement dimension. The gate accepts the reading only if the NIS is below a $\chi^2_m$ quantile. A 95% gate therefore throws away 5% of true readings by design, and in exchange rejects anything far outside the predicted spread ([[04-robotics/state-estimation-slam|State Estimation §6]] runs it on a tracker).
+  is the squared Mahalanobis distance of $\nu$ and is $\chi^2_m$, where $m$ is the measurement dimension. The gate accepts the reading only if the NIS is below a $\chi^2_m$ quantile. A 95% gate therefore throws away 5% of true readings by design, and in exchange rejects anything far outside the predicted spread ([[04-robotics/state-estimation-slam|State Estimation §8.5]] runs it on a multi-object tracker).
   - *Worked on P5* ($m = 1$, 95% gate $3.841$). The first reading: $\nu = 12 - 10 = 2$, $S = 4 + 1 = 5$, NIS $= 4/5 = 0.8$, accepted. The second, after the first update: $\nu = 11 - 11.6 = -0.6$, $S = 0.8 + 1 = 1.8$, NIS $= 0.36/1.8 = 0.2$, accepted. The wrong wall at $20$ in its place: $\nu = 8.4$, NIS $= 70.56/1.8 = 39.2$, rejected ten times over. The "confident and wrong" jump to $15.3$ in the picture happens only in a filter that fuses without gating.
   - For $k = 2$ the $\chi^2_2$ CDF is $1 - e^{-d^2/2}$, so the 99% gate is $d^2 < -2\ln 0.01 = 9.21$. In a million simulated Gaussian residuals, 98.99% fell inside.
 - **Consistency with the NEES.** In simulation, where the true state $x$ is known, the **normalized estimation error squared**
@@ -526,6 +608,8 @@ Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalma
 > The positive covariance says the two coordinates tend to err together. A residual that goes against that pattern is far more surprising. This is the "same displacement, different surprise" point of §3, in numbers.
 
 ### 7. Markov chains and hidden Markov models
+
+*Second pass: read it when you meet HMMs, MCMC or diffusion's forward process. The First pass skips this section.*
 
 *In one sentence:* many processes a robot meets forget their past once you know their present — a machine that is working, idle or broken, a wear state heard only through vibration — and that one assumption lets you predict where they settle, recover what you cannot see, and draw samples from distributions you cannot write down.
 
@@ -642,7 +726,7 @@ s = s[2_000:]                                # drop burn-in from the bad start x
 print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)")
 ```
 
-- **Output:** `accept 0.41  mean 3.01  var 2.99  (exact: 3, 3)`.
+- **Output:** `accept 0.41  mean 3.01  var 2.99  (exact: 3, 3)`. The generator is `np.random.default_rng(0)`, passed in rather than set globally, so the run replays exactly; why a generator object beats a global seed is [[02-foundations/tools/python-research-code|12.3 Python §7]].
 - **Acceptance rate alone misleads.** Same 200,000 steps and the same start, with ESS estimated from the autocorrelations:
   - width 0.1 accepts 98% of moves but needs about 6,000 steps just to walk down from 20, so the 2,000-step burn-in is too short. ESS is about 100 and the sample mean comes out 3.19.
   - width 4 accepts 41% and gives an ESS of about 32,000. Widths 3 to 6 all stayed between 28,000 and 33,000, so the optimum is broad.
@@ -662,12 +746,12 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 3. Conditional on a fixed $x_0$, show why $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\epsilon$
    ([[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]]) has the claimed distribution.
 4. In the Kalman gain, what happens as sensor noise $R \to 0$? As $R \to \infty$? Interpret.
-5. A paper reports $p = 0.03$ for "our method beats the baseline" over 5 seeds and concludes "there is a 97% chance our method is better." What is wrong, and what would you ask for?
-6. A tracker measures 3-D positions and reuses the 2-D gate $d^2 < 9.21$. What fraction of true measurements does it now reject, and what should the gate be?
-7. In the machine chain of §7, repairs get faster: the broken row becomes $(0.9,\ 0,\ 0.1)$. Find the new stationary distribution.
-8. Why can the Viterbi path disagree with the most likely state from the forward filter at the same hour? Which would you use for an online wear alarm, and which for labeling a logged run?
-9. In the grasp example of §6, the lab tests 20 more objects and the counts simply double: 12 pairs where only B succeeds and 2 where only A does. Compute the McNemar exact p. Did the effect size change?
-10. A labmate's Metropolis sampler accepts 97% of its proposals, and they call it well tuned. What is the likely problem, and what number would you ask for instead?
+5. *(Second pass, §6.2.)* A paper reports $p = 0.03$ for "our method beats the baseline" over 5 seeds and concludes "there is a 97% chance our method is better." What is wrong, and what would you ask for?
+6. *(Second pass, §6.3.)* A tracker measures 3-D positions and reuses the 2-D gate $d^2 < 9.21$. What fraction of true measurements does it now reject, and what should the gate be?
+7. *(Second pass, §7.1.)* In the machine chain of §7, repairs get faster: the broken row becomes $(0.9,\ 0,\ 0.1)$. Find the new stationary distribution.
+8. *(Second pass, §7.2.)* Why can the Viterbi path disagree with the most likely state from the forward filter at the same hour? Which would you use for an online wear alarm, and which for labeling a logged run?
+9. *(Second pass, §6.2.)* In the grasp example of §6, the lab tests 20 more objects and the counts simply double: 12 pairs where only B succeeds and 2 where only A does. Compute the McNemar exact p. Did the effect size change?
+10. *(Second pass, §7.3.)* A labmate's Metropolis sampler accepts 97% of its proposals, and they call it well tuned. What is the likely problem, and what number would you ask for instead?
 
 > [!tip]- Answers
 > 1. $P(c|+) = \frac{0.95 \times 0.2}{0.95\times 0.2 + 0.05\times 0.8} = \frac{0.19}{0.23} \approx 0.83$. The same detector's alarm jumps from 16% to 83% trustworthy purely because the base rate rose — a detector's value is set by *where you deploy it*, not by its sensitivity alone.
@@ -683,25 +767,24 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 
 ### Problem set · 과제
 
-Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]]. The motion step is the scalar Kalman of §5, not a new filter.
+Tier A. Plant **P5** from [[02-foundations/lab-plants|0.6]]. Every step is §5.2's scalar filter — predict with $\hat x^- = \hat x + u$, $P^- = P + Q$, correct with $K = P^-/(P^- + R)$ — not a new filter.
 
 1. **Draw.** The upper panel of the picture above for a range sensor twice as noisy in standard deviation, $R=4$, so that it is exactly as uncertain as the prior: prior $p(x)=\mathcal{N}(10,4)$, likelihood $p(z\mid x)=\mathcal{N}(x,4)$ with $z=12$, and the posterior. Mark the Kalman gain as the weight on the innovation. Where does the posterior sit now, and is it still narrower than both inputs?
-2. **Derive.** Catalog update: $K$, $\hat x^+$, $P^+$. Then a second independent range $z_2=11$, $R=1$. Then a motion $x\leftarrow x+1$ with process variance $Q=1$, then $z_3=13$, $R=1$. Write predict then correct.
-3. **Do.** Fill `?`. Print the three gains (after $z$, after $z_2$, after motion+$z_3$) and the final posterior.
+2. **Derive.** The robot backs $2$ cm away from the wall before anything is read: predict from the catalog prior $\mathcal N(10,\,4)$ with $u=+2$ and $Q=1$. Then two readings arrive together: the catalog sensor reads $z_a=13$ ($R_a=1$) and item 1's noisier sensor reads $z_b=12$ ($R_b=4$). Fuse them one at a time, first $z_a$ and then $z_b$, and again in the other order, giving $K$, $\hat x$ and $P$ after each reading. Show that both orders end at the same $\hat x$ and $P$, and check $P$ against §5.2's precisions, extended to two readings: $1/P=1/P^-+1/R_a+1/R_b$.
+3. **Do.** Fill the `?` and run the filter for six steps. After the catalog update ($11.6$, $0.8$) the robot backs away $1$ cm per step ($u=1$, $Q=1$) and the sensor ($R=1$) reads $13, 14, \dots, 18$. Print $K$, $\hat x$ and $P$ at each step. Where do $K$ and $P$ settle, and would other readings have changed them? Then change one knob: rerun with $Q=0.1$ and with $Q=10$ and compare the last gain.
 
 ```python
-# P5 sequential Kalman. Fill ?.
-x, P = 10.0, 4.0
+# P5 as a running filter. Fill ?.
+def predict(x, P, u=1.0, Q=1.0):
+    return ?, ?                  # the mean moves by u; the variance grows by Q
 def correct(x, P, z, R=1.0):
-    K = ?                      # P / (P + R)
-    x = ?                      # x + K*(z - x)
-    P = ?                      # (1 - K)*P
-    return x, P, K
-x, P, K1 = correct(x, P, 12.0)
-x, P, K2 = correct(x, P, 11.0)
-x, P = x + 1.0, P + 1.0        # predict
-x, P, K3 = correct(x, P, 13.0)
-print(K1, K2, K3, x, P)
+    K = ?                        # the prior's share of the total variance
+    return ?, ?, K               # x + K*(z - x), (1 - K)*P
+x, P, K = correct(10.0, 4.0, 12.0)            # the catalog update: 11.6, 0.8
+for z in (13.0, 14.0, 15.0, 16.0, 17.0, 18.0):
+    x, P = predict(x, P)                      # the knob: predict(x, P, Q=0.1), then Q=10.0
+    x, P, K = correct(x, P, z)
+    print(f"z={z:4.1f}  K={K:.3f}  x={x:.3f}  P={P:.3f}")
 ```
 
 > [!note]- How to draw it · 그리는 법
@@ -710,12 +793,12 @@ print(K1, K2, K3, x, P)
 > - Peak heights to scale, $0.199$ and $0.199$: the two curves are the same shape, one shifted by $2$. In the picture above the likelihood was twice as tall, and that height ratio is what pulled the answer toward the sensor; here nothing pulls either way.
 > - The posterior $\mathcal{N}(11,\,2)$, standard deviation $\sqrt2=1.414$, peak $0.282$, with two checks written on it: it lies exactly halfway between the two centres, and it is still narrower than *either* input ($1.414$ against $2$ and $2$). Two equally poor opinions still beat one.
 > - The gain as a labelled segment: the innovation $z-\hat x^-=2$ from $10$ to $12$, the sub-segment $K\cdot(z-\hat x^-)=0.5\times2=1$ from $10$ to $11$, and $K=P^-/(P^-+R)=4/8=0.5$ beside it. In the margin, the picture above's $R=1$: $K=0.8$ and $11.6$.
-> - Items 2 and 3 use the catalog sensor, $R=1$: keep their time axis — $P=4$, $0.8$, $0.444$, $1.444$, $0.591$, shrinking at every correction and growing at the prediction — on a separate strip, not on this panel.
+> - Items 2 and 3 are sequences in time, not this panel. Item 2's prediction and two readings ($P=4\to5$, then $0.833$ and $0.690$, or $2.222$ and $0.690$) and item 3's loop ($P$ settling at $0.618$) belong on a separate strip like the picture's lower panel, with the bar $\hat x\pm\sqrt P$ at every step.
 
 > [!tip]- Solutions
 > 1. Prior and likelihood are the same curve, centred at $10$ and $12$, each of width $2$ and peak $0.199$. $K=4/(4+4)=0.5$, so the estimate walks half the innovation, $0.5\times2=1$, to $\hat x^+=11$, exactly halfway, and $P^+=(1-0.5)\times4=2$: standard deviation $1.414$, peak $0.282$, narrower than both inputs. With the picture's $R=1$ the gain was $0.8$ and the estimate $11.6$: the gain is where the relative trust in the two sources is written down.
-> 2. $K=4/(4+1)=0.8$, $\hat x=10+0.8\cdot2=11.6$, $P=0.8$. Second: $K=0.8/(0.8+1)=0.444$, $\hat x=11.6+0.444\cdot(11-11.6)=11.333$, $P=0.444$. Predict: $x=12.333$, $P=1.444$. Third: $K=1.444/(1.444+1)=0.591$, $\hat x=12.333+0.591\cdot(13-12.333)=12.727$, $P=0.591$.
-> 3. Blanks: `K = P/(P+R)`, `x = x + K*(z-x)`, `P = (1-K)*P`. Prints $0.8$, $0.444$, then after predict+correct the third gain $\approx 0.591$, $x\approx 12.73$, $P\approx 0.591$. Fusing a *wrong* wall at 20 cm with $R=1$ after the first update would yank the estimate to $11.6+0.444\cdot(20-11.6)\approx 15.3$ with the same small $P$ — confident and wrong. That is the association failure [[04-robotics/state-estimation-slam|3]] exists to name.
+> 2. Predict: $\hat x^-=10+2=12$, $P^-=4+1=5$. **$z_a$ first:** $K=5/6=0.833$, $\hat x=12+0.833\cdot(13-12)=12.833$, $P=(1-0.833)\cdot5=0.833$; then $z_b$: $K=0.833/(0.833+4)=0.172$, $\hat x=12.833+0.172\cdot(12-12.833)=12.690$, $P=(1-0.172)\cdot0.833=0.690$. **$z_b$ first:** $K=5/9=0.556$, and the innovation is $12-12=0$, so $\hat x$ stays at $12$ while $P$ still falls to $(1-0.556)\cdot5=2.222$ — a reading that agrees with the prediction moves nothing and still counts as evidence; then $z_a$: $K=2.222/3.222=0.690$, $\hat x=12+0.690\cdot1=12.690$, $P=(1-0.690)\cdot2.222=0.690$. Both orders end at $12.690$ and $0.690$. With precisions, $1/P=1/5+1/1+1/4=1.45$, so $P=0.690$, and the precision-weighted mean $P\,(12/5+13/1+12/4)=0.690\times18.4=12.690$ agrees. The order cannot matter: each correction adds its reading's precision, and its precision-weighted value, to what is already there, and addition does not care about order.
+> 3. Blanks: `return x + u, P + Q`, `K = P / (P + R)`, `return x + K*(z - x), (1 - K)*P, K`. The six lines print $K=P=0.643$, $0.622$, $0.619$, $0.618$, $0.618$, $0.618$ and $\hat x=12.857$, $13.946$, $14.979$, $15.992$, $16.997$, $17.999$. The gain and the variance settle at $0.618$ by the fourth step, where the predict step's growth $+Q$ and the correct step's shrink by $1-K$ balance: the settled prior variance $M=P+Q$ solves $M=M/(M+1)+1$, that is $M^2-M-1=0$, so $M=1.618$ and $K=M/(M+1)=0.618$ (and $P=K$ here only because $R=1$, since $P=(1-K)M=KR$). Other readings would change every $\hat x$ and no $K$ or $P$: neither line that computes them contains $z$, so the whole gain sequence can be computed before the robot moves. The estimate closes on the readings, missing them by $0.4$, then $0.143$, $0.054$, … — each miss the last one times $1-K$. With $Q=0.1$ the last gain is $0.277$ and still falling toward $0.270$: the motion model is trusted, so each reading counts for less and the filter settles slowly. With $Q=10$ it is $0.916$ from the first step: a motion model that poor makes every reading nearly decisive. So the gain is set by $Q$ against $R$, not tuned by hand.
 
 ### Robotics bridge
 
@@ -728,14 +811,17 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 
 확률은 추정, 필터링, 그리고 딥러닝의 많은 표준 목적함수 아래에 깔린 토대다. 교재 수준의 서술:
 유도, 가우시안 도구 상자, MLE 계산 예제, 그리고 이 페이지에서 증명한 부품들로 조립하는
-칼만 필터까지.
+칼만 필터까지. 이 페이지가 계속 쓰는 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치(plant: 제어하거나 측정하는 대상 시스템) P5, 곧 벽을 바라보는 거리 센서와 그 짝인 균열 감지기다.
+
+> [!note] 왜 배우는가 · Why this matters
+> 확률은 [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택에서 인식, 접촉, 작업 완료라는 세 층 아래에 깔린 수학의 바닥이다. "*저 패널을 프레임에 설치해*"로 말하면, 잡음 섞인 측정으로 패널과 프레임이 어디 있는지 알아내고(P5의 융합된 벽 거리, §5.2), 힘 센서 값 하나로 접촉이 일어났는지 판정하고(§6.1), 몇 번의 시행으로 작업이 끝났음을 검증하는(§6.2) 일이 모두 이 페이지에서 나온다([[physical-ai-map|피지컬 AI 지도]]에 그 자리가 표시되어 있다). 이것 없이는 숫자에 속는다. 균열의 95%에서 울리는 감지기는 95% 믿을 만해 보이지만 패널의 1%만 균열인 현장에서는 경보의 16%만 진짜이고(§1), 열 번 중 아홉 번 안착했다는 결과는 증명처럼 들려도 95% Wilson 구간이 여전히 60%에서 98%까지 걸쳐 있다(§6.2). 이 페이지는 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]]) 내내 돌아온다. [[04-robotics/state-estimation-slam|3. 상태 추정과 SLAM §6]]이 §5.2의 필터를 P5 위에서 돌리고 그 페이지 첫머리의 예측·보정·게이트 한 순환은 다음 측정을 §6.3의 χ² 게이트로 거르며, [[04-robotics/capstone-panel-contact|26. 캡스톤]]이 그것으로 패널 거리를 융합한다(블록 2). [[06-research-practice/experimental-design-reproducibility|연구 실무 2 §4]]는 §6.2로 시행을 설계하고(블록 5), [[05-construction-robotics/site-engineering|2.5 현장 로보틱스 §2]]는 §2가 분산을 더하는 방식으로 오차 예산을 합치며(블록 6), [[05-construction-robotics/imitating-contact|10. 접촉 모방 §2]]는 §4의 가우시안 최대우도에 §3의 조건화 수축을 얹은 것이다(블록 7). 이 페이지를 마치면 잡음 섞인 두 측정을 융합해 그 결과를 얼마나 믿을지 말하고, MSE와 교차 엔트로피를 우도에서 유도하고, 성공률에 정직한 구간을 붙일 수 있다.
 
 > [!note] 처음이라면 · First pass
-> 그림, §1, §2, 그다음 §3을 먼저 읽어라 — 실제로 쓰이는 것은 가우시안 도구 상자다. §4는 당신의 손실함수가 어디서 왔는지 알려주므로 우회할 값어치가 있다. §5에서는 §5.2의 스칼라 이득 유도를 지금 읽어라. 그림과 과제가 그것으로 돌아간다. 벡터 필터와 §5.1의 랜덤 프로세스는 상태 추정에 닿을 때까지 미뤄도 된다. §6은 필요할 때 여는 도구 셋이다: 잡음 섞인 측정값 하나로 로봇이 결정해야 할 때 §6.1, 두 방법의 결과를 비교할 때 §6.2, 추적기가 χ² 분포로 측정을 게이팅할 때 §6.3. §7은 HMM, MCMC, 디퓨전의 전방 과정을 만날 때 읽는다.
+> 60–90분짜리 세 회차면 된다. **1회차, 언어:** 그림을 보고 §1과 §2를 읽는다. 균열 감지기 위의 사건과 베이즈 정리, 확률변수, 기댓값, 분산과 공분산이다. 스스로 점검 1로 균열 감지기를 다시 계산하며 마친다. **2회차, 가우시안과 손실:** §3, 그다음 §4. §4는 MSE와 교차 엔트로피가 잡음 모델 아래의 최대우도임을 보이는데, [[05-construction-robotics/imitating-contact|10. 접촉 모방 §2]]가 바로 이것으로 정책을 학습하므로 곁가지가 아니라 핵심이다. 스스로 점검 2와 3으로 마친다. **3회차, 칼만 이득:** §5.2를 P5 순차 계산까지 읽는다. 스칼라 이득을 두 번 유도하고 측정 둘과 이동 하나에 돌려 보는 부분이다. 그다음 스스로 점검 4와 과제를 푼다. 나머지는 두 번째 읽기이고, 필요할 때 해당 부분을 연다. §5.2 끝의 벡터 필터와 §5.1의 랜덤 프로세스는 [[04-robotics/state-estimation-slam|3. 상태 추정]] 전에, §6.1은 잡음 섞인 측정값 하나로 로봇이 결정해야 할 때, §6.2는 두 방법을 비교할 때, §6.3은 추적기가 측정을 게이팅할 때, §7은 HMM, MCMC, 디퓨전의 전방 과정을 만날 때 읽는다. 스스로 점검 5–10은 §6–§7과 함께 푼다.
 
 ### 그림으로 먼저 보기 · The picture
 
-<svg viewBox="0 0 560 546" style="max-width:100%;height:auto" role="img" aria-label="장치 P5: 벽 거리의 사전분포, 우도, 사후분포를 한 축에 그리고 칼만 이득을 혁신의 비율로 표시했으며, 그 아래에 측정마다 줄고 예측에서 늘어나는 추정의 오차 막대를 그린 그림">
+<svg viewBox="0 0 560 546" font-size="12" style="max-width:100%;height:auto" role="img" aria-label="장치 P5: 벽 거리의 사전분포, 우도, 사후분포를 한 축에 그리고 칼만 이득을 혁신의 비율로 표시했으며, 그 아래에 측정마다 줄고 예측에서 늘어나는 추정의 오차 막대를 그린 그림">
   <defs><marker id="arPbk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
   <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="50" y1="172" x2="512" y2="172"/><line x1="50" y1="172" x2="50" y2="40"/></g>
   <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="50.0" y1="172" x2="50.0" y2="176"/><line x1="96.0" y1="172" x2="96.0" y2="176"/><line x1="142.0" y1="172" x2="142.0" y2="176"/><line x1="188.0" y1="172" x2="188.0" y2="176"/><line x1="234.0" y1="172" x2="234.0" y2="176"/><line x1="280.0" y1="172" x2="280.0" y2="176"/><line x1="326.0" y1="172" x2="326.0" y2="176"/><line x1="372.0" y1="172" x2="372.0" y2="176"/><line x1="418.0" y1="172" x2="418.0" y2="176"/><line x1="464.0" y1="172" x2="464.0" y2="176"/><line x1="510.0" y1="172" x2="510.0" y2="176"/><line x1="46" y1="112.0" x2="50" y2="112.0"/><line x1="46" y1="52.0" x2="50" y2="52.0"/></g>
@@ -828,6 +914,8 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 
 ### 1. 핵심 언어
 
+로봇은 세상을 직접 보지 못하고 측정값만 본다. 그래서 그 측정값을 설명하는 가능성 — 균열인가 정상인가, 닿았는가 떨어져 있는가 — 하나하나를 얼마나 믿을지 말할 수 있어야 한다. 이 절은 그것을 정확히 말하는 언어를 세우고, 증거가 들어올 때 믿음을 고치는 규칙인 베이즈 정리로 끝난다.
+
 - **확률 공간은** 이 페이지의 모든 명제가 사는 대상이고, 이름 붙은 세 부분으로 이루어진다. **표본 공간** $\Omega$는 가능한 모든 결과의 집합이다(주사위 하나면 $\{1,\dots,6\}$). **사건** $A \subseteq \Omega$는 물어볼 수 있는 결과들의 집합이다("짝수"는 $\{2,4,6\}$; 집합 표기는 [[02-foundations/engineering-math|0.5 §10]]). **확률 측도** $P$는 각 사건에 수 하나를 배정한다. $P$는 세 가지 **콜모고로프 공리를** 만족해야 한다:
   - **비음수성**: 어떤 사건도 음의 확률을 갖지 않으므로 모든 $P(A)$는 0 이상이다.
   $$P(A) \ge 0$$
@@ -839,10 +927,10 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 - $B$가 주어졌을 때 $A$의 **조건부 확률은** $B$가 일어났음을 안 뒤의 $A$의 확률이며, $P(B) > 0$일 때 다음처럼 정의한다:
   $$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
   $A \cap B$는 "둘 다 일어남"이고 $P(B)$로 나누는 것은 재정규화다. 그래서 $B$ 안의 결과들의 확률이 다시 합 1이 된다. 증거를 본 뒤 세계를 재가중하는 연산이다. *예:* 공정한 주사위가 짝수를 보였다면 $P(\text{6} \mid \text{짝수}) = \tfrac{1/6}{1/2} = \tfrac13$이다.
-  - **연쇄 법칙**(정의를 옮겨 쓴 것): $P(A,B) = P(A|B)P(B)$이고, 사건 $n$개면 $P(A_1,\dots,A_n) = \prod_{i=1}^n P(A_i \mid A_1,\dots,A_{i-1})$.
+  - **연쇄 법칙**(정의를 옮겨 쓴 것. 미분의 연쇄 법칙과 이름만 같을 뿐 다른 규칙이다): $P(A,B) = P(A|B)P(B)$이고, 사건 $n$개면 $P(A_1,\dots,A_n) = \prod_{i=1}^n P(A_i \mid A_1,\dots,A_{i-1})$.
   - **전확률 법칙**: $B_1, \dots, B_k$가 $\Omega$를 분할하면(서로소이고 전체를 덮으면)
   $$P(A) = \sum_{i=1}^k P(A \mid B_i)\,P(B_i)$$
-  $A$가 서로소 조각 $A \cap B_i$들로 나뉘고 각 조각을 연쇄 법칙이 주기 때문이다. 아래 베이즈 정리의 분모가 이것이다: 균열 예제에서 $P(+) = 0.95 \cdot 0.01 + 0.05 \cdot 0.99 = 0.059$.
+  $A$가 서로소 조각 $A \cap B_i$들로 나뉘고 각 조각을 연쇄 법칙이 주기 때문이다. 아래 베이즈 정리의 분모가 이것이고, 균열 예제가 바로 이것을 쓴다.
 - **베이즈 정리.** 위의 연쇄 법칙은 결합 확률을 두 순서로 분해할 수 있다 —
   $P(\theta, x) = P(\theta|x)P(x)$와 $P(\theta, x) = P(x|\theta)P(\theta)$ — 둘 다 같은 결합
   확률이므로 서로 같다고 놓고 $P(x)$로 나누면 끝이다. 유도가 이게 전부다:
@@ -851,60 +939,51 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   설명하는가*($P(x|\theta)$)로 다시 가중한 것.
   계산 예제 — 센서 진단: 균열 감지기가 균열의 95%에서 울리고($P(+|c)=0.95$), 오경보율
   5%($P(+|\neg c)=0.05$), 균열은 드물다($P(c)=0.01$).
-  $P(c|+) = \frac{0.95\cdot 0.01}{0.95\cdot 0.01 + 0.05\cdot 0.99} \approx 0.16$.
+  분모 $P(+)$, 곧 경보가 울릴 확률 자체는 위의 전확률 법칙을 균열인 경우와 아닌 경우로 나눠
+  구한다: $P(+) = 0.95 \cdot 0.01 + 0.05 \cdot 0.99 = 0.059$. 그래서
+  $P(c|+) = \frac{0.95\cdot 0.01}{0.95\cdot 0.01 + 0.05\cdot 0.99} = \frac{0.0095}{0.059} \approx 0.16$.
   민감도 95%짜리(그리고 오경보율 5% — "정확도" 하나가 아니라 별개의 두 숫자다) 경보가
   울렸을 때 실제로는 16%만 맞는다 — 기저율이 지배한다. 인식 파이프라인이
   캘리브레이션을 하는 이유다.
 
-<svg viewBox="0 0 560 250" style="max-width:100%;height:auto" role="img" aria-label="패널 1000장을 균열 10장과 정상 990장으로 나누고 각 가지가 만드는 경보 수, 그리고 경보 중 16%만 진짜임을 보이는 막대">
+<svg viewBox="0 0 560 162" style="max-width:100%;height:auto" role="img" aria-label="패널 1000장을 균열 10장과 정상 990장으로 나누고 각 가지가 만드는 경보 수, 그리고 경보 중 16%만 진짜임을 보이는 막대">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.6">
-    <rect x="24" y="76" width="94" height="30" rx="3"/>
-    <rect x="150" y="34" width="86" height="30" rx="3"/>
-    <rect x="150" y="118" width="86" height="30" rx="3"/>
+    <rect x="16" y="76" width="96" height="30" rx="3"/>
+    <rect x="144" y="34" width="88" height="30" rx="3"/>
+    <rect x="144" y="118" width="88" height="30" rx="3"/>
   </g>
   <g fill="currentColor" fill-opacity="0.24" stroke="currentColor" stroke-width="1.1">
-    <rect x="268" y="34" width="82" height="30" rx="3"/>
-    <rect x="268" y="118" width="82" height="30" rx="3"/>
+    <rect x="302" y="34" width="86" height="30" rx="3"/>
+    <rect x="302" y="118" width="86" height="30" rx="3"/>
   </g>
   <g stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.65">
-    <path d="M118,86 C136,86 136,49 148,49"/>
-    <path d="M118,96 C136,96 136,133 148,133"/>
-    <line x1="236" y1="49" x2="266" y2="49"/>
-    <line x1="236" y1="133" x2="266" y2="133"/>
+    <path d="M112,86 C130,86 128,49 142,49"/>
+    <path d="M112,96 C130,96 128,133 142,133"/>
+    <line x1="232" y1="49" x2="300" y2="49"/>
+    <line x1="232" y1="133" x2="300" y2="133"/>
   </g>
-  <g font-size="10.5" fill="currentColor" text-anchor="middle">
-    <text x="71" y="95">패널 1,000장</text>
-    <text x="193" y="53">균열 10장</text>
-    <text x="193" y="137">정상 990장</text>
-    <text x="309" y="53">경보 9.5건</text>
-    <text x="309" y="137">경보 49.5건</text>
+  <g font-size="11" fill="currentColor" text-anchor="middle">
+    <text x="64" y="95">패널 1,000장</text>
+    <text x="188" y="53">균열 10장</text>
+    <text x="188" y="137">정상 990장</text>
+    <text x="345" y="53">경보 9.5건</text>
+    <text x="345" y="137">경보 49.5건</text>
   </g>
-  <g font-size="9" fill="currentColor" opacity="0.8" text-anchor="middle">
-    <text x="251" y="42">그중 95%</text>
-    <text x="251" y="126">그중 5%</text>
+  <g font-size="10.5" fill="currentColor" opacity="0.85" text-anchor="middle">
+    <text x="266" y="43">그중 95%</text>
+    <text x="266" y="127">그중 5%</text>
   </g>
+  <text x="408" y="80" font-size="11" fill="currentColor">경보 총 59건</text>
+  <rect x="408" y="88" width="140" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6"/>
+  <rect x="408" y="88" width="22.5" height="26" rx="3" fill="currentColor" fill-opacity="0.34"/>
   <g font-size="10.5" fill="currentColor">
-    <text x="372" y="80">경보 총 59건</text>
+    <text x="408" y="130">진짜 9.5</text>
+    <text x="548" y="130" text-anchor="end">오경보 49.5</text>
   </g>
-  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.6">
-    <rect x="372" y="88" width="170" height="26" rx="3"/>
-  </g>
-  <g fill="currentColor" fill-opacity="0.34">
-    <rect x="372" y="88" width="27.4" height="26" rx="3"/>
-  </g>
-  <g font-size="9.5" fill="currentColor">
-    <text x="372" y="130">진짜 9.5</text>
-    <text x="542" y="130" text-anchor="end">오경보 49.5</text>
-  </g>
-  <g font-size="13" fill="currentColor" font-weight="600">
-    <text x="372" y="152">16%</text>
-  </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="212">95%는 얇은 가지에, 5%는 굵은 가지에 쓰인다. 그래서 아무 이상 없는 굵은 가지가 얇은 가지보다</text>
-    <text x="24" y="228">다섯 배 넘는 경보를 만든다. 그 비율이 사후확률을 정한다: 경보 59건 중 9.5건, 16%다. 감지기는 아무것도 바뀌지 않았고,</text>
-    <text x="24" y="244">바뀐 것은 균열이 얼마나 드문가뿐이다.</text>
-  </g>
+  <text x="408" y="153" font-size="13" font-weight="600" fill="currentColor">16%</text>
 </svg>
+
+패널 1,000장 가운데 감지기의 95%는 균열 10장이라는 얇은 가지에, 5%는 정상 990장이라는 굵은 가지에 걸리므로, 정상 패널이 울리는 경보 49.5건이 진짜 경보 9.5건을 압도한다. 사후확률은 그 비율, 곧 경보 59건 가운데 9.5건인 16%다. 감지기는 그대로이고, 바뀐 것은 균열이 얼마나 드문가뿐이다.
 
 - **독립은** 두 사건(또는 확률변수)의 성질이다: 하나를 알아도 다른 하나의 확률이 바뀌지 않는다. 정의 조건은 결합 확률이 인수분해되는 것이다.
   $$P(A \cap B) = P(A)\,P(B)$$
@@ -918,6 +997,8 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
   각 인수분해가 큰 결합 분포를 작은 조각들의 곱으로 저장하게 해 주므로, 이것들이 그래프 모델, 나이브 베이즈, 마르코프 성질(§5)이 공유하는 가정이다.
 
 ### 2. 확률변수와 기댓값
+
+사건은 예·아니오 질문에 답하지만 센서는 숫자를 돌려주고, 로봇에게 필요한 것은 그 숫자의 평균, 퍼짐, 그리고 두 측정값이 함께 움직이는지다. 확률변수는 결과를 숫자로 바꿔 이 셋을 계산할 수 있게 한다.
 
 - **확률변수** $X$는 결과를 수로 보내는 함수 $X : \Omega \to \mathbb{R}$다. "무슨 일이 일어났나"를 더하고 평균 낼 수 있는 양으로 바꾼다. *예:* 주사위 둘을 굴리면 $\Omega$는 순서쌍 36개이고, $X$ = 합은 $(2,5) \mapsto 7$로 보낸다. 확률벡터는 같은 일을 $\mathbb{R}^n$으로 한다. 그 **분포는** 다음 세 함수 중 하나로 기술한다:
   - **PMF**(확률질량함수), 이산 $X$용: $p(x)$가 곧 값 $x$의 확률이다. 두 조건은 $p(x) \ge 0$과
@@ -975,16 +1056,53 @@ Bayesian conditioning becomes a time-indexed robot algorithm in [[04-robotics/st
 
 ### 3. 가우시안 도구 상자 (가우시안이 로보틱스를 굴리는 이유)
 
+이 위키의 잡음 모델, 필터, 손실은 거의 모두 가우시안이고, 이유는 실용적이다. 로봇이 믿음에 하는 모든 일 — 스케일을 바꾸고, 독립 잡음을 더하고, 측정값으로 조건화하는 것 — 을 거쳐도 가우시안은 가우시안으로 남으므로, 추정 파이프라인 전체가 분포 전체 대신 평균과 공분산만 들고 다닐 수 있다.
+
 **다변량 가우시안**(정규분포)은 정확히 **두** 파라미터, 평균 벡터 $\mu \in \mathbb{R}^n$과 대칭 양의 정부호 공분산 행렬 $\Sigma \in \mathbb{R}^{n\times n}$(§2)으로 정해지는 $\mathbb{R}^n$ 위의 연속 분포이며, 밀도는 다음과 같다.
 
 $$\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu)\big)$$
 
-여기서 $n$은 $x$의 차원이고 $|\Sigma|$는 공분산의 행렬식이다. 지수는 §6의 마할라노비스 거리 제곱에 $-\tfrac12$을 곱한 것이므로 밀도는 $x = \mu$에서 가장 높고 $\Sigma$가 정하는 타원체를 따라 줄어든다. 앞의 계수는 적분을 1로 만드는 값이다. 그러면 $E[x] = \mu$, $\text{Cov}(x) = \Sigma$이므로 두 파라미터가 곧 평균과 공분산이다. $n = 1$이면 §2 표의 항목이 된다. *예:* 표준정규 $\mathcal{N}(0, 1)$의 봉우리 밀도는 $0.399$이고, $\mathcal{N}(0, 0.1^2)$은 $3.99$로 §2가 허용한 대로 1을 넘는다.
+여기서 $n$은 $x$의 차원이고 $|\Sigma|$는 공분산의 행렬식이다. 지수는 $(x-\mu)^\top\Sigma^{-1}(x-\mu)$, 곧 평균에서 떨어진 거리를 방향마다 그 방향의 퍼짐을 단위로 잰 값의 제곱에 $-\tfrac12$을 곱한 것이다(이 값이 *마할라노비스 거리의 제곱*이고, §6.3이 이름을 붙여 측정을 게이팅하는 데 쓴다). 그래서 밀도는 $x = \mu$에서 가장 높고 $\Sigma$가 정하는 타원체를 따라 줄어든다. 앞의 계수는 적분을 1로 만드는 값이다. 그러면 $E[x] = \mu$, $\text{Cov}(x) = \Sigma$이므로 두 파라미터가 곧 평균과 공분산이다. $n = 1$이면 §2 표의 항목이 된다. *예:* 표준정규 $\mathcal{N}(0, 1)$의 봉우리 밀도는 $0.399$이고, $\mathcal{N}(0, 0.1^2)$은 $3.99$로 §2가 허용한 대로 1을 넘는다.
+
+**밀도식을 외우기 전에 해독한다.** μ는 중심, Σ는 퍼짐과 좌표들이 함께 변하는 방식을 나타낸다. 표시된 역행렬·행렬식 밀도식은 비특이 공분산에서만 유효하다. 특이 가우시안은 더 낮은 차원의 지지집합(변수가 실제로 가질 수 있는 값들의 집합, 예: 평면 안의 한 직선)에 놓여 별도 처리가 필요하다. 지수 안의 역공분산은 변위가 그 퍼짐에 비해 얼마나 뜻밖인지 잰다. 같은 물리 변위도 불확실한 방향에서는 덜 뜻밖이고 좁게 묶인 방향에서는 더 뜻밖이다. 지수 밖의 계수는 전체 확률을 정규화한다. 한 점의 밀도 자체가 그 연속값이 나올 확률은 아니다.
+
+<svg viewBox="0 0 560 214" style="max-width:100%;height:auto" role="img" aria-label="그림의 P5 가우시안 셋을 한 중심에 모은 그림: 표준편차 2, 1, 0.894, 봉우리 0.199, 0.399, 0.446, 넓이는 모두 1">
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="50" y1="176" x2="410" y2="176"/><line x1="50" y1="176" x2="50" y2="26"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="50" y1="176" x2="50" y2="180"/><line x1="110" y1="176" x2="110" y2="180"/><line x1="170" y1="176" x2="170" y2="180"/><line x1="230" y1="176" x2="230" y2="180"/><line x1="290" y1="176" x2="290" y2="180"/><line x1="350" y1="176" x2="350" y2="180"/><line x1="410" y1="176" x2="410" y2="180"/><line x1="46" y1="116" x2="50" y2="116"/><line x1="46" y1="56" x2="50" y2="56"/></g>
+  <path d="M50 175.3 L51.5 175.3 L53 175.2 L54.5 175.2 L56 175.1 L57.5 175 L59 175 L60.5 174.9 L62 174.8 L63.5 174.7 L65 174.6 L66.5 174.5 L68 174.4 L69.5 174.3 L71 174.2 L72.5 174.1 L74 174 L75.5 173.8 L77 173.7 L78.5 173.5 L80 173.4 L81.5 173.2 L83 173 L84.5 172.8 L86 172.6 L87.5 172.4 L89 172.2 L90.5 172 L92 171.8 L93.5 171.5 L95 171.2 L96.5 171 L98 170.7 L99.5 170.4 L101 170.1 L102.5 169.7 L104 169.4 L105.5 169 L107 168.7 L108.5 168.3 L110 167.9 L111.5 167.5 L113 167.1 L114.5 166.6 L116 166.2 L117.5 165.7 L119 165.2 L120.5 164.7 L122 164.2 L123.5 163.6 L125 163.1 L126.5 162.5 L128 161.9 L129.5 161.3 L131 160.7 L132.5 160 L134 159.4 L135.5 158.7 L137 158 L138.5 157.3 L140 156.6 L141.5 155.8 L143 155.1 L144.5 154.3 L146 153.5 L147.5 152.7 L149 151.9 L150.5 151.1 L152 150.3 L153.5 149.5 L155 148.6 L156.5 147.7 L158 146.9 L159.5 146 L161 145.1 L162.5 144.2 L164 143.3 L165.5 142.4 L167 141.5 L168.5 140.6 L170 139.7 L171.5 138.8 L173 137.9 L174.5 137 L176 136.1 L177.5 135.2 L179 134.3 L180.5 133.4 L182 132.5 L183.5 131.7 L185 130.8 L186.5 130 L188 129.2 L189.5 128.3 L191 127.6 L192.5 126.8 L194 126 L195.5 125.3 L197 124.6 L198.5 123.9 L200 123.2 L201.5 122.5 L203 121.9 L204.5 121.3 L206 120.8 L207.5 120.2 L209 119.7 L210.5 119.2 L212 118.8 L213.5 118.4 L215 118 L216.5 117.7 L218 117.3 L219.5 117.1 L221 116.8 L222.5 116.6 L224 116.5 L225.5 116.3 L227 116.2 L228.5 116.2 L230 116.2 L231.5 116.2 L233 116.2 L234.5 116.3 L236 116.5 L237.5 116.6 L239 116.8 L240.5 117.1 L242 117.3 L243.5 117.7 L245 118 L246.5 118.4 L248 118.8 L249.5 119.2 L251 119.7 L252.5 120.2 L254 120.8 L255.5 121.3 L257 121.9 L258.5 122.5 L260 123.2 L261.5 123.9 L263 124.6 L264.5 125.3 L266 126 L267.5 126.8 L269 127.6 L270.5 128.3 L272 129.2 L273.5 130 L275 130.8 L276.5 131.7 L278 132.5 L279.5 133.4 L281 134.3 L282.5 135.2 L284 136.1 L285.5 137 L287 137.9 L288.5 138.8 L290 139.7 L291.5 140.6 L293 141.5 L294.5 142.4 L296 143.3 L297.5 144.2 L299 145.1 L300.5 146 L302 146.9 L303.5 147.7 L305 148.6 L306.5 149.5 L308 150.3 L309.5 151.1 L311 151.9 L312.5 152.7 L314 153.5 L315.5 154.3 L317 155.1 L318.5 155.8 L320 156.6 L321.5 157.3 L323 158 L324.5 158.7 L326 159.4 L327.5 160 L329 160.7 L330.5 161.3 L332 161.9 L333.5 162.5 L335 163.1 L336.5 163.6 L338 164.2 L339.5 164.7 L341 165.2 L342.5 165.7 L344 166.2 L345.5 166.6 L347 167.1 L348.5 167.5 L350 167.9 L351.5 168.3 L353 168.7 L354.5 169 L356 169.4 L357.5 169.7 L359 170.1 L360.5 170.4 L362 170.7 L363.5 171 L365 171.2 L366.5 171.5 L368 171.8 L369.5 172 L371 172.2 L372.5 172.4 L374 172.6 L375.5 172.8 L377 173 L378.5 173.2 L380 173.4 L381.5 173.5 L383 173.7 L384.5 173.8 L386 174 L387.5 174.1 L389 174.2 L390.5 174.3 L392 174.4 L393.5 174.5 L395 174.6 L396.5 174.7 L398 174.8 L399.5 174.9 L401 175 L402.5 175 L404 175.1 L405.5 175.2 L407 175.2 L408.5 175.3 L410 175.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.65" stroke-dasharray="7 4"/>
+  <path d="M50 176 L51.5 176 L53 176 L54.5 176 L56 176 L57.5 176 L59 176 L60.5 176 L62 176 L63.5 176 L65 176 L66.5 176 L68 176 L69.5 176 L71 176 L72.5 176 L74 176 L75.5 176 L77 176 L78.5 176 L80 176 L81.5 176 L83 176 L84.5 176 L86 176 L87.5 176 L89 176 L90.5 176 L92 176 L93.5 176 L95 176 L96.5 176 L98 176 L99.5 176 L101 176 L102.5 176 L104 176 L105.5 176 L107 176 L108.5 176 L110 176 L111.5 176 L113 175.9 L114.5 175.9 L116 175.9 L117.5 175.9 L119 175.9 L120.5 175.8 L122 175.8 L123.5 175.8 L125 175.7 L126.5 175.7 L128 175.6 L129.5 175.6 L131 175.5 L132.5 175.4 L134 175.3 L135.5 175.2 L137 175 L138.5 174.9 L140 174.7 L141.5 174.5 L143 174.2 L144.5 173.9 L146 173.6 L147.5 173.3 L149 172.9 L150.5 172.4 L152 171.9 L153.5 171.4 L155 170.7 L156.5 170 L158 169.3 L159.5 168.4 L161 167.5 L162.5 166.5 L164 165.4 L165.5 164.1 L167 162.8 L168.5 161.4 L170 159.8 L171.5 158.1 L173 156.3 L174.5 154.4 L176 152.3 L177.5 150.1 L179 147.8 L180.5 145.3 L182 142.7 L183.5 140 L185 137.1 L186.5 134.2 L188 131.1 L189.5 127.9 L191 124.6 L192.5 121.2 L194 117.7 L195.5 114.2 L197 110.6 L198.5 107 L200 103.4 L201.5 99.8 L203 96.2 L204.5 92.6 L206 89.1 L207.5 85.7 L209 82.3 L210.5 79.1 L212 76 L213.5 73.1 L215 70.4 L216.5 67.8 L218 65.5 L219.5 63.4 L221 61.6 L222.5 60 L224 58.7 L225.5 57.7 L227 56.9 L228.5 56.5 L230 56.3 L231.5 56.5 L233 56.9 L234.5 57.7 L236 58.7 L237.5 60 L239 61.6 L240.5 63.4 L242 65.5 L243.5 67.8 L245 70.4 L246.5 73.1 L248 76 L249.5 79.1 L251 82.3 L252.5 85.7 L254 89.1 L255.5 92.6 L257 96.2 L258.5 99.8 L260 103.4 L261.5 107 L263 110.6 L264.5 114.2 L266 117.7 L267.5 121.2 L269 124.6 L270.5 127.9 L272 131.1 L273.5 134.2 L275 137.1 L276.5 140 L278 142.7 L279.5 145.3 L281 147.8 L282.5 150.1 L284 152.3 L285.5 154.4 L287 156.3 L288.5 158.1 L290 159.8 L291.5 161.4 L293 162.8 L294.5 164.1 L296 165.4 L297.5 166.5 L299 167.5 L300.5 168.4 L302 169.3 L303.5 170 L305 170.7 L306.5 171.4 L308 171.9 L309.5 172.4 L311 172.9 L312.5 173.3 L314 173.6 L315.5 173.9 L317 174.2 L318.5 174.5 L320 174.7 L321.5 174.9 L323 175 L324.5 175.2 L326 175.3 L327.5 175.4 L329 175.5 L330.5 175.6 L332 175.6 L333.5 175.7 L335 175.7 L336.5 175.8 L338 175.8 L339.5 175.8 L341 175.9 L342.5 175.9 L344 175.9 L345.5 175.9 L347 175.9 L348.5 176 L350 176 L351.5 176 L353 176 L354.5 176 L356 176 L357.5 176 L359 176 L360.5 176 L362 176 L363.5 176 L365 176 L366.5 176 L368 176 L369.5 176 L371 176 L372.5 176 L374 176 L375.5 176 L377 176 L378.5 176 L380 176 L381.5 176 L383 176 L384.5 176 L386 176 L387.5 176 L389 176 L390.5 176 L392 176 L393.5 176 L395 176 L396.5 176 L398 176 L399.5 176 L401 176 L402.5 176 L404 176 L405.5 176 L407 176 L408.5 176 L410 176" fill="none" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.85" stroke-dasharray="2 3"/>
+  <path d="M50 176 L51.5 176 L53 176 L54.5 176 L56 176 L57.5 176 L59 176 L60.5 176 L62 176 L63.5 176 L65 176 L66.5 176 L68 176 L69.5 176 L71 176 L72.5 176 L74 176 L75.5 176 L77 176 L78.5 176 L80 176 L81.5 176 L83 176 L84.5 176 L86 176 L87.5 176 L89 176 L90.5 176 L92 176 L93.5 176 L95 176 L96.5 176 L98 176 L99.5 176 L101 176 L102.5 176 L104 176 L105.5 176 L107 176 L108.5 176 L110 176 L111.5 176 L113 176 L114.5 176 L116 176 L117.5 176 L119 176 L120.5 176 L122 176 L123.5 175.9 L125 175.9 L126.5 175.9 L128 175.9 L129.5 175.9 L131 175.9 L132.5 175.8 L134 175.8 L135.5 175.7 L137 175.7 L138.5 175.6 L140 175.5 L141.5 175.4 L143 175.3 L144.5 175.2 L146 175 L147.5 174.8 L149 174.6 L150.5 174.3 L152 174 L153.5 173.7 L155 173.3 L156.5 172.9 L158 172.3 L159.5 171.8 L161 171.1 L162.5 170.3 L164 169.5 L165.5 168.6 L167 167.5 L168.5 166.3 L170 165 L171.5 163.6 L173 162 L174.5 160.2 L176 158.3 L177.5 156.3 L179 154 L180.5 151.6 L182 149 L183.5 146.2 L185 143.2 L186.5 140 L188 136.7 L189.5 133.2 L191 129.5 L192.5 125.6 L194 121.6 L195.5 117.5 L197 113.2 L198.5 108.8 L200 104.4 L201.5 99.9 L203 95.3 L204.5 90.8 L206 86.3 L207.5 81.9 L209 77.5 L210.5 73.2 L212 69.2 L213.5 65.2 L215 61.5 L216.5 58.1 L218 54.9 L219.5 52.1 L221 49.5 L222.5 47.3 L224 45.5 L225.5 44.1 L227 43 L228.5 42.4 L230 42.2 L231.5 42.4 L233 43 L234.5 44.1 L236 45.5 L237.5 47.3 L239 49.5 L240.5 52.1 L242 54.9 L243.5 58.1 L245 61.5 L246.5 65.2 L248 69.2 L249.5 73.2 L251 77.5 L252.5 81.9 L254 86.3 L255.5 90.8 L257 95.3 L258.5 99.9 L260 104.4 L261.5 108.8 L263 113.2 L264.5 117.5 L266 121.6 L267.5 125.6 L269 129.5 L270.5 133.2 L272 136.7 L273.5 140 L275 143.2 L276.5 146.2 L278 149 L279.5 151.6 L281 154 L282.5 156.3 L284 158.3 L285.5 160.2 L287 162 L288.5 163.6 L290 165 L291.5 166.3 L293 167.5 L294.5 168.6 L296 169.5 L297.5 170.3 L299 171.1 L300.5 171.8 L302 172.3 L303.5 172.9 L305 173.3 L306.5 173.7 L308 174 L309.5 174.3 L311 174.6 L312.5 174.8 L314 175 L315.5 175.2 L317 175.3 L318.5 175.4 L320 175.5 L321.5 175.6 L323 175.7 L324.5 175.7 L326 175.8 L327.5 175.8 L329 175.9 L330.5 175.9 L332 175.9 L333.5 175.9 L335 175.9 L336.5 175.9 L338 176 L339.5 176 L341 176 L342.5 176 L344 176 L345.5 176 L347 176 L348.5 176 L350 176 L351.5 176 L353 176 L354.5 176 L356 176 L357.5 176 L359 176 L360.5 176 L362 176 L363.5 176 L365 176 L366.5 176 L368 176 L369.5 176 L371 176 L372.5 176 L374 176 L375.5 176 L377 176 L378.5 176 L380 176 L381.5 176 L383 176 L384.5 176 L386 176 L387.5 176 L389 176 L390.5 176 L392 176 L393.5 176 L395 176 L396.5 176 L398 176 L399.5 176 L401 176 L402.5 176 L404 176 L405.5 176 L407 176 L408.5 176 L410 176" fill="none" stroke="currentColor" stroke-width="2.6" stroke-opacity="1.0"/>
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="50" y="192" text-anchor="middle">−6</text>
+    <text x="110" y="192" text-anchor="middle">−4</text>
+    <text x="170" y="192" text-anchor="middle">−2</text>
+    <text x="230" y="192" text-anchor="middle">0</text>
+    <text x="290" y="192" text-anchor="middle">2</text>
+    <text x="350" y="192" text-anchor="middle">4</text>
+    <text x="410" y="192" text-anchor="middle">6</text>
+    <text x="44" y="120" text-anchor="end">0.2</text>
+    <text x="44" y="60" text-anchor="end">0.4</text>
+    <text x="44" y="180" text-anchor="end">0</text>
+  </g>
+  <text x="12" y="18" font-size="11" fill="currentColor" opacity="0.85">밀도</text>
+  <text x="410" y="208" font-size="11" fill="currentColor" text-anchor="end" opacity="0.85">중심에서 떨어진 거리 x − μ (cm)</text>
+  <line x1="424" y1="52" x2="450" y2="52" stroke="currentColor" stroke-width="2.6" stroke-opacity="1.0"/>
+  <text x="456" y="56" font-size="11" fill="currentColor">사후 σ 0.894</text>
+  <text x="456" y="70" font-size="10.5" fill="currentColor" opacity="0.85">봉우리 0.446</text>
+  <line x1="424" y1="92" x2="450" y2="92" stroke="currentColor" stroke-width="1.8" stroke-opacity="0.85" stroke-dasharray="2 3"/>
+  <text x="456" y="96" font-size="11" fill="currentColor">센서 σ 1</text>
+  <text x="456" y="110" font-size="10.5" fill="currentColor" opacity="0.85">봉우리 0.399</text>
+  <line x1="424" y1="132" x2="450" y2="132" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.65" stroke-dasharray="7 4"/>
+  <text x="456" y="136" font-size="11" fill="currentColor">사전 σ 2</text>
+  <text x="456" y="150" font-size="10.5" fill="currentColor" opacity="0.85">봉우리 0.199</text>
+</svg>
+
+그림에 나온 P5의 가우시안 셋을 한 중심으로 옮겨 겹친 것이다. $\sigma = 2$(사전), $1$(센서), $0.894$(사후)는 봉우리 밀도 $0.199$, $0.399$, $0.446$을 주고, 세 곡선의 넓이는 모두 그대로 $1$이다. 모든 가우시안은 이 곡선 하나를 다시 스케일한 것이라 좁을수록 더 확신하는 것이고, 넓이가 고정되어 있으니 그만큼 높아진다.
 
 세 가지 **닫힘(closure)** 성질이 가우시안을 주력으로 만든다 — "닫힘"이란 결과가 여전히
 가우시안이라는 뜻이다. 즉 **아핀** 연산은 이 가족을 벗어나지 않는다:
 
-1. **아핀 사상**: $x\sim\mathcal{N}(\mu,\Sigma) \Rightarrow Ax + b \sim \mathcal{N}(A\mu + b,\, A\Sigma A^\top)$
+1. **아핀 사상**: $x\sim\mathcal{N}(\mu,\Sigma) \Rightarrow Ax + b \sim \mathcal{N}(A\mu + b,\, A\Sigma A^\top)$. 공분산은 $E\big[A(x-\mu)(x-\mu)^\top A^\top\big] = A\Sigma A^\top$이고, 1차원이면 $\text{Var}(ax+b) = a^2\,\text{Var}(x)$다. 이동 $b$는 평균만 옮긴다.
 2. 독립 가우시안의 **합**은 가우시안 (분산이 더해진다).
 3. **조건화**: $(x_1, x_2)$가 결합 가우시안이면
    $$E[x_1|x_2] = \mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$$
@@ -994,42 +1112,75 @@ $$\mathcal{N}(x;\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp\big(-\tfrac1
    $$\text{Cov}(x_1 \mid x_2) = \Sigma_{11} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}$$
    이고, 두 공식은 한 단계에서 함께 나온다. 나머지 $e = x_1 - \mu_1 - \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$는 $\text{Cov}(e, x_2) = \Sigma_{12} - \Sigma_{12}\Sigma_{22}^{-1}\Sigma_{22} = 0$이다. $e$는 $(x_1, x_2)$의 아핀 사상이므로 $(e, x_2)$는 결합 가우시안이고, 공분산이 0인 결합 가우시안 쌍은 독립이다(공분산이 블록 대각이어서 위의 밀도가 둘로 인수분해된다). 그래서 $x_2$를 알면 괄호 $\mu_1 + \Sigma_{12}\Sigma_{22}^{-1}(x_2 - \mu_2)$가 고정되고 $e$는 평균 0과 자기 공분산을 그대로 가지며, 그 공분산을 전개하면 두 번째 공식이 된다. *예:* P5의 벽, 곧 평균 $10$, 분산 $4$인 $x_1 = x$와 분산 $1$인 독립 잡음 $v$를 더한 $x_2 = z = x + v$는 $\Sigma_{12} = 4$, $\Sigma_{22} = 5$이므로 $E[x \mid z{=}12] = 10 + \tfrac45(12 - 10) = 11.6$, $\text{Cov}(x \mid z) = 4 - 4 \cdot 4/5 = 0.8$로 그림의 사후분포다.
 
-또한: **중심극한정리**(CLT)는 이름 붙은 가정 셋을 가진 극한 명제다: $X_1, \dots, X_N$이 i.i.d.(§2)이고, 평균이 $\mu$이고, 분산 $\sigma^2$이 *유한*하다. 그러면 표준화한 표본 평균 $\bar X_N = \frac1N \sum_i X_i$가 표준정규로 분포수렴한다:
-$$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1) \quad (N \to \infty)$$
-"분포수렴"은 CDF가 수렴한다는 뜻이므로, $\bar X_N$에 관한 확률을 평균 $\mu$, 표준편차 $\sigma/\sqrt N$인 가우시안에서 읽을 수 있다. *예:* 주사위 30개의 평균은 표준편차가 $\sqrt{35/12}/\sqrt{30} = 0.312$이고, 가우시안 근사는 $P(|\bar X_{30} - 3.5| < 0.5) = 0.89$를, 정확한 값은 $0.88$을 준다. *반례:* 분산이 유한하지 않으면 성립하지 않는다. 표준 코시 표본 $N$개의 평균은 모든 $N$에서 다시 표준 코시이므로 평균을 내도 좁아지지 않는다. CLT가 노이즈 모델의 기본값이 가우시안인 이유다;
-그리고 평균과 분산이 주어진 연속 분포 중 가우시안의 미분 엔트로피(differential entropy: [[02-foundations/information-theory|5. 정보이론 §1]]의 엔트로피를 연속 변수로 옮긴 것으로, 확률 대신 밀도로 계산하므로 이산 엔트로피와 달리 음수가 될 수 있다)가 가장 크다(Murphy PML1 §2.6.4, 증명은 §3.4.4) — "가장 덜 주제넘은" 선택.
+센서 융합에서 조건부 평균 식은 다음처럼 읽는다. 보지 못한 양의 기대값에서 시작한다. 관측한 양이 예상에서 얼마나 벗어났는지 본다. 두 양의 공분산 관계로 그 차이를 전달한다. 결합 가우시안이고 공분산이 없으면 하나의 관찰이 다른 것의 조건부 평균을 움직이지 않는다.
 
-<svg viewBox="0 0 620 214" style="max-width:100%;height:auto" role="img" aria-label="가우시안: 모양은 하나, 폭은 sigma가 정하고, 넓이는 언제나 1">
-  <g stroke="currentColor" stroke-width="1" opacity="0.3"><line x1="40" y1="150" x2="425" y2="150"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.3" stroke-dasharray="3 3">
-    <line x1="230.0" y1="48" x2="230.0" y2="150"/><line x1="170.6" y1="114" x2="170.6" y2="150"/><line x1="289.4" y1="114" x2="289.4" y2="150"/>
+<svg viewBox="0 0 560 290" style="max-width:100%;height:auto" role="img" aria-label="P5의 사전분포와 측정값을 결합 가우시안으로 그린 그림: 마할라노비스 거리 1과 2의 타원, 기울기 0.8의 조건부 평균 직선, z = 12의 세로 단면과 그 위의 N(11.6, 0.8), 오른쪽에 사전분포 N(10, 4)와 비교한 단면 밀도">
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="56" y1="248" x2="320" y2="248"/><line x1="56" y1="248" x2="56" y2="28"/><line x1="372" y1="248" x2="522" y2="248"/><line x1="372" y1="248" x2="372" y2="28"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="56" y1="248" x2="56" y2="252"/><line x1="100" y1="248" x2="100" y2="252"/><line x1="144" y1="248" x2="144" y2="252"/><line x1="188" y1="248" x2="188" y2="252"/><line x1="232" y1="248" x2="232" y2="252"/><line x1="276" y1="248" x2="276" y2="252"/><line x1="320" y1="248" x2="320" y2="252"/><line x1="52" y1="226" x2="56" y2="226"/><line x1="52" y1="182" x2="56" y2="182"/><line x1="52" y1="138" x2="56" y2="138"/><line x1="52" y1="94" x2="56" y2="94"/><line x1="52" y1="50" x2="56" y2="50"/><line x1="372" y1="248" x2="372" y2="252"/><line x1="432" y1="248" x2="432" y2="252"/><line x1="492" y1="248" x2="492" y2="252"/></g>
+  <path d="M237.2 98.6 L237.1 97.8 L237 97.1 L236.8 96.4 L236.4 95.8 L236 95.3 L235.5 94.9 L234.9 94.5 L234.2 94.3 L233.4 94.1 L232.6 94 L231.6 94 L230.6 94.1 L229.5 94.2 L228.3 94.5 L227 94.8 L225.7 95.2 L224.3 95.7 L222.8 96.3 L221.2 96.9 L219.6 97.6 L217.9 98.4 L216.2 99.3 L214.4 100.3 L212.6 101.3 L210.7 102.4 L208.8 103.5 L206.8 104.8 L204.8 106 L202.8 107.4 L200.7 108.8 L198.6 110.3 L196.5 111.8 L194.4 113.4 L192.3 115 L190.1 116.6 L188 118.3 L185.9 120.1 L183.7 121.8 L181.6 123.6 L179.5 125.5 L177.4 127.3 L175.3 129.2 L173.2 131.1 L171.2 133 L169.2 134.9 L167.2 136.8 L165.3 138.7 L163.4 140.6 L161.6 142.5 L159.8 144.5 L158.1 146.3 L156.4 148.2 L154.8 150.1 L153.2 151.9 L151.7 153.7 L150.3 155.5 L149 157.2 L147.7 159 L146.5 160.6 L145.4 162.2 L144.4 163.8 L143.4 165.4 L142.6 166.8 L141.8 168.3 L141.1 169.6 L140.5 170.9 L140 172.2 L139.6 173.3 L139.2 174.4 L139 175.5 L138.9 176.5 L138.8 177.4 L138.9 178.2 L139 178.9 L139.2 179.6 L139.6 180.2 L140 180.7 L140.5 181.1 L141.1 181.5 L141.8 181.7 L142.6 181.9 L143.4 182 L144.4 182 L145.4 181.9 L146.5 181.8 L147.7 181.5 L149 181.2 L150.3 180.8 L151.7 180.3 L153.2 179.7 L154.8 179.1 L156.4 178.4 L158.1 177.6 L159.8 176.7 L161.6 175.7 L163.4 174.7 L165.3 173.6 L167.2 172.5 L169.2 171.2 L171.2 170 L173.2 168.6 L175.3 167.2 L177.4 165.7 L179.5 164.2 L181.6 162.6 L183.7 161 L185.9 159.4 L188 157.7 L190.1 155.9 L192.3 154.2 L194.4 152.4 L196.5 150.5 L198.6 148.7 L200.7 146.8 L202.8 144.9 L204.8 143 L206.8 141.1 L208.8 139.2 L210.7 137.3 L212.6 135.4 L214.4 133.5 L216.2 131.5 L217.9 129.7 L219.6 127.8 L221.2 125.9 L222.8 124.1 L224.3 122.3 L225.7 120.5 L227 118.8 L228.3 117 L229.5 115.4 L230.6 113.8 L231.6 112.2 L232.6 110.6 L233.4 109.2 L234.2 107.7 L234.9 106.4 L235.5 105.1 L236 103.8 L236.4 102.7 L236.8 101.6 L237 100.5 L237.1 99.5 L237.2 98.6Z" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8"/>
+  <path d="M286.4 59.3 L286.3 57.6 L286 56.2 L285.5 54.8 L284.9 53.7 L284.1 52.6 L283 51.8 L281.8 51.1 L280.5 50.6 L278.9 50.2 L277.2 50 L275.3 50 L273.2 50.2 L271 50.5 L268.6 51 L266.1 51.6 L263.4 52.4 L260.5 53.4 L257.6 54.5 L254.5 55.8 L251.2 57.3 L247.9 58.9 L244.4 60.6 L240.9 62.5 L237.2 64.6 L233.4 66.7 L229.6 69.1 L225.7 71.5 L221.7 74.1 L217.6 76.8 L213.5 79.6 L209.3 82.5 L205.1 85.6 L200.8 88.7 L196.6 91.9 L192.3 95.2 L188 98.6 L183.7 102.1 L179.4 105.7 L175.2 109.3 L170.9 112.9 L166.7 116.6 L162.5 120.4 L158.4 124.1 L154.3 127.9 L150.3 131.8 L146.4 135.6 L142.6 139.4 L138.8 143.3 L135.1 147.1 L131.6 150.9 L128.1 154.7 L124.8 158.4 L121.5 162.2 L118.4 165.8 L115.5 169.4 L112.6 173 L109.9 176.5 L107.4 179.9 L105 183.2 L102.8 186.5 L100.7 189.6 L98.8 192.7 L97.1 195.7 L95.5 198.5 L94.2 201.2 L93 203.8 L91.9 206.3 L91.1 208.7 L90.5 210.9 L90 213 L89.7 214.9 L89.6 216.7 L89.7 218.4 L90 219.8 L90.5 221.2 L91.1 222.3 L91.9 223.4 L93 224.2 L94.2 224.9 L95.5 225.4 L97.1 225.8 L98.8 226 L100.7 226 L102.8 225.8 L105 225.5 L107.4 225 L109.9 224.4 L112.6 223.6 L115.5 222.6 L118.4 221.5 L121.5 220.2 L124.8 218.7 L128.1 217.1 L131.6 215.4 L135.1 213.5 L138.8 211.4 L142.6 209.3 L146.4 206.9 L150.3 204.5 L154.3 201.9 L158.4 199.2 L162.5 196.4 L166.7 193.5 L170.9 190.4 L175.2 187.3 L179.4 184.1 L183.7 180.8 L188 177.4 L192.3 173.9 L196.6 170.3 L200.8 166.7 L205.1 163.1 L209.3 159.4 L213.5 155.6 L217.6 151.9 L221.7 148.1 L225.7 144.2 L229.6 140.4 L233.4 136.6 L237.2 132.7 L240.9 128.9 L244.4 125.1 L247.9 121.3 L251.2 117.6 L254.5 113.8 L257.6 110.2 L260.5 106.6 L263.4 103 L266.1 99.5 L268.6 96.1 L271 92.8 L273.2 89.5 L275.3 86.4 L277.2 83.3 L278.9 80.3 L280.5 77.5 L281.8 74.8 L283 72.2 L284.1 69.7 L284.9 67.3 L285.5 65.1 L286 63 L286.3 61.1 L286.4 59.3Z" fill="currentColor" fill-opacity="0.03" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.5"/>
+  <line x1="64.8" y1="236.6" x2="311.2" y2="39.4" stroke="currentColor" stroke-width="1.8"/>
+  <line x1="232" y1="28" x2="232" y2="248" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 3" stroke-opacity="0.8"/>
+  <line x1="232" y1="83.1" x2="232" y2="122.5" stroke="currentColor" stroke-width="3.2"/>
+  <line x1="232" y1="102.8" x2="372" y2="102.8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.6"/>
+  <circle cx="232" cy="102.8" r="4" fill="currentColor"/>
+  <circle cx="188" cy="138" r="3" fill="currentColor" fill-opacity="0.7"/>
+  <path d="M374.6 248 L374.8 246.9 L375 245.8 L375.2 244.7 L375.4 243.6 L375.6 242.5 L375.8 241.4 L376 240.3 L376.2 239.2 L376.5 238.1 L376.8 237 L377 235.9 L377.3 234.8 L377.6 233.7 L377.9 232.6 L378.3 231.5 L378.6 230.4 L379 229.3 L379.3 228.2 L379.7 227.1 L380.1 226 L380.5 224.9 L380.9 223.8 L381.4 222.7 L381.8 221.6 L382.3 220.5 L382.8 219.4 L383.3 218.3 L383.8 217.2 L384.4 216.1 L384.9 215 L385.5 213.9 L386.1 212.8 L386.7 211.7 L387.3 210.6 L388 209.5 L388.6 208.4 L389.3 207.3 L390 206.2 L390.7 205.1 L391.4 204 L392.2 202.9 L392.9 201.8 L393.7 200.7 L394.5 199.6 L395.3 198.5 L396.1 197.4 L396.9 196.3 L397.7 195.2 L398.5 194.1 L399.4 193 L400.3 191.9 L401.1 190.8 L402 189.7 L402.9 188.6 L403.8 187.5 L404.7 186.4 L405.6 185.3 L406.5 184.2 L407.4 183.1 L408.3 182 L409.2 180.9 L410.1 179.8 L411 178.7 L411.9 177.6 L412.8 176.5 L413.7 175.4 L414.6 174.3 L415.5 173.2 L416.3 172.1 L417.2 171 L418 169.9 L418.8 168.8 L419.7 167.7 L420.4 166.6 L421.2 165.5 L422 164.4 L422.7 163.3 L423.4 162.2 L424.1 161.1 L424.8 160 L425.5 158.9 L426.1 157.8 L426.7 156.7 L427.2 155.6 L427.8 154.5 L428.3 153.4 L428.8 152.3 L429.2 151.2 L429.6 150.1 L430 149 L430.3 147.9 L430.7 146.8 L430.9 145.7 L431.2 144.6 L431.4 143.5 L431.5 142.4 L431.7 141.3 L431.8 140.2 L431.8 139.1 L431.8 138 L431.8 136.9 L431.8 135.8 L431.7 134.7 L431.5 133.6 L431.4 132.5 L431.2 131.4 L430.9 130.3 L430.7 129.2 L430.3 128.1 L430 127 L429.6 125.9 L429.2 124.8 L428.8 123.7 L428.3 122.6 L427.8 121.5 L427.2 120.4 L426.7 119.3 L426.1 118.2 L425.5 117.1 L424.8 116 L424.1 114.9 L423.4 113.8 L422.7 112.7 L422 111.6 L421.2 110.5 L420.4 109.4 L419.7 108.3 L418.8 107.2 L418 106.1 L417.2 105 L416.3 103.9 L415.5 102.8 L414.6 101.7 L413.7 100.6 L412.8 99.5 L411.9 98.4 L411 97.3 L410.1 96.2 L409.2 95.1 L408.3 94 L407.4 92.9 L406.5 91.8 L405.6 90.7 L404.7 89.6 L403.8 88.5 L402.9 87.4 L402 86.3 L401.1 85.2 L400.3 84.1 L399.4 83 L398.5 81.9 L397.7 80.8 L396.9 79.7 L396.1 78.6 L395.3 77.5 L394.5 76.4 L393.7 75.3 L392.9 74.2 L392.2 73.1 L391.4 72 L390.7 70.9 L390 69.8 L389.3 68.7 L388.6 67.6 L388 66.5 L387.3 65.4 L386.7 64.3 L386.1 63.2 L385.5 62.1 L384.9 61 L384.4 59.9 L383.8 58.8 L383.3 57.7 L382.8 56.6 L382.3 55.5 L381.8 54.4 L381.4 53.3 L380.9 52.2 L380.5 51.1 L380.1 50 L379.7 48.9 L379.3 47.8 L379 46.7 L378.6 45.6 L378.3 44.5 L377.9 43.4 L377.6 42.3 L377.3 41.2 L377 40.1 L376.8 39 L376.5 37.9 L376.2 36.8 L376 35.7 L375.8 34.6 L375.6 33.5 L375.4 32.4 L375.2 31.3 L375 30.2 L374.8 29.1 L374.6 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="7 4" stroke-opacity="0.7"/>
+  <path d="M372 248 L372 246.9 L372 245.8 L372 244.7 L372 243.6 L372 242.5 L372 241.4 L372 240.3 L372 239.2 L372 238.1 L372 237 L372 235.9 L372 234.8 L372 233.7 L372 232.6 L372 231.5 L372 230.4 L372 229.3 L372 228.2 L372 227.1 L372 226 L372 224.9 L372 223.8 L372 222.7 L372 221.6 L372 220.5 L372 219.4 L372 218.3 L372 217.2 L372 216.1 L372 215 L372 213.9 L372 212.8 L372 211.7 L372 210.6 L372 209.5 L372 208.4 L372 207.3 L372 206.2 L372 205.1 L372 204 L372 202.9 L372 201.8 L372 200.7 L372 199.6 L372 198.5 L372 197.4 L372 196.3 L372 195.2 L372 194.1 L372 193 L372 191.9 L372 190.8 L372 189.7 L372 188.6 L372 187.5 L372 186.4 L372 185.3 L372 184.2 L372 183.1 L372 182 L372.1 180.9 L372.1 179.8 L372.1 178.7 L372.1 177.6 L372.1 176.5 L372.1 175.4 L372.2 174.3 L372.2 173.2 L372.3 172.1 L372.3 171 L372.4 169.9 L372.5 168.8 L372.6 167.7 L372.7 166.6 L372.8 165.5 L373 164.4 L373.2 163.3 L373.4 162.2 L373.7 161.1 L374 160 L374.3 158.9 L374.7 157.8 L375.1 156.7 L375.7 155.6 L376.2 154.5 L376.9 153.4 L377.7 152.3 L378.5 151.2 L379.4 150.1 L380.5 149 L381.7 147.9 L383 146.8 L384.4 145.7 L386 144.6 L387.8 143.5 L389.7 142.4 L391.7 141.3 L394 140.2 L396.4 139.1 L399 138 L401.8 136.9 L404.8 135.8 L408 134.7 L411.3 133.6 L414.8 132.5 L418.5 131.4 L422.4 130.3 L426.4 129.2 L430.5 128.1 L434.8 127 L439.2 125.9 L443.6 124.8 L448.1 123.7 L452.7 122.6 L457.2 121.5 L461.7 120.4 L466.1 119.3 L470.5 118.2 L474.8 117.1 L478.8 116 L482.8 114.9 L486.5 113.8 L489.9 112.7 L493.1 111.6 L495.9 110.5 L498.5 109.4 L500.7 108.3 L502.5 107.2 L503.9 106.1 L505 105 L505.6 103.9 L505.8 102.8 L505.6 101.7 L505 100.6 L503.9 99.5 L502.5 98.4 L500.7 97.3 L498.5 96.2 L495.9 95.1 L493.1 94 L489.9 92.9 L486.5 91.8 L482.8 90.7 L478.8 89.6 L474.8 88.5 L470.5 87.4 L466.1 86.3 L461.7 85.2 L457.2 84.1 L452.7 83 L448.1 81.9 L443.6 80.8 L439.2 79.7 L434.8 78.6 L430.5 77.5 L426.4 76.4 L422.4 75.3 L418.5 74.2 L414.8 73.1 L411.3 72 L408 70.9 L404.8 69.8 L401.8 68.7 L399 67.6 L396.4 66.5 L394 65.4 L391.7 64.3 L389.7 63.2 L387.8 62.1 L386 61 L384.4 59.9 L383 58.8 L381.7 57.7 L380.5 56.6 L379.4 55.5 L378.5 54.4 L377.7 53.3 L376.9 52.2 L376.2 51.1 L375.7 50 L375.1 48.9 L374.7 47.8 L374.3 46.7 L374 45.6 L373.7 44.5 L373.4 43.4 L373.2 42.3 L373 41.2 L372.8 40.1 L372.7 39 L372.6 37.9 L372.5 36.8 L372.4 35.7 L372.3 34.6 L372.3 33.5 L372.2 32.4 L372.2 31.3 L372.1 30.2 L372.1 29.1 L372.1 28" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="2.2"/>
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="56" y="264" text-anchor="middle">4</text>
+    <text x="100" y="264" text-anchor="middle">6</text>
+    <text x="144" y="264" text-anchor="middle">8</text>
+    <text x="188" y="264" text-anchor="middle">10</text>
+    <text x="232" y="264" text-anchor="middle">12</text>
+    <text x="276" y="264" text-anchor="middle">14</text>
+    <text x="320" y="264" text-anchor="middle">16</text>
+    <text x="48" y="230" text-anchor="end">6</text>
+    <text x="48" y="186" text-anchor="end">8</text>
+    <text x="48" y="142" text-anchor="end">10</text>
+    <text x="48" y="98" text-anchor="end">12</text>
+    <text x="48" y="54" text-anchor="end">14</text>
+    <text x="372" y="264" text-anchor="middle">0</text>
+    <text x="432" y="264" text-anchor="middle">0.2</text>
+    <text x="492" y="264" text-anchor="middle">0.4</text>
   </g>
-  <path d="M40.0 149.6L41.9 149.6L43.8 149.6L45.7 149.5L47.6 149.5L49.5 149.4L51.4 149.3L53.3 149.3L55.2 149.2L57.1 149.1L59.0 149.1L60.9 149.0L62.8 148.9L64.7 148.8L66.6 148.6L68.5 148.5L70.4 148.4L72.3 148.2L74.2 148.1L76.1 147.9L78.0 147.7L79.9 147.5L81.8 147.3L83.7 147.1L85.6 146.9L87.5 146.6L89.4 146.4L91.3 146.1L93.2 145.8L95.1 145.5L97.0 145.1L98.9 144.8L100.8 144.4L102.7 144.0L104.6 143.6L106.5 143.1L108.4 142.6L110.3 142.1L112.2 141.6L114.1 141.1L116.0 140.5L117.9 139.9L119.8 139.3L121.7 138.6L123.6 138.0L125.5 137.2L127.4 136.5L129.3 135.8L131.2 135.0L133.1 134.2L135.0 133.3L136.9 132.5L138.8 131.6L140.7 130.6L142.6 129.7L144.5 128.7L146.4 127.7L148.3 126.7L150.2 125.7L152.1 124.6L154.0 123.6L155.9 122.5L157.8 121.4L159.7 120.2L161.6 119.1L163.5 118.0L165.4 116.8L167.3 115.6L169.2 114.5L171.1 113.3L173.0 112.2L174.9 111.0L176.8 109.8L178.7 108.7L180.6 107.6L182.5 106.4L184.4 105.3L186.3 104.2L188.2 103.2L190.1 102.1L192.0 101.1L193.9 100.1L195.8 99.2L197.7 98.3L199.6 97.4L201.5 96.5L203.4 95.7L205.3 95.0L207.2 94.3L209.1 93.6L211.0 93.0L212.9 92.4L214.8 91.9L216.7 91.5L218.6 91.1L220.5 90.8L222.4 90.5L224.3 90.3L226.2 90.1L228.1 90.0L230.0 90.0L231.9 90.0L233.8 90.1L235.7 90.3L237.6 90.5L239.5 90.8L241.4 91.1L243.3 91.5L245.2 91.9L247.1 92.4L249.0 93.0L250.9 93.6L252.8 94.3L254.7 95.0L256.6 95.7L258.5 96.5L260.4 97.4L262.3 98.3L264.2 99.2L266.1 100.1L268.0 101.1L269.9 102.1L271.8 103.2L273.7 104.2L275.6 105.3L277.5 106.4L279.4 107.6L281.3 108.7L283.2 109.8L285.1 111.0L287.0 112.2L288.9 113.3L290.8 114.5L292.7 115.6L294.6 116.8L296.5 118.0L298.4 119.1L300.3 120.2L302.2 121.4L304.1 122.5L306.0 123.6L307.9 124.6L309.8 125.7L311.7 126.7L313.6 127.7L315.5 128.7L317.4 129.7L319.3 130.6L321.2 131.6L323.1 132.5L325.0 133.3L326.9 134.2L328.8 135.0L330.7 135.8L332.6 136.5L334.5 137.2L336.4 138.0L338.3 138.6L340.2 139.3L342.1 139.9L344.0 140.5L345.9 141.1L347.8 141.6L349.7 142.1L351.6 142.6L353.5 143.1L355.4 143.6L357.3 144.0L359.2 144.4L361.1 144.8L363.0 145.1L364.9 145.5L366.8 145.8L368.7 146.1L370.6 146.4L372.5 146.6L374.4 146.9L376.3 147.1L378.2 147.3L380.1 147.5L382.0 147.7L383.9 147.9L385.8 148.1L387.7 148.2L389.6 148.4L391.5 148.5L393.4 148.6L395.3 148.8L397.2 148.9L399.1 149.0L401.0 149.1L402.9 149.1L404.8 149.2L406.7 149.3L408.6 149.3L410.5 149.4L412.4 149.5L414.3 149.5L416.2 149.6L418.1 149.6L420.0 149.6" fill="none" stroke="currentColor" stroke-width="2"/>
-  <path d="M40.0 150.0L41.9 150.0L43.8 150.0L45.7 150.0L47.6 150.0L49.5 150.0L51.4 150.0L53.3 150.0L55.2 150.0L57.1 150.0L59.0 150.0L60.9 150.0L62.8 150.0L64.7 150.0L66.6 150.0L68.5 150.0L70.4 150.0L72.3 150.0L74.2 150.0L76.1 150.0L78.0 150.0L79.9 150.0L81.8 150.0L83.7 150.0L85.6 150.0L87.5 150.0L89.4 150.0L91.3 149.9L93.2 149.9L95.1 149.9L97.0 149.9L98.9 149.9L100.8 149.9L102.7 149.8L104.6 149.8L106.5 149.8L108.4 149.7L110.3 149.6L112.2 149.6L114.1 149.5L116.0 149.4L117.9 149.3L119.8 149.2L121.7 149.0L123.6 148.8L125.5 148.6L127.4 148.4L129.3 148.2L131.2 147.9L133.1 147.5L135.0 147.1L136.9 146.7L138.8 146.2L140.7 145.7L142.6 145.1L144.5 144.4L146.4 143.6L148.3 142.8L150.2 141.9L152.1 140.8L154.0 139.7L155.9 138.5L157.8 137.2L159.7 135.7L161.6 134.2L163.5 132.5L165.4 130.7L167.3 128.7L169.2 126.7L171.1 124.5L173.0 122.2L174.9 119.8L176.8 117.2L178.7 114.5L180.6 111.8L182.5 108.9L184.4 105.9L186.3 102.9L188.2 99.8L190.1 96.6L192.0 93.4L193.9 90.2L195.8 86.9L197.7 83.7L199.6 80.5L201.5 77.4L203.4 74.3L205.3 71.4L207.2 68.5L209.1 65.8L211.0 63.3L212.9 60.9L214.8 58.7L216.7 56.7L218.6 55.0L220.5 53.5L222.4 52.2L224.3 51.3L226.2 50.6L228.1 50.1L230.0 50.0L231.9 50.1L233.8 50.6L235.7 51.3L237.6 52.2L239.5 53.5L241.4 55.0L243.3 56.7L245.2 58.7L247.1 60.9L249.0 63.3L250.9 65.8L252.8 68.5L254.7 71.4L256.6 74.3L258.5 77.4L260.4 80.5L262.3 83.7L264.2 86.9L266.1 90.2L268.0 93.4L269.9 96.6L271.8 99.8L273.7 102.9L275.6 105.9L277.5 108.9L279.4 111.8L281.3 114.5L283.2 117.2L285.1 119.8L287.0 122.2L288.9 124.5L290.8 126.7L292.7 128.7L294.6 130.7L296.5 132.5L298.4 134.2L300.3 135.7L302.2 137.2L304.1 138.5L306.0 139.7L307.9 140.8L309.8 141.9L311.7 142.8L313.6 143.6L315.5 144.4L317.4 145.1L319.3 145.7L321.2 146.2L323.1 146.7L325.0 147.1L326.9 147.5L328.8 147.9L330.7 148.2L332.6 148.4L334.5 148.6L336.4 148.8L338.3 149.0L340.2 149.2L342.1 149.3L344.0 149.4L345.9 149.5L347.8 149.6L349.7 149.6L351.6 149.7L353.5 149.8L355.4 149.8L357.3 149.8L359.2 149.9L361.1 149.9L363.0 149.9L364.9 149.9L366.8 149.9L368.7 149.9L370.6 150.0L372.5 150.0L374.4 150.0L376.3 150.0L378.2 150.0L380.1 150.0L382.0 150.0L383.9 150.0L385.8 150.0L387.7 150.0L389.6 150.0L391.5 150.0L393.4 150.0L395.3 150.0L397.2 150.0L399.1 150.0L401.0 150.0L402.9 150.0L404.8 150.0L406.7 150.0L408.6 150.0L410.5 150.0L412.4 150.0L414.3 150.0L416.2 150.0L418.1 150.0L420.0 150.0" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.6" stroke-dasharray="6 4"/>
-  <path d="M40.0 143.1L41.9 142.9L43.8 142.7L45.7 142.5L47.6 142.2L49.5 142.0L51.4 141.7L53.3 141.5L55.2 141.3L57.1 141.0L59.0 140.7L60.9 140.5L62.8 140.2L64.7 139.9L66.6 139.6L68.5 139.4L70.4 139.1L72.3 138.8L74.2 138.5L76.1 138.2L78.0 137.9L79.9 137.6L81.8 137.3L83.7 136.9L85.6 136.6L87.5 136.3L89.4 136.0L91.3 135.6L93.2 135.3L95.1 135.0L97.0 134.6L98.9 134.3L100.8 133.9L102.7 133.6L104.6 133.3L106.5 132.9L108.4 132.6L110.3 132.2L112.2 131.8L114.1 131.5L116.0 131.1L117.9 130.8L119.8 130.4L121.7 130.1L123.6 129.7L125.5 129.3L127.4 129.0L129.3 128.6L131.2 128.3L133.1 127.9L135.0 127.5L136.9 127.2L138.8 126.8L140.7 126.5L142.6 126.1L144.5 125.8L146.4 125.5L148.3 125.1L150.2 124.8L152.1 124.4L154.0 124.1L155.9 123.8L157.8 123.5L159.7 123.2L161.6 122.8L163.5 122.5L165.4 122.2L167.3 121.9L169.2 121.6L171.1 121.4L173.0 121.1L174.9 120.8L176.8 120.6L178.7 120.3L180.6 120.0L182.5 119.8L184.4 119.6L186.3 119.3L188.2 119.1L190.1 118.9L192.0 118.7L193.9 118.5L195.8 118.3L197.7 118.2L199.6 118.0L201.5 117.8L203.4 117.7L205.3 117.5L207.2 117.4L209.1 117.3L211.0 117.2L212.9 117.1L214.8 117.0L216.7 116.9L218.6 116.9L220.5 116.8L222.4 116.8L224.3 116.7L226.2 116.7L228.1 116.7L230.0 116.7L231.9 116.7L233.8 116.7L235.7 116.7L237.6 116.8L239.5 116.8L241.4 116.9L243.3 116.9L245.2 117.0L247.1 117.1L249.0 117.2L250.9 117.3L252.8 117.4L254.7 117.5L256.6 117.7L258.5 117.8L260.4 118.0L262.3 118.2L264.2 118.3L266.1 118.5L268.0 118.7L269.9 118.9L271.8 119.1L273.7 119.3L275.6 119.6L277.5 119.8L279.4 120.0L281.3 120.3L283.2 120.6L285.1 120.8L287.0 121.1L288.9 121.4L290.8 121.6L292.7 121.9L294.6 122.2L296.5 122.5L298.4 122.8L300.3 123.2L302.2 123.5L304.1 123.8L306.0 124.1L307.9 124.4L309.8 124.8L311.7 125.1L313.6 125.5L315.5 125.8L317.4 126.1L319.3 126.5L321.2 126.8L323.1 127.2L325.0 127.5L326.9 127.9L328.8 128.3L330.7 128.6L332.6 129.0L334.5 129.3L336.4 129.7L338.3 130.1L340.2 130.4L342.1 130.8L344.0 131.1L345.9 131.5L347.8 131.8L349.7 132.2L351.6 132.6L353.5 132.9L355.4 133.3L357.3 133.6L359.2 133.9L361.1 134.3L363.0 134.6L364.9 135.0L366.8 135.3L368.7 135.6L370.6 136.0L372.5 136.3L374.4 136.6L376.3 136.9L378.2 137.3L380.1 137.6L382.0 137.9L383.9 138.2L385.8 138.5L387.7 138.8L389.6 139.1L391.5 139.4L393.4 139.6L395.3 139.9L397.2 140.2L399.1 140.5L401.0 140.7L402.9 141.0L404.8 141.3L406.7 141.5L408.6 141.7L410.5 142.0L412.4 142.2L414.3 142.5L416.2 142.7L418.1 142.9L420.0 143.1" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4" stroke-dasharray="2 3"/>
-  <g font-size="10.5" fill="currentColor" text-anchor="middle">
-    <text x="230.0" y="166">&#956;</text><text x="170.6" y="166">&#956;&#8722;&#963;</text><text x="289.4" y="166">&#956;+&#963;</text>
+  <g font-size="11" fill="currentColor">
+    <text x="320" y="282" text-anchor="end">측정값 z (cm)</text>
+    <text x="12" y="18">실제 거리 x (cm)</text>
+    <text x="62" y="46">E[x | z] = 10 + 0.8 (z − 10)</text>
+    <text x="62" y="61">기울기 0.8 = K</text>
+    <text x="238" y="242">z = 12 단면</text>
+    <text x="181" y="131" text-anchor="end" opacity="0.85">평균 (10, 10)</text>
+    <text x="386" y="44">단면: N(11.6, 0.8)</text>
+    <text x="444" y="186" opacity="0.85">사전분포 N(10, 4)</text>
+    <text x="522" y="282" text-anchor="end" opacity="0.85">단면 위의 밀도</text>
   </g>
-  <g stroke="currentColor"><line x1="40" y1="182" x2="66" y2="182" stroke-width="2"/><line x1="146" y1="182" x2="172" y2="182" stroke-width="1.6" opacity="0.6" stroke-dasharray="6 4"/><line x1="286" y1="182" x2="312" y2="182" stroke-width="1.5" opacity="0.4" stroke-dasharray="2 3"/></g>
-  <g font-size="10.5" fill="currentColor">
-    <text x="72" y="186">&#963; = 1</text><text x="178" y="186">&#963; = 0.6 (더 확신)</text><text x="318" y="186">&#963; = 1.8 (덜 확신)</text>
-    <text x="40" y="208" opacity="0.9">모든 가우시안은 이 곡선 하나를 다시 스케일한 것이다. 좁을수록 더 확신하는 것이고, 넓이가 항상 1이므로 그만큼 높아진다.</text>
+  <g font-size="10.5" fill="currentColor" opacity="0.75">
+    <text x="150" y="195">1σ</text>
+    <text x="106" y="239">2σ</text>
   </g>
 </svg>
 
-**밀도식을 외우기 전에 해독한다.** μ는 중심, Σ는 퍼짐과 좌표들이 함께 변하는 방식을 나타낸다. 표시된 역행렬·행렬식 밀도식은 비특이 공분산에서만 유효하다. 특이 가우시안은 더 낮은 차원의 지지집합(변수가 실제로 가질 수 있는 값들의 집합, 예: 평면 안의 한 직선)에 놓여 별도 처리가 필요하다. 지수 안의 역공분산은 변위가 그 퍼짐에 비해 얼마나 뜻밖인지 잰다. 같은 물리 변위도 불확실한 방향에서는 덜 뜻밖이고 좁게 묶인 방향에서는 더 뜻밖이다. 지수 밖의 계수는 전체 확률을 정규화한다. 한 점의 밀도 자체가 그 연속값이 나올 확률은 아니다.
+P5의 사전분포와 측정값을 결합 가우시안 하나로 그린 것이다. 실제 거리 $x$는 평균 $10$, 분산 $4$이고 측정값 $z = x + v$는 분산 $1$의 잡음을 더하므로 $\text{Var}(z) = 5$, $\text{Cov}(x, z) = 4$이며, 두 타원은 마할라노비스 거리 $1$과 $2$의 등고선이다. $z = 12$를 안다는 것은 $z = 12$의 세로 단면만 남긴다는 뜻이고, 그 단면 위의 밀도는 사전분포 $\mathcal N(10,\ 4)$보다 좁은 $\mathcal N(11.6,\ 0.8)$이며(오른쪽, 굵은 막대가 $\pm0.894$), 그 중심은 기울기 $0.8$이 곧 §5.2의 칼만 이득 $K$인 직선 $E[x \mid z] = 10 + 0.8(z - 10)$ 위에 놓인다.
 
-센서 융합에서 조건부 평균 식은 다음처럼 읽는다. 보지 못한 양의 기대값에서 시작한다. 관측한 양이 예상에서 얼마나 벗어났는지 본다. 두 양의 공분산 관계로 그 차이를 전달한다. 공동 가우시안이고 공분산이 없으면 하나의 관찰이 다른 것의 조건부 평균을 움직이지 않는다.
+또한: **중심극한정리**(CLT)는 이름 붙은 가정 셋을 가진 극한 명제다: $X_1, \dots, X_N$이 i.i.d.(§2)이고, 평균이 $\mu$이고, 분산 $\sigma^2$이 *유한*하다. 그러면 표준화한 표본 평균 $\bar X_N = \frac1N \sum_i X_i$가 표준정규로 분포수렴한다:
+$$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1) \quad (N \to \infty)$$
+"분포수렴"은 CDF가 수렴한다는 뜻이므로, $\bar X_N$에 관한 확률을 평균 $\mu$, 표준편차 $\sigma/\sqrt N$인 가우시안에서 읽을 수 있다. *예:* 주사위 30개의 평균은 표준편차가 $\sqrt{35/12}/\sqrt{30} = 0.312$이고, 가우시안 근사는 $P(|\bar X_{30} - 3.5| < 0.5) = 0.89$를, 정확한 값은 $0.88$을 준다. *반례:* 분산이 유한하지 않으면 성립하지 않는다. 표준 코시 표본 $N$개의 평균은 모든 $N$에서 다시 표준 코시이므로 평균을 내도 좁아지지 않는다. CLT가 노이즈 모델의 기본값이 가우시안인 이유다.
+
+> [!note]- 더 깊이 · Deeper
+> **두 번째 이유, 최대 엔트로피.** 평균과 분산이 주어진 연속 분포 가운데 가우시안의 미분 엔트로피가 가장 크다. 미분 엔트로피(differential entropy)는 [[02-foundations/information-theory|5. 정보이론 §1]]의 엔트로피를 연속 변수로 옮긴 것으로, 확률 대신 밀도로 계산하므로 이산 엔트로피와 달리 음수가 될 수 있다(Murphy PML1 §2.6.4, 증명은 §3.4.4). 그런 뜻에서 가우시안은 평균과 분산 말고는 아무것도 가정하지 않는, "가장 덜 주제넘은" 선택이다.
 
 **이해 확인.** 작은 공분산은 모델 분포가 좁다는 보고다. 보정이 맞거나 편향이 없다는 인증은 아니다. 센서는 무작위 산포가 작으면서 일관되게 틀릴 수 있다. 잘못된 보정으로 높은 신뢰도의 위치를 보고할 때 꼭 필요한 구분이다.
 
 ### 4. 추정 — 손실함수의 출생지
 
+표준 손실은 모두 잡음 모델을 다른 모습으로 적은 것이다. 제곱 오차를 줄이는 것은 가우시안 잡음을, 교차 엔트로피를 줄이는 것은 카테고리 출력을, weight decay를 더하는 것은 가중치에 대한 가우시안 사전분포를 가정한다. 이 절은 셋을 최대우도라는 한 규칙에서 유도하므로, 논문이 손실을 바꾸면 어떤 가정을 바꿨는지 말할 수 있다.
+
 - **MLE**(최대우도추정)는 *추정기*, 즉 데이터를 파라미터 값으로 바꾸는 규칙이다. 재료는 둘이다. **우도** $L(\theta) = p(x_1, \dots, x_N \mid \theta)$는 관측된 데이터의 확률(또는 밀도)을, 데이터를 고정하고 파라미터 $\theta$의 함수로 읽은 것이다. i.i.d. 데이터(§2)면 곱이다. **MLE는** 관측된 데이터를 가장 그럴듯하게 만드는 파라미터다:
   $$\hat\theta_{\text{MLE}} = \arg\max_\theta \prod_{i=1}^N p(x_i \mid \theta) = \arg\max_\theta \sum_{i=1}^N \log p(x_i|\theta)$$
   $\log$는 증가함수이므로 최댓값의 위치는 그대로이고, 곱은 언더플로하지 않고 항별로 미분되는 합이 된다. 우도는 $\theta$ 위의 분포가 아니다. $\theta$에 대해 적분하면 1이 될 필요가 없다.
   계산 예제(가우시안 평균): $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + \text{상수}$ ⇒
-  우도 최대화 ≡ 제곱 오차 최소화; $\hat\mu = \bar{x}$.
+  우도 최대화 ≡ 제곱 오차 최소화이고, 합의 도함수 $\sum_i (x_i-\mu)/\sigma^2$를 0으로 두면 $\hat\mu = \bar{x}$다.
   **실제 데이터로:** 같은 벽을 잰 거리 측정값 다섯 개 $2.1, 1.9, 2.4, 1.6, 2.0$ m. MLE는 최선의
   추정이 그냥 평균, $\hat\mu = 10.0/5 = 2.0$ m라고 말한다. *가우시안 가정 아래에서는* 더
   정교한 무언가가 최적이 아니다 — 그리고 그것이 핵심이다: "평균을 취한다"는 습관이 아니라
@@ -1043,8 +1194,7 @@ $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1)
   대조 학습과 일부 자기지도 목적함수는 단순 MLE가 아니다.
 - **MAP**(최대 사후 확률) 추정은 MLE에 **사전분포** $p(\theta)$를 더한 것이다. §1 베이즈 정리의 사후분포에서 최빈값을 고른다:
   $$\hat\theta_{\text{MAP}} = \arg\max_\theta \Big[\sum_{i=1}^N \log p(x_i \mid \theta) + \log p(\theta)\Big]$$
-  $p(\theta \mid x) \propto p(x \mid \theta)\,p(\theta)$이고 증거 $p(x)$는 $\theta$에 의존하지 않기 때문이다. *예:* 위의 벽 측정값 다섯 개, 가우시안 잡음 $\sigma = 0.3$ m, 사전 $\mu \sim \mathcal{N}(0, 1^2)$. $-\sum_i (x_i - \mu)^2/(2\sigma^2) - \mu^2/2$의 도함수를 0으로 두면 $\hat\mu_{\text{MAP}} = \sum_i x_i / (N + \sigma^2/1^2) = 10.0/5.09 = 1.96$ m로, MLE의 $2.0$에서 사전 평균 0 쪽으로 조금 끌려간다. $N$은 커지고 $\sigma^2$은 고정이므로 데이터가 많아지면 이 끌림은 사라진다. **평균 0**인 가우시안 사전을 **가중치에** 두면 ⇒ 목적함수에 $-\lambda\|\theta\|^2$, 즉 손실에 $+\lambda\|\theta\|^2$(사후 확률은 최대화하고 손실은 최소화하므로 손실 = 음의 로그 사후 확률이 되어 부호가 뒤집힌다) — 평균이 0이 아니면 $\|\theta-\mu\|^2$가 되고, 벌점을 받는 것은 편향이나 노이즈 분산이 아니라 가중치다 —
-  weight decay는 변장한 사전 분포다; L1 사전(라플라스) ⇒ 희소성.
+  $p(\theta \mid x) \propto p(x \mid \theta)\,p(\theta)$이고 증거 $p(x)$는 $\theta$에 의존하지 않기 때문이다. *예:* 위의 벽 측정값 다섯 개, 가우시안 잡음 $\sigma = 0.3$ m, 사전 $\mu \sim \mathcal{N}(0, 1^2)$. $-\sum_i (x_i - \mu)^2/(2\sigma^2) - \mu^2/2$의 도함수를 0으로 두면 $\hat\mu_{\text{MAP}} = \sum_i x_i / (N + \sigma^2/1^2) = 10.0/5.09 = 1.96$ m로, MLE의 $2.0$에서 사전 평균 0 쪽으로 조금 끌려간다. $N$은 커지고 $\sigma^2$은 고정이므로 데이터가 많아지면 이 끌림은 사라진다. **평균 0**인 가우시안 사전 $\theta \sim \mathcal N(0, s^2 I)$을 **가중치에** 두면 목적함수에 $-\|\theta\|^2/(2s^2)$(와 상수)이 더해지고, 손실에서는 $\lambda = 1/(2s^2)$인 $+\lambda\|\theta\|^2$가 된다. 손실은 음의 로그 사후 확률이기 때문이다(사후 확률은 최대화하고 손실은 최소화하므로 부호가 뒤집힌다). 그 벌점이 곧 weight decay, 변장한 사전분포다. 사전의 중심이 0이 아닌 $\mu$라면 대신 $\lambda\|\theta-\mu\|^2$가 되고, 실제로 벌점을 받는 것은 편향이나 노이즈 분산이 아니라 가중치다. 라플라스 사전은 제곱 벌점 대신 L1 벌점 $\lambda\|\theta\|_1$을 주고, 이것이 많은 가중치를 정확히 0으로 보낸다(희소성).
 - 추정기의 품질: **편향(bias)**(여러 데이터셋에 걸쳐 *평균적으로* 얼마나 빗나가는가),
   **분산(variance)**(데이터셋이 바뀔 때 얼마나 요동치는가), 그리고 그 사이의 트레이드오프 — RL 논문의 "불편(unbiased)
   이지만 고분산인 추정기"라는 어휘가 여기서 온다
@@ -1059,6 +1209,10 @@ $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1)
 ### 5. 랜덤 프로세스와 칼만 필터
 
 #### 5.1 랜덤 프로세스와 마르코프 성질
+
+*두 번째 읽기: [[04-robotics/state-estimation-slam|3. 상태 추정]]에 닿기 전에 읽는다. 처음에는 곧장 §5.2로 간다.*
+
+센서 스트림은 확률변수 하나가 아니라 순간마다 하나씩이고, 그 무리에 대한 세 질문이 어떤 도구를 쓸지 정한다. 통계가 시간에 따라 표류하는가, 이웃한 샘플끼리 관련되어 있는가, 다음 샘플은 과거를 얼마나 필요로 하는가. 이 소절은 세 답, 곧 정상성, 백색성, 마르코프 성질에 이름을 붙인다.
 
 - 랜덤 프로세스 = 인덱스 달린 확률변수의 족; 평균 함수와 **자기상관**(autocorrelation)으로
   특성화한다 — $E[x(t)x(t+\tau)]$, 어느 순간의 신호가 $\tau$ 뒤의 자기 자신을 얼마나
@@ -1086,17 +1240,8 @@ $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1)
 
 #### 5.2 칼만 필터, 유도
 
-- **이 페이지의 부품으로 조립하는 칼만 필터**: 모델
-  $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$, 가우시안 $w_t \sim \mathcal{N}(0,Q)$,
-  $v_t \sim \mathcal{N}(0,R)$이고, 둘은 백색이며 서로, 그리고 가우시안 초기 상태 $x_0$와 독립이다.
-  - *예측* (아핀 성질): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — 여기서 $P$는
-    **추정 공분산**($\hat x$의 불확실성), $P = E[(x - \hat x)(x - \hat x)^\top]$이고, $Q$는 과정 잡음 공분산이다. 두 줄 모두 §3의 닫힘 규칙이다: $Ax$의 공분산은 $APA^\top$(성질 1)이고, 독립인 $w_t$를 더하면 $Q$가 더해진다(성질 2).
-  - *갱신* (가우시안 조건화): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
-    $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$
-  - **갱신은 어디서 오는가.** 측정 전에는 $x \sim \mathcal N(\hat x^-, P^-)$이고 $y = Cx + v$이며 $v$는 $x$와 독립이다. 쌍 $(x, y)$는 $(x, v)$의 아핀 사상이므로 결합 가우시안이고(§3, 성질 1), 평균은 $(\hat x^-,\ C\hat x^-)$,
-  $$\text{Cov}(x, y) = \text{Cov}(x,\ Cx + v) = P^-C^\top, \qquad \text{Cov}(y) = CP^-C^\top + R$$
-  이다. $v$가 $x$와 무상관이기 때문이다. §3의 두 조건화 공식에 $x_1 = x$, $x_2 = y$를 넣는다. 가중치 $\Sigma_{12}\Sigma_{22}^{-1} = P^-C^\top(CP^-C^\top+R)^{-1}$가 $K$이고, 조건부 평균은 $\hat x^- + K(y - C\hat x^-)$, 조건부 공분산은 $P^- - K\,CP^- = (I - KC)P^-$다. 이것이 갱신의 세 줄이다. 차이 $y - C\hat x^-$가 **혁신**(innovation, 측정이 예측 너머로 말해주는 것)이고 $S = CP^-C^\top + R$가 그 공분산이다. §6.3이 이 둘로 측정을 게이팅한다.
-  - **왜 최적인가.** 매 갱신은 조건부 평균 $E[x_t \mid y_{1:t}]$를 정확히 계산하고(귀납법: 예측 단계가 믿음을 가우시안이자 정확하게 유지한다), §2는 조건부 기댓값이 평균제곱 의미의 최선 예측자임을 보였다. 그래서 선형이든 아니든 어떤 추정기도 평균제곱오차가 이보다 작지 않다 — 바로 그 가정(선형 모델, 가우시안 백색 잡음, 참 $Q$와 $R$) 아래에서.
+패널이 어디 있는지에 대한 로봇의 믿음은 로봇이 도는 내내 번갈아 오는 두 사건을 견뎌야 한다. 믿음을 날카롭게 해야 할 측정값, 그리고 믿음을 흐리게 해야 할 이동이다. 칼만 필터는 둘 모두에 대한 규칙이다. 스칼라 하나에서는 짧은 세 줄이고 아래에서 두 번 유도하며, 이 소절 끝의 벡터 필터는 같은 세 줄을 행렬로 쓴 것이다.
+
 - **스칼라 이득을 베이즈 정리로 유도하기.** $C = 1$인 스칼라 상태 하나: 사전은 $x \sim \mathcal N(\hat x^-, P^-)$이고 측정은 $z = x + v$, $v \sim \mathcal N(0, R)$이며 $v$는 $x$와 독립이다. 베이즈 정리(§1)는 우도와 사전을 곱하므로 $p(x \mid z) \propto p(z \mid x)\,p(x)$, 두 가우시안의 지수가 더해진다:
   $$\log p(x \mid z) = -\frac{(x - \hat x^-)^2}{2P^-} - \frac{(z - x)^2}{2R} + \text{const}$$
   이것은 $x^2$ 계수가 음수인 $x$의 이차식이므로 사후분포도 가우시안이다. 평균은 도함수가 0이 되는 곳, $(x - \hat x^-)/P^- = (z - x)/R$이고, 분산 $P$는 $x^2$ 계수 $-\tfrac12\big(\tfrac1{P^-} + \tfrac1R\big) = -\tfrac1{2P}$에서 읽는다:
@@ -1111,7 +1256,7 @@ $$\frac{\sqrt N\,(\bar X_N - \mu)}{\sigma} \;\xrightarrow{d}\; \mathcal{N}(0, 1)
   $K = 0.04$, $\hat x = 10.08$이 되어 필터가 센서를 거의 무시한다. 이득은 그저 *상대적
   신뢰도*이고, 논문의 칼만 이득 문장이 말하는 것도 그게 전부다.
 
-**계산: P5 순차.** 위 숫자가 카탈로그 장치다([[02-foundations/lab-plants|0.6]]). 둘째 거리 $z_2=11$, $R=1$: $K=0.444$, $\hat x=11.333$, $P=0.444$. $Q=1$로 $x\leftarrow x+1$ 예측 뒤 $z_3=13$: $K=0.591$, $\hat x=12.727$, $P=0.591$. 첫 갱신 뒤 틀린 벽 $20$은 $\approx 15.3$에 작은 $P$ — 확신하고 틀림. 게이트가 막지 않는 한 그렇다(§6.3이 NIS $= 39.2$로 기각한다). 과제는 이 열을 그림과 `correct()` 템플릿으로 묻는 것이다.
+**계산: P5 순차.** 위 숫자가 카탈로그 장치다([[02-foundations/lab-plants|0.6]]). 둘째 거리 $z_2=11$, $R=1$: $K=0.8/(0.8+1)=0.444$, $\hat x=11.333$, $P=0.444$. $Q=1$로 $x\leftarrow x+1$을 예측한다. 스칼라 예측 단계는 $\hat x^- = \hat x + u$, $P^- = P + Q$이다. 알려진 이동 $u$를 더하면 평균이 옮겨 가고, 독립인 이동 잡음을 더하면 그 분산이 더해지기 때문이다(§3, 성질 2). 그래서 $\hat x^-=12.333$, $P^-=1.444$. 이어 $z_3=13$: $K=1.444/(1.444+1)=0.591$, $\hat x=12.727$, $P=0.591$. 첫 갱신 뒤에 $20$에 있는 틀린 벽을 읽으면 추정은 $\approx 15.3$까지 끌려가면서도 $P$는 작은 채로 남는다. 확신하면서 틀린 것이고, 게이트가 막지 않는 한 그렇게 된다(§6.3이 NIS $= 39.2$로 기각한다). 과제는 이것을 바꿔 묻는다. 1번은 더 시끄러운 센서를 그리고, 2번은 이동한 뒤 들어온 측정 둘을 두 순서로 융합하며, 3번은 이득이 더는 변하지 않을 때까지 루프를 돌린다.
 
 ```mermaid
 flowchart LR
@@ -1122,9 +1267,25 @@ flowchart LR
     N -. "다음 스텝" .-> P
 ```
 
+**벡터 필터: 같은 세 줄을 행렬로.** *두 번째 읽기, [[04-robotics/state-estimation-slam|3. 상태 추정]] 전에.* 실제 상태는 성분이 여럿이다(위치와 속도, 자세). 그래서 위의 숫자 하나하나가 행렬이 된다. 분산 $P$는 공분산 행렬이, 이동 $x \leftarrow x + 1$은 $x \leftarrow Ax$가, 측정 $z = x + v$는 센서가 보는 성분을 골라내는 $C$를 쓴 $y = Cx + v$가 된다. $A = C = 1$로 두면 아래의 모든 줄이 위의 스칼라 판본으로 줄어든다.
+
+- **이 페이지의 부품으로 조립하는 칼만 필터**: 모델
+  $x_{t+1} = Ax_t + w_t$, $y_t = Cx_t + v_t$, 가우시안 $w_t \sim \mathcal{N}(0,Q)$,
+  $v_t \sim \mathcal{N}(0,R)$이고, 둘은 백색이며 서로, 그리고 가우시안 초기 상태 $x_0$와 독립이다.
+  - *예측* (아핀 성질): $\hat x^- = A\hat x$, $P^- = APA^\top + Q$ — 여기서 $P$는
+    **추정 공분산**($\hat x$의 불확실성), $P = E[(x - \hat x)(x - \hat x)^\top]$이고, $Q$는 과정 잡음 공분산이다. 두 줄 모두 §3의 닫힘 규칙이다: $Ax$의 공분산은 $APA^\top$(성질 1)이고, 독립인 $w_t$를 더하면 $Q$가 더해진다(성질 2).
+  - *갱신* (가우시안 조건화): $K = P^-C^\top(CP^-C^\top + R)^{-1}$,
+    $\hat x = \hat x^- + K(y - C\hat x^-)$, $P = (I - KC)P^-$
+  - **갱신은 어디서 오는가.** 측정 전에는 $x \sim \mathcal N(\hat x^-, P^-)$이고 $y = Cx + v$이며 $v$는 $x$와 독립이다. 쌍 $(x, y)$는 $(x, v)$의 아핀 사상이므로 결합 가우시안이고(§3, 성질 1), 평균은 $(\hat x^-,\ C\hat x^-)$,
+  $$\text{Cov}(x, y) = \text{Cov}(x,\ Cx + v) = P^-C^\top, \qquad \text{Cov}(y) = CP^-C^\top + R$$
+  이다. $v$가 $x$와 무상관이기 때문이다. §3의 두 조건화 공식에 $x_1 = x$, $x_2 = y$를 넣는다. 가중치 $\Sigma_{12}\Sigma_{22}^{-1} = P^-C^\top(CP^-C^\top+R)^{-1}$가 $K$이고, 조건부 평균은 $\hat x^- + K(y - C\hat x^-)$, 조건부 공분산은 $P^- - K\,CP^- = (I - KC)P^-$다. 이것이 갱신의 세 줄이다. 차이 $y - C\hat x^-$가 **혁신**(innovation, 측정이 예측 너머로 말해주는 것)이고 $S = CP^-C^\top + R$가 그 공분산이다. §6.3이 이 둘로 측정을 게이팅한다.
+  - **왜 최적인가.** 매 갱신은 조건부 평균 $E[x_t \mid y_{1:t}]$를 정확히 계산하고(귀납법: 예측 단계가 믿음을 가우시안이자 정확하게 유지한다), §2는 조건부 기댓값이 평균제곱 의미의 최선 예측자임을 보였다. 그래서 선형이든 아니든 어떤 추정기도 평균제곱오차가 이보다 작지 않다 — 바로 그 가정(선형 모델, 가우시안 백색 잡음, 참 $Q$와 $R$) 아래에서.
+
 비선형 버전 — EKF(확장 칼만 필터)와 UKF(무향 칼만 필터) — 은 선형화하거나 샘플링하고, SLAM(동시적 위치 추정 및 지도 작성)은 이를 지도로 확장한다([[04-robotics/state-estimation-slam|상태 추정과 SLAM]]).
 
 ### 6. 검출, 가설 검정, 백색화
+
+*두 번째 읽기. 필요할 때 해당 부분을 연다: 잡음 섞인 측정값 하나로 로봇이 결정해야 할 때 §6.1, 두 방법의 결과를 비교할 때 §6.2, 추적기가 측정을 게이팅할 때 §6.3. 처음에는 이 절을 건너뛴다.*
 
 *한 문장으로:* 로봇은 잡음 섞인 숫자로 예·아니오를 답해야 할 때가 많고 — 무언가에 닿았는가, 한 방법이 정말 더 나은가, 이 측정값이 추적 중인 물체의 것인가 — 그런 답은 모두 어디에 선을 긋느냐로 오경보와 놓침을 맞바꾼다.
 
@@ -1169,23 +1330,25 @@ flowchart LR
   $$\text{FWER} = P\Big(\bigcup_{i=1}^m \{\text{검정 } i \text{가 잘못 기각}\}\Big) \le \sum_{i=1}^m \frac{\alpha}{m} = \alpha$$
   합집합의 확률은 확률의 합을 넘지 않으므로(§1) 검정들이 독립이든 아니든 성립한다. 각각 $0.0025$로 한 독립 검정 20개면 FWER는 $1 - 0.9975^{20} = 0.049$로 $0.05$ 바로 아래다.
 
-**검정 고르기.** 행과 열은 두 질문으로 정해진다: 시행마다 어떤 수가 나오는가, 그리고 두 방법이 같은 시행(같은 물체, 시드, 장면, 시작 상태)에서 돌았는가. 로봇과 ML 실험에서는 대응이 보통이고, 대응 데이터에 비대응 검정을 쓰면 위에서 말한 상쇄를 버리게 된다.
-
-| 시행당 결과 | 대응(같은 시행) | 비대응(다른 시행) | 믿기 전에 확인할 것 |
-|---|---|---|---|
-| 한 방법의 성공률 | — | 이항 CI: Wilson 또는 정확(Clopper–Pearson) 구간 | 시행이 독립인가; 조용한 재시도나 빠진 실패가 없는가 |
-| 두 방법의 성공/실패 | 불일치 쌍에 대한 McNemar 정확 검정 | 2×2 표에 대한 Fisher 정확 검정 | 두 방법이 엇갈린 쌍만 증거를 준다 |
-| 연속 지표(오차, 시간) | 대응 t-검정; Wilcoxon 부호순위 검정; $d_i$의 부호 뒤집기 순열 또는 부트스트랩 | Welch t-검정; Mann–Whitney U; 라벨 순열 검정 | t: 차이가 대략 정규이고 큰 이상치가 없음. Wilcoxon: 차이가 대칭, 이상치에 강함. 부트스트랩: 쌍이 아주 적으면 믿기 어려움 |
-| 시드나 과제가 많을 때 | 시드별 점수, 시드에 걸친 CI; 과제에 걸쳐서는 층화 부트스트랩 | 같음, 방법별로 | 단위는 시드다; 한 시드 안의 에피소드들은 독립 표본이 아니다 |
-
-- **표에 나온 순위 검정과 비대응 검정, 한 줄씩.** **Wilcoxon 부호순위 검정은** $|d_i|$에 순위를 매기고 양의 차이가 가져간 순위합이 전체의 절반에서 크게 벗어나는지 묻는다. 그래서 크기를 쓰지만, 엄청난 이상치 하나도 가장 높은 순위 하나로만 친다. **Welch t-검정은** 두 집단의 분산이 같다고 가정하지 않고 독립인 두 집단의 평균을 비교한다. **Mann–Whitney U는** 두 집단을 합쳐 전부 순위를 매기고, 한 집단의 순위가 체계적으로 더 높은지 묻는다. 표의 Wilson 구간, Fisher 정확 검정, Welch 비교는 비대응 10회 예비 실험 하나에서 손으로 계산되어, 각 숫자가 허락하는 문장과 함께 [[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]]의 계산 절에 있다.
+> [!note]- 더 깊이 · Deeper
+> **검정 고르기.** 행과 열은 두 질문으로 정해진다: 시행마다 어떤 수가 나오는가, 그리고 두 방법이 같은 시행(같은 물체, 시드, 장면, 시작 상태)에서 돌았는가. 로봇과 ML 실험에서는 대응이 보통이고, 대응 데이터에 비대응 검정을 쓰면 위에서 말한 상쇄를 버리게 된다.
+>
+> | 시행당 결과 | 대응(같은 시행) | 비대응(다른 시행) | 믿기 전에 확인할 것 |
+> |---|---|---|---|
+> | 한 방법의 성공률 | — | 이항 CI: Wilson 또는 정확(Clopper–Pearson) 구간 | 시행이 독립인가; 조용한 재시도나 빠진 실패가 없는가 |
+> | 두 방법의 성공/실패 | 불일치 쌍에 대한 McNemar 정확 검정 | 2×2 표에 대한 Fisher 정확 검정 | 두 방법이 엇갈린 쌍만 증거를 준다 |
+> | 연속 지표(오차, 시간) | 대응 t-검정; Wilcoxon 부호순위 검정; $d_i$의 부호 뒤집기 순열 또는 부트스트랩 | Welch t-검정; Mann–Whitney U; 라벨 순열 검정 | t: 차이가 대략 정규이고 큰 이상치가 없음. Wilcoxon: 차이가 대칭, 이상치에 강함. 부트스트랩: 쌍이 아주 적으면 믿기 어려움 |
+> | 시드나 과제가 많을 때 | 시드별 점수, 시드에 걸친 CI; 과제에 걸쳐서는 층화 부트스트랩 | 같음, 방법별로 | 단위는 시드다; 한 시드 안의 에피소드들은 독립 표본이 아니다 |
+>
+> **표에 나온 순위 검정과 비대응 검정, 한 줄씩.** **Wilcoxon 부호순위 검정은** $|d_i|$에 순위를 매기고 양의 차이가 가져간 순위합이 전체의 절반에서 크게 벗어나는지 묻는다. 그래서 크기를 쓰지만, 엄청난 이상치 하나도 가장 높은 순위 하나로만 친다. **Welch t-검정은** 두 집단의 분산이 같다고 가정하지 않고 독립인 두 집단의 평균을 비교한다. **Mann–Whitney U는** 두 집단을 합쳐 전부 순위를 매기고, 한 집단의 순위가 체계적으로 더 높은지 묻는다. 표의 Wilson 구간, Fisher 정확 검정, Welch 비교는 비대응 10회 예비 실험 하나에서 손으로 계산되어, 각 숫자가 허락하는 문장과 함께 [[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]]의 계산 절에 있다.
+>
+> **시드나 과제가 많을 때.** Agarwal 등(NeurIPS 2021)은 딥 RL에서 흔한, 과제당 몇 번 안 되는 실행에서 얻은 점추정이 오도할 수 있음을 보였다. 그들의 처방은 **층화 부트스트랩이다**: 과제마다 따로 실행을 복원추출하고, 종합 점수를 다시 계산하고(평균이나 중앙값보다 사분위 평균 IQM을 권한다), 이를 반복해 백분위수를 읽는다.
 
 - **McNemar는 위의 부호 검정을 불일치 쌍에 적용한 것이다.** 둘 다 성공하거나 둘 다 실패한 쌍은 어느 방법이 나은지 아무것도 말하지 않는다. 그래서 $H_0$ 아래에서 두 방법이 엇갈린 $m$개 쌍 각각이 공정한 동전 던지기다.
-- **시드나 과제가 많을 때.** Agarwal 등(NeurIPS 2021)은 딥 RL에서 흔한, 과제당 몇 번 안 되는 실행에서 얻은 점추정이 오도할 수 있음을 보였다. 그들의 처방은 **층화 부트스트랩이다**: 과제마다 따로 실행을 복원추출하고, 종합 점수를 다시 계산하고(평균이나 중앙값보다 사분위 평균 IQM을 권한다), 이를 반복해 백분위수를 읽는다.
 - **신뢰구간(CI)은** 구간 하나가 아니라 *절차*다: 데이터셋을 구간 $[L, U]$로 보내는 규칙으로, 같은 과정에서 뽑은 데이터셋을 반복했을 때 구간이 참 파라미터 $\theta$를 명시된 확률(**포함 확률** $1 - \alpha$)로 덮는다:
   $$P\big(L(\text{데이터}) \le \theta \le U(\text{데이터})\big) = 1 - \alpha$$
   데이터가 무작위이므로 $L$과 $U$가 무작위이고, $\theta$는 고정이다. *예:* 대략 가우시안인 측정값 $n$개면 $\bar x \pm t_{n-1,\,0.975}\, s/\sqrt n$이 95% CI다. §4의 벽 측정값 다섯 개는 $\bar x = 2.0$, $s = 0.292$, $t_{4,\,0.975} = 2.776$이므로 구간은 $2.0 \pm 0.362 = [1.64, 2.36]$ m다. *반례:* "$\theta$가 $[1.64, 2.36]$에 있을 확률이 95%다"는 빈도주의 CI가 말하는 바가 아니다. 한번 계산된 구간은 $\theta$를 덮거나 덮지 않거나 둘 중 하나다. 95%는 절차의 성질이고, $\theta$ 자체에 대한 확률 명제에는 §1처럼 사전확률이 필요하다.
-- **효과 크기가 먼저다.** 차이를 CI와 함께 보고하고, p-값은 그다음이다. CI는 0이 그럴듯한지와 이득이 얼마나 클 수 있는지를 함께 보여주지만, $p$만으로는 크기를 알 수 없다(위의 오독 2). 시행을 몇 번 할지, 어떤 이항 구간을 쓸지는 [[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]에 있다. 검정력과 효과 크기의 완전한 정의, 그리고 그것으로 RS1의 팔당 시행 수를 계산한 예는 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]의 계산 절에 있다.
+- **효과 크기가 먼저다.** 차이를 CI와 함께 보고하고, p-값은 그다음이다. CI는 0이 그럴듯한지와 이득이 얼마나 클 수 있는지를 함께 보여주지만, $p$만으로는 크기를 알 수 없다(위의 오독 2). 시행을 몇 번 할지, 어떤 이항 구간을 쓸지는 [[06-research-practice/experimental-design-reproducibility|실험 설계 §4]]에 있다. 검정력과 효과 크기의 완전한 정의, 그리고 그것으로 RS1 — 임피던스 제어와 위치 제어를 팔당 예비 시행 10회로 비교하는, 연구 실무 트랙의 고정 연구([[06-research-practice/index|6. 연구 실무]]) — 의 팔당 시행 수를 계산한 예는 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]의 계산 절에 있다.
 
 > [!example] 계산 예제 · Worked example
 > **같은 물체 20개에서 두 파지 정책.** A는 11개, B는 16개에서 성공해 55% 대 80%다. 결정적으로 보인다.
@@ -1218,7 +1381,7 @@ flowchart LR
 
 - **NIS로 게이팅하기.** 추적기는 새 측정값이 자기가 따라가는 물체의 것인지 결정해야 한다. 필터 자신의 모델 아래에서 참 측정값의 혁신 $\nu = y - C\hat x^-$는 $S = CP^-C^\top + R$(§5.2)일 때 $\mathcal N(0, S)$이므로, **정규화 혁신 제곱**(normalized innovation squared, NIS)
   $$\text{NIS} = \nu^\top S^{-1} \nu$$
-  은 $\nu$의 제곱 마할라노비스 거리이고 $\chi^2_m$을 따른다. $m$은 측정 차원이다. 게이트는 NIS가 $\chi^2_m$ 분위수보다 작을 때만 측정을 받아들인다. 그래서 95% 게이트는 설계상 참 측정의 5%를 버리고, 그 대가로 예측한 퍼짐에서 멀리 벗어난 것은 무엇이든 기각한다([[04-robotics/state-estimation-slam|상태 추정 §6]]이 추적기에서 돌린다).
+  은 $\nu$의 제곱 마할라노비스 거리이고 $\chi^2_m$을 따른다. $m$은 측정 차원이다. 게이트는 NIS가 $\chi^2_m$ 분위수보다 작을 때만 측정을 받아들인다. 그래서 95% 게이트는 설계상 참 측정의 5%를 버리고, 그 대가로 예측한 퍼짐에서 멀리 벗어난 것은 무엇이든 기각한다([[04-robotics/state-estimation-slam|상태 추정 §8.5]]가 다중 물체 추적기에서 돌린다).
   - *P5로 계산* ($m = 1$, 95% 게이트 $3.841$). 첫 측정: $\nu = 12 - 10 = 2$, $S = 4 + 1 = 5$, NIS $= 4/5 = 0.8$, 수락. 첫 갱신 뒤 둘째 측정: $\nu = 11 - 11.6 = -0.6$, $S = 0.8 + 1 = 1.8$, NIS $= 0.36/1.8 = 0.2$, 수락. 그 자리에 $20$의 틀린 벽: $\nu = 8.4$, NIS $= 70.56/1.8 = 39.2$로 게이트의 열 배를 넘어 기각. 그림의 "확신하고 틀린" $15.3$으로의 도약은 게이팅 없이 융합하는 필터에서만 일어난다.
   - $k = 2$이면 $\chi^2_2$의 CDF는 $1 - e^{-d^2/2}$이므로 99% 게이트는 $d^2 < -2\ln 0.01 = 9.21$이다. 가우시안 잔차 백만 개를 시뮬레이션하면 98.99%가 안에 들어왔다.
 - **NEES로 일관성 확인하기.** 참 상태 $x$를 아는 시뮬레이션에서는 **정규화 추정 오차 제곱**(normalized estimation error squared, NEES)
@@ -1234,6 +1397,8 @@ flowchart LR
 > 양의 공분산은 두 좌표가 함께 틀리는 경향이 있다는 뜻이다. 그 패턴을 거스르는 잔차는 훨씬 더 뜻밖이다. §3의 "같은 변위, 다른 놀라움"을 숫자로 본 것이다.
 
 ### 7. 마르코프 체인과 은닉 마르코프 모델
+
+*두 번째 읽기: HMM, MCMC, 디퓨전의 전방 과정을 만날 때 읽는다. 처음에는 이 절을 건너뛴다.*
 
 *한 문장으로:* 로봇이 만나는 과정 가운데 많은 것은 현재를 알면 과거를 잊는다 — 작동·대기·고장 중 하나인 기계, 진동으로만 들리는 마모 상태 — 그리고 이 가정 하나로 그 과정이 어디에 자리 잡는지 예측하고, 보이지 않는 것을 복원하고, 식으로 적을 수 없는 분포에서 표본을 뽑을 수 있다.
 
@@ -1352,7 +1517,7 @@ s = s[2_000:]                                # drop burn-in from the bad start x
 print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)")
 ```
 
-- **출력:** `accept 0.41  mean 3.01  var 2.99  (exact: 3, 3)`.
+- **출력:** `accept 0.41  mean 3.01  var 2.99  (exact: 3, 3)`. 생성기는 전역으로 정하지 않고 넘겨받은 `np.random.default_rng(0)`이어서 실행이 그대로 재현된다. 전역 시드보다 생성기 객체가 나은 이유는 [[02-foundations/tools/python-research-code|12.3 Python §7]]에 있다.
 - **수락률만 보면 속는다.** 같은 200,000 스텝, 같은 시작점에서, 자기상관으로 ESS를 추정했다:
   - 폭 0.1은 이동의 98%를 받아들이지만 20에서 걸어 내려오는 데만 약 6,000 스텝이 걸려 2,000 스텝 번인이 모자라다. ESS는 약 100이고 표본 평균은 3.19가 나온다.
   - 폭 4는 41%를 받아들이고 ESS가 약 32,000이다. 폭 3에서 6까지 모두 28,000과 33,000 사이였으므로 최적점은 넓다.
@@ -1372,18 +1537,18 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 3. $x_0$를 고정해 조건부로 볼 때 $x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\epsilon$
    ([[01-canonical-papers/notes/6-diffusion/ddpm|DDPM]])이 주장된 분포를 갖는 이유를 보여라.
 4. 칼만 이득에서 센서 노이즈 $R \to 0$이면? $R \to \infty$면? 해석하라.
-5. 어떤 논문이 시드 5개로 "우리 방법이 기준선보다 낫다"에 대해 $p = 0.03$을 보고하고 "우리 방법이 더 나을 확률이 97%다"라고 결론 내린다. 무엇이 틀렸고, 무엇을 요구하겠는가?
-6. 3차원 위치를 재는 추적기가 2차원 게이트 $d^2 < 9.21$을 그대로 쓴다. 참인 측정 중 몇 %를 기각하게 되고, 게이트는 얼마여야 하는가?
-7. §7의 기계 체인에서 수리가 빨라져 고장 행이 $(0.9,\ 0,\ 0.1)$이 되었다. 새 정상 분포를 구하라.
-8. 같은 시간에 대해 비터비 경로가 순방향 필터의 가장 가능성 높은 상태와 다를 수 있는 이유는? 온라인 마모 경보에는 어느 쪽을, 기록된 실행의 라벨링에는 어느 쪽을 쓰겠는가?
-9. §6의 파지 예제에서 연구실이 물체 20개를 더 시험했더니 개수가 그대로 두 배가 되었다: B만 성공한 쌍 12개, A만 성공한 쌍 2개. McNemar 정확 p를 계산하라. 효과 크기는 바뀌었는가?
-10. 동료의 Metropolis 샘플러가 제안의 97%를 받아들이고, 동료는 잘 조정되었다고 말한다. 무엇이 문제일 가능성이 크고, 대신 어떤 수를 요구하겠는가?
+5. *(두 번째 읽기, §6.2.)* 어떤 논문이 시드 5개로 "우리 방법이 기준선보다 낫다"에 대해 $p = 0.03$을 보고하고 "우리 방법이 더 나을 확률이 97%다"라고 결론 내린다. 무엇이 틀렸고, 무엇을 요구하겠는가?
+6. *(두 번째 읽기, §6.3.)* 3차원 위치를 재는 추적기가 2차원 게이트 $d^2 < 9.21$을 그대로 쓴다. 참인 측정 중 몇 %를 기각하게 되고, 게이트는 얼마여야 하는가?
+7. *(두 번째 읽기, §7.1.)* §7의 기계 체인에서 수리가 빨라져 고장 행이 $(0.9,\ 0,\ 0.1)$이 되었다. 새 정상 분포를 구하라.
+8. *(두 번째 읽기, §7.2.)* 같은 시간에 대해 비터비 경로가 순방향 필터의 가장 가능성 높은 상태와 다를 수 있는 이유는? 온라인 마모 경보에는 어느 쪽을, 기록된 실행의 라벨링에는 어느 쪽을 쓰겠는가?
+9. *(두 번째 읽기, §6.2.)* §6의 파지 예제에서 연구실이 물체 20개를 더 시험했더니 개수가 그대로 두 배가 되었다: B만 성공한 쌍 12개, A만 성공한 쌍 2개. McNemar 정확 p를 계산하라. 효과 크기는 바뀌었는가?
+10. *(두 번째 읽기, §7.3.)* 동료의 Metropolis 샘플러가 제안의 97%를 받아들이고, 동료는 잘 조정되었다고 말한다. 무엇이 문제일 가능성이 크고, 대신 어떤 수를 요구하겠는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. $P(c|+) = \frac{0.95 \times 0.2}{0.95 \times 0.2 + 0.05 \times 0.8} = \frac{0.19}{0.23} \approx 0.83$ — 기저율이 높은 곳에서는 같은 감지기의 경보 신뢰도가 16%→83%로 뛴다. 감지기의 가치는 배치 장소가 좌우한다.
 > 2. 가우시안: $\log p = -\frac{(x-\mu)^2}{2\sigma^2} + C$ ⇒ 우도 최대화 = 제곱합 최소화(MSE). 카테고리: $\log\prod p_{y_i} = \sum \log p_{y_i}$ ⇒ 교차 엔트로피 최소화와 동일.
 > 3. $x_0$에 조건부로 첫 항은 고정된 평균(결정론적 이동)이고, 둘째 항만 가우시안 잡음이다. 따라서 조건부 합은 $\mathcal{N}(\sqrt{\bar\alpha_t}x_0,(1-\bar\alpha_t)I)$다.
-> 4. $R \to 0$: $K$가 커져 관측에 스냅(센서 완전 신뢰); $R \to \infty$: $K \to 0$, 관측을 무시하고 모델 예측만 따른다.
+> 4. $R \to 0$: $K$가 커져 추정이 관측으로 달라붙는다(센서를 완전히 믿는다). $R \to \infty$: $K \to 0$이라 관측을 무시하고 모델 예측만 따라간다. 이득은 손으로 맞추는 조절 손잡이가 아니라 신뢰의 *비율*이다.
 > 5. p-값은 *차이가 없다면* 이만큼 극단적인 데이터가 나올 확률이다. "더 나을 확률 97%"는 $P(H_1 \mid \text{데이터})$이고, 이것에는 사전확률이 필요하며(오독 1), $p$는 이득이 얼마나 큰지도 말하지 않는다(오독 2). 시드별 대응 차이와 효과 크기, 신뢰구간을 요구하고, 이 비교를 보고하기 전에 비교를 몇 번 했는지 묻는다.
 > 6. 3차원에서 $d^2$는 $\chi^2_3$이고 $P(\chi^2_3 < 9.21) = 0.973$이다. 게이트가 참인 측정의 1%가 아니라 약 2.7%를 기각한다. $k = 3$의 99% 게이트는 $d^2 < 11.34$다: 분위수는 측정 차원에 따라 달라진다.
 > 7. I 열은 그대로이므로 $\pi_I = \pi_W/3$. B 열은 $0.9\pi_B = 0.1(\pi_W + \pi_I)$를 주므로 $\pi_B = 4\pi_W/27$. 정규화하면 $\pi_W(1 + 1/3 + 4/27) = 40\pi_W/27 = 1$이므로 $\pi = (27/40,\ 9/40,\ 1/10) = (0.675,\ 0.225,\ 0.100)$. 고장 시간이 1/7(14.3%)에서 10%로 준다.
@@ -1393,11 +1558,11 @@ print(f"accept {rate:.2f}  mean {s.mean():.2f}  var {s.var():.2f}  (exact: 3, 3)
 
 ### 과제 · Problem set
 
-Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 영어 템플릿.
+Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 모든 단계가 §5.2의 스칼라 필터다. $\hat x^- = \hat x + u$, $P^- = P + Q$로 예측하고 $K = P^-/(P^- + R)$로 보정한다. 새 필터가 아니다. 코드 템플릿은 영어 절에 있다.
 
 1. **그리기.** 표준편차가 두 배로 시끄러워진 거리 센서, 곧 사전분포와 꼭 같은 만큼 불확실한 $R=4$에 대한 위 그림의 윗부분: 사전 $p(x)=\mathcal{N}(10,4)$, $z=12$에서의 우도 $p(z\mid x)=\mathcal{N}(x,4)$, 그리고 사후. 칼만 이득을 혁신의 가중으로 표시하라. 이제 사후는 어디에 놓이고, 여전히 두 입력보다 좁은가?
-2. **유도.** 카탈로그 갱신. 둘째 거리 $z_2=11$, $R=1$. 운동 $x\leftarrow x+1$, $Q=1$, 그다음 $z_3=13$. 예측 다음 보정.
-3. **실행.** 세 이득($z$, $z_2$, 운동+$z_3$ 뒤)과 마지막 사후를 출력하라.
+2. **유도.** 아무것도 읽기 전에 로봇이 벽에서 $2$ cm 물러난다. 카탈로그 사전 $\mathcal N(10,\,4)$에서 $u=+2$, $Q=1$로 예측하라. 그다음 측정 둘이 함께 들어온다. 카탈로그 센서가 $z_a=13$($R_a=1$)을, 1번의 더 시끄러운 센서가 $z_b=12$($R_b=4$)를 읽는다. 둘을 하나씩, 먼저 $z_a$ 다음 $z_b$로, 그리고 반대 순서로도 융합하고, 측정마다 $K$, $\hat x$, $P$를 적어라. 두 순서가 같은 $\hat x$와 $P$에 닿음을 보이고, 그 $P$를 측정 둘로 넓힌 §5.2의 정밀도 식 $1/P=1/P^-+1/R_a+1/R_b$로 확인하라.
+3. **실행.** 영어 절 템플릿의 `?`를 채워 필터를 여섯 스텝 돌려라. 카탈로그 갱신($11.6$, $0.8$) 뒤 로봇은 스텝마다 $1$ cm씩 물러나고($u=1$, $Q=1$) 센서($R=1$)는 $13, 14, \dots, 18$을 읽는다. 스텝마다 $K$, $\hat x$, $P$를 출력하라. $K$와 $P$는 어디에 자리 잡고, 측정값이 달랐다면 그 값도 달라졌겠는가? 그다음 손잡이 하나를 바꿔 $Q=0.1$과 $Q=10$으로 다시 돌리고 마지막 이득을 비교하라.
 
 > [!note]- 그리는 법 · How to draw it
 > - 가로축 하나: 거리 $x$, 단위 센티미터, 대략 $4$부터 $18$까지. 세 곡선 모두에 공통인 세로 축척 하나.
@@ -1405,12 +1570,12 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P5**. 영어 템플릿.
 > - 봉우리 높이는 축척대로 $0.199$와 $0.199$. 두 곡선은 모양이 같고 $2$만큼 옮겨져 있을 뿐이다. 위 그림에서는 우도가 두 배 높았고, 그 높이 비율이 답을 센서 쪽으로 끌었다. 여기서는 어느 쪽으로도 끌지 않는다.
 > - 사후분포 $\mathcal{N}(11,\,2)$, 표준편차 $\sqrt2=1.414$, 봉우리 $0.282$. 그 위에 확인 둘을 적는다. 두 중심의 정확히 한가운데에 있고, 그래도 *어느* 입력보다 좁다($2$와 $2$에 대해 $1.414$). 똑같이 서툰 의견 둘도 하나보다 낫다.
 > - 이득은 이름 붙인 선분으로: $10$에서 $12$까지 혁신 $z-\hat x^-=2$, $10$에서 $11$까지 부분 선분 $K\cdot(z-\hat x^-)=0.5\times2=1$, 옆에 $K=P^-/(P^-+R)=4/8=0.5$. 여백에는 위 그림의 $R=1$: $K=0.8$, $11.6$.
-> - 2번과 3번은 카탈로그 센서 $R=1$을 쓴다. 그 시간축 — $P=4$, $0.8$, $0.444$, $1.444$, $0.591$, 보정마다 줄고 예측에서 늘어나는 막대 — 은 이 칸이 아니라 따로 그린 띠에 둔다.
+> - 2번과 3번은 이 칸이 아니라 시간을 따라가는 열이다. 2번의 예측과 두 측정($P=4\to5$, 그다음 $0.833$과 $0.690$, 또는 $2.222$와 $0.690$)과 3번의 루프($0.618$에 자리 잡는 $P$)는 그림 아래 칸처럼 따로 그린 띠에, 스텝마다 막대 $\hat x\pm\sqrt P$로 둔다.
 
 > [!tip]- 정답 · Solutions
 > 1. 사전과 우도는 같은 곡선이고 중심만 $10$과 $12$이며, 둘 다 폭 $2$, 봉우리 $0.199$다. $K=4/(4+4)=0.5$이므로 추정은 혁신의 절반 $0.5\times2=1$을 걸어 $\hat x^+=11$, 정확히 한가운데에 서고, $P^+=(1-0.5)\times4=2$로 표준편차 $1.414$, 봉우리 $0.282$이며 두 입력보다 좁다. 위 그림의 $R=1$에서는 이득이 $0.8$, 추정이 $11.6$이었다. 두 출처를 얼마나 믿는지가 적히는 자리가 이득이다.
-> 2. $K=0.8$, $11.6$, $P=0.8$. 둘째 $K=0.444$, $11.333$, $P=0.444$. 예측 $12.333$, $P=1.444$. 셋째 $K=0.591$, $12.727$, $P=0.591$.
-> 3. 빈칸은 영어 해. 첫 갱신 뒤 틀린 벽 20 cm를 같은 $R=1$로 넣으면 $\approx 15.3$에 작은 $P$ — 확신하고 틀림. [[04-robotics/state-estimation-slam|3]]이 이름 붙이는 연관 실패다.
+> 2. 예측: $\hat x^-=10+2=12$, $P^-=4+1=5$. **$z_a$ 먼저:** $K=5/6=0.833$, $\hat x=12+0.833\cdot(13-12)=12.833$, $P=(1-0.833)\cdot5=0.833$. 이어 $z_b$: $K=0.833/(0.833+4)=0.172$, $\hat x=12.833+0.172\cdot(12-12.833)=12.690$, $P=(1-0.172)\cdot0.833=0.690$. **$z_b$ 먼저:** $K=5/9=0.556$이고 혁신이 $12-12=0$이라 $\hat x$는 $12$에 머물지만, $P$는 그래도 $(1-0.556)\cdot5=2.222$로 준다. 예측과 맞아떨어지는 측정은 추정을 옮기지 않아도 증거로는 센다. 이어 $z_a$: $K=2.222/3.222=0.690$, $\hat x=12+0.690\cdot1=12.690$, $P=(1-0.690)\cdot2.222=0.690$. 두 순서 모두 $12.690$과 $0.690$에서 끝난다. 정밀도로 쓰면 $1/P=1/5+1/1+1/4=1.45$이므로 $P=0.690$이고, 정밀도로 가중한 평균 $P\,(12/5+13/1+12/4)=0.690\times18.4=12.690$도 맞는다. 순서가 결과를 바꿀 수 없는 이유는, 보정 하나하나가 이미 있는 것에 그 측정의 정밀도와 정밀도로 가중한 값을 더할 뿐이고 덧셈은 순서를 가리지 않기 때문이다.
+> 3. 빈칸은 `return x + u, P + Q`, `K = P / (P + R)`, `return x + K*(z - x), (1 - K)*P, K`. 여섯 줄은 $K=P=0.643$, $0.622$, $0.619$, $0.618$, $0.618$, $0.618$과 $\hat x=12.857$, $13.946$, $14.979$, $15.992$, $16.997$, $17.999$를 출력한다. 이득과 분산은 넷째 스텝에서 $0.618$에 자리 잡는다. 예측 단계가 더하는 $Q$와 보정 단계가 $1-K$배로 줄이는 몫이 거기서 균형을 이루기 때문이다. 자리 잡은 예측 분산 $M=P+Q$는 $M=M/(M+1)+1$, 곧 $M^2-M-1=0$을 풀어 $M=1.618$이고 $K=M/(M+1)=0.618$이다(여기서 $P=K$인 것은 $R=1$이기 때문일 뿐이다. $P=(1-K)M=KR$). 측정값이 달랐다면 $\hat x$는 모두 바뀌어도 $K$와 $P$는 하나도 바뀌지 않는다. 그 둘을 계산하는 줄 어디에도 $z$가 없으므로, 이득의 열 전체를 로봇이 움직이기 전에 계산할 수 있다. 추정은 측정과의 차이를 $0.4$, $0.143$, $0.054$, … 로, 매번 직전 차이의 $1-K$배로 줄이며 따라붙는다. $Q=0.1$이면 마지막 이득은 $0.277$이고 아직 $0.270$을 향해 내려가는 중이다. 운동 모델을 믿으므로 측정 하나의 몫이 작고 필터가 천천히 자리 잡는다. $Q=10$이면 첫 스텝부터 $0.916$이다. 그만큼 나쁜 운동 모델에서는 측정 하나하나가 거의 결정적이다. 그래서 이득은 손으로 맞추는 값이 아니라 $Q$와 $R$의 비가 정한다.
 
 ### 로보틱스 다리 · Robotics bridge
 

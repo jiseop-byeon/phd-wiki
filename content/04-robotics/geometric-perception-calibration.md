@@ -25,7 +25,7 @@ perception tells you *where* it is, at *what scale*, in *which frame*.
 > bundle adjustment) is a working/mastery topic.
 
 > [!note] Prerequisites
-> Plants **P2** and **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) · [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[02-foundations/optimization|Optimization]] (least squares) · [[02-foundations/probability|Probability]] (maximum likelihood, §4; the scalar Kalman update P5 uses, §5)
+> Plants **P2** and **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) · [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[02-foundations/optimization|Optimization]] (least squares) · [[02-foundations/probability|Probability]] (maximum likelihood, §4; the scalar Kalman update P5 uses, §5) · [[04-robotics/sensor-models|3.2 Sensor Models & Noise]] (the $0.5$ px pixel noise of a marker detection, §5)
 
 > [!note] First pass · 처음이라면
 > Start with the picture and the Worked case: one point of the rig projected, triangulated, distorted and miscalibrated, with every number. Then read §1 (the pinhole model, with the projection written out), §5 (calibration — where most field failures actually start) and §7 (reading claims). §2 to §4 (depth, image features, two-view geometry, point clouds, ICP) are the machinery; read them when a paper's numbers depend on them. §6 and §7.5 are short bridges to learned perception and to visual servoing.
@@ -647,15 +647,141 @@ Degeneracy depends on the measured geometry and objective. Point-to-plane residu
 
 ### 5. Calibration
 
+*In one sentence:* calibration measures what every metric step here takes as known — $K$, the distortion and the transforms between the sensors and the gripper — from views of a known target, tilted and moved until each unknown shows, and the residual it prints measures the fit to those views, not the truth.
+
 | Calibration | What it estimates | Typical method |
 |---|---|---|
-| Intrinsic | $f_x,f_y,c_x,c_y$, distortion | checkerboard/target views |
+| Intrinsic | $f_x,f_y,c_x,c_y$, distortion | tilted checkerboard/target views |
 | Camera–camera (stereo) | relative $SE(3)$ + rectification | shared target views |
 | Camera–LiDAR | extrinsic $SE(3)$ | target or mutual-feature alignment |
 | Hand–eye (camera–robot) | sensor-to-end-effector or base transform | robot motion + target ($AX=XB$) |
 | Temporal | clock offset / latency between sensors | correlation of motion signals |
 
 The camera–LiDAR row, worked on this rig with a LiDAR on the mast — its extrinsic, what a $1^\circ$ error does in pixels and in millimetres, and the check that tells rotation, translation and time apart — is [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §8]]. Every row assumes the mount does not move between calibration and use; a bracket that bends or rings breaks that, and sizing one by its tilt at the target is [[02-foundations/tools/mechanical-design-fabrication|12.9 Mechanical Design and Fabrication §6]].
+
+#### Intrinsic calibration from a planar target: the principle
+
+**The problem.** Every metric step here needs $K$ and the distortion, estimated for a real camera from images of a known target. *The idea*, from Zhang (IEEE TPAMI 2000): photograph one flat target at several tilts. Its two axes are perpendicular, and a metre is equally long along each, so un-projected from a photo through the true $K$ they must still be; each photo thus gives two equations on $K$, three tilts fix it, and a least-squares fit refines everything.
+
+> **The homography-to-$K$ constraint, defined.** Two *equations on the intrinsics* that one view of a planar target supplies. Conditions: the target lies at $Z_t=0$, as in §2.7; its homography $H=\lambda K[\,r_1\ r_2\ t\,]$ is fitted to four or more points, no three collinear, with $\lambda$ an unknown scale (the $\lVert K^{-1}h_1\rVert$ that §2.7 divides out); $r_1, r_2$ are columns of a rotation, so perpendicular unit vectors; and the pinhole model holds, with no distortion. Since $K^{-1}h_i=\lambda r_i$ for $H$'s first two columns, the dot products $h_i^\top Bh_j=(K^{-1}h_i)^\top(K^{-1}h_j)=\lambda^2r_i^\top r_j$ must vanish for $i\ne j$ and equal $\lambda^2$ whenever $i=j$:
+>
+> $$h_1^\top B\,h_2=0,\qquad h_1^\top B\,h_1=h_2^\top B\,h_2,\qquad B=K^{-\top}K^{-1}$$
+>
+> with $B$ symmetric and known up to scale, making both equations linear in its six entries.
+>
+> - **Example**: three views tilted $30°$ at $2$ m return $f=(600.000,\ 600.000)$, $c=(320.000,\ 240.000)$, $s=0.000$ px (listing below).
+> - **Non-example**: mutually parallel views, which repeat the same two equations. §2.7's fronto-parallel view, the target facing the camera squarely, has $h_1\propto(1,0,0)$ and $h_2\propto(0,1,0)$, so its two equations are $B_{12}=0$ and $B_{11}=B_{22}$, square unskewed pixels. They never touch $B_{13}$, $B_{23}$ or $B_{33}$, without which $c$ and $f$ cannot be read from $B$, so a camera with $f=500$, $c=(300,\ 250)$ px also sees its axes at $90.00°$ and equal length.
+> - **Why it matters**: calibration becomes linear algebra needing no initial guess, and tilting becomes mandatory.
+
+**Counting and solving.** $B$ has six entries, but only their ratios matter, so five unknowns, one per entry of $K$; each view gives two equations, so three views in different orientations fix it in general, and two if the skew is set to zero. Stacked, the rows read $Vb=0$ with $b=(B_{11},B_{12},B_{22},B_{13},B_{23},B_{33})$, so $b$ is $V$'s null vector, or, with noisy corners, the right singular vector of its smallest singular value, as in §2.6's direct linear transform (DLT). $K$ then comes from the Cholesky factorization $B=LL^\top$, $L$ lower-triangular ([[02-foundations/probability|3. Probability §6]]): $K^{-\top}$ is lower-triangular with a positive diagonal, so $L=K^{-\top}$ up to scale and $K=(L^\top)^{-1}$, rescaled to $K_{33}=1$, once $b$'s sign is chosen to make $B_{11}>0$. §2.7's recipe then gives each view's $R$ and $t$. This closed form ignores distortion and trusts noisy homographies, so it only starts Levenberg–Marquardt ([[02-foundations/optimization|4. Optimization §3.5]]) on $K$, the distortion and all poses, minimizing the RMS reprojection error defined below.
+
+**On the rig.** Without noise the listing recovers $K$ exactly, from the three views and from two with the skew fixed at zero. With [[04-robotics/sensor-models|3.2]]'s $0.5$ px marker noise on every corner coordinate, the closed form on those three views misses $f$ by $91.1$ px and $c$ by $61.9$ px, rms over $500$ draws, because the evidence is small: $f$ and $c$ show only through perspective, which §2.7's tilt lever makes fall off as $1/Z^2$. At $2$ m, where the target covers only u $320$–$478$, v $239$–$368$ px, a $30°$ tilt about $AB$ makes the near edge $AB$ image just $15.0$ px longer than the far edge $CD$. At $0.8$ m the tilts span u $106$–$534$, v $62$–$418$ px, most of the frame; the difference grows to $95.2$ px, the misses fall by about the same factor, to $13.7$ and $9.7$ px, and ten views of $30$ corners there bring them to $2.5$ and $1.6$ px.
+
+```python
+import numpy as np
+
+# Zhang's closed form on the rig: target views -> homographies -> B -> K, then what noise does to it
+K = np.array([600.0, 0, 320, 0, 600, 240, 0, 0, 1]).reshape(3, 3)   # the rig's intrinsics, to be recovered
+ABCD = np.array([0, 0, 0.5, 0, 0, 0.4, 0.5, 0.4]).reshape(4, 2)    # the target's corners in its own plane (m)
+
+def rot(axis, deg):                                  # rotation by deg about an axis (Rodrigues)
+    a = np.asarray(axis, float) / np.linalg.norm(axis)
+    k = np.array([0, -a[2], a[1], a[2], 0, -a[0], -a[1], a[0], 0]).reshape(3, 3)
+    th = np.radians(deg)
+    return np.eye(3) + np.sin(th) * k + (1 - np.cos(th)) * k @ k
+
+def place(R, centre):                                # the target turned by R about its middle, middle at centre (m)
+    return R, np.asarray(centre, float) - R @ (0.25, 0.2, 0)
+
+def image(R, t, pts):                                # pixels of target points (X, Y, 0): K (R X + t), divided by depth
+    q = (np.c_[pts, np.zeros(len(pts))] @ R.T + t) @ K.T
+    return q[:, :2] / q[:, 2:]
+
+def homography(pts, uv):                             # DLT: (u, v, 1) ~ H (X, Y, 1) from four or more points
+    rows = []
+    for (X, Y), (u, v) in zip(pts, uv):
+        rows.append((X, Y, 1, 0, 0, 0, -u * X, -u * Y, -u))
+        rows.append((0, 0, 0, X, Y, 1, -v * X, -v * Y, -v))
+    H = np.linalg.svd(np.array(rows))[2][-1].reshape(3, 3)
+    return H / H[2, 2]
+
+def two_rows(H):                                     # h1'B h2 = 0 and h1'B h1 - h2'B h2 = 0 as rows acting on
+    def v(a, c):                                     # b = (B11, B12, B22, B13, B23, B33)
+        return np.array((a[0] * c[0], a[0] * c[1] + a[1] * c[0], a[1] * c[1],
+                         a[2] * c[0] + a[0] * c[2], a[2] * c[1] + a[1] * c[2], a[2] * c[2]))
+    h1, h2 = H[:, 0], H[:, 1]
+    return np.array((v(h1, h2), v(h1, h1) - v(h2, h2)))
+
+def calibrate(Hs, zero_skew=False):                  # stack two rows per view, take the null vector, factor B
+    V = np.vstack([two_rows(H) for H in Hs])
+    if zero_skew:                                    # B12 = 0: drop its column, solve for the other five entries
+        b = np.insert(np.linalg.svd(np.delete(V, 1, axis=1))[2][-1], 1, 0.0)
+    else:
+        b = np.linalg.svd(V)[2][-1]
+    B = b[np.array((0, 1, 3, 1, 2, 4, 3, 4, 5))].reshape(3, 3)
+    L = np.linalg.cholesky(B if B[0, 0] > 0 else -B)   # B = K^-T K^-1 = L L^T, so K = (L^T)^-1 up to scale
+    Kc = np.linalg.inv(L.T)
+    return Kc / Kc[2, 2]
+
+def show(Kc):
+    fx, fy, cx, cy, s = (round(x, 3) + 0.0 for x in (Kc[0, 0], Kc[1, 1], Kc[0, 2], Kc[1, 2], Kc[0, 1]))
+    return "f = (%.3f, %.3f), c = (%.3f, %.3f), s = %.3f px" % (fx, fy, cx, cy, s)
+
+# 1. Three views at 2 m, the target tilted 30 deg about axes parallel to AB, to AC and halfway between them
+tilted = [place(rot(axis, 30), (0.25, 0.2, 2.0)) for axis in ((1, 0, 0), (0, 1, 0), (1, 1, 0))]
+Hs = [homography(ABCD, image(R, t, ABCD)) for R, t in tilted]
+print("three tilted views:", show(calibrate(Hs)))
+print("two tilted views, skew fixed at 0:", show(calibrate(Hs[:2], zero_skew=True)))
+
+# 2. What one view tests: K^-1 h1 and K^-1 h2 must come out perpendicular and equally long
+def axes_seen(Kc, H):
+    a1, a2 = np.linalg.solve(Kc, H[:, :2]).T
+    angle = np.degrees(np.arccos(a1 @ a2 / np.linalg.norm(a1) / np.linalg.norm(a2)))
+    return angle, np.linalg.norm(a1) / np.linalg.norm(a2)
+
+wrong = np.array([500.0, 0, 300, 0, 500, 250, 0, 0, 1]).reshape(3, 3)              # f = 500, c = (300, 250)
+front = homography(ABCD, image(np.eye(3), np.array([0, 0, 2.0]), ABCD))            # 2.7's fronto-parallel view
+turned = homography(ABCD, image(*place(rot((0, 0, 1), 90), (0.25, 0.2, 3.0)), ABCD))  # parallel to it: turned, farther
+print("2.7's H:", (np.round(front, 6) + 0.0).ravel().tolist())
+print("its two rows, on (B11, B12, B22, B13, B23, B33):", (np.round(two_rows(front), 6) + 0.0).tolist())
+for name, H in (("fronto-parallel", front), ("turned 90 deg at 3 m", turned), ("tilted about AB", Hs[0])):
+    print("%-21s true K: angle %.2f deg, length ratio %.3f | wrong K: angle %.2f deg, length ratio %.3f"
+          % (name, *axes_seen(K, H), *axes_seen(wrong, H)))
+
+# 3. Corner noise of 0.5 px (3.2's marker noise): what the closed form misses, rms over 500 draws
+def miss(views, pts, draws=500):
+    rng, err = np.random.default_rng(0), []
+    for _ in range(draws):
+        Kc = calibrate([homography(pts, image(R, t, pts) + rng.normal(0, 0.5, (len(pts), 2))) for R, t in views])
+        err.append((Kc[0, 0] - 600, Kc[1, 1] - 600, Kc[0, 2] - 320, Kc[1, 2] - 240))
+    e = np.array(err)
+    return np.sqrt(np.mean(e[:, :2] ** 2)), np.sqrt(np.mean(e[:, 2:] ** 2))
+
+near = [place(R, (0, 0, 0.8)) for R, _ in tilted]                                   # the same tilts at 0.8 m, centred
+for d, (R, t) in (("2 m", tilted[0]), ("0.8 m", near[0])):                          # the perspective a 30 deg tilt shows
+    q = image(R, t, ABCD)
+    ab, cd = np.linalg.norm(q[1] - q[0]), np.linalg.norm(q[3] - q[2])
+    print("tilted about AB at %-5s near edge AB %.1f px, far edge CD %.1f px, difference %.1f px" % (d, ab, cd, ab - cd))
+board = np.array([(x, y) for y in np.arange(5) * 0.1 for x in np.arange(6) * 0.1])  # 30 corners, 0.1 m apart, over A-D
+# ten views at 0.8 m, each tilted 30 deg, about axes 18 deg apart
+ten = [place(rot((np.cos(a), np.sin(a), 0), 30), (0, 0, 0.8)) for a in np.radians(np.arange(0, 180, 18))]
+for name, views, pts in (("3 views of A-D at 2 m", tilted, ABCD), ("3 views of A-D at 0.8 m", near, ABCD),
+                         ("10 views of 30 corners at 0.8 m", ten, board)):
+    uv = np.vstack([image(R, t, pts) for R, t in views])
+    print("%-31s u %3.0f-%3.0f, v %3.0f-%3.0f px; f off by %4.1f px, c by %4.1f px (rms)"
+          % (name, uv[:, 0].min(), uv[:, 0].max(), uv[:, 1].min(), uv[:, 1].max(), *miss(views, pts)))
+
+# 4. Where distortion lives: the rig's radial shift at L and at the image corner
+def shift(u, v, k1=-0.20, k2=0.05):
+    x = np.array(((u - 320) / 600, (v - 240) / 600))
+    r2 = x @ x
+    return 600 * np.sqrt(r2) * abs(k1 * r2 + k2 * r2 ** 2)
+print("distortion shift: %.2f px at L, %.1f px at the image corner (0, 0)" % (shift(470, 300), shift(0, 0)))
+```
+
+**In practice.** Tilt the target several ways, spread the views over the distances you will work at (a larger board for the far ones), and fill the frame, corners included: there the rig's distortion moves a point $31.6$ px, against $2.30$ at $L$, so corners never seen leave $k_1, k_2$ extrapolated. OpenCV's `calibrateCamera` follows the same outline (a first $K$ from the planar views, each view's pose by `solvePnP`, then Levenberg–Marquardt); its tutorial asks for at least $10$ test patterns, fits §1's five distortion terms, and reads a lower re-projection error as better parameters, which only held-out views can show (below). A camera–IMU pair needs a time offset besides the extrinsic, and Kalibr estimates both; [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §8–§9]] prices a degree of extrinsic rotation and a millisecond of clock offset on this rig.
+
+#### Hand–eye calibration and the reprojection residual
 
 **The hand–eye equation, derived.** A wrist-mounted camera looks at a calibration target that stays put while the arm moves. Write $T_{ab}$ for the transform that takes coordinates in frame $b$ to frame $a$, $p^a = T_{ab}p^b$, as §1's $T_{cw}$ does ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §3]]), with $b$ the robot base, $g$ the gripper, $c$ the camera and $t$ the target. At robot pose $i$, one chain of three transforms reaches the target from the base: the gripper pose $T_{bg_i}$ from the joint encoders, the unknown camera-to-gripper mount $X = T_{gc}$, which never changes, and the target pose $T_{c_it}$ that the camera measures (by PnP, from the target's known corners and their pixels). The target has not moved, so the chains at two robot poses $1$ and $2$ end at the same transform:
 $$T_{bg_1}\,X\,T_{c_1t} = T_{bt} = T_{bg_2}\,X\,T_{c_2t}$$
@@ -758,6 +884,7 @@ local basin.
 - Recover a pose from four known corners by PnP, say why three corners can leave up to four poses and what picks one, and explain why a small marker's tilt is its weakest number.
 - Write the point-to-point and point-to-plane ICP objectives and show a case where the second has a flat direction.
 - Read an RMS reprojection error as a training residual rather than an accuracy.
+- Explain how tilted views of a planar target give $K$ through two equations per view on $B=K^{-\top}K^{-1}$, and why parallel views add nothing.
 
 > [!tip] Going deeper · 더 깊이
 > Szeliski's [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/) is free and covers this page's whole span; when you need multi-view geometry stated as theorems — essential and fundamental matrices, triangulation, bundle adjustment — Hartley and Zisserman's *Multiple View Geometry in Computer Vision* is the reference the field cites.
@@ -774,6 +901,7 @@ local basin.
 8. Using the rig's $F$, a candidate match for $\tilde u_1 = (470, 300)$ sits at $(434, 306)$. Compute the algebraic residual and the point-to-line distance in pixels. Would a match at $(452, 300)$ be rejected by the same test?
 9. A calibration is refitted with $k_3$, $p_1$ and $p_2$ added, and $e_{\text{RMS}}$ drops from $0.37$ px to $0.21$ px on the same twenty views. What has been demonstrated, and what two checks would settle whether the new model is better?
 10. PnP on the four corners returns $R=I$, $t=(0,0,2)$ m. Where is the camera in the target's frame? With $1$ px of noise on every corner, which does the fit recover worse, the target's distance or its tilt, and why? What changes if the target is a $0.1$ m tag at the same place?
+11. The rig's camera is calibrated from twelve photos of a checkerboard lying flat on a table, all taken from straight above while the board is slid and turned between shots; in one of them the board's edges run at $45°$ to the image rows. Write that photo's $h_1$ and $h_2$ up to scale, and its two equations on $B$. Why can the twelve photos not fix $f$ or $c$? What one change fixes it, how few photos could then suffice, and why is that minimum not enough in practice?
 
 > [!tip]- Answers
 > 1. $u = 600(-0.3)/1.5+320 = 200$, $v = 600(0.1)/1.5+240 = 280$.
@@ -786,6 +914,7 @@ local basin.
 > 8. $\ell = F\tilde u_1 \propto (0,\ 0.0002,\ -0.06)$. The algebraic residual is $0.0002(306) - 0.06 = 1.2\times10^{-3}$ and $\sqrt{\ell_1^2+\ell_2^2} = 0.0002$, so $d_\perp = 6.0$ px — the vertical offset, as it must be for a horizontal epipolar line. A match at $(452, 300)$ gives an algebraic residual of exactly $0$ and $d_\perp = 0$: it is *on* the line, so the epipolar test passes it. It is still wrong — it triangulates to $Z = 600(0.12)/18 = 4.0$ m instead of $2.0$ m. Moving along the epipolar line is invisible to $F$ and visible only in depth.
 > 9. Only that a model with more free parameters fits the same data better, which is guaranteed and therefore demonstrates nothing about accuracy ([[02-foundations/ml-practice|9. ML Practice §2]]). Two checks settle it: (i) hold out views the fit never saw — ideally at a different distance and tilt — and compare $e_{\text{RMS}}$ there, not on the training views; (ii) measure a known length, or a known target-to-target distance, at the actual working range, since that is the metre the calibration is for. A third useful look is the residual map by image position: genuine distortion structure appears as a radial pattern, while noise-fitting appears as speckle.
 > 10. At $-R^\top t=(0,0,-2)$ m; $t$ is where the target sits in the camera's frame, not where the camera is (§1). The distance comes out to $\pm13.2$ mm because it is read from the target's apparent size, $13.3$ mm per pixel of its $150$ px width. Each tilt comes out only to $\pm2.70°$, because tilt shows only as the image's departure from a scaled rectangle, $5.2$ px for $10°$. A $0.1$ m tag spans $30$ px and a $10°$ tilt changes its edges by $0.26$ px; worse, its reprojection error has a second minimum, and at $20°$ a pose $27.5°$ away fits its corners to $0.18$ px, so the tilt is ambiguous, not merely noisy (§2.7). A larger target, several tags spread apart, or a prior fixes it.
+> 11. Turned $45°$ about the optical axis, the board has $r_1=(1,1,0)/\sqrt2$ and $r_2=(-1,1,0)/\sqrt2$, so $h_1\propto Kr_1\propto(1,1,0)$ and $h_2\propto(-1,1,0)$, since $K$ scales both axes by $600$ and adds $c$ only in proportion to a third entry that is $0$. Its equations are $h_1^\top Bh_2\propto B_{22}-B_{11}=0$ and $h_1^\top Bh_1-h_2^\top Bh_2\propto4B_{12}=0$: §5's fronto-parallel pair with the roles swapped. Every photo from straight above does the same, because the board is parallel to the image, so $r_1$ and $r_2$, and with them $h_1$ and $h_2$, have third entry $0$ and only $B_{11}$, $B_{12}$ and $B_{22}$ ever appear. Those fix the pixels' shape, square and unskewed, while $c$ and $f$ need $B_{13}$, $B_{23}$ and $B_{33}$, which no photo touches, so §5's $f=500$ px, $c=(300,\ 250)$ px camera fits all twelve as well as the true one. Tilting the board, or the camera, in different directions fixes it: three orientations determine $K$ with the skew free, two with the skew fixed at zero. That minimum is exact only without noise, because a tilt shows little perspective: §5's three views at $2$ m, with $0.5$ px of corner noise, still miss $f$ by $91.1$ px. Fill the frame, use many corners and views (OpenCV's tutorial asks for at least $10$ test patterns), and let the Levenberg–Marquardt refinement finish.
 
 ### Problem set · 과제
 
@@ -811,7 +940,10 @@ Tier B. The wrist rig of the Running object, plus **P5** as a range to a wall ([
 ### Sources
 
 - [Szeliski, *Computer Vision: Algorithms and Applications* (free official PDF)](https://szeliski.org/Book/)
-- [OpenCV camera calibration tutorial](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html)
+- [OpenCV camera calibration tutorial](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html); its [4.13.0 source](https://github.com/opencv/opencv/blob/4.13.0/doc/py_tutorials/py_calib3d/py_calibration/py_calibration.markdown) asks for at least 10 test patterns and fits five distortion coefficients, $k_1, k_2, p_1, p_2, k_3$.
+- Zhang, Z. "A flexible new technique for camera calibration." *IEEE Transactions on Pattern Analysis and Machine Intelligence* 22(11), 1330–1334, 2000. doi:10.1109/34.888718; its abstract describes a planar pattern seen at two or more orientations, a closed-form solution refined by maximum likelihood, and radial lens distortion modelled.
+- OpenCV 4.13.0, `calibrateCamera` ([its documentation, in calib3d.hpp](https://github.com/opencv/opencv/blob/4.13.0/modules/calib3d/include/opencv2/calib3d.hpp)): based on Zhang (2000) and Bouguet's calibration toolbox; a planar-pattern initialization, each view's pose by `solvePnP`, then a global Levenberg–Marquardt fit to the reprojection error. The 5.x branch's copy of the comment ([calib.hpp](https://github.com/opencv/opencv/blob/5.x/modules/calib/include/opencv2/calib.hpp)) adds acquisition advice: many board poses with significant tilt, and views spread over the expected working-distance range.
+- [Kalibr](https://github.com/ethz-asl/kalibr) (Autonomous Systems Lab, ETH Zurich): its README describes camera–IMU calibration as spatial and temporal, together with the IMU's intrinsics.
 - [KITTI sensor setup — a real calibrated multi-sensor rig](https://www.cvlibs.net/datasets/kitti/setup.php)
 - Harris, C. & Stephens, M. "A combined corner and edge detector." *Proceedings of the 4th Alvey Vision Conference*, 1988.
 - Shi, J. & Tomasi, C. "Good features to track." *IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 1994.
@@ -848,7 +980,7 @@ pose를 *얻는* 방법이다 — 픽셀, 깊이, 포인트 클라우드가 올�
 > 단계의 주제다.
 
 > [!note] 선수 지식
-> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, **P5** · [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[02-foundations/optimization|최적화]] (최소제곱) · [[02-foundations/probability|확률]] (§4의 최대우도, P5가 쓰는 §5의 스칼라 칼만 갱신)
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, **P5** · [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/se3-geometry|3D 기하와 SE(3)]] · [[02-foundations/optimization|최적화]] (최소제곱) · [[02-foundations/probability|확률]] (§4의 최대우도, P5가 쓰는 §5의 스칼라 칼만 갱신) · [[04-robotics/sensor-models|3.2 센서 모델과 잡음]] (마커 검출의 픽셀 잡음 $0.5$ px, §5)
 
 > [!note] 처음이라면 · First pass
 > 그림과 계산 절부터 본다. 리그의 점 하나를 투영하고, 삼각측량하고, 왜곡하고, 잘못 보정해 보는 것을 숫자 전부와 함께 한다. 그다음 §1(핀홀 모델, 투영식까지), §5(보정 — 현장 실패가 실제로 시작되는 곳), §7(주장 읽기)을 읽는다. §2~§4(깊이, 이미지 특징, 두 시점 기하, 포인트 클라우드, ICP)는 기계장치이고, 논문의 숫자가 거기 기댈 때 읽어라. §6과 §7.5는 학습 기반 인식과 visual servoing으로 넘어가는 짧은 다리다.
@@ -1413,15 +1545,39 @@ $$\min_{R,t} \sum_i \big((Rp_i + t - q_{c(i)})^\top n_{c(i)}\big)^2$$
 
 ### 5. 보정
 
+*한 문장으로:* 보정은 이 페이지의 미터 단위 계산이 안다고 가정하는 것 — $K$, 왜곡, 센서와 그리퍼 사이의 변환 — 을 알려진 표적의 시점들에서 재는데, 표적은 미지수가 하나하나 드러나도록 기울이고 옮겨 가며 찍어야 하고, 보정이 출력하는 잔차는 그 시점들에 대한 적합을 잴 뿐 참값을 재지는 않는다.
+
 | 보정 | 추정 대상 | 전형적 방법 |
 |---|---|---|
-| Intrinsic | $f_x,f_y,c_x,c_y$, 왜곡 | 체커보드/타깃 촬영 |
+| Intrinsic | $f_x,f_y,c_x,c_y$, 왜곡 | 기울인 체커보드/타깃 촬영 |
 | 카메라–카메라 (스테레오) | 상대 $SE(3)$ + 정렬(rectification) | 공유 타깃 촬영 |
 | 카메라–LiDAR | extrinsic $SE(3)$ | 타깃 또는 상호 특징 정렬 |
 | Hand–eye (카메라–로봇) | 센서–말단 또는 베이스 변환 | 로봇 운동 + 타깃 ($AX=XB$) |
 | 시간 | 센서 간 클럭 오프셋/지연 | 운동 신호의 상관 |
 
 카메라–LiDAR 행을 마스트에 LiDAR를 단 이 리그 위에서 계산한 것 — 외부 파라미터, $1^\circ$ 오차가 픽셀과 밀리미터로 하는 일, 그리고 회전·평행이동·시간을 가르는 검사 — 이 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §8]]이다. 모든 행은 보정과 사용 사이에 마운트가 움직이지 않는다고 가정한다. 휘거나 떠는 브래킷은 그 가정을 깨고, 그것을 목표에서의 기울기로 설계하는 법은 [[02-foundations/tools/mechanical-design-fabrication|12.9 실험을 위한 기계 설계와 제작 §6]]이다.
+
+#### 평면 표적으로 하는 내부 파라미터 캘리브레이션: 원리
+
+**문제.** 이 페이지의 미터 단위 계산은 모두 $K$ 와 왜곡을 필요로 하고, 실제 카메라에서는 둘 다 알려진 표적을 찍은 이미지에서 추정한다. *발상*은 Zhang(IEEE TPAMI 2000)에게서 왔다. 평평한 표적 하나를 여러 기울기로 찍는다. 표적의 두 축은 서로 수직이고 1미터는 어느 축을 따라도 같은 길이이므로, 사진에서 참 $K$ 로 역투영해도 여전히 그래야 한다. 그래서 사진 한 장이 $K$ 에 대한 식 둘을 주고, 기울기 셋이 $K$ 를 정하며, 그다음 최소제곱 적합이 모든 것을 다듬는다.
+
+> **Homography가 $K$ 에 거는 제약의 정의.** 평면 표적을 찍은 시점 하나가 주는 *내부 파라미터에 대한 식 둘*이다. 조건: 표적은 §2.7처럼 $Z_t=0$ 에 놓인다. 그 homography $H=\lambda K[\,r_1\ r_2\ t\,]$ 는 어느 셋도 한 직선 위에 있지 않은 점 넷 이상에 맞추며, $\lambda$ 는 모르는 스케일이다(§2.7이 나누어 없애는 $\lVert K^{-1}h_1\rVert$ 다). $r_1, r_2$ 는 회전 행렬의 열이므로 서로 수직인 단위 벡터다. 그리고 왜곡 없는 핀홀 모델이 성립한다. $H$ 의 앞 두 열 $h_1, h_2$ 에 대해 $K^{-1}h_i=\lambda r_i$ 이므로, 내적 $h_i^\top Bh_j=(K^{-1}h_i)^\top(K^{-1}h_j)=\lambda^2r_i^\top r_j$ 는 $i\ne j$ 이면 $0$ 이고 $i=j$ 이면 어느 쪽이든 $\lambda^2$ 이어야 한다. 곧
+>
+> $$h_1^\top B\,h_2=0,\qquad h_1^\top B\,h_1=h_2^\top B\,h_2,\qquad B=K^{-\top}K^{-1}$$
+>
+> 이다. $B$ 는 대칭이고 상수배까지만 정해지므로, 두 식은 그 여섯 성분에 대해 선형이다.
+>
+> - **예**: $2$ m에서 $30°$ 기울인 시점 셋이 $f=(600.000,\ 600.000)$, $c=(320.000,\ 240.000)$, $s=0.000$ px를 돌려준다(아래 코드).
+> - **비예**: 서로 평행한 시점들. 같은 두 식을 되풀이할 뿐이다. 표적이 카메라를 정면으로 마주 보는 §2.7의 정면 시점은 $h_1\propto(1,0,0)$, $h_2\propto(0,1,0)$ 이어서 두 식이 $B_{12}=0$ 과 $B_{11}=B_{22}$, 곧 skew 없는 정사각 픽셀이 되고, $c$ 와 $f$ 를 $B$ 에서 읽어 내는 데 필요한 $B_{13}$, $B_{23}$, $B_{33}$ 은 건드리지 않는다. 그래서 $f=500$, $c=(300,\ 250)$ px인 카메라도 그 두 축을 $90.00°$ 에 같은 길이로 본다.
+> - **왜 중요한가**: 보정이 초기 추정 없이 풀리는 선형대수가 되고, 표적을 기울이는 일이 필수가 된다.
+
+**세고 풀기.** $B$ 의 성분은 여섯이지만 그 비만 의미가 있으므로 미지수는 다섯, $K$ 의 성분마다 하나씩이다. 시점마다 식이 둘이므로 방향이 서로 다른 시점 셋이 일반적으로 $B$ 를 정하고, skew를 0으로 두면 둘로 충분하다. 행들을 쌓으면 $b=(B_{11},B_{12},B_{22},B_{13},B_{23},B_{33})$ 에 대해 $Vb=0$ 이 되므로 $b$ 는 $V$ 의 영공간 벡터이고, 코너에 잡음이 있으면 §2.6의 직접 선형 변환(DLT)에서처럼 $V$ 의 가장 작은 특잇값에 대응하는 오른쪽 특이벡터다. 그다음 $K$ 는 촐레스키 분해 $B=LL^\top$ ($L$ 은 하삼각행렬, [[02-foundations/probability|3. 확률 §6]])에서 나온다. $K^{-\top}$ 는 대각 성분이 양수인 하삼각행렬이므로 상수배를 무시하면 $L=K^{-\top}$ 이고, $B_{11}>0$ 이 되도록 $b$ 의 부호를 고른 뒤 $K=(L^\top)^{-1}$ 을 $K_{33}=1$ 로 맞추면 된다. 이어 §2.7의 방법이 시점마다 $R$ 과 $t$ 를 준다. 이 닫힌 형태는 왜곡을 무시하고 잡음 섞인 homography를 그대로 믿는다. 그래서 $K$, 왜곡, 모든 자세를 두고 아래에서 정의하는 RMS 재투영 오차를 최소화하는 Levenberg–Marquardt([[02-foundations/optimization|4. 최적화 §3.5]])의 출발점일 뿐이다.
+
+**리그 위에서.** 잡음이 없으면 코드는 시점 셋에서도, skew를 0으로 둔 시점 둘에서도 $K$ 를 정확히 되찾는다. 그다음 모든 코너 좌표에 [[04-robotics/sensor-models|3.2]]의 마커 잡음 $0.5$ px를 넣으면, 그 시점 셋에서 닫힌 형태는 $500$ 번 뽑은 RMS로 $f$ 를 $91.1$ px, $c$ 를 $61.9$ px 놓친다. 증거가 작기 때문이다. $f$ 와 $c$ 는 원근으로만 드러나고, 그 크기는 §2.7의 기울기 지렛대가 정하며 거리의 제곱에 반비례한다. 표적이 u $320$–$478$, v $239$–$368$ px만 덮는 $2$ m에서 $AB$ 둘레로 $30°$ 기울이면, 가까운 모서리 $AB$ 가 먼 모서리 $CD$ 보다 겨우 $15.0$ px 길게 찍힌다. $0.8$ m에서는 같은 기울기들이 u $106$–$534$, v $62$–$418$ px로 프레임 대부분을 채우고, 그 차이가 $95.2$ px로 커지며, 놓치는 양도 거의 같은 비율로 줄어 $13.7$ 과 $9.7$ px가 된다. 거기서 코너 $30$ 개짜리 시점 열 장을 쓰면 $2.5$ 와 $1.6$ px다. 영어 절반의 코드가 이 숫자를 모두 출력한다. 처음 두 줄이 되찾은 $f=(600.000,\ 600.000)$, $c=(320.000,\ 240.000)$ 이고, 이어 §2.7의 $H$ 를 다시 만들어 그 두 행이 $B_{11}$, $B_{12}$, $B_{22}$ 만 건드린다는 것을 보인다. 정면 시점과, 그것을 $90°$ 돌려 $3$ m로 옮긴 평행 시점에서는 참 $K$ 와 비예의 카메라가 모두 두 축을 $90.00°$, 길이 비 $1.000$ 으로 보고, $AB$ 둘레로 기운 시점에서만 비예의 카메라가 $89.00°$, $1.049$ 를 본다. 이어 그 기운 시점의 두 모서리 길이($2$ m에서 $157.9$ 와 $142.9$ px, $0.8$ m에서 $428.6$ 과 $333.3$ px)가 나오고, 잡음 세 경우의 RMS가 표적이 덮는 픽셀 범위와 함께 나온다(열 장의 경우 u는 $106$–$535$ px). 마지막 줄이 왜곡 이동 $2.30$ px와 $31.6$ px다.
+
+**실제로는.** 표적을 여러 방향으로 기울이고, 실제로 작업할 거리들에 걸쳐 찍고(먼 거리에는 더 큰 보드), 이미지 모서리까지 포함해 프레임을 채워라. 이미지 모서리에서는 리그의 왜곡이 점을 $31.6$ px 옮기고 $L$ 에서는 $2.30$ px이므로, 한 번도 보지 못한 모서리는 $k_1, k_2$ 를 외삽으로 남긴다. OpenCV의 `calibrateCamera`도 같은 흐름(평면 시점들로 첫 $K$, `solvePnP`로 시점마다 자세, 그다음 Levenberg–Marquardt)을 따른다. 그 튜토리얼은 테스트 패턴을 최소 $10$ 장 요구하고, §1의 왜곡 항 다섯을 맞추며, 재투영 오차가 작을수록 파라미터가 정확하다고 읽는다. 그것을 보여 줄 수 있는 것은 적합에 쓰지 않은 홀드아웃 시점뿐이다(아래). 카메라–IMU 쌍에는 extrinsic 말고도 시간 오프셋이 필요하고, Kalibr가 둘을 함께 추정한다. extrinsic 회전 $1°$ 와 시계 오프셋 $1$ ms가 이 리그에서 얼마인지는 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §8–§9]]가 매긴다.
+
+#### Hand–eye 보정과 재투영 잔차
 
 **Hand–eye 방정식의 유도.** 손목에 단 카메라가, 팔이 움직이는 동안 제자리에 있는 보정 타깃을 본다. 프레임 $b$ 의 좌표를 프레임 $a$ 로 옮기는 변환을 $T_{ab}$ 로 쓴다. $p^a = T_{ab}p^b$ 이고, §1의 $T_{cw}$ 와 같은 방향이다([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §3]]). $b$ 는 로봇 베이스, $g$ 는 그리퍼, $c$ 는 카메라, $t$ 는 타깃이다. 로봇 자세 $i$ 에서는 변환 세 개의 사슬 하나가 베이스에서 타깃까지 닿는다. 관절 엔코더가 주는 그리퍼 자세 $T_{bg_i}$, 변하지 않는 모르는 카메라–그리퍼 장착 $X = T_{gc}$, 그리고 카메라가 재는 타깃 자세 $T_{c_it}$(PnP, 곧 타깃의 알려진 코너와 그 픽셀로 구한다)다. 타깃은 움직이지 않았으므로 두 로봇 자세 $1$ 과 $2$ 의 사슬은 같은 변환에서 끝난다.
 $$T_{bg_1}\,X\,T_{c_1t} = T_{bt} = T_{bg_2}\,X\,T_{c_2t}$$
@@ -1520,6 +1676,7 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 - 알려진 코너 넷에서 PnP로 자세를 구하고, 코너 셋이 왜 자세를 최대 넷까지 남기는지와 무엇이 하나를 고르는지 말하고, 작은 마커에서 왜 기울기가 가장 약한 숫자인지 설명할 수 있다
 - 점대점과 점대평면 ICP 목적함수를 쓰고, 후자에 평평한 방향이 생기는 경우를 보일 수 있다
 - RMS reprojection error를 정확도가 아니라 훈련 잔차로 읽을 수 있다
+- 평면 표적을 기울여 찍은 시점들이 시점마다 $B=K^{-\top}K^{-1}$ 에 대한 식 둘로 어떻게 $K$ 를 주는지, 그리고 평행한 시점이 왜 아무것도 더하지 못하는지 설명할 수 있다
 
 > [!tip] 더 깊이 · Going deeper
 > Szeliski의 [*Computer Vision: Algorithms and Applications*](https://szeliski.org/Book/)이 무료이고 이 페이지의 범위를 전부 덮는다. 다시점 기하를 정리로 봐야 할 때 — essential·fundamental 행렬, 삼각측량, 번들 조정 — 는 Hartley·Zisserman의 *Multiple View Geometry in Computer Vision*이 이 분야가 인용하는 참고서다.
@@ -1536,6 +1693,7 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 8. 리그의 $F$ 로, $\tilde u_1 = (470, 300)$ 의 후보 짝이 $(434, 306)$ 에 있다. 대수적 잔차와 픽셀 단위 점-선 거리를 계산하라. $(452, 300)$ 의 짝은 같은 검사에서 기각되는가?
 9. 같은 시점 스무 장에 $k_3$, $p_1$, $p_2$ 를 더해 보정을 다시 맞추니 $e_{\text{RMS}}$ 가 $0.37$ px에서 $0.21$ px로 내려갔다. 무엇이 입증되었으며, 새 모델이 더 나은지를 가리려면 어떤 확인 둘이 필요한가?
 10. 네 코너에 PnP를 풀어 $R=I$, $t=(0,0,2)$ m를 얻었다. 타깃 프레임에서 카메라는 어디 있는가? 코너마다 $1$ px의 잡음이 있을 때 적합은 타깃의 거리와 기울기 중 무엇을 더 나쁘게 복원하며, 왜 그런가? 타깃이 같은 자리의 $0.1$ m 태그라면 무엇이 바뀌는가?
+11. 탁자 위에 평평하게 놓인 체커보드를 바로 위에서 열두 장 찍어 리그의 카메라를 보정한다. 장마다 보드를 밀거나 돌렸고, 그중 한 장에서는 보드의 모서리가 이미지의 행과 $45°$ 를 이룬다. 그 사진의 $h_1$ 과 $h_2$ 를 상수배까지 쓰고, $B$ 에 대한 두 식을 써라. 열두 장은 왜 $f$ 나 $c$ 를 정하지 못하는가? 무엇 하나를 바꾸면 고쳐지고, 그때 최소 몇 장이면 되며, 실제로는 왜 그 최소로 모자라는가?
 
 > [!tip]- 정답 · Answers
 > 1. $u = 600(-0.3)/1.5+320 = 200$, $v = 600(0.1)/1.5+240 = 280$.
@@ -1548,6 +1706,7 @@ pose 복원에 덜 민감할 수 있지만 여전히 깊이 추정과 조건이 
 > 8. $\ell = F\tilde u_1 \propto (0,\ 0.0002,\ -0.06)$ 이다. 대수적 잔차는 $0.0002(306) - 0.06 = 1.2\times10^{-3}$, $\sqrt{\ell_1^2+\ell_2^2} = 0.0002$ 이므로 $d_\perp = 6.0$ px — 수평 epipolar 선이니 당연히 수직 어긋남 그대로다. $(452, 300)$ 의 짝은 대수적 잔차가 정확히 $0$ 이고 $d_\perp = 0$ 이다. 선 *위에* 있으므로 epipolar 검사를 통과한다. 그래도 틀렸다. $Z = 600(0.12)/18 = 4.0$ m로 삼각측량되어 $2.0$ m가 아니다. Epipolar 선을 따라 움직이는 것은 $F$ 에 보이지 않고 깊이에만 보인다.
 > 9. 자유 파라미터가 많은 모델이 같은 데이터에 더 잘 맞았다는 것뿐이고, 그것은 보장된 일이므로 정확도에 대해서는 아무것도 입증하지 않는다([[02-foundations/ml-practice|9. ML 실무 §2]]). 가리는 확인이 둘이다: (i) 적합이 본 적 없는 시점 — 되도록 다른 거리와 기울기 — 을 홀드아웃으로 두고 훈련 시점이 아니라 거기서 $e_{\text{RMS}}$ 를 비교한다; (ii) 실제 작업 거리에서 알려진 길이나 타깃 간 거리를 잰다. 그것이 보정이 봉사할 미터이기 때문이다. 셋째로 이미지 위치별 잔차 지도가 유용하다. 진짜 왜곡 구조는 반경 방향 무늬로 나타나고, 잡음 적합은 얼룩으로 나타난다.
 > 10. $-R^\top t=(0,0,-2)$ m에 있다. $t$ 는 카메라 프레임에서 타깃이 놓인 자리이지 카메라의 위치가 아니다(§1). 거리는 $\pm13.2$ mm로 나온다. 타깃의 겉보기 크기에서 읽으므로 $150$ px 폭에서 1픽셀이 $13.3$ mm다. 기울기는 각각 $\pm2.70°$ 로밖에 나오지 않는다. 기울기는 이미지가 크기만 바뀐 직사각형에서 벗어나는 정도로만 드러나고, 그것이 $10°$ 에 $5.2$ px이기 때문이다. $0.1$ m 태그는 $30$ px에 걸치고 $10°$ 를 기울여도 모서리가 $0.26$ px 바뀐다. 더 나쁘게는 재투영 오차에 두 번째 최소점이 있어서, $20°$ 에서 $27.5°$ 떨어진 자세가 코너를 $0.18$ px로 맞춘다. 기울기가 그저 시끄러운 것이 아니라 모호하다(§2.7). 더 큰 타깃, 멀리 떨어뜨린 여러 태그, 또는 사전 정보가 그것을 고친다.
+> 11. 광축 둘레로 $45°$ 돌아간 보드는 $r_1=(1,1,0)/\sqrt2$, $r_2=(-1,1,0)/\sqrt2$ 이므로 $h_1\propto Kr_1\propto(1,1,0)$, $h_2\propto(-1,1,0)$ 이다. $K$ 는 두 축을 똑같이 $600$ 배 하고 $c$ 는 셋째 성분에 비례해서만 더하는데, 그 성분이 $0$ 이기 때문이다. 두 식은 $h_1^\top Bh_2\propto B_{22}-B_{11}=0$ 과 $h_1^\top Bh_1-h_2^\top Bh_2\propto4B_{12}=0$ 으로, §5의 정면 시점이 주는 두 식이 역할만 바꾼 것이다. 바로 위에서 찍은 사진은 모두 그렇다. 보드가 이미지와 평행하므로 $r_1$, $r_2$ 와 함께 $h_1$, $h_2$ 의 셋째 성분이 $0$ 이라, 식에는 $B_{11}$, $B_{12}$, $B_{22}$ 만 나온다. 이것들은 픽셀의 모양(정사각, skew 없음)을 정할 뿐이고, $c$ 와 $f$ 에 필요한 $B_{13}$, $B_{23}$, $B_{33}$ 은 어느 사진도 건드리지 않는다. 그래서 §5의 $f=500$ px, $c=(300,\ 250)$ px 카메라도 열두 장 모두에 참 카메라만큼 잘 맞는다. 보드나 카메라를 여러 방향으로 기울이면 고쳐진다. skew를 풀어 두면 방향 셋이, 0으로 고정하면 둘이 $K$ 를 정한다. 그 최소는 잡음이 없을 때만 정확하다. 기울기가 보여 주는 원근이 작기 때문이다. §5의 $2$ m 시점 셋은 코너 잡음 $0.5$ px만으로도 $f$ 를 $91.1$ px 놓친다. 프레임을 채우고, 코너와 시점을 많이 쓰고(OpenCV 튜토리얼은 테스트 패턴을 최소 $10$ 장 요구한다), Levenberg–Marquardt 다듬기가 마무리하게 하라.
 
 ### 과제 · Problem set
 
@@ -1573,7 +1732,10 @@ Tier B. 계속 쓰는 대상의 손목 리그, 벽까지의 거리로서의 **P5
 ### 출처
 
 - [Szeliski, *Computer Vision: Algorithms and Applications* (공식 무료 PDF)](https://szeliski.org/Book/)
-- [OpenCV 카메라 보정 튜토리얼](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html)
+- [OpenCV 카메라 보정 튜토리얼](https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html). [4.13.0 원본](https://github.com/opencv/opencv/blob/4.13.0/doc/py_tutorials/py_calib3d/py_calibration/py_calibration.markdown)은 테스트 패턴을 최소 10장 요구하고 왜곡 계수 다섯 $k_1, k_2, p_1, p_2, k_3$ 를 맞춘다.
+- Zhang, Z. "A flexible new technique for camera calibration." *IEEE Transactions on Pattern Analysis and Machine Intelligence* 22(11), 1330–1334, 2000. doi:10.1109/34.888718. 초록이 밝히는 것: 둘 이상의 방향에서 본 평면 패턴, 최대우도로 다듬는 닫힌 형태 해, 반경 방향 렌즈 왜곡의 모델링.
+- OpenCV 4.13.0, `calibrateCamera`([calib3d.hpp에 있는 문서](https://github.com/opencv/opencv/blob/4.13.0/modules/calib3d/include/opencv2/calib3d.hpp)): Zhang(2000)과 Bouguet의 보정 툴박스를 바탕으로, 평면 패턴으로 초기화하고 시점마다 `solvePnP`로 자세를 구한 뒤 재투영 오차에 전역 Levenberg–Marquardt 적합을 돌린다. 5.x 브랜치에 있는 같은 주석([calib.hpp](https://github.com/opencv/opencv/blob/5.x/modules/calib/include/opencv2/calib.hpp))은 촬영 요령을 덧붙인다. 크게 기울인 보드 자세를 여럿 쓰고, 예상 작업 거리 범위에 걸쳐 시점을 퍼뜨리라는 것이다.
+- [Kalibr](https://github.com/ethz-asl/kalibr)(ETH Zurich, Autonomous Systems Lab): README가 카메라–IMU 보정을 IMU 내부 파라미터까지 포함한 공간·시간 보정으로 적는다.
 - [KITTI 센서 구성 — 실제 보정된 다중 센서 리그](https://www.cvlibs.net/datasets/kitti/setup.php)
 - Harris, C. & Stephens, M. "A combined corner and edge detector." *Proceedings of the 4th Alvey Vision Conference*, 1988.
 - Shi, J. & Tomasi, C. "Good features to track." *IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 1994.

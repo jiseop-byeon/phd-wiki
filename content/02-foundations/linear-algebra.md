@@ -7,26 +7,29 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 §1]] (partial derivatives, gradient) · [[02-foundations/engineering-math|0.5 §4]] (matrix multiplication, transpose, inverse) · [[02-foundations/engineering-math|0.5 §4.5]] (linearity) · [[02-foundations/engineering-math|0.5 §10]] (Σ, argmax, norm notation) · plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/neural-network-basics|0.8]] for the machine-learning words the examples use (layer, token, embedding)
-> [[02-foundations/engineering-math|0.5 §1]](편미분·그래디언트) · [[02-foundations/engineering-math|0.5 §4]](행렬곱·전치·역행렬) · [[02-foundations/engineering-math|0.5 §4.5]](선형성) · [[02-foundations/engineering-math|0.5 §10]](Σ·argmax·노름 표기) · [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2** · 예제에 쓰이는 기계학습 어휘(층·토큰·임베딩)는 [[02-foundations/neural-network-basics|0.8]]
+> [[02-foundations/engineering-math|0.5 §1]] (partial derivatives, gradient) · [[02-foundations/engineering-math|0.5 §4]] (matrix multiplication, transpose, inverse) · [[02-foundations/engineering-math|0.5 §4.5]] (linearity) · [[02-foundations/engineering-math|0.5 §10]] (Σ, argmax, norm notation) · plant **P2**, the catalog's planar two-link arm, from [[02-foundations/lab-plants|0.6 Lab Plants]] (a *plant* is the system being controlled; the catalog freezes six small ones so that every page can reuse them by name) · [[02-foundations/neural-network-basics|0.8]] for the machine-learning words the examples use (layer, token, embedding)
+> [[02-foundations/engineering-math|0.5 §1]](편미분·그래디언트) · [[02-foundations/engineering-math|0.5 §4]](행렬곱·전치·역행렬) · [[02-foundations/engineering-math|0.5 §4.5]](선형성) · [[02-foundations/engineering-math|0.5 §10]](Σ·argmax·노름 표기) · [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**(카탈로그의 평면 2링크 팔. 장치(plant)는 제어되는 시스템을 뜻하고, 카탈로그는 작은 장치 여섯 개를 숫자까지 고정해 어느 페이지든 이름으로 다시 쓰게 한다) · 예제에 쓰이는 기계학습 어휘(층·토큰·임베딩)는 [[02-foundations/neural-network-basics|0.8]]
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
 ## English
 
 *Stands on [[02-foundations/engineering-math|0.5]] and [[02-foundations/neural-network-basics|0.8]]. First corner of the core triangle: a matrix is a map, with a rank,
-eigenvalues and an SVD. The later pages that name it as a prerequisite include calculus, probability, optimization, SE(3) and manipulator dynamics.*
+eigenvalues and an SVD (singular value decomposition). The later pages that name it as a prerequisite include calculus, probability, optimization, SE(3) and manipulator dynamics.*
 
 Deep learning *is* linear algebra with nonlinearities between the matrix multiplies.
 This page is a course-depth treatment: definitions, derivations, worked examples, and
 where each concept appears in the papers of this wiki.
 
+> [!note] Why this matters · 왜 배우는가
+> On the [[physical-ai-map|Physical AI Map]], linear algebra is part of the mathematics floor under the physical-AI stack of [[07-research-program/index|7. Research Program §5]], directly beneath motion planning, manipulation and contact: in *"Install that panel on the frame"* it is how the robot identifies panel and frame from more measurements than unknowns (the least squares of §2), and how it moves the component, because the Jacobian $J$ of this page's picture turns joint rates into the panel's velocity. Near a stretched-arm pose $J$ loses rank and $J^{-1}$ demands unbounded joint speeds, so an inverse-kinematics loop lunges at the frame; §4.5's damped least squares, which at $\lambda=0.01$ turns a near-singular $1/\sigma$ of $100$ into $0.99$, is a fix you can choose only if you can read singular values. On the dissertation path ([[07-research-program/index|7. Research Program §8]]) the page is used in block 1 by [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics §2 and §6]], in block 2 by [[04-robotics/control-theory-ce397|5. Control Theory §2]] and [[04-robotics/system-identification|5.5 System Identification §3]], in block 3 by [[04-robotics/force-compliance-control|13. Force & Compliance Control §4]], and in block 7 by [[05-construction-robotics/imitating-contact|10. Imitating Contact §2]], whose behaviour cloning is solved by §2's normal equations. After it you can read any $y=Wx$ by rows and by columns, fit a least-squares line and check its residual, and say from a Jacobian's singular values how near a pose is to singular.
+
 > [!note] First pass · 처음이라면
-> Read the picture, §1 for what a matrix is, §2 through rank and least squares (the gradient derivation included), then the 2×2 worked example in §3 and §6 for the high-dimensional intuition papers assume. The problem set needs one more piece: the shape table and the P2 worked case in §4.5, with the condition number $\kappa_2$ from §3. Second pass: the rest of §3 (conditioning, definiteness) when an optimizer or a covariance needs it, §4 (SVD) when a paper factorises something, the rest of §4.5 the first time you meet $J^\dagger$ on the robotics track, and §5 when you reach the control track.
+> About four 60–90-minute sessions, three to read and one to practise. **Session 1:** the picture, §1 (what a matrix does, read by rows and by columns on P2) and §2 through rank and the null space; the collapsed boxes can wait. **Session 2:** §2's least squares with its gradient derivation and worked fit, then §3 through the worked $2\times2$, its figure and the gradient-descent rate. **Session 3:** the rest of §3 (the condition number $\kappa_2$ and definiteness), §4's first two bullets and its worked $C$ (what singular values are), the shape table and P2 case of §4.5, and §6. **Session 4,** closed-book: self-check 1–4, then the problem set (Draw, Derive, Interpret), which needs exactly these pieces. Second pass: the rest of §4 (SVD) when a paper factorises something, the rest of §4.5 the first time you meet $J^\dagger$ on the robotics track, and §5 when you reach the control track.
 
 ### The picture · 그림으로 먼저 보기
 
-<svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="P2 at theta = (0, 90 degrees): the arm to scale, the two columns of J as arrows at the tip, (-1, 1) and (-1, 0), each perpendicular to its joint-to-tip segment; the unit circle of joint rates and the ellipse it maps to, semi-axes 1.618 and 0.618, kappa 2.618; and the straight arm, where the columns are parallel and det J = 0.">
+<svg viewBox="0 0 560 218" style="max-width:100%;height:auto" role="img" aria-label="P2 at theta = (0, 90 degrees): the arm to scale, the two columns of J as arrows at the tip, (-1, 1) and (-1, 0), each perpendicular to its joint-to-tip segment; the unit circle of joint rates and the ellipse it maps to, semi-axes 1.618 and 0.618, kappa 2.618; and the straight arm, where the columns are parallel and det J = 0.">
   <defs><marker id="laHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <rect x="10" y="32" width="160" height="160" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1"/>
   <text x="90" y="24" font-size="11" text-anchor="middle" fill="currentColor">joint-rate space (θ̇<tspan dy="3.5">1</tspan><tspan dy="-3.5">, θ̇</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">)</tspan></text>
@@ -70,27 +73,31 @@ where each concept appears in the papers of this wiki.
   <text x="232" y="132" font-size="11" text-anchor="end" fill="currentColor">→ (−1, 0)</text>
   <text x="372" y="24" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">P2, θ = (0°, 90°)</text>
   <text x="470" y="24" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">θ = (0°, 0°)</text>
-  <line x1="496" y1="53.9" x2="496" y2="170.1" stroke="currentColor" stroke-width="8" stroke-opacity="0.22"/>
-  <polyline points="444,112 470,112 496,112" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
-  <circle cx="444" cy="112" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
-  <circle cx="470" cy="112" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
-  <polyline points="496,112 496,60" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHw)"/>
-  <polyline points="496,112 496,86" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHw)"/>
+  <line x1="496" y1="58.3" x2="496" y2="165.7" stroke="currentColor" stroke-width="8" stroke-opacity="0.22"/>
+  <polyline points="448,112 472,112 496,112" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="448" cy="112" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="472" cy="112" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
+  <polyline points="496,112 496,64" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHw)"/>
+  <polyline points="496,112 496,88" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHw)"/>
   <circle cx="496" cy="112" r="3" fill="currentColor"/>
-  <text x="505" y="65" font-size="11" fill="currentColor">(0, 2)</text>
-  <text x="505" y="91" font-size="11" fill="currentColor">(0, 1)</text>
+  <text x="505" y="69" font-size="11" fill="currentColor">(0, 2)</text>
+  <text x="505" y="93" font-size="11" fill="currentColor">(0, 1)</text>
   <text x="505" y="140" font-size="11" fill="currentColor">det J = 0</text>
   <text x="505" y="154" font-size="11" fill="currentColor">κ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = ∞</tspan></text>
   <text x="496" y="206" font-size="11" text-anchor="middle" fill="currentColor">lost direction: x</text>
-  <text x="12" y="237" font-size="11" opacity="0.9" fill="currentColor">A column of J is the output of one unit of one input; each is ⊥ to its joint-to-tip segment.</text>
-  <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">Ellipse area π·σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = π·|det J| = π, the circle's own. Straight arm: parallel columns, x lost.</tspan></text>
+  <text x="470" y="38" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">⅓ scale</text>
+  <polyline points="404,80 428,80" fill="none" stroke="currentColor" stroke-width="1" marker-end="url(#laHw)"/>
+  <polyline points="404,80 404,56" fill="none" stroke="currentColor" stroke-width="1" marker-end="url(#laHw)"/>
+  <text x="431" y="84" font-size="11" fill="currentColor">ẋ</text>
+  <text x="409" y="60" font-size="11" fill="currentColor">ẏ</text>
+  <text x="388" y="96" font-size="10.5" opacity="0.85" fill="currentColor">tip velocity</text>
 </svg>
 
-Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at its frozen pose $\theta=(0^\circ,90^\circ)$, drawn as what §1 means by "a matrix is a map" (§4.5 works this pose as its P2 case): the columns of $J$ are the tip velocities for one unit of each joint rate, $(-1,1)$ for the whole arm turning about the base and $(-1,0)$ for the forearm turning about the elbow, each perpendicular to its own joint-to-tip segment. Under $J$ the unit circle of joint rates becomes an ellipse with semi-axes $\sigma_1=1.618$ and $\sigma_2=0.618$, so $\kappa_2(J)=2.618$, and its area $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$ is the circle's own because $\det J=1$. In the right panel the arm is straight, $\theta=(0^\circ,0^\circ)$: the columns $(0,2)$ and $(0,1)$ are parallel, the ellipse has collapsed to a segment with $\det J=0$ and $\kappa_2=\infty$, and the lost direction is $x$.
+Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] at its frozen pose $\theta=(0^\circ,90^\circ)$, drawn as what §1 means by "a matrix is a map" (§4.5 works this pose as its P2 case): the columns of $J$ are the tip velocities for one unit of each joint rate, $(-1,1)$ for the whole arm turning about the base and $(-1,0)$ for the forearm turning about the elbow, each perpendicular to its own joint-to-tip segment. Under $J$ the unit circle of joint rates becomes an ellipse in the plane of tip velocities $(\dot x,\dot y)$, drawn centred on the tip at the circle's scale, with semi-axes $\sigma_1=1.618$ and $\sigma_2=0.618$, so $\kappa_2(J)=2.618$, and its area $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$ is the circle's own because $\det J=1$. In the right panel, drawn at a third of that scale, the arm is straight, $\theta=(0^\circ,0^\circ)$: the columns $(0,2)$ and $(0,1)$ are parallel, the ellipse has collapsed to a segment of half-length $\sqrt5=2.236$ with $\det J=0$ and $\kappa_2=\infty$, and the lost direction is $x$.
 
 ### 1. Vectors, matrices, and what multiplication means
 
-The first three bullets set up the vocabulary — what a matrix is and two ways to read $Wx$ — and the worked shape computation for an attention head follows right after.
+A robot arm and a neural-network layer do the same thing to a list of numbers: P2's Jacobian takes two joint rates and returns the tip's velocity, and a layer takes features and returns features. Before either can be analysed you need to know what a matrix does to a vector and two ways to read the product; P2 then puts numbers on both readings.
 
 - A matrix $W \in \mathbb{R}^{m\times n}$ is a **linear map** $\mathbb{R}^n \to \mathbb{R}^m$:
   it satisfies $W(ax + by) = aWx + bWy$, which is additivity and homogeneity at once (the
@@ -99,20 +106,19 @@ The first three bullets set up the vocabulary — what a matrix is and two ways 
   column $j$ is the image of the unit vector $e_j$, since any $x = \sum_j x_j e_j$ is then sent
   to $\sum_j x_j W e_j$. For $W = \begin{pmatrix}1&2\\3&4\end{pmatrix}$, $We_1 = (1,3)$ is the
   first column. Non-example: $x \mapsto Wx + b$ with $b \ne 0$ is affine, not linear, because it
-  sends $0$ to $b$. Every linear layer (strictly, its $W$), attention projection
-  ($W_Q, W_K, W_V$), and embedding lookup is one.
+  sends $0$ to $b$. Every linear layer (strictly, its $W$) and every embedding lookup is one, and
+  so are the attention projections of the second collapsed box at the end of this section.
 - Two readings of $y = Wx$:
   - **Row picture**: $y_i = \langle w_{i,:}, x\rangle$ — each output is a dot-product
     similarity between the input and a learned pattern (row).
   - **Column picture**: $y = \sum_j x_j\, w_{:,j}$ — the output is a mix of learned
     directions (columns) weighted by the input.
+  - **Both readings, on P2.** At the picture's pose, $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$ sends joint rates $\dot\theta$ in rad/s to the tip velocity $v=J\dot\theta$ in m/s. By columns: column $j$ is the tip velocity for one unit of joint $j$ alone, $(-1,1)$ for the base and $(-1,0)$ for the elbow, so turning both at once, $\dot\theta=(1,1)$, gives $1\cdot(-1,1)+1\cdot(-1,0)=(-2,1)$. By rows, one output at a time: $v_x=-\dot\theta_1-\dot\theta_2=-2$ and $v_y=\dot\theta_1=1$. The same answer to two questions — what one joint does, and what one output collects.
 - Shape discipline: $(m\times n)(n\times 1) = (m \times 1)$. Reading shapes is how you read
-  architectures. Worked example — one attention head with $d_{model}=512$, $d_k=64$, where $X$ is the
-  input matrix of $T$ token embeddings (one 512-dim row per token in the sequence):
-  $Q = XW_Q$ is $(T\times 512)(512\times 64) = T\times 64$; scores $QK^\top$ are $T\times T$;
-  output $\text{softmax}(QK^\top/\sqrt{64})\,V$ is $T\times 64$ (softmax turns scores
-  into probabilities — defined in [[02-foundations/engineering-math|0.5 §10]]). The whole
-  [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] type-checks in one line. The same head worked with numbers, on D2's four patch tokens, is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]].
+  architectures and robots alike. P2's $J$ is $(2\times2)(2\times1)=2\times1$: two joint rates in, one planar velocity out.
+  The redundant arm of §4.5 has a $2\times3$ Jacobian, so it takes three joint rates for the same two outputs, and a
+  mismatch such as $(2\times3)(2\times1)$ is not a smaller answer but a bug. The same bookkeeping run on a
+  transformer's attention head is the second collapsed box at the end of this section.
 - **Dot product and angle**: the dot (inner) product takes two vectors of the same length and
   returns one number,
   $$\langle a,b\rangle = a^\top b = \sum_{i=1}^{n} a_i b_i = \|a\|\,\|b\|\cos\theta$$
@@ -130,7 +136,7 @@ The first three bullets set up the vocabulary — what a matrix is and two ways 
   $$\|x\| \ge 0 \text{ with } \|x\| = 0 \iff x = 0, \qquad \|c\,x\| = |c|\,\|x\|, \qquad \|x + y\| \le \|x\| + \|y\|$$
   so lengths behave the way distances must (no detour is shorter than the direct path).
   Norms: $\|x\|_2 = \sqrt{\sum x_i^2}$ (length, energy), $\|x\|_1 = \sum |x_i|$
-  (sparsity-inducing — its "corners" touch axes first), $\|x\|_\infty = \max_i |x_i|$, and for
+  (fits penalised by it come out sparse, for the reason the first collapsed box below gives), $\|x\|_\infty = \max_i |x_i|$, and for
   matrices $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$. Example: $x = (3,-4)$ has $\|x\|_2 = 5$,
   $\|x\|_1 = 7$, $\|x\|_\infty = 4$; $A = \begin{pmatrix}1&2\\3&4\end{pmatrix}$ has
   $\|A\|_F = \sqrt{30} = 5.477$; and $u = (3,0)$, $v = (0,4)$ satisfy the triangle inequality as
@@ -139,12 +145,20 @@ The first three bullets set up the vocabulary — what a matrix is and two ways 
 
 **Follow one input through the map.** Before calculating, say what each axis means. In a robot velocity map, the input entries may be joint speeds and the output entries tip-velocity components. In a neural layer, they are feature coordinates. The arithmetic is the same, but units and interpretation come from the application. A row asks which combination of inputs creates one output; a column asks what happens if only one input changes. Neither view requires imagining the whole matrix at once.
 
-In the attention example above, select one row of the score matrix. That row contains one query's comparison with every key. Softmax normalizes across those keys, and multiplying by V combines their value vectors into one output row. Repeat for the other queries. This explains why the score matrix is token-by-token while the result is token-by-feature: the operation mixes information between tokens without turning the token index into a feature coordinate.
-
 > [!question] Pause and explain · 잠깐 설명해 보기
 > If you double one input coordinate while holding the others fixed, which column controls the change? The corresponding column of the matrix. It describes that input's contribution; the other columns' contributions remain unchanged. Use this test whenever a matrix looks like an opaque block of numbers.
 
+> [!note]- Deeper · 더 깊이
+> **Why the L1 norm makes fitted solutions sparse.** The unit ball of $\lVert\cdot\rVert_1$, the set $\lvert x_1\rvert+\lvert x_2\rvert\le1$, is a diamond whose corners sit on the axes at $(\pm1,0)$ and $(0,\pm1)$, while the unit ball of $\lVert\cdot\rVert_2$ is a round circle. Ask for the point of each ball nearest to $(2,\ 0.5)$: the circle gives $(2,\ 0.5)/\lVert(2,\ 0.5)\rVert_2=(0.970,\ 0.243)$, both coordinates nonzero, but the diamond gives its corner $(1,\ 0)$, the small coordinate set exactly to zero. A least-squares fit penalised by the L1 norm (the *lasso*) lands on such corners in the same way, which is why it keeps a few weights and zeroes the rest, while an L2 penalty only shrinks them all.
+
+> [!note]- Deeper · 더 깊이
+> **Reading a transformer's shapes.** One attention head, taught in full in [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]], takes $X$, the $T\times512$ matrix whose rows are the embeddings of the $T$ tokens of a sequence ($d_{model}=512$ is the width of each token's vector), and multiplies it by three learned $512\times64$ matrices: the queries $Q=XW_Q$, the keys $K=XW_K$ and the values $V=XW_V$, each $T\times64$ ($d_k=64$ is the head's width). The scores $QK^\top$ are $(T\times64)(64\times T)=T\times T$, one number per pair of tokens, and the output $\text{softmax}(QK^\top/\sqrt{64})\,V$ is $(T\times T)(T\times64)=T\times64$. Softmax turns each row of scores into probabilities ([[02-foundations/engineering-math|0.5 §10]]), and dividing by $\sqrt{d_k}=8$ keeps the scores from growing with the width ([[03-deep-learning/foundations/attention-transformer|1.2 §2]] says why). The whole [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] type-checks this way in one line.
+>
+> Now select one row of the score matrix: it is one query compared with every key. Softmax normalizes across those keys, and multiplying by $V$ mixes their value vectors into one output row; repeat for the other queries. That is why the scores are token-by-token while the result is token-by-feature: the operation mixes information between tokens without turning the token index into a feature coordinate. The same head worked with numbers on D2 — the deep-learning track's frozen $8\times8$ image cut into four $4\times4$ patch tokens ([[03-deep-learning/lab-objects|0. Lab Objects]]) — is in 1.2.
+
 ### 2. Linear systems, rank, column space and null space
+
+**Separate three questions before reaching for an inverse.** Asked to solve $Ax=b$ — which joint rates give this tip velocity, which line fits these points — first ask whether the columns can produce the requested $b$ at all; if yes, whether only one input does so; and if not, what criterion chooses among approximations. These are existence, uniqueness and selection, and this section answers them in that order: the column space decides the first, the null space the second, least squares the third. A rectangular matrix is not automatically a failed problem: it may describe more measurements than unknowns, or more available controls than the task needs.
 
 - $Ax = b$ solvable ⟺ $b \in \text{col}(A)$ — the **column space**, i.e. everything you can
   reach by scaling $A$'s columns and adding them up. ("Everything reachable from a set of
@@ -160,14 +174,10 @@ In the attention example above, select one row of the score matrix. That row con
   so no vector is a combination of the others and each one adds a new direction. Example:
   $(1,0,1)$ and $(0,1,1)$ are independent; adding $(1,1,2)$, their sum, makes the set dependent
   ($1\cdot v_1 + 1\cdot v_2 - 1\cdot v_3 = 0$), and the span stays a plane.
-- Gaussian elimination = row
-  operations to triangular form; LU factorization is elimination *recorded* so multiple
-  right-hand sides are cheap. Written out, $A = LU$ with $L$ lower-triangular (ones on the
-  diagonal, the elimination multipliers below) and $U$ upper-triangular (what elimination
-  leaves), so $Ax = b$ becomes two triangular solves, $Ly = b$ then $Ux = y$. Example:
-  $\begin{pmatrix}2&1\\4&3\end{pmatrix} = \begin{pmatrix}1&0\\2&1\end{pmatrix}\begin{pmatrix}2&1\\0&1\end{pmatrix}$
-  (the multiplier is $4/2 = 2$); for $b = (3,7)$, $Ly = b$ gives $y = (3,1)$ and $Ux = y$ gives
-  $x = (1,1)$.
+
+> [!note]- Deeper · 더 깊이
+> **How a solver actually solves $Ax=b$: elimination and LU.** Gaussian elimination is row operations down to triangular form; LU factorization is elimination *recorded*, so that several right-hand sides cost little. Written out, $A = LU$ with $L$ lower-triangular (ones on the diagonal, the elimination multipliers below) and $U$ upper-triangular (what elimination leaves), so $Ax = b$ becomes two triangular solves, $Ly = b$ then $Ux = y$. Example: $\begin{pmatrix}2&1\\4&3\end{pmatrix} = \begin{pmatrix}1&0\\2&1\end{pmatrix}\begin{pmatrix}2&1\\0&1\end{pmatrix}$ (the multiplier is $4/2 = 2$); for $b = (3,7)$, $Ly = b$ gives $y = (3,1)$ and $Ux = y$ gives $x = (1,1)$.
+
 - **Rank** = number of independent columns = number of independent rows = dimension of
   what the map can express, $\text{rank}(A) = \dim \text{col}(A)$, where the dimension counts
   the vectors in a largest independent set. The **null space**
@@ -179,7 +189,14 @@ In the attention example above, select one row of the score matrix. That row con
   (null space $\{x: Ax = 0\}$ is nontrivial). Example: $C$ above has rank $1$ and null space
   spanned by $(2,-1)$, dimension $1$, and $1 + 1 = 2$ ✓. The consequence for solving: if $x_0$
   solves $Ax = b$, then so does $x_0 + z$ for every $z$ in the null space, so the solution is
-  unique exactly when the null space is trivial.
+  unique exactly when the null space is trivial. On P2 at the stretched pose of the picture's right panel,
+  $\theta=(0^\circ,0^\circ)$, the Jacobian is $J=\begin{pmatrix}0&0\\2&1\end{pmatrix}$: rank 1, its column space the vertical
+  line (the tip can move only in $y$, the lost $x$ of the picture), and its null space spanned by $(1,-2)$ — turning the base at
+  $+1$ rad/s and the elbow at $-2$ rad/s leaves the tip still, to first order. A structural engineer has met this object before:
+  the rigid-body motions of an unsupported structure are the null space of its stiffness matrix. One bar of stiffness
+  $k=400$ N/m between two nodes has $K=k\begin{pmatrix}1&-1\\-1&1\end{pmatrix}$, rank 1, null space spanned by $(1,1)$: moving both
+  nodes by 1 mm stretches nothing, $K(1,1)\,\mathrm{mm}=(0,0)$ N, so $Ku=f$ has no unique solution until a support removes that
+  mode ([[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §3]] has the spring itself).
 - **Least squares** — the most-used derivation in applied math. Overdetermined $Ax \approx b$:
   minimize $\|Ax - b\|^2$. At the minimum the gradient ([[02-foundations/engineering-math|0.5 §1]])
   is zero, so the first job is that gradient, and it needs nothing beyond partial derivatives.
@@ -203,8 +220,8 @@ In the attention example above, select one row of the score matrix. That row con
   [[02-foundations/calculus-backprop|2. Calculus §2]] reaches it again in one line through the
   chain rule. Setting it to zero:
   $$2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
-  (the **normal equations**), unique when $A$'s columns are linearly independent — VMLS (Boyd & Vandenberghe's *Introduction to Applied Linear Algebra*, see Going deeper below) makes that
-  assumption explicitly, and it is what makes $A^\top A$ invertible. Geometrically: $A\hat{x}$ is the orthogonal projection of $b$
+  (the **normal equations**), unique when $A$'s columns are linearly independent, because that is exactly
+  when $A^\top A$ is invertible (§4.5.1 shows why in one line). Geometrically: $A\hat{x}$ is the orthogonal projection of $b$
   onto $\text{col}(A)$, and the residual is perpendicular to it. That projection is itself a
   matrix,
   $$P = A(A^\top A)^{-1}A^\top, \qquad P^2 = P, \qquad P^\top = P$$
@@ -226,7 +243,7 @@ In the attention example above, select one row of the score matrix. That row con
   $\partial f/\partial c = 2(0-1-1) = -4$ and $\partial f/\partial m = 2(1\cdot0 + 2(-1) + 3(-1)) = -10$;
   the formula gives $2A^\top(0,-1,-1) = 2(-2,\,-5) = (-4,\,-10)$ ✓. At $\hat x$ it gives
   $2A^\top(\tfrac16,-\tfrac13,\tfrac16) = (0,0)$ — the residual check above, read as a gradient. The same normal equations fitted to a heater's recorded input and output, with the covariance of the estimate they return, are [[04-robotics/system-identification|5.5 System Identification §3]].
-<svg viewBox="0 0 560 242" style="max-width:100%;height:auto" role="img" aria-label="a vector b above the plane spanned by the columns of A, its projection inside the plane, and the residual meeting the plane at a right angle">
+<svg viewBox="0 0 560 196" style="max-width:100%;height:auto" role="img" aria-label="a vector b above the plane spanned by the columns of A, its projection inside the plane, and the residual meeting the plane at a right angle">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.65">
     <polygon points="40,150 232,106 344,146 152,190"/>
   </g>
@@ -243,39 +260,36 @@ In the attention example above, select one row of the score matrix. That row con
   </g>
   <g fill="currentColor"><circle cx="112" cy="164" r="3.5"/></g>
   <g font-size="10.5" fill="currentColor">
-    <text x="46" y="182" opacity="0.85">col(A) &#8212; everything A can reach</text>
+    <text x="196" y="192" opacity="0.85">col(A) &#8212; everything A can reach</text>
     <text x="200" y="48">b (the data)</text>
     <text x="184" y="158">A x&#770; (the projection)</text>
     <text x="254" y="96">residual b &#8722; A x&#770;</text>
   </g>
-  <g font-size="9" fill="currentColor" opacity="0.8">
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
     <text x="254" y="110">&#8869; to the plane</text>
   </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.85">
-    <text x="388" y="40">the worked example</text>
-    <text x="388" y="58">b = (1, 3, 4)</text>
-    <text x="388" y="74">A x&#770; = (7/6, 8/3, 25/6)</text>
-    <text x="388" y="90">residual = (&#8722;1/6, 1/3, &#8722;1/6)</text>
-    <text x="400" y="108">&#183; (1,1,1) = 0</text>
-    <text x="400" y="124">&#183; (1,2,3) = 0</text>
-  </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="204">The normal equations A&#7488;A x&#770; = A&#7488;b are this picture written as algebra: A&#7488;(b &#8722; A x&#770;) = 0 says</text>
-    <text x="24" y="220">the residual is perpendicular to every column of A. That is also why least squares is least &#8212;</text>
-    <text x="24" y="236">any other point of the plane is further from b, by Pythagoras on the right angle drawn here.</text>
+  <g font-size="10.5" fill="currentColor" opacity="0.85">
+    <text x="376" y="40">the worked example</text>
+    <text x="376" y="58">b = (1, 3, 4)</text>
+    <text x="376" y="74">A x&#770; = (7/6, 8/3, 25/6)</text>
+    <text x="376" y="90">residual = (&#8722;1/6, 1/3, &#8722;1/6)</text>
+    <text x="388" y="108">&#183; (1,1,1) = 0</text>
+    <text x="388" y="124">&#183; (1,2,3) = 0</text>
   </g>
 </svg>
 
+*The worked fit as geometry: $b=(1,3,4)$ sits above the plane $\text{col}(A)$, its projection is $A\hat x=(7/6,\ 8/3,\ 25/6)$, and the residual $(-1/6,\ 1/3,\ -1/6)$ meets the plane at a right angle — its dot products with the columns $(1,1,1)$ and $(1,2,3)$ are both $0$. The normal equations $A^\top(b-A\hat x)=0$ say exactly this, and Pythagoras on that right angle is why every other point of the plane lies farther from $b$.*
+
 - Low-rank structure recurs everywhere: [[01-canonical-papers/notes/1-foundations/lora|LoRA]] assumes weight
   *updates* have low intrinsic rank ($\Delta W = BA$ with $r \ll d$).
-
-**Separate three questions before reaching for an inverse.** Can the columns produce the requested b at all? If yes, is there only one input that does so? If not, what criterion chooses among approximations? These are existence, uniqueness, and selection. A rectangular matrix is not automatically a failed problem: it may describe more measurements than unknowns, or more available controls than the task needs.
 
 For the line-fitting example, the first column says how changing the intercept moves every prediction together; the second says how changing the slope moves predictions in proportion to their x-coordinate. The observed data do not lie in the plane of predictions those columns can generate. Least squares chooses a point in that plane. At the optimum, the remaining residual is perpendicular to both available directions, so neither an intercept nudge nor a slope nudge can reduce squared error to first order.
 
 **Check your understanding.** A zero residual means the chosen model fits these observations exactly. It does not mean the data are noiseless, the parameters are unique, or future predictions are correct. Conversely, a nonzero residual may simply reflect measurement noise in an overdetermined problem. This is why rank and residual answer different questions.
 
 ### 3. Eigendecomposition — directions a map only stretches
+
+Multiplying by a matrix usually turns a vector as well as stretching it, so repeated products — $A^kx$ in a system stepped in time, $k$ steps of gradient descent on a quadratic — are hard to predict entry by entry. They become easy along the directions a matrix only stretches, where it acts like a single number; this section finds those directions, then reads a matrix's difficulty (its conditioning) and its sign (definiteness) off those numbers.
 
 - An **eigenvector** of a square matrix $A$ is a *nonzero* vector $v$ that $A$ only scales,
   and the scale factor $\lambda$ is its **eigenvalue**:
@@ -306,6 +320,44 @@ For the line-fitting example, the first column says how changing the intercept m
   $Q\,\text{diag}(3,1)\,Q^\top$ multiplies back to $A$ ✓.
   *Reading it aloud:* this matrix stretches everything along the $45°$ diagonal by $3\times$
   and leaves the anti-diagonal untouched. Every symmetric matrix is a version of that sentence.
+
+<svg viewBox="0 0 560 280" style="max-width:100%;height:auto" role="img" aria-label="The unit circle and its image under A with rows (2,1) and (1,2): an ellipse with semi-axes 3 along (1,1) and 1 along (1,-1). The eigenvector (1,1)/sqrt2 is stretched to length 3 on its own line, (1,-1)/sqrt2 is unchanged, and (1,0) is sent to (2,1), turned 26.6 degrees.">
+  <defs><marker id="laEg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="10.8,140.0 289.2,140.0" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <polyline points="150.0,279.2 150.0,0.8" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <text x="292.2" y="144.0" font-size="11" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="156.0" y="6.8" font-size="11" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <polygon points="262.0,84.0 265.4,76.8 268.4,69.9 270.8,63.2 272.7,56.9 274.1,51.0 274.9,45.4 275.2,40.2 275.0,35.5 274.2,31.2 272.9,27.4 271.1,24.1 268.8,21.2 265.9,18.9 262.6,17.1 258.8,15.8 254.5,15.0 249.8,14.8 244.6,15.1 239.0,15.9 233.1,17.3 226.8,19.2 220.1,21.6 213.2,24.6 206.0,28.0 198.6,31.9 190.9,36.3 183.1,41.1 175.1,46.3 167.0,51.9 158.9,58.0 150.7,64.3 142.5,71.0 134.3,78.0 126.2,85.2 118.3,92.7 110.4,100.4 102.7,108.3 95.2,116.2 88.0,124.3 81.0,132.5 74.3,140.7 68.0,148.9 61.9,157.0 56.3,165.1 51.1,173.1 46.3,180.9 41.9,188.6 38.0,196.0 34.6,203.2 31.6,210.1 29.2,216.8 27.3,223.1 25.9,229.0 25.1,234.6 24.8,239.8 25.0,244.5 25.8,248.8 27.1,252.6 28.9,255.9 31.2,258.8 34.1,261.1 37.4,262.9 41.2,264.2 45.5,265.0 50.2,265.2 55.4,264.9 61.0,264.1 66.9,262.7 73.2,260.8 79.9,258.4 86.8,255.4 94.0,252.0 101.4,248.1 109.1,243.7 116.9,238.9 124.9,233.7 133.0,228.1 141.1,222.0 149.3,215.7 157.5,209.0 165.7,202.0 173.8,194.8 181.7,187.3 189.6,179.6 197.3,171.7 204.8,163.8 212.0,155.7 219.0,147.5 225.7,139.3 232.0,131.1 238.1,123.0 243.7,114.9 248.9,106.9 253.7,99.1 258.1,91.4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="206.0,140.0 205.9,136.3 205.5,132.7 204.9,129.1 204.1,125.5 203.0,122.0 201.7,118.6 200.2,115.2 198.5,112.0 196.6,108.9 194.4,105.9 192.1,103.1 189.6,100.4 186.9,97.9 184.1,95.6 181.1,93.4 178.0,91.5 174.8,89.8 171.4,88.3 168.0,87.0 164.5,85.9 160.9,85.1 157.3,84.5 153.7,84.1 150.0,84.0 146.3,84.1 142.7,84.5 139.1,85.1 135.5,85.9 132.0,87.0 128.6,88.3 125.2,89.8 122.0,91.5 118.9,93.4 115.9,95.6 113.1,97.9 110.4,100.4 107.9,103.1 105.6,105.9 103.4,108.9 101.5,112.0 99.8,115.2 98.3,118.6 97.0,122.0 95.9,125.5 95.1,129.1 94.5,132.7 94.1,136.3 94.0,140.0 94.1,143.7 94.5,147.3 95.1,150.9 95.9,154.5 97.0,158.0 98.3,161.4 99.8,164.8 101.5,168.0 103.4,171.1 105.6,174.1 107.9,176.9 110.4,179.6 113.1,182.1 115.9,184.4 118.9,186.6 122.0,188.5 125.2,190.2 128.6,191.7 132.0,193.0 135.5,194.1 139.1,194.9 142.7,195.5 146.3,195.9 150.0,196.0 153.7,195.9 157.3,195.5 160.9,194.9 164.5,194.1 168.0,193.0 171.4,191.7 174.8,190.2 178.0,188.5 181.1,186.6 184.1,184.4 186.9,182.1 189.6,179.6 192.1,176.9 194.4,174.1 196.6,171.1 198.5,168.0 200.2,164.8 201.7,161.4 203.0,158.0 204.1,154.5 204.9,150.9 205.5,147.3 205.9,143.7" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <polyline points="150.0,140.0 206.0,140.0" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#laEg)"/>
+  <polyline points="150.0,140.0 262.0,84.0" fill="none" stroke="currentColor" stroke-width="2.1" marker-end="url(#laEg)"/>
+  <path d="M 218.0 140.0 A 68 68 0 0 0 210.8 109.6" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="222.1" y="132.6" font-size="10.5" fill="currentColor">26.6°</text>
+  <polyline points="150.0,140.0 268.8,21.2" fill="none" stroke="currentColor" stroke-width="2.1" marker-end="url(#laEg)"/>
+  <circle cx="189.6" cy="100.4" r="3.2" fill="currentColor"/>
+  <polyline points="150.0,140.0 189.6,179.6" fill="none" stroke="currentColor" stroke-width="2.1" marker-end="url(#laEg)"/>
+  <circle cx="189.6" cy="179.6" r="3.2" fill="currentColor"/>
+  <text x="276.8" y="27.2" font-size="11" fill="currentColor">3v<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="161.0" y="107.0" font-size="11" fill="currentColor">v<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="197.6" y="193.6" font-size="11" fill="currentColor">v<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = Av<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="170.0" y="155.0" font-size="11" fill="currentColor">e<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="270.0" y="89.0" font-size="11" fill="currentColor">Ae<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="345" y="40" font-size="11.5" fill="currentColor">A: rows (2, 1) and (1, 2)</text>
+  <text x="345" y="72" font-size="11" fill="currentColor">v<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = (1, 1)/√2 → 3v<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="357" y="88" font-size="11" opacity="0.85" fill="currentColor">stretched ×3 on its own line, λ = 3</text>
+  <text x="345" y="118" font-size="11" fill="currentColor">v<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = (1, −1)/√2 → v<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="357" y="134" font-size="11" opacity="0.85" fill="currentColor">unchanged, λ = 1</text>
+  <text x="345" y="164" font-size="11" fill="currentColor">e<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = (1, 0) → (2, 1)</text>
+  <text x="357" y="180" font-size="11" opacity="0.85" fill="currentColor">turned 26.6°: not an eigenvector</text>
+  <text x="345" y="212" font-size="11" fill="currentColor">area: π → 3π = π · det A</text>
+  <polyline points="345,240 367,240" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="373" y="244" font-size="10.5" fill="currentColor">image of the circle</text>
+  <polyline points="345,258 367,258" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="373" y="262" font-size="10.5" fill="currentColor">unit circle</text>
+</svg>
+
+*The worked $A$ maps the unit circle (dashed) onto an ellipse whose axes lie along its eigenvectors: $(1,1)/\sqrt2$ comes out on its own line three times as long ($\lambda=3$), and $(1,-1)/\sqrt2$ comes out unchanged ($\lambda=1$). Every other direction turns — $(1,0)$ comes out as $(2,1)$, $26.6°$ off its line — so only along eigenvectors can $A$ be treated as a number; the area grows from $\pi$ to $3\pi$, the factor $\det A=3$.*
+
 - Why you care, concretely:
   - **Powers**: $A^k = Q\Lambda^k Q^\top$ — long-run behavior is governed by the largest
     $|\lambda|$. Stability of $x_{t+1} = Ax_t$ ⟺ all $|\lambda_i| < 1$
@@ -313,12 +365,12 @@ For the line-fitting example, the first column says how changing the intercept m
   - **Optimization landscapes**: for quadratic loss $\frac12 x^\top H x$ ($H$ = the **Hessian**,
     the matrix of second derivatives — defined properly in
     [[02-foundations/calculus-backprop|2. Calculus §1]]; here just "the curvature matrix"), gradient descent
-    converges per-eigendirection at rate $(1 - \alpha\lambda_i)$; the usable step size is
-    set by $\lambda_{max}$, the slowest progress by $\lambda_{min}$. The
-    **condition number** $\kappa = \lambda_{max}/\lambda_{min}$ (for this SPD — symmetric positive-definite, defined below — Hessian; for a
-    general matrix the 2-norm condition number is the singular-value ratio
-    $\kappa_2 = \sigma_{max}/\sigma_{min}$, e.g. $\begin{pmatrix}1&2\\3&4\end{pmatrix}$ has
-    $\sigma = 5.465,\ 0.366$ and $\kappa_2 = 14.93$; a singular matrix has $\kappa = \infty$) *is* the difficulty of the problem — and poor conditioning is one useful lens on why
+    converges per-eigendirection at rate $(1 - \alpha\lambda_i)$. The reason takes two lines. The gradient of
+    $\frac12x^\top Hx$ is $Hx$, so one step is $x \leftarrow x-\alpha Hx=(I-\alpha H)\,x$; read in the eigenvector coordinates
+    $y=Q^\top x$, where $H$ becomes the diagonal $\Lambda$, that step is $y_i \leftarrow (1-\alpha\lambda_i)\,y_i$ — one number per
+    direction, multiplied in at every step. So the usable step size is set by $\lambda_{max}$ (past $\alpha=2/\lambda_{max}$ that
+    factor drops below $-1$ and the steep direction grows) and the slowest progress by $\lambda_{min}$. Their ratio, the
+    **condition number** $\kappa=\lambda_{max}/\lambda_{min}$ of the next bullet, *is* the difficulty of the problem — and poor conditioning is one useful lens on why
     adaptive optimization ([[01-canonical-papers/notes/1-foundations/adam|Adam]]) and normalization
     ([[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]]) help.
 
@@ -328,12 +380,14 @@ For the line-fitting example, the first column says how changing the intercept m
     $\alpha < 2/\lambda_{max} = 0.2$, so take $\alpha = 0.18$. The steep direction then
     shrinks by $|1 - 1.8| = 0.8$ per step — fine — but the flat direction shrinks by only
     $1 - 0.18 = 0.82$ per step. Starting from $x_0 = (1,1)$, after 20 steps you are at about
-    $(0.012,\ 0.019)$: the flat coordinate is what holds you back, and always will. Raise
-    $\kappa$ to 1000 and the flat direction needs roughly 100× more steps. *That* is why
+    $(0.012,\ 0.019)$: the flat coordinate is what holds you back, and always will. Nor was
+    $0.18$ a poor choice: the best any single $\alpha$ can do is $\alpha=2/(\lambda_{max}+\lambda_{min})=2/11=0.182$, where
+    both directions shrink by the same $(\kappa-1)/(\kappa+1)=9/11=0.818$ per step. Raise $\kappa$ to 1000 and that best rate
+    becomes $999/1001=0.998$, about 100 times as many steps for the same accuracy. *That* is why
     people say "the problem is ill-conditioned" rather than "the learning rate is wrong" —
     no single $\alpha$ can serve both directions, which is exactly the gap per-coordinate
     methods try to close.
-<svg viewBox="0 0 560 260" style="max-width:100%;height:auto" role="img" aria-label="gradient descent bouncing across a narrow valley while creeping along its floor">
+<svg viewBox="0 0 560 200" style="max-width:100%;height:auto" role="img" aria-label="gradient descent bouncing across a narrow valley while creeping along its floor">
   <g stroke="currentColor" stroke-width="1" opacity="0.3" fill="none">
     <line x1="40" y1="128" x2="240" y2="128"/><line x1="138" y1="24" x2="138" y2="196"/>
   </g>
@@ -345,7 +399,7 @@ For the line-fitting example, the first column says how changing the intercept m
     <polyline points="223.0,43.0 70.0,58.3 192.4,70.8 94.5,81.1 172.8,89.6 110.1,96.5 160.3,102.2 120.2,106.8 152.3,110.6"/>
   </g>
   <g fill="currentColor" opacity="0.9"><circle cx="223.0" cy="43.0" r="2.6"/><circle cx="70.0" cy="58.3" r="2.6"/><circle cx="192.4" cy="70.8" r="2.6"/><circle cx="94.5" cy="81.1" r="2.6"/><circle cx="172.8" cy="89.6" r="2.6"/><circle cx="110.1" cy="96.5" r="2.6"/><circle cx="160.3" cy="102.2" r="2.6"/><circle cx="120.2" cy="106.8" r="2.6"/><circle cx="152.3" cy="110.6" r="2.6"/></g>
-  <g font-size="9.5" fill="currentColor" opacity="0.85">
+  <g font-size="10.5" fill="currentColor" opacity="0.85">
     <text x="230" y="36">x<tspan dy="3.5">0</tspan><tspan dy="-3.5"> = (1, 1)</tspan></text>
     <text x="256" y="120">steep direction x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="256" y="134">&#215;0.8 per step, sign flipping</text>
@@ -353,17 +407,33 @@ For the line-fitting example, the first column says how changing the intercept m
     <text x="256" y="172">&#215;0.82 per step</text>
     <text x="256" y="190">after 20 steps: (0.012, 0.019)</text>
   </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="206">H = diag(10, 1) and &#945; = 0.18, just under the stability limit. The steep coordinate shrinks slightly</text>
-    <text x="24" y="222">faster but flips sign each step, so the iterates bounce across the valley; the flat coordinate is</text>
-    <text x="24" y="238">the one still holding you back at step 20. Raise &#954; to 1000 and the flat direction needs roughly</text>
-    <text x="24" y="254">100&#215; more steps &#8212; no single &#945; serves both, which is what &#8220;ill-conditioned&#8221; names.</text>
-  </g>
 </svg>
 
+*Gradient descent on $\tfrac12x^\top Hx$ with $H=\text{diag}(10,1)$ and $\alpha=0.18$, just under the stability limit $0.2$, from $x_0=(1,1)$: the steep coordinate shrinks by $0.8$ a step but flips sign, so the iterates bounce across the valley, while the flat one shrinks by only $0.82$ and still holds the iterate back at step 20, at $(0.012,\ 0.019)$. Raise $\kappa$ to 1000 and the flat direction needs about 100 times as many steps — no single $\alpha$ serves both, which is what "ill-conditioned" names.*
+
+- **Condition number**, stated completely. It is a *number attached to a matrix*, never below 1, that says how unevenly
+  the matrix stretches: the ratio of its largest stretch to its smallest, because that ratio bounds how much an error can grow
+  when the matrix is inverted (below),
+  $$\kappa_2(A) = \frac{\sigma_{max}}{\sigma_{min}}$$
+  where $\sigma_{max}$ and $\sigma_{min}$ are the largest and smallest **singular values** — the longest and shortest semi-axes of
+  the ellipse the unit circle maps to, as in the picture. They are the square roots of the eigenvalues of $A^\top A$: for P2's $J$,
+  $J^\top J=\begin{pmatrix}2&1\\1&1\end{pmatrix}$ has eigenvalues $2.618$ and $0.382$, so $\sigma=1.618$ and $0.618$, the picture's semi-axes (§4 says why,
+  and §4.5 works it through). For a symmetric positive-definite matrix such as the
+  Hessian above, the singular values are the eigenvalues, so $\kappa=\lambda_{max}/\lambda_{min}=10$ for $H=\text{diag}(10,1)$; a
+  singular matrix has $\sigma_{min}=0$ and $\kappa=\infty$. Example: $\begin{pmatrix}1&2\\3&4\end{pmatrix}$ has $\sigma=5.465,\ 0.366$,
+  so $\kappa_2=14.93$; P2's $J$ at the picture's pose has $\kappa_2=2.618$, and the straight arm $\infty$. Non-example: a large
+  determinant does not make a matrix well conditioned — $\text{diag}(1000,1)$ has $\det=1000$ and $\kappa=1000$, while $0.01I$ has
+  $\det=10^{-4}$ and $\kappa=1$. Why it matters: solving $Ax=b$ can turn a relative error in $b$ into up to $\kappa$ times that
+  relative error in $x$ — for the matrix above, a 1% error in $b$ can become 14.9% in $x$ — and $\kappa$ of a Hessian is gradient
+  descent's slow mode, as the numbers above showed.
 - **Positive (semi-)definite**: symmetric $A$ with all $\lambda_i > 0$ ($\ge 0$);
   equivalently $x^\top A x > 0$ for all $x \ne 0$. Covariance matrices, Hessians at minima,
   and Gram/kernel matrices are PSD — "PSD" in a paper means "behaves like a squared quantity."
+  A structural engineer already trusts one: the stiffness matrix $K$ of a supported structure is positive definite, because
+  $\tfrac12u^\top Ku$ is the strain energy a displacement $u$ stores — the matrix form of a spring's $\tfrac12k\delta^2$
+  ([[02-foundations/basic-mechanics|0.6.1 §6]]) — and it is positive for every nonzero $u$ once the supports have removed the
+  rigid-body motions. The unsupported bar of §2 has $u^\top Ku=k(u_1-u_2)^2$: never negative, but zero along $(1,1)$, so only
+  semidefinite.
 - **Reading $x^\top A x$ — it really is $ax^2$ with more indices.** The transposes are
   bookkeeping, not content. $x$ is a column ($n\times1$), so $x^\top$ is $1\times n$, and
   $(1\times n)(n\times n)(n\times 1) = 1\times 1$: you need an $x$ on *each* side or the
@@ -398,28 +468,46 @@ For the line-fitting example, the first column says how changing the intercept m
     with no further argument, is **why every covariance matrix is PSD**. When a paper says
     "$\Sigma \succeq 0$", it is asserting nothing more exotic than that.
 
-<svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="three quadratic forms: a bowl, a flat-floored valley, and a saddle">
-  <g stroke="currentColor" stroke-width="1" opacity="0.3">
-    <line x1="15" y1="118" x2="125" y2="118"/><line x1="180" y1="118" x2="290" y2="118"/><line x1="345" y1="118" x2="455" y2="118"/>
-  </g>
-  <g fill="none" stroke="currentColor" stroke-width="1.9"><path d="M15.0 72.0L16.8 75.0L18.7 77.9L20.5 80.7L22.3 83.4L24.2 86.1L26.0 88.6L27.8 91.0L29.7 93.3L31.5 95.5L33.3 97.6L35.2 99.5L37.0 101.4L38.8 103.2L40.7 104.9L42.5 106.5L44.3 108.0L46.2 109.4L48.0 110.6L49.8 111.8L51.7 112.9L53.5 113.9L55.3 114.7L57.2 115.5L59.0 116.2L60.8 116.7L62.7 117.2L64.5 117.5L66.3 117.8L68.2 117.9L70.0 118.0L71.8 117.9L73.7 117.8L75.5 117.5L77.3 117.2L79.2 116.7L81.0 116.2L82.8 115.5L84.7 114.7L86.5 113.9L88.3 112.9L90.2 111.8L92.0 110.6L93.8 109.4L95.7 108.0L97.5 106.5L99.3 104.9L101.2 103.2L103.0 101.4L104.8 99.5L106.7 97.6L108.5 95.5L110.3 93.3L112.2 91.0L114.0 88.6L115.8 86.1L117.7 83.4L119.5 80.7L121.3 77.9L123.2 75.0L125.0 72.0"/><path d="M180.0 87.3L181.8 89.3L183.7 91.3L185.5 93.2L187.3 95.0L189.2 96.7L191.0 98.4L192.8 100.0L194.7 101.5L196.5 103.0L198.3 104.4L200.2 105.7L202.0 107.0L203.8 108.2L205.7 109.3L207.5 110.3L209.3 111.3L211.2 112.2L213.0 113.1L214.8 113.9L216.7 114.6L218.5 115.2L220.3 115.8L222.2 116.3L224.0 116.8L225.8 117.1L227.7 117.5L229.5 117.7L231.3 117.9L233.2 118.0L235.0 118.0L236.8 118.0L238.7 117.9L240.5 117.7L242.3 117.5L244.2 117.1L246.0 116.8L247.8 116.3L249.7 115.8L251.5 115.2L253.3 114.6L255.2 113.9L257.0 113.1L258.8 112.2L260.7 111.3L262.5 110.3L264.3 109.3L266.2 108.2L268.0 107.0L269.8 105.7L271.7 104.4L273.5 103.0L275.3 101.5L277.2 100.0L279.0 98.4L280.8 96.7L282.7 95.0L284.5 93.2L286.3 91.3L288.2 89.3L290.0 87.3"/><path d="M345.0 87.3L346.8 89.3L348.7 91.3L350.5 93.2L352.3 95.0L354.2 96.7L356.0 98.4L357.8 100.0L359.7 101.5L361.5 103.0L363.3 104.4L365.2 105.7L367.0 107.0L368.8 108.2L370.7 109.3L372.5 110.3L374.3 111.3L376.2 112.2L378.0 113.1L379.8 113.9L381.7 114.6L383.5 115.2L385.3 115.8L387.2 116.3L389.0 116.8L390.8 117.1L392.7 117.5L394.5 117.7L396.3 117.9L398.2 118.0L400.0 118.0L401.8 118.0L403.7 117.9L405.5 117.7L407.3 117.5L409.2 117.1L411.0 116.8L412.8 116.3L414.7 115.8L416.5 115.2L418.3 114.6L420.2 113.9L422.0 113.1L423.8 112.2L425.7 111.3L427.5 110.3L429.3 109.3L431.2 108.2L433.0 107.0L434.8 105.7L436.7 104.4L438.5 103.0L440.3 101.5L442.2 100.0L444.0 98.4L445.8 96.7L447.7 95.0L449.5 93.2L451.3 91.3L453.2 89.3L455.0 87.3"/></g>
-  <g fill="none" stroke="currentColor" stroke-width="1.9" opacity="0.55" stroke-dasharray="5 3"><path d="M15.0 87.3L16.8 89.3L18.7 91.3L20.5 93.2L22.3 95.0L24.2 96.7L26.0 98.4L27.8 100.0L29.7 101.5L31.5 103.0L33.3 104.4L35.2 105.7L37.0 107.0L38.8 108.2L40.7 109.3L42.5 110.3L44.3 111.3L46.2 112.2L48.0 113.1L49.8 113.9L51.7 114.6L53.5 115.2L55.3 115.8L57.2 116.3L59.0 116.8L60.8 117.1L62.7 117.5L64.5 117.7L66.3 117.9L68.2 118.0L70.0 118.0L71.8 118.0L73.7 117.9L75.5 117.7L77.3 117.5L79.2 117.1L81.0 116.8L82.8 116.3L84.7 115.8L86.5 115.2L88.3 114.6L90.2 113.9L92.0 113.1L93.8 112.2L95.7 111.3L97.5 110.3L99.3 109.3L101.2 108.2L103.0 107.0L104.8 105.7L106.7 104.4L108.5 103.0L110.3 101.5L112.2 100.0L114.0 98.4L115.8 96.7L117.7 95.0L119.5 93.2L121.3 91.3L123.2 89.3L125.0 87.3"/><path d="M180.0 118.0L181.8 118.0L183.7 118.0L185.5 118.0L187.3 118.0L189.2 118.0L191.0 118.0L192.8 118.0L194.7 118.0L196.5 118.0L198.3 118.0L200.2 118.0L202.0 118.0L203.8 118.0L205.7 118.0L207.5 118.0L209.3 118.0L211.2 118.0L213.0 118.0L214.8 118.0L216.7 118.0L218.5 118.0L220.3 118.0L222.2 118.0L224.0 118.0L225.8 118.0L227.7 118.0L229.5 118.0L231.3 118.0L233.2 118.0L235.0 118.0L236.8 118.0L238.7 118.0L240.5 118.0L242.3 118.0L244.2 118.0L246.0 118.0L247.8 118.0L249.7 118.0L251.5 118.0L253.3 118.0L255.2 118.0L257.0 118.0L258.8 118.0L260.7 118.0L262.5 118.0L264.3 118.0L266.2 118.0L268.0 118.0L269.8 118.0L271.7 118.0L273.5 118.0L275.3 118.0L277.2 118.0L279.0 118.0L280.8 118.0L282.7 118.0L284.5 118.0L286.3 118.0L288.2 118.0L290.0 118.0"/><path d="M345.0 148.7L346.8 146.7L348.7 144.7L350.5 142.8L352.3 141.0L354.2 139.3L356.0 137.6L357.8 136.0L359.7 134.5L361.5 133.0L363.3 131.6L365.2 130.3L367.0 129.0L368.8 127.8L370.7 126.7L372.5 125.7L374.3 124.7L376.2 123.8L378.0 122.9L379.8 122.1L381.7 121.4L383.5 120.8L385.3 120.2L387.2 119.7L389.0 119.2L390.8 118.9L392.7 118.5L394.5 118.3L396.3 118.1L398.2 118.0L400.0 118.0L401.8 118.0L403.7 118.1L405.5 118.3L407.3 118.5L409.2 118.9L411.0 119.2L412.8 119.7L414.7 120.2L416.5 120.8L418.3 121.4L420.2 122.1L422.0 122.9L423.8 123.8L425.7 124.7L427.5 125.7L429.3 126.7L431.2 127.8L433.0 129.0L434.8 130.3L436.7 131.6L438.5 133.0L440.3 134.5L442.2 136.0L444.0 137.6L445.8 139.3L447.7 141.0L449.5 142.8L451.3 144.7L453.2 146.7L455.0 148.7"/></g>
-  <g font-size="11" fill="currentColor" text-anchor="middle">
-    <text x="70" y="22">positive definite</text><text x="235" y="22">positive semidefinite</text><text x="400" y="22">indefinite</text>
-    <text x="70" y="40" font-size="10" opacity="0.8">2x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#178; + 3x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#178;</tspan></text><text x="235" y="40" font-size="10" opacity="0.8">(x<tspan dy="3.5">1</tspan><tspan dy="-3.5"> + x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">)&#178;</tspan></text><text x="400" y="40" font-size="10" opacity="0.8">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#178; &#8722; x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#178;</tspan></text>
-    <text x="70" y="176">up in every direction</text><text x="235" y="176">up, but flat along a line</text><text x="400" y="176">one way up, one way down</text>
-  </g>
-  <g font-size="11" fill="currentColor">
-    <text x="15" y="196" opacity="0.85">Each panel plots x&#7488;Ax along two directions through the origin (solid and dashed).</text>
-    <text x="15" y="209" opacity="0.85">Positive semidefinite means no direction ever dips below the axis.</text>
-  </g>
+<svg viewBox="0 0 560 224" style="max-width:100%;height:auto" role="img" aria-label="Three quadratic forms plotted along two unit directions each, at one vertical scale: 2x1^2+3x2^2 rises along x2 (to 3) and x1 (to 2); (x1+x2)^2 rises along (1,1)/sqrt2 (to 2) and is flat along (1,-1)/sqrt2; x1^2-x2^2 rises along x1 and falls along x2.">
+  <polyline points="17,120 173,120" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.35"/>
+  <polyline points="23.0,54.0 25.4,58.3 27.8,62.5 30.2,66.5 32.6,70.4 35.0,74.2 37.4,77.8 39.8,81.2 42.2,84.5 44.6,87.7 47.0,90.7 49.4,93.5 51.8,96.2 54.2,98.8 56.6,101.2 59.0,103.5 61.4,105.6 63.8,107.6 66.2,109.4 68.6,111.1 71.0,112.7 73.4,114.1 75.8,115.3 78.2,116.4 80.6,117.4 83.0,118.2 85.4,118.8 87.8,119.3 90.2,119.7 92.6,119.9 95.0,120.0 97.4,119.9 99.8,119.7 102.2,119.3 104.6,118.8 107.0,118.2 109.4,117.4 111.8,116.4 114.2,115.3 116.6,114.1 119.0,112.7 121.4,111.1 123.8,109.4 126.2,107.6 128.6,105.6 131.0,103.5 133.4,101.2 135.8,98.8 138.2,96.2 140.6,93.5 143.0,90.7 145.4,87.7 147.8,84.5 150.2,81.2 152.6,77.8 155.0,74.2 157.4,70.4 159.8,66.5 162.2,62.5 164.6,58.3 167.0,54.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="23.0,76.0 25.4,78.9 27.8,81.7 30.2,84.4 32.6,87.0 35.0,89.4 37.4,91.8 39.8,94.1 42.2,96.3 44.6,98.4 47.0,100.4 49.4,102.4 51.8,104.2 54.2,105.9 56.6,107.5 59.0,109.0 61.4,110.4 63.8,111.7 66.2,113.0 68.6,114.1 71.0,115.1 73.4,116.0 75.8,116.9 78.2,117.6 80.6,118.2 83.0,118.8 85.4,119.2 87.8,119.6 90.2,119.8 92.6,120.0 95.0,120.0 97.4,120.0 99.8,119.8 102.2,119.6 104.6,119.2 107.0,118.8 109.4,118.2 111.8,117.6 114.2,116.9 116.6,116.0 119.0,115.1 121.4,114.1 123.8,113.0 126.2,111.7 128.6,110.4 131.0,109.0 133.4,107.5 135.8,105.9 138.2,104.2 140.6,102.4 143.0,100.4 145.4,98.4 147.8,96.3 150.2,94.1 152.6,91.8 155.0,89.4 157.4,87.0 159.8,84.4 162.2,81.7 164.6,78.9 167.0,76.0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="95" y="20" font-size="11.5" text-anchor="middle" fill="currentColor">positive definite</text>
+  <text x="95" y="37" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">2x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan>² + 3x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan>²</text>
+  <text x="95" y="172" font-size="11" text-anchor="middle" fill="currentColor">up in every direction</text>
+  <polyline points="25,192 45,192" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="25,210 45,210" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="50" y="196" font-size="10.5" fill="currentColor">along x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="50" y="214" font-size="10.5" fill="currentColor">along x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <polyline points="202,120 358,120" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.35"/>
+  <polyline points="208.0,76.0 210.4,78.9 212.8,81.7 215.2,84.4 217.6,87.0 220.0,89.4 222.4,91.8 224.8,94.1 227.2,96.3 229.6,98.4 232.0,100.4 234.4,102.4 236.8,104.2 239.2,105.9 241.6,107.5 244.0,109.0 246.4,110.4 248.8,111.7 251.2,113.0 253.6,114.1 256.0,115.1 258.4,116.0 260.8,116.9 263.2,117.6 265.6,118.2 268.0,118.8 270.4,119.2 272.8,119.6 275.2,119.8 277.6,120.0 280.0,120.0 282.4,120.0 284.8,119.8 287.2,119.6 289.6,119.2 292.0,118.8 294.4,118.2 296.8,117.6 299.2,116.9 301.6,116.0 304.0,115.1 306.4,114.1 308.8,113.0 311.2,111.7 313.6,110.4 316.0,109.0 318.4,107.5 320.8,105.9 323.2,104.2 325.6,102.4 328.0,100.4 330.4,98.4 332.8,96.3 335.2,94.1 337.6,91.8 340.0,89.4 342.4,87.0 344.8,84.4 347.2,81.7 349.6,78.9 352.0,76.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="208.0,120.0 210.4,120.0 212.8,120.0 215.2,120.0 217.6,120.0 220.0,120.0 222.4,120.0 224.8,120.0 227.2,120.0 229.6,120.0 232.0,120.0 234.4,120.0 236.8,120.0 239.2,120.0 241.6,120.0 244.0,120.0 246.4,120.0 248.8,120.0 251.2,120.0 253.6,120.0 256.0,120.0 258.4,120.0 260.8,120.0 263.2,120.0 265.6,120.0 268.0,120.0 270.4,120.0 272.8,120.0 275.2,120.0 277.6,120.0 280.0,120.0 282.4,120.0 284.8,120.0 287.2,120.0 289.6,120.0 292.0,120.0 294.4,120.0 296.8,120.0 299.2,120.0 301.6,120.0 304.0,120.0 306.4,120.0 308.8,120.0 311.2,120.0 313.6,120.0 316.0,120.0 318.4,120.0 320.8,120.0 323.2,120.0 325.6,120.0 328.0,120.0 330.4,120.0 332.8,120.0 335.2,120.0 337.6,120.0 340.0,120.0 342.4,120.0 344.8,120.0 347.2,120.0 349.6,120.0 352.0,120.0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="280" y="20" font-size="11.5" text-anchor="middle" fill="currentColor">positive semidefinite</text>
+  <text x="280" y="37" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">(x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> + x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan>)²</text>
+  <text x="280" y="172" font-size="11" text-anchor="middle" fill="currentColor">up, but flat along a line</text>
+  <polyline points="210,192 230,192" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="210,210 230,210" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="235" y="196" font-size="10.5" fill="currentColor">along (1, 1)/√2</text>
+  <text x="235" y="214" font-size="10.5" fill="currentColor">along (1, −1)/√2</text>
+  <polyline points="387,120 543,120" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.35"/>
+  <polyline points="393.0,98.0 395.4,99.4 397.8,100.8 400.2,102.2 402.6,103.5 405.0,104.7 407.4,105.9 409.8,107.1 412.2,108.2 414.6,109.2 417.0,110.2 419.4,111.2 421.8,112.1 424.2,112.9 426.6,113.7 429.0,114.5 431.4,115.2 433.8,115.9 436.2,116.5 438.6,117.0 441.0,117.6 443.4,118.0 445.8,118.4 448.2,118.8 450.6,119.1 453.0,119.4 455.4,119.6 457.8,119.8 460.2,119.9 462.6,120.0 465.0,120.0 467.4,120.0 469.8,119.9 472.2,119.8 474.6,119.6 477.0,119.4 479.4,119.1 481.8,118.8 484.2,118.4 486.6,118.0 489.0,117.6 491.4,117.0 493.8,116.5 496.2,115.9 498.6,115.2 501.0,114.5 503.4,113.7 505.8,112.9 508.2,112.1 510.6,111.2 513.0,110.2 515.4,109.2 517.8,108.2 520.2,107.1 522.6,105.9 525.0,104.7 527.4,103.5 529.8,102.2 532.2,100.8 534.6,99.4 537.0,98.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="393.0,142.0 395.4,140.6 397.8,139.2 400.2,137.8 402.6,136.5 405.0,135.3 407.4,134.1 409.8,132.9 412.2,131.8 414.6,130.8 417.0,129.8 419.4,128.8 421.8,127.9 424.2,127.1 426.6,126.3 429.0,125.5 431.4,124.8 433.8,124.1 436.2,123.5 438.6,123.0 441.0,122.4 443.4,122.0 445.8,121.6 448.2,121.2 450.6,120.9 453.0,120.6 455.4,120.4 457.8,120.2 460.2,120.1 462.6,120.0 465.0,120.0 467.4,120.0 469.8,120.1 472.2,120.2 474.6,120.4 477.0,120.6 479.4,120.9 481.8,121.2 484.2,121.6 486.6,122.0 489.0,122.4 491.4,123.0 493.8,123.5 496.2,124.1 498.6,124.8 501.0,125.5 503.4,126.3 505.8,127.1 508.2,127.9 510.6,128.8 513.0,129.8 515.4,130.8 517.8,131.8 520.2,132.9 522.6,134.1 525.0,135.3 527.4,136.5 529.8,137.8 532.2,139.2 534.6,140.6 537.0,142.0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="465" y="20" font-size="11.5" text-anchor="middle" fill="currentColor">indefinite</text>
+  <text x="465" y="37" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan>² − x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan>²</text>
+  <text x="465" y="172" font-size="11" text-anchor="middle" fill="currentColor">one way up, one way down</text>
+  <polyline points="395,192 415,192" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="395,210 415,210" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="420" y="196" font-size="10.5" fill="currentColor">along x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="420" y="214" font-size="10.5" fill="currentColor">along x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
 </svg>
 
-
+*Each panel plots $x^\top Ax$ along two unit directions through the origin, from $-1$ to $1$, at one vertical scale: the bowl $2x_1^2+3x_2^2$ rises along both axes (to $3$ and $2$), the valley $(x_1+x_2)^2$ rises along $(1,1)/\sqrt2$ (to $2$) but stays at $0$ along $(1,-1)/\sqrt2$, and the saddle $x_1^2-x_2^2$ rises along $x_1$ and falls along $x_2$. Positive semidefinite means no direction ever dips below the axis.*
 
 ### 4. SVD — a universal factorization, available for every matrix
 
-*Second pass. The first pass skips this section; come back when a paper factorises something.*
+Eigenvectors need a square matrix, and even a square one may have none that are real: P2's $J$ has eigenvalues $(-1\pm j\sqrt3)/2$, and the redundant arm of §4.5 is not square at all. The SVD gives *every* matrix one pair of perpendicular frames in which it only stretches, and its stretch factors, the singular values, say at once how near the matrix is to losing a direction.
+
+*The first pass reads the first two bullets and the worked $C$ below, which say what singular values are; §3's condition number and the problem set use them. The rest of the section is second pass, for when a paper factorises something.*
 
 - **Every** matrix (any shape, any rank): $A = U\Sigma V^\top$ with **orthogonal** $U, V$ (columns unit-length and mutually
   perpendicular, so multiplying by one is a pure rotation/reflection — it stretches nothing) and
@@ -438,7 +526,8 @@ For the line-fitting example, the first column says how changing the intercept m
   the **left singular vectors**, and $\sigma_i \ge 0$ the **singular values**, so input direction
   $v_i$ goes to output direction $u_i$, stretched by $\sigma_i$.
 
-<svg viewBox="0 0 520 150" style="max-width:100%;height:auto" role="img" aria-label="SVD as rotate, scale, rotate">
+<svg viewBox="0 0 560 150" style="max-width:100%;height:auto" role="img" aria-label="SVD as rotate, scale, rotate">
+  <g transform="translate(20 0)">
   <g fill="none" stroke="currentColor" stroke-width="1.5">
     <circle cx="60" cy="75" r="38"/>
     <circle cx="205" cy="75" r="38"/>
@@ -446,8 +535,8 @@ For the line-fitting example, the first column says how changing the intercept m
     <ellipse cx="475" cy="75" rx="17" ry="42" transform="rotate(-30 475 75)"/>
   </g>
   <g stroke="currentColor" stroke-width="1.2" opacity="0.6">
-    <line x1="60" y1="75" x2="98" y2="75"/><line x1="60" y1="75" x2="60" y2="37"/>
-    <line x1="205" y1="75" x2="232" y2="48"/><line x1="205" y1="75" x2="178" y2="48"/>
+    <line x1="60" y1="75" x2="87" y2="48"/><line x1="60" y1="75" x2="33" y2="48"/>
+    <line x1="205" y1="75" x2="243" y2="75"/><line x1="205" y1="75" x2="205" y2="37"/>
     <line x1="350" y1="75" x2="392" y2="75"/><line x1="350" y1="75" x2="350" y2="58"/>
   </g>
   <defs><marker id="svdArrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
@@ -459,6 +548,7 @@ For the line-fitting example, the first column says how changing the intercept m
     <text x="60" y="138">unit ball</text>
     <text x="130" y="66">Vᵀ</text><text x="275" y="66">Σ</text><text x="414" y="66">U</text>
     <text x="205" y="138">rotate</text><text x="350" y="138">scale σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">, σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="475" y="138">rotate</text>
+  </g>
   </g>
 </svg>
 
@@ -563,7 +653,7 @@ obstacle avoidance.
 
 $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}.$$
 
-Draw the columns at the tip $(1,1)$: column 1 is the tip velocity for $\dot\theta=(1,0)$, which is $(-1,1)$; column 2 is $(-1,0)$. The $2\times 2$ inverse formula with $\det J=1$ gives $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. Square and invertible, so the table's last row says $J^\dagger=J^{-1}$. Check: $J J^{-1}=I$. The problem set asks you to write those two matrices and to say they match — you have just done it. The 3-link arm above needed a pseudoinverse because it was wide; P2 does not. What P2 *does* need the SVD story for is the next sentence: send $\theta_2\to 0$ and the two columns become parallel, $\det J\to 0$, $\kappa_2(J)\to\infty$, and a sideways tip motion is lost. $J^\dagger$ then explodes in the lost direction exactly as $\Sigma^\dagger$ below predicts.
+Draw the columns at the tip $(1,1)$: column 1 is the tip velocity for $\dot\theta=(1,0)$, which is $(-1,1)$; column 2 is $(-1,0)$. The $2\times 2$ inverse formula with $\det J=1$ gives $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. Square and invertible, so the table's last row says $J^\dagger=J^{-1}$. Check: $J J^{-1}=I$. Its singular values come from $J^\top J=\begin{pmatrix}2&1\\1&1\end{pmatrix}$, found the way §4 found $C$'s: the eigenvalues solve $\lambda^2-3\lambda+1=0$, so $\lambda=2.618,\ 0.382$ and $\sigma=\sqrt\lambda=1.618,\ 0.618$, hence $\kappa_2(J)=1.618/0.618=2.618$ and the ellipse's area $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$ — the picture's numbers. The problem set's Derive item runs the same steps at the other elbow of its Draw item, where the answer comes out in a surprising form. The 3-link arm above needed a pseudoinverse because it was wide; P2 does not. What P2 *does* need the SVD story for is the next sentence: send $\theta_2\to 0$ and the two columns become parallel, $\det J\to 0$, $\kappa_2(J)\to\infty$, and a sideways tip motion is lost. $J^\dagger$ then explodes in the lost direction exactly as $\Sigma^\dagger$ below predicts.
 
 #### 4.5.3 The SVD view, singularities and damped least squares
 
@@ -616,7 +706,7 @@ Levenberg–Marquardt. Four names, one idea.
 
 *Second pass, for when you reach the control track. Nothing else on this page depends on it.*
 
-Linear algebra *is* the language of control ([[04-robotics/index|control track]]):
+Before a controller is built, its designer has to know whether the system settles on its own, whether the input can steer every state, and whether the sensors can see every state; each question is a matrix computation. Linear algebra *is* the language of control ([[04-robotics/index|control track]]):
 
 #### 5.1 The state-space model and the matrix exponential
 
@@ -654,28 +744,32 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
   alone steers both position and velocity. Non-example: $A = \text{diag}(1, 2)$ with
   $B = (1, 0)$ gives $\mathcal{C} = \begin{pmatrix}1&1\\0&0\end{pmatrix}$, rank 1, so the second,
   unstable mode can never be influenced.
-<svg viewBox="0 0 470 160" style="max-width:100%;height:auto" role="img" aria-label="controllable versus uncontrollable reachable directions">
-  <g fill="currentColor" opacity="0.10"><polygon points="30,120 30,55 105,55 105,120"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.35">
-    <line x1="30" y1="120" x2="190" y2="120"/><line x1="30" y1="120" x2="30" y2="20"/>
-    <line x1="280" y1="120" x2="440" y2="120"/><line x1="280" y1="120" x2="280" y2="20"/>
-  </g>
-  <defs><marker id="cArrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
-    <path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
-  <g stroke="currentColor" stroke-width="2" marker-end="url(#cArrow)">
-    <line x1="30" y1="120" x2="30" y2="58"/>
-    <line x1="30" y1="120" x2="102" y2="58"/>
-    <line x1="280" y1="120" x2="362" y2="120"/>
-  </g>
-  <g font-size="11.5" fill="currentColor">
-    <text x="36" y="52">B</text><text x="108" y="52">AB</text>
-    <text x="368" y="116">B</text><text x="330" y="140">AB is on the same line</text>
-    <text x="14" y="156" font-size="12">rank 2 → every state reachable</text>
-    <text x="264" y="156" font-size="12">rank 1 → one direction unreachable</text>
-  </g>
+<svg viewBox="0 0 560 196" style="max-width:100%;height:auto" role="img" aria-label="Controllability drawn from the page's numbers. Left, the pushed mass: B = (0, 1) points along velocity, AB = (1, 0) along position, together they span the plane, rank 2. Right, A = diag(1, 2) with B = (1, 0): AB = (1, 0) lies on B's own line, so the second state direction is never reached, rank 1.">
+  <defs><marker id="cArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="70.0,138.0 166.1,138.0" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5"/>
+  <polyline points="70.0,138.0 70.0,41.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5"/>
+  <polyline points="350.0,138.0 446.1,138.0" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5"/>
+  <polyline points="350.0,138.0 350.0,41.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5"/>
+  <polygon points="70.0,138.0 132.0,138.0 132.0,76.0 70.0,76.0" fill="currentColor" fill-opacity="0.10" stroke="none"/>
+  <polyline points="70.0,138.0 70.0,76.0" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#cArrow)"/>
+  <polyline points="70.0,138.0 132.0,138.0" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#cArrow)"/>
+  <text x="77.0" y="82.0" font-size="11" fill="currentColor">B = (0, 1)</text>
+  <text x="128.0" y="155.0" font-size="11" fill="currentColor">AB = (1, 0)</text>
+  <text x="170.1" y="142.0" font-size="11" fill="currentColor">position</text>
+  <text x="64.0" y="35.9" font-size="11" fill="currentColor">velocity</text>
+  <polyline points="350.0,138.0 350.0,41.9" fill="none" stroke="currentColor" stroke-width="5" stroke-opacity="0.12"/>
+  <polyline points="350.0,138.0 412.0,138.0" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#cArrow)"/>
+  <text x="388.0" y="155.0" font-size="11" fill="currentColor">B = AB = (1, 0)</text>
+  <text x="450.1" y="142.0" font-size="11" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="344.0" y="35.9" font-size="11" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="359.0" y="82.2" font-size="10.5" opacity="0.85" fill="currentColor">never reached</text>
+  <text x="20.0" y="16" font-size="11" fill="currentColor">pushed mass: A has rows (0, 1), (0, 0)</text>
+  <text x="300.0" y="16" font-size="11" fill="currentColor">A = diag(1, 2), B = (1, 0)</text>
+  <text x="20.0" y="184" font-size="11.5" fill="currentColor">rank 2 → every state reachable</text>
+  <text x="300.0" y="184" font-size="11.5" fill="currentColor">rank 1 → x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> never reachable</text>
 </svg>
 
-*Left: $B$ and $AB$ point in different directions, so together they span the plane. Right: the dynamics only ever rotate $B$ back onto itself — a whole direction of the state space is out of reach, whatever you do with $u$.*
+*Left, the pushed mass: the force enters as a change of velocity, $B=(0,1)$, and one step of the dynamics turns that into a change of position, $AB=(1,0)$; the two span the plane, rank 2. Right, $A=\text{diag}(1,2)$ with $B=(1,0)$: $AB=(1,0)$ lies on $B$'s own line, so the second, unstable mode $x_2$ is out of reach whatever you do with $u$.*
 
   Observability is the transpose twin — can the
   output $y$ eventually reveal every state? — with matrix $[C^\top, A^\top C^\top, \ldots]$.
@@ -691,17 +785,19 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 ### 6. Geometry of high dimensions (paper-reading intuition)
 
-- Random zero-mean (isotropic) high-dim vectors are nearly orthogonal: $\cos\theta$ concentrates around 0 with spread $\approx 1/\sqrt d$ (its mean is already 0 in any dimension; vectors with a non-zero mean do not become orthogonal) — one reason
+Papers reason about 768-dimensional embeddings with intuitions built in two and three dimensions, and several of those intuitions fail there; this section says which, with numbers.
+
+- Random zero-mean (isotropic) high-dim vectors are nearly orthogonal: $\cos\theta$ concentrates around 0 with standard deviation $1/\sqrt d$ (exactly, for Gaussian vectors) — $0.58$ at $d=3$, $0.125$ at $d=64$ (one attention head's width) and $0.036$ at $d=768$ (a common embedding width) — because the $d$ squared components of a random unit direction share a total of $1$ equally, so each averages $1/d$. (Its mean is already 0 in any dimension; vectors with a non-zero mean do not become orthogonal.) That is one reason
   dot-product retrieval over millions of embeddings is *possible*: unrelated items score
   near zero. (That relevant pairs score high is a property of the *learned* embedding, not
   of geometry.)
-- Distances concentrate: nearest and farthest neighbors differ by little — one reason *learned* embeddings and metrics replace raw distances on raw features. (Cosine similarity does not escape concentration: for unit vectors $\|a-b\|^2 = 2 - 2\cos\theta$, so it ranks neighbours exactly as Euclidean distance does; what it adds is ignoring vector norms.)
+- Distances concentrate: nearest and farthest neighbors differ by little. For two random Gaussian points the distance has a relative spread (standard deviation over mean) of $0.42$ at $d=3$ but only $0.089$ at $d=64$ and $0.026$ at $d=768$, about $1/\sqrt{2d}$, so in high dimension almost every pair sits at nearly the same distance — one reason *learned* embeddings and metrics replace raw distances on raw features. (Cosine similarity does not escape concentration: for unit vectors $\|a-b\|^2 = 2 - 2\cos\theta$, so it ranks neighbours exactly as Euclidean distance does; what it adds is ignoring vector norms.)
 - Manifold hypothesis: real data occupies a low-dimensional surface inside pixel space —
   the implicit justification for latent spaces ([[01-canonical-papers/notes/6-diffusion/vae|VAE]],
   [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]]).
 
 > [!tip] Going deeper · 더 깊이
-> This page is a working set, not a course. If it moves too fast, Boyd and Vandenberghe's free [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/) covers §1 and the least-squares half of §2 at a gentler pace — it builds everything from linear independence and QR, and never uses the words rank, column space or null space, and Strang's *Introduction to Linear Algebra* is the standard first course for the eigenvalue and SVD half. Come back here for where each idea shows up in the papers.
+> This page moves fast. If it moves too fast, Boyd and Vandenberghe's free [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/) (VMLS) covers §1 and the least-squares half of §2 at a gentler pace: it builds everything from linear independence and QR, states the independent-columns assumption of least squares explicitly, and never uses the words rank, column space or null space. Strang's *Introduction to Linear Algebra* is the standard first course for the eigenvalue and SVD half. Come back here for where each idea shows up in the papers.
 
 ### Self-check
 
@@ -721,11 +817,11 @@ Linear algebra *is* the language of control ([[04-robotics/index|control track]]
 
 ### Problem set · 과제
 
-Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\circ)$. This page §4.5. No time-stepper.
+Tier B. **P2** from [[02-foundations/lab-plants|0.6]], at its catalog pose $\theta=(0^\circ,90^\circ)$ and two other poses. This page §3 (the condition number), §4 (singular values) and §4.5. No time-stepper.
 
 1. **Draw.** The picture above for the other elbow: the same tip $(1,1)$ reached at $\theta=(90^\circ,-90^\circ)$, with the elbow at $(0,1)$. Draw $J$'s two columns as arrows at the tip (tip velocity for each unit joint rate) and the ellipse the unit circle of joint rates maps to. What is the same as in the picture above, and what changed?
-2. **Derive.** From $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, compute $J^{-1}$ by the $2\times 2$ formula. Then $J^\dagger$ from the square-invertible row of the §4.5 table. Confirm they match.
-3. **Interpret.** Send $\theta_2\to 0$ with $\theta_1$ fixed. What happens to the two column arrows, to $\det J$, and to $\kappa_2(J)$? What tool motion becomes impossible?
+2. **Derive.** At item 1's other elbow, $J=\begin{pmatrix}-1&0\\1&1\end{pmatrix}$. Compute $J^{-1}$ by the $2\times 2$ formula, then $J^\dagger$ from the square-invertible row of the §4.5 table, and confirm they match. Then find the joint rates that move the tip straight up at 1 m/s, $v=(0,1)$, and compare them with the catalog pose's.
+3. **Interpret.** Straighten the arm at another base angle: hold $\theta_1=90^\circ$ and send $\theta_2\to 0$, so that the arm ends pointing straight up with its tip at $(0,2)$. What happens to the two column arrows, to $\det J$ and to $\kappa_2(J)$, and which tool motion becomes impossible? Compare with the picture's right panel.
 
 > [!note]- How to draw it · 그리는 법
 > - The arm to scale: base at the origin, a unit link straight up to the elbow at $(0,1)$, a second unit link along $+x$ to the tip at $(1,1)$, both joints marked with a circle.
@@ -734,27 +830,30 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 > - Check that each arrow is perpendicular to the segment from its own joint to the tip — a point on a rotating body moves at right angles to its radius — which catches a wrong sign faster than redoing the algebra. Column 1's segment is the same base-to-tip line as in the picture above; column 2's is not.
 > - The image of the unit circle: a radius-$1$ circle in a corner box labelled joint-rate space, and at the tip the ellipse it maps to, with the singular values of §4 as semi-axes and $\kappa_2(J)=\sigma_1/\sigma_2$ written inside; its area is $\pi\lvert\det J\rvert$.
 > - Draw the picture above's ellipse faintly behind yours: the two have the same semi-axes and differ only in tilt, and $\det J$ changes sign between them.
-> - For item 3, a second, smaller panel with the arm straight, $\theta=(0^\circ,0^\circ)$: the two column arrows there, the ellipse shaded down to the segment it collapses into, and $\det J$ and $\kappa_2$ beside it.
+> - For item 3, a second, smaller panel with the arm straight up, $\theta=(90^\circ,0^\circ)$: the two column arrows there, the ellipse shaded down to the segment it collapses into, and $\det J$ and $\kappa_2$ beside it.
 
 > [!tip]- Solutions
 > 1. Column 1 is still $(-1,1)$: turning the whole arm about the base moves the tip at right angles to the base-to-tip line, and the tip has not moved. Column 2 is now $(0,1)$, at right angles to the forearm, which runs from $(0,1)$ to $(1,1)$ along $+x$. So $J=\begin{pmatrix}-1&0\\1&1\end{pmatrix}$ and $\det J=-1$: the same size as before with the opposite sign, the sign of $\sin\theta_2$. $J^\top J=\begin{pmatrix}2&1\\1&1\end{pmatrix}$ has eigenvalues $2.618$ and $0.382$, so the singular values are again $1.618$ and $0.618$, $\kappa_2=2.618$ and the area is $\pi$. The ellipse has the same shape and a different tilt: its long axis points along $(-0.526,\ 0.851)$, at $121.7^\circ$, against $(-0.851,\ 0.526)$, at $148.3^\circ$, in the picture above. The tip is the same, the arm is not, so the map from joint rates is not.
-> 2. $\det J=1$, so $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. Square and invertible $\Rightarrow J^\dagger=J^{-1}$.
-> 3. The columns become parallel (both along $\pm y$ at $\theta=(0^\circ,0^\circ)$), $\det J\to 0$, $\kappa_2\to\infty$. Sideways ($x$) tip motion is lost: a stretched arm cannot do it at finite joint speed.
+> 2. $\det J=(-1)(1)-(0)(1)=-1$, so $J^{-1}=\frac{1}{-1}\begin{pmatrix}1&0\\-1&-1\end{pmatrix}=\begin{pmatrix}-1&0\\1&1\end{pmatrix}$ — the same matrix as $J$, because here $J^2=I$. Square and invertible $\Rightarrow J^\dagger=J^{-1}$. For $v=(0,1)$, $\dot\theta=J^{-1}v=(0,1)$: only the elbow turns, because the forearm lies along $+x$ and its tip moves straight up. At the catalog pose the same $v$ needs $\begin{pmatrix}0&1\\-1&-1\end{pmatrix}(0,1)=(1,-1)$: base forward, elbow back. Same tip, same requested velocity, different joint rates — the map depends on the arm, not only on where the tip is.
+> 3. Along the way $\det J=\sin\theta_2$ shrinks ($0.5$ at $30^\circ$, $0.017$ at $1^\circ$) and $\kappa_2$ grows ($9.4$, then $286$). At $\theta=(90^\circ,0^\circ)$, $J=\begin{pmatrix}-2&-1\\0&0\end{pmatrix}$: both columns lie along $-x$, so they are parallel, $\det J=0$ and $\kappa_2=\infty$ (the singular values are $\sqrt5$ and $0$). The lost direction is $y$, along the arm: a stretched arm cannot move its tip along its own length at finite joint speed, whichever way it points. The picture's right panel, with the arm along $+x$, lost $x$ for the same reason.
 
 ## 한국어
 
-*[[02-foundations/engineering-math|0.5]]와 [[02-foundations/neural-network-basics|0.8]] 위에 선다. 핵심 삼각형의 첫 꼭짓점이다: 행렬은 랭크와 고윳값과 SVD를 가진
+*[[02-foundations/engineering-math|0.5]]와 [[02-foundations/neural-network-basics|0.8]] 위에 선다. 핵심 삼각형의 첫 꼭짓점이다: 행렬은 랭크와 고윳값과 SVD(특이값 분해)를 가진
 사상이다. 이 페이지를 선수로 지목하는 뒤 페이지에는 미적분, 확률, 최적화, SE(3), 매니퓰레이터 동역학이 있다.*
 
 딥러닝은 행렬곱 사이에 비선형성을 끼운 선형대수 *그 자체*다. 이 페이지는 교재 수준의
 서술이다: 정의, 유도, 계산 예시, 그리고 각 개념이 이 위키의 논문들 어디에서 나타나는지.
 
+> [!note] 왜 배우는가 · Why this matters
+> [[physical-ai-map|피지컬 AI 지도]]에서 선형대수는 [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택을 받치는 수학 바닥의 일부로, 모션 계획·조작·접촉 바로 아래에 놓인다. "*저 패널을 프레임에 설치해*"에서 로봇이 미지수보다 많은 측정으로 패널과 프레임의 위치를 정하는 일(§2의 최소제곱)과 부재를 옮기는 일이 여기에 기대는데, 이 페이지 그림의 야코비안 $J$가 관절 속도를 패널의 속도로 바꾸기 때문이다. 팔을 거의 다 편 자세에서는 $J$의 랭크가 떨어져 $J^{-1}$이 한없이 빠른 관절 속도를 요구하므로 역기구학 루프가 프레임 쪽으로 튀어 나가고, 이를 막는 §4.5의 감쇠 최소제곱($\lambda=0.01$이면 특이에 가까운 $1/\sigma=100$이 $0.99$가 된다)은 특이값을 읽을 줄 알아야 고를 수 있다. 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])에서 이 페이지를 쓰는 곳은 블록 1의 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학 §2와 §6]], 블록 2의 [[04-robotics/control-theory-ce397|5. 제어 이론 §2]]와 [[04-robotics/system-identification|5.5 시스템 식별 §3]], 블록 3의 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어 §4]], 그리고 행동 복제를 §2의 정규방정식으로 푸는 블록 7의 [[05-construction-robotics/imitating-contact|10. 접촉 모방 §2]]다. 이 페이지를 마치면 어떤 $y=Wx$든 행과 열로 읽고, 최소제곱 직선을 맞춰 잔차를 검산하고, 야코비안의 특이값으로 자세가 특이점에 얼마나 가까운지 말할 수 있다.
+
 > [!note] 처음이라면 · First pass
-> 그림, §1로 행렬이 무엇인지, §2는 랭크와 최소제곱까지(그래디언트 유도 포함), 그다음 §3의 2×2 계산 예제와 논문이 전제하는 §6의 고차원 직관을 읽어라. 과제에는 하나가 더 필요하다: §4.5의 모양별 표와 P2 계산, 그리고 §3의 조건수 $\kappa_2$. 두 번째 읽기: §3의 나머지(조건수, 정부호성)는 최적화기나 공분산이 필요로 할 때, §4(SVD)는 논문이 무언가를 분해할 때, §4.5의 나머지는 로보틱스 트랙에서 $J^\dagger$를 처음 만날 때, §5는 제어 트랙에 닿았을 때 돌아오라.
+> 60~90분 회차로 네 번쯤 걸린다. 셋은 읽고 하나는 푼다. **1회차:** 그림과 §1, 그리고 §2의 랭크와 영공간까지. §1에서는 행렬이 하는 일을 P2(카탈로그의 평면 2링크 팔, [[02-foundations/lab-plants|0.6 Lab Plants]]) 위에서 행과 열로 읽는다. 접힌 상자는 나중으로 미룬다. **2회차:** §2의 최소제곱을 그래디언트 유도와 직선 맞춤 계산까지 보고, 이어서 §3을 $2\times2$ 계산 예제와 그 그림, 경사 하강의 수렴 비율까지 읽는다. **3회차:** §3의 나머지(조건수 $\kappa_2$와 정부호성), §4의 처음 두 항목과 $C$ 계산(특이값이 무엇인지), §4.5의 모양별 표와 P2 계산, 그리고 §6. **4회차**에는 책을 덮고 스스로 점검 1~4를 푼 뒤 과제(그리기·유도·해석)를 한다. 과제에 필요한 조각이 정확히 이것들이다. 두 번째 읽기: §4(SVD)의 나머지는 논문이 무언가를 분해할 때, §4.5의 나머지는 로보틱스 트랙에서 $J^\dagger$를 처음 만날 때, §5는 제어 트랙에 닿았을 때 돌아오라.
 
 ### 그림으로 먼저 보기 · The picture
 
-<svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="자세 θ = (0, 90도)의 P2: 실제 비율의 팔, 말단에 화살표로 그린 J의 두 열 (-1, 1)과 (-1, 0), 각각 자기 관절에서 말단으로 가는 선분에 수직; 관절 속도의 단위원과 그것이 옮겨 간 타원, 반축 1.618과 0.618, 조건수 2.618; 그리고 두 열이 평행하고 det J = 0인 곧게 편 팔.">
+<svg viewBox="0 0 560 218" style="max-width:100%;height:auto" role="img" aria-label="자세 θ = (0, 90도)의 P2: 실제 비율의 팔, 말단에 화살표로 그린 J의 두 열 (-1, 1)과 (-1, 0), 각각 자기 관절에서 말단으로 가는 선분에 수직; 관절 속도의 단위원과 그것이 옮겨 간 타원, 반축 1.618과 0.618, 조건수 2.618; 그리고 두 열이 평행하고 det J = 0인 곧게 편 팔.">
   <defs><marker id="laHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <rect x="10" y="32" width="160" height="160" rx="4" fill="currentColor" fill-opacity="0.04" stroke="currentColor" stroke-width="1"/>
   <text x="90" y="24" font-size="11" text-anchor="middle" fill="currentColor">관절 속도 공간 (θ̇<tspan dy="3.5">1</tspan><tspan dy="-3.5">, θ̇</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">)</tspan></text>
@@ -798,27 +897,31 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   <text x="232" y="132" font-size="11" text-anchor="end" fill="currentColor">→ (−1, 0)</text>
   <text x="372" y="24" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">P2, θ = (0°, 90°)</text>
   <text x="470" y="24" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">θ = (0°, 0°)</text>
-  <line x1="496" y1="53.9" x2="496" y2="170.1" stroke="currentColor" stroke-width="8" stroke-opacity="0.22"/>
-  <polyline points="444,112 470,112 496,112" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
-  <circle cx="444" cy="112" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
-  <circle cx="470" cy="112" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
-  <polyline points="496,112 496,60" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHwk)"/>
-  <polyline points="496,112 496,86" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHwk)"/>
+  <line x1="496" y1="58.3" x2="496" y2="165.7" stroke="currentColor" stroke-width="8" stroke-opacity="0.22"/>
+  <polyline points="448,112 472,112 496,112" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="448" cy="112" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="472" cy="112" r="5" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.4"/>
+  <polyline points="496,112 496,64" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHwk)"/>
+  <polyline points="496,112 496,88" fill="none" stroke="currentColor" stroke-width="1.9" marker-end="url(#laHwk)"/>
   <circle cx="496" cy="112" r="3" fill="currentColor"/>
-  <text x="505" y="65" font-size="11" fill="currentColor">(0, 2)</text>
-  <text x="505" y="91" font-size="11" fill="currentColor">(0, 1)</text>
+  <text x="505" y="69" font-size="11" fill="currentColor">(0, 2)</text>
+  <text x="505" y="93" font-size="11" fill="currentColor">(0, 1)</text>
   <text x="505" y="140" font-size="11" fill="currentColor">det J = 0</text>
   <text x="505" y="154" font-size="11" fill="currentColor">κ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = ∞</tspan></text>
   <text x="496" y="206" font-size="11" text-anchor="middle" fill="currentColor">사라진 방향: x</text>
-  <text x="12" y="237" font-size="11" opacity="0.9" fill="currentColor">J의 한 열은 입력 하나의 단위량이 만드는 출력이다. 각 열은 자기 관절–말단 선분에 수직이다.</text>
-  <text x="12" y="251" font-size="11" opacity="0.9" fill="currentColor">타원 넓이 π·σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = π·|det J| = π, 원의 넓이 그대로다. 편 팔: 두 열이 평행하고 x가 사라진다.</tspan></text>
+  <text x="470" y="38" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">⅓ 축척</text>
+  <polyline points="404,80 428,80" fill="none" stroke="currentColor" stroke-width="1" marker-end="url(#laHwk)"/>
+  <polyline points="404,80 404,56" fill="none" stroke="currentColor" stroke-width="1" marker-end="url(#laHwk)"/>
+  <text x="431" y="84" font-size="11" fill="currentColor">ẋ</text>
+  <text x="409" y="60" font-size="11" fill="currentColor">ẏ</text>
+  <text x="388" y="96" font-size="10.5" opacity="0.85" fill="currentColor">말단 속도</text>
 </svg>
 
-고정 자세 $\theta=(0^\circ,90^\circ)$의 장치 P2([[02-foundations/lab-plants|0.6 Lab Plants]])로 §1이 말하는 "행렬은 사상이다"를 그린 것으로(§4.5가 이 자세를 P2 계산으로 푼다), $J$의 두 열은 관절 속도 하나를 단위만큼 줄 때의 말단 속도, 곧 팔 전체가 베이스를 중심으로 돌 때의 $(-1,1)$과 전완이 엘보를 중심으로 돌 때의 $(-1,0)$이며 각각 자기 관절에서 말단으로 가는 선분에 수직이다. $J$는 관절 속도의 단위원을 반축이 $\sigma_1=1.618$, $\sigma_2=0.618$인 타원으로 옮기므로 $\kappa_2(J)=2.618$이고, $\det J=1$이라 타원의 넓이 $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$는 원의 넓이 그대로다. 오른쪽 칸은 곧게 편 팔 $\theta=(0^\circ,0^\circ)$로, 두 열 $(0,2)$와 $(0,1)$이 평행하고 타원이 선분으로 주저앉아 $\det J=0$, $\kappa_2=\infty$이며 사라진 방향은 $x$다.
+고정 자세 $\theta=(0^\circ,90^\circ)$의 장치 P2([[02-foundations/lab-plants|0.6 Lab Plants]])로 §1이 말하는 "행렬은 사상이다"를 그린 것으로(§4.5가 이 자세를 P2 계산으로 푼다), $J$의 두 열은 관절 속도 하나를 단위만큼 줄 때의 말단 속도, 곧 팔 전체가 베이스를 중심으로 돌 때의 $(-1,1)$과 전완이 엘보를 중심으로 돌 때의 $(-1,0)$이며 각각 자기 관절에서 말단으로 가는 선분에 수직이다. $J$는 관절 속도의 단위원을 말단 속도 $(\dot x,\dot y)$의 평면 위 타원, 곧 말단을 중심으로 원과 같은 축척으로 그린 반축 $\sigma_1=1.618$, $\sigma_2=0.618$의 타원으로 옮기므로 $\kappa_2(J)=2.618$이고, $\det J=1$이라 타원의 넓이 $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$는 원의 넓이 그대로다. 그 축척의 3분의 1로 그린 오른쪽 칸은 곧게 편 팔 $\theta=(0^\circ,0^\circ)$로, 두 열 $(0,2)$와 $(0,1)$이 평행하고 타원이 반길이 $\sqrt5=2.236$의 선분으로 주저앉아 $\det J=0$, $\kappa_2=\infty$이며 사라진 방향은 $x$다.
 
 ### 1. 벡터, 행렬, 그리고 곱셈의 의미
 
-처음 세 항목은 어휘를 세운다 — 행렬이 무엇인지, $Wx$를 읽는 두 방법 — 그리고 바로 뒤에 어텐션 헤드의 모양을 따지는 계산 예시가 이어진다.
+로봇 팔과 신경망 층은 숫자 목록에 같은 일을 한다. P2의 야코비안은 관절 속도 둘을 받아 말단 속도를 돌려주고, 층은 특징을 받아 특징을 돌려준다. 어느 쪽이든 분석하려면 행렬이 벡터에 무엇을 하는지, 그리고 그 곱을 읽는 두 방법을 먼저 알아야 한다. 아래에서 P2가 두 읽기 모두에 숫자를 붙인다.
 
 - 행렬 $W \in \mathbb{R}^{m\times n}$은 **선형 사상** $\mathbb{R}^n \to \mathbb{R}^m$이다:
   $W(ax + by) = aWx + bWy$를 만족한다. 가법성과 동차성을 한꺼번에 쓴 것이다(비예시까지 담은
@@ -826,21 +929,19 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   모든 선형 사상은 행렬이고, 그 $j$번째 열은 단위벡터 $e_j$의 상이다. 임의의 $x = \sum_j x_j e_j$가
   $\sum_j x_j W e_j$로 가기 때문이다. $W = \begin{pmatrix}1&2\\3&4\end{pmatrix}$라면
   $We_1 = (1,3)$이 첫 열이다. 비예시: $b \ne 0$인 $x \mapsto Wx + b$는 $0$을 $b$로 보내므로
-  선형이 아니라 아핀이다. 모든 선형층(엄밀히는 그 $W$), 어텐션 투영($W_Q, W_K, W_V$), 임베딩
-  조회가 이것이다.
+  선형이 아니라 아핀이다. 모든 선형층(엄밀히는 그 $W$)과 모든 임베딩 조회가 이것이고, 이 절 끝의
+  두 번째 접힌 상자에 나오는 어텐션 투영도 그렇다.
 - $y = Wx$의 두 가지 독해:
   - **행 관점**: $y_i = \langle w_{i,:}, x\rangle$ — 각 출력은 입력과 학습된 패턴(행)
     사이의 내적 유사도다.
   - **열 관점**: $y = \sum_j x_j\, w_{:,j}$ — 출력은 학습된 방향들(열)을 입력이 가중한
     혼합이다.
-- 모양의 규율: $(m\times n)(n\times 1) = (m \times 1)$. 모양 읽기가 구조 읽기다.
-  계산 예시 — $d_{model}=512$, $d_k=64$인 어텐션 헤드 하나, $X$는 시퀀스의 토큰 $T$개를
-  512차원 행으로 쌓은 입력 행렬:
-  $Q = XW_Q$는 $(T\times 512)(512\times 64) = T\times 64$; 점수 $QK^\top$는 $T\times T$;
-  출력 $\text{softmax}(QK^\top/\sqrt{64})\,V$는 $T\times 64$ (softmax는 점수를 확률로
-  바꾼다 — [[02-foundations/engineering-math|0.5 §10]]에 정의).
-  [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] 전체가 한 줄로 타입
-  검사된다. 같은 헤드를 D2의 패치 토큰 넷 위에서 숫자로 끝까지 계산한 것이 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]다.
+  - **두 읽기를 P2에서.** 그림의 자세에서 $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$는 rad/s 단위의 관절 속도 $\dot\theta$를 m/s 단위의 말단 속도 $v=J\dot\theta$로 보낸다. 열로 읽으면, $j$번째 열은 관절 $j$ 하나만 단위 속도로 돌릴 때의 말단 속도로 베이스는 $(-1,1)$, 엘보는 $(-1,0)$이다. 그래서 둘을 함께 $\dot\theta=(1,1)$로 돌리면 $1\cdot(-1,1)+1\cdot(-1,0)=(-2,1)$이다. 행으로 읽으면 출력을 하나씩 모은다. $v_x=-\dot\theta_1-\dot\theta_2=-2$, $v_y=\dot\theta_1=1$. 답은 같고 질문이 다르다. 관절 하나가 무엇을 하는가, 그리고 출력 하나가 무엇을 모으는가.
+- 모양의 규율: $(m\times n)(n\times 1) = (m \times 1)$. 모양 읽기가 신경망 구조를 읽는 법이고 로봇을 읽는
+  법이기도 하다. P2의 $J$는 $(2\times2)(2\times1)=2\times1$, 곧 관절 속도 둘이 들어가 평면 속도 하나가 나온다.
+  §4.5의 여유자유도 팔은 야코비안이 $2\times3$이라 같은 출력 둘에 관절 속도 셋을 받는다. $(2\times3)(2\times1)$처럼
+  모양이 어긋나면 작은 답이 나오는 것이 아니라 버그다. 같은 장부를 트랜스포머의 어텐션 헤드에 적용한 것이
+  이 절 끝의 두 번째 접힌 상자다.
 - **내적과 각도**: 내적은 길이가 같은 두 벡터를 받아 숫자 하나를 돌려준다.
   $$\langle a,b\rangle = a^\top b = \sum_{i=1}^{n} a_i b_i = \|a\|\,\|b\|\cos\theta$$
   $\theta$는 두 벡터 사이의 각이다. 마지막 등식은 코사인 법칙이고, 그래서 내적은 한 벡터가 다른
@@ -854,8 +955,8 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   — 양의 정부호성, 절대 동차성, 삼각 부등식 — 를 만족하는 함수면 무엇이든 노름이다.
   $$\|x\| \ge 0 \text{ with } \|x\| = 0 \iff x = 0, \qquad \|c\,x\| = |c|\,\|x\|, \qquad \|x + y\| \le \|x\| + \|y\|$$
   그래서 길이가 거리처럼 행동한다(돌아가는 길이 곧은 길보다 짧을 수 없다).
-  노름: $\|x\|_2 = \sqrt{\sum x_i^2}$(길이, 에너지), $\|x\|_1 = \sum |x_i|$(희소성 유도 —
-  "모서리"가 축에 먼저 닿는다), $\|x\|_\infty = \max_i |x_i|$, 행렬에는
+  노름: $\|x\|_2 = \sqrt{\sum x_i^2}$(길이, 에너지), $\|x\|_1 = \sum |x_i|$(이것으로 벌점을 준 적합은
+  희소하게 나온다. 이유는 아래 첫 번째 접힌 상자), $\|x\|_\infty = \max_i |x_i|$, 행렬에는
   $\|A\|_F = \sqrt{\sum_{ij} a_{ij}^2}$. 예: $x = (3,-4)$는 $\|x\|_2 = 5$, $\|x\|_1 = 7$,
   $\|x\|_\infty = 4$이고, $A = \begin{pmatrix}1&2\\3&4\end{pmatrix}$는
   $\|A\|_F = \sqrt{30} = 5.477$이며, $u = (3,0)$, $v = (0,4)$는 $\|u+v\|_2 = 5 \le 3 + 4$로
@@ -864,12 +965,20 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
 
 **입력 하나를 사상 끝까지 따라간다.** 계산 전에 각 축의 뜻을 말해 본다. 로봇 속도 사상에서는 입력이 관절 속도이고 출력이 말단 속도 성분일 수 있다. 신경망 층에서는 특징 좌표다. 계산은 같지만 단위와 해석은 응용이 정한다. 행은 한 출력을 만드는 입력 조합을 묻는다. 열은 입력 하나만 바뀌면 무슨 일이 생기는지 묻는다. 행렬 전체를 한꺼번에 상상할 필요가 없다.
 
-위 어텐션 예제에서는 점수 행렬의 행 하나를 고른다. 한 쿼리를 모든 키와 비교한 값이다. Softmax는 그 키들에 걸쳐 정규화하고, V를 곱하면 키에 대응하는 값 벡터를 섞어 출력 행 하나를 만든다. 나머지 쿼리에서도 반복한다. 그래서 점수는 토큰×토큰이지만 결과는 토큰×특징이다. 토큰 사이의 정보를 섞지, 토큰 번호를 특징 좌표로 바꾸는 것이 아니다.
-
 > [!question] 잠깐 설명해 보기 · Pause and explain
 > 다른 입력을 고정하고 입력 좌표 하나를 두 배로 만들면 어느 열이 변화를 결정하는가? 그 좌표에 대응하는 열이다. 그 입력의 기여가 바뀌고 다른 열의 기여는 그대로다. 행렬이 불투명한 숫자 덩어리처럼 보이면 이 질문부터 한다.
 
+> [!note]- 더 깊이 · Deeper
+> **L1 노름이 적합을 희소하게 만드는 이유.** $\lVert\cdot\rVert_1$의 단위공, 곧 $\lvert x_1\rvert+\lvert x_2\rvert\le1$인 집합은 모서리가 축 위의 $(\pm1,0)$과 $(0,\pm1)$에 있는 마름모이고, $\lVert\cdot\rVert_2$의 단위공은 둥근 원이다. 각 공에서 $(2,\ 0.5)$에 가장 가까운 점을 찾아 보자. 원은 $(2,\ 0.5)/\lVert(2,\ 0.5)\rVert_2=(0.970,\ 0.243)$을 주어 두 좌표가 모두 0이 아니지만, 마름모는 모서리 $(1,\ 0)$을 주어 작은 좌표가 정확히 0이 된다. L1 노름으로 벌점을 준 최소제곱 적합(*라소*, lasso)도 같은 식으로 이런 모서리에 내려앉기 때문에 가중치 몇 개만 남기고 나머지를 0으로 만들고, L2 벌점은 모두를 조금씩 줄이기만 한다.
+
+> [!note]- 더 깊이 · Deeper
+> **트랜스포머의 모양 읽기.** 어텐션 헤드 하나([[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]가 전부 가르친다)는 $X$, 곧 시퀀스의 토큰 $T$개의 임베딩을 행으로 쌓은 $T\times512$ 행렬($d_{model}=512$는 토큰 벡터 하나의 폭)을 받아, 학습된 $512\times64$ 행렬 셋을 곱한다. 쿼리 $Q=XW_Q$, 키 $K=XW_K$, 값 $V=XW_V$이고 각각 $T\times64$다($d_k=64$는 헤드의 폭). 점수 $QK^\top$는 $(T\times64)(64\times T)=T\times T$로 토큰 쌍마다 숫자 하나이고, 출력 $\text{softmax}(QK^\top/\sqrt{64})\,V$는 $(T\times T)(T\times64)=T\times64$다. softmax는 점수의 각 행을 확률로 바꾸고([[02-foundations/engineering-math|0.5 §10]]), $\sqrt{d_k}=8$로 나누는 것은 폭이 커져도 점수가 따라 커지지 않게 하려는 것이다(이유는 [[03-deep-learning/foundations/attention-transformer|1.2 §2]]). [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]] 전체가 이렇게 한 줄로 타입 검사된다.
+>
+> 이제 점수 행렬의 행 하나를 고른다. 한 쿼리를 모든 키와 비교한 값이다. softmax는 그 키들에 걸쳐 정규화하고, $V$를 곱하면 그 키들의 값 벡터가 섞여 출력 행 하나가 된다. 나머지 쿼리에서도 반복한다. 그래서 점수는 토큰×토큰이지만 결과는 토큰×특징이다. 토큰 사이의 정보를 섞을 뿐, 토큰 번호를 특징 좌표로 바꾸는 것이 아니다. 같은 헤드를 D2(딥러닝 트랙이 고정해 둔 $8\times8$ 영상을 $4\times4$ 패치 토큰 넷으로 자른 것, [[03-deep-learning/lab-objects|0. Lab Objects]]) 위에서 숫자로 끝까지 계산한 것이 1.2에 있다.
+
 ### 2. 선형계, 랭크, 열공간과 영공간
+
+**역행렬을 찾기 전에 세 질문을 나눈다.** $Ax=b$를 풀라는 요청 — 어떤 관절 속도가 이 말단 속도를 내는가, 어떤 직선이 이 점들에 맞는가 — 을 받으면, 먼저 열들로 요청한 $b$를 만들 수 있는지, 만들 수 있다면 그런 입력이 하나뿐인지, 만들 수 없다면 어떤 기준으로 근사를 고를지를 묻는다. 존재성, 유일성, 선택의 문제이고, 이 절은 그 순서로 답한다. 첫째는 열공간이, 둘째는 영공간이, 셋째는 최소제곱이 정한다. 직사각 행렬이라고 문제가 실패한 것은 아니다. 미지수보다 측정이 많거나, 과제가 요구하는 것보다 제어 수단이 많을 수 있다.
 
 - $Ax = b$가 풀린다 ⟺ $b \in \text{col}(A)$ — **열공간(column space)**, 즉 $A$의 열들을
   스칼라배해 더해서 도달할 수 있는 점 전체다. ("어떤 벡터 집합에서 이렇게 도달할 수 있는
@@ -883,12 +992,10 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   그래서 어떤 벡터도 나머지의 조합이 아니고, 하나하나가 새 방향을 더한다. 예: $(1,0,1)$과
   $(0,1,1)$은 독립이다. 둘의 합 $(1,1,2)$를 보태면 종속이 되고
   ($1\cdot v_1 + 1\cdot v_2 - 1\cdot v_3 = 0$), span은 여전히 평면이다.
-- 가우스 소거 = 삼각형 꼴로 가는 행
-  연산; LU 분해는 소거 과정을 *기록*해 우변이 여러 개일 때 재사용을 싸게 만든 것. 풀어 쓰면
-  $A = LU$이고, $L$은 하삼각(대각선이 1, 그 아래가 소거 승수), $U$는 상삼각(소거가 남긴 것)이다.
-  그래서 $Ax = b$가 삼각 풀이 두 번, $Ly = b$와 $Ux = y$가 된다. 예:
-  $\begin{pmatrix}2&1\\4&3\end{pmatrix} = \begin{pmatrix}1&0\\2&1\end{pmatrix}\begin{pmatrix}2&1\\0&1\end{pmatrix}$
-  (승수는 $4/2 = 2$)이고, $b = (3,7)$이면 $Ly = b$에서 $y = (3,1)$, $Ux = y$에서 $x = (1,1)$이다.
+
+> [!note]- 더 깊이 · Deeper
+> **솔버가 실제로 $Ax=b$를 푸는 법: 소거와 LU.** 가우스 소거는 삼각형 꼴이 될 때까지 행 연산을 하는 것이고, LU 분해는 소거 과정을 *기록*해 두어 우변이 여러 개여도 적은 비용으로 풀게 한 것이다. 풀어 쓰면 $A = LU$이고, $L$은 하삼각(대각선이 1, 그 아래가 소거 승수), $U$는 상삼각(소거가 남긴 것)이다. 그래서 $Ax = b$가 삼각 풀이 두 번, $Ly = b$와 $Ux = y$가 된다. 예: $\begin{pmatrix}2&1\\4&3\end{pmatrix} = \begin{pmatrix}1&0\\2&1\end{pmatrix}\begin{pmatrix}2&1\\0&1\end{pmatrix}$(승수는 $4/2 = 2$)이고, $b = (3,7)$이면 $Ly = b$에서 $y = (3,1)$, $Ux = y$에서 $x = (1,1)$이다.
+
 - **랭크** = 독립인 열의 수 = 독립인 행의 수 = 사상이 표현할 수 있는 것의 차원,
   $\text{rank}(A) = \dim \text{col}(A)$이다. 차원은 가장 큰 독립 집합의 벡터 수다. **영공간**
   $\text{null}(A) = \{x : Ax = 0\}$은 사상이 0으로 보내는 입력 전체다. 항상 $x = 0$을 포함하고,
@@ -899,7 +1006,13 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   랭크 부족 ⇒ 정보가 파괴된다 (영공간 $\{x: Ax = 0\}$이 자명하지 않다). 예: 위의 $C$는 랭크
   $1$이고 영공간은 $(2,-1)$이 생성하는 1차원이며 $1 + 1 = 2$다 ✓. 풀이에 대한 결과: $x_0$가
   $Ax = b$의 해이면 영공간의 모든 $z$에 대해 $x_0 + z$도 해이므로, 해는 영공간이 자명할 때만
-  유일하다.
+  유일하다. 곧게 편 P2, 곧 그림 오른쪽 칸의 $\theta=(0^\circ,0^\circ)$에서 야코비안은 $J=\begin{pmatrix}0&0\\2&1\end{pmatrix}$이다.
+  랭크 1이고, 열공간은 세로 직선(말단은 $y$ 방향으로만 움직일 수 있다. 그림에서 사라진 $x$다)이며, 영공간은 $(1,-2)$가
+  생성한다. 베이스를 $+1$ rad/s, 엘보를 $-2$ rad/s로 돌리면 말단이 1차까지 그대로 있다는 뜻이다. 구조 공학자는 이
+  대상을 이미 만났다. 지지되지 않은 구조물의 강체 운동이 곧 강성 행렬의 영공간이다. 두 절점 사이에 강성
+  $k=400$ N/m인 봉 하나를 두면 $K=k\begin{pmatrix}1&-1\\-1&1\end{pmatrix}$이고, 랭크 1, 영공간은 $(1,1)$이 생성한다. 두 절점을
+  함께 1 mm 옮기면 아무것도 늘어나지 않아 $K(1,1)\,\mathrm{mm}=(0,0)$ N이고, 지점이 그 모드를 없애기 전에는 $Ku=f$의
+  해가 유일하지 않다(스프링 자체는 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §3]]).
 - **최소제곱** — 응용수학에서 가장 많이 쓰는 유도. 과결정 $Ax \approx b$:
   $\|Ax - b\|^2$ 최소화. 최솟점에서는 그래디언트([[02-foundations/engineering-math|0.5 §1]])가
   0이므로, 먼저 할 일은 그 그래디언트를 구하는 것이고 편미분만 있으면 된다.
@@ -923,7 +1036,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   [[02-foundations/calculus-backprop|2. 미적분 §2]]는 연쇄 법칙 한 줄로 같은 식에 다시 닿는다.
   0으로 놓으면
   $$2A^\top(Ax - b) = 0 \;\Rightarrow\; A^\top A\, \hat{x} = A^\top b$$
-  (**정규방정식**). $A$의 열이 일차독립일 때 유일하다. VMLS(Boyd·Vandenberghe의 *Introduction to Applied Linear Algebra*, 아래 더 깊이 참고)가 그 가정을 명시하고, 그것이 $A^\top A$를 가역으로 만든다. 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
+  (**정규방정식**). $A$의 열이 일차독립일 때 유일하다. 정확히 그때 $A^\top A$가 가역이기 때문이다(§4.5.1이 한 줄로 보인다). 기하적으로: $A\hat{x}$는 $b$를 $\text{col}(A)$에 직교 투영한 것이고,
   잔차는 거기에 수직이다. 그 투영 자체가 행렬이다.
   $$P = A(A^\top A)^{-1}A^\top, \qquad P^2 = P, \qquad P^\top = P$$
   $P^2 = P$는 두 번 투영해도 달라지지 않는다는 뜻이고, $P^\top = P$는 버려지는 부분이 수직이라는
@@ -944,7 +1057,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   $\partial f/\partial m = 2(1\cdot0 + 2(-1) + 3(-1)) = -10$이고, 공식은
   $2A^\top(0,-1,-1) = 2(-2,\,-5) = (-4,\,-10)$ ✓을 준다. $\hat x$에서는
   $2A^\top(\tfrac16,-\tfrac13,\tfrac16) = (0,0)$ — 위의 잔차 검산을 그래디언트로 읽은 것이다. 같은 정규방정식을 히터의 입출력 기록에 맞추고 추정의 공분산까지 구하는 것이 [[04-robotics/system-identification|5.5 시스템 식별 §3]]이다.
-<svg viewBox="0 0 560 242" style="max-width:100%;height:auto" role="img" aria-label="A의 열들이 만드는 평면 위로 벡터 b가 떠 있고 그 투영이 평면 안에 있으며 잔차가 평면과 직각으로 만난다">
+<svg viewBox="0 0 560 196" style="max-width:100%;height:auto" role="img" aria-label="A의 열들이 만드는 평면 위로 벡터 b가 떠 있고 그 투영이 평면 안에 있으며 잔차가 평면과 직각으로 만난다">
   <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.65">
     <polygon points="40,150 232,106 344,146 152,190"/>
   </g>
@@ -961,39 +1074,36 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   </g>
   <g fill="currentColor"><circle cx="112" cy="164" r="3.5"/></g>
   <g font-size="10.5" fill="currentColor">
-    <text x="46" y="182" opacity="0.85">col(A) &#8212; A가 도달할 수 있는 전부</text>
+    <text x="196" y="192" opacity="0.85">col(A) &#8212; A가 도달할 수 있는 전부</text>
     <text x="200" y="48">b (데이터)</text>
     <text x="184" y="158">A x&#770; (투영)</text>
     <text x="254" y="96">잔차 b &#8722; A x&#770;</text>
   </g>
-  <g font-size="9" fill="currentColor" opacity="0.8">
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
     <text x="254" y="110">평면에 &#8869;</text>
   </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.85">
-    <text x="388" y="40">예제의 숫자</text>
-    <text x="388" y="58">b = (1, 3, 4)</text>
-    <text x="388" y="74">A x&#770; = (7/6, 8/3, 25/6)</text>
-    <text x="388" y="90">잔차 = (&#8722;1/6, 1/3, &#8722;1/6)</text>
-    <text x="400" y="108">&#183; (1,1,1) = 0</text>
-    <text x="400" y="124">&#183; (1,2,3) = 0</text>
-  </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="204">정규방정식 A&#7488;A x&#770; = A&#7488;b는 이 그림을 대수로 쓴 것이다. A&#7488;(b &#8722; A x&#770;) = 0이 곧 잔차가 A의</text>
-    <text x="24" y="220">모든 열에 수직이라는 뜻이다. 최소제곱이 최소인 이유도 이것이다 &#8212; 여기 그린 직각에 피타고라스를</text>
-    <text x="24" y="236">적용하면 평면 위의 다른 어떤 점도 b에서 더 멀다는 것이 바로 나온다.</text>
+  <g font-size="10.5" fill="currentColor" opacity="0.85">
+    <text x="376" y="40">예제의 숫자</text>
+    <text x="376" y="58">b = (1, 3, 4)</text>
+    <text x="376" y="74">A x&#770; = (7/6, 8/3, 25/6)</text>
+    <text x="376" y="90">잔차 = (&#8722;1/6, 1/3, &#8722;1/6)</text>
+    <text x="388" y="108">&#183; (1,1,1) = 0</text>
+    <text x="388" y="124">&#183; (1,2,3) = 0</text>
   </g>
 </svg>
+
+*계산 예제를 기하로 그린 것이다. $b=(1,3,4)$가 평면 $\text{col}(A)$ 위에 떠 있고, 그 투영은 $A\hat x=(7/6,\ 8/3,\ 25/6)$이며, 잔차 $(-1/6,\ 1/3,\ -1/6)$은 평면과 직각으로 만난다. 두 열 $(1,1,1)$, $(1,2,3)$과의 내적이 모두 $0$이다. 정규방정식 $A^\top(b-A\hat x)=0$이 말하는 것이 정확히 이것이고, 그 직각에 피타고라스를 적용하면 평면 위의 다른 어떤 점도 $b$에서 더 멀다.*
 
 - 저랭크 구조는 도처에서 반복된다: [[01-canonical-papers/notes/1-foundations/lora|LoRA]]는 가중치
   *업데이트*의 내재 랭크가 낮다고 가정한다($r \ll d$인 $\Delta W = BA$).
 
-**역행렬을 찾기 전에 세 질문을 나눈다.** 열들로 원하는 b를 만들 수 있는가? 만들 수 있다면 입력이 하나뿐인가? 만들 수 없다면 어떤 기준으로 근사를 고르는가? 존재성, 유일성, 선택의 문제다. 직사각 행렬이라고 문제가 실패한 것은 아니다. 미지수보다 측정이 많거나, 과제가 요구하는 것보다 제어 수단이 많을 수 있다.
-
-직선 적합 예제의 첫 열은 절편을 바꾸면 모든 예측이 함께 움직인다는 뜻이다. 둘째 열은 기울기를 바꾸면 x좌표에 비례해 움직인다는 뜻이다. 관측 자료는 두 열이 만드는 예측의 평면 안에 없다. 최소자승은 그 평면 위의 점을 고른다. 최적점에서는 남은 잔차가 두 방향 모두에 수직이므로 절편이나 기울기를 조금 바꿔도 제곱 오차를 일차적으로 줄이지 못한다.
+직선 적합 예제의 첫 열은 절편을 바꾸면 모든 예측이 함께 움직인다는 뜻이다. 둘째 열은 기울기를 바꾸면 x좌표에 비례해 움직인다는 뜻이다. 관측 자료는 두 열이 만드는 예측의 평면 안에 없다. 최소제곱은 그 평면 위의 점을 고른다. 최적점에서는 남은 잔차가 두 방향 모두에 수직이므로 절편이나 기울기를 조금 바꿔도 제곱 오차를 일차적으로 줄이지 못한다.
 
 **이해 확인.** 잔차가 0이면 선택한 모델이 이 관측을 정확히 맞춘다는 뜻이다. 잡음이 없거나 파라미터가 유일하거나 미래 예측이 맞는다는 뜻은 아니다. 반대로 과결정 문제의 0이 아닌 잔차는 측정 잡음 때문일 수 있다. 랭크와 잔차가 다른 질문에 답하는 이유다.
 
 ### 3. 고유분해 — 사상이 늘이기만 하는 방향
+
+행렬을 곱하면 보통 벡터가 늘어나면서 돌기도 한다. 그래서 거듭된 곱 — 시간을 따라 전진하는 시스템의 $A^kx$, 이차 함수 위에서 경사 하강 $k$스텝 — 은 성분별로 따라가서는 예측하기 어렵다. 행렬이 늘이기만 하는 방향에서는 행렬이 숫자 하나처럼 행동하므로 쉬워진다. 이 절은 그 방향을 찾고, 그 숫자들로 행렬의 난이도(조건수)와 부호(정부호성)를 읽는다.
 
 - 정방 행렬 $A$의 **고유벡터**는 $A$가 늘이거나 줄이기만 하는 *영이 아닌* 벡터 $v$이고, 그
   배율 $\lambda$가 **고유값**이다.
@@ -1022,6 +1132,44 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   곱하면 다시 $A$가 된다 ✓.
   *소리 내어 읽으면:* 이 행렬은 $45°$ 대각선 방향으로 모든 것을 $3$배 늘이고 반대 대각선은
   건드리지 않는다. 모든 대칭 행렬이 이 문장의 어떤 판본이다.
+
+<svg viewBox="0 0 560 280" style="max-width:100%;height:auto" role="img" aria-label="단위원과, 행이 (2,1), (1,2)인 A가 그것을 옮긴 상: (1,1) 방향 반축 3, (1,-1) 방향 반축 1인 타원. 고유벡터 (1,1)/√2는 제 직선 위에서 길이 3으로 늘어나고, (1,-1)/√2는 그대로이며, (1,0)은 26.6도 돌아간 (2,1)로 간다.">
+  <defs><marker id="laEgk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="10.8,140.0 289.2,140.0" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <polyline points="150.0,279.2 150.0,0.8" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <text x="292.2" y="144.0" font-size="11" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="156.0" y="6.8" font-size="11" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <polygon points="262.0,84.0 265.4,76.8 268.4,69.9 270.8,63.2 272.7,56.9 274.1,51.0 274.9,45.4 275.2,40.2 275.0,35.5 274.2,31.2 272.9,27.4 271.1,24.1 268.8,21.2 265.9,18.9 262.6,17.1 258.8,15.8 254.5,15.0 249.8,14.8 244.6,15.1 239.0,15.9 233.1,17.3 226.8,19.2 220.1,21.6 213.2,24.6 206.0,28.0 198.6,31.9 190.9,36.3 183.1,41.1 175.1,46.3 167.0,51.9 158.9,58.0 150.7,64.3 142.5,71.0 134.3,78.0 126.2,85.2 118.3,92.7 110.4,100.4 102.7,108.3 95.2,116.2 88.0,124.3 81.0,132.5 74.3,140.7 68.0,148.9 61.9,157.0 56.3,165.1 51.1,173.1 46.3,180.9 41.9,188.6 38.0,196.0 34.6,203.2 31.6,210.1 29.2,216.8 27.3,223.1 25.9,229.0 25.1,234.6 24.8,239.8 25.0,244.5 25.8,248.8 27.1,252.6 28.9,255.9 31.2,258.8 34.1,261.1 37.4,262.9 41.2,264.2 45.5,265.0 50.2,265.2 55.4,264.9 61.0,264.1 66.9,262.7 73.2,260.8 79.9,258.4 86.8,255.4 94.0,252.0 101.4,248.1 109.1,243.7 116.9,238.9 124.9,233.7 133.0,228.1 141.1,222.0 149.3,215.7 157.5,209.0 165.7,202.0 173.8,194.8 181.7,187.3 189.6,179.6 197.3,171.7 204.8,163.8 212.0,155.7 219.0,147.5 225.7,139.3 232.0,131.1 238.1,123.0 243.7,114.9 248.9,106.9 253.7,99.1 258.1,91.4" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-width="1.4"/>
+  <polygon points="206.0,140.0 205.9,136.3 205.5,132.7 204.9,129.1 204.1,125.5 203.0,122.0 201.7,118.6 200.2,115.2 198.5,112.0 196.6,108.9 194.4,105.9 192.1,103.1 189.6,100.4 186.9,97.9 184.1,95.6 181.1,93.4 178.0,91.5 174.8,89.8 171.4,88.3 168.0,87.0 164.5,85.9 160.9,85.1 157.3,84.5 153.7,84.1 150.0,84.0 146.3,84.1 142.7,84.5 139.1,85.1 135.5,85.9 132.0,87.0 128.6,88.3 125.2,89.8 122.0,91.5 118.9,93.4 115.9,95.6 113.1,97.9 110.4,100.4 107.9,103.1 105.6,105.9 103.4,108.9 101.5,112.0 99.8,115.2 98.3,118.6 97.0,122.0 95.9,125.5 95.1,129.1 94.5,132.7 94.1,136.3 94.0,140.0 94.1,143.7 94.5,147.3 95.1,150.9 95.9,154.5 97.0,158.0 98.3,161.4 99.8,164.8 101.5,168.0 103.4,171.1 105.6,174.1 107.9,176.9 110.4,179.6 113.1,182.1 115.9,184.4 118.9,186.6 122.0,188.5 125.2,190.2 128.6,191.7 132.0,193.0 135.5,194.1 139.1,194.9 142.7,195.5 146.3,195.9 150.0,196.0 153.7,195.9 157.3,195.5 160.9,194.9 164.5,194.1 168.0,193.0 171.4,191.7 174.8,190.2 178.0,188.5 181.1,186.6 184.1,184.4 186.9,182.1 189.6,179.6 192.1,176.9 194.4,174.1 196.6,171.1 198.5,168.0 200.2,164.8 201.7,161.4 203.0,158.0 204.1,154.5 204.9,150.9 205.5,147.3 205.9,143.7" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <polyline points="150.0,140.0 206.0,140.0" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#laEgk)"/>
+  <polyline points="150.0,140.0 262.0,84.0" fill="none" stroke="currentColor" stroke-width="2.1" marker-end="url(#laEgk)"/>
+  <path d="M 218.0 140.0 A 68 68 0 0 0 210.8 109.6" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="222.1" y="132.6" font-size="10.5" fill="currentColor">26.6°</text>
+  <polyline points="150.0,140.0 268.8,21.2" fill="none" stroke="currentColor" stroke-width="2.1" marker-end="url(#laEgk)"/>
+  <circle cx="189.6" cy="100.4" r="3.2" fill="currentColor"/>
+  <polyline points="150.0,140.0 189.6,179.6" fill="none" stroke="currentColor" stroke-width="2.1" marker-end="url(#laEgk)"/>
+  <circle cx="189.6" cy="179.6" r="3.2" fill="currentColor"/>
+  <text x="276.8" y="27.2" font-size="11" fill="currentColor">3v<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="161.0" y="107.0" font-size="11" fill="currentColor">v<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="197.6" y="193.6" font-size="11" fill="currentColor">v<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = Av<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="170.0" y="155.0" font-size="11" fill="currentColor">e<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="270.0" y="89.0" font-size="11" fill="currentColor">Ae<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="345" y="40" font-size="11.5" fill="currentColor">A: 행 (2, 1)과 (1, 2)</text>
+  <text x="345" y="72" font-size="11" fill="currentColor">v<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = (1, 1)/√2 → 3v<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="357" y="88" font-size="11" opacity="0.85" fill="currentColor">제 직선 위에서 3배로, λ = 3</text>
+  <text x="345" y="118" font-size="11" fill="currentColor">v<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = (1, −1)/√2 → v<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="357" y="134" font-size="11" opacity="0.85" fill="currentColor">그대로, λ = 1</text>
+  <text x="345" y="164" font-size="11" fill="currentColor">e<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = (1, 0) → (2, 1)</text>
+  <text x="357" y="180" font-size="11" opacity="0.85" fill="currentColor">26.6° 돌아감: 고유벡터가 아니다</text>
+  <text x="345" y="212" font-size="11" fill="currentColor">넓이: π → 3π = π · det A</text>
+  <polyline points="345,240 367,240" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="373" y="244" font-size="10.5" fill="currentColor">원이 옮겨 간 타원</text>
+  <polyline points="345,258 367,258" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="373" y="262" font-size="10.5" fill="currentColor">단위원</text>
+</svg>
+
+*계산 예제의 $A$는 단위원(점선)을 고유벡터 방향에 축을 둔 타원으로 옮긴다. $(1,1)/\sqrt2$는 제 직선 위에서 세 배 길어져 나오고($\lambda=3$), $(1,-1)/\sqrt2$는 그대로 나온다($\lambda=1$). 다른 방향은 모두 돈다. $(1,0)$은 제 직선에서 $26.6°$ 벗어난 $(2,1)$로 나오므로, $A$를 숫자 하나처럼 다룰 수 있는 것은 고유벡터 방향뿐이다. 넓이는 $\pi$에서 $3\pi$로, $\det A=3$배가 된다.*
+
 - 구체적으로 왜 중요한가:
   - **거듭제곱**: $A^k = Q\Lambda^k Q^\top$ — 장기 거동은 가장 큰 $|\lambda|$가 지배한다.
     $x_{t+1} = Ax_t$의 안정성 ⟺ 모든 $|\lambda_i| < 1$
@@ -1029,11 +1177,11 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   - **최적화 지형**: 이차 손실 $\frac12 x^\top H x$($H$ = **헤시안**, 2차 도함수의 행렬 —
     정식 정의는 [[02-foundations/calculus-backprop|2. 미적분 §1]]; 여기서는 "곡률 행렬"로
     읽으면 된다)에서 경사 하강은 고유방향별로
-    $(1 - \alpha\lambda_i)$ 비율로 수렴한다; 쓸 수 있는 스텝 크기는 $\lambda_{max}$가,
-    가장 느린 진전은 $\lambda_{min}$이 정한다. **조건수**
-    $\kappa = \lambda_{max}/\lambda_{min}$(이 SPD — 대칭 양정부호, 아래에 정의 — 헤시안 기준; 일반 행렬의 2-노름 조건수는
-    특이값 비 $\kappa_2 = \sigma_{max}/\sigma_{min}$. 예를 들어 $\begin{pmatrix}1&2\\3&4\end{pmatrix}$는
-    $\sigma = 5.465,\ 0.366$이고 $\kappa_2 = 14.93$이며, 특이 행렬은 $\kappa = \infty$)가 문제의 난이도 *그 자체*다 —
+    $(1 - \alpha\lambda_i)$ 비율로 수렴한다. 이유는 두 줄이다. $\frac12x^\top Hx$의 그래디언트가 $Hx$이므로 한 스텝은
+    $x \leftarrow x-\alpha Hx=(I-\alpha H)\,x$이고, $H$가 대각 $\Lambda$가 되는 고유벡터 좌표 $y=Q^\top x$에서 읽으면 이 스텝은
+    $y_i \leftarrow (1-\alpha\lambda_i)\,y_i$, 곧 방향마다 숫자 하나를 매 스텝 곱하는 것이다. 그래서 쓸 수 있는 스텝 크기는
+    $\lambda_{max}$가 정하고($\alpha=2/\lambda_{max}$를 넘으면 그 인수가 $-1$ 아래로 내려가 가파른 방향이 커진다), 가장 느린
+    진전은 $\lambda_{min}$이 정한다. 둘의 비, 곧 다음 항목에서 정의하는 **조건수** $\kappa=\lambda_{max}/\lambda_{min}$가 문제의 난이도 *그 자체*다 —
     나쁜 조건수는 적응형 최적화([[01-canonical-papers/notes/1-foundations/adam|Adam]])와
     정규화([[01-canonical-papers/notes/1-foundations/batch-norm|BatchNorm]])가 왜 돕는지 이해하는
     유용한 관점 중 하나다.
@@ -1044,11 +1192,13 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
     $\alpha = 0.18$로 두자. 그러면 가파른 방향은 스텝당 $|1 - 1.8| = 0.8$배로 줄어 괜찮지만,
     평평한 방향은 스텝당 $1 - 0.18 = 0.82$배밖에 줄지 않는다. $x_0 = (1,1)$에서 시작하면 20
     스텝 뒤 대략 $(0.012,\ 0.019)$ — 발목을 잡는 것은 평평한 좌표이고 앞으로도 계속 그렇다.
-    $\kappa$를 1000으로 올리면 평평한 방향에 약 100배의 스텝이 더 필요하다. "학습률이
+    $0.18$이 나쁜 선택이었던 것도 아니다. 단일 $\alpha$로 할 수 있는 최선은 $\alpha=2/(\lambda_{max}+\lambda_{min})=2/11=0.182$이고,
+    거기서 두 방향이 스텝당 똑같이 $(\kappa-1)/(\kappa+1)=9/11=0.818$배로 준다. $\kappa$를 1000으로 올리면 그 최선의 비율이
+    $999/1001=0.998$이 되어, 같은 정확도에 약 100배의 스텝이 필요하다. "학습률이
     잘못됐다"가 아니라 *"문제의 조건이 나쁘다"*고 말하는 이유가 이것이다 — 어떤 단일 $\alpha$도
     두 방향을 동시에 만족시킬 수 없고, 좌표별 방법들이 메우려는 격차가 정확히 이것이다.
-- **양(준)정부호**: 모든 $\lambda_i > 0$($\ge 0$)인 대칭 $A$; 동치로 모든 $x \ne 0$에서
-<svg viewBox="0 0 560 260" style="max-width:100%;height:auto" role="img" aria-label="좁은 골짜기를 가로질러 튀면서 바닥을 따라 천천히 나아가는 경사 하강">
+
+<svg viewBox="0 0 560 200" style="max-width:100%;height:auto" role="img" aria-label="좁은 골짜기를 가로질러 튀면서 바닥을 따라 천천히 나아가는 경사 하강">
   <g stroke="currentColor" stroke-width="1" opacity="0.3" fill="none">
     <line x1="40" y1="128" x2="240" y2="128"/><line x1="138" y1="24" x2="138" y2="196"/>
   </g>
@@ -1060,7 +1210,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
     <polyline points="223.0,43.0 70.0,58.3 192.4,70.8 94.5,81.1 172.8,89.6 110.1,96.5 160.3,102.2 120.2,106.8 152.3,110.6"/>
   </g>
   <g fill="currentColor" opacity="0.9"><circle cx="223.0" cy="43.0" r="2.6"/><circle cx="70.0" cy="58.3" r="2.6"/><circle cx="192.4" cy="70.8" r="2.6"/><circle cx="94.5" cy="81.1" r="2.6"/><circle cx="172.8" cy="89.6" r="2.6"/><circle cx="110.1" cy="96.5" r="2.6"/><circle cx="160.3" cy="102.2" r="2.6"/><circle cx="120.2" cy="106.8" r="2.6"/><circle cx="152.3" cy="110.6" r="2.6"/></g>
-  <g font-size="9.5" fill="currentColor" opacity="0.85">
+  <g font-size="10.5" fill="currentColor" opacity="0.85">
     <text x="230" y="36">x<tspan dy="3.5">0</tspan><tspan dy="-3.5"> = (1, 1)</tspan></text>
     <text x="256" y="120">가파른 방향 x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
     <text x="256" y="134">스텝당 &#215;0.8, 부호가 뒤집힌다</text>
@@ -1068,16 +1218,29 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
     <text x="256" y="172">스텝당 &#215;0.82</text>
     <text x="256" y="190">20 스텝 뒤: (0.012, 0.019)</text>
   </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="206">H = diag(10, 1), &#945; = 0.18 &#8212; 안정 한계 바로 아래다. 가파른 좌표가 조금 더 빨리 줄지만 매 스텝</text>
-    <text x="24" y="222">부호가 뒤집혀서 반복점이 골짜기를 가로질러 튄다. 20 스텝째에도 발목을 잡고 있는 것은 평평한</text>
-    <text x="24" y="238">좌표다. &#954;를 1000으로 올리면 평평한 방향에 약 100배의 스텝이 더 필요하다 &#8212; 어떤 단일 &#945;도</text>
-    <text x="24" y="254">둘을 함께 만족시키지 못한다는 것, 그것이 &#8220;조건이 나쁘다&#8221;는 말의 뜻이다.</text>
-  </g>
 </svg>
 
+*$H=\text{diag}(10,1)$인 $\tfrac12x^\top Hx$에서 안정 한계 $0.2$ 바로 아래인 $\alpha=0.18$로 $x_0=(1,1)$부터 내려간 경사 하강이다. 가파른 좌표는 스텝마다 $0.8$배로 줄지만 부호가 뒤집혀 반복점이 골짜기를 가로질러 튀고, 평평한 좌표는 $0.82$배밖에 줄지 않아 20스텝째 $(0.012,\ 0.019)$에서도 발목을 잡는다. $\kappa$를 1000으로 올리면 평평한 방향에 약 100배의 스텝이 필요하다. 어떤 단일 $\alpha$도 두 방향을 함께 만족시키지 못한다는 것, 그것이 "조건이 나쁘다"는 말의 뜻이다.*
+
+- **조건수**의 완전한 정의. *행렬에 붙는 숫자*로 1보다 작아지지 않으며, 행렬이 얼마나 고르지 않게 늘이는지를
+  말한다. 가장 크게 늘이는 배율과 가장 작게 늘이는 배율의 비이고, 그 비가 행렬을 뒤집을 때 오차가 얼마나
+  커질 수 있는지를 묶기 때문에(아래) 이렇게 정의한다.
+  $$\kappa_2(A) = \frac{\sigma_{max}}{\sigma_{min}}$$
+  $\sigma_{max}$와 $\sigma_{min}$은 가장 큰 **특이값**과 가장 작은 특이값, 곧 단위원이 옮겨 간 타원의 가장 긴 반축과
+  가장 짧은 반축이다(그림에서처럼). 특이값은 $A^\top A$ 고유값의 제곱근이다. P2의 $J$라면 $J^\top J=\begin{pmatrix}2&1\\1&1\end{pmatrix}$의 고유값이 $2.618$과
+  $0.382$이므로 $\sigma=1.618$과 $0.618$, 곧 그림의 반축이다(이유는 §4, 끝까지 계산은 §4.5). 위의 헤시안 같은 대칭 양정부호 행렬에서는 특이값이 고유값과
+  같으므로 $H=\text{diag}(10,1)$이면 $\kappa=\lambda_{max}/\lambda_{min}=10$이다. 특이 행렬은 $\sigma_{min}=0$이라
+  $\kappa=\infty$다. 예: $\begin{pmatrix}1&2\\3&4\end{pmatrix}$는 $\sigma=5.465,\ 0.366$이므로 $\kappa_2=14.93$이고, 그림
+  자세의 P2 $J$는 $\kappa_2=2.618$, 곧게 편 팔은 $\infty$다. 비예시: 행렬식이 크다고 조건이 좋은 것이 아니다.
+  $\text{diag}(1000,1)$은 $\det=1000$이지만 $\kappa=1000$이고, $0.01I$는 $\det=10^{-4}$이지만 $\kappa=1$이다. 중요한 이유:
+  $Ax=b$를 풀면 $b$의 상대 오차가 $x$에서 최대 $\kappa$배의 상대 오차가 될 수 있고 — 위의 행렬이라면 $b$의 1% 오차가
+  $x$에서 14.9%가 될 수 있다 — 헤시안의 $\kappa$는 위의 숫자가 보인 대로 경사 하강의 느린 모드다.
+- **양(준)정부호**: 모든 $\lambda_i > 0$($\ge 0$)인 대칭 $A$; 동치로 모든 $x \ne 0$에서
   $x^\top A x > 0$. 공분산 행렬, 최솟값에서의 헤시안, 그람/커널 행렬이 PSD다 —
-  논문의 "PSD"는 "제곱량처럼 행동한다"는 뜻.
+  논문의 "PSD"는 "제곱량처럼 행동한다"는 뜻. 구조 공학자는 이미 하나를 믿고 있다. 지지된 구조물의 강성 행렬 $K$는
+  양정부호다. $\tfrac12u^\top Ku$가 변위 $u$가 저장하는 변형 에너지, 곧 스프링의 $\tfrac12k\delta^2$를 행렬로 쓴 것이고
+  ([[02-foundations/basic-mechanics|0.6.1 §6]]), 지점이 강체 운동을 없애고 나면 0이 아닌 모든 $u$에서 양수이기 때문이다.
+  §2의 지지되지 않은 봉은 $u^\top Ku=k(u_1-u_2)^2$이라 음수가 되지는 않지만 $(1,1)$ 방향에서 0이므로 준정부호일 뿐이다.
 - **$x^\top A x$ 읽는 법 — 정말로 인덱스가 늘어난 $ax^2$이다.** 전치는 내용이 아니라 부기다.
   $x$가 열벡터($n\times1$)이므로 $x^\top$은 $1\times n$이고,
   $(1\times n)(n\times n)(n\times 1) = 1\times 1$ — 즉 답이 숫자가 되려면 $x$가 *양쪽에*
@@ -1113,28 +1276,46 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
     이것이 **모든 공분산 행렬이 PSD인 이유**다. 논문의 "$\Sigma \succeq 0$"은 그 이상 별난
     것을 주장하지 않는다.
 
-<svg viewBox="0 0 470 214" style="max-width:100%;height:auto" role="img" aria-label="세 가지 이차형식: 그릇, 바닥이 평평한 골짜기, 안장">
-  <g stroke="currentColor" stroke-width="1" opacity="0.3">
-    <line x1="15" y1="118" x2="125" y2="118"/><line x1="180" y1="118" x2="290" y2="118"/><line x1="345" y1="118" x2="455" y2="118"/>
-  </g>
-  <g fill="none" stroke="currentColor" stroke-width="1.9"><path d="M15.0 72.0L16.8 75.0L18.7 77.9L20.5 80.7L22.3 83.4L24.2 86.1L26.0 88.6L27.8 91.0L29.7 93.3L31.5 95.5L33.3 97.6L35.2 99.5L37.0 101.4L38.8 103.2L40.7 104.9L42.5 106.5L44.3 108.0L46.2 109.4L48.0 110.6L49.8 111.8L51.7 112.9L53.5 113.9L55.3 114.7L57.2 115.5L59.0 116.2L60.8 116.7L62.7 117.2L64.5 117.5L66.3 117.8L68.2 117.9L70.0 118.0L71.8 117.9L73.7 117.8L75.5 117.5L77.3 117.2L79.2 116.7L81.0 116.2L82.8 115.5L84.7 114.7L86.5 113.9L88.3 112.9L90.2 111.8L92.0 110.6L93.8 109.4L95.7 108.0L97.5 106.5L99.3 104.9L101.2 103.2L103.0 101.4L104.8 99.5L106.7 97.6L108.5 95.5L110.3 93.3L112.2 91.0L114.0 88.6L115.8 86.1L117.7 83.4L119.5 80.7L121.3 77.9L123.2 75.0L125.0 72.0"/><path d="M180.0 87.3L181.8 89.3L183.7 91.3L185.5 93.2L187.3 95.0L189.2 96.7L191.0 98.4L192.8 100.0L194.7 101.5L196.5 103.0L198.3 104.4L200.2 105.7L202.0 107.0L203.8 108.2L205.7 109.3L207.5 110.3L209.3 111.3L211.2 112.2L213.0 113.1L214.8 113.9L216.7 114.6L218.5 115.2L220.3 115.8L222.2 116.3L224.0 116.8L225.8 117.1L227.7 117.5L229.5 117.7L231.3 117.9L233.2 118.0L235.0 118.0L236.8 118.0L238.7 117.9L240.5 117.7L242.3 117.5L244.2 117.1L246.0 116.8L247.8 116.3L249.7 115.8L251.5 115.2L253.3 114.6L255.2 113.9L257.0 113.1L258.8 112.2L260.7 111.3L262.5 110.3L264.3 109.3L266.2 108.2L268.0 107.0L269.8 105.7L271.7 104.4L273.5 103.0L275.3 101.5L277.2 100.0L279.0 98.4L280.8 96.7L282.7 95.0L284.5 93.2L286.3 91.3L288.2 89.3L290.0 87.3"/><path d="M345.0 87.3L346.8 89.3L348.7 91.3L350.5 93.2L352.3 95.0L354.2 96.7L356.0 98.4L357.8 100.0L359.7 101.5L361.5 103.0L363.3 104.4L365.2 105.7L367.0 107.0L368.8 108.2L370.7 109.3L372.5 110.3L374.3 111.3L376.2 112.2L378.0 113.1L379.8 113.9L381.7 114.6L383.5 115.2L385.3 115.8L387.2 116.3L389.0 116.8L390.8 117.1L392.7 117.5L394.5 117.7L396.3 117.9L398.2 118.0L400.0 118.0L401.8 118.0L403.7 117.9L405.5 117.7L407.3 117.5L409.2 117.1L411.0 116.8L412.8 116.3L414.7 115.8L416.5 115.2L418.3 114.6L420.2 113.9L422.0 113.1L423.8 112.2L425.7 111.3L427.5 110.3L429.3 109.3L431.2 108.2L433.0 107.0L434.8 105.7L436.7 104.4L438.5 103.0L440.3 101.5L442.2 100.0L444.0 98.4L445.8 96.7L447.7 95.0L449.5 93.2L451.3 91.3L453.2 89.3L455.0 87.3"/></g>
-  <g fill="none" stroke="currentColor" stroke-width="1.9" opacity="0.55" stroke-dasharray="5 3"><path d="M15.0 87.3L16.8 89.3L18.7 91.3L20.5 93.2L22.3 95.0L24.2 96.7L26.0 98.4L27.8 100.0L29.7 101.5L31.5 103.0L33.3 104.4L35.2 105.7L37.0 107.0L38.8 108.2L40.7 109.3L42.5 110.3L44.3 111.3L46.2 112.2L48.0 113.1L49.8 113.9L51.7 114.6L53.5 115.2L55.3 115.8L57.2 116.3L59.0 116.8L60.8 117.1L62.7 117.5L64.5 117.7L66.3 117.9L68.2 118.0L70.0 118.0L71.8 118.0L73.7 117.9L75.5 117.7L77.3 117.5L79.2 117.1L81.0 116.8L82.8 116.3L84.7 115.8L86.5 115.2L88.3 114.6L90.2 113.9L92.0 113.1L93.8 112.2L95.7 111.3L97.5 110.3L99.3 109.3L101.2 108.2L103.0 107.0L104.8 105.7L106.7 104.4L108.5 103.0L110.3 101.5L112.2 100.0L114.0 98.4L115.8 96.7L117.7 95.0L119.5 93.2L121.3 91.3L123.2 89.3L125.0 87.3"/><path d="M180.0 118.0L181.8 118.0L183.7 118.0L185.5 118.0L187.3 118.0L189.2 118.0L191.0 118.0L192.8 118.0L194.7 118.0L196.5 118.0L198.3 118.0L200.2 118.0L202.0 118.0L203.8 118.0L205.7 118.0L207.5 118.0L209.3 118.0L211.2 118.0L213.0 118.0L214.8 118.0L216.7 118.0L218.5 118.0L220.3 118.0L222.2 118.0L224.0 118.0L225.8 118.0L227.7 118.0L229.5 118.0L231.3 118.0L233.2 118.0L235.0 118.0L236.8 118.0L238.7 118.0L240.5 118.0L242.3 118.0L244.2 118.0L246.0 118.0L247.8 118.0L249.7 118.0L251.5 118.0L253.3 118.0L255.2 118.0L257.0 118.0L258.8 118.0L260.7 118.0L262.5 118.0L264.3 118.0L266.2 118.0L268.0 118.0L269.8 118.0L271.7 118.0L273.5 118.0L275.3 118.0L277.2 118.0L279.0 118.0L280.8 118.0L282.7 118.0L284.5 118.0L286.3 118.0L288.2 118.0L290.0 118.0"/><path d="M345.0 148.7L346.8 146.7L348.7 144.7L350.5 142.8L352.3 141.0L354.2 139.3L356.0 137.6L357.8 136.0L359.7 134.5L361.5 133.0L363.3 131.6L365.2 130.3L367.0 129.0L368.8 127.8L370.7 126.7L372.5 125.7L374.3 124.7L376.2 123.8L378.0 122.9L379.8 122.1L381.7 121.4L383.5 120.8L385.3 120.2L387.2 119.7L389.0 119.2L390.8 118.9L392.7 118.5L394.5 118.3L396.3 118.1L398.2 118.0L400.0 118.0L401.8 118.0L403.7 118.1L405.5 118.3L407.3 118.5L409.2 118.9L411.0 119.2L412.8 119.7L414.7 120.2L416.5 120.8L418.3 121.4L420.2 122.1L422.0 122.9L423.8 123.8L425.7 124.7L427.5 125.7L429.3 126.7L431.2 127.8L433.0 129.0L434.8 130.3L436.7 131.6L438.5 133.0L440.3 134.5L442.2 136.0L444.0 137.6L445.8 139.3L447.7 141.0L449.5 142.8L451.3 144.7L453.2 146.7L455.0 148.7"/></g>
-  <g font-size="11" fill="currentColor" text-anchor="middle">
-    <text x="70" y="22">양정부호</text><text x="235" y="22">양준정부호</text><text x="400" y="22">부정부호</text>
-    <text x="70" y="40" font-size="10" opacity="0.8">2x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#178; + 3x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#178;</tspan></text><text x="235" y="40" font-size="10" opacity="0.8">(x<tspan dy="3.5">1</tspan><tspan dy="-3.5"> + x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">)&#178;</tspan></text><text x="400" y="40" font-size="10" opacity="0.8">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#178; &#8722; x</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#178;</tspan></text>
-    <text x="70" y="176">모든 방향에서 위로</text><text x="235" y="176">위로, 다만 한 직선에서 평평</text><text x="400" y="176">한쪽은 위, 다른 쪽은 아래</text>
-  </g>
-  <g font-size="11" fill="currentColor">
-    <text x="15" y="196" opacity="0.85">각 패널은 원점을 지나는 두 방향(실선·점선)을 따라 x&#7488;Ax 값을 그린 것이다.</text>
-    <text x="15" y="209" opacity="0.85">양준정부호란 어느 방향으로도 축 아래로 내려가지 않는다는 뜻이다.</text>
-  </g>
+<svg viewBox="0 0 560 224" style="max-width:100%;height:auto" role="img" aria-label="세 이차형식을 각각 두 단위 방향을 따라 같은 세로 축척으로 그린 것: 2x1^2+3x2^2는 x2 방향(3까지)과 x1 방향(2까지)으로 오르고, (x1+x2)^2는 (1,1)/√2 방향으로 2까지 오르지만 (1,-1)/√2 방향으로는 평평하며, x1^2-x2^2는 x1 방향으로 오르고 x2 방향으로 내려간다.">
+  <polyline points="17,120 173,120" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.35"/>
+  <polyline points="23.0,54.0 25.4,58.3 27.8,62.5 30.2,66.5 32.6,70.4 35.0,74.2 37.4,77.8 39.8,81.2 42.2,84.5 44.6,87.7 47.0,90.7 49.4,93.5 51.8,96.2 54.2,98.8 56.6,101.2 59.0,103.5 61.4,105.6 63.8,107.6 66.2,109.4 68.6,111.1 71.0,112.7 73.4,114.1 75.8,115.3 78.2,116.4 80.6,117.4 83.0,118.2 85.4,118.8 87.8,119.3 90.2,119.7 92.6,119.9 95.0,120.0 97.4,119.9 99.8,119.7 102.2,119.3 104.6,118.8 107.0,118.2 109.4,117.4 111.8,116.4 114.2,115.3 116.6,114.1 119.0,112.7 121.4,111.1 123.8,109.4 126.2,107.6 128.6,105.6 131.0,103.5 133.4,101.2 135.8,98.8 138.2,96.2 140.6,93.5 143.0,90.7 145.4,87.7 147.8,84.5 150.2,81.2 152.6,77.8 155.0,74.2 157.4,70.4 159.8,66.5 162.2,62.5 164.6,58.3 167.0,54.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="23.0,76.0 25.4,78.9 27.8,81.7 30.2,84.4 32.6,87.0 35.0,89.4 37.4,91.8 39.8,94.1 42.2,96.3 44.6,98.4 47.0,100.4 49.4,102.4 51.8,104.2 54.2,105.9 56.6,107.5 59.0,109.0 61.4,110.4 63.8,111.7 66.2,113.0 68.6,114.1 71.0,115.1 73.4,116.0 75.8,116.9 78.2,117.6 80.6,118.2 83.0,118.8 85.4,119.2 87.8,119.6 90.2,119.8 92.6,120.0 95.0,120.0 97.4,120.0 99.8,119.8 102.2,119.6 104.6,119.2 107.0,118.8 109.4,118.2 111.8,117.6 114.2,116.9 116.6,116.0 119.0,115.1 121.4,114.1 123.8,113.0 126.2,111.7 128.6,110.4 131.0,109.0 133.4,107.5 135.8,105.9 138.2,104.2 140.6,102.4 143.0,100.4 145.4,98.4 147.8,96.3 150.2,94.1 152.6,91.8 155.0,89.4 157.4,87.0 159.8,84.4 162.2,81.7 164.6,78.9 167.0,76.0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="95" y="20" font-size="11.5" text-anchor="middle" fill="currentColor">양정부호</text>
+  <text x="95" y="37" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">2x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan>² + 3x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan>²</text>
+  <text x="95" y="172" font-size="11" text-anchor="middle" fill="currentColor">모든 방향에서 위로</text>
+  <polyline points="25,192 45,192" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="25,210 45,210" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="50" y="196" font-size="10.5" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> 방향</text>
+  <text x="50" y="214" font-size="10.5" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> 방향</text>
+  <polyline points="202,120 358,120" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.35"/>
+  <polyline points="208.0,76.0 210.4,78.9 212.8,81.7 215.2,84.4 217.6,87.0 220.0,89.4 222.4,91.8 224.8,94.1 227.2,96.3 229.6,98.4 232.0,100.4 234.4,102.4 236.8,104.2 239.2,105.9 241.6,107.5 244.0,109.0 246.4,110.4 248.8,111.7 251.2,113.0 253.6,114.1 256.0,115.1 258.4,116.0 260.8,116.9 263.2,117.6 265.6,118.2 268.0,118.8 270.4,119.2 272.8,119.6 275.2,119.8 277.6,120.0 280.0,120.0 282.4,120.0 284.8,119.8 287.2,119.6 289.6,119.2 292.0,118.8 294.4,118.2 296.8,117.6 299.2,116.9 301.6,116.0 304.0,115.1 306.4,114.1 308.8,113.0 311.2,111.7 313.6,110.4 316.0,109.0 318.4,107.5 320.8,105.9 323.2,104.2 325.6,102.4 328.0,100.4 330.4,98.4 332.8,96.3 335.2,94.1 337.6,91.8 340.0,89.4 342.4,87.0 344.8,84.4 347.2,81.7 349.6,78.9 352.0,76.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="208.0,120.0 210.4,120.0 212.8,120.0 215.2,120.0 217.6,120.0 220.0,120.0 222.4,120.0 224.8,120.0 227.2,120.0 229.6,120.0 232.0,120.0 234.4,120.0 236.8,120.0 239.2,120.0 241.6,120.0 244.0,120.0 246.4,120.0 248.8,120.0 251.2,120.0 253.6,120.0 256.0,120.0 258.4,120.0 260.8,120.0 263.2,120.0 265.6,120.0 268.0,120.0 270.4,120.0 272.8,120.0 275.2,120.0 277.6,120.0 280.0,120.0 282.4,120.0 284.8,120.0 287.2,120.0 289.6,120.0 292.0,120.0 294.4,120.0 296.8,120.0 299.2,120.0 301.6,120.0 304.0,120.0 306.4,120.0 308.8,120.0 311.2,120.0 313.6,120.0 316.0,120.0 318.4,120.0 320.8,120.0 323.2,120.0 325.6,120.0 328.0,120.0 330.4,120.0 332.8,120.0 335.2,120.0 337.6,120.0 340.0,120.0 342.4,120.0 344.8,120.0 347.2,120.0 349.6,120.0 352.0,120.0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="280" y="20" font-size="11.5" text-anchor="middle" fill="currentColor">양준정부호</text>
+  <text x="280" y="37" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">(x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> + x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan>)²</text>
+  <text x="280" y="172" font-size="11" text-anchor="middle" fill="currentColor">위로, 다만 한 직선에서 평평</text>
+  <polyline points="210,192 230,192" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="210,210 230,210" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="235" y="196" font-size="10.5" fill="currentColor">(1, 1)/√2 방향</text>
+  <text x="235" y="214" font-size="10.5" fill="currentColor">(1, −1)/√2 방향</text>
+  <polyline points="387,120 543,120" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.35"/>
+  <polyline points="393.0,98.0 395.4,99.4 397.8,100.8 400.2,102.2 402.6,103.5 405.0,104.7 407.4,105.9 409.8,107.1 412.2,108.2 414.6,109.2 417.0,110.2 419.4,111.2 421.8,112.1 424.2,112.9 426.6,113.7 429.0,114.5 431.4,115.2 433.8,115.9 436.2,116.5 438.6,117.0 441.0,117.6 443.4,118.0 445.8,118.4 448.2,118.8 450.6,119.1 453.0,119.4 455.4,119.6 457.8,119.8 460.2,119.9 462.6,120.0 465.0,120.0 467.4,120.0 469.8,119.9 472.2,119.8 474.6,119.6 477.0,119.4 479.4,119.1 481.8,118.8 484.2,118.4 486.6,118.0 489.0,117.6 491.4,117.0 493.8,116.5 496.2,115.9 498.6,115.2 501.0,114.5 503.4,113.7 505.8,112.9 508.2,112.1 510.6,111.2 513.0,110.2 515.4,109.2 517.8,108.2 520.2,107.1 522.6,105.9 525.0,104.7 527.4,103.5 529.8,102.2 532.2,100.8 534.6,99.4 537.0,98.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="393.0,142.0 395.4,140.6 397.8,139.2 400.2,137.8 402.6,136.5 405.0,135.3 407.4,134.1 409.8,132.9 412.2,131.8 414.6,130.8 417.0,129.8 419.4,128.8 421.8,127.9 424.2,127.1 426.6,126.3 429.0,125.5 431.4,124.8 433.8,124.1 436.2,123.5 438.6,123.0 441.0,122.4 443.4,122.0 445.8,121.6 448.2,121.2 450.6,120.9 453.0,120.6 455.4,120.4 457.8,120.2 460.2,120.1 462.6,120.0 465.0,120.0 467.4,120.0 469.8,120.1 472.2,120.2 474.6,120.4 477.0,120.6 479.4,120.9 481.8,121.2 484.2,121.6 486.6,122.0 489.0,122.4 491.4,123.0 493.8,123.5 496.2,124.1 498.6,124.8 501.0,125.5 503.4,126.3 505.8,127.1 508.2,127.9 510.6,128.8 513.0,129.8 515.4,130.8 517.8,131.8 520.2,132.9 522.6,134.1 525.0,135.3 527.4,136.5 529.8,137.8 532.2,139.2 534.6,140.6 537.0,142.0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="465" y="20" font-size="11.5" text-anchor="middle" fill="currentColor">부정부호</text>
+  <text x="465" y="37" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan>² − x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan>²</text>
+  <text x="465" y="172" font-size="11" text-anchor="middle" fill="currentColor">한쪽은 위, 다른 쪽은 아래</text>
+  <polyline points="395,192 415,192" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="395,210 415,210" fill="none" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.6" stroke-dasharray="5 3"/>
+  <text x="420" y="196" font-size="10.5" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> 방향</text>
+  <text x="420" y="214" font-size="10.5" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> 방향</text>
 </svg>
 
-
+*각 패널은 원점을 지나는 두 단위 방향을 따라 $-1$부터 $1$까지 $x^\top Ax$를 같은 세로 축척으로 그린 것이다. 그릇 $2x_1^2+3x_2^2$는 두 축 방향 모두로 오르고($3$과 $2$까지), 골짜기 $(x_1+x_2)^2$는 $(1,1)/\sqrt2$ 방향으로 $2$까지 오르지만 $(1,-1)/\sqrt2$ 방향으로는 $0$에 머물며, 안장 $x_1^2-x_2^2$는 $x_1$ 방향으로 오르고 $x_2$ 방향으로 내려간다. 양준정부호란 어느 방향으로도 축 아래로 내려가지 않는다는 뜻이다.*
 
 ### 4. SVD — 모든 행렬에 존재하는 보편적 분해
 
-*두 번째 읽기. 처음에는 이 절을 건너뛰고, 논문이 무언가를 분해할 때 돌아오라.*
+고유벡터는 정방 행렬에만 있고, 정방 행렬이라도 실수 고유벡터가 하나도 없을 수 있다. P2의 $J$는 고유값이 $(-1\pm j\sqrt3)/2$이고, §4.5의 여유자유도 팔은 아예 정방이 아니다. SVD는 *모든* 행렬에 늘이기만 하는 한 쌍의 직교 좌표계를 주고, 그 늘임 배율인 특이값이 행렬이 한 방향을 잃기까지 얼마나 가까운지를 곧바로 말한다.
+
+*처음에는 처음 두 항목과 아래의 $C$ 계산만 읽는다. 특이값이 무엇인지를 말해 주고, §3의 조건수와 과제가 그것을 쓴다. 나머지는 두 번째 읽기로, 논문이 무언가를 분해할 때 돌아오라.*
 
 - **모든** 행렬(모양·랭크 불문): $A = U\Sigma V^\top$, $U, V$는 **직교행렬**(열들이 길이 1이고 서로 수직 — 그래서 곱하는
   것은 순수한 회전/반사이고 아무것도 늘이지 않는다),
@@ -1152,7 +1333,8 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
   $V$의 열 $v_i$가 **오른쪽 특이벡터**, $U$의 열 $u_i$가 **왼쪽 특이벡터**, $\sigma_i \ge 0$이
   **특이값**이다. 입력 방향 $v_i$가 $\sigma_i$배 늘어나 출력 방향 $u_i$로 간다.
 
-<svg viewBox="0 0 520 150" style="max-width:100%;height:auto" role="img" aria-label="SVD = 회전 → 스케일 → 회전">
+<svg viewBox="0 0 560 150" style="max-width:100%;height:auto" role="img" aria-label="SVD = 회전 → 스케일 → 회전">
+  <g transform="translate(20 0)">
   <g fill="none" stroke="currentColor" stroke-width="1.5">
     <circle cx="60" cy="75" r="38"/>
     <circle cx="205" cy="75" r="38"/>
@@ -1160,8 +1342,8 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
     <ellipse cx="475" cy="75" rx="17" ry="42" transform="rotate(-30 475 75)"/>
   </g>
   <g stroke="currentColor" stroke-width="1.2" opacity="0.6">
-    <line x1="60" y1="75" x2="98" y2="75"/><line x1="60" y1="75" x2="60" y2="37"/>
-    <line x1="205" y1="75" x2="232" y2="48"/><line x1="205" y1="75" x2="178" y2="48"/>
+    <line x1="60" y1="75" x2="87" y2="48"/><line x1="60" y1="75" x2="33" y2="48"/>
+    <line x1="205" y1="75" x2="243" y2="75"/><line x1="205" y1="75" x2="205" y2="37"/>
     <line x1="350" y1="75" x2="392" y2="75"/><line x1="350" y1="75" x2="350" y2="58"/>
   </g>
   <defs><marker id="svdArrowk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
@@ -1173,6 +1355,7 @@ Tier B. **P2** from [[02-foundations/lab-plants|0.6]] at $\theta=(0^\circ,90^\ci
     <text x="60" y="138">단위 원</text>
     <text x="130" y="66">Vᵀ</text><text x="275" y="66">Σ</text><text x="414" y="66">U</text>
     <text x="205" y="138">회전</text><text x="350" y="138">σ<tspan dy="3.5">1</tspan><tspan dy="-3.5">, σ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> 배로 늘리기</tspan></text><text x="475" y="138">회전</text>
+  </g>
   </g>
 </svg>
 
@@ -1234,7 +1417,7 @@ $Ax = 0$이고, 독립성에 의해 $x = 0$이다.
 
 | 모양 | 유사역행렬 | 정체 | 무엇을 계산하는가 |
 |---|---|---|---|
-| 키 크고 열이 독립 ($m > n$) | $A^\dagger = (A^\top A)^{-1}A^\top$ | 왼쪽 역원, $A^\dagger A = I$ | *과결정* 계의 최소자승해 |
+| 키 크고 열이 독립 ($m > n$) | $A^\dagger = (A^\top A)^{-1}A^\top$ | 왼쪽 역원, $A^\dagger A = I$ | *과결정* 계의 최소제곱 해 |
 | 넓고 행이 독립 ($m < n$) | $A^\dagger = A^\top (AA^\top)^{-1}$ | 오른쪽 역원, $AA^\dagger = I$ | *부족결정* 계의 *최소 노름* 해 |
 | 정사각이고 가역 | 둘 다 | 역행렬 | $A^{-1}$ — 두 공식이 여기로 무너진다 |
 
@@ -1269,7 +1452,7 @@ $\dot\theta = J^\dagger v = (1,\, -0.8,\, -0.4)$이고 $\lVert\dot\theta\rVert =
 
 $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}.$$
 
-말단 $(1,1)$에서 열을 그려라. 열 1은 $\dot\theta=(1,0)$의 말단 속도 $(-1,1)$, 열 2는 $(-1,0)$. $\det J=1$인 $2\times 2$ 역행렬 공식은 $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. 정방·가역이므로 표의 마지막 행이 $J^\dagger=J^{-1}$이라고 말한다. $J J^{-1}=I$. 과제는 그 두 행렬을 쓰고 같다고 말하라고 한다 — 방금 한 일이다. 위의 3링크는 가로로 넓어서 유사역행렬이 필요했고, P2는 아니다. P2가 SVD 이야기를 필요로 하는 것은 다음 문장이다. $\theta_2\to 0$이면 두 열이 평행해지고 $\det J\to 0$, $\kappa_2(J)\to\infty$, 옆방향 말단 운동이 사라진다. $J^\dagger$는 잃어버린 방향에서 아래 $\Sigma^\dagger$가 예측하는 대로 폭발한다.
+말단 $(1,1)$에서 열을 그려라. 열 1은 $\dot\theta=(1,0)$의 말단 속도 $(-1,1)$, 열 2는 $(-1,0)$. $\det J=1$인 $2\times 2$ 역행렬 공식은 $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. 정방·가역이므로 표의 마지막 행이 $J^\dagger=J^{-1}$이라고 말한다. $J J^{-1}=I$. 특이값은 §4가 $C$의 것을 구한 방식대로 $J^\top J=\begin{pmatrix}2&1\\1&1\end{pmatrix}$에서 나온다. 고유값이 $\lambda^2-3\lambda+1=0$을 풀어 $\lambda=2.618,\ 0.382$이므로 $\sigma=\sqrt\lambda=1.618,\ 0.618$, 따라서 $\kappa_2(J)=1.618/0.618=2.618$이고 타원의 넓이는 $\pi\sigma_1\sigma_2=\pi\lvert\det J\rvert=\pi$다. 그림의 숫자 그대로다. 과제의 유도 문항은 같은 절차를 그리기 문항의 반대쪽 엘보에서 되풀이하는데, 거기서는 답이 뜻밖의 모양으로 나온다. 위의 3링크는 가로로 넓어서 유사역행렬이 필요했고, P2는 아니다. P2가 SVD 이야기를 필요로 하는 것은 다음 문장이다. $\theta_2\to 0$이면 두 열이 평행해지고 $\det J\to 0$, $\kappa_2(J)\to\infty$, 옆방향 말단 운동이 사라진다. $J^\dagger$는 잃어버린 방향에서 아래 $\Sigma^\dagger$가 예측하는 대로 폭발한다.
 
 #### 4.5.3 SVD의 관점, 특이점, 감쇠 최소제곱
 
@@ -1278,10 +1461,10 @@ $$J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}.$$
 
 $$A^\dagger = V\Sigma^\dagger U^\top, \qquad \Sigma^\dagger = \operatorname{diag}(1/\sigma_1,\, \ldots,\, 1/\sigma_r,\, 0,\, \ldots)$$
 
-이다 — 0이 아닌 특이값만 뒤집고 0은 그대로 둔다. 이것이 계수가 모자란 것을 포함해 *모든*
+이다 — 0이 아닌 특이값만 뒤집고 0은 그대로 둔다. 이것이 랭크가 모자란 것을 포함해 *모든*
 행렬에서 통하는 정의이고, 위의 두 공식은 그 특수한 경우다. 그리고 실패 방식도 설명한다.
 특이 자세 근처에서는 어떤 $\sigma_i \to 0$이므로 $1/\sigma_i \to \infty$가 되고 돌려받는
-관절 속도가 특이 자세에 다가갈수록 그 한 방향으로 한없이 커진다. 팔에게 움직일 수 없는 방향으로 움직이라고 요구한 것이다. 특이 자세 그 자체에서는 유사역행렬이 그 0을 건드리지 않으므로, 계수가 실제로 떨어지는 순간 답이 불연속으로 뛴다.
+관절 속도가 특이 자세에 다가갈수록 그 한 방향으로 한없이 커진다. 팔에게 움직일 수 없는 방향으로 움직이라고 요구한 것이다. 특이 자세 그 자체에서는 유사역행렬이 그 0을 건드리지 않으므로, 랭크가 실제로 떨어지는 순간 답이 불연속으로 뛴다.
 
 #### 4.5.4 무어–펜로즈 정의
 
@@ -1299,7 +1482,7 @@ $(0, 0.8, 0.4)$, $(0, 0.4, 0.2)$인 투영이다. 팔이 여유자유도를 가�
 
 해법은 작은 특이값을 정확히 뒤집는 일을 그만두는 것이다 — $1/\sigma$를
 $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이고 $\sigma^2 \gg \lambda$일
-때는 $1/\sigma$와 같다. 그것이 **감쇠 최소자승**이다. 정확한 최소 노름 해 대신
+때는 $1/\sigma$와 같다. 그것이 **감쇠 최소제곱**이다. 정확한 최소 노름 해 대신
 $\lVert J\dot\theta - v\rVert^2 + \lambda\lVert\dot\theta\rVert^2$, 즉 추종 오차와 관절 속도의
 절충을 최소화하며, 그 해는
 
@@ -1318,7 +1501,7 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
 
 *두 번째 읽기 — 제어 트랙에 닿았을 때를 위한 절이다. 이 페이지의 다른 부분은 이 절에 기대지 않는다.*
 
-선형대수는 제어의 언어 *그 자체*다 ([[04-robotics/index|제어 트랙]]):
+제어기를 만들기 전에 설계자는 시스템이 스스로 가라앉는지, 입력이 모든 상태를 몰 수 있는지, 센서가 모든 상태를 볼 수 있는지를 알아야 하고, 그 질문 하나하나가 행렬 계산이다. 선형대수는 제어의 언어 *그 자체*다 ([[04-robotics/index|제어 트랙]]):
 
 #### 5.1 상태공간 모델과 행렬 지수
 
@@ -1352,28 +1535,32 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
   랭크 2다 — 힘 하나로 위치와 속도를 모두 몬다. 비예시: $A = \text{diag}(1, 2)$,
   $B = (1, 0)$이면 $\mathcal{C} = \begin{pmatrix}1&1\\0&0\end{pmatrix}$, 랭크 1이라 둘째 모드,
   그것도 불안정한 모드에 결코 영향을 줄 수 없다.
-<svg viewBox="0 0 470 160" style="max-width:100%;height:auto" role="img" aria-label="가제어 vs 비가제어: 도달 가능한 방향">
-  <g fill="currentColor" opacity="0.10"><polygon points="30,120 30,55 105,55 105,120"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.35">
-    <line x1="30" y1="120" x2="190" y2="120"/><line x1="30" y1="120" x2="30" y2="20"/>
-    <line x1="280" y1="120" x2="440" y2="120"/><line x1="280" y1="120" x2="280" y2="20"/>
-  </g>
-  <defs><marker id="cArrowk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto">
-    <path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
-  <g stroke="currentColor" stroke-width="2" marker-end="url(#cArrowk)">
-    <line x1="30" y1="120" x2="30" y2="58"/>
-    <line x1="30" y1="120" x2="102" y2="58"/>
-    <line x1="280" y1="120" x2="362" y2="120"/>
-  </g>
-  <g font-size="11.5" fill="currentColor">
-    <text x="36" y="52">B</text><text x="108" y="52">AB</text>
-    <text x="368" y="116">B</text><text x="330" y="140">AB가 같은 직선 위에 있다</text>
-    <text x="14" y="156" font-size="12">rank 2 → 모든 상태에 도달 가능</text>
-    <text x="264" y="156" font-size="12">rank 1 → 한 방향에 도달 불가</text>
-  </g>
+<svg viewBox="0 0 560 196" style="max-width:100%;height:auto" role="img" aria-label="페이지의 숫자로 그린 가제어성. 왼쪽, 밀리는 질량: B = (0, 1)은 속도 방향, AB = (1, 0)은 위치 방향이라 둘이 평면을 생성한다, 랭크 2. 오른쪽, A = diag(1, 2), B = (1, 0): AB = (1, 0)이 B와 같은 직선 위에 있어 둘째 상태 방향에는 결코 닿지 못한다, 랭크 1.">
+  <defs><marker id="cArrowk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="70.0,138.0 166.1,138.0" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5"/>
+  <polyline points="70.0,138.0 70.0,41.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5"/>
+  <polyline points="350.0,138.0 446.1,138.0" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5"/>
+  <polyline points="350.0,138.0 350.0,41.9" fill="none" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.5"/>
+  <polygon points="70.0,138.0 132.0,138.0 132.0,76.0 70.0,76.0" fill="currentColor" fill-opacity="0.10" stroke="none"/>
+  <polyline points="70.0,138.0 70.0,76.0" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#cArrowk)"/>
+  <polyline points="70.0,138.0 132.0,138.0" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#cArrowk)"/>
+  <text x="77.0" y="82.0" font-size="11" fill="currentColor">B = (0, 1)</text>
+  <text x="128.0" y="155.0" font-size="11" fill="currentColor">AB = (1, 0)</text>
+  <text x="170.1" y="142.0" font-size="11" fill="currentColor">위치</text>
+  <text x="64.0" y="35.9" font-size="11" fill="currentColor">속도</text>
+  <polyline points="350.0,138.0 350.0,41.9" fill="none" stroke="currentColor" stroke-width="5" stroke-opacity="0.12"/>
+  <polyline points="350.0,138.0 412.0,138.0" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#cArrowk)"/>
+  <text x="388.0" y="155.0" font-size="11" fill="currentColor">B = AB = (1, 0)</text>
+  <text x="450.1" y="142.0" font-size="11" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="344.0" y="35.9" font-size="11" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="359.0" y="82.2" font-size="10.5" opacity="0.85" fill="currentColor">닿지 못함</text>
+  <text x="20.0" y="16" font-size="11" fill="currentColor">밀리는 질량: A의 행 (0, 1), (0, 0)</text>
+  <text x="300.0" y="16" font-size="11" fill="currentColor">A = diag(1, 2), B = (1, 0)</text>
+  <text x="20.0" y="184" font-size="11.5" fill="currentColor">랭크 2 → 모든 상태에 도달</text>
+  <text x="300.0" y="184" font-size="11.5" fill="currentColor">랭크 1 → x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan>에 결코 도달 못함</text>
 </svg>
 
-*왼쪽: $B$와 $AB$가 다른 방향을 가리켜 둘이 평면을 생성한다. 오른쪽: 동역학이 $B$를 자기 자신 위로만 돌려놓아, $u$를 어떻게 써도 상태 공간의 한 방향 전체에 닿지 못한다.*
+*왼쪽, 밀리는 질량: 힘은 속도의 변화 $B=(0,1)$로 들어오고, 동역학의 한 스텝이 그것을 위치의 변화 $AB=(1,0)$로 바꾼다. 둘이 평면을 생성하므로 랭크 2다. 오른쪽, $A=\text{diag}(1,2)$, $B=(1,0)$: $AB=(1,0)$이 $B$와 같은 직선 위에 있어, $u$를 어떻게 써도 둘째 모드, 그것도 불안정한 모드 $x_2$에 닿지 못한다.*
 
   가관측성은 전치 쌍둥이다 — 출력 $y$가 결국 모든 상태를 드러낼 수 있는가? — 행렬은 $[C^\top, A^\top C^\top, \ldots]$이다.
   보통 방식으로 쌓으면
@@ -1387,16 +1574,18 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
 
 ### 6. 고차원의 기하 (논문 읽기용 직관)
 
-- 평균이 0인(등방) 무작위 고차원 벡터들은 거의 직교한다: $\cos\theta$가 0 근처에 퍼짐 $\approx 1/\sqrt d$로 모인다(평균은 어느 차원에서나 이미 0이고, 평균이 0이 아닌 벡터들은 직교해지지 않는다) — 수백만 임베딩에 대한
+논문은 768차원 임베딩을 2차원과 3차원에서 쌓은 직관으로 다루는데, 그 직관 몇 가지가 거기서는 틀린다. 이 절은 어느 것이 틀리는지 숫자로 말한다.
+
+- 평균이 0인(등방) 무작위 고차원 벡터들은 거의 직교한다: $\cos\theta$가 표준편차 $1/\sqrt d$(가우스 벡터라면 정확히)로 0 근처에 모인다. $d=3$이면 $0.58$, $d=64$(어텐션 헤드 하나의 폭)이면 $0.125$, $d=768$(흔한 임베딩 폭)이면 $0.036$이다. 무작위 단위 방향의 성분 $d$개의 제곱이 합 $1$을 고르게 나눠 가지므로 하나가 평균 $1/d$이기 때문이다. (평균은 어느 차원에서나 이미 0이고, 평균이 0이 아닌 벡터들은 직교해지지 않는다.) 이것이 수백만 임베딩에 대한
   내적 검색이 *가능한* 이유 중 하나다: 무관한 항목의 점수가 0 근처로 깔린다. (관련 쌍의
   점수가 높은 것은 기하가 아니라 *학습된* 임베딩의 성질이다.)
-- 거리가 집중된다: 가장 가까운 이웃과 가장 먼 이웃의 차이가 작다 — 원시 특징 위의 거리 대신 *학습된* 임베딩과 거리를 쓰는 이유 중 하나다. (코사인 유사도도 집중을 피하지 못한다: 단위 벡터에서 $\|a-b\|^2 = 2 - 2\cos\theta$이므로 이웃 순위는 유클리드 거리와 똑같다. 코사인이 더하는 것은 벡터 크기를 무시하는 것이다.)
+- 거리가 집중된다: 가장 가까운 이웃과 가장 먼 이웃의 차이가 작다. 무작위 가우스 점 두 개 사이의 거리는 상대 퍼짐(표준편차를 평균으로 나눈 값)이 $d=3$에서 $0.42$이지만 $d=64$에서 $0.089$, $d=768$에서 $0.026$으로 대략 $1/\sqrt{2d}$이고, 고차원에서는 거의 모든 쌍이 거의 같은 거리에 있다는 뜻이다 — 원시 특징 위의 거리 대신 *학습된* 임베딩과 거리를 쓰는 이유 중 하나다. (코사인 유사도도 집중을 피하지 못한다: 단위 벡터에서 $\|a-b\|^2 = 2 - 2\cos\theta$이므로 이웃 순위는 유클리드 거리와 똑같다. 코사인이 더하는 것은 벡터 크기를 무시하는 것이다.)
 - 다양체 가설: 실제 데이터는 픽셀 공간 속 저차원 곡면 위에 산다 —
   잠재 공간([[01-canonical-papers/notes/6-diffusion/vae|VAE]],
   [[01-canonical-papers/notes/6-diffusion/latent-diffusion|latent diffusion]])의 암묵적 정당화.
 
 > [!tip] 더 깊이 · Going deeper
-> 이 페이지는 강의가 아니라 작업 세트다. 너무 빠르면 Boyd·Vandenberghe의 무료 교재 [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/)가 §1과 §2의 최소제곱 쪽을 더 천천히 간다. 다만 그 책은 모든 것을 일차독립과 QR로 세우고 랭크·열공간·영공간이라는 말을 쓰지 않는다, 고윳값·SVD 쪽은 Strang의 *Introduction to Linear Algebra*가 표준 첫 강의다. 각 개념이 논문 어디에 나타나는지는 이 페이지로 돌아와 보라.
+> 이 페이지는 빠르게 나아간다. 너무 빠르면 Boyd·Vandenberghe의 무료 교재 [*Introduction to Applied Linear Algebra*](https://web.stanford.edu/~boyd/vmls/)(VMLS)가 §1과 §2의 최소제곱 쪽을 더 천천히 간다. 그 책은 모든 것을 일차독립과 QR로 세우고, 최소제곱의 열 독립 가정을 명시하며, 랭크·열공간·영공간이라는 말은 쓰지 않는다. 고윳값·SVD 쪽은 Strang의 *Introduction to Linear Algebra*가 표준 첫 강의다. 각 개념이 논문 어디에 나타나는지는 이 페이지로 돌아와 보라.
 
 ### 스스로 점검
 
@@ -1415,11 +1604,11 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
 
 ### 과제 · Problem set
 
-Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$. 이 페이지 §4.5. 시간 스테퍼 없음.
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, 카탈로그 자세 $\theta=(0^\circ,90^\circ)$와 다른 자세 둘. 이 페이지 §3(조건수), §4(특이값), §4.5. 시간 스테퍼 없음.
 
 1. **그리기.** 반대쪽 엘보에 대한 위의 그림: 같은 말단 $(1,1)$에 $\theta=(90^\circ,-90^\circ)$로 닿고 엘보는 $(0,1)$에 있다. $J$의 두 열을 말단의 화살로(각 관절 단위속도가 만드는 말단 속도), 그리고 관절 속도의 단위원이 옮겨 간 타원을 그려라. 위의 그림과 무엇이 같고 무엇이 바뀌었는가?
-2. **유도.** $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$에서 $2\times 2$ 공식으로 $J^{-1}$. 이어서 §4.5 표의 정방·가역 행으로 $J^\dagger$. 둘이 같은지 확인하라.
-3. **해석.** $\theta_1$을 고정하고 $\theta_2\to 0$. 두 열 화살, $\det J$, $\kappa_2(J)$는? 어떤 말단 운동이 불가능해지는가?
+2. **유도.** 1번의 반대쪽 엘보에서 $J=\begin{pmatrix}-1&0\\1&1\end{pmatrix}$다. $2\times 2$ 공식으로 $J^{-1}$을, 이어서 §4.5 표의 정방·가역 행으로 $J^\dagger$를 구하고 둘이 같은지 확인하라. 그다음 말단을 1 m/s로 곧장 위로 올리는, 곧 $v=(0,1)$을 내는 관절 속도를 구해 카탈로그 자세의 것과 비교하라.
+3. **해석.** 다른 베이스 각에서 팔을 편다. $\theta_1=90^\circ$로 두고 $\theta_2\to 0$으로 보내면 팔은 말단이 $(0,2)$에 오도록 곧장 위를 향한다. 두 열 화살, $\det J$, $\kappa_2(J)$는 어떻게 되고, 어떤 말단 운동이 불가능해지는가? 그림 오른쪽 칸과 비교하라.
 
 > [!note]- 그리는 법 · How to draw it
 > - 팔은 실제 비율로 그린다. 베이스는 원점, 단위 링크가 곧장 위로 엘보 $(0,1)$까지, 둘째 단위 링크가 $+x$를 따라 말단 $(1,1)$까지 가고, 관절 둘은 동그라미로 표시한다.
@@ -1428,9 +1617,9 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P2**, $\theta=(0^\circ,90^\circ)$
 > - 각 화살표가 자기 관절에서 말단으로 가는 선분과 수직인지 확인한다. 회전하는 강체 위의 점은 반지름에 직각으로 움직이기 때문이고, 이 확인이 대수를 다시 푸는 것보다 부호 실수를 빨리 잡는다. 열 1의 선분은 위 그림과 같은 베이스-말단 선이고, 열 2의 선분은 다르다.
 > - 단위원의 상: 한쪽 구석 상자에 관절 속도 공간의 반지름 $1$짜리 원을 그리고 말단 자리에 그 원이 옮겨 간 타원을 그린다. 반축은 §4의 특이값이고 타원 안에 $\kappa_2(J)=\sigma_1/\sigma_2$를 쓴다. 넓이는 $\pi\lvert\det J\rvert$다.
 > - 위 그림의 타원을 뒤에 흐리게 겹쳐 그린다. 둘은 반축이 같고 기울기만 다르며, 둘 사이에서 $\det J$의 부호가 바뀐다.
-> - 3번을 위해 더 작은 둘째 칸에 팔을 곧게 편 자세 $\theta=(0^\circ,0^\circ)$를 그리고, 거기서 두 열 화살표, 타원이 주저앉은 선분, 그리고 옆에 $\det J$와 $\kappa_2$를 쓴다.
+> - 3번을 위해 더 작은 둘째 칸에 팔을 곧게 위로 편 자세 $\theta=(90^\circ,0^\circ)$를 그리고, 거기서 두 열 화살표, 타원이 주저앉은 선분, 그리고 옆에 $\det J$와 $\kappa_2$를 쓴다.
 
 > [!tip]- 정답 · Solutions
 > 1. 열 1은 그대로 $(-1,1)$이다. 팔 전체가 베이스를 중심으로 돌면 말단은 베이스-말단 선에 직각으로 움직이고, 말단은 움직이지 않았다. 열 2는 이제 $(0,1)$로, $(0,1)$에서 $(1,1)$까지 $+x$를 따라 놓인 전완에 직각이다. 그러므로 $J=\begin{pmatrix}-1&0\\1&1\end{pmatrix}$, $\det J=-1$이다. 크기는 같고 부호는 반대이며, 그 부호는 $\sin\theta_2$의 부호다. $J^\top J=\begin{pmatrix}2&1\\1&1\end{pmatrix}$의 고윳값은 $2.618$과 $0.382$이므로 특이값은 다시 $1.618$과 $0.618$, $\kappa_2=2.618$, 넓이 $\pi$다. 타원은 모양이 같고 기울기가 다르다. 긴 축이 여기서는 $(-0.526,\ 0.851)$, 곧 $121.7^\circ$ 방향이고, 위 그림에서는 $(-0.851,\ 0.526)$, 곧 $148.3^\circ$ 방향이다. 말단은 같아도 팔이 다르니 관절 속도에서 오는 사상도 다르다.
-> 2. $\det J=1$이므로 $J^{-1}=\begin{pmatrix}0&1\\-1&-1\end{pmatrix}$. 정방·가역 $\Rightarrow J^\dagger=J^{-1}$.
-> 3. 열이 평행해진다($\theta=(0^\circ,0^\circ)$에서 둘 다 $\pm y$), $\det J\to 0$, $\kappa_2\to\infty$. 옆($x$) 말단 운동이 사라진다: 곧게 뻗은 팔은 유한 관절속도로 그것을 못 한다.
+> 2. $\det J=(-1)(1)-(0)(1)=-1$이므로 $J^{-1}=\frac{1}{-1}\begin{pmatrix}1&0\\-1&-1\end{pmatrix}=\begin{pmatrix}-1&0\\1&1\end{pmatrix}$로, $J$와 같은 행렬이다. 여기서는 $J^2=I$이기 때문이다. 정방·가역 $\Rightarrow J^\dagger=J^{-1}$. $v=(0,1)$이면 $\dot\theta=J^{-1}v=(0,1)$, 곧 엘보만 돈다. 전완이 $+x$를 따라 놓여 있어 그 끝이 곧장 위로 움직이기 때문이다. 카탈로그 자세에서는 같은 $v$에 $\begin{pmatrix}0&1\\-1&-1\end{pmatrix}(0,1)=(1,-1)$, 곧 베이스는 앞으로, 엘보는 뒤로 돌려야 한다. 말단도 요청한 속도도 같은데 관절 속도가 다르다. 사상은 말단의 위치만이 아니라 팔 전체에 달려 있다.
+> 3. 가는 동안 $\det J=\sin\theta_2$가 줄고($30^\circ$에서 $0.5$, $1^\circ$에서 $0.017$) $\kappa_2$가 커진다($9.4$, 그다음 $286$). $\theta=(90^\circ,0^\circ)$에서 $J=\begin{pmatrix}-2&-1\\0&0\end{pmatrix}$이라 두 열이 모두 $-x$ 방향이므로 평행하고, $\det J=0$, $\kappa_2=\infty$다(특이값은 $\sqrt5$와 $0$). 사라진 방향은 팔을 따라가는 $y$다. 곧게 뻗은 팔은 어느 쪽을 가리키든 말단을 자기 길이 방향으로는 유한 관절 속도로 움직이지 못한다. 팔이 $+x$를 따라 놓인 그림 오른쪽 칸이 $x$를 잃은 것도 같은 이유다.

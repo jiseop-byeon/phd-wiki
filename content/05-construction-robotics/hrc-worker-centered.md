@@ -259,7 +259,7 @@ robot motion around the worker's predicted next action. The second and third lea
 and COMMUNICATE: *adaptive autonomy* changes how much the robot does on its own, *role
 allocation* decides who does which subtask, and *legible motion* is robot motion whose goal an
 observer can read early. On a first pass, keep one anchor paper per line rather than every topic.
-On S1 the lines land in different phases: physiological computing in the hold, where fatigue and attention change over a day of fastening; intention-aware planning and legible motion on the lane, where the questions are whether this worker will cross and whether the worker can read where the base is going.
+On S1 the lines land in different phases: physiological computing in the hold, where fatigue and attention change over a day of fastening; intention-aware planning and legible motion on the lane, where the questions are whether this worker will cross and whether the worker can read where the base is going, the second of which augmented-reality intent displays have so far answered only in the laboratory studies mapped in [[04-robotics/xr-human-robot-collaboration|23.5 XR for Human–Robot Collaboration §9]].
 
 - The **Michigan DPM → UIUC/Georgia Tech/Toronto diaspora** connects physiological
   computing to intention-aware planning,
@@ -372,7 +372,7 @@ Counted as in [[05-construction-robotics/lineage|lineage §6]], human–robot co
 >
 > **Why it matters.** It turns "site conditions" into a number a planner can obey, and it shows when speed cannot buy safety at all — the relayed chain at the stack.
 
-**The alarm the worker cannot hear.** Nothing in $S_p$ is credited to a warning: $S_h$ assumes the person keeps walking at $v_h$ through the whole reaction and stop. That is why a correctly sized separation survives a worker in ear defenders beside a saw, or a wristband alert masked by a breaker in the same hand ([[06-research-practice/psychophysics-human-measurement|8. Psychophysics §5]]); the stop never needed them to respond. What an unheard warning costs is productivity. A warning exists to make the person yield before the stop is needed, and for that it must lead the protective field by what the person covers while noticing and responding, $1.6\,\mathrm{m}$ per second ([[04-robotics/hri-safety|11. §5]]); a worker who does not perceive it walks on into the field, and the base stops. The failure to look for is a plan that credits the warning — "the horn clears the walkway, so the base may keep $0.5\,\mathrm{m/s}$ past the stack" — because it has moved the horn into the safety function without the property a safety function needs: it works only on workers who hear it. A warning field that *slows the base* is different. It acts on $v_r$, which the robot controls, and at the stack in dust it is exactly Step 4's $0.17\,\mathrm{m/s}$.
+**The alarm the worker cannot hear.** Nothing in $S_p$ is credited to a warning: $S_h$ assumes the person keeps walking at $v_h$ through the whole reaction and stop. That is why a correctly sized separation survives a worker in ear defenders beside a saw, or a wristband alert masked by a breaker in the same hand ([[06-research-practice/psychophysics-human-measurement|8. Psychophysics §5]]); the stop never needed them to respond. What an unheard warning costs is productivity. A warning exists to make the person yield before the stop is needed, and for that it must lead the protective field by what the person covers while noticing and responding, $1.6\,\mathrm{m}$ per second ([[04-robotics/hri-safety|11. §5]]); a worker who does not perceive it walks on into the field, and the base stops. The failure to look for is a plan that credits the warning — "the horn clears the walkway, so the base may keep $0.5\,\mathrm{m/s}$ past the stack" — because it has moved the horn into the safety function without the property a safety function needs: it works only on workers who hear it, as a path drawn in a headset works only on a worker who wears it and looks ([[04-robotics/xr-human-robot-collaboration|23.5 XR for Human–Robot Collaboration §4]]). A warning field that *slows the base* is different. It acts on $v_r$, which the robot controls, and at the stack in dust it is exactly Step 4's $0.17\,\mathrm{m/s}$.
 
 ### 7. The hold: soft for the worker, stiff for the panel
 
@@ -744,7 +744,7 @@ flowchart LR
 COMMUNICATE 쪽에 가깝다. *적응적 자율성*은 로봇이 스스로 하는 몫을 바꾸고, *역할 배분*은 누가 어느
 하위 작업을 맡을지 정하며, *읽기 쉬운 움직임*은 보는 사람이 목표를 일찍 알아챌 수 있는 로봇
 동작이다. 처음 읽을 때는 모든 주제보다 계보마다 앵커 논문 하나를 기억한다.
-S1에서는 계보마다 자리 잡는 단계가 다르다. 생리 컴퓨팅은 하루의 체결 동안 피로와 주의가 바뀌는 지지 단계에, 의도 인식 계획과 읽기 쉬운 움직임은 이 작업자가 가로지를지, 작업자가 베이스가 어디로 가는지 읽을 수 있는지가 질문인 통로에 자리 잡는다.
+S1에서는 계보마다 자리 잡는 단계가 다르다. 생리 컴퓨팅은 하루의 체결 동안 피로와 주의가 바뀌는 지지 단계에, 의도 인식 계획과 읽기 쉬운 움직임은 이 작업자가 가로지를지, 작업자가 베이스가 어디로 가는지 읽을 수 있는지가 질문인 통로에 자리 잡는다. 둘째 질문에 증강현실 의도 디스플레이가 내놓은 답은 아직 실험실 연구뿐이고, 그 지도는 [[04-robotics/xr-human-robot-collaboration|23.5 사람–로봇 협업을 위한 XR §9]]에 있다.
 
 - **미시간 DPM → UIUC·GT·토론토**: 생리 컴퓨팅에서 의도 인식 계획,
   [[01-canonical-papers/notes/8-construction/liu-jebelli-bci|BCI 원격조작]](EEG 해독
@@ -848,7 +848,7 @@ S1에서는 계보마다 자리 잡는 단계가 다르다. 생리 컴퓨팅은 
 >
 > **왜 중요한가.** "현장 조건"을 계획기가 따를 수 있는 숫자로 바꾸고, 속도로는 안전을 아예 살 수 없는 때 — 더미에서의 중계 사슬 — 를 보여 준다.
 
-**작업자가 듣지 못하는 경보.** $S_p$의 어느 것도 경고에 기대지 않는다. $S_h$는 사람이 반응과 정지 내내 $v_h$로 계속 걷는다고 가정한다. 그래서 제대로 잡은 이격은 톱 옆에서 귀마개를 한 작업자나, 같은 손의 브레이커에 가려진 손목 밴드 경보([[06-research-practice/psychophysics-human-measurement|8. 심리물리 §5]])에도 살아남는다. 정지는 애초에 그들의 반응이 필요 없었다. 듣지 못한 경고가 치르는 것은 생산성이다. 경고는 정지가 필요해지기 전에 사람이 비켜서게 하려고 있고, 그러려면 사람이 알아채고 반응하는 동안 걷는 거리만큼, 1초에 $1.6\,\mathrm{m}$씩 보호 영역보다 앞서야 한다([[04-robotics/hri-safety|11. §5]]). 그것을 지각하지 못한 작업자는 영역 안으로 계속 걸어 들어오고, 베이스는 선다. 경계할 실패는 경고에 기대는 계획이다 — "경적이 보행로를 비우니 베이스는 더미 옆을 $0.5\,\mathrm{m/s}$로 지나도 된다." 안전 기능에 필요한 성질 없이 경적을 안전 기능 안으로 옮겨 놓은 것이기 때문이다. 경적은 듣는 작업자에게만 통한다. *베이스를 느리게 하는* 경고 영역은 다르다. 로봇이 다루는 $v_r$에 작용하고, 분진 속 더미에서는 정확히 4단계의 $0.17\,\mathrm{m/s}$다.
+**작업자가 듣지 못하는 경보.** $S_p$의 어느 것도 경고에 기대지 않는다. $S_h$는 사람이 반응과 정지 내내 $v_h$로 계속 걷는다고 가정한다. 그래서 제대로 잡은 이격은 톱 옆에서 귀마개를 한 작업자나, 같은 손의 브레이커에 가려진 손목 밴드 경보([[06-research-practice/psychophysics-human-measurement|8. 심리물리 §5]])에도 살아남는다. 정지는 애초에 그들의 반응이 필요 없었다. 듣지 못한 경고가 치르는 것은 생산성이다. 경고는 정지가 필요해지기 전에 사람이 비켜서게 하려고 있고, 그러려면 사람이 알아채고 반응하는 동안 걷는 거리만큼, 1초에 $1.6\,\mathrm{m}$씩 보호 영역보다 앞서야 한다([[04-robotics/hri-safety|11. §5]]). 그것을 지각하지 못한 작업자는 영역 안으로 계속 걸어 들어오고, 베이스는 선다. 경계할 실패는 경고에 기대는 계획이다 — "경적이 보행로를 비우니 베이스는 더미 옆을 $0.5\,\mathrm{m/s}$로 지나도 된다." 안전 기능에 필요한 성질 없이 경적을 안전 기능 안으로 옮겨 놓은 것이기 때문이다. 경적은 듣는 작업자에게만 통한다. 헤드셋에 그린 경로가 그것을 쓰고 보는 작업자에게만 통하는 것과 같다([[04-robotics/xr-human-robot-collaboration|23.5 사람–로봇 협업을 위한 XR §4]]). *베이스를 느리게 하는* 경고 영역은 다르다. 로봇이 다루는 $v_r$에 작용하고, 분진 속 더미에서는 정확히 4단계의 $0.17\,\mathrm{m/s}$다.
 
 ### 7. 지지: 작업자에게는 무르게, 패널에는 단단하게
 

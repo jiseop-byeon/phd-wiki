@@ -383,7 +383,7 @@ human's intent reaches the robot, and how cheap it is to produce an hour of demo
   universally available. Fine for a mobile base, poor for dexterous manipulation.
 - **VR controller or hand tracking.** Gives 6-DoF pose directly and naturally, usually with
   no force feedback. Requires retargeting (§5) because a human hand and a robot gripper do
-  not share kinematics.
+  not share kinematics; which headsets carry this interface, and what their hand-tracking rate costs in millimetres, is [[04-robotics/xr-human-robot-collaboration|23.5 XR for Human–Robot Collaboration §5]].
 - **Kinematically matched leader arm.** A small replica of the follower's kinematics: the
   human backdrives it, and joint angles map across **directly, with no inverse kinematics
   and no retargeting**. This is why the approach reappeared in 3D-printed,
@@ -1121,7 +1121,7 @@ $$E(t) = \int_0^t \tfrac12\left(u_l^2 - v_l^2 - u_r^2 + v_r^2\right)d\tau = \tfr
 - **게임 컨트롤러 또는 조이스틱.** 자유도가 적고 6자유도 자세에 어색하지만 어디에나 있다.
   이동 베이스에는 충분하고 정교한 조작에는 부족하다.
 - **VR 컨트롤러 또는 손 추적.** 6자유도 자세를 직접, 자연스럽게 준다. 보통 힘 피드백이
-  없다. 사람 손과 로봇 그리퍼는 기구학을 공유하지 않으므로 리타게팅(§5)이 필요하다.
+  없다. 사람 손과 로봇 그리퍼는 기구학을 공유하지 않으므로 리타게팅(§5)이 필요하다. 어떤 헤드셋이 이 인터페이스를 싣고, 그 손 추적 속도가 밀리미터로 얼마를 치르는지는 [[04-robotics/xr-human-robot-collaboration|23.5 사람–로봇 협업을 위한 XR §5]]가 다룬다.
 - **기구학이 같은 리더 암.** 팔로워의 기구학을 축소한 복제품. 사람이 그것을 손으로 밀면
   관절각이 **역기구학도 리타게팅도 없이 그대로** 넘어간다. 이 방식이 3D 프린팅 부품과 기성 모터
   형태로 다시 등장하고(GELLO, Wu et al., IROS 2024), ALOHA의 퍼펫티어링 리그를 거쳐 양팔

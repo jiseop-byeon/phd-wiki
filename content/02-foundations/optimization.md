@@ -7,8 +7,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §1–2]] (gradients, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §3]] (eigenvalues, SPD, condition number) · [[02-foundations/calculus-backprop|2. Calculus §1]] (the Hessian) · [[02-foundations/probability|3. Probability §2]] (expectation, for §3's stochastic gradients)
-> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1** · [[02-foundations/engineering-math|0.5 §1–2]](그래디언트·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §3]](고유값·SPD·조건수) · [[02-foundations/calculus-backprop|2. 미적분 §1]](헤시안) · [[02-foundations/probability|3. 확률 §2]](기댓값, §3의 확률적 그래디언트용)
+> Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled; the catalog uses it for six small frozen examples, and P1 is its two-layer test network) · [[02-foundations/engineering-math|0.5 §1–2]] (gradients, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §3]] (eigenvalues, SPD, condition number) · [[02-foundations/calculus-backprop|2. Calculus §1]] (the Hessian) · [[02-foundations/probability|3. Probability §2]] (expectation, for §3's stochastic gradients)
+> [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치(plant: 제어하거나 측정하는 대상 시스템. 카탈로그는 작은 고정 예제 여섯에 이 말을 쓰고, P1은 그중 2층 연습 신경망이다) **P1** · [[02-foundations/engineering-math|0.5 §1–2]](그래디언트·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §3]](고유값·SPD·조건수) · [[02-foundations/calculus-backprop|2. 미적분 §1]](헤시안) · [[02-foundations/probability|3. 확률 §2]](기댓값, §3의 확률적 그래디언트용)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -20,10 +20,14 @@ constraints included, and it is where network training, MPC, trajectory planning
 Optimization is the shared language of this wiki: training a network
 ([[01-canonical-papers/notes/1-foundations/adam|Adam]]), solving MPC, planning a trajectory, and allocating
 construction tasks are all "minimize an objective subject to constraints." Course-depth
-treatment: conditions, derivations, and a fully written MPC-as-QP example.
+treatment: conditions, derivations, and a fully written MPC-as-QP example. Its running object is plant P1 of
+[[02-foundations/lab-plants|0.6 Lab Plants]], the two-layer test network ($2\to3\to1$ with ReLU) whose one gradient step the picture draws.
+
+> [!note] Why this matters · 왜 배우는가
+> Optimization is the mathematical floor under the planning, grasping and manipulation layers of the physical-AI stack in [[07-research-program/index|7. Research Program §5]]: in *"Install that panel on the frame"*, decomposing the job into task assignments and planning a grasp are "minimize an objective subject to constraints", and so are the damped least-squares step that moves the panel, the MPC that keeps the arm inside its limits and the calibration that fixes where panel and frame are (its place is marked on the [[physical-ai-map|Physical AI Map]]). Without it you cannot tell a solver's answer from its accident: on this page's three-beacon problem Gauss–Newton halts when started on the wall and flies out to $y=32.3$ from a start $0.5$ m off it (§3.5), and a step size of $10$ where $0.1$ works sends P1's loss from $0.125$ to $2415$ in one step (the picture). On the dissertation path of [[07-research-program/index|7. Research Program §8]], §3.5 returns in block 2 as the solver inside [[04-robotics/system-identification|5.5 System Identification §5]], [[04-robotics/state-estimation-slam|3. State Estimation §7]] and [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration §4]]; §4–§5 return as the QPs of [[04-robotics/mpc|7. MPC §1]] (block 2) and [[04-robotics/force-compliance-control|13. Force & Compliance Control §4]] (block 3); and §3 is the training step of deep learning [[03-deep-learning/foundations/index|1. Learning Systems §2]] (block 4). After it you can write a robot decision as variables, objective and constraints, say whether it is convex, and choose a step size or damping that keeps a solver stable.
 
 > [!note] First pass · 처음이라면
-> Read the picture, §1, then §2 — convexity is the fork everything else hangs on — then §3, whose P1 step is the picture's arithmetic. Open §4 the first time a paper says "subject to"; KKT reads much better with a concrete constraint in front of you. §3.5 is for when a SLAM, calibration or IK paper says "we optimize" — read it with such a paper in hand. §5 is a table of problem classes to look things up in, and §6 is a one-screen map of where this page reappears in the wiki; skim both.
+> Two sessions of 60–90 minutes. **Session 1, the problem and its shape:** the picture, §1 and §2 — the parts of a problem, local and global minima, and convexity, the fork everything else hangs on; end with self-check 1. **Session 2, walking downhill:** the first part of §3 — the optimality conditions, the gradient-descent update, gradient descent against Newton, the P1 step with its curvature derivation (the picture's arithmetic) and stochastic gradients — then self-check 2 and the problem set. The rest is second pass: §3 from momentum on, with [[03-deep-learning/foundations/index|1. Learning Systems]] or when a paper names its optimizer; §3.5 with a SLAM, calibration or IK paper in hand; §4 the first time a paper says "subject to"; §5 is a table to look things up in and §6 a one-screen map of where this page reappears, both to skim. Self-check 3–5 go with them.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -117,9 +121,11 @@ treatment: conditions, derivations, and a fully written MPC-as-QP example.
   <text x="12" y="470" font-size="11" fill="currentColor" fill-opacity="0.85">One picture, two step sizes: the only difference between training and divergence.</text>
 </svg>
 
-Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], cut down to the one weight $W_{2,1}$: the loss is the parabola $L=\tfrac12(W_{2,1}-1.5)^2$, its slope at the catalog point $(1,\ 0.125)$ is $-0.5$, and the step $\eta=0.1$ moves the weight $0.05$, to $1.05$ ($L=0.101$), beside the $0.5$ still left to the vertex. On this slice the curvature is $1$, so $\eta=1$ lands on the vertex and $\eta>2$ diverges (on a parabola of curvature $c$ a step multiplies the distance to the vertex by $1-\eta c$; §3). Along the real three-weight gradient the curvature is $\lVert h\rVert^2=14$, the one nonzero eigenvalue of the Hessian $hh^\top$ (derived in §3's P1 step), which moves the exact step to $1/14\approx0.071$ and the divergence threshold to $2/14\approx0.143$. The lower panel is $\eta=10$: the weight jumps to $6$ ($L=10.125$ on the slice), and the full three-weight step reaches $\hat y=70.5$, $L=2415.1$.
+Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]], cut down to the one weight $W_{2,1}$: the loss is the parabola $L=\tfrac12(W_{2,1}-1.5)^2$ of curvature $1$, on which a step multiplies the distance to the vertex by $1-\eta$ (§3), so from the catalog point $(1,\ 0.125)$, slope $-0.5$, the step $\eta=0.1$ moves the weight $0.05$ to $1.05$ ($L=0.101$) with $0.5$ still left, $\eta=1$ lands on the vertex and $\eta>2$ diverges. Along the real three-weight gradient the curvature is $\lVert h\rVert^2=14$, the one nonzero eigenvalue of the Hessian $hh^\top$ (derived in §3's P1 step), which moves the exact step to $1/14\approx0.071$ and the divergence threshold to $2/14\approx0.143$. The lower panel is $\eta=10$: the weight jumps to $6$ ($L=10.125$ on the slice), and the full three-weight step reaches $\hat y=70.5$, $L=2415.1$.
 
 ### 1. Anatomy of a problem
+
+Every decision on this wiki, from a training step to an arm's path, has three parts: what the solver may change, what it should make small, and what it must never violate. A preference and a requirement play different roles: a robot may prefer a short path while being required to respect a workspace boundary, so path cost goes in the objective and admissibility in the constraints, and then you decide whether the chosen model can represent the actual obstacle and actuation limits. You have met the unconstrained case in statics: a spring under a steady push settles where its total potential energy $\tfrac12ky^2-Fy$ is smallest, because the derivative $ky-F$ vanishes there; for P3, the one-axis haptic handle of [[02-foundations/lab-plants|0.6 Lab Plants]] pushed with $0.4\,\mathrm N$ into its $400\,\mathrm{N/m}$ wall, that is $y^\star=0.4/400=1\,\mathrm{mm}$, the rest point [[02-foundations/basic-mechanics|0.6.1 §6]] reaches through its energy ledger.
 
 $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x) = 0$$
 
@@ -141,9 +147,11 @@ and a **local minimum** when that holds only nearby, for every feasible $x$ with
 > [!example] Worked example · 계산 예제
 > Minimise $f(x)=(x-3)^2$ subject to $x\le1$, written as $g(x)=x-1\le0$. The feasible set is $(-\infty,1]$. Without the constraint the answer would be $x=3$, which is infeasible. On the feasible set $f$ keeps falling as $x$ rises toward $1$, so $x^\star=1$ and $p^\star=(1-3)^2=4$. The constraint changed the answer, which is exactly what it means for it to be **active** at the optimum, $g(x^\star)=0$.
 
-The formulation is needed because a preference and a requirement play different roles. For example, a robot may prefer a short path while being required to respect a workspace boundary. Put path cost in the objective and admissibility in constraints, then decide whether the chosen model can represent the actual obstacle and actuation limits. **The reading this gives you.** Before studying a solver, name what it may change and what it must satisfy. A smaller objective value does not establish feasibility, and feasibility in an approximate model does not prove that the physical system meets every requirement.
+**The reading this gives you.** Before studying a solver, name what it may change and what it must satisfy. A smaller objective value does not establish feasibility, and feasibility in an approximate model does not prove that the physical system meets every requirement.
 
 ### 2. Convexity — the great divide
+
+Gradient descent (§3) only ever sees the slope where it stands, so it can stop at the bottom of a dip that is not the lowest one and never know. Convexity is the property that rules this out: on a convex problem every local minimum is global, so a solver that stops has found the answer. Statics is full of such problems: a supported structure's equilibrium minimizes its total potential energy $\tfrac12u^\top Ku-f^\top u$, a convex quadratic because the stiffness matrix $K$ is positive definite once the supports remove the rigid-body modes ([[02-foundations/linear-algebra|1. Linear Algebra §3]]), and setting its gradient to zero gives exactly $Ku=f$.
 
 - A set is convex if it contains all line segments between its points; $f$ is convex if
   $f(\lambda x + (1-\lambda)y) \le \lambda f(x) + (1-\lambda)f(y)$ — equivalently
@@ -167,20 +175,46 @@ The formulation is needed because a preference and a requirement play different 
   - **Why local means global.** Suppose $x^\star$ is a local minimum and some feasible $y$ had $f(y)<f(x^\star)$. Points $\lambda x^\star+(1-\lambda)y$ with $\lambda$ just below $1$ are feasible and arbitrarily close to $x^\star$, and convexity gives them $f\le\lambda f(x^\star)+(1-\lambda)f(y)<f(x^\star)$, contradicting local optimality.
   - **Non-example with numbers.** $f(x)=x^4-2x^2+0.5x$ has two local minima, $x\approx-1.057$ with $f\approx-1.515$ and $x\approx0.930$ with $f\approx-0.517$, separated by a local maximum at $x\approx0.127$. Gradient descent with step $0.01$ started at $x=2$ settles at $0.930$, the worse one, and nothing local tells it so.
 
-<svg viewBox="0 0 480 152" style="max-width:100%;height:auto" role="img" aria-label="convex versus non-convex landscape">
-  <g fill="none" stroke="currentColor" stroke-width="1.8">
-    <path d="M25,32 Q120,152 215,32"/>
-    <path d="M265,50 C288,122 302,60 326,102 C349,142 366,50 396,98 C416,130 436,74 455,45"/>
+<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="Left, the convex x squared with a chord above the graph; right, the non-convex x^4 - 2x^2 + 0.5x with its two minima, the bump between them, and the gradient-descent path from x = 2 with step 0.01 that stops at the worse minimum 0.930">
+  <defs><marker id="opCv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="36" y1="236" x2="266" y2="236"/><line x1="306" y1="244" x2="550" y2="244"/><line x1="306" y1="169.2" x2="550" y2="169.2" stroke-dasharray="3 3" opacity="0.6"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="59" y1="236" x2="59" y2="240"/><line x1="105" y1="236" x2="105" y2="240"/><line x1="151" y1="236" x2="151" y2="240"/><line x1="197" y1="236" x2="197" y2="240"/><line x1="243" y1="236" x2="243" y2="240"/><line x1="346.8" y1="244" x2="346.8" y2="248"/><line x1="414.8" y1="244" x2="414.8" y2="248"/><line x1="482.8" y1="244" x2="482.8" y2="248"/></g>
+  <path d="M36 202.2 L37.9 204.1 L39.8 205.9 L41.7 207.6 L43.6 209.3 L45.5 210.9 L47.4 212.5 L49.3 214 L51.2 215.5 L53.1 216.9 L55 218.3 L56.9 219.6 L58.8 220.9 L60.7 222.1 L62.6 223.3 L64.5 224.4 L66.4 225.5 L68.3 226.5 L70.3 227.4 L72.2 228.4 L74.1 229.2 L76 230 L77.9 230.8 L79.8 231.5 L81.7 232.1 L83.6 232.7 L85.5 233.3 L87.4 233.8 L89.3 234.2 L91.2 234.6 L93.1 235 L95 235.3 L96.9 235.5 L98.8 235.7 L100.7 235.9 L102.6 236 L104.5 236 L106.4 236 L108.3 235.9 L110.2 235.8 L112.1 235.6 L114 235.4 L115.9 235.2 L117.8 234.8 L119.7 234.5 L121.6 234 L123.5 233.6 L125.4 233 L127.3 232.5 L129.2 231.8 L131.1 231.2 L133 230.4 L135 229.6 L136.9 228.8 L138.8 227.9 L140.7 227 L142.6 226 L144.5 225 L146.4 223.9 L148.3 222.7 L150.2 221.5 L152.1 220.3 L154 219 L155.9 217.6 L157.8 216.2 L159.7 214.8 L161.6 213.3 L163.5 211.7 L165.4 210.1 L167.3 208.5 L169.2 206.8 L171.1 205 L173 203.2 L174.9 201.4 L176.8 199.4 L178.7 197.5 L180.6 195.5 L182.5 193.4 L184.4 191.3 L186.3 189.1 L188.2 186.9 L190.1 184.6 L192 182.3 L193.9 179.9 L195.8 177.5 L197.7 175 L199.6 172.5 L201.6 169.9 L203.5 167.3 L205.4 164.6 L207.3 161.9 L209.2 159.1 L211.1 156.2 L213 153.4 L214.9 150.4 L216.8 147.4 L218.7 144.4 L220.6 141.3 L222.5 138.2 L224.4 135 L226.3 131.7 L228.2 128.4 L230.1 125.1 L232 121.7 L233.9 118.2 L235.8 114.7 L237.7 111.2 L239.6 107.5 L241.5 103.9 L243.4 100.2 L245.3 96.4 L247.2 92.6 L249.1 88.7 L251 84.8 L252.9 80.9 L254.8 76.9 L256.7 72.8 L258.6 68.7 L260.5 64.5 L262.4 60.3 L264.3 56" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="59" y1="221" x2="243" y2="101" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 4"/>
+  <line x1="151" y1="161" x2="151" y2="221" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" opacity="0.7"/>
+  <g fill="currentColor"><circle cx="59" cy="221" r="3"/><circle cx="243" cy="101" r="3"/><circle cx="151" cy="161" r="3.4"/><circle cx="151" cy="221" r="3.4"/></g>
+  <path d="M306 147.7 L306.7 150.8 L307.4 153.9 L308 156.9 L308.7 159.8 L309.4 162.7 L310.1 165.4 L310.8 168.1 L311.4 170.7 L312.1 173.2 L312.8 175.6 L313.5 177.9 L314.2 180.2 L314.8 182.4 L315.5 184.5 L316.2 186.5 L316.9 188.5 L317.6 190.4 L318.2 192.2 L318.9 194 L319.6 195.7 L320.3 197.3 L321 198.9 L321.6 200.3 L322.3 201.8 L323 203.1 L323.7 204.5 L324.4 205.7 L325 206.9 L325.7 208 L326.4 209.1 L327.1 210.1 L327.8 211.1 L328.4 212 L329.1 212.9 L329.8 213.7 L330.5 214.5 L331.2 215.2 L331.8 215.8 L332.5 216.4 L333.2 217 L333.9 217.5 L334.6 218 L335.2 218.5 L335.9 218.9 L336.6 219.2 L337.3 219.5 L338 219.8 L338.6 220 L339.3 220.2 L340 220.4 L340.7 220.5 L341.4 220.6 L342 220.7 L342.7 220.7 L343.4 220.7 L344.1 220.7 L344.8 220.6 L345.4 220.5 L346.1 220.4 L346.8 220.2 L347.5 220 L348.2 219.8 L348.8 219.6 L349.5 219.3 L350.2 219 L350.9 218.7 L351.6 218.4 L352.2 218 L352.9 217.7 L353.6 217.3 L354.3 216.9 L355 216.4 L355.6 216 L356.3 215.5 L357 215 L357.7 214.5 L358.4 214 L359 213.5 L359.7 212.9 L360.4 212.4 L361.1 211.8 L361.8 211.2 L362.4 210.7 L363.1 210.1 L363.8 209.4 L364.5 208.8 L365.2 208.2 L365.8 207.6 L366.5 206.9 L367.2 206.3 L367.9 205.6 L368.6 204.9 L369.2 204.3 L369.9 203.6 L370.6 202.9 L371.3 202.2 L372 201.5 L372.6 200.9 L373.3 200.2 L374 199.5 L374.7 198.8 L375.4 198.1 L376 197.4 L376.7 196.7 L377.4 196 L378.1 195.3 L378.8 194.6 L379.4 193.9 L380.1 193.3 L380.8 192.6 L381.5 191.9 L382.2 191.2 L382.8 190.6 L383.5 189.9 L384.2 189.2 L384.9 188.6 L385.6 187.9 L386.2 187.3 L386.9 186.6 L387.6 186 L388.3 185.4 L389 184.8 L389.6 184.2 L390.3 183.6 L391 183 L391.7 182.4 L392.4 181.8 L393 181.2 L393.7 180.7 L394.4 180.1 L395.1 179.6 L395.8 179.1 L396.4 178.6 L397.1 178.1 L397.8 177.6 L398.5 177.1 L399.2 176.6 L399.8 176.2 L400.5 175.7 L401.2 175.3 L401.9 174.8 L402.6 174.4 L403.2 174 L403.9 173.6 L404.6 173.3 L405.3 172.9 L406 172.5 L406.6 172.2 L407.3 171.9 L408 171.6 L408.7 171.3 L409.4 171 L410 170.7 L410.7 170.5 L411.4 170.2 L412.1 170 L412.8 169.8 L413.4 169.6 L414.1 169.4 L414.8 169.2 L415.5 169 L416.2 168.9 L416.8 168.8 L417.5 168.6 L418.2 168.5 L418.9 168.4 L419.6 168.3 L420.2 168.3 L420.9 168.2 L421.6 168.2 L422.3 168.1 L423 168.1 L423.6 168.1 L424.3 168.1 L425 168.2 L425.7 168.2 L426.4 168.2 L427 168.3 L427.7 168.4 L428.4 168.5 L429.1 168.6 L429.8 168.7 L430.4 168.8 L431.1 168.9 L431.8 169.1 L432.5 169.2 L433.2 169.4 L433.8 169.6 L434.5 169.7 L435.2 169.9 L435.9 170.2 L436.6 170.4 L437.2 170.6 L437.9 170.8 L438.6 171.1 L439.3 171.3 L440 171.6 L440.6 171.9 L441.3 172.1 L442 172.4 L442.7 172.7 L443.4 173 L444 173.3 L444.7 173.6 L445.4 173.9 L446.1 174.2 L446.8 174.6 L447.4 174.9 L448.1 175.2 L448.8 175.6 L449.5 175.9 L450.2 176.3 L450.8 176.6 L451.5 177 L452.2 177.3 L452.9 177.7 L453.6 178 L454.2 178.4 L454.9 178.7 L455.6 179.1 L456.3 179.4 L457 179.8 L457.6 180.1 L458.3 180.5 L459 180.8 L459.7 181.1 L460.4 181.5 L461 181.8 L461.7 182.1 L462.4 182.5 L463.1 182.8 L463.8 183.1 L464.4 183.4 L465.1 183.7 L465.8 183.9 L466.5 184.2 L467.2 184.5 L467.8 184.7 L468.5 185 L469.2 185.2 L469.9 185.4 L470.6 185.6 L471.2 185.8 L471.9 186 L472.6 186.1 L473.3 186.3 L474 186.4 L474.6 186.5 L475.3 186.6 L476 186.7 L476.7 186.7 L477.4 186.8 L478 186.8 L478.7 186.8 L479.4 186.7 L480.1 186.7 L480.8 186.6 L481.4 186.5 L482.1 186.4 L482.8 186.2 L483.5 186 L484.2 185.8 L484.8 185.6 L485.5 185.3 L486.2 185 L486.9 184.7 L487.6 184.3 L488.2 183.9 L488.9 183.5 L489.6 183 L490.3 182.5 L491 182 L491.6 181.4 L492.3 180.8 L493 180.1 L493.7 179.4 L494.4 178.7 L495 177.9 L495.7 177.1 L496.4 176.2 L497.1 175.3 L497.8 174.3 L498.4 173.3 L499.1 172.3 L499.8 171.2 L500.5 170 L501.2 168.8 L501.8 167.6 L502.5 166.3 L503.2 164.9 L503.9 163.5 L504.6 162 L505.2 160.5 L505.9 158.9 L506.6 157.2 L507.3 155.5 L508 153.8 L508.6 151.9 L509.3 150 L510 148.1 L510.7 146 L511.4 143.9 L512 141.8 L512.7 139.5 L513.4 137.2 L514.1 134.8 L514.8 132.4 L515.4 129.9 L516.1 127.3 L516.8 124.6 L517.5 121.8 L518.2 119 L518.8 116.1 L519.5 113.1 L520.2 110 L520.9 106.8 L521.6 103.5 L522.2 100.2 L522.9 96.8 L523.6 93.3" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="342.9" y1="220.7" x2="478.1" y2="186.8" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 4"/>
+  <g fill="currentColor" fill-opacity="0.8"><circle cx="523.9" cy="91.8" r="2.6"/><circle cx="516.7" cy="125.1" r="2.6"/><circle cx="511.3" cy="144.3" r="2.6"/><circle cx="507" cy="156.2" r="2.6"/><circle cx="503.6" cy="164.1" r="2.6"/><circle cx="498.3" cy="173.5" r="2.6"/><circle cx="494.5" cy="178.5" r="2.6"/><circle cx="490.5" cy="182.4" r="2.6"/><circle cx="486.8" cy="184.7" r="2.6"/><circle cx="483.5" cy="186" r="2.6"/><circle cx="480.9" cy="186.6" r="2.6"/></g>
+  <line x1="546" y1="60" x2="527.9" y2="85.8" stroke="currentColor" stroke-width="1.2" marker-end="url(#opCv)"/>
+  <circle cx="478.1" cy="186.8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="342.9" cy="220.7" r="4" fill="currentColor"/>
+  <circle cx="423.4" cy="168.1" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="59" y="252" text-anchor="middle">−1</text>
+    <text x="105" y="252" text-anchor="middle">0</text>
+    <text x="151" y="252" text-anchor="middle">1</text>
+    <text x="197" y="252" text-anchor="middle">2</text>
+    <text x="243" y="252" text-anchor="middle">3</text>
+    <text x="346.8" y="260" text-anchor="middle">−1</text>
+    <text x="414.8" y="260" text-anchor="middle">0</text>
+    <text x="482.8" y="260" text-anchor="middle">1</text>
+    <text x="302" y="173.2" text-anchor="end">0</text>
   </g>
-  <g fill="currentColor"><circle cx="120" cy="92" r="4"/><circle cx="292" cy="88" r="3.5"/><circle cx="409" cy="108" r="4"/></g>
-  <g font-size="11.5" fill="currentColor" text-anchor="middle">
-    <text x="120" y="126">the minimum</text>
-    <text x="292" y="76" opacity="0.8">local</text><text x="409" y="132">another local</text>
-    <text x="120" y="20">convex — every local min is global</text>
-    <text x="360" y="20">non-convex — network training lives here</text>
+  <g font-size="11" fill="currentColor">
+    <text x="36" y="18">convex: f(x) = x²</text>
+    <text x="306" y="18">non-convex: f(x) = x⁴ − 2x² + 0.5x</text>
+    <text x="143" y="157" text-anchor="end">chord midpoint 5</text>
+    <text x="158" y="230">f(1) = 1</text>
+    <text x="548" y="50" text-anchor="end">from x = 2 (f = 9), above the frame</text>
+    <text x="488.1" y="206.8">stops at 0.930</text>
+    <text x="488.1" y="220.8" opacity="0.85">f = −0.517</text>
+    <text x="350.9" y="237.7">global min −1.057 (f = −1.515)</text>
+    <text x="423.4" y="156.1" text-anchor="middle" opacity="0.85">bump at 0.127</text>
   </g>
 </svg>
 
+Left, the convex $x^2$: the chord from $(-1, 1)$ to $(3, 9)$ runs above the graph, $5$ against $f(1)=1$ at the midpoint, and its only local minimum is the global one. Right, the non-convex $f(x)=x^4-2x^2+0.5x$ of the non-example above, whose graph rises above the chord between its minima: gradient descent with step $0.01$ from $x=2$ ($f=9$) settles at the local minimum $0.930$ ($f=-0.517$), while the global one sits at $-1.057$ ($f=-1.515$) behind the bump at $0.127$.
 
 - Recognizing/preserving convexity is the practical skill: norms, max of affine functions,
   and nonnegative sums of convex functions are convex; LP/QP and most MPC formulations are
@@ -188,6 +222,8 @@ The formulation is needed because a preference and a requirement play different 
   guarantees for expressiveness and settle for good local minima.
 
 ### 3. Unconstrained optimization
+
+With no constraints left, optimizing is walking downhill from a guess, and two questions decide everything: which way to step and how far. This section answers both, first on one-line examples and then on P1, whose training step is the picture.
 
 - **Optimality conditions**: first-order $\nabla f(x^*) = 0$; second-order $H(x^*) \succeq 0$
   (necessary), $\succ 0$ (sufficient for strict local min). Saddle points satisfy the first
@@ -216,10 +252,18 @@ The formulation is needed because a preference and a requirement play different 
   speed is not magic, it is the payoff for owning the second derivative. On a non-quadratic
   you get that behavior only near the optimum, and you pay $O(n^3)$ per step to form and
   invert $H$ — which is why nobody runs it on a neural network.
-- **Worked: one GD step on P1.** Catalog $W_2=(1,-1,0.5)$ and $\partial L/\partial W_2=(-0.5,-1,-1.5)$ from [[02-foundations/calculus-backprop|2]] ([[02-foundations/lab-plants|0.6]]). With $\eta=0.1$: $W_2\leftarrow(1.05,-0.9,0.65)$. Holding $h=(1,2,3)$, $L=\tfrac12(W_{2,1}-1.5)^2$ is a parabola in $W_{2,1}$ with minimum at $1.5$; the catalog sits on the left slope. $\eta=10$ jumps to $W_2=(6,9,15.5)$, $\hat y=70.5$, and $L$ explodes. The problem set is this step by hand.
+- **Worked: one GD step on P1.** Catalog $W_2=(1,-1,0.5)$ and $\partial L/\partial W_2=(-0.5,-1,-1.5)$ from [[02-foundations/calculus-backprop|2]] ([[02-foundations/lab-plants|0.6]]). With $\eta=0.1$: $W_2\leftarrow(1.05,-0.9,0.65)$. Holding $h=(1,2,3)$, $L=\tfrac12(W_{2,1}-1.5)^2$ is a parabola in $W_{2,1}$ with minimum at $1.5$; the catalog sits on the left slope. $\eta=10$ jumps to $W_2=(6,9,15.5)$, $\hat y=70.5$, and $L$ explodes. The problem set varies the step: another weight's slice (item 1), a new label (item 2) and a new input (item 3).
   - **The curvature along the real step, derived.** With $h$ held fixed, $\hat y=W_2h$ is linear in $W_2$, so $L=\tfrac12(W_2h-y)^2$ has gradient $(\hat y-y)\,h$ and, differentiating once more, Hessian $hh^\top$ ([[02-foundations/calculus-backprop|2. Calculus §1]]). The curvature along a unit direction $u$ is $u^\top hh^\top u=(h^\top u)^2$. Along the single weight $W_{2,1}$, $u=e_1$ gives $h_1^2=1$, the slice in the picture. Along the gradient, $u=h/\lVert h\rVert$ gives $\lVert h\rVert^2=1+4+9=14$, the largest curvature in any direction, because $hh^\top$ has the single nonzero eigenvalue $\lVert h\rVert^2$ with eigenvector $h$. One step shows it directly. The step changes the output by $-\eta(\hat y-y)\lVert h\rVert^2$, so the residual becomes
     $$\hat y'-y=(\hat y-y)\big(1-\eta\lVert h\rVert^2\big)=-0.5\,(1-14\eta)$$
     which is the per-eigendirection factor $1-\alpha\lambda_i$ above with $\lambda=14$. So $\eta=1/14\approx0.071$ zeroes the residual in one step, any $\eta>2/14\approx0.143$ makes it grow, and $\eta=0.1$ overshoots to $-0.5(1-1.4)=+0.2$, i.e. $\hat y=1.20$ and $L=0.02$. $\eta=10$ multiplies the residual by $1-140=-139$: $\hat y-y=69.5$, $\hat y=70.5$ and $L=\tfrac12(69.5)^2=2415.1$.
+- Stochastic gradients: unbiased but noisy estimates from minibatches; noise helps escape
+  saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈
+  momentum + a per-coordinate curvature proxy, both defined in the second-pass part below.
+  - **Stated completely.** For $f(x)=\frac1N\sum_{i=1}^N\ell_i(x)$, an average of per-example losses, a random batch $B$ of $|B|$ examples gives the estimate $\hat g=\frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(x)$. **Unbiased** means $\mathbb{E}[\hat g]=\nabla f(x)$ over the random choice of batch; **noisy** means any single $\hat g$ can be far from it, with variance shrinking like $1/|B|$ for independently drawn examples.
+  - **Worked.** Take $\ell_i=\tfrac12(x-a_i)^2$ with $a=(1,2,3,6)$, at $x=0$. The full gradient is $\frac14\sum(0-a_i)=-3$. The six batches of size 2 give $-1.5,\ -2,\ -3.5,\ -2.5,\ -4,\ -4.5$: no single one equals $-3$, and their average is exactly $-3$.
+
+*Second pass from here to the end of §3: momentum, Newton's convergence rate, quasi-Newton, adaptive step sizes and AdamW. Read them with [[03-deep-learning/foundations/index|1. Learning Systems]] or when a paper names its optimizer.*
+
 - **Momentum** accumulates a velocity to average out oscillation across ill-conditioned
   valleys; **Newton** minimizes the *second*-order model,
   $x_{k+1} = x_k - H^{-1}\nabla f$ — quadratic convergence near the optimum for a strongly convex $f$ with Lipschitz Hessian (its curvature cannot change arbitrarily fast: $\lVert H(x) - H(y)\rVert \le L\lVert x - y\rVert$), $O(n^3)$ per
@@ -231,11 +275,6 @@ The formulation is needed because a preference and a requirement play different 
   - **Quasi-Newton, stated completely.** Replace $H$ by a matrix $B_k$ built only from gradients. Its defining requirement is the **secant condition**, with step $s_k=x_{k+1}-x_k$ and gradient change $y_k=\nabla f(x_{k+1})-\nabla f(x_k)$:
     $$B_{k+1}\,s_k = y_k$$
     because along the step just taken, a correct Hessian must turn the change in position into the observed change in gradient. BFGS is the particular low-rank update of $B$ (or of its inverse) that satisfies this while staying symmetric positive definite; L-BFGS stores only the last few $(s_k,y_k)$ pairs instead of an $n\times n$ matrix. One-dimensional example: on $f=5x^2$, moving from $1$ to $0.5$ gives $s=-0.5$, $y=5-10=-5$, and $B=y/s=10$, the true curvature.
-- Stochastic gradients: unbiased but noisy estimates from minibatches; noise ~ helps escape
-  saddles, demands step-size decay or adaptivity — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈
-  momentum + per-coordinate curvature proxy.
-  - **Stated completely.** For $f(x)=\frac1N\sum_{i=1}^N\ell_i(x)$, an average of per-example losses, a random batch $B$ of $|B|$ examples gives the estimate $\hat g=\frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(x)$. **Unbiased** means $\mathbb{E}[\hat g]=\nabla f(x)$ over the random choice of batch; **noisy** means any single $\hat g$ can be far from it, with variance shrinking like $1/|B|$ for independently drawn examples.
-  - **Worked.** Take $\ell_i=\tfrac12(x-a_i)^2$ with $a=(1,2,3,6)$, at $x=0$. The full gradient is $\frac14\sum(0-a_i)=-3$. The six batches of size 2 give $-1.5,\ -2,\ -3.5,\ -2.5,\ -4,\ -4.5$: no single one equals $-3$, and their average is exactly $-3$.
 
 **Adaptive step sizes, in three steps.** These attack the condition-number problem above one coordinate at a time. A single $\alpha$ must be small enough for the steepest direction, which starves the flat ones. So each coordinate gets its own step size, set by how large its gradients have been: a steep coordinate with large gradients gets a small step, a flat one gets a large step. Because the scaling is per coordinate (a diagonal preconditioner), it fixes ill-conditioning aligned with the axes but not a valley tilted between them. The three methods share one update and differ only in the scale $s$:
 
@@ -262,6 +301,8 @@ $$w_{k+1}=w_k-\eta\Big(\frac{\hat m_k}{\sqrt{\hat v_k}+\epsilon}+\lambda\,w_k\Bi
 so the shrink $\eta\lambda w_k$ is the same for every weight of the same size, whatever its gradient history. Example, looking at the decay part alone (no momentum, ignoring the small effect of $\lambda w$ on $\hat v$) for two weights equal to $1$ with $\eta=0.01$, $\lambda=0.1$ and $\sqrt{\hat v}=2$ versus $0.5$: under Adam + L2 they shrink by $\eta\lambda/\sqrt{\hat v}=5\times10^{-4}$ and $2\times10^{-3}$, under AdamW both shrink by $\eta\lambda=10^{-3}$.
 
 ### 3.5 Nonlinear least squares — the solver under half the robotics papers
+
+*Second pass: read it with a SLAM, calibration or inverse-kinematics paper in hand, or before [[04-robotics/state-estimation-slam|3. State Estimation]]. The First pass skips it.*
 
 Section 3 gave you gradient descent and Newton on a general objective. A large share of
 robotics never uses either, because its problems all have the same special shape: a stack of
@@ -300,7 +341,7 @@ unknown, a single zero at the origin), Newton from $x_0 = 0.95$ gives
 $0.95 \to -0.684 \to 0.234 \to -0.009$ and lands on the solution. From $x_0 = 1.15$ it gives
 $1.15 \to -1.318 \to 2.156 \to -16.5$ and is gone. **A 0.2 change in initialization flips
 convergence into divergence** — which is why every system above ships with an initializer,
-and why "we use RANSAC/an IMU prior/a coarse alignment first" is load-bearing, not a detail.
+and why "we use RANSAC/an IMU prior/a coarse alignment first" is load-bearing, not a detail. RANSAC (random sample consensus) fits many small random subsets of the data and keeps the fit most points agree with, so outliers cannot drag the start; an IMU prior is a starting guess integrated from the inertial measurement unit's accelerometers and gyroscopes.
 
 *It stops outright when $J$ loses rank.* Take a site-localization problem: three beacons on
 one wall at $a = (0,0), (8,0), (20,0)$, true position $(10, 6)$. Initialize the solver *on
@@ -372,20 +413,22 @@ a trust parameter.
   numerical tradeoff must be managed. When a paper reports trouble near singular
   configurations, this conditioning mechanism is one place to look.
 - **It is a heuristic, and the papers know it.** Levenberg–Marquardt has no guarantee of
-  reaching the global minimum — like $k$-means, it is used everywhere anyway. That is why
+  reaching the global minimum — like $k$-means clustering (which alternates assigning points to the nearest of $k$ centres and moving each centre to the mean of its points, and can stop at a poor local answer), it is used everywhere anyway. That is why
   this literature warm-starts from the previous solve, restarts from several
   initializations, and reports the best. When a SLAM or calibration paper says "we solve
   with Ceres / g2o / GTSAM," that only signals a nonlinear least-squares framework. Check
   the actual linearization, trust-region or line-search method, linear solver, and robust-loss
   settings; the library name alone identifies neither this algorithm nor a global optimum.
 - **A filter is running this same step.** One Gauss–Newton iteration is algebraically the
-  same update an iterated extended Kalman filter applies — the same weighted residual cost,
+  same update an iterated extended Kalman filter (the Kalman filter of [[02-foundations/probability|3. Probability §5]] with a nonlinear measurement model linearized, then re-linearized at the new estimate a few times per reading) applies — the same weighted residual cost,
   written in information form rather than covariance form. So the familiar split between
   "optimisation-based" and "filter-based" state estimators is a choice about which variables
   to keep, not about which problem is being solved
   ([[04-robotics/state-estimation-slam|State Estimation & SLAM §5]]).
 
 ### 4. Constrained optimization — Lagrange, KKT, duality
+
+*Second pass: open it the first time a paper says "subject to"; KKT reads much better with a concrete constraint in front of you. The First pass skips it.*
 
 - **Why add the constraint to the objective at all?** At a constrained optimum, you can't
   descend $f$ without violating a constraint — the *descent* direction $-\nabla f$ points
@@ -398,44 +441,50 @@ a trust parameter.
   - **Its parts, each named.** A scalar function of the decision variable and of one **multiplier** per constraint: $\lambda_i$ for the inequality $g_i\le0$ and $\nu_j$ for the equality $h_j=0$. Inequality multipliers must be nonnegative, because $\lambda_i g_i$ has to act as a penalty for violation ($g_i>0$) and never as a reward. Equality multipliers may have either sign, since $h_j$ can be violated in either direction.
   - **Example.** For the half-space projection worked below, $\min\tfrac12\lVert x-p\rVert^2$ s.t. $a^\top x-b\le0$, the Lagrangian is $\mathcal{L}(x,\lambda)=\tfrac12\lVert x-p\rVert^2+\lambda(a^\top x-b)$, and $\nabla_x\mathcal{L}=x-p+\lambda a=0$ is the stationarity line used there.
 
-<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="at a constrained optimum the gradient of the objective and the gradient of the constraint lie on one line pointing opposite ways">
-  <defs><marker id="opA" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
-  <g fill="currentColor" fill-opacity="0.07">
-    <polygon points="60,180 360,80 360,190 60,190"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.6" fill="none">
-    <line x1="60" y1="180" x2="360" y2="80"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.5">
-    <circle cx="300" cy="60" r="18"/>
-    <circle cx="300" cy="60" r="37.9"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.28" stroke-dasharray="4 3">
-    <circle cx="300" cy="60" r="58"/>
-  </g>
+<svg viewBox="0 0 560 296" style="max-width:100%;height:auto" role="img" aria-label="The projection onto the half-plane where x1 + x2 is at most 5, drawn to scale: the outside point p = (3, 4), level circles of f around it, the circle of radius root two touching the boundary at x* = (2, 3), where grad f = (-1, -1) and grad g = (1, 1) lie on one line facing opposite ways">
+  <defs><marker id="opA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <polygon points="48,270 268,270 48,50" fill="currentColor" fill-opacity="0.08"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="48" y1="270" x2="285.6" y2="270"/><line x1="48" y1="270" x2="48" y2="32.4"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="48" y1="270" x2="48" y2="274"/><line x1="92" y1="270" x2="92" y2="274"/><line x1="136" y1="270" x2="136" y2="274"/><line x1="180" y1="270" x2="180" y2="274"/><line x1="224" y1="270" x2="224" y2="274"/><line x1="268" y1="270" x2="268" y2="274"/><line x1="44" y1="226" x2="48" y2="226"/><line x1="44" y1="182" x2="48" y2="182"/><line x1="44" y1="138" x2="48" y2="138"/><line x1="44" y1="94" x2="48" y2="94"/><line x1="44" y1="50" x2="48" y2="50"/></g>
+  <line x1="48" y1="50" x2="268" y2="270" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="180" cy="94" r="22.0" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <circle cx="180" cy="94" r="62.2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8"/>
+  <circle cx="180" cy="94" r="80.9" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="4 3"/>
+  <line x1="136" y1="138" x2="180" y2="94" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.7"/>
   <g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#opA)">
-    <line x1="312" y1="96" x2="329.4" y2="148.2"/>
-    <line x1="312" y1="96" x2="294.6" y2="43.8"/>
+    <line x1="136" y1="138" x2="104.3" y2="169.7"/>
+    <line x1="136" y1="138" x2="167.7" y2="106.3"/>
   </g>
-  <g fill="currentColor"><circle cx="312" cy="96" r="3.6"/><circle cx="300" cy="60" r="2.6" opacity="0.6"/></g>
-  <g font-size="10.5" fill="currentColor">
-    <text x="70" y="164">feasible region &#183; g(x) &#8804; 0</text>
-    <text x="322" y="104">x&#8902;</text>
-    <text x="336" y="152">&#8711;f</text>
-    <text x="266" y="42">&#8711;g</text>
+  <circle cx="136" cy="138" r="4" fill="currentColor"/>
+  <circle cx="180" cy="94" r="3.4" fill="currentColor" fill-opacity="0.7"/>
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="48" y="286" text-anchor="middle">0</text>
+    <text x="92" y="286" text-anchor="middle">1</text>
+    <text x="136" y="286" text-anchor="middle">2</text>
+    <text x="180" y="286" text-anchor="middle">3</text>
+    <text x="224" y="286" text-anchor="middle">4</text>
+    <text x="268" y="286" text-anchor="middle">5</text>
+    <text x="40" y="230" text-anchor="end">1</text>
+    <text x="40" y="186" text-anchor="end">2</text>
+    <text x="40" y="142" text-anchor="end">3</text>
+    <text x="40" y="98" text-anchor="end">4</text>
+    <text x="40" y="54" text-anchor="end">5</text>
+    <text x="285.6" y="286" text-anchor="end">x₁</text>
+    <text x="58" y="36.4">x₂</text>
   </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.8">
-    <text x="366" y="82">g(x) = 0</text>
-    <text x="366" y="120">one line, opposite directions</text>
-    <text x="366" y="58">where f would go if unconstrained</text>
-  </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="212">At a constrained optimum no feasible direction lowers f any further. That is the same as saying</text>
-    <text x="24" y="228">&#8722;&#8711;f points straight out through the boundary, which is the same as saying &#8711;f and &#8711;g lie on one</text>
-    <text x="24" y="244">line facing opposite ways. &#955; &#8805; 0 is the ratio of their lengths, and &#8711;(f + &#955;g) = 0 is this picture</text>
-    <text x="24" y="260">written on one line &#8212; which is the whole reason the Lagrangian is worth forming.</text>
+  <g font-size="11" fill="currentColor">
+    <text x="58" y="258">feasible set: x₁ + x₂ ≤ 5</text>
+    <text x="229.6" y="225.6">boundary x₁ + x₂ = 5</text>
+    <text x="206" y="98">p = (3, 4)</text>
+    <text x="126" y="142" text-anchor="end">x* = (2, 3)</text>
+    <text x="74.3" y="191.7">∇f(x*) = (−1, −1)</text>
+    <text x="177.7" y="118.3">∇g = (1, 1)</text>
+    <text x="270.9" y="128" opacity="0.85">level circle f = 1, radius √2</text>
+    <text x="270.9" y="146">∇f = −λ∇g, λ = 1</text>
   </g>
 </svg>
+
+The projection worked below, drawn to scale: the point $p=(3,4)$ lies outside the half-plane $x_1+x_2\le5$ (shaded), and the smallest circle around $p$ that reaches the feasible set, the level set $f=1$ of radius $\sqrt2=1.414$, touches it at $x^\star=(2,3)$. There $\nabla f=x^\star-p=(-1,-1)$ and $\nabla g=(1,1)$ lie on one line facing opposite ways, $\nabla f=-\lambda\nabla g$ with $\lambda=1$, which is $\nabla(f+\lambda g)=0$ drawn.
 
 - **KKT conditions** (first-order optimality with constraints):
   1. Stationarity: $\nabla_x \mathcal{L} = 0$
@@ -487,6 +536,8 @@ a trust parameter.
 
 ### 5. Problem classes that matter for robotics
 
+Before choosing a solver, recognise the problem's class: the class, not the application, decides whether a global answer is guaranteed and how fast one arrives.
+
 | Class | Form | Where it appears |
 |---|---|---|
 | LP | linear $f$, linear constraints | resource allocation, scheduling relaxations |
@@ -510,7 +561,7 @@ $\mathcal X=\{x:Hx\le h\}$:
 
 $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 
-Read it as the LQR cost with a finite horizon and hard constraints reattached. The dynamics enter as equality constraints; substitute them out (condensing) and what remains is a convex QP in the $u$'s alone. Small, structured
+Read it as the LQR cost with a finite horizon and hard constraints reattached: LQR, the linear–quadratic regulator of [[04-robotics/lqr-lqg|6. LQR / LQG]], minimizes the same quadratic cost over an unlimited horizon with no constraints, and its answer is a fixed feedback gain. The dynamics enter as equality constraints; substitute them out (condensing) and what remains is a convex QP in the $u$'s alone. Small, structured
 QPs can run at millisecond scale with an appropriate solver and implementation; report the
 deadline and worst-case solve time. MPC re-solves each control step and applies the first input.
 
@@ -536,11 +587,11 @@ deadline and worst-case solve time. MPC re-solves each control step and applies 
 
 1. Show that the max of two convex functions is convex, and use it to argue hinge loss is convex.
 2. For $f(x) = \tfrac12 x^\top H x$ with eigenvalues $\{1, 100\}$: what is the largest
-   stable step size, and how many iterations to shrink the slow mode by 100×?
-3. In the projection example, verify all four KKT conditions in the binding case.
-4. Why is the MPC problem above convex, and what could make it non-convex in practice?
+   stable step size, and with $\alpha = 0.01$, half that limit, how many iterations shrink the slow mode by 100×?
+3. *(Second pass, §4.)* In the projection example, verify all four KKT conditions in the binding case.
+4. *(Second pass, §5.)* Why is the MPC problem above convex, and what could make it non-convex in practice?
    (Hint: obstacle avoidance constraints.)
-5. Two weights both equal 1, with $\sqrt{\hat v} = 10$ and $\sqrt{\hat v} = 0.1$. With
+5. *(Second pass, §3.)* Two weights both equal 1, with $\sqrt{\hat v} = 10$ and $\sqrt{\hat v} = 0.1$. With
    $\eta = 10^{-3}$, $\lambda = 10^{-2}$ and no momentum, how much does each shrink per step
    under Adam + L2, and under AdamW?
 
@@ -553,25 +604,25 @@ deadline and worst-case solve time. MPC re-solves each control step and applies 
 
 ### Problem set · 과제
 
-Tier B. **P1** from [[02-foundations/lab-plants|0.6]]. One gradient step, by hand. The backprop that produced the given gradient lives on [[02-foundations/calculus-backprop|2]]; do not re-derive it here.
+Tier B. **P1** from [[02-foundations/lab-plants|0.6]], the two-layer test network, whose forward pass gives $h=(1,2,3)$ and $\hat y=0.5$. Every item moves only $W_2$ with $h$ held fixed, so its gradient is $(\hat y-y)\,h$ from §3's P1 step; the full backprop through $W_1$ lives on [[02-foundations/calculus-backprop|2]] and is not needed here.
 
 1. **Draw.** The picture above for the third weight instead of the first: $L=\tfrac12(\hat y-1)^2$ versus $W_{2,3}$ near $0.5$, holding $W_{2,1}=1$, $W_{2,2}=-1$ and $h=(1,2,3)$ fixed. Mark the catalog point, its tangent, the step $\eta=0.1$ along this weight alone, and the step sizes that land on the vertex and that diverge on this slice. Why is this parabola narrower than the one in the picture above?
-2. **Derive.** One GD step $W_2\leftarrow W_2-\eta\,\partial L/\partial W_2$ with $\eta=0.1$ and $\partial L/\partial W_2=(-0.5,-1,-1.5)$, from catalog $W_2=(1,-1,0.5)$.
-3. **Interpret.** Repeat with $\eta=10$. New $W_2$, and what happens to $L$?
+2. **Derive.** The label changes. The same input gives the same $h=(1,2,3)$ and $\hat y=0.5$, but the target is now $y=2$. (a) Write $\partial L/\partial W_2$ for $L=\tfrac12(W_2h-y)^2$ with $h$ fixed, and evaluate it. (b) Take one step $W_2\leftarrow W_2-\eta\,\partial L/\partial W_2$ with $\eta=0.06$ from the catalog $W_2=(1,-1,0.5)$: the new $W_2$, $\hat y$ and $L$. (c) Show that the residual $\hat y-y$ was multiplied by $1-\eta\lVert h\rVert^2$. Which $\eta$ would land exactly on the new target, above which $\eta$ does the step diverge, and did the new label move either value?
+3. **Interpret.** A second training example: its input $x=(1,3)$ passes the catalog $W_1$ and the ReLU to $h=(1,3,4)$, and its label is again $y=1$. Take one step from the catalog $W_2$ with the $\eta=0.1$ that converged on the catalog example: the new $W_2$, $\hat y$ and $L$. Why does the learning rate that shrank the catalog residual make this one grow, and what is the largest $\eta$ for which a step on either example alone is stable?
 
 > [!note]- How to draw it · 그리는 법
 > - Axes $W_{2,3}$ (about $0.3$ to $1$) and $L$ ($0$ to about $0.6$). With $h=(1,2,3)$ and the other two weights at their catalog values, $\hat y=3W_{2,3}-1$, so the curve is the parabola $L=\tfrac12(3W_{2,3}-2)^2=\tfrac92(W_{2,3}-\tfrac23)^2$ with its vertex at $(0.667,\ 0)$.
 > - The catalog point $W_{2,3}=0.5$ at height $L=0.125$, the same loss as in the picture above because both slices pass through the catalog state; a dot at any other height means the slice was taken wrong.
-> - The tangent at that point, labelled with its slope $\partial L/\partial W_{2,3}=3(3\cdot0.5-2)=-1.5$ — the third entry of the gradient item 2 uses.
+> - The tangent at that point, labelled with its slope $\partial L/\partial W_{2,3}=3(3\cdot0.5-2)=-1.5$ — the third entry of the catalog gradient $(-0.5,-1,-1.5)$ of §3's P1 step.
 > - The step as a horizontal arrow *against* the slope, drawn to scale: $\eta=0.1$ moves this weight $0.15$, to $0.65$ ($L=0.00125$), just short of the vertex.
 > - Three marks on the axis for what a step size does on this slice, where the curvature is $h_3^2=9$: $\eta=1/9=0.111$ lands exactly on the vertex, anything up to $2/9=0.222$ still converges, and past that the iterate walks away.
 > - Draw the picture above's parabola faintly on the same scale, shifted so the two catalog points coincide: curvature $1$ against $9$. The same $\eta=0.1$ that crawls a tenth of the way along $W_{2,1}$ goes nine tenths of the way along $W_{2,3}$.
-> - Items 2 and 3 move all three weights: keep their numbers off this slice, or write them in a corner box labelled "full step".
+> - Items 2 and 3 move all three weights, and item 3 even changes $h$: keep their numbers off this slice, or write them in a corner box labelled "full step".
 
 > [!tip]- Solutions
 > 1. $\hat y=1-2+3W_{2,3}=3W_{2,3}-1$, so $L=\tfrac12(3W_{2,3}-2)^2=\tfrac92(W_{2,3}-\tfrac23)^2$, minimum at $0.667$. The catalog $W_{2,3}=0.5$ sits at $L=0.125$ on the left slope, with slope $-1.5$, the third entry of $\partial L/\partial W_2$. The curvature is $h_3^2=9$, nine times the first slice's $h_1^2=1$, which is why the parabola is narrower. A step of $\eta=0.1$ along this weight alone moves it $0.15$, to $0.65$ ($L=0.00125$), just short of the vertex; $\eta=1/9=0.111$ lands on it and $\eta>2/9=0.222$ diverges. The curvature along a weight is the square of the activation it multiplies, so one learning rate is a different fraction of the Newton step along each weight.
-> 2. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
-> 3. $W_2\leftarrow(1,-1,0.5)+(5,10,15)=(6,9,15.5)$. Then $\hat y=70.5$ and $L$ explodes. $\eta=10$ is far past a stable step on this scale.
+> 2. (a) With $h$ fixed, $\hat y=W_2h$ is linear in $W_2$, so $\partial L/\partial W_2=(\hat y-y)\,h=(0.5-2)(1,2,3)=(-1.5,-3,-4.5)$, three times the catalog gradient because the miss, $-1.5$, is three times the catalog's $-0.5$; the loss starts at $L=\tfrac12(1.5)^2=1.125$. (b) $W_2\leftarrow(1,-1,0.5)-0.06(-1.5,-3,-4.5)=(1.09,-0.82,0.77)$, so $\hat y=1.09-1.64+2.31=1.76$ and $L=\tfrac12(0.24)^2=0.0288$. (c) The residual went from $-1.5$ to $-0.24=-1.5\times0.16$, and $1-0.06\times14=0.16$. The exact step is still $\eta=1/14\approx0.071$, which lands on $\hat y=2$, and the step still diverges past $2/14\approx0.143$: the label moved neither, because the curvature $\lVert h\rVert^2$ is built from the input alone, and the label only sets how far away the target is. Since $0.06<1/14$, the factor is positive and the output approaches $2$ from one side, where the lecture's $\eta=0.1$, past $1/14$, overshoots with the factor $-0.4$.
+> 3. Here $\hat y=1-3+2=0$, the residual is $-1$ and $L=0.5$. The gradient is $-1\cdot(1,3,4)$, so $W_2\leftarrow(1,-1,0.5)+0.1\,(1,3,4)=(1.1,-0.7,0.9)$, $\hat y=1.1-2.1+3.6=2.6$ and $L=\tfrac12(1.6)^2=1.28$: the loss more than doubled. Along this example's gradient the curvature is $\lVert h\rVert^2=1+9+16=26$, so the residual is multiplied by $1-0.1\times26=-1.6$, larger than $1$ in size, and every further step makes it $1.6$ times larger with its sign flipped: divergence. The catalog example has $\lVert h\rVert^2=14$ and the factor $-0.4$. The steepest example sets the limit: a step on either one alone is stable only for $\eta<2/26\approx0.077$, and $1/26\approx0.038$ is the exact step for this one. Larger inputs mean larger curvature, which is one reason inputs are normalized before training: a learning rate that works on small inputs can diverge on large ones.
 
 ### Robotics bridge
 
@@ -584,15 +635,19 @@ Constraints and nonlinear optimization become executable robot decisions in [[04
 
 최적화는 이 위키의 공용 언어다: 네트워크 학습([[01-canonical-papers/notes/1-foundations/adam|Adam]]),
 MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적함수 최소화"다. 교재 수준의
-서술: 조건, 유도, 그리고 완전히 써 내려간 MPC-QP 예제.
+서술: 조건, 유도, 그리고 완전히 써 내려간 MPC-QP 예제. 이 페이지가 계속 쓰는 대상은
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치(plant: 제어하거나 측정하는 대상 시스템) P1, 곧 그림이 경사 한 스텝을 그리는 2층 연습 신경망($2\to3\to1$, ReLU)이다.
+
+> [!note] 왜 배우는가 · Why this matters
+> 최적화는 [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택에서 계획, 파지, 조작 층 아래에 깔린 수학의 바닥이다. "*저 패널을 프레임에 설치해*"에서 작업을 과제 배정으로 나누는 일과 파지를 계획하는 일은 모두 "제약 아래 목적함수 최소화"이고, 패널을 옮기는 감쇠 최소자승 스텝, 팔을 한계 안에 붙잡아 두는 MPC, 패널과 프레임의 위치를 정하는 보정도 마찬가지다([[physical-ai-map|피지컬 AI 지도]]에 그 자리가 표시되어 있다). 이것 없이는 솔버의 답과 우연을 가려낼 수 없다. 이 페이지의 비콘 세 개 문제에서 Gauss–Newton은 벽 위에서 시작하면 멈춰 서고 벽에서 $0.5$ m 떨어진 곳에서 시작하면 $y=32.3$까지 날아가며(§3.5), $0.1$이면 되는 스텝 크기를 $10$으로 두면 P1의 손실이 한 스텝 만에 $0.125$에서 $2415$로 뛴다(그림). 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])에서 §3.5는 블록 2의 [[04-robotics/system-identification|5.5 시스템 식별 §5]], [[04-robotics/state-estimation-slam|3. 상태 추정 §7]], [[04-robotics/geometric-perception-calibration|3.5 기하 인식과 보정 §4]] 안의 풀이법으로 돌아오고, §4–§5는 [[04-robotics/mpc|7. MPC §1]](블록 2)과 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어 §4]](블록 3)의 QP로, §3은 딥러닝 [[03-deep-learning/foundations/index|1. 학습 시스템 §2]](블록 4)의 학습 스텝으로 돌아온다. 이 페이지를 마치면 로봇의 결정을 변수, 목적함수, 제약으로 적고, 그것이 볼록인지 말하고, 솔버를 안정하게 지키는 스텝 크기나 감쇠를 고를 수 있다.
 
 > [!note] 처음이라면 · First pass
-> 그림, §1, 그다음 §2 — 볼록성이 나머지 전부가 걸리는 분기점이다 — 그리고 §3을 읽어라. §3의 P1 스텝이 그림의 계산이다. §4는 논문이 처음 "subject to"라고 쓸 때 펴라. 눈앞에 구체적인 제약을 두고 읽으면 KKT가 훨씬 잘 읽힌다. §3.5는 SLAM·보정·IK 논문이 "최적화한다"고 쓸 때를 위한 것이니, 그런 논문을 손에 들고 읽어라. §5는 찾아보는 문제 부류 표이고 §6은 이 페이지가 위키 어디에 다시 나오는지 보여주는 한 화면짜리 지도이니, 둘 다 훑어보면 된다.
+> 60–90분짜리 두 회차면 된다. **1회차, 문제와 그 모양:** 그림, §1, §2. 문제의 부분들, 지역·전역 최솟값, 그리고 나머지 전부가 걸리는 분기점인 볼록성이다. 스스로 점검 1로 마친다. **2회차, 내리막 걷기:** §3의 앞부분, 곧 최적성 조건, 경사 하강 갱신식, 경사 하강 대 뉴턴, 곡률 유도까지 포함한 P1 스텝(그림의 계산), 확률적 그래디언트를 읽고 스스로 점검 2와 과제를 푼다. 나머지는 두 번째 읽기다. §3의 모멘텀부터는 [[03-deep-learning/foundations/index|1. 학습 시스템]]과 함께 또는 논문이 옵티마이저를 밝힐 때, §3.5는 SLAM·보정·IK 논문을 손에 들고, §4는 논문이 처음 "subject to"라고 쓸 때 읽는다. §5는 찾아보는 문제 부류 표이고 §6은 이 페이지가 위키 어디에 다시 나오는지 보여주는 한 화면짜리 지도이니 둘 다 훑어보면 된다. 스스로 점검 3–5는 그때 함께 푼다.
 
 ### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 482" style="max-width:100%;height:auto" role="img" aria-label="가중치 하나 W2,1에 대한 손실: 꼭짓점 1.5의 포물선, 높이 0.125와 기울기 -0.5인 카탈로그 점 1, 남은 거리 0.5 옆에 같은 축척으로 그린 1.05까지의 eta = 0.1 스텝, 축 위의 스텝 크기 1과 2, 아래에는 끊은 축 위의 6까지의 eta = 10 스텝과 실제 스텝의 2415.1">
-  <defs><marker id="aOpK" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <defs><marker id="aOpk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <line x1="60" y1="214" x2="530" y2="214" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
   <line x1="60" y1="214" x2="60" y2="30" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.8"/>
   <text x="548" y="230" font-size="11" fill="currentColor" text-anchor="end">W<tspan dy="3" font-size="9.5">2,1</tspan></text>
@@ -618,7 +673,7 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
   <line x1="141.8" y1="134.5" x2="277.2" y2="214" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" stroke-dasharray="5 3"/>
   <text x="74" y="160" font-size="11" fill="currentColor">접선 기울기</text>
   <text x="74" y="175" font-size="11" fill="currentColor">1 − 1.5 = −0.5</text>
-  <line x1="213.3" y1="176.5" x2="226.6" y2="176.5" stroke="currentColor" stroke-width="1.3" marker-end="url(#aOpK)"/>
+  <line x1="213.3" y1="176.5" x2="226.6" y2="176.5" stroke="currentColor" stroke-width="1.3" marker-end="url(#aOpk)"/>
   <circle cx="213.3" cy="176.5" r="4.5" stroke="none" fill="currentColor"/>
   <circle cx="226.1" cy="183.6" r="3" stroke="currentColor" stroke-width="1.3" fill="currentColor" fill-opacity="0.0"/>
   <text x="204.3" y="194.5" font-size="11" fill="currentColor" text-anchor="end">(1, 0.125)</text>
@@ -633,7 +688,7 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
   <text x="341.1" y="251" font-size="11" fill="currentColor" text-anchor="middle">η = 1</text>
   <path d="M464.4 238 L468.9 233 L473.4 238 Z" stroke="none" fill="currentColor" stroke-linejoin="round"/>
   <text x="468.9" y="251" font-size="11" fill="currentColor" text-anchor="middle">η = 2</text>
-  <line x1="489.3" y1="247" x2="509.3" y2="247" stroke="currentColor" stroke-width="1.2" marker-end="url(#aOpK)"/>
+  <line x1="489.3" y1="247" x2="509.3" y2="247" stroke="currentColor" stroke-width="1.2" marker-end="url(#aOpk)"/>
   <text x="513.3" y="251" font-size="11" fill="currentColor">η &gt; 2</text>
   <text x="208" y="30" font-size="11" fill="currentColor" fill-opacity="1.0">η = 0.1: W<tspan dy="3" font-size="9.5">2,1</tspan><tspan dy="-3" dx="3.5">1 → 1.05, L 0.125 → 0.101</tspan></text>
   <text x="208" y="46" font-size="11" fill="currentColor" fill-opacity="1.0">여기 곡률은 1: 한 스텝이 1 + 0.5η에 내려앉는다.</text>
@@ -670,7 +725,7 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
   <text x="53" y="344" font-size="11" fill="currentColor" text-anchor="end" fill-opacity="0.85">10</text>
   <path d="M60.3 364 L62.4 367 L64.4 369.9 L66.4 372.7 L68.5 375.4 L70.5 378.1 L72.5 380.6 L74.6 383.2 L76.6 385.6 L78.6 388 L80.7 390.2 L82.7 392.5 L84.7 394.6 L86.8 396.7 L88.8 398.7 L90.8 400.6 L92.8 402.4 L94.9 404.2 L96.9 405.9 L98.9 407.5 L101 409 L103 410.5 L105 411.9 L107.1 413.2 L109.1 414.4 L111.1 415.6 L113.2 416.6 L115.2 417.7 L117.2 418.6 L119.3 419.5 L121.3 420.2 L123.3 421 L125.4 421.6 L127.4 422.2 L129.4 422.6 L131.5 423.1 L133.5 423.4 L135.5 423.7 L137.5 423.9 L139.6 424 L141.6 424 L143.6 424 L145.7 423.9 L147.7 423.7 L149.7 423.4 L151.8 423.1 L153.8 422.6 L155.8 422.2 L157.9 421.6 L159.9 421 L161.9 420.2 L164 419.5 L166 418.6 L168 417.7 L170.1 416.7 L172.1 415.6 L174.1 414.4 L176.2 413.2 L178.2 411.9 L180.2 410.5 L182.3 409 L184.3 407.5 L186.3 405.9 L188.3 404.2 L190.4 402.4 L192.4 400.6 L194.4 398.6 L196.5 396.7 L198.5 394.6 L200.5 392.5 L202.6 390.2 L204.6 388 L206.6 385.6 L208.7 383.2 L210.7 380.6 L212.7 378.1 L214.8 375.4 L216.8 372.7 L218.8 369.9 L220.9 367 L222.9 364" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
   <path d="M471.8 350 L472.4 346 L473.1 342.1 L473.7 338.1 L474.4 334.1 L475.1 330.1 L475.7 326.1 L476.4 322.1 L477 318.1 L477.7 314 L478.4 310" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
-  <line x1="104.5" y1="411.5" x2="475.5" y2="411.5" stroke="currentColor" stroke-width="1.5" marker-end="url(#aOpK)"/>
+  <line x1="104.5" y1="411.5" x2="475.5" y2="411.5" stroke="currentColor" stroke-width="1.5" marker-end="url(#aOpk)"/>
   <circle cx="104.5" cy="411.5" r="4.5" stroke="none" fill="currentColor"/>
   <line x1="475.5" y1="405.5" x2="475.5" y2="366" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 3"/>
   <line x1="475.5" y1="348" x2="475.5" y2="332.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.8" stroke-dasharray="2 3"/>
@@ -681,9 +736,11 @@ MPC 풀기, 궤적 계획, 건설 작업 할당이 모두 "제약 아래 목적�
   <text x="12" y="470" font-size="11" fill="currentColor" fill-opacity="0.85">그림 하나, 스텝 크기 둘. 학습과 발산을 가르는 유일한 차이다.</text>
 </svg>
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**, 그 가중치 하나 $W_{2,1}$만 남긴 단면에서 손실은 포물선 $L=\tfrac12(W_{2,1}-1.5)^2$이고, 카탈로그 점 $(1,\ 0.125)$의 기울기는 $-0.5$이며, 스텝 $\eta=0.1$은 꼭짓점까지 남은 $0.5$ 옆에서 가중치를 $0.05$ 옮겨 $1.05$($L=0.101$)에 놓는다. 이 단면의 곡률은 $1$이라 $\eta=1$은 꼭짓점에 내려앉고 $\eta>2$는 발산한다(곡률 $c$인 포물선에서 스텝 하나는 꼭짓점까지의 거리에 $1-\eta c$를 곱한다; §3). 가중치 셋을 모두 움직이는 실제 그래디언트 방향의 곡률은 헤시안 $hh^\top$의 유일한 0 아닌 고윳값 $\lVert h\rVert^2=14$(§3의 P1 스텝에서 유도)라 정확 스텝은 $1/14\approx0.071$, 발산 문턱은 $2/14\approx0.143$으로 옮겨 간다. 아래 칸은 $\eta=10$으로, 가중치가 $6$으로 튀고(단면에서 $L=10.125$) 가중치 셋을 모두 움직이는 스텝은 $\hat y=70.5$, $L=2415.1$에 이른다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P1**에서 가중치 하나 $W_{2,1}$만 남긴 단면이다. 손실은 곡률 $1$인 포물선 $L=\tfrac12(W_{2,1}-1.5)^2$이라 스텝 하나가 꼭짓점까지의 거리에 $1-\eta$를 곱하므로(§3), 기울기가 $-0.5$인 카탈로그 점 $(1,\ 0.125)$에서 스텝 $\eta=0.1$은 꼭짓점까지 $0.5$를 남기고 가중치를 $0.05$ 옮겨 $1.05$($L=0.101$)에 놓고, $\eta=1$은 꼭짓점에 내려앉고, $\eta>2$는 발산한다. 가중치 셋을 모두 움직이는 실제 그래디언트 방향의 곡률은 헤시안 $hh^\top$의 유일한 0 아닌 고윳값 $\lVert h\rVert^2=14$(§3의 P1 스텝에서 유도)라 정확 스텝은 $1/14\approx0.071$, 발산 문턱은 $2/14\approx0.143$으로 옮겨 가며, 아래 칸의 $\eta=10$은 가중치를 $6$으로 튀게 하고(단면에서 $L=10.125$) 가중치 셋을 모두 움직이는 스텝으로는 $\hat y=70.5$, $L=2415.1$에 이른다.
 
 ### 1. 문제의 구조
+
+학습 스텝에서 팔의 경로까지, 이 위키의 결정은 모두 세 부분으로 되어 있다. 솔버가 바꿀 수 있는 것, 작게 만들 것, 절대 어겨서는 안 되는 것이다. 선호와 필수 조건은 역할이 다르다. 로봇은 짧은 경로를 선호하면서 작업 영역 경계를 반드시 지켜야 할 수 있으므로, 경로 비용은 목적함수에, 허용 조건은 제약에 넣고, 그 모델이 실제 장애물과 구동 한계를 표현하는지 판단한다. 제약이 없는 경우는 정역학에서 이미 만났다. 일정한 힘으로 밀린 스프링은 전체 퍼텐셜 에너지 $\tfrac12ky^2-Fy$가 가장 작은 곳에 멈춘다. 그곳에서 도함수 $ky-F$가 0이 되기 때문이다. [[02-foundations/lab-plants|0.6 Lab Plants]]의 1축 햅틱 핸들 P3를 $400\,\mathrm{N/m}$ 벽에 $0.4\,\mathrm N$으로 밀면 $y^\star=0.4/400=1\,\mathrm{mm}$이고, 이는 [[02-foundations/basic-mechanics|0.6.1 §6]]이 에너지 장부로 도달하는 정지점이다.
 
 $$\min_{x \in \mathbb{R}^n} f(x) \quad \text{s.t.} \quad g_i(x) \le 0, \; h_j(x) = 0$$
 
@@ -704,9 +761,11 @@ $$f(x^\star)\le f(x)\quad\text{for every } x\in\mathcal{F}$$
 > [!example] 계산 예제 · Worked example
 > $x\le1$, 즉 $g(x)=x-1\le0$ 아래에서 $f(x)=(x-3)^2$를 최소화한다. 실행 가능 집합은 $(-\infty,1]$이다. 제약이 없다면 답은 $x=3$이지만 실행 불가능하다. 실행 가능 집합 위에서 $f$는 $x$가 $1$로 갈수록 계속 줄어드므로 $x^\star=1$, $p^\star=(1-3)^2=4$다. 제약이 답을 바꿨다. 이것이 최적점에서 제약이 **활성**이라는 것, $g(x^\star)=0$의 뜻이다.
 
-선호와 필수 조건의 역할이 달라 정식화가 필요하다. 로봇은 짧은 경로를 선호하면서 작업 공간 경계를 반드시 지켜야 할 수 있다. 경로 비용은 목적함수에, 허용 조건은 제약에 넣고 모델이 실제 장애물과 구동 한계를 표현하는지 판단한다. **여기서 얻는 독법.** 해법보다 먼저 바꿀 수 있는 것과 반드시 만족할 것을 적는다. 목적값 감소는 실행 가능성의 증거가 아니며 근사 모델의 가능성이 물리 시스템의 모든 요구 충족을 증명하지는 않는다.
+**여기서 얻는 독법.** 해법보다 먼저 바꿀 수 있는 것과 반드시 만족할 것을 적는다. 목적값 감소는 실행 가능성의 증거가 아니며 근사 모델의 가능성이 물리 시스템의 모든 요구 충족을 증명하지는 않는다.
 
 ### 2. 볼록성 — 결정적 분기점
+
+경사 하강(§3)은 자기가 선 자리의 기울기만 보므로, 가장 낮지 않은 웅덩이의 바닥에 멈추고도 그 사실을 모를 수 있다. 볼록성이 이것을 막는 성질이다. 볼록 문제에서는 모든 지역 최솟값이 전역이므로, 솔버가 멈춘 곳이 곧 답이다. 정역학은 이런 문제로 가득하다. 지지된 구조물의 평형은 전체 퍼텐셜 에너지 $\tfrac12u^\top Ku-f^\top u$를 최소화하는데, 지점이 강체 모드를 막아 강성 행렬 $K$가 양의 정부호이므로([[02-foundations/linear-algebra|1. 선형대수 §3]]) 이 이차식은 볼록이고, 그래디언트를 0으로 놓으면 정확히 $Ku=f$가 나온다.
 
 - 집합이 볼록 = 두 점 사이 선분을 모두 포함; $f$가 볼록 =
   $f(\lambda x + (1-\lambda)y) \le \lambda f(x) + (1-\lambda)f(y)$ — (2차 미분 가능하면)
@@ -723,32 +782,60 @@ $$f(x^\star)\le f(x)\quad\text{for every } x\in\mathcal{F}$$
   - **예.** $f(x)=x^2$, $x=-1$, $y=3$, $\lambda=0.5$: $f(1)=1\le0.5(1)+0.5(9)=5$ ✓이고, 모든 곳에서 $f''=2\ge0$.
   - **반례.** $f(x)=x^4-2x^2$, $x=-1$, $y=1$, $\lambda=0.5$: $f(0)=0$인데 $0.5f(-1)+0.5f(1)=-1$이라 그래프가 현 위로 솟는다. $f''(0)=-4<0$도 같은 말을 한다.
   - **엄격 볼록과 강볼록.** $x\ne y$, $0<\lambda<1$에서 부등식이 엄격하면 **엄격 볼록**, 모든 곳에서 $H(x)\succeq mI$($m>0$), 즉 모든 방향의 곡률이 적어도 $m$이면 계수 $m$의 **강볼록**이다. $x^2$은 강볼록($m=2$)이고, $x^4$은 $f''(0)=0$이므로 엄격 볼록이지만 강볼록은 아니다. §3의 뉴턴 수렴 주장에는 강볼록이 필요하다.
-- 볼록 문제 = 볼록 가능 영역 위의 볼록 $f$ ⇒ **모든 지역 최솟값이 전역**이다. 많은 표준
+- 볼록 문제 = 볼록 실행 가능 집합 위의 볼록 $f$ ⇒ **모든 지역 최솟값이 전역**이다. 많은 표준
   유한차원 볼록 문제에는 명시된 가정 아래 전역해 보장과 효율적인 솔버가 있다.
   - **조건들, 각각의 이름.** §1의 형태에서 (1) 목적함수 $f$가 볼록이고, (2) 모든 부등식 함수 $g_i$가 볼록이고, (3) 모든 등식 함수 $h_j$가 아핀, $h_j(x)=a_j^\top x-b_j$이면 문제가 **볼록**이다. (2)와 (3)이 실행 가능 집합을 볼록으로 만든다. $\{g_i\le0\}$은 볼록 함수의 하위 수준 집합이고, $x_1^2+x_2^2=1$ 같은 비선형 등식은 볼록이 아닌 원이기 때문이다.
   - **지역이 곧 전역인 이유.** $x^\star$가 지역 최솟값인데 어떤 실행 가능한 $y$가 $f(y)<f(x^\star)$라고 하자. $\lambda$가 $1$보다 조금 작은 점 $\lambda x^\star+(1-\lambda)y$는 실행 가능하고 $x^\star$에 얼마든지 가깝다. 볼록성에 의해 그 점들에서 $f\le\lambda f(x^\star)+(1-\lambda)f(y)<f(x^\star)$이므로 지역 최적성과 모순이다.
   - **숫자로 본 반례.** $f(x)=x^4-2x^2+0.5x$에는 지역 최솟값이 둘 있다. $x\approx-1.057$에서 $f\approx-1.515$, $x\approx0.930$에서 $f\approx-0.517$이고, 사이에 $x\approx0.127$의 지역 최댓값이 있다. $x=2$에서 스텝 $0.01$로 시작한 경사 하강은 더 나쁜 쪽인 $0.930$에 멈추고, 국소 정보는 그 사실을 알려주지 않는다.
 
-<svg viewBox="0 0 480 152" style="max-width:100%;height:auto" role="img" aria-label="볼록 지형과 비볼록 지형">
-  <g fill="none" stroke="currentColor" stroke-width="1.8">
-    <path d="M25,32 Q120,152 215,32"/>
-    <path d="M265,50 C288,122 302,60 326,102 C349,142 366,50 396,98 C416,130 436,74 455,45"/>
+<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="왼쪽은 볼록한 x제곱과 그 현, 오른쪽은 비볼록한 x⁴ − 2x² + 0.5x와 두 최솟값, 극댓값, 그리고 x = 2에서 스텝 0.01로 출발해 더 나쁜 최솟값 0.930에 멈추는 경사 하강 경로">
+  <defs><marker id="opCvk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="36" y1="236" x2="266" y2="236"/><line x1="306" y1="244" x2="550" y2="244"/><line x1="306" y1="169.2" x2="550" y2="169.2" stroke-dasharray="3 3" opacity="0.6"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="59" y1="236" x2="59" y2="240"/><line x1="105" y1="236" x2="105" y2="240"/><line x1="151" y1="236" x2="151" y2="240"/><line x1="197" y1="236" x2="197" y2="240"/><line x1="243" y1="236" x2="243" y2="240"/><line x1="346.8" y1="244" x2="346.8" y2="248"/><line x1="414.8" y1="244" x2="414.8" y2="248"/><line x1="482.8" y1="244" x2="482.8" y2="248"/></g>
+  <path d="M36 202.2 L37.9 204.1 L39.8 205.9 L41.7 207.6 L43.6 209.3 L45.5 210.9 L47.4 212.5 L49.3 214 L51.2 215.5 L53.1 216.9 L55 218.3 L56.9 219.6 L58.8 220.9 L60.7 222.1 L62.6 223.3 L64.5 224.4 L66.4 225.5 L68.3 226.5 L70.3 227.4 L72.2 228.4 L74.1 229.2 L76 230 L77.9 230.8 L79.8 231.5 L81.7 232.1 L83.6 232.7 L85.5 233.3 L87.4 233.8 L89.3 234.2 L91.2 234.6 L93.1 235 L95 235.3 L96.9 235.5 L98.8 235.7 L100.7 235.9 L102.6 236 L104.5 236 L106.4 236 L108.3 235.9 L110.2 235.8 L112.1 235.6 L114 235.4 L115.9 235.2 L117.8 234.8 L119.7 234.5 L121.6 234 L123.5 233.6 L125.4 233 L127.3 232.5 L129.2 231.8 L131.1 231.2 L133 230.4 L135 229.6 L136.9 228.8 L138.8 227.9 L140.7 227 L142.6 226 L144.5 225 L146.4 223.9 L148.3 222.7 L150.2 221.5 L152.1 220.3 L154 219 L155.9 217.6 L157.8 216.2 L159.7 214.8 L161.6 213.3 L163.5 211.7 L165.4 210.1 L167.3 208.5 L169.2 206.8 L171.1 205 L173 203.2 L174.9 201.4 L176.8 199.4 L178.7 197.5 L180.6 195.5 L182.5 193.4 L184.4 191.3 L186.3 189.1 L188.2 186.9 L190.1 184.6 L192 182.3 L193.9 179.9 L195.8 177.5 L197.7 175 L199.6 172.5 L201.6 169.9 L203.5 167.3 L205.4 164.6 L207.3 161.9 L209.2 159.1 L211.1 156.2 L213 153.4 L214.9 150.4 L216.8 147.4 L218.7 144.4 L220.6 141.3 L222.5 138.2 L224.4 135 L226.3 131.7 L228.2 128.4 L230.1 125.1 L232 121.7 L233.9 118.2 L235.8 114.7 L237.7 111.2 L239.6 107.5 L241.5 103.9 L243.4 100.2 L245.3 96.4 L247.2 92.6 L249.1 88.7 L251 84.8 L252.9 80.9 L254.8 76.9 L256.7 72.8 L258.6 68.7 L260.5 64.5 L262.4 60.3 L264.3 56" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="59" y1="221" x2="243" y2="101" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 4"/>
+  <line x1="151" y1="161" x2="151" y2="221" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" opacity="0.7"/>
+  <g fill="currentColor"><circle cx="59" cy="221" r="3"/><circle cx="243" cy="101" r="3"/><circle cx="151" cy="161" r="3.4"/><circle cx="151" cy="221" r="3.4"/></g>
+  <path d="M306 147.7 L306.7 150.8 L307.4 153.9 L308 156.9 L308.7 159.8 L309.4 162.7 L310.1 165.4 L310.8 168.1 L311.4 170.7 L312.1 173.2 L312.8 175.6 L313.5 177.9 L314.2 180.2 L314.8 182.4 L315.5 184.5 L316.2 186.5 L316.9 188.5 L317.6 190.4 L318.2 192.2 L318.9 194 L319.6 195.7 L320.3 197.3 L321 198.9 L321.6 200.3 L322.3 201.8 L323 203.1 L323.7 204.5 L324.4 205.7 L325 206.9 L325.7 208 L326.4 209.1 L327.1 210.1 L327.8 211.1 L328.4 212 L329.1 212.9 L329.8 213.7 L330.5 214.5 L331.2 215.2 L331.8 215.8 L332.5 216.4 L333.2 217 L333.9 217.5 L334.6 218 L335.2 218.5 L335.9 218.9 L336.6 219.2 L337.3 219.5 L338 219.8 L338.6 220 L339.3 220.2 L340 220.4 L340.7 220.5 L341.4 220.6 L342 220.7 L342.7 220.7 L343.4 220.7 L344.1 220.7 L344.8 220.6 L345.4 220.5 L346.1 220.4 L346.8 220.2 L347.5 220 L348.2 219.8 L348.8 219.6 L349.5 219.3 L350.2 219 L350.9 218.7 L351.6 218.4 L352.2 218 L352.9 217.7 L353.6 217.3 L354.3 216.9 L355 216.4 L355.6 216 L356.3 215.5 L357 215 L357.7 214.5 L358.4 214 L359 213.5 L359.7 212.9 L360.4 212.4 L361.1 211.8 L361.8 211.2 L362.4 210.7 L363.1 210.1 L363.8 209.4 L364.5 208.8 L365.2 208.2 L365.8 207.6 L366.5 206.9 L367.2 206.3 L367.9 205.6 L368.6 204.9 L369.2 204.3 L369.9 203.6 L370.6 202.9 L371.3 202.2 L372 201.5 L372.6 200.9 L373.3 200.2 L374 199.5 L374.7 198.8 L375.4 198.1 L376 197.4 L376.7 196.7 L377.4 196 L378.1 195.3 L378.8 194.6 L379.4 193.9 L380.1 193.3 L380.8 192.6 L381.5 191.9 L382.2 191.2 L382.8 190.6 L383.5 189.9 L384.2 189.2 L384.9 188.6 L385.6 187.9 L386.2 187.3 L386.9 186.6 L387.6 186 L388.3 185.4 L389 184.8 L389.6 184.2 L390.3 183.6 L391 183 L391.7 182.4 L392.4 181.8 L393 181.2 L393.7 180.7 L394.4 180.1 L395.1 179.6 L395.8 179.1 L396.4 178.6 L397.1 178.1 L397.8 177.6 L398.5 177.1 L399.2 176.6 L399.8 176.2 L400.5 175.7 L401.2 175.3 L401.9 174.8 L402.6 174.4 L403.2 174 L403.9 173.6 L404.6 173.3 L405.3 172.9 L406 172.5 L406.6 172.2 L407.3 171.9 L408 171.6 L408.7 171.3 L409.4 171 L410 170.7 L410.7 170.5 L411.4 170.2 L412.1 170 L412.8 169.8 L413.4 169.6 L414.1 169.4 L414.8 169.2 L415.5 169 L416.2 168.9 L416.8 168.8 L417.5 168.6 L418.2 168.5 L418.9 168.4 L419.6 168.3 L420.2 168.3 L420.9 168.2 L421.6 168.2 L422.3 168.1 L423 168.1 L423.6 168.1 L424.3 168.1 L425 168.2 L425.7 168.2 L426.4 168.2 L427 168.3 L427.7 168.4 L428.4 168.5 L429.1 168.6 L429.8 168.7 L430.4 168.8 L431.1 168.9 L431.8 169.1 L432.5 169.2 L433.2 169.4 L433.8 169.6 L434.5 169.7 L435.2 169.9 L435.9 170.2 L436.6 170.4 L437.2 170.6 L437.9 170.8 L438.6 171.1 L439.3 171.3 L440 171.6 L440.6 171.9 L441.3 172.1 L442 172.4 L442.7 172.7 L443.4 173 L444 173.3 L444.7 173.6 L445.4 173.9 L446.1 174.2 L446.8 174.6 L447.4 174.9 L448.1 175.2 L448.8 175.6 L449.5 175.9 L450.2 176.3 L450.8 176.6 L451.5 177 L452.2 177.3 L452.9 177.7 L453.6 178 L454.2 178.4 L454.9 178.7 L455.6 179.1 L456.3 179.4 L457 179.8 L457.6 180.1 L458.3 180.5 L459 180.8 L459.7 181.1 L460.4 181.5 L461 181.8 L461.7 182.1 L462.4 182.5 L463.1 182.8 L463.8 183.1 L464.4 183.4 L465.1 183.7 L465.8 183.9 L466.5 184.2 L467.2 184.5 L467.8 184.7 L468.5 185 L469.2 185.2 L469.9 185.4 L470.6 185.6 L471.2 185.8 L471.9 186 L472.6 186.1 L473.3 186.3 L474 186.4 L474.6 186.5 L475.3 186.6 L476 186.7 L476.7 186.7 L477.4 186.8 L478 186.8 L478.7 186.8 L479.4 186.7 L480.1 186.7 L480.8 186.6 L481.4 186.5 L482.1 186.4 L482.8 186.2 L483.5 186 L484.2 185.8 L484.8 185.6 L485.5 185.3 L486.2 185 L486.9 184.7 L487.6 184.3 L488.2 183.9 L488.9 183.5 L489.6 183 L490.3 182.5 L491 182 L491.6 181.4 L492.3 180.8 L493 180.1 L493.7 179.4 L494.4 178.7 L495 177.9 L495.7 177.1 L496.4 176.2 L497.1 175.3 L497.8 174.3 L498.4 173.3 L499.1 172.3 L499.8 171.2 L500.5 170 L501.2 168.8 L501.8 167.6 L502.5 166.3 L503.2 164.9 L503.9 163.5 L504.6 162 L505.2 160.5 L505.9 158.9 L506.6 157.2 L507.3 155.5 L508 153.8 L508.6 151.9 L509.3 150 L510 148.1 L510.7 146 L511.4 143.9 L512 141.8 L512.7 139.5 L513.4 137.2 L514.1 134.8 L514.8 132.4 L515.4 129.9 L516.1 127.3 L516.8 124.6 L517.5 121.8 L518.2 119 L518.8 116.1 L519.5 113.1 L520.2 110 L520.9 106.8 L521.6 103.5 L522.2 100.2 L522.9 96.8 L523.6 93.3" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <line x1="342.9" y1="220.7" x2="478.1" y2="186.8" stroke="currentColor" stroke-width="1.3" stroke-dasharray="6 4"/>
+  <g fill="currentColor" fill-opacity="0.8"><circle cx="523.9" cy="91.8" r="2.6"/><circle cx="516.7" cy="125.1" r="2.6"/><circle cx="511.3" cy="144.3" r="2.6"/><circle cx="507" cy="156.2" r="2.6"/><circle cx="503.6" cy="164.1" r="2.6"/><circle cx="498.3" cy="173.5" r="2.6"/><circle cx="494.5" cy="178.5" r="2.6"/><circle cx="490.5" cy="182.4" r="2.6"/><circle cx="486.8" cy="184.7" r="2.6"/><circle cx="483.5" cy="186" r="2.6"/><circle cx="480.9" cy="186.6" r="2.6"/></g>
+  <line x1="546" y1="60" x2="527.9" y2="85.8" stroke="currentColor" stroke-width="1.2" marker-end="url(#opCvk)"/>
+  <circle cx="478.1" cy="186.8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="342.9" cy="220.7" r="4" fill="currentColor"/>
+  <circle cx="423.4" cy="168.1" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="59" y="252" text-anchor="middle">−1</text>
+    <text x="105" y="252" text-anchor="middle">0</text>
+    <text x="151" y="252" text-anchor="middle">1</text>
+    <text x="197" y="252" text-anchor="middle">2</text>
+    <text x="243" y="252" text-anchor="middle">3</text>
+    <text x="346.8" y="260" text-anchor="middle">−1</text>
+    <text x="414.8" y="260" text-anchor="middle">0</text>
+    <text x="482.8" y="260" text-anchor="middle">1</text>
+    <text x="302" y="173.2" text-anchor="end">0</text>
   </g>
-  <g fill="currentColor"><circle cx="120" cy="92" r="4"/><circle cx="292" cy="88" r="3.5"/><circle cx="409" cy="108" r="4"/></g>
-  <g font-size="11.5" fill="currentColor" text-anchor="middle">
-    <text x="120" y="126">최솟값</text>
-    <text x="292" y="76" opacity="0.8">지역 최솟값</text><text x="409" y="132">또 다른 지역 최솟값</text>
-    <text x="120" y="20">볼록 — 모든 지역 최솟값이 전역이다</text>
-    <text x="360" y="20">비볼록 — 신경망 학습이 사는 곳</text>
+  <g font-size="11" fill="currentColor">
+    <text x="36" y="18">볼록: f(x) = x²</text>
+    <text x="306" y="18">비볼록: f(x) = x⁴ − 2x² + 0.5x</text>
+    <text x="143" y="157" text-anchor="end">현의 중점 5</text>
+    <text x="158" y="230">f(1) = 1</text>
+    <text x="548" y="50" text-anchor="end">x = 2 (f = 9)에서 출발, 그림 위쪽 밖</text>
+    <text x="488.1" y="206.8">멈춤: 0.930</text>
+    <text x="488.1" y="220.8" opacity="0.85">f = −0.517</text>
+    <text x="350.9" y="237.7">전역 최솟값 −1.057 (f = −1.515)</text>
+    <text x="423.4" y="156.1" text-anchor="middle" opacity="0.85">극댓값 0.127</text>
   </g>
 </svg>
 
+왼쪽은 볼록한 $x^2$이다. $(-1, 1)$에서 $(3, 9)$까지의 현이 그래프 위를 지나 중점에서 $f(1)=1$ 대신 $5$이고, 유일한 지역 최솟값이 곧 전역 최솟값이다. 오른쪽은 위 반례의 비볼록 함수 $f(x)=x^4-2x^2+0.5x$로, 두 최솟값을 잇는 현 위로 그래프가 솟는다. $x=2$($f=9$)에서 스텝 $0.01$로 출발한 경사 하강은 지역 최솟값 $0.930$($f=-0.517$)에 멈추고, 전역 최솟값 $-1.057$($f=-1.515$)은 $0.127$의 봉우리 너머에 있다.
 
 - 볼록성을 알아보고 보존하는 것이 실전 기술이다: 노름, 아핀 함수들의 max, 볼록 함수의
   비음수 합은 볼록; LP/QP와 대부분의 MPC 정식화는 *설계상* 볼록이다. 신경망 학습은
   의도적 비볼록 — 보장을 표현력과 맞바꾸고 좋은 지역 최솟값에 만족한다.
 
 ### 3. 무제약 최적화
+
+제약이 없으면 최적화는 추측에서 출발해 내리막을 걷는 일이고, 두 질문이 모든 것을 정한다. 어느 쪽으로, 얼마나 멀리 딛는가. 이 절은 한 줄짜리 예로 먼저, 그다음 그림이 그 학습 스텝을 그린 P1에서 둘에 답한다.
 
 - **최적성 조건**: 1차 $\nabla f(x^*) = 0$; 2차 $H(x^*) \succeq 0$(필요),
   $\succ 0$(엄격 지역 최소의 충분). 안장점은 1차만 만족한다 — 그리고 고차원 지형을
@@ -774,10 +861,18 @@ $$f(x^\star)\le f(x)\quad\text{for every } x\in\mathcal{F}$$
   값어치가 있다: 뉴턴법의 속도는 마법이 아니라 2차 도함수를 가진 값이다. 이차가 아닌 함수에서는
   최적점 근처에서만 이 거동이 나오고, 매 스텝 $H$를 만들고 역행렬을 구하는 데 $O(n^3)$을 낸다 —
   아무도 신경망에 이걸 돌리지 않는 이유다.
-- **계산: P1에서 GD 한 스텝.** 카탈로그의 $W_2=(1,-1,0.5)$와 [[02-foundations/calculus-backprop|2]]에서 온 $\partial L/\partial W_2=(-0.5,-1,-1.5)$([[02-foundations/lab-plants|0.6]]). $\eta=0.1$이면 $W_2\leftarrow(1.05,-0.9,0.65)$. $h=(1,2,3)$을 고정하면 $L=\tfrac12(W_{2,1}-1.5)^2$은 $W_{2,1}$의 포물선이고 최솟값은 $1.5$에 있다. 카탈로그는 왼쪽 비탈에 앉아 있다. $\eta=10$은 $W_2=(6,9,15.5)$로 뛰어 $\hat y=70.5$가 되고 $L$이 폭발한다. 과제는 이 스텝을 손으로 하는 것이다.
+- **계산: P1에서 GD 한 스텝.** 카탈로그의 $W_2=(1,-1,0.5)$와 [[02-foundations/calculus-backprop|2]]에서 온 $\partial L/\partial W_2=(-0.5,-1,-1.5)$([[02-foundations/lab-plants|0.6]]). $\eta=0.1$이면 $W_2\leftarrow(1.05,-0.9,0.65)$. $h=(1,2,3)$을 고정하면 $L=\tfrac12(W_{2,1}-1.5)^2$은 $W_{2,1}$의 포물선이고 최솟값은 $1.5$에 있다. 카탈로그는 왼쪽 비탈에 앉아 있다. $\eta=10$은 $W_2=(6,9,15.5)$로 뛰어 $\hat y=70.5$가 되고 $L$이 폭발한다. 과제는 이 스텝을 바꿔 묻는다. 다른 가중치의 단면(1번), 새 라벨(2번), 새 입력(3번)이다.
   - **실제 스텝 방향의 곡률, 유도.** $h$를 고정하면 $\hat y=W_2h$는 $W_2$에 대해 선형이므로 $L=\tfrac12(W_2h-y)^2$의 그래디언트는 $(\hat y-y)\,h$이고, 한 번 더 미분하면 헤시안은 $hh^\top$이다([[02-foundations/calculus-backprop|2. 미적분 §1]]). 단위 방향 $u$를 따른 곡률은 $u^\top hh^\top u=(h^\top u)^2$다. 가중치 하나 $W_{2,1}$ 방향, 곧 $u=e_1$이면 $h_1^2=1$로 그림의 단면이다. 그래디언트 방향, 곧 $u=h/\lVert h\rVert$이면 $\lVert h\rVert^2=1+4+9=14$이고, $hh^\top$의 0 아닌 고윳값은 고유벡터 $h$를 가진 $\lVert h\rVert^2$ 하나뿐이므로 이것이 어느 방향보다 큰 곡률이다. 한 스텝이 이를 바로 보여준다. 스텝은 출력을 $-\eta(\hat y-y)\lVert h\rVert^2$만큼 바꾸므로 잔차는
     $$\hat y'-y=(\hat y-y)\big(1-\eta\lVert h\rVert^2\big)=-0.5\,(1-14\eta)$$
     가 되고, 이것이 위의 고유방향별 인자 $1-\alpha\lambda_i$에 $\lambda=14$를 넣은 것이다. 그래서 $\eta=1/14\approx0.071$은 한 스텝에 잔차를 0으로 만들고, $\eta>2/14\approx0.143$이면 잔차가 커지며, $\eta=0.1$은 $-0.5(1-1.4)=+0.2$로 넘어가 $\hat y=1.20$, $L=0.02$가 된다. $\eta=10$은 잔차에 $1-140=-139$를 곱한다: $\hat y-y=69.5$, $\hat y=70.5$, $L=\tfrac12(69.5)^2=2415.1$.
+- 확률적 그래디언트: 미니배치의 불편이지만 시끄러운 추정; 노이즈는 안장 탈출을 돕는 대신
+  스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈ 모멘텀 +
+  좌표별 곡률 대리(둘 다 아래의 두 번째 읽기 부분에서 정의한다).
+  - **완전한 정의.** 예제별 손실의 평균 $f(x)=\frac1N\sum_{i=1}^N\ell_i(x)$에 대해, 예제 $|B|$개의 무작위 배치 $B$가 추정 $\hat g=\frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(x)$를 준다. **불편**은 배치의 무작위 선택에 대해 $\mathbb{E}[\hat g]=\nabla f(x)$라는 뜻이고, **시끄럽다**는 것은 한 번의 $\hat g$가 그것과 멀 수 있다는 뜻이다. 예제를 독립적으로 뽑으면 분산은 $1/|B|$처럼 준다.
+  - **계산.** $\ell_i=\tfrac12(x-a_i)^2$, $a=(1,2,3,6)$, $x=0$으로 두자. 전체 그래디언트는 $\frac14\sum(0-a_i)=-3$이다. 크기 2인 배치 여섯 개는 $-1.5,\ -2,\ -3.5,\ -2.5,\ -4,\ -4.5$를 준다. 어느 하나도 $-3$이 아니지만 평균은 정확히 $-3$이다.
+
+*여기서 §3 끝까지는 두 번째 읽기다: 모멘텀, 뉴턴의 수렴 속도, 준뉴턴, 적응형 스텝 크기, AdamW. [[03-deep-learning/foundations/index|1. 학습 시스템]]과 함께, 또는 논문이 옵티마이저를 밝힐 때 읽는다.*
+
 - **모멘텀**은 속도를 누적해 나쁜 조건의 골짜기에서 진동을 상쇄한다; **뉴턴법**은 *2차*
   모델을 최소화, $x_{k+1} = x_k - H^{-1}\nabla f$ — 강볼록이고 헤시안이 립시츠일 때(곡률이 임의로 빠르게 변할 수 없다는 뜻: $\lVert H(x) - H(y)\rVert \le L\lVert x - y\rVert$) 최적점 근처 이차 수렴, 스텝당
   $O(n^3)$; 준뉴턴(BFGS/L-BFGS)은 그래디언트 차분으로 $H^{-1}$ 추정을 쌓는다.
@@ -788,11 +883,6 @@ $$f(x^\star)\le f(x)\quad\text{for every } x\in\mathcal{F}$$
   - **준뉴턴의 완전한 정의.** $H$를 그래디언트만으로 만든 행렬 $B_k$로 바꾼다. 스텝 $s_k=x_{k+1}-x_k$와 그래디언트 변화 $y_k=\nabla f(x_{k+1})-\nabla f(x_k)$로 쓴 **할선 조건**이 정의하는 요구다.
     $$B_{k+1}\,s_k = y_k$$
     방금 밟은 스텝 방향에서는 올바른 헤시안이 위치 변화를 관측된 그래디언트 변화로 바꿔야 하기 때문이다. BFGS는 이를 만족하면서 대칭 양정부호를 유지하는 특정한 저랭크 갱신($B$나 그 역에 대한)이고, L-BFGS는 $n\times n$ 행렬 대신 최근 $(s_k,y_k)$ 쌍 몇 개만 저장한다. 1차원 예: $f=5x^2$에서 $1$에서 $0.5$로 가면 $s=-0.5$, $y=5-10=-5$, $B=y/s=10$으로 참 곡률이다.
-- 확률적 그래디언트: 미니배치의 불편이지만 시끄러운 추정; 노이즈는 안장 탈출을 돕는 대신
-  스텝 감쇠나 적응성을 요구한다 — [[01-canonical-papers/notes/1-foundations/adam|Adam]] ≈ 모멘텀 +
-  좌표별 곡률 대리.
-  - **완전한 정의.** 예제별 손실의 평균 $f(x)=\frac1N\sum_{i=1}^N\ell_i(x)$에 대해, 예제 $|B|$개의 무작위 배치 $B$가 추정 $\hat g=\frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(x)$를 준다. **불편**은 배치의 무작위 선택에 대해 $\mathbb{E}[\hat g]=\nabla f(x)$라는 뜻이고, **시끄럽다**는 것은 한 번의 $\hat g$가 그것과 멀 수 있다는 뜻이다. 예제를 독립적으로 뽑으면 분산은 $1/|B|$처럼 준다.
-  - **계산.** $\ell_i=\tfrac12(x-a_i)^2$, $a=(1,2,3,6)$, $x=0$으로 두자. 전체 그래디언트는 $\frac14\sum(0-a_i)=-3$이다. 크기 2인 배치 여섯 개는 $-1.5,\ -2,\ -3.5,\ -2.5,\ -4,\ -4.5$를 준다. 어느 하나도 $-3$이 아니지만 평균은 정확히 $-3$이다.
 
 **적응형 스텝 크기, 세 단계로.** 위의 조건수 문제를 좌표 하나씩 공략하는 방법이다. $\alpha$ 하나는 가장 가파른 방향에 맞춰 작아야 하므로 평평한 방향은 거의 움직이지 못한다. 그래서 좌표마다 그동안 그래디언트가 얼마나 컸는지에 따라 자기만의 스텝 크기를 받는다: 그래디언트가 큰 가파른 좌표는 작은 스텝을, 평평한 좌표는 큰 스텝을 받는다. 스케일링이 좌표별(대각 전처리기)이므로 축에 정렬된 나쁜 조건은 고치지만, 축 사이로 비스듬히 놓인 골짜기는 고치지 못한다. 세 방법은 같은 업데이트를 공유하고 척도 $s$만 다르다:
 
@@ -819,6 +909,8 @@ $$w_{k+1}=w_k-\eta\Big(\frac{\hat m_k}{\sqrt{\hat v_k}+\epsilon}+\lambda\,w_k\Bi
 그래서 줄이는 양 $\eta\lambda w_k$는 그래디언트 이력과 상관없이 크기가 같은 모든 가중치에 같다. 예: 감쇠 부분만 보면(모멘텀 없음, $\lambda w$가 $\hat v$에 주는 작은 영향은 무시) $1$인 두 가중치에 $\eta=0.01$, $\lambda=0.1$, $\sqrt{\hat v}=2$와 $0.5$일 때, Adam + L2에서는 $\eta\lambda/\sqrt{\hat v}=5\times10^{-4}$와 $2\times10^{-3}$만큼, AdamW에서는 둘 다 $\eta\lambda=10^{-3}$만큼 준다.
 
 ### 3.5 비선형 최소자승 — 로보틱스 논문 절반 아래에 있는 풀이법
+
+*두 번째 읽기: SLAM, 보정, 역기구학 논문을 손에 들고, 또는 [[04-robotics/state-estimation-slam|3. 상태 추정]] 전에 읽는다. 처음에는 건너뛴다.*
 
 3절은 일반 목적함수에 대한 경사하강과 뉴턴을 주었다. 로보틱스의 큰 몫은 둘 중 어느 것도 쓰지
 않는데, 그 문제들이 전부 같은 특별한 모양을 하고 있기 때문이다: 0으로 몰아야 할 잔차 더미.
@@ -854,7 +946,7 @@ $$\nabla^2F = 2\Big(J^\top J+\sum_{i=1}^{m} f_i(x)\,\nabla^2 f_i(x)\Big)$$
 뉴턴은 $x_0 = 0.95$부터 $0.95 \to -0.684 \to 0.234 \to -0.009$로 가서 해에 앉는다.
 $x_0 = 1.15$부터는 $1.15 \to -1.318 \to 2.156 \to -16.5$로 가고 끝이다. **초기화의 0.2 차이가
 수렴을 발산으로 뒤집는다** — 위의 모든 시스템이 초기화기를 함께 싣는 이유이고, "먼저
-RANSAC을/IMU 사전값을/거친 정렬을 쓴다"가 사소한 세부가 아니라 하중을 지고 있는 이유다.
+RANSAC을/IMU 사전값을/거친 정렬을 쓴다"가 사소한 세부가 아니라 하중을 지고 있는 이유다. RANSAC(random sample consensus)은 데이터의 작은 무작위 부분집합에 여러 번 맞춘 뒤 가장 많은 점이 동의하는 맞춤을 남기므로 이상치가 시작점을 끌어가지 못하게 하고, IMU 사전값은 관성 측정 장치의 가속도계와 자이로를 적분해 얻은 출발 추정이다.
 
 *$J$가 계수를 잃으면 아예 멈춘다.* 현장 위치 추정 문제를 보자. 한 벽면에 비콘 셋이
 $a = (0,0), (8,0), (20,0)$에 있고 참 위치는 $(10, 6)$이다. 솔버를 *벽 위에서*, 즉 $(12, 0)$에서
@@ -923,68 +1015,77 @@ Gauss–Newton으로:
   희소성과 속도 때문에 실제 솔버에서 쓰이며, 수치적 대가를 관리해야 한다. 논문이 특이 자세
   근처의 수치 문제를 보고할 때 이 조건수 기전이 살펴볼 곳 중 하나다.
 - **이것은 발견적 방법이고, 논문들도 안다.** Levenberg–Marquardt에는 전역 최솟값에 닿는다는
-  보장이 없다 — $k$-평균과 마찬가지로, 그래도 어디서나 쓰인다. 이 문헌이 직전 해에서
+  보장이 없다 — $k$-평균 군집화(점을 $k$개 중심 가운데 가장 가까운 것에 배정하는 일과 각 중심을 제 점들의 평균으로 옮기는 일을 번갈아 하며, 나쁜 지역 답에 멈출 수 있다)와 마찬가지로, 그래도 어디서나 쓰인다. 이 문헌이 직전 해에서
   웜스타트하고, 여러 초기값에서 다시 돌리고, 그중 최선을 보고하는 이유다. SLAM이나 보정
   논문이 "Ceres / g2o / GTSAM으로 푼다"고 써도 비선형 최소자승 프레임워크를 썼다는 단서일
   뿐이다. 실제 선형화, trust-region/line-search 방법, 선형 솔버, 강건 손실 설정을 확인해야
   하며, 라이브러리 이름만으로 이 알고리즘이나 전역 최적해를 알 수는 없다.
 - **필터도 이 같은 스텝을 돌리고 있다.** Gauss–Newton 한 번의 반복은 iterated 확장 칼만
-  필터가 적용하는 갱신과 대수적으로 같다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보
+  필터(비선형 측정 모델을 선형화한 [[02-foundations/probability|3. 확률 §5]]의 칼만 필터로, 측정마다 새 추정에서 몇 번 다시 선형화한다)가 적용하는 갱신과 대수적으로 같다 — 같은 가중 잔차 비용을 공분산 형태가 아니라 정보
   형태로 적었을 뿐이다. 그러므로 "최적화 기반"과 "필터 기반" 상태 추정기의 익숙한 구분은
   어떤 변수를 남길 것인가의 선택이지, 서로 다른 문제를 푸는 것이 아니다
   ([[04-robotics/state-estimation-slam|상태 추정과 SLAM §5]]).
 
 ### 4. 제약 최적화 — 라그랑주, KKT, 쌍대성
 
+*두 번째 읽기: 논문이 처음 "subject to"라고 쓸 때 편다. 눈앞에 구체적인 제약을 두고 읽으면 KKT가 훨씬 잘 읽힌다. 처음에는 건너뛴다.*
+
 - **왜 제약을 목적함수에 더하나?** 제약 최적점에서는 제약을 어기지 않고는 $f$를 더 내릴
   수 없다 — *하강* 방향 $-\nabla f$가 활성 제약의 금지 영역 쪽을 정면으로 가리키므로,
-  $\nabla f$ 자신은 실행 가능 영역 쪽을 향한다. 어떤
+  $\nabla f$ 자신은 실행 가능 집합 쪽을 향한다. 어떤
   $\lambda \ge 0$에 대해 $\nabla f = -\lambda\nabla g$(두 그래디언트가 반평행)가 된다.
   정리하면 $\nabla(f + \lambda g) = 0$ — 그래서 결합된 **라그랑지안**의 그래디언트를 0으로 놓으면 실행
   가능한 하강 방향이 남지 않는 후보점을 정확히 찾는다(비볼록 문제에서는 그 점이 라그랑지안의 최소가 아니라 안장점일 수도 있다).
 
-<svg viewBox="0 0 560 266" style="max-width:100%;height:auto" role="img" aria-label="제약 최적점에서 목적함수의 그래디언트와 제약의 그래디언트가 한 직선 위에서 서로 반대를 향한다">
-  <defs><marker id="opAk" markerWidth="8" markerHeight="8" refX="7" refY="3.2" orient="auto"><path d="M0,0 L8,3.2 L0,6.4 z" fill="currentColor"/></marker></defs>
-  <g fill="currentColor" fill-opacity="0.07">
-    <polygon points="60,180 360,80 360,190 60,190"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.6" fill="none">
-    <line x1="60" y1="180" x2="360" y2="80"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.5">
-    <circle cx="300" cy="60" r="18"/>
-    <circle cx="300" cy="60" r="37.9"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.1" fill="none" opacity="0.28" stroke-dasharray="4 3">
-    <circle cx="300" cy="60" r="58"/>
-  </g>
-  <g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#opAk)">
-    <line x1="312" y1="96" x2="329.4" y2="148.2"/>
-    <line x1="312" y1="96" x2="294.6" y2="43.8"/>
-  </g>
-  <g fill="currentColor"><circle cx="312" cy="96" r="3.6"/><circle cx="300" cy="60" r="2.6" opacity="0.6"/></g>
-  <g font-size="10.5" fill="currentColor">
-    <text x="70" y="164">실행 가능 영역 &#183; g(x) &#8804; 0</text>
-    <text x="322" y="104">x&#8902;</text>
-    <text x="336" y="152">&#8711;f</text>
-    <text x="266" y="42">&#8711;g</text>
-  </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.8">
-    <text x="366" y="82">g(x) = 0</text>
-    <text x="366" y="120">한 직선 위, 반대 방향</text>
-    <text x="366" y="58">제약이 없었다면 f가 갈 곳</text>
-  </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="212">제약 최적점에서는 실행 가능 영역 안으로 f를 더 내리는 방향이 남아 있지 않다. 그 말은 &#8722;&#8711;f가</text>
-    <text x="24" y="228">경계를 똑바로 뚫고 나가려 한다는 뜻이고, 그것은 다시 &#8711;f와 &#8711;g가 한 직선 위에서 반대를 향한다는</text>
-    <text x="24" y="244">뜻이다. &#955; &#8805; 0이 두 벡터의 길이 비이고, &#8711;(f + &#955;g) = 0은 이 그림을 한 줄로 적은 것이다 &#8212;</text>
-    <text x="24" y="260">라그랑지안을 만들 값어치가 있는 이유가 그것이다.</text>
-  </g>
-</svg>
-
 - **라그랑지안**: $\mathcal{L}(x,\lambda,\nu) = f(x) + \sum_i \lambda_i g_i(x) + \sum_j \nu_j h_j(x)$, $\lambda_i \ge 0$
   - **부분들, 각각의 이름.** 결정 변수와 제약마다 하나씩인 **승수**의 스칼라 함수다. 부등식 $g_i\le0$에는 $\lambda_i$, 등식 $h_j=0$에는 $\nu_j$가 붙는다. 부등식 승수는 음수일 수 없다. $\lambda_i g_i$가 위반($g_i>0$)에 대한 벌점으로만 작동하고 보상이 되면 안 되기 때문이다. 등식은 어느 쪽으로도 어길 수 있으므로 등식 승수의 부호는 자유다.
   - **예.** 아래의 반공간 투영 $\min\tfrac12\lVert x-p\rVert^2$ s.t. $a^\top x-b\le0$의 라그랑지안은 $\mathcal{L}(x,\lambda)=\tfrac12\lVert x-p\rVert^2+\lambda(a^\top x-b)$이고, $\nabla_x\mathcal{L}=x-p+\lambda a=0$이 거기서 쓰는 정상성 식이다.
+
+<svg viewBox="0 0 560 296" style="max-width:100%;height:auto" role="img" aria-label="반평면 x₁ + x₂ ≤ 5로의 투영을 축척대로 그린 그림: 바깥의 점 p = (3, 4), 그 둘레의 등고 원, 반지름 √2인 원이 경계에 닿는 x* = (2, 3), 그곳에서 한 직선 위에 반대 방향으로 놓인 ∇f = (−1, −1)과 ∇g = (1, 1)">
+  <defs><marker id="opAk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <polygon points="48,270 268,270 48,50" fill="currentColor" fill-opacity="0.08"/>
+  <g stroke="currentColor" stroke-width="1" fill="none" opacity="0.55"><line x1="48" y1="270" x2="285.6" y2="270"/><line x1="48" y1="270" x2="48" y2="32.4"/></g>
+  <g stroke="currentColor" stroke-width="1" opacity="0.45"><line x1="48" y1="270" x2="48" y2="274"/><line x1="92" y1="270" x2="92" y2="274"/><line x1="136" y1="270" x2="136" y2="274"/><line x1="180" y1="270" x2="180" y2="274"/><line x1="224" y1="270" x2="224" y2="274"/><line x1="268" y1="270" x2="268" y2="274"/><line x1="44" y1="226" x2="48" y2="226"/><line x1="44" y1="182" x2="48" y2="182"/><line x1="44" y1="138" x2="48" y2="138"/><line x1="44" y1="94" x2="48" y2="94"/><line x1="44" y1="50" x2="48" y2="50"/></g>
+  <line x1="48" y1="50" x2="268" y2="270" stroke="currentColor" stroke-width="1.8"/>
+  <circle cx="180" cy="94" r="22.0" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <circle cx="180" cy="94" r="62.2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.8"/>
+  <circle cx="180" cy="94" r="80.9" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="4 3"/>
+  <line x1="136" y1="138" x2="180" y2="94" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3" stroke-opacity="0.7"/>
+  <g stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#opAk)">
+    <line x1="136" y1="138" x2="104.3" y2="169.7"/>
+    <line x1="136" y1="138" x2="167.7" y2="106.3"/>
+  </g>
+  <circle cx="136" cy="138" r="4" fill="currentColor"/>
+  <circle cx="180" cy="94" r="3.4" fill="currentColor" fill-opacity="0.7"/>
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
+    <text x="48" y="286" text-anchor="middle">0</text>
+    <text x="92" y="286" text-anchor="middle">1</text>
+    <text x="136" y="286" text-anchor="middle">2</text>
+    <text x="180" y="286" text-anchor="middle">3</text>
+    <text x="224" y="286" text-anchor="middle">4</text>
+    <text x="268" y="286" text-anchor="middle">5</text>
+    <text x="40" y="230" text-anchor="end">1</text>
+    <text x="40" y="186" text-anchor="end">2</text>
+    <text x="40" y="142" text-anchor="end">3</text>
+    <text x="40" y="98" text-anchor="end">4</text>
+    <text x="40" y="54" text-anchor="end">5</text>
+    <text x="285.6" y="286" text-anchor="end">x₁</text>
+    <text x="58" y="36.4">x₂</text>
+  </g>
+  <g font-size="11" fill="currentColor">
+    <text x="58" y="258">실행 가능 집합: x₁ + x₂ ≤ 5</text>
+    <text x="229.6" y="225.6">경계 x₁ + x₂ = 5</text>
+    <text x="206" y="98">p = (3, 4)</text>
+    <text x="126" y="142" text-anchor="end">x* = (2, 3)</text>
+    <text x="74.3" y="191.7">∇f(x*) = (−1, −1)</text>
+    <text x="177.7" y="118.3">∇g = (1, 1)</text>
+    <text x="270.9" y="128" opacity="0.85">f = 1인 원, 반지름 √2</text>
+    <text x="270.9" y="146">∇f = −λ∇g, λ = 1</text>
+  </g>
+</svg>
+
+아래에서 계산하는 투영을 축척대로 그린 것이다. 점 $p=(3,4)$는 반평면 $x_1+x_2\le5$(음영) 밖에 있고, $p$ 둘레의 원 가운데 실행 가능 집합에 닿는 가장 작은 원, 곧 반지름 $\sqrt2=1.414$인 등고선 $f=1$이 $x^\star=(2,3)$에서 경계에 닿는다. 그곳에서 $\nabla f=x^\star-p=(-1,-1)$과 $\nabla g=(1,1)$이 한 직선 위에서 반대를 향하므로 $\lambda=1$로 $\nabla f=-\lambda\nabla g$이고, 이것이 $\nabla(f+\lambda g)=0$을 그림으로 옮긴 것이다.
+
 - **KKT 조건** (제약이 있는 1차 최적성):
   1. 정상성: $\nabla_x \mathcal{L} = 0$
   2. 원 가능성: $g_i \le 0,\ h_j = 0$
@@ -997,7 +1098,7 @@ Gauss–Newton으로:
   즉 목적함수의 그래디언트가 제약 그래디언트들의 비음 결합과 정확히 균형을 이룬다. 위 그림의 다중 제약 판이다. $g_i(x^\star)=0$(점이 경계 위)이면 그 제약은 **활성**, $g_i(x^\star)<0$이면 **비활성**이다. 상보 여유성은 활성 제약만 0이 아닌 승수를 가질 수 있다고 말한다. 등식 제약은 항상 활성이다.
 
   쉽게 말해: KKT는 솔버가 최적 후보를 알아보는 점검표다. 최적점이 반드시 이 점검을 통과하는지, 통과하면 최적이 증명되는지는 문제에 따라 다르다.
-  - **필요조건.** 함수가 미분 가능하면 이 조건들은 강쌍대성이 성립하는 모든 최적점에서 **필요하다**. 볼록 문제에서는 Slater 조건(모든 부등식을 엄격히, 곧 $g_i(x) < 0$으로 만족하는 실현 가능한 점이 하나 있다는 조건) 같은 제약 자격 조건이 강쌍대성을 준다(Boyd & Vandenberghe §5.5.3).
+  - **필요조건.** 함수가 미분 가능하면 이 조건들은 강쌍대성이 성립하는 모든 최적점에서 **필요하다**. 볼록 문제에서는 Slater 조건(모든 부등식을 엄격히, 곧 $g_i(x) < 0$으로 만족하는 실행 가능한 점이 하나 있다는 조건) 같은 제약 자격 조건이 강쌍대성을 준다(Boyd & Vandenberghe §5.5.3).
     일반 비볼록 문제의 국소 최소에서도 LICQ(선형 독립 제약 자격 조건: 그 점에서 등식 제약과 활성 부등식 제약의 그래디언트들이 선형 독립이라는 조건) 같은 제약 자격 조건 아래에서는 여전히 필요하다. SQP와 내점법 NLP 솔버가 기대는 것이 이것이다.
   - **충분조건.** 볼록 문제에서는 **충분조건이기도** 하다. 비볼록 문제 —
     비선형 MPC, 궤적 최적화, §5가 나열하는 부류 — 에서는 KKT 점이 최소점이 아닐 수도 있다.
@@ -1032,6 +1133,8 @@ Gauss–Newton으로:
 
 ### 5. 로보틱스에 중요한 문제 부류
 
+솔버를 고르기 전에 문제의 부류부터 알아본다. 전역 해가 보장되는지, 얼마나 빨리 나오는지를 정하는 것은 응용 분야가 아니라 부류다.
+
 | 부류 | 형태 | 등장하는 곳 |
 |---|---|---|
 | LP | 선형 $f$, 선형 제약 | 자원 할당, 스케줄링 완화 |
@@ -1054,7 +1157,7 @@ $Q,P\succeq0$, $R\succ0$, 다면체 상태 집합 $\mathcal X=\{x:Hx\le h\}$:
 
 $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) + x_N^\top P x_N \quad \text{s.t. } x_{t+1} = Ax_t + Bu_t,\; u_{min}\le u_t \le u_{max},\; x_t \in \mathcal{X}$$
 
-유한 지평에 경성 제약을 다시 붙인 LQR 비용으로 읽어라. 동역학은 등식 제약으로 들어오고, 그것을 대입해 없애면(응축) $u$들에 대한 볼록 QP만 남는다. 작고 구조화된 QP는 적절한 솔버와
+유한 지평에 경성 제약을 다시 붙인 LQR 비용으로 읽어라. LQR, 곧 [[04-robotics/lqr-lqg|6. LQR / LQG]]의 선형–이차 조정기는 같은 이차 비용을 제약 없이 무한 지평에서 최소화하고, 그 답은 고정된 피드백 이득이다. 동역학은 등식 제약으로 들어오고, 그것을 대입해 없애면(응축) $u$들에 대한 볼록 QP만 남는다. 작고 구조화된 QP는 적절한 솔버와
 구현에서 ms급도 가능하므로 deadline과 최악 실행시간을 함께 보고해야 한다. MPC는 매 제어
 주기에 다시 풀고 첫 입력만 적용한다.
 
@@ -1078,12 +1181,12 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 ### 스스로 점검
 
 1. 두 볼록 함수의 max가 볼록임을 보이고, 이를 써서 힌지 손실이 볼록임을 논증하라.
-2. 고유값 $\{1, 100\}$인 $f(x) = \tfrac12 x^\top H x$에서: 안정한 최대 스텝은? 느린
+2. 고유값 $\{1, 100\}$인 $f(x) = \tfrac12 x^\top H x$에서: 안정한 최대 스텝은? 그 절반인 $\alpha = 0.01$로 느린
    모드를 100배 줄이는 데 몇 번의 반복이 필요한가?
-3. 투영 예제의 구속 케이스에서 KKT 네 조건을 전부 검증하라.
-4. 위 MPC 문제는 왜 볼록인가? 실전에서 무엇이 비볼록으로 만들 수 있는가?
+3. *(두 번째 읽기, §4.)* 투영 예제의 구속 케이스에서 KKT 네 조건을 전부 검증하라.
+4. *(두 번째 읽기, §5.)* 위 MPC 문제는 왜 볼록인가? 실전에서 무엇이 비볼록으로 만들 수 있는가?
    (힌트: 장애물 회피 제약.)
-5. 두 가중치가 모두 1이고 $\sqrt{\hat v} = 10$, $\sqrt{\hat v} = 0.1$이다. $\eta = 10^{-3}$,
+5. *(두 번째 읽기, §3.)* 두 가중치가 모두 1이고 $\sqrt{\hat v} = 10$, $\sqrt{\hat v} = 0.1$이다. $\eta = 10^{-3}$,
    $\lambda = 10^{-2}$, 모멘텀 없음일 때, Adam + L2와 AdamW에서 각각 스텝당 얼마나 줄어드는가?
 
 > [!tip]- 스스로 점검 정답 · Answers
@@ -1095,25 +1198,25 @@ $$\min_{u_0..u_{N-1}} \sum_{t=0}^{N-1}\big(x_t^\top Q x_t + u_t^\top R u_t\big) 
 
 ### 과제 · Problem set
 
-Tier B. [[02-foundations/lab-plants|0.6]]의 **P1**. 경사 한 스텝, 손계산. 주어진 그래디언트의 역전파는 [[02-foundations/calculus-backprop|2]]에 있다. 여기서 다시 유도하지 마라.
+Tier B. [[02-foundations/lab-plants|0.6]]의 **P1**, 곧 순전파가 $h=(1,2,3)$, $\hat y=0.5$를 주는 2층 연습 신경망. 모든 문항은 $h$를 고정한 채 $W_2$만 움직이므로 그래디언트는 §3의 P1 스텝에 나온 $(\hat y-y)\,h$다. $W_1$까지 거슬러 가는 역전파 전체는 [[02-foundations/calculus-backprop|2]]에 있고 여기서는 필요 없다.
 
 1. **그리기.** 첫째가 아니라 셋째 가중치에 대한 위의 그림: $W_{2,1}=1$, $W_{2,2}=-1$, $h=(1,2,3)$을 고정하고 $L=\tfrac12(\hat y-1)^2$를 $0.5$ 근처의 $W_{2,3}$의 함수로 그린다. 카탈로그 점과 그 접선, 이 가중치만 움직이는 스텝 $\eta=0.1$, 그리고 이 단면에서 꼭짓점에 내려앉는 스텝 크기와 발산하는 스텝 크기를 표시하라. 이 포물선은 왜 위 그림의 것보다 좁은가?
-2. **유도.** GD 한 스텝 $W_2\leftarrow W_2-\eta\,\partial L/\partial W_2$, $\eta=0.1$, $\partial L/\partial W_2=(-0.5,-1,-1.5)$, 출발 $W_2=(1,-1,0.5)$.
-3. **해석.** $\eta=10$으로 반복. 새 $W_2$, $L$은?
+2. **유도.** 라벨이 바뀐다. 입력이 같으므로 $h=(1,2,3)$과 $\hat y=0.5$도 같지만, 목표는 이제 $y=2$다. (a) $h$를 고정한 $L=\tfrac12(W_2h-y)^2$에 대해 $\partial L/\partial W_2$를 쓰고 값을 구하라. (b) 카탈로그 $W_2=(1,-1,0.5)$에서 $\eta=0.06$으로 한 스텝 $W_2\leftarrow W_2-\eta\,\partial L/\partial W_2$: 새 $W_2$, $\hat y$, $L$. (c) 잔차 $\hat y-y$에 $1-\eta\lVert h\rVert^2$가 곱해졌음을 보여라. 새 목표에 정확히 내려앉는 $\eta$는 얼마이고, 어떤 $\eta$부터 스텝이 발산하며, 새 라벨이 그 둘 가운데 하나라도 옮겼는가?
+3. **해석.** 두 번째 학습 예제: 입력 $x=(1,3)$이 카탈로그 $W_1$과 ReLU를 지나 $h=(1,3,4)$가 되고, 라벨은 이번에도 $y=1$이다. 카탈로그 예제에서 수렴한 $\eta=0.1$로 카탈로그 $W_2$에서 한 스텝: 새 $W_2$, $\hat y$, $L$. 카탈로그 잔차를 줄이던 학습률이 왜 이 잔차는 키우는가? 두 예제 가운데 어느 하나로만 스텝을 밟아도 안정한 가장 큰 $\eta$는 얼마인가?
 
 > [!note]- 그리는 법 · How to draw it
 > - 축은 $W_{2,3}$(대략 $0.3$부터 $1$)과 $L$($0$부터 약 $0.6$). $h=(1,2,3)$과 나머지 두 가중치를 카탈로그 값에 고정하면 $\hat y=3W_{2,3}-1$이므로, 곡선은 꼭짓점이 $(0.667,\ 0)$인 포물선 $L=\tfrac12(3W_{2,3}-2)^2=\tfrac92(W_{2,3}-\tfrac23)^2$이다.
 > - 카탈로그 점 $W_{2,3}=0.5$는 높이 $L=0.125$에 찍는다. 두 단면이 모두 카탈로그 상태를 지나므로 위 그림과 같은 손실이고, 점이 다른 높이에 있으면 단면을 잘못 자른 것이다.
-> - 그 점의 접선과 그 기울기 $\partial L/\partial W_{2,3}=3(3\cdot0.5-2)=-1.5$. 2번이 쓰는 그래디언트의 셋째 성분이다.
+> - 그 점의 접선과 그 기울기 $\partial L/\partial W_{2,3}=3(3\cdot0.5-2)=-1.5$. §3의 P1 스텝에 나온 카탈로그 그래디언트 $(-0.5,-1,-1.5)$의 셋째 성분이다.
 > - 스텝을 기울기 *반대* 방향 수평 화살표로, 같은 축척으로 그린다. $\eta=0.1$은 이 가중치를 $0.15$ 옮겨 $0.65$($L=0.00125$)에 놓고, 꼭짓점 바로 앞이다.
 > - 곡률이 $h_3^2=9$인 이 단면에서 스텝 크기가 하는 일을 축 위 눈금 셋으로: $\eta=1/9=0.111$은 꼭짓점에 정확히 내려앉고, $2/9=0.222$까지는 그래도 수렴하며, 그것을 넘기면 반복점이 걸어 나간다.
 > - 위 그림의 포물선을 같은 축척으로, 두 카탈로그 점이 겹치게 옮겨 흐리게 겹쳐 그린다. 곡률 $1$ 대 $9$다. $W_{2,1}$을 따라서는 꼭짓점까지의 십분의 일만 기어가는 같은 $\eta=0.1$이 $W_{2,3}$을 따라서는 십분의 구를 간다.
-> - 2번과 3번은 가중치 셋을 다 움직인다. 그 숫자는 이 단면에 올리지 말거나, 구석 상자에 "전체 스텝"이라고 적어 따로 둔다.
+> - 2번과 3번은 가중치 셋을 다 움직이고, 3번은 $h$까지 바꾼다. 그 숫자는 이 단면에 올리지 말거나, 구석 상자에 "전체 스텝"이라고 적어 따로 둔다.
 
 > [!tip]- 정답 · Solutions
 > 1. $\hat y=1-2+3W_{2,3}=3W_{2,3}-1$이므로 $L=\tfrac12(3W_{2,3}-2)^2=\tfrac92(W_{2,3}-\tfrac23)^2$, $0.667$에서 최소다. 카탈로그 $W_{2,3}=0.5$는 왼쪽 기울기 위 $L=0.125$에 있고, 기울기는 $\partial L/\partial W_2$의 셋째 성분인 $-1.5$다. 곡률은 $h_3^2=9$로 첫째 단면의 $h_1^2=1$의 아홉 배이고, 그래서 포물선이 좁다. 이 가중치만 $\eta=0.1$로 움직이면 $0.15$를 가서 $0.65$($L=0.00125$), 꼭짓점 바로 앞에 선다. $\eta=1/9=0.111$은 꼭짓점에 내려앉고 $\eta>2/9=0.222$는 발산한다. 한 가중치 방향의 곡률은 그 가중치가 곱하는 활성값의 제곱이므로, 학습률 하나가 가중치마다 뉴턴 스텝의 다른 몫이 된다.
-> 2. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
-> 3. $W_2\leftarrow(1,-1,0.5)+(5,10,15)=(6,9,15.5)$. $\hat y=70.5$, $L$이 폭발. $\eta=10$은 이 척도에서 안정 스텝을 한참 지난다.
+> 2. (a) $h$를 고정하면 $\hat y=W_2h$는 $W_2$에 대해 선형이므로 $\partial L/\partial W_2=(\hat y-y)\,h=(0.5-2)(1,2,3)=(-1.5,-3,-4.5)$다. 빗나간 정도 $-1.5$가 카탈로그의 $-0.5$의 세 배이므로 그래디언트도 카탈로그의 세 배이고, 손실은 $L=\tfrac12(1.5)^2=1.125$에서 출발한다. (b) $W_2\leftarrow(1,-1,0.5)-0.06(-1.5,-3,-4.5)=(1.09,-0.82,0.77)$이므로 $\hat y=1.09-1.64+2.31=1.76$, $L=\tfrac12(0.24)^2=0.0288$이다. (c) 잔차는 $-1.5$에서 $-0.24=-1.5\times0.16$이 되었고, $1-0.06\times14=0.16$이다. 정확 스텝은 여전히 $\hat y=2$에 내려앉는 $\eta=1/14\approx0.071$이고, 발산 문턱도 여전히 $2/14\approx0.143$이다. 곡률 $\lVert h\rVert^2$는 입력만으로 정해지므로 라벨은 둘 다 옮기지 못한다. 라벨은 목표가 얼마나 먼지만 정한다. $0.06<1/14$라 인수가 양수이므로 출력은 한쪽에서 $2$로 다가가고, $1/14$를 넘는 강의의 $\eta=0.1$은 인수 $-0.4$로 넘어간다.
+> 3. 여기서는 $\hat y=1-3+2=0$, 잔차 $-1$, $L=0.5$다. 그래디언트가 $-1\cdot(1,3,4)$이므로 $W_2\leftarrow(1,-1,0.5)+0.1\,(1,3,4)=(1.1,-0.7,0.9)$, $\hat y=1.1-2.1+3.6=2.6$, $L=\tfrac12(1.6)^2=1.28$이다. 손실이 두 배 넘게 커졌다. 이 예제의 그래디언트 방향 곡률은 $\lVert h\rVert^2=1+9+16=26$이라 잔차에 $1-0.1\times26=-1.6$이 곱해진다. 크기가 $1$보다 크므로 스텝마다 부호를 바꾸며 $1.6$배씩 커지고, 이것이 발산이다. 카탈로그 예제는 $\lVert h\rVert^2=14$, 인수 $-0.4$였다. 한계는 가장 가파른 예제가 정한다. 어느 하나로만 스텝을 밟아도 안정하려면 $\eta<2/26\approx0.077$이어야 하고, 이 예제의 정확 스텝은 $1/26\approx0.038$이다. 입력이 크면 곡률이 크다. 학습 전에 입력을 정규화하는 이유 가운데 하나가 이것이다. 작은 입력에서 잘 되던 학습률이 큰 입력에서는 발산할 수 있다.
 
 ### 로보틱스 다리
 

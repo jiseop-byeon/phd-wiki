@@ -101,6 +101,7 @@ decision layer these pages feed.
 - [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] — the representation ladder from 2D keypoints to parametric bodies, what MPJPE means in millimetres, why head pose is substituted for gaze at range, and the motion cues that need no keypoints
 - [[04-robotics/egocentric-perception|22. Egocentric & First-Person Perception]] — how the first-person viewpoint changes observability, the gaze → head → hand → contact cue cascade, where head motion stops proxying attention, and the gap from daily-life benchmarks to a helmet camera
 - [[04-robotics/human-intent-prediction|23. Human Intent & Trajectory Prediction]] — intent versus trajectory, the usable horizon $\Delta^*$ against required lead time, calibration and conformal prediction as the decision interface, base rates, and the human-masked ablation
+- [[04-robotics/xr-human-robot-collaboration|23.5 XR for Human–Robot Collaboration]] — the device classes from VR headsets to display smart glasses and what each shows and senses, what a developer can read from a Quest 3 and a Ray-Ban Display, a hologram's registration budget on S1 and why it cannot check ±5 mm, and the research map from intent displays to egocentric robot learning
 
 ### K. Haptics & teleoperation specialization
 
@@ -120,7 +121,7 @@ Do this last, after the cumulative problem set below.
 
 - [[04-robotics/capstone-panel-contact|26. Capstone: Tool to Panel, Controlled Contact]] — the running task end to end in one simulation: fuse the panel range, plan around the uncertainty-inflated C-obstacle, time the path at the joints and at the tip, track it, switch to impedance, press, and name the page whose limit each failing design violates
 
-Note: page numbers are the recommended study order — Modern Robotics (1–2) → estimation (3, 3.2) → geometric perception and sensors (3.5, 3.6) → planning (4) → control (5, 5.5, 6–8) → contact (9) → systems (10, 10.5) → humans & safety (11), then the specialization pages (12–16 manipulation, 17–19 navigation, 20–23 human perception & intent, 24 haptics & teleoperation, 25 the ROS 2 build track), and 26 the capstone. The later Modern Robotics chapters are read alongside the page they serve rather than all at the start: ch.10 with 4. Planning, ch.11 after 5. Control Theory, ch.12 with 15. Grasping, ch.13 with 16. Navigation.
+Note: page numbers are the recommended study order — Modern Robotics (1–2) → estimation (3, 3.2) → geometric perception and sensors (3.5, 3.6) → planning (4) → control (5, 5.5, 6–8) → contact (9) → systems (10, 10.5) → humans & safety (11), then the specialization pages (12–16 manipulation, 17–19 navigation, 20–23.5 human perception & intent, 24 haptics & teleoperation, 25 the ROS 2 build track), and 26 the capstone. The later Modern Robotics chapters are read alongside the page they serve rather than all at the start: ch.10 with 4. Planning, ch.11 after 5. Control Theory, ch.12 with 15. Grasping, ch.13 with 16. Navigation.
 
 ### Session schedule · 학습 일정
 
@@ -165,7 +166,7 @@ One row is one 60–90-minute session of the common track, in the study order of
 | 35 | 3.2 §4–6, §8 | first pass | Three numbers read off one Allan-deviation plot (§6), and where each goes in $Q$ or $R$ (§8). |
 | 36 | 3.2 self-check, problem set | problem set + lab and sweep | Solutions 1–2 (the quantization step and its $\sigma_q$ at 4096 counts/m); problem 3's record-length sweep printed. |
 | **37** | [[04-robotics/geometric-perception-calibration\|3.5]] object, diagram, worked case | first pass + worked case by hand | The RMS reprojection error, then the metric error it hides at $X=0.5$ m and at $3$ m — and which of the two the RMS certifies, the fit or the metre. |
-| **38** | 3.5 §1, §5, §7 | first pass | A table point projected to a pixel with the full pinhole model (§1); which calibration a sub-pixel residual does not certify (§5). |
+| **38** | 3.5 §1, §5, §7 | first pass | A table point projected to a pixel with the full pinhole model (§1); $K$ recovered from three views of the target tilted $30^\circ$ at $2$ m, why fronto-parallel views never pin $f$ or $c$, and which calibration a sub-pixel residual does not certify (§5). |
 | 39 | 3.5 §2.5 | first pass | The flat, edge and corner patches' Harris responses $0$, $-1125$ and $7375$ and their Shi–Tomasi scores by hand; $L$'s match rejected by the ratio test at $0.20/0.23=0.87$ although the nearest candidate is the right one; §2.5's listing run. |
 | 40 | 3.5 §2, §2.6 | first pass | Depth from disparity $Z=fb/d$ and its $\pm1$ px error (§2); the candidate at $(434,\,303)$ turned from an algebraic residual into $3.0$ px off its epipolar line, one triangulation by hand, and the repeated panel's match at $(440,\,300)$ that passes the check and lands $40$ cm too far (§2.6). |
 | 41 | 3.5 §2.7 | first pass + worked case by hand | P3P on $A$, $B$, $C$ by hand: the true pose and the two impostors, tilted $22.62^\circ$ about $AB$ and $28.07^\circ$ about $AC$, that fit those corners exactly; the fourth corner $D$ landing $12.5$ and $16.0$ px from its detection under them; the homography giving $R=I$, $t=(0,0,2)$ m in closed form; the one-view spreads, $\pm13.2$ mm in distance and $\pm2.70^\circ$ in tilt, each from its lever. |
@@ -239,7 +240,7 @@ The specializations branch from the common track rather than add to it. At the s
 
 - **H. Manipulation (12–16):** 7–36 sessions over five pages (15 is a Tier A lab) and the two Modern Robotics chapters read alongside them — [[04-robotics/modern-robotics/ch12-grasping|MR ch.12]] with 15 and [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR ch.13]] with 16, two sessions each.
 - **I. Unstructured-environment navigation (17–19):** 3–15 sessions over three pages, 17 a Tier A lab.
-- **J. Human perception & intent (20–23):** 4–16 sessions over four pages, 23 a Tier A lab.
+- **J. Human perception & intent (20–23.5):** 5–25 sessions over five pages, 23 and 23.5 Tier A labs.
 - **K. Haptics & teleoperation (24):** 10–28 sessions over the hub and its nine sub-pages, three of them Tier A labs (24.4, 24.8, 24.9). The track is course-driven; for the research program alone its core is 24.4, 24.5, 24.8 and §5–§6 of 24.9, about 4–13 sessions ([[07-research-program/index|Research Program §6]]).
 - **L. Build track (25):** 13–64 sessions over the hub and its twelve sub-pages, 25.0 C++ among them, before the build time a real workspace adds.
 
@@ -358,6 +359,7 @@ B절 다음에 읽는다; 이 페이지들이 먹이는 결정 계층은 G절에
 - [[04-robotics/human-pose-gaze|21. Human Pose, Hands & Gaze]] — 2D 키포인트에서 파라메트릭 신체까지의 표현 사다리, MPJPE의 mm 단위 의미, 원거리에서 머리 자세가 시선을 대체하는 이유, 키포인트가 필요 없는 움직임 단서
 - [[04-robotics/egocentric-perception|22. Egocentric & First-Person Perception]] — 1인칭 시점이 관측 가능성을 바꾸는 방식, 시선 → 머리 → 손 → 접촉 단서 사슬, 머리 움직임이 주의 대용이기를 멈추는 지점, 일상 벤치마크에서 헬멧 카메라까지의 격차
 - [[04-robotics/human-intent-prediction|23. Human Intent & Trajectory Prediction]] — 의도 vs 궤적, 필요 선행 시간 대비 가용 지평 $\Delta^*$, 결정 인터페이스로서의 보정과 conformal prediction, 기저율, 사람 마스킹 ablation
+- [[04-robotics/xr-human-robot-collaboration|23.5 XR for Human–Robot Collaboration]] — VR 헤드셋에서 디스플레이 스마트 글라스까지 기기 부류와 각각이 보여 주고 감지하는 것, Quest 3와 Ray-Ban Display에서 개발자가 읽을 수 있는 것, S1에서 홀로그램의 정합 예산과 그것이 ±5 mm를 검사하지 못하는 이유, 의도 디스플레이에서 1인칭 로봇 학습까지의 연구 지도
 
 ### K. 햅틱·원격조작 전문화
 
@@ -378,7 +380,7 @@ F절(10. 로봇 시스템)과 나란히, 컴퓨터에서 무언가를 돌려 보
 - [[04-robotics/capstone-panel-contact|26. Capstone: Tool to Panel, Controlled Contact]] — 관통 과제를 시뮬레이션 하나로 끝까지: 패널 거리를 융합하고, 불확실성으로 부풀린 C-장애물을 피해 계획하고, 관절과 말단에서 경로 시간을 정하고, 추종하고, 임피던스로 전환해 누르고, 실패하는 설계마다 어느 페이지의 한계를 어겼는지 댄다
 
 참고: 페이지 번호는 권장 학습 순서다 — Modern Robotics(1–2) → 추정(3, 3.2) → 기하 인식과 센서(3.5, 3.6) → 계획(4) → 제어(5, 5.5, 6–8) →
-접촉(9) → 시스템(10, 10.5) → 사람·안전(11), 그다음 전문화 페이지들(12–16 매니퓰레이션, 17–19 내비게이션, 20–23 사람 인지·의도, 24 햅틱·원격조작, 25 ROS 2 만드는 트랙), 그리고 26 캡스톤. Modern Robotics의 뒤쪽 장들은 처음에 몰아 읽지 않고 그 장이 받쳐 주는 페이지와 함께 읽는다: 10장은 4. 계획과 함께, 11장은 5. 제어 이론 다음에, 12장은 15. 파지와 함께, 13장은 16. 내비게이션과 함께.
+접촉(9) → 시스템(10, 10.5) → 사람·안전(11), 그다음 전문화 페이지들(12–16 매니퓰레이션, 17–19 내비게이션, 20–23.5 사람 인지·의도, 24 햅틱·원격조작, 25 ROS 2 만드는 트랙), 그리고 26 캡스톤. Modern Robotics의 뒤쪽 장들은 처음에 몰아 읽지 않고 그 장이 받쳐 주는 페이지와 함께 읽는다: 10장은 4. 계획과 함께, 11장은 5. 제어 이론 다음에, 12장은 15. 파지와 함께, 13장은 16. 내비게이션과 함께.
 
 ### 학습 일정 · Session schedule
 
@@ -423,7 +425,7 @@ F절(10. 로봇 시스템)과 나란히, 컴퓨터에서 무언가를 돌려 보
 | 35 | 3.2 §4–6, §8 | 첫 읽기 | 앨런 편차 그림 하나에서 숫자 셋을 읽고(§6), 각각이 $Q$와 $R$ 중 어디로 가는지 말한다(§8). |
 | 36 | 3.2 스스로 점검, 과제 | 과제 + 실습과 스윕 | 정답 1–2(4096 counts/m에서 양자화 간격과 $\sigma_q$)와 대조한다. 과제 3의 기록 길이 스윕을 찍는다. |
 | **37** | [[04-robotics/geometric-perception-calibration\|3.5]] 대상·과제 그림·끝까지 계산 | 첫 읽기 + 손 계산 | RMS 재투영 오차를 구하고, 그것이 $X=0.5$ m와 $3$ m에서 숨기는 미터 오차를 구한다 — 그리고 RMS가 보증하는 것이 적합인지 미터인지 말한다. |
-| **38** | 3.5 §1, §5, §7 | 첫 읽기 | 테이블의 점 하나를 핀홀 모델 전체로 픽셀에 투영한다(§1). sub-pixel 잔차가 보증하지 않는 보정이 무엇인지 말한다(§5). |
+| **38** | 3.5 §1, §5, §7 | 첫 읽기 | 테이블의 점 하나를 핀홀 모델 전체로 픽셀에 투영한다(§1). $2$ m에서 $30^\circ$ 기울인 타깃 시점 셋으로 $K$를 복원하고, 정면 시점만으로는 왜 $f$와 $c$가 끝내 정해지지 않는지, sub-pixel 잔차가 보증하지 않는 보정이 무엇인지 말한다(§5). |
 | 39 | 3.5 §2.5 | 첫 읽기 | 평탄·에지·코너 패치의 Harris 응답 $0$, $-1125$, $7375$와 Shi–Tomasi 점수를 손으로. 가장 가까운 후보가 참 짝인데도 비율 검사 $0.20/0.23=0.87$에서 기각되는 $L$의 매칭. §2.5의 listing 실행. |
 | 40 | 3.5 §2, §2.6 | 첫 읽기 | 시차에서 깊이 $Z=fb/d$와 그 $\pm1$ px 오차(§2). $(434,\,303)$의 후보를 대수적 잔차에서 epipolar 선까지의 $3.0$ px로 바꾸고, 삼각측량 한 번을 손으로 하고, 검사를 통과하고도 $40$ cm 멀리 가는 $(440,\,300)$의 옆 패널 매칭을 본다(§2.6). |
 | 41 | 3.5 §2.7 | 첫 읽기 + 손 계산 | $A$, $B$, $C$ 위의 P3P를 손으로: 참 자세, 그리고 세 코너에 정확히 맞는 가짜 자세 둘 — $AB$ 둘레로 $22.62^\circ$, $AC$ 둘레로 $28.07^\circ$ 기운 타깃. 가짜 자세에서 넷째 코너 $D$가 검출 위치에서 $12.5$ px와 $16.0$ px 떨어지는 것. homography로 닫힌 형태에서 얻는 $R=I$, $t=(0,0,2)$ m. 이미지 한 장의 퍼짐 — 거리 $\pm13.2$ mm, 기울기 $\pm2.70^\circ$ — 을 각각의 지렛대에서. |
@@ -497,7 +499,7 @@ F절(10. 로봇 시스템)과 나란히, 컴퓨터에서 무언가를 돌려 보
 
 - **H. 매니퓰레이션(12–16):** 다섯 페이지(15는 Tier A 실습)와 그와 함께 읽는 Modern Robotics 두 장 — 15와 함께 [[04-robotics/modern-robotics/ch12-grasping|MR 12장]], 16과 함께 [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|MR 13장]], 각각 2회 — 에 7–36회.
 - **I. 비정형 환경 내비게이션(17–19):** 세 페이지(17은 Tier A 실습)에 3–15회.
-- **J. 사람 인지와 의도(20–23):** 네 페이지(23은 Tier A 실습)에 4–16회.
+- **J. 사람 인지와 의도(20–23.5):** 다섯 페이지(23과 23.5는 Tier A 실습)에 5–25회.
 - **K. 햅틱·원격조작(24):** 허브와 하위 페이지 아홉(그중 셋은 Tier A 실습: 24.4, 24.8, 24.9)에 10–28회. 과목이 이끈 트랙이고, 연구 프로그램만 보면 핵심은 24.4, 24.5, 24.8, 24.9의 §5–§6으로 약 4–13회다([[07-research-program/index|연구 프로그램 §6]]).
 - **L. 만드는 트랙(25):** 허브와 25.0 C++를 포함한 하위 페이지 열두 개에 13–64회. 실제 워크스페이스가 더하는 빌드 시간은 빠져 있다.
 

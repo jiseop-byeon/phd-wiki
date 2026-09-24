@@ -18,15 +18,26 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 derivatives, matrix arithmetic, logs, complex numbers. Most of the other Foundations pages name it as a prerequisite, which is why it comes first.*
 
 The engineering math that pages 1–9 silently assume, self-contained in one place. Each
-section says exactly which foundation page uses it. If all of this reads easily, skip
-straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
+section says exactly which foundation page uses it. A few machine-learning words turn up here
+as examples before any page has taught them — *loss*, *ReLU*, *layer*, *batch*, *softmax*: read
+them as labels for now, since [[02-foundations/neural-network-basics|0.8 What a Neural Network Is]]
+defines each one (and §10 below defines softmax). If all of this reads easily, go on in the
+study order of [[02-foundations/overview|0. Overview]], not straight to 1. Linear Algebra:
+[[02-foundations/lab-plants|0.6 Lab Plants]] — *plant* is control's word for the system being
+controlled, and that page freezes six small test systems, P1–P6, that every problem set reuses —
+and [[02-foundations/lab-kernel|0.7 Lab Kernel]], then the physics floor
+([[02-foundations/basic-mechanics|0.6.1]], [[02-foundations/basic-circuits-electronics|0.6.2]],
+[[02-foundations/fluid-power|0.6.3]]) where your degree left a gap, then 0.8.
+
+> [!note] Why this matters · 왜 배우는가
+> **Where you are:** on the [[physical-ai-map|Physical AI Map]] this page is the mathematics floor under the whole stack of [[07-research-program/index|7. Research Program §5]]: derivatives, matrices and logarithms sit under every layer, and the linear ordinary differential equations (ODEs) and poles of §8–§9 sit directly under manipulation and contact — in "install that panel on the frame", the steps where the robot moves the panel, feels the frame and seats it. **Why:** a contact behaves like a mass on a spring and a damper, so the same push can make it ring or settle; P3, the wiki's one-degree-of-freedom test handle ([[02-foundations/lab-plants|0.6 Lab Plants]]), pushed with $0.4\,\mathrm N$ into its $400\,\mathrm{N/m}$ wall, overshoots by $73\%$ and needs $0.38\,\mathrm s$ to settle at damping ratio $\zeta = 0.10$, yet overshoots $2\%$ and settles in $36\,\mathrm{ms}$ at $\zeta = 0.78$ ([[02-foundations/basic-mechanics|0.6.1 §10]]). §8's $\zeta = c/(2\sqrt{km})$ tells you which before anything touches steel. **Direction:** [[04-robotics/control-theory-ce397|5. Control Theory §2–§5]], [[04-robotics/system-identification|5.5 System Identification §2]] and [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §1]] build on §8–§9, [[02-foundations/calculus-backprop|2. Calculus §1]] and [[02-foundations/optimization|4. Optimization §3]] open on §1–§2, and on the dissertation path of [[07-research-program/index|7. Research Program §8]] the page is the ground under block 1, the foundations gate. **Payoff:** you can differentiate and linearize a function, solve and sketch the response of a first-order plant such as the leaky heater P4 ([[02-foundations/lab-plants|0.6]]), read stability off a pole, and test whether a map is linear.
 
 > [!note] First pass · 처음이라면
-> This is a reference, not a narrative — do not read it front to back. Each section title says which page uses it, so open the section the page you are about to read names. Two exceptions. Skim §10, the notation dictionary, once and the rest of the track costs less. And the problem set uses only the picture and §8, whose P4 worked case leans on §4.5 (superposition) and §6 ($e^x$). §9 is a preview of the control track and can wait until you get there.
+> A reference, not a narrative, so the first pass is a test followed by targeted reading — about two sessions of 60–90 minutes. **Session 1:** answer the six self-check questions closed-book (about 30 minutes) and read the section behind any you miss. Then read the four parts that are not standard engineering mathematics even for a fluent reader: §1's worked gradient with its contour figure, §4.5 (linearity, the definition every later page reuses), §6's log-sum-exp, and one skim of §10's notation dictionary. **Session 2:** the picture and §8 in full — the time constant, the block diagram and the P4 worked case are new if dynamics is — then the problem set, drawing item 1 before you open *How to draw it*. §9 is a preview of the control track: read it once for its vocabulary, or leave it until [[04-robotics/control-theory-ce397|5. Control Theory]].
 
 ### The picture · 그림으로 먼저 보기
 
-<svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="Block diagram of the leaky heater P4: command u = 1 enters a summing junction whose output is x-dot, an integrator returns the temperature error x, and x comes back through a unit gain with a minus sign. Inset: the step response with its initial tangent reaching 1 at t = 1 s, and a magnified view where the two Euler points sit above the two exact points.">
+<svg viewBox="0 0 560 336" style="max-width:100%;height:auto" role="img" aria-label="Block diagram of the leaky heater P4: command u = 1 enters a summing junction whose output is x-dot, an integrator returns the temperature error x, and x comes back through a unit gain with a minus sign. Inset: the step response with its initial tangent reaching 1 at t = 1 s, and a magnified view where the two Euler points sit above the two exact points.">
   <defs><marker id="emHw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <polyline points="16,44 109,44" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#emHw)"/>
   <text x="20" y="36" font-size="11" fill="currentColor">u = 1</text>
@@ -47,7 +58,7 @@ straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
   <text x="507" y="80" font-size="11" fill="currentColor">x</text>
   <rect x="272" y="96" width="30" height="24" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.4"/>
   <text x="287" y="112" font-size="12" text-anchor="middle" fill="currentColor">1</text>
-  <text x="287" y="135" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">gain 1 (later K)</text>
+  <text x="287" y="135" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">gain 1 (later 1 + K)</text>
   <polyline points="272,108 122,108 122,57" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#emHw)"/>
   <polyline points="52,310 264,310" fill="none" stroke="currentColor" stroke-width="1.1" marker-end="url(#emHw)"/>
   <polyline points="52,310 52,168" fill="none" stroke="currentColor" stroke-width="1.1" marker-end="url(#emHw)"/>
@@ -94,13 +105,13 @@ straight to [[02-foundations/linear-algebra|1. Linear Algebra]].
   <text x="449" y="284" font-size="11" fill="currentColor">forward Euler</text>
   <circle cx="440" cy="295" r="2.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
   <text x="449" y="299" font-size="11" fill="currentColor">exact</text>
-  <text x="12" y="345" font-size="11" opacity="0.9" fill="currentColor">Right, the boxed corner magnified: each Euler point sits above its exact partner, by 0.005</text>
-  <text x="12" y="359" font-size="11" opacity="0.9" fill="currentColor">and 0.009, since Euler uses the slope at the start of the step, where 1 − x is largest. d = 0.</text>
 </svg>
 
-The plant (in control, the physical system being controlled) **P4** — the wiki's leaky-heater test system, a temperature that slowly follows its heater command ([[02-foundations/lab-plants|0.6 Lab Plants]]) — which is the leaky heater $\dot x=-x+u$ of §8, as a block diagram: the command $u=1$ enters a summing junction with $+$ and the fed-back $x$ with $-$, their sum is $\dot x$, and an integrator ($\int$, or $1/s$) returns the temperature error $x$, the only state, which comes back through a unit gain (no disturbance input: $d=0$ here). The inset is the step response from $x=0$: the initial slope is $1$ per second, its tangent reaches the steady value $1$ at the time constant $t=1\,\mathrm{s}$, and the curve $x=1-e^{-t}$ passes below it. In the magnified corner, forward Euler's $0.10$ and $0.19$ sit $0.005$ and $0.009$ above the exact $0.095$ and $0.181$ at $t=0.1$ and $0.2$, because Euler uses the slope at the start of each step, where $1-x$ is largest.
+The plant (in control, the physical system being controlled) **P4** — the wiki's leaky-heater test system, a temperature that slowly follows its heater command ([[02-foundations/lab-plants|0.6 Lab Plants]]) — is the leaky heater $\dot x=-x+u$ of §8, drawn as a block diagram: the command $u=1$ enters a summing junction with $+$ and the fed-back $x$ with $-$, their sum is $\dot x$, and an integrator ($\int$, or $1/s$) returns the temperature error $x$, the only state, which comes back through a unit gain (no disturbance input: $d=0$ here). The inset is the step response from $x=0$: the initial slope is $1$ per second, its tangent reaches the steady value $1$ at the time constant $t=1\,\mathrm{s}$, and the curve $x=1-e^{-t}$ passes below it. In the magnified corner, forward Euler's $0.10$ and $0.19$ sit $0.005$ and $0.009$ above the exact $0.095$ and $0.181$ at $t=0.1$ and $0.2$, because Euler uses the slope at the start of each step, where $1-x$ is largest.
 
 ### 1. Derivatives (→ used by 2. Calculus, 4. Optimization)
+
+Every method on the learning and control path — a training step nudging millions of weights to lower a loss, a controller nudging a motor command to shrink an error — asks one question: nudge this input, and how much does the output move? The derivative is the number that answers it, and the gradient is that number for many inputs at once.
 
 - The **derivative** $f'$ is a new function that gives, at each point $x$, the instantaneous
   rate of change of $f$. Definition as sensitivity:
@@ -111,7 +122,7 @@ The plant (in control, the physical system being controlled) **P4** — the wiki
   *differentiable* at $x$. Example: $f(x) = x^2$ at $x = 3$ with $h = 0.01$ gives
   $(9.0601 - 9)/0.01 = 6.01$, closing in on $f'(3) = 6$. Non-example: $f(x) = |x|$ at $0$,
   where the slope is $+1$ from the right and $-1$ from the left, so no single limit exists —
-  the same kink ReLU has at zero.
+  the same kink that ReLU, the function $\max(0, x)$ of 0.8, has at zero.
 - The rules you actually use:
 
 | Rule | Formula |
@@ -127,9 +138,11 @@ The plant (in control, the physical system being controlled) **P4** — the wiki
   so it is the ordinary derivative along one axis. The **gradient**
   $\nabla f = (\partial f/\partial x_1, \ldots, \partial f/\partial x_n)$ stacks all $n$ of
   them into a vector. It points in the direction of steepest increase, because for a small step
-  $\delta$ the change in $f$ is about $\nabla f^\top \delta$, which is largest when $\delta$
-  lines up with $\nabla f$ — so gradient *descent* steps the opposite way.
-- Worked example (the shape of every loss-gradient computation):
+  $\delta$ the change in $f$ is about $\nabla f^\top \delta = \sum_i (\partial f/\partial x_i)\,\delta_i$ —
+  each partial derivative times its own nudge, added up (the $^\top$ is §4's transpose) — which
+  is largest when $\delta$ lines up with $\nabla f$ — so gradient *descent* steps the opposite way.
+- Worked example (the shape of every loss-gradient computation; a *loss* is the single number
+  that scores how wrong a model is, [[02-foundations/neural-network-basics|0.8 §3]]):
   $f(x, y) = (xy - 3)^2$ ⇒ $\partial f/\partial x = 2(xy-3)\cdot y$ — outer derivative
   times inner derivative, chain rule in action. **Evaluate at $(x,y) = (2,1)$:** the inner
   part is $xy - 3 = -1$, so $\partial f/\partial x = 2(-1)(1) = -2$ and
@@ -140,7 +153,61 @@ The plant (in control, the physical system being controlled) **P4** — the wiki
   $-\alpha(-2,-4)$: push both up, push $y$ twice as hard. Every loss-gradient in this wiki is
   this computation with more indices.
 
+<svg viewBox="0 0 560 366" style="max-width:100%;height:auto" role="img" aria-label="Level sets of f = (xy - 3) squared on the square from 0.5 to 3.5: the zero set xy = 3 as a thick hyperbola, and pairs of hyperbolas xy = 2.5 and 3.5 (f = 0.25), 2 and 4 (f = 1), 1 and 5 (f = 4). At A = (2, 1), on the f = 1 curve, the gradient (-2, -4) drawn at a tenth of its length points away from xy = 3, perpendicular to the curve; one step of -0.1 times the gradient moves by (0.2, 0.4) to B = (2.2, 1.4), where f = 0.0064.">
+  <defs><marker id="emGr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="60" y="40" width="300" height="300" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <polyline points="60,190 61.7,196.5 63.4,202.6 65.1,208.4 66.7,213.8 68.4,218.8 70.1,223.6 71.8,228.2 73.5,232.5 75.2,236.6 76.9,240.4 78.5,244.1 80.2,247.6 81.9,250.9 83.6,254.1 85.3,257.2 87,260.1 88.7,262.9 90.3,265.5 92,268.1 93.7,270.5 95.4,272.9 97.1,275.2 98.8,277.3 100.4,279.4 102.1,281.5 103.8,283.4 105.5,285.3 107.2,287.1 108.9,288.9 110.6,290.6 112.2,292.2 113.9,293.8 115.6,295.3 117.3,296.8 119,298.2 120.7,299.6 122.4,301 124,302.3 125.7,303.6 127.4,304.8 129.1,306 130.8,307.2 132.5,308.3 134.2,309.5 135.8,310.5 137.5,311.6 139.2,312.6 140.9,313.6 142.6,314.6 144.3,315.5 146,316.4 147.6,317.3 149.3,318.2 151,319.1 152.7,319.9 154.4,320.7 156.1,321.5 157.8,322.3 159.4,323.1 161.1,323.8 162.8,324.6 164.5,325.3 166.2,326 167.9,326.7 169.6,327.3 171.2,328 172.9,328.6 174.6,329.2 176.3,329.9 178,330.5 179.7,331.1 181.3,331.6 183,332.2 184.7,332.8 186.4,333.3 188.1,333.8 189.8,334.4 191.5,334.9 193.1,335.4 194.8,335.9 196.5,336.4 198.2,336.9 199.9,337.3 201.6,337.8 203.3,338.3 204.9,338.7 206.6,339.1 208.3,339.6 210,340" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 2.5"/>
+  <polyline points="152.9,40 155.2,45.6 157.5,51 159.8,56.3 162.2,61.4 164.5,66.4 166.8,71.2 169.1,75.8 171.5,80.4 173.8,84.8 176.1,89 178.5,93.2 180.8,97.2 183.1,101.2 185.4,105 187.8,108.7 190.1,112.4 192.4,115.9 194.8,119.4 197.1,122.7 199.4,126 201.7,129.2 204.1,132.3 206.4,135.4 208.7,138.4 211,141.3 213.4,144.1 215.7,146.9 218,149.6 220.4,152.3 222.7,154.9 225,157.5 227.3,159.9 229.7,162.4 232,164.8 234.3,167.1 236.6,169.4 239,171.6 241.3,173.8 243.6,176 246,178.1 248.3,180.2 250.6,182.2 252.9,184.2 255.3,186.1 257.6,188.1 259.9,189.9 262.2,191.8 264.6,193.6 266.9,195.4 269.2,197.1 271.6,198.8 273.9,200.5 276.2,202.2 278.5,203.8 280.9,205.4 283.2,207 285.5,208.5 287.8,210 290.2,211.5 292.5,213 294.8,214.5 297.2,215.9 299.5,217.3 301.8,218.7 304.1,220 306.5,221.3 308.8,222.7 311.1,224 313.5,225.2 315.8,226.5 318.1,227.7 320.4,228.9 322.8,230.1 325.1,231.3 327.4,232.5 329.7,233.6 332.1,234.8 334.4,235.9 336.7,237 339.1,238 341.4,239.1 343.7,240.2 346,241.2 348.4,242.2 350.7,243.2 353,244.2 355.3,245.2 357.7,246.2 360,247.1" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 2.5"/>
+  <polyline points="67.1,40 70.4,59.1 73.7,76.1 77,91.6 80.3,105.5 83.6,118.2 86.9,129.9 90.2,140.6 93.5,150.4 96.8,159.5 100,167.9 103.3,175.7 106.6,183 109.9,189.8 113.2,196.2 116.5,202.2 119.8,207.8 123.1,213.1 126.4,218.1 129.7,222.9 133,227.3 136.2,231.6 139.5,235.6 142.8,239.4 146.1,243.1 149.4,246.5 152.7,249.8 156,253 159.3,256 162.6,258.9 165.9,261.7 169.1,264.3 172.4,266.9 175.7,269.3 179,271.7 182.3,273.9 185.6,276.1 188.9,278.2 192.2,280.2 195.5,282.2 198.8,284 202.1,285.9 205.3,287.6 208.6,289.3 211.9,291 215.2,292.5 218.5,294.1 221.8,295.6 225.1,297 228.4,298.4 231.7,299.8 235,301.1 238.3,302.4 241.5,303.6 244.8,304.8 248.1,306 251.4,307.2 254.7,308.3 258,309.4 261.3,310.4 264.6,311.4 267.9,312.4 271.2,313.4 274.4,314.4 277.7,315.3 281,316.2 284.3,317.1 287.6,318 290.9,318.8 294.2,319.6 297.5,320.4 300.8,321.2 304.1,322 307.4,322.7 310.6,323.5 313.9,324.2 317.2,324.9 320.5,325.6 323.8,326.3 327.1,326.9 330.4,327.6 333.7,328.2 337,328.8 340.3,329.4 343.5,330 346.8,330.6 350.1,331.2 353.4,331.8 356.7,332.3 360,332.9" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="5 3"/>
+  <polyline points="124.3,40 126.9,47.9 129.6,55.5 132.2,62.8 134.9,69.7 137.5,76.3 140.2,82.7 142.8,88.9 145.5,94.7 148.1,100.4 150.8,105.8 153.4,111.1 156.1,116.2 158.7,121 161.4,125.7 164,130.3 166.7,134.7 169.3,138.9 172,143 174.6,147 177.3,150.8 179.9,154.6 182.6,158.2 185.2,161.7 187.8,165.1 190.5,168.4 193.1,171.6 195.8,174.7 198.4,177.7 201.1,180.7 203.7,183.5 206.4,186.3 209,189 211.7,191.7 214.3,194.2 217,196.7 219.6,199.2 222.3,201.6 224.9,203.9 227.6,206.2 230.2,208.4 232.9,210.5 235.5,212.6 238.2,214.7 240.8,216.7 243.5,218.7 246.1,220.6 248.8,222.5 251.4,224.3 254.1,226.1 256.7,227.9 259.4,229.6 262,231.3 264.7,232.9 267.3,234.5 270,236.1 272.6,237.7 275.2,239.2 277.9,240.7 280.5,242.2 283.2,243.6 285.8,245 288.5,246.4 291.1,247.7 293.8,249 296.4,250.4 299.1,251.6 301.7,252.9 304.4,254.1 307,255.3 309.7,256.5 312.3,257.7 315,258.8 317.6,260 320.3,261.1 322.9,262.2 325.6,263.2 328.2,264.3 330.9,265.3 333.5,266.4 336.2,267.4 338.8,268.4 341.5,269.3 344.1,270.3 346.8,271.2 349.4,272.1 352.1,273.1 354.7,274 357.4,274.8 360,275.7" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="5 3"/>
+  <polyline points="81.4,40 84.6,54.7 87.7,68.2 90.8,80.7 93.9,92.2 97.1,102.9 100.2,112.9 103.3,122.2 106.5,130.8 109.6,139 112.7,146.6 115.9,153.8 119,160.6 122.1,167 125.2,173.1 128.4,178.8 131.5,184.3 134.6,189.4 137.8,194.3 140.9,199 144,203.5 147.2,207.7 150.3,211.8 153.4,215.7 156.5,219.4 159.7,223 162.8,226.4 165.9,229.7 169.1,232.8 172.2,235.9 175.3,238.8 178.5,241.6 181.6,244.3 184.7,246.9 187.8,249.4 191,251.9 194.1,254.2 197.2,256.5 200.4,258.7 203.5,260.8 206.6,262.9 209.8,264.8 212.9,266.8 216,268.7 219.1,270.5 222.3,272.2 225.4,273.9 228.5,275.6 231.7,277.2 234.8,278.8 237.9,280.3 241.1,281.8 244.2,283.2 247.3,284.7 250.4,286 253.6,287.4 256.7,288.7 259.8,289.9 263,291.2 266.1,292.4 269.2,293.6 272.4,294.7 275.5,295.8 278.6,296.9 281.7,298 284.9,299.1 288,300.1 291.1,301.1 294.3,302.1 297.4,303 300.5,304 303.7,304.9 306.8,305.8 309.9,306.6 313,307.5 316.2,308.3 319.3,309.2 322.4,310 325.6,310.8 328.7,311.6 331.8,312.3 335,313.1 338.1,313.8 341.2,314.5 344.3,315.2 347.5,315.9 350.6,316.6 353.7,317.3 356.9,317.9 360,318.6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <polyline points="110,40 112.8,49.6 115.6,58.6 118.4,67.2 121.2,75.4 124,83.1 126.9,90.5 129.7,97.5 132.5,104.2 135.3,110.6 138.1,116.8 140.9,122.6 143.7,128.2 146.5,133.6 149.3,138.8 152.1,143.8 154.9,148.5 157.8,153.1 160.6,157.5 163.4,161.8 166.2,165.9 169,169.9 171.8,173.7 174.6,177.4 177.4,180.9 180.2,184.4 183,187.7 185.8,191 188.7,194.1 191.5,197.1 194.3,200.1 197.1,202.9 199.9,205.7 202.7,208.4 205.5,211 208.3,213.5 211.1,216 213.9,218.4 216.7,220.7 219.6,223 222.4,225.2 225.2,227.3 228,229.4 230.8,231.5 233.6,233.5 236.4,235.4 239.2,237.3 242,239.2 244.8,241 247.6,242.7 250.4,244.4 253.3,246.1 256.1,247.8 258.9,249.4 261.7,250.9 264.5,252.5 267.3,254 270.1,255.4 272.9,256.9 275.7,258.3 278.5,259.7 281.3,261 284.2,262.3 287,263.6 289.8,264.9 292.6,266.1 295.4,267.4 298.2,268.6 301,269.7 303.8,270.9 306.6,272 309.4,273.1 312.2,274.2 315.1,275.3 317.9,276.3 320.7,277.3 323.5,278.4 326.3,279.3 329.1,280.3 331.9,281.3 334.7,282.2 337.5,283.1 340.3,284 343.1,284.9 346,285.8 348.8,286.7 351.6,287.5 354.4,288.4 357.2,289.2 360,290" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <polyline points="95.7,40 98.7,51.7 101.7,62.7 104.6,73 107.6,82.6 110.6,91.7 113.5,100.2 116.5,108.3 119.5,116 122.4,123.2 125.4,130.1 128.4,136.6 131.3,142.8 134.3,148.7 137.3,154.3 140.3,159.7 143.2,164.8 146.2,169.7 149.2,174.4 152.1,178.9 155.1,183.3 158.1,187.4 161,191.4 164,195.2 167,198.9 170,202.4 172.9,205.9 175.9,209.2 178.9,212.3 181.8,215.4 184.8,218.4 187.8,221.2 190.7,224 193.7,226.7 196.7,229.3 199.6,231.8 202.6,234.2 205.6,236.6 208.6,238.9 211.5,241.1 214.5,243.3 217.5,245.4 220.4,247.4 223.4,249.4 226.4,251.4 229.3,253.2 232.3,255.1 235.3,256.8 238.3,258.6 241.2,260.3 244.2,261.9 247.2,263.5 250.1,265.1 253.1,266.6 256.1,268.1 259,269.5 262,271 265,272.3 267.9,273.7 270.9,275 273.9,276.3 276.9,277.6 279.8,278.8 282.8,280 285.8,281.2 288.7,282.4 291.7,283.5 294.7,284.6 297.6,285.7 300.6,286.8 303.6,287.8 306.5,288.8 309.5,289.8 312.5,290.8 315.5,291.8 318.4,292.7 321.4,293.7 324.4,294.6 327.3,295.5 330.3,296.3 333.3,297.2 336.2,298 339.2,298.9 342.2,299.7 345.2,300.5 348.1,301.3 351.1,302 354.1,302.8 357,303.6 360,304.3" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <polyline points="110,340 110,344" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="110" y="356" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="56,290 60,290" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="52" y="294" font-size="11" text-anchor="end" fill="currentColor">1</text>
+  <polyline points="210,340 210,344" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="210" y="356" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <polyline points="56,190 60,190" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="52" y="194" font-size="11" text-anchor="end" fill="currentColor">2</text>
+  <polyline points="310,340 310,344" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="310" y="356" font-size="11" text-anchor="middle" fill="currentColor">3</text>
+  <polyline points="56,90 60,90" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="52" y="94" font-size="11" text-anchor="end" fill="currentColor">3</text>
+  <text x="368" y="344" font-size="11" fill="currentColor">x</text>
+  <text x="52" y="44" font-size="11" text-anchor="end" fill="currentColor">y</text>
+  <polyline points="210,290 190.2,329.6" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#emGr)"/>
+  <polyline points="210,290 228.6,252.9" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#emGr)"/>
+  <polyline points="213.1,283.7 219.4,286.9 216.3,293.1" fill="none" stroke="currentColor" stroke-width="0.9"/>
+  <circle cx="210" cy="290" r="3.2" fill="currentColor"/>
+  <circle cx="230" cy="250" r="3.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="219" y="310" font-size="12" fill="currentColor">A</text>
+  <text x="214" y="242" font-size="12" fill="currentColor">B</text>
+  <text x="376" y="44" font-size="12" fill="currentColor">f(x, y) = (xy − 3)<tspan dy="-5" font-size="10">2</tspan></text>
+  <polyline points="376,66 402,66" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <text x="408" y="70" font-size="11" fill="currentColor">f = 0: xy = 3</text>
+  <polyline points="376,86 402,86" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <text x="408" y="90" font-size="11" fill="currentColor">f = 0.25</text>
+  <polyline points="376,106 402,106" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="5 3"/>
+  <text x="408" y="110" font-size="11" fill="currentColor">f = 1</text>
+  <polyline points="376,126 402,126" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 2.5"/>
+  <text x="408" y="130" font-size="11" fill="currentColor">f = 4</text>
+  <polyline points="376,146 401,146" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#emGr)"/>
+  <text x="408" y="150" font-size="11" fill="currentColor">∇f at A, drawn ×0.1</text>
+  <polyline points="376,166 399,166" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#emGr)"/>
+  <text x="408" y="170" font-size="11" fill="currentColor">one step −0.1∇f</text>
+  <circle cx="389" cy="186" r="3.2" fill="currentColor"/>
+  <text x="408" y="190" font-size="11" fill="currentColor">A (2, 1): f = 1</text>
+  <circle cx="389" cy="206" r="3.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="408" y="210" font-size="11" fill="currentColor">B (2.2, 1.4): f = 0.0064</text>
+</svg>
+
+Level sets of $f(x,y)=(xy-3)^2$ on $[0.5,3.5]^2$: the thick curve is the zero set $xy=3$, and every other level is a pair of hyperbolas $xy=3\pm\sqrt f$. At $A=(2,1)$, on the level $f=1$, the gradient $\nabla f=(-2,-4)$ (drawn at a tenth of its length) is perpendicular to that level curve and points uphill, away from $xy=3$. One gradient-descent step with $\alpha=0.1$ moves against it by $(0.2,\,0.4)$ — $y$ twice as far as $x$ — to $B=(2.2,\,1.4)$, where $f=0.0064$.
+
 ### 2. Taylor expansion (→ 2. Calculus, 4. Optimization)
+
+An optimizer never sees a function whole: at each step it knows only the value and a few derivatives where it stands, and must guess what lies one step away. Taylor expansion is that guess, and it also says how far the guess can be trusted.
 
 $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
 
@@ -185,6 +252,8 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
 
 ### 3. Integrals and expectations (→ 3. Probability)
 
+Probability pages average a quantity over every outcome — the expected loss over a dataset, the expected return of a policy, the mean of a noisy range reading — and when the outcomes form a continuum, that average is an integral. This section reads an integral as a sum, then uses it for the one pattern the foundations need, the expectation.
+
 - An integral is a weighted sum **in the continuum limit** — slice the axis into pieces,
   multiply each $f$ value by its slice width, add them up, then let the slice width shrink
   to zero. "Continuum limit" always means exactly that: a sum whose steps have been taken
@@ -222,6 +291,8 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
   (e.g., KL non-negativity in [[02-foundations/information-theory|5. Information Theory]]).
 
 ### 4. Matrix arithmetic (→ 1. Linear Algebra — its entry requirement)
+
+A robot arm turns joint rates into a tip velocity through a matrix, and a network layer turns 512 features into 10 scores through another; both are a matrix times a vector, and the first thing that breaks in code is a shape that does not match. This section is the arithmetic that 1. Linear Algebra assumes, each rule computed once by hand.
 
 - $(AB)_{ij} = \sum_k A_{ik}B_{kj}$: **row $i$ of $A$ dotted with column $j$ of $B$.** Shapes:
   $(m\times n)(n \times p) = m \times p$ — the inner dimensions must match and then vanish.
@@ -261,17 +332,19 @@ $\delta = 0.01$: $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) Whenever a deriv
   deficiency, and rank gets its proper definition in
   [[02-foundations/linear-algebra|1. Linear Algebra §2]]. Here, read "full rank" as
   "nothing was lost, so it is reversible."
-- **A shape check you will do constantly.** A linear layer from 512 features to 10 class
+- **A shape check you will do constantly.** A linear layer — one matrix step of a neural
+  network, [[02-foundations/neural-network-basics|0.8 §1]] — from 512 features to 10 class
   scores is $y = Wx$ with $x$ a $512\times1$ column, so $W$ must be $10\times512$ and
-  $(10\times512)(512\times1) = 10\times1$: one score per class. A batch of 32 samples, stacked
-  as the columns of $X$ ($512\times32$), goes through in one product,
+  $(10\times512)(512\times1) = 10\times1$: one score per class. A batch of 32 samples — inputs pushed
+  through together, [[02-foundations/neural-network-basics|0.8 §4]] — stacked as the columns of $X$ ($512\times32$), goes through in one product,
   $(10\times512)(512\times32) = 10\times32$ — one score column per sample. This column
   convention is the one pages 0.8 and 2 use. Reading shapes like this *is* reading an
   architecture ([[02-foundations/linear-algebra|1. Linear Algebra §1]]).
   *Footnote, for code.* Libraries and attention formulas usually store a batch as rows
   instead: $X$ is $32\times512$, the layer's matrix is kept as its transpose ($512\times10$),
   and the output $XW$ is $32\times10$ — the same numbers transposed, by
-  $(AB)^\top = B^\top A^\top$ above. 1. Linear Algebra §1's $Q = XW_Q$ is written this way.
+  $(AB)^\top = B^\top A^\top$ above. The attention projection $Q = XW_Q$ in the collapsed box at the end of
+  1. Linear Algebra §1 is written this way.
 
 ### 4.5 Linearity: additivity and homogeneity (→ 1. Linear Algebra, 6. Signal Processing, control track)
 
@@ -305,6 +378,13 @@ Applying it repeatedly gives $f\big(\sum_k a_k x_k\big) = \sum_k a_k f(x_k)$ for
 
 ### 5. Series and the geometric sum (→ 7. RL Basics)
 
+**Why reinforcement learning (RL) cares.** A reward $k$ steps in the future is counted with weight $\gamma^k$, so the
+total weight an agent can ever collect is the infinite sum below, which the derivation shows
+equals $1/(1-\gamma)$. At $\gamma = 0.99$ that is $100$: the agent behaves roughly as if it were
+adding up 100 undiscounted steps and ignoring everything past them. Corroboration from the
+other side — $0.99^{100} \approx 0.37$, so by step 100 the weight on a reward has already fallen
+to about a third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl-basics|RL]].
+
 $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 
 **Where that comes from.** Give the sum a name:
@@ -334,14 +414,9 @@ The truncated version, which is the one that shows up in papers (same proof, one
 
 $$1 + \gamma + \cdots + \gamma^{n-1} = \frac{1 - \gamma^n}{1 - \gamma}$$
 
-**Why RL cares.** A reward $k$ steps in the future is counted with weight $\gamma^k$, so the
-total weight an agent can ever collect is precisely this sum, $1/(1-\gamma)$. At
-$\gamma = 0.99$ that is $100$: the agent behaves roughly as if it were adding up 100
-undiscounted steps and ignoring everything past them. Corroboration from the other side —
-$0.99^{100} \approx 0.37$, so by step 100 the weight on a reward has already fallen to about a
-third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl-basics|RL]].
-
 ### 6. Exponentials and logarithms (→ 5. Information Theory — its entry requirement)
+
+The probability of a thousand independent readings is a product of a thousand numbers below one — $10^{-1000}$ if each is $0.1$, which float64 rounds to exactly $0$. Its logarithm, $-2302.6$, is an ordinary number, because the log turns the product into a sum; that is why every likelihood, loss and bit count in the wiki is written with logarithms and their inverse, the exponential.
 
 - $e^x$: the function that is its own derivative; growth at a rate proportional to itself.
   ($e \approx 2.718$.) Precisely, the exponential is the one function with both properties
@@ -375,9 +450,11 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
   number: $\log_2 x = \ln x / \ln 2 \approx 1.4427\,\ln x$. One nat $\approx 1.44$ bits.
 - Numbers to internalize: $\log 1 = 0$; $\log x < 0$ for $x<1$ (log-probs are negative!);
   $\log$ grows painfully slowly.
-- **Log-sum-exp**: $\log \sum_i e^{x_i}$ is everywhere (it is the log of softmax's
-  normalizing denominator),
-  and computed literally it overflows — $e^{800}$ is already $\infty$ in float64. The fix,
+- **Log-sum-exp**: $\log \sum_i e^{x_i}$ is everywhere (it is the log of the normalizing
+  denominator of softmax, the scores-to-probabilities map defined in §10),
+  and computed literally it overflows — $e^{800}$ is already $\infty$ in float64, whose largest
+  value is about $1.8\times10^{308}=e^{709.8}$ (how a float stores numbers is
+  [[02-foundations/tools/python-research-code|12.3 §5]]). The fix,
   with $x_{max} = \max_i x_i$:
 
   $$\log \sum_i e^{x_i} = x_{max} + \log\sum_i e^{x_i - x_{max}}$$
@@ -388,7 +465,7 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
   approximation. Why it fixes the problem: every exponent $x_i - x_{max}$ is now $\le 0$,
   so every $e^{(\cdot)}$ is between $0$ and $1$ — nothing can overflow, and the largest term
   is exactly $1$, so this particular sum cannot underflow to all zeros. This stabilizes the
-  normalization step; NaNs can still arise elsewhere from invalid inputs, extreme arithmetic,
+  normalization step; NaNs (not-a-number values) can still arise elsewhere from invalid inputs, extreme arithmetic,
   or unrelated operations. Stable softmax+cross-entropy implementations use this identity
   ([[02-foundations/calculus-backprop|2. Calculus §4]]).
 
@@ -398,6 +475,8 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
   between $800$ and $800.693$.
 
 ### 7. Complex numbers and Euler's formula (→ 6. Signal Processing — its entry requirement)
+
+A vibration, a filter or a feedback loop is described by what it does to oscillations, and an oscillation carries two numbers at once — how large it is and how far it is shifted in time. A complex number holds that pair as one number and turns "scale and shift" into a single multiplication, which is why signal processing and control are written in them.
 
 - $j = \sqrt{-1}$; a complex number $a + jb$ is a point in the 2D plane, $a$ across and $b$
   up; $|a+jb| = \sqrt{a^2+b^2}$ is its distance from the origin, and its angle is
@@ -429,29 +508,36 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
   (division by zero) where the true angle is a perfectly ordinary $\pm 90°$. `atan2` keeps
   both signs, so it gets all four quadrants and the vertical axis right. In robotics this is
   the difference between a joint commanded forward and the same joint commanded backward —
-  which is why the [[02-foundations/se3-geometry|SE(3)]] page and every IK implementation use
+  which is why the [[02-foundations/se3-geometry|SE(3)]] page and every inverse-kinematics (IK) implementation use
   atan2 exclusively.
 
-<svg viewBox="0 0 470 200" style="max-width:100%;height:auto" role="img" aria-label="two opposite points share the same b/a ratio, so arctan cannot tell them apart">
+<svg viewBox="0 0 560 200" style="max-width:100%;height:auto" role="img" aria-label="Two opposite points, (1, 1) and (-1, -1), on the same dashed line through the origin, at 45 and 225 degrees. A table beside them: both have b/a = 1, so arctan(b/a) gives 45 degrees for both, wrong for (-1, -1); atan2(b, a) gives 45 and -135 degrees.">
   <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="26" y1="100" x2="234" y2="100"/><line x1="130" y1="16" x2="130" y2="184"/></g>
   <g stroke="currentColor" stroke-width="1" opacity="0.45" stroke-dasharray="4 3"><line x1="48" y1="182" x2="212" y2="18"/></g>
   <g fill="none" stroke="currentColor" stroke-width="1.7"><path d="M130,100 L183,47"/><path d="M130,100 L77,153"/></g>
   <g fill="currentColor"><circle cx="185" cy="45" r="4.5"/><circle cx="75" cy="155" r="4.5"/></g>
   <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.75"><path d="M152,100 A22,22 0 0 0 145.6,84.4"/></g>
   <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.55"><path d="M172,100 A42,42 0 1 0 100.3,129.7"/></g>
-  <g font-size="11" fill="currentColor">
-    <text x="196" y="40">(1, 1)</text>
-    <text x="22" y="172">(&#8722;1, &#8722;1)</text>
-    <text x="152" y="88" font-size="10">45&#176;</text>
-    <text x="86" y="152" font-size="10">225&#176;</text>
-    <text x="255" y="44">Both points sit on the same dashed line</text>
-    <text x="255" y="62">through the origin, so b/a = 1 for both.</text>
-    <text x="255" y="92">arctan(b/a) = 45&#176; for both &#8212; right for</text>
-    <text x="255" y="110">one, wrong by 180&#176; for the other.</text>
-    <text x="255" y="140">atan2(b, a) keeps the two signs apart</text>
-    <text x="255" y="158">and returns 45&#176; and &#8722;135&#176;.</text>
-  </g>
+  <text x="194" y="52" font-size="11" fill="currentColor">(1, 1)</text>
+  <text x="18" y="160" font-size="11" fill="currentColor">(−1, −1)</text>
+  <text x="152" y="88" font-size="10" fill="currentColor">45°</text>
+  <text x="86" y="152" font-size="10" fill="currentColor">225°</text>
+  <text x="262" y="70" font-size="11" fill="currentColor">point</text>
+  <text x="342" y="70" font-size="11" text-anchor="middle" fill="currentColor">b/a</text>
+  <text x="410" y="70" font-size="11" text-anchor="middle" fill="currentColor">arctan(b/a)</text>
+  <text x="500" y="70" font-size="11" text-anchor="middle" fill="currentColor">atan2(b, a)</text>
+  <polyline points="258,78 540,78" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="262" y="100" font-size="11" fill="currentColor">(1, 1)</text>
+  <text x="342" y="100" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="410" y="100" font-size="11" text-anchor="middle" fill="currentColor">45°</text>
+  <text x="500" y="100" font-size="11" text-anchor="middle" fill="currentColor">45°</text>
+  <text x="262" y="128" font-size="11" fill="currentColor">(−1, −1)</text>
+  <text x="342" y="128" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="410" y="128" font-size="11" text-anchor="middle" fill="currentColor">45°, wrong</text>
+  <text x="500" y="128" font-size="11" text-anchor="middle" fill="currentColor">−135°</text>
 </svg>
+
+Both points lie on the same dashed line through the origin, so $b/a = 1$ for each and $\arctan(b/a)$ returns $45°$ for both — right for $(1, 1)$, wrong by $180°$ for $(-1, -1)$. $\operatorname{atan2}(b, a)$ sees the two signs separately and returns $45°$ and $-135°$, the same direction as $225°$.
 
 
 - **Euler's formula**: $e^{j\theta} = \cos\theta + j\sin\theta$ — the unit-circle point at
@@ -476,39 +562,59 @@ third. Hence the phrase "effective horizon ≈ 100 steps" in [[02-foundations/rl
      each rotation is projecting the signal onto that rotation. That is all "decompose into
      sinusoids" means.
 
-  So the DFT formula $X[k] = \sum_n x[n]\,e^{-j2\pi kn/N}$ in
+  So the DFT (discrete Fourier transform) formula $X[k] = \sum_n x[n]\,e^{-j2\pi kn/N}$ in
   [[02-foundations/signal-processing|6. Signal Processing]] has no hidden content: the
   $e^{-j(\cdot)}$ is the counter-rotation of step 2, and the $\sum_n$ is the averaging.
   It is one dot product per frequency.
 
-<svg viewBox="0 0 470 222" style="max-width:100%;height:auto" role="img" aria-label="a point rotating on the unit circle; its shadow on the real axis traces a cosine">
-  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="20" y1="90" x2="150" y2="90"/><line x1="85" y1="25" x2="85" y2="155"/></g>
-  <circle cx="85" cy="90" r="52" fill="none" stroke="currentColor" stroke-width="1.4"/>
-  <g stroke="currentColor" stroke-width="1.7" fill="none"><line x1="85" y1="90" x2="118.4" y2="50.2"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.65" stroke-dasharray="4 3"><line x1="118.4" y1="50.2" x2="118.4" y2="90"/></g>
-  <g fill="currentColor"><circle cx="118.4" cy="50.2" r="4"/><circle cx="118.4" cy="90" r="3"/></g>
-  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.8"><path d="M105,90 A20,20 0 0 0 97.9,74.7"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="175" y1="90" x2="440" y2="90"/></g>
-  <path d="M175.0 45.0L176.3 45.0L177.6 45.1L178.9 45.2L180.2 45.4L181.5 45.6L182.8 45.8L184.1 46.1L185.4 46.4L186.7 46.8L188.0 47.2L189.3 47.7L190.6 48.2L191.9 48.7L193.2 49.3L194.5 49.9L195.8 50.6L197.1 51.3L198.4 52.0L199.7 52.8L201.0 53.6L202.3 54.4L203.6 55.3L204.9 56.2L206.2 57.2L207.5 58.2L208.8 59.2L210.1 60.2L211.4 61.3L212.7 62.4L214.0 63.5L215.3 64.7L216.6 65.9L217.9 67.1L219.2 68.3L220.5 69.6L221.8 70.8L223.1 72.1L224.4 73.4L225.7 74.8L227.0 76.1L228.3 77.4L229.6 78.8L230.9 80.2L232.2 81.6L233.5 83.0L234.8 84.4L236.1 85.8L237.4 87.2L238.7 88.6L240.0 90.0L241.3 91.4L242.6 92.8L243.9 94.2L245.2 95.6L246.5 97.0L247.8 98.4L249.1 99.8L250.4 101.2L251.7 102.6L253.0 103.9L254.3 105.2L255.6 106.6L256.9 107.9L258.2 109.2L259.5 110.4L260.8 111.7L262.1 112.9L263.4 114.1L264.7 115.3L266.0 116.5L267.3 117.6L268.6 118.7L269.9 119.8L271.2 120.8L272.5 121.8L273.8 122.8L275.1 123.8L276.4 124.7L277.7 125.6L279.0 126.4L280.3 127.2L281.6 128.0L282.9 128.7L284.2 129.4L285.5 130.1L286.8 130.7L288.1 131.3L289.4 131.8L290.7 132.3L292.0 132.8L293.3 133.2L294.6 133.6L295.9 133.9L297.2 134.2L298.5 134.4L299.8 134.6L301.1 134.8L302.4 134.9L303.7 135.0L305.0 135.0L306.3 135.0L307.6 134.9L308.9 134.8L310.2 134.6L311.5 134.4L312.8 134.2L314.1 133.9L315.4 133.6L316.7 133.2L318.0 132.8L319.3 132.3L320.6 131.8L321.9 131.3L323.2 130.7L324.5 130.1L325.8 129.4L327.1 128.7L328.4 128.0L329.7 127.2L331.0 126.4L332.3 125.6L333.6 124.7L334.9 123.8L336.2 122.8L337.5 121.8L338.8 120.8L340.1 119.8L341.4 118.7L342.7 117.6L344.0 116.5L345.3 115.3L346.6 114.1L347.9 112.9L349.2 111.7L350.5 110.4L351.8 109.2L353.1 107.9L354.4 106.6L355.7 105.2L357.0 103.9L358.3 102.6L359.6 101.2L360.9 99.8L362.2 98.4L363.5 97.0L364.8 95.6L366.1 94.2L367.4 92.8L368.7 91.4L370.0 90.0L371.3 88.6L372.6 87.2L373.9 85.8L375.2 84.4L376.5 83.0L377.8 81.6L379.1 80.2L380.4 78.8L381.7 77.4L383.0 76.1L384.3 74.8L385.6 73.4L386.9 72.1L388.2 70.8L389.5 69.6L390.8 68.3L392.1 67.1L393.4 65.9L394.7 64.7L396.0 63.5L397.3 62.4L398.6 61.3L399.9 60.2L401.2 59.2L402.5 58.2L403.8 57.2L405.1 56.2L406.4 55.3L407.7 54.4L409.0 53.6L410.3 52.8L411.6 52.0L412.9 51.3L414.2 50.6L415.5 49.9L416.8 49.3L418.1 48.7L419.4 48.2L420.7 47.7L422.0 47.2L423.3 46.8L424.6 46.4L425.9 46.1L427.2 45.8L428.5 45.6L429.8 45.4L431.1 45.2L432.4 45.1L433.7 45.0L435.0 45.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
-  <g stroke="currentColor" stroke-width="1" opacity="0.65" stroke-dasharray="4 3"><line x1="211.1" y1="61.1" x2="211.1" y2="90"/></g>
-  <g fill="currentColor"><circle cx="211.1" cy="61.1" r="4"/></g>
-  <g font-size="11" fill="currentColor">
-    <text x="124.4" y="44.2">e^(j&#952;)</text>
-    <text x="102" y="86" font-size="10">&#952;</text>
-    <text x="96" y="162" font-size="10">Re = cos &#952;</text>
-    <text x="176" y="18">cos &#952; as &#952; goes around once</text>
-    <text x="416" y="106" font-size="10">&#952;</text>
-    <text x="20" y="184" opacity="0.9">The wave on the right is not a second object &#8212; it is the left</text>
-    <text x="20" y="199" opacity="0.9">picture's shadow, plotted as the point goes around. That is why</text>
-    <text x="20" y="214" opacity="0.9">&#8220;decompose into sinusoids&#8221; and &#8220;project onto rotations&#8221; are one sentence.</text>
-  </g>
+<svg viewBox="0 0 560 424" style="max-width:100%;height:auto" role="img" aria-label="A point e to the j theta on the unit circle at theta = 50 degrees; its shadow on the real axis is a thick horizontal segment from the centre, of length cos theta = 0.643. Below, the shadow plotted against theta, which grows downward from 0 to 360 degrees, traces a cosine whose swing equals the circle's radius, plus and minus 1, and the same thick segment reappears on the wave at 50 degrees.">
+  <defs><marker id="emCs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="126,84 294,84" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <polyline points="210,12 210,156" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <circle cx="210" cy="84" r="64" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <polyline points="210,84 251.1,35" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <path d="M232,84 A22,22 0 0 0 224.1,67.1" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <polyline points="251.1,35 251.1,84" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.8"/>
+  <polyline points="251.1,86 251.1,203" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 3" stroke-opacity="0.7"/>
+  <polyline points="210,84 251.1,84" fill="none" stroke="currentColor" stroke-width="3.4"/>
+  <polyline points="210,206 251.1,206" fill="none" stroke="currentColor" stroke-width="3.4"/>
+  <polyline points="146,164 146,396" fill="none" stroke="currentColor" stroke-width="0.9" stroke-dasharray="1 3" stroke-opacity="0.55"/>
+  <polyline points="274,164 274,396" fill="none" stroke="currentColor" stroke-width="0.9" stroke-dasharray="1 3" stroke-opacity="0.55"/>
+  <text x="146" y="160" font-size="11" text-anchor="middle" fill="currentColor">−1</text>
+  <text x="274" y="160" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="210,170 210,410" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" marker-end="url(#emCs)"/>
+  <polyline points="274,176 273.9,177.8 273.6,179.6 273.2,181.4 272.6,183.2 271.8,185 270.9,186.8 269.7,188.6 268.5,190.4 267,192.2 265.4,194 263.7,195.8 261.8,197.6 259.7,199.4 257.6,201.2 255.3,203 252.8,204.8 250.3,206.6 247.6,208.4 244.9,210.2 242,212 239.1,213.8 236,215.6 232.9,217.4 229.8,219.2 226.6,221 223.3,222.8 220,224.6 216.7,226.4 213.3,228.2 210,230 206.7,231.8 203.3,233.6 200,235.4 196.7,237.2 193.4,239 190.2,240.8 187.1,242.6 184,244.4 180.9,246.2 178,248 175.1,249.8 172.4,251.6 169.7,253.4 167.2,255.2 164.7,257 162.4,258.8 160.3,260.6 158.2,262.4 156.3,264.2 154.6,266 153,267.8 151.5,269.6 150.3,271.4 149.1,273.2 148.2,275 147.4,276.8 146.8,278.6 146.4,280.4 146.1,282.2 146,284 146.1,285.8 146.4,287.6 146.8,289.4 147.4,291.2 148.2,293 149.1,294.8 150.3,296.6 151.5,298.4 153,300.2 154.6,302 156.3,303.8 158.2,305.6 160.3,307.4 162.4,309.2 164.7,311 167.2,312.8 169.7,314.6 172.4,316.4 175.1,318.2 178,320 180.9,321.8 184,323.6 187.1,325.4 190.2,327.2 193.4,329 196.7,330.8 200,332.6 203.3,334.4 206.7,336.2 210,338 213.3,339.8 216.7,341.6 220,343.4 223.3,345.2 226.6,347 229.8,348.8 232.9,350.6 236,352.4 239.1,354.2 242,356 244.9,357.8 247.6,359.6 250.3,361.4 252.8,363.2 255.3,365 257.6,366.8 259.7,368.6 261.8,370.4 263.7,372.2 265.4,374 267,375.8 268.5,377.6 269.7,379.4 270.9,381.2 271.8,383 272.6,384.8 273.2,386.6 273.6,388.4 273.9,390.2 274,392" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="206,176 214,176" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="180" font-size="11" fill="currentColor">0°</text>
+  <polyline points="206,230 214,230" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="234" font-size="11" fill="currentColor">90°</text>
+  <polyline points="206,284 214,284" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="288" font-size="11" fill="currentColor">180°</text>
+  <polyline points="206,338 214,338" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="342" font-size="11" fill="currentColor">270°</text>
+  <polyline points="206,392 214,392" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="396" font-size="11" fill="currentColor">360°</text>
+  <circle cx="251.1" cy="35" r="4" fill="currentColor"/>
+  <circle cx="251.1" cy="206" r="4" fill="currentColor"/>
+  <circle cx="251.1" cy="84" r="2.6" fill="currentColor"/>
+  <text x="259" y="30" font-size="11" fill="currentColor">e<tspan dy="-5" font-size="10">jθ</tspan></text>
+  <text x="236" y="76" font-size="11" fill="currentColor">θ</text>
+  <text x="230" y="101" font-size="11" text-anchor="middle" fill="currentColor">cos θ</text>
+  <text x="228" y="199" font-size="11" text-anchor="middle" fill="currentColor">cos θ</text>
+  <text x="318" y="38" font-size="11" fill="currentColor">a point going round the unit circle, θ = 50°</text>
+  <text x="318" y="88" font-size="11" fill="currentColor">its shadow on the real axis: cos θ</text>
+  <text x="318" y="210" font-size="11" fill="currentColor">the same length on the wave: cos 50° = 0.643</text>
+  <text x="318" y="300" font-size="11" fill="currentColor">the shadow, plotted as θ grows</text>
+  <text x="218" y="408" font-size="11" fill="currentColor">θ grows downward</text>
 </svg>
+
+A point $e^{j\theta}$ goes round the unit circle; its shadow on the real axis is the thick segment from the centre, of length $\cos\theta$ — $0.643$ at $\theta = 50°$. Plotted against $\theta$, which grows downward here, that shadow traces the wave below: the same thick segment reappears at $50°$, and the wave swings between $-1$ and $1$, the circle's own radius. The wave is not a second object but the rotation seen edge-on, which is why "decompose into sinusoids" and "project onto rotations" are one sentence.
 
 
 
 ### 8. Linear differential equations (→ control track: pages 5–7)
 
-Physical systems are described by ODEs — this is the modeling language of all of control, picked up directly in [[04-robotics/control-theory-ce397|5. Control Theory §2–4]]. The mass–spring–damper this section solves is derived from a free-body diagram, with units and energy, on the plant **P3** — the wiki's one-degree-of-freedom handle pushed into a wall ([[02-foundations/lab-plants|0.6 Lab Plants]]) — in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §5]].
+Push a handle into a wall, switch a heater on or command a joint, and the question is the same: how does the system move from then on — does it settle, how fast, and does it ring? The answer is the solution of a differential equation, and this section solves the linear ones by hand. Physical systems are described by ODEs — this is the modeling language of all of control, picked up directly in [[04-robotics/control-theory-ce397|5. Control Theory §2–4]]. The mass–spring–damper this section solves is derived from a free-body diagram, with units and energy, on the plant **P3** — the wiki's one-degree-of-freedom handle pushed into a wall ([[02-foundations/lab-plants|0.6 Lab Plants]]) — in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §5]].
 
 - An **ODE** (ordinary differential equation) is an equation relating an unknown function
   of one variable, here $x(t)$, to its derivatives; its **order** is the highest derivative
@@ -528,11 +634,29 @@ Physical systems are described by ODEs — this is the modeling language of all 
   *asymptotically stable*: from every starting value $x(0)$ the solution returns to $0$ as
   $t \to \infty$ (the full definition is [[04-robotics/control-theory-ce397|5. Control Theory §4]]). A robot joint,
   a heating room, a draining tank — all locally this equation.
+- **Time constant.** A stable first-order response closes the gap to its final value $x_\infty$
+  exponentially, and the **time constant** $\tau$ is the *time* that sets how fast. For
+  $\dot x = ax$ with $a < 0$ (a constant input only moves $x_\infty$),
+  $$\tau = \frac{1}{|a|}, \qquad x(t) - x_\infty = \big(x(0) - x_\infty\big)\,e^{-t/\tau}$$
+  so in every $\tau$ the gap shrinks by a factor $e$: after one $\tau$ the response has covered
+  $1 - e^{-1} = 63\%$ of the way, and its starting tangent reaches $x_\infty$ exactly at $t = \tau$.
+  It exists only for $a < 0$. Example: P4 has $a = -1$, so $\tau = 1\,\mathrm s$; the problem
+  set's heater $\dot x = -2x + u$ has $\tau = 0.5\,\mathrm s$. Non-example: $\tau$ is not the time
+  to *reach* $x_\infty$, which an exponential never quite does. Why it matters: settling within
+  2% takes $\ln 50 = 3.9$ time constants, about $4\tau$, so this one number says how fast a
+  first-order plant responds ([[02-foundations/basic-mechanics|0.6.1 §5]] extends it to the
+  envelope of a ringing mass–spring–damper).
 - **Worked: plant P4.** The leaky heater of [[02-foundations/lab-plants|0.6]] is $\dot x=-x+u$ (its disturbance $d$ set to $0$). With $u=1$ and $x(0)=0$, solve it in three moves. A constant that makes the right side zero solves it: $x=1$ gives $\dot x=0=-1+1$ — the *particular* solution, the steady state the input holds. The input-free equation $\dot x=-x$ is the first-order case above with $a=-1$, solved by $ce^{-t}$ for any $c$ — the *homogeneous* solution. By superposition (§4.5) their sum $x(t)=1+ce^{-t}$ still solves $\dot x=-x+1$, and $x(0)=0$ fixes $c=-1$:
   $$x(t) = 1 - e^{-t}$$
-  so at $t=0.1$ and $0.2$ it is $0.095$ and $0.181$. **Forward Euler** is the simplest way code steps an ODE: follow the slope at the start of the step for one step of length $T$, $x_{k+1}=x_k+T\,\dot x(x_k)$ — here $x\leftarrow x+T(-x+u)$ ([[02-foundations/lab-kernel|0.7 Lab Kernel §2]] calls it explicit Euler). With $T=0.1$ it gives $0.10$ then $0.19$. It is high because the slope at the *start* of each step is where $1-x$ is largest. The picture at the top of the page is this ODE as a block diagram.
+  so at $t=0.1$ and $0.2$ it is $0.095$ and $0.181$. **Forward Euler** is the simplest way code steps an ODE: follow the slope at the start of the step for one step of length $T$, $x_{k+1}=x_k+T\,\dot x(x_k)$ — here $x\leftarrow x+T(-x+u)$ ([[02-foundations/lab-kernel|0.7 Lab Kernel §2]] calls it explicit Euler). With $T=0.1$ it gives $0.10$ then $0.19$. It is high because the slope at the *start* of each step is where $1-x$ is largest.
+- **Reading the picture.** The picture at the top of the page is this ODE as a block diagram, read left to right. The circle is a **summing junction**, which adds its inputs with the signs written beside them, so its output is $\dot x=u-x$; the box marked $\int$ or $1/s$ is an **integrator**, which turns a rate back into the quantity it changes (§9 shows why integrating is dividing by $s$); and the small box is a **gain**, a plain multiplier, here $1$, the heater's own leak rate. A controller $u=-Kx$ ([[04-robotics/control-theory-ce397|5. Control Theory §1]]) feeds $x$ back through a second gain $K$, the **feedback gain**, and the two add, so the loop becomes $\dot x=-(1+K)x$ — the picture's "later $1+K$".
 - **With input**: $\dot x = ax + bu$ — the solution is "decayed initial state + accumulated
-  input"; this is the scalar version of the state-space model
+  input",
+  $$x(t) = e^{at}\,x(0) + \int_0^t e^{a(t-t')}\,b\,u(t')\,dt'$$
+  because each slice of input $b\,u(t')\,dt'$ enters at time $t'$ and then decays like the free
+  response for the remaining time $t-t'$, and superposition (§4.5) adds the slices. Check on P4
+  ($a=-1$, $b=1$, $u=1$, $x(0)=0$): $\int_0^t e^{-(t-t')}\,dt' = 1-e^{-t}$, the worked case's
+  answer. This is the scalar version of the state-space model
   $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$ ([[02-foundations/linear-algebra|linear algebra §5]]),
   and $e^{at}$ becomes the matrix exponential $e^{At}$ with eigenvalues playing the role of $a$.
 - **Second order**: $\ddot x + 2\zeta\omega_n \dot x + \omega_n^2 x = 0$ — the
@@ -546,7 +670,10 @@ Physical systems are described by ODEs — this is the modeling language of all 
   *underdamped* ($0 < \zeta < 1$), *critically damped* ($\zeta = 1$, the fastest return with no
   overshoot) and *overdamped* ($\zeta > 1$). Example: $m = 1$, $c = 1$, $k = 4$ gives
   $\omega_n = 2$ rad/s and $\zeta = 0.25$, underdamped, ringing at
-  $\omega_d = 2\sqrt{1 - 0.0625} = 1.936$ rad/s.
+  $\omega_d = 2\sqrt{1 - 0.0625} = 1.936$ rad/s. The same two numbers on P3's handle — its
+  damper, its $\zeta$ and the overshoot they cause, from a free-body diagram — are
+  [[02-foundations/basic-mechanics|0.6.1 §4–§5]]; and with the motion stopped,
+  $\ddot x = \dot x = 0$, a push $F$ on the right-hand side leaves only the statics you know, $kx = F$.
 - Discrete time (what code runs): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — stable iff
   $|a| < 1$. The continuous and discrete conditions ($\text{Re}(a) < 0$ vs $|a_d| < 1$) are
   the same statement, and here is the bridge: sampling $\dot x = ax$ every $\Delta t$ gives
@@ -566,7 +693,7 @@ Physical systems are described by ODEs — this is the modeling language of all 
 > design filters. It is thin by design: read it once for vocabulary, let the zero and
 > minimal-realization details go by on a first pass, and come back after those two.
 
-The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theory-ce397|5. Control Theory §5]] turns the resulting pole picture into the settling-time and overshoot numbers papers quote:
+A control loop chains several blocks, and solving their ODEs in time, block by block, is slow and buries the two things a designer needs: whether the loop settles, and how fast. The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theory-ce397|5. Control Theory §5]] turns the resulting pole picture into the settling-time and overshoot numbers papers quote:
 
 - Definition: the **Laplace transform** maps a signal $f(t)$, defined for $t \ge 0$, to a
   function of a complex variable,
@@ -576,7 +703,11 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
   large enough, since $e^{-st}$ must beat the growth of $f$. Two properties make it useful. It is
   linear, $\mathcal{L}[af + bg] = aF + bG$ (§4.5). And, the one property that matters most,
   **differentiation becomes multiplication by $s$** — $\mathcal{L}[\dot f] = sF(s) - f(0)$,
-  which follows from integrating by parts. Example: for $f(t) = e^{at}$,
+  which follows from integrating by parts. Read backwards, it turns **integration into
+  division by $s$**: the running integral $g(t) = \int_0^t f(t')\,dt'$ has $g(0) = 0$ and
+  $\dot g = f$, so $F = sG$ and
+  $$\mathcal{L}\Big[\int_0^t f(t')\,dt'\Big] = \frac{F(s)}{s}$$
+  which is why the picture's integrator box is labelled $1/s$. Example: for $f(t) = e^{at}$,
   $F(s) = \int_0^\infty e^{(a-s)t}\,dt = \frac{1}{s-a}$ whenever $\text{Re}(s) > a$; with
   $a = -3$ and $s = 1$ that is $1/4$, and integrating $e^{-4t}$ numerically gives $0.25$ ✓.
 - Consequence: an ODE becomes a polynomial equation, and a system becomes a
@@ -590,32 +721,55 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
   of $s$ that breaks the division, $s = a$, is the **pole** — the same $a$ whose sign decided
   stability back in §8. Poles are not a new idea; they are §8's exponents, relabelled.
 - **Poles** = roots of the denominator = the $a$'s of section 8 = eigenvalues of the
-  state-space $A$ — every pole is an eigenvalue, and every eigenvalue appears as a pole only when no pole–zero cancellation hides it. A **zero** is a root of the numerator; if the same factor sits on top and bottom, as in $\frac{s-1}{(s-1)(s+2)} = \frac{1}{s+2}$, it cancels and that eigenvalue ($s=1$ here) vanishes from $G(s)$. A state-space model with no such hidden modes is called a *minimal realization* (Åström & Murray Example 9.7). A cancelled unstable eigenvalue is invisible in $G(s)$. Plotted in the complex **s-plane**:
+  state-space $A$ (every pole is an eigenvalue; the note below says when an eigenvalue can hide). Plotted in the complex **s-plane**:
   - left half-plane (negative real part) → decaying → **stable**
   - right half-plane → growing → **unstable**
   - imaginary part → oscillation frequency; distance from axis → decay speed
 
-<svg viewBox="0 0 430 212" style="max-width:100%;height:auto" role="img" aria-label="the s-plane: pole locations and what they mean">
-  <g fill="currentColor" opacity="0.07"><rect x="20" y="15" width="195" height="160"/></g>
-  <g stroke="currentColor" stroke-width="1.3"><line x1="20" y1="103" x2="410" y2="103"/><line x1="215" y1="15" x2="215" y2="190"/></g>
-  <g fill="currentColor">
-    <path d="M112,58 l6,6 l-6,6 l-6,-6 z"/><path d="M112,136 l6,6 l-6,6 l-6,-6 z"/>
-    <path d="M64,97 l6,6 l-6,6 l-6,-6 z"/>
-    <path d="M312,71 l6,6 l-6,6 l-6,-6 z"/><path d="M312,123 l6,6 l-6,6 l-6,-6 z"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.6">
-    <line x1="112" y1="64" x2="215" y2="103"/><line x1="112" y1="64" x2="112" y2="103"/>
-  </g>
-  <g font-size="11.5" fill="currentColor">
-    <text x="26" y="32">LEFT half-plane = stable</text><text x="250" y="32">RIGHT half-plane = unstable</text>
-    <text x="386" y="120">Re</text><text x="222" y="26">Im</text>
-    <text x="124" y="56" font-size="10.5" opacity="0.9">complex pair</text>
-    <text x="26" y="90" font-size="10.5" opacity="0.9">real pole</text>
-    <text x="26" y="192" font-size="11" opacity="0.85">complex pair = decaying oscillation &#183; real pole = pure decay</text>
-    <text x="26" y="206" font-size="11" opacity="0.85">farther left = faster decay &#183; farther from the real axis = faster oscillation</text>
-  </g>
+<svg viewBox="0 0 560 336" style="max-width:100%;height:auto" role="img" aria-label="The s-plane with the page's poles: a real pole at -3 from 1/(s+3), a real pole at -1 from the leaky heater P4, and the complex pair -0.5 plus or minus 1.936j of the mass-spring-damper with m = 1, c = 1, k = 4, all in the shaded stable left half-plane; an unstable pole at +1 in the right half-plane. Dashed segments from the upper pole mark sigma = -0.5 to the imaginary axis and omega_d = 1.936 down to the real axis.">
+  <defs><marker id="emSp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="40" y="10" width="290" height="320" fill="currentColor" fill-opacity="0.06"/>
+  <polyline points="44,170 520,170" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#emSp)"/>
+  <polyline points="330,328 330,8" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#emSp)"/>
+  <text x="120" y="188" font-size="11" text-anchor="middle" fill="currentColor">−3</text>
+  <polyline points="190,166 190,174" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="190" y="188" font-size="11" text-anchor="middle" fill="currentColor">−2</text>
+  <text x="260" y="188" font-size="11" text-anchor="middle" fill="currentColor">−1</text>
+  <text x="400" y="188" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="470,166 470,174" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="470" y="188" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <polyline points="326,310 334,310" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="340" y="314" font-size="11" fill="currentColor">−2</text>
+  <polyline points="326,240 334,240" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="340" y="244" font-size="11" fill="currentColor">−1</text>
+  <polyline points="326,100 334,100" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="340" y="104" font-size="11" fill="currentColor">1</text>
+  <polyline points="326,30 334,30" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="340" y="34" font-size="11" fill="currentColor">2</text>
+  <text x="510" y="190" font-size="11" text-anchor="end" fill="currentColor">Re</text>
+  <text x="340" y="18" font-size="11" fill="currentColor">Im</text>
+  <polyline points="295,34.4 330,34.4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <polyline points="295,34.4 295,170" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="312.5" y="27.4" font-size="12" text-anchor="middle" fill="currentColor">σ</text>
+  <text x="289" y="106.2" font-size="12" text-anchor="end" fill="currentColor">ω<tspan dy="3" font-size="10">d</tspan></text>
+  <path d="M290,29.4 L300,39.4 M290,39.4 L300,29.4" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M290,300.6 L300,310.6 M290,310.6 L300,300.6" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M115,165 L125,175 M115,175 L125,165" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M255,165 L265,175 M255,175 L265,165" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M395,165 L405,175 M395,175 L405,165" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="283" y="35.4" font-size="11" text-anchor="end" fill="currentColor">−0.5 ± 1.936j</text>
+  <text x="283" y="49.4" font-size="11" text-anchor="end" fill="currentColor">§8's m = 1, c = 1, k = 4</text>
+  <text x="120" y="157" font-size="11" text-anchor="middle" fill="currentColor">−3: 1/(s + 3)</text>
+  <text x="260" y="157" font-size="11" text-anchor="middle" fill="currentColor">−1: P4</text>
+  <text x="400" y="157" font-size="11" text-anchor="middle" fill="currentColor">+1: grows as e<tspan dy="-5" font-size="10">t</tspan></text>
+  <text x="48" y="322" font-size="11" fill="currentColor">left half-plane: stable</text>
+  <text x="392" y="322" font-size="11" fill="currentColor">right half-plane: unstable</text>
 </svg>
 
+The page's own poles: $-3$ from $1/(s+3)$, $-1$ from P4, the pair $-0.5 \pm 1.936j$ of §8's mass–spring–damper ($m=1$, $c=1$, $k=4$), and an unstable $+1$ for contrast. For the pair, the horizontal dashed segment is $\sigma = -\zeta\omega_n = -0.5$, the rate of its decaying envelope $e^{-0.5t}$, and the vertical one is $\omega_d = 1.936$ rad/s, its ringing frequency. Farther left means faster decay, farther from the real axis faster oscillation, and anything right of the imaginary axis grows.
+
+> [!note]- Deeper · 더 깊이
+> **Zeros, cancellation and the minimal realization.** Every pole is an eigenvalue, but an eigenvalue appears as a pole only when no pole–zero cancellation hides it. A **zero** is a root of the numerator; if the same factor sits on top and bottom, as in $\frac{s-1}{(s-1)(s+2)} = \frac{1}{s+2}$, it cancels and that eigenvalue ($s=1$ here) vanishes from $G(s)$. A state-space model with no such hidden modes is called a *minimal realization* (Åström & Murray Example 9.7). A cancelled unstable eigenvalue is invisible in $G(s)$: the transfer function looks stable while a state inside the system grows.
 
 - This is why §7's complex plane matters for control:
   *a system's entire qualitative behavior is a picture — where its poles sit.*
@@ -637,7 +791,9 @@ The Laplace transform turns ODEs into algebra — and [[04-robotics/control-theo
   $G(s) = \frac{1}{s+3}$: at $\omega = 0.3$ rad/s, $|G| = 0.332$ and the angle is $-5.7°$; at
   $\omega = 3$, $|G| = 1/(3\sqrt2) = 0.236$ and $-45°$; at $\omega = 30$, $|G| = 0.033$ and
   $-84.3°$. Slow inputs pass almost untouched and fast ones are attenuated and delayed — the
-  system is a low-pass filter with its corner at the pole's distance, $3$ rad/s.
+  system is a low-pass filter with its corner at the pole's distance, $3$ rad/s. The same
+  one-pole filter built from a resistor and a capacitor, with its pole at $303\,\mathrm{s^{-1}}$,
+  is [[02-foundations/basic-circuits-electronics|0.6.2 §5]].
 
 ### 10. Notation dictionary (all pages)
 
@@ -646,9 +802,10 @@ Two definitions used everywhere before they are formally introduced:
 - **Softmax** turns any score vector into a probability distribution:
   $$\text{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
   where $z = (z_1, \ldots, z_K)$ are $K$ real scores (often called *logits*) and $i$ picks one
-  entry. It has three defining properties — every output is positive, the outputs sum to 1,
+  entry. It has three properties — every output is positive, the outputs sum to 1,
   and the largest score gets the largest probability (a smooth $\arg\max$) — since
   exponentials are positive and increasing and the denominator is the sum of the numerators.
+  Other maps share those properties, so the formula, not the list, is what defines softmax.
   Example: $z = (1, 2, 3)$ gives $(0.090, 0.245, 0.665)$, and adding $100$ to every score gives
   exactly the same output, because the common factor $e^{100}$ cancels (the fact the log-sum-exp
   trick of §6 uses). Non-example: plain normalization $z_i / \sum_j z_j$ fails on negative
@@ -669,6 +826,9 @@ Two definitions used everywhere before they are formally introduced:
 | $\mathbb{1}[\cdot]$ | indicator: 1 if true, 0 if false |
 | $\odot$ | element-wise product |
 | $:=$ | defined as |
+| $O(\cdot)$ | order of growth: $O(n^3)$ is at most a constant times $n^3$ for large $n$ (§2) |
+| $\mathbb{R}^n$, $\mathbb{R}^{m\times n}$ | real vectors with $n$ entries; real $m\times n$ matrices |
+| $\hat x$ | "$x$ hat": an estimate or prediction of $x$ (a network's output is $\hat y$, 0.8) |
 | $A^\top$ | transpose — flip the matrix across its diagonal ($A^\top_{ij} = A_{ji}$) |
 | $\det A$ | determinant — $\lvert\det A\rvert$ is the factor by which the map scales volume (the sign records an orientation flip); $0$ means it flattens space, so it has no inverse |
 | $A \succeq 0$, $A \succ 0$ | positive semidefinite / definite — the matrix version of "$\ge 0$" / "$>0$": for symmetric $A$, $x^\top A x \ge 0$ for every $x$ ($\succeq$) and $x^\top A x > 0$ for every $x \ne 0$ ($\succ$) |
@@ -702,8 +862,8 @@ Two definitions used everywhere before they are formally introduced:
 Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page §8; Euler numbers on [[02-foundations/lab-kernel|0.7]]. No simulator.
 
 1. **Draw.** The picture above for a heater that loses heat twice as fast, $\dot x=-2x+u$: the same four parts, with the feedback gain block now marked $2$. Label $x$ as temperature error. On a small inset of $x$ against $t$ for $u=1$, $x(0)=0$, mark the initial slope, the steady value and the time constant, and the exact and forward-Euler ($T=0.1$) values at $t=0.1$ and $0.2$.
-2. **Derive.** With $u=1$ and $x(0)=0$, solve $\dot x=-x+1$. Give $x(t)$ and the values at $t=0.1$ and $t=0.2$.
-3. **Interpret.** Forward Euler $x\leftarrow x+T(-x+u)$ with $T=0.1$, from $x_0=0$. First two steps versus the exact values. Which way does Euler miss, and why?
+2. **Derive.** Item 1's heater, $\dot x=-2x+u$ with $u=1$, now starts part-way, at $x(0)=0.25$. Solve it by §8's recipe (particular plus homogeneous), check your $x(t)$ against §8's with-input formula, and give the time constant and $x(0.5)$.
+3. **Interpret.** Forward Euler on the same heater, $u=1$ from $x_0=0$, but with long steps, $T=0.75\,\mathrm s$ and $T=1.2\,\mathrm s$: take three steps with each and compare them with the exact $\tfrac12(1-e^{-2t})$. Writing the update as $x_{k+1}=(1-2T)\,x_k+T$, use §8's discrete-time rule to say for which $T$ Euler stays stable, and why a stable heater can give an unstable simulation.
 
 > [!note]- How to draw it · 그리는 법
 > - The command $u$ enters from the left and meets a summing junction, a small circle with two inputs; the second input arrives from below.
@@ -715,9 +875,9 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
 > - Put four points on the inset and nothing else: exact $\tfrac12(1-e^{-2t})=0.0906$ and $0.1648$, forward Euler $0.100$ and $0.180$, each Euler point drawn *above* its exact partner — that gap, not the curve, is the argument.
 
 > [!tip]- Solutions
-> 1. The picture's loop with feedback gain $2$: $u$ and $-2x$ meet at the sum, the sum is $\dot x$, an integrator returns $x$. For $u=1$, $x(0)=0$ the solution is $x(t)=\tfrac12(1-e^{-2t})$: initial slope $1$ (the gain multiplies $x$, which is $0$ at the start), steady value $0.5$, time constant $0.5\,\mathrm s$. Exact $0.0906$ and $0.1648$ at $t=0.1$ and $0.2$; Euler $x_1=0.1\times1=0.100$, $x_2=0.100+0.1(-0.200+1)=0.180$, both high, for item 3's reason. Doubling the loss rate halves both the steady value and the time constant; with $u=0$ the error decays as $e^{-2t}$.
-> 2. Particular $x=1$, homogeneous $ce^{-t}$. $x(0)=0\Rightarrow c=-1$, so $x(t)=1-e^{-t}$. At $0.1$ and $0.2$: $0.095$ and $0.181$.
-> 3. $x_1=0.10$, $x_2=0.19$. Euler is high (kernel: $0.10$, $0.19$ vs $0.095$, $0.181$). Forward Euler uses the slope at the *start* of the step, where $1-x$ is largest, so it overshoots a trajectory that is decaying toward $1$.
+> 1. The picture's loop with feedback gain $2$: $u$ and $-2x$ meet at the sum, the sum is $\dot x$, an integrator returns $x$. For $u=1$, $x(0)=0$ the solution is $x(t)=\tfrac12(1-e^{-2t})$: initial slope $1$ (the gain multiplies $x$, which is $0$ at the start), steady value $0.5$, time constant $0.5\,\mathrm s$. Exact $0.0906$ and $0.1648$ at $t=0.1$ and $0.2$; Euler $x_1=0.1\times1=0.100$, $x_2=0.100+0.1(-0.200+1)=0.180$, both high, for the picture's reason: Euler takes each step's slope at its start, where the gap is largest. Doubling the loss rate halves both the steady value and the time constant; with $u=0$ the error decays as $e^{-2t}$.
+> 2. Particular: the constant that makes the right side zero, $x=\tfrac12$. Homogeneous: $ce^{-2t}$. $x(0)=0.25$ gives $c=-0.25$, so $x(t)=0.5-0.25\,e^{-2t}$. The with-input formula agrees: $0.25\,e^{-2t}+\int_0^t e^{-2(t-t')}\,dt'=0.25\,e^{-2t}+\tfrac12(1-e^{-2t})=0.5-0.25\,e^{-2t}$. The time constant is $1/2=0.5\,\mathrm s$ whatever the start, and $x(0.5)=0.5-0.25\,e^{-1}=0.408$: a part-way start only shrinks the gap the exponential has to close.
+> 3. $T=0.75$: the factor $1-2T$ is $-0.5$, and Euler gives $0.75$, $0.375$, $0.5625$ against the exact $0.388$, $0.475$, $0.494$ — it overshoots the steady value $0.5$ and then swings around it, the swing halving at every step. $T=1.2$: the factor is $-1.4$, and Euler gives $1.2$, $-0.48$, $1.872$ against the exact $0.455$, $0.496$, $0.500$ — the swing grows 1.4-fold per step and the simulation diverges although the heater is stable. The error $e_k=x_k-0.5$ obeys $e_{k+1}=(1-2T)\,e_k$, so by §8's rule Euler is stable exactly when $|1-2T|<1$, that is $0<T<1\,\mathrm s=2\tau$, and it approaches without swinging only for $T\le\tau=0.5\,\mathrm s$. The heater's true factor per step is $e^{-2T}$, always between 0 and 1; Euler replaces it by $1-2T$, its first-order Taylor expansion (§2), which is close only when $T\ll\tau$.
 
 ## 한국어
 
@@ -725,15 +885,26 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
 로그, 복소수 — 을 닫는다. 나머지 기초 페이지 대부분이 여기를 선수 지식으로 지목한다. 그래서 맨 앞이다.*
 
 1~9 페이지가 말없이 전제하는 공업수학을 한곳에 자체 완결로 정리했다.
-각 절이 정확히 어느 기초 페이지에 쓰이는지 표시했다. 전부 술술 읽히면 바로
-[[02-foundations/linear-algebra|1. 선형대수]]로 건너뛰어라.
+각 절이 정확히 어느 기초 페이지에 쓰이는지 표시했다. 기계학습 용어 몇 개 — *손실*, *ReLU*,
+*층*, *배치*, *softmax* — 는 어느 페이지도 가르치기 전에 예시로 먼저 나온다. 지금은 이름표로만
+읽어 두면 되고, [[02-foundations/neural-network-basics|0.8 신경망이란 무엇인가]]가 하나씩 정의한다
+(softmax는 아래 §10에서도 정의한다). 전부 술술 읽히면 1. 선형대수로 바로 건너뛰지 말고
+[[02-foundations/overview|0. Overview]]의 학습 순서대로 간다. 먼저 [[02-foundations/lab-plants|0.6 Lab Plants]]
+— *장치*(plant)는 제어하려는 시스템을 부르는 제어공학의 말이고, 그 페이지는 모든 과제가 다시 쓰는
+작은 시험 시스템 여섯 개 P1–P6을 고정해 둔다 — 와 [[02-foundations/lab-kernel|0.7 Lab Kernel]],
+그다음 학부에서 비어 있던 물리 바닥([[02-foundations/basic-mechanics|0.6.1]],
+[[02-foundations/basic-circuits-electronics|0.6.2]], [[02-foundations/fluid-power|0.6.3]]),
+그리고 0.8이다.
+
+> [!note] 왜 배우는가 · Why this matters
+> **지금 있는 곳:** [[physical-ai-map|피지컬 AI 지도]]에서 이 페이지는 [[07-research-program/index|7. 연구 프로그램 §5]]의 스택 전체를 받치는 수학 바닥으로, 미분·행렬·로그는 모든 층 밑에, §8–§9의 선형 미분방정식과 극점은 조작과 접촉 바로 밑에 있다 — "저 패널을 프레임에 설치해"에서 로봇이 패널을 옮기고, 프레임에 닿은 것을 느끼고, 끼워 앉히는 단계들이다. **왜:** 접촉은 스프링과 댐퍼에 매달린 질량처럼 움직여서 같은 힘으로 밀어도 울리기도 하고 곧장 가라앉기도 하는데, 위키의 1자유도 시험용 핸들 P3([[02-foundations/lab-plants|0.6 Lab Plants]])를 $400\,\mathrm{N/m}$ 벽에 $0.4\,\mathrm N$으로 밀면 감쇠비 $\zeta = 0.10$에서는 $73\%$ 넘어갔다가 가라앉는 데 $0.38\,\mathrm s$가 걸리고, $\zeta = 0.78$에서는 $2\%$만 넘고 $36\,\mathrm{ms}$ 만에 가라앉는다([[02-foundations/basic-mechanics|0.6.1 §10]]). 어느 쪽일지는 무엇이 강철에 닿기도 전에 §8의 $\zeta = c/(2\sqrt{km})$가 알려 준다. **방향:** [[04-robotics/control-theory-ce397|5. 제어 이론 §2–§5]], [[04-robotics/system-identification|5.5 시스템 식별 §2]], [[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §1]]이 §8–§9 위에 서고, [[02-foundations/calculus-backprop|2. 미적분 §1]]과 [[02-foundations/optimization|4. 최적화 §3]]은 §1–§2에서 출발하며, [[07-research-program/index|7. 연구 프로그램 §8]]의 학위논문 경로에서 이 페이지는 블록 1, 곧 기초 통과 점검의 바닥이다. **얻는 것:** 함수를 미분하고 선형화하고, 새는 히터 P4([[02-foundations/lab-plants|0.6]]) 같은 1차 장치의 응답을 풀어 그리고, 극점에서 안정성을 읽고, 어떤 사상이 선형인지 판별할 수 있다.
 
 > [!note] 처음이라면 · First pass
-> 이 페이지는 서사가 아니라 참고서다 — 처음부터 끝까지 읽지 마라. 절 제목마다 어느 페이지가 그것을 쓰는지 달려 있으니, 지금 읽으려는 페이지가 지목하는 절만 펴라. 예외는 둘이다. §10 표기법 사전은 한 번 훑어 두면 나머지 트랙이 싸진다. 그리고 과제는 그림과 §8만 쓰는데, 그 P4 계산은 §4.5(중첩)와 §6($e^x$)에 기댄다. §9는 제어 트랙의 예고편이니 거기에 닿을 때까지 미뤄도 된다.
+> 이 페이지는 서사가 아니라 참고서라서, 첫 읽기는 시험을 먼저 치르고 필요한 곳만 골라 읽는 방식이다 — 60–90분짜리 두 회차쯤 된다. **1회차:** 스스로 점검 여섯 문항을 책을 덮고 풀고(30분쯤), 틀린 문항의 절만 읽는다. 그다음 공업수학에 익숙한 사람에게도 표준 과목이 아닌 네 부분을 읽는다: §1의 그래디언트 계산 예제와 등고선 그림, §4.5(뒤의 모든 페이지가 다시 쓰는 선형성의 정의), §6의 log-sum-exp, 그리고 §10 표기법 사전 한 번 훑기. **2회차:** 그림과 §8 전체를 읽고 — 동역학이 처음이라면 시정수, 블록선도, P4 계산이 새롭다 — 과제를 푸는데, 그리기 문항은 *그리는 법*을 열기 전에 먼저 그린다. §9는 제어 트랙의 예고편이니 어휘만 한 번 읽거나 [[04-robotics/control-theory-ce397|5. 제어 이론]]에 닿을 때까지 미뤄도 된다.
 
 ### 그림으로 먼저 보기 · The picture
 
-<svg viewBox="0 0 560 370" style="max-width:100%;height:auto" role="img" aria-label="새는 히터 P4의 블록선도: 명령 u = 1이 합산점으로 들어가고 그 출력이 x-dot이며, 적분기가 온도 오차 x를 돌려주고, x는 이득 1을 거쳐 음의 부호로 돌아온다. 삽도: 계단 응답과 t = 1 s에서 1에 닿는 초기 접선, 그리고 오일러 점 둘이 정확값 점 둘 위에 있는 확대 그림.">
+<svg viewBox="0 0 560 336" style="max-width:100%;height:auto" role="img" aria-label="새는 히터 P4의 블록선도: 명령 u = 1이 합산점으로 들어가고 그 출력이 x-dot이며, 적분기가 온도 오차 x를 돌려주고, x는 이득 1을 거쳐 음의 부호로 돌아온다. 삽도: 계단 응답과 t = 1 s에서 1에 닿는 초기 접선, 그리고 오일러 점 둘이 정확값 점 둘 위에 있는 확대 그림.">
   <defs><marker id="emHwk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
   <polyline points="16,44 109,44" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#emHwk)"/>
   <text x="20" y="36" font-size="11" fill="currentColor">u = 1</text>
@@ -754,7 +925,7 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
   <text x="507" y="80" font-size="11" fill="currentColor">x</text>
   <rect x="272" y="96" width="30" height="24" rx="2" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.4"/>
   <text x="287" y="112" font-size="12" text-anchor="middle" fill="currentColor">1</text>
-  <text x="287" y="135" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">이득 1 (나중에 K)</text>
+  <text x="287" y="135" font-size="11" text-anchor="middle" opacity="0.9" fill="currentColor">이득 1 (나중에 1 + K)</text>
   <polyline points="272,108 122,108 122,57" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#emHwk)"/>
   <polyline points="52,310 264,310" fill="none" stroke="currentColor" stroke-width="1.1" marker-end="url(#emHwk)"/>
   <polyline points="52,310 52,168" fill="none" stroke="currentColor" stroke-width="1.1" marker-end="url(#emHwk)"/>
@@ -801,13 +972,13 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
   <text x="449" y="284" font-size="11" fill="currentColor">전진 오일러</text>
   <circle cx="440" cy="295" r="2.9" fill="none" stroke="currentColor" stroke-width="1.3"/>
   <text x="449" y="299" font-size="11" fill="currentColor">정확값</text>
-  <text x="12" y="345" font-size="11" opacity="0.9" fill="currentColor">오른쪽은 네모 친 모서리의 확대다. 오일러 점은 각각 짝이 되는 정확값보다 0.005, 0.009 위에</text>
-  <text x="12" y="359" font-size="11" opacity="0.9" fill="currentColor">있다. 오일러는 1 − x가 가장 큰 스텝 시작점의 기울기를 쓰기 때문이다. 외란은 없다: d = 0.</text>
 </svg>
 
 §8의 새는 히터 $\dot x=-x+u$, 곧 제어 대상(plant: 제어하려는 물리 시스템) **P4**(위키의 연습용 1차 시스템인 '새는 히터'. 온도가 히터 명령을 천천히 따라간다, [[02-foundations/lab-plants|0.6 Lab Plants]])의 블록선도로, 명령 $u=1$은 $+$로, 되먹임된 $x$는 $-$로 합산점에 들어가 그 합이 $\dot x$가 되고, 적분기($\int$ 또는 $1/s$)가 유일한 상태인 온도 오차 $x$를 돌려주며, $x$는 이득 $1$을 거쳐 되돌아온다($d=0$이라 외란 입력은 없다). 삽도는 $x=0$에서 시작한 계단 응답으로, 초당 $1$인 초기 기울기의 접선이 시정수 $t=1\,\mathrm{s}$에서 정상값 $1$에 닿고 곡선 $x=1-e^{-t}$는 그 아래로 지난다. 확대한 모서리에서는 $t=0.1$과 $0.2$의 전진 오일러 $0.10$과 $0.19$가 정확값 $0.095$와 $0.181$보다 각각 $0.005$, $0.009$ 위에 있는데, 오일러가 $1-x$가 가장 큰 스텝 시작점의 기울기를 쓰기 때문이다.
 
 ### 1. 미분 (→ 2. 미적분, 4. 최적화에서 사용)
+
+학습과 제어의 모든 방법은 — 손실을 줄이려고 가중치 수백만 개를 미는 학습 스텝이든, 오차를 줄이려고 모터 명령을 미는 제어기든 — 한 가지를 묻는다: 이 입력을 살짝 밀면 출력이 얼마나 움직이는가? 그 물음에 답하는 숫자가 도함수이고, 입력이 여럿일 때의 답이 그래디언트다.
 
 - **도함수** $f'$은 각 점 $x$에서 $f$의 순간 변화율을 돌려주는 새 함수다. 민감도로서의 정의:
   $$f'(x) = \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$$
@@ -816,7 +987,7 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
   한 값으로 모인다는 뜻이다. 모이면 $f$가 $x$에서 *미분 가능*하다고 한다. 예: $f(x) = x^2$,
   $x = 3$, $h = 0.01$이면 $(9.0601 - 9)/0.01 = 6.01$로 $f'(3) = 6$에 다가간다. 비예시:
   $f(x) = |x|$의 $0$에서는 오른쪽 기울기가 $+1$, 왼쪽이 $-1$이라 극한이 하나로 정해지지 않는다
-  — ReLU가 0에서 가진 바로 그 꺾임이다.
+  — 0.8의 함수 ReLU, 곧 $\max(0, x)$가 0에서 가진 바로 그 꺾임이다.
 - 실제로 쓰는 규칙들:
 
 | 규칙 | 공식 |
@@ -831,10 +1002,12 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
   $$\frac{\partial f}{\partial x_i}(x) = \lim_{h\to 0}\frac{f(x + h\,e_i) - f(x)}{h}$$
   이므로 축 하나를 따라가는 보통의 도함수다. **그래디언트**
   $\nabla f = (\partial f/\partial x_1, \ldots, \partial f/\partial x_n)$는 그 $n$개를 벡터로
-  쌓은 것이다. 작은 스텝 $\delta$에 대한 $f$의 변화가 약 $\nabla f^\top \delta$이고 이 값은
+  쌓은 것이다. 작은 스텝 $\delta$에 대한 $f$의 변화가 약 $\nabla f^\top \delta = \sum_i (\partial f/\partial x_i)\,\delta_i$
+  — 편미분마다 제 몫의 스텝을 곱해 더한 것이고, $^\top$은 §4의 전치다 — 이고 이 값은
   $\delta$가 $\nabla f$와 같은 방향일 때 가장 크므로, 그래디언트는 가장 가파르게 증가하는
   방향을 가리킨다. 그래서 경사 *하강*은 반대로 간다.
-- 계산 예제 (모든 손실-그래디언트 계산의 원형):
+- 계산 예제 (모든 손실-그래디언트 계산의 원형. *손실*은 모델이 얼마나 틀렸는지를 매기는 숫자
+  하나다, [[02-foundations/neural-network-basics|0.8 §3]]):
   $f(x, y) = (xy - 3)^2$ ⇒ $\partial f/\partial x = 2(xy-3)\cdot y$ — 바깥 미분 × 안쪽
   미분, 연쇄 법칙의 실전. **$(x,y) = (2,1)$에서 값을 넣어 보면:** 안쪽이 $xy - 3 = -1$이므로
   $\partial f/\partial x = 2(-1)(1) = -2$, $\partial f/\partial y = 2(-1)(2) = -4$, 즉
@@ -844,7 +1017,61 @@ Tier B. **P4** from [[02-foundations/lab-plants|0.6]] with $d=0$ here; this page
   때문이다. 경사 하강은 $-\alpha(-2,-4)$만큼 움직인다: 둘 다 올리되 $y$를 두 배 세게. 이 위키의
   모든 손실 그래디언트가 인덱스만 더 많은 이 계산이다.
 
+<svg viewBox="0 0 560 366" style="max-width:100%;height:auto" role="img" aria-label="0.5에서 3.5까지의 정사각형 위 f = (xy - 3)의 제곱의 등고선: 굵은 쌍곡선이 영점 집합 xy = 3이고, xy = 2.5와 3.5(f = 0.25), 2와 4(f = 1), 1과 5(f = 4)가 쌍으로 그려진다. f = 1 곡선 위의 A = (2, 1)에서 10분의 1 길이로 그린 그래디언트 (-2, -4)는 곡선에 수직이고 xy = 3에서 멀어지는 쪽을 가리킨다. 그 반대로 0.1배 만큼의 스텝 (0.2, 0.4)가 f = 0.0064인 B = (2.2, 1.4)로 옮긴다.">
+  <defs><marker id="emGrk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="60" y="40" width="300" height="300" fill="none" stroke="currentColor" stroke-opacity="0.35"/>
+  <polyline points="60,190 61.7,196.5 63.4,202.6 65.1,208.4 66.7,213.8 68.4,218.8 70.1,223.6 71.8,228.2 73.5,232.5 75.2,236.6 76.9,240.4 78.5,244.1 80.2,247.6 81.9,250.9 83.6,254.1 85.3,257.2 87,260.1 88.7,262.9 90.3,265.5 92,268.1 93.7,270.5 95.4,272.9 97.1,275.2 98.8,277.3 100.4,279.4 102.1,281.5 103.8,283.4 105.5,285.3 107.2,287.1 108.9,288.9 110.6,290.6 112.2,292.2 113.9,293.8 115.6,295.3 117.3,296.8 119,298.2 120.7,299.6 122.4,301 124,302.3 125.7,303.6 127.4,304.8 129.1,306 130.8,307.2 132.5,308.3 134.2,309.5 135.8,310.5 137.5,311.6 139.2,312.6 140.9,313.6 142.6,314.6 144.3,315.5 146,316.4 147.6,317.3 149.3,318.2 151,319.1 152.7,319.9 154.4,320.7 156.1,321.5 157.8,322.3 159.4,323.1 161.1,323.8 162.8,324.6 164.5,325.3 166.2,326 167.9,326.7 169.6,327.3 171.2,328 172.9,328.6 174.6,329.2 176.3,329.9 178,330.5 179.7,331.1 181.3,331.6 183,332.2 184.7,332.8 186.4,333.3 188.1,333.8 189.8,334.4 191.5,334.9 193.1,335.4 194.8,335.9 196.5,336.4 198.2,336.9 199.9,337.3 201.6,337.8 203.3,338.3 204.9,338.7 206.6,339.1 208.3,339.6 210,340" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 2.5"/>
+  <polyline points="152.9,40 155.2,45.6 157.5,51 159.8,56.3 162.2,61.4 164.5,66.4 166.8,71.2 169.1,75.8 171.5,80.4 173.8,84.8 176.1,89 178.5,93.2 180.8,97.2 183.1,101.2 185.4,105 187.8,108.7 190.1,112.4 192.4,115.9 194.8,119.4 197.1,122.7 199.4,126 201.7,129.2 204.1,132.3 206.4,135.4 208.7,138.4 211,141.3 213.4,144.1 215.7,146.9 218,149.6 220.4,152.3 222.7,154.9 225,157.5 227.3,159.9 229.7,162.4 232,164.8 234.3,167.1 236.6,169.4 239,171.6 241.3,173.8 243.6,176 246,178.1 248.3,180.2 250.6,182.2 252.9,184.2 255.3,186.1 257.6,188.1 259.9,189.9 262.2,191.8 264.6,193.6 266.9,195.4 269.2,197.1 271.6,198.8 273.9,200.5 276.2,202.2 278.5,203.8 280.9,205.4 283.2,207 285.5,208.5 287.8,210 290.2,211.5 292.5,213 294.8,214.5 297.2,215.9 299.5,217.3 301.8,218.7 304.1,220 306.5,221.3 308.8,222.7 311.1,224 313.5,225.2 315.8,226.5 318.1,227.7 320.4,228.9 322.8,230.1 325.1,231.3 327.4,232.5 329.7,233.6 332.1,234.8 334.4,235.9 336.7,237 339.1,238 341.4,239.1 343.7,240.2 346,241.2 348.4,242.2 350.7,243.2 353,244.2 355.3,245.2 357.7,246.2 360,247.1" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 2.5"/>
+  <polyline points="67.1,40 70.4,59.1 73.7,76.1 77,91.6 80.3,105.5 83.6,118.2 86.9,129.9 90.2,140.6 93.5,150.4 96.8,159.5 100,167.9 103.3,175.7 106.6,183 109.9,189.8 113.2,196.2 116.5,202.2 119.8,207.8 123.1,213.1 126.4,218.1 129.7,222.9 133,227.3 136.2,231.6 139.5,235.6 142.8,239.4 146.1,243.1 149.4,246.5 152.7,249.8 156,253 159.3,256 162.6,258.9 165.9,261.7 169.1,264.3 172.4,266.9 175.7,269.3 179,271.7 182.3,273.9 185.6,276.1 188.9,278.2 192.2,280.2 195.5,282.2 198.8,284 202.1,285.9 205.3,287.6 208.6,289.3 211.9,291 215.2,292.5 218.5,294.1 221.8,295.6 225.1,297 228.4,298.4 231.7,299.8 235,301.1 238.3,302.4 241.5,303.6 244.8,304.8 248.1,306 251.4,307.2 254.7,308.3 258,309.4 261.3,310.4 264.6,311.4 267.9,312.4 271.2,313.4 274.4,314.4 277.7,315.3 281,316.2 284.3,317.1 287.6,318 290.9,318.8 294.2,319.6 297.5,320.4 300.8,321.2 304.1,322 307.4,322.7 310.6,323.5 313.9,324.2 317.2,324.9 320.5,325.6 323.8,326.3 327.1,326.9 330.4,327.6 333.7,328.2 337,328.8 340.3,329.4 343.5,330 346.8,330.6 350.1,331.2 353.4,331.8 356.7,332.3 360,332.9" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="5 3"/>
+  <polyline points="124.3,40 126.9,47.9 129.6,55.5 132.2,62.8 134.9,69.7 137.5,76.3 140.2,82.7 142.8,88.9 145.5,94.7 148.1,100.4 150.8,105.8 153.4,111.1 156.1,116.2 158.7,121 161.4,125.7 164,130.3 166.7,134.7 169.3,138.9 172,143 174.6,147 177.3,150.8 179.9,154.6 182.6,158.2 185.2,161.7 187.8,165.1 190.5,168.4 193.1,171.6 195.8,174.7 198.4,177.7 201.1,180.7 203.7,183.5 206.4,186.3 209,189 211.7,191.7 214.3,194.2 217,196.7 219.6,199.2 222.3,201.6 224.9,203.9 227.6,206.2 230.2,208.4 232.9,210.5 235.5,212.6 238.2,214.7 240.8,216.7 243.5,218.7 246.1,220.6 248.8,222.5 251.4,224.3 254.1,226.1 256.7,227.9 259.4,229.6 262,231.3 264.7,232.9 267.3,234.5 270,236.1 272.6,237.7 275.2,239.2 277.9,240.7 280.5,242.2 283.2,243.6 285.8,245 288.5,246.4 291.1,247.7 293.8,249 296.4,250.4 299.1,251.6 301.7,252.9 304.4,254.1 307,255.3 309.7,256.5 312.3,257.7 315,258.8 317.6,260 320.3,261.1 322.9,262.2 325.6,263.2 328.2,264.3 330.9,265.3 333.5,266.4 336.2,267.4 338.8,268.4 341.5,269.3 344.1,270.3 346.8,271.2 349.4,272.1 352.1,273.1 354.7,274 357.4,274.8 360,275.7" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="5 3"/>
+  <polyline points="81.4,40 84.6,54.7 87.7,68.2 90.8,80.7 93.9,92.2 97.1,102.9 100.2,112.9 103.3,122.2 106.5,130.8 109.6,139 112.7,146.6 115.9,153.8 119,160.6 122.1,167 125.2,173.1 128.4,178.8 131.5,184.3 134.6,189.4 137.8,194.3 140.9,199 144,203.5 147.2,207.7 150.3,211.8 153.4,215.7 156.5,219.4 159.7,223 162.8,226.4 165.9,229.7 169.1,232.8 172.2,235.9 175.3,238.8 178.5,241.6 181.6,244.3 184.7,246.9 187.8,249.4 191,251.9 194.1,254.2 197.2,256.5 200.4,258.7 203.5,260.8 206.6,262.9 209.8,264.8 212.9,266.8 216,268.7 219.1,270.5 222.3,272.2 225.4,273.9 228.5,275.6 231.7,277.2 234.8,278.8 237.9,280.3 241.1,281.8 244.2,283.2 247.3,284.7 250.4,286 253.6,287.4 256.7,288.7 259.8,289.9 263,291.2 266.1,292.4 269.2,293.6 272.4,294.7 275.5,295.8 278.6,296.9 281.7,298 284.9,299.1 288,300.1 291.1,301.1 294.3,302.1 297.4,303 300.5,304 303.7,304.9 306.8,305.8 309.9,306.6 313,307.5 316.2,308.3 319.3,309.2 322.4,310 325.6,310.8 328.7,311.6 331.8,312.3 335,313.1 338.1,313.8 341.2,314.5 344.3,315.2 347.5,315.9 350.6,316.6 353.7,317.3 356.9,317.9 360,318.6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <polyline points="110,40 112.8,49.6 115.6,58.6 118.4,67.2 121.2,75.4 124,83.1 126.9,90.5 129.7,97.5 132.5,104.2 135.3,110.6 138.1,116.8 140.9,122.6 143.7,128.2 146.5,133.6 149.3,138.8 152.1,143.8 154.9,148.5 157.8,153.1 160.6,157.5 163.4,161.8 166.2,165.9 169,169.9 171.8,173.7 174.6,177.4 177.4,180.9 180.2,184.4 183,187.7 185.8,191 188.7,194.1 191.5,197.1 194.3,200.1 197.1,202.9 199.9,205.7 202.7,208.4 205.5,211 208.3,213.5 211.1,216 213.9,218.4 216.7,220.7 219.6,223 222.4,225.2 225.2,227.3 228,229.4 230.8,231.5 233.6,233.5 236.4,235.4 239.2,237.3 242,239.2 244.8,241 247.6,242.7 250.4,244.4 253.3,246.1 256.1,247.8 258.9,249.4 261.7,250.9 264.5,252.5 267.3,254 270.1,255.4 272.9,256.9 275.7,258.3 278.5,259.7 281.3,261 284.2,262.3 287,263.6 289.8,264.9 292.6,266.1 295.4,267.4 298.2,268.6 301,269.7 303.8,270.9 306.6,272 309.4,273.1 312.2,274.2 315.1,275.3 317.9,276.3 320.7,277.3 323.5,278.4 326.3,279.3 329.1,280.3 331.9,281.3 334.7,282.2 337.5,283.1 340.3,284 343.1,284.9 346,285.8 348.8,286.7 351.6,287.5 354.4,288.4 357.2,289.2 360,290" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <polyline points="95.7,40 98.7,51.7 101.7,62.7 104.6,73 107.6,82.6 110.6,91.7 113.5,100.2 116.5,108.3 119.5,116 122.4,123.2 125.4,130.1 128.4,136.6 131.3,142.8 134.3,148.7 137.3,154.3 140.3,159.7 143.2,164.8 146.2,169.7 149.2,174.4 152.1,178.9 155.1,183.3 158.1,187.4 161,191.4 164,195.2 167,198.9 170,202.4 172.9,205.9 175.9,209.2 178.9,212.3 181.8,215.4 184.8,218.4 187.8,221.2 190.7,224 193.7,226.7 196.7,229.3 199.6,231.8 202.6,234.2 205.6,236.6 208.6,238.9 211.5,241.1 214.5,243.3 217.5,245.4 220.4,247.4 223.4,249.4 226.4,251.4 229.3,253.2 232.3,255.1 235.3,256.8 238.3,258.6 241.2,260.3 244.2,261.9 247.2,263.5 250.1,265.1 253.1,266.6 256.1,268.1 259,269.5 262,271 265,272.3 267.9,273.7 270.9,275 273.9,276.3 276.9,277.6 279.8,278.8 282.8,280 285.8,281.2 288.7,282.4 291.7,283.5 294.7,284.6 297.6,285.7 300.6,286.8 303.6,287.8 306.5,288.8 309.5,289.8 312.5,290.8 315.5,291.8 318.4,292.7 321.4,293.7 324.4,294.6 327.3,295.5 330.3,296.3 333.3,297.2 336.2,298 339.2,298.9 342.2,299.7 345.2,300.5 348.1,301.3 351.1,302 354.1,302.8 357,303.6 360,304.3" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <polyline points="110,340 110,344" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="110" y="356" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="56,290 60,290" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="52" y="294" font-size="11" text-anchor="end" fill="currentColor">1</text>
+  <polyline points="210,340 210,344" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="210" y="356" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <polyline points="56,190 60,190" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="52" y="194" font-size="11" text-anchor="end" fill="currentColor">2</text>
+  <polyline points="310,340 310,344" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="310" y="356" font-size="11" text-anchor="middle" fill="currentColor">3</text>
+  <polyline points="56,90 60,90" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="52" y="94" font-size="11" text-anchor="end" fill="currentColor">3</text>
+  <text x="368" y="344" font-size="11" fill="currentColor">x</text>
+  <text x="52" y="44" font-size="11" text-anchor="end" fill="currentColor">y</text>
+  <polyline points="210,290 190.2,329.6" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#emGrk)"/>
+  <polyline points="210,290 228.6,252.9" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#emGrk)"/>
+  <polyline points="213.1,283.7 219.4,286.9 216.3,293.1" fill="none" stroke="currentColor" stroke-width="0.9"/>
+  <circle cx="210" cy="290" r="3.2" fill="currentColor"/>
+  <circle cx="230" cy="250" r="3.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="219" y="310" font-size="12" fill="currentColor">A</text>
+  <text x="214" y="242" font-size="12" fill="currentColor">B</text>
+  <text x="376" y="44" font-size="12" fill="currentColor">f(x, y) = (xy − 3)<tspan dy="-5" font-size="10">2</tspan></text>
+  <polyline points="376,66 402,66" fill="none" stroke="currentColor" stroke-width="2.2"/>
+  <text x="408" y="70" font-size="11" fill="currentColor">f = 0: xy = 3</text>
+  <polyline points="376,86 402,86" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.8"/>
+  <text x="408" y="90" font-size="11" fill="currentColor">f = 0.25</text>
+  <polyline points="376,106 402,106" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="5 3"/>
+  <text x="408" y="110" font-size="11" fill="currentColor">f = 1</text>
+  <polyline points="376,126 402,126" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1.5 2.5"/>
+  <text x="408" y="130" font-size="11" fill="currentColor">f = 4</text>
+  <polyline points="376,146 401,146" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#emGrk)"/>
+  <text x="408" y="150" font-size="11" fill="currentColor">A의 ∇f (0.1배로 그림)</text>
+  <polyline points="376,166 399,166" fill="none" stroke="currentColor" stroke-width="2" marker-end="url(#emGrk)"/>
+  <text x="408" y="170" font-size="11" fill="currentColor">스텝 하나 −0.1∇f</text>
+  <circle cx="389" cy="186" r="3.2" fill="currentColor"/>
+  <text x="408" y="190" font-size="11" fill="currentColor">A (2, 1): f = 1</text>
+  <circle cx="389" cy="206" r="3.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <text x="408" y="210" font-size="11" fill="currentColor">B (2.2, 1.4): f = 0.0064</text>
+</svg>
+
+$[0.5,3.5]^2$ 위 $f(x,y)=(xy-3)^2$의 등고선이다. 굵은 곡선이 영점 집합 $xy=3$이고, 나머지 등고선은 저마다 쌍곡선 한 쌍 $xy=3\pm\sqrt f$다. $f=1$ 등고선 위의 $A=(2,1)$에서 그래디언트 $\nabla f=(-2,-4)$(길이의 10분의 1로 그렸다)는 그 등고선에 수직이고, $xy=3$에서 멀어지는 오르막을 가리킨다. $\alpha=0.1$인 경사 하강 한 스텝은 그 반대로 $(0.2,\,0.4)$ — $y$를 $x$의 두 배 — 만큼 움직여 $f=0.0064$인 $B=(2.2,\,1.4)$에 닿는다.
+
 ### 2. 테일러 전개 (→ 2. 미적분, 4. 최적화)
+
+최적화기는 함수 전체를 보지 못하고, 스텝마다 지금 선 자리의 값과 도함수 몇 개만 가지고 한 걸음 앞을 짐작해야 한다. 테일러 전개가 그 짐작이고, 그 짐작을 얼마나 멀리까지 믿어도 되는지도 함께 말해 준다.
 
 $$f(x + \delta) \approx f(x) + f'(x)\,\delta + \tfrac12 f''(x)\,\delta^2$$
 
@@ -886,6 +1113,8 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
 
 ### 3. 적분과 기댓값 (→ 3. 확률)
 
+확률 페이지는 어떤 양을 모든 결과에 걸쳐 평균하는데(데이터 전체의 기대 손실, 정책의 기대 리턴, 잡음 섞인 거리 측정의 평균), 결과가 연속으로 이어져 있으면 그 평균이 적분이다. 이 절은 적분을 합으로 읽는 법부터 말하고, 기초 페이지가 쓰는 단 하나의 패턴인 기댓값에 그것을 쓴다.
+
 - 적분은 **연속 극한**(continuum limit)의 가중합이다 — 축을 조각으로 자르고, 각 $f$ 값에
   조각의 폭을 곱해 더한 뒤, 조각의 폭을 0으로 보낸 것. "연속 극한"은 언제나 이 뜻이다:
   더하는 단위를 끝까지 무한소로 내려보낸 합. 그 합을 $\int f(x)\,dx$로 쓴다. 식으로 쓰면
@@ -916,6 +1145,8 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
   (예: [[02-foundations/information-theory|5. 정보이론]]의 KL 비음수성).
 
 ### 4. 행렬 연산 (→ 1. 선형대수의 입장 조건)
+
+로봇 팔은 관절 속도를 행렬 하나로 끝점 속도로 바꾸고 신경망의 층은 특징 512개를 또 다른 행렬로 점수 10개로 바꾸는데, 둘 다 행렬 곱하기 벡터라서 코드에서 가장 먼저 깨지는 것은 맞지 않는 모양이다. 이 절은 1. 선형대수가 전제하는 산수를 규칙마다 한 번씩 손으로 계산해 둔다.
 
 - $(AB)_{ij} = \sum_k A_{ik}B_{kj}$: **$A$의 $i$행과 $B$의 $j$열의 내적.** 모양:
   $(m\times n)(n \times p) = m \times p$ — 안쪽 차원이 맞아야 하고, 맞으면 사라진다.
@@ -950,17 +1181,19 @@ $e^{0.01} = 1.01005$, $\log(1.01) = 0.00995$.) 유도 중에 "작은 $\epsilon$�
   0으로 나눈다: **되돌아갈 곳이 없다.** 이것이 랭크 부족이고, 랭크의 정식 정의는
   [[02-foundations/linear-algebra|1. 선형대수 §2]]에 있다. 여기서는 "풀랭크" = "잃어버린 것이
   없어 되돌릴 수 있다"로 읽으면 된다.
-- **앞으로 끊임없이 하게 될 모양 검사.** 특징 512개에서 클래스 점수 10개로 가는 선형 층은
+- **앞으로 끊임없이 하게 될 모양 검사.** 특징 512개에서 클래스 점수 10개로 가는 선형 층 — 신경망의
+  행렬 한 단계, [[02-foundations/neural-network-basics|0.8 §1]] — 은
   $x$가 $512\times1$ 열인 $y = Wx$이므로, $W$는 $10\times512$여야 하고
-  $(10\times512)(512\times1) = 10\times1$ — 클래스마다 점수 하나다. 샘플 32개를 $X$의 열로
-  쌓은 배치($512\times32$)는 곱 한 번으로 지나간다:
+  $(10\times512)(512\times1) = 10\times1$ — 클래스마다 점수 하나다. 샘플 32개 — 함께 통과시키는
+  입력 묶음인 배치, [[02-foundations/neural-network-basics|0.8 §4]] — 를 $X$의 열로 쌓은 것($512\times32$)은
+  곱 한 번으로 지나간다:
   $(10\times512)(512\times32) = 10\times32$ — 샘플마다 점수 열 하나. 0.8과 2 페이지가 쓰는
   것이 이 열벡터 관례다. 이렇게 모양을 읽는 것이 곧 아키텍처를 읽는 것이다
   ([[02-foundations/linear-algebra|1. 선형대수 §1]]).
   *코드를 위한 각주.* 라이브러리와 어텐션 식은 보통 배치를 행으로 저장한다: $X$는
   $32\times512$, 층의 행렬은 전치($512\times10$)로 두고, 출력 $XW$는 $32\times10$ — 위의
-  $(AB)^\top = B^\top A^\top$에 따라 같은 숫자를 전치한 것이다. 1. 선형대수 §1의 $Q = XW_Q$가
-  이렇게 쓰여 있다.
+  $(AB)^\top = B^\top A^\top$에 따라 같은 숫자를 전치한 것이다. 1. 선형대수 §1 끝의 접힌 상자에 나오는
+  어텐션 투영 $Q = XW_Q$가 이렇게 쓰여 있다.
 
 ### 4.5 선형성: 가법성과 동차성 (→ 1. 선형대수, 6. 신호처리, 제어 트랙)
 
@@ -994,6 +1227,13 @@ $$f(a x + b y) = a\,f(x) + b\,f(y)$$
 
 ### 5. 급수와 기하급수 합 (→ 7. RL 기초)
 
+**강화학습(RL)이 이것을 쓰는 이유.** $k$ 스텝 뒤의 보상은 가중치 $\gamma^k$로 세므로, 에이전트가 평생
+모을 수 있는 가중치의 총합이 정확히 아래의 무한합이고, 아래 유도대로 그 값은 $1/(1-\gamma)$다.
+$\gamma = 0.99$면 $100$ — 즉 할인 없는 100 스텝을 더하고 그 뒤는 무시하는 것과 대략 같게
+행동한다. 반대편에서의 확인: $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는
+가중치가 이미 3분의 1 수준으로 떨어져 있다. [[02-foundations/rl-basics|RL]]에서 말하는
+"유효 지평 약 100 스텝"이 이 뜻이다.
+
 $$1 + \gamma + \gamma^2 + \cdots = \frac{1}{1-\gamma} \quad (|\gamma| < 1)$$
 
 **어디서 나온 식인가.** 합에 이름부터 붙인다:
@@ -1022,13 +1262,9 @@ $|\gamma| < 1$ 조건이 꼬리를 0으로 줄어들게 만드는 장치다. $\g
 
 $$1 + \gamma + \cdots + \gamma^{n-1} = \frac{1 - \gamma^n}{1 - \gamma}$$
 
-**RL이 이것을 쓰는 이유.** $k$ 스텝 뒤의 보상은 가중치 $\gamma^k$로 세므로, 에이전트가 평생
-모을 수 있는 가중치의 총합이 정확히 이 합, $1/(1-\gamma)$다. $\gamma = 0.99$면 $100$ — 즉
-할인 없는 100 스텝을 더하고 그 뒤는 무시하는 것과 대략 같게 행동한다. 반대편에서의 확인:
-$0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가중치가 이미 3분의 1 수준으로
-떨어져 있다. [[02-foundations/rl-basics|RL]]에서 말하는 "유효 지평 약 100 스텝"이 이 뜻이다.
-
 ### 6. 지수와 로그 (→ 5. 정보이론의 입장 조건)
+
+서로 독립인 측정 천 개의 확률은 1보다 작은 수 천 개의 곱이다 — 하나하나가 $0.1$이면 $10^{-1000}$이고, float64는 이것을 정확히 $0$으로 반올림한다. 그 로그 $-2302.6$은 평범한 숫자인데, 로그가 곱을 합으로 바꾸기 때문이고, 이 위키의 모든 우도, 손실, 비트 수가 로그와 그 역함수인 지수로 쓰이는 이유도 그것이다.
 
 - $e^x$: 자기 자신이 도함수인 함수; 자신에 비례하는 속도로 성장. ($e \approx 2.718$.)
   정확히는 두 성질을 함께 가진 유일한 함수다.
@@ -1057,8 +1293,10 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   $\log_2 x = \ln x / \ln 2 \approx 1.4427\,\ln x$. 1 나트 $\approx 1.44$ 비트.
 - 몸에 익힐 숫자 감각: $\log 1 = 0$; $x<1$이면 $\log x < 0$ (로그 확률은 음수다!);
   $\log$는 고통스럽게 천천히 자란다.
-- **Log-sum-exp**: $\log \sum_i e^{x_i}$는 어디에나 나오며(softmax 정규화 분모의 로그다),
-  식 그대로 계산하면 넘친다 — float64에서 $e^{800}$은 이미 $\infty$다. $x_{max} = \max_i x_i$로
+- **Log-sum-exp**: $\log \sum_i e^{x_i}$는 어디에나 나오며(점수를 확률로 바꾸는 softmax — §10에서
+  정의 — 의 정규화 분모의 로그다), 식 그대로 계산하면 넘친다 — float64의 가장 큰 값이 약
+  $1.8\times10^{308}=e^{709.8}$이라 $e^{800}$은 이미 $\infty$다(부동소수점이 수를 저장하는 방식은
+  [[02-foundations/tools/python-research-code|12.3 §5]]). $x_{max} = \max_i x_i$로
   두면 해법은:
 
   $$\log \sum_i e^{x_i} = x_{max} + \log\sum_i e^{x_i - x_{max}}$$
@@ -1068,7 +1306,7 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   $\log(ab) = \log a + \log b$를 쓴 것이다. 근사가 아니라 *정확한* 항등식이다. 왜 문제가
   풀리나: 이제 모든 지수 $x_i - x_{max}$가 $\le 0$이므로 각 $e^{(\cdot)}$가 $0$과 $1$ 사이에
   있다 — 이 정규화에서는 넘칠 수 없고, 가장 큰 항이 정확히 $1$이므로 합 전체가 0으로
-  가라앉지도 않는다. 다른 잘못된 입력·극단 연산·별도 연산은 여전히 NaN을 만들 수 있지만,
+  가라앉지도 않는다. 다른 잘못된 입력·극단 연산·별도 연산은 여전히 NaN(숫자가 아님을 뜻하는 값)을 만들 수 있지만,
   안정적인 softmax+교차 엔트로피 구현이 이 항등식을 쓰는 이유가 이것이다
   ([[02-foundations/calculus-backprop|2. 미적분 §4]]).
 
@@ -1078,6 +1316,8 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   $800$과 $800.693$ 사이다.
 
 ### 7. 복소수와 오일러 공식 (→ 6. 신호처리의 입장 조건)
+
+진동, 필터, 피드백 루프는 진동하는 입력에 무엇을 하는가로 기술되는데, 진동에는 숫자가 둘 딸려 있다 — 얼마나 큰가, 그리고 시간상 얼마나 밀렸는가. 복소수는 그 쌍을 숫자 하나에 담고 '키우고 미는' 일을 곱셈 한 번으로 만들기 때문에, 신호처리와 제어가 복소수로 쓰인다.
 
 - $j = \sqrt{-1}$; 복소수 $a + jb$는 2차원 평면의 점(가로 $a$, 세로 $b$);
   $|a+jb| = \sqrt{a^2+b^2}$가 원점으로부터의 거리, 각도는 $\theta = \operatorname{atan2}(b, a)$.
@@ -1107,26 +1347,33 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   앞으로 보내느냐 뒤로 보내느냐의 차이이고, 그래서 [[02-foundations/se3-geometry|SE(3)]]
   페이지와 모든 역기구학 구현이 atan2만 쓴다.
 
-<svg viewBox="0 0 470 200" style="max-width:100%;height:auto" role="img" aria-label="정반대인 두 점은 b/a가 같아서 arctan이 구분하지 못한다">
+<svg viewBox="0 0 560 200" style="max-width:100%;height:auto" role="img" aria-label="원점을 지나는 같은 점선 위의 정반대인 두 점 (1, 1)과 (-1, -1), 각도 45°와 225°. 옆의 표: 둘 다 b/a = 1이라 arctan(b/a)는 둘 다 45°를 주고 (-1, -1)에서는 틀린다. atan2(b, a)는 45°와 -135°를 준다.">
   <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="26" y1="100" x2="234" y2="100"/><line x1="130" y1="16" x2="130" y2="184"/></g>
   <g stroke="currentColor" stroke-width="1" opacity="0.45" stroke-dasharray="4 3"><line x1="48" y1="182" x2="212" y2="18"/></g>
   <g fill="none" stroke="currentColor" stroke-width="1.7"><path d="M130,100 L183,47"/><path d="M130,100 L77,153"/></g>
   <g fill="currentColor"><circle cx="185" cy="45" r="4.5"/><circle cx="75" cy="155" r="4.5"/></g>
   <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.75"><path d="M152,100 A22,22 0 0 0 145.6,84.4"/></g>
   <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.55"><path d="M172,100 A42,42 0 1 0 100.3,129.7"/></g>
-  <g font-size="11" fill="currentColor">
-    <text x="196" y="40">(1, 1)</text>
-    <text x="22" y="172">(&#8722;1, &#8722;1)</text>
-    <text x="152" y="88" font-size="10">45&#176;</text>
-    <text x="86" y="152" font-size="10">225&#176;</text>
-    <text x="255" y="44">두 점은 원점을 지나는 같은 점선 위에 있고,</text>
-    <text x="255" y="62">따라서 둘 다 b/a = 1이다.</text>
-    <text x="255" y="92">arctan(b/a)는 둘 다 45&#176;를 준다 &#8212; 한쪽은 맞고</text>
-    <text x="255" y="110">다른 쪽은 180&#176; 틀린다.</text>
-    <text x="255" y="140">atan2(b, a)는 두 부호를 따로 들고 있어</text>
-    <text x="255" y="158">45&#176;와 &#8722;135&#176;를 각각 준다.</text>
-  </g>
+  <text x="194" y="52" font-size="11" fill="currentColor">(1, 1)</text>
+  <text x="18" y="160" font-size="11" fill="currentColor">(−1, −1)</text>
+  <text x="152" y="88" font-size="10" fill="currentColor">45°</text>
+  <text x="86" y="152" font-size="10" fill="currentColor">225°</text>
+  <text x="262" y="70" font-size="11" fill="currentColor">점</text>
+  <text x="342" y="70" font-size="11" text-anchor="middle" fill="currentColor">b/a</text>
+  <text x="410" y="70" font-size="11" text-anchor="middle" fill="currentColor">arctan(b/a)</text>
+  <text x="500" y="70" font-size="11" text-anchor="middle" fill="currentColor">atan2(b, a)</text>
+  <polyline points="258,78 540,78" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="262" y="100" font-size="11" fill="currentColor">(1, 1)</text>
+  <text x="342" y="100" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="410" y="100" font-size="11" text-anchor="middle" fill="currentColor">45°</text>
+  <text x="500" y="100" font-size="11" text-anchor="middle" fill="currentColor">45°</text>
+  <text x="262" y="128" font-size="11" fill="currentColor">(−1, −1)</text>
+  <text x="342" y="128" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <text x="410" y="128" font-size="11" text-anchor="middle" fill="currentColor">45°, 틀림</text>
+  <text x="500" y="128" font-size="11" text-anchor="middle" fill="currentColor">−135°</text>
 </svg>
+
+두 점은 원점을 지나는 같은 점선 위에 있어 둘 다 $b/a = 1$이고, 그래서 $\arctan(b/a)$는 둘 모두에 $45°$를 준다 — $(1, 1)$에는 맞고 $(-1, -1)$에는 $180°$ 틀린다. $\operatorname{atan2}(b, a)$는 두 부호를 따로 보므로 $45°$와 $-135°$를 주고, $-135°$는 $225°$와 같은 방향이다.
 
 
 - **오일러 공식**: $e^{j\theta} = \cos\theta + j\sin\theta$ — 각도 $\theta$의 단위원 위의 점.
@@ -1148,37 +1395,58 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
      재는 그 연산이다. 각 회전과의 겹침을 재는 것이 곧 신호를 그 회전 위로 투영하는 것이다.
      "사인파로 분해"의 뜻은 이게 전부다.
 
-  그래서 [[02-foundations/signal-processing|6. 신호처리]]의 DFT 공식
+  그래서 [[02-foundations/signal-processing|6. 신호처리]]의 DFT(이산 푸리에 변환) 공식
   $X[k] = \sum_n x[n]\,e^{-j2\pi kn/N}$에는 숨은 내용이 없다: $e^{-j(\cdot)}$가 2단계의 반대
   회전이고, $\sum_n$이 평균이다. 주파수 하나당 내적 하나일 뿐이다.
 
-<svg viewBox="0 0 470 205" style="max-width:100%;height:auto" role="img" aria-label="단위원 위를 도는 점과, 실수축에 드리운 그림자가 그리는 코사인">
-  <g stroke="currentColor" stroke-width="1" opacity="0.4"><line x1="20" y1="90" x2="150" y2="90"/><line x1="85" y1="25" x2="85" y2="155"/></g>
-  <circle cx="85" cy="90" r="52" fill="none" stroke="currentColor" stroke-width="1.4"/>
-  <g stroke="currentColor" stroke-width="1.7" fill="none"><line x1="85" y1="90" x2="118.4" y2="50.2"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.65" stroke-dasharray="4 3"><line x1="118.4" y1="50.2" x2="118.4" y2="90"/></g>
-  <g fill="currentColor"><circle cx="118.4" cy="50.2" r="4"/><circle cx="118.4" cy="90" r="3"/></g>
-  <g fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.8"><path d="M105,90 A20,20 0 0 0 97.9,74.7"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="175" y1="90" x2="440" y2="90"/></g>
-  <path d="M175.0 45.0L176.3 45.0L177.6 45.1L178.9 45.2L180.2 45.4L181.5 45.6L182.8 45.8L184.1 46.1L185.4 46.4L186.7 46.8L188.0 47.2L189.3 47.7L190.6 48.2L191.9 48.7L193.2 49.3L194.5 49.9L195.8 50.6L197.1 51.3L198.4 52.0L199.7 52.8L201.0 53.6L202.3 54.4L203.6 55.3L204.9 56.2L206.2 57.2L207.5 58.2L208.8 59.2L210.1 60.2L211.4 61.3L212.7 62.4L214.0 63.5L215.3 64.7L216.6 65.9L217.9 67.1L219.2 68.3L220.5 69.6L221.8 70.8L223.1 72.1L224.4 73.4L225.7 74.8L227.0 76.1L228.3 77.4L229.6 78.8L230.9 80.2L232.2 81.6L233.5 83.0L234.8 84.4L236.1 85.8L237.4 87.2L238.7 88.6L240.0 90.0L241.3 91.4L242.6 92.8L243.9 94.2L245.2 95.6L246.5 97.0L247.8 98.4L249.1 99.8L250.4 101.2L251.7 102.6L253.0 103.9L254.3 105.2L255.6 106.6L256.9 107.9L258.2 109.2L259.5 110.4L260.8 111.7L262.1 112.9L263.4 114.1L264.7 115.3L266.0 116.5L267.3 117.6L268.6 118.7L269.9 119.8L271.2 120.8L272.5 121.8L273.8 122.8L275.1 123.8L276.4 124.7L277.7 125.6L279.0 126.4L280.3 127.2L281.6 128.0L282.9 128.7L284.2 129.4L285.5 130.1L286.8 130.7L288.1 131.3L289.4 131.8L290.7 132.3L292.0 132.8L293.3 133.2L294.6 133.6L295.9 133.9L297.2 134.2L298.5 134.4L299.8 134.6L301.1 134.8L302.4 134.9L303.7 135.0L305.0 135.0L306.3 135.0L307.6 134.9L308.9 134.8L310.2 134.6L311.5 134.4L312.8 134.2L314.1 133.9L315.4 133.6L316.7 133.2L318.0 132.8L319.3 132.3L320.6 131.8L321.9 131.3L323.2 130.7L324.5 130.1L325.8 129.4L327.1 128.7L328.4 128.0L329.7 127.2L331.0 126.4L332.3 125.6L333.6 124.7L334.9 123.8L336.2 122.8L337.5 121.8L338.8 120.8L340.1 119.8L341.4 118.7L342.7 117.6L344.0 116.5L345.3 115.3L346.6 114.1L347.9 112.9L349.2 111.7L350.5 110.4L351.8 109.2L353.1 107.9L354.4 106.6L355.7 105.2L357.0 103.9L358.3 102.6L359.6 101.2L360.9 99.8L362.2 98.4L363.5 97.0L364.8 95.6L366.1 94.2L367.4 92.8L368.7 91.4L370.0 90.0L371.3 88.6L372.6 87.2L373.9 85.8L375.2 84.4L376.5 83.0L377.8 81.6L379.1 80.2L380.4 78.8L381.7 77.4L383.0 76.1L384.3 74.8L385.6 73.4L386.9 72.1L388.2 70.8L389.5 69.6L390.8 68.3L392.1 67.1L393.4 65.9L394.7 64.7L396.0 63.5L397.3 62.4L398.6 61.3L399.9 60.2L401.2 59.2L402.5 58.2L403.8 57.2L405.1 56.2L406.4 55.3L407.7 54.4L409.0 53.6L410.3 52.8L411.6 52.0L412.9 51.3L414.2 50.6L415.5 49.9L416.8 49.3L418.1 48.7L419.4 48.2L420.7 47.7L422.0 47.2L423.3 46.8L424.6 46.4L425.9 46.1L427.2 45.8L428.5 45.6L429.8 45.4L431.1 45.2L432.4 45.1L433.7 45.0L435.0 45.0" fill="none" stroke="currentColor" stroke-width="1.9"/>
-  <g stroke="currentColor" stroke-width="1" opacity="0.65" stroke-dasharray="4 3"><line x1="211.1" y1="61.1" x2="211.1" y2="90"/></g>
-  <g fill="currentColor"><circle cx="211.1" cy="61.1" r="4"/></g>
-  <g font-size="11" fill="currentColor">
-    <text x="124.4" y="44.2">e^(j&#952;)</text>
-    <text x="102" y="86" font-size="10">&#952;</text>
-    <text x="96" y="162" font-size="10">Re = cos &#952;</text>
-    <text x="176" y="18">&#952;가 한 바퀴 도는 동안의 cos &#952;</text>
-    <text x="416" y="106" font-size="10">&#952;</text>
-    <text x="20" y="184" opacity="0.9">오른쪽 파형은 별개의 대상이 아니다 &#8212; 점이 도는 동안 왼쪽 그림의 그림자를 옮겨 그린 것이다.</text>
-    <text x="20" y="199" opacity="0.9">&#8220;사인파로 분해&#8221;와 &#8220;회전들에 투영&#8221;이 같은 문장인 이유가 이것이다.</text>
-  </g>
+<svg viewBox="0 0 560 424" style="max-width:100%;height:auto" role="img" aria-label="θ = 50°에서 단위원 위의 점 e^{jθ}; 실수축 위의 그림자는 중심에서 나온 굵은 가로 선분이고 길이는 cos θ = 0.643이다. 아래에서는 θ를 0°에서 360°까지 아래로 키우며 그림자를 그리면 원의 반지름만큼, 곧 ±1로 흔들리는 코사인이 되고, 같은 굵은 선분이 50°의 파형 위에 다시 나타난다.">
+  <defs><marker id="emCsk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <polyline points="126,84 294,84" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <polyline points="210,12 210,156" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.45"/>
+  <circle cx="210" cy="84" r="64" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <polyline points="210,84 251.1,35" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <path d="M232,84 A22,22 0 0 0 224.1,67.1" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  <polyline points="251.1,35 251.1,84" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" stroke-opacity="0.8"/>
+  <polyline points="251.1,86 251.1,203" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 3" stroke-opacity="0.7"/>
+  <polyline points="210,84 251.1,84" fill="none" stroke="currentColor" stroke-width="3.4"/>
+  <polyline points="210,206 251.1,206" fill="none" stroke="currentColor" stroke-width="3.4"/>
+  <polyline points="146,164 146,396" fill="none" stroke="currentColor" stroke-width="0.9" stroke-dasharray="1 3" stroke-opacity="0.55"/>
+  <polyline points="274,164 274,396" fill="none" stroke="currentColor" stroke-width="0.9" stroke-dasharray="1 3" stroke-opacity="0.55"/>
+  <text x="146" y="160" font-size="11" text-anchor="middle" fill="currentColor">−1</text>
+  <text x="274" y="160" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="210,170 210,410" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" marker-end="url(#emCsk)"/>
+  <polyline points="274,176 273.9,177.8 273.6,179.6 273.2,181.4 272.6,183.2 271.8,185 270.9,186.8 269.7,188.6 268.5,190.4 267,192.2 265.4,194 263.7,195.8 261.8,197.6 259.7,199.4 257.6,201.2 255.3,203 252.8,204.8 250.3,206.6 247.6,208.4 244.9,210.2 242,212 239.1,213.8 236,215.6 232.9,217.4 229.8,219.2 226.6,221 223.3,222.8 220,224.6 216.7,226.4 213.3,228.2 210,230 206.7,231.8 203.3,233.6 200,235.4 196.7,237.2 193.4,239 190.2,240.8 187.1,242.6 184,244.4 180.9,246.2 178,248 175.1,249.8 172.4,251.6 169.7,253.4 167.2,255.2 164.7,257 162.4,258.8 160.3,260.6 158.2,262.4 156.3,264.2 154.6,266 153,267.8 151.5,269.6 150.3,271.4 149.1,273.2 148.2,275 147.4,276.8 146.8,278.6 146.4,280.4 146.1,282.2 146,284 146.1,285.8 146.4,287.6 146.8,289.4 147.4,291.2 148.2,293 149.1,294.8 150.3,296.6 151.5,298.4 153,300.2 154.6,302 156.3,303.8 158.2,305.6 160.3,307.4 162.4,309.2 164.7,311 167.2,312.8 169.7,314.6 172.4,316.4 175.1,318.2 178,320 180.9,321.8 184,323.6 187.1,325.4 190.2,327.2 193.4,329 196.7,330.8 200,332.6 203.3,334.4 206.7,336.2 210,338 213.3,339.8 216.7,341.6 220,343.4 223.3,345.2 226.6,347 229.8,348.8 232.9,350.6 236,352.4 239.1,354.2 242,356 244.9,357.8 247.6,359.6 250.3,361.4 252.8,363.2 255.3,365 257.6,366.8 259.7,368.6 261.8,370.4 263.7,372.2 265.4,374 267,375.8 268.5,377.6 269.7,379.4 270.9,381.2 271.8,383 272.6,384.8 273.2,386.6 273.6,388.4 273.9,390.2 274,392" fill="none" stroke="currentColor" stroke-width="1.9"/>
+  <polyline points="206,176 214,176" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="180" font-size="11" fill="currentColor">0°</text>
+  <polyline points="206,230 214,230" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="234" font-size="11" fill="currentColor">90°</text>
+  <polyline points="206,284 214,284" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="288" font-size="11" fill="currentColor">180°</text>
+  <polyline points="206,338 214,338" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="342" font-size="11" fill="currentColor">270°</text>
+  <polyline points="206,392 214,392" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="284" y="396" font-size="11" fill="currentColor">360°</text>
+  <circle cx="251.1" cy="35" r="4" fill="currentColor"/>
+  <circle cx="251.1" cy="206" r="4" fill="currentColor"/>
+  <circle cx="251.1" cy="84" r="2.6" fill="currentColor"/>
+  <text x="259" y="30" font-size="11" fill="currentColor">e<tspan dy="-5" font-size="10">jθ</tspan></text>
+  <text x="236" y="76" font-size="11" fill="currentColor">θ</text>
+  <text x="230" y="101" font-size="11" text-anchor="middle" fill="currentColor">cos θ</text>
+  <text x="228" y="199" font-size="11" text-anchor="middle" fill="currentColor">cos θ</text>
+  <text x="318" y="38" font-size="11" fill="currentColor">단위원을 도는 점, θ = 50°</text>
+  <text x="318" y="88" font-size="11" fill="currentColor">실수축 위의 그림자: cos θ</text>
+  <text x="318" y="210" font-size="11" fill="currentColor">파형 위의 같은 길이: cos 50° = 0.643</text>
+  <text x="318" y="300" font-size="11" fill="currentColor">θ가 커지는 동안 그린 그림자</text>
+  <text x="218" y="408" font-size="11" fill="currentColor">θ는 아래로 커진다</text>
 </svg>
+
+점 $e^{j\theta}$가 단위원을 돈다. 실수축 위의 그림자는 중심에서 나온 굵은 선분이고, 그 길이가 $\cos\theta$, $\theta = 50°$에서 $0.643$이다. 여기서는 아래로 커지는 $\theta$에 대해 그 그림자를 그리면 아래의 파형이 되는데, 같은 굵은 선분이 $50°$에 다시 나타나고 파형은 원의 반지름 그대로 $-1$과 $1$ 사이를 오간다. 파형은 별개의 대상이 아니라 회전을 옆에서 본 것이고, 그래서 "사인파로 분해"와 "회전들에 투영"이 같은 문장이다.
 
 
 
 ### 8. 선형 미분방정식 (→ 제어 트랙 5~7번)
 
-물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어이며, [[04-robotics/control-theory-ce397|5. 제어 이론 §2–4]]가 이것을 그대로 이어받는다. 이 절이 푸는 질량–스프링–댐퍼를 단위와 에너지까지 갖춰 자유물체도에서 유도하는 곳은, 벽을 미는 위키의 1자유도 핸들인 장치 **P3**([[02-foundations/lab-plants|0.6 Lab Plants]]) 위의 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §5]]다.
+핸들을 벽에 밀어 넣든, 히터를 켜든, 관절에 명령을 주든 질문은 같다: 그 뒤로 시스템이 어떻게 움직이는가 — 가라앉는가, 얼마나 빨리, 그리고 울리는가? 답은 미분방정식의 해이고, 이 절은 선형인 것들을 손으로 푼다. 물리 시스템은 미분방정식으로 기술된다 — 제어 전체의 모델링 언어이며, [[04-robotics/control-theory-ce397|5. 제어 이론 §2–4]]가 이것을 그대로 이어받는다. 이 절이 푸는 질량–스프링–댐퍼를 단위와 에너지까지 갖춰 자유물체도에서 유도하는 곳은, 벽을 미는 위키의 1자유도 핸들인 장치 **P3**([[02-foundations/lab-plants|0.6 Lab Plants]]) 위의 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §5]]다.
 
 - **상미분방정식**(ODE)은 한 변수의 미지 함수, 여기서는 $x(t)$와 그 도함수들 사이의 관계식이다.
   나타나는 가장 높은 도함수의 차수가 방정식의 **차수**(order)다. $x$와 그 도함수들이 1제곱으로만, $x$에
@@ -1197,10 +1465,26 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   초기값 $x(0)$에서 출발해도 $t \to \infty$에서 해가 $0$으로 돌아온다는 뜻이다(완전한 정의는
   [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]). 로봇 관절, 데워지는 방, 빠지는 물탱크
   — 전부 국소적으로 이 방정식이다.
+- **시정수**(time constant). 안정한 1차 응답은 최종값 $x_\infty$까지 남은 차이를 지수적으로 좁히고,
+  그 빠르기를 정하는 *시간*이 **시정수** $\tau$다. $a < 0$인 $\dot x = ax$에 대해(상수 입력은
+  $x_\infty$만 옮긴다)
+  $$\tau = \frac{1}{|a|}, \qquad x(t) - x_\infty = \big(x(0) - x_\infty\big)\,e^{-t/\tau}$$
+  이므로 $\tau$마다 차이가 $e$분의 1로 줄어든다. $\tau$ 한 번이 지나면 갈 길의 $1 - e^{-1} = 63\%$를
+  왔고, 출발점의 접선을 늘이면 정확히 $t = \tau$에서 $x_\infty$에 닿는다. $a < 0$일 때만 존재한다.
+  예: P4는 $a = -1$이라 $\tau = 1\,\mathrm s$이고, 과제의 히터 $\dot x = -2x + u$는
+  $\tau = 0.5\,\mathrm s$다. 비예시: $\tau$는 $x_\infty$에 *도달하는* 시간이 아니다. 지수함수는
+  끝내 완전히 닿지 않는다. 왜 중요한가: 2% 안으로 가라앉는 데 $\ln 50 = 3.9$ 시정수, 약 $4\tau$가
+  걸리므로 이 숫자 하나가 1차 장치의 빠르기를 말해 준다([[02-foundations/basic-mechanics|0.6.1 §5]]가
+  울리는 질량–스프링–댐퍼의 포락선으로 넓힌다).
 - **계산: 장치 P4.** [[02-foundations/lab-plants|0.6]]의 새는 히터는 $\dot x=-x+u$(외란 $d$는 $0$). $u=1$, $x(0)=0$이면 세 단계로 푼다. 우변을 0으로 만드는 상수가 해다: $x=1$이면 $\dot x=0=-1+1$ — 입력이 붙잡아 두는 정상상태, 곧 *특수해*다. 입력이 없는 $\dot x=-x$는 위 1차 경우에서 $a=-1$인 것이므로 임의의 $c$에 대해 $ce^{-t}$가 푼다 — *동차해*다. 중첩(§4.5)에 의해 그 합 $x(t)=1+ce^{-t}$도 $\dot x=-x+1$을 풀고, $x(0)=0$이 $c=-1$을 정한다.
   $$x(t) = 1 - e^{-t}$$
-  그래서 $t=0.1$, $0.2$에서 $0.095$, $0.181$이다. **전진 오일러**(forward Euler)는 코드가 ODE를 전진하는 가장 단순한 방법이다: 스텝 시작의 기울기를 따라 길이 $T$만큼 간다, $x_{k+1}=x_k+T\,\dot x(x_k)$ — 여기서는 $x\leftarrow x+T(-x+u)$([[02-foundations/lab-kernel|0.7 Lab Kernel §2]]는 이것을 명시적 오일러라 부른다). $T=0.1$이면 $0.10$ 다음 $0.19$. 각 스텝 *시작*의 기울기가 $1-x$가 가장 클 때의 기울기이므로 높다. 맨 위의 그림이 이 ODE의 블록선도다.
-- **입력이 있으면**: $\dot x = ax + bu$ — 해는 "감쇠한 초기 상태 + 누적된 입력";
+  그래서 $t=0.1$, $0.2$에서 $0.095$, $0.181$이다. **전진 오일러**(forward Euler)는 코드가 ODE를 전진하는 가장 단순한 방법이다: 스텝 시작의 기울기를 따라 길이 $T$만큼 간다, $x_{k+1}=x_k+T\,\dot x(x_k)$ — 여기서는 $x\leftarrow x+T(-x+u)$([[02-foundations/lab-kernel|0.7 Lab Kernel §2]]는 이것을 명시적 오일러라 부른다). $T=0.1$이면 $0.10$ 다음 $0.19$. 각 스텝 *시작*의 기울기가 $1-x$가 가장 클 때의 기울기이므로 높다.
+- **그림 읽기.** 맨 위의 그림은 이 ODE를 블록선도로 그린 것이고, 왼쪽에서 오른쪽으로 읽는다. 동그라미는 **합산점**(summing junction)으로 옆에 적힌 부호대로 입력을 더하므로 그 출력이 곧 $\dot x=u-x$다. $\int$ 또는 $1/s$라고 쓴 상자는 **적분기**로 변화율을 그것이 바꾸는 양으로 되돌리고(적분이 왜 $s$로 나누기인지는 §9가 보인다), 작은 상자는 **이득**(gain), 곧 단순한 곱셈기로 여기서는 히터 자신의 누설률 $1$이다. 제어기 $u=-Kx$([[04-robotics/control-theory-ce397|5. 제어 이론 §1]])는 $x$를 두 번째 이득 $K$, 곧 **피드백 이득**을 거쳐 다시 되먹이고 두 이득이 더해져 루프는 $\dot x=-(1+K)x$가 되는데, 그림의 '나중에 $1+K$'가 이것이다.
+- **입력이 있으면**: $\dot x = ax + bu$ — 해는 "감쇠한 초기 상태 + 누적된 입력"이다.
+  $$x(t) = e^{at}\,x(0) + \int_0^t e^{a(t-t')}\,b\,u(t')\,dt'$$
+  시각 $t'$에 들어온 입력 조각 $b\,u(t')\,dt'$는 남은 시간 $t-t'$ 동안 자유 응답처럼 감쇠하고,
+  중첩(§4.5)이 그 조각들을 더하기 때문이다. P4($a=-1$, $b=1$, $u=1$, $x(0)=0$)로 확인하면
+  $\int_0^t e^{-(t-t')}\,dt' = 1-e^{-t}$, 위 계산의 답 그대로다. 이것은
   상태공간 모델 $\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}$
   ([[02-foundations/linear-algebra|선형대수 §5]])의 스칼라판이고, $e^{at}$는 행렬 지수
   $e^{At}$가 되며 고유값이 $a$의 역할을 한다.
@@ -1213,7 +1497,10 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   이므로 강성은 진동수를, 감쇠는 $\zeta$를 올린다. 이름 붙은 세 영역은 *부족감쇠*
   ($0 < \zeta < 1$), *임계감쇠*($\zeta = 1$, 오버슈트 없이 가장 빨리 돌아옴), *과감쇠*($\zeta > 1$)다.
   예: $m = 1$, $c = 1$, $k = 4$면 $\omega_n = 2$ rad/s, $\zeta = 0.25$로 부족감쇠이고
-  $\omega_d = 2\sqrt{1 - 0.0625} = 1.936$ rad/s로 울린다.
+  $\omega_d = 2\sqrt{1 - 0.0625} = 1.936$ rad/s로 울린다. 같은 두 숫자를 P3의 핸들 위에서 — 그 댐퍼,
+  그 $\zeta$, 그것이 만드는 오버슈트를 자유물체도에서 — 계산하는 곳이
+  [[02-foundations/basic-mechanics|0.6.1 §4–§5]]다. 그리고 운동이 멈춰 $\ddot x = \dot x = 0$이면,
+  우변에 힘 $F$를 둔 식에는 익숙한 정역학 $kx = F$만 남는다.
 - 이산 시간 (코드가 실제로 도는 곳): $x_{t+1} = a x_t$ ⇒ $x_t = a^t x_0$ — $|a| < 1$일
   때만 안정. 연속과 이산의 조건($\text{Re}(a) < 0$ vs $|a_d| < 1$)은 같은 말이고, 다리는
   이것이다: $\dot x = ax$를 $\Delta t$마다 샘플링하면 $x_{t+1} = e^{a\Delta t}x_t$이므로 이산
@@ -1230,7 +1517,7 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 > [[02-foundations/signal-processing|6. 신호처리 §5]]다. 얇은 것은 설계 의도다: 어휘용으로 한
 > 번 읽고, 영점과 최소 실현의 세부는 처음에는 흘려보내고, 저 둘을 본 뒤 다시 오라.
 
-라플라스 변환은 미분방정식을 대수로 바꾼다 — 그리고 [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]가 그 극점 그림을 논문이 인용하는 정착 시간·오버슈트 숫자로 바꾼다:
+제어 루프는 블록 여러 개를 잇는데, 그 미분방정식들을 블록마다 시간 영역에서 풀면 느리고, 설계자에게 필요한 두 가지 — 루프가 가라앉는가, 얼마나 빨리 — 가 묻혀 버린다. 라플라스 변환은 미분방정식을 대수로 바꾼다 — 그리고 [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]가 그 극점 그림을 논문이 인용하는 정착 시간·오버슈트 숫자로 바꾼다:
 
 - 정의: **라플라스 변환**은 $t \ge 0$에서 정의된 신호 $f(t)$를 복소 변수의 함수로 보낸다.
   $$F(s) = \mathcal{L}[f](s) = \int_0^\infty f(t)\,e^{-st}\,dt$$
@@ -1238,7 +1525,10 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   속도를 정한다. 적분은 $e^{-st}$가 $f$의 성장을 이길 만큼 $\text{Re}(s)$가 클 때만 존재한다.
   쓸모 있는 성질이 둘이다. 선형이다: $\mathcal{L}[af + bg] = aF + bG$ (§4.5). 그리고 가장 중요한
   성질, **미분이 $s$ 곱하기가 된다** — $\mathcal{L}[\dot f] = sF(s) - f(0)$. 부분적분에서
-  나온다. 예: $f(t) = e^{at}$면 $\text{Re}(s) > a$일 때
+  나온다. 거꾸로 읽으면 **적분은 $s$로 나누기가 된다**: 누적 적분 $g(t) = \int_0^t f(t')\,dt'$는
+  $g(0) = 0$이고 $\dot g = f$이므로 $F = sG$, 곧
+  $$\mathcal{L}\Big[\int_0^t f(t')\,dt'\Big] = \frac{F(s)}{s}$$
+  이고, 그래서 그림의 적분기 상자에 $1/s$라고 적는다. 예: $f(t) = e^{at}$면 $\text{Re}(s) > a$일 때
   $F(s) = \int_0^\infty e^{(a-s)t}\,dt = \frac{1}{s-a}$다. $a = -3$, $s = 1$이면 $1/4$이고,
   $e^{-4t}$를 수치 적분하면 $0.25$다 ✓.
 - 따름정리: 미분방정식이 다항 방정식이 되고, 시스템이 **전달함수**
@@ -1250,32 +1540,55 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   방금 무슨 일이 일어났는지 보라: 미분방정식이 *나눗셈*이 되었다. 그리고 그 나눗셈을 깨뜨리는
   단 하나의 $s$ 값, $s = a$가 **극점**이다 — 8절에서 부호로 안정성을 결정하던 바로 그 $a$다.
   극점은 새 개념이 아니라, 8절의 지수를 다른 이름으로 부른 것이다.
-- **극점** = 분모의 근 = 8절의 $a$들 = 상태공간 $A$의 고유값 — 모든 극점은 고유값이지만, 모든 고유값이 극점으로 보이는 것은 극점–영점 상쇄가 없을 때뿐이다. **영점**은 분자의 근이다. $\frac{s-1}{(s-1)(s+2)} = \frac{1}{s+2}$처럼 같은 인수가 분자와 분모에 함께 있으면 약분되어 그 고유값(여기서는 $s=1$)이 $G(s)$에서 사라진다. 이렇게 숨은 모드가 없는 상태공간 모델을 *최소 실현*이라 부른다(Åström & Murray 예제 9.7). 상쇄된 불안정 고유값은 $G(s)$에 보이지 않는다. 복소 **s-평면**에 그리면:
+- **극점** = 분모의 근 = 8절의 $a$들 = 상태공간 $A$의 고유값(모든 극점은 고유값이다. 고유값이 숨을 수 있는 경우는 아래 노트에 있다). 복소 **s-평면**에 그리면:
   - 좌반평면(실수부 음수) → 감쇠 → **안정**
   - 우반평면 → 성장 → **불안정**
   - 허수부 → 진동 주파수; 축에서의 거리 → 감쇠 속도
 
-<svg viewBox="0 0 430 212" style="max-width:100%;height:auto" role="img" aria-label="s-평면: 극점 위치와 그 의미">
-  <g fill="currentColor" opacity="0.07"><rect x="20" y="15" width="195" height="160"/></g>
-  <g stroke="currentColor" stroke-width="1.3"><line x1="20" y1="103" x2="410" y2="103"/><line x1="215" y1="15" x2="215" y2="190"/></g>
-  <g fill="currentColor">
-    <path d="M112,58 l6,6 l-6,6 l-6,-6 z"/><path d="M112,136 l6,6 l-6,6 l-6,-6 z"/>
-    <path d="M64,97 l6,6 l-6,6 l-6,-6 z"/>
-    <path d="M312,71 l6,6 l-6,6 l-6,-6 z"/><path d="M312,123 l6,6 l-6,6 l-6,-6 z"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.6">
-    <line x1="112" y1="64" x2="215" y2="103"/><line x1="112" y1="64" x2="112" y2="103"/>
-  </g>
-  <g font-size="11.5" fill="currentColor">
-    <text x="26" y="32">좌반평면 = 안정</text><text x="250" y="32">우반평면 = 불안정</text>
-    <text x="386" y="120">Re</text><text x="222" y="26">Im</text>
-    <text x="124" y="56" font-size="10.5" opacity="0.9">복소 켤레쌍</text>
-    <text x="26" y="90" font-size="10.5" opacity="0.9">실수 극점</text>
-    <text x="26" y="192" font-size="11" opacity="0.85">복소 켤레쌍 = 감쇠 진동 &#183; 실수 극점 = 순수 감쇠</text>
-    <text x="26" y="206" font-size="11" opacity="0.85">왼쪽일수록 빨리 감쇠 &#183; 실수축에서 멀수록 빨리 진동</text>
-  </g>
+<svg viewBox="0 0 560 336" style="max-width:100%;height:auto" role="img" aria-label="이 페이지의 극점을 찍은 s-평면: 1/(s+3)의 실수 극점 -3, 새는 히터 P4의 실수 극점 -1, m = 1, c = 1, k = 4인 질량-스프링-댐퍼의 복소 켤레쌍 -0.5 ± 1.936j가 음영 친 안정한 좌반평면에 있고, 우반평면에는 불안정한 극점 +1이 있다. 위쪽 극점에서 나온 점선이 허수축까지의 σ = -0.5와 실수축까지의 ω_d = 1.936을 표시한다.">
+  <defs><marker id="emSpk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="40" y="10" width="290" height="320" fill="currentColor" fill-opacity="0.06"/>
+  <polyline points="44,170 520,170" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#emSpk)"/>
+  <polyline points="330,328 330,8" fill="none" stroke="currentColor" stroke-width="1.3" marker-end="url(#emSpk)"/>
+  <text x="120" y="188" font-size="11" text-anchor="middle" fill="currentColor">−3</text>
+  <polyline points="190,166 190,174" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="190" y="188" font-size="11" text-anchor="middle" fill="currentColor">−2</text>
+  <text x="260" y="188" font-size="11" text-anchor="middle" fill="currentColor">−1</text>
+  <text x="400" y="188" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="470,166 470,174" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="470" y="188" font-size="11" text-anchor="middle" fill="currentColor">2</text>
+  <polyline points="326,310 334,310" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="340" y="314" font-size="11" fill="currentColor">−2</text>
+  <polyline points="326,240 334,240" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="340" y="244" font-size="11" fill="currentColor">−1</text>
+  <polyline points="326,100 334,100" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="340" y="104" font-size="11" fill="currentColor">1</text>
+  <polyline points="326,30 334,30" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="340" y="34" font-size="11" fill="currentColor">2</text>
+  <text x="510" y="190" font-size="11" text-anchor="end" fill="currentColor">Re</text>
+  <text x="340" y="18" font-size="11" fill="currentColor">Im</text>
+  <polyline points="295,34.4 330,34.4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <polyline points="295,34.4 295,170" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="312.5" y="27.4" font-size="12" text-anchor="middle" fill="currentColor">σ</text>
+  <text x="289" y="106.2" font-size="12" text-anchor="end" fill="currentColor">ω<tspan dy="3" font-size="10">d</tspan></text>
+  <path d="M290,29.4 L300,39.4 M290,39.4 L300,29.4" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M290,300.6 L300,310.6 M290,310.6 L300,300.6" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M115,165 L125,175 M115,175 L125,165" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M255,165 L265,175 M255,175 L265,165" fill="none" stroke="currentColor" stroke-width="2"/>
+  <path d="M395,165 L405,175 M395,175 L405,165" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="283" y="35.4" font-size="11" text-anchor="end" fill="currentColor">−0.5 ± 1.936j</text>
+  <text x="283" y="49.4" font-size="11" text-anchor="end" fill="currentColor">§8의 m = 1, c = 1, k = 4</text>
+  <text x="120" y="157" font-size="11" text-anchor="middle" fill="currentColor">−3: 1/(s + 3)</text>
+  <text x="260" y="157" font-size="11" text-anchor="middle" fill="currentColor">−1: P4</text>
+  <text x="400" y="157" font-size="11" text-anchor="middle" fill="currentColor">+1: e<tspan dy="-5" font-size="10">t</tspan><tspan dy="5">로 커진다</tspan></text>
+  <text x="48" y="322" font-size="11" fill="currentColor">좌반평면: 안정</text>
+  <text x="392" y="322" font-size="11" fill="currentColor">우반평면: 불안정</text>
 </svg>
 
+이 페이지의 극점들이다: $1/(s+3)$의 $-3$, P4의 $-1$, §8 질량–스프링–댐퍼($m=1$, $c=1$, $k=4$)의 켤레쌍 $-0.5 \pm 1.936j$, 그리고 대비를 위한 불안정한 $+1$. 켤레쌍에서 가로 점선은 $\sigma = -\zeta\omega_n = -0.5$로 감쇠하는 포락선 $e^{-0.5t}$의 속도이고, 세로 점선은 $\omega_d = 1.936$ rad/s로 울리는 진동수다. 왼쪽일수록 빨리 감쇠하고, 실수축에서 멀수록 빨리 진동하며, 허수축 오른쪽에 있는 것은 모두 자란다.
+
+> [!note]- 더 깊이 · Deeper
+> **영점, 상쇄, 최소 실현.** 모든 극점은 고유값이지만, 모든 고유값이 극점으로 보이는 것은 극점–영점 상쇄가 없을 때뿐이다. **영점**은 분자의 근이다. $\frac{s-1}{(s-1)(s+2)} = \frac{1}{s+2}$처럼 같은 인수가 분자와 분모에 함께 있으면 약분되어 그 고유값(여기서는 $s=1$)이 $G(s)$에서 사라진다. 이렇게 숨은 모드가 없는 상태공간 모델을 *최소 실현*이라 부른다(Åström & Murray 예제 9.7). 상쇄된 불안정 고유값은 $G(s)$에 보이지 않는다. 전달함수는 안정해 보이는데 시스템 안의 상태 하나는 자라고 있을 수 있다.
 
 - 7절의 복소평면이 제어에서 중요한 이유가 이것이다:
   *시스템의 정성적 거동 전체가 그림 하나 — 극점이 어디에 앉아 있는가 — 다.*
@@ -1295,7 +1608,8 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
   $\omega = 0.3$ rad/s에서 $|G| = 0.332$, 각도 $-5.7°$; $\omega = 3$에서
   $|G| = 1/(3\sqrt2) = 0.236$, $-45°$; $\omega = 30$에서 $|G| = 0.033$, $-84.3°$다. 느린 입력은
   거의 그대로 지나가고 빠른 입력은 줄고 늦어진다 — 극점까지의 거리 $3$ rad/s에 모서리가 있는
-  저역통과 필터다.
+  저역통과 필터다. 저항과 커패시터로 만든 같은 단극 필터와 그 극점 $303\,\mathrm{s^{-1}}$은
+  [[02-foundations/basic-circuits-electronics|0.6.2 §5]]에 있다.
 
 ### 10. 표기법 사전 (전 페이지 공용)
 
@@ -1304,8 +1618,9 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 - **Softmax**는 임의의 점수 벡터를 확률분포로 바꾼다:
   $$\text{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
   $z = (z_1, \ldots, z_K)$는 실수 점수 $K$개(흔히 *로짓*이라 부름), $i$는 성분 하나를 고른다.
-  정의하는 성질이 셋이다 — 모든 출력이 양수이고, 합이 1이며, 가장 큰 점수가 가장 큰 확률을
+  성질이 셋이다 — 모든 출력이 양수이고, 합이 1이며, 가장 큰 점수가 가장 큰 확률을
   받는다(매끄러운 $\arg\max$). 지수함수는 양수이고 증가하며, 분모가 분자들의 합이기 때문이다.
+  다른 사상도 이 성질들을 가질 수 있으므로, softmax를 정의하는 것은 성질의 목록이 아니라 위의 식이다.
   예: $z = (1, 2, 3)$이면 $(0.090, 0.245, 0.665)$이고, 모든 점수에 $100$을 더해도 공통 인수
   $e^{100}$이 약분되어 출력이 똑같다(§6의 log-sum-exp 요령이 쓰는 사실). 비예시: 그냥 정규화
   $z_i / \sum_j z_j$는 음수 점수에서 깨진다. $z = (-1, 2)$면 "확률"이 $(-1, 2)$가 된다.
@@ -1324,6 +1639,9 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 | $\mathbb{1}[\cdot]$ | 지시 함수: 참이면 1, 거짓이면 0 |
 | $\odot$ | 원소별 곱 |
 | $:=$ | ~로 정의함 |
+| $O(\cdot)$ | 증가 차수: $O(n^3)$은 $n$이 클 때 $n^3$의 상수배 이하 (§2) |
+| $\mathbb{R}^n$, $\mathbb{R}^{m\times n}$ | 성분이 $n$개인 실수 벡터; 실수 $m\times n$ 행렬 |
+| $\hat x$ | "$x$ 햇": $x$의 추정값이나 예측값 (신경망의 출력은 $\hat y$, 0.8) |
 | $A^\top$ | 전치 — 대각선을 기준으로 뒤집기 ($A^\top_{ij} = A_{ji}$) |
 | $\det A$ | 행렬식 — $\lvert\det A\rvert$가 사상이 부피를 몇 배로 만드는가다(부호는 방향 뒤집힘); $0$이면 공간을 납작하게 뭉개므로 역행렬이 없다 |
 | $A \succeq 0$, $A \succ 0$ | 양의 준정부호/정부호 — 행렬판 "$\ge 0$"/"$>0$": 대칭 $A$에 대해 모든 $x$에서 $x^\top A x \ge 0$($\succeq$), 모든 $x \ne 0$에서 $x^\top A x > 0$($\succ$) |
@@ -1355,8 +1673,8 @@ $0.99^{100} \approx 0.37$이므로 100 스텝쯤이면 보상에 걸리는 가�
 Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** ($d=0$), 이 페이지 §8, [[02-foundations/lab-kernel|0.7]]의 오일러 숫자. 시뮬레이터 없음.
 
 1. **그리기.** 열을 두 배 빨리 잃는 히터 $\dot x=-2x+u$에 대해 위의 그림을 그려라. 네 부분은 같고, 피드백 이득 블록에만 $2$를 쓴다. $x$는 온도 오차다. $u=1$, $x(0)=0$일 때 $x$ 대 $t$의 작은 삽도에 초기 기울기, 정상값, 시정수, 그리고 $t=0.1$과 $0.2$의 정확값과 전진 오일러($T=0.1$) 값을 표시하라.
-2. **유도.** $u=1$, $x(0)=0$에서 $\dot x=-x+1$을 풀어라. $x(t)$와 $t=0.1$, $t=0.2$의 값.
-3. **해석.** 전방 오일러 $x\leftarrow x+T(-x+u)$, $T=0.1$, $x_0=0$. 두 스텝을 정확해와 비교하라. 어느 쪽으로 빗나가며 이유는?
+2. **유도.** 1번의 히터 $\dot x=-2x+u$, $u=1$이 이번에는 중간쯤인 $x(0)=0.25$에서 출발한다. §8의 방법(특수해 + 동차해)으로 풀고, 그 $x(t)$를 §8의 입력이 있는 해의 식과 맞춰 보고, 시정수와 $x(0.5)$를 구하라.
+3. **해석.** 같은 히터에 $u=1$, $x_0=0$으로 전진 오일러를 쓰되, 긴 스텝 $T=0.75\,\mathrm s$와 $T=1.2\,\mathrm s$로 각각 세 스텝씩 가서 정확해 $\tfrac12(1-e^{-2t})$와 비교하라. 갱신을 $x_{k+1}=(1-2T)\,x_k+T$로 쓰고, §8의 이산 시간 규칙으로 어떤 $T$에서 오일러가 안정한지, 그리고 안정한 히터가 왜 불안정한 시뮬레이션을 낳을 수 있는지 말하라.
 
 > [!note]- 그리는 법 · How to draw it
 > - 명령 $u$가 왼쪽에서 들어와 합산점, 곧 입력 둘을 가진 작은 원을 만난다. 둘째 입력은 아래에서 올라온다.
@@ -1368,6 +1686,6 @@ Tier B. [[02-foundations/lab-plants|0.6]]의 **P4** ($d=0$), 이 페이지 §8, 
 > - 삽도에는 점 넷만 찍는다. 정확값 $\tfrac12(1-e^{-2t})=0.0906$과 $0.1648$, 전진 오일러 $0.100$과 $0.180$이고, 오일러 점은 각각 짝이 되는 정확값 *위*에 찍힌다. 곡선이 아니라 그 간격이 논증이다.
 
 > [!tip]- 정답 · Solutions
-> 1. 피드백 이득이 $2$인 위 그림의 루프다. $u$와 $-2x$가 합산되고, 합이 $\dot x$, 적분기가 $x$를 돌려준다. $u=1$, $x(0)=0$이면 해는 $x(t)=\tfrac12(1-e^{-2t})$다. 초기 기울기 $1$(이득은 $x$에 곱해지는데 시작에서 $x=0$이다), 정상값 $0.5$, 시정수 $0.5\,\mathrm s$. $t=0.1$과 $0.2$에서 정확값 $0.0906$, $0.1648$. 오일러는 $x_1=0.1\times1=0.100$, $x_2=0.100+0.1(-0.200+1)=0.180$으로 둘 다 높고, 이유는 3번과 같다. 열을 잃는 빠르기가 두 배가 되면 정상값과 시정수가 함께 반이 된다. $u=0$이면 오차는 $e^{-2t}$로 감쇠한다.
-> 2. 특수해 $x=1$, 동차해 $ce^{-t}$. $x(0)=0\Rightarrow c=-1$, $x(t)=1-e^{-t}$. $0.1$과 $0.2$에서 $0.095$, $0.181$.
-> 3. $x_1=0.10$, $x_2=0.19$. 오일러가 높다(커널: $0.10$, $0.19$ vs $0.095$, $0.181$). 전방 오일러는 구간의 *시작* 기울기를 쓰며, 그때 $1-x$가 가장 커서 1로 다가가는 궤적을 지나친다.
+> 1. 피드백 이득이 $2$인 위 그림의 루프다. $u$와 $-2x$가 합산되고, 합이 $\dot x$, 적분기가 $x$를 돌려준다. $u=1$, $x(0)=0$이면 해는 $x(t)=\tfrac12(1-e^{-2t})$다. 초기 기울기 $1$(이득은 $x$에 곱해지는데 시작에서 $x=0$이다), 정상값 $0.5$, 시정수 $0.5\,\mathrm s$. $t=0.1$과 $0.2$에서 정확값 $0.0906$, $0.1648$. 오일러는 $x_1=0.1\times1=0.100$, $x_2=0.100+0.1(-0.200+1)=0.180$으로 둘 다 높은데, 이유는 그림의 것과 같다: 오일러는 각 스텝의 기울기를 차이가 가장 큰 시작점에서 잡는다. 열을 잃는 빠르기가 두 배가 되면 정상값과 시정수가 함께 반이 된다. $u=0$이면 오차는 $e^{-2t}$로 감쇠한다.
+> 2. 특수해: 우변을 0으로 만드는 상수 $x=\tfrac12$. 동차해: $ce^{-2t}$. $x(0)=0.25$에서 $c=-0.25$이므로 $x(t)=0.5-0.25\,e^{-2t}$다. 입력이 있는 해의 식도 같다: $0.25\,e^{-2t}+\int_0^t e^{-2(t-t')}\,dt'=0.25\,e^{-2t}+\tfrac12(1-e^{-2t})=0.5-0.25\,e^{-2t}$. 시정수는 출발점과 상관없이 $1/2=0.5\,\mathrm s$이고, $x(0.5)=0.5-0.25\,e^{-1}=0.408$이다. 중간에서 출발하면 지수함수가 좁혀야 할 차이가 줄어들 뿐이다.
+> 3. $T=0.75$: 인수 $1-2T$가 $-0.5$이고, 오일러는 $0.75$, $0.375$, $0.5625$를 주는데 정확해는 $0.388$, $0.475$, $0.494$다 — 정상값 $0.5$를 넘어갔다가 그 주위를 흔들리고, 흔들림은 스텝마다 반으로 준다. $T=1.2$: 인수가 $-1.4$이고, 오일러는 $1.2$, $-0.48$, $1.872$, 정확해는 $0.455$, $0.496$, $0.500$이다 — 흔들림이 스텝마다 1.4배로 커져서, 히터는 안정한데도 시뮬레이션이 발산한다. 오차 $e_k=x_k-0.5$는 $e_{k+1}=(1-2T)\,e_k$를 따르므로, §8의 규칙에 따라 오일러는 정확히 $|1-2T|<1$, 곧 $0<T<1\,\mathrm s=2\tau$일 때 안정하고, 흔들림 없이 다가가는 것은 $T\le\tau=0.5\,\mathrm s$일 때뿐이다. 히터의 참된 스텝당 인수는 언제나 0과 1 사이인 $e^{-2T}$인데, 오일러는 이것을 1차 테일러 전개(§2) $1-2T$로 바꿔 쓰고, 그 근사는 $T\ll\tau$일 때만 가깝다.

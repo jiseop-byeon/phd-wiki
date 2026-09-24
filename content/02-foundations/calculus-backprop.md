@@ -7,8 +7,8 @@ mastery-when: "Raise to Mastery only for the mathematical or estimation componen
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P1** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/engineering-math|0.5 §1–2]] (derivatives, chain rule, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §1]] (matrix shapes and transpose) · [[02-foundations/neural-network-basics|0.8]] (what a layer and a loss are)
-> [[02-foundations/lab-plants|0.6]]의 장치 **P1** · [[02-foundations/engineering-math|0.5 §1–2]](미분·연쇄 법칙·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §1]](행렬 모양과 전치) · [[02-foundations/neural-network-basics|0.8]](층과 손실이 무엇인지)
+> Plant **P1**, the catalog's two-layer test network, from [[02-foundations/lab-plants|0.6 Lab Plants]] (the catalog calls its six shared example systems *plants*, the control engineer's word for the system being controlled) · [[02-foundations/engineering-math|0.5 §1–2]] (derivatives, chain rule, Taylor) · [[02-foundations/linear-algebra|1. Linear Algebra §1]] (matrix shapes and transpose) · [[02-foundations/neural-network-basics|0.8]] (what a layer and a loss are) · [[02-foundations/lab-kernel|0.7 Lab Kernel §5]] (the `?`-blank pattern of the problem set's template)
+> [[02-foundations/lab-plants|0.6]]의 장치 **P1**(카탈로그의 2층 연습 신경망. 카탈로그는 함께 쓰는 예제 시스템 여섯을 제어 공학의 말로 장치(plant), 곧 제어되는 시스템이라 부른다) · [[02-foundations/engineering-math|0.5 §1–2]](미분·연쇄 법칙·테일러) · [[02-foundations/linear-algebra|1. 선형대수 §1]](행렬 모양과 전치) · [[02-foundations/neural-network-basics|0.8]](층과 손실이 무엇인지) · [[02-foundations/lab-kernel|0.7 Lab Kernel §5]](과제 템플릿의 `?` 빈칸 방식)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -21,8 +21,11 @@ The one algorithm every deep learning paper assumes silently: reverse-mode autom
 differentiation. Course-depth treatment: from Taylor expansion to a fully worked backprop
 example, plus the gradient pathologies that shaped architecture history.
 
+> [!note] Why this matters · 왜 배우는가
+> On the [[physical-ai-map|Physical AI Map]], this page is part of the mathematics floor under the learning-and-adaptation layer of the physical-AI stack of [[07-research-program/index|7. Research Program §5]], and it reaches into manipulation: in *"Install that panel on the frame"* it is what trains a learned policy for the step that performs the fitting, and the Jacobian of §1 is the same matrix that turns joint rates into the panel's velocity while the arm moves the component. A network policy's weights move only through the reverse-mode pass of §2–§3: the behaviour-cloning loss of [[05-construction-robotics/imitating-contact|10. Imitating Contact §2]], once the policy is a network, and the training of a vision–language–action model, a VLA ([[03-deep-learning/vla/index|4. VLA §2]]), reach them no other way. Without it an exploding loss or a stop-gradient arrow in a paper's figure is a black box; with it you can predict, as §3 does on P1, the two-layer test network of [[02-foundations/lab-plants|0.6 Lab Plants]], that one step at $\eta=0.1$ overshoots the target and any $\eta$ past $1/7$ leaves the loss worse than before. On the dissertation path ([[07-research-program/index|7. Research Program §8]]) it returns in block 4, where [[03-deep-learning/foundations/index|deep learning 1. Learning Systems §6]] runs §2–§3 again on D1, the deep-learning track's frozen two-layer classifier ([[03-deep-learning/lab-objects|0. Lab Objects]]), and measures its step-size boundary, and in blocks 1 and 2, where [[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics §1]] and [[04-robotics/state-estimation-slam|3. State Estimation §5]] use §1's Jacobian. After it you can backpropagate a two-layer network by hand, check every gradient's shape, and predict from the curvature which learning rates overshoot.
+
 > [!note] First pass · 처음이라면
-> Read the picture and §1, then §2 up to its *Autodiff mechanics* bullet, which can wait, then §3 — do the two-layer example by hand, it is the whole page in one calculation — then §6. §4 and §5 are second-pass: for when you are reading an architecture paper and want to know why it is shaped that way.
+> About three 60–90-minute sessions. **Session 1:** the picture and §1 (gradient and Jacobian first, then Taylor and the Hessian), then §2 up to its *Autodiff mechanics* bullet, which can wait. **Session 2:** §3 — do the two-layer example by hand, it is the whole page in one calculation — then the first bullet of §4.1 through its worked case (the one result a classifier needs, $\partial L/\partial z=p-y$), then §6 without its collapsed box. **Session 3,** closed-book: self-check 1–3, then the problem set with its $\eta$ sweep. The rest of §4, §5 and self-check 4–5 are second pass: for when you are reading an architecture paper and want to know why it is shaped that way.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -120,24 +123,15 @@ Plant **P1**'s computational graph at its catalog numbers: forward values left t
 
 ### 1. Derivatives as local linear models
 
-- **Taylor expansion** is the foundation of all of optimization:
-  $$f(x + \delta) \approx f(x) + \nabla f(x)^\top \delta + \tfrac12 \delta^\top H \delta$$
-  ($H$ is the **Hessian** — the matrix of second derivatives $H_{ij}=\partial^2 f/\partial x_i \partial x_j$,
-  the multivariable version of $f''$.) Gradient descent trusts the first-order term;
-  Newton's method trusts the second ([[02-foundations/optimization|optimization]]).
-  - **What kind of thing it is.** A polynomial model of a smooth function $f:\mathbb{R}^n\to\mathbb{R}$, built at one point and trusted only for small steps. Here $x\in\mathbb{R}^n$ is the current point, $\delta\in\mathbb{R}^n$ the proposed step, and $^\top$ turns the column $\nabla f(x)$ into a row so that the product is a single number.
-  - **Its three terms, each named.** The **value** $f(x)$ is zeroth order. The **slope term** $\nabla f(x)^\top\delta$ is first order: linear in $\delta$. The **curvature term** $\tfrac12\delta^\top H\delta$ is second order: quadratic in $\delta$. Every omitted term shrinks at least like $\lVert\delta\rVert^3$, so the model is accurate only while the step is small.
-  - **Worked, with numbers.** Take $f(x_1,x_2)=x_1^2x_2$ at $x=(1,2)$ with step $\delta=(0.1,\,0.1)$. Then $f(x)=2$, $\nabla f=(2x_1x_2,\;x_1^2)=(4,1)$ and $H=\begin{pmatrix}2x_2&2x_1\\2x_1&0\end{pmatrix}=\begin{pmatrix}4&2\\2&0\end{pmatrix}$. First order gives $2+0.4+0.1=2.5$. The curvature term adds $\tfrac12(0.04+0.04+0)=0.04$, giving $2.54$. The true value is $f(1.1,\,2.1)=2.541$, and the missing $0.001$ is exactly the third-order term $\delta_1^2\delta_2$.
-- **Hessian**, stated completely. For a twice-differentiable $f:\mathbb{R}^n\to\mathbb{R}$ it is the $n\times n$ matrix of every second partial derivative:
-  $$H(x)_{ij} = \frac{\partial^2 f}{\partial x_i\,\partial x_j}(x)$$
-  so entry $(i,j)$ says how the slope along $x_i$ changes as you move along $x_j$. Two properties carry all its uses. It is **symmetric**, $H_{ij}=H_{ji}$, whenever those second partials are continuous (Schwarz's theorem); in the example $H_{12}=H_{21}=2$. And $\delta^\top H\delta$ is the **curvature along the direction $\delta$**: positive means the surface bends up that way. Why it matters: the signs of its eigenvalues ([[02-foundations/linear-algebra|1. Linear Algebra §3]]) separate minima from saddles, and $H\succeq0$ everywhere is exactly convexity ([[02-foundations/optimization|4. Optimization §2]]).
+Training moves millions of weights to lower one loss, and a robot controller moves joint rates to move a tool; both need to know how a small change in the inputs changes the outputs. A derivative answers that near one point by replacing the function with a linear map you can compute with — a gradient when there is one output, a Jacobian when there are several — and Taylor's expansion says how far that linear map can be trusted.
+
 - $\partial L/\partial w$ answers: "nudge $w$, how much does $L$ move?" Training =
   computing millions of these sensitivities and stepping against them. (The partial derivative itself is defined in [[02-foundations/engineering-math|0.5 §1]].)
 - **Gradient** $\nabla_w L$: vector of all sensitivities; points uphill; perpendicular to
   level sets. Stated completely, for $f:\mathbb{R}^n\to\mathbb{R}$ it is the column vector of the $n$ partial derivatives,
   $$\nabla f(x) = \Big(\frac{\partial f}{\partial x_1},\ \ldots,\ \frac{\partial f}{\partial x_n}\Big)^\top$$
   Because it collects every partial, it answers the **directional derivative**: the rate of change along a unit vector $u$ is $\nabla f(x)^\top u$. Both geometric facts follow from that one product.
-  - **Points uphill.** $\nabla f^\top u = \lVert\nabla f\rVert\cos\theta$ is largest when $u$ is parallel to $\nabla f$, so the gradient is the steepest-ascent direction and its length $\lVert\nabla f\rVert$ is that steepest rate. In the Taylor example, moving along $x_1$ changes $f$ at rate $4$, while moving along $\nabla f=(4,1)$ changes it at rate $\sqrt{17}\approx4.12$.
+  - **Points uphill.** $\nabla f^\top u = \lVert\nabla f\rVert\cos\theta$ is largest when $u$ is parallel to $\nabla f$, so the gradient is the steepest-ascent direction and its length $\lVert\nabla f\rVert$ is that steepest rate. For $f(x_1,x_2)=x_1^2x_2$ at $x=(1,2)$, $\nabla f=(2x_1x_2,\;x_1^2)=(4,1)$: moving along $x_1$ changes $f$ at rate $4$, while moving along $\nabla f$ changes it at rate $\sqrt{17}\approx4.12$.
   - **Perpendicular to level sets.** Along a level set $f$ does not change, so every tangent direction $u$ has $\nabla f^\top u=0$. For $f=x_1^2+x_2^2$ at $(3,4)$ the gradient is $(6,8)$, the circle's tangent is $(-4,3)$, and $6(-4)+8(3)=0$ ✓.
 - **Jacobian** $J_{ij} = \partial y_i/\partial x_j$: the sensitivity matrix of
   a vector function — the object that *chains* under composition. (Robotics uses the same
@@ -146,7 +140,18 @@ Plant **P1**'s computational graph at its catalog numbers: forward values left t
   $$J(x) = \begin{pmatrix}\partial y_1/\partial x_1 & \cdots & \partial y_1/\partial x_n\\ \vdots & & \vdots\\ \partial y_m/\partial x_1 & \cdots & \partial y_m/\partial x_n\end{pmatrix}$$
   so it has one row per output and one column per input, and its defining property is the first-order model $f(x+\delta)\approx f(x)+J(x)\,\delta$.
   - **Row $i$** is the gradient of output $y_i$, laid on its side. **Column $j$** is how every output responds to input $x_j$ alone. For a scalar function ($m=1$) the Jacobian is the single row $\nabla f^\top$.
-  - **Worked.** $f(x_1,x_2)=(x_1x_2,\; x_1+x_2^2)$ at $x=(1,2)$ gives $f=(2,5)$ and $J=\begin{pmatrix}x_2&x_1\\1&2x_2\end{pmatrix}=\begin{pmatrix}2&1\\1&4\end{pmatrix}$. Nudge $x_1$ by $0.01$: the outputs move by $(0.02,\,0.01)$, which is $0.01$ times the first column, as the model predicts.
+  - **Worked.** $f(x_1,x_2)=(x_1x_2,\; x_1+x_2^2)$ at $x=(3,1)$ gives $f=(3,4)$ and $J=\begin{pmatrix}x_2&x_1\\1&2x_2\end{pmatrix}=\begin{pmatrix}1&3\\1&2\end{pmatrix}$. Nudge $x_1$ by $0.01$: the outputs move by $(0.01,\,0.01)$, which is $0.01$ times the first column, as the model predicts. This $J$ is deliberately not symmetric, so that §2 can show what its transpose does.
+- **Taylor expansion** says how far those linear models can be trusted, and it is the foundation of all of optimization:
+  $$f(x + \delta) \approx f(x) + \nabla f(x)^\top \delta + \tfrac12 \delta^\top H \delta$$
+  ($H$ is the **Hessian** — the matrix of second derivatives $H_{ij}=\partial^2 f/\partial x_i \partial x_j$,
+  the multivariable version of $f''$.) Gradient descent trusts the first-order term;
+  Newton's method trusts the second ([[02-foundations/optimization|optimization]]).
+  - **What kind of thing it is.** A polynomial model of a smooth function $f:\mathbb{R}^n\to\mathbb{R}$, built at one point and trusted only for small steps. Here $x\in\mathbb{R}^n$ is the current point, $\delta\in\mathbb{R}^n$ the proposed step, and $^\top$ turns the column $\nabla f(x)$ into a row so that the product is a single number.
+  - **Its three terms, each named.** The **value** $f(x)$ is zeroth order. The **slope term** $\nabla f(x)^\top\delta$ is first order: linear in $\delta$. The **curvature term** $\tfrac12\delta^\top H\delta$ is second order: quadratic in $\delta$. Every omitted term shrinks at least like $\lVert\delta\rVert^3$, so the model is accurate only while the step is small.
+  - **Worked, with numbers.** Take the gradient bullet's $f(x_1,x_2)=x_1^2x_2$ at the same $x=(1,2)$, with step $\delta=(0.1,\,0.1)$. Then $f(x)=2$, $\nabla f=(4,1)$ as there, and $H=\begin{pmatrix}2x_2&2x_1\\2x_1&0\end{pmatrix}=\begin{pmatrix}4&2\\2&0\end{pmatrix}$. First order gives $2+0.4+0.1=2.5$. The curvature term adds $\tfrac12(0.04+0.04+0)=0.04$, giving $2.54$. The true value is $f(1.1,\,2.1)=2.541$, and the missing $0.001$ is exactly the third-order term $\delta_1^2\delta_2$.
+- **Hessian**, stated completely. For a twice-differentiable $f:\mathbb{R}^n\to\mathbb{R}$ it is the $n\times n$ matrix of every second partial derivative:
+  $$H(x)_{ij} = \frac{\partial^2 f}{\partial x_i\,\partial x_j}(x)$$
+  so entry $(i,j)$ says how the slope along $x_i$ changes as you move along $x_j$. Two properties carry all its uses. It is **symmetric**, $H_{ij}=H_{ji}$, whenever those second partials are continuous (Schwarz's theorem); in the example $H_{12}=H_{21}=2$. And $\delta^\top H\delta$ is the **curvature along the direction $\delta$**: positive means the surface bends up that way. Why it matters: the signs of its eigenvalues ([[02-foundations/linear-algebra|1. Linear Algebra §3]]) separate minima from saddles, and $H\succeq0$ everywhere is exactly convexity ([[02-foundations/optimization|4. Optimization §2]]).
 
 **A derivative predicts a change; it is not the changed value.** In the Taylor expression, f(x) is the current output, δ is the proposed input change, the gradient term predicts its first-order effect, and the Hessian term corrects for curvature. If δ is too large, omitted terms can matter. That is why knowing a downhill direction does not tell you how far to step.
 
@@ -156,6 +161,8 @@ For a vector output, read the Jacobian one column at a time: perturb one input w
 > If a parameter's derivative is positive, which small change does gradient descent propose? Decrease the parameter, because the local model predicts that increasing it would raise the loss. This is a local prediction; the step size and curvature determine whether the actual update behaves as predicted.
 
 ### 2. The chain rule, and why backprop runs backwards
+
+A loss depends on millions of weights through a chain of layers, and every training step needs its partial derivative with respect to each of them; differentiating once per weight would rerun the same chain millions of times. The chain rule says how derivatives combine along a chain of maps, and doing the multiplication from the loss end is what delivers every one of them in a single backward pass.
 
 - Composition $L = f_3(f_2(f_1(x)))$:
   $\dfrac{\partial L}{\partial x} = J_1^\top J_2^\top J_3^\top \cdot 1$.
@@ -171,14 +178,53 @@ For a vector output, read the Jacobian one column at a time: perturb one input w
   so the $k\times m$ matrix of the outer map, evaluated where the inner map landed, times the $m\times n$ matrix of the inner map gives the $k\times n$ Jacobian of the whole. Written entry by entry for a scalar $L$ that depends on $x_j$ through intermediates $y_1,\ldots,y_m$, the same rule is a **sum over every path**:
   $$\frac{\partial L}{\partial x_j} = \sum_{i=1}^{m}\frac{\partial L}{\partial y_i}\,\frac{\partial y_i}{\partial x_j}$$
   because a nudge to $x_j$ reaches $L$ through each $y_i$ separately and the first-order effects add. Stacking that sum over $j$ is exactly $\nabla_x L = J^\top\,\nabla_y L$.
-  - **Worked.** Use the Jacobian example from §1, $y=(x_1x_2,\;x_1+x_2^2)$ at $x=(1,2)$, so $y=(2,5)$, and let $L=y_1y_2$. Then $\nabla_y L=(y_2,\,y_1)=(5,2)$ and $\nabla_x L=J^\top(5,2)=\begin{pmatrix}2&1\\1&4\end{pmatrix}(5,2)=(12,\,13)$. A central finite difference on $L=x_1x_2(x_1+x_2^2)$ returns $(12.000,\,13.000)$ ✓.
+  - **Worked.** Use the Jacobian example from §1, $y=(x_1x_2,\;x_1+x_2^2)$ at $x=(3,1)$, so $y=(3,4)$, and let $L=y_1y_2=12$. Then $\nabla_y L=(y_2,\,y_1)=(4,3)$ and $\nabla_x L=J^\top(4,3)=\begin{pmatrix}1&1\\3&2\end{pmatrix}(4,3)=(7,\,18)$. A central finite difference on $L=x_1x_2(x_1+x_2^2)$ returns $(7.000,\,18.000)$ ✓. Multiplying by $J$ itself would give $J(4,3)=(13,\,10)$, wrong in both entries: the transpose is what sends each sensitivity back along the edges that actually connect it to each input. The figure below draws those edges.
   - **The same rule, back on least squares.** [[02-foundations/linear-algebra|1. Linear Algebra §2]] derived $\nabla_x\lVert Ax-b\rVert^2 = 2A^\top(Ax-b)$ by expanding the square; this rule gives it in one line. Put $y = Ax - b$ and $L = \lVert y\rVert^2 = \sum_i y_i^2$. Each $y_i = \sum_j A_{ij}x_j - b_i$ is linear in $x$, so the Jacobian is $J = A$, and $\nabla_y L = 2y$. So
     $$\nabla_x L = J^\top\nabla_y L = A^\top\,2(Ax-b) = 2A^\top(Ax-b)$$
     and setting it to zero gives that page's normal equations. On its line fit — $A$ with rows $(1,1)$, $(1,2)$, $(1,3)$ and $b=(1,3,4)$ — at $(c,m) = (0,1)$: $y = (0,-1,-1)$, $\nabla_y L = (0,-2,-2)$, and $A^\top(0,-2,-2) = (-4,\,-10)$, the value found there by hand.
+
+<svg viewBox="0 0 560 206" style="max-width:100%;height:auto" role="img" aria-label="The chain rule as a sum over paths at x = (3, 1): inputs x1 = 3 and x2 = 1 feed y1 = x1 x2 = 3 and y2 = x1 + x2^2 = 4, which feed L = y1 y2 = 12. Edge labels are local derivatives: 1, 3, 1, 2 on the first layer and 4, 3 on the last. dL/dx1 = 1*4 + 1*3 = 7 and dL/dx2 = 3*4 + 2*3 = 18, which is J transpose times (4, 3).">
+  <defs><marker id="cbPa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="365" y="16" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">each edge carries its local derivative, at x = (3, 1)</text>
+  <polyline points="247.0,58.0 352.0,58.0" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPa)"/>
+  <text x="300.0" y="53.0" font-size="11" text-anchor="middle" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = 1</text>
+  <polyline points="243.4,157.5 355.8,69.1" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPa)"/>
+  <text x="275.8" y="152.5" font-size="11" text-anchor="middle" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = 3</text>
+  <polyline points="243.4,68.5 355.8,156.9" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPa)"/>
+  <text x="274.6" y="83.1" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="247.0,168.0 352.0,168.0" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPa)"/>
+  <text x="300.0" y="189.0" font-size="11" text-anchor="middle" fill="currentColor">2x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = 2</text>
+  <polyline points="385.7,64.6 483.4,106.0" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPa)"/>
+  <text x="441.6" y="73.8" font-size="11" text-anchor="middle" fill="currentColor">y<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = 4</text>
+  <polyline points="385.7,161.4 483.4,120.0" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPa)"/>
+  <text x="442.0" y="161.1" font-size="11" text-anchor="middle" fill="currentColor">y<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = 3</text>
+  <circle cx="230" cy="58" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="230" y="62" font-size="12" text-anchor="middle" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="230" y="35" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 3</text>
+  <circle cx="230" cy="168" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="230" y="172" font-size="12" text-anchor="middle" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="230" y="200" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 1</text>
+  <circle cx="370" cy="58" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="370" y="62" font-size="12" text-anchor="middle" fill="currentColor">y<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="370" y="35" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 3</text>
+  <circle cx="370" cy="168" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="370" y="172" font-size="12" text-anchor="middle" fill="currentColor">y<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="370" y="200" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 4</text>
+  <circle cx="500" cy="113" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="500" y="117" font-size="12" text-anchor="middle" fill="currentColor">L</text>
+  <text x="500" y="90" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 12</text>
+  <text x="12" y="36" font-size="10.5" opacity="0.85" fill="currentColor">backward: add the paths</text>
+  <text x="12" y="62" font-size="11" fill="currentColor">∂L/∂x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = 1·4 + 1·3 = 7</text>
+  <text x="12" y="172" font-size="11" fill="currentColor">∂L/∂x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = 3·4 + 2·3 = 18</text>
+  <text x="12" y="117" font-size="11" fill="currentColor">stacked: Jᵀ(4, 3) = (7, 18)</text>
+</svg>
+
+*The §1 map at $x=(3,1)$, where $y=(3,4)$ and $L=y_1y_2=12$, with every edge labelled by its local derivative: the four entries of $J$ on the left, $\partial L/\partial y=(4,3)$ on the right. A nudge to $x_1$ reaches $L$ along two paths, so $\partial L/\partial x_1=1\cdot4+1\cdot3=7$, and likewise $\partial L/\partial x_2=3\cdot4+2\cdot3=18$: each input collects its own column of $J$ against $(4,3)$, which is $J^\top(4,3)=(7,18)$, while the untransposed $J(4,3)=(13,10)$ would pair each edge with the wrong downstream sensitivity.*
+
 - Two evaluation orders for that product:
   - **Forward mode**: propagate $\partial/\partial x_i$ input-side first — one pass *per input*.
   - **Reverse mode**: propagate $\partial L/\partial(\cdot)$ output-side first — one pass *per output*.
-  - **Stated as formulas.** Forward mode carries a **tangent** $\dot x$ (a chosen input direction) through each primitive $y=f(x)$ by the **Jacobian-vector product** $\dot y = J\dot x$. Seeding $\dot x=e_j$, the $j$-th unit vector, returns column $j$ of the Jacobian, so a full $n$-input Jacobian needs $n$ passes. Reverse mode carries an **adjoint** $\bar y=\partial L/\partial y$ backward by the **vector-Jacobian product** $\bar x = J^\top\bar y$. Seeding $\bar y=e_i$ returns row $i$, so an $m$-output Jacobian needs $m$ passes. With the §1 Jacobian: forward with $\dot x=(1,0)$ gives $(2,1)$, the first column; reverse with $\bar y=(0,1)$ gives $(1,4)$, the second row.
+  - **Stated as formulas.** Forward mode carries a **tangent** $\dot x$ (a chosen input direction) through each primitive $y=f(x)$ by the **Jacobian-vector product** $\dot y = J\dot x$. Seeding $\dot x=e_j$, the $j$-th unit vector, returns column $j$ of the Jacobian, so a full $n$-input Jacobian needs $n$ passes. Reverse mode carries an **adjoint** $\bar y=\partial L/\partial y$ backward by the **vector-Jacobian product** $\bar x = J^\top\bar y$. Seeding $\bar y=e_i$ returns row $i$, so an $m$-output Jacobian needs $m$ passes. With the §1 Jacobian: forward with $\dot x=(1,0)$ gives $(1,1)$, the first column; reverse with $\bar y=(0,1)$ gives $(1,2)$, the second row. The first row, $(1,3)$, differs from the first column: for a non-symmetric $J$ a row and a column are different sensitivities, which is why the backward pass needs $J^\top$ and not $J$.
 - Losses are scalar: one output, millions of inputs ⇒ reverse mode computes *every*
   parameter gradient in a single backward pass. **Backprop is exactly this choice.**
   **Put numbers on it.** A modest network with $10^7$ parameters and one scalar loss:
@@ -188,8 +234,8 @@ For a vector output, read the Jacobian one column at a time: perturb one input w
   The asymmetry is not a clever trick; it falls straight out of the shape of the problem
   (many inputs, one output), and it would reverse if you ever needed the sensitivity of many
   outputs to *one* input.
-- Autodiff mechanics: each primitive supplies a **VJP** (vector-Jacobian product)
-<svg viewBox="0 0 560 244" style="max-width:100%;height:auto" role="img" aria-label="forward mode sweeping left to right once per parameter against reverse mode sweeping right to left once for the single loss">
+
+<svg viewBox="0 0 560 164" style="max-width:100%;height:auto" role="img" aria-label="forward mode sweeping left to right once per parameter against reverse mode sweeping right to left once for the single loss">
   <defs><marker id="cbA" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1">
     <rect x="70" y="38" width="52" height="26" rx="3"/><rect x="160" y="38" width="52" height="26" rx="3"/><rect x="250" y="38" width="52" height="26" rx="3"/><rect x="340" y="38" width="52" height="26" rx="3"/><circle cx="446" cy="51" r="14"/>
@@ -209,20 +255,17 @@ For a vector output, read the Jacobian one column at a time: perturb one input w
     <text x="470" y="56">&#215; 10&#8311; sweeps</text>
     <text x="470" y="126">&#215; 1 sweep</text>
   </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.8">
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
     <text x="104" y="30">push &#8706;/&#8706;&#952;&#7522; from the inputs &#8212; one sweep per parameter</text>
     <text x="104" y="100">pull &#8706;L/&#8706;(&#183;) from the output &#8212; one sweep per output</text>
     <text x="70" y="84">10&#8311; parameters</text>
     <text x="470" y="154">1 scalar loss</text>
   </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="190">The asymmetry is not a trick; it falls out of the shape of the problem &#8212; many inputs, one</text>
-    <text x="24" y="206">output. A backward pass costs two to three forward passes, so the real gap is about seven</text>
-    <text x="24" y="222">orders of magnitude, and training large models is possible for that reason alone. Need the</text>
-    <text x="24" y="238">sensitivity of many outputs to one input and the ordering flips.</text>
-  </g>
 </svg>
 
+*Forward mode pushes one input direction through the network per sweep, so $10^7$ parameters need $10^7$ sweeps; reverse mode pulls the one scalar loss's sensitivity back through the network once, and every parameter's gradient falls out of that single sweep. A backward sweep costs two to three forward passes, so the gap is still about seven orders of magnitude, and it would flip if you needed the sensitivity of many outputs to one input.*
+
+- Autodiff mechanics: each primitive supplies a **VJP** (vector-Jacobian product)
   $v \mapsto J^\top v$; the framework composes them along the recorded graph.
   Cost ≈ 2–3× a forward pass; memory ≈ stored activations (hence gradient checkpointing:
   recompute instead of store).
@@ -237,13 +280,14 @@ The transpose in Jᵀv is therefore not an inverse. You can backpropagate throug
 
 ### 3. Worked example — a 2-layer network, by hand
 
-Network: $z = W_1 x$, $h = \text{ReLU}(z)$, $\hat y = W_2 h$, loss
+§2 said what the backward pass computes, but a formula you have never evaluated is easy to misread, so this section runs it once, by hand, on a network small enough to check every number. Network: $z = W_1 x$, $h = \text{ReLU}(z)$, $\hat y = W_2 h$, loss
 $L = \tfrac12\|\hat y - y\|^2$. Backward pass, output to input:
 
 1. $\dfrac{\partial L}{\partial \hat y} = \hat y - y \quad$ (call it $\delta_2$)
 2. $\dfrac{\partial L}{\partial W_2} = \delta_2\, h^\top$ — **error × input**, an *outer product*
    (a column times a row, which produces a whole matrix — the same shape as $W_2$)
-3. $\dfrac{\partial L}{\partial h} = W_2^\top \delta_2$ — the error, mapped backwards
+3. $\dfrac{\partial L}{\partial h} = W_2^\top \delta_2$ — the error, mapped backwards: $\hat y=W_2h$ is linear in $h$, so
+   its Jacobian is $W_2$ itself, and §2's rule multiplies the incoming sensitivity by its transpose
 4. $\dfrac{\partial L}{\partial z} = W_2^\top \delta_2 \odot \mathbb{1}[z > 0]$ — ReLU's
    gradient is a mask (call it $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
@@ -273,7 +317,7 @@ $L = \tfrac12(0.5-1)^2 = 0.125$. Backward, one line per step above:
 | 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
 
 **Worked: one SGD step on P1.** This *is* plant P1 ([[02-foundations/lab-plants|0.6]]). With learning rate $\eta=0.1$ (the $\alpha$ of [[02-foundations/neural-network-basics|0.8 §3]]; this page writes $\eta$, as most papers do) only on $W_2$:
-$W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$. The same $h$ then gives $\hat y=1.20$ and $L=0.020$. One step overshot $y=1$ — $\eta=0.1$ is not small on this scale ([[02-foundations/optimization|4]]). *The scale, in numbers:* a step on $W_2$ alone moves the prediction by $-\eta\,\delta_2\,h^\top h = 7\eta$, since $\delta_2=-0.5$ and $h^\top h = 1+4+9 = 14$. So $\eta = 1/14 \approx 0.071$ lands exactly on $y=1$, any larger $\eta$ overshoots, and past $\eta = 1/7 \approx 0.143$ the new loss $\tfrac12(7\eta-0.5)^2$ is above the old $0.125$ — the step makes things worse. The problem set asks you to fill a template that prints these numbers, and to sweep $\eta$ across that boundary.
+$W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$. The same $h$ then gives $\hat y=1.20$ and $L=0.020$. One step overshot $y=1$ — $\eta=0.1$ is not small on this scale ([[02-foundations/optimization|4]]). *The scale, in numbers:* a step on $W_2$ alone moves the prediction by $-\eta\,\delta_2\,h^\top h = 7\eta$, since $\delta_2=-0.5$ and $h^\top h = 1+4+9 = 14$. So $\eta = 1/14 \approx 0.071$ lands exactly on $y=1$, any larger $\eta$ overshoots, and past $\eta = 1/7 \approx 0.143$ the new loss $\tfrac12(7\eta-0.5)^2$ is above the old $0.125$ — the step makes things worse. The problem set moves $W_1$ alone (item 2) and then both layers at once (item 3), and watches this boundary move.
 
 Three things to notice, and they generalize to every network you will read about:
 - **The sign says what to do — locally.** $\delta_2 = -0.5$ is negative because the
@@ -294,43 +338,16 @@ transposes, weight gradients are outer products of deltas with cached activation
 Dimensional sanity check: each gradient has the same shape as its variable — the fastest
 bug detector in existence.
 
-<svg viewBox="0 0 560 175" style="max-width:100%;height:auto" role="img" aria-label="forward and backward pass through a two-layer network">
-  <defs><marker id="bpF" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
-  <g fill="none" stroke="currentColor" stroke-width="1.4">
-    <rect x="20" y="52" width="62" height="34" rx="4"/><rect x="140" y="52" width="62" height="34" rx="4"/>
-    <rect x="260" y="52" width="72" height="34" rx="4"/><rect x="380" y="52" width="62" height="34" rx="4"/>
-    <rect x="490" y="52" width="52" height="34" rx="4"/>
-  </g>
-  <g font-size="12" fill="currentColor" text-anchor="middle">
-    <text x="51" y="74">x</text><text x="171" y="74">z = W<tspan dy="3.5">1</tspan><tspan dy="-3.5">x</tspan></text><text x="296" y="74">h = ReLU(z)</text><text x="411" y="74">ŷ = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">h</tspan></text><text x="516" y="74">L</text>
-  </g>
-  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpF)">
-    <line x1="82" y1="62" x2="138" y2="62"/><line x1="202" y1="62" x2="258" y2="62"/>
-    <line x1="332" y1="62" x2="378" y2="62"/><line x1="442" y1="62" x2="488" y2="62"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpF)" stroke-dasharray="5 3" opacity="0.85">
-    <line x1="488" y1="78" x2="444" y2="78"/><line x1="378" y1="78" x2="334" y2="78"/>
-    <line x1="258" y1="78" x2="204" y2="78"/><line x1="138" y1="78" x2="84" y2="78"/>
-  </g>
-  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">
-    <text x="466" y="102">δ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = ŷ − y</tspan></text><text x="356" y="102">W<tspan dy="3.5">2</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="231" y="102">⊙ 1[z&gt;0] = δ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="111" y="102">W<tspan dy="3.5">1</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
-    <text x="411" y="128">∂L/∂W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">hᵀ</tspan></text><text x="171" y="128">∂L/∂W<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">xᵀ</tspan></text>
-  </g>
-  <g font-size="11.5" fill="currentColor">
-    <text x="20" y="34">forward →</text><text x="20" y="160" opacity="0.85">← backward (dashed): deltas travel through transposes, weight gradients are outer products</text>
-  </g>
-</svg>
-
-
-
 ### 4. Gradients through the classic layers
 
-*Second pass. Each bullet is one layer's backward rule, fully derived; read the one a paper in front of you uses. The first pass jumps from §3 to §6.*
+*Second pass, except the first bullet of §4.1 through its worked case: the result $\partial L/\partial z=p-y$ belongs to the first pass, because self-check 2 uses it and the foundations gate asks for it. Every other bullet is one layer's backward rule, fully derived; read the one a paper in front of you uses.*
+
+Real networks are assembled from a few layer types, and training one means running each type's backward rule; when a paper picks one layer over another, the reason is often how its rule treats the gradient.
 
 #### 4.1 Softmax and cross-entropy
 
 - **Softmax + cross-entropy** — the tidiest result in the field, and *not* a legacy topic:
-  it is still how every LLM is trained (next-token prediction is one softmax over the
+  it is still how every large language model (LLM) is trained (next-token prediction is one softmax over the
   vocabulary, scored by cross-entropy — the loss $-\log p_{\text{true}}$, derived in [[02-foundations/information-theory|5. Information Theory §2]]), how every classification head works, and softmax is
   the operation inside attention itself
   ([[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]). Even robot
@@ -371,6 +388,8 @@ bug detector in existence.
 
 *Second pass, like §4: architecture history (LSTM, BatchNorm, ResNet) and the graph-cutting tools (stop-gradient, reparameterization, EMA), for when a paper leans on one of them.*
 
+Deep networks once refused to train because the backward signal shrank or blew up on its way through many layers; much of today's architecture is the set of fixes, and the graph-cutting tools of §5.2 use the same machinery on purpose.
+
 #### 5.1 Vanishing and exploding gradients
 
 - **Vanishing gradients**: products of Jacobians with norms < 1 decay exponentially with
@@ -387,7 +406,7 @@ bug detector in existence.
     $$\frac{\partial L}{\partial h_0} = J_1^\top J_2^\top\cdots J_T^\top\,\frac{\partial L}{\partial h_T}$$
     so the signal reaching the first layer has passed through $T$ matrices, and its size is bounded by $\big\lVert\partial L/\partial h_0\big\rVert\le\prod_t\lVert J_t\rVert\,\big\lVert\partial L/\partial h_T\big\rVert$. **Vanishing** is the case where every $\lVert J_t\rVert\le\rho<1$, which forces decay at least as fast as $\rho^{T}$. With scalar Jacobians of $0.9$ over $50$ steps the gradient is multiplied by $0.9^{50}=0.0052$. Consequence: early layers, or early time steps, stop learning while later ones still do. When every factor is the same recurrent matrix, the product is a matrix power whose long-run fate the spectral radius sets — though a non-normal matrix can grow before it vanishes — as [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models §3]] shows.
 - **Exploding gradients**: norms > 1 — treated with gradient clipping (rescale $\|g\|$ to a
-  ceiling), standard in RNN/LLM training.
+  ceiling), standard in recurrent-network (RNN) and LLM training.
   - **Stated with the formula.** The same product with factors larger than $1$ can grow like $\rho^{T}$: scalar Jacobians of $1.1$ over $50$ steps multiply the gradient by $1.1^{50}=117$, and one such step can throw the weights far outside the region where the loss was sensible. **Clipping by norm**, with ceiling $c$, rescales the gradient $g$ as
     $$g \leftarrow g\cdot\min\!\Big(1,\ \frac{c}{\lVert g\rVert}\Big)$$
     so a gradient already shorter than $c$ is untouched and a longer one keeps its direction but is shortened to length exactly $c$. Example: $g=(3,4)$ has length $5$; with $c=1$ it becomes $(0.6,\,0.8)$.
@@ -408,77 +427,85 @@ bug detector in existence.
 
 ### 6. Reading equations like an implementer
 
+Papers write their objectives with expectations, argmaxes and samples, and a framework can backpropagate none of them as written: an expectation is a sum over all the data, an argmax jumps, and a sample is random. This section says what each one becomes in code, so that an equation in a paper can be read as the program that trains it.
+
 - Expectations over training data are commonly estimated by minibatch means; finite sums,
   analytic expectations and dynamic programs can sometimes be evaluated directly. In deep
   learning, intractable or non-reparameterizable expectations are often handled with a bound
-  ([[02-foundations/information-theory|ELBO]]), a Monte Carlo estimator, or a gradient-estimation technique
-  (reparameterization; likelihood-ratio/policy gradients — [[02-foundations/rl-basics|RL basics]]).
+  ([[02-foundations/information-theory|ELBO]]), a Monte Carlo estimator (an average over random samples), or a gradient-estimation technique
+  (reparameterization, §5.2; likelihood-ratio or policy gradients — [[02-foundations/rl-basics|RL basics]]).
   - **Minibatch estimate, stated completely.** For a training loss that averages per-example losses $\ell_i$ over $N$ examples, the minibatch gradient over a random subset $B$ of size $|B|$ is
     $$\hat g = \frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(\theta)\ \approx\ \frac{1}{N}\sum_{i=1}^{N}\nabla\ell_i(\theta)$$
     and it is **unbiased**: averaged over all possible batches it equals the full gradient, so it is right on average while each draw is noisy. A worked version is in [[02-foundations/optimization|4. Optimization §3]].
 - $\arg\max$ is not differentiable; softmax is its smooth stand-in (temperature controls
   the sharpness). Sampling is not differentiable; Gumbel-softmax / straight-through
-  estimators fake it. Gumbel-softmax replaces the discrete sample with a smooth, temperature-controlled softmax of noise-perturbed logits; straight-through uses the hard sample in the forward pass but passes the smooth version's gradient backward.
+  estimators fake it, as the collapsed box at the end of this section shows.
   - **Softmax with temperature.** With temperature $\tau>0$,
     $$p_j = \frac{e^{z_j/\tau}}{\sum_k e^{z_k/\tau}}$$
     so $\tau=1$ is ordinary softmax, a small $\tau$ sharpens toward the one-hot vector of $\arg\max$, and a large $\tau$ flattens toward uniform. For $z=(2,1,0)$: $\tau=1$ gives $(0.665,\,0.245,\,0.090)$, $\tau=0.5$ gives $(0.867,\,0.117,\,0.016)$, and $\tau=0.1$ gives $(0.99995,\,0.00005,\,0.00000)$. $\arg\max$ itself is the non-example: its output jumps between one-hot vectors, so its derivative is zero almost everywhere.
-  - **Gumbel-softmax, stated completely.** Three steps. Draw $u_j$ uniformly from $(0,1)$ and form Gumbel noise $g_j=-\log(-\log u_j)$. Then $\arg\max_j(z_j+g_j)$ is an exact sample from $\text{softmax}(z)$ (the Gumbel-max trick). Finally replace that $\arg\max$ by a temperature softmax:
-    $$y_j = \frac{e^{(z_j+g_j)/\tau}}{\sum_k e^{(z_k+g_k)/\tau}}$$
-    since $y$ is smooth in $z$ and approaches the one-hot sample as $\tau\to0$. Example: $z=(2,1,0)$ with $u=(0.1,\,0.9,\,0.5)$ gives $g=(-0.834,\,2.250,\,0.367)$ and $z+g=(1.166,\,3.250,\,0.367)$, so this draw picks class 2 although class 1 has the larger logit, which is what sampling should sometimes do. At $\tau=1$, $y=(0.105,\,0.847,\,0.047)$; at $\tau=0.5$, $y=(0.015,\,0.982,\,0.003)$.
-  - **Straight-through, stated completely.** Use the hard one-hot $y_{\text{hard}}$ in the forward pass and the soft $y$'s gradient in the backward pass, written with the stop-gradient of §5 as
-    $$y_{\text{ST}} = y_{\text{hard}} - \text{sg}[y] + y$$
-    because the forward value is $y_{\text{hard}}-y+y=y_{\text{hard}}$, while the backward pass sees $\partial y_{\text{ST}}/\partial z=\partial y/\partial z$, the two hard terms contributing nothing. The gradient is therefore biased: it is the gradient of a slightly different, smooth computation.
 - Frameworks differentiate *programs*, not formulas: control flow, loops, and in-place ops
   all have gradient semantics — most "my loss doesn't decrease" bugs are graph bugs.
+
+> [!note]- Deeper · 더 깊이
+> **Sampling through a softmax: Gumbel-softmax and straight-through.** Both lean on sampling, which [[02-foundations/probability|3. Probability]] introduces next, and straight-through also on the stop-gradient of §5.2, so they belong to a second pass. Gumbel-softmax replaces the discrete sample with a smooth, temperature-controlled softmax of noise-perturbed logits; straight-through uses the hard sample in the forward pass but passes the smooth version's gradient backward.
+>
+> **Gumbel-softmax, stated completely.** Three steps. Draw $u_j$ uniformly from $(0,1)$ and form Gumbel noise $g_j=-\log(-\log u_j)$. Then $\arg\max_j(z_j+g_j)$ is an exact sample from $\text{softmax}(z)$ (the Gumbel-max trick). Finally replace that $\arg\max$ by a temperature softmax:
+> $$y_j = \frac{e^{(z_j+g_j)/\tau}}{\sum_k e^{(z_k+g_k)/\tau}}$$
+> since $y$ is smooth in $z$ and approaches the one-hot sample as $\tau\to0$. Example: $z=(2,1,0)$ with $u=(0.1,\,0.9,\,0.5)$ gives $g=(-0.834,\,2.250,\,0.367)$ and $z+g=(1.166,\,3.250,\,0.367)$, so this draw picks class 2 although class 1 has the larger logit, which is what sampling should sometimes do. At $\tau=1$, $y=(0.105,\,0.847,\,0.047)$; at $\tau=0.5$, $y=(0.015,\,0.982,\,0.003)$.
+>
+> **Straight-through, stated completely.** Use the hard one-hot $y_{\text{hard}}$ in the forward pass and the soft $y$'s gradient in the backward pass, written with the stop-gradient of §5 as
+> $$y_{\text{ST}} = y_{\text{hard}} - \text{sg}[y] + y$$
+> because the forward value is $y_{\text{hard}}-y+y=y_{\text{hard}}$, while the backward pass sees $\partial y_{\text{ST}}/\partial z=\partial y/\partial z$, the two hard terms contributing nothing. The gradient is therefore biased: it is the gradient of a slightly different, smooth computation.
 
 > [!tip] Going deeper · 더 깊이
 > For the machinery underneath: Baydin, Pearlmutter, Radul and Siskind, "Automatic Differentiation in Machine Learning: a Survey," *JMLR* 18(153), 2018 — the paper that separates forward and reverse mode carefully. The [*Deep Learning* book](https://www.deeplearningbook.org/) ch.6 treats backprop as an algorithm.
 
 ### Self-check
 
-1. Redo the worked example with a $K$-class output ($W_2 \in \mathbb{R}^{K\times 3}$) and softmax-CE in place of MSE. What changes? (Softmax over the example's single scalar output is always 1, so a one-output softmax would give zero gradient.)
-2. Show $\partial(x + F(x))/\partial x = I + J_F$ and explain why depth no longer forces the gradient to decay.
+1. P1 with the input changed to $x=(-2,1)$, same weights and target $y=1$. Give $z$, the ReLU mask, $\hat y$, $L$, $\partial L/\partial W_2$ and $\partial L/\partial W_1$. Which entries of the two gradients are zero, and why do only one entry of $W_2$ and one row of $W_1$ learn from this example?
+2. Redo the worked example with a $K$-class output ($W_2 \in \mathbb{R}^{K\times 3}$) and softmax-CE in place of MSE. What changes? (Softmax over the example's single scalar output is always 1, so a one-output softmax would give zero gradient.)
 3. Why does forward-mode autodiff cost one pass *per input parameter*, and why is that
    fatal for a 7B-parameter model?
-4. In the [[01-canonical-papers/notes/6-diffusion/vae|VAE]], why can't you backprop through
+4. *(Second pass, §5.1.)* Show $\partial(x + F(x))/\partial x = I + J_F$ and explain why depth no longer forces the gradient to decay.
+5. *(Second pass, §5.2.)* In the [[01-canonical-papers/notes/6-diffusion/vae|VAE]], why can't you backprop through
    $z \sim \mathcal{N}(\mu, \sigma^2)$ directly, and how does $z = \mu + \sigma\epsilon$ fix it?
 
 > [!tip]- Answers
-> 1. $\delta_2$ becomes $p - y$, a $K$-vector (the softmax + cross-entropy gradient), instead of the scalar $\hat y - y$. Steps 2–5 keep the same formulas with $W_2$ now $K\times 3$ — the backward pattern does not care which loss produced the incoming delta.
-> 2. The derivative of a sum is the sum of derivatives: $\partial(x + F(x))/\partial x = I + \partial F/\partial x = I + J_F$. The identity term gives the backward signal one path that is never multiplied down, so depth stops *forcing* decay — it mitigates vanishing rather than guaranteeing the total gradient never shrinks.
+> 1. Forward: $z=W_1x=(-2,\,1,\,-1)$, mask $(0,1,0)$, $h=(0,1,0)$, $\hat y=-1$, $L=\tfrac12(-2)^2=2$. Backward: $\delta_2=-2$; $\partial L/\partial W_2=\delta_2h^\top=(0,\,-2,\,0)$; $\partial L/\partial h=W_2^\top\delta_2=(-2,\,2,\,-1)$, and the mask keeps only the middle entry, so $\delta_1=(0,\,2,\,0)$; $\partial L/\partial W_1=\delta_1x^\top=\begin{pmatrix}0&0\\-4&2\\0&0\end{pmatrix}$. Two of the three hidden units are off for this input: their forward outputs are $0$, so their entries of $\partial L/\partial W_2$ are $0$, and the mask cuts their backward signal, so their rows of $\partial L/\partial W_1$ are $0$ too. Only the middle unit's path carries the error, and gradient descent raises $W_{2,2}$ (its gradient is $-2$) to lift the too-low prediction.
+> 2. $\delta_2$ becomes $p - y$, a $K$-vector (the softmax + cross-entropy gradient), instead of the scalar $\hat y - y$. Steps 2–5 keep the same formulas with $W_2$ now $K\times 3$ — the backward pattern does not care which loss produced the incoming delta.
 > 3. Forward mode propagates sensitivities with respect to *one* input direction per pass, so covering 7B parameters would need 7B passes. Reverse mode propagates from a *scalar* loss, so a single backward pass yields every parameter gradient — the asymmetry is why training is possible at all.
-> 4. Sampling is a stochastic branch with no derivative with respect to $\mu, \sigma$. Rewriting $z = \mu + \sigma\epsilon$ with $\epsilon \sim \mathcal{N}(0,1)$ pushes the randomness into an *external input*, leaving a deterministic, differentiable function of $\mu$ and $\sigma$ — gradients now flow to the encoder.
+> 4. The derivative of a sum is the sum of derivatives: $\partial(x + F(x))/\partial x = I + \partial F/\partial x = I + J_F$. The identity term gives the backward signal one path that is never multiplied down, so depth stops *forcing* decay — it mitigates vanishing rather than guaranteeing the total gradient never shrinks.
+> 5. Sampling is a stochastic branch with no derivative with respect to $\mu, \sigma$. Rewriting $z = \mu + \sigma\epsilon$ with $\epsilon \sim \mathcal{N}(0,1)$ pushes the randomness into an *external input*, leaving a deterministic, differentiable function of $\mu$ and $\sigma$ — gradients now flow to the encoder.
 
 ### Problem set · 과제
 
 Tier A. Plant **P1** from [[02-foundations/lab-plants|0.6]] — the same net as §3. No Euler; the “loop” is one SGD step.
 
 1. **Draw.** The picture above for the input $x=(2,-1)$, with the same weights and target $y=1$: $x \to z=W_1 x \to h=\mathrm{ReLU}(z) \to \hat y=W_2 h \to L=\tfrac12(\hat y-y)^2$ with every node's value, each hidden unit's ReLU mask bit, and the backward values under the chain. Circle the place where the chain is cut, and say which entries of the two weight-gradient stubs are zero and why.
-2. **Derive.** $\delta_2=\partial L/\partial\hat y$, $\partial L/\partial W_2$, $\partial L/\partial h$, $\delta_1=\partial L/\partial z$, $\partial L/\partial W_1$. Then one SGD step at $\eta=0.1$ on $W_2$ only.
-3. **Do.** Fill `?`. Print new $W_2$ and new $L$ after that one step (forward again with the updated $W_2$, same $x$). Then let the loop at the end redo the step from the original $W_2$ for $\eta = 0.05,\ 1/14,\ 0.1,\ 1/7,\ 0.2$: at which $\eta$ does one step land exactly on $y=1$, and past which one does it leave the loss above $0.125$?
+2. **Derive.** Same net and input as §3, but take the one SGD step at $\eta=0.1$ on $W_1$ only: write $W_1\leftarrow W_1-\eta\,\partial L/\partial W_1$ with §3's $\partial L/\partial W_1$, run the forward pass again, and give the new $\hat y$ and $L$. Then show that, while no mask bit flips, a $W_1$-only step moves the prediction by $-\eta\,\delta_2\,(x^\top x)\sum_i W_{2,i}^2\,\mathbb{1}[z_i>0]$, and find the $\eta$ at which it lands exactly on $y=1$.
+3. **Do.** Fill `?`. A training step moves every layer at once, each by its own gradient, not one layer as in §3 and item 2. The template computes $\delta_2$, $\partial L/\partial W_2$, $\delta_1$ and $\partial L/\partial W_1$ at §3's numbers, and its loop then steps *both* layers from the catalog weights at $\eta = 0.02,\ 0.0396,\ 0.05,\ 0.0792,\ 0.1$ and prints the new $\hat y$ and $L$. Show that to first order the full step moves the prediction by §3's $7\eta$ plus item 2's $5.625\eta$, so that it should land on $y=1$ at $\eta=0.0396$ and leave the loss above $0.125$ past $\eta=0.0792$. Why are both about $0.55$ of §3's $1/14$ and $1/7$, and why does the printout overshoot both predictions slightly?
+
+The template follows the blank-and-solve pattern of [[02-foundations/lab-kernel|0.7 Lab Kernel §5]]: fill each `?` and do not rewrite the loop. In NumPy `@` is the matrix product, `.T` the transpose and `*` the entrywise product, the $\odot$ of §3; `(z > 0)` is the mask as a column of True and False, which multiply as 1 and 0; and `.reshape(2, 1)` turns the length-2 input into a $2\times1$ column, so every line keeps the shapes of §3's table; shapes and reshapes are [[02-foundations/tools/python-research-code|12.3 Python for Research Code §3]].
 
 ```python
-# P1 one SGD step, then an eta sweep. Fill ?.
+# P1: one SGD step on both layers at once, then an eta sweep. Fill ?.
 import numpy as np
 W1 = np.array(((1., 0.), (0., 1.), (1., 1.)))
 W2 = np.array((1., -1., 0.5)).reshape(1, 3)
-W2_0 = W2.copy()                    # the catalog W2, kept for the sweep
 x = np.array((1., 2.)).reshape(2, 1)
 y = 1.0
-eta = 0.1
 z = W1 @ x
 h = np.maximum(z, 0.0)
 yhat = (W2 @ h).item()
-L = 0.5 * (yhat - y) ** 2
-d2 = ?                              # yhat - y
-dW2 = ?                             # d2 * h.T
-W2 = W2 - eta * dW2
-yhat2 = (W2 @ h).item()
-L2 = 0.5 * (yhat2 - y) ** 2
-print(d2, W2, L, L2)
-for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
-    yhat_s = ((W2_0 - ?) @ h).item()    # one step at eta_s from the catalog W2
-    print(f"{eta_s:.4f}  {yhat_s:.3f}  {0.5 * (yhat_s - y) ** 2:.5f}")
+d2 = ?                              # step 1 of §3: a number
+dW2 = ?                             # step 2: 1x3, the shape of W2
+d1 = ?                              # steps 3-4: 3x1, masked by (z > 0)
+dW1 = ?                             # step 5: 3x2, the shape of W1
+print(d2, dW2, dW1)
+for eta in (0.02, 0.0396, 0.05, 0.0792, 0.1):
+    W1n, W2n = W1 - eta * dW1, W2 - eta * dW2    # both layers, one step
+    yhat_n = (W2n @ np.maximum(W1n @ x, 0.0)).item()
+    print(f"{eta:.4f}  {yhat_n:.4f}  {0.5 * (yhat_n - y) ** 2:.5f}")
 ```
 
 > [!note]- How to draw it · 그리는 법
@@ -492,35 +519,39 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
 
 > [!tip]- Solutions
 > 1. Forward: $z=W_1x=(2,-1,1)$, mask $(1,0,1)$, $h=(2,0,1)$, $\hat y=2-0+0.5=2.5$, $L=\tfrac12(1.5)^2=1.125$. Backward: $\delta_2=2.5-1=1.5$; $\partial L/\partial h=W_2^\top\delta_2=(1.5,-1.5,0.75)$, and the zero bit cuts the middle entry, so $\delta_1=(1.5,0,0.75)$. Stubs: $\partial L/\partial W_2=\delta_2h^\top=(3,0,1.5)$ and $\partial L/\partial W_1=\delta_1x^\top=\begin{pmatrix}3&-1.5\\0&0\\1.5&-0.75\end{pmatrix}$. Both are zero for the middle unit, for different reasons: $W_2$'s middle entry because that unit's *forward* output $h_2$ is $0$, $W_1$'s middle row because its *backward* signal is cut at the mask although $\partial L/\partial h_2=-1.5$ arrived there. The catalog input $x=(1,2)$ has every bit $1$, which is why the picture above has no cut.
-> 2. $\delta_2=0.5-1=-0.5$. $\partial L/\partial W_2=\delta_2 h^\top=(-0.5,-1,-1.5)$. $\partial L/\partial h=W_2^\top\delta_2=(-0.5,0.5,-0.25)$. ReLU mask is $(1,1,1)$, so $\delta_1$ is the same. $\partial L/\partial W_1=\delta_1 x^\top=\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$. $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$.
-> 3. Blanks: `d2 = yhat - y`, `dW2 = d2 * h.T`. Prints $-0.5$, `W2 = (1.05, -0.9, 0.65)`, $L=0.125$, $L_2=0.5(0.5+0.1\cdot(0.5\cdot1+1\cdot2+1.5\cdot3)-1)^2$. New $\hat y=W_2 h=1.05-1.8+1.95=1.20$, $L_2=0.5(0.20)^2=0.020$. One step overshot the target (ŷ went from 0.5 through 1 to 1.20) — $\eta=0.1$ is not small on this scale. That is the point of [[02-foundations/optimization|4]].
->
-> The sweep's blank is `eta_s * dW2`. The loop alone, filled and run:
+> 2. $\eta\,\partial L/\partial W_1=0.1\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$, so $W_1\leftarrow\begin{pmatrix}1.05&0.1\\-0.05&0.9\\1.025&1.05\end{pmatrix}$. Forward again: $z=(1.25,\ 1.75,\ 3.125)$, every mask bit still $1$, $\hat y=1.25-1.75+1.5625=1.0625$ and $L=\tfrac12(0.0625)^2=0.00195$. The formula: the step changes $z=W_1x$ by $\Delta z=-\eta\,\delta_1x^\top x=-\eta\,(x^\top x)\,\delta_1$, and while the mask stays put $\Delta\hat y=W_2\Delta z=-\eta\,(x^\top x)\,W_2\delta_1$, where $W_2\delta_1=\delta_2\sum_iW_{2,i}^2\mathbb{1}[z_i>0]=-0.5\times2.25=-1.125$. So $\Delta\hat y=-0.1\times5\times(-1.125)=0.5625$ ✓, and the step lands on $y=1$ when $5.625\,\eta=0.5$, at $\eta=0.0889$. The same $\eta$ moves the prediction less than §3's $W_2$ step because the scale here is $(x^\top x)\lVert W_2\rVert^2=11.25$ against $h^\top h=14$ there, which is why $\eta=0.1$ overshoots less.
+> 3. Blanks: `d2 = yhat - y`, `dW2 = d2 * h.T`, `d1 = W2.T * d2 * (z > 0)` and `dW1 = d1 @ x.T` — §3's steps 1, 2, 3–4 and 5. The first print is $\delta_2=-0.5$ and §3's two gradients. The loop, filled and run:
 >
 > ```python
 > import numpy as np
 > W1 = np.array(((1., 0.), (0., 1.), (1., 1.)))
-> W2_0 = np.array((1., -1., 0.5)).reshape(1, 3)
+> W2 = np.array((1., -1., 0.5)).reshape(1, 3)
 > x = np.array((1., 2.)).reshape(2, 1)
 > y = 1.0
-> h = np.maximum(W1 @ x, 0.0)
-> dW2 = ((W2_0 @ h).item() - y) * h.T
-> for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
->     yhat_s = ((W2_0 - eta_s * dW2) @ h).item()
->     print(f"{eta_s:.4f}  {yhat_s:.3f}  {0.5 * (yhat_s - y) ** 2:.5f}")
+> z = W1 @ x
+> h = np.maximum(z, 0.0)
+> yhat = (W2 @ h).item()
+> d2 = yhat - y
+> dW2 = d2 * h.T
+> d1 = W2.T * d2 * (z > 0)
+> dW1 = d1 @ x.T
+> for eta in (0.02, 0.0396, 0.05, 0.0792, 0.1):
+>     W1n, W2n = W1 - eta * dW1, W2 - eta * dW2    # both layers, one step
+>     yhat_n = (W2n @ np.maximum(W1n @ x, 0.0)).item()
+>     print(f"{eta:.4f}  {yhat_n:.4f}  {0.5 * (yhat_n - y) ** 2:.5f}")
 > ```
 >
 > prints
 >
 > ```
-> 0.0500  0.850  0.01125
-> 0.0714  1.000  0.00000
-> 0.1000  1.200  0.02000
-> 0.1429  1.500  0.12500
-> 0.2000  1.900  0.40500
+> 0.0200  0.7528  0.03057
+> 0.0396  1.0009  0.00000
+> 0.0500  1.1328  0.00882
+> 0.0792  1.5038  0.12692
+> 0.1000  1.7688  0.29549
 > ```
 >
-> Every row is $\hat y = 0.5 + 7\eta$, as §3 derived. $\eta = 1/14$ lands on $y=1$ exactly; $\eta = 1/7$ swings to $1.5$ and only ties the old loss $0.125$; $\eta = 0.2$ leaves the loss more than three times worse than where it started. The $0.05$ row is the hand update of [[02-foundations/neural-network-basics|0.8 §3]].
+> While no mask bit flips, the step changes $h$ by $\Delta h=-\eta\,(x^\top x)\,\delta_1$ (item 2), and the new prediction is $(W_2-\eta\,\partial L/\partial W_2)(h+\Delta h)$. It moves by §3's $W_2$ term $7\eta$, item 2's $W_1$ term $5.625\eta$, and one product of the two changes: $\hat y=0.5+12.625\,\eta+0.625\,\eta^2$. To first order the step lands on $y=1$ at $\eta=0.5/12.625=0.0396$ and ties the old loss at $1/12.625=0.0792$, which is $14/25.25=0.55$ of §3's $1/14$ and $1/7$: each layer's gradient is computed as if the other layer stayed put, so their scales, $14$ and $11.25$, add. The product term pushes the prediction a little further, which is why the printout shows $1.0009$ and a loss of $0.12692$ at those two $\eta$; exactly, the step lands at $\eta=0.0395$ and makes the loss worse past $0.0789$. At $\eta=0.1$ the $W_2$-only $1.20$ of §3 and the $W_1$-only $1.0625$ of item 2 combine into $1.7688$: a step size that is safe for each layer alone can overshoot when every layer moves together.
 
 ## 한국어
 
@@ -531,8 +562,11 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
 서술: 테일러 전개에서 손으로 푸는 역전파 예제까지, 그리고 구조 설계의 역사를 만든
 그래디언트 병리들.
 
+> [!note] 왜 배우는가 · Why this matters
+> [[physical-ai-map|피지컬 AI 지도]]에서 이 페이지는 [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택 가운데 '학습과 적응' 층을 받치는 수학 바닥이고, 조작 층에도 닿는다. "*저 패널을 프레임에 설치해*"에서 끼움을 해내는 정책이 학습된 것이라면 그 정책을 학습시키는 것이 이 페이지이고, §1의 야코비안은 팔이 부재를 옮기는 동안 관절 속도를 패널의 속도로 바꾸는 바로 그 행렬이다. 신경망 정책의 가중치는 §2–§3의 역방향 패스로만 움직인다(정책이 신경망이라면 [[05-construction-robotics/imitating-contact|10. 접촉 모방 §2]]의 행동 복제 손실도, 비전–언어–행동 모델인 VLA의 학습 [[03-deep-learning/vla/index|4. VLA §2]]도 다른 길이 없다). 그래서 이것 없이는 폭주하는 손실이나 논문 그림 속 stop-gradient 화살표가 블랙박스로 남지만, 이것이 있으면 §3이 P1([[02-foundations/lab-plants|0.6 Lab Plants]]의 2층 연습 신경망)에서 하듯 $\eta=0.1$ 한 스텝이 목표를 지나치고 $1/7$을 넘는 $\eta$는 손실을 처음보다 키운다는 것을 미리 말할 수 있다. 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])에서는 블록 4의 [[03-deep-learning/foundations/index|딥러닝 1. 학습 시스템 §6]]이 D1(딥러닝 트랙이 고정해 둔 2층 분류기, [[03-deep-learning/lab-objects|0. Lab Objects]]) 위에서 §2–§3을 다시 돌려 보폭의 경계를 재고, 블록 1과 2의 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학 §1]]과 [[04-robotics/state-estimation-slam|3. 상태 추정 §5]]가 §1의 야코비안을 쓴다. 이 페이지를 마치면 2층 신경망을 손으로 역전파하고, 모든 그래디언트의 모양을 검산하고, 곡률로부터 어떤 학습률이 지나치는지 예측할 수 있다.
+
 > [!note] 처음이라면 · First pass
-> 먼저 그림과 §1, 그다음 §2를 *자동 미분의 동작* 항목 앞까지(그 항목은 미뤄도 된다), 그다음 §3 — 2층 예제를 손으로 풀어라, 그 계산 하나가 이 페이지의 전부다 — 그다음 §6. §4·§5는 두 번째 읽기다: 구조 논문을 읽으며 왜 그 모양인지 알고 싶어질 때.
+> 60~90분 회차로 세 번쯤 걸린다. **1회차:** 그림과 §1(그래디언트와 야코비안이 먼저, 그다음 테일러와 헤시안), 그다음 §2를 *자동 미분의 동작* 항목 앞까지 읽는다(그 항목은 미뤄도 된다). **2회차:** §3 — 2층 예제를 손으로 풀어라, 그 계산 하나가 이 페이지의 전부다 — 그다음 §4.1의 첫 항목을 계산 예제까지(분류기에 필요한 단 하나의 결과 $\partial L/\partial z=p-y$), 그리고 접힌 상자를 뺀 §6. **3회차**에는 책을 덮고 스스로 점검 1~3을 푼 뒤 $\eta$ 쓸기가 딸린 과제를 한다. §4의 나머지, §5, 스스로 점검 4~5는 두 번째 읽기다: 구조 논문을 읽으며 왜 그 모양인지 알고 싶어질 때.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -630,24 +664,15 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
 
 ### 1. 국소 선형 모델로서의 미분
 
-- **테일러 전개**가 최적화 전체의 토대다:
-  $$f(x + \delta) \approx f(x) + \nabla f(x)^\top \delta + \tfrac12 \delta^\top H \delta$$
-  ($H$는 **헤시안** — 2차 도함수의 행렬 $H_{ij}=\partial^2 f/\partial x_i \partial x_j$,
-  $f''$의 다변수 버전이다.) 경사 하강은 1차 항을, 뉴턴법은 2차 항까지 믿는다
-  ([[02-foundations/optimization|최적화]]).
-  - **어떤 종류의 대상인가.** 매끄러운 함수 $f:\mathbb{R}^n\to\mathbb{R}$를 한 점에서 만든 다항식 모델이고, 작은 스텝에서만 믿는다. $x\in\mathbb{R}^n$은 현재 점, $\delta\in\mathbb{R}^n$은 제안한 스텝, $^\top$은 열벡터 $\nabla f(x)$를 행벡터로 눕혀 곱이 숫자 하나가 되게 한다.
-  - **세 항, 각각의 이름.** **값** $f(x)$는 0차 항이다. **기울기 항** $\nabla f(x)^\top\delta$는 1차 항으로 $\delta$에 선형이다. **곡률 항** $\tfrac12\delta^\top H\delta$는 2차 항으로 $\delta$에 이차다. 생략한 항은 모두 적어도 $\lVert\delta\rVert^3$처럼 줄어들므로, 모델은 스텝이 작을 때만 정확하다.
-  - **숫자로 계산.** $f(x_1,x_2)=x_1^2x_2$를 $x=(1,2)$에서 스텝 $\delta=(0.1,\,0.1)$로 본다. $f(x)=2$, $\nabla f=(2x_1x_2,\;x_1^2)=(4,1)$, $H=\begin{pmatrix}2x_2&2x_1\\2x_1&0\end{pmatrix}=\begin{pmatrix}4&2\\2&0\end{pmatrix}$이다. 1차까지는 $2+0.4+0.1=2.5$. 곡률 항이 $\tfrac12(0.04+0.04+0)=0.04$를 더해 $2.54$가 된다. 참값은 $f(1.1,\,2.1)=2.541$이고, 남은 $0.001$은 정확히 3차 항 $\delta_1^2\delta_2$다.
-- **헤시안**의 완전한 정의. 두 번 미분 가능한 $f:\mathbb{R}^n\to\mathbb{R}$에 대해, 모든 2계 편미분을 모은 $n\times n$ 행렬이다:
-  $$H(x)_{ij} = \frac{\partial^2 f}{\partial x_i\,\partial x_j}(x)$$
-  즉 $(i,j)$ 성분은 $x_j$ 방향으로 움직일 때 $x_i$ 방향 기울기가 얼마나 변하는지다. 쓰임은 두 성질에서 나온다. 2계 편미분이 연속이면 **대칭**이다, $H_{ij}=H_{ji}$(슈바르츠 정리). 위 예제에서도 $H_{12}=H_{21}=2$다. 그리고 $\delta^\top H\delta$는 **방향 $\delta$로의 곡률**이다. 양수면 그 방향으로 표면이 위로 휜다. 중요한 이유: 고유값의 부호([[02-foundations/linear-algebra|1. 선형대수 §3]])가 최소점과 안장점을 가르고, 모든 곳에서 $H\succeq0$인 것이 곧 볼록성이다([[02-foundations/optimization|4. 최적화 §2]]).
+학습은 손실 하나를 줄이려고 가중치 수백만 개를 움직이고, 로봇 제어기는 공구를 옮기려고 관절 속도를 움직인다. 둘 다 입력의 작은 변화가 출력을 얼마나 바꾸는지 알아야 한다. 미분은 한 점 근처에서 함수를 계산할 수 있는 선형 사상으로 바꿔 그 질문에 답한다. 출력이 하나면 그래디언트, 여럿이면 야코비안이고, 그 선형 사상을 어디까지 믿을 수 있는지는 테일러 전개가 말한다.
+
 - $\partial L/\partial w$의 질문: "$w$를 살짝 밀면 $L$이 얼마나 움직이는가?" 학습 = 이
   민감도 수백만 개를 계산해 반대로 내딛는 일. (편미분 자체의 정의는 [[02-foundations/engineering-math|0.5 §1]].)
 - **그래디언트** $\nabla_w L$: 민감도 전체의 벡터; 오르막을 가리키고 등고선에 수직이다.
   완전히 쓰면, $f:\mathbb{R}^n\to\mathbb{R}$의 편미분 $n$개를 세운 열벡터다.
   $$\nabla f(x) = \Big(\frac{\partial f}{\partial x_1},\ \ldots,\ \frac{\partial f}{\partial x_n}\Big)^\top$$
   모든 편미분을 모았기 때문에 **방향 미분**에 답한다: 단위벡터 $u$ 방향의 변화율은 $\nabla f(x)^\top u$다. 두 기하적 사실이 모두 이 곱 하나에서 나온다.
-  - **오르막을 가리킨다.** $\nabla f^\top u = \lVert\nabla f\rVert\cos\theta$는 $u$가 $\nabla f$와 평행할 때 가장 크므로, 그래디언트는 가장 가파른 오르막 방향이고 길이 $\lVert\nabla f\rVert$가 그 최대 변화율이다. 테일러 예제에서 $x_1$ 방향 변화율은 $4$, $\nabla f=(4,1)$ 방향 변화율은 $\sqrt{17}\approx4.12$다.
+  - **오르막을 가리킨다.** $\nabla f^\top u = \lVert\nabla f\rVert\cos\theta$는 $u$가 $\nabla f$와 평행할 때 가장 크므로, 그래디언트는 가장 가파른 오르막 방향이고 길이 $\lVert\nabla f\rVert$가 그 최대 변화율이다. $f(x_1,x_2)=x_1^2x_2$의 $x=(1,2)$에서는 $\nabla f=(2x_1x_2,\;x_1^2)=(4,1)$이므로, $x_1$ 방향 변화율은 $4$, $\nabla f$ 방향 변화율은 $\sqrt{17}\approx4.12$다.
   - **등고선에 수직이다.** 등고선을 따라가면 $f$가 변하지 않으므로 모든 접선 방향 $u$에서 $\nabla f^\top u=0$이다. $f=x_1^2+x_2^2$의 $(3,4)$에서 그래디언트는 $(6,8)$, 원의 접선은 $(-4,3)$이고 $6(-4)+8(3)=0$ ✓.
 - **야코비안** $J_{ij} = \partial y_i/\partial x_j$: 벡터 함수의 민감도 행렬 — 합성에서
   *연쇄되는* 대상. (로보틱스도 같은 대상에 같은 이름을 쓴다: 관절 속도 → 말단 속도,
@@ -655,7 +680,18 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
   $$J(x) = \begin{pmatrix}\partial y_1/\partial x_1 & \cdots & \partial y_1/\partial x_n\\ \vdots & & \vdots\\ \partial y_m/\partial x_1 & \cdots & \partial y_m/\partial x_n\end{pmatrix}$$
   그래서 출력마다 행 하나, 입력마다 열 하나이고, 정의하는 성질은 1차 모델 $f(x+\delta)\approx f(x)+J(x)\,\delta$다.
   - **$i$번째 행**은 출력 $y_i$의 그래디언트를 눕힌 것이다. **$j$번째 열**은 입력 $x_j$ 하나에 모든 출력이 어떻게 반응하는지다. 스칼라 함수($m=1$)라면 야코비안은 행 하나 $\nabla f^\top$이다.
-  - **계산.** $f(x_1,x_2)=(x_1x_2,\; x_1+x_2^2)$를 $x=(1,2)$에서 보면 $f=(2,5)$이고 $J=\begin{pmatrix}x_2&x_1\\1&2x_2\end{pmatrix}=\begin{pmatrix}2&1\\1&4\end{pmatrix}$다. $x_1$을 $0.01$ 밀면 출력이 $(0.02,\,0.01)$ 움직이는데, 모델이 예측하는 대로 첫 열의 $0.01$배다.
+  - **계산.** $f(x_1,x_2)=(x_1x_2,\; x_1+x_2^2)$를 $x=(3,1)$에서 보면 $f=(3,4)$이고 $J=\begin{pmatrix}x_2&x_1\\1&2x_2\end{pmatrix}=\begin{pmatrix}1&3\\1&2\end{pmatrix}$다. $x_1$을 $0.01$ 밀면 출력이 $(0.01,\,0.01)$ 움직이는데, 모델이 예측하는 대로 첫 열의 $0.01$배다. 이 $J$는 일부러 대칭이 아닌 것으로 골랐다. §2에서 전치가 하는 일이 보이게 하려는 것이다.
+- **테일러 전개**는 이 선형 모델을 얼마나 멀리까지 믿을 수 있는지 말해 주며, 최적화 전체의 토대다:
+  $$f(x + \delta) \approx f(x) + \nabla f(x)^\top \delta + \tfrac12 \delta^\top H \delta$$
+  ($H$는 **헤시안** — 2차 도함수의 행렬 $H_{ij}=\partial^2 f/\partial x_i \partial x_j$,
+  $f''$의 다변수 버전이다.) 경사 하강은 1차 항을, 뉴턴법은 2차 항까지 믿는다
+  ([[02-foundations/optimization|최적화]]).
+  - **어떤 종류의 대상인가.** 매끄러운 함수 $f:\mathbb{R}^n\to\mathbb{R}$를 한 점에서 만든 다항식 모델이고, 작은 스텝에서만 믿는다. $x\in\mathbb{R}^n$은 현재 점, $\delta\in\mathbb{R}^n$은 제안한 스텝, $^\top$은 열벡터 $\nabla f(x)$를 행벡터로 눕혀 곱이 숫자 하나가 되게 한다.
+  - **세 항, 각각의 이름.** **값** $f(x)$는 0차 항이다. **기울기 항** $\nabla f(x)^\top\delta$는 1차 항으로 $\delta$에 선형이다. **곡률 항** $\tfrac12\delta^\top H\delta$는 2차 항으로 $\delta$에 이차다. 생략한 항은 모두 적어도 $\lVert\delta\rVert^3$처럼 줄어들므로, 모델은 스텝이 작을 때만 정확하다.
+  - **숫자로 계산.** 그래디언트 항목의 $f(x_1,x_2)=x_1^2x_2$를 같은 $x=(1,2)$에서 스텝 $\delta=(0.1,\,0.1)$로 본다. $f(x)=2$, $\nabla f=(4,1)$(거기서 구한 값), $H=\begin{pmatrix}2x_2&2x_1\\2x_1&0\end{pmatrix}=\begin{pmatrix}4&2\\2&0\end{pmatrix}$이다. 1차까지는 $2+0.4+0.1=2.5$. 곡률 항이 $\tfrac12(0.04+0.04+0)=0.04$를 더해 $2.54$가 된다. 참값은 $f(1.1,\,2.1)=2.541$이고, 남은 $0.001$은 정확히 3차 항 $\delta_1^2\delta_2$다.
+- **헤시안**의 완전한 정의. 두 번 미분 가능한 $f:\mathbb{R}^n\to\mathbb{R}$에 대해, 모든 2계 편미분을 모은 $n\times n$ 행렬이다:
+  $$H(x)_{ij} = \frac{\partial^2 f}{\partial x_i\,\partial x_j}(x)$$
+  즉 $(i,j)$ 성분은 $x_j$ 방향으로 움직일 때 $x_i$ 방향 기울기가 얼마나 변하는지다. 쓰임은 두 성질에서 나온다. 2계 편미분이 연속이면 **대칭**이다, $H_{ij}=H_{ji}$(슈바르츠 정리). 위 예제에서도 $H_{12}=H_{21}=2$다. 그리고 $\delta^\top H\delta$는 **방향 $\delta$로의 곡률**이다. 양수면 그 방향으로 표면이 위로 휜다. 중요한 이유: 고유값의 부호([[02-foundations/linear-algebra|1. 선형대수 §3]])가 최소점과 안장점을 가르고, 모든 곳에서 $H\succeq0$인 것이 곧 볼록성이다([[02-foundations/optimization|4. 최적화 §2]]).
 
 **미분은 변화량을 예측하지 바뀐 값 자체가 아니다.** 테일러 식에서 f(x)는 현재 출력, δ는 제안한 입력 변화, 기울기 항은 그 일차 효과, 헤시안 항은 곡률 보정이다. δ가 크면 생략한 항이 중요해진다. 내려가는 방향을 안다고 얼마나 움직일지까지 아는 것은 아니다.
 
@@ -665,6 +701,8 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
 > 파라미터의 미분이 양수면 경사하강은 어느 쪽의 작은 변화를 제안하는가? 파라미터를 줄인다. 국소 모델상 늘리면 손실이 올라가기 때문이다. 이는 국소 예측이다. 실제 갱신이 예측대로 움직일지는 보폭과 곡률에 달려 있다.
 
 ### 2. 연쇄 법칙, 그리고 역전파가 뒤로 도는 이유
+
+손실은 층의 사슬을 거쳐 가중치 수백만 개에 의존하고, 학습의 매 스텝은 그 하나하나에 대한 편미분을 요구한다. 가중치마다 따로 미분하면 같은 사슬을 수백만 번 다시 돌게 된다. 연쇄 법칙은 사상의 사슬을 따라 미분이 어떻게 곱해지는지 말하고, 그 곱을 손실 쪽 끝부터 계산하는 선택이 모든 편미분을 역방향 패스 한 번으로 내준다.
 
 - 합성 $L = f_3(f_2(f_1(x)))$:
   $\dfrac{\partial L}{\partial x} = J_1^\top J_2^\top J_3^\top \cdot 1$.
@@ -680,14 +718,53 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
   즉 안쪽 사상이 도착한 점에서 계산한 바깥 사상의 $k\times m$ 행렬에 안쪽 사상의 $m\times n$ 행렬을 곱하면 전체의 $k\times n$ 야코비안이 된다. 스칼라 $L$이 중간값 $y_1,\ldots,y_m$을 거쳐 $x_j$에 의존할 때 성분별로 쓰면, 같은 법칙이 **모든 경로에 대한 합**이다.
   $$\frac{\partial L}{\partial x_j} = \sum_{i=1}^{m}\frac{\partial L}{\partial y_i}\,\frac{\partial y_i}{\partial x_j}$$
   $x_j$를 미는 효과가 각 $y_i$를 따로 거쳐 $L$에 닿고 1차 효과는 더해지기 때문이다. 이 합을 $j$에 대해 쌓으면 정확히 $\nabla_x L = J^\top\,\nabla_y L$이다.
-  - **계산.** §1의 야코비안 예제 $y=(x_1x_2,\;x_1+x_2^2)$를 $x=(1,2)$에서 쓰면 $y=(2,5)$이고, $L=y_1y_2$로 두자. $\nabla_y L=(y_2,\,y_1)=(5,2)$이고 $\nabla_x L=J^\top(5,2)=\begin{pmatrix}2&1\\1&4\end{pmatrix}(5,2)=(12,\,13)$이다. $L=x_1x_2(x_1+x_2^2)$에 중앙 유한 차분을 걸면 $(12.000,\,13.000)$ ✓.
+  - **계산.** §1의 야코비안 예제 $y=(x_1x_2,\;x_1+x_2^2)$를 $x=(3,1)$에서 쓰면 $y=(3,4)$이고, $L=y_1y_2=12$로 두자. $\nabla_y L=(y_2,\,y_1)=(4,3)$이고 $\nabla_x L=J^\top(4,3)=\begin{pmatrix}1&1\\3&2\end{pmatrix}(4,3)=(7,\,18)$이다. $L=x_1x_2(x_1+x_2^2)$에 중앙 유한 차분을 걸면 $(7.000,\,18.000)$ ✓. 전치 없이 $J$를 곱하면 $J(4,3)=(13,\,10)$으로 두 성분이 다 틀린다. 전치가 하는 일은 각 민감도를, 그것을 각 입력과 실제로 잇는 간선을 따라 되돌려 보내는 것이다. 아래 그림이 그 간선들을 그린다.
   - **같은 규칙으로 최소제곱에 돌아가기.** [[02-foundations/linear-algebra|1. 선형대수 §2]]는 제곱을 전개해서 $\nabla_x\lVert Ax-b\rVert^2 = 2A^\top(Ax-b)$를 유도했다. 이 규칙이면 한 줄이다. $y = Ax - b$, $L = \lVert y\rVert^2 = \sum_i y_i^2$로 두자. 각 $y_i = \sum_j A_{ij}x_j - b_i$는 $x$에 대해 선형이므로 야코비안은 $J = A$이고, $\nabla_y L = 2y$다. 그래서
     $$\nabla_x L = J^\top\nabla_y L = A^\top\,2(Ax-b) = 2A^\top(Ax-b)$$
     이고, 이것을 0으로 놓은 것이 그 페이지의 정규방정식이다. 그 페이지의 직선 맞춤 — 행이 $(1,1)$, $(1,2)$, $(1,3)$인 $A$와 $b=(1,3,4)$ — 에서 $(c,m) = (0,1)$이면 $y = (0,-1,-1)$, $\nabla_y L = (0,-2,-2)$이고 $A^\top(0,-2,-2) = (-4,\,-10)$, 거기서 손으로 구한 값과 같다.
+
+<svg viewBox="0 0 560 206" style="max-width:100%;height:auto" role="img" aria-label="x = (3, 1)에서 경로의 합으로 본 연쇄 법칙: 입력 x1 = 3, x2 = 1이 y1 = x1 x2 = 3과 y2 = x1 + x2^2 = 4로 가고, 이것이 L = y1 y2 = 12로 간다. 간선에는 국소 미분이 적혀 있다: 첫 층에 1, 3, 1, 2, 마지막 층에 4, 3. dL/dx1 = 1*4 + 1*3 = 7, dL/dx2 = 3*4 + 2*3 = 18이고, 이것이 J의 전치와 (4, 3)의 곱이다.">
+  <defs><marker id="cbPak" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="365" y="16" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">간선마다 국소 미분, x = (3, 1)에서</text>
+  <polyline points="247.0,58.0 352.0,58.0" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPak)"/>
+  <text x="300.0" y="53.0" font-size="11" text-anchor="middle" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = 1</text>
+  <polyline points="243.4,157.5 355.8,69.1" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPak)"/>
+  <text x="275.8" y="152.5" font-size="11" text-anchor="middle" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = 3</text>
+  <polyline points="243.4,68.5 355.8,156.9" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPak)"/>
+  <text x="274.6" y="83.1" font-size="11" text-anchor="middle" fill="currentColor">1</text>
+  <polyline points="247.0,168.0 352.0,168.0" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPak)"/>
+  <text x="300.0" y="189.0" font-size="11" text-anchor="middle" fill="currentColor">2x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = 2</text>
+  <polyline points="385.7,64.6 483.4,106.0" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPak)"/>
+  <text x="441.6" y="73.8" font-size="11" text-anchor="middle" fill="currentColor">y<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = 4</text>
+  <polyline points="385.7,161.4 483.4,120.0" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#cbPak)"/>
+  <text x="442.0" y="161.1" font-size="11" text-anchor="middle" fill="currentColor">y<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = 3</text>
+  <circle cx="230" cy="58" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="230" y="62" font-size="12" text-anchor="middle" fill="currentColor">x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="230" y="35" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 3</text>
+  <circle cx="230" cy="168" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="230" y="172" font-size="12" text-anchor="middle" fill="currentColor">x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="230" y="200" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 1</text>
+  <circle cx="370" cy="58" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="370" y="62" font-size="12" text-anchor="middle" fill="currentColor">y<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="370" y="35" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 3</text>
+  <circle cx="370" cy="168" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="370" y="172" font-size="12" text-anchor="middle" fill="currentColor">y<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text>
+  <text x="370" y="200" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 4</text>
+  <circle cx="500" cy="113" r="17" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.3"/>
+  <text x="500" y="117" font-size="12" text-anchor="middle" fill="currentColor">L</text>
+  <text x="500" y="90" font-size="11" text-anchor="middle" opacity="0.85" fill="currentColor">= 12</text>
+  <text x="12" y="36" font-size="10.5" opacity="0.85" fill="currentColor">역방향: 경로를 더한다</text>
+  <text x="12" y="62" font-size="11" fill="currentColor">∂L/∂x<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan> = 1·4 + 1·3 = 7</text>
+  <text x="12" y="172" font-size="11" fill="currentColor">∂L/∂x<tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan> = 3·4 + 2·3 = 18</text>
+  <text x="12" y="117" font-size="11" fill="currentColor">쌓으면: Jᵀ(4, 3) = (7, 18)</text>
+</svg>
+
+*§1의 사상을 $x=(3,1)$에서 그린 것이다. $y=(3,4)$, $L=y_1y_2=12$이고 간선마다 국소 미분을 적었다. 왼쪽 네 간선이 $J$의 성분, 오른쪽 두 간선이 $\partial L/\partial y=(4,3)$이다. $x_1$을 밀면 두 경로로 $L$에 닿으므로 $\partial L/\partial x_1=1\cdot4+1\cdot3=7$이고, 같은 식으로 $\partial L/\partial x_2=3\cdot4+2\cdot3=18$이다. 입력마다 $J$의 자기 열을 $(4,3)$과 맞대는 것이 $J^\top(4,3)=(7,18)$이고, 전치하지 않은 $J(4,3)=(13,10)$은 간선마다 엉뚱한 뒤쪽 민감도를 짝짓는다.*
+
 - 이 곱의 두 가지 계산 순서:
   - **순방향 모드**: $\partial/\partial x_i$를 입력 쪽부터 전파 — *입력마다* 한 패스.
   - **역방향 모드**: $\partial L/\partial(\cdot)$를 출력 쪽부터 전파 — *출력마다* 한 패스.
-  - **식으로 쓰면.** 순방향 모드는 **탄젠트** $\dot x$(고른 입력 방향)를 각 기본 연산 $y=f(x)$에 **야코비안-벡터 곱** $\dot y = J\dot x$로 통과시킨다. $\dot x=e_j$($j$번째 단위벡터)를 씨앗으로 넣으면 야코비안의 $j$번째 열이 나오므로, 입력이 $n$개인 야코비안 전체에는 패스 $n$번이 든다. 역방향 모드는 **수반(adjoint)** $\bar y=\partial L/\partial y$를 **벡터-야코비안 곱** $\bar x = J^\top\bar y$로 뒤로 나른다. $\bar y=e_i$를 넣으면 $i$번째 행이 나오므로, 출력이 $m$개인 야코비안에는 패스 $m$번이 든다. §1의 야코비안으로: 순방향에 $\dot x=(1,0)$을 넣으면 첫 열 $(2,1)$, 역방향에 $\bar y=(0,1)$을 넣으면 둘째 행 $(1,4)$가 나온다.
+  - **식으로 쓰면.** 순방향 모드는 **탄젠트** $\dot x$(고른 입력 방향)를 각 기본 연산 $y=f(x)$에 **야코비안-벡터 곱** $\dot y = J\dot x$로 통과시킨다. $\dot x=e_j$($j$번째 단위벡터)를 씨앗으로 넣으면 야코비안의 $j$번째 열이 나오므로, 입력이 $n$개인 야코비안 전체에는 패스 $n$번이 든다. 역방향 모드는 **수반(adjoint)** $\bar y=\partial L/\partial y$를 **벡터-야코비안 곱** $\bar x = J^\top\bar y$로 뒤로 나른다. $\bar y=e_i$를 넣으면 $i$번째 행이 나오므로, 출력이 $m$개인 야코비안에는 패스 $m$번이 든다. §1의 야코비안으로: 순방향에 $\dot x=(1,0)$을 넣으면 첫 열 $(1,1)$, 역방향에 $\bar y=(0,1)$을 넣으면 둘째 행 $(1,2)$가 나온다. 첫 행 $(1,3)$은 첫 열과 다르다. 대칭이 아닌 $J$에서 행과 열은 서로 다른 민감도이고, 그래서 역방향 패스에는 $J$가 아니라 $J^\top$이 필요하다.
 - 손실은 스칼라다: 출력 1개, 입력 수백만 개 ⇒ 역방향 모드가 backward 한 번으로 *모든*
   파라미터의 그래디언트를 계산한다. **역전파는 정확히 이 선택이다.**
   **숫자를 붙여 보자.** 파라미터 $10^7$개에 스칼라 손실 하나인 평범한 신경망이라면, 순방향
@@ -695,12 +772,8 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
   패스가 순방향의 2~3배 비용이므로 대략 7자릿수의 차이이고, 대형 모델 학습이 가능한 이유가
   오직 이것이다. 이 비대칭은 영리한 요령이 아니라 문제의 모양(입력 다수, 출력 하나)에서 곧장
   나오는 것이고, 만약 *하나의* 입력에 대한 다수 출력의 민감도가 필요했다면 우열이 뒤집힌다.
-- 자동 미분의 동작: 각 기본 연산이 **VJP**(벡터-야코비안 곱) $v \mapsto J^\top v$를
-  제공하고, 프레임워크가 기록된 그래프를 따라 이를 합성한다.
-  비용 ≈ 순방향의 2~3배; 메모리 ≈ 저장된 활성값 (gradient checkpointing: 저장 대신 재계산).
-  - **VJP의 완전한 정의.** 야코비안이 $J$인 기본 연산 $y=f(x)$의 VJP는 출력 크기의 민감도 $v=\partial L/\partial y$를 입력 크기의 민감도 $J^\top v=\partial L/\partial x$로 보내는 선형 사상이다. 기본 연산은 이것을 규칙으로 제공하고 $J$를 만들지 않는다. 입출력이 $10^7$개인 층이라면 $J$의 성분이 $10^{14}$개이기 때문이다. §3에서 이미 쓰는 규칙 둘: 선형층 $y=Wx$의 VJP는 $v\mapsto W^\top v$, 원소별 ReLU의 VJP는 $v\mapsto v\odot\mathbb{1}[z>0]$이다.
-  - **gradient checkpointing의 완전한 정의.** 메모리와 계산을 맞바꾸는 방법이고 두 부분으로 된다. 순전파에서는 고른 **체크포인트**에서만 활성값을 저장하고, 역전파에서는 각 구간의 VJP가 필요로 하기 직전에 그 구간의 활성값을 체크포인트부터 **재계산**한다. 비용은 대략 순전파 한 번 추가다. $n$층 네트워크에서 $\sqrt{n}$층마다 체크포인트를 두면 활성값 메모리가 $O(n)$에서 $O(\sqrt{n})$으로 준다(Chen et al., "Training Deep Nets with Sublinear Memory Cost," 2016).
-<svg viewBox="0 0 560 228" style="max-width:100%;height:auto" role="img" aria-label="파라미터마다 한 번 왼쪽에서 오른쪽으로 쓸어가는 순방향 모드와, 손실 하나에 대해 한 번 오른쪽에서 왼쪽으로 쓸어오는 역방향 모드">
+
+<svg viewBox="0 0 560 164" style="max-width:100%;height:auto" role="img" aria-label="파라미터마다 한 번 왼쪽에서 오른쪽으로 쓸어가는 순방향 모드와, 손실 하나에 대해 한 번 오른쪽에서 왼쪽으로 쓸어오는 역방향 모드">
   <defs><marker id="cbAk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
   <g fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.1">
     <rect x="70" y="38" width="52" height="26" rx="3"/><rect x="160" y="38" width="52" height="26" rx="3"/><rect x="250" y="38" width="52" height="26" rx="3"/><rect x="340" y="38" width="52" height="26" rx="3"/><circle cx="446" cy="51" r="14"/>
@@ -720,18 +793,21 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
     <text x="470" y="56">&#215; 10&#8311;회</text>
     <text x="470" y="126">&#215; 1회</text>
   </g>
-  <g font-size="9.5" fill="currentColor" opacity="0.8">
+  <g font-size="10.5" fill="currentColor" opacity="0.8">
     <text x="104" y="30">&#8706;/&#8706;&#952;&#7522;를 입력 쪽부터 민다 &#8212; 파라미터마다 한 번</text>
     <text x="104" y="100">&#8706;L/&#8706;(&#183;)를 출력에서 끌어온다 &#8212; 출력마다 한 번</text>
     <text x="70" y="84">파라미터 10&#8311;개</text>
     <text x="470" y="154">스칼라 손실 1개</text>
   </g>
-  <g font-size="10.5" fill="currentColor" opacity="0.9">
-    <text x="24" y="190">이 비대칭은 요령이 아니라 문제의 모양에서 곧장 나온다 &#8212; 입력이 많고 출력이 하나다. 역방향</text>
-    <text x="24" y="206">패스가 순방향의 2~3배 비용이므로 실제 차이는 약 7자릿수이고, 대형 모델 학습이 가능한 이유가</text>
-    <text x="24" y="222">오직 이것이다. 만약 하나의 입력에 대한 다수 출력의 민감도가 필요했다면 우열이 뒤집힌다.</text>
-  </g>
 </svg>
+
+*순방향 모드는 입력 방향 하나를 한 번에 네트워크 끝까지 밀므로 파라미터 $10^7$개에는 $10^7$번을 쓸어야 하고, 역방향 모드는 스칼라 손실 하나의 민감도를 네트워크를 따라 한 번 끌어오며, 그 한 번에서 모든 파라미터의 그래디언트가 나온다. 역방향 한 번이 순방향 두세 번의 비용이라 해도 차이는 여전히 약 7자릿수이고, 하나의 입력에 대한 다수 출력의 민감도가 필요했다면 우열이 뒤집힌다.*
+
+- 자동 미분의 동작: 각 기본 연산이 **VJP**(벡터-야코비안 곱) $v \mapsto J^\top v$를
+  제공하고, 프레임워크가 기록된 그래프를 따라 이를 합성한다.
+  비용 ≈ 순방향의 2~3배; 메모리 ≈ 저장된 활성값 (gradient checkpointing: 저장 대신 재계산).
+  - **VJP의 완전한 정의.** 야코비안이 $J$인 기본 연산 $y=f(x)$의 VJP는 출력 크기의 민감도 $v=\partial L/\partial y$를 입력 크기의 민감도 $J^\top v=\partial L/\partial x$로 보내는 선형 사상이다. 기본 연산은 이것을 규칙으로 제공하고 $J$를 만들지 않는다. 입출력이 $10^7$개인 층이라면 $J$의 성분이 $10^{14}$개이기 때문이다. §3에서 이미 쓰는 규칙 둘: 선형층 $y=Wx$의 VJP는 $v\mapsto W^\top v$, 원소별 ReLU의 VJP는 $v\mapsto v\odot\mathbb{1}[z>0]$이다.
+  - **gradient checkpointing의 완전한 정의.** 메모리와 계산을 맞바꾸는 방법이고 두 부분으로 된다. 순전파에서는 고른 **체크포인트**에서만 활성값을 저장하고, 역전파에서는 각 구간의 VJP가 필요로 하기 직전에 그 구간의 활성값을 체크포인트부터 **재계산**한다. 비용은 대략 순전파 한 번 추가다. $n$층 네트워크에서 $\sqrt{n}$층마다 체크포인트를 두면 활성값 메모리가 $O(n)$에서 $O(\sqrt{n})$으로 준다(Chen et al., "Training Deep Nets with Sublinear Memory Cost," 2016).
 
 **뒤로 간다는 것은 순전파를 되돌린다는 뜻이 아니다.** 순전파는 값을 전달한다. 역전파는 그 값에 대한 최종 손실의 민감도를 전달한다. 연산마다 도착한 민감도에 국소 미분을 곱한다. 값 하나가 여러 분기를 통해 손실에 영향을 주면 분기별 기여를 더한다. 공유 사용의 효과를 합해야지 마지막 분기만 세면 안 된다.
 
@@ -741,13 +817,14 @@ for eta_s in (0.05, 1/14, 0.1, 1/7, 0.2):
 
 ### 3. 계산 예제 — 2층 네트워크를 손으로
 
-네트워크: $z = W_1 x$, $h = \text{ReLU}(z)$, $\hat y = W_2 h$, 손실
+§2는 역방향 패스가 무엇을 계산하는지 말했지만, 한 번도 값을 넣어 보지 않은 식은 잘못 읽기 쉽다. 그래서 이 절은 숫자를 전부 검산할 수 있을 만큼 작은 신경망에서 그것을 손으로 한 번 돌린다. 네트워크: $z = W_1 x$, $h = \text{ReLU}(z)$, $\hat y = W_2 h$, 손실
 $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
 
 1. $\dfrac{\partial L}{\partial \hat y} = \hat y - y \quad$ (이것을 $\delta_2$라 하자)
 2. $\dfrac{\partial L}{\partial W_2} = \delta_2\, h^\top$ — **오차 × 입력**, *외적(outer product)*이다
    (열벡터 × 행벡터 → 행렬 하나가 나온다 — $W_2$와 같은 모양)
-3. $\dfrac{\partial L}{\partial h} = W_2^\top \delta_2$ — 오차를 거꾸로 사상한 것
+3. $\dfrac{\partial L}{\partial h} = W_2^\top \delta_2$ — 오차를 거꾸로 사상한 것. $\hat y=W_2h$는 $h$에 대해 선형이라
+   야코비안이 $W_2$ 자신이고, §2의 규칙이 들어온 민감도에 그 전치를 곱한다
 4. $\dfrac{\partial L}{\partial z} = W_2^\top \delta_2 \odot \mathbb{1}[z > 0]$ — ReLU의
    그래디언트는 마스크 (이것이 $\delta_1$)
 5. $\dfrac{\partial L}{\partial W_1} = \delta_1\, x^\top$
@@ -755,7 +832,7 @@ $L = \tfrac12\|\hat y - y\|^2$. 출력에서 입력으로 backward:
 **위 단계에 나온 표기 셋, 각각의 정의.** (손실 $L=\tfrac12\|\hat y-y\|^2$는 [[02-foundations/neural-network-basics|0.8 §3]]의 제곱 오차 손실이다.)
 - **외적(outer product).** 열벡터 $u\in\mathbb{R}^m$과 열벡터 $v\in\mathbb{R}^n$의 외적은 $m\times n$ 행렬이다.
   $$(uv^\top)_{ij} = u_i\,v_j$$
-  즉 모든 성분이 $u$의 성분 하나와 $v$의 성분 하나의 곱이다. 계수는 1이다(모든 행이 $v^\top$의 배수). 예: $u=(1,2)$, $v=(3,4,5)$이면 $\begin{pmatrix}3&4&5\\6&8&10\end{pmatrix}$. 대조되는 **내적** $u^\top v$는 숫자 하나이고 길이가 같아야 한다. 여기 나오는 이유: 가중치 $W_{ij}$가 입력 $h_j$를 출력 $i$로 보내며 곱해지기 때문에 $\partial L/\partial W_{ij}=\delta_i\,h_j$다.
+  즉 모든 성분이 $u$의 성분 하나와 $v$의 성분 하나의 곱이다. 랭크는 1이다(모든 행이 $v^\top$의 배수). 예: $u=(1,2)$, $v=(3,4,5)$이면 $\begin{pmatrix}3&4&5\\6&8&10\end{pmatrix}$. 대조되는 **내적** $u^\top v$는 숫자 하나이고 길이가 같아야 한다. 여기 나오는 이유: 가중치 $W_{ij}$가 입력 $h_j$를 출력 $i$로 보내며 곱해지기 때문에 $\partial L/\partial W_{ij}=\delta_i\,h_j$다.
 - **아다마르(원소별) 곱** $\odot$. 모양이 같은 두 벡터나 행렬에 대해
   $$(a\odot b)_i = a_i\,b_i$$
   즉 같은 자리 성분끼리 곱하고 모양을 유지한다. 예: $(-0.5,\,0.5,\,-0.25)\odot(1,0,1)=(-0.5,\,0,\,-0.25)$. 행렬곱이 아니다. $a\odot b$는 모양이 같아야 하고, $ab$는 안쪽 차원이 맞아야 한다.
@@ -775,7 +852,7 @@ $L = \tfrac12(0.5-1)^2 = 0.125$. 역전파는 위 단계마다 한 줄씩:
 | 4 | $\delta_1 = \partial L/\partial h \odot \mathbb{1}[z>0]$ | $z>0$이라 마스크가 $(1,1,1)$, 따라서 $\delta_1 = (-0.5,\,0.5,\,-0.25)$ |
 | 5 | $\partial L/\partial W_1 = \delta_1 x^\top$ | $\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$ |
 
-**계산: P1에서 SGD 한 스텝.** 이것이 장치 P1이다([[02-foundations/lab-plants|0.6]]). 학습률 $\eta=0.1$([[02-foundations/neural-network-basics|0.8 §3]]의 $\alpha$다. 이 페이지는 대부분의 논문처럼 $\eta$로 쓴다)로 $W_2$만: $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$. 같은 $h$로 $\hat y=1.20$, $L=0.020$. 한 스텝이 $y=1$을 지나쳤다 — 이 스케일에서 $\eta=0.1$은 작지 않다([[02-foundations/optimization|4]]). *그 스케일을 숫자로:* $W_2$만 한 스텝 움직이면 예측이 $-\eta\,\delta_2\,h^\top h = 7\eta$만큼 움직인다. $\delta_2=-0.5$이고 $h^\top h = 1+4+9 = 14$이기 때문이다. 그래서 $\eta = 1/14 \approx 0.071$이면 정확히 $y=1$에 닿고, 그보다 크면 지나치며, $\eta = 1/7 \approx 0.143$을 넘으면 새 손실 $\tfrac12(7\eta-0.5)^2$이 원래의 $0.125$보다 커진다 — 스텝이 오히려 나쁘게 만든다. 과제는 이 숫자를 출력하는 템플릿을 채우고, 그 경계를 가로질러 $\eta$를 쓸어 보게 한다.
+**계산: P1에서 SGD 한 스텝.** 이것이 장치 P1이다([[02-foundations/lab-plants|0.6]]). 학습률 $\eta=0.1$([[02-foundations/neural-network-basics|0.8 §3]]의 $\alpha$다. 이 페이지는 대부분의 논문처럼 $\eta$로 쓴다)로 $W_2$만: $W_2\leftarrow(1,-1,0.5)-0.1(-0.5,-1,-1.5)=(1.05,-0.9,0.65)$. 같은 $h$로 $\hat y=1.20$, $L=0.020$. 한 스텝이 $y=1$을 지나쳤다 — 이 스케일에서 $\eta=0.1$은 작지 않다([[02-foundations/optimization|4]]). *그 스케일을 숫자로:* $W_2$만 한 스텝 움직이면 예측이 $-\eta\,\delta_2\,h^\top h = 7\eta$만큼 움직인다. $\delta_2=-0.5$이고 $h^\top h = 1+4+9 = 14$이기 때문이다. 그래서 $\eta = 1/14 \approx 0.071$이면 정확히 $y=1$에 닿고, 그보다 크면 지나치며, $\eta = 1/7 \approx 0.143$을 넘으면 새 손실 $\tfrac12(7\eta-0.5)^2$이 원래의 $0.125$보다 커진다 — 스텝이 오히려 나쁘게 만든다. 과제는 $W_1$만 움직여 보고(2번) 이어서 두 층을 함께 움직여(3번) 이 경계가 어디로 옮겨 가는지 본다.
 
 눈여겨볼 것 셋, 그리고 이 셋은 앞으로 읽을 모든 신경망에 그대로 적용된다:
 - **부호는 국소적으로 무엇을 할지 말해준다.** $\delta_2 = -0.5$가 음수인 이유는 예측이
@@ -794,43 +871,16 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 그래디언트는 델타와 캐시된 활성값의 외적이다.* 차원 검산: 각 그래디언트는 그
 변수와 같은 모양이다 — 세상에서 가장 빠른 버그 검출기.
 
-<svg viewBox="0 0 560 175" style="max-width:100%;height:auto" role="img" aria-label="2층 신경망의 순전파와 역전파">
-  <defs><marker id="bpFk" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="currentColor"/></marker></defs>
-  <g fill="none" stroke="currentColor" stroke-width="1.4">
-    <rect x="20" y="52" width="62" height="34" rx="4"/><rect x="140" y="52" width="62" height="34" rx="4"/>
-    <rect x="260" y="52" width="72" height="34" rx="4"/><rect x="380" y="52" width="62" height="34" rx="4"/>
-    <rect x="490" y="52" width="52" height="34" rx="4"/>
-  </g>
-  <g font-size="12" fill="currentColor" text-anchor="middle">
-    <text x="51" y="74">x</text><text x="171" y="74">z = W<tspan dy="3.5">1</tspan><tspan dy="-3.5">x</tspan></text><text x="296" y="74">h = ReLU(z)</text><text x="411" y="74">ŷ = W<tspan dy="3.5">2</tspan><tspan dy="-3.5">h</tspan></text><text x="516" y="74">L</text>
-  </g>
-  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpFk)">
-    <line x1="82" y1="62" x2="138" y2="62"/><line x1="202" y1="62" x2="258" y2="62"/>
-    <line x1="332" y1="62" x2="378" y2="62"/><line x1="442" y1="62" x2="488" y2="62"/>
-  </g>
-  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#bpFk)" stroke-dasharray="5 3" opacity="0.85">
-    <line x1="488" y1="78" x2="444" y2="78"/><line x1="378" y1="78" x2="334" y2="78"/>
-    <line x1="258" y1="78" x2="204" y2="78"/><line x1="138" y1="78" x2="84" y2="78"/>
-  </g>
-  <g font-size="11" fill="currentColor" text-anchor="middle" opacity="0.85">
-    <text x="466" y="102">δ<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = ŷ − y</tspan></text><text x="356" y="102">W<tspan dy="3.5">2</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="231" y="102">⊙ 1[z&gt;0] = δ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text><text x="111" y="102">W<tspan dy="3.5">1</tspan><tspan dy="-3.5">ᵀδ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
-    <text x="411" y="128">∂L/∂W<tspan dy="3.5">2</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5">hᵀ</tspan></text><text x="171" y="128">∂L/∂W<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = δ</tspan><tspan dy="3.5">1</tspan><tspan dy="-3.5">xᵀ</tspan></text>
-  </g>
-  <g font-size="11.5" fill="currentColor">
-    <text x="20" y="34">순전파 →</text><text x="20" y="160" opacity="0.85">← 역전파(점선): 델타는 전치를 타고 흐르고, 가중치 그래디언트는 외적이다</text>
-  </g>
-</svg>
-
-
-
 ### 4. 고전 층들의 그래디언트
 
-*두 번째 읽기. 항목마다 층 하나의 역방향 규칙을 끝까지 유도한다. 지금 읽는 논문이 쓰는 층만 읽어라. 처음에는 §3에서 §6으로 건너뛴다.*
+*두 번째 읽기다. 다만 §4.1의 첫 항목은 계산 예제까지 처음부터 읽는다. 스스로 점검 2가 그 결과 $\partial L/\partial z=p-y$를 쓰고 기초 통과 점검이 그것을 묻기 때문이다. 나머지 항목은 층 하나의 역방향 규칙을 끝까지 유도한 것이니, 지금 읽는 논문이 쓰는 층만 읽어라.*
+
+실제 신경망은 몇 가지 층으로 조립되고, 학습은 층마다 그 역방향 규칙을 돌리는 일이다. 논문이 어떤 층을 고른 이유는 흔히 그 규칙이 그래디언트를 어떻게 다루는가에 있다.
 
 #### 4.1 Softmax와 교차 엔트로피
 
 - **Softmax + 교차 엔트로피** — 이 분야에서 가장 깔끔한 결과이고, 지나간 주제가 *아니다*:
-  지금도 모든 LLM이 이것으로 학습된다(다음 토큰 예측 = 어휘 전체에 대한 softmax 하나를
+  지금도 모든 대형 언어 모델(LLM)이 이것으로 학습된다(다음 토큰 예측 = 어휘 전체에 대한 softmax 하나를
   교차 엔트로피 — 손실 $-\log p_{\text{정답}}$, 유도는 [[02-foundations/information-theory|5. 정보이론 §2]] — 로 채점하는 것). 모든 분류 헤드가 이것이고, softmax는 어텐션 내부의 연산
   그 자체다([[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer]]).
   로봇 정책도 행동을 토큰으로 이산화하면 이것을 쓴다
@@ -870,6 +920,8 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 
 *§4처럼 두 번째 읽기다: 구조의 역사(LSTM, BatchNorm, ResNet)와 그래프를 끊는 도구들(stop-gradient, 재매개변수화, EMA). 논문이 그중 하나에 기댈 때 읽어라.*
 
+깊은 신경망은 한때 역방향 신호가 여러 층을 지나며 줄어들거나 폭발해 학습되지 않았다. 오늘날 구조의 상당 부분이 그 처방들이고, §5.2의 그래프를 자르는 도구는 같은 장치를 일부러 쓴다.
+
 #### 5.1 그래디언트 소실과 폭발
 
 - **그래디언트 소실**: 노름 < 1인 야코비안들의 곱은 깊이/시간에 지수적으로 붕괴.
@@ -887,7 +939,7 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
     $$\frac{\partial L}{\partial h_0} = J_1^\top J_2^\top\cdots J_T^\top\,\frac{\partial L}{\partial h_T}$$
     즉 첫 층에 닿는 신호는 행렬 $T$개를 통과했고, 크기는 $\big\lVert\partial L/\partial h_0\big\rVert\le\prod_t\lVert J_t\rVert\,\big\lVert\partial L/\partial h_T\big\rVert$로 묶인다. **소실**은 모든 $\lVert J_t\rVert\le\rho<1$인 경우이고, 적어도 $\rho^{T}$만큼 빠른 감쇠를 강제한다. 스칼라 야코비안 $0.9$가 $50$스텝 이어지면 그래디언트에 $0.9^{50}=0.0052$가 곱해진다. 결과: 뒤쪽 층은 여전히 배우는데 앞쪽 층이나 앞쪽 시간 스텝은 배우기를 멈춘다. 모든 인수가 같은 순환 행렬이면 곱은 장기적 운명을 스펙트럼 반경이 정하는 행렬 거듭제곱이고, 비정규 행렬은 사라지기 전에 먼저 커질 수도 있음을 [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델 §3]]이 보인다.
 - **그래디언트 폭발**: 노름 > 1 — gradient clipping($\|g\|$를 상한으로 재스케일)으로
-  처치, RNN/LLM 학습의 표준.
+  처치, 순환 신경망(RNN)과 LLM 학습의 표준.
   - **식으로 쓰면.** 같은 곱의 인수가 $1$보다 크면 $\rho^{T}$처럼 커질 수 있다. 스칼라 야코비안 $1.1$이 $50$스텝이면 그래디언트에 $1.1^{50}=117$이 곱해지고, 그런 스텝 한 번이 가중치를 손실이 말이 되던 영역 밖으로 던질 수 있다. 상한 $c$의 **노름 클리핑**은 그래디언트 $g$를 이렇게 재스케일한다.
     $$g \leftarrow g\cdot\min\!\Big(1,\ \frac{c}{\lVert g\rVert}\Big)$$
     그래서 이미 $c$보다 짧은 그래디언트는 그대로이고, 긴 것은 방향을 유지한 채 길이가 정확히 $c$로 줄어든다. 예: $g=(3,4)$는 길이 $5$이고, $c=1$이면 $(0.6,\,0.8)$이 된다.
@@ -908,54 +960,65 @@ $\delta$에 적용한 것 — §2가 추상적으로 말한 것을 방금 손으
 
 ### 6. 구현자의 눈으로 수식 읽기
 
+논문은 목적 함수를 기댓값, argmax, 샘플로 쓰는데, 프레임워크는 그 어느 것도 쓰인 그대로는 역전파하지 못한다. 기댓값은 데이터 전체에 대한 합이고, argmax는 값이 뛰고, 샘플은 무작위이기 때문이다. 이 절은 각각이 코드에서 무엇이 되는지 말해, 논문의 식을 그것을 학습시키는 프로그램으로 읽게 한다.
+
 - 학습 데이터에 대한 기댓값은 흔히 미니배치 평균으로 추정하지만, 유한 합·해석적 기댓값·
   동적계획법으로 직접 계산할 수 있는 경우도 있다. 딥러닝에서는 계산하기 어렵거나
-  reparameterize할 수 없는 기댓값을 흔히 하한([[02-foundations/information-theory|ELBO]]),
-  몬테카를로 추정, 또는 그래디언트 추정 기법(reparameterization;
-  우도비/정책 그래디언트 — [[02-foundations/rl-basics|RL 기초]])이 된다.
+  reparameterize할 수 없는 기댓값은 흔히 하한([[02-foundations/information-theory|ELBO]]),
+  몬테카를로 추정(무작위 표본의 평균), 또는 그래디언트 추정 기법(reparameterization, §5.2;
+  우도비·정책 그래디언트 — [[02-foundations/rl-basics|RL 기초]])으로 다룬다.
   - **미니배치 추정의 완전한 정의.** 학습 손실이 예제 $N$개의 손실 $\ell_i$의 평균일 때, 크기 $|B|$의 무작위 부분집합 $B$에 대한 미니배치 그래디언트는
     $$\hat g = \frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(\theta)\ \approx\ \frac{1}{N}\sum_{i=1}^{N}\nabla\ell_i(\theta)$$
     이고 **불편**이다. 가능한 모든 배치에 대해 평균하면 전체 그래디언트와 같으므로, 한 번 뽑을 때마다 시끄럽지만 평균적으로는 맞다. 숫자로 푼 예는 [[02-foundations/optimization|4. 최적화 §3]]에 있다.
 - $\arg\max$는 미분 불가능하다; softmax가 그 매끄러운 대역이다(온도가 날카로움을 조절).
-  샘플링도 미분 불가능하다; Gumbel-softmax / straight-through 추정기가 흉내 낸다. Gumbel-softmax는 이산 샘플을 잡음을 더한 로짓의 매끄러운 softmax(온도로 날카로움 조절)로 바꾸고, straight-through는 순방향에서는 딱딱한 샘플을 쓰되 역방향에서는 매끄러운 쪽의 그래디언트를 흘려보낸다.
+  샘플링도 미분 불가능하다; Gumbel-softmax / straight-through 추정기가 흉내 낸다. 그 방법은 이 절 끝의 접힌 상자에 있다.
   - **온도가 있는 softmax.** 온도 $\tau>0$에서
     $$p_j = \frac{e^{z_j/\tau}}{\sum_k e^{z_k/\tau}}$$
     그래서 $\tau=1$이면 평범한 softmax, 작은 $\tau$는 $\arg\max$의 원-핫 벡터 쪽으로 날카로워지고, 큰 $\tau$는 균등 분포 쪽으로 평평해진다. $z=(2,1,0)$에서 $\tau=1$은 $(0.665,\,0.245,\,0.090)$, $\tau=0.5$는 $(0.867,\,0.117,\,0.016)$, $\tau=0.1$은 $(0.99995,\,0.00005,\,0.00000)$이다. $\arg\max$ 자체가 반례다. 출력이 원-핫 벡터 사이를 뛰어다니므로 도함수가 거의 모든 곳에서 0이다.
-  - **Gumbel-softmax의 완전한 정의.** 세 단계다. $(0,1)$에서 균등하게 $u_j$를 뽑아 굼벨 잡음 $g_j=-\log(-\log u_j)$를 만든다. 그러면 $\arg\max_j(z_j+g_j)$가 $\text{softmax}(z)$의 정확한 샘플이다(굼벨-맥스 트릭). 마지막으로 그 $\arg\max$를 온도 softmax로 바꾼다.
-    $$y_j = \frac{e^{(z_j+g_j)/\tau}}{\sum_k e^{(z_k+g_k)/\tau}}$$
-    $y$는 $z$에 대해 매끄럽고 $\tau\to0$이면 원-핫 샘플에 다가가기 때문이다. 예: $z=(2,1,0)$, $u=(0.1,\,0.9,\,0.5)$이면 $g=(-0.834,\,2.250,\,0.367)$, $z+g=(1.166,\,3.250,\,0.367)$이라 이번 추출은 로짓이 더 큰 클래스 1이 아니라 클래스 2를 고른다. 샘플링이라면 가끔 그래야 한다. $\tau=1$에서 $y=(0.105,\,0.847,\,0.047)$, $\tau=0.5$에서 $y=(0.015,\,0.982,\,0.003)$이다.
-  - **straight-through의 완전한 정의.** 순전파에서는 딱딱한 원-핫 $y_{\text{hard}}$를, 역전파에서는 부드러운 $y$의 그래디언트를 쓴다. §5의 stop-gradient로 쓰면
-    $$y_{\text{ST}} = y_{\text{hard}} - \text{sg}[y] + y$$
-    순전파 값은 $y_{\text{hard}}-y+y=y_{\text{hard}}$이고, 역전파는 딱딱한 두 항이 아무것도 보태지 않아 $\partial y_{\text{ST}}/\partial z=\partial y/\partial z$를 보기 때문이다. 그래서 그래디언트는 편향되어 있다. 조금 다른 매끄러운 계산의 그래디언트다.
 - 프레임워크는 수식이 아니라 *프로그램*을 미분한다: 제어 흐름, 루프, in-place 연산에 전부
   그래디언트 의미론이 있다 — "손실이 안 줄어요" 버그의 대부분은 그래프 버그다.
+
+> [!note]- 더 깊이 · Deeper
+> **softmax를 거친 샘플링: Gumbel-softmax와 straight-through.** 둘 다 바로 다음 페이지 [[02-foundations/probability|3. 확률]]이 소개하는 샘플링에 기대고, straight-through는 §5.2의 stop-gradient에도 기대므로 두 번째 읽기에 속한다. Gumbel-softmax는 이산 샘플을 잡음을 더한 로짓의 매끄러운 softmax(온도로 날카로움 조절)로 바꾸고, straight-through는 순방향에서는 딱딱한 샘플을 쓰되 역방향에서는 매끄러운 쪽의 그래디언트를 흘려보낸다.
+>
+> **Gumbel-softmax의 완전한 정의.** 세 단계다. $(0,1)$에서 균등하게 $u_j$를 뽑아 굼벨 잡음 $g_j=-\log(-\log u_j)$를 만든다. 그러면 $\arg\max_j(z_j+g_j)$가 $\text{softmax}(z)$의 정확한 샘플이다(굼벨-맥스 트릭). 마지막으로 그 $\arg\max$를 온도 softmax로 바꾼다.
+> $$y_j = \frac{e^{(z_j+g_j)/\tau}}{\sum_k e^{(z_k+g_k)/\tau}}$$
+> $y$는 $z$에 대해 매끄럽고 $\tau\to0$이면 원-핫 샘플에 다가가기 때문이다. 예: $z=(2,1,0)$, $u=(0.1,\,0.9,\,0.5)$이면 $g=(-0.834,\,2.250,\,0.367)$, $z+g=(1.166,\,3.250,\,0.367)$이라 이번 추출은 로짓이 더 큰 클래스 1이 아니라 클래스 2를 고른다. 샘플링이라면 가끔 그래야 한다. $\tau=1$에서 $y=(0.105,\,0.847,\,0.047)$, $\tau=0.5$에서 $y=(0.015,\,0.982,\,0.003)$이다.
+>
+> **straight-through의 완전한 정의.** 순전파에서는 딱딱한 원-핫 $y_{\text{hard}}$를, 역전파에서는 부드러운 $y$의 그래디언트를 쓴다. §5의 stop-gradient로 쓰면
+> $$y_{\text{ST}} = y_{\text{hard}} - \text{sg}[y] + y$$
+> 순전파 값은 $y_{\text{hard}}-y+y=y_{\text{hard}}$이고, 역전파는 딱딱한 두 항이 아무것도 보태지 않아 $\partial y_{\text{ST}}/\partial z=\partial y/\partial z$를 보기 때문이다. 그래서 그래디언트는 편향되어 있다. 조금 다른 매끄러운 계산의 그래디언트다.
 
 > [!tip] 더 깊이 · Going deeper
 > 아래 깔린 기계장치를 보려면: Baydin, Pearlmutter, Radul, Siskind, "Automatic Differentiation in Machine Learning: a Survey," *JMLR* 18(153), 2018 — 순방향과 역방향 모드를 정확히 가른 논문이다. 역전파를 알고리즘으로 다루는 것은 [*Deep Learning* 책](https://www.deeplearningbook.org/) 6장.
 
 ### 스스로 점검
 
-1. 계산 예제를 $K$-클래스 출력($W_2 \in \mathbb{R}^{K\times 3}$)과 MSE 대신 softmax-CE로 바꾸면 무엇이 바뀌는가? (예제의 스칼라 출력 하나에 softmax를 걸면 항상 1이라 그래디언트가 0이 된다.)
-2. $\partial(x + F(x))/\partial x = I + J_F$를 보이고, 깊이가 더는 감쇠를 강제하지 않는 이유를
-   설명하라.
+1. 입력을 $x=(-2,1)$로 바꾸고 가중치와 목표 $y=1$은 그대로 둔 P1. $z$, ReLU 마스크, $\hat y$, $L$, $\partial L/\partial W_2$, $\partial L/\partial W_1$을 구하라. 두 그래디언트에서 0인 성분은 무엇이며, 왜 이 예제에서는 $W_2$의 성분 하나와 $W_1$의 행 하나만 배우는가?
+2. 계산 예제를 $K$-클래스 출력($W_2 \in \mathbb{R}^{K\times 3}$)과 MSE 대신 softmax-CE로 바꾸면 무엇이 바뀌는가? (예제의 스칼라 출력 하나에 softmax를 걸면 항상 1이라 그래디언트가 0이 된다.)
 3. 순방향 모드 자동 미분은 왜 *입력 파라미터마다* 한 패스가 들고, 그것이 7B 모델에 왜
    치명적인가?
-4. [[01-canonical-papers/notes/6-diffusion/vae|VAE]]에서 $z \sim \mathcal{N}(\mu, \sigma^2)$를 직접
+4. *(두 번째 읽기, §5.1.)* $\partial(x + F(x))/\partial x = I + J_F$를 보이고, 깊이가 더는 감쇠를 강제하지 않는 이유를
+   설명하라.
+5. *(두 번째 읽기, §5.2.)* [[01-canonical-papers/notes/6-diffusion/vae|VAE]]에서 $z \sim \mathcal{N}(\mu, \sigma^2)$를 직접
    역전파할 수 없는 이유는, 그리고 $z = \mu + \sigma\epsilon$이 이를 고치는 방식은?
 
 > [!tip]- 스스로 점검 정답 · Answers
-> 1. $\delta_2$가 스칼라 $\hat y - y$ 대신 $K$-벡터 $p - y$(softmax+CE의 결과)가 된다. 2~5단계는 $W_2$가 $K\times 3$이 된 채로 같은 공식을 쓴다.
-> 2. 합의 미분 = 미분의 합: $I + \partial F/\partial x$ — 항등 항 덕분에 역방향 신호가 아무리 깊어도 곱해 줄어들지 않는 경로를 하나 갖는다. 즉 깊이가 감쇠를 *강제하지* 않게 될 뿐이고, 전체 gradient가 절대 줄지 않는다는 보장은 아니다.
+> 1. 순전파: $z=W_1x=(-2,\,1,\,-1)$, 마스크 $(0,1,0)$, $h=(0,1,0)$, $\hat y=-1$, $L=\tfrac12(-2)^2=2$. 역전파: $\delta_2=-2$, $\partial L/\partial W_2=\delta_2h^\top=(0,\,-2,\,0)$, $\partial L/\partial h=W_2^\top\delta_2=(-2,\,2,\,-1)$이고 마스크가 가운데 성분만 남기므로 $\delta_1=(0,\,2,\,0)$, $\partial L/\partial W_1=\delta_1x^\top=\begin{pmatrix}0&0\\-4&2\\0&0\end{pmatrix}$. 이 입력에서는 은닉 유닛 셋 중 둘이 꺼져 있다. 순전파 출력이 $0$이라 $\partial L/\partial W_2$의 그 성분이 $0$이고, 마스크가 역전파 신호를 끊어 $\partial L/\partial W_1$의 그 행도 $0$이다. 오차를 나르는 것은 가운데 유닛의 경로뿐이고, 경사 하강은 너무 낮은 예측을 끌어올리려고 $W_{2,2}$를 올린다(그래디언트가 $-2$).
+> 2. $\delta_2$가 스칼라 $\hat y - y$ 대신 $K$-벡터 $p - y$(softmax+CE의 결과)가 된다. 2~5단계는 $W_2$가 $K\times 3$이 된 채로 같은 공식을 쓴다.
 > 3. 순방향 모드는 입력 방향 하나당 전체 패스 한 번 — 7B 파라미터면 패스 7B번이 필요해 불가능; 역방향은 스칼라 손실(출력 1개) 기준 한 번이면 된다.
-> 4. 샘플링은 미분 불가능한 확률적 분기다; $z = \mu + \sigma\epsilon$으로 쓰면 무작위성이 외부 입력 $\epsilon$으로 밀려나 $\mu, \sigma$에 그래디언트가 흐른다.
+> 4. 합의 미분 = 미분의 합: $I + \partial F/\partial x$ — 항등 항 덕분에 역방향 신호가 아무리 깊어도 곱해 줄어들지 않는 경로를 하나 갖는다. 즉 깊이가 감쇠를 *강제하지* 않게 될 뿐이고, 전체 gradient가 절대 줄지 않는다는 보장은 아니다.
+> 5. 샘플링은 미분 불가능한 확률적 분기다; $z = \mu + \sigma\epsilon$으로 쓰면 무작위성이 외부 입력 $\epsilon$으로 밀려나 $\mu, \sigma$에 그래디언트가 흐른다.
 
 ### 과제 · Problem set
 
 Tier A. [[02-foundations/lab-plants|0.6]]의 **P1**. 오일러 없음. “루프”는 SGD 한 스텝. 영어 템플릿을 채워라.
 
 1. **그리기.** 입력이 $x=(2,-1)$이고 가중치와 목표 $y=1$은 같을 때의 위 그림: $x \to z=W_1 x \to h=\mathrm{ReLU}(z) \to \hat y=W_2 h \to L=\tfrac12(\hat y-y)^2$의 각 노드 값, 은닉 유닛마다 ReLU 마스크 비트, 사슬 아래의 역전파 값. 사슬이 끊기는 자리에 동그라미를 치고, 두 가중치 그래디언트 가지에서 0이 되는 성분이 무엇이며 왜 그런지 말하라.
-2. **유도.** $\delta_2$, $\partial L/\partial W_2$, $\partial L/\partial h$, $\delta_1$, $\partial L/\partial W_1$. $\eta=0.1$로 $W_2$만 SGD 한 스텝.
-3. **실행.** 영어 템플릿. 새 $W_2$와 한 스텝 뒤 $L$을 출력하라. 그다음 끝의 루프가 원래 $W_2$에서 $\eta = 0.05,\ 1/14,\ 0.1,\ 1/7,\ 0.2$로 스텝을 다시 하게 하라: 어느 $\eta$에서 한 스텝이 정확히 $y=1$에 닿고, 어느 $\eta$를 넘으면 손실이 $0.125$보다 커지는가?
+2. **유도.** §3과 같은 신경망과 입력에서, 이번에는 $\eta=0.1$의 SGD 한 스텝을 $W_1$에만 적용하라. §3의 $\partial L/\partial W_1$로 $W_1\leftarrow W_1-\eta\,\partial L/\partial W_1$을 쓰고, 다시 순전파해 새 $\hat y$와 $L$을 구하라. 그다음 마스크 비트가 하나도 바뀌지 않는 동안 $W_1$만 움직인 스텝이 예측을 $-\eta\,\delta_2\,(x^\top x)\sum_i W_{2,i}^2\,\mathbb{1}[z_i>0]$만큼 옮긴다는 것을 보이고, 정확히 $y=1$에 닿는 $\eta$를 구하라.
+3. **실행.** 영어 템플릿의 `?`를 채워라. 학습 스텝은 §3이나 2번처럼 층 하나가 아니라, 층마다 자기 그래디언트로 모든 층을 한꺼번에 움직인다. 템플릿은 §3의 숫자에서 $\delta_2$, $\partial L/\partial W_2$, $\delta_1$, $\partial L/\partial W_1$을 계산하고, 끝의 루프가 카탈로그 가중치에서 *두* 층을 함께 한 스텝 움직여 $\eta = 0.02,\ 0.0396,\ 0.05,\ 0.0792,\ 0.1$마다 새 $\hat y$와 $L$을 출력한다. 1차까지는 전체 스텝이 예측을 §3의 $7\eta$에 2번의 $5.625\eta$를 더한 만큼 옮기므로, $\eta=0.0396$에서 $y=1$에 닿고 $\eta=0.0792$를 넘으면 손실이 $0.125$보다 커져야 함을 보여라. 두 값은 왜 §3의 $1/14$, $1/7$의 약 $0.55$배이고, 출력은 왜 두 예측을 조금씩 넘는가?
+
+템플릿은 [[02-foundations/lab-kernel|0.7 Lab Kernel §5]]의 빈칸 채우기 방식을 따른다. `?`만 채우고 루프는 고쳐 쓰지 않는다. NumPy에서 `@`는 행렬곱, `.T`는 전치, `*`는 원소별 곱(§3의 $\odot$)이다. `(z > 0)`은 참과 거짓으로 된 마스크 열이고 곱하면 1과 0으로 쓰인다. `.reshape(2, 1)`은 길이 2인 입력을 $2\times1$ 열벡터로 바꿔 모든 줄이 §3 표의 모양을 지키게 한다. 모양과 reshape는 [[02-foundations/tools/python-research-code|12.3 연구 코드를 위한 Python §3]]에 있다.
 
 > [!note]- 그리는 법 · How to draw it
 > - 순전파 사슬은 왼쪽에서 오른쪽으로, 상자 다섯을 화살표 넷으로 잇는다. $x$, $z=W_1x$, $h=\mathrm{ReLU}(z)$, $\hat y=W_2h$, $L=\tfrac12(\hat y-y)^2$이고, 상자마다 안에 $x=(2,-1)$일 때의 값을 쓴다.
@@ -968,5 +1031,5 @@ Tier A. [[02-foundations/lab-plants|0.6]]의 **P1**. 오일러 없음. “루프
 
 > [!tip]- 정답 · Solutions
 > 1. 순전파: $z=W_1x=(2,-1,1)$, 마스크 $(1,0,1)$, $h=(2,0,1)$, $\hat y=2-0+0.5=2.5$, $L=\tfrac12(1.5)^2=1.125$. 역전파: $\delta_2=2.5-1=1.5$, $\partial L/\partial h=W_2^\top\delta_2=(1.5,-1.5,0.75)$이고, 0인 비트가 가운데 성분을 끊으므로 $\delta_1=(1.5,0,0.75)$. 가지: $\partial L/\partial W_2=\delta_2h^\top=(3,0,1.5)$, $\partial L/\partial W_1=\delta_1x^\top=\begin{pmatrix}3&-1.5\\0&0\\1.5&-0.75\end{pmatrix}$. 둘 다 가운데 유닛에서 0이지만 이유가 다르다. $W_2$의 가운데 성분은 그 유닛의 *순전파* 출력 $h_2$가 $0$이라서, $W_1$의 가운데 행은 $\partial L/\partial h_2=-1.5$가 도착했는데도 *역전파* 신호가 마스크에서 끊겨서 0이다. 카탈로그 입력 $x=(1,2)$는 비트가 모두 $1$이라 위 그림에는 끊긴 곳이 없다.
-> 2. $\delta_2=-0.5$, $\partial L/\partial W_2=(-0.5,-1,-1.5)$, $\partial L/\partial h=(-0.5,0.5,-0.25)=\delta_1$, $\partial L/\partial W_1=\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$. $W_2\leftarrow(1.05,-0.9,0.65)$.
-> 3. 빈칸은 영어 해. 새 $\hat y=1.20$, $L_2=0.020$. 한 스텝이 목표를 지나쳤다 — 이 스케일에서 $\eta=0.1$은 작지 않다. 쓸기 빈칸은 `eta_s * dW2`이고(실행 코드는 영어 해), 출력은 $\eta = 0.05,\ 0.0714,\ 0.1,\ 0.1429,\ 0.2$에서 $\hat y = 0.850,\ 1.000,\ 1.200,\ 1.500,\ 1.900$, $L = 0.01125,\ 0,\ 0.02,\ 0.125,\ 0.405$다. 매 행이 §3에서 유도한 $\hat y = 0.5 + 7\eta$다. $\eta = 1/14$은 정확히 $y=1$에 닿고, $\eta = 1/7$은 $1.5$까지 흔들려 원래 손실 $0.125$와 같아질 뿐이며, $\eta = 0.2$는 손실을 처음보다 세 배 넘게 나쁘게 만든다. $0.05$ 행은 [[02-foundations/neural-network-basics|0.8 §3]]의 손 계산 갱신이다.
+> 2. $\eta\,\partial L/\partial W_1=0.1\begin{pmatrix}-0.5&-1\\0.5&1\\-0.25&-0.5\end{pmatrix}$이므로 $W_1\leftarrow\begin{pmatrix}1.05&0.1\\-0.05&0.9\\1.025&1.05\end{pmatrix}$. 다시 순전파하면 $z=(1.25,\ 1.75,\ 3.125)$, 마스크 비트는 여전히 모두 $1$, $\hat y=1.25-1.75+1.5625=1.0625$, $L=\tfrac12(0.0625)^2=0.00195$. 식으로는 스텝이 $z=W_1x$를 $\Delta z=-\eta\,\delta_1x^\top x=-\eta\,(x^\top x)\,\delta_1$만큼 바꾸고, 마스크가 그대로인 동안 $\Delta\hat y=W_2\Delta z=-\eta\,(x^\top x)\,W_2\delta_1$이며, $W_2\delta_1=\delta_2\sum_iW_{2,i}^2\mathbb{1}[z_i>0]=-0.5\times2.25=-1.125$다. 그래서 $\Delta\hat y=-0.1\times5\times(-1.125)=0.5625$ ✓이고, $5.625\,\eta=0.5$, 곧 $\eta=0.0889$에서 정확히 $y=1$에 닿는다. 같은 $\eta$가 §3의 $W_2$ 스텝보다 예측을 덜 옮기는 것은 배율이 여기서는 $(x^\top x)\lVert W_2\rVert^2=11.25$, 거기서는 $h^\top h=14$이기 때문이고, 그래서 $\eta=0.1$이 덜 지나친다.
+> 3. 빈칸은 `d2 = yhat - y`, `dW2 = d2 * h.T`, `d1 = W2.T * d2 * (z > 0)`, `dW1 = d1 @ x.T`이다. §3의 1, 2, 3–4, 5단계다. 첫 출력은 $\delta_2=-0.5$와 §3의 두 그래디언트다. 채운 루프(코드는 영어 해)는 $\eta = 0.02,\ 0.0396,\ 0.05,\ 0.0792,\ 0.1$에서 $\hat y = 0.7528,\ 1.0009,\ 1.1328,\ 1.5038,\ 1.7688$, $L = 0.03057,\ 0.00000,\ 0.00882,\ 0.12692,\ 0.29549$를 출력한다. 마스크 비트가 바뀌지 않는 동안 스텝은 $h$를 $\Delta h=-\eta\,(x^\top x)\,\delta_1$만큼 바꾸고(2번), 새 예측은 $(W_2-\eta\,\partial L/\partial W_2)(h+\Delta h)$다. 그래서 예측은 §3의 $W_2$ 몫 $7\eta$, 2번의 $W_1$ 몫 $5.625\eta$, 그리고 두 변화의 곱 하나만큼 움직인다: $\hat y=0.5+12.625\,\eta+0.625\,\eta^2$. 1차까지 보면 $\eta=0.5/12.625=0.0396$에서 $y=1$에 닿고 $1/12.625=0.0792$에서 원래 손실과 같아지는데, 이는 §3의 $1/14$, $1/7$의 $14/25.25=0.55$배다. 층마다 그래디언트를 다른 층이 가만히 있다고 보고 계산하므로 두 층의 배율 $14$와 $11.25$가 더해지기 때문이다. 곱의 항이 예측을 조금 더 밀어서 그 두 $\eta$에서 $1.0009$와 손실 $0.12692$가 출력되고, 정확히는 $\eta=0.0395$에서 닿고 $0.0789$를 넘으면 손실이 나빠진다. $\eta=0.1$에서는 §3의 $W_2$만의 $1.20$과 2번의 $W_1$만의 $1.0625$가 합쳐져 $1.7688$이 된다. 층 하나에는 안전한 보폭도 모든 층이 함께 움직이면 지나칠 수 있다.

@@ -512,7 +512,7 @@ since each row of $R_{CL}$ names the LiDAR axis a camera axis equals. Inverting 
 
 $$e=v\,\Delta t$$
 
-because in $\Delta t$ the rig covers $v\Delta t$; a rotation at $\omega$ adds $\omega\,\Delta t\,R$ at range $R$. At $0.5\,\mathrm{m/s}$ each millisecond is $0.5\,\mathrm{mm}$: $5\,\mathrm{mm}$ at $10\,\mathrm{ms}$ and $35\,\mathrm{mm}$ at P6's $70\,\mathrm{ms}$ budget — the $35\,\mathrm{mm}$ 3.2 §5 finds for a frame acted on late. At the facade $10\,\mathrm{ms}$ is $1.5$ px, exactly the blur of a $10\,\mathrm{ms}$ exposure: blur is this law smeared over the exposure.
+because in $\Delta t$ the rig covers $v\Delta t$; a rotation at $\omega$ adds $\omega\,\Delta t\,R$ at range $R$. At $0.5\,\mathrm{m/s}$ each millisecond is $0.5\,\mathrm{mm}$: $5\,\mathrm{mm}$ at $10\,\mathrm{ms}$ and $35\,\mathrm{mm}$ at P6's $70\,\mathrm{ms}$ budget — the $35\,\mathrm{mm}$ 3.2 §5 finds for a frame acted on late. At the facade $10\,\mathrm{ms}$ is $1.5$ px, exactly the blur of a $10\,\mathrm{ms}$ exposure: blur is this law smeared over the exposure. A headset draws a hologram by the same law, and its rotation term, a head turning at $\omega$ with $\tau$ of latency, is the one line of [[04-robotics/xr-human-robot-collaboration|23.5 XR for Human–Robot Collaboration §3]]'s registration budget that grows with head speed.
 
 > **Time offset, defined.** A **time offset** is a *signed error between a measurement's stamp and the instant the measurement describes*, or between two sensors' clocks — a bias in time, not jitter. Three conditions: each sensor has a defined **reference instant** — mid-exposure for an image (a row's mid-exposure under a rolling shutter), the firing time for a LiDAR point, the chirp frame for a radar detection; the stamps are read on a **common clock**, or clocks whose relation is known; and the rig or scene **moves** during $\Delta t$ — a stationary rig makes any offset harmless, which is why a static test cannot find one.
 >
@@ -1457,7 +1457,7 @@ $R_{CL}$의 각 행은 카메라 축이 어느 LiDAR 축과 같은지를 적은 
 
 $$e=v\,\Delta t$$
 
-$\Delta t$ 동안 리그가 $v\Delta t$를 가기 때문이고, 각속도 $\omega$의 회전은 거리 $R$에서 $\omega\,\Delta t\,R$을 더한다. $0.5\,\mathrm{m/s}$에서 $1$밀리초는 $0.5\,\mathrm{mm}$다. $10\,\mathrm{ms}$면 $5\,\mathrm{mm}$, P6의 $70\,\mathrm{ms}$ 예산이면 $35\,\mathrm{mm}$ — 3.2 §5가 늦게 쓰인 프레임에서 찾은 바로 그 $35\,\mathrm{mm}$다. 파사드에서 $10\,\mathrm{ms}$는 $1.5$ px로, $10\,\mathrm{ms}$ 노출의 블러와 똑같다. 블러는 이 법칙을 노출 시간에 걸쳐 번지게 한 것이다.
+$\Delta t$ 동안 리그가 $v\Delta t$를 가기 때문이고, 각속도 $\omega$의 회전은 거리 $R$에서 $\omega\,\Delta t\,R$을 더한다. $0.5\,\mathrm{m/s}$에서 $1$밀리초는 $0.5\,\mathrm{mm}$다. $10\,\mathrm{ms}$면 $5\,\mathrm{mm}$, P6의 $70\,\mathrm{ms}$ 예산이면 $35\,\mathrm{mm}$ — 3.2 §5가 늦게 쓰인 프레임에서 찾은 바로 그 $35\,\mathrm{mm}$다. 파사드에서 $10\,\mathrm{ms}$는 $1.5$ px로, $10\,\mathrm{ms}$ 노출의 블러와 똑같다. 블러는 이 법칙을 노출 시간에 걸쳐 번지게 한 것이다. 헤드셋도 같은 법칙으로 홀로그램을 그리고, 그 회전 항 — $\omega$로 도는 머리와 지연 $\tau$ — 은 [[04-robotics/xr-human-robot-collaboration|23.5 사람–로봇 협업을 위한 XR §3]]의 정합 예산에서 머리 속도와 함께 커지는 유일한 줄이다.
 
 > **시간 오프셋의 정의.** **시간 오프셋**(time offset)은 *측정의 스탬프와 그 측정이 가리키는 순간 사이의 부호 있는 오차*, 또는 두 센서 시계 사이의 오차다. 지터가 아니라 시간의 편향이다. 조건 셋. 센서마다 **기준 순간**이 정의되어 있다 — 영상은 노출 중간(롤링 셔터면 행마다의 노출 중간), LiDAR 점은 발사 시각, 레이더 검출은 처프 프레임. 스탬프를 **공통 시계**로, 또는 관계를 아는 시계들로 읽는다. 그리고 $\Delta t$ 동안 리그나 장면이 **움직인다**. 서 있는 리그에서는 어떤 오프셋도 무해하고, 그래서 정지 시험으로는 찾을 수 없다.
 >

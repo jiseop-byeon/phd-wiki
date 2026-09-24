@@ -8,8 +8,8 @@ mastery-when: "Raise to Mastery when a reward design, an RL fine-tuning recipe o
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/rl-basics|7. RL Basics §2–§4]] (values, advantage and the bucket MDP; TD and the deadly triad; policy gradients and PPO) · [[02-foundations/probability|3. Probability §4]] (maximum likelihood — behaviour cloning and every reward fit) · [[02-foundations/information-theory|5. Information Theory §1, §3]] (entropy and KL divergence — the entropy bonus, the KL anchor, MaxEnt IRL) · [[02-foundations/optimization|4. Optimization §4]] (Lagrange multipliers — constrained MDPs, MaxEnt IRL, DPO)
-> [[02-foundations/rl-basics|7. RL 기초 §2–§4]](가치·어드밴티지와 버킷 MDP, TD와 deadly triad, 정책 그래디언트와 PPO) · [[02-foundations/probability|3. 확률 §4]](최대우도 — 행동 복제와 모든 보상 적합) · [[02-foundations/information-theory|5. 정보이론 §1, §3]](엔트로피와 KL 발산 — 엔트로피 보너스, KL 닻, MaxEnt IRL) · [[02-foundations/optimization|4. 최적화 §4]](라그랑주 승수 — 제약 MDP, MaxEnt IRL, DPO)
+> [[02-foundations/rl-basics|7. RL Basics §2–§4]] (values, advantage and the bucket MDP; TD and the deadly triad; policy gradients and PPO) · [[02-foundations/probability|3. Probability §4]] (maximum likelihood — behaviour cloning and every reward fit) · [[02-foundations/information-theory|5. Information Theory §1, §3]] (entropy and KL divergence — the entropy bonus, the KL anchor, MaxEnt IRL) · [[02-foundations/optimization|4. Optimization §4]] (Lagrange multipliers — constrained MDPs, MaxEnt IRL, DPO) · [[02-foundations/neural-network-basics|0.8 What a Neural Network Is §3, §5–§6]] (training on a loss, hyperparameters, pretraining and fine-tuning, tokens — behaviour cloning is supervised learning, a reward's weights are hyperparameters, §4 fine-tunes a pretrained policy and §8's VLAs emit tokens)
+> [[02-foundations/rl-basics|7. RL 기초 §2–§4]](가치·어드밴티지와 버킷 MDP, TD와 deadly triad, 정책 그래디언트와 PPO) · [[02-foundations/probability|3. 확률 §4]](최대우도 — 행동 복제와 모든 보상 적합) · [[02-foundations/information-theory|5. 정보이론 §1, §3]](엔트로피와 KL 발산 — 엔트로피 보너스, KL 닻, MaxEnt IRL) · [[02-foundations/optimization|4. 최적화 §4]](라그랑주 승수 — 제약 MDP, MaxEnt IRL, DPO) · [[02-foundations/neural-network-basics|0.8 신경망이란 무엇인가 §3, §5–§6]](손실에 대한 학습, 하이퍼파라미터, 사전학습과 파인튜닝, 토큰 — 행동 복제는 지도학습이고, 보상의 가중치는 하이퍼파라미터이며, §4는 사전학습된 정책을 파인튜닝하고 §8의 VLA는 토큰을 낸다)
 >
 > Connection map · 연결 지도: [[02-foundations/overview|0. Overview]]
 
@@ -19,12 +19,15 @@ mastery-when: "Raise to Mastery when a reward design, an RL fine-tuning recipe o
 
 7. RL Basics gave the MDP, the Bellman equations, TD learning, the deadly triad, policy gradients and PPO. A robot-learning paper spends its pages elsewhere: whether the policy learns from demonstrations or from a reward, what that reward says, how the policy finds anything worth learning, how RL is run on a machine that can break, how the experiment was set up, and how a reward can be learned from people when nobody can write it down. That layer is this page.
 
+> [!note] Why this matters · 왜 배우는가
+> This page is the learning-and-adaptation layer of the physical-AI stack in [[07-research-program/index|7. Research Program §5]] as robot papers practise it — where a policy's data and its reward come from — and in *"Install that panel on the frame"* it sits under *performs the fitting*, whenever a learned policy does it, and reaches *verifies completion*, since a binary success check is often the only reward (§8); its place is marked on the [[physical-ai-map|Physical AI Map]]. Without it you cannot tell what a result shows: behaviour cloning copies an operator's hesitation along with the task, and a reward that pays for idling makes "wait forever" the optimum — on this page's bucket, the cloned policy is worth $8.78$ where the optimum is worth $9$, and the idling optimum is worth $0$ on the task. Later pages build on it section by section — [[05-construction-robotics/imitating-contact|10. Imitating Contact]] on §1's compounding-error bounds and §4's KL-anchored fine-tuning, [[04-robotics/teleoperation-demonstration|12. Teleoperation & Demonstration Collection]] on §1, [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving & Heavy-Machine Autonomy]] and [[05-construction-robotics/sim-to-real|7.5 Sim-to-Real for Field Robots]] on §4, [[04-robotics/hri-safety|11. Human–Robot Interaction & Safety]] on §6's learned rewards — and on the dissertation path ([[07-research-program/index|7. Research Program §8]]) question 12 of block 1's [[02-foundations/overview#Gate check — are the foundations done?|foundations gate]] tests §1; §1 and §4 then open block 4, the bridge to vision–language–action models, and §7–§8 join block 6 with the construction pages 2.5, 4, 6 and 9. After it you can read a robot-learning paper's method and experiment sections and say whether it reports imitation, RL given the right reward, or RL that found a loop in its reward.
+
 > [!note] First pass · 처음이라면
-> Read the running object, the picture and the Worked case first: they are §1 and §2 on one two-state MDP. Then read §1 (which half of the field your papers live in) and §2 (the reward), then §4 and §5, which are what a robot paper's method and experiment sections are made of. §3, on exploration, is short: read it when a paper's exploration scheme puzzles you. §6, learning the reward, is second-pass unless you read RLHF, DPO or inverse-RL papers; it assumes §2, and its four subsections can be read one at a time. Read §8 when a paper post-trains a policy from success alone, or says GRPO.
+> About three sessions of 60–90 minutes. Session 1: the running object, the picture, the Worked case's parts 1 and 2, then §1 through the compounding-error chart and its two bounds. Session 2: the rest of §1, with its 2024–2026 note left folded, and §2, where the Worked case's part 3 follows the shaping theorem. Session 3: §4 and §5, then problem 2 (a)–(c), self-checks 2–5 and question 12 of the [[02-foundations/overview#Gate check — are the foundations done?|gate check]]. §3 is short: read it when a paper's exploration scheme puzzles you. §6 is second pass unless you read RLHF, DPO or inverse-RL papers; it assumes §2, and its four subsections can be read one at a time. §7 and §8 belong to block 6 of the dissertation path: read them there, or when a paper post-trains a policy from success alone or says GRPO.
 
 ### Running object · 이 페이지의 대상
 
-The **bucket MDP** of [[02-foundations/rl-basics|7. RL Basics §2]], with its "wait" action, and one operator's record of driving it. No plant from [[02-foundations/lab-plants|0.6 Lab Plants]] fits: the subject here is where a policy's data and its reward come from, and the object has to be small enough that a whole policy's value can be written down. The nearest candidate, plant P4 read as an MDP on 7. RL Basics, has no task to put off — its best move is to do nothing — so it cannot show what a reward that pays for doing nothing does. The bucket can.
+The **bucket MDP** of [[02-foundations/rl-basics|7. RL Basics §2]], with its "wait" action, and one operator's record of driving it. No plant (control's word for a system being controlled) from [[02-foundations/lab-plants|0.6 Lab Plants]] fits: the subject here is where a policy's data and its reward come from, and the object has to be small enough that a whole policy's value can be written down. The nearest candidate, plant P4 read as an MDP on 7. RL Basics, has no task to put off — its best move is to do nothing — so it cannot show what a reward that pays for doing nothing does. The bucket can.
 
 - **States** $A$ (bucket empty) and $B$ (bucket full); discount $\gamma = 0.9$; every transition is deterministic.
 - **Actions.** In $A$: *move* to $B$ with reward $0$, or *wait* in $A$ with reward $0$. In $B$: one action, *stay*, with reward $1$ per step.
@@ -100,27 +103,23 @@ The bucket MDP with the operator's record: four moves and one wait at $A$ give b
 
 Everything below runs on the running object. Every value comes from the Bellman expectation equation of [[02-foundations/rl-basics|7. RL Basics §2]]: a state's value is this step's reward plus $\gamma$ times the value of where you land.
 
-**1. What imitation gets.** *Behaviour cloning* (BC) fits the policy to the recorded state–action pairs by maximum likelihood (§1); for a table of counts the maximizer is the empirical frequency, so the five pairs at $A$ give $\pi_{\text{BC}}(\text{move}\mid A) = 4/5 = 0.8$. A move lands in $B$, worth $10$, and a wait lands back in $A$, so BC's value appears on both sides of its own equation:
+**1. What imitation gets.** *Behaviour cloning* (BC) fits the policy to the recorded state–action pairs by maximum likelihood (§1). With $p = \pi(\text{move}\mid A)$ the five pairs at $A$ have log-likelihood $4\log p + \log(1-p)$, whose derivative $4/p - 1/(1-p)$ vanishes at $p = 4/5$: for a table of counts the maximizer is the empirical frequency, so BC gives $\pi_{\text{BC}}(\text{move}\mid A) = 0.8$. A move lands in $B$, worth $10$, and a wait lands back in $A$, so BC's value appears on both sides of its own equation:
 
 $$V^{\text{BC}}(A) = 0.8\,(0 + 0.9 \times 10) + 0.2\,\big(0 + 0.9\,V^{\text{BC}}(A)\big) \;\Rightarrow\; V^{\text{BC}}(A) = \frac{7.2}{1 - 0.18} = 8.78$$
 
 The greedy policy on $Q^*$ moves every time and earns $V^*(A) = 9$. The gap of $0.22$ is what copying the operator's one hesitation costs, and it is the whole content of "RL can exceed the demonstrator": the reward says that waiting is worth $8.1$ against $9$ for moving, and BC never reads a reward.
 
-**2. What the reward decides.** Now let the reward's author add an *idle bonus* $b$ to every wait step — the "smoothness" term of §2 that pays a policy for leaving the actuators still. Moving now still earns $9$ on the written reward, since the bonus is only paid in $A$, while waiting forever earns
+**2. What the reward decides.** Now let the reward's author add an *idle bonus* $b$ to every wait step — the mirror image of §2's smoothness penalty: that term charges a policy for moving, this one pays it for waiting. Moving now still earns $9$ on the written reward, since the bonus is only paid in $A$, while waiting forever earns
 
 $$b + 0.9\,b + 0.9^2\,b + \cdots = \frac{b}{1 - 0.9} = 10\,b$$
 
 so the written optimum flips to waiting forever once $10b > 9$, that is past $b = 0.9$ — past $b = \gamma$ in general, since moving is worth $\gamma/(1-\gamma)$ and waiting forever $b/(1-\gamma)$. At $b = 1$ the RL policy earns $10$ on what was written and $0$ on the task, because the bucket is never filled. That is *reward hacking* (§2): the policy maximized what was written, not what was meant. BC, which never read the reward, still earns $8.78$.
 
-**3. The same bonus, paid safely.** A *potential-based* shaping term (§2) pays $F = \gamma\Phi(s') - \Phi(s)$ for a function $\Phi$ of the state alone, and cannot change which action is best. It can still pay exactly $b = 1$ on every wait: $\gamma\Phi(A) - \Phi(A) = -0.1\,\Phi(A) = 1$ fixes $\Phi(A) = -10$, and with $\Phi(B) = 0$ the move then earns $F = 0 - (-10) = 10$ while a step in $B$ earns $0$. Under the shaped reward a step in $B$ still pays $1 + 0 = 1$, so $V'(B) = 10$ and
-
-$$Q'(A,\text{move}) = 10 + 0.9 \times 10 = 19, \qquad Q'(A,\text{wait}) = 1 + 0.9 \times 19 = 18.1$$
-
-where the wait is followed by the best play from $A$, worth $19$; waiting forever earns only $1/(1 - 0.9) = 10$. These are the unshaped $9$ and $8.1$ plus $10$, so moving still wins by $0.9$. The idle bonus of part 2 and this term pay the same $+1$ on every wait. The one difference is the $10$ on the move, which pays back at once the whole bank of bonuses that waiting forever would have collected.
-
 **Reading it.** Three numbers carry the page: $8.78$ (imitation copies its data, hesitation included), $9$ (RL given the right reward removes the hesitation) and $0$ (RL given a reward with a loop in it removes the task). §1 is about the first two and §2 about the third. §4 is how a fine-tuned policy is kept near the first while it chases the second, §5 is how to tell from an experiment section which of the three a paper is reporting, and §6 is how to get the reward from people when nobody can write one without a loop.
 
 ### 1. RL vs imitation in robot learning (orientation map)
+
+Before any algorithm, a robot paper chooses where its policy's behaviour comes from — copied from demonstrations or discovered from a reward — and that choice fixes what can go wrong. This section maps the two halves of the field and the vocabulary each brings.
 
 - **Imitation** ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]],
   [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]): supervised on demos —
@@ -130,8 +129,8 @@ where the wait is followed by the best play from $A$, worth $19$; waiting foreve
   data collection, change this).
 - **RL** *can* exceed the demonstrator — when an informative reward and enough exploration
   are available — practical mostly in
-  simulation (sim-to-real) or as *fine-tuning* atop imitation-pretrained VLAs, mirroring
-  the [[01-canonical-papers/notes/1-foundations/instructgpt|pretrain → RLHF]] recipe.
+  simulation (sim-to-real) or as *fine-tuning* atop imitation-pretrained VLAs (vision–language–action models: policies that read camera images and a text instruction and output robot actions, [[03-deep-learning/vla/index|4. VLA]]), mirroring
+  the [[01-canonical-papers/notes/1-foundations/instructgpt|pretrain → RLHF]] recipe (RLHF: reinforcement learning from human feedback, §6.3).
 
 **The imitation-learning toolbox** (the vocabulary of every VLA paper). Read it in three
 groups — *the core objective and its one failure mode*, *what the data looks like*, and
@@ -173,6 +172,8 @@ survives with probability $(1-\epsilon)^T$, and the horizon does the damage:
   <path d="M 60.0 40.0 L 69.2 92.2 L 78.4 123.4 L 87.6 142.1 L 96.8 153.3 L 106.0 160.0 L 115.2 164.0 L 124.4 166.4 L 133.6 167.9 L 142.8 168.7 L 152.0 169.2 L 161.2 169.5 L 170.4 169.7 L 179.6 169.8 L 188.8 169.9 L 198.0 169.9 L 207.2 170.0 L 216.4 170.0 L 225.6 170.0 L 234.8 170.0 L 244.0 170.0 L 253.2 170.0 L 262.4 170.0 L 271.6 170.0 L 280.8 170.0 L 290.0 170.0 L 299.2 170.0 L 308.4 170.0 L 317.6 170.0 L 326.8 170.0 L 336.0 170.0 L 345.2 170.0 L 354.4 170.0 L 363.6 170.0 L 372.8 170.0 L 382.0 170.0 L 391.2 170.0 L 400.4 170.0 L 409.6 170.0 L 418.8 170.0 L 428.0 170.0 L 437.2 170.0 L 446.4 170.0 L 455.6 170.0 L 464.8 170.0 L 474.0 170.0 L 483.2 170.0 L 492.4 170.0 L 501.6 170.0 L 510.8 170.0 L 520.0 170.0" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.9"/>
   <path d="M 60.0 40.0 L 69.2 52.4 L 78.4 63.7 L 87.6 73.8 L 96.8 83.0 L 106.0 91.3 L 115.2 98.9 L 124.4 105.7 L 133.6 111.8 L 142.8 117.4 L 152.0 122.4 L 161.2 127.0 L 170.4 131.1 L 179.6 134.8 L 188.8 138.2 L 198.0 141.2 L 207.2 144.0 L 216.4 146.5 L 225.6 148.7 L 234.8 150.7 L 244.0 152.6 L 253.2 154.2 L 262.4 155.8 L 271.6 157.1 L 280.8 158.3 L 290.0 159.5 L 299.2 160.5 L 308.4 161.4 L 317.6 162.2 L 326.8 163.0 L 336.0 163.6 L 345.2 164.2 L 354.4 164.8 L 363.6 165.3 L 372.8 165.7 L 382.0 166.1 L 391.2 166.5 L 400.4 166.8 L 409.6 167.1 L 418.8 167.4 L 428.0 167.7 L 437.2 167.9 L 446.4 168.1 L 455.6 168.3 L 464.8 168.4 L 474.0 168.6 L 483.2 168.7 L 492.4 168.8 L 501.6 169.0 L 510.8 169.1 L 520.0 169.1" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.9"/>
   <path d="M 60.0 40.0 L 69.2 41.3 L 78.4 42.6 L 87.6 43.8 L 96.8 45.1 L 106.0 46.3 L 115.2 47.6 L 124.4 48.8 L 133.6 50.0 L 142.8 51.2 L 152.0 52.4 L 161.2 53.5 L 170.4 54.7 L 179.6 55.9 L 188.8 57.0 L 198.0 58.1 L 207.2 59.2 L 216.4 60.3 L 225.6 61.4 L 234.8 62.5 L 244.0 63.6 L 253.2 64.6 L 262.4 65.7 L 271.6 66.7 L 280.8 67.8 L 290.0 68.8 L 299.2 69.8 L 308.4 70.8 L 317.6 71.8 L 326.8 72.7 L 336.0 73.7 L 345.2 74.7 L 354.4 75.6 L 363.6 76.6 L 372.8 77.5 L 382.0 78.4 L 391.2 79.3 L 400.4 80.2 L 409.6 81.1 L 418.8 82.0 L 428.0 82.9 L 437.2 83.7 L 446.4 84.6 L 455.6 85.5 L 464.8 86.3 L 474.0 87.1 L 483.2 88.0 L 492.4 88.8 L 501.6 89.6 L 510.8 90.4 L 520.0 91.2" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.9"/>
+  <g fill="none" stroke="currentColor"><line x1="520" y1="165" x2="520" y2="99" stroke-width="1.3" stroke-dasharray="4 3" opacity="0.8"/><path d="M516 104L520 96L524 104" stroke-width="1.3" opacity="0.8"/><circle cx="520" cy="91.3" r="4.2" stroke-width="1.8"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="510" y="122" text-anchor="end">500 steps in chunks of 10, 50 decisions:</text><text x="510" y="136" text-anchor="end">0.99⁵⁰ = 60.5%, where 1 in 1000 ends</text></g>
   <g font-size="10" fill="currentColor" opacity="0.85">
     <text x="110" y="148">1 step in 20 wrong</text>
     <text x="170" y="124">1 in 100</text>
@@ -192,12 +193,11 @@ survives with probability $(1-\epsilon)^T$, and the horizon does the damage:
 Real errors are neither independent nor individually fatal, so read that curve as an
 illustration, not a theorem. The theorem has the same shape: Ross, Gordon and Bagnell's
 2011 reduction shows plain behaviour cloning accumulates cost as $O(\epsilon T^2)$ while a
-no-regret method such as DAgger reaches $O(\epsilon T)$ — the difference between a horizon
+no-regret method such as DAgger — a learner that keeps retraining on the states it actually visits, so its average loss approaches that of the best policy in hindsight — reaches $O(\epsilon T)$ — the difference between a horizon
 you can grow and one you cannot. **Action chunking** (group 3 below) is the cheap version of
 the same move: predicting $k$ steps at once turns a $T$-step task into a $T/k$-decision
 task, sliding you back down the horizon axis. [[05-construction-robotics/imitating-contact|10. Imitating Contact §3]] prices both bounds on a
-construction task, S1's last 40 mm: at $\epsilon=0.02$ the first allows $T^2\epsilon=32$ steps adrift
-where the lead-in absorbs $15$, so it covers only a $27$-step phase, while the second covers $750$.
+construction task: the last 40 mm of S1, the construction track's facade-panel task ([[05-construction-robotics/site-engineering|2.5]]), taken in $T = 40$ policy steps. At $\epsilon=0.02$ BC's bound is $T^2\epsilon=32$ steps adrift where the pin's lead-in absorbs only $15$, so the bound holds only for phases up to $\sqrt{15/0.02} \approx 27$ steps; DAgger's $T\epsilon$ stays within $15$ up to $750$ steps.
 
 *Group 2 — reading a dataset section.* Demos come from teleoperation
 ([[01-canonical-papers/notes/4-vla/act|ALOHA]]-style rigs, VR, kinesthetic teaching), scripted
@@ -222,7 +222,9 @@ the price of value-extrapolation instability BC never has.
 - **Action chunking, precisely.** The policy outputs the next $k$ actions from one observation, $\pi_\theta(a_t, a_{t+1}, \dots, a_{t+k-1} \mid o_t)$, and the robot executes several of them before querying again. A $T$-step task then needs about $T/k$ policy decisions: $500$ steps in chunks of $10$ is $50$ decisions, and at a $1\%$ per-decision error rate the illustration above moves from $0.99^{500} = 0.7\%$ to $0.99^{50} = 60.5\%$ clean. The same formula shows the cost: within a chunk, observations after $o_t$ are not used.
 - **Offline RL, precisely.** Learn a policy that maximizes expected return $J(\pi)$ from a fixed dataset of transitions $\mathcal{D} = \{(s, a, r, s')\}$ collected by some other behavior policy, with **no further interaction**. It differs from BC in using $r$, so it can prefer the better parts of mediocre trajectories, and from ordinary off-policy RL in that nothing outside $\operatorname{supp}(\mathcal{D})$ can ever be tried to correct an overestimated $Q$ — hence the pessimism of [[02-foundations/rl-basics|7. RL Basics §3.5]].
 
-> [!important] The 2024–2026 correction to this section
+**Two conclusions from 2024–2026, argued in the folded note below.** On contact-rich precision tasks the recent successes all put a human correcting the policy during learning, so **interactive learning beat offline learning**, with reward one of several ways to close that loop. And since imitation's generalization grows with the number of environments and objects rather than demonstrations, **RL buys precision with interaction time, imitation buys generality with scene diversity.**
+
+> [!important]- The 2024–2026 correction to this section
 > The framing above — imitation is stable but capped, RL can exceed the demonstrator — is
 > right, and the last two years sharpened it in a way worth carrying. On **contact-rich
 > precision** tasks the gap is not narrow: **[[01-canonical-papers/notes/7-robotics/hil-serl|HIL-SERL]]** (*Science Robotics*, 2025) reports
@@ -263,7 +265,7 @@ Entry chain into the papers: this section →
   reference policy while improving.
   - The last two are one formula. The **KL-regularized objective** trades return against distance from a reference policy $\pi_{\text{ref}}$ (the pretrained or data-collecting policy), with a temperature $\beta > 0$ setting the exchange rate:
   $$\max_\pi\ E_{a \sim \pi}\big[A(s, a)\big] - \beta\, \mathrm{KL}\big(\pi(\cdot \mid s)\ \Vert\ \pi_{\text{ref}}(\cdot \mid s)\big) \quad\Rightarrow\quad \pi^*(a \mid s) = \frac{\pi_{\text{ref}}(a \mid s)\, e^{A(s,a)/\beta}}{Z(s)}$$
-  where $Z(s)$ normalizes the probabilities to one; the closed form is the same Lagrange-multiplier result used for MaxEnt IRL and DPO in §6. "Advantage-weighted" methods fit $\pi_\theta$ to this $\pi^*$ by weighted BC, each logged action weighted by $e^{A/\beta}$. Worked: two actions with $\pi_{\text{ref}} = (0.5, 0.5)$, advantages $(1, 0)$ and $\beta = 0.5$ give weights $e^{2} : e^{0}$, so $\pi^* = (0.881, 0.119)$; a larger $\beta$ keeps $\pi^*$ closer to $(0.5, 0.5)$.
+  where $Z(s)$ normalizes the probabilities to one. This is the *exponential-tilting* form — the reference policy tilted by $e^{A/\beta}$ — and it comes from the same Lagrange-multiplier step that §6.2 writes out for MaxEnt IRL and §6.3 reuses for DPO. "Advantage-weighted" methods fit $\pi_\theta$ to this $\pi^*$ by weighted BC, each logged action weighted by $e^{A/\beta}$. Worked: two actions with $\pi_{\text{ref}} = (0.5, 0.5)$, advantages $(1, 0)$ and $\beta = 0.5$ give weights $e^{2} : e^{0}$, so $\pi^* = (0.881, 0.119)$; a larger $\beta$ keeps $\pi^*$ closer to $(0.5, 0.5)$.
 
 ### 2. Reward design — the choice that decides the outcome
 
@@ -282,7 +284,46 @@ their abstracts never mention.
   - *Why it cannot* (Ng, Harada & Russell, ICML 1999). Along any trajectory the shaping terms telescope:
   $$\sum_{t=0}^{T-1} \gamma^t \big(\gamma\,\Phi(s_{t+1}) - \Phi(s_t)\big) = \gamma^T\, \Phi(s_T) - \Phi(s_0)$$
   because each $\gamma^{t+1}\Phi(s_{t+1})$ cancels the next step's $-\gamma^{t+1}\Phi(s_{t+1})$. The shaped return therefore differs from the original only by a start-state term (plus an end term that vanishes as $T \to \infty$ with bounded $\Phi$ and $\gamma < 1$), so $Q'(s, a) = Q(s, a) - \Phi(s)$ for every action: all actions in a state shift by the same amount, and the ranking of actions — hence the optimal policy — is unchanged. The condition is that $F$ depends only on a state potential; a bonus that can be collected again by looping has no such cancellation.
-  - *Worked,* on the running object — the bucket MDP of [[02-foundations/rl-basics|7. RL Basics §2]] with its "wait" action — with $\Phi(A) = 0$, $\Phi(B) = 5$, $\gamma = 0.9$. Moving $A \to B$ earns $F = 0.9(5) - 0 = 4.5$; staying in $B$ earns $F = 0.9(5) - 5 = -0.5$ on top of its reward $1$. Shaped values: $V'(B) = (1 - 0.5)/(1 - 0.9) = 5 = V(B) - \Phi(B)$, and in $A$, $Q'(A, \text{move}) = 4.5 + 0.9 \times 5 = 9$ against $Q'(A, \text{wait}) = 0 + 0.9 \times 9 = 8.1$ — the same two numbers as before shaping, because $\Phi(A) = 0$, so moving is still optimal. The Worked case, part 3, runs the same check with a potential chosen to pay $+1$ on every wait.
+  - *Worked,* on the running object — the bucket MDP of [[02-foundations/rl-basics|7. RL Basics §2]] with its "wait" action — with $\Phi(A) = 0$, $\Phi(B) = 5$, $\gamma = 0.9$. Moving $A \to B$ earns $F = 0.9(5) - 0 = 4.5$; staying in $B$ earns $F = 0.9(5) - 5 = -0.5$ on top of its reward $1$. Shaped values: $V'(B) = (1 - 0.5)/(1 - 0.9) = 5 = V(B) - \Phi(B)$, and in $A$, $Q'(A, \text{move}) = 4.5 + 0.9 \times 5 = 9$ against $Q'(A, \text{wait}) = 0 + 0.9 \times 9 = 8.1$ — the same two numbers as before shaping, because $\Phi(A) = 0$, so moving is still optimal. The Worked case's part 3, next, runs the same check with a potential chosen to pay $+1$ on every wait.
+
+**Worked case, part 3 — the same bonus, paid safely.** The idle bonus of the Worked case's part 2 can be paid through a potential instead, and then it cannot change which action is best. A wait should earn $F = \gamma\Phi(A) - \Phi(A) = -0.1\,\Phi(A) = 1$, which fixes $\Phi(A) = -10$; with $\Phi(B) = 0$ the move then earns $F = 0 - (-10) = 10$ while a step in $B$ earns $0$. Under the shaped reward a step in $B$ still pays $1 + 0 = 1$, so $V'(B) = 10$, and because each action is worth its shaped reward plus $0.9$ times the value of where it lands,
+
+$$Q'(A,\text{move}) = 10 + 0.9 \times 10 = 19, \qquad Q'(A,\text{wait}) = 1 + 0.9 \times 19 = 18.1$$
+
+where the wait is followed by the best play from $A$, worth $19$; waiting forever earns only $1/(1 - 0.9) = 10$. These are the unshaped $9$ and $8.1$ plus $10$, the theorem's $Q' = Q - \Phi(A)$, so moving still wins by $0.9$. The idle bonus of part 2 and this term pay the same $+1$ on every wait. The one difference is the $10$ on the move, which pays back at once the whole bank of bonuses that waiting forever would have collected.
+
+<svg viewBox="0 0 560 318" style="max-width:100%;height:auto" role="img" aria-label="the potential landscape of potential-based shaping: with Φ(A) = −10 and Φ(B) = 0 every wait pays +1, the move pays +10 and a step in B pays 0, so both action values in A rise by the same 10 and moving still wins">
+  <defs><marker id="arPl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <line x1="56" y1="44" x2="56" y2="198" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+  <line x1="52" y1="66" x2="56" y2="66" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+  <text x="48" y="70" font-size="10" text-anchor="end" opacity="0.85" fill="currentColor">0</text>
+  <line x1="52" y1="121" x2="56" y2="121" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+  <text x="48" y="125" font-size="10" text-anchor="end" opacity="0.85" fill="currentColor">−5</text>
+  <line x1="52" y1="176" x2="56" y2="176" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+  <text x="48" y="180" font-size="10" text-anchor="end" opacity="0.85" fill="currentColor">−10</text>
+  <text x="60" y="38" font-size="11" font-style="italic" fill="currentColor">Φ(s)</text>
+  <line x1="60" y1="66" x2="540" y2="66" stroke="currentColor" stroke-width="0.9" stroke-dasharray="2 3" opacity="0.45"/>
+  <line x1="60" y1="176" x2="540" y2="176" stroke="currentColor" stroke-width="0.9" stroke-dasharray="2 3" opacity="0.45"/>
+  <circle cx="196" cy="176" r="24" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="196" y="174" font-size="12" text-anchor="middle" font-weight="bold" fill="currentColor">A</text>
+  <text x="196" y="188" font-size="10" text-anchor="middle" opacity="0.9" fill="currentColor">Φ = −10</text>
+  <circle cx="396" cy="66" r="24" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="396" y="64" font-size="12" text-anchor="middle" font-weight="bold" fill="currentColor">B</text>
+  <text x="396" y="78" font-size="10" text-anchor="middle" opacity="0.9" fill="currentColor">Φ = 0</text>
+  <line x1="215" y1="161" x2="375" y2="79" stroke="currentColor" stroke-width="2.2" marker-end="url(#arPl)"/>
+  <text x="318" y="146" font-size="11" fill="currentColor">move: F = 0 − (−10) = +10</text>
+  <path d="M176 163 C118 126 118 226 175 188" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#arPl)"/>
+  <text x="132" y="222" font-size="11" fill="currentColor">wait: F = 0.9(−10) − (−10) = +1</text>
+  <path d="M416 53 C474 16 474 116 417 78" fill="none" stroke="currentColor" stroke-width="1.6" marker-end="url(#arPl)"/>
+  <text x="458" y="98" font-size="11" fill="currentColor">stay: F = 0, r = 1</text>
+  <text x="24" y="244" font-size="11" fill="currentColor">Q′(A, move) = 10 + 0.9 × 10 = 19,   Q′(A, wait) = 1 + 0.9 × 19 = 18.1</text>
+  <text x="24" y="262" font-size="11" fill="currentColor">These are the unshaped 9 and 8.1 plus the same 10, so moving still wins by 0.9.</text>
+  <text x="24" y="280" font-size="11" fill="currentColor">Waiting forever banks 1 + 0.9 + 0.81 + … = 10; the move pays that same 10 at once.</text>
+  <text x="24" y="298" font-size="11" opacity="0.9" fill="currentColor">Part 2's idle bonus b = 1 pays the same +1 per wait but never pays it back, so it flips the optimum.</text>
+</svg>
+
+Part 3's potential drawn as a landscape: $A$ sits $10$ below $B$, so each wait earns $+1$, the move earns $+10$ and a step in $B$ earns $0$. Both action values in $A$ rise by the same $10$, to $19$ and $18.1$, so the ranking — and with it the optimal policy — is unchanged, while part 2's bonus, which is never paid back, flips it.
+
 - **A real reward is a weighted sum of terms**, $r = \sum_{j} w_j\, r_j$, where each $r_j$ measures one aspect of behavior and each weight $w_j$ is a hyperparameter carrying its sign. A digging policy's reward typically looks
   like this, and the table *is* the method section worth reading:
 
@@ -297,22 +338,24 @@ their abstracts never mention.
 
 - **The weights are hyperparameters, and they fight.** Take
   $r = 2.0\,\Delta d - 0.5\,\lVert a\rVert^2$. Moving 1 cm ($\Delta d = 0.01$) with a
-  unit-norm action earns $2.0(0.01) - 0.5(1) = -0.48$ — **negative**, so the optimal policy
-  is to *do nothing*. Degenerate "stands still and collects the smoothness bonus" solutions
-  come from arithmetic exactly this simple.
+  unit-norm action earns $2.0(0.01) - 0.5(1) = -0.48$ — **negative**, worse than standing still. The optimizer does not stop, though; it shrinks. If progress is proportional to the action, $1\,\mathrm{cm}$ per unit, then $r(a) = 0.02a - 0.5a^2$, which peaks where its slope $0.02 - a$ vanishes, at $a = 0.02$, with $r = +0.0002$: the policy cuts its action fiftyfold and crawls $0.2\,\mathrm{mm}$ a step, and on an actuator with stiction a command that small does not move it at all. Near-frozen policies come from arithmetic exactly this simple.
 
-<svg viewBox="0 0 460 152" style="max-width:100%;height:auto" role="img" aria-label="the two reward terms drawn to scale: the penalty dwarfs the progress term">
-  <g stroke="currentColor" stroke-width="1.2" opacity="0.5"><line x1="150" y1="20" x2="150" y2="118"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="30" y1="118" x2="430" y2="118"/></g>
-  <g fill="currentColor" opacity="0.22"><rect x="150" y="34" width="4" height="26"/><rect x="50" y="74" width="100" height="26"/></g>
-  <g fill="none" stroke="currentColor" stroke-width="1.2"><rect x="150" y="34" width="4" height="26"/><rect x="50" y="74" width="100" height="26"/></g>
-  <g font-size="11.5" fill="currentColor">
-    <text x="164" y="52">+0.02 &nbsp; task progress (2.0 &#215; 0.01 m)</text>
-    <text x="164" y="92">&#8722;0.50 &nbsp; action penalty (0.5 &#215; 1)</text>
-    <text x="30" y="140">drawn to scale: the sum is &#8722;0.48, so standing still beats digging</text>
-    <text x="122" y="20" font-size="10.5" opacity="0.7">0</text>
-  </g>
+<svg viewBox="0 0 560 158" style="max-width:100%;height:auto" role="img" aria-label="the two reward terms at a unit action, drawn to scale: the penalty dwarfs the progress term and the sum is −0.48">
+  <line x1="236" y1="22" x2="236" y2="128" stroke="currentColor" stroke-width="1.2" opacity="0.6"/>
+  <text x="236" y="16" font-size="10" text-anchor="middle" opacity="0.8" fill="currentColor">0</text>
+  <rect x="236" y="30" width="8" height="22" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.2"/>
+  <text x="254" y="45" font-size="11" font-weight="bold" fill="currentColor">+0.02</text>
+  <text x="300" y="45" font-size="11" fill="currentColor">task progress (2.0 × 0.01 m)</text>
+  <rect x="36" y="62" width="200" height="22" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.2"/>
+  <text x="246" y="77" font-size="11" font-weight="bold" fill="currentColor">−0.50</text>
+  <text x="292" y="77" font-size="11" fill="currentColor">action penalty (0.5 × 1²)</text>
+  <rect x="44" y="94" width="192" height="22" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="246" y="109" font-size="11" fill="currentColor">−0.48</text>
+  <text x="292" y="109" font-size="11" fill="currentColor">their sum for one unit action</text>
+  <text x="20" y="142" font-size="11" opacity="0.9" fill="currentColor">scale: 1 = 400 units. The best action is not to stop but to crawl at a 50th of this one.</text>
 </svg>
+
+The two terms of $r = 2.0\,\Delta d - 0.5\,\lVert a\rVert^2$ for one unit-norm action that moves the tool $1\,\mathrm{cm}$, drawn to scale: progress earns $+0.02$, the penalty costs $-0.50$, and the sum, $-0.48$, is worse than standing still. The optimum is not to stop but to shrink: $r(a) = 0.02a - 0.5a^2$ peaks at $a = 0.02$ with $+0.0002$, a crawl that an actuator with stiction turns into standing still.
 
 - **Reward hacking** is the general form: the policy maximizes what you wrote, not what you
   meant. A velocity reward met by vibrating in place; a distance-to-goal reward met by
@@ -320,7 +363,7 @@ their abstracts never mention.
   The diagnostic question is always *what is the cheapest way to earn this reward?*
   - *Stated as a condition.* Let $r^\dagger$ be the reward you meant (usually unwritable) and $\hat r$ the proxy you wrote. Reward hacking is the case where optimizing the proxy succeeds on the proxy and fails on the intent:
   $$\hat\pi = \arg\max_\pi J_{\hat r}(\pi), \qquad J_{\hat r}(\hat\pi) \ \text{high}, \qquad J_{r^\dagger}(\hat\pi) \ \text{low}$$
-  so it is a property of the pair (proxy, optimizer), not of either alone — the stronger the optimizer, the more reliably it finds where $\hat r$ and $r^\dagger$ disagree. The $-0.48$ example above is the simplest instance: the proxy is maximized by standing still, which scores zero on the intended digging task.
+  so it is a property of the pair (proxy, optimizer), not of either alone — the stronger the optimizer, the more reliably it finds where $\hat r$ and $r^\dagger$ disagree. The $-0.48$ example above is the simplest instance: the proxy is maximized by a crawl fifty times smaller than a working action, which does almost none of the intended digging.
 - **Reading cue**: find the reward table, count the terms, look for the weights (often only
   in an appendix), and ask which term dominates at the operating point the paper reports.
   A paper that will not show its reward has not shown its method.
@@ -362,12 +405,14 @@ the binding constraint.
 
 ### 4. RL on a real machine: fine-tuning, safety, and where sim-to-real sits
 
+A policy pretrained on demonstrations or in simulation still has to improve on the machine it will run on, where every trial costs time and wear and one bad action can break something. This section says how RL is run there: fine-tuning from the pretrained policy, keeping the policy near it, keeping the machine safe while the policy learns, and where the transfer from simulation fits.
+
 - **RL fine-tuning (RLFT)** is how RL now most often reaches robots — and how you will
   meet it in this wiki. Start from a policy already pretrained by behavior cloning (or an
   earlier RL run), then continue with RL on task reward. Pretraining puts you in a region
   where exploration is not hopeless; RL then fixes what the demonstrations could not cover.
   It is the same shape as [[01-canonical-papers/notes/1-foundations/instructgpt|pretrain → RLHF]],
-  and it is what [[01-canonical-papers/notes/8-construction/ext|ExT]]'s SFT/RLFT stage does
+  and it is what [[01-canonical-papers/notes/8-construction/ext|ExT]]'s SFT/RLFT stage — supervised fine-tuning on demonstrations, which is behaviour cloning, then RL fine-tuning — does
   on an excavator.
 - **Keep it near the reference.** RLFT is usually regularized by a KL term back to the
   pretrained policy. Drift too far and you lose what pretraining bought — and reward
@@ -379,7 +424,7 @@ the binding constraint.
   weakest of them:
   1. train in simulation (dominant — a 12-tonne machine cannot "try and correct");
   2. wrap the policy in a **safety filter / envelope** that clips or vetoes unsafe commands
-     before they reach the actuator ([[04-robotics/mpc|MPC]] is often that filter);
+     before they reach the actuator ([[04-robotics/mpc|MPC]], model-predictive control, is often that filter);
   3. formulate a **constrained MDP** — an MDP with a second, cost signal whose expected total
      must stay under a limit — and optimize reward subject to that bound (Lagrangian methods,
      which fold the limit into the objective with a multiplier, as in
@@ -395,8 +440,8 @@ the binding constraint.
 - **The real cost is not compute.** On hardware, every episode needs a reset, resets are
   human labor, and wear and safety review are real budgets
   ([[04-robotics/hri-safety|HRI & safety]]).
-- The transfer half of this story — reality gap, randomization, privileged learning,
-  residuals, the deployment ladder — is the
+- The transfer half of this story — reality gap, randomization, privileged learning (a teacher policy trained on simulator-only state, then distilled into a student that sees only real sensors),
+  residuals (a learned correction added to a hand-designed controller's command), the deployment ladder — is the
   [[05-construction-robotics/sim-to-real|Sim-to-Real guide]]. Read it right after this page
   if your interest is robots rather than language models.
 
@@ -471,6 +516,8 @@ explain the same data.
 
 #### 6.1 Feature matching and max-margin planning
 
+A demonstration shows what the expert did, not which reward they optimized. The first answer to that gap is to stop asking for the reward itself and ask only that the learner collect the same features as the expert, whatever the weights are.
+
 **Feature matching.** Assume a linear reward over hand-chosen features,
 $r(s,a) = w^\top\phi(s,a)$. A policy's expected return is then $w^\top\mu(\pi)$, where
 $\mu(\pi)$ is its discounted feature expectation:
@@ -478,7 +525,7 @@ $\mu(\pi)$ is its discounted feature expectation:
 $$\mu(\pi) = E_\pi\Big[\sum_{t} \gamma^t\,\phi(s_t,a_t)\Big]$$
 
 The return factors this way because the reward is linear, so $w$ comes out of the
-expectation. The useful consequence: if a learner's $\mu$ is within $\epsilon$ of the
+expectation. The feature expectation is a concrete number: features $\phi = 1, 0, 1$ at steps $0, 1, 2$ with $\gamma = 0.9$ give $\mu = 1 + 0 + 0.81 = 1.81$ for a policy that always runs that trajectory. The useful consequence: if a learner's $\mu$ is within $\epsilon$ of the
 expert's, then for *every* $w$ with $\lVert w\rVert \le 1$ its return is within $\epsilon$
 of the expert's. Writing $\mu_L$ and $\mu_E$ for the learner's and the expert's feature
 expectations, Cauchy–Schwarz gives
@@ -489,9 +536,12 @@ expert's routes avoid stop signs and favour high speed limits, and seek routes w
 feature counts. **Max-margin planning** (Ratliff, Bagnell & Zinkevich, ICML 2006) turns this
 into a quadratic program: choose the smallest $w$ under which the expert beats every other
 candidate policy by a margin that grows with how different that policy is, with a slack
-variable for an imperfect expert. In symbols, with $\mu_E$ the expert's feature expectations, $\mu(\pi)$ a candidate's, $\ell(\pi) \ge 0$ a loss measuring how different $\pi$ is from the expert, and slack $\xi \ge 0$ weighted by $C$:
-$$\min_{w,\ \xi \ge 0}\ \tfrac12 \lVert w \rVert^2 + C\,\xi \quad \text{s.t.} \quad w^\top \mu_E \ \ge\ w^\top \mu(\pi) + \ell(\pi) - \xi \quad \text{for every candidate } \pi$$
-so minimizing $\lVert w\rVert$ picks the least extreme reward that still separates the expert, which is how this method breaks the scaling ambiguity. The discounted feature expectation itself is a concrete number: features $\phi = 1, 0, 1$ at steps $0, 1, 2$ with $\gamma = 0.9$ give $\mu = 1 + 0 + 0.81 = 1.81$.
+variable for an imperfect expert. Minimizing $\lVert w\rVert$ picks the least extreme reward that still separates the expert, which is how this method breaks the scaling ambiguity.
+
+> [!note]- Deeper · 더 깊이
+> **The max-margin program, written out.** With $\mu_E$ the expert's feature expectations, $\mu(\pi)$ a candidate's, $\ell(\pi) \ge 0$ a loss measuring how different $\pi$ is from the expert, and slack $\xi \ge 0$ weighted by $C$:
+> $$\min_{w,\ \xi \ge 0}\ \tfrac12 \lVert w \rVert^2 + C\,\xi \quad \text{s.t.} \quad w^\top \mu_E \ \ge\ w^\top \mu(\pi) + \ell(\pi) - \xi \quad \text{for every candidate } \pi$$
+> so a candidate that differs more from the expert has to lose by a wider margin, and the slack lets an imperfect expert lose some comparisons at a price of $C$ per unit.
 
 #### 6.2 Maximum-entropy IRL and GAIL
 
@@ -502,11 +552,12 @@ MaxEnt's principle is to commit to nothing the features do not demand — among 
 distributions that match the expert's feature counts, take the one with maximum entropy
 ([[02-foundations/information-theory|information theory]]).
 
-*The model.* Maximizing entropy subject to matching an expected feature count is a
-Lagrange-multiplier problem ([[02-foundations/optimization|4. Optimization §4]]), and its
-solution is always exponential in the constrained features, with the multiplier on the
-feature constraint playing the role of $w$. So the solution is exponential in
-the reward, with $f(\tau) = \sum_t \phi(s_t,a_t)$ the trajectory's feature count:
+*The model.* Maximizing entropy subject to matching the expert's expected feature count $f_E$ is a
+Lagrange-multiplier problem ([[02-foundations/optimization|4. Optimization §4]]), with $f(\tau) = \sum_t \phi(s_t,a_t)$ the trajectory's feature count, a multiplier vector $w$ on the feature constraint and a scalar $\lambda$ on normalization:
+
+$$\mathcal{L}(P) = -\sum_\tau P(\tau)\log P(\tau) + w^\top\Big(\sum_\tau P(\tau)f(\tau) - f_E\Big) + \lambda\Big(\sum_\tau P(\tau) - 1\Big)$$
+
+Setting $\partial\mathcal{L}/\partial P(\tau) = -\log P(\tau) - 1 + w^\top f(\tau) + \lambda$ to zero gives $P(\tau) = e^{\lambda - 1}\,e^{w^\top f(\tau)}$, so the solution is always exponential in the constrained features, and the multiplier on the feature constraint plays the role of the reward weights $w$. Normalized:
 
 $$P_w(\tau) = \frac{\exp\big(w^\top f(\tau)\big)}{Z(w)}, \qquad Z(w) = \sum_{\tau}\exp\big(w^\top f(\tau)\big)$$
 
@@ -519,23 +570,8 @@ maximum likelihood on $N$ demonstrations $\tau_1,\dots,\tau_N$:
 $$\nabla_w \log \prod_{i} P_w(\tau_i) = \sum_{i=1}^{N} f(\tau_i) - N\,E_{\tau\sim P_w}\big[f(\tau)\big]$$
 
 The second term appears because the derivative of $\log Z(w)$ is the model's own expected
-feature count, so the gradient is *expert feature counts minus what the current model
+feature count — differentiate under the sum, $\partial \log Z/\partial w = \frac{1}{Z}\sum_\tau f(\tau)\,e^{w^\top f(\tau)} = E_{P_w}[f]$ — so the gradient is *expert feature counts minus what the current model
 expects*, and it vanishes exactly when the features match.
-
-*The cost.* **It is all in that second
-term.** It is an expectation over every trajectory the current reward makes likely, so each
-gradient step needs a full planning pass under the current $w$. Ziebart et al. compute it
-with a backward pass (a soft, log-sum-exp form of value iteration) and a forward pass for
-state-visitation frequencies; with a sampler instead, it is a forward RL run. The outer loop
-learns the reward, and the inner loop solves an RL problem every time — tractable in small
-discrete worlds, expensive anywhere larger.
-
-*The adversarial version.* **GAIL** (Ho & Ermon, NeurIPS 2016) is the
-adversarial descendant: a discriminator that tells expert state-action pairs from the
-policy's plays the role of the learned reward, and the policy is trained against it with RL,
-without recovering an explicit reward first. Its saddle-point objective, with discriminator $D(s, a) \in (0, 1)$ scoring how *policy-like* a pair is, expert policy $\pi_E$, and entropy weight $\lambda \ge 0$:
-$$\min_\pi\ \max_D\ \ E_{\pi}\big[\log D(s, a)\big] + E_{\pi_E}\big[\log\big(1 - D(s, a)\big)\big] - \lambda\, H(\pi)$$
-so $D$ is trained to tell the two apart and $\pi$ is trained, by RL with cost $\log D(s, a)$, to make its pairs indistinguishable from the expert's. When no discriminator can do better than chance, $D = 0.5$ everywhere and the policy's state-action distribution matches the expert's — distribution matching, the same goal as feature matching without hand-chosen features.
 
 > [!example] Worked example · 계산 예제
 > Two trajectories with a scalar feature, $f(\tau_1) = 2$ and $f(\tau_2) = 1$. The expert
@@ -554,6 +590,24 @@ so $D$ is trained to tell the two apart and $\pi$ is trained, by RL with cost $\
 > been $\tau_1$, the gradient $8 - 4E[f]$ would stay positive for every $w$ because $E[f] < 2$,
 > so $w$ would grow without bound — a perfectly consistent expert reads as infinitely
 > confident, which is why practical fits regularize $w$.
+
+*The cost.* **It is all in the gradient's second
+term.** It is an expectation over every trajectory the current reward makes likely, so each
+gradient step needs a full planning pass under the current $w$. Ziebart et al. compute it
+with a backward pass (a soft, log-sum-exp form of value iteration) and a forward pass for
+state-visitation frequencies; with a sampler instead, it is a forward RL run. The outer loop
+learns the reward, and the inner loop solves an RL problem every time — tractable in small
+discrete worlds, expensive anywhere larger.
+
+*The adversarial version.* **GAIL** (Ho & Ermon, NeurIPS 2016) is the
+adversarial descendant: a discriminator that tells expert state-action pairs from the
+policy's plays the role of the learned reward, and the policy is trained against it with RL,
+without recovering an explicit reward first. When no discriminator can do better than chance, the policy's state-action distribution matches the expert's — distribution matching, the same goal as feature matching without hand-chosen features.
+
+> [!note]- Deeper · 더 깊이
+> **GAIL's objective.** With a discriminator $D(s, a) \in (0, 1)$ scoring how *policy-like* a pair is, expert policy $\pi_E$ and entropy weight $\lambda \ge 0$, GAIL solves the saddle point
+> $$\min_\pi\ \max_D\ \ E_{\pi}\big[\log D(s, a)\big] + E_{\pi_E}\big[\log\big(1 - D(s, a)\big)\big] - \lambda\, H(\pi)$$
+> so $D$ is trained to tell the two apart and $\pi$ is trained, by RL with cost $\log D(s, a)$, to make its pairs indistinguishable from the expert's; at the equilibrium no discriminator beats chance, and $D = 0.5$ everywhere.
 
 #### 6.3 Preferences: Bradley–Terry, RLHF and DPO
 
@@ -585,7 +639,7 @@ $w^\top(\phi(A) - \phi(B)) = 0$.
 - **This is the RLHF reward model.** [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT]]
   trains its reward model with a pairwise ranking loss of this form on labeler rankings, then
   optimizes the policy against it with PPO ([[02-foundations/rl-basics|7. RL Basics §4]]) under a KL penalty (§4).
-- **DPO** (Rafailov et al., NeurIPS 2023) removes the explicit reward model: for the
+- **DPO** (direct preference optimization; Rafailov et al., NeurIPS 2023) removes the explicit reward model: for the
   KL-regularized objective the optimal policy determines the reward, so the Bradley–Terry loss
   can be written directly in policy log-probability ratios and trained without an RL loop.
   The derivation takes three lines.
@@ -651,6 +705,8 @@ so moving is better exactly while $p<0.9/1.9=0.474$. Nothing in the world change
 
 ### 8. Group-relative RL: reasoning models, and VLAs that learn from success
 
+A robot often can say only whether a trial succeeded, and a critic that must learn values from such bits is slow and costly to train. Group-relative RL drops the critic and compares a few attempts from the same start with one another; this section defines it and says what to ask of a robot paper that uses it.
+
 The reasoning language models of 2025 were trained with a policy-gradient method whose shape fits robots unusually well. DeepSeek-R1-Zero learned to reason from reinforcement learning alone, with rewards a program can check — was the final answer right, was the format kept — and no human-written reasoning traces; self-reflection and verification emerged along the way ([DeepSeek-AI, *Nature* 645, 2025](https://arxiv.org/abs/2501.12948)). The optimizer was GRPO.
 
 > **Group-relative policy optimization, defined.** **GRPO** is a *policy-gradient estimator whose baseline is a group of samples from the same starting point* rather than a learned value function. Three defining conditions. For each prompt or start state it **samples a group of $G$ outcomes from the current policy**. Each outcome's **advantage is its reward standardized within the group**, so no critic network is trained. And the policy is **updated with PPO's clipped ratio** ([[02-foundations/rl-basics|7. RL Basics §4]]), with a KL penalty to a reference policy added to the loss rather than to the reward.
@@ -665,7 +721,7 @@ The reasoning language models of 2025 were trained with a policy-gradient method
 
 **On the bucket MDP, by hand.** Reward a rollout $1$ if the policy moves the bucket at once from $A$ and $0$ if it waits. Four rollouts from $A$ — move, wait, wait, move — give rewards $(1,0,0,1)$, mean $0.5$, standard deviation $0.5$, and advantages $(+1,-1,-1,+1)$: two pushes up on $\log\pi(\text{move}\mid A)$ and two down on $\log\pi(\text{wait}\mid A)$. [[02-foundations/rl-basics|7. RL Basics §4]] took its baseline $b=0.6$ from a known policy; GRPO estimates it from the group. Two other groups show what the estimator does. One success in four, $(1,0,0,0)$, gets $+1.73$ against $-0.58$ for each failure: a rare success is pushed hard. Four successes, $(1,1,1,1)$, have a standard deviation of zero, so no member differs from the mean and the group teaches nothing — the same holds for four failures. (These use the population standard deviation; the sample form, dividing by $G-1$, scales every advantage here by $\sqrt{3/4}$ and changes no sign.)
 
-**Why it fits robots.** A robot's most natural reward is a binary success check, and its most natural group is one start state rolled out several times. RIPT-VLA post-trains pretrained VLAs from sparse binary success alone, with dynamic rollout sampling that drops the uninformative all-same groups and a leave-one-out advantage; it reports QueST improved by $21.2\%$ and OpenVLA-OFT raised to $97.5\%$ ([Tan et al., 2025](https://arxiv.org/abs/2505.17016)). VLA-RL treats a manipulation trajectory as a multi-turn conversation so that an autoregressive VLA can be trained online at the trajectory level ([Lu et al., 2025](https://arxiv.org/abs/2505.18719)). The reasoning models also showed that thinking longer can be bought at test time: s1 fine-tuned on only $1{,}000$ curated examples and controlled its thinking by "budget forcing" — cutting it short, or appending *Wait* to lengthen it ([Muennighoff et al., 2025](https://arxiv.org/abs/2501.19393)). On a robot that extra thinking is paid in rate, the cost counted in [[03-deep-learning/vla/index|4. VLA §6]].
+**Why it fits robots.** A robot's most natural reward is a binary success check, and its most natural group is one start state rolled out several times. RIPT-VLA post-trains pretrained VLAs from sparse binary success alone, with dynamic rollout sampling that drops the uninformative all-same groups and a leave-one-out advantage; it reports two published policies improved — QueST, which acts through learned skill tokens, by $21.2\%$, and OpenVLA-OFT, the OpenVLA model fine-tuned to emit action chunks in parallel, to $97.5\%$ ([Tan et al., 2025](https://arxiv.org/abs/2505.17016)). VLA-RL treats a manipulation trajectory as a multi-turn conversation so that an autoregressive VLA can be trained online at the trajectory level ([Lu et al., 2025](https://arxiv.org/abs/2505.18719)). The reasoning models also showed that thinking longer can be bought at test time: s1 fine-tuned on only $1{,}000$ curated examples and controlled its thinking by "budget forcing" — cutting it short, or appending *Wait* to lengthen it ([Muennighoff et al., 2025](https://arxiv.org/abs/2501.19393)). On a robot that extra thinking is paid in rate, the cost counted in [[03-deep-learning/vla/index|4. VLA §6]].
 
 **What to ask of a group-relative robot paper**, beside §5's checklist: where the rollouts ran, simulation or the real machine, and how many went into each update; what decides success, since the success detector *is* the reward; the group size, and what happened to groups that all succeeded or all failed; the KL reference; and whether the gain held on the real robot at its control rate.
 
@@ -708,7 +764,7 @@ The reasoning language models of 2025 were trained with a policy-gradient method
 
 > [!tip]- Answers
 > 1. Predicting $k$ actions at once cuts by a factor of $k$ the number of times the policy re-conditions on its own (possibly drifted) state, so off-distribution drift accumulates more slowly. The trade is reactivity: during chunk execution new observations are only partially incorporated (or not at all), so a disturbance mid-chunk is answered late.
-> 2. Any motion costs the smoothness term immediately while the progress term pays only $1.0\Delta d$; for a unit-norm action, moving 1 cm earns $0.01 - 0.2 = -0.19$, so standing still (reward 0) is optimal. Fixes: raise the progress weight or rescale $\Delta d$ to comparable units, penalize *action rate* rather than magnitude, or add a small per-step alive/idle penalty so doing nothing is not free.
+> 2. Any motion costs the smoothness term immediately while the progress term pays only $1.0\,\Delta d$: for a unit-norm action, moving 1 cm earns $0.01 - 0.2 = -0.19$, worse than standing still. The optimizer then shrinks its action rather than stopping: with progress of 1 cm per unit of action, $r(a) = 0.01a - 0.2a^2$ peaks at $a = 0.025$ with $r = +0.000125$, a crawl of $0.25\,\mathrm{mm}$ a step that an actuator with stiction cannot even execute, so on the machine the policy freezes. Fixes: raise the progress weight or rescale $\Delta d$ to comparable units, penalize *action rate* rather than magnitude, or add a small per-step alive/idle penalty so doing nothing is not free.
 > 3. The difference between (method + curriculum) and (baseline without curriculum) — that is, it measured the curriculum and the method together. The comparison isolates nothing unless the baseline gets the same curriculum.
 > 4. Because it is a soft trade: a large enough task reward simply buys the penalty, and nothing bounds violations during the exploration that precedes learning. Stronger: a safety filter/envelope that vetoes unsafe commands before the actuator (often an MPC), and a constrained-MDP formulation that optimizes reward subject to an explicit bound on expected violation.
 > 5. $1\times10^9/2{,}048 \approx 488{,}000$ steps per environment; at 100 Hz that is 4,880 s ≈ **1.4 hours** of simulated experience each. On one real machine at 100 Hz: $10^9/100 = 10^7$ s ≈ **116 days**.
@@ -756,12 +812,15 @@ Tier B. The running object with two knobs changed: discount $\gamma = 0.95$, and
 
 7. RL 기초는 MDP, 벨만 방정식, TD 학습, deadly triad, 정책 그래디언트와 PPO를 주었다. 로봇 학습 논문은 지면을 다른 데 쓴다. 정책이 시연에서 배우는가 보상에서 배우는가, 그 보상이 무엇을 말하는가, 정책이 배울 거리를 어떻게 찾아내는가, 부서질 수 있는 기계 위에서 RL을 어떻게 돌리는가, 실험을 어떻게 짰는가, 그리고 아무도 보상을 적어 내지 못할 때 사람에게서 보상을 어떻게 배우는가. 이 페이지가 그 층이다.
 
+> [!note] 왜 배우는가 · Why this matters
+> 이 페이지는 [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택에서 학습·적응 층을 로봇 논문이 실제로 다루는 모습 그대로 다룬다. 정책의 데이터와 보상이 어디서 오는가다. "*저 패널을 프레임에 설치해*"에서는 학습된 정책이 끼움을 맡을 때 그 단계 밑에 놓이고, 이진 성공 판정이 흔히 유일한 보상이므로(§8) 완료를 확인하는 단계에까지 닿는다([[physical-ai-map|피지컬 AI 지도]]에 그 자리가 표시되어 있다). 이것 없이는 결과가 무엇을 보였는지 가리지 못한다. 행동 복제는 과제와 함께 조작자의 망설임까지 베끼고, 대기에 값을 쳐 주는 보상은 "영원히 대기"를 최적해로 만든다 — 이 페이지의 버킷에서 복제한 정책의 가치는 최적값 $9$에 못 미치는 $8.78$이고, 대기하는 최적해의 과제 가치는 $0$이다. 뒤의 페이지들이 절 단위로 이 위에 짓는다. [[05-construction-robotics/imitating-contact|10. 접촉 모방]]은 §1의 오차 누적 상한과 §4의 KL로 닻을 내린 파인튜닝을, [[04-robotics/teleoperation-demonstration|12. 원격조작과 시연 수집]]은 §1을, [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공·중장비 자율화]]와 [[05-construction-robotics/sim-to-real|7.5 Sim-to-Real]]은 §4를, [[04-robotics/hri-safety|11. HRI·안전]]은 §6의 학습된 보상을 쓴다. 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])에서는 1 블록 [[02-foundations/overview#통과 점검 — 기초는 끝났는가|기초 통과 점검]]의 12번 문제가 §1을 시험하고, 이어서 §1과 §4가 시각–언어–행동 모델로 가는 다리인 4 블록을 열며, §7–§8은 건설 페이지 2.5, 4, 6, 9와 함께 6 블록에 들어간다. 이 페이지를 마치면 로봇 학습 논문의 방법 절과 실험 절을 읽고, 그것이 모방을 보고하는지, 맞는 보상을 받은 RL을 보고하는지, 보상 속 루프를 찾아낸 RL을 보고하는지 말할 수 있다.
+
 > [!note] 처음이라면 · First pass
-> 이 페이지의 대상, 그림, 대상으로 한 번 끝까지를 먼저 읽는다. 셋은 두 상태 MDP 하나 위에서 본 §1과 §2다. 이어서 §1(당신의 논문이 이 분야의 어느 절반에 사는가)과 §2(보상)를, 그다음 로봇 논문의 방법 절과 실험 절을 이루는 §4와 §5를 읽는다. §3 탐색은 짧으니 논문의 탐색 방식이 궁금해질 때 읽으면 된다. §6 보상 학습은 RLHF·DPO·역강화학습 논문을 읽는 것이 아니라면 2차 통과로 미룬다. §2를 전제하고, 네 소절은 하나씩 따로 읽을 수 있다. 논문이 성공 여부만으로 정책을 사후학습하거나 GRPO를 말하면 §8을 읽는다.
+> 60~90분짜리 회차 세 번쯤 든다. 1회차: 이 페이지의 대상, 그림, 대상으로 한 번 끝까지의 1번과 2번, 그리고 §1을 오차 누적 그림과 그 두 상한까지. 2회차: 2024~26년 상자를 접어 둔 채 §1의 나머지, 그리고 shaping 정리 뒤에 대상으로 한 번 끝까지의 3번이 이어지는 §2. 3회차: §4와 §5, 그다음 과제 2번 (a)–(c), 스스로 점검 2–5번, [[02-foundations/overview#통과 점검 — 기초는 끝났는가|통과 점검]] 12번. §3은 짧으니 논문의 탐색 방식이 궁금할 때 읽는다. §6은 RLHF·DPO·역강화학습 논문을 읽는 것이 아니라면 2차 통과로 미룬다. §2를 전제하고, 네 소절은 하나씩 따로 읽을 수 있다. §7과 §8은 학위논문 경로의 6 블록에 속하니 거기서 읽거나, 논문이 성공 여부만으로 정책을 사후학습하거나 GRPO를 말할 때 읽는다.
 
 ### 이 페이지의 대상 · Running object
 
-[[02-foundations/rl-basics|7. RL 기초 §2]]의 **버킷 MDP**, 곧 "대기" 행동을 더한 그 MDP와, 한 조작자가 그것을 몬 기록 하나다. [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 가운데 맞는 것이 없다. 여기서 다루는 것은 정책의 데이터와 보상이 어디서 오는가이고, 대상은 정책 하나의 가치 전체를 손으로 적을 수 있을 만큼 작아야 한다. 가장 가까운 후보인, 7. RL 기초가 MDP로 읽은 장치 P4에는 미룰 과제가 없다. 그 MDP의 최선의 수는 아무것도 하지 않는 것이라서, 아무것도 하지 않는 데 값을 쳐 주는 보상이 무슨 일을 하는지 보여 줄 수 없다. 버킷은 보여 줄 수 있다.
+[[02-foundations/rl-basics|7. RL 기초 §2]]의 **버킷 MDP**, 곧 "대기" 행동을 더한 그 MDP와, 한 조작자가 그것을 몬 기록 하나다. [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치(plant: 제어공학에서 제어하는 대상 시스템을 부르는 말) 가운데 맞는 것이 없다. 여기서 다루는 것은 정책의 데이터와 보상이 어디서 오는가이고, 대상은 정책 하나의 가치 전체를 손으로 적을 수 있을 만큼 작아야 한다. 가장 가까운 후보인, 7. RL 기초가 MDP로 읽은 장치 P4에는 미룰 과제가 없다. 그 MDP의 최선의 수는 아무것도 하지 않는 것이라서, 아무것도 하지 않는 데 값을 쳐 주는 보상이 무슨 일을 하는지 보여 줄 수 없다. 버킷은 보여 줄 수 있다.
 
 - **상태** $A$(빈 버킷)와 $B$(가득 찬 버킷), 할인율 $\gamma = 0.9$, 모든 전이는 결정론적이다.
 - **행동.** $A$에서는 보상 $0$으로 $B$로 가는 *이동*, 또는 보상 $0$으로 $A$에 머무는 *대기*. $B$에서는 행동이 *머묾* 하나이고 스텝마다 보상 $1$을 받는다.
@@ -838,27 +897,23 @@ Tier B. The running object with two knobs changed: discount $\gamma = 0.95$, and
 
 아래는 모두 이 페이지의 대상 위에서 돈다. 모든 가치는 [[02-foundations/rl-basics|7. RL 기초 §2]]의 벨만 기대 방정식에서 나온다. 한 상태의 가치는 이번 스텝의 보상에, 도착한 곳의 가치를 $\gamma$배 해 더한 것이다.
 
-**1. 모방이 얻는 것.** *행동 복제*(BC)는 기록된 상태–행동 쌍에 최대우도로 정책을 맞춘다(§1). 개수의 표라면 최대화하는 값은 경험적 빈도이므로, $A$의 다섯 쌍은 $\pi_{\text{BC}}(\text{이동}\mid A) = 4/5 = 0.8$을 준다. 이동은 가치 $10$인 $B$에 닿고 대기는 다시 $A$로 돌아오므로, BC의 가치는 자기 방정식의 양변에 나타난다.
+**1. 모방이 얻는 것.** *행동 복제*(BC)는 기록된 상태–행동 쌍에 최대우도로 정책을 맞춘다(§1). $p = \pi(\text{이동}\mid A)$라 두면 $A$의 다섯 쌍의 로그우도는 $4\log p + \log(1-p)$이고, 그 도함수 $4/p - 1/(1-p)$는 $p = 4/5$에서 0이 된다. 개수의 표를 최대화하는 값은 경험적 빈도이므로 BC는 $\pi_{\text{BC}}(\text{이동}\mid A) = 0.8$을 준다. 이동은 가치 $10$인 $B$에 닿고 대기는 다시 $A$로 돌아오므로, BC의 가치는 자기 방정식의 양변에 나타난다.
 
 $$V^{\text{BC}}(A) = 0.8\,(0 + 0.9 \times 10) + 0.2\,\big(0 + 0.9\,V^{\text{BC}}(A)\big) \;\Rightarrow\; V^{\text{BC}}(A) = \frac{7.2}{1 - 0.18} = 8.78$$
 
 $Q^*$에 대한 탐욕 정책은 매번 이동해 $V^*(A) = 9$를 번다. $0.22$의 차이가 조작자의 망설임 한 번을 베낀 값이고, "RL은 시연자를 넘어설 수 있다"는 말의 내용 전부가 이것이다. 보상은 대기가 $8.1$, 이동이 $9$의 가치라고 말해 주는데 BC는 보상을 읽지 않는다.
 
-**2. 보상이 정하는 것.** 이제 보상을 쓰는 사람이 대기 스텝마다 *유휴 보너스* $b$를 더한다고 하자. 액추에이터를 가만히 두는 정책에 값을 쳐 주는 §2의 "매끄러움" 항이다. 보너스는 $A$에서만 주어지므로 지금 이동은 써 놓은 보상으로 여전히 $9$를 벌고, 영원히 대기하면 다음을 번다.
+**2. 보상이 정하는 것.** 이제 보상을 쓰는 사람이 대기 스텝마다 *유휴 보너스* $b$를 더한다고 하자. §2의 매끄러움 페널티를 뒤집어 놓은 것이다. 그 항은 움직임에 값을 물리고, 이 보너스는 기다림에 값을 쳐 준다. 보너스는 $A$에서만 주어지므로 지금 이동은 써 놓은 보상으로 여전히 $9$를 벌고, 영원히 대기하면 다음을 번다.
 
 $$b + 0.9\,b + 0.9^2\,b + \cdots = \frac{b}{1 - 0.9} = 10\,b$$
 
 그래서 $10b > 9$, 곧 $b = 0.9$를 넘으면 써 놓은 보상의 최적해가 영원히 대기로 뒤집힌다. 일반적으로는 이동이 $\gamma/(1-\gamma)$, 영원히 대기가 $b/(1-\gamma)$의 가치이므로 문턱은 $b = \gamma$다. $b = 1$에서 RL 정책은 써 놓은 보상으로 $10$, 과제로 $0$을 번다. 버킷이 영영 차지 않기 때문이다. 이것이 *reward hacking*(§2)이다. 정책은 의도한 것이 아니라 써 놓은 것을 최대화했다. 보상을 읽은 적 없는 BC는 여전히 $8.78$을 번다.
 
-**3. 같은 보너스를 안전하게 주기.** *포텐셜 기반* shaping 항(§2)은 상태만의 함수 $\Phi$에 대해 $F = \gamma\Phi(s') - \Phi(s)$를 주고, 어느 행동이 최선인지를 바꾸지 못한다. 그래도 대기마다 정확히 $b = 1$을 줄 수 있다. $\gamma\Phi(A) - \Phi(A) = -0.1\,\Phi(A) = 1$이 $\Phi(A) = -10$을 정하고, $\Phi(B) = 0$이면 이동은 $F = 0 - (-10) = 10$을, $B$에서의 한 스텝은 $0$을 받는다. shaped 보상에서도 $B$의 한 스텝은 $1 + 0 = 1$을 주므로 $V'(B) = 10$이고, 다음이 성립한다.
-
-$$Q'(A,\text{이동}) = 10 + 0.9 \times 10 = 19, \qquad Q'(A,\text{대기}) = 1 + 0.9 \times 19 = 18.1$$
-
-대기 뒤에는 가치 $19$인 $A$에서의 최선의 수가 이어지고, 영원히 대기하면 $1/(1 - 0.9) = 10$밖에 벌지 못한다. 두 값은 shaping 전의 $9$와 $8.1$에 $10$을 더한 것이라서 이동이 여전히 $0.9$ 차이로 이긴다. 2번의 유휴 보너스와 이 항은 대기마다 똑같이 $+1$을 준다. 차이는 이동에 붙은 $10$ 하나뿐인데, 그것이 영원히 대기했다면 모았을 보너스 전부를 한꺼번에 갚아 준다.
-
 **읽는 법.** 세 숫자가 이 페이지를 떠받친다. $8.78$(모방은 망설임까지 포함해 데이터를 베낀다), $9$(맞는 보상을 받은 RL은 망설임을 없앤다), $0$(루프가 숨은 보상을 받은 RL은 과제를 없앤다). §1은 앞의 둘을, §2는 셋째를 다룬다. §4는 파인튜닝한 정책이 둘째를 좇는 동안 첫째 근처에 머물게 하는 법이고, §5는 실험 절에서 논문이 셋 중 무엇을 보고하는지 가려내는 법이며, §6은 루프 없는 보상을 아무도 적어 내지 못할 때 사람에게서 보상을 얻는 법이다.
 
 ### 1. 로봇 학습에서 RL vs 모방 (지도)
+
+알고리즘보다 먼저, 로봇 논문은 정책의 거동이 어디서 오는지 고른다. 시연에서 베끼는가, 보상에서 찾아내는가. 그 선택이 무엇이 잘못될 수 있는지를 정한다. 이 절은 분야의 두 절반과 각각이 가져오는 어휘를 지도로 그린다.
 
 - **모방** ([[01-canonical-papers/notes/4-vla/rt-1|RT-1]],
   [[01-canonical-papers/notes/4-vla/diffusion-policy|Diffusion Policy]]): 시연에 대한 지도학습 —
@@ -868,8 +923,8 @@ $$Q'(A,\text{이동}) = 10 + 0.9 \times 10 = 19, \qquad Q'(A,\text{대기}) = 1 
   이를 바꾼다).
 - **RL**은 유익한 보상과 충분한 탐색이 있으면 시연자를 넘어설 *수 있다* — 주로
   시뮬레이션(sim-to-real)
-  에서, 또는 모방으로 사전학습된 VLA 위의 *파인튜닝*으로 —
-  [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]] 레시피의 미러링이다.
+  에서, 또는 모방으로 사전학습된 VLA(시각–언어–행동 모델: 카메라 영상과 글 지시를 읽고 로봇 행동을 내는 정책, [[03-deep-learning/vla/index|4. VLA]]) 위의 *파인튜닝*으로 —
+  [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]] 레시피(RLHF: 사람의 피드백에서 배우는 강화학습, §6.3)의 미러링이다.
 
 **모방 학습 도구 상자** (모든 VLA 논문의 어휘). 여섯 개의 사실이 아니라 *세 묶음*으로
 읽어라 — *핵심 목적함수와 그 하나의 약점*, *데이터의 모습*, *정책을 표현력 있게 만드는 것*.
@@ -909,6 +964,8 @@ $$Q'(A,\text{이동}) = 10 + 0.9 \times 10 = 19, \qquad Q'(A,\text{대기}) = 1 
   <path d="M 60.0 40.0 L 69.2 92.2 L 78.4 123.4 L 87.6 142.1 L 96.8 153.3 L 106.0 160.0 L 115.2 164.0 L 124.4 166.4 L 133.6 167.9 L 142.8 168.7 L 152.0 169.2 L 161.2 169.5 L 170.4 169.7 L 179.6 169.8 L 188.8 169.9 L 198.0 169.9 L 207.2 170.0 L 216.4 170.0 L 225.6 170.0 L 234.8 170.0 L 244.0 170.0 L 253.2 170.0 L 262.4 170.0 L 271.6 170.0 L 280.8 170.0 L 290.0 170.0 L 299.2 170.0 L 308.4 170.0 L 317.6 170.0 L 326.8 170.0 L 336.0 170.0 L 345.2 170.0 L 354.4 170.0 L 363.6 170.0 L 372.8 170.0 L 382.0 170.0 L 391.2 170.0 L 400.4 170.0 L 409.6 170.0 L 418.8 170.0 L 428.0 170.0 L 437.2 170.0 L 446.4 170.0 L 455.6 170.0 L 464.8 170.0 L 474.0 170.0 L 483.2 170.0 L 492.4 170.0 L 501.6 170.0 L 510.8 170.0 L 520.0 170.0" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.9"/>
   <path d="M 60.0 40.0 L 69.2 52.4 L 78.4 63.7 L 87.6 73.8 L 96.8 83.0 L 106.0 91.3 L 115.2 98.9 L 124.4 105.7 L 133.6 111.8 L 142.8 117.4 L 152.0 122.4 L 161.2 127.0 L 170.4 131.1 L 179.6 134.8 L 188.8 138.2 L 198.0 141.2 L 207.2 144.0 L 216.4 146.5 L 225.6 148.7 L 234.8 150.7 L 244.0 152.6 L 253.2 154.2 L 262.4 155.8 L 271.6 157.1 L 280.8 158.3 L 290.0 159.5 L 299.2 160.5 L 308.4 161.4 L 317.6 162.2 L 326.8 163.0 L 336.0 163.6 L 345.2 164.2 L 354.4 164.8 L 363.6 165.3 L 372.8 165.7 L 382.0 166.1 L 391.2 166.5 L 400.4 166.8 L 409.6 167.1 L 418.8 167.4 L 428.0 167.7 L 437.2 167.9 L 446.4 168.1 L 455.6 168.3 L 464.8 168.4 L 474.0 168.6 L 483.2 168.7 L 492.4 168.8 L 501.6 169.0 L 510.8 169.1 L 520.0 169.1" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.9"/>
   <path d="M 60.0 40.0 L 69.2 41.3 L 78.4 42.6 L 87.6 43.8 L 96.8 45.1 L 106.0 46.3 L 115.2 47.6 L 124.4 48.8 L 133.6 50.0 L 142.8 51.2 L 152.0 52.4 L 161.2 53.5 L 170.4 54.7 L 179.6 55.9 L 188.8 57.0 L 198.0 58.1 L 207.2 59.2 L 216.4 60.3 L 225.6 61.4 L 234.8 62.5 L 244.0 63.6 L 253.2 64.6 L 262.4 65.7 L 271.6 66.7 L 280.8 67.8 L 290.0 68.8 L 299.2 69.8 L 308.4 70.8 L 317.6 71.8 L 326.8 72.7 L 336.0 73.7 L 345.2 74.7 L 354.4 75.6 L 363.6 76.6 L 372.8 77.5 L 382.0 78.4 L 391.2 79.3 L 400.4 80.2 L 409.6 81.1 L 418.8 82.0 L 428.0 82.9 L 437.2 83.7 L 446.4 84.6 L 455.6 85.5 L 464.8 86.3 L 474.0 87.1 L 483.2 88.0 L 492.4 88.8 L 501.6 89.6 L 510.8 90.4 L 520.0 91.2" fill="none" stroke="currentColor" stroke-width="1.6" opacity="0.9"/>
+  <g fill="none" stroke="currentColor"><line x1="520" y1="165" x2="520" y2="99" stroke-width="1.3" stroke-dasharray="4 3" opacity="0.8"/><path d="M516 104L520 96L524 104" stroke-width="1.3" opacity="0.8"/><circle cx="520" cy="91.3" r="4.2" stroke-width="1.8"/></g>
+  <g font-size="10.5" fill="currentColor"><text x="510" y="122" text-anchor="end">500스텝을 10개씩 묶으면 결정 50번:</text><text x="510" y="136" text-anchor="end">0.99⁵⁰ = 60.5%, 1000에 1번 곡선의 끝</text></g>
   <g font-size="10" fill="currentColor" opacity="0.85">
     <text x="110" y="148">20스텝에 1번 틀림</text>
     <text x="170" y="124">100에 1번</text>
@@ -927,12 +984,10 @@ $$Q'(A,\text{이동}) = 10 + 0.9 \times 10 = 19, \qquad Q'(A,\text{대기}) = 1 
 
 실제 오차는 독립도 아니고 하나하나가 치명적이지도 않으므로, 저 곡선은 정리가 아니라 예시로
 읽어라. 정리도 같은 모양이다: Ross, Gordon, Bagnell의 2011년 환원은 순수 행동 복제가
-$O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방법은 $O(\epsilon T)$에
+$O(\epsilon T^2)$로 비용을 누적하는 반면 DAgger 같은 no-regret 방법 — 실제로 방문한 상태에서 계속 재학습해 평균 손실이 돌이켜 본 최선의 정책의 손실에 다가가는 학습자 — 은 $O(\epsilon T)$에
 도달함을 보인다 — 늘릴 수 있는 지평과 늘릴 수 없는 지평의 차이다. 아래 묶음 3의 **행동 청킹**은
 같은 수를 싸게 두는 것이다: $k$스텝을 한 번에 예측하면 $T$스텝 과제가 $T/k$번의 결정 과제가
-되어, 이 곡선의 지평 축을 왼쪽으로 되돌린다. [[05-construction-robotics/imitating-contact|10. 접촉 모방 §3]]은 두 상한에 건설 작업,
-S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것은 리드인이 흡수하는 $15$스텝에 대해
-표류 $T^2\epsilon=32$스텝을 허락하므로 $27$스텝짜리 단계까지만 덮고, 뒤의 것은 $750$스텝을 덮는다.
+되어, 이 곡선의 지평 축을 왼쪽으로 되돌린다. [[05-construction-robotics/imitating-contact|10. 접촉 모방 §3]]은 두 상한에 건설 작업으로 값을 매긴다. S1(건설 트랙의 외장 패널 과제, [[05-construction-robotics/site-engineering|2.5]])의 마지막 40 mm를 정책 스텝 $T = 40$번에 가는 작업이다. $\epsilon=0.02$에서 BC의 상한은 표류 $T^2\epsilon=32$스텝인데 핀의 리드인은 $15$스텝만 흡수하므로, 그 상한은 $\sqrt{15/0.02} \approx 27$스텝까지의 단계에서만 성립하고, DAgger의 $T\epsilon$은 $750$스텝까지 $15$ 안에 머문다.
 
 *묶음 2 — 데이터셋 절 읽기.* 시연은 원격조작([[01-canonical-papers/notes/4-vla/act|ALOHA]]식
 장비, VR, 직접 교시), 스크립트 정책, 교차-embodiment 풀링
@@ -954,7 +1009,9 @@ S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것�
 - **행동 청킹, 정확히.** 정책이 관측 하나에서 다음 $k$개 행동 $\pi_\theta(a_t, a_{t+1}, \dots, a_{t+k-1} \mid o_t)$를 내고, 로봇은 다시 묻기 전에 그중 여러 개를 실행한다. 그러면 $T$스텝 과제에 정책 결정이 약 $T/k$번 필요하다. $500$스텝을 $10$개씩 묶으면 결정 $50$번이고, 결정당 오류율 $1\%$에서 위 그림의 무결 확률이 $0.99^{500} = 0.7\%$에서 $0.99^{50} = 60.5\%$로 옮겨 간다. 같은 식이 대가도 보여 준다. 청크 안에서는 $o_t$ 이후의 관측을 쓰지 않는다.
 - **오프라인 RL, 정확히.** 다른 행동 정책이 모은 고정 전이 데이터셋 $\mathcal{D} = \{(s, a, r, s')\}$에서, **추가 상호작용 없이** 기대 리턴 $J(\pi)$를 최대화하는 정책을 배운다. $r$을 쓴다는 점에서 BC와 달라 평범한 궤적의 좋은 부분을 골라 쓸 수 있고, $\operatorname{supp}(\mathcal{D})$ 밖을 시도해 과대추정된 $Q$를 바로잡을 길이 전혀 없다는 점에서 보통의 오프폴리시 RL과 다르다 — [[02-foundations/rl-basics|7. RL 기초 §3.5]]의 비관주의가 그래서 필요하다.
 
-> [!important] 이 절에 대한 2024~26년의 교정
+**2024~26년 결과에서 나온 두 결론, 논증은 아래 접힌 상자에.** 접촉이 많은 정밀 과제의 최근 성공 사례는 모두 학습 도중 사람이 정책을 교정했으므로 **상호작용적 학습이 오프라인 학습을 이겼고**, 보상은 그 루프를 닫는 여러 방법 중 하나다. 그리고 모방의 일반화는 시연 수가 아니라 환경과 물체의 수를 따라 자라므로 **RL은 상호작용 시간으로 정밀도를 사고, 모방은 장면 다양성으로 일반성을 산다.**
+
+> [!important]- 이 절에 대한 2024~26년의 교정
 > 위의 프레이밍 — 모방은 안정적이지만 상한이 있고, RL은 시연자를 넘어설 수 있다 — 은 옳고,
 > 지난 2년이 그것을 가져갈 만한 방식으로 날카롭게 만들었다. **접촉이 많은 정밀** 과제에서 격차는
 > 좁지 않다: **[[01-canonical-papers/notes/7-robotics/hil-serl|HIL-SERL]]**(*Science Robotics*, 2025)이 그런 과제 약 열세 개에서 **실기계 학습
@@ -990,7 +1047,7 @@ S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것�
   정책 개선; "KL-regularized policy" = 기준 정책 근처에 머물며 개선하기.
   - 뒤의 둘은 한 식이다. **KL 정규화 목적함수**는 리턴을 기준 정책 $\pi_{\text{ref}}$(사전학습 정책이나 데이터 수집 정책)로부터의 거리와 맞바꾸고, 온도 $\beta > 0$이 교환 비율을 정한다.
   $$\max_\pi\ E_{a \sim \pi}\big[A(s, a)\big] - \beta\, \mathrm{KL}\big(\pi(\cdot \mid s)\ \Vert\ \pi_{\text{ref}}(\cdot \mid s)\big) \quad\Rightarrow\quad \pi^*(a \mid s) = \frac{\pi_{\text{ref}}(a \mid s)\, e^{A(s,a)/\beta}}{Z(s)}$$
-  $Z(s)$는 확률의 합을 1로 맞추는 정규화 상수이고, 이 닫힌 형태는 §6의 MaxEnt IRL과 DPO에 쓰이는 것과 같은 라그랑주 승수 결과다. "Advantage-weighted" 방법은 기록된 행동마다 $e^{A/\beta}$로 가중한 BC로 $\pi_\theta$를 이 $\pi^*$에 맞춘다. 계산 예: $\pi_{\text{ref}} = (0.5, 0.5)$인 두 행동, 어드밴티지 $(1, 0)$, $\beta = 0.5$면 가중치가 $e^{2} : e^{0}$이라 $\pi^* = (0.881, 0.119)$이고, $\beta$가 클수록 $\pi^*$는 $(0.5, 0.5)$에 가깝게 남는다.
+  $Z(s)$는 확률의 합을 1로 맞추는 정규화 상수다. 이것이 *지수 기울임*(exponential tilting) 꼴, 곧 기준 정책을 $e^{A/\beta}$로 기울인 것이고, §6.2가 MaxEnt IRL에서 풀어 쓰고 §6.3이 DPO에서 다시 쓰는 것과 같은 라그랑주 승수 단계에서 나온다. "Advantage-weighted" 방법은 기록된 행동마다 $e^{A/\beta}$로 가중한 BC로 $\pi_\theta$를 이 $\pi^*$에 맞춘다. 계산 예: $\pi_{\text{ref}} = (0.5, 0.5)$인 두 행동, 어드밴티지 $(1, 0)$, $\beta = 0.5$면 가중치가 $e^{2} : e^{0}$이라 $\pi^* = (0.881, 0.119)$이고, $\beta$가 클수록 $\pi^*$는 $(0.5, 0.5)$에 가깝게 남는다.
 
 ### 2. 보상 설계 — 결과를 결정하는 선택
 
@@ -1007,7 +1064,46 @@ S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것�
   - *바꿀 수 없는 이유*(Ng, Harada & Russell, ICML 1999). 어떤 궤적을 따라서든 shaping 항은 망원경처럼 접힌다.
   $$\sum_{t=0}^{T-1} \gamma^t \big(\gamma\,\Phi(s_{t+1}) - \Phi(s_t)\big) = \gamma^T\, \Phi(s_T) - \Phi(s_0)$$
   각 $\gamma^{t+1}\Phi(s_{t+1})$이 다음 스텝의 $-\gamma^{t+1}\Phi(s_{t+1})$과 상쇄되기 때문이다. 그래서 shaped 리턴은 원래 리턴과 시작 상태 항만큼만 다르고(끝 항은 $\Phi$가 유계이고 $\gamma < 1$이면 $T \to \infty$에서 사라진다), 모든 행동에 대해 $Q'(s, a) = Q(s, a) - \Phi(s)$다. 한 상태의 모든 행동이 같은 양만큼 옮겨지므로 행동의 순위, 곧 최적 정책은 바뀌지 않는다. 조건은 $F$가 상태 포텐셜에만 의존한다는 것이다. 루프를 돌며 다시 챙길 수 있는 보너스에는 이런 상쇄가 없다.
-  - *계산 예:* 이 페이지의 대상, 곧 "대기" 행동을 더한 [[02-foundations/rl-basics|7. RL 기초 §2]]의 버킷 MDP에 $\Phi(A) = 0$, $\Phi(B) = 5$, $\gamma = 0.9$를 두자. $A \to B$ 이동은 $F = 0.9(5) - 0 = 4.5$를 벌고, $B$에 머물면 보상 $1$ 위에 $F = 0.9(5) - 5 = -0.5$를 받는다. shaped 가치는 $V'(B) = (1 - 0.5)/(1 - 0.9) = 5 = V(B) - \Phi(B)$이고, $A$에서는 $Q'(A, \text{이동}) = 4.5 + 0.9 \times 5 = 9$ 대 $Q'(A, \text{대기}) = 0 + 0.9 \times 9 = 8.1$이다. $\Phi(A) = 0$이므로 shaping 전과 같은 두 숫자이고, 여전히 이동이 최적이다. 대상으로 한 번 끝까지의 3번은 대기마다 $+1$을 주도록 고른 포텐셜로 같은 확인을 한다.
+  - *계산 예:* 이 페이지의 대상, 곧 "대기" 행동을 더한 [[02-foundations/rl-basics|7. RL 기초 §2]]의 버킷 MDP에 $\Phi(A) = 0$, $\Phi(B) = 5$, $\gamma = 0.9$를 두자. $A \to B$ 이동은 $F = 0.9(5) - 0 = 4.5$를 벌고, $B$에 머물면 보상 $1$ 위에 $F = 0.9(5) - 5 = -0.5$를 받는다. shaped 가치는 $V'(B) = (1 - 0.5)/(1 - 0.9) = 5 = V(B) - \Phi(B)$이고, $A$에서는 $Q'(A, \text{이동}) = 4.5 + 0.9 \times 5 = 9$ 대 $Q'(A, \text{대기}) = 0 + 0.9 \times 9 = 8.1$이다. $\Phi(A) = 0$이므로 shaping 전과 같은 두 숫자이고, 여전히 이동이 최적이다. 바로 아래의, 대상으로 한 번 끝까지의 3번은 대기마다 $+1$을 주도록 고른 포텐셜로 같은 확인을 한다.
+
+**대상으로 한 번 끝까지, 3번 — 같은 보너스를 안전하게 주기.** 대상으로 한 번 끝까지 2번의 유휴 보너스를 포텐셜로 대신 줄 수도 있고, 그러면 어느 행동이 최선인지를 바꾸지 못한다. 대기가 $F = \gamma\Phi(A) - \Phi(A) = -0.1\,\Phi(A) = 1$을 받아야 하므로 $\Phi(A) = -10$이 정해지고, $\Phi(B) = 0$이면 이동은 $F = 0 - (-10) = 10$을, $B$에서의 한 스텝은 $0$을 받는다. shaped 보상에서도 $B$의 한 스텝은 $1 + 0 = 1$을 주므로 $V'(B) = 10$이다. 각 행동의 가치는 shaped 보상에 도착한 곳 가치의 $0.9$배를 더한 것이므로 다음이 성립한다.
+
+$$Q'(A,\text{이동}) = 10 + 0.9 \times 10 = 19, \qquad Q'(A,\text{대기}) = 1 + 0.9 \times 19 = 18.1$$
+
+대기 뒤에는 가치 $19$인 $A$에서의 최선의 수가 이어지고, 영원히 대기하면 $1/(1 - 0.9) = 10$밖에 벌지 못한다. 두 값은 shaping 전의 $9$와 $8.1$에 $10$을 더한 것, 곧 정리의 $Q' = Q - \Phi(A)$이므로 이동이 여전히 $0.9$ 차이로 이긴다. 2번의 유휴 보너스와 이 항은 대기마다 똑같이 $+1$을 준다. 차이는 이동에 붙은 $10$ 하나뿐인데, 그것이 영원히 대기했다면 모았을 보너스 전부를 한꺼번에 갚아 준다.
+
+<svg viewBox="0 0 560 318" style="max-width:100%;height:auto" role="img" aria-label="포텐셜 기반 shaping의 지형: Φ(A) = −10, Φ(B) = 0이면 대기마다 +1, 이동에 +10, B에서 머물면 0이 붙고, A의 두 행동 가치가 똑같이 10씩 올라 이동이 여전히 이긴다">
+  <defs><marker id="arPlk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <line x1="56" y1="44" x2="56" y2="198" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+  <line x1="52" y1="66" x2="56" y2="66" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+  <text x="48" y="70" font-size="10" text-anchor="end" opacity="0.85" fill="currentColor">0</text>
+  <line x1="52" y1="121" x2="56" y2="121" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+  <text x="48" y="125" font-size="10" text-anchor="end" opacity="0.85" fill="currentColor">−5</text>
+  <line x1="52" y1="176" x2="56" y2="176" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+  <text x="48" y="180" font-size="10" text-anchor="end" opacity="0.85" fill="currentColor">−10</text>
+  <text x="60" y="38" font-size="11" font-style="italic" fill="currentColor">Φ(s)</text>
+  <line x1="60" y1="66" x2="540" y2="66" stroke="currentColor" stroke-width="0.9" stroke-dasharray="2 3" opacity="0.45"/>
+  <line x1="60" y1="176" x2="540" y2="176" stroke="currentColor" stroke-width="0.9" stroke-dasharray="2 3" opacity="0.45"/>
+  <circle cx="196" cy="176" r="24" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="196" y="174" font-size="12" text-anchor="middle" font-weight="bold" fill="currentColor">A</text>
+  <text x="196" y="188" font-size="10" text-anchor="middle" opacity="0.9" fill="currentColor">Φ = −10</text>
+  <circle cx="396" cy="66" r="24" fill="none" stroke="currentColor" stroke-width="1.8"/>
+  <text x="396" y="64" font-size="12" text-anchor="middle" font-weight="bold" fill="currentColor">B</text>
+  <text x="396" y="78" font-size="10" text-anchor="middle" opacity="0.9" fill="currentColor">Φ = 0</text>
+  <line x1="215" y1="161" x2="375" y2="79" stroke="currentColor" stroke-width="2.2" marker-end="url(#arPlk)"/>
+  <text x="318" y="146" font-size="11" fill="currentColor">이동: F = 0 − (−10) = +10</text>
+  <path d="M176 163 C118 126 118 226 175 188" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#arPlk)"/>
+  <text x="132" y="222" font-size="11" fill="currentColor">대기: F = 0.9(−10) − (−10) = +1</text>
+  <path d="M416 53 C474 16 474 116 417 78" fill="none" stroke="currentColor" stroke-width="1.6" marker-end="url(#arPlk)"/>
+  <text x="458" y="98" font-size="11" fill="currentColor">머묾: F = 0, r = 1</text>
+  <text x="24" y="244" font-size="11" fill="currentColor">Q′(A, 이동) = 10 + 0.9 × 10 = 19,   Q′(A, 대기) = 1 + 0.9 × 19 = 18.1</text>
+  <text x="24" y="262" font-size="11" fill="currentColor">shaping 전의 9와 8.1에 똑같이 10을 더한 값이라 이동이 여전히 0.9 차이로 이긴다.</text>
+  <text x="24" y="280" font-size="11" fill="currentColor">영원히 대기하면 모으는 1 + 0.9 + 0.81 + … = 10을 이동이 한꺼번에 먼저 갚는다.</text>
+  <text x="24" y="298" font-size="11" opacity="0.9" fill="currentColor">2번의 유휴 보너스 b = 1은 대기에 같은 +1을 주지만 되갚지 않아 최적해를 뒤집는다.</text>
+</svg>
+
+3번의 포텐셜을 지형으로 그렸다. $A$가 $B$보다 $10$ 아래에 있으므로 대기마다 $+1$, 이동에 $+10$, $B$에서의 한 스텝에 $0$이 붙는다. $A$의 두 행동 가치가 똑같이 $10$씩 올라 $19$와 $18.1$이 되므로 순위와 그에 따른 최적 정책은 그대로이고, 되갚지 않는 2번의 보너스는 그것을 뒤집는다.
+
 - **실제 보상은 항들의 가중합이다.** 곧 $r = \sum_{j} w_j\, r_j$이고, 각 $r_j$는 거동의 한 측면을 재며 각 가중치 $w_j$는 부호를 품은 하이퍼파라미터다. 굴착 정책의 보상은 보통 이렇게 생겼고, 이 표가 곧 읽을
   가치가 있는 방법 절이다:
 
@@ -1022,21 +1118,24 @@ S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것�
 
 - **가중치는 하이퍼파라미터이고, 서로 싸운다.** $r = 2.0\,\Delta d - 0.5\,\lVert a\rVert^2$를
   보자. 단위 노름 행동으로 1 cm 이동($\Delta d = 0.01$)하면
-  $2.0(0.01) - 0.5(1) = -0.48$ — **음수**다. 즉 최적 정책은 *아무것도 하지 않는 것*이다.
-  "가만히 서서 매끄러움 보너스만 챙긴다"는 퇴화 해가 정확히 이만큼 단순한 산수에서 나온다.
+  $2.0(0.01) - 0.5(1) = -0.48$ — **음수**라, 가만히 서 있는 것보다 못하다. 그래도 최적화기는 멈추지 않고 줄인다. 진척이 행동에 비례해 단위당 $1\,\mathrm{cm}$라면 $r(a) = 0.02a - 0.5a^2$이고, 기울기 $0.02 - a$가 0이 되는 $a = 0.02$에서 $r = +0.0002$로 가장 크다. 정책은 행동을 50분의 1로 줄여 한 스텝에 $0.2\,\mathrm{mm}$씩 기어가고, 정지 마찰이 있는 액추에이터에서는 그렇게 작은 명령으로는 아예 움직이지 않는다. 거의 얼어붙은 정책이 정확히 이만큼 단순한 산수에서 나온다.
 
-<svg viewBox="0 0 460 152" style="max-width:100%;height:auto" role="img" aria-label="두 보상 항을 실제 비율로 그린 그림: 페널티가 진척 항을 압도한다">
-  <g stroke="currentColor" stroke-width="1.2" opacity="0.5"><line x1="150" y1="20" x2="150" y2="118"/></g>
-  <g stroke="currentColor" stroke-width="1" opacity="0.35"><line x1="30" y1="118" x2="430" y2="118"/></g>
-  <g fill="currentColor" opacity="0.22"><rect x="150" y="34" width="4" height="26"/><rect x="50" y="74" width="100" height="26"/></g>
-  <g fill="none" stroke="currentColor" stroke-width="1.2"><rect x="150" y="34" width="4" height="26"/><rect x="50" y="74" width="100" height="26"/></g>
-  <g font-size="11.5" fill="currentColor">
-    <text x="164" y="52">+0.02 &nbsp; 과제 진척 (2.0 &#215; 0.01 m)</text>
-    <text x="164" y="92">&#8722;0.50 &nbsp; 행동 페널티 (0.5 &#215; 1)</text>
-    <text x="30" y="140">실제 비율: 합이 &#8722;0.48이므로 가만히 있는 쪽이 파는 쪽보다 낫다</text>
-    <text x="122" y="20" font-size="10.5" opacity="0.7">0</text>
-  </g>
+<svg viewBox="0 0 560 158" style="max-width:100%;height:auto" role="img" aria-label="두 보상 항을 실제 비율로 그린 그림: 단위 행동에서 페널티가 진척 항을 압도해 합이 −0.48이다">
+  <line x1="236" y1="22" x2="236" y2="128" stroke="currentColor" stroke-width="1.2" opacity="0.6"/>
+  <text x="236" y="16" font-size="10" text-anchor="middle" opacity="0.8" fill="currentColor">0</text>
+  <rect x="236" y="30" width="8" height="22" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.2"/>
+  <text x="254" y="45" font-size="11" font-weight="bold" fill="currentColor">+0.02</text>
+  <text x="300" y="45" font-size="11" fill="currentColor">과제 진척 (2.0 × 0.01 m)</text>
+  <rect x="36" y="62" width="200" height="22" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="1.2"/>
+  <text x="246" y="77" font-size="11" font-weight="bold" fill="currentColor">−0.50</text>
+  <text x="292" y="77" font-size="11" fill="currentColor">행동 페널티 (0.5 × 1²)</text>
+  <rect x="44" y="94" width="192" height="22" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="246" y="109" font-size="11" fill="currentColor">−0.48</text>
+  <text x="292" y="109" font-size="11" fill="currentColor">단위 행동 한 번의 합</text>
+  <text x="20" y="142" font-size="11" opacity="0.9" fill="currentColor">축척: 1 = 400 단위. 최선은 멈춤이 아니라 행동을 50분의 1로 줄인 기어가기다.</text>
 </svg>
+
+공구를 $1\,\mathrm{cm}$ 옮기는 단위 노름 행동 하나에 대한 $r = 2.0\,\Delta d - 0.5\,\lVert a\rVert^2$의 두 항을 실제 비율로 그렸다. 진척은 $+0.02$, 페널티는 $-0.50$이고, 합 $-0.48$은 가만히 서 있는 것보다 못하다. 최적해는 멈춤이 아니라 줄이기다. $r(a) = 0.02a - 0.5a^2$는 $a = 0.02$에서 $+0.0002$로 가장 크고, 정지 마찰이 있는 액추에이터는 그 기어가기를 제자리 서 있기로 바꾼다.
 
 - **Reward hacking**이 그 일반형이다: 정책은 당신이 *의도한* 것이 아니라 *써 놓은* 것을
   최대화한다. 속도 보상을 제자리 진동으로 채우고, 목표까지 거리 보상을 문턱 안쪽에서 맴돌며
@@ -1044,7 +1143,7 @@ S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것�
   *이 보상을 버는 가장 싼 방법이 무엇인가?* 다.
   - *조건으로 쓰면.* 의도한 보상(대개 적을 수 없다)을 $r^\dagger$, 써 놓은 대리 보상을 $\hat r$라 하자. Reward hacking은 대리물을 최적화한 결과가 대리물에서는 성공하고 의도에서는 실패하는 경우다.
   $$\hat\pi = \arg\max_\pi J_{\hat r}(\pi), \qquad J_{\hat r}(\hat\pi) \ \text{high}, \qquad J_{r^\dagger}(\hat\pi) \ \text{low}$$
-  그래서 이것은 어느 한쪽이 아니라 (대리물, 최적화기) 쌍의 성질이다. 최적화기가 강할수록 $\hat r$과 $r^\dagger$가 어긋나는 곳을 더 확실히 찾아낸다. 위의 $-0.48$ 예가 가장 단순한 사례다. 대리물은 가만히 서 있기로 최대화되고, 그것은 의도한 굴착 과제에서 0점이다.
+  그래서 이것은 어느 한쪽이 아니라 (대리물, 최적화기) 쌍의 성질이다. 최적화기가 강할수록 $\hat r$과 $r^\dagger$가 어긋나는 곳을 더 확실히 찾아낸다. 위의 $-0.48$ 예가 가장 단순한 사례다. 대리물은 일하는 행동보다 50배 작은 기어가기로 최대화되고, 그것은 의도한 굴착을 거의 하지 못한다.
 - **읽기 단서**: 보상 표를 찾고, 항의 개수를 세고, 가중치를 찾고(대개 부록에만 있다), 논문이
   보고하는 운용점에서 어느 항이 지배적인지 물어라. 보상을 보여주지 않는 논문은 방법을 보여주지
   않은 것이다.
@@ -1084,11 +1183,13 @@ S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것�
 
 ### 4. 실기계 위의 RL: 파인튜닝, 안전, 그리고 sim-to-real의 자리
 
+시연이나 시뮬레이션으로 사전학습한 정책도 결국 자기가 돌 기계 위에서 나아져야 하고, 거기서는 시행마다 시간과 마모가 들며 나쁜 행동 하나가 무언가를 부술 수 있다. 이 절은 그곳에서 RL을 돌리는 법을 말한다. 사전학습된 정책에서 출발하는 파인튜닝, 정책을 그 근처에 붙들어 두는 법, 정책이 배우는 동안 기계를 안전하게 지키는 법, 그리고 시뮬레이션에서 옮겨 오는 일이 들어설 자리다.
+
 - **RL 파인튜닝**(RLFT)이 오늘날 RL이 로봇에 닿는 가장 흔한 경로이고, 이 위키에서 만나게 될
   형태다. 행동 복제(또는 이전 RL 실행)로 이미 사전학습된 정책에서 출발해, 과제 보상으로 RL을
   이어간다. 사전학습이 탐색이 절망적이지 않은 영역에 데려다 놓고, RL이 시연으로 덮지 못한 것을
   고친다. [[01-canonical-papers/notes/1-foundations/instructgpt|사전학습 → RLHF]]와 같은
-  모양이며, [[01-canonical-papers/notes/8-construction/ext|ExT]]의 SFT/RLFT 단계가 굴착기에서
+  모양이며, [[01-canonical-papers/notes/8-construction/ext|ExT]]의 SFT/RLFT 단계 — 시연에 대한 지도 파인튜닝(곧 행동 복제) 뒤의 RL 파인튜닝 — 가 굴착기에서
   하는 일이 이것이다.
 - **기준 근처에 붙들어 둔다.** RLFT는 보통 사전학습 정책으로의 KL 항으로 정규화한다. 너무 멀리
   가면 사전학습이 사 준 것을 잃고, reward hacking이 유력해진다 — 보상은 애초에 거동 전체를
@@ -1099,7 +1200,7 @@ S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것�
 - **학습 중 안전**에는 정직한 선택지가 몇 개뿐이고, 보상 페널티가 그중 가장 약하다:
   1. 시뮬레이션에서 학습한다(지배적 — 12톤 기계는 "해 보고 고치기"를 할 수 없다);
   2. 안전하지 않은 명령이 액추에이터에 닿기 전에 자르거나 거부하는 **안전 필터·엔벨로프**로
-     정책을 감싼다([[04-robotics/mpc|MPC]]가 흔히 그 필터다);
+     정책을 감싼다([[04-robotics/mpc|MPC]], 곧 모델 예측 제어가 흔히 그 필터다);
   3. **제약 MDP**(보상과 별도의 비용 신호가 있고 그 기대 총합이 한도 아래에 머물러야 하는 MDP)로
      정식화해 그 상한 아래에서 보상을 최적화한다(한도를 승수로 목적함수에 접어 넣는 라그랑주 방법,
      [[02-foundations/optimization|최적화 §4]] 참고);
@@ -1113,7 +1214,7 @@ S1의 마지막 40 mm에서 값을 매긴다. $\epsilon=0.02$에서 앞의 것�
   $J_r$과 $J_c$는 보상과 비용의 기대 할인 총합이다. 라그랑주 방법은 $\mathcal{L}$에 대해 $\pi$를 개선하는 것과, 제약이 깨지는 동안 $\lambda$를 *올리는* 것을 번갈아 한다. **계산 예와, 그것이 드러내는 반례.** 정책 둘: $\pi_1$은 $J_r = 10$, $J_c = 3$, $\pi_2$는 $J_r = 8$, $J_c = 1$, 한도 $d = 2$. 제약 문제의 답은 유일하게 허용되는 $\pi_2$다. 비용 단위당 고정 보상 페널티 $0.5$는 둘을 $10 - 1.5 = 8.5$와 $8 - 0.5 = 7.5$로 매겨 *위반하는* $\pi_1$을 고른다 — 장치 4가 말한 그대로 실패한다. 라그랑주 점수는 $10 - \lambda$와 $8 + \lambda$이므로 $\lambda$가 $1$을 넘도록 올라가면 $\pi_2$를 고른다. 승수는 짐작하는 값이 아니라 제약이 성립할 때까지 조정되는 페널티 가중치다.
 - **진짜 비용은 연산이 아니다.** 하드웨어에서는 에피소드마다 리셋이 필요하고, 리셋은 인간
   노동이며, 마모와 안전 심사가 실제 예산이다([[04-robotics/hri-safety|HRI·안전]]).
-- 이 이야기의 전이 쪽 절반 — reality gap, 랜덤화, privileged learning, 잔차, 배치 사다리 — 은
+- 이 이야기의 전이 쪽 절반 — reality gap, 랜덤화, privileged learning(시뮬레이터에만 있는 상태로 학습한 교사 정책을 실제 센서만 보는 학생에게 증류하는 것), 잔차(손으로 설계한 제어기의 명령에 더하는 학습된 보정), 배치 사다리 — 은
   [[05-construction-robotics/sim-to-real|Sim-to-Real 가이드]]다. 관심이 언어모델이 아니라
   로봇이라면 이 페이지 바로 다음에 읽어라.
 
@@ -1174,13 +1275,15 @@ RL 결과는 거의 어떤 하위 분야보다 규약에 의존한다. 확인할
 
 #### 6.1 특징 맞추기와 최대 마진 계획
 
+시연은 전문가가 무엇을 했는지 보여 줄 뿐, 어떤 보상을 최적화했는지는 보여 주지 않는다. 그 틈에 대한 첫 답은 보상 자체를 묻지 않고, 가중치가 무엇이든 학습자가 전문가와 같은 특징을 모으기만 하라고 요구하는 것이다.
+
 **특징 맞추기(feature matching).** 손으로 고른 특징 위의 선형 보상
 $r(s,a) = w^\top\phi(s,a)$를 가정한다. 그러면 정책의 기대 리턴은 $w^\top\mu(\pi)$이고,
 $\mu(\pi)$는 할인된 특징 기댓값이다:
 
 $$\mu(\pi) = E_\pi\Big[\sum_{t} \gamma^t\,\phi(s_t,a_t)\Big]$$
 
-리턴이 이렇게 인수분해되는 것은 보상이 선형이어서 $w$가 기댓값 밖으로 나오기 때문이다. 쓸모
+리턴이 이렇게 인수분해되는 것은 보상이 선형이어서 $w$가 기댓값 밖으로 나오기 때문이다. 할인된 특징 기댓값은 구체적인 숫자다. 스텝 $0, 1, 2$의 특징이 $\phi = 1, 0, 1$인 궤적 하나만 늘 도는 정책이라면 $\gamma = 0.9$에서 $\mu = 1 + 0 + 0.81 = 1.81$이다. 쓸모
 있는 귀결: 학습자의 $\mu$가 전문가의 것과 $\epsilon$ 이내이면, $\lVert w\rVert \le 1$인
 *모든* $w$에 대해 리턴도 $\epsilon$ 이내다. 학습자와 전문가의 특징 기댓값을 $\mu_L$, $\mu_E$로 쓰면
 코시–슈바르츠 부등식이
@@ -1190,9 +1293,12 @@ $|w^\top\mu_L - w^\top\mu_E| \le \lVert w\rVert\,\lVert\mu_L - \mu_E\rVert \le 1
 길을 좋아한다는 것을 알아채고 같은 특징 합을 내는 경로를 찾는다. **최대 마진 계획**(Maximum
 Margin Planning; Ratliff, Bagnell & Zinkevich, ICML 2006)은 이를 이차 계획 문제로 만든다: 전문가가
 다른 모든 후보 정책을 — 그 정책이 전문가와 다를수록 더 큰 — 마진으로 이기게 하는 가장 작은
-$w$를 고르고, 불완전한 전문가를 위해 슬랙 변수를 둔다. 기호로 쓰면, $\mu_E$는 전문가의 특징 기댓값, $\mu(\pi)$는 후보의 것, $\ell(\pi) \ge 0$은 $\pi$가 전문가와 얼마나 다른지 재는 손실, 슬랙 $\xi \ge 0$의 가중치는 $C$다.
-$$\min_{w,\ \xi \ge 0}\ \tfrac12 \lVert w \rVert^2 + C\,\xi \quad \text{s.t.} \quad w^\top \mu_E \ \ge\ w^\top \mu(\pi) + \ell(\pi) - \xi \quad \text{for every candidate } \pi$$
-$\lVert w\rVert$를 최소화하므로 전문가를 여전히 가려내는 가장 덜 극단적인 보상이 골라지고, 이 방법이 척도 모호성을 깨는 방식이 이것이다. 할인된 특징 기댓값 자체는 구체적인 숫자다. 스텝 $0, 1, 2$의 특징이 $\phi = 1, 0, 1$이고 $\gamma = 0.9$면 $\mu = 1 + 0 + 0.81 = 1.81$이다.
+$w$를 고르고, 불완전한 전문가를 위해 슬랙 변수를 둔다. $\lVert w\rVert$를 최소화하므로 전문가를 여전히 가려내는 가장 덜 극단적인 보상이 골라지고, 이 방법이 척도 모호성을 깨는 방식이 이것이다.
+
+> [!note]- 더 깊이 · Deeper
+> **최대 마진 계획을 식으로.** $\mu_E$는 전문가의 특징 기댓값, $\mu(\pi)$는 후보의 것, $\ell(\pi) \ge 0$은 $\pi$가 전문가와 얼마나 다른지 재는 손실, 슬랙 $\xi \ge 0$의 가중치는 $C$다.
+> $$\min_{w,\ \xi \ge 0}\ \tfrac12 \lVert w \rVert^2 + C\,\xi \quad \text{s.t.} \quad w^\top \mu_E \ \ge\ w^\top \mu(\pi) + \ell(\pi) - \xi \quad \text{for every candidate } \pi$$
+> 그래서 전문가와 더 다른 후보일수록 더 큰 차이로 져야 하고, 슬랙은 불완전한 전문가가 비교 몇 개를 단위당 $C$의 값을 치르고 지는 것을 허락한다.
 
 #### 6.2 최대 엔트로피 IRL과 GAIL
 
@@ -1202,10 +1308,12 @@ $\lVert w\rVert$를 최소화하므로 전문가를 여전히 가려내는 가�
 특징 합을 맞추는 모든 분포 가운데 엔트로피가 최대인 것을 택한다
 ([[02-foundations/information-theory|정보이론]]).
 
-*모델.* 기대 특징 합을 맞춘다는 제약 아래 엔트로피를 최대화하는 것은 라그랑주 승수 문제이고
-([[02-foundations/optimization|4. 최적화 §4]]), 그 해는 언제나 제약된 특징에 대해 지수형이며
-특징 제약에 붙은 승수가 $w$ 역할을 한다. 그래서 해는 보상에 대해 지수형이며,
-$f(\tau) = \sum_t \phi(s_t,a_t)$는 궤적의 특징 합이다:
+*모델.* 전문가의 기대 특징 합 $f_E$를 맞춘다는 제약 아래 엔트로피를 최대화하는 것은 라그랑주 승수 문제다
+([[02-foundations/optimization|4. 최적화 §4]]). $f(\tau) = \sum_t \phi(s_t,a_t)$는 궤적의 특징 합, $w$는 특징 제약에 붙은 승수 벡터, $\lambda$는 정규화 제약에 붙은 스칼라다.
+
+$$\mathcal{L}(P) = -\sum_\tau P(\tau)\log P(\tau) + w^\top\Big(\sum_\tau P(\tau)f(\tau) - f_E\Big) + \lambda\Big(\sum_\tau P(\tau) - 1\Big)$$
+
+$\partial\mathcal{L}/\partial P(\tau) = -\log P(\tau) - 1 + w^\top f(\tau) + \lambda$를 0으로 두면 $P(\tau) = e^{\lambda - 1}\,e^{w^\top f(\tau)}$이므로, 해는 언제나 제약된 특징에 대해 지수형이고 특징 제약에 붙은 승수가 보상 가중치 $w$ 역할을 한다. 정규화하면:
 
 $$P_w(\tau) = \frac{\exp\big(w^\top f(\tau)\big)}{Z(w)}, \qquad Z(w) = \sum_{\tau}\exp\big(w^\top f(\tau)\big)$$
 
@@ -1217,20 +1325,8 @@ $w$를 맞추면:
 
 $$\nabla_w \log \prod_{i} P_w(\tau_i) = \sum_{i=1}^{N} f(\tau_i) - N\,E_{\tau\sim P_w}\big[f(\tau)\big]$$
 
-둘째 항은 $\log Z(w)$의 미분이 모델 자신의 기대 특징 합이기 때문에 생긴다. 그래서 그래디언트는
+둘째 항은 $\log Z(w)$의 미분이 모델 자신의 기대 특징 합이기 때문에 생긴다 — 합 안에서 미분하면 $\partial \log Z/\partial w = \frac{1}{Z}\sum_\tau f(\tau)\,e^{w^\top f(\tau)} = E_{P_w}[f]$다. 그래서 그래디언트는
 *전문가의 특징 합 빼기 현재 모델이 기대하는 특징 합*이고, 특징이 맞는 바로 그때 0이 된다.
-
-*비용.* **비용은 전부 그 둘째 항에 있다.** 현재 보상이 그럴듯하게 만드는 모든 궤적에 대한 기댓값이므로,
-그래디언트 한 스텝마다 현재 $w$ 아래의 계획을 한 번 통째로 풀어야 한다. Ziebart 등은 이를
-역방향 패스(log-sum-exp 형태의 soft 가치 반복)와 상태 방문 빈도를 구하는 순방향 패스로 계산하고,
-샘플러로 대신하면 순방향 RL 실행 한 번이 된다. 바깥 루프가 보상을 배우고 안쪽 루프가 매번 RL
-문제를 푼다 — 작은 이산 세계에서는 다룰 만하지만 그보다 크면 비싸다.
-
-*적대적 버전.* **GAIL**(Ho & Ermon,
-NeurIPS 2016)이 적대적 후손이다: 전문가의 상태-행동 쌍과 정책의 것을 구별하는 판별기가 학습된
-보상 역할을 하고, 명시적 보상을 먼저 복원하지 않은 채 정책을 그것에 대해 RL로 학습한다. 쌍이 얼마나 *정책 같은지* 매기는 판별기 $D(s, a) \in (0, 1)$, 전문가 정책 $\pi_E$, 엔트로피 가중치 $\lambda \ge 0$에 대한 안장점 목적함수는 다음과 같다.
-$$\min_\pi\ \max_D\ \ E_{\pi}\big[\log D(s, a)\big] + E_{\pi_E}\big[\log\big(1 - D(s, a)\big)\big] - \lambda\, H(\pi)$$
-그래서 $D$는 둘을 구별하도록, $\pi$는 비용 $\log D(s, a)$로 RL을 해서 자기 쌍이 전문가의 것과 구별되지 않도록 학습된다. 어떤 판별기도 우연보다 잘할 수 없으면 모든 곳에서 $D = 0.5$이고 정책의 상태-행동 분포가 전문가의 것과 일치한다. 분포 맞추기, 곧 손으로 고른 특징 없는 특징 맞추기와 같은 목표다.
 
 > [!example] 계산 예제 · Worked example
 > 스칼라 특징을 가진 궤적 둘, $f(\tau_1) = 2$, $f(\tau_2) = 1$. 전문가를 네 번 기록했더니
@@ -1247,6 +1343,21 @@ $$\min_\pi\ \max_D\ \ E_{\pi}\big[\log D(s, a)\big] + E_{\pi_E}\big[\log\big(1 -
 > 지수형의 "불가능하지는 않다"가 이것이다. 그리고 네 시연이 모두 $\tau_1$이었다면 $E[f] < 2$이므로
 > 그래디언트 $8 - 4E[f]$가 모든 $w$에서 양수로 남아 $w$가 한없이 커진다 — 완벽히 일관된 전문가는
 > 무한히 확신하는 것으로 읽히고, 실제 적합에서 $w$를 정규화하는 이유가 이것이다.
+
+*비용.* **비용은 전부 그래디언트의 둘째 항에 있다.** 현재 보상이 그럴듯하게 만드는 모든 궤적에 대한 기댓값이므로,
+그래디언트 한 스텝마다 현재 $w$ 아래의 계획을 한 번 통째로 풀어야 한다. Ziebart 등은 이를
+역방향 패스(log-sum-exp 형태의 soft 가치 반복)와 상태 방문 빈도를 구하는 순방향 패스로 계산하고,
+샘플러로 대신하면 순방향 RL 실행 한 번이 된다. 바깥 루프가 보상을 배우고 안쪽 루프가 매번 RL
+문제를 푼다 — 작은 이산 세계에서는 다룰 만하지만 그보다 크면 비싸다.
+
+*적대적 버전.* **GAIL**(Ho & Ermon,
+NeurIPS 2016)이 적대적 후손이다: 전문가의 상태-행동 쌍과 정책의 것을 구별하는 판별기가 학습된
+보상 역할을 하고, 명시적 보상을 먼저 복원하지 않은 채 정책을 그것에 대해 RL로 학습한다. 어떤 판별기도 우연보다 잘할 수 없으면 정책의 상태-행동 분포가 전문가의 것과 일치한다. 분포 맞추기, 곧 손으로 고른 특징 없는 특징 맞추기와 같은 목표다.
+
+> [!note]- 더 깊이 · Deeper
+> **GAIL의 목적함수.** 쌍이 얼마나 *정책 같은지* 매기는 판별기 $D(s, a) \in (0, 1)$, 전문가 정책 $\pi_E$, 엔트로피 가중치 $\lambda \ge 0$에 대해 GAIL은 다음 안장점을 푼다.
+> $$\min_\pi\ \max_D\ \ E_{\pi}\big[\log D(s, a)\big] + E_{\pi_E}\big[\log\big(1 - D(s, a)\big)\big] - \lambda\, H(\pi)$$
+> 그래서 $D$는 둘을 구별하도록, $\pi$는 비용 $\log D(s, a)$로 RL을 해서 자기 쌍이 전문가의 것과 구별되지 않도록 학습되고, 균형에서는 어떤 판별기도 우연보다 나을 수 없어 모든 곳에서 $D = 0.5$다.
 
 #### 6.3 선호: Bradley–Terry, RLHF, DPO
 
@@ -1273,7 +1384,7 @@ $w$의 공간을 초평면 $w^\top(\phi(A) - \phi(B)) = 0$을 따라 반으로 �
 - **이것이 RLHF의 보상 모델이다.** [[01-canonical-papers/notes/1-foundations/instructgpt|InstructGPT]]는
   라벨러 순위에 대해 이 형태의 쌍별 랭킹 손실로 보상 모델을 학습한 뒤, KL 페널티(§4) 아래에서 PPO([[02-foundations/rl-basics|7. RL 기초 §4]])로
   정책을 그것에 대해 최적화한다.
-- **DPO**(Rafailov et al., NeurIPS 2023)는 명시적 보상 모델을 없앤다: KL 정규화 목적에서는 최적
+- **DPO**(직접 선호 최적화; Rafailov et al., NeurIPS 2023)는 명시적 보상 모델을 없앤다: KL 정규화 목적에서는 최적
   정책이 보상을 결정하므로, Bradley–Terry 손실을 정책의 로그 확률 비로 직접 쓰고 RL 루프 없이
   학습할 수 있다. 유도는 세 줄이다.
   - 프롬프트 하나에 대해 $E_{y\sim\pi}[r(y)] - \beta\,\mathrm{KL}(\pi \Vert \pi_{\text{ref}})$를
@@ -1329,29 +1440,31 @@ $$Q_1(\text{move})=(1-p)\cdot 9+p\cdot 7.1=9-1.9p,\qquad Q_1(\text{wait})=8.1$$
 
 **추가되는 비용 둘.** 결합 행동 공간이 곱해진다. 행동이 각 $|\mathcal A|$개인 기계 $n$대면 결합 행동은 $|\mathcal A|^n$개이므로, 행동 열 개짜리 다섯 대면 $10^5$이다. 결합 행동 위의 크리틱은 곧바로 표로 다룰 수 없게 된다. 그리고 공유 보상은 **기여 배분**을 감춘다. 현장 처리량이 올랐다면 어느 기계 덕분인가? 에이전트별 보상은 귀속을 분명히 하지만 자기 몫만 챙길 유인을 만들고, 공유 보상은 그 반대다.
 
-**분야는 무엇을 하나.** 표준적인 절충은 **중앙 집중 학습, 분산 실행**이다. 학습할 때 크리틱은 모든 에이전트의 관측과 행동을 보고, 실행할 때 각 정책은 자기 것만 본다. 그래서 각 에이전트의 세계는 비정상이어도 크리틱은 정상이고, 배치에는 공유 채널이 필요 없다. 가치 분해(에이전트별 가치를 더하거나 단조롭게 섞는 것)는 결합 가치에서 분산 argmax를 사 오고, 에이전트별 정책에 크리틱 하나를 두는 것이 정책 그래디언트 판이다. 같은 기계끼리 파라미터를 공유하면 표본 비용이 준다. 논문에서는 넷을 본다. 학습 때와 시험 때의 에이전트 수, 실행이 정말 분산인지, 기준선이 *독립 학습자*인지 아니면 단일 에이전트 기법인지, 보상이 공유인지 에이전트별인지.
+**분야는 무엇을 하나.** 표준적인 절충은 **중앙 집중 학습, 분산 실행**이다. 학습할 때 크리틱은 모든 에이전트의 관측과 행동을 보고, 실행할 때 각 정책은 자기 것만 본다. 그래서 각 에이전트의 세계는 비정상이어도 크리틱은 정상이고, 배치에는 공유 채널이 필요 없다. 가치 분해(에이전트별 가치를 더하거나 단조롭게 섞는 것)는 결합 가치에서 분산 argmax를 사 오고, 에이전트별 정책에 크리틱 하나를 두는 것이 정책 그래디언트 판이다. 같은 기계끼리 파라미터를 공유하면 표본 비용이 준다. 논문에서는 넷을 본다. 학습 때와 시험 때의 에이전트 수, 실행이 정말 분산인지, 베이스라인이 *독립 학습자*인지 아니면 단일 에이전트 기법인지, 보상이 공유인지 에이전트별인지.
 
 **그 문제가 아닐 때.** 조율에는 학습이 전혀 필요 없는 제어 쪽 답이 있는 경우가 많다. [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 §8]]은 리더 하나를 여러 팔로워에 수동성을 지키는 결합과 회피 함수로 잇고, 오늘의 건설 기계 편대는 함께 학습되는 대신 중앙에서 감독된다([[05-construction-robotics/lineage|계보, 3시대]]). 여기 연구 프로그램의 코어는 접촉하는 매니퓰레이터 한 대이므로([[07-research-program/index|7. §7]]) 다중 에이전트 학습은 Literacy에 둔다. 실패 방식을 알아 두고, 조율 자체가 기여일 때만 꺼낸다.
 
 ### 8. 그룹 상대 RL: 추론 모델, 그리고 성공에서 배우는 VLA
 
+로봇은 흔히 시행이 성공했는지만 말할 수 있고, 그런 비트에서 가치를 배워야 하는 크리틱은 학습이 느리고 비싸다. 그룹 상대 RL은 크리틱을 없애고 같은 시작점에서 나온 몇 번의 시도를 서로 견준다. 이 절은 그것을 정의하고, 그것을 쓰는 로봇 논문에 무엇을 물을지 말한다.
+
 2025년의 추론 언어 모델들은 로봇에 유난히 잘 맞는 모양의 정책 그래디언트 방법으로 학습되었다. DeepSeek-R1-Zero는 사람이 쓴 추론 기록 없이, 프로그램이 확인할 수 있는 보상 — 최종 답이 맞았나, 형식을 지켰나 — 만으로 강화학습을 해서 추론을 익혔고, 그 과정에서 자기 반성과 검증이 창발했다([DeepSeek-AI, *Nature* 645, 2025](https://arxiv.org/abs/2501.12948)). 최적화기는 GRPO였다.
 
-> **그룹 상대 정책 최적화의 정의.** **GRPO**(group relative policy optimization)는 학습된 가치 함수가 아니라 *같은 출발점에서 뽑은 표본 묶음을 기준선으로 쓰는 정책 그래디언트 추정량*이다. 정의 조건은 셋이다. 프롬프트나 시작 상태마다 **현재 정책에서 결과 $G$개의 묶음을 뽑는다.** 각 결과의 **이득은 묶음 안에서 표준화한 보상**이므로 비평가 망을 학습하지 않는다. 그리고 정책은 **PPO의 잘린 비율로 갱신**하며([[02-foundations/rl-basics|7. RL 기초 §4]]), 기준 정책에 대한 KL 벌점을 보상이 아니라 손실에 더한다.
+> **그룹 상대 정책 최적화의 정의.** **GRPO**(group relative policy optimization)는 학습된 가치 함수가 아니라 *같은 출발점에서 뽑은 표본 묶음을 베이스라인으로 쓰는 정책 그래디언트 추정량*이다. 정의 조건은 셋이다. 프롬프트나 시작 상태마다 **현재 정책에서 결과 $G$개의 묶음을 뽑는다.** 각 결과의 **어드밴티지는 묶음 안에서 표준화한 보상**이므로 크리틱 망을 학습하지 않는다. 그리고 정책은 **PPO의 잘린 비율로 갱신**하며([[02-foundations/rl-basics|7. RL 기초 §4]]), 기준 정책에 대한 KL 벌점을 보상이 아니라 손실에 더한다.
 >
 > $$\hat A_i=\frac{r_i-\operatorname{mean}(r_1,\dots,r_G)}{\operatorname{std}(r_1,\dots,r_G)},\qquad J(\theta)=\mathbb E\Big[\frac1G\sum_{i=1}^{G}\frac{1}{|o_i|}\sum_{t}\min\big(\rho_{i,t}\hat A_i,\ \operatorname{clip}(\rho_{i,t},1-\varepsilon,1+\varepsilon)\,\hat A_i\big)-\beta\,D_{\mathrm{KL}}\big(\pi_\theta\,\Vert\,\pi_{\text{ref}}\big)\Big]$$
 >
-> 여기서 $o_i$는 $i$번째로 뽑은 출력, $|o_i|$는 토큰이나 스텝으로 센 그 길이, $\rho_{i,t}$는 $t$번째 토큰에 대한 새 정책 확률과 옛 정책 확률의 비다. 그래서 한 출력의 모든 토큰이 그 출력의 이득을 나눠 갖는다.
+> 여기서 $o_i$는 $i$번째로 뽑은 출력, $|o_i|$는 토큰이나 스텝으로 센 그 길이, $\rho_{i,t}$는 $t$번째 토큰에 대한 새 정책 확률과 옛 정책 확률의 비다. 그래서 한 출력의 모든 토큰이 그 출력의 어드밴티지를 나눠 갖는다.
 >
 > - **예**: GRPO가 처음 나온 DeepSeekMath. 영어 지시 데이터로 한 RL이 GSM8K를 $82.9\%$에서 $88.2\%$로, MATH를 $46.8\%$에서 $51.7\%$로 올렸다([Shao 외, 2024](https://arxiv.org/abs/2402.03300)).
-> - **반례**: 비평가를 둔 PPO. 기준선이 정책과 함께 학습하는 가치 망 $V_\psi$이고, GRPO가 아끼는 메모리가 바로 그것이다.
+> - **반례**: 크리틱을 둔 PPO. 베이스라인이 정책과 함께 학습하는 가치 망 $V_\psi$이고, GRPO가 아끼는 메모리가 바로 그것이다.
 > - **반례**: DPO(§6.3). 아무것도 뽑지 않고 보상도 계산하지 않는다. 고정된 선호 쌍에서 배운다.
 
-**버킷 MDP에서, 손으로.** 정책이 $A$에서 곧바로 버킷을 옮기면 보상 $1$, 기다리면 $0$을 준다. $A$에서 네 번 돌려 옮기기, 기다리기, 기다리기, 옮기기가 나오면 보상은 $(1,0,0,1)$, 평균 $0.5$, 표준편차 $0.5$, 이득은 $(+1,-1,-1,+1)$이다. $\log\pi(\text{move}\mid A)$를 두 번 올리고 $\log\pi(\text{wait}\mid A)$를 두 번 내린다. [[02-foundations/rl-basics|7. RL 기초 §4]]는 알려진 정책에서 기준선 $b=0.6$을 얻었고, GRPO는 그것을 묶음에서 추정한다. 다른 두 묶음이 추정량의 성격을 보여 준다. 넷 중 성공 하나인 $(1,0,0,0)$은 실패 하나마다 $-0.58$에 비해 $+1.73$을 받는다. 드문 성공을 세게 민다. 네 번 모두 성공한 $(1,1,1,1)$은 표준편차가 0이라 평균과 다른 구성원이 없고, 묶음이 아무것도 가르치지 않는다. 네 번 모두 실패해도 같다. (모집단 표준편차를 썼다. $G-1$로 나누는 표본 표준편차는 여기서 모든 이득을 $\sqrt{3/4}$배 할 뿐 부호를 바꾸지 않는다.)
+**버킷 MDP에서, 손으로.** 정책이 $A$에서 곧바로 버킷을 옮기면 보상 $1$, 기다리면 $0$을 준다. $A$에서 네 번 돌려 옮기기, 기다리기, 기다리기, 옮기기가 나오면 보상은 $(1,0,0,1)$, 평균 $0.5$, 표준편차 $0.5$, 어드밴티지는 $(+1,-1,-1,+1)$이다. $\log\pi(\text{move}\mid A)$를 두 번 올리고 $\log\pi(\text{wait}\mid A)$를 두 번 내린다. [[02-foundations/rl-basics|7. RL 기초 §4]]는 알려진 정책에서 베이스라인 $b=0.6$을 얻었고, GRPO는 그것을 묶음에서 추정한다. 다른 두 묶음이 추정량의 성격을 보여 준다. 넷 중 성공 하나인 $(1,0,0,0)$은 실패 하나마다 $-0.58$에 비해 $+1.73$을 받는다. 드문 성공을 세게 민다. 네 번 모두 성공한 $(1,1,1,1)$은 표준편차가 0이라 평균과 다른 구성원이 없고, 묶음이 아무것도 가르치지 않는다. 네 번 모두 실패해도 같다. (모집단 표준편차를 썼다. $G-1$로 나누는 표본 표준편차는 여기서 모든 어드밴티지를 $\sqrt{3/4}$배 할 뿐 부호를 바꾸지 않는다.)
 
-**로봇에 맞는 이유.** 로봇에게 가장 자연스러운 보상은 성공 여부를 확인하는 이진 판정이고, 가장 자연스러운 묶음은 시작 상태 하나를 여러 번 돌린 것이다. RIPT-VLA는 사전학습된 VLA를 드문 이진 성공 보상만으로 사후학습하며, 모두 같은 결과라 정보가 없는 묶음을 버리는 동적 롤아웃 추출과 하나를 뺀 나머지로 구하는 이득을 쓴다. QueST가 $21.2\%$ 나아지고 OpenVLA-OFT가 $97.5\%$에 이르렀다고 보고한다([Tan 외, 2025](https://arxiv.org/abs/2505.17016)). VLA-RL은 조작 궤적을 여러 차례 주고받는 대화로 다뤄, 자기회귀 VLA를 궤적 단위로 온라인 학습하게 한다([Lu 외, 2025](https://arxiv.org/abs/2505.18719)). 추론 모델은 더 오래 생각하는 것을 시험 때 살 수 있다는 것도 보였다. s1은 정선한 예제 $1{,}000$개로만 미세조정하고, 생각을 끊거나 *Wait*를 덧붙여 늘리는 "예산 강제"로 생각의 길이를 조절했다([Muennighoff 외, 2025](https://arxiv.org/abs/2501.19393)). 로봇에서 그 추가 생각은 rate로 치르고, 그 비용은 [[03-deep-learning/vla/index|4. VLA §6]]이 센다.
+**로봇에 맞는 이유.** 로봇에게 가장 자연스러운 보상은 성공 여부를 확인하는 이진 판정이고, 가장 자연스러운 묶음은 시작 상태 하나를 여러 번 돌린 것이다. RIPT-VLA는 사전학습된 VLA를 드문 이진 성공 보상만으로 사후학습하며, 모두 같은 결과라 정보가 없는 묶음을 버리는 동적 롤아웃 추출과 하나를 뺀 나머지로 구하는 어드밴티지를 쓴다. 공개된 두 정책이 나아졌다고 보고한다. 학습된 기술 토큰으로 행동하는 QueST는 $21.2\%$ 나아졌고, 행동 청크를 병렬로 내도록 미세조정한 OpenVLA 모델인 OpenVLA-OFT는 $97.5\%$에 이르렀다([Tan 외, 2025](https://arxiv.org/abs/2505.17016)). VLA-RL은 조작 궤적을 여러 차례 주고받는 대화로 다뤄, 자기회귀 VLA를 궤적 단위로 온라인 학습하게 한다([Lu 외, 2025](https://arxiv.org/abs/2505.18719)). 추론 모델은 더 오래 생각하는 것을 시험 때 살 수 있다는 것도 보였다. s1은 정선한 예제 $1{,}000$개로만 미세조정하고, 생각을 끊거나 *Wait*를 덧붙여 늘리는 "예산 강제"로 생각의 길이를 조절했다([Muennighoff 외, 2025](https://arxiv.org/abs/2501.19393)). 로봇에서 그 추가 생각은 rate로 치르고, 그 비용은 [[03-deep-learning/vla/index|4. VLA §6]]이 센다.
 
-**그룹 상대 로봇 논문에 물을 것**, §5의 점검표에 더해: 롤아웃을 어디서 — 시뮬레이션인가 실제 기계인가 — 돌렸고 갱신마다 몇 개가 들어갔나. 무엇이 성공을 판정하나. 성공 검출기가 곧 보상이다. 묶음 크기, 그리고 모두 성공하거나 모두 실패한 묶음은 어떻게 했나. KL 기준은 무엇인가. 그리고 이득이 실제 로봇에서 제 제어 주기로 유지되었나.
+**그룹 상대 로봇 논문에 물을 것**, §5의 점검표에 더해: 롤아웃을 어디서 — 시뮬레이션인가 실제 기계인가 — 돌렸고 갱신마다 몇 개가 들어갔나. 무엇이 성공을 판정하나. 성공 검출기가 곧 보상이다. 묶음 크기, 그리고 모두 성공하거나 모두 실패한 묶음은 어떻게 했나. KL 기준은 무엇인가. 그리고 향상이 실제 로봇에서 제 제어 주기로 유지되었나.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
@@ -1363,7 +1476,7 @@ $$Q_1(\text{move})=(1-p)\cdot 9+p\cdot 7.1=9-1.9p,\qquad Q_1(\text{wait})=8.1$$
 - [ ] 논문의 environment step 수를 환경당 시뮬레이션 시간과 실기계 시간으로 바꾸고, TD 타깃에서 종료와 절단을 구분한다.
 - [ ] Bradley–Terry 그래디언트 한 스텝을 손으로 밟고, KL 정규화 최적해에서 DPO 손실을 유도한다.
 - [ ] 기계 두 대의 버킷에서 상대의 정책이 내 최적 행동을 뒤집는 확률을 구하고, 중앙 집중 학습·분산 실행이 무엇을 사 오는지 말할 수 있다.
-- [ ] 이진 결과 묶음의 GRPO 이득을 손으로 계산하고, 모두 성공한 묶음이 왜 아무것도 가르치지 않는지, 그것을 쓰는 로봇 논문에 무엇을 물을지 말할 수 있다.
+- [ ] 이진 결과 묶음의 GRPO 어드밴티지를 손으로 계산하고, 모두 성공한 묶음이 왜 아무것도 가르치지 않는지, 그것을 쓰는 로봇 논문에 무엇을 물을지 말할 수 있다.
 
 > [!tip] 더 깊이 · Going deeper
 > Sutton·Barto의 [*Reinforcement Learning: An Introduction*](http://incompleteideas.net/book/the-book.html)은 [[02-foundations/rl-basics|7. RL 기초]]가 압축한 책이다. 그 책은 §1과 §4 — 모방 대 RL, 물리 기계 위의 RL — 를 다루지 않고, 이 페이지가 더하는 것이 바로 그 부분이다. 절마다의 1차 출처는 아래 출처에 모았다.
@@ -1389,14 +1502,14 @@ $$Q_1(\text{move})=(1-p)\cdot 9+p\cdot 7.1=9-1.9p,\qquad Q_1(\text{wait})=8.1$$
 
 > [!tip]- 스스로 점검 정답 · Answers
 > 1. 정책이 자기 오차 위에서 다시 예측하는 횟수가 $k$분의 1로 줄어 분포 이탈이 느려진다; 대가는 반응성 — 청크 실행 중에 들어온 새 관측을 (부분적으로만) 반영한다.
-> 2. 움직이면 매끄러움 항이 즉시 비용을 물리는데 진행 항은 $1.0\Delta d$만 준다; 단위 노름 행동으로 1 cm 이동하면 $0.01 - 0.2 = -0.19$라 가만히 있기(보상 0)가 최적이다. 처방: 진행 항 가중치를 올리거나 $\Delta d$를 비교 가능한 단위로 재척도, 크기 대신 *변화율*에 페널티, 또는 아무것도 안 하는 것이 공짜가 아니도록 스텝당 작은 페널티 추가.
+> 2. 움직이면 매끄러움 항이 즉시 비용을 물리는데 진행 항은 $1.0\,\Delta d$만 준다. 단위 노름 행동으로 1 cm 이동하면 $0.01 - 0.2 = -0.19$라 가만히 있기보다 못하다. 그러면 최적화기는 멈추지 않고 행동을 줄인다. 행동 단위당 1 cm 진척이면 $r(a) = 0.01a - 0.2a^2$가 $a = 0.025$에서 $r = +0.000125$로 가장 크고, 이는 한 스텝 $0.25\,\mathrm{mm}$의 기어가기라 정지 마찰이 있는 액추에이터는 실행조차 못 하므로, 기계 위에서 정책은 얼어붙는다. 처방: 진행 항 가중치를 올리거나 $\Delta d$를 비교 가능한 단위로 재척도, 크기 대신 *변화율*에 페널티, 또는 아무것도 안 하는 것이 공짜가 아니도록 스텝당 작은 페널티 추가.
 > 3. (방법 + 커리큘럼)과 (커리큘럼 없는 베이스라인)의 차이 — 즉 커리큘럼과 방법을 합쳐서 측정했다. 베이스라인이 같은 커리큘럼을 받기 전까지 이 비교는 아무것도 분리하지 못한다.
 > 4. 부드러운 교환이기 때문이다: 과제 보상이 충분히 크면 페널티를 사 버리고, 학습 이전의 탐색 구간에서는 위반을 아무것도 제한하지 않는다. 더 강한 것: 액추에이터 앞에서 안전하지 않은 명령을 거부하는 안전 필터·엔벨로프(대개 MPC), 그리고 기대 위반량의 명시적 상한 아래에서 보상을 최적화하는 제약 MDP 정식화.
 > 5. 환경당 $1\times10^9/2{,}048 \approx 488{,}000$ 스텝; 100 Hz면 4,880초 ≈ **1.4시간**의 시뮬레이션 경험이다. 실기계 한 대로는 $10^9/100 = 10^7$초 ≈ **116일**.
 > 6. $r = 0$(모든 정책이 최적), $2r$ 같은 양수배, 또는 $r$에 포텐셜 기반 shaping 항 $\gamma\Phi(s') - \Phi(s)$를 더한 것(§2). MaxEnt IRL은 전문가의 특징 합을 맞추는 분포만 남기고 그중 엔트로피가 최대인 것을 택한다. 그러면 지수족 모델 $P_w(\tau) \propto \exp(w^\top f(\tau))$가 정해지고 $w$는 최대우도로 맞춘다.
 > 7. $w = 0$에서 두 궤적의 확률이 각각 $0.5$이므로 모델의 기대 $f$는 $2$, 그래디언트는 $3 - 2 = 1$이다. 유한한 모든 $w$에서 $E[f] < 3$이므로 그래디언트가 0에 닿지 않고 $w$는 한없이 커진다. 정규화나 $\tau_2$의 시연이 있어야 유한한 답이 나온다.
 > 8. $\sigma(2.0 - 1.0) = \sigma(1) = 0.731$. 차이만 들어가므로 평행이동은 아무것도 바꾸지 않는다. 보류 정확도는 모델이 학습된 데이터 근처에서 뽑은 쌍으로 잰 것이다. 모델에 대해 최적화한 정책은 모델이 아무것도 보지 못한 거동 쪽으로 움직여 모델을 공략할 수 있다(reward hacking, §2). 의미 있는 증거는 학습된 보상으로 학습한 정책을 참 과제 지표로 채점한 결과다.
-> 9. 모두 성공한 묶음은 퍼짐이 0이므로 모든 구성원의 이득이 0이고 묶음은 그래디언트를 내지 않는다. 정책이 좋아진 바로 그곳에서 학습이 멈추고, 남은 실패는 몇 안 되는 섞인 묶음에 있다. 정보가 있는 묶음을 남기고 — RIPT-VLA의 동적 롤아웃 추출이 모두 같은 묶음을 버린다 — 더 어려운 시작 상태를 뽑거나 묶음을 키운다. 그다음 시뮬레이터의 성공 검출기가 보상의 전부였으므로, 실제 로봇에서 제 제어 주기로 이득을 확인한다.
+> 9. 모두 성공한 묶음은 퍼짐이 0이므로 모든 구성원의 어드밴티지가 0이고 묶음은 그래디언트를 내지 않는다. 정책이 좋아진 바로 그곳에서 학습이 멈추고, 남은 실패는 몇 안 되는 섞인 묶음에 있다. 정보가 있는 묶음을 남기고 — RIPT-VLA의 동적 롤아웃 추출이 모두 같은 묶음을 버린다 — 더 어려운 시작 상태를 뽑거나 묶음을 키운다. 그다음 시뮬레이터의 성공 검출기가 보상의 전부였으므로, 실제 로봇에서 제 제어 주기로 향상을 확인한다.
 
 ### 과제 · Problem set
 
