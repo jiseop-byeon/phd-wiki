@@ -10,15 +10,15 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.10** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> You need the C-space idea from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]] — specifically the panel's C-obstacle derived there — and graph search: BFS and Dijkstra's algorithm from [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms §2 and §4]], which Step 5 runs.
-> [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 C-space 개념, 특히 거기서 유도한 패널의 C-장애물과, 그래프 탐색 — 5단계가 돌리는 BFS와 다익스트라 알고리즘, [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘 §2·§4]] — 이 필요하다.
+> You need the C-space idea from [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]] — specifically the panel's C-obstacle derived there — and graph search: BFS and Dijkstra's algorithm from [[02-foundations/algorithms/graph-algorithms|11.6 Graph Algorithms §2 and §4]], which Step 5 runs. The object is the arm **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 C-space 개념, 특히 거기서 유도한 패널의 C-장애물과, 그래프 탐색 — 5단계가 돌리는 BFS와 다익스트라 알고리즘, [[02-foundations/algorithms/graph-algorithms|11.6 그래프 알고리즘 §2·§4]] — 이 필요하다. 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 팔 **P2**다.
 
 ## English
 
 **Core question**: how do we find a collision-free path through C-space?
 
 > [!note] First pass · 처음이라면
-> Read the running plant, the picture and the whole worked case (Steps 1–5: the collision test, the grid count, the direct edge that fails, the edge a coarse test misses, and the detour Dijkstra finds), then §3, because the difference between its two completeness guarantees is the sentence papers most often get wrong. §1, the chapter as one list (A\*, RRT, PRM, kinodynamic planning, and the grid-size example), and §2, which restates Steps 1 and 3 as definitions, are the second pass. Then the self-check and the problem set, which moves the wall to $x \ge 1.5$.
+> Read the running plant (*plant*: control's word for the system being controlled), the picture and the whole worked case (Steps 1–5: the collision test, the grid count, the direct edge that fails, the edge a coarse test misses, and the detour Dijkstra finds), then §3, because the difference between its two completeness guarantees is the sentence papers most often get wrong. §1, the chapter as one list (A\*, RRT, PRM, kinodynamic planning, and the grid-size example), and §2, which restates Steps 1 and 3 as definitions, are the second pass. Then the self-check and the problem set, which moves the wall to $x \ge 1.5$.
 
 ### Running plant · 이 페이지의 장치
 
@@ -222,7 +222,7 @@ because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so
 > - **6-DOF arm:** $36^6 \approx 2.18 \times 10^9$ cells — $36^4 \approx 1.7$ million times more for four extra joints.
 > - At $1$ µs per collision check that is about $36$ minutes; at a more realistic $1$ ms, about $25$ days. And $10°$ is coarse: halve the step and the 6-DOF count grows $2^6 = 64\times$.
 >
-> The intractability claim *is* $36^6\approx 2.18\times 10^9$ at $1\,\mathrm{ms}\approx 25$ days. Probabilistic completeness is not a time bound: a planner can run forever on a problem that has a solution. An RRT path that puts P2's tip on the panel has not checked $F_n$ on the P3 wall.
+> The intractability claim *is* $36^6\approx 2.18\times 10^9$ at $1\,\mathrm{ms}\approx 25$ days. Probabilistic completeness is not a time bound: a planner can run forever on a problem that has a solution. An RRT path that puts P2's tip on the panel has not checked $F_n$ on the P3 wall (P3: the catalog's haptic handle, whose 400 N/m virtual wall stands in for the panel, [[02-foundations/lab-plants|0.6]]).
 >
 > **The fix.** Sampling planners never build the grid. One RRT step: sample a random $q_\text{rand}$, find the nearest tree node $q_\text{near}$, move a fixed step from $q_\text{near}$ toward $q_\text{rand}$ to get $q_\text{new}$, and add it if the segment is collision-free. The cost is paid per sample, not per cell.
 
@@ -522,7 +522,7 @@ $$A \to E \to B, \qquad \text{비용 } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = 
 > - **6자유도 팔:** $36^6 \approx 2.18 \times 10^9$칸 — 관절 4개를 더했을 뿐인데 $36^4 \approx 170$만 배다.
 > - 충돌 검사 1회에 $1$ µs면 약 $36$분, 더 현실적인 $1$ ms면 약 $25$일이다. 게다가 $10°$는 거칠다: 간격을 절반으로 줄이면 6자유도 칸 수는 $2^6 = 64$배가 된다.
 >
-> 비실용 주장은 곧 $1\,\mathrm{ms}$에 $36^6\approx 2.18\times 10^9$, 약 $25$일이다. 확률적 완전성은 시간 보장이 아니다. 해가 있는 문제에서도 계획기가 영원히 돌 수 있다. P2 말단을 패널에 두는 RRT 경로는 P3 벽의 $F_n$을 검사하지 않았다.
+> 비실용 주장은 곧 $1\,\mathrm{ms}$에 $36^6\approx 2.18\times 10^9$, 약 $25$일이다. 확률적 완전성은 시간 보장이 아니다. 해가 있는 문제에서도 계획기가 영원히 돌 수 있다. P2 말단을 패널에 두는 RRT 경로는 P3 벽(카탈로그 햅틱 핸들 P3의 400 N/m 가상 벽, [[02-foundations/lab-plants|0.6]])의 $F_n$을 검사하지 않았다.
 >
 > **해결책.** 샘플링 계획기는 격자를 만들지 않는다. RRT 한 스텝: 무작위 $q_\text{rand}$를 뽑고, 트리에서 가장 가까운 노드 $q_\text{near}$를 찾고, $q_\text{near}$에서 $q_\text{rand}$ 쪽으로 고정 보폭만큼 움직여 $q_\text{new}$를 얻은 뒤, 그 선분에 충돌이 없으면 트리에 더한다. 비용은 칸마다가 아니라 표본마다 든다.
 

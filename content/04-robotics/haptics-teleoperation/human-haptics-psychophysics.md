@@ -8,7 +8,7 @@ mastery-when: "Master staircase design, psychometric modeling, and multisensory 
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] — here the handle is a stimulus generator, not a controlled loop. Proportions and their uncertainty from [[02-foundations/probability|3. Probability]]. Nothing else: the arithmetic on this page is linear interpolation.
+> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) — here the handle is a stimulus generator, not a controlled loop. Proportions and their uncertainty from [[02-foundations/probability|3. Probability]]. Nothing else: the arithmetic on this page is linear interpolation.
 > [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3**. 여기서 핸들은 제어 루프가 아니라 자극 발생기다. 비율과 그 불확실성은 [[02-foundations/probability|3. 확률]]. 그 밖에는 필요 없다. 이 페이지의 계산은 선형 보간이다.
 
 ## English
@@ -281,7 +281,7 @@ Same participant, same handle, same 2AFC task, but the reference is moved down t
 
 ## 한국어
 
-*햅틱 트랙의 지각 쪽 끝이다. 장치 **P3**를 렌더링 루프가 아니라 자극 발생기로 쓰는 첫 페이지이고, 루프 자체는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다.*
+*햅틱 트랙의 지각 쪽 끝이다. 장치 **P3**(카탈로그의 1축 햅틱 핸들, [[02-foundations/lab-plants|0.6]])를 렌더링 루프가 아니라 자극 발생기로 쓰는 첫 페이지이고, 루프 자체는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]에 있다.*
 
 > [!note] 처음이라면 · First pass
 > 대상을 읽고 그림을 보라. 시행 하나, 비율 여섯 줄짜리 표 하나, 그리고 뒤의 모든 숫자가 나오는 교차점 셋이다. 그다음 §2에서 다섯 용어를 읽고 §5 계산 절을 따라가라. 표가 임계값·JND·Weber 분수로 바뀌는 곳이다. §1, §3, §4는 두 번째 읽을 때 본다. 수용기 용어가 필요하면 §1, 실험 방법을 골라야 하면 §3, 논문이 다감각이나 workload 주장을 하면 §4를 연다.

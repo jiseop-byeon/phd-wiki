@@ -8,7 +8,7 @@ mastery-when: "Already raised: imitation learning for manipulation is a Mastery 
 ---
 
 > [!abstract] Depth target · 깊이 목표
-> **Mastery** — the learning half of the research program, defended at the depth of its contact half: what a cloned policy assumes, what the assumption costs on S1 in millimetres, and which fix pays for itself on a site.
+> **Mastery** — the learning half of the research program, defended at the depth of its contact half: what a cloned policy assumes, what the assumption costs on S1, the construction track's facade-panel task ([[05-construction-robotics/site-engineering|2.5]]), in millimetres, and which fix pays for itself on a site.
 > **Mastery** — 연구 프로그램의 학습 절반을 접촉 절반과 같은 깊이로 방어한다. 복제한 정책이 무엇을 가정하는지, 그 가정이 S1에서 몇 밀리미터의 값을 치르는지, 어떤 해법이 현장에서 제값을 하는지.
 
 > [!note] Prerequisites · 선수 지식
@@ -167,7 +167,7 @@ or $12.84\times0.2=2.57\,\mathrm{mm}$ of expected drift, $86\%$ of the $3\,\math
 
 *In one sentence:* when the operators reach the bracket by two routes, a head that regresses the mean command drives between them, and a chunk does not change that unless the head can hold one route.
 
-**Two routes.** Before the last $40\,\mathrm{mm}$, S1's corpus has the multimodality of 12's log. A scaffold tie crosses the straight line to the bracket, and the operators pass the panel's lower edge $60\,\mathrm{mm}$ to its left or its right, each through a gap of half-width $10\,\mathrm{mm}$; the 96 seated attempts split $58$ left and $38$ right. A unimodal head trained with squared error returns the conditional mean, because the mean is what minimizes squared error ([[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]], and [[03-deep-learning/vla/index|VLA §2]] for the same failure on D4):
+**Two routes.** Before the last $40\,\mathrm{mm}$, S1's corpus has the multimodality of 12's log. A scaffold tie crosses the straight line to the bracket, and the operators pass the panel's lower edge $60\,\mathrm{mm}$ to its left or its right, each through a gap of half-width $10\,\mathrm{mm}$; the 96 seated attempts split $58$ left and $38$ right. A unimodal head trained with squared error returns the conditional mean, because the mean is what minimizes squared error ([[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1]], and [[03-deep-learning/vla/index|VLA §2]] for the same failure on D4, the deep-learning track's action chunk of [[03-deep-learning/lab-objects|0. Lab Objects]]):
 
 $$\bar u=\frac{58\times(-60)+38\times60}{96}=-12.5\,\mathrm{mm},$$
 
@@ -240,7 +240,7 @@ so whatever the correction outputs, the command stays within $B$ of a controller
 
 $$\bar x_\infty=\frac{B+c}{k_0}=\frac{0.3+0.2}{0.25}=2.0\,\mathrm{mm},\qquad \bar y_\infty=\frac{B}{k_0}=\frac{0.3}{0.25}=1.2\,\mathrm{mm},$$
 
-$2.33\,\mathrm{mm}$ from the pin whatever the network outputs, with the base loop's spread $\sqrt{(k_0^2\sigma_v^2+\sigma_w^2)/(1-(1-k_0)^2)}=0.242\,\mathrm{mm}$: $6.9$ standard deviations inside the lead-in. The base alone ($B=0$) settles at $c/k_0=0.8\,\mathrm{mm}$ and seats $1.000$ with $95\%$ of seatings within $1.24\,\mathrm{mm}$; the residual tightens that to $1.08\,\mathrm{mm}$. How large may $B$ be? Keeping the worst case four standard deviations inside the lead-in needs $\sqrt{((B+0.2)/0.25)^2+(B/0.25)^2}\le4-4\times0.242=3.03\,\mathrm{mm}$, so $B\le0.43\,\mathrm{mm}$ per step. As on S2's soil in 7.5 Sim-to-Real §8, one number trades what the residual may fix against how far a wrong one can take the hole.
+$2.33\,\mathrm{mm}$ from the pin whatever the network outputs, with the base loop's spread $\sqrt{(k_0^2\sigma_v^2+\sigma_w^2)/(1-(1-k_0)^2)}=0.242\,\mathrm{mm}$: $6.9$ standard deviations inside the lead-in. The base alone ($B=0$) settles at $c/k_0=0.8\,\mathrm{mm}$ and seats $1.000$ with $95\%$ of seatings within $1.24\,\mathrm{mm}$; the residual tightens that to $1.08\,\mathrm{mm}$. How large may $B$ be? Keeping the worst case four standard deviations inside the lead-in needs $\sqrt{((B+0.2)/0.25)^2+(B/0.25)^2}\le4-4\times0.242=3.03\,\mathrm{mm}$, so $B\le0.43\,\mathrm{mm}$ per step. As on the soil of S2, the construction track's trench task ([[05-construction-robotics/site-engineering|2.5]]), in 7.5 Sim-to-Real §8, one number trades what the residual may fix against how far a wrong one can take the hole.
 
 **The worker.** The seating is the last step before hold and fasten, and a worker may reach in early to guide the panel. [[05-construction-robotics/hrc-worker-centered|6. HRC §8]] fixes what an estimate of the worker may do: the admissible set is computed from measured state with worst-case human terms, and an estimate may only select inside it. On S1, $B$ belongs to that set. When the tracker of [[05-construction-robotics/hrc-worker-centered|6. §6]] measures a person within reach of the panel, $B$ drops to $0$ and the seating finishes on the base alone, which §9 seats every time with $95\%$ within $1.24\,\mathrm{mm}$; tightening costs precision, not safety. An estimate that the worker is attentive may slow the descent or shrink $B$ further, and it may never raise $B$ above $0.3$. The bound is not a safety function — the stop chain of 6 §6 still owns the stop — but it keeps the policy's worst case inside what the safety functions assume. The impedance target of §6 is also the hold's own action: soft along the wall and stiff against gravity, as [[05-construction-robotics/hrc-worker-centered|6. §7]] sizes it.
 
@@ -549,7 +549,7 @@ print("residual pushed by +B every step, offset at the pin:", round(residual_wor
 
 ## 한국어
 
-*건설 트랙의 마지막 페이지다. 구멍이 핀을 만나는 순간의 S1에 값을 매긴 [[05-construction-robotics/construction-manipulation|9]]와, 시연이 어떻게 만들어지는지 기록한 [[04-robotics/teleoperation-demonstration|12]] 위에 선다. [[04-robotics/capstone-panel-contact|로보틱스 캡스톤]]은 패널 위에서 고전 루프를 닫았고, 이 페이지는 학습한 정책을 현장 허용오차까지 몰고 간다.*
+*건설 트랙의 마지막 페이지다. 구멍이 핀을 만나는 순간의 S1(건설 트랙의 외장 패널 과제, [[05-construction-robotics/site-engineering|2.5]])에 값을 매긴 [[05-construction-robotics/construction-manipulation|9]]와, 시연이 어떻게 만들어지는지 기록한 [[04-robotics/teleoperation-demonstration|12]] 위에 선다. [[04-robotics/capstone-panel-contact|로보틱스 캡스톤]]은 패널 위에서 고전 루프를 닫았고, 이 페이지는 학습한 정책을 현장 허용오차까지 몰고 간다.*
 
 > [!note] 왜 배우는가 · Why this matters
 > [[07-research-program/index|7. 연구 프로그램 §5]]가 피지컬 AI 스택의 사례로 드는 "*저 패널을 프레임에 설치해*"에서, 이 페이지는 "끼움을 수행한다"의 학습 절반이다. 학습·적응 층을 접촉 단계까지 끌어내려, 시연에서 배운 정책이 패널을 앉힌다([[physical-ai-map|피지컬 AI 지도]]에 그 자리가 표시되어 있다). 이것 없이는 학습된 정책의 약속을 엉뚱한 숫자로 읽는다. 자기 상태의 $0.02$에서만 틀리는 복제 정책도 S1의 패널을 $0.98^{25}=0.603$의 확률로만 앉힌다. 단계의 $40$스텝 가운데 앞 $25$스텝 어디에서든 오류가 나면 구멍이 시연 밖으로 떠나 핀의 $4\,\mathrm{mm}$ 리드인을 넘기 때문이다. 목업에서 스무 번 중 열아홉 번 앉혀도 Wilson 구간은 $0.764$까지 내려간다. 이 페이지는 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])의 7 블록, 곧 실험 전의 마지막 블록이고, 앞의 모든 블록 — [[05-construction-robotics/construction-manipulation|9]]의 포착 계산과 [[04-robotics/teleoperation-demonstration|12. 원격조작 §6]]의 시연을 포함해 — 위에 선다. 실제로 돌리려면 학습할 클러스터([[02-foundations/tools/gpu-clusters|12.7 GPU 클러스터]])와 매 시행 핀이 같은 자리로 돌아오는 목업([[02-foundations/tools/mechanical-design-fabrication|12.9 §7]])이 필요하다. 이 페이지를 마치면 학습된 정책을 시연에서 앉힌 패널까지 끌고 가고, 그것이 어디서 깨지는지와 어느 해법이 현장에서 제값을 하는지를 밀리미터와 안착 확률로 말할 수 있다.
@@ -699,7 +699,7 @@ $$E[N_{\text{off}}]=\sum_{\tau=1}^{T}\epsilon\,(1-\epsilon)^{\tau-1}\,(T-\tau+1)
 
 *한 문장으로:* 조작자들이 두 경로로 브래킷에 이를 때, 평균 명령으로 회귀하는 헤드는 그 사이로 몰고 가며, 헤드가 한 경로를 붙들 수 없으면 청크도 그것을 바꾸지 못한다.
 
-**두 경로.** 마지막 $40\,\mathrm{mm}$ 전에, S1의 코퍼스는 12의 로그와 같은 다봉성을 갖는다. 비계 연결재가 브래킷으로 가는 직선을 가로지르고, 조작자들은 패널의 아래 모서리를 그 왼쪽이나 오른쪽 $60\,\mathrm{mm}$로 지나게 하며, 둘 다 반폭 $10\,\mathrm{mm}$의 틈을 지난다. 앉은 시도 96개는 왼쪽 $58$, 오른쪽 $38$로 나뉜다. 제곱 오차로 학습한 단봉 헤드는 조건부 평균을 돌려준다. 제곱 오차를 최소로 만드는 것이 평균이기 때문이다([[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]], D4 위의 같은 실패는 [[03-deep-learning/vla/index|VLA §2]]).
+**두 경로.** 마지막 $40\,\mathrm{mm}$ 전에, S1의 코퍼스는 12의 로그와 같은 다봉성을 갖는다. 비계 연결재가 브래킷으로 가는 직선을 가로지르고, 조작자들은 패널의 아래 모서리를 그 왼쪽이나 오른쪽 $60\,\mathrm{mm}$로 지나게 하며, 둘 다 반폭 $10\,\mathrm{mm}$의 틈을 지난다. 앉은 시도 96개는 왼쪽 $58$, 오른쪽 $38$로 나뉜다. 제곱 오차로 학습한 단봉 헤드는 조건부 평균을 돌려준다. 제곱 오차를 최소로 만드는 것이 평균이기 때문이다([[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]], D4(딥러닝 트랙의 행동 청크, [[03-deep-learning/lab-objects|0. Lab Objects]]) 위의 같은 실패는 [[03-deep-learning/vla/index|VLA §2]]).
 
 $$\bar u=\frac{58\times(-60)+38\times60}{96}=-12.5\,\mathrm{mm},$$
 
@@ -772,7 +772,7 @@ $$u_t=-k_0\,o_t+\operatorname{clip}\big(r_\phi(t,o_t),\,-B,\,B\big),$$
 
 $$\bar x_\infty=\frac{B+c}{k_0}=\frac{0.3+0.2}{0.25}=2.0\,\mathrm{mm},\qquad \bar y_\infty=\frac{B}{k_0}=\frac{0.3}{0.25}=1.2\,\mathrm{mm},$$
 
-신경망이 무엇을 내놓든 핀에서 $2.33\,\mathrm{mm}$이고, 기본 루프의 퍼짐 $\sqrt{(k_0^2\sigma_v^2+\sigma_w^2)/(1-(1-k_0)^2)}=0.242\,\mathrm{mm}$로 보면 리드인 안쪽으로 표준편차 $6.9$개다. 기본 제어기만 쓰면($B=0$) $c/k_0=0.8\,\mathrm{mm}$에 자리 잡고, 안착의 $95\%$가 $1.24\,\mathrm{mm}$ 안에 들며 $1.000$으로 앉는다. 잔차는 그것을 $1.08\,\mathrm{mm}$로 좁힌다. $B$는 얼마까지 커도 되는가? 최악의 경우를 리드인 안쪽으로 표준편차 네 개만큼 두려면 $\sqrt{((B+0.2)/0.25)^2+(B/0.25)^2}\le4-4\times0.242=3.03\,\mathrm{mm}$이어야 하므로 스텝마다 $B\le0.43\,\mathrm{mm}$다. 7.5 Sim-to-Real §8의 S2 흙에서처럼, 숫자 하나가 잔차가 고칠 수 있는 것과 틀린 잔차가 구멍을 데려갈 수 있는 거리를 맞바꾼다.
+신경망이 무엇을 내놓든 핀에서 $2.33\,\mathrm{mm}$이고, 기본 루프의 퍼짐 $\sqrt{(k_0^2\sigma_v^2+\sigma_w^2)/(1-(1-k_0)^2)}=0.242\,\mathrm{mm}$로 보면 리드인 안쪽으로 표준편차 $6.9$개다. 기본 제어기만 쓰면($B=0$) $c/k_0=0.8\,\mathrm{mm}$에 자리 잡고, 안착의 $95\%$가 $1.24\,\mathrm{mm}$ 안에 들며 $1.000$으로 앉는다. 잔차는 그것을 $1.08\,\mathrm{mm}$로 좁힌다. $B$는 얼마까지 커도 되는가? 최악의 경우를 리드인 안쪽으로 표준편차 네 개만큼 두려면 $\sqrt{((B+0.2)/0.25)^2+(B/0.25)^2}\le4-4\times0.242=3.03\,\mathrm{mm}$이어야 하므로 스텝마다 $B\le0.43\,\mathrm{mm}$다. 7.5 Sim-to-Real §8의 S2(건설 트랙의 트렌치 굴착 과제, [[05-construction-robotics/site-engineering|2.5]]) 흙에서처럼, 숫자 하나가 잔차가 고칠 수 있는 것과 틀린 잔차가 구멍을 데려갈 수 있는 거리를 맞바꾼다.
 
 **작업자.** 안착은 지지·체결 직전의 마지막 스텝이고, 작업자는 패널을 이끌려고 일찍 손을 뻗을 수 있다. [[05-construction-robotics/hrc-worker-centered|6. HRC §8]]은 작업자에 대한 추정이 할 수 있는 일을 정한다. 허용 집합은 잰 상태와 최악의 인간 항으로만 계산하고, 추정은 그 안에서 고르기만 한다. S1에서 $B$는 그 집합에 속한다. [[05-construction-robotics/hrc-worker-centered|6. §6]]의 추적기가 패널에 손이 닿는 거리 안의 사람을 재면 $B$는 $0$으로 떨어지고, 안착은 기본 제어기만으로 끝난다. §9에서 그것은 매번 앉고 $95\%$가 $1.24\,\mathrm{mm}$ 안이다. 좁히는 값은 정밀도이지 안전이 아니다. 작업자가 주의를 기울이고 있다는 추정은 하강을 늦추거나 $B$를 더 줄일 수는 있어도, $B$를 $0.3$보다 올릴 수는 없다. 한계는 안전 기능이 아니다 — 정지는 여전히 6 §6의 정지 사슬이 맡는다 — 그러나 정책의 최악의 경우를 안전 기능이 가정하는 범위 안에 붙들어 둔다. §6의 임피던스 목표는 지지 단계 자신의 행동이기도 하다. [[05-construction-robotics/hrc-worker-centered|6. §7]]이 정한 대로 벽을 따라서는 무르게, 중력에 맞서서는 단단하게다.
 

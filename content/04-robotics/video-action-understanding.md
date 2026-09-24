@@ -18,14 +18,14 @@ A single image answers *what is here*. Video is required to answer *what is happ
 > Distinguish recognition, temporal localization, spatiotemporal detection, and anticipation; explain why a video model may need no temporal reasoning to score well; interpret backbone choices (two-stream, 3D CNN, video transformer) and the cost they impose; and read an evaluation critically enough to know whether the claimed capability was tested.
 
 > [!note] Prerequisites
-> [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/information-theory|Information Theory]] · [[02-foundations/neural-network-basics|Neural Network Basics]] · [[02-foundations/ml-practice|9. ML Practice & Evaluation]] (§3: precision, recall, IoU and AP, which the worked case's temporal versions reuse) · [[04-robotics/hri-safety|11. HRI & Safety]] (the P2 safety cell and its protective separation distance $S_p$, which Step 4 prices a delay in) · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (paper note)]]
+> [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] · [[02-foundations/information-theory|Information Theory]] · [[02-foundations/neural-network-basics|Neural Network Basics]] · [[02-foundations/ml-practice|9. ML Practice & Evaluation]] (§3: precision, recall, IoU and AP, which the worked case's temporal versions reuse) · [[04-robotics/hri-safety|11. HRI & Safety]] (the safety cell around P2 — the catalog's planar two-link arm, [[02-foundations/lab-plants|0.6]] — and its protective separation distance $S_p$, which Step 4 prices a delay in) · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (paper note)]]
 
 > [!note] First pass · 처음이라면
 > Read the running object and the worked case below — eight frames, one ground truth, and the three numbers you can compute from them — then §1, four tasks that get mixed up routinely, then §2 on scene bias, then §4, the anticipation objective, and §5's worked example of one number hiding a result. §3 and §6 are backbone and long-form detail for when a specific paper needs them; §7 is the hand-off to pages 21–23 and §8 the checklist to keep beside a paper.
 
 ### Running object: the clip V8
 
-No plant from [[02-foundations/lab-plants|0.6]] fits a page whose object is a *score sequence*, so this page freezes its own and never changes it. **V8** is an eight-frame clip recorded at 4 fps, so each frame lasts $\Delta = 0.25$ s and frame $k$ occupies the interval $[(k-1)\Delta,\ k\Delta)$ — the clip runs from 0 to 2.00 s. One class matters: *a hand entering the machine's swing zone.*
+No plant from [[02-foundations/lab-plants|0.6]] (*plant*: control's word for the system being controlled) fits a page whose object is a *score sequence*, so this page freezes its own and never changes it. **V8** is an eight-frame clip recorded at 4 fps, so each frame lasts $\Delta = 0.25$ s and frame $k$ occupies the interval $[(k-1)\Delta,\ k\Delta)$ — the clip runs from 0 to 2.00 s. One class matters: *a hand entering the machine's swing zone.*
 
 A per-frame detector returns a score $s_k \in [0,1]$ for that class on every frame. These eight numbers are frozen page-local values, not measurements from any system:
 
@@ -430,7 +430,7 @@ Tier B. Hand derivation on **V8**, using only this page and its prerequisites. S
 > 그 비용을 해석한다; 주장한 능력이 실제로 검증됐는지 판단할 만큼 평가를 비판적으로 읽는다.
 
 > [!note] 선수 지식
-> [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/information-theory|정보 이론]] · [[02-foundations/neural-network-basics|신경망 기초]] · [[02-foundations/ml-practice|9. ML 실무와 평가]](§3: 정밀도·재현율·IoU·AP. 예제의 시간 버전이 이것을 그대로 쓴다) · [[04-robotics/hri-safety|11. HRI와 안전]](P2 안전 셀과 그 보호 이격 거리 $S_p$. 4단계가 지연의 값을 여기서 매긴다) · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (논문 노트)]]
+> [[02-foundations/linear-algebra|선형대수]] · [[02-foundations/probability|확률]] · [[02-foundations/information-theory|정보 이론]] · [[02-foundations/neural-network-basics|신경망 기초]] · [[02-foundations/ml-practice|9. ML 실무와 평가]](§3: 정밀도·재현율·IoU·AP. 예제의 시간 버전이 이것을 그대로 쓴다) · [[04-robotics/hri-safety|11. HRI와 안전]](카탈로그의 평면 2링크 팔 P2([[02-foundations/lab-plants|0.6]])를 둘러싼 안전 셀과 그 보호 이격 거리 $S_p$. 4단계가 지연의 값을 여기서 매긴다) · [[01-canonical-papers/notes/1-foundations/vit|ViT]] · [[01-canonical-papers/notes/2-computer-vision/video-understanding|Video Understanding (논문 노트)]]
 
 > [!note] 처음이라면 · First pass
 > 먼저 아래의 계속 쓰는 대상과 끝까지 계산해 보는 예제 — 프레임 여덟 장, 정답 구간 하나, 그리고 거기서 계산할 수 있는 숫자 셋 — 그다음 §1, 습관적으로 뒤섞이는 네 과제, 그다음 장면 편향인 §2, 그다음 예측(anticipation)의 목적식인 §4와 숫자 하나가 결과를 가리는 §5의 예제. §3·§6은 백본과 롱폼 세부이니 특정 논문이 요구할 때 보라. §7은 21–23번 페이지로 넘기는 연결이고, §8은 논문 옆에 두고 쓰는 점검표다.

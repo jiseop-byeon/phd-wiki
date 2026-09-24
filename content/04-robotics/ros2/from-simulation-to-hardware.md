@@ -14,7 +14,7 @@ mastery-when: "Go deeper when you are writing the hardware component or the moto
 > **Working** — 시뮬레이션에서 돌던 스택을 실제 기계 위로 안전하게 옮기고, 아무것도 움직이지 않을 때 진단할 정도. 안전 기능을 인증하거나 모터 제어기 펌웨어를 작성할 정도는 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> A stack that already runs in simulation under a controller: [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]. The silent-failure mechanisms in [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] and [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]], and the ordered checks in [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]] are used here rather than re-taught. Read [[04-robotics/hri-safety|11. HRI & Safety]] alongside §7, which defers the safety standards to it; the operational side of a deployed machine, and the source of P6's $70\,\mathrm{ms}$, is [[04-robotics/robot-systems-deployment|10. Robot Systems & Deployment]]. Baseline throughout: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**.
+> A stack that already runs in simulation under a controller: [[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]. The silent-failure mechanisms in [[04-robotics/ros2/qos-executors-time|25.5 Quality of Service]] and [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executors, Callback Groups and Time]], and the ordered checks in [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]] are used here rather than re-taught. Read [[04-robotics/hri-safety|11. HRI & Safety]] alongside §7, which defers the safety standards to it; the operational side of a deployed machine, and the source of the $70\,\mathrm{ms}$ budget of P6, the catalog's cart on a rail ([[02-foundations/lab-plants|0.6]]), is [[04-robotics/robot-systems-deployment|10. Robot Systems & Deployment]]. Baseline throughout: **ROS 2 Jazzy Jalisco on Ubuntu 24.04**.
 > 이미 시뮬레이션에서 제어기 아래 돌아가는 스택([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]와 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]의 조용한 실패 메커니즘과 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]의 순서 있는 점검은 여기서 다시 가르치지 않고 사용한다. 안전 표준을 넘겨받는 [[04-robotics/hri-safety|11. HRI & Safety]]는 §7과 나란히 읽고, 배치된 기계의 운용 쪽과 P6의 $70\,\mathrm{ms}$의 출처는 [[04-robotics/robot-systems-deployment|10. Robot Systems & Deployment]]다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**.
 
 > [!note] First pass · 처음이라면
@@ -22,7 +22,7 @@ mastery-when: "Go deeper when you are writing the hardware component or the moto
 
 ### Running object · 이 페이지의 대상
 
-Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] on a *real* cart: the same encoder, the same rates, the same budget as in [[04-robotics/ros2/simulation-and-control|25.7]], with the Gazebo plugin swapped for a vendor hardware component behind the same `<ros2_control>` seam. Keeping every catalog number fixed is the point — what changes is only what is below the seam, and this page prices that change.
+Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) on a *real* cart: the same encoder, the same rates, the same budget as in [[04-robotics/ros2/simulation-and-control|25.7]], with the Gazebo plugin swapped for a vendor hardware component behind the same `<ros2_control>` seam. Keeping every catalog number fixed is the point — what changes is only what is below the seam, and this page prices that change.
 
 *One object on paper, one you can run.* The real P6 cart exists only on this page, and its three bus and network latencies below are invented; §3 ends with how to measure them on whatever machine you do get. The exercise (§9) is a checklist for your own machine, and its software lines can be rehearsed now on the 25.7 arm in Gazebo, where each prints the simulation answer the checklist tells you to see replaced (§9 lists them).
 
@@ -603,7 +603,7 @@ Tier B. Using **P6** from [[02-foundations/lab-plants|0.6]] on a *real* cart. En
 > **Working** — enough to bring a simulated stack onto a real machine safely and diagnose it, not to certify a safety function.
 
 > [!note] 선수 지식 · Prerequisites
-> 이미 시뮬레이션에서 제어기 아래 돌아가는 스택([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]와 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]의 조용한 실패와 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]의 순서 있는 점검은 여기서 사용만 한다. 안전 표준을 넘겨받는 [[04-robotics/hri-safety|11. HRI & Safety]]는 §7과 나란히 읽고, 배치된 기계의 운용 쪽과 P6의 $70\,\mathrm{ms}$의 출처는 [[04-robotics/robot-systems-deployment|10. Robot Systems & Deployment]]다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**.
+> 이미 시뮬레이션에서 제어기 아래 돌아가는 스택([[04-robotics/ros2/simulation-and-control|25.7 Simulation and ros2_control]]). [[04-robotics/ros2/qos-executors-time|25.5 서비스 품질(QoS)]]와 [[04-robotics/ros2/executors-callbacks-time|25.5.1 Executor, 콜백 그룹, 시간]]의 조용한 실패와 [[04-robotics/ros2/debugging-data-reproducibility|25.10 Debugging, Data and Reproducibility]]의 순서 있는 점검은 여기서 사용만 한다. 안전 표준을 넘겨받는 [[04-robotics/hri-safety|11. HRI & Safety]]는 §7과 나란히 읽고, 배치된 기계의 운용 쪽과 P6(카탈로그의 레일 위 카트, [[02-foundations/lab-plants|0.6]])의 $70\,\mathrm{ms}$ 예산의 출처는 [[04-robotics/robot-systems-deployment|10. Robot Systems & Deployment]]다. 기준 환경은 **Ubuntu 24.04 위의 ROS 2 Jazzy Jalisco**.
 > A stack already running in simulation under a controller; 11. HRI & Safety alongside §7; Jazzy on Ubuntu 24.04 throughout.
 
 > [!note] 처음이라면 · First pass
@@ -807,7 +807,7 @@ $$70-32 = 38\,\mathrm{ms}$$
 
 **그리고 접촉 모델 — 스택 전체에서 가장 낙관적이던 부분.** 위의 다른 간극은 전부 측정할 수 있는 파라미터다. 접촉은 대개 *모델 형식(model-form)* 오류다. 강체 엔진은 접촉을 시간 스텝마다 푸는 점 구속으로 처리하는데, 실제 충격과 stick–slip 전이는 진짜 불연속이다. Gazebo에서 안정적으로 닫히던 파지가 실물에서 실패하는 이유는 마찰 계수가 틀려서가 아니라 시뮬레이터가 접촉 면적 자체를 표현할 수 없었기 때문인 경우가 많다. [[05-construction-robotics/sim-to-real|Sim-to-Real]]이 이를 제대로 다룬다. 여기서의 실무 규칙은 자유 공간 운동이 접촉보다 훨씬 잘 이전된다는 것이고, 그러니 첫 실기 실험은 자유 공간으로 계획하라.
 
-> **Sim-to-real 간극의 정의.** **sim-to-real 간극**(sim-to-real gap)은 *시뮬레이션 플랜트와 실제 플랜트 사이의 차이들의 집합이고, 차이마다 이름 붙은 양이 있다*. 한 항목이 여기에 들려면 조건 셋이 필요하다. **양쪽에서 잰 같은 양**이어야 하고 단위가 있어야 한다. 지연, 잡음 $\sigma$, 외부 캘리브레이션 오프셋, 시계 오프셋, 토크 여유 같은 것이다. **파라미터 간극**이거나 **모델 형식 간극**이다. 앞의 것은 재고 다시 튜닝하면 닫히고, 뒤의 것은 어떤 파라미터 값으로도 시뮬레이터가 그 현상을 표현하지 못한다. 그리고 **예산에 청구된다**. 차이는 그것이 먹어 치우는 여유를 통해서만 중요하기 때문이다.
+> **Sim-to-real 간극의 정의.** **sim-to-real 간극**(sim-to-real gap)은 *시뮬레이션 플랜트(제어되는 시스템)와 실제 플랜트 사이의 차이들의 집합이고, 차이마다 이름 붙은 양이 있다*. 한 항목이 여기에 들려면 조건 셋이 필요하다. **양쪽에서 잰 같은 양**이어야 하고 단위가 있어야 한다. 지연, 잡음 $\sigma$, 외부 캘리브레이션 오프셋, 시계 오프셋, 토크 여유 같은 것이다. **파라미터 간극**이거나 **모델 형식 간극**이다. 앞의 것은 재고 다시 튜닝하면 닫히고, 뒤의 것은 어떤 파라미터 값으로도 시뮬레이터가 그 현상을 표현하지 못한다. 그리고 **예산에 청구된다**. 차이는 그것이 먹어 치우는 여유를 통해서만 중요하기 때문이다.
 >
 > $$\Delta q=q_{\text{real}}-q_{\text{sim}},\qquad \text{margin}_{\text{real}}=\text{margin}_{\text{sim}}-\sum_{q\in\text{budget}}\Delta q$$
 >

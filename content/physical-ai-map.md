@@ -499,6 +499,30 @@ The path of §8 as a timeline: a thick bar is one block taken at Working, in the
 
 Every course page opens with a *Why this matters* callout that names its place here — its layer of the stack, or the floor beneath it, and the step of "install that panel on the frame" it serves. When a callout places a page, find its chip and read up and down: what the page stands on is below it, what uses it is above. The figures are drawn by `scripts/build_physical_ai_map.py` from one table of pages; when a page is added or the path changes, that table is the one place to edit, and the pin moves when its week does.
 
+### The examples this wiki reuses · 이 위키가 되풀이해 쓰는 예제
+
+Pages across the tracks compute on the same few worked examples and call them by short labels, so that a number worked on one page can be checked on another. Each label's numbers are frozen once on its home page and never changed. Look a label up here; the [[glossary|Glossary]] and the hover tooltips carry the same one-line definitions. The numbers in the last column are page numbers inside the named track, as on the map above. An object that only one page needs — MLP-256 and G-100 on deep learning 1.4, H1 and V1 on 0.6.3, B-60 and F-50 on 12.9 — is frozen in that page's Running object section instead.
+
+| Label | What it is | Key numbers | Home | Used by |
+|---|---|---|---|---|
+| **P1** | a two-layer neural network | $2\to3\to1$ with ReLU and zero biases; at $x=(1,2)$ it predicts $0.5$ for a target of $1$, a loss of $0.125$ | [[02-foundations/lab-plants\|0.6 Lab Plants]] | Foundations 0.8, 2, 4 and 9: the neural-network, backpropagation and optimization lessons |
+| **P2** | a planar two-link arm | links of $1$ m with $1$ kg at each tip; the tip at $(1,1)$ m in the pose $\theta=(0^\circ,90^\circ)$ | [[02-foundations/lab-plants\|0.6]] | robotics from the MR chapters through 13 and the capstone 26; Foundations 0.6.1 and 10; the arm of RS1, the research-practice study ([[06-research-practice/index\|6. Research Practice]]) |
+| **P3** | a one-axis haptic handle and its virtual wall | $0.04$ kg, $0.8$ N·s/m, a $400$ N/m wall at $30$ mm, a $1024$-count encoder | [[02-foundations/lab-plants\|0.6]] | robotics 24 (haptics), 9, 13 and 26; research practice 7 and 8; the panel stiffness P2 meets |
+| **P4** | a leaky heater, $\dot x=-x+u+d$ | first order; feedback $u=-Kx$ leaves $d/(1+K)$; sampled every $0.1$ s | [[02-foundations/lab-plants\|0.6]] | robotics 5, 5.5, 6 and 7; Foundations 0.5, 0.7 and 7 |
+| **P5** | a one-dimensional range estimate | prior $10$ cm (variance $4\,\mathrm{cm}^2$), reading $12$ cm (variance $1\,\mathrm{cm}^2$), fused $11.6$ cm | [[02-foundations/lab-plants\|0.6]] | Foundations 3; robotics 3, 3.2, 3.5, 3.6 and 26 |
+| **P6** | a cart on a rail and its clocks | $2048$ counts/m, vision at $50$ Hz, control at $200$ Hz, a $70$ ms budget | [[02-foundations/lab-plants\|0.6]] | robotics 3.2, 10, MR ch.13 and the ROS 2 track 25; Foundations 0.6.2, 6 and the tools track 12 |
+| **D1** | a small classifier | input $(1,2)$, three ReLU units, two class scores $s=(2,1)$ | [[03-deep-learning/lab-objects\|0. Lab Objects]] | deep learning 1, 1.2, 1.3 and 1.4 |
+| **D2** | an image cut into patch tokens | $8\times8$ grayscale, four $4\times4$ patches | [[03-deep-learning/lab-objects\|0. Lab Objects]] | deep learning 2 and 1.2 |
+| **D3** | three matched image–text pairs | unit 2-D vectors at $\tau=1/2$; logits $(2,1,0)$ for the first image | [[03-deep-learning/lab-objects\|0. Lab Objects]] | deep learning 3 |
+| **D4** | an action chunk | three $0.02$ m moves on a plane, $20$ Hz control, $100$ ms inference | [[03-deep-learning/lab-objects\|0. Lab Objects]] | deep learning 4, and the latency questions of 1.3, 1.4 and 6; construction 10 |
+| **D5** | a one-number world model | $z_{t+1}=0.8z_t+0.5a_t$, reward $-z_t^2-0.1a_t^2$, $z_0=1$ | [[03-deep-learning/lab-objects\|0. Lab Objects]] | deep learning 5 and 1.1 |
+| **D6** | a single diffusion datum | $x_0=2$, $\epsilon=-1$; $\bar\alpha=0.64$ at the catalog level of a $20$-level schedule | [[03-deep-learning/lab-objects\|0. Lab Objects]] | deep learning 6 and 6.1 |
+| **S1** | placing a facade panel on site | a $20$ kg panel carried $8$ m; two holes $400$ mm apart aligned to $\pm5$ mm while a worker fastens it | [[05-construction-robotics/site-engineering\|2.5 Site Robotics]] | construction 2.5, 4–7, 9 and 10; robotics 3, 3.5, 3.6, 12 and 26; the physics and tools pages of Foundations |
+| **S2** | digging a trench with a compact excavator | $5$-tonne class; a trench $20$ m long, $0.6$ m wide and $1.0$ m deep to a $\pm30$ mm grade | [[05-construction-robotics/site-engineering\|2.5]] | construction 3 and 7.5; Foundations 0.6.1, 0.6.3 and 12.5 |
+| **RS1** | the research-practice track's frozen study | impedance control (B) against position control with a force stop (A), for P2 pressing a $400$ N/m panel; a pilot of $10$ trials per arm, $6/10$ against $9/10$ at or under $10$ N | [[06-research-practice/index\|6. Research Practice]] | research practice 1–8; Foundations 3, 9, 12.2 and 12.6; robotics 13 |
+
+Three strings look like these labels and are not: the fingertip patch that [[04-robotics/tactile-visuotactile|14. Tactile & Visuotactile Sensing]] calls S1, Skild AI's robot policy S1 on the VLA pages, and the detections D1–D3 in the tracking example of [[04-robotics/state-estimation-slam|3. State Estimation]].
+
 ## 한국어
 
 이 위키가 가르치는 피지컬 AI 전체를 그림 한 장으로 보여 준다. 어느 페이지에서든 지금 어디에 서 있고 그 페이지가 왜 필요한지 말할 수 있게 하려는 것이다. 아래에서 위로 읽는다. 도구·수학·물리의 세 바닥이 [[07-research-program/index|7. 연구 프로그램 §5]]의 로봇 스택을 받치고, 스택 곁에 제어와 시스템이 있다. 스택 위에 학습과 적응이, 맨 위에 목표 "저 패널을 프레임에 설치해"가 있다. 연구 실무는 모든 층 곁을 따라간다. 칩 하나가 페이지 하나다. 누르면 그 페이지가 열리고, 포인터를 올리면 제목이 보인다. 굵은 칩은 [[07-research-program/index|7 §8]]의 학위논문 경로 위에 있고, 핀은 이번 주에 서 있는 곳을 가리킨다.
@@ -984,3 +1008,27 @@ Every course page opens with a *Why this matters* callout that names its place h
 ### 페이지들이 이 지도를 쓰는 방식
 
 모든 교과 페이지는 *왜 배우는가* 상자로 시작하고, 그 상자가 이 지도에서의 자리를 댄다. 스택의 어느 층인지, 또는 그 밑의 어느 바닥인지, 그리고 "저 패널을 프레임에 설치해"의 어느 단계를 맡는지다. 상자가 페이지의 자리를 말하면 여기서 그 칩을 찾아 위아래로 읽어라. 페이지가 딛는 것은 아래에, 그 페이지를 쓰는 것은 위에 있다. 그림은 `scripts/build_physical_ai_map.py`가 페이지 표 하나로 그린다. 페이지가 늘거나 경로가 바뀌면 그 표 한 곳만 고치면 되고, 핀은 표의 주차가 바뀔 때 옮겨 간다.
+
+### 이 위키가 되풀이해 쓰는 예제 · The examples this wiki reuses
+
+여러 트랙의 페이지가 같은 몇 개의 예제 위에서 계산하고, 그것을 짧은 이름표로 부른다. 한 페이지에서 계산한 숫자를 다른 페이지에서 검산할 수 있게 하려는 것이다. 이름표마다 숫자는 집 페이지에서 한 번 고정하고 다시는 바꾸지 않는다. 이름표는 여기서 찾아본다. [[glossary|용어집]]과 마우스를 올리면 뜨는 툴팁에도 같은 한 줄 정의가 있다. 마지막 열의 번호는 위 지도에서처럼 이름 붙인 트랙 안의 페이지 번호다. 한 페이지만 쓰는 대상 — 딥러닝 1.4의 MLP-256과 G-100, 0.6.3의 H1과 V1, 12.9의 B-60과 F-50 — 은 그 페이지의 대상 절에서 고정한다.
+
+| 이름표 | 무엇인가 | 핵심 숫자 | 집 | 쓰는 곳 |
+|---|---|---|---|---|
+| **P1** | 2층 신경망 | ReLU와 편향 0의 $2\to3\to1$. $x=(1,2)$에서 목표 $1$에 대해 $0.5$를 예측하고 손실은 $0.125$ | [[02-foundations/lab-plants\|0.6 Lab Plants]] | 기초 0.8, 2, 4, 9: 신경망, 역전파, 최적화 강의 |
+| **P2** | 평면 2링크 팔 | 링크 $1$ m, 끝마다 $1$ kg. 자세 $\theta=(0^\circ,90^\circ)$에서 말단은 $(1,1)$ m | [[02-foundations/lab-plants\|0.6]] | 로보틱스의 MR 장들부터 13과 캡스톤 26까지; 기초 0.6.1과 10; RS1(연구 실무 트랙의 고정 연구, [[06-research-practice/index\|6. 연구 실무]])의 팔 |
+| **P3** | 1축 햅틱 핸들과 그 가상 벽 | $0.04$ kg, $0.8$ N·s/m, $30$ mm에 놓인 $400$ N/m 벽, $1024$카운트 엔코더 | [[02-foundations/lab-plants\|0.6]] | 로보틱스 24(햅틱), 9, 13, 26; 연구 실무 7과 8; P2가 만나는 패널 강성 |
+| **P4** | 새는 히터 $\dot x=-x+u+d$ | 1차. 피드백 $u=-Kx$는 $d/(1+K)$를 남긴다. $0.1$ s마다 샘플 | [[02-foundations/lab-plants\|0.6]] | 로보틱스 5, 5.5, 6, 7; 기초 0.5, 0.7, 7 |
+| **P5** | 1차원 거리 추정 | 사전 $10$ cm(분산 $4\,\mathrm{cm}^2$), 측정 $12$ cm(분산 $1\,\mathrm{cm}^2$), 융합 $11.6$ cm | [[02-foundations/lab-plants\|0.6]] | 기초 3; 로보틱스 3, 3.2, 3.5, 3.6, 26 |
+| **P6** | 레일 위 카트와 그 시계들 | $2048$ counts/m, 비전 $50$ Hz, 제어 $200$ Hz, $70$ ms 예산 | [[02-foundations/lab-plants\|0.6]] | 로보틱스 3.2, 10, MR 13장, ROS 2 트랙 25; 기초 0.6.2, 6, 도구 트랙 12 |
+| **D1** | 작은 분류기 | 입력 $(1,2)$, ReLU 셋, 클래스 점수 둘 $s=(2,1)$ | [[03-deep-learning/lab-objects\|0. Lab Objects]] | 딥러닝 1, 1.2, 1.3, 1.4 |
+| **D2** | 패치 토큰으로 자른 이미지 | $8\times8$ 회색조, $4\times4$ 패치 넷 | [[03-deep-learning/lab-objects\|0. Lab Objects]] | 딥러닝 2와 1.2 |
+| **D3** | 짝이 맞는 이미지–텍스트 셋 | $\tau=1/2$의 단위 2차원 벡터. 첫 이미지의 logit $(2,1,0)$ | [[03-deep-learning/lab-objects\|0. Lab Objects]] | 딥러닝 3 |
+| **D4** | 행동 청크 | 평면 위 $0.02$ m 이동 셋, 제어 $20$ Hz, 추론 $100$ ms | [[03-deep-learning/lab-objects\|0. Lab Objects]] | 딥러닝 4, 그리고 1.3, 1.4, 6의 지연 문제; 건설 10 |
+| **D5** | 숫자 하나짜리 월드모델 | $z_{t+1}=0.8z_t+0.5a_t$, 보상 $-z_t^2-0.1a_t^2$, $z_0=1$ | [[03-deep-learning/lab-objects\|0. Lab Objects]] | 딥러닝 5와 1.1 |
+| **D6** | 디퓨전 자료 하나 | $x_0=2$, $\epsilon=-1$. 20레벨 schedule의 카탈로그 레벨에서 $\bar\alpha=0.64$ | [[03-deep-learning/lab-objects\|0. Lab Objects]] | 딥러닝 6과 6.1 |
+| **S1** | 현장의 외장 패널 설치 | $20$ kg 패널을 $8$ m 옮겨, $400$ mm 떨어진 두 구멍을 $\pm5$ mm로 맞추고 작업자가 체결하는 동안 지지 | [[05-construction-robotics/site-engineering\|2.5 현장 로보틱스]] | 건설 2.5, 4–7, 9, 10; 로보틱스 3, 3.5, 3.6, 12, 26; 기초의 물리·도구 페이지 |
+| **S2** | 소형 굴착기의 트렌치 굴착 | $5$톤급. 길이 $20$ m, 폭 $0.6$ m, 깊이 $1.0$ m의 트렌치를 바닥 고저 $\pm30$ mm로 | [[05-construction-robotics/site-engineering\|2.5]] | 건설 3과 7.5; 기초 0.6.1, 0.6.3, 12.5 |
+| **RS1** | 연구 실무 트랙의 고정 연구 | P2가 $400$ N/m 패널을 누를 때 임피던스 제어(B) 대 힘 정지를 단 위치 제어(A). 팔마다 $10$회인 예비 실험에서 $10$ N 이하가 $6/10$ 대 $9/10$ | [[06-research-practice/index\|6. 연구 실무]] | 연구 실무 1–8; 기초 3, 9, 12.2, 12.6; 로보틱스 13 |
+
+이 이름표처럼 보이지만 다른 것이 셋 있다. [[04-robotics/tactile-visuotactile|14. 촉각·시촉각 센싱]]이 S1이라 부르는 손끝 접촉면, VLA 페이지에 나오는 Skild AI의 로봇 정책 S1, 그리고 [[04-robotics/state-estimation-slam|3. 상태 추정]]의 추적 예제에서 검출 셋에 붙인 D1–D3다.

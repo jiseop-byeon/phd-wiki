@@ -25,7 +25,7 @@ A robot sharing space with a person acts on a guess about what the person will d
 
 ### Running object · 이 페이지의 대상
 
-Prediction is evaluated on a log, not on a plant, so no object from [[02-foundations/lab-plants|0.6 Lab Plants]] fits. This page freezes its own log — **I20**, one afternoon of a crossing-intent system on a mobile base — and never changes its numbers afterwards. It has three parts, one for each thing the page has to evaluate.
+Prediction is evaluated on a log, not on a plant — a system being controlled — so no object from [[02-foundations/lab-plants|0.6 Lab Plants]] fits. This page freezes its own log — **I20**, one afternoon of a crossing-intent system on a mobile base — and never changes its numbers afterwards. It has three parts, one for each thing the page has to evaluate.
 
 **Part 1 — twenty judgements.** Each case $i$ is a probability $\hat p_i$ that a worker will enter the robot's path within the next 2 s, and the outcome $y_i \in \{0,1\}$ that followed. The cases are listed in increasing $\hat p$; the index is a label, not a time.
 
@@ -362,7 +362,7 @@ Intent is latent. What is measurable, roughly in order of lead time:
 | Trajectory curvature toward target | short | yes | §1 above |
 | Contact / entry | zero | yes | too late |
 
-Proximity is a relation between the person and the scene, not something read off the person. It is the signed distance from the person's tracked ground position $x$ to the boundary, positive outside; for a machine envelope modelled as a circle of radius $R_h$ about the base $x_{\mathrm{base}}$, it is $d = \lVert x - x_{\mathrm{base}}\rVert - R_h$, the same boundary [[04-robotics/hri-safety|11. HRI & Safety]] measures every separation distance from ($R_h = 2.25$ m for its P2 cell). Computing it takes scene geometry — two inputs beyond the person's track: the boundary itself in the robot's ground frame, from a site map or from the machine's own reach, and the person's ground position in that frame, from a depth sensor or from the ray through the foot of a tracked box meeting a known ground plane ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §1]], the pinhole model).
+Proximity is a relation between the person and the scene, not something read off the person. It is the signed distance from the person's tracked ground position $x$ to the boundary, positive outside; for a machine envelope modelled as a circle of radius $R_h$ about the base $x_{\mathrm{base}}$, it is $d = \lVert x - x_{\mathrm{base}}\rVert - R_h$, the same boundary [[04-robotics/hri-safety|11. HRI & Safety]] measures every separation distance from ($R_h = 2.25$ m for its cell around P2, the catalog's planar two-link arm, [[02-foundations/lab-plants|0.6]]). Computing it takes scene geometry — two inputs beyond the person's track: the boundary itself in the robot's ground frame, from a site map or from the machine's own reach, and the person's ground position in that frame, from a depth sensor or from the ray through the foot of a tracked box meeting a known ground plane ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §1]], the pinhole model).
 
 This is the same cascade as [[04-robotics/egocentric-perception|22. §4]], seen from outside instead of from the head. **The design decision in any intent system is which rung you commit to,** because that fixes both the lead time and the ceiling on reliability.
 
@@ -1057,7 +1057,7 @@ $$v \le a\big(\Delta^{*} - t_{\mathrm{lat}}\big) = 1.5 \times (1.375 - 0.45) = 1
 | 목표를 향한 궤적 곡률 | 짧음 | 가능 | 위 §1 |
 | 접촉·진입 | 0 | 가능 | 이미 늦음 |
 
-근접은 사람만 보고 읽어 내는 것이 아니라 사람과 장면 사이의 관계다. 추적한 사람의 지면 위치 $x$에서 경계까지의 부호 있는 거리이고, 바깥쪽이 양수다. 기계 반경을 베이스 $x_{\mathrm{base}}$ 둘레 반지름 $R_h$의 원으로 두면 $d = \lVert x - x_{\mathrm{base}}\rVert - R_h$이며, [[04-robotics/hri-safety|11. HRI와 안전]]이 모든 이격 거리를 재는 기준 경계가 바로 이것이다(그 P2 셀에서 $R_h = 2.25$ m). 그것을 계산하려면 장면 기하 — 사람의 추적 궤적 말고도 입력 둘 — 가 필요하다. 하나는 로봇의 지면 좌표계에서의 경계 자체로, 현장 지도나 기계 자신의 도달 범위에서 온다. 다른 하나는 같은 좌표계에서의 사람의 지면 위치로, 깊이 센서에서 오거나, 추적 상자의 발 쪽 픽셀을 지나는 광선이 알려진 지면 평면과 만나는 점에서 온다([[04-robotics/geometric-perception-calibration|3.5 기하 인식 §1]], 핀홀 모형).
+근접은 사람만 보고 읽어 내는 것이 아니라 사람과 장면 사이의 관계다. 추적한 사람의 지면 위치 $x$에서 경계까지의 부호 있는 거리이고, 바깥쪽이 양수다. 기계 반경을 베이스 $x_{\mathrm{base}}$ 둘레 반지름 $R_h$의 원으로 두면 $d = \lVert x - x_{\mathrm{base}}\rVert - R_h$이며, [[04-robotics/hri-safety|11. HRI와 안전]]이 모든 이격 거리를 재는 기준 경계가 바로 이것이다(카탈로그의 평면 2링크 팔 P2를 둘러싼 그 셀에서 $R_h = 2.25$ m, [[02-foundations/lab-plants|0.6]]). 그것을 계산하려면 장면 기하 — 사람의 추적 궤적 말고도 입력 둘 — 가 필요하다. 하나는 로봇의 지면 좌표계에서의 경계 자체로, 현장 지도나 기계 자신의 도달 범위에서 온다. 다른 하나는 같은 좌표계에서의 사람의 지면 위치로, 깊이 센서에서 오거나, 추적 상자의 발 쪽 픽셀을 지나는 광선이 알려진 지면 평면과 만나는 점에서 온다([[04-robotics/geometric-perception-calibration|3.5 기하 인식 §1]], 핀홀 모형).
 
 이는 [[04-robotics/egocentric-perception|22. §4]]와 같은 사슬을 머리가 아니라 바깥에서 본 것이다. **어떤 의도 시스템에서도 설계 결정은 어느 단에 걸 것인가이며**, 그 선택이 선행 시간과 신뢰도 상한을 동시에 고정한다.
 

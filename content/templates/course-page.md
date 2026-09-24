@@ -64,7 +64,9 @@ After reading) - a worked case that cites what the reader has not met yet does n
 10. HONEST PREREQUISITES. The Prerequisites callout lists every page the lecture actually
 leans on, and none that comes later in study order (scripts/audit_prereqs.py reports both).
 A concept the page uses must be taught on this page, on a listed prerequisite, or linked at
-first use - never used as if known.
+first use - never used as if known. The wiki's catalog labels (P1-P6, D1-D6, S1/S2, RS1) and
+field jargon such as "plant" are glossed in plain words with a link at their first use on
+each page, even when an earlier page defined them; scripts/audit_labels.py lists the gaps.
 
 6. wiki-support: Working means the page's own problem set is completable from the page,
 its prerequisites, and the object catalog - nothing else. If it is not, the honest value

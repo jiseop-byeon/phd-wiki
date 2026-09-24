@@ -8,7 +8,7 @@ mastery-when: "Raise when the thesis ships multi-threaded robot software of its 
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] (the 50 Hz goal, the 200 Hz controller, the 70 ms budget) and Python at the level of functions, lists and dictionaries. The lab needs the standard library and NumPy only; listings that start real threads or PyTorch are marked not-run, were run on this page's machine, and their outputs are labelled as its measurements.
+> Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] (the 50 Hz goal, the 200 Hz controller, the 70 ms budget; *plant* is control's word for the system being controlled) and Python at the level of functions, lists and dictionaries. The lab needs the standard library and NumPy only; listings that start real threads or PyTorch are marked not-run, were run on this page's machine, and their outputs are labelled as its measurements.
 > [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P6**(50 Hz 목표, 200 Hz 제어기, 70 ms 예산)와 함수·리스트·딕셔너리 수준의 Python. 실습에는 표준 라이브러리와 NumPy만 있으면 된다. 실제 스레드나 PyTorch를 띄우는 코드는 not-run 표시를 달고 이 페이지를 쓴 기계에서 돌렸으며, 그 출력은 그 기계의 측정값이라고 밝혀 두었다.
 
 ## English

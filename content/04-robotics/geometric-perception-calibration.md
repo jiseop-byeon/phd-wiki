@@ -25,7 +25,7 @@ perception tells you *where* it is, at *what scale*, in *which frame*.
 > bundle adjustment) is a working/mastery topic.
 
 > [!note] Prerequisites
-> Plants **P2** and **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[02-foundations/optimization|Optimization]] (least squares) · [[02-foundations/probability|Probability]] (maximum likelihood, §4; the scalar Kalman update P5 uses, §5)
+> Plants **P2** and **P5** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) · [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]] · [[02-foundations/optimization|Optimization]] (least squares) · [[02-foundations/probability|Probability]] (maximum likelihood, §4; the scalar Kalman update P5 uses, §5)
 
 > [!note] First pass · 처음이라면
 > Start with the picture and the Worked case: one point of the rig projected, triangulated, distorted and miscalibrated, with every number. Then read §1 (the pinhole model, with the projection written out), §5 (calibration — where most field failures actually start) and §7 (reading claims). §2 to §4 (depth, image features, two-view geometry, point clouds, ICP) are the machinery; read them when a paper's numbers depend on them. §6 and §7.5 are short bridges to learned perception and to visual servoing.
@@ -463,7 +463,7 @@ $$Z = \frac{f b}{d}, \qquad X = \frac{(u_1 - c_x)Z}{f_x}, \qquad Y = \frac{(v_1 
 
 *In one sentence:* when every match pairs a pixel with a point already known on the object, one calibrated image gives the object's pose in metres, but three points leave several answers and four can still be weak in tilt.
 
-**The problem.** To put a tool on a known thing — §5's target, a part, S1's facade panel — a robot needs its pose in metres from one image. §2.6 paired pixels with pixels and recovered motion only up to scale; here one side of each match is a known model point, which fixes the metres. This section adds a fourth target corner to the frozen rig, $D=(0.5,\ 0.4,\ 2)$ m, which completes the rectangle the other three imply: $B-A=(0.5,0,0)$ and $C-A=(0,0.4,0)$ are perpendicular and $A+(B-A)+(C-A)=D$. Camera 1 sees the corners at
+**The problem.** To put a tool on a known thing — §5's target, a part, the facade panel of S1, the construction track's panel-placement task ([[05-construction-robotics/site-engineering|2.5]]) — a robot needs its pose in metres from one image. §2.6 paired pixels with pixels and recovered motion only up to scale; here one side of each match is a known model point, which fixes the metres. This section adds a fourth target corner to the frozen rig, $D=(0.5,\ 0.4,\ 2)$ m, which completes the rectangle the other three imply: $B-A=(0.5,0,0)$ and $C-A=(0,0.4,0)$ are perpendicular and $A+(B-A)+(C-A)=D$. Camera 1 sees the corners at
 
 $$A\to(320,\,240),\qquad B\to(470,\,240),\qquad C\to(320,\,360),\qquad D\to(470,\,360)\ \text{px}$$
 
@@ -1282,7 +1282,7 @@ $$Z = \frac{f b}{d}, \qquad X = \frac{(u_1 - c_x)Z}{f_x}, \qquad Y = \frac{(v_1 
 
 *한 문장으로:* 대응마다 픽셀이 물체 위에서 이미 아는 점과 짝지어져 있으면 보정된 이미지 한 장이 물체의 자세를 미터 단위로 주지만, 점 셋은 답을 여럿 남기고 점 넷도 기울기에서는 약할 수 있다.
 
-**문제.** 공구를 이미 아는 물체, 곧 §5의 타깃이나 부품이나 S1의 외장 패널에 가져다 대려면 로봇은 이미지 한 장에서 그 물체의 자세를 미터 단위로 알아야 한다. §2.6은 픽셀을 픽셀과 짝지었고 운동을 스케일을 빼고서만 복원했다. 여기서는 대응의 한쪽이 이미 아는 모델의 점이고, 그 모델이 미터를 정한다. 이 절은 고정된 리그에 네 번째 타깃 코너 $D=(0.5,\ 0.4,\ 2)$ m를 더한다. 나머지 세 코너가 암시하는 직사각형을 완성하는 점이다. $B-A=(0.5,0,0)$ 와 $C-A=(0,0.4,0)$ 가 수직이고 $A+(B-A)+(C-A)=D$ 다. 카메라 1은 네 코너를 다음 자리에서 본다.
+**문제.** 공구를 이미 아는 물체, 곧 §5의 타깃이나 부품이나 S1(건설 트랙의 패널 설치 과제, [[05-construction-robotics/site-engineering|2.5]])의 외장 패널에 가져다 대려면 로봇은 이미지 한 장에서 그 물체의 자세를 미터 단위로 알아야 한다. §2.6은 픽셀을 픽셀과 짝지었고 운동을 스케일을 빼고서만 복원했다. 여기서는 대응의 한쪽이 이미 아는 모델의 점이고, 그 모델이 미터를 정한다. 이 절은 고정된 리그에 네 번째 타깃 코너 $D=(0.5,\ 0.4,\ 2)$ m를 더한다. 나머지 세 코너가 암시하는 직사각형을 완성하는 점이다. $B-A=(0.5,0,0)$ 와 $C-A=(0,0.4,0)$ 가 수직이고 $A+(B-A)+(C-A)=D$ 다. 카메라 1은 네 코너를 다음 자리에서 본다.
 
 $$A\to(320,\,240),\qquad B\to(470,\,240),\qquad C\to(320,\,360),\qquad D\to(470,\,360)\ \text{px}$$
 

@@ -16,7 +16,7 @@ mastery-when: "Raise to Mastery when a human-subjects evaluation is itself the c
 > [!note] Prerequisites · 선수 지식
 > [[06-research-practice/experimental-design-reproducibility|2. Experimental Design & Reproducibility]] first — this page
 > is that page's toolbox for the special case where the measured system is a person.
-> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], with its encoder count from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]; the normal CDF $\Phi$ from [[02-foundations/probability|3. Probability §2–§3]]; the blank-and-solve pattern of [[02-foundations/lab-kernel|0.7 §5]] for the lab.
+> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled), with its encoder count from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]; the normal CDF $\Phi$ from [[02-foundations/probability|3. Probability §2–§3]]; the blank-and-solve pattern of [[02-foundations/lab-kernel|0.7 §5]] for the lab.
 > [[06-research-practice/experimental-design-reproducibility|2. 실험 설계와 재현성]]을 먼저 —
 > 이 페이지는 측정 대상이 사람인 특수 사례를 위한 그 페이지의 공구함이다.
 > [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P3** 핸들, 그리고 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §4]]의 엔코더 한 카운트. 정규분포의 누적분포함수 $\Phi$는 [[02-foundations/probability|3. 확률 §2–§3]]. 랩은 [[02-foundations/lab-kernel|0.7 §5]]의 빈칸 채우기 방식을 따른다.
@@ -692,7 +692,7 @@ for step in (10.0, 20.0, 40.0, 80.0):
 
 ## 한국어
 
-*[[06-research-practice/experimental-design-reproducibility|2. 실험 설계]] 위에 선다 — 참가자가 실험 단위라는 그 페이지의 첫 규칙을 이 페이지가 사람에게 적용한다. 그리고 같은 핸들의 힘 표에 심리측정 함수를 맞추는 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]] 위에 선다. **P3** 핸들을 다시 쓰되, 여기서는 변별 연구를 위한 강성 디스플레이로 쓴다. 그 뒤의 렌더링 루프는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]다.*
+*[[06-research-practice/experimental-design-reproducibility|2. 실험 설계]] 위에 선다 — 참가자가 실험 단위라는 그 페이지의 첫 규칙을 이 페이지가 사람에게 적용한다. 그리고 같은 핸들의 힘 표에 심리측정 함수를 맞추는 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]] 위에 선다. **P3**(카탈로그의 1축 햅틱 핸들, [[02-foundations/lab-plants|0.6]]) 핸들을 다시 쓰되, 여기서는 변별 연구를 위한 강성 디스플레이로 쓴다. 그 뒤의 렌더링 루프는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]다.*
 
 사람과 함께, 혹은 사람을 위해 일하는 로봇은 결국 사람에 대한 주장을 하게 된다: 조작자가
 접촉을 *느꼈다*, 작업자가 알림을 *알아챘다*, 인터페이스가 난이도를 *낮췄다*. 심리물리학은

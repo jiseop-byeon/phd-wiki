@@ -46,7 +46,7 @@ flowchart LR
 
 ### 2. The pages
 
-0. [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code]] — values, lifetime and ownership, classes and RAII, templates and interfaces, the build, and the rules of a real-time tick, on P6's controller: the C++ the rest of the track reads and writes.
+0. [[04-robotics/ros2/cpp-for-robot-code|25.0 C++ for Robot Code]] — values, lifetime and ownership, classes and RAII, templates and interfaces, the build, and the rules of a real-time tick, on the controller of P6, the catalog's cart on a rail ([[02-foundations/lab-plants|0.6]]): the C++ the rest of the track reads and writes.
 1. [[04-robotics/ros2/what-ros2-is|25.1 What ROS 2 Is, and Your First Running System]] — what a middleware is for, why ROS 2 exists, installation, and a system you can watch talk to itself.
 2. [[04-robotics/ros2/nodes-topics-messages|25.2 Nodes, Topics and Messages]] — publish and subscribe, in Python and in the C++ that production stacks are written in.
 3. [[04-robotics/ros2/services-actions-parameters|25.3 Services, Actions, Parameters and Lifecycle]] — the three patterns that are not topics, and how a node is configured and started deterministically.
@@ -103,7 +103,7 @@ commands rather than guesses.
 
 ### Problem set · 과제
 
-Tier A (weekend path). Plant **P6** from [[02-foundations/lab-plants|0.6]]. The arithmetic lives on [[04-robotics/robot-systems-deployment|10]]; this page is the silent-failure drill. No new ODE.
+Tier A (weekend path). Plant **P6** from [[02-foundations/lab-plants|0.6]] (*plant*: control's word for the system being controlled). The arithmetic lives on [[04-robotics/robot-systems-deployment|10]]; this page is the silent-failure drill. No new ODE.
 
 Do this set when you finish the track, not when you arrive: item 3 asks for checks from 25.2, 25.5 and 25.6, and the QoS and transform vocabulary it uses is taught there. On a first visit, read it as a preview of what the track will let you do.
 
@@ -145,7 +145,7 @@ flowchart LR
 
 ### 2. 페이지 목록
 
-0. [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++]] — 값·수명·소유권, 클래스와 RAII, 템플릿과 인터페이스, 빌드, 그리고 실시간 틱의 규칙을 P6의 제어기 위에서: 트랙의 나머지가 읽고 쓰는 C++.
+0. [[04-robotics/ros2/cpp-for-robot-code|25.0 로봇 코드를 위한 C++]] — 값·수명·소유권, 클래스와 RAII, 템플릿과 인터페이스, 빌드, 그리고 실시간 틱의 규칙을 P6(카탈로그의 레일 위 카트, [[02-foundations/lab-plants|0.6]])의 제어기 위에서: 트랙의 나머지가 읽고 쓰는 C++.
 1. [[04-robotics/ros2/what-ros2-is|25.1 ROS 2란 무엇이고, 첫 시스템 돌리기]] — 미들웨어가 왜 필요한지, ROS 2가 왜 존재하는지, 설치, 그리고 스스로 대화하는 것을 지켜볼 수 있는 시스템.
 2. [[04-robotics/ros2/nodes-topics-messages|25.2 노드, 토픽, 메시지]] — 발행과 구독. Python으로, 그리고 실제 제품 스택이 쓰는 C++로.
 3. [[04-robotics/ros2/services-actions-parameters|25.3 서비스, 액션, 파라미터, 라이프사이클]] — 토픽이 아닌 세 가지 패턴, 그리고 노드를 설정하고 결정론적으로 띄우는 법.

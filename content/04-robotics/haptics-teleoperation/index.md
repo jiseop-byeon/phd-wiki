@@ -43,7 +43,7 @@ The fastest useful route is **24.1 → 24.3 → 24.4**. Add 24.2 for tactile-dis
 | force/impedance/admittance control | [[04-robotics/force-compliance-control\|Force & Compliance Control]] |
 | experimental design and uncertainty | [[06-research-practice/experimental-design-reproducibility\|Experiment Design]], [[06-research-practice/psychophysics-human-measurement\|Psychophysics]] |
 
-You need not master every formula before starting, but the numbers are not optional: P3's $m$, $b$ and $k_w$, 24.1's JND and 24.3's encoder count all come back in 24.4 and later, and the checks there assume you can reproduce them. Mark the inputs, outputs, energy flow and assumptions on each page as you read.
+You need not master every formula before starting, but the numbers are not optional: the $m$, $b$ and $k_w$ of P3, the catalog's one-axis haptic handle ([[02-foundations/lab-plants|0.6]]), 24.1's JND and 24.3's encoder count all come back in 24.4 and later, and the checks there assume you can reproduce them. Mark the inputs, outputs, energy flow and assumptions on each page as you read.
 
 > [!warning] Scope and source status
 > The local course packet contains copyrighted lectures, licensed papers, assignments, hardware files, and human-subject documents. Those originals remain outside the public site. These pages are original study notes synthesized from them and from linked public sources. Hardware pin assignments and deadlines differ across packet versions; the current board documentation and instructor instructions are authoritative.
@@ -103,7 +103,7 @@ flowchart LR
 | 힘/임피던스/어드미턴스 제어 | [[04-robotics/force-compliance-control\|Force & Compliance Control]] |
 | 실험 설계와 불확실성 | [[06-research-practice/experimental-design-reproducibility\|Experiment Design]], [[06-research-practice/psychophysics-human-measurement\|Psychophysics]] |
 
-모든 공식을 먼저 숙달하고 시작할 필요는 없지만, 숫자는 건너뛸 수 없다. P3의 $m$, $b$, $k_w$, 24.1의 JND, 24.3의 엔코더 한 카운트가 모두 24.4와 그 뒤에서 다시 나오고, 거기서의 확인은 당신이 그 숫자를 다시 낼 수 있다고 가정한다. 각 페이지에서 입력·출력·에너지 흐름·가정을 표시하며 읽어라.
+모든 공식을 먼저 숙달하고 시작할 필요는 없지만, 숫자는 건너뛸 수 없다. P3(카탈로그의 1축 햅틱 핸들, [[02-foundations/lab-plants|0.6]])의 $m$, $b$, $k_w$, 24.1의 JND, 24.3의 엔코더 한 카운트가 모두 24.4와 그 뒤에서 다시 나오고, 거기서의 확인은 당신이 그 숫자를 다시 낼 수 있다고 가정한다. 각 페이지에서 입력·출력·에너지 흐름·가정을 표시하며 읽어라.
 
 > [!warning] 범위와 자료 상태
 > 로컬 과목 자료에는 저작권 강의안·라이선스 논문·과제·하드웨어 파일·인간대상연구 문서가 포함되어 있어 공개하지 않는다. 이 디렉토리는 그 자료와 공개 출처를 바탕으로 새로 쓴 학습 노트다. 자료 버전에 따라 배선 핀과 일정이 다르므로 실제 제작에서는 현재 보드 문서와 담당 교수 안내를 따른다.

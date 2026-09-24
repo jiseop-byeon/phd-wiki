@@ -204,7 +204,7 @@ demote, not to restate the rule.
 
 ### 8. The dissertation path, in sessions
 
-*In one sentence:* about 180 sessions in seven blocks, in the order below, take the dissertation from the foundations gate to a learned policy seating S1's panel, and the rest of the tracks wait until the experiment calls for them.
+*In one sentence:* about 180 sessions in seven blocks, in the order below, take the dissertation from the foundations gate to a learned policy seating the panel of S1, the construction track's 20 kg facade-panel task ([[05-construction-robotics/site-engineering|2.5]]), and the rest of the tracks wait until the experiment calls for them.
 
 The schedules and pacing ranges of all the tracks add up to more than four hundred sessions at Working, and most of them serve some other reader. This section is the path through them for the question of §3, in the order the pages' prerequisites allow. Each count is read off a schedule in the track indexes — the Working pass is every row, the Literacy pass the bold rows — except for the gate, foundations 10, the manipulation pages and 7.5 RL, which no schedule covers; those are sized the way the schedules are, with a session for the object and worked case, one for about 1,600 words of sections, one more for a Tier A lab and one for the problem set.
 
@@ -221,7 +221,7 @@ The schedules and pacing ranges of all the tracks add up to more than four hundr
 
 **Reading the table.** Blocks 1–7 come to about 180 sessions at Working and 71 at Literacy before an experiment starts; block 8 adds 32 beside it, about 212 in all. At the overview's pace of two course sessions a week, 180 sessions is about 90 weeks, so the Working pass cannot all come before the first mock-up. Take blocks 1–7 at Literacy first — 71 sessions, about 36 weeks at that pace — and take each block's remaining rows at Working when the experiment reaches its page. [[physical-ai-map|The Physical AI Map §3]] draws the seven blocks as a timeline, and its whole map marks every page of the path with a heavy chip.
 
-The order follows the prerequisite callouts. Block 4 comes after 2 and 3 because computer vision needs robotics 3.5 and the VLA page needs 10. Robot Systems and 12; block 5 comes before 6 because 2.5's protocol takes its trial design from it and 6's §4 its rule of three; block 7 needs every block before it. Where a page on the path leans on one section of a page off it — 2.5 on [[06-research-practice/real-world-impact|research practice 6 §2]], 9 on [[04-robotics/tactile-visuotactile|14. Tactile §1]], 6 on [[04-robotics/human-intent-prediction|23 §5]] and [[06-research-practice/psychophysics-human-measurement|research practice 8 §5]], 7.5 on [[05-construction-robotics/earthmoving-heavy-machinery|3]] for S2's machine — read that section when the callout names it.
+The order follows the prerequisite callouts. Block 4 comes after 2 and 3 because computer vision needs robotics 3.5 and the VLA page needs 10. Robot Systems and 12; block 5 comes before 6 because 2.5's protocol takes its trial design from it and 6's §4 its rule of three; block 7 needs every block before it. Where a page on the path leans on one section of a page off it — 2.5 on [[06-research-practice/real-world-impact|research practice 6 §2]], 9 on [[04-robotics/tactile-visuotactile|14. Tactile §1]], 6 on [[04-robotics/human-intent-prediction|23 §5]] and [[06-research-practice/psychophysics-human-measurement|research practice 8 §5]], 7.5 on [[05-construction-robotics/earthmoving-heavy-machinery|3]] for the machine of S2, the construction track's 5-tonne trench excavator ([[05-construction-robotics/site-engineering|2.5]]) — read that section when the callout names it.
 
 ### 9. What the path leaves out, and when to add it back
 
@@ -441,7 +441,7 @@ Working이 다수라는 사실만으로는 거르는 기능이 멈췄다는 증�
 
 ### 8. 학위논문 경로, 회차로
 
-*한 문장으로:* 아래 순서의 일곱 블록, 약 180회가 학위논문을 기초 통과 점검에서 S1 패널을 앉히는 학습된 정책까지 데려가고, 트랙의 나머지는 실험이 부를 때까지 기다린다.
+*한 문장으로:* 아래 순서의 일곱 블록, 약 180회가 학위논문을 기초 통과 점검에서 S1(건설 트랙의 20 kg 외장 패널 과제, [[05-construction-robotics/site-engineering|2.5]]) 패널을 앉히는 학습된 정책까지 데려가고, 트랙의 나머지는 실험이 부를 때까지 기다린다.
 
 모든 트랙의 일정표와 페이스 범위를 합치면 Working으로 400회가 넘고, 그 대부분은 다른 독자를 위한 것이다. 이 절은 §3의 질문을 위해 그 사이를 지나는 경로를, 페이지들의 선수 관계가 허락하는 순서로 적는다. 회차 수는 트랙 목차의 일정표에서 읽었다 — Working 통과는 모든 행, Literacy 통과는 굵은 행이다. 일정표가 다루지 않는 통과 점검, 기초 10, 조작 페이지들, 7.5 RL만은 일정표와 같은 방식으로 셌다. 대상과 끝까지 계산에 1회, 절 약 1,600단어에 1회, Tier A 실습에 1회 더, 과제에 1회다.
 
@@ -458,7 +458,7 @@ Working이 다수라는 사실만으로는 거르는 기능이 멈췄다는 증�
 
 **표 읽기.** 1–7 블록은 실험이 시작되기 전까지 Working으로 약 180회, Literacy로 71회이고, 8 블록이 그 곁에서 32회를 더해 모두 약 212회다. 개관이 권하는 주 2회 교과 속도로 180회는 약 90주이므로, Working 통과를 모두 첫 모형 실험 앞에 둘 수는 없다. 1–7 블록을 먼저 Literacy로 지나고(71회, 그 속도로 약 36주), 실험이 어느 페이지에 닿을 때 그 블록의 남은 행을 Working으로 한다. [[physical-ai-map|피지컬 AI 지도 §3]]이 일곱 블록을 시간표로 그리고, 전체 지도는 경로 위의 페이지를 모두 굵은 칩으로 표시한다.
 
-순서는 선수 지식 상자를 따른다. 컴퓨터 비전이 로보틱스 3.5를, VLA 페이지가 10. 로봇 시스템과 12를 요구하므로 4 블록은 2와 3 뒤에 온다. 2.5의 프로토콜이 그 시행 설계를, 6의 §4가 그 3의 규칙을 쓰므로 5 블록은 6 앞에 온다. 7 블록은 앞의 모든 블록을 요구한다. 경로 위의 페이지가 경로 밖 페이지의 한 절에 기대는 곳 — 2.5는 [[06-research-practice/real-world-impact|연구 실무 6 §2]]에, 9는 [[04-robotics/tactile-visuotactile|14. 촉각 §1]]에, 6은 [[04-robotics/human-intent-prediction|23 §5]]와 [[06-research-practice/psychophysics-human-measurement|연구 실무 8 §5]]에, 7.5는 S2의 기계를 위해 [[05-construction-robotics/earthmoving-heavy-machinery|3]]에 기댄다 — 은 선수 지식 상자가 그 절을 부를 때 읽는다.
+순서는 선수 지식 상자를 따른다. 컴퓨터 비전이 로보틱스 3.5를, VLA 페이지가 10. 로봇 시스템과 12를 요구하므로 4 블록은 2와 3 뒤에 온다. 2.5의 프로토콜이 그 시행 설계를, 6의 §4가 그 3의 규칙을 쓰므로 5 블록은 6 앞에 온다. 7 블록은 앞의 모든 블록을 요구한다. 경로 위의 페이지가 경로 밖 페이지의 한 절에 기대는 곳 — 2.5는 [[06-research-practice/real-world-impact|연구 실무 6 §2]]에, 9는 [[04-robotics/tactile-visuotactile|14. 촉각 §1]]에, 6은 [[04-robotics/human-intent-prediction|23 §5]]와 [[06-research-practice/psychophysics-human-measurement|연구 실무 8 §5]]에, 7.5는 S2(건설 트랙의 5톤급 트렌치 굴착기, [[05-construction-robotics/site-engineering|2.5]])의 기계를 위해 [[05-construction-robotics/earthmoving-heavy-machinery|3]]에 기댄다 — 은 선수 지식 상자가 그 절을 부를 때 읽는다.
 
 ### 9. 경로가 빼는 것, 그리고 다시 넣을 때
 

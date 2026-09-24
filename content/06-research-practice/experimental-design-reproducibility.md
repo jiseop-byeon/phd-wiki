@@ -8,12 +8,12 @@ mastery-when: "Mastery means consistently producing defensible work, not memoriz
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/ml-practice|9. ML Practice & Evaluation]] (reading a result; the percentile bootstrap in its worked case) · [[02-foundations/probability|3. Probability §6]] (α, the p-value, power as a detection probability, the confidence-interval procedure, the test-choice table) · [[02-foundations/probability|3. Probability §3]] (the CLT behind every normal approximation) · plants P2 and P3 from [[02-foundations/lab-plants|0.6 Lab Plants]]
+> [[02-foundations/ml-practice|9. ML Practice & Evaluation]] (reading a result; the percentile bootstrap in its worked case) · [[02-foundations/probability|3. Probability §6]] (α, the p-value, power as a detection probability, the confidence-interval procedure, the test-choice table) · [[02-foundations/probability|3. Probability §3]] (the CLT behind every normal approximation) · plants P2 and P3 from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled)
 > [[02-foundations/ml-practice|9. ML 실무와 평가]](결과 읽기, 그 worked case의 백분위 부트스트랩) · [[02-foundations/probability|3. 확률 §6]](α, p-값, 검출 확률로서의 검정력, 신뢰구간 절차, 검정 선택 표) · [[02-foundations/probability|3. 확률 §3]](모든 정규근사 뒤에 있는 CLT) · [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 P2와 P3
 
 ## English
 
-*Stands on [[02-foundations/ml-practice|9. ML Practice]], which reads a finished result, and [[02-foundations/probability|3. Probability §6]], which supplies the tests. Runs on RS1, the study every Research Practice page shares, and is the wiki's home for power analysis.*
+*Stands on [[02-foundations/ml-practice|9. ML Practice]], which reads a finished result, and [[02-foundations/probability|3. Probability §6]], which supplies the tests. Runs on RS1, the contact-safety study every [[06-research-practice/index|Research Practice]] page shares, and is the wiki's home for power analysis.*
 
 An experiment should distinguish the proposed explanation from plausible alternatives. In robotics, this requires controlling not only models and datasets but scenes, hardware, calibration, operators, resets, timing, and exposure to failures.
 
@@ -565,7 +565,7 @@ for n in (32, 50, 70, 82, 100):                # (b): range(100, 141, 5)
 
 ## 한국어
 
-*[[02-foundations/ml-practice|9. ML 실무]](완성된 결과를 읽는 법)와 [[02-foundations/probability|3. 확률 §6]](검정) 위에 선다. 모든 연구 실무 페이지가 공유하는 연구 RS1 위에서 진행하며, 위키에서 검정력 분석을 가르치는 자리다.*
+*[[02-foundations/ml-practice|9. ML 실무]](완성된 결과를 읽는 법)와 [[02-foundations/probability|3. 확률 §6]](검정) 위에 선다. 모든 [[06-research-practice/index|연구 실무]] 페이지가 공유하는 접촉 안전 연구 RS1 위에서 진행하며, 위키에서 검정력 분석을 가르치는 자리다.*
 
 실험은 제안한 설명을 그럴듯한 대안들과 구분해야 한다. 로보틱스에서는 모델·데이터셋만이
 아니라 장면, 하드웨어, 보정, 운용자, 리셋, 타이밍, 실패 노출까지 통제 대상이다.

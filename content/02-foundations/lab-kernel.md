@@ -13,7 +13,7 @@ wiki-support: Working
 
 ## English
 
-Every Tier A lab on this wiki steps a continuous plant in an explicit loop. The integrator is part of the claim: a virtual wall that is passive in continuous time can still inject energy once it is sampled ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). Name the method. Do not call `odeint` and hide the step.
+Every Tier A lab on this wiki steps a continuous plant (the system being controlled, such as the haptic handle P3 or the leaky heater P4 of [[02-foundations/lab-plants|0.6 Lab Plants]]) in an explicit loop. The integrator is part of the claim: a virtual wall that is passive in continuous time can still inject energy once it is sampled ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). Name the method. Do not call `odeint` and hide the step.
 
 ### 1. Time vector
 
@@ -62,7 +62,7 @@ Continuous solution $x(t)=1-e^{-t}$ is $0.095$ then $0.181$ at the same instants
 
 ## 한국어
 
-이 위키의 Tier A 랩은 연속 플랜트를 명시적 루프로 전진한다. 적분기는 주장의 일부다: 연속 시간에는 수동인 가상 벽도 샘플되면 에너지를 넣을 수 있다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). 방법을 이름 붙여라. `odeint`로 스텝을 숨기지 마라.
+이 위키의 Tier A 랩은 연속 플랜트(제어되는 시스템. 예컨대 [[02-foundations/lab-plants|0.6 Lab Plants]]의 햅틱 핸들 P3나 새는 히터 P4)를 명시적 루프로 전진한다. 적분기는 주장의 일부다: 연속 시간에는 수동인 가상 벽도 샘플되면 에너지를 넣을 수 있다([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]). 방법을 이름 붙여라. `odeint`로 스텝을 숨기지 마라.
 
 ### 1. 시간 벡터
 

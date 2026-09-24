@@ -18,7 +18,7 @@ Sensors do not reveal the world directly: they provide partial, delayed, and noi
 > Read state-estimation and SLAM papers without confusing state, observation, estimate, or map; interpret covariance, drift, loop closure, and sensor-fusion claims; and judge whether the reported evaluation supports robust deployment. Full filter and bundle-adjustment implementations are a working/mastery topic.
 
 > [!note] Prerequisites
-> Plants **P5** and **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] · [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] (the scalar Kalman filter of §5, the Mahalanobis distance and $\chi^2$ gate of §6) · [[02-foundations/optimization|Optimization]] · [[02-foundations/signal-processing|Signal Processing]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]]
+> Plants **P5** and **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) · [[02-foundations/linear-algebra|Linear Algebra]] · [[02-foundations/probability|Probability]] (the scalar Kalman filter of §5, the Mahalanobis distance and $\chi^2$ gate of §6) · [[02-foundations/optimization|Optimization]] · [[02-foundations/signal-processing|Signal Processing]] · [[02-foundations/se3-geometry|3D Geometry & SE(3)]]
 
 > [!note] First pass · 처음이라면
 > Start with the picture and the Worked case: one predict–correct–gate cycle on P5 with every number. Then read §1–§4 in order (the loop, the four words nobody separates, the two models, predict and correct), §6 to do the update by hand, and §7.1 for the SLAM posterior and why association is where it breaks. §5, §7.2–§7.4 and §8 are the reference half; open them against a specific paper. §8.5 is a self-contained unit on multi-object tracking, for a second pass or a tracking paper. §9 is the checklist to carry into any paper's evaluation.
@@ -510,7 +510,7 @@ $\operatorname{Exp}$ turns a rotation vector into a rotation matrix ([[02-founda
 
 **Deskewing** re-expresses each lidar point $p_k$, captured at time $t_k$ during the sweep, in the sensor frame at one reference time $t_s$, using the sensor pose $T(t)$ interpolated from the IMU or odometry:
 $$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
-so every point is placed where it would have been seen had the whole sweep been instantaneous. *Example:* a robot moving at 1 m/s with a 0.1 s sweep travels 0.1 m between the first and last points, so without deskewing a flat wall appears offset by up to 10 cm across one scan. Deskewing needs each point's own time, which a cloud's single header stamp does not carry; [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §5]] prices the missing column times on a rig passing S1's facade.
+so every point is placed where it would have been seen had the whole sweep been instantaneous. *Example:* a robot moving at 1 m/s with a 0.1 s sweep travels 0.1 m between the first and last points, so without deskewing a flat wall appears offset by up to 10 cm across one scan. Deskewing needs each point's own time, which a cloud's single header stamp does not carry; [[04-robotics/perception-sensors-rigs|3.6 Perception Sensors §5]] prices the missing column times on a rig passing the facade of S1, the construction track's facade-panel task ([[05-construction-robotics/site-engineering|2.5]]).
 
 ### 7.3 Keyframes, marginalization, and the information matrix
 
@@ -1341,7 +1341,7 @@ $\operatorname{Exp}$는 회전 벡터를 회전 행렬로 보낸다([[02-foundat
 
 **Deskewing**은 스윕 도중 시각 $t_k$ 에 잡힌 라이다 점 $p_k$ 를 기준 시각 $t_s$ 의 센서 프레임으로 다시 쓴다. 센서 pose $T(t)$ 는 IMU나 오도메트리에서 보간한다.
 $$p_k' = T(t_s)^{-1}\,T(t_k)\,p_k$$
-그래서 모든 점이 스윕 전체가 순간이었다면 보였을 자리에 놓인다. *예:* 1 m/s로 움직이는 로봇이 0.1 s 스윕을 돌면 첫 점과 마지막 점 사이에 0.1 m를 지나므로, deskewing 없이는 평평한 벽이 한 스캔 안에서 최대 10 cm 어긋나 보인다. deskewing에는 점마다 제 시각이 필요한데, 클라우드의 헤더 스탬프 하나는 그것을 담지 않는다. 빠진 열 시각의 값을 S1의 파사드를 지나는 리그 위에서 매기는 곳이 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §5]]다.
+그래서 모든 점이 스윕 전체가 순간이었다면 보였을 자리에 놓인다. *예:* 1 m/s로 움직이는 로봇이 0.1 s 스윕을 돌면 첫 점과 마지막 점 사이에 0.1 m를 지나므로, deskewing 없이는 평평한 벽이 한 스캔 안에서 최대 10 cm 어긋나 보인다. deskewing에는 점마다 제 시각이 필요한데, 클라우드의 헤더 스탬프 하나는 그것을 담지 않는다. 빠진 열 시각의 값을 S1(건설 트랙의 외장 패널 과제, [[05-construction-robotics/site-engineering|2.5]])의 파사드를 지나는 리그 위에서 매기는 곳이 [[04-robotics/perception-sensors-rigs|3.6 인식 센서 §5]]다.
 
 ### 7.3 Keyframe, 주변화, 정보 행렬
 

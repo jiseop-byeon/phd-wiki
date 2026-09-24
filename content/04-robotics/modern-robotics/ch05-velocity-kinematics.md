@@ -10,7 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.5** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]. FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]]; twists and the adjoint from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §3–4]] and the wrench from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §6]]; partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]). How to step a loop: [[02-foundations/lab-kernel|0.7 Lab Kernel]].
+> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled). FK from [[04-robotics/modern-robotics/ch04-forward-kinematics|ch.4]]; twists and the adjoint from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §3–4]] and the wrench from [[04-robotics/modern-robotics/ch03-rigid-body-motions|ch.3 §6]]; partial derivatives and Jacobians ([[02-foundations/calculus-backprop|2. Calculus]]), and what matrix rank means ([[02-foundations/linear-algebra|1. Linear Algebra §2]]). How to step a loop: [[02-foundations/lab-kernel|0.7 Lab Kernel]].
 > [[02-foundations/lab-plants|0.6]]의 장치 **P2**. [[04-robotics/modern-robotics/ch04-forward-kinematics|4장]]의 FK, [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §3–4]]의 twist와 adjoint, [[04-robotics/modern-robotics/ch03-rigid-body-motions|3장 §6]]의 렌치, [[02-foundations/calculus-backprop|편미분·야코비안]], [[02-foundations/linear-algebra|선형대수 §2]]의 랭크. 루프 전진: [[02-foundations/lab-kernel|0.7]].
 
 ## English
@@ -247,7 +247,7 @@ for k in range(n):
 **핵심 질문**: 관절 속도는 말단 속도로, 힘은 그 반대로 어떻게 사상되는가?
 
 > [!note] 처음이라면 · First pass
-> 그림과 §1 첫머리의 정의(열 $i$는 관절 $i$만 돌 때의 도구 운동)를 읽고, §2를 말단의 두 화살표와 resolved-rate 실행까지 읽어라. 야코비안이 속도 화살표 둘이라는 것과 왜 다시 계산해야 하는지가 거기 있다. 그다음 §3의 세 줄 유도 $\tau = J^\top\mathcal{F}$와 그 P2 숫자. §1의 나머지 프레임 관리, 6차원 검산과 §3 유도 뒤의 회계 문단들, §4의 타원체는 두 번째 읽기다. 6차원 검산에는 3장 §6의 렌치가 필요하다.
+> 그림과 §1 첫머리의 정의(열 $i$는 관절 $i$만 돌 때의 도구 운동)를 읽고, §2를 말단의 두 화살표와 resolved-rate 실행까지 읽어라. 야코비안이 속도 화살표 둘이라는 것과 왜 다시 계산해야 하는지가 거기 있다. 그다음 §3의 세 줄 유도 $\tau = J^\top\mathcal{F}$와 그 P2(카탈로그의 평면 2링크 팔, [[02-foundations/lab-plants|0.6]]) 숫자. §1의 나머지 프레임 관리, 6차원 검산과 §3 유도 뒤의 회계 문단들, §4의 타원체는 두 번째 읽기다. 6차원 검산에는 3장 §6의 렌치가 필요하다.
 
 ### 그림으로 먼저 보기 · The picture
 

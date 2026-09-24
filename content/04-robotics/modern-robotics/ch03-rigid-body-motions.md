@@ -10,7 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.3** — [[04-robotics/modern-robotics-book|book guide & free PDF]] · prerequisite: [[02-foundations/se3-geometry|8. SE(3)]]
 
 > [!note] Prerequisites · 선수 지식
-> You should be able to: ① multiply rotation matrices and use $R^{-1} = R^\top$ ([[02-foundations/se3-geometry|SE(3) §1]]) ② compute a cross product $\omega \times v$ ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §1]]) ③ solve $\dot x = ax \Rightarrow x = e^{at}x_0$ ([[02-foundations/engineering-math|0.5 §8]]). If any of the three is shaky, read that page first. The object throughout is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> You should be able to: ① multiply rotation matrices and use $R^{-1} = R^\top$ ([[02-foundations/se3-geometry|SE(3) §1]]) ② compute a cross product $\omega \times v$ ([[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §1]]) ③ solve $\dot x = ax \Rightarrow x = e^{at}x_0$ ([[02-foundations/engineering-math|0.5 §8]]). If any of the three is shaky, read that page first. The object throughout is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled).
 > 다음을 할 수 있어야 한다: ① 회전 행렬 곱셈과 $R^{-1} = R^\top$ ([[02-foundations/se3-geometry|SE(3) §1]]) ② 외적 $\omega \times v$ 계산 ([[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §1]]) ③ $\dot x = ax \Rightarrow x = e^{at}x_0$ ([[02-foundations/engineering-math|0.5 공업수학 §8]]). 셋 중 하나라도 흔들리면 해당 페이지를 먼저 읽어라. 전체에서 쓰는 대상은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**다.
 
 ## English
@@ -428,7 +428,7 @@ Tier B. Using **P2** at $\theta=(0^\circ,90^\circ)$ from [[02-foundations/lab-pl
 불러 쓰는 두 단계를 더하라.
 
 > [!note] 처음이라면 · First pass
-> 그림, §1, 검산 예제가 있는 §2를 읽고, 이어서 §3과 §4를 P2의 $T_{sb}$ 계산까지 읽어라. 이후의 모든 장이 쓰는 어휘가 이것이다. §5(자세 지수와 로그)와 §6(렌치)은 두 번째 읽기다. 4장이 지수를 곱하고 6장이 자세 오차를 잡을 때 §5로, 5장이 $\tau = J^\top\mathcal{F}$를 유도할 때 §6으로 돌아오라. §1과 §3의 '이해 확인' 문단도 나중에 읽어도 된다.
+> 그림, §1, 검산 예제가 있는 §2를 읽고, 이어서 §3과 §4를 P2(카탈로그의 평면 2링크 팔, [[02-foundations/lab-plants|0.6]])의 $T_{sb}$ 계산까지 읽어라. 이후의 모든 장이 쓰는 어휘가 이것이다. §5(자세 지수와 로그)와 §6(렌치)은 두 번째 읽기다. 4장이 지수를 곱하고 6장이 자세 오차를 잡을 때 §5로, 5장이 $\tau = J^\top\mathcal{F}$를 유도할 때 §6으로 돌아오라. §1과 §3의 '이해 확인' 문단도 나중에 읽어도 된다.
 
 ### 그림으로 먼저 보기 · The picture
 

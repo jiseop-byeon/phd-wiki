@@ -8,7 +8,7 @@ mastery-when: "Mastery means consistently producing defensible work, not memoriz
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]] (RS1; oracle, exposure, trials; the exact bound after zero failures in §4) · [[04-robotics/robot-systems-deployment|10. Robot Systems]] (failure taxonomy, logging) · [[02-foundations/probability|3. Probability §2]] (the Poisson and exponential distributions) · [[02-foundations/probability|3. Probability §6]] (the confidence-interval procedure)
+> [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]] (RS1, the frozen contact-safety study of [[06-research-practice/index|Research Practice]]; oracle, exposure, trials; the exact bound after zero failures in §4) · [[04-robotics/robot-systems-deployment|10. Robot Systems]] (failure taxonomy, logging) · [[02-foundations/probability|3. Probability §2]] (the Poisson and exponential distributions) · [[02-foundations/probability|3. Probability §6]] (the confidence-interval procedure)
 > [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]](RS1, oracle·노출·시행, §4의 실패 0회 뒤 정확 상한) · [[04-robotics/robot-systems-deployment|10. 로봇 시스템]](실패 분류·로깅) · [[02-foundations/probability|3. 확률 §2]](포아송·지수 분포) · [[02-foundations/probability|3. 확률 §6]](신뢰구간 절차)
 
 ## English
@@ -22,7 +22,7 @@ Aggregate success rate says how often a pipeline reached an endpoint; it rarely 
 
 ### Running object · 이 페이지의 대상
 
-**RS1** from [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]]: does impedance control (**B**) make the contact of plant **P2** with a 400 N/m panel safer than position control with a force-threshold stop (**A**)? One trial is one approach ending in contact, and it succeeds when the peak contact force is at most 10 N; the frozen pilot went 6 of 10 for A and 9 of 10 for B. On top of RS1 this page freezes one object of its own, specified in full here and never changed.
+**RS1** from [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]]: does impedance control (**B**) make the contact of plant **P2** (the catalog's planar two-link arm, [[02-foundations/lab-plants|0.6]]; *plant* is control's word for the system being controlled) with a 400 N/m panel safer than position control with a force-threshold stop (**A**)? One trial is one approach ending in contact, and it succeeds when the peak contact force is at most 10 N; the frozen pilot went 6 of 10 for A and 9 of 10 for B. On top of RS1 this page freezes one object of its own, specified in full here and never changed.
 
 **F1 — the first 200 hours of RS1's test rig.** Illustrative: every number below is invented for teaching, not measured.
 
@@ -380,7 +380,7 @@ Tier B. Hand derivation on RS1 and F1, using only this page and its prerequisite
 
 ## 한국어
 
-*[[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]가 RS1의 시행을 계획했다면, 이 페이지는 그 시행이나 그것을 돌리는 시험 장치가 실패했을 때 하는 일이다.*
+*[[06-research-practice/experimental-design-reproducibility|2. 실험 설계]]가 RS1(연구 실무 트랙의 고정 연구, [[06-research-practice/index|연구 실무]])의 시행을 계획했다면, 이 페이지는 그 시행이나 그것을 돌리는 시험 장치가 실패했을 때 하는 일이다.*
 
 합산 성공률은 파이프라인이 끝점에 얼마나 자주 도달했는지 말할 뿐, 왜인지는 거의 설명하지
 않는다. Physical-AI 연구에는 최초의 인과적 하위 시스템을 찾고, 회복과 리셋을 구분하고,

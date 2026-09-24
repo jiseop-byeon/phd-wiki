@@ -420,7 +420,7 @@ $|e|$ stays under $5$ mm; "active row" names any inequality the QP had to enforc
   in the table, because it is the first step that can see the braking.
 - **The horizon stops paying almost immediately.** At $\lambda=1$ the first command is $76.9$ N at
   $N=2$, $76.5$ N at $N=4$ and $76.4$ N at $N=8$. Predicting eight times as far changes the applied
-  force by $0.7\%$, because the plant's own response is over inside about $0.1$ s and there is nothing
+  force by $0.7\%$, because the plant's own response (*plant*: the system being controlled, here Q's body) is over inside about $0.1$ s and there is nothing
   further out for the cost to see. That is the honest reason legged MPC horizons are short, and it is a
   much better reason than "it has to fit in a millisecond".
 - **$\lambda$ is a peak-force-versus-time dial, and it is not monotone in quality.** At $N=8$, raising
@@ -467,7 +467,7 @@ three named ways: $m$ is $14$ kg, not $12$; $I_B$ is a box's inertia and does no
 contribution about the new centre of mass; and the reaction wrench the arm applies while pressing a
 panel is an external force the single-rigid-body model has no term for at all. The QP would absorb it
 as an unexplained tracking error and fight it with foot forces. That is the honest reading of "no arm,
-no tool wrench, no P3 wall".
+no tool wrench, no P3 wall" (P3: the catalog's haptic handle, whose 400 N/m wall stands in for the panel, [[02-foundations/lab-plants|0.6]]).
 
 **The change of knobs.** Q starts $5$ cm **high**, not low: $z_0=0.35$ m, $\dot z_0=0$, so
 $e_0=+0.05$ m. Same $\Delta t$, same trot, same bounds.
@@ -885,7 +885,7 @@ condensed QP를 매 틱 세우고, 활성 집합으로 상자 제약을 풀고, 
   첫 스텝이 그것이기 때문이다.
 - **지평은 거의 곧바로 값을 멈춘다.** $\lambda=1$에서 첫 명령은 $N=2$에 $76.9$ N, $N=4$에
   $76.5$ N, $N=8$에 $76.4$ N이다. 여덟 배 멀리 내다봐도 적용되는 힘은 $0.7\%$ 달라질 뿐이다.
-  플랜트 자신의 반응이 대략 $0.1$ s 안에 끝나 비용이 볼 것이 더 없기 때문이다. 보행 MPC의 지평이
+  플랜트(제어되는 시스템, 여기서는 Q의 몸통) 자신의 반응이 대략 $0.1$ s 안에 끝나 비용이 볼 것이 더 없기 때문이다. 보행 MPC의 지평이
   짧은 정직한 이유가 그것이고, "1밀리초 안에 들어가야 해서"보다 훨씬 나은 이유다.
 - **$\lambda$는 최대 힘 대 시간의 다이얼이고, 품질에 단조롭지 않다.** $N=8$에서 $\lambda$를
   $0.1$에서 $100$으로 올리면 최대가 발당 $115$ N에서 $66$ N으로, 정착이 $0.12$ s에서 $0.36$ s로

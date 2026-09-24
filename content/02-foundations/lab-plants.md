@@ -13,7 +13,7 @@ wiki-support: Working
 
 ## English
 
-Six plants, numbers frozen once. *Frozen* here means fixed at one value and never changed afterwards, so that every page naming a plant computes with the same numbers and results can be compared across pages; it has nothing to do with the frozen, untrained weights of a neural network ([[glossary|Glossary]]: *Frozen numbers*). Problem sets in Foundations and Robotics name a plant by id instead of re-specifying it. Change a number here and every lab that points here is using a different machine. How to step one of them in time is the next page, [[02-foundations/lab-kernel|0.7 Lab Kernel]].
+Six plants, numbers frozen once. A *plant* is the control engineer's word for the physical system being controlled or measured — here, six small example systems (a tiny network, a two-link arm, a haptic handle, a heater, a range sensor and a cart), numbered P1–P6 so that any page can reuse one by name. *Frozen* here means fixed at one value and never changed afterwards, so that every page naming a plant computes with the same numbers and results can be compared across pages; it has nothing to do with the frozen, untrained weights of a neural network ([[glossary|Glossary]]: *Frozen numbers*). Problem sets in Foundations and Robotics name a plant by id instead of re-specifying it. Change a number here and every lab that points here is using a different machine. How to step one of them in time is the next page, [[02-foundations/lab-kernel|0.7 Lab Kernel]].
 
 The robotics running task — *move a tool to a panel and make controlled contact* — is **P2** carrying a tool, meeting a wall whose stiffness is the same order as **P3**.
 
@@ -96,7 +96,7 @@ How to step a continuous plant: [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Ho
 
 ## 한국어
 
-장치 여섯 개, 숫자는 한 번만 고정한다. 여기서 *고정*(frozen)은 값을 한 번 정한 뒤 다시는 바꾸지 않는다는 뜻이어서, 장치를 부르는 모든 페이지가 같은 숫자로 계산하고 결과를 페이지끼리 견줄 수 있다. 신경망에서 학습하지 않는 frozen 가중치와는 관계가 없다([[glossary|용어집]]: *Frozen numbers*). 기초와 로보틱스 과제는 장치를 다시 정의하지 않고 **P1**–**P6** 번호로 부른다. 여기 숫자를 바꾸면 이 페이지를 가리키는 모든 랩이 다른 기계를 쓴다. 이 장치들을 시간에 따라 전진하는 법은 다음 페이지 [[02-foundations/lab-kernel|0.7 Lab Kernel]]이다.
+장치 여섯 개, 숫자는 한 번만 고정한다. 여기서 장치(plant)는 제어공학에서 제어하거나 측정하려는 물리 시스템을 부르는 말이고, 이 페이지는 그런 작은 예제 시스템 여섯 개(아주 작은 신경망, 두 관절 팔, 햅틱 손잡이, 히터, 거리 센서, 카트)를 P1–P6으로 번호 매겨 어느 페이지든 이름으로 다시 쓸 수 있게 한다. 여기서 *고정*(frozen)은 값을 한 번 정한 뒤 다시는 바꾸지 않는다는 뜻이어서, 장치를 부르는 모든 페이지가 같은 숫자로 계산하고 결과를 페이지끼리 견줄 수 있다. 신경망에서 학습하지 않는 frozen 가중치와는 관계가 없다([[glossary|용어집]]: *Frozen numbers*). 기초와 로보틱스 과제는 장치를 다시 정의하지 않고 **P1**–**P6** 번호로 부른다. 여기 숫자를 바꾸면 이 페이지를 가리키는 모든 랩이 다른 기계를 쓴다. 이 장치들을 시간에 따라 전진하는 법은 다음 페이지 [[02-foundations/lab-kernel|0.7 Lab Kernel]]이다.
 
 로보틱스 관통 과제 — *도구를 패널까지 옮겨 힘을 조절하며 접촉한다* — 는 도구를 든 **P2**가 **P3** 정도의 강성을 가진 벽을 만나는 것이다.
 

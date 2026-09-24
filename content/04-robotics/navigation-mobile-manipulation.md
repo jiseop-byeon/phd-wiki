@@ -15,8 +15,8 @@ mastery-when: "The research program keeps this at Working — it is a supporting
 > 의도적으로 이것을 Mastery로 올리지 *않는다*: 새 SLAM은 기여가 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> You need localization and mapping ([[04-robotics/state-estimation-slam|3. State Estimation, Localization & SLAM]]), configuration space and planning ([[04-robotics/planning-decision-making|4. Planning & Decision-Making]]), the manipulability ellipsoid ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §4]]) — which turns out to be the quantity that decides where a base should stop — the pseudo-inverse and the null space of a wide Jacobian ([[02-foundations/linear-algebra|1. Linear Algebra §4.5]]), and hand–eye calibration, the camera-to-gripper transform whose error enters §4's budget ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration §5]]).
-> 위치 추정과 지도 작성([[04-robotics/state-estimation-slam|3. 상태 추정·위치추정·SLAM]]), 자세 공간과 계획([[04-robotics/planning-decision-making|4. 계획·의사결정]]), 가조작성 타원체([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]]; 베이스를 어디에 세울지를 결정하는 양이 결국 그것이다), 넓은 야코비안의 유사역행렬과 영공간([[02-foundations/linear-algebra|1. 선형대수 §4.5]]), 그리고 §4의 예산에 오차로 들어가는 카메라–그리퍼 변환을 정하는 손–눈 보정([[04-robotics/geometric-perception-calibration|3.5 기하 인식·보정 §5]])이 필요하다.
+> You need localization and mapping ([[04-robotics/state-estimation-slam|3. State Estimation, Localization & SLAM]]), configuration space and planning ([[04-robotics/planning-decision-making|4. Planning & Decision-Making]]), the manipulability ellipsoid ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5 §4]]) — which turns out to be the quantity that decides where a base should stop — the pseudo-inverse and the null space of a wide Jacobian ([[02-foundations/linear-algebra|1. Linear Algebra §4.5]]), and hand–eye calibration, the camera-to-gripper transform whose error enters §4's budget ([[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration §5]]). The arm is **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> 위치 추정과 지도 작성([[04-robotics/state-estimation-slam|3. 상태 추정·위치추정·SLAM]]), 자세 공간과 계획([[04-robotics/planning-decision-making|4. 계획·의사결정]]), 가조작성 타원체([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장 §4]]; 베이스를 어디에 세울지를 결정하는 양이 결국 그것이다), 넓은 야코비안의 유사역행렬과 영공간([[02-foundations/linear-algebra|1. 선형대수 §4.5]]), 그리고 §4의 예산에 오차로 들어가는 카메라–그리퍼 변환을 정하는 손–눈 보정([[04-robotics/geometric-perception-calibration|3.5 기하 인식·보정 §5]])이 필요하다. 팔은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**다.
 
 ## English
 
@@ -499,7 +499,7 @@ Tier B. Using **P2** from [[02-foundations/lab-plants|0.6]] on a holonomic base.
 *범위: 이 페이지는 이동 베이스가 어디에 서야 하고 왜 그런지를 가르친다 — 배치 기준으로서의 도달 작업 영역과 가조작성(§2–§3), 전신/분리 아키텍처 선택(§4.5), 그리고 개루프 설계가 성립하는지를 결정하는 오차 예산(§4). SLAM이나 위치 추정은 가르치지 않는다. 그것은 [[04-robotics/state-estimation-slam|3. 상태 추정]]이다. 베이스를 그곳까지 몰고 가는 플래너는 [[04-robotics/planning-decision-making|4. 계획]]이고, 도착한 뒤 팔이 하는 일은 [[04-robotics/grasping|15. 파지]]와 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어]]다.*
 
 > [!note] 처음이라면 · First pass
-> 그림을 먼저 보고, §1(목표는 점이 아니라 자세다), §2(도달성과 두 가조작성 척도), §3(base placement), §4(오차 예산), §4.5(전신인가 분리인가)를 읽어라. 그다음 §4.5 뒤에 있는 Worked case가 §2–§4를 P2 위에서 하나로 합치고, §6의 읽기 표로 끝낸다. §5(계속 변하는 현장에서 위치 잡기)는 두 번째 읽기에서 본다. §4는 시스템이 센티미터 단위로 빗나가는데 어느 단계 탓인지 아무도 못 말할 때 돌아오는 절이기도 하다.
+> 그림을 먼저 보고, §1(목표는 점이 아니라 자세다), §2(도달성과 두 가조작성 척도), §3(base placement), §4(오차 예산), §4.5(전신인가 분리인가)를 읽어라. 그다음 §4.5 뒤에 있는 Worked case가 §2–§4를 P2(카탈로그의 평면 2링크 팔, [[02-foundations/lab-plants|0.6]]) 위에서 하나로 합치고, §6의 읽기 표로 끝낸다. §5(계속 변하는 현장에서 위치 잡기)는 두 번째 읽기에서 본다. §4는 시스템이 센티미터 단위로 빗나가는데 어느 단계 탓인지 아무도 못 말할 때 돌아오는 절이기도 하다.
 
 ### 그림으로 먼저 보기 · The picture
 

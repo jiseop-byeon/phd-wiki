@@ -13,7 +13,7 @@ mastery-when: "Mastery means consistently producing defensible work, not memoriz
 
 ## English
 
-*Stands on [[02-foundations/ml-practice|9. ML Practice]] and [[02-foundations/probability|3. Probability §6]]. The first page of Research Practice and the first use of **RS1**, the running study every page in this section shares: here it becomes a claim, on page 2 an experiment, on page 4 a paper, and on page 6 a rung of evidence.*
+*Stands on [[02-foundations/ml-practice|9. ML Practice]] and [[02-foundations/probability|3. Probability §6]]. The first page of Research Practice and the first use of **RS1** ([[06-research-practice/index|Research Practice]]), the running study every page in this section shares: here it becomes a claim, on page 2 an experiment, on page 4 a paper, and on page 6 a rung of evidence.*
 
 A topic names an area; a research question specifies an uncertain relationship that evidence can resolve. “Apply VLA to construction” is a direction. A useful question identifies the intervention, comparator, outcome, conditions, and scope.
 
@@ -29,7 +29,7 @@ A topic names an area; a research question specifies an uncertain relationship t
 
 *Question.* Does impedance control (**B**) make the planar arm's contact with a panel safer than position control with a force-threshold stop (**A**)?
 
-*Plant.* The arm is **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]: planar 2R, unit links, a 1 kg point mass at the end of each link. The panel's stiffness is that of **P3**'s wall, $k_w = 400$ N/m.
+*Plant* (the system being controlled). The arm is **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]]: planar 2R, unit links, a 1 kg point mass at the end of each link. The panel's stiffness is that of **P3**'s wall, $k_w = 400$ N/m.
 
 *Trial.* One trial = the arm approaches the panel and makes contact. The recorded outcome is the trial's peak contact force in newtons, and the trial is a **success** when that peak is at most 10 N.
 
@@ -400,7 +400,7 @@ Tier B. Hand work on RS1, using only this page, its prerequisites and the pilot 
 
 ## 한국어
 
-*[[02-foundations/ml-practice|9. ML 실무]]와 [[02-foundations/probability|3. 확률 §6]] 위에 선다. Research Practice의 첫 페이지이자, 이 섹션의 모든 페이지가 함께 쓰는 관통 연구 RS1을 처음 쓰는 곳이다. RS1은 여기서 주장이 되고, 2쪽에서 실험이, 4쪽에서 논문이, 6쪽에서 증거 사다리의 한 단이 된다.*
+*[[02-foundations/ml-practice|9. ML 실무]]와 [[02-foundations/probability|3. 확률 §6]] 위에 선다. Research Practice의 첫 페이지이자, 이 섹션의 모든 페이지가 함께 쓰는 관통 연구 RS1([[06-research-practice/index|연구 실무]])을 처음 쓰는 곳이다. RS1은 여기서 주장이 되고, 2쪽에서 실험이, 4쪽에서 논문이, 6쪽에서 증거 사다리의 한 단이 된다.*
 
 Topic은 영역의 이름이고, research question은 증거가 해소할 수 있는 불확실한 관계를
 명시한다. "건설에 VLA 적용"은 방향이다. 쓸모 있는 질문은 개입(intervention), 비교

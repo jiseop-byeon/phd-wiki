@@ -8,7 +8,7 @@ mastery-when: "Raise to Mastery when sensor modelling, inertial calibration or v
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] · the integrators of [[02-foundations/lab-kernel|0.7 Lab Kernel]] (Tier A) · variance from [[02-foundations/probability|3. Probability §2]] · white noise and the random walk from [[02-foundations/probability|3. Probability §5]] · sampling and quantization from [[02-foundations/signal-processing|6. Signal Processing §2]] · the observation model and the Kalman filter from [[04-robotics/state-estimation-slam|3. State Estimation §3 and §5]]
+> Plant **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) · the integrators of [[02-foundations/lab-kernel|0.7 Lab Kernel]] (Tier A) · variance from [[02-foundations/probability|3. Probability §2]] · white noise and the random walk from [[02-foundations/probability|3. Probability §5]] · sampling and quantization from [[02-foundations/signal-processing|6. Signal Processing §2]] · the observation model and the Kalman filter from [[04-robotics/state-estimation-slam|3. State Estimation §3 and §5]]
 > [[02-foundations/lab-plants|0.6]]의 장치 **P6** · [[02-foundations/lab-kernel|0.7]]의 적분기(Tier A) · [[02-foundations/probability|3. 확률 §2]]의 분산 · [[02-foundations/probability|3. 확률 §5]]의 백색 잡음과 랜덤 워크 · [[02-foundations/signal-processing|6. 신호처리 §2]]의 샘플링과 양자화 · [[04-robotics/state-estimation-slam|3. 상태 추정 §3과 §5]]의 관측 모델과 칼만 필터
 
 ## English
@@ -33,9 +33,9 @@ mastery-when: "Raise to Mastery when sensor modelling, inertial calibration or v
 | $N_g$ | $1.0\times10^{-4}\ \mathrm{(rad/s)/\sqrt{Hz}}$ | gyro white-noise density ($0.344\,°/\sqrt{\mathrm h}$) |
 | $B_g$ | $1.5\times10^{-4}\ \mathrm{rad/s}$ | gyro bias instability ($30.9\,°/\mathrm h$) |
 | $K_g$ | $2.0\times10^{-6}\ \mathrm{(rad/s)/\sqrt{s}}$ | gyro bias random walk |
-| $\sigma_r$, $b_r$ | $10\,\mathrm{mm}$, $4\,\mathrm{mm}$ | range-sensor noise (P5's $R = 1\,\mathrm{cm}^2$) and its mounting offset |
+| $\sigma_r$, $b_r$ | $10\,\mathrm{mm}$, $4\,\mathrm{mm}$ | range-sensor noise (the $R = 1\,\mathrm{cm}^2$ of P5, the catalog's range estimate, [[02-foundations/lab-plants\|0.6]]) and its mounting offset |
 | $f_x$, $Z_c$, $\sigma_u$ | $600\,\mathrm{px}$, $1.0\,\mathrm{m}$, $0.5\,\mathrm{px}$ | camera focal length, its distance from the rail, pixel noise of the marker detection |
-| $g$ | $9.81\,\mathrm{m/s^2}$ | gravity, as in **P2** |
+| $g$ | $9.81\,\mathrm{m/s^2}$ | gravity, as in **P2**, the catalog's planar arm ([[02-foundations/lab-plants\|0.6]]) |
 
 The accelerometer's axis lies along the rail. The gyro's axis is horizontal and across the rail, so it measures the cart's pitch rate. On P6's level rail the true pitch and pitch rate are both zero, but the dead-reckoning loop of §3 integrates the gyro anyway to know the accelerometer's tilt, because a strapdown loop cannot assume its platform stays level. Every radian that integral reports is therefore error, and gravity turns it into a false acceleration.
 
@@ -600,9 +600,9 @@ for T in (300.0, 1800.0, 7200.0):
 | $N_g$ | $1.0\times10^{-4}\ \mathrm{(rad/s)/\sqrt{Hz}}$ | 자이로 백색 잡음 밀도($0.344\,°/\sqrt{\mathrm h}$) |
 | $B_g$ | $1.5\times10^{-4}\ \mathrm{rad/s}$ | 자이로 바이어스 불안정성($30.9\,°/\mathrm h$) |
 | $K_g$ | $2.0\times10^{-6}\ \mathrm{(rad/s)/\sqrt{s}}$ | 자이로 바이어스 랜덤 워크 |
-| $\sigma_r$, $b_r$ | $10\,\mathrm{mm}$, $4\,\mathrm{mm}$ | 거리 센서 잡음(P5의 $R = 1\,\mathrm{cm}^2$)과 장착 오프셋 |
+| $\sigma_r$, $b_r$ | $10\,\mathrm{mm}$, $4\,\mathrm{mm}$ | 거리 센서 잡음(카탈로그의 1차원 거리 추정 P5의 $R = 1\,\mathrm{cm}^2$, [[02-foundations/lab-plants\|0.6]])과 장착 오프셋 |
 | $f_x$, $Z_c$, $\sigma_u$ | $600\,\mathrm{px}$, $1.0\,\mathrm{m}$, $0.5\,\mathrm{px}$ | 카메라 초점거리, 레일까지의 거리, 마커 검출의 픽셀 잡음 |
-| $g$ | $9.81\,\mathrm{m/s^2}$ | 중력. 값은 **P2** 그대로 |
+| $g$ | $9.81\,\mathrm{m/s^2}$ | 중력. 값은 **P2**(카탈로그의 평면 팔, [[02-foundations/lab-plants\|0.6]]) 그대로 |
 
 가속도계 축은 레일 방향이다. 자이로 축은 수평이고 레일을 가로지르므로 카트의 피치 각속도를 잰다. P6의 레일은 수평이라 실제 피치와 피치 각속도는 둘 다 0이다. 그래도 §3의 추측 항법 루프는 가속도계의 기울기를 알려고 자이로를 적분한다. 스트랩다운 루프는 플랫폼이 수평을 유지한다고 가정할 수 없기 때문이다. 그러니 그 적분이 내놓는 모든 라디안은 오차이고, 중력이 그것을 가짜 가속도로 바꾼다.
 

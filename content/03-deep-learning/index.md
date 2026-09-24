@@ -18,7 +18,7 @@ Map of content for deep learning. Goal: solid foundations first, then track the 
 
 ### Subareas
 
-Start with [[03-deep-learning/lab-objects|0. Deep-Learning Lab Objects]]. The six course modules reuse those fixed objects so that representations, objectives, and evidence can be compared rather than relearned from scratch.
+Start with [[03-deep-learning/lab-objects|0. Deep-Learning Lab Objects]], six tiny fixed examples: D1 a small classifier, D2 an 8×8 image cut into four patch tokens, D3 three matched image–text pairs, D4 an action chunk, D5 a one-number world model and D6 a single diffusion datum. The six course modules reuse those fixed objects so that representations, objectives, and evidence can be compared rather than relearned from scratch.
 
 1. [[03-deep-learning/foundations/index|Learning Systems]] — tensors, logits, loss, updates, data splits, recipes and scaling claims
    - [[03-deep-learning/foundations/sequence-models|1.1 Sequence Models]] — the recurrent network and backpropagation through time, vanishing and exploding gradients, the LSTM and GRU, linear state-space models (S4, Mamba), and linear attention, the delta rule and the attention hybrids of 2025, on D5
@@ -136,7 +136,7 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
 
 ### 세부 분야
 
-[[03-deep-learning/lab-objects|0. Deep-Learning Lab Objects]]에서 시작한다. 여섯 교과 모듈은 같은 고정 대상을 재사용해 표현·목적함수·증거를 서로 비교하게 한다.
+[[03-deep-learning/lab-objects|0. Deep-Learning Lab Objects]]에서 시작한다. 고정한 작은 예제 여섯으로, D1은 작은 분류기, D2는 패치 토큰 넷으로 자른 8×8 이미지, D3는 이미지–텍스트 짝 셋, D4는 행동 청크, D5는 숫자 하나짜리 월드모델, D6는 디퓨전 자료 하나다. 여섯 교과 모듈은 같은 고정 대상을 재사용해 표현·목적함수·증거를 서로 비교하게 한다.
 
 1. [[03-deep-learning/foundations/index|Learning Systems]] — tensor, logit, loss, update, data split, 학습 recipe와 scaling 주장
    - [[03-deep-learning/foundations/sequence-models|1.1 시퀀스 모델]] — 순환 신경망과 시간 역전파, 그래디언트 소실과 폭발, LSTM과 GRU, 선형 상태공간 모델(S4, Mamba), 선형 어텐션과 델타 규칙, 2025년의 어텐션 하이브리드. 대상은 D5

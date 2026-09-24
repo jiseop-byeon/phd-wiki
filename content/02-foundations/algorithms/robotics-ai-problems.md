@@ -13,7 +13,7 @@ mastery-when: "Raise to Mastery only if one of these components (a planner, an e
 
 ## English
 
-*The last page of the algorithms track, and the one closest to a lab interview. This is the major-related special attention: blank-file A*, nearest neighbour, RANSAC, a Kalman step, resampling, planar IK, PID, poses, softmax, and attention. Each problem links back to the page that owns its theory; this page owns only the implementation, the traps, and the follow-up questions. VLA chunks and site error budgets are not extra algorithm problems — they live on [[03-deep-learning/vla/index|D4]] and [[05-construction-robotics/site-engineering|S1]].*
+*The last page of the algorithms track, and the one closest to a lab interview. This is the major-related special attention: blank-file A*, nearest neighbour, RANSAC, a Kalman step, resampling, planar IK, PID, poses, softmax, and attention. Each problem links back to the page that owns its theory; this page owns only the implementation, the traps, and the follow-up questions. VLA chunks and site error budgets are not extra algorithm problems — they live on the deep-learning track's action chunk [[03-deep-learning/vla/index|D4]] and the construction track's facade-panel task [[05-construction-robotics/site-engineering|S1]].*
 
 A research-lab coding round rarely asks for a clever puzzle. It asks you to write, in 20 to 40 minutes, a small piece of the code your future lab already runs: a planner, a filter step, an inverse-kinematics solve, an attention layer. The interviewer is checking three things at once. Can you state the idea before typing? Does your code survive the input that breaks the naive version (an unreachable goal, a rotation near 180°, logits of 1000)? And when they push with "what if…", do you know where the method stops working? The ten problems below are the ones that come up most, each written so that it runs, with the tests kept in a separate file.
 
@@ -673,7 +673,7 @@ The last line reproduces the hand iteration on [[04-robotics/modern-robotics/ch0
 
 **Key idea.** The control law from [[04-robotics/control-theory-ce397|5. Control Theory §7]] is $u = K_p e + K_i \int e\,dt + K_d \dot e$ with $e = r - y$. For a constant setpoint $\dot e = -\dot y$, so replacing $K_d\dot e$ by $-K_d\dot y$ changes nothing between setpoint changes and removes the kick at them. Clamp $u$ to the actuator range, and commit the integrator update only when it would not drive $u$ further into the limit (conditional integration). Written in discrete time, before the derivative filter and the clamp, the law the code implements at sample $k$ is the one below, with the sum as the integral and a backward difference on $y$ as the derivative:
 $$u_k = K_p e_k + K_i \sum_{j \le k} e_j\,\Delta t - K_d\,\frac{y_k - y_{k-1}}{\Delta t}$$
-Three terms from the prompt, defined. **Integral windup** is the growth of the integral term while the actuator is saturated, since the error persists but the clamped output cannot act on it, so the stored integral overshoots and must be unwound later. **Derivative kick** is the one-sample spike $K_d\,\Delta r/\Delta t$ that derivative-on-error produces when the setpoint $r$ jumps by $\Delta r$. A **zero-order hold** keeps each command constant over its sample interval, $u(t) = u_k$ for $k\Delta t \le t < (k+1)\Delta t$. The plant $\tau\dot y = -y + Ku$ under a zero-order hold is simulated exactly by $y_{k+1} = a y_k + K(1 - a)u_k$ with $a = e^{-\Delta t/\tau}$.
+Three terms from the prompt, defined. **Integral windup** is the growth of the integral term while the actuator is saturated, since the error persists but the clamped output cannot act on it, so the stored integral overshoots and must be unwound later. **Derivative kick** is the one-sample spike $K_d\,\Delta r/\Delta t$ that derivative-on-error produces when the setpoint $r$ jumps by $\Delta r$. A **zero-order hold** keeps each command constant over its sample interval, $u(t) = u_k$ for $k\Delta t \le t < (k+1)\Delta t$. The plant — the system being controlled, here a first-order lag — $\tau\dot y = -y + Ku$ under a zero-order hold is simulated exactly by $y_{k+1} = a y_k + K(1 - a)u_k$ with $a = e^{-\Delta t/\tau}$.
 
 ```python
 import math
@@ -905,7 +905,7 @@ print(out.shape, W.shape, W[0].round(2))
 - *The sequence is 100 000 tokens.* The $T \times T$ table does not fit. Exact attention in blocks that never materializes it (FlashAttention) is the usual answer; sparse or linear attention changes the model.
 - *Padding and causal masks together?* Combine them with a logical OR before the softmax, and broadcast the padding mask over the query axis.
 
-**Theory.** What attention computes, multi-head attention, and the blocks used now: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention Is All You Need]]. The same layer worked by hand on D2, with its causal mask, is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]].
+**Theory.** What attention computes, multi-head attention, and the blocks used now: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention Is All You Need]]. The same layer worked by hand on D2 (the deep-learning track's 8×8 test image cut into four patch tokens, [[03-deep-learning/lab-objects|0. Lab Objects]]), with its causal mask, is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer]].
 
 ### How to practise these
 
@@ -963,7 +963,7 @@ print(out.shape, W.shape, W[0].round(2))
 
 ## 한국어
 
-*알고리즘 트랙의 마지막 페이지이고, 연구실 인터뷰에 가장 가까운 페이지다. 전공과 겹치는 특별 취급이 여기다: 백지 A*, 최근접점, RANSAC, 칼만 한 스텝, 재표본추출, 평면 IK, PID, pose, softmax, attention. 문제마다 이론을 맡은 페이지로 링크를 걸어 두었다. 이 페이지가 맡는 것은 구현, 함정, 꼬리 질문뿐이다. VLA chunk와 현장 오차 budget은 알고리즘 문제를 하나 더 만들지 않는다 — [[03-deep-learning/vla/index|D4]]와 [[05-construction-robotics/site-engineering|S1]]에 있다.*
+*알고리즘 트랙의 마지막 페이지이고, 연구실 인터뷰에 가장 가까운 페이지다. 전공과 겹치는 특별 취급이 여기다: 백지 A*, 최근접점, RANSAC, 칼만 한 스텝, 재표본추출, 평면 IK, PID, pose, softmax, attention. 문제마다 이론을 맡은 페이지로 링크를 걸어 두었다. 이 페이지가 맡는 것은 구현, 함정, 꼬리 질문뿐이다. VLA chunk와 현장 오차 budget은 알고리즘 문제를 하나 더 만들지 않는다 — 딥러닝 트랙의 행동 청크 [[03-deep-learning/vla/index|D4]]와 건설 트랙의 외장 패널 과제 [[05-construction-robotics/site-engineering|S1]]에 있다.*
 
 연구실 코딩 면접은 기발한 퍼즐을 잘 내지 않는다. 대신 20–40분 안에, 들어갈 연구실이 이미 돌리고 있는 코드의 작은 조각을 짜 보라고 한다. 플래너, 필터 한 스텝, 역기구학 풀이, 어텐션 층 같은 것들이다. 면접관은 세 가지를 동시에 본다. 타이핑 전에 아이디어를 말할 수 있는가? 순진한 구현을 깨뜨리는 입력(도달할 수 없는 목표, 180° 근처의 회전, 1000짜리 로짓)에도 코드가 살아남는가? "그러면 이런 경우는?" 하고 밀어붙일 때, 방법이 어디서 무너지는지 아는가? 아래 열 문제는 가장 자주 나오는 것들이다. 모든 코드는 그대로 실행되고, 테스트는 별도 파일에 두었다.
 
@@ -1623,7 +1623,7 @@ print(np.degrees(dls_step(np.radians([45.0, 90.0]), target, lam=0.0)).round(1))
 
 **핵심 아이디어.** [[04-robotics/control-theory-ce397|5. 제어 이론 §7]]의 제어 법칙은 $e = r - y$일 때 $u = K_p e + K_i \int e\,dt + K_d \dot e$다. 설정값이 일정하면 $\dot e = -\dot y$이므로, $K_d\dot e$를 $-K_d\dot y$로 바꿔도 설정값이 바뀌는 순간 사이에는 아무것도 달라지지 않고, 바뀌는 순간의 튐만 사라진다. $u$를 구동기 범위로 자르고, 적분기 갱신은 $u$를 한계 쪽으로 더 밀지 않을 때만 반영한다(조건부 적분). 미분 필터와 자르기 전의 이산 시간 법칙으로 쓰면, 코드가 표본 $k$에서 구현하는 것은 아래 식이다. 합이 적분을, $y$의 후진 차분이 미분을 대신한다.
 $$u_k = K_p e_k + K_i \sum_{j \le k} e_j\,\Delta t - K_d\,\frac{y_k - y_{k-1}}{\Delta t}$$
-문제에 나온 세 용어의 정의. 적분 와인드업(**integral windup**)은 구동기가 포화된 동안 적분 항이 커지는 현상이다. 오차는 남아 있지만 잘린 출력이 그 오차에 대응하지 못하므로 쌓인 적분이 넘치고, 나중에 되감아야 한다. 미분 킥(**derivative kick**)은 설정값 $r$이 $\Delta r$만큼 뛸 때 오차 미분이 만드는 한 표본짜리 튐 $K_d\,\Delta r/\Delta t$다. 영차 유지(**zero-order hold**)는 각 명령을 표본 구간 동안 일정하게 유지한다. 곧 $k\Delta t \le t < (k+1)\Delta t$에서 $u(t) = u_k$다. 영차 유지 아래의 플랜트 $\tau\dot y = -y + Ku$는 $a = e^{-\Delta t/\tau}$일 때 $y_{k+1} = a y_k + K(1 - a)u_k$로 정확히 모사된다.
+문제에 나온 세 용어의 정의. 적분 와인드업(**integral windup**)은 구동기가 포화된 동안 적분 항이 커지는 현상이다. 오차는 남아 있지만 잘린 출력이 그 오차에 대응하지 못하므로 쌓인 적분이 넘치고, 나중에 되감아야 한다. 미분 킥(**derivative kick**)은 설정값 $r$이 $\Delta r$만큼 뛸 때 오차 미분이 만드는 한 표본짜리 튐 $K_d\,\Delta r/\Delta t$다. 영차 유지(**zero-order hold**)는 각 명령을 표본 구간 동안 일정하게 유지한다. 곧 $k\Delta t \le t < (k+1)\Delta t$에서 $u(t) = u_k$다. 영차 유지 아래의 플랜트(제어되는 시스템, 여기서는 1차 지연) $\tau\dot y = -y + Ku$는 $a = e^{-\Delta t/\tau}$일 때 $y_{k+1} = a y_k + K(1 - a)u_k$로 정확히 모사된다.
 
 ```python
 import math
@@ -1855,7 +1855,7 @@ print(out.shape, W.shape, W[0].round(2))
 - *시퀀스가 100 000 토큰이다.* $T \times T$ 표가 메모리에 들어가지 않는다. 표를 만들지 않고 블록 단위로 계산하는 정확한 어텐션(FlashAttention)이 보통의 답이다. 희소 어텐션이나 선형 어텐션은 모델 자체를 바꾼다.
 - *패딩 마스크와 인과 마스크를 함께?* softmax 전에 논리 OR로 합치고, 패딩 마스크는 질의 축으로 브로드캐스트한다.
 
-**이론.** 어텐션이 계산하는 것, 멀티헤드 어텐션, 요즘 쓰이는 블록: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention Is All You Need]]. 같은 층을 인과 마스크까지 D2 위에서 손으로 계산한 것은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]다.
+**이론.** 어텐션이 계산하는 것, 멀티헤드 어텐션, 요즘 쓰이는 블록: [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Attention Is All You Need]]. 같은 층을 인과 마스크까지 D2(딥러닝 트랙의 8×8 연습 이미지를 패치 토큰 넷으로 자른 것, [[03-deep-learning/lab-objects|0. Lab Objects]]) 위에서 손으로 계산한 것은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]다.
 
 ### 연습하는 법
 

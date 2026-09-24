@@ -22,7 +22,7 @@ Use **D1** from [[03-deep-learning/lab-objects|0. Lab Objects]], biases zero:
 
 $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\1&0&0\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix}.$$
 
-Forward: $W_1x=(1,2,1)$, $h=\operatorname{ReLU}(W_1x)=(1,2,1)$, $s=W_2h=(2,1)$. The prediction is $p=\operatorname{softmax}(s)$. A diagram must show shapes $2\rightarrow3\rightarrow2$. This is not **P1** ($2\to3\to1$ MSE).
+Forward: $W_1x=(1,2,1)$, $h=\operatorname{ReLU}(W_1x)=(1,2,1)$, $s=W_2h=(2,1)$. The prediction is $p=\operatorname{softmax}(s)$. A diagram must show shapes $2\rightarrow3\rightarrow2$. This is not **P1**, the foundations track's two-layer test network of [[02-foundations/lab-plants|0.6 Lab Plants]] ($2\to3\to1$ MSE).
 
 The target is class 1 throughout this page, so $y=(1,0)$, and every number below follows from those five objects and nothing else.
 
@@ -483,7 +483,7 @@ print("largest eta that settles: %.4f" % hi)
 
 $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\1&0&0\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix}.$$
 
-순전파: $W_1x=(1,2,1)$, $h=\operatorname{ReLU}(W_1x)=(1,2,1)$, $s=W_2h=(2,1)$, $p=\operatorname{softmax}(s)$. 그림에 $2\rightarrow3\rightarrow2$ shape를 적는다. **P1**($2\to3\to1$ MSE)과 다른 장치다.
+순전파: $W_1x=(1,2,1)$, $h=\operatorname{ReLU}(W_1x)=(1,2,1)$, $s=W_2h=(2,1)$, $p=\operatorname{softmax}(s)$. 그림에 $2\rightarrow3\rightarrow2$ shape를 적는다. [[02-foundations/lab-plants|0.6 Lab Plants]]의 2층 연습 신경망 **P1**($2\to3\to1$ MSE)과 다른 장치다.
 
 이 페이지에서 정답은 항상 1번 클래스이므로 $y=(1,0)$이고, 아래의 모든 숫자는 이 다섯 개의 대상만으로 나온다.
 

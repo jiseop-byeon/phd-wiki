@@ -18,7 +18,7 @@ What feedback buys and what it costs is settled here; [[04-robotics/lqr-lqg|6]],
 > 로보틱스 논문의 상태공간 모델·안정성·극점/고유값 주장·가제어성/가관측성 서술을 정확히 읽고, 제어기가 무엇을 약속할 수 있고 없는지 말할 수 있으면 된다. 이 페이지가 그 읽기 수준을 처음부터 끝까지 가르친다; 여기 예제 너머의 제어기 *설계*는 패킷과 [[04-robotics/lqr-lqg|LQR]]/[[04-robotics/mpc|MPC]]의 몫이다.
 
 > [!note] Prerequisites
-> [[02-foundations/engineering-math|0.5 Engineering Math §8–9]] (linear ODEs, $\dot x = ax \Rightarrow x = x_0e^{at}$, Laplace, poles) · [[02-foundations/linear-algebra|1. Linear Algebra §1–3, §5]] (matrix multiplication, eigenvalues, the state-space section) · [[02-foundations/lab-plants|0.6 Lab Plants]] (plant P4, the heater every section reuses) · [[02-foundations/lab-kernel|0.7 Lab Kernel §2]] (explicit Euler, which §4 and the problem set step the loop with) · [[02-foundations/signal-processing|6. Signal Processing §1 and §4]] (input–output stability; why differentiating a noisy signal amplifies the noise). With those, the page is self-contained: the frequency-response reading of §5.5 is built on the page, point by point.
+> [[02-foundations/engineering-math|0.5 Engineering Math §8–9]] (linear ODEs, $\dot x = ax \Rightarrow x = x_0e^{at}$, Laplace, poles) · [[02-foundations/linear-algebra|1. Linear Algebra §1–3, §5]] (matrix multiplication, eigenvalues, the state-space section) · [[02-foundations/lab-plants|0.6 Lab Plants]] (plant P4, the heater every section reuses; a *plant* is the system being controlled) · [[02-foundations/lab-kernel|0.7 Lab Kernel §2]] (explicit Euler, which §4 and the problem set step the loop with) · [[02-foundations/signal-processing|6. Signal Processing §1 and §4]] (input–output stability; why differentiating a noisy signal amplifies the noise). With those, the page is self-contained: the frequency-response reading of §5.5 is built on the page, point by point.
 
 Control is the layer that makes a physical system do what you meant. Every robotics paper
 either designs one, wraps a learned policy in one, or quietly relies on one — and almost
@@ -26,7 +26,7 @@ every claim about *stability*, *tracking*, *bandwidth*, or *robustness* is a cla
 page's vocabulary.
 
 > [!note] First pass · 처음이라면
-> The longest page in group D. First pass: §1 — the leaky heater, with the numbers — then §4 for stability, then §10 for reading control claims. §5.5 — margins, sensitivity, and what no controller can do — is the other reading-skill section; save it for a second pass. It is read off a frequency-response (Nyquist) plot, which the primer at the start of §5.5 builds point by point on the same loop the margins then use, so no outside text is needed. §2, §3 and §5 to §8 are the machinery, and they read much faster once §1 has told you what feedback is for. [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11]], robot control on P2, comes after this page and builds on it.
+> The longest page in group D. First pass: §1 — the leaky heater, with the numbers — then §4 for stability, then §10 for reading control claims. §5.5 — margins, sensitivity, and what no controller can do — is the other reading-skill section; save it for a second pass. It is read off a frequency-response (Nyquist) plot, which the primer at the start of §5.5 builds point by point on the same loop the margins then use, so no outside text is needed. §2, §3 and §5 to §8 are the machinery, and they read much faster once §1 has told you what feedback is for. [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11]], robot control on P2 (the catalog's planar two-link arm, [[02-foundations/lab-plants|0.6]]), comes after this page and builds on it.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -351,7 +351,7 @@ can be described by one number for speed and one for ringing.
 - **$\omega_n$** (natural frequency) sets *speed*; **$\zeta$** (damping ratio) sets
   *ringing*: $\zeta<1$ oscillates, $\zeta=1$ is critically damped, $\zeta>1$ is sluggish
   (the three regimes, with a worked mass–spring–damper, are defined in
-  [[02-foundations/engineering-math|0.5 §8]], and worked on P3's handle, energy and all, in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §5]]).
+  [[02-foundations/engineering-math|0.5 §8]], and worked on the handle of P3, the catalog's haptic device ([[02-foundations/lab-plants|0.6]]), energy and all, in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §5]]).
 - Rules of thumb you can apply to any plot in a paper. The 2% **settling time** $t_s$ is the time
   after which the step response stays within 2% of its final value $y_\infty$. The **overshoot**
   is how far the peak exceeds that final value, as a fraction of it,
@@ -858,7 +858,7 @@ examples *are* your domain.
 *안정성·추종·대역폭·강건성*에 대한 거의 모든 주장이 이 페이지의 어휘로 쓰여 있다.
 
 > [!note] 처음이라면 · First pass
-> D군에서 가장 긴 페이지다. 1차 통과: §1 — 새는 히터, 숫자까지 — 그다음 §4의 안정성, 그다음 §10의 제어 주장 읽기. §5.5 — 여유, 감도, 그리고 어떤 제어기도 할 수 없는 것 — 이 나머지 하나의 읽기 기술 절이니 2회독에 두라. 그 절은 주파수 응답(나이퀴스트) 선도를 읽는 절인데, §5.5 첫머리의 입문이 뒤에서 여유를 재는 바로 그 루프 위에서 선도를 한 점씩 쌓아 올리므로 바깥 교재가 필요 없다. §2·§3·§5~§8은 기계장치이고, §1이 피드백이 무엇을 위한 것인지 말해 준 뒤에 훨씬 빨리 읽힌다. P2 위의 로봇 제어인 [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]]은 이 페이지 다음에 오고, 이 페이지 위에 쌓인다.
+> D군에서 가장 긴 페이지다. 1차 통과: §1 — 새는 히터, 숫자까지 — 그다음 §4의 안정성, 그다음 §10의 제어 주장 읽기. §5.5 — 여유, 감도, 그리고 어떤 제어기도 할 수 없는 것 — 이 나머지 하나의 읽기 기술 절이니 2회독에 두라. 그 절은 주파수 응답(나이퀴스트) 선도를 읽는 절인데, §5.5 첫머리의 입문이 뒤에서 여유를 재는 바로 그 루프 위에서 선도를 한 점씩 쌓아 올리므로 바깥 교재가 필요 없다. §2·§3·§5~§8은 기계장치이고, §1이 피드백이 무엇을 위한 것인지 말해 준 뒤에 훨씬 빨리 읽힌다. P2(카탈로그의 평면 2링크 팔, [[02-foundations/lab-plants|0.6]]) 위의 로봇 제어인 [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]]은 이 페이지 다음에 오고, 이 페이지 위에 쌓인다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -927,7 +927,7 @@ examples *are* your domain.
   </g>
 </svg>
 
-왼쪽은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 곧 §1이 열면서 꺼내는 새는 히터 $\dot x=-x+u+d$의 개루프로, $u=1$과 $d=0.5$가 플랜트 앞의 합산점 하나로 들어가 $x$는 $x_\infty=1+d=1.5$에 머물고, $x$를 읽는 화살표가 없으니 아무것도 그것을 고칠 수 없다. 오른쪽은 같은 플랜트에 $K=9$의 $u=-Kx$를 건 폐루프로, 극점이 $-(1+K)=-10$으로, 정상 상태가 $d/(1+K)=0.05$로 옮겨 간다. 그 위에 겹친 시계는 주기 $T=0.1\,\mathrm s$의 샘플러와 영차 홀드로 $x(t)$를 수열 $x_k$로, $u_k$를 유지된 $u(t)$로 바꾸어 루프를 이산으로 만들고, 명시적 오일러 $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$로 전진시킨 그 루프는 $K<19$일 때만 안정하므로 연속 루프가 받아들이는 $K=99$ 같은 이득도 샘플링되면 발산한다.
+왼쪽은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 곧 §1이 열면서 꺼내는 새는 히터 $\dot x=-x+u+d$의 개루프로, $u=1$과 $d=0.5$가 플랜트(제어되는 시스템, 여기서는 히터) 앞의 합산점 하나로 들어가 $x$는 $x_\infty=1+d=1.5$에 머물고, $x$를 읽는 화살표가 없으니 아무것도 그것을 고칠 수 없다. 오른쪽은 같은 플랜트에 $K=9$의 $u=-Kx$를 건 폐루프로, 극점이 $-(1+K)=-10$으로, 정상 상태가 $d/(1+K)=0.05$로 옮겨 간다. 그 위에 겹친 시계는 주기 $T=0.1\,\mathrm s$의 샘플러와 영차 홀드로 $x(t)$를 수열 $x_k$로, $u_k$를 유지된 $u(t)$로 바꾸어 루프를 이산으로 만들고, 명시적 오일러 $x_{k+1}=\big(1-T(1+K)\big)x_k+Td_k$로 전진시킨 그 루프는 $K<19$일 때만 안정하므로 연속 루프가 받아들이는 $K=99$ 같은 이득도 샘플링되면 발산한다.
 
 ### 1. 피드백이 실제로 사는 것
 
@@ -1160,7 +1160,7 @@ $2\zeta\omega_n = b/m$이므로 $\zeta = b/(2\sqrt{km})$이다. 유도는 그게
 
 - **$\omega_n$**(고유 진동수)이 *속도*를, **$\zeta$**(감쇠비)가 *울림*을 정한다:
   $\zeta<1$은 진동, $\zeta=1$은 임계 감쇠, $\zeta>1$은 굼뜸(세 영역은 질량-스프링-댐퍼 예제와 함께
-  [[02-foundations/engineering-math|0.5 §8]]에서 정의하고, P3의 핸들 위에서 에너지까지 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §5]]가 계산한다).
+  [[02-foundations/engineering-math|0.5 §8]]에서 정의하고, P3, 곧 카탈로그의 햅틱 장치([[02-foundations/lab-plants|0.6]])의 핸들 위에서 에너지까지 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §5]]가 계산한다).
 - 논문의 어떤 그래프에도 적용할 수 있는 어림법. 2% **정착 시간** $t_s$는 계단 응답이 최종값
   $y_\infty$의 2% 안에 계속 머물기 시작하는 시각이다. **오버슈트**는 최댓값이 최종값을 넘어선 정도를
   최종값에 대한 비율로 쓴 것, $M_p = (y_{max} - y_\infty)/y_\infty$다. 부족 감쇠 표준 2차

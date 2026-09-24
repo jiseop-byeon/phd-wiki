@@ -623,7 +623,7 @@ for warm in (500, 1000, 2000):
 
 ## 한국어
 
-*[[02-foundations/probability|3. 확률 §3]]의 가우시안 대수, [[02-foundations/information-theory|5. 정보이론 §3]]의 KL 발산, [[02-foundations/information-theory|5. 정보이론 §5]]의 ELBO, [[02-foundations/calculus-backprop|2. 미적분과 역전파 §5]]에서 진술한 reparameterization 위에 선다. 대상 **D6**를 두 번째로 쓴다. 집은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]이고, 이 페이지는 그 모듈의 선수 강의로서 diffusion이 밀어낸 두 생성 모델을 다루며, D6의 자료 하나를 분포로 넓힌다.*
+*[[02-foundations/probability|3. 확률 §3]]의 가우시안 대수, [[02-foundations/information-theory|5. 정보이론 §3]]의 KL 발산, [[02-foundations/information-theory|5. 정보이론 §5]]의 ELBO, [[02-foundations/calculus-backprop|2. 미적분과 역전파 §5]]에서 진술한 reparameterization 위에 선다. 대상 **D6**(디퓨전을 위한 스칼라 자료 하나, [[03-deep-learning/lab-objects|0. Lab Objects]])를 두 번째로 쓴다. 집은 [[03-deep-learning/diffusion/index|6. Diffusion & Flow]]이고, 이 페이지는 그 모듈의 선수 강의로서 diffusion이 밀어낸 두 생성 모델을 다루며, D6의 자료 하나를 분포로 넓힌다.*
 
 > [!note] 처음이라면 · First pass
 > 대상과 계산 절을 읽고 §1, §2, §5, §6을 본 뒤 문제 1–2를 푼다. VAE가 시끄럽게 학습되거나 잠재변수를 무시하면 §3과 §4를, GAN 논문이 "mode collapse"나 "Wasserstein"을 말하면 §7을, 어떤 생성 모델이든 diffusion과 견주기 전에는 §9를, 논문이 이미지·비디오·행동을 토큰으로 바꾸면 §10을 연다. §8은 §2–§7을 코드로 돌린다.

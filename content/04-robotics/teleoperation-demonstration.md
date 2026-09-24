@@ -535,7 +535,7 @@ below, and each has a statistic that can be computed before any training runs.
 - **State-action consistency.** If the operator reacts to something the robot's sensors did
   not record — a sound, a glance at their own hand, knowledge of what comes next — the
   dataset contains actions that its own observations cannot explain, and no amount of it
-  will teach the policy that behaviour. On S1 the loss is measurable: a camera that misses the
+  will teach the policy that behaviour. On S1, the construction track's facade-panel task ([[05-construction-robotics/site-engineering|2.5]]), the loss is measurable: a camera that misses the
   close-up view the operator acted on shrinks the cloned correction from $0.5$ to $0.054$ per
   step, and a corpus logged while the operator watched only that camera seats $0.953$ against
   $0.875$ ([[05-construction-robotics/imitating-contact|10. Imitating Contact §2, §9]]).
@@ -1250,7 +1250,7 @@ Demonstrations for Robot Manipulation*(Mandlekar et al., CoRL 2021 — robomimic
   때문이다 — [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1]]의 복합 오차 논증.
 - **상태-행동 일관성.** 조작자가 로봇의 센서가 기록하지 않은 무언가에 반응했다면 — 소리,
   자기 손을 흘깃 본 것, 다음에 무엇이 오는지 아는 것 — 데이터셋은 자기 관측으로 설명할 수
-  없는 행동을 담게 되고, 아무리 많아도 그 행동을 정책에 가르치지 못한다. S1에서는 이 손실을 잴 수 있다.
+  없는 행동을 담게 되고, 아무리 많아도 그 행동을 정책에 가르치지 못한다. S1(건설 트랙의 외장 패널 과제, [[05-construction-robotics/site-engineering|2.5]])에서는 이 손실을 잴 수 있다.
   조작자가 보고 움직인 근접 화면을 놓친 카메라는 복제된 보정을 스텝당 $0.5$에서 $0.054$로 줄이고,
   조작자가 그 카메라만 보며 모은 코퍼스는 $0.875$ 대신 $0.953$으로 앉는다([[05-construction-robotics/imitating-contact|10. 접촉 모방 §2, §9]]).
 - **RL을 이어 붙일 수 있다면 몇 개로도 충분해진다.** 시연은 복제용 데이터셋만이 아니라

@@ -247,7 +247,7 @@ that is the correct behaviour, not a failure.
 >
 > **Why it matters.** Every row of the table below, every $K_d$ in §2, the selection of which direction is stiff in §3, and the impact arithmetic in §5 are these same three coefficients. A contact claim with none of them reported is a claim with no units.
 
-The spring and the damper as physical elements — springs in series and in parallel, a preload, viscous damping set against Coulomb friction — are derived on P3's handle in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §3–§4]].
+The spring and the damper as physical elements — springs in series and in parallel, a preload, viscous damping set against Coulomb friction — are derived on the handle of P3, the catalog's one-axis haptic device ([[02-foundations/lab-plants|0.6]]), in [[02-foundations/basic-mechanics|0.6.1 Basic Mechanics §3–§4]].
 
 Keep a scale of environment stiffness. It spans five orders of magnitude, and papers name the
 contact rather than the number. The same control law is safe at one end and impossible at the
@@ -340,7 +340,7 @@ so an impedance controller measures motion and outputs force, and an admittance 
 
 > [!example] Worked example · 계산 예제
 > $M_d=2$ kg, $K_d=500$ N/m. A steady 10 N push settles at $e=F_{ext}/K_d=10/500=0.02$ m. The natural frequency is $\sqrt{500/2}=15.8$ rad/s, and critical damping ($\zeta=1$) needs $D_d=2\sqrt{500\times2}=63.2$ N·s/m.
-> **Those numbers are plant P2 in $y$.** Catalog pose $\theta=(0^\circ,90^\circ)$ has $\Lambda=\mathrm{diag}(1,2)$ ([[02-foundations/lab-plants|0.6]] and [[02-foundations/manipulator-kinematics-dynamics|10]]), so $\Lambda_y=2\,\mathrm{kg}$ is the apparent mass at the tip in $y$, not the $2\,\mathrm{kg}$ of metal. Command $F=(0,-10)$ on the panel: $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$. The panel pushes the robot in $+y$, so $F_{ext}=+10\,\mathrm{N}$ and the $0.02\,\mathrm{m}$ deflection is in $+y$. Unconstrained, $a_y=-10/2=-5\,\mathrm{m/s}^2$. Against steel the *position* is set by the wall: impedance still commands the $10\,\mathrm{N}$; admittance commands motion and a delayed force error becomes a shove into the wall. The problem set is this example as two block diagrams.
+> **Those numbers are plant P2 in $y$.** (A *plant* is the system being controlled, here the arm.) Catalog pose $\theta=(0^\circ,90^\circ)$ has $\Lambda=\mathrm{diag}(1,2)$ ([[02-foundations/lab-plants|0.6]] and [[02-foundations/manipulator-kinematics-dynamics|10]]), so $\Lambda_y=2\,\mathrm{kg}$ is the apparent mass at the tip in $y$, not the $2\,\mathrm{kg}$ of metal. Command $F=(0,-10)$ on the panel: $\tau=J^\top F=(-10,0)\,\mathrm{N{\cdot}m}$. The panel pushes the robot in $+y$, so $F_{ext}=+10\,\mathrm{N}$ and the $0.02\,\mathrm{m}$ deflection is in $+y$. Unconstrained, $a_y=-10/2=-5\,\mathrm{m/s}^2$. Against steel the *position* is set by the wall: impedance still commands the $10\,\mathrm{N}$; admittance commands motion and a delayed force error becomes a shove into the wall. The problem set is this example as two block diagrams.
 > **Non-examples**: a controller that holds $F=F_d$ regardless of motion specifies no relation between motion and force, so it is force control, not an impedance. And "soft" is not part of the definition: $K_d=10^5$ N/m is a perfectly valid, very stiff impedance.
 
 <svg viewBox="0 0 560 248" style="max-width:100%;height:auto" role="img" aria-label="impedance control measures motion and commands torque, admittance control measures force and commands position into an inner loop">
@@ -1093,7 +1093,7 @@ $$F = K_e\,\Delta x = 10^4 \times 0.01 = 100\ \text{N}$$
 >
 > **왜 중요한가.** 아래 표의 모든 행, §2의 모든 $K_d$, §3에서 어느 방향을 단단하게 둘지 고르는 일, §5의 충격 산수가 전부 이 세 계수다. 셋 중 아무것도 보고하지 않은 접촉 주장은 단위가 없는 주장이다.
 
-물리 요소로서의 스프링과 댐퍼 — 직렬·병렬 스프링, 예압, 쿨롱 마찰과 대비한 점성 감쇠 — 는 P3의 핸들 위에서 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §3–§4]]가 유도한다.
+물리 요소로서의 스프링과 댐퍼 — 직렬·병렬 스프링, 예압, 쿨롱 마찰과 대비한 점성 감쇠 — 는 P3(카탈로그의 1축 햅틱 장치, [[02-foundations/lab-plants|0.6]])의 핸들 위에서 [[02-foundations/basic-mechanics|0.6.1 기초 역학 §3–§4]]가 유도한다.
 
 환경 강성의 눈금을 갖고 있어야 한다. 환경 강성은 다섯 자릿수에 걸쳐 있고, 논문은 숫자 대신 접촉을
 이름으로 부른다. 같은 제어 법칙이 한쪽 끝에서는 안전하고 반대쪽 끝에서는 불가능하다:
@@ -1635,7 +1635,7 @@ Tier B. 이 페이지와 선수 지식, 객체 카탈로그만 쓴다. 계속 �
 > - **위, $x$–$y$ 평면의 팔과 패널, 실제 비율.** 원점에 P2 베이스, 링크 1이 $+x$로 뻗어 엘보가 $(1,0)$, 링크 2가 올라가 말단이 $(1,1)$. 패널 면은 말단에 닿고 누름에 수직인 선으로 긋는다.
 > - **명령한 누름은 말단에서 패널 쪽으로 향한 화살표다.** 로봇이 받는 반력은 같은 길이의 반대 방향 화살표로 그린다.
 > - **말단 옆에 직렬 스프링 둘을 그려 이름을 붙인다.** 가상 $K_d$와 실제 $K_e=10^5$ N/m를, 가상 쪽 코일은 길게 늘이고 실제 쪽은 거의 납작하게 그린다. 위 패널이 할 일은 그 비를 보여 주는 것 하나다(계산 예제에서는 $200$).
-> - **가운데, 블록선도 둘.** 위아래로 놓고 오른쪽 플랜트 블록은 공유한다. 임피던스: 누름 축을 따라 말단의 위치와 속도를 재고 목표 $M_d\ddot e+D_d\dot e+K_de$에 통과시켜 힘을 얻은 뒤 $\tau=J^\top F$로 옮겨 팔에 토크를 보낸다.
+> - **가운데, 블록선도 둘.** 위아래로 놓고 오른쪽 플랜트(제어되는 시스템, 여기서는 팔) 블록은 공유한다. 임피던스: 누름 축을 따라 말단의 위치와 속도를 재고 목표 $M_d\ddot e+D_d\dot e+K_de$에 통과시켜 힘을 얻은 뒤 $\tau=J^\top F$로 옮겨 팔에 토크를 보낸다.
 > - **어드미턴스.** 손목에서 그 축의 힘을 재고 가상 동역학을 적분해 운동 기준을 얻어 내부 위치 루프에 넘기고, 그 루프가 토크를 보낸다.
 > - **각 구조가 흉내 낼 수 없는 블록 하나를 음영으로 칠한다.** 임피던스 행은 토크 인터페이스, 어드미턴스 행은 힘 센서다. 패널에서 측정으로 돌아오는 되먹임 경로는 양쪽에 다 그린다.
 > - **아래, 밀리초 단위 축 하나의 시계.** 접촉 사건은 $t=0$에서 시작하는 폭 $t_{\text{contact}}=\pi\sqrt{\Lambda/K_e}$의 반주기 사인, 목표 거동의 한 주기 $T=2\pi/\omega_n$은 같은 축 위의 사인, 그 위에 1 kHz 샘플 눈금을 두고 각각 안에 든 개수를 센다.

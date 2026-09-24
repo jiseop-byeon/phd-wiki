@@ -8,7 +8,7 @@ mastery-when: "Master transducer dynamics and psychophysical validation when the
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] — the handle is the delivery device that carries the tactor. A second-order mass–spring–damper and its magnitude response from [[04-robotics/control-theory-ce397|5. Control Theory §5]], and the idea of a transfer function from [[02-foundations/signal-processing|6. Signal Processing]]. Detection thresholds and the JND from [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §2]].
+> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) — the handle is the delivery device that carries the tactor. A second-order mass–spring–damper and its magnitude response from [[04-robotics/control-theory-ce397|5. Control Theory §5]], and the idea of a transfer function from [[02-foundations/signal-processing|6. Signal Processing]]. Detection thresholds and the JND from [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §2]].
 > [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3**. 핸들이 tactor를 싣는 전달 장치다. 2차 질량–스프링–댐퍼와 그 크기 응답은 [[04-robotics/control-theory-ce397|5. 제어 이론 §5]], 전달함수 개념은 [[02-foundations/signal-processing|6. 신호처리]]. 검출 임계값과 JND는 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §2]].
 
 ## English
@@ -278,7 +278,7 @@ Two knobs move, nothing else. The suspension is stiffened to $k_t'=9860\,\mathrm
 
 ## 한국어
 
-*햅틱 트랙의 구동 쪽 끝이다. 장치 **P3**를 피부가 닿아 있는 물체로 쓴다. [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]은 같은 핸들을 사람을 구동하는 대신 사람을 재는 데 쓴 페이지다.*
+*햅틱 트랙의 구동 쪽 끝이다. 장치 **P3**(카탈로그의 1축 햅틱 핸들, [[02-foundations/lab-plants|0.6]])를 피부가 닿아 있는 물체로 쓴다. [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]은 같은 핸들을 사람을 구동하는 대신 사람을 재는 데 쓴 페이지다.*
 
 > [!note] 처음이라면 · First pass
 > 대상을 읽고 그림을 보라. 평평한 명령 하나가 피부에서는 전혀 다른 자극 둘이 되고, 액추에이터 16개짜리 슬리브가 위치는 10개밖에 사 주지 못한다. 그다음 §2에서 세 용어(크기 응답, 공진, 감각 수준)를, §3에서 two-point limen을 읽고 §6 계산 절을 따라가라. §1, §4, §5는 두 번째 읽을 때 본다. 계열 표, 접촉 cue, 설계 체크리스트는 하드웨어를 읽을 때가 아니라 고를 때 연다.

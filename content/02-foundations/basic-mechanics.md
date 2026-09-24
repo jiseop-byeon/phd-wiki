@@ -8,7 +8,7 @@ wiki-support: Working
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 Engineering Math]] — derivatives (§1), exponentials (§6), complex numbers (§7) and linear ODEs up to the second-order one (§8), used here without being re-taught · plants **P3** and **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]].
+> [[02-foundations/engineering-math|0.5 Engineering Math]] — derivatives (§1), exponentials (§6), complex numbers (§7) and linear ODEs up to the second-order one (§8), used here without being re-taught · plants **P3** and **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled).
 > [[02-foundations/engineering-math|0.5 공업수학]] — 미분(§1), 지수(§6), 복소수(§7), 2차까지의 선형 미분방정식(§8). 여기서는 다시 가르치지 않고 쓴다 · [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P3**와 **P2**.
 
 ## English
@@ -523,7 +523,7 @@ print(f"uniform rods: I = {I_rods:.4f} kg*m^2, weights' moment {tau_rods:+.3f} N
 
 It prints $I=3.000\,\mathrm{kg{\cdot}m^2}$ at both angles, the weights' moment $-19.620$ and $-12.086\,\mathrm{N{\cdot}m}$ (holding torques $+19.620$ and $+12.086$), and for the rod arm $I=1.6667\,\mathrm{kg{\cdot}m^2}$ and $-14.715\,\mathrm{N{\cdot}m}$: rods also put their weight nearer the shoulder, so they are easier to hold as well as to swing.
 
-**Angular momentum, in one paragraph.** A body turning about a fixed axis at angular velocity $\omega$ carries the **angular momentum** $L=I\omega$, in $\mathrm{kg{\cdot}m^2/s}$, and the net external torque is its rate of change, $\sum\tau=dL/dt$ — the rotational form of $\sum F=dp/dt$, as OpenStax states it. P2 swinging about its shoulder at $1\,\mathrm{rad/s}$ with the elbow locked carries $L=3\times1=3\,\mathrm{kg{\cdot}m^2/s}$ and $\tfrac12I\omega^2=1.5\,\mathrm{J}$; stopping it in $0.5\,\mathrm{s}$ takes an average $3/0.5=6\,\mathrm{N{\cdot}m}$ on top of whatever holds it against gravity. Momentum is what makes a heavy machine hard to stop — the reason [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving §1]] treats S2's inertia as a problem of its own — and it is conserved only while no external torque acts, which a fixed-base arm never enjoys.
+**Angular momentum, in one paragraph.** A body turning about a fixed axis at angular velocity $\omega$ carries the **angular momentum** $L=I\omega$, in $\mathrm{kg{\cdot}m^2/s}$, and the net external torque is its rate of change, $\sum\tau=dL/dt$ — the rotational form of $\sum F=dp/dt$, as OpenStax states it. P2 swinging about its shoulder at $1\,\mathrm{rad/s}$ with the elbow locked carries $L=3\times1=3\,\mathrm{kg{\cdot}m^2/s}$ and $\tfrac12I\omega^2=1.5\,\mathrm{J}$; stopping it in $0.5\,\mathrm{s}$ takes an average $3/0.5=6\,\mathrm{N{\cdot}m}$ on top of whatever holds it against gravity. Momentum is what makes a heavy machine hard to stop — the reason [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving §1]] treats the inertia of S2, the construction track's 5-tonne trench excavator ([[05-construction-robotics/site-engineering|2.5]]), as a problem of its own — and it is conserved only while no external torque acts, which a fixed-base arm never enjoys.
 
 ### 8. Statics: equilibrium and the holding torque
 
@@ -1216,7 +1216,7 @@ $$\sum\tau=I\,\alpha$$
 
 출력은 두 각에서 모두 $I=3.000\,\mathrm{kg{\cdot}m^2}$, 무게의 모멘트 $-19.620$과 $-12.086\,\mathrm{N{\cdot}m}$(유지 토크 $+19.620$과 $+12.086$), 그리고 막대 팔의 $I=1.6667\,\mathrm{kg{\cdot}m^2}$와 $-14.715\,\mathrm{N{\cdot}m}$다. 막대는 무게도 어깨 가까이 두므로 휘두르기뿐 아니라 붙잡기도 쉽다.
 
-**각운동량, 한 문단으로.** 고정축을 각속도 $\omega$로 도는 물체는 **각운동량** $L=I\omega$($\mathrm{kg{\cdot}m^2/s}$)를 지니고, 알짜 외부 토크는 그 변화율이다, $\sum\tau=dL/dt$ — OpenStax가 말하는 대로 $\sum F=dp/dt$의 회전판이다. 팔꿈치를 잠근 채 어깨를 $1\,\mathrm{rad/s}$로 휘두르는 P2는 $L=3\times1=3\,\mathrm{kg{\cdot}m^2/s}$와 $\tfrac12I\omega^2=1.5\,\mathrm{J}$을 지니고, 그것을 $0.5\,\mathrm{s}$에 세우려면 중력에 맞서 붙잡는 토크 위에 평균 $3/0.5=6\,\mathrm{N{\cdot}m}$가 더 든다. 운동량은 무거운 기계를 세우기 어렵게 만드는 것이다 — [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공 §1]]이 S2의 관성을 따로 다루는 이유다 — 그리고 외부 토크가 없을 때만 보존되는데, 바닥에 고정된 팔은 그런 호사를 누리지 못한다.
+**각운동량, 한 문단으로.** 고정축을 각속도 $\omega$로 도는 물체는 **각운동량** $L=I\omega$($\mathrm{kg{\cdot}m^2/s}$)를 지니고, 알짜 외부 토크는 그 변화율이다, $\sum\tau=dL/dt$ — OpenStax가 말하는 대로 $\sum F=dp/dt$의 회전판이다. 팔꿈치를 잠근 채 어깨를 $1\,\mathrm{rad/s}$로 휘두르는 P2는 $L=3\times1=3\,\mathrm{kg{\cdot}m^2/s}$와 $\tfrac12I\omega^2=1.5\,\mathrm{J}$을 지니고, 그것을 $0.5\,\mathrm{s}$에 세우려면 중력에 맞서 붙잡는 토크 위에 평균 $3/0.5=6\,\mathrm{N{\cdot}m}$가 더 든다. 운동량은 무거운 기계를 세우기 어렵게 만드는 것이다 — [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공 §1]]이 S2, 곧 건설 트랙의 5톤급 트렌치 굴착기([[05-construction-robotics/site-engineering|2.5]])의 관성을 따로 다루는 이유다 — 그리고 외부 토크가 없을 때만 보존되는데, 바닥에 고정된 팔은 그런 호사를 누리지 못한다.
 
 ### 8. 정역학: 평형과 유지 토크
 

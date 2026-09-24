@@ -10,7 +10,7 @@ mastery-when: "Raise when an integrated contact pipeline, rather than one of its
 ## English
 
 > [!note] Prerequisites · 선수 지식
-> **This capstone needs the whole common track** — pages 1–11 of [[04-robotics/index|4. Robotics]] and its cumulative problem set, sessions 1–99 of the schedule there — **plus two sections from the specialisations**, scheduled as session 100: [[04-robotics/force-compliance-control|13. Force & Compliance §1, §2, §5]] and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]. It runs plants **P2**, **P3**, **P5** and **P6** ([[02-foundations/lab-plants|0.6 Lab Plants]]) on the integrator of [[02-foundations/lab-kernel|0.7 Lab Kernel]], and it re-teaches no stage: each step below cites its owner and uses that page's result as given. The manipulation sequence 9 → 13 → 15 alone is not enough — it supplies the contact half only, and [[04-robotics/grasping|15. Grasping]] is not used at all, because nothing in this cell is grasped. Tick every line below before starting; each names what the capstone takes from the page and a number to reproduce with the solution covered.
+> **This capstone needs the whole common track** — pages 1–11 of [[04-robotics/index|4. Robotics]] and its cumulative problem set, sessions 1–99 of the schedule there — **plus two sections from the specialisations**, scheduled as session 100: [[04-robotics/force-compliance-control|13. Force & Compliance §1, §2, §5]] and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]. It runs plants **P2**, **P3**, **P5** and **P6** ([[02-foundations/lab-plants|0.6 Lab Plants]]; *plant* is control's word for the system being controlled) on the integrator of [[02-foundations/lab-kernel|0.7 Lab Kernel]], and it re-teaches no stage: each step below cites its owner and uses that page's result as given. The manipulation sequence 9 → 13 → 15 alone is not enough — it supplies the contact half only, and [[04-robotics/grasping|15. Grasping]] is not used at all, because nothing in this cell is grasped. Tick every line below before starting; each names what the capstone takes from the page and a number to reproduce with the solution covered.
 >
 > **Common track — the stages the loop runs, in its order**
 > - [ ] **The Kalman update** ([[02-foundations/probability|3. Probability §5]]; the same P5 update in [[04-robotics/state-estimation-slam|3. State Estimation §6]]) → step 1. A 10 cm prior of variance 4 cm² and a 12 cm reading of variance 1 cm² fuse to 11.6 cm and 0.8 cm².
@@ -407,7 +407,7 @@ Reading the table:
 - **One estimate, no noise.** The panel is read once, at home, and the simulation's sensor is exact. A second reading would shrink $\sigma$ — [[02-foundations/probability|3. Probability §5]] runs the sequence — and with it the force band of §4.
 - **Geometry.** Point contact, frictionless face, zero-thickness links. The elbow's clearance was checked; the tool's orientation was not controlled, because a 2R arm has no spare joint for it.
 - **Model error.** The computed-torque model is exact except for $b$. A real arm carries payload and friction error, which enters the error dynamics as the disturbance ch.11 §2 describes.
-- **A classical policy.** Every command here comes from a model and a gain; nothing was learned. Running a policy learned from demonstrations into the same kind of contact — what behaviour cloning's per-step errors compound into at the pin, and which fix keeps the tool inside its tolerance — is [[05-construction-robotics/imitating-contact|10. Imitating Contact]], on the construction track's S1 panel.
+- **A classical policy.** Every command here comes from a model and a gain; nothing was learned. Running a policy learned from demonstrations into the same kind of contact — what behaviour cloning's per-step errors compound into at the pin, and which fix keeps the tool inside its tolerance — is [[05-construction-robotics/imitating-contact|10. Imitating Contact]], on the construction track's S1 panel, a 20 kg facade panel aligned to ±5 mm ([[05-construction-robotics/site-engineering|2.5]]).
 
 ### After reading
 
@@ -741,7 +741,7 @@ C-장애물([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]
 
 ### 6. 랩 — 루프 전체를 시뮬레이션 하나로
 
-Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면이 가진 두 손잡이 $K_d$와 $v_a$를 바꾸고, 그와 함께 움직이는 세 검사에 대해 각 행을 표시한다. 플랜트는 $M$, $c$, $g$를 모두 가진 P2이고, 패널은 P3의 한쪽 스프링이다. 제어기는 $T=1\,\mathrm{ms}$로 돌며 토크를 스텝 동안 유지하고, 적분기는 같은 스텝의 준음해 오일러다([[02-foundations/lab-kernel|0.7 §3]]). 공구 댐퍼 $b$는 플랜트에 작용하고 제어기 모델에는 없다. 코드와 출력은 영어 절에 있다.
+Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면이 가진 두 손잡이 $K_d$와 $v_a$를 바꾸고, 그와 함께 움직이는 세 검사에 대해 각 행을 표시한다. 플랜트(제어되는 시스템)는 $M$, $c$, $g$를 모두 가진 P2이고, 패널은 P3의 한쪽 스프링이다. 제어기는 $T=1\,\mathrm{ms}$로 돌며 토크를 스텝 동안 유지하고, 적분기는 같은 스텝의 준음해 오일러다([[02-foundations/lab-kernel|0.7 §3]]). 공구 댐퍼 $b$는 플랜트에 작용하고 제어기 모델에는 없다. 코드와 출력은 영어 절에 있다.
 
 약 5초 동안 돌고, 계산 절을 먼저 출력한다: 융합 거리 $11.6\,\mathrm{cm}$, $\sigma$ $0.89\,\mathrm{cm}$, 부풀린 면 $1.0892\,\mathrm{m}$; 간선 $A$–$P$ $0.352$(막힘), $A$–$E$ $-0.089$, $E$–$P$ $-0.0132$; 순항 $0.80/0.38\,\mathrm{rad/s}$, $T_1$ $3.345\,\mathrm{s}$, 전환 $5.802\,\mathrm{s}$; 첫 접촉 $6.684\,\mathrm{s}$, 최대 $9.84\,\mathrm{N}$, 정착 오차 $-0.889\,\mathrm{N}$. 마지막 줄은 분리 검사로, 계획한 상한 $0.997\,\mathrm{m/s}$, 시뮬레이션 $0.967\,\mathrm{m/s}$, $S_p=1.239\,\mathrm{m}$다. 시뮬레이션의 말단이 계획보다 느린 것은 모델에서 $b$를 뺀 궤적을 팔이 뒤처져 따라가기 때문이다. 검사는 계획을 쓴다. 안전 기능은 명령한 것에 대해 성립해야 하기 때문이다. 스윕은 다음과 같고, 실패한 행마다 한계를 어긴 페이지를 적었다.
 
@@ -781,7 +781,7 @@ Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면
 - **추정 하나, 잡음 없음.** 패널은 홈에서 한 번 읽고, 시뮬레이션의 센서는 정확하다. 두 번째 측정은 $\sigma$를 줄이고 — [[02-foundations/probability|3. 확률 §5]]가 그 순서를 돌린다 — 그와 함께 §4의 힘 띠도 줄인다.
 - **기하.** 점 접촉, 마찰 없는 면, 두께 없는 링크. 엘보의 여유는 확인했지만 공구의 방향은 제어하지 않았다. 2R 팔에는 그럴 여분의 관절이 없다.
 - **모델 오차.** 계산 토크의 모델은 $b$를 빼면 정확하다. 실제 팔은 탑재물과 마찰의 오차를 싣고, 그것은 11장 §2가 말하는 교란으로 오차 동역학에 들어간다.
-- **고전 정책.** 여기의 명령은 모두 모델과 이득에서 나오고, 배운 것은 없다. 시연에서 배운 정책을 같은 종류의 접촉으로 돌리는 것 — 행동 복제의 스텝당 오류가 핀에서 무엇으로 불어나는지, 어떤 해법이 공구를 허용오차 안에 붙잡아 두는지 — 은 건설 트랙의 S1 패널 위에서 [[05-construction-robotics/imitating-contact|10. 접촉 모방]]이 다룬다.
+- **고전 정책.** 여기의 명령은 모두 모델과 이득에서 나오고, 배운 것은 없다. 시연에서 배운 정책을 같은 종류의 접촉으로 돌리는 것 — 행동 복제의 스텝당 오류가 핀에서 무엇으로 불어나는지, 어떤 해법이 공구를 허용오차 안에 붙잡아 두는지 — 은 건설 트랙의 S1 패널(±5 mm로 맞추는 20 kg 외장 패널, [[05-construction-robotics/site-engineering|2.5]]) 위에서 [[05-construction-robotics/imitating-contact|10. 접촉 모방]]이 다룬다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 

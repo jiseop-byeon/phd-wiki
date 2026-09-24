@@ -8,12 +8,12 @@ mastery-when: "Master four-channel synthesis, absolute-stability design and dela
 ---
 
 > [!note] Prerequisites · 선수 지식
-> The two-port view, the hybrid matrix and its ideal, and the wave-variable channel from [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 §1–§4]]; passivity at a port and the Z-width of a haptic display from [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2 and §4]]; impedance versus admittance causality from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]; transfer functions evaluated at $s=j\omega$ from [[04-robotics/control-theory-ce397|Control Theory §5]]; and complex numbers as magnitude and angle. Nothing else: every other quantity is defined on the page.
-> 2포트 관점, 하이브리드 행렬과 그 이상값, wave variable 채널은 [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 §1–§4]]. 포트에서의 수동성과 햅틱 디스플레이의 Z-width는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2와 §4]]. 임피던스 대 어드미턴스 인과성은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]. $s=j\omega$에서 계산한 전달함수는 [[04-robotics/control-theory-ce397|제어 이론 §5]]. 그리고 크기와 각도로서의 복소수. 그 밖의 모든 양은 이 페이지에서 정의한다.
+> The two-port view, the hybrid matrix and its ideal, and the wave-variable channel from [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 §1–§4]]; passivity at a port and the Z-width of a haptic display from [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2 and §4]]; impedance versus admittance causality from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]; transfer functions evaluated at $s=j\omega$ from [[04-robotics/control-theory-ce397|Control Theory §5]]; the haptic handle **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]]; and complex numbers as magnitude and angle. Nothing else: every other quantity is defined on the page.
+> 2포트 관점, 하이브리드 행렬과 그 이상값, wave variable 채널은 [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 §1–§4]]. 포트에서의 수동성과 햅틱 디스플레이의 Z-width는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2와 §4]]. 임피던스 대 어드미턴스 인과성은 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3 §1]]. $s=j\omega$에서 계산한 전달함수는 [[04-robotics/control-theory-ce397|제어 이론 §5]]. [[02-foundations/lab-plants|0.6 Lab Plants]]의 햅틱 핸들 **P3**. 그리고 크기와 각도로서의 복소수. 그 밖의 모든 양은 이 페이지에서 정의한다.
 
 ## English
 
-*Stands on [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 Bilateral Teleoperation]]: same two copies of plant **P3**, now with the controller between them written down, so that the questions 24.5 asks in words can be answered in numbers.*
+*Stands on [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 Bilateral Teleoperation]]: same two copies of plant **P3** (*plant*: control's word for the system being controlled), now with the controller between them written down, so that the questions 24.5 asks in words can be answered in numbers.*
 
 > [!note] First pass · 처음이라면
 > Read the Running object and look at the picture: two ways of wiring the same pair, and a curve that says which of them can be destabilized by some passive hand and wall. Then §1–§4 in order — they define the four numbers the picture is made of — and the Worked case, which computes them. §5 and §6 are for choosing an architecture; §7 is what delay does to all of it; §8 is the one-to-many case. A first reading can stop after the Worked case.
@@ -380,7 +380,7 @@ for name, Hf in (("P-P", H_pp), ("P-F", H_pf)):
 
 ## 한국어
 
-*[[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 양방향 원격조작]] 위에 선다. 같은 **P3** 두 대에 그 사이의 제어기를 적어 넣어, 24.5가 말로 물은 질문에 숫자로 답한다.*
+*[[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 양방향 원격조작]] 위에 선다. 같은 **P3**(카탈로그의 1축 햅틱 핸들, [[02-foundations/lab-plants|0.6]]) 두 대에 그 사이의 제어기를 적어 넣어, 24.5가 말로 물은 질문에 숫자로 답한다.*
 
 > [!note] 처음이라면 · First pass
 > 이 페이지의 대상을 읽고 그림을 본다. 같은 쌍을 두 가지로 배선한 것, 그리고 어떤 수동적 손과 벽이 그중 어느 쪽을 불안정하게 만들 수 있는지를 말해 주는 곡선이다. 그다음 §1–§4를 순서대로 — 그림을 이루는 네 숫자를 정의한다 — 그리고 그것을 계산하는 계산 절을 읽는다. §5와 §6은 구조를 고를 때, §7은 지연이 그 모두에 하는 일, §8은 하나가 여럿을 조종하는 경우다. 첫 읽기는 계산 절에서 멈춰도 된다.

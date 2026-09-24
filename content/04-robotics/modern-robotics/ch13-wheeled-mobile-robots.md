@@ -18,7 +18,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Core question**: how do wheeled bases move, and why is "can't slide sideways" not the same as "can't get there"?
 
 > [!note] First pass · 처음이라면
-> Read the running plant, the picture and Steps 1–4 of the worked case — rolling constraint, wheel speeds, the odometry update, and one quarter turn run through it by hand — then Step 6, which ranks encoder quantization against tyre slip. Steps 5 and 7 (why the loop runs at $200\,\mathrm{Hz}$, and what the clock does to a velocity estimate) and the definitions in §2 and §3 are the second pass; §1 is the chapter as one list, including Brockett's result, to come back to when a paper says its base tracks trajectories rather than stabilizing to a pose. Then the self-check and the problem set, which turns the cart in place.
+> Read the running plant (*plant*: control's word for the system being controlled), the picture and Steps 1–4 of the worked case — rolling constraint, wheel speeds, the odometry update, and one quarter turn run through it by hand — then Step 6, which ranks encoder quantization against tyre slip. Steps 5 and 7 (why the loop runs at $200\,\mathrm{Hz}$, and what the clock does to a velocity estimate) and the definitions in §2 and §3 are the second pass; §1 is the chapter as one list, including Brockett's result, to come back to when a paper says its base tracks trajectories rather than stabilizing to a pose. Then the self-check and the problem set, which turns the cart in place.
 
 ### Running plant · 이 페이지의 장치
 
@@ -200,7 +200,7 @@ Slip beats quantization by a factor of $38.6$, so **odometry decay is a tyre bud
   continuous time-invariant feedback. Neither MR nor this page proves it; the source is
   Brockett's 1983 paper, *Asymptotic Stability and Feedback Stabilization*.) Planning
   has the matching consequence: search edges must be drivable curves — Reeds–Shepp shots,
-  state lattices, Hybrid A\* ([[04-robotics/planning-decision-making|4. Planning §5.5]]). A base putting P2's origin in front of the panel therefore cannot use a sideways shuffle as a legal edge, and still reaches the pose.
+  state lattices, Hybrid A\* ([[04-robotics/planning-decision-making|4. Planning §5.5]]). A base putting the origin of P2, the catalog's planar two-link arm ([[02-foundations/lab-plants|0.6]]), in front of the panel therefore cannot use a sideways shuffle as a legal edge, and still reaches the pose.
 
 > **Controllability, defined.** **Controllability** is *a property of a control system $\dot q = G(q)u$ with its admissible inputs, judged from a configuration $q$* (MR §13.3.2). Two of MR's notions carry this page's claim. The robot is **controllable** from $q$ if every goal can be reached in finite time by some admissible input history. It is **small-time locally controllable** (STLC) from $q$ if, for every time $T > 0$ and every neighbourhood $W$ of $q$, the set it can reach by time $T$ without leaving $W$ is itself a neighbourhood of $q$: it can move a little in every direction, however cramped the space.
 >
@@ -474,7 +474,7 @@ $$\delta\theta = \frac{1/2048}{2d} = \frac{1/2048}{0.4} = 0.0012207\ \mathrm{rad
   않으며, 출처는 Brockett의 1983년 논문 *Asymptotic Stability and Feedback Stabilization*이다.)
   계획 쪽의 짝이 되는 귀결은, 탐색의
   간선이 주행 가능한 곡선이어야 한다는 것이다 — Reeds–Shepp 연결, 상태 격자, Hybrid A\*
-  ([[04-robotics/planning-decision-making|4. 계획 §5.5]]). 그래서 P2의 원점을 패널 앞에 두는 베이스도 옆으로 미끄러지는 간선은 쓸 수 없고, 그래도 그 자세에는 도달한다.
+  ([[04-robotics/planning-decision-making|4. 계획 §5.5]]). 그래서 P2(카탈로그의 평면 2링크 팔, [[02-foundations/lab-plants|0.6]])의 원점을 패널 앞에 두는 베이스도 옆으로 미끄러지는 간선은 쓸 수 없고, 그래도 그 자세에는 도달한다.
 
 > **가제어성의 정의.** **가제어성**(controllability)은 *허용 입력과 함께 주어진 제어 시스템 $\dot q = G(q)u$의 성질*이고, 컨피규레이션 $q$에서 판정한다(MR §13.3.2). 이 페이지의 주장을 떠받치는 것은 MR의 개념 둘이다. 모든 목표에 어떤 허용 입력 이력으로 유한 시간에 닿을 수 있으면 로봇은 $q$에서 **가제어**(controllable)다. 모든 시간 $T > 0$과 $q$의 모든 근방 $W$에 대해, $W$를 벗어나지 않고 시간 $T$까지 닿을 수 있는 집합이 그 자체로 $q$의 근방이면 $q$에서 **소시간 국소 가제어**(small-time locally controllable, STLC)다. 공간이 아무리 좁아도 모든 방향으로 조금씩 움직일 수 있다는 뜻이다.
 >

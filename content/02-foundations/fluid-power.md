@@ -8,7 +8,7 @@ wiki-support: Working
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/engineering-math|0.5 Engineering Math §1, §8]] (derivatives; first- and second-order linear ODEs and the natural frequency $\omega_n=\sqrt{k/m}$) · [[02-foundations/lab-plants|0.6 Lab Plants]] (the catalog, and the rule that a page freezes its own object when no plant fits)
+> [[02-foundations/engineering-math|0.5 Engineering Math §1, §8]] (derivatives; first- and second-order linear ODEs and the natural frequency $\omega_n=\sqrt{k/m}$) · [[02-foundations/lab-plants|0.6 Lab Plants]] (the catalog of plants — control's word for the system being controlled — and the rule that a page freezes its own object when no plant fits)
 > [[02-foundations/engineering-math|0.5 공업수학 §1, §8]](미분, 1차·2차 선형 미분방정식과 고유 진동수 $\omega_n=\sqrt{k/m}$) · [[02-foundations/lab-plants|0.6 Lab Plants]](카탈로그, 그리고 맞는 장치가 없으면 페이지가 자기 대상을 고정한다는 규칙)
 
 ## English
@@ -25,7 +25,7 @@ wiki-support: Working
 
 No plant in [[02-foundations/lab-plants|0.6 Lab Plants]] is hydraulic or pneumatic — P1 to P6 are a network, an arm, a handle, a heater, a range sensor and a cart — so this page freezes two objects of its own. Their numbers are **course numbers**: sized for a 5-tonne-class machine and a 20 kg panel, frozen here, and not measurements or specifications of any product. No other page changes them.
 
-**H1 — a boom cylinder and its circuit.** One double-acting cylinder raises the boom of an excavator of S2's class, the 5-tonne-class machine of [[05-construction-robotics/site-engineering|2.5 Site Robotics]]. A fixed-displacement pump feeds it through a directional valve, a relief valve caps the pressure, and the oil returns to a tank. The arm, the bucket and a full bucket of soil are lumped into one point mass at the bucket tip, as P2's links are point masses.
+**H1 — a boom cylinder and its circuit.** One double-acting cylinder raises the boom of an excavator of S2's class, the 5-tonne-class machine of [[05-construction-robotics/site-engineering|2.5 Site Robotics]]. A fixed-displacement pump feeds it through a directional valve, a relief valve caps the pressure, and the oil returns to a tank. The arm, the bucket and a full bucket of soil are lumped into one point mass at the bucket tip, as the links of P2, the catalog's planar arm ([[02-foundations/lab-plants|0.6]]), are point masses.
 
 | Symbol | Value | What it is |
 |---|---:|---|
@@ -235,7 +235,7 @@ How fast the boom rises and how long a stroke takes are set by the pump's flow, 
 > - **Non-example**: "the return line carries the pump flow." Retracting, the cap side empties at $0.199\times7.854\times10^{-3}=1.5625\times10^{-3}\,\mathrm{m^3/s}$, $93.75\,\mathrm{L/min}$, which is $\varphi$ times the pump's $60$; extending, the rod side returns only $38.4\,\mathrm{L/min}$. A valve and a return line sized for the pump are undersized for a retracting cylinder.
 > - **Why it matters**: flow sets speed and pressure sets force, and the two stay independent until power (§4) or the relief valve (§5) ties them together. To make a cylinder faster you need more flow, not more pressure.
 
-The time to stroke is the swept volume over the flow, $t=sA/Q$: H1's cap side sweeps $0.80\times7.854\times10^{-3}=6.28\times10^{-3}\,\mathrm{m^3}$, $6.28\,\mathrm{L}$, which the pump's $1.0\,\mathrm{L/s}$ fills in $6.28\,\mathrm{s}$. At the tip the lever multiplies the speed by $n$: the arm rises at $6\times0.127=0.764\,\mathrm{m/s}$. As long as the pressure the load needs stays below the relief setting, a fixed pump gives the same speed whatever the load, since the load changes the pressure, not the volume per second. Read the other way, the cylinder is an integrator: its position is the flow it has received, $x(t)=x(0)+\frac{1}{A}\int_0^tQ\,dt$, so a valve that sets flow sets speed, and holding a position against a changing load needs a loop closed on position, the integrator-in-a-loop that 0.5 draws for P4 ([[02-foundations/engineering-math|0.5 §8]]). The one assumption to keep in view is incompressibility: §7 relaxes it, and it is exactly what the first tens of milliseconds of a movement violate (§11).
+The time to stroke is the swept volume over the flow, $t=sA/Q$: H1's cap side sweeps $0.80\times7.854\times10^{-3}=6.28\times10^{-3}\,\mathrm{m^3}$, $6.28\,\mathrm{L}$, which the pump's $1.0\,\mathrm{L/s}$ fills in $6.28\,\mathrm{s}$. At the tip the lever multiplies the speed by $n$: the arm rises at $6\times0.127=0.764\,\mathrm{m/s}$. As long as the pressure the load needs stays below the relief setting, a fixed pump gives the same speed whatever the load, since the load changes the pressure, not the volume per second. Read the other way, the cylinder is an integrator: its position is the flow it has received, $x(t)=x(0)+\frac{1}{A}\int_0^tQ\,dt$, so a valve that sets flow sets speed, and holding a position against a changing load needs a loop closed on position, the integrator-in-a-loop that 0.5 draws for P4, the leaky-heater test system of [[02-foundations/lab-plants|0.6]] ([[02-foundations/engineering-math|0.5 §8]]). The one assumption to keep in view is incompressibility: §7 relaxes it, and it is exactly what the first tens of milliseconds of a movement violate (§11).
 
 ### 4. Hydraulic power, efficiency and heat
 
@@ -528,7 +528,7 @@ Tier B. Using only this page, its prerequisites and the Running object: H1 and V
 
 [[02-foundations/lab-plants|0.6 Lab Plants]]에는 유압이나 공압 장치가 없다. P1부터 P6까지는 신경망, 팔, 핸들, 히터, 거리 센서, 카트다. 그래서 이 페이지는 자기 대상 둘을 고정한다. 숫자는 **교과 숫자**다. 5톤급 기계와 20 kg 패널에 맞는 크기로 골라 여기서 고정했고, 어떤 제품을 재거나 사양에서 옮긴 값이 아니다. 다른 페이지는 이 숫자를 바꾸지 않는다.
 
-**H1 — 붐 실린더와 그 회로.** 복동 실린더 하나가 S2 급 굴착기, 곧 [[05-construction-robotics/site-engineering|2.5 현장 로보틱스]]의 5톤급 기계의 붐을 들어 올린다. 정용량 펌프가 방향 제어 밸브를 거쳐 기름을 보내고, 릴리프 밸브가 압력의 상한을 막으며, 기름은 탱크로 돌아온다. 팔, 버킷, 흙을 가득 담은 버킷은 버킷 날 끝의 점질량 하나로 뭉친다. P2의 링크를 점질량으로 둔 것과 같은 단순화다.
+**H1 — 붐 실린더와 그 회로.** 복동 실린더 하나가 S2 급 굴착기, 곧 [[05-construction-robotics/site-engineering|2.5 현장 로보틱스]]의 5톤급 기계의 붐을 들어 올린다. 정용량 펌프가 방향 제어 밸브를 거쳐 기름을 보내고, 릴리프 밸브가 압력의 상한을 막으며, 기름은 탱크로 돌아온다. 팔, 버킷, 흙을 가득 담은 버킷은 버킷 날 끝의 점질량 하나로 뭉친다. 카탈로그의 평면 팔 P2([[02-foundations/lab-plants|0.6]])의 링크를 점질량으로 둔 것과 같은 단순화다.
 
 | 기호 | 값 | 무엇인가 |
 |---|---:|---|
@@ -555,7 +555,7 @@ Tier B. Using only this page, its prerequisites and the Running object: H1 and V
 
 모델링 선택 셋을 한 번만 적는다. **하중은 중력뿐이다**: 붐은 일정한 속도로 올라가므로 로드는 지렛대를 거친 날 끝의 무게만 진다. 굴착력은 3번 페이지의 주제다. **지렛대는 이상적이다**: 쓰는 자세에서 날 끝은 똑바로 위로, 로드의 $n=6$배 속도로 움직이고 핀에서 잃는 것이 없다. **패널은 면이 연직인 채로 매달린다**: S1의 지지 단계에서 벽 앞에 설 때처럼. 그래서 컵은 무게를 마찰로 진다. 눕혀 드는 패널은 §9의 더 쉬운 경우다. H1의 보어와 V1의 컵은 일부러 같은 $100\,\mathrm{mm}$ 원을 쓴다. §9가 두 압력을 같은 면적 위에 올려놓기 위해서다.
 
-*범위: 이 페이지는 건설·로보틱스 논문을 읽는 사람에게 필요한 유체 동력의 물리 — 압력과 그 단위, 실린더의 두 면적에 걸리는 압력의 힘, 유량과 속도, 유압 동력과 효율과 열, 기본 회로, 오리피스 손실, 압축성과 기름 스프링, 공기가 무른 이유, 진공으로 붙잡기 — 를 H1과 V1 위에서 가르친다. 밸브나 펌프의 설계, 뭉친 지연 하나를 넘는 밸브 동역학, 부하 감응과 전자 유압 제어, 작동유와 오염, 공압 회로 설계는 가르치지 않는다. 그 가운데 가까운 것들이 어디에 있는지는 §12가 말한다. S2의 지연은 [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공·중장비 §1]]이 값을 매기고, 2차 플랜트의 제어는 [[04-robotics/control-theory-ce397|5. 제어 이론]]의 몫이다.*
+*범위: 이 페이지는 건설·로보틱스 논문을 읽는 사람에게 필요한 유체 동력의 물리 — 압력과 그 단위, 실린더의 두 면적에 걸리는 압력의 힘, 유량과 속도, 유압 동력과 효율과 열, 기본 회로, 오리피스 손실, 압축성과 기름 스프링, 공기가 무른 이유, 진공으로 붙잡기 — 를 H1과 V1 위에서 가르친다. 밸브나 펌프의 설계, 뭉친 지연 하나를 넘는 밸브 동역학, 부하 감응과 전자 유압 제어, 작동유와 오염, 공압 회로 설계는 가르치지 않는다. 그 가운데 가까운 것들이 어디에 있는지는 §12가 말한다. S2의 지연은 [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공·중장비 §1]]이 값을 매기고, 2차 플랜트(제어되는 시스템)의 제어는 [[04-robotics/control-theory-ce397|5. 제어 이론]]의 몫이다.*
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -738,7 +738,7 @@ $$F_L\,v=m_ag\,(n\,v)\quad\Rightarrow\quad F_L=n\,m_ag=6\times600\times9.81=35.3
 > - **비예**: "귀환 라인에는 펌프 유량이 흐른다." 줄어들 때 헤드측은 $0.199\times7.854\times10^{-3}=1.5625\times10^{-3}\,\mathrm{m^3/s}$, 곧 $93.75\,\mathrm{L/min}$으로 비는데, 펌프 $60$의 $\varphi$배다. 늘어날 때 로드측은 $38.4\,\mathrm{L/min}$만 돌려보낸다. 펌프에 맞춰 고른 밸브와 귀환 라인은 줄어드는 실린더에는 작다.
 > - **왜 중요한가**: 유량이 속도를, 압력이 힘을 정하고, 일률(§4)이나 릴리프 밸브(§5)가 둘을 묶기 전까지 둘은 따로 논다. 실린더를 빠르게 하려면 압력이 아니라 유량이 더 필요하다.
 
-행정 시간은 쓸고 지나가는 부피를 유량으로 나눈 것, $t=sA/Q$다. H1의 헤드측은 $0.80\times7.854\times10^{-3}=6.28\times10^{-3}\,\mathrm{m^3}$, 곧 $6.28\,\mathrm{L}$를 쓸고, 펌프의 초당 $1.0\,\mathrm{L}$가 그것을 $6.28\,\mathrm{s}$에 채운다. 날 끝에서는 지렛대가 속도를 $n$배로 불려, 팔은 $6\times0.127=0.764\,\mathrm{m/s}$로 올라간다. 하중이 요구하는 압력이 릴리프 설정 아래에 있는 한 정용량 펌프는 하중과 상관없이 같은 속도를 준다. 하중이 바꾸는 것은 압력이지 초당 부피가 아니기 때문이다. 거꾸로 읽으면 실린더는 적분기다. 그 위치는 받은 유량의 누적, $x(t)=x(0)+\frac{1}{A}\int_0^tQ\,dt$이다. 그래서 유량을 정하는 밸브는 속도를 정하고, 변하는 하중에 맞서 위치를 지키려면 위치에 대해 닫은 루프가 필요하다. 0.5가 P4에 대해 그리는, 루프 속의 적분기와 같은 구조다([[02-foundations/engineering-math|0.5 §8]]). 눈여겨볼 가정 하나는 비압축성이다. §7이 그것을 풀고, 움직임의 처음 수십 밀리초가 바로 그 가정을 깬다(§11).
+행정 시간은 쓸고 지나가는 부피를 유량으로 나눈 것, $t=sA/Q$다. H1의 헤드측은 $0.80\times7.854\times10^{-3}=6.28\times10^{-3}\,\mathrm{m^3}$, 곧 $6.28\,\mathrm{L}$를 쓸고, 펌프의 초당 $1.0\,\mathrm{L}$가 그것을 $6.28\,\mathrm{s}$에 채운다. 날 끝에서는 지렛대가 속도를 $n$배로 불려, 팔은 $6\times0.127=0.764\,\mathrm{m/s}$로 올라간다. 하중이 요구하는 압력이 릴리프 설정 아래에 있는 한 정용량 펌프는 하중과 상관없이 같은 속도를 준다. 하중이 바꾸는 것은 압력이지 초당 부피가 아니기 때문이다. 거꾸로 읽으면 실린더는 적분기다. 그 위치는 받은 유량의 누적, $x(t)=x(0)+\frac{1}{A}\int_0^tQ\,dt$이다. 그래서 유량을 정하는 밸브는 속도를 정하고, 변하는 하중에 맞서 위치를 지키려면 위치에 대해 닫은 루프가 필요하다. 0.5가 P4, 곧 [[02-foundations/lab-plants|0.6]]의 연습용 새는 히터에 대해 그리는, 루프 속의 적분기와 같은 구조다([[02-foundations/engineering-math|0.5 §8]]). 눈여겨볼 가정 하나는 비압축성이다. §7이 그것을 풀고, 움직임의 처음 수십 밀리초가 바로 그 가정을 깬다(§11).
 
 ### 4. 유압 동력, 효율, 그리고 열
 

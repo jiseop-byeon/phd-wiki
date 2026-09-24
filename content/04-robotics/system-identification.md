@@ -8,7 +8,7 @@ mastery-when: "Raise to Working when an identified payload, friction or actuator
 ---
 
 > [!note] Prerequisites · 선수 지식
-> For §1–§8 and the worked case: plant **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]]; the loop conventions of [[02-foundations/lab-kernel|0.7 Lab Kernel]]; least squares and the normal equations from [[02-foundations/linear-algebra|1. Linear Algebra §2]], and when $A^\top A$ is invertible from [[02-foundations/linear-algebra|1. Linear Algebra §4.5]]; the covariance matrix, bias and variance, and white noise from [[02-foundations/probability|3. Probability §2, §4 and §5]]; P4 and its exact sampled model from [[04-robotics/control-theory-ce397|5. Control Theory §1 and §4]]; nonlinear least squares, and why forming $J^\top J$ squares the condition number, from [[02-foundations/optimization|4. Optimization §3.5]], used in §3. For §9 only: plant **P2** from the same catalog and the manipulator equation on it from [[02-foundations/manipulator-kinematics-dynamics|10. §2–§4]].
+> For §1–§8 and the worked case: plant **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled); the loop conventions of [[02-foundations/lab-kernel|0.7 Lab Kernel]]; least squares and the normal equations from [[02-foundations/linear-algebra|1. Linear Algebra §2]], and when $A^\top A$ is invertible from [[02-foundations/linear-algebra|1. Linear Algebra §4.5]]; the covariance matrix, bias and variance, and white noise from [[02-foundations/probability|3. Probability §2, §4 and §5]]; P4 and its exact sampled model from [[04-robotics/control-theory-ce397|5. Control Theory §1 and §4]]; nonlinear least squares, and why forming $J^\top J$ squares the condition number, from [[02-foundations/optimization|4. Optimization §3.5]], used in §3. For §9 only: plant **P2** from the same catalog and the manipulator equation on it from [[02-foundations/manipulator-kinematics-dynamics|10. §2–§4]].
 > §1–§8과 끝까지 계산에는: [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P4**; [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 루프 규약; [[02-foundations/linear-algebra|1. 선형대수 §2]]의 최소제곱과 정규방정식, [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 $A^\top A$가 가역일 조건; [[02-foundations/probability|3. 확률 §2, §4, §5]]의 공분산 행렬, 편향과 분산, 백색 잡음; [[04-robotics/control-theory-ce397|5. 제어 이론 §1, §4]]의 P4와 그 정확한 샘플 모델; §3이 쓰는 [[02-foundations/optimization|4. 최적화 §3.5]]의 비선형 최소제곱, 그리고 $J^\top J$를 만들면 조건수가 제곱되는 이유. §9에만: 같은 카탈로그의 장치 **P2**, 그리고 [[02-foundations/manipulator-kinematics-dynamics|10. §2–§4]]의 P2 매니퓰레이터 방정식.
 
 ## English
@@ -106,7 +106,7 @@ Two readings. The method is exact: fit the unrounded states and least squares re
 
 ### 1. What system identification is
 
-Every plant on this wiki arrived with its numbers already attached: P4's pole, P2's masses, P3's damper that [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] spends in its passivity bound. On a real machine each of those numbers is the output of a procedure, and the procedure has a name.
+Every plant on this wiki arrived with its numbers already attached: P4's pole, P2's masses, the damper of P3, the catalog's haptic handle ([[02-foundations/lab-plants|0.6]]), that [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] spends in its passivity bound. On a real machine each of those numbers is the output of a procedure, and the procedure has a name.
 
 > **System identification, defined.** **System identification** is an *estimation procedure* that turns a record of inputs and outputs into the parameters of a model — not a model, not a simulator, and not a curve through the data. Four defining conditions, and a result that skips any of them is something else. A **model structure** is chosen before the data are seen: a set of candidate models indexed by a parameter vector $\theta$, here "$x_{k+1}=a\,x_k+b\,u_k$ for some $(a,b)$". An **experiment** produces a record $Z^N=\{(u_k,y_k)\}$ of commanded inputs and measured outputs, and the input is usually yours to design. A **criterion** scores every candidate against the record. And the winner is **validated** on data the criterion never saw.
 >
@@ -522,7 +522,7 @@ for name, r in (("r = 0", np.zeros(N)), ("r = prbs", prbs(N))):
 
 ## 한국어
 
-*[[02-foundations/linear-algebra|1. 선형대수]](최소제곱), [[02-foundations/probability|3. 확률]](편향과 분산), [[04-robotics/control-theory-ce397|5. 제어 이론]](장치 **P4**, 그리고 그 샘플 모델) 위에 선다. 다른 페이지는 모두 P4의 숫자를 카탈로그에서 읽는다. 이 페이지는 그 숫자를 기록에서 되찾고, 이어서 **P2** 팔의 질량 행렬을 미지수 셋으로 다룬다.*
+*[[02-foundations/linear-algebra|1. 선형대수]](최소제곱), [[02-foundations/probability|3. 확률]](편향과 분산), [[04-robotics/control-theory-ce397|5. 제어 이론]](장치 **P4**, 곧 카탈로그의 새는 히터([[02-foundations/lab-plants|0.6]]), 그리고 그 샘플 모델) 위에 선다. 다른 페이지는 모두 P4의 숫자를 카탈로그에서 읽는다. 이 페이지는 그 숫자를 기록에서 되찾고, 이어서 **P2** 팔의 질량 행렬을 미지수 셋으로 다룬다.*
 
 > [!note] 처음이라면 · First pass
 > 아래의 그림에서 시작해, 계산기를 들고 계산 절을 따라가라. P4의 샘플 파라미터를 정확히 구하고, 센서 판독값 다섯 개로 추정하고, 그 추정을 시상수로 되돌린다. 그다음 최소제곱은 §3, 입력이 왜 모든 것을 정하는지는 §4, 그리고 §8의 랩. 논문의 식별된 모델을 믿기 전에 §5를 다시 읽어라. 어떤 공분산도 보고하지 않는 오차를 다루기 때문이다. §9는 같은 방법을 로봇 팔에 쓴다.
@@ -563,7 +563,7 @@ flowchart LR
     LS --> VAL["검증: 떼어 둔 기록에서 자유 실행"]
 ```
 
-P4의 식별 기록을 그린 신호 흐름도다: 명령은 영차 유지를 거치고 상태는 샘플러가 읽는데 둘 다 주기가 $T = 0.1\,\mathrm{s}$라서, 샘플 모델 $x_{k+1} = a\,x_k + b\,u_k$는 $(a, b) = (0.904837,\ 0.095163)$으로 정확하다. 잡음은 두 자리로 들어오고 — 외란 $d$는 플랜트 앞에서, 센서 잡음 $v_k$는 샘플러 뒤에서 — 명령은 생성기에서 곧장 회귀 벡터로 가므로, $\Phi$에 잡음을 실어 나를 수 있는 것은 잰 열 $y_k$뿐이고 그것이 §5의 편향이다. 최소제곱이 돌려준 $\theta = (a, b)$를 $\tau = -T/\ln a = 1\,\mathrm{s}$와 $K = b/(1-a) = 1$로 되돌리고, 떼어 둔 기록 위의 자유 주행으로 검증한다.
+P4의 식별 기록을 그린 신호 흐름도다: 명령은 영차 유지를 거치고 상태는 샘플러가 읽는데 둘 다 주기가 $T = 0.1\,\mathrm{s}$라서, 샘플 모델 $x_{k+1} = a\,x_k + b\,u_k$는 $(a, b) = (0.904837,\ 0.095163)$으로 정확하다. 잡음은 두 자리로 들어오고 — 외란 $d$는 플랜트(제어되는 시스템, 여기서는 P4) 앞에서, 센서 잡음 $v_k$는 샘플러 뒤에서 — 명령은 생성기에서 곧장 회귀 벡터로 가므로, $\Phi$에 잡음을 실어 나를 수 있는 것은 잰 열 $y_k$뿐이고 그것이 §5의 편향이다. 최소제곱이 돌려준 $\theta = (a, b)$를 $\tau = -T/\ln a = 1\,\mathrm{s}$와 $K = b/(1-a) = 1$로 되돌리고, 떼어 둔 기록 위의 자유 주행으로 검증한다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -615,7 +615,7 @@ $$\hat\theta=\frac{1}{0.6336}\begin{pmatrix}5&0.12\\ 0.12&0.1296\end{pmatrix}\be
 
 ### 1. 시스템 식별이란 무엇인가
 
-이 위키의 장치는 모두 숫자가 이미 붙은 채로 왔다. P4의 극점, P2의 질량, [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]가 수동성 경계에서 쓰는 P3의 댐퍼. 실제 기계에서 그 숫자는 저마다 어떤 절차의 출력이고, 그 절차에는 이름이 있다.
+이 위키의 장치는 모두 숫자가 이미 붙은 채로 왔다. P4의 극점, P2의 질량, [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]가 수동성 경계에서 쓰는 P3(카탈로그의 햅틱 핸들, [[02-foundations/lab-plants|0.6]])의 댐퍼. 실제 기계에서 그 숫자는 저마다 어떤 절차의 출력이고, 그 절차에는 이름이 있다.
 
 > **시스템 식별의 정의.** **시스템 식별**(system identification)은 입력과 출력의 기록을 모델의 파라미터로 바꾸는 *추정 절차*다. 모델도, 시뮬레이터도, 데이터를 지나는 곡선도 아니다. 정의 조건 넷이고, 하나라도 빠진 결과는 다른 것이다. 첫째는 **모델 구조** — 데이터를 보기 전에 고르는, 파라미터 벡터 $\theta$로 번호 매긴 후보 모델의 집합. 여기서는 "어떤 $(a,b)$에 대해 $x_{k+1}=a\,x_k+b\,u_k$"다. 둘째는 **실험** — 명령 입력과 측정 출력의 기록 $Z^N=\{(u_k,y_k)\}$을 만드는 일이고, 입력은 대개 직접 설계할 수 있다. 셋째는 **기준** — 모든 후보를 기록에 대해 채점하는 규칙. 넷째는 **검증** — 이긴 후보를 기준이 보지 않은 데이터로 시험하는 일.
 >

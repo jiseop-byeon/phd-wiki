@@ -13,7 +13,7 @@ mastery-when: "This is operational judgement, demonstrated through the work rath
 > **Working** — 프로젝트의 산출물을 의도적으로 계획하고, 확인을 견디는 임팩트 주장을 할 만큼.
 
 > [!note] Prerequisites · 선수 지식
-> Read [[07-research-program/index|7. Research Program]] and [[06-research-practice/research-questions-claims|Research Questions & Claims]] first — this page is about what evidence licenses which claim, and those two define the claims. For the running study RS1: [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]] (power, effect size and the two sample-size formulas), [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing]] (its results table and the licensed-sentence test) and [[02-foundations/probability|3. Probability §6]] (the two kinds of error).
+> Read [[07-research-program/index|7. Research Program]] and [[06-research-practice/research-questions-claims|Research Questions & Claims]] first — this page is about what evidence licenses which claim, and those two define the claims. For the running study RS1 (the track's frozen contact-safety study, [[06-research-practice/index|Research Practice]]): [[06-research-practice/experimental-design-reproducibility|2. Experimental Design]] (power, effect size and the two sample-size formulas), [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing]] (its results table and the licensed-sentence test) and [[02-foundations/probability|3. Probability §6]] (the two kinds of error).
 > [[07-research-program/index|7. 연구 프로그램]]과 [[06-research-practice/research-questions-claims|연구 질문과 주장]]을 먼저 읽어라 — 이 페이지는 어떤 증거가 어떤 주장을 허락하는가에 관한 것이고, 그 둘이 주장을 정의한다. 관통 연구 RS1을 위해서는 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]](검정력, 효과 크기, 두 표본 크기 식), [[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]](결과 표와 허락된 문장의 판정), [[02-foundations/probability|3. 확률 §6]](두 종류의 오류).
 
 ## English
@@ -25,7 +25,7 @@ mastery-when: "This is operational judgement, demonstrated through the work rath
 
 ### Running object · 이 페이지의 대상
 
-**RS1**, the running study of Research Practice, restated in full from [[06-research-practice/research-questions-claims|1. Research Questions & Claims]]. *Question:* does impedance control (**B**) make the planar arm's contact with a panel safer than position control with a force-threshold stop (**A**)? *Plant:* **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (planar 2R, unit links, a 1 kg point mass at the end of each link), against a panel with **P3**'s wall stiffness, $k_w = 400$ N/m. *Trial:* the arm approaches the panel and makes contact; the outcome is the peak contact force in newtons, and a trial succeeds when that peak is at most 10 N. *Pilot:* ten unpaired trials per controller. **The data are illustrative — invented for teaching and frozen — not a measurement of any real controller.**
+**RS1**, the running study of Research Practice, restated in full from [[06-research-practice/research-questions-claims|1. Research Questions & Claims]]. *Question:* does impedance control (**B**) make the planar arm's contact with a panel safer than position control with a force-threshold stop (**A**)? *Plant (the system being controlled):* **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (planar 2R, unit links, a 1 kg point mass at the end of each link), against a panel with **P3**'s wall stiffness, $k_w = 400$ N/m. *Trial:* the arm approaches the panel and makes contact; the outcome is the peak contact force in newtons, and a trial succeeds when that peak is at most 10 N. *Pilot:* ten unpaired trials per controller. **The data are illustrative — invented for teaching and frozen — not a measurement of any real controller.**
 
 | Trial | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -399,7 +399,7 @@ Tier B. Hand derivation on RS1, using only this page, its prerequisites and the 
 
 ## 한국어
 
-*RS1을 주장과 결과 표로 바꾼 [[06-research-practice/research-questions-claims|1. 연구 질문과 주장]]과 [[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]], 그리고 다음 실험에 필요한 표본 크기를 유도한 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]] 위에 선다. 여기서 RS1은 사다리의 한 단을 얻는다. 파일럿이 어떤 문장을 허락하는지, 그리고 다음 단이 시행 수로 얼마인지다.*
+*RS1(연구 실무 트랙의 고정된 접촉 안전 연구, [[06-research-practice/index|연구 실무]])을 주장과 결과 표로 바꾼 [[06-research-practice/research-questions-claims|1. 연구 질문과 주장]]과 [[06-research-practice/scientific-writing-peer-review|4. 과학적 글쓰기]], 그리고 다음 실험에 필요한 표본 크기를 유도한 [[06-research-practice/experimental-design-reproducibility|2. 실험 설계]] 위에 선다. 여기서 RS1은 사다리의 한 단을 얻는다. 파일럿이 어떤 문장을 허락하는지, 그리고 다음 단이 시행 수로 얼마인지다.*
 
 > [!note] 처음이라면 · First pass
 > 이 페이지의 대상과 계산 예제를 먼저 읽는다. 둘은 RS1의 파일럿을 §2의 사다리 위에 놓고 다음 단의 값을 시행 수로 매긴다. 성공률이 주장을 떠받치면 제어기당 32회, 최대 접촉력이 떠받치면 8회다. 그다음 §2(사다리)와 §4(단을 미리 고르기)를 읽는다. 3절, 5절, 6절은 산출물과 프로그램 설계에 관한 것이라 따로 읽어도 된다.

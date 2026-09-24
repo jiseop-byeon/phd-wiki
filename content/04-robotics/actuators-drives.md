@@ -8,7 +8,7 @@ mastery-when: "Raise to Working when a paper or the thesis reads motor current a
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], with its mass matrix and gravity torque from [[02-foundations/manipulator-kinematics-dynamics|10. §3 and §5]]. The integrators of [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Second-order parameters, bandwidth, and PID with anti-windup from [[04-robotics/control-theory-ce397|5. Control Theory §5, §5.5 and §7]]. The gear ratio, reflected inertia and backdrivability are defined on this page (§2, §4, §7), so no later page is needed; the capstan version of all three, on a haptic handle, is optional further reading in the haptics track.
+> Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled), with its mass matrix and gravity torque from [[02-foundations/manipulator-kinematics-dynamics|10. §3 and §5]]. The integrators of [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Second-order parameters, bandwidth, and PID with anti-windup from [[04-robotics/control-theory-ce397|5. Control Theory §5, §5.5 and §7]]. The gear ratio, reflected inertia and backdrivability are defined on this page (§2, §4, §7), so no later page is needed; the capstan version of all three, on a haptic handle, is optional further reading in the haptics track.
 > [[02-foundations/lab-plants|0.6]]의 장치 **P2**, 그리고 [[02-foundations/manipulator-kinematics-dynamics|10. §3과 §5]]의 질량 행렬·중력 토크. [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기. [[04-robotics/control-theory-ce397|5. 제어 이론 §5, §5.5, §7]]의 2차계 파라미터, 대역폭, anti-windup이 있는 PID. 감속비, 반사 관성, 역구동성은 이 페이지(§2, §4, §7)에서 정의하므로 뒤쪽 페이지는 필요 없다. 셋 모두의 캡스턴 판(햅틱 손잡이 위)은 햅틱 트랙에서 골라 더 읽을 거리다.
 
 ## English
@@ -500,7 +500,7 @@ def run(n):
 
 ## 한국어
 
-*P2의 $M$과 $g$는 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]] 위에, PD·대역폭·anti-windup은 [[04-robotics/control-theory-ce397|5. 제어 이론]] 위에 선다. 액추에이터를 embodiment의 일부로 꼽기만 하고 열어 보지는 않는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §2]] 옆에 놓인다. 다시 쓰는 장치는 **P2**. 이제 관절마다 모터와 기어박스가 달려 있다.*
+*P2(카탈로그의 평면 2링크 팔, [[02-foundations/lab-plants|0.6]])의 $M$과 $g$는 [[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학]] 위에, PD·대역폭·anti-windup은 [[04-robotics/control-theory-ce397|5. 제어 이론]] 위에 선다. 액추에이터를 embodiment의 일부로 꼽기만 하고 열어 보지는 않는 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §2]] 옆에 놓인다. 다시 쓰는 장치는 **P2**. 이제 관절마다 모터와 기어박스가 달려 있다.*
 
 > [!note] 처음이라면 · First pass
 > 이 페이지의 대상, 그림, 계산 절을 먼저 읽어라. 관절 토크 하나가 암페어·볼트·와트·켈빈으로 바뀌고, 눈에 보이지 않는 회전자 하나가 P2 질량 행렬의 원소 하나를 바꾼다. 그다음 두 방정식의 §1, 토크–속도 선의 §3, 반사 관성의 §4, 그리고 관절이 무엇을 버틸 수 있는지를 전류가 아니라 열이 정하는 이유인 §6. §2·§5·§7은 구동계에 관해 읽을 때가 아니라 고를 때 연다. §8은 랩, §9는 논문 읽기 점검표다.
@@ -815,7 +815,7 @@ $$C_{th}\,\frac{d\,\Delta T}{dt}=i^2R-\frac{\Delta T}{R_{th}}\quad\Longrightarro
 
 ### 8. 랩: P2 어깨의 캐스케이드와 감속비 스윕
 
-과제는 들어올리기다. 팔꿈치를 $90^\circ$에 붙잡은 P2의 어깨를 $\theta_1=-0.5\,\mathrm{rad}$에서 고정 자세 $\theta_1=0$까지 $T=0.8\,\mathrm{s}$의 5차 시간 스케일링으로 올리고([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §2]]; 최대 속도 $1.875\,\Delta\theta/T=1.17\,\mathrm{rad/s}$, 최대 가속도 $5.77\,\Delta\theta/T^2=4.51\,\mathrm{rad/s^2}$), 그다음 붙잡는다. 이 들어올리기는 [[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]]이 P2에 고정한 액추에이터 한계($0.8\,\mathrm{rad/s}$, $2\,\mathrm{rad/s^2}$)보다 일부러 빠르다. 그 한계는 계획기가 그 안에 머무는 사양이고, 이 랩은 특정 구동계 하나가 그 너머에서 무엇을 할 수 있는지를 묻는다. $n=100$에서는 여유가 있고, $n=200$에서는 최대 속도 $1.17\,\mathrm{rad/s}$가 전압선에 닿는다. 제어기는 §5의 캐스케이드다. 중력 피드포워드가 있는 $1\,\mathrm{kHz}$ PD 위치 루프가 이상 기어 단위로 토크를 요구하므로 피드포워드는 $g_1/\eta$이고, 한 번 $n=100$에 맞춰 — $J_{eq}=4.75$에서 $20\,\mathrm{rad/s}$, 임계 감쇠 — 설계한 뒤 모든 감속비에 그대로 둔다. 한 기어박스에 맞춘 제어기가 그렇듯이. 그 안에서 $V_s$와 $I_{\max}$ 한계를 가진 $20\,\mathrm{kHz}$ PI 전류 루프가 돈다. 플랜트는 §1–§2다. 권선 방정식은 명시적 오일러로, 관절은 준음해 오일러로 전진하고([[02-foundations/lab-kernel|0.7 §2와 §3]]), 둘 다 전류 루프의 $50\,\mu\mathrm{s}$로 돈다. 속도는 완벽하게 잰다고 두고 PWM은 평균 전압으로 바꿨는데, 둘 다 루프에 유리한 이상화다.
+과제는 들어올리기다. 팔꿈치를 $90^\circ$에 붙잡은 P2의 어깨를 $\theta_1=-0.5\,\mathrm{rad}$에서 고정 자세 $\theta_1=0$까지 $T=0.8\,\mathrm{s}$의 5차 시간 스케일링으로 올리고([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §2]]; 최대 속도 $1.875\,\Delta\theta/T=1.17\,\mathrm{rad/s}$, 최대 가속도 $5.77\,\Delta\theta/T^2=4.51\,\mathrm{rad/s^2}$), 그다음 붙잡는다. 이 들어올리기는 [[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]]이 P2에 고정한 액추에이터 한계($0.8\,\mathrm{rad/s}$, $2\,\mathrm{rad/s^2}$)보다 일부러 빠르다. 그 한계는 계획기가 그 안에 머무는 사양이고, 이 랩은 특정 구동계 하나가 그 너머에서 무엇을 할 수 있는지를 묻는다. $n=100$에서는 여유가 있고, $n=200$에서는 최대 속도 $1.17\,\mathrm{rad/s}$가 전압선에 닿는다. 제어기는 §5의 캐스케이드다. 중력 피드포워드가 있는 $1\,\mathrm{kHz}$ PD 위치 루프가 이상 기어 단위로 토크를 요구하므로 피드포워드는 $g_1/\eta$이고, 한 번 $n=100$에 맞춰 — $J_{eq}=4.75$에서 $20\,\mathrm{rad/s}$, 임계 감쇠 — 설계한 뒤 모든 감속비에 그대로 둔다. 한 기어박스에 맞춘 제어기가 그렇듯이. 그 안에서 $V_s$와 $I_{\max}$ 한계를 가진 $20\,\mathrm{kHz}$ PI 전류 루프가 돈다. 플랜트(제어되는 시스템)는 §1–§2다. 권선 방정식은 명시적 오일러로, 관절은 준음해 오일러로 전진하고([[02-foundations/lab-kernel|0.7 §2와 §3]]), 둘 다 전류 루프의 $50\,\mu\mathrm{s}$로 돈다. 속도는 완벽하게 잰다고 두고 PWM은 평균 전압으로 바꿨는데, 둘 다 루프에 유리한 이상화다.
 
 (코드는 영어 절에 한 번만 싣는다.)
 

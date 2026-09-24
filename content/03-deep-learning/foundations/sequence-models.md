@@ -636,7 +636,7 @@ for bf, Ug in ((1.0, 0.0), (3.0, 0.8)):          # the recommended bias; a candi
 
 ## 한국어
 
-*[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[02-foundations/calculus-backprop|2. 미적분과 역전파]] 위에 선다. 대상 **D5**, 두 번째 사용. D5의 집은 [[03-deep-learning/world-models/index|5. 월드모델]]이다. 그 페이지는 D5를 앞으로 돌려 rollout 오차가 어떻게 자라는지 재고, 이 페이지는 같은 식을 가장 작은 순환 신경망으로 읽어 뒤로 돌린다. 자매 페이지 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]가 시퀀스를 읽는 또 하나의 방법이다.*
+*[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[02-foundations/calculus-backprop|2. 미적분과 역전파]] 위에 선다. 대상 **D5**(숫자 하나짜리 월드모델, [[03-deep-learning/lab-objects|0. Lab Objects]]), 두 번째 사용. D5의 집은 [[03-deep-learning/world-models/index|5. 월드모델]]이다. 그 페이지는 D5를 앞으로 돌려 rollout 오차가 어떻게 자라는지 재고, 이 페이지는 같은 식을 가장 작은 순환 신경망으로 읽어 뒤로 돌린다. 자매 페이지 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer]]가 시퀀스를 읽는 또 하나의 방법이다.*
 
 > [!note] 처음이라면 · First pass
 > 그림을 먼저 보고, 계산기를 들고 계산 절을 따라간다. 앞으로 두 스텝, 뒤로 두 스텝, 커널 탭 다섯 개, 그리고 같은 두 출력을 합성곱으로 한 번 더. §1–§3을 읽고 문제 1–2를 푼다. 논문이 "clipping", "forget 게이트 bias", "GRU"라고 하면 §4–§6을, "상태공간", "S4", "Mamba", "선형 시간"이라고 하면 §7–§10을 연다. §11이 §1–§10을 코드로 돌린다. 논문이 선형 층과 전체 어텐션 층을 섞거나 긴 기억을 내세우면 §13을 읽는다.

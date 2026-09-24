@@ -8,7 +8,7 @@ mastery-when: "Master psychometric/statistical models and protocol validation wh
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] as the stimulus generator. The psychometric function, the JND and the Weber fraction from [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §2]], whose constant-stimuli table this page's staircase is the alternative to.
+> Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) as the stimulus generator. The psychometric function, the JND and the Weber fraction from [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §2]], whose constant-stimuli table this page's staircase is the alternative to.
 > [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P3**를 자극 발생기로 쓴다. 심리측정 함수, JND, Weber 분수는 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1 §2]]. 이 페이지의 staircase는 그 페이지 constant-stimuli 표의 대안이다.
 
 ## English
@@ -282,7 +282,7 @@ Same handle, same $5.00\,\mathrm{N}$ pedestal, same $0.05\,\mathrm{N}$ step, but
 
 ## 한국어
 
-*햅틱 트랙의 연구 실무 쪽 끝이다. 읽기 지도이자 프로토콜 체크리스트다. 장치 **P3**는 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]이 만들어 둔 자극 발생기로만 쓴다.*
+*햅틱 트랙의 연구 실무 쪽 끝이다. 읽기 지도이자 프로토콜 체크리스트다. 장치 **P3**(카탈로그의 1축 햅틱 핸들, [[02-foundations/lab-plants|0.6]])는 [[04-robotics/haptics-teleoperation/human-haptics-psychophysics|24.1]]이 만들어 둔 자극 발생기로만 쓴다.*
 
 > [!note] 처음이라면 · First pass
 > 대상을 읽고 그림을 보라. staircase 기록 하나, reversal 여덟, 그리고 그중 여섯을 평균한 선 하나다. 그다음 §2에서 프로토콜과 세 용어를 estimand부터 읽고 §6 계산 절을 따라가라. 기록이 기준을 밝힌 임계값이 되고 24.1의 JND와 나란히 놓이는 곳이다. §1과 §3은 짧으니 한 번 읽어 둘 만하다. §4는 다시 돌아와 볼 읽기 목록이고, §5는 이 위키가 원자료를 어떻게 골랐는지를 기록할 뿐이니 처음에는 건너뛴다.

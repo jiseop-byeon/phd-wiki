@@ -25,7 +25,7 @@ then complete [[05-construction-robotics/site-engineering|2.5 Site Robotics as a
 ### The five research streams
 
 Corpus-derived (2026-07 survey of ~120 papers from the mapped labs), not aspirational:
-each stream has enough real published work to be read as a lineage. Every stream page is also a course page on one of 2.5's two site objects, with its picture, worked case and problem set; the session schedule at the end of this page orders them.
+each stream has enough real published work to be read as a lineage. Every stream page is also a course page on one of 2.5's two site objects — S1, a 20 kg facade panel whose two holes are aligned to ±5 mm, and S2, a 5-tonne excavator's trench dug to a ±30 mm grade ([[05-construction-robotics/site-engineering|2.5]]) — with its picture, worked case and problem set; the session schedule at the end of this page orders them.
 
 1. [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving & Heavy-Machine Autonomy]] —
    excavators, wheel loaders, fleets: dynamics, terrain interaction, MPC vs RL vs
@@ -157,7 +157,7 @@ One row is one 60–90-minute session; [[02-foundations/overview|0. Overview]] s
 ### 다섯 개의 연구 스트림
 
 희망 사항이 아니라 코퍼스에서 도출했다(매핑된 랩들의 논문 ~120편, 2026-07 조사): 각
-스트림은 계보로 읽을 수 있을 만큼의 실제 출판물을 갖고 있다. 스트림 페이지는 모두 2.5의 두 현장 대상 가운데 하나 위에 선 과목 페이지이기도 해서, 그림, 끝까지 한 계산, 과제를 갖췄다. 이 페이지 끝의 학습 일정이 순서를 정한다.
+스트림은 계보로 읽을 수 있을 만큼의 실제 출판물을 갖고 있다. 스트림 페이지는 모두 2.5의 두 현장 대상 — S1은 두 구멍을 ±5 mm로 맞추는 20 kg 외장 패널, S2는 5톤급 굴착기가 ±30 mm 고저로 파는 트렌치([[05-construction-robotics/site-engineering|2.5]]) — 가운데 하나 위에 선 과목 페이지이기도 해서, 그림, 끝까지 한 계산, 과제를 갖췄다. 이 페이지 끝의 학습 일정이 순서를 정한다.
 
 1. [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving & Heavy-Machine Autonomy]] —
    굴착기, 휠로더, 선단: 동역학, 지반 상호작용, MPC vs RL vs 모방, HEAP/AES/ExT. S2의 트렌치로 계산한다 — 고저 오차, 밸브 지연, 절삭력

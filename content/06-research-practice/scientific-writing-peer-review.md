@@ -8,7 +8,7 @@ mastery-when: "Mastery means consistently producing defensible work, not memoriz
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[06-research-practice/research-questions-claims|Research Questions & Claims]] (RS1 and the claim this page writes up) · [[06-research-practice/experimental-design-reproducibility|Experimental Design]] · [[06-research-practice/failure-analysis-system-evaluation|Failure Analysis]] · [[02-foundations/probability|3. Probability §6]] (p-value, confidence interval, the test-choice table) · [[02-foundations/ml-practice|9. ML Practice §4]] (standard deviation against standard error)
+> [[06-research-practice/research-questions-claims|Research Questions & Claims]] (RS1, the track's frozen contact-safety study of [[06-research-practice/index|Research Practice]], and the claim this page writes up) · [[06-research-practice/experimental-design-reproducibility|Experimental Design]] · [[06-research-practice/failure-analysis-system-evaluation|Failure Analysis]] · [[02-foundations/probability|3. Probability §6]] (p-value, confidence interval, the test-choice table) · [[02-foundations/ml-practice|9. ML Practice §4]] (standard deviation against standard error)
 > [[06-research-practice/research-questions-claims|연구 질문과 주장]](RS1과 이 페이지가 논문으로 쓰는 주장) · [[06-research-practice/experimental-design-reproducibility|실험 설계]] · [[06-research-practice/failure-analysis-system-evaluation|실패 분석]] · [[02-foundations/probability|3. 확률 §6]](p-값, 신뢰구간, 검정 선택 표) · [[02-foundations/ml-practice|9. ML 실무 §4]](표준편차와 표준오차의 차이)
 
 ## English
@@ -22,7 +22,7 @@ Scientific writing aligns a claim with evidence and makes its boundary inspectab
 
 ### Running object · 이 페이지의 대상
 
-**RS1**, the running study of Research Practice, restated in full from [[06-research-practice/research-questions-claims|1. Research Questions & Claims]]. *Question:* does impedance control (**B**) make the planar arm's contact with a panel safer than position control with a force-threshold stop (**A**)? *Plant:* **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (planar 2R, unit links, a 1 kg point mass at the end of each link), against a panel with **P3**'s wall stiffness, $k_w = 400$ N/m. *Trial:* the arm approaches the panel and makes contact; the outcome is the peak contact force in newtons, and a trial succeeds when that peak is at most 10 N. *Pilot:* ten unpaired trials per controller. **The data are illustrative — invented for teaching and frozen — not a measurement of any real controller.**
+**RS1**, the running study of Research Practice, restated in full from [[06-research-practice/research-questions-claims|1. Research Questions & Claims]]. *Question:* does impedance control (**B**) make the planar arm's contact with a panel safer than position control with a force-threshold stop (**A**)? *Plant (the system being controlled):* **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (planar 2R, unit links, a 1 kg point mass at the end of each link), against a panel with **P3**'s wall stiffness, $k_w = 400$ N/m. *Trial:* the arm approaches the panel and makes contact; the outcome is the peak contact force in newtons, and a trial succeeds when that peak is at most 10 N. *Pilot:* ten unpaired trials per controller. **The data are illustrative — invented for teaching and frozen — not a measurement of any real controller.**
 
 | Trial | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -471,7 +471,7 @@ Tier B. Hand derivation on RS1, using only this page, its prerequisites and the 
 
 ## 한국어
 
-*RS1을 주장으로 바꾼 [[06-research-practice/research-questions-claims|1. 연구 질문과 주장]]과 [[02-foundations/probability|3. 확률 §6]] 위에 선다. 여기서 RS1의 주장은 논문이 된다. 논증 하나, 결과 표 하나, 그림 하나, 한계 문단 하나, 심사 문답 하나가 모두 파일럿의 숫자 스무 개 위에 선다.*
+*RS1(연구 실무 트랙의 고정된 접촉 안전 연구, [[06-research-practice/index|연구 실무]])을 주장으로 바꾼 [[06-research-practice/research-questions-claims|1. 연구 질문과 주장]]과 [[02-foundations/probability|3. 확률 §6]] 위에 선다. 여기서 RS1의 주장은 논문이 된다. 논증 하나, 결과 표 하나, 그림 하나, 한계 문단 하나, 심사 문답 하나가 모두 파일럿의 숫자 스무 개 위에 선다.*
 
 과학적 글쓰기는 주장을 증거와 정렬하고 그 경계를 검사 가능하게 만든다. 명료함은 장식이
 아니다: 모호한 범위, 숨은 가정, 빠진 프로토콜은 독자의 평가 자체를 막는다.

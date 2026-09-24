@@ -13,7 +13,7 @@ mastery-when: "This is operational knowledge, not a research topic — keep it c
 > **Working** — venue를 고르고, 심사 과정을 예측하고, 실수로 저널 판본의 길을 막지 않을 만큼.
 
 > [!note] Prerequisites · 선수 지식
-> [[06-research-practice/research-questions-claims|1. Research Questions & Claims]] (RS1 and the claim a venue will judge) · [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing & Peer Review §7]] (what a review and a rebuttal are — this page says which venues allow one)
+> [[06-research-practice/research-questions-claims|1. Research Questions & Claims]] (RS1, the track's frozen contact-safety study of [[06-research-practice/index|Research Practice]], and the claim a venue will judge) · [[06-research-practice/scientific-writing-peer-review|4. Scientific Writing & Peer Review §7]] (what a review and a rebuttal are — this page says which venues allow one)
 > [[06-research-practice/research-questions-claims|1. 연구 질문과 주장]](RS1과 venue가 심사할 주장) · [[06-research-practice/scientific-writing-peer-review|4. 과학 글쓰기와 peer review §7]](심사와 반박문이 무엇인지 — 이 페이지는 어느 venue가 그것을 허용하는지를 말한다)
 
 > [!warning] This page goes stale · 이 페이지는 낡는다
@@ -36,7 +36,7 @@ mastery-when: "This is operational knowledge, not a research topic — keep it c
 
 ### Running object · 이 페이지의 대상
 
-**RS1**, the running study of Research Practice, restated with its numbers unchanged. *Question:* does impedance control (**B**) make the planar arm's contact with a panel safer than position control with a force-threshold stop (**A**)? The arm is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], and the panel's stiffness is **P3**'s wall, $k_w=400\,\mathrm{N/m}$. One trial is an approach and a contact; it succeeds when the peak contact force is at most $10\,\mathrm N$. The pilot ran ten trials per arm — **illustrative data, frozen for the whole chapter, not a measurement**:
+**RS1**, the running study of Research Practice, restated with its numbers unchanged. *Question:* does impedance control (**B**) make the planar arm's contact with a panel safer than position control with a force-threshold stop (**A**)? The arm is plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled), and the panel's stiffness is **P3**'s wall, $k_w=400\,\mathrm{N/m}$. One trial is an approach and a contact; it succeeds when the peak contact force is at most $10\,\mathrm N$. The pilot ran ten trials per arm — **illustrative data, frozen for the whole chapter, not a measurement**:
 
 | Arm | Peak contact force (N) | Successes | Mean | Sample sd | Median |
 |---|---|---:|---:|---:|---:|
@@ -498,7 +498,7 @@ venue's calls for papers, statistics pages and chairs' reports were checked and 
 
 ## 한국어
 
-*RS1을 주장으로 바꾼 [[06-research-practice/research-questions-claims|1. 연구 질문과 주장]], 그리고 그것을 논문으로 쓴 [[06-research-practice/scientific-writing-peer-review|4. 과학 글쓰기와 peer review]] 위에 선다. 여기서 RS1의 논문이 venue를 만난다: 어디로 갈 수 있는지, 각 심사 과정이 그것에 무엇을 하는지, 어떤 제출이 나중의 저널 판본을 닫는지.*
+*RS1(연구 실무 트랙의 고정된 접촉 안전 연구, [[06-research-practice/index|연구 실무]])을 주장으로 바꾼 [[06-research-practice/research-questions-claims|1. 연구 질문과 주장]], 그리고 그것을 논문으로 쓴 [[06-research-practice/scientific-writing-peer-review|4. 과학 글쓰기와 peer review]] 위에 선다. 여기서 RS1의 논문이 venue를 만난다: 어디로 갈 수 있는지, 각 심사 과정이 그것에 무엇을 하는지, 어떤 제출이 나중의 저널 판본을 닫는지.*
 
 > [!note] 처음이라면 · First pass
 > 이 페이지의 대상과 계산 절부터 읽는다 — RS1의 논문을 이 페이지의 규칙에 통과시키고, 상대 월로 쓴 일정표와 경로마다 나중의 저널 판본을 닫는 규칙 하나를 붙인다. 그다음 §2(답할 기회가 있는가, 언제 낼 수 있는가), §4(RA-L 경로), §5–§6(막는 규칙들)을 읽는다. §1, §3, §7은 venue 선택을 다른 사람에게 변호해야 할 때 연다.

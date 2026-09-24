@@ -8,7 +8,7 @@ mastery-when: "Master multirate architectures, sampled-wall compensation and tim
 ---
 
 > [!note] Prerequisites · 선수 지식
-> The sampled-wall bound $K<2b/T$ and why a held force leaks energy, from [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]; position quantization and velocity filtering from [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]; penalty and proxy rendering, event-based transients and friction models from [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §2–§5]]; P3's encoder count and amplifier limit from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]; passivity as an energy inequality at a port, from [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 §1]]; and, only for the comparisons in §3 and §6, the coupling and delay passivation of [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 §3 and §7]]. Nothing else: every other quantity is defined on the page.
+> The sampled-wall bound $K<2b/T$ and why a held force leaks energy, from [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]; position quantization and velocity filtering from [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]; penalty and proxy rendering, event-based transients and friction models from [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §2–§5]]; the encoder count and amplifier limit of P3, the catalog's haptic handle ([[02-foundations/lab-plants|0.6]]), from [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]; passivity as an energy inequality at a port, from [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 §1]]; and, only for the comparisons in §3 and §6, the coupling and delay passivation of [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 §3 and §7]]. Nothing else: every other quantity is defined on the page.
 > 샘플된 벽의 경계 $K<2b/T$와 붙들린 힘이 에너지를 새게 하는 이유는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]. 위치 양자화와 속도 필터는 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §3]]. 벌점·proxy 렌더링, 사건 기반 과도 신호, 마찰 모형은 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 §2–§5]]. P3의 인코더 카운트와 앰프 한계는 [[04-robotics/haptics-teleoperation/device-design-kinematics|24.3]]. 포트에서의 에너지 부등식으로서의 수동성은 [[04-robotics/haptics-teleoperation/bilateral-teleoperation|24.5 §1]]. §3과 §6의 비교에만, 결합과 지연 수동화는 [[04-robotics/haptics-teleoperation/teleoperation-architectures-delay|24.8 §3과 §7]]. 그 밖의 모든 양은 이 페이지에서 정의한다.
 
 ## English
@@ -20,7 +20,7 @@ mastery-when: "Master multirate architectures, sampled-wall compensation and tim
 
 ### Running object · 이 페이지의 대상
 
-Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]], pressed into its wall by a **light fingertip** — the hand's spring without its damper, which is the worst case the sampling bound of [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]] assumes. The handle starts at rest $1\,\mathrm{mm}$ outside the wall, and the hand's desired position is $3\,\mathrm{mm}$ inside it, so every force on the page stays inside P3's amplifier limit.
+Plant **P3** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled), pressed into its wall by a **light fingertip** — the hand's spring without its damper, which is the worst case the sampling bound of [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]] assumes. The handle starts at rest $1\,\mathrm{mm}$ outside the wall, and the hand's desired position is $3\,\mathrm{mm}$ inside it, so every force on the page stays inside P3's amplifier limit.
 
 | Symbol | Value | What it is |
 |---|---:|---|
@@ -350,7 +350,7 @@ for name, kw, hold, amax in (("A", 400, 1, 0), ("B", 2500, 1, 0), ("C", 2500, 1,
 
 ## 한국어
 
-*[[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링, 샘플링과 안정성]]과 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 햅틱 렌더링 알고리즘]] 위에 선다. 같은 핸들 **P3**에, 이번에는 힘 법칙을 둘러싼 프로그램을 적어 넣는다. 어느 루프가 무엇을 계산하는지, 효과마다 어떤 상태를 들고 있는지, 강성이 경계를 넘은 벽을 어떻게 안정하게 두는지.*
+*[[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링, 샘플링과 안정성]]과 [[04-robotics/haptics-teleoperation/haptic-rendering-algorithms|24.7 햅틱 렌더링 알고리즘]] 위에 선다. 같은 핸들 **P3**(카탈로그의 1축 햅틱 핸들, [[02-foundations/lab-plants|0.6]])에, 이번에는 힘 법칙을 둘러싼 프로그램을 적어 넣는다. 어느 루프가 무엇을 계산하는지, 효과마다 어떤 상태를 들고 있는지, 강성이 경계를 넘은 벽을 어떻게 안정하게 두는지.*
 
 > [!note] 처음이라면 · First pass
 > 이 페이지의 대상을 읽고 그림을 본다. 샘플링 주기에 비해 너무 단단한 벽 하나를, 한 번은 그대로 두고 한 번은 벽이 만든 에너지를 세어 되갚는 계수기를 달아 본 것이다. 그다음 §1과 §2를 읽는다. 뒤의 모든 숫자가 기대는 주기 $T$가 여기서 정해진다. 그리고 실선을 설명하는 §6. §3은 장치를 프로그래밍할 때 꺼내 쓸 효과 목록, §4는 3차원 기하, §5는 점선이 왜 울리는지의 물리다. 계산 절이 이 모두를 P3 위에서 돌린다.
@@ -496,7 +496,7 @@ $$\sum_k k_w\,y_k\,(y_{k+1}-y_k)=\tfrac12k_w\big(y_n^2-y_0^2\big)-\tfrac12k_w\su
 
 **비동기 전환.** 벽은 스위치이고, 스위치는 샘플 시각에만 바뀐다. 한 샘플 늦게 켜지므로 스프링은 이미 눌린 채다 — 아무도 일을 하지 않았는데 저장된 에너지다. 그리고 벽 안의 마지막 샘플의 힘은 핸들이 이미 벗어난 주기 동안에도 밖으로 민다.
 
-그들의 시험대는 튀는 공이었다. $0.35\,\mathrm{kg}$의 조작 핸들과 $0.006\,\mathrm{kg}$, $500\,\mathrm{N/m}$의 손가락, 감쇠 없음, $10\,\mathrm{ms}$마다 샘플되는 $5000\,\mathrm{N/m}$ 바닥이다. 샘플된 공은 튈 때마다 더 높이 올라갔다. 홀드의 누설은 두 방법으로 없앴다. 손과 장치의 모형으로 $T/2$ 앞을 예측한 위치에서 벽 법칙을 계산하는 **반 샘플 예측**, 그리고 이산화한 플랜트의 폐루프 극을 연속 목표의 영차 홀드 등가에 두는 **디지털 영역 설계**다. 전환의 누설은 **감시와 데드비트 보정**으로 없앴다. 교차 전후의 샘플로부터, 문턱에서 정확히 전환했다면 벽 밖 첫 샘플에서 상태가 어디 있었을지 계산하고, 벽 안 마지막 두 붙들린 힘을 골라 2차 계를 정확히 거기로 보낸다.
+그들의 시험대는 튀는 공이었다. $0.35\,\mathrm{kg}$의 조작 핸들과 $0.006\,\mathrm{kg}$, $500\,\mathrm{N/m}$의 손가락, 감쇠 없음, $10\,\mathrm{ms}$마다 샘플되는 $5000\,\mathrm{N/m}$ 바닥이다. 샘플된 공은 튈 때마다 더 높이 올라갔다. 홀드의 누설은 두 방법으로 없앴다. 손과 장치의 모형으로 $T/2$ 앞을 예측한 위치에서 벽 법칙을 계산하는 **반 샘플 예측**, 그리고 이산화한 플랜트(제어되는 시스템)의 폐루프 극을 연속 목표의 영차 홀드 등가에 두는 **디지털 영역 설계**다. 전환의 누설은 **감시와 데드비트 보정**으로 없앴다. 교차 전후의 샘플로부터, 문턱에서 정확히 전환했다면 벽 밖 첫 샘플에서 상태가 어디 있었을지 계산하고, 벽 안 마지막 두 붙들린 힘을 골라 2차 계를 정확히 거기로 보낸다.
 
 교훈은 가정에 있다. 그들이 본 채터는 대개 $10$–$50\,\mathrm{Hz}$로, 사람이 의도해서 명령하는 것보다 훨씬 높고, 사람은 흔드는 것이 아니라 일정한 쥠새로 벽을 누른 채 채터를 일으킨다. 같은 벽이 한 사람의 손가락 아래서는 떨고 다른 사람 아래서는 떨지 않을 수 있다. 그래서 반사가 개입하기 전 약 $30\,\mathrm{ms}$ 동안 손가락을 2차 선형계로 모형화할 수 있고, 렌더링 직전에 같은 장치로 그 모형을 식별한다. 이 페이지의 한계 순환은 $34\,\mathrm{Hz}$로 그들의 대역 안에 있다. 결과와 함께 가져가야 할 그들 자신의 단서도 있다. 보정한 벽은 위치뿐 아니라 속도도 되먹임하므로 감쇠 없는 벽과 비교하면 후하게 보이고, 첫 실험은 정성적이었다.
 

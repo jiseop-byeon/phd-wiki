@@ -10,7 +10,7 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 **Modern Robotics ch.9** — [[04-robotics/modern-robotics-book|book guide & free PDF]]
 
 > [!note] Prerequisites · 선수 지식
-> Differentiating polynomials ([[02-foundations/engineering-math|0.5 §1]]) and the idea of separating path from timing are all you need — the lightest chapter in the track. Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] carries the worked move, whose two end poses are the contact configurations of [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]]; §1's remark on torque uses the equation of motion of [[04-robotics/modern-robotics/ch08-dynamics|ch.8]].
+> Differentiating polynomials ([[02-foundations/engineering-math|0.5 §1]]) and the idea of separating path from timing are all you need — the lightest chapter in the track. Plant **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) carries the worked move, whose two end poses are the contact configurations of [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]]; §1's remark on torque uses the equation of motion of [[04-robotics/modern-robotics/ch08-dynamics|ch.8]].
 > 다항식 미분([[02-foundations/engineering-math|0.5 §1]])과 경로/시간의 분리라는 아이디어만 있으면 된다 — 이 장은 트랙에서 가장 가벼운 장이다. 계산은 [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**로 하고, 그 이동의 두 끝 자세는 [[04-robotics/modern-robotics/ch02-configuration-space|2장]]의 접촉 컨피규레이션이다. §1의 토크 이야기는 [[04-robotics/modern-robotics/ch08-dynamics|8장]]의 운동 방정식을 쓴다.
 
 ## English
@@ -207,7 +207,7 @@ because $1.5\Delta\theta/v_{\max} = \sqrt{6\Delta\theta/a_{\max}}$ squares to $2
 >
 > **Which limit binds**: velocity. Both polynomials stay under $a_{\max}$ (1.8 and 1.73 < 2) but exceed $v_{\max}$ (0.9 and 1.125 > 0.8), so at $T = 2$ s neither is executable on this joint; the trapezoid saturates $v_{\max}$ by construction.
 >
-> The claim of infeasibility *is* $0.9>0.8$. A cubic on P2 that ignores contact still does not bound $F_n$ on a P3-stiffness wall.
+> The claim of infeasibility *is* $0.9>0.8$. A cubic on P2 that ignores contact still does not bound $F_n$ on a P3-stiffness wall (P3: the catalog's haptic handle, whose virtual wall is 400 N/m, [[02-foundations/lab-plants|0.6]]).
 
 ### 2. Time scaling, defined
 
@@ -466,7 +466,7 @@ $1.5\Delta\theta/v_{\max} = \sqrt{6\Delta\theta/a_{\max}}$를 제곱하면 $2.25
 >
 > **어느 한계가 걸리는가**: 속도다. 두 다항식 모두 가속도는 $a_{\max}$ 아래지만(1.8, 1.73 < 2) 속도는 $v_{\max}$를 넘으므로(0.9, 1.125 > 0.8) $T = 2$ s로는 이 관절에서 실행할 수 없다. 사다리꼴은 구성상 $v_{\max}$에 딱 맞춘다.
 >
-> 실행 불가 주장은 곧 $0.9>0.8$이다. 접촉을 무시한 P2 3차는 P3 강성 벽의 $F_n$을 여전히 묶지 못한다.
+> 실행 불가 주장은 곧 $0.9>0.8$이다. 접촉을 무시한 P2 3차는 P3 강성 벽(카탈로그 햅틱 핸들 P3의 400 N/m 가상 벽, [[02-foundations/lab-plants|0.6]])의 $F_n$을 여전히 묶지 못한다.
 
 ### 2. 시간 스케일링의 정의
 

@@ -8,7 +8,7 @@ mastery-when: "This is operational knowledge — keep it current rather than dee
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/lab-kernel|0.7 Lab Kernel §2–§3]] (explicit and semi-implicit Euler, the two integrators the lab compares) · [[02-foundations/lab-plants|0.6 Lab Plants]] (**P3**, whose handle the drop cell borrows, and **P2**, the arm of RS1) · natural frequency and damping ratio from [[04-robotics/control-theory-ce397|5. Control Theory §5]], and the discrete-time stability test from its §4 · the penalty contact law from [[04-robotics/contact-force-tactile|9. Contact §3]]
+> [[02-foundations/lab-kernel|0.7 Lab Kernel §2–§3]] (explicit and semi-implicit Euler, the two integrators the lab compares) · [[02-foundations/lab-plants|0.6 Lab Plants]] (**P3**, whose handle the drop cell borrows, and **P2**, the arm of RS1, the frozen contact-safety study of [[06-research-practice/index|Research Practice]]) · natural frequency and damping ratio from [[04-robotics/control-theory-ce397|5. Control Theory §5]], and the discrete-time stability test from its §4 · the penalty contact law from [[04-robotics/contact-force-tactile|9. Contact §3]]
 > [[02-foundations/lab-kernel|0.7 Lab Kernel §2–§3]](명시적·반암시적 오일러, 랩이 비교하는 두 적분기) · [[02-foundations/lab-plants|0.6 Lab Plants]](낙하 셀이 핸들을 빌려 오는 **P3**, RS1의 팔인 **P2**) · [[04-robotics/control-theory-ce397|5. 제어 이론 §5]]의 고유 진동수와 감쇠비, 같은 페이지 §4의 이산시간 안정성 판정 · [[04-robotics/contact-force-tactile|9. 접촉 §3]]의 페널티 접촉 법칙
 
 > [!abstract] Depth target · 깊이 목표
@@ -30,7 +30,7 @@ mastery-when: "This is operational knowledge — keep it current rather than dee
 
 ## English
 
-*Stands on [[02-foundations/lab-kernel|0.7 Lab Kernel]] and [[02-foundations/lab-plants|0.6 Lab Plants]]. A later use of plant **P3** — its home is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], and this page borrows only its mass and its wall — and a restatement of RS1, the study every research-practice page shares. Most of this page is a reading page about tools; the running object gives its one numerical claim, §3's, a lab.*
+*Stands on [[02-foundations/lab-kernel|0.7 Lab Kernel]] and [[02-foundations/lab-plants|0.6 Lab Plants]]. A later use of plant **P3** (*plant*: control's word for the system being controlled) — its home is [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]], and this page borrows only its mass and its wall — and a restatement of RS1, the study every research-practice page shares. Most of this page is a reading page about tools; the running object gives its one numerical claim, §3's, a lab.*
 
 > [!note] First pass · 처음이라면
 > Read the running object, then work the worked case — one bounce, stepped by hand with both integrators. Then §3, where the same drop runs as a lab and its table puts a price on what "fast and stable" costs a simulator. After that, §2 (the status traps) and §7–§8 (the missing force data), which are the page's citable absences. §6 and §11 are for the day you read someone else's benchmark numbers.
@@ -943,7 +943,7 @@ checked and contained nothing.
 
 ## 한국어
 
-*[[02-foundations/lab-kernel|0.7 Lab Kernel]]과 [[02-foundations/lab-plants|0.6 Lab Plants]] 위에 선다. 장치 P3를 다시 쓰는 페이지다 — P3의 집은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]이고, 이 페이지는 그 질량과 벽만 빌린다. 그리고 연구 실무의 모든 페이지가 공유하는 연구 RS1을 다시 적는다. 이 페이지의 대부분은 도구에 관한 읽기 페이지이고, 이 페이지의 대상은 그 가운데 하나뿐인 수치적 주장, 곧 §3의 주장에 랩을 붙인다.*
+*[[02-foundations/lab-kernel|0.7 Lab Kernel]]과 [[02-foundations/lab-plants|0.6 Lab Plants]] 위에 선다. 장치 P3를 다시 쓰는 페이지다 — P3의 집은 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]]이고, 이 페이지는 그 질량과 벽만 빌린다. 그리고 [[06-research-practice/index|연구 실무]]의 모든 페이지가 공유하는 접촉 안전 연구 RS1을 다시 적는다. 이 페이지의 대부분은 도구에 관한 읽기 페이지이고, 이 페이지의 대상은 그 가운데 하나뿐인 수치적 주장, 곧 §3의 주장에 랩을 붙인다.*
 
 > [!note] 처음이라면 · First pass
 > 이 페이지의 대상을 읽고, 대상으로 한 번 끝까지 절에서 한 번의 튕김을 두 적분기로 손으로 전진해 본다. 다음은 §3이다. 같은 낙하를 랩으로 돌리고, 그 표가 시뮬레이터의 "빠르고 안정적"이 무엇을 대가로 치르는지 값을 매긴다. 그다음이 §2(상태 함정)와 §7–§8(빠진 힘 데이터)로, 이 페이지의 인용 가능한 부재들이다. §6과 §11은 남의 벤치마크 숫자를 읽는 날을 위해 남겨 둔다.

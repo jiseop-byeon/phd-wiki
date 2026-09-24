@@ -555,7 +555,7 @@ At the 0.10 m/s that [[04-robotics/robot-systems-deployment|10. Robot Systems §
 
 **Step 4 — the camera against the links.** Raw, the stream is $921{,}600\times8\times50=368.64$ Mb/s; compressed to 60,000 bytes a frame it is 24 Mb/s. Were the camera wired to `bot` on the moving cart, placement B would need it across Wi-Fi's 100 Mb/s: raw is 3.7 times too much, compressed uses 24%. Placement C needs it up the 20 Mb/s uplink: raw is 18.4 times too much, and even compressed is 1.2 times — each frame takes 24 ms to send while a new one comes every 20 ms, so the queue at `gw` grows by 4 ms per frame, 200 ms per second, without end. C fails on the uplink before its latency is even counted.
 
-**What the case says.** Keep the camera and the loop on the robot's side of the slow link, send goals and states across it rather than frames, and send the periodic stream best effort. The same arithmetic on a site machine: a stop command crossing path C arrives 20.05 ms late, which at S2's finishing speed of 0.3 m/s is 6.0 mm more latency overshoot ($e=v\tau$, [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving §1]]); a stop that waits one RTO adds $0.3\times0.2=0.06$ m, twice the ±30 mm grade.
+**What the case says.** Keep the camera and the loop on the robot's side of the slow link, send goals and states across it rather than frames, and send the periodic stream best effort. The same arithmetic on a site machine: a stop command crossing path C arrives 20.05 ms late, which at S2's finishing speed of 0.3 m/s (S2: the construction track's 5-tonne trench excavator, [[05-construction-robotics/site-engineering|2.5]]) is 6.0 mm more latency overshoot ($e=v\tau$, [[05-construction-robotics/earthmoving-heavy-machinery|3. Earthmoving §1]]); a stop that waits one RTO adds $0.3\times0.2=0.06$ m, twice the ±30 mm grade.
 
 ### 7. Application protocols: HTTP, WebSocket, gRPC, MQTT and QUIC
 
@@ -1358,7 +1358,7 @@ $$\text{age}=L_v+d+L_{\text{wait}}+L_{\text{reuse}},\qquad 0\le L_{\text{wait}}<
 
 **4단계 — 카메라 대 링크.** 원본 스트림은 $921{,}600\times8\times50=368.64$ Mb/s이고, 프레임당 60,000바이트로 압축하면 24 Mb/s다. 카메라가 움직이는 카트의 `bot`에 연결되어 있다면 배치 B는 그것을 Wi-Fi의 100 Mb/s로 건너야 한다. 원본은 3.7배 넘치고, 압축본은 24%를 쓴다. 배치 C는 그것을 20 Mb/s 업링크로 올려야 한다. 원본은 18.4배 넘치고, 압축본도 1.2배다. 프레임 하나를 보내는 데 24 ms가 드는데 새 프레임은 20 ms마다 오므로, `gw`의 큐는 프레임마다 4 ms, 초마다 200 ms씩 끝없이 자란다. C는 지연을 세기도 전에 업링크에서 실패한다.
 
-**계산이 말하는 것.** 카메라와 루프는 느린 링크의 로봇 쪽에 두고, 링크 너머로는 프레임 대신 목표와 상태를 보내고, 주기 스트림은 최선 노력으로 보낸다. 현장 기계에서도 같은 산수다. 경로 C를 건너는 정지 명령은 20.05 ms 늦으므로, S2의 마무리 속도 0.3 m/s에서 지연 오버슈트가 6.0 mm 더해진다($e=v\tau$, [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공 §1]]). RTO 하나를 기다린 정지는 $0.3\times0.2=0.06$ m를 더하고, ±30 mm 고저 허용치의 두 배다.
+**계산이 말하는 것.** 카메라와 루프는 느린 링크의 로봇 쪽에 두고, 링크 너머로는 프레임 대신 목표와 상태를 보내고, 주기 스트림은 최선 노력으로 보낸다. 현장 기계에서도 같은 산수다. 경로 C를 건너는 정지 명령은 20.05 ms 늦으므로, S2(건설 트랙의 5톤급 트렌치 굴착기, [[05-construction-robotics/site-engineering|2.5]])의 마무리 속도 0.3 m/s에서 지연 오버슈트가 6.0 mm 더해진다($e=v\tau$, [[05-construction-robotics/earthmoving-heavy-machinery|3. 토공 §1]]). RTO 하나를 기다린 정지는 $0.3\times0.2=0.06$ m를 더하고, ±30 mm 고저 허용치의 두 배다.
 
 ### 7. 응용 프로토콜: HTTP, WebSocket, gRPC, MQTT, QUIC
 

@@ -257,7 +257,7 @@ so each sublayer reads a normalised copy of the running vector and adds its resu
 > where $\odot$ is elementwise — so with $\varepsilon=0$, $\mathrm{LN}(x+c\mathbf 1)=\mathrm{LN}(x)$ and $\mathrm{LN}(ax)=\mathrm{LN}(x)$ for $a>0$, which means a token's mean and overall scale never reach the sublayer.
 >
 > - **Example**: D2's $x_1=(0,1,-1,-1)$ has $\mu=-0.25$ and $\sigma^2=0.6875$, so with $\gamma=\mathbf 1$, $\beta=0$, $\varepsilon=0$ it maps to $(0.301511,\,1.507557,\,-0.904534,\,-0.904534)$; $x_4=(1,0,1,1)$ has $\mu=0.75$ and $\sigma^2=0.1875$ and maps to $(0.577350,\,-1.732051,\,0.577350,\,0.577350)$.
-> - **Non-example**: BatchNorm, which normalises each feature across the samples of a batch. Its statistics depend on the other samples and differ between training and test. LayerNorm uses one token, so it computes the same thing at batch size one and at test time — a property Ba et al. state in their abstract — and it keeps the block permutation-equivariant (§5). BatchNorm is defined in full, on D1, in [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §2]].
+> - **Non-example**: BatchNorm, which normalises each feature across the samples of a batch. Its statistics depend on the other samples and differ between training and test. LayerNorm uses one token, so it computes the same thing at batch size one and at test time — a property Ba et al. state in their abstract — and it keeps the block permutation-equivariant (§5). BatchNorm is defined in full on D1, the deep-learning track's small classifier ([[03-deep-learning/lab-objects|0. Lab Objects]]), in [[03-deep-learning/foundations/training-at-scale|1.3 Training at Scale §2]].
 > - **Non-example**: normalising each feature across the tokens of a sequence. Its mean and variance are sums over the tokens, so reordering the tokens only reorders the outputs and equivariance survives. What breaks is locality in time: every token's normalised value now depends on every other token, later ones included, so a causal mask no longer hides the future (§3), and a KV cache goes stale because the earlier tokens' outputs change each time a token is appended (§7).
 > - **Why it matters**: it fixes the scale of what enters $W_Q$ and $W_K$, which is where §2's unit-variance assumption comes from at initialisation.
 
@@ -637,7 +637,7 @@ for n in (16, 64, 256, 1024, 4096):
 
 ## 한국어
 
-*[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]] 위에 선다. 대상 **D2** — 집은 비전 페이지 — 를 두 번째로 쓴다. 그 페이지가 이름만 대고 넘긴 어텐션을 여기서 가르치며, [[03-deep-learning/vlm/index|3. VLM]], [[03-deep-learning/vla/index|4. VLA]], 그리고 Transformer를 쓰는 모든 논문 노트가 이 내용을 전제한다.*
+*[[03-deep-learning/foundations/index|1. 학습 시스템]]과 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]] 위에 선다. 대상 **D2**(4×4 패치 토큰 넷으로 자른 8×8 연습 이미지, [[03-deep-learning/lab-objects|0. Lab Objects]]) — 집은 비전 페이지 — 를 두 번째로 쓴다. 그 페이지가 이름만 대고 넘긴 어텐션을 여기서 가르치며, [[03-deep-learning/vlm/index|3. VLM]], [[03-deep-learning/vla/index|4. VLA]], 그리고 Transformer를 쓰는 모든 논문 노트가 이 내용을 전제한다.*
 
 > [!note] 처음이라면 · First pass
 > 그림을 먼저 본 뒤, 계산기로 계산 절을 따라간다. 헤드 하나, 점수 열여섯 개, softmax 행 넷, 출력 넷, 그리고 인과 마스크를 건 같은 헤드다. §1–§3을 읽고 문제 1–2를 푼다. §4–§7은 논문이 "헤드", "RoPE", "pre-norm", "KV 캐시"를 말할 때 연다. §8이 §1–§7을 코드로 돌린다. 논문이 모델에 파라미터 수를 둘 — 전체와 활성 — 주면 §9를 연다.
@@ -881,7 +881,7 @@ $$Z=X+\mathrm{MHA}\big(\mathrm{LN}(X)\big),\qquad Y=Z+\mathrm{MLP}\big(\mathrm{L
 > $\odot$은 성분별 곱이다. 그래서 $\varepsilon=0$이면 $\mathrm{LN}(x+c\mathbf 1)=\mathrm{LN}(x)$이고 $a>0$에서 $\mathrm{LN}(ax)=\mathrm{LN}(x)$다. 토큰의 평균과 전체 크기는 서브레이어에 닿지 않는다는 뜻이다.
 >
 > - **예**: D2의 $x_1=(0,1,-1,-1)$은 $\mu=-0.25$, $\sigma^2=0.6875$이므로 $\gamma=\mathbf 1$, $\beta=0$, $\varepsilon=0$에서 $(0.301511,\,1.507557,\,-0.904534,\,-0.904534)$로 간다. $x_4=(1,0,1,1)$은 $\mu=0.75$, $\sigma^2=0.1875$이고 $(0.577350,\,-1.732051,\,0.577350,\,0.577350)$으로 간다.
-> - **비예**: BatchNorm. 특징마다 배치의 샘플들에 걸쳐 정규화한다. 통계량이 다른 샘플에 의존하고 학습과 시험 때 달라진다. LayerNorm은 토큰 하나를 쓰므로 배치 크기 1에서도, 시험 때도 같은 것을 계산하고 — Ba 등이 초록에 적은 성질이다 — 블록의 순열 등변성을 지킨다(§5). BatchNorm의 완전한 정의는 D1 위에서 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §2]]에 있다.
+> - **비예**: BatchNorm. 특징마다 배치의 샘플들에 걸쳐 정규화한다. 통계량이 다른 샘플에 의존하고 학습과 시험 때 달라진다. LayerNorm은 토큰 하나를 쓰므로 배치 크기 1에서도, 시험 때도 같은 것을 계산하고 — Ba 등이 초록에 적은 성질이다 — 블록의 순열 등변성을 지킨다(§5). BatchNorm의 완전한 정의는 D1(딥러닝 트랙의 작은 분류기, [[03-deep-learning/lab-objects|0. Lab Objects]]) 위에서 [[03-deep-learning/foundations/training-at-scale|1.3 대규모 학습 §2]]에 있다.
 > - **비예**: 시퀀스의 토큰들에 걸쳐 특징마다 정규화하기. 평균과 분산이 토큰들에 대한 합이므로 토큰을 재배열하면 출력도 재배열될 뿐이고, 등변성은 살아남는다. 깨지는 것은 시간상의 국소성이다. 모든 토큰의 정규화된 값이 이제 다른 모든 토큰, 뒤에 오는 토큰까지에 의존하므로 인과 마스크가 더 이상 미래를 가리지 못하고(§3), 토큰을 하나 덧붙일 때마다 앞 토큰들의 출력이 바뀌어 KV 캐시가 낡아 버린다(§7).
 > - **왜 중요한가**: $W_Q$와 $W_K$에 들어가는 것의 크기를 고정한다. 초기화 때 §2의 단위 분산 가정이 오는 곳이 여기다.
 

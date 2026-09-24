@@ -23,11 +23,11 @@ mastery-when: "Raise to Mastery when tactile sensing, the fusion architecture, o
 For the tasks where the deciding variable is inside the contact, hidden by the very thing doing the manipulating.*
 
 > [!note] First pass · 처음이라면
-> The main line is the picture, §1 (what vision cannot see, and why that is a short and specific list), §2 (what a sensor outputs, and its worked example on resolution and rate), and the four boxed definitions — tactile transduction at the top of §2.5, slip and incipient slip in §3, spatial resolution at the end of §3, and visuotactile fusion at the top of §4. Then work the Worked case, which sits after §6 and runs S1 through all four, and read §6's table. Second pass: the rest of §2.5 (the family table, magnetic sensing, whole-body skin), §3's receptor subsection, the rest of §4 (Lee et al., Sparsh), §5, and the tinted asides, which widen the main line rather than carry it.
+> The main line is the picture, §1 (what vision cannot see, and why that is a short and specific list), §2 (what a sensor outputs, and its worked example on resolution and rate), and the four boxed definitions — tactile transduction at the top of §2.5, slip and incipient slip in §3, spatial resolution at the end of §3, and visuotactile fusion at the top of §4. Then work the Worked case, which sits after §6 and runs S1 — this page's own fingertip patch, frozen in the Running object below, not the construction track's S1 — through all four, and read §6's table. Second pass: the rest of §2.5 (the family table, magnetic sensing, whole-body skin), §3's receptor subsection, the rest of §4 (Lee et al., Sparsh), §5, and the tinted asides, which widen the main line rather than carry it.
 
 ### Running object · 이 페이지의 대상
 
-No plant in [[02-foundations/lab-plants|0.6]] has a contact patch, so this page freezes its own object and never changes its numbers. **S1 — the fingertip patch**: one finger pressing a panel edge, with three candidate sensors behind the same gel and one camera watching from the wrist.
+No plant in [[02-foundations/lab-plants|0.6]] (*plant*: control's word for the system being controlled) has a contact patch, so this page freezes its own object and never changes its numbers. **S1 — the fingertip patch**: one finger pressing a panel edge, with three candidate sensors behind the same gel and one camera watching from the wrist.
 
 | Part of S1 | Frozen value | Source of the number |
 |---|---|---|
@@ -692,7 +692,7 @@ Tier B. Using only this page, its prerequisites and **S1**. Four knobs move, not
 결정적 변수가 접촉 안에 있고, 하필 조작을 하고 있는 그것에 가려지는 과제들을 위한 페이지다.*
 
 > [!note] 처음이라면 · First pass
-> 본줄기는 그림, §1(비전이 볼 수 없는 것, 그리고 그것이 왜 짧고 구체적인 목록인지), §2(센서가 내놓는 것과, 해상도와 속도에 대한 그 절의 계산 예제), 그리고 상자로 된 정의 넷 — §2.5 첫머리의 촉각 변환, §3의 미끄러짐과 초기 미끄러짐, §3 끝의 공간 해상도, §4 첫머리의 시촉각 융합 — 이다. 그다음 §6 뒤에 있는 Worked case를 풀며 S1을 그 넷 모두에 통과시키고, §6의 표를 읽어라. 두 번째 읽기: §2.5의 나머지(계열 표, 자기 감지, 전신 피부), §3의 수용기 소절, §4의 나머지(Lee 외, Sparsh), §5, 그리고 색을 입힌 곁상자들. 곁상자는 본줄기를 넓힐 뿐 떠받치지는 않는다.
+> 본줄기는 그림, §1(비전이 볼 수 없는 것, 그리고 그것이 왜 짧고 구체적인 목록인지), §2(센서가 내놓는 것과, 해상도와 속도에 대한 그 절의 계산 예제), 그리고 상자로 된 정의 넷 — §2.5 첫머리의 촉각 변환, §3의 미끄러짐과 초기 미끄러짐, §3 끝의 공간 해상도, §4 첫머리의 시촉각 융합 — 이다. 그다음 §6 뒤에 있는 Worked case를 풀며 S1(이 페이지가 아래 대상 절에서 고정하는 손끝 접촉면. 건설 트랙의 S1과는 다르다)을 그 넷 모두에 통과시키고, §6의 표를 읽어라. 두 번째 읽기: §2.5의 나머지(계열 표, 자기 감지, 전신 피부), §3의 수용기 소절, §4의 나머지(Lee 외, Sparsh), §5, 그리고 색을 입힌 곁상자들. 곁상자는 본줄기를 넓힐 뿐 떠받치지는 않는다.
 
 ### 이 페이지의 대상 · Running object
 

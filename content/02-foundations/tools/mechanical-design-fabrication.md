@@ -8,7 +8,7 @@ mastery-when: "Raise when the dissertation's evidence rests on hardware you buil
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[02-foundations/lab-plants|0.6 Lab Plants]] (**P2**: its unit links, its catalog pose and the tip's apparent mass $\Lambda=\mathrm{diag}(1,2)$ kg), [[02-foundations/engineering-math|0.5 Engineering Math §8]] (a mass on a spring: $\omega_n=\sqrt{k/m}$ and the damping ratio $\zeta$) and [[02-foundations/signal-processing|6. Signal Processing §2]] (sampling and aliasing). The beam theory and statics of a civil-engineering degree — cantilever deflection, second moment of area, bending stress — are used and not re-derived. The construction track's S1 pin and hole are borrowed as numbers, not as a prerequisite.
+> [[02-foundations/lab-plants|0.6 Lab Plants]] (**P2**: its unit links, its catalog pose and the tip's apparent mass $\Lambda=\mathrm{diag}(1,2)$ kg), [[02-foundations/engineering-math|0.5 Engineering Math §8]] (a mass on a spring: $\omega_n=\sqrt{k/m}$ and the damping ratio $\zeta$) and [[02-foundations/signal-processing|6. Signal Processing §2]] (sampling and aliasing). The beam theory and statics of a civil-engineering degree — cantilever deflection, second moment of area, bending stress — are used and not re-derived. The pin and hole of the construction track's S1, its 20 kg facade-panel task ([[05-construction-robotics/site-engineering|2.5]]), are borrowed as numbers, not as a prerequisite.
 > [[02-foundations/lab-plants|0.6 Lab Plants]](**P2**: 단위 링크, 카탈로그 자세, 말단의 겉보기 질량 $\Lambda=\mathrm{diag}(1,2)$ kg), [[02-foundations/engineering-math|0.5 공학수학 §8]](스프링에 매단 질량: $\omega_n=\sqrt{k/m}$와 감쇠비 $\zeta$), [[02-foundations/signal-processing|6. 신호처리 §2]](샘플링과 앨리어싱). 토목공학 학위의 보 이론과 정역학 — 캔틸레버 처짐, 단면 2차 모멘트, 휨응력 — 은 다시 유도하지 않고 쓴다. 건설 트랙 S1의 핀과 구멍은 숫자로 빌려 올 뿐 선수 지식이 아니다.
 
 ## English
@@ -36,7 +36,7 @@ mastery-when: "Raise when the dissertation's evidence rests on hardware you buil
 | $\sigma_\parallel,\ \sigma_\perp$ | $50$, $12$ MPa | its tensile strength in the same two directions |
 | $\zeta$ | $0.02$ | the bracket's damping ratio |
 | $D_w$ | $0.40$ m | camera to the pin while the camera guides the approach |
-| $f_s$ | $50$ Hz | the camera's frame rate, P6's vision rate |
+| $f_s$ | $50$ Hz | the camera's frame rate, P6's vision rate (P6: the catalog's cart on a rail, [[02-foundations/lab-plants\|0.6]]) |
 | $e_{\max}$ | $0.5$ mm | what the bracket may cost at the pin: S1's whole tool allocation |
 
 **F-50, the pin fixture.** A steel mock-up of S1's locating pin as [[05-construction-robotics/construction-manipulation|9. Construction Manipulation]] freezes it — 16 mm across, with a tapered nose that captures up to 4 mm of radial error — is pressed into an aluminium block $80\times40$ mm. The block sits on a base plate bolted to the bench, placed by the plate's top face and two locating pins 50 mm apart — one round, and one diamond, relieved on two sides so that it locates in one direction only (§7) — with S1's pin midway; two M6 screws hold it down.
@@ -583,7 +583,7 @@ Pin fixture: pin block on four rubber feet on the base plate, located by two rou
 | $\sigma_\parallel,\ \sigma_\perp$ | $50$, $12$ MPa | 같은 두 방향의 인장강도 |
 | $\zeta$ | $0.02$ | 브래킷의 감쇠비 |
 | $D_w$ | $0.40$ m | 카메라가 접근을 이끄는 동안 카메라에서 핀까지 |
-| $f_s$ | $50$ Hz | 카메라의 프레임 속도, P6의 비전 속도 |
+| $f_s$ | $50$ Hz | 카메라의 프레임 속도, P6(카탈로그의 레일 위 카트, [[02-foundations/lab-plants\|0.6]])의 비전 속도 |
 | $e_{\max}$ | $0.5$ mm | 브래킷이 핀에서 써도 되는 오차: S1의 공구 할당 전부 |
 
 **F-50, 핀 고정구.** [[05-construction-robotics/construction-manipulation|9. 건설 조작]]이 고정한 S1의 위치 결정 핀 — 지름 16 mm, 반경 오차 4 mm까지 붙잡아 주는 테이퍼 코 — 을 강철로 본뜬 목업이 $80\times40$ mm 알루미늄 블록에 압입되어 있다. 블록은 작업대에 볼트로 고정한 베이스판 위에 놓이고, 판의 윗면과 50 mm 떨어진 위치 결정 핀 두 개 — 둥근 핀 하나, 그리고 양옆을 깎아 한 방향으로만 위치를 잡는 다이아몬드 핀 하나(§7) — 가 자리를 정한다. S1의 핀은 두 핀의 한가운데에 있고, M6 나사 두 개가 블록을 눌러 둔다.
