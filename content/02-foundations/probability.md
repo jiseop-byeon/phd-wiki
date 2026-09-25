@@ -493,7 +493,7 @@ flowchart LR
   because $v$ is uncorrelated with $x$. Put $x_1 = x$ and $x_2 = y$ into §3's two conditioning formulas. The weight $\Sigma_{12}\Sigma_{22}^{-1} = P^-C^\top(CP^-C^\top+R)^{-1}$ is $K$, the conditional mean is $\hat x^- + K(y - C\hat x^-)$, and the conditional covariance is $P^- - K\,CP^- = (I - KC)P^-$: the three update lines. The difference $y - C\hat x^-$ is the **innovation** (what the reading says beyond the prediction) and $S = CP^-C^\top + R$ is its covariance; §6.3 uses both to gate readings.
   - **Why it is optimal.** Each update computes the conditional mean $E[x_t \mid y_{1:t}]$ exactly (by induction: the predict step keeps the belief Gaussian and exact), and §2 showed the conditional expectation is the best mean-square predictor. So no estimator, linear or not, has smaller mean-square error — under exactly those assumptions (linear model, Gaussian white noise, the true $Q$ and $R$).
 
-Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalman filter) — linearize or sample; SLAM (simultaneous localization and mapping) scales this to maps ([[04-robotics/state-estimation-slam|State Estimation & SLAM]]).
+[[04-robotics/state-estimation-slam|3. State Estimation §5]] writes this same filter with $H$ for $C$, $z$ for the reading $y$ and $\nu$ for the innovation, and marks the corrected values with a $+$, $\hat x^+$ and $P^+$, where this page writes $\hat x$ and $P$. Nonlinear versions — the EKF (extended Kalman filter) and UKF (unscented Kalman filter) — linearize or sample; SLAM (simultaneous localization and mapping) scales this to maps ([[04-robotics/state-estimation-slam|State Estimation & SLAM]]).
 
 ### 6. Detection, hypothesis tests, and whitening
 
@@ -1281,7 +1281,7 @@ flowchart LR
   이다. $v$가 $x$와 무상관이기 때문이다. §3의 두 조건화 공식에 $x_1 = x$, $x_2 = y$를 넣는다. 가중치 $\Sigma_{12}\Sigma_{22}^{-1} = P^-C^\top(CP^-C^\top+R)^{-1}$가 $K$이고, 조건부 평균은 $\hat x^- + K(y - C\hat x^-)$, 조건부 공분산은 $P^- - K\,CP^- = (I - KC)P^-$다. 이것이 갱신의 세 줄이다. 차이 $y - C\hat x^-$가 **혁신**(innovation, 측정이 예측 너머로 말해주는 것)이고 $S = CP^-C^\top + R$가 그 공분산이다. §6.3이 이 둘로 측정을 게이팅한다.
   - **왜 최적인가.** 매 갱신은 조건부 평균 $E[x_t \mid y_{1:t}]$를 정확히 계산하고(귀납법: 예측 단계가 믿음을 가우시안이자 정확하게 유지한다), §2는 조건부 기댓값이 평균제곱 의미의 최선 예측자임을 보였다. 그래서 선형이든 아니든 어떤 추정기도 평균제곱오차가 이보다 작지 않다 — 바로 그 가정(선형 모델, 가우시안 백색 잡음, 참 $Q$와 $R$) 아래에서.
 
-비선형 버전 — EKF(확장 칼만 필터)와 UKF(무향 칼만 필터) — 은 선형화하거나 샘플링하고, SLAM(동시적 위치 추정 및 지도 작성)은 이를 지도로 확장한다([[04-robotics/state-estimation-slam|상태 추정과 SLAM]]).
+[[04-robotics/state-estimation-slam|3. 상태 추정 §5]]는 같은 필터를 $C$ 대신 $H$, 측정 $y$ 대신 $z$, 혁신에 $\nu$를 써서 적고, 이 페이지가 $\hat x$와 $P$로 쓰는 보정된 값에는 $+$를 붙인다($\hat x^+$, $P^+$). 비선형 버전 — EKF(확장 칼만 필터)와 UKF(무향 칼만 필터) — 은 선형화하거나 샘플링하고, SLAM(동시적 위치 추정 및 지도 작성)은 이를 지도로 확장한다([[04-robotics/state-estimation-slam|상태 추정과 SLAM]]).
 
 ### 6. 검출, 가설 검정, 백색화
 

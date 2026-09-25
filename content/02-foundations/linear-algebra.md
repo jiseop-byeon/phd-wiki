@@ -668,21 +668,6 @@ special cases of it. It also explains the failure mode: near a singular configur
 $\sigma_i \to 0$, so $1/\sigma_i \to \infty$ and the returned joint velocity grows without bound in
 that one direction as the arm approaches the singularity. The arm is being asked to move in a direction it cannot move; at the singular pose itself the pseudo-inverse leaves that zero alone, so the answer jumps discontinuously when the rank actually drops.
 
-#### 4.5.4 The Moore–Penrose definition
-
-**The definition behind both formulas.** The (Moore–Penrose) pseudo-inverse of any
-$m\times n$ matrix $A$ is the unique $n\times m$ matrix $A^\dagger$ satisfying four conditions:
-
-$$AA^\dagger A = A, \qquad A^\dagger A A^\dagger = A^\dagger, \qquad (AA^\dagger)^\top = AA^\dagger, \qquad (A^\dagger A)^\top = A^\dagger A$$
-
-The first two say $A^\dagger$ undoes $A$ wherever undoing is possible, and the last two say the
-products $AA^\dagger$ and $A^\dagger A$ are orthogonal projections, so what cannot be undone is
-discarded perpendicularly rather than arbitrarily. The SVD formula satisfies all four, which is
-why it is the general definition. The $J^\dagger$ above passes all four numerically (to about
-$10^{-16}$), and $J^\dagger J$ is not $I$ but the projection with rows $(1,0,0)$,
-$(0, 0.8, 0.4)$, $(0, 0.4, 0.2)$: it removes exactly the null-space direction $n$, because the
-arm is redundant.
-
 The fix is to stop inverting the small singular values exactly — replace $1/\sigma$ with
 $\sigma/(\sigma^2 + \lambda)$, which is bounded for every $\sigma$ and equals $1/\sigma$
 when $\sigma^2 \gg \lambda$. That is **damped least squares**: instead of the exact
@@ -701,6 +686,21 @@ as the trust parameter you will meet on [[02-foundations/optimization|4. Optimiz
 a forward pointer, not something this page depends on. So the chain
 runs: singular values → pseudo-inverse → what happens when one of them vanishes → damping →
 Levenberg–Marquardt. Four names, one idea.
+
+#### 4.5.4 The Moore–Penrose definition
+
+**The definition behind both formulas.** The (Moore–Penrose) pseudo-inverse of any
+$m\times n$ matrix $A$ is the unique $n\times m$ matrix $A^\dagger$ satisfying four conditions:
+
+$$AA^\dagger A = A, \qquad A^\dagger A A^\dagger = A^\dagger, \qquad (AA^\dagger)^\top = AA^\dagger, \qquad (A^\dagger A)^\top = A^\dagger A$$
+
+The first two say $A^\dagger$ undoes $A$ wherever undoing is possible, and the last two say the
+products $AA^\dagger$ and $A^\dagger A$ are orthogonal projections, so what cannot be undone is
+discarded perpendicularly rather than arbitrarily. The SVD formula satisfies all four, which is
+why it is the general definition. The $J^\dagger$ above passes all four numerically (to about
+$10^{-16}$), and $J^\dagger J$ is not $I$ but the projection with rows $(1,0,0)$,
+$(0, 0.8, 0.4)$, $(0, 0.4, 0.2)$: it removes exactly the null-space direction $n$, because the
+arm is redundant.
 
 ### 5. The control-theory connection
 
@@ -1466,20 +1466,6 @@ $$A^\dagger = V\Sigma^\dagger U^\top, \qquad \Sigma^\dagger = \operatorname{diag
 특이 자세 근처에서는 어떤 $\sigma_i \to 0$이므로 $1/\sigma_i \to \infty$가 되고 돌려받는
 관절 속도가 특이 자세에 다가갈수록 그 한 방향으로 한없이 커진다. 팔에게 움직일 수 없는 방향으로 움직이라고 요구한 것이다. 특이 자세 그 자체에서는 유사역행렬이 그 0을 건드리지 않으므로, 랭크가 실제로 떨어지는 순간 답이 불연속으로 뛴다.
 
-#### 4.5.4 무어–펜로즈 정의
-
-**두 공식 뒤에 있는 정의.** 임의의 $m\times n$ 행렬 $A$의 (무어–펜로즈) 유사역행렬은 네 조건을
-만족하는 유일한 $n\times m$ 행렬 $A^\dagger$다.
-
-$$AA^\dagger A = A, \qquad A^\dagger A A^\dagger = A^\dagger, \qquad (AA^\dagger)^\top = AA^\dagger, \qquad (A^\dagger A)^\top = A^\dagger A$$
-
-앞의 둘은 되돌릴 수 있는 곳에서는 $A^\dagger$가 $A$를 되돌린다는 뜻이고, 뒤의 둘은 곱
-$AA^\dagger$와 $A^\dagger A$가 직교 투영이라는 뜻이다. 그래서 되돌릴 수 없는 부분은 제멋대로가
-아니라 수직으로 버려진다. SVD 공식이 넷을 모두 만족하므로 그것이 일반 정의다. 위의 $J^\dagger$도
-넷을 수치적으로(약 $10^{-16}$까지) 통과하고, $J^\dagger J$는 $I$가 아니라 행이 $(1,0,0)$,
-$(0, 0.8, 0.4)$, $(0, 0.4, 0.2)$인 투영이다. 팔이 여유자유도를 가지므로 영공간 방향 $n$을 정확히
-지우는 것이다.
-
 해법은 작은 특이값을 정확히 뒤집는 일을 그만두는 것이다 — $1/\sigma$를
 $\sigma/(\sigma^2 + \lambda)$로 바꾸면 모든 $\sigma$에 대해 유계이고 $\sigma^2 \gg \lambda$일
 때는 $1/\sigma$와 같다. 그것이 **감쇠 최소제곱**이다. 정확한 최소 노름 해 대신
@@ -1496,6 +1482,20 @@ $v = (0,1)$을 $(1,\ -0.8,\ -0.4)$ 대신 $\dot\theta = (0.982,\ -0.784,\ -0.392
 [[02-foundations/optimization|4. 최적화 §3.5]]에서 만나게 될 신뢰 파라미터와 같은 $\lambda$다 —
 이 페이지가 기대는 것이 아니라 앞을 가리키는 표지다. 그러니 사슬은 이렇게 이어진다: 특이값 → 유사역행렬
 → 그중 하나가 사라지면 벌어지는 일 → 감쇠 → Levenberg–Marquardt. 이름 넷, 발상 하나.
+
+#### 4.5.4 무어–펜로즈 정의
+
+**두 공식 뒤에 있는 정의.** 임의의 $m\times n$ 행렬 $A$의 (무어–펜로즈) 유사역행렬은 네 조건을
+만족하는 유일한 $n\times m$ 행렬 $A^\dagger$다.
+
+$$AA^\dagger A = A, \qquad A^\dagger A A^\dagger = A^\dagger, \qquad (AA^\dagger)^\top = AA^\dagger, \qquad (A^\dagger A)^\top = A^\dagger A$$
+
+앞의 둘은 되돌릴 수 있는 곳에서는 $A^\dagger$가 $A$를 되돌린다는 뜻이고, 뒤의 둘은 곱
+$AA^\dagger$와 $A^\dagger A$가 직교 투영이라는 뜻이다. 그래서 되돌릴 수 없는 부분은 제멋대로가
+아니라 수직으로 버려진다. SVD 공식이 넷을 모두 만족하므로 그것이 일반 정의다. 위의 $J^\dagger$도
+넷을 수치적으로(약 $10^{-16}$까지) 통과하고, $J^\dagger J$는 $I$가 아니라 행이 $(1,0,0)$,
+$(0, 0.8, 0.4)$, $(0, 0.4, 0.2)$인 투영이다. 팔이 여유자유도를 가지므로 영공간 방향 $n$을 정확히
+지우는 것이다.
 
 ### 5. 제어이론과의 연결
 

@@ -8,22 +8,22 @@ mastery-when: "Raise to Mastery when a sensor rig's design, calibration or synch
 ---
 
 > [!note] Prerequisites · 선수 지식
-> Plants **P2**, **P5** and **P6** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled) · the Tier A lab conventions of [[02-foundations/lab-kernel|0.7 Lab Kernel]] · the wrist rig of [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]] (§1 the pinhole model and distortion, §2 depth from disparity, §3 frames, §5 calibration) · the noise models of [[04-robotics/sensor-models|3.2 Sensor Models & Noise]] (§1 the measurement model, §4 quantization, §5 the range sensor and the camera) · [[04-robotics/state-estimation-slam|3. State Estimation]] (§7.2 deskewing, §8 fusion) · variances of independent errors from [[02-foundations/probability|3. Probability §2]] · quantization and the DFT's bin spacing from [[02-foundations/signal-processing|6. Signal Processing §2 and §3]] · rigid transforms from [[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §3]]
-> [[02-foundations/lab-plants|0.6]]의 장치 **P2**, **P5**, **P6** · [[02-foundations/lab-kernel|0.7]]의 Tier A 실습 규약 · [[04-robotics/geometric-perception-calibration|3.5 기하 인식과 보정]]의 손목 리그(§1 핀홀 모델과 왜곡, §2 시차에서 깊이, §3 프레임, §5 보정) · [[04-robotics/sensor-models|3.2 센서 모델과 잡음]]의 잡음 모델(§1 측정 모델, §4 양자화, §5 거리 센서와 카메라) · [[04-robotics/state-estimation-slam|3. 상태 추정]](§7.2 deskewing, §8 융합) · [[02-foundations/probability|3. 확률 §2]]의 독립 오차의 분산 · [[02-foundations/signal-processing|6. 신호처리 §2와 §3]]의 양자화와 DFT 빈 간격 · [[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §3]]의 강체 변환
+> Plants **P2** (the planar two-link arm), **P5** (a one-dimensional range to a wall) and **P6** (a cart on a rail and its clock) from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled or measured) · the Tier A lab conventions of [[02-foundations/lab-kernel|0.7 Lab Kernel]] · the wrist rig of [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception & Calibration]] (§1 the pinhole model and distortion, §2 depth from disparity, §3 frames, §5 calibration) · the noise models of [[04-robotics/sensor-models|3.2 Sensor Models & Noise]] (§1 the measurement model, §4 quantization, §5 the range sensor and the camera) · [[04-robotics/state-estimation-slam|3. State Estimation]] (§7.2 deskewing, §8 fusion) · variances of independent errors from [[02-foundations/probability|3. Probability §2]] · quantization and the DFT's bin spacing from [[02-foundations/signal-processing|6. Signal Processing §2 and §3]] · rigid transforms from [[02-foundations/se3-geometry|8. 3D Geometry & SE(3) §3]]
+> [[02-foundations/lab-plants|0.6]]의 장치 **P2**(평면 2링크 팔), **P5**(벽까지의 1차원 거리), **P6**(레일 위 카트와 그 시계) · [[02-foundations/lab-kernel|0.7]]의 Tier A 실습 규약 · [[04-robotics/geometric-perception-calibration|3.5 기하 인식과 보정]]의 손목 리그(§1 핀홀 모델과 왜곡, §2 시차에서 깊이, §3 프레임, §5 보정) · [[04-robotics/sensor-models|3.2 센서 모델과 잡음]]의 잡음 모델(§1 측정 모델, §4 양자화, §5 거리 센서와 카메라) · [[04-robotics/state-estimation-slam|3. 상태 추정]](§7.2 deskewing, §8 융합) · [[02-foundations/probability|3. 확률 §2]]의 독립 오차의 분산 · [[02-foundations/signal-processing|6. 신호처리 §2와 §3]]의 양자화와 DFT 빈 간격 · [[02-foundations/se3-geometry|8. 3D 기하와 SE(3) §3]]의 강체 변환
 
 ## English
 
-*Stands on [[04-robotics/geometric-perception-calibration|3.5]], which turns pixels into rays, depths and frames, and [[04-robotics/sensor-models|3.2]], which writes each sensor as $z=h(x)+b+n$. Both take the measurement as given. This page opens the sensor: how photons in a well, a pulse's flight time, a chirp's beat and a clock's reading become a measurement, and where that physics makes it fail. A later use of **P2**, **P5** and **P6**.*
+*Stands on [[04-robotics/geometric-perception-calibration|3.5]], which turns pixels into rays, depths and frames, and [[04-robotics/sensor-models|3.2]], which writes each sensor as $z=h(x)+b+n$. Both take the measurement as given. This page opens the sensor: how photons in a well, a pulse's flight time, a chirp's beat and a clock's reading become a measurement, and where that physics makes it fail. A later use of **P2** (the planar two-link arm), **P5** (one-dimensional range estimation) and **P6** (the cart on a rail and its clock) from [[02-foundations/lab-plants|0.6]].*
 
 > [!note] Why this matters · 왜 배우는가
-> This page is the first layer of the physical-AI stack in [[07-research-program/index|7. Research Program §5]], perception, beneath object and scene understanding; in *"Install that panel on the frame"* it is the sensing under identifying the panel and the frame, and under seeing the contact (its place is marked on the [[physical-ai-map|Physical AI Map]]). Without it a rig's numbers are taken on trust, and on a moving base they fail before any algorithm runs: at $0.5\,\mathrm{m/s}$ a camera stamped at the end of its readout puts the panel $8.5\,\mathrm{mm}$ off and a LiDAR cloud's single stamp $23\,\mathrm{mm}$, both past the $\pm5\,\mathrm{mm}$ tolerance of S1, the construction track's facade-panel task ([[05-construction-robotics/site-engineering|2.5]]), and to a single-return LiDAR a saw's dust is a wall. The same physics returns in [[05-construction-robotics/site-perception|5. Site Perception §1]] (a scan's spacing and point error), [[04-robotics/capstone-panel-contact|26. Capstone §5]] (a delay as a staleness distance), [[04-robotics/ros2/from-simulation-to-hardware|25.11 §4–§5]] (the drivers and clocks that stamp the data) and [[05-construction-robotics/imitating-contact|10. Imitating Contact §1]], whose learned policy sees the hole only through a camera's $0.5\,\mathrm{mm}$; on the dissertation path ([[07-research-program/index|7. Research Program §8]]) it belongs to block 2, the robotics common track. After it you can turn any sensor on a moving site rig into millimetres of error at the panel, and give each sensor the job its physics allows.
+> This page is the first layer of the physical-AI stack in [[07-research-program/index|7. Research Program §5]], perception, beneath object and scene understanding; in *"Install that panel on the frame"* it is the sensing under identifying the panel and the frame, and under the final alignment of the fitting (its place is marked on the [[physical-ai-map|Physical AI Map]]). Without it a rig's numbers are taken on trust, and on a moving base they fail before any algorithm runs: at $0.5\,\mathrm{m/s}$ a camera stamped at the end of its readout puts the panel $8.5\,\mathrm{mm}$ off and a LiDAR cloud's single stamp $23\,\mathrm{mm}$, both past the $\pm5\,\mathrm{mm}$ tolerance of S1, the construction track's facade-panel task ([[05-construction-robotics/site-engineering|2.5]]), and to a single-return LiDAR a saw's dust is a wall. The same physics returns in [[05-construction-robotics/site-perception|5. Site Perception §1]] (a scan's spacing and point error), [[04-robotics/capstone-panel-contact|26. Capstone §5]] (a delay as a staleness distance), [[04-robotics/ros2/from-simulation-to-hardware|25.11 §4–§5]] (the drivers and clocks that stamp the data) and [[05-construction-robotics/imitating-contact|10. Imitating Contact §1]], whose learned policy sees the hole only through a camera's $0.5\,\mathrm{mm}$; on the dissertation path ([[07-research-program/index|7. Research Program §8]]) it belongs to block 2, the robotics common track, in robotics sessions 45–51. After it you can turn any sensor on a moving site rig into millimetres of error at the panel, and give each sensor the job its physics allows.
 
 > [!note] First pass · 처음이라면
-> Two sittings. **Sitting 1 — the camera and time.** Read the Running object and find in the picture each error's size at the facade — the $39\,\mathrm{mm}$ stereo bar, the $16\,\mathrm{mm}$ LiDAR spots, the $5\,\mathrm{mm}$ blur, the $23\,\mathrm{mm}$ stamp error — before you know where they come from. Then read §1–§3 and §9 and work steps 1, 2 and 5 of the Worked case by hand; self-check 1, the exposure window at $1\,\mathrm{m/s}$, closes the sitting. **Sitting 2 — the LiDAR and the ledger.** Read §5, say at what range the LiDAR beats stereo and why the answer is a square root, work step 3 and the ledger, then run §10 and read its five bullets. §4 (depth cameras), §6 (radar), §7 (the site table, to carry to a site) and §8 (extrinsics) come on a second pass, or when a paper or a site uses those sensors; the problem set closes that pass.
+> Two sessions of 60–90 minutes, the bold rows 45 and 49 of the robotics schedule. **Session 1 — the camera.** Read the Running object and find each error's size in the picture — the $39\,\mathrm{mm}$ stereo bar, the $16\,\mathrm{mm}$ LiDAR spots, the $5\,\mathrm{mm}$ blur, the $23\,\mathrm{mm}$ stamp error — before you know where they come from; then §1 and §2 (the collapsed notes can wait for the Working pass), and close with self-check 1, the exposure window at $1\,\mathrm{m/s}$. **Session 2 — time and the ledger.** Read §9, then work the Worked case by hand, all five steps and the ledger; steps 2–4 quote §3's $\sigma_Z$, §5's spacing and §6's cells with their formulas, so read those sections' one-sentence summaries first. The Working pass adds five sessions: §3–§4, §5–§6, §7–§8, the §10 lab, and the problem set.
 
 ### Running object · 이 페이지의 대상
 
-**The rig.** Put **P2**, with 3.5's wrist rig on its tool, on the mobile base of the construction track's facade-panel task S1 ([[05-construction-robotics/site-engineering|2.5 Site Robotics]]; a forward pointer, not a prerequisite). Add a spinning LiDAR and an FMCW radar on the base's mast, and drive the base along the facade at $0.5\,\mathrm{m/s}$, $2.0\,\mathrm m$ from it, the cameras facing the facade. P2 stays parked for the whole pass, so the cameras and the mast's sensors keep one fixed geometry (§8). The landmark $L$ is a point on that facade. From other pages, unchanged:
+**The rig.** Put **P2**, with 3.5's wrist rig on its tool, on the mobile base of the construction track's facade-panel task S1 ([[05-construction-robotics/site-engineering|2.5 Site Robotics]]; a forward pointer, not a prerequisite). Add a spinning LiDAR and an FMCW (frequency-modulated continuous-wave) radar on the base's mast, and drive the base along the facade at $0.5\,\mathrm{m/s}$, $2.0\,\mathrm m$ from it, the cameras facing the facade. P2 stays parked for the whole pass, so the cameras and the mast's sensors keep one fixed geometry (§8). The landmark $L$ is a point on that facade. From other pages, unchanged:
 
 | Object | Values | From |
 |---|---|---|
@@ -32,7 +32,7 @@ mastery-when: "Raise to Mastery when a sensor rig's design, calibration or synch
 | P6's camera | $f_x=600$ px at $Z_c=1.0\,\mathrm m$, $\sigma_u=0.5$ px ($0.833\,\mathrm{mm}$), $50\,\mathrm{Hz}$; budget $70\,\mathrm{ms}$ from mid-exposure to force | 3.2; **P6** |
 | P5's range sensor | $\sigma_r=10\,\mathrm{mm}$, offset $b_r=4\,\mathrm{mm}$; P5 reads $12\,\mathrm{cm}$ | 3.2; **P5** |
 
-The rest is this page's own, frozen as **course numbers for clean arithmetic, not any product's datasheet**:
+The rest is this page's own, frozen as **course numbers for clean arithmetic, not any product's datasheet**; each term is defined where it is used (full well §1, divergence §5, IF band and virtual channels §6):
 
 | Object | Values |
 |---|---|
@@ -244,7 +244,7 @@ Everything later is derived from these tables. One consistency check: the LiDAR 
   <text x="16" y="410" font-size="11" fill="currentColor" fill-opacity="0.9">only the camera's pixel, at a short exposure and a true stamp, is the size of S1's ±5 mm.</text>
 </svg>
 
-The rig passing the facade, every error drawn to scale where it lands. Left, in plan: the stereo depth error at $L$ ($\pm39\,\mathrm{mm}$ along the ray), the radar's $15\,\mathrm{cm}\times9.5^\circ$ cell ($0.33\,\mathrm m$ wide there), a worker $0.30\,\mathrm m$ before the facade, and the LiDAR's $120^\circ$ sweep across it ($33\,\mathrm{ms}$, $17\,\mathrm{mm}$ of base motion). Right, the facade around $L$ at $1\,\mathrm{mm}=2$ px: $3.3\,\mathrm{mm}$ camera pixels inside S1's $\pm5\,\mathrm{mm}$, $16\,\mathrm{mm}$ LiDAR spots overlapping along each ring with $\sim22\,\mathrm{mm}$ gaps between rings, the $5\,\mathrm{mm}$ blur of a $10\,\mathrm{ms}$ exposure, and two wrong time stamps worth $8.5$ and $23\,\mathrm{mm}$.
+The rig passing the facade, every error drawn to scale where it lands. Left, in plan: the stereo depth error at $L$ ($\pm39\,\mathrm{mm}$ along the ray), the radar's $15\,\mathrm{cm}\times9.5^\circ$ cell ($0.33\,\mathrm m$ wide there), a worker $0.30\,\mathrm m$ before the facade, and the LiDAR's $120^\circ$ sweep across it ($33\,\mathrm{ms}$, $17\,\mathrm{mm}$ of base motion). Right, the facade around $L$ at $1\,\mathrm{mm}=2$ px: $3.3\,\mathrm{mm}$ camera pixels inside S1's $\pm5\,\mathrm{mm}$, $16\,\mathrm{mm}$ LiDAR spots overlapping along each ring with $\sim22\,\mathrm{mm}$ gaps between rings next to $L$, the $5\,\mathrm{mm}$ blur of a $10\,\mathrm{ms}$ exposure, and two wrong time stamps worth $8.5$ and $23\,\mathrm{mm}$.
 
 ### 1. Image formation: light, exposure and noise
 
@@ -274,7 +274,7 @@ since the distance cancels: a wall's image is as bright at $10\,\mathrm m$ as at
 >
 > $$\mathrm{DR}=\frac{S_{\max}}{\sigma_{\text{read}}},\qquad \mathrm{DR}_{\mathrm{dB}}=20\log_{10}\mathrm{DR}$$
 >
-> where $S_{\max}$ is the full well and $\sigma_{\text{read}}$ the read noise (Hamamatsu's definition), so the rig has $10{,}000/5=2{,}000$, $66.0\,\mathrm{dB}$ ($10.97$ stops), and $64.8\,\mathrm{dB}$ with the converter's step in the floor.
+> where $S_{\max}$ is the full well and $\sigma_{\text{read}}$ the read noise (Hamamatsu's definition), so the rig has $10{,}000/5=2{,}000$, $66.0\,\mathrm{dB}$ ($10.97$ stops, a stop being a factor of $2$), and $64.8\,\mathrm{dB}$ with the converter's step in the floor.
 >
 > - **Example**: sun against shade is $2{,}000/200=10$, $20\,\mathrm{dB}$: at $2\,\mathrm{ms}$ the shade reads at SNR $19.2$ and the sun at $4{,}000\ e^-$, unsaturated.
 > - **Non-example**: the low sun's glint against the shade, $2\times10^6/200$, is $80\,\mathrm{dB}$. No exposure holds both: the glint fills the well in $5\,\mathrm{\mu s}$, when the shade holds $1\ e^-$ (SNR $0.17$).
@@ -302,6 +302,45 @@ since the distance cancels: a wall's image is as bright at $10\,\mathrm m$ as at
 > - **Why it matters**: blur caps the exposure from above while SNR (§1) bounds it from below; between them lies the window a moving robot can use.
 
 **The exposure window.** At $0.5\,\mathrm{m/s}$ the shade needs $t_{\exp}\ge0.632\,\mathrm{ms}$ for an SNR of $10$, half a pixel of blur allows $t_{\exp}\le0.5Z/(fv)=3.333\,\mathrm{ms}$, and the sun stays unsaturated to $5.0\,\mathrm{ms}$. The indoor $10\,\mathrm{ms}$ fails twice: $1.5$ px of blur and a saturated sunlit half. At $2\,\mathrm{m/s}$ the upper limit falls to $0.833\,\mathrm{ms}$; at dusk, with a tenth of the light, the lower limit rises about tenfold, past it. Then only light (a strobe), aperture or a slower base helps — not gain.
+
+<svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="The moving rig's exposure window on a log axis of exposure time: the shaded facade reaches an SNR of 10 at 0.632 ms, the sunlit facade saturates at 5.0 ms, half a pixel of blur allows 3.333 ms at 0.5 m/s and 0.833 ms at 2 m/s, so the usable window is 0.632 to 3.333 ms at 0.5 m/s and 0.632 to 0.833 ms at 2 m/s, and the indoor 10 ms exposure lies outside both">
+  <text x="16" y="20" font-size="12" fill="currentColor" font-weight="600">exposure time, log axis (ms)</text>
+  <text x="16" y="48.0" font-size="11" fill="currentColor">shade: SNR ≥ 10</text>
+  <line x1="150.0" y1="44.0" x2="540.0" y2="44.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <line x1="285.7" y1="44.0" x2="540.0" y2="44.0" stroke="currentColor" stroke-width="5" stroke-opacity="0.55"/>
+  <text x="16" y="74.0" font-size="11" fill="currentColor">sun: below full well</text>
+  <line x1="150.0" y1="70.0" x2="540.0" y2="70.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <line x1="150.0" y1="70.0" x2="438.0" y2="70.0" stroke="currentColor" stroke-width="5" stroke-opacity="0.55"/>
+  <text x="16" y="100.0" font-size="11" fill="currentColor">blur ≤ 0.5 px, 0.5 m/s</text>
+  <line x1="150.0" y1="96.0" x2="540.0" y2="96.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <line x1="150.0" y1="96.0" x2="408.1" y2="96.0" stroke="currentColor" stroke-width="5" stroke-opacity="0.55"/>
+  <text x="16" y="126.0" font-size="11" fill="currentColor">blur ≤ 0.5 px, 2 m/s</text>
+  <line x1="150.0" y1="122.0" x2="540.0" y2="122.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <line x1="150.0" y1="122.0" x2="306.1" y2="122.0" stroke="currentColor" stroke-width="5" stroke-opacity="0.55"/>
+  <text x="16" y="160.0" font-size="11" fill="currentColor" font-weight="600">window at 0.5 m/s</text>
+  <rect x="285.7" y="149.0" width="122.4" height="14" fill="currentColor" fill-opacity="0.28" stroke="currentColor" stroke-width="1.2"/>
+  <text x="16" y="186.0" font-size="11" fill="currentColor" font-weight="600">window at 2 m/s</text>
+  <rect x="285.7" y="175.0" width="20.3" height="14" fill="currentColor" fill-opacity="0.28" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="285.7" y1="32.0" x2="285.7" y2="210.0" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="306.1" y1="32.0" x2="306.1" y2="210.0" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="408.1" y1="32.0" x2="408.1" y2="210.0" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="438.0" y1="32.0" x2="438.0" y2="210.0" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="489.0" y1="32.0" x2="489.0" y2="194.0" stroke="currentColor" stroke-width="1.6"/>
+  <text x="489.0" y="28.0" font-size="11" fill="currentColor" text-anchor="middle">indoor 10 ms</text>
+  <line x1="150.0" y1="210.0" x2="540.0" y2="210.0" stroke="currentColor" stroke-width="1.0"/>
+  <line x1="150.0" y1="206.0" x2="150.0" y2="214.0" stroke="currentColor" stroke-width="1.0"/>
+  <text x="150.0" y="227.0" font-size="11" fill="currentColor" text-anchor="middle">0.1</text>
+  <line x1="319.5" y1="206.0" x2="319.5" y2="214.0" stroke="currentColor" stroke-width="1.0"/>
+  <text x="319.5" y="227.0" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="489.0" y1="206.0" x2="489.0" y2="214.0" stroke="currentColor" stroke-width="1.0"/>
+  <text x="489.0" y="227.0" font-size="11" fill="currentColor" text-anchor="middle">10</text>
+  <text x="285.7" y="240.0" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.632</text>
+  <text x="306.1" y="252.0" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.833</text>
+  <text x="408.1" y="240.0" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">3.333</text>
+  <text x="438.0" y="252.0" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">5.0</text>
+</svg>
+
+Each constraint of §1–§2 as a range of exposure times, on a log axis: the shaded facade needs at least $0.632$ ms for an SNR of $10$, the sunlit facade saturates after $5.0$ ms, and half a pixel of blur at $2$ m allows at most $3.333$ ms at $0.5\,\mathrm{m/s}$ and $0.833$ ms at $2\,\mathrm{m/s}$. The usable window is where all of them hold — $0.632$ to $3.333$ ms at $0.5\,\mathrm{m/s}$, $0.632$ to $0.833$ ms at $2\,\mathrm{m/s}$ — and the indoor $10$ ms lies outside both.
 
 **The rolling shutter.** A global shutter starts and stops all pixels at once; a rolling shutter exposes row after row, each offset by the row time, and reading the frame takes that time times the rows ([Basler, *Electronic Shutter Types*](https://docs.baslerweb.com/electronic-shutter-types), whose examples include $14$ and $35\,\mathrm{\mu s}$ per row).
 
@@ -341,7 +380,7 @@ because each error enters the difference with weight $\pm1$ — $0.707$ px with 
 
 Across the ray the same pixel noise is only $Z\sigma_u/f=1.67\,\mathrm{mm}$ at $2\,\mathrm m$, so a stereo point is a needle along its ray, $\sqrt2\,Z/b=23.6$ times longer than wide.
 
-**What stereo needs from the surface.** A disparity exists only where a patch can be found again in the other image. An evenly painted panel gives every window the same content — no peak to match (3.5 §2.5's flat structure tensor). A row of identical panels gives one good match per panel, and 3.5 §2.6 shows the wrong one passing the epipolar check $40\,\mathrm{cm}$ too far. $\sigma_Z$ prices neither: it assumes the match is right.
+**What stereo needs from the surface.** A disparity exists only where a patch can be found again in the other image. An evenly painted panel gives every window the same content — no peak to match (3.5 §2.5's flat structure tensor). A texture that repeats — a profiled or perforated sheet, a row of identical panels — gives one good match per repeat, and 3.5 §2.6 shows a wrong one on a texture repeating every $2\,\mathrm{cm}$ passing the epipolar check and landing $40\,\mathrm{cm}$ too far. $\sigma_Z$ prices neither: it assumes the match is right.
 
 **Active stereo.** A projector that throws an infrared pattern gives a blank panel texture; the two cameras still triangulate between themselves. Keselman et al. give the projector exactly that job — texture that makes matching unambiguous — and ask of the pattern that it be dense, photometrically consistent and free of repetition along the matching axis. Their infrared cameras work both in darkness, lit by the projector, and in broad daylight, where the sun lights the scene's own texture.
 
@@ -461,7 +500,7 @@ since the step is unambiguous while $|\Delta\varphi|<\pi$, and $N_c$ chirps form
 | Sensor | Dark / low sun | Dust, fog, rain | Bare, repeated, glass | Depth error at $2\,\mathrm m$ | Samples at $2\,\mathrm m$ | Reach | Cost class |
 |---|---|---|---|---|---|---|---|
 | camera | fails: collects light only / glint's $80\,\mathrm{dB}$ over the sensor's $66$ (§1) | visual clutter (§6) | no features, or the wrong one (3.5 §2.5–§2.6) | none from one image (3.5 §1) | $3.3\,\mathrm{mm}$ per pixel | any lit range; blur $fvt_{\exp}/Z$ (§2) | low |
-| stereo pair | as the camera | as the camera | no depth on bare panels; $40\,\mathrm{cm}$ off on repeated ones (3.5 §2.6) | $39.3\,\mathrm{mm}$ (§3) | $3.3\,\mathrm{mm}$ where matched | from $0.56\,\mathrm m$; $\sigma_Z\propto Z^2$ | low |
+| stereo pair | as the camera | as the camera | no depth on bare panels; $40\,\mathrm{cm}$ off on a texture repeating every $2\,\mathrm{cm}$ (3.5 §2.6) | $39.3\,\mathrm{mm}$ (§3) | $3.3\,\mathrm{mm}$ where matched | from $0.56\,\mathrm m$; $\sigma_Z\propto Z^2$ | low |
 | active stereo | works on its pattern / on sunlit texture (§3) | as the camera | the pattern supplies texture (§3) | as stereo | as stereo | as stereo | low to medium |
 | ToF camera | works / struggles in strong sun (§4) | — | multipath in corners, flying pixels at edges (§4) | $4.77\,\mathrm{mm}$ at $100\,\mathrm{MHz}$, wraps past $1.5\,\mathrm m$ (§4) | a range per pixel | $7.5\,\mathrm m$ unique with two frequencies | low to medium |
 | structured light | works / sun can saturate it (§4) | — | needs its pattern visible | $\propto Z^2/(fb_p)$ (§4) | a range per pixel | short: contrast $\propto1/R^2$ (§4) | low |
@@ -472,7 +511,7 @@ since the step is unambiguous while $|\Delta\varphi|<\pi$, and $N_c$ chirps form
 - **Low morning sun on a glazed facade.** The camera exposes for the shaded panel and treats glints as missing data (§1); the LiDAR brings its own light but may lose the glass (§5). Bracketed exposures help only with the base stopped, because on the move each sees a different place (§9).
 - **Dust from cutting.** A single-return LiDAR reports the cloud as a surface at its leading edge (§5), the camera loses contrast, the radar sees through — and a person walking out of the cloud is seen first by the radar, and seen moving (§6).
 - **A night shift.** The cameras need light, and a strobe that lights only during a short exposure also removes §2's blur and skew; the LiDAR and radar do not notice the dark.
-- **A row of identical panels.** Stereo can match the wrong panel and pass every geometric check (3.5 §2.6); the LiDAR is not fooled by paint, but a flat facade leaves ICP free to slide along it (3.5 §4).
+- **Repeated texture and identical panels.** Stereo can match the wrong repeat and pass every geometric check (3.5 §2.6); the LiDAR is not fooled by paint, but a flat facade leaves ICP free to slide along it (3.5 §4).
 
 The trap is to pick "the best sensor". The rig divides the work by physics instead: the LiDAR maps the approach, the radar watches for people in dust and dark, and the final $\pm5\,\mathrm{mm}$ of S1's hole belongs to the camera — close, at a short exposure, with its own light, stamped at mid-exposure, with the base stopped or its motion known to a few milliseconds (§9). The Worked case prices each clause.
 
@@ -520,7 +559,7 @@ because in $\Delta t$ the rig covers $v\Delta t$; a rotation at $\omega$ adds $\
 >
 > where $v$ is the relative speed, $\Delta t$ the offset, $\omega$ the rotation rate and $R$ the range, so it is simply the distance the rig covered while the stamp was wrong.
 >
-> - **Example**: a driver that stamps the rig's image at the end of readout instead of mid-exposure is late by $t_{\exp}/2$ plus the readout, counted from the first row's mid-exposure, where a rolling-shutter model starts counting rows: $5+12=17\,\mathrm{ms}$ at a $10\,\mathrm{ms}$ exposure. A camera read that way on P6's cart at $0.5\,\mathrm{m/s}$ is $8.5\,\mathrm{mm}$ off, $5.1$ px at P6's camera, ten times its $0.833\,\mathrm{mm}$ noise.
+> - **Example**: a driver that stamps the rig's image at the end of readout instead of mid-exposure is late by $t_{\exp}/2$ plus the readout, counted from the first row's mid-exposure, where a rolling-shutter model starts counting rows: $5+12=17\,\mathrm{ms}$ at a $10\,\mathrm{ms}$ exposure. On the rig at $0.5\,\mathrm{m/s}$ that is $8.5\,\mathrm{mm}$ at the facade, $2.55$ px in camera 1, five times its $\sigma_u=0.5$ px; the same driver on P6's cart camera, $1.0\,\mathrm m$ from its rail and late by the same $17\,\mathrm{ms}$, puts the cart $5.1$ px off, ten times that camera's $0.833\,\mathrm{mm}$ noise.
 > - **Non-example**: a known, constant latency is not an offset. P6's $70\,\mathrm{ms}$ from mid-exposure to force is a delay the controller budgets and predicts across ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]); what corrupts fusion is the part the stamps get wrong.
 > - **Why it matters**: a filter compares each measurement with the state at its stamp, so an offset puts $v\Delta t$ into the innovation as if it were evidence — a bias no $R$ models (3.2 §1) — and it grows with speed, so a system tuned at a walk fails at a trot.
 
@@ -961,14 +1000,14 @@ print("PTP, paths 90/10 us: offset %.1f us, mean delay %.1f us, error %.1f us" %
 *[[04-robotics/geometric-perception-calibration|3.5]]는 픽셀을 광선·깊이·프레임으로 바꾸고, [[04-robotics/sensor-models|3.2]]는 모든 센서를 $z=h(x)+b+n$으로 적는다. 두 페이지 모두 측정값을 주어진 것으로 받는다. 이 페이지는 센서의 뚜껑을 연다. 우물에 쌓이는 광자, 펄스의 비행시간, 처프의 비트, 시계의 눈금이 어떻게 측정값이 되는지, 그리고 그 물리가 어디서 측정을 망가뜨리는지를 본다. 장치 **P2**(평면 2링크 팔), **P5**(1차원 거리 추정), **P6**(레일 위 카트와 그 시계)을 다시 쓴다([[02-foundations/lab-plants|0.6]]).*
 
 > [!note] 왜 배우는가 · Why this matters
-> 이 페이지는 [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택에서 첫 층, 물체·장면 이해 바로 아래의 인식이고, "*저 패널을 프레임에 설치해*"에서 패널과 프레임을 식별하는 단계와 접촉을 보는 단계 밑의 감지가 여기서 나온다([[physical-ai-map|피지컬 AI 지도]]에 그 자리가 표시되어 있다). 이것 없이는 리그가 내놓는 숫자를 그냥 믿게 되고, 움직이는 베이스 위에서는 어떤 알고리즘이 돌기도 전에 그 숫자가 틀린다 — $0.5\,\mathrm{m/s}$에서 판독 끝에 스탬프를 찍은 카메라는 패널을 $8.5\,\mathrm{mm}$, LiDAR 클라우드의 스탬프 하나는 $23\,\mathrm{mm}$ 어긋나게 놓아 둘 다 S1(건설 트랙의 외장 패널 과제, [[05-construction-robotics/site-engineering|2.5]])의 $\pm5\,\mathrm{mm}$를 넘고, 귀환을 하나만 기록하는 LiDAR에게 톱이 일으킨 먼지는 벽이다. 같은 물리가 [[05-construction-robotics/site-perception|5. 현장 인식 §1]](스캔의 간격과 점 오차), [[04-robotics/capstone-panel-contact|26. 캡스톤 §5]](낡음 거리가 된 지연), [[04-robotics/ros2/from-simulation-to-hardware|25.11 §4–§5]](데이터에 스탬프를 찍는 드라이버와 시계), 그리고 학습된 정책이 구멍을 카메라의 $0.5\,\mathrm{mm}$로만 보는 [[05-construction-robotics/imitating-contact|10. 접촉 모방 §1]]에서 다시 나오고, 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])에서는 2블록, 로보틱스 공통 트랙에 속한다. 이 페이지를 마치면 움직이는 현장 리그의 어떤 센서든 패널에서의 밀리미터 오차로 바꾸고, 센서마다 제 물리가 허락하는 일을 맡길 수 있다.
+> 이 페이지는 [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택에서 첫 층, 물체·장면 이해 바로 아래의 인식이고, "*저 패널을 프레임에 설치해*"에서는 패널과 프레임을 식별하는 단계, 그리고 끼움을 수행하는 단계의 마지막 정렬을 받치는 감지가 여기서 나온다([[physical-ai-map|피지컬 AI 지도]]에 그 자리가 표시되어 있다). 이것 없이는 리그가 내놓는 숫자를 그냥 믿게 되고, 움직이는 베이스 위에서는 어떤 알고리즘이 돌기도 전에 그 숫자가 틀린다 — $0.5\,\mathrm{m/s}$에서 판독 끝에 스탬프를 찍은 카메라는 패널을 $8.5\,\mathrm{mm}$, LiDAR 클라우드의 스탬프 하나는 $23\,\mathrm{mm}$ 어긋나게 놓아 둘 다 S1(건설 트랙의 외장 패널 과제, [[05-construction-robotics/site-engineering|2.5]])의 $\pm5\,\mathrm{mm}$를 넘고, 귀환을 하나만 기록하는 LiDAR에게 톱이 일으킨 먼지는 벽이다. 같은 물리가 [[05-construction-robotics/site-perception|5. 현장 인식 §1]](스캔의 간격과 점 오차), [[04-robotics/capstone-panel-contact|26. 캡스톤 §5]](지연을 그사이 움직인 거리로 바꿔 읽는 것), [[04-robotics/ros2/from-simulation-to-hardware|25.11 §4–§5]](데이터에 스탬프를 찍는 드라이버와 시계), 그리고 학습된 정책이 구멍을 카메라의 $0.5\,\mathrm{mm}$로만 보는 [[05-construction-robotics/imitating-contact|10. 접촉 모방 §1]]에서 다시 나오고, 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])에서는 블록 2, 로보틱스 공통 트랙의 45–51회에 속한다. 이 페이지를 마치면 움직이는 현장 리그의 어떤 센서든 패널에서의 밀리미터 오차로 바꾸고, 센서마다 제 물리가 허락하는 일을 맡길 수 있다.
 
 > [!note] 처음이라면 · First pass
-> 두 번 앉아서 끝낸다. **첫째 — 카메라와 시간.** 이 페이지의 대상을 읽고, 그림에서 파사드 위 오차의 크기를 하나씩 찾는다 — $39\,\mathrm{mm}$ 스테레오 막대, $16\,\mathrm{mm}$ LiDAR 점, $5\,\mathrm{mm}$ 블러, $23\,\mathrm{mm}$ 스탬프 오차. 어디서 왔는지는 아직 몰라도 된다. 그다음 §1–§3과 §9를 읽고 계산 절의 1, 2, 5단계를 손으로 따라간다. $1\,\mathrm{m/s}$에서의 노출 창을 묻는 스스로 점검 1로 마무리한다. **둘째 — LiDAR와 장부.** §5를 읽고, 어느 거리부터 LiDAR가 스테레오를 이기는지, 왜 그 답이 제곱근인지 말한다. 3단계와 장부를 따라간 뒤 §10을 돌리고 그 아래 다섯 항목을 읽는다. §4(깊이 카메라), §6(레이더), §7(현장에 들고 갈 표), §8(외부 파라미터)은 두 번째로 읽을 때, 또는 논문이나 현장이 그 센서를 쓸 때 연다. 과제가 그 두 번째 읽기를 마무리한다.
+> 60–90분짜리 두 회, 로보틱스 일정의 굵은 행 45와 49다. **첫 회 — 카메라.** 이 페이지의 대상을 읽고, 그림에서 파사드 위 오차의 크기를 하나씩 찾는다 — $39\,\mathrm{mm}$ 스테레오 막대, $16\,\mathrm{mm}$ LiDAR 점, $5\,\mathrm{mm}$ 블러, $23\,\mathrm{mm}$ 스탬프 오차. 어디서 왔는지는 아직 몰라도 된다. 그다음 §1과 §2를 읽고(접힌 노트는 실무 단계로 미뤄도 된다), $1\,\mathrm{m/s}$에서의 노출 창을 묻는 스스로 점검 1로 마무리한다. **둘째 회 — 시간과 장부.** §9를 읽은 뒤 계산 절의 다섯 단계와 장부를 모두 손으로 따라간다. 2–4단계는 §3의 $\sigma_Z$, §5의 간격, §6의 셀을 공식과 함께 인용하므로, 그 절들의 한 문장 요약을 먼저 읽는다. 실무 단계(Working pass)는 다섯 회를 더한다: §3–§4, §5–§6, §7–§8, §10 실습, 그리고 과제.
 
 ### 이 페이지의 대상 · Running object
 
-**리그.** 3.5의 손목 리그를 도구에 단 **P2**를 건설 트랙의 파사드 패널 과제 S1의 모바일 베이스 위에 올린다([[05-construction-robotics/site-engineering|2.5 현장 로보틱스]]. 앞으로 가리키는 링크일 뿐 선수 지식은 아니다). 베이스의 마스트에 회전식 LiDAR와 FMCW 레이더를 더 달고, 카메라가 파사드를 보게 한 채 파사드에서 $2.0\,\mathrm m$ 떨어져 $0.5\,\mathrm{m/s}$로 파사드를 따라 달린다. P2는 지나가는 내내 멈춰 있으므로 카메라와 마스트의 센서는 하나의 고정된 기하를 유지한다(§8). 랜드마크 $L$은 그 파사드 위의 한 점이다. 다른 페이지에서 그대로 가져오는 것:
+**리그.** 3.5의 손목 리그를 도구에 단 **P2**를 건설 트랙의 파사드 패널 과제 S1의 모바일 베이스 위에 올린다([[05-construction-robotics/site-engineering|2.5 현장 로보틱스]]. 앞으로 가리키는 링크일 뿐 선수 지식은 아니다). 베이스의 마스트에 회전식 LiDAR와 FMCW(주파수 변조 연속파) 레이더를 더 달고, 카메라가 파사드를 보게 한 채 파사드에서 $2.0\,\mathrm m$ 떨어져 $0.5\,\mathrm{m/s}$로 파사드를 따라 달린다. P2는 지나가는 내내 멈춰 있으므로 카메라와 마스트의 센서는 하나의 고정된 기하를 유지한다(§8). 랜드마크 $L$은 그 파사드 위의 한 점이다. 다른 페이지에서 그대로 가져오는 것:
 
 | 대상 | 값 | 출처 |
 |---|---|---|
@@ -977,7 +1016,7 @@ print("PTP, paths 90/10 us: offset %.1f us, mean delay %.1f us, error %.1f us" %
 | P6의 카메라 | $Z_c=1.0\,\mathrm m$에서 $f_x=600$ px, $\sigma_u=0.5$ px($0.833\,\mathrm{mm}$), $50\,\mathrm{Hz}$. 노출 중간에서 힘까지의 예산 $70\,\mathrm{ms}$ | 3.2; **P6** |
 | P5의 거리 센서 | $\sigma_r=10\,\mathrm{mm}$, 오프셋 $b_r=4\,\mathrm{mm}$. P5의 판독값 $12\,\mathrm{cm}$ | 3.2; **P5** |
 
-나머지는 이 페이지가 스스로 고정한 값이다. **계산이 깔끔하도록 고른 교과 숫자이며, 어떤 제품의 데이터시트도 아니다.**
+나머지는 이 페이지가 스스로 고정한 값이다. **계산이 깔끔하도록 고른 교과 숫자이며, 어떤 제품의 데이터시트도 아니다.** 용어는 쓰이는 절에서 정의한다(풀 웰 §1, 발산각 §5, IF 대역과 가상 채널 §6).
 
 | 대상 | 값 |
 |---|---|
@@ -1189,7 +1228,7 @@ print("PTP, paths 90/10 us: offset %.1f us, mean delay %.1f us, error %.1f us" %
   <text x="16" y="410" font-size="11" fill="currentColor" fill-opacity="0.9">S1의 ±5 mm와 같은 크기인 것은 짧은 노출과 참 스탬프를 갖춘 카메라 픽셀뿐이다.</text>
 </svg>
 
-파사드를 지나가는 리그다. 모든 오차를 떨어지는 자리에 축척대로 그렸다. 왼쪽 평면도: $L$에서의 스테레오 깊이 오차(광선 방향 $\pm39\,\mathrm{mm}$), 레이더의 $15\,\mathrm{cm}\times9.5^\circ$ 셀(그 자리에서 폭 $0.33\,\mathrm m$), 파사드 앞 $0.30\,\mathrm m$의 작업자, 파사드를 가로지르는 LiDAR의 $120^\circ$ 훑기($33\,\mathrm{ms}$ 동안 베이스가 $17\,\mathrm{mm}$ 이동). 오른쪽은 $1\,\mathrm{mm}=2$ px로 본 $L$ 주변의 파사드: S1의 $\pm5\,\mathrm{mm}$ 안에 든 $3.3\,\mathrm{mm}$ 카메라 픽셀, 링을 따라 겹치고 링 사이에 $\sim22\,\mathrm{mm}$ 틈을 남기는 $16\,\mathrm{mm}$ LiDAR 점, $10\,\mathrm{ms}$ 노출의 $5\,\mathrm{mm}$ 블러, 그리고 $8.5$와 $23\,\mathrm{mm}$짜리 잘못된 타임스탬프 둘.
+파사드를 지나가는 리그다. 모든 오차를 떨어지는 자리에 축척대로 그렸다. 왼쪽 평면도: $L$에서의 스테레오 깊이 오차(광선 방향 $\pm39\,\mathrm{mm}$), 레이더의 $15\,\mathrm{cm}\times9.5^\circ$ 셀(그 자리에서 폭 $0.33\,\mathrm m$), 파사드 앞 $0.30\,\mathrm m$의 작업자, 파사드를 가로지르는 LiDAR의 $120^\circ$ 훑기($33\,\mathrm{ms}$ 동안 베이스가 $17\,\mathrm{mm}$ 이동). 오른쪽은 $1\,\mathrm{mm}=2$ px로 본 $L$ 주변의 파사드: S1의 $\pm5\,\mathrm{mm}$ 안에 든 $3.3\,\mathrm{mm}$ 카메라 픽셀, 링을 따라 겹치고 $L$ 옆에서 링 사이에 $\sim22\,\mathrm{mm}$ 틈을 남기는 $16\,\mathrm{mm}$ LiDAR 점, $10\,\mathrm{ms}$ 노출의 $5\,\mathrm{mm}$ 블러, 그리고 $8.5$와 $23\,\mathrm{mm}$짜리 잘못된 타임스탬프 둘.
 
 ### 1. 영상 형성: 빛, 노출, 잡음
 
@@ -1219,7 +1258,7 @@ $$E_{\text{image}}\ \propto\ \frac{D^2/Z^2}{f^2/Z^2}=\frac{1}{N^2}$$
 >
 > $$\mathrm{DR}=\frac{S_{\max}}{\sigma_{\text{read}}},\qquad \mathrm{DR}_{\mathrm{dB}}=20\log_{10}\mathrm{DR}$$
 >
-> $S_{\max}$는 풀 웰, $\sigma_{\text{read}}$는 읽기 잡음이다(Hamamatsu의 정의). 리그는 $10{,}000/5=2{,}000$, $66.0\,\mathrm{dB}$($10.97$스톱)이고, 변환기의 계단을 바닥에 넣으면 $64.8\,\mathrm{dB}$다.
+> $S_{\max}$는 풀 웰, $\sigma_{\text{read}}$는 읽기 잡음이다(Hamamatsu의 정의). 리그는 $10{,}000/5=2{,}000$, $66.0\,\mathrm{dB}$($10.97$스톱, 1스톱은 $2$배)이고, 변환기의 계단을 바닥에 넣으면 $64.8\,\mathrm{dB}$다.
 >
 > - **예**: 햇빛 대 그늘은 $2{,}000/200=10$, $20\,\mathrm{dB}$다. $2\,\mathrm{ms}$에서 그늘은 SNR $19.2$로, 해는 $4{,}000\ e^-$로 포화 없이 읽힌다.
 > - **비예**: 낮은 해의 글린트 대 그늘은 $2\times10^6/200$, $80\,\mathrm{dB}$다. 어떤 노출도 둘을 함께 담지 못한다. 글린트는 $5\,\mathrm{\mu s}$ 만에 우물을 채우는데, 그때 그늘은 $1\ e^-$(SNR $0.17$)밖에 없다.
@@ -1247,6 +1286,45 @@ $$E_{\text{image}}\ \propto\ \frac{D^2/Z^2}{f^2/Z^2}=\frac{1}{N^2}$$
 > - **왜 중요한가**: SNR(§1)이 노출의 아래를 막고 블러가 위를 막는다. 그 사이가 움직이는 로봇이 쓸 수 있는 창이다.
 
 **노출 창.** $0.5\,\mathrm{m/s}$에서 그늘이 SNR $10$을 내려면 $t_{\exp}\ge0.632\,\mathrm{ms}$, 블러를 반 픽셀 이하로 하려면 $t_{\exp}\le0.5Z/(fv)=3.333\,\mathrm{ms}$, 해가 포화하지 않으려면 $5.0\,\mathrm{ms}$까지다. 실내의 $10\,\mathrm{ms}$는 두 번 실패한다. $1.5$ px 블러, 그리고 포화한 햇빛 쪽 절반. $2\,\mathrm{m/s}$에서는 위쪽 한계가 $0.833\,\mathrm{ms}$로 내려오고, 빛이 열 분의 일인 해 질 녘에는 아래쪽 한계가 열 배쯤 올라가 위쪽을 넘는다. 그때는 빛(스트로브), 조리개, 느린 베이스만이 돕는다. 게인은 아니다.
+
+<svg viewBox="0 0 560 262" style="max-width:100%;height:auto" role="img" aria-label="움직이는 리그의 노출 창을 노출 시간의 로그 축에 그린 것: 그늘진 파사드는 0.632 ms에서 SNR 10에 닿고, 햇빛 받는 파사드는 5.0 ms에서 포화하며, 블러 반 픽셀은 0.5 m/s에서 3.333 ms, 2 m/s에서 0.833 ms까지 허용하므로 쓸 수 있는 창은 0.5 m/s에서 0.632–3.333 ms, 2 m/s에서 0.632–0.833 ms이고, 실내 10 ms 노출은 두 창 모두의 밖에 있다">
+  <text x="16" y="20" font-size="12" fill="currentColor" font-weight="600">노출 시간, 로그 축 (ms)</text>
+  <text x="16" y="48.0" font-size="11" fill="currentColor">그늘: SNR ≥ 10</text>
+  <line x1="150.0" y1="44.0" x2="540.0" y2="44.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <line x1="285.7" y1="44.0" x2="540.0" y2="44.0" stroke="currentColor" stroke-width="5" stroke-opacity="0.55"/>
+  <text x="16" y="74.0" font-size="11" fill="currentColor">햇빛: 풀 웰 아래</text>
+  <line x1="150.0" y1="70.0" x2="540.0" y2="70.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <line x1="150.0" y1="70.0" x2="438.0" y2="70.0" stroke="currentColor" stroke-width="5" stroke-opacity="0.55"/>
+  <text x="16" y="100.0" font-size="11" fill="currentColor">블러 ≤ 0.5 px, 0.5 m/s</text>
+  <line x1="150.0" y1="96.0" x2="540.0" y2="96.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <line x1="150.0" y1="96.0" x2="408.1" y2="96.0" stroke="currentColor" stroke-width="5" stroke-opacity="0.55"/>
+  <text x="16" y="126.0" font-size="11" fill="currentColor">블러 ≤ 0.5 px, 2 m/s</text>
+  <line x1="150.0" y1="122.0" x2="540.0" y2="122.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.3"/>
+  <line x1="150.0" y1="122.0" x2="306.1" y2="122.0" stroke="currentColor" stroke-width="5" stroke-opacity="0.55"/>
+  <text x="16" y="160.0" font-size="11" fill="currentColor" font-weight="600">0.5 m/s의 창</text>
+  <rect x="285.7" y="149.0" width="122.4" height="14" fill="currentColor" fill-opacity="0.28" stroke="currentColor" stroke-width="1.2"/>
+  <text x="16" y="186.0" font-size="11" fill="currentColor" font-weight="600">2 m/s의 창</text>
+  <rect x="285.7" y="175.0" width="20.3" height="14" fill="currentColor" fill-opacity="0.28" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="285.7" y1="32.0" x2="285.7" y2="210.0" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="306.1" y1="32.0" x2="306.1" y2="210.0" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="408.1" y1="32.0" x2="408.1" y2="210.0" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="438.0" y1="32.0" x2="438.0" y2="210.0" stroke="currentColor" stroke-width="0.9" stroke-opacity="0.6" stroke-dasharray="3 3"/>
+  <line x1="489.0" y1="32.0" x2="489.0" y2="194.0" stroke="currentColor" stroke-width="1.6"/>
+  <text x="489.0" y="28.0" font-size="11" fill="currentColor" text-anchor="middle">실내 10 ms</text>
+  <line x1="150.0" y1="210.0" x2="540.0" y2="210.0" stroke="currentColor" stroke-width="1.0"/>
+  <line x1="150.0" y1="206.0" x2="150.0" y2="214.0" stroke="currentColor" stroke-width="1.0"/>
+  <text x="150.0" y="227.0" font-size="11" fill="currentColor" text-anchor="middle">0.1</text>
+  <line x1="319.5" y1="206.0" x2="319.5" y2="214.0" stroke="currentColor" stroke-width="1.0"/>
+  <text x="319.5" y="227.0" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="489.0" y1="206.0" x2="489.0" y2="214.0" stroke="currentColor" stroke-width="1.0"/>
+  <text x="489.0" y="227.0" font-size="11" fill="currentColor" text-anchor="middle">10</text>
+  <text x="285.7" y="240.0" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.632</text>
+  <text x="306.1" y="252.0" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">0.833</text>
+  <text x="408.1" y="240.0" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">3.333</text>
+  <text x="438.0" y="252.0" font-size="10" fill="currentColor" text-anchor="middle" fill-opacity="0.85">5.0</text>
+</svg>
+
+§1–§2의 제약을 노출 시간의 범위로 로그 축에 그렸다. 그늘진 파사드는 SNR $10$을 내려면 적어도 $0.632$ ms가 필요하고, 햇빛 받는 파사드는 $5.0$ ms가 지나면 포화하며, $2$ m에서 블러 반 픽셀은 $0.5\,\mathrm{m/s}$에서 $3.333$ ms, $2\,\mathrm{m/s}$에서 $0.833$ ms까지만 허용한다. 쓸 수 있는 창은 모두가 성립하는 곳 — $0.5\,\mathrm{m/s}$에서 $0.632$–$3.333$ ms, $2\,\mathrm{m/s}$에서 $0.632$–$0.833$ ms — 이고, 실내 $10$ ms는 두 창 모두의 밖이다.
 
 **롤링 셔터.** 글로벌 셔터는 모든 픽셀을 한꺼번에 시작하고 멈춘다. 롤링 셔터는 행을 차례로 노출하고 행마다 행 시간만큼 어긋나며, 프레임 전체를 읽는 데 행 시간 곱하기 행 수가 걸린다([Basler, *Electronic Shutter Types*](https://docs.baslerweb.com/electronic-shutter-types). 예로 든 값에 행당 $14$와 $35\,\mathrm{\mu s}$가 있다).
 
@@ -1286,7 +1364,7 @@ $$\sigma_d=\sqrt{\sigma_u^2+\sigma_u^2}=\sqrt2\,\sigma_u$$
 
 광선을 가로지르는 방향으로는 같은 픽셀 잡음이 $2\,\mathrm m$에서 $Z\sigma_u/f=1.67\,\mathrm{mm}$일 뿐이다. 스테레오 점은 광선을 따라 늘어난 바늘이고, 폭보다 $\sqrt2\,Z/b=23.6$배 길다.
 
-**스테레오가 표면에 요구하는 것.** 시차는 한 조각을 다른 영상에서 다시 찾을 수 있는 곳에만 있다. 고르게 칠한 패널은 모든 창에 같은 내용을 주어 맞출 봉우리가 없다(3.5 §2.5의 평평한 구조 텐서). 똑같은 패널이 줄지어 있으면 패널마다 좋은 짝이 하나씩 있고, 3.5 §2.6은 틀린 짝이 epipolar 검사를 통과해 $40\,\mathrm{cm}$ 멀리 떨어지는 것을 보여 준다. $\sigma_Z$는 둘 다 값을 매기지 않는다. 짝이 옳다고 가정하기 때문이다.
+**스테레오가 표면에 요구하는 것.** 시차는 한 조각을 다른 영상에서 다시 찾을 수 있는 곳에만 있다. 고르게 칠한 패널은 모든 창에 같은 내용을 주어 맞출 봉우리가 없다(3.5 §2.5의 평평한 구조 텐서). 골판이나 타공판, 똑같은 패널의 줄처럼 무늬가 되풀이되면 주기마다 좋은 짝이 하나씩 있고, 3.5 §2.6은 $2\,\mathrm{cm}$마다 되풀이되는 무늬에서 틀린 짝이 epipolar 검사를 통과해 $40\,\mathrm{cm}$ 멀리 떨어지는 것을 보여 준다. $\sigma_Z$는 둘 다 값을 매기지 않는다. 짝이 옳다고 가정하기 때문이다.
 
 **능동 스테레오.** 적외선 무늬를 쏘는 프로젝터는 민무늬 패널에 무늬를 입힌다. 삼각측량은 여전히 두 카메라 사이에서 한다. Keselman 등은 프로젝터에 바로 그 일 — 매칭을 모호하지 않게 하는 무늬 — 만 맡기고, 무늬가 조밀하고, 광도가 일정하며, 매칭 축을 따라 반복하지 않기를 요구한다. 적외선만 보는 그 카메라는 프로젝터만 비추는 어둠에서도, 해가 장면 자체의 무늬를 비추는 한낮에도 작동한다.
 
@@ -1354,9 +1432,9 @@ $\Delta\varepsilon$은 채널 간격, $\rho_{\text{pts}}$는 제곱미터당 점
 **훑기에는 시간이 걸린다.** 한 바퀴는 $100\,\mathrm{ms}$이고 그동안 베이스는 $50\,\mathrm{mm}$ 간다. 빔이 파사드의 $120^\circ$를 가로지르는 데 $33.3\,\mathrm{ms}$가 걸리므로 클라우드 하나 속 파사드는 $16.7\,\mathrm{mm}$ 번진다. [[04-robotics/state-estimation-slam|3. 상태 추정 §7.2]]가 처방을 준다. deskewing, 곧 점마다 제가 발사된 시각의 센서 자세로 한 시각에 옮겨 놓는 것이다. 그러려면 점마다 시각이 필요한데, ROS 포인트 클라우드는 클라우드 전체에 헤더 스탬프 하나만 싣는다([`sensor_msgs/PointCloud2`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/PointCloud2.msg)). 점별 시각은 드라이버가 필드로 넣을 때만 있고, 센서 자체의 패킷은 열마다 타임스탬프를 실을 수 있다([Ouster, *Sensor Data*](https://static.ouster.dev/sensor-docs/image_route1/image_route2/sensor_data/sensor-data.html)). 교과 LiDAR가 훑기의 시작을 스탬프로 찍으면, $L$을 보는 열은 스탬프보다 $46.1\,\mathrm{ms}$ 뒤에 쏜다. 그 스탬프를 쓰면 베이스 이동 $23.1\,\mathrm{mm}$만큼 어긋난다(§9).
 
 > [!note]- 더 깊이 · Deeper
-> **표면에서 돌아오는 출력.** 빔을 채우고 모든 방향으로 고르게 흩뿌리는 표면(람베르트 면), 반사율 $\rho$, 수직 입사를 생각하자. 펄스 출력 $P_t$의 $\rho$만큼을 축 방향 세기 $\rho P_t/\pi$(스테라디안당)로 돌려보내고, 거리 $R$의 면적 $A_r$ 수신기는 $A_r/R^2$ 스테라디안을 차지하므로 $P_r=\rho P_tA_r/(\pi R^2)$이다. 표면이 빔을 채우면 점의 크기는 약분된다. 제조사는 이런 과녁으로 거리를 말한다. 한 제조사는 반사율 채널을 람베르트 과녁으로 보정하고, 그 눈금은 완전한 흰색보다 $864$배 밝은 재귀반사체까지 이른다(Ouster, *Sensor Data*).
+> **표면에서 돌아오는 출력.** 빔을 채우고 모든 방향으로 고르게 흩뿌리는 표면(람베르트 면), 반사율 $\rho$, 수직 입사를 생각하자. 펄스 출력 $P_t$의 $\rho$만큼을 축 방향 세기 $\rho P_t/\pi$(스테라디안당)로 돌려보내고, 거리 $R$의 면적 $A_r$ 수신기는 $A_r/R^2$ 스테라디안을 차지하므로 $P_r=\rho P_tA_r/(\pi R^2)$이다. 표면이 빔을 채우면 점의 크기는 약분된다. 제조사는 이런 타깃으로 거리를 말한다. 한 제조사는 반사율 채널을 람베르트 타깃으로 보정하고, 그 눈금은 완전한 흰색보다 $864$배 밝은 재귀반사체까지 이른다(Ouster, *Sensor Data*).
 >
-> **펄스 하나, 메아리 여럿.** 패널 모서리와 그 뒤 $0.3\,\mathrm m$의 벽에 걸친 점은 봉우리 둘을 돌려준다. USGS 라이다 규격은 저장한 봉우리들을 이산 귀환, 첫 귀환과 마지막 귀환이라 부르고([USGS glossary](https://www.usgs.gov/ngp-standards-and-specifications/lidar-base-specification-glossary)), 가장 강한 귀환과 두 번째로 강한 귀환을 함께 보고하는 센서는 비, 안개, 철망 너머를 볼 수 있다(Ouster). Phillips 등은 투과율 $2\%$의 먼지구름 너머 재귀반사 과녁까지, $6\%$면 반사율 낮은 과녁까지 여전히 거리를 재는 것도 보였다.
+> **펄스 하나, 메아리 여럿.** 패널 모서리와 그 뒤 $0.3\,\mathrm m$의 벽에 걸친 점은 봉우리 둘을 돌려준다. USGS 라이다 규격은 저장한 봉우리들을 이산 귀환, 첫 귀환과 마지막 귀환이라 부르고([USGS glossary](https://www.usgs.gov/ngp-standards-and-specifications/lidar-base-specification-glossary)), 가장 강한 귀환과 두 번째로 강한 귀환을 함께 보고하는 센서는 비, 안개, 철망 너머를 볼 수 있다(Ouster). Phillips 등은 투과율 $2\%$의 먼지구름 너머 재귀반사 타깃까지, $6\%$면 반사율 낮은 타깃까지 여전히 거리를 재는 것도 보였다.
 >
 > **회전식과 고체식.** 회전식은 발광부를 모터로 돌려 사방을 본다. 고체식은 칩 위의 작은 거울(MEMS)이나 광위상배열로 빔을 돌리거나, 장면 전체를 한꺼번에 비춘다(플래시). Li와 Ibanez-Guzman은 플래시 방식이 모든 거리를 동시에 재므로 훑는 센서가 필요로 하는 운동 보정을 피한다고 적는다.
 
@@ -1406,7 +1484,7 @@ $$\dot R=\frac{\lambda\,\Delta\varphi}{4\pi T_c},\qquad v_{\max}=\frac{\lambda}{
 | 센서 | 어둠 / 낮은 해 | 먼지, 안개, 비 | 민무늬, 반복, 유리 | $2\,\mathrm m$의 깊이 오차 | $2\,\mathrm m$의 표본 | 도달 | 비용 등급 |
 |---|---|---|---|---|---|---|---|
 | 카메라 | 실패: 빛만 모은다 / 글린트 $80\,\mathrm{dB}$가 센서의 $66$을 넘는다(§1) | 시각적 방해물(§6) | 특징이 없거나 틀린 특징(3.5 §2.5–§2.6) | 영상 한 장으로는 없음(3.5 §1) | 픽셀당 $3.3\,\mathrm{mm}$ | 빛이 닿는 어디든; 블러 $fvt_{\exp}/Z$(§2) | 낮음 |
-| 스테레오 쌍 | 카메라와 같음 | 카메라와 같음 | 민무늬 패널에 깊이 없음; 반복 패널에 $40\,\mathrm{cm}$ 오차(3.5 §2.6) | $39.3\,\mathrm{mm}$(§3) | 짝이 맞은 곳에서 $3.3\,\mathrm{mm}$ | $0.56\,\mathrm m$부터; $\sigma_Z\propto Z^2$ | 낮음 |
+| 스테레오 쌍 | 카메라와 같음 | 카메라와 같음 | 민무늬 패널에 깊이 없음; $2\,\mathrm{cm}$마다 되풀이되는 무늬에 $40\,\mathrm{cm}$ 오차(3.5 §2.6) | $39.3\,\mathrm{mm}$(§3) | 짝이 맞은 곳에서 $3.3\,\mathrm{mm}$ | $0.56\,\mathrm m$부터; $\sigma_Z\propto Z^2$ | 낮음 |
 | 능동 스테레오 | 제 무늬로 작동 / 햇빛 받은 무늬로 작동(§3) | 카메라와 같음 | 무늬가 질감을 준다(§3) | 스테레오와 같음 | 스테레오와 같음 | 스테레오와 같음 | 낮음–중간 |
 | ToF 카메라 | 작동 / 강한 햇빛에서 고전(§4) | — | 모서리의 다중 경로, 경계의 떠다니는 픽셀(§4) | $100\,\mathrm{MHz}$에서 $4.77\,\mathrm{mm}$, $1.5\,\mathrm m$ 넘으면 감김(§4) | 픽셀마다 거리 하나 | 두 주파수로 $7.5\,\mathrm m$까지 유일 | 낮음–중간 |
 | 구조광 | 작동 / 해가 센서를 포화시킬 수 있음(§4) | — | 무늬가 보여야 함 | $\propto Z^2/(fb_p)$(§4) | 픽셀마다 거리 하나 | 짧다: 대비 $\propto1/R^2$(§4) | 낮음 |
@@ -1417,7 +1495,7 @@ $$\dot R=\frac{\lambda\,\Delta\varphi}{4\pi T_c},\qquad v_{\max}=\frac{\lambda}{
 - **유리 파사드에 낮은 아침 해.** 카메라는 그늘진 패널에 노출을 맞추고 글린트는 빠진 데이터로 다룬다(§1). LiDAR는 제 빛을 가져오지만 유리를 잃을 수 있다(§5). 노출을 여러 번 나눠 찍는 것은 베이스가 멈춰 있을 때만 돕는다. 움직이면 각 노출이 다른 자리를 보기 때문이다(§9).
 - **절단 작업의 먼지.** 귀환을 하나만 기록하는 LiDAR는 구름을 그 앞쪽 경계의 표면으로 보고하고(§5), 카메라는 대비를 잃고, 레이더는 꿰뚫는다. 구름 밖으로 걸어 나오는 사람을 처음 보는 것은 레이더이고, 움직이는 것으로 본다(§6).
 - **야간 작업.** 카메라는 빛이 필요한데, 짧은 노출 동안만 켜지는 스트로브는 §2의 블러와 스큐까지 없앤다. LiDAR와 레이더는 어둠을 알아채지도 못한다.
-- **똑같은 패널의 줄.** 스테레오는 틀린 패널과 짝지어 모든 기하 검사를 통과할 수 있다(3.5 §2.6). LiDAR는 칠에 속지 않지만, 평평한 파사드에서는 ICP가 파사드를 따라 미끄러질 수 있다(3.5 §4).
+- **되풀이되는 무늬와 똑같은 패널.** 스테레오는 틀린 주기와 짝지어 모든 기하 검사를 통과할 수 있다(3.5 §2.6). LiDAR는 칠에 속지 않지만, 평평한 파사드에서는 ICP가 파사드를 따라 미끄러질 수 있다(3.5 §4).
 
 함정은 "가장 좋은 센서"를 고르려는 것이다. 리그는 물리에 따라 일을 나눈다. LiDAR는 접근 경로의 지도를, 레이더는 먼지와 어둠 속의 사람을 맡고, S1 구멍의 마지막 $\pm5\,\mathrm{mm}$는 카메라의 몫이다 — 가까이서, 짧은 노출로, 제 빛으로, 노출 중간에 스탬프를 찍고, 베이스를 멈추거나 그 운동을 몇 밀리초 안으로 알고서(§9). 계산 절이 각 조건에 값을 매긴다.
 
@@ -1425,9 +1503,9 @@ $$\dot R=\frac{\lambda\,\Delta\varphi}{4\pi T_c},\qquad v_{\max}=\frac{\lambda}{
 
 *한 문장으로:* 모든 센서의 자세를 한 프레임에서 알아야 비로소 리그가 한 기기가 되고, 두 센서 사이의 회전 오차는 투영된 모든 점을 같은 각도만큼 옮긴다 — 픽셀로는 일정하고 밀리미터로는 자라는 양이다.
 
-**문제.** LiDAR는 제 프레임에서, 카메라는 제 프레임에서 $L$을 잰다. 둘을 융합하려면 — 점에 색을 입히고, 영상으로 LiDAR 점에 라벨을 달고, 서로를 검사하려면 — 둘 사이의 변환이 필요하고, 그 변환의 오차는 센서끼리의 불일치와 똑같아 보인다. 발상은 둘 다 볼 수 있는 과녁으로 변환을 보정하고, 회전·병진·시간에 대해 답이 서로 다르게 변하는 시험으로 검사하는 것이다.
+**문제.** LiDAR는 제 프레임에서, 카메라는 제 프레임에서 $L$을 잰다. 둘을 융합하려면 — 점에 색을 입히고, 영상으로 LiDAR 점에 라벨을 달고, 서로를 검사하려면 — 둘 사이의 변환이 필요하고, 그 변환의 오차는 센서끼리의 불일치와 똑같아 보인다. 발상은 둘 다 볼 수 있는 타깃으로 변환을 보정하고, 회전·병진·시간에 대해 답이 서로 다르게 변하는 시험으로 검사하는 것이다.
 
-**보정하기.** [[04-robotics/geometric-perception-calibration|3.5 §5]]는 카메라를 카메라에, 그리고 그리퍼에 보정한다. 카메라와 LiDAR도 공유 과녁을 쓰지만 보는 방식이 다르다. 카메라는 모서리를 픽셀의 몇 분의 일까지 보아 PnP로 카메라 프레임에서의 과녁 자세를 얻고([[04-robotics/geometric-perception-calibration|3.5 §2.7]]), LiDAR는 $7\times35\,\mathrm{mm}$ 간격의 $16\,\mathrm{mm}$ 점으로 평면과 가장자리를 본다. 문서화된 한 작업 흐름은 체커보드를 두 센서에 여러 자세로 보여 주고, 두 프레임에서 모서리를 찾아 그것을 맞추는 강체 변환을 추정하고, LiDAR 점을 영상에 투영해 검사하며, 카메라의 내부 파라미터를 먼저 보정한다([MathWorks](https://www.mathworks.com/help/lidar/ug/lidar-and-camera-calibration.html)). 결과는 LiDAR 좌표를 카메라 좌표로 보내는 외부 파라미터 $T_{CL}=(R_{CL},t_{CL})$이다([[02-foundations/se3-geometry|8. SE(3) §3]]). 여기서 이것이 고정된 변환 하나인 것은 P2가 멈춰 있기 때문이다. 팔이 움직이면 이것은 마스트에서 P2의 엔코더와 3.5 §5의 손-눈 변환을 거쳐 카메라에 이르는 사슬이 되고, 그 오차도 자세에 따라 바뀐다. 리그에서 LiDAR의 축은 앞·왼쪽·위, 카메라 1의 축은 오른쪽·아래·앞을 가리키고, LiDAR는 $0.30\,\mathrm m$ 위에 있으므로 아래를 향한 카메라 $y$로는 $-0.30$이다.
+**보정하기.** [[04-robotics/geometric-perception-calibration|3.5 §5]]는 카메라를 카메라에, 그리고 그리퍼에 보정한다. 카메라와 LiDAR도 공유 타깃을 쓰지만 보는 방식이 다르다. 카메라는 모서리를 픽셀의 몇 분의 일까지 보아 PnP로 카메라 프레임에서의 타깃 자세를 얻고([[04-robotics/geometric-perception-calibration|3.5 §2.7]]), LiDAR는 $7\times35\,\mathrm{mm}$ 간격의 $16\,\mathrm{mm}$ 점으로 평면과 가장자리를 본다. 문서화된 한 작업 흐름은 체커보드를 두 센서에 여러 자세로 보여 주고, 두 프레임에서 모서리를 찾아 그것을 맞추는 강체 변환을 추정하고, LiDAR 점을 영상에 투영해 검사하며, 카메라의 내부 파라미터를 먼저 보정한다([MathWorks](https://www.mathworks.com/help/lidar/ug/lidar-and-camera-calibration.html)). 결과는 LiDAR 좌표를 카메라 좌표로 보내는 외부 파라미터 $T_{CL}=(R_{CL},t_{CL})$이다([[02-foundations/se3-geometry|8. SE(3) §3]]). 여기서 이것이 고정된 변환 하나인 것은 P2가 멈춰 있기 때문이다. 팔이 움직이면 이것은 마스트에서 P2의 엔코더와 3.5 §5의 손–눈 변환을 거쳐 카메라에 이르는 사슬이 되고, 그 오차도 자세에 따라 바뀐다. 리그에서 LiDAR의 축은 앞·왼쪽·위, 카메라 1의 축은 오른쪽·아래·앞을 가리키고, LiDAR는 $0.30\,\mathrm m$ 위에 있으므로 아래를 향한 카메라 $y$로는 $-0.30$이다.
 
 $$R_{CL}=\begin{pmatrix}0&-1&0\\0&0&-1\\1&0&0\end{pmatrix},\qquad t_{CL}=\begin{pmatrix}0\\-0.30\\0\end{pmatrix}\mathrm m$$
 
@@ -1443,7 +1521,7 @@ $R_{CL}$의 각 행은 카메라 축이 어느 LiDAR 축과 같은지를 적은 
 > - **비예**: 가시성 검사 없는 투영. 카메라 1 앞 $1.0\,\mathrm m$, 광축 위의 비계 파이프가 파사드 점 $(0,\ 0,\ 2.0)\,\mathrm m$를 카메라에게서 가린다. $0.30\,\mathrm m$ 위의 LiDAR는 파이프 너머로 그 점을 보고(광선이 파이프 축보다 $0.15\,\mathrm m$ 위를 지난다), 투영은 파사드의 $2.0\,\mathrm m$를 파이프가 $1.0\,\mathrm m$로 찍힌 픽셀 $(320,\ 240)$에 칠한다.
 > - **왜 중요한가**: 영상으로 라벨 단 LiDAR 점이나 LiDAR 깊이를 붙인 영상으로 학습하는 파이프라인은 이 사상의 오차를 잡음 아닌 라벨 잡음, 곧 매 프레임 같은 어긋남으로 물려받는다.
 
-**1도가 거리에서 하는 일.** $R_{CL}$에 수직축 둘레 $1^\circ$ 오차를 주면 $L$은 $11.18$ px, $10\,\mathrm m$의 점은 $10.51$ px 움직인다. 둘 다 $f\,\delta\theta=10.47$ px 근처인데, 회전은 모든 광선을 같은 각도만큼 돌리기 때문이다. 밀리미터로는 회전축에서 멀수록 자란다. $L$에서 $36.0\,\mathrm{mm}$(3.5 §3의 손-눈 수치), $10\,\mathrm m$에서 $174.7$이다. $1\,\mathrm{cm}$ 병진 오차는 그 반대다. 모든 거리에서 $1\,\mathrm{cm}$이고, 픽셀로는 $f\delta t/Z$ — $2\,\mathrm m$에서 $3.00$ px, $10$에서 $0.60$ px다.
+**1도가 거리에서 하는 일.** $R_{CL}$에 수직축 둘레 $1^\circ$ 오차를 주면 $L$은 $11.18$ px, $10\,\mathrm m$의 점은 $10.51$ px 움직인다. 둘 다 $f\,\delta\theta=10.47$ px 근처인데, 회전은 모든 광선을 같은 각도만큼 돌리기 때문이다. 밀리미터로는 회전축에서 멀수록 자란다. $L$에서 $36.0\,\mathrm{mm}$(3.5 §3의 손–눈 수치), $10\,\mathrm m$에서 $174.7$이다. $1\,\mathrm{cm}$ 병진 오차는 그 반대다. 모든 거리에서 $1\,\mathrm{cm}$이고, 픽셀로는 $f\delta t/Z$ — $2\,\mathrm m$에서 $3.00$ px, $10$에서 $0.60$ px다.
 
 **건전성 검사.** 날카로운 깊이 경계 — 패널 모서리, 기둥 — 가 있는 장면의 LiDAR 점을 영상에 투영하고, 투영된 경계와 영상의 경계 사이 어긋남을 두 거리에서 잰다. 가까이서나 멀리서나 픽셀 수가 같으면 회전, 거리에 따라 줄면 병진, 베이스의 속도에 따라 변하면 외부 파라미터가 아니라 시간이다(§9). 함정은 움직이면서 검사하는 것이다. 먼저 베이스를 멈추고 해야 시간이 기하로 둔갑하지 못한다.
 
@@ -1465,9 +1543,9 @@ $\Delta t$ 동안 리그가 $v\Delta t$를 가기 때문이고, 각속도 $\omeg
 >
 > $v$는 상대 속도, $\Delta t$는 오프셋, $\omega$는 각속도, $R$은 거리다. 틀린 시각에 융합된 점의 오차다.
 >
-> - **예**: 리그의 영상을 노출 중간이 아니라 판독 끝에 찍는 드라이버는 $t_{\exp}/2$에 판독 시간을 더한 만큼 늦다. 롤링 셔터 모델이 행을 세기 시작하는 첫 행의 노출 중간에서 센 값으로, $10\,\mathrm{ms}$ 노출이면 $5+12=17\,\mathrm{ms}$다. 그렇게 읽히는 카메라는 $0.5\,\mathrm{m/s}$로 가는 P6의 카트에서 $8.5\,\mathrm{mm}$, P6 카메라로 $5.1$ px 어긋나고, 이는 제 잡음 $0.833\,\mathrm{mm}$의 열 배다.
+> - **예**: 리그의 영상을 노출 중간이 아니라 판독 끝에 찍는 드라이버는 $t_{\exp}/2$에 판독 시간을 더한 만큼 늦다. 롤링 셔터 모델이 행을 세기 시작하는 첫 행의 노출 중간에서 센 값으로, $10\,\mathrm{ms}$ 노출이면 $5+12=17\,\mathrm{ms}$다. $0.5\,\mathrm{m/s}$의 리그에서 그것은 파사드에서 $8.5\,\mathrm{mm}$, 카메라 1에서 $2.55$ px로 그 $\sigma_u=0.5$ px의 다섯 배다. 같은 드라이버를 레일에서 $1.0\,\mathrm m$ 떨어진 P6 카트의 카메라에 써서 똑같이 $17\,\mathrm{ms}$ 늦으면 카트가 $5.1$ px 어긋나, 그 카메라 잡음 $0.833\,\mathrm{mm}$의 열 배다.
 > - **비예**: 알려진 일정한 지연은 오프셋이 아니다. 노출 중간에서 힘까지의 P6 $70\,\mathrm{ms}$는 제어기가 예산에 넣고 예측으로 건너가는 지연이다([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]). 융합을 망치는 것은 스탬프가 틀리게 적는 부분이다.
-> - **왜 중요한가**: 필터는 측정을 그 스탬프 시각의 상태와 비교하므로, 오프셋은 $v\Delta t$를 증거처럼 innovation에 넣는다 — 어떤 $R$도 모델링하지 못하는 편향이다(3.2 §1). 그리고 속도와 함께 자라므로, 걸음 속도로 조정한 시스템은 뛰는 속도에서 실패한다.
+> - **왜 중요한가**: 필터는 측정을 그 스탬프 시각의 상태와 비교하므로, 오프셋은 $v\Delta t$를 증거처럼 혁신(innovation)에 넣는다 — 어떤 $R$도 모델링하지 못하는 편향이다(3.2 §1). 그리고 속도와 함께 자라므로, 걸음 속도로 조정한 시스템은 뛰는 속도에서 실패한다.
 
 **영상은 어느 순간인가?** §2의 줄은 노출 중간에 점이 있던 자리를 중심으로 하므로, 영상의 기하가 속하는 순간은 노출 중간이고 P6의 예산도 거기서 시작한다. ROS 영상 메시지는 영상의 획득 시각만 요구하고([`sensor_msgs/Image`](https://github.com/ros2/common_interfaces/blob/jazzy/sensor_msgs/msg/Image.msg)) 어느 순간인지는 말하지 않으므로, 드라이버의 스탬프는 가정하지 말고 확인해야 한다. 롤링 셔터는 행마다 제 노출 중간을 주어 위에서 아래까지 $12\,\mathrm{ms}$ 차이가 나고, LiDAR 클라우드의 스탬프 하나는 $L$을 보는 열을 deskewing 전까지 $23.1\,\mathrm{mm}$($6.92$ px) 어긋나게 둔다(§5).
 

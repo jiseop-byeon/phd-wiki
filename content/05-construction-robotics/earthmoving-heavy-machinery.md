@@ -8,8 +8,8 @@ mastery-when: "Raise to Mastery when this task stream or deployment layer is the
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[05-construction-robotics/site-engineering|2.5 Site Robotics §2, §4]] (S2, the error budget and the time denominator) · [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 §1]] (the Jacobian: how an angle error moves the tip) · [[04-robotics/robot-systems-deployment|10. Robot Systems §3]] (latency, and why a delay is a distance) · [[02-foundations/probability|3. Probability §3, §6]] (the Gaussian, and its tail through erf, for reading an error budget) · [[04-robotics/contact-force-tactile|9. Contact]] · [[04-robotics/mpc|7. MPC]] · [[02-foundations/rl-basics|7. RL Basics]] and [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1, §4]] (imitation, and RL fine-tuning on a real machine) · [[04-robotics/hri-safety|11. HRI & Safety §1]] (the autonomy spectrum)
-> [[05-construction-robotics/site-engineering|2.5 현장 로보틱스 §2, §4]](S2, 오차 예산과 시간 분모) · [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 §1]](야코비안: 각도 오차가 날 끝을 옮기는 방식) · [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]](지연, 그리고 지연이 왜 거리인가) · [[02-foundations/probability|3. 확률 §3, §6]](오차 예산을 읽기 위한 가우시안과 erf로 쓴 그 꼬리) · [[04-robotics/contact-force-tactile|9. 접촉]] · [[04-robotics/mpc|7. MPC]] · [[02-foundations/rl-basics|7. RL 기초]]와 [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1, §4]](모방, 그리고 실기계 위의 RL 파인튜닝) · [[04-robotics/hri-safety|11. HRI·안전 §1]](자율성 스펙트럼)
+> [[05-construction-robotics/site-engineering|2.5 Site Robotics §2, §4]] (S2, the error budget and the time denominator) · [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 §2]] (the Jacobian: how an angle error moves the tip) · [[04-robotics/robot-systems-deployment|10. Robot Systems §3]] (latency, and why a delay is a distance) · [[02-foundations/probability|3. Probability §3, §6]] (the Gaussian, and its tail through erf, for reading an error budget) · [[04-robotics/contact-force-tactile|9. Contact]] · [[04-robotics/mpc|7. MPC]] · [[02-foundations/rl-basics|7. RL Basics]] and [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §1, §4]] (imitation, and RL fine-tuning on a real machine) · [[04-robotics/hri-safety|11. HRI & Safety §1]] (the autonomy spectrum)
+> [[05-construction-robotics/site-engineering|2.5 현장 로보틱스 §2, §4]](S2, 오차 예산과 시간 분모) · [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 §2]](야코비안: 각도 오차가 날 끝을 옮기는 방식) · [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]](지연, 그리고 지연이 왜 거리인가) · [[02-foundations/probability|3. 확률 §3, §6]](오차 예산을 읽기 위한 가우시안과 erf로 쓴 그 꼬리) · [[04-robotics/contact-force-tactile|9. 접촉]] · [[04-robotics/mpc|7. MPC]] · [[02-foundations/rl-basics|7. RL 기초]]와 [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §1, §4]](모방, 그리고 실기계 위의 RL 파인튜닝) · [[04-robotics/hri-safety|11. HRI·안전 §1]](자율성 스펙트럼)
 
 ## English
 
@@ -219,7 +219,7 @@ almost everywhere.
 
 $$z_{\text{tip}}=z_0+L_1\sin\varphi_1+L_2\sin\varphi_2+L_3\sin\varphi_3$$
 
-which at the drawing pose is $1.0+2.5\sin(-10^\circ)+1.3\sin(-70^\circ)+0.6\sin(-35^\circ)=1.0-0.434-1.222-0.344=-1.000\,\mathrm{m}$, on the grade. An error in any one measurement moves the tip by the partial derivative with respect to that measurement times the error — the Jacobian's first-order reasoning ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 §1]]), applied to sensor errors instead of joint rates — so
+which at the drawing pose is $1.0+2.5\sin(-10^\circ)+1.3\sin(-70^\circ)+0.6\sin(-35^\circ)=1.0-0.434-1.222-0.344=-1.000\,\mathrm{m}$, on the grade. An error in any one measurement moves the tip by the partial derivative with respect to that measurement times the error — the Jacobian's first-order reasoning ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 §2]]), applied to sensor errors instead of joint rates — so
 
 $$\delta z_{\text{tip}}=\delta z_0+\sum_{i=1}^{3}L_i\cos\varphi_i\,\delta\varphi_i$$
 
@@ -624,7 +624,7 @@ flowchart LR
 
 $$z_{\text{tip}}=z_0+L_1\sin\varphi_1+L_2\sin\varphi_2+L_3\sin\varphi_3$$
 
-이고, 그림의 자세에서 $1.0+2.5\sin(-10^\circ)+1.3\sin(-70^\circ)+0.6\sin(-35^\circ)=1.0-0.434-1.222-0.344=-1.000\,\mathrm{m}$, 바닥 고저 위다. 어느 한 측정의 오차든 날 끝을 그 측정에 대한 편미분 곱하기 오차만큼 옮긴다. 관절 속도 대신 센서 오차에 적용한 야코비안의 1차 추론이다([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 §1]]). 그래서
+이고, 그림의 자세에서 $1.0+2.5\sin(-10^\circ)+1.3\sin(-70^\circ)+0.6\sin(-35^\circ)=1.0-0.434-1.222-0.344=-1.000\,\mathrm{m}$, 바닥 고저 위다. 어느 한 측정의 오차든 날 끝을 그 측정에 대한 편미분 곱하기 오차만큼 옮긴다. 관절 속도 대신 센서 오차에 적용한 야코비안의 1차 추론이다([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR Ch.05 §2]]). 그래서
 
 $$\delta z_{\text{tip}}=\delta z_0+\sum_{i=1}^{3}L_i\cos\varphi_i\,\delta\varphi_i$$
 

@@ -15,8 +15,11 @@ mastery-when: "Raise to Mastery when sensor modelling, inertial calibration or v
 
 *Stands on 3. Probability, 6. Signal Processing and 3. State Estimation. A later use of plant **P6**, which ROS 2, 10. Robot Systems and MR ch.13 already drive; here it carries the sensors whose noise models those pages, and 3. State Estimation's filters, take as given.*
 
+> [!note] Why this matters · 왜 배우는가
+> This page is the first layer of the physical-AI stack in [[07-research-program/index|7. Research Program §5]], perception, at the point where a sensor's number is written down with its errors; in *"install that panel on the frame"* it serves step 2, *identify panel and frame*, where the range sensor's and the camera's $R$ decide how far the panel's estimate can be trusted, and step 6, *detect contact*, where a sensor's bias and delay decide when contact is seen (its chip sits in the perception band of the [[physical-ai-map|Physical AI Map]]). Without it noise and bias are filed together and a filter trusts what it should not: a hundred range readings average the noise down to $1$ mm but leave the $4$ mm mounting offset untouched, so at the moment of contact the averaged range still reads $4$ mm until $b_r$ is calibrated (§5), and an IMU that looks precise per sample has drifted $257$ mm after $10$ s, $245$ mm of it a gyro bias of $1.5\times10^{-4}$ rad/s reaching position through gravity (the Worked case). These are the models the filters of [[04-robotics/state-estimation-slam|3. State Estimation §5]] take as given, and they return in [[04-robotics/geometric-perception-calibration|3.5 §5]] (the $0.5$ px marker noise that limits a calibration), [[04-robotics/perception-sensors-rigs|3.6 §1–§2 and §9]] (where a pixel's noise and a stamp's delay come from) and [[05-construction-robotics/site-perception|5. Site Perception §1]] (a scan point's error, bias against noise); on the dissertation path ([[07-research-program/index|7. Research Program §8]]) the page belongs to block 2, the robotics common track, as robotics sessions 32–36. After it you can write any sensor as $z=h(x)+b+n$, turn a datasheet density into the $Q$ or $R$ a filter needs, and read $N$, $B$ and $K$ off an Allan plot.
+
 > [!note] First pass · 처음이라면
-> Read the Running object table and the Worked case, then §1 (the one form every sensor is written in), §2 (a density becomes a per-sample σ) and §3 (what integration does to each error term), and run the listing in §7. §4–§6 are what you open when an encoder's $R$, a range sensor's outliers or an Allan plot in a paper needs reading; §8 is where every number on the page goes in a Kalman filter.
+> About three sessions of 60–90 minutes, the bold rows 32–34 of the robotics schedule. **Session 1:** the Running object, the picture and the Worked case — steps 1, 2 and 5 by hand, steps 3 and 4 read as a preview. **Session 2:** §1–§3, then redo the Worked case's $1$ s column from §3's growth laws; end with self-checks 1 and 2. **Session 3:** §6's definition box and slope table, then run §7 and set its Part 1 and Part 4 against the page; end with self-check 5. §4, §5, the rest of §6 and §8 are the second pass, read before you tune a filter's $Q$ and $R$; the problem set closes the page.
 
 ### Running object · 이 페이지의 대상
 
@@ -27,26 +30,28 @@ mastery-when: "Raise to Mastery when sensor modelling, inertial calibration or v
 | $\Delta$ | $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$ | one encoder count, from **P6** |
 | $f$, $\Delta t$ | $200\,\mathrm{Hz}$, $5\,\mathrm{ms}$ | the control rate of **P6**; the encoder and the IMU are sampled here |
 | $f_v$ | $50\,\mathrm{Hz}$ | the vision rate of **P6**; the camera and the range sensor report here |
-| $N_a$ | $1.0\times10^{-3}\ \mathrm{(m/s^2)/\sqrt{Hz}}$ | accelerometer white-noise density ($102\,\mathrm{\mu g/\sqrt{Hz}}$) |
-| $B_a$ | $5.0\times10^{-4}\ \mathrm{m/s^2}$ | accelerometer bias instability ($51\,\mathrm{\mu g}$) |
-| $K_a$ | $2.0\times10^{-5}\ \mathrm{(m/s^2)/\sqrt{s}}$ | accelerometer bias random walk |
-| $N_g$ | $1.0\times10^{-4}\ \mathrm{(rad/s)/\sqrt{Hz}}$ | gyro white-noise density ($0.344\,°/\sqrt{\mathrm h}$) |
-| $B_g$ | $1.5\times10^{-4}\ \mathrm{rad/s}$ | gyro bias instability ($30.9\,°/\mathrm h$) |
-| $K_g$ | $2.0\times10^{-6}\ \mathrm{(rad/s)/\sqrt{s}}$ | gyro bias random walk |
+| $N_a$ | $1.0\times10^{-3}\ \mathrm{(m/s^2)/\sqrt{Hz}}$ | accelerometer white-noise density ($102\,\mathrm{\mu g/\sqrt{Hz}}$; §2) |
+| $B_a$ | $5.0\times10^{-4}\ \mathrm{m/s^2}$ | accelerometer bias instability ($51\,\mathrm{\mu g}$; §3) |
+| $K_a$ | $2.0\times10^{-5}\ \mathrm{(m/s^2)/\sqrt{s}}$ | accelerometer bias random walk (§3) |
+| $N_g$ | $1.0\times10^{-4}\ \mathrm{(rad/s)/\sqrt{Hz}}$ | gyro white-noise density ($0.344\,°/\sqrt{\mathrm h}$; §2) |
+| $B_g$ | $1.5\times10^{-4}\ \mathrm{rad/s}$ | gyro bias instability ($30.9\,°/\mathrm h$; §3) |
+| $K_g$ | $2.0\times10^{-6}\ \mathrm{(rad/s)/\sqrt{s}}$ | gyro bias random walk (§3) |
 | $\sigma_r$, $b_r$ | $10\,\mathrm{mm}$, $4\,\mathrm{mm}$ | range-sensor noise (the $R = 1\,\mathrm{cm}^2$ of P5, the catalog's range estimate, [[02-foundations/lab-plants\|0.6]]) and its mounting offset |
 | $f_x$, $Z_c$, $\sigma_u$ | $600\,\mathrm{px}$, $1.0\,\mathrm{m}$, $0.5\,\mathrm{px}$ | camera focal length, its distance from the rail, pixel noise of the marker detection |
 | $g$ | $9.81\,\mathrm{m/s^2}$ | gravity, as in **P2**, the catalog's planar arm ([[02-foundations/lab-plants\|0.6]]) |
 
-The accelerometer's axis lies along the rail. The gyro's axis is horizontal and across the rail, so it measures the cart's pitch rate. On P6's level rail the true pitch and pitch rate are both zero, but the dead-reckoning loop of §3 integrates the gyro anyway to know the accelerometer's tilt, because a strapdown loop cannot assume its platform stays level. Every radian that integral reports is therefore error, and gravity turns it into a false acceleration.
+$N$, $B$ and $K$ are the names IEEE Std 952 gives the three noise terms. They are not the Kalman gain $K$ or the input matrix $B$ of [[04-robotics/state-estimation-slam|3. State Estimation §5]], nor that page's $N$ for particles.
 
-**The IMU values are illustrative.** $N$ and $B$ are of the order found on MEMS inertial parts, and they are not any product's datasheet. The gyro's ratio of $B$ to $N$ puts its flat Allan floor near $1\,\mathrm{s}$, so a few minutes of simulated data show it. A gyro whose floor is lower relative to its white noise reaches it later, since the floor begins at $\tau_1 = (N/0.664B)^2$ (§6); the problem set's upgraded gyro reaches it at $25\,\mathrm{s}$, which is why Allan tests on real sensors are usually logged for hours. $K$ is set small enough for the floor to survive, and §7's sweep raises it. The camera borrows the focal length of 3.5's rig. The range sensor has P5's noise, so 3. State Estimation's $R = 1\,\mathrm{cm}^2$ applies to it unchanged; the offset is this page's addition.
+The accelerometer's axis lies along the rail. The gyro's axis is horizontal and across the rail, so it measures the cart's pitch rate. On P6's level rail the true pitch and pitch rate are both zero, but the dead-reckoning loop of §3 integrates the gyro anyway to know the accelerometer's tilt, because a strapdown loop — an IMU bolted to the body with no gimbal to hold it level, written out in §3 — cannot assume its platform stays level. Every radian that integral reports is therefore error, and gravity turns it into a false acceleration.
 
-*Scope: this page teaches the noise and bias models of five sensors on one cart, how a noise density becomes a per-sample σ, what dead reckoning does to each error term, when quantization is noise, and how the Allan deviation separates the terms. It does not teach the filters that consume these numbers ([[04-robotics/state-estimation-slam|3. State Estimation]]), the camera geometry behind a pixel or the extrinsic calibration between sensors ([[04-robotics/geometric-perception-calibration|3.5 §5]]), or multi-axis inertial navigation on SE(3), whose rotation algebra is [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]].*
+**The IMU values are illustrative.** $N$ and $B$ are of the order found on MEMS inertial parts (micro-electro-mechanical systems, the etched-silicon sensors of phones and drones), and they are not any product's datasheet; §6 says why the gyro's pair was chosen. $K$ is set small enough that its random walk rises past the floor only after about two hours ($\tau_2 = 7400\,\mathrm s$, §6), and §7's sweep raises it. The camera borrows the focal length of 3.5's rig. The range sensor has P5's noise, so 3. State Estimation's $R = 1\,\mathrm{cm}^2$ applies to it unchanged; the offset is this page's addition.
+
+*Scope: this page teaches the noise and bias models of five sensors on one cart, how a noise density becomes a per-sample σ, what dead reckoning does to each error term, when quantization is noise, and how the Allan deviation separates the terms. It does not teach the filters that consume these numbers ([[04-robotics/state-estimation-slam|3. State Estimation]]), the camera geometry behind a pixel or the extrinsic calibration between sensors ([[04-robotics/geometric-perception-calibration|3.5 §1 and §5]]), or multi-axis inertial navigation on SE(3), whose rotation algebra is [[02-foundations/se3-geometry|8. 3D Geometry & SE(3)]].*
 
 ### The picture · 그림으로 먼저 보기
 
 <svg viewBox="0 0 560 379" style="max-width:100%;height:auto" role="img" aria-label="Two log-log panels, on the left the P6 gyro's Allan deviation with its white-noise, bias-instability and random-walk asymptotes, tau1 at 1 s, tau2 at 7400 s, the 15 s tick of a 5-minute record and the N, B and K reading marks, and on the right the dead-reckoning position error against horizon with the flat encoder, camera and range-sensor lines, the four IMU growth laws, their total and its crossings at 0.38, 1.09 and 3.21 s">
-  <text x="16" y="20" font-size="11.5" font-weight="bold" fill="currentColor">Left: gyro Allan deviation σ<tspan dy="3" font-size="9.5">A</tspan><tspan dx="3.2" dy="-3">(rad/s)</tspan></text>
+  <text x="16" y="20" font-size="11.5" font-weight="bold" fill="currentColor">Left: gyro Allan deviation σ<tspan dy="3" font-size="10">A</tspan><tspan dx="3.2" dy="-3">(rad/s)</tspan></text>
   <path d="M57.4 34V224 M95.4 34V224 M133.4 34V224 M171.4 34V224 M209.4 34V224 M247.4 34V224" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.16"/>
   <path d="M46 186H285.4 M46 148H285.4 M46 110H285.4 M46 72H285.4" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.16"/>
   <rect x="46" y="34" width="239.4" height="190" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
@@ -56,14 +61,14 @@ The accelerometer's axis lies along the rail. The gyro's axis is horizontal and 
   <text x="133.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">1</text>
   <text x="171.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10</text>
   <text x="209.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">100</text>
-  <text x="247.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">3</tspan></text>
-  <text x="285.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">4</tspan></text>
-  <text x="41" y="228" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−7</tspan></text>
-  <text x="41" y="190" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−6</tspan></text>
-  <text x="41" y="152" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−5</tspan></text>
-  <text x="41" y="114" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−4</tspan></text>
-  <text x="41" y="76" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−3</tspan></text>
-  <text x="41" y="38" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−2</tspan></text>
+  <text x="247.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10<tspan dy="-4.5" font-size="10">3</tspan></text>
+  <text x="285.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10<tspan dy="-4.5" font-size="10">4</tspan></text>
+  <text x="41" y="228" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−7</tspan></text>
+  <text x="41" y="190" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−6</tspan></text>
+  <text x="41" y="152" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−5</tspan></text>
+  <text x="41" y="114" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−4</tspan></text>
+  <text x="41" y="76" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−3</tspan></text>
+  <text x="41" y="38" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−2</tspan></text>
   <text x="165.7" y="256" font-size="11" text-anchor="middle" fill="currentColor">cluster time τ (s)</text>
   <path d="M46 66.3 L46.6 66.6 L47.2 66.9 L47.8 67.2 L48.4 67.5 L49 67.8 L49.6 68.1 L50.2 68.4 L50.8 68.7 L51.4 69 L52 69.3 L52.6 69.6 L53.2 69.9 L53.8 70.2 L54.4 70.5 L55 70.8 L55.6 71.1 L56.2 71.4 L56.8 71.7 L57.4 72 L58 72.3 L58.6 72.6 L59.2 72.9 L59.8 73.2 L60.4 73.5 L61 73.8 L61.6 74.1 L62.2 74.4 L62.8 74.7 L63.4 75 L64 75.3 L64.6 75.6 L65.2 75.9 L65.8 76.2 L66.4 76.5 L67 76.8 L67.6 77.1 L68.2 77.4 L68.8 77.7 L69.4 78 L70 78.3 L70.6 78.6 L71.2 78.9 L71.8 79.2 L72.4 79.5 L73 79.8 L73.6 80.1 L74.2 80.4 L74.8 80.7 L75.4 81 L76 81.3 L76.6 81.6 L77.2 81.9 L77.8 82.2 L78.4 82.5 L79 82.8 L79.6 83.1 L80.2 83.4 L80.8 83.7 L81.4 84 L82 84.3 L82.6 84.6 L83.2 84.9 L83.8 85.2 L84.4 85.5 L85 85.8 L85.6 86.1 L86.2 86.4 L86.8 86.7 L87.4 87 L88 87.3 L88.6 87.6 L89.2 87.9 L89.8 88.2 L90.4 88.5 L91 88.8 L91.6 89.1 L92.2 89.4 L92.8 89.7 L93.4 90 L94 90.3 L94.6 90.6 L95.2 90.9 L95.8 91.2 L96.4 91.5 L97 91.8 L97.6 92.1 L98.2 92.4 L98.8 92.7 L99.4 93 L100 93.3 L100.6 93.6 L101.2 93.9 L101.8 94.2 L102.4 94.5 L103 94.8 L103.6 95.1 L104.2 95.4 L104.8 95.7 L105.4 96 L106 96.3 L106.6 96.6 L107.2 96.9 L107.8 97.2 L108.4 97.5 L109 97.8 L109.6 98.1 L110.2 98.4 L110.8 98.7 L111.4 99 L112 99.3 L112.6 99.6 L113.2 99.9 L113.8 100.2 L114.4 100.5 L115 100.8 L115.6 101.1 L116.2 101.4 L116.8 101.7 L117.4 102 L118 102.3 L118.6 102.6 L119.2 102.9 L119.8 103.2 L120.4 103.5 L121 103.8 L121.6 104.1 L122.2 104.4 L122.8 104.7 L123.4 105 L124 105.3 L124.6 105.6 L125.2 105.9 L125.8 106.2 L126.4 106.5 L127 106.8 L127.6 107.1 L128.2 107.4 L128.8 107.7 L129.4 108 L130 108.3 L130.6 108.6 L131.2 108.9 L131.8 109.2 L132.4 109.5 L133 109.8 L133.6 110.1 L134.2 110.4 L134.8 110.7 L135.4 111 L136 111.3 L136.6 111.6 L137.2 111.9 L137.8 112.2 L138.4 112.5 L139 112.8 L139.6 113.1 L140.2 113.4 L140.8 113.7 L141.4 114 L142 114.3 L142.6 114.6 L143.2 114.9 L143.8 115.2 L144.4 115.5 L145 115.8 L145.6 116.1 L146.2 116.4 L146.8 116.7 L147.4 117 L148 117.3 L148.6 117.6 L149.2 117.9 L149.8 118.2 L150.4 118.5 L151 118.8 L151.6 119.1 L152.2 119.4 L152.8 119.7 L153.4 120 L154 120.3 L154.6 120.6 L155.2 120.9 L155.8 121.2 L156.4 121.5 L157 121.8 L157.6 122.1 L158.2 122.4 L158.8 122.7 L159.4 123 L160 123.3 L160.6 123.6 L161.2 123.9 L161.8 124.2 L162.4 124.5 L163 124.8 L163.6 125.1 L164.2 125.4 L164.8 125.7 L165.4 126 L166 126.3 L166.6 126.6 L167.2 126.9 L167.8 127.2 L168.4 127.5 L169 127.8 L169.6 128.1 L170.2 128.4 L170.8 128.7 L171.4 129 L172 129.3 L172.6 129.6 L173.2 129.9 L173.8 130.2 L174.4 130.5 L175 130.8 L175.6 131.1 L176.2 131.4 L176.8 131.7 L177.4 132 L178 132.3 L178.6 132.6 L179.2 132.9 L179.8 133.2 L180.4 133.5 L181 133.8 L181.6 134.1 L182.2 134.4 L182.8 134.7 L183.4 135 L184 135.3 L184.6 135.6 L185.2 135.9 L185.8 136.2 L186.4 136.5 L187 136.8 L187.6 137.1 L188.2 137.4 L188.8 137.7 L189.4 138 L190 138.3 L190.6 138.6 L191.2 138.9 L191.8 139.2 L192.4 139.5 L193 139.8 L193.6 140.1 L194.2 140.4 L194.8 140.7 L195.4 141 L196 141.3 L196.6 141.6 L197.2 141.9 L197.8 142.2 L198.4 142.5 L199 142.8 L199.6 143.1 L200.2 143.4 L200.8 143.7 L201.4 144 L202 144.3 L202.6 144.6 L203.2 144.9 L203.8 145.2 L204.4 145.5 L205 145.8 L205.6 146.1 L206.2 146.4 L206.8 146.7 L207.4 147 L208 147.3 L208.6 147.6 L209.2 147.9 L209.8 148.2 L210.4 148.5 L211 148.8 L211.6 149.1 L212.2 149.4 L212.8 149.7 L213.4 150 L214 150.3 L214.6 150.6 L215.2 150.9 L215.8 151.2 L216.4 151.5 L217 151.8 L217.6 152.1 L218.2 152.4 L218.8 152.7 L219.4 153 L220 153.3 L220.6 153.6 L221.2 153.9 L221.8 154.2 L222.4 154.5 L223 154.8 L223.6 155.1 L224.2 155.4 L224.8 155.7 L225.4 156 L226 156.3 L226.6 156.6 L227.2 156.9 L227.8 157.2 L228.4 157.5 L229 157.8 L229.6 158.1 L230.2 158.4 L230.8 158.7 L231.4 159 L232 159.3 L232.6 159.6 L233.2 159.9 L233.8 160.2 L234.4 160.5 L235 160.8 L235.6 161.1 L236.2 161.4 L236.8 161.7 L237.4 162 L238 162.3 L238.6 162.6 L239.2 162.9 L239.8 163.2 L240.4 163.5 L241 163.8 L241.6 164.1 L242.2 164.4 L242.8 164.7 L243.4 165 L244 165.3 L244.6 165.6 L245.2 165.9 L245.8 166.2 L246.4 166.5 L247 166.8 L247.6 167.1 L248.2 167.4 L248.8 167.7 L249.4 168 L250 168.3 L250.6 168.6 L251.2 168.9 L251.8 169.2 L252.4 169.5 L253 169.8 L253.6 170.1 L254.2 170.4 L254.8 170.7 L255.4 171 L256 171.3 L256.6 171.6 L257.2 171.9 L257.8 172.2 L258.4 172.5 L259 172.8 L259.6 173.1 L260.2 173.4 L260.8 173.7 L261.4 174 L262 174.3 L262.6 174.6 L263.2 174.9 L263.8 175.2 L264.4 175.5 L265 175.8 L265.6 176.1 L266.2 176.4 L266.8 176.7 L267.4 177 L268 177.3 L268.6 177.6 L269.2 177.9 L269.8 178.2 L270.4 178.5 L271 178.8 L271.6 179.1 L272.2 179.4 L272.8 179.7 L273.4 180 L274 180.3 L274.6 180.6 L275.2 180.9 L275.8 181.2 L276.4 181.5 L277 181.8 L277.6 182.1 L278.2 182.4 L278.8 182.7 L279.4 183 L280 183.3 L280.6 183.6 L281.2 183.9 L281.8 184.2 L282.4 184.5 L283 184.8 L283.6 185.1 L284.2 185.4 L284.8 185.7 L285.4 186" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="5 3"/>
   <path d="M52.7 224 L53.2 223.7 L53.8 223.4 L54.4 223.1 L55 222.8 L55.6 222.5 L56.2 222.2 L56.8 221.9 L57.4 221.6 L58 221.3 L58.6 221 L59.2 220.7 L59.8 220.4 L60.4 220.1 L61 219.8 L61.6 219.5 L62.2 219.2 L62.8 218.9 L63.4 218.6 L64 218.3 L64.6 218 L65.2 217.7 L65.8 217.4 L66.4 217.1 L67 216.8 L67.6 216.5 L68.2 216.2 L68.8 215.9 L69.4 215.6 L70 215.3 L70.6 215 L71.2 214.7 L71.8 214.4 L72.4 214.1 L73 213.8 L73.6 213.5 L74.2 213.2 L74.8 212.9 L75.4 212.6 L76 212.3 L76.6 212 L77.2 211.7 L77.8 211.4 L78.4 211.1 L79 210.8 L79.6 210.5 L80.2 210.2 L80.8 209.9 L81.4 209.6 L82 209.3 L82.6 209 L83.2 208.7 L83.8 208.4 L84.4 208.1 L85 207.8 L85.6 207.5 L86.2 207.2 L86.8 206.9 L87.4 206.6 L88 206.3 L88.6 206 L89.2 205.7 L89.8 205.4 L90.4 205.1 L91 204.8 L91.6 204.5 L92.2 204.2 L92.8 203.9 L93.4 203.6 L94 203.3 L94.6 203 L95.2 202.7 L95.8 202.4 L96.4 202.1 L97 201.8 L97.6 201.5 L98.2 201.2 L98.8 200.9 L99.4 200.6 L100 200.3 L100.6 200 L101.2 199.7 L101.8 199.4 L102.4 199.1 L103 198.8 L103.6 198.5 L104.2 198.2 L104.8 197.9 L105.4 197.6 L106 197.3 L106.6 197 L107.2 196.7 L107.8 196.4 L108.4 196.1 L109 195.8 L109.6 195.5 L110.2 195.2 L110.8 194.9 L111.4 194.6 L112 194.3 L112.6 194 L113.2 193.7 L113.8 193.4 L114.4 193.1 L115 192.8 L115.6 192.5 L116.2 192.2 L116.8 191.9 L117.4 191.6 L118 191.3 L118.6 191 L119.2 190.7 L119.8 190.4 L120.4 190.1 L121 189.8 L121.6 189.5 L122.2 189.2 L122.8 188.9 L123.4 188.6 L124 188.3 L124.6 188 L125.2 187.7 L125.8 187.4 L126.4 187.1 L127 186.8 L127.6 186.5 L128.2 186.2 L128.8 185.9 L129.4 185.6 L130 185.3 L130.6 185 L131.2 184.7 L131.8 184.4 L132.4 184.1 L133 183.8 L133.6 183.5 L134.2 183.2 L134.8 182.9 L135.4 182.6 L136 182.3 L136.6 182 L137.2 181.7 L137.8 181.4 L138.4 181.1 L139 180.8 L139.6 180.5 L140.2 180.2 L140.8 179.9 L141.4 179.6 L142 179.3 L142.6 179 L143.2 178.7 L143.8 178.4 L144.4 178.1 L145 177.8 L145.6 177.5 L146.2 177.2 L146.8 176.9 L147.4 176.6 L148 176.3 L148.6 176 L149.2 175.7 L149.8 175.4 L150.4 175.1 L151 174.8 L151.6 174.5 L152.2 174.2 L152.8 173.9 L153.4 173.6 L154 173.3 L154.6 173 L155.2 172.7 L155.8 172.4 L156.4 172.1 L157 171.8 L157.6 171.5 L158.2 171.2 L158.8 170.9 L159.4 170.6 L160 170.3 L160.6 170 L161.2 169.7 L161.8 169.4 L162.4 169.1 L163 168.8 L163.6 168.5 L164.2 168.2 L164.8 167.9 L165.4 167.6 L166 167.3 L166.6 167 L167.2 166.7 L167.8 166.4 L168.4 166.1 L169 165.8 L169.6 165.5 L170.2 165.2 L170.8 164.9 L171.4 164.6 L172 164.3 L172.6 164 L173.2 163.7 L173.8 163.4 L174.4 163.1 L175 162.8 L175.6 162.5 L176.2 162.2 L176.8 161.9 L177.4 161.6 L178 161.3 L178.6 161 L179.2 160.7 L179.8 160.4 L180.4 160.1 L181 159.8 L181.6 159.5 L182.2 159.2 L182.8 158.9 L183.4 158.6 L184 158.3 L184.6 158 L185.2 157.7 L185.8 157.4 L186.4 157.1 L187 156.8 L187.6 156.5 L188.2 156.2 L188.8 155.9 L189.4 155.6 L190 155.3 L190.6 155 L191.2 154.7 L191.8 154.4 L192.4 154.1 L193 153.8 L193.6 153.5 L194.2 153.2 L194.8 152.9 L195.4 152.6 L196 152.3 L196.6 152 L197.2 151.7 L197.8 151.4 L198.4 151.1 L199 150.8 L199.6 150.5 L200.2 150.2 L200.8 149.9 L201.4 149.6 L202 149.3 L202.6 149 L203.2 148.7 L203.8 148.4 L204.4 148.1 L205 147.8 L205.6 147.5 L206.2 147.2 L206.8 146.9 L207.4 146.6 L208 146.3 L208.6 146 L209.2 145.7 L209.8 145.4 L210.4 145.1 L211 144.8 L211.6 144.5 L212.2 144.2 L212.8 143.9 L213.4 143.6 L214 143.3 L214.6 143 L215.2 142.7 L215.8 142.4 L216.4 142.1 L217 141.8 L217.6 141.5 L218.2 141.2 L218.8 140.9 L219.4 140.6 L220 140.3 L220.6 140 L221.2 139.7 L221.8 139.4 L222.4 139.1 L223 138.8 L223.6 138.5 L224.2 138.2 L224.8 137.9 L225.4 137.6 L226 137.3 L226.6 137 L227.2 136.7 L227.8 136.4 L228.4 136.1 L229 135.8 L229.6 135.5 L230.2 135.2 L230.8 134.9 L231.4 134.6 L232 134.3 L232.6 134 L233.2 133.7 L233.8 133.4 L234.4 133.1 L235 132.8 L235.6 132.5 L236.2 132.2 L236.8 131.9 L237.4 131.6 L238 131.3 L238.6 131 L239.2 130.7 L239.8 130.4 L240.4 130.1 L241 129.8 L241.6 129.5 L242.2 129.2 L242.8 128.9 L243.4 128.6 L244 128.3 L244.6 128 L245.2 127.7 L245.8 127.4 L246.4 127.1 L247 126.8 L247.6 126.5 L248.2 126.2 L248.8 125.9 L249.4 125.6 L250 125.3 L250.6 125 L251.2 124.7 L251.8 124.4 L252.4 124.1 L253 123.8 L253.6 123.5 L254.2 123.2 L254.8 122.9 L255.4 122.6 L256 122.3 L256.6 122 L257.2 121.7 L257.8 121.4 L258.4 121.1 L259 120.8 L259.6 120.5 L260.2 120.2 L260.8 119.9 L261.4 119.6 L262 119.3 L262.6 119 L263.2 118.7 L263.8 118.4 L264.4 118.1 L265 117.8 L265.6 117.5 L266.2 117.2 L266.8 116.9 L267.4 116.6 L268 116.3 L268.6 116 L269.2 115.7 L269.8 115.4 L270.4 115.1 L271 114.8 L271.6 114.5 L272.2 114.2 L272.8 113.9 L273.4 113.6 L274 113.3 L274.6 113 L275.2 112.7 L275.8 112.4 L276.4 112.1 L277 111.8 L277.6 111.5 L278.2 111.2 L278.8 110.9 L279.4 110.6 L280 110.3 L280.6 110 L281.2 109.7 L281.8 109.4 L282.4 109.1 L283 108.8 L283.6 108.5 L284.2 108.2 L284.8 107.9 L285.4 107.6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="5 3"/>
@@ -78,11 +83,11 @@ The accelerometer's axis lies along the rail. The gyro's axis is horizontal and 
   <circle cx="133.4" cy="110" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
   <circle cx="151.6" cy="174.6" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
   <path d="M133.4 100.8 l3.5 3.5 l-3.5 3.5 l-3.5 -3.5 Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.1"/>
-  <text x="121.4" y="130" font-size="11" text-anchor="end" fill="currentColor">N<tspan dy="3" font-size="9.5">g</tspan></text>
+  <text x="121.4" y="130" font-size="11" text-anchor="end" fill="currentColor">N<tspan dy="3" font-size="10">g</tspan></text>
   <line x1="122.4" y1="125" x2="130.4" y2="113" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
-  <text x="161.6" y="188.6" font-size="11" fill="currentColor">K<tspan dy="3" font-size="9.5">g</tspan></text>
-  <text x="183.1" y="87.1" font-size="11" fill="currentColor">floor 0.664 B<tspan dy="3" font-size="9.5">g</tspan></text>
-  <text x="183.1" y="104.1" font-size="11" fill="currentColor">=<tspan dx="3.1">9.96×10</tspan><tspan dy="-4.5" font-size="9.5">−5</tspan></text>
+  <text x="161.6" y="188.6" font-size="11" fill="currentColor">K<tspan dy="3" font-size="10">g</tspan></text>
+  <text x="183.1" y="87.1" font-size="11" fill="currentColor">floor 0.664 B<tspan dy="3" font-size="10">g</tspan></text>
+  <text x="183.1" y="104.1" font-size="11" fill="currentColor">=<tspan dx="3.1">9.96×10</tspan><tspan dy="-4.5" font-size="10">−5</tspan></text>
   <text x="75.6" y="97.1" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">−½</text>
   <text x="201" y="167.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">+½</text>
   <text x="129.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
@@ -130,33 +135,33 @@ The accelerometer's axis lies along the rail. The gyro's axis is horizontal and 
   <line x1="354" y1="195.2" x2="360.7" y2="214.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
   <text x="512.1" y="69.8" font-size="11" text-anchor="end" font-weight="bold" fill="currentColor">IMU total</text>
   <text x="16" y="278" font-size="11" font-weight="bold" fill="currentColor">−½</text>
-  <text x="40" y="278" font-size="11" fill="currentColor">white noise N<tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">/√τ through (1 s,</tspan><tspan dx="3.1">1.0×10</tspan><tspan dy="-4.5" font-size="9.5">−4</tspan><tspan dy="4.5">) and</tspan></text>
-  <text x="40" y="295" font-size="11" fill="currentColor">(5 ms,<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="9.5">−3</tspan><tspan dy="4.5">); N</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dx="3.1" dy="-3">is read on this line at 1 s</tspan></text>
+  <text x="40" y="278" font-size="11" fill="currentColor">white noise N<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">/√τ through (1 s,</tspan><tspan dx="3.1">1.0×10</tspan><tspan dy="-4.5" font-size="10">−4</tspan><tspan dy="4.5">) and</tspan></text>
+  <text x="40" y="295" font-size="11" fill="currentColor">(5 ms,<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="10">−3</tspan><tspan dy="4.5">); N</tspan><tspan dy="3" font-size="10">g</tspan><tspan dx="3.1" dy="-3">is read on this line at 1 s</tspan></text>
   <text x="16" y="312" font-size="11" font-weight="bold" fill="currentColor">0</text>
-  <text x="40" y="312" font-size="11" fill="currentColor">floor 0.664 B<tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">: B</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dx="3.1" dy="-3">= floor ÷ 0.664 =</tspan><tspan dx="3.1">1.5×10</tspan><tspan dy="-4.5" font-size="9.5">−4</tspan></text>
+  <text x="40" y="312" font-size="11" fill="currentColor">floor 0.664 B<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">: B</tspan><tspan dy="3" font-size="10">g</tspan><tspan dx="3.1" dy="-3">= floor ÷ 0.664 =</tspan><tspan dx="3.1">1.5×10</tspan><tspan dy="-4.5" font-size="10">−4</tspan></text>
   <text x="16" y="329" font-size="11" font-weight="bold" fill="currentColor">+½</text>
-  <text x="40" y="329" font-size="11" fill="currentColor">random walk K<tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">√(τ/3); K</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dx="3.1" dy="-3">is read on this line at 3 s</tspan></text>
+  <text x="40" y="329" font-size="11" fill="currentColor">random walk K<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">√(τ/3); K</tspan><tspan dy="3" font-size="10">g</tspan><tspan dx="3.1" dy="-3">is read on this line at 3 s</tspan></text>
   <text x="16" y="346" font-size="11" font-weight="bold" fill="currentColor">τ</text>
   <text x="40" y="346" font-size="11" fill="currentColor">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 1.0 s and τ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 7400 s, the two corners</tspan></text>
   <path d="M22 355 l4 4 l-4 4 l-4 -4 Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.1"/>
-  <text x="40" y="363" font-size="11" fill="currentColor">the curve at 1 s:<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="9.5">−4</tspan><tspan dy="4.5">, 41% above N</tspan><tspan dy="3" font-size="9.5">g</tspan></text>
+  <text x="40" y="363" font-size="11" fill="currentColor">the curve at 1 s:<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="10">−4</tspan><tspan dy="4.5">, 41% above N</tspan><tspan dy="3" font-size="10">g</tspan></text>
   <line x1="318" y1="274" x2="340" y2="274" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="7 3"/>
-  <text x="345" y="278" font-size="11" fill="currentColor">0.577 mm · t<tspan dy="-4.5" font-size="9.5">3/2</tspan><tspan dx="3.1" dy="4.5">accel. white noise</tspan></text>
+  <text x="345" y="278" font-size="11" fill="currentColor">0.577 mm · t<tspan dy="-4.5" font-size="10">3/2</tspan><tspan dx="3.1" dy="4.5">accel. white noise</tspan></text>
   <line x1="318" y1="291" x2="340" y2="291" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="2.6 2.4"/>
-  <text x="345" y="295" font-size="11" fill="currentColor">0.250 mm · t<tspan dy="-4.5" font-size="9.5">2</tspan><tspan dx="3.1" dy="4.5">accel. bias</tspan></text>
+  <text x="345" y="295" font-size="11" fill="currentColor">0.250 mm · t<tspan dy="-4.5" font-size="10">2</tspan><tspan dx="3.1" dy="4.5">accel. bias</tspan></text>
   <line x1="318" y1="308" x2="340" y2="308" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.95" stroke-dasharray="0.6 2.6" stroke-linecap="round"/>
-  <text x="345" y="312" font-size="11" fill="currentColor">0.219 mm · t<tspan dy="-4.5" font-size="9.5">5/2</tspan><tspan dx="3.1" dy="4.5">gyro white, via g</tspan></text>
+  <text x="345" y="312" font-size="11" fill="currentColor">0.219 mm · t<tspan dy="-4.5" font-size="10">5/2</tspan><tspan dx="3.1" dy="4.5">gyro white, via g</tspan></text>
   <line x1="318" y1="325" x2="340" y2="325" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="9 3 1.5 3"/>
-  <text x="345" y="329" font-size="11" fill="currentColor">0.245 mm · t<tspan dy="-4.5" font-size="9.5">3</tspan><tspan dx="3.1" dy="4.5">gyro bias, via g</tspan></text>
+  <text x="345" y="329" font-size="11" fill="currentColor">0.245 mm · t<tspan dy="-4.5" font-size="10">3</tspan><tspan dx="3.1" dy="4.5">gyro bias, via g</tspan></text>
   <line x1="318" y1="342" x2="340" y2="342" stroke="currentColor" stroke-width="2.2" stroke-opacity="1" />
   <text x="345" y="346" font-size="11" fill="currentColor">IMU total: their quadrature sum</text>
 </svg>
 
-Left: P6's gyro Allan deviation, the quadrature sum of three asymptotes — white noise of slope $-\tfrac12$ crossing $N_g = 1.0\times10^{-4}\,\mathrm{rad/s}$ at $1\,\mathrm s$, the floor $0.664B_g = 9.96\times10^{-5}$, and a random walk of slope $+\tfrac12$ crossing $K_g$ at $3\,\mathrm s$ — with its corners at $\tau_1 = 1.0\,\mathrm s$ and $\tau_2 = 7400\,\mathrm s$, and a 5-minute record trustworthy only out to $15\,\mathrm s$. Right: the dead-reckoned position error against the time since the last fix, where the encoder ($0.141\,\mathrm{mm}$), the camera ($0.833\,\mathrm{mm}$) and the range sensor ($10\,\mathrm{mm}$) stay flat while the IMU's total, built from terms rising as $t^{3/2}$, $t^2$, $t^{5/2}$ and $t^3$, crosses them at $0.38$, $1.09$ and $3.21\,\mathrm s$. Each rising slope is an Allan slope plus the number of integrals, with one integral more for the two gyro terms, which reach position only through gravity.
+Left: P6's gyro Allan deviation (how much successive averages of a static record differ, against the averaging time $\tau$; defined in §6), the quadrature sum of three asymptotes — white noise of slope $-\tfrac12$ crossing $N_g = 1.0\times10^{-4}\,\mathrm{rad/s}$ at $1\,\mathrm s$, the floor $0.664B_g = 9.96\times10^{-5}$, and a random walk of slope $+\tfrac12$ crossing $K_g$ at $3\,\mathrm s$ — with its corners at $\tau_1 = 1.0\,\mathrm s$ and $\tau_2 = 7400\,\mathrm s$, and a 5-minute record trustworthy only out to $15\,\mathrm s$. Right: the dead-reckoned position error against the time since the last fix, where the encoder ($0.141\,\mathrm{mm}$), the camera ($0.833\,\mathrm{mm}$) and the range sensor ($10\,\mathrm{mm}$) stay flat while the IMU's total, built from terms rising as $t^{3/2}$, $t^2$, $t^{5/2}$ and $t^3$, crosses them at $0.38$, $1.09$ and $3.21\,\mathrm s$. Each rising slope is an Allan slope plus the number of integrals, with one integral more for the two gyro terms, which reach position only through gravity.
 
 ### Worked case · 대상으로 한 번 끝까지
 
-This is the homework object with its numbers. The problem set changes the gyro and the encoder, so do the whole chain here first.
+This is the homework object with its numbers. The problem set changes the gyro and the encoder, so do the whole chain here first. Steps 1, 2 and 5 need only the Running object and a one-line pointer each, so do them now; steps 3 and 4 quote §3's growth laws, so read them as a preview and redo them after §3.
 
 **1. The encoder's count as noise.** One count is $\Delta = 1/2048\,\mathrm m = 0.488\,\mathrm{mm}$. While the cart moves across many counts between samples, the error is uniform over one count (§4), so
 
@@ -170,7 +175,7 @@ $$\sigma_a = 1.0\times10^{-3}\sqrt{200} = 0.0141\ \mathrm{m/s^2},\qquad \sigma_g
 
 since each sample averages the white noise over only $5\,\mathrm{ms}$. One accelerometer sample is 28 times noisier than the accelerometer's bias instability, and yet step 3 shows the bias beating the noise at 10 s.
 
-**3. Dead reckoning for 1 s and for 10 s.** Start from a perfectly known position and velocity, with the turn-on biases calibrated away, and integrate the IMU alone. The usual back-of-envelope treats the in-run bias as a constant of size $B$ over the horizon. §3 derives each growth law; here are the values.
+**3. Dead reckoning for 1 s and for 10 s.** Start from a perfectly known position and velocity, with the turn-on biases calibrated away, and integrate the IMU alone. The usual back-of-envelope treats the in-run bias as a constant of size $B$ over the horizon. One rule gives every exponent: after one integral, white noise grows as $t^{1/2}$, a random-walk bias as $t^{3/2}$ and a held bias as $t^1$; each further integral adds one power of $t$; and gravity adds one integral to every gyro term, because the gyro reaches position only through a tilt. §3 shows how, and derives the coefficients.
 
 | Error term | Growth | at $t = 1\,\mathrm s$ | at $t = 10\,\mathrm s$ |
 |---|---|---:|---:|
@@ -180,9 +185,9 @@ since each sample averages the white noise over only $5\,\mathrm{ms}$. One accel
 | gyro white noise, through gravity | $gN_g t^{5/2}/\sqrt{20}$ | $0.219\,\mathrm{mm}$ | $69.4\,\mathrm{mm}$ |
 | gyro bias, through gravity | $gB_g t^3/6$ | $0.245\,\mathrm{mm}$ | $245\,\mathrm{mm}$ |
 | gyro bias random walk, through gravity | $gK_g t^{7/2}/\sqrt{252}$ | $0.001\,\mathrm{mm}$ | $3.91\,\mathrm{mm}$ |
-| **all six in quadrature** | | $0.710\,\mathrm{mm}$ | $257\,\mathrm{mm}$ |
+| **root-sum-square of all six** | | $0.710\,\mathrm{mm}$ | $257\,\mathrm{mm}$ |
 
-The quadrature sum treats each bias row as a one-sigma value of unknown sign. The gyro's own angle error, from white noise and bias, is $N_g\sqrt t = 1.0\times10^{-4}$ and $B_gt = 1.5\times10^{-4}\,\mathrm{rad}$ at 1 s, and $3.2\times10^{-4}$ and $1.5\times10^{-3}\,\mathrm{rad}$ at 10 s. These are tiny angles, $0.086°$ at most. But multiplied by $g$, the last one is $0.0147\,\mathrm{m/s^2}$ of false acceleration, 29 times $B_a$.
+The root-sum-square — the quadrature sum, the square root of the sum of the squares — is valid because the six terms are independent, and it treats each bias row as a one-sigma value of unknown sign. The gyro's own angle error, from white noise and bias, is $N_g\sqrt t = 1.0\times10^{-4}$ and $B_gt = 1.5\times10^{-4}\,\mathrm{rad}$ at 1 s, and $3.2\times10^{-4}$ and $1.5\times10^{-3}\,\mathrm{rad}$ at 10 s. These are tiny angles, $0.086°$ at most. But multiplied by $g$, the last one is $0.0147\,\mathrm{m/s^2}$ of false acceleration, 29 times $B_a$.
 
 **4. Which sensor dominates, at each horizon.** Inside the IMU, the accelerometer's white noise dominates at 1 s, with $0.577$ of the $0.710\,\mathrm{mm}$. At 10 s the gyro's bias dominates through gravity, with $245$ of the $257\,\mathrm{mm}$, because it has been integrated three times against the accelerometer bias's two. The two bias rows are equal when $gB_gt^3/6 = B_at^2/2$, that is at $t = 3B_a/(gB_g) = 1.02\,\mathrm s$. Across the cart, set the IMU's growing error against the three sensors whose error does not grow. The IMU total passes the encoder's $0.141\,\mathrm{mm}$ at $0.38\,\mathrm s$, the camera's $0.833\,\mathrm{mm}$ at $1.09\,\mathrm s$, and the range sensor's $10\,\mathrm{mm}$ at $3.21\,\mathrm s$. Over one vision frame ($20\,\mathrm{ms}$) it has drifted $1.6\,\mathrm{\mu m}$, 86 times less than one encoder σ.
 
@@ -209,8 +214,8 @@ The five sensors on the cart, in this form:
 | Sensor | $h(x)$ | $b$ | $n$, per sample | Rate |
 |---|---|---|---|---:|
 | encoder | $p$ | $-\Delta/2$ from the floor, removed at homing | uniform, $\sigma_q = 0.141\,\mathrm{mm}$, *only while moving* (§4) | $200\,\mathrm{Hz}$ |
-| accelerometer | $\ddot p + g\sin\theta$ | $b_a(t)$: turn-on offset, flicker ($B_a$), random walk ($K_a$) | white, $\sigma_a = 0.0141\,\mathrm{m/s^2}$ | $200\,\mathrm{Hz}$ |
-| gyro | $\dot\theta$ | $b_g(t)$: turn-on offset, flicker ($B_g$), random walk ($K_g$) | white, $\sigma_g = 1.41\times10^{-3}\,\mathrm{rad/s}$ | $200\,\mathrm{Hz}$ |
+| accelerometer | $\ddot p + g\sin\theta$ | $b_a(t)$: turn-on offset, flicker, a slow $1/f$ wander ($B_a$, §3), random walk ($K_a$, §3) | white, $\sigma_a = 0.0141\,\mathrm{m/s^2}$ | $200\,\mathrm{Hz}$ |
+| gyro | $\dot\theta$ | $b_g(t)$: turn-on offset, flicker ($B_g$, §3), random walk ($K_g$, §3) | white, $\sigma_g = 1.41\times10^{-3}\,\mathrm{rad/s}$ | $200\,\mathrm{Hz}$ |
 | range sensor | $x_w - p$ | $b_r = 4\,\mathrm{mm}$ mounting offset | Gaussian, $\sigma_r = 10\,\mathrm{mm}$, plus outliers (§5) | $50\,\mathrm{Hz}$ |
 | camera | $c_x + f_x(p - p_c)/Z_c$, in px | lens distortion; a wrong $Z_c$ or $c_x$ (§5) | $\sigma_u = 0.5\,\mathrm{px}$, i.e. $0.833\,\mathrm{mm}$ | $50\,\mathrm{Hz}$ |
 
@@ -238,7 +243,7 @@ because a faster sampler averages the same noise over a shorter interval, and wh
 
 Two consequences are worth stating, because both are commonly got wrong.
 - **The same part read faster is noisier per sample and no worse where it counts.** At $800\,\mathrm{Hz}$ the gyro's samples have $\sigma = 2.83\times10^{-3}\,\mathrm{rad/s}$, twice the $200\,\mathrm{Hz}$ value. Its angle error after 10 s is still $N_g\sqrt{10} = 3.2\times10^{-4}\,\mathrm{rad}$, because the integral sees $N$, not σ. §7's rate sweep shows the same thing on the Allan plot.
-- **The formula assumes independent samples.** A sensor whose internal low-pass filter cuts off well below $f/2$ returns correlated samples. Their σ is smaller than $N\sqrt f$, and averaging $n$ of them does not divide the noise by $\sqrt n$. So take the density and the filter bandwidth from the datasheet, or read $N$ off the Allan deviation's $-\tfrac12$ line (§6) at cluster times well beyond the filter's time constant, rather than measuring σ from a log and assuming it is white.
+- **The formula assumes independent samples.** A sensor whose internal low-pass filter, the anti-alias filter of [[02-foundations/signal-processing|6. Signal Processing §2]], cuts off well below $f/2$ returns correlated samples. Their σ is smaller than $N\sqrt f$, and averaging $n$ of them does not divide the noise by $\sqrt n$. So take the density and the filter bandwidth from the datasheet, or read $N$ off the Allan deviation's $-\tfrac12$ line (§6) at cluster times well beyond the filter's time constant, rather than measuring σ from a log and assuming it is white.
 
 The units you will meet: gyro densities in $°/\mathrm s/\sqrt{\mathrm{Hz}}$ or in $°/\sqrt{\mathrm h}$ (multiply the first by 60 to get the second, since $\sqrt{\mathrm h} = 60\sqrt{\mathrm s}$), accelerometer densities in $\mathrm{\mu g}/\sqrt{\mathrm{Hz}}$ with $1\,\mathrm{\mu g} = 9.81\times10^{-6}\,\mathrm{m/s^2}$, and bias instability in $°/\mathrm h$ or $\mathrm{\mu g}$.
 
@@ -250,7 +255,7 @@ Dead reckoning with an IMU is odometry with a different sensor: a position built
 >
 > $$S_b(f) = \frac{B^2}{2\pi f}$$
 >
-> where $S_b$ is the power spectral density of the bias wander and $f$ the frequency, so the bias has more power the slower you look. Averaging over a longer window stops helping because a $1/f$ spectrum holds the same power, $(B^2/2\pi)\ln2$, in every octave: doubling the window averages one octave away and lets the next one in. §6 turns this into the floor $0.664B$.
+> where $S_b$ is the power spectral density of the bias wander — its power per unit frequency, the Fourier transform of its autocorrelation ([[02-foundations/probability|3. Probability §5.1]]) — and $f$ the frequency, so the bias has more power the slower you look. Averaging over a longer window stops helping because a $1/f$ spectrum holds the same power, $(B^2/2\pi)\ln2$, in every octave: doubling the window averages one octave away and lets the next one in. §6 turns this into the floor $0.664B$.
 >
 > - **Example**: P6's gyro, $B_g = 1.5\times10^{-4}\,\mathrm{rad/s}$, gives a floor of $9.96\times10^{-5}\,\mathrm{rad/s}$ from $\tau = 1\,\mathrm s$ onward. §7's five-minute record reads $B$ back as $1.475\times10^{-4}$, within 2%.
 > - **Non-example**: the turn-on bias, the offset from one power-up to the next. It is a different datasheet line, and a start-up calibration removes it.
@@ -272,7 +277,56 @@ $$\operatorname{Var} = N^2\int_0^t \frac{(t-s)^{2m-2}}{\big((m-1)!\big)^2}\,ds =
 
 because the integral of $u^{2m-2}$ from $0$ to $t$ is $t^{2m-1}/(2m-1)$. One to four integrals give variances $N^2t$, $N^2t^3/3$, $N^2t^5/20$ and $N^2t^7/252$. A constant bias $B$ integrated $m$ times is simply $Bt^m/m!$. A random-walk bias is white noise already integrated once, so $m$ integrals of it behave like $m+1$ integrals of white noise, with $K$ in place of $N$.
 
-The accelerometer is integrated twice to reach position. The gyro is integrated once to reach tilt. Gravity turns a tilt error $\delta\theta$ into a false acceleration $g\sin\delta\theta \approx g\,\delta\theta$, and two more integrals carry that to position. So every gyro term arrives one integral further along than the matching accelerometer term.
+**How a gyro error reaches position.** The accelerometer reads $z_a = \ddot p + g\sin\theta$ (§1's table), the same $mg\sin\theta$ a block feels along an incline. A **strapdown** IMU is bolted to the cart, with no gimbal holding it level, so the loop has to remove gravity itself, using the tilt it believes, $\hat\theta$, which it gets only by integrating the gyro. With the tilt error $\delta\theta = \hat\theta - \theta$ it computes
+$$z_a - g\sin\hat\theta \approx \ddot p - g\,\delta\theta$$
+since $\sin\hat\theta - \sin\theta \approx \delta\theta$ for small angles: a false acceleration of size $g\,\delta\theta$ that the accelerometer never felt. At $10$ s the gyro bias alone has built $\delta\theta = B_gt = 1.5$ mrad, which times $g$ is a false acceleration of $0.0147\,\mathrm{m/s^2}$, $29$ times $B_a$, and two more integrals make it $245$ mm. So the accelerometer is integrated twice to reach position, the gyro once to reach tilt and twice more through gravity: every gyro term carries one integral more than the matching accelerometer term, and so grows one power of $t$ faster.
+
+<svg viewBox="0 0 560 252" style="max-width:100%;height:auto" role="img" aria-label="Left: the IMU on P6's level rail. The accelerometer's true axis is level, but the loop believes the axis is tilted by the angle it integrated from the gyro bias, so it resolves gravity along that believed axis and subtracts g sin(delta theta), about g delta theta, which the accelerometer never felt. Right: the chain at 10 s, gyro bias 1.5e-4 rad/s, integrated to a 1.5 mrad tilt, times g a false acceleration of 14.7 mm/s^2, 29 times the accelerometer bias, integrated twice to 245 mm, against 25 mm from the accelerometer bias.">
+<defs><marker id="aTilt" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+<path d="M20 222H270" stroke="currentColor" stroke-width="1.4"/>
+<path d="M30 222l-6 7 M44 222l-6 7 M58 222l-6 7 M72 222l-6 7 M86 222l-6 7 M100 222l-6 7 M114 222l-6 7 M128 222l-6 7 M142 222l-6 7 M156 222l-6 7 M170 222l-6 7 M184 222l-6 7 M198 222l-6 7 M212 222l-6 7 M226 222l-6 7 M240 222l-6 7 M254 222l-6 7 M268 222l-6 7" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+<rect x="68" y="172" width="120" height="36" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2"/>
+<circle cx="92" cy="214" r="7" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="164" cy="214" r="7" fill="none" stroke="currentColor" stroke-width="1.2"/>
+<rect x="112" y="178" width="32" height="16" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
+<text x="128" y="190" font-size="10" text-anchor="middle" fill="currentColor">IMU</text>
+<text x="196" y="217" font-size="10.5" fill="currentColor">P6's rail</text>
+<path d="M128 178V168" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 3" stroke-opacity="0.5"/>
+<path d="M128 104H250" stroke="currentColor" stroke-width="1.6" marker-end="url(#aTilt)"/>
+<path d="M128 104L242.6 62.3" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3" marker-end="url(#aTilt)"/>
+<text x="184" y="121" font-size="10.5" fill="currentColor">true axis: level rail</text>
+<text x="122" y="38.3" font-size="10.5" fill="currentColor">axis the loop believes:</text>
+<text x="122" y="51.3" font-size="10.5" fill="currentColor">tilt from the integrated gyro</text>
+<path d="M178 104A50 50 0 0 0 175 86.9" fill="none" stroke="currentColor" stroke-width="1"/>
+<text x="182" y="99" font-size="11" fill="currentColor">δθ</text>
+<path d="M128 104V162" stroke="currentColor" stroke-width="1.8" marker-end="url(#aTilt)"/>
+<text x="135" y="158" font-size="11" fill="currentColor">g</text>
+<path d="M128 104L109.4 110.8" stroke="currentColor" stroke-width="3.2" stroke-opacity="0.9"/>
+<path d="M109.4 110.8L128 162" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="104.4" y="112.8" font-size="10.5" text-anchor="end" fill="currentColor">g sin δθ ≈ g δθ</text>
+<text x="114.9" y="142.4" font-size="10.5" text-anchor="end" fill="currentColor">g cos δθ</text>
+<text x="20" y="246" font-size="10" fill="currentColor" opacity="0.85">angle enlarged; at 10 s δθ = 1.5 mrad</text>
+<rect x="300" y="14" width="244" height="36" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.1"/>
+<text x="308" y="29" font-size="11" fill="currentColor">gyro bias B<tspan dy="3" font-size="10">g</tspan><tspan dy="-3" dx="3">= 1.5×10⁻⁴ rad/s</tspan></text>
+<text x="308" y="43" font-size="10.5" fill="currentColor" opacity="0.85">constant: t⁰</text>
+<rect x="300" y="74" width="244" height="36" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.1"/>
+<text x="308" y="89" font-size="11" fill="currentColor">believed tilt δθ = B<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">t</tspan></text>
+<text x="308" y="103" font-size="10.5" fill="currentColor" opacity="0.85">1.5 mrad at 10 s: t¹</text>
+<rect x="300" y="134" width="244" height="36" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.1"/>
+<text x="308" y="149" font-size="11" fill="currentColor">false acceleration g δθ</text>
+<text x="308" y="163" font-size="10.5" fill="currentColor" opacity="0.85">14.7 mm/s² = 29 B<tspan dy="3" font-size="10">a</tspan><tspan dy="-3" dx="3">at 10 s: t¹</tspan></text>
+<rect x="300" y="194" width="244" height="36" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.1"/>
+<text x="308" y="209" font-size="11" fill="currentColor">position error gB<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">t³/6</tspan></text>
+<text x="308" y="223" font-size="10.5" fill="currentColor" opacity="0.85">245 mm at 10 s: t³</text>
+<path d="M326 50V72" stroke="currentColor" stroke-width="1.3" marker-end="url(#aTilt)"/>
+<text x="336" y="65" font-size="10.5" fill="currentColor">∫ dt, the gyro loop</text>
+<path d="M326 110V132" stroke="currentColor" stroke-width="1.3" marker-end="url(#aTilt)"/>
+<text x="336" y="125" font-size="10.5" fill="currentColor">× g, the tilt resolves gravity</text>
+<path d="M326 170V192" stroke="currentColor" stroke-width="1.3" marker-end="url(#aTilt)"/>
+<text x="336" y="185" font-size="10.5" fill="currentColor">∫∫ dt², two more integrals</text>
+<text x="300" y="246" font-size="10.5" fill="currentColor" opacity="0.85">accelerometer's own bias B<tspan dy="3" font-size="10">a</tspan><tspan dy="-3" dx="1">t²/2: 25 mm at 10 s, t²</tspan></text>
+</svg>
+
+On P6's level rail the loop believes the tilt $\delta\theta = B_gt$ that it integrated from the gyro bias, and so subtracts $g\sin\delta\theta \approx g\,\delta\theta$ of gravity that the level accelerometer never felt. At $10$ s that is $1.5$ mrad and a false acceleration of $14.7\,\mathrm{mm/s^2}$, $29$ times $B_a$, which two more integrals turn into $245$ mm, a power of $t$ above the accelerometer bias's $25$ mm.
 
 | Term | in the gyro's angle (1 integral) | in position, from the accelerometer (2) | in position, from the gyro through $g$ (3) |
 |---|---|---|---|
@@ -305,7 +359,7 @@ Differencing makes quantization worse, because a one-tick velocity divides a pos
 
 Both measure position with an error that does not grow with the horizon. Each has one trap that the Gaussian in §1's table does not show.
 
-**The range sensor.** It reads $z_r = (x_w - p) + b_r + n_r$ with $\sigma_r = 10\,\mathrm{mm}$. The noise averages away and the offset does not. A hundred readings (2 s at 50 Hz) bring the noise down to $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$ and leave the $4\,\mathrm{mm}$ offset untouched, so after two seconds the bias is four times the noise, and it has to be calibrated against a known distance or carried as a state. The Gaussian is also only part of a real range sensor. Thrun, Burgard and Fox's beam model mixes four components: the Gaussian *hit* on the intended surface, *short* readings from unexpected objects in the beam, *max-range* readings when the return is lost, and a uniform floor of *random* readings. A reading that does not come from the panel at all, like the passer-by in 3. State Estimation's Worked case, belongs to one of the last three. No choice of $\sigma_r$ covers them, which is why that page gates ([[04-robotics/state-estimation-slam|3. State Estimation §8.5.2]]).
+**The range sensor.** It reads $z_r = (x_w - p) + b_r + n_r$ with $\sigma_r = 10\,\mathrm{mm}$. The noise averages away and the offset does not. A hundred readings (2 s at 50 Hz) bring the noise down to $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$ and leave the $4\,\mathrm{mm}$ offset untouched, so after two seconds the bias is four times the noise, and it has to be calibrated against a known distance or carried as a state. The offset also decides when contact is seen: when the tool touches the panel the true range $x_w - p$ is zero, but the averaged reading still says $4$ mm until $b_r$ is calibrated, so a contact test that waits for the averaged range to reach zero never fires against a rigid panel. The Gaussian is also only part of a real range sensor. Thrun, Burgard and Fox's beam model mixes four components: the Gaussian *hit* on the intended surface, *short* readings from unexpected objects in the beam, *max-range* readings when the return is lost, and a uniform floor of *random* readings. A reading that does not come from the panel at all, like the passer-by in 3. State Estimation's Worked case, belongs to one of the last three. No choice of $\sigma_r$ covers them, which is why that page gates ([[04-robotics/state-estimation-slam|3. State Estimation §8.5.2]]).
 
 **The camera.** It measures a pixel, $u = c_x + f_x(p - p_c)/Z_c + n_u$. For a point at depth $Z_c$ the pinhole model ([[04-robotics/geometric-perception-calibration|3.5 §1]]) turns pixel noise into position noise:
 
@@ -335,13 +389,18 @@ Each term has its own slope and its own reading rule. The rules come from averag
 | $0$ | bias instability | $\sqrt{2\ln2/\pi}\,B = 0.664B$ | $B$ = the floor divided by $0.664$ |
 | $+\tfrac12$ | bias random walk | $K\sqrt{\tau/3}$ | $K$ = the line's value at $\tau = 3\,\mathrm s$ |
 
-**Where $0.664$ comes from.** The Allan variance is a filter applied to the rate. The difference of two successive $\tau$-averages is the rate convolved with $+1/\tau$ over one cluster and $-1/\tau$ over the next, a kernel whose frequency response has magnitude $2\sin^2(\pi f\tau)/(\pi f\tau)$. Since $\sigma_A^2$ is half that difference's power, a rate with two-sided power spectral density $S(f)$ has
-$$\sigma_A^2(\tau) = 4\int_0^\infty S(f)\,\frac{\sin^4(\pi f\tau)}{(\pi f\tau)^2}\,df$$
-the relation the Allan-variance literature starts from (IEEE Std 952; El-Sheimy, Hou and Niu). White noise, $S = N^2$, gives $N^2/\tau$ under the substitution $u = \pi f\tau$, because $\int_0^\infty \sin^4u/u^2\,du = \pi/4$: the table's first row. For §3's flicker spectrum $S = B^2/(2\pi f)$, the same substitution turns $df/f$ into $du/u$, so $\tau$ drops out entirely, which is why the floor is flat:
-$$\sigma_A^2 = \frac{2B^2}{\pi}\int_0^\infty \frac{\sin^4u}{u^3}\,du = \frac{2\ln2}{\pi}\,B^2$$
-The integral is $\ln2$. One integration by parts turns $\sin^4u/u^3$ into $2\sin^3u\cos u/u^2 = (2\sin2u - \sin4u)/(4u^2)$, a second turns that into $(\cos2u - \cos4u)/u$, and the boundary terms vanish at both ends each time. That last integral is Frullani's, $\int_0^\infty(\cos au - \cos bu)/u\,du = \ln(b/a) = \ln 2$. So the floor is $\sqrt{2\ln2/\pi}\,B = 0.664B$, and quadrature confirms $\int_0^\infty \sin^4u/u^3\,du = 0.693147$. Hou's derivation covers further terms, among them slope $-1$ for quantization of the output and slope $+1$ for a steady ramp in the rate. Three reading habits separate a correct reading from a plausible one.
+The floor's factor, $0.664 = \sqrt{2\ln2/\pi}$, is what the Allan average makes of a flicker spectrum; the collapsed note below derives it.
+
+> [!note]- Deeper · 더 깊이
+> **Where $0.664$ comes from.** The Allan variance is a filter applied to the rate. The difference of two successive $\tau$-averages is the rate convolved with $+1/\tau$ over one cluster and $-1/\tau$ over the next, a kernel whose frequency response ([[02-foundations/signal-processing|6. Signal Processing §3]]) has magnitude $2\sin^2(\pi f\tau)/(\pi f\tau)$. Since $\sigma_A^2$ is half that difference's power, a rate with two-sided power spectral density $S(f)$ — spread over negative and positive frequencies, so its one-sided twin is $2S$ — has
+> $$\sigma_A^2(\tau) = 4\int_0^\infty S(f)\,\frac{\sin^4(\pi f\tau)}{(\pi f\tau)^2}\,df$$
+> the relation the Allan-variance literature starts from (IEEE Std 952; El-Sheimy, Hou and Niu). White noise, $S = N^2$, gives $N^2/\tau$ under the substitution $u = \pi f\tau$, because $\int_0^\infty \sin^4u/u^2\,du = \pi/4$: the table's first row. For §3's flicker spectrum $S = B^2/(2\pi f)$, the same substitution turns $df/f$ into $du/u$, so $\tau$ drops out entirely, which is why the floor is flat:
+> $$\sigma_A^2 = \frac{2B^2}{\pi}\int_0^\infty \frac{\sin^4u}{u^3}\,du = \frac{2\ln2}{\pi}\,B^2$$
+> The integral is $\ln2$. One integration by parts turns $\sin^4u/u^3$ into $2\sin^3u\cos u/u^2 = (2\sin2u - \sin4u)/(4u^2)$, a second turns that into $(\cos2u - \cos4u)/u$, and the boundary terms vanish at both ends each time. That last integral is Frullani's, $\int_0^\infty(\cos au - \cos bu)/u\,du = \ln(b/a) = \ln 2$. So the floor is $\sqrt{2\ln2/\pi}\,B = 0.664B$, and numerical integration confirms $\int_0^\infty \sin^4u/u^3\,du = 0.693147$.
+
+Hou's derivation covers further terms, among them slope $-1$ for quantization of the output and slope $+1$ for a steady ramp in the rate. Three reading habits separate a correct reading from a plausible one.
 - **Read the line, not the curve.** On P6's gyro the curve at $\tau = 1\,\mathrm s$ is $1.41\times10^{-4}$, 41% above $N_g$, because the floor is already there. $N$ comes from the $-\tfrac12$ line extended to 1 s, which is how §7's code reads it: a fit over the first decade of $\tau$.
-- **A flat bottom exists only if the terms leave room for it.** The white line meets the floor at $\tau_1 = (N/0.664B)^2 = 1.0\,\mathrm s$, and the floor meets the random walk at $\tau_2 = 3(0.664B/K)^2 = 7400\,\mathrm s$. With $\tau_2 \gg \tau_1$ the floor is a shelf several decades wide. Once $K$ grows until $\tau_2 < \tau_1$, the minimum is only where the $-\tfrac12$ and $+\tfrac12$ lines cross, and dividing it by $0.664$ reports a bias instability that is not there: §7's sweep reads $1.81B$ at $K = 2\times10^{-4}$. And a datasheet's "bias instability" may be the floor itself or the floor divided by $0.664$, a factor of 1.5 apart, so check which.
+- **A flat bottom exists only if the terms leave room for it.** The white line meets the floor at $\tau_1 = (N/0.664B)^2 = 1.0\,\mathrm s$, and the floor meets the random walk at $\tau_2 = 3(0.664B/K)^2 = 7400\,\mathrm s$. With $\tau_2 \gg \tau_1$ the floor is a shelf several decades wide. P6's gyro was given its ratio of $B$ to $N$ so that $\tau_1$ falls near $1\,\mathrm s$ and a few minutes of simulated data show the floor. A gyro whose floor is lower relative to its white noise reaches it later: the problem set's upgraded gyro reaches it at $25\,\mathrm s$, which is why Allan tests on real sensors are usually logged for hours. Once $K$ grows until $\tau_2 < \tau_1$, the minimum is only where the $-\tfrac12$ and $+\tfrac12$ lines cross, and dividing it by $0.664$ reports a bias instability that is not there: §7's sweep reads $1.81B$ at $K = 2\times10^{-4}$. And a datasheet's "bias instability" may be the floor itself or the floor divided by $0.664$, a factor of 1.5 apart, so check which.
 - **Long cluster times are few.** The value at $\tau$ rests on only about $T/\tau$ clusters of a record of length $T$, and it scatters accordingly. For white noise, 4000 simulated records scatter by 20% with 20 non-overlapping clusters and by 11% with 60. The overlapping form does better, but not by an order of magnitude. That is why §7 reads the floor only up to $T/20$.
 
 **An Allan plot is also a drift budget.** For the white and random-walk terms, the standard deviation of the angle error after integrating for $t$ seconds from a known start is exactly $t\,\sigma_A(t)$. White noise gives $t\cdot N/\sqrt t = N\sqrt t$, and the random walk gives $t\cdot K\sqrt{t/3} = Kt^{3/2}/\sqrt3$, both the first column of §3's table. For the flat term it holds to within a constant factor. So the Allan slope plus one is the exponent of the angle drift, and plus two the exponent of the accelerometer's position drift. That is the rule the right panel of the picture at the top of the page is drawn with.
@@ -350,9 +409,12 @@ The integral is $\ln2$. One integration by parts turns $\sin^4u/u^3$ into $2\sin
 
 The derivations above give asymptotes. This section checks them on data you generate, and shows what a change of sample rate and a growing random walk do to the reading. The listing builds one gyro axis at rest from its three terms. The white noise has $\sigma = N\sqrt f$ (§2). The random walk is a cumulative sum of steps of size $K\sqrt{\Delta t}$ (§3). The flicker floor is white noise shaped by an FFT to the spectrum $B^2/(2\pi f)$. The listing then computes the overlapping Allan deviation, reads $N$ off the first decade and $B$ off the lowest point up to $T/20$. Part 1 is one five-minute record at P6's 200 Hz, the one §6's example quotes. Parts 2 and 3 are the sweeps, ten seeds per row. Part 4 checks §3's white-noise laws by brute force; its cumulative sums are semi-implicit Euler ([[02-foundations/lab-kernel|0.7 §3]]).
 
-**How the listing makes the flicker term.** A $1/f$ spectrum has no exact finite recursion, so `imu_axis` builds it in the frequency domain, in three moves. First, the discrete Fourier transform of $n$ independent standard-normal samples has coefficients $W_k$ with $E|W_k|^2 = n$ at every frequency $f_k = kf/n$: white noise's flat spectrum, with independent random phases. Second, a record sampled at rate $f$ whose two-sided power spectral density is $S$ has $E|Y_k|^2 = nf\,S(f_k)$, because the periodogram $|Y_k|^2/(nf)$ is the discrete estimate of $S$. So scaling each white coefficient by the square root of $f$ times the target spectrum gives every frequency exactly the power a process with that spectrum would have:
-$$Y_k = \sqrt{f\,S(f_k)}\;W_k, \qquad S(f_k) = \frac{B^2}{2\pi f_k}$$
-The inverse FFT turns the $Y_k$ back into a record, and a Gaussian one, since it is a linear map of Gaussian draws. Third, the zero-frequency bin is set to zero, because the $1/f$ spectrum is infinite there and that bin would only be a constant offset, which the Allan deviation cancels anyway. Averaged over 200 records and all frequency bins, the ratio of the output's periodogram to $B^2/(2\pi f_k)$ is $0.999$. Two limits come with the construction. The spectrum exists only between the lowest bin, $1/T$, and $f/2$, so the generated bias behaves as flicker only for cluster times well inside that band, one more reason to read the floor only up to $T/20$. And the FFT makes the record periodic, which does not matter for $\tau \ll T$.
+The flicker term is white noise reshaped in the frequency domain, and its periodogram matches the target spectrum $B^2/(2\pi f)$ to within $0.1\%$ on average; the collapsed note below shows why the scaling gives each frequency the right power, and the two limits of the construction.
+
+> [!note]- Deeper · 더 깊이
+> **How the listing makes the flicker term.** A $1/f$ spectrum has no exact finite recursion, so `imu_axis` builds it in the frequency domain, in three moves. First, the discrete Fourier transform of $n$ independent standard-normal samples has coefficients $W_k$ with $E|W_k|^2 = n$ at every frequency $f_k = kf/n$: white noise's flat spectrum, with independent random phases. Second, a record sampled at rate $f$ whose two-sided power spectral density is $S$ has $E|Y_k|^2 = nf\,S(f_k)$, because the periodogram $|Y_k|^2/(nf)$ is the discrete estimate of $S$. So scaling each white coefficient by the square root of $f$ times the target spectrum gives every frequency exactly the power a process with that spectrum would have:
+> $$Y_k = \sqrt{f\,S(f_k)}\;W_k, \qquad S(f_k) = \frac{B^2}{2\pi f_k}$$
+> The inverse FFT turns the $Y_k$ back into a record, and a Gaussian one, since it is a linear map of Gaussian draws. Third, the zero-frequency bin is set to zero, because the $1/f$ spectrum is infinite there and that bin would only be a constant offset, which the Allan deviation cancels anyway. Averaged over 200 records and all frequency bins, the ratio of the output's periodogram to $B^2/(2\pi f_k)$ is $0.999$. Two limits come with the construction. The spectrum exists only between the lowest bin, $1/T$, and $f/2$, so the generated bias behaves as flicker only for cluster times well inside that band, one more reason to read the floor only up to $T/20$. And the FFT makes the record periodic, which does not matter for $\tau \ll T$.
 
 ```python
 # P6's page-local IMU at rest: simulate, compute the Allan deviation, read N and B back.
@@ -580,10 +642,13 @@ for T in (300.0, 1800.0, 7200.0):
 
 ## 한국어
 
-*3. 확률, 6. 신호처리, 3. 상태 추정 위에 선다. 대상은 다시 장치 **P6** — ROS 2, 10. 로봇 시스템, MR 13장이 이미 굴린 카트다. 여기서는 그 페이지들과 3. 상태 추정의 필터들이 주어진 것으로 받아 쓰는 센서 잡음 모델을 싣는다.*
+*3. 확률, 6. 신호처리, 3. 상태 추정 위에 선다. 대상은 다시 장치 **P6**([[02-foundations/lab-plants|0.6]]의 레일 위 카트와 그 시계) — ROS 2, 10. 로봇 시스템, MR 13장이 이미 굴린 카트다. 여기서는 그 페이지들과 3. 상태 추정의 필터들이 주어진 것으로 받아 쓰는 센서 잡음 모델을 싣는다.*
+
+> [!note] 왜 배우는가 · Why this matters
+> 이 페이지는 [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택에서 첫 층인 인식, 그중에서도 센서의 숫자를 그 오차와 함께 적는 자리이고, "*저 패널을 프레임에 설치해*"에서는 거리 센서와 카메라의 $R$이 패널 추정을 얼마나 믿을지 정하는 2단계 *패널과 프레임을 식별하기*와, 센서의 바이어스와 지연이 접촉을 언제 보는지 정하는 6단계 *접촉을 감지하기*를 받친다([[physical-ai-map|피지컬 AI 지도]]의 인식 띠에 이 페이지의 칩이 있다). 이것 없이는 잡음과 바이어스를 한데 묶어 필터가 믿지 말아야 할 것을 믿는다. 거리 측정 100개는 잡음을 $1$ mm로 줄이지만 $4$ mm 장착 오프셋은 그대로 두어, 접촉하는 순간에도 $b_r$을 보정하기 전까지는 평균한 측정이 $4$ mm를 읽고(§5), 샘플마다 정밀해 보이는 IMU는 $10$ s 뒤 $257$ mm를 표류하는데 그중 $245$ mm가 $1.5\times10^{-4}$ rad/s의 자이로 바이어스가 중력을 거쳐 위치에 닿은 것이다(계산 절). 이 모델들을 [[04-robotics/state-estimation-slam|3. 상태 추정 §5]]의 필터가 주어진 것으로 받아 쓰고, [[04-robotics/geometric-perception-calibration|3.5 §5]](보정을 제한하는 $0.5$ px 마커 잡음), [[04-robotics/perception-sensors-rigs|3.6 §1–§2와 §9]](픽셀의 잡음과 스탬프의 지연이 어디서 오는가), [[05-construction-robotics/site-perception|5. 현장 인식 §1]](스캔 점의 오차, 바이어스 대 잡음)에서 다시 나오며, 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])에서는 2블록, 로보틱스 공통 트랙의 32–36회차에 속한다. 이 페이지를 마치면 어떤 센서든 $z=h(x)+b+n$으로 쓰고, 데이터시트의 밀도를 필터에 필요한 $Q$나 $R$로 바꾸고, 앨런 그림에서 $N$, $B$, $K$를 읽을 수 있다.
 
 > [!note] 처음이라면 · First pass
-> 이 페이지의 대상 표와 대상으로 한 번 끝까지를 읽고, §1(모든 센서를 쓰는 하나의 형태), §2(밀도가 샘플당 σ가 되는 법)와 §3(적분이 각 오차 항에 하는 일)을 읽은 뒤 §7의 코드를 돌려라. §4–§6은 엔코더의 $R$, 거리 센서의 이상치, 논문의 앨런 그림을 읽어야 할 때 펴는 절이고, §8은 이 페이지의 모든 숫자가 칼만 필터의 어디로 들어가는지를 보여 준다.
+> 60–90분짜리 회차 세 번쯤이고, 로보틱스 일정의 굵은 행 32–34다. **첫 회차:** 이 페이지의 대상, 그림, 대상으로 한 번 끝까지 — 1, 2, 5단계는 손으로 하고 3, 4단계는 미리 보기로 읽는다. **둘째 회차:** §1–§3을 읽은 뒤 §3의 증가 법칙으로 계산 절의 $1$ s 열을 다시 하고, 스스로 점검 1, 2번으로 마친다. **셋째 회차:** §6의 정의 상자와 기울기 표를 읽고 §7을 돌려 1부와 4부를 페이지와 맞대 보고, 스스로 점검 5번으로 마친다. §4, §5, §6의 나머지, §8은 두 번째 읽기이고 필터의 $Q$와 $R$을 조율하기 전에 읽는다. 과제가 페이지를 닫는다.
 
 ### 이 페이지의 대상 · Running object
 
@@ -594,26 +659,28 @@ for T in (300.0, 1800.0, 7200.0):
 | $\Delta$ | $1/2048\,\mathrm{m} = 0.488\,\mathrm{mm}$ | 엔코더 한 카운트(**P6**) |
 | $f$, $\Delta t$ | $200\,\mathrm{Hz}$, $5\,\mathrm{ms}$ | 제어 주기(**P6**). 엔코더와 IMU를 여기서 샘플링한다 |
 | $f_v$ | $50\,\mathrm{Hz}$ | 비전 주기(**P6**). 카메라와 거리 센서가 여기서 보고한다 |
-| $N_a$ | $1.0\times10^{-3}\ \mathrm{(m/s^2)/\sqrt{Hz}}$ | 가속도계 백색 잡음 밀도($102\,\mathrm{\mu g/\sqrt{Hz}}$) |
-| $B_a$ | $5.0\times10^{-4}\ \mathrm{m/s^2}$ | 가속도계 바이어스 불안정성($51\,\mathrm{\mu g}$) |
-| $K_a$ | $2.0\times10^{-5}\ \mathrm{(m/s^2)/\sqrt{s}}$ | 가속도계 바이어스 랜덤 워크 |
-| $N_g$ | $1.0\times10^{-4}\ \mathrm{(rad/s)/\sqrt{Hz}}$ | 자이로 백색 잡음 밀도($0.344\,°/\sqrt{\mathrm h}$) |
-| $B_g$ | $1.5\times10^{-4}\ \mathrm{rad/s}$ | 자이로 바이어스 불안정성($30.9\,°/\mathrm h$) |
-| $K_g$ | $2.0\times10^{-6}\ \mathrm{(rad/s)/\sqrt{s}}$ | 자이로 바이어스 랜덤 워크 |
+| $N_a$ | $1.0\times10^{-3}\ \mathrm{(m/s^2)/\sqrt{Hz}}$ | 가속도계 백색 잡음 밀도($102\,\mathrm{\mu g/\sqrt{Hz}}$; §2) |
+| $B_a$ | $5.0\times10^{-4}\ \mathrm{m/s^2}$ | 가속도계 바이어스 불안정성($51\,\mathrm{\mu g}$; §3) |
+| $K_a$ | $2.0\times10^{-5}\ \mathrm{(m/s^2)/\sqrt{s}}$ | 가속도계 바이어스 랜덤 워크(§3) |
+| $N_g$ | $1.0\times10^{-4}\ \mathrm{(rad/s)/\sqrt{Hz}}$ | 자이로 백색 잡음 밀도($0.344\,°/\sqrt{\mathrm h}$; §2) |
+| $B_g$ | $1.5\times10^{-4}\ \mathrm{rad/s}$ | 자이로 바이어스 불안정성($30.9\,°/\mathrm h$; §3) |
+| $K_g$ | $2.0\times10^{-6}\ \mathrm{(rad/s)/\sqrt{s}}$ | 자이로 바이어스 랜덤 워크(§3) |
 | $\sigma_r$, $b_r$ | $10\,\mathrm{mm}$, $4\,\mathrm{mm}$ | 거리 센서 잡음(카탈로그의 1차원 거리 추정 P5의 $R = 1\,\mathrm{cm}^2$, [[02-foundations/lab-plants\|0.6]])과 장착 오프셋 |
 | $f_x$, $Z_c$, $\sigma_u$ | $600\,\mathrm{px}$, $1.0\,\mathrm{m}$, $0.5\,\mathrm{px}$ | 카메라 초점거리, 레일까지의 거리, 마커 검출의 픽셀 잡음 |
 | $g$ | $9.81\,\mathrm{m/s^2}$ | 중력. 값은 **P2**(카탈로그의 평면 팔, [[02-foundations/lab-plants\|0.6]]) 그대로 |
 
-가속도계 축은 레일 방향이다. 자이로 축은 수평이고 레일을 가로지르므로 카트의 피치 각속도를 잰다. P6의 레일은 수평이라 실제 피치와 피치 각속도는 둘 다 0이다. 그래도 §3의 추측 항법 루프는 가속도계의 기울기를 알려고 자이로를 적분한다. 스트랩다운 루프는 플랫폼이 수평을 유지한다고 가정할 수 없기 때문이다. 그러니 그 적분이 내놓는 모든 라디안은 오차이고, 중력이 그것을 가짜 가속도로 바꾼다.
+$N$, $B$, $K$는 IEEE Std 952가 세 잡음 항에 붙인 이름이다. [[04-robotics/state-estimation-slam|3. 상태 추정 §5]]의 칼만 이득 $K$나 입력 행렬 $B$, 그 페이지의 파티클 수 $N$과는 다른 기호다.
 
-**IMU 값은 예시값이다.** $N$과 $B$는 MEMS 관성 부품에서 볼 수 있는 크기이지만 어떤 제품의 데이터시트도 아니다. 자이로의 $B$ 대 $N$ 비율이 평평한 앨런 바닥을 $1\,\mathrm{s}$ 근처에 두므로, 몇 분짜리 시뮬레이션 데이터에서 바닥이 보인다. 백색 잡음에 비해 바닥이 낮은 자이로는 바닥에 더 늦게 닿는다. 바닥이 $\tau_1 = (N/0.664B)^2$에서 시작하기 때문이다(§6). 과제의 개선된 자이로는 $25\,\mathrm{s}$에 닿고, 실제 센서의 앨런 시험을 보통 몇 시간씩 기록하는 이유가 이것이다. $K$는 바닥이 살아남을 만큼 작게 잡았고, §7의 스윕이 그것을 키운다. 카메라는 3.5 리그의 초점거리를 빌린다. 거리 센서는 P5의 잡음을 가지므로 3. 상태 추정의 $R = 1\,\mathrm{cm}^2$이 그대로 적용된다. 오프셋은 이 페이지가 더한 것이다.
+가속도계 축은 레일 방향이다. 자이로 축은 수평이고 레일을 가로지르므로 카트의 피치 각속도를 잰다. P6의 레일은 수평이라 실제 피치와 피치 각속도는 둘 다 0이다. 그래도 §3의 추측 항법 루프는 가속도계의 기울기를 알려고 자이로를 적분한다. 스트랩다운 루프, 곧 짐벌 없이 몸체에 볼트로 고정된 IMU(§3이 풀어 쓴다)는 플랫폼이 수평을 유지한다고 가정할 수 없기 때문이다. 그러니 그 적분이 내놓는 모든 라디안은 오차이고, 중력이 그것을 가짜 가속도로 바꾼다.
 
-*범위: 이 페이지는 한 카트 위 센서 다섯의 잡음·바이어스 모델, 잡음 밀도가 샘플당 σ가 되는 법, 추측 항법이 각 오차 항에 하는 일, 양자화가 잡음인 조건, 앨런 편차가 항들을 가르는 법을 가르친다. 이 숫자들을 쓰는 필터([[04-robotics/state-estimation-slam|3. 상태 추정]]), 픽셀 뒤의 카메라 기하와 센서 사이의 외부 보정([[04-robotics/geometric-perception-calibration|3.5 §5]]), 그리고 회전 대수가 [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]]에 있는 SE(3) 위의 다축 관성 항법은 가르치지 않는다.*
+**IMU 값은 예시값이다.** $N$과 $B$는 MEMS(미세 전자 기계 시스템, 휴대폰과 드론에 들어가는 실리콘 식각 센서) 관성 부품에서 볼 수 있는 크기이지만 어떤 제품의 데이터시트도 아니고, 자이로의 두 값을 왜 이렇게 골랐는지는 §6이 말한다. $K$는 그 랜덤 워크가 약 두 시간($\tau_2 = 7400\,\mathrm s$, §6)이 지나서야 바닥을 넘도록 작게 잡았고, §7의 스윕이 그것을 키운다. 카메라는 3.5 리그의 초점거리를 빌린다. 거리 센서는 P5의 잡음을 가지므로 3. 상태 추정의 $R = 1\,\mathrm{cm}^2$이 그대로 적용된다. 오프셋은 이 페이지가 더한 것이다.
+
+*범위: 이 페이지는 한 카트 위 센서 다섯의 잡음·바이어스 모델, 잡음 밀도가 샘플당 σ가 되는 법, 추측 항법이 각 오차 항에 하는 일, 양자화가 잡음인 조건, 앨런 편차가 항들을 가르는 법을 가르친다. 이 숫자들을 쓰는 필터([[04-robotics/state-estimation-slam|3. 상태 추정]]), 픽셀 뒤의 카메라 기하와 센서 사이의 외부 보정([[04-robotics/geometric-perception-calibration|3.5 §1과 §5]]), 그리고 회전 대수가 [[02-foundations/se3-geometry|8. 3D 기하와 SE(3)]]에 있는 SE(3) 위의 다축 관성 항법은 가르치지 않는다.*
 
 ### 그림으로 먼저 보기 · The picture
 
 <svg viewBox="0 0 560 379" style="max-width:100%;height:auto" role="img" aria-label="로그–로그 패널 둘로, 왼쪽은 P6 자이로의 앨런 편차와 백색 잡음·바이어스 불안정성·랜덤 워크 점근선, 1 s의 τ1, 7400 s의 τ2, 5분 기록의 15 s 눈금, N·B·K 읽기 표시를, 오른쪽은 지평에 따른 추측 항법 위치 오차와 평평한 엔코더·카메라·거리 센서 선, IMU 증가 법칙 넷, 그 합계, 0.38·1.09·3.21 s의 교차점을 그린 그림">
-  <text x="16" y="20" font-size="11.5" font-weight="bold" fill="currentColor">왼쪽: 자이로 앨런 편차 σ<tspan dy="3" font-size="9.5">A</tspan><tspan dx="3.2" dy="-3">(rad/s)</tspan></text>
+  <text x="16" y="20" font-size="11.5" font-weight="bold" fill="currentColor">왼쪽: 자이로 앨런 편차 σ<tspan dy="3" font-size="10">A</tspan><tspan dx="3.2" dy="-3">(rad/s)</tspan></text>
   <path d="M57.4 34V224 M95.4 34V224 M133.4 34V224 M171.4 34V224 M209.4 34V224 M247.4 34V224" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.16"/>
   <path d="M46 186H285.4 M46 148H285.4 M46 110H285.4 M46 72H285.4" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.16"/>
   <rect x="46" y="34" width="239.4" height="190" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.5"/>
@@ -623,14 +690,14 @@ for T in (300.0, 1800.0, 7200.0):
   <text x="133.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">1</text>
   <text x="171.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10</text>
   <text x="209.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">100</text>
-  <text x="247.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">3</tspan></text>
-  <text x="285.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">4</tspan></text>
-  <text x="41" y="228" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−7</tspan></text>
-  <text x="41" y="190" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−6</tspan></text>
-  <text x="41" y="152" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−5</tspan></text>
-  <text x="41" y="114" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−4</tspan></text>
-  <text x="41" y="76" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−3</tspan></text>
-  <text x="41" y="38" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="9.5">−2</tspan></text>
+  <text x="247.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10<tspan dy="-4.5" font-size="10">3</tspan></text>
+  <text x="285.4" y="240" font-size="11" text-anchor="middle" fill="currentColor">10<tspan dy="-4.5" font-size="10">4</tspan></text>
+  <text x="41" y="228" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−7</tspan></text>
+  <text x="41" y="190" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−6</tspan></text>
+  <text x="41" y="152" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−5</tspan></text>
+  <text x="41" y="114" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−4</tspan></text>
+  <text x="41" y="76" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−3</tspan></text>
+  <text x="41" y="38" font-size="11" text-anchor="end" fill="currentColor">10<tspan dy="-4.5" font-size="10">−2</tspan></text>
   <text x="165.7" y="256" font-size="11" text-anchor="middle" fill="currentColor">클러스터 시간 τ (s)</text>
   <path d="M46 66.3 L46.6 66.6 L47.2 66.9 L47.8 67.2 L48.4 67.5 L49 67.8 L49.6 68.1 L50.2 68.4 L50.8 68.7 L51.4 69 L52 69.3 L52.6 69.6 L53.2 69.9 L53.8 70.2 L54.4 70.5 L55 70.8 L55.6 71.1 L56.2 71.4 L56.8 71.7 L57.4 72 L58 72.3 L58.6 72.6 L59.2 72.9 L59.8 73.2 L60.4 73.5 L61 73.8 L61.6 74.1 L62.2 74.4 L62.8 74.7 L63.4 75 L64 75.3 L64.6 75.6 L65.2 75.9 L65.8 76.2 L66.4 76.5 L67 76.8 L67.6 77.1 L68.2 77.4 L68.8 77.7 L69.4 78 L70 78.3 L70.6 78.6 L71.2 78.9 L71.8 79.2 L72.4 79.5 L73 79.8 L73.6 80.1 L74.2 80.4 L74.8 80.7 L75.4 81 L76 81.3 L76.6 81.6 L77.2 81.9 L77.8 82.2 L78.4 82.5 L79 82.8 L79.6 83.1 L80.2 83.4 L80.8 83.7 L81.4 84 L82 84.3 L82.6 84.6 L83.2 84.9 L83.8 85.2 L84.4 85.5 L85 85.8 L85.6 86.1 L86.2 86.4 L86.8 86.7 L87.4 87 L88 87.3 L88.6 87.6 L89.2 87.9 L89.8 88.2 L90.4 88.5 L91 88.8 L91.6 89.1 L92.2 89.4 L92.8 89.7 L93.4 90 L94 90.3 L94.6 90.6 L95.2 90.9 L95.8 91.2 L96.4 91.5 L97 91.8 L97.6 92.1 L98.2 92.4 L98.8 92.7 L99.4 93 L100 93.3 L100.6 93.6 L101.2 93.9 L101.8 94.2 L102.4 94.5 L103 94.8 L103.6 95.1 L104.2 95.4 L104.8 95.7 L105.4 96 L106 96.3 L106.6 96.6 L107.2 96.9 L107.8 97.2 L108.4 97.5 L109 97.8 L109.6 98.1 L110.2 98.4 L110.8 98.7 L111.4 99 L112 99.3 L112.6 99.6 L113.2 99.9 L113.8 100.2 L114.4 100.5 L115 100.8 L115.6 101.1 L116.2 101.4 L116.8 101.7 L117.4 102 L118 102.3 L118.6 102.6 L119.2 102.9 L119.8 103.2 L120.4 103.5 L121 103.8 L121.6 104.1 L122.2 104.4 L122.8 104.7 L123.4 105 L124 105.3 L124.6 105.6 L125.2 105.9 L125.8 106.2 L126.4 106.5 L127 106.8 L127.6 107.1 L128.2 107.4 L128.8 107.7 L129.4 108 L130 108.3 L130.6 108.6 L131.2 108.9 L131.8 109.2 L132.4 109.5 L133 109.8 L133.6 110.1 L134.2 110.4 L134.8 110.7 L135.4 111 L136 111.3 L136.6 111.6 L137.2 111.9 L137.8 112.2 L138.4 112.5 L139 112.8 L139.6 113.1 L140.2 113.4 L140.8 113.7 L141.4 114 L142 114.3 L142.6 114.6 L143.2 114.9 L143.8 115.2 L144.4 115.5 L145 115.8 L145.6 116.1 L146.2 116.4 L146.8 116.7 L147.4 117 L148 117.3 L148.6 117.6 L149.2 117.9 L149.8 118.2 L150.4 118.5 L151 118.8 L151.6 119.1 L152.2 119.4 L152.8 119.7 L153.4 120 L154 120.3 L154.6 120.6 L155.2 120.9 L155.8 121.2 L156.4 121.5 L157 121.8 L157.6 122.1 L158.2 122.4 L158.8 122.7 L159.4 123 L160 123.3 L160.6 123.6 L161.2 123.9 L161.8 124.2 L162.4 124.5 L163 124.8 L163.6 125.1 L164.2 125.4 L164.8 125.7 L165.4 126 L166 126.3 L166.6 126.6 L167.2 126.9 L167.8 127.2 L168.4 127.5 L169 127.8 L169.6 128.1 L170.2 128.4 L170.8 128.7 L171.4 129 L172 129.3 L172.6 129.6 L173.2 129.9 L173.8 130.2 L174.4 130.5 L175 130.8 L175.6 131.1 L176.2 131.4 L176.8 131.7 L177.4 132 L178 132.3 L178.6 132.6 L179.2 132.9 L179.8 133.2 L180.4 133.5 L181 133.8 L181.6 134.1 L182.2 134.4 L182.8 134.7 L183.4 135 L184 135.3 L184.6 135.6 L185.2 135.9 L185.8 136.2 L186.4 136.5 L187 136.8 L187.6 137.1 L188.2 137.4 L188.8 137.7 L189.4 138 L190 138.3 L190.6 138.6 L191.2 138.9 L191.8 139.2 L192.4 139.5 L193 139.8 L193.6 140.1 L194.2 140.4 L194.8 140.7 L195.4 141 L196 141.3 L196.6 141.6 L197.2 141.9 L197.8 142.2 L198.4 142.5 L199 142.8 L199.6 143.1 L200.2 143.4 L200.8 143.7 L201.4 144 L202 144.3 L202.6 144.6 L203.2 144.9 L203.8 145.2 L204.4 145.5 L205 145.8 L205.6 146.1 L206.2 146.4 L206.8 146.7 L207.4 147 L208 147.3 L208.6 147.6 L209.2 147.9 L209.8 148.2 L210.4 148.5 L211 148.8 L211.6 149.1 L212.2 149.4 L212.8 149.7 L213.4 150 L214 150.3 L214.6 150.6 L215.2 150.9 L215.8 151.2 L216.4 151.5 L217 151.8 L217.6 152.1 L218.2 152.4 L218.8 152.7 L219.4 153 L220 153.3 L220.6 153.6 L221.2 153.9 L221.8 154.2 L222.4 154.5 L223 154.8 L223.6 155.1 L224.2 155.4 L224.8 155.7 L225.4 156 L226 156.3 L226.6 156.6 L227.2 156.9 L227.8 157.2 L228.4 157.5 L229 157.8 L229.6 158.1 L230.2 158.4 L230.8 158.7 L231.4 159 L232 159.3 L232.6 159.6 L233.2 159.9 L233.8 160.2 L234.4 160.5 L235 160.8 L235.6 161.1 L236.2 161.4 L236.8 161.7 L237.4 162 L238 162.3 L238.6 162.6 L239.2 162.9 L239.8 163.2 L240.4 163.5 L241 163.8 L241.6 164.1 L242.2 164.4 L242.8 164.7 L243.4 165 L244 165.3 L244.6 165.6 L245.2 165.9 L245.8 166.2 L246.4 166.5 L247 166.8 L247.6 167.1 L248.2 167.4 L248.8 167.7 L249.4 168 L250 168.3 L250.6 168.6 L251.2 168.9 L251.8 169.2 L252.4 169.5 L253 169.8 L253.6 170.1 L254.2 170.4 L254.8 170.7 L255.4 171 L256 171.3 L256.6 171.6 L257.2 171.9 L257.8 172.2 L258.4 172.5 L259 172.8 L259.6 173.1 L260.2 173.4 L260.8 173.7 L261.4 174 L262 174.3 L262.6 174.6 L263.2 174.9 L263.8 175.2 L264.4 175.5 L265 175.8 L265.6 176.1 L266.2 176.4 L266.8 176.7 L267.4 177 L268 177.3 L268.6 177.6 L269.2 177.9 L269.8 178.2 L270.4 178.5 L271 178.8 L271.6 179.1 L272.2 179.4 L272.8 179.7 L273.4 180 L274 180.3 L274.6 180.6 L275.2 180.9 L275.8 181.2 L276.4 181.5 L277 181.8 L277.6 182.1 L278.2 182.4 L278.8 182.7 L279.4 183 L280 183.3 L280.6 183.6 L281.2 183.9 L281.8 184.2 L282.4 184.5 L283 184.8 L283.6 185.1 L284.2 185.4 L284.8 185.7 L285.4 186" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="5 3"/>
   <path d="M52.7 224 L53.2 223.7 L53.8 223.4 L54.4 223.1 L55 222.8 L55.6 222.5 L56.2 222.2 L56.8 221.9 L57.4 221.6 L58 221.3 L58.6 221 L59.2 220.7 L59.8 220.4 L60.4 220.1 L61 219.8 L61.6 219.5 L62.2 219.2 L62.8 218.9 L63.4 218.6 L64 218.3 L64.6 218 L65.2 217.7 L65.8 217.4 L66.4 217.1 L67 216.8 L67.6 216.5 L68.2 216.2 L68.8 215.9 L69.4 215.6 L70 215.3 L70.6 215 L71.2 214.7 L71.8 214.4 L72.4 214.1 L73 213.8 L73.6 213.5 L74.2 213.2 L74.8 212.9 L75.4 212.6 L76 212.3 L76.6 212 L77.2 211.7 L77.8 211.4 L78.4 211.1 L79 210.8 L79.6 210.5 L80.2 210.2 L80.8 209.9 L81.4 209.6 L82 209.3 L82.6 209 L83.2 208.7 L83.8 208.4 L84.4 208.1 L85 207.8 L85.6 207.5 L86.2 207.2 L86.8 206.9 L87.4 206.6 L88 206.3 L88.6 206 L89.2 205.7 L89.8 205.4 L90.4 205.1 L91 204.8 L91.6 204.5 L92.2 204.2 L92.8 203.9 L93.4 203.6 L94 203.3 L94.6 203 L95.2 202.7 L95.8 202.4 L96.4 202.1 L97 201.8 L97.6 201.5 L98.2 201.2 L98.8 200.9 L99.4 200.6 L100 200.3 L100.6 200 L101.2 199.7 L101.8 199.4 L102.4 199.1 L103 198.8 L103.6 198.5 L104.2 198.2 L104.8 197.9 L105.4 197.6 L106 197.3 L106.6 197 L107.2 196.7 L107.8 196.4 L108.4 196.1 L109 195.8 L109.6 195.5 L110.2 195.2 L110.8 194.9 L111.4 194.6 L112 194.3 L112.6 194 L113.2 193.7 L113.8 193.4 L114.4 193.1 L115 192.8 L115.6 192.5 L116.2 192.2 L116.8 191.9 L117.4 191.6 L118 191.3 L118.6 191 L119.2 190.7 L119.8 190.4 L120.4 190.1 L121 189.8 L121.6 189.5 L122.2 189.2 L122.8 188.9 L123.4 188.6 L124 188.3 L124.6 188 L125.2 187.7 L125.8 187.4 L126.4 187.1 L127 186.8 L127.6 186.5 L128.2 186.2 L128.8 185.9 L129.4 185.6 L130 185.3 L130.6 185 L131.2 184.7 L131.8 184.4 L132.4 184.1 L133 183.8 L133.6 183.5 L134.2 183.2 L134.8 182.9 L135.4 182.6 L136 182.3 L136.6 182 L137.2 181.7 L137.8 181.4 L138.4 181.1 L139 180.8 L139.6 180.5 L140.2 180.2 L140.8 179.9 L141.4 179.6 L142 179.3 L142.6 179 L143.2 178.7 L143.8 178.4 L144.4 178.1 L145 177.8 L145.6 177.5 L146.2 177.2 L146.8 176.9 L147.4 176.6 L148 176.3 L148.6 176 L149.2 175.7 L149.8 175.4 L150.4 175.1 L151 174.8 L151.6 174.5 L152.2 174.2 L152.8 173.9 L153.4 173.6 L154 173.3 L154.6 173 L155.2 172.7 L155.8 172.4 L156.4 172.1 L157 171.8 L157.6 171.5 L158.2 171.2 L158.8 170.9 L159.4 170.6 L160 170.3 L160.6 170 L161.2 169.7 L161.8 169.4 L162.4 169.1 L163 168.8 L163.6 168.5 L164.2 168.2 L164.8 167.9 L165.4 167.6 L166 167.3 L166.6 167 L167.2 166.7 L167.8 166.4 L168.4 166.1 L169 165.8 L169.6 165.5 L170.2 165.2 L170.8 164.9 L171.4 164.6 L172 164.3 L172.6 164 L173.2 163.7 L173.8 163.4 L174.4 163.1 L175 162.8 L175.6 162.5 L176.2 162.2 L176.8 161.9 L177.4 161.6 L178 161.3 L178.6 161 L179.2 160.7 L179.8 160.4 L180.4 160.1 L181 159.8 L181.6 159.5 L182.2 159.2 L182.8 158.9 L183.4 158.6 L184 158.3 L184.6 158 L185.2 157.7 L185.8 157.4 L186.4 157.1 L187 156.8 L187.6 156.5 L188.2 156.2 L188.8 155.9 L189.4 155.6 L190 155.3 L190.6 155 L191.2 154.7 L191.8 154.4 L192.4 154.1 L193 153.8 L193.6 153.5 L194.2 153.2 L194.8 152.9 L195.4 152.6 L196 152.3 L196.6 152 L197.2 151.7 L197.8 151.4 L198.4 151.1 L199 150.8 L199.6 150.5 L200.2 150.2 L200.8 149.9 L201.4 149.6 L202 149.3 L202.6 149 L203.2 148.7 L203.8 148.4 L204.4 148.1 L205 147.8 L205.6 147.5 L206.2 147.2 L206.8 146.9 L207.4 146.6 L208 146.3 L208.6 146 L209.2 145.7 L209.8 145.4 L210.4 145.1 L211 144.8 L211.6 144.5 L212.2 144.2 L212.8 143.9 L213.4 143.6 L214 143.3 L214.6 143 L215.2 142.7 L215.8 142.4 L216.4 142.1 L217 141.8 L217.6 141.5 L218.2 141.2 L218.8 140.9 L219.4 140.6 L220 140.3 L220.6 140 L221.2 139.7 L221.8 139.4 L222.4 139.1 L223 138.8 L223.6 138.5 L224.2 138.2 L224.8 137.9 L225.4 137.6 L226 137.3 L226.6 137 L227.2 136.7 L227.8 136.4 L228.4 136.1 L229 135.8 L229.6 135.5 L230.2 135.2 L230.8 134.9 L231.4 134.6 L232 134.3 L232.6 134 L233.2 133.7 L233.8 133.4 L234.4 133.1 L235 132.8 L235.6 132.5 L236.2 132.2 L236.8 131.9 L237.4 131.6 L238 131.3 L238.6 131 L239.2 130.7 L239.8 130.4 L240.4 130.1 L241 129.8 L241.6 129.5 L242.2 129.2 L242.8 128.9 L243.4 128.6 L244 128.3 L244.6 128 L245.2 127.7 L245.8 127.4 L246.4 127.1 L247 126.8 L247.6 126.5 L248.2 126.2 L248.8 125.9 L249.4 125.6 L250 125.3 L250.6 125 L251.2 124.7 L251.8 124.4 L252.4 124.1 L253 123.8 L253.6 123.5 L254.2 123.2 L254.8 122.9 L255.4 122.6 L256 122.3 L256.6 122 L257.2 121.7 L257.8 121.4 L258.4 121.1 L259 120.8 L259.6 120.5 L260.2 120.2 L260.8 119.9 L261.4 119.6 L262 119.3 L262.6 119 L263.2 118.7 L263.8 118.4 L264.4 118.1 L265 117.8 L265.6 117.5 L266.2 117.2 L266.8 116.9 L267.4 116.6 L268 116.3 L268.6 116 L269.2 115.7 L269.8 115.4 L270.4 115.1 L271 114.8 L271.6 114.5 L272.2 114.2 L272.8 113.9 L273.4 113.6 L274 113.3 L274.6 113 L275.2 112.7 L275.8 112.4 L276.4 112.1 L277 111.8 L277.6 111.5 L278.2 111.2 L278.8 110.9 L279.4 110.6 L280 110.3 L280.6 110 L281.2 109.7 L281.8 109.4 L282.4 109.1 L283 108.8 L283.6 108.5 L284.2 108.2 L284.8 107.9 L285.4 107.6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-opacity="0.6" stroke-dasharray="5 3"/>
@@ -645,11 +712,11 @@ for T in (300.0, 1800.0, 7200.0):
   <circle cx="133.4" cy="110" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
   <circle cx="151.6" cy="174.6" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
   <path d="M133.4 100.8 l3.5 3.5 l-3.5 3.5 l-3.5 -3.5 Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.1"/>
-  <text x="121.4" y="130" font-size="11" text-anchor="end" fill="currentColor">N<tspan dy="3" font-size="9.5">g</tspan></text>
+  <text x="121.4" y="130" font-size="11" text-anchor="end" fill="currentColor">N<tspan dy="3" font-size="10">g</tspan></text>
   <line x1="122.4" y1="125" x2="130.4" y2="113" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
-  <text x="161.6" y="188.6" font-size="11" fill="currentColor">K<tspan dy="3" font-size="9.5">g</tspan></text>
-  <text x="183.1" y="87.1" font-size="11" fill="currentColor">바닥 0.664 B<tspan dy="3" font-size="9.5">g</tspan></text>
-  <text x="183.1" y="104.1" font-size="11" fill="currentColor">=<tspan dx="3.1">9.96×10</tspan><tspan dy="-4.5" font-size="9.5">−5</tspan></text>
+  <text x="161.6" y="188.6" font-size="11" fill="currentColor">K<tspan dy="3" font-size="10">g</tspan></text>
+  <text x="183.1" y="87.1" font-size="11" fill="currentColor">바닥 0.664 B<tspan dy="3" font-size="10">g</tspan></text>
+  <text x="183.1" y="104.1" font-size="11" fill="currentColor">=<tspan dx="3.1">9.96×10</tspan><tspan dy="-4.5" font-size="10">−5</tspan></text>
   <text x="75.6" y="97.1" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">−½</text>
   <text x="201" y="167.8" font-size="11.5" text-anchor="middle" font-weight="bold" fill="currentColor">+½</text>
   <text x="129.6" y="215" font-size="11" text-anchor="end" fill="currentColor">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5">&#8203;</tspan></text>
@@ -670,7 +737,7 @@ for T in (300.0, 1800.0, 7200.0):
   <text x="337" y="164.7" font-size="11" text-anchor="end" fill="currentColor">0.1 mm</text>
   <text x="337" y="196.3" font-size="11" text-anchor="end" fill="currentColor">10 µm</text>
   <text x="337" y="228" font-size="11" text-anchor="end" fill="currentColor">1 µm</text>
-  <text x="433" y="256" font-size="11" text-anchor="middle" fill="currentColor">마지막 고정 이후 시간 t (s)</text>
+  <text x="433" y="256" font-size="11" text-anchor="middle" fill="currentColor">마지막 위치 고정 이후 시간 t (s)</text>
   <line x1="342" y1="155.9" x2="548" y2="155.9" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75"/>
   <line x1="342" y1="131.5" x2="548" y2="131.5" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75"/>
   <line x1="342" y1="97.3" x2="548" y2="97.3" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.75"/>
@@ -697,33 +764,33 @@ for T in (300.0, 1800.0, 7200.0):
   <line x1="354" y1="195.2" x2="360.7" y2="214.2" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.7"/>
   <text x="512.1" y="69.8" font-size="11" text-anchor="end" font-weight="bold" fill="currentColor">IMU 합계</text>
   <text x="16" y="278" font-size="11" font-weight="bold" fill="currentColor">−½</text>
-  <text x="40" y="278" font-size="11" fill="currentColor">백색 잡음 N<tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">/√τ, (1 s,</tspan><tspan dx="3.1">1.0×10</tspan><tspan dy="-4.5" font-size="9.5">−4</tspan><tspan dy="4.5">)과</tspan></text>
-  <text x="40" y="295" font-size="11" fill="currentColor">(5 ms,<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="9.5">−3</tspan><tspan dy="4.5">)을 지난다. N</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">는 이 직선에서 읽는다</tspan></text>
+  <text x="40" y="278" font-size="11" fill="currentColor">백색 잡음 N<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">/√τ, (1 s,</tspan><tspan dx="3.1">1.0×10</tspan><tspan dy="-4.5" font-size="10">−4</tspan><tspan dy="4.5">)과</tspan></text>
+  <text x="40" y="295" font-size="11" fill="currentColor">(5 ms,<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="10">−3</tspan><tspan dy="4.5">)을 지난다. N</tspan><tspan dy="3" font-size="10">g</tspan><tspan dy="-3">는 직선의 1 s 값이다</tspan></text>
   <text x="16" y="312" font-size="11" font-weight="bold" fill="currentColor">0</text>
-  <text x="40" y="312" font-size="11" fill="currentColor">바닥 0.664 B<tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">: B</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dx="3.1" dy="-3">= 바닥 ÷ 0.664 =</tspan><tspan dx="3.1">1.5×10</tspan><tspan dy="-4.5" font-size="9.5">−4</tspan></text>
+  <text x="40" y="312" font-size="11" fill="currentColor">바닥 0.664 B<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">: B</tspan><tspan dy="3" font-size="10">g</tspan><tspan dx="3.1" dy="-3">= 바닥 ÷ 0.664 =</tspan><tspan dx="3.1">1.5×10</tspan><tspan dy="-4.5" font-size="10">−4</tspan></text>
   <text x="16" y="329" font-size="11" font-weight="bold" fill="currentColor">+½</text>
-  <text x="40" y="329" font-size="11" fill="currentColor">랜덤 워크 K<tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">√(τ/3). K</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">는 3 s에서 이 직선으로 읽는다</tspan></text>
+  <text x="40" y="329" font-size="11" fill="currentColor">랜덤 워크 K<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">√(τ/3). K</tspan><tspan dy="3" font-size="10">g</tspan><tspan dy="-3">는 직선의 3 s 값이다</tspan></text>
   <text x="16" y="346" font-size="11" font-weight="bold" fill="currentColor">τ</text>
   <text x="40" y="346" font-size="11" fill="currentColor">τ<tspan dy="3.5">1</tspan><tspan dy="-3.5"> = 1.0 s와 τ</tspan><tspan dy="3.5">2</tspan><tspan dy="-3.5"> = 7400 s, 두 모서리</tspan></text>
   <path d="M22 355 l4 4 l-4 4 l-4 -4 Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.1"/>
-  <text x="40" y="363" font-size="11" fill="currentColor">1 s에서의 곡선:<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="9.5">−4</tspan><tspan dy="4.5">, N</tspan><tspan dy="3" font-size="9.5">g</tspan><tspan dy="-3">보다 41% 높다</tspan></text>
+  <text x="40" y="363" font-size="11" fill="currentColor">1 s에서의 곡선:<tspan dx="3.1">1.41×10</tspan><tspan dy="-4.5" font-size="10">−4</tspan><tspan dy="4.5">, N</tspan><tspan dy="3" font-size="10">g</tspan><tspan dy="-3">보다 41% 높다</tspan></text>
   <line x1="318" y1="274" x2="340" y2="274" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="7 3"/>
-  <text x="345" y="278" font-size="11" fill="currentColor">0.577 mm · t<tspan dy="-4.5" font-size="9.5">3/2</tspan><tspan dx="3.1" dy="4.5">가속도계 백색 잡음</tspan></text>
+  <text x="345" y="278" font-size="11" fill="currentColor">0.577 mm · t<tspan dy="-4.5" font-size="10">3/2</tspan><tspan dx="3.1" dy="4.5">가속도계 백색 잡음</tspan></text>
   <line x1="318" y1="291" x2="340" y2="291" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="2.6 2.4"/>
-  <text x="345" y="295" font-size="11" fill="currentColor">0.250 mm · t<tspan dy="-4.5" font-size="9.5">2</tspan><tspan dx="3.1" dy="4.5">가속도계 바이어스</tspan></text>
+  <text x="345" y="295" font-size="11" fill="currentColor">0.250 mm · t<tspan dy="-4.5" font-size="10">2</tspan><tspan dx="3.1" dy="4.5">가속도계 바이어스</tspan></text>
   <line x1="318" y1="308" x2="340" y2="308" stroke="currentColor" stroke-width="1.9" stroke-opacity="0.95" stroke-dasharray="0.6 2.6" stroke-linecap="round"/>
-  <text x="345" y="312" font-size="11" fill="currentColor">0.219 mm · t<tspan dy="-4.5" font-size="9.5">5/2</tspan><tspan dx="3.1" dy="4.5">자이로 백색, 중력 경유</tspan></text>
+  <text x="345" y="312" font-size="11" fill="currentColor">0.219 mm · t<tspan dy="-4.5" font-size="10">5/2</tspan><tspan dx="3.1" dy="4.5">자이로 백색, 중력 경유</tspan></text>
   <line x1="318" y1="325" x2="340" y2="325" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="9 3 1.5 3"/>
-  <text x="345" y="329" font-size="11" fill="currentColor">0.245 mm · t<tspan dy="-4.5" font-size="9.5">3</tspan><tspan dx="3.1" dy="4.5">자이로 바이어스, 중력 경유</tspan></text>
+  <text x="345" y="329" font-size="11" fill="currentColor">0.245 mm · t<tspan dy="-4.5" font-size="10">3</tspan><tspan dx="3.1" dy="4.5">자이로 바이어스, 중력 경유</tspan></text>
   <line x1="318" y1="342" x2="340" y2="342" stroke="currentColor" stroke-width="2.2" stroke-opacity="1" />
   <text x="345" y="346" font-size="11" fill="currentColor">IMU 합계: 넷의 제곱합의 제곱근</text>
 </svg>
 
-왼쪽은 P6 자이로의 앨런 편차로, $1\,\mathrm s$에서 $N_g = 1.0\times10^{-4}\,\mathrm{rad/s}$를 지나는 기울기 $-\tfrac12$의 백색 잡음과 바닥 $0.664B_g = 9.96\times10^{-5}$, $3\,\mathrm s$에서 $K_g$를 지나는 기울기 $+\tfrac12$의 랜덤 워크를 제곱합의 제곱근으로 합친 곡선이고, 모서리는 $\tau_1 = 1.0\,\mathrm s$와 $\tau_2 = 7400\,\mathrm s$에 있으며, 5분 기록은 $15\,\mathrm s$까지만 믿을 수 있다. 오른쪽은 마지막 고정 이후 시간에 따른 추측 항법 위치 오차로, 엔코더($0.141\,\mathrm{mm}$)와 카메라($0.833\,\mathrm{mm}$), 거리 센서($10\,\mathrm{mm}$)는 평평하게 머물고, $t^{3/2}$, $t^2$, $t^{5/2}$, $t^3$으로 자라는 항들을 합친 IMU 합계가 셋을 $0.38$, $1.09$, $3.21\,\mathrm s$에서 가로지른다. 올라가는 기울기는 저마다 앨런 기울기에 적분 횟수를 더한 것이고, 자이로의 두 항은 중력을 거쳐서만 위치에 닿으므로 적분이 하나 더 많다.
+왼쪽은 P6 자이로의 앨런 편차(정지 기록의 연속한 평균들이 서로 얼마나 다른지를 평균 시간 $\tau$에 대해 그린 것, §6에서 정의)로, $1\,\mathrm s$에서 $N_g = 1.0\times10^{-4}\,\mathrm{rad/s}$를 지나는 기울기 $-\tfrac12$의 백색 잡음과 바닥 $0.664B_g = 9.96\times10^{-5}$, $3\,\mathrm s$에서 $K_g$를 지나는 기울기 $+\tfrac12$의 랜덤 워크를 제곱합의 제곱근으로 합친 곡선이고, 모서리는 $\tau_1 = 1.0\,\mathrm s$와 $\tau_2 = 7400\,\mathrm s$에 있으며, 5분 기록은 $15\,\mathrm s$까지만 믿을 수 있다. 오른쪽은 마지막 위치 고정 이후 시간에 따른 추측 항법 위치 오차로, 엔코더($0.141\,\mathrm{mm}$)와 카메라($0.833\,\mathrm{mm}$), 거리 센서($10\,\mathrm{mm}$)는 평평하게 머물고, $t^{3/2}$, $t^2$, $t^{5/2}$, $t^3$으로 자라는 항들을 합친 IMU 합계가 셋을 $0.38$, $1.09$, $3.21\,\mathrm s$에서 가로지른다. 올라가는 기울기는 저마다 앨런 기울기에 적분 횟수를 더한 것이고, 자이로의 두 항은 중력을 거쳐서만 위치에 닿으므로 적분이 하나 더 많다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
-숫자가 붙은 과제 대상이다. 과제는 자이로와 엔코더를 바꾸므로, 사슬 전체를 여기서 먼저 한다.
+숫자가 붙은 과제 대상이다. 과제는 자이로와 엔코더를 바꾸므로, 사슬 전체를 여기서 먼저 한다. 1, 2, 5단계는 이 페이지의 대상과 한 줄짜리 안내 하나씩이면 되니 지금 하고, 3, 4단계는 §3의 증가 법칙을 인용하므로 미리 보기로 읽은 뒤 §3을 마치고 다시 한다.
 
 **1. 엔코더의 카운트를 잡음으로.** 한 카운트는 $\Delta = 1/2048\,\mathrm m = 0.488\,\mathrm{mm}$다. 카트가 샘플 사이에 여러 카운트를 가로지르는 동안 오차는 한 카운트 위에서 균일하다(§4). 그러므로
 
@@ -737,7 +804,7 @@ $$\sigma_a = 1.0\times10^{-3}\sqrt{200} = 0.0141\ \mathrm{m/s^2},\qquad \sigma_g
 
 샘플 하나가 백색 잡음을 $5\,\mathrm{ms}$ 동안만 평균하기 때문이다. 가속도계 샘플 하나는 가속도계 바이어스 불안정성보다 28배 시끄럽다. 그런데도 3단계에서 10 s에는 바이어스가 잡음을 이긴다.
 
-**3. 1 s와 10 s의 추측 항법.** 위치와 속도를 완벽히 아는 상태에서, 전원 투입 바이어스를 보정으로 지운 뒤, IMU만 적분한다. 흔한 어림셈은 운용 중 바이어스를 지평 동안 크기 $B$의 상수로 둔다. 각 증가 법칙은 §3이 유도하고, 여기서는 값만 적는다.
+**3. 1 s와 10 s의 추측 항법.** 위치와 속도를 완벽히 아는 상태에서, 전원 투입 바이어스를 보정으로 지운 뒤, IMU만 적분한다. 흔한 어림셈은 운용 중 바이어스를 지평 동안 크기 $B$의 상수로 둔다. 모든 지수를 규칙 하나가 준다. 적분 한 번 뒤에 백색 잡음은 $t^{1/2}$, 랜덤 워크 바이어스는 $t^{3/2}$, 붙잡아 둔 바이어스는 $t^1$로 자라고, 적분이 하나 늘 때마다 $t$의 거듭제곱이 하나 오르며, 자이로는 기울기를 거쳐서만 위치에 닿으므로 중력이 모든 자이로 항에 적분을 하나 더한다. 그 경로와 계수는 §3이 유도한다.
 
 | 오차 항 | 증가 | $t = 1\,\mathrm s$ | $t = 10\,\mathrm s$ |
 |---|---|---:|---:|
@@ -749,7 +816,7 @@ $$\sigma_a = 1.0\times10^{-3}\sqrt{200} = 0.0141\ \mathrm{m/s^2},\qquad \sigma_g
 | 자이로 바이어스 랜덤 워크, 중력을 거쳐 | $gK_g t^{7/2}/\sqrt{252}$ | $0.001\,\mathrm{mm}$ | $3.91\,\mathrm{mm}$ |
 | **여섯 항의 제곱합의 제곱근** | | $0.710\,\mathrm{mm}$ | $257\,\mathrm{mm}$ |
 
-제곱 합산은 각 바이어스 행을 부호를 모르는 1σ 값으로 다룬다. 백색 잡음과 바이어스가 만드는 자이로 자신의 각도 오차는 1 s에서 $N_g\sqrt t = 1.0\times10^{-4}$과 $B_gt = 1.5\times10^{-4}\,\mathrm{rad}$, 10 s에서 $3.2\times10^{-4}$과 $1.5\times10^{-3}\,\mathrm{rad}$이다. 가장 커도 $0.086°$인 작은 각도다. 그러나 $g$를 곱하면 마지막 것은 $0.0147\,\mathrm{m/s^2}$의 가짜 가속도로, $B_a$의 29배다.
+여섯 항이 서로 독립이므로 제곱합의 제곱근(quadrature sum)이 성립하고, 각 바이어스 행은 부호를 모르는 1σ 값으로 다룬다. 백색 잡음과 바이어스가 만드는 자이로 자신의 각도 오차는 1 s에서 $N_g\sqrt t = 1.0\times10^{-4}$과 $B_gt = 1.5\times10^{-4}\,\mathrm{rad}$, 10 s에서 $3.2\times10^{-4}$과 $1.5\times10^{-3}\,\mathrm{rad}$이다. 가장 커도 $0.086°$인 작은 각도다. 그러나 $g$를 곱하면 마지막 것은 $0.0147\,\mathrm{m/s^2}$의 가짜 가속도로, $B_a$의 29배다.
 
 **4. 지평마다 어느 센서가 지배하는가.** IMU 안에서는 1 s에 가속도계 백색 잡음이 지배한다. $0.710\,\mathrm{mm}$ 중 $0.577$이다. 10 s에는 중력을 거친 자이로 바이어스가 $257\,\mathrm{mm}$ 중 $245$로 지배한다. 가속도계 바이어스가 두 번 적분되는 동안 그것은 세 번 적분되기 때문이다. 두 바이어스 행은 $gB_gt^3/6 = B_at^2/2$, 곧 $t = 3B_a/(gB_g) = 1.02\,\mathrm s$에서 같다. 카트 전체로 보면, 자라는 IMU 오차를 자라지 않는 센서 셋과 맞세운다. IMU 합계는 $0.38\,\mathrm s$에 엔코더의 $0.141\,\mathrm{mm}$를, $1.09\,\mathrm s$에 카메라의 $0.833\,\mathrm{mm}$를, $3.21\,\mathrm s$에 거리 센서의 $10\,\mathrm{mm}$를 넘는다. 비전 한 프레임($20\,\mathrm{ms}$) 동안의 표류는 $1.6\,\mathrm{\mu m}$로, 엔코더 σ 하나보다 86배 작다.
 
@@ -776,8 +843,8 @@ $$\sigma_a = 1.0\times10^{-3}\sqrt{200} = 0.0141\ \mathrm{m/s^2},\qquad \sigma_g
 | 센서 | $h(x)$ | $b$ | $n$, 샘플당 | 주기 |
 |---|---|---|---|---:|
 | 엔코더 | $p$ | 바닥 함수에서 오는 $-\Delta/2$, 원점 복귀로 제거 | 균일, $\sigma_q = 0.141\,\mathrm{mm}$, *움직이는 동안만*(§4) | $200\,\mathrm{Hz}$ |
-| 가속도계 | $\ddot p + g\sin\theta$ | $b_a(t)$: 전원 투입 오프셋, 플리커($B_a$), 랜덤 워크($K_a$) | 백색, $\sigma_a = 0.0141\,\mathrm{m/s^2}$ | $200\,\mathrm{Hz}$ |
-| 자이로 | $\dot\theta$ | $b_g(t)$: 전원 투입 오프셋, 플리커($B_g$), 랜덤 워크($K_g$) | 백색, $\sigma_g = 1.41\times10^{-3}\,\mathrm{rad/s}$ | $200\,\mathrm{Hz}$ |
+| 가속도계 | $\ddot p + g\sin\theta$ | $b_a(t)$: 전원 투입 오프셋, 플리커, 곧 느린 $1/f$ 떠돎($B_a$, §3), 랜덤 워크($K_a$, §3) | 백색, $\sigma_a = 0.0141\,\mathrm{m/s^2}$ | $200\,\mathrm{Hz}$ |
+| 자이로 | $\dot\theta$ | $b_g(t)$: 전원 투입 오프셋, 플리커($B_g$, §3), 랜덤 워크($K_g$, §3) | 백색, $\sigma_g = 1.41\times10^{-3}\,\mathrm{rad/s}$ | $200\,\mathrm{Hz}$ |
 | 거리 센서 | $x_w - p$ | $b_r = 4\,\mathrm{mm}$ 장착 오프셋 | 가우시안, $\sigma_r = 10\,\mathrm{mm}$, 그리고 이상치(§5) | $50\,\mathrm{Hz}$ |
 | 카메라 | $c_x + f_x(p - p_c)/Z_c$, px 단위 | 렌즈 왜곡; 틀린 $Z_c$나 $c_x$(§5) | $\sigma_u = 0.5\,\mathrm{px}$, 곧 $0.833\,\mathrm{mm}$ | $50\,\mathrm{Hz}$ |
 
@@ -805,7 +872,7 @@ $$\sigma = N\sqrt f$$
 
 두 가지 귀결을 적어 둘 만하다. 둘 다 흔히 틀린다.
 - **같은 부품을 더 빨리 읽으면 샘플마다는 더 시끄럽고, 중요한 곳에서는 나빠지지 않는다.** $800\,\mathrm{Hz}$에서 자이로 샘플의 $\sigma = 2.83\times10^{-3}\,\mathrm{rad/s}$로, $200\,\mathrm{Hz}$ 값의 두 배다. 그래도 10 s 뒤 각도 오차는 여전히 $N_g\sqrt{10} = 3.2\times10^{-4}\,\mathrm{rad}$이다. 적분이 보는 것은 σ가 아니라 $N$이기 때문이다. §7의 주기 스윕이 앨런 그림에서 같은 것을 보여 준다.
-- **이 식은 샘플이 독립이라고 가정한다.** 내부 저역통과 필터가 $f/2$보다 한참 아래에서 자르는 센서는 상관된 샘플을 돌려준다. 그 σ는 $N\sqrt f$보다 작고, $n$개를 평균해도 잡음이 $\sqrt n$으로 나뉘지 않는다. 그러니 로그에서 σ를 재고 백색이라 가정하지 말고, 밀도와 필터 대역폭을 데이터시트에서 가져오거나, 필터 시정수보다 한참 긴 클러스터 시간에서 앨런 편차의 $-\tfrac12$ 직선으로 $N$을 읽어라(§6).
+- **이 식은 샘플이 독립이라고 가정한다.** 내부 저역통과 필터, 곧 [[02-foundations/signal-processing|6. 신호처리 §2]]의 앤티앨리어싱 필터가 $f/2$보다 한참 아래에서 자르는 센서는 상관된 샘플을 돌려준다. 그 σ는 $N\sqrt f$보다 작고, $n$개를 평균해도 잡음이 $\sqrt n$으로 나뉘지 않는다. 그러니 로그에서 σ를 재고 백색이라 가정하지 말고, 밀도와 필터 대역폭을 데이터시트에서 가져오거나, 필터 시정수보다 한참 긴 클러스터 시간에서 앨런 편차의 $-\tfrac12$ 직선으로 $N$을 읽어라(§6).
 
 만나게 될 단위: 자이로 밀도는 $°/\mathrm s/\sqrt{\mathrm{Hz}}$나 $°/\sqrt{\mathrm h}$(앞의 것에 60을 곱하면 뒤의 것, $\sqrt{\mathrm h} = 60\sqrt{\mathrm s}$이므로), 가속도계 밀도는 $\mathrm{\mu g}/\sqrt{\mathrm{Hz}}$($1\,\mathrm{\mu g} = 9.81\times10^{-6}\,\mathrm{m/s^2}$), 바이어스 불안정성은 $°/\mathrm h$나 $\mathrm{\mu g}$다.
 
@@ -817,7 +884,7 @@ IMU로 하는 추측 항법은 센서만 다른 오도메트리다. 외부 기�
 >
 > $$S_b(f) = \frac{B^2}{2\pi f}$$
 >
-> $S_b$는 바이어스 떠돎의 전력 스펙트럼 밀도, $f$는 주파수다. 그러므로 느리게 볼수록 바이어스의 전력이 크다. 평균 창을 늘려도 어느 순간부터 도움이 되지 않는 것은 $1/f$ 스펙트럼이 모든 옥타브에 같은 전력 $(B^2/2\pi)\ln2$를 담기 때문이다. 창을 두 배로 늘리면 옥타브 하나를 평균으로 지우는 대신 다음 옥타브 하나를 들인다. §6이 이것을 바닥 $0.664B$로 바꾼다.
+> $S_b$는 바이어스 떠돎의 전력 스펙트럼 밀도, 곧 주파수당 전력이자 자기상관의 푸리에 변환([[02-foundations/probability|3. 확률 §5.1]])이고, $f$는 주파수다. 그러므로 느리게 볼수록 바이어스의 전력이 크다. 평균 창을 늘려도 어느 순간부터 도움이 되지 않는 것은 $1/f$ 스펙트럼이 모든 옥타브에 같은 전력 $(B^2/2\pi)\ln2$를 담기 때문이다. 창을 두 배로 늘리면 옥타브 하나를 평균으로 지우는 대신 다음 옥타브 하나를 들인다. §6이 이것을 바닥 $0.664B$로 바꾼다.
 >
 > - **예**: P6의 자이로, $B_g = 1.5\times10^{-4}\,\mathrm{rad/s}$는 $\tau = 1\,\mathrm s$부터 $9.96\times10^{-5}\,\mathrm{rad/s}$의 바닥을 준다. §7의 5분 기록은 $B$를 $1.475\times10^{-4}$로, 2% 안에서 읽어 낸다.
 > - **비예**: 전원 투입 바이어스, 곧 전원을 켤 때마다 달라지는 오프셋. 데이터시트의 다른 줄이고, 시동 보정이 없앤다.
@@ -839,7 +906,56 @@ $$\operatorname{Var} = N^2\int_0^t \frac{(t-s)^{2m-2}}{\big((m-1)!\big)^2}\,ds =
 
 $u^{2m-2}$를 $0$부터 $t$까지 적분하면 $t^{2m-1}/(2m-1)$이기 때문이다. 적분 한 번부터 네 번까지의 분산은 $N^2t$, $N^2t^3/3$, $N^2t^5/20$, $N^2t^7/252$다. 상수 바이어스 $B$를 $m$번 적분하면 그냥 $Bt^m/m!$이다. 랜덤 워크 바이어스는 이미 한 번 적분된 백색 잡음이므로, 그것을 $m$번 적분하면 $N$ 자리에 $K$가 온 백색 잡음 $m+1$번 적분처럼 행동한다.
 
-가속도계는 위치까지 두 번 적분된다. 자이로는 기울기까지 한 번 적분된다. 중력이 기울기 오차 $\delta\theta$를 가짜 가속도 $g\sin\delta\theta \approx g\,\delta\theta$로 바꾸고, 적분 두 번이 그것을 위치로 옮긴다. 그래서 모든 자이로 항은 짝이 되는 가속도계 항보다 적분 하나만큼 앞서 도착한다.
+**자이로 오차가 위치에 닿는 경로.** 가속도계는 $z_a = \ddot p + g\sin\theta$를 읽는다(§1의 표). 경사면 위의 블록이 경사를 따라 $mg\sin\theta$를 느끼는 것과 같다. **스트랩다운**(strapdown) IMU는 수평을 잡아 주는 짐벌 없이 카트에 볼트로 고정되어 있으므로, 루프는 중력을 스스로 빼야 하고, 그때 쓰는 것은 믿는 기울기 $\hat\theta$이며 그것은 자이로를 적분해서만 얻는다. 기울기 오차를 $\delta\theta = \hat\theta - \theta$라 하면 루프가 계산하는 것은
+$$z_a - g\sin\hat\theta \approx \ddot p - g\,\delta\theta$$
+이다. 작은 각에서 $\sin\hat\theta - \sin\theta \approx \delta\theta$이기 때문이고, 가속도계가 느낀 적 없는 크기 $g\,\delta\theta$의 가짜 가속도가 생긴다. $10$ s에 자이로 바이어스 하나만으로 $\delta\theta = B_gt = 1.5$ mrad가 쌓이고, 여기에 $g$를 곱한 가짜 가속도는 $0.0147\,\mathrm{m/s^2}$, 곧 $B_a$의 $29$배이며, 적분 두 번이 그것을 $245$ mm로 만든다. 그래서 가속도계는 위치까지 두 번 적분되고, 자이로는 기울기까지 한 번, 그다음 중력을 거쳐 두 번 더 적분된다. 모든 자이로 항은 짝이 되는 가속도계 항보다 적분을 하나 더 거치므로 $t$의 거듭제곱 하나만큼 빨리 자란다.
+
+<svg viewBox="0 0 560 252" style="max-width:100%;height:auto" role="img" aria-label="왼쪽: P6의 수평 레일 위 IMU. 가속도계의 참 축은 수평인데, 루프는 자이로 바이어스를 적분한 각만큼 축이 기울었다고 믿으므로 중력을 그 믿는 축으로 분해해 가속도계가 느낀 적 없는 g sin(델타 세타), 곧 약 g 델타 세타를 뺀다. 오른쪽: 10 s의 사슬. 자이로 바이어스 1.5e-4 rad/s가 적분되어 1.5 mrad의 기울기, g를 곱해 가속도계 바이어스의 29배인 14.7 mm/s^2의 가짜 가속도, 두 번 더 적분되어 245 mm. 가속도계 바이어스가 만드는 25 mm와 대비된다.">
+<defs><marker id="aTiltk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+<path d="M20 222H270" stroke="currentColor" stroke-width="1.4"/>
+<path d="M30 222l-6 7 M44 222l-6 7 M58 222l-6 7 M72 222l-6 7 M86 222l-6 7 M100 222l-6 7 M114 222l-6 7 M128 222l-6 7 M142 222l-6 7 M156 222l-6 7 M170 222l-6 7 M184 222l-6 7 M198 222l-6 7 M212 222l-6 7 M226 222l-6 7 M240 222l-6 7 M254 222l-6 7 M268 222l-6 7" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+<rect x="68" y="172" width="120" height="36" rx="3" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.2"/>
+<circle cx="92" cy="214" r="7" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="164" cy="214" r="7" fill="none" stroke="currentColor" stroke-width="1.2"/>
+<rect x="112" y="178" width="32" height="16" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
+<text x="128" y="190" font-size="10" text-anchor="middle" fill="currentColor">IMU</text>
+<text x="196" y="217" font-size="10.5" fill="currentColor">P6의 레일</text>
+<path d="M128 178V168" stroke="currentColor" stroke-width="0.8" stroke-dasharray="2 3" stroke-opacity="0.5"/>
+<path d="M128 104H250" stroke="currentColor" stroke-width="1.6" marker-end="url(#aTiltk)"/>
+<path d="M128 104L242.6 62.3" stroke="currentColor" stroke-width="1.4" stroke-dasharray="5 3" marker-end="url(#aTiltk)"/>
+<text x="184" y="121" font-size="10.5" fill="currentColor">참 축: 수평 레일</text>
+<text x="122" y="38.3" font-size="10.5" fill="currentColor">루프가 믿는 축:</text>
+<text x="122" y="51.3" font-size="10.5" fill="currentColor">자이로를 적분한 기울기</text>
+<path d="M178 104A50 50 0 0 0 175 86.9" fill="none" stroke="currentColor" stroke-width="1"/>
+<text x="182" y="99" font-size="11" fill="currentColor">δθ</text>
+<path d="M128 104V162" stroke="currentColor" stroke-width="1.8" marker-end="url(#aTiltk)"/>
+<text x="135" y="158" font-size="11" fill="currentColor">g</text>
+<path d="M128 104L109.4 110.8" stroke="currentColor" stroke-width="3.2" stroke-opacity="0.9"/>
+<path d="M109.4 110.8L128 162" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="104.4" y="112.8" font-size="10.5" text-anchor="end" fill="currentColor">g sin δθ ≈ g δθ</text>
+<text x="114.9" y="142.4" font-size="10.5" text-anchor="end" fill="currentColor">g cos δθ</text>
+<text x="20" y="246" font-size="10" fill="currentColor" opacity="0.85">각은 과장했다. 10 s에서 δθ = 1.5 mrad</text>
+<rect x="300" y="14" width="244" height="36" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.1"/>
+<text x="308" y="29" font-size="11" fill="currentColor">자이로 바이어스 B<tspan dy="3" font-size="10">g</tspan><tspan dy="-3" dx="3">= 1.5×10⁻⁴ rad/s</tspan></text>
+<text x="308" y="43" font-size="10.5" fill="currentColor" opacity="0.85">상수: t⁰</text>
+<rect x="300" y="74" width="244" height="36" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.1"/>
+<text x="308" y="89" font-size="11" fill="currentColor">믿는 기울기 δθ = B<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">t</tspan></text>
+<text x="308" y="103" font-size="10.5" fill="currentColor" opacity="0.85">10 s에 1.5 mrad: t¹</text>
+<rect x="300" y="134" width="244" height="36" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.1"/>
+<text x="308" y="149" font-size="11" fill="currentColor">가짜 가속도 g δθ</text>
+<text x="308" y="163" font-size="10.5" fill="currentColor" opacity="0.85">10 s에 14.7 mm/s² = 29 B<tspan dy="3" font-size="10">a</tspan><tspan dy="-3">: t¹</tspan></text>
+<rect x="300" y="194" width="244" height="36" rx="3" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.1"/>
+<text x="308" y="209" font-size="11" fill="currentColor">위치 오차 gB<tspan dy="3" font-size="10">g</tspan><tspan dy="-3">t³/6</tspan></text>
+<text x="308" y="223" font-size="10.5" fill="currentColor" opacity="0.85">10 s에 245 mm: t³</text>
+<path d="M326 50V72" stroke="currentColor" stroke-width="1.3" marker-end="url(#aTiltk)"/>
+<text x="336" y="65" font-size="10.5" fill="currentColor">∫ dt, 자이로 루프</text>
+<path d="M326 110V132" stroke="currentColor" stroke-width="1.3" marker-end="url(#aTiltk)"/>
+<text x="336" y="125" font-size="10.5" fill="currentColor">× g, 기울기로 중력을 분해</text>
+<path d="M326 170V192" stroke="currentColor" stroke-width="1.3" marker-end="url(#aTiltk)"/>
+<text x="336" y="185" font-size="10.5" fill="currentColor">∫∫ dt², 적분 두 번 더</text>
+<text x="300" y="246" font-size="10.5" fill="currentColor" opacity="0.85">가속도계 자신의 바이어스 B<tspan dy="3" font-size="10">a</tspan><tspan dy="-3" dx="1">t²/2: 10 s에 25 mm, t²</tspan></text>
+</svg>
+
+P6의 수평 레일 위에서 루프는 자이로 바이어스를 적분한 기울기 $\delta\theta = B_gt$를 믿고, 그래서 수평인 가속도계가 느낀 적 없는 중력 $g\sin\delta\theta \approx g\,\delta\theta$를 뺀다. $10$ s에 그 기울기는 $1.5$ mrad이고 가짜 가속도는 $B_a$의 $29$배인 $14.7\,\mathrm{mm/s^2}$이며, 적분 두 번이 그것을 $245$ mm로 만든다. 가속도계 바이어스의 $25$ mm보다 $t$의 거듭제곱 하나만큼 위다.
 
 | 항 | 자이로의 각도에서(적분 1) | 가속도계에서 온 위치(2) | 중력을 거쳐 자이로에서 온 위치(3) |
 |---|---|---|---|
@@ -872,7 +988,7 @@ $u^{2m-2}$를 $0$부터 $t$까지 적분하면 $t^{2m-1}/(2m-1)$이기 때문이
 
 둘 다 지평에 따라 자라지 않는 오차로 위치를 잰다. 각각에 §1 표의 가우시안이 보여 주지 않는 함정이 하나씩 있다.
 
-**거리 센서.** $\sigma_r = 10\,\mathrm{mm}$로 $z_r = (x_w - p) + b_r + n_r$을 읽는다. 잡음은 평균으로 사라지고 오프셋은 그렇지 않다. 100개를 읽으면(50 Hz로 2 s) 잡음은 $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$로 내려가고 $4\,\mathrm{mm}$ 오프셋은 그대로다. 그래서 2초 뒤에는 바이어스가 잡음의 네 배이고, 알려진 거리에 대해 보정하거나 상태로 들고 가야 한다. 가우시안은 실제 거리 센서의 일부이기도 하다. Thrun, Burgard, Fox의 빔 모델은 성분 넷을 섞는다. 의도한 표면에 맞은 가우시안 *hit*, 빔 안의 예상 밖 물체가 만드는 *short* 판독, 반사가 사라졌을 때의 *max-range* 판독, 그리고 균일한 바닥의 *random* 판독이다. 3. 상태 추정 계산 절의 지나가는 사람처럼 패널에서 전혀 오지 않은 판독은 뒤의 셋 중 하나에 속한다. 어떤 $\sigma_r$도 그것을 덮지 못하므로 그 페이지는 게이트를 건다([[04-robotics/state-estimation-slam|3. 상태 추정 §8.5.2]]).
+**거리 센서.** $\sigma_r = 10\,\mathrm{mm}$로 $z_r = (x_w - p) + b_r + n_r$을 읽는다. 잡음은 평균으로 사라지고 오프셋은 그렇지 않다. 100개를 읽으면(50 Hz로 2 s) 잡음은 $\sigma_r/\sqrt{100} = 1\,\mathrm{mm}$로 내려가고 $4\,\mathrm{mm}$ 오프셋은 그대로다. 그래서 2초 뒤에는 바이어스가 잡음의 네 배이고, 알려진 거리에 대해 보정하거나 상태로 들고 가야 한다. 이 오프셋은 접촉을 언제 보는지도 정한다. 도구가 패널에 닿는 순간 참 거리 $x_w - p$는 0이지만, $b_r$을 보정하기 전까지 평균한 측정은 여전히 $4$ mm를 말하므로, 평균한 거리가 0이 되기를 기다리는 접촉 판정은 단단한 패널 앞에서 끝내 울리지 않는다. 실제 거리 센서에서 가우시안은 일부일 뿐이다. Thrun, Burgard, Fox의 빔 모델은 성분 넷을 섞는다. 의도한 표면에 맞은 가우시안 *hit*, 빔 안의 예상 밖 물체가 만드는 *short* 판독, 반사가 사라졌을 때의 *max-range* 판독, 그리고 균일한 바닥의 *random* 판독이다. 3. 상태 추정 계산 절의 통행인처럼 패널에서 전혀 오지 않은 판독은 뒤의 셋 중 하나에 속한다. 어떤 $\sigma_r$도 그것을 덮지 못하므로 그 페이지는 게이트를 건다([[04-robotics/state-estimation-slam|3. 상태 추정 §8.5.2]]).
 
 **카메라.** 픽셀 $u = c_x + f_x(p - p_c)/Z_c + n_u$를 잰다. 깊이 $Z_c$의 점에 대해 핀홀 모델([[04-robotics/geometric-perception-calibration|3.5 §1]])이 픽셀 잡음을 위치 잡음으로 바꾼다.
 
@@ -902,13 +1018,18 @@ $$\sigma_p = \frac{Z_c\,\sigma_u}{f_x} = \frac{1.0 \times 0.5}{600}\ \mathrm m =
 | $0$ | 바이어스 불안정성 | $\sqrt{2\ln2/\pi}\,B = 0.664B$ | $B$ = 바닥을 $0.664$로 나눈 값 |
 | $+\tfrac12$ | 바이어스 랜덤 워크 | $K\sqrt{\tau/3}$ | $K$ = 직선의 $\tau = 3\,\mathrm s$ 값 |
 
-**$0.664$는 어디서 오는가.** 앨런 분산은 각속도에 거는 필터다. 연속한 두 $\tau$-평균의 차이는 각속도를 한 클러스터 동안 $+1/\tau$, 다음 클러스터 동안 $-1/\tau$인 핵과 합성곱한 것이고, 그 핵의 주파수 응답 크기는 $2\sin^2(\pi f\tau)/(\pi f\tau)$다. $\sigma_A^2$는 그 차이의 전력의 절반이므로, 양측 전력 스펙트럼 밀도가 $S(f)$인 각속도는
-$$\sigma_A^2(\tau) = 4\int_0^\infty S(f)\,\frac{\sin^4(\pi f\tau)}{(\pi f\tau)^2}\,df$$
-를 가진다. 앨런 분산 문헌이 출발점으로 삼는 관계식이다(IEEE Std 952; El-Sheimy, Hou, Niu). 백색 잡음 $S = N^2$은 치환 $u = \pi f\tau$ 아래에서 $N^2/\tau$를 준다. $\int_0^\infty \sin^4u/u^2\,du = \pi/4$이기 때문이고, 표의 첫 행이다. §3의 플리커 스펙트럼 $S = B^2/(2\pi f)$에서는 같은 치환이 $df/f$를 $du/u$로 바꾸므로 $\tau$가 통째로 빠진다. 바닥이 평평한 이유가 그것이다.
-$$\sigma_A^2 = \frac{2B^2}{\pi}\int_0^\infty \frac{\sin^4u}{u^3}\,du = \frac{2\ln2}{\pi}\,B^2$$
-적분값은 $\ln2$다. 부분적분 한 번이 $\sin^4u/u^3$을 $2\sin^3u\cos u/u^2 = (2\sin2u - \sin4u)/(4u^2)$로, 두 번째가 그것을 $(\cos2u - \cos4u)/u$로 바꾸고, 경계항은 매번 양끝에서 사라진다. 마지막 적분은 Frullani 적분 $\int_0^\infty(\cos au - \cos bu)/u\,du = \ln(b/a) = \ln 2$다. 그러므로 바닥은 $\sqrt{2\ln2/\pi}\,B = 0.664B$이고, 수치 적분도 $\int_0^\infty \sin^4u/u^3\,du = 0.693147$을 확인한다. Hou의 유도는 항을 더 다루는데, 그중에는 출력 양자화의 기울기 $-1$과 각속도의 일정한 경사가 만드는 기울기 $+1$이 있다. 읽는 습관 셋이 맞는 읽기와 그럴듯한 읽기를 가른다.
+바닥의 계수 $0.664 = \sqrt{2\ln2/\pi}$는 앨런 평균이 플리커 스펙트럼을 만나 만드는 값이고, 아래 접힌 노트가 그것을 유도한다.
+
+> [!note]- 더 깊이 · Deeper
+> **$0.664$는 어디서 오는가.** 앨런 분산은 각속도에 거는 필터다. 연속한 두 $\tau$-평균의 차이는 각속도를 한 클러스터 동안 $+1/\tau$, 다음 클러스터 동안 $-1/\tau$인 핵과 합성곱한 것이고, 그 핵의 주파수 응답([[02-foundations/signal-processing|6. 신호처리 §3]]) 크기는 $2\sin^2(\pi f\tau)/(\pi f\tau)$다. $\sigma_A^2$는 그 차이의 전력의 절반이므로, 양측 전력 스펙트럼 밀도(음과 양의 주파수에 걸쳐 퍼뜨린 밀도라, 단측으로 쓰면 $2S$다)가 $S(f)$인 각속도는
+> $$\sigma_A^2(\tau) = 4\int_0^\infty S(f)\,\frac{\sin^4(\pi f\tau)}{(\pi f\tau)^2}\,df$$
+> 를 가진다. 앨런 분산 문헌이 출발점으로 삼는 관계식이다(IEEE Std 952; El-Sheimy, Hou, Niu). 백색 잡음 $S = N^2$은 치환 $u = \pi f\tau$ 아래에서 $N^2/\tau$를 준다. $\int_0^\infty \sin^4u/u^2\,du = \pi/4$이기 때문이고, 표의 첫 행이다. §3의 플리커 스펙트럼 $S = B^2/(2\pi f)$에서는 같은 치환이 $df/f$를 $du/u$로 바꾸므로 $\tau$가 통째로 빠진다. 바닥이 평평한 이유가 그것이다.
+> $$\sigma_A^2 = \frac{2B^2}{\pi}\int_0^\infty \frac{\sin^4u}{u^3}\,du = \frac{2\ln2}{\pi}\,B^2$$
+> 적분값은 $\ln2$다. 부분적분 한 번이 $\sin^4u/u^3$을 $2\sin^3u\cos u/u^2 = (2\sin2u - \sin4u)/(4u^2)$로, 두 번째가 그것을 $(\cos2u - \cos4u)/u$로 바꾸고, 경계항은 매번 양끝에서 사라진다. 마지막 적분은 Frullani 적분 $\int_0^\infty(\cos au - \cos bu)/u\,du = \ln(b/a) = \ln 2$다. 그러므로 바닥은 $\sqrt{2\ln2/\pi}\,B = 0.664B$이고, 수치 적분도 $\int_0^\infty \sin^4u/u^3\,du = 0.693147$을 확인한다.
+
+Hou의 유도는 항을 더 다루는데, 그중에는 출력 양자화의 기울기 $-1$과 각속도의 일정한 경사가 만드는 기울기 $+1$이 있다. 읽는 습관 셋이 맞는 읽기와 그럴듯한 읽기를 가른다.
 - **곡선이 아니라 직선을 읽어라.** P6 자이로에서 $\tau = 1\,\mathrm s$의 곡선은 $1.41\times10^{-4}$로 $N_g$보다 41% 높다. 바닥이 이미 와 있기 때문이다. $N$은 $-\tfrac12$ 직선을 1 s까지 연장한 값이고, §7의 코드가 첫 decade의 맞춤으로 그렇게 읽는다.
-- **평평한 바닥은 항들이 자리를 내줄 때만 있다.** 백색 직선은 $\tau_1 = (N/0.664B)^2 = 1.0\,\mathrm s$에서 바닥과 만나고, 바닥은 $\tau_2 = 3(0.664B/K)^2 = 7400\,\mathrm s$에서 랜덤 워크와 만난다. $\tau_2 \gg \tau_1$이면 바닥은 몇 decade 폭의 선반이다. $K$가 커져 $\tau_2 < \tau_1$이 되면 최솟값은 $-\tfrac12$ 직선과 $+\tfrac12$ 직선이 교차하는 곳일 뿐이고, 그것을 $0.664$로 나누면 존재하지 않는 바이어스 불안정성을 보고하게 된다. §7의 스윕은 $K = 2\times10^{-4}$에서 $1.81B$를 읽는다. 그리고 데이터시트의 "bias instability"는 바닥 그 자체일 수도, 바닥을 $0.664$로 나눈 값일 수도 있다. 1.5배 차이이니 어느 쪽인지 확인하라.
+- **평평한 바닥은 항들이 자리를 내줄 때만 있다.** 백색 직선은 $\tau_1 = (N/0.664B)^2 = 1.0\,\mathrm s$에서 바닥과 만나고, 바닥은 $\tau_2 = 3(0.664B/K)^2 = 7400\,\mathrm s$에서 랜덤 워크와 만난다. $\tau_2 \gg \tau_1$이면 바닥은 몇 decade 폭의 선반이다. P6의 자이로는 $\tau_1$이 $1\,\mathrm s$ 근처에 오도록 $B$ 대 $N$ 비율을 골랐으므로 몇 분짜리 시뮬레이션 데이터에서 바닥이 보인다. 백색 잡음에 비해 바닥이 낮은 자이로는 바닥에 더 늦게 닿는다. 과제의 개선된 자이로는 $25\,\mathrm s$에 닿고, 실제 센서의 앨런 시험을 보통 몇 시간씩 기록하는 이유가 이것이다. $K$가 커져 $\tau_2 < \tau_1$이 되면 최솟값은 $-\tfrac12$ 직선과 $+\tfrac12$ 직선이 교차하는 곳일 뿐이고, 그것을 $0.664$로 나누면 존재하지 않는 바이어스 불안정성을 보고하게 된다. §7의 스윕은 $K = 2\times10^{-4}$에서 $1.81B$를 읽는다. 그리고 데이터시트의 "bias instability"는 바닥 그 자체일 수도, 바닥을 $0.664$로 나눈 값일 수도 있다. 1.5배 차이이니 어느 쪽인지 확인하라.
 - **긴 클러스터 시간은 수가 적다.** $\tau$에서의 값은 길이 $T$ 기록의 클러스터 약 $T/\tau$개에만 기대고, 그만큼 흩어진다. 백색 잡음에서 시뮬레이션 기록 4000개는 겹치지 않는 클러스터 20개로 20%, 60개로 11% 흩어진다. 겹침 형태가 낫지만 자릿수가 달라질 만큼은 아니다. §7이 바닥을 $T/20$까지만 읽는 이유다.
 
 **앨런 그림은 표류 예산이기도 하다.** 백색 항과 랜덤 워크 항에서, 알려진 출발점부터 $t$초 적분한 뒤 각도 오차의 표준편차는 정확히 $t\,\sigma_A(t)$다. 백색 잡음은 $t\cdot N/\sqrt t = N\sqrt t$, 랜덤 워크는 $t\cdot K\sqrt{t/3} = Kt^{3/2}/\sqrt3$을 주고, 둘 다 §3 표의 첫 열이다. 평평한 항에서는 상수배 안에서 성립한다. 그러니 앨런 기울기에 1을 더하면 각도 표류의 지수, 2를 더하면 가속도계 위치 표류의 지수다. 맨 위의 그림에서 오른쪽 패널을 그리는 규칙이 이것이다.
@@ -917,9 +1038,12 @@ $$\sigma_A^2 = \frac{2B^2}{\pi}\int_0^\infty \frac{\sin^4u}{u^3}\,du = \frac{2\l
 
 위의 유도는 점근선을 준다. 이 절은 직접 만든 데이터로 그것을 확인하고, 샘플링 속도의 변화와 커지는 랜덤 워크가 읽기에 무엇을 하는지 보여 준다. 코드는 정지한 자이로 축 하나를 세 항으로 만든다. 백색 잡음은 $\sigma = N\sqrt f$(§2), 랜덤 워크는 크기 $K\sqrt{\Delta t}$ 걸음의 누적합(§3), 플리커 바닥은 FFT로 스펙트럼 $B^2/(2\pi f)$에 맞춰 성형한 백색 잡음이다. 그런 다음 겹침 앨런 편차를 계산하고, 첫 decade에서 $N$을, $T/20$까지의 가장 낮은 점에서 $B$를 읽는다. 1부는 P6의 200 Hz로 얻은 5분 기록 하나이고, §6의 예가 인용하는 것이다. 2부와 3부는 스윕이고 행마다 시드 열 개다. 4부는 §3의 백색 잡음 법칙을 무차별 대입으로 확인한다. 거기의 누적합은 반암시적 오일러다([[02-foundations/lab-kernel|0.7 §3]]). 코드는 영어 절에 있다.
 
-**코드가 플리커 항을 만드는 법.** $1/f$ 스펙트럼에는 정확한 유한 점화식이 없으므로, `imu_axis`는 그것을 주파수 영역에서 세 걸음으로 짓는다. 첫째, 서로 독립인 표준정규 표본 $n$개의 이산 푸리에 변환은 모든 주파수 $f_k = kf/n$에서 $E|W_k|^2 = n$인 계수 $W_k$를 가진다. 백색 잡음의 평평한 스펙트럼이고, 위상은 서로 독립인 난수다. 둘째, 속도 $f$로 샘플링한 기록의 양측 전력 스펙트럼 밀도가 $S$이면 $E|Y_k|^2 = nf\,S(f_k)$다. 주기도 $|Y_k|^2/(nf)$가 $S$의 이산 추정량이기 때문이다. 그러므로 백색 계수마다 $f$ 곱하기 목표 스펙트럼의 제곱근을 곱하면, 모든 주파수가 그 스펙트럼을 가진 과정이 가질 전력을 정확히 갖는다.
-$$Y_k = \sqrt{f\,S(f_k)}\;W_k, \qquad S(f_k) = \frac{B^2}{2\pi f_k}$$
-역 FFT가 $Y_k$를 다시 기록으로 되돌리고, 가우시안 난수의 선형 사상이므로 그 기록도 가우시안이다. 셋째, 주파수 0의 칸은 0으로 둔다. $1/f$ 스펙트럼이 거기서 무한대이고, 그 칸은 상수 오프셋일 뿐이라 앨런 편차가 어차피 소거하기 때문이다. 기록 200개와 모든 주파수 칸에 걸쳐 평균하면, 출력의 주기도와 $B^2/(2\pi f_k)$의 비는 $0.999$다. 이 구성에는 한계가 둘 따라온다. 스펙트럼은 가장 낮은 칸 $1/T$와 $f/2$ 사이에만 있으므로, 만들어진 바이어스는 그 대역 한참 안쪽의 클러스터 시간에서만 플리커로 행동한다. 바닥을 $T/20$까지만 읽는 이유가 하나 더 생긴다. 그리고 FFT는 기록을 주기적으로 만들지만, $\tau \ll T$에서는 상관이 없다.
+플리커 항은 주파수 영역에서 모양을 바꾼 백색 잡음이고, 그 주기도는 평균으로 목표 스펙트럼 $B^2/(2\pi f)$와 $0.1\%$ 안에서 맞는다. 아래 접힌 노트가 그 비율 조정이 왜 주파수마다 맞는 전력을 주는지와, 이 구성에 따라오는 한계 둘을 보여 준다.
+
+> [!note]- 더 깊이 · Deeper
+> **코드가 플리커 항을 만드는 법.** $1/f$ 스펙트럼에는 정확한 유한 점화식이 없으므로, `imu_axis`는 그것을 주파수 영역에서 세 걸음으로 짓는다. 첫째, 서로 독립인 표준정규 표본 $n$개의 이산 푸리에 변환은 모든 주파수 $f_k = kf/n$에서 $E|W_k|^2 = n$인 계수 $W_k$를 가진다. 백색 잡음의 평평한 스펙트럼이고, 위상은 서로 독립인 난수다. 둘째, 속도 $f$로 샘플링한 기록의 양측 전력 스펙트럼 밀도가 $S$이면 $E|Y_k|^2 = nf\,S(f_k)$다. 주기도 $|Y_k|^2/(nf)$가 $S$의 이산 추정량이기 때문이다. 그러므로 백색 계수마다 $f$ 곱하기 목표 스펙트럼의 제곱근을 곱하면, 모든 주파수가 그 스펙트럼을 가진 과정이 가질 전력을 정확히 갖는다.
+> $$Y_k = \sqrt{f\,S(f_k)}\;W_k, \qquad S(f_k) = \frac{B^2}{2\pi f_k}$$
+> 역 FFT가 $Y_k$를 다시 기록으로 되돌리고, 가우시안 난수의 선형 사상이므로 그 기록도 가우시안이다. 셋째, 주파수 0의 칸은 0으로 둔다. $1/f$ 스펙트럼이 거기서 무한대이고, 그 칸은 상수 오프셋일 뿐이라 앨런 편차가 어차피 소거하기 때문이다. 기록 200개와 모든 주파수 칸에 걸쳐 평균하면, 출력의 주기도와 $B^2/(2\pi f_k)$의 비는 $0.999$다. 이 구성에는 한계가 둘 따라온다. 스펙트럼은 가장 낮은 칸 $1/T$와 $f/2$ 사이에만 있으므로, 만들어진 바이어스는 그 대역 한참 안쪽의 클러스터 시간에서만 플리커로 행동한다. 바닥을 $T/20$까지만 읽는 이유가 하나 더 생긴다. 그리고 FFT는 기록을 주기적으로 만들지만, $\tau \ll T$에서는 상관이 없다.
 
 **1부.** 기록의 샘플당 표준편차는 $N_g\sqrt f = 1.414\times10^{-3}$에 대해 $1.439\times10^{-3}$이다. 차이는 플리커와 랜덤 워크가 더한다. 앨런 편차는 §6의 예다. 시드 0은 $\hat N = 1.007\times10^{-4}$, $\hat B = 1.475\times10^{-4}$를 읽고, 가장 낮은 점은 $11.4\,\mathrm s$다.
 

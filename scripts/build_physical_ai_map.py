@@ -48,7 +48,7 @@ ROBOTICS_PAGE = os.path.join(CONTENT, "04-robotics", "index.md")
 # Where you are now: a week of the four-week improvement plan (WEEKS, below).
 # Figure 1 pins the band that holds most of that week's pages, figure 2 its row,
 # figure 3 the first bar the week prepares. Move it when the week changes.
-YOU_ARE_HERE = 1
+YOU_ARE_HERE = 2
 
 # One chip per page: (key, label, slug, on_path, block)
 #   key      how STEPS and WEEKS name the chip: a track tag, a colon, the number
@@ -258,27 +258,28 @@ STEPS = (
      ("d:3", "d:1.2", "r:19", "f:5", "f:0.8", "t:1.4")),
     (("identify", "panel and", "frame"), ("패널과", "프레임을", "식별"),
      ("perception,", "scene, state"), ("인식,", "장면과 상태"),
-     ("c:5", "c:7", "d:2", "r:3.2", "r:3.5", "r:3.6", "r:3", "f:8", "f:1", "f:3",
+     ("c:5", "c:7", "d:2", "r:3", "r:3.2", "r:3.5", "r:3.6", "f:8", "f:1", "f:3",
       "f:6", "f:4", "t:12.5", "t:12.8", "t:12.9")),
     (("decompose", "the job"), ("작업을", "분해"),
      ("planning:", "the task"), ("계획:", "과제"),
      ("c:2.5", "c:7", "d:4", "r:4", "f:4", "f:7", "t:11")),
     (("plan a", "grasp"), ("파지를", "계획"),
      ("grasping",), ("파지",),
-     ("r:15", "mr:12", "r:16", "f:0.6.1", "f:0.6.3", "f:4", "f:8")),
+     ("mr:12", "r:15", "r:16", "f:0.6.1", "f:0.6.3", "f:4", "f:8")),
     (("move the", "component"), ("부재를", "옮김"),
      ("planning,", "manipulation"), ("계획,", "조작"),
-     ("mr:6", "mr:9", "mr:10", "mr:11", "r:5", "r:10.5", "f:0.6.1", "f:0.6.2",
-      "f:0.6.3", "f:2", "f:8", "f:10", "f:4", "f:0.5", "f:1", "t:25.0", "t:12.1",
-      "t:12.8", "t:12.5")),
+     ("mr:2", "mr:3", "mr:4", "mr:5", "mr:6", "mr:8", "mr:9", "r:4", "mr:10", "r:5",
+      "mr:11", "r:10.5", "f:0.6.1", "f:0.6.2", "f:0.6.3", "f:2", "f:8", "f:10", "f:4",
+      "f:0.5", "f:1", "t:25.0", "t:12.1", "t:12.8", "t:12.5")),
     (("detect", "contact"), ("접촉을", "감지"),
      ("contact and", "force"), ("접촉과 힘",),
-     ("r:9", "r:14", "r:3.2", "r:3.6", "f:0.6.1", "f:0.6.2", "f:6", "f:3", "f:10",
-      "f:0.5", "t:12.3", "t:25.0", "t:12.1", "t:12.8")),
+     ("mr:3", "mr:5", "r:3.2", "r:9", "r:14", "f:0.6.1", "f:0.6.2", "f:6", "f:3",
+      "f:10", "f:0.5", "t:12.3", "t:25.0", "t:12.1", "t:12.8")),
     (("perform the", "fitting"), ("끼움을", "수행"),
      ("contact,", "learning"), ("접촉,", "학습"),
-     ("c:4", "c:9", "c:10", "c:7.5", "d:4", "r:13", "r:12", "rp:7", "f:0.6.1", "f:7.5",
-      "f:10", "f:0.5", "f:2", "f:7", "t:12.7", "t:12.4", "t:25.0", "t:12.9")),
+     ("c:4", "c:9", "c:10", "c:7.5", "d:4", "mr:5", "r:3.5", "r:3.6", "r:12", "r:13",
+      "rp:7", "f:0.6.1", "f:7.5", "f:10", "f:0.5", "f:2", "f:7", "t:12.7", "t:12.4",
+      "t:25.0", "t:12.9")),
     (("verify", "completion"), ("완료를", "검증"),
      ("task", "completion"), ("작업 완료",),
      ("c:2.5", "c:5", "c:6", "rp:2", "rp:3", "f:3", "f:9", "f:7.5", "t:12.2", "t:12.3",
@@ -716,7 +717,7 @@ def pin(fig, x, y, label, size=11, lift=1):
 
 
 def here_label(fig):
-    return "you are here · 지금 여기" if fig.en else "지금 여기 · you are here"
+    return "you are here" if fig.en else "지금 여기"
 
 
 def here_info():

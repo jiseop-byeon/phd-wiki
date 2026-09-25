@@ -23,8 +23,9 @@ It is a worklist, not a gate: it always exits 0, and every hit has to be read.
 Known false positives, each checked by reading the page:
 
   * a different thing with the same name: Skild AI's policy S1 on the VLA pages,
-    a paper's supplementary "Table S2", the detections D1-D3 of the tracking
-    example in 3. State Estimation, a code variable named P2;
+    a paper's supplementary "Table S2", a code variable named P2 (3. State
+    Estimation's tracking detections were renamed z1-z3 on 2026-09-25 so they
+    no longer look like the D1-D6 catalog labels);
   * a page-local object that reuses a label: 14. Tactile & Visuotactile Sensing
     calls its fingertip patch S1 (glossed in words at its first use);
   * a label glossed in plain words at its first use without a link, or restated

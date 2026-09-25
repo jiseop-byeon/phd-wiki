@@ -17,18 +17,21 @@ mastery-when: "Raise to Mastery when this subsystem is modified, defended, or cl
 
 **Core question**: how do we find a collision-free path through C-space?
 
+> [!note] Why this matters · 왜 배우는가
+> In the physical-AI stack of [[07-research-program/index|7. Research Program §5]] this chapter is the motion-and-task-planning layer worked on one arm, and in *"install that panel on the frame"* it serves *move the component* — getting the tool to the panel without any link going through it (its chip sits in the planning layer of the [[physical-ai-map|Physical AI Map]], on the dissertation path). Testing where a move starts and ends is not enough: both ends of the elbow flip of P2, the catalog's planar two-link arm ([[02-foundations/lab-plants|0.6]]) — the move [[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9]] timed — merely touch the panel, yet the straight joint-space move between them drives the tip $0.414$ m into it (Step 3), and an edge test with five samples misses a $2$ cm bite that six samples catch (Step 4). [[04-robotics/planning-decision-making|4. Planning & Decision-Making §5]] places these planners among the other method families, and [[04-robotics/capstone-panel-contact|26. Capstone §2]] inflates the panel by the uncertainty of its estimated position before any edge is tested, while its worked case reruns this chapter's detour through $E$ — block 2 of the dissertation path, robotics sessions 54–56, read inside page 4's sessions ([[07-research-program/index|7. Research Program §8]]). After it you can write an arm's collision test, check an edge honestly, run Dijkstra on a roadmap by hand, and say which completeness a planner's "failed" really reports.
+
 > [!note] First pass · 처음이라면
-> Read the running plant (*plant*: control's word for the system being controlled), the picture and the whole worked case (Steps 1–5: the collision test, the grid count, the direct edge that fails, the edge a coarse test misses, and the detour Dijkstra finds), then §3, because the difference between its two completeness guarantees is the sentence papers most often get wrong. §1, the chapter as one list (A\*, RRT, PRM, kinodynamic planning, and the grid-size example), and §2, which restates Steps 1 and 3 as definitions, are the second pass. Then the self-check and the problem set, which moves the wall to $x \ge 1.5$.
+> Three sessions of 60–90 minutes, read inside [[04-robotics/planning-decision-making|4. Planning & Decision-Making]]'s sessions, right after its Worked case (schedule 54–56). **Session 1:** the Running object, P2 (a *plant*, control's word for the system being controlled), the picture and the Worked case, Steps 1–5 — the collision test, the grid count, the direct edge that fails, the edge a coarse test misses and the detour Dijkstra finds — by hand with the tables covered; end with self-check 4. **Session 2:** §1's list, reading its RRT and PRM box first, since §3's examples use both samplers; then §2, which restates Steps 1 and 3 as definitions, and §3, because the difference between its two weaker completeness guarantees is the sentence papers most often get wrong. **Session 3:** the self-check and the problem set, which moves the wall to $x \ge 1.5$; end with problem 2 by hand.
 
-### Running plant · 이 페이지의 장치
+### Running object · 이 페이지의 대상
 
-**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]] and the panel frozen on [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]]: the rigid half-plane $x \ge 1$, links modelled as zero-thickness segments. That chapter derived the penetration depth and the C-obstacle; this page plans inside them.
+**P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], the catalog's planar two-link arm with unit links, and the panel frozen on [[04-robotics/modern-robotics/ch02-configuration-space|ch.2]]: the rigid half-plane $x \ge 1$, links modelled as zero-thickness segments. That chapter derived the penetration depth and the C-obstacle; this page plans inside them.
 
 $$d(\theta) = \max\bigl(\cos\theta_1,\ \cos\theta_1 + \cos(\theta_1{+}\theta_2)\bigr) - 1, \qquad \mathcal{C}_{\text{free}} = \{\theta : d(\theta) \le 0\}$$
 
 with contact ($d = 0$) counted as free, because the running task ends in contact. Here $d$ is a penetration depth, positive inside the obstacle — the opposite sign to MR's signed distance, as ch.2 warns. P2's configuration space is the torus $T^2$, and the panel blocks $18.478\,\%$ of it.
 
-**The query** is the elbow flip of [[04-robotics/modern-robotics/ch09-trajectory-generation|ch.9]]: start at $A = (0°, 90°)$, reach $B = (90°, -90°)$. Both put the tip on the panel target $(1,1)$; ch.9 timed the straight line between them, and this page asks whether that line is legal.
+**The query** is the elbow flip of [[04-robotics/modern-robotics/ch09-trajectory-generation|ch.9]]: start at $A = (0°, 90°)$, reach $B = (90°, -90°)$. Both put the tip on the panel target $(1,1)$; ch.9 timed the straight line between them, and this page asks whether that line is legal. [[04-robotics/planning-decision-making|4. Planning & Decision-Making]]'s worked case, the session before, costs these same $A$ and $B$ as goals reached from the arm parked straight up at $(90°, 0°)$; this page joins them to each other.
 
 ### The picture · 그림으로 먼저 보기
 
@@ -100,7 +103,7 @@ with contact ($d = 0$) counted as free, because the running task ends in contact
 
 P2's torus chart for the panel $x \ge 1$, $\theta_1$ across and $\theta_2$ up from $-180°$ to $180°$ with opposite edges identified: the shaded lens is the C-obstacle, $18.478\,\%$ of the torus, and the $30°$ grid's $144$ nodes split into $21$ blocked, $13$ touching at $d = 0$ (seven of them on the line $\theta_1 = 0$, where the elbow grazes the wall) and $110$ free. Of the five-node roadmap's ten edges two are blocked — $A$–$B$, which drives the arm $0.4142$ m into the panel at its midpoint, and $B$–$C$, which bites $0.0201$ m — so the shortest surviving path, drawn heavy, is $A \to E \to B$ at $\pi\sqrt2 = 4.4429$ rad.
 
-### Worked on the plant · 장치로 한 번 끝까지
+### Worked case · 대상으로 한 번 끝까지
 
 **Step 1 — the collision test, written as a procedure.** A planner calls this on every candidate configuration, so it has to be cheap and exact:
 
@@ -118,7 +121,7 @@ Only the two endpoints are tested because $x$ is linear along a straight segment
 | $d = 0$, exactly touching | $13$ | $9.03\,\%$ |
 | $d < 0$, strictly free | $110$ | $76.39\,\%$ |
 
-and the row that teaches something is the first against ch.2's continuous answer. The true obstacle covers $18.478\,\%$ of the torus, which is $0.18478 \times 144 = 26.6$ cells' worth of area, but only $21$ *nodes* land inside it. **A node-sampled grid systematically underestimates the obstacle**, by $5.6$ cells here, because a cell whose centre is free can still be half full of obstacle. That gap is the whole content of resolution completeness in §3. Of the 13 touching nodes, 7 have $\theta_1 = 0$, where link 1's elbow grazes the wall; in two of those, $(0°, \pm 90°)$, the tip lands on the face as well, and only those two are contacts the *tool* makes.
+and the row that teaches something is the first against ch.2's continuous answer. The true obstacle covers $18.478\,\%$ of the torus, which is $0.18478 \times 144 = 26.6$ cells' worth of area, but only $21$ *nodes* land inside it. **A node-sampled grid systematically underestimates the obstacle**, by $5.6$ cells here, because a cell whose centre is free can still be half full of obstacle. That gap is the whole content of resolution completeness in §3. Of the 13 touching nodes, 7 have $\theta_1 = 0$, where link 1's elbow grazes the wall, and in two of those, $(0°, \pm 90°)$, the tip lands on the face as well. Counted by the tip instead, 8 of the 13 are contacts the *tool* makes — those two, one of them the query's start $A$, its goal $B = (90°, -90°)$, and $(-90°, 90°)$, $(\pm 60°, 0°)$, $(60°, -120°)$ and $(-60°, 120°)$ — while the other 5, $\theta_1 = 0$ with $\theta_2 = \pm 120°$, $\pm 150°$ or $180°$, are the elbow grazing the wall with the tool somewhere else.
 
 **Step 3 — the edge test, and the query's direct edge.** An edge is a straight segment in C-space, $\theta(\lambda) = (1-\lambda)q_1 + \lambda q_2$. Testing it means evaluating $d$ at $m$ interior values of $\lambda$. Take the query's direct edge, $A = (0°,90°)$ to $B = (90°,-90°)$. Along it $\theta_1 = 90°\lambda$ and $\theta_1 + \theta_2 = 90° - 90°\lambda$, so the tip's $x$-coordinate is
 
@@ -129,6 +132,51 @@ because $\cos(90° - u) = \sin u$. That is $\sqrt2\cos(90°\lambda - 45°)$, max
 $$d_{\max} = \sqrt2 - 1 = 0.4142\ \mathrm{m}$$
 
 so the edge ch.9 spent a whole chapter timing drives the arm **41 cm into the panel** at its midpoint. Both endpoints have $d = 0$; only the interior offends. Checking $m = 1$ interior sample already catches it, because that sample is $\lambda = 0.5$ exactly.
+
+<svg viewBox="0 0 560 318" style="max-width:100%;height:auto" role="img" aria-label="P2 in the workspace along the direct edge from A = (0°, 90°) to B = (90°, −90°): the arm at λ = 0, 0.25, 0.5, 0.75 and 1, the elbow sliding along the unit circle from (1, 0) to (0, 1), and the tip running out along y = x from (1, 1) to (1.414, 1.414), 0.414 m past the face x = 1, and back. The detour through E = (135°, −45°), drawn light, keeps the tip at x ≤ 1.">
+  <rect x="268" y="34.2" width="56" height="271.4" fill="currentColor" fill-opacity="0.07"/>
+  <path d="M268 36.2 l 12 12 M268 48.2 l 12 12 M268 60.2 l 12 12 M268 72.2 l 12 12 M268 84.2 l 12 12 M268 96.2 l 12 12 M268 108.2 l 12 12 M268 120.2 l 12 12 M268 132.2 l 12 12 M268 144.2 l 12 12 M268 156.2 l 12 12 M268 168.2 l 12 12 M268 180.2 l 12 12 M268 192.2 l 12 12 M268 204.2 l 12 12 M268 216.2 l 12 12 M268 228.2 l 12 12 M268 240.2 l 12 12 M268 252.2 l 12 12 M268 264.2 l 12 12 M268 276.2 l 12 12 M268 288.2 l 12 12" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" fill="none"/>
+  <line x1="268" y1="34.2" x2="268" y2="305.6" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M268 282 A118 118 0 0 0 150 164" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 3"/>
+  <path d="M268 164 L267.9 159.3 L267.6 154.6 L267.2 149.9 L266.5 145.2 L265.7 140.6 L264.6 136 L263.4 131.4 L262 126.9 L260.5 122.5 L258.7 118.1 L256.8 113.8 L254.7 109.6 L252.5 105.5 L250 101.4 L247.5 97.5 L244.7 93.6 L241.8 89.9 L238.8 86.3 L235.6 82.8 L232.3 79.5 L228.9 76.2 L225.3 73.2 L221.6 70.2 L217.8 67.4 L213.9 64.8 L209.9 62.3 L205.8 60 L201.6 57.9 L197.3 55.9 L193 54.1 L188.5 52.5 L184.1 51 L179.5 49.8 L174.9 48.7 L170.3 47.8 L165.7 47 L161 46.5 L156.3 46.2 L151.6 46 L146.9 46 L142.2 46.3 L137.5 46.7 L132.8 47.3 L128.1 48 L123.5 49 L119 50.2 L114.4 51.5 L110 53 L105.6 54.7 L101.2 56.5 L97 58.6 L92.8 60.8 L88.7 63.1 L84.8 65.7 L80.9 68.4 L77.1 71.2 L73.5 74.2 L70 77.3 L66.6 80.6 L66.6 80.6 L70.8 79.5 L75.1 78.5 L79.4 77.7 L83.7 76.9 L88 76.2 L92.3 75.7 L96.6 75.2 L100.8 74.8 L105.1 74.6 L109.4 74.4 L113.7 74.3 L118 74.3 L122.2 74.4 L126.4 74.6 L130.7 75 L134.8 75.4 L139 75.8 L143.2 76.4 L147.3 77.1 L151.4 77.9 L155.4 78.7 L159.4 79.7 L163.4 80.7 L167.4 81.9 L171.3 83.1 L175.1 84.4 L178.9 85.7 L182.7 87.2 L186.4 88.7 L190.1 90.4 L193.7 92.1 L197.3 93.8 L200.8 95.7 L204.3 97.6 L207.7 99.6 L211 101.7 L214.3 103.8 L217.5 106 L220.6 108.3 L223.7 110.6 L226.7 113 L229.6 115.4 L232.5 117.9 L235.3 120.5 L238 123.1 L240.7 125.7 L243.3 128.4 L245.8 131.2 L248.2 134 L250.5 136.8 L252.8 139.7 L255 142.6 L257.1 145.6 L259.1 148.6 L261.1 151.6 L262.9 154.7 L264.7 157.8 L266.4 160.9 L268 164" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 3" stroke-opacity="0.6"/>
+  <polyline points="150,282 66.6,198.6 66.6,80.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-opacity="0.3" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 268,282 268,164" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 259,236.8 304.2,127.8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.55" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 233.4,198.6 316.9,115.1" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 195.2,173 304.2,127.8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.55" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 150,164 268,164" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="7 3" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="268" y1="164" x2="316.9" y2="115.1" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="150" cy="282" r="4.5" fill="currentColor"/>
+  <circle cx="268" cy="282" r="2.6" fill="currentColor"/>
+  <circle cx="259" cy="236.8" r="2.6" fill="currentColor"/>
+  <circle cx="233.4" cy="198.6" r="2.6" fill="currentColor"/>
+  <circle cx="195.2" cy="173" r="2.6" fill="currentColor"/>
+  <circle cx="150" cy="164" r="2.6" fill="currentColor"/>
+  <circle cx="268" cy="164" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <circle cx="316.9" cy="115.1" r="3.4" fill="currentColor"/>
+  <circle cx="304.2" cy="127.8" r="2.6" fill="currentColor"/>
+  <circle cx="66.6" cy="80.6" r="2.6" fill="currentColor" fill-opacity="0.5"/>
+  <path d="M268 106.1 v 18 M316.9 106.1 v 18 M268 111.1 H 316.9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <line x1="360" y1="192" x2="384" y2="192" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="360" y1="210" x2="384" y2="210" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 3"/>
+  <line x1="360" y1="228" x2="384" y2="228" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 3" stroke-opacity="0.6"/>
+  <g fill="currentColor">
+    <text x="272" y="28.2" font-size="11">panel x ≥ 1</text>
+    <text x="142" y="286" font-size="10.5" text-anchor="end">base</text>
+    <text x="262" y="298" font-size="10.5" text-anchor="end">A, λ = 0</text>
+    <text x="142" y="178" font-size="10.5" text-anchor="end">B, λ = 1</text>
+    <text x="324.9" y="93.1" font-size="10.5">λ = 0.5: tip (1.414, 1.414)</text>
+    <text x="324.9" y="106.1" font-size="10.5">0.414 m past the face</text>
+    <text x="314.2" y="141.8" font-size="10">λ = 0.25 and 0.75:</text>
+    <text x="314.2" y="154.8" font-size="10">tip (1.307, 1.307)</text>
+    <text x="66.6" y="70.6" font-size="10" text-anchor="middle" opacity="0.8">E (135°, −45°)</text>
+    <text x="390" y="196" font-size="10">tip on the direct edge: along y = x</text>
+    <text x="390" y="214" font-size="10">elbow: unit circle, (1, 0) to (0, 1)</text>
+    <text x="390" y="232" font-size="10">tip via E: x ≤ 1 throughout</text>
+  </g>
+</svg>
+
+The direct edge of Step 3 drawn in the workspace: the arm at $\lambda = 0$, $0.25$, $0.5$, $0.75$ and $1$, the elbow sliding along the unit circle from $(1,0)$ to $(0,1)$, and the tip running out along $y = x$ from $(1,1)$ to $(1.414, 1.414)$ and back through $(1.307, 1.307)$ — at $\lambda = 0.5$ the straight arm puts the tip $0.414$ m past the face. The detour through $E = (135°, -45°)$, drawn light, keeps the tip at $x \le 1$ the whole way, which is why Step 5's answer costs $26.5\,\%$ more joint travel and is legal.
 
 **Step 4 — an edge that a careless test misses.** Not every violation sits at a midpoint. Take the edge $B = (90°,-90°)$ to $C = (60°,90°)$. Along it $\theta_1 = 90° - 30°\lambda$ and $\theta_2 = -90° + 180°\lambda$ (a $180°$ change is equally short either way round the circle; this page takes the way through $\theta_2 = 0$), so $\theta_1 + \theta_2 = 150°\lambda$, the elbow's $x = \cos\theta_1 = \sin(30°\lambda)$ never exceeds $0.5$, and the tip's $x$-coordinate is
 
@@ -177,7 +225,7 @@ Now run Dijkstra from $A$ ([[02-foundations/algorithms/graph-algorithms|11.6 §4
 
 $$A \to E \to B, \qquad \text{cost } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = \pi\sqrt2$$
 
-because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so the two lengths are $135°\sqrt2$ and $45°\sqrt2$ and they sum to $180°\sqrt2 = \pi\sqrt2$. Against the blocked direct edge's $(\pi/2)\sqrt5 = 3.5124$, the detour costs $2\sqrt2/\sqrt5 = 1.265$, i.e. $\mathbf{26.5\,\%}$ extra joint travel. The margin over $A$–$D$–$B$ is only $0.058\,\mathrm{rad}$; a roadmap this sparse decides such things by which samples happened to be drawn, which is exactly the property §3 names.
+because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so the two lengths are $135°\sqrt2$ and $45°\sqrt2$ and they sum to $180°\sqrt2 = \pi\sqrt2$. Against the blocked direct edge's $(\pi/2)\sqrt5 = 3.5124$, the detour costs $2\sqrt2/\sqrt5 = 1.265$ times as much, i.e. $\mathbf{26.5\,\%}$ extra joint travel. The margin over $A$–$D$–$B$ is only $0.058\,\mathrm{rad}$; a roadmap this sparse decides such things by which samples happened to be drawn, which is exactly the property §3 names.
 
 ### 1. The chapter in one list
 
@@ -193,9 +241,7 @@ because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so
 > - **Example**: P2's query $A \to B$, solved by $A \to E \to B$: two straight segments, $4.4429$ rad long, with $d \le 0$ at every point.
 > - **Non-example**: ch.9's straight line from $A$ to $B$. Both ends are free, $d = 0$, but its midpoint $(45°, 0°)$ has $d = 0.4142$ m, so it fails the third condition, and no time scaling can repair a path that is not free.
 
-- **Grid/graph search**: discretize C-space, run **A\*** (Dijkstra + admissible heuristic, i.e. a cost-to-go guess that never overestimates the true remaining cost)
-  — complete on the grid, and optimal there given an admissible heuristic plus the revisit
-  bookkeeping a closed set needs (the closed set is the nodes already expanded; one must be reopened if a cheaper route to it turns up later; see [[04-robotics/planning-decision-making|4. Planning & Decision-Making]] §3, and for the definitions of admissible and consistent, the correctness proof and an implementation [[02-foundations/algorithms/graph-algorithms|11.6 §6]]), but the grid explodes exponentially with dof.
+- **Grid/graph search**: discretize C-space and run **A\***, which is Dijkstra plus an admissible heuristic — a cost-to-go guess that never overestimates the true remaining cost. On the grid it is complete, and it is optimal there when it also keeps the revisit bookkeeping a closed set needs: the closed set holds the nodes already expanded, and one of them must be reopened if a cheaper route to it turns up later ([[04-robotics/planning-decision-making|4. Planning & Decision-Making §3]]; the definitions of admissible and consistent, the correctness proof and an implementation are in [[02-foundations/algorithms/graph-algorithms|11.6 §6]]). The grid, though, grows exponentially with the dof.
 - **Sampling-based planning** — the high-dof workhorses:
   - **RRT**: grow a tree by sampling random configurations and extending toward them;
     RRT\* adds rewiring for asymptotic optimality.
@@ -222,11 +268,13 @@ because $A$–$E$ moves $(135°,-135°)$ and $E$–$B$ moves $(-45°,-45°)$, so
 > - **6-DOF arm:** $36^6 \approx 2.18 \times 10^9$ cells — $36^4 \approx 1.7$ million times more for four extra joints.
 > - At $1$ µs per collision check that is about $36$ minutes; at a more realistic $1$ ms, about $25$ days. And $10°$ is coarse: halve the step and the 6-DOF count grows $2^6 = 64\times$.
 >
-> The intractability claim *is* $36^6\approx 2.18\times 10^9$ at $1\,\mathrm{ms}\approx 25$ days. Probabilistic completeness is not a time bound: a planner can run forever on a problem that has a solution. An RRT path that puts P2's tip on the panel has not checked $F_n$ on the P3 wall (P3: the catalog's haptic handle, whose 400 N/m virtual wall stands in for the panel, [[02-foundations/lab-plants|0.6]]).
+> The intractability claim *is* $36^6\approx 2.18\times 10^9$ at $1\,\mathrm{ms}\approx 25$ days. Probabilistic completeness is not a time bound: a planner can run forever on a problem that has a solution.
 >
 > **The fix.** Sampling planners never build the grid. One RRT step: sample a random $q_\text{rand}$, find the nearest tree node $q_\text{near}$, move a fixed step from $q_\text{near}$ toward $q_\text{rand}$ to get $q_\text{new}$, and add it if the segment is collision-free. The cost is paid per sample, not per cell.
 
 ### 2. The collision test, defined
+
+Every completeness claim of §3 is a claim about one predicate being called on enough points, and planners are usually correct — it is the discretization of their edge test that fails. So the predicate, and the edge test built from it, are worth defining exactly.
 
 A **configuration collision test** is a *predicate* on a single configuration: given $q$, it returns whether $\mathcal{A}(q) \cap \operatorname{int}\mathcal{O} \neq \varnothing$, i.e. whether $q \in \mathcal{C}_{\text{obs}}$. Testing the interior is this wiki's convention, so that contact counts as free ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]]); MR §10.2.2 states the closed test instead, reporting a collision whenever its signed distance is $\le 0$, contact included. It is the only way a planner ever learns about the world; the planner itself has no picture of the obstacle. Three conditions make it a valid test (MR §10.2.2): it checks the **whole body** $\mathcal{A}(q)$, every link rather than a representative point; it is **exact or conservative**, never reporting a penetrating configuration as free, so an approximation may only grow the robot or the obstacle; and it is **pointwise**, silent about every configuration between two it has tested. An **edge test** is the derived predicate on a pair, and the honest version of it is not a predicate at all but an approximation:
 
@@ -236,11 +284,10 @@ because testing a continuum would cost infinitely much, so a finite $m$ stands i
 
 - **Example**: P2's test above, three arithmetic lines and one comparison. At $C = (60°, 90°)$ they give $e_x = 0.5$, $p_x = -0.366$ and $d = -0.500$, free; at the $A$–$B$ midpoint $(45°, 0°)$, $p_x = \sqrt2$ and $d = 0.4142$, a collision. A real manipulator's is a broad-phase bounding-volume pass followed by a narrow-phase mesh–mesh query, but the interface is the same predicate.
 - **Non-example**: "the tip is outside the wall." That tests one *point* of the robot, not the robot, so it passes any configuration in which a link crosses the obstacle while the tip does not — stand the wall closer than $L_1$ and a folded elbow goes straight through it unseen. With the wall at $x \ge 0.5$, the folded pose $(0°, 180°)$ puts the tip back at the base, $x = 0$, and passes, while link 1 reaches $x = 1$, half a metre through the wall. For P2 and this wall the two tests happen to agree, and ch.2's derivation is what establishes that; it is not a general licence to test the tip alone.
-- **Why it matters**: every completeness claim in §3 is a claim about this predicate being called on enough points. Planners are usually correct; the discretization of their edge test is what fails.
 
 ### 3. Two completeness guarantees, defined apart
 
-Both guarantees are weaker than **completeness** proper, so it comes first.
+A paper that reports "the planner failed" has reported a fact about its resolution or its budget, not about the robot's workspace, unless it says which — and telling those apart needs the two weaker guarantees defined apart. Both are weaker than **completeness** proper, so it comes first.
 
 > **Completeness, defined.** **Completeness** is *a property of a planning algorithm over a class of problems*, not of one run or one path, and it has two conditions (MR §10.1.2). **Success**: if a solution exists, the algorithm finds one in finite time. **Honest failure**: if none exists, it says so in finite time. Both guarantees below weaken the first condition, and neither can certify that no path exists.
 >
@@ -251,7 +298,7 @@ Both guarantees are weaker than **completeness** proper, so it comes first.
 > - **Example**: for P2 and this wall, a planner that folds, swings and unfolds. The folded circle $\theta_2 = 180°$ is free at every $\theta_1$, and each slice $\theta_1 = \text{const}$ is blocked on at most one interval, $|\theta_1 + \theta_2| < \arccos(1 - \cos\theta_1)$, which never contains $180°$, so a $\theta_2$-only move joins any free configuration to that circle. That circle is MR §10.3's exact roadmap, and the planner decides every query: $A \to (0°, 180°) \to (90°, 180°) \to B$, $270° = 4.7124$ rad.
 > - **Non-example**: graph search on a sampled roadmap, which looks complete because Dijkstra always stops. Keep only $A$, $B$ and $C$: both edges into $B$ are blocked, so it reports failure while $\mathcal{C}_{\text{free}}$ holds $A \to E \to B$. That failure is a fact about three samples.
 
-> **Resolution completeness, defined.** **Resolution completeness** is *completeness relative to a chosen discretization*: if a solution exists *that the discretization can represent*, through nodes at spacing $\delta$ and the moves between them, the algorithm finds it, and otherwise it reports failure, for the grid and not for $\mathcal{C}_{\text{free}}$ (MR §10.1.2; A\* on a grid, §10.4). Its failure mode is geometric — a free passage narrower than the grid spacing is invisible, and Step 2 of the worked section shows the same effect on the obstacle, whose area the node sample understates by $5.6$ cells out of $144$.
+> **Resolution completeness, defined.** **Resolution completeness** is *completeness relative to a chosen discretization*: if a solution exists *that the discretization can represent*, through nodes at spacing $\delta$ and the moves between them, the algorithm finds it, and otherwise it reports failure, for the grid and not for $\mathcal{C}_{\text{free}}$ (MR §10.1.2; A\* on a grid, §10.4). Its failure mode is geometric — a free passage narrower than the grid spacing is invisible, and Step 2 of the Worked case shows the same effect on the obstacle, whose area the node sample understates by $5.6$ cells out of $144$.
 >
 > $$\mathrm{Sol}_\delta(P) \neq \varnothing \Rightarrow \text{a grid solution is returned}, \qquad \mathrm{Sol}_\delta(P) = \varnothing \Rightarrow \text{failure is reported}$$
 >
@@ -268,8 +315,6 @@ Both guarantees are weaker than **completeness** proper, so it comes first.
 >
 > - **Example**: a PRM that tries each sample against $A$ and $B$. About $25\,\%$ of the torus sees both along free straight edges, $E$ among it, so it fails only if all $n$ uniform draws miss that region, probability about $0.75^n$: $0.056$ at $n = 10$, $0.0032$ at $n = 20$. The five-node roadmap is one such draw, and its $0.058\,\mathrm{rad}$ margin between the best and second-best path is decided by which three samples were drawn.
 > - **Non-example**: an RRT whose sampler always returns the goal. Every step from $A$ toward $B$ enters the panel, $0.038$ m deep after $5°$, so the tree never leaves $A$: probability $0$ for every $n$. Nor is an RRT still running evidence that no path exists; that reads this guarantee as completeness.
-
-**Why it matters**: a paper that reports "the planner failed" has reported a fact about its resolution or its budget, not about the robot's workspace, unless it says which.
 
 **Wiki connections**: the classical layer that learned policies increasingly *absorb* —
 a [[01-canonical-papers/notes/4-vla/pi0|VLA]] implicitly plans in its forward pass, and
@@ -319,18 +364,21 @@ Tier B. Using only this page, its prerequisites, and [[02-foundations/lab-plants
 
 **핵심 질문**: C-space를 통과하는 충돌 없는 경로를 어떻게 찾는가?
 
+> [!note] 왜 배우는가 · Why this matters
+> [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택에서 이 장은 운동·과제 계획 층을 팔 하나 위에서 풀어 본 것이고, "*저 패널을 프레임에 설치해*"에서는 *부재를 옮기는* 단계, 곧 어느 링크도 패널을 뚫지 않게 공구를 패널까지 가져가는 일을 받친다([[physical-ai-map|피지컬 AI 지도]]에서 계획 층의 학위논문 경로 위에 놓인 칩이다). 움직임의 시작과 끝만 검사해서는 부족하다. [[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]]이 시간을 입힌 P2(카탈로그의 평면 2링크 팔, [[02-foundations/lab-plants|0.6]])의 엘보 뒤집기는 양 끝이 패널에 닿기만 하는데도, 그 사이의 관절 공간 직선 운동은 말단을 패널 안으로 $0.414$ m 밀어 넣고(3단계), 표본 다섯 개로 하는 간선 검사는 표본 여섯 개면 잡히는 $2$ cm 파고듦을 놓친다(4단계). [[04-robotics/planning-decision-making|4. 계획과 의사결정 §5]]가 이 계획기들을 다른 방법 계열 사이에 놓고, [[04-robotics/capstone-panel-contact|26. 캡스톤 §2]]는 간선을 검사하기 전에 패널을 추정 위치의 불확실성만큼 부풀리며, 그 계산 절은 이 장의 $E$ 경유 우회를 다시 돈다 — 학위논문 경로의 블록 2, 로보틱스 54–56회차이고, 4장의 회차 안에서 읽는다([[07-research-program/index|7. 연구 프로그램 §8]]). 이 장을 마치면 팔의 충돌 검사를 쓰고, 간선을 정직하게 검사하고, 로드맵 위에서 다익스트라를 손으로 돌리고, 계획기의 "실패"가 실제로 어느 완전성을 보고하는지 말할 수 있다.
+
 > [!note] 처음이라면 · First pass
-> 이 페이지의 장치, 그림, 그리고 계산 전체(1–5단계: 충돌 검사, 격자 세기, 실패하는 직통 간선, 거친 검사가 놓치는 간선, 다익스트라가 찾는 우회)를 읽고, 그다음 §3을 읽어라. 두 완전성 보장의 차이가 논문이 가장 자주 틀리는 문장이기 때문이다. 이 장을 목록 하나로 정리한 §1(A\*, RRT, PRM, 키노다이나믹 계획, 격자 크기 예제)과 1·3단계를 정의로 다시 쓴 §2는 두 번째 읽기다. 그다음 스스로 점검과, 벽을 $x \ge 1.5$로 옮기는 과제.
+> 60–90분 회차 셋이고, [[04-robotics/planning-decision-making|4. 계획과 의사결정]]의 회차 안에서 그 계산 절 바로 다음에 읽는다(일정표 54–56). **1회차:** 이 페이지의 대상인 장치 P2(*장치*: 제어에서 제어 대상이 되는 시스템을 부르는 말), 그림, 그리고 계산 전체인 1–5단계 — 충돌 검사, 격자 세기, 실패하는 직통 간선, 거친 검사가 놓치는 간선, 다익스트라가 찾는 우회 — 를 표를 가린 채 손으로 푼다. 스스로 점검 4로 마친다. **2회차:** §1의 목록을 읽되 §3의 예가 두 표본 기반 계획기를 모두 쓰므로 RRT·PRM 상자를 먼저 읽고, 그다음 1·3단계를 정의로 다시 쓴 §2, 그리고 §3을 읽는다. §3의 더 약한 완전성 보장 둘의 차이가 논문이 가장 자주 틀리는 문장이기 때문이다. **3회차:** 스스로 점검과, 벽을 $x \ge 1.5$로 옮기는 과제. 과제 2를 손으로 풀어 마친다.
 
-### 이 페이지의 장치 · Running plant
+### 이 페이지의 대상 · Running object
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**와 [[04-robotics/modern-robotics/ch02-configuration-space|2장]]에서 고정한 패널: 강체 반평면 $x \ge 1$, 링크는 두께 0인 선분. 그 장에서 침투 깊이와 C-장애물을 유도했고, 이 페이지는 그 안에서 계획한다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**(카탈로그의 평면 2링크 팔, 단위 링크)와 [[04-robotics/modern-robotics/ch02-configuration-space|2장]]에서 고정한 패널: 강체 반평면 $x \ge 1$, 링크는 두께 0인 선분. 그 장에서 침투 깊이와 C-장애물을 유도했고, 이 페이지는 그 안에서 계획한다.
 
 $$d(\theta) = \max\bigl(\cos\theta_1,\ \cos\theta_1 + \cos(\theta_1{+}\theta_2)\bigr) - 1, \qquad \mathcal{C}_{\text{free}} = \{\theta : d(\theta) \le 0\}$$
 
 접촉($d = 0$)은 자유로 센다. 관통 과제가 접촉으로 끝나기 때문이다. 여기서 $d$는 장애물 안에서 양수인 침투 깊이이고, 2장이 경고하듯 MR의 부호 있는 거리와는 부호가 반대다. P2의 컨피규레이션 공간은 원환면 $T^2$이고 패널이 그중 $18.478\,\%$를 막는다.
 
-**질의**는 [[04-robotics/modern-robotics/ch09-trajectory-generation|9장]]의 엘보 뒤집기다. $A = (0°, 90°)$에서 출발해 $B = (90°, -90°)$에 도달한다. 둘 다 말단을 패널 목표 $(1,1)$에 두고, 9장은 그 둘 사이의 직선에 시간을 입혔으며, 이 페이지는 그 직선이 합법인지 묻는다.
+**질의**는 [[04-robotics/modern-robotics/ch09-trajectory-generation|9장]]의 엘보 뒤집기다. $A = (0°, 90°)$에서 출발해 $B = (90°, -90°)$에 도달한다. 둘 다 말단을 패널 목표 $(1,1)$에 두고, 9장은 그 둘 사이의 직선에 시간을 입혔으며, 이 페이지는 그 직선이 합법인지 묻는다. 바로 앞 회차의 [[04-robotics/planning-decision-making|4. 계획과 의사결정]] 계산 절은 곧게 선 $(90°, 0°)$의 팔에서 출발해 이 $A$와 $B$에 닿는 비용을 매겼고, 이 페이지는 둘을 서로 잇는다.
 
 ### 그림으로 먼저 보기 · The picture
 
@@ -402,15 +450,15 @@ $$d(\theta) = \max\bigl(\cos\theta_1,\ \cos\theta_1 + \cos(\theta_1{+}\theta_2)\
 
 패널 $x \ge 1$에 대한 P2의 원환면 도표로, 가로 $\theta_1$과 세로 $\theta_2$가 $-180°$에서 $180°$까지이고 마주 보는 변은 동일시된다. 칠한 렌즈가 원환면의 $18.478\,\%$인 C-장애물이고, $30°$ 격자의 노드 $144$개는 막힘 $21$개, $d = 0$으로 닿음 $13$개(그중 일곱은 엘보가 벽을 스치는 $\theta_1 = 0$ 선 위), 자유 $110$개로 나뉜다. 다섯 노드 로드맵의 간선 열 개 중 둘, 곧 중간점에서 팔을 패널 안으로 $0.4142$ m 밀어 넣는 $A$–$B$와 $0.0201$ m 파고드는 $B$–$C$가 막히므로, 살아남은 최단 경로는 굵게 그린 $A \to E \to B$, $\pi\sqrt2 = 4.4429$ rad다.
 
-### 장치로 한 번 끝까지 · Worked on the plant
+### 대상으로 한 번 끝까지 · Worked case
 
-**1단계 — 충돌 검사를 절차로.** 계획기가 후보 자세마다 부르므로 싸고 정확해야 한다:
+**1단계 — 충돌 검사를 절차로.** 계획기가 후보 컨피규레이션마다 부르므로 싸고 정확해야 한다:
 
 1. 엘보 $e_x = \cos\theta_1$;
 2. 말단 $p_x = \cos\theta_1 + \cos(\theta_1{+}\theta_2)$;
 3. $d = \max(e_x, p_x) - 1$; $d > 0$이면 *충돌*이라고 보고.
 
-끝점 둘만 보는 이유는 직선 선분 위에서 $x$가 일차라 최댓값이 끝에서 나오기 때문이다. 그리고 $|\cos\theta_1| \le 1$이므로 1단계가 혼자 발화할 수 없다. 엘보는 $\theta_1 = 0$에서 벽을 스칠 뿐 넘지 못한다.
+끝점 둘만 보는 이유는 직선 선분 위에서 $x$가 일차라 최댓값이 끝에서 나오기 때문이다. 그리고 $|\cos\theta_1| \le 1$이므로 1단계만으로는 충돌이 보고되지 않는다. 엘보는 $\theta_1 = 0$에서 벽을 스칠 뿐 넘지 못한다.
 
 **2단계 — 격자를 세다.** 두 각을 $30°$로 이산화하면 각각 $360/30 = 12$개 값이라 노드가 $12^2 = \mathbf{144}$개다. 전부에서 $d$를 계산하면
 
@@ -420,7 +468,7 @@ $$d(\theta) = \max\bigl(\cos\theta_1,\ \cos\theta_1 + \cos(\theta_1{+}\theta_2)\
 | $d = 0$, 정확히 닿음 | $13$ | $9.03\,\%$ |
 | $d < 0$, 엄격히 자유 | $110$ | $76.39\,\%$ |
 
-이고, 배울 것이 있는 행은 2장의 연속적 답과 맞댄 첫 행이다. 진짜 장애물은 원환면의 $18.478\,\%$, 즉 $0.18478 \times 144 = 26.6$칸어치 넓이를 덮는데 그 안에 떨어진 *노드*는 $21$개뿐이다. **노드만 표본하는 격자는 장애물을 체계적으로 과소평가한다.** 여기서는 $5.6$칸만큼인데, 중심이 자유인 칸도 절반이 장애물일 수 있기 때문이다. 이 간극이 §3의 해상도 완전성의 내용 전부다. 닿는 노드 13개 중 7개는 $\theta_1 = 0$으로 링크 1의 엘보가 벽을 스치는 자리다. 그중 둘, $(0°, \pm 90°)$에서는 말단도 면에 닿으며, *도구*가 만드는 접촉은 그 둘뿐이다.
+이고, 배울 것이 있는 행은 2장의 연속적 답과 맞댄 첫 행이다. 진짜 장애물은 원환면의 $18.478\,\%$, 즉 $0.18478 \times 144 = 26.6$칸어치 넓이를 덮는데 그 안에 떨어진 *노드*는 $21$개뿐이다. **노드만 표본하는 격자는 장애물을 체계적으로 과소평가한다.** 여기서는 $5.6$칸만큼인데, 중심이 자유인 칸도 절반이 장애물일 수 있기 때문이다. 이 간극이 §3의 해상도 완전성의 내용 전부다. 닿는 노드 13개 중 7개는 $\theta_1 = 0$으로 링크 1의 엘보가 벽을 스치는 자리이고, 그중 둘, $(0°, \pm 90°)$에서는 말단도 면에 닿는다. 말단으로 세면 13개 중 8개가 *도구*가 만드는 접촉이다 — 그 둘(그중 하나가 질의의 출발 $A$다), 질의의 목표 $B = (90°, -90°)$, 그리고 $(-90°, 90°)$, $(\pm 60°, 0°)$, $(60°, -120°)$, $(-60°, 120°)$. 나머지 5개, 곧 $\theta_1 = 0$에 $\theta_2 = \pm 120°$, $\pm 150°$, $180°$인 노드는 도구가 다른 곳에 있는 채 엘보가 벽을 스치는 자리다.
 
 **3단계 — 간선 검사와 질의의 직통 간선.** 간선은 C-space의 직선 선분 $\theta(\lambda) = (1-\lambda)q_1 + \lambda q_2$다. 검사란 $\lambda$의 내부 값 $m$개에서 $d$를 계산하는 일이다. 질의의 직통 간선 $A = (0°,90°) \to B = (90°,-90°)$를 보자. 그 위에서 $\theta_1 = 90°\lambda$, $\theta_1 + \theta_2 = 90° - 90°\lambda$이므로 말단의 $x$ 좌표는
 
@@ -432,6 +480,51 @@ $$d_{\max} = \sqrt2 - 1 = 0.4142\ \mathrm{m}$$
 
 따라서 9장이 한 장을 통째로 들여 시간을 입힌 그 간선은 중간점에서 팔을 **패널 안으로 41 cm** 밀어 넣는다. 양 끝점은 $d = 0$이고 내부만 위반한다. 내부 표본 $m = 1$이면 이미 잡힌다. 그 표본이 정확히 $\lambda = 0.5$이기 때문이다.
 
+<svg viewBox="0 0 560 318" style="max-width:100%;height:auto" role="img" aria-label="직통 간선 A = (0°, 90°) → B = (90°, −90°)를 따라가는 작업 영역의 P2: λ = 0, 0.25, 0.5, 0.75, 1의 팔, (1, 0)에서 (0, 1)까지 단위원을 따라 미끄러지는 엘보, 그리고 y = x를 따라 (1, 1)에서 면 x = 1 너머 0.414 m인 (1.414, 1.414)까지 나갔다가 돌아오는 말단. 흐리게 그린 E = (135°, −45°) 경유 우회는 말단을 x ≤ 1에 둔다.">
+  <rect x="268" y="34.2" width="56" height="271.4" fill="currentColor" fill-opacity="0.07"/>
+  <path d="M268 36.2 l 12 12 M268 48.2 l 12 12 M268 60.2 l 12 12 M268 72.2 l 12 12 M268 84.2 l 12 12 M268 96.2 l 12 12 M268 108.2 l 12 12 M268 120.2 l 12 12 M268 132.2 l 12 12 M268 144.2 l 12 12 M268 156.2 l 12 12 M268 168.2 l 12 12 M268 180.2 l 12 12 M268 192.2 l 12 12 M268 204.2 l 12 12 M268 216.2 l 12 12 M268 228.2 l 12 12 M268 240.2 l 12 12 M268 252.2 l 12 12 M268 264.2 l 12 12 M268 276.2 l 12 12 M268 288.2 l 12 12" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" fill="none"/>
+  <line x1="268" y1="34.2" x2="268" y2="305.6" stroke="currentColor" stroke-width="1.3"/>
+  <path d="M268 282 A118 118 0 0 0 150 164" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 3"/>
+  <path d="M268 164 L267.9 159.3 L267.6 154.6 L267.2 149.9 L266.5 145.2 L265.7 140.6 L264.6 136 L263.4 131.4 L262 126.9 L260.5 122.5 L258.7 118.1 L256.8 113.8 L254.7 109.6 L252.5 105.5 L250 101.4 L247.5 97.5 L244.7 93.6 L241.8 89.9 L238.8 86.3 L235.6 82.8 L232.3 79.5 L228.9 76.2 L225.3 73.2 L221.6 70.2 L217.8 67.4 L213.9 64.8 L209.9 62.3 L205.8 60 L201.6 57.9 L197.3 55.9 L193 54.1 L188.5 52.5 L184.1 51 L179.5 49.8 L174.9 48.7 L170.3 47.8 L165.7 47 L161 46.5 L156.3 46.2 L151.6 46 L146.9 46 L142.2 46.3 L137.5 46.7 L132.8 47.3 L128.1 48 L123.5 49 L119 50.2 L114.4 51.5 L110 53 L105.6 54.7 L101.2 56.5 L97 58.6 L92.8 60.8 L88.7 63.1 L84.8 65.7 L80.9 68.4 L77.1 71.2 L73.5 74.2 L70 77.3 L66.6 80.6 L66.6 80.6 L70.8 79.5 L75.1 78.5 L79.4 77.7 L83.7 76.9 L88 76.2 L92.3 75.7 L96.6 75.2 L100.8 74.8 L105.1 74.6 L109.4 74.4 L113.7 74.3 L118 74.3 L122.2 74.4 L126.4 74.6 L130.7 75 L134.8 75.4 L139 75.8 L143.2 76.4 L147.3 77.1 L151.4 77.9 L155.4 78.7 L159.4 79.7 L163.4 80.7 L167.4 81.9 L171.3 83.1 L175.1 84.4 L178.9 85.7 L182.7 87.2 L186.4 88.7 L190.1 90.4 L193.7 92.1 L197.3 93.8 L200.8 95.7 L204.3 97.6 L207.7 99.6 L211 101.7 L214.3 103.8 L217.5 106 L220.6 108.3 L223.7 110.6 L226.7 113 L229.6 115.4 L232.5 117.9 L235.3 120.5 L238 123.1 L240.7 125.7 L243.3 128.4 L245.8 131.2 L248.2 134 L250.5 136.8 L252.8 139.7 L255 142.6 L257.1 145.6 L259.1 148.6 L261.1 151.6 L262.9 154.7 L264.7 157.8 L266.4 160.9 L268 164" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 3" stroke-opacity="0.6"/>
+  <polyline points="150,282 66.6,198.6 66.6,80.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-opacity="0.3" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 268,282 268,164" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 259,236.8 304.2,127.8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.55" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 233.4,198.6 316.9,115.1" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 195.2,173 304.2,127.8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-opacity="0.55" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="150,282 150,164 268,164" fill="none" stroke="currentColor" stroke-width="2.4" stroke-dasharray="7 3" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="268" y1="164" x2="316.9" y2="115.1" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="150" cy="282" r="4.5" fill="currentColor"/>
+  <circle cx="268" cy="282" r="2.6" fill="currentColor"/>
+  <circle cx="259" cy="236.8" r="2.6" fill="currentColor"/>
+  <circle cx="233.4" cy="198.6" r="2.6" fill="currentColor"/>
+  <circle cx="195.2" cy="173" r="2.6" fill="currentColor"/>
+  <circle cx="150" cy="164" r="2.6" fill="currentColor"/>
+  <circle cx="268" cy="164" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <circle cx="316.9" cy="115.1" r="3.4" fill="currentColor"/>
+  <circle cx="304.2" cy="127.8" r="2.6" fill="currentColor"/>
+  <circle cx="66.6" cy="80.6" r="2.6" fill="currentColor" fill-opacity="0.5"/>
+  <path d="M268 106.1 v 18 M316.9 106.1 v 18 M268 111.1 H 316.9" stroke="currentColor" stroke-width="0.9" fill="none"/>
+  <line x1="360" y1="192" x2="384" y2="192" stroke="currentColor" stroke-width="1.6"/>
+  <line x1="360" y1="210" x2="384" y2="210" stroke="currentColor" stroke-width="1" stroke-dasharray="1.5 3"/>
+  <line x1="360" y1="228" x2="384" y2="228" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 3" stroke-opacity="0.6"/>
+  <g fill="currentColor">
+    <text x="272" y="28.2" font-size="11">패널 x ≥ 1</text>
+    <text x="142" y="286" font-size="10.5" text-anchor="end">베이스</text>
+    <text x="262" y="298" font-size="10.5" text-anchor="end">A, λ = 0</text>
+    <text x="142" y="178" font-size="10.5" text-anchor="end">B, λ = 1</text>
+    <text x="324.9" y="93.1" font-size="10.5">λ = 0.5: 말단 (1.414, 1.414)</text>
+    <text x="324.9" y="106.1" font-size="10.5">면에서 0.414 m 안쪽</text>
+    <text x="314.2" y="141.8" font-size="10">λ = 0.25와 0.75:</text>
+    <text x="314.2" y="154.8" font-size="10">말단 (1.307, 1.307)</text>
+    <text x="66.6" y="70.6" font-size="10" text-anchor="middle" opacity="0.8">E (135°, −45°)</text>
+    <text x="390" y="196" font-size="10">직통 간선의 말단: y = x를 따라</text>
+    <text x="390" y="214" font-size="10">엘보: 단위원, (1, 0)에서 (0, 1)로</text>
+    <text x="390" y="232" font-size="10">E를 거친 말단: 내내 x ≤ 1</text>
+  </g>
+</svg>
+
+3단계의 직통 간선을 작업 영역에 그렸다. $\lambda = 0$, $0.25$, $0.5$, $0.75$, $1$의 팔, $(1,0)$에서 $(0,1)$까지 단위원을 따라 미끄러지는 엘보, 그리고 $y = x$를 따라 $(1,1)$에서 $(1.414, 1.414)$까지 나갔다가 $(1.307, 1.307)$을 지나 돌아오는 말단이다 — $\lambda = 0.5$에서 곧게 편 팔은 말단을 면 너머 $0.414$ m에 놓는다. 흐리게 그린 $E = (135°, -45°)$ 경유 우회는 말단을 내내 $x \le 1$에 두고, 그래서 5단계의 답은 관절 이동량이 $26.5\,\%$ 더 들면서도 합법이다.
+
 **4단계 — 부주의한 검사가 놓치는 간선.** 모든 위반이 중간점에 있지는 않다. 간선 $B = (90°,-90°) \to C = (60°,90°)$를 보자. 그 위에서 $\theta_1 = 90° - 30°\lambda$, $\theta_2 = -90° + 180°\lambda$이고($180°$ 변화는 원의 어느 쪽으로 돌아도 똑같이 짧다. 이 페이지는 $\theta_2 = 0$을 지나는 쪽을 택한다), 따라서 $\theta_1 + \theta_2 = 150°\lambda$, 엘보의 $x = \cos\theta_1 = \sin(30°\lambda)$는 $0.5$를 넘지 않으며, 말단의 $x$ 좌표는
 
 $$p_x(\lambda) = \sin(30°\lambda) + \cos(150°\lambda)$$
@@ -440,7 +533,7 @@ $$p_x(\lambda) = \sin(30°\lambda) + \cos(150°\lambda)$$
 
 $$d(\lambda) = p_x(\lambda) - 1 \approx u - 12.5\,u^2$$
 
-이고, 이 포물선은 $0 < u < 0.08$에서 양수이며 $u = 0.04$에서 $d = 0.02$로 최대다. $30° = 0.5236\,\mathrm{rad}$로 나누면 최대점은 $\lambda = 0.076$, 띠의 끝은 $\lambda = 0.153$이다. 정확한 조건 — 최대점은 $dp_x/d\lambda = 0$, 곧 $\cos u = 5\sin 5u$, 띠의 끝은 $d = 0$ — 을 수치로 풀면 셋째 자리만 바뀐다. 최대는 $\lambda = 0.077$에서 $d = 0.0201\,\mathrm{m}$이고, 간선은 $\lambda \in (0,\ 0.155]$에서 파고든다. 간선 길이가 $\sqrt{30^2 + 180^2} = 182.48°$이므로 $0.155 \times 182.48° = 28.2°$ 띠에 퍼진 $2\,\mathrm{cm}$짜리 한 입이다. 내부 표본 $m$개를 고르게 두면 간격이 $182.48°/(m+1)$이고 첫 표본은 $\lambda = 1/(m+1)$에 놓이는데, 그것이 띠에 떨어지는 것은 $1/(m+1) \le 0.155$, 곧 $m \ge 6$일 때뿐이다:
+이고, 이 포물선은 $0 < u < 0.08$에서 양수이며 $u = 0.04$에서 $d = 0.02$로 최대다. $30° = 0.5236\,\mathrm{rad}$로 나누면 최대점은 $\lambda = 0.076$, 띠의 끝은 $\lambda = 0.153$이다. 정확한 조건 — 최대점은 $dp_x/d\lambda = 0$, 곧 $\cos u = 5\sin 5u$, 띠의 끝은 $d = 0$ — 을 수치로 풀면 셋째 자리만 바뀐다. 최대는 $\lambda = 0.077$에서 $d = 0.0201\,\mathrm{m}$이고, 간선은 $\lambda \in (0,\ 0.155]$에서 파고든다. 간선 길이가 $\sqrt{30^2 + 180^2} = 182.48°$이므로 $0.155 \times 182.48° = 28.2°$ 띠에 걸친 $2\,\mathrm{cm}$ 파고듦이다. 내부 표본 $m$개를 고르게 두면 간격이 $182.48°/(m+1)$이고 첫 표본은 $\lambda = 1/(m+1)$에 놓이는데, 그것이 띠에 떨어지는 것은 $1/(m+1) \le 0.155$, 곧 $m \ge 6$일 때뿐이다:
 
 | $m$ | 간격 | 판정 |
 |---:|---:|---|
@@ -450,7 +543,7 @@ $$d(\lambda) = p_x(\lambda) - 1 \approx u - 12.5\,u^2$$
 
 이고 규칙이 표에 보인다. **표본 간격이 위반 띠보다 넓으면 그것을 건너뛸 수 있다.** 검사기가 틀린 것은 없다. 점 $m$개에 대한 질문에 답했을 뿐이고, 그러면 계획기가 로봇이 실행할 수 없는 경로를 보고한다. 실제 계획기는 관절 각도당 몸체가 얼마나 빨리 움직일 수 있는지의 상계로 이것을 다루지, 운에 맡기지 않는다.
 
-**5단계 — 로드맵.** 자세 다섯, 질의의 끝점 둘과 표본 셋:
+**5단계 — 로드맵.** 컨피규레이션 다섯, 질의의 끝점 둘과 표본 셋:
 
 | 노드 | $(\theta_1, \theta_2)$ | 말단 | $d$ |
 |---|---|---|---:|
@@ -487,25 +580,24 @@ $$A \to E \to B, \qquad \text{비용 } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = 
   [[04-robotics/modern-robotics/ch02-configuration-space|컨피규레이션 공간]]에서의 항해이고,
   거기서 로봇은 점이다.
 
-> **운동 계획 문제의 정의.** **경로 계획 문제**(path-planning problem)는 *실행 가능 조건이 붙은 질의*다. 시작 자세 $q_{\text{start}}$와 목표 $q_{\text{goal}}$이 주어지면 둘을 잇는 경로를 찾는다(MR §10.1.1). 해는 세 조건을 만족한다. **양 끝이 질의의 컨피규레이션이다.** 도구 자세가 아니라 관절 각이다. **연속이다.** 점의 목록이 아니라 $\mathcal{C}$ 안의 곡선이다. **모든 점이 자유다.** 양 끝만이 아니라 경로 위의 모든 점이 [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]가 정의하는 $\mathcal{C}_{\text{free}}$ 안에 있다. 일반적인 **운동 계획 문제**(motion-planning problem)는 여기에 동역학, 곧 상태와 제어 입력과 지속 시간을 더한다.
+> **운동 계획 문제의 정의.** **경로 계획 문제**(path-planning problem)는 *실행 가능 조건이 붙은 질의*다. 시작 컨피규레이션 $q_{\text{start}}$와 목표 $q_{\text{goal}}$이 주어지면 둘을 잇는 경로를 찾는다(MR §10.1.1). 해는 세 조건을 만족한다. **양 끝이 질의의 컨피규레이션이다.** 도구 자세가 아니라 관절 각이다. **연속이다.** 점의 목록이 아니라 $\mathcal{C}$ 안의 곡선이다. **모든 점이 자유다.** 양 끝만이 아니라 경로 위의 모든 점이 [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]가 정의하는 $\mathcal{C}_{\text{free}}$ 안에 있다. 일반적인 **운동 계획 문제**(motion-planning problem)는 여기에 동역학, 곧 상태와 제어 입력과 지속 시간을 더한다.
 >
 > $$\text{연속 경로 } q:[0,1]\to\mathcal{C}_{\text{free}}\text{를 찾되 } q(0)=q_{\text{start}},\ q(1)=q_{\text{goal}}; \qquad T\text{와 } u(\cdot)\text{를 찾되 } \dot x=f(x,u),\ u(t)\in\mathcal{U},\ x(0)=x_{\text{start}},\ x(T)=x_{\text{goal}},\ q\bigl(x(t)\bigr)\in\mathcal{C}_{\text{free}}\ \forall t\in[0,T]$$
 >
-> 여기서 $x$는 상태(입력이 힘이면 자세에 속도를 더한 것), $u$는 제어 입력, $\mathcal{U}$는 허용 입력 집합, $f$는 운동 방정식이다. 뒤의 문제가 앞의 문제를 품는다. 경로는 로봇이 어디로 가는지만 정하고 언제 가는지는 정하지 않으며, 그것은 9장의 시간 스케일링이 채우기 때문이다.
+> 여기서 $x$는 상태(입력이 힘이면 컨피규레이션에 속도를 더한 것), $u$는 제어 입력, $\mathcal{U}$는 허용 입력 집합, $f$는 운동 방정식이다. 뒤의 문제가 앞의 문제를 품는다. 경로는 로봇이 어디로 가는지만 정하고 언제 가는지는 정하지 않으며, 그것은 9장의 시간 스케일링이 채우기 때문이다.
 >
 > - **예**: P2의 질의 $A \to B$와 그 해 $A \to E \to B$. 직선 선분 둘, 길이 $4.4429$ rad이고 모든 점에서 $d \le 0$이다.
 > - **비예**: 9장의 $A$–$B$ 직선. 양 끝은 $d = 0$으로 자유지만 중간점 $(45°, 0°)$에서 $d = 0.4142$ m라 셋째 조건을 어긴다. 자유가 아닌 경로는 어떤 시간 스케일링으로도 고칠 수 없다.
 
-- **격자/그래프 탐색**: C-space를 이산화하고 **A\***(다익스트라 + 허용 가능 휴리스틱, 즉 실제 남은 비용을 절대 과대추정하지 않는 비용 추정)를
-  돌린다 — 격자 위에서 완전하고, 허용 가능 휴리스틱에 더해 닫힌 집합이 요구하는 재방문 처리까지 갖추면 최적이다. 닫힌 집합은 이미 확장한 노드들이고, 나중에 그중 하나로 가는 더 싼 경로가 나타나면 그 노드를 다시 열어야 한다([[04-robotics/planning-decision-making|4. 계획과 의사결정]] §3. 허용성과 일관성의 정의, 정확성 증명과 구현은 [[02-foundations/algorithms/graph-algorithms|11.6 §6]]). 다만 격자가 자유도에 지수적으로 폭발한다.
-- **샘플링 기반 계획** — 고자유도의 주력:
-  - **RRT**: 무작위 컨피규레이션을 샘플링하고 그쪽으로 확장하며 트리를 키운다; RRT\*는
+- **격자/그래프 탐색**: C-space를 이산화하고 **A\***를 돌린다. A\*는 다익스트라에 허용 가능 휴리스틱, 곧 실제 남은 비용을 절대 과대추정하지 않는 비용 추정을 더한 것이다. 격자 위에서 완전하고, 닫힌 집합이 요구하는 재방문 처리까지 갖추면 거기서 최적이다. 닫힌 집합은 이미 확장한 노드들이고, 나중에 그중 하나로 가는 더 싼 경로가 나타나면 그 노드를 다시 열어야 한다([[04-robotics/planning-decision-making|4. 계획과 의사결정 §3]]. 허용성과 일관성의 정의, 정확성 증명과 구현은 [[02-foundations/algorithms/graph-algorithms|11.6 §6]]). 다만 격자는 자유도에 지수적으로 커진다.
+- **표본 기반 계획** — 고자유도의 주력:
+  - **RRT**: 무작위 컨피규레이션을 표본으로 뽑고 그쪽으로 확장하며 트리를 키운다; RRT\*는
     재배선을 더해 점근적 최적성을 얻는다.
-  - **PRM**: 많이 샘플링해 이웃을 로드맵으로 연결한 뒤 질의한다.
+  - **PRM**: 표본을 많이 뽑아 이웃을 로드맵으로 연결한 뒤 질의한다.
   - 보장: **확률적 완전성** — 표본을 계속 뽑으면 존재하는 해를 찾을 확률이 1로 간다. *해상도* 완전성은 격자에 상대적인 다른 보장이다: 선택한 이산화 해상도에서 해가 존재하면 찾는다(MR §10.1). 그래서 격자보다 좁은 통로는 놓칠 수 있다. 둘 다 완전한 완전성보다 약하다. (언제인지, 얼마나 못생겼는지는
     약속 없음; 그래서 사후 평활화를 한다).
 
-> **RRT와 PRM의 정의.** **표본 기반 계획기**(sampling-based planner)는 *표본으로 뽑은 자세들로 $\mathcal{C}_{\text{free}}$ 안에 그래프를 키우는 알고리즘*이고, 정의 조건은 셋이다(MR §10.5). **조밀한 표본**: 대개 균등하게 뽑아서, 결국 모든 자세에 임의로 가까이 다가가게 한다. **검사한 간선**: 두 자세는 그 사이가 §2의 간선 검사를 통과할 때만 잇는다. **성장 규칙**, 둘이 갈리는 곳이다. **RRT**는 질의 하나를 위해 $q_{\text{start}}$에서 트리 하나를 키우고, **PRM**은 질의 전에 로드맵을 만들어 두고 같은 세계에 대한 이후의 질의마다 그것을 탐색한다.
+> **RRT와 PRM의 정의.** **표본 기반 계획기**(sampling-based planner)는 *표본으로 뽑은 컨피규레이션들로 $\mathcal{C}_{\text{free}}$ 안에 그래프를 키우는 알고리즘*이고, 정의 조건은 셋이다(MR §10.5). **조밀한 표본**: 대개 균등하게 뽑아서, 결국 모든 컨피규레이션에 임의로 가까이 다가가게 한다. **검사한 간선**: 두 컨피규레이션은 그 사이가 §2의 간선 검사를 통과할 때만 잇는다. **성장 규칙**, 둘이 갈리는 곳이다. **RRT**는 질의 하나를 위해 $q_{\text{start}}$에서 트리 하나를 키우고, **PRM**은 질의 전에 로드맵을 만들어 두고 같은 세계에 대한 이후의 질의마다 그것을 탐색한다.
 >
 > $$\text{RRT: } q_{\text{new}} = q_{\text{near}} + \min\Bigl(1,\ \frac{\epsilon}{\lVert q_{\text{rand}} - q_{\text{near}}\rVert}\Bigr)\,(q_{\text{rand}} - q_{\text{near}}); \qquad \text{PRM: } \{q_i, q\}\text{가 간선} \iff \bigl(q \in N_k(q_i)\ \text{또는}\ q_i \in N_k(q)\bigr)\text{이고 간선 검사를 통과}$$
 >
@@ -514,7 +606,7 @@ $$A \to E \to B, \qquad \text{비용 } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = 
 > - **예**: $A$에서 표본 $E$ 쪽으로 $\epsilon = 30°$인 RRT 한 스텝은 $(21.21°, 68.79°)$에 닿고 거기서 $d = -0.068$ m다. 그 선분은 $\theta_1 + \theta_2 = 90°$가 유지되어 말단이 $x = \cos\theta_1 \le 1$에 머물므로 자유다. 다섯 노드 로드맵은 모든 쌍을 시도한 PRM이다. 둘째 질의 $C \to B$에는 새 간선 검사 없이 $C \to D \to B$, $3.6399$ rad으로 답한다.
 > - **비예**: 같은 다섯 노드를 간선 검사 없이 이은 것. 간선 열 개가 모두 서고, 다익스트라는 직통 $A$–$B$를 $3.5124$ rad으로 돌려주며, 팔은 패널 안으로 $0.4142$ m 들어간다. 자유 표본은 방법의 절반이고, 검사한 간선이 나머지 절반이다.
 
-- 비홀로노믹/키노다이나믹 계획: 속도 제약이 물 때도 컨피규레이션이나 상태는 계속 샘플링하되, 직선 국소 계획기를 제약을 지키는 것으로 바꾼다 — 이산 제어 집합을 적분하거나 자동차라면 Reeds–Shepp 곡선을 쓴다(MR §10.5.1.3)(자동차, [[04-robotics/convex-mpc-legged|보행 기계]]).
+- 비홀로노믹/키노다이나믹 계획: 속도 제약이 물 때도 컨피규레이션이나 상태는 계속 표본으로 뽑되, 직선 국소 계획기를 제약을 지키는 것으로 바꾼다 — 이산 제어 집합을 적분하거나 자동차라면 Reeds–Shepp 곡선을 쓴다(MR §10.5.1.3)(자동차, [[04-robotics/convex-mpc-legged|보행 기계]]).
 
 > [!example] 계산 예제 · Worked example
 > **격자는 얼마나 큰가?** 회전 관절마다 전체 $360°$ 범위를 $10°$ 해상도로 이산화하면 관절당 $36$개 값이다. 격자 계획기는 최악의 경우 모든 칸을 충돌 검사해야 한다.
@@ -522,25 +614,26 @@ $$A \to E \to B, \qquad \text{비용 } 3.3322 + 1.1107 = 4.4429\ \mathrm{rad} = 
 > - **6자유도 팔:** $36^6 \approx 2.18 \times 10^9$칸 — 관절 4개를 더했을 뿐인데 $36^4 \approx 170$만 배다.
 > - 충돌 검사 1회에 $1$ µs면 약 $36$분, 더 현실적인 $1$ ms면 약 $25$일이다. 게다가 $10°$는 거칠다: 간격을 절반으로 줄이면 6자유도 칸 수는 $2^6 = 64$배가 된다.
 >
-> 비실용 주장은 곧 $1\,\mathrm{ms}$에 $36^6\approx 2.18\times 10^9$, 약 $25$일이다. 확률적 완전성은 시간 보장이 아니다. 해가 있는 문제에서도 계획기가 영원히 돌 수 있다. P2 말단을 패널에 두는 RRT 경로는 P3 벽(카탈로그 햅틱 핸들 P3의 400 N/m 가상 벽, [[02-foundations/lab-plants|0.6]])의 $F_n$을 검사하지 않았다.
+> 비실용 주장은 곧 $1\,\mathrm{ms}$에 $36^6\approx 2.18\times 10^9$, 약 $25$일이다. 확률적 완전성은 시간 보장이 아니다. 해가 있는 문제에서도 계획기가 영원히 돌 수 있다.
 >
-> **해결책.** 샘플링 계획기는 격자를 만들지 않는다. RRT 한 스텝: 무작위 $q_\text{rand}$를 뽑고, 트리에서 가장 가까운 노드 $q_\text{near}$를 찾고, $q_\text{near}$에서 $q_\text{rand}$ 쪽으로 고정 보폭만큼 움직여 $q_\text{new}$를 얻은 뒤, 그 선분에 충돌이 없으면 트리에 더한다. 비용은 칸마다가 아니라 표본마다 든다.
+> **해결책.** 표본 기반 계획기는 격자를 만들지 않는다. RRT 한 스텝: 무작위 $q_\text{rand}$를 뽑고, 트리에서 가장 가까운 노드 $q_\text{near}$를 찾고, $q_\text{near}$에서 $q_\text{rand}$ 쪽으로 고정 보폭만큼 움직여 $q_\text{new}$를 얻은 뒤, 그 선분에 충돌이 없으면 트리에 더한다. 비용은 칸마다가 아니라 표본마다 든다.
 
 ### 2. 충돌 검사의 정의
 
-**자세 충돌 검사**는 자세 하나에 대한 *술어*다. $q$가 주어지면 $\mathcal{A}(q) \cap \operatorname{int}\mathcal{O} \neq \varnothing$인지, 즉 $q \in \mathcal{C}_{\text{obs}}$인지를 돌려준다. 내부와 견주는 것은 접촉을 자유로 세려는 이 위키의 약속이고([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]), MR §10.2.2는 대신 닫힌 검사를 적어 부호 있는 거리가 $0$ 이하이면, 곧 접촉까지 충돌로 보고한다. 계획기가 세계에 대해 배우는 유일한 통로이며, 계획기 자신은 장애물의 그림을 갖고 있지 않다. 유효한 검사가 되는 조건은 셋이다(MR §10.2.2). **몸 전체** $\mathcal{A}(q)$를 본다. 대표점 하나가 아니라 모든 링크다. **정확하거나 보수적**이다. 파고든 자세를 자유라고 보고하는 일이 없어야 하므로, 근사는 로봇이나 장애물을 키우는 쪽으로만 한다. **점별**이다. 검사한 두 자세 사이의 자세에 대해서는 아무것도 말하지 않는다. **간선 검사**는 쌍에 대해 파생된 술어인데, 정직한 형태는 술어가 아니라 근사다:
+§3의 모든 완전성 주장은 술어 하나가 충분히 많은 점에서 불린다는 주장이고, 계획기는 보통 옳다 — 무너지는 것은 간선 검사의 이산화다. 그래서 이 술어와 그것으로 만든 간선 검사를 정확히 정의해 둘 가치가 있다.
+
+**컨피규레이션 충돌 검사**는 컨피규레이션 하나에 대한 *술어*다. $q$가 주어지면 $\mathcal{A}(q) \cap \operatorname{int}\mathcal{O} \neq \varnothing$인지, 즉 $q \in \mathcal{C}_{\text{obs}}$인지를 돌려준다. 내부와 견주는 것은 접촉을 자유로 세려는 이 위키의 약속이고([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]), MR §10.2.2는 대신 닫힌 검사를 적어 부호 있는 거리가 $0$ 이하이면, 곧 접촉까지 충돌로 보고한다. 계획기가 세계에 대해 배우는 유일한 통로이며, 계획기 자신은 장애물의 그림을 갖고 있지 않다. 유효한 검사가 되는 조건은 셋이다(MR §10.2.2). **몸 전체** $\mathcal{A}(q)$를 본다. 대표점 하나가 아니라 모든 링크다. **정확하거나 보수적**이다. 파고든 컨피규레이션을 자유라고 보고하는 일이 없어야 하므로, 근사는 로봇이나 장애물을 키우는 쪽으로만 한다. **점별**이다. 검사한 두 컨피규레이션 사이의 컨피규레이션에 대해서는 아무것도 말하지 않는다. **간선 검사**는 쌍에 대해 파생된 술어인데, 정직한 형태는 술어가 아니라 근사다:
 
 $$\text{간선}(q_1,q_2)\text{을 자유로 선언} \iff \lambda = \tfrac{1}{m+1}, \dots, \tfrac{m}{m+1}\text{에서 } d\bigl((1-\lambda)q_1 + \lambda q_2\bigr) \le 0$$
 
 연속체를 검사하면 비용이 무한이므로 유한한 $m$이 그 자리를 대신하고, 결과는 $m$이 큰 만큼만 참이기 때문이다.
 
 - **예**: 위의 P2 검사, 산술 세 줄과 비교 하나. $C = (60°, 90°)$에서는 $e_x = 0.5$, $p_x = -0.366$, $d = -0.500$으로 자유이고, $A$–$B$ 중간점 $(45°, 0°)$에서는 $p_x = \sqrt2$, $d = 0.4142$로 충돌이다. 실제 매니퓰레이터의 검사는 경계 부피 광역 탐색 뒤 메시-메시 정밀 질의지만 인터페이스는 같은 술어다.
-- **반례**: "말단이 벽 밖에 있다". 이것은 로봇이 아니라 로봇의 *점 하나*를 검사한다. 말단은 넘지 않는데 링크가 장애물을 가로지르는 자세를 그대로 통과시킨다. 벽을 $L_1$보다 가까이 세우면 접은 엘보가 아무 신호 없이 벽을 통과한다. 벽이 $x \ge 0.5$에 있으면 접은 자세 $(0°, 180°)$는 말단을 베이스 자리 $x = 0$으로 되돌려 검사를 통과하지만, 링크 1은 $x = 1$까지 뻗어 벽을 반 미터 관통한다. P2와 이 벽에서는 두 검사가 우연히 일치하고, 그것을 세우는 것이 2장의 유도다. 말단만 검사해도 된다는 일반 면허가 아니다.
-- **왜 중요한가**: §3의 모든 완전성 주장은 이 술어가 충분히 많은 점에서 불린다는 주장이다. 계획기는 보통 옳고, 무너지는 것은 간선 검사의 이산화다.
+- **비예**: "말단이 벽 밖에 있다". 이것은 로봇이 아니라 로봇의 *점 하나*를 검사한다. 말단은 넘지 않는데 링크가 장애물을 가로지르는 컨피규레이션을 그대로 통과시킨다. 벽을 $L_1$보다 가까이 세우면 접은 엘보가 아무 신호 없이 벽을 통과한다. 벽이 $x \ge 0.5$에 있으면 접은 자세 $(0°, 180°)$는 말단을 베이스 자리 $x = 0$으로 되돌려 검사를 통과하지만, 링크 1은 $x = 1$까지 뻗어 벽을 반 미터 관통한다. P2와 이 벽에서는 두 검사가 우연히 일치하고, 그것을 세우는 것이 2장의 유도다. 말단만 검사해도 된다는 일반 면허가 아니다.
 
 ### 3. 완전성 보장 둘을 갈라 정의하기
 
-두 보장 모두 진짜 **완전성**보다 약하므로, 완전성부터 정의한다.
+"계획기가 실패했다"고 보고한 논문은 어느 쪽인지 밝히지 않는 한 로봇의 작업 영역이 아니라 자기 해상도나 자기 예산에 관한 사실을 보고한 것이고, 그 둘을 가르려면 더 약한 보장 둘을 따로 정의해야 한다. 두 보장 모두 진짜 **완전성**보다 약하므로, 완전성부터 정의한다.
 
 > **완전성의 정의.** **완전성**(completeness)은 실행 한 번이나 경로 하나가 아니라 *문제 부류 전체에 대한 계획 알고리즘의 성질*이고, 조건은 둘이다(MR §10.1.2). **성공**: 해가 있으면 유한 시간에 하나를 찾는다. **정직한 실패**: 해가 없으면 유한 시간에 없다고 말한다. 아래의 두 보장은 첫 조건을 약하게 만들고, 어느 쪽도 경로가 없다는 것을 보증하지 못한다.
 >
@@ -548,7 +641,7 @@ $$\text{간선}(q_1,q_2)\text{을 자유로 선언} \iff \lambda = \tfrac{1}{m+1
 >
 > 여기서 $P$는 부류 안의 모든 문제를 돌고, $\mathrm{Sol}(P)$는 §1의 경로 계획 문제의 해 집합이다. 한정사가 모든 문제에 걸리므로 실행 한 번으로는 완전성을 보일 수 없다.
 >
-> - **예**: P2와 이 벽에 대해서는 접고, 돌리고, 펴는 계획기. 접은 원 $\theta_2 = 180°$는 모든 $\theta_1$에서 자유이고, 각 단면 $\theta_1 = \text{const}$는 많아야 구간 하나 $|\theta_1 + \theta_2| < \arccos(1 - \cos\theta_1)$에서 막히며 그 구간은 $180°$를 품지 않는다. 그래서 $\theta_2$만 움직이면 어떤 자유 자세도 그 원에 이어진다. 그 원이 MR §10.3의 정확한 로드맵이고, 계획기는 모든 질의를 판정한다. $A \to (0°, 180°) \to (90°, 180°) \to B$, $270° = 4.7124$ rad.
+> - **예**: P2와 이 벽에 대해서는 접고, 돌리고, 펴는 계획기. 접은 원 $\theta_2 = 180°$는 모든 $\theta_1$에서 자유이고, 각 단면 $\theta_1 = \text{const}$는 많아야 구간 하나 $|\theta_1 + \theta_2| < \arccos(1 - \cos\theta_1)$에서 막히며 그 구간은 $180°$를 품지 않는다. 그래서 $\theta_2$만 움직이면 어떤 자유 컨피규레이션도 그 원에 이어진다. 그 원이 MR §10.3의 정확한 로드맵이고, 계획기는 모든 질의를 판정한다. $A \to (0°, 180°) \to (90°, 180°) \to B$, $270° = 4.7124$ rad.
 > - **비예**: 표본 로드맵 위의 그래프 탐색. 다익스트라는 늘 멈추므로 완전해 보인다. $A$, $B$, $C$만 남기면 $B$로 드는 간선 둘이 모두 막혀 실패를 보고하지만, $\mathcal{C}_{\text{free}}$에는 $A \to E \to B$가 있다. 그 실패는 표본 셋에 대한 사실이다.
 
 > **해상도 완전성의 정의.** **해상도 완전성**(resolution completeness)은 *고른 이산화에 상대적인 완전성*이다. 간격 $\delta$의 노드와 그 사이 이동으로 *그 이산화가 표현할 수 있는* 해가 존재하면 찾고, 없으면 실패를 보고한다. $\mathcal{C}_{\text{free}}$가 아니라 그 격자에 대해서다(MR §10.1.2, 격자 위의 A\*는 §10.4). 실패 방식은 기하적이다. 격자 간격보다 좁은 자유 통로는 보이지 않고, 위 2단계는 같은 효과를 장애물 쪽에서 보여 준다. 노드 표본이 그 넓이를 $144$칸 중 $5.6$칸만큼 적게 말한다.
@@ -564,17 +657,15 @@ $$\text{간선}(q_1,q_2)\text{을 자유로 선언} \iff \lambda = \tfrac{1}{m+1
 >
 > $$\lim_{n \to \infty} P[\text{표본 } n \text{개 안에 해를 찾음}] = 1$$
 >
-> 표본기가 결국 양의 측도를 가진 모든 영역에 점을 놓기 때문이다. 바로 그래서 측도가 *0*인 통로 — $A$나 $B$처럼 정확히 닿는 접촉 자세 — 는 샘플링으로 영영 찾을 수 없고 질의가 직접 넣어 주어야 한다.
+> 표본기가 결국 양의 측도를 가진 모든 영역에 점을 놓기 때문이다. 바로 그래서 측도가 *0*인 통로 — $A$나 $B$처럼 정확히 닿는 접촉 컨피규레이션 — 는 표본 추출로 영영 찾을 수 없고 질의가 직접 넣어 주어야 한다.
 >
 > - **예**: 표본마다 $A$와 $B$에 이어 보는 PRM. 원환면의 약 $25\,\%$가 자유 직선 간선으로 둘을 모두 보고 $E$도 그 안에 있으므로, 이 계획기가 실패하려면 균등 추출 $n$번이 모두 그 영역을 빗나가야 하고, 그 확률은 약 $0.75^n$, 곧 $n = 10$에서 $0.056$, $n = 20$에서 $0.0032$다. 다섯 노드 로드맵은 그런 한 번의 추출이고, 최선과 차선 사이 $0.058\,\mathrm{rad}$의 여유는 어떤 표본 셋이 뽑혔는지가 결정한다.
 > - **비예**: 표본기가 늘 목표만 돌려주는 RRT. $A$에서 $B$ 쪽으로 가는 모든 스텝이 패널 안으로 들어가고, $5°$만 가도 $0.038$ m 깊이다. 그래서 트리는 $A$를 떠나지 못하고, 확률은 모든 $n$에서 $0$이다. 아직 돌고 있는 RRT도 경로가 없다는 증거가 아니다. 그렇게 읽으면 이 보장을 완전성으로 읽은 것이다.
 
-**왜 중요한가**: "계획기가 실패했다"고 보고한 논문은 어느 쪽인지 밝히지 않는 한 로봇의 작업 영역이 아니라 자기 해상도나 자기 예산에 관한 사실을 보고한 것이다.
-
 **위키 연결**: 학습된 정책이 점점 *흡수*하는 고전 계층 —
 [[01-canonical-papers/notes/4-vla/pi0|VLA]]는 forward pass 안에서 암묵적으로 계획하고,
 [[01-canonical-papers/notes/5-world-models/planet|잠재 공간 CEM]]은 학습된 모델로 하는 계획이다;
-실제 현장에서는 샘플링 플래너가 여전히 학습된 제안을 거르는 안전 검증 가능한 척추를
+실제 현장에서는 표본 기반 계획기가 여전히 학습된 제안을 거르는 안전 검증 가능한 척추를
 제공한다.
 
 ### 스스로 점검
@@ -587,7 +678,7 @@ $$\text{간선}(q_1,q_2)\text{을 자유로 선언} \iff \lambda = \tfrac{1}{m+1
 > [!tip]- 정답
 > 1. $100^7 = 10^{14}$칸이다. 격자 탐색은 자유도에 지수적으로 폭발하므로 몇 차원만 넘어가도 표본 추출만이 실용적이다. 탐색은커녕 공간을 나열하는 것조차 불가능하다.
 > 2. 보장하는 것: 해가 존재하면(그 방법의 가정 아래) 계산을 늘릴수록 찾을 확률이 1로 간다. 보장하지 않는 것: *언제* 찾는지, 그리고 경로의 품질이다. 일반 RRT의 경로는 대개 최적과 거리가 멀고, RRT\*와 사후 평활화가 그 문제를 다룬다.
-> 3. 확장 단계가 두 자세를 C-space의 직선으로 잇는데, 비홀로노믹 차량은 옆으로 가는 운동을 실행할 수 없다. 그 "간선"이 실행 가능한 궤적이 아닌 것이다. 상태 표본 추출은 그대로 두고, 제약을 지키는 국소 계획기로 확장한다. 이산화한 제어를 적분하거나 Reeds–Shepp 곡선을 쓰는 방식이다(kinodynamic 계획; [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|13장]]).
+> 3. 확장 단계가 두 컨피규레이션을 C-space의 직선으로 잇는데, 비홀로노믹 차량은 옆으로 가는 운동을 실행할 수 없다. 그 "간선"이 실행 가능한 궤적이 아닌 것이다. 상태 표본 추출은 그대로 두고, 제약을 지키는 국소 계획기로 확장한다. 이산화한 제어를 적분하거나 Reeds–Shepp 곡선을 쓰는 방식이다(kinodynamic 계획; [[04-robotics/modern-robotics/ch13-wheeled-mobile-robots|13장]]).
 > 4. $\mathcal{C}_{\text{free}}$가 볼록하지 않기 때문이다. 두 점을 잇는 선분이 밖으로 나갈 수 있다. 여기서 $p_x(\lambda) = \cos(90°\lambda)+\sin(90°\lambda)$는 $1$에서 $\sqrt2$까지 올랐다 내려오므로, 양 끝은 닿기만 하는데 내부는 $0.4142\,\mathrm{m}$ 파고든다.
 
 ### 과제 · Problem set
@@ -602,14 +693,14 @@ Tier B. 이 페이지와 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴
 > - 정사각형 하나, 가로 $\theta_1$ 세로 $\theta_2$, 둘 다 $-180°$에서 $+180°$, 마주 보는 변은 동일시 표시 — 2장과 같은 원환면 도표 — 그리고 두 축에 $30°$마다 눈금을 넣어 $12 \times 12$개의 노드를 만든다.
 > - C-장애물을 칠한다. 말단이 벽을 넘어간 렌즈, 곧 $\cos\theta_1 + \cos(\theta_1{+}\theta_2)$가 벽의 $x$보다 큰 곳이다.
 > - 칠한 영역 안의 노드마다 가위표, 정확히 $d = 0$인 노드마다 작은 빈 동그라미. 렌즈 가장자리의 노드(말단이 패널에 닿는 곳)와 함께 렌즈 바깥 $\theta_1 = 0$ 선 위의 노드(엘보가 벽에 닿는 곳)도 여기에 든다. 엘보는 $x = \cos\theta_1 \le 1$을 넘지 못하므로 이런 노드는 벽이 $x = 1$에 있을 때만 생긴다. 그런 $\theta_1 = 0$ 구간은 가는 선으로 긋는다.
-> - 로드맵: 표의 자세에 점 다섯 $A, B, C, D, E$를 찍고 모든 쌍을 직선으로 잇는다. 벽이 어떻게 움직이든 노드와 선분은 제자리이고, 바뀌는 것은 칠한 영역과 표시와 판정뿐이다.
+> - 로드맵: 표의 컨피규레이션에 점 다섯 $A, B, C, D, E$를 찍고 모든 쌍을 직선으로 잇는다. 벽이 어떻게 움직이든 노드와 선분은 제자리이고, 바뀌는 것은 칠한 영역과 표시와 판정뿐이다.
 > - 선분은 끝만 보지 말고 내부를 검사한다. 어느 부분이라도 칠한 영역에 들어가면 점선으로 그리고 가장 깊은 점에 X를 친다. 위의 그림에서 $A$–$B$는 양 끝이 벽에 닿기만 하는데 중간점은 $0.4142$ m 안에 있다. 문제의 핵심은 어느 점선이 되살아나는가다.
 > - 정답 경로: $A$에서 $B$로 살아남은 가장 짧은 사슬을 굵게 덧그리고 옆에 길이를 쓴다.
 
 > [!tip]- 정답 · Solutions
 > 1. 전에 점선이던 두 간선이 모두 실선이 되므로 다섯 노드 위에서 로드맵은 완전 그래프가 되고 직통 간선 $A$–$B$를 쓸 수 있다.
 > 2. (a) $p_x$는 여전히 $\lambda = 0.5$에서 $\sqrt2 = 1.4142$로 최대지만 벽이 이제 $1.5$이므로 $d_{\max} = 1.4142 - 1.5 = -0.0858\,\mathrm{m}$. 자유이고 $8.6\,\mathrm{cm}$ 여유가 있다. (b) 그 간선 위의 모든 $d$가 정확히 $0.5$씩 내려가므로 최악점이 $0.0201 - 0.5 = -0.4799$가 된다. 자유다. (c) 최단 경로는 이제 직통 간선이고 비용은 $(\pi/2)\sqrt5 = 3.5124\,\mathrm{rad}$, $\pi\sqrt2$ 대비 $1 - 3.5124/4.4429 = 20.9\,\%$ 절약이다.
-> 3. 여전히 과소평가한다. 진짜 넓이는 $0.08515 \times 144 = 12.3$칸어치인데 막힌 노드는 $9$개라 $3.3$칸 모자란다. 벽이 움직여도 노드의 *좌표*는 하나도 바뀌지 않았고 노드의 *딱지*는 전부 바뀌었으며, 간선 판정 열 개가 모두 무효가 되었다. 그래프의 기하는 로봇의 성질이고 점유는 세계의 성질이다. 따라서 로드맵은 검사할 때 쓴 세계가 유지되는 동안만 캐시해 재사용할 수 있다. 현장에서는 측량이 갱신될 때마다 검사를 다시 돌린다는 뜻이고, 표본은 그대로 두므로 다시 샘플링하는 것보다 싸다. PRM이 학습 단계와 질의 단계를 나누는 이유가 정확히 이것이다.
+> 3. 여전히 과소평가한다. 진짜 넓이는 $0.08515 \times 144 = 12.3$칸어치인데 막힌 노드는 $9$개라 $3.3$칸 모자란다. 벽이 움직여도 노드의 *좌표*는 하나도 바뀌지 않았고 노드의 *딱지*는 전부 바뀌었으며, 간선 판정 열 개가 모두 무효가 되었다. 그래프의 기하는 로봇의 성질이고 점유는 세계의 성질이다. 따라서 로드맵은 검사할 때 쓴 세계가 유지되는 동안만 캐시해 재사용할 수 있다. 현장에서는 측량이 갱신될 때마다 검사를 다시 돌린다는 뜻이고, 표본은 그대로 두므로 표본을 다시 뽑는 것보다 싸다. PRM이 학습 단계와 질의 단계를 나누는 이유가 정확히 이것이다.
 
 ### 이 장 너머로
 
