@@ -10,18 +10,19 @@ mastery-when: "Raise when an integrated contact pipeline, rather than one of its
 ## English
 
 > [!note] Prerequisites · 선수 지식
-> **This capstone needs the whole common track** — pages 1–11 of [[04-robotics/index|4. Robotics]] and its cumulative problem set, sessions 1–99 of the schedule there — **plus two sections from the specialisations**, scheduled as session 100: [[04-robotics/force-compliance-control|13. Force & Compliance §1, §2, §5]] and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]. It runs plants **P2**, **P3**, **P5** and **P6** ([[02-foundations/lab-plants|0.6 Lab Plants]]; *plant* is control's word for the system being controlled) on the integrator of [[02-foundations/lab-kernel|0.7 Lab Kernel]], and it re-teaches no stage: each step below cites its owner and uses that page's result as given. The manipulation sequence 9 → 13 → 15 alone is not enough — it supplies the contact half only, and [[04-robotics/grasping|15. Grasping]] is not used at all, because nothing in this cell is grasped. Tick every line below before starting; each names what the capstone takes from the page and a number to reproduce with the solution covered.
+> **This capstone needs the whole common track** — pages 1–11 of [[04-robotics/index|4. Robotics]] and its cumulative problem set, sessions 1–99 of the schedule there — **plus two sections from the specialisations**, scheduled as session 100: [[04-robotics/force-compliance-control|13. Force & Compliance §1, §2, §5]] and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]. It runs plants **P2**, **P3**, **P5** and **P6** ([[02-foundations/lab-plants|0.6 Lab Plants]]; *plant* is control's word for the system being controlled — here the two-link arm P2, the one-axis haptic handle P3 whose wall law and stiffness the panel borrows, the range sensor P5 and the camera-to-force clock P6) on the integrator of [[02-foundations/lab-kernel|0.7 Lab Kernel]], and it re-teaches no stage: each step below cites its owner and uses that page's result as given. The manipulation sequence 9 → 13 → 15 alone is not enough — it supplies the contact half only, and [[04-robotics/grasping|15. Grasping]] is not used at all, because nothing in this cell is grasped. Tick every line below before starting; each names what the capstone takes from the page and a number to reproduce with the solution covered.
 >
 > **Common track — the stages the loop runs, in its order**
 > - [ ] **The Kalman update** ([[02-foundations/probability|3. Probability §5]]; the same P5 update in [[04-robotics/state-estimation-slam|3. State Estimation §6]]) → step 1. A 10 cm prior of variance 4 cm² and a 12 cm reading of variance 1 cm² fuse to 11.6 cm and 0.8 cm².
-> - [ ] **C-obstacles** ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]]) → step 2 and §2. The face at $x=1$ blocks $18.478\,\%$ of P2's torus.
+> - [ ] **C-obstacles** ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]]) → step 2 and §2. The face at $x=1$ makes a lens-shaped C-obstacle that pinches to a point at $\theta_1=\pm90^\circ$, with the contact configuration $A=(0^\circ,90^\circ)$ on its boundary.
 > - [ ] **The edge test and the via point** ([[04-robotics/modern-robotics/ch10-motion-planning|MR ch.10 §2]]) → step 2. The roadmap returns $A\to E\to B$ at $\pi\sqrt2=4.4429$ rad, $26.5\,\%$ over the blocked direct edge.
 > - [ ] **The Jacobian and statics** ([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]) → steps 3 and 5. At the catalog pose $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$, and $v=(0,-0.25)$ m/s needs $\dot\theta=(-0.25,\,0.25)$ rad/s.
 > - [ ] **Trapezoidal time scaling** ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9 §3]]) → steps 3 and 8. The elbow flip, $\pi$ rad at the frozen $0.8$ rad/s and $2$ rad/s², is a true trapezoid of $\pi/0.8+0.8/2=4.327$ s; on a faster, weaker drive ($1.6$ rad/s, $0.5$ rad/s²) it never reaches top speed and becomes a $5.013$ s triangle.
-> - [ ] **The mass matrix, gravity and computed torque** ([[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]], [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §2]]) → step 4 and the lab. At rest $\tau=g=(19.62,\,0)$ N·m; computed torque $\tau=(29.62,\,10)$ N·m gives $\ddot\theta=(0,\,10)$ where PD gives the coupled $(-5,\,15)$.
+> - [ ] **The mass matrix, gravity and computed torque** ([[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]], [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §2]]) → step 4 and the lab. At rest $\tau=g=(19.62,\,0)$ N·m; in ch.11's problem 2, a $0.1$ rad elbow error, computed torque $\tau=(29.62,\,10)$ N·m gives $\ddot\theta=(0,\,10)$ where PD with gravity compensation gives the coupled $(-5,\,15)$.
+> - [ ] **The joint drive** ([[04-robotics/actuators-drives|10.5 Actuators & Drives §3, §6]]) → step 4. P2's shoulder drive at $n=100$ is limited to $80$ N·m by its amplifier and to $25.3$ N·m continuously by heat, so the catalog pose's $19.62$ N·m hold uses $77.6\,\%$ of the continuous rating.
 > - [ ] **The operational-space inertia** ([[02-foundations/manipulator-kinematics-dynamics|10. Manipulator Kinematics & Dynamics §6]]) → step 5. $\Lambda=(JM^{-1}J^\top)^{-1}=\mathrm{diag}(1,2)$ kg at the catalog pose.
 > - [ ] **Contact and its detection** ([[04-robotics/contact-force-tactile|9. Contact §1, §7]]) → the panel's unilateral law and §4's switch. The two defining conditions of contact-state estimation, and why "the command is past the surface" fails the second.
-> - [ ] **The latency budget** ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]) → step 8 and §5. The $70$ ms observation-to-action budget rebuilt from its parts.
+> - [ ] **The latency budget** ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]) → step 8 and §5. The $70$ ms observation-to-action budget rebuilt from its parts, and placed in 10 §3's sum as $L-\tfrac12T_{\text{cam}}$.
 > - [ ] **The separation distance** ([[04-robotics/hri-safety|11. HRI & Safety]], its worked case) → step 8. $S_p=1.24$ m term by term.
 > - [ ] **The integrator** ([[02-foundations/lab-kernel|0.7 Lab Kernel §3]]) → the lab of §6. Semi-implicit Euler: velocity first, then position with the new velocity.
 > - [ ] **The cumulative problem set** ([[04-robotics/index|4. Robotics]]) → §1. $(-0.05,\,0.05)$ rad/s, $(9.62,\,0)$ N·m, $1600$ N/m and $11.6$ cm.
@@ -30,12 +31,15 @@ mastery-when: "Raise when an integrated contact pipeline, rather than one of its
 > - [ ] **Target impedance, series stiffness and the impact** ([[04-robotics/force-compliance-control|13. Force & Compliance §1, §2, §5]]) → steps 5–6 and §4. $D_d=2\sqrt{500\times2}=63.2$ N·s/m; with $10^5$ N/m in series the $500$ N/m controller supplies $99.5\,\%$ of the give; the $5$ cm/s touchdown on $10^5$ N/m peaks at $22.4$ N in $14.05$ ms.
 > - [ ] **The sampled-spring ledger** ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]) → step 7. $K\le2b/T=1600$ N/m for $b=0.8$ N·s/m and $T=1$ ms.
 >
-> The common-track pages not named above — 3.2, 3.5, 4 to 8, 10.5 and the other Modern Robotics chapters — are not called directly; the stages above stand on them, and the schedule places this page after all of them.
+> The common-track pages not named above — 3.2, 3.5, 4 to 8 and the other Modern Robotics chapters — are not called directly; the stages above stand on them, and the schedule places this page after all of them.
 
 *The capstone of the robotics track. It uses **P2**, **P3**, **P5** and **P6** together, as the cumulative set on [[04-robotics/index|4. Robotics]] does — but as one loop, in which each stage's answer is the next stage's input, rather than as four separate answers.*
 
+> [!note] Why this matters · 왜 배우는가
+> This page is the top band of the robot stack in the [[physical-ai-map|Physical AI Map]], *the loop, closed* — the one page that runs the stack of [[07-research-program/index|7. Research Program §5]] end to end — and in *"install that panel on the frame"* it runs four steps in one simulation: *identify* the panel (P5's fused range, step 1), *move the component* (plan, time and track $A\to E\to P$, steps 2–4), *perform the fitting* (the impedance press, steps 5–7) and *verify completion* (step 9's report and §5's four checks). Assembly is where correct pages disagree: the $E\to P$ leg obeys every joint limit of MR ch.9 yet drives the tip at $2.04$ m/s and grows page 11's separation distance from $1.24$ to $1.50$ m, and the press that passes the $11$ N limit at $9.84$ N would press $15.96$ N had the panel stood at the near edge of its own $3\sigma$ band — the pass was the sign of an error the robot cannot see. It closes block 2 of the dissertation path, robotics sessions 99–104 ([[07-research-program/index|7 §8]]), as the classical baseline a learned policy must beat: [[04-robotics/force-compliance-control|13 §2–§3]] (block 3) is where the press ends on a measured force instead, and [[05-construction-robotics/imitating-contact|10. Imitating Contact]] (block 7) runs a learned policy into the same kind of contact on S1, the construction track's 20 kg facade panel ([[05-construction-robotics/site-engineering|2.5]]). After it you can trace any number in a contact pipeline to the page that owns it and say which checks a simulation can certify.
+
 > [!note] First pass · 처음이라면
-> Tick the checklist in the Prerequisites first: a line you cannot reproduce is a stage page to go back to, not something this page will explain. Then read the running object and the picture, and follow the worked case to its report and its caution — that is the page. Then §5 for the four checks and their owners, and run the lab in §6. §1–§4 each define one thing the assembly needed that no single page owned; §7 says what the simulation cannot certify.
+> Six sessions of 60–90 minutes, robotics 99–104, split by the loop's halves. **Sessions 99–100:** the checklist in the Prerequisites — the cumulative problem set and the common-track lines in 99, the two specialisation sections and their lines in 100; a line you cannot reproduce is a stage page to go back to, not something this page will explain. **Session 101:** the Running object, the picture, and the Worked case's steps 1–4 with §2 and §3, which define the two things those steps use; end by deriving the planner's face, $1.0892$ m, and the capped cruise, $0.38$ rad/s, with the page covered. **Session 102:** steps 5–9 with §4 and §5, and the caution that ends the Worked case; end with the report — first contact at $6.684$ s, $9.84$ N against the $11$ N limit — and the $\pm5.96$ N band that limit sits in. **Session 103:** run the lab of §6 and read its sweep, then §1 and §7. **Session 104:** the self-check and the problem set, the same cell with the mirror-image reading. The Deeper note in step 5 derives $\Lambda$'s closed form; skip it on the first pass.
 
 ### Running object · 이 페이지의 대상
 
@@ -58,9 +62,15 @@ mastery-when: "Raise when an integrated contact pipeline, rather than one of its
 | $v_a$, $F_d$ | $0.05\,\mathrm{m/s}$, $10\,\mathrm{N}$ | approach speed and commanded press | 13 |
 | $F_{\lim}$ | $11\,\mathrm{N}$ | peak-force limit, at most $10\,\%$ over the press (an illustrative task specification) | this page |
 | $T$ | $1\,\mathrm{ms}$ | controller period, torque held over the period | 24.4 |
-| $L$ | $70\,\mathrm{ms}$ | observation-to-action budget | P6, 10 |
+| $L$ | $70\,\mathrm{ms}$ | observation-to-action budget, from mid-exposure to applied force — what 10 §3 writes $L-\tfrac12T_{\text{cam}}$, keeping $L$ for the span from the physical event | P6, 10 |
 
 $400\,\mathrm{N/m}$ is soft — below the foam row of the stiffness scale in [[04-robotics/force-compliance-control|13. Force & Compliance §1]] — so this is a compliantly mounted panel and the approach below is a slow press rather than an impact; 13 §5 computes what a structural panel does to the same approach. As on ch.2 the face is frictionless and the links have no thickness.
+
+**The panel, against page 4's.** [[04-robotics/planning-decision-making|4. Planning]] and MR ch.2 freeze a rigid half-plane $x\ge1$ m whose face holds $p^\star=(1,1)$. This page's panel is that upright panel moved out and made soft: its face stands at $1.10$ m on the drawing, $1.116$ m as estimated and $1.120$ m in truth, it is compliantly mounted at $400$ N/m, and the tool presses it in $+x$. [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]'s flat panel, pressed in $-y$, is the same panel turned through a right angle. So the contact configuration $A$ of ch.2 and page 4 is home here, $10$ cm short of the drawing's face, and the pre-contact pose $P$ plays the role of page 4's $B$ — elbow up, forearm pointing at the face. The collision test is page 4's and ch.2's, the whole arm against the face, with contact counted as free and only penetration colliding:
+
+$$d(\theta)=\max\bigl(\cos\theta_1,\ \cos\theta_1+\cos(\theta_1+\theta_2)\bigr)-x_{\text{face}}$$
+
+and since every face this page uses lies beyond the elbow's reach, $x_{\text{face}}>L_1=1$, the elbow term is always negative and only the tip term can collide (§2).
 
 *Scope: this page teaches how the stages of the running task feed each other — which number from one page becomes the input of the next, and where two pages' checks disagree — on one frozen cell, with one simulation of the whole loop. It re-teaches no stage; each is linked to its owner where it is used. It does not teach contact detection ([[04-robotics/contact-force-tactile|9. Contact §7]]), force-sensed control ([[04-robotics/force-compliance-control|13 §3]]) or a stiff panel's impact ([[04-robotics/force-compliance-control|13 §5]]).*
 
@@ -72,28 +82,142 @@ flowchart LR
     KF --> OB["planner face x = 1.0892 m"]
     KF --> XS["stop point x = 1.161 m"]
     OB --> PL["path A, E, P"]
-    PL --> TS["trapezoids 3.345 s and 2.457 s"]
+    PL --> TS["trapezoids: A to E 3.345 s, E to P 1.477 s, then capped to 2.457 s"]
     TS --> CT["computed torque kp 100, kv 20"]
     CT --> SW{"arrived at P?"}
     SW -->|yes| IM["impedance Kd 500, Dd 63.2"]
     XS --> IM
     IM --> WL["panel kw 400 N/m"]
-    WL --> CK["checks: 11 N, 2b/T, va L, S_p"]
+    WL --> CK["checks: peak force 11 N, ledger 2b/T, staleness va L against sigma, separation S_p"]
+    CK -.->|"S_p 1.50 m over 1.24 m: cap the tip speed"| TS
 ```
 
-The worked case's loop, stage by stage, each box carrying the number it passes on. The $12\,\mathrm{cm}$ reading fuses to $11.6\,\mathrm{cm}$ with $\sigma=0.89\,\mathrm{cm}$ and feeds two stages: the band's near edge, $x=1.0892\,\mathrm{m}$, goes to the planner and the estimate to the stop point at $x=1.161\,\mathrm{m}$. The path $A\to E\to P$, timed as trapezoids of $3.345$ and $2.457\,\mathrm{s}$, runs under computed torque until the switch to the impedance ($K_d=500\,\mathrm{N/m}$, $D_d=63.2\,\mathrm{N{\cdot}s/m}$) on arrival at $P$, and the press on the $400\,\mathrm{N/m}$ panel is judged by four checks: the $11\,\mathrm{N}$ limit, the ledger $2b/T$, the latency $v_aL$ and the separation $S_p$.
+The worked case's loop, stage by stage, each box carrying the number it passes on. The $12\,\mathrm{cm}$ reading fuses to $11.6\,\mathrm{cm}$ with $\sigma=0.89\,\mathrm{cm}$ and feeds two stages — the band's near edge, $x=1.0892\,\mathrm{m}$, to the planner and the estimate to the stop point at $x=1.161\,\mathrm{m}$ — and the dotted edge is the one feedback only assembly shows: the separation check fails at $1.50\,\mathrm{m}$ and sends the $1.477\,\mathrm{s}$ leg back to be capped at the tip, $2.457\,\mathrm{s}$. Computed torque then tracks the path until the switch to the impedance ($K_d=500\,\mathrm{N/m}$, $D_d=63.2\,\mathrm{N{\cdot}s/m}$) at $P$, and the press on the $400\,\mathrm{N/m}$ panel is judged by four checks: the $11\,\mathrm{N}$ peak-force limit, the ledger $2b/T$, the staleness $v_aL$ against $\sigma$, and the separation $S_p$.
+
+<svg viewBox="0 0 560 520" style="max-width:100%;height:auto" role="img" aria-label="The worked case in space and time. Top left, the workspace at 125 px per m: P2 at home A with its tip at (1, 1), at the via point E with its tip at (-0.707, 1.707) and at the pre-contact pose P with its tip at (1.076, 1.000); the tip's path A to E to P; dashed, the direct edge's midpoint pose, whose tip is 0.35 m inside the planner's face; the panel with its 3-sigma band. Top right, the contact zone at 1600 px per m: P's tip 13.2 mm short of the band [1.0892, 1.1428], the standoff of 4 cm to the estimate 1.116, the drawing's face 1.10, the true face 1.120, the stop point 1.161 and the settled tip 1.143. Bottom, the clock over 0 to 9 s: at E at 3.345 s, the switch at 5.802 s, first contact at 6.684 s, the reference stopping at 7.502 s and the force peaking at 9.84 N at 7.526 s under the 10 N command and the 11 N limit, settling at 9.11 N; a faint tick marks 5.704 s, the unrepaired plan's contact.">
+  <text x="12" y="16" font-size="12" font-weight="600" fill="currentColor">workspace (m), 1 m = 125 px</text>
+  <rect x="264.9" y="36.0" width="47.1" height="267.5" fill="currentColor" fill-opacity="0.06"/>
+  <rect x="258.1" y="36.0" width="6.7" height="267.5" fill="currentColor" fill-opacity="0.22"/>
+  <text x="308.0" y="50.0" font-size="11" fill="currentColor" text-anchor="end">panel</text>
+  <text x="254.1" y="50.0" font-size="10.5" fill="currentColor" text-anchor="end">3σ band</text>
+  <polyline points="247.0,171.0 246.9,166.0 246.6,161.0 246.1,156.1 245.4,151.1 244.5,146.2 243.4,141.3 242.1,136.5 240.7,131.7 239.0,127.0 237.2,122.4 235.1,117.8 232.9,113.4 230.5,109.0 228.0,104.7 225.2,100.5 222.3,96.5 219.3,92.5 216.1,88.7 212.7,85.0 209.2,81.4 205.6,78.0 201.8,74.8 197.9,71.7 193.8,68.7 189.7,65.9 185.5,63.3 181.1,60.9 176.7,58.6 172.1,56.5 167.5,54.6 162.8,52.9 158.1,51.3 153.3,50.0 148.4,48.8 143.5,47.9 138.6,47.1 133.6,46.5 128.7,46.2 123.7,46.0 118.7,46.0 113.7,46.3 108.7,46.7 103.8,47.3 98.8,48.2 94.0,49.2 89.1,50.4 84.3,51.8 79.6,53.4 74.9,55.2 70.3,57.2 65.8,59.3 61.4,61.7 57.1,64.2 52.9,66.8 48.8,69.7 44.8,72.7 40.9,75.8 37.2,79.2 33.6,82.6" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+  <polyline points="33.6,82.6 38.2,81.4 42.9,80.2 47.5,79.2 52.2,78.3 56.9,77.5 61.5,76.8 66.2,76.2 70.9,75.7 75.6,75.4 80.2,75.1 84.9,74.9 89.6,74.9 94.2,74.9 98.8,75.1 103.4,75.3 108.0,75.7 112.6,76.1 117.1,76.7 121.7,77.4 126.2,78.2 130.6,79.0 135.0,80.0 139.4,81.1 143.8,82.2 148.1,83.5 152.3,84.8 156.5,86.3 160.7,87.8 164.8,89.4 168.9,91.1 172.9,92.9 176.8,94.8 180.7,96.8 184.6,98.8 188.3,101.0 192.1,103.2 195.7,105.4 199.3,107.8 202.8,110.2 206.2,112.7 209.6,115.3 212.9,118.0 216.1,120.7 219.3,123.4 222.3,126.3 225.3,129.1 228.2,132.1 231.0,135.1 233.8,138.1 236.4,141.2 239.0,144.4 241.5,147.6 243.9,150.8 246.2,154.1 248.5,157.4 250.6,160.7 252.7,164.1 254.6,167.6 256.5,171.0" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+  <polyline points="122.0,296.0 213.7,211.0 302.0,122.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.45" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 3"/>
+  <circle cx="302.0" cy="122.5" r="2.6" fill="currentColor" fill-opacity="0.45"/>
+  <polyline points="122.0,296.0 33.6,207.6 33.6,82.6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-opacity="0.55" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="33.6" cy="82.6" r="2.6" fill="currentColor" fill-opacity="0.55"/>
+  <polyline points="122.0,296.0 247.0,296.0 247.0,171.0" fill="none" stroke="currentColor" stroke-width="2.8" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="247.0" cy="171.0" r="2.6" fill="currentColor" fill-opacity="0.9"/>
+  <polyline points="122.0,296.0 131.5,171.4 256.5,171.0" fill="none" stroke="currentColor" stroke-width="2.8" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="256.5" cy="171.0" r="2.6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="115.0" y="292.0" width="14" height="8" fill="currentColor" fill-opacity="0.35"/>
+  <text x="241.0" y="288.0" font-size="11" fill="currentColor" text-anchor="end">A, home</text>
+  <text x="39.6" y="86.6" font-size="11" fill="currentColor">E, via point</text>
+  <text x="243.0" y="187.0" font-size="11" fill="currentColor" text-anchor="end">P, pre-contact</text>
+  <text x="139.0" y="128.0" font-size="10" fill="currentColor" fill-opacity="0.85">dashed: direct</text>
+  <text x="139.0" y="140.0" font-size="10" fill="currentColor" fill-opacity="0.85">edge's midpoint,</text>
+  <text x="139.0" y="152.0" font-size="10" fill="currentColor" fill-opacity="0.85">tip 0.35 m past</text>
+  <text x="139.0" y="164.0" font-size="10" fill="currentColor" fill-opacity="0.85">the planner's face</text>
+  <text x="201.5" y="63.9" font-size="10.5" fill="currentColor">A→E</text>
+  <text x="115.8" y="92.5" font-size="10.5" fill="currentColor" text-anchor="middle">E→P</text>
+  <text x="372.0" y="30" font-size="11" font-weight="600" fill="currentColor">contact zone, 1 m = 1600 px</text>
+  <rect x="418.7" y="40.0" width="85.8" height="174.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="461.6" y="53.0" font-size="10.5" fill="currentColor" text-anchor="middle">3σ band</text>
+  <line x1="436.0" y1="118.0" x2="436.0" y2="158.0" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 3"/>
+  <line x1="461.6" y1="118.0" x2="461.6" y2="158.0" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="468.0" y1="118.0" x2="468.0" y2="158.0" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.2 2.2"/>
+  <line x1="372.0" y1="214.0" x2="552" y2="214.0" stroke="currentColor" stroke-width="1"/>
+  <line x1="397.6" y1="214.0" x2="397.6" y2="218.0" stroke="currentColor" stroke-width="1"/>
+  <text x="397.6" y="229.0" font-size="10" fill="currentColor" text-anchor="middle">1.076</text>
+  <line x1="418.7" y1="214.0" x2="418.7" y2="218.0" stroke="currentColor" stroke-width="1"/>
+  <text x="418.7" y="241.0" font-size="10" fill="currentColor" text-anchor="middle">1.0892</text>
+  <line x1="504.5" y1="214.0" x2="504.5" y2="218.0" stroke="currentColor" stroke-width="1"/>
+  <text x="504.5" y="229.0" font-size="10" fill="currentColor" text-anchor="middle">1.1428</text>
+  <line x1="533.6" y1="214.0" x2="533.6" y2="218.0" stroke="currentColor" stroke-width="1"/>
+  <text x="533.6" y="241.0" font-size="10" fill="currentColor" text-anchor="middle">1.161</text>
+  <line x1="372.0" y1="150.0" x2="552" y2="150.0" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+  <circle cx="397.6" cy="150.0" r="3.4" fill="currentColor"/>
+  <line x1="397.6" y1="172.0" x2="527.6" y2="172.0" stroke="currentColor" stroke-width="1.1"/>
+  <path d="M533.6 172.0 l-7 -3 v6 z" fill="currentColor"/>
+  <line x1="533.6" y1="166.0" x2="533.6" y2="214.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="397.6" y="187.0" font-size="10.5" fill="currentColor">reference ramp → x<tspan dy="3" font-size="10">stop</tspan></text>
+  <circle cx="504.4" cy="150.0" r="3.4" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="552" y="143.0" font-size="10.5" fill="currentColor" text-anchor="end">settled 1.143</text>
+  <path d="M397.6 114.0 v-4 H461.6 v4" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="429.6" y="106.0" font-size="10.5" fill="currentColor" text-anchor="middle">d<tspan dy="3" font-size="10">s</tspan><tspan dy="-3" dx="2">= 4 cm</tspan></text>
+  <path d="M397.6 138.0 v-4 H418.7 v4" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="392.6" y="137.0" font-size="10.5" fill="currentColor" text-anchor="end">13.2 mm</text>
+  <line x1="374.0" y1="66.5" x2="392.0" y2="66.5" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 3"/>
+  <text x="396.0" y="70.0" font-size="10" fill="currentColor">1.10 drawing</text>
+  <line x1="374.0" y1="78.5" x2="392.0" y2="78.5" stroke="currentColor" stroke-width="1.1"/>
+  <text x="396.0" y="82.0" font-size="10" fill="currentColor">1.116 estimate</text>
+  <line x1="374.0" y1="90.5" x2="392.0" y2="90.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.2 2.2"/>
+  <text x="396.0" y="94.0" font-size="10" fill="currentColor">1.120 true, simulation only</text>
+  <line x1="8" y1="302" x2="552" y2="302" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.35"/>
+  <text x="12" y="322" font-size="12" font-weight="600" fill="currentColor">the clock (s)</text>
+  <rect x="40.0" y="330" width="187.3" height="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="0.8"/>
+  <text x="133.7" y="342" font-size="10" fill="currentColor" text-anchor="middle">A→E, 3.345 s</text>
+  <rect x="227.3" y="330" width="137.6" height="16" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8"/>
+  <text x="296.1" y="342" font-size="10" fill="currentColor" text-anchor="middle">E→P capped, 2.457 s</text>
+  <rect x="364.9" y="330" width="179.1" height="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="0.8"/>
+  <text x="454.5" y="342" font-size="10" fill="currentColor" text-anchor="middle">impedance: ramp, press</text>
+  <line x1="359.4" y1="322" x2="359.4" y2="352" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+  <text x="355.4" y="324" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.7">unrepaired plan would touch at 5.704 s</text>
+  <line x1="40.0" y1="470.0" x2="550.0" y2="470.0" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="40.0" y1="470.0" x2="40.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="40.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="96.0" y1="470.0" x2="96.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="96.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="152.0" y1="470.0" x2="152.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="152.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="208.0" y1="470.0" x2="208.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="208.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="264.0" y1="470.0" x2="264.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="264.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="320.0" y1="470.0" x2="320.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="320.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="376.0" y1="470.0" x2="376.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="376.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">6</text>
+  <line x1="432.0" y1="470.0" x2="432.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="432.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">7</text>
+  <line x1="488.0" y1="470.0" x2="488.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="488.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">8</text>
+  <line x1="544.0" y1="470.0" x2="544.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="544.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="364.9" y1="371.0" x2="544.0" y2="371.0" stroke="currentColor" stroke-width="1" stroke-dasharray="5 3"/>
+  <line x1="364.9" y1="380.0" x2="544.0" y2="380.0" stroke="currentColor" stroke-width="1" stroke-dasharray="1.2 2.2"/>
+  <text x="358.9" y="374.0" font-size="10.5" fill="currentColor" text-anchor="end">F<tspan dy="3" font-size="10">lim</tspan><tspan dy="-3" dx="2">= 11 N</tspan></text>
+  <text x="358.9" y="392.0" font-size="10.5" fill="currentColor" text-anchor="end">F<tspan dy="3" font-size="10">d</tspan><tspan dy="-3" dx="2">= 10 N</tspan></text>
+  <text x="42.0" y="416.0" font-size="10.5" fill="currentColor" fill-opacity="0.8">force on the panel (N)</text>
+  <polyline points="364.9,470.0 365.4,470.0 365.8,470.0 366.3,470.0 366.7,470.0 367.2,470.0 367.6,470.0 368.0,470.0 368.5,470.0 368.9,470.0 369.4,470.0 369.8,470.0 370.3,470.0 370.7,470.0 371.2,470.0 371.6,470.0 372.1,470.0 372.5,470.0 373.0,470.0 373.4,470.0 373.9,470.0 374.3,470.0 374.8,470.0 375.2,470.0 375.7,470.0 376.1,470.0 376.6,470.0 377.0,470.0 377.5,470.0 377.9,470.0 378.4,470.0 378.8,470.0 379.2,470.0 379.7,470.0 380.1,470.0 380.6,470.0 381.0,470.0 381.5,470.0 381.9,470.0 382.4,470.0 382.8,470.0 383.3,470.0 383.7,470.0 384.2,470.0 384.6,470.0 385.1,470.0 385.5,470.0 386.0,470.0 386.4,470.0 386.9,470.0 387.3,470.0 387.8,470.0 388.2,470.0 388.7,470.0 389.1,470.0 389.6,470.0 390.0,470.0 390.4,470.0 390.9,470.0 391.3,470.0 391.8,470.0 392.2,470.0 392.7,470.0 393.1,470.0 393.6,470.0 394.0,470.0 394.5,470.0 394.9,470.0 395.4,470.0 395.8,470.0 396.3,470.0 396.7,470.0 397.2,470.0 397.6,470.0 398.1,470.0 398.5,470.0 399.0,470.0 399.4,470.0 399.9,470.0 400.3,470.0 400.8,470.0 401.2,470.0 401.6,470.0 402.1,470.0 402.5,470.0 403.0,470.0 403.4,470.0 403.9,470.0 404.3,470.0 404.8,470.0 405.2,470.0 405.7,470.0 406.1,470.0 406.6,470.0 407.0,470.0 407.5,470.0 407.9,470.0 408.4,470.0 408.8,470.0 409.3,470.0 409.7,470.0 410.2,470.0 410.6,470.0 411.1,470.0 411.5,470.0 412.0,470.0 412.4,470.0 412.8,470.0 413.3,470.0 413.7,470.0 414.2,470.0 414.6,468.9 415.1,467.5 415.5,466.1 416.0,464.7 416.4,463.4 416.9,462.1 417.3,460.9 417.8,459.7 418.2,458.6 418.7,457.5 419.1,456.4 419.6,455.4 420.0,454.4 420.5,453.5 420.9,452.6 421.4,451.7 421.8,450.8 422.3,450.0 422.7,449.1 423.2,448.3 423.6,447.5 424.0,446.7 424.5,445.9 424.9,445.1 425.4,444.3 425.8,443.5 426.3,442.7 426.7,441.9 427.2,441.2 427.6,440.4 428.1,439.6 428.5,438.8 429.0,438.0 429.4,437.2 429.9,436.4 430.3,435.7 430.8,434.9 431.2,434.1 431.7,433.3 432.1,432.5 432.6,431.7 433.0,430.9 433.5,430.1 433.9,429.3 434.4,428.5 434.8,427.7 435.2,426.9 435.7,426.1 436.1,425.3 436.6,424.5 437.0,423.7 437.5,422.9 437.9,422.1 438.4,421.3 438.8,420.5 439.3,419.7 439.7,418.9 440.2,418.1 440.6,417.3 441.1,416.5 441.5,415.7 442.0,414.9 442.4,414.1 442.9,413.3 443.3,412.5 443.8,411.7 444.2,410.9 444.7,410.1 445.1,409.3 445.6,408.5 446.0,407.7 446.4,406.9 446.9,406.1 447.3,405.3 447.8,404.5 448.2,403.7 448.7,402.9 449.1,402.1 449.6,401.3 450.0,400.5 450.5,399.7 450.9,398.9 451.4,398.1 451.8,397.3 452.3,396.5 452.7,395.7 453.2,394.9 453.6,394.1 454.1,393.3 454.5,392.5 455.0,391.7 455.4,390.9 455.9,390.1 456.3,389.3 456.8,388.5 457.2,387.7 457.6,386.9 458.1,386.1 458.5,385.3 459.0,384.5 459.4,383.7 459.9,382.9 460.3,382.1 460.8,381.6 461.2,381.4 461.5,381.4 461.7,381.4 462.1,381.6 462.6,381.9 463.0,382.3 463.5,382.7 463.9,383.2 464.4,383.7 464.8,384.2 465.3,384.6 465.7,385.1 466.2,385.5 466.6,385.9 467.1,386.3 467.5,386.6 468.0,386.9 468.4,387.1 468.8,387.3 469.3,387.5 469.7,387.7 470.2,387.8 470.6,387.9 471.1,388.0 471.5,388.0 472.0,388.1 472.4,388.1 472.9,388.2 473.3,388.2 473.8,388.2 474.2,388.2 474.7,388.2 475.1,388.2 475.6,388.2 476.0,388.1 476.5,388.1 476.9,388.1 477.4,388.1 477.8,388.1 478.3,388.1 478.7,388.1 479.2,388.1 479.6,388.0 480.0,388.0 480.5,388.0 480.9,388.0 481.4,388.0 481.8,388.0 482.3,388.0 482.7,388.0 483.2,388.0 483.6,388.0 484.1,388.0 484.5,388.0 485.0,388.0 485.4,388.0 485.9,388.0 486.3,388.0 486.8,388.0 487.2,388.0 487.7,388.0 488.1,388.0 488.6,388.0 489.0,388.0 489.5,388.0 489.9,388.0 490.4,388.0 490.8,388.0 491.2,388.0 491.7,388.0 492.1,388.0 492.6,388.0 493.0,388.0 493.5,388.0 493.9,388.0 494.4,388.0 494.8,388.0 495.3,388.0 495.7,388.0 496.2,388.0 496.6,388.0 497.1,388.0 497.5,388.0 498.0,388.0 498.4,388.0 498.9,388.0 499.3,388.0 499.8,388.0 500.2,388.0 500.7,388.0 501.1,388.0 501.6,388.0 502.0,388.0 502.4,388.0 502.9,388.0 503.3,388.0 503.8,388.0 504.2,388.0 504.7,388.0 505.1,388.0 505.6,388.0 506.0,388.0 506.5,388.0 506.9,388.0 507.4,388.0 507.8,388.0 508.3,388.0 508.7,388.0 509.2,388.0 509.6,388.0 510.1,388.0 510.5,388.0 511.0,388.0 511.4,388.0 511.9,388.0 512.3,388.0 512.8,388.0 513.2,388.0 513.6,388.0 514.1,388.0 514.5,388.0 515.0,388.0 515.4,388.0 515.9,388.0 516.3,388.0 516.8,388.0 517.2,388.0 517.7,388.0 518.1,388.0 518.6,388.0 519.0,388.0 519.5,388.0 519.9,388.0 520.4,388.0 520.8,388.0 521.3,388.0 521.7,388.0 522.2,388.0 522.6,388.0 523.1,388.0 523.5,388.0 524.0,388.0 524.4,388.0 524.8,388.0 525.3,388.0 525.7,388.0 526.2,388.0 526.6,388.0 527.1,388.0 527.5,388.0 528.0,388.0 528.4,388.0 528.9,388.0 529.3,388.0 529.8,388.0 530.2,388.0 530.7,388.0 531.1,388.0 531.6,388.0 532.0,388.0 532.5,388.0 532.9,388.0 533.4,388.0 533.8,388.0 534.3,388.0 534.7,388.0 535.2,388.0 535.6,388.0 536.0,388.0 536.5,388.0 536.9,388.0 537.4,388.0 537.8,388.0 538.3,388.0 538.7,388.0 539.2,388.0 539.6,388.0 540.1,388.0 540.5,388.0 541.0,388.0 541.4,388.0 541.9,388.0 542.3,388.0 542.8,388.0 543.2,388.0 543.7,388.0 544.0,388.0" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="461.5" cy="381.4" r="3" fill="currentColor"/>
+  <text x="469.5" y="405.4" font-size="10.5" fill="currentColor">peak 9.84 N</text>
+  <text x="469.5" y="418.4" font-size="10.5" fill="currentColor">at 7.526 s</text>
+  <text x="544.0" y="440.0" font-size="10.5" fill="currentColor" text-anchor="end">settles at 9.11 N</text>
+  <line x1="227.3" y1="346" x2="227.3" y2="470.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <line x1="364.9" y1="346" x2="364.9" y2="470.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <line x1="414.3" y1="346" x2="414.3" y2="470.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <line x1="460.1" y1="346" x2="460.1" y2="470.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <circle cx="414.3" cy="470.0" r="2.6" fill="currentColor"/>
+  <text x="227.3" y="498.0" font-size="10.5" fill="currentColor" text-anchor="middle">at E 3.345</text>
+  <text x="366.9" y="498.0" font-size="10.5" fill="currentColor" text-anchor="end">switch 5.802</text>
+  <text x="412.3" y="498.0" font-size="10.5" fill="currentColor" text-anchor="start">contact 6.684</text>
+  <text x="464.1" y="512.0" font-size="10.5" fill="currentColor" text-anchor="end">reference stops 7.502</text>
+</svg>
+
+The same worked case in space and time. Top left, the workspace at $125$ px per m: P2 at home $A$, at the via point $E$ and at the pre-contact pose $P$, the tip's path $A\to E\to P$ and, dashed, the direct edge's midpoint pose $(42.8^\circ,\,2.3^\circ)$, whose tip sits $0.35$ m inside the planner's face at $1.0892$ m; top right, the contact zone at $1600$ px per m: $P$'s tip $13.2$ mm short of the $3\sigma$ band $[1.0892,\,1.1428]$ around the estimate $1.116$, the drawing's face at $1.10$, the true face at $1.120$ that only the simulation knows, the stop point $1.161$ and the settled tip $1.143$. Bottom, the clock: at $E$ at $3.345$ s, the switch at $P$ at $5.802$ s, first contact at $6.684$ s, the reference stopping at $7.502$ s and the force peaking at $9.84$ N at $7.526$ s under $F_d=10$ N and $F_{\lim}=11$ N before settling at $9.11$ N, with a faint tick at $5.704$ s where the unrepaired plan would have touched.
 
 ### Worked case · 대상으로 한 번 끝까지
 
 Nine steps in the order the loop runs them, each heading naming the page that owns the step. Step 8 fails the first time and sends the loop back to step 3 — feedback between stages, which no stage page, read alone, can show.
 
-**Step 1 — where is the panel? (P5, [[02-foundations/probability|3. Probability §5]]).** The sensor looks along $+x$ from the home tip. The drawing says $10\,\mathrm{cm}$ with variance $4\,\mathrm{cm^2}$; the reading says $12\,\mathrm{cm}$ with variance $1\,\mathrm{cm^2}$:
+**Step 1 — where is the panel? (P5, [[02-foundations/probability|3. Probability §5]]).** The sensor looks along $+x$ from the home tip. The drawing is the prediction, $\hat x^-=10\,\mathrm{cm}$ with variance $P^-=4\,\mathrm{cm^2}$; the reading is $z=12\,\mathrm{cm}$ with variance $R=1\,\mathrm{cm^2}$. In the notation of [[04-robotics/state-estimation-slam|3. State Estimation §5]], which works this same update in its §6 (3. Probability §5 writes the corrected $\hat x^+$ and $P^+$ without the $+$), the innovation is $\nu=z-\hat x^-=2\,\mathrm{cm}$ and its variance $S=P^-+R=5\,\mathrm{cm^2}$, so
 
-$$K=\frac{4}{4+1}=0.8,\qquad \hat x=10+0.8\,(12-10)=11.6\ \mathrm{cm},\qquad P=(1-0.8)\cdot4=0.8\ \mathrm{cm^2}$$
+$$K=\frac{P^-}{S}=\frac{4}{5}=0.8,\qquad \hat x^+=\hat x^-+K\nu=10+0.8\times2=11.6\ \mathrm{cm},\qquad P^+=(1-K)\,P^-=0.8\ \mathrm{cm^2}$$
 
-because the gain is the fraction of the innovation worth walking and the variance shrinks by $1-K$. So the face is estimated at $\hat x_w=1.00+0.116=1.116\,\mathrm{m}$ with $\sigma=\sqrt{0.8}=0.894\,\mathrm{cm}$. The planner is not given $\hat x_w$; it is given the near edge of the $3\sigma$ band, $x_{\text{obs}}=1.116-0.0268=1.0892\,\mathrm{m}$ (§2). Without the reading the band would be $\pm6.0\,\mathrm{cm}$ around $1.10$, with its near edge at $1.04\,\mathrm{m}$: the update narrows the band by $3.3\,\mathrm{cm}$, which at $v_a=0.05\,\mathrm{m/s}$ is $0.66\,\mathrm{s}$ of approach not spent.
+because the gain is the share of the surprise $\nu$ that the estimate moves by, and the variance shrinks by $1-K$; the superscripts leave the letter $P$ free for the pre-contact pose from step 2 on. So the face is estimated at $\hat x_w=1.00+0.116=1.116\,\mathrm{m}$ with $\sigma=\sqrt{0.8}=0.894\,\mathrm{cm}$. The planner is not given $\hat x_w$; it is given the near edge of the $3\sigma$ band, $x_{\text{obs}}=1.116-0.0268=1.0892\,\mathrm{m}$ (§2). Without the reading the band would be $\pm6.0\,\mathrm{cm}$ around $1.10$, with its near edge at $1.04\,\mathrm{m}$: the update narrows the band by $3.3\,\mathrm{cm}$, which at $v_a=0.05\,\mathrm{m/s}$ is $0.66\,\mathrm{s}$ of approach not spent.
 
-**Step 2 — which configurations are legal, and which path ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR ch.10 §2]]).** Since $x_{\text{obs}}>L_1=1$, ch.2's argument carries over: the elbow never gets past $x=1$, so only the tip can enter, and
+**Step 2 — which configurations are legal, and which path ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR ch.10 §2]]).** The collision test is the Running object's whole-arm test with $x_{\text{face}}=x_{\text{obs}}=1.0892$. Since $x_{\text{obs}}>L_1=1$, its elbow term $\cos\theta_1-x_{\text{obs}}$ is always negative, so the test reduces to its tip term and
 
 $$\mathcal C_{\text{obs}}=\{\theta:\ \cos\theta_1+\cos(\theta_1+\theta_2)>1.0892\}$$
 
@@ -105,7 +229,7 @@ where $42.90^\circ=\operatorname{atan2}(1,\,1.076)$ is the direction of the targ
 
 **Step 3 — how fast, at the joints ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR ch.9 §3]]).** Rest-to-rest trapezoids, one scaling per leg, led by the joint that moves furthest. $A\to E$ moves both joints $135^\circ=2.3562\,\mathrm{rad}$; $E\to P$ moves $(-49.36^\circ,\,-40.48^\circ)=(-0.8615,\,-0.7064)\,\mathrm{rad}$, led by the shoulder. Both are far above $v_{\max}^2/a_{\max}=0.32\,\mathrm{rad}$, so both are true trapezoids:
 
-$$T_1=\frac{2.3562}{0.8}+\frac{0.8}{2}=3.345\ \mathrm{s},\qquad T_2=\frac{0.8615}{0.8}+\frac{0.8}{2}=1.477\ \mathrm{s}$$
+$$T_{AE}=\frac{2.3562}{0.8}+\frac{0.8}{2}=3.345\ \mathrm{s},\qquad T_{EP}=\frac{0.8615}{0.8}+\frac{0.8}{2}=1.477\ \mathrm{s}$$
 
 since a trapezoid spends $\Delta\theta/v_{\max}$ cruising plus one ramp time. Both legs are legal for the motors. Now read the same scaling at the tip. On $A\to E$ the forearm translates without turning, so the tip moves exactly like the elbow: $0.8\,\mathrm{m/s}$. On $E\to P$ both joints turn the same way and the tip swings on a long radius. At $E$, with the leading-joint direction $u=(-1,\,-0.820)$,
 
@@ -113,21 +237,28 @@ $$\lVert J(E)\,u\rVert=\left\lVert\begin{pmatrix}-1.7071&-1\\-0.7071&0\end{pmatr
 
 so every radian per second of shoulder speed is up to $2.624\,\mathrm{m/s}$ at the tip, and along the cruise the tip reaches $2.04\,\mathrm{m/s}$. Hold that number for step 8.
 
-**Step 4 — tracking the legs ([[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §2]]).** Computed torque, $\tau=M(\theta)(\ddot\theta_d+k_pe+k_v\dot e)+c+g$, makes every joint's error obey $\ddot e+20\dot e+100e=0$: $\omega_n=10\,\mathrm{rad/s}$, $\zeta=1$, $0.4\,\mathrm{s}$ settling. The model leaves out the tool damper $b$, and that omission is the whole tracking error. Run on the final plan of step 8, the simulation follows the legs to within $6.2\,\mathrm{mrad}$ and arrives at $P$ with the tip $1.2\,\mathrm{mm}$ short and $4.6\,\mathrm{mm}$ high; the tip's largest $x$ on the way is $1.0748\,\mathrm{m}$, $14\,\mathrm{mm}$ outside the planner's face. Parked at $P$, the arm holds gravity with
+**Step 4 — tracking the legs ([[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §2]]).** Computed torque, $\tau=M(\theta)(\ddot\theta_d+k_pe+k_v\dot e)+c+g$, makes every joint's error obey $\ddot e+20\dot e+100e=0$: $\omega_n=10\,\mathrm{rad/s}$ and $\zeta=1$, critically damped, so an error decays as $(1+\omega_nt)\,e^{-\omega_nt}$ and is inside $2\,\%$ after $0.58\,\mathrm{s}$ (ch.11's rule of thumb, four time constants $4/(\zeta\omega_n)$, says $0.4\,\mathrm{s}$). The model leaves out the tool damper $b$, and that omission is the whole tracking error. Run on the final plan of step 8, the simulation follows the legs to within $6.2\,\mathrm{mrad}$ and arrives at $P$ with the tip $1.2\,\mathrm{mm}$ short and $4.6\,\mathrm{mm}$ high; the tip's largest $x$ on the way is $1.0748\,\mathrm{m}$, $14\,\mathrm{mm}$ outside the planner's face. Parked at $P$, the arm holds gravity with
 
 $$g(\theta_P)=9.81\,\big(2\cos85.64^\circ+\cos0.17^\circ,\ \cos0.17^\circ\big)=(11.30,\ 9.81)\ \mathrm{N{\cdot}m}$$
 
-since the forearm is now horizontal: the elbow carries the full $9.81\,\mathrm{N{\cdot}m}$ it carried none of at $A$.
+since the forearm is now horizontal: the elbow carries the full $9.81\,\mathrm{N{\cdot}m}$ it carried none of at $A$. The motors can deliver all of this: P2's joint drives ([[04-robotics/actuators-drives|10.5 §3, §6]]) stop at $80\,\mathrm{N{\cdot}m}$ and carry $25.3\,\mathrm{N{\cdot}m}$ continuously. The lab's largest commanded torque, $|\tau_1|=25.6\,\mathrm{N{\cdot}m}$ as the $E\to P$ leg sets off from $E$, is above the continuous rating for only $0.19\,\mathrm{s}$, the leg's acceleration ramp, and 10.5 §6 allows that with room to spare: at $25.6/8=3.2\,\mathrm{A}$ ($\eta nk_t=8\,\mathrm{N{\cdot}m/A}$) the winding's steady rise would be $10\times3.2^2\times1=102\,\mathrm{K}$, barely over the $100\,\mathrm{K}$ allowed, so its formula gives nearly four minutes from a cold winding. $|\tau_2|$ peaks at $13.5\,\mathrm{N{\cdot}m}$, and both holds — $(11.30,\,9.81)\,\mathrm{N{\cdot}m}$ here and $(3.50,\,9.72)\,\mathrm{N{\cdot}m}$ in the settled press of step 6 — are under the continuous rating.
 
 **Step 5 — the switch, and the press it makes ([[04-robotics/force-compliance-control|13. Force & Compliance §2]]).** On arrival at $P$, at time $t_s$, the controller becomes 13's impedance, with gravity and velocity terms compensated and no inertia shaping:
 
 $$\tau=J^\top\big[K_d\,(x_r-x)+D_d\,(\dot x_r-\dot x)\big]+c(\theta,\dot\theta)+g(\theta)$$
 
-so the tool keeps the arm's own apparent mass, the operational-space inertia $\Lambda=(JM^{-1}J^\top)^{-1}$ of [[02-foundations/manipulator-kinematics-dynamics|10. §6]]. For P2, whose two unit masses sit at the elbow and the tip, it has a closed form. The tip mass moves with the tip in every direction. The elbow mass moves only with the part of the tip's velocity that runs along the forearm — a push across the forearm just swings it about the elbow — and $1/|\sin\theta_2|$ times as fast, because projecting the tip velocity onto the forearm direction leaves $\dot\theta_1\sin\theta_2$. Writing the kinetic energy as $\tfrac12v^\top\Lambda v$ then gives
+so the tool keeps the arm's own apparent mass, the operational-space inertia $\Lambda=(JM^{-1}J^\top)^{-1}$ of [[02-foundations/manipulator-kinematics-dynamics|10. §6]]. For P2, whose two unit masses sit at the elbow and the tip, it has a closed form, since the tip mass moves with the tip in every direction while the elbow mass moves only with the part of the tip's velocity that runs along the forearm — a push across the forearm just swings it about the elbow:
 
 $$\Lambda=I+\frac{e\,e^\top}{\sin^2\theta_2},\qquad e=\big(\cos(\theta_1+\theta_2),\ \sin(\theta_1+\theta_2)\big)$$
 
-in kilograms, with $e$ the forearm's unit direction. At the catalog pose $e=\hat y$ and $\sin^2\theta_2=1$, so $\Lambda=\mathrm{diag}(1,2)$. In contact the tip runs from the true face, $x=1.120\,\mathrm{m}$, to where step 6 settles it, $1.120+9.111/400=1.143\,\mathrm{m}$; on the elbow-up branch that is $\theta=(83.11^\circ,\,-82.69^\circ)$ to $(81.79^\circ,\,-81.20^\circ)$, with the forearm within $0.6^\circ$ of $x$. At the settled press $\sin^2(81.20^\circ)=0.9766$, so $\Lambda_{xx}=1+\cos^2(0.59^\circ)/0.9766=2.024$; across the whole contact, overshoot included, $\Lambda_{xx}$ stays between $2.016$ and $2.025$ while $\Lambda_{yy}=1.000$ and $|\Lambda_{xy}|\le0.011\,\mathrm{kg}$. That is $\Lambda\approx\mathrm{diag}(2.02,\,1.00)\,\mathrm{kg}$ — the catalog pose's $\mathrm{diag}(1,2)$ mirrored, because the forearm now lies along $x$ — and $D_d=2\sqrt{500\cdot2}=63.2\,\mathrm{N{\cdot}s/m}$ is 13's critical damping for it, rounded to $2$ kg. The reference starts at $P$, ramps along $+x$ at $v_a$, and stops where the modelled series spring would carry $F_d$ against the *estimated* face (§4):
+in kilograms, with $e$ the forearm's unit direction. The Deeper note derives it.
+
+> [!note]- Deeper · 더 깊이
+> **Where the closed form comes from.** The elbow moves on a unit circle, so its speed is $|\dot\theta_1|$. The tip's velocity is the elbow's plus the forearm's rotation, $v=v_e+(\dot\theta_1+\dot\theta_2)\,e_\perp$, and the rotation term is perpendicular to $e$, so along the forearm only the elbow's motion shows: $e\cdot v=e\cdot v_e=\dot\theta_1\sin\theta_2$. Hence $|\dot\theta_1|=|e\cdot v|/|\sin\theta_2|$, and with the two unit masses the kinetic energy is
+> $$\mathrm{KE}=\tfrac12\lvert v\rvert^2+\tfrac12\dot\theta_1^2=\tfrac12\lvert v\rvert^2+\frac{(e\cdot v)^2}{2\sin^2\theta_2}=\tfrac12\,v^\top\Big(I+\frac{e\,e^\top}{\sin^2\theta_2}\Big)v$$
+> since $(e\cdot v)^2=v^\top e\,e^\top v$. Kinetic energy written in the tip velocity is $\tfrac12v^\top\Lambda v$ by the definition of [[02-foundations/manipulator-kinematics-dynamics|10. §6]], so the bracket is $\Lambda$; it equals $(JM^{-1}J^\top)^{-1}$ at $A$, at $P$ and at both contact poses, and it breaks down only where $\sin\theta_2=0$, the straight or folded arm, where the tip's velocity no longer fixes the elbow's.
+
+At the catalog pose $e=\hat y$ and $\sin^2\theta_2=1$, so $\Lambda=\mathrm{diag}(1,2)$. In contact the tip runs from the true face, $x=1.120\,\mathrm{m}$, to where step 6 settles it, $1.120+9.111/400=1.143\,\mathrm{m}$; on the elbow-up branch that is $\theta=(83.11^\circ,\,-82.69^\circ)$ to $(81.79^\circ,\,-81.20^\circ)$, with the forearm within $0.6^\circ$ of $x$. At the settled press $\sin^2(81.20^\circ)=0.9766$, so $\Lambda_{xx}=1+\cos^2(0.59^\circ)/0.9766=2.024$; across the whole contact, overshoot included, $\Lambda_{xx}$ stays between $2.016$ and $2.025$ while $\Lambda_{yy}=1.000$ and $|\Lambda_{xy}|\le0.011\,\mathrm{kg}$. That is $\Lambda\approx\mathrm{diag}(2.02,\,1.00)\,\mathrm{kg}$ — the catalog pose's $\mathrm{diag}(1,2)$ mirrored, because the forearm now lies along $x$ — and $D_d=2\sqrt{500\cdot2}=63.2\,\mathrm{N{\cdot}s/m}$ is 13's critical damping for it, rounded to $2$ kg. In the control law's bracket, $K_d(x_r-x)+D_d(\dot x_r-\dot x)$ is the force the controller asks the tool to apply to the panel — [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR ch.5]]'s $F$ in $\tau=J^\top F$, the tool pushing the panel — and the panel pushes the tip back with $-F$, the panel's term in the lab's `f_ext` (the other is the tool damper's $-bv$). The reference starts at $P$, ramps along $+x$ at $v_a$, and stops where the modelled series spring would carry $F_d$ against the *estimated* face (§4):
 
 $$K_s=\frac{K_dk_w}{K_d+k_w}=\frac{500\cdot400}{900}=222.2\ \mathrm{N/m},\qquad x_{\text{stop}}=\hat x_w+\frac{F_d}{K_s}=1.116+0.045=1.161\ \mathrm{m}$$
 
@@ -137,11 +268,19 @@ because the impedance spring and the panel carry the same force in series ([[04-
 
 $$F_{\text{set}}=K_s\,(x_{\text{stop}}-x_w)=222.2\times0.041=9.111\ \mathrm{N}$$
 
-which is $0.889\,\mathrm{N}$ under the command — the estimate's $4\,\mathrm{mm}$ error times $K_s$. The peak comes from the transient, in two pieces that can be done by hand. While the reference ramps in contact, the tool follows at $\alpha v_a$ with $\alpha=K_d/(K_d+k_w)=5/9$, and the force runs ahead of its static value by the damper's share, $D_dv_a\big(k_w/(K_d+k_w)\big)^2=63.2\times0.05\times(4/9)^2=0.625\,\mathrm{N}$; so when the reference stops the force is $9.736\,\mathrm{N}$. After the stop the contact is a damped oscillator with
+which is $0.889\,\mathrm{N}$ under the command — the estimate's $4\,\mathrm{mm}$ error times $K_s$. Held there, at $\theta=(81.79^\circ,\,-81.20^\circ)$, a few degrees from $P$, the motors add $J^\top F=(-9.11,\,-0.09)\,\mathrm{N{\cdot}m}$ to gravity's hold for $F=(9.11,\,0)\,\mathrm{N}$: the push runs along the nearly horizontal forearm, so the elbow carries almost none of it, where at the catalog pose the same push into ch.2's upright face would load both joints, $(-10,\,-10)\,\mathrm{N{\cdot}m}$ for $10\,\mathrm{N}$ (MR ch.5's problem 2). The peak comes from the transient, in two pieces that can be done by hand. While the reference ramps in contact, the tool follows at a fraction $\alpha$ of $v_a$, and its force balance — impedance on one side, panel on the other, the tool's inertia negligible on this slow, steady ramp — reads
 
-$$\omega_n=\sqrt{\frac{K_d+k_w}{M_d}}=21.2\ \mathrm{rad/s},\qquad \zeta=\sqrt{\frac{K_d}{K_d+k_w}}=0.745,\qquad \omega_d=\sqrt{\frac{k_w}{M_d}}=14.1\ \mathrm{rad/s}$$
+$$K_d\,(x_r-x)+D_d\,(1-\alpha)\,v_a=k_w\,(x-x_w),\qquad \dot x=\alpha v_a$$
 
-because $D_d$ was chosen critical for $K_d$ alone and the panel adds stiffness but no damping. Released $1.56\,\mathrm{mm}$ past its equilibrium and still moving at $27.8\,\mathrm{mm/s}$, it peaks $23\,\mathrm{ms}$ later at $1.85\,\mathrm{mm}$, so $F_{\text{pk}}=9.111+400\times0.00185=9.85\,\mathrm{N}$. The simulation says $9.84\,\mathrm{N}$ at $t=7.526\,\mathrm{s}$, $24\,\mathrm{ms}$ after the reference stopped at $7.502$; the last digit is the tool damper and the full arm dynamics the hand calculation leaves out.
+since the reference moves at $v_a$ and the tool at $\alpha v_a$. Differentiating it in time gives $K_d(1-\alpha)=k_w\alpha$, so $\alpha=K_d/(K_d+k_w)=5/9$; solving it for $F=k_w(x-x_w)$ gives the static series force $K_s(x_r-x_w)$ plus the damper's share, $D_dv_a\big(k_w/(K_d+k_w)\big)^2=63.2\times0.05\times(4/9)^2=0.625\,\mathrm{N}$. So when the reference stops the force is $9.736\,\mathrm{N}$. After the stop the contact is a damped oscillator with
+
+$$\omega_n=\sqrt{\frac{K_d+k_w}{\Lambda_{xx}}}=21.2\ \mathrm{rad/s},\qquad \zeta=\sqrt{\frac{K_d}{K_d+k_w}}=0.745,\qquad \omega_d=\sqrt{\frac{k_w}{\Lambda_{xx}}}=14.1\ \mathrm{rad/s}$$
+
+because $D_d$ was chosen critical for $K_d$ alone and the panel adds stiffness but no damping; $\Lambda_{xx}\approx2.02$ kg is step 5's mass in the press direction, rounded to $2$ kg as 13 does. Released $x_0=0.625/400=1.56\,\mathrm{mm}$ past its equilibrium and still moving at $v_0=\alpha v_a=27.8\,\mathrm{mm/s}$, it follows the damped response of [[02-foundations/engineering-math|0.5 §8]], the mass–spring–damper of [[02-foundations/basic-mechanics|0.6.1 §5]],
+
+$$x(t)=e^{-\zeta\omega_nt}\Big[x_0\cos\omega_dt+\frac{v_0+\zeta\omega_nx_0}{\omega_d}\sin\omega_dt\Big]$$
+
+because both initial conditions are nonzero; it peaks $23\,\mathrm{ms}$ later at $1.85\,\mathrm{mm}$, so $F_{\text{pk}}=9.111+400\times0.00185=9.85\,\mathrm{N}$. The simulation says $9.84\,\mathrm{N}$ at $t=7.526\,\mathrm{s}$, $24\,\mathrm{ms}$ after the reference stopped at $7.502$; the last digit is the tool damper and the full arm dynamics the hand calculation leaves out.
 
 **Step 7 — the force limit and the stability ledger ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]).** $F_{\text{pk}}=9.84\le11\,\mathrm{N}$, with $1.16\,\mathrm{N}$ to spare. The impedance spring is rendered by a sampled controller that holds its torque for $T$, so 24.4's ledger applies to $K_d$:
 
@@ -153,9 +292,9 @@ and $500$ passes, the hold leaking $K_dT/(2b)=0.3125$ of what the tool damper re
 
 $$S_p=1.6\,(0.10+0.30)+2.04\times0.10+\tfrac12\times2.04\times0.30+0.20+0.10+0.05=1.50\ \mathrm{m}>1.24\ \mathrm{m}$$
 
-so the sensing field would have to move out to $2.25+1.50=3.75\,\mathrm{m}$. **Back to step 3**, and cap the leg at the tip instead (§3): $v_c=1.0/2.624=0.381$, rounded down to $0.38\,\mathrm{rad/s}$, gives
+so the sensing field would have to move out by $0.26\,\mathrm{m}$ — to $2.25+1.50=3.75\,\mathrm{m}$ in page 11's cell, whose hazard radius $R_h=2.25\,\mathrm{m}$ counts a $0.25\,\mathrm{m}$ tool beyond the tip; with this page's tool, whose contact point is the tip itself, $R_h=2.00\,\mathrm{m}$ and the field would go from $3.24$ to $3.50\,\mathrm{m}$. **Back to step 3**, and cap the leg at the tip instead (§3): $v_c=1.0/2.624=0.381$, rounded down to $0.38\,\mathrm{rad/s}$, gives
 
-$$T_2=\frac{0.8615}{0.38}+\frac{0.38}{2}=2.457\ \mathrm{s},\qquad v_{\text{tip}}\le0.38\times2.624=0.997\ \mathrm{m/s},\qquad S_p=1.239\ \mathrm{m}\le1.24\ \mathrm{m}$$
+$$T_{EP}=\frac{0.8615}{0.38}+\frac{0.38}{2}=2.457\ \mathrm{s},\qquad v_{\text{tip}}\le0.38\times2.624=0.997\ \mathrm{m/s},\qquad S_p=1.239\ \mathrm{m}\le1.24\ \mathrm{m}$$
 
 and page 11's cell stands. The contact phase starts from rest at $P$ either way, so steps 5–7 do not change; every clock time after $E$ moves $2.457-1.477=0.980\,\mathrm{s}$ later.
 
@@ -165,7 +304,7 @@ and page 11's cell stands. The contact phase starts from rest at $P$ either way,
 
 ### 1. What the cumulative set computed, and what assembling it adds
 
-The cumulative problem set on [[04-robotics/index|4. Robotics]] asks for four numbers at the catalog pose — joint rates $J^{-1}v=(-0.05,\,0.05)\,\mathrm{rad/s}$, a holding torque $g+J^\top F=(9.62,\,0)\,\mathrm{N{\cdot}m}$, the ledger $2b/T=1600\,\mathrm{N/m}$, and the fused range $11.6\,\mathrm{cm}$ — and each is right. They are also independent: no answer is used by another. Assembling them changes five things, and each is a claim no stage page can make.
+Four right answers that never feed each other cannot show where two pages disagree; this section says what changes when they do. The cumulative problem set on [[04-robotics/index|4. Robotics]] asks for four numbers at the catalog pose — joint rates $J^{-1}v=(-0.05,\,0.05)\,\mathrm{rad/s}$, a holding torque $g+J^\top F=(9.62,\,0)\,\mathrm{N{\cdot}m}$, the ledger $2b/T=1600\,\mathrm{N/m}$, and the fused range $11.6\,\mathrm{cm}$ — and each is right. They are also independent: no answer is used by another. Assembling them changes five things, and each is a claim no stage page can make.
 
 | Cumulative item | Here | What changed |
 |---|---|---|
@@ -175,7 +314,7 @@ The cumulative problem set on [[04-robotics/index|4. Robotics]] asks for four nu
 | holding torque at the catalog pose (Derive b) | Step 4 | at $P$ the forearm is horizontal and the elbow holds $9.81\,\mathrm{N{\cdot}m}$ |
 | "late vision is P6" (Interpret) | Step 8 | lateness gets a threshold, $v_aL\le\sigma$ |
 
-The fifth is the one to remember: **the checks disagree**. Step 3's trapezoid is legal by ch.9 and illegal by page 11, and nothing inside either page would have caught it, because each is written in its own coordinates — joint speed on one, tip speed on the other.
+And one thing no cumulative item has at all is the one to remember: **the checks disagree**. Step 3's trapezoid is legal by ch.9 and illegal by page 11, and nothing inside either page would have caught it, because each is written in its own coordinates — joint speed on one, tip speed on the other.
 
 ### 2. The estimate feeds the planner — the inflated C-obstacle, defined
 
@@ -189,10 +328,10 @@ A C-obstacle ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2 §2
 >
 > - **Example**: step 2's lens, $\cos\theta_1+\cos(\theta_1+\theta_2)>1.0892$, $16.565\,\%$ of P2's torus, pinching at $\theta_1=\pm84.9^\circ$. With the prior alone ($\sigma=2\,\mathrm{cm}$, near edge $1.04$) it would block $17.611\,\%$: the update frees only $1.05\,\%$ of the torus but $3.3\,\mathrm{cm}$ of approach, which is where it pays.
 > - **Non-example**: the C-obstacle of the mean, $k=0$. The true face is nearer than $\hat x_w$ half the time, so the planner would certify as free configurations that are inside the panel with probability up to one half; a $1\,\mathrm{cm}$ standoff, legal against the mean, puts the tip inside the true panel $13\,\%$ of the time.
-> - **Non-example**: Nav2's inflation layer ([[04-robotics/ros2/navigation-nav2|25.9 §5]]). Only its inscribed core is treated as collision; the decaying skirt around it is a cost gradient that steers a search toward the middle of free space rather than a margin, and neither radius is set from an estimate's $\sigma$.
+> - **Non-example**: Nav2's inflation layer ([[04-robotics/ros2/navigation-nav2|25.9 §5]]), the costmap layer that surrounds every obstacle with a band of decreasing cost. Only its inscribed core is treated as collision; the decaying skirt around it is a cost gradient that steers a search toward the middle of free space rather than a margin, and neither radius is set from an estimate's $\sigma$.
 > - **Why it matters**: it passes the filter's output to the planner with its units intact — $\sigma$ in centimetres becomes standoff in centimetres and approach time in seconds — and it is where a wrong $\sigma$, an overconfident filter, becomes a collision rather than a number.
 
-One consequence is specific to this cell and worth rechecking whenever the panel moves. Ch.2's shortcut, testing the tip only, holds because $x_{\text{obs}}=1.0892>L_1$, so the elbow can never reach the face. Inflate a panel that sits closer than $L_1+k\sigma$ and the elbow can enter too; the collision test must then check both link ends, which is exactly the non-example of testing the tip alone in [[04-robotics/modern-robotics/ch10-motion-planning|MR ch.10 §2]].
+One consequence is specific to this cell and worth rechecking whenever the panel moves. The Running object's whole-arm test reduces to its tip term only because $x_{\text{obs}}=1.0892>L_1$, so the elbow can never reach the face. Inflate a panel that sits closer than $L_1+k\sigma$ and the elbow term can go positive too; dropping it then is exactly the non-example of testing the tip alone in [[04-robotics/modern-robotics/ch10-motion-planning|MR ch.10 §2]].
 
 ### 3. Two clocks on one path — the tip-speed cap, defined
 
@@ -204,7 +343,7 @@ Ch.9 times a path in joint coordinates; page 11 judges it in the tip's. They mee
 >
 > where $v_{\max}$ is the joint limit, $v_{\text{tip}}$ the tip limit and the maximum runs over $s\in[0,1]$ — whichever bound is smaller is the one that binds.
 >
-> - **Example**: $E\to P$, where $\max_s\lVert Ju\rVert=2.624\,\mathrm{m/rad}$ at $E$, so $1.0/2.624=0.381$, rounded down to $0.38\,\mathrm{rad/s}$: $T_2$ grows from $1.477$ to $2.457\,\mathrm{s}$ and the tip is bounded by $0.997\,\mathrm{m/s}$ (the trajectory's actual peak is $0.992$). On $A\to E$, $\max_s\lVert Ju\rVert=1.000$, so $0.8\,\mathrm{rad/s}$ already means $0.8\,\mathrm{m/s}$ and the cap does not bind.
+> - **Example**: $E\to P$, where $\max_s\lVert Ju\rVert=2.624\,\mathrm{m/rad}$ at $E$, so $1.0/2.624=0.381$, rounded down to $0.38\,\mathrm{rad/s}$: $T_{EP}$ grows from $1.477$ to $2.457\,\mathrm{s}$ and the tip is bounded by $0.997\,\mathrm{m/s}$ (the trajectory's actual peak is $0.992$). On $A\to E$, $\max_s\lVert Ju\rVert=1.000$, so $0.8\,\mathrm{rad/s}$ already means $0.8\,\mathrm{m/s}$ and the cap does not bind.
 > - **Non-example**: the joint limit itself. $0.8\,\mathrm{rad/s}$ on every joint bounds the tip only through $J$, and on $E\to P$ that bound is $2.1\,\mathrm{m/s}$. A trajectory that respects every actuator can still break a safety function written in task space.
 > - **Why it matters**: page 11's $S_p$ is written in tip speed, ch.9's limits in joint speed, and a robot's datasheet speaks joint. The cap is the one line that translates, and without it step 3 and step 8 never talk.
 
@@ -229,6 +368,8 @@ What the impedance then delivers is a press whose force nobody measures.
 
 ### 5. Four checks, four owners
 
+Four checks judge the press, and only one of them can be read off the simulated trace; the table names each check's owner and says which.
+
 | Check | Owner | Inequality | Worked case | Read from the simulation? |
 |---|---|---|---|---|
 | peak force | this page's limit; the transient is 13 §5's | $F_{\text{pk}}\le11\,\mathrm{N}$ | $9.84\,\mathrm{N}$ | yes |
@@ -236,23 +377,23 @@ What the impedance then delivers is a press whose force nobody measures.
 | latency | 10 §3 | $v_aL\le\sigma$ | $3.5\le8.9\,\mathrm{mm}$ | no — a design inequality |
 | separation | 11 | $S_p(v_{\text{tip}})\le1.24\,\mathrm{m}$ | $1.239\,\mathrm{m}$ | no — it uses the planned bound |
 
-Only one of the four is read off the trace. That is not a weakness of this simulation; it is what the four inequalities are. The ledger is a sufficient condition over all inputs, and a trace is one input. The latency and separation checks are about loops the simulation does not contain — a camera in the loop, a person in the cell. A capstone that reports "the simulation ran and nothing broke" has reported the first row.
+That only one row is read off the trace is not a weakness of this simulation; it is what the four inequalities are. The ledger is a sufficient condition over all inputs, and a trace is one input. The latency and separation checks are about loops the simulation does not contain — a camera in the loop, a person in the cell. A capstone that reports "the simulation ran and nothing broke" has reported the first row.
 
 The latency row needs one definition, because 10's budget is a time and the check needs a length.
 
-> **Staleness distance, defined.** The **staleness distance** is a *length*: how far the thing an observation describes moves between the observation and the action it causes. Three defining conditions. The time is the **end-to-end** observation-to-action latency $L$, from mid-exposure to applied force ([[04-robotics/robot-systems-deployment|10. Robot Systems §3]]), not a rate; the speed is that of the **observed quantity relative to the observer** — here, the tool relative to the panel; and it is **compared with the uncertainty of the estimate** it would correct, because a correction staler than the estimate's own spread adds error rather than removing it.
+> **Staleness distance, defined.** The **staleness distance** is a *length*: how far the thing an observation describes moves between the observation and the action it causes. Three defining conditions. The time is the **end-to-end** observation-to-action latency $L$, from mid-exposure to applied force — what [[04-robotics/robot-systems-deployment|10. Robot Systems §3]] calls the budget and writes $L-\tfrac12T_{\text{cam}}$, because an observation's age starts at the instant it stands for — not a rate; the speed is that of the **observed quantity relative to the observer** — here, the tool relative to the panel; and it is **compared with the uncertainty of the estimate** it would correct, because a correction staler than the estimate's own spread adds error rather than removing it.
 >
 > $$v\,L\le\sigma\quad\Longleftrightarrow\quad v\le\frac{\sigma}{L}=\frac{8.94\,\mathrm{mm}}{70\,\mathrm{ms}}=0.128\ \mathrm{m/s}$$
 >
 > where $v$ is the approach speed, $L=70\,\mathrm{ms}$ and $\sigma=8.94\,\mathrm{mm}$ is step 1's posterior spread.
 >
 > - **Example**: the approach at $0.05\,\mathrm{m/s}$, $3.5\,\mathrm{mm}$, $0.39\sigma$. The free leg at $1.0\,\mathrm{m/s}$ has $70\,\mathrm{mm}$, nearly eight $\sigma$ — which is why that leg is planned against the inflated obstacle and never steered by the camera.
-> - **Non-example**: the camera's $20\,\mathrm{ms}$ frame period. A rate is not a latency ([[04-robotics/robot-systems-deployment|10 §3]]), and the worst-case age of a vision goal adds the vision and control periods to $L$ ([[04-robotics/ros2/simulation-and-control|25.7]]'s staleness ledger).
+> - **Non-example**: the camera's $20\,\mathrm{ms}$ frame period. A rate is not a latency ([[04-robotics/robot-systems-deployment|10 §3]]), and the worst-case age of a vision goal adds the vision and control periods to the transport latency — [[04-robotics/ros2/simulation-and-control|25.7]]'s staleness ledger, whose $L$ ends where the goal reaches the controller, not at the applied force as this page's does.
 > - **Why it matters**: it gives "late vision" a threshold, and the threshold couples P5 to P6: a better sensor, with a smaller $\sigma$, *lowers* the speed at which a camera correction can still help.
 
 ### 6. Lab — the whole loop in one simulation
 
-Tier A. One program runs steps 1–8; the sweep changes the two knobs the contact phase owns, $K_d$ and $v_a$, and marks each row against the three checks that move with them. The plant is P2 with its full $M$, $c$ and $g$; the panel is P3's unilateral spring; the controller runs at $T=1\,\mathrm{ms}$ with its torque held over the step, and the integrator is semi-implicit Euler at the same step ([[02-foundations/lab-kernel|0.7 §3]]). The tool damper $b$ acts on the plant and is absent from the controller's model.
+Each hand step above froze everything but its own stage; only a program that runs the whole loop shows that the stages' numbers survive each other, and a sweep shows which knob moves which check. Tier A. One program runs steps 1–8; the sweep changes the two knobs the contact phase owns, $K_d$ and $v_a$, and marks each row against the three checks that move with them. The plant is P2 with its full $M$, $c$ and $g$; the panel is P3's unilateral spring; the controller runs at $T=1\,\mathrm{ms}$ with its torque held over the step, and the integrator is semi-implicit Euler at the same step ([[02-foundations/lab-kernel|0.7 §3]]). The tool damper $b$ acts on the plant and is absent from the controller's model.
 
 ```python
 import numpy as np
@@ -307,8 +448,8 @@ def trap(q0, q1, vc, t):
     return q0 + u * s, u * sd, u * sdd, Tt
 V1 = min(VMAX, np.floor(100 * VTIP / tip_gain(A, E)) / 100)
 V2 = min(VMAX, np.floor(100 * VTIP / tip_gain(E, P)) / 100)
-T1 = trap(A, E, V1, 0)[3]
-TS = T1 + trap(E, P, V2, 0)[3]                        # switch time: arrival at P
+T_AE = trap(A, E, V1, 0)[3]
+TS = T_AE + trap(E, P, V2, 0)[3]                      # switch time: arrival at P
 
 # Steps 4-6 - computed torque (MR ch.11), impedance (13), P3-stiffness wall
 def simulate(Kd, va, kw=400.0, b=0.8, Fd=10.0, T=1e-3, kp=100.0, kv=20.0):
@@ -316,38 +457,41 @@ def simulate(Kd, va, kw=400.0, b=0.8, Fd=10.0, T=1e-3, kp=100.0, kv=20.0):
     Ks = Kd * kw / (Kd + kw)                          # series stiffness, impedance + panel
     xP = fk(P); xstop = XW_HAT + Fd / Ks              # the ramp stops here
     q, dq = A.copy(), np.zeros(2)
-    tc, Fpk, vtip, F = None, 0.0, 0.0, []
+    tc, Fpk, vtip, F, tpk = None, 0.0, 0.0, [], np.zeros(2)
     for k in range(int((TS + (xstop - xP[0]) / va + 2.0) / T)):
         t = k * T; x, J = fk(q), jac(q); v = J @ dq
         Fw = kw * (x[0] - XW_TRUE) if x[0] > XW_TRUE else 0.0
         if Fw > 0 and tc is None: tc = t
         Fpk = max(Fpk, Fw); F.append(Fw)
         if t < TS:                                    # computed torque on the trapezoids
-            qd, dqd, ddqd, _ = trap(A, E, V1, t) if t < T1 else trap(E, P, V2, t - T1)
+            qd, dqd, ddqd, _ = trap(A, E, V1, t) if t < T_AE else trap(E, P, V2, t - T_AE)
             tau = mass(q) @ (ddqd + kp * (qd - q) + kv * (dqd - dq)) + cor(q, dq) + grav(q)
             vtip = max(vtip, np.linalg.norm(v))
         else:                                         # impedance, reference ramps then stops
             xr = min(xP[0] + va * (t - TS), xstop); vr = va if xr < xstop else 0.0
             Fi = Kd * (np.array((xr, xP[1])) - x) + Dd * (np.array((vr, 0.0)) - v)
             tau = J.T @ Fi + cor(q, dq) + grav(q)
+        tpk = np.maximum(tpk, np.abs(tau))            # for 10.5's torque limits
         f_ext = np.array((-Fw, 0.0)) - b * v          # panel + tool damping b (not modelled)
         ddq = np.linalg.solve(mass(q), tau + J.T @ f_ext - cor(q, dq) - grav(q))
-        dq = dq + T * ddq                             # semi-implicit Euler (0.65 section 3)
+        dq = dq + T * ddq                             # semi-implicit Euler (0.7 section 3)
         q = q + T * dq
-    return tc, Fpk, np.mean(F[-500:]) - Fd, vtip
+    return tc, Fpk, np.mean(F[-500:]) - Fd, vtip, tpk, tau
 
 # Report: the worked case, then the sweep with every check marked
 print("fused range %.1f cm, sigma %.2f cm, inflated face x = %.4f m" % (xh, 100 * SIG, X_OBS))
 print("edges (m, >0 blocked): A-P %.3f  A-E %.3f  E-P %.4f" % (edge(A, P), edge(A, E), edge(E, P)))
-print("cruise %.2f / %.2f rad/s, T1 %.3f s, switch at %.3f s" % (V1, V2, T1, TS))
-tc, Fpk, dF, vtip = simulate(500.0, 0.05)
+print("cruise %.2f / %.2f rad/s, T_AE %.3f s, switch at %.3f s" % (V1, V2, T_AE, TS))
+tc, Fpk, dF, vtip, tpk, tau_end = simulate(500.0, 0.05)
 print("worked: first contact %.3f s, peak %.2f N, settling error %+.3f N, tip %.3f m/s"
       % (tc, Fpk, dF, vtip))
+print("torques (N m): peak |tau| (%.1f, %.1f), hold at P (%.2f, %.2f), settled press (%.2f, %.2f)"
+      % (*tpk, *grav(P), *tau_end))
 L, FLIM, B, TCTRL = 0.070, 11.0, 0.8, 1e-3
 print(" Kd(N/m) va(m/s)   t_c(s)  F_pk(N)  dF_set(N)  va*L<=sigma  fails")
 for Kd in (250.0, 500.0, 1000.0, 2000.0):
     for va in (0.05, 0.10, 0.20, 0.40):
-        tc, Fpk, dF, _ = simulate(Kd, va)
+        tc, Fpk, dF = simulate(Kd, va)[:3]
         fails = []
         if Fpk > FLIM: fails.append("force>11N (26)")
         if Kd > 2 * B / TCTRL: fails.append("Kd>2b/T (24.4)")
@@ -365,8 +509,9 @@ It runs in about five seconds and prints the worked case first:
 ```text
 fused range 11.6 cm, sigma 0.89 cm, inflated face x = 1.0892 m
 edges (m, >0 blocked): A-P 0.352  A-E -0.089  E-P -0.0132
-cruise 0.80 / 0.38 rad/s, T1 3.345 s, switch at 5.802 s
+cruise 0.80 / 0.38 rad/s, T_AE 3.345 s, switch at 5.802 s
 worked: first contact 6.684 s, peak 9.84 N, settling error -0.889 N, tip 0.967 m/s
+torques (N m): peak |tau| (25.6, 13.5), hold at P (11.30, 9.81), settled press (3.50, 9.72)
 ```
 
 and closes with the separation check, `tip speed: planned bound 0.997 m/s, simulated 0.967 m/s -> S_p 1.239 m`. The simulated tip is slower than the plan because the arm lags a trajectory whose model left out $b$; the check uses the plan, since a safety function must hold for what was commanded. The sweep, with each failing row marked by the page whose limit it violates:
@@ -402,7 +547,9 @@ Reading the table:
 
 ### 7. What this simulation cannot certify
 
-- **24.4's leak.** The plant is stepped at the controller's own period, so the energy a held spring leaks between samples is not in the model at all. And the impedance damper is computed from the exact sampled velocity: $D_d=126\,\mathrm{N{\cdot}s/m}$ at $K_d=2000$, $158$ times the tool's $b$. That is why the $2000\,\mathrm{N/m}$ rows look clean. It is 24.4's case D in a new place — a damper that is not the device's is paying — and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]] says a damper computed from a delayed velocity estimate does not substitute for physical dissipation.
+A run that passes certifies only what its model contains; each item below is something this model leaves out.
+
+- **24.4's leak.** The plant is stepped at the controller's own period, so the energy a held spring leaks between samples is not in the model at all. And the impedance damper is computed from the exact sampled velocity: $D_d=126\,\mathrm{N{\cdot}s/m}$ at $K_d=2000$, $158$ times the tool's $b$. That is why the $2000\,\mathrm{N/m}$ rows look clean. It is 24.4's case D in a new place — the $2500\,\mathrm{N/m}$ wall of [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §4]] and its problem set, which looks settled only because the hand's damping, ten times the device's, pays for its leak: a damper that is not the device's is paying — and [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]] says a damper computed from a delayed velocity estimate does not substitute for physical dissipation.
 - **A stiff panel.** At $10^5\,\mathrm{N/m}$, the series stiffness 13 §1 says a force controller identifies on real structure, the approach becomes an impact: $22\,\mathrm{N}$ in $14\,\mathrm{ms}$ at $5\,\mathrm{cm/s}$ against a $2\,\mathrm{kg}$ apparent mass ([[04-robotics/force-compliance-control|13 §5]]), and the force limit, not latency, would bind first.
 - **One estimate, no noise.** The panel is read once, at home, and the simulation's sensor is exact. A second reading would shrink $\sigma$ — [[02-foundations/probability|3. Probability §5]] runs the sequence — and with it the force band of §4.
 - **Geometry.** Point contact, frictionless face, zero-thickness links. The elbow's clearance was checked; the tool's orientation was not controlled, because a 2R arm has no spare joint for it.
@@ -431,14 +578,14 @@ Reading the table:
 > 2. Joint speed reaches the tip only through $J$, and at $E$, $\lVert Ju\rVert=2.624\,\mathrm{m/rad}$: both joints turn the same way and the tip swings on a long radius, so $0.8\,\mathrm{rad/s}$ becomes up to $2.04\,\mathrm{m/s}$, while $S_p$ is written in tip speed. On $A\to E$ the joints turn in opposite directions at equal rates, $\theta_1+\theta_2$ stays at $90^\circ$ and the forearm only translates: $\lVert Ju\rVert=1$, so the tip moves at $0.8\,\mathrm{m/s}$.
 > 3. $K_d=2000>2b/T=1600$: the held spring leaks more per period than the $0.8\,\mathrm{N{\cdot}s/m}$ tool damper removes, $K_dT/(2b)=1.25$. The trace hides it twice over — the plant is stepped at the control period, so the inter-sample leak is not modelled, and the $126\,\mathrm{N{\cdot}s/m}$ virtual damper computed from the exact velocity pays for it, which 24.4 says a delayed estimate cannot be counted on to do.
 > 4. Because once the motion has died it is set by springs alone: $F_{\text{set}}=K_s(x_{\text{stop}}-x_w)$ has no velocity in it. Only the estimate's error, $K_d$ and $k_w$ (through $K_s$), or measuring the force instead would change it.
-> 5. "At the realised estimate error of $-4\,\mathrm{mm}$." At the band's near edge the same stop point presses $15.96\,\mathrm{N}$ and at its far edge $4.04\,\mathrm{N}$: the result is conditional on the sign of an error the robot cannot see.
+> 5. "At the realised estimate error $x_w-\hat x_w=+4\,\mathrm{mm}$." At the band's near edge the same stop point presses $15.96\,\mathrm{N}$ and at its far edge $4.04\,\mathrm{N}$: the result is conditional on the sign of an error the robot cannot see.
 
 ### Problem set · 과제
 
 Tier A. Using only this page, its prerequisites and [[02-foundations/lab-plants|0.6]]. The same cell with **one reading changed**: the panel was re-hung and the sensor now reads $z=8\,\mathrm{cm}$ — the mirror of $12$ about the drawing's $10$. The simulation's true face moves to where this reading puts it, $x_w=1.080\,\mathrm{m}$. Everything else — the prior, $R$, $d_s$, $E$, the limits, the gains, the controller — stays frozen. Use the lab of §6; do not start a second simulator.
 
 1. **Draw.** The picture above at the new numbers — the loop with each box's new number — and, as *How to draw it* below lays them out, the workspace with the new band, the C-space lens for the new planner's face, and the clock. Mark which boxes' numbers did *not* change, and say why.
-2. **Derive.** (a) The Kalman update, $\hat x_w$ and the planner's face. (b) The pre-contact pose on the elbow-up branch; the direct edge from $A$ at its midpoint; the two legs' clearances. (c) $T_1$; the joint-limit $T_2$; the capped $T_2$, taking $\max_s\lVert Ju\rVert=2.694\,\mathrm{m/rad}$ (attained at $E$) on the new $E\to P$; the switch time. (d) $K_s$, $x_{\text{stop}}$ and $F_{\text{set}}$ at $K_d=500$, and $F_{\text{set}}-F_d$ for all four stiffnesses. (e) The ledger, latency and separation checks.
+2. **Derive.** (a) The Kalman update, $\hat x_w$ and the planner's face. (b) The pre-contact pose on the elbow-up branch; the direct edge from $A$ at its midpoint; the two legs' clearances. (c) $T_{AE}$; the joint-limit $T_{EP}$; the capped $T_{EP}$, taking $\max_s\lVert Ju\rVert=2.694\,\mathrm{m/rad}$ (attained at $E$) on the new $E\to P$; the switch time. (d) $K_s$, $x_{\text{stop}}$ and $F_{\text{set}}$ at $K_d=500$, and $F_{\text{set}}-F_d$ for all four stiffnesses. (e) The ledger, latency and separation checks.
 3. **Do.** Fill the `?` below, paste it over step 1 of the lab, and run. Fill the sweep table with $t_c$, $F_{\text{pk}}$, $F_{\text{set}}-F_d$ and each row's verdict. Then interpret: which rows pass, why the answer differs from the worked case although no controller setting changed, and what change — outside the sweep — would make a row pass.
 
 ```python
@@ -465,16 +612,16 @@ X_OBS = XW_HAT - ? * SIG               # the planner's face
 > - **The switch sits at $P$, before the contact**, not on it: on the clock its tick comes before first contact, and in the workspace $P$ is outside the band.
 
 > [!tip]- Solutions
-> 1. Same loop, same three drawings. Changed: range $8\,\mathrm{cm}$, fused $8.4\,\mathrm{cm}$, planner's face $1.0572\,\mathrm{m}$, stop point $1.129\,\mathrm{m}$, $P$'s tip at $x=1.044$, capped $T_2=2.427\,\mathrm{s}$, switch $5.772\,\mathrm{s}$, first contact $6.494\,\mathrm{s}$, peak $11.62\,\mathrm{N}$. Unchanged: $\sigma=0.894\,\mathrm{cm}$ (the variance update never looks at $z$), $T_1$, the gains, $K_s$, and every check that depends only on $\sigma$, $K_d$ or $v_a$. The clock's force trace now crosses the $11\,\mathrm{N}$ line.
-> 2. (a) $K=0.8$, $\hat x=10+0.8\,(8-10)=8.4\,\mathrm{cm}$, $P=0.8\,\mathrm{cm^2}$, $\hat x_w=1.084\,\mathrm{m}$; planner's face $1.084-0.0268=1.0572\,\mathrm{m}>L_1$, so the tip-only test still holds. (b) Tip $(1.044,\,1.000)$: $\cos\theta_2=(1.044^2+1-2)/2=0.0450$, $\theta_2=-87.42^\circ$, $\theta_1=43.77^\circ+43.71^\circ=87.48^\circ$. Midpoint of $A$–$P$: $(43.74^\circ,\,1.29^\circ)$, tip $x=1.4293$, $0.372\,\mathrm{m}$ inside ($0.373$ at worst) — blocked. $A$–$E$ is clear by $1.0572-1=0.057\,\mathrm{m}$; $E$–$P$ by $1.0572-1.044=13.2\,\mathrm{mm}$ at $P$ — unchanged, because the standoff and $\sigma$ are. (c) $T_1=3.345\,\mathrm{s}$. $E\to P$ moves $(-47.52^\circ,\,-42.42^\circ)=(-0.8294,\,-0.7404)\,\mathrm{rad}$: joint-limit $T_2=0.8294/0.8+0.4=1.437\,\mathrm{s}$; cap $1.0/2.694=0.371\to0.37\,\mathrm{rad/s}$, $T_2=0.8294/0.37+0.185=2.427\,\mathrm{s}$; switch at $3.345+2.427=5.772\,\mathrm{s}$. (d) $K_s=222.2\,\mathrm{N/m}$, $x_{\text{stop}}=1.084+0.045=1.129\,\mathrm{m}$, $F_{\text{set}}=222.2\times0.049=10.889\,\mathrm{N}$, i.e. $+0.889\,\mathrm{N}$. For $K_d=250$, $500$, $1000$, $2000$: $+0.615$, $+0.889$, $+1.143$, $+1.333\,\mathrm{N}$ — the worked case's numbers with the sign flipped. (e) Ledger: $500\le1600$, unchanged. Latency: $3.5\le8.9\,\mathrm{mm}$, unchanged. Separation: $0.37\times2.694=0.997\,\mathrm{m/s}$, $S_p=1.239\,\mathrm{m}$, passes.
-> 3. Blanks: `z = 8.0`, `K = P0 / (P0 + R)`, `xh = x0 + K * (z - x0)`, `Pp = (1 - K) * P0`, `XW_TRUE = 1.080`, `X_OBS = XW_HAT - 3 * SIG`; checks `11.0`, `2 * B / TCTRL`, `SIG`. The run prints fused $8.4\,\mathrm{cm}$, planner's face $1.0572$, edges $0.373$ / $-0.057$ / $-0.0132$, cruise $0.80/0.37$, switch $5.772\,\mathrm{s}$, and the worked row: contact $6.494\,\mathrm{s}$, peak $11.62\,\mathrm{N}$, settling error $+0.889\,\mathrm{N}$. Peak force in newtons, rows $K_d$, columns $v_a=0.05/0.10/0.20/0.40\,\mathrm{m/s}$: $250$: $11.52/12.43/14.23/18.89$; $500$: $11.62/12.34/13.84/16.75$; $1000$: $11.64/12.13/13.13/14.97$; $2000$: $11.64/11.95/12.57/13.72$. **No row passes.** Every row now fails the force limit; the $v_a\ge0.20$ columns also fail latency and the $K_d=2000$ row the ledger, exactly as before. Nothing in the controller changed: the estimate's error flipped from $-4$ to $+4\,\mathrm{mm}$, a position-referenced press turns that into $+K_s\times4\,\mathrm{mm}$ of standing force, and the transient then sits on top of it. The worked case's pass was the sign of an error. What would make a row pass is outside the sweep: measure the force and end the ramp on it, so the estimate moves the stop and not the force (13 §2–§3); or shrink $K_s\sigma$ until the $\pm3\sigma$ band fits the $1\,\mathrm{N}$ margin — at $K_d=500$ that needs $\sigma\le1/(3\times222.2)=1.5\,\mathrm{mm}$, some $45$ independent readings of this sensor, which is why measuring the force is the practical fix.
+> 1. Same loop, same three drawings. Changed: range $8\,\mathrm{cm}$, fused $8.4\,\mathrm{cm}$, planner's face $1.0572\,\mathrm{m}$, stop point $1.129\,\mathrm{m}$, $P$'s tip at $x=1.044$, capped $T_{EP}=2.427\,\mathrm{s}$, switch $5.772\,\mathrm{s}$, first contact $6.494\,\mathrm{s}$, peak $11.62\,\mathrm{N}$. Unchanged: $\sigma=0.894\,\mathrm{cm}$ (the variance update never looks at $z$), $T_{AE}$, the gains, $K_s$, and every check that depends only on $\sigma$, $K_d$ or $v_a$. The clock's force trace now crosses the $11\,\mathrm{N}$ line.
+> 2. (a) $\nu=8-10=-2\,\mathrm{cm}$, $K=0.8$, $\hat x^+=10+0.8\times(-2)=8.4\,\mathrm{cm}$, $P^+=0.8\,\mathrm{cm^2}$, $\hat x_w=1.084\,\mathrm{m}$; planner's face $1.084-0.0268=1.0572\,\mathrm{m}>L_1$, so the tip-only test still holds. (b) Tip $(1.044,\,1.000)$: $\cos\theta_2=(1.044^2+1-2)/2=0.0450$, $\theta_2=-87.42^\circ$, $\theta_1=43.77^\circ+43.71^\circ=87.48^\circ$. Midpoint of $A$–$P$: $(43.74^\circ,\,1.29^\circ)$, tip $x=1.4293$, $0.372\,\mathrm{m}$ inside ($0.373$ at worst) — blocked. $A$–$E$ is clear by $1.0572-1=0.057\,\mathrm{m}$; $E$–$P$ by $1.0572-1.044=13.2\,\mathrm{mm}$ at $P$ — unchanged, because the standoff and $\sigma$ are. (c) $T_{AE}=3.345\,\mathrm{s}$. $E\to P$ moves $(-47.52^\circ,\,-42.42^\circ)=(-0.8294,\,-0.7404)\,\mathrm{rad}$: joint-limit $T_{EP}=0.8294/0.8+0.4=1.437\,\mathrm{s}$; cap $1.0/2.694=0.371\to0.37\,\mathrm{rad/s}$, $T_{EP}=0.8294/0.37+0.185=2.427\,\mathrm{s}$; switch at $3.345+2.427=5.772\,\mathrm{s}$. (d) $K_s=222.2\,\mathrm{N/m}$, $x_{\text{stop}}=1.084+0.045=1.129\,\mathrm{m}$, $F_{\text{set}}=222.2\times0.049=10.889\,\mathrm{N}$, i.e. $+0.889\,\mathrm{N}$. For $K_d=250$, $500$, $1000$, $2000$: $+0.615$, $+0.889$, $+1.143$, $+1.333\,\mathrm{N}$ — the worked case's numbers with the sign flipped. (e) Ledger: $500\le1600$, unchanged. Latency: $3.5\le8.9\,\mathrm{mm}$, unchanged. Separation: $0.37\times2.694=0.997\,\mathrm{m/s}$, $S_p=1.239\,\mathrm{m}$, passes.
+> 3. Blanks: `z = 8.0`, `K = P0 / (P0 + R)`, `xh = x0 + K * (z - x0)`, `Pp = (1 - K) * P0`, `XW_TRUE = 1.080`, `X_OBS = XW_HAT - 3 * SIG`; checks `11.0`, `2 * B / TCTRL`, `SIG`. The run prints fused $8.4\,\mathrm{cm}$, planner's face $1.0572$, edges $0.373$ / $-0.057$ / $-0.0132$, cruise $0.80/0.37$, switch $5.772\,\mathrm{s}$, and the worked row: contact $6.494\,\mathrm{s}$, peak $11.62\,\mathrm{N}$, settling error $+0.889\,\mathrm{N}$; the torque line moves little — peaks $(25.9,\,13.6)$, holds $(10.67,\,9.81)$ and $(1.02,\,9.75)\,\mathrm{N{\cdot}m}$ — and stays inside 10.5's limits. Peak force in newtons, rows $K_d$, columns $v_a=0.05/0.10/0.20/0.40\,\mathrm{m/s}$: $250$: $11.52/12.43/14.23/18.89$; $500$: $11.62/12.34/13.84/16.75$; $1000$: $11.64/12.13/13.13/14.97$; $2000$: $11.64/11.95/12.57/13.72$. **No row passes.** Every row now fails the force limit; the $v_a\ge0.20$ columns also fail latency and the $K_d=2000$ row the ledger, exactly as before. Nothing in the controller changed: the estimate's error $x_w-\hat x_w$ flipped from $+4$ to $-4\,\mathrm{mm}$, a position-referenced press, $F_{\text{set}}=F_d-K_s(x_w-\hat x_w)$, turns that into $+K_s\times4\,\mathrm{mm}=+0.889\,\mathrm{N}$ of standing force, and the transient then sits on top of it. The worked case's pass was the sign of an error. What would make a row pass is outside the sweep: measure the force and end the ramp on it, so the estimate moves the stop and not the force (13 §2–§3); or shrink $K_s\sigma$ until the $\pm3\sigma$ band fits the $1\,\mathrm{N}$ margin — at $K_d=500$ that needs $\sigma\le1/(3\times222.2)=1.5\,\mathrm{mm}$, some $45$ independent readings of this sensor, which is why measuring the force is the practical fix.
 >
 > **Grading checklist** (10 points, one each).
 > - [ ] Kalman: $K=0.8$, $8.4\,\mathrm{cm}$, $0.8\,\mathrm{cm^2}$, $\hat x_w=1.084\,\mathrm{m}$, with the note that $\sigma$ did not change.
 > - [ ] Planner's face $1.0572\,\mathrm{m}$, with the reason the tip-only test survives ($1.0572>L_1$).
 > - [ ] Pre-contact IK on the elbow-up branch, $(87.48^\circ,\,-87.42^\circ)$, with the reason: the tool rides the forearm.
 > - [ ] Direct edge blocked, about $0.37\,\mathrm{m}$ deep; both legs clear, with their clearances.
-> - [ ] $T_1$, the joint-limit and capped $T_2$, and the cruise $0.37\,\mathrm{rad/s}$ rounded *down*.
+> - [ ] $T_{AE}$, the joint-limit and capped $T_{EP}$, and the cruise $0.37\,\mathrm{rad/s}$ rounded *down*.
 > - [ ] $K_s$, $x_{\text{stop}}$, $F_{\text{set}}=10.889\,\mathrm{N}$, and the four signed settling errors.
 > - [ ] Ledger, latency and separation computed, with verdicts unchanged.
 > - [ ] Template filled; printed first contact $6.494\,\mathrm{s}$ and peak $11.62\,\mathrm{N}$.
@@ -499,19 +646,20 @@ X_OBS = XW_HAT - ? * SIG               # the planner's face
 ## 한국어
 
 > [!note] 선수 지식 · Prerequisites
-> **이 캡스톤에는 공통 트랙 전체가 필요하다** — [[04-robotics/index|4. 로보틱스]]의 1–11쪽과 그 누적 과제, 곧 그곳 학습 일정의 1–99회차 — **그리고 100회차에 배정된 전문화 트랙의 두 절**, [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §1, §2, §5]]와 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]가 필요하다. 장치 **P2**, **P3**, **P5**, **P6**([[02-foundations/lab-plants|0.6 Lab Plants]])을 [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기 위에서 돌리고, 어느 단계도 다시 가르치지 않는다. 아래 각 단계는 주인 페이지를 밝히고 그 페이지의 결과를 주어진 것으로 쓴다. 매니퓰레이션 순서 9 → 13 → 15만으로는 모자란다. 그것은 접촉 쪽 절반만 주고, [[04-robotics/grasping|15. 파지]]는 전혀 쓰이지 않는다 — 이 셀에서는 아무것도 쥐지 않기 때문이다. 시작하기 전에 아래 줄을 모두 체크하라. 줄마다 캡스톤이 그 페이지에서 가져가는 것과, 풀이를 가리고 재현할 숫자 하나를 적었다.
+> **이 캡스톤에는 공통 트랙 전체가 필요하다** — [[04-robotics/index|4. 로보틱스]]의 1–11번 페이지와 그 누적 과제, 곧 그곳 학습 일정의 1–99회차 — **그리고 100회차에 배정된 전문화 트랙의 두 절**, [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §1, §2, §5]]와 [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]가 필요하다. 장치 **P2**, **P3**, **P5**, **P6**([[02-foundations/lab-plants|0.6 Lab Plants]]. 장치(plant)는 제어공학에서 제어 대상 시스템을 부르는 말이고, 여기서는 두 링크 팔 P2, 패널이 벽 법칙과 강성을 빌려 오는 1축 햅틱 손잡이 P3, 거리 센서 P5, 카메라에서 힘까지의 시계 P6이다)을 [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 적분기 위에서 돌리고, 어느 단계도 다시 가르치지 않는다. 아래 각 단계는 주인 페이지를 밝히고 그 페이지의 결과를 주어진 것으로 쓴다. 매니퓰레이션 순서 9 → 13 → 15만으로는 모자란다. 그것은 접촉 쪽 절반만 주고, [[04-robotics/grasping|15. 파지]]는 전혀 쓰이지 않는다 — 이 셀에서는 아무것도 쥐지 않기 때문이다. 시작하기 전에 아래 줄을 모두 체크하라. 줄마다 캡스톤이 그 페이지에서 가져가는 것과, 풀이를 가리고 재현할 숫자 하나를 적었다.
 >
 > **공통 트랙 — 루프가 돌리는 단계, 그 순서대로**
 > - [ ] **칼만 갱신**([[02-foundations/probability|3. 확률 §5]], 같은 P5 갱신을 [[04-robotics/state-estimation-slam|3. 상태 추정 §6]]에서도 푼다) → 1단계. 분산 4 cm²의 사전 10 cm와 분산 1 cm²의 측정 12 cm가 11.6 cm, 0.8 cm²로 융합된다.
-> - [ ] **C-장애물**([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]) → 2단계와 §2. $x=1$의 면이 P2 토러스의 $18.478\,\%$를 막는다.
+> - [ ] **C-장애물**([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]) → 2단계와 §2. $x=1$의 면은 $\theta_1=\pm90^\circ$에서 한 점으로 오므라드는 렌즈 모양의 C-장애물을 만들고, 접촉 컨피규레이션 $A=(0^\circ,90^\circ)$는 그 경계 위에 있다.
 > - [ ] **간선 검사와 경유점**([[04-robotics/modern-robotics/ch10-motion-planning|MR 10장 §2]]) → 2단계. 로드맵이 $A\to E\to B$를 $\pi\sqrt2=4.4429$ rad로 돌려주고, 막힌 직통 간선보다 $26.5\,\%$ 길다.
 > - [ ] **야코비안과 정역학**([[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]) → 3단계와 5단계. 카탈로그 자세에서 $J=\begin{pmatrix}-1&-1\\1&0\end{pmatrix}$이고, $v=(0,-0.25)$ m/s에는 $\dot\theta=(-0.25,\,0.25)$ rad/s가 필요하다.
 > - [ ] **사다리꼴 시간 스케일링**([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §3]]) → 3단계와 8단계. 고정 한계 $0.8$ rad/s, $2$ rad/s²에서 $\pi$ rad의 엘보 뒤집기는 $\pi/0.8+0.8/2=4.327$ s의 온전한 사다리꼴이고, 더 빠르고 약한 구동계($1.6$ rad/s, $0.5$ rad/s²)에서는 최고 속도에 닿지 못해 $5.013$ s의 삼각형이 된다.
-> - [ ] **질량 행렬, 중력, 계산 토크**([[04-robotics/modern-robotics/ch08-dynamics|MR 8장]], [[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §2]]) → 4단계와 랩. 정지 상태에서 $\tau=g=(19.62,\,0)$ N·m이고, 계산 토크 $\tau=(29.62,\,10)$ N·m은 $\ddot\theta=(0,\,10)$을 주는데 PD는 결합된 $(-5,\,15)$를 준다.
+> - [ ] **질량 행렬, 중력, 계산 토크**([[04-robotics/modern-robotics/ch08-dynamics|MR 8장]], [[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §2]]) → 4단계와 랩. 정지 상태에서 $\tau=g=(19.62,\,0)$ N·m이다. 11장의 과제 2, 곧 엘보의 $0.1$ rad 오차에서 계산 토크 $\tau=(29.62,\,10)$ N·m은 $\ddot\theta=(0,\,10)$을 주는데, 중력 보상 PD는 결합된 $(-5,\,15)$를 준다.
+> - [ ] **관절 구동계**([[04-robotics/actuators-drives|10.5 액추에이터·구동계 §3, §6]]) → 4단계. $n=100$인 P2의 어깨 구동계는 증폭기가 $80$ N·m로, 열이 연속 $25.3$ N·m로 묶으므로, 카탈로그 자세의 유지 토크 $19.62$ N·m는 연속 정격의 $77.6\,\%$를 쓴다.
 > - [ ] **작업 공간 관성**([[02-foundations/manipulator-kinematics-dynamics|10. 매니퓰레이터 기구학·동역학 §6]]) → 5단계. 카탈로그 자세에서 $\Lambda=(JM^{-1}J^\top)^{-1}=\mathrm{diag}(1,2)$ kg.
 > - [ ] **접촉과 그 검출**([[04-robotics/contact-force-tactile|9. 접촉 §1, §7]]) → 패널의 단방향 법칙과 §4의 전환. 접촉 상태 추정의 두 정의 조건, 그리고 "명령이 표면을 넘었다"가 둘째 조건을 어기는 이유.
-> - [ ] **지연 예산**([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]) → 8단계와 §5. $70$ ms 관측-행동 예산을 그 부분들로 다시 쌓는다.
-> - [ ] **분리 거리**([[04-robotics/hri-safety|11. HRI·안전]]의 계산 절) → 8단계. $S_p=1.24$ m를 항마다.
+> - [ ] **지연 예산**([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]) → 8단계와 §5. $70$ ms 관측-행동 예산을 그 부분들로 다시 쌓고, 10 §3의 합에서 $L-\tfrac12T_{\text{cam}}$으로 놓이는 자리를 확인한다.
+> - [ ] **이격 거리**([[04-robotics/hri-safety|11. HRI·안전]]의 계산 절) → 8단계. $S_p=1.24$ m를 항마다.
 > - [ ] **적분기**([[02-foundations/lab-kernel|0.7 Lab Kernel §3]]) → §6의 랩. 반암시적 오일러: 속도를 먼저, 그다음 새 속도로 위치를.
 > - [ ] **누적 과제**([[04-robotics/index|4. 로보틱스]]) → §1. $(-0.05,\,0.05)$ rad/s, $(9.62,\,0)$ N·m, $1600$ N/m, $11.6$ cm.
 >
@@ -519,26 +667,29 @@ X_OBS = XW_HAT - ? * SIG               # the planner's face
 > - [ ] **목표 임피던스, 직렬 강성, 충격**([[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §1, §2, §5]]) → 5–6단계와 §4. $D_d=2\sqrt{500\times2}=63.2$ N·s/m; $10^5$ N/m와 직렬이면 $500$ N/m 제어기가 변위의 $99.5\,\%$를 맡는다; $10^5$ N/m 위에 $5$ cm/s로 닿으면 $14.05$ ms 동안 $22.4$ N의 정점이 난다.
 > - [ ] **샘플된 스프링의 장부**([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]) → 7단계. $b=0.8$ N·s/m, $T=1$ ms에서 $K\le2b/T=1600$ N/m.
 >
-> 위에 이름이 없는 공통 트랙 페이지 — 3.2, 3.5, 4–8, 10.5, 그리고 나머지 Modern Robotics 장 — 는 직접 호출되지 않는다. 위의 단계들이 그 위에 서 있고, 학습 일정은 이 페이지를 그 모두의 뒤에 둔다.
+> 위에 이름이 없는 공통 트랙 페이지 — 3.2, 3.5, 4–8, 그리고 나머지 Modern Robotics 장 — 는 직접 호출되지 않는다. 위의 단계들이 그 위에 서 있고, 학습 일정은 이 페이지를 그 모두의 뒤에 둔다.
 
 *로보틱스 트랙의 캡스톤. [[04-robotics/index|4. 로보틱스]]의 누적 과제처럼 장치 넷(**P2**, **P3**, **P5**, **P6**)을 함께 쓰지만, 따로 떨어진 답 넷이 아니라 단계마다 앞 단계의 답이 다음 단계의 입력이 되는 루프 하나로 쓴다.*
 
+> [!note] 왜 배우는가 · Why this matters
+> 이 페이지는 [[physical-ai-map|피지컬 AI 지도]]에서 로봇 스택의 맨 위 띠, *닫힌 루프*이고 — [[07-research-program/index|7. 연구 프로그램 §5]]의 스택을 처음부터 끝까지 돌리는 유일한 페이지다 — "*저 패널을 프레임에 설치해*"의 네 단계를 시뮬레이션 하나로 돌린다: 패널을 *식별하고*(P5의 융합 거리, 1단계), *부재를 옮기고*($A\to E\to P$의 계획·시간 입히기·추종, 2–4단계), *끼움을 수행하고*(임피던스 누르기, 5–7단계), *완료를 검증한다*(9단계의 보고와 §5의 네 검사). 조립은 올바른 페이지들끼리 어긋나는 자리다. $E\to P$ 구간은 MR 9장의 관절 한계를 모두 지키면서도 말단을 $2.04$ m/s로 몰아 11번 페이지의 이격 거리를 $1.24$에서 $1.50$ m로 키우고, $9.84$ N으로 $11$ N 한계를 통과한 누르기는 패널이 제 $3\sigma$ 띠의 가까운 끝에 서 있었다면 $15.96$ N으로 눌렀을 것이다 — 통과는 로봇이 볼 수 없는 오차의 부호였다. 이 페이지는 학습된 정책이 이겨야 할 고전 기준선으로서 학위논문 경로의 블록 2, 로보틱스 99–104회차를 닫고([[07-research-program/index|7 §8]]), [[04-robotics/force-compliance-control|13 §2–§3]](블록 3)은 누르기를 잰 힘으로 끝내는 곳이며, [[05-construction-robotics/imitating-contact|10. 접촉 모방]](블록 7)은 학습된 정책을 건설 트랙의 20 kg 외장 패널 S1([[05-construction-robotics/site-engineering|2.5]]) 위에서 같은 종류의 접촉으로 몰아넣는다. 이 페이지를 마치면 접촉 파이프라인의 어떤 숫자든 그것을 소유한 페이지까지 추적하고, 시뮬레이션이 보증할 수 있는 검사가 어느 것인지 말할 수 있다.
+
 > [!note] 처음이라면 · First pass
-> 먼저 선수 지식의 체크리스트를 채워라. 재현하지 못하는 줄은 이 페이지가 설명해 줄 것이 아니라 돌아가야 할 단계 페이지다. 그다음 이 페이지의 대상과 그림을 읽고, 계산 절을 보고서와 경고까지 따라가라. 그것이 이 페이지다. 그다음 §5에서 네 가지 검사와 그 주인을 보고 §6의 랩을 돌려라. §1–§4는 조립에 필요했지만 어느 한 페이지도 갖고 있지 않던 것을 하나씩 정의하고, §7은 시뮬레이션이 보증하지 못하는 것을 말한다.
+> 60–90분짜리 회차 여섯, 로보틱스 99–104회차이고, 루프의 두 절반으로 나눈다. **99–100회차:** 선수 지식의 체크리스트 — 99회차에 누적 과제와 공통 트랙 줄들, 100회차에 전문화 트랙의 두 절과 그 줄들. 재현하지 못하는 줄은 이 페이지가 설명해 줄 것이 아니라 돌아가야 할 단계 페이지다. **101회차:** 이 페이지의 대상, 그림, 그리고 그 단계들이 쓰는 두 가지를 정의하는 §2, §3과 함께 계산 절의 1–4단계. 페이지를 가리고 계획기의 면 $1.0892$ m와 제한한 순항 $0.38$ rad/s를 유도하며 끝낸다. **102회차:** §4, §5와 함께 5–9단계, 그리고 계산 절을 끝맺는 경고. 보고 — 첫 접촉 $6.684$ s, $11$ N 한계 대비 $9.84$ N — 와 그 한계가 들어 있는 $\pm5.96$ N 띠로 끝낸다. **103회차:** §6의 랩을 돌리고 스윕을 읽은 뒤 §1과 §7. **104회차:** 스스로 점검과 과제. 과제는 측정이 거울상인 같은 셀이다. 5단계의 더 깊이 노트는 $\Lambda$의 닫힌 꼴을 유도하며, 첫 읽기에서는 건너뛴다.
 
 ### 이 페이지의 대상 · Running object
 
-**캡스톤 셀.** [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 수직 평면에 서 있고 중력 $9.81\,\mathrm{m/s^2}$가 $-y$로 작용한다. 카탈로그 자세에 세워 두고, 말단이 곧 접촉점인 공구를 들고 있다. 그 앞에 패널이 서 있다 — [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]과 [[04-robotics/contact-force-tactile|9. 접촉]]의 수직 면이고, 강성과 벽 법칙은 장치 **P3** 것이다. 그 면이 어디 있는지는 추정해야 하며 그것이 장치 **P5**, 카메라에서 힘까지의 예산은 장치 **P6** 것이다. 나머지 숫자는 모두 그 숫자의 주인 페이지에서 빌려 오고, 이 페이지가 더한 몇 개는 *이 페이지*로 표시한다.
+**캡스톤 셀.** [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P2**, 수직 평면에 서 있고 중력 $9.81\,\mathrm{m/s^2}$가 $-y$로 작용한다. 카탈로그 자세에 세워 두고, 말단이 곧 접촉점인 도구를 들고 있다. 그 앞에 패널이 서 있다 — [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]과 [[04-robotics/contact-force-tactile|9. 접촉]]의 수직 면이고, 강성과 벽 법칙은 장치 **P3** 것이다. 그 면이 어디 있는지는 추정해야 하며 그것이 장치 **P5**, 카메라에서 힘까지의 예산은 장치 **P6** 것이다. 나머지 숫자는 모두 그 숫자의 주인 페이지에서 빌려 오고, 이 페이지가 더한 몇 개는 *이 페이지*로 표시한다.
 
 | 기호 | 값 | 뜻 | 주인 |
 |---|---:|---|---|
 | $A$ | $\theta=(0^\circ,90^\circ)$, 말단 $(1,1)\,\mathrm{m}$ | 홈: 카탈로그 자세 | 0.6 |
 | 사전 | $10\,\mathrm{cm}$, 분산 $4\,\mathrm{cm^2}$ | 도면상 홈 말단에서 면까지의 거리, 즉 면은 $x=1.10\,\mathrm{m}$ | P5 |
-| $z$, $R$ | $12\,\mathrm{cm}$, $1\,\mathrm{cm^2}$ | 홈에서 공구에 단 센서로 $+x$ 방향을 한 번 잰 거리 | P5 |
+| $z$, $R$ | $12\,\mathrm{cm}$, $1\,\mathrm{cm^2}$ | 홈에서 도구에 단 센서로 $+x$ 방향을 한 번 잰 거리 | P5 |
 | $x_w$ | $1.120\,\mathrm{m}$ | 참 면, 시뮬레이션만 쓴다 — 센서가 읽은 자리에 둔다(예시값) | 이 페이지 |
 | $k_w$ | $400\,\mathrm{N/m}$ | 패널 강성; $x>x_w$일 때만 힘 $-k_w(x-x_w)$ | P3 |
-| $b$ | $0.8\,\mathrm{N{\cdot}s/m}$ | 공구의 물리 댐핑, P3의 장치 댐퍼를 빌린다 — 24.4의 장부가 쓸 수 있는 유일한 항; 제어기 모델에는 없다 | P3, 이 페이지 |
-| $y_c$, $d_s$ | $1.00\,\mathrm{m}$, $4\,\mathrm{cm}$ | 접촉 높이, 그리고 추정한 면에서 접촉 전 자세까지의 이격 거리 | 이 페이지 |
+| $b$ | $0.8\,\mathrm{N{\cdot}s/m}$ | 도구의 물리 댐핑, P3의 장치 댐퍼를 빌린다 — 24.4의 장부가 쓸 수 있는 유일한 항; 제어기 모델에는 없다 | P3, 이 페이지 |
+| $y_c$, $d_s$ | $1.00\,\mathrm{m}$, $4\,\mathrm{cm}$ | 접촉 높이, 그리고 추정한 면에서 접촉 전 자세까지의 대기 간격(standoff) | 이 페이지 |
 | $E$ | $\theta=(135^\circ,-45^\circ)$ | 경유점: 10장 로드맵의 답 | MR 10장 |
 | $v_{\max}$, $a_{\max}$ | $0.8\,\mathrm{rad/s}$, $2\,\mathrm{rad/s^2}$ | 관절 한계, 모든 관절 | MR 9장 |
 | $v_{\text{tip}}$ | $1.0\,\mathrm{m/s}$ | 11번 페이지의 셀이 가정한 말단 속도 | 11 |
@@ -547,9 +698,15 @@ X_OBS = XW_HAT - ? * SIG               # the planner's face
 | $v_a$, $F_d$ | $0.05\,\mathrm{m/s}$, $10\,\mathrm{N}$ | 접근 속도와 명령한 누르는 힘 | 13 |
 | $F_{\lim}$ | $11\,\mathrm{N}$ | 최대 힘 한계, 누르는 힘보다 최대 $10\,\%$ 초과(예시 과제 사양) | 이 페이지 |
 | $T$ | $1\,\mathrm{ms}$ | 제어기 주기, 토크는 주기 동안 유지 | 24.4 |
-| $L$ | $70\,\mathrm{ms}$ | 관측에서 행동까지의 예산 | P6, 10 |
+| $L$ | $70\,\mathrm{ms}$ | 관측에서 행동까지의 예산, 노출 중간점부터 힘이 가해질 때까지 — 10 §3은 이것을 $L-\tfrac12T_{\text{cam}}$으로 쓰고 $L$은 물리적 사건부터의 구간에 남겨 둔다 | P6, 10 |
 
 $400\,\mathrm{N/m}$은 부드럽다. [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §1]]의 강성 눈금에서 폼 줄보다도 낮다. 그러니 이것은 유연하게 장착한 패널이고, 아래의 접근은 충격이 아니라 느린 누르기다. 구조물 패널이 같은 접근에 무엇을 하는지는 13 §5가 계산한다. 2장처럼 면에는 마찰이 없고 링크에는 두께가 없다.
+
+**4번 페이지의 패널과 견주면.** [[04-robotics/planning-decision-making|4. 계획]]과 MR 2장은 면이 $p^\star=(1,1)$을 지나는 단단한 반평면 $x\ge1$ m를 고정한다. 이 페이지의 패널은 그 수직 패널을 바깥으로 옮기고 부드럽게 만든 것이다. 면은 도면에서 $1.10$ m, 추정으로 $1.116$ m, 실제로 $1.120$ m에 있고, $400$ N/m로 유연하게 장착되어 있으며, 도구가 $+x$로 누른다. $-y$로 누르는 [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]의 평평한 패널은 같은 패널을 직각으로 돌린 것이다. 그래서 2장과 4번 페이지의 접촉 컨피규레이션 $A$가 여기서는 도면의 면보다 $10$ cm 앞의 홈이고, 접촉 전 자세 $P$가 4번 페이지의 $B$ 역할 — 엘보가 위, 전완이 면을 가리킴 — 을 맡는다. 충돌 검사는 4번 페이지와 2장의 것, 곧 팔 전체를 면에 대 보는 검사이고, 접촉은 자유로 치며 침투만 충돌이다:
+
+$$d(\theta)=\max\bigl(\cos\theta_1,\ \cos\theta_1+\cos(\theta_1+\theta_2)\bigr)-x_{\text{face}}$$
+
+이 페이지가 쓰는 면은 모두 엘보가 닿는 범위 너머, 곧 $x_{\text{face}}>L_1=1$에 있으므로 엘보 항은 늘 음수이고 충돌할 수 있는 것은 말단 항뿐이다(§2).
 
 *범위: 이 페이지는 관통 과제의 단계들이 서로를 어떻게 먹이는지 — 한 페이지의 어떤 숫자가 다음 페이지의 입력이 되고, 두 페이지의 검사가 어디서 어긋나는지 — 를 고정된 셀 하나와 루프 전체의 시뮬레이션 하나로 가르친다. 어떤 단계도 다시 가르치지 않는다. 각 단계는 쓰이는 자리에서 주인 페이지로 연결된다. 접촉 감지([[04-robotics/contact-force-tactile|9. 접촉 §7]]), 힘 센싱 제어([[04-robotics/force-compliance-control|13 §3]]), 단단한 패널의 충격([[04-robotics/force-compliance-control|13 §5]])은 가르치지 않는다.*
 
@@ -558,43 +715,157 @@ $400\,\mathrm{N/m}$은 부드럽다. [[04-robotics/force-compliance-control|13. 
 ```mermaid
 flowchart LR
     Z["거리 측정 z = 12 cm"] --> KF["칼만: 11.6 cm, sigma 0.89 cm"]
-    KF --> OB["planner가 쓰는 면 x = 1.0892 m"]
+    KF --> OB["계획기가 쓰는 면 x = 1.0892 m"]
     KF --> XS["정지점 x = 1.161 m"]
     OB --> PL["경로 A, E, P"]
-    PL --> TS["사다리꼴 3.345 s와 2.457 s"]
+    PL --> TS["사다리꼴: A에서 E 3.345 s, E에서 P 1.477 s, 제한 뒤 2.457 s"]
     TS --> CT["계산 토크 kp 100, kv 20"]
     CT --> SW{"P에 도착했나?"}
     SW -->|예| IM["임피던스 Kd 500, Dd 63.2"]
     XS --> IM
     IM --> WL["패널 kw 400 N/m"]
-    WL --> CK["점검: 11 N, 2b/T, va L, S_p"]
+    WL --> CK["검사: 최대 힘 11 N, 장부 2b/T, 낡음 va L 대 sigma, 이격 S_p"]
+    CK -.->|"S_p 1.50 m, 1.24 m 초과: 말단 속도 제한"| TS
 ```
 
-계산 절의 루프를 단계별로 그렸고, 상자마다 다음 단계로 넘기는 숫자가 적혀 있다. $12\,\mathrm{cm}$ 측정은 $\sigma=0.89\,\mathrm{cm}$의 $11.6\,\mathrm{cm}$로 융합되어 두 단계를 먹인다: 띠의 가까운 끝 $x=1.0892\,\mathrm{m}$는 계획기로, 추정은 $x=1.161\,\mathrm{m}$의 정지점으로 간다. 경로 $A\to E\to P$는 $3.345\,\mathrm{s}$와 $2.457\,\mathrm{s}$의 사다리꼴로 시간이 매겨져 계산 토크로 추종되다가 $P$에 도착하면 임피던스($K_d=500\,\mathrm{N/m}$, $D_d=63.2\,\mathrm{N{\cdot}s/m}$)로 전환되고, $400\,\mathrm{N/m}$ 패널을 누르는 일은 검사 넷으로 판정한다: $11\,\mathrm{N}$ 한계, 장부 $2b/T$, 지연 $v_aL$, 분리 $S_p$.
+계산 절의 루프를 단계별로 그렸고, 상자마다 다음 단계로 넘기는 숫자가 적혀 있다. $12\,\mathrm{cm}$ 측정은 $\sigma=0.89\,\mathrm{cm}$의 $11.6\,\mathrm{cm}$로 융합되어 두 단계를 먹이고 — 띠의 가까운 끝 $x=1.0892\,\mathrm{m}$는 계획기로, 추정은 $x=1.161\,\mathrm{m}$의 정지점으로 간다 — 점선 간선은 조립만이 보여 주는 단 하나의 되먹임이다. 이격 검사가 $1.50\,\mathrm{m}$에서 떨어져 $1.477\,\mathrm{s}$ 구간을 말단에서 제한하도록 돌려보내고, 그 구간은 $2.457\,\mathrm{s}$가 된다. 그다음 계산 토크가 경로를 추종하다가 $P$에서 임피던스($K_d=500\,\mathrm{N/m}$, $D_d=63.2\,\mathrm{N{\cdot}s/m}$)로 전환되고, $400\,\mathrm{N/m}$ 패널을 누르는 일은 검사 넷으로 판정한다: $11\,\mathrm{N}$ 최대 힘 한계, 장부 $2b/T$, $\sigma$와 견준 낡음 $v_aL$, 이격 $S_p$.
+
+<svg viewBox="0 0 560 520" style="max-width:100%;height:auto" role="img" aria-label="공간과 시간으로 본 계산 절. 왼쪽 위는 1 m를 125 px로 그린 작업 영역: 말단이 (1, 1)인 홈 A, 말단이 (-0.707, 1.707)인 경유점 E, 말단이 (1.076, 1.000)인 접촉 전 자세 P의 P2, 말단 경로 A→E→P, 점선으로 그린 직통 간선의 중간점 자세(말단이 계획기의 면 안으로 0.35 m), 3σ 띠를 가진 패널. 오른쪽 위는 1 m를 1600 px로 그린 접촉 구역: 띠 [1.0892, 1.1428]보다 13.2 mm 앞의 P 말단, 추정 1.116까지의 대기 간격 4 cm, 도면의 면 1.10, 참 면 1.120, 정지점 1.161, 정착한 말단 1.143. 아래는 0–9 s의 시계: 3.345 s에 E 도착, 5.802 s에 전환, 6.684 s에 첫 접촉, 7.502 s에 기준 정지, 7.526 s에 10 N 명령과 11 N 한계 아래 9.84 N의 최대, 9.11 N으로 정착. 옅은 눈금은 고치기 전 계획의 접촉 5.704 s다.">
+  <text x="12" y="16" font-size="12" font-weight="600" fill="currentColor">작업 영역 (m), 1 m = 125 px</text>
+  <rect x="264.9" y="36.0" width="47.1" height="267.5" fill="currentColor" fill-opacity="0.06"/>
+  <rect x="258.1" y="36.0" width="6.7" height="267.5" fill="currentColor" fill-opacity="0.22"/>
+  <text x="308.0" y="50.0" font-size="11" fill="currentColor" text-anchor="end">패널</text>
+  <text x="254.1" y="50.0" font-size="10.5" fill="currentColor" text-anchor="end">3σ 띠</text>
+  <polyline points="247.0,171.0 246.9,166.0 246.6,161.0 246.1,156.1 245.4,151.1 244.5,146.2 243.4,141.3 242.1,136.5 240.7,131.7 239.0,127.0 237.2,122.4 235.1,117.8 232.9,113.4 230.5,109.0 228.0,104.7 225.2,100.5 222.3,96.5 219.3,92.5 216.1,88.7 212.7,85.0 209.2,81.4 205.6,78.0 201.8,74.8 197.9,71.7 193.8,68.7 189.7,65.9 185.5,63.3 181.1,60.9 176.7,58.6 172.1,56.5 167.5,54.6 162.8,52.9 158.1,51.3 153.3,50.0 148.4,48.8 143.5,47.9 138.6,47.1 133.6,46.5 128.7,46.2 123.7,46.0 118.7,46.0 113.7,46.3 108.7,46.7 103.8,47.3 98.8,48.2 94.0,49.2 89.1,50.4 84.3,51.8 79.6,53.4 74.9,55.2 70.3,57.2 65.8,59.3 61.4,61.7 57.1,64.2 52.9,66.8 48.8,69.7 44.8,72.7 40.9,75.8 37.2,79.2 33.6,82.6" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+  <polyline points="33.6,82.6 38.2,81.4 42.9,80.2 47.5,79.2 52.2,78.3 56.9,77.5 61.5,76.8 66.2,76.2 70.9,75.7 75.6,75.4 80.2,75.1 84.9,74.9 89.6,74.9 94.2,74.9 98.8,75.1 103.4,75.3 108.0,75.7 112.6,76.1 117.1,76.7 121.7,77.4 126.2,78.2 130.6,79.0 135.0,80.0 139.4,81.1 143.8,82.2 148.1,83.5 152.3,84.8 156.5,86.3 160.7,87.8 164.8,89.4 168.9,91.1 172.9,92.9 176.8,94.8 180.7,96.8 184.6,98.8 188.3,101.0 192.1,103.2 195.7,105.4 199.3,107.8 202.8,110.2 206.2,112.7 209.6,115.3 212.9,118.0 216.1,120.7 219.3,123.4 222.3,126.3 225.3,129.1 228.2,132.1 231.0,135.1 233.8,138.1 236.4,141.2 239.0,144.4 241.5,147.6 243.9,150.8 246.2,154.1 248.5,157.4 250.6,160.7 252.7,164.1 254.6,167.6 256.5,171.0" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.75"/>
+  <polyline points="122.0,296.0 213.7,211.0 302.0,122.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.45" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 3"/>
+  <circle cx="302.0" cy="122.5" r="2.6" fill="currentColor" fill-opacity="0.45"/>
+  <polyline points="122.0,296.0 33.6,207.6 33.6,82.6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-opacity="0.55" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="33.6" cy="82.6" r="2.6" fill="currentColor" fill-opacity="0.55"/>
+  <polyline points="122.0,296.0 247.0,296.0 247.0,171.0" fill="none" stroke="currentColor" stroke-width="2.8" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="247.0" cy="171.0" r="2.6" fill="currentColor" fill-opacity="0.9"/>
+  <polyline points="122.0,296.0 131.5,171.4 256.5,171.0" fill="none" stroke="currentColor" stroke-width="2.8" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="256.5" cy="171.0" r="2.6" fill="currentColor" fill-opacity="0.9"/>
+  <rect x="115.0" y="292.0" width="14" height="8" fill="currentColor" fill-opacity="0.35"/>
+  <text x="241.0" y="288.0" font-size="11" fill="currentColor" text-anchor="end">A, 홈</text>
+  <text x="39.6" y="86.6" font-size="11" fill="currentColor">E, 경유점</text>
+  <text x="243.0" y="187.0" font-size="11" fill="currentColor" text-anchor="end">P, 접촉 전</text>
+  <text x="139.0" y="128.0" font-size="10" fill="currentColor" fill-opacity="0.85">점선은 직통</text>
+  <text x="139.0" y="140.0" font-size="10" fill="currentColor" fill-opacity="0.85">간선의 중간점 자세,</text>
+  <text x="139.0" y="152.0" font-size="10" fill="currentColor" fill-opacity="0.85">말단이 계획기 면보다</text>
+  <text x="139.0" y="164.0" font-size="10" fill="currentColor" fill-opacity="0.85">0.35 m 안쪽</text>
+  <text x="201.5" y="63.9" font-size="10.5" fill="currentColor">A→E</text>
+  <text x="115.8" y="92.5" font-size="10.5" fill="currentColor" text-anchor="middle">E→P</text>
+  <text x="372.0" y="30" font-size="11" font-weight="600" fill="currentColor">접촉 구역, 1 m = 1600 px</text>
+  <rect x="418.7" y="40.0" width="85.8" height="174.0" fill="currentColor" fill-opacity="0.18"/>
+  <text x="461.6" y="53.0" font-size="10.5" fill="currentColor" text-anchor="middle">3σ 띠</text>
+  <line x1="436.0" y1="118.0" x2="436.0" y2="158.0" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 3"/>
+  <line x1="461.6" y1="118.0" x2="461.6" y2="158.0" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="468.0" y1="118.0" x2="468.0" y2="158.0" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.2 2.2"/>
+  <line x1="372.0" y1="214.0" x2="552" y2="214.0" stroke="currentColor" stroke-width="1"/>
+  <line x1="397.6" y1="214.0" x2="397.6" y2="218.0" stroke="currentColor" stroke-width="1"/>
+  <text x="397.6" y="229.0" font-size="10" fill="currentColor" text-anchor="middle">1.076</text>
+  <line x1="418.7" y1="214.0" x2="418.7" y2="218.0" stroke="currentColor" stroke-width="1"/>
+  <text x="418.7" y="241.0" font-size="10" fill="currentColor" text-anchor="middle">1.0892</text>
+  <line x1="504.5" y1="214.0" x2="504.5" y2="218.0" stroke="currentColor" stroke-width="1"/>
+  <text x="504.5" y="229.0" font-size="10" fill="currentColor" text-anchor="middle">1.1428</text>
+  <line x1="533.6" y1="214.0" x2="533.6" y2="218.0" stroke="currentColor" stroke-width="1"/>
+  <text x="533.6" y="241.0" font-size="10" fill="currentColor" text-anchor="middle">1.161</text>
+  <line x1="372.0" y1="150.0" x2="552" y2="150.0" stroke="currentColor" stroke-width="0.7" stroke-opacity="0.45"/>
+  <circle cx="397.6" cy="150.0" r="3.4" fill="currentColor"/>
+  <line x1="397.6" y1="172.0" x2="527.6" y2="172.0" stroke="currentColor" stroke-width="1.1"/>
+  <path d="M533.6 172.0 l-7 -3 v6 z" fill="currentColor"/>
+  <line x1="533.6" y1="166.0" x2="533.6" y2="214.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="397.6" y="187.0" font-size="10.5" fill="currentColor">기준 램프 → x<tspan dy="3" font-size="10">stop</tspan></text>
+  <circle cx="504.4" cy="150.0" r="3.4" fill="none" stroke="currentColor" stroke-width="1.3"/>
+  <text x="552" y="143.0" font-size="10.5" fill="currentColor" text-anchor="end">정착 1.143</text>
+  <path d="M397.6 114.0 v-4 H461.6 v4" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="429.6" y="106.0" font-size="10.5" fill="currentColor" text-anchor="middle">d<tspan dy="3" font-size="10">s</tspan><tspan dy="-3" dx="2">= 4 cm</tspan></text>
+  <path d="M397.6 138.0 v-4 H418.7 v4" fill="none" stroke="currentColor" stroke-width="1"/>
+  <text x="392.6" y="137.0" font-size="10.5" fill="currentColor" text-anchor="end">13.2 mm</text>
+  <line x1="374.0" y1="66.5" x2="392.0" y2="66.5" stroke="currentColor" stroke-width="1.1" stroke-dasharray="4 3"/>
+  <text x="396.0" y="70.0" font-size="10" fill="currentColor">1.10 도면</text>
+  <line x1="374.0" y1="78.5" x2="392.0" y2="78.5" stroke="currentColor" stroke-width="1.1"/>
+  <text x="396.0" y="82.0" font-size="10" fill="currentColor">1.116 추정</text>
+  <line x1="374.0" y1="90.5" x2="392.0" y2="90.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.2 2.2"/>
+  <text x="396.0" y="94.0" font-size="10" fill="currentColor">1.120 참 면, 시뮬레이션 전용</text>
+  <line x1="8" y1="302" x2="552" y2="302" stroke="currentColor" stroke-width="0.6" stroke-opacity="0.35"/>
+  <text x="12" y="322" font-size="12" font-weight="600" fill="currentColor">시계 (s)</text>
+  <rect x="40.0" y="330" width="187.3" height="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="0.8"/>
+  <text x="133.7" y="342" font-size="10" fill="currentColor" text-anchor="middle">A→E, 3.345 s</text>
+  <rect x="227.3" y="330" width="137.6" height="16" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="0.8"/>
+  <text x="296.1" y="342" font-size="10" fill="currentColor" text-anchor="middle">E→P 제한, 2.457 s</text>
+  <rect x="364.9" y="330" width="179.1" height="16" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="0.8"/>
+  <text x="454.5" y="342" font-size="10" fill="currentColor" text-anchor="middle">임피던스: 램프, 누르기</text>
+  <line x1="359.4" y1="322" x2="359.4" y2="352" stroke="currentColor" stroke-width="1" stroke-opacity="0.45" stroke-dasharray="2 2"/>
+  <text x="355.4" y="324" font-size="10" fill="currentColor" text-anchor="end" fill-opacity="0.7">고치기 전 계획이라면 5.704 s에 접촉</text>
+  <line x1="40.0" y1="470.0" x2="550.0" y2="470.0" stroke="currentColor" stroke-width="1.1"/>
+  <line x1="40.0" y1="470.0" x2="40.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="40.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">0</text>
+  <line x1="96.0" y1="470.0" x2="96.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="96.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">1</text>
+  <line x1="152.0" y1="470.0" x2="152.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="152.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">2</text>
+  <line x1="208.0" y1="470.0" x2="208.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="208.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">3</text>
+  <line x1="264.0" y1="470.0" x2="264.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="264.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">4</text>
+  <line x1="320.0" y1="470.0" x2="320.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="320.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">5</text>
+  <line x1="376.0" y1="470.0" x2="376.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="376.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">6</text>
+  <line x1="432.0" y1="470.0" x2="432.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="432.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">7</text>
+  <line x1="488.0" y1="470.0" x2="488.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="488.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">8</text>
+  <line x1="544.0" y1="470.0" x2="544.0" y2="474.0" stroke="currentColor" stroke-width="1"/>
+  <text x="544.0" y="484.0" font-size="10" fill="currentColor" text-anchor="middle">9</text>
+  <line x1="364.9" y1="371.0" x2="544.0" y2="371.0" stroke="currentColor" stroke-width="1" stroke-dasharray="5 3"/>
+  <line x1="364.9" y1="380.0" x2="544.0" y2="380.0" stroke="currentColor" stroke-width="1" stroke-dasharray="1.2 2.2"/>
+  <text x="358.9" y="374.0" font-size="10.5" fill="currentColor" text-anchor="end">F<tspan dy="3" font-size="10">lim</tspan><tspan dy="-3" dx="2">= 11 N</tspan></text>
+  <text x="358.9" y="392.0" font-size="10.5" fill="currentColor" text-anchor="end">F<tspan dy="3" font-size="10">d</tspan><tspan dy="-3" dx="2">= 10 N</tspan></text>
+  <text x="42.0" y="416.0" font-size="10.5" fill="currentColor" fill-opacity="0.8">패널에 걸리는 힘 (N)</text>
+  <polyline points="364.9,470.0 365.4,470.0 365.8,470.0 366.3,470.0 366.7,470.0 367.2,470.0 367.6,470.0 368.0,470.0 368.5,470.0 368.9,470.0 369.4,470.0 369.8,470.0 370.3,470.0 370.7,470.0 371.2,470.0 371.6,470.0 372.1,470.0 372.5,470.0 373.0,470.0 373.4,470.0 373.9,470.0 374.3,470.0 374.8,470.0 375.2,470.0 375.7,470.0 376.1,470.0 376.6,470.0 377.0,470.0 377.5,470.0 377.9,470.0 378.4,470.0 378.8,470.0 379.2,470.0 379.7,470.0 380.1,470.0 380.6,470.0 381.0,470.0 381.5,470.0 381.9,470.0 382.4,470.0 382.8,470.0 383.3,470.0 383.7,470.0 384.2,470.0 384.6,470.0 385.1,470.0 385.5,470.0 386.0,470.0 386.4,470.0 386.9,470.0 387.3,470.0 387.8,470.0 388.2,470.0 388.7,470.0 389.1,470.0 389.6,470.0 390.0,470.0 390.4,470.0 390.9,470.0 391.3,470.0 391.8,470.0 392.2,470.0 392.7,470.0 393.1,470.0 393.6,470.0 394.0,470.0 394.5,470.0 394.9,470.0 395.4,470.0 395.8,470.0 396.3,470.0 396.7,470.0 397.2,470.0 397.6,470.0 398.1,470.0 398.5,470.0 399.0,470.0 399.4,470.0 399.9,470.0 400.3,470.0 400.8,470.0 401.2,470.0 401.6,470.0 402.1,470.0 402.5,470.0 403.0,470.0 403.4,470.0 403.9,470.0 404.3,470.0 404.8,470.0 405.2,470.0 405.7,470.0 406.1,470.0 406.6,470.0 407.0,470.0 407.5,470.0 407.9,470.0 408.4,470.0 408.8,470.0 409.3,470.0 409.7,470.0 410.2,470.0 410.6,470.0 411.1,470.0 411.5,470.0 412.0,470.0 412.4,470.0 412.8,470.0 413.3,470.0 413.7,470.0 414.2,470.0 414.6,468.9 415.1,467.5 415.5,466.1 416.0,464.7 416.4,463.4 416.9,462.1 417.3,460.9 417.8,459.7 418.2,458.6 418.7,457.5 419.1,456.4 419.6,455.4 420.0,454.4 420.5,453.5 420.9,452.6 421.4,451.7 421.8,450.8 422.3,450.0 422.7,449.1 423.2,448.3 423.6,447.5 424.0,446.7 424.5,445.9 424.9,445.1 425.4,444.3 425.8,443.5 426.3,442.7 426.7,441.9 427.2,441.2 427.6,440.4 428.1,439.6 428.5,438.8 429.0,438.0 429.4,437.2 429.9,436.4 430.3,435.7 430.8,434.9 431.2,434.1 431.7,433.3 432.1,432.5 432.6,431.7 433.0,430.9 433.5,430.1 433.9,429.3 434.4,428.5 434.8,427.7 435.2,426.9 435.7,426.1 436.1,425.3 436.6,424.5 437.0,423.7 437.5,422.9 437.9,422.1 438.4,421.3 438.8,420.5 439.3,419.7 439.7,418.9 440.2,418.1 440.6,417.3 441.1,416.5 441.5,415.7 442.0,414.9 442.4,414.1 442.9,413.3 443.3,412.5 443.8,411.7 444.2,410.9 444.7,410.1 445.1,409.3 445.6,408.5 446.0,407.7 446.4,406.9 446.9,406.1 447.3,405.3 447.8,404.5 448.2,403.7 448.7,402.9 449.1,402.1 449.6,401.3 450.0,400.5 450.5,399.7 450.9,398.9 451.4,398.1 451.8,397.3 452.3,396.5 452.7,395.7 453.2,394.9 453.6,394.1 454.1,393.3 454.5,392.5 455.0,391.7 455.4,390.9 455.9,390.1 456.3,389.3 456.8,388.5 457.2,387.7 457.6,386.9 458.1,386.1 458.5,385.3 459.0,384.5 459.4,383.7 459.9,382.9 460.3,382.1 460.8,381.6 461.2,381.4 461.5,381.4 461.7,381.4 462.1,381.6 462.6,381.9 463.0,382.3 463.5,382.7 463.9,383.2 464.4,383.7 464.8,384.2 465.3,384.6 465.7,385.1 466.2,385.5 466.6,385.9 467.1,386.3 467.5,386.6 468.0,386.9 468.4,387.1 468.8,387.3 469.3,387.5 469.7,387.7 470.2,387.8 470.6,387.9 471.1,388.0 471.5,388.0 472.0,388.1 472.4,388.1 472.9,388.2 473.3,388.2 473.8,388.2 474.2,388.2 474.7,388.2 475.1,388.2 475.6,388.2 476.0,388.1 476.5,388.1 476.9,388.1 477.4,388.1 477.8,388.1 478.3,388.1 478.7,388.1 479.2,388.1 479.6,388.0 480.0,388.0 480.5,388.0 480.9,388.0 481.4,388.0 481.8,388.0 482.3,388.0 482.7,388.0 483.2,388.0 483.6,388.0 484.1,388.0 484.5,388.0 485.0,388.0 485.4,388.0 485.9,388.0 486.3,388.0 486.8,388.0 487.2,388.0 487.7,388.0 488.1,388.0 488.6,388.0 489.0,388.0 489.5,388.0 489.9,388.0 490.4,388.0 490.8,388.0 491.2,388.0 491.7,388.0 492.1,388.0 492.6,388.0 493.0,388.0 493.5,388.0 493.9,388.0 494.4,388.0 494.8,388.0 495.3,388.0 495.7,388.0 496.2,388.0 496.6,388.0 497.1,388.0 497.5,388.0 498.0,388.0 498.4,388.0 498.9,388.0 499.3,388.0 499.8,388.0 500.2,388.0 500.7,388.0 501.1,388.0 501.6,388.0 502.0,388.0 502.4,388.0 502.9,388.0 503.3,388.0 503.8,388.0 504.2,388.0 504.7,388.0 505.1,388.0 505.6,388.0 506.0,388.0 506.5,388.0 506.9,388.0 507.4,388.0 507.8,388.0 508.3,388.0 508.7,388.0 509.2,388.0 509.6,388.0 510.1,388.0 510.5,388.0 511.0,388.0 511.4,388.0 511.9,388.0 512.3,388.0 512.8,388.0 513.2,388.0 513.6,388.0 514.1,388.0 514.5,388.0 515.0,388.0 515.4,388.0 515.9,388.0 516.3,388.0 516.8,388.0 517.2,388.0 517.7,388.0 518.1,388.0 518.6,388.0 519.0,388.0 519.5,388.0 519.9,388.0 520.4,388.0 520.8,388.0 521.3,388.0 521.7,388.0 522.2,388.0 522.6,388.0 523.1,388.0 523.5,388.0 524.0,388.0 524.4,388.0 524.8,388.0 525.3,388.0 525.7,388.0 526.2,388.0 526.6,388.0 527.1,388.0 527.5,388.0 528.0,388.0 528.4,388.0 528.9,388.0 529.3,388.0 529.8,388.0 530.2,388.0 530.7,388.0 531.1,388.0 531.6,388.0 532.0,388.0 532.5,388.0 532.9,388.0 533.4,388.0 533.8,388.0 534.3,388.0 534.7,388.0 535.2,388.0 535.6,388.0 536.0,388.0 536.5,388.0 536.9,388.0 537.4,388.0 537.8,388.0 538.3,388.0 538.7,388.0 539.2,388.0 539.6,388.0 540.1,388.0 540.5,388.0 541.0,388.0 541.4,388.0 541.9,388.0 542.3,388.0 542.8,388.0 543.2,388.0 543.7,388.0 544.0,388.0" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="461.5" cy="381.4" r="3" fill="currentColor"/>
+  <text x="469.5" y="405.4" font-size="10.5" fill="currentColor">최대 9.84 N</text>
+  <text x="469.5" y="418.4" font-size="10.5" fill="currentColor">7.526 s에</text>
+  <text x="544.0" y="440.0" font-size="10.5" fill="currentColor" text-anchor="end">9.11 N으로 정착</text>
+  <line x1="227.3" y1="346" x2="227.3" y2="470.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <line x1="364.9" y1="346" x2="364.9" y2="470.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <line x1="414.3" y1="346" x2="414.3" y2="470.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <line x1="460.1" y1="346" x2="460.1" y2="470.0" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="3 3"/>
+  <circle cx="414.3" cy="470.0" r="2.6" fill="currentColor"/>
+  <text x="227.3" y="498.0" font-size="10.5" fill="currentColor" text-anchor="middle">E 도착 3.345</text>
+  <text x="366.9" y="498.0" font-size="10.5" fill="currentColor" text-anchor="end">전환 5.802</text>
+  <text x="412.3" y="498.0" font-size="10.5" fill="currentColor" text-anchor="start">접촉 6.684</text>
+  <text x="464.1" y="512.0" font-size="10.5" fill="currentColor" text-anchor="end">기준 정지 7.502</text>
+</svg>
+
+같은 계산 절을 공간과 시간으로 그렸다. 왼쪽 위는 1 m를 $125$ px로 그린 작업 영역이다. 홈 $A$, 경유점 $E$, 접촉 전 자세 $P$의 P2, 말단 경로 $A\to E\to P$, 그리고 점선으로 그린 직통 간선의 중간점 자세 $(42.8^\circ,\,2.3^\circ)$가 있고, 그 말단은 $1.0892$ m의 계획기 면보다 $0.35$ m 안쪽에 있다. 오른쪽 위는 1 m를 $1600$ px로 그린 접촉 구역으로, 추정 $1.116$ 둘레의 $3\sigma$ 띠 $[1.0892,\,1.1428]$보다 $13.2$ mm 앞의 $P$ 말단, $1.10$의 도면 면, 시뮬레이션만 아는 $1.120$의 참 면, 정지점 $1.161$, 정착한 말단 $1.143$이 있다. 아래 시계에서는 $3.345$ s에 $E$ 도착, $5.802$ s에 $P$에서 전환, $6.684$ s에 첫 접촉, $7.502$ s에 기준 정지가 오고, 힘은 $F_d=10$ N과 $F_{\lim}=11$ N 아래에서 $7.526$ s에 $9.84$ N으로 정점을 찍은 뒤 $9.11$ N으로 정착하며, 옅은 눈금 $5.704$ s는 고치기 전 계획이라면 닿았을 시각이다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
 루프가 도는 순서대로 아홉 단계, 각 제목은 그 단계의 주인 페이지를 댄다. 8단계는 처음에 실패하고 루프를 3단계로 돌려보낸다. 단계 사이의 되먹임이고, 어느 단계 페이지도 혼자서는 보여 줄 수 없는 부분이다.
 
-**1단계 — 패널은 어디 있나 (P5, [[02-foundations/probability|3. 확률 §5]]).** 센서는 홈 말단에서 $+x$ 방향을 본다. 도면은 $10\,\mathrm{cm}$, 분산 $4\,\mathrm{cm^2}$라 하고 측정은 $12\,\mathrm{cm}$, 분산 $1\,\mathrm{cm^2}$라 한다.
+**1단계 — 패널은 어디 있나 (P5, [[02-foundations/probability|3. 확률 §5]]).** 센서는 홈 말단에서 $+x$ 방향을 본다. 도면이 예측이다: $\hat x^-=10\,\mathrm{cm}$, 분산 $P^-=4\,\mathrm{cm^2}$. 측정은 $z=12\,\mathrm{cm}$, 분산 $R=1\,\mathrm{cm^2}$다. 바로 이 갱신을 그 §6에서 푸는 [[04-robotics/state-estimation-slam|3. 상태 추정 §5]]의 표기로(3. 확률 §5는 갱신한 $\hat x^+$, $P^+$를 $+$ 없이 쓴다) 혁신은 $\nu=z-\hat x^-=2\,\mathrm{cm}$, 그 분산은 $S=P^-+R=5\,\mathrm{cm^2}$이므로
 
-$$K=\frac{4}{4+1}=0.8,\qquad \hat x=10+0.8\,(12-10)=11.6\ \mathrm{cm},\qquad P=(1-0.8)\cdot4=0.8\ \mathrm{cm^2}$$
+$$K=\frac{P^-}{S}=\frac{4}{5}=0.8,\qquad \hat x^+=\hat x^-+K\nu=10+0.8\times2=11.6\ \mathrm{cm},\qquad P^+=(1-K)\,P^-=0.8\ \mathrm{cm^2}$$
 
-이득은 혁신 중 걸어갈 만한 몫이고 분산은 $1-K$배로 줄기 때문이다. 그래서 면은 $\hat x_w=1.00+0.116=1.116\,\mathrm{m}$, $\sigma=\sqrt{0.8}=0.894\,\mathrm{cm}$로 추정된다. 계획기에는 $\hat x_w$가 아니라 $3\sigma$ 띠의 가까운 끝 $x_{\text{obs}}=1.116-0.0268=1.0892\,\mathrm{m}$를 준다(§2). 측정이 없으면 띠는 $1.10$ 둘레 $\pm6.0\,\mathrm{cm}$이고 가까운 끝은 $1.04\,\mathrm{m}$다. 갱신은 띠를 $3.3\,\mathrm{cm}$ 좁히고, 그것은 $v_a=0.05\,\mathrm{m/s}$에서 쓰지 않아도 되는 $0.66\,\mathrm{s}$의 접근이다.
+이다. 이득은 놀람 $\nu$ 가운데 추정이 실제로 움직이는 몫이고, 분산은 $1-K$배로 줄기 때문이다. 위첨자 덕분에 글자 $P$는 2단계부터 접촉 전 자세의 이름으로 비워 둘 수 있다. 그래서 면은 $\hat x_w=1.00+0.116=1.116\,\mathrm{m}$, $\sigma=\sqrt{0.8}=0.894\,\mathrm{cm}$로 추정된다. 계획기에는 $\hat x_w$가 아니라 $3\sigma$ 띠의 가까운 끝 $x_{\text{obs}}=1.116-0.0268=1.0892\,\mathrm{m}$를 준다(§2). 측정이 없으면 띠는 $1.10$ 둘레 $\pm6.0\,\mathrm{cm}$이고 가까운 끝은 $1.04\,\mathrm{m}$다. 갱신은 띠를 $3.3\,\mathrm{cm}$ 좁히고, 그것은 $v_a=0.05\,\mathrm{m/s}$에서 쓰지 않아도 되는 $0.66\,\mathrm{s}$의 접근이다.
 
-**2단계 — 어떤 형상이 합법이고, 어떤 경로인가 ([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR 10장 §2]]).** $x_{\text{obs}}>L_1=1$이므로 2장의 논증이 그대로 넘어온다. 엘보는 $x=1$을 넘지 못하니 들어갈 수 있는 것은 말단뿐이고,
+**2단계 — 어떤 컨피규레이션이 합법이고, 어떤 경로인가 ([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]], [[04-robotics/modern-robotics/ch10-motion-planning|MR 10장 §2]]).** 충돌 검사는 이 페이지의 대상이 적은 팔 전체의 검사에 $x_{\text{face}}=x_{\text{obs}}=1.0892$를 넣은 것이다. $x_{\text{obs}}>L_1=1$이므로 엘보 항 $\cos\theta_1-x_{\text{obs}}$는 늘 음수라 검사는 말단 항으로 줄어들고, C-장애물
 
 $$\mathcal C_{\text{obs}}=\{\theta:\ \cos\theta_1+\cos(\theta_1+\theta_2)>1.0892\}$$
 
-이 토러스의 $16.565\,\%$를 막는다. $x=1$의 2장 면은 $18.478\,\%$였다. 접촉 전 자세 $P$는 말단을 $(\hat x_w-d_s,\,y_c)=(1.076,\,1.000)$에 두되 **엘보 위** 가지에 둔다. 공구가 전완을 따라 달려 있어 면을 가리켜야 하기 때문이다.
+이 토러스의 $16.565\,\%$를 막는다. $x=1$의 2장 면은 $18.478\,\%$였다. 접촉 전 자세 $P$는 말단을 $(\hat x_w-d_s,\,y_c)=(1.076,\,1.000)$에 두되 **엘보 위** 가지에 둔다. 도구가 전완을 따라 달려 있어 면을 가리켜야 하기 때문이다.
 
 $$\cos\theta_2=\frac{1.076^2+1^2-2}{2}=0.0789,\qquad \theta_2=-85.48^\circ,\qquad \theta_1=42.90^\circ+42.74^\circ=85.64^\circ$$
 
-여기서 $42.90^\circ=\operatorname{atan2}(1,\,1.076)$은 목표의 방향이고, $42.74^\circ$는 굽힌 엘보가 도달 방향을 거기서 비트는 양이다. 엘보 아래 쌍둥이 $(0.17^\circ,\,85.48^\circ)$도 합법이지만 전완이 면을 따라 곧게 위를 향하므로($\theta_1+\theta_2=85.64^\circ$) 공구가 누를 수 없다. $A$에서의 직통 간선은 검사에서 떨어진다. 중간점 $\theta=(42.82^\circ,\,2.26^\circ)$에서 말단은 $x=\cos42.82^\circ+\cos45.08^\circ=1.4396$이니 패널 안으로 $1.4396-1.0892=0.350\,\mathrm{m}$ 들어가 있다(최악점 $0.352\,\mathrm{m}$는 $\lambda=0.53$). 10장의 엘보 뒤집기가 다시 나온 것이다. 10장의 우회로 $E$를 탄다. $A$–$E$에서는 합 $\theta_1+\theta_2$가 $90^\circ$에 머무르므로 말단의 $x$는 $\cos\theta_1\le1$일 뿐이고 여유는 최소 $0.089\,\mathrm{m}$다. $E$–$P$에서는 말단의 $x$가 단조롭게 $1.076$까지 올라가고 $P$에서 여유 $13.2\,\mathrm{mm}$다. **경로: $A\to E\to P$.**
+여기서 $42.90^\circ=\operatorname{atan2}(1,\,1.076)$은 목표의 방향이고, $42.74^\circ$는 굽힌 엘보가 도달 방향을 거기서 비트는 양이다. 엘보 아래 쌍둥이 $(0.17^\circ,\,85.48^\circ)$도 합법이지만 전완이 면을 따라 곧게 위를 향하므로($\theta_1+\theta_2=85.64^\circ$) 도구가 누를 수 없다. $A$에서의 직통 간선은 검사에서 떨어진다. 중간점 $\theta=(42.82^\circ,\,2.26^\circ)$에서 말단은 $x=\cos42.82^\circ+\cos45.08^\circ=1.4396$이니 패널 안으로 $1.4396-1.0892=0.350\,\mathrm{m}$ 들어가 있다(최악점 $0.352\,\mathrm{m}$는 $\lambda=0.53$). 10장의 엘보 뒤집기가 다시 나온 것이다. 10장의 우회로 $E$를 탄다. $A$–$E$에서는 합 $\theta_1+\theta_2$가 $90^\circ$에 머무르므로 말단의 $x$는 $\cos\theta_1\le1$일 뿐이고 여유는 최소 $0.089\,\mathrm{m}$다. $E$–$P$에서는 말단의 $x$가 단조롭게 $1.076$까지 올라가고 $P$에서 여유 $13.2\,\mathrm{mm}$다. **경로: $A\to E\to P$.**
 
 **3단계 — 관절에서 얼마나 빨리 ([[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장 §3]]).** 정지에서 정지까지의 사다리꼴, 구간마다 스케일링 하나, 가장 멀리 가는 관절이 이끈다. $A\to E$는 두 관절을 모두 $135^\circ=2.3562\,\mathrm{rad}$ 움직이고, $E\to P$는 $(-49.36^\circ,\,-40.48^\circ)=(-0.8615,\,-0.7064)\,\mathrm{rad}$를 어깨가 이끌며 움직인다. 둘 다 $v_{\max}^2/a_{\max}=0.32\,\mathrm{rad}$보다 훨씬 크니 둘 다 진짜 사다리꼴이다.
 
-$$T_1=\frac{2.3562}{0.8}+\frac{0.8}{2}=3.345\ \mathrm{s},\qquad T_2=\frac{0.8615}{0.8}+\frac{0.8}{2}=1.477\ \mathrm{s}$$
+$$T_{AE}=\frac{2.3562}{0.8}+\frac{0.8}{2}=3.345\ \mathrm{s},\qquad T_{EP}=\frac{0.8615}{0.8}+\frac{0.8}{2}=1.477\ \mathrm{s}$$
 
 사다리꼴은 순항에 $\Delta\theta/v_{\max}$를 쓰고 거기에 램프 시간 하나를 더하기 때문이다. 두 구간 모두 모터에게는 합법이다. 이제 같은 스케일링을 말단에서 읽는다. $A\to E$에서는 전완이 돌지 않고 평행 이동하므로 말단은 엘보와 똑같이 $0.8\,\mathrm{m/s}$로 움직인다. $E\to P$에서는 두 관절이 같은 쪽으로 돌아 말단이 긴 반지름으로 휘돈다. $E$에서 선도 관절 방향 $u=(-1,\,-0.820)$이면
 
@@ -602,21 +873,28 @@ $$\lVert J(E)\,u\rVert=\left\lVert\begin{pmatrix}-1.7071&-1\\-0.7071&0\end{pmatr
 
 이므로 어깨 속도 $1\,\mathrm{rad/s}$마다 말단은 최대 $2.624\,\mathrm{m/s}$이고, 순항 중 말단은 $2.04\,\mathrm{m/s}$에 이른다. 이 숫자를 8단계까지 들고 가라.
 
-**4단계 — 구간 추종 ([[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §2]]).** 계산 토크 $\tau=M(\theta)(\ddot\theta_d+k_pe+k_v\dot e)+c+g$는 모든 관절의 오차를 $\ddot e+20\dot e+100e=0$에 따르게 한다: $\omega_n=10\,\mathrm{rad/s}$, $\zeta=1$, 정착 $0.4\,\mathrm{s}$. 모델에는 공구 댐퍼 $b$가 빠져 있고, 그 누락이 추종 오차의 전부다. 8단계의 최종 계획으로 돌린 시뮬레이션은 구간을 $6.2\,\mathrm{mrad}$ 안에서 따라가고, $P$에 말단이 $1.2\,\mathrm{mm}$ 모자라고 $4.6\,\mathrm{mm}$ 높은 채로 도착한다. 가는 동안 말단의 최대 $x$는 $1.0748\,\mathrm{m}$로 계획기의 면보다 $14\,\mathrm{mm}$ 바깥이다. $P$에 멈춘 팔은 중력을
+**4단계 — 구간 추종 ([[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §2]]).** 계산 토크 $\tau=M(\theta)(\ddot\theta_d+k_pe+k_v\dot e)+c+g$는 모든 관절의 오차를 $\ddot e+20\dot e+100e=0$에 따르게 한다: $\omega_n=10\,\mathrm{rad/s}$, $\zeta=1$의 임계 감쇠이므로 오차는 $(1+\omega_nt)\,e^{-\omega_nt}$로 줄고 $0.58\,\mathrm{s}$ 뒤에 $2\,\%$ 안에 든다(11장의 어림, 시간 상수 넷 $4/(\zeta\omega_n)$는 $0.4\,\mathrm{s}$라 한다). 모델에는 도구 댐퍼 $b$가 빠져 있고, 그 누락이 추종 오차의 전부다. 8단계의 최종 계획으로 돌린 시뮬레이션은 구간을 $6.2\,\mathrm{mrad}$ 안에서 따라가고, $P$에 말단이 $1.2\,\mathrm{mm}$ 모자라고 $4.6\,\mathrm{mm}$ 높은 채로 도착한다. 가는 동안 말단의 최대 $x$는 $1.0748\,\mathrm{m}$로 계획기의 면보다 $14\,\mathrm{mm}$ 바깥이다. $P$에 멈춘 팔은 중력을
 
 $$g(\theta_P)=9.81\,\big(2\cos85.64^\circ+\cos0.17^\circ,\ \cos0.17^\circ\big)=(11.30,\ 9.81)\ \mathrm{N{\cdot}m}$$
 
-로 버틴다. 전완이 이제 수평이라, $A$에서 하나도 지지 않던 $9.81\,\mathrm{N{\cdot}m}$를 엘보가 모두 진다.
+로 버틴다. 전완이 이제 수평이라, $A$에서 하나도 지지 않던 $9.81\,\mathrm{N{\cdot}m}$를 엘보가 모두 진다. 모터는 이것을 모두 낼 수 있다. P2의 관절 구동계([[04-robotics/actuators-drives|10.5 §3, §6]])는 $80\,\mathrm{N{\cdot}m}$에서 멈추고 연속으로 $25.3\,\mathrm{N{\cdot}m}$를 진다. 랩이 명령하는 가장 큰 토크 — $E\to P$ 구간이 $E$를 떠날 때의 $|\tau_1|=25.6\,\mathrm{N{\cdot}m}$ — 는 그 구간의 가속 램프인 $0.19\,\mathrm{s}$ 동안만 연속 정격을 넘고, 10.5 §6은 이것을 넉넉히 허락한다. $25.6/8=3.2\,\mathrm{A}$($\eta nk_t=8\,\mathrm{N{\cdot}m/A}$)에서 권선의 정상 상태 온도 상승은 $10\times3.2^2\times1=102\,\mathrm{K}$로 허용치 $100\,\mathrm{K}$를 겨우 넘으므로, 10.5의 공식은 차가운 권선에서 출발할 때 거의 4분을 허락한다. $|\tau_2|$의 최대는 $13.5\,\mathrm{N{\cdot}m}$이고, 두 유지 토크 — 여기의 $(11.30,\,9.81)\,\mathrm{N{\cdot}m}$와 6단계의 정착한 누르기의 $(3.50,\,9.72)\,\mathrm{N{\cdot}m}$ — 는 연속 정격 아래다.
 
 **5단계 — 전환, 그리고 그것이 만드는 누르기 ([[04-robotics/force-compliance-control|13. 힘·컴플라이언스 §2]]).** $P$에 도착하는 시각 $t_s$에 제어기는 13의 임피던스로 바뀐다. 중력과 속도 항은 보상하고 관성 성형은 하지 않는다.
 
 $$\tau=J^\top\big[K_d\,(x_r-x)+D_d\,(\dot x_r-\dot x)\big]+c(\theta,\dot\theta)+g(\theta)$$
 
-그래서 공구는 팔 자신의 겉보기 질량, 곧 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 작업 공간 관성 $\Lambda=(JM^{-1}J^\top)^{-1}$을 그대로 가진다. 단위 질량 둘이 팔꿈치와 말단에 있는 P2에서는 이것이 닫힌 꼴을 가진다. 말단 질량은 어느 방향으로든 말단과 함께 움직인다. 팔꿈치 질량은 말단 속도 가운데 전완을 따라가는 성분에만 따라 움직이고 — 전완을 가로지르는 밀기는 전완을 팔꿈치 둘레로 휘두를 뿐이다 — 그 속도는 $1/|\sin\theta_2|$배다. 말단 속도를 전완 방향에 사영하면 $\dot\theta_1\sin\theta_2$가 남기 때문이다. 운동 에너지를 $\tfrac12v^\top\Lambda v$로 쓰면
+그래서 도구는 팔 자신의 겉보기 질량, 곧 [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 작업 공간 관성 $\Lambda=(JM^{-1}J^\top)^{-1}$을 그대로 가진다. 단위 질량 둘이 엘보와 말단에 있는 P2에서는 이것이 닫힌 꼴을 가진다. 말단 질량은 어느 방향으로든 말단과 함께 움직이지만, 엘보 질량은 말단 속도 가운데 전완을 따라가는 성분에만 따라 움직이기 때문이다 — 전완을 가로지르는 밀기는 전완을 엘보 둘레로 휘두를 뿐이다:
 
 $$\Lambda=I+\frac{e\,e^\top}{\sin^2\theta_2},\qquad e=\big(\cos(\theta_1+\theta_2),\ \sin(\theta_1+\theta_2)\big)$$
 
-이다(킬로그램 단위, $e$는 전완의 단위 방향). 카탈로그 자세에서는 $e=\hat y$, $\sin^2\theta_2=1$이므로 $\Lambda=\mathrm{diag}(1,2)$다. 접촉하는 동안 말단은 참 면 $x=1.120\,\mathrm{m}$에서 6단계가 멈춰 세우는 $1.120+9.111/400=1.143\,\mathrm{m}$까지 움직이고, 엘보 위 가지에서 이것은 $\theta=(83.11^\circ,\,-82.69^\circ)$에서 $(81.79^\circ,\,-81.20^\circ)$까지로, 전완은 $x$에서 $0.6^\circ$ 안에 있다. 멈춘 누르기에서 $\sin^2(81.20^\circ)=0.9766$이므로 $\Lambda_{xx}=1+\cos^2(0.59^\circ)/0.9766=2.024$이고, 오버슈트를 포함한 접촉 전체에서 $\Lambda_{xx}$는 $2.016$과 $2.025$ 사이에 머물며 $\Lambda_{yy}=1.000$, $|\Lambda_{xy}|\le0.011\,\mathrm{kg}$이다. 즉 $\Lambda\approx\mathrm{diag}(2.02,\,1.00)\,\mathrm{kg}$ — 전완이 이제 $x$를 따라 누워 있어서 카탈로그 자세의 $\mathrm{diag}(1,2)$가 뒤집힌 것이다 — 이고, $D_d=2\sqrt{500\cdot2}=63.2\,\mathrm{N{\cdot}s/m}$는 $2$ kg로 반올림한 그에 대한 13의 임계 댐핑이다. 기준은 $P$에서 출발해 $+x$로 $v_a$만큼씩 나아가다가, 모델링한 직렬 스프링이 *추정한* 면에 대해 $F_d$를 지는 자리에서 멈춘다(§4).
+(킬로그램 단위, $e$는 전완의 단위 방향). 유도는 더 깊이 노트에 있다.
+
+> [!note]- 더 깊이 · Deeper
+> **닫힌 꼴은 어디서 오는가.** 엘보는 단위원 위를 움직이므로 속력이 $|\dot\theta_1|$이다. 말단 속도는 엘보의 속도에 전완의 회전을 더한 것, $v=v_e+(\dot\theta_1+\dot\theta_2)\,e_\perp$이고, 회전 항은 $e$에 수직이므로 전완 방향으로는 엘보의 움직임만 보인다: $e\cdot v=e\cdot v_e=\dot\theta_1\sin\theta_2$. 따라서 $|\dot\theta_1|=|e\cdot v|/|\sin\theta_2|$이고, 두 단위 질량의 운동 에너지는
+> $$\mathrm{KE}=\tfrac12\lvert v\rvert^2+\tfrac12\dot\theta_1^2=\tfrac12\lvert v\rvert^2+\frac{(e\cdot v)^2}{2\sin^2\theta_2}=\tfrac12\,v^\top\Big(I+\frac{e\,e^\top}{\sin^2\theta_2}\Big)v$$
+> 이다. $(e\cdot v)^2=v^\top e\,e^\top v$이기 때문이다. [[02-foundations/manipulator-kinematics-dynamics|10. §6]]의 정의대로 말단 속도로 쓴 운동 에너지가 $\tfrac12v^\top\Lambda v$이므로 괄호가 $\Lambda$다. 이것은 $A$에서도, $P$에서도, 두 접촉 자세에서도 $(JM^{-1}J^\top)^{-1}$과 같고, 말단 속도가 엘보 속도를 더는 정하지 못하는 곧게 편 팔이나 접힌 팔, 곧 $\sin\theta_2=0$에서만 무너진다.
+
+카탈로그 자세에서는 $e=\hat y$, $\sin^2\theta_2=1$이므로 $\Lambda=\mathrm{diag}(1,2)$다. 접촉하는 동안 말단은 참 면 $x=1.120\,\mathrm{m}$에서 6단계가 멈춰 세우는 $1.120+9.111/400=1.143\,\mathrm{m}$까지 움직이고, 엘보 위 가지에서 이것은 $\theta=(83.11^\circ,\,-82.69^\circ)$에서 $(81.79^\circ,\,-81.20^\circ)$까지로, 전완은 $x$에서 $0.6^\circ$ 안에 있다. 멈춘 누르기에서 $\sin^2(81.20^\circ)=0.9766$이므로 $\Lambda_{xx}=1+\cos^2(0.59^\circ)/0.9766=2.024$이고, 오버슈트를 포함한 접촉 전체에서 $\Lambda_{xx}$는 $2.016$과 $2.025$ 사이에 머물며 $\Lambda_{yy}=1.000$, $|\Lambda_{xy}|\le0.011\,\mathrm{kg}$이다. 즉 $\Lambda\approx\mathrm{diag}(2.02,\,1.00)\,\mathrm{kg}$ — 전완이 이제 $x$를 따라 누워 있어서 카탈로그 자세의 $\mathrm{diag}(1,2)$가 뒤집힌 것이다 — 이고, $D_d=2\sqrt{500\cdot2}=63.2\,\mathrm{N{\cdot}s/m}$는 $2$ kg로 반올림한 그에 대한 13의 임계 댐핑이다. 제어 법칙의 괄호 $K_d(x_r-x)+D_d(\dot x_r-\dot x)$는 제어기가 도구에게 패널에 가하라고 요구하는 힘 — [[04-robotics/modern-robotics/ch05-velocity-kinematics|MR 5장]]의 $\tau=J^\top F$에서 도구가 패널을 미는 $F$ — 이고, 패널은 말단을 $-F$로 되민다. 그것이 랩의 `f_ext`에서 패널이 맡는 항이다(나머지 항은 도구 댐퍼의 $-bv$). 기준은 $P$에서 출발해 $+x$로 속도 $v_a$로 나아가다가, 모델링한 직렬 스프링이 *추정한* 면에 대해 $F_d$를 지는 자리에서 멈춘다(§4).
 
 $$K_s=\frac{K_dk_w}{K_d+k_w}=\frac{500\cdot400}{900}=222.2\ \mathrm{N/m},\qquad x_{\text{stop}}=\hat x_w+\frac{F_d}{K_s}=1.116+0.045=1.161\ \mathrm{m}$$
 
@@ -626,25 +904,33 @@ $$K_s=\frac{K_dk_w}{K_d+k_w}=\frac{500\cdot400}{900}=222.2\ \mathrm{N/m},\qquad 
 
 $$F_{\text{set}}=K_s\,(x_{\text{stop}}-x_w)=222.2\times0.041=9.111\ \mathrm{N}$$
 
-이고, 이는 명령보다 $0.889\,\mathrm{N}$ 모자라다 — 추정의 $4\,\mathrm{mm}$ 오차에 $K_s$를 곱한 것이다. 최대값은 과도 응답에서 오고, 손으로 풀 수 있는 두 조각으로 나뉜다. 접촉한 채 기준이 나아가는 동안 공구는 $\alpha v_a$($\alpha=K_d/(K_d+k_w)=5/9$)로 따라가고, 힘은 댐퍼의 몫 $D_dv_a\big(k_w/(K_d+k_w)\big)^2=63.2\times0.05\times(4/9)^2=0.625\,\mathrm{N}$만큼 정적 값보다 앞서 달린다. 그래서 기준이 멈출 때 힘은 $9.736\,\mathrm{N}$이다. 정지 뒤 접촉은
+이고, 이는 명령보다 $0.889\,\mathrm{N}$ 모자라다 — 추정의 $4\,\mathrm{mm}$ 오차에 $K_s$를 곱한 것이다. 거기서 버티는 동안, 곧 $P$에서 몇 도 떨어진 $\theta=(81.79^\circ,\,-81.20^\circ)$에서 모터는 $F=(9.11,\,0)\,\mathrm{N}$에 대해 중력 유지 토크에 $J^\top F=(-9.11,\,-0.09)\,\mathrm{N{\cdot}m}$를 더한다. 미는 힘이 거의 수평인 전완을 따라 지나가므로 엘보는 그 몫을 거의 지지 않는다. 카탈로그 자세에서 같은 힘으로 2장의 수직 면을 밀었다면 두 관절이 모두 졌을 것이다 — $10\,\mathrm{N}$에 $(-10,\,-10)\,\mathrm{N{\cdot}m}$(MR 5장의 과제 2). 최대값은 과도 응답에서 오고, 손으로 풀 수 있는 두 조각으로 나뉜다. 접촉한 채 기준이 나아가는 동안 도구는 $v_a$의 일정한 몫 $\alpha$로 따라가고, 그 힘의 균형 — 한쪽은 임피던스, 다른 쪽은 패널이며, 느리고 고른 램프라 도구의 관성은 무시한다 — 은
 
-$$\omega_n=\sqrt{\frac{K_d+k_w}{M_d}}=21.2\ \mathrm{rad/s},\qquad \zeta=\sqrt{\frac{K_d}{K_d+k_w}}=0.745,\qquad \omega_d=\sqrt{\frac{k_w}{M_d}}=14.1\ \mathrm{rad/s}$$
+$$K_d\,(x_r-x)+D_d\,(1-\alpha)\,v_a=k_w\,(x-x_w),\qquad \dot x=\alpha v_a$$
 
-인 감쇠 진동자다. $D_d$를 $K_d$만 놓고 임계로 골랐고 패널은 강성만 더하지 댐핑은 더하지 않기 때문이다. 평형보다 $1.56\,\mathrm{mm}$ 지난 자리에서 여전히 $27.8\,\mathrm{mm/s}$로 움직이며 풀려나, $23\,\mathrm{ms}$ 뒤 $1.85\,\mathrm{mm}$에서 최대가 되므로 $F_{\text{pk}}=9.111+400\times0.00185=9.85\,\mathrm{N}$이다. 시뮬레이션은 $t=7.526\,\mathrm{s}$에 $9.84\,\mathrm{N}$, 즉 기준이 $7.502$에 멈추고 $24\,\mathrm{ms}$ 뒤라 한다. 마지막 자리의 차이는 손 계산이 빠뜨린 공구 댐퍼와 팔의 전체 동역학이다.
+이다. 기준은 $v_a$로, 도구는 $\alpha v_a$로 움직이기 때문이다. 이것을 시간으로 미분하면 $K_d(1-\alpha)=k_w\alpha$, 곧 $\alpha=K_d/(K_d+k_w)=5/9$이고, $F=k_w(x-x_w)$에 대해 풀면 정적 직렬 힘 $K_s(x_r-x_w)$에 댐퍼의 몫 $D_dv_a\big(k_w/(K_d+k_w)\big)^2=63.2\times0.05\times(4/9)^2=0.625\,\mathrm{N}$이 더해진다. 그래서 기준이 멈출 때 힘은 $9.736\,\mathrm{N}$이다. 정지 뒤 접촉은
+
+$$\omega_n=\sqrt{\frac{K_d+k_w}{\Lambda_{xx}}}=21.2\ \mathrm{rad/s},\qquad \zeta=\sqrt{\frac{K_d}{K_d+k_w}}=0.745,\qquad \omega_d=\sqrt{\frac{k_w}{\Lambda_{xx}}}=14.1\ \mathrm{rad/s}$$
+
+인 감쇠 진동자다. $D_d$를 $K_d$만 놓고 임계로 골랐고 패널은 강성만 더하지 댐핑은 더하지 않기 때문이다. $\Lambda_{xx}\approx2.02$ kg는 5단계의 누르는 방향 질량이고, 13처럼 $2$ kg로 반올림했다. 평형보다 $x_0=0.625/400=1.56\,\mathrm{mm}$ 지난 자리에서 여전히 $v_0=\alpha v_a=27.8\,\mathrm{mm/s}$로 움직이며 풀려나, [[02-foundations/engineering-math|0.5 §8]]의 감쇠 응답, 곧 [[02-foundations/basic-mechanics|0.6.1 §5]]의 질량–스프링–댐퍼를 따른다.
+
+$$x(t)=e^{-\zeta\omega_nt}\Big[x_0\cos\omega_dt+\frac{v_0+\zeta\omega_nx_0}{\omega_d}\sin\omega_dt\Big]$$
+
+두 초기 조건이 모두 0이 아니기 때문이다. $23\,\mathrm{ms}$ 뒤 $1.85\,\mathrm{mm}$에서 최대가 되므로 $F_{\text{pk}}=9.111+400\times0.00185=9.85\,\mathrm{N}$이다. 시뮬레이션은 $t=7.526\,\mathrm{s}$에 $9.84\,\mathrm{N}$, 즉 기준이 $7.502$에 멈추고 $24\,\mathrm{ms}$ 뒤라 한다. 마지막 자리의 차이는 손 계산이 빠뜨린 도구 댐퍼와 팔의 전체 동역학이다.
 
 **7단계 — 힘 한계와 안정성 장부 ([[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]).** $F_{\text{pk}}=9.84\le11\,\mathrm{N}$, $1.16\,\mathrm{N}$의 여유가 있다. 임피던스 스프링은 토크를 $T$ 동안 유지하는 샘플 제어기가 렌더링하므로 24.4의 장부가 $K_d$에 적용된다.
 
 $$K_d\le\frac{2b}{T}=\frac{2\times0.8}{10^{-3}}=1600\ \mathrm{N/m}$$
 
-$500$은 통과하고, 홀드가 흘리는 에너지는 공구 댐퍼가 걷어 가는 양의 $K_dT/(2b)=0.3125$다. 패널의 $400\,\mathrm{N/m}$은 물리 스프링이라 이 장부에 오르지 않는다.
+$500$은 통과하고, 홀드가 흘리는 에너지는 도구 댐퍼가 걷어 가는 양의 $K_dT/(2b)=0.3125$다. 패널의 $400\,\mathrm{N/m}$은 물리 스프링이라 이 장부에 오르지 않는다.
 
-**8단계 — 지연과 분리 ([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]], [[04-robotics/hri-safety|11. HRI·안전]]).** $70\,\mathrm{ms}$ 예산 하나 동안 다가가는 공구는 $v_aL=0.05\times0.070=3.5\,\mathrm{mm}$ 움직이고, 이는 $\sigma=8.9\,\mathrm{mm}$보다 작다(§5). 접근 중의 카메라 보정은 $0.39\sigma$만큼만 낡으니 예산은 지켜진다. 루프가 깨지는 곳은 분리다. 11번 페이지의 셀은 $1.0\,\mathrm{m/s}$의 말단을 가정해 크기를 정했는데, 3단계의 $E\to P$ 구간은 말단을 $2.04\,\mathrm{m/s}$로 몬다.
+**8단계 — 지연과 이격 ([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]], [[04-robotics/hri-safety|11. HRI·안전]]).** $70\,\mathrm{ms}$ 예산 하나 동안 다가가는 도구는 $v_aL=0.05\times0.070=3.5\,\mathrm{mm}$ 움직이고, 이는 $\sigma=8.9\,\mathrm{mm}$보다 작다(§5). 접근 중의 카메라 보정은 $0.39\sigma$만큼만 낡으니 예산은 지켜진다. 루프가 깨지는 곳은 이격이다. 11번 페이지의 셀은 $1.0\,\mathrm{m/s}$의 말단을 가정해 크기를 정했는데, 3단계의 $E\to P$ 구간은 말단을 $2.04\,\mathrm{m/s}$로 몬다.
 
 $$S_p=1.6\,(0.10+0.30)+2.04\times0.10+\tfrac12\times2.04\times0.30+0.20+0.10+0.05=1.50\ \mathrm{m}>1.24\ \mathrm{m}$$
 
-그러니 감지 영역을 $2.25+1.50=3.75\,\mathrm{m}$까지 밀어내야 한다. **3단계로 돌아가** 이번에는 구간을 말단에서 제한한다(§3). $v_c=1.0/2.624=0.381$을 내림해 $0.38\,\mathrm{rad/s}$로 두면
+그러니 감지 영역을 $0.26\,\mathrm{m}$ 밀어내야 한다 — 말단 너머 $0.25\,\mathrm{m}$ 도구까지 센 위험 반지름 $R_h=2.25\,\mathrm{m}$의 11번 페이지 셀에서는 $2.25+1.50=3.75\,\mathrm{m}$까지다. 접촉점이 말단 자체인 이 페이지의 도구라면 $R_h=2.00\,\mathrm{m}$이고, 영역은 $3.24$에서 $3.50\,\mathrm{m}$로 간다. **3단계로 돌아가** 이번에는 구간을 말단에서 제한한다(§3). $v_c=1.0/2.624=0.381$을 내림해 $0.38\,\mathrm{rad/s}$로 두면
 
-$$T_2=\frac{0.8615}{0.38}+\frac{0.38}{2}=2.457\ \mathrm{s},\qquad v_{\text{tip}}\le0.38\times2.624=0.997\ \mathrm{m/s},\qquad S_p=1.239\ \mathrm{m}\le1.24\ \mathrm{m}$$
+$$T_{EP}=\frac{0.8615}{0.38}+\frac{0.38}{2}=2.457\ \mathrm{s},\qquad v_{\text{tip}}\le0.38\times2.624=0.997\ \mathrm{m/s},\qquad S_p=1.239\ \mathrm{m}\le1.24\ \mathrm{m}$$
 
 이고 11번 페이지의 셀이 그대로 선다. 접촉 국면은 어느 쪽이든 $P$의 정지 상태에서 시작하므로 5–7단계는 바뀌지 않는다. $E$ 이후의 모든 시각이 $2.457-1.477=0.980\,\mathrm{s}$ 늦춰질 뿐이다.
 
@@ -654,46 +940,46 @@ $$T_2=\frac{0.8615}{0.38}+\frac{0.38}{2}=2.457\ \mathrm{s},\qquad v_{\text{tip}}
 
 ### 1. 누적 과제가 계산한 것, 그리고 조립이 더하는 것
 
-[[04-robotics/index|4. 로보틱스]]의 누적 과제는 카탈로그 자세에서 숫자 넷을 묻는다 — 관절 속도 $J^{-1}v=(-0.05,\,0.05)\,\mathrm{rad/s}$, 유지 토크 $g+J^\top F=(9.62,\,0)\,\mathrm{N{\cdot}m}$, 장부 $2b/T=1600\,\mathrm{N/m}$, 융합 거리 $11.6\,\mathrm{cm}$. 모두 맞다. 그리고 서로 독립이다. 어떤 답도 다른 답에 쓰이지 않는다. 조립하면 다섯 가지가 바뀌고, 각각은 어느 단계 페이지도 할 수 없는 주장이다.
+서로를 먹이지 않는 옳은 답 넷은 두 페이지가 어디서 어긋나는지 보여 줄 수 없다. 이 절은 그 답들이 서로를 먹일 때 무엇이 바뀌는지 말한다. [[04-robotics/index|4. 로보틱스]]의 누적 과제는 카탈로그 자세에서 숫자 넷을 묻는다 — 관절 속도 $J^{-1}v=(-0.05,\,0.05)\,\mathrm{rad/s}$, 유지 토크 $g+J^\top F=(9.62,\,0)\,\mathrm{N{\cdot}m}$, 장부 $2b/T=1600\,\mathrm{N/m}$, 융합 거리 $11.6\,\mathrm{cm}$. 모두 맞다. 그리고 서로 독립이다. 어떤 답도 다른 답에 쓰이지 않는다. 조립하면 다섯 가지가 바뀌고, 각각은 어느 단계 페이지도 할 수 없는 주장이다.
 
 | 누적 과제 항목 | 여기서 | 바뀐 것 |
 |---|---|---|
 | 융합 거리 $11.6\,\mathrm{cm}$ (유도 d) | 1단계 | 답이 입력으로 두 번 쓰인다: 띠의 가까운 끝은 계획기로, 평균은 정지점으로 |
-| $(0^\circ,90^\circ)$에서 $\Lambda_y=2\,\mathrm{kg}$ (해석) | 5단계 | 공구가 면을 가리켜야 하므로 접촉 자세는 엘보 위 가지이고, 거기서 $\Lambda\approx\mathrm{diag}(2.02,1.00)$: 무거운 방향이 이제 누르는 방향이다 |
+| $(0^\circ,90^\circ)$에서 $\Lambda_y=2\,\mathrm{kg}$ (해석) | 5단계 | 도구가 면을 가리켜야 하므로 접촉 자세는 엘보 위 가지이고, 거기서 $\Lambda\approx\mathrm{diag}(2.02,1.00)$: 무거운 방향이 이제 누르는 방향이다 |
 | 패널에 대한 $2b/T=1600$ (유도 c) | 7단계 | 장부가 패널에서 제어기가 렌더링하는 스프링 $K_d$로 옮겨 간다; 패널은 물리적이다 |
 | 카탈로그 자세의 유지 토크 (유도 b) | 4단계 | $P$에서는 전완이 수평이라 엘보가 $9.81\,\mathrm{N{\cdot}m}$를 진다 |
 | "늦은 비전은 P6" (해석) | 8단계 | 늦음에 문턱이 생긴다, $v_aL\le\sigma$ |
 
-기억할 것은 다섯째다. **검사들이 서로 어긋난다.** 3단계의 사다리꼴은 9장으로는 합법이고 11번 페이지로는 불법이며, 두 페이지 어느 쪽 안에서도 그것을 잡지 못했을 것이다. 각자 자기 좌표로 쓰여 있기 때문이다 — 한쪽은 관절 속도, 다른 쪽은 말단 속도.
+그리고 어느 누적 과제 항목에도 없는 것 하나가 기억할 것이다. **검사들이 서로 어긋난다.** 3단계의 사다리꼴은 9장으로는 합법이고 11번 페이지로는 불법이며, 두 페이지 어느 쪽 안에서도 그것을 잡지 못했을 것이다. 각자 자기 좌표로 쓰여 있기 때문이다 — 한쪽은 관절 속도, 다른 쪽은 말단 속도.
 
 ### 2. 추정이 계획기로 들어간다 — 부풀린 C-장애물의 정의
 
 C-장애물([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]])은 장애물이 도면이 말하는 자리에 있다고 가정한다. 여기서는 추정이 말하는 자리에, 명시된 퍼짐과 함께 있다. 그리고 계획기에는 확실한 것으로 다룰 수 있는 무언가를 줘야 한다.
 
-> **불확실성으로 부풀린 C-장애물의 정의.** 불확실성으로 부풀린 C-장애물(**uncertainty-inflated C-obstacle**)은 *형상의 집합*이다 — 새로운 종류의 대상이 아니라 보통의 C-장애물이며, 장애물을 사후 표준편차의 몇 배만큼 로봇 쪽으로 옮겨 놓고 계산한다. 정의 조건 셋. 장애물의 자세는 추정이다 — 가정이 성립하는 필터가 낸, **명시된 사후 $\sigma$를 가진 추정**. 장애물은 C-장애물을 계산하기 **전에 로봇 쪽으로 $k\sigma$만큼 키우며**, 계산한 뒤에 키우지 않는다. 그리고 $k$는 **명시한 놓칠 확률에 맞춰 고른다** — $k=3$이면 가우시안에서 한쪽 $0.135\,\%$가 남는다.
+> **불확실성으로 부풀린 C-장애물의 정의.** **불확실성으로 부풀린 C-장애물**(uncertainty-inflated C-obstacle)은 *컨피규레이션의 집합*이다 — 새로운 종류의 대상이 아니라 보통의 C-장애물이며, 장애물을 사후 표준편차의 몇 배만큼 로봇 쪽으로 옮겨 놓고 계산한다. 정의 조건 셋. 장애물의 자세는 추정이다 — 가정이 성립하는 필터가 낸, **명시된 사후 $\sigma$를 가진 추정**. 장애물은 C-장애물을 계산하기 **전에 로봇 쪽으로 $k\sigma$만큼 키우며**, 계산한 뒤에 키우지 않는다. 그리고 $k$는 **명시한 놓칠 확률에 맞춰 고른다** — $k=3$이면 가우시안에서 한쪽 $0.135\,\%$가 남는다.
 >
 > $$\mathcal C^{\,k}_{\text{obs}}=\{\theta:\ \mathcal A(\theta)\cap\{x\ge\hat x_w-k\sigma\}\neq\varnothing\}$$
 >
-> $\mathcal A(\theta)$는 형상 $\theta$에서 팔이 차지하는 점들의 집합, $\hat x_w$는 추정한 면, $\sigma$는 그 사후 표준편차다. 그래서 계획기는 확실한 장애물을 보고, 참 면이 그 경계를 넘을 확률은 $0.135\,\%$다.
+> $\mathcal A(\theta)$는 컨피규레이션 $\theta$에서 팔이 차지하는 점들의 집합, $\hat x_w$는 추정한 면, $\sigma$는 그 사후 표준편차다. 그래서 계획기는 확실한 장애물을 보고, 참 면이 그 경계를 넘을 확률은 $0.135\,\%$다.
 >
 > - **예**: 2단계의 렌즈 $\cos\theta_1+\cos(\theta_1+\theta_2)>1.0892$, P2 토러스의 $16.565\,\%$, $\theta_1=\pm84.9^\circ$에서 오므라든다. 사전만 쓰면($\sigma=2\,\mathrm{cm}$, 가까운 끝 $1.04$) $17.611\,\%$를 막는다. 갱신이 토러스에서 풀어 주는 것은 $1.05\,\%$뿐이지만 접근은 $3.3\,\mathrm{cm}$를 풀어 주고, 값을 하는 곳이 거기다.
-> - **비예**: 평균의 C-장애물, $k=0$. 참 면은 절반의 확률로 $\hat x_w$보다 가깝다. 그러니 계획기는 최대 절반의 확률로 패널 안에 있는 형상을 자유롭다고 인증하게 된다. 평균에 대해서는 합법인 $1\,\mathrm{cm}$ 이격은 말단을 $13\,\%$의 확률로 참 패널 안에 둔다.
-> - **비예**: Nav2의 팽창 계층([[04-robotics/ros2/navigation-nav2|25.9 §5]]). 충돌로 다루는 것은 내접 핵심부뿐이고, 그 둘레의 감쇠하는 치마는 여유가 아니라 탐색을 자유 공간 한가운데로 모는 비용 경사다. 어느 반지름도 추정의 $\sigma$에서 정하지 않는다.
-> - **왜 중요한가**: 필터의 출력을 단위를 잃지 않고 계획기에 넘긴다 — 센티미터의 $\sigma$가 센티미터의 이격이 되고 초 단위의 접근 시간이 된다. 그리고 틀린 $\sigma$, 즉 과신하는 필터가 숫자가 아니라 충돌이 되는 자리가 여기다.
+> - **비예**: 평균의 C-장애물, $k=0$. 참 면은 절반의 확률로 $\hat x_w$보다 가깝다. 그러니 계획기는 최대 절반의 확률로 패널 안에 있는 컨피규레이션을 자유롭다고 인증하게 된다. 평균에 대해서는 합법인 $1\,\mathrm{cm}$ 대기 간격은 말단을 $13\,\%$의 확률로 참 패널 안에 둔다.
+> - **비예**: Nav2의 팽창 계층([[04-robotics/ros2/navigation-nav2|25.9 §5]]), 곧 장애물마다 둘레에 점점 옅어지는 비용의 띠를 두르는 비용 지도 계층. 충돌로 다루는 것은 내접 핵심부뿐이고, 그 둘레에서 점점 옅어지는 띠는 여유가 아니라 탐색을 자유 공간 한가운데로 모는 비용 경사다. 어느 반지름도 추정의 $\sigma$에서 정하지 않는다.
+> - **왜 중요한가**: 필터의 출력을 단위를 잃지 않고 계획기에 넘긴다 — 센티미터의 $\sigma$가 센티미터의 대기 간격이 되고 초 단위의 접근 시간이 된다. 그리고 틀린 $\sigma$, 즉 과신하는 필터가 숫자가 아니라 충돌이 되는 자리가 여기다.
 
-이 셀에만 해당하는, 패널이 움직일 때마다 다시 확인할 결과가 하나 있다. 말단만 검사하는 2장의 지름길은 $x_{\text{obs}}=1.0892>L_1$이라 엘보가 면에 닿을 수 없어서 성립한다. $L_1+k\sigma$보다 가까이 있는 패널을 부풀리면 엘보도 들어갈 수 있고, 그때 충돌 검사는 링크 양 끝을 모두 봐야 한다. 말단만 검사하는 것이 바로 [[04-robotics/modern-robotics/ch10-motion-planning|MR 10장 §2]]의 비예다.
+이 셀에만 해당하는, 패널이 움직일 때마다 다시 확인할 결과가 하나 있다. 이 페이지의 대상이 적은 팔 전체의 검사가 말단 항으로 줄어드는 것은 $x_{\text{obs}}=1.0892>L_1$이라 엘보가 면에 닿을 수 없기 때문일 뿐이다. $L_1+k\sigma$보다 가까이 있는 패널을 부풀리면 엘보 항도 양수가 될 수 있고, 그때 그 항을 버리는 것이 바로 말단만 검사하는 [[04-robotics/modern-robotics/ch10-motion-planning|MR 10장 §2]]의 비예다.
 
 ### 3. 한 경로 위의 두 시계 — 말단 속도 상한의 정의
 
 9장은 경로에 관절 좌표로 시간을 입히고, 11번 페이지는 말단 좌표로 판정한다. 둘은 $J$를 통해 만나고, $E\to P$ 구간에서 $J$는 최대 $2.624$배를 곱한다.
 
-> **말단 속도 상한의 정의.** 말단 속도 상한(**tip-speed cap**)은 *시간 스케일링에 대한 제약*이다 — 경로를 바꾸는 것이 아니라 $\dot s$를 묶는 것 — 이고, 고정된 관절 공간 경로를 따라 말단 속도를 명시한 한계 아래로 유지한다. 정의 조건 셋. **경로가 고정되어 있다.** 선도 관절 방향 $u=\Delta\theta/\max_i|\Delta\theta_i|$로 쓰므로 $\dot s$는 선도 관절의 속도다. 각 점에서의 말단 속도는 $\dot s$가 아니라 **$\lVert J(\theta(s))\,u\rVert\,\dot s$**, 즉 선도 관절 속도에 $J$가 곱해진 값이다. 그리고 상한은 경로 위 어느 한 점이 아니라 **경로 전체의 최대값**, 곧 가장 빠른 점을 묶는다. 스케일링은 빠른 점이 어디인지 모르기 때문이다.
+> **말단 속도 상한의 정의.** **말단 속도 상한**(tip-speed cap)은 *시간 스케일링에 대한 제약*이다 — 경로를 바꾸는 것이 아니라 $\dot s$를 묶는 것 — 이고, 고정된 관절 공간 경로를 따라 말단 속도를 명시한 한계 아래로 유지한다. 정의 조건 셋. **경로가 고정되어 있다.** 선도 관절 방향 $u=\Delta\theta/\max_i|\Delta\theta_i|$로 쓰므로 $\dot s$는 선도 관절의 속도다. 각 점에서의 말단 속도는 $\dot s$가 아니라 **$\lVert J(\theta(s))\,u\rVert\,\dot s$**, 즉 선도 관절 속도에 $J$가 곱해진 값이다. 그리고 상한은 경로 위 어느 한 점이 아니라 **경로 전체의 최대값**, 곧 가장 빠른 점을 묶는다. 스케일링은 빠른 점이 어디인지 모르기 때문이다.
 >
 > $$\dot s_{\max}=\min\!\Big(v_{\max},\ \frac{v_{\text{tip}}}{\max_{s}\lVert J(\theta(s))\,u\rVert}\Big)$$
 >
 > $v_{\max}$는 관절 한계, $v_{\text{tip}}$은 말단 한계이고 최대값은 $s\in[0,1]$ 전체에서 잡는다. 둘 중 작은 쪽이 묶는 쪽이다.
 >
-> - **예**: $E\to P$에서는 $E$에서 $\max_s\lVert Ju\rVert=2.624\,\mathrm{m/rad}$이므로 $1.0/2.624=0.381$을 내림해 $0.38\,\mathrm{rad/s}$가 된다. $T_2$는 $1.477$에서 $2.457\,\mathrm{s}$로 늘고 말단은 $0.997\,\mathrm{m/s}$로 묶인다(궤적의 실제 최대는 $0.992$). $A\to E$에서는 $\max_s\lVert Ju\rVert=1.000$이라 $0.8\,\mathrm{rad/s}$가 이미 $0.8\,\mathrm{m/s}$이고, 상한은 묶지 않는다.
+> - **예**: $E\to P$에서는 $E$에서 $\max_s\lVert Ju\rVert=2.624\,\mathrm{m/rad}$이므로 $1.0/2.624=0.381$을 내림해 $0.38\,\mathrm{rad/s}$가 된다. $T_{EP}$는 $1.477$에서 $2.457\,\mathrm{s}$로 늘고 말단은 $0.997\,\mathrm{m/s}$로 묶인다(궤적의 실제 최대는 $0.992$). $A\to E$에서는 $\max_s\lVert Ju\rVert=1.000$이라 $0.8\,\mathrm{rad/s}$가 이미 $0.8\,\mathrm{m/s}$이고, 상한은 묶지 않는다.
 > - **비예**: 관절 한계 그 자체. 모든 관절의 $0.8\,\mathrm{rad/s}$는 $J$를 통해서만 말단을 묶고, $E\to P$에서 그 묶음은 $2.1\,\mathrm{m/s}$다. 모든 액추에이터를 지키는 궤적도 작업 공간에서 쓰인 안전 기능은 깰 수 있다.
 > - **왜 중요한가**: 11번 페이지의 $S_p$는 말단 속도로, 9장의 한계는 관절 속도로 쓰여 있고, 로봇의 데이터시트는 관절로 말한다. 상한은 둘을 번역하는 단 한 줄이고, 그것 없이는 3단계와 8단계가 서로 말을 하지 않는다.
 
@@ -701,11 +987,11 @@ C-장애물([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]
 
 ### 4. 전환, 그리고 그것이 만드는 누르기
 
-"접촉에서 임피던스로 전환"은 *접촉하는 순간에*라는 뜻일 수 없다. 그 순간을 감지하는 것은 그 자체로 추정 문제이고([[04-robotics/contact-force-tactile|9. 접촉 §7]]), 감지기가 울리기 전까지 공구는 계산 토크 아래서 패널을 만나게 된다 — 예상 못 한 침투 1밀리미터를 루프의 강성만큼의 힘으로 바꾸는 뻣뻣한 위치 루프다([[04-robotics/force-compliance-control|13 §1]]). 그래서 전환은 띠 바깥의 $P$에서 일어나고, 공구가 도착할 때 임피던스는 이미 돌고 있다. *접촉에서*는 *접촉 국면을 위해*라는 뜻이다. 여기서 전환 자체는 부드럽다. 팔은 $P$에 멈춰 있고 기준도 $P$에서 출발하므로, 첫 임피던스 힘은 $1.2$와 $4.6\,\mathrm{mm}$의 추종 어긋남을 되돌리는 힘에 기준이 떠날 때의 댐퍼 몫 $D_dv_a=3.2\,\mathrm{N}$을 더한 것이다.
+"접촉에서 임피던스로 전환"은 *접촉하는 순간에*라는 뜻일 수 없다. 그 순간을 감지하는 것은 그 자체로 추정 문제이고([[04-robotics/contact-force-tactile|9. 접촉 §7]]), 감지기가 울리기 전까지 도구는 계산 토크 아래서 패널을 만나게 된다 — 예상 못 한 침투 1밀리미터를 루프의 강성만큼의 힘으로 바꾸는 뻣뻣한 위치 루프다([[04-robotics/force-compliance-control|13 §1]]). 그래서 전환은 띠 바깥의 $P$에서 일어나고, 도구가 도착할 때 임피던스는 이미 돌고 있다. *접촉에서*는 *접촉 국면을 위해*라는 뜻이다. 여기서 전환 자체는 부드럽다. 팔은 $P$에 멈춰 있고 기준도 $P$에서 출발하므로, 첫 임피던스 힘은 $1.2$와 $4.6\,\mathrm{mm}$의 추종 어긋남을 되돌리는 힘에 기준이 떠날 때의 댐퍼 몫 $D_dv_a=3.2\,\mathrm{N}$을 더한 것이다.
 
 그다음 임피던스가 내놓는 것은 아무도 재지 않는 힘의 누르기다.
 
-> **위치 기준 누르기의 정의.** 위치 기준 누르기(**position-referenced press**)는 *접촉력을 재지 않고 명령하는 방식*이다. 힘은 기준이 멈추는 자리와 표면이 실제로 있는 자리 사이의 간격을 직렬 강성이 무엇으로 만드느냐에 달려 있다. 정의 조건 셋. **어떤 힘 측정도 루프를 닫지 않는다.** 정지점은 **추정한 표면 위치와 모델링한 직렬 강성으로 계산한다.** 그러므로 전달되는 힘은 제어기가 결코 보지 못하는 **참 표면이 정한다.**
+> **위치 기준 누르기의 정의.** **위치 기준 누르기**(position-referenced press)는 *접촉력을 재지 않고 명령하는 방식*이다. 힘은 기준이 멈추는 자리와 표면이 실제로 있는 자리 사이의 간격을 직렬 강성이 무엇으로 만드느냐에 달려 있다. 정의 조건 셋. **어떤 힘 측정도 루프를 닫지 않는다.** 정지점은 **추정한 표면 위치와 모델링한 직렬 강성으로 계산한다.** 그러므로 전달되는 힘은 제어기가 결코 보지 못하는 **참 표면이 정한다.**
 >
 > $$F_{\text{set}}=K_s\,(x_{\text{stop}}-x_w)=F_d-K_s\,(x_w-\hat x_w)$$
 >
@@ -718,32 +1004,34 @@ C-장애물([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장 §2]]
 
 ### 5. 네 가지 검사, 네 주인
 
+누르기를 판정하는 검사는 넷이고, 그중 시뮬레이션의 궤적에서 읽을 수 있는 것은 하나뿐이다. 아래 표가 검사마다 주인을 대고 어느 것이 그 하나인지 말한다.
+
 | 검사 | 주인 | 부등식 | 계산 절 | 시뮬레이션에서 읽는가? |
 |---|---|---|---|---|
 | 최대 힘 | 이 페이지의 한계; 과도 응답은 13 §5의 것 | $F_{\text{pk}}\le11\,\mathrm{N}$ | $9.84\,\mathrm{N}$ | 그렇다 |
 | 샘플된 스프링의 장부 | 24.4 §2 | $K_d\le2b/T=1600\,\mathrm{N/m}$ | $500\,\mathrm{N/m}$ | 아니다 — 장부다 |
 | 지연 | 10 §3 | $v_aL\le\sigma$ | $3.5\le8.9\,\mathrm{mm}$ | 아니다 — 설계 부등식이다 |
-| 분리 | 11 | $S_p(v_{\text{tip}})\le1.24\,\mathrm{m}$ | $1.239\,\mathrm{m}$ | 아니다 — 계획한 상한을 쓴다 |
+| 이격 | 11 | $S_p(v_{\text{tip}})\le1.24\,\mathrm{m}$ | $1.239\,\mathrm{m}$ | 아니다 — 계획한 상한을 쓴다 |
 
-넷 중 궤적에서 읽는 것은 하나뿐이다. 이 시뮬레이션의 약점이 아니라 네 부등식이 원래 그런 것이다. 장부는 모든 입력에 대한 충분조건이고 궤적은 입력 하나다. 지연과 분리 검사는 시뮬레이션에 들어 있지 않은 루프 — 루프 속의 카메라, 셀 안의 사람 — 에 관한 것이다. "시뮬레이션이 돌았고 아무것도 깨지지 않았다"고 보고하는 캡스톤은 첫 줄만 보고한 것이다.
+궤적에서 읽는 것이 한 줄뿐인 것은 이 시뮬레이션의 약점이 아니라 네 부등식이 원래 그런 것이다. 장부는 모든 입력에 대한 충분조건이고 궤적은 입력 하나다. 지연과 이격 검사는 시뮬레이션에 들어 있지 않은 루프 — 루프 속의 카메라, 셀 안의 사람 — 에 관한 것이다. "시뮬레이션이 돌았고 아무것도 깨지지 않았다"고 보고하는 캡스톤은 첫 줄만 보고한 것이다.
 
 지연 줄에는 정의가 하나 필요하다. 10의 예산은 시간이고 검사에는 길이가 필요하기 때문이다.
 
-> **낡음 거리의 정의.** 낡음 거리(**staleness distance**)는 *길이*다. 관측이 묘사하는 대상이 그 관측과 그것이 일으킨 행동 사이에 움직이는 거리. 정의 조건 셋. 시간은 노출 중간에서 힘이 나갈 때까지의 **종단 간** 관측–행동 지연 $L$이지 주기가 아니다([[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]). 속도는 관측하는 쪽에 대한 관측 대상의 **상대 속도**, 여기서는 패널에 대한 공구의 속도다. 그리고 그것이 보정할 **추정의 불확실성과 비교한다.** 추정 자신의 퍼짐보다 더 낡은 보정은 오차를 없애는 대신 더하기 때문이다.
+> **낡음 거리의 정의.** **낡음 거리**(staleness distance)는 *길이*다. 관측이 묘사하는 대상이 그 관측과 그것이 일으킨 행동 사이에 움직이는 거리. 정의 조건 셋. 시간은 노출 중간에서 힘이 나갈 때까지의 **종단 간** 관측–행동 지연 $L$이지 주기가 아니다. 이것은 [[04-robotics/robot-systems-deployment|10. 로봇 시스템 §3]]이 예산이라 부르며 $L-\tfrac12T_{\text{cam}}$으로 쓰는 양이다. 관측의 나이는 그 관측이 나타내는 순간부터 세기 때문이다. 속도는 관측하는 쪽에 대한 관측 대상의 **상대 속도**, 여기서는 패널에 대한 도구의 속도다. 그리고 그것이 보정할 **추정의 불확실성과 비교한다.** 추정 자신의 퍼짐보다 더 낡은 보정은 오차를 없애는 대신 더하기 때문이다.
 >
 > $$v\,L\le\sigma\quad\Longleftrightarrow\quad v\le\frac{\sigma}{L}=\frac{8.94\,\mathrm{mm}}{70\,\mathrm{ms}}=0.128\ \mathrm{m/s}$$
 >
 > $v$는 접근 속도, $L=70\,\mathrm{ms}$, $\sigma=8.94\,\mathrm{mm}$는 1단계의 사후 퍼짐이다.
 >
 > - **예**: $0.05\,\mathrm{m/s}$의 접근, $3.5\,\mathrm{mm}$, $0.39\sigma$. $1.0\,\mathrm{m/s}$의 자유 구간은 $70\,\mathrm{mm}$로 거의 여덟 $\sigma$다. 그 구간을 부풀린 장애물에 대해 계획하고 결코 카메라로 조종하지 않는 이유가 이것이다.
-> - **비예**: 카메라의 $20\,\mathrm{ms}$ 프레임 주기. 주기는 지연이 아니다([[04-robotics/robot-systems-deployment|10 §3]]). 비전 목표의 최악 나이는 $L$에 비전 주기와 제어 주기를 더한 것이다([[04-robotics/ros2/simulation-and-control|25.7]]의 낡음 장부).
+> - **비예**: 카메라의 $20\,\mathrm{ms}$ 프레임 주기. 주기는 지연이 아니다([[04-robotics/robot-systems-deployment|10 §3]]). 비전 목표의 최악 나이는 전송 지연에 비전 주기와 제어 주기를 더한 것이다 — [[04-robotics/ros2/simulation-and-control|25.7]]의 낡음 장부이고, 그 $L$은 이 페이지의 $L$처럼 힘이 가해질 때가 아니라 목표가 제어기에 닿을 때 끝난다.
 > - **왜 중요한가**: "늦은 비전"에 문턱을 주고, 그 문턱이 P5와 P6를 묶는다. 더 좋은 센서, 즉 더 작은 $\sigma$는 카메라 보정이 아직 도움이 되는 속도를 *낮춘다*.
 
 ### 6. 랩 — 루프 전체를 시뮬레이션 하나로
 
-Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면이 가진 두 손잡이 $K_d$와 $v_a$를 바꾸고, 그와 함께 움직이는 세 검사에 대해 각 행을 표시한다. 플랜트(제어되는 시스템)는 $M$, $c$, $g$를 모두 가진 P2이고, 패널은 P3의 한쪽 스프링이다. 제어기는 $T=1\,\mathrm{ms}$로 돌며 토크를 스텝 동안 유지하고, 적분기는 같은 스텝의 준음해 오일러다([[02-foundations/lab-kernel|0.7 §3]]). 공구 댐퍼 $b$는 플랜트에 작용하고 제어기 모델에는 없다. 코드와 출력은 영어 절에 있다.
+위의 손 계산은 단계마다 제 단계만 남기고 나머지를 모두 고정했다. 단계들의 숫자가 서로 맞물려도 살아남는지는 루프 전체를 돌리는 프로그램만이 보여 주고, 어느 손잡이가 어느 검사를 움직이는지는 스윕이 보여 준다. Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면이 가진 두 손잡이 $K_d$와 $v_a$를 바꾸고, 그와 함께 움직이는 세 검사에 대해 각 행을 표시한다. 장치(plant, 제어되는 시스템)는 $M$, $c$, $g$를 모두 가진 P2이고, 패널은 P3의 한쪽 스프링이다. 제어기는 $T=1\,\mathrm{ms}$로 돌며 토크를 스텝 동안 유지하고, 적분기는 같은 스텝의 반암시적 오일러다([[02-foundations/lab-kernel|0.7 §3]]). 도구 댐퍼 $b$는 장치에 작용하고 제어기 모델에는 없다. 코드와 출력은 영어 절에 있다.
 
-약 5초 동안 돌고, 계산 절을 먼저 출력한다: 융합 거리 $11.6\,\mathrm{cm}$, $\sigma$ $0.89\,\mathrm{cm}$, 부풀린 면 $1.0892\,\mathrm{m}$; 간선 $A$–$P$ $0.352$(막힘), $A$–$E$ $-0.089$, $E$–$P$ $-0.0132$; 순항 $0.80/0.38\,\mathrm{rad/s}$, $T_1$ $3.345\,\mathrm{s}$, 전환 $5.802\,\mathrm{s}$; 첫 접촉 $6.684\,\mathrm{s}$, 최대 $9.84\,\mathrm{N}$, 정착 오차 $-0.889\,\mathrm{N}$. 마지막 줄은 분리 검사로, 계획한 상한 $0.997\,\mathrm{m/s}$, 시뮬레이션 $0.967\,\mathrm{m/s}$, $S_p=1.239\,\mathrm{m}$다. 시뮬레이션의 말단이 계획보다 느린 것은 모델에서 $b$를 뺀 궤적을 팔이 뒤처져 따라가기 때문이다. 검사는 계획을 쓴다. 안전 기능은 명령한 것에 대해 성립해야 하기 때문이다. 스윕은 다음과 같고, 실패한 행마다 한계를 어긴 페이지를 적었다.
+약 5초 동안 돌고, 계산 절을 먼저 출력한다: 융합 거리 $11.6\,\mathrm{cm}$, $\sigma$ $0.89\,\mathrm{cm}$, 부풀린 면 $1.0892\,\mathrm{m}$; 간선 $A$–$P$ $0.352$(막힘), $A$–$E$ $-0.089$, $E$–$P$ $-0.0132$; 순항 $0.80/0.38\,\mathrm{rad/s}$, $T_{AE}$ $3.345\,\mathrm{s}$, 전환 $5.802\,\mathrm{s}$; 첫 접촉 $6.684\,\mathrm{s}$, 최대 $9.84\,\mathrm{N}$, 정착 오차 $-0.889\,\mathrm{N}$; 토크는 최대 $|\tau|=(25.6,\,13.5)\,\mathrm{N{\cdot}m}$, $P$에서의 유지 $(11.30,\,9.81)$, 정착한 누르기 $(3.50,\,9.72)\,\mathrm{N{\cdot}m}$. 마지막 줄은 이격 검사로, 계획한 상한 $0.997\,\mathrm{m/s}$, 시뮬레이션 $0.967\,\mathrm{m/s}$, $S_p=1.239\,\mathrm{m}$다. 시뮬레이션의 말단이 계획보다 느린 것은 모델에서 $b$를 뺀 궤적을 팔이 뒤처져 따라가기 때문이다. 검사는 계획을 쓴다. 안전 기능은 명령한 것에 대해 성립해야 하기 때문이다. 스윕은 다음과 같고, 실패한 행마다 한계를 어긴 페이지를 적었다.
 
 | $K_d$ (N/m) | $v_a$ (m/s) | $t_c$ (s) | $F_{\text{pk}}$ (N) | $F_{\text{set}}-F_d$ (N) | $v_aL\le\sigma$ | 판정: 어긴 한계 |
 |---:|---:|---:|---:|---:|:---:|---|
@@ -772,16 +1060,18 @@ Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면
 - **통과 집합.** $v_a\le0.10$에서 $K_d\in\{500,\,1000\}$, 그리고 $(250,\,0.05)$다. $K_d\ge500$이면 이 부드러운 패널에서 속도를 묶는 것은 힘 한계가 아니라 지연 검사다.
 - **한 행은 칼날 위에 있다.** $(2000,\,0.40)$은 한계를 $0.06\,\mathrm{N}$ 넘는다 — 더 고운 적분 스텝이 만드는 변화 $11.06\to11.11\,\mathrm{N}$과 같은 크기라, 이 행의 힘 판정은 견고하지 않다. 어쨌든 다른 검사 둘에서 떨어진다.
 
-**적분기도 주장의 일부다**([[02-foundations/lab-kernel|0.7 Lab Kernel]]). 같은 유지 토크 아래서 플랜트를 $T/10$으로 전진시키면 어떤 최대값도 $0.51\,\%$보다 많이 움직이지 않고 — 가장 큰 변화는 그 칼날 행의 $11.06\to11.11\,\mathrm{N}$ — 정착 힘은 전혀 움직이지 않는다. 그러니 표가 묘사하는 것은 오일러 스텝이 아니라 제어기다.
+**적분기도 주장의 일부다**([[02-foundations/lab-kernel|0.7 Lab Kernel]]). 같은 유지 토크 아래서 장치를 $T/10$으로 전진시키면 어떤 최대값도 $0.51\,\%$보다 많이 움직이지 않고 — 가장 큰 변화는 그 칼날 행의 $11.06\to11.11\,\mathrm{N}$ — 정착 힘은 전혀 움직이지 않는다. 그러니 표가 묘사하는 것은 오일러 스텝이 아니라 제어기다.
 
 ### 7. 이 시뮬레이션이 보증하지 못하는 것
 
-- **24.4의 누설.** 플랜트를 제어기 자신의 주기로 전진시키므로, 유지된 스프링이 샘플 사이에 흘리는 에너지는 모델에 아예 없다. 그리고 임피던스 댐퍼는 정확한 샘플 속도로 계산한다: $K_d=2000$에서 $D_d=126\,\mathrm{N{\cdot}s/m}$, 공구 $b$의 $158$배다. $2000\,\mathrm{N/m}$ 행들이 깨끗해 보이는 이유가 그것이다. 새 자리에서 본 24.4의 조건 D다 — 장치의 것이 아닌 댐퍼가 갚고 있다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]는 늦은 속도 추정으로 계산한 댐퍼가 물리적 소산을 대신하지 못한다고 말한다.
+통과한 실행은 그 모델에 들어 있는 것만 보증한다. 아래 항목은 저마다 이 모델이 빼놓은 것이다.
+
+- **24.4의 누설.** 장치를 제어기 자신의 주기로 전진시키므로, 유지된 스프링이 샘플 사이에 흘리는 에너지는 모델에 아예 없다. 그리고 임피던스 댐퍼는 정확한 샘플 속도로 계산한다: $K_d=2000$에서 $D_d=126\,\mathrm{N{\cdot}s/m}$, 도구 $b$의 $158$배다. $2000\,\mathrm{N/m}$ 행들이 깨끗해 보이는 이유가 그것이다. 새 자리에서 본 24.4의 조건 D다 — [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §4]]와 그 과제의 $2500\,\mathrm{N/m}$ 벽으로, 손의 댐핑이 장치의 열 배라 그 누설을 갚아 주는 덕분에만 멀쩡해 보인다. 장치의 것이 아닌 댐퍼가 갚고 있는 것이다. [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 §2]]는 늦은 속도 추정으로 계산한 댐퍼가 물리적 소산을 대신하지 못한다고 말한다.
 - **단단한 패널.** 13 §1이 실제 구조물에서 힘 제어기가 식별한다고 말하는 직렬 강성 $10^5\,\mathrm{N/m}$이면 접근은 충격이 된다: $2\,\mathrm{kg}$의 겉보기 질량으로 $5\,\mathrm{cm/s}$에서 $14\,\mathrm{ms}$ 동안 $22\,\mathrm{N}$([[04-robotics/force-compliance-control|13 §5]]). 그때 먼저 묶는 것은 지연이 아니라 힘 한계일 것이다.
 - **추정 하나, 잡음 없음.** 패널은 홈에서 한 번 읽고, 시뮬레이션의 센서는 정확하다. 두 번째 측정은 $\sigma$를 줄이고 — [[02-foundations/probability|3. 확률 §5]]가 그 순서를 돌린다 — 그와 함께 §4의 힘 띠도 줄인다.
-- **기하.** 점 접촉, 마찰 없는 면, 두께 없는 링크. 엘보의 여유는 확인했지만 공구의 방향은 제어하지 않았다. 2R 팔에는 그럴 여분의 관절이 없다.
+- **기하.** 점 접촉, 마찰 없는 면, 두께 없는 링크. 엘보의 여유는 확인했지만 도구의 방향은 제어하지 않았다. 2R 팔에는 그럴 여분의 관절이 없다.
 - **모델 오차.** 계산 토크의 모델은 $b$를 빼면 정확하다. 실제 팔은 탑재물과 마찰의 오차를 싣고, 그것은 11장 §2가 말하는 교란으로 오차 동역학에 들어간다.
-- **고전 정책.** 여기의 명령은 모두 모델과 이득에서 나오고, 배운 것은 없다. 시연에서 배운 정책을 같은 종류의 접촉으로 돌리는 것 — 행동 복제의 스텝당 오류가 핀에서 무엇으로 불어나는지, 어떤 해법이 공구를 허용오차 안에 붙잡아 두는지 — 은 건설 트랙의 S1 패널(±5 mm로 맞추는 20 kg 외장 패널, [[05-construction-robotics/site-engineering|2.5]]) 위에서 [[05-construction-robotics/imitating-contact|10. 접촉 모방]]이 다룬다.
+- **고전 정책.** 여기의 명령은 모두 모델과 이득에서 나오고, 배운 것은 없다. 시연에서 배운 정책을 같은 종류의 접촉으로 돌리는 것 — 행동 복제의 스텝당 오류가 핀에서 무엇으로 불어나는지, 어떤 해법이 도구를 허용오차 안에 붙잡아 두는지 — 은 건설 트랙의 S1 패널(±5 mm로 맞추는 20 kg 외장 패널, [[05-construction-robotics/site-engineering|2.5]]) 위에서 [[05-construction-robotics/imitating-contact|10. 접촉 모방]]이 다룬다.
 
 ### 읽고 나면 말할 수 있어야 하는 것
 
@@ -794,50 +1084,50 @@ Tier A. 프로그램 하나가 1–8단계를 돌린다. 스윕은 접촉 국면
 
 ### 스스로 점검
 
-1. 사전만 쓰면 도면의 면에서 가장 작은 합법 이격은 얼마이고, 칼만 갱신은 $0.05\,\mathrm{m/s}$에서 접근 시간을 얼마나 사 주는가?
+1. 사전만 쓰면 도면의 면에서 가장 작은 합법 대기 간격은 얼마이고, 칼만 갱신은 $0.05\,\mathrm{m/s}$에서 접근 시간을 얼마나 사 주는가?
 2. $E\to P$의 사다리꼴은 두 관절 모두 $0.8\,\mathrm{rad/s}$를 지킨다. 그런데도 왜 11번 페이지에서 떨어지고, $A\to E$는 왜 그러지 않았나?
 3. $2000\,\mathrm{N/m}$ 행들은 스윕에서 최대 힘이 가장 낮다. 왜 떨어지며, 궤적은 왜 그 이유를 보여 주지 않는가?
 4. $F_{\text{set}}-F_d$는 왜 모든 접근 속도에서 같고, 무엇이 그것을 바꾸겠는가?
 5. 어떤 보고서가 "캡스톤은 $11\,\mathrm{N}$ 한계를 만족한다"고 쓴다. 무엇을 덧붙여야 하나?
 
 > [!tip]- 정답 · Answers
-> 1. $1.10$에서 $3\sigma_{\text{prior}}=6.0\,\mathrm{cm}$, 즉 계획기의 면은 $1.04\,\mathrm{m}$다. 갱신하면 띠의 반폭이 $2.68\,\mathrm{cm}$라 공구가 $3.3\,\mathrm{cm}$ 더 가까이서 출발할 수 있다: $0.05\,\mathrm{m/s}$에서 $0.66\,\mathrm{s}$ — 그리고 토러스는 $1.05\,\%$뿐이다. 추정은 계획기의 자유가 아니라 접근에서 값을 한다.
+> 1. $1.10$에서 $3\sigma_{\text{prior}}=6.0\,\mathrm{cm}$, 즉 계획기의 면은 $1.04\,\mathrm{m}$다. 갱신하면 띠의 반폭이 $2.68\,\mathrm{cm}$라 도구가 $3.3\,\mathrm{cm}$ 더 가까이서 출발할 수 있다: $0.05\,\mathrm{m/s}$에서 $0.66\,\mathrm{s}$ — 그리고 토러스는 $1.05\,\%$뿐이다. 추정은 계획기의 자유가 아니라 접근에서 값을 한다.
 > 2. 관절 속도는 $J$를 통해서만 말단에 닿고, $E$에서 $\lVert Ju\rVert=2.624\,\mathrm{m/rad}$다. 두 관절이 같은 쪽으로 돌아 말단이 긴 반지름으로 휘돌므로 $0.8\,\mathrm{rad/s}$가 최대 $2.04\,\mathrm{m/s}$가 되는데, $S_p$는 말단 속도로 쓰여 있다. $A\to E$에서는 두 관절이 같은 빠르기로 반대쪽으로 돌아 $\theta_1+\theta_2$가 $90^\circ$에 머물고 전완은 평행 이동만 한다: $\lVert Ju\rVert=1$이라 말단은 $0.8\,\mathrm{m/s}$다.
-> 3. $K_d=2000>2b/T=1600$: 유지된 스프링이 주기마다 흘리는 양이 $0.8\,\mathrm{N{\cdot}s/m}$ 공구 댐퍼가 걷어 가는 양보다 많다, $K_dT/(2b)=1.25$. 궤적은 이것을 두 겹으로 숨긴다 — 플랜트를 제어 주기로 전진시키므로 샘플 사이 누설이 모델에 없고, 정확한 속도로 계산한 $126\,\mathrm{N{\cdot}s/m}$ 가상 댐퍼가 그것을 갚는다. 24.4는 늦은 추정에 그 일을 맡길 수 없다고 말한다.
+> 3. $K_d=2000>2b/T=1600$: 유지된 스프링이 주기마다 흘리는 양이 $0.8\,\mathrm{N{\cdot}s/m}$ 도구 댐퍼가 걷어 가는 양보다 많다, $K_dT/(2b)=1.25$. 궤적은 이것을 두 겹으로 숨긴다 — 장치를 제어 주기로 전진시키므로 샘플 사이 누설이 모델에 없고, 정확한 속도로 계산한 $126\,\mathrm{N{\cdot}s/m}$ 가상 댐퍼가 그것을 갚는다. 24.4는 늦은 추정에 그 일을 맡길 수 없다고 말한다.
 > 4. 움직임이 잦아들고 나면 스프링만으로 정해지기 때문이다: $F_{\text{set}}=K_s(x_{\text{stop}}-x_w)$에는 속도가 없다. 바꿀 수 있는 것은 추정의 오차, ($K_s$를 통한) $K_d$와 $k_w$, 또는 대신 힘을 재는 것뿐이다.
-> 5. "실현된 추정 오차 $-4\,\mathrm{mm}$에서." 띠의 가까운 끝이면 같은 정지점이 $15.96\,\mathrm{N}$으로, 먼 끝이면 $4.04\,\mathrm{N}$으로 누른다. 결과는 로봇이 볼 수 없는 오차의 부호에 조건부다.
+> 5. "실현된 추정 오차 $x_w-\hat x_w=+4\,\mathrm{mm}$에서." 띠의 가까운 끝이면 같은 정지점이 $15.96\,\mathrm{N}$으로, 먼 끝이면 $4.04\,\mathrm{N}$으로 누른다. 결과는 로봇이 볼 수 없는 오차의 부호에 조건부다.
 
 ### 과제 · Problem set
 
 Tier A. 이 페이지, 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴다. 같은 셀에서 **측정 하나만 바꾼다**: 패널을 다시 걸었고 센서는 이제 $z=8\,\mathrm{cm}$를 읽는다 — 도면의 $10$을 중심으로 $12$의 거울상이다. 시뮬레이션의 참 면은 이 측정이 두는 자리 $x_w=1.080\,\mathrm{m}$로 옮긴다. 나머지 — 사전, $R$, $d_s$, $E$, 한계, 이득, 제어기 — 는 고정이다. §6의 랩을 쓰고, 시뮬레이터를 하나 더 만들지 마라.
 
 1. **그리기.** 새 숫자로 위의 그림, 곧 상자마다 새 숫자를 적은 루프. 그리고 아래 *그리는 법*이 늘어놓은 대로 새 띠를 그린 작업 영역, 새 계획기 면의 C-space 렌즈, 시계. 숫자가 바뀌지 *않은* 상자를 표시하고 이유를 말하라.
-2. **유도.** (a) 칼만 갱신, $\hat x_w$, 계획기의 면. (b) 엘보 위 가지의 접촉 전 자세; $A$에서의 직통 간선의 중간점; 두 구간의 여유. (c) $T_1$; 관절 한계 $T_2$; 새 $E\to P$에서 $\max_s\lVert Ju\rVert=2.694\,\mathrm{m/rad}$($E$에서)을 써서 제한한 $T_2$; 전환 시각. (d) $K_d=500$의 $K_s$, $x_{\text{stop}}$, $F_{\text{set}}$, 그리고 네 강성 모두의 $F_{\text{set}}-F_d$. (e) 장부, 지연, 분리 검사.
+2. **유도.** (a) 칼만 갱신, $\hat x_w$, 계획기의 면. (b) 엘보 위 가지의 접촉 전 자세; $A$에서의 직통 간선의 중간점; 두 구간의 여유. (c) $T_{AE}$; 관절 한계 $T_{EP}$; 새 $E\to P$에서 $\max_s\lVert Ju\rVert=2.694\,\mathrm{m/rad}$($E$에서)을 써서 제한한 $T_{EP}$; 전환 시각. (d) $K_d=500$의 $K_s$, $x_{\text{stop}}$, $F_{\text{set}}$, 그리고 네 강성 모두의 $F_{\text{set}}-F_d$. (e) 장부, 지연, 이격 검사.
 3. **실행.** 영어 절 템플릿의 `?`를 채우고 랩의 1단계 위에 붙여 넣은 뒤 돌린다. 스윕 표를 $t_c$, $F_{\text{pk}}$, $F_{\text{set}}-F_d$, 행마다의 판정으로 채운다. 그리고 해석하라: 어느 행이 통과하는지, 제어기 설정은 하나도 바꾸지 않았는데 왜 답이 계산 절과 다른지, 그리고 스윕 바깥의 어떤 변화가 행 하나를 통과시키겠는지.
 
 > [!note]- 그리는 법 · How to draw it
 > - **루프.** 위의 그림처럼 상자마다 다음 단계로 넘기는 숫자를 적는다. 새 숫자로 그릴 때는 숫자가 바뀌지 않은 상자를 표시한다.
 > - **두 면이 두 단계를 먹인다.** 띠의 가까운 끝은 계획기로, 추정 자체는 정지점으로 간다. 칼만 상자에서 나가는 화살표가 하나뿐이면 둘을 합쳐 버린 것이다.
 > - **루프 아래에 세 그림을 위아래로 쌓아 각각 축척대로 그린다.** 작업 영역, C-space 도표, 시계.
-> - **작업 영역.** $A$, $E$, $P$에서의 P2와 말단 경로 $A\to E\to P$. 면을 세 번 그린다: 도면의 $x=1.10$(파선), 추정과 그 $\pm3\sigma$ 띠(음영), 그리고 참 면(점선, *시뮬레이션 전용*이라 적는다). $P$의 말단에서 정지점까지 접근 화살표를 긋고, 그 위에 $4\,\mathrm{cm}$ 이격과 띠의 가까운 끝까지의 간격을 적는다.
+> - **작업 영역.** $A$, $E$, $P$에서의 P2와 말단 경로 $A\to E\to P$. 면을 세 번 그린다: 도면의 $x=1.10$(파선), 추정과 그 $\pm3\sigma$ 띠(음영), 그리고 참 면(점선, *시뮬레이션 전용*이라 적는다). $P$의 말단에서 정지점까지 접근 화살표를 긋고, 그 위에 $4\,\mathrm{cm}$ 대기 간격과 띠의 가까운 끝까지의 간격을 적는다.
 > - **C-space.** 2장의 토러스 도표에 부풀린 렌즈 $\cos\theta_1+\cos(\theta_1+\theta_2)>x_{\text{obs}}$를 음영으로 칠하고 오므라드는 곳을 표시한다. 점 $A$, $E$, $P$를 찍고, 직통 간선 $A$–$P$는 X를 친 파선으로 그 침투와 함께, 두 구간은 실선으로 그린다.
 > - **파선 간선은 양 끝이 렌즈 밖에 있으면서 렌즈를 눈에 띄게 가로질러야 한다.** 경유점을 강제하는 사실이 바로 그것이기 때문이다.
-> - **시계**, $0$에서 $9\,\mathrm{s}$까지: $E$ 도착, $P$에서의 전환, 첫 접촉, 기준 정지, 최대. 그 아래 힘 궤적을 그리고 $F_d=10\,\mathrm{N}$은 점선, $F_{\lim}=11\,\mathrm{N}$은 파선으로 긋는다. 접촉 옆에는 $70\,\mathrm{ms}$ 막대를 두고, 그 안에 공구가 움직이는 $v_aL=3.5\,\mathrm{mm}$를 적는다.
+> - **시계**, $0$에서 $9\,\mathrm{s}$까지: $E$ 도착, $P$에서의 전환, 첫 접촉, 기준 정지, 최대. 그 아래 힘 궤적을 그리고 $F_d=10\,\mathrm{N}$은 점선, $F_{\lim}=11\,\mathrm{N}$은 파선으로 긋는다. 접촉 옆에는 $70\,\mathrm{ms}$ 막대를 두고, 그 안에 도구가 움직이는 $v_aL=3.5\,\mathrm{mm}$를 적는다.
 > - **전환은 접촉 위가 아니라 그 전, $P$에 있다.** 시계에서 그 눈금은 첫 접촉보다 앞에 오고, 작업 영역에서 $P$는 띠 밖에 있다.
 
 > [!tip]- 정답 · Solutions
-> 1. 같은 루프, 같은 세 그림. 바뀐 것: 측정 $8\,\mathrm{cm}$, 융합 $8.4\,\mathrm{cm}$, 계획기의 면 $1.0572\,\mathrm{m}$, 정지점 $1.129\,\mathrm{m}$, $P$의 말단 $x=1.044$, 제한한 $T_2=2.427\,\mathrm{s}$, 전환 $5.772\,\mathrm{s}$, 첫 접촉 $6.494\,\mathrm{s}$, 최대 $11.62\,\mathrm{N}$. 바뀌지 않은 것: $\sigma=0.894\,\mathrm{cm}$(분산 갱신은 $z$를 보지 않는다), $T_1$, 이득, $K_s$, 그리고 $\sigma$, $K_d$, $v_a$에만 기대는 모든 검사. 시계의 힘 궤적이 이제 $11\,\mathrm{N}$ 선을 넘는다.
-> 2. (a) $K=0.8$, $\hat x=10+0.8\,(8-10)=8.4\,\mathrm{cm}$, $P=0.8\,\mathrm{cm^2}$, $\hat x_w=1.084\,\mathrm{m}$. 계획기의 면 $1.084-0.0268=1.0572\,\mathrm{m}>L_1$이라 말단만의 검사가 여전히 성립한다. (b) 말단 $(1.044,\,1.000)$: $\cos\theta_2=(1.044^2+1-2)/2=0.0450$, $\theta_2=-87.42^\circ$, $\theta_1=43.77^\circ+43.71^\circ=87.48^\circ$. $A$–$P$의 중간점 $(43.74^\circ,\,1.29^\circ)$, 말단 $x=1.4293$, 안으로 $0.372\,\mathrm{m}$(최악 $0.373$) — 막힘. $A$–$E$의 여유 $1.0572-1=0.057\,\mathrm{m}$, $E$–$P$는 $P$에서 $1.0572-1.044=13.2\,\mathrm{mm}$ — 이격과 $\sigma$가 그대로라 이것도 그대로다. (c) $T_1=3.345\,\mathrm{s}$. $E\to P$는 $(-47.52^\circ,\,-42.42^\circ)=(-0.8294,\,-0.7404)\,\mathrm{rad}$를 움직인다: 관절 한계 $T_2=0.8294/0.8+0.4=1.437\,\mathrm{s}$; 상한 $1.0/2.694=0.371\to0.37\,\mathrm{rad/s}$, $T_2=0.8294/0.37+0.185=2.427\,\mathrm{s}$; 전환 $3.345+2.427=5.772\,\mathrm{s}$. (d) $K_s=222.2\,\mathrm{N/m}$, $x_{\text{stop}}=1.084+0.045=1.129\,\mathrm{m}$, $F_{\text{set}}=222.2\times0.049=10.889\,\mathrm{N}$, 즉 $+0.889\,\mathrm{N}$. $K_d=250$, $500$, $1000$, $2000$이면 $+0.615$, $+0.889$, $+1.143$, $+1.333\,\mathrm{N}$ — 계산 절의 숫자에서 부호만 뒤집혔다. (e) 장부: $500\le1600$, 그대로. 지연: $3.5\le8.9\,\mathrm{mm}$, 그대로. 분리: $0.37\times2.694=0.997\,\mathrm{m/s}$, $S_p=1.239\,\mathrm{m}$, 통과.
-> 3. 빈칸: `z = 8.0`, `K = P0 / (P0 + R)`, `xh = x0 + K * (z - x0)`, `Pp = (1 - K) * P0`, `XW_TRUE = 1.080`, `X_OBS = XW_HAT - 3 * SIG`; 검사 `11.0`, `2 * B / TCTRL`, `SIG`. 실행하면 융합 $8.4\,\mathrm{cm}$, 계획기의 면 $1.0572$, 간선 $0.373$ / $-0.057$ / $-0.0132$, 순항 $0.80/0.37$, 전환 $5.772\,\mathrm{s}$, 그리고 계산 행: 접촉 $6.494\,\mathrm{s}$, 최대 $11.62\,\mathrm{N}$, 정착 오차 $+0.889\,\mathrm{N}$를 출력한다. 최대 힘(뉴턴), 행은 $K_d$, 열은 $v_a=0.05/0.10/0.20/0.40\,\mathrm{m/s}$: $250$: $11.52/12.43/14.23/18.89$; $500$: $11.62/12.34/13.84/16.75$; $1000$: $11.64/12.13/13.13/14.97$; $2000$: $11.64/11.95/12.57/13.72$. **통과하는 행이 없다.** 이제 모든 행이 힘 한계에서 떨어지고, $v_a\ge0.20$ 열은 지연에서도, $K_d=2000$ 행은 장부에서도 전과 똑같이 떨어진다. 제어기는 하나도 바뀌지 않았다. 추정의 오차가 $-4$에서 $+4\,\mathrm{mm}$로 뒤집혔고, 위치 기준 누르기가 그것을 $+K_s\times4\,\mathrm{mm}$의 상시 힘으로 바꾸었으며, 과도 응답이 그 위에 얹혔다. 계산 절의 통과는 오차의 부호였다. 행을 통과시킬 것은 스윕 바깥에 있다: 힘을 재서 램프를 그것으로 끝내 추정이 힘이 아니라 정지점을 옮기게 하거나(13 §2–§3), $\pm3\sigma$ 띠가 $1\,\mathrm{N}$ 여유에 들어올 때까지 $K_s\sigma$를 줄이는 것 — $K_d=500$에서 그것은 $\sigma\le1/(3\times222.2)=1.5\,\mathrm{mm}$, 이 센서의 독립 측정 약 $45$번을 요구한다. 힘을 재는 것이 실용적인 해법인 이유다.
+> 1. 같은 루프, 같은 세 그림. 바뀐 것: 측정 $8\,\mathrm{cm}$, 융합 $8.4\,\mathrm{cm}$, 계획기의 면 $1.0572\,\mathrm{m}$, 정지점 $1.129\,\mathrm{m}$, $P$의 말단 $x=1.044$, 제한한 $T_{EP}=2.427\,\mathrm{s}$, 전환 $5.772\,\mathrm{s}$, 첫 접촉 $6.494\,\mathrm{s}$, 최대 $11.62\,\mathrm{N}$. 바뀌지 않은 것: $\sigma=0.894\,\mathrm{cm}$(분산 갱신은 $z$를 보지 않는다), $T_{AE}$, 이득, $K_s$, 그리고 $\sigma$, $K_d$, $v_a$에만 기대는 모든 검사. 시계의 힘 궤적이 이제 $11\,\mathrm{N}$ 선을 넘는다.
+> 2. (a) $\nu=8-10=-2\,\mathrm{cm}$, $K=0.8$, $\hat x^+=10+0.8\times(-2)=8.4\,\mathrm{cm}$, $P^+=0.8\,\mathrm{cm^2}$, $\hat x_w=1.084\,\mathrm{m}$. 계획기의 면 $1.084-0.0268=1.0572\,\mathrm{m}>L_1$이라 말단만의 검사가 여전히 성립한다. (b) 말단 $(1.044,\,1.000)$: $\cos\theta_2=(1.044^2+1-2)/2=0.0450$, $\theta_2=-87.42^\circ$, $\theta_1=43.77^\circ+43.71^\circ=87.48^\circ$. $A$–$P$의 중간점 $(43.74^\circ,\,1.29^\circ)$, 말단 $x=1.4293$, 안으로 $0.372\,\mathrm{m}$(최악 $0.373$) — 막힘. $A$–$E$의 여유 $1.0572-1=0.057\,\mathrm{m}$, $E$–$P$는 $P$에서 $1.0572-1.044=13.2\,\mathrm{mm}$ — 대기 간격과 $\sigma$가 그대로라 이것도 그대로다. (c) $T_{AE}=3.345\,\mathrm{s}$. $E\to P$는 $(-47.52^\circ,\,-42.42^\circ)=(-0.8294,\,-0.7404)\,\mathrm{rad}$를 움직인다: 관절 한계 $T_{EP}=0.8294/0.8+0.4=1.437\,\mathrm{s}$; 상한 $1.0/2.694=0.371\to0.37\,\mathrm{rad/s}$, $T_{EP}=0.8294/0.37+0.185=2.427\,\mathrm{s}$; 전환 $3.345+2.427=5.772\,\mathrm{s}$. (d) $K_s=222.2\,\mathrm{N/m}$, $x_{\text{stop}}=1.084+0.045=1.129\,\mathrm{m}$, $F_{\text{set}}=222.2\times0.049=10.889\,\mathrm{N}$, 즉 $+0.889\,\mathrm{N}$. $K_d=250$, $500$, $1000$, $2000$이면 $+0.615$, $+0.889$, $+1.143$, $+1.333\,\mathrm{N}$ — 계산 절의 숫자에서 부호만 뒤집혔다. (e) 장부: $500\le1600$, 그대로. 지연: $3.5\le8.9\,\mathrm{mm}$, 그대로. 이격: $0.37\times2.694=0.997\,\mathrm{m/s}$, $S_p=1.239\,\mathrm{m}$, 통과.
+> 3. 빈칸: `z = 8.0`, `K = P0 / (P0 + R)`, `xh = x0 + K * (z - x0)`, `Pp = (1 - K) * P0`, `XW_TRUE = 1.080`, `X_OBS = XW_HAT - 3 * SIG`; 검사 `11.0`, `2 * B / TCTRL`, `SIG`. 실행하면 융합 $8.4\,\mathrm{cm}$, 계획기의 면 $1.0572$, 간선 $0.373$ / $-0.057$ / $-0.0132$, 순항 $0.80/0.37$, 전환 $5.772\,\mathrm{s}$, 그리고 계산 행: 접촉 $6.494\,\mathrm{s}$, 최대 $11.62\,\mathrm{N}$, 정착 오차 $+0.889\,\mathrm{N}$를 출력한다. 토크 줄은 거의 움직이지 않고 — 최대 $(25.9,\,13.6)$, 유지 $(10.67,\,9.81)$과 $(1.02,\,9.75)\,\mathrm{N{\cdot}m}$ — 10.5의 한계 안에 머문다. 최대 힘(뉴턴), 행은 $K_d$, 열은 $v_a=0.05/0.10/0.20/0.40\,\mathrm{m/s}$: $250$: $11.52/12.43/14.23/18.89$; $500$: $11.62/12.34/13.84/16.75$; $1000$: $11.64/12.13/13.13/14.97$; $2000$: $11.64/11.95/12.57/13.72$. **통과하는 행이 없다.** 이제 모든 행이 힘 한계에서 떨어지고, $v_a\ge0.20$ 열은 지연에서도, $K_d=2000$ 행은 장부에서도 전과 똑같이 떨어진다. 제어기는 하나도 바뀌지 않았다. 추정의 오차 $x_w-\hat x_w$가 $+4$에서 $-4\,\mathrm{mm}$로 뒤집혔고, 위치 기준 누르기 $F_{\text{set}}=F_d-K_s(x_w-\hat x_w)$가 그것을 $+K_s\times4\,\mathrm{mm}=+0.889\,\mathrm{N}$의 상시 힘으로 바꾸었으며, 과도 응답이 그 위에 얹혔다. 계산 절의 통과는 오차의 부호였다. 행을 통과시킬 것은 스윕 바깥에 있다: 힘을 재서 램프를 그것으로 끝내 추정이 힘이 아니라 정지점을 옮기게 하거나(13 §2–§3), $\pm3\sigma$ 띠가 $1\,\mathrm{N}$ 여유에 들어올 때까지 $K_s\sigma$를 줄이는 것 — $K_d=500$에서 그것은 $\sigma\le1/(3\times222.2)=1.5\,\mathrm{mm}$, 이 센서의 독립 측정 약 $45$번을 요구한다. 힘을 재는 것이 실용적인 해법인 이유다.
 >
 > **채점 목록** (10점, 항목당 1점).
 > - [ ] 칼만: $K=0.8$, $8.4\,\mathrm{cm}$, $0.8\,\mathrm{cm^2}$, $\hat x_w=1.084\,\mathrm{m}$, 그리고 $\sigma$가 바뀌지 않았다는 언급.
 > - [ ] 계획기의 면 $1.0572\,\mathrm{m}$와 말단만의 검사가 살아남는 이유($1.0572>L_1$).
-> - [ ] 엘보 위 가지의 접촉 전 역기구학 $(87.48^\circ,\,-87.42^\circ)$와 그 이유: 공구가 전완을 따라 달려 있다.
+> - [ ] 엘보 위 가지의 접촉 전 역기구학 $(87.48^\circ,\,-87.42^\circ)$와 그 이유: 도구가 전완을 따라 달려 있다.
 > - [ ] 직통 간선이 약 $0.37\,\mathrm{m}$ 깊이로 막힘; 두 구간은 여유와 함께 통과.
-> - [ ] $T_1$, 관절 한계와 제한한 $T_2$, 그리고 *내림*한 순항 $0.37\,\mathrm{rad/s}$.
+> - [ ] $T_{AE}$, 관절 한계와 제한한 $T_{EP}$, 그리고 *내림*한 순항 $0.37\,\mathrm{rad/s}$.
 > - [ ] $K_s$, $x_{\text{stop}}$, $F_{\text{set}}=10.889\,\mathrm{N}$, 부호가 붙은 정착 오차 넷.
-> - [ ] 장부, 지연, 분리를 계산했고 판정은 그대로.
+> - [ ] 장부, 지연, 이격을 계산했고 판정은 그대로.
 > - [ ] 템플릿을 채웠고 첫 접촉 $6.494\,\mathrm{s}$와 최대 $11.62\,\mathrm{N}$를 출력.
 > - [ ] 스윕 표 완성, 실패한 행마다 어긴 페이지 표시.
 > - [ ] 해석: 추정 오차의 부호가 결정한다; 해법은 속도나 이득이 아니라 힘 측정이나 더 작은 $K_s\sigma$다.
@@ -846,13 +1136,13 @@ Tier A. 이 페이지, 선수 지식, [[02-foundations/lab-plants|0.6]]만 쓴�
 
 **1차 출처 — 확인한 인용**
 
-- K. M. Lynch and F. C. Park, *Modern Robotics: Mechanics, Planning, and Control*, Cambridge University Press, 2017 — 2장(형상 공간), 9장(시간 스케일링), 10장(운동 계획), 11장(계산 토크).
+- K. M. Lynch and F. C. Park, *Modern Robotics: Mechanics, Planning, and Control*, Cambridge University Press, 2017 — 2장(컨피규레이션 공간), 9장(시간 스케일링), 10장(운동 계획), 11장(계산 토크).
 - R. E. Kalman, "A New Approach to Linear Filtering and Prediction Problems," *Journal of Basic Engineering*, vol. 82, no. 1, pp. 35–45, 1960.
 - N. Hogan, "Impedance Control: An Approach to Manipulation: Part I—Theory," *ASME Journal of Dynamic Systems, Measurement, and Control*, vol. 107, no. 1, pp. 1–7, 1985.
 - J. E. Colgate and G. G. Schenkel, "Passivity of a Class of Sampled-Data Systems: Application to Haptic Interfaces," *Journal of Robotic Systems*, vol. 14, no. 1, pp. 37–47, 1997 — 24.4의 $2b/T$ 뒤에 있는 샘플링 데이터 수동성 조건.
 
 **이 위키 안에서**
 
-- 각 단계의 주인 페이지, 단계가 쓰이는 자리에 연결했다: [[02-foundations/probability|3. 확률]], [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]], [[04-robotics/modern-robotics/ch10-motion-planning|MR 10장]], [[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]], [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]], [[04-robotics/force-compliance-control|13. 힘·컴플라이언스]], [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]], [[04-robotics/robot-systems-deployment|10. 로봇 시스템]], 그리고 분리 표준과 그 현재 지위를 주는 [[04-robotics/hri-safety|11. HRI·안전]].
+- 각 단계의 주인 페이지, 단계가 쓰이는 자리에 연결했다: [[02-foundations/probability|3. 확률]], [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]], [[04-robotics/modern-robotics/ch10-motion-planning|MR 10장]], [[04-robotics/modern-robotics/ch09-trajectory-generation|MR 9장]], [[04-robotics/modern-robotics/ch11-robot-control|MR 11장]], [[04-robotics/force-compliance-control|13. 힘·컴플라이언스]], [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4 렌더링·샘플링·안정성]], [[04-robotics/robot-systems-deployment|10. 로봇 시스템]], 그리고 이격 표준과 그 현재 지위를 주는 [[04-robotics/hri-safety|11. HRI·안전]].
 - 이 페이지가 딛고 선 누적 과제: [[04-robotics/index|4. 로보틱스]].
 - 이 페이지의 모든 숫자는 명시한 셀에서 여기서 계산했고 랩이 그것을 재현한다. $1.120\,\mathrm{m}$의 참 면과 $11\,\mathrm{N}$ 한계는 측정값이 아니라 예시로 고른 값이다. 믿지 말고 다시 계산하라.

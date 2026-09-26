@@ -35,7 +35,7 @@ If a paper changes only line 1, it proposes a representation. If it changes line
 
 *Frozen* means fixed once here and never changed, so that every page using an object computes with the same numbers and a result on one page can be checked against another. A page that needs a variant widens the object on its own page and says how it differs, as [[03-deep-learning/diffusion/vae-gan|6.1]] does for D6. It is unrelated to frozen, untrained network weights ([[glossary|Glossary]]: *Frozen numbers*).
 
-**D1.** Biases zero, $\sigma=\mathrm{ReLU}$. Distinct from **P1** ($2\to3\to1$ MSE) on [[02-foundations/lab-plants|0.6]].
+**D1.** Biases held at zero and not trained: $12$ trained parameters in $17$ slots, as P1's $9$ of $13$ on [[02-foundations/neural-network-basics|0.8 §2]]. $\sigma=\mathrm{ReLU}$. Distinct from **P1** ($2\to3\to1$ MSE) on [[02-foundations/lab-plants|0.6]].
 
 $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\1&0&0\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix}$$
 
@@ -95,7 +95,7 @@ The catalog level is $i=5$, where $x_5=0.8(2)+0.6(-1)=1$; there $\alpha_5=\bar\a
 
 *고정*(frozen)은 여기서 한 번 정하고 다시는 바꾸지 않는다는 뜻이어서, 대상을 쓰는 모든 페이지가 같은 숫자로 계산하고 한 페이지의 결과를 다른 페이지에서 확인할 수 있다. 변형이 필요한 페이지는 자기 페이지에서 대상을 넓히고 무엇이 다른지 밝힌다. [[03-deep-learning/diffusion/vae-gan|6.1]]이 D6에 대해 그렇게 한다. 신경망의 학습하지 않는 frozen 가중치와는 관계가 없다([[glossary|용어집]]: *Frozen numbers*).
 
-**D1.** bias 0, $\sigma=\mathrm{ReLU}$. [[02-foundations/lab-plants|0.6]]의 **P1**($2\to3\to1$ MSE)과 다른 장치다.
+**D1.** bias는 0에 고정하고 학습하지 않는다. 자리 $17$개 가운데 학습하는 파라미터는 $12$개로, [[02-foundations/neural-network-basics|0.8 §2]]가 P1을 $13$개 가운데 $9$개로 세는 것과 같은 규약이다. $\sigma=\mathrm{ReLU}$. [[02-foundations/lab-plants|0.6]]의 **P1**($2\to3\to1$ MSE)과 다른 장치다.
 
 $$W_1=\begin{pmatrix}1&0\\0&1\\1&0\end{pmatrix},\quad W_2=\begin{pmatrix}0&1&0\\1&0&0\end{pmatrix},\quad x=\begin{pmatrix}1\\2\end{pmatrix}$$
 

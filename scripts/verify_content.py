@@ -413,7 +413,7 @@ for p in md_files:
 # sections and two of MR ch.3 went unassigned until 2026-09-22. A page counts as
 # scheduled when a row introduces it (object, plant, diagram, worked case, or
 # "all"); a page the table only cross-reads by section — 13 and 24.4 in the
-# robotics track's session 81 — is exempt. Sections are the `### N.` and
+# robotics track's session 100 — is exempt. Sections are the `### N.` and
 # `### N.M` headings of the English half; the Korean table must match row for row.
 _SCHED_TRACKS = ("03-deep-learning/index.md", "04-robotics/index.md",
                  "05-construction-robotics/index.md", "06-research-practice/index.md")

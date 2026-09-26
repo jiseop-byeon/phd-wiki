@@ -8,13 +8,16 @@ mastery-when: "Raise when multimodal grounding, representation, or language-cond
 ---
 
 > [!note] Prerequisites · 선수 지식
-> [[03-deep-learning/computer-vision/index|2. Computer Vision]], [[02-foundations/information-theory|5. Information Theory]], and [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|the Transformer note]]. Object **D3** from [[03-deep-learning/lab-objects|0. Lab Objects]]; the Tier A lab in §5 needs NumPy and nothing else.
-> [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]], [[02-foundations/information-theory|5. 정보이론]], [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]. 대상은 [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D3**이고, §5의 Tier A 실습에는 NumPy만 있으면 된다.
+> [[03-deep-learning/foundations/index|1. Learning Systems §1–§2]] (softmax, cross-entropy and $p-y$), [[03-deep-learning/computer-vision/index|2. Computer Vision]], [[02-foundations/information-theory|5. Information Theory]], and [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|the Transformer note]]. Object **D3**, three frozen image–caption pairs, from [[03-deep-learning/lab-objects|0. Lab Objects]]; the Tier A lab in §5 needs NumPy and nothing else.
+> [[03-deep-learning/foundations/index|1. 학습 시스템 §1–§2]](softmax, cross-entropy, $p-y$), [[03-deep-learning/computer-vision/index|2. 컴퓨터비전]], [[02-foundations/information-theory|5. 정보이론]], [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]. 대상은 [[03-deep-learning/lab-objects|0. Lab Objects]]의 **D3**(고정된 이미지–캡션 3쌍)이고, §5의 Tier A 실습에는 NumPy만 있으면 된다.
 
 ## English
 
-> [!note] First pass
-> Read D3, §2, and questions 1–2. Work the Worked case by hand — nine dot products, three row losses, one average — before you open §5. Return to §3 when a caption or VQA number is treated as grounding, and read §6 when a paper calls its model early-fusion, omni-modal or any-to-any.
+> [!note] Why this matters · 왜 배우는가
+> In the physical-AI stack of [[07-research-program/index|7. Research Program §5]] this page belongs to the learning-and-adaptation layer, as the "VLM or VLA reasoning" box that opens the stack's language-driven form, and in *"install that panel on the frame"* it serves step 1, *resolve the instruction*: "that panel" has to be tied to something in the image before step 2 can identify it (its chip sits in the learning-and-adaptation band of the [[physical-ai-map|Physical AI Map]]). Without it a vision–language number is easy to over-read: D3, the track's three frozen image–caption pairs ([[03-deep-learning/lab-objects|0. Lab Objects]]), is a batch its encoder has already solved perfectly, yet its loss runs from $0.933538$ down to $0.000001$ on the temperature alone (§5); a success detector that fires above one half calls a perfect match a failure at $\tau=1/2$, where $p=0.468861$, and a success at $\tau=1/4$, where $p=0.581234$, with nothing in the scene changed (§4); and a correct "red valve" says nothing about whether the valve's pixels were used (§3). Later pages stand on it: [[03-deep-learning/vla/index|4. VLA]] puts an action head on this backbone and, in its §6, prices the backbone's rate; a VLM success check is the kind of binary reward [[02-foundations/rl-robot-learning|7.5 RL for Robot Learning §8]] trains on; and on the dissertation path ([[07-research-program/index|7. Research Program §8]]) the page is the third of block 4's four deep-learning pages, deep-learning sessions 35–38. After it you can compute a contrastive batch by hand, say what its number certifies — at most $\log N$ nats — and tell conditioning from grounding in a paper's claim.
+
+> [!note] First pass · 처음이라면
+> About four sessions of 60–90 minutes, rows 35–38 of the [[03-deep-learning/index|deep-learning schedule]]; the first two are the first pass. **Session 1:** D3 and the picture, then the Worked case by hand with the solution covered — nine dot products, three row losses, and $\mathcal L=0.602352$ nats against $\log3=1.098612$. **Session 2:** §1–§4, self-checks 1–5 and problems 1–3. **Session 3:** the §5 lab and problem 4. **Session 4:** §6 and self-check 6; its collapsed note on the omni models is second-pass reading. Finish by saying in two sentences what a contrastive loss certifies — at most $\log N$ nats of mutual information — and what it does not: that an answer is grounded in the pixels.
 
 ### Running object: D3
 
@@ -22,11 +25,11 @@ mastery-when: "Raise when multimodal grounding, representation, or language-cond
 
 $$v_1=t_1=\begin{pmatrix}1\\0\end{pmatrix},\quad v_2=t_2=\begin{pmatrix}1/2\\\sqrt{3}/2\end{pmatrix},\quad v_3=t_3=\begin{pmatrix}0\\1\end{pmatrix}.$$
 
-Similarity logits are $\ell_{ij}=v_i^\top t_j/\tau$. Rows ask “which text matches this image?”; columns ask the reverse.
+Similarity logits are $\ell_{ij}=v_i^\top t_j/\tau$: row $i$ is image $i$'s logit vector, the $s$ of [[03-deep-learning/foundations/index|1. Learning Systems]], with the batch's $N$ captions as its classes ($N=3$ on D3). Rows ask “which text matches this image?”; columns ask the reverse.
 
 Everything on this page follows from those six vectors and one knob. All are unit length, so each dot product is the cosine of the angle between two of them, and the three images sit at $0^\circ$, $60^\circ$ and $90^\circ$. Matched pairs are *exactly* aligned — this is a batch the encoder has already solved — so the only thing that can go wrong on D3 is the objective itself, which is what makes it the right object for reading a contrastive loss. Two page-local variants are frozen here for §5 and the problem set, changing one vector each. **The one-wrong batch** moves image 2 to $v_2'=(0,1)$, i.e. to $90^\circ$, so the encoder now places it on top of caption 3. **The duplicate-caption batch** sets $t_3=t_2$, so captions 2 and 3 are the same sentence and the "negative" in row 2 is a correct match.
 
-*Scope: this page teaches the contrastive objective of a dual encoder — the similarity matrix, the two directions, the temperature, the negatives, and what the resulting number does and does not certify — and the vocabulary that separates conditioning from grounding. It does not teach the image encoder, which is [[03-deep-learning/computer-vision/index|2. Computer Vision §1]]; nor the cross-attention that fusion models use, which is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §1]] and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]; nor the loss and optimizer machinery around the objective, which is [[03-deep-learning/foundations/index|1. Learning Systems §6]]; nor generative decoding, captioning metrics, or action, which are the generative entries of the [[01-canonical-papers/canonical-list|canonical list]] and the [[03-deep-learning/vla/index|VLA course]] — §6 only places those larger models by where their modalities meet. The retrieval metrics named in §3 are defined in [[02-foundations/ml-practice|9. ML Practice §3]].*
+*Scope: this page teaches the contrastive objective of a dual encoder — the similarity matrix, the two directions, the temperature, the negatives, and what the resulting number does and does not certify — and the vocabulary that separates conditioning from grounding. It does not teach the image encoder, which is [[03-deep-learning/computer-vision/index|2. Computer Vision §1]]; nor the cross-attention that fusion models use — each text token weighting the image patches and reading their weighted sum — which is [[03-deep-learning/foundations/attention-transformer|1.2 Attention & the Transformer §1]], off the dissertation path, and the [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer note]]; nor the loss and optimizer machinery around the objective, which is [[03-deep-learning/foundations/index|1. Learning Systems §1–§2]] and its §6 lab; nor generative decoding, captioning metrics, or action, which are the generative entries of the [[01-canonical-papers/canonical-list|canonical list]] and the [[03-deep-learning/vla/index|VLA course]] — §6 only places those larger models by where their modalities meet. The retrieval metrics named in §3 are defined in [[02-foundations/ml-practice|9. ML Practice §3]].*
 
 ### The picture
 
@@ -145,15 +148,60 @@ $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_
 
 **What that number is measured against.** A batch of $N=3$ that has learned nothing puts $1/3$ on every cell, so its loss is $\log 3=1.098612$ nats. D3 sits at $0.602352$, a little under half the way down — and the *floor* is $0$, reached only as $\tau\to0$. So the number alone says almost nothing: the same encoder scores anywhere between $0.933538$ and $0.000001$ on this very batch depending only on $\tau$, which §5 measures.
 
-**The negative that is not obviously wrong.** Row 2's softmax at $\tau=1/2$ is $(0.172485,\ 0.468861,\ 0.358654)$. The gradient of a softmax cross-entropy is $p-y$ (worked in [[03-deep-learning/foundations/index|1. Learning Systems §2]]), so this row pushes image 2 *away from caption 3* with weight $0.358654$ — more than a third of all the push-down mass in the row. Caption 3 is a negative because it sits in a different slot of the batch, and for no other reason. Keep that number in mind for §2's paragraph about false negatives, and for the problem set, where caption 3 is a copy of caption 2.
+**The negative that is not obviously wrong.** Row 2's softmax at $\tau=1/2$ is $(0.172485,\ 0.468861,\ 0.358654)$. The gradient of a softmax cross-entropy is $p-y$ (worked in [[03-deep-learning/foundations/index|1. Learning Systems §2]]), so this row pushes image 2 *away from caption 3* with weight $0.358654$. All the push-down in the row together is $1-0.468861=0.531139$, the mass the softmax put on wrong captions, and caption 3 takes $0.358654/0.531139=67.5\%$ of it — two-thirds, against a third for caption 1 — because at $30^\circ$ it is the nearer negative. Caption 3 is a negative because it sits in a different slot of the batch, and for no other reason. Keep that number in mind for §2's paragraph about false negatives, and for problem 4, where caption 3 is a copy of caption 2. The figure puts the angles and the row side by side.
+
+<svg viewBox="0 0 560 312" style="max-width:100%;height:auto" role="img" aria-label="D3's three images and three captions coincide on the unit circle at 0, 60 and 90 degrees, so image 2 is 60 degrees from caption 1 and 30 degrees from caption 3; image 2's row softmax at tau = 1/2 is 0.172485, 0.468861, 0.358654, and caption 3 takes 67.5 percent of the push-down mass 0.531139; a dashed arc marks the one-wrong batch, which moves image 2 to 90 degrees">
+  <defs><marker id="aVce" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="22" font-size="12" fill="currentColor">(a) D3 on the unit circle</text>
+  <line x1="62" y1="282" x2="276" y2="282" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <line x1="62" y1="282" x2="62" y2="68" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <path d="M 258.0 282.0 A 196 196 0 0 0 62.0 86.0" stroke="currentColor" stroke-width="0.8" fill="none" stroke-opacity="0.35" stroke-dasharray="2 3"/>
+  <line x1="62" y1="282" x2="258.0" y2="282.0" stroke="currentColor" stroke-width="1.6" marker-end="url(#aVce)"/>
+  <circle cx="258.0" cy="282.0" r="2.6" fill="currentColor"/>
+  <text x="258.0" y="300.0" font-size="11" fill="currentColor" text-anchor="end">v<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= t</tspan><tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">· 0°</tspan></text>
+  <line x1="62" y1="282" x2="160.0" y2="112.3" stroke="currentColor" stroke-width="1.6" marker-end="url(#aVce)"/>
+  <circle cx="160.0" cy="112.3" r="2.6" fill="currentColor"/>
+  <text x="168.0" y="110.3" font-size="11" fill="currentColor" text-anchor="start">v<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= t</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">· 60°</tspan></text>
+  <line x1="62" y1="282" x2="62.0" y2="86.0" stroke="currentColor" stroke-width="1.6" marker-end="url(#aVce)"/>
+  <circle cx="62.0" cy="86.0" r="2.6" fill="currentColor"/>
+  <text x="70.0" y="108.0" font-size="11" fill="currentColor" text-anchor="start">v<tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">= t</tspan><tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">· 90°</tspan></text>
+  <path d="M 116.0 282.0 A 54 54 0 0 0 89.0 235.2" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <text x="120.9" y="252.0" font-size="11" fill="currentColor" text-anchor="middle">60°</text>
+  <path d="M 110.0 198.9 A 96 96 0 0 0 62.0 186.0" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <text x="91.0" y="177.8" font-size="11" fill="currentColor" text-anchor="middle">30°</text>
+  <path d="M 167.0 100.1 A 210 210 0 0 0 69.3 72.1" stroke="currentColor" stroke-width="1.3" fill="none" stroke-dasharray="5 3" marker-end="url(#aVce)"/>
+  <text x="70" y="48" font-size="11" fill="currentColor">v<tspan dy="3" font-size="10">2</tspan><tspan dy="-3">′, the one-wrong batch of §5:</tspan></text>
+  <text x="70" y="62" font-size="11" fill="currentColor">moved to 90°, onto t<tspan dy="3" font-size="10">3</tspan></text>
+  <text x="290" y="72" font-size="12" fill="currentColor">(b) image 2's row at τ = 1/2</text>
+  <text x="384" y="109" font-size="11" fill="currentColor" text-anchor="end">caption 1, 60° away</text>
+  <rect x="392" y="96" width="37.9" height="18" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="0.8"/>
+  <text x="435.9" y="109" font-size="11" fill="currentColor">0.172485</text>
+  <text x="384" y="143" font-size="11" fill="currentColor" text-anchor="end">caption 2, its match</text>
+  <rect x="392" y="130" width="103.1" height="18" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="0.8"/>
+  <text x="501.1" y="143" font-size="11" fill="currentColor">0.468861</text>
+  <text x="501.1" y="157" font-size="10" fill="currentColor" fill-opacity="0.8">positive</text>
+  <text x="384" y="177" font-size="11" fill="currentColor" text-anchor="end">caption 3, 30° away</text>
+  <rect x="392" y="164" width="78.9" height="18" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="0.8"/>
+  <text x="476.9" y="177" font-size="11" fill="currentColor">0.358654</text>
+  <text x="476.9" y="191" font-size="10" fill="currentColor" fill-opacity="0.8">hard negative</text>
+  <line x1="392" y1="90" x2="392" y2="194" stroke="currentColor" stroke-width="0.9"/>
+  <text x="290" y="222" font-size="11" fill="currentColor">cosines: 0.5 to caption 1, 0.866025 to caption 3</text>
+  <text x="290" y="240" font-size="11" fill="currentColor">push-down mass 1 − 0.468861 = 0.531139</text>
+  <text x="290" y="258" font-size="11" fill="currentColor" font-weight="bold">caption 3 takes 0.358654/0.531139 = 67.5%</text>
+  <text x="290" y="276" font-size="11" fill="currentColor" fill-opacity="0.85">the nearer negative is pushed harder</text>
+</svg>
+
+D3's images and captions coincide on the unit circle at $0^\circ$, $60^\circ$ and $90^\circ$, so image 2 sits $60^\circ$ from caption 1 (cosine $0.5$) and only $30^\circ$ from caption 3 (cosine $0.866025$). Its row softmax at $\tau=1/2$ is $(0.172485,\ 0.468861,\ 0.358654)$, and of the push-down mass $0.531139$ the nearer caption 3 takes $67.5\%$. The dashed arc is the one-wrong batch of §5 and problems 1–2, which moves image 2 to $90^\circ$, on top of caption 3.
 
 ### 1. Three VLM families
+
+Three quite different machines are all called VLMs, and a paper's task usually decided which one it could use: the practical difference between them is cost, and the cost follows from where the two modalities meet.
 
 - **dual encoder:** image and text encoded separately; fast retrieval and zero-shot classification through similarity.
 - **fusion model:** tokens interact through cross-attention; stronger pair reasoning, more expensive all-pairs use.
 - **generative model:** predicts language tokens conditioned on visual representations; fluent output is not proof of grounded perception.
 
-The cost structure is the practical difference, and it follows from where the two modalities meet. A dual encoder computes $N$ image vectors and $M$ text vectors once and then scores any pair with a dot product, so ranking a query against a million images is a million multiply-adds. A fusion model has to run the joint network once per pair, so the same ranking is a million forward passes. That is why retrieval systems are built on dual encoders and why fusion models appear where the pair set is small — and it explains, without any appeal to quality, which architecture a paper's task forced on it.
+A dual encoder computes $N$ image vectors and $M$ text vectors once and then scores any pair with a dot product, so ranking a query against a million images is a million multiply-adds. A fusion model has to run the joint network once per pair, so the same ranking is a million forward passes. That is why retrieval systems are built on dual encoders and why fusion models appear where the pair set is small — and it explains, without any appeal to quality, which architecture a paper's task forced on it.
 
 **Zero-shot classification, on D3.** A dual encoder classifies by retrieval: write one caption per class, embed each once, and pick the caption closest to the image. Read D3's three captions as three class prompts and image 2's cosines to them are $(0.5,\ 1,\ 0.866025)$, so it is classified correctly, as class 2 — by a margin of only $1-0.866025=0.133975$ over class 3, the $30^\circ$ between their vectors. At $\tau=1/2$ that margin becomes a probability of $0.468861$, less than one half, and the decision is still right, because dividing by $\tau$ never moves the arg max. What this family outputs is a ranking, and its probabilities depend on a knob the ranking ignores (§2's temperature box). [[01-canonical-papers/notes/3-vlm/clip|CLIP]] is this procedure at scale: trained on $400$ million image–text pairs from the web, it matched the original supervised ResNet-50 on ImageNet zero-shot, without using any of ImageNet's training labels.
 
@@ -161,13 +209,9 @@ The cost structure is the practical difference, and it follows from where the tw
 
 ### 2. Contrastive learning, by hand
 
-Image 1 dots are $v_1^\top t_j=(1,1/2,0)$. Dividing by $\tau=1/2$ gives logits $(2,1,0)$. Its correct-pair probability is
+A dual encoder has pairs but no labels, so it learns by making each image pick its own caption out of the batch, and every other caption in the batch counts as wrong. The Worked case did this by hand for D3's three rows. Written for any batch, the full CLIP-style objective averages the image-to-text and text-to-image cross-entropies over the batch, and the other batch members are not generic "wrong language" but sampled negatives, so false negatives and batch composition affect what is learned.
 
-$$p_{11}=\frac{e^2}{e^2+e+1}=0.665,\qquad L_{i\to t}=-\log p_{11}=0.408.$$
-
-The full CLIP-style objective averages image-to-text and text-to-image cross-entropies over the batch. The other batch members are not generic “wrong language”; they are sampled negatives. False negatives and batch composition therefore affect what is learned.
-
-That sentence is the whole objective, so it is worth writing out with every symbol rather than describing.
+That is the whole objective, so it is worth writing out with every symbol rather than describing.
 
 > **The contrastive (InfoNCE) objective, defined.** A **contrastive objective** is a *classification loss over a batch* — each item's job is to pick its partner out of a lineup — and not a distance, not a regression onto a target embedding, and not a similarity that is maximised on its own. Four defining conditions, and dropping any one of them changes what the number means. The **positives are the diagonal by assumption**: pairing comes from how the batch was assembled, not from a judgement that the off-diagonal pairs are mismatched. The **negatives are the rest of the batch**, so the loss depends on $N$ and on which items were drawn together. The **logits are scaled by a temperature $\tau$** before the softmax, so the same embeddings can produce any loss between $0$ and $\log N$. And it is **symmetrised over the two directions**, image-to-text and text-to-image, which are two different classification problems over the same matrix.
 >
@@ -194,7 +238,7 @@ That sentence is the whole objective, so it is worth writing out with every symb
 
 ### 3. Conditioning is not grounding
 
-A model is *conditioned on* an image when the image changes its output distribution. Grounding additionally asks whether a claim or token is supported by localized visual evidence. Caption likelihood, retrieval accuracy, VQA accuracy, hallucination rate, and spatial grounding measure different abilities.
+A model can answer "red valve" correctly without having used the valve's pixels, and a robot that must then reach for the valve needs to know whether it did. A model is *conditioned on* an image when the image changes its output distribution. Grounding additionally asks whether a claim or token is supported by localized visual evidence. Caption likelihood, retrieval accuracy, VQA accuracy (visual question answering: the share of questions about an image answered correctly), hallucination rate (the share of outputs that mention an object or attribute the image does not contain), and spatial grounding measure different abilities.
 
 Those two words carry the whole section, so both get definitions rather than a contrast.
 
@@ -220,7 +264,7 @@ Read [[01-canonical-papers/notes/3-vlm/clip|CLIP]] first, then fusion/generative
 
 ### 5. The lab: what the temperature does, and to whom
 
-One knob, two batches. Part 1 reproduces the Worked case. Part 2 sweeps $\tau$ over the aligned D3 — the batch the encoder has already solved — and over the one-wrong batch that moves image 2 to $90^\circ$. The second column is the point: on a perfect batch the sweep is monotone and says nothing, and only a batch with a mistake in it has an opinion about $\tau$.
+Contrastive papers tune $\tau$, and the loss they report moves with $\tau$ whether or not the encoder got any better — so before a loss curve can count as evidence you need to know what the temperature alone does, and to which batch. One knob, two batches. Part 1 reproduces the Worked case. Part 2 sweeps $\tau$ over the aligned D3 — the batch the encoder has already solved — and over the one-wrong batch that moves image 2 to $90^\circ$. The one-wrong column is the point: on a perfect batch the sweep is monotone and says nothing, and only a batch with a mistake in it has an opinion about $\tau$.
 
 ```python
 # D3: contrastive logits, the two directions, and the temperature sweep. NumPy only.
@@ -281,7 +325,7 @@ print("log 3 in bits =", round(float(np.log(3)/np.log(2)), 6), "  log 2 =", roun
 
 - **On a batch it has already solved, lowering $\tau$ only buys confidence.** The aligned column falls monotonically from $0.933538$ at $\tau=2$ to $0.000001$ at $\tau=1/100$, and the grid search confirms the minimum is at the low end of the range. Nothing was learned; the same six vectors produced a loss that spans six orders of magnitude. A contrastive loss quoted without its $\tau$ and its $N$ is not a comparable number, and neither is a plot of it across a paper that tunes $\tau$.
 - **The spread is not uniform across rows, and that is the geometry.** At $\tau=1/2$, $p_{11}=0.665241$ but $p_{22}=0.468861$ — image 2 is at $60^\circ$ from caption 1 and only $30^\circ$ from caption 3, so it has a genuinely hard negative and image 1 does not. Row 2 is the hardest row at every temperature in the table. Hard negatives are a property of the embedding geometry, not of the sampling code.
-- **With one pair wrong, the loss is not monotone in $\tau$ and has an interior minimum.** The right-hand column falls to $0.527329$ at $\tau=1/4$, turns, and reaches $2.463960$ at $\tau=1/100$ — worse than the no-information $\log 3$. A grid search over $\tau\in[0.01,3]$ puts the minimum at $\tau=0.1639$, $\mathcal L=0.507409$. Sharpening amplifies whatever the model believes, and below the optimum it is amplifying a mistake. This is the sentence in the problem set's old solution — "sharper logits improve confidence here but also sharpen mistakes" — with the turning point measured.
+- **With one pair wrong, the loss is not monotone in $\tau$ and has an interior minimum.** The right-hand column falls to $0.527329$ at $\tau=1/4$, turns, and reaches $2.463960$ at $\tau=1/100$ — worse than the no-information $\log 3$. A grid search over $\tau\in[0.01,3]$ puts the minimum at $\tau=0.1639$, $\mathcal L=0.507409$. Sharpening amplifies whatever the model believes, and below the optimum it is amplifying a mistake.
 - **A large enough $\tau$ hides the error completely.** At $\tau=2$ the wrong encoder scores $0.932611$ against the correct encoder's $0.933538$ — marginally *better*. The two curves cross at $\tau\approx1.6542$. Above that, the softmax is so flat that a $30^\circ$ encoding error is invisible in the loss, which is worth remembering whenever a training curve is used as evidence that an encoder is working.
 
 ### 6. Where the modalities meet: from VLM to omni-modal
@@ -295,11 +339,12 @@ print("log 3 in bits =", round(float(np.log(3)/np.log(2)), 6), "  log 2 =", roun
 | in one sequence | every modality becomes positions in one transformer — as discrete codes (Chameleon) or as continuous patches trained with a diffusion loss (Transfusion) | Chameleon (2024); Transfusion (2024) | images and text read and generated in any interleaving | every image costs many positions; discrete codes lose detail, and Transfusion reports scaling better than a model over quantized image tokens |
 | omni-modal | the one-sequence design widened to audio and video, in and out, trained end to end | GPT-4o (2024); Qwen2.5-Omni (2025) | one network that perceives and answers in speech | the longest sequences of all, since every second of audio and video adds positions |
 
-On D3 the difference is countable. Three images and three captions cost six encoder passes, after which all nine pairs are scored by dot products; a model that meets the modalities in one sequence needs nine joint passes for the same nine scores, and in exchange can say *why* a pair matches or write the caption itself. That is §1's cost argument, carried to its end.
+On D3 the difference is countable. Three images and three captions cost six encoder passes, after which all nine pairs are scored by dot products; a model that meets the modalities in one sequence needs nine joint passes for the same nine scores, and in exchange can say *why* a pair matches or write the caption itself. That is §1's cost argument, carried to its end. The collapsed note below says how the table's two omni models work inside and where the one-sequence designs came from.
 
-**The omni models, briefly.** GPT-4o accepts any mix of text, audio, image and video and produces text, audio and images from one network trained across all of them; its system card reports answers to speech in as little as $232$ ms, $320$ ms on average — the latency of a human reply ([OpenAI, 2024](https://arxiv.org/abs/2410.21276)). Qwen2.5-Omni streams text and speech at once by splitting the work: a *Thinker*, the language model, writes text, and a *Talker* turns the Thinker's hidden states into audio tokens, while a time-aligned position embedding keeps interleaved video and audio in step ([Qwen, 2025](https://arxiv.org/abs/2503.20215)). The early-fusion ancestors are Chameleon, which tokenizes images with a codebook of the kind in [[03-deep-learning/diffusion/vae-gan|6.1 §10]] ([Chameleon Team, 2024](https://arxiv.org/abs/2405.09818)), and Transfusion, which trains one transformer with next-token prediction on text and diffusion on images ([Zhou et al., 2024](https://arxiv.org/abs/2408.11039)).
+> [!note]- Deeper · 더 깊이
+> **The omni models, briefly.** GPT-4o accepts any mix of text, audio, image and video and produces text, audio and images from one network trained across all of them; its system card reports answers to speech in as little as $232$ ms, $320$ ms on average — the latency of a human reply ([OpenAI, 2024](https://arxiv.org/abs/2410.21276)). Qwen2.5-Omni streams text and speech at once by splitting the work: a *Thinker*, the language model, writes text, and a *Talker* turns the Thinker's hidden states into audio tokens, while a time-aligned position embedding keeps interleaved video and audio in step ([Qwen, 2025](https://arxiv.org/abs/2503.20215)). The early-fusion ancestors are Chameleon, which tokenizes images with a codebook of the kind in [[03-deep-learning/diffusion/vae-gan|6.1 §10]] ([Chameleon Team, 2024](https://arxiv.org/abs/2405.09818)), and Transfusion, which trains one transformer with next-token prediction on text and diffusion on images ([Zhou et al., 2024](https://arxiv.org/abs/2408.11039)).
 
-**Action is one more modality.** π0 builds on Transfusion — language by next-token prediction, actions by flow matching, and separate weights per modality inside one attention, the Mixture of Transformers of [[03-deep-learning/vla/index|4. VLA §6]]. A VLA is therefore an early-fusion model whose extra output modality is action, and Gemini Robotics built one directly on Gemini 2.0, a large multimodal model ([Gemini Robotics Team, 2025](https://arxiv.org/abs/2503.20020)). Inputs widen the same way: ManiWAV put a microphone in the gripper and learned contact-rich skills from audio and video together, because sound carried contact events and surface materials that vision alone left ambiguous ([Liu et al., 2024](https://arxiv.org/abs/2406.19464)). A construction site is where that matters — loud, cluttered, often poorly lit — and where a worker's spoken instruction is the natural interface. So read "omni-modal" in a robot paper as two questions: which modalities go in, and whether action is among those that come out.
+**Action is one more modality.** π0's architecture is, in its authors' words, inspired by Transfusion — one transformer, a cross-entropy loss on its discrete tokens and a flow-matching loss on its continuous ones — and adds a separate set of weights for the robot's state and action tokens, the Mixture of Transformers of [[03-deep-learning/vla/index|4. VLA §6]]. It starts from PaliGemma, a 3B VLM that writes its answers a token at a time, and supervises its own action tokens with flow matching, which trains the network to turn random noise into an action chunk in a few integration steps — the denoiser family of that same §6 ([[01-canonical-papers/notes/4-vla/pi0|π0]]). A VLA is therefore an early-fusion model — its modalities meet in one sequence, the table's third row — whose extra output modality is action, and Gemini Robotics built one directly on Gemini 2.0, a large multimodal model ([Gemini Robotics Team, 2025](https://arxiv.org/abs/2503.20020)). Inputs widen the same way: ManiWAV put a microphone in the gripper and learned contact-rich skills from audio and video together, because sound carried contact events and surface materials that vision alone left ambiguous ([Liu et al., 2024](https://arxiv.org/abs/2406.19464)). A construction site is where that matters — loud, cluttered, often poorly lit — and where a worker's spoken instruction is the natural interface. So read "omni-modal" in a robot paper as two questions: which modalities go in, and whether action is among those that come out.
 
 ### Self-check
 
@@ -320,11 +365,11 @@ On D3 the difference is countable. Three images and three captions cost six enco
 
 ### Problem set · 과제
 
-Tier A. Using only this page, its prerequisites, and [[03-deep-learning/lab-objects|0. Lab Objects]]. D3 and its two variants are frozen in the Running object; question 4 uses the duplicate-caption variant, which §5 never runs, so none of the lab's numbers can be copied.
+Tier A. Using only this page, its prerequisites, and [[03-deep-learning/lab-objects|0. Lab Objects]]. D3 and its two variants are frozen in the Running object. Questions 1–2 open the one-wrong batch at $\tau=1/2$, whose single loss §5 prints but whose rows and columns it never shows, and question 4 uses the duplicate-caption variant, which §5 never runs, so none of the lab's numbers can be copied.
 
-1. **Draw.** The picture above, redrawn to show what a larger batch changes. Draw D3's $3\times3$ similarity matrix and mark positives on the diagonal. Add the two softmax directions as arrows off the same matrix, the $\tau$ division before them, and a box around the batch; mark where a larger batch would add cells, and which of the added cells would be negatives.
-2. **Derive.** On D3 image 1, recompute logits and row loss at $\tau=1/4$. Explain the effect of the lower temperature.
-3. **Interpret.** A model answers “red valve” correctly but no localization or intervention is tested. What claim remains open?
+1. **Draw.** The picture above, redrawn for the one-wrong batch — image 2 encoded at $90^\circ$ — at $\tau=1/2$: its $3\times3$ logit matrix with only the diagonal shaded as positives, the $\tau$ division in front of it, the row softmax and the column softmax as two arrows off the same matrix with their three losses each, and the batch box. Circle the cell each row ranks first, and mark where a fourth pair would add cells and which of the added cells would be negatives.
+2. **Derive.** On the same batch: (a) the logit matrix, and why it is no longer symmetric; (b) the three row losses, the three column losses and $\mathcal L$, checked against §5's one-wrong column; (c) row 2's softmax, the caption it ranks first, and the share of its push-down mass that caption 3 takes, against D3's $67.5\%$.
+3. **Interpret.** A VLM asked to point at "the left bolt hole" of S1's panel — S1 is the construction track's facade-panel task, whose panel has two mounting holes $400$ mm apart ([[05-construction-robotics/site-engineering|2.5]]) — lands on the left hole in all $20$ test images, every one taken from the same tripod. (a) Which claim is still open? (b) Design two interventions on the image that separate grounding from a learned position, and say what a grounded answer must do under each. (c) Why is "left" a harder word to ground than "red"?
 4. **Do.** Fill the `?` blanks, then run the **duplicate-caption** variant: caption 3 is an exact copy of caption 2, so $t_3=t_2$ while the images are unchanged. Sweep $\tau\in\{2,1,1/2,1/4,1/10,1/20,1/100\}$ and report (a) $\mathcal L$ at each $\tau$; (b) the three image-to-text row losses and the three text-to-image column losses at $\tau=1/2$ and at $\tau=1/100$; (c) the $\tau$ that minimises $\mathcal L$, by grid search. Then answer in two sentences: which of the six losses is unbounded as $\tau\to0$ and which ones converge to $\log 2$, and what that difference says about how a duplicate caption damages the two directions differently.
 
 ```python
@@ -349,11 +394,12 @@ print("best tau = %.4f at L = %.6f" % (grid[Ld.argmin()], Ld.min()))
 > - Draw two arrows out of the same matrix, not two matrices. The row softmax and the column softmax read the identical numbers in two directions; drawing two matrices claims there are two models, and there is one, scored twice.
 > - Draw the $\tau$ division before the softmax, on the whole matrix. Temperature is not a property of a pair or of the encoder — it scales every cell at once, which is why §5 can pull it out and sweep it.
 > - Draw the batch boundary as a box around all the cells. Nothing outside the box is a negative: a loss computed over three items is a different function from the same loss over 32,768 items, and the box is where the difference lives.
+> - Write each direction's three losses at the end of its own arrow. On D3 they are the same three numbers; on the one-wrong batch they differ, and a drawing with one set of losses has hidden the error.
 
 > [!tip]- Solutions
-> 1. Rows are images, columns captions; $(i,i)$ are matched pairs. The two arrows leave the same matrix — one softmax along rows, one along columns — with the $\tau$ division applied to all nine cells first. Nothing outside the box is a negative: enlarging the batch adds columns and rows, and every new off-diagonal cell becomes a negative the moment it is drawn, which is the whole mechanism by which $N$ enters the loss.
-> 2. Dots unchanged, so logits $(4,2,0)$. $p=e^4/(e^4+e^2+1)=0.867$, loss $0.143$. Sharper logits improve confidence here but also sharpen mistakes — §5 measures where that turns, at $\tau=0.1639$ on the one-wrong batch.
-> 3. Whether the answer is grounded in the valve pixels rather than language priors.
+> 1. Rows are images, columns captions, and the shaded diagonal $(2,\ 1.732051,\ 2)$ holds the matched pairs. The matrix is $\begin{pmatrix}2&1&0\\0&1.732051&2\\0&1.732051&2\end{pmatrix}$ after the $\tau$ division on all nine cells. The row arrow ends in the losses $(0.407606,\ 0.909951,\ 0.642002)$, the column arrow in $(0.239545,\ 0.908630,\ 0.758624)$ — two different sets now. The circles fall on $(1,1)$, $(2,3)$ and $(3,3)$: row 2's is off the diagonal, because image 2 now ranks caption 3 first. A fourth pair adds a fourth row and column, seven new cells: the one on the diagonal is a positive and the six off it are negatives the moment they are drawn, which is the whole mechanism by which $N$ enters the loss.
+> 2. (a) $v_2'=(0,1)$ gives $v_2'^\top t_j=(0,\ 0.866025,\ 1)$, so row 2 of the logits is $(0,\ 1.732051,\ 2)$, the same as row 3 because $v_2'=v_3$. The matrix is not symmetric — $\ell_{12}=1$ but $\ell_{21}=0$ — because image 2 moved and caption 2 did not, so $v_2'\ne t_2$. (b) Rows: $L_1=0.407606$ and $L_3=0.642002$ are unchanged, and $L_2=-\log\big(e^{1.732051}/(e^0+e^{1.732051}+e^2)\big)=0.909951$, mean $0.653187$. Columns: $0.239545$, $0.908630$ and $0.758624$, mean $0.635600$. So $\mathcal L=\tfrac12(0.653187+0.635600)=0.644393$, the $\tau=1/2$ entry of §5's one-wrong column. Column 1 *fell*, from $0.407606$ to $0.239545$: image 2 moved away from caption 1, cosine $0.5$ to $0$, so caption 1's lineup got easier — a wrong encoder lowered one direction's loss. In columns 2 and 3 images 2 and 3 now tie, because $v_2'=v_3$. (c) Row 2's softmax is $(0.071219,\ 0.402544,\ 0.526238)$, so caption 3 ranks first and image 2 now retrieves the wrong caption. The push-down mass is $1-0.402544=0.597456$ and caption 3 takes $0.526238$ of it, $88.1\%$ against D3's $67.5\%$: the hard negative has become the model's first choice, and the gradient $p-y$ pushes hardest exactly there.
+> 3. (a) Whether the point comes from the hole's pixels or from where left holes sit in these pictures. With one tripod the left hole is always near the same pixel, so a model that returns that pixel without looking scores $20/20$ — the "red valve" ambiguity, with a position prior in place of a colour prior. (b) *Shift*: move the panel, or translate the image, sideways by a known number of pixels; a grounded answer moves by the same amount, and a position prior stays put. *Mirror*: flip the image left to right; the hole that was on the right is now the left one, so a grounded answer jumps to the other hole, $400$ mm away on the panel, while an answer that stays put was not reading "left" off the image. Covering the left hole is a third test: a grounded model loses it rather than pointing at the cover. (c) "Red" is a property of the object's own pixels, so recolouring tests it directly. "Left" is a relation between the two holes *and* a viewpoint — the camera's left is the worker's right when the worker faces the camera — so "left" has no answer until a frame is fixed: the camera frame of [[04-robotics/geometric-perception-calibration|3.5 Geometric Perception §1]], or the worker's.
 > 4. Blanks: `Td[2] = T[1]` and `Ld = np.array([infonce(V, Td, t)[5] for t in grid])`. The dot products become $\begin{pmatrix}1&0.5&0.5\\0.5&1&1\\0&0.866025&0.866025\end{pmatrix}$, with columns 2 and 3 identical.
 >
 >    (a) and (c):
@@ -368,10 +414,26 @@ print("best tau = %.4f at L = %.6f" % (grid[Ld.argmin()], Ld.min()))
 >
 >    The unbounded one is the text-to-image loss of column 3; the two converging to $\log 2=0.693147$ are the image-to-text losses of rows 2 and 3. The asymmetry is the point. Along a row the model must choose between two *identical* captions, so the best it can do is split the mass, and $\log 2$ is the price of a tie it cannot win — bounded, and arguably not even an error. Along column 3 the model must choose between two *different* images for the duplicated caption, and image 2 wins it ($v_2^\top t_3=1$ against $v_3^\top t_3=0.866025$), so the correct image is ranked second and its loss grows without bound as $\tau\to0$. A duplicate caption costs a tie in one direction and an outright wrong answer in the other, and only the second is unbounded — which is why deduplicating captions matters more than it looks, and why low temperatures make a noisy batch actively dangerous.
 
+### Sources
+
+The paper notes linked from §1, §4 and §6 — CLIP, Flamingo, BLIP-2, LLaVA, PaliGemma, π0 — carry each paper's own citation. The rest of the page cites:
+
+- van den Oord, A., Li, Y. & Vinyals, O. "Representation Learning with Contrastive Predictive Coding." arXiv:1807.03748, 2018 — the InfoNCE objective and its $\log N$ bound (§2).
+- Poole, B., Ozair, S., van den Oord, A., Alemi, A. A. & Tucker, G. "On Variational Bounds of Mutual Information." *ICML*, 2019 — the same bound among the mutual-information estimators (§2).
+- Black, K. et al. "π0: A Vision-Language-Action Flow Model for General Robot Control." arXiv:2410.24164, 2024 — the architecture "inspired by Transfusion", the separate weights for state and action tokens, flow matching on the action tokens (§6).
+- Gemini Robotics Team. "Gemini Robotics: Bringing AI into the Physical World." arXiv:2503.20020, 2025 — a VLA built on Gemini 2.0 (§6).
+- Liu, Z., Chi, C., Cousineau, E. et al. "ManiWAV: Learning Robot Manipulation from In-the-Wild Audio-Visual Data." *CoRL*, 2024 — contact skills learned from audio and video together (§6).
+- OpenAI. "GPT-4o System Card." arXiv:2410.21276, 2024 — any mix of inputs and outputs, $232$ and $320$ ms replies to speech (§6, the collapsed note).
+- Xu, J., Guo, Z., He, J. et al. "Qwen2.5-Omni Technical Report." arXiv:2503.20215, 2025 — the Thinker and the Talker (§6, the collapsed note).
+- Chameleon Team. "Chameleon: Mixed-Modal Early-Fusion Foundation Models." arXiv:2405.09818, 2024; Zhou, C., Yu, L., Babu, A. et al. "Transfusion: Predict the Next Token and Diffuse Images with One Multi-Modal Model." arXiv:2408.11039, 2024 — the two one-sequence designs (§6).
+
 ## 한국어
 
-> [!note] 처음이라면
-> D3, §2, 문제 1–2를 먼저 한다. §5를 열기 전에 계산 절 — 내적 아홉 개, 행 loss 셋, 평균 하나 — 을 손으로 끝낸다. caption이나 VQA 숫자를 grounding으로 읽을 때 §3으로 돌아오고, 논문이 모델을 조기 결합, 옴니모달, any-to-any라고 부르면 §6을 읽는다.
+> [!note] 왜 배우는가 · Why this matters
+> [[07-research-program/index|7. 연구 프로그램 §5]]의 피지컬 AI 스택에서 이 페이지는 학습과 적응 층에 속하고, 그 스택을 언어가 구동하는 형태가 시작되는 "VLM 또는 VLA 추론" 상자다. "*저 패널을 프레임에 설치해*"에서는 첫 단계인 *지시 해석*을 받친다. 둘째 단계가 패널을 식별하려면 먼저 "저 패널"이 이미지 속 무언가에 묶여야 하기 때문이다([[physical-ai-map|피지컬 AI 지도]]의 학습과 적응 띠에 이 페이지의 자리가 있다). 이것 없이는 시각–언어 숫자를 과하게 읽기 쉽다. 이 트랙이 고정해 둔 이미지–캡션 3쌍 D3([[03-deep-learning/lab-objects|0. Lab Objects]])는 인코더가 이미 완벽하게 풀어 놓은 배치인데도 loss가 temperature 하나만으로 $0.933538$에서 $0.000001$까지 오르내린다(§5). 절반을 넘으면 켜지는 성공 판정기는 $\tau=1/2$에서는 완벽한 일치를 실패라 부르고($p=0.468861$), $\tau=1/4$에서는 성공이라 부른다($p=0.581234$). 장면은 하나도 바뀌지 않았다(§4). 그리고 "red valve"라는 맞는 답은 밸브의 픽셀을 썼는지에 대해 아무것도 말하지 않는다(§3). 뒤 페이지들이 이 위에 선다. [[03-deep-learning/vla/index|4. VLA]]는 이 백본에 행동 헤드를 달고 그 §6에서 백본의 주기에 값을 매기며, VLM 성공 판정은 [[02-foundations/rl-robot-learning|7.5 로봇 학습을 위한 RL §8]]이 학습에 쓰는 바로 그런 이진 보상이다. 학위논문 경로([[07-research-program/index|7. 연구 프로그램 §8]])에서는 블록 4의 딥러닝 페이지 넷 가운데 셋째이고, 딥러닝 회차 35–38이다. 이 페이지를 마치면 대조 배치를 손으로 계산하고, 그 숫자가 무엇을 보증하는지 — 최대 $\log N$ nat — 말하고, 논문의 주장에서 conditioning과 grounding을 가를 수 있다.
+
+> [!note] 처음이라면 · First pass
+> 60–90분짜리 회차 네 번쯤이고, [[03-deep-learning/index|딥러닝 학습 일정]]의 35–38행이다. 앞의 두 회차가 첫 읽기다. **첫 회차:** D3와 그림을 본 뒤, 풀이를 가리고 계산 절을 손으로 한다. 내적 아홉 개, 행 loss 셋, 그리고 $\log3=1.098612$에 대한 $\mathcal L=0.602352$ nat이다. **둘째 회차:** §1–§4, 스스로 점검 1–5, 과제 1–3. **셋째 회차:** §5 실습과 과제 4. **넷째 회차:** §6과 스스로 점검 6. 옴니 모델에 관한 접힌 메모는 두 번째 읽기로 미룬다. 마지막으로 대조 loss가 무엇을 보증하는지 — 최대 $\log N$ nat의 상호정보량 — 와 무엇을 보증하지 않는지 — 답이 픽셀에 grounded되어 있다는 것 — 를 두 문장으로 말해 본다.
 
 ### 계속 쓰는 대상: D3
 
@@ -379,11 +441,11 @@ print("best tau = %.4f at L = %.6f" % (grid[Ld.argmin()], Ld.min()))
 
 $$v_1=t_1=\begin{pmatrix}1\\0\end{pmatrix},\quad v_2=t_2=\begin{pmatrix}1/2\\\sqrt{3}/2\end{pmatrix},\quad v_3=t_3=\begin{pmatrix}0\\1\end{pmatrix}.$$
 
-logit은 $\ell_{ij}=v_i^\top t_j/\tau$다. 행은 이미지에 맞는 텍스트, 열은 텍스트에 맞는 이미지를 묻는다.
+logit은 $\ell_{ij}=v_i^\top t_j/\tau$다. 행 $i$가 이미지 $i$의 logit 벡터, 곧 [[03-deep-learning/foundations/index|1. 학습 시스템]]의 $s$이고, 배치의 캡션 $N$개가 그 클래스다(D3에서는 $N=3$). 행은 이미지에 맞는 텍스트, 열은 텍스트에 맞는 이미지를 묻는다.
 
 이 페이지의 전부가 그 벡터 여섯 개와 손잡이 하나에서 나온다. 모두 단위 길이라 각 내적은 두 벡터 사이 각의 코사인이고, 세 이미지는 $0^\circ$, $60^\circ$, $90^\circ$에 놓인다. 짝이 맞는 쌍은 *정확히* 정렬되어 있다. 즉 encoder가 이미 풀어 놓은 배치라서, D3에서 잘못될 수 있는 것은 목적함수 자체뿐이다. 대조 loss를 읽기에 알맞은 대상인 이유가 그것이다. §5와 과제를 위해 벡터 하나씩만 바꾼 페이지 고유 변형 둘도 여기서 고정한다. **한 쌍이 틀린 배치**는 이미지 2를 $v_2'=(0,1)$, 즉 $90^\circ$로 옮겨 encoder가 캡션 3 위에 겹쳐 놓게 한다. **중복 캡션 배치**는 $t_3=t_2$로 두어 캡션 2와 3이 같은 문장이 되고, 행 2의 "negative"가 실제로는 맞는 짝이 된다.
 
-*범위: 이 페이지는 dual encoder의 대조 목적함수 — similarity matrix, 두 방향, temperature, negative, 그리고 그 결과 숫자가 보증하는 것과 보증하지 못하는 것 — 와 conditioning을 grounding에서 가르는 어휘를 가르친다. 이미지 encoder는 가르치지 않는다. 그것은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전 §1]]이다. fusion 모델이 쓰는 cross-attention도 아니다. 그것은 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §1]]과 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 목적함수 주변의 loss·optimizer 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §6]]이다. 생성 디코딩, 캡션 metric, 행동도 아니다. 그것은 [[01-canonical-papers/canonical-list|canonical list]]의 생성 항목과 [[03-deep-learning/vla/index|VLA 교과]]다. §6은 그 더 큰 모델들을 모달리티가 만나는 곳으로만 자리 매긴다. §3에 이름만 나오는 retrieval metric은 [[02-foundations/ml-practice|9. ML 실무 §3]]에 정의되어 있다.*
+*범위: 이 페이지는 dual encoder의 대조 목적함수 — similarity matrix, 두 방향, temperature, negative, 그리고 그 결과 숫자가 보증하는 것과 보증하지 못하는 것 — 와 conditioning을 grounding에서 가르는 어휘를 가르친다. 이미지 encoder는 가르치지 않는다. 그것은 [[03-deep-learning/computer-vision/index|2. 컴퓨터비전 §1]]이다. fusion 모델이 쓰는 cross-attention — 텍스트 토큰 하나하나가 이미지 패치들에 가중치를 매기고 그 가중합을 읽는 것 — 도 아니다. 그것은 학위논문 경로 밖의 [[03-deep-learning/foundations/attention-transformer|1.2 어텐션과 Transformer §1]]과 [[01-canonical-papers/notes/1-foundations/attention-is-all-you-need|Transformer 노트]]다. 목적함수 주변의 loss·optimizer 기계도 아니다. 그것은 [[03-deep-learning/foundations/index|1. 학습 시스템 §1–§2]]와 그 §6 실습이다. 생성 디코딩, 캡션 metric, 행동도 아니다. 그것은 [[01-canonical-papers/canonical-list|canonical list]]의 생성 항목과 [[03-deep-learning/vla/index|VLA 교과]]다. §6은 그 더 큰 모델들을 모달리티가 만나는 곳으로만 자리 매긴다. §3에 이름만 나오는 retrieval metric은 [[02-foundations/ml-practice|9. ML 실무 §3]]에 정의되어 있다.*
 
 ### 그림으로 먼저 보기
 
@@ -502,15 +564,60 @@ $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_
 
 **그 숫자는 무엇에 대고 재는가.** 아무것도 배우지 못한 $N=3$ 배치는 아홉 칸에 $1/3$씩 두므로 loss가 $\log 3=1.098612$ nat이다. D3는 $0.602352$로 절반이 조금 못 되게 내려와 있고, *바닥*은 $0$인데 $\tau\to0$에서만 닿는다. 그래서 숫자만으로는 말할 수 있는 것이 거의 없다. 같은 encoder가 바로 이 배치에서 $\tau$만으로 $0.933538$과 $0.000001$ 사이 아무 값이나 낸다. 그것을 §5가 측정한다.
 
-**명백히 틀렸다고 할 수 없는 negative.** $\tau=1/2$에서 행 2의 softmax는 $(0.172485,\ 0.468861,\ 0.358654)$다. softmax cross-entropy의 gradient는 $p-y$이므로([[03-deep-learning/foundations/index|1. 학습 시스템 §2]]의 계산) 이 행은 이미지 2를 *캡션 3에서* 가중치 $0.358654$만큼 밀어낸다. 행 전체의 밀어내기 질량 중 3분의 1이 넘는다. 캡션 3이 negative인 이유는 배치의 다른 칸에 있다는 것뿐이고 다른 이유는 없다. 이 숫자를 §2의 false negative 문단과, 캡션 3이 캡션 2의 복사본이 되는 과제를 위해 기억해 둔다.
+**명백히 틀렸다고 할 수 없는 negative.** $\tau=1/2$에서 행 2의 softmax는 $(0.172485,\ 0.468861,\ 0.358654)$다. softmax cross-entropy의 gradient는 $p-y$이므로([[03-deep-learning/foundations/index|1. 학습 시스템 §2]]의 계산) 이 행은 이미지 2를 *캡션 3에서* 가중치 $0.358654$만큼 밀어낸다. 행 전체의 밀어내기, 곧 softmax가 틀린 캡션들에 둔 질량은 $1-0.468861=0.531139$이고, 캡션 3이 그중 $0.358654/0.531139=67.5\%$를 가져간다. 3분의 2이고, 캡션 1의 몫은 3분의 1이다. $30^\circ$ 떨어진 캡션 3이 더 가까운 negative이기 때문이다. 캡션 3이 negative인 이유는 배치의 다른 칸에 있다는 것뿐이고 다른 이유는 없다. 이 숫자를 §2의 false negative 문단과, 캡션 3이 캡션 2의 복사본이 되는 과제 4를 위해 기억해 둔다. 그림이 각도와 이 행을 나란히 놓는다.
+
+<svg viewBox="0 0 560 312" style="max-width:100%;height:auto" role="img" aria-label="D3의 세 이미지와 세 캡션이 단위원 위 0°, 60°, 90°에 겹쳐 있고, 이미지 2는 캡션 1에서 60°, 캡션 3에서 30° 떨어져 있다. τ = 1/2에서 이미지 2의 행 softmax는 0.172485, 0.468861, 0.358654이고, 밀어내기 질량 0.531139 가운데 캡션 3이 67.5%를 가져간다. 점선 호는 이미지 2를 90°로 옮긴 한 쌍이 틀린 배치다">
+  <defs><marker id="aVck" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="12" y="22" font-size="12" fill="currentColor">(a) 단위원 위의 D3</text>
+  <line x1="62" y1="282" x2="276" y2="282" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <line x1="62" y1="282" x2="62" y2="68" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.45"/>
+  <path d="M 258.0 282.0 A 196 196 0 0 0 62.0 86.0" stroke="currentColor" stroke-width="0.8" fill="none" stroke-opacity="0.35" stroke-dasharray="2 3"/>
+  <line x1="62" y1="282" x2="258.0" y2="282.0" stroke="currentColor" stroke-width="1.6" marker-end="url(#aVck)"/>
+  <circle cx="258.0" cy="282.0" r="2.6" fill="currentColor"/>
+  <text x="258.0" y="300.0" font-size="11" fill="currentColor" text-anchor="end">v<tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">= t</tspan><tspan dy="3" font-size="10">1</tspan><tspan dy="-3" dx="3.5">· 0°</tspan></text>
+  <line x1="62" y1="282" x2="160.0" y2="112.3" stroke="currentColor" stroke-width="1.6" marker-end="url(#aVck)"/>
+  <circle cx="160.0" cy="112.3" r="2.6" fill="currentColor"/>
+  <text x="168.0" y="110.3" font-size="11" fill="currentColor" text-anchor="start">v<tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">= t</tspan><tspan dy="3" font-size="10">2</tspan><tspan dy="-3" dx="3.5">· 60°</tspan></text>
+  <line x1="62" y1="282" x2="62.0" y2="86.0" stroke="currentColor" stroke-width="1.6" marker-end="url(#aVck)"/>
+  <circle cx="62.0" cy="86.0" r="2.6" fill="currentColor"/>
+  <text x="70.0" y="108.0" font-size="11" fill="currentColor" text-anchor="start">v<tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">= t</tspan><tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">· 90°</tspan></text>
+  <path d="M 116.0 282.0 A 54 54 0 0 0 89.0 235.2" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <text x="120.9" y="252.0" font-size="11" fill="currentColor" text-anchor="middle">60°</text>
+  <path d="M 110.0 198.9 A 96 96 0 0 0 62.0 186.0" stroke="currentColor" stroke-width="1.1" fill="none"/>
+  <text x="91.0" y="177.8" font-size="11" fill="currentColor" text-anchor="middle">30°</text>
+  <path d="M 167.0 100.1 A 210 210 0 0 0 69.3 72.1" stroke="currentColor" stroke-width="1.3" fill="none" stroke-dasharray="5 3" marker-end="url(#aVck)"/>
+  <text x="70" y="48" font-size="11" fill="currentColor">v<tspan dy="3" font-size="10">2</tspan><tspan dy="-3">′: 한 쌍이 틀린 배치(§5),</tspan></text>
+  <text x="70" y="62" font-size="11" fill="currentColor">90°로, t<tspan dy="3" font-size="10">3</tspan><tspan dy="-3" dx="3.5">위에 놓인다</tspan></text>
+  <text x="290" y="72" font-size="12" fill="currentColor">(b) τ = 1/2에서 이미지 2의 행</text>
+  <text x="384" y="109" font-size="11" fill="currentColor" text-anchor="end">캡션 1, 60° 떨어짐</text>
+  <rect x="392" y="96" width="37.9" height="18" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="0.8"/>
+  <text x="435.9" y="109" font-size="11" fill="currentColor">0.172485</text>
+  <text x="384" y="143" font-size="11" fill="currentColor" text-anchor="end">캡션 2, 제 짝</text>
+  <rect x="392" y="130" width="103.1" height="18" fill="currentColor" fill-opacity="0.34" stroke="currentColor" stroke-width="0.8"/>
+  <text x="501.1" y="143" font-size="11" fill="currentColor">0.468861</text>
+  <text x="501.1" y="157" font-size="10" fill="currentColor" fill-opacity="0.8">positive</text>
+  <text x="384" y="177" font-size="11" fill="currentColor" text-anchor="end">캡션 3, 30° 떨어짐</text>
+  <rect x="392" y="164" width="78.9" height="18" fill="currentColor" fill-opacity="0.22" stroke="currentColor" stroke-width="0.8"/>
+  <text x="476.9" y="177" font-size="11" fill="currentColor">0.358654</text>
+  <text x="476.9" y="191" font-size="10" fill="currentColor" fill-opacity="0.8">어려운 negative</text>
+  <line x1="392" y1="90" x2="392" y2="194" stroke="currentColor" stroke-width="0.9"/>
+  <text x="290" y="222" font-size="11" fill="currentColor">코사인: 캡션 1과 0.5, 캡션 3과 0.866025</text>
+  <text x="290" y="240" font-size="11" fill="currentColor">밀어내기 질량 1 − 0.468861 = 0.531139</text>
+  <text x="290" y="258" font-size="11" fill="currentColor" font-weight="bold">캡션 3의 몫 0.358654/0.531139 = 67.5%</text>
+  <text x="290" y="276" font-size="11" fill="currentColor" fill-opacity="0.85">더 가까운 negative가 더 세게 밀린다</text>
+</svg>
+
+D3의 이미지와 캡션은 단위원 위 $0^\circ$, $60^\circ$, $90^\circ$에 겹쳐 있으므로, 이미지 2는 캡션 1에서 $60^\circ$(코사인 $0.5$), 캡션 3에서는 $30^\circ$(코사인 $0.866025$)밖에 떨어져 있지 않다. $\tau=1/2$에서 그 행 softmax는 $(0.172485,\ 0.468861,\ 0.358654)$이고, 밀어내기 질량 $0.531139$ 가운데 더 가까운 캡션 3이 $67.5\%$를 가져간다. 점선 호는 이미지 2를 $90^\circ$, 곧 캡션 3 위로 옮긴, §5와 과제 1–2의 한 쌍이 틀린 배치다.
 
 ### 1. 세 VLM 계열
+
+꽤 다른 기계 셋이 모두 VLM이라 불리고, 그중 어느 것을 쓸 수 있었는지는 대개 논문의 과제가 정했다. 셋의 실무적 차이는 비용이고, 비용은 두 모달리티가 어디서 만나는지에서 따라 나온다.
 
 - dual encoder: 따로 encoding해 similarity로 retrieval·zero-shot 분류.
 - fusion model: cross-attention으로 token을 섞어 pair reasoning.
 - generative model: 시각 표현을 조건으로 language token 생성. 유창함은 grounding 증거가 아니다.
 
-실무적 차이는 비용 구조이고, 그것은 두 양상이 어디서 만나는지에서 따라 나온다. dual encoder는 이미지 벡터 $N$개와 텍스트 벡터 $M$개를 한 번 계산해 두고 어떤 쌍이든 내적 하나로 점수를 매기므로, 질의 하나를 백만 장에 대해 순위 매기는 일이 곱셈덧셈 백만 번이다. fusion model은 쌍마다 결합 신경망을 한 번씩 돌려야 하므로 같은 순위 매기기가 순전파 백만 번이다. 검색 시스템이 dual encoder 위에 세워지는 이유이고, fusion model이 쌍 집합이 작은 곳에 나타나는 이유다. 품질을 들먹이지 않고도, 논문의 과제가 어떤 구조를 강요했는지 설명해 준다.
+dual encoder는 이미지 벡터 $N$개와 텍스트 벡터 $M$개를 한 번 계산해 두고 어떤 쌍이든 내적 하나로 점수를 매기므로, 질의 하나를 백만 장에 대해 순위 매기는 일이 곱셈덧셈 백만 번이다. fusion model은 쌍마다 결합 신경망을 한 번씩 돌려야 하므로 같은 순위 매기기가 순전파 백만 번이다. 검색 시스템이 dual encoder 위에 세워지는 이유이고, fusion model이 쌍 집합이 작은 곳에 나타나는 이유다. 품질을 들먹이지 않고도, 논문의 과제가 어떤 구조를 강요했는지 설명해 준다.
 
 **D3에서 본 zero-shot 분류.** dual encoder는 검색으로 분류한다. 클래스마다 캡션을 하나씩 쓰고, 각각 한 번 임베딩한 뒤, 이미지에 가장 가까운 캡션을 고른다. D3의 캡션 셋을 클래스 프롬프트 셋으로 읽으면 이미지 2의 코사인은 $(0.5,\ 1,\ 0.866025)$이므로 클래스 2로 맞게 분류된다. 그러나 클래스 3과의 차이는 $1-0.866025=0.133975$, 두 벡터 사이의 $30^\circ$뿐이다. $\tau=1/2$에서 그 차이는 확률 $0.468861$이 되어 절반에 못 미치는데도 결정은 여전히 맞다. $\tau$로 나누는 것은 arg max를 결코 옮기지 않기 때문이다. 이 계열이 내놓는 것은 순위이고, 그 확률은 순위가 무시하는 손잡이에 달려 있다(§2의 temperature 상자). [[01-canonical-papers/notes/3-vlm/clip|CLIP]]은 이 절차를 규모로 키운 것이다. 웹의 이미지–텍스트 쌍 $4$억 개로 학습해, ImageNet의 학습 label을 하나도 쓰지 않은 zero-shot으로 원래의 지도학습 ResNet-50과 맞먹었다.
 
@@ -518,9 +625,9 @@ $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_
 
 ### 2. 대조학습 계산
 
-이미지 1의 내적은 $v_1^\top t_j=(1,1/2,0)$이고 $\tau=1/2$로 나누면 logit $(2,1,0)$이다. 정답 확률은 $0.665$, loss는 $0.408$이다. 전체 목적함수는 image→text와 text→image cross-entropy를 평균한다. batch의 다른 항목은 sampled negative라서 false negative와 batch 구성이 학습을 바꾼다.
+dual encoder에게는 짝은 있어도 label이 없다. 그래서 각 이미지가 배치 안에서 자기 캡션을 골라내게 하고, 배치의 다른 캡션은 모두 오답으로 친다. 계산 절이 D3의 세 행에서 이것을 손으로 했다. 어떤 배치에나 쓰이게 적으면 CLIP식 목적함수 전체는 image→text와 text→image cross-entropy를 배치에 대해 평균한다. 배치의 다른 항목은 막연한 "틀린 언어"가 아니라 표본으로 뽑힌 negative이므로, false negative와 배치 구성이 무엇을 배우는지를 바꾼다.
 
-그 문장이 목적함수 전체이므로, 서술하지 말고 기호를 모두 달아 적을 가치가 있다.
+이것이 목적함수 전체이므로, 서술하지 말고 기호를 모두 달아 적을 가치가 있다.
 
 > **대조(InfoNCE) 목적함수의 정의.** **대조 목적함수**는 *배치 위의 분류 loss*다. 각 항목의 과제는 줄 세운 후보 중에서 자기 짝을 고르는 것이다. 거리도 아니고, 목표 임베딩으로의 회귀도 아니고, 혼자서 최대화되는 유사도도 아니다. 정의 조건 넷이고, 하나만 빠져도 숫자의 뜻이 달라진다. **positive는 가정에 의해 대각선**이다. 짝은 배치를 어떻게 모았는가에서 나오지, 대각선 밖이 어긋난 쌍이라는 판단에서 나오지 않는다. **negative는 배치의 나머지**이므로 loss가 $N$과 어떤 항목이 함께 뽑혔는가에 의존한다. **logit을 temperature $\tau$로 비례 조정**한 뒤 softmax를 걸므로 같은 임베딩이 $0$과 $\log N$ 사이 아무 loss나 낼 수 있다. 그리고 image→text와 text→image **두 방향에 대해 대칭화**되는데, 같은 행렬 위의 서로 다른 두 분류 문제다.
 >
@@ -547,7 +654,7 @@ $$\mathcal L=\tfrac12\left(\tfrac13\textstyle\sum_i L_i^{\,i\to t}+\tfrac13\sum_
 
 ### 3. Conditioning은 grounding이 아니다
 
-이미지가 출력 분포를 바꾸면 conditioning이다. grounding은 주장이나 token이 국소 시각 증거에 지지되는지 추가로 묻는다. caption likelihood·retrieval·VQA·hallucination·spatial grounding은 서로 다른 능력이다.
+모델은 밸브의 픽셀을 쓰지 않고도 "red valve"라고 맞힐 수 있고, 그다음 그 밸브로 손을 뻗어야 하는 로봇은 모델이 그 픽셀을 썼는지 알아야 한다. 이미지가 출력 분포를 바꾸면 conditioning이다. grounding은 주장이나 token이 국소 시각 증거에 지지되는지 추가로 묻는다. caption likelihood, retrieval 정확도, VQA 정확도(visual question answering: 이미지에 관한 질문 가운데 맞게 답한 비율), hallucination 비율(이미지에 없는 물체나 속성을 말한 출력의 비율), spatial grounding은 서로 다른 능력을 잰다.
 
 이 절 전체를 그 두 단어가 떠받치므로, 대비가 아니라 정의를 둘 다 붙인다.
 
@@ -573,7 +680,7 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 
 ### 5. 실습: temperature가 하는 일과, 그 대상
 
-손잡이 하나, 배치 둘. 영어 절 코드 1부는 계산 절을 재현한다. 2부는 encoder가 이미 풀어 놓은 정렬된 D3와, 이미지 2를 $90^\circ$로 옮긴 "한 쌍 틀린" 배치에 대해 $\tau$를 훑는다. 요점은 둘째 열이다. 완벽한 배치에서 sweep은 단조이고 아무것도 말하지 않는다. $\tau$에 대해 의견을 가지는 것은 실수가 섞인 배치뿐이다.
+대조학습 논문들은 $\tau$를 튜닝하는데, 보고되는 loss는 encoder가 나아졌든 아니든 $\tau$를 따라 움직인다. 그래서 loss 곡선을 증거로 치기 전에 temperature 하나가 무엇을 하는지, 그리고 어느 배치에 하는지부터 알아야 한다. 손잡이 하나, 배치 둘. 영어 절 코드 1부는 계산 절을 재현한다. 2부는 encoder가 이미 풀어 놓은 정렬된 D3와, 이미지 2를 $90^\circ$로 옮긴 "한 쌍 틀린" 배치에 대해 $\tau$를 훑는다. 요점은 한 쌍 틀림 열이다. 완벽한 배치에서 sweep은 단조이고 아무것도 말하지 않는다. $\tau$에 대해 의견을 가지는 것은 실수가 섞인 배치뿐이다.
 
 **Sweep.** $p_{ii}$는 행 softmax가 맞는 캡션에 둔 확률이고 $\mathcal L$은 nat 단위의 대칭화된 목적함수다. 정보가 없을 때의 값은 $\log 3=1.098612$다.
 
@@ -591,7 +698,7 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 
 - **이미 풀어 놓은 배치에서 $\tau$를 낮추는 것은 확신을 사는 일일 뿐이다.** 정렬 열은 $\tau=2$의 $0.933538$에서 $\tau=1/100$의 $0.000001$까지 단조로 내려가고, 격자 탐색도 최소가 범위의 아래 끝에 있음을 확인한다. 배운 것은 없다. 같은 벡터 여섯 개가 여섯 자릿수를 넘나드는 loss를 냈다. $\tau$와 $N$ 없이 인용된 대조 loss는 비교 가능한 숫자가 아니고, $\tau$를 튜닝하는 논문의 loss 그래프도 마찬가지다.
 - **퍼짐은 행마다 다르고, 그것이 기하다.** $\tau=1/2$에서 $p_{11}=0.665241$인데 $p_{22}=0.468861$이다. 이미지 2는 캡션 1에서 $60^\circ$, 캡션 3에서는 $30^\circ$밖에 떨어져 있지 않아 진짜 어려운 negative를 가지고 있고 이미지 1은 그렇지 않다. 표의 모든 temperature에서 행 2가 가장 어려운 행이다. hard negative는 임베딩 기하의 성질이지 샘플링 코드의 성질이 아니다.
-- **한 쌍이 틀리면 loss는 $\tau$에 대해 단조가 아니고 내부 최소를 가진다.** 오른쪽 열은 $\tau=1/4$의 $0.527329$까지 내려갔다가 돌아서서 $\tau=1/100$에서 $2.463960$에 이른다. 정보가 없을 때의 $\log 3$보다 나쁘다. $\tau\in[0.01,3]$ 격자 탐색은 최소를 $\tau=0.1639$, $\mathcal L=0.507409$에 둔다. 날카롭게 하는 것은 모델이 믿는 것을 증폭하는 일이고, 최적점 아래에서는 실수를 증폭한다. 과제의 옛 정답에 있던 문장 — "맞을 때 더 자신 있지만 오류도 날카로워진다" — 의 전환점을 측정한 것이 이것이다.
+- **한 쌍이 틀리면 loss는 $\tau$에 대해 단조가 아니고 내부 최소를 가진다.** 오른쪽 열은 $\tau=1/4$의 $0.527329$까지 내려갔다가 돌아서서 $\tau=1/100$에서 $2.463960$에 이른다. 정보가 없을 때의 $\log 3$보다 나쁘다. $\tau\in[0.01,3]$ 격자 탐색은 최소를 $\tau=0.1639$, $\mathcal L=0.507409$에 둔다. 날카롭게 하는 것은 모델이 믿는 것을 증폭하는 일이고, 최적점 아래에서는 실수를 증폭한다.
 - **$\tau$가 충분히 크면 오류가 완전히 숨는다.** $\tau=2$에서 틀린 encoder는 $0.932611$로 맞는 encoder의 $0.933538$보다 근소하게 *낫다*. 두 곡선은 $\tau\approx1.6542$에서 교차한다. 그 위에서는 softmax가 너무 평평해 $30^\circ$의 인코딩 오류가 loss에 보이지 않는다. 학습 곡선을 encoder가 잘 작동한다는 증거로 쓸 때마다 기억할 일이다.
 
 ### 6. 모달리티가 만나는 곳: VLM에서 옴니모달까지
@@ -605,11 +712,12 @@ VLM은 의미 label, 언어 목표, reward, VLA backbone을 줄 수 있지만 �
 | 한 시퀀스 안에서 | 모든 모달리티가 한 트랜스포머의 위치가 된다 — 이산 코드로(Chameleon), 또는 디퓨전 손실로 학습하는 연속 패치로(Transfusion) | Chameleon(2024); Transfusion(2024) | 어떤 순서로 섞여도 이미지와 텍스트를 읽고 생성 | 이미지 하나가 위치를 많이 차지한다. 이산 코드는 세부를 잃고, Transfusion은 양자화한 이미지 토큰 위의 모델보다 스케일이 낫다고 보고한다 |
 | 옴니모달 | 한 시퀀스 설계를 오디오와 비디오로, 입력과 출력 모두로 넓혀 끝에서 끝까지 학습 | GPT-4o(2024); Qwen2.5-Omni(2025) | 인식하고 말로 답하는 신경망 하나 | 가장 긴 시퀀스. 오디오와 비디오는 초마다 위치를 더한다 |
 
-D3에서는 그 차이를 셀 수 있다. 이미지 셋과 캡션 셋은 인코더 패스 여섯 번이면 되고, 그다음 아홉 쌍 전부를 내적으로 채점한다. 모달리티를 한 시퀀스에서 만나게 하는 모델은 같은 아홉 점수에 결합 패스 아홉 번이 들고, 그 대가로 한 쌍이 *왜* 맞는지 말하거나 캡션을 직접 쓸 수 있다. §1의 비용 논증을 끝까지 밀고 간 것이다.
+D3에서는 그 차이를 셀 수 있다. 이미지 셋과 캡션 셋은 인코더 패스 여섯 번이면 되고, 그다음 아홉 쌍 전부를 내적으로 채점한다. 모달리티를 한 시퀀스에서 만나게 하는 모델은 같은 아홉 점수에 결합 패스 아홉 번이 들고, 그 대가로 한 쌍이 *왜* 맞는지 말하거나 캡션을 직접 쓸 수 있다. §1의 비용 논증을 끝까지 밀고 간 것이다. 아래의 접힌 메모는 표의 두 옴니 모델이 안에서 어떻게 돌아가는지, 한 시퀀스 설계가 어디서 왔는지 말한다.
 
-**옴니 모델, 짧게.** GPT-4o는 텍스트·오디오·이미지·비디오를 어떻게 섞어도 받고, 그 모두로 학습한 신경망 하나에서 텍스트·오디오·이미지를 낸다. 시스템 카드는 말에 대한 응답이 빠르면 $232$ ms, 평균 $320$ ms라고 보고한다. 사람이 대꾸하는 지연이다([OpenAI, 2024](https://arxiv.org/abs/2410.21276)). Qwen2.5-Omni는 일을 나눠 텍스트와 음성을 동시에 흘려보낸다. 언어 모델인 *Thinker*가 텍스트를 쓰고, *Talker*가 Thinker의 은닉 상태를 오디오 토큰으로 바꾸며, 시간에 맞춘 위치 임베딩이 섞인 비디오와 오디오의 박자를 맞춘다([Qwen, 2025](https://arxiv.org/abs/2503.20215)). 조기 결합의 조상은, [[03-deep-learning/diffusion/vae-gan|6.1 §10]]과 같은 종류의 코드북으로 이미지를 토큰화하는 Chameleon([Chameleon Team, 2024](https://arxiv.org/abs/2405.09818))과, 트랜스포머 하나를 텍스트에는 다음 토큰 예측으로, 이미지에는 디퓨전으로 학습하는 Transfusion([Zhou 외, 2024](https://arxiv.org/abs/2408.11039))이다.
+> [!note]- 더 깊이 · Deeper
+> **옴니 모델, 짧게.** GPT-4o는 텍스트·오디오·이미지·비디오를 어떻게 섞어도 받고, 그 모두로 학습한 신경망 하나에서 텍스트·오디오·이미지를 낸다. 시스템 카드는 말에 대한 응답이 빠르면 $232$ ms, 평균 $320$ ms라고 보고한다. 사람이 대꾸하는 지연이다([OpenAI, 2024](https://arxiv.org/abs/2410.21276)). Qwen2.5-Omni는 일을 나눠 텍스트와 음성을 동시에 흘려보낸다. 언어 모델인 *Thinker*가 텍스트를 쓰고, *Talker*가 Thinker의 은닉 상태를 오디오 토큰으로 바꾸며, 시간에 맞춘 위치 임베딩이 섞인 비디오와 오디오의 박자를 맞춘다([Qwen, 2025](https://arxiv.org/abs/2503.20215)). 조기 결합의 조상은, [[03-deep-learning/diffusion/vae-gan|6.1 §10]]과 같은 종류의 코드북으로 이미지를 토큰화하는 Chameleon([Chameleon Team, 2024](https://arxiv.org/abs/2405.09818))과, 트랜스포머 하나를 텍스트에는 다음 토큰 예측으로, 이미지에는 디퓨전으로 학습하는 Transfusion([Zhou 외, 2024](https://arxiv.org/abs/2408.11039))이다.
 
-**행동은 모달리티가 하나 더 느는 것이다.** π0는 Transfusion 위에 지었다. 언어는 다음 토큰 예측으로, 행동은 flow matching으로 배우고, 하나의 attention 안에서 모달리티마다 가중치를 따로 둔다. [[03-deep-learning/vla/index|4. VLA §6]]의 Mixture of Transformers다. 그러니 VLA는 출력 모달리티에 행동이 더해진 조기 결합 모델이고, Gemini Robotics는 대형 멀티모달 모델인 Gemini 2.0 위에 곧바로 그것을 지었다([Gemini Robotics Team, 2025](https://arxiv.org/abs/2503.20020)). 입력도 같은 방식으로 넓어진다. ManiWAV는 그리퍼에 마이크를 달아 오디오와 비디오를 함께 써서 접촉이 많은 기술을 배웠다. 시각만으로는 모호했던 접촉 사건과 표면 재질을 소리가 실어 날랐기 때문이다([Liu 외, 2024](https://arxiv.org/abs/2406.19464)). 건설 현장은 그것이 중요한 곳이다 — 시끄럽고, 어수선하고, 자주 어둡다 — 그리고 작업자의 말로 된 지시가 자연스러운 인터페이스인 곳이다. 그러니 로봇 논문의 "옴니모달"은 두 질문으로 읽어라. 어떤 모달리티가 들어가는가, 그리고 나오는 것 가운데 행동이 있는가.
+**행동은 모달리티가 하나 더 느는 것이다.** 저자들의 말로 π0의 구조는 Transfusion — 트랜스포머 하나에 이산 토큰은 cross-entropy 손실, 연속 토큰은 flow matching 손실 — 에서 영감을 받았고, 여기에 로봇의 상태·행동 토큰을 위한 가중치 한 벌을 따로 더했다. [[03-deep-learning/vla/index|4. VLA §6]]의 Mixture of Transformers다. 출발점은 답을 토큰 하나씩 쓰는 3B VLM인 PaliGemma이고, 자기 행동 토큰은 flow matching으로 지도한다. 신경망이 무작위 노이즈를 적분 몇 스텝 만에 행동 청크로 바꾸도록 배우는 방식으로, 같은 §6의 노이즈 제거기 계열이다([[01-canonical-papers/notes/4-vla/pi0|π0]]). 그러니 VLA는 조기 결합 모델 — 표의 셋째 줄처럼 모달리티가 한 시퀀스 안에서 만나는 모델 — 에 출력 모달리티로 행동이 더해진 것이고, Gemini Robotics는 대형 멀티모달 모델인 Gemini 2.0 위에 곧바로 그것을 지었다([Gemini Robotics Team, 2025](https://arxiv.org/abs/2503.20020)). 입력도 같은 방식으로 넓어진다. ManiWAV는 그리퍼에 마이크를 달아 오디오와 비디오를 함께 써서 접촉이 많은 기술을 배웠다. 시각만으로는 모호했던 접촉 사건과 표면 재질을 소리가 실어 날랐기 때문이다([Liu 외, 2024](https://arxiv.org/abs/2406.19464)). 건설 현장은 그것이 중요한 곳이다 — 시끄럽고, 어수선하고, 자주 어둡다 — 그리고 작업자의 말로 된 지시가 자연스러운 인터페이스인 곳이다. 그러니 로봇 논문의 "옴니모달"은 두 질문으로 읽어라. 어떤 모달리티가 들어가는가, 그리고 나오는 것 가운데 행동이 있는가.
 
 ### 스스로 점검 · Self-check
 
@@ -630,11 +738,11 @@ D3에서는 그 차이를 셀 수 있다. 이미지 셋과 캡션 셋은 인코�
 
 ### 과제 · Problem set
 
-Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Objects]]만 쓴다. D3와 두 변형은 대상 절에 고정되어 있고, 문제 4는 §5가 한 번도 돌리지 않는 중복 캡션 변형을 쓰므로 실습의 숫자를 그대로 옮길 수 없다.
+Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Objects]]만 쓴다. D3와 두 변형은 대상 절에 고정되어 있다. 문제 1–2는 §5가 loss 하나만 찍고 행과 열은 한 번도 펼쳐 보이지 않는 $\tau=1/2$의 한 쌍 틀린 배치를 열고, 문제 4는 §5가 한 번도 돌리지 않는 중복 캡션 변형을 쓰므로 실습의 숫자를 그대로 옮길 수 없다.
 
-1. **그리기.** 더 큰 배치가 무엇을 바꾸는지 보이도록 위의 그림을 다시 그린다. D3의 $3\times3$ similarity matrix와 diagonal positive를 그리고, 같은 행렬에서 나오는 두 softmax 방향을 화살표로, 그 앞의 $\tau$ 나눗셈을, 그리고 배치를 감싸는 상자를 더한다. 배치가 더 커지면 칸이 어디에 더해지고, 더해진 칸 중 어느 것이 negative가 되는지 표시한다.
-2. **유도.** D3 이미지 1에서 $\tau=1/4$일 때 logit과 row loss, 낮은 temperature의 효과를 계산한다.
-3. **해석.** “red valve” 정답만으로 남는 grounding 질문을 말한다.
+1. **그리기.** 위의 그림을 한 쌍이 틀린 배치 — 이미지 2를 $90^\circ$에 인코딩한 것 — 에 대해 $\tau=1/2$로 다시 그린다. $3\times3$ logit 행렬에 대각선만 positive로 음영을 넣고, 그 앞에 $\tau$ 나눗셈을 두고, 같은 행렬에서 나가는 두 화살표로 행 softmax와 열 softmax를 그려 각 화살표 끝에 loss 셋씩을 적고, 배치 상자를 두른다. 각 행이 1위로 매기는 칸에 동그라미를 치고, 넷째 쌍이 칸을 어디에 더하는지, 더해진 칸 가운데 어느 것이 negative가 되는지 표시한다.
+2. **유도.** 같은 배치에서 (a) logit 행렬과, 그것이 더는 대칭이 아닌 이유, (b) 행 loss 셋, 열 loss 셋, 그리고 §5의 한 쌍 틀림 열과 맞춰 본 $\mathcal L$, (c) 행 2의 softmax, 그 행이 1위로 매기는 캡션, 그리고 밀어내기 질량 가운데 캡션 3이 가져가는 몫을 D3의 $67.5\%$와 견준 것.
+3. **해석.** VLM에게 S1 패널의 "왼쪽 볼트 구멍"을 가리키라고 했다. S1은 건설 트랙의 외장 패널 과제이고, 그 패널에는 $400$ mm 떨어진 체결 구멍이 둘 있다([[05-construction-robotics/site-engineering|2.5]]). 시험 이미지 $20$장 모두에서 왼쪽 구멍을 짚었는데, 이미지는 모두 같은 삼각대에서 찍었다. (a) 아직 열려 있는 주장은 무엇인가? (b) grounding을 학습된 위치와 가를 이미지 개입 둘을 설계하고, 각 개입에서 grounded된 답이 무엇을 해야 하는지 말하라. (c) "왼쪽"이 "빨간"보다 grounding하기 어려운 단어인 이유는?
 4. **실행.** 영어 절 템플릿의 `?`를 채우고 **중복 캡션** 변형을 돌린다. 캡션 3이 캡션 2의 정확한 복사본이므로 $t_3=t_2$이고 이미지는 그대로다. $\tau\in\{2,1,1/2,1/4,1/10,1/20,1/100\}$을 훑어 (a) 각 $\tau$의 $\mathcal L$, (b) $\tau=1/2$과 $\tau=1/100$에서의 image→text 행 loss 셋과 text→image 열 loss 셋, (c) 격자 탐색으로 $\mathcal L$을 최소화하는 $\tau$를 보고한다. 그리고 두 문장으로 답한다. 여섯 loss 중 $\tau\to0$에서 위로 유계가 아닌 것은 무엇이고 $\log 2$로 수렴하는 것은 무엇이며, 그 차이는 중복 캡션이 두 방향을 서로 다르게 망가뜨리는 방식에 대해 무엇을 말하는가.
 
 > [!note]- 그리는 법 · How to draw it
@@ -642,11 +750,12 @@ Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Ob
 > - 행렬 둘이 아니라 같은 행렬에서 나오는 화살표 둘을 그린다. 행 softmax와 열 softmax는 동일한 숫자를 두 방향으로 읽는다. 행렬을 둘 그리면 모델이 둘이라고 주장하는 셈인데, 모델은 하나이고 채점이 둘이다.
 > - $\tau$ 나눗셈은 softmax 앞에, 행렬 전체에 그린다. temperature는 쌍의 성질도 encoder의 성질도 아니다. 모든 칸을 한꺼번에 비례 조정하므로 §5가 그것을 떼어 내 훑을 수 있다.
 > - 배치 경계는 모든 칸을 감싸는 상자로 그린다. 상자 밖에는 negative가 없다. 항목 3개에 대한 loss와 32,768개에 대한 같은 loss는 다른 함수이고, 그 차이가 사는 자리가 이 상자다.
+> - 각 방향의 loss 셋은 그 방향 화살표 끝에 따로 적는다. D3에서는 같은 세 숫자이지만 한 쌍이 틀린 배치에서는 다르고, loss를 한 벌만 적은 그림은 오류를 숨긴 것이다.
 
 > [!tip]- 정답 · Solutions
-> 1. 행=image, 열=caption, $(i,i)$가 positive. 화살표 둘은 같은 행렬에서 나가고, 하나는 행 방향 softmax, 다른 하나는 열 방향 softmax이며, $\tau$ 나눗셈이 아홉 칸 전부에 먼저 걸린다. 상자 밖에는 negative가 없다. 배치를 키우면 행과 열이 늘고, 새로 그려지는 대각선 밖 칸은 그려지는 순간 negative가 된다. $N$이 loss에 들어오는 기제 전체가 그것이다.
-> 2. 내적은 같고 logit은 $(4,2,0)$. 확률 $0.867$, loss $0.143$. 맞을 때 더 자신 있지만 오류도 날카로워진다. §5가 그 전환점을 한 쌍 틀린 배치에서 $\tau=0.1639$로 측정한다.
-> 3. valve pixel을 실제 사용했는지 language prior를 사용했는지 미확인이다.
+> 1. 행=이미지, 열=캡션이고, 음영을 넣은 대각선 $(2,\ 1.732051,\ 2)$가 짝이 맞는 쌍이다. 아홉 칸 전부에 $\tau$ 나눗셈을 건 행렬은 $\begin{pmatrix}2&1&0\\0&1.732051&2\\0&1.732051&2\end{pmatrix}$다. 행 화살표 끝의 loss는 $(0.407606,\ 0.909951,\ 0.642002)$, 열 화살표 끝은 $(0.239545,\ 0.908630,\ 0.758624)$로, 이제 두 벌이 다르다. 동그라미는 $(1,1)$, $(2,3)$, $(3,3)$에 친다. 행 2의 동그라미가 대각선 밖에 있는데, 이미지 2가 이제 캡션 3을 1위로 매기기 때문이다. 넷째 쌍은 넷째 행과 열, 곧 새 칸 일곱을 더한다. 대각선 위의 하나는 positive이고 대각선 밖의 여섯은 그려지는 순간 negative다. $N$이 loss에 들어오는 기제 전체가 그것이다.
+> 2. (a) $v_2'=(0,1)$이면 $v_2'^\top t_j=(0,\ 0.866025,\ 1)$이므로 logit의 행 2는 $(0,\ 1.732051,\ 2)$이고, $v_2'=v_3$이라 행 3과 같다. 행렬은 대칭이 아니다 — $\ell_{12}=1$인데 $\ell_{21}=0$ — 이미지 2는 움직였고 캡션 2는 움직이지 않아 $v_2'\ne t_2$이기 때문이다. (b) 행: $L_1=0.407606$과 $L_3=0.642002$는 그대로이고 $L_2=-\log\big(e^{1.732051}/(e^0+e^{1.732051}+e^2)\big)=0.909951$, 평균은 $0.653187$이다. 열: $0.239545$, $0.908630$, $0.758624$, 평균 $0.635600$이다. 그래서 $\mathcal L=\tfrac12(0.653187+0.635600)=0.644393$으로, §5 한 쌍 틀림 열의 $\tau=1/2$ 값이다. 열 1은 $0.407606$에서 $0.239545$로 *내려갔다*. 이미지 2가 캡션 1에서 멀어져 코사인이 $0.5$에서 $0$이 되었으므로 캡션 1의 후보 줄이 쉬워졌다. 틀린 encoder가 한 방향의 loss를 낮춘 것이다. 열 2와 열 3에서는 $v_2'=v_3$이라 이미지 2와 3이 동점이다. (c) 행 2의 softmax는 $(0.071219,\ 0.402544,\ 0.526238)$이므로 캡션 3이 1위이고, 이미지 2는 이제 틀린 캡션을 검색한다. 밀어내기 질량은 $1-0.402544=0.597456$이고 캡션 3이 그중 $0.526238$, 곧 $88.1\%$를 가져간다. D3의 $67.5\%$보다 크다. 어려운 negative가 모델의 1순위가 되었고, gradient $p-y$가 바로 거기를 가장 세게 민다.
+> 3. (a) 그 점이 구멍의 픽셀에서 나왔는지, 이 사진들에서 왼쪽 구멍이 늘 놓이는 자리에서 나왔는지다. 삼각대가 하나면 왼쪽 구멍은 늘 거의 같은 픽셀에 있으므로, 보지 않고 그 픽셀을 내놓는 모델도 $20/20$을 받는다. "red valve"의 모호함에서 색 prior가 위치 prior로 바뀐 것이다. (b) *이동*: 패널을 옮기거나 이미지를 옆으로 알려진 픽셀 수만큼 평행이동한다. grounded된 답은 같은 양만큼 따라 움직이고, 위치 prior는 제자리에 머문다. *좌우 반전*: 이미지를 좌우로 뒤집는다. 오른쪽에 있던 구멍이 이제 왼쪽 구멍이므로 grounded된 답은 패널 위에서 $400$ mm 떨어진 다른 구멍으로 옮겨 가고, 제자리에 머무는 답은 이미지에서 "왼쪽"을 읽고 있지 않았던 것이다. 왼쪽 구멍을 가리는 것이 셋째 시험이다. grounded된 모델은 가리개를 짚는 대신 구멍을 놓친다. (c) "빨간"은 물체 자신의 픽셀이 가진 성질이라 색을 바꾸면 곧바로 시험된다. "왼쪽"은 두 구멍 *그리고* 시점 사이의 관계다. 작업자가 카메라를 마주 보면 카메라의 왼쪽은 작업자의 오른쪽이다. 그래서 "왼쪽"은 프레임을 정하기 전에는 답이 없다. [[04-robotics/geometric-perception-calibration|3.5 기하 인식 §1]]의 카메라 프레임인가, 작업자의 프레임인가.
 > 4. 빈칸은 `Td[2] = T[1]`과 `Ld = np.array([infonce(V, Td, t)[5] for t in grid])`이다. 내적은 $\begin{pmatrix}1&0.5&0.5\\0.5&1&1\\0&0.866025&0.866025\end{pmatrix}$가 되고 2열과 3열이 같아진다.
 >
 >    (a)와 (c):
@@ -660,3 +769,16 @@ Tier A. 이 페이지와 선수 지식, [[03-deep-learning/lab-objects|0. Lab Ob
 >    (b) $\tau=1/2$에서 image→text는 $(0.551445,\,0.861995,\,0.777912)$, text→image는 $(0.407606,\,0.757448,\,1.025397)$이다. $\tau=1/100$에서 image→text는 $(0,\,0.693147,\,0.693147)$, text→image는 $(0,\,0.000002,\,13.397461)$이다.
 >
 >    위로 유계가 아닌 것은 3열의 text→image loss이고, $\log 2=0.693147$로 수렴하는 것은 행 2와 행 3의 image→text loss다. 비대칭이 요점이다. 행을 따라가면 모델은 *똑같은* 캡션 둘 중에서 골라야 하므로 최선이 질량을 반으로 가르는 것이고, $\log 2$는 이길 수 없는 무승부의 값이다. 유계이고 오류라고 부르기도 어렵다. 3열을 따라가면 모델은 중복된 캡션에 대해 *서로 다른* 이미지 둘 중에서 골라야 하는데 이미지 2가 이긴다($v_2^\top t_3=1$ 대 $v_3^\top t_3=0.866025$). 맞는 이미지가 2위로 밀리고 그 loss는 $\tau\to0$에서 한없이 커진다. 중복 캡션은 한 방향에서 무승부를, 다른 방향에서 노골적인 오답을 치르게 하고 유계가 아닌 쪽은 후자뿐이다. 캡션 중복 제거가 보기보다 더 중요한 이유이고, 낮은 temperature가 잡음 섞인 배치를 실제로 위험하게 만드는 이유다.
+
+### 출처 · Sources
+
+§1, §4, §6이 잇는 논문 노트 — CLIP, Flamingo, BLIP-2, LLaVA, PaliGemma, π0 — 가 각 논문의 인용을 담는다. 페이지의 나머지 인용은 다음과 같다.
+
+- van den Oord, A., Li, Y. & Vinyals, O. "Representation Learning with Contrastive Predictive Coding." arXiv:1807.03748, 2018 — InfoNCE 목적함수와 그 $\log N$ 경계(§2).
+- Poole, B., Ozair, S., van den Oord, A., Alemi, A. A. & Tucker, G. "On Variational Bounds of Mutual Information." *ICML*, 2019 — 상호정보량 추정량들 가운데 놓인 같은 경계(§2).
+- Black, K. 외. "π0: A Vision-Language-Action Flow Model for General Robot Control." arXiv:2410.24164, 2024 — "Transfusion에서 영감을 받은" 구조, 상태·행동 토큰의 별도 가중치, 행동 토큰의 flow matching(§6).
+- Gemini Robotics Team. "Gemini Robotics: Bringing AI into the Physical World." arXiv:2503.20020, 2025 — Gemini 2.0 위에 지은 VLA(§6).
+- Liu, Z., Chi, C., Cousineau, E. 외. "ManiWAV: Learning Robot Manipulation from In-the-Wild Audio-Visual Data." *CoRL*, 2024 — 오디오와 비디오를 함께 써서 배운 접촉 기술(§6).
+- OpenAI. "GPT-4o System Card." arXiv:2410.21276, 2024 — 어떤 입력·출력 조합이든 받는 모델, 말에 대한 $232$ ms와 $320$ ms 응답(§6의 접힌 메모).
+- Xu, J., Guo, Z., He, J. 외. "Qwen2.5-Omni Technical Report." arXiv:2503.20215, 2025 — Thinker와 Talker(§6의 접힌 메모).
+- Chameleon Team. "Chameleon: Mixed-Modal Early-Fusion Foundation Models." arXiv:2405.09818, 2024; Zhou, C., Yu, L., Babu, A. 외. "Transfusion: Predict the Next Token and Diffuse Images with One Multi-Modal Model." arXiv:2408.11039, 2024 — 한 시퀀스 설계 둘(§6).

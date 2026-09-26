@@ -19,17 +19,20 @@ The cleanest case study of the skill the optimization page teaches: choose the a
 > 왜 문제를 볼록화했고 그 단순화의 대가가 무엇인지 이해하는 것이 목표다. 대표 응용 읽기이지 제어기 설계 가이드가 아니다.
 
 > [!note] Prerequisites · 선수 지식
-> [[04-robotics/mpc|7. MPC]] (the formulation being applied) · [[02-foundations/optimization|4. Optimization §5]] (QP) · [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]] (what the single-rigid-body approximation throws away) · [[02-foundations/se3-geometry|8. 3D Geometry §2]] (roll, pitch, yaw) · [[02-foundations/lab-plants|0.6 Lab Plants]] (P2, for the problem set's running task)
-> [[04-robotics/mpc|7. MPC]] (적용되는 정식화) · [[02-foundations/optimization|4. 최적화 §5]] (QP) · [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]] (단일 강체 근사가 버리는 것) · [[02-foundations/se3-geometry|8. 3D 기하 §2]] (롤·피치·요) · [[02-foundations/lab-plants|0.6 Lab Plants]] (과제의 관통 과제에 쓰는 P2)
+> [[04-robotics/mpc|7. MPC]] (the formulation being applied) · [[02-foundations/optimization|4. Optimization §5]] (QP) · [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]] (what the single-rigid-body approximation throws away) · [[02-foundations/se3-geometry|8. 3D Geometry §2]] (roll, pitch, yaw) · [[02-foundations/lab-plants|0.6 Lab Plants]] (P2, the catalog's planar two-link arm, two $1$ kg masses on $1$ m links, for the problem set's running task)
+> [[04-robotics/mpc|7. MPC]] (적용되는 정식화) · [[02-foundations/optimization|4. 최적화 §5]] (QP) · [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]] (단일 강체 근사가 버리는 것) · [[02-foundations/se3-geometry|8. 3D 기하 §2]] (롤·피치·요) · [[02-foundations/lab-plants|0.6 Lab Plants]] (카탈로그의 평면 2링크 팔 P2, $1$ m 링크 끝의 $1$ kg 질량 둘 — 과제의 관통 과제에 쓴다)
+
+> [!note] Why this matters · 왜 배우는가
+> On the [[physical-ai-map|Physical AI Map]] this page sits in the control column beside the robot stack of [[07-research-program/index|7. Research Program §5]] as the common track's one representative application; its quadruped is not the thesis platform, so in *"install that panel on the frame"* it serves *move the component* only when the base itself walks. What the panel task keeps is its core pattern: contact forces as decision variables inside linearised friction cones, solved as a convex QP fast enough to re-solve every tick. The pattern has a price you can compute, and missing it is how a controller asks a foot or a gripper to slip: the four-face pyramid at $\mu=0.6$ admits a corner force of $84.9$ N where the cone allows $60$ N, and on the heave slice of Q, the page's $12$ kg quadruped, a one-step horizon at $\lambda=0.1$ overshoots $36$ mm because it cannot see the braking, where $N=2$ overshoots $3.7$ mm (§5). [[04-robotics/contact-force-tactile|9. Contact §2]], the next page, treats the cone in full, and the same force QP returns for the arm's own contacts in [[04-robotics/force-compliance-control|13. Force & Compliance Control §4]]'s whole-body QP and in the inscribed linearisation $\mu\cos(\pi/m)$ of [[04-robotics/grasping|15. Grasping §2]] (block 3). On the dissertation path ([[07-research-program/index|7 §8]]) the page is block 2, robotics sessions 79–81, a Literacy page whose first session is the part the thesis needs; after it you can size an MPC QP, name the approximation behind each modelling move and what it costs, and predict which constraint binds before solving.
 
 > [!note] First pass · 처음이라면
-> First pass: the Running object — Q, and the gait and friction vocabulary it restates — then the picture, the five modelling moves and the box that sizes the paper's QP. Worked on Q is the second sitting: steps 1–7 by hand, then steps 8–10 (the loop and its sweep) with the problem set. Read alongside, not before: [[04-robotics/legged-locomotion|18. Legged Locomotion]], an optional branch page where Q is frozen and its gaits compared, and [[04-robotics/contact-force-tactile|9. Contact §2]], the next page in study order, where the friction cone is treated in full. Everything this page uses from either is restated below.
+> About three sessions of 60–90 minutes, robotics 79–81. **Session 1 (79):** the Running object — Q, and the gait and friction vocabulary it restates — the picture, then §1 (the five modelling moves, and the dynamics behind the first two) and §2 (forces, the friction pyramid, the QP and the box that sizes it). End with the $N=10$ sizing, $120$ variables and $160$ pyramid rows, and the approximation behind each move named. **Session 2 (80):** §3 and §4, then the Worked case, steps 1–7 by hand; end by saying why the QP is always feasible yet proves no stability ($58.86$ N per stance foot, §3), then solving the $2\times2$ normal equations at $\lambda=1$ with the page covered ($u_0=76.92$ N, $u_1=-15.38$ N) and saying why no row binds. **Session 3 (81):** §5, the loop and its sweep, then the self-check and the problem set. Session 79 is the part the thesis needs, and a Literacy pass stops there, adding §3–§4 (about 430 words, the start of session 80) if it can; the Worked case and session 81 can wait until a force QP enters your experiment. Read alongside, not before: [[04-robotics/legged-locomotion|18. Legged Locomotion]], an optional branch page where Q is frozen and its gaits compared, and [[04-robotics/contact-force-tactile|9. Contact §2]], the next page in study order, where the friction cone is treated in full. Everything this page uses from either is restated below.
 
-### Running object · 이 페이지의 장치
+### Running object · 이 페이지의 대상
 
 The body is **Q**, the frozen quadruped of [[04-robotics/legged-locomotion|18. Legged Locomotion]] —
 an optional page, not a prerequisite: every number and term used here is restated on this page.
-$m=12$ kg, CoM $0.30$ m up, feet at $(\pm0.30,\pm0.15)$ m, $\mu=0.6$, a trot of period
+$m=12$ kg, centre of mass (CoM) $0.30$ m up, feet at $(\pm0.30,\pm0.15)$ m, $\mu=0.6$, a trot of period
 $T=0.40$ s at duty factor $\beta=0.50$, and a per-foot ceiling $f_{z,\max}=200$ N. Four numbers
 the QP needs that the locomotion page has no use for:
 
@@ -53,7 +56,7 @@ commanded height $z^{\mathrm{ref}}=0.30$ m and must be pushed back up.
 > - **Non-example**: $\beta$ is not the number of feet on the ground. That number is $4\beta$ on average, two for the trot, and a gait with $\beta<0.25$ must have instants with no foot down at all.
 > - **Why it matters here**: the schedule decides which force variables exist. A foot in swing cannot push, so its force is fixed at $f_i=0$ (move 3 below), and the QP only ever chooses forces for stance feet.
 
-> **The friction cone, defined here.** Under Coulomb's model with friction coefficient $\mu$, a foot pressing on the ground with vertical force $f_z$ and horizontal force $(f_x,f_y)$ does not slip as long as two conditions hold: it pushes rather than pulls ($f_z\ge0$, the **unilateral** condition), and the horizontal part is at most $\mu$ times the vertical,
+> **The friction cone, defined here.** Under Coulomb's model with friction coefficient $\mu$, a foot pressing on the ground with vertical force $f_z$ and horizontal force $(f_x,f_y)$ — on flat ground these are the normal force $f_n=f_z$ and tangential force $f_t=(f_x,f_y)$ that [[04-robotics/contact-force-tactile|9. Contact §2]] and [[04-robotics/grasping|15. Grasping §2]] write — does not slip as long as two conditions hold: it pushes rather than pulls ($f_z\ge0$, the **unilateral** condition), and the horizontal part is at most $\mu$ times the vertical,
 >
 > $$\sqrt{f_x^2+f_y^2}\le\mu f_z$$
 >
@@ -192,14 +195,18 @@ tens of times a second precisely so that each solve sees a short, nearly static 
     <circle cx="402" cy="212" r="2.6" fill="currentColor"/>
     <text x="422" y="216" font-size="11" xml:space="preserve">−f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
     <text x="12" y="378" font-size="11" xml:space="preserve">Count: 24 cells − 12 crossed (swing, f<tspan dy="3.1" font-size="11">i</tspan><tspan dy="-3.1"> = 0) = 12 free forces;  rows 4 × 2 × 5 = 40,</tspan></text>
-    <text x="12" y="393" font-size="11">that is 32 pyramid + 8 unilateral (+ 8 with the 200 N/foot ceiling).  At the solution all are slack:</text>
-    <text x="12" y="408" font-size="11" xml:space="preserve">f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 97.32 N per stance foot, |f</tspan><tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1">| = |f</tspan><tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1">| = 0 ≤ μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 58.39 N.  Only the circled u</tspan><tspan dy="3.1" font-size="11">0</tspan><tspan dy="-3.1"> is applied.</tspan></text>
+    <text x="12" y="393" font-size="11">that is 32 pyramid + 8 unilateral (+ 8 with the 200 N/foot ceiling).  At the solution none binds:</text>
+    <text x="12" y="408" font-size="11" xml:space="preserve">stance: f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 97.32 N, |f</tspan><tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1">| = |f</tspan><tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1">| = 0 &lt; μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 58.39 N, slack;  swing rows hold only as 0 ≤ 0.</tspan></text>
   </g>
 </svg>
 
-Q's two-step heave plan from the worked case: from the measured $e_0=-30$ mm, the decisions $u_0=76.92$ N (circled, the only one ever applied) and $u_1=-15.38$ N carry the predicted gap to $-18.5$ mm and then $+2.3$ mm about the dashed $0.30$ m reference. Below it, on the same time axis, the $0.12$ s horizon sits inside one trot stance, the LF–RH one, before support switches at $0.20$ s; on the right, the $24$-cell decision grid loses its $12$ swing cells to $f_i=0$, leaving $12$ free forces under $4\times2\times5=40$ rows, all slack at the solution's $97.32$ N per stance foot.
+Q's two-step heave plan from the worked case: from the measured $e_0=-30$ mm, the decisions $u_0=76.92$ N (circled, the only one ever applied) and $u_1=-15.38$ N carry the predicted gap to $-18.5$ mm and then $+2.3$ mm about the dashed $0.30$ m reference. Below it, on the same time axis, the $0.12$ s horizon sits inside one trot stance, the LF–RH one, before support switches at $0.20$ s; on the right, the $24$-cell decision grid loses its $12$ swing cells to $f_i=0$, leaving $12$ free forces under $4\times2\times5=40$ rows, none of which binds at the solution: the stance feet's rows are slack at $97.32$ N per foot, and the swing feet's hold only as $0\le0$.
 
-### Five modelling moves
+### 1. Five modelling moves
+
+*In one sentence:* a quadruped's full dynamics are nonlinear — rotations, and legs whose inertia changes with pose — and hybrid, since feet touch down and lift off, so an optimizer over them is slow and can stall in a local optimum, and five deliberate approximations turn them into a convex QP small enough to re-solve tens of times a second.
+
+This paper is the cleanest case study of the craft [[02-foundations/optimization|4. Optimization]] teaches — *choose the approximation that makes the problem convex, and buy back accuracy with re-solving speed* — and it is also the classical baseline that learned locomotion policies (RL) are compared against.
 
 **What it is**: the paper that made real-time MPC standard on legged robots. The trick is a
 *deliberate simplification*, made in five modelling moves:
@@ -212,14 +219,16 @@ Q's two-step heave plan from the worked case: from the measured $e_0=-30$ mm, th
    The one exception is the first step, which uses the current robot state instead.
 3. **Forces as decisions**: treat ground reaction forces as the decision variables.
 4. **Friction pyramid**: approximate each circular friction cone by linear facets.
-5. **Condensed QP, solved fast**: those linear inequalities keep the problem a **convex QP**,
-   solved in the condensed form of [[04-robotics/mpc|7. MPC §2]], that solved in under a
-   millisecond in the reported implementation and was re-run at tens of Hz (Di Carlo et al.'s
-   abstract says 20–30 Hz while their experiments ran at 25 to 50 Hz depending on gait, so the
-   50 Hz [[04-robotics/mpc|7. MPC §2]] sizes is the top of the paper's own range, not a
-   disagreement) — exactly the machinery of [[02-foundations/optimization|4. Optimization §5]].
+5. **Condensed QP, solved fast**: those linear inequalities keep the problem a **convex QP** —
+   exactly the machinery of [[02-foundations/optimization|4. Optimization §5]] — written in the
+   condensed form of [[04-robotics/mpc|7. MPC §2]]. In the reported implementation it solved in
+   under a millisecond and was re-run at tens of hertz; the Deeper note reconciles the paper's two
+   rate figures.
 
-**The model behind the five moves, written out.**
+> [!note]- Deeper · 더 깊이
+> **The paper's two rates.** Di Carlo et al.'s abstract says 20–30 Hz, while their experiments ran at 25 to 50 Hz depending on gait, so the 50 Hz that [[04-robotics/mpc|7. MPC §2]] sizes is the top of the paper's own range, not a disagreement.
+
+**The dynamics behind moves 1 and 2, written out.**
 
 - **Single rigid body dynamics** (move 1). With the legs treated as massless, the only forces on the body are gravity and the four ground reaction forces, so Newton's and Euler's equations give
 $$m\,\ddot p=\sum_{i=1}^{4}f_i-m\,g,\qquad \frac{d}{dt}\big(I\,\omega\big)=\sum_{i=1}^{4}r_i\times f_i$$
@@ -227,19 +236,54 @@ $$m\,\ddot p=\sum_{i=1}^{4}f_i-m\,g,\qquad \frac{d}{dt}\big(I\,\omega\big)=\sum_
 - **Small roll and pitch** (move 2). Write $\Theta=(\phi,\theta,\psi)$ for roll, pitch and yaw. The exact map from $\omega$ to $\dot\Theta$ contains factors $\tan\theta$ and $1/\cos\theta$; with $\phi\approx\theta\approx0$ it keeps only yaw, and the world-frame inertia keeps only the yaw rotation of the body-frame inertia $I_B$:
 $$\dot\Theta\approx R_z(\psi)^\top\omega,\qquad I\approx R_z(\psi)\,I_B\,R_z(\psi)^\top$$
   and the gyroscopic term $\omega\times I\omega$ is dropped as small. At $5°$ pitch the neglected factors are $\tan5°=0.087$ and $1/\cos5°=1.004$; at $30°$ they are $0.577$ and $1.155$, which is where the approximation stops being small. With the 13-dimensional state $x=(\Theta,p,\omega,\dot p,g)$ (gravity appended as a constant state so the model has no offset term), discretizing gives $x_{k+1}=A\,x_k+B_k\,u_k$, with one $A$ from the average yaw and a $B_k$ per step.
+
+### 2. Forces, friction and the QP
+
+Moves 1 and 2 leave a linear model of how the four foot forces move the body. Still open are what the optimizer may choose, which of those forces the ground will actually supply, and what it minimises — moves 3 to 5 — and how big the resulting problem is, which is what makes a sub-millisecond solve believable.
+
+*If you need only one thing from this section:* the box at its end — the paper's QP at $N=10$ has $120$ force variables and $160$ pyramid rows — and the approximation each move pays for that size.
+
 - **Forces as decisions** (move 3). The input at step $k$ is $u_k=(f_1,\dots,f_4)\in\mathbb{R}^{12}$. The gait's **contact schedule** (defined in the Running object) says which feet are down at each step, and a foot in swing gets the equality constraint $f_i=0$, since it cannot push on the ground.
 - **Friction pyramid** (move 4). The circular cone $\sqrt{f_x^2+f_y^2}\le\mu f_z$ of the Running object is not linear. Bounding each tangential axis separately is, and each absolute value is two linear inequalities, which gives the four faces counted below:
 $$|f_x|\le\mu f_z,\qquad |f_y|\le\mu f_z$$
-  Example: $\mu=0.6$, $f_z=100$ N. The cone allows tangential force up to $60$ N, but the pyramid's corner $(60,60)$ N has magnitude $84.9$ N, so this pyramid admits forces that would slip. Shrinking the coefficient to $\mu/\sqrt2=0.424$ puts the corner at exactly $60$ N, which is safe but rejects $(60,0)$, a force the real cone allows.
-- **The QP** (move 5). With reference states $x^{\text{ref}}_k$ from the commanded body motion, weights $Q\succeq0$ on tracking error and $R\succ0$ on force magnitude, and $\lVert v\rVert_Q^2=v^\top Qv$, the controller solves
-$$\min_{u_0,\dots,u_{N-1}}\ \sum_{k=0}^{N-1}\lVert x_{k+1}-x_{k+1}^{\text{ref}}\rVert_Q^2+\lVert u_k\rVert_R^2$$
+  Example: $\mu=0.6$, $f_z=100$ N. The cone allows tangential force up to $60$ N, but the pyramid's corner $(60,60)$ N has magnitude $84.9$ N, so this pyramid admits forces that would slip. Shrinking the coefficient to $\mu/\sqrt2=0.424$ puts the corner at exactly $60$ N, which is safe but rejects $(60,0)$, a force the real cone allows. That shrunk box is the inscribed linearisation at $m=4$ facets, whose worst-direction coefficient [[04-robotics/grasping|15. Grasping §2]] writes $\mu_{\text{eff}}=\mu\cos(\pi/m)$; [[04-robotics/contact-force-tactile|9. Contact §2]] calls the unshrunk box the outer pyramid and shows that the shrunk one is the four-generator inner cone.
+
+<svg viewBox="0 0 560 330" style="max-width:100%;height:auto" role="img" aria-label="Top view of the friction cone at f_z = 100 N and mu = 0.6: a circle of radius 60 N in the (f_x, f_y) plane, the outer box with half-side 60 N whose corner (60, 60) N lies 84.9 N from the centre, outside the circle, and the inner box with half-side 42.4 N whose corners touch the circle; the point (60, 0) on the circle lies outside the inner box.">
+  <rect x="60.0" y="75.0" width="180.0" height="180.0" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3"/>
+  <circle cx="150" cy="165" r="90.0" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.8"/>
+  <rect x="86.4" y="101.4" width="127.3" height="127.3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <g stroke="currentColor" stroke-width="1" stroke-opacity="0.6"><line x1="33.0" y1="165" x2="267.0" y2="165"/><line x1="150" y1="48.0" x2="150" y2="282.0"/></g>
+  <line x1="150" y1="165" x2="240.0" y2="75.0" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+  <circle cx="240.0" cy="75.0" r="4" fill="currentColor"/>
+  <circle cx="240.0" cy="165" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="213.6" cy="228.6" r="3.2" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none">
+    <line x1="244.0" y1="75.0" x2="296" y2="71.0"/>
+    <line x1="244.0" y1="165.0" x2="296" y2="157.0"/>
+    <line x1="217.6" y1="228.6" x2="296" y2="224.6"/>
+  </g>
+  <g fill="currentColor">
+    <text x="256.5" y="181" font-size="11" xml:space="preserve">f<tspan dy="3" font-size="10">x</tspan><tspan dy="-3">​</tspan></text>
+    <text x="155" y="51.0" font-size="11" xml:space="preserve">f<tspan dy="3" font-size="10">y</tspan><tspan dy="-3">​</tspan></text>
+    <text x="24" y="26" font-size="12" xml:space="preserve">top view at f<tspan dy="3" font-size="10">z</tspan><tspan dy="-3">​</tspan> = 100 N, μ = 0.6</text>
+    <text x="300" y="67.0" font-size="11">corner (60, 60):</text>
+    <text x="300" y="81.0" font-size="11" xml:space="preserve">|f<tspan dy="3" font-size="10">t</tspan><tspan dy="-3">​</tspan>| = 84.9 N > 60 N,</text>
+    <text x="300" y="95.0" font-size="11">admitted by the outer box, slips</text>
+    <text x="300" y="155" font-size="11">(60, 0): on the cone,</text>
+    <text x="300" y="169" font-size="11">rejected by the inner box</text>
+    <text x="300" y="222.6" font-size="11">inner corner: 60 N, safe</text>
+    <text x="300" y="268" font-size="11" xml:space="preserve">circle: the cone, |f<tspan dy="3" font-size="10">t</tspan><tspan dy="-3">​</tspan>| ≤ μf<tspan dy="3" font-size="10">z</tspan><tspan dy="-3">​</tspan> = 60 N</text>
+    <text x="300" y="284" font-size="11" xml:space="preserve">outer box: |f<tspan dy="3" font-size="10">x</tspan><tspan dy="-3">​</tspan>|, |f<tspan dy="3" font-size="10">y</tspan><tspan dy="-3">​</tspan>| ≤ 0.6 f<tspan dy="3" font-size="10">z</tspan><tspan dy="-3">​</tspan> = 60 N (move 4)</text>
+    <text x="300" y="300" font-size="11" xml:space="preserve">inner box: |f<tspan dy="3" font-size="10">x</tspan><tspan dy="-3">​</tspan>|, |f<tspan dy="3" font-size="10">y</tspan><tspan dy="-3">​</tspan>| ≤ 0.424 f<tspan dy="3" font-size="10">z</tspan><tspan dy="-3">​</tspan> = 42.4 N</text>
+    <text x="300" y="314" font-size="11" opacity="0.85">(μ/√2: 15 §2's μ cos(π/m) at m = 4)</text>
+  </g>
+</svg>
+
+Move 4 from above, at $f_z=100$ N and $\mu=0.6$: the true cone is the circle $|f_t|\le60$ N. The outer box $|f_x|,|f_y|\le60$ N contains it and admits its corner $(60,60)$ N, $84.9$ N of tangential force that would slip; shrunk to $\mu/\sqrt2$, the inner box $\pm42.4$ N sits inside the circle, safe, but rejects $(60,0)$, which the cone allows.
+
+- **The QP** (move 5). With reference states $x^{\text{ref}}_k$ from the commanded body motion, weights $Q_w\succeq0$ on tracking error and $R_w\succ0$ on force magnitude (the subscript keeps them apart from the robot Q; 6 and 7 write them $Q$ and $R$), and $\lVert v\rVert_{Q_w}^2=v^\top Q_wv$, the controller solves
+$$\min_{u_0,\dots,u_{N-1}}\ \sum_{k=0}^{N-1}\lVert x_{k+1}-x_{k+1}^{\text{ref}}\rVert_{Q_w}^2+\lVert u_k\rVert_{R_w}^2$$
   subject to the dynamics, the pyramid inequalities and the swing equalities. The cost is quadratic and every constraint is linear, so it is a convex QP; substituting the dynamics out leaves the condensed form.
-
-**What the paper does not claim: 7. MPC's stability conditions.** The QP above has no terminal cost $V_f$ beyond the stage weights and no terminal set $\mathcal X_f$, the two ingredients of the Mayne conditions on [[04-robotics/mpc|7. MPC]]. So condition (b), the cost decrease that makes the optimal cost a Lyapunov function, is not claimed, and Di Carlo et al. support stability by experiment rather than proof. Condition (a) is a different story, for a reason worth seeing: every constraint here is on the forces alone, and zero force on the swing feet with a purely vertical force inside the per-foot bounds on the stance feet satisfies all of them from any state, so the QP is never infeasible — recursive feasibility holds trivially, with no terminal set. What the formulation guarantees is that an answer always exists, not that the answer stabilizes; the sweep in step 9 of Worked on Q below is the kind of evidence it rests on instead.
-
-Cheetah 3 galloped on this; the follow-up (Kim et al., open access) pairs the MPC with
-whole-body impulse control (built from the null-space task priority and whole-body QP of [[04-robotics/force-compliance-control|13. Force & Compliance Control §4]]) — the standard two-level stack (slow MPC plans forces, fast WBC
-tracks them) that echoes [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]'s System 2/System 1 split.
 
 > [!example] Worked example · 계산 예제
 > How big is the QP? Take a 13-dimensional state, 4 feet × 3 force components = 12 inputs per step, and horizon $N = 10$.
@@ -249,10 +293,20 @@ tracks them) that echoes [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]'s Sy
 > - This counts only the pyramid faces; any force bounds or swing-foot constraints the implementation adds come on top and are not counted here.
 > - A 120-variable, 160-inequality QP is tiny, which is why a sub-millisecond solve is plausible.
 
-### Worked on Q · 장치로 한 번 끝까지
+### 3. What the paper does not claim: 7. MPC's stability conditions
 
-The box above sizes the paper's own $N=10$ QP. This section solves the $N=2$ one on Q, by hand,
-and then lets a loop vary the two things you would actually tune.
+Having met the two conditions of [[04-robotics/mpc|7. MPC §5]], ask whether this controller meets them; the answer separates what the paper proves from what it only shows. The QP of §2 has no terminal cost $V_f$ beyond the stage weights and no terminal set $\mathcal X_f$, the two ingredients of those Mayne conditions. So condition (b), the cost decrease that makes the optimal cost a Lyapunov function, is not claimed, and Di Carlo et al. support stability by experiment rather than proof. Condition (a) is a different story, for a reason worth seeing: every constraint here is on the forces alone, and zero force on the swing feet with a purely vertical force inside the per-foot bounds on the stance feet satisfies all of them from any state. On Q that is each stance foot carrying half the weight, $117.72/2=58.86$ N, with nothing tangential: every stance pyramid row then reads $|f_x|=0\le0.6\times58.86=35.3$ N and every swing row $0\le0$. So the QP is never infeasible, and recursive feasibility holds trivially, with no terminal set. What the formulation guarantees is that an answer always exists, not that the answer stabilizes; the sweep of §5 below is the kind of evidence it rests on instead.
+
+### 4. The two-level stack
+
+The QP of §2 plans forces for one rigid body a few tens of times a second, but the motors take joint torques, and the legs that move 1 threw away still have mass. Something has to turn the planned forces into torques, on the full dynamics, much faster.
+
+Cheetah 3 galloped on the MPC alone; the follow-up (Kim et al., open access) adds whole-body impulse control beneath it, built from the null-space task priority and whole-body QP of [[04-robotics/force-compliance-control|13. Force & Compliance Control §4]]. That is the standard two-level stack. The slow layer, this MPC, re-plans contact forces over its horizon on §1's simplified model — $N=10$ steps in the paper, $N=2$ steps of $0.06$ s on Q. The fast layer solves 13 §4's QP at every control tick on the full mass matrix of [[04-robotics/modern-robotics/ch08-dynamics|MR ch.8]], with accelerations, torques and contact forces as its decisions and the same friction cones as constraints, and keeps its forces close to the MPC's. Each layer does what its model can: the slow one looks ahead cheaply, the fast one is exact about the present. The same division of labour is [[04-robotics/force-compliance-control|13 §6]]'s for the panel task — a learned policy chooses a compliance at $10$–$50$ Hz and an impedance controller realises it at $500$–$1000$ Hz — and [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]'s System 2/System 1 split echoes it.
+
+### Worked case · 대상으로 한 번 끝까지
+
+§2's box sizes the paper's own $N=10$ QP. This section solves the $N=2$ one on Q by hand; §5
+then lets a loop vary the two things you would actually tune.
 
 **1. The slice, and why it is honest.** Command Q to hold height with no horizontal motion. Then
 $f_x=f_y=0$ at every foot, the roll-and-pitch channels are at their references, and the twelve-input
@@ -264,7 +318,7 @@ $u$ gives the discrete model
 $$z_{k+1}=z_k+\Delta t\,\dot z_k+\frac{\Delta t^2}{2m}u_k,\qquad \dot z_{k+1}=\dot z_k+\frac{\Delta t}{m}u_k$$
 
 This is the same $x_{k+1}=Ax_k+B_ku_k$ as move 2, restricted to the two rows that move under a purely
-vertical command. It is a slice, not a different model, and step 10 below says exactly what the
+vertical command. It is a slice, not a different model, and §5 says exactly what the
 slice hides.
 
 **2. Condensing.** Write $e_k=z_k-z^{\mathrm{ref}}$ and $\alpha=\Delta t^2/(2m)=0.06^2/24=1.5\times10^{-4}$
@@ -300,14 +354,16 @@ $\dot z_1=\Delta t\,u_0/m=0.385$ m/s and then braking is cheaper in this cost th
 **5. The rows, and which of them bind.** For the full $N=2$ trot QP the count is: $4\times3\times2=24$
 decision variables, $2\times3\times2=12$ of them killed by the swing equalities $f_i=0$, leaving $12$
 free; $4\times4\times2=32$ friction-pyramid inequalities; $4\times2=8$ unilateral rows $f_{z,i}\ge0$;
-and $8$ more if the $200$ N/foot ceiling is imposed. An **active** (binding) constraint is an
-inequality row that the optimum satisfies with equality, so that deleting it would move the answer;
-a **slack** row is satisfied strictly and could be deleted with no effect at all. At the solution
-above, every pyramid row is slack, because the command is vertical and $|f_x|=0\le\mu f_z=0.6\times97.32=58.39$
-N with $58.39$ N to spare, and the stance feet's unilateral rows are slack at both steps since
-$97.32$ N and $(117.72-15.38)/2=51.17$ N are both positive. Every row is slack, so
-the unconstrained stationary point *is* the QP solution — which is the licence for having solved it on
-paper. Non-example: a pyramid row is not "inactive because the friction is high"; it is inactive
+and $8$ more if the $200$ N/foot ceiling is imposed. A row is **active** (binding) when deleting it
+would move the answer; a **slack** row is satisfied strictly and could be deleted with no effect at
+all. The two tests differ: a row can hold with equality at the optimum without binding, when other
+constraints already pin the same variables. At the solution above, every row on the stance feet is
+slack: the command is vertical, so $|f_x|=|f_y|=0<\mu f_z=0.6\times97.32=58.39$ N at step $0$ (and
+$30.70$ N at step $1$), and the unilateral rows hold strictly since $97.32$ N and
+$(117.72-15.38)/2=51.17$ N are both positive. The swing feet's $16$ pyramid rows and $4$ unilateral
+rows hold as $0\le0$, but they are redundant with $f_i=0$, so deleting them moves nothing. No row
+binds, so the unconstrained stationary point *is* the QP solution — which is the licence for having
+solved it on paper. Non-example: a pyramid row is not "inactive because the friction is high"; it is inactive
 because this particular command asks for no tangential force, and the first sideways step makes it the
 row that decides everything.
 
@@ -319,17 +375,17 @@ work. That discontinuity — a smooth cost, a solution that suddenly stops respo
 is what the inequality rows are for, and it is invisible in any presentation that only writes the
 cost down.
 
-**7. Receding horizon.** Only $u_0$ is applied. **Receding-horizon control** is a feedback policy, not
-a trajectory: at each tick it (i) measures the state, (ii) solves a finite-horizon optimal-control
-problem starting there, (iii) applies the first input only, and (iv) discards the rest and repeats.
-The policy is $u(x)=[\,u_0^\star(x)\,]$ where $u^\star$ is the solve above. Example: Q applies $76.92$
-N for one $\Delta t$, re-measures, and solves again from wherever it actually is — so a modelling error
-in $\alpha$ is corrected next tick rather than integrated. Non-example: solving once and playing
-$u_0,u_1$ out to the end of the horizon is *not* receding-horizon control; it is an open-loop
-trajectory, and on a robot whose real $m$ differs by 10% it drifts with nothing to pull it back. This
-is why the paper's re-solve rate, not its horizon, is the number that makes the controller work.
+**7. Receding horizon.** Only $u_0$ is applied: this is the receding horizon that
+[[04-robotics/mpc|7. MPC]] defines, with its open-loop non-example. On Q it reads: apply $76.92$ N for
+one $\Delta t$, re-measure, and solve again from wherever Q actually is — so a modelling error in
+$\alpha$ is corrected next tick rather than integrated. Playing $u_0,u_1$ out to the end of the horizon
+instead is an open-loop trajectory, and on a robot whose real $m$ differs by 10% it drifts with nothing
+to pull it back. This is why the paper's re-solve rate, not its horizon, is the number that makes the
+controller work.
 
-**8. The loop, and the two knobs.** Everything above is one tick at one setting. The horizon $N$ and
+### 5. Lab: the loop and its two knobs
+
+**The loop.** Everything in the Worked case is one tick at one setting. The horizon $N$ and
 the weight ratio $\lambda$ are what a practitioner actually chooses, and the trade between them is
 what a hand calculation cannot show: it lives in the closed loop, over many ticks, with the unilateral
 row switching in and out.
@@ -374,8 +430,8 @@ def run(N, lam, e0=-0.03, zd0=0.0, ticks=12):
         H, f = condensed(N, e, zd, lam)
         free = np.linalg.solve(H, -f)          # the unconstrained stationary point
         u = solve_box(H, f, u_lo, u_hi)        # the QP solution
-        if free[0] < u_lo: rows.add("fz = 0")
-        if free[0] > u_hi: rows.add("200 N/foot")
+        if free[0] < u_lo: rows.add("$f_z=0$")
+        if free[0] > u_hi: rows.add("$200$ N/foot")
         if u0 is None: u0 = u[0]
         peak = max(peak, (m * g + u[0]) / n_st)
         e, zd = e + dt * zd + alpha * u[0], zd + dt / m * u[0]
@@ -384,12 +440,14 @@ def run(N, lam, e0=-0.03, zd0=0.0, ticks=12):
                    if all(abs(x) <= 0.005 for x in hist[i:])), None)
     return u0, peak, 1000 * max(0.0, max(hist)), settle, ", ".join(sorted(rows)) or "none"
 
-for N in (1, 2, 4, 8):
+for N in (1, 2, 4, 8):                         # one printed line per row of the table below
     for lam in (0.1, 1.0, 10.0, 100.0):
-        print(N, N * dt, lam, run(N, lam))
+        u0, peak, over, settle, rows = run(N, lam)
+        st = f"${settle:.2f}$" if settle else "never"
+        print(f"| {N} | ${N * dt:.2f}$ s | ${lam:g}$ | ${u0:.1f}$ | ${peak:.1f}$ | ${over:.2f}$ | {st} | {rows} |")
 ```
 
-**9. The sweep.** Twelve ticks of $0.06$ s from $z_0=0.27$ m. "Settle" is the first tick after which
+**The sweep.** Twelve ticks of $0.06$ s from $z_0=0.27$ m; the loop prints the rows of this table. "Settle" is the first tick after which
 $|e|$ stays under $5$ mm; "active row" names any inequality the QP had to enforce during the run.
 
 | $N$ | horizon | $\lambda$ | $u_0$ (N) | peak (N/foot) | overshoot (mm) | settle (s) | active row |
@@ -411,18 +469,22 @@ $|e|$ stays under $5$ mm; "active row" names any inequality the QP had to enforc
 | 8 | $0.48$ s | $10$ | $36.3$ | $77.0$ | $1.35$ | $0.24$ | none |
 | 8 | $0.48$ s | $100$ | $14.2$ | $65.9$ | $1.33$ | $0.36$ | none |
 
-**10. Reading the sweep.** Four things the algebra could not have told you.
+**Reading the sweep.** Four things the algebra could not have told you.
 
 - **One step is blind to the stop.** At $N=1$, $\lambda=0.1$ the controller asks for $181.8$ N, saturates
   both stance feet at the $200$ N ceiling, overshoots $36$ mm, and then has to hit the *other* bound —
   $f_z=0$, free fall — to come back. Going to $N=2$ at the same weight drops the overshoot to $3.7$ mm
   and the settling time from $0.42$ s to $0.12$ s. The second step is worth more than any weight change
   in the table, because it is the first step that can see the braking.
-- **The horizon stops paying almost immediately.** At $\lambda=1$ the first command is $76.9$ N at
-  $N=2$, $76.5$ N at $N=4$ and $76.4$ N at $N=8$. Predicting eight times as far changes the applied
-  force by $0.7\%$, because the plant's own response (*plant*: the system being controlled, here Q's body) is over inside about $0.1$ s and there is nothing
-  further out for the cost to see. That is the honest reason legged MPC horizons are short, and it is a
-  much better reason than "it has to fit in a millisecond".
+- **At the nominal weight, the horizon stops paying almost immediately.** At $\lambda=1$ the first
+  command is $76.9$ N at $N=2$, $76.5$ N at $N=4$ and $76.4$ N at $N=8$. Predicting eight times as far
+  changes the applied force by $0.7\%$, because the closed loop at this weight settles within
+  $0.12$ s, two steps, and there is nothing further out for the cost to see; Q's heave itself,
+  $m\ddot z=u$, is a double integrator with no response of its own to wait for. At $\lambda=100$ the
+  table says the opposite: $N=2$ never settles ($17.3$ mm overshoot) while $N=4$ settles in $0.30$ s,
+  because heavily weighted forces make the loop slow, and a slow loop needs a horizon long enough to
+  see its own braking. The horizon has to span the closed loop's settling time — which is a better
+  reason for a short legged-MPC horizon, where it holds, than "it has to fit in a millisecond".
 - **$\lambda$ is a peak-force-versus-time dial, and it is not monotone in quality.** At $N=8$, raising
   $\lambda$ from $0.1$ to $100$ takes the peak from $115$ to $66$ N per foot and the settling time from
   $0.12$ s to $0.36$ s. At $N=1$ the same sweep is not even ordered: $\lambda=10$ never settles while
@@ -434,20 +496,21 @@ $|e|$ stays under $5$ mm; "active row" names any inequality the QP had to enforc
   derives from friction alone. The pyramid is the interesting half of this QP; it just is not the half
   you can solve on paper.
 
-**Why read it here**: it is the cleanest case study of the modeling craft this wiki's
-optimization page teaches — *choose the approximation that makes the problem convex, and
-buy back accuracy with re-solving speed*. Also the classical baseline that learned
-locomotion policies (RL) are compared against.
+### After reading
 
-**Suggested path**: [[02-foundations/optimization|optimization page]] → Di Carlo et al. (IROS 2018; open copy on MIT DSpace)
-§III–IV (simplified dynamics + QP), skimming §V for results → Kim et al. (arXiv 1909.06586) §III–IV for the MPC + whole-body impulse control stack.
+- [ ] Solve Q's $N=2$ condensed QP by hand, name which rows came out slack, and say why the swing feet's rows bind nothing
+- [ ] Say where a longer horizon stops paying on the sweep, and what $\lambda$ trades for what
+- [ ] Say what the single-rigid-body approximation throws away and what it buys (convexity)
+- [ ] Describe the setup in which ground reaction forces are the decision variables and friction cones the constraints
+- [ ] Explain the division of labor in the two-level stack: slow MPC above, fast whole-body control beneath
+- [ ] State the modeling craft this case teaches: choose the approximation that makes the problem convex
 
 ### Self-check
 
 1. Which modelling move makes the friction constraint linear, and what does it give up?
 2. Why can the state matrix be shared across the horizon while the input matrix changes every step?
 3. In the condensed QP above ($N = 10$, 12 inputs), what happens to the number of decision variables if the horizon doubles?
-4. On Q's heave slice every friction-pyramid row came out slack. What command would make one of them the active row instead, and what caps the answer?
+4. On Q's heave slice no friction-pyramid row bound. What command would make one of them the active row instead, and what caps the answer?
 
 > [!tip]- Answers
 > 1. Move 4, the friction pyramid: replacing the circular cone by linear facets gives linear inequalities (keeping the QP convex), at the cost of only approximating the true cone: near its edge the facets and the circle disagree about which forces are feasible.
@@ -458,7 +521,7 @@ locomotion policies (RL) are compared against.
 ### Problem set · 과제
 
 Tier A. Using **Q** and this page; the Running object restates everything the set needs from
-[[04-robotics/legged-locomotion|18. Legged Locomotion]]. Running task: a quadruped carries **P2**
+[[04-robotics/legged-locomotion|18. Legged Locomotion]]. Running task: a quadruped carries **P2**, the catalog's planar two-link arm,
 toward a panel ([[02-foundations/lab-plants|0.6]]) — but problems 1–3 stay on Q's body alone, and
 the paragraph below says what mounting P2 would change.
 
@@ -519,41 +582,36 @@ for N in (1, 2, 4, 8):
 > - **Middle, the schedule**: under the same time axis, the trot gait chart — the contact schedule of the Running object, one lane per foot with its stance filled in — and the $0.12$ s the horizon covers shaded across all four lanes. The point of the drawing is that the shaded window sits inside one stance phase.
 > - **Right, the constraint block**: the decision vector as a grid, $4$ feet $\times\ 3$ force components $\times\ 2$ steps $=24$ cells, with the $12$ cells of the two swing feet crossed out — those are the equalities $f_i=0$.
 > - **On one surviving stance foot**, the four pyramid faces $\pm f_x\le\mu f_z$, $\pm f_y\le\mu f_z$ as four lines and the unilateral bound $f_z\ge0$ as a fifth.
-> - **Count**: the cells left are the $12$ free forces, and the rows are five per foot per step for all four feet, $4\times2\times5=40$ ($32$ pyramid faces and $8$ unilateral bounds), because the swing feet keep their rows, which $f_i=0$ leaves nothing to constrain. That count is the QP.
+> - **Count**: the cells left are the $12$ free forces, and the rows are five per foot per step for all four feet, $4\times2\times5=40$ ($32$ pyramid faces and $8$ unilateral bounds), because the swing feet keep their rows; with $f_i=0$ they hold as $0\le0$ and constrain nothing. That count is the QP.
 
 > [!tip]- Solutions
 > 1. You should expect the unilateral row $f_z\ge0$. Being high means the cost wants a *downward* correction, the only downward force available is gravity, and the feet can only push — so the request will run into $f_z^{\mathrm{tot}}\ge0$ rather than into the $200$ N ceiling. Predicting the active row before solving is the skill; the $200$ N ceiling is the row that binds when you start low and weight force cheaply, which is the lecture's $N=1$, $\lambda=0.1$ line.
 > 2. (a) $e_0/\alpha=0.05/1.5\times10^{-4}=333.3$ N. (b) $11u_0+3u_1=-1333.3$, $3u_0+2u_1=-333.3$, determinant $13$, so $u_0=-1666.7/13=-128.21$ N and $u_1=333.3/13=25.64$ N, giving $f_z^{\mathrm{tot}}=117.72-128.21=-10.49$ N. (c) Not feasible: that is a *pulling* foot. The unilateral row binds, $u_0$ clamps to $-mg=-117.72$ N, $f_z^{\mathrm{tot}}=0$ and each stance foot carries $0$ N — the QP's answer is to unload the legs and fall for one tick. (d) Only the diagonal changes, to $20u_0+3u_1=-1333.3$, $3u_0+11u_1=-333.3$, determinant $211$, giving $u_0=-13666.7/211=-64.77$ N and $u_1=-2666.7/211=-12.64$ N. Now $f_z^{\mathrm{tot}}=117.72-64.77=52.95$ N, i.e. $26.47$ N per foot, and nothing binds. The *weight*, not the geometry, decided whether the constraint was active.
-> 3. Blanks: `u_lo, u_hi = -m*g, n_st*fz_max - m*g`; `feas = (u_lo <= free[0] <= u_hi)`; `low = min(low, (m*g + u[0]) / n_st)`; `e, zd = e + dt*zd + alpha*u[0], zd + dt/m*u[0]`. The table: at $\lambda=1$, every $N$ is infeasible on tick 1, applies $u_0=-117.72$ N, unloads the feet to $0$ N and settles in $0.42$ s at $N=1$ and $0.18$ s at $N=2,4,8$. At $\lambda=10$, every $N$ is feasible, with $u_0=-30.3,\,-64.8,\,-58.9,\,-60.5$ N and a lowest per-foot force of $43.7,\,26.5,\,29.4,\,28.6$ N; $N=1$ never settles and the rest take $0.42$, $0.24$, $0.24$ s. **The horizon does not move the row at all** — the weight does, and the answer is the physical reason why. Coming *down* is capped by free fall: with the feet fully unloaded the body loses only $\tfrac12 g\Delta t^2=17.7$ mm in one tick, so any plan that wants $50$ mm gone quickly asks for a pulling foot no matter how far ahead it looks. Lengthening the horizon changes how the descent is distributed, not how fast gravity works, and at $N=2$ it actually asks for *more* than at $N=1$ ($-64.8$ against $-30.3$ N) because it can now plan the catch. Raising $\lambda$ works because it makes the controller want less, which is a different mechanism from making the plant able to do more — and a paper that reports tuning one knob without the other has told you half of its controller.
+> 3. Blanks: `u_lo, u_hi = -m*g, n_st*fz_max - m*g`; `feas = (u_lo <= free[0] <= u_hi)`; `low = min(low, (m*g + u[0]) / n_st)`; `e, zd = e + dt*zd + alpha*u[0], zd + dt/m*u[0]`. The table: at $\lambda=1$, every $N$ is infeasible on tick 1, applies $u_0=-117.72$ N, unloads the feet to $0$ N and settles in $0.42$ s at $N=1$ and $0.18$ s at $N=2,4,8$. At $\lambda=10$, every $N$ is feasible, with $u_0=-30.3,\,-64.8,\,-58.9,\,-60.5$ N and a lowest per-foot force of $43.7,\,26.5,\,29.4,\,28.6$ N; $N=1$ never settles and the rest take $0.42$, $0.24$, $0.24$ s. **The horizon does not move the row at all** — the weight does, and the answer is the physical reason why. Coming *down* is capped by free fall: with the feet fully unloaded the body loses only $\tfrac12 g\Delta t^2=17.7$ mm in one tick, so any plan that wants $50$ mm gone quickly asks for a pulling foot no matter how far ahead it looks. Lengthening the horizon changes how the descent is distributed, not how fast gravity works, and at $N=2$ it actually asks for *more* than at $N=1$ ($-64.8$ against $-30.3$ N) because it can now plan the catch. Raising $\lambda$ works because it makes the controller want less, which is a different mechanism from making the robot able to do more — and a paper that reports tuning one knob without the other has told you half of its controller.
 
 > [!tip]- Claim-reading, kept from the earlier version of this set
 > - **Claim.** The timing claim for the condensed QP is the sub-millisecond solve, re-run at tens of Hz (abstract 20–30 Hz, experiments 25–50 Hz) — those times *are* the claim.
 > - **Falsify.** Pitch $30^\circ$: the neglected factors are $\tan 30^\circ=0.577$ and $1/\cos 30^\circ=1.155$, which this page already calls no longer small. A rear-up or a fall would do it.
 > - **Task.** P2 on that body, pressing the panel: no arm, no tool wrench, no P3 wall. Ground-reaction forces on four feet are the decisions; contact at the panel is outside the QP.
 
-### Connections
+### Sources
 
-- Foundations: [[02-foundations/optimization|Optimization]] · Previous: [[04-robotics/mpc|MPC]]
-- Echoed in: [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T N1]] (the two-system split)
-
-### After reading
-
-- [ ] Solve Q's $N=2$ condensed QP by hand and name which rows came out slack
-- [ ] Say where a longer horizon stops paying on the sweep, and what $\lambda$ trades for what
-- [ ] Say what the single-rigid-body approximation throws away and what it buys (convexity)
-- [ ] Describe the setup in which ground reaction forces are the decision variables and friction cones the constraints
-- [ ] Explain the division of labor in the slow-MPC + fast-WBC two-level stack
-- [ ] State the modeling craft this case teaches: choose the approximation that makes the problem convex
+- Di Carlo et al., *Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control*, IROS 2018 · [IEEE](https://ieeexplore.ieee.org/document/8594448), with an open copy on MIT DSpace — the paper this page reads: §III–IV for the simplified dynamics and the QP of §1–§2, skimming §V for the results.
+- Kim et al., *Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and MPC*, 2019 · [arXiv 1909.06586](https://arxiv.org/abs/1909.06586), open access — §III–IV for the stack of §4, the MPC above whole-body impulse control.
+- Read both after [[02-foundations/optimization|4. Optimization §5]] and [[04-robotics/mpc|7. MPC]].
 
 ## 한국어
 
-*D군의 마지막이자 그 응용 사례다. [[04-robotics/mpc|7. MPC]]와 [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]] 위에 선다. 학습 순서상 뒤에 오는 페이지에서 빌려 오는 두 조각 — 선택 가지 페이지의 보행 어휘와 다음 페이지의 마찰 원뿔 — 은 이 페이지의 장치 절에 다시 적어 두었다.
+*D군의 마지막이자 그 응용 사례다. [[04-robotics/mpc|7. MPC]]와 [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]] 위에 선다. 학습 순서상 뒤에 오는 페이지에서 빌려 오는 두 조각 — 선택 가지 페이지의 보행 어휘와 다음 페이지의 마찰 원뿔 — 은 이 페이지의 대상 절에 다시 적어 두었다.
 최적화 페이지가 가르치는 기술 — 문제를 볼록하게 만드는 근사를 고르는 것 — 의 가장 깔끔한 사례 연구다.*
 
-> [!note] 처음이라면 · First pass
-> 첫 읽기: 이 페이지의 장치 — Q, 그리고 거기 다시 적어 둔 보행·마찰 어휘 — 다음 그림, 다섯 가지 모델링 선택, 논문 QP의 크기를 재는 상자. 장치로 한 번 끝까지는 두 번째 자리에서 한다: 1–7단계를 손으로, 이어서 8–10단계(루프와 스윕)를 과제와 함께. 먼저가 아니라 함께 읽을 것: Q가 고정되고 보행 양식들이 비교되는 선택 가지 페이지 [[04-robotics/legged-locomotion|18. 레그드 로코모션]], 그리고 학습 순서상 다음 페이지로 마찰 원뿔을 완전히 다루는 [[04-robotics/contact-force-tactile|9. 접촉 §2]]. 이 페이지가 둘에서 쓰는 것은 모두 아래에 다시 적어 두었다.
+> [!note] 왜 배우는가 · Why this matters
+> 이 페이지는 [[physical-ai-map|피지컬 AI 지도]]에서 [[07-research-program/index|7. 연구 프로그램 §5]]의 로봇 스택 옆 제어 열에 놓인, 공통 트랙의 대표 응용 하나다. 그 사족 로봇은 학위논문의 플랫폼이 아니므로, "*저 패널을 프레임에 설치해*"에서 *부재를 옮기는* 단계를 받치는 것은 몸체 자체가 걸어갈 때뿐이다. 패널 과제가 가져가는 것은 그 핵심 패턴이다. 접촉력을 결정 변수로 두고 선형화한 마찰 원뿔 안에 가둔 뒤, 매 틱 다시 풀 수 있을 만큼 빠른 볼록 QP로 푼다. 이 패턴에는 계산할 수 있는 값이 있고, 그것을 놓치면 제어기가 발이나 그리퍼에게 미끄러지라고 요구하게 된다. $\mu=0.6$에서 면 네 개짜리 피라미드는 원뿔이 $60$ N까지 허용하는 곳에서 모서리 힘 $84.9$ N을 받아들이고, 이 페이지의 $12$ kg 사족 로봇 Q의 상하 절단면에서 $\lambda=0.1$의 한 스텝 지평은 제동을 보지 못해 $36$ mm를 지나치는데 $N=2$는 $3.7$ mm만 지나친다(§5). 다음 페이지인 [[04-robotics/contact-force-tactile|9. 접촉 §2]]가 원뿔을 완전히 다루고, 같은 힘 QP가 팔 자신의 접촉을 위해 [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어 §4]]의 전신 QP와 [[04-robotics/grasping|15. 파지 §2]]의 내접 선형화 $\mu\cos(\pi/m)$로 돌아온다(블록 3). 학위논문 경로([[07-research-program/index|7 §8]])에서 이 페이지는 블록 2, 로보틱스 79–81회차의 Literacy 페이지이고, 첫 회차가 학위논문에 필요한 부분이다. 이 페이지를 마치면 MPC QP의 크기를 재고, 모델링 선택마다 뒤에 있는 근사와 그 대가를 말하고, 풀기 전에 어느 제약이 걸릴지 예측할 수 있다.
 
-### 이 페이지의 장치 · Running object
+> [!note] 처음이라면 · First pass
+> 60–90분 회차 셋쯤, 로보틱스 79–81회차다. **1회차(79):** 이 페이지의 대상 — Q, 그리고 거기 다시 적어 둔 보행·마찰 어휘 — 과 그림, 이어서 §1(다섯 가지 모델링 선택과, 그중 앞의 둘 뒤에 있는 동역학)과 §2(힘, 마찰 피라미드, QP, 그리고 그 크기를 재는 상자). $N=10$의 크기, 곧 변수 $120$개와 피라미드 행 $160$개를 세고 선택마다 뒤에 있는 근사를 대며 마친다. **2회차(80):** §3과 §4, 이어서 '대상으로 한 번 끝까지'의 1–7단계를 손으로. QP가 늘 실행 가능하면서도 안정성은 증명하지 않는 이유(디딤발마다 $58.86$ N, §3)를 말한 뒤, 페이지를 가린 채 $\lambda=1$의 $2\times2$ 정규방정식을 풀고($u_0=76.92$ N, $u_1=-15.38$ N) 걸리는 행이 왜 없는지 말하며 마친다. **3회차(81):** §5의 루프와 스윕, 이어서 스스로 점검과 과제. 학위논문에 필요한 것은 79회차이고 Literacy 통과는 거기서 멈추되, 할 수 있으면 80회차 첫머리의 §3–§4(약 430단어)를 더한다. '대상으로 한 번 끝까지'와 81회차는 힘 QP가 실험에 들어올 때까지 미뤄도 된다. 먼저가 아니라 함께 읽을 것: Q가 고정되고 보행 양식들이 비교되는 선택 가지 페이지 [[04-robotics/legged-locomotion|18. 레그드 로코모션]], 그리고 학습 순서상 다음 페이지로 마찰 원뿔을 완전히 다루는 [[04-robotics/contact-force-tactile|9. 접촉 §2]]. 이 페이지가 둘에서 쓰는 것은 모두 아래에 다시 적어 두었다.
+
+### 이 페이지의 대상 · Running object
 
 몸통은 [[04-robotics/legged-locomotion|18. 레그드 로코모션]]의 고정 사족 **Q**다 — 선수 지식이 아니라
 선택 페이지이고, 여기서 쓰는 숫자와 용어는 모두 이 페이지에 다시 적어 두었다. $m=12$ kg,
@@ -578,17 +636,17 @@ $z^{\mathrm{ref}}=0.30$ m보다 $3$ cm 내려앉아 있고 다시 밀어 올려�
 > 여기서 $T_{\mathrm{st}}$는 그 발의 디딤 시간이므로 $0<\beta\le1$이다. **trot**(속보)은 대각선 발끼리 함께 움직이는 보행 양식이다 — 왼앞발과 오른뒷발(LF–RH), 오른앞발과 왼뒷발(RF–LH) — 각 쌍이 주기의 절반 동안 디딤에 있으므로 $\beta=0.50$이고, 어느 순간에나 정확히 두 발이 땅에 있다. 어느 발이 언제 땅에 있는지를 표로 쓴 것이 QP가 건네받는 **접촉 스케줄**(contact schedule)이다.
 >
 > - **예**: Q의 trot. 디딤 하나는 $T_{\mathrm{st}}=\beta T=0.50\times0.40=0.20$ s 동안이다. $0\le t<0.20$ s에는 LF와 RH가, $0.20\le t<0.40$ s에는 RF와 LH가 땅에 있다 — 아래 그림의 차트가 이것이다.
-> - **반례**: $\beta$는 땅에 있는 발의 수가 아니다. 그 수는 평균 $4\beta$로 trot에서는 둘이고, $\beta<0.25$인 보행 양식에는 땅에 닿은 발이 하나도 없는 순간이 반드시 생긴다.
+> - **비예**: $\beta$는 땅에 있는 발의 수가 아니다. 그 수는 평균 $4\beta$로 trot에서는 둘이고, $\beta<0.25$인 보행 양식에는 땅에 닿은 발이 하나도 없는 순간이 반드시 생긴다.
 > - **여기서 중요한 이유**: 스케줄이 어떤 힘 변수가 존재하는지를 정한다. 유각 중인 발은 밀 수 없으므로 그 힘은 $f_i=0$으로 고정되고(아래 선택 3), QP는 디딤발의 힘만 고른다.
 
-> **마찰 원뿔, 여기서 정의한다.** 마찰 계수 $\mu$인 Coulomb 모델에서, 수직력 $f_z$와 수평력 $(f_x,f_y)$로 땅을 누르는 발은 두 조건이 성립하는 한 미끄러지지 않는다. 당기지 않고 밀어야 하고($f_z\ge0$, **단방향** 조건), 수평 성분이 수직의 $\mu$배를 넘지 않아야 한다.
+> **마찰 원뿔, 여기서 정의한다.** 마찰 계수 $\mu$인 Coulomb 모델에서, 수직력 $f_z$와 수평력 $(f_x,f_y)$ — 평평한 땅에서는 [[04-robotics/contact-force-tactile|9. 접촉 §2]]와 [[04-robotics/grasping|15. 파지 §2]]가 쓰는 법선력 $f_n=f_z$와 접선력 $f_t=(f_x,f_y)$ — 로 땅을 누르는 발은 두 조건이 성립하는 한 미끄러지지 않는다. 당기지 않고 밀어야 하고($f_z\ge0$, **단방향** 조건), 수평 성분이 수직의 $\mu$배를 넘지 않아야 한다.
 >
 > $$\sqrt{f_x^2+f_y^2}\le\mu f_z$$
 >
 > 두 조건을 만족하는 힘들은 수직축을 중심으로 반각 $\arctan\mu$인 원형 원뿔을 이루고, Q의 $\mu=0.6$에서 그 반각은 $31.0^\circ$다. 다음 페이지인 [[04-robotics/contact-force-tactile|9. 접촉 §2]]가 미끄러지는 접촉에 대해 Coulomb 법칙이 말하는 것까지 포함해 원뿔을 완전히 다룬다.
 >
 > - **예**: $f_z=100$ N이면 발은 어느 방향으로든 수평력을 $0.6\times100=60$ N까지 받을 수 있다.
-> - **반례**: $(f_x,f_z)=(70,100)$ N은 $70>60$이라 원뿔 밖에 있고 미끄러진다.
+> - **비예**: $(f_x,f_z)=(70,100)$ N은 $70>60$이라 원뿔 밖에 있고 미끄러진다.
 > - **여기서 중요한 이유**: 제약 집합 안의 물리는 이 원뿔뿐이고, 아래 선택 4가 그것을 선형으로 만든다.
 
 $0.12$ s 지평은 trot의 $0.20$ s 디딤보다 짧다. 그래서 **접촉 스케줄이 지평 내내 고정**이다 —
@@ -720,14 +778,18 @@ $0.12$ s 지평은 trot의 $0.20$ s 디딤보다 짧다. 그래서 **접촉 스�
     <circle cx="402" cy="212" r="2.6" fill="currentColor"/>
     <text x="422" y="216" font-size="11" xml:space="preserve">−f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> ≤ 0</tspan></text>
     <text x="12" y="378" font-size="11" xml:space="preserve">개수: 24칸 − 지운 12칸(유각, f<tspan dy="3.1" font-size="11">i</tspan><tspan dy="-3.1"> = 0) = 자유 힘 12개.  행은 4 × 2 × 5 = 40개,</tspan></text>
-    <text x="12" y="393" font-size="11">곧 피라미드 32 + 단방향 8 (200 N/발 한계를 걸면 + 8).  풀이에서는 모두 여유다:</text>
-    <text x="12" y="408" font-size="11" xml:space="preserve">디딤발마다 f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 97.32 N, |f</tspan><tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1">| = |f</tspan><tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1">| = 0 ≤ μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 58.39 N.  적용되는 것은 동그라미 친 u</tspan><tspan dy="3.1" font-size="11">0</tspan><tspan dy="-3.1">뿐.</tspan></text>
+    <text x="12" y="393" font-size="11">곧 피라미드 32 + 단방향 8 (200 N/발 한계를 걸면 + 8).  풀이에서 걸리는 행은 없다:</text>
+    <text x="12" y="408" font-size="11" xml:space="preserve">디딤발: f<tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 97.32 N, |f</tspan><tspan dy="3.1" font-size="11">x</tspan><tspan dy="-3.1">| = |f</tspan><tspan dy="3.1" font-size="11">y</tspan><tspan dy="-3.1">| = 0 &lt; μf</tspan><tspan dy="3.1" font-size="11">z</tspan><tspan dy="-3.1"> = 58.39 N, 여유.  유각 행은 0 ≤ 0일 뿐이다.</tspan></text>
   </g>
 </svg>
 
-계산 절에서 푼 Q의 두 스텝 상하 운동 계획이다. 측정한 $e_0=-30$ mm에서 결정 $u_0=76.92$ N(동그라미, 실제로 적용되는 유일한 결정)과 $u_1=-15.38$ N이 예측 간격을 파선 기준 $0.30$ m 둘레에서 $-18.5$ mm로, 이어서 $+2.3$ mm로 옮긴다. 그 아래 같은 시간 축에서 $0.12$ s 지평은 디딤이 교대하는 $0.20$ s 전, LF–RH 디딤 하나 안에 들어가고, 오른쪽의 $24$칸 결정 격자는 유각 $12$칸을 $f_i=0$으로 잃어 자유 힘 $12$개와 행 $4\times2\times5=40$개가 남는데, 해에서는 디딤발마다 $97.32$ N이라 모든 행이 여유다.
+'대상으로 한 번 끝까지'에서 푼 Q의 두 스텝 상하 운동 계획이다. 측정한 $e_0=-30$ mm에서 결정 $u_0=76.92$ N(동그라미, 실제로 적용되는 유일한 결정)과 $u_1=-15.38$ N이 예측 간격을 파선 기준 $0.30$ m 둘레에서 $-18.5$ mm로, 이어서 $+2.3$ mm로 옮긴다. 그 아래 같은 시간 축에서 $0.12$ s 지평은 디딤이 교대하는 $0.20$ s 전, LF–RH 디딤 하나 안에 들어가고, 오른쪽의 $24$칸 결정 격자는 유각 $12$칸을 $f_i=0$으로 잃어 자유 힘 $12$개와 행 $4\times2\times5=40$개가 남는데, 해에서 걸리는 행은 하나도 없다. 디딤발의 행은 발마다 $97.32$ N이라 여유이고, 유각 발의 행은 $0\le0$으로 성립할 뿐이다.
 
-### 다섯 가지 모델링 선택
+### 1. 다섯 가지 모델링 선택
+
+*한 문장으로:* 사족 로봇의 전체 동역학은 비선형이고 — 회전, 그리고 자세에 따라 관성이 바뀌는 다리 — 발이 닿았다 떨어지므로 하이브리드여서 그 위의 최적화기는 느리고 국소 최적에 멈출 수 있는데, 의도된 근사 다섯 가지가 그것을 초당 수십 번 다시 풀 만큼 작은 볼록 QP로 바꾼다.
+
+이 논문은 [[02-foundations/optimization|4. 최적화]]가 가르치는 기술 — *문제를 볼록하게 만드는 근사를 고르고, 정확도는 재풀이 속도로 되산다* — 의 가장 깔끔한 사례 연구이고, 학습 기반 보행 정책(RL)이 비교당하는 고전 베이스라인이기도 하다.
 
 **무엇인가**: 보행 로봇에서 실시간 MPC를 표준으로 만든 논문. 비결은 *의도된 단순화*이고,
 다섯 가지 모델링 선택으로 이루어진다:
@@ -739,33 +801,70 @@ $0.12$ s 지평은 trot의 $0.20$ s 디딤보다 짧다. 그래서 **접촉 스�
    쓴다. 단 하나의 예외는 첫 단계로, 그 단계는 대신 현재 로봇 상태를 쓴다.
 3. **힘을 결정 변수로**: 지면 반력을 결정 변수로 삼는다.
 4. **마찰 피라미드**: 원형 마찰 원뿔을 선형 면들로 이루어진 마찰 피라미드로 근사한다.
-5. **condensed QP, 빠른 풀이**: 이 선형 부등식 덕분에 문제는 **볼록 QP**로 남고,
-   [[04-robotics/mpc|7. MPC §2]]의 condensed 형태로 푼다. 보고된 구현에서 1밀리초 안에 풀리고
-   수십 Hz로 다시 돈다(Di Carlo 등의 초록은 20~30 Hz지만 실험은 보행 방식에 따라 25~50 Hz로
-   돌았다. 그러니 [[04-robotics/mpc|7. MPC §2]]가 잡는 50 Hz는 논문 자신의 범위 상단이지
-   불일치가 아니다). 정확히 [[02-foundations/optimization|4. 최적화 §5]]의 기계장치다.
+5. **condensed QP, 빠른 풀이**: 이 선형 부등식 덕분에 문제는 **볼록 QP**로 남고 — 정확히
+   [[02-foundations/optimization|4. 최적화 §5]]의 기계장치다 — [[04-robotics/mpc|7. MPC §2]]의
+   condensed 형태로 적는다. 보고된 구현에서 1밀리초 안에 풀렸고 수십 Hz로 다시 돌았다. 논문의
+   두 주기 수치가 어떻게 맞아떨어지는지는 더 깊이 노트에 있다.
 
-**다섯 선택 뒤의 모델을 풀어 쓰면.**
+> [!note]- 더 깊이 · Deeper
+> **논문의 두 주기.** Di Carlo 등의 초록은 20~30 Hz라 하지만 실험은 보행 방식에 따라 25~50 Hz로 돌았다. 그러니 [[04-robotics/mpc|7. MPC §2]]가 잡는 50 Hz는 논문 자신의 범위 상단이지 불일치가 아니다.
+
+**선택 1과 2 뒤의 동역학을 풀어 쓰면.**
 
 - **단일 강체 동역학**(선택 1). 다리를 질량 없는 것으로 보면 몸통에 작용하는 힘은 중력과 네 지면 반력뿐이므로 뉴턴·오일러 방정식이 다음을 준다.
 $$m\,\ddot p=\sum_{i=1}^{4}f_i-m\,g,\qquad \frac{d}{dt}\big(I\,\omega\big)=\sum_{i=1}^{4}r_i\times f_i$$
-  $m$은 전체 질량, $p$는 무게중심 위치, $g=(0,0,9.81)$ m/s², $f_i\in\mathbb{R}^3$는 발 $i$의 지면 반력, $r_i$는 무게중심에 대한 발 위치, $I$는 월드 축의 몸통 관성, $\omega$는 각속도다. 예: 네 발로 하중을 똑같이 나눠 가만히 선 12 kg 로봇은 발마다 $f_{i,z}=12\times9.81/4=29.43$ N이 필요하다. 반례: 빠르게 휘두르는 2 kg 다리가 나르는 운동량에는 이 식에 해당 항이 없다.
+  $m$은 전체 질량, $p$는 무게중심 위치, $g=(0,0,9.81)$ m/s², $f_i\in\mathbb{R}^3$는 발 $i$의 지면 반력, $r_i$는 무게중심에 대한 발 위치, $I$는 월드 축의 몸통 관성, $\omega$는 각속도다. 예: 네 발로 하중을 똑같이 나눠 가만히 선 12 kg 로봇은 발마다 $f_{i,z}=12\times9.81/4=29.43$ N이 필요하다. 비예: 빠르게 휘두르는 2 kg 다리가 나르는 운동량에는 이 식에 해당 항이 없다.
 - **작은 롤·피치**(선택 2). 롤·피치·요를 $\Theta=(\phi,\theta,\psi)$로 쓴다. $\omega$에서 $\dot\Theta$로 가는 정확한 사상에는 $\tan\theta$와 $1/\cos\theta$ 인자가 들어 있다. $\phi\approx\theta\approx0$이면 요만 남고, 월드 프레임 관성도 몸통 프레임 관성 $I_B$를 요만큼 돌린 것만 남는다.
 $$\dot\Theta\approx R_z(\psi)^\top\omega,\qquad I\approx R_z(\psi)\,I_B\,R_z(\psi)^\top$$
   자이로 항 $\omega\times I\omega$도 작다고 보고 버린다. 피치 $5°$에서 버린 인자는 $\tan5°=0.087$, $1/\cos5°=1.004$이고, $30°$에서는 $0.577$과 $1.155$라 근사가 더는 작지 않다. 13차원 상태 $x=(\Theta,p,\omega,\dot p,g)$(모델에 오프셋 항이 없도록 중력을 상수 상태로 덧붙임)로 이산화하면 $x_{k+1}=A\,x_k+B_k\,u_k$가 되고, $A$는 평균 요로 하나, $B_k$는 단계마다 하나다.
-- **힘을 결정 변수로**(선택 3). 단계 $k$의 입력은 $u_k=(f_1,\dots,f_4)\in\mathbb{R}^{12}$다. 보행 양식의 **접촉 스케줄**(이 페이지의 장치 절에서 정의)이 단계마다 어느 발이 땅에 있는지 정하고, 유각 중인 발은 땅을 밀 수 없으므로 등식 제약 $f_i=0$을 받는다.
-- **마찰 피라미드**(선택 4). 이 페이지의 장치 절에 적은 원형 원뿔 $\sqrt{f_x^2+f_y^2}\le\mu f_z$는 선형이 아니다. 접선 축을 따로따로 묶으면 선형이 되고, 절댓값 하나가 선형 부등식 둘이므로 아래에서 세는 면 네 개가 나온다.
+
+### 2. 힘, 마찰, 그리고 QP
+
+선택 1과 2는 네 발의 힘이 몸통을 어떻게 움직이는지에 대한 선형 모델을 남긴다. 아직 열려 있는 것은 최적화기가 무엇을 고를 수 있는지, 그 힘 가운데 무엇을 땅이 실제로 내줄 수 있는지, 최적화기가 무엇을 최소화하는지 — 선택 3에서 5까지 — 그리고 그 결과로 생기는 문제가 얼마나 큰지다. 1밀리초 미만의 풀이를 믿을 만하게 만드는 것이 바로 그 크기다.
+
+*이 절에서 하나만 가져간다면:* 끝의 상자 — $N=10$에서 논문의 QP는 힘 변수 $120$개와 피라미드 행 $160$개 — 그리고 그 크기를 위해 선택마다 치르는 근사.
+
+- **힘을 결정 변수로**(선택 3). 단계 $k$의 입력은 $u_k=(f_1,\dots,f_4)\in\mathbb{R}^{12}$다. 보행 양식의 **접촉 스케줄**(이 페이지의 대상 절에서 정의)이 단계마다 어느 발이 땅에 있는지 정하고, 유각 중인 발은 땅을 밀 수 없으므로 등식 제약 $f_i=0$을 받는다.
+- **마찰 피라미드**(선택 4). 이 페이지의 대상 절에 적은 원형 원뿔 $\sqrt{f_x^2+f_y^2}\le\mu f_z$는 선형이 아니다. 접선 축을 따로따로 묶으면 선형이 되고, 절댓값 하나가 선형 부등식 둘이므로 아래에서 세는 면 네 개가 나온다.
 $$|f_x|\le\mu f_z,\qquad |f_y|\le\mu f_z$$
-  예: $\mu=0.6$, $f_z=100$ N. 원뿔은 접선력을 $60$ N까지 허용하지만 피라미드의 모서리 $(60,60)$ N은 크기가 $84.9$ N이라, 이 피라미드는 미끄러질 힘을 허용한다. 계수를 $\mu/\sqrt2=0.424$로 줄이면 모서리가 정확히 $60$ N이 되어 안전하지만, 실제 원뿔이 허용하는 $(60,0)$은 거부한다.
-- **QP**(선택 5). 명령한 몸통 운동에서 온 기준 상태 $x^{\text{ref}}_k$, 추종 오차 가중치 $Q\succeq0$, 힘 크기 가중치 $R\succ0$, $\lVert v\rVert_Q^2=v^\top Qv$로 제어기는 다음을 푼다.
-$$\min_{u_0,\dots,u_{N-1}}\ \sum_{k=0}^{N-1}\lVert x_{k+1}-x_{k+1}^{\text{ref}}\rVert_Q^2+\lVert u_k\rVert_R^2$$
+  예: $\mu=0.6$, $f_z=100$ N. 원뿔은 접선력을 $60$ N까지 허용하지만 피라미드의 모서리 $(60,60)$ N은 크기가 $84.9$ N이라, 이 피라미드는 미끄러질 힘을 허용한다. 계수를 $\mu/\sqrt2=0.424$로 줄이면 모서리가 정확히 $60$ N이 되어 안전하지만, 실제 원뿔이 허용하는 $(60,0)$은 거부한다. 이렇게 줄인 상자는 면이 $m=4$개인 내접 선형화이고, 그 최악 방향의 계수를 [[04-robotics/grasping|15. 파지 §2]]는 $\mu_{\text{eff}}=\mu\cos(\pi/m)$로 쓴다. [[04-robotics/contact-force-tactile|9. 접촉 §2]]는 줄이지 않은 상자를 바깥 피라미드라 부르고, 줄인 상자가 곧 생성 광선 넷짜리 안쪽 원뿔임을 보인다.
+
+<svg viewBox="0 0 560 330" style="max-width:100%;height:auto" role="img" aria-label="f_z = 100 N, mu = 0.6에서 위에서 본 마찰 원뿔: (f_x, f_y) 평면의 반지름 60 N 원, 반변 60 N의 바깥 상자와 그 모서리 (60, 60) N은 중심에서 84.9 N으로 원 밖, 반변 42.4 N의 안쪽 상자는 모서리가 원에 닿는다; 원 위의 점 (60, 0)은 안쪽 상자 밖이다.">
+  <rect x="60.0" y="75.0" width="180.0" height="180.0" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="1.3" stroke-dasharray="5 3"/>
+  <circle cx="150" cy="165" r="90.0" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.8"/>
+  <rect x="86.4" y="101.4" width="127.3" height="127.3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <g stroke="currentColor" stroke-width="1" stroke-opacity="0.6"><line x1="33.0" y1="165" x2="267.0" y2="165"/><line x1="150" y1="48.0" x2="150" y2="282.0"/></g>
+  <line x1="150" y1="165" x2="240.0" y2="75.0" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+  <circle cx="240.0" cy="75.0" r="4" fill="currentColor"/>
+  <circle cx="240.0" cy="165" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="213.6" cy="228.6" r="3.2" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="0.9" stroke-opacity="0.7" fill="none">
+    <line x1="244.0" y1="75.0" x2="296" y2="71.0"/>
+    <line x1="244.0" y1="165.0" x2="296" y2="157.0"/>
+    <line x1="217.6" y1="228.6" x2="296" y2="224.6"/>
+  </g>
+  <g fill="currentColor">
+    <text x="256.5" y="181" font-size="11" xml:space="preserve">f<tspan dy="3" font-size="10">x</tspan><tspan dy="-3">​</tspan></text>
+    <text x="155" y="51.0" font-size="11" xml:space="preserve">f<tspan dy="3" font-size="10">y</tspan><tspan dy="-3">​</tspan></text>
+    <text x="24" y="26" font-size="12" xml:space="preserve">f<tspan dy="3" font-size="10">z</tspan><tspan dy="-3">​</tspan> = 100 N, μ = 0.6에서 위에서 본 모습</text>
+    <text x="300" y="67.0" font-size="11">모서리 (60, 60):</text>
+    <text x="300" y="81.0" font-size="11" xml:space="preserve">|f<tspan dy="3" font-size="10">t</tspan><tspan dy="-3">​</tspan>| = 84.9 N > 60 N,</text>
+    <text x="300" y="95.0" font-size="11">바깥 상자는 받아들이지만 미끄러진다</text>
+    <text x="300" y="155" font-size="11">(60, 0): 원뿔 위,</text>
+    <text x="300" y="169" font-size="11">안쪽 상자는 거부한다</text>
+    <text x="300" y="222.6" font-size="11">안쪽 모서리: 60 N, 안전</text>
+    <text x="300" y="268" font-size="11" xml:space="preserve">원: 원뿔, |f<tspan dy="3" font-size="10">t</tspan><tspan dy="-3">​</tspan>| ≤ μf<tspan dy="3" font-size="10">z</tspan><tspan dy="-3">​</tspan> = 60 N</text>
+    <text x="300" y="284" font-size="11" xml:space="preserve">바깥 상자: |f<tspan dy="3" font-size="10">x</tspan><tspan dy="-3">​</tspan>|, |f<tspan dy="3" font-size="10">y</tspan><tspan dy="-3">​</tspan>| ≤ 0.6 f<tspan dy="3" font-size="10">z</tspan><tspan dy="-3">​</tspan> = 60 N (선택 4)</text>
+    <text x="300" y="300" font-size="11" xml:space="preserve">안쪽 상자: |f<tspan dy="3" font-size="10">x</tspan><tspan dy="-3">​</tspan>|, |f<tspan dy="3" font-size="10">y</tspan><tspan dy="-3">​</tspan>| ≤ 0.424 f<tspan dy="3" font-size="10">z</tspan><tspan dy="-3">​</tspan> = 42.4 N</text>
+    <text x="300" y="314" font-size="11" opacity="0.85">(μ/√2: 15 §2의 μ cos(π/m), m = 4)</text>
+  </g>
+</svg>
+
+위에서 본 선택 4, $f_z=100$ N, $\mu=0.6$에서: 실제 원뿔은 원 $|f_t|\le60$ N이다. 바깥 상자 $|f_x|,|f_y|\le60$ N은 원을 품고 그 모서리 $(60,60)$ N, 곧 미끄러질 접선력 $84.9$ N을 받아들인다. $\mu/\sqrt2$로 줄인 안쪽 상자 $\pm42.4$ N은 원 안에 있어 안전하지만, 원뿔이 허용하는 $(60,0)$을 거부한다.
+
+- **QP**(선택 5). 명령한 몸통 운동에서 온 기준 상태 $x^{\text{ref}}_k$, 추종 오차 가중치 $Q_w\succeq0$, 힘 크기 가중치 $R_w\succ0$(아래첨자는 로봇 Q와 구별하려는 것이다. 6과 7은 이것을 $Q$, $R$로 쓴다), $\lVert v\rVert_{Q_w}^2=v^\top Q_wv$로 제어기는 다음을 푼다.
+$$\min_{u_0,\dots,u_{N-1}}\ \sum_{k=0}^{N-1}\lVert x_{k+1}-x_{k+1}^{\text{ref}}\rVert_{Q_w}^2+\lVert u_k\rVert_{R_w}^2$$
   제약은 동역학, 피라미드 부등식, 유각 등식이다. 비용이 이차이고 모든 제약이 선형이므로 볼록 QP이고, 동역학을 대입해 없애면 condensed 형태가 남는다.
-
-**논문이 주장하지 않는 것: 7. MPC의 안정성 조건.** 위 QP에는 단계 가중치 외의 종단 비용 $V_f$도, 종단 집합 $\mathcal X_f$도 없다. 둘은 [[04-robotics/mpc|7. MPC]]가 다루는 Mayne 조건의 두 재료다. 그러니 최적 비용을 리아푸노프 함수로 만드는 비용 감소, 곧 조건 (b)는 주장되지 않으며, Di Carlo 등은 안정성을 증명이 아니라 실험으로 뒷받침한다. 조건 (a)는 사정이 다르고, 그 이유가 볼 만하다. 여기의 제약은 모두 힘에만 걸려 있고, 유각 발에는 힘 0, 디딤발에는 발당 한계 안의 순수한 수직력을 주면 어느 상태에서든 모든 제약이 만족된다. 그래서 QP는 실행 불가능해지는 일이 없다 — 종단 집합 없이도 recursive feasibility가 자명하게 성립한다. 이 정식화가 보장하는 것은 답이 늘 있다는 것이지 그 답이 안정화한다는 것이 아니며, 그 대신 기대는 증거가 아래 장치로 한 번 끝까지의 9단계 스윕 같은 것이다.
-
-Cheetah 3가 이걸로 질주했고, 후속(Kim et al., 공개 접근)은 MPC를 전신 임펄스
-제어([[04-robotics/force-compliance-control|13. 힘과 컴플라이언스 제어 §4]]의 영공간 과제 우선순위와 전신 QP로 짜인 것)와 결합한다 — 느린 MPC가 힘을 계획하고 빠른 WBC가 추종하는 표준 2단 스택으로,
-[[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]의 System 2/System 1 분할과 공명한다.
 
 > [!example] 계산 예제 · Worked example
 > QP는 얼마나 큰가? 상태 13차원, 발 4개 × 힘 성분 3개 = 단계당 입력 12개, 지평 $N = 10$으로 잡는다.
@@ -775,9 +874,19 @@ Cheetah 3가 이걸로 질주했고, 후속(Kim et al., 공개 접근)은 MPC를
 > - 여기서는 피라미드 면만 셌다. 구현이 더하는 힘 한계나 유각(swing) 발 제약은 그 위에 추가되며 세지 않았다.
 > - 변수 120개, 부등식 160개짜리 QP는 아주 작다. 1밀리초 미만 풀이가 가능한 이유다.
 
-### 장치로 한 번 끝까지 · Worked on Q
+### 3. 논문이 주장하지 않는 것: 7. MPC의 안정성 조건
 
-위 상자는 논문 자신의 $N=10$ QP 크기를 잰다. 이 절은 Q 위의 $N=2$ QP를 손으로 풀고, 그다음
+[[04-robotics/mpc|7. MPC §5]]의 두 조건을 만났으니 이 제어기가 그것을 채우는지 물어보자. 그 답이 논문이 증명한 것과 보여 주기만 한 것을 가른다. §2의 QP에는 단계 가중치 외의 종단 비용 $V_f$도, 종단 집합 $\mathcal X_f$도 없다. 둘은 그 Mayne 조건의 두 재료다. 그러니 최적 비용을 리아푸노프 함수로 만드는 비용 감소, 곧 조건 (b)는 주장되지 않으며, Di Carlo 등은 안정성을 증명이 아니라 실험으로 뒷받침한다. 조건 (a)는 사정이 다르고, 그 이유가 볼 만하다. 여기의 제약은 모두 힘에만 걸려 있고, 유각 발에는 힘 0, 디딤발에는 발당 한계 안의 순수한 수직력을 주면 어느 상태에서든 모든 제약이 만족된다. Q에서는 디딤발마다 무게의 절반 $117.72/2=58.86$ N을 싣고 접선력은 없는 경우로, 디딤발의 피라미드 행은 모두 $|f_x|=0\le0.6\times58.86=35.3$ N, 유각 발의 행은 $0\le0$이 된다. 그래서 QP는 실행 불가능해지는 일이 없다 — 종단 집합 없이도 재귀적 실행 가능성(recursive feasibility)이 자명하게 성립한다. 이 정식화가 보장하는 것은 답이 늘 있다는 것이지 그 답이 안정화한다는 것이 아니며, 그 대신 이 정식화가 기대는 증거는 아래 §5의 스윕 같은 것이다.
+
+### 4. 2단 스택
+
+§2의 QP는 강체 하나에 대한 힘을 초당 수십 번 계획하지만, 모터가 받는 것은 관절 토크이고 선택 1이 버린 다리에도 질량이 있다. 계획한 힘을 전체 동역학 위에서, 훨씬 빠르게 토크로 바꾸는 무언가가 있어야 한다.
+
+Cheetah 3는 MPC만으로 질주했고, 후속(Kim et al., 공개 접근)은 그 아래에 전신 임펄스 제어를 둔다. [[04-robotics/force-compliance-control|13. 힘·컴플라이언스 제어 §4]]의 영공간 과제 우선순위와 전신 QP로 짜인 것이다. 이것이 표준 2단 스택이다. 느린 층, 곧 이 MPC는 §1의 단순화한 모델 위에서 지평 동안의 접촉력을 다시 계획한다 — 논문에서는 $N=10$ 스텝, Q에서는 $0.06$ s짜리 $N=2$ 스텝. 빠른 층은 매 제어 틱마다 [[04-robotics/modern-robotics/ch08-dynamics|MR 8장]]의 전체 질량 행렬 위에서 13 §4의 QP를 푼다. 결정 변수는 가속도·토크·접촉력이고 제약은 같은 마찰 원뿔이며, 자기 힘을 MPC의 힘에 가깝게 유지한다. 층마다 자기 모델이 할 수 있는 일을 한다. 느린 층은 싸게 앞을 내다보고, 빠른 층은 현재에 대해 정확하다. 같은 분업이 패널 과제를 위한 [[04-robotics/force-compliance-control|13 §6]]의 것이다 — 학습된 정책이 $10$–$50$ Hz로 컴플라이언스를 고르고 임피던스 제어기가 $500$–$1000$ Hz로 그것을 실현한다 — 그리고 [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T]]의 System 2/System 1 분할이 이것과 공명한다.
+
+### 대상으로 한 번 끝까지 · Worked case
+
+§2의 상자는 논문 자신의 $N=10$ QP 크기를 잰다. 이 절은 Q 위의 $N=2$ QP를 손으로 풀고, §5에서
 실제로 조율하게 되는 두 가지를 루프가 바꿔 보게 한다.
 
 **1. 절단면, 그리고 그것이 정직한 이유.** Q에게 수평 운동 없이 높이만 유지하라고 명령한다. 그러면
@@ -789,7 +898,7 @@ Cheetah 3가 이걸로 질주했고, 후속(Kim et al., 공개 접근)은 MPC를
 $$z_{k+1}=z_k+\Delta t\,\dot z_k+\frac{\Delta t^2}{2m}u_k,\qquad \dot z_{k+1}=\dot z_k+\frac{\Delta t}{m}u_k$$
 
 선택 2의 $x_{k+1}=Ax_k+B_ku_k$를, 순수한 수직 명령에서 움직이는 두 행으로 제한한 것과 같다. 다른
-모델이 아니라 절단면이고, 그 절단면이 무엇을 가리는지는 아래 10번이 말한다.
+모델이 아니라 절단면이고, 그 절단면이 무엇을 가리는지는 §5가 말한다.
 
 **2. Condensing.** $e_k=z_k-z^{\mathrm{ref}}$, 그리고
 $\alpha=\Delta t^2/(2m)=0.06^2/24=1.5\times10^{-4}$ m/N로 둔다. $\dot z_0=0$에서 동역학을 앞으로
@@ -823,12 +932,15 @@ $f_z^{\mathrm{tot}}=mg+u_0=117.72+76.92=194.64$ N이고, 디딤발 둘이 각각
 **5. 제약 행들, 그리고 그중 걸리는 것.** $N=2$ trot QP 전체를 세면 이렇다. 결정 변수
 $4\times3\times2=24$개, 그중 $2\times3\times2=12$개가 유각 등식 $f_i=0$으로 죽고 $12$개가 남는다.
 마찰 피라미드 부등식 $4\times4\times2=32$개, 단방향 행 $f_{z,i}\ge0$이 $4\times2=8$개, 발당
-$200$ N 천장을 부과하면 $8$개가 더 붙는다. **활성(active)** 제약이란 최적해가 등호로 만족시키는
-부등식 행이어서 지우면 답이 움직이는 행이고, **여유(slack)** 행은 부등호로 만족되어 지워도 아무
-일이 없는 행이다. 위의 해에서는 피라미드 행이 전부 여유다. 명령이 수직뿐이라
-$|f_x|=0\le\mu f_z=0.6\times97.32=58.39$ N이고 $58.39$ N이나 남기 때문이다. 디딤발의 단방향 행도
-두 스텝 모두 여유다. $97.32$ N과 $(117.72-15.38)/2=51.17$ N이 둘 다 양수이기 때문이다. 모든 행이 여유이므로 제약 없는 정류점이 *곧* QP의 해이고, 종이 위에서
-푼 것이 허용되는 근거가 그것이다. 반례: 피라미드 행이 비활성인 것은 "마찰이 크기 때문"이 아니라
+$200$ N 천장을 부과하면 $8$개가 더 붙는다. 지우면 답이 움직이는 행이 **활성**(active) 행이고,
+부등호로 엄격히 만족되어 지워도 아무 일이 없는 행이 **여유**(slack) 행이다. 두 검사는 다르다.
+다른 제약이 같은 변수를 이미 묶고 있으면, 최적해에서 등호로 성립하면서도 걸리지 않는 행이 있을 수
+있다. 위의 해에서 디딤발의 행은 모두 여유다. 명령이 수직뿐이라 스텝 $0$에서
+$|f_x|=|f_y|=0<\mu f_z=0.6\times97.32=58.39$ N이고(스텝 $1$에서는 $30.70$ N), 단방향 행도
+$97.32$ N과 $(117.72-15.38)/2=51.17$ N이 둘 다 양수라 엄격히 성립한다. 유각 발의 피라미드 행
+$16$개와 단방향 행 $4$개는 $0\le0$으로 성립하지만 $f_i=0$과 겹치므로 지워도 아무것도 움직이지
+않는다. 걸리는 행이 없으므로 제약 없는 정류점이 *곧* QP의 해이고, 종이 위에서
+푼 것이 허용되는 근거가 그것이다. 비예: 피라미드 행이 비활성인 것은 "마찰이 크기 때문"이 아니라
 바로 이 명령이 접선력을 전혀 요구하지 않기 때문이고, 옆으로 한 걸음만 내디디면 그 행이 모든 것을
 결정하는 행이 된다.
 
@@ -839,22 +951,22 @@ $f_z^{\mathrm{tot}}=117.72-256.4=-138.7$ N을 돌려준다. 발은 당길 수 �
 것이 된다. 매끄러운 비용에 가중치를 바꿔도 갑자기 반응하지 않는 해 — 그 불연속이 부등식 행이
 존재하는 이유이고, 비용만 적어 보여 주는 설명에서는 결코 보이지 않는다.
 
-**7. Receding horizon.** 적용되는 것은 $u_0$뿐이다. **Receding-horizon 제어**는 궤적이 아니라
-피드백 정책이다. 매 틱마다 (i) 상태를 측정하고, (ii) 거기서 출발하는 유한 지평 최적 제어 문제를
-풀고, (iii) 첫 입력만 적용하고, (iv) 나머지는 버리고 반복한다. 정책은 위 풀이의 $u^\star$에 대해
-$u(x)=[\,u_0^\star(x)\,]$다. 예: Q는 $76.92$ N을 $\Delta t$ 동안 적용하고, 다시 측정하고, 실제로
-있는 자리에서 다시 푼다 — $\alpha$의 모델 오차가 누적되는 대신 다음 틱에 교정된다. 반례: 한 번
-풀고 $u_0,u_1$을 지평 끝까지 재생하는 것은 receding horizon이 *아니다*. 그것은 개루프 궤적이고,
-실제 $m$이 10% 다른 로봇에서는 되돌릴 것이 없이 흘러간다. 논문의 지평이 아니라 재풀이 주기가 이
-제어기를 작동하게 만드는 숫자인 이유다.
+**7. 후퇴 지평.** 적용되는 것은 $u_0$뿐이다. [[04-robotics/mpc|7. MPC]]가 정의하는 후퇴 지평(receding
+horizon)이 이것이고, 개루프 비예도 거기에 있다. Q에서는 이렇게 읽는다. $76.92$ N을 $\Delta t$ 동안
+적용하고, 다시 측정하고, Q가 실제로 있는 자리에서 다시 푼다 — $\alpha$의 모델 오차가 누적되는 대신
+다음 틱에 교정된다. 대신 $u_0,u_1$을 지평 끝까지 재생하면 개루프 궤적이 되고, 실제 $m$이 10% 다른
+로봇에서는 되돌릴 것이 없이 흘러간다. 논문의 지평이 아니라 재풀이 주기가 이 제어기를 작동하게
+만드는 숫자인 이유다.
 
-**8. 루프, 그리고 손잡이 둘.** 위의 모든 것은 한 설정에서의 한 틱이다. 실무자가 실제로 고르는
+### 5. 실습: 루프와 손잡이 둘
+
+**루프.** '대상으로 한 번 끝까지'의 모든 것은 한 설정에서의 한 틱이다. 실무자가 실제로 고르는
 것은 지평 $N$과 가중치 비 $\lambda$이고, 둘 사이의 맞거래는 손 계산이 보여 줄 수 없다. 그것은
 단방향 행이 켜졌다 꺼졌다 하는 여러 틱의 폐루프 안에 산다. 영어 쪽의 파이썬 루프가 그
 condensed QP를 매 틱 세우고, 활성 집합으로 상자 제약을 풀고, 첫 입력만 적용하며, 아래 표를
 찍는다.
 
-**9. 스윕.** $z_0=0.27$ m에서 $0.06$ s로 열두 틱. "정착"은 그 뒤로 $|e|$가 계속 $5$ mm 아래인
+**스윕.** $z_0=0.27$ m에서 $0.06$ s로 열두 틱. "정착"은 그 뒤로 $|e|$가 계속 $5$ mm 아래인
 첫 틱이고, "활성 행"은 그 실행 중 QP가 실제로 강제해야 했던 부등식이다.
 
 | $N$ | 지평 | $\lambda$ | $u_0$ (N) | 최대 (N/발) | 오버슈트 (mm) | 정착 (s) | 활성 행 |
@@ -876,17 +988,21 @@ condensed QP를 매 틱 세우고, 활성 집합으로 상자 제약을 풀고, 
 | 8 | $0.48$ s | $10$ | $36.3$ | $77.0$ | $1.35$ | $0.24$ | 없음 |
 | 8 | $0.48$ s | $100$ | $14.2$ | $65.9$ | $1.33$ | $0.36$ | 없음 |
 
-**10. 표 읽기.** 대수로는 알 수 없었을 것 넷.
+**표 읽기.** 대수로는 알 수 없었을 것 넷.
 
 - **한 스텝은 정지를 보지 못한다.** $N=1$, $\lambda=0.1$에서 제어기는 $181.8$ N을 요구해 디딤발
   둘을 $200$ N 천장에 포화시키고, $36$ mm 지나친 뒤, 돌아오려고 반대쪽 한계 — $f_z=0$, 곧 자유
   낙하 — 까지 친다. 같은 가중치에서 $N=2$로 가면 오버슈트가 $3.7$ mm로, 정착이 $0.42$ s에서
   $0.12$ s로 떨어진다. 표의 어떤 가중치 변경보다 두 번째 스텝이 더 값어치 있다. 제동을 볼 수 있는
   첫 스텝이 그것이기 때문이다.
-- **지평은 거의 곧바로 값을 멈춘다.** $\lambda=1$에서 첫 명령은 $N=2$에 $76.9$ N, $N=4$에
-  $76.5$ N, $N=8$에 $76.4$ N이다. 여덟 배 멀리 내다봐도 적용되는 힘은 $0.7\%$ 달라질 뿐이다.
-  플랜트(제어되는 시스템, 여기서는 Q의 몸통) 자신의 반응이 대략 $0.1$ s 안에 끝나 비용이 볼 것이 더 없기 때문이다. 보행 MPC의 지평이
-  짧은 정직한 이유가 그것이고, "1밀리초 안에 들어가야 해서"보다 훨씬 나은 이유다.
+- **기준 가중치에서는 지평을 늘리는 값어치가 거의 곧바로 사라진다.** $\lambda=1$에서 첫 명령은 $N=2$에
+  $76.9$ N, $N=4$에 $76.5$ N, $N=8$에 $76.4$ N이다. 여덟 배 멀리 내다봐도 적용되는 힘은 $0.7\%$
+  달라질 뿐이다. 이 가중치의 폐루프가 $0.12$ s, 곧 두 스텝 안에 정착해 비용이 더 볼 것이 없기
+  때문이다. Q의 상하 운동 자체, $m\ddot z=u$는 제 반응이랄 것이 없는 이중 적분기다. $\lambda=100$에서는
+  표가 반대를 말한다. $N=2$는 정착하지 못하고($17.3$ mm 오버슈트) $N=4$는 $0.30$ s에 정착한다. 힘에
+  가중치를 크게 주면 루프가 느려지고, 느린 루프에는 자기 제동을 볼 만큼 긴 지평이 필요하기
+  때문이다. 지평은 폐루프의 정착 시간을 덮어야 한다 — 그것이 성립하는 곳에서, 보행 MPC의 지평이
+  짧은 이유로는 "1밀리초 안에 들어가야 해서"보다 나은 이유다.
 - **$\lambda$는 최대 힘 대 시간의 다이얼이고, 품질에 단조롭지 않다.** $N=8$에서 $\lambda$를
   $0.1$에서 $100$으로 올리면 최대가 발당 $115$ N에서 $66$ N으로, 정착이 $0.12$ s에서 $0.36$ s로
   간다. $N=1$에서는 같은 스윕이 순서조차 맞지 않는다. $\lambda=10$은 정착하지 못하는데
@@ -897,18 +1013,21 @@ condensed QP를 매 틱 세우고, 활성 집합으로 상자 제약을 풀고, 
   [[04-robotics/legged-locomotion|18. 레그드 로코모션]]이 마찰만으로 유도하는 바로 그 수다.
   이 QP에서 흥미로운 절반은 피라미드다. 다만 종이 위에서 풀 수 있는 절반이 아닐 뿐이다.
 
-**여기서 읽는 이유**: 이 위키 최적화 페이지가 가르치는 모델링 기술 — *문제를 볼록하게
-만드는 근사를 고르고, 정확도는 재풀이 속도로 되산다* — 의 가장 깔끔한 사례 연구다.
-학습 기반 보행 정책(RL)이 비교당하는 고전 베이스라인이기도 하다.
+### 읽고 나면 말할 수 있어야 하는 것
 
-**권장 경로**: [[02-foundations/optimization|최적화 페이지]] → Di Carlo 외(IROS 2018; MIT DSpace 공개본) §III~IV(단순화 동역학 + QP), 결과는 §V를 훑기 → Kim 외(arXiv 1909.06586) §III~IV에서 MPC + 전신 임펄스 제어 스택.
+- [ ] Q의 $N=2$ condensed QP를 손으로 풀고, 어느 행이 여유로 나왔는지, 유각 발의 행은 왜 아무것도 묶지 않는지 댈 수 있다
+- [ ] 스윕에서 지평이 언제부터 값을 못 하는지, $\lambda$가 무엇과 무엇을 맞바꾸는지 말할 수 있다
+- [ ] 단일 강체 근사가 버리는 것과 사는 것(볼록성)을 말할 수 있다
+- [ ] 지면 반력 + 마찰 원뿔이 결정 변수·제약이 되는 구성을 말할 수 있다
+- [ ] 위의 느린 MPC와 아래의 빠른 전신 제어로 된 2단 스택의 분업을 말할 수 있다
+- [ ] 이 사례가 가르치는 모델링 기술(볼록하게 만드는 근사 선택)을 말할 수 있다
 
 ### 스스로 점검
 
 1. 마찰 제약을 선형으로 만드는 모델링 선택은 무엇이고, 그 대가는?
 2. 상태 행렬은 지평 전체에서 하나를 공유하는데 입력 행렬은 왜 단계마다 바뀌는가?
 3. 위 condensed QP($N = 10$, 입력 12개)에서 지평을 두 배로 늘리면 결정 변수 수는?
-4. Q의 수직 절단면에서는 마찰 피라미드 행이 전부 여유로 나왔다. 대신 그중 하나를 활성 행으로 만드는 명령은 무엇이고, 그 답의 상한은 무엇이 정하는가?
+4. Q의 수직 절단면에서는 걸리는 마찰 피라미드 행이 없었다. 대신 그중 하나를 활성 행으로 만드는 명령은 무엇이고, 그 답의 상한은 무엇이 정하는가?
 
 > [!tip]- 정답
 > 1. 4번, 마찰 피라미드: 원형 원뿔을 선형 면으로 바꿔 선형 부등식을 얻고(QP가 볼록하게 남음), 대신 실제 원뿔은 근사로만 남는다: 가장자리 근처에서는 면과 원이 어떤 힘이 허용되는지 서로 다르게 판정한다.
@@ -919,15 +1038,15 @@ condensed QP를 매 틱 세우고, 활성 집합으로 상자 제약을 풀고, 
 ### 과제 · Problem set
 
 Tier A. **Q** 하나와 이 페이지를 쓴다. 이 과제가 [[04-robotics/legged-locomotion|18. 레그드 로코모션]]에서
-필요로 하는 것은 모두 이 페이지의 장치 절에 다시 적어 두었다. 관통 과제: 사족이
-[[02-foundations/lab-plants|0.6]]의 **P2** 팔을 패널로 나른다 — 다만 과제 1–3은 Q의 몸통만 다루고,
+필요로 하는 것은 모두 이 페이지의 대상 절에 다시 적어 두었다. 관통 과제: 사족이
+[[02-foundations/lab-plants|0.6]]의 **P2**, 곧 카탈로그의 평면 2링크 팔을 패널로 나른다 — 다만 과제 1–3은 Q의 몸통만 다루고,
 P2를 얹으면 무엇이 달라지는지는 바로 아래 문단이 말한다. 파이썬 목록은 영어 쪽에 한 번만 있다.
 
 **P2가 아직 빠져 있는 곳.** 이 페이지의 모든 것은 몸통뿐이다. P2를 얹으면 QP는 이름 붙일 수 있는 세
 가지로 틀린다. $m$이 $12$가 아니라 $14$ kg이고, $I_B$는 상자의 관성이라 새 무게중심에 대한 팔의
 기여가 빠져 있으며, 패널을 누르는 동안 팔이 가하는 반작용 렌치는 단일 강체 모델에 해당 항이 아예
 없는 외력이다. QP는 그것을 설명되지 않는 추종 오차로 흡수하고 발 힘으로 맞서 싸운다. "팔 없음,
-도구 렌치 없음, P3 벽 없음"의 정직한 독해가 이것이다.
+도구 렌치 없음, P3 벽 없음"의 정직한 독해가 이것이다(P3: 카탈로그의 햅틱 손잡이로, 그 400 N/m 벽이 패널을 대신한다, [[02-foundations/lab-plants|0.6]]).
 
 **바꿀 손잡이.** Q가 낮은 곳이 아니라 $5$ cm **높은** 곳에서 시작한다. $z_0=0.35$ m,
 $\dot z_0=0$이므로 $e_0=+0.05$ m다. $\Delta t$도, trot도, 한계도 그대로다.
@@ -950,31 +1069,23 @@ $\dot z_0=0$이므로 $e_0=+0.05$ m다. $\Delta t$도, trot도, 한계도 그대
 > - **왼쪽, 지평 타임라인.** $0$, $\Delta t$, $2\Delta t$에 눈금이 있는 시간 축. 첫 눈금에 측정 상태 $x_0$, 앞 두 눈금에서 떠나는 화살표로 결정 $u_0$와 $u_1$, 그것들이 도착하는 눈금에 예측 상태 $x_1$, $x_2$를 표시한다.
 > - **기준 높이 $z^{\mathrm{ref}}$는 세 눈금을 가로지르는 파선이다.** 비용이 제곱하고 있는 간격 $e_k=z_k-z^{\mathrm{ref}}$를, 상태가 놓인 쪽에 칠한다.
 > - **$u_0$에 동그라미를 친다.** 실제로 적용되는 결정은 그것 하나뿐이다.
-> - **가운데, 스케줄.** 같은 시간 축 아래에 trot 보행 차트 — 이 페이지의 장치 절에서 정의한 접촉 스케줄로, 발마다 한 줄에 디딤 구간을 채운 것 — 를 그리고, 지평이 덮는 $0.12$ s를 네 줄에 걸쳐 칠한다. 이 그림의 요점은 칠한 창이 한 디딤 구간 안에 들어간다는 것이다.
+> - **가운데, 스케줄.** 같은 시간 축 아래에 trot 보행 차트 — 이 페이지의 대상 절에서 정의한 접촉 스케줄로, 발마다 한 줄에 디딤 구간을 채운 것 — 를 그리고, 지평이 덮는 $0.12$ s를 네 줄에 걸쳐 칠한다. 이 그림의 요점은 칠한 창이 한 디딤 구간 안에 들어간다는 것이다.
 > - **오른쪽, 제약 블록.** 결정 벡터를 발 $4$개 $\times$ 힘 성분 $3$개 $\times$ 스텝 $2$개 $=24$칸의 격자로 그리고, 유각 중인 두 발의 $12$칸을 지운다. 등식 $f_i=0$이 그것이다.
 > - **남은 디딤발 하나에** 피라미드 네 면 $\pm f_x\le\mu f_z$, $\pm f_y\le\mu f_z$를 네 개의 선으로, 단방향 한계 $f_z\ge0$을 다섯 번째로 그린다.
-> - **센다.** 남은 칸이 자유 힘 $12$개이고, 행은 네 발 모두에 발마다 스텝마다 다섯 개씩 $4\times2\times5=40$개(피라미드 면 $32$개와 단방향 한계 $8$개)다. 유각 발도 자기 행을 그대로 갖고, $f_i=0$이라 그 행들이 구속할 것이 남지 않을 뿐이다. 그 수가 곧 QP다.
+> - **센다.** 남은 칸이 자유 힘 $12$개이고, 행은 네 발 모두에 발마다 스텝마다 다섯 개씩 $4\times2\times5=40$개(피라미드 면 $32$개와 단방향 한계 $8$개)다. 유각 발도 자기 행을 그대로 갖고, $f_i=0$이라 그 행들은 $0\le0$으로 성립할 뿐 아무것도 구속하지 않는다. 그 수가 곧 QP다.
 
 > [!tip]- 정답 · Solutions
 > 1. 단방향 행 $f_z\ge0$을 예상해야 한다. 높다는 것은 비용이 *아래쪽* 교정을 원한다는 뜻이고, 쓸 수 있는 아래쪽 힘은 중력뿐이며, 발은 밀 수만 있다. 그러니 요구는 $200$ N 천장이 아니라 $f_z^{\mathrm{tot}}\ge0$에 부딪힌다. 풀기 전에 활성 행을 맞히는 것이 이 문제의 기술이다. $200$ N 천장은 낮은 곳에서 시작하고 힘을 싸게 매길 때 걸리는 행이고, 그것이 강의의 $N=1$, $\lambda=0.1$ 줄이다.
 > 2. (a) $e_0/\alpha=0.05/1.5\times10^{-4}=333.3$ N. (b) $11u_0+3u_1=-1333.3$, $3u_0+2u_1=-333.3$, 행렬식 $13$이므로 $u_0=-1666.7/13=-128.21$ N, $u_1=333.3/13=25.64$ N이고 $f_z^{\mathrm{tot}}=117.72-128.21=-10.49$ N. (c) 실행 불가능하다. 발이 *당기는* 값이다. 단방향 행이 걸리고 $u_0$는 $-mg=-117.72$ N으로 물리며 $f_z^{\mathrm{tot}}=0$, 디딤발마다 $0$ N이 된다 — QP의 답은 다리에서 하중을 빼고 한 틱 떨어지라는 것이다. (d) 대각선만 바뀌어 $20u_0+3u_1=-1333.3$, $3u_0+11u_1=-333.3$, 행렬식 $211$이므로 $u_0=-13666.7/211=-64.77$ N, $u_1=-2666.7/211=-12.64$ N이다. 이제 $f_z^{\mathrm{tot}}=117.72-64.77=52.95$ N, 곧 발당 $26.47$ N이고 걸리는 행이 없다. 제약이 활성인지를 정한 것은 기하가 아니라 *가중치*다.
-> 3. 빈칸: `u_lo, u_hi = -m*g, n_st*fz_max - m*g`, `feas = (u_lo <= free[0] <= u_hi)`, `low = min(low, (m*g + u[0]) / n_st)`, `e, zd = e + dt*zd + alpha*u[0], zd + dt/m*u[0]`. 표는 이렇다. $\lambda=1$에서는 모든 $N$이 첫 틱에 실행 불가능해 $u_0=-117.72$ N을 적용하고 발 하중을 $0$ N까지 빼며, $N=1$은 $0.42$ s, $N=2,4,8$은 $0.18$ s에 정착한다. $\lambda=10$에서는 모든 $N$이 실행 가능하고 $u_0$가 각각 $-30.3,\,-64.8,\,-58.9,\,-60.5$ N, 최저 발당 힘이 $43.7,\,26.5,\,29.4,\,28.6$ N이며, $N=1$은 정착하지 못하고 나머지는 $0.42$, $0.24$, $0.24$ s가 걸린다. **지평은 그 행을 전혀 움직이지 못한다.** 움직이는 것은 가중치이고, 그 물리적 이유가 답이다. 내려오는 속도는 자유 낙하로 묶인다. 발 하중을 완전히 빼도 한 틱에 잃는 높이는 $\tfrac12 g\Delta t^2=17.7$ mm뿐이므로, $50$ mm를 빨리 없애려는 계획은 아무리 멀리 내다봐도 당기는 발을 요구한다. 지평을 늘리는 것은 하강을 어떻게 나누는지를 바꿀 뿐 중력이 일하는 속도를 바꾸지 못하고, 실제로 $N=2$는 $N=1$보다 *더* 요구한다($-64.8$ 대 $-30.3$ N). 이제 받아 내는 것까지 계획할 수 있기 때문이다. $\lambda$를 올리는 것이 통하는 이유는 제어기가 덜 원하게 만들기 때문이고, 이는 플랜트가 더 할 수 있게 만드는 것과 다른 기제다 — 한 손잡이만 조율했다고 보고하는 논문은 제어기의 절반만 말한 것이다.
+> 3. 빈칸: `u_lo, u_hi = -m*g, n_st*fz_max - m*g`, `feas = (u_lo <= free[0] <= u_hi)`, `low = min(low, (m*g + u[0]) / n_st)`, `e, zd = e + dt*zd + alpha*u[0], zd + dt/m*u[0]`. 표는 이렇다. $\lambda=1$에서는 모든 $N$이 첫 틱에 실행 불가능해 $u_0=-117.72$ N을 적용하고 발 하중을 $0$ N까지 빼며, $N=1$은 $0.42$ s, $N=2,4,8$은 $0.18$ s에 정착한다. $\lambda=10$에서는 모든 $N$이 실행 가능하고 $u_0$가 각각 $-30.3,\,-64.8,\,-58.9,\,-60.5$ N, 최저 발당 힘이 $43.7,\,26.5,\,29.4,\,28.6$ N이며, $N=1$은 정착하지 못하고 나머지는 $0.42$, $0.24$, $0.24$ s가 걸린다. **지평은 그 행을 전혀 움직이지 못한다.** 움직이는 것은 가중치이고, 그 물리적 이유가 답이다. 내려오는 속도는 자유 낙하로 묶인다. 발 하중을 완전히 빼도 한 틱에 잃는 높이는 $\tfrac12 g\Delta t^2=17.7$ mm뿐이므로, $50$ mm를 빨리 없애려는 계획은 아무리 멀리 내다봐도 당기는 발을 요구한다. 지평을 늘리는 것은 하강을 어떻게 나누는지를 바꿀 뿐 중력이 일하는 속도를 바꾸지 못하고, 실제로 $N=2$는 $N=1$보다 *더* 요구한다($-64.8$ 대 $-30.3$ N). 이제 받아 내는 것까지 계획할 수 있기 때문이다. $\lambda$를 올리는 것이 통하는 이유는 제어기가 덜 원하게 만들기 때문이고, 이는 로봇이 더 할 수 있게 만드는 것과 다른 기제다 — 한 손잡이만 조율했다고 보고하는 논문은 제어기의 절반만 말한 것이다.
 
 > [!tip]- 이전 판에서 이어 온 주장 읽기 · Claim-reading, kept
 > - **주장.** condensed QP의 시간 주장은 1밀리초 미만 풀이와 수십 Hz 재실행이다(초록 20–30 Hz, 실험 25–50 Hz) — 그 시간이 곧 주장이다.
 > - **반증.** 피치 $30^\circ$: 버린 인자가 $0.577$과 $1.155$로, 이 페이지가 이미 더는 작지 않다고 한다. 뒷발 들기나 전복이면 충분하다.
 > - **과제.** 그 몸통 위 P2가 패널을 누를 때 — 팔 없음, 도구 렌치 없음, P3 벽 없음. 결정 변수는 네 발의 지면 반력이고, 패널 접촉은 QP 밖이다.
 
-### 연결
+### 출처 · Sources
 
-- 기초: [[02-foundations/optimization|최적화]] · 이전: [[04-robotics/mpc|MPC]]
-- 반향: [[01-canonical-papers/notes/4-vla/gr00t-n1|GR00T N1]] (이중 시스템)
-
-### 읽고 나면 말할 수 있어야 하는 것
-
-- [ ] Q의 $N=2$ condensed QP를 손으로 풀고 어느 행이 여유로 나왔는지 댈 수 있다
-- [ ] 스윕에서 지평이 언제부터 값을 못 하는지, $\lambda$가 무엇과 무엇을 맞바꾸는지 말할 수 있다
-- [ ] 단일 강체 근사가 버리는 것과 사는 것(볼록성)을 말할 수 있다
-- [ ] 지면 반력 + 마찰 원뿔이 결정 변수·제약이 되는 구성을 말할 수 있다
-- [ ] 느린 MPC + 빠른 WBC 2단 스택의 분업을 말할 수 있다
-- [ ] 이 사례가 가르치는 모델링 기술(볼록하게 만드는 근사 선택)을 말할 수 있다
+- Di Carlo 외, *Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control*, IROS 2018 · [IEEE](https://ieeexplore.ieee.org/document/8594448), MIT DSpace에 공개본이 있다 — 이 페이지가 읽는 논문. §III–IV에서 단순화한 동역학과 §1–§2의 QP를 읽고, 결과는 §V를 훑는다.
+- Kim 외, *Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and MPC*, 2019 · [arXiv 1909.06586](https://arxiv.org/abs/1909.06586), 공개 접근 — §III–IV에서 §4의 스택, 곧 위의 MPC와 그 아래의 전신 임펄스 제어를 읽는다.
+- 둘 다 [[02-foundations/optimization|4. 최적화 §5]]와 [[04-robotics/mpc|7. MPC]] 다음에 읽는다.

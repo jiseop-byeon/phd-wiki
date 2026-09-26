@@ -8,19 +8,22 @@ mastery-when: "Raise to Working when an identified payload, friction or actuator
 ---
 
 > [!note] Prerequisites · 선수 지식
-> For §1–§8 and the worked case: plant **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled); the loop conventions of [[02-foundations/lab-kernel|0.7 Lab Kernel]]; least squares and the normal equations from [[02-foundations/linear-algebra|1. Linear Algebra §2]], and when $A^\top A$ is invertible from [[02-foundations/linear-algebra|1. Linear Algebra §4.5]]; the covariance matrix, bias and variance, and white noise from [[02-foundations/probability|3. Probability §2, §4 and §5]]; P4 and its exact sampled model from [[04-robotics/control-theory-ce397|5. Control Theory §1 and §4]]; nonlinear least squares, and why forming $J^\top J$ squares the condition number, from [[02-foundations/optimization|4. Optimization §3.5]], used in §3. For §9 only: plant **P2** from the same catalog and the manipulator equation on it from [[02-foundations/manipulator-kinematics-dynamics|10. §2–§4]].
-> §1–§8과 끝까지 계산에는: [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P4**; [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 루프 규약; [[02-foundations/linear-algebra|1. 선형대수 §2]]의 최소제곱과 정규방정식, [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 $A^\top A$가 가역일 조건; [[02-foundations/probability|3. 확률 §2, §4, §5]]의 공분산 행렬, 편향과 분산, 백색 잡음; [[04-robotics/control-theory-ce397|5. 제어 이론 §1, §4]]의 P4와 그 정확한 샘플 모델; §3이 쓰는 [[02-foundations/optimization|4. 최적화 §3.5]]의 비선형 최소제곱, 그리고 $J^\top J$를 만들면 조건수가 제곱되는 이유. §9에만: 같은 카탈로그의 장치 **P2**, 그리고 [[02-foundations/manipulator-kinematics-dynamics|10. §2–§4]]의 P2 매니퓰레이터 방정식.
+> For §1–§8 and the worked case: plant **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]] (*plant*: control's word for the system being controlled); the first-order ODE with a held input, its sampled factor $a_d = e^{a\Delta t}$, and the corner frequency of a one-pole system from [[02-foundations/engineering-math|0.5 Engineering Math §8–§9]]; P4's pole in the z-plane from [[02-foundations/signal-processing|6. Signal Processing §5]]; the loop conventions of [[02-foundations/lab-kernel|0.7 Lab Kernel]]; least squares and the normal equations from [[02-foundations/linear-algebra|1. Linear Algebra §2]], and when $A^\top A$ is invertible from [[02-foundations/linear-algebra|1. Linear Algebra §4.5]]; the covariance matrix, bias and variance, and white noise from [[02-foundations/probability|3. Probability §2, §4 and §5]]; P4 and its exact sampled model from [[04-robotics/control-theory-ce397|5. Control Theory §1 and §4]]; nonlinear least squares, and why forming $J^\top J$ squares the condition number, from [[02-foundations/optimization|4. Optimization §3.5]], used in §3. For §9 only: plant **P2** from the same catalog and the manipulator equation on it from [[02-foundations/manipulator-kinematics-dynamics|10. §2–§4]].
+> §1–§8과 끝까지 계산에는: [[02-foundations/lab-plants|0.6 Lab Plants]]의 장치 **P4**; [[02-foundations/engineering-math|0.5 공업수학 §8–§9]]의 입력이 유지되는 1차 미분방정식, 그 샘플 인수 $a_d = e^{a\Delta t}$, 1극점 시스템의 코너 주파수; [[02-foundations/signal-processing|6. 신호 처리 §5]]의 z-평면에 놓인 P4의 극점; [[02-foundations/lab-kernel|0.7 Lab Kernel]]의 루프 규약; [[02-foundations/linear-algebra|1. 선형대수 §2]]의 최소제곱과 정규방정식, [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 $A^\top A$가 가역일 조건; [[02-foundations/probability|3. 확률 §2, §4, §5]]의 공분산 행렬, 편향과 분산, 백색 잡음; [[04-robotics/control-theory-ce397|5. 제어 이론 §1, §4]]의 P4와 그 정확한 샘플 모델; §3이 쓰는 [[02-foundations/optimization|4. 최적화 §3.5]]의 비선형 최소제곱, 그리고 $J^\top J$를 만들면 조건수가 제곱되는 이유. §9에만: 같은 카탈로그의 장치 **P2**, 그리고 [[02-foundations/manipulator-kinematics-dynamics|10. §2–§4]]의 P2 매니퓰레이터 방정식.
 
 ## English
 
 *Stands on [[02-foundations/linear-algebra|1. Linear Algebra]] (least squares), [[02-foundations/probability|3. Probability]] (bias and variance) and [[04-robotics/control-theory-ce397|5. Control Theory]] (**P4** and its sampled model). Every other page reads P4's numbers from the catalog; this one recovers them from a record, and then treats the mass matrix of **P2** as three unknowns.*
 
+> [!note] Why this matters · 왜 배우는가
+> **Where you are:** on the [[physical-ai-map|Physical AI Map]] identification stands with control in the column beside the robot stack of [[07-research-program/index|7. Research Program §5]], and in *"install that panel on the frame"* it serves *move the component*: a model-based controller carries the panel only as well as the record its model was fitted to. **Why:** gripping a panel changes the arm, and a careless record identifies the wrong one — a $3$ kg panel at the tip of P2, the catalog's two-link arm ([[02-foundations/lab-plants|0.6]]), turns its three inertial parameters from $(2, 1, 1)$ into $(5, 4, 4)$ kg m² (§9), and a step logged through sensor noise $\sigma = 0.1$ reports the $1$ s time constant of P4, the catalog's leaky heater, as $0.23$ s while its covariance shows none of it (§5). **Direction:** [[04-robotics/modern-robotics/ch11-robot-control|MR ch.11 §2]]'s computed torque multiplies by the mass matrix §9 identifies, [[04-robotics/mpc|7. MPC]] plans on exactly the sampled heater of §2, and [[05-construction-robotics/sim-to-real|Construction 7.5 Sim-to-Real §7]] identifies a trench's soil from four passes with §3's least squares; the page is block 2 of the dissertation path, robotics sessions 69–74, and 7.5 §7 returns in block 6 ([[07-research-program/index|7. Research Program §8]]). **Payoff:** you can fit a sampled model by least squares, say whether the input excited it and whether noise biased it, validate it by free run on held-out data, turn it back into a time constant, and put the same five questions to a paper's identified model.
+
 > [!note] First pass · 처음이라면
-> Start from the picture below, then work the worked case with a calculator: it computes P4's sampled parameters exactly, estimates them from five sensor readings, and turns the estimate back into a time constant. Then §3 for least squares, §4 for why the input decides everything, and the lab in §8. Reread §5 before you trust an identified model in a paper, because it is the error no covariance reports. §9 is the same method on a robot arm.
+> Three sessions of 60–90 minutes for the first pass (robotics 69–71), three more for the Working pass (72–74). **Session 1 (69):** the Running object, the picture and the Worked case with a calculator — the exact $a = 0.904837$ and $b = 0.095163$, the five-reading estimate by the $2\times2$ normal equations, and $\hat\tau = 0.968$ s with its one-sd band — then §1. End by redoing the normal equations with the page covered and checking that the residuals are orthogonal to both columns. **Session 2 (70):** §2–§4 — why the sampled model is exact, least squares and its covariance, and why the input decides whether $\Phi^\top\Phi$ can be inverted. End with self-check 1. **Session 3 (71):** §5–§7 — where the noise enters and when it biases the fit, validation by free run, and the map back to continuous time. End with self-checks 3 and 4. **Working pass:** run §8's lab and read its four readings against §4–§6 (72); §9–§10 and the rest of the self-check (73); the problem set (74). Reread §5 before you trust an identified model in a paper, because it is the error no covariance reports.
 
 ### Running object · 이 페이지의 대상
 
-**P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$: $x$ is the temperature error, $u$ the command, $d$ an unknown disturbance. Its continuous pole at $-1\,\mathrm{s^{-1}}$ (time constant $\tau=1\,\mathrm{s}$) and its DC gain of $1$ are the numbers this page pretends not to know and recovers from data. The page adds the following and freezes them.
+**P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], the leaky heater $\dot x=-x+u+d$: $x$ is the temperature error, $u$ the command, $d$ an unknown disturbance. Its continuous pole at $-1\,\mathrm{s^{-1}}$ (time constant $\tau=1\,\mathrm{s}$) and its **DC gain** $K_{\mathrm{dc}}=1$ — the steady output per unit of held input, $G(0)=-\beta/\alpha$ for a plant $\dot x=\alpha x+\beta u$, which the sampled model of §2 writes $b/(1-a)$ — are the numbers this page pretends not to know and recovers from data. The page adds the following and freezes them.
 
 | Symbol | Value | What it is |
 |---|---:|---|
@@ -29,7 +32,7 @@ mastery-when: "Raise to Working when an identified payload, friction or actuator
 | $w_k$ | white, standard deviation $\sigma$ | equation error: the disturbance after sampling, $w_k=b\,d_k$ when $d$ is constant over a period |
 | $v_k$ | white, standard deviation $\sigma$ | output error: sensor noise on the sampled state, $y_k=x_k+v_k$ |
 | $N$ | $200$ samples, $20\,\mathrm{s}$ | one record, started from rest |
-| inputs | step, sine, PRBS, all $\lvert u_k\rvert\le1$ | step $u_k=1$; sine $u_k=\sin(kT)$, at the heater's corner frequency $1\,\mathrm{rad/s}$; PRBS: §4's 31-bit sequence, each bit held for 5 samples |
+| inputs | step, sine, PRBS, all $\lvert u_k\rvert\le1$ | step $u_k=1$; sine $u_k=\sin(kT)$, at the heater's corner frequency $1\,\mathrm{rad/s}$ (the rate $1/\tau$ above which the heater attenuates its input, [[02-foundations/engineering-math\|0.5 §9]]); PRBS: §4's 31-bit sequence, each bit held for 5 samples |
 | worked record | $u=(1,1,1,-1,-1)$ | five commands from rest, read by a sensor that resolves $0.01$ |
 
 **P2** from the same catalog enters in §9 only, lying in the horizontal plane so that gravity drops out: $L_1=L_2=1\,\mathrm{m}$ and $m_1=m_2=1\,\mathrm{kg}$ at the distal ends of the links.
@@ -38,23 +41,53 @@ mastery-when: "Raise to Working when an identified payload, friction or actuator
 
 ### The picture · 그림으로 먼저 보기
 
-```mermaid
-flowchart LR
-    G["input generator: step, sine or PRBS"] -->|"u_k"| H["zero-order hold, T"]
-    H --> S1(("Σ"))
-    D["d: disturbance, equation error"] --> S1
-    S1 --> P["P4: dx/dt = -x + u + d"]
-    P --> SM["sampler, T"]
-    SM -->|"x_k"| S2(("Σ"))
-    V["v_k: sensor noise, output error"] --> S2
-    S2 -->|"y_k"| RG["regressor phi_k = (y_k, u_k), target y_k+1"]
-    G -->|"u_k, known exactly"| RG
-    RG --> LS["least squares: theta = (a, b)"]
-    LS --> MB["map back: tau = -T / ln a, K = b / (1 - a)"]
-    LS --> VAL["validate: free run on a held-out record"]
-```
+<svg viewBox="0 0 560 390" style="max-width:100%;height:auto" role="img" aria-label="The worked case in the plane of the two unknowns a (0.80 to 1.00) and b (0.075 to 0.115). Each of the five readings is a straight line y_k a + u_k b = y_{k+1}: the three rows with the heater on, b = 0.10, b = 0.18 - 0.10a and b = 0.26 - 0.18a, are nearly parallel and cross far apart at a = 0.80 and a = 1.00; the two reversed rows, b = 0.26a - 0.14 and b = 0.14a - 0.03, dashed, cut across them between a = 0.875 and 0.929. The least-squares point (0.9018, 0.0956), filled, sits with its one-standard-deviation box of plus or minus 0.0124 by 0.0020 around the truth (0.9048, 0.0952), open. The dotted line a + b = 1, where every steady row of a step lies, passes through the truth.">
+  <defs><clipPath id="siClip"><rect x="70.0" y="30.0" width="450.0" height="260.0"/></clipPath></defs>
+  <rect x="70.0" y="30.0" width="450.0" height="260.0" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"><line x1="70.0" y1="290.0" x2="70.0" y2="294.0"/><line x1="182.5" y1="290.0" x2="182.5" y2="294.0"/><line x1="295.0" y1="290.0" x2="295.0" y2="294.0"/><line x1="407.5" y1="290.0" x2="407.5" y2="294.0"/><line x1="520.0" y1="290.0" x2="520.0" y2="294.0"/><line x1="66.0" y1="257.5" x2="70.0" y2="257.5"/><line x1="66.0" y1="192.5" x2="70.0" y2="192.5"/><line x1="66.0" y1="127.5" x2="70.0" y2="127.5"/><line x1="66.0" y1="62.5" x2="70.0" y2="62.5"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="70.0" y="306.0" text-anchor="middle">0.80</text>
+    <text x="182.5" y="306.0" text-anchor="middle">0.85</text>
+    <text x="295.0" y="306.0" text-anchor="middle">0.90</text>
+    <text x="407.5" y="306.0" text-anchor="middle">0.95</text>
+    <text x="520.0" y="306.0" text-anchor="middle">1.00</text>
+    <text x="63.0" y="261.5" text-anchor="end">0.08</text>
+    <text x="63.0" y="196.5" text-anchor="end">0.09</text>
+    <text x="63.0" y="131.5" text-anchor="end">0.10</text>
+    <text x="63.0" y="66.5" text-anchor="end">0.11</text>
+    <text x="520.0" y="320.0" text-anchor="end" font-style="italic">a</text>
+    <text x="63.0" y="22.0" text-anchor="end" font-style="italic">b</text>
+  </g>
+  <g fill="none" stroke="currentColor" clip-path="url(#siClip)">
+    <line x1="-42.5" y1="127.5" x2="632.5" y2="127.5" stroke-width="1.4"/>
+    <line x1="-42.5" y1="95.0" x2="632.5" y2="290.0" stroke-width="1.4"/>
+    <line x1="-42.5" y1="-35.0" x2="632.5" y2="316.0" stroke-width="1.4"/>
+    <line x1="-42.5" y1="420.0" x2="632.5" y2="-87.0" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <line x1="-42.5" y1="290.0" x2="632.5" y2="17.0" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <line x1="227.5" y1="-67.5" x2="385.0" y2="387.5" stroke-width="2.2" stroke-dasharray="0.1 4.5" stroke-linecap="round"/>
+  </g>
+  <rect x="271.1" y="142.8" width="56.0" height="26.0" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="0.9" stroke-dasharray="3 2"/>
+  <circle cx="299.1" cy="155.8" r="3.6" fill="currentColor"/>
+  <circle cx="305.9" cy="158.9" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g font-size="11" fill="currentColor">
+    <text x="103.7" y="121.5">k = 0</text>
+    <text x="112.0" y="163.0">k = 1</text>
+    <text x="143.5" y="54.6">k = 2</text>
+    <text x="186.0" y="267.0">k = 3</text>
+    <text x="470.0" y="104.0" text-anchor="middle">k = 4</text>
+    <text x="357.5" y="280.2">a + b = 1</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4"><line x1="70.0" y1="330" x2="96.0" y2="330"/><line x1="340.0" y1="330" x2="366.0" y2="330" stroke-dasharray="6 4"/></g>
+  <line x1="70.0" y1="372" x2="96.0" y2="372" stroke="currentColor" stroke-width="2.2" stroke-dasharray="0.1 4.5" stroke-linecap="round"/>
+  <circle cx="83.0" cy="351" r="3.6" fill="currentColor"/><circle cx="353.0" cy="351" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g font-size="11" fill="currentColor">
+    <text x="104.0" y="334">solid: heater on, u = 1</text><text x="374.0" y="334">dashed: reversed, u = −1</text>
+    <text x="104.0" y="355">least squares (0.9018, 0.0956); box: ±1 sd</text><text x="374.0" y="355">truth (0.9048, 0.0952)</text>
+    <text x="104.0" y="376">dotted: a + b = 1, where every steady row of a step lies</text>
+  </g>
+</svg>
 
-P4's identification record as a signal flow: the command passes a zero-order hold and the state is sampled, both every $T = 0.1\,\mathrm{s}$, so the sampled model $x_{k+1} = a\,x_k + b\,u_k$ is exact, with $(a, b) = (0.904837,\ 0.095163)$. Noise enters in two places, the disturbance $d$ before the plant and the sensor noise $v_k$ after the sampler, while the command reaches the regressor straight from the generator, so only the measured column $y_k$ can carry noise into $\Phi$, which is §5's bias. Least squares returns $\theta = (a, b)$, which maps back to $\tau = -T/\ln a = 1\,\mathrm{s}$ and $K = b/(1-a) = 1$, and a free run on a held-out record validates it.
+The worked case in the plane of the two unknowns. Each of the five readings is one straight line, $y_k\,a + u_k\,b = y_{k+1}$, the set of $(a, b)$ it would allow on its own; least squares picks the point $(0.9018,\ 0.0956)$ whose five misses $y_{k+1} - y_k a - u_k b$ have the smallest sum of squares, and its one-standard-deviation box, $\pm0.0124$ in $a$ by $\pm0.0020$ in $b$, holds the truth $(0.9048,\ 0.0952)$. The three rows with the heater on are nearly parallel and cross far apart — rows 0 and 1 at $a = 0.80$, rows 1 and 2 at $a = 1.00$ — while the two reversed rows cut across them between $a = 0.875$ and $0.929$, so it is the reversal that pins $a$; a step's steady rows would all fall on the dotted line $a + b = 1$ and pin only the DC gain.
 
 ### Worked case · 대상으로 한 번 끝까지
 
@@ -64,13 +97,13 @@ Three steps on the object: the exact sampled parameters, an estimate from five r
 
 $$x_{k+1}=e^{-T}x_k+\big(1-e^{-T}\big)(u_k+d_k)$$
 
-because the free response decays by $e^{-T}$ over one period and a constant input accumulates $\int_0^T e^{-(T-s)}\,ds=1-e^{-T}$. With $d=0$ this is $x_{k+1}=a\,x_k+b\,u_k$ with
+because the free response decays by $e^{-T}$ over one period and a constant input accumulates $\int_0^T e^{-(T-t')}\,dt'=1-e^{-T}$. With $d=0$ this is $x_{k+1}=a\,x_k+b\,u_k$ with
 
 $$a=e^{-0.1}=0.904837,\qquad b=1-e^{-0.1}=0.095163.$$
 
-Two checks. First, $a+b=1$ exactly, since the sampled DC gain $b/(1-a)$ has to equal P4's DC gain of $1$. Second, these are the $A_d$ and $B_d$ that [[04-robotics/control-theory-ce397|5. Control Theory §4]] computes for the same plant in matrix form. Explicit Euler ([[02-foundations/lab-kernel|0.7]]) would give $(0.9,\ 0.1)$ instead: close, but a record simulated that way makes least squares identify the integrator, not the heater, which is why the lab below simulates with the exact map.
+Two checks. First, $a+b=1$ exactly, since the sampled DC gain $K_{\mathrm{dc}}=b/(1-a)$ has to equal P4's $K_{\mathrm{dc}}=1$. Second, these are the $A_d$ and $B_d$ that [[04-robotics/control-theory-ce397|5. Control Theory §4]] computes for the same plant in matrix form. Explicit Euler ([[02-foundations/lab-kernel|0.7]]) would step the heater with slightly different numbers, and a record simulated that way makes least squares identify Euler's $(0.9,\ 0.1)$, not the heater's, which is why the lab below simulates with the exact map.
 
-**2. The estimate from five readings.** Start at rest and send $u=(1,1,1,-1,-1)$: the heater on for three periods, then reversed for two. The exact states are $x=(0,\ 0.095163,\ 0.181269,\ 0.259182,\ 0.139355,\ 0.030931)$, and a sensor that resolves $0.01$ reports
+**2. The estimate from five readings.** Start at rest and send $u=(1,1,1,-1,-1)$: the heater on for three periods, then reversed for two. The exact states are $x=(0,\ 0.095163,\ 0.181269,\ 0.259182,\ 0.139355,\ 0.030931)$ — the first two are the exact $0.095$ and $0.181$ of [[02-foundations/engineering-math|0.5]]'s picture, where forward Euler gave $0.10$ and $0.19$ — and a sensor that resolves $0.01$ reports
 
 $$y=(0,\ 0.10,\ 0.18,\ 0.26,\ 0.14,\ 0.03)$$
 
@@ -92,21 +125,21 @@ so $\det\Phi^\top\Phi=0.648-0.0144=0.6336$, and since a $2\times2$ inverse swaps
 
 $$\hat\theta=\frac{1}{0.6336}\begin{pmatrix}5&0.12\\ 0.12&0.1296\end{pmatrix}\begin{pmatrix}0.1054\\ 0.37\end{pmatrix}=\begin{pmatrix}0.90183\\ 0.095644\end{pmatrix}.$$
 
-**3. Compare, check, and map back.** The map back is §7's $\hat\tau=-T/\ln\hat a$ and $\hat K=\hat b/(1-\hat a)$.
+**3. Compare, check, and map back.** The map back is §7's $\hat\tau=-T/\ln\hat a$ and $\hat K_{\mathrm{dc}}=\hat b/(1-\hat a)$.
 
-| | $a$ | $b$ | $\tau$ | DC gain $K$ |
+| | $a$ | $b$ | $\tau$ | DC gain $K_{\mathrm{dc}}$ |
 |---|---:|---:|---:|---:|
 | exact | 0.904837 | 0.095163 | 1.000 s | 1.000 |
 | five readings | 0.90183 | 0.095644 | 0.968 s | 0.974 |
 | error | −0.33 % | +0.51 % | −3.2 % | −2.6 % |
 
-The residuals $r=y-\Phi\hat\theta=(0.00436,\ -0.00583,\ 0.00203,\ 0.00117,\ -0.00061)$ satisfy $\sum r_ky_k=0$ and $\sum r_ku_k=0$ to rounding. That is the orthogonality to every column of $\Phi$ which [[02-foundations/linear-algebra|1. Linear Algebra §2]] says least squares must leave, and it is the ten-second check that catches most arithmetic slips. Their size gives §3's noise estimate $\hat\sigma^2=\sum r_k^2/(5-2)=1.96\times10^{-5}$, so $\hat\sigma=0.0044$, close to the $0.0039$ that rounding to $0.01$ should produce; §3's covariance formula, $\widehat{\mathrm{cov}}(\hat\theta)=\hat\sigma^2(\Phi^\top\Phi)^{-1}$, then gives $\mathrm{sd}(\hat a)=\sqrt{1.96\times10^{-5}\times5/0.6336}=0.0124$ and $\mathrm{sd}(\hat b)=0.0020$. The truth sits inside one standard deviation of both.
+The residuals $r=y-\Phi\hat\theta=(0.00436,\ -0.00583,\ 0.00203,\ 0.00117,\ -0.00061)$ satisfy $\sum r_ky_k=0$ and $\sum r_ku_k=0$ to rounding. That is the orthogonality to every column of $\Phi$ which [[02-foundations/linear-algebra|1. Linear Algebra §2]] says least squares must leave, and it is the ten-second check that catches most arithmetic slips. Their size gives §3's noise estimate $\hat\sigma^2=\sum r_k^2/(5-2)=1.96\times10^{-5}$ — divided by $N-2$, the five equations less the two fitted parameters (§3) — so $\hat\sigma=0.0044$. That is close to the $0.0039$ rounding should produce: a rounding error is spread evenly over one step $\Delta=0.01$, so its standard deviation is $\Delta/\sqrt{12}=0.0029$ ([[04-robotics/sensor-models|3.2 Sensor Models & Noise §4]]), and a noise $v_k$ on each reading enters the equation for $y_{k+1}$ as $v_{k+1}-a\,v_k$ (§5), whose standard deviation is $\sqrt{1+a^2}=1.35$ times larger, $0.0039$. §3's covariance formula, $\widehat{\mathrm{cov}}(\hat\theta)=\hat\sigma^2(\Phi^\top\Phi)^{-1}$, then gives $\mathrm{sd}(\hat a)=\sqrt{1.96\times10^{-5}\times5/0.6336}=0.0124$ — the $5/0.6336$ is $[(\Phi^\top\Phi)^{-1}]_{11}$, the top-left entry of the inverse, read off the swapped diagonal above — and $\mathrm{sd}(\hat b)=0.0020$. The truth sits inside one standard deviation of both.
 
 Two readings. The method is exact: fit the unrounded states and least squares returns $0.904837$ and $0.095163$ to machine precision, so every digit of error came from the sensor. And a third of a percent in $\hat a$ became three percent in $\hat\tau$, a factor of $\tau/T=10$ that §7 derives; pushed through the same map, the honest $\mathrm{sd}(\hat a)=0.0124$ puts $\tau$ anywhere from $0.853$ to $1.116\,\mathrm{s}$. Five readings buy a good-looking point estimate inside a wide interval.
 
 ### 1. What system identification is
 
-Every plant on this wiki arrived with its numbers already attached: P4's pole, P2's masses, the damper of P3, the catalog's haptic handle ([[02-foundations/lab-plants|0.6]]), that [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] spends in its passivity bound. On a real machine each of those numbers is the output of a procedure, and the procedure has a name.
+Every plant on this wiki arrived with its numbers already attached: P4's pole, P2's masses, and the damper of P3 (the catalog's haptic handle, [[02-foundations/lab-plants|0.6]]) that [[04-robotics/haptics-teleoperation/rendering-sampling-stability|24.4]] spends in its passivity bound. On a real machine each of those numbers is the output of a procedure, and the procedure has a name.
 
 > **System identification, defined.** **System identification** is an *estimation procedure* that turns a record of inputs and outputs into the parameters of a model — not a model, not a simulator, and not a curve through the data. Four defining conditions, and a result that skips any of them is something else. A **model structure** is chosen before the data are seen: a set of candidate models indexed by a parameter vector $\theta$, here "$x_{k+1}=a\,x_k+b\,u_k$ for some $(a,b)$". An **experiment** produces a record $Z^N=\{(u_k,y_k)\}$ of commanded inputs and measured outputs, and the input is usually yours to design. A **criterion** scores every candidate against the record. And the winner is **validated** on data the criterion never saw.
 >
@@ -121,25 +154,28 @@ Every plant on this wiki arrived with its numbers already attached: P4's pole, P
 
 ### 2. The sampled model, and why it is exact
 
-The worked case did P4. The same integral works for any first-order plant $\dot x=\alpha x+\beta u$ with a held input:
+A computer sees the heater only every $T$, so the model it can fit is a sampled one, and the first question is whether that model is an approximation. For a held input it is not. The worked case did P4; the same integral works for any first-order plant $\dot x=\alpha x+\beta u$ with a held input:
 
 $$a=e^{\alpha T},\qquad b=\frac{e^{\alpha T}-1}{\alpha}\,\beta$$
 
-since the free response over a period is $e^{\alpha T}$ and the held input accumulates $\beta\int_0^T e^{\alpha s}\,ds$. P4 is $\alpha=-1$, $\beta=1$. Three facts about this map carry the rest of the page.
+since the free response over a period is $e^{\alpha T}$ and the held input accumulates $\beta\int_0^T e^{\alpha t'}\,dt'$. P4 is $\alpha=-1$, $\beta=1$. These are [[02-foundations/engineering-math|0.5 §8]]'s symbols renamed: its $a$ ($-1$ for P4) is this page's $\alpha$, and its sampled factor $a_d=e^{a\Delta t}$ is this page's $a$ — the $A_d$ of [[04-robotics/control-theory-ce397|5. Control Theory §4]], and P4's $z=0.905$ in [[02-foundations/signal-processing|6. Signal Processing §5]]. Three facts about this map carry the rest of the page.
 
 - **It is exact at the sample instants**, not a discretization error to be kept small, whenever the input really is held between samples — true of a digital controller's output. So the structure $x_{k+1}=a\,x_k+b\,u_k$ is correct for P4, and any misfit in the lab is noise or bias, never truncation. The matrix version, with $e^{AT}$, is [[04-robotics/control-theory-ce397|5. Control Theory §4]].
 - **It is linear in $(a,b)$ and nonlinear in $\alpha$.** So identify $(a,b)$ by least squares and convert afterwards (§7); fitting $\alpha$ directly would put the unknown inside an exponential.
 - **The pole map does not depend on the hold; the input side does.** $a=e^{\alpha T}$ is the free response, which never sees what the input does between samples, while $b$ is built from the hold. An actuator that does not hold its command — one that ramps or smooths it between samples — changes the input side of the correct sampled model, its coefficient and possibly how many past inputs appear, but not the pole. Fit an input side that matches the actuator, because an error there leaks into $\hat a$ as well.
 
-**The input side, priced on P4.** Suppose the heater's driver ramped each new command in over the period, linearly from $u_{k-1}$ to $u_k$, instead of holding it. The free response is untouched, so $a=0.904837$ still, but the input term splits in two, because part of each period is now driven by the previous command:
+The collapsed note below prices the third fact on P4: an actuator that ramps its command instead of holding it, fitted with the held-input structure, reports a time constant of $1.10$ s from a step and $1.35$ s from the PRBS, from exact, noise-free records.
 
-$$x_{k+1}=a\,x_k+b_0\,u_k+b_1\,u_{k-1},\qquad b_0=0.048374,\quad b_1=0.046788$$
-
-and $b_0+b_1=0.095163=b$, so the DC gain is still $1$. Fit the two-parameter structure of §3 to this actuator's exact, noise-free records and the missing $u_{k-1}$ lands in the pole: $\hat\tau=1.10\,\mathrm{s}$ from the step, $1.35\,\mathrm{s}$ from §8's PRBS, and $\hat a=1.048$ from the worked case's five commands, a pole no stable heater has (§7's first check). Add $u_{k-1}$ as a third regressor and least squares returns all three coefficients exactly. An identified pole is therefore only as good as the model of what the actuator does between samples, and a paper that reports one should say which hold it assumed.
+> [!note]- Deeper · 더 깊이
+> **The input side, priced on P4.** Suppose the heater's driver ramped each new command in over the period, linearly from $u_{k-1}$ to $u_k$, instead of holding it. The free response is untouched, so $a=0.904837$ still, but the input term splits in two, because part of each period is now driven by the previous command:
+>
+> $$x_{k+1}=a\,x_k+b_0\,u_k+b_1\,u_{k-1},\qquad b_0=0.048374,\quad b_1=0.046788$$
+>
+> and $b_0+b_1=0.095163=b$, so $K_{\mathrm{dc}}$ is still $1$. Fit the two-parameter structure of §3 to this actuator's exact, noise-free records and the missing $u_{k-1}$ lands in the pole: $\hat\tau=1.10\,\mathrm{s}$ from the step, $1.35\,\mathrm{s}$ from §8's PRBS, and $\hat a=1.048$ from the worked case's five commands, a pole no stable heater has (§7's first check). Add $u_{k-1}$ as a third regressor and least squares returns all three coefficients exactly. An identified pole is therefore only as good as the model of what the actuator does between samples, and a paper that reports one should say which hold it assumed.
 
 ### 3. Least squares on the regression
 
-Write the sampled model with its unexplained part made explicit:
+Five readings gave five equations in two unknowns, and no $(a, b)$ satisfies all five exactly — the picture's five lines do not meet in one point. Which pair to choose, and how sure to be of it, is this section. Write the sampled model with its unexplained part made explicit:
 
 $$y_{k+1}=\varphi_k^\top\theta+e_k,\qquad \varphi_k=\begin{pmatrix}y_k\\ u_k\end{pmatrix},\qquad \theta=\begin{pmatrix}a\\ b\end{pmatrix}$$
 
@@ -156,11 +192,11 @@ where $e_k$ is the equation error, everything the model does not explain at step
 > - **Non-example**: the free-run model $\hat x_{k+1}=a\,\hat x_k+b\,u_k$ scored against measurements. Its would-be regressor $\hat x_k$ depends on $(a,b)$, so the second condition fails and minimizing its error is a nonlinear least-squares problem ([[02-foundations/optimization|4. Optimization §3.5]]). That is exactly the price of §5's output-error remedy.
 > - **Why it matters**: the second condition is what turns identification into a linear-algebra problem with a unique answer; lose it and you are back to iterative solvers, starting guesses and local minima.
 
-**The estimate.** Least squares picks the $\theta$ minimizing $V(\theta)=\lVert y-\Phi\theta\rVert^2=\sum_k(y_{k+1}-\varphi_k^\top\theta)^2$. Its gradient is $\nabla V=-2\Phi^\top(y-\Phi\theta)$, and setting it to zero gives the normal equations $\Phi^\top\Phi\,\hat\theta=\Phi^\top y$ of [[02-foundations/linear-algebra|1. Linear Algebra §2]]. When $\Phi^\top\Phi$ is invertible,
+**The estimate.** Least squares picks the $\theta$ minimizing $V(\theta)=\lVert y-\Phi\theta\rVert^2=\sum_k(y_{k+1}-\varphi_k^\top\theta)^2$, which is [[02-foundations/linear-algebra|1. Linear Algebra §2]]'s problem $\min\lVert Ax-b\rVert^2$ renamed: its $A$ is $\Phi$, its $x$ is $\theta$, and its target vector $b$ is this page's $y$, not the input coefficient $b$. That section sets the gradient to zero and gets the normal equations, here $\Phi^\top\Phi\,\hat\theta=\Phi^\top y$, so when $\Phi^\top\Phi$ is invertible,
 
 $$\hat\theta=\big(\Phi^\top\Phi\big)^{-1}\Phi^\top y=\Phi^\dagger y$$
 
-because the normal equations then have exactly one solution. Every symbol: $\Phi$ is the $N\times2$ regressor matrix; $y$ the $N$-vector of next outputs; $\Phi^\top\Phi$ the $2\times2$ matrix of sums of squares and cross-products of the regressor's columns — the worked case's $\sum y_k^2$, $\sum y_ku_k$, $\sum u_k^2$; $\Phi^\top y$ the 2-vector of how each column co-varies with the targets; and $\Phi^\dagger$ the left pseudo-inverse of [[02-foundations/linear-algebra|1. Linear Algebra §4.5]]. It is a minimum and not a saddle since the Hessian $2\Phi^\top\Phi$ is positive definite whenever it is invertible. Geometrically, $\Phi\hat\theta$ is the orthogonal projection of $y$ onto the columns of $\Phi$, which is the residual check the worked case ran. In code, solve with an orthogonal factorization (`np.linalg.lstsq`) rather than by forming the inverse, because forming $\Phi^\top\Phi$ squares the condition number of $\Phi$ ([[02-foundations/optimization|4. Optimization §3.5]]).
+because the normal equations then have exactly one solution. Every symbol: $\Phi$ is the $N\times2$ regressor matrix; $y$ the $N$-vector of next outputs; $\Phi^\top\Phi$ the $2\times2$ matrix of sums of squares and cross-products of the regressor's columns — the worked case's $\sum y_k^2$, $\sum y_ku_k$, $\sum u_k^2$; $\Phi^\top y$ the 2-vector of how each column co-varies with the targets; and $\Phi^\dagger$ the left pseudo-inverse of [[02-foundations/linear-algebra|1. Linear Algebra §4.5]]. It is a minimum and not a saddle since the Hessian $2\Phi^\top\Phi$ is positive definite whenever it is invertible, and $\Phi\hat\theta$ is the orthogonal projection of $y$ onto the columns of $\Phi$, which is why the worked case's residuals came out orthogonal to both columns. In code, solve with an orthogonal factorization (`np.linalg.lstsq`) rather than by forming the inverse, because forming $\Phi^\top\Phi$ squares the condition number of $\Phi$ ([[02-foundations/optimization|4. Optimization §3.5]]).
 
 **How good is it?** Suppose the record really is $y=\Phi\theta+e$ with $e$ zero-mean white noise of variance $\sigma^2$ ([[02-foundations/probability|3. Probability §5]]), and that the regressor at step $k$ is uncorrelated with the error at step $k$, $\mathrm{E}[\varphi_ke_k]=0$. Then substituting the model into the estimate gives $\hat\theta-\theta=(\Phi^\top\Phi)^{-1}\Phi^\top e$, and two cases follow.
 
@@ -211,7 +247,25 @@ The workhorse input is built to pass this test by a wide margin.
 
 ### 5. Where the noise enters: equation error, output error, and the bias
 
-§3's guarantee rested on one condition, $\mathrm{E}[\varphi_ke_k]=0$. Whether it holds depends on where the noise enters the record, and the picture at the top of the page shows two places.
+§3's guarantee rested on one condition, $\mathrm{E}[\varphi_ke_k]=0$. Whether it holds depends on where the noise enters the record, and the signal-flow diagram below shows the two places.
+
+```mermaid
+flowchart LR
+    G["input generator: step, sine or PRBS"] -->|"u_k"| H["zero-order hold, T"]
+    H --> S1(("Σ"))
+    D["d: disturbance, equation error"] --> S1
+    S1 --> P["P4: dx/dt = -x + u + d"]
+    P --> SM["sampler, T"]
+    SM -->|"x_k"| S2(("Σ"))
+    V["v_k: sensor noise, output error"] --> S2
+    S2 -->|"y_k"| RG["regressor phi_k = (y_k, u_k), target y_k+1"]
+    G -->|"u_k, known exactly"| RG
+    RG --> LS["least squares: theta = (a, b)"]
+    LS --> MB["map back: tau = -T / ln a, K_dc = b / (1 - a)"]
+    LS --> VAL["validate: free run on a held-out record"]
+```
+
+P4's identification record as a signal flow: the command passes a zero-order hold and the state is sampled, both every $T = 0.1\,\mathrm{s}$, so the sampled model $x_{k+1} = a\,x_k + b\,u_k$ is exact, with $(a, b) = (0.904837,\ 0.095163)$. Noise enters in two places, the disturbance $d$ before the plant and the sensor noise $v_k$ after the sampler, while the command reaches the regressor straight from the generator, so only the measured column $y_k$ can carry noise into $\Phi$, which is the bias this section derives. Least squares returns $\theta = (a, b)$, which maps back to $\tau = -T/\ln a = 1\,\mathrm{s}$ and $K_{\mathrm{dc}} = b/(1-a) = 1$ (§7), and a free run on a held-out record validates it (§6).
 
 > **Equation error and output error, defined.** Two *noise structures* — statements about where the unexplained part of the record enters the model, not about its size. Three conditions separate them. Where it enters: equation error $w_k$ enters the state update and propagates through the dynamics; output error $v_k$ is added to the measurement and does not. What the regression's error becomes: under equation error it is $w_k$ itself, white and uncorrelated with the regressor at the same step; under output error it is $v_{k+1}-a\,v_k$, which shares $v_k$ with the regressor $y_k$. What least squares does: consistent under the first, biased under the second.
 >
@@ -261,11 +315,11 @@ Overfitting in the sense of [[02-foundations/ml-practice|9. ML Practice §2]] is
 
 ### 7. Back to continuous time
 
-Inverting §2's map at the sample period used,
+A sampled model is valid only at its own $T$, and a controller seldom runs at the rate the record was taken at, so an identified model is carried in continuous time and resampled for each use — the last paragraph of this section does it for a $50\,\mathrm{Hz}$ loop. Going back means inverting §2's map at the sample period used,
 
-$$\hat\alpha=\frac{\ln\hat a}{T},\qquad \hat\beta=\frac{\hat\alpha\,\hat b}{\hat a-1},\qquad \hat\tau=-\frac{T}{\ln\hat a},\qquad \hat K=\frac{\hat b}{1-\hat a}$$
+$$\hat\alpha=\frac{\ln\hat a}{T},\qquad \hat\beta=\frac{\hat\alpha\,\hat b}{\hat a-1},\qquad \hat\tau=-\frac{T}{\ln\hat a},\qquad \hat K_{\mathrm{dc}}=\frac{\hat b}{1-\hat a}$$
 
-because $a=e^{\alpha T}$ gives $\alpha=\ln a/T$, the formula for $b$ then gives $\beta$, the time constant is $\tau=-1/\alpha$, and the DC gain $K=-\beta/\alpha$ works out to exactly $b/(1-a)$: the gain survives sampling unchanged.
+because $a=e^{\alpha T}$ gives $\alpha=\ln a/T$, the formula for $b$ then gives $\beta$, the time constant is $\tau=-1/\alpha$, and the DC gain $K_{\mathrm{dc}}=-\beta/\alpha$ works out to exactly $b/(1-a)$: the gain survives sampling unchanged.
 
 **The map amplifies relative error by $\tau/T$.** Differentiating $\alpha=\ln a/T$ gives $\delta\alpha=\delta a/(aT)$, and dividing by $\alpha=-1/\tau$,
 
@@ -276,12 +330,12 @@ so at $T=0.1\tau$ a relative error in $\hat a$ becomes ten times that in $\hat\t
 Three more things to check before trusting a converted number.
 
 - **$0<\hat a<1$** for a stable real pole. $\hat a\ge1$ is an integrator or an unstable plant. $\hat a\le0$ is no first-order continuous model at all, since $e^{\alpha T}>0$ for every real $\alpha$; it means the structure is wrong or the sampling is far too slow.
-- **The DC gain has no logarithm in it** and is correspondingly robust. The step under output noise $\sigma=0.1$ gets $\hat K=0.3444/(1-0.6418)=0.961$ while its $\hat\tau$ is $0.23\,\mathrm{s}$.
+- **The DC gain has no logarithm in it** and is correspondingly robust. The step under output noise $\sigma=0.1$ gets $\hat K_{\mathrm{dc}}=0.3444/(1-0.6418)=0.961$ while its $\hat\tau$ is $0.23\,\mathrm{s}$.
 - **Warning — do not map back with Euler.** $\hat\alpha\approx(\hat a-1)/T$ looks like the inverse of the explicit-Euler step and is wrong by a fixed amount: from the exact $a$ it gives $-0.9516$ instead of $-1$, a $4.8\,\%$ error no amount of data removes, growing to $21\,\%$ at $T=0.5\,\mathrm{s}$.
 
-**The whole map, on the worked case's estimate.** From $(\hat a,\hat b)=(0.90183,\ 0.095644)$ at $T=0.1\,\mathrm{s}$, $\hat\alpha=\ln0.90183/0.1=-1.0333\,\mathrm{s^{-1}}$ and $\hat\beta=\hat\alpha\hat b/(\hat a-1)=1.0067$. The input gain is off by $0.7\,\%$ while the pole is off by $3.3\,\%$, and $-\hat\beta/\hat\alpha=0.974$ is the worked case's $\hat K$, as it must be.
+**The whole map, on the worked case's estimate.** From $(\hat a,\hat b)=(0.90183,\ 0.095644)$ at $T=0.1\,\mathrm{s}$, $\hat\alpha=\ln0.90183/0.1=-1.0333\,\mathrm{s^{-1}}$ and $\hat\beta=\hat\alpha\hat b/(\hat a-1)=1.0067$. The input gain is off by $0.7\,\%$ while the pole is off by $3.3\,\%$, and $-\hat\beta/\hat\alpha=0.974$ is the worked case's $\hat K_{\mathrm{dc}}$, as it must be.
 
-**Why a model is carried in continuous time.** A controller seldom runs at the rate the record was taken at, and a sampled model is valid only at its own $T$. To use the heater in a $50\,\mathrm{Hz}$ loop, go back through $(\hat\alpha,\hat\beta)$ and sample again with §2's map at $T=0.02\,\mathrm{s}$: that gives $e^{-1.0333\times0.02}=0.97955$ and $0.019927$, against the true $0.98020$ and $0.019801$. Reusing the $10\,\mathrm{Hz}$ pair unchanged at $50\,\mathrm{Hz}$ instead runs a heater whose time constant is $-0.02/\ln0.904837=0.2\,\mathrm{s}$, five times too fast, and a controller tuned on that model is tuned for the wrong plant. The matrix version of the same resampling is [[04-robotics/control-theory-ce397|5. Control Theory §4]].
+**Resampling for a faster loop.** To use the heater in a $50\,\mathrm{Hz}$ loop, go back through $(\hat\alpha,\hat\beta)$ and sample again with §2's map at $T=0.02\,\mathrm{s}$: that gives $e^{-1.0333\times0.02}=0.97955$ and $0.019927$, against the true $0.98020$ and $0.019801$. Reusing the $10\,\mathrm{Hz}$ pair unchanged at $50\,\mathrm{Hz}$ instead runs a heater whose time constant is $-0.02/\ln0.904837=0.2\,\mathrm{s}$, five times too fast, and a controller tuned on that model is tuned for the wrong plant. The matrix version of the same resampling is [[04-robotics/control-theory-ce397|5. Control Theory §4]].
 
 ### 8. Lab: three inputs, one heater
 
@@ -404,7 +458,9 @@ First, what the equation-error table confirms before any reading: §3's claim it
 
 ### 9. The second object: P2 is linear in its inertial parameters
 
-P4 has two parameters and one state. The same method identifies a robot arm, because the rigid-body dynamics — however nonlinear in the joint angles — are linear in the inertial parameters (Atkeson, An & Hollerbach, Sources). Take P2 in the horizontal plane, so the manipulator equation of [[02-foundations/manipulator-kinematics-dynamics|10. §2]] is $\tau=M(q)\ddot q+C(q,\dot q)\dot q$, with the mass matrix of [[02-foundations/manipulator-kinematics-dynamics|10. §3]] and the velocity terms of [[02-foundations/manipulator-kinematics-dynamics|10. §4]] (there $h=-m_2L_1L_2\sin q_2$). Collect every term by the three combinations of masses and lengths it multiplies:
+Gripping a panel changes the arm the controller is driving: a $3\,\mathrm{kg}$ panel at P2's tip changes its mass matrix, and no catalog knows the panel's mass. This section identifies it from the arm's own motors. Two letters change meaning here: $\tau$ is now the joint torque, not the time constant of §2–§7, and joint angles are written $q$ where [[02-foundations/manipulator-kinematics-dynamics|10]] and the P2 catalog write $\theta$, because $\theta$ is this page's parameter vector.
+
+P4 has two parameters and one state. The same method identifies a robot arm, because the rigid-body dynamics — however nonlinear in the joint angles — are linear in the inertial parameters (Atkeson, An & Hollerbach, Sources). Take P2 in the horizontal plane, so the manipulator equation of [[02-foundations/manipulator-kinematics-dynamics|10. §2]] is $\tau=M(q)\ddot q+C(q,\dot q)\dot q$, with the mass matrix of [[02-foundations/manipulator-kinematics-dynamics|10. §3]] and the velocity terms of [[02-foundations/manipulator-kinematics-dynamics|10. §4]] (there $h=-m_2L_1L_2\sin\theta_2$, which is $\sin q_2$ in this page's letters). Collect every term by the three combinations of masses and lengths it multiplies:
 
 $$\pi=\begin{pmatrix}\pi_1\\ \pi_2\\ \pi_3\end{pmatrix}=\begin{pmatrix}(m_1+m_2)L_1^2\\ m_2L_2^2\\ m_2L_1L_2\end{pmatrix}=\begin{pmatrix}2\\ 1\\ 1\end{pmatrix}\ \mathrm{kg\,m^2}$$
 
@@ -451,7 +507,7 @@ A paper that says "we identified the model" has made five choices, and each is a
 - [ ] Say why a step identifies the DC gain but not the time constant, in terms of $\Phi^\top\Phi$ and persistent excitation.
 - [ ] Explain why noise in the regressor biases least squares while noise in the target does not, and why the covariance cannot show it.
 - [ ] Validate by free-run simulation on held-out data, and say why fitting error and one-step prediction error are not validation.
-- [ ] Map $(\hat a,\hat b)$ back to $\tau$ and $K$, and state the $\tau/T$ amplification of relative error.
+- [ ] Map $(\hat a,\hat b)$ back to $\tau$ and $K_{\mathrm{dc}}$, and state the $\tau/T$ amplification of relative error.
 - [ ] Write $\tau=Y\pi$ for P2 and say which motions leave $\pi$ unidentifiable.
 
 ### Self-check
@@ -459,22 +515,22 @@ A paper that says "we identified the model" has made five choices, and each is a
 1. A 20-second step record from rest pins P4's DC gain well and its time constant badly. Why, in terms of the two columns of $\Phi$?
 2. You log a robot joint for an hour under its position controller and fit $x_{k+1}=a\,x_k+b\,u_k$ by least squares. The software returns two numbers without complaint. What do you check first, and why?
 3. A colleague samples the heater at $T=0.01\,\mathrm{s}$ and reports $\hat a=0.9900\pm0.0005$. What time constant does that give, and with what interval?
-4. The lab's PRBS fit under output noise $\sigma=0.1$ reports $\hat a=0.8583$ with a formula standard deviation of $0.0214$. Is the true $0.9048$ plausible under that interval, and what went wrong?
+4. Under output noise $\sigma=0.03$ the lab's PRBS fit reports $\hat a=0.9004$ with a formula standard deviation of $0.0066$. Is the true $0.9048$ plausible under that interval? At $\sigma=0.1$ the same fit reports $0.8583\pm0.0214$: what changed between the two noise levels, and why does the covariance not warn you?
 5. A single sine did nearly as well as the PRBS in the lab. Why is it still not the default identification input?
 
 > [!tip]- Answers
 > 1. After about three time constants $x_k=u_k=1$, so the output column and the command column are the same column and every steady row says only $a+b=1$ — the DC gain. The time constant needs $a$ and $b$ separately, and only the first thirty or so samples separate them. That is order-1 excitation: the lab shows the correlation of $\hat a$ with $\hat b$ at $-0.99$, a condition number of $144$, and a spread that barely moves when the record grows sixteenfold.
-> 2. The rank, or the condition number, of $\Phi$. Under feedback $u_k=-Kx_k$ with no external signal, the command column is $-K$ times the output column, $\Phi$ has rank 1, and `lstsq` quietly returns the minimum-norm solution; only $\hat a-K\hat b$, the closed-loop pole, means anything. The problem set's Do item gets $(0.1513,\ -0.3026)$ this way from a heater whose parameters are $(0.905,\ 0.095)$. Inject an external signal and refit.
+> 2. The rank, or the condition number, of $\Phi$. Under feedback $u_k=-Kx_k$ with no external signal, the command column is $-K$ times the output column, $\Phi$ has rank 1, and `lstsq` quietly returns the minimum-norm solution; only $\hat a-K\hat b$, the closed-loop pole, means anything. The problem set's Do item walks into this on purpose. Inject an external signal and refit.
 > 3. $\hat\tau=-T/\ln\hat a=-0.01/\ln0.99=0.995\,\mathrm{s}$. At $\hat a=0.9895$ and $0.9905$ the same formula gives $0.947$ and $1.048\,\mathrm{s}$, so about $\pm5\,\%$: the relative error in $\hat a$, $0.05\,\%$, times $\tau/T\approx100$. Four good-looking decimals in $\hat a$ are $\pm5\,\%$ in $\tau$.
-> 4. No: $(0.9048-0.8583)/0.0214=2.2$ standard deviations. The formula describes scatter around the estimate's own mean; output noise has shifted that mean by the errors-in-variables bias, which the formula does not contain. The fixes are an output-error or instrumental-variable estimator, or more excitation — which also shrinks the bias, since it scales with $R^{-1}$.
+> 4. At $\sigma=0.03$: $(0.9048-0.9004)/0.0066=0.67$ standard deviations, so the truth is plausible and nothing in this fit warns of trouble. At $\sigma=0.1$: $(0.9048-0.8583)/0.0214=2.2$, outside the fit's own two-standard-deviation interval. Between the two, the bias grew from $0.0044$ to $0.0465$, about $10.5$ times on the unrounded means ($10.6$ from the rounded ones), close to $\sigma^2$'s $11.1$, while the reported spread grew $3.2$ times, close to $\sigma$'s $3.3$ (§5). The formula describes scatter around the estimate's own mean, and output noise shifts that mean by the errors-in-variables bias, which the formula does not contain; because the bias grows like $\sigma^2$ and the spread like $\sigma$, a fit that looks honest at low noise stops being honest as the noise rises. The fixes are an output-error or instrumental-variable estimator, or more excitation — which also shrinks the bias, since it scales with $R^{-1}$.
 > 5. A sine is persistently exciting of order 2, so it can identify at most a model whose regressor needs order 2, and it measures the plant at one frequency only. Any model with the same gain and phase at that frequency fits the record equally well, so it cannot tell a first-order plant from a second-order one. The PRBS is order 31 and spreads its power over the band, which is what a test of the structure needs.
 
 ### Problem set · 과제
 
 Tier A. Using **P4** from [[02-foundations/lab-plants|0.6 Lab Plants]], this page, and [[02-foundations/lab-kernel|0.7 Lab Kernel]]. Original plant and original problems. The worked case ran at $T=0.1\,\mathrm{s}$ on an open-loop record; this set moves the sample period, adds sensor noise to the analysis, and closes the loop — change the knobs in §8's listing, do not rewrite it.
 
-1. **Draw.** The picture above, for a record logged under feedback: add a controller block $u_k=-K\,y_k+r_k$ fed by the measured $y_k$, with an external signal $r_k$ entering at its own summing junction. Mark the two arrows that feed the regressor, and show on the drawing why, with $r=0$, they carry the same signal up to the factor $-K$.
-2. **Derive.** At $T=0.2\,\mathrm{s}$. (a) P4's exact $a$ and $b$, and the check that makes them consistent with the DC gain. (b) From rest the commands $u=(1,1,-1,-1,1)$ give the rounded readings $y=(0,\ 0.18,\ 0.33,\ 0.09,\ -0.11,\ 0.09)$. Build $\Phi^\top\Phi$ and $\Phi^\top y$, solve for $\hat\theta$, compare with (a), and map back to $\hat\tau$ and $\hat K$. By what factor should the relative error in $\hat a$ appear in $\hat\tau$? (c) Output noise $\sigma=0.1$ with an input that is white with unit variance, so $\mathrm{E}[x_ku_k]=0$ and $S=b^2/(1-a^2)$: where does $\hat a$ converge, and what time constant would you report? (d) Back at $T=0.1\,\mathrm{s}$, a record logged under $u_k=-2x_k$ with no external signal: show that $\Phi$ has rank 1 and compute the one combination least squares does identify.
+1. **Draw.** The signal-flow diagram of §5, for a record logged under feedback: add a controller block $u_k=-K\,y_k+r_k$ fed by the measured $y_k$, with an external signal $r_k$ entering at its own summing junction. Mark the two arrows that feed the regressor, and show on the drawing why, with $r=0$, they carry the same signal up to the factor $-K$.
+2. **Derive.** At $T=0.2\,\mathrm{s}$. (a) P4's exact $a$ and $b$, and the check that makes them consistent with the DC gain. (b) From rest the commands $u=(1,1,-1,-1,1)$ give the rounded readings $y=(0,\ 0.18,\ 0.33,\ 0.09,\ -0.11,\ 0.09)$. Build $\Phi^\top\Phi$ and $\Phi^\top y$, solve for $\hat\theta$, compare with (a), and map back to $\hat\tau$ and $\hat K_{\mathrm{dc}}$. By what factor should the relative error in $\hat a$ appear in $\hat\tau$? (c) Output noise $\sigma=0.1$ with an input that is white with unit variance, so $\mathrm{E}[x_ku_k]=0$ and $S=b^2/(1-a^2)$: where does $\hat a$ converge, and what time constant would you report? (d) Back at $T=0.1\,\mathrm{s}$, a record logged under $u_k=-2x_k$ with no external signal: show that $\Phi$ has rank 1 and compute the one combination least squares does identify.
 3. **Do.** Fill the `?` in the patch below and append it to §8's listing. The record has equation error only, so the controller's measured $y_k$ is $x_k$. Run $r=0$ and $r=$ PRBS. Report the rank of $\Phi$, $\hat\theta$, $\hat a-K\hat b$, the formula standard deviations and the condition number; compare $\hat a-K\hat b$ with (d), and compare the PRBS run's standard deviations with the open-loop PRBS row of §8's first table.
 
 ```python
@@ -507,7 +563,7 @@ for name, r in (("r = 0", np.zeros(N)), ("r = prbs", prbs(N))):
 
 > [!tip]- Solutions
 > 1. The controller closes a path from the measured $y_k$ back to $u_k$; $r_k$ enters beside it; the command column of the regressor is now fed by that controller's output rather than by an independent generator. With $r=0$ the two arrows into the regressor carry $y_k$ and $-K\,y_k$: one signal and its scaled copy, so the two columns of $\Phi$ are parallel and $\Phi^\top\Phi$ is singular. With $r\neq0$ the command carries a component no function of $y_k$ can reproduce, and the columns separate. The noise arrows are unchanged; only the input's independence is lost.
-> 2. (a) $a=e^{-0.2}=0.818731$, $b=1-e^{-0.2}=0.181269$, and $a+b=1$ so $b/(1-a)=1$. (b) $\sum y_k^2=0.1615$, $\sum y_ku_k=-0.35$, $\sum u_k^2=5$, $\sum y_ky_{k+1}=0.0693$, $\sum u_ky_{k+1}=0.62$, so $\det=0.8075-0.1225=0.685$ and $\hat\theta=\tfrac{1}{0.685}(5\cdot0.0693+0.35\cdot0.62,\ 0.35\cdot0.0693+0.1615\cdot0.62)=(0.82263,\ 0.18158)$. Errors $+0.48\,\%$ in $\hat a$, $+0.17\,\%$ in $\hat b$ — the opposite sign from the worked case, since rounding can err either way. $\hat\tau=-0.2/\ln0.82263=1.024\,\mathrm{s}$ and $\hat K=0.18158/0.17737=1.024$. The factor is $\tau/T=5$: $0.48\,\%\times5=2.4\,\%$. The residuals give $\hat\sigma^2=3.28\times10^{-6}$ and $\mathrm{sd}(\hat a)=0.0049$, about $\pm3\,\%$ in $\tau$ — tighter than the worked case's $\pm13\,\%$, partly because $\tau/T$ is $5$ instead of $10$ and partly because this record's residuals happen to be smaller. (c) $S=0.181269^2/(1-0.818731^2)=0.09967$, so $\hat a\to0.818731\times0.09967/0.10967=0.7441$ and $\hat\tau=-0.2/\ln0.7441=0.677\,\mathrm{s}$: a noise one third of the state's standard deviation ($\sqrt S=0.316$) reports a time constant a third too short, with a covariance that shows none of it. (d) With $u_k=-2x_k$ the columns are $x_k$ and $-2x_k$, so every row of $\Phi$ is a multiple of $(1,-2)$: rank 1. The regression reduces to $x_{k+1}=(a-2b)\,x_k$, so least squares identifies the closed-loop pole $a-2b=0.904837-0.190325=0.7145$ and nothing about $a$ and $b$ separately.
+> 2. (a) $a=e^{-0.2}=0.818731$, $b=1-e^{-0.2}=0.181269$, and $a+b=1$ so $b/(1-a)=1$. (b) $\sum y_k^2=0.1615$, $\sum y_ku_k=-0.35$, $\sum u_k^2=5$, $\sum y_ky_{k+1}=0.0693$, $\sum u_ky_{k+1}=0.62$, so $\det=0.8075-0.1225=0.685$ and $\hat\theta=\tfrac{1}{0.685}(5\cdot0.0693+0.35\cdot0.62,\ 0.35\cdot0.0693+0.1615\cdot0.62)=(0.82263,\ 0.18158)$. Errors $+0.48\,\%$ in $\hat a$, $+0.17\,\%$ in $\hat b$ — the opposite sign from the worked case, since rounding can err either way. $\hat\tau=-0.2/\ln0.82263=1.024\,\mathrm{s}$ and $\hat K_{\mathrm{dc}}=0.18158/0.17737=1.024$. The factor is $\tau/T=5$: $0.48\,\%\times5=2.4\,\%$. The residuals give $\hat\sigma^2=3.28\times10^{-6}$ and $\mathrm{sd}(\hat a)=0.0049$, about $\pm3\,\%$ in $\tau$ — tighter than the worked case's $\pm13\,\%$, partly because $\tau/T$ is $5$ instead of $10$ and partly because this record's residuals happen to be smaller. (c) $S=0.181269^2/(1-0.818731^2)=0.09967$, so $\hat a\to0.818731\times0.09967/0.10967=0.7441$ and $\hat\tau=-0.2/\ln0.7441=0.677\,\mathrm{s}$: a noise one third of the state's standard deviation ($\sqrt S=0.316$) reports a time constant a third too short, with a covariance that shows none of it. (d) With $u_k=-2x_k$ the columns are $x_k$ and $-2x_k$, so every row of $\Phi$ is a multiple of $(1,-2)$: rank 1. The regression reduces to $x_{k+1}=(a-2b)\,x_k$, so least squares identifies the closed-loop pole $a-2b=0.904837-0.190325=0.7145$ and nothing about $a$ and $b$ separately.
 > 3. Blanks: `u[i] = -K * x[i] + r[i]`, `x[i + 1] = a0 * x[i] + b0 * u[i] + sw * rng.standard_normal()`, and `theta[0] - K * theta[1]`. With $r=0$ it prints rank $1$, $\hat\theta=(0.1513,\ -0.3026)$, $\hat a-K\hat b=0.7565$, standard deviations `inf`, and a condition number of order $10^{32}$ — the second singular value is rounding noise, so your machine may print another huge number or `inf`. The pair is the minimum-norm point on the line $a-2b=0.7565$, namely $0.7565\,(1,-2)/5$, and it is nowhere near the heater; `lstsq` gives no warning, which is why the rank is printed. $0.7565$ is a noisy estimate of (d)'s $0.7145$ from 200 samples of noise-driven data, within the $0.049$ standard deviation such an estimate has. With $r=$ PRBS it prints rank $2$, $\hat\theta=(0.9079,\ 0.0958)$, $\hat a-K\hat b=0.7162$, standard deviations $(0.0028,\ 0.0009)$ and a condition number near $10$. Identifiable — at a price: the open-loop PRBS gave $0.0016$ for $\hat a$. Feedback holds the state near zero, which is its job, and the state is a regressor, so the closed-loop record carries less information: from $r$ to $x$ the loop's DC gain is $1/(1+K)=1/3$.
 
 ### Sources
@@ -524,21 +580,24 @@ for name, r in (("r = 0", np.zeros(N)), ("r = prbs", prbs(N))):
 
 *[[02-foundations/linear-algebra|1. 선형대수]](최소제곱), [[02-foundations/probability|3. 확률]](편향과 분산), [[04-robotics/control-theory-ce397|5. 제어 이론]](장치 **P4**, 곧 카탈로그의 새는 히터([[02-foundations/lab-plants|0.6]]), 그리고 그 샘플 모델) 위에 선다. 다른 페이지는 모두 P4의 숫자를 카탈로그에서 읽는다. 이 페이지는 그 숫자를 기록에서 되찾고, 이어서 **P2** 팔의 질량 행렬을 미지수 셋으로 다룬다.*
 
+> [!note] 왜 배우는가 · Why this matters
+> **지금 있는 곳:** [[physical-ai-map|피지컬 AI 지도]]에서 식별은 제어와 함께 [[07-research-program/index|7. 연구 프로그램 §5]]의 로봇 스택 옆 열에 서고, "*저 패널을 프레임에 설치해*"에서는 *부재를 옮기는* 단계를 맡는다. 모델 기반 제어기는 그 모델을 맞춘 기록만큼만 패널을 잘 나른다. **왜:** 패널을 잡으면 팔이 바뀌고, 부주의한 기록은 엉뚱한 팔을 식별한다. 카탈로그의 2링크 팔 P2([[02-foundations/lab-plants|0.6]])의 끝에 $3$ kg 패널을 달면 세 관성 파라미터가 $(2, 1, 1)$에서 $(5, 4, 4)$ kg m²로 바뀌고(§9), 센서 잡음 $\sigma = 0.1$을 거쳐 기록한 계단은 카탈로그의 새는 히터 P4의 시정수 $1$ s를 $0.23$ s로 보고하면서도 공분산에는 그 기미조차 없다(§5). **방향:** [[04-robotics/modern-robotics/ch11-robot-control|MR 11장 §2]]의 계산 토크는 §9가 식별하는 질량 행렬을 곱하고, [[04-robotics/mpc|7. MPC]]는 정확히 §2의 샘플 히터 위에서 계획하며, [[05-construction-robotics/sim-to-real|건설 7.5 Sim-to-Real §7]]은 §3의 최소제곱으로 네 번의 통과에서 트렌치의 흙을 식별한다. 이 페이지는 학위논문 경로의 블록 2, 로보틱스 69–74회차이고, 7.5 §7은 블록 6에서 다시 나온다([[07-research-program/index|7. 연구 프로그램 §8]]). **얻는 것:** 샘플 모델을 최소제곱으로 맞추고, 입력이 그것을 여기했는지와 잡음이 그것을 편향시켰는지 말하고, 떼어 둔 데이터에서 자유 주행으로 검증하고, 시정수로 되돌리고, 논문의 식별된 모델에 같은 다섯 질문을 던질 수 있다.
+
 > [!note] 처음이라면 · First pass
-> 아래의 그림에서 시작해, 계산기를 들고 계산 절을 따라가라. P4의 샘플 파라미터를 정확히 구하고, 센서 판독값 다섯 개로 추정하고, 그 추정을 시상수로 되돌린다. 그다음 최소제곱은 §3, 입력이 왜 모든 것을 정하는지는 §4, 그리고 §8의 랩. 논문의 식별된 모델을 믿기 전에 §5를 다시 읽어라. 어떤 공분산도 보고하지 않는 오차를 다루기 때문이다. §9는 같은 방법을 로봇 팔에 쓴다.
+> 첫 읽기는 60–90분짜리 세 회차(로보틱스 69–71)이고, Working 통과에 세 회차(72–74)가 더 든다. **1회차(69):** 이 페이지의 대상, 그림, 그리고 계산기를 든 끝까지 계산 — 정확한 $a = 0.904837$과 $b = 0.095163$, $2\times2$ 정규방정식으로 푼 판독값 다섯 개의 추정, 한 표준편차 구간이 붙은 $\hat\tau = 0.968$ s — 그다음 §1. 페이지를 가리고 정규방정식을 다시 풀고 잔차가 두 열에 모두 직교하는지 확인하는 것으로 끝낸다. **2회차(70):** §2–§4 — 샘플 모델이 왜 정확한지, 최소제곱과 그 공분산, $\Phi^\top\Phi$를 뒤집을 수 있는지를 왜 입력이 정하는지. 스스로 점검 1로 끝낸다. **3회차(71):** §5–§7 — 잡음이 어디로 들어와 언제 맞춤을 편향시키는지, 자유 주행 검증, 연속 시간으로 되돌리기. 스스로 점검 3과 4로 끝낸다. **Working 통과:** §8의 랩을 돌리고 그 네 읽기를 §4–§6에 비추어 읽고(72), §9–§10과 나머지 스스로 점검(73), 과제(74). 논문의 식별된 모델을 믿기 전에 §5를 다시 읽어라. 어떤 공분산도 보고하지 않는 오차를 다루기 때문이다.
 
 ### 이 페이지의 대상 · Running object
 
-[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 새는 히터 $\dot x=-x+u+d$. $x$는 온도 오차, $u$는 명령, $d$는 미지 외란이다. 연속 극점 $-1\,\mathrm{s^{-1}}$(시상수 $\tau=1\,\mathrm{s}$)과 DC 이득 $1$이, 이 페이지가 모르는 척하다가 데이터에서 되찾는 숫자다. 페이지는 다음을 더하고 고정한다.
+[[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 새는 히터 $\dot x=-x+u+d$. $x$는 온도 오차, $u$는 명령, $d$는 미지 외란이다. 연속 극점 $-1\,\mathrm{s^{-1}}$(시정수 $\tau=1\,\mathrm{s}$)과 **DC 이득**(DC gain) $K_{\mathrm{dc}}=1$ — 유지된 입력 한 단위당 정상 출력, 플랜트 $\dot x=\alpha x+\beta u$에서 $G(0)=-\beta/\alpha$이고 §2의 샘플 모델로는 $b/(1-a)$ — 이, 이 페이지가 모르는 척하다가 데이터에서 되찾는 숫자다. 페이지는 다음을 더하고 고정한다.
 
 | 기호 | 값 | 뜻 |
 |---|---:|---|
 | $T$ | $0.1\,\mathrm{s}$ | 샘플 주기. 명령은 주기마다 일정하게 유지된다(영차 유지) |
-| $a,\ b$ | $0.904837,\ 0.095163$ | 이 $T$에서 P4의 정확한 샘플 파라미터. 계산 절에서 유도 |
+| $a,\ b$ | $0.904837,\ 0.095163$ | 이 $T$에서 P4의 정확한 샘플 파라미터. 끝까지 계산에서 유도 |
 | $w_k$ | 백색, 표준편차 $\sigma$ | 방정식 오차: 샘플링을 거친 외란. $d$가 한 주기 동안 일정하면 $w_k=b\,d_k$ |
 | $v_k$ | 백색, 표준편차 $\sigma$ | 출력 오차: 샘플된 상태에 더해지는 센서 잡음, $y_k=x_k+v_k$ |
 | $N$ | $200$ 샘플, $20\,\mathrm{s}$ | 기록 하나, 정지 상태에서 시작 |
-| 입력 | 계단, 사인, PRBS, 모두 $\lvert u_k\rvert\le1$ | 계단 $u_k=1$; 사인 $u_k=\sin(kT)$, 히터의 코너 주파수 $1\,\mathrm{rad/s}$; PRBS: §4의 31비트 수열, 비트마다 5샘플 유지 |
+| 입력 | 계단, 사인, PRBS, 모두 $\lvert u_k\rvert\le1$ | 계단 $u_k=1$; 사인 $u_k=\sin(kT)$, 히터의 코너 주파수 $1\,\mathrm{rad/s}$(히터가 그보다 빠른 입력을 감쇠시키기 시작하는 $1/\tau$, [[02-foundations/engineering-math\|0.5 §9]]); PRBS: §4의 31비트 수열, 비트마다 5샘플 유지 |
 | 계산 기록 | $u=(1,1,1,-1,-1)$ | 정지 상태에서 보낸 명령 다섯 개, 분해능 $0.01$인 센서로 읽음 |
 
 같은 카탈로그의 **P2** 팔은 §9에서만 등장하고, 수평면에 놓여 중력이 빠진다: $L_1=L_2=1\,\mathrm{m}$, 각 링크 말단에 $m_1=m_2=1\,\mathrm{kg}$.
@@ -547,23 +606,53 @@ for name, r in (("r = 0", np.zeros(N)), ("r = prbs", prbs(N))):
 
 ### 그림으로 먼저 보기 · The picture
 
-```mermaid
-flowchart LR
-    G["입력 생성기: 계단, 사인 또는 PRBS"] -->|"u_k"| H["영차 유지, T"]
-    H --> S1(("Σ"))
-    D["d: 외란, 방정식 오차"] --> S1
-    S1 --> P["P4: dx/dt = -x + u + d"]
-    P --> SM["샘플러, T"]
-    SM -->|"x_k"| S2(("Σ"))
-    V["v_k: 센서 잡음, 출력 오차"] --> S2
-    S2 -->|"y_k"| RG["회귀 벡터 phi_k = (y_k, u_k), 목표 y_k+1"]
-    G -->|"u_k, 정확히 안다"| RG
-    RG --> LS["최소제곱: theta = (a, b)"]
-    LS --> MB["되돌리기: tau = -T / ln a, K = b / (1 - a)"]
-    LS --> VAL["검증: 떼어 둔 기록에서 자유 실행"]
-```
+<svg viewBox="0 0 560 390" style="max-width:100%;height:auto" role="img" aria-label="두 미지수 a(0.80~1.00)와 b(0.075~0.115)의 평면에 그린 끝까지 계산. 판독값 다섯 개는 각각 직선 y_k a + u_k b = y_{k+1}이다: 히터를 켠 세 행 b = 0.10, b = 0.18 - 0.10a, b = 0.26 - 0.18a는 거의 평행해 a = 0.80과 a = 1.00에서 멀리 만나고, 뒤집은 두 행 b = 0.26a - 0.14와 b = 0.14a - 0.03(점선)은 a = 0.875와 0.929 사이에서 그 셋을 가파르게 자른다. 최소제곱 점 (0.9018, 0.0956)(채운 점)과 그 한 표준편차 상자 ±0.0124 × ±0.0020이 참값 (0.9048, 0.0952)(빈 점)을 감싼다. 계단의 정상상태 행이 모두 놓이는 점선 a + b = 1이 참값을 지난다.">
+  <defs><clipPath id="siClipk"><rect x="70.0" y="30.0" width="450.0" height="260.0"/></clipPath></defs>
+  <rect x="70.0" y="30.0" width="450.0" height="260.0" fill="none" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.5"/>
+  <g stroke="currentColor" stroke-width="0.8" stroke-opacity="0.6"><line x1="70.0" y1="290.0" x2="70.0" y2="294.0"/><line x1="182.5" y1="290.0" x2="182.5" y2="294.0"/><line x1="295.0" y1="290.0" x2="295.0" y2="294.0"/><line x1="407.5" y1="290.0" x2="407.5" y2="294.0"/><line x1="520.0" y1="290.0" x2="520.0" y2="294.0"/><line x1="66.0" y1="257.5" x2="70.0" y2="257.5"/><line x1="66.0" y1="192.5" x2="70.0" y2="192.5"/><line x1="66.0" y1="127.5" x2="70.0" y2="127.5"/><line x1="66.0" y1="62.5" x2="70.0" y2="62.5"/></g>
+  <g font-size="11" fill="currentColor">
+    <text x="70.0" y="306.0" text-anchor="middle">0.80</text>
+    <text x="182.5" y="306.0" text-anchor="middle">0.85</text>
+    <text x="295.0" y="306.0" text-anchor="middle">0.90</text>
+    <text x="407.5" y="306.0" text-anchor="middle">0.95</text>
+    <text x="520.0" y="306.0" text-anchor="middle">1.00</text>
+    <text x="63.0" y="261.5" text-anchor="end">0.08</text>
+    <text x="63.0" y="196.5" text-anchor="end">0.09</text>
+    <text x="63.0" y="131.5" text-anchor="end">0.10</text>
+    <text x="63.0" y="66.5" text-anchor="end">0.11</text>
+    <text x="520.0" y="320.0" text-anchor="end" font-style="italic">a</text>
+    <text x="63.0" y="22.0" text-anchor="end" font-style="italic">b</text>
+  </g>
+  <g fill="none" stroke="currentColor" clip-path="url(#siClipk)">
+    <line x1="-42.5" y1="127.5" x2="632.5" y2="127.5" stroke-width="1.4"/>
+    <line x1="-42.5" y1="95.0" x2="632.5" y2="290.0" stroke-width="1.4"/>
+    <line x1="-42.5" y1="-35.0" x2="632.5" y2="316.0" stroke-width="1.4"/>
+    <line x1="-42.5" y1="420.0" x2="632.5" y2="-87.0" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <line x1="-42.5" y1="290.0" x2="632.5" y2="17.0" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <line x1="227.5" y1="-67.5" x2="385.0" y2="387.5" stroke-width="2.2" stroke-dasharray="0.1 4.5" stroke-linecap="round"/>
+  </g>
+  <rect x="271.1" y="142.8" width="56.0" height="26.0" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="0.9" stroke-dasharray="3 2"/>
+  <circle cx="299.1" cy="155.8" r="3.6" fill="currentColor"/>
+  <circle cx="305.9" cy="158.9" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g font-size="11" fill="currentColor">
+    <text x="103.7" y="121.5">k = 0</text>
+    <text x="112.0" y="163.0">k = 1</text>
+    <text x="143.5" y="54.6">k = 2</text>
+    <text x="186.0" y="267.0">k = 3</text>
+    <text x="470.0" y="104.0" text-anchor="middle">k = 4</text>
+    <text x="357.5" y="280.2">a + b = 1</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.4"><line x1="70.0" y1="330" x2="96.0" y2="330"/><line x1="340.0" y1="330" x2="366.0" y2="330" stroke-dasharray="6 4"/></g>
+  <line x1="70.0" y1="372" x2="96.0" y2="372" stroke="currentColor" stroke-width="2.2" stroke-dasharray="0.1 4.5" stroke-linecap="round"/>
+  <circle cx="83.0" cy="351" r="3.6" fill="currentColor"/><circle cx="353.0" cy="351" r="3.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <g font-size="11" fill="currentColor">
+    <text x="104.0" y="334">실선: 히터 켬, u = 1</text><text x="374.0" y="334">파선: 뒤집음, u = −1</text>
+    <text x="104.0" y="355">최소제곱 (0.9018, 0.0956); 상자: ±1 표준편차</text><text x="374.0" y="355">참값 (0.9048, 0.0952)</text>
+    <text x="104.0" y="376">점선: a + b = 1, 계단의 정상상태 행이 모두 놓이는 곳</text>
+  </g>
+</svg>
 
-P4의 식별 기록을 그린 신호 흐름도다: 명령은 영차 유지를 거치고 상태는 샘플러가 읽는데 둘 다 주기가 $T = 0.1\,\mathrm{s}$라서, 샘플 모델 $x_{k+1} = a\,x_k + b\,u_k$는 $(a, b) = (0.904837,\ 0.095163)$으로 정확하다. 잡음은 두 자리로 들어오고 — 외란 $d$는 플랜트(제어되는 시스템, 여기서는 P4) 앞에서, 센서 잡음 $v_k$는 샘플러 뒤에서 — 명령은 생성기에서 곧장 회귀 벡터로 가므로, $\Phi$에 잡음을 실어 나를 수 있는 것은 잰 열 $y_k$뿐이고 그것이 §5의 편향이다. 최소제곱이 돌려준 $\theta = (a, b)$를 $\tau = -T/\ln a = 1\,\mathrm{s}$와 $K = b/(1-a) = 1$로 되돌리고, 떼어 둔 기록 위의 자유 주행으로 검증한다.
+끝까지 계산을 두 미지수의 평면에 그린 것이다. 판독값 다섯 개는 각각 직선 하나 $y_k\,a + u_k\,b = y_{k+1}$, 곧 그 판독값 혼자서 허락하는 $(a, b)$의 집합이다. 최소제곱은 다섯 빗나감 $y_{k+1} - y_k a - u_k b$의 제곱합이 가장 작은 점 $(0.9018,\ 0.0956)$을 고르고, 그 한 표준편차 상자 — $a$로 $\pm0.0124$, $b$로 $\pm0.0020$ — 가 참값 $(0.9048,\ 0.0952)$을 감싼다. 히터를 켠 세 행은 거의 평행해 멀리서 만나고 — 행 0과 1은 $a = 0.80$, 행 1과 2는 $a = 1.00$에서 — 뒤집은 두 행은 $a = 0.875$와 $0.929$ 사이에서 그 셋을 가로지르므로 $a$를 고정하는 것은 뒤집기이며, 계단의 정상상태 행은 모두 점선 $a + b = 1$ 위에 떨어져 DC 이득만 고정할 것이다.
 
 ### 대상으로 한 번 끝까지 · Worked case
 
@@ -573,13 +662,13 @@ P4의 식별 기록을 그린 신호 흐름도다: 명령은 영차 유지를 �
 
 $$x_{k+1}=e^{-T}x_k+\big(1-e^{-T}\big)(u_k+d_k)$$
 
-자유 응답이 한 주기에 $e^{-T}$만큼 감쇠하고, 상수 입력은 $\int_0^T e^{-(T-s)}\,ds=1-e^{-T}$만큼 쌓이기 때문이다. $d=0$이면 $x_{k+1}=a\,x_k+b\,u_k$이고
+자유 응답이 한 주기에 $e^{-T}$만큼 감쇠하고, 상수 입력은 $\int_0^T e^{-(T-t')}\,dt'=1-e^{-T}$만큼 쌓이기 때문이다. $d=0$이면 $x_{k+1}=a\,x_k+b\,u_k$이고
 
 $$a=e^{-0.1}=0.904837,\qquad b=1-e^{-0.1}=0.095163.$$
 
-검산 둘. 첫째, $a+b=1$이 정확히 성립한다. 샘플된 DC 이득 $b/(1-a)$가 P4의 DC 이득 $1$과 같아야 하기 때문이다. 둘째, 이것은 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]가 같은 플랜트에 대해 행렬로 계산한 $A_d$, $B_d$다. 명시적 오일러([[02-foundations/lab-kernel|0.7]])는 대신 $(0.9,\ 0.1)$을 준다. 가깝지만, 그렇게 시뮬레이션한 기록으로는 최소제곱이 히터가 아니라 적분기를 식별한다. 아래 랩이 정확한 사상으로 시뮬레이션하는 이유다.
+검산 둘. 첫째, $a+b=1$이 정확히 성립한다. 샘플된 DC 이득 $K_{\mathrm{dc}}=b/(1-a)$가 P4의 $K_{\mathrm{dc}}=1$과 같아야 하기 때문이다. 둘째, 이것은 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]가 같은 플랜트에 대해 행렬로 계산한 $A_d$, $B_d$다. 명시적 오일러([[02-foundations/lab-kernel|0.7]])는 히터를 조금 다른 숫자로 밟고, 그렇게 시뮬레이션한 기록으로는 최소제곱이 히터의 값이 아니라 오일러의 $(0.9,\ 0.1)$을 식별한다. 아래 랩이 정확한 사상으로 시뮬레이션하는 이유다.
 
-**2. 판독값 다섯 개로 한 추정.** 정지 상태에서 $u=(1,1,1,-1,-1)$을 보낸다. 세 주기 동안 켜고, 두 주기 동안 뒤집는다. 정확한 상태는 $x=(0,\ 0.095163,\ 0.181269,\ 0.259182,\ 0.139355,\ 0.030931)$이고, 분해능 $0.01$인 센서는
+**2. 판독값 다섯 개로 한 추정.** 정지 상태에서 $u=(1,1,1,-1,-1)$을 보낸다. 세 주기 동안 켜고, 두 주기 동안 뒤집는다. 정확한 상태는 $x=(0,\ 0.095163,\ 0.181269,\ 0.259182,\ 0.139355,\ 0.030931)$이고 — 앞의 둘은 [[02-foundations/engineering-math|0.5]]의 그림에서 전진 오일러가 $0.10$과 $0.19$를 준 자리의 정확한 $0.095$와 $0.181$이다 — 분해능 $0.01$인 센서는
 
 $$y=(0,\ 0.10,\ 0.18,\ 0.26,\ 0.14,\ 0.03)$$
 
@@ -601,15 +690,15 @@ $$\Phi^\top\Phi=\begin{pmatrix}\sum y_k^2&\sum y_ku_k\\ \sum y_ku_k&\sum u_k^2\e
 
 $$\hat\theta=\frac{1}{0.6336}\begin{pmatrix}5&0.12\\ 0.12&0.1296\end{pmatrix}\begin{pmatrix}0.1054\\ 0.37\end{pmatrix}=\begin{pmatrix}0.90183\\ 0.095644\end{pmatrix}.$$
 
-**3. 비교하고, 검산하고, 되돌리기.** 되돌리기는 §7의 $\hat\tau=-T/\ln\hat a$와 $\hat K=\hat b/(1-\hat a)$다.
+**3. 비교하고, 검산하고, 되돌리기.** 되돌리기는 §7의 $\hat\tau=-T/\ln\hat a$와 $\hat K_{\mathrm{dc}}=\hat b/(1-\hat a)$다.
 
-| | $a$ | $b$ | $\tau$ | DC 이득 $K$ |
+| | $a$ | $b$ | $\tau$ | DC 이득 $K_{\mathrm{dc}}$ |
 |---|---:|---:|---:|---:|
 | 정확 | 0.904837 | 0.095163 | 1.000 s | 1.000 |
 | 판독값 다섯 개 | 0.90183 | 0.095644 | 0.968 s | 0.974 |
 | 오차 | −0.33 % | +0.51 % | −3.2 % | −2.6 % |
 
-잔차 $r=y-\Phi\hat\theta=(0.00436,\ -0.00583,\ 0.00203,\ 0.00117,\ -0.00061)$은 반올림 범위에서 $\sum r_ky_k=0$, $\sum r_ku_k=0$을 만족한다. [[02-foundations/linear-algebra|1. 선형대수 §2]]가 최소제곱이 반드시 남긴다고 말하는, $\Phi$의 모든 열과의 직교성이다. 산수 실수를 대부분 잡아내는 10초짜리 검산이기도 하다. 잔차의 크기는 §3의 잡음 추정 $\hat\sigma^2=\sum r_k^2/(5-2)=1.96\times10^{-5}$, 즉 $\hat\sigma=0.0044$를 주는데, $0.01$로 반올림하면 생겨야 할 $0.0039$에 가깝다. 이어서 §3의 공분산 식 $\widehat{\mathrm{cov}}(\hat\theta)=\hat\sigma^2(\Phi^\top\Phi)^{-1}$이 $\mathrm{sd}(\hat a)=\sqrt{1.96\times10^{-5}\times5/0.6336}=0.0124$, $\mathrm{sd}(\hat b)=0.0020$을 준다. 참값은 둘 다 한 표준편차 안에 있다.
+잔차 $r=y-\Phi\hat\theta=(0.00436,\ -0.00583,\ 0.00203,\ 0.00117,\ -0.00061)$은 반올림 범위에서 $\sum r_ky_k=0$, $\sum r_ku_k=0$을 만족한다. [[02-foundations/linear-algebra|1. 선형대수 §2]]가 최소제곱이 반드시 남긴다고 말하는, $\Phi$의 모든 열과의 직교성이다. 산수 실수를 대부분 잡아내는 10초짜리 검산이기도 하다. 잔차의 크기는 §3의 잡음 추정 $\hat\sigma^2=\sum r_k^2/(5-2)=1.96\times10^{-5}$ — 식 다섯에서 맞춘 파라미터 둘을 뺀 $N-2$로 나눈다(§3) — 즉 $\hat\sigma=0.0044$를 준다. $0.01$로 반올림하면 생겨야 할 $0.0039$에 가깝다. 반올림 오차는 한 칸 $\Delta=0.01$ 위에 고르게 퍼지므로 표준편차가 $\Delta/\sqrt{12}=0.0029$이고([[04-robotics/sensor-models|3.2 센서 모델과 잡음 §4]]), 판독값마다의 잡음 $v_k$는 $y_{k+1}$의 식에 $v_{k+1}-a\,v_k$로 들어가(§5) 표준편차가 $\sqrt{1+a^2}=1.35$배, 곧 $0.0039$가 된다. 이어서 §3의 공분산 식 $\widehat{\mathrm{cov}}(\hat\theta)=\hat\sigma^2(\Phi^\top\Phi)^{-1}$이 $\mathrm{sd}(\hat a)=\sqrt{1.96\times10^{-5}\times5/0.6336}=0.0124$ — $5/0.6336$은 위에서 대각을 맞바꿔 읽은 역행렬의 왼쪽 위 성분 $[(\Phi^\top\Phi)^{-1}]_{11}$이다 — 와 $\mathrm{sd}(\hat b)=0.0020$을 준다. 참값은 둘 다 한 표준편차 안에 있다.
 
 읽을 것 둘. 방법은 정확하다. 반올림하지 않은 상태로 맞추면 최소제곱이 $0.904837$과 $0.095163$을 기계 정밀도로 돌려주므로, 오차의 모든 자릿수는 센서에서 왔다. 그리고 $\hat a$의 0.3 %가 $\hat\tau$에서는 3 %가 되었다. §7이 유도하는 $\tau/T=10$배다. 같은 사상을 통과시키면 정직한 $\mathrm{sd}(\hat a)=0.0124$는 $\tau$를 $0.853$부터 $1.116\,\mathrm{s}$ 사이 어디에든 둔다. 판독값 다섯 개로 사는 것은 넓은 구간 안의 그럴듯한 점 추정이다.
 
@@ -623,32 +712,35 @@ $$\hat\theta=\frac{1}{0.6336}\begin{pmatrix}5&0.12\\ 0.12&0.1296\end{pmatrix}\be
 >
 > $\hat\theta_N$은 식 $N$개에서 얻은 추정, $\varphi_k$는 스텝 $k$에서 기록으로 만든 회귀 벡터, $y_{k+1}$은 다음 측정 출력이다. 그러므로 추정은 모델의 한 스텝 예측이 측정값에 제곱 오차로 가장 가까운 후보다. 이것이 §3의 최소제곱 기준이다. 다른 기준도 있고, §5는 이 기준이 언제 오도하는지에 관한 것이다.
 >
-> - **예**: 계산 절 — 구조 $x_{k+1}=a\,x_k+b\,u_k$, 실험 $u=(1,1,1,-1,-1)$을 분해능 $0.01$로 읽음, 기준 최소제곱, 추정 $(0.90183,\ 0.095644)$, 검증은 아직 남은 빚.
+> - **예**: 끝까지 계산 — 구조 $x_{k+1}=a\,x_k+b\,u_k$, 실험 $u=(1,1,1,-1,-1)$을 분해능 $0.01$로 읽음, 기준 최소제곱, 추정 $(0.90183,\ 0.095644)$, 검증은 아직 남은 빚.
 > - **비예**: 기록된 계단 응답 하나에 시간의 다항식을 맞추는 것. 그것은 *시스템*이 아니라 *신호*를 맞춘다. 입력이 들어 있지 않아 다른 명령에 대한 응답을 예측할 수 없는데, 다른 명령에 대한 응답을 예측하는 것이 모델의 유일한 쓸모다.
 > - **비예**: CAD 모델에서 $M(\theta)$를 읽는 것. 파라미터가 있는 모델이지만 기록도 기준도 없고, 어디서 틀리는지는 [[02-foundations/manipulator-kinematics-dynamics|10. §7]]이 나열한다.
 > - **왜 중요한가**: 제어기, 시뮬레이터, 수동성 경계는 식별이 남긴 오차를 그대로 물려받는다. 어떤 보고된 불확실성에도 담기지 않는 오차까지 물려받는다(§5). 그러니 논문의 모든 모델 기반 주장은, 그 논문이 설명하지 않을 수도 있는 식별만큼만 좋다.
 
 ### 2. 샘플 모델, 그리고 그것이 정확한 이유
 
-계산 절은 P4를 다뤘다. 입력이 유지되는 모든 1차 플랜트 $\dot x=\alpha x+\beta u$에 같은 적분이 통한다:
+컴퓨터는 히터를 $T$마다 한 번씩만 보므로 맞출 수 있는 모델은 샘플 모델이고, 첫 질문은 그 모델이 근사인가다. 입력이 유지되면 근사가 아니다. 끝까지 계산은 P4를 다뤘고, 입력이 유지되는 모든 1차 플랜트(제어되는 시스템) $\dot x=\alpha x+\beta u$에 같은 적분이 통한다:
 
 $$a=e^{\alpha T},\qquad b=\frac{e^{\alpha T}-1}{\alpha}\,\beta$$
 
-한 주기의 자유 응답이 $e^{\alpha T}$이고 유지된 입력이 $\beta\int_0^T e^{\alpha s}\,ds$만큼 쌓이기 때문이다. P4는 $\alpha=-1$, $\beta=1$이다. 이 사상에 관한 사실 셋이 페이지의 나머지를 떠받친다.
+한 주기의 자유 응답이 $e^{\alpha T}$이고 유지된 입력이 $\beta\int_0^T e^{\alpha t'}\,dt'$만큼 쌓이기 때문이다. P4는 $\alpha=-1$, $\beta=1$이다. [[02-foundations/engineering-math|0.5 §8]]의 기호를 바꿔 부른 것이다. 거기의 $a$(P4에서 $-1$)가 이 페이지의 $\alpha$이고, 거기의 샘플 인수 $a_d=e^{a\Delta t}$가 이 페이지의 $a$ — [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]의 $A_d$이자 [[02-foundations/signal-processing|6. 신호 처리 §5]]에서 P4가 놓이는 $z=0.905$ — 다. 이 사상에 관한 사실 셋이 페이지의 나머지를 떠받친다.
 
 - **샘플 순간에서 정확하다.** 작게 유지해야 할 이산화 오차가 아니다. 입력이 샘플 사이에 정말 유지되기만 하면 — 디지털 제어기의 출력은 그렇다 — 정확하다. 그러므로 구조 $x_{k+1}=a\,x_k+b\,u_k$는 P4에 대해 옳고, 랩의 어떤 불일치도 절단 오차가 아니라 잡음이거나 편향이다. $e^{AT}$로 쓴 행렬판은 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]다.
 - **$(a,b)$에 선형이고 $\alpha$에는 비선형이다.** 그러니 $(a,b)$를 최소제곱으로 식별하고 나중에 변환한다(§7). $\alpha$를 직접 맞추면 미지수가 지수함수 안에 들어간다.
 - **극점 사상은 홀드에 의존하지 않고, 입력 쪽은 의존한다.** $a=e^{\alpha T}$는 자유 응답이라 샘플 사이에 입력이 무엇을 하는지 보지 않는다. $b$는 홀드로부터 만들어진다. 명령을 유지하지 않는 액추에이터 — 샘플 사이에 명령을 경사로 잇거나 매끄럽게 만드는 것 — 는 올바른 샘플 모델의 입력 쪽, 곧 그 계수와 경우에 따라 과거 입력이 몇 개 들어가는지를 바꾸지만 극점은 바꾸지 않는다. 액추에이터에 맞는 입력 쪽을 맞춰라. 거기서 생긴 오차는 $\hat a$로도 새어 들어가기 때문이다.
 
-**입력 쪽의 값을 P4에서 매기면.** 히터의 구동기가 새 명령을 유지하지 않고 한 주기에 걸쳐 $u_{k-1}$에서 $u_k$까지 직선으로 올린다고 하자. 자유 응답은 그대로이므로 $a=0.904837$도 그대로지만, 입력 항은 둘로 갈라진다. 이제 각 주기의 일부를 이전 명령이 구동하기 때문이다:
+아래 접힌 노트가 셋째 사실의 값을 P4에서 매긴다. 명령을 유지하지 않고 경사로 잇는 액추에이터를 유지 입력 구조로 맞추면, 정확하고 잡음 없는 기록에서도 계단은 시정수를 $1.10$ s로, PRBS는 $1.35$ s로 보고한다.
 
-$$x_{k+1}=a\,x_k+b_0\,u_k+b_1\,u_{k-1},\qquad b_0=0.048374,\quad b_1=0.046788$$
-
-그리고 $b_0+b_1=0.095163=b$이므로 DC 이득은 여전히 $1$이다. 이 액추에이터의 정확하고 잡음 없는 기록에 §3의 두 파라미터 구조를 맞추면 빠진 $u_{k-1}$이 극점으로 들어간다. 계단에서는 $\hat\tau=1.10\,\mathrm{s}$, §8의 PRBS에서는 $1.35\,\mathrm{s}$, 계산 절의 명령 다섯 개에서는 $\hat a=1.048$로, 안정한 히터에는 있을 수 없는 극점이다(§7의 첫째 확인). $u_{k-1}$을 셋째 회귀 변수로 더하면 최소제곱은 세 계수를 모두 정확히 돌려준다. 그러므로 식별된 극점은 샘플 사이에 액추에이터가 무엇을 하는지에 대한 모델만큼만 옳고, 극점을 보고하는 논문은 어떤 홀드를 가정했는지 밝혀야 한다.
+> [!note]- 더 깊이 · Deeper
+> **입력 쪽의 값을 P4에서 매기면.** 히터의 구동기가 새 명령을 유지하지 않고 한 주기에 걸쳐 $u_{k-1}$에서 $u_k$까지 직선으로 올린다고 하자. 자유 응답은 그대로이므로 $a=0.904837$도 그대로지만, 입력 항은 둘로 갈라진다. 이제 각 주기의 일부를 이전 명령이 구동하기 때문이다:
+>
+> $$x_{k+1}=a\,x_k+b_0\,u_k+b_1\,u_{k-1},\qquad b_0=0.048374,\quad b_1=0.046788$$
+>
+> 그리고 $b_0+b_1=0.095163=b$이므로 $K_{\mathrm{dc}}$는 여전히 $1$이다. 이 액추에이터의 정확하고 잡음 없는 기록에 §3의 두 파라미터 구조를 맞추면 빠진 $u_{k-1}$이 극점으로 들어간다. 계단에서는 $\hat\tau=1.10\,\mathrm{s}$, §8의 PRBS에서는 $1.35\,\mathrm{s}$, 끝까지 계산의 명령 다섯 개에서는 $\hat a=1.048$로, 안정한 히터에는 있을 수 없는 극점이다(§7의 첫째 확인). $u_{k-1}$을 셋째 회귀 변수로 더하면 최소제곱은 세 계수를 모두 정확히 돌려준다. 그러므로 식별된 극점은 샘플 사이에 액추에이터가 무엇을 하는지에 대한 모델만큼만 옳고, 극점을 보고하는 논문은 어떤 홀드를 가정했는지 밝혀야 한다.
 
 ### 3. 회귀 위의 최소제곱
 
-설명되지 않는 부분을 드러내 샘플 모델을 쓴다:
+판독값 다섯 개가 미지수 둘에 식 다섯을 주었고, 다섯을 모두 정확히 만족하는 $(a, b)$는 없다. 그림의 직선 다섯이 한 점에서 만나지 않는다. 어느 쌍을 고르고 그것을 얼마나 믿을지가 이 절이다. 설명되지 않는 부분을 드러내 샘플 모델을 쓴다:
 
 $$y_{k+1}=\varphi_k^\top\theta+e_k,\qquad \varphi_k=\begin{pmatrix}y_k\\ u_k\end{pmatrix},\qquad \theta=\begin{pmatrix}a\\ b\end{pmatrix}$$
 
@@ -665,11 +757,11 @@ $e_k$는 방정식 오차, 곧 스텝 $k$에서 모델이 설명하지 못하는
 > - **비예**: 측정값에 대해 채점한 자유 주행 모델 $\hat x_{k+1}=a\,\hat x_k+b\,u_k$. 회귀 벡터가 될 뻔한 $\hat x_k$가 $(a,b)$에 의존하므로 둘째 조건이 깨지고, 그 오차를 최소화하는 것은 비선형 최소제곱 문제다([[02-foundations/optimization|4. 최적화 §3.5]]). §5의 출력 오차 처방이 치르는 값이 정확히 이것이다.
 > - **왜 중요한가**: 둘째 조건이 식별을 답이 하나인 선형대수 문제로 만든다. 그것을 잃으면 반복 솔버, 초기 추측, 국소 최소로 돌아간다.
 
-**추정.** 최소제곱은 $V(\theta)=\lVert y-\Phi\theta\rVert^2=\sum_k(y_{k+1}-\varphi_k^\top\theta)^2$을 최소화하는 $\theta$를 고른다. 기울기는 $\nabla V=-2\Phi^\top(y-\Phi\theta)$이고, 이를 0으로 두면 [[02-foundations/linear-algebra|1. 선형대수 §2]]의 정규방정식 $\Phi^\top\Phi\,\hat\theta=\Phi^\top y$가 나온다. $\Phi^\top\Phi$가 가역이면
+**추정.** 최소제곱은 $V(\theta)=\lVert y-\Phi\theta\rVert^2=\sum_k(y_{k+1}-\varphi_k^\top\theta)^2$을 최소화하는 $\theta$를 고르고, 이것은 [[02-foundations/linear-algebra|1. 선형대수 §2]]의 문제 $\min\lVert Ax-b\rVert^2$을 이름만 바꾼 것이다. 거기의 $A$가 $\Phi$, $x$가 $\theta$이고, 거기의 목표 벡터 $b$는 이 페이지의 $y$이지 입력 계수 $b$가 아니다. 그 절이 기울기를 0으로 두어 정규방정식을 얻고, 여기서는 그것이 $\Phi^\top\Phi\,\hat\theta=\Phi^\top y$이므로, $\Phi^\top\Phi$가 가역이면
 
 $$\hat\theta=\big(\Phi^\top\Phi\big)^{-1}\Phi^\top y=\Phi^\dagger y$$
 
-그때 정규방정식의 해가 정확히 하나이기 때문이다. 기호 하나하나: $\Phi$는 $N\times2$ 회귀 행렬, $y$는 다음 출력의 $N$-벡터, $\Phi^\top\Phi$는 회귀 행렬 열들의 제곱합과 교차곱합으로 된 $2\times2$ 행렬 — 계산 절의 $\sum y_k^2$, $\sum y_ku_k$, $\sum u_k^2$ — , $\Phi^\top y$는 각 열이 목표와 얼마나 함께 움직이는지의 2-벡터, $\Phi^\dagger$는 [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 왼쪽 유사역행렬이다. 헤시안 $2\Phi^\top\Phi$는 가역이기만 하면 양정부호이므로 안장점이 아니라 최소점이다. 기하적으로 $\Phi\hat\theta$는 $y$를 $\Phi$의 열공간에 직교 투영한 것이고, 계산 절이 한 잔차 검산이 바로 그것이다. 코드에서는 역행렬을 만들지 말고 직교 분해(`np.linalg.lstsq`)로 풀어라. $\Phi^\top\Phi$를 만들면 $\Phi$의 조건수가 제곱되기 때문이다([[02-foundations/optimization|4. 최적화 §3.5]]).
+그때 정규방정식의 해가 정확히 하나이기 때문이다. 기호 하나하나: $\Phi$는 $N\times2$ 회귀 행렬, $y$는 다음 출력의 $N$-벡터, $\Phi^\top\Phi$는 회귀 행렬 열들의 제곱합과 교차곱합으로 된 $2\times2$ 행렬 — 끝까지 계산의 $\sum y_k^2$, $\sum y_ku_k$, $\sum u_k^2$ — , $\Phi^\top y$는 각 열이 목표와 얼마나 함께 움직이는지의 2-벡터, $\Phi^\dagger$는 [[02-foundations/linear-algebra|1. 선형대수 §4.5]]의 왼쪽 유사역행렬이다. 헤시안 $2\Phi^\top\Phi$는 가역이기만 하면 양정부호이므로 안장점이 아니라 최소점이고, $\Phi\hat\theta$는 $y$를 $\Phi$의 열공간에 직교 투영한 것이라서 끝까지 계산의 잔차가 두 열 모두에 직교하게 나왔다. 코드에서는 역행렬을 만들지 말고 직교 분해(`np.linalg.lstsq`)로 풀어라. $\Phi^\top\Phi$를 만들면 $\Phi$의 조건수가 제곱되기 때문이다([[02-foundations/optimization|4. 최적화 §3.5]]).
 
 **얼마나 좋은가?** 기록이 정말로 $y=\Phi\theta+e$이고 $e$가 분산 $\sigma^2$인 평균 0 백색 잡음이며([[02-foundations/probability|3. 확률 §5]]), 스텝 $k$의 회귀 벡터가 스텝 $k$의 오차와 무상관, $\mathrm{E}[\varphi_ke_k]=0$이라 하자. 모델을 추정식에 대입하면 $\hat\theta-\theta=(\Phi^\top\Phi)^{-1}\Phi^\top e$이고, 두 경우가 나온다.
 
@@ -684,7 +776,7 @@ $$\widehat{\mathrm{Cov}}(\hat\theta)=\hat\sigma^2\big(\Phi^\top\Phi\big)^{-1},\q
 
 ### 4. 지속적 여기 — $\Phi^\top\Phi$를 뒤집을 수 있을 때
 
-$\Phi^\top\Phi$는 $\Phi$의 열이 선형독립일 때 정확히 가역이다([[02-foundations/linear-algebra|1. 선형대수 §4.5]]). P4의 두 열은 측정 출력과 명령이고, 둘을 떼어 놓는 것은 입력이다. 계단을 보내고 둘이 합쳐지는 것을 보라. 시상수의 세 배쯤 지나면 히터가 자리 잡아 $x_k=u_k=1$이 되고, 두 열이 모두 1로 된 열이 된다. 그러면 정상상태의 모든 행이 같은 말, $1=a\cdot1+b\cdot1$을 한다. $a+b$ — DC 이득 — 만 고정하고 다른 것은 아무것도 고정하지 않는다. $a$와 $b$를 떼어 놓는 것은 과도 응답의 처음 서른 샘플뿐이고, 정상상태를 더 모아도 보태지는 것이 없다. 계단에 없는 성질의 이름에 중요한 단어가 들어 있다: *지속적*.
+$\Phi^\top\Phi$는 $\Phi$의 열이 선형독립일 때 정확히 가역이다([[02-foundations/linear-algebra|1. 선형대수 §4.5]]). P4의 두 열은 측정 출력과 명령이고, 둘을 떼어 놓는 것은 입력이다. 계단을 보내고 둘이 합쳐지는 것을 보라. 시정수의 세 배쯤 지나면 히터가 자리 잡아 $x_k=u_k=1$이 되고, 두 열이 모두 1로 된 열이 된다. 그러면 정상상태의 모든 행이 같은 말, $1=a\cdot1+b\cdot1$을 한다. $a+b$ — DC 이득 — 만 고정하고 다른 것은 아무것도 고정하지 않는다. $a$와 $b$를 떼어 놓는 것은 과도 응답의 처음 서른 샘플뿐이고, 정상상태를 더 모아도 보태지는 것이 없다. 계단에 없는 성질의 이름에 중요한 단어가 들어 있다: *지속적*.
 
 > **지속적 여기의 정의.** **지속적 여기**(persistent excitation)는 *입력 신호*의 성질이고, *차수* $n$에 상대적으로 말한다. 플랜트나 추정기나 입력 크기의 성질이 아니다. 정의 조건 셋. 기록이 길어질수록 신호의 지연 곱 평균이 수렴해 자기상관이 존재한다. 그 평균으로 만든 $n\times n$ 행렬이 양정부호다. 그리고 주장은 언제나 "차수 $n$의" 것이며, 필요한 차수는 모델이 정한다. 개루프에서 P4의 두 파라미터 모델은 $2$다.
 >
@@ -716,11 +808,29 @@ $$c_2\,u_k+(c_1b-c_2a)\,u_{k-1}=0$$
 > - **예**: 랩의 생성기, $m=5$, 되먹임 $x^5+x^3+1$, 그래서 $M=31$. 모두 1인 레지스터에서 `+++++---++-+++-+-+----+--+-++--`를 내보낸다. $+1$ 열여섯 개, $-1$ 열다섯 개이고, 자기상관은 정확히 $1$과 $-1/31=-0.032258$이다.
 > - **비예**: 동전 던지기 $\pm1$ 신호. 역시 이진이고 거의 백색이지만, 상관이 근사적으로만 0이고 실행마다 다르다. PRBS의 상관은 정확하고 재현되며, 그래서 차수를 말할 수 있다.
 > - **비예**, 발목을 잡는 쪽: 같은 PRBS를 샘플마다 클록하는 것. 여전히 차수 31이지만 주기가 $3.1\,\mathrm{s}$라 가장 낮은 주파수가 $2\pi/3.1=2.03\,\mathrm{rad/s}$, 히터의 코너 $1\,\mathrm{rad/s}$ 위다. 히터가 거의 따라오지 못해, 기록에 걸친 상태의 평균 제곱이 $0.026$이다. 비트마다 5샘플씩 유지하면 $0.22$다. 여기는 열들이 독립이라고 말할 뿐, 그 열들이 큰지는 말하지 않는다.
-> - **왜 중요한가**: "어떤 입력?"에 대한 표준 답인 이유가 셋이다. 높은 차수로 지속적으로 여기하고, 딱딱한 액추에이터 한계를 지키면서 그 한계가 허용하는 최대 일률을 내며($u_k^2=1$이 항상 성립), 비트 길이를 골라 스펙트럼을 플랜트 대역에 놓을 수 있다. 랩은 비트마다 $0.5\,\mathrm{s}$, 시상수의 절반을 유지해 가장 낮은 주파수를 $0.41\,\mathrm{rad/s}$에 둔다.
+> - **왜 중요한가**: "어떤 입력?"에 대한 표준 답인 이유가 셋이다. 높은 차수로 지속적으로 여기하고, 딱딱한 액추에이터 한계를 지키면서 그 한계가 허용하는 최대 일률을 내며($u_k^2=1$이 항상 성립), 비트 길이를 골라 스펙트럼을 플랜트 대역에 놓을 수 있다. 랩은 비트마다 $0.5\,\mathrm{s}$, 시정수의 절반을 유지해 가장 낮은 주파수를 $0.41\,\mathrm{rad/s}$에 둔다.
 
 ### 5. 잡음이 들어오는 곳: 방정식 오차, 출력 오차, 그리고 편향
 
-§3의 보장은 조건 하나, $\mathrm{E}[\varphi_ke_k]=0$ 위에 서 있었다. 그것이 성립하는지는 잡음이 기록의 어디로 들어오는지에 달렸고, 맨 위의 그림에는 두 자리가 있다.
+§3의 보장은 조건 하나, $\mathrm{E}[\varphi_ke_k]=0$ 위에 서 있었다. 그것이 성립하는지는 잡음이 기록의 어디로 들어오는지에 달렸고, 아래 신호 흐름도가 그 두 자리를 보인다.
+
+```mermaid
+flowchart LR
+    G["입력 생성기: 계단, 사인 또는 PRBS"] -->|"u_k"| H["영차 유지, T"]
+    H --> S1(("Σ"))
+    D["d: 외란, 방정식 오차"] --> S1
+    S1 --> P["P4: dx/dt = -x + u + d"]
+    P --> SM["샘플러, T"]
+    SM -->|"x_k"| S2(("Σ"))
+    V["v_k: 센서 잡음, 출력 오차"] --> S2
+    S2 -->|"y_k"| RG["회귀 벡터 phi_k = (y_k, u_k), 목표 y_k+1"]
+    G -->|"u_k, 정확히 안다"| RG
+    RG --> LS["최소제곱: theta = (a, b)"]
+    LS --> MB["되돌리기: tau = -T / ln a, K_dc = b / (1 - a)"]
+    LS --> VAL["검증: 떼어 둔 기록에서 자유 주행"]
+```
+
+P4의 식별 기록을 그린 신호 흐름도다: 명령은 영차 유지를 거치고 상태는 샘플러가 읽는데 둘 다 주기가 $T = 0.1\,\mathrm{s}$라서, 샘플 모델 $x_{k+1} = a\,x_k + b\,u_k$는 $(a, b) = (0.904837,\ 0.095163)$으로 정확하다. 잡음은 두 자리로 들어오고 — 외란 $d$는 플랜트 앞에서, 센서 잡음 $v_k$는 샘플러 뒤에서 — 명령은 생성기에서 곧장 회귀 벡터로 가므로, $\Phi$에 잡음을 실어 나를 수 있는 것은 잰 열 $y_k$뿐이고 그것이 이 절이 유도하는 편향이다. 최소제곱이 돌려준 $\theta = (a, b)$를 $\tau = -T/\ln a = 1\,\mathrm{s}$와 $K_{\mathrm{dc}} = b/(1-a) = 1$로 되돌리고(§7), 떼어 둔 기록 위의 자유 주행으로 검증한다(§6).
 
 > **방정식 오차와 출력 오차의 정의.** 두 가지 *잡음 구조*다. 기록의 설명되지 않는 부분이 모델의 어디로 들어오는지에 관한 진술이지, 크기에 관한 진술이 아니다. 조건 셋이 둘을 가른다. 들어오는 자리: 방정식 오차 $w_k$는 상태 갱신으로 들어가 동역학을 따라 퍼지고, 출력 오차 $v_k$는 측정값에 더해져 퍼지지 않는다. 회귀의 오차가 되는 것: 방정식 오차에서는 $w_k$ 자체로, 백색이고 같은 스텝의 회귀 벡터와 무상관이다. 출력 오차에서는 $v_{k+1}-a\,v_k$로, 회귀 벡터 $y_k$와 $v_k$를 공유한다. 최소제곱이 하는 일: 앞의 것에서는 일치, 뒤의 것에서는 편향.
 >
@@ -745,7 +855,7 @@ $$y_{k+1}=a\,y_k+b\,u_k+\varepsilon_k,\qquad \varepsilon_k=v_{k+1}-a\,v_k$$
 > $\theta^\ast$는 최소제곱이 수렴하는 값, $S=\mathrm{E}[x_k^2]$는 잡음 없는 출력의 평균 제곱, $\mathrm{E}[\varphi_k\varepsilon_k]$는 회귀 벡터와 오차의 상관이고 방정식 오차에서는 0이다. 그러므로 편향은 그 상관을 여기의 역수로 증폭한 것이다. 입력이 현재 상태와 무상관이어서 $\mathrm{E}[x_ku_k]=0$이면 식은 $\hat a\to a\,S/(S+\sigma^2)$로 무너진다. $a$가 출력의 신호 대 잡음비만큼 0 쪽으로 줄어들고, $\hat b$는 불편이다.
 >
 > - **예**: $\sigma=0.1$인 랩의 PRBS 기록. 잡음 없는 모멘트가 $S=0.2205$, $\mathrm{E}[x_ku_k]=0.1795$, $\mathrm{E}[u_k^2]=1$이고, 식은 $\hat a\to0.8592$, $\hat b\to0.1034$를 예측한다. 기록 300개의 평균은 $0.8583$과 $0.1034$다. 편향은 운이 나빠서가 아니라 식 그대로다.
-> - **예**: 같은 잡음의 계단. 잡음 없는 $\det R$이 $0.0248$로 PRBS의 $0.1882$보다 작아, 같은 $\sigma^2$가 $\hat a\to0.6450$, $\hat b\to0.3414$를 예측한다(랩: $0.6418$, $0.3444$). 추정이 $a+b\approx1$을 따라 미끄러진다. DC 이득은 지키고 시상수는 잃어, $\tau$가 $1\,\mathrm{s}$인 히터에 $\hat\tau=0.23\,\mathrm{s}$를 준다.
+> - **예**: 같은 잡음의 계단. 잡음 없는 $\det R$이 $0.0248$로 PRBS의 $0.1882$보다 작아, 같은 $\sigma^2$가 $\hat a\to0.6450$, $\hat b\to0.3414$를 예측한다(랩: $0.6418$, $0.3444$). 추정이 $a+b\approx1$을 따라 미끄러진다. DC 이득은 지키고 시정수는 잃어, $\tau$가 $1\,\mathrm{s}$인 히터에 $\hat\tau=0.23\,\mathrm{s}$를 준다.
 > - **비예**: 회귀 벡터는 정확하고 목표 $y_{k+1}$에만 잡음이 있는 경우. 그러면 $\mathrm{E}[\varphi_k\varepsilon_k]=0$이라 편향은 없고 분산만 있다. 그것이 방정식 오차의 경우이고, 거기서 §3의 공분산 식이 성립하는 이유다.
 > - **왜 중요한가**: 공분산은 이것을 보지 못한다. $\sigma=0.1$에서 PRBS 맞춤은 참값보다 $0.0465$ 아래인 평균 둘레로 $\mathrm{sd}(\hat a)=0.0214$를 보고하므로, 자기 자신의 두 표준편차 구간이 실제 히터를 배제한다. 기록을 늘리면 틀린 숫자 둘레로 구간이 좁아질 뿐이다.
 
@@ -770,27 +880,27 @@ $$y_{k+1}=a\,y_k+b\,u_k+\varepsilon_k,\qquad \varepsilon_k=v_{k+1}-a\,v_k$$
 
 ### 7. 연속 시간으로 되돌리기
 
-쓴 샘플 주기에서 §2의 사상을 뒤집으면
+샘플 모델은 자기 $T$에서만 맞고 제어기가 기록을 얻은 주기로 도는 일은 드물므로, 식별한 모델은 연속 시간으로 들고 다니다가 쓸 때마다 다시 샘플한다. 이 절의 마지막 문단이 $50\,\mathrm{Hz}$ 루프에 대해 그렇게 한다. 되돌아가는 것은 쓴 샘플 주기에서 §2의 사상을 뒤집는 일이다:
 
-$$\hat\alpha=\frac{\ln\hat a}{T},\qquad \hat\beta=\frac{\hat\alpha\,\hat b}{\hat a-1},\qquad \hat\tau=-\frac{T}{\ln\hat a},\qquad \hat K=\frac{\hat b}{1-\hat a}$$
+$$\hat\alpha=\frac{\ln\hat a}{T},\qquad \hat\beta=\frac{\hat\alpha\,\hat b}{\hat a-1},\qquad \hat\tau=-\frac{T}{\ln\hat a},\qquad \hat K_{\mathrm{dc}}=\frac{\hat b}{1-\hat a}$$
 
-$a=e^{\alpha T}$에서 $\alpha=\ln a/T$가 나오고, $b$의 식이 $\beta$를 주고, 시상수는 $\tau=-1/\alpha$이며, DC 이득 $K=-\beta/\alpha$는 정확히 $b/(1-a)$가 되기 때문이다. 이득은 샘플링을 거쳐도 그대로 남는다.
+$a=e^{\alpha T}$에서 $\alpha=\ln a/T$가 나오고, $b$의 식이 $\beta$를 주고, 시정수는 $\tau=-1/\alpha$이며, DC 이득 $K_{\mathrm{dc}}=-\beta/\alpha$는 정확히 $b/(1-a)$가 되기 때문이다. 이득은 샘플링을 거쳐도 그대로 남는다.
 
 **사상은 상대 오차를 $\tau/T$배로 키운다.** $\alpha=\ln a/T$를 미분하면 $\delta\alpha=\delta a/(aT)$이고, $\alpha=-1/\tau$로 나누면
 
 $$\frac{\delta\tau}{\tau}=-\frac{\delta\alpha}{\alpha}=\frac{\delta a}{a}\cdot\frac{\tau}{T}$$
 
-그러므로 $T=0.1\tau$에서 $\hat a$의 상대 오차는 $\hat\tau$에서 열 배가 된다. 계산 절의 $-0.33\,\%$가 $-3.2\,\%$가 되었다. $\hat a$의 *절대* 오차가 고정이면 극점의 상대 오차는 $\delta a/(a\lvert\ln a\rvert)$이고, $a\lvert\ln a\rvert$는 $a=1/e$, 곧 $T=\tau$에서 최대다. 증폭은 $T=0.1\tau$에서 $11.05$, $T=\tau$에서 $e=2.72$, $T=2\tau$에서 $3.69$다. 빠른 샘플링은 시상수당 샘플도 늘려 $\delta a$ 자체를 줄이므로, 이것은 $T$ 선택의 한 면이지 선택 자체가 아니다.
+그러므로 $T=0.1\tau$에서 $\hat a$의 상대 오차는 $\hat\tau$에서 열 배가 된다. 끝까지 계산의 $-0.33\,\%$가 $-3.2\,\%$가 되었다. $\hat a$의 *절대* 오차가 고정이면 극점의 상대 오차는 $\delta a/(a\lvert\ln a\rvert)$이고, $a\lvert\ln a\rvert$는 $a=1/e$, 곧 $T=\tau$에서 최대다. 증폭은 $T=0.1\tau$에서 $11.05$, $T=\tau$에서 $e=2.72$, $T=2\tau$에서 $3.69$다. 빠른 샘플링은 시정수당 샘플도 늘려 $\delta a$ 자체를 줄이므로, 이것은 $T$ 선택의 한 면이지 선택 자체가 아니다.
 
 변환한 숫자를 믿기 전에 확인할 것이 셋 더 있다.
 
 - 안정한 실수 극점이려면 **$0<\hat a<1$**. $\hat a\ge1$은 적분기이거나 불안정한 플랜트다. $\hat a\le0$은 1차 연속 모델이 아예 아니다. 모든 실수 $\alpha$에 대해 $e^{\alpha T}>0$이기 때문이다. 구조가 틀렸거나 샘플링이 너무 느리다는 뜻이다.
-- **DC 이득에는 로그가 없고**, 그만큼 튼튼하다. 출력 잡음 $\sigma=0.1$의 계단은 $\hat\tau$가 $0.23\,\mathrm{s}$인데도 $\hat K=0.3444/(1-0.6418)=0.961$을 얻는다.
+- **DC 이득에는 로그가 없고**, 그만큼 튼튼하다. 출력 잡음 $\sigma=0.1$의 계단은 $\hat\tau$가 $0.23\,\mathrm{s}$인데도 $\hat K_{\mathrm{dc}}=0.3444/(1-0.6418)=0.961$을 얻는다.
 - **경고 — 오일러로 되돌리지 마라.** $\hat\alpha\approx(\hat a-1)/T$는 명시적 오일러 스텝의 역처럼 보이지만 고정된 양만큼 틀린다. 정확한 $a$에서 $-1$ 대신 $-0.9516$을 주는데, 어떤 양의 데이터도 없애지 못하는 $4.8\,\%$ 오차이고, $T=0.5\,\mathrm{s}$에서는 $21\,\%$로 커진다.
 
-**계산 절의 추정값에 사상 전체를 적용하면.** $T=0.1\,\mathrm{s}$의 $(\hat a,\hat b)=(0.90183,\ 0.095644)$에서 $\hat\alpha=\ln0.90183/0.1=-1.0333\,\mathrm{s^{-1}}$, $\hat\beta=\hat\alpha\hat b/(\hat a-1)=1.0067$이다. 입력 이득은 $0.7\,\%$ 틀렸고 극점은 $3.3\,\%$ 틀렸으며, $-\hat\beta/\hat\alpha=0.974$는 당연히 계산 절의 $\hat K$와 같다.
+**끝까지 계산의 추정값에 사상 전체를 적용하면.** $T=0.1\,\mathrm{s}$의 $(\hat a,\hat b)=(0.90183,\ 0.095644)$에서 $\hat\alpha=\ln0.90183/0.1=-1.0333\,\mathrm{s^{-1}}$, $\hat\beta=\hat\alpha\hat b/(\hat a-1)=1.0067$이다. 입력 이득은 $0.7\,\%$ 틀렸고 극점은 $3.3\,\%$ 틀렸으며, $-\hat\beta/\hat\alpha=0.974$는 당연히 끝까지 계산의 $\hat K_{\mathrm{dc}}$와 같다.
 
-**모델을 연속 시간으로 들고 다니는 이유.** 제어기가 기록을 얻은 주기로 도는 일은 드물고, 샘플 모델은 자기 $T$에서만 맞다. 히터를 $50\,\mathrm{Hz}$ 루프에서 쓰려면 $(\hat\alpha,\hat\beta)$로 돌아가 §2의 사상으로 $T=0.02\,\mathrm{s}$에서 다시 샘플링한다. 그러면 $e^{-1.0333\times0.02}=0.97955$와 $0.019927$이 나오고, 참값은 $0.98020$과 $0.019801$이다. $10\,\mathrm{Hz}$ 쌍을 그대로 $50\,\mathrm{Hz}$에서 쓰면 시상수가 $-0.02/\ln0.904837=0.2\,\mathrm{s}$인, 다섯 배 빠른 히터를 돌리는 셈이고, 그 모델로 조정한 제어기는 엉뚱한 플랜트에 맞춰진다. 같은 재샘플링의 행렬판은 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]다.
+**더 빠른 루프를 위한 재샘플링.** 히터를 $50\,\mathrm{Hz}$ 루프에서 쓰려면 $(\hat\alpha,\hat\beta)$로 돌아가 §2의 사상으로 $T=0.02\,\mathrm{s}$에서 다시 샘플링한다. 그러면 $e^{-1.0333\times0.02}=0.97955$와 $0.019927$이 나오고, 참값은 $0.98020$과 $0.019801$이다. $10\,\mathrm{Hz}$ 쌍을 그대로 $50\,\mathrm{Hz}$에서 쓰면 시정수가 $-0.02/\ln0.904837=0.2\,\mathrm{s}$인, 다섯 배 빠른 히터를 돌리는 셈이고, 그 모델로 조정한 제어기는 엉뚱한 플랜트에 맞춰진다. 같은 재샘플링의 행렬판은 [[04-robotics/control-theory-ce397|5. 제어 이론 §4]]다.
 
 ### 8. 랩: 입력 셋, 히터 하나
 
@@ -840,11 +950,13 @@ $$\frac{\delta\tau}{\tau}=-\frac{\delta\alpha}{\alpha}=\frac{\delta a}{a}\cdot\f
 
 **출력 오차에서 편향은 $\sigma^2$처럼, 흩어짐은 $\sigma$처럼 자라므로 편향이 이긴다**(§5의 편향과 §3 식의 한계를 시험). $\sigma$가 세 배, 이어서 세 배 넘게 커질 때 PRBS의 $\hat a$는 $0.0005$, $0.0044$, $0.0465$만큼 빗나간다. 단계마다 대략 잡음 비의 제곱이고, 퍼짐은 대략 비례해서 자란다. 방정식 오차에서는 옳던 식 열이 이제는 틀린 평균 둘레의 흩어짐에 관한 진술이다. $\sigma=0.1$에서 참값은 PRBS 추정에서 식의 표준편차로 $2.2$개, 계단 추정에서 $5.5$개 떨어져 있다. 한 스텝 열은 §6의 함정을 숫자로 보여 준다. PRBS 맞춤의 $0.1336$이 참 히터의 $0.1349$를 이긴다.
 
-**PRBS는 성공하고, 사인은 여기서 거의 대등한데 그 이유는 다른 곳으로 옮겨 가지 않는다**(§4, 여기의 차수를 시험). 히터의 코너 주파수에 있는 사인은 차수 2로 지속적으로 여기하고, 이는 두 파라미터 모델이 필요로 하는 정확히 그만큼이다. 게다가 모든 일률을 히터의 응답이 시상수에 가장 민감한 곳에 둔다. $1/(1+j\omega\tau)$의 $\tau$에 대한 민감도 크기는 $\omega/(1+\omega^2\tau^2)$이고, $\omega=1/\tau$에서 최대다. 그러나 사인은 플랜트를 한 주파수에서만 잰다. $1\,\mathrm{rad/s}$에서 이득과 위상이 같은 모델은 모두 같은 기록에 맞으므로, 사인은 1차 히터와, 파라미터가 넷이라 차수 4가 필요한 2차 히터를 구별하지 못한다. PRBS는 차수 31이고 대역 전체에 일률을 펼친다. 구조 자체가 심판대에 오를 때 원하는 것이 그것이다. 기록 300개의 몬테카를로 숫자는 표준편차에 몇 퍼센트의 표본 오차를 지닌다. 마지막 표의 $N=200$ 행은 첫 표와 다른 추첨을 쓰고 그 범위 안에서 일치한다. PRBS는 $0.0017$ 대 $0.0015$로, 식의 $0.0016$ 양쪽에 있다.
+**PRBS는 성공하고, 사인은 여기서 거의 대등한데 그 이유는 다른 곳으로 옮겨 가지 않는다**(§4, 여기의 차수를 시험). 히터의 코너 주파수에 있는 사인은 차수 2로 지속적으로 여기하고, 이는 두 파라미터 모델이 필요로 하는 정확히 그만큼이다. 게다가 모든 일률을 히터의 응답이 시정수에 가장 민감한 곳에 둔다. $1/(1+j\omega\tau)$의 $\tau$에 대한 민감도 크기는 $\omega/(1+\omega^2\tau^2)$이고, $\omega=1/\tau$에서 최대다. 그러나 사인은 플랜트를 한 주파수에서만 잰다. $1\,\mathrm{rad/s}$에서 이득과 위상이 같은 모델은 모두 같은 기록에 맞으므로, 사인은 1차 히터와, 파라미터가 넷이라 차수 4가 필요한 2차 히터를 구별하지 못한다. PRBS는 차수 31이고 대역 전체에 일률을 펼친다. 구조 자체가 심판대에 오를 때 원하는 것이 그것이다. 기록 300개의 몬테카를로 숫자는 표준편차에 몇 퍼센트의 표본 오차를 지닌다. 마지막 표의 $N=200$ 행은 첫 표와 다른 추첨을 쓰고 그 범위 안에서 일치한다. PRBS는 $0.0017$ 대 $0.0015$로, 식의 $0.0016$ 양쪽에 있다.
 
 ### 9. 둘째 대상: P2는 관성 파라미터에 선형이다
 
-P4는 파라미터 둘, 상태 하나다. 같은 방법으로 로봇 팔을 식별할 수 있다. 강체 동역학은 관절각에 대해 아무리 비선형이어도 관성 파라미터에 대해서는 선형이기 때문이다(Atkeson, An & Hollerbach, 출처). P2를 수평면에 두면 [[02-foundations/manipulator-kinematics-dynamics|10. §2]]의 매니퓰레이터 방정식은 $\tau=M(q)\ddot q+C(q,\dot q)\dot q$이고, 질량 행렬은 [[02-foundations/manipulator-kinematics-dynamics|10. §3]], 속도 항은 [[02-foundations/manipulator-kinematics-dynamics|10. §4]]의 것이다(거기서 $h=-m_2L_1L_2\sin q_2$). 모든 항을 그것이 곱하는 질량·길이의 세 조합으로 모은다:
+패널을 잡으면 제어기가 모는 팔이 바뀐다. P2의 끝에 $3\,\mathrm{kg}$ 패널을 달면 질량 행렬이 바뀌는데, 어느 카탈로그도 패널의 질량을 모른다. 이 절은 그것을 팔 자신의 모터로 식별한다. 여기서 글자 둘의 뜻이 바뀐다. $\tau$는 이제 §2–§7의 시정수가 아니라 관절 토크이고, 관절각은 $q$로 쓴다. [[02-foundations/manipulator-kinematics-dynamics|10]]과 P2 카탈로그는 $\theta$로 쓰지만, 이 페이지에서 $\theta$는 파라미터 벡터이기 때문이다.
+
+P4는 파라미터 둘, 상태 하나다. 같은 방법으로 로봇 팔을 식별할 수 있다. 강체 동역학은 관절각에 대해 아무리 비선형이어도 관성 파라미터에 대해서는 선형이기 때문이다(Atkeson, An & Hollerbach, 출처). P2를 수평면에 두면 [[02-foundations/manipulator-kinematics-dynamics|10. §2]]의 매니퓰레이터 방정식은 $\tau=M(q)\ddot q+C(q,\dot q)\dot q$이고, 질량 행렬은 [[02-foundations/manipulator-kinematics-dynamics|10. §3]], 속도 항은 [[02-foundations/manipulator-kinematics-dynamics|10. §4]]의 것이다(거기서는 $h=-m_2L_1L_2\sin\theta_2$, 이 페이지의 글자로는 $\sin q_2$). 모든 항을 그것이 곱하는 질량·길이의 세 조합으로 모은다:
 
 $$\pi=\begin{pmatrix}\pi_1\\ \pi_2\\ \pi_3\end{pmatrix}=\begin{pmatrix}(m_1+m_2)L_1^2\\ m_2L_2^2\\ m_2L_1L_2\end{pmatrix}=\begin{pmatrix}2\\ 1\\ 1\end{pmatrix}\ \mathrm{kg\,m^2}$$
 
@@ -852,13 +964,13 @@ $$\pi=\begin{pmatrix}\pi_1\\ \pi_2\\ \pi_3\end{pmatrix}=\begin{pmatrix}(m_1+m_2)
 
 $$\tau=Y(q,\dot q,\ddot q)\,\pi,\qquad Y=\begin{pmatrix}\ddot q_1&\ddot q_1+\ddot q_2&c_2(2\ddot q_1+\ddot q_2)-s_2(\dot q_2^2+2\dot q_1\dot q_2)\\ 0&\ddot q_1+\ddot q_2&c_2\ddot q_1+s_2\dot q_1^2\end{pmatrix}$$
 
-$M_{11}=\pi_1+\pi_2+2\pi_3c_2$, $M_{12}=\pi_2+\pi_3c_2$, $M_{22}=\pi_2$, $h=-\pi_3s_2$이고, 각각이 엔코더가 주는 가속도나 속도 곱과 곱해져 $\tau$에 들어가기 때문이다. $q_2=90^\circ$에서 카탈로그의 $M=\begin{pmatrix}3&1\\1&1\end{pmatrix}$을, $q_2=0^\circ$에서 10. §3의 $\begin{pmatrix}5&2\\2&1\end{pmatrix}$을 재현한다. $Y$를 회귀 벡터로, $\pi$를 $\theta$로 둔 §3의 회귀다.
+$M_{11}=\pi_1+\pi_2+2\pi_3c_2$, $M_{12}=\pi_2+\pi_3c_2$, $M_{22}=\pi_2$, $h=-\pi_3s_2$이고, 각각이 엔코더가 주는 가속도나 속도 곱과 곱해져 $\tau$에 들어가기 때문이다. $q_2=90^\circ$에서 카탈로그의 $M=\begin{pmatrix}3&1\\1&1\end{pmatrix}$을, $q_2=0^\circ$에서 10. §3의 $\begin{pmatrix}5&2\\2&1\end{pmatrix}$을 재현한다. $Y$를 회귀 행렬로, $\pi$를 $\theta$로 둔 §3의 회귀다.
 
-**샘플 둘, 손으로.** $q=(0^\circ,90^\circ)$, $\dot q=(1,0)\,\mathrm{rad/s}$, $\ddot q=(1,0)\,\mathrm{rad/s^2}$ — 팔꿈치를 직각으로 잠그고 어깨를 돌려 올리는 중 — 에서 $Y=\begin{pmatrix}1&1&0\\0&1&1\end{pmatrix}$, $\tau=(3,\ 2)\,\mathrm{N{\cdot}m}$이다. 어깨는 $M_{11}=3$을 가속하고, 팔꿈치는 결합 $M_{21}\ddot q_1=1$에 더해 전완의 원심력에 맞서 $1\,\mathrm{N{\cdot}m}$을 밀어야 한다. $q=(0^\circ,0^\circ)$, 정지, 같은 $\ddot q$에서는 $Y=\begin{pmatrix}1&1&2\\0&1&1\end{pmatrix}$, $\tau=(5,\ 2)$다. 쌓은 네 행의 랭크는 3이고 — 서로 다른 세 행의 행렬식이 $2$ — 그래서 잡음 없는 토크에서 최소제곱은 $\hat\pi=(2,1,1)$을 정확히 돌려준다.
+**샘플 둘, 손으로.** $q=(0^\circ,90^\circ)$, $\dot q=(1,0)\,\mathrm{rad/s}$, $\ddot q=(1,0)\,\mathrm{rad/s^2}$ — 엘보를 직각으로 잠그고 어깨를 돌려 올리는 중 — 에서 $Y=\begin{pmatrix}1&1&0\\0&1&1\end{pmatrix}$, $\tau=(3,\ 2)\,\mathrm{N{\cdot}m}$이다. 어깨는 $M_{11}=3$을 가속하고, 엘보는 결합 $M_{21}\ddot q_1=1$에 더해 전완의 원심력에 맞서 $1\,\mathrm{N{\cdot}m}$을 밀어야 한다. $q=(0^\circ,0^\circ)$, 정지, 같은 $\ddot q$에서는 $Y=\begin{pmatrix}1&1&2\\0&1&1\end{pmatrix}$, $\tau=(5,\ 2)$다. 쌓은 네 행의 랭크는 3이고 — 서로 다른 세 행의 행렬식이 $2$ — 그래서 잡음 없는 토크에서 최소제곱은 $\hat\pi=(2,1,1)$을 정확히 돌려준다.
 
 **페이로드, 건설이 신경 쓰는 이유.** 끝에서 $3\,\mathrm{kg}$ 패널을 잡으면 $m_2$가 이미 있는 자리에 질량이 더해져 $\pi$가 $(5,4,4)$가 되고, 같은 두 샘플은 $\tau=(9,\ 8)$과 $(17,\ 8)$을 읽는다. 그 토크로 식별하면 $\hat\pi_2/L_2^2-m_2=3\,\mathrm{kg}$과 $\hat\pi_3/(L_1L_2)-m_2=3\,\mathrm{kg}$이 페이로드에 대해 일치한다 — 한 숫자의 추정 둘, 공짜 일관성 검사 — 그리고 $\hat\pi_1/L_1^2-\hat\pi_2/L_2^2=1\,\mathrm{kg}$은 건드리지 않은 $m_1$을 돌려준다. [[02-foundations/manipulator-kinematics-dynamics|10. §7]]이 경고하는 미지의 큰 페이로드를 팔 자신의 모터로 되찾는 것이다.
 
-**다시, 여기.** 팔꿈치를 줄곧 곧게, $q_2=0$으로 두고 어깨만 움직인다. $Y$의 모든 행이 $\big(\ddot q_1,\ \ddot q_1,\ 2\ddot q_1\big)$과 $\big(0,\ \ddot q_1,\ \ddot q_1\big)$이 되고, 셋째 열은 앞의 두 열의 합이다. 궤적이 아무리 길어도 쌓은 행렬의 랭크는 2이고, $\pi\to\pi+t(-1,-1,1)$은 어떤 토크도 바꾸지 않는다. 식별되는 것은 $\pi_1+\pi_2+2\pi_3=5$와 $\pi_2+\pi_3=2$, 곧은 팔의 $M_{11}$과 $M_{12}$뿐이다. 대신 팔꿈치를 $90^\circ$에 두고 어깨의 속도와 가속도를 바꾸면 셋이 모두 돌아온다. 이제 팔꿈치 토크가 $\pi_3$만 실어 나르는 원심 항을 재기 때문이다. 어느 자세를 유지하는지가 입력 설계의 일부다.
+**다시, 여기.** 엘보를 줄곧 곧게, $q_2=0$으로 두고 어깨만 움직인다. $Y$의 모든 행이 $\big(\ddot q_1,\ \ddot q_1,\ 2\ddot q_1\big)$과 $\big(0,\ \ddot q_1,\ \ddot q_1\big)$이 되고, 셋째 열은 앞의 두 열의 합이다. 궤적이 아무리 길어도 쌓은 행렬의 랭크는 2이고, $\pi\to\pi+t(-1,-1,1)$은 어떤 토크도 바꾸지 않는다. 식별되는 것은 $\pi_1+\pi_2+2\pi_3=5$와 $\pi_2+\pi_3=2$, 곧은 팔의 $M_{11}$과 $M_{12}$뿐이다. 대신 엘보를 $90^\circ$에 두고 어깨의 속도와 가속도를 바꾸면 셋이 모두 돌아온다. 이제 엘보 토크가 $\pi_3$만 실어 나르는 원심 항을 재기 때문이다. 어느 자세를 유지하는지가 입력 설계의 일부다.
 
 $\pi$의 조합은 P2 점질량의 편의가 아니다. 강제된 것이고, 이름이 있다.
 
@@ -882,39 +994,39 @@ P4와 실무적으로 다른 점 둘, 둘 다 이미 이 페이지에 있다. $Y
 - **입력.** 계단, 사인, PRBS, 설계한 궤적 — 그리고 모델이 필요로 하는 차수로 지속적으로 여기했고, 일률이 플랜트 대역에 있었는가? 폐루프에서 기록했는가, 그렇다면 어떤 외부 신호가 공선성을 깼는가?
 - **잡음이 들어오는 곳과 추정기.** 측정 출력이나 측정 가속도 위의 최소제곱은 §5의 편향을 지닌다. 출력 오차, 도구 변수, 잡음 모델 추정기를 찾거나, 회귀 벡터의 잡음이 작다는 논증을 찾아라.
 - **검증.** 어떤 기록으로, 어떤 입력으로 했는가? 자유 주행 시뮬레이션인가, 한 스텝 예측인가? 자기 기록에서만, 또는 한 스텝 앞으로만 보고한 맞춤은 §6의 뜻으로 검증되지 않았다.
-- **샘플 시간과 변환.** 어떤 $T$에서, 연속 파라미터를 어떻게 얻었나 — 로그로, 아니면 고정된 편향을 지닌 오일러식 지름길로? $T\ll\tau$에서 세 자리로 인용한 시상수는 $\tau/T$ 증폭을 감안해 읽어야 한다.
+- **샘플 시간과 변환.** 어떤 $T$에서, 연속 파라미터를 어떻게 얻었나 — 로그로, 아니면 고정된 편향을 지닌 오일러식 지름길로? $T\ll\tau$에서 세 자리로 인용한 시정수는 $\tau/T$ 증폭을 감안해 읽어야 한다.
 
 ### 읽고 나면
 
 - [ ] 주어진 $T$에서 연속 모델로부터 P4의 샘플 모델을 쓰고, 그것이 근사가 아니라 정확한 이유를 말한다.
 - [ ] 짧은 기록에서 $\Phi$와 $y$를 만들어 정규방정식을 손으로 풀고, 잔차의 직교성을 검산한다.
-- [ ] 계단이 DC 이득은 식별하지만 시상수는 식별하지 못하는 이유를 $\Phi^\top\Phi$와 지속적 여기로 말한다.
+- [ ] 계단이 DC 이득은 식별하지만 시정수는 식별하지 못하는 이유를 $\Phi^\top\Phi$와 지속적 여기로 말한다.
 - [ ] 회귀 벡터의 잡음은 최소제곱을 편향시키고 목표의 잡음은 그렇지 않은 이유, 그리고 공분산이 그것을 보여 줄 수 없는 이유를 설명한다.
 - [ ] 떼어 둔 데이터에서 자유 주행 시뮬레이션으로 검증하고, 맞춤 오차와 한 스텝 예측 오차가 검증이 아닌 이유를 말한다.
-- [ ] $(\hat a,\hat b)$를 $\tau$와 $K$로 되돌리고, 상대 오차의 $\tau/T$ 증폭을 말한다.
+- [ ] $(\hat a,\hat b)$를 $\tau$와 $K_{\mathrm{dc}}$로 되돌리고, 상대 오차의 $\tau/T$ 증폭을 말한다.
 - [ ] P2에 대해 $\tau=Y\pi$를 쓰고, 어떤 운동이 $\pi$를 식별 불가능하게 남기는지 말한다.
 
 ### 스스로 점검
 
-1. 정지 상태에서 시작한 20초 계단 기록은 P4의 DC 이득은 잘 고정하고 시상수는 나쁘게 고정한다. $\Phi$의 두 열로 설명하면 왜인가?
+1. 정지 상태에서 시작한 20초 계단 기록은 P4의 DC 이득은 잘 고정하고 시정수는 나쁘게 고정한다. $\Phi$의 두 열로 설명하면 왜인가?
 2. 위치 제어기 아래서 로봇 관절을 한 시간 기록하고 $x_{k+1}=a\,x_k+b\,u_k$를 최소제곱으로 맞췄다. 소프트웨어는 불평 없이 숫자 둘을 돌려준다. 무엇을 먼저 확인하며, 왜인가?
-3. 동료가 히터를 $T=0.01\,\mathrm{s}$로 샘플해 $\hat a=0.9900\pm0.0005$를 보고한다. 시상수는 얼마이고, 구간은 어떠한가?
-4. 출력 잡음 $\sigma=0.1$에서 랩의 PRBS 맞춤은 $\hat a=0.8583$과 식의 표준편차 $0.0214$를 보고한다. 이 구간 아래서 참값 $0.9048$은 그럴듯한가? 무엇이 잘못되었나?
+3. 동료가 히터를 $T=0.01\,\mathrm{s}$로 샘플해 $\hat a=0.9900\pm0.0005$를 보고한다. 시정수는 얼마이고, 구간은 어떠한가?
+4. 출력 잡음 $\sigma=0.03$에서 랩의 PRBS 맞춤은 $\hat a=0.9004$와 식의 표준편차 $0.0066$을 보고한다. 이 구간 아래서 참값 $0.9048$은 그럴듯한가? $\sigma=0.1$에서 같은 맞춤은 $0.8583\pm0.0214$를 보고한다. 두 잡음 수준 사이에 무엇이 바뀌었고, 공분산은 왜 경고하지 않는가?
 5. 랩에서 사인 하나가 PRBS와 거의 대등했다. 그래도 기본 식별 입력이 아닌 이유는?
 
 > [!tip]- 정답 · Answers
-> 1. 시상수의 세 배쯤 지나면 $x_k=u_k=1$이라 출력 열과 명령 열이 같은 열이 되고, 정상상태의 모든 행은 $a+b=1$ — DC 이득 — 만 말한다. 시상수에는 $a$와 $b$가 따로 필요하고, 둘을 떼어 놓는 것은 처음 서른 샘플 남짓뿐이다. 차수 1의 여기다. 랩은 $\hat a$와 $\hat b$의 상관 $-0.99$, 조건수 $144$, 그리고 기록이 열여섯 배로 자라도 거의 움직이지 않는 퍼짐을 보여 준다.
-> 2. $\Phi$의 랭크 또는 조건수. 외부 신호 없는 피드백 $u_k=-Kx_k$ 아래서는 명령 열이 출력 열의 $-K$배라 $\Phi$의 랭크가 1이고, `lstsq`는 조용히 최소 노름 해를 돌려준다. 의미 있는 것은 폐루프 극점 $\hat a-K\hat b$뿐이다. 과제의 실행 문항은 파라미터가 $(0.905,\ 0.095)$인 히터에서 이렇게 $(0.1513,\ -0.3026)$을 얻는다. 외부 신호를 넣고 다시 맞춰라.
+> 1. 시정수의 세 배쯤 지나면 $x_k=u_k=1$이라 출력 열과 명령 열이 같은 열이 되고, 정상상태의 모든 행은 $a+b=1$ — DC 이득 — 만 말한다. 시정수에는 $a$와 $b$가 따로 필요하고, 둘을 떼어 놓는 것은 처음 서른 샘플 남짓뿐이다. 차수 1의 여기다. 랩은 $\hat a$와 $\hat b$의 상관 $-0.99$, 조건수 $144$, 그리고 기록이 열여섯 배로 자라도 거의 움직이지 않는 퍼짐을 보여 준다.
+> 2. $\Phi$의 랭크 또는 조건수. 외부 신호 없는 피드백 $u_k=-Kx_k$ 아래서는 명령 열이 출력 열의 $-K$배라 $\Phi$의 랭크가 1이고, `lstsq`는 조용히 최소 노름 해를 돌려준다. 의미 있는 것은 폐루프 극점 $\hat a-K\hat b$뿐이다. 과제의 실행 문항이 일부러 이 함정에 들어간다. 외부 신호를 넣고 다시 맞춰라.
 > 3. $\hat\tau=-T/\ln\hat a=-0.01/\ln0.99=0.995\,\mathrm{s}$. $\hat a=0.9895$와 $0.9905$에서 같은 식은 $0.947$과 $1.048\,\mathrm{s}$를 주므로 약 $\pm5\,\%$다. $\hat a$의 상대 오차 $0.05\,\%$ 곱하기 $\tau/T\approx100$. 그럴듯한 소수 넷의 $\hat a$가 $\tau$에서는 $\pm5\,\%$다.
-> 4. 아니다. $(0.9048-0.8583)/0.0214=2.2$ 표준편차다. 식은 추정 자신의 평균 둘레의 흩어짐을 기술한다. 출력 잡음이 그 평균을 변수 오차 편향만큼 옮겼고, 식에는 그것이 들어 있지 않다. 처방은 출력 오차 또는 도구 변수 추정기, 또는 더 많은 여기다. 편향이 $R^{-1}$에 비례하므로 여기는 편향도 줄인다.
+> 4. $\sigma=0.03$에서는 $(0.9048-0.9004)/0.0066=0.67$ 표준편차라 참값이 그럴듯하고, 이 맞춤에는 문제를 알리는 것이 아무것도 없다. $\sigma=0.1$에서는 $(0.9048-0.8583)/0.0214=2.2$로, 맞춤 자신의 두 표준편차 구간 밖이다. 둘 사이에 편향은 $0.0044$에서 $0.0465$로, 반올림 전 평균으로는 약 $10.5$배(반올림한 값으로는 $10.6$배) 커져 $\sigma^2$의 $11.1$배에 가깝고, 보고된 퍼짐은 $3.2$배 커져 $\sigma$의 $3.3$배에 가깝다(§5). 식은 추정 자신의 평균 둘레의 흩어짐을 기술하는데, 출력 잡음은 그 평균을 변수 오차 편향만큼 옮기고 식에는 그것이 들어 있지 않다. 편향은 $\sigma^2$처럼, 퍼짐은 $\sigma$처럼 자라므로 잡음이 작을 때 정직해 보이던 맞춤이 잡음이 커지면 정직하지 않게 된다. 처방은 출력 오차 또는 도구 변수 추정기, 또는 더 많은 여기다. 편향이 $R^{-1}$에 비례하므로 여기는 편향도 줄인다.
 > 5. 사인은 차수 2로 지속적으로 여기하므로, 회귀 벡터가 차수 2를 필요로 하는 모델까지만 식별할 수 있고, 플랜트를 한 주파수에서만 잰다. 그 주파수에서 이득과 위상이 같은 모델은 모두 기록에 똑같이 잘 맞으므로, 1차 플랜트와 2차 플랜트를 구별하지 못한다. PRBS는 차수 31이고 대역에 일률을 펼친다. 구조를 시험하려면 그것이 필요하다.
 
 ### 과제 · Problem set
 
-Tier A. [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 이 페이지, [[02-foundations/lab-kernel|0.7 Lab Kernel]]만 쓴다. 독자적인 장치와 독자적인 문제다. 계산 절은 $T=0.1\,\mathrm{s}$의 개루프 기록에서 돌았다. 이 과제는 샘플 주기를 옮기고, 분석에 센서 잡음을 더하고, 루프를 닫는다. 영어 절 §8 목록의 손잡이를 바꾸되 다시 쓰지 마라.
+Tier A. [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 이 페이지, [[02-foundations/lab-kernel|0.7 Lab Kernel]]만 쓴다. 독자적인 장치와 독자적인 문제다. 끝까지 계산은 $T=0.1\,\mathrm{s}$의 개루프 기록에서 돌았다. 이 과제는 샘플 주기를 옮기고, 분석에 센서 잡음을 더하고, 루프를 닫는다. 영어 절 §8 목록의 손잡이를 바꾸되 다시 쓰지 마라.
 
-1. **그리기.** 위의 그림을 피드백 아래서 기록한 경우로: 측정 $y_k$를 받는 제어기 블록 $u_k=-K\,y_k+r_k$를 더하고, 외부 신호 $r_k$가 자기 합산점으로 들어오게 한다. 회귀 벡터로 들어가는 두 화살표를 표시하고, $r=0$이면 둘이 $-K$배 차이만 나는 같은 신호를 나른다는 것을 그림으로 보여라.
-2. **유도.** $T=0.2\,\mathrm{s}$에서. (a) P4의 정확한 $a$와 $b$, 그리고 DC 이득과 맞는지의 검산. (b) 정지 상태에서 명령 $u=(1,1,-1,-1,1)$이 반올림 판독값 $y=(0,\ 0.18,\ 0.33,\ 0.09,\ -0.11,\ 0.09)$를 준다. $\Phi^\top\Phi$와 $\Phi^\top y$를 만들고 $\hat\theta$를 풀어 (a)와 비교하고, $\hat\tau$와 $\hat K$로 되돌려라. $\hat a$의 상대 오차는 $\hat\tau$에서 몇 배로 나타나야 하는가? (c) 출력 잡음 $\sigma=0.1$, 입력은 분산 1인 백색이라 $\mathrm{E}[x_ku_k]=0$이고 $S=b^2/(1-a^2)$: $\hat a$는 어디로 수렴하고, 어떤 시상수를 보고하게 되는가? (d) 다시 $T=0.1\,\mathrm{s}$에서, 외부 신호 없이 $u_k=-2x_k$ 아래서 기록한 데이터: $\Phi$의 랭크가 1임을 보이고, 최소제곱이 식별하는 유일한 조합을 계산하라.
+1. **그리기.** §5의 신호 흐름도를 피드백 아래서 기록한 경우로: 측정 $y_k$를 받는 제어기 블록 $u_k=-K\,y_k+r_k$를 더하고, 외부 신호 $r_k$가 자기 합산점으로 들어오게 한다. 회귀 벡터로 들어가는 두 화살표를 표시하고, $r=0$이면 둘이 $-K$배 차이만 나는 같은 신호를 나른다는 것을 그림으로 보여라.
+2. **유도.** $T=0.2\,\mathrm{s}$에서. (a) P4의 정확한 $a$와 $b$, 그리고 DC 이득과 맞는지의 검산. (b) 정지 상태에서 명령 $u=(1,1,-1,-1,1)$이 반올림 판독값 $y=(0,\ 0.18,\ 0.33,\ 0.09,\ -0.11,\ 0.09)$를 준다. $\Phi^\top\Phi$와 $\Phi^\top y$를 만들고 $\hat\theta$를 풀어 (a)와 비교하고, $\hat\tau$와 $\hat K_{\mathrm{dc}}$로 되돌려라. $\hat a$의 상대 오차는 $\hat\tau$에서 몇 배로 나타나야 하는가? (c) 출력 잡음 $\sigma=0.1$, 입력은 분산 1인 백색이라 $\mathrm{E}[x_ku_k]=0$이고 $S=b^2/(1-a^2)$: $\hat a$는 어디로 수렴하고, 어떤 시정수를 보고하게 되는가? (d) 다시 $T=0.1\,\mathrm{s}$에서, 외부 신호 없이 $u_k=-2x_k$ 아래서 기록한 데이터: $\Phi$의 랭크가 1임을 보이고, 최소제곱이 식별하는 유일한 조합을 계산하라.
 3. **실행.** 영어 절의 패치에서 `?`를 채워 §8의 목록 뒤에 붙인다. 이 기록에는 방정식 오차만 있으므로 제어기가 재는 $y_k$가 곧 $x_k$다. $r=0$과 $r=$ PRBS를 돌린다. $\Phi$의 랭크, $\hat\theta$, $\hat a-K\hat b$, 식의 표준편차, 조건수를 보고하라. $\hat a-K\hat b$를 (d)와, PRBS 실행의 표준편차를 §8 첫 표의 개루프 PRBS 행과 비교하라.
 
 > [!note]- 그리는 법 · How to draw it
@@ -928,7 +1040,7 @@ Tier A. [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 이 페이지, [
 
 > [!tip]- 정답 · Solutions
 > 1. 제어기가 측정 $y_k$에서 $u_k$로 돌아가는 길을 닫고, $r_k$가 그 옆으로 들어온다. 회귀 벡터의 명령 열은 이제 독립 생성기가 아니라 그 제어기의 출력이 먹인다. $r=0$이면 회귀 벡터로 들어가는 두 화살표가 $y_k$와 $-K\,y_k$, 곧 신호 하나와 그 축척 복사본을 나르므로 $\Phi$의 두 열이 평행하고 $\Phi^\top\Phi$는 특이하다. $r\neq0$이면 명령에 $y_k$의 어떤 함수로도 재현할 수 없는 성분이 실려 열들이 갈라진다. 잡음 화살표는 그대로이고, 잃은 것은 입력의 독립성뿐이다.
-> 2. (a) $a=e^{-0.2}=0.818731$, $b=1-e^{-0.2}=0.181269$이고, $a+b=1$이므로 $b/(1-a)=1$. (b) $\sum y_k^2=0.1615$, $\sum y_ku_k=-0.35$, $\sum u_k^2=5$, $\sum y_ky_{k+1}=0.0693$, $\sum u_ky_{k+1}=0.62$, 그래서 $\det=0.8075-0.1225=0.685$이고 $\hat\theta=\tfrac{1}{0.685}(5\cdot0.0693+0.35\cdot0.62,\ 0.35\cdot0.0693+0.1615\cdot0.62)=(0.82263,\ 0.18158)$. 오차는 $\hat a$가 $+0.48\,\%$, $\hat b$가 $+0.17\,\%$로 계산 절과 부호가 반대다. 반올림은 어느 쪽으로든 틀릴 수 있다. $\hat\tau=-0.2/\ln0.82263=1.024\,\mathrm{s}$, $\hat K=0.18158/0.17737=1.024$. 배수는 $\tau/T=5$: $0.48\,\%\times5=2.4\,\%$. 잔차는 $\hat\sigma^2=3.28\times10^{-6}$, $\mathrm{sd}(\hat a)=0.0049$를 주고, $\tau$에서 약 $\pm3\,\%$다. 계산 절의 $\pm13\,\%$보다 좁은 것은 일부는 $\tau/T$가 $10$이 아니라 $5$이기 때문이고, 일부는 이 기록의 잔차가 우연히 작기 때문이다. (c) $S=0.181269^2/(1-0.818731^2)=0.09967$이므로 $\hat a\to0.818731\times0.09967/0.10967=0.7441$, $\hat\tau=-0.2/\ln0.7441=0.677\,\mathrm{s}$. 상태 표준편차($\sqrt S=0.316$)의 3분의 1인 잡음이 3분의 1만큼 짧은 시상수를 보고하게 하고, 공분산은 그중 아무것도 보여 주지 않는다. (d) $u_k=-2x_k$이면 열이 $x_k$와 $-2x_k$라 $\Phi$의 모든 행이 $(1,-2)$의 배수, 랭크 1이다. 회귀는 $x_{k+1}=(a-2b)\,x_k$로 줄어, 최소제곱은 폐루프 극점 $a-2b=0.904837-0.190325=0.7145$를 식별하고, $a$와 $b$는 따로 아무것도 식별하지 못한다.
+> 2. (a) $a=e^{-0.2}=0.818731$, $b=1-e^{-0.2}=0.181269$이고, $a+b=1$이므로 $b/(1-a)=1$. (b) $\sum y_k^2=0.1615$, $\sum y_ku_k=-0.35$, $\sum u_k^2=5$, $\sum y_ky_{k+1}=0.0693$, $\sum u_ky_{k+1}=0.62$, 그래서 $\det=0.8075-0.1225=0.685$이고 $\hat\theta=\tfrac{1}{0.685}(5\cdot0.0693+0.35\cdot0.62,\ 0.35\cdot0.0693+0.1615\cdot0.62)=(0.82263,\ 0.18158)$. 오차는 $\hat a$가 $+0.48\,\%$, $\hat b$가 $+0.17\,\%$로 끝까지 계산과 부호가 반대다. 반올림은 어느 쪽으로든 틀릴 수 있다. $\hat\tau=-0.2/\ln0.82263=1.024\,\mathrm{s}$, $\hat K_{\mathrm{dc}}=0.18158/0.17737=1.024$. 배수는 $\tau/T=5$: $0.48\,\%\times5=2.4\,\%$. 잔차는 $\hat\sigma^2=3.28\times10^{-6}$, $\mathrm{sd}(\hat a)=0.0049$를 주고, $\tau$에서 약 $\pm3\,\%$다. 끝까지 계산의 $\pm13\,\%$보다 좁은 것은 일부는 $\tau/T$가 $10$이 아니라 $5$이기 때문이고, 일부는 이 기록의 잔차가 우연히 작기 때문이다. (c) $S=0.181269^2/(1-0.818731^2)=0.09967$이므로 $\hat a\to0.818731\times0.09967/0.10967=0.7441$, $\hat\tau=-0.2/\ln0.7441=0.677\,\mathrm{s}$. 상태 표준편차($\sqrt S=0.316$)의 3분의 1인 잡음이 3분의 1만큼 짧은 시정수를 보고하게 하고, 공분산은 그중 아무것도 보여 주지 않는다. (d) $u_k=-2x_k$이면 열이 $x_k$와 $-2x_k$라 $\Phi$의 모든 행이 $(1,-2)$의 배수, 랭크 1이다. 회귀는 $x_{k+1}=(a-2b)\,x_k$로 줄어, 최소제곱은 폐루프 극점 $a-2b=0.904837-0.190325=0.7145$를 식별하고, $a$와 $b$는 따로 아무것도 식별하지 못한다.
 > 3. 빈칸: `u[i] = -K * x[i] + r[i]`, `x[i + 1] = a0 * x[i] + b0 * u[i] + sw * rng.standard_normal()`, 그리고 `theta[0] - K * theta[1]`. $r=0$이면 랭크 $1$, $\hat\theta=(0.1513,\ -0.3026)$, $\hat a-K\hat b=0.7565$, 표준편차 `inf`, 그리고 $10^{32}$ 규모의 조건수를 출력한다 — 둘째 특이값이 반올림 잡음이라, 기계에 따라 다른 거대한 수나 `inf`가 나올 수 있다. 이 쌍은 직선 $a-2b=0.7565$ 위의 최소 노름 점, 곧 $0.7565\,(1,-2)/5$이고 히터와는 거리가 멀다. `lstsq`는 경고하지 않으므로 랭크를 출력하는 것이다. $0.7565$는 잡음이 몰아간 200 샘플에서 얻은 (d)의 $0.7145$의 잡음 섞인 추정이고, 그런 추정이 갖는 표준편차 $0.049$ 안에 있다. $r=$ PRBS이면 랭크 $2$, $\hat\theta=(0.9079,\ 0.0958)$, $\hat a-K\hat b=0.7162$, 표준편차 $(0.0028,\ 0.0009)$, 조건수 약 $10$을 출력한다. 식별 가능하다 — 대가를 치르고. 개루프 PRBS는 $\hat a$에 $0.0016$을 주었다. 피드백은 상태를 0 근처에 붙잡아 두는 것이 제 일이고 상태는 회귀 벡터이므로, 폐루프 기록이 담는 정보가 적다. $r$에서 $x$로 가는 루프의 DC 이득은 $1/(1+K)=1/3$이다.
 
 ### 출처
@@ -936,7 +1048,7 @@ Tier A. [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P4**, 이 페이지, [
 - L. Ljung, *System Identification: Theory for the User*, 2nd ed., Prentice Hall, 1999 — 모델 구조(ARX, 출력 오차, ARMAX, Box–Jenkins), 예측 오차법, 정보를 담는 실험, 모델 검증.
 - T. Söderström and P. Stoica, *System Identification*, Prentice Hall, 1989 — §4에서 쓴 형태의 차수 $n$ 지속적 여기, 계단·사인의 합·PRBS의 여기 차수, 도구 변수 방법.
 - S. W. Golomb, *Shift Register Sequences*, Holden-Day, 1967 — 최대 길이 수열과 두 값만 갖는 자기상관.
-- C. G. Atkeson, C. H. An and J. M. Hollerbach, "Estimation of inertial parameters of manipulator loads and links," *The International Journal of Robotics Research* 5(3), 1986 — 강체 동역학의 관성 파라미터 선형성, 적재물 식별.
+- C. G. Atkeson, C. H. An and J. M. Hollerbach, "Estimation of inertial parameters of manipulator loads and links," *The International Journal of Robotics Research* 5(3), 1986 — 강체 동역학의 관성 파라미터 선형성, 페이로드 식별.
 - W. Khalil and E. Dombre, *Modeling, Identification and Control of Robots*, Hermes Penton Science, 2002 — 직렬 로봇의 기저 관성 파라미터와 동적 식별.
 - J. Swevers, C. Ganseman, D. B. Tükel, J. De Schutter and H. Van Brussel, "Optimal robot excitation and identification," *IEEE Transactions on Robotics and Automation* 13(5), 1997 — 회귀 행렬의 조건을 기준으로 고른 주기적 여기 궤적.
 - 이 페이지의 모든 숫자는 P4와 P2의 카탈로그 값에서 NumPy 2.0.2로 여기서 계산했다. 기록은 측정이 아니라 시뮬레이션이다.

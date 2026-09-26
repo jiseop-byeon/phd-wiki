@@ -49,6 +49,11 @@ both — semantics to decide, high-rate continuous control to execute.
 - **Flow matching head**: learns the velocity field that transports noise to action chunks
   ($H = 50$ actions, all continuous joints) — a handful of integration steps at inference,
   fast enough for **50 Hz** control.
+- **Transfusion lineage**: in the authors' words the architecture is *inspired by Transfusion* —
+  one transformer, trained with a cross-entropy loss on its discrete tokens and a flow-matching
+  loss on its continuous ones — to which π0 adds the separate weights for state and action tokens;
+  the action tokens are supervised with a **conditional flow-matching** loss
+  ([[03-deep-learning/vlm/index|3. VLM §6]] places this among the ways modalities meet).
 
 ```mermaid
 flowchart LR
@@ -144,6 +149,10 @@ models.
   분할(VLM 토큰과 행동 토큰이 별도 가중치 사용)로 그 상태를 참조.
 - **Flow matching 헤드**: 노이즈를 행동 청크($H = 50$, 전부 연속 관절값)로 수송하는
   속도장을 학습 — 추론 시 적분 몇 스텝이면 충분해 **50 Hz** 제어가 가능.
+- **Transfusion 계보**: 저자들의 말로 이 구조는 *Transfusion에서 영감을 받았다* — 트랜스포머
+  하나를 이산 토큰에는 cross-entropy 손실로, 연속 토큰에는 flow matching 손실로 학습한다 — 그리고
+  π0는 여기에 상태·행동 토큰용 별도 가중치를 더했다. 행동 토큰은 **조건부 flow matching** 손실로
+  지도한다([[03-deep-learning/vlm/index|3. VLM §6]]이 이것을 모달리티가 만나는 방식들 가운데 놓는다).
 
 ```mermaid
 flowchart LR

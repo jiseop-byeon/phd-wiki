@@ -30,7 +30,7 @@ Planning asks how a robot should choose a feasible sequence of future states and
 
 **P2** from [[02-foundations/lab-plants|0.6 Lab Plants]], the catalog's planar two-link arm: links $L_1=L_2=1$ m, base at the origin, $\theta_1$ measured from the $+x$ axis and $\theta_2$ the elbow angle relative to link 1, so the elbow is at $(\cos\theta_1,\sin\theta_1)$ and the tip one more metre along the absolute angle $\theta_1+\theta_2$. Its configuration space is the torus $T^2$, both angles wrapping at $\pm180°$ ([[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2]]).
 
-**The panel** that [[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2]] freezes and [[04-robotics/modern-robotics/ch09-trajectory-generation|ch.9]], [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]] and [[04-robotics/capstone-panel-contact|26]] reuse: the rigid half-plane $x\ge1$ m, whose face, the line $x=1$, holds the task point $p^\star=(1,1)$ m. The collision test checks the whole arm against it, and only penetration collides:
+**The panel** that [[04-robotics/modern-robotics/ch02-configuration-space|MR ch.2]] freezes and [[04-robotics/modern-robotics/ch09-trajectory-generation|ch.9]], [[04-robotics/modern-robotics/ch10-motion-planning|ch.10]] and [[04-robotics/capstone-panel-contact|26]] reuse, 26 with the face moved out to $x=1.10$ m on the drawing ($1.116$ estimated, $1.120$ true) and mounted compliantly at $400$ N/m: the rigid half-plane $x\ge1$ m, whose face, the line $x=1$, holds the task point $p^\star=(1,1)$ m. The collision test checks the whole arm against it, and only penetration collides:
 
 $$d(\theta)=\max\bigl(\cos\theta_1,\ \cos\theta_1+\cos(\theta_1+\theta_2)\bigr)-1,\qquad \mathcal{C}_{\text{free}}=\{\theta:\ d(\theta)\le0\}$$
 
@@ -682,7 +682,7 @@ Tier B, taken in the Working pass. **P2** ([[02-foundations/lab-plants|0.6]], th
 
 [[02-foundations/lab-plants|0.6 Lab Plants]]의 **P2**, 카탈로그의 평면 2링크 팔이다. 링크는 $L_1=L_2=1$ m, 베이스는 원점이고, $\theta_1$은 $+x$축에서 재며 $\theta_2$는 링크 1에 대한 엘보 각이다. 그래서 엘보는 $(\cos\theta_1,\sin\theta_1)$에, 말단은 절대각 $\theta_1+\theta_2$ 방향으로 1 m 더 간 곳에 있다. 컨피규레이션 공간은 두 각이 모두 $\pm180°$에서 감기는 원환면 $T^2$다([[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]).
 
-**패널**은 [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]이 고정하고 [[04-robotics/modern-robotics/ch09-trajectory-generation|9장]], [[04-robotics/modern-robotics/ch10-motion-planning|10장]], [[04-robotics/capstone-panel-contact|26]]이 다시 쓰는 그것이다. 강체 반평면 $x\ge1$ m이고, 그 면인 직선 $x=1$ 위에 과제 점 $p^\star=(1,1)$ m가 있다. 충돌 검사는 팔 전체를 패널에 대 보고, 관통만 충돌로 센다:
+**패널**은 [[04-robotics/modern-robotics/ch02-configuration-space|MR 2장]]이 고정하고 [[04-robotics/modern-robotics/ch09-trajectory-generation|9장]], [[04-robotics/modern-robotics/ch10-motion-planning|10장]], [[04-robotics/capstone-panel-contact|26]]이 다시 쓰는 그것이다(26은 면을 도면상 $x=1.10$ m, 추정 $1.116$ m, 실제 $1.120$ m로 옮기고 $400$ N/m로 유연하게 장착한다). 강체 반평면 $x\ge1$ m이고, 그 면인 직선 $x=1$ 위에 과제 점 $p^\star=(1,1)$ m가 있다. 충돌 검사는 팔 전체를 패널에 대 보고, 관통만 충돌로 센다:
 
 $$d(\theta)=\max\bigl(\cos\theta_1,\ \cos\theta_1+\cos(\theta_1+\theta_2)\bigr)-1,\qquad \mathcal{C}_{\text{free}}=\{\theta:\ d(\theta)\le0\}$$
 
